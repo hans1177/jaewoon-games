@@ -3146,11 +3146,12 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
   const selectedSourceHashes=Object.freeze(allSelectedPaths.map(relative=>{
     const absolute=path.resolve(cwd,relative);
     if(!fs.existsSync(absolute))return Object.freeze({path:relative,sha256:null,status:'SOURCE_UNAVAILABLE'});
-    const stat=fs.statSync(absolute);
+    // Nanosecond timestamps prevent same-size, same-millisecond asset edits from reusing stale hashes.
+    const stat=fs.statSync(absolute,{bigint:true});
     if(!stat.isFile())return Object.freeze({path:relative,sha256:null,status:'SOURCE_UNAVAILABLE'});
     const real=fs.realpathSync(absolute);
     if(!real.startsWith(canonicalRoot))throw new Error('INTERNAL_ASSET_SOURCE_OUTSIDE_REPOSITORY:'+relative);
-    const stamp=[stat.size,stat.mtimeMs,stat.ctimeMs,stat.ino,stat.dev].join(':');
+    const stamp=[stat.size,stat.mtimeNs,stat.ctimeNs,stat.ino,stat.dev].join(':');
     const cached=INTERNAL_ASSET_SOURCE_HASH_CACHE.get(real);
     let digest;
     if(cached&&cached.stamp===stamp)digest=cached.sha256;
@@ -3421,9 +3422,9 @@ export function buildInternalAssetApiIndex({cwd=process.cwd(),paths=[]}={}){
     }
     availableSourceCount+=1;
     // 같은 API 코드를 수백 게임마다 중복 파싱하지 않는다. 파일이 바뀌면 즉시 재탐색한다.
-    const stat=fs.statSync(absolute);
+    const stat=fs.statSync(absolute,{bigint:true});
     const key=fs.realpathSync(absolute);
-    const stamp=[stat.size,stat.mtimeMs,stat.ctimeMs,stat.ino,stat.dev].join(':');
+    const stamp=[stat.size,stat.mtimeNs,stat.ctimeNs,stat.ino,stat.dev].join(':');
     const cached=INTERNAL_ASSET_API_SIGNATURE_CACHE.get(key);
     const signatures=cached&&cached.stamp===stamp?[...cached.signatures]:[];
     const add=value=>{
@@ -3508,9 +3509,9 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
       const platformName=/(?:^|[-_.])(roblox|unity|godot|unreal)(?:[-_.]|$)/i.exec(name)?.[1]?.toLowerCase();
       if(platformName&&platformName!==target)continue;
       const relative=folder+'/'+entry.name,absolute=path.join(directory,entry.name);
-      const stat=fs.statSync(absolute);
+      const stat=fs.statSync(absolute,{bigint:true});
       const real=fs.realpathSync(absolute);
-      const stamp=[stat.size,stat.mtimeMs,stat.ctimeMs,stat.ino,stat.dev].join(':');
+      const stamp=[stat.size,stat.mtimeNs,stat.ctimeNs,stat.ino,stat.dev].join(':');
       const prior=INTERNAL_ASSET_TOOL_EXPORT_CACHE.get(real);
       let apiNames,sha256;
       if(prior&&prior.stamp===stamp){apiNames=prior.exports;sha256=prior.sha256;}
