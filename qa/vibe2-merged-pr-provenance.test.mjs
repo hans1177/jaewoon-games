@@ -273,6 +273,14 @@ test('merged PR collector checks out only exact provenance evidence without full
   assert.match(source,/fetch-depth: 1/);
   assert.match(source,/fetch-tags: false/);
   assert.match(source,/filter: blob:none/);
+  assert.match(source,/sparse-checkout: \|/);
+  assert.match(source,/\.github\/workflows\/vibe2-merged-pr-provenance\.yml/);
+  assert.match(source,/assets\/vibe-experience-memory\.js/);
+  assert.match(source,/qa\/vibe2-merged-pr-provenance\.test\.mjs/);
+  assert.match(source,/tools\/vibe2-capability-distillation\.mjs/);
+  assert.match(source,/tools\/vibe2-merged-pr-provenance\.mjs/);
+  assert.match(source,/sparse-checkout-cone-mode: false/);
+  assert.doesNotMatch(source,/\.vibe2\/queue(?:\/|\.json)/);
   assert.match(control,/ref: vibe2-unreal-core/);
   assert.match(control,/fetch-depth: 1/);
   assert.match(control,/fetch-tags: false/);
