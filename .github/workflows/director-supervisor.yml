@@ -383,6 +383,17 @@ jobs:
               &&String(r.head_sha||'')
               &&String(r.head_sha||'')!==currentMain
             ))add(stale,'VIBE2_STALE_UNSTARTED_FANIN_REFILL');
+
+            // 이전 제목의 리필도 최신 main 호출로 대체된다. 취소 직전 job 0개를 별도 검증한다.
+            for(const stale of runs.filter(r=>
+              r.path==='.github/workflows/vibe2-continuous-core.yml'
+              &&String(r.event||'')==='repository_dispatch'
+              &&String(r.display_title||'')==='vibe2-fanin-refill'
+              &&queued.has(String(r.status||'').toLowerCase())
+              &&String(r.head_branch||'')==='main'
+              &&String(r.head_sha||'')
+              &&String(r.head_sha||'')!==currentMain
+            ))add(stale,'VIBE2_LEGACY_UNSTARTED_FANIN_REFILL');
           }
 
           const staleBefore=Date.now()-(15*60*1000);
@@ -474,12 +485,24 @@ jobs:
               continue
             fi
             safe_force_cancel=false
+            if [ "$reason" = 'VIBE2_LEGACY_UNSTARTED_FANIN_REFILL' ]; then
+              legacy_job_count="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=100" --jq '.total_count' 2>/dev/null || true)"
+              if [ "$legacy_job_count" != '0' ]; then
+                echo "DIRECTOR_LEGACY_REFILL_PRESERVED=${run_id}:JOBS_NOT_PROVEN_EMPTY:${legacy_job_count:-unknown}"
+                continue
+              fi
+              safe_force_cancel=true
+            fi
             if [[ "$reason" == 'DUPLICATE_TITLE_STALE_QUEUED' || "$reason" == 'ROBLOX_STALE_LEGACY_OR_BATCH' || "$reason" == 'ROBLOX_STALE_UNSTARTED_NATIVE_WORK_REPLACED_BY_CURRENT_BATCH' || "$reason" == 'CONTROL_PLANE_SUPERSEDED' || "$reason" == 'VIBE2_RECOVERY_FAST_SUPERSEDED_QUEUED' || "$reason" == 'CENTRAL_EXACT_GAME_STALE_HEAD_REPLACED_BY_CURRENT_GAME_RUN' || "$reason" == 'CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD' || "$reason" == 'ROBLOX_LEGACY_STUDIO_MCP_DISABLED_BY_CLOUD_ONLY' ]]; then
               safe_force_cancel=true
             fi
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
               current_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
               if [ "$safe_force_cancel" = true ] && [[ "$current_state" == 'queued' || "$current_state" == 'pending' || "$current_state" == 'requested' || "$current_state" == 'waiting' ]]; then
+                if [ "$reason" = 'VIBE2_LEGACY_UNSTARTED_FANIN_REFILL' ] && [ "$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=100" --jq '.total_count' 2>/dev/null || true)" != '0' ]; then
+                  echo "DIRECTOR_LEGACY_REFILL_PRESERVED=${run_id}:JOBS_CHANGED_AFTER_CANCEL"
+                  continue
+                fi
                 if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
                   cancelled=$((cancelled+1))
                   echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED_AFTER_ACCEPTED_CANCEL=${run_id}:${reason}:${current_state}"
@@ -511,6 +534,10 @@ jobs:
             elif [ "$safe_force_cancel" = true ]; then
               force_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
               force_active_jobs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=100" --jq '[.jobs[] | select(.status=="in_progress")] | length' 2>/dev/null || echo 0)"
+              if [ "$reason" = 'VIBE2_LEGACY_UNSTARTED_FANIN_REFILL' ] && [ "$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=100" --jq '.total_count' 2>/dev/null || true)" != '0' ]; then
+                echo "DIRECTOR_LEGACY_REFILL_PRESERVED=${run_id}:JOBS_CHANGED_BEFORE_FORCE_CANCEL"
+                continue
+              fi
               force_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
               if [ "$force_state" = 'in_progress' ] || [ "${force_active_jobs:-0}" != '0' ]; then
                 echo "DIRECTOR_RUNNER_DRAIN_ACTIVE_PRESERVED=${run_id}:${reason}:${force_state:-unknown}:${force_active_jobs:-0}"
