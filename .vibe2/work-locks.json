@@ -1,5 +1,28 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-5sg2fr",
+      "worker": "vibe2",
+      "taskId": "insect-survival-studio-evolution-roblox-usability-v2",
+      "gameId": "insect-survival",
+      "files": [
+        "roblox-games/insect-survival/client/Game.client.luau",
+        "roblox-games/insect-survival/shared/GameConfig.luau",
+        "roblox-games/insect-survival/server/Game.server.luau",
+        "roblox-games/insect-survival/client/MaterialPresentation.client.luau"
+      ],
+      "baseSha": "3bd377815e45befd156261f0d50b683f5d3c21e1",
+      "runId": "38313655128",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-12T22:10:36.357Z",
+      "expiresAt": "2026-10-12T22:55:36.357Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:insect-survival-studio-evolution-roblox-usability-v2"
+      ]
+    }
+  ]
 }
