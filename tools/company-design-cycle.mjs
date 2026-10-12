@@ -1250,7 +1250,8 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
 // 파일명: tools/company-design-cycle.mjs / 메인: 바이브 자체 인과 설계 연산
 let nativeDesignVariation=0;
 function computeVibeNativeDesign(){
-  const original=seed.originalDesignContext?.content||{};
+  const freeTopicMode=seed.designTopicMode==='VIBE_FREE_TOPIC';
+  const original=freeTopicMode?{}:seed.originalDesignContext?.content||{};
   // 원본 소재명이 존재하는 것만으로 완성된 설계라고 보지 않는다. 검증된 문법만 그대로 재사용한다.
   const preserved=Boolean(original.creativeGrammar?.a?.material&&original.creativeGrammar?.b?.material
     &&validateDesignAuthoringContent({design:{creativeGrammar:original.creativeGrammar},seed,fields:['creativeGrammar']}).length===0);
@@ -1258,20 +1259,22 @@ function computeVibeNativeDesign(){
   const materials=(seedState.seedMaterials||[]).filter(row=>materialIds.has(row.materialId));
   const computed=computeVibeSeedProposal({
     requestId:gameId,category:seed.GAME_CATEGORY,platform:seed.INITIAL_TARGET_PLATFORM,
-    gameName:clean(seed.gameName||game.name),
-    ownerBrief:clean(seed.OWNER_LATEST_DESIGN_REQUEST||seed.OWNER_DESIGN_INTENT),
-    gameDescription:clean(game.description),
-    coreLoop:Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[],
-    materials,variant:nativeDesignVariation
+    gameName:freeTopicMode?'':clean(seed.gameName||game.name),
+    ownerBrief:freeTopicMode?'':clean(seed.OWNER_LATEST_DESIGN_REQUEST||seed.OWNER_DESIGN_INTENT),
+    gameDescription:freeTopicMode?'':clean(game.description),
+    coreLoop:freeTopicMode?[]:Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[],
+    materials:freeTopicMode?[]:materials,variant:nativeDesignVariation,
+    designTopicMode:freeTopicMode?'VIBE_FREE_TOPIC':'ORIGINAL_CONTEXT',
+    topicRevision:freeTopicMode?seed.ownerResetRevision:''
   });
-  const sketch=seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion?.formula==='MAIN × A × B × C'
+  const sketch=!freeTopicMode&&seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion?.formula==='MAIN × A × B × C'
     &&!pendingSeedGrammarNotAuthored?seedGameplaySketch:computed.gameplaySketch;
   const grammar=sketch.novelGameGrammar;
   const fusion=grammar.gameplaySystemFusion;
   const a=fusion.majorAxes.find(row=>row.key==='A'),b=fusion.majorAxes.find(row=>row.key==='B');
   const c=fusion.themeFusion,main=fusion.main,delve=grammar.delveLayer.elements;
   const shorten=(value,max=650)=>clean(value).slice(0,max);
-  const name=clean(seed.gameName||game.name||original.identity||seed.DISTINCT_IDENTITY)||main.name;
+  const name=freeTopicMode?clean(computed.gameName):clean(seed.gameName||game.name||original.identity||seed.DISTINCT_IDENTITY)||main.name;
   const mainName=clean(main.name||name);
   const mode=allGamesMultiplayerRequired
     ?(['COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?originalMultiplayerMode:'COOP')
