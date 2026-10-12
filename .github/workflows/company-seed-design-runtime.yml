@@ -112,6 +112,38 @@ jobs:
             git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > game-seed-state.json
           fi
           git reset -- game-seed-state.json >/dev/null 2>&1 || true
+          # 기존 오너 재설계 입력이 참조하는 정확한 원본만 복원한다. 전체 설계 폴더는 받지 않는다.
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {execFileSync} from 'node:child_process';
+          import {activeOwnerDesignResetRequests} from './tools/owner-design-reset.mjs';
+          const runtimeRef='origin/'+process.env.COMPANY_RUNTIME_BRANCH;
+          const baselines=new Set();
+          for(const request of activeOwnerDesignResetRequests()){
+            const gameId=String(request.gameId||'').trim();
+            const source=String(request.designRequest?.baselineSource||'').trim();
+            if(!source)continue;
+            const match=/^design\/([a-z0-9-]+)\/\d{4}-\d{2}-\d{2}\/design-revised\.json$/.exec(source);
+            if(!match||match[1]!==gameId)throw new Error('OWNER_DESIGN_BASELINE_PATH_INVALID:'+gameId);
+            baselines.add(source);
+          }
+          for(const source of baselines){
+            let contents;
+            try{
+              contents=execFileSync('git',['show',runtimeRef+':'+source],{
+                encoding:'utf8',maxBuffer:16*1024*1024,stdio:['ignore','pipe','ignore']
+              });
+            }catch{
+              throw new Error('OWNER_DESIGN_BASELINE_READ_FAILED:'+source);
+            }
+            try{JSON.parse(contents);}catch{throw new Error('OWNER_DESIGN_BASELINE_JSON_INVALID:'+source);}
+            fs.mkdirSync(path.dirname(source),{recursive:true});
+            fs.writeFileSync(source,contents,'utf8');
+          }
+          console.log('OWNER_DESIGN_BASELINE_SELECTED_COUNT='+baselines.size);
+          console.log('OWNER_DESIGN_BASELINE_LOAD_MODE=TARGET_FILES_ONLY');
+          NODE
           echo 'COMPANY_RUNTIME_DESIGN_EVIDENCE=LAZY_READ_ONLY'
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=YES'
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
