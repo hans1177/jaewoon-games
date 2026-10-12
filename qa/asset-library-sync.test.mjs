@@ -601,6 +601,7 @@ test('acquired Roblox GLBs are previewable through the existing safe native view
     assert.equal(record.path,model.path);
     assert.equal(record.masterGlbHash,model.sha256);
     assert.equal(record.productionVerified,false);
+    assert.equal(record.gameExclusive,false,'acquired actor must remain company-common');
     assert.equal(nativeGLB(model.path),'/'+model.path);
     assert.equal(nativeGLB('/'+model.path),'/'+model.path);
     assert.ok(fs.statSync(model.path).size>100,'empty GLB '+model.path);
