@@ -1272,7 +1272,7 @@ function computeVibeNativeDesign(){
     systemFamily:clean(existingSystem?.systemFamily||original.creativeGrammar?.a?.system||existingLoop[0]),
     playerChoice:clean(existingSystem?.playerChoice||original.creativeGrammar?.a?.stateChange||existingLoop.join(' → ')),
     gameGenre:clean(existingSystem?.gameGenre||original.creativeGrammar?.a?.gameGenre),
-    source:clean(seed.DESIGN_BASELINE_SOURCE||seed.originalDesignContext?.source||seed.seedId)
+    source:clean(existingSystem?.source||seed.DESIGN_BASELINE_SOURCE||seed.originalDesignContext?.source||seed.seedId)
   }:null;
   const freeTopicMode=ownerFreeTopic||Boolean(bSystemReference);
   const computed=computeVibeSeedProposal({
@@ -1284,7 +1284,7 @@ function computeVibeNativeDesign(){
     materials:freeTopicMode?[]:materials,variant:nativeDesignVariation,
     designTopicMode:freeTopicMode?'VIBE_FREE_TOPIC':'ORIGINAL_CONTEXT',
     topicRevision:freeTopicMode?seed.ownerResetRevision:'',
-    aSystemReference:!basicDesignMethod&&freeTopicMode?seed.A_SYSTEM_REFERENCE:null,
+    aSystemReference:typeof basicDesignMethod==='undefined'&&freeTopicMode?seed.A_SYSTEM_REFERENCE:null,
     bSystemReference,
     basicDesignMethod:typeof basicDesignMethod==='undefined'?null:basicDesignMethod,
     discoveryCount:seed.designDiscoveryCount
