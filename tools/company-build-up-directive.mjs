@@ -1492,6 +1492,72 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
   });
 }
 
+// Existing BUILD_UP workers consume this through directivePrompt; this is not a new QA runner.
+function buildPlayerFacingInspectionContract({gameId,source,states,responsibleFiles=[]}){
+  const definitions=[
+    ['UI_LAYOUT','UI_HUD','UI', 'HUD·메뉴·팝업·인벤을 작은/큰 화면과 가로/세로에서 열고 긴 한글·최대 보유량·위험 경고를 표시', '글자 잘림·겹침·safe area 침범·체력/목표 가림·초점 소실·색만으로 상태 구분', '레이아웃·텍스트·아이콘·정보 우선순위', '같은 해상도/상태 전후 화면과 핵심 정보 식별'],
+    ['UI_INTERACTION','MENU_FLOW','UI', '열기→스크롤→선택→장착→닫기→다시 열기, 팝업 위 터치와 빠른 연속 입력', '장식 버튼·중복 실행·닫기 터치의 뒤쪽 공격 전달·선택 초기화·표시와 실제 장착 불일치', '입력 소비·모달·선택 상태·서버 응답 연결', '터치/마우스별 한 번의 입력에 한 번의 결과와 상태 유지'],
+    ['CHARACTER_RENDER','CHARACTER_VISUALS','GRAPHICS', '정면/측면/후면, 가까이/멀리, 장비 교체와 이동·경사·착지', '누락 메시/텍스처·기본 부품 대체·장비 관통/부유·리그 찢어짐·발 미끄러짐·지면 관통', '기존 모델 바인딩·리그·장착 접점·접지', '같은 캐릭터/장비/카메라의 실제 렌더와 원본 해시/업로드 ID 연결'],
+    ['MONSTER_READABILITY','ENEMY_VISUALS','GRAPHICS', '기존 적 종류를 같은 조명에서 접근→추적→공격 전조→피격→사망 순으로 관찰', '색만 다른 복제·역할 식별 불가·공격 전조 안 보임·배경에 묻힘·죽은 적이 움직이거나 남음', '적 모델·상태 표현·전조·사망 정리', '기존 종류별 역할과 위험 전조가 구별되는 화면/행동 기록'],
+    ['MOTION_TRANSITIONS','ANIMATION','GRAPHICS', 'idle→start→walk/run→turn→stop→jump/land→attack→hit/death, 행동 중 취소·재시작', 'T포즈·정지 모델·전환 튐·루프 끊김·중복 트랙·사망 뒤 idle·전체 CFrame 이동만으로 모션 주장', 'Animator·관절·블렌딩·상태 전환·트랙 수명', '같은 입력 순서의 연속 프레임/동작 기록과 실제 상태 일치'],
+    ['ACTION_IMPACT','GAME_FEEL','GAMEPLAY', '기존 주 행동의 준비→실행→판정→회복, 빗나감·피격·취소·연속 입력', '판정보다 먼저 데미지 표현·허공 타격 피드백·VFX/음향 지연·쿨다운 표시 불일치·연속 입력 고착', '기존 서버 판정과 클라이언트 모션/VFX/음향 사건 연결', 'authoritative impact 시점과 시각/음향 타임라인 비교; 데미지·쿨다운·히트 의미 보존'],
+    ['CAMERA_COMPOSITION','CAMERA','GRAPHICS', '벽/모서리/좁은 통로·다중 적·장비 UI·큰 VFX·근접/원거리 장면', '카메라 벽 관통·캐릭터/적/목표 가림·과도한 흔들림·줌 튐·모바일 화면 이탈', '카메라 충돌·추적·FOV·오클루전·화면 구성', '같은 동선에서 플레이어·위험·다음 목표를 지속적으로 식별'],
+    ['WORLD_BACKGROUND','ENVIRONMENT','MAP', '스폰→허브→주 동선→전투/상호작용 구역→지역 경계, 낮/어둠 등 기존 상태', '빈 평면·무의미한 반복 소품·전경/중경/배경 혼동·랜드마크 부재·동선과 장식 충돌', '기존 맵 배치·지형·랜드마크·조명·배경 밀도', '같은 경로의 전후 장면에서 지역 역할과 목적지 식별; 새 지역은 승인 설계에만 연결'],
+    ['GRAPHICS_INTEGRITY','MATERIALS','GRAPHICS', '기존 모든 자산 계열을 가까이/멀리/이동 중, 로딩 전후와 품질 단계 전환에서 관찰', '미로드 자산·검은/투명 모델·핑크/누락 재질·UV 깨짐·z-fighting·깜빡임·LOD 갑작스런 소실', '메시/텍스처/재질 ID·로드 실패 복구·LOD', '실제 화면과 로드/바인딩 오류를 함께 확인; 썸네일 파일 정상은 렌더 합격 아님'],
+    ['NAVIGATION_BLOCKERS','WORLD_NAVIGATION','MAP', '스폰부터 기존 목표/출구까지 이동, 문/포탈/경사/계단/맵 경계·리스폰', '끼임·보이지 않는 벽·낙사·부유 스폰·막힌 문·도달 불가능한 목표·안전 복귀 실패', '충돌·접지·경로 연결·문/포탈·복귀', '동일 경로의 실제 입력→도착→목표 상태, 모든 실패 지점 재통과'],
+    ['PROGRESSION_BLOCKERS','SYSTEM_CONNECTION','GAMEPLAY', '첫 세션 핵심 루프와 기존 중후반 해금·퀘스트·보상·다음 지역 연결', '다음 행동 없음·퀘스트 완료 불가·보상 중복/누락·상태 불일치·다음 지역으로 진행 불가', '기존 목표·퀘스트·보상·진행 상태 책임 시스템', '성공/실패/재시도 분기의 상태 전후 및 다음 행동 연결; 승인 없는 경제/밸런스 변경 금지'],
+    ['RECOVERY_SAVE','SAVE_AND_RECOVERY','SAVE', '사망→재시작→로비 복귀, 기존 저장→이탈→재접속, 로드/네트워크 실패', '세이브 초기화·아이템 소실/복제·옛 UI 상태·영구 로딩·오류 숨김·복구 버튼 무효', '기존 저장 키·세션 수명·오류 처리·재접속', '같은 저장 의미와 권한으로 복구; 기존 데이터/보상 보존'],
+    ['MULTIPLAYER_CONSISTENCY','MULTIPLAYER_AND_SYNC','MULTIPLAYER_SERVER', '기존 멀티에서 두 명 이상 참가→준비→행동→이탈/재접속; 동시 상호작용', '클라이언트마다 외형/목표/피격 불일치·중복 보상·방장 이탈 무한대기·권한 이동', '서버 권한·동기화·참가/이탈·장비/모션 복제', '두 참가자의 실제 상태/장면과 서버 결과 비교; 로컬 모의 결과를 멀티 PASS로 쓰지 않음'],
+    ['MOBILE_PERFORMANCE','PERFORMANCE_BUDGET','GRAPHICS', '최대 기존 전투/파티클/인벤·지역 이동·반복 세션을 승인된 모바일 예산과 대조', '입력 지연·프레임 급락·메모리/객체 누수·HUD 가림·발열 비용·무제한 효과', '실제 병목 update·객체/효과 수명·로드·네트워크', '같은 기기/장면의 전후 측정과 회귀; 예산 없으면 임의 수치 PASS 대신 미검증'],
+    ['LOBBY_SPACES','MENU_FLOW','UI', '기존 로비에서 진입·파티 공간·퀘스트/이벤트 게시판·장비 전시·외형 설정·안전 연습 동선을 점검', '기능 없는 장식·구역 겹침·목적 불명·접지 불량·포탈 가림·연습이 저장/재화/판정 변경', '기존 허브 배치·상호작용·메뉴·안전 연습', '있는 기능은 연결/보존하고 없는 기능은 승인 설계 또는 오너 요청 범위 확인; 로비 없는 게임에 강제 추가 금지']
+  ];
+  return{
+    version:1,gameId,requiredEveryBuildUpCycle:true,executionBoundary:'EXISTING_BUILD_UP_AND_F0_F9_ONLY',
+    sourceTreeFingerprint:source.sourceTreeFingerprint,checklistIsNotExecutedEvidence:true,
+    evidenceState:'UNVERIFIED',technicalPassIsNotVisualQualityPass:true,thumbnailTransportIsNotRenderedQuality:true,
+    applicabilityRule:'CHECK_EXISTING_OR_APPROVED_SURFACE; NOT_APPLICABLE_REQUIRES_DESIGN_AND_SOURCE_REASON; NEVER_ADD_UNAPPROVED_GAMEPLAY',
+    cases:definitions.map(([id,domain,impact,scene,failure,owner,replay])=>{
+      const domainState=states.find(row=>row.domain===domain);
+      return{id,domain,impact,applicability:domainState?.state==='NOT_APPLICABLE'?'REVIEW_NOT_APPLICABLE_REASON':'INSPECT_EXISTING_OR_APPROVED_SURFACE',applicabilityReason:domainState?.state==='NOT_APPLICABLE'?domainState.reason:null,scene,failureCriteria:failure,responsibility:owner,retest:replay,evidenceState:'UNVERIFIED'};
+    }),
+    responsibleSourceCandidates:uniq(responsibleFiles),
+    requiredEvidenceFields:['gameId','sourceRevision','artifactIdentity','placeOrSceneId','candidateVersion','platform','viewportOrDevice','scenarioId','inputSequence','observedStateBeforeAfter','captureReferenceAndSha256','finding','responsibleSource','retestResult'],
+    evidenceRules:[
+      '현재 정확한 후보의 실제 플레이 장면만 사용한다. 대표 장면은 시작/로비, 핵심 행동, 위험/다중 적, 인벤/팝업, 지역 경계와 모바일이다. 해당 없는 장면은 설계/소스 이유를 기록한다.',
+      '같은 카메라·입력·해상도·게임 상태의 전후 이미지와 상태 결과를 비교한다. 모션은 정지 이미지 한 장 대신 연속 프레임/시간 정보가 필요하다.',
+      '파일 존재·크기·PNG 서명·썸네일·자산 업로드·소스 마커·테스트 개수·반복 횟수는 시각 품질 합격을 증명하지 않는다.',
+      '중앙 정책에서 허용한 관찰 도구만 사용한다. 정확한 화면 관찰 수단이 없으면 시각 품질은 UNVERIFIED로 남기고 증거 수집 책임으로 반환한다. 증거 부재를 관찰된 그래픽 오류로 꾸미지 않는다.',
+      '실제 결함은 재현 장면→기존 책임 함수→최소 원인 수정→영향별 QA→정확 후보 재빌드→같은 장면 재검수로 반환한다. 같은 결함이 반복되면 미세 패치 누적 대신 근본 원인을 재평가한다.',
+      '검증된 개선만 다음 반복의 기준선으로 사용한다. 적용 항목 전체를 검토하되 실제 변화/실패 영향에 맞춰 검증 범위를 넓히고 다른 게임의 독립 작업을 막지 않는다.'
+    ]
+  };
+}
+
+export function playerFacingInspectionPromptLines(contract={}, {focus='',generation=1}={}){
+  const cases=Array.isArray(contract.cases)?contract.cases:[];
+  if(!cases.length)return[];
+  const impact=({PRESENTATION:'GRAPHICS',USABILITY:'UI',PROGRESSION:'MAP',CORE_FUN:'GAMEPLAY',STABILITY:'SAVE'})[clean(focus).toUpperCase()];
+  const applicable=cases.filter(row=>row.applicability!=='REVIEW_NOT_APPLICABLE_REASON');
+  const preferred=applicable.filter(row=>row.impact===impact);
+  const pool=preferred.length?preferred:applicable;
+  const start=(Math.max(1,Number(generation)||1)-1)%Math.max(1,pool.length);
+  const selected=pool.length?[pool[start],...(pool.length>1?[pool[(start+1)%pool.length]]:[])]:[];
+  const lines=[];
+  for(let i=0;i<cases.length;i+=5)lines.push('inspectionIndex='+cases.slice(i,i+5).map(row=>row.id+':'+row.applicability).join('|'));
+  return[
+    'inspectionContract=EVERY_CYCLE; EXISTING_BUILD_UP_AND_F0_F9_ONLY; CHECKLIST_NOT_EXECUTED; QUALITY_UNVERIFIED; inspect all applicable surfaces, expand current details from playerFacingInspectionContract; not-applicable needs design/source reason.',
+    ...lines,
+    'inspectionEvidence=EXACT_GAME_SOURCE_ARTIFACT_VERSION_SCENE_VIEWPORT_INPUT_STATE_CAPTURE_SHA256_FINDING_OWNER_RETEST; compare same scene before/after; motion needs timed frames. Thumbnail/transport/static QA/counts never prove visual quality.',
+    'inspectionRule=Use centrally allowed observation only. Missing exact render stays UNVERIFIED, not an invented defect/PASS. Reproduce real failure, repair existing owner, run impact QA, rebuild/replay same scene; preserve save/balance/server authority.',
+    ...selected.flatMap(row=>[
+      'inspectionScene='+row.id+':'+row.scene,
+      'inspectionFailure='+row.id+':'+row.failureCriteria,
+      'inspectionOwner='+row.id+':'+row.responsibility,
+      'inspectionRetest='+row.id+':'+row.retest
+    ])
+  ];
+}
+
 function buildVisualDirective({gameId,design,source,focus}){
   const identity=design.identity||gameId;
   const anchor=primaryDesignAnchor(design);
@@ -2052,6 +2118,8 @@ export function directivePrompt(d={}){
     domainPriority,
     'VISUAL:',
     visual,
+    'PLAYER_FACING_INSPECTION_CONTRACT:',
+    ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
     `EXPERIENCE_BUILD_UP: ${JSON.stringify(d.experienceBuildUpContract||{})}`,
     `UX_INPUT: ${d.uxInputDirectives.join(' | ')}`,
     d.robloxNativeExecution?`ROBLOX_NATIVE_RESPONSIBLE_FILES: ${(d.robloxNativeExecution.responsibleFiles||[]).join(' | ')||'CURRENT_ALLOWED_ROBLOX_FILES'}`:'',
@@ -2558,6 +2626,7 @@ export function buildGameSpecificBuildUpDirective({
       shadowPipelineForbidden:true
     },
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
+    playerFacingInspectionContract:buildPlayerFacingInspectionContract({gameId:id,source,states,responsibleFiles:topFiles}),
     experienceBuildUpContract:buildExperienceBuildupContract({platform,design,source,focus}),
     uxInputDirectives:ux,
     platformAdaptationDirectives:platformDirectives({identity,goal}),
@@ -2575,7 +2644,7 @@ export function buildGameSpecificBuildUpDirective({
     preMutationDryRun,
     effectivenessMeasurement:{expectedPlayerEffect:expectedEffect,previousGeneration:previousEffectiveness,baseline:{sourceTreeFingerprint:source.sourceTreeFingerprint,runtimeObserved:runtimeEvidence?.runtimeObserved===true,runtimePassed:runtimeEvidence?.runtimePassed===true,failureStage:clean(runtimeEvidence?.failureStage)||null,failureSignature:clean(runtimeEvidence?.failureSignature)||null},requiredPostChangeEvidence:['CHANGED_GAME_FILES','POST_CHANGE_SOURCE_TREE_FINGERPRINT','RELEVANT_QA_OR_RUNTIME_RESULT','OBSERVED_PLAYER_VALUE_EFFECT'],sourceDeltaAloneDoesNotProvePlayerValueImprovement:true},
     nextActionDecision,
-    acceptanceEvidence:effectiveAcceptance,
+    acceptanceEvidence:[...effectiveAcceptance,'PLAYER_FACING_APPLICABLE_SCENARIOS_REVIEW_REQUIRED','THUMBNAIL_TRANSPORT_CANNOT_CLOSE_VISUAL_QUALITY','MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED'],
     nextEscalationCandidates:nextCandidates,
     loopEscalation:{automatic:true,nextGeneration:generation+1,currentDevelopmentDepth:depthInfo.developmentDepth,nextDevelopmentDepth:depthInfo.advanceAllowed?depthInfo.developmentDepth+1:depthInfo.developmentDepth,escalationStage:depthInfo.escalationStage,escalationMode:depthInfo.escalationMode,sourceChangedSincePrevious:depthInfo.sourceChangedSincePrevious,verifiedEvolution:depthInfo.verifiedEvolution,reuseSameGoalWithoutNewEvidence:false,completedGoalBecomesBaseline:depthInfo.verifiedEvolution},
     coverage:{
