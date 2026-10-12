@@ -1183,8 +1183,8 @@ test('native design repairs only failing fields and requires scored improvement 
   assert.match(repair,/finally\{nativeDesignVariation=0;\}/);
   assert.match(repair,/DESIGN_NATIVE_REPAIR_UNRESOLVED=/);
   assert.doesNotMatch(repair,/callDesignerModel\(/);
-  assert.match(design,/gameName:clean\(seed\.gameName\|\|game\.name\)/);
-  assert.match(design,/ownerBrief:clean\(seed\.OWNER_LATEST_DESIGN_REQUEST\|\|seed\.OWNER_DESIGN_INTENT\)/);
+  assert.match(design,/gameName:freeTopicMode\?'':clean\(seed\.gameName\|\|game\.name\)/);
+  assert.match(design,/ownerBrief:freeTopicMode\?'':clean\(seed\.OWNER_LATEST_DESIGN_REQUEST\|\|seed\.OWNER_DESIGN_INTENT\)/);
   assert.doesNotMatch(design,/KARMA_RETURN','TRICKSTER_REVERSAL','TESTIMONY_CONSENSUS_REALITY','EXILE_RETURN'/);
 });
 
@@ -1250,15 +1250,12 @@ test('design runtime scheduler requeues structurally stale strict PASS and memoi
   ]);
   let reads=0;
   const check=allowed=>runInNewContext(scheduler,{
-    fs:{
-      existsSync:file=>file==='design/demo'||files.has(file),
-      readdirSync:()=>[{name:'2026-10-10',isDirectory:()=>true}],
-      readFileSync:file=>{reads++;return files.get(file);}
-    },
+    designDatesFor:gameId=>gameId==='demo'?['2026-10-10']:[],
+    readDesignJson:file=>{reads++;const source=files.get(file);return source?JSON.parse(source):null;},
     path,resetGameIds:new Set(),resetTimestamp:0,
     evaluateMinimumDesignContract:()=>({pass:allowed})
   });
-  const invalid=check(false);
+    const invalid=check(false);
   assert.equal(invalid({gameId:'demo'}),null,'과거 PASS도 현재 설계 문법 결함이면 재작성 대상');
   const firstReads=reads;
   assert.equal(invalid({gameId:'demo'}),null);
