@@ -14,124 +14,6 @@
   "traces": [
     {
       "version": 1,
-      "traceId": "ctrace_ee59ce55200ead4634ed70e4",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "internal-motion-nian-walk-v1",
-        "workKey": null,
-        "gameId": "horror-escape-room",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "12269bd9e5dffb27312dacccee2d45100d62f783",
-        "variant": "primary",
-        "goal": "[INTERNAL ASSET MOTION REPAIR] roblox-world-ghost-nian의 기존 walk 동작 하나를 약 60분의 실제 수정 작업량으로 깊게 개선한다. 원본을 읽고 자세·중심 이동·관절 곡선·접촉·후행 움직임·복귀와 루프를 검토한다. 같은 오브젝트와 같은 동작만 수정하며 다른 모션, 루트 이동, 판정, 게임 소스는 변경하지 않는다. 변경하지 않는 축은 소스 근거로 보존한다. 전후 실제 native 재생과 검수 전에는 품질 통과를 주장하지 않는다. 실패는 같은 대상의 기존 수리 흐름에서 반복 수정한다."
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "PATH_VERIFIED_ANCHOR_FIRST",
-        "responsibilityConfidence": "HIGH",
-        "primaryTargets": [
-          "Motion.walk"
-        ],
-        "primarySystems": [
-          "AI",
-          "CORE_STATE"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "COMBAT",
-          "WORLD"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|TIMEOUT",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 2,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "TIMEOUT",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 273051,
-        "candidateMs": 242133,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:37720846742",
-        "reservation-id:37720846742:1",
-        "source-generation-failure:TIMEOUT"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "FAILURE_RECOVERY",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
       "traceId": "ctrace_89b4b8e0e0c8214844535f5d",
       "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
       "source": "VIBE2_WORKER_RESULT",
@@ -569989,11 +569871,129 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_e95a02ed1c488fb6ed661005",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "internal-motion-eoduksini-walk-v1",
+        "workKey": null,
+        "gameId": "horror-escape-room",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "3bd377815e45befd156261f0d50b683f5d3c21e1",
+        "variant": "primary",
+        "goal": "[INTERNAL ASSET MOTION REPAIR] roblox-world-ghost-eoduksini의 기존 walk 동작 하나를 약 60분의 실제 수정 작업량으로 깊게 개선한다. 원본을 읽고 자세·중심 이동·관절 곡선·접촉·후행 움직임·복귀와 루프를 검토한다. 같은 오브젝트와 같은 동작만 수정하며 다른 모션, 루트 이동, 판정, 게임 소스는 변경하지 않는다. 변경하지 않는 축은 소스 근거로 보존한다. 전후 실제 native 재생과 검수 전에는 품질 통과를 주장하지 않는다. 실패는 같은 대상의 기존 수리 흐름에서 반복 수정한다."
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "Motion.walk"
+        ],
+        "primarySystems": [
+          "AI",
+          "CORE_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|INVALID_PATH|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 4,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "TIMEOUT",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 778524,
+        "candidateMs": 723111,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:38316379451",
+        "reservation-id:38316379451:1",
+        "source-generation-failure:TIMEOUT"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "FAILURE_RECOVERY",
+        "RESOURCE_EFFICIENCY",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 18,
-    "refreshed": 0,
+    "added": 1,
+    "refreshed": 10,
     "total": 5000,
     "verified": 0,
     "failures": 2341
