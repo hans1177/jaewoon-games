@@ -1335,9 +1335,9 @@ function computeVibeNativeDesign(){
   const baseLoop=preserved&&originalRoles&&Array.isArray(original.coreLoop)&&original.coreLoop.length>=3
     ?original.coreLoop.slice(0,8):computed.coreLoop;
   const coreLoop=baseLoop.map(value=>shorten(value,330));
-  const identity=freeTopicMode?shorten(`${name}. 플레이어는 ${a.systemFamily}의 RiskState·ResourceState를 ${b.systemFamily}의 대응 조건으로 전환하고, B의 RouteState 결과를 A에 되돌려 다음 목표를 푼다. ${c.genres[0].name}·${c.genres[1].name}의 선택과 ${a.sourceMaterial}·${b.sourceMaterial}의 규칙이 실제 진행을 바꾼다.`,950):shorten(`${name}. ${grammar.emergentGenre.name}. ${mainName}에서 ${a.name}과 ${b.name}이 서로 결과를 되돌려 바꾸며 ${c.genres[0].name}·${c.genres[1].name}의 판단이 실제 세계 상태를 변화시킨다.`,950);
+  const identity=freeTopicMode?shorten(`${name}. MAIN은 A(${a.systemFamily} × ${a.sourceMaterial})와 독립적인 B(${b.systemFamily} × ${b.sourceMaterial})의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 ${c.genres[0].name} × 보조 ${c.genres[1].name})의 판정 차이, @(${delve[0].name})가 여는 새 WorldAccessState를 합성한 결과다.`,950):shorten(`${name}. ${grammar.emergentGenre.name}. ${mainName}에서 ${a.name}과 ${b.name}이 서로 결과를 되돌려 바꾸며 ${c.genres[0].name}·${c.genres[1].name}의 판단이 실제 세계 상태를 변화시킨다.`,950);
   const creativeGrammar=preserved&&originalRoles?structuredClone(original.creativeGrammar):{
-    mainIdentity:freeTopicMode?shorten(`${mainName}. ${main.playerAction} B의 RouteState·RiskState 결과를 A가 다시 읽는 과정에서 목표와 세계 접근이 달라진다.`):shorten(`${mainName}: ${name}. ${main.playerAction}과 ${grammar.newPrimaryVerb}를 반복하는 게임이다.`),
+    mainIdentity:freeTopicMode?shorten(`${mainName}. A의 ${a.systemFamily} 선택과 B의 ${b.systemFamily} 대응을 왕복하고, C의 메인 ${c.genres[0].name}·보조 ${c.genres[1].name} 장르 판정과 @(${delve[0].name}) 발견 조건이 목표·길·세계 반응을 바꾼다.`):shorten(`${mainName}: ${name}. ${main.playerAction}과 ${grammar.newPrimaryVerb}를 반복하는 게임이다.`),
     a:{system:a.name,material:a.sourceMaterial,materialDomain:`${a.sourceDomain.replaceAll('_',' ').toLowerCase()}의 문화·역사 인과 소재`,
       stateChange:freeTopicMode?shorten(a.materialRule):shorten(`${a.materialRule} ${a.stateContribution} 그 결과 ${b.name}의 다음 행동 조건이 달라진다.`)},
     b:{system:b.name,material:b.sourceMaterial,materialDomain:`${b.sourceDomain.replaceAll('_',' ').toLowerCase()}의 문화·역사 인과 소재`,
@@ -1370,7 +1370,7 @@ function computeVibeNativeDesign(){
       newChoice:shorten(`${d.name}: ${d.gameplayEffect}`,490)
     })),
     delveGrowthRule:freeTopicMode?shorten(`@는 최초 ${Math.min(4,delve.length)}개 발견으로 출발하지만 완성 개수가 아니다. 각 발견의 WorldAccessState·RouteState·ResourceState·IntentState 결과를 다음 @의 선행 조건으로 연결한다. A의 행동과 B의 대응, C의 두 소재·메인/보조 장르 해석을 다른 순서로 실험해 새 선택을 연다. 새 @마다 실제 상태 변화·실패 복구·육하원칙을 검증하고 단순 이름·순번 교체는 반려한다. 파고들기와 콘텐츠 확장에 최종 개수 제한을 두지 않는다.`,700):shorten(`${delve[0].name} 이후 새로운 발견은 A와 B, C 장르 반응의 서로 다른 조건을 실험해 새 길·정보·관계·숙련을 열고 제한 없이 깊어진다.`),
-    finalGameIdentity:shorten(`${grammar.emergentGenre.name}. ${grammar.emergentGenre.definition}`)
+    finalGameIdentity:freeTopicMode?shorten(`${grammar.emergentGenre.name}. A와 B의 인과 변화, C의 주·보조 장르, @(${delve[0].name}) 발견에서 MAIN이 최종 확정된다. ${grammar.emergentGenre.definition}`):shorten(`${grammar.emergentGenre.name}. ${grammar.emergentGenre.definition}`)
   };
   const abilities=(playableRequirements.abilityFacts||[]).map(row=>({
     id:row.id,name:row.name||row.id,kind:row.kind,ownerId:row.ownerId,ruleId:roles.B.id,
@@ -1457,8 +1457,8 @@ function computeVibeNativeDesign(){
     detail('C',{
       when:`A의 선택 결과를 B가 읽거나 B의 결과가 A로 돌아올 때: ${creativeGrammar.cGenreInterlock}`,
       where:`${regions.map(region=>region.name).join(' 및 ')}에서 같은 선택의 세계 반응을 비교한다.`,
-      what:`소재 ${creativeGrammar.cThemes.map(theme=>theme.name).join(' × ')}; ${creativeGrammar.cGenres.map(genre=>`${genre.role==='PRIMARY'?'메인':'보조'} 장르 ${genre.name}`).join(' + ')}. ${creativeGrammar.cWorldAndGameplayEffect}`,
-      how:[...creativeGrammar.cThemes,...creativeGrammar.cGenres].map(row=>`${row.name}: ${row.gameplayEffect}`).join(' '),
+      what:freeTopicMode?`C는 ${creativeGrammar.cGenres.map(genre=>`${genre.role==='PRIMARY'?'메인':'보조'} 장르 ${genre.name}`).join(' × ')}의 융합이다. 보조 소재 ${creativeGrammar.cThemes.map(theme=>theme.name).join('· ')}가 실제 판단 조건을 바꾼다. ${creativeGrammar.cWorldAndGameplayEffect}`:`소재 ${creativeGrammar.cThemes.map(theme=>theme.name).join(' × ')}; ${creativeGrammar.cGenres.map(genre=>`${genre.role==='PRIMARY'?'메인':'보조'} 장르 ${genre.name}`).join(' + ')}. ${creativeGrammar.cWorldAndGameplayEffect}`,
+      how:[...creativeGrammar.cGenres,...creativeGrammar.cThemes].map(row=>`${row.name}: ${row.gameplayEffect}`).join(' '),
       why:`${creativeGrammar.cGenreInterlock} ${creativeGrammar.storyCausalChain.characterConflict}`,
       result:`${creativeGrammar.storyCausalChain.worldChange} A/B 출력 ${[...new Set([...roles.A.stateOutputs,...roles.B.stateOutputs])].join('·')}에 이 반응을 적용한다. 다음 선택: ${creativeGrammar.storyCausalChain.nextEvent} 조건 미충족·취소 시 세계 상태를 유지하고 다른 접근을 고른다.`,
       linkedElements:['A','B','C'],ruleIds:[roles.A.id,roles.B.id],regionIds
