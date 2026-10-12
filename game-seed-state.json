@@ -10050,9 +10050,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-COZY-FRESH-GRAMMAR-20261012-1",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -10061,7 +10061,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -10070,18 +10070,40 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/cozy-island/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/cozy-island",
+          "UNITY": "unity-games/cozy-island"
+        },
+        "designBaselineSource": "design/cozy-island/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T02:07:05.484Z"
+        "promotedAt": "2026-10-12T01:59:37.497Z"
       },
-      "updatedAt": "2026-10-12T02:07:05.287Z",
+      "updatedAt": "2026-10-12T02:05:47.207Z",
       "novelGrammarBackfill": {
         "version": 5,
         "source": "CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009",
@@ -10097,7 +10119,15 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "strictDesignReviewRefreshRequired": true
+      "ROBLOX_GENRE": "Simulation",
+      "ROBLOX_SUBGENRE": null,
+      "ROBLOX_GENRE_LABEL_KO": "시뮬레이션",
+      "ROBLOX_SUBGENRE_LABEL_KO": null,
+      "ROBLOX_PLAY_MODE": "COOP",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
+      "ROBLOX_GENRE_DISPLAY_KO": "시뮬레이션 · 멀티·협동",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:07:21.373Z"
     },
     {
       "version": 1,
