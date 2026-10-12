@@ -171,12 +171,16 @@ jobs:
             rm -rf /tmp/vibe2-system-main
             git worktree prune
             git worktree add --detach /tmp/vibe2-system-main origin/main >/dev/null
+            node /tmp/vibe2-system-main/tools/vibe2-queue-control.mjs storage-unpack
             if [ "$VERIFY_RESULT" = success ] && [ "$PROMOTE_RESULT" = success ]; then
               node /tmp/vibe2-system-main/tools/vibe2-queue-control.mjs pass --queue=.vibe2/queue.json --id="$TASK_ID" --evidence="self-architecture-before-fail-after-pass,self-architecture-full-regression-pass,self-architecture-security-pass,self-architecture-main-pr-merged"
             else
               node /tmp/vibe2-system-main/tools/vibe2-queue-control.mjs fail --queue=.vibe2/queue.json --id="$TASK_ID" --blocker=self-architecture-verification-or-promotion-failed --evidence="self-architecture-verify-$VERIFY_RESULT,self-architecture-promote-$PROMOTE_RESULT"
             fi
+            node /tmp/vibe2-system-main/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node /tmp/vibe2-system-main/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m "vibe2: settle self architecture evolution [skip ci]"
             if git push origin HEAD:vibe2-unreal-core; then exit 0; fi

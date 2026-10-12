@@ -1593,7 +1593,7 @@ jobs:
           echo "UNITY_BUILD_UP_RUNTIME_SOURCE_TREE_SHA=$GAME_ID:$runtime_source_tree_sha"
           rm -rf /tmp/vibe2-unity-runtime-control
           git clone --depth=1 --filter=blob:none --no-checkout --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-unity-runtime-control >/dev/null 2>&1
-          git -C /tmp/vibe2-unity-runtime-control sparse-checkout set --no-cone '/.vibe2/queue.json' '/.vibe2/parallelism-control.json' '/company-learning/platform-release-roadmap.json'
+          git -C /tmp/vibe2-unity-runtime-control sparse-checkout set --no-cone '/.vibe2/queue.json' '/.vibe2/queue/' '/.vibe2/parallelism-control.json' '/company-learning/platform-release-roadmap.json'
           git -C /tmp/vibe2-unity-runtime-control checkout vibe2-unreal-core
           git -C /tmp/vibe2-unity-runtime-control config user.name 'jaewoon-unity-runtime-fanin'
           git -C /tmp/vibe2-unity-runtime-control config user.email 'actions@users.noreply.github.com'
@@ -1603,6 +1603,7 @@ jobs:
             attempt_settled=0
             git -C /tmp/vibe2-unity-runtime-control fetch origin vibe2-unreal-core --quiet
             git -C /tmp/vibe2-unity-runtime-control reset --hard origin/vibe2-unreal-core >/dev/null
+            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-unpack --queue=/tmp/vibe2-unity-runtime-control/.vibe2/queue.json
             mapfile -t task_ids < <(GAME_ID="$GAME_ID" RUNTIME_SOURCE_TREE_SHA="$runtime_source_tree_sha" node --input-type=module <<'NODE'
             import fs from 'node:fs';
             const q=JSON.parse(fs.readFileSync('/tmp/vibe2-unity-runtime-control/.vibe2/queue.json','utf8'));
@@ -1629,7 +1630,10 @@ jobs:
               echo "UNITY_BUILD_UP_VIBE_TASK_PASS=${GAME_ID}:${task_id}:source_tree=${runtime_source_tree_sha}"
               attempt_settled=$((attempt_settled+1))
             done
+            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-pack --queue=/tmp/vibe2-unity-runtime-control/.vibe2/queue.json
+            if [ -d /tmp/vibe2-unity-runtime-control/.vibe2/queue ]; then git -C /tmp/vibe2-unity-runtime-control add -A -- .vibe2/queue; fi
             git -C /tmp/vibe2-unity-runtime-control add .vibe2/queue.json
+            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-unpack --queue=/tmp/vibe2-unity-runtime-control/.vibe2/queue.json
             if git -C /tmp/vibe2-unity-runtime-control diff --cached --quiet; then
               pushed=1
               settled_count=$attempt_settled

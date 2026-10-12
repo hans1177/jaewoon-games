@@ -345,12 +345,16 @@ jobs:
             echo "VIBE2_UNITY_RESULT_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if [ "$result" = PASS ]; then
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs block --id="$TASK_ID" --blocker=candidate-awaiting-unity-runtime-qa --evidence="unity-candidate-apk-build-pass,unity-build-run-${{ github.event.workflow_run.id }},main-pr-merged,unity-runtime-await-game:${GAME_ID},unity-runtime-await-source-tree:${PROMOTED_SOURCE_TREE_SHA},unity-runtime-await-main-sha:${PROMOTED_MAIN_SHA},unity-runtime-independent-qa-regression-required,incremental-release-evidence-${EVIDENCE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-promotion-or-release-evidence-failed --evidence="build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},release-evidence-${EVIDENCE_OUTCOME},unity-build-run-${{ github.event.workflow_run.id }}"
             fi
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               echo 'VIBE2_UNITY_RESULT_QUEUE_WRITE=NO_CHANGE'
               break

@@ -935,6 +935,7 @@ jobs:
             attempt_settled=0
             git -C /tmp/vibe2-f9-control fetch origin vibe2-unreal-core --quiet
             git -C /tmp/vibe2-f9-control reset --hard origin/vibe2-unreal-core >/dev/null
+            node "$GITHUB_WORKSPACE/main/tools/vibe2-queue-control.mjs" storage-unpack --queue=/tmp/vibe2-f9-control/.vibe2/queue.json
             while IFS=$'\t' read -r game_id studio_required source_revision version_number acceptance_mode; do
               [ -n "$game_id" ] || continue
               if ! git -C main cat-file -e "$source_revision^{commit}" 2>/dev/null; then
@@ -980,7 +981,10 @@ jobs:
               done
             done < "$proof_tsv"
 
+            node "$GITHUB_WORKSPACE/main/tools/vibe2-queue-control.mjs" storage-pack --queue=/tmp/vibe2-f9-control/.vibe2/queue.json
+            if [ -d /tmp/vibe2-f9-control/.vibe2/queue ]; then git -C /tmp/vibe2-f9-control add -A -- .vibe2/queue; fi
             git -C /tmp/vibe2-f9-control add .vibe2/queue.json
+            node "$GITHUB_WORKSPACE/main/tools/vibe2-queue-control.mjs" storage-unpack --queue=/tmp/vibe2-f9-control/.vibe2/queue.json
             if git -C /tmp/vibe2-f9-control diff --cached --quiet; then
               pushed=1
               settled_count=$attempt_settled

@@ -7449,5 +7449,21 @@
     "admissionOwner": "tools/company-upper-platform-admission.mjs::classifyUpperPlatformAdmission",
     "latestMainBuildPreflightRequired": true,
     "existingExecutorsOnly": true
-  }
+  },
+ "vibeQueueStorage": {
+  "authority": "company-learning/platform-release-roadmap.json#vibeQueueStorage",
+  "owner": "tools/vibe2-queue-control.mjs",
+  "branch": "vibe2-unreal-core",
+  "index": ".vibe2/queue.json",
+  "activeParts": ".vibe2/queue/active/",
+  "permanentHistoryParts": ".vibe2/queue/history/",
+  "formatMarker": ".vibe2/queue/format.json",
+  "executionRepresentation": "EXISTING_FULL_QUEUE_RESTORED_AND_HASH_VERIFIED",
+  "transportOnly": true,
+  "normalNonForcePushRequired": true,
+  "conflictRecovery": "FETCH_RESET_RESTORE_REAPPLY_SAME_SEMANTIC_OPERATION",
+  "incompleteOrCorruptParts": "FAIL_CLOSED_PRESERVE_COMMITTED_STATE",
+  "migration": "EXISTING_24H_RUNNER_AFTER_LEGACY_WRITERS_DRAIN",
+  "newSchedulerOrWorker": false
+ }
 }

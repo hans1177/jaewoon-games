@@ -78,6 +78,7 @@ jobs:
             git worktree prune
             git worktree add --detach /tmp/vibe2-recovery-control origin/vibe2-unreal-core >/dev/null
             control=/tmp/vibe2-recovery-control
+            node tools/vibe2-queue-control.mjs storage-unpack --queue="$control/.vibe2/queue.json"
 
             test -f "$control/.vibe2/queue.json"
             test -f "$control/.vibe2/system-ai-queue.json" || printf '%s\n' '{"version":1,"kind":"company-system-ai-queue","policy":"PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK","tasks":[]}' > "$control/.vibe2/system-ai-queue.json"
@@ -168,7 +169,10 @@ jobs:
             cd "$control"
             git config user.name 'jaewoon-vibe2-recovery-fast'
             git config user.email 'vibe2-recovery-fast@users.noreply.github.com'
+            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json .vibe2/system-ai-queue.json .vibe2/recovery-queue.json
+            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
 
             if git diff --cached --quiet; then
               echo 'VIBE2_RECOVERY_FAST_WRITE=NO'

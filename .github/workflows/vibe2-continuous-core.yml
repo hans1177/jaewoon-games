@@ -248,6 +248,7 @@ jobs:
           echo 'contract_regression_passed=false' >> "$GITHUB_OUTPUT"
           set -euo pipefail
           control_root="$GITHUB_WORKSPACE"
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
           for file in \
             assets/vibe-continuous-queue.js \
             tools/vibe2-auto-planner.mjs \
@@ -411,6 +412,7 @@ jobs:
             echo "VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=$state_attempt"
             git -C "$control_root" fetch origin vibe2-unreal-core --quiet
             git -C "$control_root" reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
 
             if [ "$callback_kind" = 'neuron' ]; then
               neuron_result_file="$(find /tmp/vibe2-neuron-result -type f -name '*.json' -print -quit)"
@@ -457,7 +459,10 @@ jobs:
                   ;;
               esac
 
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-pack --queue="$control_root/.vibe2/queue.json"
+              if [ -d "$control_root"/.vibe2/queue ]; then git -C "$control_root" add -A -- .vibe2/queue; fi
               git -C "$control_root" add .vibe2/queue.json .vibe2/parallelism-control.json
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
               if git -C "$control_root" diff --cached --quiet; then
                 state_persisted=1
                 state_write='NO'
@@ -834,6 +839,7 @@ jobs:
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-after-reserve.json >/tmp/vibe2-handoff-after-reserve.log
 
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-pack --queue="$control_root/.vibe2/queue.json"
             state_paths=(
               .vibe2/queue.json
               .vibe2/parallelism-control.json
@@ -842,16 +848,19 @@ jobs:
               .vibe2/idle-practice-queue.json
               .vibe2/web-roblox-handoffs.json
             )
+            if [ -d "$control_root/.vibe2/queue" ]; then state_paths+=(.vibe2/queue); fi
             if [ -d "$control_root/.vibe2/build-up-directives" ]; then
               state_paths+=(.vibe2/build-up-directives)
             fi
             if git -C "$control_root" diff --quiet -- "${state_paths[@]}"; then
               state_persisted=1
               state_write='NO'
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
               break
             fi
 
-            git -C "$control_root" add "${state_paths[@]}"
+            git -C "$control_root" add -A -- "${state_paths[@]}"
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
             git -C "$control_root" commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
             if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then
               state_persisted=1
@@ -1256,6 +1265,7 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           test -n "$CONTRACT_SHA"
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
+          node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"
           policy_sha="$(sha256sum "$contract_root/company-learning/platform-release-roadmap.json" | cut -d' ' -f1)"
           log_map_sha="$(sha256sum "$contract_root/company-learning/company-log-map.json" | cut -d' ' -f1)"
           architecture_sha="$(sha256sum "$contract_root/company-learning/company-architecture-map.json" | cut -d' ' -f1)"
@@ -1437,6 +1447,7 @@ jobs:
           set -euo pipefail
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
+          node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"
           CONTRACT_ROOT="$contract_root" node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {pathToFileURL} from 'node:url';
@@ -2785,6 +2796,9 @@ jobs:
           github-token: ${{ github.token }}
           run-id: ${{ needs.reserve.outputs.stranded_review_run }}
 
+      - name: Restore queue for immutable result aggregation
+        run: node vibe2-contract/tools/vibe2-queue-control.mjs storage-unpack
+
       - name: Aggregate immutable results
         env:
           STRANDED_REVIEW_RUN: ${{ needs.reserve.outputs.stranded_review_run }}
@@ -2831,6 +2845,7 @@ jobs:
           contract_sha="${{ needs.reserve.outputs.contract_sha }}"
           test -n "$contract_sha"
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$contract_sha"
+          node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$control_root/.vibe2/queue.json"
 
           lane_min='1'
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
@@ -2918,6 +2933,7 @@ jobs:
               echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT=$attempt"
               git fetch origin vibe2-unreal-core --quiet
               git reset --hard origin/vibe2-unreal-core
+              node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$control_root/.vibe2/queue.json"
               node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
                 --queue="$control_root/.vibe2/queue.json" \
                 --control="$control_root/.vibe2/parallelism-control.json" \
@@ -2929,7 +2945,10 @@ jobs:
                 --control="$control_root/.vibe2/parallelism-control.json" \
                 --input=/tmp/vibe2-fan-in.json \
                 --blocker=fan-in-regression-failed
+              node "$contract_root/tools/vibe2-queue-control.mjs" storage-pack --queue="$control_root/.vibe2/queue.json"
+              if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
               git add .vibe2/queue.json .vibe2/parallelism-control.json
+              node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$control_root/.vibe2/queue.json"
               if git diff --cached --quiet; then
                 pushed=1
                 echo 'VIBE2_FAN_IN_REGRESSION_STATE_ALREADY_APPLIED=YES'
@@ -3020,6 +3039,7 @@ jobs:
             echo "VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT=$attempt"
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
+            node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$control_root/.vibe2/queue.json"
 
             node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
               --queue="$control_root/.vibe2/queue.json" \
@@ -3059,8 +3079,11 @@ jobs:
               --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-fanin.log
             echo "VIBE2_SELF_SIGNAL_AFTER_FANIN=PASS:$VIBE2_EXECUTION_LANE"
 
+            node "$contract_root/tools/vibe2-queue-control.mjs" storage-pack --queue="$control_root/.vibe2/queue.json"
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json \
               .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json
+            node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$control_root/.vibe2/queue.json"
             test ! -d .vibe2/build-up-directives || git add .vibe2/build-up-directives
             test ! -f .vibe2/coding-trace-ledger.json || git add .vibe2/coding-trace-ledger.json
             if git diff --cached --quiet; then

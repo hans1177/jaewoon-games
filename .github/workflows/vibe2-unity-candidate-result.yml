@@ -55,7 +55,9 @@ jobs:
             attempt=$((attempt+1))
             echo "VIBE2_RECONCILE_ATTEMPT=$attempt"
             git fetch origin "$CONTROL_BRANCH"
+            git reset --hard HEAD
             git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
+            node "$GITHUB_WORKSPACE/vibe2-main-contract/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
 
             node vibe2-main-contract/tools/vibe2-candidate-reconcile.mjs \
               --branch="$CANDIDATE_BRANCH" \
@@ -82,7 +84,10 @@ jobs:
                 --post-native-target=unity | tee /tmp/vibe2-unity-post-native-specialized.log
             fi
 
+            node "$GITHUB_WORKSPACE/vibe2-main-contract/tools/vibe2-queue-control.mjs" storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node "$GITHUB_WORKSPACE/vibe2-main-contract/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               echo 'VIBE2_QUEUE_RESULT_COMMIT=NO_CHANGE'
               echo 'updated=0' >> "$GITHUB_OUTPUT"

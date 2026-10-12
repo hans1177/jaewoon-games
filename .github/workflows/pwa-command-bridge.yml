@@ -111,6 +111,7 @@ jobs:
             rm -rf "$work"
             git worktree prune
             git worktree add --detach "$work" "origin/$VIBE2_BRANCH" >/dev/null
+            node tools/vibe2-queue-control.mjs storage-unpack --queue="$work/.vibe2/queue.json"
             if ! node "$GITHUB_WORKSPACE/tools/pwa-command-vibe2-task.mjs" ingest \
               --task=/tmp/pwa-next.json \
               --queue="$work/.vibe2/queue.json" \
@@ -122,7 +123,10 @@ jobs:
               break
             fi
             cd "$work"
+            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               success=1
             else
