@@ -12,6 +12,17 @@ import {robloxDesignProfileFromBaseline} from '../tools/company-development-robl
 
 const gameId='seed-roblox-simulator-tycoon-i-adopt-me';
 
+test('common library compile selector discovers the actual native libraries',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe3-engine-contract.yml','utf8');
+  const step=workflow.split('      - name: Compile common Roblox libraries before game binding')[1].split('      - name: ')[0];
+  const selection=step.split('\n').find(line=>line.includes('mapfile -t libraries')).trim();
+  const files=execFileSync('bash',['-c',selection+'\nprintf "%s\\n" "${libraries[@]}"'],{encoding:'utf8'}).trim().split('\n');
+  assert.ok(files.includes('assets/roblox/common-ui-v1/RobloxCommonUI.luau'));
+  assert.ok(files.includes('assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau'));
+  assert.ok(files.length>2);
+  assert.ok(files.every(file=>fs.existsSync(file)&&file.endsWith('.luau')));
+});
+
 // 검수 범위: 단일 게임은 무관한 설계·과거 소스·학습 상태를 방문하지 않는다.
 test('requested source reconciliation isolates one game while batch keeps all games',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-requested-reconcile-'));

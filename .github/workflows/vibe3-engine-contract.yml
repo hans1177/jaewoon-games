@@ -166,7 +166,7 @@ jobs:
       - name: Compile common Roblox libraries before game binding
         run: |
           set -euo pipefail
-          mapfile -t libraries < <(rg --files assets/roblox | rg '/common-[^/]+/[^/]+\.luau$')
+          mapfile -t libraries < <(git ls-files -- ':(glob)assets/roblox/common-*/*.luau')
           test "${#libraries[@]}" -gt 0
           for library in "${libraries[@]}"; do
             /tmp/luau-bin/luau-compile "$library" >/dev/null
