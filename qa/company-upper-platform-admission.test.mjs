@@ -690,11 +690,11 @@ test('upper-platform orchestration uses reusable workflows instead of rate-limit
   const bootstrap=fs.readFileSync(path.join(root,'.github','workflows','unity-web-floor-source-bootstrap.yml'),'utf8');
 
   assert.match(orchestration,/eligible_json:/);
-  assert.match(orchestration,/unity_web_json:/);
+  assert.doesNotMatch(orchestration,/unity_web_json:/);
   assert.match(orchestration,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
   assert.match(orchestration,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
-  assert.match(orchestration,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
-  assert.match(orchestration,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
+  assert.doesNotMatch(orchestration,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.doesNotMatch(orchestration,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
   assert.doesNotMatch(orchestration,/gh workflow run company-development-(?:roblox|unity)-runtime\.yml/);
   assert.doesNotMatch(orchestration,/gh workflow run unity-web-(?:first-stage-build|floor-source-bootstrap)\.yml/);
 

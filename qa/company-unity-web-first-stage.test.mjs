@@ -778,30 +778,15 @@ test('Unity Web readiness failure enters reusable Vibe2 causal repair and still 
   }
 });
 
-test('all playable Unity Web builds publish separately without claiming full 3D readiness',()=>{
-  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+test('paused Unity Web homepage never probes builds while static Unity compression remains compatible',()=>{
   const homepage=fs.readFileSync(path.join(repo,'assets','homepage-enhancements.js'),'utf8');
+  const routes=JSON.parse(fs.readFileSync(path.join(repo,'_routes.json'),'utf8'));
   const headers=fs.readFileSync(path.join(repo,'_headers'),'utf8');
-  const publish=workflow.indexOf('      - name: Publish every verified Unity Web build via reviewed PR');
-  const repair=workflow.indexOf('      - name: Mark Unity Web floor repair requirement');
-  const section=workflow.slice(publish,repair);
-  assert.ok(publish>=0&&repair>publish,'publish browser test before marking upper-platform repair');
-  assert.ok(section.includes("steps.readiness.outcome == 'success'"));
-  assert.ok(!section.includes("inputs.publish_to_main == true"),"검증된 빌드는 기존 게시 흐름으로 자동 진입");
-  assert.ok(section.includes('runtime_dir="web-games/$GAME_ID/unity"'));
-  assert.ok(!section.includes('rm -rf "web-games/$GAME_ID"'));
-  assert.ok(workflow.includes('manifest.homepageDevelopmentTest'));
-  assert.ok(section.includes('test -s "$runtime_dir/unity-web-gameplay-validation.json"'));
-  assert.ok(section.includes('test -s "$runtime_dir/unity-web-independent-qa.json"'));
-  assert.ok(section.includes('test -s "$runtime_dir/unity-web-regression.json"'));
-  assert.ok(section.includes('UPPER_PLATFORM_DEVELOPMENT_READY=$READINESS_PASS'));
-  assert.ok(section.includes('if [ -n "$VIBE2_TASK_ID" ] && [ "$READINESS_PASS" = \'true\' ]; then'));
-  assert.ok(workflow.includes("(steps.readiness.outputs.pass != 'true' || steps.publish.outcome == 'failure')"));
-  assert.match(homepage,/for\(const href of \[/);
-  assert.ok(homepage.includes('/unity/'));
-  assert.match(homepage,/if\(!probes\.every\(response=>response\?\.ok===true\)\)continue/);
+  const orchestrator=fs.readFileSync(path.join(repo,'.github','workflows','company-development-confirmed-runtime.yml'),'utf8');
+  assert.doesNotMatch(homepage,/bindAvailableUnityWebSurfaces|unity-web-deploy-manifest|probeFetch/);
+  assert.doesNotMatch(orchestrator,/dispatch-unity-web-floor:|dispatch-unity-web-bootstrap:/);
+  assert.ok(routes.exclude.includes('/assets/*'));
   assert.match(headers,/\/web-games\/\*\.wasm\.gz\n  Content-Type: application\/wasm\n  Content-Encoding: gzip/);
-  assert.doesNotMatch(headers,/^\/web-games\/[^\n]*\*[^\n]*\*/m);
   const worker=fs.readFileSync(path.join(repo,'_worker.js'),'utf8');
   assert.ok(worker.includes("headers.set('Content-Encoding',format==='gz'?'gzip':'br')"));
 });
