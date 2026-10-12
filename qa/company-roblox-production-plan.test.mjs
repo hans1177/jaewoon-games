@@ -67,6 +67,32 @@ test('biome composes real spawn stat and drop configuration within authored worl
   assert.equal(invalid.status,'REPAIR_REQUIRED');assert.deepEqual(invalid.entries,[]);
 });
 
+test('settlements bind real buildings rooms facilities road schedules and guarded construction',()=>{
+  const spec={approvedDesign:true,dimension:'3D',seed:'village-life',width:24,height:24,density:.8,biome:'FOREST',climate:'COLD_WET',
+    ecologyActors:Array.from({length:4},(_,i)=>({id:'resident-'+i,kind:'NPC',approved:true,allowedActions:['WORK','TRADE','REST','VILLAGE_BUILD']}))};
+  const world=createVibeProceduralWorldLayout(spec),s=world.settlement;
+  assert.ok(s.buildings.length>0);assert.equal(s.buildings.length,world.buildings.length);
+  const districts=new Set(s.districts.map(row=>row.id)),rooms=new Set(s.buildings.flatMap(row=>row.rooms.map(room=>room.id)));
+  for(const building of s.buildings){assert.ok(districts.has(building.parentId));assert.equal(building.climateAdaptation.floor,'RAISED_WITH_ACCESSIBLE_ENTRY');assert.ok(building.rooms.every(row=>row.parentId===building.id));}
+  assert.ok(s.facilities.every(row=>rooms.has(row.parentId)));
+  const roads=new Set(world.roadCells.map(row=>row.x+':'+row.z));
+  for(const resident of s.residents)for(const activity of resident.schedule){assert.ok(activity.roadCells.length>0);assert.ok(activity.roadCells.every(row=>roads.has(row.x+':'+row.z)));assert.ok(s.facilities.some(row=>row.id===activity.facilityId));}
+  const state={engineValidated:true,resources:{wood:2},population:12,houseCapacity:3,projects:[{id:'build-1',buildingId:s.buildings[0].id,stage:0,costs:{wood:4}}]};
+  const blocked=createVibeProceduralWorldLayout({...spec,settlementState:state}).settlement;
+  assert.equal(blocked.constructionProjects[0].status,'MATERIALS_REQUIRED');assert.equal(blocked.growth.nextAction,'SUPPLY_MISSING_MATERIALS');
+  const ready=createVibeProceduralWorldLayout({...spec,settlementState:{...state,resources:{wood:4}}}).settlement;
+  assert.equal(ready.constructionProjects[0].status,'READY_FOR_EXISTING_SERVER_TRANSACTION');assert.equal(ready.constructionProjects[0].nextStage,1);
+  assert.equal(ready.constructionProjects[0].resourceDeducted,false);assert.equal(state.resources.wood,2);
+  assert.equal(createVibeProceduralWorldLayout({...spec,settlementState:{...state,engineValidated:false}}).settlement.constructionProjects.length,0);
+  const habitatId=world.hierarchy.habitats[0].id;
+  const logging={id:'logging-1',habitatId,type:'LOGGING',intensity:.4,engineValidated:true};
+  const effects=createVibeProceduralWorldLayout({...spec,settlementState:{engineValidated:true,ecologyEvents:[logging,logging]}}).settlement.ecologyEffects;
+  assert.equal(effects.habitatPressure[habitatId],.4);assert.deepEqual(effects.appliedEventIds,['logging-1']);
+  const restored=createVibeProceduralWorldLayout({...spec,settlementState:{engineValidated:true,habitatPressure:effects.habitatPressure,appliedEcologyEventIds:effects.appliedEventIds,ecologyEvents:[logging,{...logging,id:'restore-1',type:'RESTORATION',intensity:.2}]}}).settlement.ecologyEffects;
+  assert.equal(restored.habitatPressure[habitatId],.2);
+  assert.equal(s.nativeRuntimeVerified,false);
+});
+
 test('native biome factory executes deterministic relief and keeps collision authority outside the asset',{skip:!process.env.VIBE2_LUAU_BINARY},t=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'biome-native-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
   const source=fs.readFileSync(new URL('../assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau',import.meta.url),'utf8');

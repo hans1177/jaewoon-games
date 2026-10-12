@@ -247,6 +247,17 @@ export class JaewoonCommonAI {
     // 오토 바이옴: 이미 승인·배치된 동일 NPC가 해당 지역의 실제 길을 따라 생활한다.
     // AI는 목적지만 제안한다. 작업/상점/집 건설의 게임 상태 갱신은 기존 서버 함수가 한다.
     const biomeActorId=String(context.actorId||this.identity.id||'');
+    const resident=context.biomeWorld?.settlement?.residents?.find(row=>row.actorId===biomeActorId);
+    const activity=resident?.schedule?.find(row=>row.phase===String(context.dayPhase||'').toUpperCase());
+    if(activity?.target&&context.settlementActivityApproved===true&&context.movementAuthorized===true&&context.canRoam===true&&context.hostile!==true){
+      if(context.settlementAtDestination===true&&context.canInteract===true&&context.interactTarget?.engineApproved===true
+        &&String(context.interactTarget.id)===activity.facilityId){
+        const work=this.action(S.INTERACT,'npc_settlement_activity',context.interactTarget);
+        work.activityId=activity.facilityId;work.actionId=activity.action;work.engineValidationRequired=true;return work;
+      }
+      const travel=this.action(S.PATROL,'npc_settlement_road_route',activity.target);
+      travel.routeCells=activity.roadCells;travel.engineValidationRequired=true;return travel;
+    }
     const biomeSite=context.biomeWorld?.livingBiomePopulation?.actorPlacements?.find(row=>
       row.actorId===biomeActorId&&row.kind==='NPC'&&row.status==='DESIGN_MAPPED_NATIVE_BINDING_REQUIRED');
     if (biomeSite?.cell&&context.movementAuthorized===true&&context.canRoam===true

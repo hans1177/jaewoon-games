@@ -602,6 +602,15 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
       rule:'Use habitat fit, food availability, ecological pressure and distance/progression to generate concrete spawn, stat and independent drop tables. Do not keep those values unchanged merely because the former presentation-only rule did. Use actual game definitions, validate finite ranges and missing species/items, bind the generated revision to existing server consumers and verify spawn/death/loot/restore. Rebalance is authorized for biome gameplay; save schema and network bypass are not.',
       runtimeVerified:false
     },
+    settlementDirection:sourceOnly?null:{
+      scope:presentationOnly?'PRESENT_EXISTING_SETTLEMENT_ONLY':'AUTHOR_APPROVED_SETTLEMENT_IN_EXISTING_WORLD',
+      source:'assets/vibe-environment-director.js#createVibeProceduralWorldLayout.settlement',
+      hierarchy:['REGION','SETTLEMENT','DISTRICT','BUILDING','ROOM','FACILITY','RESIDENT_ACTIVITY'],
+      implementation:'Use generated existing lots, stable building/room/facility IDs and road-only resident schedules. Bind home, workshop, warehouse and market to actual existing gameplay handlers; missing roles remain explicit gaps. Native room geometry must provide real entrances and accessible routes. Adapt roof, insulation, raised floor and drainage to local climate without floating foundations.',
+      construction:'Consume engineValidated settlementState snapshots from existing inventory/building owners. Material transport, foundation, frame, walls, roof and interiors use the current project stage and authored costs. Reserve/deduct resources atomically in existing server handlers and persist the stage through the existing save contract. The generator never spends materials or completes construction by itself.',
+      evolution:'Respond to actual housing pressure, shortages, damaged buildings and authored abandoned sites with supply, repair, approved expansion or restoration. Production -> storage -> trade uses existing inventory ownership. Connect approved logging/farming/restoration events to biome pressure and recovery; do not simulate a successful event from a proposal.',
+      runtimeChecks:['HOME_WORK_MARKET_RETURN_ROAD_REPLAY','FACILITY_ACTION_AND_INVENTORY_CHANGE','INSUFFICIENT_MATERIAL_AND_DUPLICATE_BUILD_GUARD','CONSTRUCTION_STAGE_SAVE_RESTORE','ABANDONMENT_AND_RESTORATION','CLIMATE_BUILDING_GROUNDING'],runtimeVerified:false
+    },
     interfaceBlueprintContract:interfaceContract,libraryReuseContract,simpleMenuDirection,creatureIdentityDirection,aiParticipantDirection,
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
@@ -649,6 +658,7 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     prefix+'CONNECTION='+JSON.stringify({flow:plan.systemConnection,coreLoop:plan.approvedCoreLoop,systems:plan.signatureSystems,nextGoal:plan.progressionDirection}),
     prefix+'FILES='+JSON.stringify(packages),
     ...(packages.length&&plan.biomeGameplayDirection?[prefix+'BIOME_GAMEPLAY='+JSON.stringify(plan.biomeGameplayDirection)]:[]),
+    ...(packages.length&&plan.settlementDirection?[prefix+'SETTLEMENT='+JSON.stringify({...plan.settlementDirection,ownedRoles:packages.map(row=>row.role)})]:[]),
     ...(packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))&&plan.simpleMenuDirection?[
       prefix+'SIMPLE_MENU='+JSON.stringify(plan.simpleMenuDirection)
     ]:[]),

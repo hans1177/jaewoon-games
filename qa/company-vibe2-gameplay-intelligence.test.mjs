@@ -73,6 +73,16 @@ test('seeded nicknames stay stable and squad speech respects actual available sl
   assert.ok(decisions.every(row=>row.decision.gameplayAuthority===false));
 });
 
+test('resident runtime follows its phase schedule and only performs the validated destination action',()=>{
+  const ai=new JaewoonCommonAI({identity:{id:'resident'}}),target={id:'workshop',x:2,y:0,z:3};
+  const context={entityKind:'npc',actorId:'resident',canRoam:true,movementAuthorized:true,settlementActivityApproved:true,dayPhase:'DAY',
+    biomeWorld:{settlement:{residents:[{actorId:'resident',schedule:[{phase:'DAY',action:'WORK',facilityId:'workshop',target,roadCells:[{x:1,z:1},{x:2,z:1}]}]}]}}};
+  assert.equal(ai.decide(context).reason,'npc_settlement_road_route');
+  const decision=ai.decide({...context,settlementAtDestination:true,canInteract:true,interactTarget:{id:'workshop',engineApproved:true}});
+  assert.equal(decision.state,'INTERACT');assert.equal(decision.actionId,'WORK');assert.equal(decision.gameplayAuthority,false);
+  assert.equal(ai.decide({...context,settlementAtDestination:true,canInteract:true,interactTarget:{id:'wrong',engineApproved:true}}).state,'PATROL');
+});
+
 test('companion play participation and stable bot names stay scoped to approved actors',()=>{
   const actors={runtimeActorIntelligenceRequired:true,companionIntelligenceRequired:true,individualActivitySimulationRequired:true};
   const plan=buildVibePatchPlan({gameplaySketch:{actors,worldModel:{requiresPlayableSpace:true}}});
