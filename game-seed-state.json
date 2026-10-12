@@ -9708,24 +9708,30 @@
       "gameName": "포근섬",
       "designInputMode": "OWNER_BRIEF_AND_ORIGINAL_ONLY",
       "designTopicMode": "VIBE_FREE_TOPIC",
-      "OWNER_LATEST_DESIGN_REQUEST": "2026-10-12 오너 최신 지시: 이 게임 ID만 유지하고 이전 설계의 주제·장르·소재·시스템·문장을 신규 창작의 출발점이나 정답으로 사용하지 않는다. 주제·장르·시스템·소재를 요청 전달자 또는 대화 모델이 대신 정하거나 대필하지 않는다. 기존 단일 Vibe 디자이너가 먼저 A=대분류 창작 소재×구체적 게임 시스템, B=A에 종속되지 않는 독립 소분류 창작 소재×다른 게임 시스템을 자유롭게 각각 창작하고, A→B→A 실제 행동·조건·상태·결과의 양방향 인과를 만든다. C=메인 장르×보조 장르의 게임플레이 규칙 융합이며 보조 창작 소재 두 개의 구체적 영향도 검증한다. @는 최소 네 개의 서로 다른 단서·발견·숙련에서 출발하고 선행 발견의 결과로 새 게임플레이와 콘텐츠를 상한 없이 확장한다. 마지막에 MAIN을 A·B·C·@가 만들어낸 게임 정체성·주제·대표 행동의 결과로 확정하고, MAIN을 먼저 선택해 A/B/C/@를 끼워 맞추지 않는다. 창작 소재는 동서양 종교·철학·역사·인물·문학·귀신·과학·연구·개발·스포츠·여행·탐험·생존 등 열린 분야를 포함한다. 각 문법 항목의 육하원칙과 결과는 실제 규칙·장소 참조 및 다음 선택으로 연결하고, 장르 이름이나 추상 상태값만 쓰고 실제 시스템 설계를 생략하면 반려한다. 기존 공통 설계 작성·검수·부분 재작성 경로만 사용한다. 설계 후보와 실제 플레이 검증을 구분하고, 이번 요청에서는 DESIGN_ONLY 후보 생성·검수만 수행한다. 운영 게임 소스, 수치, 저장 키, 멀티플레이 서버 권한, 배포 상태는 변경하지 않는다. 로블록스를 우선하며 새 기본설계의 정합성을 검토한 후 상세설계를 진행한다.",
+      "A_SYSTEM_REFERENCE": {
+        "scope": "A_SYSTEM_ONLY",
+        "systemFamily": "직접 채집",
+        "playerChoice": "나무와 식량은 월드 노드에서 직접 상호작용해 획득한다.",
+        "source": "design/cozy-island/2026-09-22/design-revised.json"
+      },
+      "OWNER_LATEST_DESIGN_REQUEST": "포근섬 기존 게임 새 기본설계. 과거 원본 시드의 signatureSystems 중 게임의 첫 핵심 시스템 하나를 기존 Vibe가 자동 추출하여 A 게임 시스템에만 참고한다. 이때 시스템 명칭·목적은 원본에서 읽고, 사용자가 지정하지 않은 시스템을 외부 대화·모델이 임의로 선택하거나 대필하지 않는다. A의 대분류 창작 소재는 완전히 새로 창작한다. B는 A에 종속되지 않는 독립 소분류 창작 소재와 다른 게임 시스템으로 새로 생성한다. C는 메인 장르×보조 장르의 실제 게임 규칙 융합이며 C의 별도 소재는 두 장르가 A/B의 선택·상태·위험을 바꾸는 조건에만 연결한다. @는 서로 다른 초기 발견 4개 이상부터 시작해서 이전 발견의 결과를 이용해 다음 발견·숙련·콘텐츠를 제한 없이 확장한다. MAIN은 A+B+C+@를 만든 다음 결과로 도출한다. 기존 게임의 원래 명칭·장르·서사·소재·B·C·@와 과거 상세설계를 재활용하거나 정답으로 쓰지 않는다. 현재 gameId와 Roblox COOP, DESIGN_ONLY 상태는 유지한다. 다른 게임·운영 게임 소스·저장·보상·멀티 권한·배포를 변경하지 않고 기존 중앙 DESIGN_ONLY 설계와 엄격 심사 파이프라인에서 새 시드/기본설계를 생성한다.",
       "DESIGN_BASELINE_SOURCE": null,
       "GAME_CATEGORY": "CASUAL",
       "INITIAL_TARGET_PLATFORM": "ROBLOX",
       "INITIAL_PLAY_MODE": "PROJECT_DEFINED",
       "MULTIPLAYER_DESIGN_MODE": "COOP",
       "CORE_FUN_TO_LEARN": [
-        "2026-10-12 오너 최신 지시: 이 게임 ID만 유지하고 이전 설계의 주제·장르·소재·시스템·문장을 신규 창작의 출발점이나 정답으로 사용하지 않는다. 주제·장르·시스템·소재를 요청 전달자 또는 대화 모델이 대신 정하거나 대필하지 않는다. 기존 단일 Vibe 디자이너가 먼저 A=대분류 창작 소재×구체적 게임 시스템, B=A에 종속되지 않는 독립 소분류 창작 소재×다른 게임 시스템을 자유롭게 각각 창작하고, A→B→A 실제 행동·조건·상태·결과의 양방향 인과를 만든다. C=메인 장르×보조 장르의 게임플레이 규칙 융합이며 보조 창작 소재 두 개의 구체적 영향도 검증한다. @는 최소 네 개의 서로 다른 단서·발견·숙련에서 출발하고 선행 발견의 결과로 새 게임플레이와 콘텐츠를 상한 없이 확장한다. 마지막에 MAIN을 A·B·C·@가 만들어낸 게임 정체성·주제·대표 행동의 결과로 확정하고, MAIN을 먼저 선택해 A/B/C/@를 끼워 맞추지 않는다. 창작 소재는 동서양 종교·철학·역사·인물·문학·귀신·과학·연구·개발·스포츠·여행·탐험·생존 등 열린 분야를 포함한다. 각 문법 항목의 육하원칙과 결과는 실제 규칙·장소 참조 및 다음 선택으로 연결하고, 장르 이름이나 추상 상태값만 쓰고 실제 시스템 설계를 생략하면 반려한다. 기존 공통 설계 작성·검수·부분 재작성 경로만 사용한다. 설계 후보와 실제 플레이 검증을 구분하고, 이번 요청에서는 DESIGN_ONLY 후보 생성·검수만 수행한다. 운영 게임 소스, 수치, 저장 키, 멀티플레이 서버 권한, 배포 상태는 변경하지 않는다. 로블록스를 우선하며 새 기본설계의 정합성을 검토한 후 상세설계를 진행한다."
+        "포근섬 기존 게임 새 기본설계. 과거 원본 시드의 signatureSystems 중 게임의 첫 핵심 시스템 하나를 기존 Vibe가 자동 추출하여 A 게임 시스템에만 참고한다. 이때 시스템 명칭·목적은 원본에서 읽고, 사용자가 지정하지 않은 시스템을 외부 대화·모델이 임의로 선택하거나 대필하지 않는다. A의 대분류 창작 소재는 완전히 새로 창작한다. B는 A에 종속되지 않는 독립 소분류 창작 소재와 다른 게임 시스템으로 새로 생성한다. C는 메인 장르×보조 장르의 실제 게임 규칙 융합이며 C의 별도 소재는 두 장르가 A/B의 선택·상태·위험을 바꾸는 조건에만 연결한다. @는 서로 다른 초기 발견 4개 이상부터 시작해서 이전 발견의 결과를 이용해 다음 발견·숙련·콘텐츠를 제한 없이 확장한다. MAIN은 A+B+C+@를 만든 다음 결과로 도출한다. 기존 게임의 원래 명칭·장르·서사·소재·B·C·@와 과거 상세설계를 재활용하거나 정답으로 쓰지 않는다. 현재 gameId와 Roblox COOP, DESIGN_ONLY 상태는 유지한다. 다른 게임·운영 게임 소스·저장·보상·멀티 권한·배포를 변경하지 않고 기존 중앙 DESIGN_ONLY 설계와 엄격 심사 파이프라인에서 새 시드/기본설계를 생성한다."
       ],
       "CORE_LOOP": [
         "디자이너 AI가 사용자 요청에 맞는 핵심 루프를 설계한다."
       ],
-      "DISTINCT_IDENTITY": "2026-10-12 오너 최신 지시: 이 게임 ID만 유지하고 이전 설계의 주제·장르·소재·시스템·문장을 신규 창작의 출발점이나 정답으로 사용하지 않는다. 주제·장르·시스템·소재를 요청 전달자 또는 대화 모델이 대신 정하거나 대필하지 않는다. 기존 단일 Vibe 디자이너가 먼저 A=대분류 창작 소재×구체적 게임 시스템, B=A에 종속되지 않는 독립 소분류 창작 소재×다른 게임 시스템을 자유롭게 각각 창작하고, A→B→A 실제 행동·조건·상태·결과의 양방향 인과를 만든다. C=메인 장르×보조 장르의 게임플레이 규칙 융합이며 보조 창작 소재 두 개의 구체적 영향도 검증한다. @는 최소 네 개의 서로 다른 단서·발견·숙련에서 출발하고 선행 발견의 결과로 새 게임플레이와 콘텐츠를 상한 없이 확장한다. 마지막에 MAIN을 A·B·C·@가 만들어낸 게임 정체성·주제·대표 행동의 결과로 확정하고, MAIN을 먼저 선택해 A/B/C/@를 끼워 맞추지 않는다. 창작 소재는 동서양 종교·철학·역사·인물·문학·귀신·과학·연구·개발·스포츠·여행·탐험·생존 등 열린 분야를 포함한다. 각 문법 항목의 육하원칙과 결과는 실제 규칙·장소 참조 및 다음 선택으로 연결하고, 장르 이름이나 추상 상태값만 쓰고 실제 시스템 설계를 생략하면 반려한다. 기존 공통 설계 작성·검수·부분 재작성 경로만 사용한다. 설계 후보와 실제 플레이 검증을 구분하고, 이번 요청에서는 DESIGN_ONLY 후보 생성·검수만 수행한다. 운영 게임 소스, 수치, 저장 키, 멀티플레이 서버 권한, 배포 상태는 변경하지 않는다. 로블록스를 우선하며 새 기본설계의 정합성을 검토한 후 상세설계를 진행한다.",
+      "DISTINCT_IDENTITY": "포근섬 기존 게임 새 기본설계. 과거 원본 시드의 signatureSystems 중 게임의 첫 핵심 시스템 하나를 기존 Vibe가 자동 추출하여 A 게임 시스템에만 참고한다. 이때 시스템 명칭·목적은 원본에서 읽고, 사용자가 지정하지 않은 시스템을 외부 대화·모델이 임의로 선택하거나 대필하지 않는다. A의 대분류 창작 소재는 완전히 새로 창작한다. B는 A에 종속되지 않는 독립 소분류 창작 소재와 다른 게임 시스템으로 새로 생성한다. C는 메인 장르×보조 장르의 실제 게임 규칙 융합이며 C의 별도 소재는 두 장르가 A/B의 선택·상태·위험을 바꾸는 조건에만 연결한다. @는 서로 다른 초기 발견 4개 이상부터 시작해서 이전 발견의 결과를 이용해 다음 발견·숙련·콘텐츠를 제한 없이 확장한다. MAIN은 A+B+C+@를 만든 다음 결과로 도출한다. 기존 게임의 원래 명칭·장르·서사·소재·B·C·@와 과거 상세설계를 재활용하거나 정답으로 쓰지 않는다. 현재 gameId와 Roblox COOP, DESIGN_ONLY 상태는 유지한다. 다른 게임·운영 게임 소스·저장·보상·멀티 권한·배포를 변경하지 않고 기존 중앙 DESIGN_ONLY 설계와 엄격 심사 파이프라인에서 새 시드/기본설계를 생성한다.",
       "REFERENCE_GAMES": [],
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
-          "value": "2026-10-12 오너 최신 지시: 이 게임 ID만 유지하고 이전 설계의 주제·장르·소재·시스템·문장을 신규 창작의 출발점이나 정답으로 사용하지 않는다. 주제·장르·시스템·소재를 요청 전달자 또는 대화 모델이 대신 정하거나 대필하지 않는다. 기존 단일 Vibe 디자이너가 먼저 A=대분류 창작 소재×구체적 게임 시스템, B=A에 종속되지 않는 독립 소분류 창작 소재×다른 게임 시스템을 자유롭게 각각 창작하고, A→B→A 실제 행동·조건·상태·결과의 양방향 인과를 만든다. C=메인 장르×보조 장르의 게임플레이 규칙 융합이며 보조 창작 소재 두 개의 구체적 영향도 검증한다. @는 최소 네 개의 서로 다른 단서·발견·숙련에서 출발하고 선행 발견의 결과로 새 게임플레이와 콘텐츠를 상한 없이 확장한다. 마지막에 MAIN을 A·B·C·@가 만들어낸 게임 정체성·주제·대표 행동의 결과로 확정하고, MAIN을 먼저 선택해 A/B/C/@를 끼워 맞추지 않는다. 창작 소재는 동서양 종교·철학·역사·인물·문학·귀신·과학·연구·개발·스포츠·여행·탐험·생존 등 열린 분야를 포함한다. 각 문법 항목의 육하원칙과 결과는 실제 규칙·장소 참조 및 다음 선택으로 연결하고, 장르 이름이나 추상 상태값만 쓰고 실제 시스템 설계를 생략하면 반려한다. 기존 공통 설계 작성·검수·부분 재작성 경로만 사용한다. 설계 후보와 실제 플레이 검증을 구분하고, 이번 요청에서는 DESIGN_ONLY 후보 생성·검수만 수행한다. 운영 게임 소스, 수치, 저장 키, 멀티플레이 서버 권한, 배포 상태는 변경하지 않는다. 로블록스를 우선하며 새 기본설계의 정합성을 검토한 후 상세설계를 진행한다."
+          "value": "포근섬 기존 게임 새 기본설계. 과거 원본 시드의 signatureSystems 중 게임의 첫 핵심 시스템 하나를 기존 Vibe가 자동 추출하여 A 게임 시스템에만 참고한다. 이때 시스템 명칭·목적은 원본에서 읽고, 사용자가 지정하지 않은 시스템을 외부 대화·모델이 임의로 선택하거나 대필하지 않는다. A의 대분류 창작 소재는 완전히 새로 창작한다. B는 A에 종속되지 않는 독립 소분류 창작 소재와 다른 게임 시스템으로 새로 생성한다. C는 메인 장르×보조 장르의 실제 게임 규칙 융합이며 C의 별도 소재는 두 장르가 A/B의 선택·상태·위험을 바꾸는 조건에만 연결한다. @는 서로 다른 초기 발견 4개 이상부터 시작해서 이전 발견의 결과를 이용해 다음 발견·숙련·콘텐츠를 제한 없이 확장한다. MAIN은 A+B+C+@를 만든 다음 결과로 도출한다. 기존 게임의 원래 명칭·장르·서사·소재·B·C·@와 과거 상세설계를 재활용하거나 정답으로 쓰지 않는다. 현재 gameId와 Roblox COOP, DESIGN_ONLY 상태는 유지한다. 다른 게임·운영 게임 소스·저장·보상·멀티 권한·배포를 변경하지 않고 기존 중앙 DESIGN_ONLY 설계와 엄격 심사 파이프라인에서 새 시드/기본설계를 생성한다."
         }
       ],
       "TARGET_AUDIENCE": "기존 원본과 사용자 요청의 대상 플레이어",
@@ -9799,86 +9805,26 @@
       },
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
-      "ownerResetRevision": "OWNER-COZY-FRESH-GRAMMAR-20261012-3",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "ownerResetRevision": "OWNER-COZY-A-SEED-AUTO-20261012-5",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "lifecycleState": "DESIGN_ONLY",
       "novelGrammarBackfill": {
         "version": 5,
         "source": "CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009",
         "authoringPending": true,
-        "updatedAt": "2026-10-12T05:04:43.161Z"
+        "updatedAt": "2026-10-12T05:45:28.439Z"
       },
       "designEvolutionSignals": [
         {
           "id": "CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009",
           "type": "OWNER_MAIN_AB_C_GRAMMAR_REDESIGN",
           "status": "OPEN",
-          "createdAt": "2026-10-12T05:04:43.161Z",
+          "createdAt": "2026-10-12T05:45:28.439Z",
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T05:28:00.662Z",
-      "ROBLOX_GENRE": "Survival",
-      "ROBLOX_SUBGENRE": null,
-      "ROBLOX_GENRE_LABEL_KO": "서바이벌",
-      "ROBLOX_SUBGENRE_LABEL_KO": null,
-      "ROBLOX_PLAY_MODE": "COOP",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
-      "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 멀티·협동",
-      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T05:14:40.229Z",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "minimumDesignContract": {
-        "version": 1,
-        "pass": true,
-        "source": "design/cozy-island/2026-10-12/design-revised.json",
-        "date": "2026-10-12"
-      },
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/cozy-island/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/cozy-island/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "strictDesignReviewRefreshRequired": true,
-      "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-        "requestedPlatform": "ROBLOX",
-        "concurrentTargetPlatforms": [
-          "ROBLOX",
-          "UNITY"
-        ],
-        "targetSourcePaths": {
-          "ROBLOX": "roblox-games/cozy-island",
-          "UNITY": "unity-games/cozy-island"
-        },
-        "designBaselineSource": "design/cozy-island/2026-10-12/design-revised.json",
-        "designDate": "2026-10-12",
-        "strictDesignReviewRequiredForAdmission": false,
-        "strictDesignReviewContinuesInParallel": true,
-        "promotedAt": "2026-10-12T05:15:36.729Z"
-      },
-      "productionTier": 2,
-      "selectedPlatform": "ROBLOX",
-      "strictDesignReview": {
-        "verdict": "PASS",
-        "totalScore": 80,
-        "hardFailures": [],
-        "evidencePath": "design/cozy-island/2026-10-12/strict-design-review.json",
-        "passThreshold": 80
-      },
-      "strictDesignReviewUpdatedAt": "2026-10-12T05:42:01.482Z"
+      "updatedAt": "2026-10-12T05:45:28.439Z"
     },
     {
       "version": 1,
@@ -92480,7 +92426,7 @@
   "autoMissingDesignIntake": {
     "version": 4,
     "source": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
-    "updatedAt": "2026-10-12T05:04:43.161Z",
+    "updatedAt": "2026-10-12T05:45:28.439Z",
     "createdGameIds": [],
     "reactivatedGameIds": [],
     "canonicalNovelGrammarSource": "CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009",
@@ -92581,5 +92527,6 @@
       "tower-choice-rpg",
       "zombie-survival"
     ]
-  }
+  },
+  "policyDocument": "company-learning/platform-release-roadmap.json"
 }
