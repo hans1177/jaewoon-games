@@ -103,6 +103,12 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
     seed:worldProposal.seed||worldRequest.seed||null,dimension,coordinateSystem:worldProposal.coordinateSystem||null,
     regionBiome:worldProposal.regionalBiome||null,climate:worldProposal.climate||null,
     grid:worldProposal.size||null,drainage:worldProposal.drainage||null,riverType:worldProposal.riverType||null,
+    hierarchy:worldProposal.hierarchy?{
+      version:worldProposal.hierarchy.version,root:worldProposal.hierarchy.root,order:worldProposal.hierarchy.order,
+      regionCount:worldProposal.hierarchy.regions.length,biomeCount:worldProposal.hierarchy.biomes.length,habitatCount:worldProposal.hierarchy.habitats.length,
+      routeCount:worldProposal.hierarchy.routes.length,inheritance:worldProposal.hierarchy.inheritance,
+      rule:worldProposal.hierarchy.crossLayerRule,nativeRuntimeVerified:false
+    }:null,
     // 승인된 오토 바이옴 도안만 Vibe의 기존 월드 소스 담당 작업자에게 전달한다.
     waterBodies:(worldProposal.oceansAndLakes?.waterBodies||[]).map(row=>({id:row.id,kind:row.kind,salinityPpt:row.salinityPpt,cellCount:row.cellCount})),
     waterMode:worldProposal.oceansAndLakes?.selectedWaterMode||'AUTO',
@@ -125,6 +131,7 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
     // AI 의도·진화는 기존 게임의 승인/보스 등급/드랍/저장 권한을 통과하기 전까지 실행하지 않는다.
     lifeAndDungeonPlans:(worldProposal.livingBiomePopulation?.actorPlacements||[]).slice(0,3).map(row=>({
       actorId:row.actorId,kind:row.kind,tier:row.tier,approvedSite:row.status==='DESIGN_MAPPED_NATIVE_BINDING_REQUIRED',
+      hierarchyHabitatId:worldProposal.hierarchy?.actors.find(actor=>actor.id===row.actorId)?.parentId||null,
       cell:row.cell,habitat:row.habitat,earthBiome:row.earthBiome,homeSettlementId:row.homeSettlementId,
       authoredDungeonId:row.authoredDungeonId,raidTargetAuthorized:row.raidTargetAuthorized,
       behaviorCycle:(row.behaviorCycle||[]).map(step=>({phase:step.phase,action:step.proposedAction})),visualEvolution:row.evolution?.phenotypeStage||null,
@@ -498,6 +505,44 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const coreLoop=unique(list(design.coreLoop));
   const systems=list(design.signatureSystems).map(row=>clean(row.name)).filter(Boolean);
   const genreProfile=selected?.id||'DESIGN_DEFINED';
+  // 메뉴 구성: 장르 후보는 기존 기능을 찾는 기준이며 새 기능이나 고정 HUD를 강제하지 않는다.
+  const genreMenus={
+    RPG:['장비','의뢰','가방'],ADVENTURE:['목표','지도','가방'],SURVIVAL:['가방','제작','지도'],
+    TYCOON:['건설','시설','운영'],DEFENSE:['배치','강화','웨이브'],STRATEGY:['유닛','명령','전황'],
+    PUZZLE:['되돌리기','재시작','목표'],OBBY:['체크포인트','재시도'],RACING:['주행','기록'],
+    HORROR:['단서','목표','가방'],ROLEPLAY:['활동','가방'],SANDBOX:['건설','도구','가방'],SHOOTER:['장비','목표']
+  };
+  const simpleMenuDirection=sourceOnly?null:{
+    genreProfile,candidates:genreMenus[genreProfile]||[],candidateAuthority:'EXISTING_HANDLER_MATCH_ONLY',
+    persistentActions:'Keep only the most frequent existing actions visible; prefer two or three menu entries when the current game permits. Put secondary actions behind the existing menu without removing access.',
+    stateVisibility:'Use existing exploration, combat, build and interaction states to show relevant actions. Keep required combat controls, accessibility and system indicators available.',
+    composition:'Short labels with readable icons; stable positions, grouped status, clear equipped/selected state and visible cost or missing requirements. Keep the actor, target and danger telegraphs unobstructed.',
+    guidance:'Show one immediate objective and a brief contextual hint; stop first-use guidance after the existing completion condition. Route guidance must follow actual reachable objectives.',
+    touch:'Use at least 44-unit touch targets, native safe insets and portrait/landscape adaptation. Keep menus separate from movement, attack and jump touch regions.',
+    navigation:'Reuse existing open/back/close handlers, preserve selection and scroll, and retain disabled-action reasons and transaction guards.',
+    verification:['MOBILE_MENU_OPEN_BACK_CLOSE','CONTEXT_ACTION_VISIBILITY','EQUIPPED_AND_COST_FEEDBACK','TOUCH_CONTROL_OVERLAP','TARGET_AND_TELEGRAPH_OCCLUSION'],runtimeVerified:false
+  };
+  // 몬스터 표현: 현재 종·행동·판정에 맞는 몸 구조와 모션을 구현하며 새 전투 규칙을 만들지 않는다.
+  const creatureIdentityDirection=sourceOnly?null:{
+    applicability:'Only existing or explicitly approved creatures in the owned source. Games without creatures must not gain monsters from this direction.',
+    authoring:'For each changed creature bind its stable ID to approved species/role, silhouette, body proportions, defining anatomy, locomotion, attack anticipation, impact and recovery. Read current creature definitions and behavior before authoring.',
+    readability:'Use recognizable species anatomy and characteristic motion at normal mobile camera distance. Do not accept recolors, labels or identical primitive bodies as distinct creatures. Favor coherent simple low-poly models over expensive detail.',
+    behavior:'Express existing ground, flying, crawling, charging or ranged behavior through matching movement and visible existing attack timing. Presentation-only edits cannot add behavior or alter hitboxes, speed, range, cooldown, damage, drops, spawn counts or authority.',
+    assets:'Reuse compatible registered internal 3D assets and native rigs; preserve style and validate part attachment, ground contact and motion. A missing asset remains an explicit gap, never verified by a placeholder.',
+    verification:['SPECIES_SILHOUETTE_AND_ANATOMY','LOCOMOTION_AND_GROUND_CONTACT','EXISTING_ATTACK_TELEGRAPH_AND_IMPACT','EXACT_SOURCE_CREATURE_BINDING','MOBILE_DISTANCE_READABILITY','UNCHANGED_COMBAT_AND_SAVE'],runtimeVerified:false
+  };
+  // 살아 있는 동료: 기존/승인된 참여자만 같은 게임의 권한 있는 행동 처리로 연결한다.
+  const actorText=JSON.stringify([design.signatureSystems,design.systemInterconnections,design.coreLoop,source.sourceAnchors]);
+  const aiParticipantDirection=sourceOnly||!/companion|party|ally|follower|npc|동료|파티|아군|주민|참가자/i.test(actorText)?null:{
+    scope:presentationOnly?'PRESENT_EXISTING_ACTOR_BEHAVIOR_ONLY':'IMPLEMENT_APPROVED_ACTOR_PARTICIPATION',
+    applicability:'Existing or approved AI participants only; preserve authored story NPC names, population and party caps. Use multiple distinct actors where approved, with mobile-bounded active population.',
+    playLoop:'Observe -> personal goal -> reachable task -> existing engine action -> observed result -> recover or next goal. Participate in approved genre activities with distinct initiative, risk and cooperation preferences even in solo play. Following, idle dialogue or random roaming alone is insufficient.',
+    actions:'Use only existing/approved gathering, crafting, exploration, combat, support, building and return handlers. Engine owns costs, prerequisites, rewards, inventory, collision and networking; AI chooses allowed intents. Recover from blocked paths, missing resources, low health, invalid targets and player departure.',
+    displayNames:'For generic AI participants derive stable meaningless lowercase-letter-and-digit names such as fhfgjjgdd75 from existing actor ID/world seed with deterministic local collision handling. Keep stable save IDs and authored NPC names. Display an AI indicator; never invent Roblox UserIds or count bots as connected humans.',
+    speech:'Use short authored in-character lines for intention, preference, warning, help requests, reaction and occasional self-talk, for example 나무 좀 모을게, 위험해 돌아가자, 이쪽이 나을 듯. Bind speech to observable goals, decisions and outcomes; a brief expressed judgment is dialogue, not a transcript of internal reasoning. Keep individual tone, no hidden-state spoilers, no fake action claims and no player reply required. Use the existing dialogue/nameplate presentation with short lifetime, per-actor cooldown, same-event dedupe, proximity filtering and a bounded simultaneous bubble count. Warnings take priority over idle self-talk; speech never blocks input or covers target/health/telegraphs. Preserve existing dialogue accessibility/settings and server-validated actor identity.',
+    native:'Implement in existing native actor creation, decision, navigation and nameplate responsibilities; inspect compatible internal AI libraries and reauthor platform-native behavior, never add a shadow participant engine.',
+    verification:['SOLO_AI_GOAL_ACTION_RESULT','DISTINCT_SIMULTANEOUS_ACTIVITIES','COOPERATION_AND_BLOCKED_PATH_RECOVERY','STABLE_NICKNAME_RESTORE','NO_DUPLICATE_REWARDS','MOBILE_AI_UPDATE_BUDGET'],runtimeVerified:false
+  };
   const ownerFeatureChanges=latestOwnerChanges(design.ownerFeatureChanges);
   const ownerChangeFingerprint=hash(JSON.stringify(ownerFeatureChanges));
   const currentPrevious=previousPlan?.ownerChangeFingerprint===ownerChangeFingerprint
@@ -523,10 +568,12 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const libraryReuseContract=interfaceContract?{
     status:'OPTIONAL_MATCH_NOT_APPLIED',firstPartyLibraryCount:interfaceContract.firstPartyLibraryCount,
     candidates:list(interfaceContract.internalLibraryMatches).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED'),
-    assetLibrarySelection:'EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE',automaticImport:false,runtimeVerified:false
+    assetLibrarySelection:'EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE',automaticImport:false,runtimeVerified:false,
+    applicationRule:'Evaluate the complete currently available internal game library index on every existing-game BUILD_UP without arbitrary candidate-count caps. For every compatible source-matched library within owned responsibilities, reuse its existing binding or implement the needed native integration in the responsible functions. Report exact incompatibility or missing owned source when not applied. Design-only matches remain hints. Never add an unrelated feature just to consume a library; existing working equivalent functionality must not be duplicated.',
+    evidenceRule:'Bind library revision and selected capabilities to actual source consumers and exact-build action/state/visual evidence. Imports, names, configuration, menu presence or match counts alone cannot claim use or quality improvement.'
   }:null;
   return {
-    version:3,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
+    version:5,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
     conceptIdentity:identity,coreAction:selected?.action||coreLoop[0]||'승인된 핵심 행동',
     ownerFeatureChanges,ownerChangeFingerprint,
     systemConnection:sourceOnly?'현재 실패 원인 → 기존 행동 복구':presentationOnly?'기존 행동 → 상태별 표현/입력 피드백':selected?.connection||coreLoop.join(' → '),
@@ -542,7 +589,29 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     ideas,selectedIdea:chosen,ideaHistory:unique([...(available.length||repair?used:[]),chosen.id]),
     implementationPackages:packages,sourceTreeFingerprint:clean(source.sourceTreeFingerprint),
     spatialBlueprintContract:buildSpatialBlueprintContract({design,source,files,mode,platform:target,enabled:policy.spatialBlueprint?.enabled===true}),
-    interfaceBlueprintContract:interfaceContract,libraryReuseContract,
+    ecosystemDirection:sourceOnly?null:{
+      scope:'EXISTING_APPROVED_WORLD_AND_HABITATS',
+      components:['LIGHT_AND_CLIMATE','HYDROLOGY_AND_SALINITY','SOIL_AND_GEOLOGY','MICROCLIMATE','PRODUCERS','HERBIVORES','PREDATORS','DECOMPOSERS','POLLINATION_AND_SEED_DISPERSAL','NUTRIENT_AND_ENERGY_FLOWS','SEASONS','SUCCESSION_AND_RECOVERY'],
+      implementation:'Reuse the actual hierarchy and habitat ecosystem output from assets/vibe-environment-director.js. Bind approved internal native models, materials, motion and ambient sound to the actual habitat microclimate, seasonal cues and matter-cycle state. Keep nature-like connected patches rather than uniform random decoration. Missing guild assets remain authoring gaps, not invented monsters. The normalized matter model is a presentation approximation, not a biological forecast.',
+      authority:'The owner now requests biome-composed spawn, drops and stats. Author ecologyGameplayRules and species gameplay definitions in the existing approved world design, then consume biomeGameplay entries through existing server spawn/combat/reward functions. The biome system owns generated configuration; server handlers own actual effects and exactly-once rewards. Preserve save identity, network security, route safety and mobile budgets.',runtimeVerified:false
+    },
+    biomeGameplayDirection:sourceOnly?null:{
+      ownerRequest:'OWNER_BIOME_SPAWN_DROP_STATS_20261012',mode:presentationOnly?'PRESENT_EXISTING_BIOME_RULES_ONLY':'BIOME_COMPOSES_SPAWN_DROPS_AND_STATS',
+      source:'assets/vibe-environment-director.js#createVibeProceduralWorldLayout',
+      requiredInputs:'ecologyGameplayRules: enabled, ownerAuthorized, revision, maxAlive, growthPerCell, statMultiplierRange, dropMultiplierRange, existing itemIds. Each species needs gameplay health, damage, spawnCount, respawnSeconds and itemId/chance/quantity drops.',
+      rule:'Use habitat fit, food availability, ecological pressure and distance/progression to generate concrete spawn, stat and independent drop tables. Do not keep those values unchanged merely because the former presentation-only rule did. Use actual game definitions, validate finite ranges and missing species/items, bind the generated revision to existing server consumers and verify spawn/death/loot/restore. Rebalance is authorized for biome gameplay; save schema and network bypass are not.',
+      runtimeVerified:false
+    },
+    settlementDirection:sourceOnly?null:{
+      scope:presentationOnly?'PRESENT_EXISTING_SETTLEMENT_ONLY':'AUTHOR_APPROVED_SETTLEMENT_IN_EXISTING_WORLD',
+      source:'assets/vibe-environment-director.js#createVibeProceduralWorldLayout.settlement',
+      hierarchy:['REGION','SETTLEMENT','DISTRICT','BUILDING','ROOM','FACILITY','RESIDENT_ACTIVITY'],
+      implementation:'Use generated existing lots, stable building/room/facility IDs and road-only resident schedules. Bind home, workshop, warehouse and market to actual existing gameplay handlers; missing roles remain explicit gaps. Native room geometry must provide real entrances and accessible routes. Adapt roof, insulation, raised floor and drainage to local climate without floating foundations.',
+      construction:'Consume engineValidated settlementState snapshots from existing inventory/building owners. Material transport, foundation, frame, walls, roof and interiors use the current project stage and authored costs. Reserve/deduct resources atomically in existing server handlers and persist the stage through the existing save contract. The generator never spends materials or completes construction by itself.',
+      evolution:'Respond to actual housing pressure, shortages, damaged buildings and authored abandoned sites with supply, repair, approved expansion or restoration. Production -> storage -> trade uses existing inventory ownership. Connect approved logging/farming/restoration events to biome pressure and recovery; do not simulate a successful event from a proposal.',
+      runtimeChecks:['HOME_WORK_MARKET_RETURN_ROAD_REPLAY','FACILITY_ACTION_AND_INVENTORY_CHANGE','INSUFFICIENT_MATERIAL_AND_DUPLICATE_BUILD_GUARD','CONSTRUCTION_STAGE_SAVE_RESTORE','ABANDONMENT_AND_RESTORATION','CLIMATE_BUILDING_GROUNDING'],runtimeVerified:false
+    },
+    interfaceBlueprintContract:interfaceContract,libraryReuseContract,simpleMenuDirection,creatureIdentityDirection,aiParticipantDirection,
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
       implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
@@ -552,7 +621,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     },
     handoffRule:'Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.',
     contentRule:sourceOnly?'REPAIR_EXISTING_BEHAVIOR_ONLY':presentationOnly?'PRESENT_EXISTING_BEHAVIOR_ONLY':'CONNECT_ONE_PLAYABLE_CONTENT_PACKAGE_TO_EXISTING_CORE_LOOP',
-    preservation:['APPROVED_CONCEPT','APPROVED_GENRE','STYLE_LOCK','SAVE_IDENTITY','BALANCE_AND_ECONOMY_MEANING','SERVER_AUTHORITY'],
+    preservation:['APPROVED_CONCEPT','APPROVED_GENRE','STYLE_LOCK','SAVE_IDENTITY',sourceOnly||presentationOnly?'BALANCE_AND_ECONOMY_MEANING':'OWNER_AUTHORIZED_BIOME_BALANCE_REVISION','SERVER_AUTHORITY'],
     newWorkflow:false,newQaStage:false,implementationStatus:'PLANNED_NOT_IMPLEMENTED'
   };
 }
@@ -588,11 +657,24 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     prefix+'IDEA='+JSON.stringify(plan.selectedIdea),
     prefix+'CONNECTION='+JSON.stringify({flow:plan.systemConnection,coreLoop:plan.approvedCoreLoop,systems:plan.signatureSystems,nextGoal:plan.progressionDirection}),
     prefix+'FILES='+JSON.stringify(packages),
+    ...(packages.length&&plan.biomeGameplayDirection?[prefix+'BIOME_GAMEPLAY='+JSON.stringify(plan.biomeGameplayDirection)]:[]),
+    ...(packages.length&&plan.settlementDirection?[prefix+'SETTLEMENT='+JSON.stringify({...plan.settlementDirection,ownedRoles:packages.map(row=>row.role)})]:[]),
+    ...(packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))&&plan.simpleMenuDirection?[
+      prefix+'SIMPLE_MENU='+JSON.stringify(plan.simpleMenuDirection)
+    ]:[]),
+    ...(packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))&&plan.creatureIdentityDirection?[
+      prefix+'CREATURE_IDENTITY='+JSON.stringify(plan.creatureIdentityDirection)
+    ]:[]),
+    ...(packages.length&&plan.aiParticipantDirection?[
+      prefix+'AI_PARTICIPANT='+JSON.stringify({...plan.aiParticipantDirection,ownedRoles:packages.map(row=>row.role)}),
+      prefix+'AI_PARTICIPANT_SCOPE=Implement only the current owned responsibilities. Client presentation owns labels and feedback, never autonomous authoritative state or rewards. Server/state workers use existing approved actor action handlers. Missing sibling implementation remains an explicit gap, not permission to edit unowned files.'
+    ]:[]),
     ...(plan.depthAndReward?[prefix+'DEPTH='+JSON.stringify(plan.depthAndReward)]:[]),
     ...(libraryCandidates.length?[
       prefix+'LIBRARY_MATCH='+JSON.stringify({
         firstPartyLibraryCount:plan.libraryReuseContract.firstPartyLibraryCount,
         candidates:libraryCandidates,assetLibrarySelection:plan.libraryReuseContract.assetLibrarySelection,
+        applicationRule:plan.libraryReuseContract.applicationRule,evidenceRule:plan.libraryReuseContract.evidenceRule,
         automaticImport:false,runtimeVerified:false
       }),
       prefix+'LIBRARY_RULE=Consider all currently available first-party game runtime libraries by actual game source evidence. Select only relevant, compatible matches within owned source. Use existing graphics asset registry and license gates. For Unity and Roblox implement platform-native functionality rather than importing Web JS. Never install external packages, force new gameplay, change balance/save/economy, or claim runtime PASS from a match.'
@@ -603,12 +685,16 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     ]:[]),
     ...(plan.spatialBlueprintContract?[
       prefix+'SPATIAL='+JSON.stringify(blueprints.spatial),
+      ...(blueprints.spatial?.required&&plan.ecosystemDirection?[prefix+'ECOSYSTEM='+JSON.stringify(plan.ecosystemDirection)]:[]),
+      ...(blueprints.spatial?.macroSketch?.proceduralWorldStudy?[
+        prefix+'AUTO_BIOME_RULE=Translate the approved auto-biome study into actual native terrain, climate-matched vegetation/materials, water and coherent biome transitions inside owned world source. Low-poly detail is acceptable; biome labels, a flat recolored floor or a proposal alone are not implementation. Connect supported spawn, resource, settlement and objective routes before decoration. Validate slopes, shoreline, collisions, actor grounding, camera sightlines and mobile object/update budgets in the exact build. Preserve authored layout, resource quantities, spawn counts, save and combat semantics. If this worker cannot own the required terrain or bindings, report the exact missing responsibility; never claim full-world completion from bounded study samples.'
+      ]:[]),
       prefix+'SPATIAL_SCHEMA='+JSON.stringify(SPATIAL_BLUEPRINT_SCHEMA),
       prefix+'SPATIAL_RULE=When required=true, first author spatialBlueprint in the same candidate JSON, then implement it in existing source. Otherwise include a report only for relevant spatial changes. Scope the sketch to the owned task region and its existing entry/objective boundaries, not the entire game or sibling files. Use source dimensions, axis direction, units, player size and stable IDs. Draw regions before object bounds and typed connections. Preserve locations unless authorized. In 3D account for support, headroom, elevation, stairs, slopes, camera sightlines and swept clearance; in 2D distinguish top-down from side-view and layers. Bind each row to executable source. AABB checks are conservative and cannot prove curved terrain, ramps, jumps, engine physics or runtime PASS. For an explicitly approved new environment, derive seeded gradient-noise elevation and drainage by climate and biome; connect walkable road and optional routes before placing any building. Zone footprints by local function (housing, services and workshops), snap modular foundations/walls/openings/roofs to the existing grid, face door openings toward a traversable road, and preserve any reserved player/objective/interaction cells. Use local material and climate for architecture, keep a clear landmark sightline from a decision point, and budget cell/prop density, LOD and reusable mesh instances for mobile. These are authoring constraints, not proof of native instancing or runtime visibility; bind placements to real existing source and reject blocked routes instead of claiming PASS. An approved macroSketch.proceduralWorldStudy provides only bounded route and lot samples, not a full terrain mesh or a verified game implementation. If status is not STATIC_LAYOUT_PROPOSED, repair route or placement feasibility before using its layout; do not substitute the study for actual source implementation. Existing map repairs and presentation-only tasks must preserve established layout and gameplay state.'
     ]:[]),
     ...(plan.qualityContract?[prefix+'QUALITY='+JSON.stringify(plan.qualityContract)]:[]),
     ...list(plan.ownerFeatureChanges).map(change=>prefix+'OWNER='+JSON.stringify(change)+'; latest owner intent wins; REMOVE must not be restored by autonomous expansion; ADD/UPDATE must be preserved within this request scope.'),
-    prefix+'SCOPE='+plan.contentRule+'; '+plan.handoffRule+' Preserve approved concept, style, balance, save and server authority. Independent files can proceed in parallel inside the existing worker; this is no new stage.'
+    prefix+'SCOPE='+plan.contentRule+'; '+plan.handoffRule+(plan.biomeGameplayDirection?.mode==='BIOME_COMPOSES_SPAWN_DROPS_AND_STATS'?' Apply the owner-authorized biome balance revision through existing server handlers; preserve approved concept, style, save identity and network security.':' Preserve approved concept, style, balance, save and server authority.')+' Independent files can proceed in parallel inside the existing worker; this is no new stage.'
   ];
 }
 

@@ -1,6 +1,6 @@
 // 파일명: assets/vibe-environment-director.js
 // 역할: 세계관/맵/사물/배경/날씨를 사실적 원인-반응과 제한된 물리·화학 상호작용으로 표현하는 결정론적 환경 Director
-// 절대 규칙: 개발/디자인 AI 사용 금지. 게임 런타임 AI만 허용. 물리·화학 표현은 기존 충돌/데미지/스폰/진행/밸런스/저장 규칙을 임의 변경하지 않음.
+// 규칙: 표현은 게임 상태를 임의 변경하지 않는다. 명시적으로 승인된 바이옴 게임 규칙은 스폰·능력치·드랍 설정을 생성하며 실제 적용은 기존 서버가 담당한다.
 
 const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
 const uniq=a=>[...new Set((a||[]).filter(Boolean))];
@@ -328,7 +328,7 @@ function proceduralGradientNoise(seed,x,z){
   const u=fade(fx),v=fade(fz),lerp=(a,b,t)=>a+(b-a)*t;
   return lerp(lerp(dot(ix,iz,fx,fz),dot(ix+1,iz,fx-1,fz),u),lerp(dot(ix,iz+1,fx,fz-1),dot(ix+1,iz+1,fx-1,fz-1),u),v);
 }
-export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='AUTO',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[]}={}){
+export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='AUTO',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[],ecologyGameplayRules=null,settlementState=null}={}){
   const noMutation={sourceMutationPerformed:false,nativeAssetInstancingPerformed:false,runtimeVerified:false,gameplayRuleMutation:false,saveMeaningMutation:false};
   if(approvedDesign!==true)return Object.freeze({status:'APPROVED_DESIGN_REQUIRED',issues:Object.freeze(['APPROVED_WORLD_DESIGN_REQUIRED']),...noMutation});
   const maximum=mobile?48:72,validNumber=n=>typeof n==='number'&&Number.isFinite(n);
@@ -620,7 +620,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   const routeEdges=[['ENTRY','HUB'],['HUB','LANDMARK'],['HUB','BRANCH']];
   const points=Object.fromEntries(routeNodes.map(([id,pos])=>[id,pos]));
   const routes=[],roadSet=new Set();
-  function route(a,b){
+  function route(a,b,roadOnly=false){
     if(!a||!b)return null;
     const start=at(a.x,a.z),goal=at(b.x,b.z),cost=new Float64Array(w*h).fill(Infinity),from=new Int32Array(w*h).fill(-1),closed=new Set(),open=[{id:start,score:0}];
     cost[start]=0;
@@ -632,7 +632,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       closed.add(current);
       const x=current%w,z=Math.floor(current/w),neighbors=[[x+1,z],[x,z+1],[x-1,z],[x,z-1]];
       for(const [xx,zz] of neighbors){
-        if(!passable(xx,zz))continue;
+        if(!passable(xx,zz)||(roadOnly&&!roadSet.has(at(xx,zz))))continue;
         const next=at(xx,zz),rise=Math.abs(terrain[current].elevation-terrain[next].elevation)*8;
         if(Math.atan2(rise,cellSize)*180/Math.PI>maxSlopeDegrees)continue;
         const nextCost=cost[current]+1+rise*4+(terrain[next].biome==='RIDGE'?1:0);
@@ -704,7 +704,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const foundationStability=Math.min(...footprint.map(c=>terrain[at(c.x,c.z)].surface.substrateStability));
       const floodBuffer=Math.min(...footprint.map(c=>terrain[at(c.x,c.z)].surface.waterDistanceCells??999));
       const erosionRisk=Math.max(...footprint.map(c=>terrain[at(c.x,c.z)].catchment.erosionRisk));
-      const siteSuitability=Math.max(.65,1-(1-foundationStability)*.2-erosionRisk*.1-(floodBuffer<=1?.12:floodBuffer<=3?.05:0));
+      const foodSuitability=terrain[at(x,z)].ecology.carryingCapacity;
+      const waterSupply=terrain[at(x,z)].hydroVisual.freshWater?1:Math.max(.1,1-(floodBuffer===999?12:floodBuffer)/12);
+      const siteSuitability=Math.max(.35,Math.min(1,.55+foodSuitability*.18+waterSupply*.17+foundationStability*.1-erosionRisk*.1-(floodBuffer<=1?.18:0)));
       const roll=proceduralCellHash(hash,x,z)/4294967296;
       if(roll>density*siteSuitability)continue;
       footprint.forEach(c=>occupied.add(at(c.x,c.z)));
@@ -827,9 +829,12 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   const observedCoverByHabitat=new Map(),habitatCapacityByType=new Map();
   for(const tile of terrain){
     const type=tile.ecology.habitat;
-    const data=habitatCapacityByType.get(type)||{cells:0,capacity:0,scenicCapacity:0,waterCells:0};
+    const data=habitatCapacityByType.get(type)||{cells:0,capacity:0,scenicCapacity:0,waterCells:0,temperature:0,humidity:0,soil:0,erosion:0,salinity:0,aquaticCells:0};
     data.cells++;data.capacity+=tile.ecology.carryingCapacity;
     data.scenicCapacity+=tile.aquatic?tile.hydroVisual.scenicCarryingCapacity:tile.ecology.carryingCapacity;
+    data.temperature+=tile.surface.temperature;data.humidity+=tile.surface.humidity;data.soil+=tile.surface.soilDepth;
+    data.erosion+=tile.catchment.erosionRisk;data.salinity+=tile.hydroVisual.salinityPpt;
+    if(tile.aquatic)data.aquaticCells++;
     if(tile.surface.waterDistanceCells!==null&&tile.surface.waterDistanceCells<=2)data.waterCells++;
     habitatCapacityByType.set(type,data);
   }
@@ -855,6 +860,40 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const nextPredator=clamp01(predator+.2*(.13*prey*predator-.09*predator));
     const foodWebVisual=Object.freeze({algorithm:'BOUNDED_LOTKA_VOLTERRA_SCENIC_PREVIEW',producerIndex:+producer.toFixed(3),
       preyIndex:+nextPrey.toFixed(3),predatorIndex:+nextPredator.toFixed(3),visualOnly:true,realCreatureCountChanged:false});
+    // 자연형 생태계: 물질 저장소 사이 이동을 계산해 생산·소비·분해·재순환을 연결한다.
+    // 지표는 무차원 표현 모델이며 실제 생물 개체수/수확/전투 결과를 변경하지 않는다.
+    const average=key=>row[key]/Math.max(1,row.cells),aquatic=row.aquaticCells>row.cells/2;
+    const temperature=average('temperature'),moisture=average('humidity'),soil=average('soil');
+    const light=seasonKey==='WINTER'?.35:seasonKey==='SUMMER'?.9:.65;
+    const productivity=clamp01(light*(aquatic?.7:moisture)*Math.max(.05,1-Math.abs(temperature-.55)*1.6));
+    const matter={nutrients:.25,producers:.45,herbivores:.12,predators:.04,detritus:.14};
+    const trace=[];
+    for(let step=0;step<24;step++){
+      const flows=[
+        ['nutrients','producers',matter.nutrients*.12*productivity],
+        ['producers','herbivores',matter.producers*matter.herbivores*.08],
+        ['herbivores','predators',matter.herbivores*matter.predators*.12],
+        ['producers','detritus',matter.producers*(seasonKey==='AUTUMN'?.035:.012)],
+        ['herbivores','detritus',matter.herbivores*.018],
+        ['predators','detritus',matter.predators*.014],
+        ['detritus','nutrients',matter.detritus*.08*(.2+moisture*.8)*(.3+temperature*.7)]
+      ];
+      for(const [from,to,requested] of flows){const amount=Math.min(matter[from],Math.max(0,requested));matter[from]-=amount;matter[to]+=amount;}
+      if(step%6===5)trace.push(Object.freeze({step:step+1,...matter}));
+    }
+    const ecosystem=Object.freeze({model:'BOUNDED_NATURE_INSPIRED_MATTER_CYCLE',scientificSimulation:false,units:'NORMALIZED_PRESENTATION_INDEX',
+      abiotic:Object.freeze({light,temperature,moisture,soilDepth:soil,erosion:average('erosion'),salinityPpt:average('salinity'),
+        dissolvedOxygenProxy:aquatic?clamp01(1-temperature*.45-matter.detritus*.35):null}),
+      guilds:Object.freeze({producers:aquatic?['ALGAE','AQUATIC_PLANTS']:['CANOPY','SHRUB','HERB','MOSS'],
+        primaryConsumers:['HERBIVORE','SEED_EATER'],secondaryConsumers:['SMALL_PREDATOR'],topConsumers:['PREDATOR'],
+        decomposers:['FUNGI','MICROBE','DETRITIVORE'],mutualists:aquatic?['CLEANER_SYMBIOSIS']:['POLLINATOR','SEED_DISPERSER','ROOT_SYMBIOSIS']}),
+      processes:Object.freeze(['PRIMARY_PRODUCTION','HERBIVORY','PREDATION','DECOMPOSITION','NUTRIENT_RECYCLE','WATER_CYCLE','COMPETITION','MUTUALISM','SEASONAL_DORMANCY','SUCCESSION','DISTURBANCE_RECOVERY']),
+      matterState:Object.freeze({...matter}),matterTotal:Object.values(matter).reduce((sum,value)=>sum+value,0),trace:Object.freeze(trace),
+      energy:Object.freeze({solarInput:light,primaryProduction:productivity,trophicTransferEfficiency:.1,heatDissipation:true}),
+      succession:Object.freeze({stage:soil<.25?'PIONEER':soil<.6?'ESTABLISHING':'MATURE_MOSAIC',recoverySuitability:clamp01(soil*moisture*(1-average('erosion')))}),
+      seasonalCues:Object.freeze(seasonKey==='WINTER'?['DORMANCY','REDUCED_ACTIVITY']:seasonKey==='AUTUMN'?['LEAF_LITTER','SEED_DISPERSAL']:seasonKey==='SPRING'?['BUDDING','POLLINATION']:['GROWTH','FORAGING']),
+      disturbanceCues:Object.freeze(average('erosion')>.45?['RUNOFF','SEDIMENT','BANK_RECOVERY']:moisture<.25?['DRY_SOIL','SPARSE_COVER']:['PATCH_GROWTH','LOCAL_REGENERATION']),
+      sourceBindingRequired:true,unavailableGuildAssetIsGap:true,actualSpawnCount:0,gameplayAuthority:false,nativeRuntimeVerified:false});
     const cue=/CORAL_REEF|OPEN_OCEAN|DEEP_OCEAN/.test(habitat)?'CURRENT_REEF_MARINE_SOUNDS'
       :/KELP_FOREST/.test(habitat)?'KELP_SWAY_AND_BUBBLES'
       :/FRESHWATER_LAKE/.test(habitat)?'LAKE_REEDS_AND_SHOREBIRDS'
@@ -868,7 +907,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       carryingCapacitySum:+usableCapacity.toFixed(3),averageHabitatCapacity:+(usableCapacity/Math.max(1,row.cells)).toFixed(3),
       idealVisualCover:+desired.toFixed(3),nextVisualCover:+nextVisualCover.toFixed(3),
       validatedVisualDensityFeedbackApplied:feedbackAccepted,visualDensityFeedback:visualDensityDelta(habitat),
-      ambientCue:cue,foodWebVisual,producerGuild:'VEGETATION',consumerGuild:'SCENIC_WILDLIFE_CUE_ONLY',
+      ambientCue:cue,foodWebVisual,ecosystem,producerGuild:'VEGETATION',consumerGuild:'SCENIC_WILDLIFE_CUE_ONLY',
       decomposerGuild:'SOIL_AND_FALLEN_MATTER_CUE_ONLY',actualCreatureSpawnCount:0,
       actualHarvestableResourceCount:0,actualNativeVisualsVerified:false});
   });
@@ -938,7 +977,8 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const dungeonAnchor=authoredDungeon?.cell||authoredDungeon;
     const dungeonAnchorValid=Number.isInteger(dungeonAnchor?.x)&&Number.isInteger(dungeonAnchor?.z)&&within(dungeonAnchor.x,dungeonAnchor.z);
     const authoredRank=actor?.approved===true&&actor?.tierAuthorized===true;
-    const homeAnchor=playerRelevant&&buildings.length?buildings[proceduralCellHash(hash^0xa773,rosterIndex,7)%buildings.length]:null;
+    const homes=buildings.filter(row=>row.zone==='RESIDENTIAL');
+    const homeAnchor=playerRelevant&&homes.length?homes[proceduralCellHash(hash^0xa773,rosterIndex,7)%homes.length]:null;
     let placements=terrain.filter(tile=>{
       const id=at(tile.x,tile.z),isWater=tile.biome==='WATER';
       if(blocked.has(id)||assignedActorCells.has(id)||tile.slopeDegrees>maxSlopeDegrees)return false;
@@ -1052,10 +1092,213 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     sightline={from:hub,to:landmark,fovDegrees,cameraForward,withinFov,visible:withinFov&&!seen&&!terrainObstructed,terrainObstructed,buildingObstructed:seen,exactCameraAndOcclusionRuntimeVerified:false};
     if(!sightline.visible)issues.push('LANDMARK_VISIBILITY_REQUIRES_CAMERA_REVIEW');
   }
+  // 계층 도안: 기후/지질 권역 아래 연결된 바이옴과 서식지를 실제 셀로 분리한다.
+  // 지형·길·식생·배치된 생물은 같은 서식지 ID를 공유하며 별도 월드를 생성하지 않는다.
+  const worldId=objectNamespace,regions=new Map(),biomeNodes=[],habitatNodes=[],membership=new Array(terrain.length);
+  for(const tile of terrain){
+    const regionId=worldId+':REGION:'+tile.surface.geologyId;
+    if(!regions.has(regionId))regions.set(regionId,{id:regionId,parentId:worldId,level:'REGION',climate:String(climate).toUpperCase(),cells:[]});
+    regions.get(regionId).cells.push({x:tile.x,z:tile.z});
+  }
+  const seenBiome=new Set();
+  for(let start=0;start<terrain.length;start++){
+    if(seenBiome.has(start))continue;
+    const first=terrain[start],regionId=worldId+':REGION:'+first.surface.geologyId;
+    const biomeId=regionId+':BIOME:'+start,queue=[start],cells=[];
+    seenBiome.add(start);
+    for(let q=0;q<queue.length;q++){
+      const index=queue[q],tile=terrain[index];cells.push({x:tile.x,z:tile.z});
+      membership[index]={regionId,biomeId};
+      for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const x=tile.x+dx,z=tile.z+dz,next=z*w+x;
+        if(x<0||z<0||x>=w||z>=h||seenBiome.has(next))continue;
+        const other=terrain[next];
+        if(other.surface.geologyId===first.surface.geologyId&&other.earthBiome.name===first.earthBiome.name){seenBiome.add(next);queue.push(next);}
+      }
+    }
+    biomeNodes.push(Object.freeze({id:biomeId,parentId:regionId,level:'BIOME',biome:first.earthBiome.name,climate:String(climate).toUpperCase(),cells:Object.freeze(cells)}));
+  }
+  const seenHabitat=new Set();
+  for(let start=0;start<terrain.length;start++){
+    if(seenHabitat.has(start))continue;
+    const first=terrain[start],biomeId=membership[start].biomeId,habitatId=biomeId+':HABITAT:'+start,queue=[start],cells=[];
+    seenHabitat.add(start);
+    for(let q=0;q<queue.length;q++){
+      const index=queue[q],tile=terrain[index];cells.push({x:tile.x,z:tile.z});membership[index].habitatId=habitatId;
+      for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const x=tile.x+dx,z=tile.z+dz,next=z*w+x;
+        if(x<0||z<0||x>=w||z>=h||seenHabitat.has(next))continue;
+        if(membership[next].biomeId===biomeId&&terrain[next].ecology.habitat===first.ecology.habitat){seenHabitat.add(next);queue.push(next);}
+      }
+    }
+    const localMean=read=>queue.reduce((sum,index)=>sum+read(terrain[index]),0)/queue.length;
+    habitatNodes.push(Object.freeze({id:habitatId,parentId:biomeId,level:'HABITAT',habitat:first.ecology.habitat,cells:Object.freeze(cells),material:first.surface.primary,
+      ecosystemProfileId:first.ecology.habitat,microclimate:Object.freeze({temperature:localMean(tile=>tile.surface.temperature),moisture:localMean(tile=>tile.surface.humidity),soilDepth:localMean(tile=>tile.surface.soilDepth),erosion:localMean(tile=>tile.catchment.erosionRisk)}),nativeRuntimeVerified:false}));
+  }
+  const hierarchyBinding=(x,z)=>membership[z*w+x]||null;
+  // 정착지 계층: 기존 대지와 실제 길을 재사용해 방·시설·생활 동선을 구성한다.
+  const settlementId=worldId+':SETTLEMENT:HUB',facilityNodes=[],buildingNodes=[],residentPlans=[],settlementGaps=[];
+  const climateWords=String(climate).toUpperCase(),cold=/COLD|SNOW|POLAR/.test(climateWords),wet=/WET|RAIN|HUMID/.test(climateWords);
+  for(const building of buildings){
+    const role=building.zone==='RESIDENTIAL'?'HOME':building.zone==='WORKSHOP'?'WORKSHOP':'MARKET';
+    const roomRoles=role==='HOME'?['LIVING','REST','STORAGE']:role==='WORKSHOP'?['WORK','STORAGE']:['TRADE','WAREHOUSE'];
+    const districtId=settlementId+':DISTRICT:'+building.planning.districtId;
+    const rooms=roomRoles.map((room,index)=>Object.freeze({id:building.stableObjectId+':ROOM:'+room,parentId:building.stableObjectId,level:'ROOM',role:room,
+      storey:Math.min(index+1,building.construction.structure3d?.storeys||1),
+      purpose:room==='STORAGE'||room==='WAREHOUSE'?'EXISTING_INVENTORY_STORAGE':room==='REST'?'REST':room==='TRADE'?'EXISTING_TRADE':'EXISTING_ROLE_ACTIVITY',
+      position:building.position,interiorGeometryRequired:true,runtimeVerified:false}));
+    for(const room of rooms)facilityNodes.push(Object.freeze({id:room.id+':FACILITY',parentId:room.id,level:'FACILITY',role:room.role,
+      accessAnchor:building.roadAccess,position:building.doorway.position,sourceBinding:building.sourceBinding,actualInstalled:false}));
+    const buildingState=settlementState?.engineValidated===true?settlementState.buildingStates?.[building.stableObjectId]:null;
+    const lifecycle=buildingState?.abandoned===true?'ABANDONED':buildingState?.damaged===true?'REPAIR_REQUIRED':'EXISTING_OR_PLANNED';
+    buildingNodes.push(Object.freeze({id:building.stableObjectId,parentId:districtId,level:'BUILDING',role,rooms:Object.freeze(rooms),lifecycle,
+      habitatId:hierarchyBinding(building.footprint[0].x,building.footprint[0].z)?.habitatId,
+      climateAdaptation:Object.freeze({roof:building.modules.at(-1),insulation:cold?'THICK_WALL_AND_SMALL_OPENING':'LOCAL_CLIMATE',
+        drainage:wet?'EAVES_GUTTER_AND_DRAIN':'LOCAL_RUNOFF',floor:wet?'RAISED_WITH_ACCESSIBLE_ENTRY':'GROUND_SUPPORTED',
+        materials:building.construction.primaryMaterial,nativeGeometryRequired:true}),
+      constructionOrder:Object.freeze(['MATERIAL_TRANSPORT','FOUNDATION','FRAME','WALL','ROOF','INTERIOR','OPERATIONAL']),
+      resourceAuthority:'EXISTING_GAME_INVENTORY_AND_BUILDING_HANDLERS',runtimeVerified:false}));
+  }
+  const resourceSnapshot=settlementState?.engineValidated===true&&settlementState.resources&&typeof settlementState.resources==='object'?settlementState.resources:null;
+  const constructionProjects=[];
+  for(const project of Array.isArray(settlementState?.projects)?settlementState.projects:[]){
+    const building=buildingNodes.find(row=>row.id===project.buildingId);
+    if(!building||!resourceSnapshot||!project.id||!Number.isInteger(project.stage)||project.stage<0||project.stage>=building.constructionOrder.length||!project.costs||typeof project.costs!=='object')continue;
+    const costs=Object.entries(project.costs);
+    if(!costs.length||!costs.every(([itemId,count])=>Number.isSafeInteger(count)&&count>=0&&Number.isSafeInteger(resourceSnapshot[itemId])&&resourceSnapshot[itemId]>=0))continue;
+    const missing=costs.filter(([itemId,count])=>resourceSnapshot[itemId]<count).map(([itemId,count])=>({itemId,missing:count-resourceSnapshot[itemId]}));
+    constructionProjects.push(Object.freeze({id:String(project.id),buildingId:building.id,stage:building.constructionOrder[project.stage],
+      status:project.stage===building.constructionOrder.length-1?'OPERATIONAL':missing.length?'MATERIALS_REQUIRED':'READY_FOR_EXISTING_SERVER_TRANSACTION',missing:Object.freeze(missing),
+      nextStage:missing.length?project.stage:Math.min(project.stage+1,building.constructionOrder.length-1),
+      costs:Object.freeze({...project.costs}),requiresAtomicResourceReservation:true,resourceDeducted:false,applied:false}));
+  }
+  const facilitiesFor=roles=>facilityNodes.filter(row=>roles.includes(row.role));
+  for(const actor of lifeAndEncounterSites.filter(row=>row.kind==='NPC'&&row.status==='DESIGN_MAPPED_NATIVE_BINDING_REQUIRED')){
+    const home=buildingNodes.find(row=>row.id===actor.homeSettlementId),homeAnchor=buildings.find(row=>row.stableObjectId===home?.id)?.roadAccess;
+    const allowed=new Set(actor.behaviorUtilities.map(row=>row.action)),schedule=[];
+    let previous=homeAnchor||actor.cell;
+    for(const phase of ['DAWN','DAY','DUSK','NIGHT']){
+      const action=phase==='NIGHT'?'REST':phase==='DUSK'?'TRADE':phase==='DAWN'?'WORK':constructionProjects.some(row=>row.status==='READY_FOR_EXISTING_SERVER_TRANSACTION')?'VILLAGE_BUILD':'WORK';
+      if(!allowed.has(action))continue;
+      const targets=action==='VILLAGE_BUILD'?facilityNodes.filter(row=>constructionProjects.some(project=>project.status==='READY_FOR_EXISTING_SERVER_TRANSACTION'&&row.parentId.startsWith(project.buildingId+':ROOM:'))):
+        action==='REST'?facilityNodes.filter(row=>row.parentId.startsWith(home?.id+':ROOM:')&&row.role==='REST'):
+        action==='TRADE'?facilitiesFor(['TRADE','WAREHOUSE']):facilitiesFor(['WORK']);
+      const target=targets.find(row=>previous&&route(previous,row.accessAnchor,true));
+      if(!target){settlementGaps.push('RESIDENT_ACTIVITY_DESTINATION_MISSING:'+actor.actorId+':'+action);continue;}
+      const cells=route(previous,target.accessAnchor,true);
+      schedule.push(Object.freeze({phase,action,facilityId:target.id,buildingId:target.parentId.split(':ROOM:')[0],
+        target:Object.freeze({id:target.id,...worldPosition(target.accessAnchor.x,target.accessAnchor.z,terrain[at(target.accessAnchor.x,target.accessAnchor.z)].elevation*8)}),
+        roadCells:Object.freeze(cells),actionExecuted:false,engineValidationRequired:true}));
+      previous=target.accessAnchor;
+    }
+    if(!home)settlementGaps.push('RESIDENT_HOME_MISSING:'+actor.actorId);
+    residentPlans.push(Object.freeze({actorId:actor.actorId,parentId:home?.id||settlementId,homeBuildingId:home?.id||null,
+      schedule:Object.freeze(schedule),noTeleport:true,runtimeVerified:false}));
+  }
+  for(const role of ['HOME','WORKSHOP','MARKET'])if(!buildingNodes.some(row=>row.role===role))settlementGaps.push('SETTLEMENT_ROLE_MISSING:'+role);
+  const nearby=hub?terrain.filter(tile=>Math.hypot(tile.x-hub.x,tile.z-hub.z)<=6):[];
+  const homeCount=buildingNodes.filter(row=>row.role==='HOME'&&row.lifecycle!=='ABANDONED').length;
+  const housingCapacity=settlementState?.engineValidated===true&&Number.isSafeInteger(settlementState.houseCapacity)&&settlementState.houseCapacity>0?homeCount*settlementState.houseCapacity:null;
+  const population=settlementState?.engineValidated===true&&Number.isSafeInteger(settlementState.population)&&settlementState.population>=0?settlementState.population:null;
+  const growth=Object.freeze({population,housingCapacity,
+    nextAction:constructionProjects.some(row=>row.status==='MATERIALS_REQUIRED')?'SUPPLY_MISSING_MATERIALS':
+      buildingNodes.some(row=>row.lifecycle==='REPAIR_REQUIRED')?'REPAIR_EXISTING_BUILDING':
+      buildingNodes.some(row=>row.lifecycle==='ABANDONED')?'RESTORE_AUTHORED_RUIN':
+      population!==null&&housingCapacity!==null&&population>housingCapacity?'EXPAND_APPROVED_HOUSING':
+      constructionProjects.some(row=>row.status==='READY_FOR_EXISTING_SERVER_TRANSACTION')?'CONTINUE_CONSTRUCTION':'CHECK_CURRENT_NEEDS',
+    automaticallyCreatedBuildings:0,serverTransactionRequired:true});
+  // 생태 영향: 기존 서버가 검증한 실제 행동 사건만 중복 없이 반영한다.
+  const habitatPressure=new Map(),appliedEcologyEvents=new Set();
+  if(settlementState?.engineValidated===true){
+    for(const [id,value] of Object.entries(settlementState.habitatPressure||{})){
+      if(habitatNodes.some(row=>row.id===id)&&Number.isFinite(value)&&value>=0&&value<=1)habitatPressure.set(id,value);
+    }
+    for(const id of (Array.isArray(settlementState.appliedEcologyEventIds)?settlementState.appliedEcologyEventIds:[]).slice(-128))appliedEcologyEvents.add(String(id));
+    for(const event of (Array.isArray(settlementState.ecologyEvents)?settlementState.ecologyEvents:[]).slice(-64)){
+      if(!event?.id||event.engineValidated!==true||appliedEcologyEvents.has(String(event.id))||!habitatNodes.some(row=>row.id===event.habitatId)
+        ||!['LOGGING','HUNTING','FARMING','RESTORATION'].includes(event.type)||!Number.isFinite(event.intensity)||event.intensity<0||event.intensity>1)continue;
+      const pressure=habitatPressure.get(event.habitatId)||0;
+      habitatPressure.set(event.habitatId,clamp01(pressure+(event.type==='RESTORATION'?-1:1)*event.intensity));
+      appliedEcologyEvents.add(String(event.id));
+      if(appliedEcologyEvents.size>128)appliedEcologyEvents.delete(appliedEcologyEvents.values().next().value);
+    }
+  }
+  const settlement=Object.freeze({id:settlementId,parentId:hub?hierarchyBinding(hub.x,hub.z)?.regionId:null,level:'SETTLEMENT',
+    order:Object.freeze(['REGION','SETTLEMENT','DISTRICT','BUILDING','ROOM','FACILITY','RESIDENT_ACTIVITY']),
+    site:Object.freeze({hub,waterAccessCells:nearby.filter(tile=>tile.hydroVisual.freshWater).length,foodSuitability:nearby.reduce((sum,tile)=>sum+tile.ecology.carryingCapacity,0)/Math.max(1,nearby.length),roadConnected:!!hub&&roadSet.has(at(hub.x,hub.z))}),
+    districts:Object.freeze(urbanDistricts.map(row=>Object.freeze({id:settlementId+':DISTRICT:'+row.districtId,parentId:settlementId,level:'DISTRICT',landUse:row.landUse}))),
+    buildings:Object.freeze(buildingNodes),facilities:Object.freeze(facilityNodes),residents:Object.freeze(residentPlans),constructionProjects:Object.freeze(constructionProjects),growth,
+    supplyConnections:Object.freeze(buildingNodes.filter(row=>row.role==='WORKSHOP').flatMap(workshop=>buildingNodes.filter(row=>row.role==='MARKET').map(market=>Object.freeze({from:workshop.id,to:market.id,via:'EXISTING_WAREHOUSE_FACILITY',kind:'PRODUCTION_STORAGE_TRADE',inventoryTransferExecuted:false})))),
+    abandonedSiteResponse:Object.freeze({succession:'EXISTING_HABITAT_RECOVERY',wildlife:'EXISTING_BIOME_SPAWN_PLAN',restoration:'CANONICAL_BUILDING_TRANSACTION',unapprovedNewSpawns:false}),
+    ecologyEffects:Object.freeze({habitatPressure:Object.freeze(Object.fromEntries(habitatPressure)),appliedEventIds:Object.freeze([...appliedEcologyEvents]),
+      source:'ENGINE_VALIDATED_LOGGING_HUNTING_FARMING_RESTORATION',existingSaveOwnerMustPersistSnapshot:true,gameStateWritten:false}),
+    gaps:Object.freeze([...new Set(settlementGaps)]),nativeRuntimeVerified:false,sourceMutationPerformed:false});
+  const hierarchy=Object.freeze({version:1,root:Object.freeze({id:worldId,level:'WORLD',seed:String(seed),climate:String(climate).toUpperCase()}),
+    order:Object.freeze(['WORLD','REGION','BIOME','HABITAT','ROUTE','PATCH','ACTOR']),
+    regions:Object.freeze([...regions.values()].map(row=>Object.freeze({...row,cells:Object.freeze(row.cells)}))),
+    biomes:Object.freeze(biomeNodes),habitats:Object.freeze(habitatNodes),
+    cellMembership:Object.freeze(membership.map(row=>Object.freeze(row))),
+    routes:Object.freeze(routes.map(row=>Object.freeze({id:row.id,parentId:worldId,level:'ROUTE',habitatIds:Object.freeze([...new Set(row.cells.map(cell=>hierarchyBinding(cell.x,cell.z)?.habitatId).filter(Boolean))]),crossHabitatLinks:true}))),
+    patches:Object.freeze(vegetation.map(row=>Object.freeze({id:row.stableObjectId,parentId:hierarchyBinding(row.x,row.z)?.habitatId,level:'PATCH',kind:row.kind,sourceBinding:row.sourceBinding}))),
+    actors:Object.freeze(lifeAndEncounterSites.map(row=>Object.freeze({id:row.actorId,parentId:row.cell?hierarchyBinding(row.cell.x,row.cell.z)?.habitatId:null,level:'ACTOR',placementStatus:row.status,spawned:false}))),
+    inheritance:Object.freeze(['CLIMATE','BIOME_IDENTITY','HABITAT','MATERIAL','SOURCE_SEED']),
+    crossLayerRule:'Routes connect habitats; patches and actors belong to their actual habitat rather than arbitrary route ancestry.',
+    nativeRuntimeVerified:false,gameplayAuthority:false});
+  // 메인: 명시적 바이옴 게임 규칙으로 스폰·능력치·드랍을 함께 구성한다.
+  // 현재 게임의 종/아이템 정의를 사용하고 결과는 동일 게임의 기존 서버 소유자가 적용한다.
+  const gameplayRows=[],gameplayIssues=[],rules=ecologyGameplayRules;
+  if(rules?.enabled===true){
+    const validRange=value=>Array.isArray(value)&&value.length===2&&value.every(n=>Number.isFinite(n)&&n>=0)&&value[1]>=value[0];
+    const validRules=typeof rules.revision==='string'&&rules.revision.length>0&&rules.ownerAuthorized===true
+      &&Number.isSafeInteger(rules.maxAlive)&&rules.maxAlive>=0&&Number.isFinite(rules.growthPerCell)&&rules.growthPerCell>=0
+      &&validRange(rules.statMultiplierRange)&&validRange(rules.dropMultiplierRange)&&Array.isArray(rules.itemIds)
+      &&rules.itemIds.every(id=>typeof id==='string'&&id.length>0&&id.length<=80);
+    if(!validRules)gameplayIssues.push('BIOME_GAMEPLAY_RULES_INVALID');
+    else{
+      const itemIds=new Set(rules.itemIds),definitions=new Map(ecologyActors.map(actor=>[String(actor.id),actor]));
+      let remaining=rules.maxAlive;
+      for(const site of lifeAndEncounterSites){
+        if(site.kind==='NPC'||site.status!=='DESIGN_MAPPED_NATIVE_BINDING_REQUIRED')continue;
+        const actor=definitions.get(site.actorId),base=actor?.gameplay,eco=habitatBalance.find(row=>row.habitat===site.habitat)?.ecosystem;
+        const validBase=base&&Number.isFinite(base.health)&&base.health>0&&Number.isFinite(base.damage)&&base.damage>=0
+          &&Number.isSafeInteger(base.spawnCount)&&base.spawnCount>=0&&Number.isFinite(base.respawnSeconds)&&base.respawnSeconds>0
+          &&Array.isArray(base.drops)&&base.drops.every(drop=>itemIds.has(drop.itemId)&&Number.isFinite(drop.chance)&&drop.chance>=0&&drop.chance<=1&&Number.isSafeInteger(drop.quantity)&&drop.quantity>0);
+        if(!validBase||!eco){gameplayIssues.push('BIOME_SPECIES_GAMEPLAY_INVALID:'+site.actorId);continue;}
+        const distance=entry&&site.cell?Math.hypot(site.cell.x-entry.x,site.cell.z-entry.z):0;
+        const habitatId=site.cell?hierarchyBinding(site.cell.x,site.cell.z)?.habitatId:null;
+        const settlementPressure=habitatPressure.get(habitatId)||0;
+        const pressure=clamp01(1-eco.energy.primaryProduction+eco.matterState.predators+settlementPressure);
+        const multiplier=Math.max(rules.statMultiplierRange[0],Math.min(rules.statMultiplierRange[1],1+distance*rules.growthPerCell+pressure*.25));
+        const abundance=clamp01((eco.energy.primaryProduction+eco.matterState.producers)*(1-settlementPressure));
+        const dropMultiplier=Math.max(rules.dropMultiplierRange[0],Math.min(rules.dropMultiplierRange[1],.5+abundance));
+        const requested=Math.max(0,Math.round(base.spawnCount*(.5+abundance)));
+        const health=Math.max(1,Math.round(base.health*multiplier)),damage=Math.max(0,Math.round(base.damage*multiplier));
+        const respawnSeconds=base.respawnSeconds/(.75+abundance*.5);
+        if(!Number.isSafeInteger(health)||!Number.isSafeInteger(damage)||!Number.isFinite(respawnSeconds)){
+          gameplayIssues.push('BIOME_GAMEPLAY_NUMERIC_OVERFLOW:'+site.actorId);continue;
+        }
+        const count=Math.min(remaining,requested);remaining-=count;
+        gameplayRows.push(Object.freeze({actorId:site.actorId,species:site.species,tier:site.tier,
+          habitatId:site.cell?hierarchyBinding(site.cell.x,site.cell.z)?.habitatId:null,
+          spawn:Object.freeze({anchor:site.position,maxAlive:count,respawnSeconds,
+            habitatFitRequired:true,existingNavigationAndClearanceRequired:true,safePlayerSpawnExclusionRequired:true}),
+          stats:Object.freeze({health,damage,multiplier}),
+          drops:Object.freeze(base.drops.map(drop=>Object.freeze({itemId:drop.itemId,chance:clamp01(drop.chance*dropMultiplier),quantity:drop.quantity}))),
+          causes:Object.freeze({distanceFromEntry:distance,ecologicalPressure:pressure,foodAbundance:abundance}),
+          sourceRuleRevision:rules.revision,appliedToGame:false}));
+      }
+    }
+  }
+  const biomeGameplay=Object.freeze({enabled:rules?.enabled===true,ruleRevision:rules?.revision||null,
+    status:rules?.enabled!==true?'NOT_REQUESTED':gameplayIssues.length?'REPAIR_REQUIRED':'GENERATED_SERVER_APPLICATION_REQUIRED',
+    entries:Object.freeze(gameplayIssues.length?[]:gameplayRows),issues:Object.freeze(gameplayIssues),
+    configurationOwner:'EXISTING_GAME_BIOME_SYSTEM',applicationOwner:'EXISTING_SERVER_SPAWN_COMBAT_AND_REWARD_HANDLERS',
+    dropPolicy:'INDEPENDENT_ITEM_PROBABILITIES',plannedMaxAlive:gameplayIssues.length?0:gameplayRows.reduce((sum,row)=>sum+row.spawn.maxAlive,0),
+    noDirectSaveWrite:true,serverApplicationVerified:false,runtimeVerified:false});
   const result={
     version:1,status:issues.length?'LAYOUT_REVIEW_REQUIRED':'STATIC_LAYOUT_PROPOSED',issues:Object.freeze(issues),
     seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED',
-    size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
+    size:{width:w,height:h,cellSize},hierarchy,settlement,biomeGameplay,terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
     routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
     livingBiomePopulation:Object.freeze({algorithm:'DETERMINISTIC_HABITAT_FIT_AND_AUTHORED_UTILITY_AI_ADVISORY',
       inputActorCount:ecologyActors.length,plannedActorCount:lifeAndEncounterSites.length,issues:Object.freeze(rosterIssues),

@@ -3,12 +3,158 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
 import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_PROFILES,buildSpatialBlueprintContract,validateSpatialBlueprint,buildInterfaceBlueprintContract,validateInterfaceBlueprint,productionBlueprintContractsForFiles} from '../tools/company-roblox-production-plan.mjs';
 import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/company-build-up-directive.mjs';
 
 const central=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const policy=central.robloxStudioProductionFlowContract;
+
+test('biome hierarchy partitions actual cells and connects routes patches and actors to valid parents',()=>{
+  const input={approvedDesign:true,dimension:'3D',seed:'layer-world',width:24,height:24,cellSize:4,biome:'FOREST',climate:'TEMPERATE'};
+  const world=createVibeProceduralWorldLayout(input),h=world.hierarchy;
+  assert.ok(h);assert.equal(h.cellMembership.length,world.terrain.length);
+  assert.deepEqual(h,createVibeProceduralWorldLayout(input).hierarchy);
+  const ids=new Set([h.root.id,...h.regions.map(row=>row.id),...h.biomes.map(row=>row.id),...h.habitats.map(row=>row.id)]);
+  for(const row of [...h.regions,...h.biomes,...h.habitats,...h.patches])assert.ok(ids.has(row.parentId));
+  for(const row of h.cellMembership){assert.ok(ids.has(row.regionId));assert.ok(ids.has(row.biomeId));assert.ok(ids.has(row.habitatId));}
+  assert.equal(h.habitats.reduce((count,row)=>count+row.cells.length,0),world.terrain.length);
+  for(const route of h.routes)assert.ok(route.habitatIds.every(id=>ids.has(id)));
+  for(const habitat of h.habitats){
+    const cells=new Set(habitat.cells.map(row=>row.z*24+row.x)),visited=new Set(),queue=[habitat.cells[0]];
+    for(let i=0;i<queue.length;i++){
+      const cell=queue[i],id=cell.z*24+cell.x;if(visited.has(id))continue;visited.add(id);
+      for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){const x=cell.x+dx,z=cell.z+dz;if(x>=0&&x<24&&z>=0&&z<24&&cells.has(z*24+x)&&!visited.has(z*24+x))queue.push({x,z});}
+    }
+    assert.equal(visited.size,cells.size);
+  }
+  assert.equal(h.gameplayAuthority,false);assert.equal(h.nativeRuntimeVerified,false);
+});
+
+test('nature-inspired ecosystems conserve matter and adapt seasonal cycles without spawning actors',()=>{
+  const spec={approvedDesign:true,dimension:'3D',seed:'nature-cycle',width:24,height:24,biome:'FOREST',climate:'TEMPERATE'};
+  const spring=createVibeProceduralWorldLayout({...spec,season:'SPRING'}),winter=createVibeProceduralWorldLayout({...spec,season:'WINTER'});
+  for(const world of [spring,winter])for(const habitat of world.ecologyBalance.habitats){
+    const eco=habitat.ecosystem;assert.ok(eco.processes.includes('DECOMPOSITION'));assert.ok(eco.processes.includes('MUTUALISM'));
+    assert.ok(Math.abs(eco.matterTotal-1)<1e-10);
+    for(const row of eco.trace){const values=Object.entries(row).filter(([key])=>key!=='step').map(([,value])=>value);assert.ok(values.every(value=>Number.isFinite(value)&&value>=0&&value<=1));assert.ok(Math.abs(values.reduce((a,b)=>a+b,0)-1)<1e-10);}
+    assert.equal(eco.actualSpawnCount,0);assert.equal(eco.gameplayAuthority,false);assert.equal(eco.scientificSimulation,false);
+  }
+  const common=spring.ecologyBalance.habitats.find(row=>winter.ecologyBalance.habitats.some(other=>other.habitat===row.habitat));
+  const cold=winter.ecologyBalance.habitats.find(row=>row.habitat===common.habitat);
+  assert.ok(common.ecosystem.energy.primaryProduction>cold.ecosystem.energy.primaryProduction);
+  assert.ok(common.ecosystem.seasonalCues.includes('POLLINATION'));
+  assert.ok(cold.ecosystem.seasonalCues.includes('DORMANCY'));
+});
+
+test('biome composes real spawn stat and drop configuration within authored world budgets',()=>{
+  const spec={approvedDesign:true,dimension:'3D',seed:'biome-gameplay',width:24,height:24,biome:'FOREST',climate:'TEMPERATE',
+    ecologyActors:[{id:'wolf',kind:'MONSTER',species:'wolf',tier:'NORMAL',approved:true,gameplay:{health:100,damage:12,spawnCount:6,respawnSeconds:60,drops:[{itemId:'hide',chance:.4,quantity:1}]}}],
+    ecologyGameplayRules:{enabled:true,ownerAuthorized:true,revision:'owner-biome-20261012',maxAlive:4,growthPerCell:.04,statMultiplierRange:[1,3],dropMultiplierRange:[.5,1.5],itemIds:['hide']}};
+  const world=createVibeProceduralWorldLayout(spec),plan=world.biomeGameplay;
+  assert.equal(plan.status,'GENERATED_SERVER_APPLICATION_REQUIRED');assert.equal(plan.entries.length,1);
+  const row=plan.entries[0];assert.ok(row.stats.health>100);assert.ok(row.stats.damage>=12);
+  assert.ok(row.spawn.maxAlive<=4);assert.ok(row.spawn.respawnSeconds>0);assert.ok(row.habitatId);
+  assert.equal(row.drops[0].itemId,'hide');assert.ok(row.drops[0].chance>=0&&row.drops[0].chance<=1);
+  assert.deepEqual(plan,createVibeProceduralWorldLayout(spec).biomeGameplay);
+  assert.equal(plan.serverApplicationVerified,false);assert.equal(row.appliedToGame,false);
+  assert.equal(createVibeProceduralWorldLayout({...spec,ecologyGameplayRules:{...spec.ecologyGameplayRules,ownerAuthorized:false}}).biomeGameplay.status,'REPAIR_REQUIRED');
+  const invalid=createVibeProceduralWorldLayout({...spec,ecologyActors:[{...spec.ecologyActors[0],gameplay:{...spec.ecologyActors[0].gameplay,health:NaN}}]}).biomeGameplay;
+  assert.equal(invalid.status,'REPAIR_REQUIRED');assert.deepEqual(invalid.entries,[]);
+});
+
+test('settlements bind real buildings rooms facilities road schedules and guarded construction',()=>{
+  const spec={approvedDesign:true,dimension:'3D',seed:'village-life',width:24,height:24,density:.8,biome:'FOREST',climate:'COLD_WET',
+    ecologyActors:Array.from({length:4},(_,i)=>({id:'resident-'+i,kind:'NPC',approved:true,allowedActions:['WORK','TRADE','REST','VILLAGE_BUILD']}))};
+  const world=createVibeProceduralWorldLayout(spec),s=world.settlement;
+  assert.ok(s.buildings.length>0);assert.equal(s.buildings.length,world.buildings.length);
+  const districts=new Set(s.districts.map(row=>row.id)),rooms=new Set(s.buildings.flatMap(row=>row.rooms.map(room=>room.id)));
+  for(const building of s.buildings){assert.ok(districts.has(building.parentId));assert.equal(building.climateAdaptation.floor,'RAISED_WITH_ACCESSIBLE_ENTRY');assert.ok(building.rooms.every(row=>row.parentId===building.id));}
+  assert.ok(s.facilities.every(row=>rooms.has(row.parentId)));
+  const roads=new Set(world.roadCells.map(row=>row.x+':'+row.z));
+  for(const resident of s.residents)for(const activity of resident.schedule){assert.ok(activity.roadCells.length>0);assert.ok(activity.roadCells.every(row=>roads.has(row.x+':'+row.z)));assert.ok(s.facilities.some(row=>row.id===activity.facilityId));}
+  const state={engineValidated:true,resources:{wood:2},population:12,houseCapacity:3,projects:[{id:'build-1',buildingId:s.buildings[0].id,stage:0,costs:{wood:4}}]};
+  const blocked=createVibeProceduralWorldLayout({...spec,settlementState:state}).settlement;
+  assert.equal(blocked.constructionProjects[0].status,'MATERIALS_REQUIRED');assert.equal(blocked.growth.nextAction,'SUPPLY_MISSING_MATERIALS');
+  const ready=createVibeProceduralWorldLayout({...spec,settlementState:{...state,resources:{wood:4}}}).settlement;
+  assert.equal(ready.constructionProjects[0].status,'READY_FOR_EXISTING_SERVER_TRANSACTION');assert.equal(ready.constructionProjects[0].nextStage,1);
+  assert.equal(ready.constructionProjects[0].resourceDeducted,false);assert.equal(state.resources.wood,2);
+  assert.equal(createVibeProceduralWorldLayout({...spec,settlementState:{...state,engineValidated:false}}).settlement.constructionProjects.length,0);
+  const habitatId=world.hierarchy.habitats[0].id;
+  const logging={id:'logging-1',habitatId,type:'LOGGING',intensity:.4,engineValidated:true};
+  const effects=createVibeProceduralWorldLayout({...spec,settlementState:{engineValidated:true,ecologyEvents:[logging,logging]}}).settlement.ecologyEffects;
+  assert.equal(effects.habitatPressure[habitatId],.4);assert.deepEqual(effects.appliedEventIds,['logging-1']);
+  const restored=createVibeProceduralWorldLayout({...spec,settlementState:{engineValidated:true,habitatPressure:effects.habitatPressure,appliedEcologyEventIds:effects.appliedEventIds,ecologyEvents:[logging,{...logging,id:'restore-1',type:'RESTORATION',intensity:.2}]}}).settlement.ecologyEffects;
+  assert.equal(restored.habitatPressure[habitatId],.2);
+  assert.equal(s.nativeRuntimeVerified,false);
+});
+
+test('native biome factory executes deterministic relief and keeps collision authority outside the asset',{skip:!process.env.VIBE2_LUAU_BINARY},t=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'biome-native-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+  const source=fs.readFileSync(new URL('../assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau',import.meta.url),'utf8');
+  const mock=`local vector={} local mt={}
+function vector.new(x,y,z) return setmetatable({X=x or 0,Y=y or 0,Z=z or 0},mt) end
+mt.__add=function(a,b)return vector.new(a.X+b.X,a.Y+b.Y,a.Z+b.Z)end
+mt.__sub=function(a,b)return vector.new(a.X-b.X,a.Y-b.Y,a.Z-b.Z)end
+mt.__mul=function(a,b)return vector.new(a.X*b,a.Y*b,a.Z*b)end
+local Vector3=vector
+local Color3={fromRGB=function(r,g,b)return {r,g,b} end}
+local Enum=setmetatable({},{__index=function(t,k)local row=setmetatable({},{__index=function(_,v)return v end})rawset(t,k,row)return row end})
+local Instance={new=function(kind)local obj={ClassName=kind,attrs={}}
+function obj:SetAttribute(k,v)self.attrs[k]=v end
+function obj:GetAttribute(k)return self.attrs[k]end return obj end}
+local module=(function()\n${source}\nend)()
+local root,a=module.CreateBiomeKit('FOREST',{procedural=true,seed='seed-a',gridSize=12})
+local _,b=module.CreateBiomeKit('FOREST',{procedural=true,seed='seed-a',gridSize=12})
+local _,c=module.CreateBiomeKit('FOREST',{procedural=true,seed='seed-b',gridSize=12})
+assert(#a.terrainCells==144)
+local varied=false local changed=false
+for i,tile in a.terrainCells do
+assert(tile.CanCollide==false and tile.Size.Y>=2)
+assert(tile:GetAttribute('SurfaceHeight')==b.terrainCells[i]:GetAttribute('SurfaceHeight'))
+if tile:GetAttribute('SurfaceHeight')>0 then varied=true end
+if tile:GetAttribute('SurfaceHeight')~=c.terrainCells[i]:GetAttribute('SurfaceHeight')then changed=true end
+if math.abs(tile.Position.X)<=8 then assert(tile:GetAttribute('SurfaceHeight')==0)end
+end
+assert(varied and changed)
+local _,legacy=module.CreateBiomeKit('FOREST',{})assert(#legacy.terrainCells==0)
+assert(not pcall(function()module.CreateBiomeKit('FOREST',{scale=0})end))
+print('NATIVE_BIOME_FACTORY_MOCK_PASS')`;
+  const file=path.join(dir,'biome.luau');fs.writeFileSync(file,mock);
+  const result=spawnSync(process.env.VIBE2_LUAU_BINARY,[file],{encoding:'utf8',timeout:10000});
+  assert.equal(result.status,0,result.stderr||result.stdout);assert.match(result.stdout,/NATIVE_BIOME_FACTORY_MOCK_PASS/);
+});
+
+test('simple genre menus and creature identity reach owned presentation workers without inventing repair gameplay',()=>{
+  const args={gameId:'demo',platform:'ROBLOX',policy,responsibleFiles:['roblox-games/demo/client/Main.client.luau','roblox-games/demo/server/Main.server.luau'],design:{genre:'SURVIVAL',identity:'existing survival'},focus:'USABILITY'};
+  const plan=buildRobloxProductionPlan(args);
+  assert.deepEqual(plan.simpleMenuDirection.candidates,['가방','제작','지도']);
+  assert.equal(plan.simpleMenuDirection.candidateAuthority,'EXISTING_HANDLER_MATCH_ONLY');
+  assert.equal(plan.creatureIdentityDirection.runtimeVerified,false);
+  assert.match(plan.creatureIdentityDirection.behavior,/cannot add behavior or alter hitboxes/);
+  const client=robloxProductionPromptLines(plan,{responsibleFiles:['client/Main.client.luau']}).join('\n');
+  assert.match(client,/SIMPLE_MENU=/);assert.match(client,/CREATURE_IDENTITY=/);
+  const server=robloxProductionPromptLines(plan,{responsibleFiles:['server/Main.server.luau']}).join('\n');
+  assert.doesNotMatch(server,/SIMPLE_MENU=|CREATURE_IDENTITY=/);
+  const repair=buildRobloxProductionPlan({...args,focus:'STABILITY'});
+  assert.equal(repair.simpleMenuDirection,null);assert.equal(repair.creatureIdentityDirection,null);
+  const unknown=buildRobloxProductionPlan({...args,design:{genre:'UNLISTED',identity:'approved game'}});
+  assert.deepEqual(unknown.simpleMenuDirection.candidates,[]);
+  const puzzle=buildRobloxProductionPlan({...args,design:{genre:'PUZZLE',identity:'approved puzzle'}});
+  assert.deepEqual(puzzle.simpleMenuDirection.candidates,['되돌리기','재시작','목표']);
+  assert.equal(puzzle.aiParticipantDirection,null);
+  const companions=buildRobloxProductionPlan({...args,focus:'CORE',design:{genre:'SURVIVAL',coreLoop:['동료와 탐험'],identity:'approved survival'}});
+  const actorPrompt=robloxProductionPromptLines(companions,{responsibleFiles:['server/Main.server.luau']}).join('\n');
+  assert.match(actorPrompt,/AI_PARTICIPANT=/);assert.match(actorPrompt,/fhfgjjgdd75/);
+  assert.match(actorPrompt,/never invent Roblox UserIds/);
+  assert.match(actorPrompt,/나무 좀 모을게/);
+  assert.match(actorPrompt,/same-event dedupe/);
+  assert.match(actorPrompt,/Missing sibling implementation remains an explicit gap/);
+});
 
 function spatialFixture(dimension='2D'){
   const source='const world = {scale: 1};';

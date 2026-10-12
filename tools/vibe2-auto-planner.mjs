@@ -3221,7 +3221,7 @@ function hasCurrentAutonomousContentExpansionDirective(directive={},productionPo
   const plan=directive?.productionPlan||directive?.robloxProductionPlan;
   return Boolean(
     clean(directive?.directiveId)
-    &&(!productionRequired||(Number(plan?.version)>=2&&plan?.platform===target&&plan?.gameId===directive?.gameId))
+    &&(!productionRequired||(Number(plan?.version)>=5&&plan?.platform===target&&plan?.gameId===directive?.gameId))
     &&Number(expansion?.version||0)>=2
     &&clean(expansion?.executionBoundary).toUpperCase()==='EXISTING_BUILD_UP_ONLY'
     &&expansion?.autonomousDecisionOwner==='VIBE'
