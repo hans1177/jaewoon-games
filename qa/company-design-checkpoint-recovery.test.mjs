@@ -103,3 +103,38 @@ test('workflow reuses verified checkpoints before local authoring and never requ
   assert.match(baseline,/deterministic-design-pre-gate-pass-required/);
   assert.match(baseline,/aiReviewIsGateAuthority:false/);
 });
+
+test('a new owner revision cannot recover an old deterministic PASS checkpoint with the same seed ID',()=>{
+  const root=fixture();
+  try{
+    const seedPath=path.join(root,'game-seed-state.json');
+    const state=JSON.parse(fs.readFileSync(seedPath,'utf8'));
+    state.seeds[0].ownerResetRevision='OWNER-FRESH-V2';
+    state.seeds[0].designTopicMode='VIBE_FREE_TOPIC';
+    fs.writeFileSync(seedPath,JSON.stringify(state,null,2)+'\n');
+    const run=()=>materializeDeterministicCheckpointCandidate({gameId:'g',date:'2026-09-19',root});
+    assert.throws(run,/DESIGN_CHECKPOINT_RECOVERY_OWNER_EVENT_STALE/);
+    assert.equal(fs.existsSync(path.join(root,'design/g/2026-09-19/design-revised.json')),false);
+    const checkpointPath=path.join(root,'design/g/2026-09-19/design-checkpoint.json');
+    const checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));
+    checkpoint.ownerDesignEventId='OWNER-FRESH-V2';
+    fs.writeFileSync(checkpointPath,JSON.stringify(checkpoint,null,2)+'\n');
+    assert.throws(run,/DESIGN_CHECKPOINT_RECOVERY_TOPIC_MODE_STALE/);
+    checkpoint.designTopicMode='VIBE_FREE_TOPIC';
+    fs.writeFileSync(checkpointPath,JSON.stringify(checkpoint,null,2)+'\n');
+    const verified=run();
+    assert.equal(verified.totalScore,80);
+    const revised=JSON.parse(fs.readFileSync(path.join(root,'design/g/2026-09-19/design-revised.json'),'utf8'));
+    assert.equal(revised.ownerDesignEventId,'OWNER-FRESH-V2');
+    assert.equal(revised.designTopicMode,'VIBE_FREE_TOPIC');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('native designer stamps current owner event and topic mode on every checkpoint path',()=>{
+  const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+  assert.match(design,/const activeOwnerDesignEventId=clean\(designEvolutionBrief/);
+  assert.match(design,/const activeDesignTopicMode=clean\(seed\.designTopicMode/);
+  assert.match(design,/ownerDesignEventId:activeOwnerDesignEventId\|\|null/);
+  assert.match(design,/designTopicMode:activeDesignTopicMode\|\|null/);
+  assert.match(design,/designCheckpoint\.ownerDesignEventId=activeOwnerDesignEventId\|\|null/);
+});
