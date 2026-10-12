@@ -680,9 +680,10 @@ function validateProposal(target,p){
 export function computeVibeSeedProposal(target){
   const category=clean(target.category);
   // 오너의 게임 정체성과 기존 플레이 루프를 우선 읽고, 장르 이름만으로 MAIN을 덮어쓰지 않는다.
-  const requestedName=clean(target.gameName||target.ownerGameName);
-  const ownerBrief=clean(target.ownerBrief||target.brief);
-  const requestContext=[requestedName,ownerBrief,clean(target.gameDescription),...(Array.isArray(target.coreLoop)?target.coreLoop.map(clean):[])].join(' ');
+  const freeTopicMode=target.designTopicMode==='VIBE_FREE_TOPIC';
+  const requestedName=freeTopicMode?'':clean(target.gameName||target.ownerGameName);
+  const ownerBrief=freeTopicMode?'':clean(target.ownerBrief||target.brief);
+  const requestContext=freeTopicMode?'':[requestedName,ownerBrief,clean(target.gameDescription),...(Array.isArray(target.coreLoop)?target.coreLoop.map(clean):[])].join(' ');
   const context=(category+' '+requestContext).toLowerCase();
   const obbyProfile={
     genre:'오비',
@@ -734,7 +735,13 @@ export function computeVibeSeedProposal(target){
   // MAIN의 명시된 주제를 먼저 잡고, 세계관 소재 단어가 다른 게임 시스템을 선택하지 않게 한다.
   const topicMatch=topicalProfiles.find(([pattern])=>pattern.test(requestedName.toLowerCase()))
     ||topicalProfiles.find(([pattern])=>pattern.test(requestContext.toLowerCase()));
-  const profile=(explicitObby?obbyProfile:null)||schoolProfile||topicMatch?.[1]||profiles[category]||
+  // 오너가 주제를 완전히 재창작하도록 요청한 경우, 기존 게임명·소개·장르의 프로필 매칭을 하지 않는다.
+  // 후보 시스템 선택도 외부 대필 없이 기존 Vibe의 결정론적 선택으로 수행한다.
+  const freeProfiles=Object.values(profiles);
+  const freeFingerprint=[...`${target.requestId}|${target.topicRevision||''}|${target.variant||0}`]
+    .reduce((hash,ch)=>Math.imul(hash^ch.codePointAt(0),16777619)>>>0,2166136261);
+  const profile=freeTopicMode?freeProfiles[freeFingerprint%freeProfiles.length]:
+    (explicitObby?obbyProfile:null)||schoolProfile||topicMatch?.[1]||profiles[category]||
     topicalProfiles.find(([pattern])=>pattern.test(context))?.[1]||
     {genre:'모험',a:'경로 탐색과 목표 선택',b:'환경과 상대의 상태 대응',choiceA:'목표를 향할 경로와 상호작용 순서를 결정',choiceB:'경로 결과로 바뀐 세계와 상대의 상태에 대응',playerRole:'플레이어'};
   const materialNames={
@@ -749,7 +756,7 @@ export function computeVibeSeedProposal(target){
   };
   // 명시된 소재는 최우선이며, 부족한 창작 소재만 게임별 인과 맥락으로 보충한다.
   // 오픈소스·사내 모듈은 원리 참고에 한정하고 외부 모델 호출은 없다.
-  const explicitIds=uniq((target.materials||[]).flatMap(row=>row.causalDNA||[]))
+  const explicitIds=uniq((freeTopicMode?[]:(target.materials||[])).flatMap(row=>row.causalDNA||[]))
     .filter(id=>CAUSAL_DNA_LIBRARY.some(row=>row.id===id));
   const materialHints=[
     [/로마|roman|신전|의례|ritual/,'RITUAL_RECIPROCITY'],

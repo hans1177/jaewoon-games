@@ -32,6 +32,8 @@ export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE)
     const brief=request.designRequest;
     const game=clean(request.gameId);
     const baselineSource=clean(brief.baselineSource);
+    const freeTopicMode=clean(brief.topicMode)==='VIBE_FREE_TOPIC';
+    if(freeTopicMode&&baselineSource)throw new Error('OWNER_FREE_TOPIC_BASELINE_FORBIDDEN: '+game);
     if(baselineSource&&(!baselineSource.startsWith('design/'+game+'/')||!/^design\/[a-z0-9-]+\/\d{4}-\d{2}-\d{2}\/design-revised\.json$/.test(baselineSource)))throw new Error('OWNER_DESIGN_BASELINE_PATH_INVALID: '+game);
     const original=baselineSource?JSON.parse(fs.readFileSync(path.resolve(path.dirname(file),baselineSource),'utf8')):null;
     if(original?.gameId&&clean(original.gameId)!==game)throw new Error('OWNER_DESIGN_BASELINE_GAME_MISMATCH: '+game);
@@ -43,12 +45,13 @@ export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE)
       version:3,seedId:'OWNER-DESIGN-'+game.toUpperCase(),
       gameId:game,gameName,
       designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY',
+      designTopicMode:freeTopicMode?'VIBE_FREE_TOPIC':'ORIGINAL_CONTEXT',
       OWNER_LATEST_DESIGN_REQUEST:clean(brief.instruction),
       DESIGN_BASELINE_SOURCE:baselineSource||null,
       GAME_CATEGORY:clean(original?.gameCategory||'CASUAL'),
       INITIAL_TARGET_PLATFORM:platform,
       INITIAL_PLAY_MODE:clean(content.multiplayerMode)||'PROJECT_DEFINED',
-      MULTIPLAYER_DESIGN_MODE:clean(content.robloxBuildProfile?.playMode||content.multiplayerMode).toUpperCase(),
+      MULTIPLAYER_DESIGN_MODE:clean(brief.multiplayerMode||content.robloxBuildProfile?.playMode||content.multiplayerMode).toUpperCase(),
       CORE_FUN_TO_LEARN:[clean(content.coreFun)||clean(brief.instruction)],
       CORE_LOOP:Array.isArray(content.coreLoop)&&content.coreLoop.length?clone(content.coreLoop):['디자이너 AI가 사용자 요청에 맞는 핵심 루프를 설계한다.'],
       DISTINCT_IDENTITY:clean(content.identity)||clean(brief.instruction),
