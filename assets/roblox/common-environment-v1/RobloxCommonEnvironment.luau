@@ -246,6 +246,7 @@ function CommonEnvironment.CreateBiomeKit(biomeId, options)
   assert(profile,"UNKNOWN_COMMON_BIOME:"..biomeId)
   local origin=options.origin or Vector3.new()
   local scale=tonumber(options.scale) or 1
+  assert(scale==scale and scale>0 and scale<=100,"COMMON_BIOME_SCALE_INVALID")
 
   local root=Instance.new("Folder")
   root.Name=options.name or ("CommonBiome_"..biomeId)
@@ -253,6 +254,38 @@ function CommonEnvironment.CreateBiomeKit(biomeId, options)
 
   local terrain=makePart(root,"TerrainPlate",Vector3.new(72,2,72)*scale,origin+Vector3.new(0,-1,0),profile.ground,Enum.Material.Ground)
   tag(terrain,biomeId,"TERRAIN")
+  -- 메인: 승인된 표현 업그레이드에서 시드로 실제 입체 지형 부품을 생성한다.
+  -- 충돌·스폰·자원 소유권은 기존 게임에 남긴다. 지형 표면을 게임 충돌로 승인하려면 게임 소스가 처리한다.
+  local terrainCells={}
+  local sampleHeight=nil
+  if options.procedural==true then
+    local seed=0
+    for i=1,#tostring(options.seed or biomeId) do seed=(seed*31+string.byte(tostring(options.seed or biomeId),i))%65521 end
+    local grid=math.clamp(math.floor(tonumber(options.gridSize) or 12),6,24)
+    local cell=72/grid
+    local amplitude=math.clamp(tonumber(options.elevation) or 6,0,12)
+    sampleHeight=function(x,z)
+      -- 중앙 이동 동선과 기존 수면 영역은 평탄하게 유지한다.
+      if math.abs(x)<=8 or (x<-11 and z>4) then return 0 end
+      local edge=math.clamp((math.abs(x)-8)/8,0,1)
+      local n=math.noise(x/28+seed/127,z/28,seed/251)*0.7+math.noise(x/12,z/12+seed/131,seed/257)*0.3
+      return math.max(0,(n+0.5)*amplitude)*edge
+    end
+    terrain.Transparency=1
+    for z=1,grid do
+      for x=1,grid do
+        local px=-36+(x-0.5)*cell
+        local pz=-36+(z-0.5)*cell
+        local h=sampleHeight(px,pz)
+        local tile=makePart(root,"BiomeCell_"..x.."_"..z,Vector3.new(cell,2+h,cell)*scale,
+          origin+Vector3.new(px,(h-2)/2,pz)*scale,profile.ground,h>amplitude*0.72 and Enum.Material.Rock or Enum.Material.Ground)
+        tag(tile,biomeId,"TERRAIN")
+        tile:SetAttribute("SurfaceHeight",h*scale)
+        terrainCells[#terrainCells+1]=tile
+      end
+    end
+    root:SetAttribute("ProceduralSeed",tostring(options.seed or biomeId))
+  end
 
   local road=makePart(root,"Road",Vector3.new(12,0.5,70)*scale,origin+Vector3.new(0,0.15,0),profile.secondary,Enum.Material.Slate)
   tag(road,biomeId,"PATH_ROAD")
@@ -273,6 +306,15 @@ function CommonEnvironment.CreateBiomeKit(biomeId, options)
   for i=1,count do
     local recipe=profile.dress[((i-1)%#profile.dress)+1]
     dressing[i]=dressCluster(root,biomeId,recipe,origin,i)
+    if sampleHeight then
+      local offset=dressing[i].Position-origin
+      local sx=math.floor((offset.X+36)/(72/math.sqrt(#terrainCells)))
+      local sz=math.floor((offset.Z+36)/(72/math.sqrt(#terrainCells)))
+      local cell=72/math.sqrt(#terrainCells)
+      local h=sampleHeight(-36+(sx+0.5)*cell,-36+(sz+0.5)*cell)
+      dressing[i].Position=origin+Vector3.new(offset.X*scale,offset.Y*scale+h*scale,offset.Z*scale)
+      dressing[i].Size=dressing[i].Size*scale
+    end
   end
 
   root:SetAttribute("VisualDetailTier",tostring(options.detailTier or "HIGH"))
@@ -280,7 +322,7 @@ function CommonEnvironment.CreateBiomeKit(biomeId, options)
   root:SetAttribute("PreserveGameCollisionAuthority",true)
   root:SetAttribute("PreserveGameSpawnAuthority",true)
   root:SetAttribute("PreserveGameResourceAuthority",true)
-  return root,{terrain=terrain,road=road,cliff=cliff,water=water,landmark=landmark,dressing=dressing}
+  return root,{terrain=terrain,terrainCells=terrainCells,road=road,cliff=cliff,water=water,landmark=landmark,dressing=dressing}
 end
 
 function CommonEnvironment.GetBiomeProfile(biomeId)

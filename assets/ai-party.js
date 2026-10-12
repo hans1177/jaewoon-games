@@ -21,7 +21,7 @@ function stableSeed(value = '') {
   for (const ch of clean(value)) { hash ^= ch.charCodeAt(0); hash = Math.imul(hash, 16777619); }
   return (hash >>> 0).toString(36);
 }
-function defaultCompanionIdentity(role, index) {
+function defaultCompanionIdentity(role, index, worldSeed = '') {
   const archetype = {
     tank: { temperament:'steady', values:['protect-others','duty'], traits:{ courage:.55,caution:.15,protectiveness:.75,discipline:.6 } },
     melee: { temperament:'bold', values:['courage','mastery'], traits:{ courage:.65,aggression:.45,pride:.25,loyalty:.3 } },
@@ -30,8 +30,14 @@ function defaultCompanionIdentity(role, index) {
     support: { temperament:'social', values:['teamwork','adaptation'], traits:{ empathy:.45,sociability:.6,curiosity:.35,loyalty:.45 } },
     mage: { temperament:'curious', values:['knowledge','self-control'], traits:{ curiosity:.75,caution:.2,pride:.2,independence:.35 } }
   }[role] || { temperament:'balanced', values:['survival','cooperation'], traits:{} };
+  // 닉네임: 저장 ID는 유지하고 게임 시드에 따라 같은 이름을 재생성한다.
+  let nameSeed=parseInt(stableSeed(worldSeed+'|'+role+'|'+(index+1)),36)>>>0;
+  let displayName='';
+  for(let i=0;i<9;i++){nameSeed=(Math.imul(nameSeed,1664525)+1013904223)>>>0;displayName+=String.fromCharCode(97+nameSeed%26);}
+  displayName+=String(index+1)+String(nameSeed%10);
   return Object.freeze({
     id:'ai-' + (index + 1),
+    displayName,isAi:true,
     qualityProfile:'COMPANION',
     stableSeed:stableSeed(role + '|' + (index + 1)),
     temperament:archetype.temperament,
@@ -54,7 +60,7 @@ function roleFromText(prompt) {
     .map(([role]) => role);
 }
 
-export function createAIPartyConfig({ request = '', humanPlayers = 1, aiCount = null, roles = [], fillEmptySlots = true } = {}) {
+export function createAIPartyConfig({ request = '', humanPlayers = 1, aiCount = null, roles = [], fillEmptySlots = true, worldSeed = '' } = {}) {
   const text = clean(request);
   const humans = Math.max(1, Math.min(4, Math.floor(Number(humanPlayers) || 1)));
   const explicit = text.match(/(?:AI|에이아이)\s*(?:동료|캐릭터|명|명까지)?\s*(\d+)/i);
@@ -69,6 +75,7 @@ export function createAIPartyConfig({ request = '', humanPlayers = 1, aiCount = 
 
   return Object.freeze({
     version: 1,
+    worldSeed:clean(worldSeed),
     maxPlayers: 4,
     humanPlayers: humans,
     aiCount: bots,
@@ -98,7 +105,7 @@ export function createDefaultAIEntries(config = {}) {
       id: 'ai-' + (index + 1),
       role: normalizedRole,
       controlledBy: 'local-ai',
-      identity: defaultCompanionIdentity(normalizedRole, index),
+      identity: defaultCompanionIdentity(normalizedRole, index, config.worldSeed),
       personalityStableAcrossDecisions: true,
       relationshipDirectional: true,
       memoryRequiresSourceEvent: true,

@@ -3,12 +3,73 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
 import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_PROFILES,buildSpatialBlueprintContract,validateSpatialBlueprint,buildInterfaceBlueprintContract,validateInterfaceBlueprint,productionBlueprintContractsForFiles} from '../tools/company-roblox-production-plan.mjs';
 import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/company-build-up-directive.mjs';
 
 const central=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const policy=central.robloxStudioProductionFlowContract;
+
+test('biome hierarchy partitions actual cells and connects routes patches and actors to valid parents',()=>{
+  const input={approvedDesign:true,dimension:'3D',seed:'layer-world',width:24,height:24,cellSize:4,biome:'FOREST',climate:'TEMPERATE'};
+  const world=createVibeProceduralWorldLayout(input),h=world.hierarchy;
+  assert.ok(h);assert.equal(h.cellMembership.length,world.terrain.length);
+  assert.deepEqual(h,createVibeProceduralWorldLayout(input).hierarchy);
+  const ids=new Set([h.root.id,...h.regions.map(row=>row.id),...h.biomes.map(row=>row.id),...h.habitats.map(row=>row.id)]);
+  for(const row of [...h.regions,...h.biomes,...h.habitats,...h.patches])assert.ok(ids.has(row.parentId));
+  for(const row of h.cellMembership){assert.ok(ids.has(row.regionId));assert.ok(ids.has(row.biomeId));assert.ok(ids.has(row.habitatId));}
+  assert.equal(h.habitats.reduce((count,row)=>count+row.cells.length,0),world.terrain.length);
+  for(const route of h.routes)assert.ok(route.habitatIds.every(id=>ids.has(id)));
+  for(const habitat of h.habitats){
+    const cells=new Set(habitat.cells.map(row=>row.z*24+row.x)),visited=new Set(),queue=[habitat.cells[0]];
+    for(let i=0;i<queue.length;i++){
+      const cell=queue[i],id=cell.z*24+cell.x;if(visited.has(id))continue;visited.add(id);
+      for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){const x=cell.x+dx,z=cell.z+dz;if(x>=0&&x<24&&z>=0&&z<24&&cells.has(z*24+x)&&!visited.has(z*24+x))queue.push({x,z});}
+    }
+    assert.equal(visited.size,cells.size);
+  }
+  assert.equal(h.gameplayAuthority,false);assert.equal(h.nativeRuntimeVerified,false);
+});
+
+test('native biome factory executes deterministic relief and keeps collision authority outside the asset',{skip:!process.env.VIBE2_LUAU_BINARY},t=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'biome-native-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+  const source=fs.readFileSync(new URL('../assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau',import.meta.url),'utf8');
+  const mock=`local vector={} local mt={}
+function vector.new(x,y,z) return setmetatable({X=x or 0,Y=y or 0,Z=z or 0},mt) end
+mt.__add=function(a,b)return vector.new(a.X+b.X,a.Y+b.Y,a.Z+b.Z)end
+mt.__sub=function(a,b)return vector.new(a.X-b.X,a.Y-b.Y,a.Z-b.Z)end
+mt.__mul=function(a,b)return vector.new(a.X*b,a.Y*b,a.Z*b)end
+local Vector3=vector
+local Color3={fromRGB=function(r,g,b)return {r,g,b} end}
+local Enum=setmetatable({},{__index=function(t,k)local row=setmetatable({},{__index=function(_,v)return v end})rawset(t,k,row)return row end})
+local Instance={new=function(kind)local obj={ClassName=kind,attrs={}}
+function obj:SetAttribute(k,v)self.attrs[k]=v end
+function obj:GetAttribute(k)return self.attrs[k]end return obj end}
+local module=(function()\n${source}\nend)()
+local root,a=module.CreateBiomeKit('FOREST',{procedural=true,seed='seed-a',gridSize=12})
+local _,b=module.CreateBiomeKit('FOREST',{procedural=true,seed='seed-a',gridSize=12})
+local _,c=module.CreateBiomeKit('FOREST',{procedural=true,seed='seed-b',gridSize=12})
+assert(#a.terrainCells==144)
+local varied=false local changed=false
+for i,tile in a.terrainCells do
+assert(tile.CanCollide==false and tile.Size.Y>=2)
+assert(tile:GetAttribute('SurfaceHeight')==b.terrainCells[i]:GetAttribute('SurfaceHeight'))
+if tile:GetAttribute('SurfaceHeight')>0 then varied=true end
+if tile:GetAttribute('SurfaceHeight')~=c.terrainCells[i]:GetAttribute('SurfaceHeight')then changed=true end
+if math.abs(tile.Position.X)<=8 then assert(tile:GetAttribute('SurfaceHeight')==0)end
+end
+assert(varied and changed)
+local _,legacy=module.CreateBiomeKit('FOREST',{})assert(#legacy.terrainCells==0)
+assert(not pcall(function()module.CreateBiomeKit('FOREST',{scale=0})end))
+print('NATIVE_BIOME_FACTORY_MOCK_PASS')`;
+  const file=path.join(dir,'biome.luau');fs.writeFileSync(file,mock);
+  const result=spawnSync(process.env.VIBE2_LUAU_BINARY,[file],{encoding:'utf8',timeout:10000});
+  assert.equal(result.status,0,result.stderr||result.stdout);assert.match(result.stdout,/NATIVE_BIOME_FACTORY_MOCK_PASS/);
+});
 
 test('simple genre menus and creature identity reach owned presentation workers without inventing repair gameplay',()=>{
   const args={gameId:'demo',platform:'ROBLOX',policy,responsibleFiles:['roblox-games/demo/client/Main.client.luau','roblox-games/demo/server/Main.server.luau'],design:{genre:'SURVIVAL',identity:'existing survival'},focus:'USABILITY'};

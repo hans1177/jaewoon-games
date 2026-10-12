@@ -103,6 +103,12 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
     seed:worldProposal.seed||worldRequest.seed||null,dimension,coordinateSystem:worldProposal.coordinateSystem||null,
     regionBiome:worldProposal.regionalBiome||null,climate:worldProposal.climate||null,
     grid:worldProposal.size||null,drainage:worldProposal.drainage||null,riverType:worldProposal.riverType||null,
+    hierarchy:worldProposal.hierarchy?{
+      version:worldProposal.hierarchy.version,root:worldProposal.hierarchy.root,order:worldProposal.hierarchy.order,
+      regionCount:worldProposal.hierarchy.regions.length,biomeCount:worldProposal.hierarchy.biomes.length,habitatCount:worldProposal.hierarchy.habitats.length,
+      routeCount:worldProposal.hierarchy.routes.length,inheritance:worldProposal.hierarchy.inheritance,
+      rule:worldProposal.hierarchy.crossLayerRule,nativeRuntimeVerified:false
+    }:null,
     // 승인된 오토 바이옴 도안만 Vibe의 기존 월드 소스 담당 작업자에게 전달한다.
     waterBodies:(worldProposal.oceansAndLakes?.waterBodies||[]).map(row=>({id:row.id,kind:row.kind,salinityPpt:row.salinityPpt,cellCount:row.cellCount})),
     waterMode:worldProposal.oceansAndLakes?.selectedWaterMode||'AUTO',
@@ -125,6 +131,7 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
     // AI 의도·진화는 기존 게임의 승인/보스 등급/드랍/저장 권한을 통과하기 전까지 실행하지 않는다.
     lifeAndDungeonPlans:(worldProposal.livingBiomePopulation?.actorPlacements||[]).slice(0,3).map(row=>({
       actorId:row.actorId,kind:row.kind,tier:row.tier,approvedSite:row.status==='DESIGN_MAPPED_NATIVE_BINDING_REQUIRED',
+      hierarchyHabitatId:worldProposal.hierarchy?.actors.find(actor=>actor.id===row.actorId)?.parentId||null,
       cell:row.cell,habitat:row.habitat,earthBiome:row.earthBiome,homeSettlementId:row.homeSettlementId,
       authoredDungeonId:row.authoredDungeonId,raidTargetAuthorized:row.raidTargetAuthorized,
       behaviorCycle:(row.behaviorCycle||[]).map(step=>({phase:step.phase,action:step.proposedAction})),visualEvolution:row.evolution?.phenotypeStage||null,

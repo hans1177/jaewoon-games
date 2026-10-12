@@ -35,6 +35,11 @@ export class JaewoonCommonAI {
     // 유틸: 관계·대화 제안의 반복 발화를 막는 비저장, 비권한 타이머.
     this.lastSocialAt = -Infinity;
     this.lastSocialTopic = '';
+    // 로그·메인: 참가자 작업과 대사는 비권한·유한 런타임 상태만 보관한다.
+    this.activity = null;
+    this.activityOutcomes = new Map();
+    this.lastSpeechAt = -Infinity;
+    this.speechEvents = new Set();
     this.presentedBossScenes = new Set();
     this.order = JaewoonCommonAI.Order.AUTO;
     this.focusTargetId = '';
@@ -69,7 +74,58 @@ export class JaewoonCommonAI {
     const kind=String(context.entityKind||'').toLowerCase().replace(/[-_\s]/g,'');
     if (['enemy','monster','boss','elite','rareboss','rare','legendary','legendaryboss'].includes(kind))
       return this.decideEnemy(context);
-    return kind==='npc'?this.decideNpc(context):this.decideCompanion(context);
+    const now=Number.isFinite(context.now)?context.now:Date.now();
+    let decision=null;
+    // 메인: 서버가 승인한 기존 행동만 선택한다. 성공·재화 변경은 결과 수신 전까지 추측하지 않는다.
+    const result=context.activityResult;
+    if(this.activity&&result?.engineValidated===true&&String(result.activityId)===this.activity.id
+      &&['SUCCESS','FAILED','CANCELLED'].includes(result.status)){
+      this.activityOutcomes.set(this.activity.id,{status:result.status,until:result.status==='SUCCESS'?Infinity:now+5000});
+      if(this.activityOutcomes.size>32)this.activityOutcomes.delete(this.activityOutcomes.keys().next().value);
+      this.activity=null;
+    }
+    const safe=this.order===JaewoonCommonAI.Order.AUTO&&Number(context.hpRatio??1)>this.config.retreatHpRatio
+      &&Number(context.danger??0)<this.config.dangerThreshold&&!(context.enemies||[]).length;
+    if(context.aiParticipant===true&&safe&&context.movementAuthorized===true){
+      const allowed=new Set([JaewoonCommonAI.State.INTERACT,JaewoonCommonAI.State.SEARCH,JaewoonCommonAI.State.PATROL]);
+      const candidates=(Array.isArray(context.activities)?context.activities:[]).slice(0,64).filter(row=>row?.id
+        &&row.engineApproved===true&&row.eligible===true&&row.reachable===true&&allowed.has(row.state)
+        &&row.target?.id&&Number.isFinite(row.target.x)&&Number.isFinite(row.target.y)
+        &&(this.activityOutcomes.get(String(row.id))?.until??-Infinity)<=now);
+      let selected=candidates.find(row=>String(row.id)===this.activity?.id);
+      if(!selected){
+        const id=String(context.actorId||this.identity.id||'actor');
+        const score=row=>{
+          let seed=2166136261;for(const ch of id+'|'+row.id){seed^=ch.charCodeAt(0);seed=Math.imul(seed,16777619);}
+          return (Number.isFinite(row.priority)?row.priority:0)+(seed>>>0)%1000/1000
+            +(row.family==='EXPLORE'?this.personality.curiosity:row.family==='SUPPORT'?this.personality.protectiveness:0);
+        };
+        selected=candidates.sort((a,b)=>score(b)-score(a)||String(a.id).localeCompare(String(b.id)))[0];
+        this.activity=selected?{id:String(selected.id)}:null;
+      }
+      if(selected){
+        const arrived=selected.inRange===true;
+        decision=this.action(arrived?selected.state:JaewoonCommonAI.State.SEARCH,arrived?'participant_perform':'participant_travel',selected.target);
+        decision.activityId=String(selected.id);decision.actionId=String(selected.actionId||'');
+        decision.engineValidationRequired=true;
+      }
+    }
+    if(!decision)decision=kind==='npc'?this.decideNpc(context):this.decideCompanion(context);
+    // 대사: 행동과 분리된 짧은 의사표현. 목표 선택은 발화 쿨다운에 영향을 받지 않는다.
+    const urgent=['RETREAT','DODGE'].includes(decision.state);
+    if(context.aiParticipant===true&&context.speechEnabled===true&&context.playerVisible===true
+      &&context.speechSlotAvailable===true&&now-this.lastSpeechAt>=(urgent?2000:8000)){
+      const key=decision.state+'|'+(decision.activityId||decision.targetId||decision.reason);
+      if(!this.speechEvents.has(key)){
+        const lines={RETREAT:['위험해, 돌아가자.','잠깐 쉬어야겠어.'],DODGE:['조심해!','피해야겠어.'],ATTACK:['내가 도울게.','같이 잡자.'],HEAL:['회복 도와줄게.','잠깐, 치료할게.'],REVIVE:['내가 구할게.','조금만 기다려.'],SEARCH:['이쪽을 살펴볼게.','저쪽이 나을 듯.'],INTERACT:['이 일부터 할게.','이것부터 해볼게.'],PATROL:['주변을 둘러볼게.','여기는 조용하네.'],FOLLOW:['같이 가자.','따라갈게.']};
+        const choices=lines[decision.state]||['뭘 할지 살펴보자.'];
+        const variant=this.personality.curiosity>this.personality.caution?1:0;
+        decision.speech=Object.freeze({text:choices[variant%choices.length],actorId:String(context.actorId||this.identity.id||''),kind:['RETREAT','DODGE'].includes(decision.state)?'WARNING':'INTENT',expiresAt:now+3000,gameplayAuthority:false});
+        this.lastSpeechAt=now;this.speechEvents.add(key);
+        if(this.speechEvents.size>24)this.speechEvents.delete(this.speechEvents.values().next().value);
+      }
+    }
+    return decision;
   }
 
   decideCompanion(context = {}) {
@@ -730,18 +786,23 @@ export class JaewoonAISquad {
     this.lastDecisionAt = current;
     const members = Array.isArray(context.members) ? context.members : [];
     const results = [];
+    let speechSlots=Math.max(0,Math.min(3,Number.isFinite(context.availableSpeechSlots)?Math.floor(context.availableSpeechSlots):2));
     for (const member of this.members.values()) {
       const own = members.find(item => String(item?.id || '') === member.id) || {};
       const allies = members.filter(item => String(item?.id || '') !== member.id);
       const decisionContext = {
         ...context,
         ...own,
+        now:current,
+        speechSlotAvailable:(own.speechSlotAvailable??context.speechSlotAvailable)===true&&speechSlots>0,
         allies: context.allies || allies,
         shared: this.shared,
         enemyTarget: this.shared.focusTargetId,
         protectedTarget: this.shared.protectedTargetId,
       };
-      results.push(Object.freeze({ id: member.id, role: member.role, decision: member.ai.decide(decisionContext) }));
+      const decision=member.ai.decide(decisionContext);
+      if(decision.speech)speechSlots--;
+      results.push(Object.freeze({ id: member.id, role: member.role, decision }));
     }
     return results;
   }

@@ -28,7 +28,7 @@ import {
   createVibeIndividualActivityPlan,
   planVibeLivingActorDirector,
 } from '../assets/vibe-ai-role-director.js';
-import {JaewoonCommonAI} from '../assets/common-ai.js';
+import {JaewoonCommonAI,JaewoonAISquad} from '../assets/common-ai.js';
 import {createAIPartyConfig,createDefaultAIEntries} from '../assets/ai-party.js';
 
 const inventory=[
@@ -37,6 +37,41 @@ const inventory=[
   {id:'scope-tower',path:'combat.tower',label:'tower placement strategy'},
   {id:'scope-progress',path:'progression.quest',label:'quest reward and unlock'},
 ];
+
+test('runtime participants travel, perform validated actions, recover and speak without owning rewards',()=>{
+  const ai=new JaewoonCommonAI({identity:{id:'ai-1'},personality:{curiosity:.8}});
+  const task={id:'gather-1',family:'EXPLORE',state:'INTERACT',actionId:'gather',engineApproved:true,eligible:true,reachable:true,inRange:false,target:{id:'tree',x:2,y:3}};
+  const context={now:0,aiParticipant:true,movementAuthorized:true,playerVisible:true,speechEnabled:true,speechSlotAvailable:true,activities:[task]};
+  const travel=ai.decide(context);assert.equal(travel.state,'SEARCH');assert.equal(travel.activityId,'gather-1');
+  assert.equal(travel.speech.expiresAt,3000);assert.equal(travel.gameplayAuthority,false);
+  const perform=ai.decide({...context,now:1000,activities:[{...task,inRange:true}]});
+  assert.equal(perform.state,'INTERACT');assert.equal(perform.actionId,'gather');assert.equal(perform.speech,undefined);
+  // 실제 행동을 기존 엔진 소비자에서 수행하고 검증된 결과만 인공지능에 전달한다.
+  let wood=0;if(perform.engineValidationRequired&&perform.actionId==='gather')wood++;
+  ai.decide({...context,now:2000,activityResult:{activityId:task.id,status:'SUCCESS',engineValidated:true}});
+  assert.equal(ai.activity,null);assert.equal(wood,1);
+  assert.equal(ai.decide({...context,now:10000}).activityId,undefined);
+  const blocked={...task,id:'blocked',reachable:false};
+  assert.equal(ai.decide({...context,activities:[blocked]}).activityId,undefined);
+  assert.equal(ai.decide({...context,activities:[{...task,id:'unsafe',engineApproved:false}]}).activityId,undefined);
+  const recovery=new JaewoonCommonAI({identity:{id:'recover'}});
+  recovery.decide(context);
+  assert.equal(recovery.decide({...context,now:1000,activityResult:{activityId:task.id,status:'FAILED',engineValidated:true}}).activityId,undefined);
+  assert.equal(recovery.decide({...context,now:6000}).activityId,task.id);
+  assert.equal(recovery.decide({...context,now:9000,danger:1}).state,'DODGE');
+});
+
+test('seeded nicknames stay stable and squad speech respects actual available slots',()=>{
+  const config=createAIPartyConfig({aiCount:3,worldSeed:'same-world'}),entries=createDefaultAIEntries(config);
+  assert.deepEqual(entries,createDefaultAIEntries(config));
+  assert.equal(new Set(entries.map(row=>row.identity.displayName)).size,3);
+  assert.ok(entries.every(row=>/^[a-z]{9}\d+$/.test(row.identity.displayName)&&row.identity.isAi));
+  assert.notEqual(entries[0].identity.displayName,createDefaultAIEntries({...config,worldSeed:'other-world'})[0].identity.displayName);
+  const squad=new JaewoonAISquad({members:entries,decisionIntervalMs:100});
+  const decisions=squad.decide({aiParticipant:true,playerVisible:true,speechEnabled:true,speechSlotAvailable:true,availableSpeechSlots:1},1000);
+  assert.equal(decisions.filter(row=>row.decision.speech).length,1);
+  assert.ok(decisions.every(row=>row.decision.gameplayAuthority===false));
+});
 
 test('companion play participation and stable bot names stay scoped to approved actors',()=>{
   const actors={runtimeActorIntelligenceRequired:true,companionIntelligenceRequired:true,individualActivitySimulationRequired:true};

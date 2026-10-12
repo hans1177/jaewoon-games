@@ -1052,10 +1052,63 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     sightline={from:hub,to:landmark,fovDegrees,cameraForward,withinFov,visible:withinFov&&!seen&&!terrainObstructed,terrainObstructed,buildingObstructed:seen,exactCameraAndOcclusionRuntimeVerified:false};
     if(!sightline.visible)issues.push('LANDMARK_VISIBILITY_REQUIRES_CAMERA_REVIEW');
   }
+  // 계층 도안: 기후/지질 권역 아래 연결된 바이옴과 서식지를 실제 셀로 분리한다.
+  // 지형·길·식생·배치된 생물은 같은 서식지 ID를 공유하며 별도 월드를 생성하지 않는다.
+  const worldId=objectNamespace,regions=new Map(),biomeNodes=[],habitatNodes=[],membership=new Array(terrain.length);
+  for(const tile of terrain){
+    const regionId=worldId+':REGION:'+tile.surface.geologyId;
+    if(!regions.has(regionId))regions.set(regionId,{id:regionId,parentId:worldId,level:'REGION',climate:String(climate).toUpperCase(),cells:[]});
+    regions.get(regionId).cells.push({x:tile.x,z:tile.z});
+  }
+  const seenBiome=new Set();
+  for(let start=0;start<terrain.length;start++){
+    if(seenBiome.has(start))continue;
+    const first=terrain[start],regionId=worldId+':REGION:'+first.surface.geologyId;
+    const biomeId=regionId+':BIOME:'+start,queue=[start],cells=[];
+    seenBiome.add(start);
+    for(let q=0;q<queue.length;q++){
+      const index=queue[q],tile=terrain[index];cells.push({x:tile.x,z:tile.z});
+      membership[index]={regionId,biomeId};
+      for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const x=tile.x+dx,z=tile.z+dz,next=z*w+x;
+        if(x<0||z<0||x>=w||z>=h||seenBiome.has(next))continue;
+        const other=terrain[next];
+        if(other.surface.geologyId===first.surface.geologyId&&other.earthBiome.name===first.earthBiome.name){seenBiome.add(next);queue.push(next);}
+      }
+    }
+    biomeNodes.push(Object.freeze({id:biomeId,parentId:regionId,level:'BIOME',biome:first.earthBiome.name,climate:String(climate).toUpperCase(),cells:Object.freeze(cells)}));
+  }
+  const seenHabitat=new Set();
+  for(let start=0;start<terrain.length;start++){
+    if(seenHabitat.has(start))continue;
+    const first=terrain[start],biomeId=membership[start].biomeId,habitatId=biomeId+':HABITAT:'+start,queue=[start],cells=[];
+    seenHabitat.add(start);
+    for(let q=0;q<queue.length;q++){
+      const index=queue[q],tile=terrain[index];cells.push({x:tile.x,z:tile.z});membership[index].habitatId=habitatId;
+      for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const x=tile.x+dx,z=tile.z+dz,next=z*w+x;
+        if(x<0||z<0||x>=w||z>=h||seenHabitat.has(next))continue;
+        if(membership[next].biomeId===biomeId&&terrain[next].ecology.habitat===first.ecology.habitat){seenHabitat.add(next);queue.push(next);}
+      }
+    }
+    habitatNodes.push(Object.freeze({id:habitatId,parentId:biomeId,level:'HABITAT',habitat:first.ecology.habitat,cells:Object.freeze(cells),material:first.surface.primary}));
+  }
+  const hierarchyBinding=(x,z)=>membership[z*w+x]||null;
+  const hierarchy=Object.freeze({version:1,root:Object.freeze({id:worldId,level:'WORLD',seed:String(seed),climate:String(climate).toUpperCase()}),
+    order:Object.freeze(['WORLD','REGION','BIOME','HABITAT','ROUTE','PATCH','ACTOR']),
+    regions:Object.freeze([...regions.values()].map(row=>Object.freeze({...row,cells:Object.freeze(row.cells)}))),
+    biomes:Object.freeze(biomeNodes),habitats:Object.freeze(habitatNodes),
+    cellMembership:Object.freeze(membership.map(row=>Object.freeze(row))),
+    routes:Object.freeze(routes.map(row=>Object.freeze({id:row.id,parentId:worldId,level:'ROUTE',habitatIds:Object.freeze([...new Set(row.cells.map(cell=>hierarchyBinding(cell.x,cell.z)?.habitatId).filter(Boolean))]),crossHabitatLinks:true}))),
+    patches:Object.freeze(vegetation.map(row=>Object.freeze({id:row.stableObjectId,parentId:hierarchyBinding(row.x,row.z)?.habitatId,level:'PATCH',kind:row.kind,sourceBinding:row.sourceBinding}))),
+    actors:Object.freeze(lifeAndEncounterSites.map(row=>Object.freeze({id:row.actorId,parentId:row.cell?hierarchyBinding(row.cell.x,row.cell.z)?.habitatId:null,level:'ACTOR',placementStatus:row.status,spawned:false}))),
+    inheritance:Object.freeze(['CLIMATE','BIOME_IDENTITY','HABITAT','MATERIAL','SOURCE_SEED']),
+    crossLayerRule:'Routes connect habitats; patches and actors belong to their actual habitat rather than arbitrary route ancestry.',
+    nativeRuntimeVerified:false,gameplayAuthority:false});
   const result={
     version:1,status:issues.length?'LAYOUT_REVIEW_REQUIRED':'STATIC_LAYOUT_PROPOSED',issues:Object.freeze(issues),
     seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED',
-    size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
+    size:{width:w,height:h,cellSize},hierarchy,terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
     routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
     livingBiomePopulation:Object.freeze({algorithm:'DETERMINISTIC_HABITAT_FIT_AND_AUTHORED_UTILITY_AI_ADVISORY',
       inputActorCount:ecologyActors.length,plannedActorCount:lifeAndEncounterSites.length,issues:Object.freeze(rosterIssues),
