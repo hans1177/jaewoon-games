@@ -46,7 +46,8 @@ test('Blender motion actually corrects planted foot positions without weakening 
 
 test('loop closure is baked into actual skinned action keys and checked without loosening thresholds',()=>{
   assert.match(native,/LOOP_FIRST_AUTHORED_POSES = \{\}/);
-  assert.match(native,/if authored_first is not None:\s*apply_snapshot\(authored_first\)\s*return/);
+  assert.match(native,/assert authored_first is not None, 'LOOP_FIRST_AUTHORED_POSE_MISSING:' \+ name/);
+  assert.match(native,/apply_snapshot\(authored_first\)\s*return/);
   assert.match(native,/LOOP_FIRST_AUTHORED_POSES\[name\] = pose_snapshot\(\)/);
   assert.match(native,/baked_loop_metrics=\{\}/);
   assert.match(native,/fcurve\.evaluate\(0\)/);
