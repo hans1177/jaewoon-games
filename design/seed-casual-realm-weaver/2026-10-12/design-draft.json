@@ -3,68 +3,12 @@
   "gameId": "seed-casual-realm-weaver",
   "date": "2026-10-12",
   "productionClass": "DESIGN_ONLY",
-  "tierAlias": 3,
-  "tier": 3,
   "gameSeedId": "OWNER-DESIGN-SEED-CASUAL-REALM-WEAVER",
-  "gameSeedSource": "design/seed-casual-realm-weaver/2026-10-12/design-seed.json",
-  "gameSeedInputSource": "game-seed-state.json",
-  "gameplaySketchVersion": 5,
-  "inputGameplaySketchVersion": 1,
-  "gameplaySketch": {
-    "version": 1,
-    "source": "OWNER_BRIEF_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN",
-    "worldModel": "CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
-    "actors": [
-      "플레이어: 화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
-      "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
-    ],
-    "interactionChains": [
-      "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
-    ],
-    "stateMachine": [
-      "START_OR_WORLD_ENTRY",
-      "REAL_PLAYER_INPUT",
-      "CORE_GAMEPLAY_ACTION",
-      "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
-      "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
-      "RISK_FAILURE_OR_RESOURCE_PRESSURE",
-      "GOAL_OR_RETRY"
-    ],
-    "firstPlayableCycle": [
-      "월드/세션 진입",
-      "화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
-      "조각을 연결하여 특정 패턴이나 색상을 완성하면, 해당 영역이 활성화되며 점수와 함께 주변 환경이 변화합니다.",
-      "보상 또는 의미 있는 선택 적용",
-      "위험·실패·자원 압박 경험",
-      "연속 연결(콤보)을 통해 특수 효과를 발동시키고, 제한된 턴 내에 목표 점수를 달성하여 다음 스테이지로 나아갑니다."
-    ],
-    "expansionPlan": [
-      "새 적·위협 또는 행동 패턴",
-      "새 공간·경로 또는 목표",
-      "새 상호작용 또는 전략 결과"
-    ],
-    "longGoalScenario": [
-      "초기 핵심 루프 완료",
-      "성장·보상으로 새 선택 개방",
-      "새 위협·공간·목표를 거쳐 중간 목표 달성"
-    ],
-    "validationRisks": [
-      "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
-      "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
-    ]
-  },
   "ownerDesignEventId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:seed-casual-realm-weaver",
-  "designEvolutionLoopVersion": 1,
-  "authorRole": "GAME_DESIGNER_AI",
+  "designTopicMode": null,
+  "authorRole": "DESIGN_AUTHOR_CHECKPOINT",
   "authorModel": "vibe-native:causal-design-v1",
-  "singleAuthor": true,
-  "preGate": {
-    "pass": true,
-    "totalScore": 80,
-    "hardFailures": [],
-    "criticalAxisFailures": [],
-    "attempts": 0
-  },
+  "status": "DESIGN_DRAFT_RECOVERED_FROM_VERIFIED_CHECKPOINT",
   "content": {
     "identity": "세계의 직조자. 조상 기억과 계승·역사적 세력 균형 생활. 세계의 직조자에서 사회관계 선택 × 조상 기억과 계승과 생활 공간 탐색 × 역사적 세력 균형이 서로 결과를 되돌려 바꾸며 생활·코믹의 판단이 실제 세계 상태를 변화시킨다.",
     "creativeGrammar": {
@@ -1375,5 +1319,11 @@
       "unityRule": "Unity 네이티브 앱은 오너 보류 상태다. 과거 플랫폼 프로필은 기록 호환을 위해 유지하되 개발·배포·WebGL 빌드는 실행하지 않는다. 보류 해제 후 공통 원본과 규칙을 보존한다.",
       "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
     }
+  },
+  "recovery": {
+    "source": "design-checkpoint.json",
+    "checkpointFingerprint": "5ba1e61c1534c751c0e30fbcd75aab988c7f56728480a6fe830ddb0f0e157be7",
+    "aiVerdictUsed": false,
+    "materializedAt": "2026-10-12T03:14:19.915Z"
   }
 }
