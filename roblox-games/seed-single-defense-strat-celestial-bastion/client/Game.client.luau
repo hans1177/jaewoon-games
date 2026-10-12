@@ -55,8 +55,8 @@ local STUDIO_ASSET_FAMILY_STATUS = {
   AUDIO = "NOT_APPLICABLE",
   VFX = "NOT_APPLICABLE",
   UI = "APPLIED",
-  MOTION = "APPLIED",
-  PROP = "APPLIED",
+  MOTION = "NOT_APPLICABLE",
+  PROP = "NOT_APPLICABLE",
 }
 -- STUDIO_ASSET_BINDING_CLIENT_END
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
