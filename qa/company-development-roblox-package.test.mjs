@@ -283,6 +283,10 @@ ${familyRows}
     fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config);
     fs.writeFileSync(path.join(root,'client','Game.client.luau'),client);
     const pass=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
+    for(const row of pass.familyResults){
+      assert.ok(Array.isArray(row.responsibleFiles));
+      assert.ok(row.responsibleFiles.every(file=>!file.startsWith('/')&&!file.includes('..')));
+    }
     assert.equal(pass.pass,true);
     assert.equal(pass.familyCoverageCount,12);
     assert.equal(pass.requiredFamilyCount,12);
