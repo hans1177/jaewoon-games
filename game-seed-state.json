@@ -14539,8 +14539,8 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/island-village",
@@ -14553,7 +14553,7 @@
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-ISLAND-VILLAGE-20260913-2",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "GAMEPLAY_SKETCH": {
         "version": 5,
         "source": "GAME_SEED_MODEL_V5_OWNER_CREATIVE_GRAMMAR",
@@ -16027,7 +16027,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -16067,7 +16067,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-11T23:40:28.495Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -16076,16 +16076,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/island-village/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/island-village",
+          "UNITY": "unity-games/island-village"
+        },
+        "designBaselineSource": "design/island-village/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -16095,7 +16107,17 @@
         "evidencePath": "design/island-village/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-11T23:40:44.026Z"
+      "strictDesignReviewUpdatedAt": "2026-10-11T23:40:44.026Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/island-village/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/island-village/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 1,
@@ -16442,8 +16464,8 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/egg-heist",
@@ -16456,7 +16478,7 @@
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-EGG-HEIST-20260913-2",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "GAMEPLAY_SKETCH": {
         "version": 5,
         "source": "GAME_SEED_MODEL_V5_OWNER_CREATIVE_GRAMMAR",
@@ -17912,7 +17934,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -17952,7 +17974,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "시뮬레이션 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:19:14.431Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -17961,16 +17983,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/egg-heist/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/egg-heist",
+          "UNITY": "unity-games/egg-heist"
+        },
+        "designBaselineSource": "design/egg-heist/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -17982,7 +18016,17 @@
         "evidencePath": "design/egg-heist/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.034Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.034Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/egg-heist/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/egg-heist/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 1,
@@ -18337,8 +18381,8 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/chess-battle",
@@ -18351,7 +18395,7 @@
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-CHESS-BATTLE-20260913-2",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "GAMEPLAY_SKETCH": {
         "version": 5,
         "source": "GAME_SEED_MODEL_V5_OWNER_CREATIVE_GRAMMAR",
@@ -20025,7 +20069,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -20065,7 +20109,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "전략 · 보드·카드 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:11:18.000Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -20074,16 +20118,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/chess-battle/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/chess-battle",
+          "UNITY": "unity-games/chess-battle"
+        },
+        "designBaselineSource": "design/chess-battle/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -20095,7 +20151,17 @@
         "evidencePath": "design/chess-battle/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.034Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.034Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/chess-battle/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/chess-battle/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 1,
@@ -20426,8 +20492,8 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/survival2",
@@ -20440,7 +20506,7 @@
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-SURVIVAL2-20260913-2",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "GAMEPLAY_SKETCH": {
         "version": 5,
         "source": "GAME_SEED_MODEL_V5_OWNER_CREATIVE_GRAMMAR",
@@ -22431,7 +22497,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -22471,7 +22537,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:09:49.700Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -22480,16 +22546,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/survival2/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/survival2",
+          "UNITY": "unity-games/survival2"
+        },
+        "designBaselineSource": "design/survival2/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -22501,7 +22579,17 @@
         "evidencePath": "design/survival2/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.034Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.034Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/survival2/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/survival2/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 1,
@@ -25525,9 +25613,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:daechung-rpg",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -25536,7 +25624,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -25545,18 +25633,30 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/daechung-rpg/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/daechung-rpg",
+          "UNITY": "unity-games/daechung-rpg"
+        },
+        "designBaselineSource": "design/daechung-rpg/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -25591,7 +25691,17 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "RPG · 액션 RPG · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:18:37.331Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:18:37.331Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/daechung-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 3,
@@ -26830,9 +26940,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:seed-single-defense-strat-celestial-bastion",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": false,
       "semanticNormalization": {
@@ -26841,7 +26951,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -26850,18 +26960,30 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/seed-single-defense-strat-celestial-bastion/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/seed-single-defense-strat-celestial-bastion",
+          "UNITY": "unity-games/seed-single-defense-strat-celestial-bastion"
+        },
+        "designBaselineSource": "design/seed-single-defense-strat-celestial-bastion/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -26894,7 +27016,17 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "전략 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-11T23:37:39.316Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-11T23:37:39.316Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-single-defense-strat-celestial-bastion/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-single-defense-strat-celestial-bastion/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 3,
@@ -27479,9 +27611,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:seed-puzzle-chromatic-cascade",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": false,
       "semanticNormalization": {
@@ -27490,7 +27622,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -27499,18 +27631,30 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/seed-puzzle-chromatic-cascade/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/seed-puzzle-chromatic-cascade",
+          "UNITY": "unity-games/seed-puzzle-chromatic-cascade"
+        },
+        "designBaselineSource": "design/seed-puzzle-chromatic-cascade/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-10T08:24:08.366Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-10T10:59:37.448Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -27545,7 +27689,17 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "퍼즐 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:11:39.459Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:11:39.459Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-puzzle-chromatic-cascade/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-puzzle-chromatic-cascade/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 3,
@@ -28132,9 +28286,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:seed-casual-realm-weaver",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": false,
       "semanticNormalization": {
@@ -28143,7 +28297,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -28152,18 +28306,30 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/seed-casual-realm-weaver/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/seed-casual-realm-weaver",
+          "UNITY": "unity-games/seed-casual-realm-weaver"
+        },
+        "designBaselineSource": "design/seed-casual-realm-weaver/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-10T08:24:08.366Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-10T10:59:37.448Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -28198,7 +28364,17 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "시뮬레이션 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:08:03.810Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:08:03.810Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-casual-realm-weaver/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-casual-realm-weaver/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 3,
@@ -29437,9 +29613,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:seed-story-complete-rpg-chronicles-of-eldoria",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": false,
       "semanticNormalization": {
@@ -29448,7 +29624,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -29457,18 +29633,30 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
+          "UNITY": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria"
+        },
+        "designBaselineSource": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -29503,7 +29691,17 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "어드벤처 · 스토리 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:06:53.310Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:06:53.310Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 3,
@@ -30089,9 +30287,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:monster-adventure",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": false,
       "semanticNormalization": {
@@ -30100,7 +30298,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -30109,18 +30307,30 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/monster-adventure/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/monster-adventure",
+          "UNITY": "unity-games/monster-adventure"
+        },
+        "designBaselineSource": "design/monster-adventure/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -30155,7 +30365,17 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "시뮬레이션 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:10:00.100Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:10:00.100Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/monster-adventure/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/monster-adventure/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 3,
@@ -35260,7 +35480,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T02:13:25.550Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -35662,10 +35882,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -37904,7 +38124,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:10:02.701Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -37913,16 +38133,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/zombie-survival/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/zombie-survival",
+          "UNITY": "unity-games/zombie-survival"
+        },
+        "designBaselineSource": "design/zombie-survival/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -37934,7 +38166,17 @@
         "evidencePath": "design/zombie-survival/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.037Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.037Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/zombie-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/zombie-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 3,
@@ -38649,9 +38891,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:horror-escape-room",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -38660,7 +38902,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -38669,18 +38911,30 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/horror-escape-room/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/horror-escape-room",
+          "UNITY": "unity-games/horror-escape-room"
+        },
+        "designBaselineSource": "design/horror-escape-room/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -38715,7 +38969,17 @@
         "evidencePath": "design/horror-escape-room/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.037Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.037Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/horror-escape-room/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -39058,10 +39322,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -41303,7 +41567,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:19:10.730Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -41312,16 +41576,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/core-clash-4v4/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/core-clash-4v4",
+          "UNITY": "unity-games/core-clash-4v4"
+        },
+        "designBaselineSource": "design/core-clash-4v4/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -41331,7 +41607,17 @@
         "evidencePath": "design/core-clash-4v4/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T00:17:14.624Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T00:17:14.624Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/core-clash-4v4/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/core-clash-4v4/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -46443,10 +46729,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -48684,7 +48970,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:20:41.320Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -48693,16 +48979,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
+          "UNITY": "unity-games/seed-roblox-roleplay-life-avat-brookhaven-rp"
+        },
+        "designBaselineSource": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -48714,7 +49012,17 @@
         "evidencePath": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.037Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.037Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -53593,10 +53901,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -55346,7 +55654,7 @@
         "GAMEPLAY_SKETCH C requires two distinct PRIMARY and SECONDARY genres that causally change gameplay",
         "GAMEPLAY_SKETCH C themes must causally change A/B gameplay and story/world"
       ],
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -55355,16 +55663,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/seed-roblox-survival-horror-es-doors/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/seed-roblox-survival-horror-es-doors",
+          "UNITY": "unity-games/seed-roblox-survival-horror-es-doors"
+        },
+        "designBaselineSource": "design/seed-roblox-survival-horror-es-doors/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "ROBLOX_GENRE": "Puzzle",
@@ -55383,7 +55703,17 @@
         "evidencePath": "design/seed-roblox-survival-horror-es-doors/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-11T23:40:44.029Z"
+      "strictDesignReviewUpdatedAt": "2026-10-11T23:40:44.029Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-roblox-survival-horror-es-doors/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-roblox-survival-horror-es-doors/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -55750,10 +56080,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -57522,7 +57852,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "전략 · 보드·카드 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:07:38.626Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -57531,16 +57861,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/cat-step/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/cat-step",
+          "UNITY": "unity-games/cat-step"
+        },
+        "designBaselineSource": "design/cat-step/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -57552,7 +57894,17 @@
         "evidencePath": "design/cat-step/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.038Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.038Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cat-step/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cat-step/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -60231,10 +60583,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -62060,7 +62412,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "전략 · 보드·카드 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:06:32.162Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -62069,16 +62421,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/dice-battle-board/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/dice-battle-board",
+          "UNITY": "unity-games/dice-battle-board"
+        },
+        "designBaselineSource": "design/dice-battle-board/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -62090,7 +62454,17 @@
         "evidencePath": "design/dice-battle-board/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.038Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.038Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/dice-battle-board/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/dice-battle-board/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -67149,10 +67523,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -69388,7 +69762,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-11T23:55:08.587Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -69397,16 +69771,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/gem-survivor/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/gem-survivor",
+          "UNITY": "unity-games/gem-survivor"
+        },
+        "designBaselineSource": "design/gem-survivor/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -69416,7 +69802,17 @@
         "evidencePath": "design/gem-survivor/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T00:17:14.625Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T00:17:14.625Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/gem-survivor/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/gem-survivor/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -69759,10 +70155,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -71722,7 +72118,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "전략 · 타워 디펜스 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:12:08.099Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -71731,16 +72127,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/kingshot-ad/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/kingshot-ad",
+          "UNITY": "unity-games/kingshot-ad"
+        },
+        "designBaselineSource": "design/kingshot-ad/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -71752,7 +72160,17 @@
         "evidencePath": "design/kingshot-ad/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.042Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.042Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/kingshot-ad/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/kingshot-ad/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -72095,10 +72513,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -74338,7 +74756,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-11T23:30:01.743Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -74347,16 +74765,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/realistic-builder/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/realistic-builder",
+          "UNITY": "unity-games/realistic-builder"
+        },
+        "designBaselineSource": "design/realistic-builder/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -74366,7 +74796,17 @@
         "evidencePath": "design/realistic-builder/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-11T23:40:44.029Z"
+      "strictDesignReviewUpdatedAt": "2026-10-11T23:40:44.029Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/realistic-builder/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/realistic-builder/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -74733,10 +75173,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -76509,7 +76949,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "전략 · 보드·카드 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:09:25.643Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -76518,16 +76958,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/simple-rpg/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/simple-rpg",
+          "UNITY": "unity-games/simple-rpg"
+        },
+        "designBaselineSource": "design/simple-rpg/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -76539,7 +76991,17 @@
         "evidencePath": "design/simple-rpg/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.043Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.043Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/simple-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/simple-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -79017,10 +79479,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-12T02:21:08.360Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -81155,7 +81617,7 @@
       "ROBLOX_GENRE_DISPLAY_KO": "RPG · 오픈월드·생존 RPG · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
       "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:12:35.098Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -81164,16 +81626,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
+        "pass": true,
+        "source": "design/tower-choice-rpg/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/tower-choice-rpg",
+          "UNITY": "unity-games/tower-choice-rpg"
+        },
+        "designBaselineSource": "design/tower-choice-rpg/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:21:08.360Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -81185,7 +81659,17 @@
         "evidencePath": "design/tower-choice-rpg/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.043Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T02:13:08.043Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/tower-choice-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/tower-choice-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -91801,7 +92285,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-12T02:13:25.550Z",
+  "updatedAt": "2026-10-12T02:21:08.360Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
