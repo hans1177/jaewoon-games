@@ -1186,8 +1186,7 @@ jobs:
 
   worker:
     needs: [reserve, model_cache]
-    # A cancelled/failed reserve has no cohort artifact; never launch orphan workers from its matrix.
-    if: always() && needs.reserve.result == 'success' && needs.reserve.outputs.worker_count != '0' && ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'game-primary' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development' || (needs.reserve.outputs.verified_learning_memory_sha != '' && needs.reserve.outputs.verified_learning_memory_file_sha256 != ''))
+    if: always() && needs.reserve.result == 'success' && needs.reserve.outputs.worker_count != '0' && (!contains('game-primary,asset-development', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || needs.reserve.outputs.verified_learning_memory_sha != '')
     # Roblox asset work stays on x64 for the native Luau toolchain; Unity asset work keeps the dedicated ARM lane.
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
     # game-primary BUILD_UP과 asset 품질 작업은 소스 생성·네이티브 그래픽 작성·impact-scoped QA를 끝까지 수행할 수 있게 최대 60분을 확보한다.
