@@ -593,12 +593,18 @@ TweenService:Create(stats, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.Easin
 local versionMark=Instance.new("TextLabel")
 versionMark.Name="LiveBuildMarker";versionMark.BackgroundTransparency=.3
 versionMark.BackgroundColor3=Color3.fromRGB(20,35,35)
-versionMark.Text="RPG BUILD · 2026-10-14 · FIX-3"
+local function refreshBuildMark()
+ local server=tostring(workspace:GetAttribute("DaechungRuntimeRevision")or"SERVER_OLD")
+ versionMark.Text="RPG FIX4 · "..server.." · v"..tostring(game.PlaceVersion)
+ versionMark.TextColor3=server=="20261014-FIX4" and Color3.fromRGB(205,245,215) or Color3.fromRGB(255,177,107)
+end
+workspace:GetAttributeChangedSignal("DaechungRuntimeRevision"):Connect(refreshBuildMark)
+refreshBuildMark()
 versionMark.TextSize=10;versionMark.TextColor3=Color3.fromRGB(205,245,215)
 versionMark.Font=Enum.Font.GothamBold
 versionMark.AnchorPoint=Vector2.new(.5,0)
 versionMark.Position=UDim2.new(.5,0,0,57)
-versionMark.Size=UDim2.fromOffset(236,17);versionMark.ZIndex=15;versionMark.Parent=gui
+versionMark.Size=UDim2.fromOffset(310,17);versionMark.ZIndex=15;versionMark.Parent=gui
 local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-14,0,23);title.Position=UDim2.fromOffset(7,4);title.BackgroundTransparency=1;title.Text="대충 RPG";title.TextColor3=Color3.fromRGB(255,223,157);title.TextXAlignment=Enum.TextXAlignment.Left;title.Font=Enum.Font.GothamBold;title.TextSize=16;title.Parent=stats
 local statLine=Instance.new("TextLabel");statLine.Size=UDim2.new(1,-14,0,38);statLine.Position=UDim2.fromOffset(7,27);statLine.BackgroundTransparency=1;statLine.TextColor3=Color3.fromRGB(230,234,241);statLine.TextXAlignment=Enum.TextXAlignment.Left;statLine.TextYAlignment=Enum.TextYAlignment.Top;statLine.TextWrapped=true;statLine.TextSize=12;statLine.Font=Enum.Font.Gotham;statLine.Parent=stats
 
