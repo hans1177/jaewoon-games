@@ -698,7 +698,7 @@ end
 -- Save schema v3 preserves every earlier key and adds level-cap, relic and boss-companion progression.
 local SAVE_SCHEMA_VERSION=3
 local SAVE_MAX_ATTEMPTS=3
-local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount"}
+local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture"}
 local saveReady={}
 local saveSurface=RS:FindFirstChild("SavePersistence")
 if not saveSurface then
@@ -717,7 +717,7 @@ end
 local function init(p)
  p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1);p:SetAttribute("RelicId",C.RelicDefault or"NONE")
  p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("SecondAdvancementId","");p:SetAttribute("ClassName","직업 미선택")
- p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0)
+ p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0);p:SetAttribute("HouseLevel",0);p:SetAttribute("HouseFurniture",0)
  p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
  p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
@@ -1661,6 +1661,68 @@ local function chooseAdvancement(p,key)
  p:SetAttribute("AdvancementId",choice.Id);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("RespecReady",false)
  setStats(p,true);applyPlayerAppearance(p);msg(p,"1차 전직 · "..choice.Name.." · "..choice.Role);feedback(p,"ADVANCEMENT_COMPLETE");return true
 end
+-- 개인 주택: 기존 월드/저장 데이터와 분리된 시각 구성, 소유자는 서버만 결정한다.
+local houses=Instance.new("Folder");houses.Name="PlayerHousing";houses.Parent=world
+local function housePosition(p)
+ local slots=math.max(1,tonumber(C.Housing and C.Housing.Slots)or 100000)
+ local index=p.UserId%slots
+ return Vector3.new(410+(index%100)*48,2,math.floor(index/100)*52)
+end
+local function refreshHouse(p)
+ local key="House_"..p.UserId
+ local prior=houses:FindFirstChild(key);if prior then prior:Destroy()end
+ local level=math.clamp(math.floor(n(p,"HouseLevel",0)),0,3)
+ if level==0 then return end
+ local furniture=math.clamp(math.floor(n(p,"HouseFurniture",0)),0,8)
+ local base=housePosition(p)
+ local home=Instance.new("Model");home.Name=key;home:SetAttribute("OwnerUserId",p.UserId);home:SetAttribute("HouseLevel",level);home.Parent=houses
+ local width=18+level*6
+ local function piece(name,size,offset,color,material)
+  local x=ppart(home,name,size,base+offset,color,material or Enum.Material.WoodPlanks);x.CanCollide=true;return x
+ end
+ piece("Floor",Vector3.new(width,1,width),Vector3.new(0,-.25,0),Color3.fromRGB(142,111,78))
+ for _,side in ipairs({-1,1})do
+  piece("Wall",Vector3.new(1,10,width),Vector3.new(side*width/2,5,0),Color3.fromRGB(205,184,148))
+ end
+ piece("BackWall",Vector3.new(width,10,1),Vector3.new(0,5,width/2),Color3.fromRGB(205,184,148))
+ for _,side in ipairs({-1,1})do
+  piece("EntryWall",Vector3.new(width*.36,10,1),Vector3.new(side*width*.32,5,-width/2),Color3.fromRGB(205,184,148))
+ end
+ piece("Roof",Vector3.new(width+2,1.8,width+2),Vector3.new(0,10.5,0),Color3.fromRGB(104,73,65))
+ local sign=piece("HouseSign",Vector3.new(10,2,.6),Vector3.new(0,8,-width/2-.5),Color3.fromRGB(86,62,47))
+ label(sign,p.DisplayName.."의 집",Color3.fromRGB(255,227,174),65)
+ for i=1,furniture do
+  local col=(i-1)%4;local row=math.floor((i-1)/4)
+  local pos=Vector3.new(-width/2+4+col*4,1.4,-2+row*5)
+  piece("Furniture_"..i,Vector3.new(3,2,2.5),pos,i%2==0 and Color3.fromRGB(107,147,119)or Color3.fromRGB(158,113,76))
+ end
+ home:SetAttribute("FurnitureCount",furniture)
+end
+local function houseAction(p,action)
+ if p:GetAttribute("SaveState")=="LOADING"or saveReady[p]~=true then msg(p,"저장 데이터 준비 후 이용해.");return false end
+ if n(p,"CurrentZone",0)~=0 or p:GetAttribute("InCombat")==true or os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds then msg(p,"마을에서 전투가 끝난 뒤 이용해.");return false end
+ local h=C.Housing;local level=math.floor(n(p,"HouseLevel",0));local furniture=math.floor(n(p,"HouseFurniture",0))
+ if action==C.Actions.HOUSING_VISIT then
+  if level==0 then msg(p,"먼저 집을 건설해.");return false end
+  teleportPlayer(p,housePosition(p)+Vector3.new(0,5,-12));msg(p,"내 집 방문");return true
+ end
+ local cost,newLevel,newFurniture=0,level,furniture
+ if action==C.Actions.HOUSING_BUILD then
+  if level>0 then msg(p,"이미 집을 소유하고 있어.");return false end
+  cost=h.BuildCost;newLevel=1
+ elseif action==C.Actions.HOUSING_UPGRADE then
+  if level==0 or level>=h.MaxLevel then msg(p,"집을 건설했거나 최대 확장 단계인지 확인해.");return false end
+  cost=h.UpgradeBaseCost*level;newLevel=level+1
+ elseif action==C.Actions.HOUSING_FURNISH then
+  if level==0 or furniture>=h.MaxFurniture then msg(p,"집 또는 가구 배치 한도를 확인해.");return false end
+  cost=h.FurnitureCost;newFurniture=furniture+1
+ else return false end
+ if n(p,"Gold",0)<cost then msg(p,"집 꾸미기에 필요한 골드가 부족해. "..cost.."G 필요");return false end
+ p:SetAttribute("Gold",n(p,"Gold",0)-cost)
+ p:SetAttribute("HouseLevel",newLevel);p:SetAttribute("HouseFurniture",newFurniture)
+ refreshHouse(p);msg(p,"하우징 변경 완료 · "..cost.."G");feedback(p,"BUILD");return true
+end
+
 remote.OnServerEvent:Connect(function(p,a)
  if typeof(a)~="string"then return end
  local now=os.clock();local isBlock=a==C.Actions.BLOCK_START or a==C.Actions.BLOCK_END
@@ -1670,7 +1732,8 @@ remote.OnServerEvent:Connect(function(p,a)
   if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end;lastRequest[p]=now
  end
  local accepted=false
- if a==C.Actions.BUY_WEAPON then accepted=purchaseMerchantEquipment(p,"WEAPON")
+ if a==C.Actions.HOUSING_BUILD or a==C.Actions.HOUSING_UPGRADE or a==C.Actions.HOUSING_FURNISH or a==C.Actions.HOUSING_VISIT then accepted=houseAction(p,a)
+ elseif a==C.Actions.BUY_WEAPON then accepted=purchaseMerchantEquipment(p,"WEAPON")
  elseif a==C.Actions.BUY_ARMOR then accepted=purchaseMerchantEquipment(p,"ARMOR")
  elseif CLASS_ACTIONS[a]then accepted=selectClass(p,CLASS_ACTIONS[a])
  elseif a==C.Actions.ADVANCE_A then accepted=chooseAdvancement(p,"A")
@@ -1728,6 +1791,7 @@ buildWorld()
 
 local function bindPlayer(p)
  load(p)
+ refreshHouse(p)
  local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end
  p:GetAttributeChangedSignal("ClassId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("AdvancementId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("WeaponTier"):Connect(refreshAppearance);p:GetAttributeChangedSignal("ArmorTier"):Connect(refreshAppearance)
  p.CharacterAdded:Connect(function(c)
@@ -1737,7 +1801,7 @@ local function bindPlayer(p)
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)save(p);local oldHouse=houses:FindFirstChild("House_"..p.UserId);if oldHouse then oldHouse:Destroy()end;saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
