@@ -2612,15 +2612,17 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   // The planner already binds this failure to the current source. Preserve that identity and
   // its game-source-only repair boundary through focused/oversized prompt reconstruction.
   const failure=d?.playtestRuntimeFindings?.studioQualityFailure;
-  const packageRepair=failure?.authority==='roblox-package-asset-binding-failure'
+  const sourceContractFailure=failure?.authority==='roblox-source-static-contract-failure';
+  const sourceFailureContract=sourceContractFailure?failure.staticContract:failure?.assetThreshold;
+  const packageRepair=['roblox-package-asset-binding-failure','roblox-source-static-contract-failure'].includes(failure?.authority)
     &&/^[0-9a-f]{40}$/i.test(clean(failure.sourceRevision))
     &&!clean(failure.artifactIdentity)
-    &&failure?.assetThreshold?.pass===false
-    &&Array.isArray(failure?.assetThreshold?.blockers)
-    &&failure.assetThreshold.blockers.some(value=>clean(value));
+    &&sourceFailureContract?.pass===false
+    &&Array.isArray(sourceFailureContract?.blockers)
+    &&sourceFailureContract.blockers.some(value=>clean(value));
   const sourceRepair=packageRepair?[
     'sourceRepairIdentity='+JSON.stringify({authority:failure.authority,sourceRevision:failure.sourceRevision,artifactIdentity:null}),
-    'sourceRepairBlockers='+JSON.stringify(unique(failure.assetThreshold.blockers)),
+    'sourceRepairBlockers='+JSON.stringify(unique(sourceFailureContract.blockers)),
     'sourceRepairPolicy='+JSON.stringify(failure.assetRepairPolicy||{}),
     'sourceRepairHints='+boundedPromptText(unique((failure.qualityFailureDetails||[]).map(row=>row?.hint)).join(' | '),COMPACT_DIRECTIVE_LINE_BYTES)
   ]:[];

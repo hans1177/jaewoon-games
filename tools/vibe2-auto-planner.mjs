@@ -469,7 +469,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     // source-reconcile의 canonical exact 판정을 그대로 사용해 이미 바뀐 게임 트리에 옛 수리를 재발행하지 않는다.
     const packageAssetFailure=item?.robloxQualityBuildUpEvidence;
     const packageAssetFailureRequested=queueRobloxQualityBuildUpRequested
-      &&clean(packageAssetFailure?.authority)==='roblox-package-asset-binding-failure';
+      &&['roblox-package-asset-binding-failure','roblox-source-static-contract-failure'].includes(clean(packageAssetFailure?.authority));
     const liveRobloxSourceTreeSha=currentSourceTreeSha({repoRoot,sourcePath:root});
     const currentPackageAssetFailure=Boolean(
       packageAssetFailureRequested
@@ -2497,9 +2497,11 @@ function applyRobloxQualityRepairDirective(directive,project,platformLane){
   const studioQualityFailure=project.queueRobloxQualityBuildUpEvidence||null;
   const packageFailure=studioQualityFailure?.authority==='roblox-package-asset-binding-failure';
   const f0Failure=studioQualityFailure?.authority==='roblox-f0-gameplay-product-readiness-failure';
-  const runtimeObserved=!packageFailure&&!f0Failure;
+  const contractFailure=studioQualityFailure?.authority==='roblox-source-static-contract-failure';
+  const runtimeObserved=!packageFailure&&!f0Failure&&!contractFailure;
   const reason=packageFailure
     ?'current source package asset binding failure requires game-side source repair; internal assets must remain unchanged'
+    :contractFailure?'current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts'
     :f0Failure?'current source F0 design-bound gameplay gaps require source repair before real runtime testing'
     :'current source Studio product-quality failure requires source repair before another observation';
   return{
@@ -2672,7 +2674,12 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       .filter(file=>fs.existsSync(sourceFile(repoRoot,file)));
     taskInput={...taskInput,responsibleFiles:[...new Set([...(taskInput.responsibleFiles||[]),...repairFiles])]};
   }
-  const sourceOnlyQualityFailure=qualityFailure&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure'].includes(project.queueRobloxQualityBuildUpEvidence?.authority);
+  if(qualityFailure&&project.queueRobloxQualityBuildUpEvidence?.authority==='roblox-source-static-contract-failure'){
+    const owners=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau']
+      .map(file=>`roblox-games/${project.gameId}/${file}`).filter(file=>fs.existsSync(sourceFile(repoRoot,file)));
+    taskInput={...taskInput,responsibleFiles:[...new Set([...(taskInput.responsibleFiles||[]),...owners])]};
+  }
+  const sourceOnlyQualityFailure=qualityFailure&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure','roblox-source-static-contract-failure'].includes(project.queueRobloxQualityBuildUpEvidence?.authority);
   const runtimeEvidence={
     platform,
     studioQualityFailure:qualityFailure?project.queueRobloxQualityBuildUpEvidence||null:null,
@@ -3425,7 +3432,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       const repairRequired=project.queueRobloxQualityBuildUpRequired===true;
       const staleDecision=repairRequired&&(candidate.buildUpDirective.nextActionDecision?.action!=='CAUSAL_REPAIR'
         ||candidate.buildUpDirective.effectivenessMeasurement?.previousGeneration?.classification!=='REGRESSION');
-      const staleSourceObservation=repairRequired&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure'].includes(studioQualityFailure?.authority)
+      const staleSourceObservation=repairRequired&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure','roblox-source-static-contract-failure'].includes(studioQualityFailure?.authority)
         &&candidate.buildUpDirective.playtestRuntimeFindings?.runtimeObserved!==false;
       if(staleDecision||staleSourceObservation||JSON.stringify(candidate.buildUpDirective.playtestRuntimeFindings?.studioQualityFailure??null)!==JSON.stringify(studioQualityFailure)){
         candidate=bindSharedBuildUpDirective(candidate,applyRobloxQualityRepairDirective({

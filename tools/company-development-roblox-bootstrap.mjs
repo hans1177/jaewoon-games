@@ -1591,9 +1591,15 @@ async function main(){
   if(buildUpDirectiveConsumed&&clean(buildUpDirective?.gameId)!==gameId)throw new Error('BUILD_UP_DIRECTIVE_GAME_ID_MISMATCH');
   if(existingSource){
     const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair,learning:existingLearning});
+    const staticContract=validateRobloxBootstrap({
+      sharedConfig:fs.readFileSync(path.join(outputRoot,'shared','GameConfig.luau'),'utf8'),
+      serverCode:fs.readFileSync(path.join(outputRoot,'server','Game.server.luau'),'utf8'),
+      clientCode:fs.readFileSync(path.join(outputRoot,'client','Game.client.luau'),'utf8'),
+      baseline,
+    });
     const evidence={
       version:6,gameId,gameName,platform:'ROBLOX',policyDocument:'company-learning/platform-release-roadmap.json',stage:'TARGET_PLATFORM_SOURCE_BIND',
-      sourcePath:outputRoot,sourceValidationPassed:true,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
+      sourcePath:outputRoot,sourceValidationPassed:staticContract.pass,sourceValidationBlockers:staticContract.blockers,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
       existingSourcePreserved:true,gameplayAuthorityChanged:false,serverSourceChanged:applied.serverSourceChanged===true,
       foundationRepairApplied:applied.foundationRepairApplied===true,
       generatedFiles:applied.changedFiles.map(file=>posix(path.relative(outputRoot,file))),
@@ -1612,12 +1618,13 @@ async function main(){
       buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
       buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
       buildUpDirectiveConsumed,buildUpDirectiveCompletionClaim:false,
-      nextRequiredStage:'TARGET_PLATFORM_RUNTIME',createdAt:new Date().toISOString(),
+      nextRequiredStage:staticContract.pass?'TARGET_PLATFORM_TECHNICAL_VALIDATION':'TARGET_PLATFORM_SOURCE_REPAIR',createdAt:new Date().toISOString(),
     };
     fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
     fs.writeFileSync(evidenceFile,`${JSON.stringify(evidence,null,2)}\n`,'utf8');
     fs.copyFileSync(evidenceFile,path.join(outputRoot,'roblox-source-bootstrap.json'));
-    console.log('ROBLOX_SOURCE_BOOTSTRAP=PASS');
+    console.log(`ROBLOX_SOURCE_BOOTSTRAP=${staticContract.pass?'PASS':'REPAIR_REQUIRED'}`);
+    console.log('ROBLOX_SOURCE_STATIC_BLOCKERS='+JSON.stringify(staticContract.blockers));
     console.log(`ROBLOX_GAME_ID=${gameId}`);
     console.log('ROBLOX_EXISTING_SOURCE_PRESERVED=YES');
     console.log('ROBLOX_GAMEPLAY_AUTHORITY_CHANGED=NO');
