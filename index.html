@@ -126,13 +126,7 @@ window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();def
 window.addEventListener('appinstalled',()=>{deferredAppInstall=null;appInstallBtn.disabled=true;appInstallBtn.textContent='설치됨'});
 appInstallBtn.addEventListener('click',requestHomepageInstall);
 function openChatGpt(){
-  const fast='/command.html?from=chatgpt-shortcut';
-  if(/Android/i.test(navigator.userAgent)){
-    const fallback=encodeURIComponent(new URL(fast,location.href).href);
-    location.href='intent://chatgpt.com/#Intent;scheme=https;package=com.openai.chatgpt;S.browser_fallback_url='+fallback+';end';
-    return;
-  }
-  location.href='https://chatgpt.com/';
+  location.href='/command.html?from=chatgpt-shortcut';
 }
 document.querySelectorAll('[data-chatgpt-launch]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();openChatGpt();}));
 // 사용자가 실행하지 않은 게임·명령 페이지는 미리 요청하지 않는다.

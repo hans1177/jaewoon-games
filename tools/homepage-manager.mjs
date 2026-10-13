@@ -142,7 +142,7 @@ const checks={
   validationCandidateWebRoutesResolve:brokenTestWebRoutes.length===0,
   validationCandidateArtbooksResolve:brokenTestArtbooks.length===0,
   fixedPwaFilesExist:pwaFiles.every(exists),
-  pwaManifestCommandEntry:manifest.id==='/command.html'&&manifest.start_url==='/command.html'&&manifest.scope==='/'&&manifest.display==='standalone',
+  pwaManifestCommandEntry:manifest.id==='/command.html'&&manifest.start_url==='/'&&manifest.scope==='/'&&manifest.display==='standalone',
   pwaManifestIconsPreserved:Array.isArray(manifest.icons)&&manifest.icons.some(x=>x.src==='/assets/pwa-icon-192.png')&&manifest.icons.some(x=>x.src==='/assets/pwa-icon-512.png'),
   installPwaContractPreserved:includesAll(install,['rel="manifest" href="/manifest.webmanifest"','id="installBtn"','beforeinstallprompt',"navigator.serviceWorker.register('/sw.js',{scope:'/'})",'appinstalled']),
   serviceWorkerPwaContractPreserved:includesAll(serviceWorker,["'/command.html'","'/install.html'","'/offline.html'","'/manifest.webmanifest'","self.addEventListener('install'","self.addEventListener('activate'","self.addEventListener('fetch'",'serveCommand(request)']),

@@ -413,14 +413,14 @@ test('homepage workflow validates the exact sample deployment contract',()=>{
   assert.match(workflow,/SYNC_INTERVAL_MS=30000/);
 });
 
-test('featured hero is explicit and ChatGPT launcher is app-first with safe fallback',()=>{
+test('featured hero is explicit and ChatGPT launcher opens internal PWA chat',()=>{
   const index=fs.readFileSync('index.html','utf8');
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
   assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
   assert.match(runtime,/const direct=links\.roblox\|\|links\.unity\|\|''/);
   assert.match(runtime,/const actionLabel=links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':'게임 보기'/);
-  assert.match(index,/package=com\.openai\.chatgpt/);
+  assert.doesNotMatch(index,/package=com\.openai\.chatgpt|intent:\/\/chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
 });
