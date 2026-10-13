@@ -2185,7 +2185,10 @@ RunService.Heartbeat:Connect(function(dt)
     end
     local tr=root(target);local d=tr and Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
     local attackDef=e.def and e.def.Attack;local engage=(attackDef and attackDef.Range)or(e.def and e.def.Attacks and 18)or 5.5
-    if d and d.Magnitude>math.max(4,engage*.78)and now>=(e.stunnedUntil or 0)and not e.attackPending then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,(e.speed or 7)*dt)end
+    if d and d.Magnitude>math.max(4,engage*.78)and now>=(e.stunnedUntil or 0)and not e.attackPending then
+     local nextPos=e.part.Position+d.Unit*math.min(d.Magnitude,(e.speed or 7)*dt)
+     e.part.CFrame=CFrame.lookAt(nextPos,nextPos+d.Unit)
+    end
     if tr and(tr.Position-e.part.Position).Magnitude<=engage and now>=(e.nextAttackAt or 0)and now>=(e.stunnedUntil or 0)then beginEnemyAttack(e,target,now)end
    else
     e.part:SetAttribute("MotionState",e.attackPending and "ATTACK" or "ROAM")
