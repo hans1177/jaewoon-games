@@ -4935,3 +4935,13 @@ test('newly registered better shared asset becomes safe adaptation candidate for
  assert.equal(upgrade?.independentNativeRuntimeQaRequired,true);
  assert.equal(summary.runtimeVerificationGranted,false);
 });
+
+test('detailed design candidates enter canonical binding targets only with verified rights',()=>{
+  const source=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  assert.ok(source.includes('const detailedBindingTargets=freezeList('));
+  assert.ok(source.includes('automaticBindingTargets.push(...detailedBindingTargets)'));
+  assert.ok(source.includes('asset?.productionVerified===true&&asset?.rightsPass===true'));
+  assert.ok(source.includes('automaticReplacementAuthorized:false'));
+  assert.ok(source.includes('roleAndPlatformRevalidationRequired:true'));
+  assert.ok(source.includes('existingSelectionKeys.has(row.assetId)'));
+});
