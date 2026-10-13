@@ -51,9 +51,11 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     const match=file.match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
     const gameId=match[2],platform=match[1];
     const existing=gameQueue.tasks.find(task=>clean(task.gameId)===gameId
-      &&clean(task.status).toLowerCase()!=='cancelled'
-      &&(clean(task.id).includes('repair')||clean(task.id).includes('implementation'))
-      &&(clean(task.id).includes(platform)||clean(task.sourceRoot).startsWith(platform+'-games/')));
+      &&!['cancelled','done','completed','verified'].includes(clean(task.status).toLowerCase())
+      &&clean(task.target).toLowerCase()===platform
+      &&(clean(task.sourceRoot).startsWith(platform+'-games/'+gameId)
+        ||clean(task.id).includes(platform))
+      &&(clean(task.id).includes('repair')||clean(task.id).includes('implementation')));
     if(!existing)continue; // 새 게임 작업 생성 금지
     const ids=new Set(legacy.map(task=>clean(task.id)));
     if(targetSourceTaskId&&!legacy.some(task=>clean(task.id)===targetSourceTaskId))continue;
