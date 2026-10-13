@@ -701,7 +701,10 @@ local function bindSharedPlayerVisual(character,classId)
    visualRoot.Name="LibraryVisualRoot";visualRoot.Size=Vector3.new(.2,.2,.2);visualRoot.Transparency=1
    visualRoot.Anchored=false;visualRoot.Massless=true;visualRoot.CanCollide=false;visualRoot.CanTouch=false;visualRoot.CanQuery=false
    visualRoot.CFrame=rootPart.CFrame;visualRoot.Parent=folder
-   local weld=Instance.new("WeldConstraint");weld.Part0=rootPart;weld.Part1=visualRoot;weld.Parent=visualRoot
+   local animatedPivot=Instance.new("Motor6D");animatedPivot.Name="NativePoseMotor"
+   animatedPivot.Part0=rootPart;animatedPivot.Part1=visualRoot
+   animatedPivot.C0=CFrame.identity;animatedPivot.C1=CFrame.identity
+   animatedPivot.Parent=visualRoot
    for _,visual in ipairs(native:GetDescendants())do
     if visual:IsA("BasePart")then
      visual.Anchored=false;visual.Massless=true
