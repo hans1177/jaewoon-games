@@ -5742,7 +5742,8 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     &&(!assetDevelopmentLane||target==='web')
     &&!singleMotionWorkUnit
     &&!systemAtomicPairRequired
-    &&!dedicatedRobloxOversizePath
+    // Large Roblox rebuilds must also use the canonical bounded source prompt.
+    // The full task remains in the work order; only the model input is compacted.
     &&Buffer.byteLength(specializedInitialPrompt,'utf8')>SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES;
   const initialStudioPrompt=sourceCandidatePressureInitial
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,oversizedInitial:true,initialPromptLimitBytes:SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES})
@@ -5760,7 +5761,9 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     &&!systemAtomicPairRequired&&!multiFilePairRequired
     &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt))
     &&String(prompt).includes('[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]')
-    &&Buffer.byteLength(initialStudioPrompt,'utf8')>MAX_CONTEXT_BYTES;
+    // Preserve the focused source-anchor strategy when the original work order was oversized.
+    // Initial prompt compaction must not suppress the existing focused-rebuild path.
+    &&Buffer.byteLength(specializedInitialPrompt,'utf8')>MAX_CONTEXT_BYTES;
   if(robloxRebuildFocused)console.log('VIBE2_ROBLOX_REBUILD_FOCUSED_INITIAL=bytes:'+Buffer.byteLength(initialStudioPrompt,'utf8'));
   const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
   const baseMaxAttempts=assetDevelopmentLane&&robloxGraphicsInitial
