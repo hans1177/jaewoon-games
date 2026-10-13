@@ -190,7 +190,7 @@ test('single changed Roblox game redispatches exact runtime game id',()=>{
 
 test('source drift sync has a dedicated non-starving concurrency lane',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
-  assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-runtime-writer-v2\s*\n\s*cancel-in-progress: false/);
+  assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-runtime-writer-v2\s*\n\s*queue: max\s*\n\s*cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
   assert.match(workflow,/for i in 1 2 3 4 5; do[\s\S]*git push origin HEAD:"\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(workflow,/regenerate_runtime_state/);
@@ -429,4 +429,14 @@ test('exact Roblox runs deduplicate before work without cancelling an active bui
   assert.match(freshness,/String\(r\.head_sha\|\|''\)===currentSha/);
   assert.match(freshness,/echo 'run=false' >> "\$GITHUB_OUTPUT"/);
   assert.match(freshness,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
+});
+
+// 병합 복구 이벤트를 보존하고 이벤트별 대기열을 분리한다.
+test('Roblox source sync preserves both triggers without pending cross-cancellation',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.ok(workflow.includes('  push:\n    branches: [main]'));
+  assert.ok(workflow.includes('  pull_request:\n    branches: [main]\n    types: [closed]'));
+  assert.ok(workflow.includes('  workflow_dispatch:'));
+  assert.ok(workflow.includes('group: roblox-source-drift-runtime-writer-v2\n  queue: max\n  cancel-in-progress: false'));
+  assert.ok(workflow.includes('cancel-in-progress: false'));
 });

@@ -29,6 +29,7 @@ permissions:
 
 concurrency:
   group: roblox-source-drift-runtime-writer-v2
+  queue: max
   cancel-in-progress: false
 
 env:
