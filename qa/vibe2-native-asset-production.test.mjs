@@ -4884,3 +4884,12 @@ test('shared RPG inventory labels show equipped state and correct slot category'
   assert.equal(consumer,source);
   assert.match(source,/b\.ItemState\.Text=row\.equipped and "착용 중" or \(row\.category=="장비" and "장비" or "도구"\)/);
 });
+
+// Status-only equipment is not an actionable Roblox Tool; do not show a dead equip button.
+test('shared RPG menu only offers equip action for real Tools',()=>{
+  const shared=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
+  const game=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
+  assert.equal(game,shared);
+  assert.match(shared,/itemAction\.Visible=row\.tool~=nil/);
+  assert.match(shared,/row\.tool and "배낭에서 선택한 도구야/);
+});
