@@ -281,6 +281,7 @@ jobs:
           fi
 
           # 메인 · 아직 시작하지 않은 정확히 같은 main의 GAME_PRIMARY 호출만 재사용한다.
+          # main push 예약도 기존 동일 SHA 게임 제작 wake이므로 별도 dispatch를 만들지 않는다.
           # 다른 SHA·실행 중 작업·자산 작업은 유지하고, 조회 실패 때는 기존 호출을 진행한다.
           if [[ "$preplan_pressure" =~ ^[0-9]+$ && "$current_main_sha" =~ ^[a-f0-9]{40}$ ]]; then
             queued_exact_wake="$(CURRENT_MAIN_SHA="$current_main_sha" node <<'NODE'
@@ -289,10 +290,11 @@ jobs:
           const queued=new Set(['queued','pending','requested']);
           const wake=(snapshot.workflow_runs||[]).find(run=>
             run.path==='.github/workflows/vibe2-continuous-core.yml'
-            &&run.event==='workflow_dispatch'
+            &&(run.event==='workflow_dispatch'||(run.event==='push'&&run.head_branch==='main'))
             &&run.head_sha===process.env.CURRENT_MAIN_SHA
             &&queued.has(String(run.status||'').toLowerCase())
-            &&run.display_title==='Vibe2 Continuous Core · workflow_dispatch · game-primary');
+            &&(run.display_title==='Vibe2 Continuous Core · workflow_dispatch · game-primary'
+              ||run.display_title==='Vibe2 Continuous Core · push · game-primary'));
           process.stdout.write(wake?String(wake.id):'');
           NODE
             )"
