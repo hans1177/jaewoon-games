@@ -2049,12 +2049,43 @@ const revisedDesign=designDraft;
 persistDesignerSeed(revisedDesign,'designer_revision');
 persistDesignCheckpoint();
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
+// 상세 설계 인계: 승인 전 후보이며 그래픽 제작/네이티브 바인딩 QA를 대체하지 않는다.
+// 원본 에셋 ID, 역할 증거, 교체 대상, 원장 해시를 보존해 기존 제작 책임 함수가 재평가한다.
+const detailedAssetLibraryHandoff={
+  version:1,
+  stage:'DETAILED_DESIGN',
+  source:designAssetLibraryContext.source,
+  registrySha256:designAssetLibraryContext.sha256,
+  authoringState:'CANDIDATE_REQUIRES_GRAPHICS_AND_NATIVE_QA',
+  gameplayMutationAuthorized:false,
+  platformSelection:Object.fromEntries(Object.entries(designAssetLibraryContext.platforms).map(([target,platform])=>[
+    target,{
+      requiredFamilies:platform.requiredFamilies,
+      evaluatedAssetCount:platform.evaluatedAssetCount,
+      candidates:platform.candidates.map(row=>({
+        family:row.family,assetId:row.assetId,roleEvidence:row.roleEvidence||null,
+        applicationMode:row.applicationMode||null,action:row.action||null,
+        ...(row.replacesCandidateAssetId?{replacesCandidateAssetId:row.replacesCandidateAssetId}:{}),
+        sourceFacts:designAssetLibraryContext.assetFacts[row.assetId]||null,
+        selectionState:'REVALIDATE_AT_GRAPHICS_PRODUCTION',
+        automaticReplacementAuthorized:false,
+        independentNativeRuntimeQaRequired:true
+      }))
+    }
+  ])),
+  canonicalHandoff:'tools/vibe2-asset-production-plan.mjs',
+  sourceApplicationOwner:'tools/vibe2-source-worker.mjs',
+  nativeRuntimeQaRequired:true
+};
+designCheckpoint.detailedAssetLibraryHandoff=detailedAssetLibraryHandoff;
+persistDesignCheckpoint();
 writeJson(path.join(base,'design-revised.json'),{
   version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,inputGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,
   sameModelAsDraft:false,revisionApplied:false,reviewMode:'DETERMINISTIC_EVIDENCE_NO_AI_REVIEW',
   deterministicRevalidation:{passed:preGatePass(postRevisionPreGate),authority:'STAGE_GATE_SCORING_V2'},
   status:'DESIGN_BASELINE_CANDIDATE',
+  detailedAssetLibraryHandoff,
   // 코드 생성자가 실제 역할·상태 연결·진행·검증 기준을 같은 원본에서 읽는다.
   // 최종 엄격 검수 전에는 코딩 허가 근거가 아니다.
   codingBlueprint:{
