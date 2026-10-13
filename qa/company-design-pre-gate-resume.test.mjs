@@ -1465,3 +1465,11 @@ test('design library handoff keeps newly authored asset replacement target gated
  assert.match(source,/replacesCandidateAssetId,automaticReplacementAuthorized,independentNativeRuntimeQaRequired/);
  assert.match(source,/replacesCandidateAssetId\?\{replacesCandidateAssetId,automaticReplacementAuthorized:false,independentNativeRuntimeQaRequired:true\}/);
 });
+
+test('asset upgrade review handoff remains unapproved until native runtime QA',()=>{
+ const source=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+ assert.match(source,/designAssetLibraryContext\.replacementReviewQueue/);
+ assert.match(source,/existingAssetId:row\.replacesCandidateAssetId/);
+ assert.match(source,/independentNativeRuntimeQaRequired:true,automaticReplacementAuthorized:false/);
+ assert.match(source,/state:'REVIEW_REQUIRED_NOT_APPLIED'/);
+});
