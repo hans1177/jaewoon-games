@@ -8803,7 +8803,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-13T03:14:23.343Z",
+      "updatedAt": "2026-10-13T03:34:58.752Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8813,7 +8813,7 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-13T03:14:23.343Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-13T03:34:58.752Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -9442,8 +9442,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 38337155843,
-        "testedAt": "2026-10-13T03:14:23.343Z"
+        "workflowRunId": 38339123877,
+        "testedAt": "2026-10-13T03:34:58.752Z"
       }
     },
     {
@@ -10733,10 +10733,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-12T20:41:37.107Z",
+      "updatedAt": "2026-10-13T03:34:58.752Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "horror-escape-room",
@@ -10770,7 +10770,7 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-13T03:34:58.752Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -10817,9 +10817,9 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
       ],
-      "robloxSourceCommit": "19b7fd56153fbcf63c96b812f3a7aaf2bab97f93",
+      "robloxSourceCommit": "fa2b7e42add05f10f86d34cd017923e210889920",
       "robloxSourceBootstrapPassedAt": "2026-10-12T20:41:37.107Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -11348,7 +11348,45 @@
         "updatedAt": "2026-10-12T19:22:04.041Z",
         "authority": "owner-dedicated-roblox-experience-bootstrap"
       },
-      "robloxDedicatedExperiencePublished": false
+      "robloxDedicatedExperiencePublished": false,
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityBuildUpSourceRevision": "fa2b7e42add05f10f86d34cd017923e210889920",
+      "robloxQualityFailureClass": "SOURCE_CONTRACT",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "gameId": "horror-escape-room",
+        "sourceRevision": "fa2b7e42add05f10f86d34cd017923e210889920",
+        "sourceTreeSha": "1e6dbe79920e7b80946387b0b38f4ee02f99f96b",
+        "artifactIdentity": null,
+        "authority": "roblox-source-static-contract-failure",
+        "staticContract": {
+          "pass": false,
+          "blockers": [
+            "CONFIG_GENRE_PROFILE_REQUIRED"
+          ]
+        },
+        "assetRepairContext": {
+          "libraryFingerprint": "04118a83119f8731f784b72d4af59b672cfca774d1d9111b258fd573585a7737",
+          "baselineFingerprint": "1450d9c6b34e4c7a87e32e5fca32fdc70bfee19c4a2c5098738ea43ca6ca4c79",
+          "validatorFingerprint": "adf181319228b79a60bee6a70fa8940c9aaa4250750a266716ca3c01fa018401"
+        },
+        "qualityFailureKinds": [
+          "CONFIG_GENRE_PROFILE_REQUIRED"
+        ],
+        "repairSurfaces": [
+          "SOURCE_CONTRACT"
+        ],
+        "qualityFailureDetails": [
+          {
+            "id": "CONFIG_GENRE_PROFILE_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          }
+        ],
+        "workflowRunId": 38339123877,
+        "testedAt": "2026-10-13T03:34:58.752Z"
+      }
     },
     {
       "gameId": "core-clash-4v4",
@@ -12640,7 +12678,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-13T03:13:49.596Z",
+      "updatedAt": "2026-10-13T03:34:58.752Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -12650,7 +12688,7 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-13T03:13:49.596Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-13T03:34:58.752Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -13287,8 +13325,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 38337155843,
-        "testedAt": "2026-10-13T03:13:49.596Z"
+        "workflowRunId": 38339123877,
+        "testedAt": "2026-10-13T03:34:58.752Z"
       }
     },
     {
@@ -23566,7 +23604,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-13T03:19:28.663Z",
+      "updatedAt": "2026-10-13T03:34:58.752Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -23576,7 +23614,7 @@
         "capturedAt": "2026-10-12T02:23:12.492Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-13T03:19:28.663Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-13T03:34:58.752Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -24165,8 +24203,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 38338441505,
-        "testedAt": "2026-10-13T03:19:28.663Z"
+        "workflowRunId": 38339123877,
+        "testedAt": "2026-10-13T03:34:58.752Z"
       }
     },
     {
@@ -24920,7 +24958,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-13T03:14:01.246Z",
+      "updatedAt": "2026-10-13T03:34:58.752Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -24932,7 +24970,7 @@
       "strictDesignReviewRefreshRequired": true,
       "robloxSourceCommit": "fa2b7e42add05f10f86d34cd017923e210889920",
       "robloxSourceBootstrapPassedAt": "2026-10-12T18:09:47.970Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-13T03:14:01.246Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-13T03:34:58.752Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -25569,8 +25607,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 38337155843,
-        "testedAt": "2026-10-13T03:14:01.246Z"
+        "workflowRunId": 38339123877,
+        "testedAt": "2026-10-13T03:34:58.752Z"
       }
     },
     {
@@ -38188,7 +38226,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-13T03:34:51.667Z",
+  "updatedAt": "2026-10-13T03:34:58.752Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
