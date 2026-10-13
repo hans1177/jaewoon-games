@@ -855,7 +855,7 @@ local function init(p)
  p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
  p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
- p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
+ p:SetAttribute("AutoCombat",true);p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
  p:SetAttribute("PartyCount",0);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0);p:SetAttribute("PartyHuntActive",false);p:SetAttribute("RoomCode",1)
  msg(p,"직업을 고르고 보스를 격파해 AI 동료를 해금해.")
  parties[p]={};clickTimes[p]={};setStats(p,true)
@@ -1974,6 +1974,7 @@ local function validateCharacterFoundation(p,c)
  end)
 end
 
+workspace:SetAttribute("DaechungRuntimeRevision","20261014-FIX4")
 buildWorld()
 
 local function bindPlayer(p)
@@ -2154,8 +2155,19 @@ RunService.Heartbeat:Connect(function(dt)
   local zone=n(p,"CurrentZone",0)
   local h=hum(p);local r=root(p)
   if zone>0 and h and h.Health>0 and r and p:GetAttribute("AutoCombat")~=false and now>=n(p,"NextAutoAttack",0) then
-   if nearestEnemy(r.Position,zone,14) then
-    p:SetAttribute("NextAutoAttack",now+1.05);playerAttack(p,false)
+   local enemy=nearestEnemy(r.Position,zone,21)
+   if enemy then
+    local skillReady=now>=n(p,"NextAutoSkill",0) and (enemy.part.Position-r.Position).Magnitude<=20
+    if skillReady then
+     p:SetAttribute("NextAutoSkill",now+5.5)
+     p:SetAttribute("NextAutoAttack",now+1.2)
+     playerAttack(p,true)
+    elseif (enemy.part.Position-r.Position).Magnitude<=15 then
+     p:SetAttribute("NextAutoAttack",now+1.05)
+     playerAttack(p,false)
+    else
+     p:SetAttribute("NextAutoAttack",now+.23)
+    end
    end
   end
   if zone==0 then local h=hum(p);if h and h.Health<h.MaxHealth then h.Health=math.min(h.MaxHealth,h.Health+25*dt)end end
