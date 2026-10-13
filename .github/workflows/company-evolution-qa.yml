@@ -182,6 +182,8 @@ jobs:
           node --check tools/company-baseline-gate.mjs
           node --check tools/artbook-production-pipeline.mjs
           node --check qa/company-release-production-cycle.test.mjs
+          node --check qa/owner-model-free-production.test.mjs
+          node --test qa/owner-model-free-production.test.mjs
           node --check qa/release-stale-artifact-guard.test.mjs
           node --check qa/company-design-pre-gate-resume.test.mjs
           node --check qa/tier1-development-baseline-gate.test.mjs
