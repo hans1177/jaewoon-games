@@ -673,7 +673,7 @@ local function playCombatAnimation(skillCast)
  local animator=h:FindFirstChildOfClass("Animator")or Instance.new("Animator",h)
  local classId=tostring(p:GetAttribute("ClassId")or"NONE")
  local weaponTier=tonumber(p:GetAttribute("WeaponTier"))or 1
- local atom=skillCast and "CAST" or (weaponTier>=4 and "HEAVY_ATTACK" or classId=="SHADOW" and "LIGHT_ATTACK" or "HEAVY_ATTACK")
+ local atom=skillCast and "CAST_RELEASE" or (weaponTier>=4 and "HEAVY_ATTACK_1" or "LIGHT_ATTACK_1")
  if playCommonMotion(atom)then return end
  local key=skillCast and"LUNGE"or"SLASH";local track=combatTracks[key]
  if not track or track.Parent==nil then
@@ -931,7 +931,8 @@ refreshHud=function()
  place(combat,layout.combat);place(returnButton,layout.village);place(classPanel,layout.class)
  -- 화면 크기에 따라 가로형 카드/하단 내비게이션으로 다시 배치한다.
  local compact=size.X<630
- housingToggle.Position=UDim2.new(0,12,1,compact and -14 or -20)
+ housingToggle.AnchorPoint=Vector2.new(0,0)
+  housingToggle.Position=UDim2.fromOffset(8,compact and 164 or 171)
  housingToggle.Size=UDim2.fromOffset(compact and 76 or 84,compact and 36 or 38)
  housingPanel.Size=UDim2.fromOffset(math.min(320,size.X-22),322)
  housingPanel.Position=UDim2.new(.5,0,1,compact and -60 or -76)
@@ -957,7 +958,7 @@ refreshHud=function()
  local message=RPGMenuModel.hudMessage(menuOpen,classPanel.Visible,startupOpen,bossSceneActive,npcSpeechActive,objectContextActive,tipsVisible)
  objective.Visible=message=="OBJECTIVE";npcSpeech.Visible=message=="SPEECH"
  objectContext.Visible=message=="OBJECT";bossScene.Visible=message=="BOSS";hint.Visible=message=="TIPS"
- notice.Visible=message~="NONE";combat.Visible=not blocked
+ notice.Visible=message~="NONE";combat.Visible=false -- 자동 전투: 모바일 수동 버튼을 표시하지 않는다
  returnButton.Visible=not blocked and (tonumber(p:GetAttribute("CurrentZone"))or 0)>0
  stats.Visible=not blocked;party.Visible=not blocked
  housingToggle.Visible=not blocked
@@ -1074,9 +1075,22 @@ game:GetService("Lighting").ChildAdded:Connect(function(child)
 end)
 task.defer(applyBiomePresentation)
 for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","RelicId","MasteryLevel","SecondAdvancementId","CompanionUnlockCount","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge","Guard","Blocking","GuardBrokenUntil","ParryCount","CurrentRunSeed"})do p:GetAttributeChangedSignal(k):Connect(render)end
+local lastAutoMotion=0
+local lastActionMotion=""
+local function syncAutoMotion()
+ local now=os.clock()
+ local action=tostring(p:GetAttribute("FeedbackEvent")or"")
+ if action~=lastActionMotion then
+  lastActionMotion=action
+  if action:find("PARRY",1,true)then playCommonMotion("PARRY_PERFECT")
+  elseif action:find("DODGE",1,true)then playCommonMotion("DODGE_LEFT")
+  elseif action:find("ATTACK",1,true)or action:find("SKILL",1,true)then playCombatAnimation(action:find("SKILL",1,true)~=nil) end
+ end
+end
 local function bindChar(c)combatTracks={};previewTracks={};local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end
 if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect(bindChar)
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
+ syncAutoMotion()
  local v=tostring(p:GetAttribute("FeedbackEvent")or"")
  if v:match("^SKILL:")then
   playCombatAnimation(true);skillSfx:Play()
