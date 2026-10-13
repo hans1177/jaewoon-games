@@ -595,8 +595,8 @@ versionMark.Name="LiveBuildMarker";versionMark.BackgroundTransparency=.3
 versionMark.BackgroundColor3=Color3.fromRGB(20,35,35)
 local function refreshBuildMark()
  local server=tostring(workspace:GetAttribute("DaechungRuntimeRevision")or"SERVER_OLD")
- versionMark.Text="RPG FIX5 · "..server.." · v"..tostring(game.PlaceVersion)
- versionMark.TextColor3=server=="20261014-FIX5" and Color3.fromRGB(205,245,215) or Color3.fromRGB(255,177,107)
+ versionMark.Text="RPG FIX6 · "..server.." · v"..tostring(game.PlaceVersion)
+ versionMark.TextColor3=server=="20261014-FIX6" and Color3.fromRGB(205,245,215) or Color3.fromRGB(255,177,107)
 end
 workspace:GetAttributeChangedSignal("DaechungRuntimeRevision"):Connect(refreshBuildMark)
 refreshBuildMark()
@@ -666,7 +666,7 @@ avatarToggle.Name="CustomizeNav";avatarToggle.AnchorPoint=Vector2.zero;avatarTog
 avatarToggle.Size=UDim2.fromOffset(84,36)
 avatarPanel=Instance.new("Frame");avatarPanel.Name="CharacterCustomizer"
 avatarPanel.AnchorPoint=Vector2.new(.5,.5);avatarPanel.Position=UDim2.fromScale(.5,.5)
-avatarPanel.Size=UDim2.fromOffset(338,262);avatarPanel.BackgroundColor3=Color3.fromRGB(23,33,44)
+avatarPanel.Size=UDim2.fromOffset(math.min(438,gui.AbsoluteSize.X-20),312);avatarPanel.BackgroundColor3=Color3.fromRGB(23,33,44)
 avatarPanel.ZIndex=45;avatarPanel.Visible=false;avatarPanel.Parent=gui;corner(avatarPanel,14);stroke(avatarPanel,.2)
 local avatarHeader=Instance.new("TextLabel");avatarHeader.BackgroundTransparency=1
 avatarHeader.Position=UDim2.fromOffset(12,8);avatarHeader.Size=UDim2.new(1,-68,0,29)
@@ -677,9 +677,9 @@ local avatarClose=button(avatarPanel,"닫기",Color3.fromRGB(134,69,74))
 avatarClose.Size=UDim2.fromOffset(56,34);avatarClose.Position=UDim2.new(1,-65,0,6);avatarClose.ZIndex=47
 avatarClose.Activated:Connect(function()avatarPanel.Visible=false end)
 local avatarInfo=Instance.new("TextLabel");avatarInfo.BackgroundTransparency=1
-avatarInfo.Position=UDim2.fromOffset(12,43);avatarInfo.Size=UDim2.new(1,-24,0,63)
+avatarInfo.Position=UDim2.fromOffset(155,43);avatarInfo.Size=UDim2.new(1,-168,0,73)
 avatarInfo.TextWrapped=true;avatarInfo.TextXAlignment=Enum.TextXAlignment.Left
-avatarInfo.TextColor3=Color3.fromRGB(217,231,240);avatarInfo.TextSize=14
+avatarInfo.TextColor3=Color3.fromRGB(217,231,240);avatarInfo.TextSize=12
 avatarInfo.Font=Enum.Font.Gotham;avatarInfo.ZIndex=46;avatarInfo.Parent=avatarPanel
 local avatarItems={
  {"유형 변경","CUSTOMIZE_ARCHETYPE"},{"갑옷 변경","CUSTOMIZE_ARMOR"},
@@ -687,9 +687,47 @@ local avatarItems={
 }
 for i,row in ipairs(avatarItems)do
  local b=button(avatarPanel,row[1],Color3.fromRGB(65,96,125))
- b.Name="AvatarAction"..i;b.Size=UDim2.new(.5,-17,0,49)
- b.Position=UDim2.new((i-1)%2*.5,12+((i-1)%2)*5,0,117+math.floor((i-1)/2)*58)
+ b.Name="AvatarAction"..i;b.Size=UDim2.new(1,-168,0,42)
+ b.Position=UDim2.fromOffset(155,118+(i-1)*47)
  b.ZIndex=47;b.Activated:Connect(function()remote:FireServer(row[2])end)
+end
+-- Live 3D preview clones the server-owned outfit without executing cloned scripts.
+local avatarPreview=Instance.new("ViewportFrame")
+avatarPreview.Name="AvatarLivePreview";avatarPreview.Position=UDim2.fromOffset(12,49)
+avatarPreview.Size=UDim2.fromOffset(131,242);avatarPreview.BorderSizePixel=0
+avatarPreview.BackgroundColor3=Color3.fromRGB(39,49,62);avatarPreview.BackgroundTransparency=.12
+avatarPreview.Ambient=Color3.fromRGB(195,205,217)
+avatarPreview.LightColor=Color3.fromRGB(255,242,213)
+avatarPreview.LightDirection=Vector3.new(-1,-1,-1);avatarPreview.ZIndex=46
+avatarPreview.Parent=avatarPanel;corner(avatarPreview,12)
+local previewWorld=Instance.new("WorldModel");previewWorld.Parent=avatarPreview
+local previewCamera=Instance.new("Camera");previewCamera.Parent=avatarPreview;avatarPreview.CurrentCamera=previewCamera
+local previewGeneration=0
+local function refreshAvatarPreview()
+ previewGeneration+=1
+ local ticket=previewGeneration
+ task.delay(.22,function()
+  if ticket~=previewGeneration or not avatarPanel.Parent or not avatarPanel.Visible then return end
+  local character=p.Character
+  if not character or not character.Parent then return end
+  local archived=character.Archivable;character.Archivable=true
+  local ok,model=pcall(function()return character:Clone()end)
+  character.Archivable=archived
+  if not ok or not model then return end
+  model.Name="PreviewCharacter"
+  for _,d in ipairs(model:GetDescendants())do
+   if d:IsA("BaseScript")then d:Destroy()
+   elseif d:IsA("BasePart")then d.Anchored=true;d.CanCollide=false;d.CanTouch=false;d.CanQuery=false end
+  end
+  if ticket~=previewGeneration then model:Destroy();return end
+  previewWorld:ClearAllChildren()
+  model.Parent=previewWorld
+  model:PivotTo(CFrame.new(0,0,0))
+  local boundsCf,boundsSize=model:GetBoundingBox()
+  local center=boundsCf.Position
+  previewCamera.FieldOfView=35
+  previewCamera.CFrame=CFrame.lookAt(center+Vector3.new(0,.2,math.max(9,boundsSize.Y*1.65)),center)
+ end)
 end
 local function refreshAvatarInfo()
  local names={"사무라이","무협 무인","서양 기사"}
@@ -699,7 +737,8 @@ local function refreshAvatarInfo()
  local skin=tonumber(p:GetAttribute("AvatarStyle"))or 1
  local character=p.Character
  local state=character and tostring(character:GetAttribute("SharedPlayerVisualState") or "대기") or "대기"
- avatarInfo.Text=names[index].." | 갑옷 "..a.."/2 | 장식 "..d.."/2 | 피부 "..skin.."/6\n모델 로딩: "..state.." · 마을에서 변경/저장"
+ refreshAvatarPreview()
+ avatarInfo.Text=names[index].." · 갑옷 "..a.."/2 · 장식 "..d.."/2\n피부 "..skin.."/6 · 로딩 "..state.."\n저장: "..tostring(p:GetAttribute("SaveState")or"확인 중")
 end
 for _,key in ipairs({"AvatarArchetype","AvatarArmor","AvatarDecoration","AvatarStyle","SaveState"})do
  p:GetAttributeChangedSignal(key):Connect(refreshAvatarInfo)
