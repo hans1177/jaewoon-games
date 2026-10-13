@@ -5012,8 +5012,11 @@ export function buildVibeAssetProductionPlan({
       const masterUpgradeReviewRequired=Boolean(sourceBound&&currentMasterGlbHash
         &&(!consumerAppliedMasterHash||consumerAppliedMasterHash!==currentMasterGlbHash));
       const compatible=assetSupplyCandidateAllowed(asset,resolvedTarget);
-      const status=!compatible?'ASSET_REPAIR_REQUIRED':sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
-        :sourceFiles.length&&asset?.productionVerified===true&&asset?.rightsPass===true?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED';
+      const eligibleForNativeBinding=sourceFiles.length>0&&asset?.productionVerified===true&&asset?.rightsPass===true;
+      const status=!compatible?'ASSET_REPAIR_REQUIRED'
+        :masterUpgradeReviewRequired?(eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED')
+        :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
+        :eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED';
       return freeze({requirementId:null,assetId:row.assetId,family:row.family,
         role:clean(asset?.role||asset?.subfamily)||null,status,sourceBound,
         sourceFiles:freezeList(sourceFiles),sourceHash:clean(asset?.sourceHash)||null,
