@@ -49,7 +49,8 @@ const INTERNAL_ASSET_TOOL_EXPORT_CACHE=new Map();
 const INTERNAL_ASSET_CACHE_MAX_ENTRIES=2048;
 function assertGameDevelopmentAuthority(){
   const owner=clean(process.env.VIBE2_GAME_DEVELOPMENT_OWNER||'VIBE2_VIBE3').toUpperCase();
-  const modelFree=clean(process.env.VIBE2_PRODUCTION_MODEL_CALLS_ENABLED).toLowerCase()==='false';
+  const modelFree=readJson(path.resolve(process.cwd(),'company-learning/platform-release-roadmap.json'),{})?.ownerModelFreeProduction20261014?.productionModelCallsAllowed===false
+    ||clean(process.env.VIBE2_PRODUCTION_MODEL_CALLS_ENABLED).toLowerCase()==='false';
   const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||(modelFree?'DETERMINISTIC_ONLY':'LOCAL_OLLAMA')).toUpperCase();
   const codexRole=clean(process.env.VIBE2_CODEX_ROLE||'DISABLED').toUpperCase();
   const codexGameSourceWrite=clean(process.env.VIBE2_CODEX_GAME_SOURCE_WRITE||'FORBIDDEN').toUpperCase();
@@ -7013,7 +7014,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     error.vibe2GenerationFailureClass='DETERMINISTIC_ROBLOX_BUILDUP';
     throw error;
   }
-  if(!generated && clean(process.env.VIBE2_PRODUCTION_MODEL_CALLS_ENABLED).toLowerCase()==='false'){
+  if(!generated && (readJson(path.resolve(cwd,'company-learning/platform-release-roadmap.json'),{})?.ownerModelFreeProduction20261014?.productionModelCallsAllowed===false
+    ||clean(process.env.VIBE2_PRODUCTION_MODEL_CALLS_ENABLED).toLowerCase()==='false')){
     // Owner production rule: preserve deterministic fixes, but never invoke any AI
     // text model to fabricate a candidate when a deterministic edit is unavailable.
     const error=new Error('PRODUCTION_AI_MODELS_DISABLED:DETERMINISTIC_CANDIDATE_REQUIRED');
