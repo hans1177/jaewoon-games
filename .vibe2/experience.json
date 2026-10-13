@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -607056,7 +607054,11 @@
         "actions-run:38143775973",
         "reservation-id:38143775973:1",
         "coding-trace:ctrace_e18aaf97d6b5171915c63316",
-        "verified-coding-failure:EDIT_MATCH"
+        "verified-coding-failure:EDIT_MATCH",
+        "base-main:4e619d23889750e6d34ffab5de21f73dd70e9305",
+        "actions-run:38359541089",
+        "reservation-id:38359541089:1",
+        "coding-trace:ctrace_0a2b531dd5ae1ed9d587feda"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -607065,8 +607067,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 1,
-      "confidence": 0.5,
+      "confirmations": 2,
+      "confidence": 0.6667,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -607248,7 +607250,11 @@
         "actions-run:38232924249",
         "reservation-id:38232924249:1",
         "coding-trace:ctrace_955d5bb2a50a2eb34a013158",
-        "verified-coding-failure:TIMEOUT"
+        "verified-coding-failure:TIMEOUT",
+        "base-main:4e619d23889750e6d34ffab5de21f73dd70e9305",
+        "actions-run:38359541089",
+        "reservation-id:38359541089:1",
+        "coding-trace:ctrace_3b7df83d42d7f721e27b96a7"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -607257,8 +607263,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 1,
-      "confidence": 0.5,
+      "confirmations": 2,
+      "confidence": 0.6667,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -607338,6 +607344,90 @@
       "avoidPatterns": [
         "CAPABILITY_AVOID:SOURCE_GENERATION:TIMEOUT",
         "CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:TIMEOUT"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "verifiedExternalLearningApplication": null,
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_5b535b4a2f311591caee3aea",
+      "fingerprint": "fp_q9wck7",
+      "gameId": "__vibe_system__",
+      "engine": "system",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:EDIT_MATCH",
+      "goal": "[VIBE_SELF_ARCHITECTURE_EVOLUTION]\nstructuralSignal=candidate-awaiting-qa-and-deployment\noccurrences=4\nrecoveryGeneration=0\n현재 구조 자체가 반복 병목의 원인인지 기존 소스와 근거를 읽고 판단한다.\n최소 2개 대안을 비교하고 현재 권한/보안/QA 관문을 유지한 채 가장 작은 인과적 구조 개선을 설계한다.\n필요하면 기존 시스템을 재구성하거나 안전한 내부 시스템을 구축하되 wrapper/shadow 중복 시스템은 만들지 않는다.\n신경망 확대 readiness가 아직 PASS가 아니다. 이번 작업은 일반 자기구조 진화만 수행하고 neural expansion은 readiness PASS 이후 다음 구조 진화에서 검토한다.\n구현 후 동일 실패 재현, 전체 관련 회귀, 전후 병목 지표를 비교한다. 개선 증거가 없으면 채택하지 않는다.\n실행 권한 확대, gate/threshold 완화, 검증 생략, fabricated PASS, verified learning 삭제는 금지한다.",
+      "change": "strategy PRIMARY_RESPONSIBILITY_MINIMAL | variant primary | attempts 3 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:EDIT_MATCH",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:38359541089",
+      "evidence": [
+        "base-main:4e619d23889750e6d34ffab5de21f73dd70e9305",
+        "source-generation-failure:EDIT_MATCH",
+        "actions-run:38359541089",
+        "reservation-id:38359541089:1",
+        "coding-trace:ctrace_5b535b4a2f311591caee3aea",
+        "verified-coding-failure:EDIT_MATCH"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:EDIT_MATCH",
+        "CAPABILITY_AVOID:STRATEGY:PRIMARY_RESPONSIBILITY_MINIMAL:FAILURE:EDIT_MATCH"
       ],
       "verified": true,
       "reusable": true,
