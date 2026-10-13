@@ -909,10 +909,10 @@ end)
 -- 메인: 공용 메뉴 모델로 HUD를 배치하고 메뉴·대사·안내를 함께 조정한다.
 for _,item in ipairs({objective,hint,npcSpeech,objectContext,bossScene})do
  item.Parent=notice;item.AnchorPoint=Vector2.zero;item.Position=UDim2.fromOffset(0,0)
- item.Size=UDim2.new(1,-6,0,item==bossScene and 148 or item==objectContext and 88 or 72)
+ item.Size=UDim2.new(1,-6,0,item==bossScene and 148 or item==objectContext and 64 or item==objective and 40 or 52)
 end
-objective.AutomaticSize=Enum.AutomaticSize.Y;hint.AutomaticSize=Enum.AutomaticSize.Y
-npcSpeech.AutomaticSize=Enum.AutomaticSize.Y;npcSpeech.TextYAlignment=Enum.TextYAlignment.Top
+objective.AutomaticSize=Enum.AutomaticSize.None;hint.AutomaticSize=Enum.AutomaticSize.None
+npcSpeech.AutomaticSize=Enum.AutomaticSize.None;npcSpeech.TextYAlignment=Enum.TextYAlignment.Top
 bossText.AutomaticSize=Enum.AutomaticSize.Y;bossText.Size=UDim2.new(1,-18,0,76)
 bossText:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
  bossScene.Size=UDim2.new(1,-6,0,math.max(148,bossText.AbsoluteSize.Y+72))
@@ -932,24 +932,24 @@ refreshHud=function()
  -- 화면 크기에 따라 가로형 카드/하단 내비게이션으로 다시 배치한다.
  local compact=size.X<630
  housingToggle.Position=UDim2.new(0,12,1,compact and -14 or -20)
- housingToggle.Size=UDim2.fromOffset(compact and 76 or 104,compact and 40 or 46)
+ housingToggle.Size=UDim2.fromOffset(compact and 76 or 84,compact and 36 or 38)
  housingPanel.Size=UDim2.fromOffset(math.min(320,size.X-22),322)
  housingPanel.Position=UDim2.new(.5,0,1,compact and -60 or -76)
  stats.BackgroundColor3=Color3.fromRGB(22,43,49)
  party.BackgroundColor3=Color3.fromRGB(24,47,55)
  title.TextColor3=Color3.fromRGB(255,222,152)
- combat.BackgroundTransparency=0.18
+ combat.BackgroundTransparency=1
  combat.BackgroundColor3=Color3.fromRGB(19,38,46)
  corner(combat,17)
  for _,control in ipairs({attack,skill,block,dodge})do
-  control.TextSize=15
+  control.TextSize=13
  end
  title.Position=UDim2.fromOffset(7,2);title.Size=UDim2.new(1,-14,0,18)
  statLine.Position=UDim2.fromOffset(7,23);statLine.Size=UDim2.new(1,-14,0,32)
  classBadge.Position=UDim2.fromOffset(7,56);classBadge.TextTruncate=Enum.TextTruncate.AtEnd
  for index,control in ipairs({attack,skill,block,dodge})do
-  control.Size=UDim2.fromOffset(60,54)
-  control.Position=UDim2.fromOffset((index-1)%2*68,math.floor((index-1)/2)*62)
+  control.Size=UDim2.fromOffset(55,48)
+  control.Position=UDim2.fromOffset((index-1)%2*62,math.floor((index-1)/2)*55)
  end
  local startupOpen=startupOverlay.Parent~=nil
  local menuOpen=gui:GetAttribute("RPGMenuOpen")==true
