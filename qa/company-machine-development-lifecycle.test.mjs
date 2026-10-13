@@ -167,7 +167,7 @@ assert.match(webRuntime,/company-selected-platform-router\.mjs/);
 // 같은 개정의 수동 전체 배치만 합치고, 개별 게임과 다른 개정 실행은 독립시킨다.
 const coordinatorGate=webRuntime.split('\n  coordinator-gate:\n')[1]?.split('\n  native-plan:\n')[0]||'';
 assert.ok(coordinatorGate.length>0);
-assert.match(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ \(github\.event_name == 'workflow_dispatch' && !inputs\.game_id && format\('batch-\{0\}', github\.sha\)\) \|\| github\.run_id \}\}/);
+assert.match(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ github\.run_id \}\}/);
 assert.doesNotMatch(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ inputs\.game_id/);
 assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=/);
 assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
