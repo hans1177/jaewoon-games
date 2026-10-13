@@ -128,6 +128,23 @@ local handlers = {
   ["scope-mobileux-f8e0f864a6"] = scopeHandler6,
 }
 
+-- 서버 권한 COOP 상태 동기화: 원본 게임 행동과 개별 저장/보상 유지.
+local function broadcastMultiplayerSync()
+  local members = Players:GetPlayers()
+  local participants = {}
+  local sharedProgress = nil
+  for _, member in ipairs(members) do
+    local progress = readNumber(member, "Progress", 0)
+    sharedProgress = sharedProgress and math.min(sharedProgress, progress) or progress
+    table.insert(participants, {UserId = member.UserId, Progress = progress})
+  end
+  remote:FireAllClients("MULTIPLAYER_SYNC", {
+    ParticipantCount = #members,
+    Participants = participants,
+    SharedObjective = {Kind = "MONSTER_ADVENTURE_COOP", Progress = sharedProgress or 0, MinimumParticipants = 2},
+  })
+end
+
 Players.PlayerAdded:Connect(function(player)
   local ok, saved = pcall(function()
     return store:GetAsync("player:" .. player.UserId)
@@ -153,6 +170,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
   handler(player)
+  broadcastMultiplayerSync()
 end)
 Players.PlayerRemoving:Connect(function(player)
   local snapshot = {}
