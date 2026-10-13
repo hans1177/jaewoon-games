@@ -1186,9 +1186,9 @@ jobs:
 
   worker:
     needs: [reserve, model_cache]
+    runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
     if: always() && needs.reserve.result == 'success' && needs.reserve.outputs.worker_count != '0' && (!contains('game-primary,asset-development', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || needs.reserve.outputs.verified_learning_memory_sha != '')
     # Roblox asset work stays on x64 for the native Luau toolchain; Unity asset work keeps the dedicated ARM lane.
-    runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
     # game-primary BUILD_UP과 asset 품질 작업은 소스 생성·네이티브 그래픽 작성·impact-scoped QA를 끝까지 수행할 수 있게 최대 60분을 확보한다.
     # 개별 모델 호출 timeout/retry와 QA/release gate는 그대로 유지하고, 작업이 끝나면 즉시 종료한다.
     timeout-minutes: ${{ ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' || (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary') && 60 || 22 }}
