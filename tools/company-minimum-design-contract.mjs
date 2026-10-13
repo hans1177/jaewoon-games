@@ -50,7 +50,11 @@ export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=
   const multiplayerPolicy=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../company-learning/platform-release-roadmap.json'),'utf8'))
     ?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
   const multiplayerMandatory=multiplayerPolicy.required===true&&multiplayerPolicy.scope==='ALL_ACTIVE_AND_NEW_GAMES';
-  const authoredMode=clean(content?.multiplayerMode||content?.robloxBuildProfile?.playMode).toUpperCase();
+  const declaredMode=clean(content?.multiplayerMode).toUpperCase();
+  const profileMode=clean(content?.robloxBuildProfile?.playMode).toUpperCase();
+  const authoredMode=['COOP','COMPETITIVE','HYBRID'].includes(declaredMode)
+    ?declaredMode:['COOP','COMPETITIVE','HYBRID'].includes(profileMode)&&declaredMode!=='SINGLE'
+      ?profileMode:declaredMode;
   if(multiplayerMandatory&&!['COOP','COMPETITIVE','HYBRID'].includes(authoredMode))
     blockers.push('MINIMUM_MULTIPLAYER_DESIGN_EXTENSION_REQUIRED');
   if(!common)blockers.push('MINIMUM_COMMON_CORE_INCOMPLETE');
