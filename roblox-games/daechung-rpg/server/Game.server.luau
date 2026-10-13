@@ -258,6 +258,24 @@ local function decorateZoneAssets(parent,z,requestedSeed)
     decoration:SetAttribute("BiomeTheme",z.Theme)
    end
   end
+  -- 자동 바이옴 지형: 기존 포탈 길과 전투장 중앙을 피해서 암벽·둔덕·식생 군락을 생성한다.
+  local terrainColors={
+   MEADOW=Color3.fromRGB(98,143,88),CANYON=Color3.fromRGB(159,109,78),
+   RUINS=Color3.fromRGB(113,110,125),SNOW=Color3.fromRGB(195,210,219),ABYSS=Color3.fromRGB(88,75,105)
+  }
+  local groundColor=terrainColors[z.Theme] or Color3.fromRGB(115,120,112)
+  for i=1,18 do
+   local theta=(i/18)*math.pi*2+phase
+   local radius=rng:NextNumber(210,265)
+   local point=z.Center+Vector3.new(math.cos(theta)*radius,0,math.sin(theta)*radius)
+   local height=rng:NextNumber(8,20)
+   local mound=Instance.new("Part")
+   mound.Name="BiomeRidge";mound.Anchored=true;mound.CanCollide=true
+   mound.Material=z.Theme=="SNOW" and Enum.Material.Snow or z.Theme=="MEADOW" and Enum.Material.Grass or Enum.Material.Slate
+   mound.Color=groundColor;mound.Size=Vector3.new(rng:NextNumber(14,27),height,rng:NextNumber(16,30))
+   mound.CFrame=CFrame.new(point+Vector3.new(0,height/2-.4,0))*CFrame.Angles(0,theta,math.rad(rng:NextNumber(-7,7)))
+   mound:SetAttribute("BiomeTheme",z.Theme);mound.Parent=scenery
+  end
   -- Loading can yield. A newer empty-zone run owns the scene; never append a stale generation.
   if not parent.Parent or biomeRunState[z.Id].generation~=generation then scenery:Destroy();return end
   local old=parent:FindFirstChild("NativeBiomeScenery");if old then old:Destroy()end
