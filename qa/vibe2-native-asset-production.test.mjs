@@ -4921,3 +4921,17 @@ test('universal library matching includes lobby environment BGM SFX items and ef
   assert.ok(result.requiredFamilies.includes(family),family+' must be mapped');
  }
 });
+
+test('newly registered better shared asset becomes safe adaptation candidate for existing consumer',()=>{
+ const registry={assets:[
+  {id:'old-prop',family:'PROP',role:'ITEM',consumerGameIds:['demo'],qualityScore:42},
+  {id:'new-prop',family:'PROP',role:'ITEM',qualityScore:91}
+ ]};
+ const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item',registry});
+ const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
+ assert.equal(upgrade?.assetId,'new-prop');
+ assert.equal(upgrade?.replacesCandidateAssetId,'old-prop');
+ assert.equal(upgrade?.automaticReplacementAuthorized,false);
+ assert.equal(upgrade?.independentNativeRuntimeQaRequired,true);
+ assert.equal(summary.runtimeVerificationGranted,false);
+});
