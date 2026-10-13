@@ -431,12 +431,12 @@ test('exact Roblox runs deduplicate before work without cancelling an active bui
   assert.match(freshness,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
 });
 
-// 동일 병합의 자동 이벤트와 복구 이벤트를 함께 보존하면서 대기 작업 취소를 방지한다.
-test('Roblox source sync isolates pending push and merged PR events',()=>{
+// 병합 복구 이벤트를 보존하고 이벤트별 대기열을 분리한다.
+test('Roblox source sync preserves both triggers without pending cross-cancellation',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
-  assert.match(workflow,/  push:\\n    branches: \\[main\\]/);
-  assert.match(workflow,/  pull_request:\\n    branches: \\[main\\]\\n    types: \\[closed\\]/);
-  assert.match(workflow,/  workflow_dispatch:/);
-  assert.match(workflow,/group: roblox-source-drift-runtime-writer-v2-\\$\\{\\{ github\\.event_name \\}\\}/);
-  assert.match(workflow,/cancel-in-progress: false/);
+  assert.ok(workflow.includes('  push:\n    branches: [main]'));
+  assert.ok(workflow.includes('  pull_request:\n    branches: [main]\n    types: [closed]'));
+  assert.ok(workflow.includes('  workflow_dispatch:'));
+  assert.ok(workflow.includes('group: roblox-source-drift-runtime-writer-v2-${{ github.event_name }}'));
+  assert.ok(workflow.includes('cancel-in-progress: false'));
 });
