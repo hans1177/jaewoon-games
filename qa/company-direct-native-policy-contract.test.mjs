@@ -139,10 +139,10 @@ test('architecture preserves Unity Web adapters behind the owner hold',()=>{
   assert.doesNotMatch(runtime,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS=/);
   assert.doesNotMatch(runtime,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
   assert.match(runtime,/grandfatherGameIds/);
-  assert.match(runtime,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(runtime,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$game_id"/);
   assert.match(runtime,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.doesNotMatch(runtime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
-  assert.doesNotMatch(runtime,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
+  assert.doesNotMatch(runtime,/gh workflow run (?:company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   assert.match(webWorkflow,/Run Unity Web independent QA/);
   assert.match(webWorkflow,/Run Unity Web regression/);
