@@ -4893,3 +4893,45 @@ test('shared RPG menu only offers equip action for real Tools',()=>{
   assert.match(shared,/itemAction\.Visible=row\.tool~=nil/);
   assert.match(shared,/row\.tool and "배낭에서 선택한 도구야/);
 });
+
+test('Roblox native GLB usage maps exact loaded asset ID without promoting runtime verification',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-native-id-consumer-'));
+ try{
+  const dir=path.join(root,'roblox-games','sample','server');
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'Game.server.luau'),'local x = AssetService:LoadAssetAsync(AssetService, 110808635634531)\\n-- AssetService:LoadAssetAsync(AssetService, 999999999999999)\\n');
+  const registry={assets:[
+   {id:'shared-wolf',family:'CREATURE',robloxAssetId:'110808635634531',productionVerified:false},
+   {id:'unbound-wolf',family:'CREATURE',robloxAssetId:'999999999999999',productionVerified:false}
+  ]};
+  const result=synchronizeSourceBoundAssetConsumers({repoRoot:root,registry,gameCatalog:{games:[{id:'sample',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]}});
+  assert.equal(result.bindings.length,1);
+  assert.equal(result.bindings[0].assetId,'shared-wolf');
+  assert.equal(result.bindings[0].mode,'NATIVE_RUNTIME_LOAD_CALL');
+  assert.equal(result.bindings[0].runtimeVerified,false);
+  assert.deepEqual(result.registry.assets[0].sourceBoundConsumerGameIds,['sample']);
+  assert.equal(result.registry.assets[1].sourceBoundConsumerGameIds,undefined);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('universal library matching includes lobby environment BGM SFX items and effects',()=>{
+ const registry={assets:[]};
+ const result=buildAssetSupplyDecisionSummary({target:'roblox',gameId:'demo',request:'로비 배경 BGM 효과음 아이템 날씨 파티클',registry});
+ for(const family of ['BUILDING','ENVIRONMENT','PROP','UI','AUDIO','VFX','MATERIAL','WEAPON']){
+  assert.ok(result.requiredFamilies.includes(family),family+' must be mapped');
+ }
+});
+
+test('newly registered better shared asset becomes safe adaptation candidate for existing consumer',()=>{
+ const registry={assets:[
+  {id:'old-prop',family:'PROP',role:'ITEM',consumerGameIds:['demo'],qualityScore:42},
+  {id:'new-prop',family:'PROP',role:'ITEM',qualityScore:91}
+ ]};
+ const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item',registry});
+ const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
+ assert.equal(upgrade?.assetId,'new-prop');
+ assert.equal(upgrade?.replacesCandidateAssetId,'old-prop');
+ assert.equal(upgrade?.automaticReplacementAuthorized,false);
+ assert.equal(upgrade?.independentNativeRuntimeQaRequired,true);
+ assert.equal(summary.runtimeVerificationGranted,false);
+});

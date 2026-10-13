@@ -1210,7 +1210,13 @@ const ASSET_REQUIREMENT_FAMILY_RULES=Object.freeze([
   Object.freeze({re:/(?:village|town|마을)/i,families:Object.freeze(['BUILDING','ENVIRONMENT','PROP','MATERIAL'])}),
   Object.freeze({re:/(?:housing|house|home|하우징|주택|집짓|건축)/i,families:Object.freeze(['BUILDING','PROP','MATERIAL','UI'])}),
   Object.freeze({re:/(?:explor|adventure|탐험|탐색)/i,families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','VFX','AUDIO'])}),
-  Object.freeze({re:/(?:ui|hud|menu|interface|버튼|메뉴|인벤토리|인터페이스)/i,families:Object.freeze(['UI','AUDIO','MOTION'])})
+  Object.freeze({re:/(?:ui|hud|menu|interface|버튼|메뉴|인벤토리|인터페이스)/i,families:Object.freeze(['UI','AUDIO','MOTION'])}),
+  Object.freeze({re:/(?:lobby|hub|spawn|waiting.room|로비|대기실|시작 화면|메인 화면)/i,families:Object.freeze(['BUILDING','ENVIRONMENT','PROP','UI','AUDIO','VFX'])}),
+  Object.freeze({re:/(?:background|skybox|terrain|landscape|scenery|배경|지형|하늘|풍경|맵 꾸미기)/i,families:Object.freeze(['ENVIRONMENT','MATERIAL','PROP','VFX'])}),
+  Object.freeze({re:/(?:bgm|soundtrack|music|theme.song|배경음악|브금|음악)/i,families:Object.freeze(['AUDIO'])}),
+  Object.freeze({re:/(?:sfx|sound.effect|foley|ambien(?:t|ce).sound|효과음|환경음|발소리|타격음)/i,families:Object.freeze(['AUDIO'])}),
+  Object.freeze({re:/(?:item|loot|chest|pickup|inventory|equipment|아이템|전리품|상자|장비|소지품|수집품)/i,families:Object.freeze(['PROP','WEAPON','MATERIAL','UI'])}),
+  Object.freeze({re:/(?:particle|weather|fog|lighting|rain|snow|fire.effect|파티클|날씨|안개|조명|비 효과|눈 효과|환경 효과)/i,families:Object.freeze(['VFX','ENVIRONMENT','MATERIAL'])})
 ]);
 // 역할명이 없는 일반 요청에서도 호환되는 등록 자산을 먼저 재사용한다.
 // 요구사항에 구체적 역할이 있으면 이 일반 매칭은 사용하지 않는다.
@@ -1219,7 +1225,13 @@ const ASSET_GENERIC_DEMAND_TERMS=Object.freeze({
   MOTION:Object.freeze(['motion','animation','action','모션','애니메이션','액션']),
   SKILL:Object.freeze(['skill','spell','ability','스킬','마법','특수기']),
   VFX:Object.freeze(['vfx','effect','이펙트','효과','스킬','액션']),
-  AUDIO:Object.freeze(['audio','sound','효과음','사운드'])
+  AUDIO:Object.freeze(['audio','sound','sfx','bgm','music','효과음','배경음악','브금','사운드']),
+  BUILDING:Object.freeze(['building','lobby','structure','건물','로비']),
+  ENVIRONMENT:Object.freeze(['environment','background','skybox','배경','환경','지형']),
+  PROP:Object.freeze(['prop','item','pickup','loot','소품','아이템','전리품']),
+  UI:Object.freeze(['ui','menu','lobby','hud','메뉴','로비','인터페이스']),
+  WEAPON:Object.freeze(['weapon','equipment','무기','장비']),
+  MATERIAL:Object.freeze(['material','texture','재질','텍스처'])
 });
 function assetRuntimeConsumerVerified(asset={}){
   const state=clean(asset.runtimeVerificationState).toUpperCase();
@@ -1445,6 +1457,19 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   for(const family of requiredFamilies){
     const usedCount=currentFamilyCounts.get(family)||0;
     if(usedCount){
+      // Newly registered shared assets participate in every planning cycle, even where a
+      // lower-quality asset is already bound. A candidate never silently replaces live source.
+      const currentAsset=currentPrimaryByFamily.get(family);
+      const improved=bestReusableByFamily.get(family);
+      const currentScore=Number(currentAsset?.internalAuditScore??currentAsset?.qualityScore??-1);
+      const improvedScore=Number(improved?.internalAuditScore??improved?.qualityScore??-1);
+      if(improved&&clean(improved.id)!==clean(currentAsset?.id)&&improvedScore>=currentScore+10){
+        pushAction({action:'ADAPT',assetId:clean(improved.id),family,
+          reason:'NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
+          replacesCandidateAssetId:clean(currentAsset?.id),
+          automaticReplacementAuthorized:false,independentNativeRuntimeQaRequired:true,
+          roleEvidence:roleEvidenceById.get(clean(improved.id))});
+      }
       if(!(repairsByFamily.get(family)||[]).length){
         const asset=currentPrimaryByFamily.get(family),mode=internalAssetPlatformApplicationMode(asset,target);
         const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
@@ -1643,7 +1668,7 @@ function sourceConsumerUsageSource(source=''){
 function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   const gameId=clean(game.id||game.gameId);
   const roots=sourceConsumerRoots({repoRoot,game});
-  const assetPaths=new Map(),tokens=new Map(),usageTokens=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
+  const assetPaths=new Map(),tokens=new Map(),usageTokens=new Map(),nativeAssetIds=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
   let scannedFileCount=0,scannedBytes=0;
   const addToken=(target,token,file)=>{
     const normalized=clean(token).toLowerCase();
@@ -1696,6 +1721,10 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         for(const match of source.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
         }
+        // Count native imported IDs only at executable load sites, never mere catalog declarations.
+        if(root.relative.startsWith('roblox-games/')){
+          for(const match of usageBody.matchAll(/\b(?:LoadAssetAsync|LoadAsset)\s*\(\s*(?:(?:[A-Za-z_]\w*)\s*,\s*)?(\d{6,})\s*\)/g))addToken(nativeAssetIds,match[1],relative);
+        }
         // Unity Resources.Load consumes imported assets without their extensions.
         // Resolve only exact existing native files referenced by executable game code.
         // This is source-bound evidence, never proof of an actual rendered frame.
@@ -1743,7 +1772,7 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   }
   fingerprintRows.sort((a,b)=>a[0].localeCompare(b[0]));
   const snapshot=Object.freeze({
-    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,usageTokens,managedByFamily,managedFiles,
+    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,usageTokens,nativeAssetIds,managedByFamily,managedFiles,
     scannedFileCount,scannedBytes,
     sourceFingerprint:crypto.createHash('sha256').update(JSON.stringify(fingerprintRows)).digest('hex')
   });
@@ -1761,7 +1790,8 @@ function sourceConsumerAssetPaths(asset={}){
 function sourceConsumerIdentityTokens(asset={}){
   return unique([
     asset.skinId,asset.atomId,asset.assetId,
-    asset?.bindingHint?.skinId,asset?.bindingHint?.atomId,asset?.bindingHint?.assetId
+    asset?.bindingHint?.skinId,asset?.bindingHint?.atomId,asset?.bindingHint?.assetId,
+    asset.robloxAssetId,asset?.platformVariants?.ROBLOX?.assetId
   ].map(clean).filter(value=>value.length>=2));
 }
 export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),registry={},gameCatalog=null}={}){
@@ -1819,6 +1849,9 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
           ...directPaths.map(assetPath=>snapshot.assetPaths.get(assetPath)),
           ...literalIds.map(value=>snapshot.usageTokens.get(value.toLowerCase()))
         ];
+      }else if(meta.family&&clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId)&&snapshot.nativeAssetIds.has(clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId))){
+        mode='NATIVE_RUNTIME_LOAD_CALL';matchedIds=[clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId)];
+        evidenceFiles=[snapshot.nativeAssetIds.get(matchedIds[0])];
       }else if(managed.length&&(asset.atomId||asset.assetId||asset?.bindingHint?.configCollection)){
         mode='MANAGED_LIBRARY_IDENTITY';matchedIds=managed;
         evidenceFiles=[
@@ -2826,8 +2859,11 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
     throw new Error('VIBE_NATIVE_MODULE_UNKNOWN:'+selected);
   const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
     ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
-  const linkedSourceModel=clean(librarySource?.sourceModel);
-  const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel)||linkedSourceModel);
+  // Image-to-mesh takes precedence over an optional library model fallback.
+  // An explicitly supplied model together with an image is still an invalid dual source.
+  const explicitSourceModel=clean(task.assetAuthoring?.sourceModel);
+  const linkedSourceModel=imageRequested?'':clean(librarySource?.sourceModel);
+  const modelRequested=Boolean(explicitSourceModel||linkedSourceModel);
   const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai'
     :modelRequested?(/\.fbx$/i.test(clean(task.assetAuthoring?.sourceModel))?'animation':'object'):'auto';
   const meshModel=clean(task.assetAuthoring?.meshModel||'auto').toLowerCase();
