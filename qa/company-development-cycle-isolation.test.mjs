@@ -40,13 +40,14 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
 });
 
 
-test('only same-revision batch coordinator jobs coalesce, while game lanes stay independent',()=>{
+test('coordinator runners stay independent while active batch admission deduplicates',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const start=workflow.indexOf('  coordinator-gate:\n');
   const end=workflow.indexOf('\n  native-plan:',start);
   assert.ok(start>=0&&end>start);
   const gate=workflow.slice(start,end);
-  assert.ok(gate.includes("group: company-development-confirmed-coordinator-gate-${{ (github.event_name == 'workflow_dispatch' && !inputs.game_id && format('batch-{0}', github.sha)) || github.run_id }}"));
+  assert.ok(gate.includes("group: company-development-confirmed-coordinator-gate-${{ github.run_id }}"));
+  assert.doesNotMatch(gate,/format\('batch-\{0\}', github\.sha\)/);
   assert.match(gate,/cancel-in-progress: false/);
   assert.match(gate,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
   // No unstarted queued/pending workflow may monopolize this source revision's development batch.
