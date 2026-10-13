@@ -672,6 +672,15 @@ local function applyPlayerAppearance(p)
  body.LeftLegColor3=colors[choice];body.RightLegColor3=colors[choice]
  body.TorsoColor3=colors[choice];body.Parent=c
  c:SetAttribute("AvatarStyle",choice)
+ local head=c:FindFirstChild("Head")
+ if head then
+  local old=head:FindFirstChild("AvatarStyleMark");if old then old:Destroy()end
+  local band=Instance.new("Part");band.Name="AvatarStyleMark";band.Anchored=false;band.CanCollide=false;band.Massless=true
+  band.Size=Vector3.new(1.05,.28,1.08);band.Material=Enum.Material.Fabric
+  local palettes={Color3.fromRGB(53,39,32),Color3.fromRGB(204,160,72),Color3.fromRGB(67,82,120),Color3.fromRGB(153,54,51),Color3.fromRGB(61,123,83),Color3.fromRGB(127,88,148)}
+  band.Color=palettes[choice];band.CFrame=head.CFrame*CFrame.new(0,.47,0);band.Parent=head
+  local weld=Instance.new("WeldConstraint");weld.Part0=head;weld.Part1=band;weld.Parent=band
+ end
  task.spawn(bindSharedPlayerVisual,c,tostring(p:GetAttribute("ClassId")or"NONE"))
  local weaponTier=n(p,"WeaponTier",1);local armorTier=n(p,"ArmorTier",1);local gear=c:FindFirstChild("DaechungClassGear")
  -- 코난풍 무기 단계별 외형: 기본 검→도끼→창→망치→강철 대검.
@@ -1823,7 +1832,7 @@ local function houseAction(p,action)
  if n(p,"Gold",0)<cost then msg(p,"집 꾸미기에 필요한 골드가 부족해. "..cost.."G 필요");return false end
  p:SetAttribute("Gold",n(p,"Gold",0)-cost)
  p:SetAttribute("HouseLevel",newLevel);p:SetAttribute("HouseFurniture",newFurniture);p:SetAttribute("HouseModules",newModules)
- refreshHouse(p);msg(p,"하우징 변경 완료 · "..cost.."G");feedback(p,"BUILD");return true
+ refreshHouse(p);teleportPlayer(p,housePosition(p)+Vector3.new(0,5,-12));msg(p,"건축 변경 적용 · 내 집에서 확인해 ("..cost.."G)");feedback(p,"BUILD");return true
 end
 
 remote.OnServerEvent:Connect(function(p,a)
@@ -1992,7 +2001,7 @@ RunService.Heartbeat:Connect(function(dt)
   if e.hp>0 and e.part.Parent then
    local z=portalDef(e.zone)
    if e.dormant==true then
-    e.part.AssemblyLinearVelocity=Vector3.zero
+    e.part.AssemblyLinearVelocity=Vector3.zero;e.part:SetAttribute("MotionState","IDLE")
    else
    local target,bd=nil,z.Aggro
    for _,p in ipairs(Players:GetPlayers())do
