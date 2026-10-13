@@ -681,7 +681,7 @@ test('an explicit migration id without durable native progress cannot bypass the
 });
 
 
-test('upper-platform orchestration uses reusable workflows instead of rate-limited API dispatch',()=>{
+test('upper-platform orchestration keeps independent native game dispatch with Unity hold',()=>{
   const root=process.cwd();
   const orchestration=fs.readFileSync(path.join(root,'.github','workflows','company-development-confirmed-runtime.yml'),'utf8');
   const roblox=fs.readFileSync(path.join(root,'.github','workflows','company-development-roblox-runtime.yml'),'utf8');
@@ -691,11 +691,11 @@ test('upper-platform orchestration uses reusable workflows instead of rate-limit
 
   assert.match(orchestration,/eligible_json:/);
   assert.doesNotMatch(orchestration,/unity_web_json:/);
-  assert.match(orchestration,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(orchestration,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$game_id"/);
   assert.match(orchestration,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.doesNotMatch(orchestration,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.doesNotMatch(orchestration,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-  assert.doesNotMatch(orchestration,/gh workflow run company-development-(?:roblox|unity)-runtime\.yml/);
+  assert.doesNotMatch(orchestration,/gh workflow run company-development-unity-runtime\.yml/);
   assert.doesNotMatch(orchestration,/gh workflow run unity-web-(?:first-stage-build|floor-source-bootstrap)\.yml/);
 
   for(const workflow of [roblox,unity,web,bootstrap])assert.match(workflow,/workflow_call:/);
