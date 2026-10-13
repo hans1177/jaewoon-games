@@ -81,3 +81,13 @@ test('Unity Web active push runs are coalesced by exact game ID without serializ
   assert.ok(workflow.includes('UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE='));
   assert.match(workflow,/fail-fast: false/);
 });
+
+
+test('director drain never cancels independent game scheduler',()=>{
+  const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
+  const drain=director.slice(director.indexOf("while IFS='|' read -r run_id reason; do"));
+  assert.match(drain,/DIRECTOR_INDEPENDENT_GAME_SCHEDULER_PRESERVED=/);
+  assert.match(drain,/CENTRAL_DEVELOPMENT_\\\*/);
+  assert.match(drain,/CENTRAL_MANUAL_BATCH_\\\*/);
+  assert.ok(drain.indexOf('DIRECTOR_INDEPENDENT_GAME_SCHEDULER_PRESERVED=')<drain.indexOf('pre_cancel_state='));
+});
