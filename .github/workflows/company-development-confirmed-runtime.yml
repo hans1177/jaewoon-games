@@ -191,7 +191,7 @@ jobs:
           };
           const currentControlSha=String(process.env.CURRENT_CONTROL_SHA||'').trim();
           if(!/^[a-f0-9]{40}$/i.test(currentControlSha))throw new Error('ROBLOX_CURRENT_CONTROL_SHA_REQUIRED');
-          const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ');
+          const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ',currentControlSha);
           const activeUnity=activeIds('/tmp/active-unity-native-runs.json','Unity runtime · ');
           const nativeIds=[],robloxIds=[],unityIds=[],blockedIds=[],grandfatheredIds=[];
           for(const item of rows){
