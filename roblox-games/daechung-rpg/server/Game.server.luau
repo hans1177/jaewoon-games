@@ -1174,6 +1174,9 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
    add("KnightShield",Vector3.new(.5,3.3,2.6),Vector3.new(-2.7,-1.2,0),Color3.fromRGB(67,60,83),Enum.Material.Metal)
  end
  label(rootPart,boss and("BOSS · "..displayName)or displayName,boss and Color3.fromRGB(255,198,105)or Color3.new(1,1,1),boss and 58 or 32)
+ -- Reuse existing native-imported creature GLBs; preserve scripted root, combat and geometry fallback.
+ local sharedEnemyId=not boss and Style.SharedEnemyModels and Style.SharedEnemyModels[z.Theme]
+ if sharedEnemyId then task.spawn(bindNativeNpcVisual,rootPart,sharedEnemyId)end
  return rootPart
 end
 local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)
