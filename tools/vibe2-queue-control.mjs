@@ -340,6 +340,41 @@ export function recoverTransientWorkLockBlocks(queueInput) {
   return{recovered,queue:recovered?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue};
 }
 
+// Reconsider stale, generic work-order blocks only once per pinned main contract.
+// Never treat a missing work order as success: reservation, generation and QA still run normally.
+export function recoverContractScopedWorkOrderBlocks(queueInput,{contractSha='',lane='game-primary'}={}) {
+  const queue=createVibeContinuousQueue(queueInput);
+  const sha=clean(contractSha).toLowerCase();
+  if(clean(lane)!=='game-primary'||!/^[a-f0-9]{40}$/.test(sha))return{recovered:0,queue};
+  const marker=`work-order-contract-retry:${sha}`;
+  const occupiedGames=new Set(queue.tasks.filter(task=>
+    ['queued','running'].includes(clean(task.status).toLowerCase())
+    &&clean(task.executionLane)==='GAME_PRIMARY'
+  ).map(task=>clean(task.gameId)).filter(Boolean));
+  let recovered=0;
+  const tasks=queue.tasks.map(task=>{
+    const gameId=clean(task.gameId);
+    if(!gameId||occupiedGames.has(gameId)
+      ||clean(task.status).toLowerCase()!=='blocked'
+      ||clean(task.blocker)!=='work-order-not-runnable'
+      ||clean(task.executionLane)!=='GAME_PRIMARY'
+      ||clean(task.target).toLowerCase()!=='roblox'
+      ||clean(task.department).toLowerCase()!=='development'
+      ||clean(task.type).toLowerCase()!=='implementation'
+      ||task.ownerDevelopmentHold===true
+      ||(task.evidence||[]).includes(marker))return task;
+    occupiedGames.add(gameId); // Reopen at most one blocked order per game per reserve.
+    recovered+=1;
+    return{
+      ...task,...clearedReservation(),status:'queued',blocker:null,
+      lastOutcome:'CONTRACT_SCOPED_WORK_ORDER_REEVALUATION',
+      neuronExpectedVariants:0,neuronResults:[],
+      evidence:[...new Set([...(task.evidence||[]),marker,'recovery:work-order-generic-block-reevaluation:v1'])]
+    };
+  });
+  return{recovered,queue:recovered?createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks}):queue};
+}
+
 export function recoverCompletedRunningReservations(queueInput, {
   completedRunIds = [],
   recoveryOutcome = 'COMPLETED_RESERVATION_RUN_RECOVERED',
@@ -1125,6 +1160,10 @@ export function runQueueCommand(args = {}) {
   const webGameFlowTarget=reservationPolicy?.developmentSpeedExecution?.webGameFlow?.enabled===true?reservationPolicy.developmentSpeedExecution.webGameFlow.targetConcurrentGames:0;
   const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
   queue=transientLockRecovery.queue;
+  const contractWorkOrderRecovery=['reserve','reserve-batch'].includes(command)
+    ?recoverContractScopedWorkOrderBlocks(queue,{contractSha:args['contract-sha'],lane:clean(args.lane)||'game-primary'})
+    :{recovered:0,queue};
+  queue=contractWorkOrderRecovery.queue;
   let result;
   if (command === 'verify-worker-sync') {
     const sync=verifyVibeWorkerSynchronization(queue,{
@@ -1189,7 +1228,7 @@ export function runQueueCommand(args = {}) {
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
-    if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
+    if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || contractWorkOrderRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget }) };
   } else if (command === 'reserve-batch') {
     const executionLane=clean(args.lane)||'game-primary';
@@ -1208,7 +1247,7 @@ export function runQueueCommand(args = {}) {
       speculativeExpansionAllowed:speculativeExpansion.allowed,
       speculativeExpansionReason:speculativeExpansion.reason
     });
-    if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
+    if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || contractWorkOrderRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     if (clean(args.output)) {
       const createdAt=new Date().toISOString();
       const requestedMaxConcurrentTasks=reserved.selection?.requestedMaxConcurrentTasks ?? reservationMaxConcurrentTasks;
@@ -1393,6 +1432,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_WORKER_SYNC_TASK=${result.taskId||'NONE'}`);
     console.log(`VIBE2_WORKER_SYNC_RESERVATION=${result.reservationId||'NONE'}`);
   }
+  if(contractWorkOrderRecovery.recovered)console.log(`VIBE2_CONTRACT_WORK_ORDER_REQUEUED=${contractWorkOrderRecovery.recovered}`);
   if(result.reservationMaxConcurrentTasks)console.log(`VIBE2_LANE_RESERVATION_MAX=${result.reservationMaxConcurrentTasks}`);
   if(result.command==='fan-in')console.log(`VIBE2_FANIN_ADAPTIVE_ELIGIBLE=${result.adaptiveEligible===true?'YES':'NO'}`);
   if(Array.isArray(result.dependencyReadyTaskIds)){
