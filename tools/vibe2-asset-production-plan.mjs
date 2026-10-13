@@ -1463,7 +1463,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
       // 실제 게임 소스 적용 및 독립 런타임 QA 없이 완료로 승격하지 않는다.
       const currentAsset=currentPrimaryByFamily.get(family);
-      const improved=bestReusableByFamily.get(family);
+      // [교체 역할 보존] 같은 계열이라는 이유만으로 조명·문서, 패널·인트로를 서로 교체하지 않는다.
+      // 일반 요청은 신규 사용 후보를 허용하지만 기존 역할 교체는 등록된 역할 근거가 필요하다.
+      const currentRoles=unique([currentAsset?.role,currentAsset?.subfamily,currentAsset?.atomId,currentAsset?.factory])
+        .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value!==family.toLowerCase());
+      const improved=assets.filter(asset=>
+        clean(asset.family||asset.category).toUpperCase()===family
+        &&!currentAssetIds.has(clean(asset.id))&&assetSupplyCandidateAllowed(asset,target)
+        &&roleEvidenceById.get(clean(asset.id))?.verifiedRoleMatch===true
+        &&unique([asset.role,asset.subfamily,asset.atomId,asset.factory])
+          .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))
+          .some(value=>currentRoles.includes(value))
+      ).sort(compareReusable)[0];
       const currentScore=Number(currentAsset?.internalAuditScore??currentAsset?.qualityScore??-1);
       const improvedScore=Number(improved?.internalAuditScore??improved?.qualityScore??-1);
       if(improved&&clean(improved.id)!==clean(currentAsset?.id)
