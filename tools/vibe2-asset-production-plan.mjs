@@ -2846,8 +2846,11 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
     throw new Error('VIBE_NATIVE_MODULE_UNKNOWN:'+selected);
   const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
     ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
-  const linkedSourceModel=clean(librarySource?.sourceModel);
-  const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel)||linkedSourceModel);
+  // Image-to-mesh takes precedence over an optional library model fallback.
+  // An explicitly supplied model together with an image is still an invalid dual source.
+  const explicitSourceModel=clean(task.assetAuthoring?.sourceModel);
+  const linkedSourceModel=imageRequested?'':clean(librarySource?.sourceModel);
+  const modelRequested=Boolean(explicitSourceModel||linkedSourceModel);
   const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai'
     :modelRequested?(/\.fbx$/i.test(clean(task.assetAuthoring?.sourceModel))?'animation':'object'):'auto';
   const meshModel=clean(task.assetAuthoring?.meshModel||'auto').toLowerCase();
