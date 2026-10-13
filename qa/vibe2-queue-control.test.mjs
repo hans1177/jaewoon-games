@@ -1276,6 +1276,32 @@ test('completed reservation probe prioritizes oldest running reservations and co
   assert.doesNotMatch(block,/slice\(0,64\)/);
 });
 
+test('completed graphics asset reservations recover while live and fan-in work stay protected',()=>{
+  const base={gameId:'horror-escape-room',target:'roblox',department:'graphics',type:'implementation',
+    executionLane:'ASSET_DEVELOPMENT',sourceRoot:'assets/roblox/world-ghosts/motions',goal:'motion repair',
+    status:'running',reservationRunId:'100',reservationId:'100:1',retries:1};
+  const queue=createVibeContinuousQueue({tasks:[
+    {...base,id:'ended-asset'},
+    {...base,id:'live-asset',reservationRunId:'101',reservationId:'101:1'},
+    {...base,id:'fan-in-asset',blocker:'slot-released-awaiting-fan-in'},
+    {...base,id:'unrelated-graphics',executionLane:'SUPPORT'}
+  ]});
+  const result=recoverCompletedRunningReservations(queue,{completedRunIds:['100']});
+  assert.equal(result.recovered,1);
+  const recovered=result.queue.tasks.find(row=>row.id==='ended-asset');
+  assert.equal(recovered.status,'queued');
+  assert.equal(recovered.reservationRunId,null);
+  assert.equal(recovered.retries,1);
+  for(const id of ['live-asset','fan-in-asset','unrelated-graphics']){
+    assert.equal(result.queue.tasks.find(row=>row.id===id).status,'running');
+  }
+  const start=continuousWorkflow.indexOf('candidate_reservation_runs="$(node');
+  const end=continuousWorkflow.indexOf("process.stdout.write(ids.join(','))",start);
+  const probe=continuousWorkflow.slice(start,end);
+  assert.match(probe,/String\(task\.executionLane\|\|''\)\.toUpperCase\(\)==='ASSET_DEVELOPMENT'/);
+  assert.match(probe,/!String\(task\.blocker\|\|''\)\.trim\(\)/);
+});
+
 test('completed workflow reservation is requeued immediately without waiting for stale TTL', () => {
   const queue=createVibeContinuousQueue({tasks:[
     {
