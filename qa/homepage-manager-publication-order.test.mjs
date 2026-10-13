@@ -205,15 +205,15 @@ test('central development orchestrator runs Unity Web floor before new Roblox an
   assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
-  // 현재 정식 구조: 게임별 로블록스 런타임을 독립 디스패치하고 부모는 완료를 기다리지 않는다.
+  // 현재 정식 구조: 게임별 로블록스 런타임은 독립 실행하고 부모는 완료를 기다리지 않는다.
   assert.match(development,/name: Dispatch independent Roblox game development/);
-  assert.match(development,/ROBLOX_GAME_IDS: \\$\{\{ needs\.native-plan\.outputs\.roblox_json \}\}/);
-  assert.match(development,/gh workflow run company-development-roblox-runtime\\.yml --repo "\\$GITHUB_REPOSITORY" --ref main -f game_id="\\$game_id"/);
+  assert.match(development,/ROBLOX_GAME_IDS: \$\{\{ needs\.native-plan\.outputs\.roblox_json \}\}/);
+  assert.match(development,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$game_id"/);
   assert.match(development,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
-  assert.doesNotMatch(development,/uses: \\.\\/\\.github\\/workflows\\/company-development-roblox-runtime\\.yml/);
+  assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
   assert.match(development,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.match(development,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
-  assert.doesNotMatch(development,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
+  assert.doesNotMatch(development,/gh workflow run (?:company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.doesNotMatch(development,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 
