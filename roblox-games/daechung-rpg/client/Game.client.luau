@@ -697,12 +697,20 @@ local function refreshAvatarInfo()
  local a=tonumber(p:GetAttribute("AvatarArmor"))or 0
  local d=tonumber(p:GetAttribute("AvatarDecoration"))or 0
  local skin=tonumber(p:GetAttribute("AvatarStyle"))or 1
- avatarInfo.Text=names[index].." | 갑옷 "..a.."/2 | 장식 "..d.."/2 | 피부 "..skin.."/6\n마을에서 변경 · 캐릭터에 바로 적용 및 자동 저장"
+ local character=p.Character
+ local state=character and tostring(character:GetAttribute("SharedPlayerVisualState") or "대기") or "대기"
+ avatarInfo.Text=names[index].." | 갑옷 "..a.."/2 | 장식 "..d.."/2 | 피부 "..skin.."/6\n모델 로딩: "..state.." · 마을에서 변경/저장"
 end
 for _,key in ipairs({"AvatarArchetype","AvatarArmor","AvatarDecoration","AvatarStyle","SaveState"})do
  p:GetAttributeChangedSignal(key):Connect(refreshAvatarInfo)
 end
 refreshAvatarInfo()
+local function watchCharacterState(character)
+ character:GetAttributeChangedSignal("SharedPlayerVisualState"):Connect(refreshAvatarInfo)
+ task.defer(refreshAvatarInfo)
+end
+if p.Character then watchCharacterState(p.Character)end
+p.CharacterAdded:Connect(watchCharacterState)
 avatarToggle.Activated:Connect(function()
  if startupOverlay.Parent or gui:GetAttribute("RPGMenuOpen")==true then return end
  housingPanel.Visible=false;avatarPanel.Visible=not avatarPanel.Visible
