@@ -649,30 +649,55 @@ if commonMotionModule then
   if good and audit.atomCount==61 then commonMotion=result end
  end
 end
+-- 게시되지 않은 KeyframeSequence 미리보기 대신 실게임에서 동작하는 관절 기반 폴백.
+local jointEpoch=setmetatable({}, {__mode="k"})
+local function poseRig(rig,kind)
+ if not rig then return false end
+ local torso=rig:FindFirstChild("UpperTorso") or rig:FindFirstChild("Torso")
+ if not torso then return false end
+ local right=torso:FindFirstChild("RightShoulder") or torso:FindFirstChild("Right Shoulder")
+ local left=torso:FindFirstChild("LeftShoulder") or torso:FindFirstChild("Left Shoulder")
+ local waist=torso:FindFirstChild("Waist")
+ if not right or not left or not right:IsA("Motor6D") or not left:IsA("Motor6D") then return false end
+ local epoch=(jointEpoch[rig] or 0)+1;jointEpoch[rig]=epoch
+ local pitch=kind=="PARRY_PERFECT" and -1.25 or kind=="DODGE_LEFT" and .5 or kind=="CAST_RELEASE" and -1.65 or -1.1
+ local twist=kind=="DODGE_LEFT" and -.5 or kind=="HEAVY_ATTACK_1" and .55 or .28
+ local duration=kind=="DODGE_LEFT" and .42 or kind=="HEAVY_ATTACK_1" and .52 or .32
+ local motors={{right,right.C0,right.C0*CFrame.Angles(pitch,0,twist)},{left,left.C0,left.C0*CFrame.Angles(-pitch*.55,0,-twist)}}
+ if waist and waist:IsA("Motor6D") then table.insert(motors,{waist,waist.C0,waist.C0*CFrame.Angles(0,twist*.6,0)})end
+ for _,m in ipairs(motors)do TweenService:Create(m[1],TweenInfo.new(.09,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{C0=m[3]}):Play()end
+ task.delay(duration,function()
+  if jointEpoch[rig]~=epoch or not rig.Parent then return end
+  for _,m in ipairs(motors)do
+   if m[1].Parent then TweenService:Create(m[1],TweenInfo.new(.17,Enum.EasingStyle.Quad),{C0=m[2]}):Play()end
+  end
+ end)
+ return true
+end
 local previewTracks={}
 local function playCommonMotion(atomId)
- if not commonMotion then return false end
  local character=p.Character
+ if not commonMotion then return poseRig(character,atomId) end
  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
  local animator=humanoid and humanoid:FindFirstChildOfClass("Animator")
- if not animator or humanoid.RigType~=Enum.HumanoidRigType.R15 then return false end
+ if not animator or humanoid.RigType~=Enum.HumanoidRigType.R15 then return poseRig(character,atomId) end
  local previous=previewTracks[atomId]
  if previous then pcall(function()previous:Stop(.1);previous:Destroy()end)end
  local ok,track=pcall(function()
   return commonMotion.PlayPreview(animator,atomId,{fadeTime=.1})
  end)
- if ok and track then
+ if ok and track and track.IsPlaying then
   previewTracks[atomId]=track
   return true
  end
- return false
+ return poseRig(character,atomId)
 end
 -- 리그를 가진 NPC·몬스터의 실제 Animator에서 공용 모션을 재생한다.
 -- GLB 정적 메시(Animator 없음)는 관절 애니메이션 대상에서 제외한다.
 local actorMotionTracks=setmetatable({}, {__mode="k"})
 task.spawn(function()
  while gui.Parent do
-  if commonMotion and p.Character then
+  if p.Character then
    local center=p.Character:FindFirstChild("HumanoidRootPart")
    if center then
     local checked=0
