@@ -201,7 +201,9 @@ test('F0 source preflight validates source integrity and explicitly cannot claim
 });
 
 test('canonical native parent calls Roblox runtime while Roblox runtime watches both fast-path workflow contracts',()=>{
-  assert.ok(parent.includes('uses: ./.github/workflows/company-development-roblox-runtime.yml'));
+  assert.ok(parent.includes('name: Dispatch independent Roblox game development'));
+  assert.ok(parent.includes('gh workflow run company-development-roblox-runtime.yml --repo'));
+  assert.ok(parent.includes('ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'));
   assert.ok(runtime.includes("- '.github/workflows/company-development-roblox-runtime-continuation.yml'"));
   assert.ok(runtime.includes("- '.github/workflows/company-development-roblox-headless-fast-mvp.yml'"));
 });
