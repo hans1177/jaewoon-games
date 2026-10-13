@@ -593,7 +593,7 @@ TweenService:Create(stats, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.Easin
 local versionMark=Instance.new("TextLabel")
 versionMark.Name="LiveBuildMarker";versionMark.BackgroundTransparency=.3
 versionMark.BackgroundColor3=Color3.fromRGB(20,35,35)
-versionMark.Text="RPG BUILD · 2026-10-14 · CUSTOM-2"
+versionMark.Text="RPG BUILD · 2026-10-14 · FIX-3"
 versionMark.TextSize=10;versionMark.TextColor3=Color3.fromRGB(205,245,215)
 versionMark.Font=Enum.Font.GothamBold
 versionMark.AnchorPoint=Vector2.new(.5,0)
@@ -646,11 +646,63 @@ for _,attribute in ipairs({"HouseLevel","HouseFurniture","HouseModules"})do p:Ge
 refreshHousing()
 housingToggle.Activated:Connect(function()
  if startupOverlay.Parent~=nil or gui:GetAttribute("RPGMenuOpen")==true then return end
- housingPanel.Visible=not housingPanel.Visible
+ housingPanel.Visible=not housingPanel.Visible;avatarPanel.Visible=false
  refreshHousing()
 end)
 gui:GetAttributeChangedSignal("RPGMenuOpen"):Connect(function()
  if gui:GetAttribute("RPGMenuOpen")==true then housingPanel.Visible=false end
+end)
+
+-- 현재 플레이 중에도 사용할 수 있는 장비식 외형 편집기 (마을에서 수정 가능).
+local avatarToggle=button(gui,"외형",Color3.fromRGB(73,103,147))
+avatarToggle.Name="CustomizeNav";avatarToggle.AnchorPoint=Vector2.zero;avatarToggle.Position=UDim2.fromOffset(8,212)
+avatarToggle.Size=UDim2.fromOffset(84,36)
+local avatarPanel=Instance.new("Frame");avatarPanel.Name="CharacterCustomizer"
+avatarPanel.AnchorPoint=Vector2.new(.5,.5);avatarPanel.Position=UDim2.fromScale(.5,.5)
+avatarPanel.Size=UDim2.fromOffset(338,262);avatarPanel.BackgroundColor3=Color3.fromRGB(23,33,44)
+avatarPanel.ZIndex=45;avatarPanel.Visible=false;avatarPanel.Parent=gui;corner(avatarPanel,14);stroke(avatarPanel,.2)
+local avatarHeader=Instance.new("TextLabel");avatarHeader.BackgroundTransparency=1
+avatarHeader.Position=UDim2.fromOffset(12,8);avatarHeader.Size=UDim2.new(1,-68,0,29)
+avatarHeader.Text="캐릭터 커스터마이징";avatarHeader.TextColor3=Color3.fromRGB(245,223,177)
+avatarHeader.TextSize=18;avatarHeader.Font=Enum.Font.GothamBold;avatarHeader.TextXAlignment=Enum.TextXAlignment.Left
+avatarHeader.ZIndex=46;avatarHeader.Parent=avatarPanel
+local avatarClose=button(avatarPanel,"닫기",Color3.fromRGB(134,69,74))
+avatarClose.Size=UDim2.fromOffset(56,34);avatarClose.Position=UDim2.new(1,-65,0,6);avatarClose.ZIndex=47
+avatarClose.Activated:Connect(function()avatarPanel.Visible=false end)
+local avatarInfo=Instance.new("TextLabel");avatarInfo.BackgroundTransparency=1
+avatarInfo.Position=UDim2.fromOffset(12,43);avatarInfo.Size=UDim2.new(1,-24,0,63)
+avatarInfo.TextWrapped=true;avatarInfo.TextXAlignment=Enum.TextXAlignment.Left
+avatarInfo.TextColor3=Color3.fromRGB(217,231,240);avatarInfo.TextSize=14
+avatarInfo.Font=Enum.Font.Gotham;avatarInfo.ZIndex=46;avatarInfo.Parent=avatarPanel
+local avatarItems={
+ {"유형 변경","CUSTOMIZE_ARCHETYPE"},{"갑옷 변경","CUSTOMIZE_ARMOR"},
+ {"장식 변경","CUSTOMIZE_DECORATION"},{"피부색 변경",C.Actions.CUSTOMIZE_NEXT}
+}
+for i,row in ipairs(avatarItems)do
+ local b=button(avatarPanel,row[1],Color3.fromRGB(65,96,125))
+ b.Name="AvatarAction"..i;b.Size=UDim2.new(.5,-17,0,49)
+ b.Position=UDim2.new((i-1)%2*.5,12+((i-1)%2)*5,0,117+math.floor((i-1)/2)*58)
+ b.ZIndex=47;b.Activated:Connect(function()remote:FireServer(row[2])end)
+end
+local function refreshAvatarInfo()
+ local names={"사무라이","무협 무인","서양 기사"}
+ local index=math.clamp(math.floor(tonumber(p:GetAttribute("AvatarArchetype"))or 1),1,3)
+ local a=tonumber(p:GetAttribute("AvatarArmor"))or 0
+ local d=tonumber(p:GetAttribute("AvatarDecoration"))or 0
+ local skin=tonumber(p:GetAttribute("AvatarStyle"))or 1
+ avatarInfo.Text=names[index].." | 갑옷 "..a.."/2 | 장식 "..d.."/2 | 피부 "..skin.."/6\n마을에서 변경 · 캐릭터에 바로 적용 및 자동 저장"
+end
+for _,key in ipairs({"AvatarArchetype","AvatarArmor","AvatarDecoration","AvatarStyle","SaveState"})do
+ p:GetAttributeChangedSignal(key):Connect(refreshAvatarInfo)
+end
+refreshAvatarInfo()
+avatarToggle.Activated:Connect(function()
+ if startupOverlay.Parent or gui:GetAttribute("RPGMenuOpen")==true then return end
+ housingPanel.Visible=false;avatarPanel.Visible=not avatarPanel.Visible
+ refreshAvatarInfo()
+end)
+gui:GetAttributeChangedSignal("RPGMenuOpen"):Connect(function()
+ if gui:GetAttribute("RPGMenuOpen")==true then avatarPanel.Visible=false end
 end)
 
 local party=Instance.new("Frame");party.Name="PartyStatus";party.AnchorPoint=Vector2.new(1,0);party.Position=UDim2.new(1,-8,0,8);party.Size=touchEnabled and UDim2.fromOffset(116,58)or UDim2.fromOffset(142,64);party.BackgroundColor3=Color3.fromRGB(29,32,40);party.BackgroundTransparency=.1;party.Parent=gui;corner(party,12);stroke(party,.5)
@@ -1066,6 +1118,9 @@ refreshHud=function()
  housingToggle.AnchorPoint=Vector2.new(0,0)
   housingToggle.Position=UDim2.fromOffset(8,compact and 164 or 171)
  housingToggle.Size=UDim2.fromOffset(compact and 76 or 84,compact and 36 or 38)
+ avatarToggle.Position=UDim2.fromOffset(8,compact and 206 or 214)
+ avatarToggle.Size=UDim2.fromOffset(compact and 76 or 84,compact and 36 or 38)
+ avatarPanel.Size=UDim2.fromOffset(math.min(338,size.X-20),math.min(262,size.Y-20))
  housingPanel.Size=UDim2.fromOffset(math.min(320,size.X-22),322)
  housingPanel.Position=UDim2.new(.5,0,1,compact and -60 or -76)
  stats.BackgroundColor3=Color3.fromRGB(22,43,49)
@@ -1093,8 +1148,8 @@ refreshHud=function()
  notice.Visible=message~="NONE";combat.Visible=false -- 자동 전투: 모바일 수동 버튼을 표시하지 않는다
  returnButton.Visible=not blocked and (tonumber(p:GetAttribute("CurrentZone"))or 0)>0
  stats.Visible=not blocked;party.Visible=not blocked
- housingToggle.Visible=not blocked
- if blocked then housingPanel.Visible=false end
+ housingToggle.Visible=not blocked;avatarToggle.Visible=not blocked
+ if blocked then housingPanel.Visible=false;avatarPanel.Visible=false end
  if rpgMenu then rpgMenu.button.Visible=not blocked end
  if notice:GetAttribute("ActiveMessage")~=message then notice.CanvasPosition=Vector2.zero;notice:SetAttribute("ActiveMessage",message)end
 end
