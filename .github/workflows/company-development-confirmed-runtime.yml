@@ -341,22 +341,16 @@ jobs:
     secrets: inherit
 
   continue-cycle:
-    name: Continue DEVELOPMENT_CONFIRMED cycle after isolated game outcomes
+    name: Record independent development handoff
     needs: [native-plan, dispatch-roblox, dispatch-unity]
-    if: ${{ always() && needs.native-plan.result == 'success' && (needs.native-plan.outputs.roblox_count != '0' || needs.native-plan.outputs.unity_count != '0') }}
+    if: ${{ always() && needs.native-plan.result == 'success' }}
     runs-on: ubuntu-slim
     timeout-minutes: 5
     permissions:
-      actions: write
       contents: read
     steps:
-      - name: Re-open the next development wave regardless of individual game failure
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
+      - name: Record independent scheduling without immediate self-dispatch
         run: |
-          set -euo pipefail
-          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
-            -f trigger_source=CONTINUOUS_PER_GAME_ISOLATED_CYCLE
-          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=YES'
+          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_HANDOFF=INDEPENDENT_GAME_RUNS'
+          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=NO_IMMEDIATE_RECURSION'
           echo 'SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO'
