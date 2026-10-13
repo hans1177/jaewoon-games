@@ -98,7 +98,8 @@ Web: `await multiplayer.matchCoopForGame('crystal-defense')`
 - 기존 `GameRoom`은 `ctx.acceptWebSocket`을 사용하여 WebSocket 연결의 유휴 절전(hibernation)을 지원합니다. 유휴 폴링 타이머를 추가하지 않습니다.
 - Cloudflare 계정은 반드시 **Workers Free 플랜**에서 설정해야 하며, 무료 사용량 제한 초과 시 요청이 제한될 수 있습니다. 이 저장소 설정만으로 계정이 자동으로 무료 플랜으로 변경되지는 않습니다.
 - **정적 코드 작업 완료 기준:** Worker 문법·Wrangler 무료 플랜 설정·기존 독립 게임 개발 워크플로 분리 검증 및 main 병합. WebSocket 실접속 테스트와 원격 배포는 이 정적 완료 기준의 필수 차단 단계가 아닙니다.
-- **멀티플레이 기능의 운영 검증 기준:** 실제 서비스 배포 전에는 `https://<worker>.<account>.workers.dev/health`와 서로 다른 두 사용자 간 WebSocket 방 참가·메시지 동기화를 별도로 확인해야 합니다. 해당 실접속 증거가 없으면 멀티플레이 런타임 PASS나 배포 성공으로 표시하지 않습니다. 빌드 실패 원인은 Wrangler 로그로 구분합니다.
+- **멀티플레이 배포 완료 기준:** Worker 정적 코드 검사와 빌드 성공, 실제 Wrangler 배포 명령의 성공 응답으로 배포 완료를 판정합니다. WebSocket 실접속·2명 동기화 검증은 배포 완료의 필수 차단 단계가 아닙니다. 실제 배포 증거가 없거나 빌드가 실패하면 배포 성공으로 기록하지 않습니다.
+- **런타임 검증 상태 분리:** WebSocket 실접속·동기화를 수행하지 않았으면 `MULTIPLAYER_RUNTIME_UNVERIFIED`로 남기며, 실제 접속 또는 게임 상태 동기화가 검증된 것으로 표시하지 않습니다. 게임별 네이티브 QA와 기존 보안·중앙정책 검사는 우회하지 않습니다. 빌드 실패 원인은 Wrangler 로그로 구분합니다.
 - Supabase Auth도 무료 플랜 한도를 확인해야 합니다. 기존 프로젝트 키는 변경하지 않습니다.
 
 ## Cloudflare 설정
