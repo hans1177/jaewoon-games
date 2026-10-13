@@ -1643,7 +1643,7 @@ function sourceConsumerUsageSource(source=''){
 function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   const gameId=clean(game.id||game.gameId);
   const roots=sourceConsumerRoots({repoRoot,game});
-  const assetPaths=new Map(),tokens=new Map(),usageTokens=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
+  const assetPaths=new Map(),tokens=new Map(),usageTokens=new Map(),nativeAssetIds=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
   let scannedFileCount=0,scannedBytes=0;
   const addToken=(target,token,file)=>{
     const normalized=clean(token).toLowerCase();
@@ -1696,6 +1696,10 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         for(const match of source.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
         }
+        // Count native imported IDs only at executable load sites, never mere catalog declarations.
+        if(root.relative.startsWith('roblox-games/')){
+          for(const match of usageBody.matchAll(/\\b(?:LoadAssetAsync|LoadAsset)\\s*\\([^,\\n]*,?\\s*(\\d{6,})\\s*\\)/g))addToken(nativeAssetIds,match[1],relative);
+        }
         // Unity Resources.Load consumes imported assets without their extensions.
         // Resolve only exact existing native files referenced by executable game code.
         // This is source-bound evidence, never proof of an actual rendered frame.
@@ -1743,7 +1747,7 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   }
   fingerprintRows.sort((a,b)=>a[0].localeCompare(b[0]));
   const snapshot=Object.freeze({
-    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,usageTokens,managedByFamily,managedFiles,
+    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,usageTokens,nativeAssetIds,managedByFamily,managedFiles,
     scannedFileCount,scannedBytes,
     sourceFingerprint:crypto.createHash('sha256').update(JSON.stringify(fingerprintRows)).digest('hex')
   });
@@ -1761,7 +1765,8 @@ function sourceConsumerAssetPaths(asset={}){
 function sourceConsumerIdentityTokens(asset={}){
   return unique([
     asset.skinId,asset.atomId,asset.assetId,
-    asset?.bindingHint?.skinId,asset?.bindingHint?.atomId,asset?.bindingHint?.assetId
+    asset?.bindingHint?.skinId,asset?.bindingHint?.atomId,asset?.bindingHint?.assetId,
+    asset.robloxAssetId,asset?.platformVariants?.ROBLOX?.assetId
   ].map(clean).filter(value=>value.length>=2));
 }
 export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),registry={},gameCatalog=null}={}){
@@ -1819,6 +1824,9 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
           ...directPaths.map(assetPath=>snapshot.assetPaths.get(assetPath)),
           ...literalIds.map(value=>snapshot.usageTokens.get(value.toLowerCase()))
         ];
+      }else if(meta.family&&clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId)&&snapshot.nativeAssetIds.has(clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId))){
+        mode='NATIVE_RUNTIME_LOAD_CALL';matchedIds=[clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId)];
+        evidenceFiles=[snapshot.nativeAssetIds.get(matchedIds[0])];
       }else if(managed.length&&(asset.atomId||asset.assetId||asset?.bindingHint?.configCollection)){
         mode='MANAGED_LIBRARY_IDENTITY';matchedIds=managed;
         evidenceFiles=[
