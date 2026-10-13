@@ -3,7 +3,7 @@
   "gameId": "fantasy-survival",
   "date": "2026-10-13",
   "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
-  "fingerprint": "1bef0cd71e65bfcd49ba3c8e48d787e4a15ea0b6321532b29963c2be0f41ca6a",
+  "fingerprint": "1bee3004bc713f93b9df4db8a353410d7004484d4dd40cac4c9d81c0dc73331b",
   "policyDigest": "ba5857fecb7f2e3d0d6170a757c158646945e4c7e02fd811eec84af7f375c5fb",
   "engineDigest": "b250a88c3470b2fee0f6ee2444679487075b430c2afa03f6cb6a97ee63f4e0ec",
   "ownerDesignEventId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:fantasy-survival",
@@ -1381,8 +1381,8 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-13T11:10:15.655Z",
-  "updatedAt": "2026-10-13T12:25:18.218Z",
+  "createdAt": "2026-10-13T12:55:35.325Z",
+  "updatedAt": "2026-10-13T12:55:35.480Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1998,16 +1998,12 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "assetId": "roblox-common-intro-short",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "current",
-                "next",
-                "boss"
-              ],
+              "matchedRoles": [],
               "currentSourceBound": false,
               "genericFamilyRequest": true,
               "verifiedRoleMatch": true
@@ -2650,16 +2646,12 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "assetId": "roblox-common-intro-short",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "current",
-                "next",
-                "boss"
-              ],
+              "matchedRoles": [],
               "currentSourceBound": false,
               "genericFamilyRequest": true,
               "verifiedRoleMatch": true
@@ -3302,16 +3294,12 @@
           {
             "family": "UI",
             "action": "USE",
-            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "assetId": "roblox-common-intro-short",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "current",
-                "next",
-                "boss"
-              ],
+              "matchedRoles": [],
               "currentSourceBound": false,
               "genericFamilyRequest": true,
               "verifiedRoleMatch": true
@@ -3660,25 +3648,21 @@
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
       },
-      "roblox-common-ui-wave-forecast-ribbon": {
+      "roblox-common-intro-short": {
         "family": "UI",
         "roleEvidence": {
           "requestedRoles": [],
-          "matchedRoles": [
-            "current",
-            "next",
-            "boss"
-          ],
+          "matchedRoles": [],
           "currentSourceBound": false,
           "genericFamilyRequest": true,
           "verifiedRoleMatch": true
         },
-        "role": "WAVE_FORECAST_RIBBON",
-        "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "role": "INTRO",
+        "sourcePath": "/assets/roblox/common-presentation-v1/RobloxCommonPresentation.luau",
         "platform": "ROBLOX",
         "license": "project-original",
         "referenceOnly": false,
-        "auditScore": 956.4,
+        "auditScore": 966.7,
         "auditState": "UNKNOWN",
         "qualityGap": null,
         "runtimeState": "PENDING_STUDIO",
@@ -3780,7 +3764,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::systems-progression": 7
+    "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
   "effectiveDesignerModel": "vibe-native:standard-design-v1",
