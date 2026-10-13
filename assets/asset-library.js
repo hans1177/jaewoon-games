@@ -8,7 +8,7 @@ const categoryLabels={CHARACTER:'캐릭터',CREATURE:'크리처',BUILDING:'건�
 // Owner-retired homepage previews. Keep the reusable source assets intact.
 const retiredPreviews=new Set(['roblox-insect-spider-hd-v1','roblox-insect-spider-hd','roblox-world-ghost-gwisin-bride']);
 const publicAssets=assets=>assets.filter(row=>!retiredPreviews.has(row.id));
-const registrySignature=value=>JSON.stringify(value?.assets?.map(({id,title,category,family,subfamily,platform,status,path,sourcePath,previewPath,productionVerified,verifiedCompanyReusable,runtimeVerificationState,consumerGameIds,intendedConsumerGameIds,internalAuditScore,internalAuditGrade,sourceRevision,version,sha256})=>({id,title,category,family,subfamily,platform,status,path,sourcePath,previewPath,productionVerified,verifiedCompanyReusable,runtimeVerificationState,consumerGameIds,intendedConsumerGameIds,internalAuditScore,internalAuditGrade,sourceRevision,version,sha256})));
+const registrySignature=value=>JSON.stringify(value?.assets?.map(({id,title,category,family,subfamily,platform,status,path,sourcePath,previewPath,productionVerified,verifiedCompanyReusable,runtimeVerificationState,consumerGameIds,intendedConsumerGameIds,internalAuditScore,internalAuditGrade,sourceRevision,version,sha256,sourceHash,robloxAssetId,nativeRuntimeVerified,modelPath})=>({id,title,category,family,subfamily,platform,status,path,sourcePath,previewPath,productionVerified,verifiedCompanyReusable,runtimeVerificationState,consumerGameIds,intendedConsumerGameIds,internalAuditScore,internalAuditGrade,sourceRevision,version,sha256,sourceHash,robloxAssetId,nativeRuntimeVerified,modelPath})));
 const biomes={forest:'숲',snow:'설원',desert:'사막',swamp:'늪',cave:'동굴',coast:'해안',village:'마을',city:'도시',ruins:'폐허',dungeon:'던전'};
 const clipNames={idle:'대기',walk:'걷기',chase:'추격',attack:'공격',hit:'피격',death:'쓰러짐'};
 const motionLabels={IDLE_RELAXED:'대기',WALK:'걷기',JOG:'조깅',RUN:'달리기',START:'출발',STOP:'정지',TURN_90:'90도 회전',JUMP_START:'점프',LAND:'착지',HIT_FRONT:'정면 피격',DEATH_FRONT:'쓰러짐',BLOCK_RAISE:'방어 올리기',BLOCK_HOLD:'방어 유지',PARRY_PERFECT:'정밀 받아치기',GUARD_BREAK:'가드 브레이크',COUNTER_READY:'카운터 준비',SPRINT:'전력질주',CROUCH_IDLE:'웅크리기',DODGE_LEFT:'왼쪽 회피',DODGE_RIGHT:'오른쪽 회피',ROLL_FORWARD:'앞구르기',CLIMB_LOOP:'오르기',SWIM_FORWARD:'수영',INTERACT_USE:'상호작용',GATHER_SWING:'채집 휘두르기',CRAFT_LOOP:'제작',CARRY_IDLE:'들고 대기',EQUIP_DRAW:'장비 꺼내기',UNEQUIP_STOW:'장비 넣기',USE_CONSUMABLE:'소모품 사용',DOWNED_IDLE:'다운',REVIVE_HELP:'부활 도움',EMOTE_WAVE:'손 흔들기',LIGHT_ATTACK_1:'약공격',HEAVY_ATTACK_1:'강공격',RANGED_DRAW_SHOT:'원거리 발사',CAST_BURST:'마법 발동',CHANNEL_LOOP:'집중 시전',HIT_BACK:'후방 피격',BLEND_NEUTRAL:'중립 블렌드',SIT_DOWN:'앉기',STAND_UP:'일어나기',LEAN_WALL_IDLE:'벽 기대기',OPEN_DOOR:'문 열기',OPEN_CONTAINER:'상자 열기',PICKUP_GROUND:'줍기',PLACE_GROUND:'놓기',PUSH_OBJECT:'밀기',PULL_OBJECT:'당기기',TALK_GESTURE:'대화 제스처',NPC_WORK_LOOP:'NPC 작업',COOK_LOOP:'요리',FARM_TEND:'농사',FISH_CAST:'낚시',BED_LIE_DOWN:'눕기',LADDER_ENTER:'사다리 진입',LADDER_EXIT:'사다리 이탈',SLOPE_ASCEND:'오르막',SLOPE_DESCEND:'내리막',FATIGUED_IDLE:'지친 대기',INJURED_WALK:'부상 걷기'};
@@ -159,7 +159,7 @@ async function getViewer(){
  return viewerPromise;
 }
 async function choose(row,force=false){
- const key=kind+':'+row.id+':'+(row.sample?.sha256||row.atom?.atomId||row.image);
+ const key=kind+':'+row.id+':'+(row.sample?.sha256||row.asset?.sourceHash||row.asset?.sha256||row.atom?.atomId||row.image)+':'+(row.asset?.robloxAssetId||'');
  if(!force&&key===currentKey)return;
  viewer?.cancelLoad();nativeClip='';
  const token=++selectionToken;currentKey='';selectedId=row.id;currentRow=row;
@@ -295,7 +295,8 @@ async function refresh(force=false){
   $('environmentCount').textContent=publicAssets(registry.assets).filter(row=>row.category==='ENVIRONMENT').length;
   $('commonCount').textContent=publicAssets(registry.assets).filter(row=>row.category==='MOTION').length;
   if(changed||force||!currentKey){rows=allRows();updateFilters();showList();const selected=rows.find(row=>row.id===selectedId)||rows.find(row=>row.sample?.id==='ghoul')||rows[0];if(selected)await choose(selected,force);}
-  $('syncStatus').textContent='자동 동기화 연결됨 · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' 확인';
+  document.documentElement.dataset.assetLibraryVersion=String(registry.version||'');
+  $('syncStatus').textContent='자동 동기화 연결됨 · 버전 '+String(registry.version||'확인 중')+' · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' 확인';
  }catch(error){$('syncStatus').textContent=(registry?'이전 목록을 표시 중이야. ':'')+(error.message||'자산 정보를 불러오지 못했어.')+' 새로고침으로 다시 시도할 수 있어.';}
  finally{refreshing=false;$('refreshAssets').disabled=false;}
 }
@@ -320,3 +321,4 @@ $('assetCanvas').addEventListener('previewlost',()=>{$('previewStatus').textCont
 setInterval(()=>{if(!document.hidden)refresh();},SYNC_INTERVAL_MS);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
 pauseLabel();refresh();
+

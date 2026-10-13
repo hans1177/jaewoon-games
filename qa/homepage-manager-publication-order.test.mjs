@@ -593,3 +593,30 @@ test('homepage manager binds official images to exact dedicated games and fills 
     run();assert.equal(JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8')).games[0].robloxThumbnail,undefined);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('homepage front door requests only the three runtime snapshots needed for its visible content',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+ const requests=[];let renders=0;
+ const data={'/game-catalog.json':{runtimeInfoAuthority:'company-runtime',games:[]},'/company-status.json':{runtimeAuthority:'company-runtime'},'/homepage-platform-exposure.json':{authority:'company-runtime',supportedPlatforms:['ROBLOX','UNITY'],games:[]}};
+ const refresh=runInNewContext(source.slice(source.indexOf('async function refresh(){'),source.indexOf('function main(){'))+'refresh;',{
+  refreshInFlight:false,lastSignature:'',portfolioStatus:{},platformExposure:{},getJson:async path=>{requests.push(path);return data[path];},
+  normalizePlatform:String,document:{getElementById:()=>null,querySelector:()=>null,documentElement:{dataset:{}}},
+  updateLiveSummary:()=>{},buildFocus:()=>{renders++;},buildGameCenter:()=>{},buildRecentUpdates:()=>{}
+ });
+ await refresh();assert.deepEqual(requests,['/game-catalog.json','/company-status.json','/homepage-platform-exposure.json']);
+ await refresh();assert.equal(renders,1);
+});
+
+test('PWA runtime metadata uses bounded server HTTP caching while scripts remain network-only',async()=>{
+ const {runInNewContext}=await import('node:vm');const events={};const calls=[];
+ runInNewContext(fs.readFileSync('sw.js','utf8'),{URL,Request,Response,Headers,
+  self:{location:{origin:'https://site.test'},addEventListener:(name,callback)=>{events[name]=callback;}},
+  fetch:async(request,options)=>{calls.push(options);return new Response('ok');},
+  caches:{match:()=>{throw Error('runtime must not use offline app cache');}}
+ });
+ for(const path of ['/game-catalog.json','/assets/homepage-enhancements.js']){
+  let promise;events.fetch({request:new Request('https://site.test'+path),respondWith:value=>{promise=value;}});await promise;
+ }
+ assert.equal(calls[0].cache,'default');assert.equal(calls[1].cache,'no-store');
+});

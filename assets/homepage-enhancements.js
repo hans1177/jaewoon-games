@@ -450,7 +450,7 @@ async function refresh(){
   if(refreshInFlight)return;
   refreshInFlight=true;
   try{
-    const [catalog,status,testManifest,portfolio,exposure]=await Promise.all([getJson('/game-catalog.json'),getJson('/company-status.json'),getJson('/test-game-candidates.json'),getJson('/homepage-portfolio-status.json'),getJson('/homepage-platform-exposure.json')]);
+    const [catalog,status,exposure,portfolio]=await Promise.all([getJson('/game-catalog.json'),getJson('/company-status.json'),getJson('/homepage-platform-exposure.json'),document.getElementById('homePortfolioBoard')?getJson('/homepage-portfolio-status.json'):Promise.resolve(null)]);
     if(catalog?.runtimeInfoAuthority!=='company-runtime'||status?.runtimeAuthority!=='company-runtime')return;
     const exposureAuthority=String(exposure?.runtimeAuthority||exposure?.authority||'').trim();
     const exposurePlatforms=Array.isArray(exposure?.supportedPlatforms)?exposure.supportedPlatforms.map(normalizePlatform).filter(Boolean):[];
@@ -458,7 +458,7 @@ async function refresh(){
     portfolioStatus=portfolio&&Array.isArray(portfolio.games)?portfolio:{games:[],counts:{}};
     platformExposure=exposure;
     const renderCatalog=currentCatalog=>{
-      const sig=JSON.stringify([currentCatalog,status,testManifest,portfolioStatus,platformExposure]);
+      const sig=JSON.stringify([currentCatalog,status,portfolioStatus,platformExposure]);
       if(sig===lastSignature)return;
       // Keep the user's open player intact while background status snapshots change.
       if(document.querySelector('.homeGameplayVideo[open]'))return;

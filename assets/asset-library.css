@@ -21,3 +21,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.6 system-ui,-app
 #assetCanvas canvas{touch-action:none;display:block}
 #motionControls .clipRow>div{max-height:138px;overflow-y:auto;scrollbar-width:thin}
 @media(max-width:760px){.meshControls{padding:6px 16px 0;gap:4px 12px}.meshControls span{font-size:11px;flex-basis:100%}}
+
+
+/* 자산 목록: 화면 밖 항목은 그리기를 늦추고 원본 목록은 보존한다. */
+.assetList button{content-visibility:auto;contain-intrinsic-size:auto 72px}
