@@ -504,14 +504,14 @@ test('Core QA skips duplicate heavy suites only for dedicated parallelism workfl
   assert.match(scopeBlock,/VIBE2_CORE_QA_PARALLELISM_ONLY=/);
   assert.match(scopeBlock,/vibe2-\(continuous-core\|24h-runner\|parallelism-contract-qa\)/);
   assert.match(scopeBlock,/qa\/vibe2-parallelism-\(main\|20\)-contract/);
-  assert.doesNotMatch(scopeBlock,/vibe2-core-qa\.yml/);
+  assert.match(scopeBlock,/vibe2-\(continuous-core\|core-qa\)/);
   assert.match(scopeBlock,/grep -Eq '\^0\+\$'/);
-  assert.equal((coreQa.match(/\n  test:\n/g)||[]).length,1);
-  assert.equal((coreQa.match(/\n  browser-smoke:\n/g)||[]).length,1);
-  assert.equal((coreQa.match(/\n  practice-runtime:\n/g)||[]).length,1);
-  assert.match(coreQa,/\n  test:\n    needs: scope\n    if: \$\{\{ needs\.scope\.outputs\.parallelism_only != 'YES' \}\}/);
-  assert.match(coreQa,/\n  browser-smoke:\n    needs: scope\n    if: \$\{\{ needs\.scope\.outputs\.parallelism_only != 'YES' \}\}/);
-  assert.match(coreQa,/\n  practice-runtime:\n    needs: scope\n    if: \$\{\{ needs\.scope\.outputs\.parallelism_only != 'YES' \}\}/);
+  assert.equal((coreQa.match(/^  test:$/gm)||[]).length,1);
+  assert.equal((coreQa.match(/^  browser-smoke:$/gm)||[]).length,1);
+  assert.equal((coreQa.match(/^  practice-runtime:$/gm)||[]).length,1);
+  assert.match(coreQa,/\n  test:\n    needs: scope\n    if: \$\{\{ needs\.scope\.outputs\.parallelism_only != 'YES' && needs\.scope\.outputs\.workorder_only != 'YES' \}\}/);
+  assert.match(coreQa,/\n  browser-smoke:\n    needs: scope\n    if: \$\{\{ needs\.scope\.outputs\.parallelism_only != 'YES' && needs\.scope\.outputs\.workorder_only != 'YES' \}\}/);
+  assert.match(coreQa,/\n  practice-runtime:\n    needs: scope\n    if: \$\{\{ needs\.scope\.outputs\.parallelism_only != 'YES' && needs\.scope\.outputs\.workorder_only != 'YES' \}\}/);
 });
 
 test('24h runner does not treat many workflow runs as runner saturation when queued jobs are zero',()=>{

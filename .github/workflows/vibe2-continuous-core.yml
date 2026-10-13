@@ -889,6 +889,7 @@ jobs:
           node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
+            --contract-sha="$(git -C /tmp/vibe2-main rev-parse HEAD)" \
             --lane="$VIBE2_EXECUTION_LANE" \
             --max="$VIBE2_LANE_MAX" \
             --min="$lane_min" \
