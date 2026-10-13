@@ -27,7 +27,7 @@ test('canonical production run never installs or invokes an AI coding model', ()
   assert.match(workflow, /VIBE2_PRODUCTION_MODEL_CALLS_ENABLED: 'false'/);
   assert.match(workflow, /VIBE2_GAME_SOURCE_PROVIDER: DETERMINISTIC_ONLY/);
   assert.match(workflow, /VIBE2_LOCAL_MODEL: 'NONE'/);
-  assert.match(workflow, /if: false # Production models disabled/);
+  assert.match(workflow, /model_cache:[\s\S]{0,350}?if: [^\n]+&& false # production models disabled/);
   assert.match(workflow, /reason='OWNER_MODEL_FREE_PRODUCTION'/);
   assert.match(workflow, /if: false # model-based practice disabled/);
   assert.match(workflow, /test "\$VIBE2_GAME_SOURCE_PROVIDER" = "DETERMINISTIC_ONLY"/);
@@ -35,6 +35,7 @@ test('canonical production run never installs or invokes an AI coding model', ()
   const call = source.indexOf('generated=await generateCandidateWithRecovery');
   assert.ok(guard >= 0 && call > guard, 'model-free fail-closed guard must precede model generation');
   assert.match(source, /modelFree\?'NONE':DEFAULT_MODEL/);
+  assert.match(source, /ownerModelFreeProduction20261014\?\.productionModelCallsAllowed===false/);
 });
 
 test('design pipeline does not install Ollama, pull language models, or inject external model credentials', () => {
