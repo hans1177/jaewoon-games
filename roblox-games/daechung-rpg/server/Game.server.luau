@@ -1217,7 +1217,7 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
  local variants=not boss and Style.SharedEnemyVariants and Style.SharedEnemyVariants[z.Theme]
  if variants and #variants>0 then
   -- Stable spawn choice: avoids visual changes when the monster respawns.
-  local key=tonumber(rootPart:GetAttribute("EnemySpawnIndex")) or tonumber(string.match(rootPart.Name,"(%d+)$")) or 1
+  local key=math.abs(math.floor(rootPart.Position.X*17+rootPart.Position.Z*11+rootPart.Position.Y*3))+1
   sharedEnemyId=variants[(math.abs(math.floor(key))-1)%#variants+1]
  end
  if sharedEnemyId then task.spawn(bindNativeNpcVisual,rootPart,sharedEnemyId)end
