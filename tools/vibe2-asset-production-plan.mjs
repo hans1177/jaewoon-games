@@ -4993,6 +4993,44 @@ export function buildVibeAssetProductionPlan({
         protectedGameplayAuthority:true
       });
     });
+  // 상세 설계 후보는 기존 선택과 중복되지 않을 때만 기존 BUILD_UP 바인딩 대상으로 승격 검토한다.
+  // 실소스·권리·플랫폼 QA가 없는 에셋의 자동 적용은 허용하지 않는다.
+  const currentLibraryAssets=new Map((librarySync.sourceConsumerRegistry?.assets||companyRegistry.assets||[])
+    .filter(row=>clean(row?.id)).map(row=>[clean(row.id),row]));
+  const existingSelectionKeys=new Set(automaticBindingTargets.map(row=>clean(row.assetId)));
+  const detailedBindingTargets=freezeList(detailedAssetCandidateReview.candidates
+    .filter(row=>row.stillInCurrentRegistry&&row.assetId&&!existingSelectionKeys.has(row.assetId))
+    .map(row=>{
+      const asset=currentLibraryAssets.get(row.assetId);
+      const sourceFiles=(Array.isArray(asset?.sourceFiles)?asset.sourceFiles:[])
+        .map(file=>typeof file==='string'?file:file?.path).map(clean).filter(Boolean);
+      const sourceBound=actualGameConsumerIds.has(row.assetId);
+      const sourceBinding=(librarySync.sourceConsumerBindings||[]).find(binding=>
+        binding.gameId===currentGameId&&clean(binding.assetId)===row.assetId&&binding.sourceBound===true);
+      const currentMasterGlbHash=clean(asset?.masterGlbHash||asset?.masterGlbSha256||asset?.masterSourceHash)||null;
+      const consumerAppliedMasterHash=clean(sourceBinding?.appliedMasterGlbHash)||null;
+      const masterUpgradeProvenanceRequired=Boolean(sourceBound&&currentMasterGlbHash&&!consumerAppliedMasterHash);
+      const masterUpgradeReviewRequired=Boolean(sourceBound&&currentMasterGlbHash&&consumerAppliedMasterHash
+        &&consumerAppliedMasterHash!==currentMasterGlbHash);
+      const compatible=assetSupplyCandidateAllowed(asset,resolvedTarget);
+      const eligibleForNativeBinding=sourceFiles.length>0&&asset?.productionVerified===true&&asset?.rightsPass===true;
+      const status=!compatible?'ASSET_REPAIR_REQUIRED'
+        :masterUpgradeReviewRequired?(eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED')
+        :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
+        :eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED';
+      return freeze({requirementId:null,assetId:row.assetId,family:row.family,
+        role:clean(asset?.role||asset?.subfamily)||null,status,sourceBound,
+        sourceFiles:freezeList(sourceFiles),sourceHash:clean(asset?.sourceHash)||null,
+        libraryVersion:Number(companyRegistry.version||0),nativeRuntimeVerified:false,
+        repairOwner:status==='NATIVE_SOURCE_BINDING_REQUIRED'?'EXISTING_GAME_SOURCE_WORKER':'EXISTING_ASSET_DEVELOPMENT',
+        protectedGameplayAuthority:true,detailedDesignCandidate:true,
+        roleAndPlatformRevalidationRequired:true,automaticReplacementAuthorized:false,
+        currentMasterGlbHash,consumerAppliedMasterHash,masterUpgradeReviewRequired,masterUpgradeProvenanceRequired,
+        masterUpgradePolicy:'REVALIDATE_AND_REBIND_THROUGH_EXISTING_BUILD_UP_NO_ASSUMED_RUNTIME_PASS',
+        replacesCandidateAssetId:row.replacesCandidateAssetId||null
+      });
+    }));
+  automaticBindingTargets.push(...detailedBindingTargets);
   const automaticAssetBindingWork=freeze({
     version:1,enabled:Boolean(currentGameId)&&['roblox','unity','web'].includes(resolvedTarget),
     trigger:'EVERY_EXISTING_BUILD_UP',gameId:currentGameId||null,target:resolvedTarget,
@@ -5002,6 +5040,8 @@ export function buildVibeAssetProductionPlan({
     pendingSourceBindingCount:automaticBindingTargets.filter(row=>row.status==='NATIVE_SOURCE_BINDING_REQUIRED').length,
     authoringRequiredCount:automaticBindingTargets.filter(row=>['AUTHORING_REQUIRED','SOURCE_ASSET_REQUIRED'].includes(row.status)).length,
     runtimeQaRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BOUND_RUNTIME_QA_REQUIRED').length,
+    glbMasterUpgradeCount:automaticBindingTargets.filter(row=>row.masterUpgradeReviewRequired===true).length,
+    glbAppliedVersionProvenanceRequiredCount:automaticBindingTargets.filter(row=>row.masterUpgradeProvenanceRequired===true).length,
     targets:freezeList(automaticBindingTargets),
     selectedRequirementsOnly:true,noParallelPipeline:true,noNewQueue:true,
     existingGraphicsProductionAndBuildUp:true,
