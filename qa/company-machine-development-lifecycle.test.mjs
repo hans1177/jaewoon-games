@@ -164,14 +164,10 @@ assert.doesNotMatch(webRuntime,/WEB_GAMEPLAY_MUSIC_GATE=REQUIRED/);
 assert.match(webRuntime,/company-minimum-design-contract\.mjs/);
 assert.match(webRuntime,/company-selected-platform-router\.mjs/);
 
-// 같은 개정의 수동 전체 배치만 합치고, 개별 게임과 다른 개정 실행은 독립시킨다.
-const coordinatorGate=webRuntime.split('\n  coordinator-gate:\n')[1]?.split('\n  native-plan:\n')[0]||'';
-assert.ok(coordinatorGate.length>0);
-assert.match(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ github\.run_id \}\}/);
-assert.doesNotMatch(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ inputs\.game_id/);
-assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=/);
-assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
-assert.match(coordinatorGate,/cancel-in-progress: false/);
+// Director is a separate monitor; game admission is read directly by the native planner.
+assert.match(webRuntime,/^  native-plan:/m);
+assert.doesNotMatch(webRuntime,/^  coordinator-gate:/m);
+assert.doesNotMatch(webRuntime,/needs: coordinator-gate/);
 
 assert.match(robloxRuntime,/--roadmap=company-learning\/platform-release-roadmap\.json/);
 assert.ok(bootstrap.includes('PolicySource = "company-learning/platform-release-roadmap.json"'));
