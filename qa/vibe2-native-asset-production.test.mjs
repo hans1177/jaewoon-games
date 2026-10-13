@@ -4939,6 +4939,19 @@ test('shared asset with just one higher quality point is immediately queued for 
  assert.equal(summary.runtimeVerificationGranted,false);
 });
 
+test('higher quality eligible shared asset beats lower quality with more role matches',()=>{
+ const registry={assets:[
+  {id:'current-prop',family:'PROP',role:'item',consumerGameIds:['demo'],qualityScore:42,license:'project-original',masterGlb:'assets/native/current-prop.glb'},
+  {id:'two-role-prop',family:'PROP',role:'item',tags:['loot'],qualityScore:43,license:'project-original',masterGlb:'assets/native/two-role-prop.glb'},
+  {id:'high-quality-prop',family:'PROP',role:'item',qualityScore:44,license:'project-original',masterGlb:'assets/native/high-quality-prop.glb'}
+ ]};
+ const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item loot',requirements:[{family:'PROP',roles:['item','loot']}],registry});
+ const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
+ assert.equal(upgrade?.assetId,'high-quality-prop');
+ assert.equal(upgrade?.replacesCandidateAssetId,'current-prop');
+ assert.equal(upgrade?.runtimeVerificationGranted,false);
+});
+
 test('detailed design candidates enter canonical binding targets only with verified rights',()=>{
   const source=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
   assert.ok(source.includes('const detailedBindingTargets=freezeList('));
