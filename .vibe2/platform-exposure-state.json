@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-13T02:56:07.883Z",
+  "updatedAt": "2026-10-13T03:14:30.072Z",
   "games": [
     {
       "gameId": "fantasy-survival",
@@ -1189,8 +1189,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "b52fdffd9f3f18480d10701e3bd28992e59087d9",
-            "artifactIdentity": "sha256:8e67cd2be034cab51075a2b2428b244c584d8cd88c1fd9e534900adae419e3ec",
+            "sourceRevision": "fa2b7e42add05f10f86d34cd017923e210889920",
+            "artifactIdentity": "sha256:657397c500f492a9a8defe5fc46cfa068550abc207c6b7827c87a60033c64ad5",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -1210,7 +1210,7 @@
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": false,
+              "multiplayer": true,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -1227,7 +1227,6 @@
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
-              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -1235,7 +1234,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 38
+            "candidateVersionNumber": 3
           },
           "perpetualBuildupActive": false,
           "testerTickets": {

@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-13T02:55:18.332Z",
+  "updatedAt": "2026-10-13T03:13:38.216Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -93,8 +93,8 @@
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 130,
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 131,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -138,15 +138,16 @@
         "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "roblox-runtime-evidence-pending",
         "{\"sourceRevision\":\"b2360f7a15d01c09406318083bad4e4456fa8b3e\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"34d9cf292aa25468e1a95cee40e212b8df4aaec5\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"34d9cf292aa25468e1a95cee40e212b8df4aaec5\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"fa2b7e42add05f10f86d34cd017923e210889920\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 171,
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 172,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -204,15 +205,16 @@
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"bc6ca4bf24042fa809d7cba0ce918295cd8dd86b\",\"artifactIdentity\":\"sha256:0c3b395e04d63ab0a16e61b4c01b1630c2ad9256f9a529618f8f424486d6f41d\",\"artifactRunId\":37632390643,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":9,\"workflowRunId\":37633563003,\"publishedAt\":\"2026-10-07T14:05:05.629Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81\",\"artifactIdentity\":\"sha256:8a6ec8161fd4ece31cb8d32ea79012d14dac99dae6a1ba5133c7ebf3c7b07138\",\"artifactRunId\":37773425618,\"universeId\":\"10768961338\",\"placeId\":\"79150944093879\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":10,\"workflowRunId\":37786712856,\"publishedAt\":\"2026-10-08T13:53:16.635Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
         "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"f2dbbb9d06a30f70e0dacb9e5529b23502e6f819\",\"artifactIdentity\":\"sha256:0e7016a060b9772aa5ab19389e4bf9a1b6663658ddf88403b2a4ca39f52988e1\",\"artifactRunId\":38196291154,\"universeId\":\"10770475187\",\"placeId\":\"112643742919826\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":2,\"workflowRunId\":38199031621,\"publishedAt\":\"2026-10-12T03:24:42.177Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}",
-        "{\"version\":2,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"b52fdffd9f3f18480d10701e3bd28992e59087d9\",\"artifactIdentity\":\"sha256:8e67cd2be034cab51075a2b2428b244c584d8cd88c1fd9e534900adae419e3ec\",\"artifactRunId\":38287796182,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":38,\"workflowRunId\":38292680169,\"publishedAt\":\"2026-10-12T19:22:04.041Z\",\"authority\":\"roblox-open-cloud-dedicated-private-runtime-candidate\",\"dedicated\":true,\"current\":true,\"publisherMainRevision\":\"b52fdffd9f3f18480d10701e3bd28992e59087d9\"}"
+        "{\"version\":2,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"b52fdffd9f3f18480d10701e3bd28992e59087d9\",\"artifactIdentity\":\"sha256:8e67cd2be034cab51075a2b2428b244c584d8cd88c1fd9e534900adae419e3ec\",\"artifactRunId\":38287796182,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":38,\"workflowRunId\":38292680169,\"publishedAt\":\"2026-10-12T19:22:04.041Z\",\"authority\":\"roblox-open-cloud-dedicated-private-runtime-candidate\",\"dedicated\":true,\"current\":true,\"publisherMainRevision\":\"b52fdffd9f3f18480d10701e3bd28992e59087d9\"}",
+        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"fa2b7e42add05f10f86d34cd017923e210889920\",\"artifactIdentity\":\"sha256:657397c500f492a9a8defe5fc46cfa068550abc207c6b7827c87a60033c64ad5\",\"artifactRunId\":38336254461,\"universeId\":\"10770475187\",\"placeId\":\"112643742919826\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"canonicalGameTarget\":false,\"validationOnly\":true,\"exposure\":\"PRIVATE_PRE_F9_VALIDATION_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":3,\"workflowRunId\":38338905418,\"publishedAt\":\"2026-10-13T03:01:14.619Z\",\"authority\":\"roblox-open-cloud-pre-f9-validation-candidate\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "route": "GAME_TESTER_FOUNDATION_EXECUTION",
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-23T11:54:41.174Z",
-      "updatedAt": "2026-10-13T02:24:03.775Z",
-      "occurrenceCount": 439,
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 440,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -7535,7 +7537,8 @@
         "roblox-runtime-evidence-pending",
         "{\"sourceRevision\":\"acec200039c5402e7d865fe6495866957cee2ac4\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"3b09af14b403756306055ae084ec9d386c25627b\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"45db977277c2ba8f7515969cb62b73484ebad84a\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"45db977277c2ba8f7515969cb62b73484ebad84a\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"fa2b7e42add05f10f86d34cd017923e210889920\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -7544,8 +7547,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-11T12:05:48.061Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 63
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 64
     },
     {
       "id": "bug-32f1aa35f82deecfdfbe",
@@ -8156,8 +8159,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T02:41:22.454Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 58
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 59
     },
     {
       "id": "bug-1914c95bbdae27625f92",
@@ -8187,8 +8190,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T02:56:24.018Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 56
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 57
     },
     {
       "id": "bug-5fb32d2c05ee6a34483f",
@@ -8214,8 +8217,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T02:56:24.018Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 57
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 58
     },
     {
       "id": "bug-eb83ec2636f91acaa5e8",
@@ -8232,7 +8235,8 @@
         "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "roblox-runtime-evidence-pending",
         "{\"sourceRevision\":\"7391830b5de7d8f01a1d8b9053485bdd5ba387e3\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":\"56401e19a86d544c370a690cb44fee0026b4c758\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"56401e19a86d544c370a690cb44fee0026b4c758\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"fa2b7e42add05f10f86d34cd017923e210889920\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -8241,8 +8245,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T02:56:24.018Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 57
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 58
     },
     {
       "id": "bug-9fe02b2e6a9e55a1ae55",
@@ -8268,8 +8272,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T05:18:35.997Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 54
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 55
     },
     {
       "id": "bug-5c320e9e115028e1d2a8",
@@ -8295,8 +8299,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T05:18:35.997Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 56
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 57
     },
     {
       "id": "bug-6aa2f36c69bdc2721e47",
@@ -8322,8 +8326,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T05:18:35.997Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 55
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 56
     },
     {
       "id": "bug-c9f963239a5107c59ad0",
@@ -8349,8 +8353,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T05:18:35.997Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 56
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 57
     },
     {
       "id": "bug-e6986ed37d3999467033",
@@ -8376,8 +8380,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T05:18:35.997Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 56
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 57
     },
     {
       "id": "bug-5db62a2ee710dce0fa12",
@@ -8394,7 +8398,8 @@
         "{\"sourceRevision\":\"e7a3d31658d02bda8d97d7cc0a47a184639dcaed\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "{\"sourceRevision\":\"9167c54b9cf3290fbea176ae61e669bebff608bc\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED",
-        "{\"sourceRevision\":\"9b2ea0d7fc0060ed107a29e14cc0c1276472104d\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"9b2ea0d7fc0060ed107a29e14cc0c1276472104d\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"fa2b7e42add05f10f86d34cd017923e210889920\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -8403,8 +8408,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T05:18:35.997Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 56
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 57
     },
     {
       "id": "bug-1c333f6d9a080610af93",
@@ -8430,8 +8435,32 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T05:18:35.997Z",
-      "updatedAt": "2026-10-13T02:55:18.329Z",
-      "occurrenceCount": 56
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 57
+    },
+    {
+      "id": "bug-2ca67e1c397958122636",
+      "gameId": "island-village",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "existing-source-static-revalidation-failed",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED",
+        "{\"sourceRevision\":\"fa2b7e42add05f10f86d34cd017923e210889920\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-13T03:13:38.212Z",
+      "updatedAt": "2026-10-13T03:13:38.212Z",
+      "occurrenceCount": 1
     }
   ]
 }
