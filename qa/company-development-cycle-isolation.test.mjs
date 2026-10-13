@@ -30,9 +30,9 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
   assert.match(workflow,/actions\/workflows\/company-development-confirmed-runtime\.yml\/runs\?per_page=100&page=\$page/);
   assert.match(workflow,/DEVELOPMENT_COORDINATOR_SCAN_INCLUDES_PUSH_AND_DISPATCH=YES/);
   assert.match(workflow,/DEVELOPMENT cycle \| batch \|/);
-  assert.ok((workflow.match(/fail-fast: false/g)||[]).length>=4);
+  assert.ok((workflow.match(/fail-fast: false/g)||[]).length>=1);
   assert.match(workflow,/continue-cycle:/);
-  assert.match(workflow,/needs: \[native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap\]/);
+  assert.match(workflow,/needs: \[native-plan, dispatch-roblox, dispatch-unity\]/);
   assert.match(workflow,/if: \$\{\{ always\(\) && needs\.native-plan\.result == 'success'/);
   assert.match(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
   assert.match(workflow,/CONTINUOUS_PER_GAME_ISOLATED_CYCLE/);
@@ -54,8 +54,8 @@ test('coordinator runners stay independent while active batch admission deduplic
   assert.match(gate,/select\(\.status == "in_progress"\)/);
   assert.doesNotMatch(gate,/select\(\.status == "queued" or \.status == "pending"/);
   assert.ok(workflow.slice(0,workflow.indexOf('\njobs:\n')).includes("github.run_id"));
-  assert.match(workflow,/  dispatch-roblox:[\s\S]*?matrix:\n        game_id:/);
-  assert.match(workflow,/  dispatch-unity-web-floor:[\s\S]*?matrix:\n        game_id:/);
+  assert.match(workflow,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml/);
 });
 
 test('Unity Web active push runs are coalesced by exact game ID without serializing sibling games',()=>{
