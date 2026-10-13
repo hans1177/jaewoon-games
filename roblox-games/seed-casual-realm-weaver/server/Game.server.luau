@@ -120,6 +120,22 @@ local handlers = {
   ["scope-mobileux-6b1e61eae0"] = scopeHandler7,
 }
 
+-- 승인된 COOP 확장: 게임별 원본 행동과 보상은 보존하고 서버가 공동 진척만 동기화한다.
+local function broadcastMultiplayerSync()
+  local roster = {}
+  local sharedProgress = nil
+  for _, participant in ipairs(Players:GetPlayers()) do
+    local progress = readNumber(participant, "Progress", 0)
+    sharedProgress = sharedProgress and math.min(sharedProgress, progress) or progress
+    table.insert(roster, {UserId = participant.UserId, Progress = progress})
+  end
+  remote:FireAllClients("MULTIPLAYER_SYNC", {
+    ParticipantCount = #roster,
+    Participants = roster,
+    SharedObjective = {Kind = "REALM_WEAVER_COOP_PROGRESS", Progress = sharedProgress or 0, MinimumParticipants = 2},
+  })
+end
+
 Players.PlayerAdded:Connect(function(player)
   local ok, saved = pcall(function()
     return store:GetAsync("player:" .. player.UserId)
@@ -145,6 +161,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
   handler(player)
+  broadcastMultiplayerSync()
 end)
 Players.PlayerRemoving:Connect(function(player)
   local snapshot = {}
