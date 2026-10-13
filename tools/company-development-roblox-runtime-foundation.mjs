@@ -365,7 +365,7 @@ export async function probeRobloxOpenCloudEngine({
     'local startupWaitStarted=os.clock()',
     'local startupWaitDeadline=startupWaitStarted+8',
     'local function runtimeWorldReady() if workspace:GetAttribute("Foundation_SERVER_BOOT")==true then return true end; for _,item in ipairs(workspace:GetDescendants()) do if item:IsA("SpawnLocation") or item:GetAttribute("SpawnMarkerOnly")==true then return true end end; return false end',
-    'while not runtimeWorldReady() and os.clock()<startupWaitDeadline do task.wait(0.25) end',
+    'while simulationRunning and not runtimeWorldReady() and os.clock()<startupWaitDeadline do task.wait(0.25) end',
     'local startupWaitSeconds=os.clock()-startupWaitStarted',
     'local runtimeWorldReadyObserved=runtimeWorldReady()',
     'local foundationServerBoot=workspace:GetAttribute("Foundation_SERVER_BOOT")==true',
