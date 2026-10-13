@@ -369,9 +369,12 @@ local function humanoidFigure(parent,name,pos,color,accent,scale)
   add("AdventurerMantle",Vector3.new(3.1,.85,2),Vector3.new(0,1.15,.2),accent,Enum.Material.Fabric,Enum.PartType.Ball)
  end
  local nativeId=Style.NpcModels and Style.NpcModels[name]
+ local sharedId=Style.SharedNpcModels and Style.SharedNpcModels[name]
  local residentIndex=tonumber(string.match(name,"^Resident(%d+)$"))
  if residentIndex and Style.ResidentModels then nativeId=Style.ResidentModels[(residentIndex-1)%#Style.ResidentModels+1]end
- if nativeId then task.spawn(bindNativeNpcVisual,r,nativeId)end
+ if residentIndex and Style.SharedResidentModels and #Style.SharedResidentModels>0 then sharedId=Style.SharedResidentModels[(residentIndex-1)%#Style.SharedResidentModels+1]end
+ if sharedId then task.spawn(bindNativeNpcVisual,r,sharedId)
+ elseif nativeId then task.spawn(bindNativeNpcVisual,r,nativeId)end
  return r
 end
 local function gearPart(folder,body,name,size,offset,color,material,shape,rotation)
