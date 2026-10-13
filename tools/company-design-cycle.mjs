@@ -839,6 +839,11 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
       if(!feedback.length)continue;
       const taskKey=`${phase}_slices::${slice.id}`;
       delete designCheckpoint.tasks[taskKey];
+      // 최종 검증에서 실패한 필드는 부분 캐시에서도 제거해 다음 재시작에 반드시 재작성한다.
+      const partial=designCheckpoint.slicePartialResults?.[taskKey];
+      if(partial&&typeof partial==='object'){
+        for(const row of feedback)for(const field of row.fields||[])delete partial[field];
+      }
       designCheckpoint.sliceRepairFeedback[taskKey]=feedback;
       designCheckpoint.sliceRepairAttempts[taskKey]=(designCheckpoint.sliceRepairAttempts[taskKey]||0)+1;
       designCheckpoint.failedPhase=`${phase}_slices`;designCheckpoint.failedTask=slice.id;
