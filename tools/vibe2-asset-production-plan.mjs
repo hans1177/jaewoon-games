@@ -5009,8 +5009,9 @@ export function buildVibeAssetProductionPlan({
         binding.gameId===currentGameId&&clean(binding.assetId)===row.assetId&&binding.sourceBound===true);
       const currentMasterGlbHash=clean(asset?.masterGlbHash||asset?.masterGlbSha256||asset?.masterSourceHash)||null;
       const consumerAppliedMasterHash=clean(sourceBinding?.appliedMasterGlbHash)||null;
-      const masterUpgradeReviewRequired=Boolean(sourceBound&&currentMasterGlbHash
-        &&(!consumerAppliedMasterHash||consumerAppliedMasterHash!==currentMasterGlbHash));
+      const masterUpgradeProvenanceRequired=Boolean(sourceBound&&currentMasterGlbHash&&!consumerAppliedMasterHash);
+      const masterUpgradeReviewRequired=Boolean(sourceBound&&currentMasterGlbHash&&consumerAppliedMasterHash
+        &&consumerAppliedMasterHash!==currentMasterGlbHash);
       const compatible=assetSupplyCandidateAllowed(asset,resolvedTarget);
       const eligibleForNativeBinding=sourceFiles.length>0&&asset?.productionVerified===true&&asset?.rightsPass===true;
       const status=!compatible?'ASSET_REPAIR_REQUIRED'
@@ -5024,7 +5025,7 @@ export function buildVibeAssetProductionPlan({
         repairOwner:status==='NATIVE_SOURCE_BINDING_REQUIRED'?'EXISTING_GAME_SOURCE_WORKER':'EXISTING_ASSET_DEVELOPMENT',
         protectedGameplayAuthority:true,detailedDesignCandidate:true,
         roleAndPlatformRevalidationRequired:true,automaticReplacementAuthorized:false,
-        currentMasterGlbHash,consumerAppliedMasterHash,masterUpgradeReviewRequired,
+        currentMasterGlbHash,consumerAppliedMasterHash,masterUpgradeReviewRequired,masterUpgradeProvenanceRequired,
         masterUpgradePolicy:'REVALIDATE_AND_REBIND_THROUGH_EXISTING_BUILD_UP_NO_ASSUMED_RUNTIME_PASS',
         replacesCandidateAssetId:row.replacesCandidateAssetId||null
       });
