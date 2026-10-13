@@ -677,7 +677,31 @@ local function applyPlayerAppearance(p)
  body.LeftArmColor3=colors[choice];body.RightArmColor3=colors[choice]
  body.LeftLegColor3=colors[choice];body.RightLegColor3=colors[choice]
  body.TorsoColor3=colors[choice];body.Parent=c
- c:SetAttribute("AvatarStyle",choice)
+ local archetype=math.clamp(math.floor(n(p,"AvatarArchetype",1)),1,3)
+ local armor=math.clamp(math.floor(n(p,"AvatarArmor",0)),0,2)
+ local decoration=math.clamp(math.floor(n(p,"AvatarDecoration",0)),0,2)
+ local oldOutfit=c:FindFirstChild("AvatarLibraryOutfit");if oldOutfit then oldOutfit:Destroy()end
+ local outfit=Instance.new("Folder");outfit.Name="AvatarLibraryOutfit";outfit.Parent=c
+ local colors3={Color3.fromRGB(145,56,50),Color3.fromRGB(51,148,132),Color3.fromRGB(194,203,214)}
+ local tint=colors3[archetype]
+ local torso=c:FindFirstChild("UpperTorso")or c:FindFirstChild("Torso")
+ local head=c:FindFirstChild("Head")
+ local function fit(body,name,size,offset,color,material)
+  if not body then return end
+  local part=Instance.new("Part");part.Name=name;part.Size=size;part.Color=color
+  part.Material=material or Enum.Material.Metal;part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
+  part.CFrame=body.CFrame*offset;part.Parent=outfit
+  local weld=Instance.new("WeldConstraint");weld.Part0=body;weld.Part1=part;weld.Parent=part
+ end
+ if armor>=1 then
+  fit(torso,"ArmorChest",Vector3.new(2.15,1.5,.3),CFrame.new(0,0,-.62),tint)
+  fit(c:FindFirstChild("LeftUpperArm")or c:FindFirstChild("Left Arm"),"ArmorLeft",Vector3.new(.75,.6,.8),CFrame.new(0,.25,0),tint)
+  fit(c:FindFirstChild("RightUpperArm")or c:FindFirstChild("Right Arm"),"ArmorRight",Vector3.new(.75,.6,.8),CFrame.new(0,.25,0),tint)
+ end
+ if armor>=2 then fit(head,"ArmorHelmet",Vector3.new(1.85,.62,1.8),CFrame.new(0,.54,0),tint)end
+ if decoration>=1 then fit(head,"HatCrest",Vector3.new(.2,.76,.48),CFrame.new(0,1.02,-.15),Color3.fromRGB(238,183,75),Enum.Material.Neon)end
+ if decoration>=2 then fit(torso,"ClothCape",Vector3.new(1.9,2.4,.18),CFrame.new(0,-.55,.73),tint,Enum.Material.Fabric)end
+  c:SetAttribute("AvatarStyle",choice)
  local head=c:FindFirstChild("Head")
  if head then
   local old=head:FindFirstChild("AvatarStyleMark");if old then old:Destroy()end
@@ -687,7 +711,8 @@ local function applyPlayerAppearance(p)
   band.Color=palettes[choice];band.CFrame=head.CFrame*CFrame.new(0,.47,0);band.Parent=head
   local weld=Instance.new("WeldConstraint");weld.Part0=head;weld.Part1=band;weld.Parent=band
  end
- task.spawn(bindSharedPlayerVisual,c,tostring(p:GetAttribute("ClassId")or"NONE"))
+ local archetypes={"BREAKER","SHADOW","SOUL"}
+ task.spawn(bindSharedPlayerVisual,c,archetypes[math.clamp(math.floor(n(p,"AvatarArchetype",1)),1,3)])
  local weaponTier=n(p,"WeaponTier",1);local armorTier=n(p,"ArmorTier",1);local gear=c:FindFirstChild("DaechungClassGear")
  -- 코난풍 무기 단계별 외형: 기본 검→도끼→창→망치→강철 대검.
  -- 게임플레이 공격 판정·피해량은 기존 WeaponTier 로직에 남긴다.
@@ -777,7 +802,7 @@ end
 -- Save schema v3 preserves every earlier key and adds level-cap, relic and boss-companion progression.
 local SAVE_SCHEMA_VERSION=3
 local SAVE_MAX_ATTEMPTS=3
-local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture","HouseModules","AvatarStyle"}
+local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture","HouseModules","AvatarStyle","AvatarArchetype","AvatarArmor","AvatarDecoration"}
 local saveReady={}
 local saveSurface=RS:FindFirstChild("SavePersistence")
 if not saveSurface then
@@ -796,7 +821,7 @@ end
 local function init(p)
  p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1);p:SetAttribute("RelicId",C.RelicDefault or"NONE")
  p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("SecondAdvancementId","");p:SetAttribute("ClassName","직업 미선택")
- p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0);p:SetAttribute("HouseLevel",0);p:SetAttribute("HouseFurniture",0);p:SetAttribute("HouseModules",0);p:SetAttribute("AvatarStyle",1)
+ p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0);p:SetAttribute("HouseLevel",0);p:SetAttribute("HouseFurniture",0);p:SetAttribute("HouseModules",0);p:SetAttribute("AvatarStyle",1);p:SetAttribute("AvatarArchetype",1);p:SetAttribute("AvatarArmor",0);p:SetAttribute("AvatarDecoration",0)
  p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
  p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
@@ -1854,6 +1879,15 @@ remote.OnServerEvent:Connect(function(p,a)
   if n(p,"CurrentZone",0)==0 and p:GetAttribute("InCombat")~=true and saveReady[p]==true then
    p:SetAttribute("AvatarStyle",n(p,"AvatarStyle",1)%6+1);applyPlayerAppearance(p)
    msg(p,"외형 스타일 "..n(p,"AvatarStyle",1).."/6");accepted=true
+  end
+ elseif a=="CUSTOMIZE_ARCHETYPE" or a=="CUSTOMIZE_ARMOR" or a=="CUSTOMIZE_DECORATION" then
+  if n(p,"CurrentZone",0)==0 and p:GetAttribute("InCombat")~=true and saveReady[p]==true then
+   local key,maxVal,minimum
+   if a=="CUSTOMIZE_ARCHETYPE" then key="AvatarArchetype";maxVal=3;minimum=1
+   elseif a=="CUSTOMIZE_ARMOR" then key="AvatarArmor";maxVal=2;minimum=0
+   else key="AvatarDecoration";maxVal=2;minimum=0 end
+   p:SetAttribute(key,((math.floor(n(p,key,minimum))-minimum+1)%(maxVal-minimum+1))+minimum)
+   applyPlayerAppearance(p);accepted=true;feedback(p,"CUSTOMIZE")
   end
  elseif a==C.Actions.HOUSING_BUILD or a==C.Actions.HOUSING_UPGRADE or a==C.Actions.HOUSING_FURNISH or a==C.Actions.HOUSING_MODULE or a==C.Actions.HOUSING_VISIT then accepted=houseAction(p,a)
  elseif a==C.Actions.BUY_WEAPON then accepted=purchaseMerchantEquipment(p,"WEAPON")
