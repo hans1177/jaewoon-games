@@ -236,6 +236,20 @@ designAssetLibraryContext.assetFacts=Object.fromEntries(Object.values(designAsse
 for(const platform of Object.values(designAssetLibraryContext.platforms)){
   platform.candidates=platform.candidates.map(({family,action,assetId,applicationMode,reason,roleEvidence,replacesCandidateAssetId,automaticReplacementAuthorized,independentNativeRuntimeQaRequired})=>({family,action,assetId,applicationMode,reason,roleEvidence,...(replacesCandidateAssetId?{replacesCandidateAssetId,automaticReplacementAuthorized:false,independentNativeRuntimeQaRequired:true}:{})}));
 }
+// Persist actionable replacement reviews without asserting that a source patch or runtime swap happened.
+designAssetLibraryContext.replacementReviewQueue=Object.freeze(
+  Object.entries(designAssetLibraryContext.platforms).flatMap(([target,platform])=>
+    platform.candidates.filter(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
+      &&row.assetId&&row.replacesCandidateAssetId&&row.assetId!==row.replacesCandidateAssetId)
+      .map(row=>({
+        gameId,target,family:row.family,newAssetId:row.assetId,
+        existingAssetId:row.replacesCandidateAssetId,
+        candidateEvidence:designAssetLibraryContext.assetFacts[row.assetId]||null,
+        sourceBindingRequired:true,platformImportRequired:true,
+        independentNativeRuntimeQaRequired:true,automaticReplacementAuthorized:false,
+        state:'REVIEW_REQUIRED_NOT_APPLIED'
+      })))
+);
 const designAssetFamilies=uniq(Object.values(designAssetLibraryContext.platforms).flatMap(platform=>platform.requiredFamilies||[]));
 const designLearningEvents=(Array.isArray(seedState?.seedMaterialLearning?.events)?seedState.seedMaterialLearning.events:[])
   .filter(event=>clean(event?.gameId)===gameId&&clean(event?.reviewStage)==='DESIGN_STRICT_REVIEW')
