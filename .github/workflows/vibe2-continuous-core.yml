@@ -841,6 +841,16 @@ jobs:
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
             --reserved-at="$reserved_at" \
             --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
+          node - <<'NODE'
+          const fs=require('fs');
+          const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
+          const scheduler=batch.scheduler||{};
+          if((batch.matrix||[]).length===0){
+            const keys=['lane','freeSlotsBeforeReservation','activeWorkersBeforeReservation','blockedCount','conflictCount','stopReason'];
+            const details=Object.fromEntries(keys.map(key=>[key,scheduler[key]??null]));
+            console.log('VIBE2_EMPTY_BATCH_DIAGNOSTICS='+JSON.stringify(details));
+          }
+          NODE
 
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
