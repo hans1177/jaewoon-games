@@ -266,13 +266,14 @@ local function decorateZoneAssets(parent,z,requestedSeed)
  end)
 end
 
-local function bindNativeNpcVisual(rootPart,assetId)
+local function bindNativeNpcVisual(rootPart,assetId,fallbackAssetId)
  if not assetId or not rootPart.Parent then return end
  local sourceModel,loadFailure=loadAsset(assetId)
  if not sourceModel or not rootPart.Parent then
   rootPart:SetAttribute("NativeActorMissing",true)
   rootPart:SetAttribute("NativeActorFailureStage","ROBLOX_NATIVE_ASSET_LOAD")
   rootPart:SetAttribute("NativeActorFailureSignature",loadFailure or "ACTOR_ROOT_REMOVED")
+  if fallbackAssetId and fallbackAssetId~=assetId and rootPart.Parent then return bindNativeNpcVisual(rootPart,fallbackAssetId)end
   return
  end
  local native=sourceModel:Clone();native.Name="NativeLibraryActor"
@@ -299,6 +300,7 @@ local function bindNativeNpcVisual(rootPart,assetId)
   native:Destroy();rootPart:SetAttribute("NativeActorMissing",true)
   rootPart:SetAttribute("NativeActorFailureStage","ROBLOX_NATIVE_ACTOR_BIND")
   rootPart:SetAttribute("NativeActorFailureSignature",rootPart.Parent and "INVALID_OR_OVER_BUDGET_GEOMETRY" or "ACTOR_ROOT_REMOVED")
+  if fallbackAssetId and fallbackAssetId~=assetId and rootPart.Parent then return bindNativeNpcVisual(rootPart,fallbackAssetId)end
   return
  end
  native:SetAttribute("SourceAssetId",tostring(assetId));native:SetAttribute("RuntimeVisualReview","PENDING")
@@ -373,7 +375,7 @@ local function humanoidFigure(parent,name,pos,color,accent,scale)
  local residentIndex=tonumber(string.match(name,"^Resident(%d+)$"))
  if residentIndex and Style.ResidentModels then nativeId=Style.ResidentModels[(residentIndex-1)%#Style.ResidentModels+1]end
  if residentIndex and Style.SharedResidentModels and #Style.SharedResidentModels>0 then sharedId=Style.SharedResidentModels[(residentIndex-1)%#Style.SharedResidentModels+1]end
- if sharedId then task.spawn(bindNativeNpcVisual,r,sharedId)
+ if sharedId then task.spawn(bindNativeNpcVisual,r,sharedId,nativeId)
  elseif nativeId then task.spawn(bindNativeNpcVisual,r,nativeId)end
  return r
 end
