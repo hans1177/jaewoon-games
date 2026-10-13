@@ -14123,7 +14123,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-12T18:09:47.970Z",
+      "updatedAt": "2026-10-13T02:54:11.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -14177,13 +14177,13 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-studio-asset-binding-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-package-pending"
       ],
-      "robloxSourceCommit": "d54a18ca369053dabea6e02795c731f3fa41849e",
-      "robloxSourceBootstrapPassedAt": "2026-10-12T18:09:47.970Z",
+      "robloxSourceCommit": "fa2b7e42add05f10f86d34cd017923e210889920",
+      "robloxSourceBootstrapPassedAt": "2026-10-13T02:54:11.499Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -14686,7 +14686,10 @@
         "gameplayAuthority": false
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
-      "robloxStudioAssetRuntimeBindingEvidence": null
+      "robloxStudioAssetRuntimeBindingEvidence": null,
+      "robloxBuildFailedAt": null,
+      "robloxRuntimeRetryCount": 0,
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND"
     },
     {
       "gameId": "gem-survivor",
@@ -36528,7 +36531,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null
     }
   ],
-  "updatedAt": "2026-10-13T02:54:04.661Z",
+  "updatedAt": "2026-10-13T02:54:11.499Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
