@@ -40135,9 +40135,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-13T07:37:21.773Z",
-      "updatedAt": "2026-10-13T07:44:37.104Z",
+      "updatedAt": "2026-10-13T09:06:18.638Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -40146,7 +40146,14 @@
         "webValidationRequired": false,
         "capturedAt": "2026-10-13T07:44:36.385Z"
       },
-      "strictDesignReviewRefreshRequired": true
+      "strictDesignReviewRefreshRequired": true,
+      "robloxSourceBootstrapFailedAt": "2026-10-13T09:06:18.638Z",
+      "robloxSourceCandidateBranch": null,
+      "robloxSourceCandidateReadyAt": null,
+      "robloxRuntimePassed": false,
+      "routingBlockers": [
+        "roblox-source-bootstrap:source-generation-failed"
+      ]
     },
     {
       "gameId": "wild-survival",
@@ -40212,9 +40219,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-13T07:37:21.773Z",
-      "updatedAt": "2026-10-13T07:44:37.104Z",
+      "updatedAt": "2026-10-13T09:06:18.638Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -40223,10 +40230,17 @@
         "webValidationRequired": false,
         "capturedAt": "2026-10-13T07:44:36.385Z"
       },
-      "strictDesignReviewRefreshRequired": true
+      "strictDesignReviewRefreshRequired": true,
+      "robloxSourceBootstrapFailedAt": "2026-10-13T09:06:18.638Z",
+      "robloxSourceCandidateBranch": null,
+      "robloxSourceCandidateReadyAt": null,
+      "robloxRuntimePassed": false,
+      "routingBlockers": [
+        "roblox-source-bootstrap:source-generation-failed"
+      ]
     }
   ],
-  "updatedAt": "2026-10-13T09:02:27.770Z",
+  "updatedAt": "2026-10-13T09:06:18.638Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
