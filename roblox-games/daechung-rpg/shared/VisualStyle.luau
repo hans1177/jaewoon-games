@@ -1,5 +1,11 @@
 local Style={
   -- 기존 공용 네이티브 원본의 실제 등록 ID. 적용은 시각/모션 검수 완료를 뜻하지 않는다.
+  -- Native-imported shared GLB candidates; fallback to established NPC models if loading/binding fails.
+  -- Player appearance candidates are only applied if a compatible articulated R15 part rig is found.
+  SharedPlayerModels={NONE=103829007217036,BREAKER=110863257572824,SHADOW=133331287956378,RUNE=102792311375491,SOUL=85536157214273},
+  SharedNpcModels={VillageChief=110863257572824,WeaponMerchant=87698901546908,ArmorMerchant=110863257572824,VillageHealer=103829007217036,AdvancementMaster=76197736552279},
+  SharedResidentModels={103829007217036,85536157214273,102792311375491,133331287956378,91869903175689},
+  SharedEnemyModels={MEADOW=110808635634531,RUINS=123382901571219,ABYSS=104892549506438},
   NpcModels={VillageChief=89472411044669,WeaponMerchant=71830244663306,ArmorMerchant=95529290247720,VillageHealer=106583720750028,AdvancementMaster=71960136671229},
   ResidentModels={89472411044669,116599489319716,133560049433012,94002783932866,92558150738144,89066815382766},
   Biomes={
