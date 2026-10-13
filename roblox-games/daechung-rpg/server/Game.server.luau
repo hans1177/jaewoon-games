@@ -519,6 +519,15 @@ end
 local function resolveIncomingAttack(p,e,attack)
  local h=hum(p);local pr=root(p);if not h or not pr or h.Health<=0 or not e.part or not e.part.Parent then return end
  local now=os.clock()
+ if p:GetAttribute("AutoCombat")~=false and n(p,"CurrentZone",0)>0 then
+  if now>=n(p,"AutoDodgeReady",0) and math.random()<.18 then
+   p:SetAttribute("AutoDodgeReady",now+4.5);p:SetAttribute("EvasionUntil",now+.28);feedback(p,"AUTO_DODGE")
+  elseif attack.Parryable~=false and now>=n(p,"AutoParryReady",0) and n(p,"Guard",C.GuardMax)>16 and math.random()<.26 then
+   p:SetAttribute("AutoParryReady",now+3.2);p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1)
+   p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+8))
+   staggerEnemy(e,(attack.GuardDamage or 20)*1.2,now);feedback(p,"PARRY");return
+  end
+ end
  if n(p,"EvasionUntil",0)>now then feedback(p,"DODGE");msg(p,"회피 성공");return end
  local damage=(e.damage or 8)*(attack.DamageMult or 1)
  if e.enragedUntil and e.enragedUntil>now then damage*=1.22 end
@@ -2064,6 +2073,12 @@ RunService.Heartbeat:Connect(function(dt)
 
  for _,p in ipairs(Players:GetPlayers())do
   local zone=n(p,"CurrentZone",0)
+  local h=hum(p);local r=root(p)
+  if zone>0 and h and h.Health>0 and r and p:GetAttribute("AutoCombat")~=false and now>=n(p,"NextAutoAttack",0) then
+   if nearestEnemy(r.Position,zone,14) then
+    p:SetAttribute("NextAutoAttack",now+1.05);playerAttack(p,false)
+   end
+  end
   if zone==0 then local h=hum(p);if h and h.Health<h.MaxHealth then h.Health=math.min(h.MaxHealth,h.Health+25*dt)end end
   if p:GetAttribute("Blocking")~=true and now>=n(p,"GuardBrokenUntil",0)then
    local guard=n(p,"Guard",C.GuardMax);if guard<C.GuardMax then p:SetAttribute("Guard",math.min(C.GuardMax,guard+C.GuardRegenPerSecond*dt))end
