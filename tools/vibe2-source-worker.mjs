@@ -7011,6 +7011,13 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     error.vibe2GenerationFailureClass='DETERMINISTIC_ROBLOX_BUILDUP';
     throw error;
   }
+  if(!generated && clean(process.env.VIBE2_PRODUCTION_MODEL_CALLS_ENABLED).toLowerCase()==='false'){
+    // Owner production rule: preserve deterministic fixes, but never invoke any AI
+    // text model to fabricate a candidate when a deterministic edit is unavailable.
+    const error=new Error('PRODUCTION_AI_MODELS_DISABLED:DETERMINISTIC_CANDIDATE_REQUIRED');
+    error.vibe2GenerationFailureClass='PRODUCTION_MODELS_DISABLED';
+    throw error;
+  }
   if(!generated){
     let generationSourceRoot=sourceRoot,generationBootstrapRoot='';
     if(bootstrap&&target==='unity'){
