@@ -32,6 +32,66 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
   // 이번 복구가 대기열로 돌려보낸 작업만 예약 알림에 사용한다. 실행 중 예약은 보존한다.
   const gameRequeuedTaskIds=new Set();
 
+  // 오래된 게임 소스 복구 예약은 기존 GAME_PRIMARY 작업에 귀속한다.
+  // 후속 시스템 작업은 게임 소스 수정 및 검증이 확인되기 전까지 해제하지 않는다.
+  const legacyGroups=new Map();
+  for(const task of systemAi.tasks){
+    if(!['queued','blocked'].includes(clean(task.status)))continue;
+    if(!clean(task.id).startsWith('recovery-recovery-')&&!clean(task.id).startsWith('game-'))continue;
+    const files=uniq(task.responsibleFiles).map(file=>file.replaceAll('\\','/').replace(/^\.\//,''));
+    if(files.length!==1)continue;
+    const match=files[0].match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
+    if(!match)continue;
+    const key=files[0];
+    if(!legacyGroups.has(key))legacyGroups.set(key,[]);
+    legacyGroups.get(key).push(task);
+  }
+  for(const [file,legacy] of (mode==='all'||mode==='vibe'?legacyGroups:new Map())){
+    if(legacy.length===0)continue;
+    const match=file.match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
+    const gameId=match[2],platform=match[1];
+    if(platform!=='roblox')continue; // 중앙정책: 로블록스 단독 개발, 이전 플랫폼 이관 재활성화 금지
+    const existing=gameQueue.tasks.find(task=>clean(task.gameId)===gameId
+      &&!['cancelled','done','completed','verified'].includes(clean(task.status).toLowerCase())
+      &&clean(task.target).toLowerCase()===platform
+      &&(clean(task.sourceRoot).startsWith(platform+'-games/'+gameId)
+        ||clean(task.id).includes(platform))
+      &&(clean(task.id).includes('repair')||clean(task.id).includes('implementation')));
+    if(!existing)continue; // 새 게임 작업 생성 금지
+    const ids=new Set(legacy.map(task=>clean(task.id)));
+    if(targetSourceTaskId&&!legacy.some(task=>clean(task.id)===targetSourceTaskId))continue;
+    const verified=['done','verified','completed'].includes(clean(existing.status).toLowerCase())
+      &&uniq(existing.evidence).some(value=>/verification:(?:PASS|VERIFIED)|runtime-qa:PASS|qa:PASS/i.test(value));
+    if(!verified){
+      gameQueue.tasks=gameQueue.tasks.map(task=>{
+        if(clean(task.id)!==clean(existing.id))return task;
+        const evidence=uniq([...(task.evidence||[]),...legacy.map(row=>'legacy-system-ai-repair:'+clean(row.id)),
+          'legacy-recovery-source:'+file,'legacy-recovery-verification:REQUIRED']);
+        if(task.priority==='critical'&&task.sourceMutationRequired===true
+          &&evidence.length===(task.evidence||[]).length)return task;
+        return{...task,priority:'critical',sourceMutationRequired:true,evidence,updatedAt:stamp};
+      });
+    }
+    systemAi.tasks=systemAi.tasks.map(task=>{
+      if(ids.has(clean(task.id))){
+        const status=verified?'cancelled':'blocked';
+        const blocker=verified?null:'vibe-game-repair-pending:'+clean(existing.id);
+        const evidence=uniq([...(task.evidence||[]),'legacy-recovery-routed-to-vibe:'+clean(existing.id),
+          ...(verified?['legacy-recovery-verified-by-vibe:'+clean(existing.id)]:[])]);
+        if(task.status===status&&task.blocker===blocker
+          &&!task.reservationId&&!task.reservationRunId&&!task.reservedAt
+          &&evidence.length===(task.evidence||[]).length)return task;
+        return{...clearReservation(task),status,blocker,evidence,updatedAt:stamp};
+      }
+      if(!verified)return task; // 검증 전 원래 의존성을 유지한다
+      const deps=uniq(task.dependencies);
+      if(!deps.some(id=>ids.has(id)))return task;
+      return{...task,dependencies:deps.filter(id=>!ids.has(id)),
+        evidence:uniq([...(task.evidence||[]),'legacy-recovery-dependency-verified:'+clean(existing.id)]),
+        updatedAt:stamp};
+    });
+  }
+
   recovery.tasks=recovery.tasks.map(rec=>{
     if(clean(rec.status)!=='queued')return rec;
     if(targetSourceTaskId&&clean(rec.sourceTaskId)!==targetSourceTaskId)return rec;
@@ -39,6 +99,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     // Existing System AI worker cannot write game source. Recover legacy misrouted work in-place.
     const gameSourceOwned=uniq(rec.responsibleFiles).some(file=>GAME_SOURCE_PREFIXES.some(prefix=>clean(file).replaceAll('\\','/').replace(/^\.\//,'').startsWith(prefix)));
     const owner=requestedOwner==='SYSTEM_AI'&&gameSourceOwned?'VIBE2_VIBE3':requestedOwner;
+    if(owner==='VIBE2_VIBE3'&&uniq(rec.responsibleFiles).some(file=>
+      /^(?:web|unity|unreal|godot)-games\//.test(clean(file).replaceAll('\\\\','/').replace(/^\.\//,''))))return rec;
     if(mode!=='all'&&mode==='vibe'&&owner!=='VIBE2_VIBE3')return rec;
     if(mode!=='all'&&mode==='system-ai'&&owner!=='SYSTEM_AI')return rec;
     const ids=uniq([rec.sourceTaskId,...(rec.relatedTaskIds||[])]);
@@ -376,7 +438,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   });
   writeJson(recoveryFile,result.recovery);
   if(['all','vibe'].includes(clean(args.route||'all').toLowerCase()))writeJson(gameFile,result.gameQueue);
-  if(['all','system-ai'].includes(clean(args.route||'all').toLowerCase()))writeJson(systemFile,result.systemAi);
+  if(['all','vibe','system-ai'].includes(clean(args.route||'all').toLowerCase()))writeJson(systemFile,result.systemAi);
   console.log('RECOVERY_DISPATCH_COUNT='+result.dispatched.length);
   console.log('RECOVERY_GAME_REQUEUED_COUNT='+result.gameRequeuedTaskIds.length);
   for(const row of result.dispatched)console.log('RECOVERY_DISPATCH='+row.id+':'+row.owner+':'+row.touched);

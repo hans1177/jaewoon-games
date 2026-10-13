@@ -3744,11 +3744,13 @@ function universalAssetWorkerGuidance(order={}) {
   const selected=Object.entries(loadout?.families||{}).map(([family,atoms])=>family+'='+((atoms||[]).map(clean).filter(Boolean).join('|')||'NONE')).join('; ');
   const customization=order?.assetProduction?.assetCustomization;
   const automaticBinding=order?.assetProduction?.automaticAssetBindingWork||null;
+  const detailedReview=order?.assetProduction?.detailedAssetCandidateReview||null;
   return [
     '[UNIVERSAL ASSET-FIRST UPGRADE CONTRACT]',
+    detailedReview?.candidateCount>0?'[DETAILED DESIGN LIBRARY HANDOFF] '+JSON.stringify(detailedReview)+'. These are historical design candidates, not approved source bindings. Re-check every ID against the current library, source owner, platform, role, rig, license and style before any replacement. Do not automatically replace absent, unverified or incompatible assets; use the existing GRAPHICS_PRODUCTION and native QA path. Source metadata alone never counts as APPLIED.':'' ,
     automaticBinding?.enabled===true
       ?'[AUTOMATIC ASSET BINDING / CANONICAL VIBE] '+JSON.stringify(automaticBinding)+
-       '. Follow the existing asset selection and exact current game source consumers on EVERY BUILD_UP. Apply NATIVE_SOURCE_BINDING_REQUIRED only to compatible existing ownership in this task writable scope; reuse SOURCE_BOUND_RUNTIME_QA_REQUIRED without duplicate recreation. Route AUTHORING_REQUIRED or SOURCE_ASSET_REQUIRED to the existing asset authoring responsibility, never fabricate a native file. Preserve source hashes, saved game, combat, progression and server authority. Runtime and positive-learning PASS require exact artifact and independent engine evidence. Do not create a separate runner, queue, wrapper or shadow pipeline.'
+       '. Follow the existing asset selection and exact current game source consumers on EVERY BUILD_UP. Apply NATIVE_SOURCE_BINDING_REQUIRED only to compatible existing ownership in this task writable scope; reuse SOURCE_BOUND_RUNTIME_QA_REQUIRED without duplicate recreation. For SOURCE_BINDING_PROVENANCE_REQUIRED, inspect the current real game consumer and existing GLB master lineage and record the applied hash before scheduling replacements; missing provenance is never proof of an outdated version. Never mark a hash comparison as runtime QA or completed source replacement. Route AUTHORING_REQUIRED or SOURCE_ASSET_REQUIRED to the existing asset authoring responsibility, never fabricate a native file. Preserve source hashes, saved game, combat, progression and server authority. Runtime and positive-learning PASS require exact artifact and independent engine evidence. Do not create a separate runner, queue, wrapper or shadow pipeline.'
       :'',
     'All 12 asset families MUST be evaluated: '+families.join(','),
     'Selected loadout: '+(selected||'NONE'),
@@ -4435,19 +4437,30 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
         sourceOwnership:'EXISTING_GRAPHICS_PRODUCTION',
         selectedActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
           .filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'
-            ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady===true)
+            ||row.action==='ADAPT'&&(row.libraryReuse?.derivativeCandidateReady===true
+              ||row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
+                &&row.automaticReplacementAuthorized===true
+                &&row.sourceCompatibilityAndRightsRequired===true))
           .map(row=>Object.freeze({
             family:row.family,action:row.action,reason:row.reason,
+            // Carry the planner's exact upgrade IDs into the canonical worker;
+            // authorization to attempt replacement is never runtime verification.
+            assetId:row.assetId||null,
+            replacesCandidateAssetId:row.replacesCandidateAssetId||null,
+            replacementExecution:row.replacementExecution||null,
+            automaticReplacementAuthorized:row.automaticReplacementAuthorized===true,
+            sourceCompatibilityAndRightsRequired:row.sourceCompatibilityAndRightsRequired===true,
             selectedSourceId:row.externalAcquisition?.sourceId||row.libraryReuse?.sourceAssetId||null,
             sourcePage:row.externalAcquisition?.sourceUrl||null,
             directDownload:row.externalAcquisition?.downloadUrl||null,
             acquisitionState:row.externalAcquisition?.acquisitionState||null,
-            license:row.externalAcquisition?.license||row.libraryReuse?.sourceLicense||null,
+            license:row.externalAcquisition?.license||row.libraryReuse?.sourceLicense||row.registeredSourceLicense||null,
             licenseEvidenceUrl:row.externalAcquisition?.licenseEvidenceUrl||null,
             // 내부 후보는 원본·해시·권리 검증 뒤 기존 Blender 제작 책임이 파생한다.
-            sourceModel:row.libraryReuse?.sourceModel||null,
+            sourceModel:row.libraryReuse?.sourceModel||row.registeredSourceModel||null,
             sourceSha256:row.libraryReuse?.expectedSourceSha256||null,
-            sourceInspectionRequired:row.libraryReuse?.sourceFileAndSha256InspectionRequired===true,
+            sourceInspectionRequired:row.libraryReuse?.sourceFileAndSha256InspectionRequired===true
+              ||row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
             sourceAssetImmutable:row.libraryReuse?.originalImmutable===true,
             materialRefinement:row.materialRefinement||null,
             assetization:row.assetization||null,
@@ -4456,6 +4469,10 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
             runtimeVerified:false,productionVerified:false,
             nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'&&!row.externalAcquisition?.downloadUrl
               ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady!==true
+                &&!(row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
+                  &&row.automaticReplacementAuthorized===true
+                  &&row.sourceCompatibilityAndRightsRequired===true
+                  &&row.registeredSourceModel&&row.registeredSourceLicense)
           })))
       })
     }),
@@ -5742,7 +5759,8 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     &&(!assetDevelopmentLane||target==='web')
     &&!singleMotionWorkUnit
     &&!systemAtomicPairRequired
-    &&!dedicatedRobloxOversizePath
+    // Large Roblox rebuilds must also use the canonical bounded source prompt.
+    // The full task remains in the work order; only the model input is compacted.
     &&Buffer.byteLength(specializedInitialPrompt,'utf8')>SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES;
   const initialStudioPrompt=sourceCandidatePressureInitial
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,oversizedInitial:true,initialPromptLimitBytes:SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES})
@@ -5760,7 +5778,9 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     &&!systemAtomicPairRequired&&!multiFilePairRequired
     &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt))
     &&String(prompt).includes('[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]')
-    &&Buffer.byteLength(initialStudioPrompt,'utf8')>MAX_CONTEXT_BYTES;
+    // Preserve the focused source-anchor strategy when the original work order was oversized.
+    // Initial prompt compaction must not suppress the existing focused-rebuild path.
+    &&Buffer.byteLength(specializedInitialPrompt,'utf8')>MAX_CONTEXT_BYTES;
   if(robloxRebuildFocused)console.log('VIBE2_ROBLOX_REBUILD_FOCUSED_INITIAL=bytes:'+Buffer.byteLength(initialStudioPrompt,'utf8'));
   const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
   const baseMaxAttempts=assetDevelopmentLane&&robloxGraphicsInitial

@@ -4858,3 +4858,133 @@ test('Roblox native asset uses are counted while unconsumed configuration atoms 
     assert.equal(result.summary.runtimeVerifiedConsumerCount,0);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+// RPG 공용 UI 자산 개선은 게임 상태가 아닌 표시 전환만 다룬다.
+test('shared RPG menu transition is interruptible and preserves direct interaction',()=>{
+  const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
+  const consumer=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
+  assert.equal(consumer,source,'actual game source must match its shared library asset');
+  const sharedModel=fs.readFileSync('assets/roblox/rpg-menu/RPGMenuModel.luau','utf8');
+  const gameModel=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenuModel.luau','utf8');
+  assert.equal(gameModel,sharedModel,'RPG menu state model must also remain synchronized with shared asset');
+  assert.match(source,/TweenService:Create\(overlay,TweenInfo\.new\(\.18/);
+  assert.match(source,/entranceTween:Cancel\(\)/);
+  assert.match(source,/panelTween:Cancel\(\)/);
+  assert.match(source,/panelScale.Scale=\.97/);
+  assert.match(source,/panelScale.Scale=1/);
+  assert.match(source,/stopEntrance\(\)\s*\n\s*opened=value/);
+  assert.match(source,/if options\.onOpen then options\.onOpen\(value\)end/);
+  assert.match(source,/gui\.Destroying:Connect\(function\(\)\s*\n\s*stopEntrance\(\)/);
+});
+
+// Shared RPG inventory labels must distinguish equipment from usable tools.
+test('shared RPG inventory labels show equipped state and correct slot category',()=>{
+  const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
+  const consumer=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
+  assert.equal(consumer,source);
+  assert.match(source,/b\.ItemState\.Text=row\.equipped and "착용 중" or \(row\.category=="장비" and "장비" or "도구"\)/);
+});
+
+// Status-only equipment is not an actionable Roblox Tool; do not show a dead equip button.
+test('shared RPG menu only offers equip action for real Tools',()=>{
+  const shared=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
+  const game=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
+  assert.equal(game,shared);
+  assert.match(shared,/itemAction\.Visible=row\.tool~=nil/);
+  assert.match(shared,/row\.tool and "배낭에서 선택한 도구야/);
+});
+
+test('Roblox native GLB usage maps exact loaded asset ID without promoting runtime verification',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-native-id-consumer-'));
+ try{
+  const dir=path.join(root,'roblox-games','sample','server');
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'Game.server.luau'),'local x = AssetService:LoadAssetAsync(AssetService, 110808635634531)\\n-- AssetService:LoadAssetAsync(AssetService, 999999999999999)\\n');
+  const registry={assets:[
+   {id:'shared-wolf',family:'CREATURE',robloxAssetId:'110808635634531',productionVerified:false},
+   {id:'unbound-wolf',family:'CREATURE',robloxAssetId:'999999999999999',productionVerified:false}
+  ]};
+  const result=synchronizeSourceBoundAssetConsumers({repoRoot:root,registry,gameCatalog:{games:[{id:'sample',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]}});
+  assert.equal(result.bindings.length,1);
+  assert.equal(result.bindings[0].assetId,'shared-wolf');
+  assert.equal(result.bindings[0].mode,'NATIVE_RUNTIME_LOAD_CALL');
+  assert.equal(result.bindings[0].runtimeVerified,false);
+  assert.deepEqual(result.registry.assets[0].sourceBoundConsumerGameIds,['sample']);
+  assert.equal(result.registry.assets[1].sourceBoundConsumerGameIds,undefined);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('universal library matching includes lobby environment BGM SFX items and effects',()=>{
+ const registry={assets:[]};
+ const result=buildAssetSupplyDecisionSummary({target:'roblox',gameId:'demo',request:'로비 배경 BGM 효과음 아이템 날씨 파티클',registry});
+ for(const family of ['BUILDING','ENVIRONMENT','PROP','UI','AUDIO','VFX','MATERIAL','WEAPON']){
+  assert.ok(result.requiredFamilies.includes(family),family+' must be mapped');
+ }
+});
+
+test('canonical source worker carries authorized shared GLB replacement identities',()=>{
+ const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+ assert.match(worker,/row\.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'/);
+ assert.match(worker,/row\.automaticReplacementAuthorized===true/);
+ assert.match(worker,/replacesCandidateAssetId:row\.replacesCandidateAssetId\|\|null/);
+ assert.match(worker,/assetId:row\.assetId\|\|null/);
+ assert.match(worker,/sourceCompatibilityAndRightsRequired:row\.sourceCompatibilityAndRightsRequired===true/);
+ assert.match(worker,/nativeBuildBlockedByUnacquiredSource:/);
+ assert.match(worker,/row\.registeredSourceModel\|\|null/);
+ assert.match(worker,/row\.registeredSourceLicense\|\|null/);
+ assert.match(worker,/sourceInspectionRequired:/);
+});
+
+test('shared asset with just one higher quality point is immediately queued for canonical replacement',()=>{
+ const registry={assets:[
+  {id:'old-prop',family:'PROP',role:'ITEM',consumerGameIds:['demo'],qualityScore:42,license:'project-original',masterGlb:'assets/native/old-prop.glb'},
+  {id:'new-prop',family:'PROP',role:'ITEM',qualityScore:43,license:'project-original',masterGlb:'assets/native/new-prop.glb'}
+ ]};
+ const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item',registry});
+ const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
+ assert.equal(upgrade?.assetId,'new-prop');
+ assert.equal(upgrade?.replacesCandidateAssetId,'old-prop');
+ assert.equal(upgrade?.registeredSourceModel,'assets/native/new-prop.glb');
+ assert.equal(upgrade?.registeredSourceLicense,'project-original');
+ assert.equal(upgrade?.automaticReplacementAuthorized,true);
+ assert.equal(upgrade?.replacementExecution,'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE');
+ assert.equal(upgrade?.sourceCompatibilityAndRightsRequired,true);
+ assert.equal(upgrade?.runtimeVerificationGranted,false);
+ assert.equal(upgrade?.independentNativeRuntimeQaRequired,true);
+ assert.equal(summary.runtimeVerificationGranted,false);
+});
+
+test('higher quality eligible shared asset beats lower quality with more role matches',()=>{
+ const registry={assets:[
+  {id:'current-prop',family:'PROP',role:'item',consumerGameIds:['demo'],qualityScore:42,license:'project-original',masterGlb:'assets/native/current-prop.glb'},
+  {id:'two-role-prop',family:'PROP',role:'item',tags:['loot'],qualityScore:43,license:'project-original',masterGlb:'assets/native/two-role-prop.glb'},
+  {id:'high-quality-prop',family:'PROP',role:'item',qualityScore:44,license:'project-original',masterGlb:'assets/native/high-quality-prop.glb'}
+ ]};
+ const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item loot',requirements:[{family:'PROP',roles:['item','loot']}],registry});
+ const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
+ assert.equal(upgrade?.assetId,'high-quality-prop');
+ assert.equal(upgrade?.replacesCandidateAssetId,'current-prop');
+ assert.equal(upgrade?.runtimeVerificationGranted,false);
+});
+
+test('detailed design candidates enter canonical binding targets only with verified rights',()=>{
+  const source=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  assert.ok(source.includes('const detailedBindingTargets=freezeList('));
+  assert.ok(source.includes('automaticBindingTargets.push(...detailedBindingTargets)'));
+  assert.ok(source.includes('asset?.productionVerified===true&&asset?.rightsPass===true'));
+  assert.ok(source.includes('automaticReplacementAuthorized:false'));
+  assert.ok(source.includes('roleAndPlatformRevalidationRequired:true'));
+  assert.ok(source.includes('masterUpgradeReviewRequired'));
+  assert.ok(source.includes('glbMasterUpgradeCount:'));
+  assert.ok(source.includes('glbAppliedVersionProvenanceRequiredCount:'));
+  assert.ok(source.includes('currentMasterGlbHash'));
+  assert.ok(source.includes('consumerAppliedMasterHash'));
+  assert.ok(source.includes('existingSelectionKeys.has(row.assetId)'));
+});
+
+test('GLB adoption without applied master hash remains provenance required, not runtime QA',()=>{
+  const source=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  assert.ok(source.includes("masterUpgradeProvenanceRequired?'SOURCE_BINDING_PROVENANCE_REQUIRED'"));
+  assert.ok(source.includes("status==='SOURCE_BINDING_PROVENANCE_REQUIRED'"));
+  assert.ok(source.includes('glbAppliedVersionProvenanceRequiredCount:'));
+});

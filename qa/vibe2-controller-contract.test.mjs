@@ -444,7 +444,7 @@ test('reserve probes model cache lookup-only and skips the dedicated warmup runn
   assert.match(modelBlock,/uses: \.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
   assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS/);
   assert.match(workerBlock,/needs: \[reserve, model_cache\]/);
-  assert.match(workerBlock,/if: always\(\) && needs\.reserve\.outputs\.worker_count != '0'/);
+  assert.match(workerBlock,/if: always\(\) && needs\.reserve\.result == 'success' && needs\.reserve\.outputs\.worker_count != '0'/);
   assert.match(workerBlock,/Restore and persist selected Vibe2 model cache/);
   assert.match(workerBlock,/uses: actions\/cache@v4/);
   assert.match(workerBlock,/Prepare cached Ollama runtime/);
@@ -610,16 +610,15 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert.equal(runtime.qaOptimization.fanInTestConcurrency,4);
 });
 
-test('core QA coalesces same-PR and main regressions, not manual or unrelated branch runs',()=>{
-  assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}\n\s+cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \|\| \(github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'\) \}\}/);
-  const concurrency=coreQaWorkflow.match(/cancel-in-progress: \$\{\{([^\n]+)\}\}/)?.[1]?.trim();
-  assert.equal(concurrency,"github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')");
+test('core QA supersedes stale PR revisions but preserves full QA for each main SHA',()=>{
+  const group="vibe2-core-qa-${{ github.event_name == 'pull_request' && github.ref || github.sha }}";
+  assert.ok(coreQaWorkflow.includes('group: '+group));
+  assert.ok(coreQaWorkflow.includes("cancel-in-progress: ${{ github.event_name == 'pull_request' }}"));
   const regression=runtime.continuous.reserveContractRegressionPreflight;
-  assert.equal(regression.coreQaActiveCompletion.concurrencyGroup,'vibe2-core-qa-${{ github.ref }}');
-  assert.equal(regression.coreQaActiveCompletion.mainPushCancelsSupersededInProgress,true);
-  // Non-main branch *pushes* do not cancel; separate PR heads supersede their own stale QA.
+  assert.equal(regression.coreQaActiveCompletion.concurrencyGroup,group);
+  assert.equal(regression.coreQaActiveCompletion.mainPushCancelsSupersededInProgress,false);
   assert.equal(regression.coreQaActiveCompletion.nonMainCancelsInProgress,false);
-  assert.equal(regression.coreQaActiveCompletion.pendingPolicy,'MAIN_LATEST_SHA_ONLY_NON_MAIN_LATEST_PENDING_SAME_REF');
+  assert.equal(regression.coreQaActiveCompletion.pendingPolicy,'MAIN_EVERY_SHA_NON_MAIN_LATEST_PENDING_SAME_REF');
   assert.equal(regression.coreQaActiveCompletion.runner,'ubuntu-slim');
 });
 
@@ -758,6 +757,19 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
   assert(workflow.includes('vibe2-remote-work-lock.mjs" acquire'));
   assert(workflow.includes('Release shared Work Locks after fan-in or abort'));
   assert(workflow.includes('vibe2-remote-work-lock.mjs" release'));
+});
+
+test('reserve keeps retry budget and restores the expanded queue after durable publication',()=>{
+  const reserve=workflow.slice(workflow.indexOf('\n  reserve:'),workflow.indexOf('\n  model_cache:'));
+  assert.match(reserve,/timeout-minutes: 15/);
+  const commit=reserve.indexOf('git -C "$control_root" commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"');
+  const push=reserve.indexOf('if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then',commit);
+  const persisted=reserve.indexOf('test "$state_persisted" = 1',push);
+  const restored=reserve.indexOf('storage-unpack',persisted);
+  const matrix=reserve.indexOf('worker_matrix=${JSON.stringify',restored);
+  assert.ok(commit>=0&&push>commit&&persisted>push&&restored>persisted&&matrix>restored);
+  assert.doesNotMatch(reserve.slice(commit,push),/storage-unpack/);
+  assert.match(reserve.slice(push,persisted),/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS/);
 });
 
 test('controller allows approved source root but enforces candidate boundary',()=>{
@@ -1637,7 +1649,7 @@ test('recovery-fast control work uses a slim runner and never competes for a gam
 
 test('fan-in refill wakes coalesce by lane without a global singleton',()=>{
   assert.match(workflow,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
-  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.sha, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(workflow,/vibe2-fanin-refill-singleton/);
   assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_WAKE_COALESCING');
   assert.equal(runtime.continuous.atomicNeuronStream.sameLaneFanInRefillSerialization,true);
@@ -1714,6 +1726,9 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(workflow.includes('verifiedLearningMemorySha:'));
   assert.ok(continuousRunnerSource.includes("Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs"));
   assert.ok(continuousRunnerSource.includes('verifiedExternalLearningFirst:true'));
+  // External sources are opt-in: only actually retrieved verified playbooks trigger mandatory source-proof gates.
+  assert.match(continuousRunnerSource,/mandatoryVerifiedKnowledgeApplication=externalLearningApplicable&&verifiedExternalPlaybookReuse\.length>0/);
+  assert.doesNotMatch(continuousRunnerSource,/mandatoryVerifiedKnowledgeApplication=\['roblox','unity','web'\]\.includes\(plan\.target\)\|\|assetDevelopmentLearning/);
   assert.ok(continuousRunnerSource.includes('verifiedExternalLearningCoveragePct=verifiedExternalPlaybookReuse.length>0'));
   assert.ok(continuousRunnerSource.includes('verifiedExternalDistilledContentComplete'));
   assert.ok(continuousRunnerSource.includes('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED_BEFORE_GAME_OR_ASSET_WORK'));
@@ -1817,3 +1832,4 @@ done`;
     }
   }
 });
+

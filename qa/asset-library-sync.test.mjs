@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 test('asset homepage automatically publishes new entries, preserves selection, excludes retired previews and recovers from outage',async()=>{
  const elements=new Map(),intervals=[],listeners={},requests=[];
- const document={hidden:false,activeElement:null,getElementById:id=>elements.get(id),querySelectorAll:()=>[],addEventListener:(name,fn)=>{listeners[name]=fn;},createElement:tag=>element(tag)};
+ const document={documentElement:{dataset:{}},hidden:false,activeElement:null,getElementById:id=>elements.get(id),querySelectorAll:()=>[],addEventListener:(name,fn)=>{listeners[name]=fn;},createElement:tag=>element(tag)};
  function element(tag='div'){
   return {tag,children:[],options:[],dataset:{},attributes:{},listeners:{},textContent:'',value:'',hidden:false,disabled:false,scrollTop:0,scrollLeft:0,
    append(...nodes){this.children.push(...nodes);},replaceChildren(...nodes){this.children=[...nodes];if(tag==='select')this.options=[...nodes];},add(node){this.options.push(node);},
@@ -631,4 +631,28 @@ test('Roblox external pack gallery separates acquired originals from runtime-ver
   assert.match(library,/source\.acquisitionState==='ACQUIRED_ORIGINAL_FILES'/);
   assert.match(library,/source\.productionVerified===true/);
   assert.ok(acquired.every(row=>row.productionVerified!==true));
+});
+
+test('asset homepage notices native ID and source hash changes without treating unchanged records as new',()=>{
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ const signature=vm.runInNewContext(script.slice(script.indexOf('const registrySignature='),script.indexOf('const biomes='))+'registrySignature;');
+ const original={assets:[{id:'model',path:'/assets/shared/humanoid-traveler.glb',sourceHash:'a'.repeat(64),robloxAssetId:'11'}]};
+ assert.equal(signature(original),signature(JSON.parse(JSON.stringify(original))));
+ assert.notEqual(signature(original),signature({assets:[{...original.assets[0],robloxAssetId:'22'}]}));
+ assert.notEqual(signature(original),signature({assets:[{...original.assets[0],sourceHash:'b'.repeat(64)}]}));
+ assert.match(script,/row\.asset\?\.sourceHash/);
+});
+
+test('mobile asset preview skips extra frames and hidden-tab time instead of advancing the animation',()=>{
+ const source=fs.readFileSync('assets/asset-library-viewer.js','utf8');
+ const start=source.indexOf(' let last=performance.now();'),end=source.indexOf('  if(!paused)',start);
+ const prefix=source.slice(start,end);
+ const document={hidden:false};let loop;
+ const frames=[];
+ vm.runInNewContext(prefix+'frames.push(dt); });',{document,visible:true,performance:{now:()=>0},matchMedia:()=>({matches:true}),renderer:{setAnimationLoop:callback=>{loop=callback;}},frames});
+ for(let time=0;time<1000;time+=16.7)loop(time);
+ assert.ok(frames.length>=28&&frames.length<=30);
+ const before=frames.length;document.hidden=true;loop(2000);assert.equal(frames.length,before);
+ document.hidden=false;loop(2010);assert.equal(frames.length,before);loop(2034);assert.ok(frames.at(-1)<.04);
+ assert.match(source,/uri\+='\?v='\+sourceHash/);
 });

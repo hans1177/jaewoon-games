@@ -603,6 +603,14 @@ end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
 
+remote.OnClientEvent:Connect(function(eventName, snapshot)
+  if eventName ~= "MULTIPLAYER_SYNC" or typeof(snapshot) ~= "table" then return end
+  if typeof(snapshot.SharedObjective) ~= "table" then return end
+  gui:SetAttribute("CoopParticipantCount", math.max(0, tonumber(snapshot.ParticipantCount) or 0))
+  gui:SetAttribute("CoopSharedProgress", math.max(0, tonumber(snapshot.SharedObjective.Progress) or 0))
+  render()
+end)
+
 if #Config.Actions > 0 then
   ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
     if inputState == Enum.UserInputState.Begin and gui:GetAttribute("GameMenuOpen")~=true then remote:FireServer(Config.Actions[1].Id) end

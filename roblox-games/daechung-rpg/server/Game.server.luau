@@ -156,10 +156,19 @@ local function stripAsset(root)
  end
  return root
 end
+-- 로그: 같은 자산 로딩 실패는 한 번만 기록한다.
+local assetLoadFailures={}
 local function loadAsset(id)
  if assetCache[id]then return assetCache[id]end
  local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,id)
- if not ok or not result then return nil end
+ if not ok or not result then
+  local signature=ok and "EMPTY_ASSET" or "ASSET_ACCESS_OR_LOAD_ERROR"
+  if not assetLoadFailures[id]then
+   assetLoadFailures[id]=signature
+   warn("NPC_ASSET_LOAD_FAILURE assetId="..tostring(id).." FAILURE_STAGE=ROBLOX_NATIVE_ASSET_LOAD FAILURE_SIGNATURE="..signature)
+  end
+  return nil,signature
+ end
  stripAsset(result);result.Parent=nil;assetCache[id]=result;return result
 end
 local function chooseMesh(assetId,keywords,seed)
@@ -257,10 +266,16 @@ local function decorateZoneAssets(parent,z,requestedSeed)
  end)
 end
 
-local function bindNativeNpcVisual(rootPart,assetId)
+local function bindNativeNpcVisual(rootPart,assetId,fallbackAssetId)
  if not assetId or not rootPart.Parent then return end
- local sourceModel=loadAsset(assetId)
- if not sourceModel or not rootPart.Parent then rootPart:SetAttribute("NativeActorMissing",true);return end
+ local sourceModel,loadFailure=loadAsset(assetId)
+ if not sourceModel or not rootPart.Parent then
+  rootPart:SetAttribute("NativeActorMissing",true)
+  rootPart:SetAttribute("NativeActorFailureStage","ROBLOX_NATIVE_ASSET_LOAD")
+  rootPart:SetAttribute("NativeActorFailureSignature",loadFailure or "ACTOR_ROOT_REMOVED")
+  if fallbackAssetId and fallbackAssetId~=assetId and rootPart.Parent then return bindNativeNpcVisual(rootPart,fallbackAssetId)end
+  return
+ end
  local native=sourceModel:Clone();native.Name="NativeLibraryActor"
  local originalParts={}
  for _,child in ipairs(rootPart:GetChildren())do if child:IsA("BasePart")then table.insert(originalParts,child)end end
@@ -281,12 +296,21 @@ local function bindNativeNpcVisual(rootPart,assetId)
   end
   if count==0 then error("NATIVE_ACTOR_GEOMETRY_MISSING")end
  end)
- if not ok or not rootPart.Parent then native:Destroy();rootPart:SetAttribute("NativeActorMissing",true);return end
+ if not ok or not rootPart.Parent then
+  native:Destroy();rootPart:SetAttribute("NativeActorMissing",true)
+  rootPart:SetAttribute("NativeActorFailureStage","ROBLOX_NATIVE_ACTOR_BIND")
+  rootPart:SetAttribute("NativeActorFailureSignature",rootPart.Parent and "INVALID_OR_OVER_BUDGET_GEOMETRY" or "ACTOR_ROOT_REMOVED")
+  if fallbackAssetId and fallbackAssetId~=assetId and rootPart.Parent then return bindNativeNpcVisual(rootPart,fallbackAssetId)end
+  return
+ end
  native:SetAttribute("SourceAssetId",tostring(assetId));native:SetAttribute("RuntimeVisualReview","PENDING")
  native:SetAttribute("MotionRetargetReview","PENDING")
  native.Parent=rootPart
  for _,part in ipairs(originalParts)do part.Transparency=1 end
  rootPart:SetAttribute("NativeActorMissing",false)
+ rootPart:SetAttribute("NativeActorFailureStage",nil)
+ rootPart:SetAttribute("NativeActorFailureSignature",nil)
+ rootPart:SetAttribute("NativeActorBindingState","BOUND_UNVERIFIED")
 end
 
 local function label(target,text,color,maxDistance)
@@ -347,9 +371,12 @@ local function humanoidFigure(parent,name,pos,color,accent,scale)
   add("AdventurerMantle",Vector3.new(3.1,.85,2),Vector3.new(0,1.15,.2),accent,Enum.Material.Fabric,Enum.PartType.Ball)
  end
  local nativeId=Style.NpcModels and Style.NpcModels[name]
+ local sharedId=Style.SharedNpcModels and Style.SharedNpcModels[name]
  local residentIndex=tonumber(string.match(name,"^Resident(%d+)$"))
  if residentIndex and Style.ResidentModels then nativeId=Style.ResidentModels[(residentIndex-1)%#Style.ResidentModels+1]end
- if nativeId then task.spawn(bindNativeNpcVisual,r,nativeId)end
+ if residentIndex and Style.SharedResidentModels and #Style.SharedResidentModels>0 then sharedId=Style.SharedResidentModels[(residentIndex-1)%#Style.SharedResidentModels+1]end
+ if sharedId then task.spawn(bindNativeNpcVisual,r,sharedId,nativeId)
+ elseif nativeId then task.spawn(bindNativeNpcVisual,r,nativeId)end
  return r
 end
 local function gearPart(folder,body,name,size,offset,color,material,shape,rotation)
@@ -566,9 +593,47 @@ local function beginEnemyAttack(e,target,now)
  end)
 end
 
+local function bindSharedPlayerVisual(character,classId)
+ local assetId=Style.SharedPlayerModels and (Style.SharedPlayerModels[classId] or Style.SharedPlayerModels.NONE)
+ if not assetId then return end
+ local source=loadAsset(assetId)
+ if not source or not character.Parent then
+  character:SetAttribute("SharedPlayerVisualState","LOAD_UNVERIFIED")
+  return
+ end
+ local meshByLimb={}
+ for _,mesh in ipairs(source:GetDescendants())do
+  if mesh:IsA("MeshPart") and character:FindFirstChild(mesh.Name) then meshByLimb[mesh.Name]=mesh end
+ end
+ local required={"Head","UpperTorso","LowerTorso","LeftUpperArm","RightUpperArm","LeftUpperLeg","RightUpperLeg"}
+ for _,name in ipairs(required)do
+  if not meshByLimb[name] or not character:FindFirstChild(name) then
+   character:SetAttribute("SharedPlayerVisualState","RIG_RETARGET_REQUIRED")
+   return
+  end
+ end
+ local previous=character:FindFirstChild("SharedPlayerVisual")
+ if previous then previous:Destroy()end
+ local folder=Instance.new("Folder");folder.Name="SharedPlayerVisual";folder.Parent=character
+ for name,mesh in pairs(meshByLimb)do
+  local limb=character:FindFirstChild(name)
+  if limb and limb:IsA("BasePart") then
+   local cosmetic=mesh:Clone();cosmetic.Name="Shared_"..name;cosmetic.Anchored=false
+   cosmetic.CanCollide=false;cosmetic.CanTouch=false;cosmetic.CanQuery=false;cosmetic.Massless=true
+   cosmetic.CFrame=limb.CFrame;cosmetic.Parent=folder
+   local weld=Instance.new("WeldConstraint");weld.Part0=limb;weld.Part1=cosmetic;weld.Parent=cosmetic
+  end
+ end
+ character:SetAttribute("SharedPlayerVisualState","BOUND_UNVERIFIED")
+ character:SetAttribute("SharedPlayerVisualAssetId",tostring(assetId))
+ character:SetAttribute("RuntimeVisualReview","PENDING")
+ character:SetAttribute("MotionRetargetReview","PENDING")
+end
+
 local function applyPlayerAppearance(p)
  local c=p.Character;if not c then return end
  decorateCharacterModel(c,tostring(p:GetAttribute("ClassId")or"NONE"),(p.UserId%7)+1,tostring(p:GetAttribute("AdvancementId")or""))
+ task.spawn(bindSharedPlayerVisual,c,tostring(p:GetAttribute("ClassId")or"NONE"))
  local weaponTier=n(p,"WeaponTier",1);local armorTier=n(p,"ArmorTier",1);local gear=c:FindFirstChild("DaechungClassGear")
  if gear then
   for _,d in ipairs(gear:GetDescendants())do
@@ -1147,6 +1212,9 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
    add("KnightShield",Vector3.new(.5,3.3,2.6),Vector3.new(-2.7,-1.2,0),Color3.fromRGB(67,60,83),Enum.Material.Metal)
  end
  label(rootPart,boss and("BOSS · "..displayName)or displayName,boss and Color3.fromRGB(255,198,105)or Color3.new(1,1,1),boss and 58 or 32)
+ -- Reuse existing native-imported creature GLBs; preserve scripted root, combat and geometry fallback.
+ local sharedEnemyId=not boss and Style.SharedEnemyModels and Style.SharedEnemyModels[z.Theme]
+ if sharedEnemyId then task.spawn(bindNativeNpcVisual,rootPart,sharedEnemyId)end
  return rootPart
 end
 local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)

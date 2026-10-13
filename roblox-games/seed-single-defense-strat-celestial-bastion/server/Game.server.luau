@@ -126,11 +126,26 @@ local function multiplayerSnapshot(changedPlayer)
     })
   end
 
+  -- 설계 COOP: 서버가 참여자 전체의 방어 진척을 합산해 공동 목표 상태를 전파한다.
+  -- 전투·개별 웨이브·기존 보상 및 저장 데이터는 변경하지 않는다.
+  local sharedWave = nil
+  local activeDefenders = 0
+  for _, participant in ipairs(participants) do
+    local completedWave = math.max(0, participant.Wave - 1)
+    sharedWave = sharedWave and math.min(sharedWave, completedWave) or completedWave
+    if participant.SessionActive then activeDefenders += 1 end
+  end
   return {
-    Version = 1,
+    Version = 2,
     ParticipantCount = #participants,
     ChangedUserId = changedPlayer and changedPlayer.UserId or 0,
     Participants = participants,
+    SharedObjective = {
+      Kind = "TEAM_BASTION_DEFENSE",
+      CompletedWavesTogether = sharedWave or 0,
+      ActiveDefenders = activeDefenders,
+      MinimumParticipants = 2,
+    },
     ServerTime = os.time(),
   }
 end

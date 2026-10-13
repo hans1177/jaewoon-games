@@ -113,6 +113,23 @@ local handlers = {
   ["scope-mobileux-62f2f81cf4"] = scopeHandler6,
 }
 
+-- COOP 설계: 기존 개인 퍼즐·보상 규칙을 보존하면서 서버의 공동 진행 상태를 동기화한다.
+local function broadcastMultiplayerSync()
+  local participants = Players:GetPlayers()
+  local completed = nil
+  local roster = {}
+  for _, member in ipairs(participants) do
+    local progress = readNumber(member, "Progress", 0)
+    completed = completed and math.min(completed, progress) or progress
+    table.insert(roster, {UserId = member.UserId, Progress = progress})
+  end
+  remote:FireAllClients("MULTIPLAYER_SYNC", {
+    ParticipantCount = #participants,
+    Participants = roster,
+    SharedObjective = {Kind = "COOP_COLOR_CASCADE", Progress = completed or 0, MinimumParticipants = 2},
+  })
+end
+
 Players.PlayerAdded:Connect(function(player)
   local ok, saved = pcall(function()
     return store:GetAsync("player:" .. player.UserId)
@@ -138,6 +155,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
   handler(player)
+  broadcastMultiplayerSync()
 end)
 Players.PlayerRemoving:Connect(function(player)
   local snapshot = {}

@@ -339,6 +339,9 @@ jobs:
           git worktree prune
           echo 'HOMEPAGE_PLATFORM_EXPOSURE_RUNTIME_SYNC=PASS'
 
+      - name: Sync official Roblox titles and fill game title artwork
+        run: node tools/homepage-manager.mjs --sync-roblox-titles
+
       - name: Plan source-bound release gameplay capture
         id: media_plan
         run: node tools/homepage-manager.mjs --plan-release-media
@@ -405,7 +408,7 @@ jobs:
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' index.html
           grep -Fq 'data-homepage-build="2026-09-21-sample-exact"' index.html
-          grep -Fq 'https://chatgpt.com/' index.html
+          grep -Fq "location.href='/command.html?from=chatgpt-shortcut';" index.html
           grep -Fq 'const SYNC_INTERVAL_MS=30000;' assets/homepage-enhancements.js
           grep -Fq "catalog?.runtimeInfoAuthority!=='company-runtime'" assets/homepage-enhancements.js
           grep -Fq "status?.runtimeAuthority!=='company-runtime'" assets/homepage-enhancements.js
@@ -612,7 +615,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fq '"id": "/command.html"' manifest.webmanifest
-          grep -Fq '"start_url": "/command.html"' manifest.webmanifest
+          grep -Fq '"start_url": "/"' manifest.webmanifest
           grep -Fq "navigator.serviceWorker.register('/sw.js'" install.html
           grep -Fq "navigator.serviceWorker.register('/sw.js')" command.html
           grep -Fq "'/offline.html'" sw.js
@@ -630,8 +633,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-homepage-manager'
-          git config user.email 'homepage-manager@users.noreply.github.com'
+          git config user.name 'jaewoon-director'
+          git config user.email 'jaewoon-director@users.noreply.github.com'
           published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games artbook-submissions assets/homepage-covers assets/homepage-media)
           git add -- "${published_paths[@]}"
           if git diff --cached --quiet; then
@@ -655,3 +658,4 @@ jobs:
             echo 'HOMEPAGE_PUBLICATION=BLOCKED_PR_PERMISSION_REQUIRED'
             exit 1
           fi
+

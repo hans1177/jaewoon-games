@@ -234,7 +234,7 @@ const designAssetLibraryContext={
 // 세 플랫폼의 동일 자산 사실은 한 번만 전달하고 적용 방식만 각각 유지한다.
 designAssetLibraryContext.assetFacts=Object.fromEntries(Object.values(designAssetLibraryContext.platforms).flatMap(platform=>platform.candidates.filter(row=>row.assetId).map(({assetId,action,reason,applicationMode,family,...facts})=>[assetId,{family,...facts}])));
 for(const platform of Object.values(designAssetLibraryContext.platforms)){
-  platform.candidates=platform.candidates.map(({family,action,assetId,applicationMode,reason,roleEvidence})=>({family,action,assetId,applicationMode,reason,roleEvidence}));
+  platform.candidates=platform.candidates.map(({family,action,assetId,applicationMode,reason,roleEvidence,replacesCandidateAssetId,automaticReplacementAuthorized,independentNativeRuntimeQaRequired})=>({family,action,assetId,applicationMode,reason,roleEvidence,...(replacesCandidateAssetId?{replacesCandidateAssetId,automaticReplacementAuthorized:false,independentNativeRuntimeQaRequired:true}:{})}));
 }
 const designAssetFamilies=uniq(Object.values(designAssetLibraryContext.platforms).flatMap(platform=>platform.requiredFamilies||[]));
 const designLearningEvents=(Array.isArray(seedState?.seedMaterialLearning?.events)?seedState.seedMaterialLearning.events:[])
@@ -698,7 +698,7 @@ function designSliceSchemaWithAuthoredHandoffs(fields,signatureSystems=[]){
 const DESIGN_BASE=designSliceSchema(DESIGN_BASE_FIELDS);
 const DESIGN_GATE=designSliceSchema(DESIGN_GATE_FIELDS);
 const DESIGN_AUTHORING_SLICES=Object.freeze([
-  {id:'identity-core',fields:['identity','creativeGrammar','playerFantasy','coreFun','coreLoop','signatureSystems','multiplayerMode'],predict:2200},
+  {id:'identity-core',fields:['identity','creativeGrammar','playerFantasy','coreFun','coreLoop','signatureSystems','multiplayerMode'],predict:4096},
   {id:'systems-progression',fields:['systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk'],predict:1500},
   {id:'content-rules',fields:['contentVarietyPlan'],predict:1800},
   {id:'alternatives',fields:['designAlternatives'],predict:1600},
@@ -754,7 +754,8 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
   const merged={...currentDesign};
   // 고정 입력을 앞에 유지해 다음 요청에서도 같은 접두부를 재사용한다.
   // 오너 원본 모드의 호환용 자동 스케치는 설계 원본 입력이 아니다.
-  const commonInput=`${['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\n기본설계 문법=MAIN = A + B + C + D + @. MAIN은 누가 무엇을 반복하는 게임인지 정한다. A는 대표 중심 게임 장르와 대분류 소재, B는 보조 세부 게임 장르와 중분류 소재를 결합한다. 분류 경로와 보조 이유는 중앙 표준표를 따른다. 자원수집·이동·전투처럼 시스템 동작 자체를 창작 소재라고 쓰지 않는다. A의 선택→B의 상태 변화→다음 A의 새로운 선택을 실제 원인·상태 키로 연결한다. C는 소설·영화의 주/보조 장르 두 개를 결합하고 D는 소분류 소재로 구체적인 세계·존재·사건·규칙을 창작한다. 각 D를 A/B 플레이에 연결하고, 보조 장르를 제거하면 플레이 규칙·위험·정보·선택이 바뀌어야 한다. @는 초기 발견 4개 이상(단서→실험→새 선택), 상한 없이 확장하되 단순 수치 강화와 기능 나열은 제외한다. 세계·스토리는 원인→인물 갈등→플레이어 선택→상태 변화→다음 사건으로 생성한다. A/B/C 제거 전후 플레이 차이를 설명한다. 기존 소스·저장·밸런스는 변경하지 말고 검증 전 설계를 통과라고 주장하지 않는다. 설계 원본은 게임당 하나다. MAIN/A/B/C/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성한다. platformProfiles는 같은 원본의 플랫폼별 구현 제약이며 별도 게임 설계가 아니다.\nMULTIPLAYER_ALLOWED_MODES=${JSON.stringify(MULTIPLAYER_MODES)}; 모든 게임 멀티 필수 정책이 적용되면 기존 SINGLE은 원본 참고이며 디자이너가 멀티 확장을 직접 작성한다. 기존 COOP/COMPETITIVE/HYBRID 규칙은 보존한다. Unity WebGL도 2.5D 이상 실제 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획을 UNITY 프로필에 설계한다.\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
+  const grammarAuthoringRule='BASIC_DESIGN_GRAMMAR=MAIN = A + B + C + D + @; MAIN=플레이어 정체성·반복 목표; A=대표 중심 게임 장르+대분류 소재; B=보조 세부 게임 장르+중분류 소재와 A↔B 상태 교환; C=소설·영화 주/보조 장르가 플레이 판정·위험·선택을 바꾸는 인과 융합; D=소분류 소재로 만든 구체 창작과 규칙; @=각 D에서 확장되는 단서→실험→발견→새 선택. creativeGrammar의 mainIdentity/a/b/cGenres/dCreations/delveDiscoveries/fiveWOneH 필드를 이 역할대로 채운다. D는 최소 1개이며 @ 발견은 최소 4개, 각 발견에 sourceDId 연결을 둔다. signatureSystems의 MAIN/A/B/DELVE 상태 입출력과 coreLoop가 같은 규칙을 참조한다. A/B/C/D/@는 목록만 나열하지 말고 실제 입력→조건→상태 변화→피드백→다음 선택을 보여준다. 사용자 승인 원본·게임 규칙·세이브 의미는 보존하고 미완성 표식이나 근거 없는 PASS는 금지한다.';
+  const commonInput=`${['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\n${grammarAuthoringRule}\n기본설계 문법=MAIN = A + B + C + D + @. MAIN은 누가 무엇을 반복하는 게임인지 정한다. A는 대표 중심 게임 장르와 대분류 소재, B는 보조 세부 게임 장르와 중분류 소재를 결합한다. 분류 경로와 보조 이유는 중앙 표준표를 따른다. 자원수집·이동·전투처럼 시스템 동작 자체를 창작 소재라고 쓰지 않는다. A의 선택→B의 상태 변화→다음 A의 새로운 선택을 실제 원인·상태 키로 연결한다. C는 소설·영화의 주/보조 장르 두 개를 결합하고 D는 소분류 소재로 구체적인 세계·존재·사건·규칙을 창작한다. 각 D를 A/B 플레이에 연결하고, 보조 장르를 제거하면 플레이 규칙·위험·정보·선택이 바뀌어야 한다. @는 초기 발견 4개 이상(단서→실험→새 선택), 상한 없이 확장하되 단순 수치 강화와 기능 나열은 제외한다. 세계·스토리는 원인→인물 갈등→플레이어 선택→상태 변화→다음 사건으로 생성한다. A/B/C 제거 전후 플레이 차이를 설명한다. 기존 소스·저장·밸런스는 변경하지 말고 검증 전 설계를 통과라고 주장하지 않는다. 설계 원본은 게임당 하나다. MAIN/A/B/C/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성한다. platformProfiles는 같은 원본의 플랫폼별 구현 제약이며 별도 게임 설계가 아니다.\nMULTIPLAYER_ALLOWED_MODES=${JSON.stringify(MULTIPLAYER_MODES)}; 모든 게임 멀티 필수 정책이 적용되면 기존 SINGLE은 원본 참고이며 디자이너가 멀티 확장을 직접 작성한다. 기존 COOP/COMPETITIVE/HYBRID 규칙은 보존한다. Unity WebGL도 2.5D 이상 실제 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획을 UNITY 프로필에 설계한다.\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
   for(const slice of DESIGN_AUTHORING_SLICES){
     // 웹 호환 뷰와 플랫폼 적용 정책은 마지막에 같은 원본에서 투영한다.
     if(slice.derived)continue;
@@ -839,6 +840,11 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
       if(!feedback.length)continue;
       const taskKey=`${phase}_slices::${slice.id}`;
       delete designCheckpoint.tasks[taskKey];
+      // 최종 검증에서 실패한 필드는 부분 캐시에서도 제거해 다음 재시작에 반드시 재작성한다.
+      const partial=designCheckpoint.slicePartialResults?.[taskKey];
+      if(partial&&typeof partial==='object'){
+        for(const row of feedback)for(const field of row.fields||[])delete partial[field];
+      }
       designCheckpoint.sliceRepairFeedback[taskKey]=feedback;
       designCheckpoint.sliceRepairAttempts[taskKey]=(designCheckpoint.sliceRepairAttempts[taskKey]||0)+1;
       designCheckpoint.failedPhase=`${phase}_slices`;designCheckpoint.failedTask=slice.id;
@@ -2043,12 +2049,43 @@ const revisedDesign=designDraft;
 persistDesignerSeed(revisedDesign,'designer_revision');
 persistDesignCheckpoint();
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
+// 상세 설계 인계: 승인 전 후보이며 그래픽 제작/네이티브 바인딩 QA를 대체하지 않는다.
+// 원본 에셋 ID, 역할 증거, 교체 대상, 원장 해시를 보존해 기존 제작 책임 함수가 재평가한다.
+const detailedAssetLibraryHandoff={
+  version:1,
+  stage:'DETAILED_DESIGN',
+  source:designAssetLibraryContext.source,
+  registrySha256:designAssetLibraryContext.sha256,
+  authoringState:'CANDIDATE_REQUIRES_GRAPHICS_AND_NATIVE_QA',
+  gameplayMutationAuthorized:false,
+  platformSelection:Object.fromEntries(Object.entries(designAssetLibraryContext.platforms).map(([target,platform])=>[
+    target,{
+      requiredFamilies:platform.requiredFamilies,
+      evaluatedAssetCount:platform.evaluatedAssetCount,
+      candidates:platform.candidates.map(row=>({
+        family:row.family,assetId:row.assetId,roleEvidence:row.roleEvidence||null,
+        applicationMode:row.applicationMode||null,action:row.action||null,
+        ...(row.replacesCandidateAssetId?{replacesCandidateAssetId:row.replacesCandidateAssetId}:{}),
+        sourceFacts:designAssetLibraryContext.assetFacts[row.assetId]||null,
+        selectionState:'REVALIDATE_AT_GRAPHICS_PRODUCTION',
+        automaticReplacementAuthorized:false,
+        independentNativeRuntimeQaRequired:true
+      }))
+    }
+  ])),
+  canonicalHandoff:'tools/vibe2-asset-production-plan.mjs',
+  sourceApplicationOwner:'tools/vibe2-source-worker.mjs',
+  nativeRuntimeQaRequired:true
+};
+designCheckpoint.detailedAssetLibraryHandoff=detailedAssetLibraryHandoff;
+persistDesignCheckpoint();
 writeJson(path.join(base,'design-revised.json'),{
   version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,inputGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,
   sameModelAsDraft:false,revisionApplied:false,reviewMode:'DETERMINISTIC_EVIDENCE_NO_AI_REVIEW',
   deterministicRevalidation:{passed:preGatePass(postRevisionPreGate),authority:'STAGE_GATE_SCORING_V2'},
   status:'DESIGN_BASELINE_CANDIDATE',
+  detailedAssetLibraryHandoff,
   // 코드 생성자가 실제 역할·상태 연결·진행·검증 기준을 같은 원본에서 읽는다.
   // 최종 엄격 검수 전에는 코딩 허가 근거가 아니다.
   codingBlueprint:{

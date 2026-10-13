@@ -424,7 +424,9 @@ export function canonicalizeGameRecord(game={}){
     marketing:{
       thumbnail:clean(game.marketingThumbnail)||clean(game.image)||'assets/pwa-icon-512.png',
       source:'CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET',
-      homepageMedia:game.homepageMedia||null
+      homepageMedia:game.homepageMedia||null,
+      robloxThumbnail:game.robloxThumbnail||null,
+      robloxTitleArtwork:game.robloxTitleArtwork||null
     },
     lifecycle:{
       state:lifecycleState,
@@ -670,3 +672,4 @@ function main(){
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   try{main();}catch(error){console.error(error.stack||error.message);process.exitCode=1;}
 }
+

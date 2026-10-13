@@ -216,6 +216,23 @@ test('Roblox bootstrap static gate accepts profile-bound server-authoritative mo
   assert.equal(verdict.profile.genre,'Simulation');
 });
 
+test('Roblox static multiplayer profile accepts formatting only and rejects incorrect values',()=>{
+  const profile=robloxBuildProfileFromBaseline(baseline);
+  const original=validateRobloxBootstrap({sharedConfig:shared,serverCode:server,clientCode:client,baseline});
+  assert.equal(original.pass,true,original.blockers.join(','));
+  const compact=shared
+    .replace(/\bGenre\s*=\s*/, 'Genre=')
+    .replace(/\bPlayMode\s*=\s*/, 'PlayMode=')
+    .replace(/\bMultiplayerRequired\s*=\s*/, 'MultiplayerRequired=');
+  const valid=validateRobloxBootstrap({sharedConfig:compact,serverCode:server,clientCode:client,baseline});
+  assert.equal(valid.pass,true,valid.blockers.join(','));
+  const invalid=compact.replace(/\bMultiplayerRequired\s*=\s*(true|false)/,
+    'MultiplayerRequired='+(profile.multiplayerRequired?'false':'true'));
+  const denied=validateRobloxBootstrap({sharedConfig:invalid,serverCode:server,clientCode:client,baseline});
+  assert.equal(denied.pass,false);
+  assert.ok(denied.blockers.includes('CONFIG_MULTIPLAYER_PROFILE_REQUIRED'));
+});
+
 test('Roblox bootstrap static gate rejects placeholders and missing server boundary',()=>{
   const bad=validateRobloxBootstrap({sharedConfig:shared,serverCode:'-- TODO placeholder\n',clientCode:client,baseline});
   assert.equal(bad.pass,false);
@@ -613,14 +630,15 @@ test('Roblox compiler is admitted by native platform design and does not consume
   assert.ok(compiled.result.sharedConfig.includes('AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY"'));
 });
 
-test('central development orchestrator gates new native lanes on Unity Web readiness',()=>{
+test('central development orchestrator independently dispatches Roblox while preserving native admission',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
   const admission=fs.readFileSync(new URL('../tools/company-upper-platform-admission.mjs',import.meta.url),'utf8');
-  assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo/);
+  assert.match(workflow,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
   assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.doesNotMatch(workflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.doesNotMatch(workflow,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-  assert.doesNotMatch(workflow,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
+  assert.doesNotMatch(workflow,/gh workflow run (?:company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.match(workflow,/grandfatherGameIds/);
@@ -1175,7 +1193,7 @@ test('source-plan dedupe keeps active same-game ingress on the fixed control run
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
   assert.match(block,/runs-on:\s*ubuntu-24\.04/);
-  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      cancel-in-progress: false/);
+  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      queue: max\n      cancel-in-progress: false/);
   assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
 });
 

@@ -1210,7 +1210,13 @@ const ASSET_REQUIREMENT_FAMILY_RULES=Object.freeze([
   Object.freeze({re:/(?:village|town|마을)/i,families:Object.freeze(['BUILDING','ENVIRONMENT','PROP','MATERIAL'])}),
   Object.freeze({re:/(?:housing|house|home|하우징|주택|집짓|건축)/i,families:Object.freeze(['BUILDING','PROP','MATERIAL','UI'])}),
   Object.freeze({re:/(?:explor|adventure|탐험|탐색)/i,families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','VFX','AUDIO'])}),
-  Object.freeze({re:/(?:ui|hud|menu|interface|버튼|메뉴|인벤토리|인터페이스)/i,families:Object.freeze(['UI','AUDIO','MOTION'])})
+  Object.freeze({re:/(?:ui|hud|menu|interface|버튼|메뉴|인벤토리|인터페이스)/i,families:Object.freeze(['UI','AUDIO','MOTION'])}),
+  Object.freeze({re:/(?:lobby|hub|spawn|waiting.room|로비|대기실|시작 화면|메인 화면)/i,families:Object.freeze(['BUILDING','ENVIRONMENT','PROP','UI','AUDIO','VFX'])}),
+  Object.freeze({re:/(?:background|skybox|terrain|landscape|scenery|배경|지형|하늘|풍경|맵 꾸미기)/i,families:Object.freeze(['ENVIRONMENT','MATERIAL','PROP','VFX'])}),
+  Object.freeze({re:/(?:bgm|soundtrack|music|theme.song|배경음악|브금|음악)/i,families:Object.freeze(['AUDIO'])}),
+  Object.freeze({re:/(?:sfx|sound.effect|foley|ambien(?:t|ce).sound|효과음|환경음|발소리|타격음)/i,families:Object.freeze(['AUDIO'])}),
+  Object.freeze({re:/(?:item|loot|chest|pickup|inventory|equipment|아이템|전리품|상자|장비|소지품|수집품)/i,families:Object.freeze(['PROP','WEAPON','MATERIAL','UI'])}),
+  Object.freeze({re:/(?:particle|weather|fog|lighting|rain|snow|fire.effect|파티클|날씨|안개|조명|비 효과|눈 효과|환경 효과)/i,families:Object.freeze(['VFX','ENVIRONMENT','MATERIAL'])})
 ]);
 // 역할명이 없는 일반 요청에서도 호환되는 등록 자산을 먼저 재사용한다.
 // 요구사항에 구체적 역할이 있으면 이 일반 매칭은 사용하지 않는다.
@@ -1219,7 +1225,13 @@ const ASSET_GENERIC_DEMAND_TERMS=Object.freeze({
   MOTION:Object.freeze(['motion','animation','action','모션','애니메이션','액션']),
   SKILL:Object.freeze(['skill','spell','ability','스킬','마법','특수기']),
   VFX:Object.freeze(['vfx','effect','이펙트','효과','스킬','액션']),
-  AUDIO:Object.freeze(['audio','sound','효과음','사운드'])
+  AUDIO:Object.freeze(['audio','sound','sfx','bgm','music','효과음','배경음악','브금','사운드']),
+  BUILDING:Object.freeze(['building','lobby','structure','건물','로비']),
+  ENVIRONMENT:Object.freeze(['environment','background','skybox','배경','환경','지형']),
+  PROP:Object.freeze(['prop','item','pickup','loot','소품','아이템','전리품']),
+  UI:Object.freeze(['ui','menu','lobby','hud','메뉴','로비','인터페이스']),
+  WEAPON:Object.freeze(['weapon','equipment','무기','장비']),
+  MATERIAL:Object.freeze(['material','texture','재질','텍스처'])
 });
 function assetRuntimeConsumerVerified(asset={}){
   const state=clean(asset.runtimeVerificationState).toUpperCase();
@@ -1334,9 +1346,11 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   };
   const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map();
   let intendedOnlyCount=0;
+  // The role gate above rejects incompatible candidates; among eligible assets,
+  // a higher audited quality score must win regardless of matched-role count.
   const compareReusable=(a,b)=>
-    (roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
-    ||Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+    Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+    ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
     ||clean(a?.id).localeCompare(clean(b?.id));
   const betterReusable=(candidate,current)=>!current||compareReusable(candidate,current)<0;
   for(const asset of assets){
@@ -1445,6 +1459,29 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   for(const family of requiredFamilies){
     const usedCount=currentFamilyCounts.get(family)||0;
     if(usedCount){
+      // [공용 자산 즉시 업그레이드] 점수가 조금이라도 높고 현재 역할/플랫폼에 맞으면
+      // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
+      // 실제 게임 소스 적용 및 독립 런타임 QA 없이 완료로 승격하지 않는다.
+      const currentAsset=currentPrimaryByFamily.get(family);
+      const improved=bestReusableByFamily.get(family);
+      const currentScore=Number(currentAsset?.internalAuditScore??currentAsset?.qualityScore??-1);
+      const improvedScore=Number(improved?.internalAuditScore??improved?.qualityScore??-1);
+      if(improved&&clean(improved.id)!==clean(currentAsset?.id)
+        &&Number.isFinite(improvedScore)&&improvedScore>currentScore
+        &&roleEvidenceById.get(clean(improved.id))?.verifiedRoleMatch===true){
+        pushAction({action:'ADAPT',assetId:clean(improved.id),family,
+          reason:'NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
+          replacesCandidateAssetId:clean(currentAsset?.id),
+          // Pass only registered model provenance; source existence/hash still
+          // require independent inspection before a native source edit.
+          registeredSourceModel:clean(improved.masterGlb||improved.masterSourcePath||improved.path)||null,
+          registeredSourceLicense:clean(improved.license)||null,
+          replacementExecution:'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE',
+          automaticReplacementAuthorized:true,independentNativeRuntimeQaRequired:true,
+          sourceCompatibilityAndRightsRequired:true,
+          runtimeVerificationGranted:false,
+          roleEvidence:roleEvidenceById.get(clean(improved.id))});
+      }
       if(!(repairsByFamily.get(family)||[]).length){
         const asset=currentPrimaryByFamily.get(family),mode=internalAssetPlatformApplicationMode(asset,target);
         const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
@@ -1643,7 +1680,7 @@ function sourceConsumerUsageSource(source=''){
 function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   const gameId=clean(game.id||game.gameId);
   const roots=sourceConsumerRoots({repoRoot,game});
-  const assetPaths=new Map(),tokens=new Map(),usageTokens=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
+  const assetPaths=new Map(),tokens=new Map(),usageTokens=new Map(),nativeAssetIds=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
   let scannedFileCount=0,scannedBytes=0;
   const addToken=(target,token,file)=>{
     const normalized=clean(token).toLowerCase();
@@ -1673,7 +1710,9 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         fingerprintRows.push([relative,crypto.createHash('sha256').update(source).digest('hex')]);
         // [실사용 자산 추적] 등록용 StudioAssets 목록은 소비 근거가 아니다.
         // 현재 게임 코드의 실제 원자 사용 호출만 식별자 바인딩으로 기록한다.
-        const usageBody=usageSource.replace(/^\s*(?:--|\/\/)[^\r\n]*/gm,' ');
+        // Escaped fixture/newline records can contain a literal \\n before a comment;
+        // exclude that comment from native ID usage evidence as well.
+        const usageBody=usageSource.replace(/\\n(?=\s*(?:--|\/\/))/g,'\n').replace(/^\s*(?:--|\/\/)[^\r\n]*/gm,' ');
         for(const match of usageBody.matchAll(/\bhasStudioAssetAtom\s*\(\s*(?:['"][A-Z][A-Z0-9_]*['"]\s*,\s*)?['"]([A-Za-z][A-Za-z0-9_.:-]{1,95})['"]\s*\)/g)){
           addToken(usageTokens,match[1],relative);
         }
@@ -1695,6 +1734,10 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         }
         for(const match of source.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
+        }
+        // Count native imported IDs only at executable load sites, never mere catalog declarations.
+        if(root.relative.startsWith('roblox-games/')){
+          for(const match of usageBody.matchAll(/\b(?:LoadAssetAsync|LoadAsset)\s*\(\s*(?:(?:[A-Za-z_]\w*)\s*,\s*)?(\d{6,})\s*\)/g))addToken(nativeAssetIds,match[1],relative);
         }
         // Unity Resources.Load consumes imported assets without their extensions.
         // Resolve only exact existing native files referenced by executable game code.
@@ -1743,7 +1786,7 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   }
   fingerprintRows.sort((a,b)=>a[0].localeCompare(b[0]));
   const snapshot=Object.freeze({
-    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,usageTokens,managedByFamily,managedFiles,
+    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,usageTokens,nativeAssetIds,managedByFamily,managedFiles,
     scannedFileCount,scannedBytes,
     sourceFingerprint:crypto.createHash('sha256').update(JSON.stringify(fingerprintRows)).digest('hex')
   });
@@ -1761,7 +1804,8 @@ function sourceConsumerAssetPaths(asset={}){
 function sourceConsumerIdentityTokens(asset={}){
   return unique([
     asset.skinId,asset.atomId,asset.assetId,
-    asset?.bindingHint?.skinId,asset?.bindingHint?.atomId,asset?.bindingHint?.assetId
+    asset?.bindingHint?.skinId,asset?.bindingHint?.atomId,asset?.bindingHint?.assetId,
+    asset.robloxAssetId,asset?.platformVariants?.ROBLOX?.assetId
   ].map(clean).filter(value=>value.length>=2));
 }
 export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),registry={},gameCatalog=null}={}){
@@ -1819,6 +1863,9 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
           ...directPaths.map(assetPath=>snapshot.assetPaths.get(assetPath)),
           ...literalIds.map(value=>snapshot.usageTokens.get(value.toLowerCase()))
         ];
+      }else if(meta.family&&clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId)&&snapshot.nativeAssetIds.has(clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId))){
+        mode='NATIVE_RUNTIME_LOAD_CALL';matchedIds=[clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId)];
+        evidenceFiles=[snapshot.nativeAssetIds.get(matchedIds[0])];
       }else if(managed.length&&(asset.atomId||asset.assetId||asset?.bindingHint?.configCollection)){
         mode='MANAGED_LIBRARY_IDENTITY';matchedIds=managed;
         evidenceFiles=[
@@ -2826,8 +2873,11 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
     throw new Error('VIBE_NATIVE_MODULE_UNKNOWN:'+selected);
   const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
     ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
-  const linkedSourceModel=clean(librarySource?.sourceModel);
-  const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel)||linkedSourceModel);
+  // Image-to-mesh takes precedence over an optional library model fallback.
+  // An explicitly supplied model together with an image is still an invalid dual source.
+  const explicitSourceModel=clean(task.assetAuthoring?.sourceModel);
+  const linkedSourceModel=imageRequested?'':clean(librarySource?.sourceModel);
+  const modelRequested=Boolean(explicitSourceModel||linkedSourceModel);
   const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai'
     :modelRequested?(/\.fbx$/i.test(clean(task.assetAuthoring?.sourceModel))?'animation':'object'):'auto';
   const meshModel=clean(task.assetAuthoring?.meshModel||'auto').toLowerCase();
@@ -4422,6 +4472,8 @@ export function buildVibeAssetProductionPlan({
   // 게임별 컨셉: 공용 원형과 표면 변형 수는 스타일 종류 수가 아니다. 검증된 설계가 제작 입력이다.
   const verifiedDesign=task.buildUpDirective?.designContextMode==='APPROVED_OR_MINIMUM_DESIGN'
     ?task.buildUpDirective?.designImplementationContext||null:null;
+  // 상세 설계 후보는 현재 원장과 다시 대조하며 자동 적용·QA 통과로 간주하지 않는다.
+  const detailedAssetHandoff=verifiedDesign?.detailedAssetLibraryHandoff||null;
   const authoredPresentation=Object.keys(verifiedDesign?.presentationPlan||{}).length?verifiedDesign.presentationPlan:verifiedDesign?.detailedDesign?.presentation||{};
   const approvedStyleBible=authoredPresentation.styleBible||verifiedDesign?.artAudioDirection?.styleBible||{};
   const approvedStyleFamily=clean(approvedStyleBible.profileKey||authoredPresentation.styleFamily||verifiedDesign?.artAudioDirection?.styleFamily);
@@ -4777,6 +4829,22 @@ export function buildVibeAssetProductionPlan({
     executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
     sourceConsumerSummary:librarySync.sourceConsumerSync
   });
+  const handoffCandidates=detailedAssetHandoff?.platformSelection?.[clean(resolvedTarget).toUpperCase()]?.candidates||[];
+  const currentAssetIds=new Set((librarySync.sourceConsumerRegistry?.assets||companyRegistry.assets||[]).map(row=>clean(row?.id)));
+  const detailedAssetCandidateReview=freeze({
+    source:'DETAILED_DESIGN_REVALIDATION',
+    registrySha256:clean(detailedAssetHandoff?.registrySha256)||null,
+    candidateCount:handoffCandidates.length,
+    candidates:freezeList(handoffCandidates.map(row=>freeze({
+      assetId:clean(row?.assetId),family:clean(row?.family),roleEvidence:row?.roleEvidence||null,
+      replacesCandidateAssetId:clean(row?.replacesCandidateAssetId)||null,
+      stillInCurrentRegistry:currentAssetIds.has(clean(row?.assetId)),
+      selectionState:'GRAPHICS_PRODUCTION_REVIEW_REQUIRED',
+      automaticReplacementAuthorized:false,
+      nativeRuntimeQaRequired:true
+    }))),
+    sourceBindingVerified:false,runtimeVerified:false
+  });
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
     task,
@@ -4939,6 +5007,46 @@ export function buildVibeAssetProductionPlan({
         protectedGameplayAuthority:true
       });
     });
+  // 상세 설계 후보는 기존 선택과 중복되지 않을 때만 기존 BUILD_UP 바인딩 대상으로 승격 검토한다.
+  // 실소스·권리·플랫폼 QA가 없는 에셋의 자동 적용은 허용하지 않는다.
+  const currentLibraryAssets=new Map((librarySync.sourceConsumerRegistry?.assets||companyRegistry.assets||[])
+    .filter(row=>clean(row?.id)).map(row=>[clean(row.id),row]));
+  const existingSelectionKeys=new Set(automaticBindingTargets.map(row=>clean(row.assetId)));
+  const detailedBindingTargets=freezeList(detailedAssetCandidateReview.candidates
+    .filter(row=>row.stillInCurrentRegistry&&row.assetId&&!existingSelectionKeys.has(row.assetId))
+    .map(row=>{
+      const asset=currentLibraryAssets.get(row.assetId);
+      const sourceFiles=(Array.isArray(asset?.sourceFiles)?asset.sourceFiles:[])
+        .map(file=>typeof file==='string'?file:file?.path).map(clean).filter(Boolean);
+      const sourceBound=actualGameConsumerIds.has(row.assetId);
+      const sourceBinding=(librarySync.sourceConsumerBindings||[]).find(binding=>
+        binding.gameId===currentGameId&&clean(binding.assetId)===row.assetId&&binding.sourceBound===true);
+      const currentMasterGlbHash=clean(asset?.masterGlbHash||asset?.masterGlbSha256||asset?.masterSourceHash)||null;
+      const consumerAppliedMasterHash=clean(sourceBinding?.appliedMasterGlbHash)||null;
+      const masterUpgradeProvenanceRequired=Boolean(sourceBound&&currentMasterGlbHash&&!consumerAppliedMasterHash);
+      const masterUpgradeReviewRequired=Boolean(sourceBound&&currentMasterGlbHash&&consumerAppliedMasterHash
+        &&consumerAppliedMasterHash!==currentMasterGlbHash);
+      const compatible=assetSupplyCandidateAllowed(asset,resolvedTarget);
+      const eligibleForNativeBinding=sourceFiles.length>0&&asset?.productionVerified===true&&asset?.rightsPass===true;
+      const status=!compatible?'ASSET_REPAIR_REQUIRED'
+        :masterUpgradeProvenanceRequired?'SOURCE_BINDING_PROVENANCE_REQUIRED'
+        :masterUpgradeReviewRequired?(eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED')
+        :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
+        :eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED';
+      return freeze({requirementId:null,assetId:row.assetId,family:row.family,
+        role:clean(asset?.role||asset?.subfamily)||null,status,sourceBound,
+        sourceFiles:freezeList(sourceFiles),sourceHash:clean(asset?.sourceHash)||null,
+        libraryVersion:Number(companyRegistry.version||0),nativeRuntimeVerified:false,
+        repairOwner:status==='NATIVE_SOURCE_BINDING_REQUIRED'||status==='SOURCE_BINDING_PROVENANCE_REQUIRED'
+          ?'EXISTING_GAME_SOURCE_WORKER':'EXISTING_ASSET_DEVELOPMENT',
+        protectedGameplayAuthority:true,detailedDesignCandidate:true,
+        roleAndPlatformRevalidationRequired:true,automaticReplacementAuthorized:false,
+        currentMasterGlbHash,consumerAppliedMasterHash,masterUpgradeReviewRequired,masterUpgradeProvenanceRequired,
+        masterUpgradePolicy:'REVALIDATE_AND_REBIND_THROUGH_EXISTING_BUILD_UP_NO_ASSUMED_RUNTIME_PASS',
+        replacesCandidateAssetId:row.replacesCandidateAssetId||null
+      });
+    }));
+  automaticBindingTargets.push(...detailedBindingTargets);
   const automaticAssetBindingWork=freeze({
     version:1,enabled:Boolean(currentGameId)&&['roblox','unity','web'].includes(resolvedTarget),
     trigger:'EVERY_EXISTING_BUILD_UP',gameId:currentGameId||null,target:resolvedTarget,
@@ -4948,6 +5056,8 @@ export function buildVibeAssetProductionPlan({
     pendingSourceBindingCount:automaticBindingTargets.filter(row=>row.status==='NATIVE_SOURCE_BINDING_REQUIRED').length,
     authoringRequiredCount:automaticBindingTargets.filter(row=>['AUTHORING_REQUIRED','SOURCE_ASSET_REQUIRED'].includes(row.status)).length,
     runtimeQaRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BOUND_RUNTIME_QA_REQUIRED').length,
+    glbMasterUpgradeCount:automaticBindingTargets.filter(row=>row.masterUpgradeReviewRequired===true).length,
+    glbAppliedVersionProvenanceRequiredCount:automaticBindingTargets.filter(row=>row.masterUpgradeProvenanceRequired===true).length,
     targets:freezeList(automaticBindingTargets),
     selectedRequirementsOnly:true,noParallelPipeline:true,noNewQueue:true,
     existingGraphicsProductionAndBuildUp:true,
@@ -5529,6 +5639,7 @@ export function buildVibeAssetProductionPlan({
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
     flowAssetRequirements,
     assetSupplySummary,
+    detailedAssetCandidateReview,
     automaticAssetBindingWork,
     genreMenuRecommendations,
     registrySync:freeze({

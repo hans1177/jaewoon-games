@@ -153,25 +153,24 @@ assert.match(webRuntime,/Resolve native upper-platform eligibility/);
 assert.match(webRuntime,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
 assert.match(webRuntime,/eligible_json:/);
 assert.doesNotMatch(webRuntime,/unity_web_json:/);
-assert.match(webRuntime,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+// 현재 게임별 독립 로블록스 배정과 기존 실행 경로를 확인한다.
+assert.match(webRuntime,/name: Dispatch independent Roblox game development/);
+assert.match(webRuntime,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$game_id"/);
+assert.match(webRuntime,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
 assert.match(webRuntime,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
 assert.doesNotMatch(webRuntime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
 assert.doesNotMatch(webRuntime,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-assert.doesNotMatch(webRuntime,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
+assert.doesNotMatch(webRuntime,/gh workflow run (?:company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
 assert.doesNotMatch(webRuntime,/company-development-web-bootstrap\.mjs/);
 assert.doesNotMatch(webRuntime,/company-development-web-gameplay-validation\.mjs/);
 assert.doesNotMatch(webRuntime,/WEB_GAMEPLAY_MUSIC_GATE=REQUIRED/);
 assert.match(webRuntime,/company-minimum-design-contract\.mjs/);
 assert.match(webRuntime,/company-selected-platform-router\.mjs/);
 
-// 같은 개정의 수동 전체 배치만 합치고, 개별 게임과 다른 개정 실행은 독립시킨다.
-const coordinatorGate=webRuntime.split('\n  coordinator-gate:\n')[1]?.split('\n  native-plan:\n')[0]||'';
-assert.ok(coordinatorGate.length>0);
-assert.match(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ \(github\.event_name == 'workflow_dispatch' && !inputs\.game_id && format\('batch-\{0\}', github\.sha\)\) \|\| github\.run_id \}\}/);
-assert.doesNotMatch(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ inputs\.game_id/);
-assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=/);
-assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
-assert.match(coordinatorGate,/cancel-in-progress: false/);
+// Director is a separate monitor; game admission is read directly by the native planner.
+assert.match(webRuntime,/^  native-plan:/m);
+assert.doesNotMatch(webRuntime,/^  coordinator-gate:/m);
+assert.doesNotMatch(webRuntime,/needs: coordinator-gate/);
 
 assert.match(robloxRuntime,/--roadmap=company-learning\/platform-release-roadmap\.json/);
 assert.ok(bootstrap.includes('PolicySource = "company-learning/platform-release-roadmap.json"'));

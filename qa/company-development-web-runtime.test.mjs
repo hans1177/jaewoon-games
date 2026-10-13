@@ -208,11 +208,12 @@ test('owner-held Unity Web does not gate canonical DEVELOPMENT_CONFIRMED native 
   assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.match(source,/UPPER_PLATFORM_ELIGIBLE_IDS=/);
   assert.match(source,/UPPER_PLATFORM_GRANDFATHERED_IDS=/);
-  assert.match(source,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(source,/gh workflow run company-development-roblox-runtime\.yml --repo/);
+  assert.match(source,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
   assert.match(source,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.doesNotMatch(source,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.doesNotMatch(source,/UNITY_WEB_FLOOR_IDS=|UNITY_WEB_FLOOR_BOOTSTRAP_IDS=/);
-  assert.doesNotMatch(source,/gh workflow run company-development-(?:roblox|unity)-runtime\.yml/);
+  assert.doesNotMatch(source,/gh workflow run company-development-unity-runtime\.yml/);
 });
 
 test('native admission retains strict design evidence while owner-held Web is not dispatched',()=>{
@@ -268,7 +269,7 @@ test('development runtime uses company-runtime queue authority and canonical nat
   assert.match(source,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
 });
 
-test('development runtime preserves reusable native lanes without reactivating owner-held Unity Web',()=>{
+test('development runtime preserves independent Roblox and reusable Unity lanes without reactivating owner-held Unity Web',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   assert.equal(roadmap.developmentAccess.UNITY_WEB,'OWNER_HOLD');
@@ -276,7 +277,8 @@ test('development runtime preserves reusable native lanes without reactivating o
   assert.doesNotMatch(workflow,/WEB_DEVELOPMENT_TARGET_COUNT=0/);
   assert.match(workflow,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
   assert.match(workflow,/UPPER_PLATFORM_ELIGIBLE_IDS=/);
-  assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo/);
+  assert.match(workflow,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
   assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.doesNotMatch(workflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.doesNotMatch(workflow,/dispatch-unity-web-floor:|dispatch-unity-web-bootstrap:/);
@@ -293,9 +295,13 @@ test('native coordinator never locks whole workflow or starts held Unity Web job
   assert.match(global,/github\.run_id/);
   assert.match(global,/cancel-in-progress: false/);
   assert.doesNotMatch(global,/main-push|game_id|source-root/);
-  assert.match(workflow,/coordinator-gate:\s*\n/);
-  assert.match(workflow,/group: company-development-confirmed-coordinator-gate-/);
-  assert.match(workflow,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
+  // [게임별 중복 방지] 총괄 잠금 대신 같은 메인 리비전의 활성 게임 실행만 제외한다.
+  assert.doesNotMatch(workflow,/^  coordinator-gate:\s*$/m);
+  assert.match(workflow,/const activeRoblox=activeIds\([^\n]*currentControlSha\)/);
+  assert.match(workflow,/if\(exactHead&&String\(run\.head_sha\|\|''\)!==exactHead\)continue/);
+  assert.match(workflow,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
+  assert.match(workflow,/NATIVE_ACTIVE_RUN_SCAN=FAIL/);
+  assert.match(workflow,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
   assert.match(workflow,/dispatch-roblox:\s*\n/);
   assert.match(workflow,/dispatch-unity:\s*\n/);
   assert.match(workflow,/needs\.native-plan\.outputs\.roblox_json/);

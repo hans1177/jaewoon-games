@@ -706,11 +706,11 @@
       "exactContractShaRequired": true,
       "reuseSuccessfulCoreQaForExactSha": true,
       "coreQaActiveCompletion": {
-        "concurrencyGroup": "vibe2-core-qa-${{ github.ref }}",
+        "concurrencyGroup": "vibe2-core-qa-${{ github.event_name == 'pull_request' && github.ref || github.sha }}",
         "cancelInProgress": false,
-        "pendingPolicy": "MAIN_LATEST_SHA_ONLY_NON_MAIN_LATEST_PENDING_SAME_REF",
+        "pendingPolicy": "MAIN_EVERY_SHA_NON_MAIN_LATEST_PENDING_SAME_REF",
         "runner": "ubuntu-slim",
-        "mainPushCancelsSupersededInProgress": true,
+        "mainPushCancelsSupersededInProgress": false,
         "nonMainCancelsInProgress": false
       },
       "fallback": "LOCAL_SAME_FAN_IN_CORE_REGRESSION",

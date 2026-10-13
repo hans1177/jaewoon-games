@@ -142,12 +142,14 @@ test('promotion invariant accepts progressed native states and rejects Web-first
   assert.doesNotMatch(promotion,/currentStep\|\|''\)!=='TARGET_PLATFORM_SOURCE_BIND'/);
 });
 
-test('design control jobs use slim runners while per-game design cycles retain full runners',()=>{
+test('design control and per-game jobs use the available full runner pool',()=>{
   assert.doesNotMatch(designRuntime,/\n  game-primary-gate:|needs\.game-primary-gate/);
-  assert.match(designRuntime,/\n  resolve-seed-targets:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
-  assert.match(designRuntime,/\n  design-cycle:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
+  for(const job of ['resolve-seed-targets','design-cycle','sync-strict-design-scores']){
+    const block=designRuntime.split(`\n  ${job}:\n`)[1]?.split(/\n  [a-z][a-z0-9-]*:\n/)[0]||'';
+    const expectedRunner=job==='resolve-seed-targets'?'ubuntu-slim':'ubuntu-latest';
+    assert.match(block,new RegExp(`^    runs-on: ${expectedRunner}$`,'m'),`${job} must use its policy-authorized runner pool`);
+  }
   assert.doesNotMatch(designRuntime,/mark-design-engine-canary:/);
-  assert.match(designRuntime,/\n  sync-strict-design-scores:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.doesNotMatch(designRuntime,/\n  continue-seed-supply:/);
   const finish=designRuntime.slice(designRuntime.indexOf('\n  sync-strict-design-scores:'));
   assert.match(finish,/needs: \[resolve-seed-targets, design-cycle\]/);
@@ -190,3 +192,4 @@ test('promotion loads latest four central policies into the isolated runtime wor
     assert.ok(reset.split(/\s+/).includes(file),'canonical policy must not be persisted to runtime branch: '+file);
   }
 });
+

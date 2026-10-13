@@ -30,7 +30,9 @@ test('NPC native IDs resolve to preserved licensed repository masters, not inven
 test('native NPC presentation keeps failed imports visible and retains original interaction/authority roots',()=>{
  const body=server.slice(server.indexOf('local function bindNativeNpcVisual('),server.indexOf('local function label('));
  assert.ok(body.indexOf('native.Parent=rootPart')<body.indexOf('part.Transparency=1'));
- assert.match(body,/if not ok or not rootPart.Parent then native:Destroy\(\);rootPart:SetAttribute\("NativeActorMissing",true\);return end/);
+ assert.match(body,/NativeActorFailureStage/);
+ assert.match(body,/NativeActorFailureSignature/);
+ assert.match(body,/NativeActorBindingState","BOUND_UNVERIFIED/);
  assert.match(body,/part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true/);
  assert.match(body,/joint.Part0=rootPart;joint.Part1=part/);
  assert.match(body,/MotionRetargetReview","PENDING/);
@@ -114,4 +116,12 @@ print('BIOME_GENERATION_UNIT_PASS_NOT_RUNTIME_RENDER_PASS')
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'rpg-biome-'));
  try{const file=path.join(dir,'test.luau');fs.writeFileSync(file,harness);const result=spawnSync(process.env.VIBE2_LUAU_BINARY,[file],{encoding:'utf8',timeout:10000});assert.equal(result.status,0,result.stderr||result.stdout);}
  finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('NPC runtime load errors are deduplicated and stage-classified',()=>{
+ assert.match(server,/local assetLoadFailures=\{\}/);
+ assert.match(server,/if not assetLoadFailures\[id\]then/);
+ assert.match(server,/NPC_ASSET_LOAD_FAILURE assetId=/);
+ assert.match(server,/FAILURE_STAGE=ROBLOX_NATIVE_ASSET_LOAD/);
+ assert.match(server,/return nil,signature/);
 });

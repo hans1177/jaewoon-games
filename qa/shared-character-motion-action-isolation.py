@@ -81,3 +81,4 @@ with tempfile.TemporaryDirectory(prefix='motion-action-isolation-') as output:
         'maxBakedLocationError': max(row['locationMax'] for row in baked_errors),
         'blenderVersion': bpy.app.version_string, 'runtimeVerified': False,
     }, sort_keys=True), flush=True)
+

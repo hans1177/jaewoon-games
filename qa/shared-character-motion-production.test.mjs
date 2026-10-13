@@ -85,3 +85,4 @@ test('draft asset verification keeps generated outputs out of the source PR',()=
   assert.match(workflow,/blender --background --python-exit-code 1 --python qa\/shared-character-motion-action-isolation\.py/);
   assert.match(workflow,/blender --background --python-exit-code 1 --python assets\/roblox\/world-ghosts\/refine-humanoid-motion\.py/);
 });
+

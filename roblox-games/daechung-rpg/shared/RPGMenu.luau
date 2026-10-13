@@ -5,6 +5,7 @@ local Model = require(script.Parent:WaitForChild("RPGMenuModel"))
 local CommonUI = require(script.Parent:WaitForChild("RobloxCommonUI"))
 local Input = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
+local TweenService = game:GetService("TweenService")
 local Menu = {}
 local colors = {base=Color3.fromRGB(19,23,29),panel=Color3.fromRGB(29,35,43),card=Color3.fromRGB(39,47,56),gold=Color3.fromRGB(232,193,120),text=Color3.fromRGB(240,237,225),muted=Color3.fromRGB(171,184,192)}
 
@@ -56,6 +57,14 @@ function Menu.install(config,gui,player,options)
  local overlay=make("Frame",gui,"RPGSystemMenu",{Visible=false,Active=true,BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=.28,Size=UDim2.fromScale(1,1),ZIndex=50})
  local panel=make("Frame",overlay,"MenuPanel",{AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5),BackgroundColor3=colors.base,BorderSizePixel=0,ZIndex=51})
  round(panel,16)
+ -- Presentation only: interruptible entrance; never delays menu input or changes game state.
+ local entranceTween=nil
+ local panelTween=nil
+ local panelScale=make("UIScale",panel,"EntranceScale",{Scale=1})
+ local function stopEntrance()
+  if entranceTween then entranceTween:Cancel();entranceTween=nil end
+  if panelTween then panelTween:Cancel();panelTween=nil end
+ end
  make("UIStroke",panel,"Outline",{Color=colors.gold,Transparency=.55,Thickness=1})
  local title=label(panel,"MenuTitle","모험가의 배낭",22);title.Font=Enum.Font.GothamBold;title.Position=UDim2.fromOffset(18,8);title.Size=UDim2.new(1,-88,0,30)
  local balance=label(panel,"MenuBalance","",13);balance.TextColor3=colors.gold;balance.Position=UDim2.fromOffset(18,39);balance.Size=UDim2.new(1,-88,0,20)
@@ -94,8 +103,8 @@ function Menu.install(config,gui,player,options)
  local function selectItem(row)
   selectedId=row.id;selectedTool=row.tool
   detailTitle.Text=row.name..(row.tier and (" · T"..row.tier) or "")
-  detailText.Text=row.description or "배낭에 보관 중인 도구야. 장착한 뒤 월드에서 사용할 수 있어."
-  itemAction.Visible=true;itemAction.Active=row.tool~=nil;itemAction.AutoButtonColor=row.tool~=nil
+  detailText.Text=row.description or (row.tool and "배낭에서 선택한 도구야. 장착한 뒤 월드에서 사용할 수 있어." or "현재 장비 상태를 확인할 수 있어.")
+  itemAction.Visible=row.tool~=nil;itemAction.Active=row.tool~=nil;itemAction.AutoButtonColor=row.tool~=nil
   itemAction.Text=row.tool and (row.equipped and "장착 해제" or "장착") or "현재 착용 중"
   for id,b in pairs(itemButtons)do b.BackgroundColor3=id==row.id and Color3.fromRGB(73,65,48) or colors.card;b.SelectedRing.Visible=id==row.id end
  end
@@ -212,7 +221,7 @@ function Menu.install(config,gui,player,options)
    end
    b.Name="InventorySlot"..index;b.LayoutOrder=index
    b.ItemIcon.Text=row.icon;b.ItemName.Text=row.name
-   b.ItemState.Text=row.equipped and "착용 중" or "도구"
+   b.ItemState.Text=row.equipped and "착용 중" or (row.category=="장비" and "장비" or "도구")
    if id==selectedId then selection=row end
   end
   for id,b in pairs(itemButtons)do
@@ -298,7 +307,19 @@ function Menu.install(config,gui,player,options)
  setOpen=function(value)
   if value==opened then return end
   if value and options.canOpen and not options.canOpen()then return end
+  stopEntrance()
   opened=value;overlay.Visible=value;toggle.Visible=not value;gui:SetAttribute("RPGMenuOpen",value)
+  if value then
+   overlay.BackgroundTransparency=.45
+   panelScale.Scale=.97
+   panelTween=TweenService:Create(panelScale,TweenInfo.new(.2,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Scale=1})
+   panelTween:Play()
+   entranceTween=TweenService:Create(overlay,TweenInfo.new(.18,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=.28})
+   entranceTween:Play()
+  else
+   overlay.BackgroundTransparency=.28
+   panelScale.Scale=1
+  end
   if options.onOpen then options.onOpen(value)end
   if value then previousSelection=GuiService.SelectedObject;refresh();if Input.GamepadEnabled then GuiService.SelectedObject=tabButtons[activeTab]end
   else GuiService.SelectedObject=previousSelection and previousSelection.Parent and previousSelection or nil end
@@ -342,6 +363,7 @@ function Menu.install(config,gui,player,options)
  table.insert(connections,player.ChildAdded:Connect(function(child)if child:IsA("Backpack")then watchTools()end end))
  table.insert(connections,player.CharacterAdded:Connect(function()setOpen(false);watchTools()end))
  table.insert(connections,gui.Destroying:Connect(function()
+  stopEntrance()
   for _,c in ipairs(connections)do c:Disconnect()end
   for _,c in ipairs(toolConnections)do c:Disconnect()end
  end))

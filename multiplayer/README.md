@@ -92,6 +92,17 @@ Godot: `await MultiplayerClient.match_coop_for_game("crystal-defense")`
 
 Web: `await multiplayer.matchCoopForGame('crystal-defense')`
 
+## 무료 플랜 배포 (Cloudflare Workers Free)
+- `multiplayer/wrangler.toml`의 `workers_dev = true`를 사용해 별도 유료 도메인 없이 `*.workers.dev` 주소로 배포합니다.
+- `MATCHMAKER`, `ROOMS`는 기존 `new_sqlite_classes` 마이그레이션으로 SQLite Durable Objects를 사용합니다. 유료 전용 KV-backed Durable Objects로 변경하지 않습니다.
+- 기존 `GameRoom`은 `ctx.acceptWebSocket`을 사용하여 WebSocket 연결의 유휴 절전(hibernation)을 지원합니다. 유휴 폴링 타이머를 추가하지 않습니다.
+- Cloudflare 계정은 반드시 **Workers Free 플랜**에서 설정해야 하며, 무료 사용량 제한 초과 시 요청이 제한될 수 있습니다. 이 저장소 설정만으로 계정이 자동으로 무료 플랜으로 변경되지는 않습니다.
+- **정적 코드 작업 완료 기준:** Worker 문법·Wrangler 무료 플랜 설정·기존 독립 게임 개발 워크플로 분리 검증 및 main 병합. WebSocket 실접속 테스트와 원격 배포는 이 정적 완료 기준의 필수 차단 단계가 아닙니다.
+- **멀티플레이 배포 완료 기준:** Worker 정적 코드 검사와 빌드 성공, 실제 Wrangler 배포 명령의 성공 응답으로 배포 완료를 판정합니다. WebSocket 실접속·2명 동기화 검증은 배포 완료의 필수 차단 단계가 아닙니다. 실제 배포 증거가 없거나 빌드가 실패하면 배포 성공으로 기록하지 않습니다.
+- **프로젝트의 멀티플레이어 기능 완료 판정:** Worker 문법, 필수 WebSocket 처리 및 방/매칭 코드의 정적 검사, 무료 Wrangler 설정과 독립 개발 흐름 검사만 통과하면 `MULTIPLAYER_STATIC_PASS`로 완료 판정합니다. 사람 또는 가상 플레이어의 실접속·동기화 테스트는 필수 요구사항이 아닙니다.
+- **증거 범위:** 정적 완료 판정은 실제 접속 성공을 입증하지 않으므로 실접속을 수행하지 않았다면 `MULTIPLAYER_RUNTIME_UNVERIFIED`를 별도 기록합니다. 기존 보안·중앙정책 검사와 실제 배포 성공 응답 요건은 그대로 유지합니다.
+- Supabase Auth도 무료 플랜 한도를 확인해야 합니다. 기존 프로젝트 키는 변경하지 않습니다.
+
 ## Cloudflare 설정
 `multiplayer/`에서 Wrangler로 Worker를 배포합니다.
 

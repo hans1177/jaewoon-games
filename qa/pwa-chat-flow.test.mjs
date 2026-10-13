@@ -1,10 +1,27 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 
 const command=fs.readFileSync('command.html','utf8');
 const emergency=fs.readFileSync('emergency-ai.js','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
+
+test('homepage and installed app open the front door, with ChatGPT opening internal PWA chat',()=>{
+  const homepage=fs.readFileSync('index.html','utf8');
+  const manifest=JSON.parse(fs.readFileSync('manifest.webmanifest','utf8'));
+  assert.equal(manifest.start_url,'/');
+  assert.equal(manifest.id,'/command.html');
+  assert.equal(manifest.display,'standalone');
+  assert.match(homepage,/<nav class="mobileDock"[\s\S]*?href="\/command\.html\?from=chatgpt-shortcut" data-chatgpt-launch/);
+  const open=homepage.match(/function openChatGpt\(\)\{[\s\S]*?\n\}/)?.[0];
+  assert.ok(open);
+  for(const userAgent of ['Android','iPhone','Desktop']){
+    const context={location:{href:'https://jaewoon-games.pages.dev/'},navigator:{userAgent}};
+    vm.runInNewContext(open+';openChatGpt();',context);
+    assert.equal(context.location.href,'/command.html?from=chatgpt-shortcut');
+  }
+});
 
 function inlineScript(html){
   const matches=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];

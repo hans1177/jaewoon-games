@@ -71,10 +71,10 @@ permissions:
   contents: write
   actions: write
 
-# Only exact duplicate identities stay serialized. Fan-in refills and result-bearing runs are run-unique;
+# Only exact duplicate identities stay serialized. Fan-in refills coalesce by exact SHA and lane to prevent wake storms;
 # shared queue writes already use optimistic fetch/reset/replan/push retries.
 concurrency:
-  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}-{1}', github.sha, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
@@ -103,7 +103,8 @@ jobs:
     # Result callbacks and stateless refills use ubuntu-latest because the ARM control pool was observed queued
     # while ubuntu-latest game workers were actively running. Push/manual reserve stays on slim.
     runs-on: ${{ (github.event_name == 'repository_dispatch' && (github.event.action == 'vibe2-fanin-refill' || github.event.action == 'vibe2-neuron-complete') && 'ubuntu-latest' || 'ubuntu-slim') }}
-    timeout-minutes: 7
+    # 예약 전 준비·계획과 저장 충돌 재시도가 7분에 잘려 작업자 실행이 사라지지 않게 한다.
+    timeout-minutes: 15
     # Reserve runs are run-unique. Shared queue writes use optimistic fetch/reset/replan/push retry,
     # so fan-in refill wakes must not serialize by lane or occupy a single pending concurrency slot.
     outputs:
@@ -364,6 +365,61 @@ jobs:
             echo "VIBE2_RESERVE_CONTRACT_REGRESSION=SKIPPED_AUXILIARY_LANE:$VIBE2_EXECUTION_LANE"
           fi
           echo 'VIBE2_RESERVE_PREFLIGHT=MAIN_CONTRACT_CONTROL_STATE'
+
+      - name: Prepare verified learning memory once for worker cohort
+        id: learning_memory
+        if: steps.main_wake.outputs.proceed == 'true' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
+        shell: bash
+        run: |
+          set -euo pipefail
+          learning_root=/tmp/vibe2-learning-memory
+          playbooks="$learning_root/company-learning/vibe3-task-playbooks.json"
+          rm -rf "$learning_root"
+          mkdir -p "$learning_root/company-learning"
+          git fetch --depth=1 --no-tags origin vibe2-learning-runtime --quiet
+          learning_sha="$(git rev-parse FETCH_HEAD)"
+          test -n "$learning_sha"
+          git show "$learning_sha:company-learning/vibe3-task-playbooks.json" > "$playbooks"
+          test -s "$playbooks"
+          node - "$playbooks" <<'NODE'
+          const fs=require('fs');
+          const file=process.argv[2];
+          const data=JSON.parse(fs.readFileSync(file,'utf8'));
+          if(String(data.generatedFrom||'')!=='VERIFIED_MEMORY_ONLY')throw new Error('VERIFIED_PLAYBOOK_SOURCE_REQUIRED');
+          const taskTypes=data.taskTypes&&typeof data.taskTypes==='object'?data.taskTypes:{};
+          if(!Object.keys(taskTypes).length)throw new Error('VERIFIED_PLAYBOOK_TASK_TYPES_REQUIRED');
+          for(const [kind,row] of Object.entries(taskTypes)){
+            if(String(row?.authority||'')!=='verified-task-playbook')throw new Error('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED:'+kind);
+            if(!Array.isArray(row?.reuse))throw new Error('VERIFIED_PLAYBOOK_REUSE_ARRAY_REQUIRED:'+kind);
+            for(const item of row.reuse){
+              const id=String(item?.id||'').trim();
+              if(!id)throw new Error('VERIFIED_PLAYBOOK_REUSE_ID_REQUIRED:'+kind);
+              if(id.startsWith('external-black-box-')){
+                const principles=Array.isArray(item?.distilledApplicationPrinciples)
+                  ?item.distilledApplicationPrinciples.map(value=>String(value||'').trim()).filter(Boolean)
+                  :[];
+                if(!principles.length)throw new Error('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED:'+kind+':'+id);
+              }
+            }
+          }
+          console.log('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS');
+          NODE
+          file_sha256="$(sha256sum "$playbooks" | cut -d' ' -f1)"
+          test -n "$file_sha256"
+          echo "sha=$learning_sha" >> "$GITHUB_OUTPUT"
+          echo "file_sha256=$file_sha256" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_VERIFIED_LEARNING_MEMORY_SHA=$learning_sha"
+          echo "VIBE2_VERIFIED_LEARNING_MEMORY_FILE_SHA256=$file_sha256"
+          echo 'VIBE2_VERIFIED_LEARNING_MEMORY_VALIDATION=COHORT_ONCE'
+
+      - name: Upload verified learning memory for worker cohort
+        if: steps.main_wake.outputs.proceed == 'true' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-verified-learning-memory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/vibe2-learning-memory/
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Reserve conflict-free DAG batch
         id: batch
@@ -686,8 +742,17 @@ jobs:
           fi
 
           completed_probe_failures=0
-          latest_main_sha="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
-          latest_core_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/.github/workflows/vibe2-continuous-core.yml?ref=${latest_main_sha}" --jq '.sha' 2>/dev/null || true)"
+          latest_main_sha=''
+          latest_core_blob=''
+          # Empty reservation queues have no prior workers to supersede; avoid unnecessary API probes.
+          if [ -n "$candidate_reservation_runs" ]; then
+            latest_main_sha="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
+            if [ -n "$latest_main_sha" ]; then
+              latest_core_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/.github/workflows/vibe2-continuous-core.yml?ref=${latest_main_sha}" --jq '.sha' 2>/dev/null || true)"
+            fi
+          else
+            echo 'VIBE2_EMPTY_RESERVE_SUPERSEDED_PROBE=SKIPPED_NO_CANDIDATES'
+          fi
           rm -f /tmp/vibe2-run-probe-*.completed /tmp/vibe2-run-probe-*.superseded /tmp/vibe2-run-probe-*.error
           if [ -n "$candidate_reservation_runs" ]; then
             IFS=',' read -r -a reservation_run_ids <<< "$candidate_reservation_runs"
@@ -832,6 +897,16 @@ jobs:
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
             --reserved-at="$reserved_at" \
             --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
+          node - <<'NODE'
+          const fs=require('fs');
+          const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
+          const scheduler=batch.scheduler||{};
+          if((batch.matrix||[]).length===0){
+            const keys=['lane','freeSlotsBeforeReservation','activeWorkersBeforeReservation','blockedCount','conflictCount','stopReason'];
+            const details=Object.fromEntries(keys.map(key=>[key,scheduler[key]??null]));
+            console.log('VIBE2_EMPTY_BATCH_DIAGNOSTICS='+JSON.stringify(details));
+          }
+          NODE
 
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
@@ -854,15 +929,14 @@ jobs:
             if [ -d "$control_root/.vibe2/build-up-directives" ]; then
               state_paths+=(.vibe2/build-up-directives)
             fi
-            if git -C "$control_root" diff --quiet -- "${state_paths[@]}"; then
+            # Include newly generated queue shards, not just tracked file changes.
+            git -C "$control_root" add -A -- "${state_paths[@]}"
+            if git -C "$control_root" diff --cached --quiet -- "${state_paths[@]}"; then
               state_persisted=1
               state_write='NO'
               node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
               break
             fi
-
-            git -C "$control_root" add -A -- "${state_paths[@]}"
-            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
             git -C "$control_root" commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
             if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then
               state_persisted=1
@@ -881,6 +955,8 @@ jobs:
             sleep "$retry_sleep"
           done
           test "$state_persisted" = 1
+          # 원격 저장이 끝난 뒤 실행용 전체 큐를 복원해 저장 충돌 구간을 줄인다.
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
           echo "VIBE2_BATCH_RESERVATION_WRITE=$state_write"
 
           if [ "$callback_kind" = 'neuron' ]; then
@@ -969,61 +1045,6 @@ jobs:
           console.log(`VIBE2_SPECULATIVE_EXPANSION_REASON=${String(batch.scheduler?.speculativeExpansionReason||'AVAILABLE')}`);
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
-
-      - name: Prepare verified learning memory once for worker cohort
-        id: learning_memory
-        if: steps.batch.outputs.worker_count != '0' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
-        shell: bash
-        run: |
-          set -euo pipefail
-          learning_root=/tmp/vibe2-learning-memory
-          playbooks="$learning_root/company-learning/vibe3-task-playbooks.json"
-          rm -rf "$learning_root"
-          mkdir -p "$learning_root/company-learning"
-          git fetch --depth=1 --no-tags origin vibe2-learning-runtime --quiet
-          learning_sha="$(git rev-parse FETCH_HEAD)"
-          test -n "$learning_sha"
-          git show "$learning_sha:company-learning/vibe3-task-playbooks.json" > "$playbooks"
-          test -s "$playbooks"
-          node - "$playbooks" <<'NODE'
-          const fs=require('fs');
-          const file=process.argv[2];
-          const data=JSON.parse(fs.readFileSync(file,'utf8'));
-          if(String(data.generatedFrom||'')!=='VERIFIED_MEMORY_ONLY')throw new Error('VERIFIED_PLAYBOOK_SOURCE_REQUIRED');
-          const taskTypes=data.taskTypes&&typeof data.taskTypes==='object'?data.taskTypes:{};
-          if(!Object.keys(taskTypes).length)throw new Error('VERIFIED_PLAYBOOK_TASK_TYPES_REQUIRED');
-          for(const [kind,row] of Object.entries(taskTypes)){
-            if(String(row?.authority||'')!=='verified-task-playbook')throw new Error('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED:'+kind);
-            if(!Array.isArray(row?.reuse))throw new Error('VERIFIED_PLAYBOOK_REUSE_ARRAY_REQUIRED:'+kind);
-            for(const item of row.reuse){
-              const id=String(item?.id||'').trim();
-              if(!id)throw new Error('VERIFIED_PLAYBOOK_REUSE_ID_REQUIRED:'+kind);
-              if(id.startsWith('external-black-box-')){
-                const principles=Array.isArray(item?.distilledApplicationPrinciples)
-                  ?item.distilledApplicationPrinciples.map(value=>String(value||'').trim()).filter(Boolean)
-                  :[];
-                if(!principles.length)throw new Error('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED:'+kind+':'+id);
-              }
-            }
-          }
-          console.log('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS');
-          NODE
-          file_sha256="$(sha256sum "$playbooks" | cut -d' ' -f1)"
-          test -n "$file_sha256"
-          echo "sha=$learning_sha" >> "$GITHUB_OUTPUT"
-          echo "file_sha256=$file_sha256" >> "$GITHUB_OUTPUT"
-          echo "VIBE2_VERIFIED_LEARNING_MEMORY_SHA=$learning_sha"
-          echo "VIBE2_VERIFIED_LEARNING_MEMORY_FILE_SHA256=$file_sha256"
-          echo 'VIBE2_VERIFIED_LEARNING_MEMORY_VALIDATION=COHORT_ONCE'
-
-      - name: Upload verified learning memory for worker cohort
-        if: steps.batch.outputs.worker_count != '0' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
-        uses: actions/upload-artifact@v4
-        with:
-          name: vibe2-verified-learning-memory-${{ github.run_id }}-${{ github.run_attempt }}
-          path: /tmp/vibe2-learning-memory/
-          if-no-files-found: error
-          retention-days: 1
 
       - name: Probe dedicated Vibe2 model cache
         id: ollama_model_cache_probe
@@ -1167,9 +1188,9 @@ jobs:
 
   worker:
     needs: [reserve, model_cache]
-    if: always() && needs.reserve.outputs.worker_count != '0'
-    # Roblox asset work stays on x64 for the native Luau toolchain; Unity asset work keeps the dedicated ARM lane.
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
+    if: always() && needs.reserve.result == 'success' && needs.reserve.outputs.worker_count != '0' && (!contains('game-primary,asset-development', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || needs.reserve.outputs.verified_learning_memory_sha != '')
+    # Roblox asset work stays on x64 for the native Luau toolchain; Unity asset work keeps the dedicated ARM lane.
     # game-primary BUILD_UP과 asset 품질 작업은 소스 생성·네이티브 그래픽 작성·impact-scoped QA를 끝까지 수행할 수 있게 최대 60분을 확보한다.
     # 개별 모델 호출 timeout/retry와 QA/release gate는 그대로 유지하고, 작업이 끝나면 즉시 종료한다.
     timeout-minutes: ${{ ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' || (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary') && 60 || 22 }}
@@ -3367,3 +3388,4 @@ jobs:
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
             --data "$payload"
           echo 'VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'
+
