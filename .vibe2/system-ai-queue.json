@@ -1109,7 +1109,7 @@
     },
     {
       "id": "game-fantasy-survival-web-second-gate-collab-v1",
-      "status": "queued",
+      "status": "blocked-vibe-game-repair",
       "priority": "critical",
       "department": null,
       "taskType": null,
@@ -1172,7 +1172,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "shared-signature-canary-pending:recovery-recovery-5b037d3c85e87819c676",
+      "blocker": "vibe-game-source-verification-pending:fantasy-survival-existing-web-assessment-v1",
       "evidence": [
         "owner-directive:full-process-external-ai-vibe-collaboration-2026-09-21",
         "game:fantasy-survival",
@@ -1980,13 +1980,18 @@
         "recovery-queue:recovery-9f9b58e72fc8e9efa837",
         "shared-signature-canary:recovery-recovery-9f9b58e72fc8e9efa837",
         "shared-signature:shared-signature-canary-pending:recovery-recovery-5c4d3632653e8b635f98",
-        "system-ai-duplicate-dependency-rewired:YES"
+        "system-ai-duplicate-dependency-rewired:YES",
+        "system-ai-game-source-write-forbidden:YES",
+        "system-ai-vibe-game-handoff:fantasy-survival-existing-web-assessment-v1",
+        "system-ai-handoff-not-completion:YES"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 0,
       "impactComponents": null,
       "createdAt": "2026-09-21T02:15:00.000Z",
-      "updatedAt": "2026-09-23T01:28:26.987Z"
+      "updatedAt": "2026-10-13T09:13:23.378Z",
+      "reservationRunId": null,
+      "reservationRunAttempt": 0
     },
     {
       "id": "marketing-ant-simulator-pre-release-v1",
@@ -15237,7 +15242,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-21T06:56:44.534Z",
-      "updatedAt": "2026-10-13T09:06:12.537Z",
+      "updatedAt": "2026-10-13T09:13:23.378Z",
       "reservationRunId": null,
       "reservationRunAttempt": 0
     },
@@ -15621,7 +15626,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-21T07:03:16.523Z",
-      "updatedAt": "2026-10-13T09:06:12.537Z",
+      "updatedAt": "2026-10-13T09:13:23.378Z",
       "reservationRunId": null,
       "reservationRunAttempt": 0
     },
@@ -108338,7 +108343,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T17:05:15.157Z",
-      "updatedAt": "2026-10-13T09:06:12.537Z",
+      "updatedAt": "2026-10-13T09:13:23.378Z",
       "reservationRunId": null,
       "reservationRunAttempt": 0
     },
@@ -144331,7 +144336,7 @@
     },
     {
       "id": "recovery-recovery-f7cd6a198912a519f708",
-      "status": "queued",
+      "status": "blocked-vibe-game-repair",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -144429,7 +144434,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
-      "blocker": null,
+      "blocker": "vibe-game-source-verification-pending:daechung-rpg-unity-presentation-asset-adaptation-v1",
       "evidence": [
         "actions-run-34277408665",
         "actions-run-34282338339",
@@ -144472,17 +144477,22 @@
         "game-repair-save-migration:REQUIRED",
         "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
         "learning-route:existing-vibe-learning-motor",
-        "primary-ai-collaboration-task:recovery-recovery-f7cd6a198912a519f708"
+        "primary-ai-collaboration-task:recovery-recovery-f7cd6a198912a519f708",
+        "system-ai-game-source-write-forbidden:YES",
+        "system-ai-vibe-game-handoff:daechung-rpg-unity-presentation-asset-adaptation-v1",
+        "system-ai-handoff-not-completion:YES"
       ],
       "supervisorReviewRequired": true,
       "workerSelfAcceptance": false,
       "learningCandidate": true,
       "createdAt": "2026-09-23T11:57:20.543Z",
-      "updatedAt": "2026-09-23T11:57:20.543Z"
+      "updatedAt": "2026-10-13T09:13:23.378Z",
+      "reservationRunId": null,
+      "reservationRunAttempt": 0
     },
     {
       "id": "recovery-recovery-828f178e7d13218d39e5",
-      "status": "queued",
+      "status": "blocked-vibe-game-repair",
       "priority": "critical",
       "department": "recovery",
       "taskType": "bottleneck-repair",
@@ -144553,7 +144563,7 @@
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": null,
-      "blocker": null,
+      "blocker": "vibe-game-source-verification-pending:daechung-rpg-unity-presentation-asset-adaptation-v1",
       "evidence": [
         "actions-run-34277017158",
         "actions-run-34281727541",
@@ -144593,13 +144603,18 @@
         "game-repair-save-migration:REQUIRED",
         "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
         "learning-route:existing-vibe-learning-motor",
-        "primary-ai-collaboration-task:recovery-recovery-828f178e7d13218d39e5"
+        "primary-ai-collaboration-task:recovery-recovery-828f178e7d13218d39e5",
+        "system-ai-game-source-write-forbidden:YES",
+        "system-ai-vibe-game-handoff:daechung-rpg-unity-presentation-asset-adaptation-v1",
+        "system-ai-handoff-not-completion:YES"
       ],
       "supervisorReviewRequired": true,
       "workerSelfAcceptance": false,
       "learningCandidate": true,
       "createdAt": "2026-09-23T11:57:20.543Z",
-      "updatedAt": "2026-09-23T11:57:20.543Z"
+      "updatedAt": "2026-10-13T09:13:23.378Z",
+      "reservationRunId": null,
+      "reservationRunAttempt": 0
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
