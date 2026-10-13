@@ -1677,6 +1677,7 @@ local function refreshHouse(p)
  local base=housePosition(p)
  local home=Instance.new("Model");home.Name=key;home:SetAttribute("OwnerUserId",p.UserId);home:SetAttribute("HouseLevel",level);home.Parent=houses
  local width=18+level*6
+ local plot=ppart(home,"PrivatePlot",Vector3.new(width+12,2,width+12),base+Vector3.new(0,-2,0),Color3.fromRGB(91,136,95),Enum.Material.Grass);plot.CanCollide=true
  local function piece(name,size,offset,color,material)
   local x=ppart(home,name,size,base+offset,color,material or Enum.Material.WoodPlanks);x.CanCollide=true;return x
  end
