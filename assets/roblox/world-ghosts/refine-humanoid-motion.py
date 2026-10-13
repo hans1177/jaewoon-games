@@ -181,6 +181,10 @@ RIG['ProductionVerified'] = False
 
 
 def reset_pose():
+    # A dependency-graph update in the foot solver must not reapply the last
+    # baked Action over this procedural pose. Reattach only when inserting keys.
+    if RIG.animation_data:
+        RIG.animation_data.action = None
     for pose_bone in RIG.pose.bones:
         pose_bone.rotation_mode = 'XYZ'
         pose_bone.rotation_euler = (0.0, 0.0, 0.0)
@@ -688,10 +692,10 @@ def animate(name, normalized_time):
 for clip_name, duration in CLIPS.items():
     action = bpy.data.actions.new(clip_name)
     RIG.animation_data_create()
-    RIG.animation_data.action = action
     frame_count = round(duration * FPS)
     for frame in range(frame_count + 1):
         animate(clip_name, frame / max(1, frame_count))
+        RIG.animation_data.action = action
         for pose_bone in RIG.pose.bones:
             if pose_bone.name == 'Root':
                 continue
@@ -1039,3 +1043,4 @@ if ARGS.render_dir:
     )
 
 print(json.dumps(evidence, ensure_ascii=False), flush=True)
+
