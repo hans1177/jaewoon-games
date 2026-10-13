@@ -28,7 +28,8 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: roblox-source-drift-runtime-writer-v2-${{ github.event_name }}
+  group: roblox-source-drift-runtime-writer-v2
+  queue: max
   cancel-in-progress: false
 
 env:
