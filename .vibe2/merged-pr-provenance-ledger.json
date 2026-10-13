@@ -36630,11 +36630,130 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_f586e3788cf3d4006233cdd3",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-7953",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "3a20278c0e7056cc6edad0e0c724ae7436baa0f8",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 7953,
+        "baseBranch": "main",
+        "headBranch": "fix/daechung-runtime-build-wake-20261013",
+        "baseSha": "3a20278c0e7056cc6edad0e0c724ae7436baa0f8",
+        "headSha": "e4fe0552a9e3faf73a6bec92b722eb198a3c2303",
+        "mergeCommitSha": "1a4c8535d5473984fdf10c267b6bd2274f72f3c5",
+        "mergedAt": "2026-10-13T04:39:35Z",
+        "authorLogin": "hans1177",
+        "titleHash": "94087b02e4c8c2b841930cb78dd22802574e4a4e96533cb8e0e446ba4a4daa53",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/daechung-runtime-build-wake-20261013",
+        "candidateSha": "e4fe0552a9e3faf73a6bec92b722eb198a3c2303"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 4,
+        "deletedLineCount": 3,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          "roblox-games/.company-runtime-trigger"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          ".github/workflows/vibe2-continuous-core.yml"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:7953",
+        "merge-commit:1a4c8535d5473984fdf10c267b6bd2274f72f3c5",
+        "base-main:3a20278c0e7056cc6edad0e0c724ae7436baa0f8"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 294
+    "total": 295
   }
 }
