@@ -1210,7 +1210,13 @@ const ASSET_REQUIREMENT_FAMILY_RULES=Object.freeze([
   Object.freeze({re:/(?:village|town|마을)/i,families:Object.freeze(['BUILDING','ENVIRONMENT','PROP','MATERIAL'])}),
   Object.freeze({re:/(?:housing|house|home|하우징|주택|집짓|건축)/i,families:Object.freeze(['BUILDING','PROP','MATERIAL','UI'])}),
   Object.freeze({re:/(?:explor|adventure|탐험|탐색)/i,families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','VFX','AUDIO'])}),
-  Object.freeze({re:/(?:ui|hud|menu|interface|버튼|메뉴|인벤토리|인터페이스)/i,families:Object.freeze(['UI','AUDIO','MOTION'])})
+  Object.freeze({re:/(?:ui|hud|menu|interface|버튼|메뉴|인벤토리|인터페이스)/i,families:Object.freeze(['UI','AUDIO','MOTION'])}),
+  Object.freeze({re:/(?:lobby|hub|spawn|waiting.room|로비|대기실|시작 화면|메인 화면)/i,families:Object.freeze(['BUILDING','ENVIRONMENT','PROP','UI','AUDIO','VFX'])}),
+  Object.freeze({re:/(?:background|skybox|terrain|landscape|scenery|배경|지형|하늘|풍경|맵 꾸미기)/i,families:Object.freeze(['ENVIRONMENT','MATERIAL','PROP','VFX'])}),
+  Object.freeze({re:/(?:bgm|soundtrack|music|theme.song|배경음악|브금|음악)/i,families:Object.freeze(['AUDIO'])}),
+  Object.freeze({re:/(?:sfx|sound.effect|foley|ambien(?:t|ce).sound|효과음|환경음|발소리|타격음)/i,families:Object.freeze(['AUDIO'])}),
+  Object.freeze({re:/(?:item|loot|chest|pickup|inventory|equipment|아이템|전리품|상자|장비|소지품|수집품)/i,families:Object.freeze(['PROP','WEAPON','MATERIAL','UI'])}),
+  Object.freeze({re:/(?:particle|weather|fog|lighting|rain|snow|fire.effect|파티클|날씨|안개|조명|비 효과|눈 효과|환경 효과)/i,families:Object.freeze(['VFX','ENVIRONMENT','MATERIAL'])})
 ]);
 // 역할명이 없는 일반 요청에서도 호환되는 등록 자산을 먼저 재사용한다.
 // 요구사항에 구체적 역할이 있으면 이 일반 매칭은 사용하지 않는다.
@@ -1219,7 +1225,13 @@ const ASSET_GENERIC_DEMAND_TERMS=Object.freeze({
   MOTION:Object.freeze(['motion','animation','action','모션','애니메이션','액션']),
   SKILL:Object.freeze(['skill','spell','ability','스킬','마법','특수기']),
   VFX:Object.freeze(['vfx','effect','이펙트','효과','스킬','액션']),
-  AUDIO:Object.freeze(['audio','sound','효과음','사운드'])
+  AUDIO:Object.freeze(['audio','sound','sfx','bgm','music','효과음','배경음악','브금','사운드']),
+  BUILDING:Object.freeze(['building','lobby','structure','건물','로비']),
+  ENVIRONMENT:Object.freeze(['environment','background','skybox','배경','환경','지형']),
+  PROP:Object.freeze(['prop','item','pickup','loot','소품','아이템','전리품']),
+  UI:Object.freeze(['ui','menu','lobby','hud','메뉴','로비','인터페이스']),
+  WEAPON:Object.freeze(['weapon','equipment','무기','장비']),
+  MATERIAL:Object.freeze(['material','texture','재질','텍스처'])
 });
 function assetRuntimeConsumerVerified(asset={}){
   const state=clean(asset.runtimeVerificationState).toUpperCase();
