@@ -78,6 +78,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  VIBE2_PRODUCTION_MODEL_CALLS_ENABLED: 'false' # Owner: no external or local AI models for game/asset source production
   VIBE2_LOCAL_MODEL: qwen3:1.7b
   VIBE2_MODEL_MAX_PREDICT: '3072'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
@@ -1151,7 +1152,9 @@ jobs:
 
   model_cache:
     needs: reserve
-    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle'
+    if: false # Production models disabled: do not warm or download Ollama models
+    # Was: worker_count and cache-miss guard, retained for future historical audit
+    # needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle'
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     timeout-minutes: 12
     continue-on-error: true
@@ -1388,7 +1391,10 @@ jobs:
           set -euo pipefail
           required='false'
           reason='ROUTE_NO_LOCAL_MODEL'
-          if [ "$ORDER_RUN" != 'true' ]; then
+          if [ "${VIBE2_PRODUCTION_MODEL_CALLS_ENABLED:-false}" != 'true' ]; then
+            required='false'
+            reason='OWNER_MODEL_FREE_PRODUCTION'
+          elif [ "$ORDER_RUN" != 'true' ]; then
             reason='WORK_ORDER_NOT_RUNNABLE'
           elif [ "$ROUTE" = 'analysis-only' ] || [ "$ROUTE" = 'learning-web-artifact' ]; then
             required='true'
@@ -1594,6 +1600,7 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           target="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.target||''))")"
           model_calls=1
+          if [ "${VIBE2_PRODUCTION_MODEL_CALLS_ENABLED:-false}" != 'true' ]; then model_calls=0; fi
           deterministic_source="${{ steps.order.outputs.deterministic_source }}"
           if [ "$deterministic_source" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then model_calls=0; fi
           node "$contract_root/tools/free-budget-telemetry.mjs" \
@@ -1706,7 +1713,10 @@ jobs:
           echo 'VIBE2_GAME_SOURCE_PROVIDER=LOCAL_OLLAMA'
           echo 'VIBE2_CODEX_GAME_SOURCE_WRITE=FORBIDDEN'
 
-          if [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
+          if [ "${VIBE2_PRODUCTION_MODEL_CALLS_ENABLED:-false}" != 'true' ]; then
+            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_ONLY'
+            echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
+          elif [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
             echo 'VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL'
             echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_LOCAL'
             echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
