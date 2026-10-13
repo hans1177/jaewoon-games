@@ -1867,5 +1867,5 @@ test('generic blocked Roblox work orders retry once per pinned contract without 
   assert.equal(noSha.recovered,0);
   const wrongLane=recoverContractScopedWorkOrderBlocks(input,{contractSha:sha,lane:'asset-development'});
   assert.equal(wrongLane.recovered,0);
-  assert.match(workflow,/reserve-batch[\\s\\S]{0,700}--contract-sha="/);
+  assert.match(workflow,/reserve-batch[\s\S]{0,700}--contract-sha="/);
 });
