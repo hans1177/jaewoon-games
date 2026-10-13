@@ -4922,16 +4922,19 @@ test('universal library matching includes lobby environment BGM SFX items and ef
  }
 });
 
-test('newly registered better shared asset becomes safe adaptation candidate for existing consumer',()=>{
+test('shared asset with just one higher quality point is immediately queued for canonical replacement',()=>{
  const registry={assets:[
   {id:'old-prop',family:'PROP',role:'ITEM',consumerGameIds:['demo'],qualityScore:42},
-  {id:'new-prop',family:'PROP',role:'ITEM',qualityScore:91}
+  {id:'new-prop',family:'PROP',role:'ITEM',qualityScore:43}
  ]};
  const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item',registry});
  const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
  assert.equal(upgrade?.assetId,'new-prop');
  assert.equal(upgrade?.replacesCandidateAssetId,'old-prop');
- assert.equal(upgrade?.automaticReplacementAuthorized,false);
+ assert.equal(upgrade?.automaticReplacementAuthorized,true);
+ assert.equal(upgrade?.replacementExecution,'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE');
+ assert.equal(upgrade?.sourceCompatibilityAndRightsRequired,true);
+ assert.equal(upgrade?.runtimeVerificationGranted,false);
  assert.equal(upgrade?.independentNativeRuntimeQaRequired,true);
  assert.equal(summary.runtimeVerificationGranted,false);
 });
