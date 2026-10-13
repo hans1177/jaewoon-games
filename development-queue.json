@@ -4408,7 +4408,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-12T18:09:47.970Z",
+      "updatedAt": "2026-10-13T03:03:48.932Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4462,13 +4462,13 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-studio-asset-binding-required",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-package-pending"
       ],
-      "robloxSourceCommit": "435b3d1df9b3b588dcf0a8bc5f895f63c3d6e19d",
-      "robloxSourceBootstrapPassedAt": "2026-10-12T18:09:47.970Z",
+      "robloxSourceCommit": "fa2b7e42add05f10f86d34cd017923e210889920",
+      "robloxSourceBootstrapPassedAt": "2026-10-13T03:03:48.932Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -4971,7 +4971,10 @@
         "gameplayAuthority": false
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
-      "robloxStudioAssetRuntimeBindingEvidence": null
+      "robloxStudioAssetRuntimeBindingEvidence": null,
+      "robloxBuildFailedAt": null,
+      "robloxRuntimeRetryCount": 0,
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND"
     },
     {
       "gameId": "daechung-rpg",
@@ -37134,7 +37137,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-13T03:02:47.946Z",
+  "updatedAt": "2026-10-13T03:03:48.932Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
