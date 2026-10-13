@@ -47,7 +47,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     legacyGroups.get(key).push(task);
   }
   for(const [file,legacy] of (mode==='all'||mode==='vibe'?legacyGroups:new Map())){
-    if(legacy.length<2)continue;
+    if(legacy.length===0)continue;
     const match=file.match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
     const gameId=match[2],platform=match[1];
     const existing=gameQueue.tasks.find(task=>clean(task.gameId)===gameId
