@@ -4876,3 +4876,11 @@ test('shared RPG menu transition is interruptible and preserves direct interacti
   assert.match(source,/if options\.onOpen then options\.onOpen\(value\)end/);
   assert.match(source,/gui\.Destroying:Connect\(function\(\)\s*\n\s*stopEntrance\(\)/);
 });
+
+// Shared RPG inventory labels must distinguish equipment from usable tools.
+test('shared RPG inventory labels show equipped state and correct slot category',()=>{
+  const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
+  const consumer=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
+  assert.equal(consumer,source);
+  assert.match(source,/b\.ItemState\.Text=row\.equipped and "착용 중" or \(row\.category=="장비" and "장비" or "도구"\)/);
+});
