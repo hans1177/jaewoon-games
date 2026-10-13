@@ -414,12 +414,12 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
   if(mode==='all'||mode==='vibe'){
     const eligible=systemAi.tasks.filter(task=>clean(task.status)==='queued'
       &&uniq(task.responsibleFiles).some(file=>GAME_SOURCE_PREFIXES.some(prefix=>
-        clean(file).replaceAll('\\\\','/').replace(/^\\.\\//,'').startsWith(prefix))));
+        clean(file).replaceAll(String.fromCharCode(92),'/').replace(/^[.][/]/,'').startsWith(prefix))));
     for(const legacy of eligible){
-      const files=uniq(legacy.responsibleFiles).map(file=>clean(file).replaceAll('\\\\','/').replace(/^\\.\\//,''));
+      const files=uniq(legacy.responsibleFiles).map(file=>clean(file).replaceAll(String.fromCharCode(92),'/').replace(/^[.][/]/,''));
       const matching=gameQueue.tasks.filter(task=>{
         if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))return false;
-        const root=clean(task.sourceRoot).replace(/\\/$/,'');
+        const root=clean(task.sourceRoot).replace(/[/]$/,'');
         return files.some(file=>root&&file.startsWith(root+'/')||uniq(task.responsibleFiles).includes(file));
       });
       if(!matching.length)continue;
