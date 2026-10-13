@@ -593,9 +593,47 @@ local function beginEnemyAttack(e,target,now)
  end)
 end
 
+local function bindSharedPlayerVisual(character,classId)
+ local assetId=Style.SharedPlayerModels and (Style.SharedPlayerModels[classId] or Style.SharedPlayerModels.NONE)
+ if not assetId then return end
+ local source=loadAsset(assetId)
+ if not source or not character.Parent then
+  character:SetAttribute("SharedPlayerVisualState","LOAD_UNVERIFIED")
+  return
+ end
+ local meshByLimb={}
+ for _,mesh in ipairs(source:GetDescendants())do
+  if mesh:IsA("MeshPart") and character:FindFirstChild(mesh.Name) then meshByLimb[mesh.Name]=mesh end
+ end
+ local required={"Head","UpperTorso","LowerTorso","LeftUpperArm","RightUpperArm","LeftUpperLeg","RightUpperLeg"}
+ for _,name in ipairs(required)do
+  if not meshByLimb[name] or not character:FindFirstChild(name) then
+   character:SetAttribute("SharedPlayerVisualState","RIG_RETARGET_REQUIRED")
+   return
+  end
+ end
+ local previous=character:FindFirstChild("SharedPlayerVisual")
+ if previous then previous:Destroy()end
+ local folder=Instance.new("Folder");folder.Name="SharedPlayerVisual";folder.Parent=character
+ for name,mesh in pairs(meshByLimb)do
+  local limb=character:FindFirstChild(name)
+  if limb and limb:IsA("BasePart") then
+   local cosmetic=mesh:Clone();cosmetic.Name="Shared_"..name;cosmetic.Anchored=false
+   cosmetic.CanCollide=false;cosmetic.CanTouch=false;cosmetic.CanQuery=false;cosmetic.Massless=true
+   cosmetic.CFrame=limb.CFrame;cosmetic.Parent=folder
+   local weld=Instance.new("WeldConstraint");weld.Part0=limb;weld.Part1=cosmetic;weld.Parent=cosmetic
+  end
+ end
+ character:SetAttribute("SharedPlayerVisualState","BOUND_UNVERIFIED")
+ character:SetAttribute("SharedPlayerVisualAssetId",tostring(assetId))
+ character:SetAttribute("RuntimeVisualReview","PENDING")
+ character:SetAttribute("MotionRetargetReview","PENDING")
+end
+
 local function applyPlayerAppearance(p)
  local c=p.Character;if not c then return end
  decorateCharacterModel(c,tostring(p:GetAttribute("ClassId")or"NONE"),(p.UserId%7)+1,tostring(p:GetAttribute("AdvancementId")or""))
+ task.spawn(bindSharedPlayerVisual,c,tostring(p:GetAttribute("ClassId")or"NONE"))
  local weaponTier=n(p,"WeaponTier",1);local armorTier=n(p,"ArmorTier",1);local gear=c:FindFirstChild("DaechungClassGear")
  if gear then
   for _,d in ipairs(gear:GetDescendants())do
