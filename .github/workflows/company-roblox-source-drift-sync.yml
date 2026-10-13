@@ -89,12 +89,27 @@ jobs:
             fi
             git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ > /tmp/roblox-push-files.txt
             changed="$(node tools/company-roblox-source-drift-sync.mjs --resolve-files=/tmp/roblox-push-files.txt)"
+            # Explicit company trigger resumes the existing source-sync and BUILD_UP/F0 chain.
+            # It does not substitute trigger metadata for build or runtime evidence.
+            if grep -Fxq 'roblox-games/.company-runtime-trigger' /tmp/roblox-push-files.txt; then
+              trigger_game_id="$(sed -n 's/^gameId: *\([a-z0-9-]*\) *$/\1/p' roblox-games/.company-runtime-trigger | head -1)"
+              if [[ "$trigger_game_id" =~ ^[a-z0-9][a-z0-9-]{1,48}$ ]]; then
+                changed="$(printf '%s\n%s\n' "$changed" "$trigger_game_id" | tr ',' '\n' | sed '/^$/d' | sort -u | paste -sd, -)"
+                echo "ROBLOX_SOURCE_SYNC_TRIGGER_GAME_ID=$trigger_game_id"
+                echo "ROBLOX_SOURCE_SYNC_TRIGGER_RESTART_F0=YES"
+              fi
+            fi
           fi
           if [[ -n "$changed" ]] && ! [[ "$changed" =~ ^[a-z0-9][a-z0-9-]{1,48}(,[a-z0-9][a-z0-9-]{1,48})*$ ]]; then
             echo "invalid Roblox changed game ids: $changed" >&2
             exit 2
           fi
           echo "game_ids=$changed" >> "$GITHUB_OUTPUT"
+          if [[ "$EVENT_NAME" == "push" ]] && [[ -f /tmp/roblox-push-files.txt ]] && grep -Fxq "roblox-games/.company-runtime-trigger" /tmp/roblox-push-files.txt; then
+            echo "restart_f0=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "restart_f0=false" >> "$GITHUB_OUTPUT"
+          fi
           echo "ROBLOX_CHANGED_SOURCE_IDS=${changed:-NONE}"
 
       - name: Fetch runtime state
@@ -108,7 +123,7 @@ jobs:
         env:
           CHANGED_GAME_IDS: ${{ steps.changed.outputs.game_ids }}
           SOURCE_REVISION: ${{ steps.main.outputs.sha }}
-          FORCE_F0_RESTART: ${{ inputs.restart_from_f0 == true && 'true' || 'false' }}
+          FORCE_F0_RESTART: ${{ (inputs.restart_from_f0 == true || steps.changed.outputs.restart_f0 == 'true') && 'true' || 'false' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -177,7 +192,7 @@ jobs:
         env:
           CHANGED_GAME_IDS: ${{ steps.changed.outputs.game_ids }}
           SOURCE_REVISION: ${{ steps.main.outputs.sha }}
-          FORCE_F0_RESTART: ${{ inputs.restart_from_f0 == true && 'true' || 'false' }}
+          FORCE_F0_RESTART: ${{ (inputs.restart_from_f0 == true || steps.changed.outputs.restart_f0 == 'true') && 'true' || 'false' }}
         shell: bash
         run: |
           set -euo pipefail
