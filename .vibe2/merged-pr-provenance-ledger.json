@@ -40048,11 +40048,171 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_6855b0c807825a09e571ae93",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-7980",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "82c7ae62eedfcf642edee0ec82cea0e1cee91a83",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 7980,
+        "baseBranch": "main",
+        "headBranch": "fix/design-final-feedback-cache-20261013",
+        "baseSha": "82c7ae62eedfcf642edee0ec82cea0e1cee91a83",
+        "headSha": "715ad48e3c2124e8d2358cf70b4f502e462250f2",
+        "mergeCommitSha": "c3de4bab77abf7916158ecaa21d7b9510ccc4830",
+        "mergedAt": "2026-10-13T08:29:33Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e625cfd2ac8d5c021a16d006d3a723c7c34bd1bda153dc799bb236a42958c8f8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/design-final-feedback-cache-20261013",
+        "candidateSha": "715ad48e3c2124e8d2358cf70b4f502e462250f2"
+      },
+      "changeStats": {
+        "changedFileCount": 23,
+        "codingRelevantFileCount": 23,
+        "addedLineCount": 459,
+        "deletedLineCount": 287,
+        "changedFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          "company-status.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/company-development-roblox-post-runtime-qa.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-minimum-design-contract.test.mjs",
+          "qa/design-promotion-workflow-contract.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "roblox-games/island-village/shared/GameConfig.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "tools/company-design-cycle.mjs",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-minimum-design-contract.mjs",
+          "tools/vibe2-continuous-runner.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          "company-status.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/company-development-roblox-post-runtime-qa.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-minimum-design-contract.test.mjs",
+          "qa/design-promotion-workflow-contract.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "roblox-games/island-village/shared/GameConfig.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "tools/company-design-cycle.mjs",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-minimum-design-contract.mjs",
+          "tools/vibe2-continuous-runner.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:7980",
+        "merge-commit:c3de4bab77abf7916158ecaa21d7b9510ccc4830",
+        "base-main:82c7ae62eedfcf642edee0ec82cea0e1cee91a83"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 322
+    "total": 323
   }
 }
