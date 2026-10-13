@@ -656,7 +656,8 @@ jobs:
           const rows=(queue.tasks||[])
             .filter(task=>
               String(task.status||'').toLowerCase()==='running'
-              &&String(task.department||'').toLowerCase()==='development'
+              &&(String(task.department||'').toLowerCase()==='development'
+                ||String(task.executionLane||'').toUpperCase()==='ASSET_DEVELOPMENT')
               &&String(task.type||'implementation').toLowerCase()==='implementation'
               &&!String(task.blocker||'').trim()
               &&/^[0-9]+$/.test(String(task.reservationRunId||'').trim())

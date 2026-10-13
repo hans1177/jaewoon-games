@@ -357,7 +357,9 @@ export function recoverCompletedRunningReservations(queueInput, {
   const tasks=queue.tasks.map(task=>{
     const runId=clean(task.reservationRunId);
     if(task.status!=='running')return task;
-    if(clean(task.department).toLowerCase()!=='development'||clean(task.type).toLowerCase()!=='implementation')return task;
+    // [자산 예약 회수] 그래픽 부서의 기존 자산 개발 작업도 실제 종료된 실행에 한해 재배정한다.
+    if((clean(task.department).toLowerCase()!=='development'&&clean(task.executionLane).toUpperCase()!=='ASSET_DEVELOPMENT')
+      ||clean(task.type).toLowerCase()!=='implementation')return task;
     // Completed worker artifacts are converted to slot-released fan-in waits before this recovery.
     // Preserve those immutable results and only reclaim still-unstarted blocker-free reservations.
     if(clean(task.blocker)||!runId||!completed.has(runId))return task;

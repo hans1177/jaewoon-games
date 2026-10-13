@@ -4954,6 +4954,28 @@ test('shared asset with just one higher quality point is immediately queued for 
  assert.equal(summary.runtimeVerificationGranted,false);
 });
 
+test('shared replacement preserves the current role despite a higher unrelated family score',()=>{
+ const registry={assets:[
+  {id:'lamp',family:'PROP',role:'LANTERN',subfamily:'LAMP',consumerGameIds:['demo'],qualityScore:42,license:'project-original',masterGlb:'assets/native/lamp.glb'},
+  {id:'record',family:'PROP',role:'LORE_RECORD',subfamily:'DOCUMENT',qualityScore:99,license:'project-original',masterGlb:'assets/native/record.glb'},
+  {id:'better-lamp',family:'PROP',role:'LANTERN',subfamily:'LAMP',qualityScore:43,license:'project-original',masterGlb:'assets/native/better-lamp.glb'}
+ ]};
+ const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item',registry});
+ const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
+ assert.equal(upgrade?.assetId,'better-lamp');
+ assert.equal(upgrade?.replacesCandidateAssetId,'lamp');
+ const unrelatedOnly=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item',registry:{assets:registry.assets.slice(0,2)}});
+ assert.equal(unrelatedOnly.nextActions.some(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'),false);
+});
+
+test('shared replacement cannot exchange a UI panel for a higher scored intro',()=>{
+ const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'ui',registry:{assets:[
+  {id:'panel',family:'UI',role:'READABLE_PANEL',subfamily:'FRAME_PANEL',consumerGameIds:['demo'],qualityScore:42,license:'project-original'},
+  {id:'intro',family:'UI',subfamily:'INTRO',qualityScore:99,license:'project-original'}
+ ]}});
+ assert.equal(summary.nextActions.some(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'),false);
+});
+
 test('higher quality eligible shared asset beats lower quality with more role matches',()=>{
  const registry={assets:[
   {id:'current-prop',family:'PROP',role:'item',consumerGameIds:['demo'],qualityScore:42,license:'project-original',masterGlb:'assets/native/current-prop.glb'},
