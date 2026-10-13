@@ -4817,7 +4817,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -7232,7 +7232,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -9623,7 +9623,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -10116,9 +10116,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-COZY-STANDARD-DESIGN-20261012-7",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "novelGrammarBackfill": {
         "version": 5,
         "source": "CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009",
@@ -10134,7 +10134,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:33:52.988Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -10159,7 +10159,50 @@
         "evidencePath": "design/cozy-island/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T11:58:22.722Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T11:58:22.722Z",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/cozy-island/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "strictDesignReviewRefreshRequired": true,
+      "promotion": {
+        "from": "DEVELOPMENT_CONFIRMED",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/cozy-island",
+          "UNITY": "unity-games/cozy-island"
+        },
+        "designBaselineSource": "design/cozy-island/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-13T07:37:21.773Z"
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX"
     },
     {
       "version": 1,
@@ -12306,7 +12349,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -14192,7 +14235,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -16117,7 +16160,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -18024,7 +18067,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -20157,7 +20200,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -22583,7 +22626,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -24740,7 +24783,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -25760,7 +25803,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -26433,7 +26476,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:37:22.817Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -27105,7 +27148,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -27776,7 +27819,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -28449,7 +28492,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -29121,7 +29164,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:32:36.568Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -29794,7 +29837,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -30466,7 +30509,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -31139,7 +31182,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:32:36.568Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -31811,7 +31854,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:37:22.817Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -32483,7 +32526,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:22:20.011Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -35676,7 +35719,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -36081,7 +36124,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -39128,7 +39171,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-12T02:21:08.360Z"
       },
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -39517,7 +39560,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -42155,7 +42198,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -44813,7 +44856,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -46966,7 +47009,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -49600,7 +49643,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -51991,7 +52034,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -54180,7 +54223,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -56359,7 +56402,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -58524,7 +58567,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -60880,7 +60923,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -63118,7 +63161,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -65223,7 +65266,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -67860,7 +67903,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -70492,7 +70535,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -72848,7 +72891,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -75508,7 +75551,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -77701,7 +77744,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -79832,7 +79875,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -82026,9 +82069,9 @@
       "gameName": "개미 시뮬레이터",
       "status": "ACTIVE",
       "generation": "AUTO_MISSING_DESIGN_INTAKE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
       "REFERENCE_GAMES": [],
       "REFERENCE_INPUTS": [
@@ -84485,7 +84528,7 @@
       "MOBILE_FIRST": true,
       "autoMissingDesignIntake": true,
       "createdAt": "2026-10-07T07:35:07.296Z",
-      "updatedAt": "2026-10-12T00:05:09.094Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
       "novelGrammarBackfill": {
         "version": 5,
@@ -84540,7 +84583,7 @@
         "passThreshold": 80
       },
       "strictDesignReviewUpdatedAt": "2026-10-12T14:44:51.278Z",
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -84549,18 +84592,40 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/ant-simulator/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/ant-simulator",
+          "UNITY": "unity-games/ant-simulator"
+        },
+        "designBaselineSource": "design/ant-simulator/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-13T07:37:21.773Z"
       },
-      "strictDesignReviewRefreshRequired": true
+      "strictDesignReviewRefreshRequired": true,
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/ant-simulator/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/ant-simulator/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -84569,9 +84634,9 @@
       "gameName": "야생 생존",
       "status": "ACTIVE",
       "generation": "AUTO_MISSING_DESIGN_INTAKE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
       "REFERENCE_GAMES": [],
       "REFERENCE_INPUTS": [
@@ -86999,7 +87064,7 @@
       "MOBILE_FIRST": true,
       "autoMissingDesignIntake": true,
       "createdAt": "2026-10-07T07:35:07.296Z",
-      "updatedAt": "2026-10-09T16:57:34.175Z",
+      "updatedAt": "2026-10-13T07:37:21.773Z",
       "reactivatedBy": "AUTO_MISSING_DESIGN_INTAKE_2026-09-25",
       "novelGrammarBackfill": {
         "version": 5,
@@ -87053,7 +87118,49 @@
         "evidencePath": "design/wild-survival/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-12T14:44:51.278Z"
+      "strictDesignReviewUpdatedAt": "2026-10-12T14:44:51.278Z",
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/wild-survival/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/wild-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/wild-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/wild-survival",
+          "UNITY": "unity-games/wild-survival"
+        },
+        "designBaselineSource": "design/wild-survival/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-13T07:37:21.773Z"
+      }
     }
   ],
   "seedMaterials": [
@@ -92709,7 +92816,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-12T11:17:57.187Z",
+  "updatedAt": "2026-10-13T07:37:21.773Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
