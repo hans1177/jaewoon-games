@@ -135,11 +135,11 @@ test('central production runtime keeps independent Roblox and Unity Web QA witho
   assert.match(development,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
   assert.match(development,/eligible_json:/);
   assert.doesNotMatch(development,/unity_web_json:/);
-  assert.match(development,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(development,/gh workflow run company-development-roblox-runtime\.yml/);
   assert.match(development,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-  assert.doesNotMatch(development,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
+  assert.doesNotMatch(development,/gh workflow run (?:company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.doesNotMatch(development,/company-development-web-bootstrap\.mjs/);
@@ -502,7 +502,7 @@ test('central native planner suppresses already-active per-game child dispatches
   assert.match(development,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
   assert.match(development,/roblox_count=/);
   assert.match(development,/unity_count=/);
-  assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.roblox_json\)/);
+  assert.match(development,/ROBLOX_GAME_IDS: \$\{\{ needs\.native-plan\.outputs\.roblox_json \}\}/);
   assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.unity_json\)/);
 });
 

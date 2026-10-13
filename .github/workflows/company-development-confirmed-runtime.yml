@@ -258,7 +258,7 @@ jobs:
           };
           const currentControlSha=String(process.env.CURRENT_CONTROL_SHA||'').trim();
           if(!/^[a-f0-9]{40}$/i.test(currentControlSha))throw new Error('ROBLOX_CURRENT_CONTROL_SHA_REQUIRED');
-          const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ',currentControlSha);
+          const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ');
           const activeUnity=activeIds('/tmp/active-unity-native-runs.json','Unity runtime · ');
           const nativeIds=[],robloxIds=[],unityIds=[],blockedIds=[],grandfatheredIds=[];
           for(const item of rows){
@@ -301,21 +301,28 @@ jobs:
 
 
   dispatch-roblox:
-    name: Run ready Roblox upper-platform lanes
+    name: Dispatch independent Roblox game development
     needs: native-plan
     if: needs.native-plan.result == 'success' && needs.native-plan.outputs.roblox_count != '0'
-    strategy:
-      fail-fast: false
-      matrix:
-        game_id: ${{ fromJSON(needs.native-plan.outputs.roblox_json) }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 8
     permissions:
-      contents: write
-      pull-requests: write
       actions: write
-    uses: ./.github/workflows/company-development-roblox-runtime.yml
-    with:
-      game_id: ${{ matrix.game_id }}
-    secrets: inherit
+      contents: read
+    steps:
+      - name: Submit ready games to existing independent Roblox workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ROBLOX_GAME_IDS: ${{ needs.native-plan.outputs.roblox_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r game_id; do
+            [[ -n "$game_id" ]] || continue
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
+            echo "ROBLOX_INDEPENDENT_GAME_DISPATCH=$game_id"
+          done < <(jq -r '.[]' <<< "$ROBLOX_GAME_IDS")
+          echo 'ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'
 
   dispatch-unity:
     name: Unity Android development (owner hold)
@@ -334,22 +341,16 @@ jobs:
     secrets: inherit
 
   continue-cycle:
-    name: Continue DEVELOPMENT_CONFIRMED cycle after isolated game outcomes
+    name: Record independent development handoff
     needs: [native-plan, dispatch-roblox, dispatch-unity]
-    if: ${{ always() && needs.native-plan.result == 'success' && (needs.native-plan.outputs.roblox_count != '0' || needs.native-plan.outputs.unity_count != '0') }}
+    if: ${{ always() && needs.native-plan.result == 'success' }}
     runs-on: ubuntu-slim
     timeout-minutes: 5
     permissions:
-      actions: write
       contents: read
     steps:
-      - name: Re-open the next development wave regardless of individual game failure
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
+      - name: Record independent scheduling without immediate self-dispatch
         run: |
-          set -euo pipefail
-          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
-            -f trigger_source=CONTINUOUS_PER_GAME_ISOLATED_CYCLE
-          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=YES'
+          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_HANDOFF=INDEPENDENT_GAME_RUNS'
+          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=NO_IMMEDIATE_RECURSION'
           echo 'SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO'
