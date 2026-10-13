@@ -1282,11 +1282,11 @@ test('core QA supersedes main and PR revisions while preserving manual and other
   assert.equal(policy?.nonMainActiveRunPreserved,true);
   assert.equal(policy?.exactShaAuthorityPreserved,true);
   const concurrency=coreQaWorkflow.match(/^concurrency:\n([\s\S]*?)(?=^\S)/m)?.[1]||'';
-  assert.match(concurrency,/group: vibe2-core-qa-\$\{\{ github\.ref \}\}/);
+  assert.match(concurrency,/group: vibe2-core-qa-\$\{\{ github\.event_name == 'pull_request' && github\.ref \|\| github\.sha \}\}/);
   const cancellation=concurrency.match(/cancel-in-progress:\s*\$\{\{(.*?)\}\}/)?.[1];
   assert.ok(cancellation,'evaluate the actual workflow cancellation expression');
   for(const [event_name,ref,expected]of [
-    ['push','refs/heads/main',true],['pull_request','refs/pull/7680/merge',true],
+    ['push','refs/heads/main',false],['pull_request','refs/pull/7680/merge',true],
     ['push','refs/heads/topic',false],['workflow_dispatch','refs/heads/main',false],
     ['workflow_dispatch','refs/heads/topic',false],['schedule','refs/heads/main',false]
   ])assert.equal(runInNewContext(cancellation,{github:{event_name,ref}},{timeout:1000}),expected,event_name+' '+ref);
