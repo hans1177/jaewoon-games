@@ -1,7 +1,7 @@
 // 파일명: tools/company-minimum-design-contract.mjs
 import fs from 'node:fs';
 import path from 'node:path';
-import {pathToFileURL} from 'node:url';
+import {pathToFileURL,fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {validateDesignAuthoringContent} from './company-design-gate-scoring-v2.mjs';
 
@@ -46,6 +46,17 @@ export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=
   const unity=platformProfileReady(profiles.UNITY||{},'UNITY');
   const distinct=roblox&&unity&&JSON.stringify(profiles.ROBLOX)!==JSON.stringify(profiles.UNITY);
   const blockers=[];
+  // 기본설계에도 모든 게임 멀티 필수 정책을 적용한다. SINGLE은 디자이너가 확장 설계해야 한다.
+  const multiplayerPolicy=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../company-learning/platform-release-roadmap.json'),'utf8'))
+    ?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
+  const multiplayerMandatory=multiplayerPolicy.required===true&&multiplayerPolicy.scope==='ALL_ACTIVE_AND_NEW_GAMES';
+  const declaredMode=clean(content?.multiplayerMode).toUpperCase();
+  const profileMode=clean(content?.robloxBuildProfile?.playMode).toUpperCase();
+  const authoredMode=['COOP','COMPETITIVE','HYBRID'].includes(declaredMode)
+    ?declaredMode:['COOP','COMPETITIVE','HYBRID'].includes(profileMode)&&declaredMode!=='SINGLE'
+      ?profileMode:declaredMode;
+  if(multiplayerMandatory&&!['COOP','COMPETITIVE','HYBRID'].includes(authoredMode))
+    blockers.push('MINIMUM_MULTIPLAYER_DESIGN_EXTENSION_REQUIRED');
   if(!common)blockers.push('MINIMUM_COMMON_CORE_INCOMPLETE');
   if(!roblox)blockers.push('ROBLOX_PLATFORM_PROFILE_INCOMPLETE');
   if(!unity)blockers.push('UNITY_PLATFORM_PROFILE_INCOMPLETE');
@@ -74,7 +85,7 @@ export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=
   };
   return Object.freeze({
     version:1,
-    pass:common&&roblox&&unity&&distinct&&grammarReady,
+    pass:common&&roblox&&unity&&distinct&&grammarReady&&(!multiplayerMandatory||['COOP','COMPETITIVE','HYBRID'].includes(authoredMode)),
     commonCoreReady:common,creativeGrammarReady:grammarReady,
     platformProfiles:{ROBLOX:roblox,UNITY:unity,distinct},
     releaseChecklist:Object.freeze(releaseChecklist),
