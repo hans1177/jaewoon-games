@@ -156,10 +156,19 @@ local function stripAsset(root)
  end
  return root
 end
+-- 로그: 같은 자산 로딩 실패는 한 번만 기록한다.
+local assetLoadFailures={}
 local function loadAsset(id)
  if assetCache[id]then return assetCache[id]end
  local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,id)
- if not ok or not result then return nil end
+ if not ok or not result then
+  local signature=ok and "EMPTY_ASSET" or "ASSET_ACCESS_OR_LOAD_ERROR"
+  if not assetLoadFailures[id]then
+   assetLoadFailures[id]=signature
+   warn("NPC_ASSET_LOAD_FAILURE assetId="..tostring(id).." FAILURE_STAGE=ROBLOX_NATIVE_ASSET_LOAD FAILURE_SIGNATURE="..signature)
+  end
+  return nil,signature
+ end
  stripAsset(result);result.Parent=nil;assetCache[id]=result;return result
 end
 local function chooseMesh(assetId,keywords,seed)
@@ -259,8 +268,13 @@ end
 
 local function bindNativeNpcVisual(rootPart,assetId)
  if not assetId or not rootPart.Parent then return end
- local sourceModel=loadAsset(assetId)
- if not sourceModel or not rootPart.Parent then rootPart:SetAttribute("NativeActorMissing",true);return end
+ local sourceModel,loadFailure=loadAsset(assetId)
+ if not sourceModel or not rootPart.Parent then
+  rootPart:SetAttribute("NativeActorMissing",true)
+  rootPart:SetAttribute("NativeActorFailureStage","ROBLOX_NATIVE_ASSET_LOAD")
+  rootPart:SetAttribute("NativeActorFailureSignature",loadFailure or "ACTOR_ROOT_REMOVED")
+  return
+ end
  local native=sourceModel:Clone();native.Name="NativeLibraryActor"
  local originalParts={}
  for _,child in ipairs(rootPart:GetChildren())do if child:IsA("BasePart")then table.insert(originalParts,child)end end
@@ -281,12 +295,20 @@ local function bindNativeNpcVisual(rootPart,assetId)
   end
   if count==0 then error("NATIVE_ACTOR_GEOMETRY_MISSING")end
  end)
- if not ok or not rootPart.Parent then native:Destroy();rootPart:SetAttribute("NativeActorMissing",true);return end
+ if not ok or not rootPart.Parent then
+  native:Destroy();rootPart:SetAttribute("NativeActorMissing",true)
+  rootPart:SetAttribute("NativeActorFailureStage","ROBLOX_NATIVE_ACTOR_BIND")
+  rootPart:SetAttribute("NativeActorFailureSignature",rootPart.Parent and "INVALID_OR_OVER_BUDGET_GEOMETRY" or "ACTOR_ROOT_REMOVED")
+  return
+ end
  native:SetAttribute("SourceAssetId",tostring(assetId));native:SetAttribute("RuntimeVisualReview","PENDING")
  native:SetAttribute("MotionRetargetReview","PENDING")
  native.Parent=rootPart
  for _,part in ipairs(originalParts)do part.Transparency=1 end
  rootPart:SetAttribute("NativeActorMissing",false)
+ rootPart:SetAttribute("NativeActorFailureStage",nil)
+ rootPart:SetAttribute("NativeActorFailureSignature",nil)
+ rootPart:SetAttribute("NativeActorBindingState","BOUND_UNVERIFIED")
 end
 
 local function label(target,text,color,maxDistance)
