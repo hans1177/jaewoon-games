@@ -710,6 +710,27 @@ local function applyPlayerAppearance(p)
  if armor>=2 then fit(head,"ArmorHelmet",Vector3.new(1.85,.62,1.8),CFrame.new(0,.54,0),tint)end
  if decoration>=1 then fit(head,"HatCrest",Vector3.new(.2,.76,.48),CFrame.new(0,1.02,-.15),Color3.fromRGB(238,183,75),Enum.Material.Neon)end
  if decoration>=2 then fit(torso,"ClothCape",Vector3.new(1.9,2.4,.18),CFrame.new(0,-.55,.73),tint,Enum.Material.Fabric)end
+ -- 라이브러리의 3개 외형군이 방어구 단계와 무관하게 즉시 구별되도록 기본 실루엣 제공.
+ if archetype==1 then
+  fit(torso,"SamuraiKimono",Vector3.new(2.25,1.95,.34),CFrame.new(0,-.15,-.54),Color3.fromRGB(37,74,116),Enum.Material.Fabric)
+  fit(torso,"SamuraiLacquerBelt",Vector3.new(2.35,.34,.48),CFrame.new(0,-.93,-.52),Color3.fromRGB(173,61,54))
+  fit(head,"SamuraiTopKnot",Vector3.new(.64,.54,.63),CFrame.new(0,.84,0),Color3.fromRGB(89,54,42),Enum.Material.Fabric)
+  if armor>=1 then
+   fit(head,"SamuraiKabuto",Vector3.new(1.75,.42,1.88),CFrame.new(0,.53,0),Color3.fromRGB(73,71,77))
+  end
+ elseif archetype==2 then
+  fit(torso,"WuxiaRobe",Vector3.new(2.25,2.55,.33),CFrame.new(0,-.48,-.56),Color3.fromRGB(37,167,155),Enum.Material.Fabric)
+  fit(torso,"WuxiaSash",Vector3.new(2.33,.24,.45),CFrame.new(0,-.82,-.57),Color3.fromRGB(230,218,157),Enum.Material.Fabric)
+  if decoration>=1 then
+   fit(head,"WuxiaStrawHat",Vector3.new(3,.2,3),CFrame.new(0,.77,0),Color3.fromRGB(215,188,132),Enum.Material.Wood)
+  end
+ else
+  fit(torso,"KnightTabard",Vector3.new(2.18,2.05,.3),CFrame.new(0,-.22,-.54),Color3.fromRGB(231,226,207),Enum.Material.Fabric)
+  fit(torso,"KnightBlueCrest",Vector3.new(.54,.73,.1),CFrame.new(0,.05,-.76),Color3.fromRGB(51,93,160),Enum.Material.SmoothPlastic)
+  if armor>=1 then fit(head,"KnightVisor",Vector3.new(1.65,.33,.65),CFrame.new(0,.15,-.54),Color3.fromRGB(194,209,219))end
+ end
+ c:SetAttribute("OutfitRevision","MODULAR_ARCHETYPE_V3")
+
   c:SetAttribute("AvatarStyle",choice)
  local head=c:FindFirstChild("Head")
  if head then
@@ -1896,7 +1917,7 @@ remote.OnServerEvent:Connect(function(p,a)
    elseif a=="CUSTOMIZE_ARMOR" then key="AvatarArmor";maxVal=2;minimum=0
    else key="AvatarDecoration";maxVal=2;minimum=0 end
    p:SetAttribute(key,((math.floor(n(p,key,minimum))-minimum+1)%(maxVal-minimum+1))+minimum)
-   applyPlayerAppearance(p);accepted=true;feedback(p,"CUSTOMIZE")
+   applyPlayerAppearance(p);msg(p,"캐릭터 외형 변경 완료");accepted=true;feedback(p,"CUSTOMIZE")
   end
  elseif a==C.Actions.HOUSING_BUILD or a==C.Actions.HOUSING_UPGRADE or a==C.Actions.HOUSING_FURNISH or a==C.Actions.HOUSING_MODULE or a==C.Actions.HOUSING_VISIT then accepted=houseAction(p,a)
  elseif a==C.Actions.BUY_WEAPON then accepted=purchaseMerchantEquipment(p,"WEAPON")
