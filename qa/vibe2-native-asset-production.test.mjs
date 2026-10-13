@@ -4862,6 +4862,8 @@ test('Roblox native asset uses are counted while unconsumed configuration atoms 
 // RPG 공용 UI 자산 개선은 게임 상태가 아닌 표시 전환만 다룬다.
 test('shared RPG menu transition is interruptible and preserves direct interaction',()=>{
   const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
+  const consumer=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
+  assert.equal(consumer,source,'actual game source must match its shared library asset');
   assert.match(source,/TweenService:Create\(overlay,TweenInfo\.new\(\.18/);
   assert.match(source,/entranceTween:Cancel\(\)/);
   assert.match(source,/panelTween:Cancel\(\)/);
