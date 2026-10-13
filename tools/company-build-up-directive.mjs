@@ -545,7 +545,7 @@ export function extractDesignContext(record={}){
     subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
     ownerFeatureChanges:Array.isArray(d?.ownerFeatureChanges)?d.ownerFeatureChanges:[],
     detailedDesign:asObject(d?.detailedDesign),
-    detailedAssetLibraryHandoff:asObject(record?.detailedAssetLibraryHandoff||d?.detailedAssetLibraryHandoff),
+    ...((record?.detailedAssetLibraryHandoff||d?.detailedAssetLibraryHandoff)?.platformSelection?{detailedAssetLibraryHandoff:asObject(record?.detailedAssetLibraryHandoff||d?.detailedAssetLibraryHandoff)}:{}),
     tutorialPlan:asObject(d?.tutorialPlan),
     presentationPlan:asObject(d?.presentationPlan),
     interfacePlan:asObject(d?.interfacePlan),
@@ -2544,7 +2544,7 @@ export function buildGameSpecificBuildUpDirective({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
       // 오토 바이옴의 월드 지오메트리·생태계 입력은 검증된 동일 게임 설계에서 가져온다.
       detailedDesign:design.detailedDesign,
-      detailedAssetLibraryHandoff:design.detailedAssetLibraryHandoff,
+      ...(design.detailedAssetLibraryHandoff?.platformSelection?{detailedAssetLibraryHandoff:design.detailedAssetLibraryHandoff}:{}),
       tutorialPlan:design.tutorialPlan,
       presentationPlan:design.presentationPlan,
       interfacePlan:design.interfacePlan,
