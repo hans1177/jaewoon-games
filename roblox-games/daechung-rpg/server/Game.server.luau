@@ -771,6 +771,25 @@ local function applyPlayerAppearance(p)
  if armor>=2 then fit(head,"ArmorHelmet",Vector3.new(1.85,.62,1.8),CFrame.new(0,.54,0),tint)end
  if decoration>=1 then fit(head,"HatCrest",Vector3.new(.2,.76,.48),CFrame.new(0,1.02,-.15),Color3.fromRGB(238,183,75),Enum.Material.Neon)end
  if decoration>=2 then fit(torso,"ClothCape",Vector3.new(1.9,2.4,.18),CFrame.new(0,-.55,.73),tint,Enum.Material.Fabric)end
+ -- Guaranteed visible silhouette per library archetype, including when an imported GLB is restricted.
+ -- These local cosmetic pieces use the same 3-archetype vocabulary as the supplied previews.
+ if archetype==1 then
+  fit(torso,"SamuraiRedLamellar",Vector3.new(2.28,1.75,.38),CFrame.new(0,-.1,-.69),Color3.fromRGB(148,47,45))
+  fit(torso,"SamuraiObi",Vector3.new(2.38,.32,1.55),CFrame.new(0,-.9,0),Color3.fromRGB(220,183,120),Enum.Material.Fabric)
+  fit(head,"SamuraiHelmBand",Vector3.new(1.87,.42,1.88),CFrame.new(0,.51,0),Color3.fromRGB(58,60,69))
+  fit(head,"SamuraiCrestLeft",Vector3.new(.16,.72,.22),CFrame.new(-.48,1,.0)*CFrame.Angles(0,0,math.rad(-28)),Color3.fromRGB(224,179,86))
+  fit(head,"SamuraiCrestRight",Vector3.new(.16,.72,.22),CFrame.new(.48,1,.0)*CFrame.Angles(0,0,math.rad(28)),Color3.fromRGB(224,179,86))
+ elseif archetype==2 then
+  fit(torso,"WuxiaTurquoiseOuter",Vector3.new(2.25,2.22,.22),CFrame.new(0,-.42,-.62),Color3.fromRGB(44,170,150),Enum.Material.Fabric)
+  fit(torso,"WuxiaCrossSash",Vector3.new(.38,2.25,.15),CFrame.new(0,.0,-.77)*CFrame.Angles(0,0,math.rad(32)),Color3.fromRGB(232,213,160),Enum.Material.Fabric)
+  fit(head,"WuxiaStrawHatBrim",Vector3.new(.24,2.86,2.86),CFrame.new(0,.86,0)*CFrame.Angles(0,0,math.rad(90)),Color3.fromRGB(218,195,139),Enum.Material.Fabric)
+  fit(head,"WuxiaHatCrown",Vector3.new(.38,1.15,1.15),CFrame.new(0,1.04,0)*CFrame.Angles(0,0,math.rad(90)),Color3.fromRGB(205,177,126),Enum.Material.Fabric)
+ else
+  fit(torso,"KnightIvoryBreastplate",Vector3.new(2.32,2.12,.35),CFrame.new(0,-.22,-.73),Color3.fromRGB(202,211,224))
+  fit(head,"KnightIvoryHelm",Vector3.new(1.98,1.42,1.9),CFrame.new(0,.49,0),Color3.fromRGB(188,198,214))
+  fit(head,"KnightVisorTrim",Vector3.new(1.65,.25,.22),CFrame.new(0,.26,-1.02),Color3.fromRGB(79,89,109))
+  fit(c:FindFirstChild("LeftHand")or c:FindFirstChild("Left Arm"),"KnightShield",Vector3.new(.35,2.2,1.45),CFrame.new(-.35,-.25,-.38),Color3.fromRGB(157,171,194))
+ end
  -- 라이브러리의 3개 외형군이 방어구 단계와 무관하게 즉시 구별되도록 기본 실루엣 제공.
  if archetype==1 then
   fit(torso,"SamuraiKimono",Vector3.new(2.25,1.95,.34),CFrame.new(0,-.15,-.54),Color3.fromRGB(37,74,116),Enum.Material.Fabric)
@@ -2035,7 +2054,7 @@ local function validateCharacterFoundation(p,c)
  end)
 end
 
-workspace:SetAttribute("DaechungRuntimeRevision","20261014-FIX4")
+workspace:SetAttribute("DaechungRuntimeRevision","20261014-FIX5")
 buildWorld()
 
 local function bindPlayer(p)
