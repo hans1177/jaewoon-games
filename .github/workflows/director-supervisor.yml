@@ -479,6 +479,17 @@ jobs:
               echo "DIRECTOR_INDEPENDENT_GAME_SCHEDULER_PRESERVED=${run_id}:${reason}"
               continue
             fi
+            # Roblox game runtime owns its source, QA and release checkpoints independently.
+            # Director must never discard an unstarted per-game handoff based on title/age.
+            run_path="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.path' 2>/dev/null || true)"
+            if [ -z "$run_path" ]; then
+              echo "DIRECTOR_RUNNER_DRAIN_UNVERIFIED_PATH_PRESERVED=${run_id}:${reason}"
+              continue
+            fi
+            if [[ "$run_path" == ".github/workflows/company-development-roblox-runtime.yml" || "$run_path" == ".github/workflows/company-development-roblox-runtime-continuation.yml" ]]; then
+              echo "DIRECTOR_INDEPENDENT_ROBLOX_RUNTIME_PRESERVED=${run_id}:${reason}"
+              continue
+            fi
             pre_cancel_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
             pre_cancel_active_jobs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=100" --jq '[.jobs[] | select(.status=="in_progress")] | length' 2>/dev/null || echo 0)"
             pre_cancel_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
