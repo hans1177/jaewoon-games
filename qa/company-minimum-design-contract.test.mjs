@@ -29,6 +29,17 @@ const base=()=>({
   }
 });
 
+test('all-game policy rejects SINGLE even when minimum design fields are otherwise complete',()=>{
+  const record=base();
+  record.content.multiplayerMode='SINGLE';
+  const verdict=evaluateMinimumDesignContract(record);
+  assert.equal(verdict.pass,false);
+  assert.ok(verdict.blockers.includes('MINIMUM_MULTIPLAYER_DESIGN_EXTENSION_REQUIRED'));
+  const coop=evaluateMinimumDesignContract(base());
+  assert.equal(coop.blockers.includes('MINIMUM_MULTIPLAYER_DESIGN_EXTENSION_REQUIRED'),false);
+});
+
+
 test('minimum design requires common core and both distinct platform profiles',()=>{
   const gate=evaluateMinimumDesignContract(base());
   assert.equal(gate.pass,true);
