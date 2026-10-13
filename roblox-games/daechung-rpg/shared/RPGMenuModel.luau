@@ -13,18 +13,30 @@ function Model.hudLayout(width, height)
  local w=math.max(240,width);local h=math.max(240,height)
  local landscape=w>h and h<500
  local function box(x,y,bw,bh)return {x=x,y=y,width=bw,height=bh}end
- local noticeWidth=landscape and math.max(120,w-296)or math.min(480,w-16)
- local noticeX=landscape and 148 or (w-noticeWidth)/2
- local noticeY=landscape and 84 or 140
+ if landscape then
+  -- 가로 모바일: 중앙 전투 시야는 비우고 모든 상시 UI를 가장자리에 고정.
+  local left=math.min(248,math.floor(w*.27))
+  local right=math.min(132,math.floor(w*.16))
+  local noticeW=math.min(340,math.max(180,math.floor(w*.34)))
+  return {
+   landscape=true,
+   stats=box(8,8,left,64),party=box(w-right-8,8,right,55),
+   menu=box(8,78,112,38),village=box(8,122,112,38),
+   notice=box(math.floor((w-noticeW)/2),8,noticeW,45),
+   combat=box(w-142,math.max(100,h-196),132,126),
+   class=box((w-math.min(380,w-16))/2,(h-math.min(230,h-16))/2,math.min(380,w-16),math.min(230,h-16))
+  }
+ end
+ local noticeWidth=math.min(340,w-16)
  return {
-  landscape=landscape,
-  stats=box(8,8,w-140,72),party=box(w-124,8,116,64),
-  menu=box(8,landscape and 88 or 84,128,52),
-  village=box(landscape and 8 or w-160,landscape and 148 or 84,landscape and 128 or 152,52),
-  notice=box(noticeX,noticeY,noticeWidth,math.max(52,math.min(148,h-noticeY-(landscape and 16 or 232)))),
-  combat=box(w-136,math.max(80,h-224),128,116),
+  landscape=false,
+  stats=box(8,8,math.min(220,w-140),68),party=box(w-122,8,114,58),
+  menu=box(8,82,110,42),village=box(w-132,82,124,42),
+  notice=box((w-noticeWidth)/2,132,noticeWidth,66),
+  combat=box(w-138,math.max(210,h-226),128,126),
   class=box((w-math.min(380,w-16))/2,(h-math.min(230,h-16))/2,math.min(380,w-16),math.min(230,h-16))
  }
+
 end
 
 function Model.hudMessage(menuOpen, classOpen, startupOpen, bossActive, speechActive, objectActive, tipsActive)
