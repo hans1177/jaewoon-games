@@ -44,5 +44,7 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-neuron-refill-active\.txt\)"/);
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-regression-refill-active\.txt\)"/);
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-fanin-refill-active\.txt\)"/);
+  assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.run_id,/);
+  assert.doesNotMatch(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.sha,/);
   assert.match(workflow,/cancel-in-progress: false/);
 });
