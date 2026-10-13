@@ -47,9 +47,9 @@ const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
 const INTERNAL_ASSET_API_SIGNATURE_CACHE=new Map();
 const INTERNAL_ASSET_TOOL_EXPORT_CACHE=new Map();
 const INTERNAL_ASSET_CACHE_MAX_ENTRIES=2048;
-function assertGameDevelopmentAuthority(){
+function assertGameDevelopmentAuthority({cwd=process.cwd()}={}){
   const owner=clean(process.env.VIBE2_GAME_DEVELOPMENT_OWNER||'VIBE2_VIBE3').toUpperCase();
-  const modelFree=readJson(path.resolve(process.cwd(),'company-learning/platform-release-roadmap.json'),{})?.ownerModelFreeProduction20261014?.productionModelCallsAllowed===false
+  const modelFree=readJson(path.resolve(cwd,'company-learning/platform-release-roadmap.json'),{})?.ownerModelFreeProduction20261014?.productionModelCallsAllowed===false
     ||clean(process.env.VIBE2_PRODUCTION_MODEL_CALLS_ENABLED).toLowerCase()==='false';
   const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||(modelFree?'DETERMINISTIC_ONLY':'LOCAL_OLLAMA')).toUpperCase();
   const codexRole=clean(process.env.VIBE2_CODEX_ROLE||'DISABLED').toUpperCase();
@@ -6722,7 +6722,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const effectiveModel=modelRouting.selectedModel;
   const developmentAuthority=target==='system'
     ?{owner:'VIBE2_VIBE3',provider:'LOCAL_OLLAMA',model:DEFAULT_MODEL,role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
-    :assertGameDevelopmentAuthority();
+    :assertGameDevelopmentAuthority({cwd});
   const bootstrap=sourceRootBootstrapAllowed(order,target,sourceRootRelative,responsibleFiles);
   const sourceRootExists=fs.existsSync(sourceRoot)&&fs.statSync(sourceRoot).isDirectory();
   if(!sourceRootExists&&!bootstrap)throw new Error(`source root 없음: ${sourceRootRelative}`);
