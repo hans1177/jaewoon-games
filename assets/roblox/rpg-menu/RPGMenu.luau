@@ -5,6 +5,7 @@ local Model = require(script.Parent:WaitForChild("RPGMenuModel"))
 local CommonUI = require(script.Parent:WaitForChild("RobloxCommonUI"))
 local Input = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
+local TweenService = game:GetService("TweenService")
 local Menu = {}
 local colors = {base=Color3.fromRGB(19,23,29),panel=Color3.fromRGB(29,35,43),card=Color3.fromRGB(39,47,56),gold=Color3.fromRGB(232,193,120),text=Color3.fromRGB(240,237,225),muted=Color3.fromRGB(171,184,192)}
 
@@ -56,6 +57,11 @@ function Menu.install(config,gui,player,options)
  local overlay=make("Frame",gui,"RPGSystemMenu",{Visible=false,Active=true,BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=.28,Size=UDim2.fromScale(1,1),ZIndex=50})
  local panel=make("Frame",overlay,"MenuPanel",{AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5),BackgroundColor3=colors.base,BorderSizePixel=0,ZIndex=51})
  round(panel,16)
+ -- Presentation only: interruptible entrance; never delays menu input or changes game state.
+ local entranceTween=nil
+ local function stopEntrance()
+  if entranceTween then entranceTween:Cancel();entranceTween=nil end
+ end
  make("UIStroke",panel,"Outline",{Color=colors.gold,Transparency=.55,Thickness=1})
  local title=label(panel,"MenuTitle","모험가의 배낭",22);title.Font=Enum.Font.GothamBold;title.Position=UDim2.fromOffset(18,8);title.Size=UDim2.new(1,-88,0,30)
  local balance=label(panel,"MenuBalance","",13);balance.TextColor3=colors.gold;balance.Position=UDim2.fromOffset(18,39);balance.Size=UDim2.new(1,-88,0,20)
@@ -298,7 +304,15 @@ function Menu.install(config,gui,player,options)
  setOpen=function(value)
   if value==opened then return end
   if value and options.canOpen and not options.canOpen()then return end
+  stopEntrance()
   opened=value;overlay.Visible=value;toggle.Visible=not value;gui:SetAttribute("RPGMenuOpen",value)
+  if value then
+   overlay.BackgroundTransparency=.45
+   entranceTween=TweenService:Create(overlay,TweenInfo.new(.18,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=.28})
+   entranceTween:Play()
+  else
+   overlay.BackgroundTransparency=.28
+  end
   if options.onOpen then options.onOpen(value)end
   if value then previousSelection=GuiService.SelectedObject;refresh();if Input.GamepadEnabled then GuiService.SelectedObject=tabButtons[activeTab]end
   else GuiService.SelectedObject=previousSelection and previousSelection.Parent and previousSelection or nil end
@@ -342,6 +356,7 @@ function Menu.install(config,gui,player,options)
  table.insert(connections,player.ChildAdded:Connect(function(child)if child:IsA("Backpack")then watchTools()end end))
  table.insert(connections,player.CharacterAdded:Connect(function()setOpen(false);watchTools()end))
  table.insert(connections,gui.Destroying:Connect(function()
+  stopEntrance()
   for _,c in ipairs(connections)do c:Disconnect()end
   for _,c in ipairs(toolConnections)do c:Disconnect()end
  end))
