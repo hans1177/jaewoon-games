@@ -103,8 +103,8 @@ function Menu.install(config,gui,player,options)
  local function selectItem(row)
   selectedId=row.id;selectedTool=row.tool
   detailTitle.Text=row.name..(row.tier and (" · T"..row.tier) or "")
-  detailText.Text=row.description or "배낭에 보관 중인 도구야. 장착한 뒤 월드에서 사용할 수 있어."
-  itemAction.Visible=true;itemAction.Active=row.tool~=nil;itemAction.AutoButtonColor=row.tool~=nil
+  detailText.Text=row.description or (row.tool and "배낭에서 선택한 도구야. 장착한 뒤 월드에서 사용할 수 있어." or "현재 장비 상태를 확인할 수 있어.")
+  itemAction.Visible=row.tool~=nil;itemAction.Active=row.tool~=nil;itemAction.AutoButtonColor=row.tool~=nil
   itemAction.Text=row.tool and (row.equipped and "장착 해제" or "장착") or "현재 착용 중"
   for id,b in pairs(itemButtons)do b.BackgroundColor3=id==row.id and Color3.fromRGB(73,65,48) or colors.card;b.SelectedRing.Visible=id==row.id end
  end
