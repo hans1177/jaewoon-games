@@ -403,7 +403,7 @@ for index, action in ipairs(Config.Actions) do
 end
 local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
 local function render()
-  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d · 서버 %d명", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1, participantCount)
+  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d · 서버 %d명 · 공동 방어 %d웨이브 · 활동 %d명", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1, participantCount, gui:GetAttribute("CoopCompletedWaves") or 0, gui:GetAttribute("CoopActiveDefenders") or 0)
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
@@ -415,6 +415,11 @@ remote.OnClientEvent:Connect(function(eventName, snapshot)
   gui:SetAttribute("ParticipantCount", participantCount)
   gui:SetAttribute("MultiplayerSyncAt", os.clock())
   gui:SetAttribute("MultiplayerSnapshotVersion", tonumber(snapshot.Version) or 1)
+  if typeof(snapshot.SharedObjective) == "table" then
+    local objective = snapshot.SharedObjective
+    gui:SetAttribute("CoopCompletedWaves", math.max(0, tonumber(objective.CompletedWavesTogether) or 0))
+    gui:SetAttribute("CoopActiveDefenders", math.max(0, tonumber(objective.ActiveDefenders) or 0))
+  end
   render()
 end)
 
