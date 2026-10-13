@@ -135,13 +135,19 @@ function expectationMetric(spec={},cycle=1,fallback={}){
   return Number.isFinite(max)&&max>0?Math.min(max,value):value;
 }
 const ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE=new Map();
+const ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE_MAX_ENTRIES=64;
 function assetLibrarySourceSnapshot(repoRoot,relativePath=COMPANY_ASSET_LIBRARY_PATH){
   const assetLibraryPath=clean(relativePath)||COMPANY_ASSET_LIBRARY_PATH;
   const file=path.resolve(repoRoot,assetLibraryPath);
   let stat=null;
   try{stat=fs.statSync(file);}catch{}
   const cached=ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.get(file);
-  if(cached&&cached.mtimeMs===(stat?.mtimeMs??null)&&cached.size===(stat?.size??0))return cached.snapshot;
+  if(cached&&cached.mtimeMs===(stat?.mtimeMs??null)&&cached.size===(stat?.size??0)){
+    // Retain frequently used repository snapshots without retaining every transient checkout.
+    ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.delete(file);
+    ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.set(file,cached);
+    return cached.snapshot;
+  }
   const assetLibrary=readJson(file,null);
   const assets=Array.isArray(assetLibrary?.assets)?assetLibrary.assets:[];
   const families=[...new Set(assets.map(row=>clean(row?.family||row?.category).toUpperCase()).filter(Boolean))].sort();
@@ -153,7 +159,11 @@ function assetLibrarySourceSnapshot(repoRoot,relativePath=COMPANY_ASSET_LIBRARY_
     families:Object.freeze(families),
     familyCount:families.length
   });
+  ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.delete(file);
   ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.set(file,Object.freeze({mtimeMs:stat?.mtimeMs??null,size:stat?.size??0,snapshot}));
+  while(ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.size>ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE_MAX_ENTRIES){
+    ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.delete(ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.keys().next().value);
+  }
   return snapshot;
 }
 export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle=1,phase='BUILD_UP',focusPillar=''}={}){
