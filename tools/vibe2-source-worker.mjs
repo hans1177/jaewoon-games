@@ -3744,8 +3744,10 @@ function universalAssetWorkerGuidance(order={}) {
   const selected=Object.entries(loadout?.families||{}).map(([family,atoms])=>family+'='+((atoms||[]).map(clean).filter(Boolean).join('|')||'NONE')).join('; ');
   const customization=order?.assetProduction?.assetCustomization;
   const automaticBinding=order?.assetProduction?.automaticAssetBindingWork||null;
+  const detailedReview=order?.assetProduction?.detailedAssetCandidateReview||null;
   return [
     '[UNIVERSAL ASSET-FIRST UPGRADE CONTRACT]',
+    detailedReview?.candidateCount>0?'[DETAILED DESIGN LIBRARY HANDOFF] '+JSON.stringify(detailedReview)+'. These are historical design candidates, not approved source bindings. Re-check every ID against the current library, source owner, platform, role, rig, license and style before any replacement. Do not automatically replace absent, unverified or incompatible assets; use the existing GRAPHICS_PRODUCTION and native QA path. Source metadata alone never counts as APPLIED.':'' ,
     automaticBinding?.enabled===true
       ?'[AUTOMATIC ASSET BINDING / CANONICAL VIBE] '+JSON.stringify(automaticBinding)+
        '. Follow the existing asset selection and exact current game source consumers on EVERY BUILD_UP. Apply NATIVE_SOURCE_BINDING_REQUIRED only to compatible existing ownership in this task writable scope; reuse SOURCE_BOUND_RUNTIME_QA_REQUIRED without duplicate recreation. Route AUTHORING_REQUIRED or SOURCE_ASSET_REQUIRED to the existing asset authoring responsibility, never fabricate a native file. Preserve source hashes, saved game, combat, progression and server authority. Runtime and positive-learning PASS require exact artifact and independent engine evidence. Do not create a separate runner, queue, wrapper or shadow pipeline.'
