@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-13T02:20:17.933Z",
+  "updatedAt": "2026-10-13T02:24:54.585Z",
   "games": [
     {
       "gameId": "fantasy-survival",
@@ -1162,14 +1162,14 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": true,
+          "technicalReady": false,
           "internalReleaseState": "NATIVE_DEVELOPMENT",
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -1193,7 +1193,7 @@
             "artifactIdentity": "sha256:8e67cd2be034cab51075a2b2428b244c584d8cd88c1fd9e534900adae419e3ec",
             "verifiedAt": null
           },
-          "internalReleasePublished": true,
+          "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -1210,7 +1210,7 @@
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": true,
+              "multiplayer": false,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -1227,6 +1227,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
+              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -1236,7 +1237,7 @@
             ],
             "candidateVersionNumber": 38
           },
-          "perpetualBuildupActive": true,
+          "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
               "bug-2cfb0882ff23baaef682",
@@ -1255,7 +1256,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": true
+          "rebuildRequired": false
         },
         {
           "platform": "UNITY",
