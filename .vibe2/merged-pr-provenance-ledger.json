@@ -39640,11 +39640,141 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b2283923af6cf882d713961f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-7990",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "e53e07b2c9000a80feb93bca5e9b33fefe58562a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 7990,
+        "baseBranch": "main",
+        "headBranch": "vibe2/mandatory-multiplayer-basic-design-20261013",
+        "baseSha": "e53e07b2c9000a80feb93bca5e9b33fefe58562a",
+        "headSha": "a386f4a5de533e5eb7cf0caeed644c38f2304d83",
+        "mergeCommitSha": "3e2800dc2833bda11e935091839c19395760b650",
+        "mergedAt": "2026-10-13T08:17:13Z",
+        "authorLogin": "hans1177",
+        "titleHash": "ad548eda14dcff937654d0546e117e5d723a7e9bfbda9aa613ec3d21b35b6d6f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/mandatory-multiplayer-basic-design-20261013",
+        "candidateSha": "a386f4a5de533e5eb7cf0caeed644c38f2304d83"
+      },
+      "changeStats": {
+        "changedFileCount": 8,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 93,
+        "deletedLineCount": 35,
+        "changedFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-minimum-design-contract.test.mjs",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "tools/company-minimum-design-contract.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/company-minimum-design-contract.test.mjs",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "tools/company-minimum-design-contract.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:7990",
+        "merge-commit:3e2800dc2833bda11e935091839c19395760b650",
+        "base-main:e53e07b2c9000a80feb93bca5e9b33fefe58562a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 319
+    "total": 320
   }
 }
