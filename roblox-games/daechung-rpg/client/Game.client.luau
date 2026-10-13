@@ -758,24 +758,18 @@ local function poseRig(rig,kind)
 end
 local previewTracks={}
 -- In live Roblox sessions no ephemeral KeyframeSequence registration is trusted.
+local activePoseToken=0
 local function playCommonMotion(atomId)
- return poseRig(p.Character,atomId)
-end
--- DEPRECATED_PREVIEW_PATH_DISABLED
-local function unusedPreviewMotion(atomId)
  local character=p.Character
- if not commonMotion then return poseRig(character,atomId) end
- local humanoid=character and character:FindFirstChildOfClass("Humanoid")
- local animator=humanoid and humanoid:FindFirstChildOfClass("Animator")
- if not animator or humanoid.RigType~=Enum.HumanoidRigType.R15 then return poseRig(character,atomId) end
- local previous=previewTracks[atomId]
- if previous then pcall(function()previous:Stop(.1);previous:Destroy()end)end
- local ok,track=pcall(function()
-  return commonMotion.PlayPreview(animator,atomId,{fadeTime=.1})
- end)
- if ok and track and track.IsPlaying then
-  previewTracks[atomId]=track
-  return true
+ local movingRoot=character and character:FindFirstChild("HumanoidRootPart")
+ if movingRoot then
+  activePoseToken+=1
+  local token=activePoseToken
+  local state=atomId=="DODGE_LEFT" and "CHASE" or atomId=="PARRY_PERFECT" and "ATTACK" or "ATTACK"
+  movingRoot:SetAttribute("MotionState",state)
+  task.delay(atomId=="HEAVY_ATTACK_1" and .62 or .4,function()
+   if token==activePoseToken and movingRoot.Parent then movingRoot:SetAttribute("MotionState","IDLE")end
+  end)
  end
  return poseRig(character,atomId)
 end
