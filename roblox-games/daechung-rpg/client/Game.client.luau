@@ -589,7 +589,7 @@ housingToggle.Name="HousingNav";housingToggle.Size=UDim2.fromOffset(80,42)
 housingToggle.AnchorPoint=Vector2.new(0,1);housingToggle.Position=UDim2.new(0,12,1,-14)
 local housingPanel=Instance.new("Frame")
 housingPanel.Name="HousingPanel";housingPanel.AnchorPoint=Vector2.new(.5,1)
-housingPanel.Size=UDim2.fromOffset(320,254);housingPanel.Position=UDim2.new(.5,0,1,-65)
+housingPanel.Size=UDim2.fromOffset(320,322);housingPanel.Position=UDim2.new(.5,0,1,-65)
 housingPanel.BackgroundColor3=Color3.fromRGB(21,35,41);housingPanel.BorderSizePixel=0
 housingPanel.Visible=false;housingPanel.ZIndex=40;housingPanel.Parent=gui;corner(housingPanel,18);stroke(housingPanel,.25)
 local housingTitle=Instance.new("TextLabel");housingTitle.Name="HousingTitle"
@@ -601,7 +601,7 @@ local housingInfo=Instance.new("TextLabel");housingInfo.Size=UDim2.new(1,-26,0,3
 housingInfo.Position=UDim2.fromOffset(13,49);housingInfo.BackgroundTransparency=1
 housingInfo.TextColor3=Color3.fromRGB(218,235,235);housingInfo.TextSize=14
 housingInfo.Font=Enum.Font.Gotham;housingInfo.TextWrapped=true;housingInfo.ZIndex=41;housingInfo.Parent=housingPanel
-local housingActions={{"집 건설",C.Actions.HOUSING_BUILD},{"집 확장",C.Actions.HOUSING_UPGRADE},{"가구 배치",C.Actions.HOUSING_FURNISH},{"집 방문",C.Actions.HOUSING_VISIT}}
+local housingActions={{"집 건설",C.Actions.HOUSING_BUILD},{"집 확장",C.Actions.HOUSING_UPGRADE},{"가구 배치",C.Actions.HOUSING_FURNISH},{"건축 모듈",C.Actions.HOUSING_MODULE},{"집 방문",C.Actions.HOUSING_VISIT}}
 for i,item in ipairs(housingActions)do
  local b=button(housingPanel,item[1],Color3.fromRGB(47,97,106))
  b.Name="HousingAction"..i;b.Size=UDim2.fromOffset(139,56)
@@ -609,16 +609,17 @@ for i,item in ipairs(housingActions)do
  b.ZIndex=42
  b.Activated:Connect(function()
   remote:FireServer(item[2])
-  if i==4 then housingPanel.Visible=false end
+  if i==5 then housingPanel.Visible=false end
  end)
 end
 local function refreshHousing()
  local level=tonumber(p:GetAttribute("HouseLevel"))or 0
  local items=tonumber(p:GetAttribute("HouseFurniture"))or 0
+ local modules=tonumber(p:GetAttribute("HouseModules"))or 0
  local cfg=C.Housing or {}
- housingInfo.Text=level==0 and ("미보유 · 건설 "..tostring(cfg.BuildCost or 80).."G") or ("집 Lv."..level.." / "..tostring(cfg.MaxLevel or 3).." · 가구 "..items.."/"..tostring(cfg.MaxFurniture or 8))
+ housingInfo.Text=level==0 and ("미보유 · 건설 "..tostring(cfg.BuildCost or 80).."G") or ("집 Lv."..level.." / "..tostring(cfg.MaxLevel or 3).." · 가구 "..items.."/"..tostring(cfg.MaxFurniture or 8).." · 건축 "..modules.."/"..tostring(cfg.MaxModules or 12))
 end
-for _,attribute in ipairs({"HouseLevel","HouseFurniture"})do p:GetAttributeChangedSignal(attribute):Connect(refreshHousing)end
+for _,attribute in ipairs({"HouseLevel","HouseFurniture","HouseModules"})do p:GetAttributeChangedSignal(attribute):Connect(refreshHousing)end
 refreshHousing()
 housingToggle.Activated:Connect(function()
  if startupOverlay.Parent~=nil or gui:GetAttribute("RPGMenuOpen")==true then return end
@@ -899,7 +900,7 @@ refreshHud=function()
  local compact=size.X<630
  housingToggle.Position=UDim2.new(0,12,1,compact and -14 or -20)
  housingToggle.Size=UDim2.fromOffset(compact and 76 or 104,compact and 40 or 46)
- housingPanel.Size=UDim2.fromOffset(math.min(320,size.X-22),254)
+ housingPanel.Size=UDim2.fromOffset(math.min(320,size.X-22),322)
  housingPanel.Position=UDim2.new(.5,0,1,compact and -60 or -76)
  stats.BackgroundColor3=Color3.fromRGB(22,43,49)
  party.BackgroundColor3=Color3.fromRGB(24,47,55)
