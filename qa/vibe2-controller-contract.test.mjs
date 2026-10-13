@@ -444,7 +444,7 @@ test('reserve probes model cache lookup-only and skips the dedicated warmup runn
   assert.match(modelBlock,/uses: \.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
   assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS/);
   assert.match(workerBlock,/needs: \[reserve, model_cache\]/);
-  assert.match(workerBlock,/if: always\(\) && needs\.reserve\.outputs\.worker_count != '0'/);
+  assert.match(workerBlock,/if: always\(\) && needs\.reserve\.result == 'success' && needs\.reserve\.outputs\.worker_count != '0'/);
   assert.match(workerBlock,/Restore and persist selected Vibe2 model cache/);
   assert.match(workerBlock,/uses: actions\/cache@v4/);
   assert.match(workerBlock,/Prepare cached Ollama runtime/);
