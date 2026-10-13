@@ -150,6 +150,24 @@ test('common source has per-motion baked bones, original foot contact QA, and cr
   assert.equal(py.status,0,py.stderr||py.stdout);
 });
 
+test('shared focused loop bakes its real skinned first pose into the final key and audits actual action channels',()=>{
+  assert.match(producer,/LOOP_FIRST_AUTHORED_POSES = \\{\\}/);
+  assert.match(producer,/assert authored_first is not None, 'LOOP_FIRST_AUTHORED_POSE_MISSING:' \\+ name/);
+  assert.match(producer,/apply_snapshot\\(authored_first\\)\\s*return/);
+  assert.match(producer,/LOOP_FIRST_AUTHORED_POSES\\[name\\] = pose_snapshot\\(\\)/);
+  assert.match(producer,/if clip_name in EXPORT_CLIPS:/);
+  assert.match(producer,/baked_loop_metrics=\\{\\}/);
+  assert.match(producer,/fcurve\\.evaluate\\(0\\)/);
+  assert.match(producer,/fcurve\\.evaluate\\(end_frame\\)/);
+  assert.match(producer,/LOOP_AUTHORED_CHANNELS_MISSING:/);
+  assert.match(producer,/'bakedLoopEndpoints':baked_loop_metrics/);
+  assert.match(producer,/'loopRotationMaxRad': 0\\.015/);
+  assert.match(producer,/'loopLocationMax': 0\\.004/);
+  assert.match(producer,/qa_failures\\.append\\('LOOP_CONTINUITY:'\\+clip_name\\)/);
+  assert.match(producer,/EXPORT_CLIPS = \\{ARGS\\.focus:CLIPS\\[ARGS\\.focus\\]\\}/);
+  assert.match(producer,/'productionVerified': False/);
+});
+
 test('shared master is registered in the original company library without platform QA forgery',()=>{
   const lib=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
   const asset=lib.assets.find(x=>x.id==='shared-humanoid-motion-v1');

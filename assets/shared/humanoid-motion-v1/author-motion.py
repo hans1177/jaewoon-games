@@ -1038,6 +1038,9 @@ GAIT_NAME_TO_PACE = {
     'common_sprint_hq': 'sprint',
     'common_backward_hq': 'backward',
 }
+# [루프 원본] 실제 첫 키의 접지 보정된 전체 스킨드 포즈를 마지막 키에 재사용한다.
+# 게임 이동/공격 타이밍은 그대로 두고 원본 관절 키만 연속되게 만든다.
+LOOP_FIRST_AUTHORED_POSES = {}
 GAIT_CONTACT_ANCHORS = {}
 for _pace in GAIT_STANCE_BY_PACE:
     for _foot, _phase in [('FootL', 0.0), ('FootR', 0.5)]:
@@ -1319,7 +1322,11 @@ def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
     if name in LOOP_CLIPS and t >= 1.0 - 1e-9:
-        t = 0.0
+        authored_first = LOOP_FIRST_AUTHORED_POSES.get(name)
+        assert authored_first is not None, 'LOOP_FIRST_AUTHORED_POSE_MISSING:' + name
+        assert len(authored_first) == len(RIG.pose.bones), 'LOOP_FIRST_AUTHORED_POSE_INCOMPLETE:' + name
+        apply_snapshot(authored_first)
+        return
     if name == 'common_idle_hq':
         idle_pose(t)
     elif name == 'common_walk_hq':
@@ -1390,6 +1397,9 @@ def animate(name, normalized_time):
         raise AssertionError('UNKNOWN_CLIP:' + name)
     if name in GAIT_NAME_TO_PACE:
         stabilize_planted_feet(t, GAIT_NAME_TO_PACE[name])
+    # [첫 프레임 원자성] 이후 QA 재평가로 원본 첫 키가 대체되지 않는다.
+    if name in LOOP_CLIPS and t <= 1e-9 and name not in LOOP_FIRST_AUTHORED_POSES:
+        LOOP_FIRST_AUTHORED_POSES[name] = pose_snapshot()
 
 
 for clip_name, duration in EXPORT_CLIPS.items():
@@ -1462,9 +1472,39 @@ def finite_snapshot(snapshot):
     )
 
 
+# [모션 QA] 선택된 단일 루프 액션의 실제 FCurve를 검사한다.
+# 선택하지 않은 루프는 기존 관절 샘플 QA를 유지하며 제작/검증 사실을 허위 표시하지 않는다.
 loop_metrics={}
+baked_loop_metrics={}
 for clip_name in LOOP_CLIPS:
-    loop_metrics[clip_name]=snapshot_distance(sampled_snapshot(clip_name,0.0),sampled_snapshot(clip_name,1.0))
+    procedural = snapshot_distance(sampled_snapshot(clip_name,0.0),sampled_snapshot(clip_name,1.0))
+    if clip_name in EXPORT_CLIPS:
+        action = bpy.data.actions[clip_name]
+        end_frame = round(CLIPS[clip_name] * FPS)
+        tracked_paths = tuple(f'pose.bones["{bone}"]' for bone in PRIMARY_QA_BONES)
+        rotation_delta = 0.0
+        location_delta = 0.0
+        tracked_channels = 0
+        for fcurve in action.fcurves:
+            if not fcurve.data_path.startswith(tracked_paths):
+                continue
+            delta = abs(float(fcurve.evaluate(0)) - float(fcurve.evaluate(end_frame)))
+            if fcurve.data_path.endswith('.rotation_euler'):
+                rotation_delta = max(rotation_delta, delta)
+                tracked_channels += 1
+            elif fcurve.data_path.endswith('.location'):
+                location_delta = max(location_delta, delta)
+                tracked_channels += 1
+        baked_loop_metrics[clip_name] = {
+            'rotationMaxRad': rotation_delta,
+            'locationMax': location_delta,
+            'verifiedChannelCount': tracked_channels,
+        }
+        procedural = {
+            'rotationMaxRad': max(procedural['rotationMaxRad'], rotation_delta),
+            'locationMax': max(procedural['locationMax'], location_delta),
+        }
+    loop_metrics[clip_name] = procedural
 
 transition_metrics={
     'startToWalk':snapshot_distance(sampled_snapshot('common_start_hq',1.0),sampled_snapshot('common_walk_hq',0.0)),
@@ -1533,6 +1573,8 @@ focused_action_joint_activity = {
 focused_action_activity_max = max(focused_action_joint_activity.values(),default=0.0)
 qa_failures=[]
 for clip_name,row in loop_metrics.items():
+    if clip_name in EXPORT_CLIPS and baked_loop_metrics.get(clip_name,{}).get('verifiedChannelCount',0) == 0:
+        qa_failures.append('LOOP_AUTHORED_CHANNELS_MISSING:'+clip_name)
     if row['rotationMaxRad']>QA_THRESHOLDS['loopRotationMaxRad'] or row['locationMax']>QA_THRESHOLDS['loopLocationMax']:
         qa_failures.append('LOOP_CONTINUITY:'+clip_name)
 for name,row in transition_metrics.items():
@@ -1570,6 +1612,7 @@ for clip_name,value in secondary_activity.items():
 qa_metrics={
     'thresholds':QA_THRESHOLDS,
     'loop':loop_metrics,
+    'bakedLoopEndpoints':baked_loop_metrics,
     'transitions':transition_metrics,
     'speedBlendRotationMaxRad':speed_blend_metrics,
     'leftRightPhaseErrorRad':phase_metrics,
