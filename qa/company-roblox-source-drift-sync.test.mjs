@@ -430,3 +430,11 @@ test('exact Roblox runs deduplicate before work without cancelling an active bui
   assert.match(freshness,/echo 'run=false' >> "\$GITHUB_OUTPUT"/);
   assert.match(freshness,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
 });
+
+test('existing Roblox source sync resumes F0 on explicit company runtime trigger without forging runtime pass',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/ROBLOX_SOURCE_SYNC_TRIGGER_GAME_ID/);
+  assert.match(workflow,/ROBLOX_SOURCE_SYNC_TRIGGER_RESTART_F0/);
+  assert.match(workflow,/steps\.changed\.outputs\.restart_f0/);
+  assert.match(workflow,/--force-f0-restart=true/);
+});
