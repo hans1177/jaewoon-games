@@ -35163,11 +35163,161 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_e58d151b1b3144db2b815b79",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-7930",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "e4ed9d209a8ab8e703f1f036074cf0335090f112",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 7930,
+        "baseBranch": "main",
+        "headBranch": "fix/roblox-preserved-source-contract-evidence",
+        "baseSha": "e4ed9d209a8ab8e703f1f036074cf0335090f112",
+        "headSha": "2eaca150f595f0804007118ebb6de134971bf51f",
+        "mergeCommitSha": "815c2c081bf33d1d2de9ee6ccbac98695fa35bd5",
+        "mergedAt": "2026-10-13T02:14:15Z",
+        "authorLogin": "hans1177",
+        "titleHash": "842fb757ae9d52ec0870113b31b8b0d695a3a071b96230e8f14bd68428d64d1e",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/roblox-preserved-source-contract-evidence",
+        "candidateSha": "2eaca150f595f0804007118ebb6de134971bf51f"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 18,
+        "addedLineCount": 883,
+        "deletedLineCount": 137,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "company-asset-library.json",
+          "company-learning/evidence/roblox-three-game-main-build-audit-20261013.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-development-roblox-source-reconcile.test.mjs",
+          "qa/daechung-rpg-native-renewal.test.mjs",
+          "qa/primary-three-world-visual-qa.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-development-roblox-source-reconcile.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "company-asset-library.json",
+          "company-learning/evidence/roblox-three-game-main-build-audit-20261013.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/company-development-roblox-source-reconcile.test.mjs",
+          "qa/daechung-rpg-native-renewal.test.mjs",
+          "qa/primary-three-world-visual-qa.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "roblox-games/daechung-rpg/client/Game.client.luau",
+          "roblox-games/daechung-rpg/server/Game.server.luau",
+          "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-development-roblox-source-reconcile.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:7930",
+        "merge-commit:815c2c081bf33d1d2de9ee6ccbac98695fa35bd5",
+        "base-main:e4ed9d209a8ab8e703f1f036074cf0335090f112"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 282
+    "total": 283
   }
 }
