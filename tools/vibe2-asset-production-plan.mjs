@@ -5008,7 +5008,7 @@ export function buildVibeAssetProductionPlan({
       const blocked=asset?.rightsPass===false||asset?.catalogActive===false
         ||/STALE|RETIRED|REJECTED/.test((clean(asset?.catalogState)+' '+clean(asset?.status)).toUpperCase());
       const status=blocked?'ASSET_REPAIR_REQUIRED':sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
-        :sourceFiles.length?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED';
+        :sourceFiles.length&&asset?.productionVerified===true&&asset?.rightsPass===true?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED';
       return freeze({requirementId:null,assetId:row.assetId,family:row.family,
         role:clean(asset?.role||asset?.subfamily)||null,status,sourceBound,
         sourceFiles:freezeList(sourceFiles),sourceHash:clean(asset?.sourceHash)||null,
