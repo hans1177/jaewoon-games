@@ -694,6 +694,38 @@ local function playCommonMotion(atomId)
 end
 -- 리그를 가진 NPC·몬스터의 실제 Animator에서 공용 모션을 재생한다.
 -- GLB 정적 메시(Animator 없음)는 관절 애니메이션 대상에서 제외한다.
+-- Imported GLB assets lacking R15 joints still have a visual pose motor.
+-- This moves only appearance; authoritative collision and combat hitboxes stay unchanged.
+local RunService=game:GetService("RunService")
+local nativePoseMotors=setmetatable({}, {__mode="k"})
+local function trackNativePose(inst)
+ if inst.Name=="NativePoseMotor" and inst:IsA("Motor6D") then nativePoseMotors[inst]=true end
+end
+for _,desc in ipairs(workspace:GetDescendants())do trackNativePose(desc)end
+workspace.DescendantAdded:Connect(trackNativePose)
+workspace.DescendantRemoving:Connect(function(inst)nativePoseMotors[inst]=nil end)
+local lastNativePose=0
+RunService.Heartbeat:Connect(function()
+ local now=os.clock()
+ if now-lastNativePose<.07 then return end
+ lastNativePose=now
+ local c=p.Character
+ local me=c and c:FindFirstChild("HumanoidRootPart")
+ if not me then return end
+ local processed=0
+ for motor in pairs(nativePoseMotors)do
+  if processed>=55 then break end
+  local host=motor.Part0
+  if motor.Parent and host and host.Parent and (host.Position-me.Position).Magnitude<120 then
+   processed+=1
+   local state=tostring(host:GetAttribute("MotionState")or"IDLE")
+   local stride=state=="ATTACK" and .37 or state=="CHASE" and .16 or state=="ROAM" and .11 or .045
+   local speed=state=="ATTACK" and 12 or state=="CHASE" and 8 or state=="ROAM" and 4 or 1.9
+   local phase=now*speed+(host.Position.X+host.Position.Z)*.1
+   motor.C0=CFrame.new(0,math.sin(phase)*stride*.5,0)*CFrame.Angles(math.sin(phase)*stride,0,math.cos(phase*.7)*stride*.65)
+  end
+ end
+end)
 local actorMotionTracks=setmetatable({}, {__mode="k"})
 task.spawn(function()
  while gui.Parent do
