@@ -613,6 +613,7 @@ local classBadge=Instance.new("TextLabel");classBadge.Name="ClassBadge";classBad
 local objective=Instance.new("TextLabel");objective.Name="QuestObjective";objective.AnchorPoint=Vector2.new(.5,0);objective.Position=touchEnabled and UDim2.new(.5,0,0,96)or UDim2.new(.5,0,0,8);objective.Size=touchEnabled and UDim2.fromOffset(276,34)or UDim2.fromOffset(330,38);objective.BackgroundColor3=Color3.fromRGB(31,34,43);objective.BackgroundTransparency=.12;objective.TextColor3=Color3.fromRGB(255,220,146);objective.TextWrapped=true;objective.TextSize=13;objective.Font=Enum.Font.GothamBold;objective.Parent=gui;corner(objective,11);stroke(objective,.52)
 
 -- 신규 레이아웃: 명확한 하단 탐험 내비게이션과 주택 관리 드로어.
+local avatarPanel -- forward reference: house button closes character panel safely
 local housingToggle=button(gui,"내 집",Color3.fromRGB(72,116,125))
 housingToggle.Name="HousingNav";housingToggle.Size=UDim2.fromOffset(80,42)
 housingToggle.AnchorPoint=Vector2.new(0,1);housingToggle.Position=UDim2.new(0,12,1,-14)
@@ -652,7 +653,7 @@ for _,attribute in ipairs({"HouseLevel","HouseFurniture","HouseModules"})do p:Ge
 refreshHousing()
 housingToggle.Activated:Connect(function()
  if startupOverlay.Parent~=nil or gui:GetAttribute("RPGMenuOpen")==true then return end
- housingPanel.Visible=not housingPanel.Visible;avatarPanel.Visible=false
+ housingPanel.Visible=not housingPanel.Visible;if avatarPanel then avatarPanel.Visible=false end
  refreshHousing()
 end)
 gui:GetAttributeChangedSignal("RPGMenuOpen"):Connect(function()
@@ -663,7 +664,7 @@ end)
 local avatarToggle=button(gui,"외형",Color3.fromRGB(73,103,147))
 avatarToggle.Name="CustomizeNav";avatarToggle.AnchorPoint=Vector2.zero;avatarToggle.Position=UDim2.fromOffset(8,212)
 avatarToggle.Size=UDim2.fromOffset(84,36)
-local avatarPanel=Instance.new("Frame");avatarPanel.Name="CharacterCustomizer"
+avatarPanel=Instance.new("Frame");avatarPanel.Name="CharacterCustomizer"
 avatarPanel.AnchorPoint=Vector2.new(.5,.5);avatarPanel.Position=UDim2.fromScale(.5,.5)
 avatarPanel.Size=UDim2.fromOffset(338,262);avatarPanel.BackgroundColor3=Color3.fromRGB(23,33,44)
 avatarPanel.ZIndex=45;avatarPanel.Visible=false;avatarPanel.Parent=gui;corner(avatarPanel,14);stroke(avatarPanel,.2)
