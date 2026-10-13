@@ -165,7 +165,7 @@ test('game-primary control work uses available latest capacity while push/manual
   assert.match(core,/\n  reserve:\n(?:    #[^\n]*\n)*    runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(core.slice(core.indexOf('\n  fan_in:'),core.indexOf('\n    steps:',core.indexOf('\n  fan_in:'))),/\n    runs-on: ubuntu-latest/);
   assert.match(core,/\n  model_cache:[\s\S]{0,700}?if: [^\n]+&& false # production models disabled/);
-  assert.match(core,/\n  model_cache:[\s\S]{0,520}?\n    runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest' \}\}/);
+  assert.match(core,/\n  model_cache:[\s\S]{0,1200}?\n    runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest' \}\}/);
   assert.match(core,/Probe dedicated Vibe2 model cache\n\s+id: ollama_model_cache_probe\n\s+if: false # owner model-free production/);
   assert.match(core,/Probe canonical Ollama runtime cache\n\s+id: ollama_runtime_cache_probe\n\s+if: false # owner model-free production/);
   assert.match(core,/Record asset no-model cache bypass/);
