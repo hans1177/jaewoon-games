@@ -5742,7 +5742,8 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     &&(!assetDevelopmentLane||target==='web')
     &&!singleMotionWorkUnit
     &&!systemAtomicPairRequired
-    &&!dedicatedRobloxOversizePath
+    // Large Roblox rebuilds must also use the canonical bounded source prompt.
+    // The full task remains in the work order; only the model input is compacted.
     &&Buffer.byteLength(specializedInitialPrompt,'utf8')>SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES;
   const initialStudioPrompt=sourceCandidatePressureInitial
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,oversizedInitial:true,initialPromptLimitBytes:SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES})
