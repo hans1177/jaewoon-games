@@ -5,6 +5,11 @@ on:
     branches: [main]
     paths:
       - 'roblox-games/**'
+  pull_request:
+    branches: [main]
+    types: [closed]
+    paths:
+      - 'roblox-games/**'
   workflow_dispatch:
     inputs:
       game_id:
@@ -23,7 +28,7 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: roblox-source-drift-runtime-writer-v2
+  group: roblox-source-drift-runtime-writer-v2-${{ github.event_name }}
   cancel-in-progress: false
 
 env:
@@ -32,6 +37,7 @@ env:
 
 jobs:
   sync:
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -61,6 +67,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           BEFORE_SHA: ${{ github.event.before || '' }}
           CURRENT_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number || '' }}
           GH_TOKEN: ${{ github.token }}
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
@@ -69,6 +76,10 @@ jobs:
           changed=""
           if [[ -n "$REQUESTED_GAME_ID" ]]; then
             changed="$REQUESTED_GAME_ID"
+          elif [[ "$EVENT_NAME" == "pull_request" && "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
+            gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files?per_page=100" --jq '.[].filename' > /tmp/roblox-merged-pr-files.txt
+            changed="$(node tools/company-roblox-source-drift-sync.mjs --resolve-files=/tmp/roblox-merged-pr-files.txt)"
+            echo "ROBLOX_MERGED_PR_SOURCE_FILES=$(paste -sd, /tmp/roblox-merged-pr-files.txt)"
           elif [[ "$EVENT_NAME" == "push" && "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
             if ! git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
               git fetch --no-tags --depth=1 origin "$BEFORE_SHA"
