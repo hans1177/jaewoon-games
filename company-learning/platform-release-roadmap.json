@@ -3835,7 +3835,7 @@
         "VIBE2",
         "VIBE3"
       ],
-      "gameSourceGenerationProvider": "LOCAL_OLLAMA",
+      "gameSourceGenerationProvider": "DETERMINISTIC_ONLY",
       "gameSourceGenerationModel": "qwen3:1.7b",
       "gameSourceWritePolicy": {
         "allowedWorker": "tools/vibe2-source-worker.mjs",
@@ -3903,7 +3903,7 @@
         "qa": "qa/vibe2-source-worker.test.mjs",
         "requiredEnvironment": {
           "VIBE2_GAME_DEVELOPMENT_OWNER": "VIBE2_VIBE3",
-          "VIBE2_GAME_SOURCE_PROVIDER": "LOCAL_OLLAMA",
+          "VIBE2_GAME_SOURCE_PROVIDER": "DETERMINISTIC_ONLY",
           "VIBE2_CODEX_GAME_SOURCE_WRITE": "FORBIDDEN",
           "VIBE2_OPENAI_PAID_API_ALLOWED": "false",
           "VIBE2_CODEX_ROLE": "DISABLED"
