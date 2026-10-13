@@ -4458,6 +4458,8 @@ export function buildVibeAssetProductionPlan({
   // 게임별 컨셉: 공용 원형과 표면 변형 수는 스타일 종류 수가 아니다. 검증된 설계가 제작 입력이다.
   const verifiedDesign=task.buildUpDirective?.designContextMode==='APPROVED_OR_MINIMUM_DESIGN'
     ?task.buildUpDirective?.designImplementationContext||null:null;
+  // 상세 설계 후보는 현재 원장과 다시 대조하며 자동 적용·QA 통과로 간주하지 않는다.
+  const detailedAssetHandoff=verifiedDesign?.detailedAssetLibraryHandoff||null;
   const authoredPresentation=Object.keys(verifiedDesign?.presentationPlan||{}).length?verifiedDesign.presentationPlan:verifiedDesign?.detailedDesign?.presentation||{};
   const approvedStyleBible=authoredPresentation.styleBible||verifiedDesign?.artAudioDirection?.styleBible||{};
   const approvedStyleFamily=clean(approvedStyleBible.profileKey||authoredPresentation.styleFamily||verifiedDesign?.artAudioDirection?.styleFamily);
@@ -4812,6 +4814,22 @@ export function buildVibeAssetProductionPlan({
     registry:librarySync.sourceConsumerRegistry||companyRegistry,
     executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
     sourceConsumerSummary:librarySync.sourceConsumerSync
+  });
+  const handoffCandidates=detailedAssetHandoff?.platformSelection?.[clean(resolvedTarget).toUpperCase()]?.candidates||[];
+  const currentAssetIds=new Set((librarySync.sourceConsumerRegistry?.assets||companyRegistry.assets||[]).map(row=>clean(row?.id)));
+  const detailedAssetCandidateReview=freeze({
+    source:'DETAILED_DESIGN_REVALIDATION',
+    registrySha256:clean(detailedAssetHandoff?.registrySha256)||null,
+    candidateCount:handoffCandidates.length,
+    candidates:freezeList(handoffCandidates.map(row=>freeze({
+      assetId:clean(row?.assetId),family:clean(row?.family),roleEvidence:row?.roleEvidence||null,
+      replacesCandidateAssetId:clean(row?.replacesCandidateAssetId)||null,
+      stillInCurrentRegistry:currentAssetIds.has(clean(row?.assetId)),
+      selectionState:'GRAPHICS_PRODUCTION_REVIEW_REQUIRED',
+      automaticReplacementAuthorized:false,
+      nativeRuntimeQaRequired:true
+    }))),
+    sourceBindingVerified:false,runtimeVerified:false
   });
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
@@ -5565,6 +5583,7 @@ export function buildVibeAssetProductionPlan({
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
     flowAssetRequirements,
     assetSupplySummary,
+    detailedAssetCandidateReview,
     automaticAssetBindingWork,
     genreMenuRecommendations,
     registrySync:freeze({
