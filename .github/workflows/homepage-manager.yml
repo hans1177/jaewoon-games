@@ -339,6 +339,9 @@ jobs:
           git worktree prune
           echo 'HOMEPAGE_PLATFORM_EXPOSURE_RUNTIME_SYNC=PASS'
 
+      - name: Sync official Roblox titles and fill game title artwork
+        run: node tools/homepage-manager.mjs --sync-roblox-titles
+
       - name: Plan source-bound release gameplay capture
         id: media_plan
         run: node tools/homepage-manager.mjs --plan-release-media
@@ -655,3 +658,4 @@ jobs:
             echo 'HOMEPAGE_PUBLICATION=BLOCKED_PR_PERMISSION_REQUIRED'
             exit 1
           fi
+
