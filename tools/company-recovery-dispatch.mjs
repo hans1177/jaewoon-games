@@ -36,7 +36,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
   // 후속 시스템 작업은 게임 소스 수정 및 검증이 확인되기 전까지 해제하지 않는다.
   const legacyGroups=new Map();
   for(const task of systemAi.tasks){
-    if(!['queued','blocked'].includes(clean(task.status))||!clean(task.id).startsWith('recovery-recovery-'))continue;
+    if(!['queued','blocked'].includes(clean(task.status)))continue;
+    if(!clean(task.id).startsWith('recovery-recovery-')&&!clean(task.id).startsWith('game-'))continue;
     const files=uniq(task.responsibleFiles).map(file=>file.replaceAll('\\','/').replace(/^\.\//,''));
     if(files.length!==1)continue;
     const match=files[0].match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
@@ -45,7 +46,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     if(!legacyGroups.has(key))legacyGroups.set(key,[]);
     legacyGroups.get(key).push(task);
   }
-  for(const [file,legacy] of legacyGroups){
+  for(const [file,legacy] of (mode==='all'||mode==='vibe'?legacyGroups:new Map())){
     if(legacy.length<2)continue;
     const match=file.match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
     const gameId=match[2],platform=match[1];
@@ -55,6 +56,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
       &&(clean(task.id).includes(platform)||clean(task.sourceRoot).startsWith(platform+'-games/')));
     if(!existing)continue; // 새 게임 작업 생성 금지
     const ids=new Set(legacy.map(task=>clean(task.id)));
+    if(targetSourceTaskId&&!legacy.some(task=>clean(task.id)===targetSourceTaskId))continue;
     const verified=['done','verified','completed'].includes(clean(existing.status).toLowerCase())
       &&uniq(existing.evidence).some(value=>/verification:(?:PASS|VERIFIED)|runtime-qa:PASS|qa:PASS/i.test(value));
     if(!verified){
@@ -409,43 +411,6 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     dispatched.push({id:rec.id,owner,touched});
     return{...rec,status:'dispatched',recoveryOwner:owner,dispatchEvidence:uniq([...(rec.dispatchEvidence||[]),'recovery-dispatched:'+owner.toLowerCase(),'recovery-dispatched-at:'+stamp]),updatedAt:stamp};
   });
-  // Historical System AI reservations may predate the game-source authority guard.
-  // Hand off only to an existing canonical Vibe game task; never acknowledge source repair here.
-  if(mode==='all'||mode==='vibe'){
-    const eligible=systemAi.tasks.filter(task=>clean(task.status)==='queued'
-      &&uniq(task.responsibleFiles).some(file=>GAME_SOURCE_PREFIXES.some(prefix=>
-        clean(file).replaceAll(String.fromCharCode(92),'/').replace(/^[.][/]/,'').startsWith(prefix))));
-    for(const legacy of eligible){
-      const files=uniq(legacy.responsibleFiles).map(file=>clean(file).replaceAll(String.fromCharCode(92),'/').replace(/^[.][/]/,''));
-      const matching=gameQueue.tasks.filter(task=>{
-        if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))return false;
-        const root=clean(task.sourceRoot).replace(/[/]$/,'');
-        return files.some(file=>root&&file.startsWith(root+'/')||uniq(task.responsibleFiles).includes(file));
-      });
-      if(!matching.length)continue;
-      const preferred=matching.find(task=>clean(task.status)==='running')
-        ||matching.find(task=>/repair|implementation/i.test(clean(task.type)+' '+clean(task.id)))
-        ||matching[0];
-      const taskId=clean(preferred.id);
-      if(!taskId)continue;
-      gameQueue.tasks=gameQueue.tasks.map(task=>clean(task.id)!==taskId?task:{
-        ...task,priority:'critical',
-        evidence:uniq([...(task.evidence||[]),'system-ai-legacy-game-source-handoff:'+clean(legacy.id)]),
-        updatedAt:stamp
-      });
-      systemAi.tasks=systemAi.tasks.map(task=>clean(task.id)!==clean(legacy.id)?task:{
-        ...clearReservation(task),
-        status:'blocked-vibe-game-repair',
-        blocker:'vibe-game-source-verification-pending:'+taskId,
-        evidence:uniq([...(task.evidence||[]),'system-ai-game-source-write-forbidden:YES',
-          'system-ai-vibe-game-handoff:'+taskId,'system-ai-handoff-not-completion:YES']),
-        updatedAt:stamp
-      });
-      // Keep all dependent System AI tasks blocked until independent source/QA evidence
-      // explicitly resolves their dependency; cross-queue success is never fabricated.
-      dispatched.push({id:clean(legacy.id),owner:'VIBE2_VIBE3',touched:1});
-    }
-  }
   return{recovery,gameQueue,systemAi,dispatched,gameRequeuedTaskIds:[...gameRequeuedTaskIds]};
 }
 
