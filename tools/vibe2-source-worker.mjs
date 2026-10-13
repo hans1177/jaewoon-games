@@ -49,19 +49,21 @@ const INTERNAL_ASSET_TOOL_EXPORT_CACHE=new Map();
 const INTERNAL_ASSET_CACHE_MAX_ENTRIES=2048;
 function assertGameDevelopmentAuthority(){
   const owner=clean(process.env.VIBE2_GAME_DEVELOPMENT_OWNER||'VIBE2_VIBE3').toUpperCase();
-  const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'LOCAL_OLLAMA').toUpperCase();
+  const modelFree=clean(process.env.VIBE2_PRODUCTION_MODEL_CALLS_ENABLED).toLowerCase()==='false';
+  const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||(modelFree?'DETERMINISTIC_ONLY':'LOCAL_OLLAMA')).toUpperCase();
   const codexRole=clean(process.env.VIBE2_CODEX_ROLE||'DISABLED').toUpperCase();
   const codexGameSourceWrite=clean(process.env.VIBE2_CODEX_GAME_SOURCE_WRITE||'FORBIDDEN').toUpperCase();
   const paidOpenAiAllowed=clean(process.env.VIBE2_OPENAI_PAID_API_ALLOWED||'false').toLowerCase();
   if(owner!=='VIBE2_VIBE3')throw new Error(`GAME_DEVELOPMENT_OWNER_INVALID:${owner||'EMPTY'}`);
-  if(provider!=='LOCAL_OLLAMA')throw new Error(`GAME_SOURCE_PROVIDER_INVALID:${provider||'EMPTY'}`);
+  if(provider!==(modelFree?'DETERMINISTIC_ONLY':'LOCAL_OLLAMA'))throw new Error(`GAME_SOURCE_PROVIDER_INVALID:${provider||'EMPTY'}`);
   if(codexRole!=='DISABLED')throw new Error(`CODEX_USE_FORBIDDEN:${codexRole||'EMPTY'}`);
   if(codexGameSourceWrite!=='FORBIDDEN')throw new Error(`CODEX_GAME_SOURCE_WRITE_FORBIDDEN:${codexGameSourceWrite||'EMPTY'}`);
   if(paidOpenAiAllowed!=='false')throw new Error(`OPENAI_PAID_API_GAME_SOURCE_FORBIDDEN:${paidOpenAiAllowed||'EMPTY'}`);
   return{
     owner,
     provider,
-    model:DEFAULT_MODEL,
+    model:modelFree?'NONE':DEFAULT_MODEL,
+    modelFreeProduction:modelFree,
     codexRole:'DISABLED',
     codexGameSourceWrite:'FORBIDDEN',
     paidOpenAiApiAllowed:false,
