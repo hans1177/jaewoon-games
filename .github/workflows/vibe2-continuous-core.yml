@@ -79,7 +79,7 @@ concurrency:
 
 env:
   VIBE2_PRODUCTION_MODEL_CALLS_ENABLED: 'false' # Owner: no external or local AI models for game/asset source production
-  VIBE2_LOCAL_MODEL: qwen3:1.7b
+  VIBE2_LOCAL_MODEL: 'NONE' # model-free production
   VIBE2_MODEL_MAX_PREDICT: '3072'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
@@ -90,7 +90,7 @@ env:
   VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
-  VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
+  VIBE2_GAME_SOURCE_PROVIDER: DETERMINISTIC_ONLY
   VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'
   VIBE2_CODEX_ROLE: DISABLED
   VIBE2_CODEX_GAME_SOURCE_WRITE: FORBIDDEN
@@ -1496,7 +1496,7 @@ jobs:
 
       - name: Run isolated learning practice
         id: practice
-        if: steps.order.outputs.run == 'true' && (steps.order.outputs.route == 'analysis-only' || steps.order.outputs.route == 'learning-web-artifact')
+        if: false # model-based practice disabled for the production runner
         continue-on-error: true
         env:
           SAFE_TASK: ${{ matrix.safeTask }}
@@ -1616,7 +1616,7 @@ jobs:
           echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
           echo 'VIBE2_FREE_AI_SCALE=ONE_WORKER_PER_INDEPENDENT_TASK'
           test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3"
-          test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA"
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "DETERMINISTIC_ONLY"
           test "$VIBE2_CODEX_ROLE" = "DISABLED"
           test "$VIBE2_CODEX_GAME_SOURCE_WRITE" = "FORBIDDEN"
           test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false"
@@ -1705,12 +1705,12 @@ jobs:
           cp /tmp/vibe2-exploration/vibe2-exploration.json "$candidate_dir/.vibe2/exploration.json"
 
           test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3" || { echo "GAME_DEVELOPMENT_OWNER_INVALID=$VIBE2_GAME_DEVELOPMENT_OWNER" >&2; exit 1; }
-          test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA" || { echo "GAME_SOURCE_PROVIDER_INVALID=$VIBE2_GAME_SOURCE_PROVIDER" >&2; exit 1; }
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "DETERMINISTIC_ONLY" || { echo "GAME_SOURCE_PROVIDER_INVALID=$VIBE2_GAME_SOURCE_PROVIDER" >&2; exit 1; }
           test "$VIBE2_CODEX_ROLE" = "DISABLED" || { echo "CODEX_USE_FORBIDDEN=$VIBE2_CODEX_ROLE" >&2; exit 1; }
           test "$VIBE2_CODEX_GAME_SOURCE_WRITE" = "FORBIDDEN" || { echo "CODEX_GAME_SOURCE_WRITE_FORBIDDEN=$VIBE2_CODEX_GAME_SOURCE_WRITE" >&2; exit 1; }
           test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false" || { echo "OPENAI_PAID_API_GAME_SOURCE_FORBIDDEN=$VIBE2_OPENAI_PAID_API_ALLOWED" >&2; exit 1; }
           echo 'VIBE2_GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3'
-          echo 'VIBE2_GAME_SOURCE_PROVIDER=LOCAL_OLLAMA'
+          echo 'VIBE2_GAME_SOURCE_PROVIDER=DETERMINISTIC_ONLY'
           echo 'VIBE2_CODEX_GAME_SOURCE_WRITE=FORBIDDEN'
 
           if [ "${VIBE2_PRODUCTION_MODEL_CALLS_ENABLED:-false}" != 'true' ]; then
