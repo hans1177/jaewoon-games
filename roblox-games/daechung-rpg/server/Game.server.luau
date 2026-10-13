@@ -1214,6 +1214,12 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
  label(rootPart,boss and("BOSS · "..displayName)or displayName,boss and Color3.fromRGB(255,198,105)or Color3.new(1,1,1),boss and 58 or 32)
  -- Reuse existing native-imported creature GLBs; preserve scripted root, combat and geometry fallback.
  local sharedEnemyId=not boss and Style.SharedEnemyModels and Style.SharedEnemyModels[z.Theme]
+ local variants=not boss and Style.SharedEnemyVariants and Style.SharedEnemyVariants[z.Theme]
+ if variants and #variants>0 then
+  -- Stable spawn choice: avoids visual changes when the monster respawns.
+  local key=tonumber(rootPart:GetAttribute("EnemySpawnIndex")) or tonumber(string.match(rootPart.Name,"(%d+)$")) or 1
+  sharedEnemyId=variants[(math.abs(math.floor(key))-1)%#variants+1]
+ end
  if sharedEnemyId then task.spawn(bindNativeNpcVisual,rootPart,sharedEnemyId)end
  return rootPart
 end
