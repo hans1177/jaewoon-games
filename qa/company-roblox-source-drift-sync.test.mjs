@@ -430,3 +430,15 @@ test('exact Roblox runs deduplicate before work without cancelling an active bui
   assert.match(freshness,/echo 'run=false' >> "\$GITHUB_OUTPUT"/);
   assert.match(freshness,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
 });
+
+// 병합의 main push만 동기화를 호출한다. PR closed 중복 이벤트는 예약 취소를 유발하므로 금지.
+test('Roblox source sync has one merge trigger and preserves manual F0 recovery',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  const triggers=workflow.split('\npermissions:')[0];
+  assert.match(triggers,/  push:\n    branches: \[main\]/);
+  assert.match(triggers,/  workflow_dispatch:/);
+  assert.doesNotMatch(triggers,/  pull_request:/);
+  assert.match(workflow,/restart_from_f0:/);
+  assert.match(workflow,/group: roblox-source-drift-runtime-writer-v2/);
+  assert.match(workflow,/cancel-in-progress: false/);
+});
