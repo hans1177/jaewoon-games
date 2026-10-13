@@ -415,6 +415,11 @@ remote.OnClientEvent:Connect(function(eventName, snapshot)
   gui:SetAttribute("ParticipantCount", participantCount)
   gui:SetAttribute("MultiplayerSyncAt", os.clock())
   gui:SetAttribute("MultiplayerSnapshotVersion", tonumber(snapshot.Version) or 1)
+  if typeof(snapshot.SharedObjective) == "table" then
+    local objective = snapshot.SharedObjective
+    gui:SetAttribute("CoopCompletedWaves", math.max(0, tonumber(objective.CompletedWavesTogether) or 0))
+    gui:SetAttribute("CoopActiveDefenders", math.max(0, tonumber(objective.ActiveDefenders) or 0))
+  end
   render()
 end)
 
