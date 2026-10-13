@@ -943,8 +943,8 @@ end
 local function load(p)
  init(p)
  saveReady[p]=false
- if C.SaveEnabled~=true then setSaveState(p,"DISABLED");setStats(p,true);return end
- if not store then setSaveState(p,"STORE_UNAVAILABLE");setStats(p,true);return end
+ if C.SaveEnabled~=true then saveReady[p]=true;setSaveState(p,"SESSION_ONLY");setStats(p,true);return end
+ if not store then saveReady[p]=true;setSaveState(p,"SESSION_ONLY");setStats(p,true);return end
  setSaveState(p,"LOADING")
  local data=nil
  local readOk=false
@@ -2054,7 +2054,7 @@ local function validateCharacterFoundation(p,c)
  end)
 end
 
-workspace:SetAttribute("DaechungRuntimeRevision","20261014-FIX5")
+workspace:SetAttribute("DaechungRuntimeRevision","20261014-FIX6")
 buildWorld()
 
 local function bindPlayer(p)
@@ -2100,11 +2100,11 @@ RunService.Heartbeat:Connect(function(dt)
    local offset=Vector3.new(target.X-part.Position.X,0,target.Z-part.Position.Z)
    if offset.Magnitude<.5 then
     resident.nextAnchor=resident.nextAnchor%#resident.route+1
-    resident.restUntil=now+2.5
+    resident.restUntil=now+2.5;part:SetAttribute("MotionState","IDLE")
    else
     local direction=offset.Unit
     local nextPos=part.Position+direction*math.min(offset.Magnitude,resident.speed*math.min(.08,dt))
-    part.CFrame=CFrame.lookAt(nextPos,nextPos+direction)
+    part.CFrame=CFrame.lookAt(nextPos,nextPos+direction);part:SetAttribute("MotionState","WALK")
    end
   end
  end
