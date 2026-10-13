@@ -717,3 +717,21 @@ test('Roblox F0 script failure scopes repair to existing game scripts, not unrel
   ]);
   assert.equal(result.queue.tasks[0].maxRetries,null);
 });
+
+test('single historical game-source task is handed to matching existing Vibe repair only',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const source='roblox-games/example/main.server.lua';
+  const game={id:'example-roblox-repair',gameId:'example',target:'roblox',sourceRoot:'roblox-games/example',type:'implementation',status:'queued',evidence:[]};
+  const legacy={id:'game-old-example',status:'queued',responsibleFiles:[source],dependencies:[]};
+  const dependent={id:'sys-dependent',status:'queued',dependencies:[legacy.id]};
+  const first=dispatchRecovery({route:'vibe',gameQueueInput:{tasks:[game]},systemAiQueueInput:{tasks:[legacy,dependent]}});
+  assert.equal(first.systemAi.tasks[0].status,'blocked');
+  assert.equal(first.systemAi.tasks[0].blocker,'vibe-game-repair-pending:'+game.id);
+  assert.deepEqual(first.systemAi.tasks[1].dependencies,[legacy.id]);
+  assert.ok(first.gameQueue.tasks[0].evidence.includes('legacy-recovery-source:'+source));
+  assert.equal(first.gameQueue.tasks.length,1);
+  const second=dispatchRecovery({route:'vibe',gameQueueInput:first.gameQueue,systemAiQueueInput:first.systemAi});
+  assert.equal(second.gameQueue.tasks.length,1);
+  assert.equal(second.systemAi.tasks[0].status,'blocked');
+  assert.deepEqual(second.systemAi.tasks[1].dependencies,[legacy.id]);
+});
