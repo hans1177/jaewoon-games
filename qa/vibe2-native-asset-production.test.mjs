@@ -4913,3 +4913,11 @@ test('Roblox native GLB usage maps exact loaded asset ID without promoting runti
   assert.equal(result.registry.assets[1].sourceBoundConsumerGameIds,undefined);
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('universal library matching includes lobby environment BGM SFX items and effects',()=>{
+ const registry={assets:[]};
+ const result=buildAssetSupplyDecisionSummary({target:'roblox',gameId:'demo',request:'로비 배경 BGM 효과음 아이템 날씨 파티클',registry});
+ for(const family of ['BUILDING','ENVIRONMENT','PROP','UI','AUDIO','VFX','MATERIAL','WEAPON']){
+  assert.ok(result.requiredFamilies.includes(family),family+' must be mapped');
+ }
+});
