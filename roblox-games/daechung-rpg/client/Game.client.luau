@@ -277,7 +277,7 @@ startupGuide.Parent=startupCard
 
 local startupStatus=Instance.new("TextLabel")
 startupStatus.AnchorPoint=Vector2.new(.5,0)
-startupStatus.Position=UDim2.new(.5,0,1,-76)
+startupStatus.Position=UDim2.new(.5,0,0,302)
 startupStatus.Size=UDim2.new(.84,0,0,28)
 startupStatus.BackgroundTransparency=1
 startupStatus.Text="마을과 캐릭터를 준비하는 중..."
@@ -295,7 +295,7 @@ startupGuide.Position=UDim2.new(.5,0,0,122)
 startupGuide.Size=UDim2.new(.84,0,0,50)
 local lobbyCustomize=button(startupCard,"캐릭터 외형 변경",Color3.fromRGB(74,136,129))
 lobbyCustomize.Name="LobbyCustomize";lobbyCustomize.AnchorPoint=Vector2.new(.5,0)
-lobbyCustomize.Position=UDim2.new(.5,0,0,175);lobbyCustomize.Size=UDim2.new(.72,0,0,32)
+lobbyCustomize.Position=UDim2.new(.73,0,0,216);lobbyCustomize.Size=UDim2.new(.42,0,0,36)
 lobbyCustomize.ZIndex=104
 lobbyCustomize.Text="피부색 바꾸기"
 lobbyCustomize.Activated:Connect(function()remote:FireServer(C.Actions.CUSTOMIZE_NEXT)end)
@@ -308,12 +308,12 @@ local outfitButtons={
 for i,item in ipairs(outfitButtons)do
  local b=button(startupCard,item[1],Color3.fromRGB(64+17*i,88+10*i,111+9*i))
  b.Name="AvatarOutfit"..i;b.AnchorPoint=Vector2.new(.5,0)
- b.Position=UDim2.new(.5,0,0,212+(i-1)*35);b.Size=UDim2.new(.72,0,0,30);b.ZIndex=104
+ b.Position=UDim2.new(i%2==1 and .27 or .73,0,0,180+math.floor((i-1)/2)*36);b.Size=UDim2.new(.42,0,0,32);b.ZIndex=104
  b.Activated:Connect(function()remote:FireServer(item[2])end)
 end
 local lobbyStyle=Instance.new("TextLabel")
 lobbyStyle.BackgroundTransparency=1;lobbyStyle.Size=UDim2.new(.84,0,0,24);lobbyStyle.TextWrapped=true
-lobbyStyle.Position=UDim2.new(.08,0,0,320);lobbyStyle.ZIndex=104
+lobbyStyle.Position=UDim2.new(.08,0,0,273);lobbyStyle.ZIndex=104
 lobbyStyle.TextColor3=Color3.fromRGB(212,230,218)
 lobbyStyle.TextSize=13;lobbyStyle.Font=Enum.Font.Gotham;lobbyStyle.Parent=startupCard
 local function showLobbyStyle()
