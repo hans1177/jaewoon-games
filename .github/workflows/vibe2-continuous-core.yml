@@ -854,14 +854,14 @@ jobs:
             if [ -d "$control_root/.vibe2/build-up-directives" ]; then
               state_paths+=(.vibe2/build-up-directives)
             fi
-            if git -C "$control_root" diff --quiet -- "${state_paths[@]}"; then
+            # Include newly generated queue shards, not just tracked file changes.
+            git -C "$control_root" add -A -- "${state_paths[@]}"
+            if git -C "$control_root" diff --cached --quiet -- "${state_paths[@]}"; then
               state_persisted=1
               state_write='NO'
               node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
               break
             fi
-
-            git -C "$control_root" add -A -- "${state_paths[@]}"
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
             git -C "$control_root" commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
             if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then
