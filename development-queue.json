@@ -13190,10 +13190,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-13T02:56:29.087Z",
+      "updatedAt": "2026-10-13T03:13:08.309Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -13203,9 +13203,9 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "fc5bef080252b467ebfd403c5816fc2f17a57ffa",
+      "robloxSourceCommit": "fa2b7e42add05f10f86d34cd017923e210889920",
       "robloxSourceBootstrapPassedAt": "2026-10-12T18:09:47.970Z",
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-13T03:13:08.309Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -13713,10 +13713,10 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-package:roblox-build-package-failed"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_DATASTORE_REQUIRED|SERVER_DATASTORE_LOAD_REQUIRED|SERVER_DATASTORE_SAVE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
       ],
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "fc5bef080252b467ebfd403c5816fc2f17a57ffa",
+      "robloxBuildSourceRevision": null,
       "robloxBuildFailedAt": "2026-10-13T02:56:29.087Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
@@ -13749,8 +13749,126 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-build-package-failed"
+      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureSignature": "existing-source-static-revalidation-failed",
+      "robloxBuildArtifactIdentity": null,
+      "robloxBuildPassedAt": null,
+      "robloxMultiplayerQaPassed": false,
+      "robloxInternalReleaseEvidence": null,
+      "robloxReleaseEvidence": null,
+      "robloxPublicReleaseReady": false,
+      "robloxReleaseClaim": false,
+      "robloxReleasePublishedAt": null,
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityBuildUpSourceRevision": "fa2b7e42add05f10f86d34cd017923e210889920",
+      "robloxQualityFailureClass": "SOURCE_CONTRACT",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-survival-horror-es-doors",
+        "sourceRevision": "fa2b7e42add05f10f86d34cd017923e210889920",
+        "sourceTreeSha": "15d1943e646da24a3501a1cf0367aad0de77b9fb",
+        "artifactIdentity": null,
+        "authority": "roblox-source-static-contract-failure",
+        "staticContract": {
+          "pass": false,
+          "blockers": [
+            "CONFIG_POLICY_SOURCE_REQUIRED",
+            "CONFIG_GENRE_PROFILE_REQUIRED",
+            "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+            "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+            "SERVER_DATASTORE_REQUIRED",
+            "SERVER_DATASTORE_LOAD_REQUIRED",
+            "SERVER_DATASTORE_SAVE_REQUIRED",
+            "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+            "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+            "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+          ]
+        },
+        "assetRepairContext": {
+          "libraryFingerprint": "04118a83119f8731f784b72d4af59b672cfca774d1d9111b258fd573585a7737",
+          "baselineFingerprint": "6e65709e63fce788d27abef2284aab0356767144bafb888b9daa26222ae9b51e",
+          "validatorFingerprint": "adf181319228b79a60bee6a70fa8940c9aaa4250750a266716ca3c01fa018401"
+        },
+        "qualityFailureKinds": [
+          "CONFIG_POLICY_SOURCE_REQUIRED",
+          "CONFIG_GENRE_PROFILE_REQUIRED",
+          "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+          "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+          "SERVER_DATASTORE_REQUIRED",
+          "SERVER_DATASTORE_LOAD_REQUIRED",
+          "SERVER_DATASTORE_SAVE_REQUIRED",
+          "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+          "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+          "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+        ],
+        "repairSurfaces": [
+          "SOURCE_CONTRACT"
+        ],
+        "qualityFailureDetails": [
+          {
+            "id": "CONFIG_POLICY_SOURCE_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          },
+          {
+            "id": "CONFIG_GENRE_PROFILE_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          },
+          {
+            "id": "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          },
+          {
+            "id": "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          },
+          {
+            "id": "SERVER_DATASTORE_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          },
+          {
+            "id": "SERVER_DATASTORE_LOAD_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          },
+          {
+            "id": "SERVER_DATASTORE_SAVE_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          },
+          {
+            "id": "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          },
+          {
+            "id": "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          },
+          {
+            "id": "CLIENT_MULTIPLAYER_SYNC_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          }
+        ],
+        "workflowRunId": 38337155843,
+        "testedAt": "2026-10-13T03:13:08.309Z"
+      }
     },
     {
       "gameId": "cat-step",
@@ -37774,7 +37892,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-13T03:12:26.041Z",
+  "updatedAt": "2026-10-13T03:13:08.309Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
