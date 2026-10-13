@@ -436,7 +436,11 @@ jobs:
 
             # Repair canonical queue/parallelism state before fail-closed handoff validation.
             node --check /tmp/vibe2-main/tools/vibe2-system-steward.mjs
-            node --test /tmp/vibe2-main/qa/vibe2-system-steward.test.mjs
+            if [ "${VIBE2_24H_SAME_MAIN_QA_REUSE:-0}" = '1' ]; then
+              echo "VIBE2_24H_STEWARD_UNIT_QA=REUSED_THIS_RUN_EXACT_MAIN_SHA:$main_sha"
+            else
+              node --test /tmp/vibe2-main/qa/vibe2-system-steward.test.mjs
+            fi
             node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
               --queue="$control_root/.vibe2/queue.json" \
               --control="$control_root/.vibe2/parallelism-control.json" \
