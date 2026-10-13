@@ -75,6 +75,7 @@ jobs:
     # This never serializes downstream source, runtime, QA, or release work.
     concurrency:
       group: roblox-runtime-source-plan-v2-${{ inputs.game_id || 'batch' }}
+      queue: max
       cancel-in-progress: false
     # Exact-game ingress uses the ARM game-control pool; batch push ingress stays on fixed 24.04.
     # This spreads control work without consuming heavy ubuntu-latest game capacity.
