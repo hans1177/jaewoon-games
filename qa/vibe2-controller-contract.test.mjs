@@ -11,6 +11,7 @@ import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner, expandPresentationResponsibleFiles, candidateStrategyRole } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
+import { recoverContractScopedWorkOrderBlocks } from '../tools/vibe2-queue-control.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
@@ -1833,3 +1834,38 @@ done`;
   }
 });
 
+
+test('generic blocked Roblox work orders retry once per pinned contract without competing active games',()=>{
+  const sha='a'.repeat(40);
+  const row=(id,gameId,status='blocked',blocker='work-order-not-runnable')=>({
+    id,gameId,target:'roblox',department:'development',type:'implementation',
+    executionLane:'GAME_PRIMARY',status,blocker,goal:'Improve Roblox gameplay source',
+    retries:11,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',ownerDevelopmentHold:false
+  });
+  const input={maxConcurrentTasks:128,tasks:[
+    row('a-old','a'),row('a-other','a'),
+    row('b-old','b'),row('b-active','b','queued',null),
+    {...row('c-old','c'),ownerDevelopmentHold:true},
+    row('d-other','d','blocked','design-gate-failed'),
+    row('e-old','e')
+  ]};
+  const recovered=recoverContractScopedWorkOrderBlocks(input,{contractSha:sha,lane:'game-primary'});
+  assert.equal(recovered.recovered,2);
+  assert.equal(recovered.queue.tasks.find(t=>t.id==='a-old').status,'queued');
+  assert.equal(recovered.queue.tasks.find(t=>t.id==='a-other').status,'blocked');
+  assert.equal(recovered.queue.tasks.find(t=>t.id==='b-old').status,'blocked');
+  assert.equal(recovered.queue.tasks.find(t=>t.id==='c-old').status,'blocked');
+  assert.equal(recovered.queue.tasks.find(t=>t.id==='d-other').status,'blocked');
+  assert.equal(recovered.queue.tasks.find(t=>t.id==='e-old').status,'queued');
+  const marker='work-order-contract-retry:'+sha;
+  assert(recovered.queue.tasks.find(t=>t.id==='a-old').evidence.includes(marker));
+  const retry=recoverContractScopedWorkOrderBlocks({
+    maxConcurrentTasks:128,tasks:recovered.queue.tasks.map(t=>t.id==='e-old'?{...t,status:'blocked',blocker:'work-order-not-runnable'}:t)
+  },{contractSha:sha,lane:'game-primary'});
+  assert.equal(retry.queue.tasks.find(t=>t.id==='e-old').status,'blocked');
+  const noSha=recoverContractScopedWorkOrderBlocks(input,{contractSha:'',lane:'game-primary'});
+  assert.equal(noSha.recovered,0);
+  const wrongLane=recoverContractScopedWorkOrderBlocks(input,{contractSha:sha,lane:'asset-development'});
+  assert.equal(wrongLane.recovered,0);
+  assert.match(workflow,/reserve-batch[\\s\\S]{0,270}--contract-sha="/);
+});
