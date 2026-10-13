@@ -4950,3 +4950,10 @@ test('detailed design candidates enter canonical binding targets only with verif
   assert.ok(source.includes('consumerAppliedMasterHash'));
   assert.ok(source.includes('existingSelectionKeys.has(row.assetId)'));
 });
+
+test('GLB adoption without applied master hash remains provenance required, not runtime QA',()=>{
+  const source=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  assert.ok(source.includes("masterUpgradeProvenanceRequired?'SOURCE_BINDING_PROVENANCE_REQUIRED'"));
+  assert.ok(source.includes("status==='SOURCE_BINDING_PROVENANCE_REQUIRED'"));
+  assert.ok(source.includes('glbAppliedVersionProvenanceRequiredCount:'));
+});
