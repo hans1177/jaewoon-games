@@ -1346,9 +1346,11 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   };
   const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map();
   let intendedOnlyCount=0;
+  // The role gate above rejects incompatible candidates; among eligible assets,
+  // a higher audited quality score must win regardless of matched-role count.
   const compareReusable=(a,b)=>
-    (roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
-    ||Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+    Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+    ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
     ||clean(a?.id).localeCompare(clean(b?.id));
   const betterReusable=(candidate,current)=>!current||compareReusable(candidate,current)<0;
   for(const asset of assets){
