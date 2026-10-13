@@ -737,3 +737,15 @@ test('single historical game-source task is handed to matching existing Vibe rep
   assert.deepEqual(second.gameQueue,first.gameQueue);
   assert.deepEqual(second.systemAi,first.systemAi);
 });
+
+test('Roblox-only development does not reactivate held web game recovery',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const web={id:'web-repair',gameId:'legacy-web',target:'web',sourceRoot:'web-games/legacy-web',type:'implementation',status:'queued',priority:'normal'};
+  const old={id:'game-legacy-web',status:'queued',responsibleFiles:['web-games/legacy-web/index.html']};
+  const rec={id:'recovery-web',status:'queued',recoveryOwner:'VIBE2_VIBE3',sourceTaskId:'web-repair',responsibleFiles:['web-games/legacy-web/index.html']};
+  const result=dispatchRecovery({route:'vibe',gameQueueInput:{tasks:[web]},systemAiQueueInput:{tasks:[old]},recoveryInput:{tasks:[rec]}});
+  assert.deepEqual(result.gameQueue.tasks,[web]);
+  assert.deepEqual(result.systemAi.tasks,[old]);
+  assert.equal(result.recovery.tasks[0].status,'queued');
+  assert.deepEqual(result.gameRequeuedTaskIds,[]);
+});
