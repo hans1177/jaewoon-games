@@ -1710,7 +1710,7 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         }
         // Count native imported IDs only at executable load sites, never mere catalog declarations.
         if(root.relative.startsWith('roblox-games/')){
-          for(const match of usageBody.matchAll(/\\b(?:LoadAssetAsync|LoadAsset)\\s*\\([^,\\n]*,?\\s*(\\d{6,})\\s*\\)/g))addToken(nativeAssetIds,match[1],relative);
+          for(const match of usageBody.matchAll(/\b(?:LoadAssetAsync|LoadAsset)\s*\(\s*(?:(?:[A-Za-z_]\w*)\s*,\s*)?(\d{6,})\s*\)/g))addToken(nativeAssetIds,match[1],relative);
         }
         // Unity Resources.Load consumes imported assets without their extensions.
         // Resolve only exact existing native files referenced by executable game code.
