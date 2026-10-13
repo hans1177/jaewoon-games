@@ -4924,8 +4924,8 @@ test('universal library matching includes lobby environment BGM SFX items and ef
 
 test('shared asset with just one higher quality point is immediately queued for canonical replacement',()=>{
  const registry={assets:[
-  {id:'old-prop',family:'PROP',role:'ITEM',consumerGameIds:['demo'],qualityScore:42},
-  {id:'new-prop',family:'PROP',role:'ITEM',qualityScore:43}
+  {id:'old-prop',family:'PROP',role:'ITEM',consumerGameIds:['demo'],qualityScore:42,license:'project-original',masterGlb:'assets/native/old-prop.glb'},
+  {id:'new-prop',family:'PROP',role:'ITEM',qualityScore:43,license:'project-original',masterGlb:'assets/native/new-prop.glb'}
  ]};
  const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item',registry});
  const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
