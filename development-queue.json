@@ -7253,8 +7253,8 @@
       },
       "robloxProjectPath": "roblox-games/seed-puzzle-chromatic-cascade",
       "unityProjectPath": "unity-games/seed-puzzle-chromatic-cascade",
-      "targetSourcePath": "unity-games/seed-puzzle-chromatic-cascade",
-      "sourcePath": "unity-games/seed-puzzle-chromatic-cascade",
+      "targetSourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
+      "sourcePath": "roblox-games/seed-puzzle-chromatic-cascade",
       "designBaselineSource": "design/seed-puzzle-chromatic-cascade/2026-10-12/design-revised.json",
       "designDate": "2026-10-12",
       "minimumDesignContract": {
@@ -7294,10 +7294,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-13T07:44:37.104Z",
+      "updatedAt": "2026-10-13T08:24:40.171Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -7307,9 +7307,9 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "fa2b7e42add05f10f86d34cd017923e210889920",
-      "robloxSourceBootstrapPassedAt": "2026-10-12T19:30:34.477Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-13T03:26:30.329Z",
+      "robloxSourceCommit": "dbfd7acb1da30e46653cf1efc7d30c3b57113e7a",
+      "robloxSourceBootstrapPassedAt": "2026-10-13T08:24:40.171Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -7817,11 +7817,11 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+        "roblox-build-package-revalidation-pending"
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": null,
-      "robloxBuildFailedAt": "2026-10-12T18:01:30.365Z",
+      "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -7853,8 +7853,8 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-static-revalidation-failed",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
       "robloxMultiplayerQaPassed": false,
@@ -7932,6 +7932,18 @@
         ],
         "workflowRunId": 38337821319,
         "testedAt": "2026-10-13T03:26:30.329Z"
+      },
+      "robloxExactRevisionPassed": false,
+      "robloxHeadlessPassedAt": null,
+      "robloxInternalReleasePublished": false,
+      "robloxPublicRelease": false,
+      "robloxFastMvpPublished": false,
+      "robloxFastMvpPublishedAt": null,
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxEvidenceInvalidatedBySourceChange": {
+        "previousSourceRevision": "fa2b7e42add05f10f86d34cd017923e210889920",
+        "newSourceRevision": "dbfd7acb1da30e46653cf1efc7d30c3b57113e7a",
+        "invalidatedAt": "2026-10-13T08:24:40.171Z"
       }
     },
     {
@@ -40175,7 +40187,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-13T08:24:31.707Z",
+  "updatedAt": "2026-10-13T08:24:40.171Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
