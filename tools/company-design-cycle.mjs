@@ -234,7 +234,7 @@ const designAssetLibraryContext={
 // 세 플랫폼의 동일 자산 사실은 한 번만 전달하고 적용 방식만 각각 유지한다.
 designAssetLibraryContext.assetFacts=Object.fromEntries(Object.values(designAssetLibraryContext.platforms).flatMap(platform=>platform.candidates.filter(row=>row.assetId).map(({assetId,action,reason,applicationMode,family,...facts})=>[assetId,{family,...facts}])));
 for(const platform of Object.values(designAssetLibraryContext.platforms)){
-  platform.candidates=platform.candidates.map(({family,action,assetId,applicationMode,reason,roleEvidence})=>({family,action,assetId,applicationMode,reason,roleEvidence}));
+  platform.candidates=platform.candidates.map(({family,action,assetId,applicationMode,reason,roleEvidence,replacesCandidateAssetId,automaticReplacementAuthorized,independentNativeRuntimeQaRequired})=>({family,action,assetId,applicationMode,reason,roleEvidence,...(replacesCandidateAssetId?{replacesCandidateAssetId,automaticReplacementAuthorized:false,independentNativeRuntimeQaRequired:true}:{})}));
 }
 const designAssetFamilies=uniq(Object.values(designAssetLibraryContext.platforms).flatMap(platform=>platform.requiredFamilies||[]));
 const designLearningEvents=(Array.isArray(seedState?.seedMaterialLearning?.events)?seedState.seedMaterialLearning.events:[])
