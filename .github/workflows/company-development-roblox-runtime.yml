@@ -30,6 +30,7 @@ on:
       - 'company-learning/platform-release-roadmap.json'
       - 'tools/company-development-roblox-build-preflight.mjs'
       - 'tools/company-development-roblox-runtime-smoke.luau'
+      - 'roblox-games/.company-runtime-trigger'
   workflow_call:
     inputs:
       game_id:
