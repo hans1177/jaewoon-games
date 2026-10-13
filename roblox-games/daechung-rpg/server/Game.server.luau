@@ -59,6 +59,8 @@ local foundationSeen={}
 local foundationSequence=0
 local foundationLast={}
 local assetCache={}
+local biomeRunState={}
+local biomeRunCounter=0
 local meadowRunCounter=0
 local meadowRunState={seed=0,hiddenBossId="",generated=false}
 local generateMeadowRun
@@ -216,15 +218,75 @@ local function decorateVillageAssets(parent)
   end
  end)
 end
-local function decorateZoneAssets(parent,z)
+local function decorateZoneAssets(parent,z,requestedSeed)
+ local previous=biomeRunState[z.Id]
+ local seed=math.floor(tonumber(requestedSeed)or(previous and previous.seed)or(100000+game.PlaceVersion*31+z.Id*197))
+ local generation=(previous and previous.generation or 0)+1
+ biomeRunState[z.Id]={seed=seed,generation=generation}
+ parent:SetAttribute("BiomeGenerationSeed",seed)
  task.spawn(function()
-  local pack=(z.Theme=="MEADOW"or z.Theme=="SNOW")and ASSETS.Nature or ASSETS.Dungeon
-  local keys=(pack==ASSETS.Nature)and{"tree","bush","rock","log","plant"}or{"rock","rune","pillar","wall","bridge","crate","barrel"}
+  local biome=Style.Biomes and Style.Biomes[z.Theme]
+  if not biome then parent:SetAttribute("NativeBiomeBindingMissing",true);return end
+  local scenery=Instance.new("Folder");scenery.Name="NativeBiomeScenery"
+  local rng=Random.new(seed)
+  local phase=rng:NextNumber(0,math.pi*2)
   for i=1,34 do
-   local a=i/34*math.pi*2;local r=72+(i%7)*20
-   assetProp(parent,pack,keys,z.Center+Vector3.new(math.cos(a)*r,2,math.sin(a)*r),.7+(i%5)*.07,i,false)
+   local a=i/34*math.pi*2+phase+rng:NextNumber(-.05,.05);local r=rng:NextNumber(126,190)
+   local dx,dz=math.cos(a)*r,math.sin(a)*r
+   -- 기존 포탈/귀환·주 동선·보스 경기장에는 시야를 가리는 장식도 두지 않는다.
+   if math.abs(dx)<30 then dx=dx<0 and -38 or 38 end
+   if math.abs(dx)<66 and dz< -38 and dz> -140 then dx=dx<0 and -78 or 78 end
+   local nature=i%3~=0
+   local pack=nature and ASSETS.Nature or ASSETS.Dungeon
+   local keys=nature and biome.Nature or biome.Structure
+   local decoration=assetProp(scenery,pack,keys,z.Center+Vector3.new(dx,1, dz),rng:NextNumber(.62,1),rng:NextInteger(1,10000),false)
+   if decoration then
+    local maxSize=math.max(decoration.Size.X,decoration.Size.Y,decoration.Size.Z)
+    if maxSize>24 then
+     decoration.Size*=24/maxSize
+     decoration.Position=z.Center+Vector3.new(dx,1+decoration.Size.Y/2,dz)
+    end
+    decoration:SetAttribute("BiomeTheme",z.Theme)
+   end
   end
+  -- Loading can yield. A newer empty-zone run owns the scene; never append a stale generation.
+  if not parent.Parent or biomeRunState[z.Id].generation~=generation then scenery:Destroy();return end
+  local old=parent:FindFirstChild("NativeBiomeScenery");if old then old:Destroy()end
+  scenery:SetAttribute("BiomeGenerationSeed",seed);scenery:SetAttribute("BiomeTheme",z.Theme);scenery.Parent=parent
+  parent:SetAttribute("NativeBiomeVisualReview","PENDING")
  end)
+end
+
+local function bindNativeNpcVisual(rootPart,assetId)
+ if not assetId or not rootPart.Parent then return end
+ local sourceModel=loadAsset(assetId)
+ if not sourceModel or not rootPart.Parent then rootPart:SetAttribute("NativeActorMissing",true);return end
+ local native=sourceModel:Clone();native.Name="NativeLibraryActor"
+ local originalParts={}
+ for _,child in ipairs(rootPart:GetChildren())do if child:IsA("BasePart")then table.insert(originalParts,child)end end
+ local ok=pcall(function()
+  local _,size=native:GetBoundingBox()
+  if size.Y<=0 then error("EMPTY_NATIVE_ACTOR")end
+  native:ScaleTo(native:GetScale()*rootPart.Size.Y/size.Y)
+  native:PivotTo(rootPart.CFrame)
+  local bounds,scaled=native:GetBoundingBox()
+  native:PivotTo(native:GetPivot()+Vector3.new(rootPart.Position.X-bounds.Position.X,rootPart.Position.Y-rootPart.Size.Y/2-(bounds.Position.Y-scaled.Y/2),rootPart.Position.Z-bounds.Position.Z))
+  local count=0
+  for _,part in ipairs(native:GetDescendants())do
+   if part:IsA("BasePart")then
+    count+=1;if count>128 then error("NATIVE_ACTOR_PART_BUDGET")end
+    part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
+    local joint=Instance.new("WeldConstraint");joint.Part0=rootPart;joint.Part1=part;joint.Parent=part
+   end
+  end
+  if count==0 then error("NATIVE_ACTOR_GEOMETRY_MISSING")end
+ end)
+ if not ok or not rootPart.Parent then native:Destroy();rootPart:SetAttribute("NativeActorMissing",true);return end
+ native:SetAttribute("SourceAssetId",tostring(assetId));native:SetAttribute("RuntimeVisualReview","PENDING")
+ native:SetAttribute("MotionRetargetReview","PENDING")
+ native.Parent=rootPart
+ for _,part in ipairs(originalParts)do part.Transparency=1 end
+ rootPart:SetAttribute("NativeActorMissing",false)
 end
 
 local function label(target,text,color,maxDistance)
@@ -284,6 +346,10 @@ local function humanoidFigure(parent,name,pos,color,accent,scale)
  elseif string.find(name,"Resident",1,true)or string.find(name,"AI_",1,true)then
   add("AdventurerMantle",Vector3.new(3.1,.85,2),Vector3.new(0,1.15,.2),accent,Enum.Material.Fabric,Enum.PartType.Ball)
  end
+ local nativeId=Style.NpcModels and Style.NpcModels[name]
+ local residentIndex=tonumber(string.match(name,"^Resident(%d+)$"))
+ if residentIndex and Style.ResidentModels then nativeId=Style.ResidentModels[(residentIndex-1)%#Style.ResidentModels+1]end
+ if nativeId then task.spawn(bindNativeNpcVisual,r,nativeId)end
  return r
 end
 local function gearPart(folder,body,name,size,offset,color,material,shape,rotation)
@@ -871,9 +937,16 @@ local function makeVillage()
   local portalPrompt=prompt(pad,z.Name,"포탈 입장","ENTRY_PORTAL","Portal"..z.Id)
   portalPrompt:SetAttribute("DestinationZone",z.Id)
   portalPrompt.Triggered:Connect(function(p)
+   local occupants=0;for _,player in ipairs(Players:GetPlayers())do if n(player,"CurrentZone",0)==z.Id then occupants+=1 end end
    if z.Id==1 and meadowPlayersInside()==0 and generateMeadowRun then
     local seed=(os.time()%1000000)*100+n(p,"RoomCode",1)+meadowRunCounter*13;generateMeadowRun(seed)
+    local zone=world and world:FindFirstChild("Zone"..z.Id);if zone then decorateZoneAssets(zone,z,seed)end
+   elseif z.Id~=1 and occupants==0 then
+    biomeRunCounter+=1
+    local seed=(os.time()%1000000)*100+n(p,"RoomCode",1)+biomeRunCounter*13+z.Id*197
+    local zone=world and world:FindFirstChild("Zone"..z.Id);if zone then decorateZoneAssets(zone,z,seed)end
    end
+   local biomeState=biomeRunState[z.Id];p:SetAttribute("BiomeGenerationSeed",biomeState and biomeState.seed or 0)
    p:SetAttribute("CurrentZone",z.Id);p:SetAttribute("InCombat",false);p:SetAttribute("Blocking",false);lastCombat[p]=0
    if z.Id==1 then p:SetAttribute("CurrentRunSeed",meadowRunState.seed)else p:SetAttribute("CurrentRunSeed",0)end
    teleportPlayer(p,z.Center+Vector3.new(0,0,170));msg(p,z.Name.." 입장"..(z.Id==1 and(" · RUN "..tostring(meadowRunState.seed))or""))
@@ -919,7 +992,7 @@ local function makeZone(z)
   local a=i/8*math.pi*2;local lamp=ppart(f,"Guide"..i,Vector3.new(1.2,8,1.2),z.Center+Vector3.new(math.cos(a)*86,5,math.sin(a)*86),Color3.fromRGB(75,73,76),Enum.Material.Metal)
   local glow=ppart(f,"GuideGlow"..i,Vector3.new(2.2,2.2,2.2),lamp.Position+Vector3.new(0,5,0),z.Color,Enum.Material.Neon);glow.CanCollide=false
  end
- if z.Theme~="MEADOW"then decorateZoneAssets(f,z)end
+ decorateZoneAssets(f,z)
  local ret=ppart(f,"ReturnPortal",Vector3.new(26,2,18),z.Center+Vector3.new(0,2,190),Color3.fromRGB(112,180,205),Enum.Material.Neon);label(ret,"마을 귀환",Color3.fromRGB(180,235,255),36)
  local returnPrompt=prompt(ret,"마을","귀환","RETURN_PORTAL","ReturnPortal"..z.Id)
  returnPrompt:SetAttribute("DestinationZone",0)
