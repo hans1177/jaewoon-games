@@ -437,6 +437,6 @@ test('Roblox source sync preserves both triggers without pending cross-cancellat
   assert.ok(workflow.includes('  push:\n    branches: [main]'));
   assert.ok(workflow.includes('  pull_request:\n    branches: [main]\n    types: [closed]'));
   assert.ok(workflow.includes('  workflow_dispatch:'));
-  assert.ok(workflow.includes('group: roblox-source-drift-runtime-writer-v2-${{ github.event_name }}'));
+  assert.ok(workflow.includes('group: roblox-source-drift-runtime-writer-v2\n  queue: max\n  cancel-in-progress: false'));
   assert.ok(workflow.includes('cancel-in-progress: false'));
 });
