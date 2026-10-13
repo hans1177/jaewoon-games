@@ -562,6 +562,52 @@ local classBadge=Instance.new("TextLabel");classBadge.Name="ClassBadge";classBad
 
 local objective=Instance.new("TextLabel");objective.Name="QuestObjective";objective.AnchorPoint=Vector2.new(.5,0);objective.Position=touchEnabled and UDim2.new(.5,0,0,96)or UDim2.new(.5,0,0,8);objective.Size=touchEnabled and UDim2.fromOffset(276,34)or UDim2.fromOffset(330,38);objective.BackgroundColor3=Color3.fromRGB(31,34,43);objective.BackgroundTransparency=.12;objective.TextColor3=Color3.fromRGB(255,220,146);objective.TextWrapped=true;objective.TextSize=13;objective.Font=Enum.Font.GothamBold;objective.Parent=gui;corner(objective,11);stroke(objective,.52)
 
+-- 신규 레이아웃: 명확한 하단 탐험 내비게이션과 주택 관리 드로어.
+local housingToggle=button(gui,"내 집",Color3.fromRGB(72,116,125))
+housingToggle.Name="HousingNav";housingToggle.Size=UDim2.fromOffset(80,42)
+housingToggle.AnchorPoint=Vector2.new(0,1);housingToggle.Position=UDim2.new(0,12,1,-14)
+local housingPanel=Instance.new("Frame")
+housingPanel.Name="HousingPanel";housingPanel.AnchorPoint=Vector2.new(.5,1)
+housingPanel.Size=UDim2.fromOffset(320,254);housingPanel.Position=UDim2.new(.5,0,1,-65)
+housingPanel.BackgroundColor3=Color3.fromRGB(21,35,41);housingPanel.BorderSizePixel=0
+housingPanel.Visible=false;housingPanel.ZIndex=40;housingPanel.Parent=gui;corner(housingPanel,18);stroke(housingPanel,.25)
+local housingTitle=Instance.new("TextLabel");housingTitle.Name="HousingTitle"
+housingTitle.Size=UDim2.new(1,-26,0,42);housingTitle.Position=UDim2.fromOffset(13,9)
+housingTitle.Text="나의 아지트";housingTitle.TextColor3=Color3.fromRGB(255,233,176)
+housingTitle.TextSize=21;housingTitle.Font=Enum.Font.GothamBold;housingTitle.BackgroundTransparency=1
+housingTitle.TextXAlignment=Enum.TextXAlignment.Left;housingTitle.ZIndex=41;housingTitle.Parent=housingPanel
+local housingInfo=Instance.new("TextLabel");housingInfo.Size=UDim2.new(1,-26,0,39)
+housingInfo.Position=UDim2.fromOffset(13,49);housingInfo.BackgroundTransparency=1
+housingInfo.TextColor3=Color3.fromRGB(218,235,235);housingInfo.TextSize=14
+housingInfo.Font=Enum.Font.Gotham;housingInfo.TextWrapped=true;housingInfo.ZIndex=41;housingInfo.Parent=housingPanel
+local housingActions={{"집 건설",C.Actions.HOUSING_BUILD},{"집 확장",C.Actions.HOUSING_UPGRADE},{"가구 배치",C.Actions.HOUSING_FURNISH},{"집 방문",C.Actions.HOUSING_VISIT}}
+for i,item in ipairs(housingActions)do
+ local b=button(housingPanel,item[1],Color3.fromRGB(47,97,106))
+ b.Name="HousingAction"..i;b.Size=UDim2.fromOffset(139,56)
+ b.Position=UDim2.fromOffset(13+((i-1)%2)*153,100+math.floor((i-1)/2)*66)
+ b.ZIndex=42
+ b.Activated:Connect(function()
+  remote:FireServer(item[2])
+  if i==4 then housingPanel.Visible=false end
+ end)
+end
+local function refreshHousing()
+ local level=tonumber(p:GetAttribute("HouseLevel"))or 0
+ local items=tonumber(p:GetAttribute("HouseFurniture"))or 0
+ local cfg=C.Housing or {}
+ housingInfo.Text=level==0 and ("미보유 · 건설 "..tostring(cfg.BuildCost or 80).."G") or ("집 Lv."..level.." / "..tostring(cfg.MaxLevel or 3).." · 가구 "..items.."/"..tostring(cfg.MaxFurniture or 8))
+end
+for _,attribute in ipairs({"HouseLevel","HouseFurniture"})do p:GetAttributeChangedSignal(attribute):Connect(refreshHousing)end
+refreshHousing()
+housingToggle.Activated:Connect(function()
+ if startupOverlay.Parent~=nil or gui:GetAttribute("RPGMenuOpen")==true then return end
+ housingPanel.Visible=not housingPanel.Visible
+ refreshHousing()
+end)
+gui:GetAttributeChangedSignal("RPGMenuOpen"):Connect(function()
+ if gui:GetAttribute("RPGMenuOpen")==true then housingPanel.Visible=false end
+end)
+
 local party=Instance.new("Frame");party.Name="PartyStatus";party.AnchorPoint=Vector2.new(1,0);party.Position=UDim2.new(1,-8,0,8);party.Size=touchEnabled and UDim2.fromOffset(116,58)or UDim2.fromOffset(142,64);party.BackgroundColor3=Color3.fromRGB(29,32,40);party.BackgroundTransparency=.1;party.Parent=gui;corner(party,12);stroke(party,.5)
 local partyText=Instance.new("TextLabel");partyText.Size=UDim2.new(1,-12,1,-10);partyText.Position=UDim2.fromOffset(6,5);partyText.BackgroundTransparency=1;partyText.TextColor3=Color3.fromRGB(220,232,241);partyText.TextSize=11;partyText.TextWrapped=true;partyText.Font=Enum.Font.GothamBold;partyText.Parent=party
 
@@ -828,6 +874,21 @@ refreshHud=function()
  end
  place(stats,layout.stats);place(party,layout.party);place(notice,layout.notice)
  place(combat,layout.combat);place(returnButton,layout.village);place(classPanel,layout.class)
+ -- 화면 크기에 따라 가로형 카드/하단 내비게이션으로 다시 배치한다.
+ local compact=size.X<630
+ housingToggle.Position=UDim2.new(0,12,1,compact and -14 or -20)
+ housingToggle.Size=UDim2.fromOffset(compact and 76 or 104,compact and 40 or 46)
+ housingPanel.Size=UDim2.fromOffset(math.min(320,size.X-22),254)
+ housingPanel.Position=UDim2.new(.5,0,1,compact and -60 or -76)
+ stats.BackgroundColor3=Color3.fromRGB(22,43,49)
+ party.BackgroundColor3=Color3.fromRGB(24,47,55)
+ title.TextColor3=Color3.fromRGB(255,222,152)
+ combat.BackgroundTransparency=0.18
+ combat.BackgroundColor3=Color3.fromRGB(19,38,46)
+ corner(combat,17)
+ for _,control in ipairs({attack,skill,block,dodge})do
+  control.TextSize=15
+ end
  title.Position=UDim2.fromOffset(7,2);title.Size=UDim2.new(1,-14,0,18)
  statLine.Position=UDim2.fromOffset(7,23);statLine.Size=UDim2.new(1,-14,0,32)
  classBadge.Position=UDim2.fromOffset(7,56);classBadge.TextTruncate=Enum.TextTruncate.AtEnd
@@ -844,6 +905,8 @@ refreshHud=function()
  notice.Visible=message~="NONE";combat.Visible=not blocked
  returnButton.Visible=not blocked and (tonumber(p:GetAttribute("CurrentZone"))or 0)>0
  stats.Visible=not blocked;party.Visible=not blocked
+ housingToggle.Visible=not blocked
+ if blocked then housingPanel.Visible=false end
  if rpgMenu then rpgMenu.button.Visible=not blocked end
  if notice:GetAttribute("ActiveMessage")~=message then notice.CanvasPosition=Vector2.zero;notice:SetAttribute("ActiveMessage",message)end
 end
