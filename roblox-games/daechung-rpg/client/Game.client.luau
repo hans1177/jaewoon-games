@@ -595,8 +595,8 @@ versionMark.Name="LiveBuildMarker";versionMark.BackgroundTransparency=.3
 versionMark.BackgroundColor3=Color3.fromRGB(20,35,35)
 local function refreshBuildMark()
  local server=tostring(workspace:GetAttribute("DaechungRuntimeRevision")or"SERVER_OLD")
- versionMark.Text="RPG FIX4 · "..server.." · v"..tostring(game.PlaceVersion)
- versionMark.TextColor3=server=="20261014-FIX4" and Color3.fromRGB(205,245,215) or Color3.fromRGB(255,177,107)
+ versionMark.Text="RPG FIX5 · "..server.." · v"..tostring(game.PlaceVersion)
+ versionMark.TextColor3=server=="20261014-FIX5" and Color3.fromRGB(205,245,215) or Color3.fromRGB(255,177,107)
 end
 workspace:GetAttributeChangedSignal("DaechungRuntimeRevision"):Connect(refreshBuildMark)
 refreshBuildMark()
@@ -723,6 +723,14 @@ end)
 local party=Instance.new("Frame");party.Name="PartyStatus";party.AnchorPoint=Vector2.new(1,0);party.Position=UDim2.new(1,-8,0,8);party.Size=touchEnabled and UDim2.fromOffset(116,58)or UDim2.fromOffset(142,64);party.BackgroundColor3=Color3.fromRGB(29,32,40);party.BackgroundTransparency=.1;party.Parent=gui;corner(party,12);stroke(party,.5)
 local partyText=Instance.new("TextLabel");partyText.Size=UDim2.new(1,-12,1,-10);partyText.Position=UDim2.fromOffset(6,5);partyText.BackgroundTransparency=1;partyText.TextColor3=Color3.fromRGB(220,232,241);partyText.TextSize=11;partyText.TextWrapped=true;partyText.Font=Enum.Font.GothamBold;partyText.Parent=party
 
+-- Small non-interactive combat indicator replaces the old four opaque mobile buttons.
+local autoIndicator=Instance.new("TextLabel")
+autoIndicator.Name="AutoCombatStatus";autoIndicator.BackgroundTransparency=.32
+autoIndicator.BackgroundColor3=Color3.fromRGB(20,47,45);autoIndicator.BorderSizePixel=0
+autoIndicator.AnchorPoint=Vector2.new(1,0);autoIndicator.Position=UDim2.new(1,-10,0,83)
+autoIndicator.Size=UDim2.fromOffset(190,24);autoIndicator.Text="자동공격 · 자동회피 · 자동패링"
+autoIndicator.TextSize=12;autoIndicator.TextColor3=Color3.fromRGB(206,247,224)
+autoIndicator.Font=Enum.Font.GothamBold;autoIndicator.Parent=gui
 local combat=Instance.new("Frame");combat.Name="CombatDock";combat.AnchorPoint=Vector2.new(1,.5);combat.Position=UDim2.new(1,-12,.5,30);combat.Size=UDim2.fromOffset(62,232);combat.BackgroundTransparency=1;combat.Parent=gui
 local attack=button(combat,"공격",Color3.fromRGB(166,65,55));attack.Size=UDim2.fromOffset(58,50);attack.Position=UDim2.fromOffset(2,0)
 local skill=button(combat,"스킬",Color3.fromRGB(100,69,166));skill.Size=UDim2.fromOffset(58,50);skill.Position=UDim2.fromOffset(2,58)
@@ -1155,6 +1163,7 @@ refreshHud=function()
  objective.Visible=message=="OBJECTIVE";npcSpeech.Visible=message=="SPEECH"
  objectContext.Visible=message=="OBJECT";bossScene.Visible=message=="BOSS";hint.Visible=message=="TIPS"
  notice.Visible=message~="NONE";combat.Visible=false -- 자동 전투: 모바일 수동 버튼을 표시하지 않는다
+ autoIndicator.Visible=not blocked and (tonumber(p:GetAttribute("CurrentZone"))or 0)>0
  returnButton.Visible=not blocked and (tonumber(p:GetAttribute("CurrentZone"))or 0)>0
  stats.Visible=not blocked;party.Visible=not blocked
  housingToggle.Visible=not blocked;avatarToggle.Visible=not blocked
