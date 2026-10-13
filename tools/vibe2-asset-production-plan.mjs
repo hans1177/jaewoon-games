@@ -5015,6 +5015,7 @@ export function buildVibeAssetProductionPlan({
       const compatible=assetSupplyCandidateAllowed(asset,resolvedTarget);
       const eligibleForNativeBinding=sourceFiles.length>0&&asset?.productionVerified===true&&asset?.rightsPass===true;
       const status=!compatible?'ASSET_REPAIR_REQUIRED'
+        :masterUpgradeProvenanceRequired?'SOURCE_BINDING_PROVENANCE_REQUIRED'
         :masterUpgradeReviewRequired?(eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED')
         :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
         :eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED';
@@ -5022,7 +5023,8 @@ export function buildVibeAssetProductionPlan({
         role:clean(asset?.role||asset?.subfamily)||null,status,sourceBound,
         sourceFiles:freezeList(sourceFiles),sourceHash:clean(asset?.sourceHash)||null,
         libraryVersion:Number(companyRegistry.version||0),nativeRuntimeVerified:false,
-        repairOwner:status==='NATIVE_SOURCE_BINDING_REQUIRED'?'EXISTING_GAME_SOURCE_WORKER':'EXISTING_ASSET_DEVELOPMENT',
+        repairOwner:status==='NATIVE_SOURCE_BINDING_REQUIRED'||status==='SOURCE_BINDING_PROVENANCE_REQUIRED'
+          ?'EXISTING_GAME_SOURCE_WORKER':'EXISTING_ASSET_DEVELOPMENT',
         protectedGameplayAuthority:true,detailedDesignCandidate:true,
         roleAndPlatformRevalidationRequired:true,automaticReplacementAuthorized:false,
         currentMasterGlbHash,consumerAppliedMasterHash,masterUpgradeReviewRequired,masterUpgradeProvenanceRequired,
