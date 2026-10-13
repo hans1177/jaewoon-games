@@ -956,8 +956,8 @@ local function load(p)
   if attempt<SAVE_MAX_ATTEMPTS then task.wait(.2*attempt)end
  end
  if not readOk then
-  setSaveState(p,"LOAD_FAILED")
-  warn("Player save load failed",p.UserId,lastError)
+  saveReady[p]=true;setSaveState(p,"SESSION_ONLY")
+  warn("Player save load failed; using session-only customization",p.UserId,lastError)
   setStats(p,true)
   return
  end
@@ -969,7 +969,7 @@ local function load(p)
  setStats(p,true)
 end
 local function save(p)
- if C.SaveEnabled~=true or not store or saveReady[p]~=true then return false end
+ if C.SaveEnabled~=true or not store or saveReady[p]~=true or p:GetAttribute("SaveState")=="SESSION_ONLY" then return false end
  local data={};for _,k in ipairs(SAVE)do data[k]=p:GetAttribute(k)end
  setSaveState(p,"SAVING")
  local lastError=nil
@@ -2159,6 +2159,7 @@ RunService.Heartbeat:Connect(function(dt)
     if n(p,"CurrentZone",0)==e.zone then local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end
    end
    if target then
+    e.part:SetAttribute("MotionState",e.attackPending and "ATTACK" or now<(e.stunnedUntil or 0) and "HIT" or "CHASE")
     e.lastPlayerObservedAt=now
     e.roamTarget=nil
     -- 보스의 실제 첫 조우 사건만 대사/컷신 후보로 전달한다. 공격·보상·페이즈는 기존 전투 시스템 담당.
@@ -2187,6 +2188,7 @@ RunService.Heartbeat:Connect(function(dt)
     if d and d.Magnitude>math.max(4,engage*.78)and now>=(e.stunnedUntil or 0)and not e.attackPending then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,(e.speed or 7)*dt)end
     if tr and(tr.Position-e.part.Position).Magnitude<=engage and now>=(e.nextAttackAt or 0)and now>=(e.stunnedUntil or 0)then beginEnemyAttack(e,target,now)end
    else
+    e.part:SetAttribute("MotionState",e.attackPending and "ATTACK" or "ROAM")
     local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z)
     -- 기존 전투 추적·귀환은 그대로 두고, 비전투 일반 몬스터만 자기 서식지에서 관찰·이동한다.
     if e.boss or e.runBoss or e.hiddenBoss or now-(e.lastPlayerObservedAt or -1000000)<4 or back.Magnitude>18 then
