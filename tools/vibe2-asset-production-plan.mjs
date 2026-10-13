@@ -5040,6 +5040,8 @@ export function buildVibeAssetProductionPlan({
     pendingSourceBindingCount:automaticBindingTargets.filter(row=>row.status==='NATIVE_SOURCE_BINDING_REQUIRED').length,
     authoringRequiredCount:automaticBindingTargets.filter(row=>['AUTHORING_REQUIRED','SOURCE_ASSET_REQUIRED'].includes(row.status)).length,
     runtimeQaRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BOUND_RUNTIME_QA_REQUIRED').length,
+    glbMasterUpgradeCount:automaticBindingTargets.filter(row=>row.masterUpgradeReviewRequired===true).length,
+    glbAppliedVersionProvenanceRequiredCount:automaticBindingTargets.filter(row=>row.masterUpgradeProvenanceRequired===true).length,
     targets:freezeList(automaticBindingTargets),
     selectedRequirementsOnly:true,noParallelPipeline:true,noNewQueue:true,
     existingGraphicsProductionAndBuildUp:true,
