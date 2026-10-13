@@ -50,6 +50,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     if(legacy.length===0)continue;
     const match=file.match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
     const gameId=match[2],platform=match[1];
+    if(platform!=='roblox')continue; // 중앙정책: 로블록스 단독 개발, 이전 플랫폼 이관 재활성화 금지
     const existing=gameQueue.tasks.find(task=>clean(task.gameId)===gameId
       &&!['cancelled','done','completed','verified'].includes(clean(task.status).toLowerCase())
       &&clean(task.target).toLowerCase()===platform
@@ -98,6 +99,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     // Existing System AI worker cannot write game source. Recover legacy misrouted work in-place.
     const gameSourceOwned=uniq(rec.responsibleFiles).some(file=>GAME_SOURCE_PREFIXES.some(prefix=>clean(file).replaceAll('\\','/').replace(/^\.\//,'').startsWith(prefix)));
     const owner=requestedOwner==='SYSTEM_AI'&&gameSourceOwned?'VIBE2_VIBE3':requestedOwner;
+    if(owner==='VIBE2_VIBE3'&&uniq(rec.responsibleFiles).some(file=>
+      /^(?:web|unity|unreal|godot)-games\//.test(clean(file).replaceAll('\\\\','/').replace(/^\.\//,''))))return rec;
     if(mode!=='all'&&mode==='vibe'&&owner!=='VIBE2_VIBE3')return rec;
     if(mode!=='all'&&mode==='system-ai'&&owner!=='SYSTEM_AI')return rec;
     const ids=uniq([rec.sourceTaskId,...(rec.relatedTaskIds||[])]);
