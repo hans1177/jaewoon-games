@@ -32,6 +32,56 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
   // 이번 복구가 대기열로 돌려보낸 작업만 예약 알림에 사용한다. 실행 중 예약은 보존한다.
   const gameRequeuedTaskIds=new Set();
 
+  // 오래된 게임 소스 복구 예약은 기존 GAME_PRIMARY 작업에 귀속한다.
+  // 후속 시스템 작업은 게임 소스 수정 및 검증이 확인되기 전까지 해제하지 않는다.
+  const legacyGroups=new Map();
+  for(const task of systemAi.tasks){
+    if(clean(task.status)!=='queued'||!clean(task.id).startsWith('recovery-recovery-'))continue;
+    const files=uniq(task.responsibleFiles).map(file=>file.replaceAll('\\','/').replace(/^\.\//,''));
+    if(files.length!==1)continue;
+    const match=files[0].match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
+    if(!match)continue;
+    const key=files[0];
+    if(!legacyGroups.has(key))legacyGroups.set(key,[]);
+    legacyGroups.get(key).push(task);
+  }
+  for(const [file,legacy] of legacyGroups){
+    if(legacy.length<2)continue;
+    const match=file.match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
+    const gameId=match[2],platform=match[1];
+    const existing=gameQueue.tasks.find(task=>clean(task.gameId)===gameId
+      &&!['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase())
+      &&(clean(task.id).includes('repair')||clean(task.id).includes('implementation'))
+      &&(clean(task.id).includes(platform)||clean(task.sourceRoot).startsWith(platform+'-games/')));
+    if(!existing)continue; // 새 게임 작업 생성 금지
+    const ids=new Set(legacy.map(task=>clean(task.id)));
+    const verified=['done','verified','completed'].includes(clean(existing.status).toLowerCase())
+      &&uniq(existing.evidence).some(value=>/verification:(?:PASS|VERIFIED)|runtime-qa:PASS|qa:PASS/i.test(value));
+    if(!verified){
+      gameQueue.tasks=gameQueue.tasks.map(task=>clean(task.id)!==clean(existing.id)?task:{
+        ...task,priority:'critical',sourceMutationRequired:true,
+        evidence:uniq([...(task.evidence||[]),...legacy.map(row=>'legacy-system-ai-repair:'+clean(row.id)),
+          'legacy-recovery-source:'+file,'legacy-recovery-verification:REQUIRED']),
+        updatedAt:stamp
+      });
+    }
+    systemAi.tasks=systemAi.tasks.map(task=>{
+      if(ids.has(clean(task.id)))return{
+        ...clearReservation(task),status:verified?'cancelled':'blocked',
+        blocker:verified?null:'vibe-game-repair-pending:'+clean(existing.id),
+        evidence:uniq([...(task.evidence||[]),'legacy-recovery-routed-to-vibe:'+clean(existing.id),
+          ...(verified?['legacy-recovery-verified-by-vibe:'+clean(existing.id)]:[])]),
+        updatedAt:stamp
+      };
+      if(!verified)return task; // 검증 전 원래 의존성을 유지한다
+      const deps=uniq(task.dependencies);
+      if(!deps.some(id=>ids.has(id)))return task;
+      return{...task,dependencies:deps.filter(id=>!ids.has(id)),
+        evidence:uniq([...(task.evidence||[]),'legacy-recovery-dependency-verified:'+clean(existing.id)]),
+        updatedAt:stamp};
+    });
+  }
+
   recovery.tasks=recovery.tasks.map(rec=>{
     if(clean(rec.status)!=='queued')return rec;
     if(targetSourceTaskId&&clean(rec.sourceTaskId)!==targetSourceTaskId)return rec;
