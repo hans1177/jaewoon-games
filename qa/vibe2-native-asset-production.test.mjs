@@ -4864,6 +4864,9 @@ test('shared RPG menu transition is interruptible and preserves direct interacti
   const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
   assert.match(source,/TweenService:Create\(overlay,TweenInfo\.new\(\.18/);
   assert.match(source,/entranceTween:Cancel\(\)/);
+  assert.match(source,/panelTween:Cancel\(\)/);
+  assert.match(source,/panelScale.Scale=\.97/);
+  assert.match(source,/panelScale.Scale=1/);
   assert.match(source,/stopEntrance\(\)\s*\n\s*opened=value/);
   assert.match(source,/if options\.onOpen then options\.onOpen\(value\)end/);
   assert.match(source,/gui\.Destroying:Connect\(function\(\)\s*\n\s*stopEntrance\(\)/);
