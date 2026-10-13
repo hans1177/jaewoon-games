@@ -502,7 +502,7 @@ test('central native planner suppresses already-active per-game child dispatches
   assert.match(development,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
   assert.match(development,/roblox_count=/);
   assert.match(development,/unity_count=/);
-  assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.roblox_json\)/);
+  assert.match(development,/ROBLOX_GAME_IDS: \$\{\{ needs\.native-plan\.outputs\.roblox_json \}\}/);
   assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.unity_json\)/);
 });
 
