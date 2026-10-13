@@ -667,6 +667,40 @@ local function playCommonMotion(atomId)
  end
  return false
 end
+-- 리그를 가진 NPC·몬스터의 실제 Animator에서 공용 모션을 재생한다.
+-- GLB 정적 메시(Animator 없음)는 관절 애니메이션 대상에서 제외한다.
+local actorMotionTracks=setmetatable({}, {__mode="k"})
+task.spawn(function()
+ while gui.Parent do
+  if commonMotion and p.Character then
+   local center=p.Character:FindFirstChild("HumanoidRootPart")
+   if center then
+    local checked=0
+    for _,actor in ipairs(workspace:GetDescendants())do
+     if checked>=80 then break end
+     if actor:IsA("Humanoid") and actor.Parent~=p.Character and actor.RigType==Enum.HumanoidRigType.R15 then
+      local rig=actor.Parent;local ar=rig and rig:FindFirstChild("HumanoidRootPart")
+      if ar and (ar.Position-center.Position).Magnitude<110 then
+       checked+=1
+       local animator=actor:FindFirstChildOfClass("Animator")
+       if animator then
+        local moving=actor.MoveDirection.Magnitude>.08
+        local desired=actor.Health<=0 and "DEATH_FRONT" or moving and "WALK" or "IDLE_RELAXED"
+        local item=actorMotionTracks[actor]
+        if not item or item.name~=desired then
+         if item and item.track then pcall(function()item.track:Stop(.16);item.track:Destroy()end)end
+         local ok,track=pcall(function()return commonMotion.PlayPreview(animator,desired,{fadeTime=.15})end)
+         actorMotionTracks[actor]={name=desired,track=ok and track or nil}
+        end
+       end
+      end
+     end
+    end
+   end
+  end
+  task.wait(1.2)
+ end
+end)
 local combatTracks={}
 local function playCombatAnimation(skillCast)
  local c=p.Character;local h=c and c:FindFirstChildOfClass("Humanoid");if not h then return end
