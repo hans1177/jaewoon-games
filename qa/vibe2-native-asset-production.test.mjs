@@ -4944,6 +4944,8 @@ test('detailed design candidates enter canonical binding targets only with verif
   assert.ok(source.includes('automaticReplacementAuthorized:false'));
   assert.ok(source.includes('roleAndPlatformRevalidationRequired:true'));
   assert.ok(source.includes('masterUpgradeReviewRequired'));
+  assert.ok(source.includes('glbMasterUpgradeCount:'));
+  assert.ok(source.includes('glbAppliedVersionProvenanceRequiredCount:'));
   assert.ok(source.includes('currentMasterGlbHash'));
   assert.ok(source.includes('consumerAppliedMasterHash'));
   assert.ok(source.includes('existingSelectionKeys.has(row.assetId)'));
