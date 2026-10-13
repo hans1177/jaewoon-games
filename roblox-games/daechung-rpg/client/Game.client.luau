@@ -230,7 +230,7 @@ startupOverlay.Parent=gui
 local startupCard=Instance.new("Frame")
 startupCard.AnchorPoint=Vector2.new(.5,.5)
 startupCard.Position=UDim2.fromScale(.5,.5)
-startupCard.Size=touchEnabled and UDim2.new(.9,0,0,318)or UDim2.fromOffset(480,334)
+startupCard.Size=touchEnabled and UDim2.new(.9,0,0,345)or UDim2.fromOffset(480,365)
 startupCard.BackgroundColor3=Color3.fromRGB(34,37,48)
 startupCard.BackgroundTransparency=.04
 startupCard.BorderSizePixel=0
@@ -277,7 +277,7 @@ startupGuide.Parent=startupCard
 
 local startupStatus=Instance.new("TextLabel")
 startupStatus.AnchorPoint=Vector2.new(.5,0)
-startupStatus.Position=UDim2.new(.5,0,0,216)
+startupStatus.Position=UDim2.new(.5,0,0,237)
 startupStatus.Size=UDim2.new(.84,0,0,28)
 startupStatus.BackgroundTransparency=1
 startupStatus.Text="마을과 캐릭터를 준비하는 중..."
@@ -287,10 +287,31 @@ startupStatus.Font=Enum.Font.Gotham
 startupStatus.ZIndex=102
 startupStatus.Parent=startupCard
 
+-- 로비: 첫 화면에서 서버 저장형 외형을 선택한 뒤 입장한다.
+startupTitle.Text="대충 RPG  ·  나만의 모험"
+startupSubtitle.Text="캐릭터 꾸미기  /  마을  /  주택  /  5개 바이옴"
+startupGuide.Text="외형을 고르고 입장해. 마을에서 집을 짓고 포탈을 탐험할 수 있어."
+startupGuide.Position=UDim2.new(.5,0,0,122)
+startupGuide.Size=UDim2.new(.84,0,0,50)
+local lobbyCustomize=button(startupCard,"캐릭터 외형 변경",Color3.fromRGB(74,136,129))
+lobbyCustomize.Name="LobbyCustomize";lobbyCustomize.AnchorPoint=Vector2.new(.5,0)
+lobbyCustomize.Position=UDim2.new(.5,0,0,174);lobbyCustomize.Size=UDim2.new(.72,0,0,38)
+lobbyCustomize.ZIndex=104
+lobbyCustomize.Activated:Connect(function()remote:FireServer(C.Actions.CUSTOMIZE_NEXT)end)
+local lobbyStyle=Instance.new("TextLabel")
+lobbyStyle.BackgroundTransparency=1;lobbyStyle.Size=UDim2.new(.84,0,0,22)
+lobbyStyle.Position=UDim2.new(.08,0,0,209);lobbyStyle.ZIndex=104
+lobbyStyle.TextColor3=Color3.fromRGB(212,230,218)
+lobbyStyle.TextSize=13;lobbyStyle.Font=Enum.Font.Gotham;lobbyStyle.Parent=startupCard
+local function showLobbyStyle()
+ lobbyStyle.Text="외형 "..tostring(p:GetAttribute("AvatarStyle")or 1).." / 6 · 재접속 유지"
+end
+p:GetAttributeChangedSignal("AvatarStyle"):Connect(showLobbyStyle)
+showLobbyStyle()
 local startupPlay=button(startupCard,"게임 시작",Color3.fromRGB(86,103,163))
 startupPlay.Name="PlayButton"
 startupPlay.AnchorPoint=Vector2.new(.5,1)
-startupPlay.Position=UDim2.new(.5,0,1,-22)
+startupPlay.Position=UDim2.new(.5,0,1,-12)
 startupPlay.Size=UDim2.new(.72,0,0,50)
 startupPlay.Visible=false
 startupPlay.ZIndex=102
