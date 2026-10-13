@@ -539,3 +539,57 @@ test('every deployment requests existing supervised homepage publication without
     assert.notEqual(result.fingerprint,compiled.fingerprint);
   }
 });
+
+
+test('homepage reuses fetched URLs and unchanged shelf nodes instead of rebuilding them',async()=>{
+  const {runInNewContext}=await import('node:vm');
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const requests=[];
+  const fetchJson=runInNewContext(source.slice(source.indexOf('const getJson='),source.indexOf('const esc='))+'getJson;',{
+    AbortSignal,fetch:async(url,options)=>{requests.push({url,options});return{ok:true,json:async()=>({value:1})};}
+  });
+  await fetchJson('/game-catalog.json');
+  assert.equal(requests[0].url,'/game-catalog.json');
+  assert.equal(requests[0].options.cache,'default');
+  assert.ok(requests[0].options.signal);
+  const nodes=new Map();let writes=0,appends=0;
+  const shelf=runInNewContext(source.slice(source.indexOf('function buildShelf('),source.indexOf('function buildRecentUpdates('))+'buildShelf;',{
+    esc:String,buildCard:row=>'<article>'+row.id+'</article>',
+    document:{getElementById:id=>nodes.get(id),createElement:()=>({parentNode:null,grid:{scrollLeft:0},setAttribute(){},querySelector(){return this.grid;},set innerHTML(value){writes++;this.html=value;}})}
+  });
+  const hub={appendChild(node){appends++;node.parentNode=this;nodes.set(node.id,node);}};
+  shelf(hub,'games','제목','설명',[{id:'a'}]);const node=nodes.get('games');node.grid.scrollLeft=120;
+  shelf(hub,'games','제목','설명',[{id:'a'}]);
+  assert.equal(writes,1);assert.equal(appends,1);assert.equal(nodes.get('games'),node);
+  shelf(hub,'games','제목','설명',[{id:'b'}]);assert.equal(writes,2);assert.equal(node.grid.scrollLeft,120);
+});
+
+test('homepage manager binds official images to exact dedicated games and fills missing artwork idempotently',async()=>{
+  const os=await import('node:os'),path=await import('node:path');
+  const {execFileSync}=await import('node:child_process');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'homepage-title-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets/homepage-covers'),{recursive:true});
+    const catalog={games:[{id:'real-game',name:'검증된 게임'},{id:'other-game',name:'다른 게임'}]};
+    const queue={items:[{gameId:'real-game',robloxPublicationTarget:{gameId:'real-game',verified:true,dedicated:true,universeId:'11',placeId:'111'}},
+      {gameId:'other-game',robloxDedicatedExperience:{gameId:'other-game',state:'PASS',published:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'22',placeId:'222'}}]};
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify(catalog));
+    fs.writeFileSync(path.join(root,'queue.json'),JSON.stringify(queue));
+    fs.writeFileSync(path.join(root,'homepage-platform-exposure.json'),'{}');
+    const body={data:[{universeId:11,thumbnails:[{state:'Completed',targetId:7,imageUrl:'https://tr.rbxcdn.com/real.png'}]},
+      {universeId:22,thumbnails:[{state:'Completed',imageUrl:'https://rbxcdn.com.evil.test/wrong.png'}]},
+      {universeId:99,thumbnails:[{state:'Completed',imageUrl:'https://tr.rbxcdn.com/unrelated.png'}]}]};
+    const preload='data:text/javascript,'+encodeURIComponent('globalThis.fetch=async()=>({ok:true,json:async()=>('+JSON.stringify(body)+')});');
+    const run=()=>execFileSync(process.execPath,['--import',preload,path.resolve('tools/homepage-manager.mjs'),'--sync-roblox-titles'],{
+      cwd:root,env:{...process.env,HOMEPAGE_CATALOG_PATH:'game-catalog.json',HOMEPAGE_QUEUE_PATH:'queue.json'},encoding:'utf8'});
+    run();const first=fs.readFileSync(path.join(root,'game-catalog.json'),'utf8');
+    const result=JSON.parse(first);
+    assert.equal(result.games[0].robloxThumbnail.universeId,'11');
+    assert.equal(result.games[0].robloxThumbnail.runtimeScreenshot,false);
+    assert.equal(result.games[1].robloxThumbnail,undefined);
+    assert.ok(fs.existsSync(path.join(root,result.games[1].robloxTitleArtwork.src)));
+    run();assert.equal(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8'),first);
+    queue.items[0].robloxPublicationTarget.shared=true;fs.writeFileSync(path.join(root,'queue.json'),JSON.stringify(queue));
+    run();assert.equal(JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8')).games[0].robloxThumbnail,undefined);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
