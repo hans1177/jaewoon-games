@@ -490,7 +490,7 @@ export function reviewSecurityRecovery(queueInput,recoveryInput,{recoveryId='',d
 // Game source mutations belong to the canonical Vibe game worker, never System AI.
 function requiresVibeSourceWorker(task={}){
   return unique(task.responsibleFiles).some(file=>
-    /^(?:web|roblox|unity|unreal|godot)-games\//.test(clean(file).replaceAll('\\\\','/').replace(/^\.\//,'')));
+    /^(?:web|roblox|unity|unreal|godot)-games\//.test(clean(file).replaceAll('\\','/').replace(/^\.\//,'')));
 }
 export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId='',at=Date.now()}={}){
   const compacted=coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at});
