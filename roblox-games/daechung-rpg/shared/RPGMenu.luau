@@ -221,7 +221,7 @@ function Menu.install(config,gui,player,options)
    end
    b.Name="InventorySlot"..index;b.LayoutOrder=index
    b.ItemIcon.Text=row.icon;b.ItemName.Text=row.name
-   b.ItemState.Text=row.equipped and "착용 중" or "도구"
+   b.ItemState.Text=row.equipped and "착용 중" or (row.category=="장비" and "장비" or "도구")
    if id==selectedId then selection=row end
   end
   for id,b in pairs(itemButtons)do
