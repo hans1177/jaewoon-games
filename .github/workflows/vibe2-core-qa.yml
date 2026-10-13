@@ -227,9 +227,10 @@ permissions:
   contents: read
 
 concurrency:
-  # New PR revisions and main pushes supersede old QA; preserve manual and unrelated branch runs.
-  group: vibe2-core-qa-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+  # PR updates supersede their own checks, but each merged main commit must finish its QA.
+  # Separate main commits by SHA so newer pushes neither cancel active checks nor replace pending ones.
+  group: vibe2-core-qa-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   scope:
