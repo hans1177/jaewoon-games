@@ -1472,6 +1472,10 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         pushAction({action:'ADAPT',assetId:clean(improved.id),family,
           reason:'NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
           replacesCandidateAssetId:clean(currentAsset?.id),
+          // Pass only registered model provenance; source existence/hash still
+          // require independent inspection before a native source edit.
+          registeredSourceModel:clean(improved.masterGlb||improved.masterSourcePath||improved.path)||null,
+          registeredSourceLicense:clean(improved.license)||null,
           replacementExecution:'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE',
           automaticReplacementAuthorized:true,independentNativeRuntimeQaRequired:true,
           sourceCompatibilityAndRightsRequired:true,

@@ -4930,6 +4930,9 @@ test('canonical source worker carries authorized shared GLB replacement identiti
  assert.match(worker,/assetId:row\.assetId\|\|null/);
  assert.match(worker,/sourceCompatibilityAndRightsRequired:row\.sourceCompatibilityAndRightsRequired===true/);
  assert.match(worker,/nativeBuildBlockedByUnacquiredSource:/);
+ assert.match(worker,/row\.registeredSourceModel\|\|null/);
+ assert.match(worker,/row\.registeredSourceLicense\|\|null/);
+ assert.match(worker,/sourceInspectionRequired:/);
 });
 
 test('shared asset with just one higher quality point is immediately queued for canonical replacement',()=>{
@@ -4941,6 +4944,8 @@ test('shared asset with just one higher quality point is immediately queued for 
  const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
  assert.equal(upgrade?.assetId,'new-prop');
  assert.equal(upgrade?.replacesCandidateAssetId,'old-prop');
+ assert.equal(upgrade?.registeredSourceModel,'assets/native/new-prop.glb');
+ assert.equal(upgrade?.registeredSourceLicense,'project-original');
  assert.equal(upgrade?.automaticReplacementAuthorized,true);
  assert.equal(upgrade?.replacementExecution,'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE');
  assert.equal(upgrade?.sourceCompatibilityAndRightsRequired,true);
