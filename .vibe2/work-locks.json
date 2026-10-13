@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-12z4uh3",
+      "worker": "vibe2",
+      "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-second-gate-rebuild-v1",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "files": [
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau",
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau"
+      ],
+      "baseSha": "f4d99fed53f21cb0781307d4cb4d96ecb5a3dbae",
+      "runId": "38383552772",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-13T10:48:47.572Z",
+      "expiresAt": "2026-10-13T11:33:47.572Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-second-gate-rebuild-v1"
+      ]
+    }
+  ]
 }
