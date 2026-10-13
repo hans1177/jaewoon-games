@@ -710,7 +710,7 @@ end
 -- Save schema v3 preserves every earlier key and adds level-cap, relic and boss-companion progression.
 local SAVE_SCHEMA_VERSION=3
 local SAVE_MAX_ATTEMPTS=3
-local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture","AvatarStyle"}
+local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture","HouseModules","AvatarStyle"}
 local saveReady={}
 local saveSurface=RS:FindFirstChild("SavePersistence")
 if not saveSurface then
@@ -729,7 +729,7 @@ end
 local function init(p)
  p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1);p:SetAttribute("RelicId",C.RelicDefault or"NONE")
  p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("SecondAdvancementId","");p:SetAttribute("ClassName","직업 미선택")
- p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0);p:SetAttribute("HouseLevel",0);p:SetAttribute("HouseFurniture",0);p:SetAttribute("AvatarStyle",1)
+ p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0);p:SetAttribute("HouseLevel",0);p:SetAttribute("HouseFurniture",0);p:SetAttribute("HouseModules",0);p:SetAttribute("AvatarStyle",1)
  p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
  p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
@@ -1686,6 +1686,7 @@ local function refreshHouse(p)
  local level=math.clamp(math.floor(n(p,"HouseLevel",0)),0,3)
  if level==0 then return end
  local furniture=math.clamp(math.floor(n(p,"HouseFurniture",0)),0,8)
+ local modules=math.clamp(math.floor(n(p,"HouseModules",0)),0,12)
  local base=housePosition(p)
  local home=Instance.new("Model");home.Name=key;home:SetAttribute("OwnerUserId",p.UserId);home:SetAttribute("HouseLevel",level);home.Parent=houses
  local width=18+level*6
@@ -1725,31 +1726,51 @@ local function refreshHouse(p)
   local pos=Vector3.new(-width/2+4+col*4,1.4,-2+row*5)
   piece("Furniture_"..i,Vector3.new(3,2,2.5),pos,i%2==0 and Color3.fromRGB(107,147,119)or Color3.fromRGB(158,113,76))
  end
+ -- 플레이어가 구매한 모듈을 고정 슬롯에 개별 배치해 재접속 후에도 복원한다.
+ for i=1,modules do
+  local side=i%4
+  local tier=math.ceil(i/4)
+  local offset=width/2+3+tier*4
+  local positions={
+   Vector3.new(offset,0,(i%3-1)*5),
+   Vector3.new(-offset,0,(i%3-1)*5),
+   Vector3.new((i%3-1)*5,0,offset),
+   Vector3.new((i%3-1)*5,0,-offset)
+  }
+  local at=positions[side+1]
+  piece("BuildFoundation_"..i,Vector3.new(5,1,5),at+Vector3.new(0,-.4,0),frameColor,frameMaterial)
+  piece("BuildWall_"..i,Vector3.new(5,5,1),at+Vector3.new(0,2,0),frameColor,frameMaterial)
+  piece("BuildRoof_"..i,Vector3.new(5.5,.8,5.5),at+Vector3.new(0,5,0),Color3.fromRGB(105,78,68))
+ end
+ home:SetAttribute("ModuleCount",modules)
  home:SetAttribute("BuildingStyle",level==1 and "TIMBER" or level==2 and "STONE" or "FORTIFIED")
   home:SetAttribute("FurnitureCount",furniture)
 end
 local function houseAction(p,action)
  if p:GetAttribute("SaveState")=="LOADING"or saveReady[p]~=true then msg(p,"저장 데이터 준비 후 이용해.");return false end
  if n(p,"CurrentZone",0)~=0 or p:GetAttribute("InCombat")==true or os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds then msg(p,"마을에서 전투가 끝난 뒤 이용해.");return false end
- local h=C.Housing;local level=math.floor(n(p,"HouseLevel",0));local furniture=math.floor(n(p,"HouseFurniture",0))
+ local h=C.Housing;local level=math.floor(n(p,"HouseLevel",0));local furniture=math.floor(n(p,"HouseFurniture",0));local modules=math.floor(n(p,"HouseModules",0))
  if action==C.Actions.HOUSING_VISIT then
   if level==0 then msg(p,"먼저 집을 건설해.");return false end
   teleportPlayer(p,housePosition(p)+Vector3.new(0,5,-12));msg(p,"내 집 방문");return true
  end
- local cost,newLevel,newFurniture=0,level,furniture
+ local cost,newLevel,newFurniture,newModules=0,level,furniture,modules
  if action==C.Actions.HOUSING_BUILD then
   if level>0 then msg(p,"이미 집을 소유하고 있어.");return false end
   cost=h.BuildCost;newLevel=1
  elseif action==C.Actions.HOUSING_UPGRADE then
   if level==0 or level>=h.MaxLevel then msg(p,"집을 건설했거나 최대 확장 단계인지 확인해.");return false end
   cost=h.UpgradeBaseCost*level;newLevel=level+1
+ elseif action==C.Actions.HOUSING_MODULE then
+  if level==0 or modules>=h.MaxModules then msg(p,"집을 건설하거나 건축 모듈 한도를 확인해.");return false end
+  cost=h.ModuleCost;newModules=modules+1
  elseif action==C.Actions.HOUSING_FURNISH then
   if level==0 or furniture>=h.MaxFurniture then msg(p,"집 또는 가구 배치 한도를 확인해.");return false end
   cost=h.FurnitureCost;newFurniture=furniture+1
  else return false end
  if n(p,"Gold",0)<cost then msg(p,"집 꾸미기에 필요한 골드가 부족해. "..cost.."G 필요");return false end
  p:SetAttribute("Gold",n(p,"Gold",0)-cost)
- p:SetAttribute("HouseLevel",newLevel);p:SetAttribute("HouseFurniture",newFurniture)
+ p:SetAttribute("HouseLevel",newLevel);p:SetAttribute("HouseFurniture",newFurniture);p:SetAttribute("HouseModules",newModules)
  refreshHouse(p);msg(p,"하우징 변경 완료 · "..cost.."G");feedback(p,"BUILD");return true
 end
 
@@ -1767,7 +1788,7 @@ remote.OnServerEvent:Connect(function(p,a)
    p:SetAttribute("AvatarStyle",n(p,"AvatarStyle",1)%6+1);applyPlayerAppearance(p)
    msg(p,"외형 스타일 "..n(p,"AvatarStyle",1).."/6");accepted=true
   end
- elseif a==C.Actions.HOUSING_BUILD or a==C.Actions.HOUSING_UPGRADE or a==C.Actions.HOUSING_FURNISH or a==C.Actions.HOUSING_VISIT then accepted=houseAction(p,a)
+ elseif a==C.Actions.HOUSING_BUILD or a==C.Actions.HOUSING_UPGRADE or a==C.Actions.HOUSING_FURNISH or a==C.Actions.HOUSING_MODULE or a==C.Actions.HOUSING_VISIT then accepted=houseAction(p,a)
  elseif a==C.Actions.BUY_WEAPON then accepted=purchaseMerchantEquipment(p,"WEAPON")
  elseif a==C.Actions.BUY_ARMOR then accepted=purchaseMerchantEquipment(p,"ARMOR")
  elseif CLASS_ACTIONS[a]then accepted=selectClass(p,CLASS_ACTIONS[a])
