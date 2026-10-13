@@ -760,23 +760,6 @@ local function applyPlayerAppearance(p)
   local weld=Instance.new("WeldConstraint");weld.Part0=body;weld.Part1=part;weld.Parent=part
   return part
  end
- -- Character library archetypes retain a visibly different silhouette even when the
- -- optional external asset cannot be loaded in this Roblox experience.
- if archetype==1 then
-  fit(torso,"SamuraiKimono",Vector3.new(2.05,2.15,1.25),CFrame.new(0,-.22,0),Color3.fromRGB(40,79,126),Enum.Material.Fabric)
-  fit(head,"SamuraiHairTop",Vector3.new(1.4,.42,1.35),CFrame.new(0,.53,.05),Color3.fromRGB(98,53,39),Enum.Material.Fabric)
-  fit(head,"SamuraiTopKnot",Vector3.new(.5,.52,.5),CFrame.new(0,.94,.25),Color3.fromRGB(98,53,39),Enum.Material.Fabric)
-  fit(torso,"SamuraiSash",Vector3.new(2.12,.32,1.35),CFrame.new(0,-.85,0),Color3.fromRGB(211,186,117),Enum.Material.Fabric)
- elseif archetype==2 then
-  fit(torso,"WuxiaRobe",Vector3.new(2.12,2.65,1.3),CFrame.new(0,-.48,0),Color3.fromRGB(46,152,139),Enum.Material.Fabric)
-  local brim=fit(head,"WuxiaHatBrim",Vector3.new(3,.16,3),CFrame.new(0,.72,0),Color3.fromRGB(210,183,126),Enum.Material.Wood)
-  if brim then brim.Shape=Enum.PartType.Cylinder end
-  fit(head,"WuxiaHatCrown",Vector3.new(1.3,.52,1.3),CFrame.new(0,.97,0),Color3.fromRGB(210,183,126),Enum.Material.Wood)
- else
-  fit(torso,"KnightTabard",Vector3.new(2.12,2.2,1.3),CFrame.new(0,-.25,0),Color3.fromRGB(63,98,150),Enum.Material.Fabric)
-  fit(head,"KnightVisorHelmet",Vector3.new(1.85,1.05,1.68),CFrame.new(0,.35,0),Color3.fromRGB(179,187,203))
-  fit(head,"KnightVisorSlot",Vector3.new(1.35,.16,.13),CFrame.new(0,.28,-.87),Color3.fromRGB(27,43,66))
- end
  if armor>=1 then
   fit(torso,"ArmorChest",Vector3.new(2.15,1.5,.3),CFrame.new(0,0,-.62),tint)
   fit(c:FindFirstChild("LeftUpperArm")or c:FindFirstChild("Left Arm"),"ArmorLeft",Vector3.new(.75,.6,.8),CFrame.new(0,.25,0),tint)
