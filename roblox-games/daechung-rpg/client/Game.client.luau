@@ -638,10 +638,43 @@ local attack=button(combat,"공격",Color3.fromRGB(166,65,55));attack.Size=UDim2
 local skill=button(combat,"스킬",Color3.fromRGB(100,69,166));skill.Size=UDim2.fromOffset(58,50);skill.Position=UDim2.fromOffset(2,58)
 local block=button(combat,"막기",Color3.fromRGB(74,102,151));block.Name="BlockParry";block.Size=UDim2.fromOffset(58,50);block.Position=UDim2.fromOffset(2,116)
 local dodge=button(combat,"회피",Color3.fromRGB(54,115,139));dodge.Size=UDim2.fromOffset(58,50);dodge.Position=UDim2.fromOffset(2,174)
+-- 공용 R15 61종 소스는 로드 가능하게 등록한다. 현재 키프레임은 미게시 프리뷰이므로
+-- 실제 재생 가능한 경우에만 적용하며 기존 게시 애니메이션은 폴백으로 유지한다.
+local commonMotionModule=RS:WaitForChild("Shared"):FindFirstChild("RobloxCommonMotion")
+local commonMotion=nil
+if commonMotionModule then
+ local ok,result=pcall(require,commonMotionModule)
+ if ok and result and result.Audit then
+  local good,audit=pcall(result.Audit)
+  if good and audit.atomCount==61 then commonMotion=result end
+ end
+end
+local previewTracks={}
+local function playCommonMotion(atomId)
+ if not commonMotion then return false end
+ local character=p.Character
+ local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+ local animator=humanoid and humanoid:FindFirstChildOfClass("Animator")
+ if not animator or humanoid.RigType~=Enum.HumanoidRigType.R15 then return false end
+ local previous=previewTracks[atomId]
+ if previous then pcall(function()previous:Stop(.1);previous:Destroy()end)end
+ local ok,track=pcall(function()
+  return commonMotion.PlayPreview(animator,atomId,{fadeTime=.1})
+ end)
+ if ok and track then
+  previewTracks[atomId]=track
+  return true
+ end
+ return false
+end
 local combatTracks={}
 local function playCombatAnimation(skillCast)
  local c=p.Character;local h=c and c:FindFirstChildOfClass("Humanoid");if not h then return end
  local animator=h:FindFirstChildOfClass("Animator")or Instance.new("Animator",h)
+ local classId=tostring(p:GetAttribute("ClassId")or"NONE")
+ local weaponTier=tonumber(p:GetAttribute("WeaponTier"))or 1
+ local atom=skillCast and "CAST" or (weaponTier>=4 and "HEAVY_ATTACK" or classId=="SHADOW" and "LIGHT_ATTACK" or "HEAVY_ATTACK")
+ if playCommonMotion(atom)then return end
  local key=skillCast and"LUNGE"or"SLASH";local track=combatTracks[key]
  if not track or track.Parent==nil then
   local a=Instance.new("Animation");a.AnimationId=skillCast and"rbxassetid://522638767"or"rbxassetid://522635514"
@@ -662,9 +695,9 @@ end
 attack.Activated:Connect(function()setBlock(false);playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)end)
 skill.Activated:Connect(function()
  setBlock(false)
- remote:FireServer(C.Actions.SKILL)
+ playCombatAnimation(true);remote:FireServer(C.Actions.SKILL)
 end)
-dodge.Activated:Connect(function()setBlock(false);remote:FireServer(C.Actions.DODGE)end)
+dodge.Activated:Connect(function()setBlock(false);playCommonMotion("DODGE_LEFT");remote:FireServer(C.Actions.DODGE)end)
 block.InputBegan:Connect(function(input)
  if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then blockInput=input;setBlock(true)end
 end)
@@ -1041,7 +1074,7 @@ game:GetService("Lighting").ChildAdded:Connect(function(child)
 end)
 task.defer(applyBiomePresentation)
 for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","RelicId","MasteryLevel","SecondAdvancementId","CompanionUnlockCount","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge","Guard","Blocking","GuardBrokenUntil","ParryCount","CurrentRunSeed"})do p:GetAttributeChangedSignal(k):Connect(render)end
-local function bindChar(c)combatTracks={};local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end
+local function bindChar(c)combatTracks={};previewTracks={};local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end
 if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect(bindChar)
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local v=tostring(p:GetAttribute("FeedbackEvent")or"")
