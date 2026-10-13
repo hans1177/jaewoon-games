@@ -734,4 +734,6 @@ test('single historical game-source task is handed to matching existing Vibe rep
   assert.equal(second.gameQueue.tasks.length,1);
   assert.equal(second.systemAi.tasks[0].status,'blocked');
   assert.deepEqual(second.systemAi.tasks[1].dependencies,[legacy.id]);
+  assert.deepEqual(second.gameQueue,first.gameQueue);
+  assert.deepEqual(second.systemAi,first.systemAi);
 });
