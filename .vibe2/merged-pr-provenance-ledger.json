@@ -40208,11 +40208,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3da48b51eddf85c7a5f48719",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-7995",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "dbfd7acb1da30e46653cf1efc7d30c3b57113e7a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 7995,
+        "baseBranch": "main",
+        "headBranch": "vibe2/eldoria-static-coop-20261013",
+        "baseSha": "dbfd7acb1da30e46653cf1efc7d30c3b57113e7a",
+        "headSha": "c732148eae0b4b80c8e5948375c730be67c21256",
+        "mergeCommitSha": "9ca69e1b8934682c36f3561a4c836042973adee4",
+        "mergedAt": "2026-10-13T08:29:36Z",
+        "authorLogin": "hans1177",
+        "titleHash": "3ea36e544dd08b388f978a6951e9394ac8cbb296628d3043c5cc653cf13c8df1",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/eldoria-static-coop-20261013",
+        "candidateSha": "c732148eae0b4b80c8e5948375c730be67c21256"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 36,
+        "deletedLineCount": 5,
+        "changedFiles": [
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+          "tools/company-design-cycle.mjs"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+          "tools/company-design-cycle.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:7995",
+        "merge-commit:9ca69e1b8934682c36f3561a4c836042973adee4",
+        "base-main:dbfd7acb1da30e46653cf1efc7d30c3b57113e7a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 323
+    "total": 324
   }
 }
