@@ -5,6 +5,12 @@ import {runInNewContext} from 'node:vm';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 
+test('all-game multiplayer policy overrides legacy SINGLE design before static source validation',()=>{
+  assert.match(workflow,/multiplayerPolicy\.required===true&&multiplayerPolicy\.scope==='ALL_ACTIVE_AND_NEW_GAMES'/);
+  assert.match(workflow,/return\{known:true,required:true,mode:'POLICY_REQUIRED_STATIC_CODE'\}/);
+  assert.match(workflow,/const staticMultiplayerCodePass=multiplayer\.required===true&&multiplayerSourceContract\.passed===true/);
+});
+
 test('private-published exact unfinished QA consumes observations despite internal-release-ready state',()=>{
   const marker="const candidate=candidateForItem(item);\n            if(isSharedCandidate(candidate)";
   const at=workflow.indexOf(marker);
