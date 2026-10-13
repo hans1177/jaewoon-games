@@ -36,7 +36,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
   // 후속 시스템 작업은 게임 소스 수정 및 검증이 확인되기 전까지 해제하지 않는다.
   const legacyGroups=new Map();
   for(const task of systemAi.tasks){
-    if(clean(task.status)!=='queued'||!clean(task.id).startsWith('recovery-recovery-'))continue;
+    if(!['queued','blocked'].includes(clean(task.status))||!clean(task.id).startsWith('recovery-recovery-'))continue;
     const files=uniq(task.responsibleFiles).map(file=>file.replaceAll('\\','/').replace(/^\.\//,''));
     if(files.length!==1)continue;
     const match=files[0].match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
@@ -50,7 +50,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     const match=file.match(/^(web|roblox|unity)-games\/([a-z0-9-]+)\//);
     const gameId=match[2],platform=match[1];
     const existing=gameQueue.tasks.find(task=>clean(task.gameId)===gameId
-      &&!['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase())
+      &&clean(task.status).toLowerCase()!=='cancelled'
       &&(clean(task.id).includes('repair')||clean(task.id).includes('implementation'))
       &&(clean(task.id).includes(platform)||clean(task.sourceRoot).startsWith(platform+'-games/')));
     if(!existing)continue; // 새 게임 작업 생성 금지
