@@ -4864,6 +4864,9 @@ test('shared RPG menu transition is interruptible and preserves direct interacti
   const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
   const consumer=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenu.luau','utf8');
   assert.equal(consumer,source,'actual game source must match its shared library asset');
+  const sharedModel=fs.readFileSync('assets/roblox/rpg-menu/RPGMenuModel.luau','utf8');
+  const gameModel=fs.readFileSync('roblox-games/daechung-rpg/shared/RPGMenuModel.luau','utf8');
+  assert.equal(gameModel,sharedModel,'RPG menu state model must also remain synchronized with shared asset');
   assert.match(source,/TweenService:Create\(overlay,TweenInfo\.new\(\.18/);
   assert.match(source,/entranceTween:Cancel\(\)/);
   assert.match(source,/panelTween:Cancel\(\)/);
