@@ -1714,6 +1714,9 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(workflow.includes('verifiedLearningMemorySha:'));
   assert.ok(continuousRunnerSource.includes("Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs"));
   assert.ok(continuousRunnerSource.includes('verifiedExternalLearningFirst:true'));
+  // External sources are opt-in: only actually retrieved verified playbooks trigger mandatory source-proof gates.
+  assert.match(continuousRunnerSource,/mandatoryVerifiedKnowledgeApplication=externalLearningApplicable&&verifiedExternalPlaybookReuse\.length>0/);
+  assert.doesNotMatch(continuousRunnerSource,/mandatoryVerifiedKnowledgeApplication=\['roblox','unity','web'\]\.includes\(plan\.target\)\|\|assetDevelopmentLearning/);
   assert.ok(continuousRunnerSource.includes('verifiedExternalLearningCoveragePct=verifiedExternalPlaybookReuse.length>0'));
   assert.ok(continuousRunnerSource.includes('verifiedExternalDistilledContentComplete'));
   assert.ok(continuousRunnerSource.includes('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED_BEFORE_GAME_OR_ASSET_WORK'));
