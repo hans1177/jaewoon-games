@@ -6,6 +6,7 @@ local DSS=game:GetService("DataStoreService")
 local RunService=game:GetService("RunService")
 local Lighting=game:GetService("Lighting")
 local AssetService=game:GetService("AssetService")
+local InsertService=game:GetService("InsertService")
 local TweenService=game:GetService("TweenService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
@@ -170,6 +171,11 @@ local assetLoadFailures={}
 local function loadAsset(id)
  if assetCache[id]then return assetCache[id]end
  local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,id)
+ if not ok or not result then
+  -- 오너가 업로드한 모델은 InsertService 소유자 경로로 한 번 더 시도한다.
+  local ownedOk,owned=pcall(InsertService.LoadAsset,InsertService,id)
+  if ownedOk and owned then ok,result=true,owned end
+ end
  if not ok or not result then
   local signature=ok and "EMPTY_ASSET" or "ASSET_ACCESS_OR_LOAD_ERROR"
   if not assetLoadFailures[id]then
