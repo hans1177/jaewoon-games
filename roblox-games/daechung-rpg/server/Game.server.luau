@@ -146,7 +146,16 @@ local function attach(rootPart,name,size,offset,color,material,shape,rotation)
  local rot=rotation or Vector3.zero
  x.CFrame=rootPart.CFrame*CFrame.new(offset)*CFrame.Angles(math.rad(rot.X),math.rad(rot.Y),math.rad(rot.Z))
  if shape then x.Shape=shape end;x.Parent=rootPart
- local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x
+ -- 실제 애니메이션 가능한 팔다리/날개: 정적 용접 대신 Motor6D를 구성한다.
+ local animated=name:find("Arm",1,true) or name:find("Leg",1,true) or name:find("Wing",1,true) or name:find("Tail",1,true) or name:find("Paw",1,true)
+ if animated then
+  local motor=Instance.new("Motor6D");motor.Name="ActorLimbMotor"
+  motor:SetAttribute("LimbRole",name)
+  motor.Part0=rootPart;motor.Part1=x;motor.C0=CFrame.new(offset)*CFrame.Angles(math.rad(rot.X),math.rad(rot.Y),math.rad(rot.Z))
+  motor.C1=CFrame.identity;motor.Parent=x
+ else
+  local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x
+ end
  return x
 end
 local function stripAsset(root)
