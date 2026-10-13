@@ -79,3 +79,16 @@ test('심야 최종 아트 계약은 현실형 인간과 비정상 몬스터를 
  assert.match(server,/SchoolRoofRim/);
  assert.doesNotMatch(server,/SchoolMainRoof/);
 });
+
+test('대충 RPG 공용 GLB 캐릭터와 몬스터는 네이티브 바인딩 검증과 기본 외형 복구를 유지한다',()=>{
+ const server=read('roblox-games/daechung-rpg/server/Game.server.luau');
+ const visual=read('roblox-games/daechung-rpg/shared/VisualStyle.luau');
+ assert.match(visual,/SharedPlayerModels=\{NONE=/);
+ assert.match(visual,/SharedNpcModels=\{VillageChief=/);
+ assert.match(visual,/SharedEnemyModels=\{MEADOW=/);
+ assert.match(server,/SharedPlayerVisualState","RIG_RETARGET_REQUIRED"/);
+ assert.match(server,/RuntimeVisualReview","PENDING"/);
+ assert.match(server,/MotionRetargetReview","PENDING"/);
+ assert.match(server,/if fallbackAssetId and fallbackAssetId~=assetId/);
+ assert.match(server,/if sharedEnemyId then task.spawn\(bindNativeNpcVisual,rootPart,sharedEnemyId\)end/);
+});
