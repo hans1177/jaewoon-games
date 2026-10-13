@@ -40330,11 +40330,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_d57125b35e8254291e00af6d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-7994",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b887104078f1e42450b253d04e3c3f0af8d00399",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 7994,
+        "baseBranch": "main",
+        "headBranch": "vibe2/realm-weaver-static-coop-20261013",
+        "baseSha": "b887104078f1e42450b253d04e3c3f0af8d00399",
+        "headSha": "640dacc800b70cf09e1745ef4e5aa595d3a80868",
+        "mergeCommitSha": "f063bfa3b0f4253c8f0854a3269168d9f57568ce",
+        "mergedAt": "2026-10-13T08:29:45Z",
+        "authorLogin": "hans1177",
+        "titleHash": "869fcf136f3a030b0d97c6a4d1293484deeb01df858e8ed6311bc139f8a3ffb0",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/realm-weaver-static-coop-20261013",
+        "candidateSha": "640dacc800b70cf09e1745ef4e5aa595d3a80868"
+      },
+      "changeStats": {
+        "changedFileCount": 12,
+        "codingRelevantFileCount": 12,
+        "addedLineCount": 150,
+        "deletedLineCount": 65,
+        "changedFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+          "tools/company-design-cycle.mjs"
+        ],
+        "codingRelevantFiles": [
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+          "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
+          "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+          "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+          "tools/company-design-cycle.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:7994",
+        "merge-commit:f063bfa3b0f4253c8f0854a3269168d9f57568ce",
+        "base-main:b887104078f1e42450b253d04e3c3f0af8d00399"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 324
+    "total": 325
   }
 }
