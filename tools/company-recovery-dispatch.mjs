@@ -62,21 +62,26 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     const verified=['done','verified','completed'].includes(clean(existing.status).toLowerCase())
       &&uniq(existing.evidence).some(value=>/verification:(?:PASS|VERIFIED)|runtime-qa:PASS|qa:PASS/i.test(value));
     if(!verified){
-      gameQueue.tasks=gameQueue.tasks.map(task=>clean(task.id)!==clean(existing.id)?task:{
-        ...task,priority:'critical',sourceMutationRequired:true,
-        evidence:uniq([...(task.evidence||[]),...legacy.map(row=>'legacy-system-ai-repair:'+clean(row.id)),
-          'legacy-recovery-source:'+file,'legacy-recovery-verification:REQUIRED']),
-        updatedAt:stamp
+      gameQueue.tasks=gameQueue.tasks.map(task=>{
+        if(clean(task.id)!==clean(existing.id))return task;
+        const evidence=uniq([...(task.evidence||[]),...legacy.map(row=>'legacy-system-ai-repair:'+clean(row.id)),
+          'legacy-recovery-source:'+file,'legacy-recovery-verification:REQUIRED']);
+        if(task.priority==='critical'&&task.sourceMutationRequired===true
+          &&evidence.length===(task.evidence||[]).length)return task;
+        return{...task,priority:'critical',sourceMutationRequired:true,evidence,updatedAt:stamp};
       });
     }
     systemAi.tasks=systemAi.tasks.map(task=>{
-      if(ids.has(clean(task.id)))return{
-        ...clearReservation(task),status:verified?'cancelled':'blocked',
-        blocker:verified?null:'vibe-game-repair-pending:'+clean(existing.id),
-        evidence:uniq([...(task.evidence||[]),'legacy-recovery-routed-to-vibe:'+clean(existing.id),
-          ...(verified?['legacy-recovery-verified-by-vibe:'+clean(existing.id)]:[])]),
-        updatedAt:stamp
-      };
+      if(ids.has(clean(task.id))){
+        const status=verified?'cancelled':'blocked';
+        const blocker=verified?null:'vibe-game-repair-pending:'+clean(existing.id);
+        const evidence=uniq([...(task.evidence||[]),'legacy-recovery-routed-to-vibe:'+clean(existing.id),
+          ...(verified?['legacy-recovery-verified-by-vibe:'+clean(existing.id)]:[])]);
+        if(task.status===status&&task.blocker===blocker
+          &&!task.reservationId&&!task.reservationRunId&&!task.reservedAt
+          &&evidence.length===(task.evidence||[]).length)return task;
+        return{...clearReservation(task),status,blocker,evidence,updatedAt:stamp};
+      }
       if(!verified)return task; // 검증 전 원래 의존성을 유지한다
       const deps=uniq(task.dependencies);
       if(!deps.some(id=>ids.has(id)))return task;
