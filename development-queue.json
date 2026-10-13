@@ -22151,10 +22151,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-12T20:41:37.107Z",
+      "updatedAt": "2026-10-13T02:54:24.822Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "cozy-island",
@@ -22188,7 +22188,7 @@
         "capturedAt": "2026-10-12T02:23:12.492Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-13T02:54:24.822Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -22235,9 +22235,9 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
       ],
-      "robloxSourceCommit": "1a71b8b868b61a8e0ccc0bb048b6bef857e27450",
+      "robloxSourceCommit": "fa2b7e42add05f10f86d34cd017923e210889920",
       "robloxSourceBootstrapPassedAt": "2026-10-12T20:41:37.107Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -22766,7 +22766,45 @@
         "updatedAt": "2026-10-12T19:22:04.041Z",
         "authority": "owner-dedicated-roblox-experience-bootstrap"
       },
-      "robloxDedicatedExperiencePublished": false
+      "robloxDedicatedExperiencePublished": false,
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityBuildUpSourceRevision": "fa2b7e42add05f10f86d34cd017923e210889920",
+      "robloxQualityFailureClass": "SOURCE_CONTRACT",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "gameId": "cozy-island",
+        "sourceRevision": "fa2b7e42add05f10f86d34cd017923e210889920",
+        "sourceTreeSha": "14ca129296fed127e38992cd92d3e4ce514fa5ae",
+        "artifactIdentity": null,
+        "authority": "roblox-source-static-contract-failure",
+        "staticContract": {
+          "pass": false,
+          "blockers": [
+            "CONFIG_GENRE_PROFILE_REQUIRED"
+          ]
+        },
+        "assetRepairContext": {
+          "libraryFingerprint": "04118a83119f8731f784b72d4af59b672cfca774d1d9111b258fd573585a7737",
+          "baselineFingerprint": "49c8ba980220878874db0a8706393062596b2c7356094a7c90a0ae3c1ed19fb6",
+          "validatorFingerprint": "adf181319228b79a60bee6a70fa8940c9aaa4250750a266716ca3c01fa018401"
+        },
+        "qualityFailureKinds": [
+          "CONFIG_GENRE_PROFILE_REQUIRED"
+        ],
+        "repairSurfaces": [
+          "SOURCE_CONTRACT"
+        ],
+        "qualityFailureDetails": [
+          {
+            "id": "CONFIG_GENRE_PROFILE_REQUIRED",
+            "repairSurface": "SOURCE_CONTRACT",
+            "priority": "P0",
+            "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
+          }
+        ],
+        "workflowRunId": 38336369605,
+        "testedAt": "2026-10-13T02:54:24.822Z"
+      }
     },
     {
       "gameId": "human-go",
@@ -36531,7 +36569,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null
     }
   ],
-  "updatedAt": "2026-10-13T02:54:17.367Z",
+  "updatedAt": "2026-10-13T02:54:24.822Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
