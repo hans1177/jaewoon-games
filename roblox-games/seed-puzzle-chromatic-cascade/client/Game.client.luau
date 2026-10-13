@@ -341,10 +341,20 @@ for index, action in ipairs(Config.Actions) do
 end
 local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
 local function render()
-  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
+  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d · 협동 %d명 · 공동진척 %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1, gui:GetAttribute("CoopParticipantCount") or 0, gui:GetAttribute("CoopSharedProgress") or 0)
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
+
+-- 멀티 정적 계약: 서버가 계산한 공동 퍼즐 진척과 참가자 수를 수신한다.
+remote.OnClientEvent:Connect(function(eventName, snapshot)
+  if eventName ~= "MULTIPLAYER_SYNC" or typeof(snapshot) ~= "table" then return end
+  local objective = snapshot.SharedObjective
+  if typeof(objective) ~= "table" then return end
+  gui:SetAttribute("CoopParticipantCount", math.max(0, tonumber(snapshot.ParticipantCount) or 0))
+  gui:SetAttribute("CoopSharedProgress", math.max(0, tonumber(objective.Progress) or 0))
+  render()
+end)
 
 if #Config.Actions > 0 then
   ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
