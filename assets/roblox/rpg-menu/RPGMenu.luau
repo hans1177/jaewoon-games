@@ -59,8 +59,11 @@ function Menu.install(config,gui,player,options)
  round(panel,16)
  -- Presentation only: interruptible entrance; never delays menu input or changes game state.
  local entranceTween=nil
+ local panelTween=nil
+ local panelScale=make("UIScale",panel,"EntranceScale",{Scale=1})
  local function stopEntrance()
   if entranceTween then entranceTween:Cancel();entranceTween=nil end
+  if panelTween then panelTween:Cancel();panelTween=nil end
  end
  make("UIStroke",panel,"Outline",{Color=colors.gold,Transparency=.55,Thickness=1})
  local title=label(panel,"MenuTitle","모험가의 배낭",22);title.Font=Enum.Font.GothamBold;title.Position=UDim2.fromOffset(18,8);title.Size=UDim2.new(1,-88,0,30)
@@ -308,10 +311,14 @@ function Menu.install(config,gui,player,options)
   opened=value;overlay.Visible=value;toggle.Visible=not value;gui:SetAttribute("RPGMenuOpen",value)
   if value then
    overlay.BackgroundTransparency=.45
+   panelScale.Scale=.97
+   panelTween=TweenService:Create(panelScale,TweenInfo.new(.2,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Scale=1})
+   panelTween:Play()
    entranceTween=TweenService:Create(overlay,TweenInfo.new(.18,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=.28})
    entranceTween:Play()
   else
    overlay.BackgroundTransparency=.28
+   panelScale.Scale=1
   end
   if options.onOpen then options.onOpen(value)end
   if value then previousSelection=GuiService.SelectedObject;refresh();if Input.GamepadEnabled then GuiService.SelectedObject=tabButtons[activeTab]end
