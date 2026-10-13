@@ -430,7 +430,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   });
   writeJson(recoveryFile,result.recovery);
   if(['all','vibe'].includes(clean(args.route||'all').toLowerCase()))writeJson(gameFile,result.gameQueue);
-  if(['all','system-ai'].includes(clean(args.route||'all').toLowerCase()))writeJson(systemFile,result.systemAi);
+  if(['all','vibe','system-ai'].includes(clean(args.route||'all').toLowerCase()))writeJson(systemFile,result.systemAi);
   console.log('RECOVERY_DISPATCH_COUNT='+result.dispatched.length);
   console.log('RECOVERY_GAME_REQUEUED_COUNT='+result.gameRequeuedTaskIds.length);
   for(const row of result.dispatched)console.log('RECOVERY_DISPATCH='+row.id+':'+row.owner+':'+row.touched);
