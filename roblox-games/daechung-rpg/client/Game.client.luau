@@ -859,8 +859,8 @@ RunService.Heartbeat:Connect(function()
    local moving=(host.Position-lastPos).Magnitude>.015
    item.lastPos=host.Position
    if state=="IDLE" and moving then state="ROAM" end
-   local stride=state=="ATTACK" and .55 or state=="CHASE" and .35 or state=="ROAM" and .25 or .075
-   local speed=state=="ATTACK" and 13 or state=="CHASE" and 9 or state=="ROAM" and 5 or 2
+   local stride=state=="ATTACK" and .55 or state=="HIT" and .52 or state=="CHASE" and .35 or state=="WALK" and .34 or state=="ROAM" and .25 or .075
+   local speed=state=="ATTACK" and 13 or state=="HIT" and 10 or state=="CHASE" and 9 or state=="WALK" and 7 or state=="ROAM" and 5 or 2
    local phase=now*speed+(host.Position.X+host.Position.Z)*.1
    if motor.Name=="ActorLimbMotor" then
     local role=item.role or ""
