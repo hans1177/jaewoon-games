@@ -26,7 +26,8 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
   assert.match(workflow,/coordinator-gate:/);
   assert.match(workflow,/group: company-development-confirmed-coordinator-gate-/);
   assert.match(workflow,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
-  assert.match(workflow,/native-plan:[\s\S]{0,180}?needs: coordinator-gate[\s\S]{0,180}?if: needs\.coordinator-gate\.outputs\.proceed == 'true'/);
+  assert.match(workflow,/  native-plan:\n    # The scheduler reads durable queue readiness independently/);
+  assert.doesNotMatch(workflow.slice(workflow.indexOf('  native-plan:'),workflow.indexOf('  dispatch-roblox:')),/needs: coordinator-gate|needs\.coordinator-gate/);
   assert.match(workflow,/actions\/workflows\/company-development-confirmed-runtime\.yml\/runs\?per_page=100&page=\$page/);
   assert.match(workflow,/DEVELOPMENT_COORDINATOR_SCAN_INCLUDES_PUSH_AND_DISPATCH=YES/);
   assert.match(workflow,/DEVELOPMENT cycle \| batch \|/);

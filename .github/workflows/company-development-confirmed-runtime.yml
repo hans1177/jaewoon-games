@@ -116,9 +116,8 @@ jobs:
           echo 'DEVELOPMENT_COORDINATOR_ADMISSION=OLDEST_ACTIVE_BATCH'
 
   native-plan:
+    # The scheduler reads durable queue readiness independently of director/coordinator admission.
     name: Resolve direct native development
-    needs: coordinator-gate
-    if: needs.coordinator-gate.outputs.proceed == 'true'
     runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
