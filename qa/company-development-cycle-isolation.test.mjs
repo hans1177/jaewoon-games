@@ -23,13 +23,9 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
   assert.match(workflow,/!ownerExcludedGameIds\.has\(item\.gameId\)/);
   assert.match(workflow,/DEVELOPMENT_OWNER_EXCLUDED_GAME_IDS=/);
   assert.match(workflow,/run-name: DEVELOPMENT cycle \| \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
-  assert.match(workflow,/coordinator-gate:/);
-  assert.match(workflow,/group: company-development-confirmed-coordinator-gate-/);
-  assert.match(workflow,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
-  assert.match(workflow,/  native-plan:\n    # The scheduler reads durable queue readiness independently/);
-  assert.doesNotMatch(workflow.slice(workflow.indexOf('  native-plan:'),workflow.indexOf('  dispatch-roblox:')),/needs: coordinator-gate|needs\.coordinator-gate/);
-  assert.match(workflow,/actions\/workflows\/company-development-confirmed-runtime\.yml\/runs\?per_page=100&page=\$page/);
-  assert.match(workflow,/DEVELOPMENT_COORDINATOR_SCAN_INCLUDES_PUSH_AND_DISPATCH=YES/);
+  assert.doesNotMatch(workflow,/^  coordinator-gate:/m);
+  assert.match(workflow,/^  native-plan:/m);
+  assert.doesNotMatch(workflow,/needs: coordinator-gate|needs\\.coordinator-gate/);
   assert.match(workflow,/DEVELOPMENT cycle \| batch \|/);
   assert.ok((workflow.match(/fail-fast: false/g)||[]).length>=1);
   assert.match(workflow,/continue-cycle:/);
@@ -41,22 +37,14 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
 });
 
 
-test('coordinator runners stay independent while active batch admission deduplicates',()=>{
+test('director is independent from native game scheduler',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  const start=workflow.indexOf('  coordinator-gate:\n');
-  const end=workflow.indexOf('\n  native-plan:',start);
-  assert.ok(start>=0&&end>start);
-  const gate=workflow.slice(start,end);
-  assert.ok(gate.includes("group: company-development-confirmed-coordinator-gate-${{ github.run_id }}"));
-  assert.doesNotMatch(gate,/format\('batch-\{0\}', github\.sha\)/);
-  assert.match(gate,/cancel-in-progress: false/);
-  assert.match(gate,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
-  // No unstarted queued/pending workflow may monopolize this source revision's development batch.
-  assert.match(gate,/select\(\.status == "in_progress"\)/);
-  assert.doesNotMatch(gate,/select\(\.status == "queued" or \.status == "pending"/);
-  assert.ok(workflow.slice(0,workflow.indexOf('\njobs:\n')).includes("github.run_id"));
+  const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
+  assert.match(workflow,/^  native-plan:/m);
+  assert.doesNotMatch(workflow,/coordinator-gate:/);
+  assert.match(director,/^name: Director Staff Supervisor/m);
   assert.match(workflow,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
-  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\\.yml/);
 });
 
 test('Unity Web active push runs are coalesced by exact game ID without serializing sibling games',()=>{
