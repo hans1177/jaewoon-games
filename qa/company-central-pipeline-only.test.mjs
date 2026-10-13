@@ -1142,3 +1142,12 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.match(assetPlan,/mandatoryApplicationCoveragePct:100/);
   assert.match(assetPlan,/TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION/);
 });
+
+
+test('director preserves admitted central development handoff even when parent is queued',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/CENTRAL_DEVELOPMENT_\*/);
+  assert.match(director,/Admit one unscoped development coordinator/);
+  assert.match(director,/DIRECTOR_CENTRAL_ADMITTED_HANDOFF_PRESERVED=/);
+  assert.match(director,/if \[ "\$admitted" != '0' \]; then/);
+});
