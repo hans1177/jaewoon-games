@@ -91,3 +91,15 @@ test('director drain never cancels independent game scheduler',()=>{
   assert.ok(drain.includes('CENTRAL_MANUAL_BATCH_*'));
   assert.ok(drain.indexOf('DIRECTOR_INDEPENDENT_GAME_SCHEDULER_PRESERVED=')<drain.indexOf('pre_cancel_state='));
 });
+
+
+test('director preserves independent Roblox runtime before cancellation',()=>{
+  const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
+  const drain=director.slice(director.indexOf("while IFS='|' read -r run_id reason; do"));
+  const marker=drain.indexOf('DIRECTOR_INDEPENDENT_ROBLOX_RUNTIME_PRESERVED=');
+  assert.ok(marker>=0);
+  assert.ok(drain.includes('company-development-roblox-runtime.yml'));
+  assert.ok(drain.includes('company-development-roblox-runtime-continuation.yml'));
+  assert.ok(drain.includes('DIRECTOR_RUNNER_DRAIN_UNVERIFIED_PATH_PRESERVED='));
+  assert.ok(marker<drain.indexOf('pre_cancel_state='));
+});
