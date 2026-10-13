@@ -252,7 +252,7 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
     'fetch origin vibe2-unreal-core --quiet',
     'reset --hard origin/vibe2-unreal-core',
     'fetch origin company-runtime --quiet',
-    'diff --quiet -- "${state_paths[@]}"',
+    'diff --cached --quiet -- "${state_paths[@]}"',
     'add -A -- "${state_paths[@]}"',
     'commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"',
     'push origin HEAD:vibe2-unreal-core'
@@ -364,7 +364,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(core,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/format\('vibe2-continuous-\{0\}', github\.run_id\)/);
   assert.doesNotMatch(core,/vibe2-fanin-refill-singleton/);
-  assert.match(core,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.match(core,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.sha, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
   assert.match(runner,/group: vibe2-24h-cycle-\$\{\{ github\.run_id \}\}/);
   assert.match(runner,/'tools\/vibe2-queue-control\.mjs'/);
