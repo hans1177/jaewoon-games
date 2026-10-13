@@ -665,6 +665,31 @@ local function applyPlayerAppearance(p)
  c:SetAttribute("AvatarStyle",choice)
  task.spawn(bindSharedPlayerVisual,c,tostring(p:GetAttribute("ClassId")or"NONE"))
  local weaponTier=n(p,"WeaponTier",1);local armorTier=n(p,"ArmorTier",1);local gear=c:FindFirstChild("DaechungClassGear")
+ -- 코난풍 무기 단계별 외형: 기본 검→도끼→창→망치→강철 대검.
+ -- 게임플레이 공격 판정·피해량은 기존 WeaponTier 로직에 남긴다.
+ local right=c:FindFirstChild("RightHand") or c:FindFirstChild("Right Arm")
+ if right and gear then
+  local shapes={
+   {name="IronSword",blade=Vector3.new(.27,3.7,.5),edge=Color3.fromRGB(164,171,180)},
+   {name="WarAxe",blade=Vector3.new(1.6,1.5,.42),edge=Color3.fromRGB(133,143,153)},
+   {name="HuntingSpear",blade=Vector3.new(.38,5.8,.38),edge=Color3.fromRGB(175,165,130)},
+   {name="StoneHammer",blade=Vector3.new(1.75,1.15,.95),edge=Color3.fromRGB(104,111,119)},
+   {name="Greatsword",blade=Vector3.new(.48,6,.95),edge=Color3.fromRGB(205,207,215)}
+  }
+  local weapon=shapes[math.clamp(math.floor(weaponTier),1,#shapes)]
+  local previous=gear:FindFirstChild("ConanWeaponVisual");if previous then previous:Destroy()end
+  local holder=Instance.new("Folder");holder.Name="ConanWeaponVisual";holder.Parent=gear
+  local handle=gearPart(holder,right,"WeaponHandle",Vector3.new(.25,2.4,.25),Vector3.new(0,-.65,-.25),Color3.fromRGB(103,73,53),Enum.Material.Wood)
+  if handle then
+   local blade=gearPart(holder,handle,weapon.name,weapon.blade,Vector3.new(0,1.5,0),weapon.edge,Enum.Material.Metal)
+   if blade then addWeaponTrail(blade,weapon.edge)end
+  end
+  for _,old in ipairs(gear:GetDescendants())do
+   if old:IsA("BasePart") and old.Name:find("ClassWeapon",1,true) then old.Transparency=1 end
+  end
+  c:SetAttribute("EquippedWeaponVisual",weapon.name)
+ end
+
  if gear then
   for _,d in ipairs(gear:GetDescendants())do
    if d:IsA("BasePart")and string.find(d.Name,"ClassWeapon",1,true)then
