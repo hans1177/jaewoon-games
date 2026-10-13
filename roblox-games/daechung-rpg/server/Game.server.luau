@@ -304,12 +304,18 @@ local function bindNativeNpcVisual(rootPart,assetId,fallbackAssetId)
   native:PivotTo(rootPart.CFrame)
   local bounds,scaled=native:GetBoundingBox()
   native:PivotTo(native:GetPivot()+Vector3.new(rootPart.Position.X-bounds.Position.X,rootPart.Position.Y-rootPart.Size.Y/2-(bounds.Position.Y-scaled.Y/2),rootPart.Position.Z-bounds.Position.Z))
+  -- Static library GLB: articulated visual pivot for idle/chase/attack presentation.
+  local pivot=Instance.new("Part");pivot.Name="NativeMotionPivot";pivot.Size=Vector3.new(.2,.2,.2)
+  pivot.Transparency=1;pivot.Anchored=false;pivot.CanCollide=false;pivot.CanTouch=false;pivot.CanQuery=false;pivot.Massless=true
+  pivot.CFrame=rootPart.CFrame;pivot.Parent=rootPart
+  local pose=Instance.new("Motor6D");pose.Name="NativePoseMotor";pose.Part0=rootPart;pose.Part1=pivot
+  pose.C0=CFrame.identity;pose.C1=CFrame.identity;pose.Parent=pivot
   local count=0
   for _,part in ipairs(native:GetDescendants())do
    if part:IsA("BasePart")then
     count+=1;if count>128 then error("NATIVE_ACTOR_PART_BUDGET")end
     part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
-    local joint=Instance.new("WeldConstraint");joint.Part0=rootPart;joint.Part1=part;joint.Parent=part
+    local joint=Instance.new("WeldConstraint");joint.Part0=pivot;joint.Part1=part;joint.Parent=part
    end
   end
   if count==0 then error("NATIVE_ACTOR_GEOMETRY_MISSING")end
