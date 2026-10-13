@@ -641,41 +641,92 @@ local function beginEnemyAttack(e,target,now)
  end)
 end
 
+-- Native library character binding. Preserve R15 animation when separate limb meshes exist.
+-- If the GLB is a single combined mesh, display the source as a fitted full-body cosmetic instead.
 local function bindSharedPlayerVisual(character,classId)
  local assetId=Style.SharedPlayerModels and (Style.SharedPlayerModels[classId] or Style.SharedPlayerModels.NONE)
- if not assetId then return end
- local source=loadAsset(assetId)
- if not source or not character.Parent then
-  character:SetAttribute("SharedPlayerVisualState","LOAD_UNVERIFIED")
+ local rootPart=character:FindFirstChild("HumanoidRootPart")
+ if not assetId or not rootPart or not character.Parent then return end
+ character:SetAttribute("SharedPlayerVisualRequestedId",tostring(assetId))
+ character:SetAttribute("SharedPlayerVisualState","LOADING")
+ local source,failure=loadAsset(assetId)
+ if not character.Parent or character:GetAttribute("SharedPlayerVisualRequestedId")~=tostring(assetId)then return end
+ if not source then
+  character:SetAttribute("SharedPlayerVisualState","LOAD_FAILED")
+  character:SetAttribute("SharedPlayerVisualFailure",failure or "ASSET_UNAVAILABLE")
   return
  end
- local meshByLimb={}
+ local parts={}
+ local matched={}
  for _,mesh in ipairs(source:GetDescendants())do
-  if mesh:IsA("MeshPart") and character:FindFirstChild(mesh.Name) then meshByLimb[mesh.Name]=mesh end
+  if mesh:IsA("MeshPart") then
+   table.insert(parts,mesh)
+   local limb=character:FindFirstChild(mesh.Name)
+   if limb and limb:IsA("BasePart")then matched[mesh.Name]=mesh end
+  end
  end
- local required={"Head","UpperTorso","LowerTorso","LeftUpperArm","RightUpperArm","LeftUpperLeg","RightUpperLeg"}
- for _,name in ipairs(required)do
-  if not meshByLimb[name] or not character:FindFirstChild(name) then
-   character:SetAttribute("SharedPlayerVisualState","RIG_RETARGET_REQUIRED")
+ if #parts==0 then character:SetAttribute("SharedPlayerVisualState","NO_MESH");return end
+ local old=character:FindFirstChild("SharedPlayerVisual");if old then old:Destroy()end
+ local folder=Instance.new("Folder");folder.Name="SharedPlayerVisual";folder.Parent=character
+ local rigParts=0
+ for _,name in ipairs({"Head","UpperTorso","LowerTorso","LeftUpperArm","RightUpperArm","LeftUpperLeg","RightUpperLeg"})do
+  if matched[name]then rigParts+=1 end
+ end
+ if rigParts>=7 then
+  for name,mesh in pairs(matched)do
+   local limb=character:FindFirstChild(name)
+   if limb and limb:IsA("BasePart")then
+    local visual=mesh:Clone();visual.Name="Library_"..name
+    visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
+    visual.CFrame=limb.CFrame;visual.Parent=folder
+    local weld=Instance.new("WeldConstraint");weld.Part0=limb;weld.Part1=visual;weld.Parent=visual
+   end
+  end
+  character:SetAttribute("SharedPlayerVisualState","R15_LIMB_BOUND")
+ else
+  local native=Instance.new("Model");native.Name="LibraryFullBody";native.Parent=folder
+  for _,mesh in ipairs(parts)do
+   local cloned=mesh:Clone();cloned.Anchored=true;cloned.CanCollide=false;cloned.CanTouch=false;cloned.CanQuery=false;cloned.Parent=native
+  end
+  -- Source model may have an unusual object hierarchy or absolute import scale.
+  local ok,reason=pcall(function()
+   local _,bounds=native:GetBoundingBox()
+   if bounds.Y<.001 then error("EMPTY_BOUNDS")end
+   native:ScaleTo(math.clamp(5.3/bounds.Y,.025,50))
+   local _,scaled=native:GetBoundingBox()
+   local target=rootPart.Position+Vector3.new(0,.5,0)
+   local cf=native:GetPivot()
+   native:PivotTo(cf+target-scaled.Position)
+   local visualRoot=Instance.new("Part")
+   visualRoot.Name="LibraryVisualRoot";visualRoot.Size=Vector3.new(.2,.2,.2);visualRoot.Transparency=1
+   visualRoot.Anchored=false;visualRoot.Massless=true;visualRoot.CanCollide=false;visualRoot.CanTouch=false;visualRoot.CanQuery=false
+   visualRoot.CFrame=rootPart.CFrame;visualRoot.Parent=folder
+   local weld=Instance.new("WeldConstraint");weld.Part0=rootPart;weld.Part1=visualRoot;weld.Parent=visualRoot
+   for _,visual in ipairs(native:GetDescendants())do
+    if visual:IsA("BasePart")then
+     visual.Anchored=false;visual.Massless=true
+     local join=Instance.new("WeldConstraint");join.Part0=visualRoot;join.Part1=visual;join.Parent=visual
+    end
+   end
+  end)
+  if not ok then
+   folder:Destroy()
+   character:SetAttribute("SharedPlayerVisualState","BIND_FAILED")
+   character:SetAttribute("SharedPlayerVisualFailure",tostring(reason):sub(1,140))
    return
   end
+  character:SetAttribute("SharedPlayerVisualState","FULL_MESH_BOUND")
  end
- local previous=character:FindFirstChild("SharedPlayerVisual")
- if previous then previous:Destroy()end
- local folder=Instance.new("Folder");folder.Name="SharedPlayerVisual";folder.Parent=character
- for name,mesh in pairs(meshByLimb)do
-  local limb=character:FindFirstChild(name)
-  if limb and limb:IsA("BasePart") then
-   local cosmetic=mesh:Clone();cosmetic.Name="Shared_"..name;cosmetic.Anchored=false
-   cosmetic.CanCollide=false;cosmetic.CanTouch=false;cosmetic.CanQuery=false;cosmetic.Massless=true
-   cosmetic.CFrame=limb.CFrame;cosmetic.Parent=folder
-   local weld=Instance.new("WeldConstraint");weld.Part0=limb;weld.Part1=cosmetic;weld.Parent=cosmetic
+ for _,part in ipairs(character:GetChildren())do
+  if part:IsA("BasePart") and part.Name~="HumanoidRootPart" then
+   part.Transparency=1
+   for _,decal in ipairs(part:GetChildren())do
+    if decal:IsA("Decal")then decal.Transparency=1 end
+   end
   end
  end
- character:SetAttribute("SharedPlayerVisualState","BOUND_UNVERIFIED")
  character:SetAttribute("SharedPlayerVisualAssetId",tostring(assetId))
- character:SetAttribute("RuntimeVisualReview","PENDING")
- character:SetAttribute("MotionRetargetReview","PENDING")
+ character:SetAttribute("SharedPlayerVisualFailure",nil)
 end
 
 local function applyPlayerAppearance(p)
