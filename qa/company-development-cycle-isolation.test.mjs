@@ -34,8 +34,8 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
   assert.match(workflow,/continue-cycle:/);
   assert.match(workflow,/needs: \[native-plan, dispatch-roblox, dispatch-unity\]/);
   assert.match(workflow,/if: \$\{\{ always\(\) && needs\.native-plan\.result == 'success'/);
-  assert.match(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
-  assert.match(workflow,/CONTINUOUS_PER_GAME_ISOLATED_CYCLE/);
+  assert.doesNotMatch(workflow.slice(workflow.indexOf('  continue-cycle:')),/gh workflow run company-development-confirmed-runtime\.yml/);
+  assert.match(workflow,/DEVELOPMENT_CONTINUOUS_CYCLE_HANDOFF=INDEPENDENT_GAME_RUNS/);
   assert.match(workflow,/SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO/);
 });
 
