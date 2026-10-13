@@ -334,6 +334,7 @@ jobs:
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
           for(const item of candidates){
             if(rows.length>=EXECUTION_BATCH_MAX)break;
+            if(item.gameId==='daechung-rpg')continue; // owner-direct publish only
             if(requested&&item.gameId!==requested)continue;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -1095,6 +1096,7 @@ jobs:
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
           for(const item of candidates){
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
+            if(item.gameId==='daechung-rpg')continue; // owner-direct publish only
             if(requested&&item.gameId!==requested)continue;
             if(sourceBusyIds.has(String(item.gameId||''))){
               console.log('ROBLOX_TECHNICAL_DEFER_SOURCE_STAGE='+item.gameId);
