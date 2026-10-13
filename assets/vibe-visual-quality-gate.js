@@ -161,6 +161,13 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
     const primitive=PRIMITIVE_PRESENTATIONS.has(presentation)||actor?.placeholder===true;
     return strictStage&&primitive&&actor?.explicitStylizedApproval!==true;
   }).map(actor=>String(actor?.id||actor?.role||'UNKNOWN_PRIMARY_ACTOR'));
+  // Native actor IDs are not evidence that a better model rendered successfully.
+  // Only explicitly reported binding states are assessed; unknown actors require runtime observation.
+  const actorBindingFailures=primaryActors.filter(actor=>{
+    const binding=String(actor?.nativeActorBindingState||actor?.bindingState||'').trim().toUpperCase();
+    return actor?.nativeActorMissing===true||actor?.nativeActorFailureStage||
+      ['BOUND_UNVERIFIED','FAILED','MISSING','LOAD_FAILED','FALLBACK_ONLY'].includes(binding);
+  }).map(actor=>String(actor?.id||actor?.role||'UNKNOWN_PRIMARY_ACTOR'));
   const openCriticalDebt=visualDebt.filter(debt=>String(debt?.status||'OPEN').toUpperCase()!=='RESOLVED'&&['critical','high'].includes(String(debt?.severity||'high').toLowerCase()));
   const reasons=[];
   const heroPrimitiveViolations=heroAssets.filter(asset=>{
@@ -292,9 +299,11 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   if(highEndRequired&&!visualRegressionPassed)reasons.push('before-after-visual-regression-missing-or-failed');
   if(highEndRequired&&evidence.performance?.pass!==true)reasons.push('platform-performance-evidence-missing-or-failed');
   if(primitiveViolations.length)reasons.push('primary-actor-primitive-placeholder');
+  if(actorBindingFailures.length)reasons.push('primary-actor-native-binding-not-verified');
   if(finalStage&&openCriticalDebt.length)reasons.push('unresolved-critical-visual-debt');
   if(evidence.markerOnlyPass===true)reasons.push('marker-only-presentation-pass-forbidden');
   const repairTargets=[];
+  for(const id of actorBindingFailures)repairTargets.push(Object.freeze({surface:'CHARACTER_NPC_CREATURE',id,scope:'VISUAL_AND_MOTION_ONLY',evidenceRequired:'EXACT_RUNTIME_ACTOR_VISIBLE_AND_MOTION_REVIEW',preserveGameplayAndSave:true}));
   for(const id of missingEnvironment)repairTargets.push(Object.freeze({surface:'ENVIRONMENT',id,scope:'PRESENTATION_ONLY',evidenceRequired:'SAME_ROLE_RUNTIME_RECAPTURE'}));
   for(const id of missingCohesion)repairTargets.push(Object.freeze({surface:'COHESION',id,scope:'ART_STYLE_ONLY',evidenceRequired:'SAME_CAMERA_LIGHTING_COMPARISON'}));
   for(const id of missingPresentation)repairTargets.push(Object.freeze({surface:'PRESENTATION',id,scope:'PRESENTATION_ONLY',evidenceRequired:'RUNTIME_EVENT_CAPTURE'}));
@@ -314,6 +323,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
     golden,
     primaryActorCount:primaryActors.length,
     primitiveViolations:Object.freeze(primitiveViolations),
+    actorBindingFailures:Object.freeze(actorBindingFailures),
     openCriticalVisualDebt:Object.freeze(openCriticalDebt.map(row=>String(row?.id||row?.role||'visual-debt'))),
     interfaceCoverage:Object.freeze({
       required:Object.freeze(declaredInterfaceSurfaces),

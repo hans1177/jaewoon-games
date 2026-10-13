@@ -234,3 +234,19 @@ test('mobile visual audit rejects stale, thumbnail, unreviewed, clipped and over
  const stale=captures(revision);delete stale[0].candidateRevision;
  assert.equal(auditVibeGoldenSceneEvidence({candidateRevision:revision,captures:stale}).pass,false);
 });
+
+// Existing Vibe QA must not interpret native asset registration as verified rendering.
+test('all games flag unverified native character and NPC bindings for existing visual repair',()=>{
+  const rev='a'.repeat(40);
+  const base={candidateRevision:rev,captures:captures(rev),stage:'INTERNAL_PLAYTEST'};
+  const failed=auditVibeRuntimeVisualEvidence({...base,primaryActors:[{id:'VillageChief',presentation:'native-model',nativeActorBindingState:'BOUND_UNVERIFIED'}]});
+  assert.equal(failed.pass,false);
+  assert.ok(failed.reasons.includes('primary-actor-native-binding-not-verified'));
+  assert.deepEqual([...failed.actorBindingFailures],['VillageChief']);
+  assert.equal(failed.repairTargets.find(row=>row.id==='VillageChief')?.scope,'VISUAL_AND_MOTION_ONLY');
+  assert.equal(failed.repairTargets.find(row=>row.id==='VillageChief')?.preserveGameplayAndSave,true);
+  const missing=auditVibeRuntimeVisualEvidence({...base,primaryActors:[{id:'NPC2',presentation:'native-model',nativeActorMissing:true}]});
+  assert.ok(missing.actorBindingFailures.includes('NPC2'));
+  const verified=auditVibeRuntimeVisualEvidence({...base,primaryActors:[{id:'VillageChief',presentation:'native-model',nativeActorBindingState:'VERIFIED'}]});
+  assert.deepEqual([...verified.actorBindingFailures],[]);
+});
