@@ -146,7 +146,8 @@ test('design control and per-game jobs use the available full runner pool',()=>{
   assert.doesNotMatch(designRuntime,/\n  game-primary-gate:|needs\.game-primary-gate/);
   for(const job of ['resolve-seed-targets','design-cycle','sync-strict-design-scores']){
     const block=designRuntime.split(`\n  ${job}:\n`)[1]?.split(/\n  [a-z][a-z0-9-]*:\n/)[0]||'';
-    assert.match(block,/^    runs-on: ubuntu-latest$/m,`${job} must use the available runner pool`);
+    const expectedRunner=job==='resolve-seed-targets'?'ubuntu-slim':'ubuntu-latest';
+    assert.match(block,new RegExp(`^    runs-on: ${expectedRunner}$`,'m'),`${job} must use its policy-authorized runner pool`);
   }
   assert.doesNotMatch(designRuntime,/mark-design-engine-canary:/);
   assert.doesNotMatch(designRuntime,/\n  continue-seed-supply:/);
