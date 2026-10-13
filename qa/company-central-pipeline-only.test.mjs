@@ -195,12 +195,15 @@ test('direct horror edits re-enter the canonical development flow',()=>{
   assert.doesNotMatch(central,/\['horror-escape-room'\]/);
 });
 
-test('unscoped development coordinator dedupes against active push and manual batches',()=>{
+test('development coordinator dedupes exact-revision active Roblox games without locking batches',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
-  assert.match(development,/actions\/workflows\/company-development-confirmed-runtime\.yml\/runs\?per_page=100&page=\$page/);
-  assert.doesNotMatch(development,/company-development-confirmed-runtime\.yml\/runs\?event=workflow_dispatch/);
-  assert.match(development,/DEVELOPMENT_COORDINATOR_SCAN_INCLUDES_PUSH_AND_DISPATCH=YES/);
-  assert.match(development,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
+  assert.match(development,/actions\/workflows\/company-development-roblox-runtime\.yml\/runs\?per_page=100&page=\$page/);
+  assert.doesNotMatch(development,/company-development-roblox-runtime\.yml\/runs\?event=workflow_dispatch/);
+  assert.match(development,/const activeStates=new Set\(\['queued','pending','in_progress','requested'\]\)/);
+  assert.match(development,/const activeRoblox=activeIds\([^\n]*currentControlSha\)/);
+  assert.match(development,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
+  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN=FAIL/);
+  assert.doesNotMatch(development,/^  coordinator-gate:\s*$/m);
 });
 
 test('native child workflow changes stay child-owned while source wakes preserve platform holds',()=>{
