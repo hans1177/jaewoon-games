@@ -4469,6 +4469,10 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
             runtimeVerified:false,productionVerified:false,
             nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'&&!row.externalAcquisition?.downloadUrl
               ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady!==true
+                &&!(row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
+                  &&row.automaticReplacementAuthorized===true
+                  &&row.sourceCompatibilityAndRightsRequired===true
+                  &&row.registeredSourceModel&&row.registeredSourceLicense)
           })))
       })
     }),
