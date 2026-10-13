@@ -512,7 +512,7 @@ jobs:
           put('place_id',placeId);
           put('publication_target_source',selected.source);
           put('shared_rotation',sharedRotation?'true':'false');
-          put('visibility_intent',String(persistedTarget.visibilityIntent||'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'));
+          put('visibility_intent','PRESERVE_EXISTING_TARGET_VISIBILITY');
           put('publish_stage',publishStage);
           put('publish_cycle_id',publishStage==='final'?requestedCycleId:'');
           console.log((publishStage==='final'?'ROBLOX_CANONICAL_FINAL_TARGET=':'ROBLOX_VALIDATION_TARGET=')+gameId);
@@ -522,7 +522,7 @@ jobs:
           console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
           console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
           console.log(`ROBLOX_RELEASE_PUBLICATION_TARGET_SOURCE=${selected.source}`);
-          console.log('ROBLOX_INTERNAL_RELEASE_VISIBILITY_INTENT=PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
+          console.log('ROBLOX_INTERNAL_RELEASE_VISIBILITY_INTENT=PRESERVE_EXISTING_TARGET_VISIBILITY');
           NODE
 
       - name: Verify unchanged source and exact F0 candidate evidence
@@ -628,76 +628,34 @@ jobs:
           console.log('ROBLOX_INTERNAL_RELEASE_CLAIM=NO');
           NODE
 
-      - name: Ensure Roblox universe is private before runtime candidate publish
-        if: steps.target.outputs.skip != 'true' && steps.target.outputs.publish_stage == 'validation'
+      - name: Observe existing Roblox visibility without changing it
+        id: visibility
+        if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
-          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
         shell: bash
         run: |
           set -euo pipefail
           status=/tmp/roblox-universe-status.json
-          status_code="$(curl --silent --show-error --output "$status" --write-out '%{http_code}' "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID" || true)"
-          already_private=0
-          if [[ "$status_code" == 200 ]]; then
-            already_private="$(node - "$status" <<'NODE'
+          status_code="$(curl --silent --show-error --connect-timeout 10 --max-time 20 --output "$status" --write-out '%{http_code}' "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID" || true)"
+          node - "$status" "$status_code" <<'NODE'
           const fs=require('fs');
-          const p=process.argv[2];
-          try{
-            const x=JSON.parse(fs.readFileSync(p,'utf8'));
-            const active=x.isActive ?? x.IsActive ?? x.isUniverseActive ?? x.IsUniverseActive;
-            process.stdout.write(active===false?'1':'0');
-          }catch{process.stdout.write('0');}
+          let visibility='UNKNOWN';
+          if(process.argv[3]==='200'){
+            try{
+              const x=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+              const active=x.isActive ?? x.IsActive ?? x.isUniverseActive ?? x.IsUniverseActive;
+              if(active===true)visibility='PUBLIC';
+              else if(active===false)visibility='PRIVATE';
+            }catch{}
+          }
+          // The owner controls visibility. This read is audit evidence, never a publish gate.
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'state='+visibility+'\nobserved_at='+new Date().toISOString()+'\n');
+          console.log('ROBLOX_TARGET_VISIBILITY_OBSERVED='+visibility);
+          console.log('ROBLOX_TARGET_VISIBILITY=PRESERVED');
+          console.log('ROBLOX_TARGET_VISIBILITY_MUTATION=NONE');
           NODE
-            )"
-          fi
-          if [[ "$already_private" == 1 ]]; then
-            echo 'ROBLOX_INTERNAL_RELEASE_ALREADY_PRIVATE=YES'
-            echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=PASS'
-            echo 'ROBLOX_INTERNAL_RELEASE_PUBLIC_DISCOVERY=NO'
-            exit 0
-          fi
-
-          response=/tmp/roblox-deactivate-response.txt
-          code=000
-          if [[ -n "${ROBLOX_OPEN_CLOUD_API_KEY:-}" ]]; then
-            code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' --request POST --header "x-api-key: $ROBLOX_OPEN_CLOUD_API_KEY" "https://apis.roblox.com/legacy-develop/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate")"
-          fi
-          if [[ "$code" != 200 && "$code" != 201 && "$code" != 204 ]]; then
-            raw_cookie="${ROBLOX_ROBLOSECURITY:-${ROBLOX_SECURITY_COOKIE:-}}"
-            if [[ -z "$raw_cookie" ]]; then
-              cat "$response" >&2 || true
-              echo "ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:HTTP_$code:NO_COOKIE_FALLBACK" >&2
-              exit 42
-            fi
-            if [[ "$raw_cookie" == *'.ROBLOSECURITY='* ]]; then cookie="$raw_cookie"; else cookie=".ROBLOSECURITY=$raw_cookie;"; fi
-            csrf_headers=/tmp/roblox-deactivate-headers.txt
-            : > "$csrf_headers"
-            curl --silent --show-error --output /tmp/roblox-deactivate-csrf-body.txt --dump-header "$csrf_headers" --request POST --header "cookie: $cookie" "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate" || true
-            csrf="$(awk 'BEGIN{IGNORECASE=1}/^x-csrf-token:/{sub(/\r$/,"",$2);print $2;exit}' "$csrf_headers")"
-            [[ -n "$csrf" ]] || { cat /tmp/roblox-deactivate-csrf-body.txt >&2 || true; echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:NO_CSRF' >&2; exit 43; }
-            code="$(curl --silent --show-error --output "$response" --write-out '%{http_code}' --request POST --header "cookie: $cookie" --header "x-csrf-token: $csrf" "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID/deactivate")"
-            echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_FALLBACK=COOKIE_CSRF'
-          fi
-          case "$code" in
-            200|201|204) ;;
-            *) cat "$response" >&2 || true; echo "ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=FAILED:HTTP_$code" >&2; exit 42 ;;
-          esac
-          verify=/tmp/roblox-universe-status-after.json
-          verify_code="$(curl --silent --show-error --output "$verify" --write-out '%{http_code}' "https://develop.roblox.com/v1/universes/$ROBLOX_UNIVERSE_ID" || true)"
-          if [[ "$verify_code" == 200 ]]; then
-            node - "$verify" <<'NODE'
-          const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-          const active=x.isActive ?? x.IsActive ?? x.isUniverseActive ?? x.IsUniverseActive;
-          if(active===true)process.exit(44);
-          NODE
-          fi
-          echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=PASS'
-          echo 'ROBLOX_INTERNAL_RELEASE_PUBLIC_DISCOVERY=NO'
 
       - name: Publish exact package to validation target or F9-verified canonical target
         id: publish
@@ -864,6 +822,8 @@ jobs:
           PLACE_ID: ${{ steps.target.outputs.place_id }}
           PUBLICATION_TARGET_SOURCE: ${{ steps.target.outputs.publication_target_source }}
           VISIBILITY_INTENT: ${{ steps.target.outputs.visibility_intent }}
+          OBSERVED_VISIBILITY: ${{ steps.visibility.outputs.state }}
+          VISIBILITY_OBSERVED_AT: ${{ steps.visibility.outputs.observed_at }}
           SHARED_ROTATION: ${{ steps.target.outputs.shared_rotation }}
           VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
           RELEASE_RUN_ID: ${{ github.run_id }}
@@ -923,6 +883,9 @@ jobs:
           const stamp=new Date().toISOString();
           const visibilityIntent=String(process.env.VISIBILITY_INTENT||'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
           const preserveExistingVisibility=visibilityIntent==='PRESERVE_EXISTING_TARGET_VISIBILITY';
+          const observedVisibility=['PUBLIC','PRIVATE'].includes(process.env.OBSERVED_VISIBILITY)?process.env.OBSERVED_VISIBILITY:'UNKNOWN';
+          const visibilityEvidence={observedVisibility,observedBeforePublish:true,visibilityPreserved:preserveExistingVisibility,observedAt:process.env.VISIBILITY_OBSERVED_AT||null};
+          const publishedVisibilityState=observedVisibility==='PRIVATE'?'PUBLISHED_PRIVATE':observedVisibility==='PUBLIC'?'PUBLISHED_PUBLIC':'PUBLISHED_VISIBILITY_PRESERVED';
           if(publishStage==='final'){
             const entry=queuedFinalEntry;
             if(Number(entry.validationVersionNumber||0)<=0)throw new Error('queued F9 validation version missing during canonical persist');
@@ -940,7 +903,7 @@ jobs:
               published:true,publishedAt:stamp,finalReviewPassed:true,f9ReleaseRegressionPassed:true,
               exactValidationCandidateVersionNumber:Number(entry.validationVersionNumber||0),
               exactValidationUniverseId:String(entry.validationUniverseId||''),exactValidationPlaceId:String(entry.validationPlaceId||''),
-              releaseClaim:'INTERNAL_PLATFORM_RELEASE_AFTER_F9',publicRelease:false,f9RuntimeReplay:entry.f9RuntimeReplay===false,
+              releaseClaim:'INTERNAL_PLATFORM_RELEASE_AFTER_F9',publicRelease:false,visibilityIntent,visibilityEvidence,f9RuntimeReplay:entry.f9RuntimeReplay===false,
               internalStudioValidationOnly:entry.internalStudioValidationOnly===true,
               authority:'roblox-open-cloud-f9-verified-canonical-publish'
             };
@@ -955,7 +918,7 @@ jobs:
             entry.lastAttemptAt=stamp;
             item.robloxCanonicalPublishQueue=publishQueue;
             item.robloxCanonicalPublishPending=publishQueue.some(row=>['PENDING','RETRY_REQUIRED','PUBLISHING'].includes(String(row?.status||'')));
-            item.robloxPublicationTarget={...existingTarget,version:Number(existingTarget.version||3),gameId:item.gameId,universeId,placeId,verified:true,verifiedAt:existingTarget.verifiedAt||stamp,lastVerifiedAt:stamp,authority:'roblox-canonical-publication-target',dedicated:true,shared:false,bootstrapState:'PUBLISHED_PRIVATE'};
+            item.robloxPublicationTarget={...existingTarget,version:Number(existingTarget.version||3),gameId:item.gameId,universeId,placeId,verified:true,verifiedAt:existingTarget.verifiedAt||stamp,lastVerifiedAt:stamp,authority:'roblox-canonical-publication-target',dedicated:true,shared:false,visibilityIntent,visibilityEvidence,internalOnly:!preserveExistingVisibility,publicDiscoveryAllowed:preserveExistingVisibility?null:false,bootstrapState:publishedVisibilityState};
             item.robloxCanonicalReleaseEvidence=canonicalEvidence;
             item.robloxLastCanonicalPublishedEvidence=canonicalEvidence;
             item.robloxInternalReleasePublished=true;
@@ -1018,7 +981,8 @@ jobs:
             visibilityIntent,
             internalOnly:!preserveExistingVisibility,
             publicDiscoveryAllowed:preserveExistingVisibility?null:false,
-            bootstrapState:'PUBLISHED_PRIVATE',
+            visibilityEvidence,
+            bootstrapState:publishedVisibilityState,
           };
           item.robloxRuntimeCandidateEvidence={
             version:1,
@@ -1034,7 +998,8 @@ jobs:
             releaseClaim:false,
             canonicalGameTarget:false,
             validationOnly:true,
-            exposure:'PRIVATE_PRE_F9_VALIDATION_CANDIDATE',
+            exposure:preserveExistingVisibility?'PRE_F9_VALIDATION_CANDIDATE_EXISTING_VISIBILITY':'PRIVATE_PRE_F9_VALIDATION_CANDIDATE',
+            visibilityEvidence,
             visibilityIntent,
             versionNumber:version,
             workflowRunId:releaseRunId,
@@ -1460,5 +1425,6 @@ jobs:
           done
           echo 'ROBLOX_THUMBNAIL_RUNTIME_PERSIST=FAILED'
           exit 1
+
 
 

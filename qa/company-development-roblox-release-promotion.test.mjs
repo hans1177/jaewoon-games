@@ -1,4 +1,7 @@
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {assembleRobloxDevelopmentReleaseEvidence,assertRobloxLatestPublishCandidate} from '../tools/vibe3-roblox-platform.mjs';
@@ -420,9 +423,10 @@ test('canonical final publish requires exact F9 and central exact verified serve
   assert.match(block,/ROBLOX_SERVER_PUBLICATION=BLOCKED_EXACT_F9/);
   assert.match(block,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SERVER_DEPLOYMENT/);
   assert.match(block,/'SERVER_DEPLOYMENT'/);
-  const privateAt=candidate.indexOf('Ensure Roblox universe is private before runtime candidate publish');
-  const privateStep=candidate.slice(privateAt,candidate.indexOf('working-directory: main',privateAt));
-  assert.match(privateStep,/steps\.target\.outputs\.publish_stage == 'validation'/);
+  const visibilityAt=candidate.indexOf('Observe existing Roblox visibility without changing it');
+  const visibilityStep=candidate.slice(visibilityAt,candidate.indexOf('working-directory: main',visibilityAt));
+  assert.match(visibilityStep,/steps\.target\.outputs\.skip != 'true'/);
+  assert.doesNotMatch(visibilityStep,/publish_stage ==/);
 });
 
 
@@ -572,3 +576,75 @@ test('final publication dedupe keeps distinct immutable cycles independent',()=>
   assert.match(guard,/String\(r\.display_title\|\|''\)===title/);
 });
 
+
+
+
+test('existing public and private target visibility is audit-only for both publication stages',()=>{
+  const start=workflow.indexOf('      - name: Observe existing Roblox visibility without changing it');
+  const end=workflow.indexOf('      - name: Publish exact package',start);
+  assert(start>0&&end>start);
+  const audit=workflow.slice(start,end);
+  assert.match(audit,/id: visibility/);
+  assert.match(audit,/if: steps\.target\.outputs\.skip != 'true'/);
+  assert.doesNotMatch(audit,/publish_stage ==|ROBLOX_OPEN_CLOUD_API_KEY|ROBLOSECURITY|SECURITY_COOKIE|--request POST|--header|deactivate|activate/);
+  assert.match(audit,/--connect-timeout 10 --max-time 20/);
+  assert.match(workflow,/put\('visibility_intent','PRESERVE_EXISTING_TARGET_VISIBILITY'\)/);
+  assert.doesNotMatch(workflow,/\/deactivate|ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=PASS|ROBLOX_INTERNAL_RELEASE_PRIVATE_FALLBACK/);
+  assert.match(workflow,/OBSERVED_VISIBILITY: \$\{\{ steps\.visibility\.outputs\.state \}\}/);
+  assert.match(workflow,/bootstrapState:publishedVisibilityState/);
+  assert.match(workflow,/visibilityEvidence/);
+  const upload=workflow.slice(end,workflow.indexOf('      - name:',end+15));
+  assert.match(upload,/assertRobloxLatestPublishCandidate/);
+  assert.match(upload,/ROBLOX_PUBLISH_EXACT_CYCLE_RELEASE_GATE_REQUIRED/);
+  assert.match(upload,/if\(plan\.executionReady!==true\)throw/);
+});
+
+test('visibility observation never blocks approved publication or claims private for public and unknown responses',()=>{
+  const start=workflow.indexOf('      - name: Observe existing Roblox visibility without changing it');
+  const audit=workflow.slice(start,workflow.indexOf('      - name: Publish exact package',start));
+  const match=audit.match(/          node - "\$status" "\$status_code" <<'NODE'\n([\s\S]*?)          NODE/);
+  assert(match,'visibility observation uses a bounded read-only parser');
+  const script=match[1].replace(/^          /gm,'');
+  const cases=[
+    ['public',{isActive:true},'200','PUBLIC'],
+    ['private',{isActive:false},'200','PRIVATE'],
+    ['alias-public',{IsActive:true},'200','PUBLIC'],
+    ['alias-private',{isUniverseActive:false},'200','PRIVATE'],
+    ['legacy-private',{IsUniverseActive:false},'200','PRIVATE'],
+    ['unknown',{},'200','UNKNOWN'],
+    ['null',{isActive:null},'200','UNKNOWN'],
+    ['wrong-type',{isActive:'false'},'200','UNKNOWN'],
+    ['malformed','not json','200','UNKNOWN'],
+    ['denied',{isActive:false},'403','UNKNOWN'],
+    ['network',{isActive:false},'000','UNKNOWN'],
+  ];
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-visibility-'));
+  try{
+    for(const [name,body,status,expected] of cases){
+      const input=path.join(tmp,name+'.json'),output=path.join(tmp,name+'.out');
+      fs.writeFileSync(input,typeof body==='string'?body:JSON.stringify(body));
+      const run=spawnSync(process.execPath,['-',input,status],{input:script,encoding:'utf8',env:{...process.env,GITHUB_OUTPUT:output}});
+      assert.equal(run.status,0,name+': '+run.stderr);
+      const saved=fs.readFileSync(output,'utf8').trim().split('\n');
+      assert.equal(saved[0],'state='+expected,name);
+      assert.ok(Number.isFinite(Date.parse(saved[1].slice('observed_at='.length))),name+' observation time');
+      assert.match(run.stdout,/ROBLOX_TARGET_VISIBILITY=PRESERVED/);
+      assert.match(run.stdout,/ROBLOX_TARGET_VISIBILITY_MUTATION=NONE/);
+      assert.doesNotMatch(run.stdout,/PRIVATE_ENFORCEMENT|PUBLIC_DISCOVERY=NO/);
+    }
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('private initialization is limited to the target returned by a new Experience create operation',()=>{
+  const start=workflow.indexOf('      - name: Ensure game-specific private Roblox target for current publish stage');
+  const block=workflow.slice(start,workflow.indexOf('      - name:',start+15));
+  const reuse=block.indexOf("if(dedicated){");
+  const create=block.indexOf('const created=await createRobloxDedicatedExperience(');
+  const initialize=block.indexOf('await ensureRobloxExperiencePrivate(');
+  assert(reuse>0&&create>reuse&&initialize>create);
+  assert.match(block.slice(reuse,create),/ROBLOX_DEDICATED_TARGET_REUSE/);
+  assert.match(block.slice(reuse,create),/process\.exit\(0\)/);
+  assert.match(block.slice(initialize),/ensureRobloxExperiencePrivate\(\{\s*universeId:created\.universeId,/);
+  assert.doesNotMatch(block.slice(initialize,block.indexOf('const result=',initialize)),/universeId:(?:current|canonicalTarget|item|selected)\./);
+  assert.equal((workflow.match(/await ensureRobloxExperiencePrivate\(/g)||[]).length,1);
+});
