@@ -1465,3 +1465,22 @@ test('design library handoff keeps newly authored asset replacement target gated
  assert.match(source,/replacesCandidateAssetId,automaticReplacementAuthorized,independentNativeRuntimeQaRequired/);
  assert.match(source,/replacesCandidateAssetId\?\{replacesCandidateAssetId,automaticReplacementAuthorized:false,independentNativeRuntimeQaRequired:true\}/);
 });
+
+// 상세 설계 후보는 기존 제작 경로에 전달하지만 실제 게임 적용·네이티브 QA를 대신하지 않는다.
+test('detailed design asset handoff reaches canonical production plan without granting application',()=>{
+  const designSource=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+  const directiveSource=fs.readFileSync('tools/company-build-up-directive.mjs','utf8');
+  const productionSource=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  const workerSource=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.ok(designSource.includes('const detailedAssetLibraryHandoff={'));
+  assert.ok(designSource.includes('registrySha256:designAssetLibraryContext.sha256'));
+  assert.ok(designSource.includes('  detailedAssetLibraryHandoff,'));
+  assert.ok(directiveSource.includes('detailedAssetLibraryHandoff:asObject(record?.detailedAssetLibraryHandoff'));
+  assert.ok(directiveSource.includes('detailedAssetLibraryHandoff:design.detailedAssetLibraryHandoff'));
+  assert.ok(productionSource.includes('detailedAssetHandoff=verifiedDesign?.detailedAssetLibraryHandoff'));
+  assert.ok(productionSource.includes('    detailedAssetCandidateReview,'));
+  assert.ok(workerSource.includes('detailedReview=order?.assetProduction?.detailedAssetCandidateReview'));
+  assert.ok(workerSource.includes('Source metadata alone never counts as APPLIED'));
+  assert.ok(productionSource.includes('automaticReplacementAuthorized:false'));
+  assert.ok(productionSource.includes('sourceBindingVerified:false,runtimeVerified:false'));
+});
