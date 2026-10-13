@@ -1315,9 +1315,13 @@ function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
     if(!/Platform\s*=\s*["']ROBLOX["']/.test(value))blockers.push('CONFIG_ROBLOX_PLATFORM_REQUIRED');
     if(!/MobileFirst\s*=\s*true/.test(value))blockers.push('CONFIG_MOBILE_FIRST_REQUIRED');
     if(profile){
-      if(!value.includes(`Genre = ${luauString(profile.genre)}`))blockers.push('CONFIG_GENRE_PROFILE_REQUIRED');
-      if(!value.includes(`PlayMode = ${luauString(profile.playMode)}`))blockers.push('CONFIG_PLAY_MODE_PROFILE_REQUIRED');
-      if(!value.includes(`MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'}`))blockers.push('CONFIG_MULTIPLAYER_PROFILE_REQUIRED');
+      // 동일 Luau 필드 값은 공백 형식과 무관하게 통과시키고 다른 값은 차단한다.
+      const genreField=value.match(/\bGenre\s*=\s*(["'][^"'\n]*["'])\s*(?=[,}\n\r])/);
+      const modeField=value.match(/\bPlayMode\s*=\s*(["'][^"'\n]*["'])\s*(?=[,}\n\r])/);
+      const multiplayerField=value.match(/\bMultiplayerRequired\s*=\s*(true|false)\s*(?=[,}\n\r])/);
+      if(genreField?.[1]!==luauString(profile.genre))blockers.push('CONFIG_GENRE_PROFILE_REQUIRED');
+      if(modeField?.[1]!==luauString(profile.playMode))blockers.push('CONFIG_PLAY_MODE_PROFILE_REQUIRED');
+      if(multiplayerField?.[1]!==(profile.multiplayerRequired?'true':'false'))blockers.push('CONFIG_MULTIPLAYER_PROFILE_REQUIRED');
     }
   }
   if(kind==='server'){

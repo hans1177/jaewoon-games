@@ -216,6 +216,23 @@ test('Roblox bootstrap static gate accepts profile-bound server-authoritative mo
   assert.equal(verdict.profile.genre,'Simulation');
 });
 
+test('Roblox static multiplayer profile accepts formatting only and rejects incorrect values',()=>{
+  const profile=robloxBuildProfileFromBaseline(baseline);
+  const original=validateRobloxBootstrap({sharedConfig:shared,serverCode:server,clientCode:client,baseline});
+  assert.equal(original.pass,true,original.blockers.join(','));
+  const compact=shared
+    .replace(/\bGenre\s*=\s*/, 'Genre=')
+    .replace(/\bPlayMode\s*=\s*/, 'PlayMode=')
+    .replace(/\bMultiplayerRequired\s*=\s*/, 'MultiplayerRequired=');
+  const valid=validateRobloxBootstrap({sharedConfig:compact,serverCode:server,clientCode:client,baseline});
+  assert.equal(valid.pass,true,valid.blockers.join(','));
+  const invalid=compact.replace(/\bMultiplayerRequired\s*=\s*(true|false)/,
+    'MultiplayerRequired='+(profile.multiplayerRequired?'false':'true'));
+  const denied=validateRobloxBootstrap({sharedConfig:invalid,serverCode:server,clientCode:client,baseline});
+  assert.equal(denied.pass,false);
+  assert.ok(denied.blockers.includes('CONFIG_MULTIPLAYER_PROFILE_REQUIRED'));
+});
+
 test('Roblox bootstrap static gate rejects placeholders and missing server boundary',()=>{
   const bad=validateRobloxBootstrap({sharedConfig:shared,serverCode:'-- TODO placeholder\n',clientCode:client,baseline});
   assert.equal(bad.pass,false);
