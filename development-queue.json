@@ -9412,8 +9412,8 @@
       },
       "robloxProjectPath": "roblox-games/monster-adventure",
       "unityProjectPath": "unity-games/monster-adventure",
-      "targetSourcePath": "unity-games/monster-adventure",
-      "sourcePath": "unity-games/monster-adventure",
+      "targetSourcePath": "roblox-games/monster-adventure",
+      "sourcePath": "roblox-games/monster-adventure",
       "designBaselineSource": "design/monster-adventure/2026-10-12/design-revised.json",
       "designDate": "2026-10-12",
       "minimumDesignContract": {
@@ -9453,10 +9453,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-13T07:44:37.104Z",
+      "updatedAt": "2026-10-13T08:39:26.235Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -9466,7 +9466,7 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-13T03:34:58.752Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -9510,13 +9510,13 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-static-revalidation-failed",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+        "roblox-build-package-revalidation-pending"
       ],
-      "robloxSourceCommit": "fa2b7e42add05f10f86d34cd017923e210889920",
-      "robloxSourceBootstrapPassedAt": "2026-10-12T18:09:47.970Z",
+      "robloxSourceCommit": "845dbeec58345be7a38fcf7c549aaec70ee9e350",
+      "robloxSourceBootstrapPassedAt": "2026-10-13T08:39:26.235Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -10097,6 +10097,19 @@
         ],
         "workflowRunId": 38339123877,
         "testedAt": "2026-10-13T03:34:58.752Z"
+      },
+      "robloxBuildFailedAt": null,
+      "robloxExactRevisionPassed": false,
+      "robloxHeadlessPassedAt": null,
+      "robloxInternalReleasePublished": false,
+      "robloxPublicRelease": false,
+      "robloxFastMvpPublished": false,
+      "robloxFastMvpPublishedAt": null,
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxEvidenceInvalidatedBySourceChange": {
+        "previousSourceRevision": "fa2b7e42add05f10f86d34cd017923e210889920",
+        "newSourceRevision": "845dbeec58345be7a38fcf7c549aaec70ee9e350",
+        "invalidatedAt": "2026-10-13T08:39:26.235Z"
       }
     },
     {
@@ -40213,7 +40226,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-13T08:38:34.355Z",
+  "updatedAt": "2026-10-13T08:39:26.235Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
