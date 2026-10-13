@@ -4858,3 +4858,13 @@ test('Roblox native asset uses are counted while unconsumed configuration atoms 
     assert.equal(result.summary.runtimeVerifiedConsumerCount,0);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+// RPG 공용 UI 자산 개선은 게임 상태가 아닌 표시 전환만 다룬다.
+test('shared RPG menu transition is interruptible and preserves direct interaction',()=>{
+  const source=fs.readFileSync('assets/roblox/rpg-menu/RPGMenu.luau','utf8');
+  assert.match(source,/TweenService:Create\(overlay,TweenInfo\.new\(\.18/);
+  assert.match(source,/entranceTween:Cancel\(\)/);
+  assert.match(source,/stopEntrance\(\)\s*\n\s*opened=value/);
+  assert.match(source,/if options\.onOpen then options\.onOpen\(value\)end/);
+  assert.match(source,/gui\.Destroying:Connect\(function\(\)\s*\n\s*stopEntrance\(\)/);
+});
