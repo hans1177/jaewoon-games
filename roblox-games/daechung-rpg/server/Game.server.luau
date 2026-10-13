@@ -633,6 +633,18 @@ end
 local function applyPlayerAppearance(p)
  local c=p.Character;if not c then return end
  decorateCharacterModel(c,tostring(p:GetAttribute("ClassId")or"NONE"),(p.UserId%7)+1,tostring(p:GetAttribute("AdvancementId")or""))
+ local colors={
+  Color3.fromRGB(225,190,155),Color3.fromRGB(175,120,85),
+  Color3.fromRGB(116,81,61),Color3.fromRGB(245,212,175),
+  Color3.fromRGB(188,146,103),Color3.fromRGB(120,92,76)
+ }
+ local choice=math.clamp(math.floor(n(p,"AvatarStyle",1)),1,#colors)
+ local body=c:FindFirstChildOfClass("BodyColors") or Instance.new("BodyColors")
+ body.Name="CustomAvatarColors";body.HeadColor3=colors[choice]
+ body.LeftArmColor3=colors[choice];body.RightArmColor3=colors[choice]
+ body.LeftLegColor3=colors[choice];body.RightLegColor3=colors[choice]
+ body.TorsoColor3=colors[choice];body.Parent=c
+ c:SetAttribute("AvatarStyle",choice)
  task.spawn(bindSharedPlayerVisual,c,tostring(p:GetAttribute("ClassId")or"NONE"))
  local weaponTier=n(p,"WeaponTier",1);local armorTier=n(p,"ArmorTier",1);local gear=c:FindFirstChild("DaechungClassGear")
  if gear then
@@ -698,7 +710,7 @@ end
 -- Save schema v3 preserves every earlier key and adds level-cap, relic and boss-companion progression.
 local SAVE_SCHEMA_VERSION=3
 local SAVE_MAX_ATTEMPTS=3
-local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture"}
+local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture","AvatarStyle"}
 local saveReady={}
 local saveSurface=RS:FindFirstChild("SavePersistence")
 if not saveSurface then
@@ -717,7 +729,7 @@ end
 local function init(p)
  p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1);p:SetAttribute("RelicId",C.RelicDefault or"NONE")
  p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("SecondAdvancementId","");p:SetAttribute("ClassName","직업 미선택")
- p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0);p:SetAttribute("HouseLevel",0);p:SetAttribute("HouseFurniture",0)
+ p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0);p:SetAttribute("HouseLevel",0);p:SetAttribute("HouseFurniture",0);p:SetAttribute("AvatarStyle",1)
  p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
  p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
@@ -1733,7 +1745,12 @@ remote.OnServerEvent:Connect(function(p,a)
   if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end;lastRequest[p]=now
  end
  local accepted=false
- if a==C.Actions.HOUSING_BUILD or a==C.Actions.HOUSING_UPGRADE or a==C.Actions.HOUSING_FURNISH or a==C.Actions.HOUSING_VISIT then accepted=houseAction(p,a)
+ if a==C.Actions.CUSTOMIZE_NEXT then
+  if n(p,"CurrentZone",0)==0 and p:GetAttribute("InCombat")~=true and saveReady[p]==true then
+   p:SetAttribute("AvatarStyle",n(p,"AvatarStyle",1)%6+1);applyPlayerAppearance(p)
+   msg(p,"외형 스타일 "..n(p,"AvatarStyle",1).."/6");accepted=true
+  end
+ elseif a==C.Actions.HOUSING_BUILD or a==C.Actions.HOUSING_UPGRADE or a==C.Actions.HOUSING_FURNISH or a==C.Actions.HOUSING_VISIT then accepted=houseAction(p,a)
  elseif a==C.Actions.BUY_WEAPON then accepted=purchaseMerchantEquipment(p,"WEAPON")
  elseif a==C.Actions.BUY_ARMOR then accepted=purchaseMerchantEquipment(p,"ARMOR")
  elseif CLASS_ACTIONS[a]then accepted=selectClass(p,CLASS_ACTIONS[a])
