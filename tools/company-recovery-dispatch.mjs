@@ -409,6 +409,43 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     dispatched.push({id:rec.id,owner,touched});
     return{...rec,status:'dispatched',recoveryOwner:owner,dispatchEvidence:uniq([...(rec.dispatchEvidence||[]),'recovery-dispatched:'+owner.toLowerCase(),'recovery-dispatched-at:'+stamp]),updatedAt:stamp};
   });
+  // Historical System AI reservations may predate the game-source authority guard.
+  // Hand off only to an existing canonical Vibe game task; never acknowledge source repair here.
+  if(mode==='all'||mode==='vibe'){
+    const eligible=systemAi.tasks.filter(task=>clean(task.status)==='queued'
+      &&uniq(task.responsibleFiles).some(file=>GAME_SOURCE_PREFIXES.some(prefix=>
+        clean(file).replaceAll('\\\\','/').replace(/^\\.\\//,'').startsWith(prefix))));
+    for(const legacy of eligible){
+      const files=uniq(legacy.responsibleFiles).map(file=>clean(file).replaceAll('\\\\','/').replace(/^\\.\\//,''));
+      const matching=gameQueue.tasks.filter(task=>{
+        if(['done','completed','cancelled','verified'].includes(clean(task.status).toLowerCase()))return false;
+        const root=clean(task.sourceRoot).replace(/\\/$/,'');
+        return files.some(file=>root&&file.startsWith(root+'/')||uniq(task.responsibleFiles).includes(file));
+      });
+      if(!matching.length)continue;
+      const preferred=matching.find(task=>clean(task.status)==='running')
+        ||matching.find(task=>/repair|implementation/i.test(clean(task.type)+' '+clean(task.id)))
+        ||matching[0];
+      const taskId=clean(preferred.id);
+      if(!taskId)continue;
+      gameQueue.tasks=gameQueue.tasks.map(task=>clean(task.id)!==taskId?task:{
+        ...task,priority:'critical',
+        evidence:uniq([...(task.evidence||[]),'system-ai-legacy-game-source-handoff:'+clean(legacy.id)]),
+        updatedAt:stamp
+      });
+      systemAi.tasks=systemAi.tasks.map(task=>clean(task.id)!==clean(legacy.id)?task:{
+        ...clearReservation(task),
+        status:'blocked-vibe-game-repair',
+        blocker:'vibe-game-source-verification-pending:'+taskId,
+        evidence:uniq([...(task.evidence||[]),'system-ai-game-source-write-forbidden:YES',
+          'system-ai-vibe-game-handoff:'+taskId,'system-ai-handoff-not-completion:YES']),
+        updatedAt:stamp
+      });
+      // Keep all dependent System AI tasks blocked until independent source/QA evidence
+      // explicitly resolves their dependency; cross-queue success is never fabricated.
+      dispatched.push({id:clean(legacy.id),owner:'VIBE2_VIBE3',touched:1});
+    }
+  }
   return{recovery,gameQueue,systemAi,dispatched,gameRequeuedTaskIds:[...gameRequeuedTaskIds]};
 }
 
