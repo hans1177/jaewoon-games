@@ -1050,7 +1050,7 @@ jobs:
 
       - name: Probe dedicated Vibe2 model cache
         id: ollama_model_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
+        if: false # owner model-free production: skip Ollama model/runtime cache lookups
         uses: actions/cache/restore@v4
         with:
           path: ~/.ollama/models
@@ -1059,7 +1059,7 @@ jobs:
 
       - name: Probe canonical Ollama runtime cache
         id: ollama_runtime_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
+        if: false # owner model-free production: skip Ollama model/runtime cache lookups
         uses: actions/cache/restore@v4
         with:
           path: ~/.cache/jaewoon-ollama/ollama-linux-*-cpu-0.33.3.tar.zst
@@ -1068,7 +1068,7 @@ jobs:
 
       - name: Record reserve model cache decision
         id: ollama_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
+        if: false # owner model-free production: skip Ollama model/runtime cache lookups
         env:
           MODEL_CACHE_HIT: ${{ steps.ollama_model_cache_probe.outputs.cache-hit }}
           RUNTIME_CACHE_HIT: ${{ steps.ollama_runtime_cache_probe.outputs.cache-hit }}
@@ -1457,7 +1457,7 @@ jobs:
 
       - name: Prepare declared native DCC authoring runtime
         timeout-minutes: 5
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
+        if: false # owner model-free production: skip AI-backed DCC generation recipes
         shell: bash
         run: |
           set -euo pipefail
@@ -1469,7 +1469,7 @@ jobs:
           echo 'VIBE2_NATIVE_DCC_RUNTIME=BLENDER_READY'
 
       - name: Execute declared native DCC authoring verification
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
+        if: false # owner model-free production: skip AI-backed DCC generation recipes
         env:
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           VIBE2_BASE_MAIN_SHA: ${{ needs.reserve.outputs.contract_sha }}
