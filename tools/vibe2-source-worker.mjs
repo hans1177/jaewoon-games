@@ -4437,9 +4437,19 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
         sourceOwnership:'EXISTING_GRAPHICS_PRODUCTION',
         selectedActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
           .filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'
-            ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady===true)
+            ||row.action==='ADAPT'&&(row.libraryReuse?.derivativeCandidateReady===true
+              ||row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
+                &&row.automaticReplacementAuthorized===true
+                &&row.sourceCompatibilityAndRightsRequired===true))
           .map(row=>Object.freeze({
             family:row.family,action:row.action,reason:row.reason,
+            // Carry the planner's exact upgrade IDs into the canonical worker;
+            // authorization to attempt replacement is never runtime verification.
+            assetId:row.assetId||null,
+            replacesCandidateAssetId:row.replacesCandidateAssetId||null,
+            replacementExecution:row.replacementExecution||null,
+            automaticReplacementAuthorized:row.automaticReplacementAuthorized===true,
+            sourceCompatibilityAndRightsRequired:row.sourceCompatibilityAndRightsRequired===true,
             selectedSourceId:row.externalAcquisition?.sourceId||row.libraryReuse?.sourceAssetId||null,
             sourcePage:row.externalAcquisition?.sourceUrl||null,
             directDownload:row.externalAcquisition?.downloadUrl||null,

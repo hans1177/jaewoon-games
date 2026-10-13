@@ -4922,6 +4922,16 @@ test('universal library matching includes lobby environment BGM SFX items and ef
  }
 });
 
+test('canonical source worker carries authorized shared GLB replacement identities',()=>{
+ const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+ assert.match(worker,/row\.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'/);
+ assert.match(worker,/row\.automaticReplacementAuthorized===true/);
+ assert.match(worker,/replacesCandidateAssetId:row\.replacesCandidateAssetId\|\|null/);
+ assert.match(worker,/assetId:row\.assetId\|\|null/);
+ assert.match(worker,/sourceCompatibilityAndRightsRequired:row\.sourceCompatibilityAndRightsRequired===true/);
+ assert.match(worker,/nativeBuildBlockedByUnacquiredSource:/);
+});
+
 test('shared asset with just one higher quality point is immediately queued for canonical replacement',()=>{
  const registry={assets:[
   {id:'old-prop',family:'PROP',role:'ITEM',consumerGameIds:['demo'],qualityScore:42,license:'project-original',masterGlb:'assets/native/old-prop.glb'},
