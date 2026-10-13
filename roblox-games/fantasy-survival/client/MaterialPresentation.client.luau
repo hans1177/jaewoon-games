@@ -28,16 +28,11 @@ local function flush()
   for i = head, stop do
    local part = queue[i]
    if part:IsDescendantOf(workspace) then
-    -- 기존 PBR/원본 재질 보호 계약을 먼저 적용한다.
-    local applied = Materials.ApplyAuthoredSurface(part, style)
-    -- 설정에서 선택한 재질만 실제 공용 렌더링 경로로 소비한다.
-    -- 색·기본 재질·물리 특성은 원래 값을 보존한다.
+    -- 선택한 재질 계열은 기존 공용 적용 함수를 통해 한 번만 적용한다.
+    -- 분류되지 않은 재질에는 기존 표현 방식을 그대로 유지한다.
     local family = materialFamily[part.Material.Name]
-    if applied and family and selectedMaterial[family] then
-     Materials.Apply(part, family, {
-      tint = part.Color, tintStrength = 1,
-      preserveBaseMaterial = true, preservePhysics = true,
-     })
+    if not family or selectedMaterial[family] then
+     Materials.ApplyAuthoredSurface(part, style)
     end
    end
   end
