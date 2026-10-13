@@ -501,7 +501,7 @@ test('canonical promotion feeds exactly one grounded Vibe starter into native co
     const seed=id=>({
       seedId:'OWNER-'+id.toUpperCase(),gameId:id,gameName:id,
       status:'ACTIVE',productionClass:'DESIGN_ONLY',GAME_CATEGORY:'SINGLE_DEFENSE_STRATEGY',
-      INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:'SINGLE',
+      INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:'COOP',
       DISTINCT_IDENTITY:'웨이브별 곤충 종류와 서식 환경의 상성을 활용하는 수비 전략 게임',
       CORE_LOOP:['다가오는 웨이브의 위험을 분석한다','제한된 자원으로 수비 유닛을 배치한다','웨이브를 견디고 다음 수비를 준비한다'],
       CORE_FUN_TO_LEARN:['배치의 선택','적의 종류에 따른 전략 조합'],
@@ -524,7 +524,7 @@ test('canonical promotion feeds exactly one grounded Vibe starter into native co
     assert.equal(firstRecord.strictDesignPass,false);
     assert.equal(firstRecord.runtimePass,false);
     assert.equal(firstRecord.releasePass,false);
-    assert.equal(firstRecord.content.multiplayerMode,'SINGLE');
+    assert.equal(firstRecord.content.multiplayerMode,'COOP');
     assert.equal(firstRecord.content.coreNumbersAndBalance.catalogScope,'30웨이브 곤충 디펜스');
     assert.deepEqual(read(root,'development-queue.json').items.map(item=>item.gameId),['one-defense']);
     const second=promoteReadyDesignSeeds({root});
