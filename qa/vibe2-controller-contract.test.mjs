@@ -760,6 +760,19 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
   assert(workflow.includes('vibe2-remote-work-lock.mjs" release'));
 });
 
+test('reserve keeps retry budget and restores the expanded queue after durable publication',()=>{
+  const reserve=workflow.slice(workflow.indexOf('\n  reserve:'),workflow.indexOf('\n  model_cache:'));
+  assert.match(reserve,/timeout-minutes: 15/);
+  const commit=reserve.indexOf('git -C "$control_root" commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"');
+  const push=reserve.indexOf('if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then',commit);
+  const persisted=reserve.indexOf('test "$state_persisted" = 1',push);
+  const restored=reserve.indexOf('storage-unpack',persisted);
+  const matrix=reserve.indexOf('worker_matrix=${JSON.stringify',restored);
+  assert.ok(commit>=0&&push>commit&&persisted>push&&restored>persisted&&matrix>restored);
+  assert.doesNotMatch(reserve.slice(commit,push),/storage-unpack/);
+  assert.match(reserve.slice(push,persisted),/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS/);
+});
+
 test('controller allows approved source root but enforces candidate boundary',()=>{
   assert(workflow.includes('git add "$SOURCE_ROOT" .vibe2/candidates'));
   assert(workflow.includes('candidate escaped approved boundary'));
@@ -1820,3 +1833,4 @@ done`;
     }
   }
 });
+
