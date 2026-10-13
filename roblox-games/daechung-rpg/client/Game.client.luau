@@ -277,7 +277,7 @@ startupGuide.Parent=startupCard
 
 local startupStatus=Instance.new("TextLabel")
 startupStatus.AnchorPoint=Vector2.new(.5,0)
-startupStatus.Position=UDim2.new(.5,0,0,237)
+startupStatus.Position=UDim2.new(.5,0,1,-76)
 startupStatus.Size=UDim2.new(.84,0,0,28)
 startupStatus.BackgroundTransparency=1
 startupStatus.Text="마을과 캐릭터를 준비하는 중..."
@@ -312,8 +312,8 @@ for i,item in ipairs(outfitButtons)do
  b.Activated:Connect(function()remote:FireServer(item[2])end)
 end
 local lobbyStyle=Instance.new("TextLabel")
-lobbyStyle.BackgroundTransparency=1;lobbyStyle.Size=UDim2.new(.84,0,0,22)
-lobbyStyle.Position=UDim2.new(.08,0,0,322);lobbyStyle.ZIndex=104
+lobbyStyle.BackgroundTransparency=1;lobbyStyle.Size=UDim2.new(.84,0,0,24);lobbyStyle.TextWrapped=true
+lobbyStyle.Position=UDim2.new(.08,0,0,320);lobbyStyle.ZIndex=104
 lobbyStyle.TextColor3=Color3.fromRGB(212,230,218)
 lobbyStyle.TextSize=13;lobbyStyle.Font=Enum.Font.Gotham;lobbyStyle.Parent=startupCard
 local function showLobbyStyle()
