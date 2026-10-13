@@ -473,6 +473,12 @@ jobs:
           failed=0
           while IFS='|' read -r run_id reason; do
             [ -n "$run_id" ] || continue
+            # Game assignment is an independent execution plane, not director-owned work.
+            # Even a queued/pending scheduler may hold unique unassigned game state.
+            if [[ "$reason" == CENTRAL_DEVELOPMENT_* || "$reason" == CENTRAL_MANUAL_BATCH_* ]]; then
+              echo "DIRECTOR_INDEPENDENT_GAME_SCHEDULER_PRESERVED=${run_id}:${reason}"
+              continue
+            fi
             pre_cancel_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
             pre_cancel_active_jobs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=100" --jq '[.jobs[] | select(.status=="in_progress")] | length' 2>/dev/null || echo 0)"
             pre_cancel_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || true)"
