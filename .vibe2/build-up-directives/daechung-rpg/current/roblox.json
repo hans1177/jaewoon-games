@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g42-85da1299a068",
-  "directiveFingerprint": "85da1299a068284244eefb7f9fe79745f4b61aeb754fb018c73e15e3ece2d907",
-  "previousDirectiveFingerprint": "2def95eae2c15b5bdc722ff374548d31ccb52af393043f1e88a6b71e44f359bd",
-  "forbiddenRepeatFingerprint": "2def95eae2c15b5bdc722ff374548d31ccb52af393043f1e88a6b71e44f359bd",
+  "directiveId": "daechung-rpg-build-up-g43-7b4d769b452b",
+  "directiveFingerprint": "7b4d769b452b8d7e5c5049ae2527ef0894785ee87decd76e0429205d1b0a8bd5",
+  "previousDirectiveFingerprint": "85da1299a068284244eefb7f9fe79745f4b61aeb754fb018c73e15e3ece2d907",
+  "forbiddenRepeatFingerprint": "85da1299a068284244eefb7f9fe79745f4b61aeb754fb018c73e15e3ece2d907",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 42,
+  "generation": 43,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
+  "sourceTreeFingerprint": "4093ee86baed6ed96477ce1b9cb17263477ebe3f3ef7421556dcd83cba77d369",
   "designFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -292,7 +292,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
+        "sourceTreeFingerprint": "4093ee86baed6ed96477ce1b9cb17263477ebe3f3ef7421556dcd83cba77d369",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -442,7 +442,7 @@
       "nextAction": "OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL"
     },
     "designFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
-    "sourceTreeFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
+    "sourceTreeFingerprint": "4093ee86baed6ed96477ce1b9cb17263477ebe3f3ef7421556dcd83cba77d369",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -968,7 +968,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
+    "sourceTreeFingerprint": "4093ee86baed6ed96477ce1b9cb17263477ebe3f3ef7421556dcd83cba77d369",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4578,33 +4578,33 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 817,
+      "combat": 825,
       "progression": 1034,
       "ai": 105,
-      "save": 240,
+      "save": 243,
       "multiplayer": 27,
-      "animation": 106,
-      "motionStates": 1324,
+      "animation": 108,
+      "motionStates": 1330,
       "gameFeel": 45,
       "vfx": 70,
       "camera": 140,
       "audio": 44,
       "audioDynamics": 34,
-      "ui": 1085,
-      "uiFlow": 1485,
+      "ui": 1091,
+      "uiFlow": 1512,
       "entryFlow": 39,
       "loadingFlow": 0,
-      "input": 192,
-      "map": 836,
+      "input": 195,
+      "map": 838,
       "landmark": 75,
-      "interaction": 419,
+      "interaction": 425,
       "inventory": 304,
-      "equipment": 236,
+      "equipment": 241,
       "settings": 37,
       "feedback": 181,
-      "session": 104,
-      "content": 1371,
-      "choice": 1841,
+      "session": 107,
+      "content": 1388,
+      "choice": 1845,
       "connection": 11,
       "performance": 65,
       "lighting": 218,
@@ -4619,11 +4619,11 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "score": 556
+        "score": 565
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "score": 441
+        "score": 466
       },
       {
         "file": "roblox-games/daechung-rpg/shared/GameConfig.luau",
@@ -4665,7 +4665,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 594,
+        "line": 609,
         "kind": "FUNCTION",
         "symbol": "beginEnemyAttack",
         "context": "local function beginEnemyAttack(e,target,now)",
@@ -4697,7 +4697,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 885,
+        "line": 971,
         "kind": "FUNCTION",
         "symbol": "endBossCinematic",
         "context": "local function endBossCinematic()",
@@ -4705,7 +4705,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1179,
+        "line": 1215,
         "kind": "FUNCTION",
         "symbol": "enemyModel",
         "context": "local function enemyModel(parent,z,pos,boss,enemyDef)",
@@ -4729,7 +4729,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1017,
+        "line": 1053,
         "kind": "FUNCTION",
         "symbol": "makeVillage",
         "context": "local function makeVillage()",
@@ -4761,7 +4761,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1330,
+        "line": 1366,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
@@ -4833,7 +4833,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 1030,
+        "line": 1116,
         "kind": "FUNCTION",
         "symbol": "place",
         "context": "local function place(item,rect)",
@@ -4841,7 +4841,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 584,
+        "line": 599,
         "kind": "FUNCTION",
         "symbol": "chooseEnemyAttack",
         "context": "local function chooseEnemyAttack(e)",
@@ -4849,7 +4849,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 629,
+        "line": 644,
         "kind": "FUNCTION",
         "symbol": "bindSharedPlayerVisual",
         "context": "local function bindSharedPlayerVisual(character,classId)",
@@ -4857,7 +4857,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 818,
+        "line": 854,
         "kind": "FUNCTION",
         "symbol": "setSaveState",
         "context": "local function setSaveState(p,state)",
@@ -4953,7 +4953,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 934,
+        "line": 1020,
         "kind": "FUNCTION",
         "symbol": "refreshObjectInteraction",
         "context": "local function refreshObjectInteraction()",
@@ -4961,7 +4961,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 349,
+        "line": 364,
         "kind": "FUNCTION",
         "symbol": "prompt",
         "context": "local function prompt(target,objectText,actionText,kind,interactionId)",
@@ -4969,7 +4969,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 861,
+        "line": 897,
         "kind": "FUNCTION",
         "symbol": "save",
         "context": "local function save(p)",
@@ -4977,7 +4977,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 925,
+        "line": 961,
         "kind": "FUNCTION",
         "symbol": "unlockBossCompanion",
         "context": "local function unlockBossCompanion(killer,e)",
@@ -4985,7 +4985,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1548,
+        "line": 1584,
         "kind": "FUNCTION",
         "symbol": "killEnemy",
         "context": "local function killEnemy(p,e,contribution)",
@@ -4993,7 +4993,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1841,
+        "line": 1877,
         "kind": "FUNCTION",
         "symbol": "houseAction",
         "context": "local function houseAction(p,action)",
@@ -5025,7 +5025,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 894,
+        "line": 980,
         "kind": "FUNCTION",
         "symbol": "showBossCinematic",
         "context": "local function showBossCinematic()",
@@ -5033,7 +5033,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 821,
+        "line": 857,
         "kind": "FUNCTION",
         "symbol": "init",
         "context": "local function init(p)",
@@ -5041,7 +5041,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1184,
+        "line": 1220,
         "kind": "FUNCTION",
         "symbol": "add",
         "context": "local function add(nm,size,off,col,mat,shape,rot)return attach(rootPart,nm,size,off,col,mat,shape,rot)end",
@@ -5052,9 +5052,9 @@
   "previousVersionDelta": {
     "previousGoal": "5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티와 퀘스트와 인물 관계 × 서사시의 추방과 귀환가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 41,
-    "previousSourceTreeFingerprint": "663c8673b37a5f3f5025c135aa3f8782a6cf032660b93b6ae0f950728423e9a5",
-    "currentSourceTreeFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
+    "previousGeneration": 42,
+    "previousSourceTreeFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
+    "currentSourceTreeFingerprint": "4093ee86baed6ed96477ce1b9cb17263477ebe3f3ef7421556dcd83cba77d369",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6211,7 +6211,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 679749,
+        "sourceBytes": 688233,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6244,22 +6244,21 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 3,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=2.",
+    "themeDepth": 4,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=2.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 10,
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 9,
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 3,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 4,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
@@ -6269,6 +6268,7 @@
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
@@ -6298,7 +6298,7 @@
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 140,
+        "score": 122,
         "gapDomains": []
       },
       {
@@ -6412,11 +6412,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 42,
-    "previousGeneration": 41,
+    "generation": 43,
+    "previousGeneration": 42,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
-    "priorSourceFingerprint": "663c8673b37a5f3f5025c135aa3f8782a6cf032660b93b6ae0f950728423e9a5",
+    "sourceFingerprint": "4093ee86baed6ed96477ce1b9cb17263477ebe3f3ef7421556dcd83cba77d369",
+    "priorSourceFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6486,7 +6486,7 @@
     "gameId": "daechung-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
+    "sourceTreeFingerprint": "4093ee86baed6ed96477ce1b9cb17263477ebe3f3ef7421556dcd83cba77d369",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6911,7 +6911,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 594,
+        "line": 609,
         "kind": "FUNCTION",
         "symbol": "beginEnemyAttack",
         "currentBehavior": "local function beginEnemyAttack(e,target,now)",
@@ -6920,7 +6920,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 885,
+        "line": 971,
         "kind": "FUNCTION",
         "symbol": "endBossCinematic",
         "currentBehavior": "local function endBossCinematic()",
@@ -6929,7 +6929,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1179,
+        "line": 1215,
         "kind": "FUNCTION",
         "symbol": "enemyModel",
         "currentBehavior": "local function enemyModel(parent,z,pos,boss,enemyDef)",
@@ -6938,7 +6938,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1017,
+        "line": 1053,
         "kind": "FUNCTION",
         "symbol": "makeVillage",
         "currentBehavior": "local function makeVillage()",
@@ -6947,7 +6947,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1330,
+        "line": 1366,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "currentBehavior": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
@@ -6956,7 +6956,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 1030,
+        "line": 1116,
         "kind": "FUNCTION",
         "symbol": "place",
         "currentBehavior": "local function place(item,rect)",
@@ -6965,7 +6965,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 584,
+        "line": 599,
         "kind": "FUNCTION",
         "symbol": "chooseEnemyAttack",
         "currentBehavior": "local function chooseEnemyAttack(e)",
@@ -6974,7 +6974,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 629,
+        "line": 644,
         "kind": "FUNCTION",
         "symbol": "bindSharedPlayerVisual",
         "currentBehavior": "local function bindSharedPlayerVisual(character,classId)",
@@ -7121,7 +7121,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
+    "sourceTreeFingerprint": "4093ee86baed6ed96477ce1b9cb17263477ebe3f3ef7421556dcd83cba77d369",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -10202,7 +10202,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
+    "sourceTreeFingerprint": "4093ee86baed6ed96477ce1b9cb17263477ebe3f3ef7421556dcd83cba77d369",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -13243,7 +13243,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 594,
+        "line": 609,
         "kind": "FUNCTION",
         "symbol": "beginEnemyAttack",
         "context": "local function beginEnemyAttack(e,target,now)",
@@ -13255,7 +13255,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 885,
+        "line": 971,
         "kind": "FUNCTION",
         "symbol": "endBossCinematic",
         "context": "local function endBossCinematic()",
@@ -13267,7 +13267,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1179,
+        "line": 1215,
         "kind": "FUNCTION",
         "symbol": "enemyModel",
         "context": "local function enemyModel(parent,z,pos,boss,enemyDef)",
@@ -13279,7 +13279,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1017,
+        "line": 1053,
         "kind": "FUNCTION",
         "symbol": "makeVillage",
         "context": "local function makeVillage()",
@@ -13291,7 +13291,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 1330,
+        "line": 1366,
         "kind": "FUNCTION",
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
@@ -13303,7 +13303,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "line": 1030,
+        "line": 1116,
         "kind": "FUNCTION",
         "symbol": "place",
         "context": "local function place(item,rect)",
@@ -13315,7 +13315,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 584,
+        "line": 599,
         "kind": "FUNCTION",
         "symbol": "chooseEnemyAttack",
         "context": "local function chooseEnemyAttack(e)",
@@ -13327,7 +13327,7 @@
       },
       {
         "file": "roblox-games/daechung-rpg/server/Game.server.luau",
-        "line": 629,
+        "line": 644,
         "kind": "FUNCTION",
         "symbol": "bindSharedPlayerVisual",
         "context": "local function bindSharedPlayerVisual(character,classId)",
@@ -13464,7 +13464,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "60759f330114af48c3aa12ed2e66892db4950bbde45a75e8dce25efd82f614a1",
+      "sourceTreeFingerprint": "4093ee86baed6ed96477ce1b9cb17263477ebe3f3ef7421556dcd83cba77d369",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
@@ -13523,7 +13523,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 43,
+    "nextGeneration": 44,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -13585,5 +13585,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-13T15:59:43.687Z"
+  "generatedAt": "2026-10-13T16:14:23.436Z"
 }
