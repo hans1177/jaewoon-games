@@ -1457,17 +1457,23 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   for(const family of requiredFamilies){
     const usedCount=currentFamilyCounts.get(family)||0;
     if(usedCount){
-      // Newly registered shared assets participate in every planning cycle, even where a
-      // lower-quality asset is already bound. A candidate never silently replaces live source.
+      // [공용 자산 즉시 업그레이드] 점수가 조금이라도 높고 현재 역할/플랫폼에 맞으면
+      // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
+      // 실제 게임 소스 적용 및 독립 런타임 QA 없이 완료로 승격하지 않는다.
       const currentAsset=currentPrimaryByFamily.get(family);
       const improved=bestReusableByFamily.get(family);
       const currentScore=Number(currentAsset?.internalAuditScore??currentAsset?.qualityScore??-1);
       const improvedScore=Number(improved?.internalAuditScore??improved?.qualityScore??-1);
-      if(improved&&clean(improved.id)!==clean(currentAsset?.id)&&improvedScore>=currentScore+10){
+      if(improved&&clean(improved.id)!==clean(currentAsset?.id)
+        &&Number.isFinite(improvedScore)&&improvedScore>currentScore
+        &&roleEvidenceById.get(clean(improved.id))?.verifiedRoleMatch===true){
         pushAction({action:'ADAPT',assetId:clean(improved.id),family,
           reason:'NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
           replacesCandidateAssetId:clean(currentAsset?.id),
-          automaticReplacementAuthorized:false,independentNativeRuntimeQaRequired:true,
+          replacementExecution:'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE',
+          automaticReplacementAuthorized:true,independentNativeRuntimeQaRequired:true,
+          sourceCompatibilityAndRightsRequired:true,
+          runtimeVerificationGranted:false,
           roleEvidence:roleEvidenceById.get(clean(improved.id))});
       }
       if(!(repairsByFamily.get(family)||[]).length){
