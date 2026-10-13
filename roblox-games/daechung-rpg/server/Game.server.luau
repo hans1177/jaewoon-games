@@ -1701,7 +1701,23 @@ local function refreshHouse(p)
  for _,side in ipairs({-1,1})do
   piece("EntryWall",Vector3.new(width*.36,10,1),Vector3.new(side*width*.32,5,-width/2),Color3.fromRGB(205,184,148))
  end
- piece("Roof",Vector3.new(width+2,1.8,width+2),Vector3.new(0,10.5,0),Color3.fromRGB(104,73,65))
+ -- 코난풍 건축 단계 표현: 기초, 보강기둥, 방어용 울타리와 지붕을 레벨에 따라 조립한다.
+ local frameColor=level==1 and Color3.fromRGB(112,81,57) or level==2 and Color3.fromRGB(116,113,105) or Color3.fromRGB(80,87,96)
+ local frameMaterial=level==1 and Enum.Material.WoodPlanks or Enum.Material.Rock
+ for _,x in ipairs({-1,1})do for _,z in ipairs({-1,1})do
+  piece("SupportColumn",Vector3.new(1.5,11,1.5),Vector3.new(x*width/2,5,z*width/2),frameColor,frameMaterial)
+ end end
+ if level>=2 then
+  for _,x in ipairs({-1,1})do
+   piece("ReinforcedWall",Vector3.new(1,4,width-3),Vector3.new(x*(width/2-1),3,0),frameColor,Enum.Material.Rock)
+  end
+ end
+ if level>=3 then
+  for _,x in ipairs({-1,1})do for _,z in ipairs({-1,1})do
+   piece("WatchPost",Vector3.new(3,15,3),Vector3.new(x*(width/2+3),6,z*(width/2+3)),frameColor,Enum.Material.Rock)
+  end end
+ end
+  piece("Roof",Vector3.new(width+2,1.8,width+2),Vector3.new(0,10.5,0),Color3.fromRGB(104,73,65))
  local sign=piece("HouseSign",Vector3.new(10,2,.6),Vector3.new(0,8,-width/2-.5),Color3.fromRGB(86,62,47))
  label(sign,p.DisplayName.."의 집",Color3.fromRGB(255,227,174),65)
  for i=1,furniture do
@@ -1709,7 +1725,8 @@ local function refreshHouse(p)
   local pos=Vector3.new(-width/2+4+col*4,1.4,-2+row*5)
   piece("Furniture_"..i,Vector3.new(3,2,2.5),pos,i%2==0 and Color3.fromRGB(107,147,119)or Color3.fromRGB(158,113,76))
  end
- home:SetAttribute("FurnitureCount",furniture)
+ home:SetAttribute("BuildingStyle",level==1 and "TIMBER" or level==2 and "STONE" or "FORTIFIED")
+  home:SetAttribute("FurnitureCount",furniture)
 end
 local function houseAction(p,action)
  if p:GetAttribute("SaveState")=="LOADING"or saveReady[p]~=true then msg(p,"저장 데이터 준비 후 이용해.");return false end
