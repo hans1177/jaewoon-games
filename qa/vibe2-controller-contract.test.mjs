@@ -445,7 +445,7 @@ test('reserve probes model cache lookup-only and skips the dedicated warmup runn
   assert.match(modelBlock,/uses: \.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
   assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS/);
   assert.match(workerBlock,/needs: \[reserve, model_cache\]/);
-  assert.match(workerBlock,/if: always\(\) && needs\.reserve\.outputs\.worker_count != '0'/);
+  assert.match(workerBlock,/if: always\(\) && needs\.reserve\.result == 'success' && needs\.reserve\.outputs\.worker_count != '0'/);
   assert.match(workerBlock,/Restore and persist selected Vibe2 model cache/);
   assert.match(workerBlock,/uses: actions\/cache@v4/);
   assert.match(workerBlock,/Prepare cached Ollama runtime/);
@@ -1867,5 +1867,5 @@ test('generic blocked Roblox work orders retry once per pinned contract without 
   assert.equal(noSha.recovered,0);
   const wrongLane=recoverContractScopedWorkOrderBlocks(input,{contractSha:sha,lane:'asset-development'});
   assert.equal(wrongLane.recovered,0);
-  assert.match(workflow,/reserve-batch[\\s\\S]{0,270}--contract-sha="/);
+  assert.match(workflow,/reserve-batch[\\s\\S]{0,700}--contract-sha="/);
 });
