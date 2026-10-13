@@ -129,6 +129,23 @@ local handlers = {
   ["scope-mobileux-de0fa512b2"] = scopeHandler6,
 }
 
+-- 협동 기본설계: 개별 RPG 진행·보상·저장을 유지하며 서버에서 공동 목표 진척을 집계한다.
+local function broadcastMultiplayerSync()
+  local members = Players:GetPlayers()
+  local roster = {}
+  local sharedProgress = nil
+  for _, member in ipairs(members) do
+    local progress = readNumber(member, "Progress", 0)
+    sharedProgress = sharedProgress and math.min(sharedProgress, progress) or progress
+    table.insert(roster, {UserId = member.UserId, Progress = progress})
+  end
+  remote:FireAllClients("MULTIPLAYER_SYNC", {
+    ParticipantCount = #members,
+    Participants = roster,
+    SharedObjective = {Kind = "ELDORIA_COOP_STORY", Progress = sharedProgress or 0, MinimumParticipants = 2},
+  })
+end
+
 Players.PlayerAdded:Connect(function(player)
   local ok, saved = pcall(function()
     return store:GetAsync("player:" .. player.UserId)
@@ -154,6 +171,7 @@ remote.OnServerEvent:Connect(function(player, actionId)
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
   handler(player)
+  broadcastMultiplayerSync()
 end)
 Players.PlayerRemoving:Connect(function(player)
   local snapshot = {}
