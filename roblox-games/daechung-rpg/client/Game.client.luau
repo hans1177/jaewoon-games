@@ -698,7 +698,12 @@ local function poseRig(rig,kind)
  return true
 end
 local previewTracks={}
+-- In live Roblox sessions no ephemeral KeyframeSequence registration is trusted.
 local function playCommonMotion(atomId)
+ return poseRig(p.Character,atomId)
+end
+-- DEPRECATED_PREVIEW_PATH_DISABLED
+local function unusedPreviewMotion(atomId)
  local character=p.Character
  if not commonMotion then return poseRig(character,atomId) end
  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
@@ -722,7 +727,7 @@ end
 local RunService=game:GetService("RunService")
 local nativePoseMotors=setmetatable({}, {__mode="k"})
 local function trackNativePose(inst)
- if inst.Name=="NativePoseMotor" and inst:IsA("Motor6D") then nativePoseMotors[inst]=true end
+ if inst:IsA("Motor6D") and (inst.Name=="NativePoseMotor" or inst.Name=="ActorLimbMotor") then nativePoseMotors[inst]={base=inst.C0,role=inst:GetAttribute("LimbRole")} end
 end
 for _,desc in ipairs(workspace:GetDescendants())do trackNativePose(desc)end
 workspace.DescendantAdded:Connect(trackNativePose)
@@ -736,16 +741,29 @@ RunService.Heartbeat:Connect(function()
  local me=c and c:FindFirstChild("HumanoidRootPart")
  if not me then return end
  local processed=0
- for motor in pairs(nativePoseMotors)do
+ for motor,item in pairs(nativePoseMotors)do
   if processed>=55 then break end
   local host=motor.Part0
   if motor.Parent and host and host.Parent and (host.Position-me.Position).Magnitude<120 then
    processed+=1
    local state=tostring(host:GetAttribute("MotionState")or"IDLE")
-   local stride=state=="ATTACK" and .37 or state=="CHASE" and .16 or state=="ROAM" and .11 or .045
-   local speed=state=="ATTACK" and 12 or state=="CHASE" and 8 or state=="ROAM" and 4 or 1.9
+   local lastPos=item.lastPos or host.Position
+   local moving=(host.Position-lastPos).Magnitude>.015
+   item.lastPos=host.Position
+   if state=="IDLE" and moving then state="ROAM" end
+   local stride=state=="ATTACK" and .55 or state=="CHASE" and .35 or state=="ROAM" and .25 or .075
+   local speed=state=="ATTACK" and 13 or state=="CHASE" and 9 or state=="ROAM" and 5 or 2
    local phase=now*speed+(host.Position.X+host.Position.Z)*.1
-   motor.C0=CFrame.new(0,math.sin(phase)*stride*.5,0)*CFrame.Angles(math.sin(phase)*stride,0,math.cos(phase*.7)*stride*.65)
+   if motor.Name=="ActorLimbMotor" then
+    local role=item.role or ""
+    local side=(role:find("Left",1,true)or role:find("ArmL",1,true)or role:find("LegR",1,true)or role:find("WingL",1,true)) and -1 or 1
+    local swing=math.sin(phase)*stride*side
+    if role:find("Wing",1,true) then swing*=2.4 end
+    if role:find("Tail",1,true) then motor.C0=item.base*CFrame.Angles(0,swing*.7,0)
+    else motor.C0=item.base*CFrame.Angles(swing,0,math.cos(phase)*stride*.35*side)end
+   else
+    motor.C0=item.base*CFrame.new(0,math.sin(phase)*stride*.45,0)*CFrame.Angles(math.sin(phase)*stride*.45,0,math.cos(phase*.7)*stride*.65)
+   end
   end
  end
 end)
@@ -769,7 +787,7 @@ task.spawn(function()
         local item=actorMotionTracks[actor]
         if not item or item.name~=desired then
          if item and item.track then pcall(function()item.track:Stop(.16);item.track:Destroy()end)end
-         local ok,track=pcall(function()return commonMotion.PlayPreview(animator,desired,{fadeTime=.15})end)
+         local ok,track=false,nil -- Production animation upload not verified
          actorMotionTracks[actor]={name=desired,track=ok and track or nil}
         end
        end
