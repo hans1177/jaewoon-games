@@ -4454,12 +4454,13 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
             sourcePage:row.externalAcquisition?.sourceUrl||null,
             directDownload:row.externalAcquisition?.downloadUrl||null,
             acquisitionState:row.externalAcquisition?.acquisitionState||null,
-            license:row.externalAcquisition?.license||row.libraryReuse?.sourceLicense||null,
+            license:row.externalAcquisition?.license||row.libraryReuse?.sourceLicense||row.registeredSourceLicense||null,
             licenseEvidenceUrl:row.externalAcquisition?.licenseEvidenceUrl||null,
             // 내부 후보는 원본·해시·권리 검증 뒤 기존 Blender 제작 책임이 파생한다.
-            sourceModel:row.libraryReuse?.sourceModel||null,
+            sourceModel:row.libraryReuse?.sourceModel||row.registeredSourceModel||null,
             sourceSha256:row.libraryReuse?.expectedSourceSha256||null,
-            sourceInspectionRequired:row.libraryReuse?.sourceFileAndSha256InspectionRequired===true,
+            sourceInspectionRequired:row.libraryReuse?.sourceFileAndSha256InspectionRequired===true
+              ||row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
             sourceAssetImmutable:row.libraryReuse?.originalImmutable===true,
             materialRefinement:row.materialRefinement||null,
             assetization:row.assetization||null,
