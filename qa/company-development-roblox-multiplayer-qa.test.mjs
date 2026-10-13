@@ -21,6 +21,7 @@ test('separate Roblox two-client Studio workflow remains disabled',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-multiplayer-qa.yml','utf8');
   assert.match(workflow,/Multiplayer Studio QA \(Disabled\)/);
   assert.match(workflow,/ROBLOX_STUDIO_MULTIPLAYER_QA=REMOVED/);
+  assert.match(workflow,/disabled:\s*\n(?:\s*#[^\n]*\n)*\s*if: false/);
   assert.doesNotMatch(workflow,/self-hosted, Windows, X64, roblox-studio-authenticated/);
 });
 

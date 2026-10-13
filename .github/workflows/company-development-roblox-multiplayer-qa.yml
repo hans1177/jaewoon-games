@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
 jobs:
   disabled:
+    # 메인: 이미 제거된 별도 멀티 검사는 러너를 배정하지 않는다.
+    if: false
     runs-on: ubuntu-latest
     steps:
       - run: echo 'ROBLOX_STUDIO_MULTIPLAYER_QA=REMOVED; ROBLOX_MULTIPLAYER_VALIDATION=HEADLESS_STATE_SYNC_CONTRACT'
