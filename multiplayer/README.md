@@ -92,6 +92,14 @@ Godot: `await MultiplayerClient.match_coop_for_game("crystal-defense")`
 
 Web: `await multiplayer.matchCoopForGame('crystal-defense')`
 
+## 무료 플랜 배포 (Cloudflare Workers Free)
+- `multiplayer/wrangler.toml`의 `workers_dev = true`를 사용해 별도 유료 도메인 없이 `*.workers.dev` 주소로 배포합니다.
+- `MATCHMAKER`, `ROOMS`는 기존 `new_sqlite_classes` 마이그레이션으로 SQLite Durable Objects를 사용합니다. 유료 전용 KV-backed Durable Objects로 변경하지 않습니다.
+- 기존 `GameRoom`은 `ctx.acceptWebSocket`을 사용하여 WebSocket 연결의 유휴 절전(hibernation)을 지원합니다. 유휴 폴링 타이머를 추가하지 않습니다.
+- Cloudflare 계정은 반드시 **Workers Free 플랜**에서 설정해야 하며, 무료 사용량 제한 초과 시 요청이 제한될 수 있습니다. 이 저장소 설정만으로 계정이 자동으로 무료 플랜으로 변경되지는 않습니다.
+- 배포 후 `https://<worker>.<account>.workers.dev/health`를 검사하고, 서로 다른 두 사용자로 방 참가 및 게임 상태 동기화를 확인합니다. 빌드/배포 실패는 실제 Wrangler 로그로 구분합니다.
+- Supabase Auth도 무료 플랜 한도를 확인해야 합니다. 기존 프로젝트 키는 변경하지 않습니다.
+
 ## Cloudflare 설정
 `multiplayer/`에서 Wrangler로 Worker를 배포합니다.
 
