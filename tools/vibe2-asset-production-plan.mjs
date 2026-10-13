@@ -1457,6 +1457,19 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   for(const family of requiredFamilies){
     const usedCount=currentFamilyCounts.get(family)||0;
     if(usedCount){
+      // Newly registered shared assets participate in every planning cycle, even where a
+      // lower-quality asset is already bound. A candidate never silently replaces live source.
+      const currentAsset=currentPrimaryByFamily.get(family);
+      const improved=bestReusableByFamily.get(family);
+      const currentScore=Number(currentAsset?.internalAuditScore??currentAsset?.qualityScore??-1);
+      const improvedScore=Number(improved?.internalAuditScore??improved?.qualityScore??-1);
+      if(improved&&clean(improved.id)!==clean(currentAsset?.id)&&improvedScore>=currentScore+10){
+        pushAction({action:'ADAPT',assetId:clean(improved.id),family,
+          reason:'NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
+          replacesCandidateAssetId:clean(currentAsset?.id),
+          automaticReplacementAuthorized:false,independentNativeRuntimeQaRequired:true,
+          roleEvidence:roleEvidenceById.get(clean(improved.id))});
+      }
       if(!(repairsByFamily.get(family)||[]).length){
         const asset=currentPrimaryByFamily.get(family),mode=internalAssetPlatformApplicationMode(asset,target);
         const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
