@@ -487,6 +487,11 @@ export function reviewSecurityRecovery(queueInput,recoveryInput,{recoveryId='',d
   return{queue:{...queue,tasks},recovery:{...recovery,tasks:recoveryTasks},taskId,recoveryId:id,decision:review};
 }
 
+// Game source mutations belong to the canonical Vibe game worker, never System AI.
+function requiresVibeSourceWorker(task={}){
+  return unique(task.responsibleFiles).some(file=>
+    /^(?:web|roblox|unity|unreal|godot)-games\//.test(clean(file).replaceAll('\\','/').replace(/^\.\//,'')));
+}
 export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId='',at=Date.now()}={}){
   const compacted=coalesceQueuedSystemAiDuplicateRepairs(queueInput,{at});
   const queue=compacted.queue;
@@ -495,6 +500,7 @@ export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId='',a
   const task=queue.tasks.find(x=>x.id===taskId);
   if(!task)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_TARGET_NOT_FOUND:'+taskId);
   if(task.status!=='queued')throw new Error('SYSTEM_AI_SECURITY_RECOVERY_TARGET_NOT_QUEUED:'+taskId+':'+task.status);
+  if(requiresVibeSourceWorker(task))throw new Error('SYSTEM_AI_GAME_SOURCE_REQUIRES_VIBE_WORKER:'+taskId);
   if(task.supervisorReviewRequired!==true)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_SUPERVISION_REQUIRED:'+taskId);
   if(!(task.evidence||[]).includes('primary-ai-security-recovery-assignment:APPROVE'))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_ASSIGNMENT_EVIDENCE_REQUIRED:'+taskId);
   if(!(task.evidence||[]).some(x=>clean(x).startsWith('security-recovery:')))throw new Error('SYSTEM_AI_SECURITY_RECOVERY_LINK_EVIDENCE_REQUIRED:'+taskId);
@@ -515,7 +521,7 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
   const preferredOrder=new Map(unique(preferredIds).map((id,index)=>[id,index]));
   const preferredRank=task=>preferredOrder.has(task.id)?preferredOrder.get(task.id):Number.MAX_SAFE_INTEGER;
   const excluded=new Set(unique(excludedGameIds));
-  const candidates=queue.tasks.filter(t=>t.status==='queued'&&!excluded.has(clean(t.gameId))&&dependencyReady(t,queue))
+  const candidates=queue.tasks.filter(t=>t.status==='queued'&&!excluded.has(clean(t.gameId))&&!requiresVibeSourceWorker(t)&&dependencyReady(t,queue))
     .sort((a,b)=>preferredRank(a)-preferredRank(b)
       ||(profiles.get(b.id)?.score||0)-(profiles.get(a.id)?.score||0)
       ||rank(b.priority)-rank(a.priority)
@@ -561,6 +567,7 @@ export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',lease
   for(const id of wanted){
     const task=byId.get(id);
     if(!task)throw new Error('SYSTEM_AI_TARGET_NOT_FOUND:'+id);
+    if(requiresVibeSourceWorker(task))throw new Error('SYSTEM_AI_GAME_SOURCE_REQUIRES_VIBE_WORKER:'+id);
     if(excluded.has(clean(task.gameId)))continue;
     if(task.status!=='queued')continue;
     if(!dependencyReady(task,queue))throw new Error('SYSTEM_AI_TARGET_DEPENDENCY_NOT_READY:'+id);
