@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-m00wo1",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-roblox-second-gate-rebuild-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "roblox-games/amusement-tycoon/client/Game.client.luau",
+        "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+        "roblox-games/amusement-tycoon/server/Game.server.luau"
+      ],
+      "baseSha": "16440b869bf0023acaa839b8956ddd6de0242a85",
+      "runId": "38613537997",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-14T18:23:46.971Z",
+      "expiresAt": "2026-10-14T19:08:46.971Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-roblox-second-gate-rebuild-v1"
+      ]
+    }
+  ]
 }
