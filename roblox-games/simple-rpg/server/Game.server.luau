@@ -2461,15 +2461,17 @@ Players.PlayerAdded:Connect(function(player)
     setNumber(player, "CivRaceID", 1)
   end
   player:SetAttribute("CivSaveAvailable", civDataLoadValid[player] == true)
-  player:SetAttribute("CivReady", true)
-  weatherSyncEvent:FireClient(player, WeatherSystem.Snapshot())
-  queueInventorySync(player)
+  -- 저장 건축물 복원까지 완료한 뒤 조작을 허용해 로비 이동과 복원 작업의 충돌을 방지한다.
   civApplyCharacterPassive(player)
   civApplySkinTone(player)
   civRestoreBuildings(player)
   if civDataLoadValid[player] == true and typeof(saved) == "table" then
     civRestoreHousing(player,saved.CivHousingPieces)
   end
+  if player.Parent ~= Players then return end
+  player:SetAttribute("CivReady", true)
+  weatherSyncEvent:FireClient(player, WeatherSystem.Snapshot())
+  queueInventorySync(player)
   -- 리저브 서버 도착 후 실제 저장된 최종 연구 완료 여부를 재검증한다.
   local joinOk, joinData = pcall(function() return player:GetJoinData() end)
   local portalData = joinOk and joinData and joinData.TeleportData
