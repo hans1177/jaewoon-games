@@ -1883,8 +1883,19 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         local importedVisual = model:FindFirstChild("ImportedCreatureVisual")
         if importedVisual and importedVisual:IsA("Model")
           and importedVisual:GetAttribute("ImportedVisualFollowRoot") == true then
-          local stride = moving and math.sin(creatureMotionPhase * 8) * 0.08 or 0
-          importedVisual:PivotTo(rootPart.CFrame * CFrame.new(0, stride, 0))
+          -- 가져온 외형은 루트 좌표를 따라가며 걷기/공격 예고/기절 자세를 표시한다.
+          -- 실제 위치·공격 판정은 서버 몬스터 루트에서만 결정한다.
+          local state = model:GetAttribute("AIState")
+          local windingUp = model:GetAttribute("IsPreparingAttack") == true
+          local humanoid = model:FindFirstChildOfClass("Humanoid")
+          local down = humanoid and humanoid.Health <= 0
+          local clock = creatureMotionPhase * 8
+          local stride = moving and not down and math.sin(clock) * 0.12 or 0
+          local roll = moving and not down and math.sin(clock) * 0.055 or 0
+          local pitch = down and math.rad(65) or state == "Stunned" and math.rad(20)
+            or windingUp and math.rad(-16) or 0
+          importedVisual:PivotTo(rootPart.CFrame * CFrame.new(0, stride, 0)
+            * CFrame.Angles(pitch, 0, roll))
         end
         local preparing = model:GetAttribute("IsPreparingAttack") == true
         local amplitude = moving and 0.22 or 0.035
