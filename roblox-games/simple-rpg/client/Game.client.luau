@@ -77,8 +77,8 @@ local STUDIO_ASSET_SELECTION = {
   PROP = studioAssetFamily("PROP"),
 }
 local STUDIO_ASSET_FAMILY_STATUS = {
-  CHARACTER = "NOT_APPLICABLE",
-  CREATURE = "NOT_APPLICABLE",
+  CHARACTER = "APPLIED_PROCEDURAL",
+  CREATURE = "APPLIED_PROCEDURAL",
   BUILDING = "NOT_APPLICABLE",
   ENVIRONMENT = "APPLIED",
   WEAPON = "NOT_APPLICABLE",
@@ -1873,6 +1873,37 @@ remote.OnClientEvent:Connect(function(kind, payload)
       end)
     end
   elseif kind == "CIV_HIT" and typeof(payload) == "table" then
+    -- 실제 서버 적중 결과에만 표시하는 로컬 타격 그래픽.
+    local character = player.Character
+    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+    if rootPart then
+      local nearest, distance = nil, 14
+      for _, model in ipairs(workspace:GetDescendants()) do
+        if model:IsA("Model") and model:GetAttribute("CivilizationEnemy") == true
+          and model.Name == tostring(payload.Enemy) then
+          local pivot = model.PrimaryPart
+          if pivot then
+            local d = (pivot.Position - rootPart.Position).Magnitude
+            if d < distance then nearest, distance = model, d end
+          end
+        end
+      end
+      if nearest then
+        local impact = Instance.new("Highlight")
+        impact.Name = "CombatHitFlash"
+        impact.FillColor = Color3.fromRGB(255, 201, 108)
+        impact.OutlineColor = Color3.fromRGB(255, 244, 214)
+        impact.FillTransparency = 0.25
+        impact.OutlineTransparency = 0.1
+        impact.DepthMode = Enum.HighlightDepthMode.Occluded
+        impact.Adornee = nearest
+        impact.Parent = nearest
+        actionTweenService:Create(impact, TweenInfo.new(0.18), {
+          FillTransparency = 1, OutlineTransparency = 1
+        }):Play()
+        task.delay(0.2, function() impact:Destroy() end)
+      end
+    end
     civMessage.TextColor3 = Color3.fromRGB(250, 235, 191)
     civMessage.Text = tostring(payload.Enemy) .. "에게 " .. tostring(payload.Damage) .. " 피해!"
     local hitCamera = workspace.CurrentCamera
