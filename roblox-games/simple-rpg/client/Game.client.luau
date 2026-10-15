@@ -1551,6 +1551,8 @@ local actionTweenService = game:GetService("TweenService")
 local commonMotion = require(Shared:WaitForChild("CommonMotion"))
 local studioMotionPreviewEnabled = game:GetService("RunService"):IsStudio()
 local actionMotionToken = 0
+-- 연속 입력 중 이전 동작의 임시 관절 각도가 다음 동작의 기준으로 누적되지 않게 한다.
+local actionJointBases = setmetatable({}, {__mode = "k"})
 local attackCombo = 0
 local lastAttackMotionAt = 0
 local function civActionMotion(actionId, button)
@@ -1605,7 +1607,8 @@ local function civActionMotion(actionId, button)
     local waist = torso and torso:FindFirstChild("Waist")
     local joint = shoulder and shoulder:IsA("Motor6D") and shoulder or nil
     if joint then
-      local startC0 = joint.C0
+      local startC0 = actionJointBases[joint] or joint.C0
+      actionJointBases[joint] = startC0
       local swing = actionId == "CivAttack" and CFrame.Angles(math.rad(attackCombo == 3 and -145 or -105), math.rad(attackCombo == 2 and -46 or 24), math.rad(attackCombo == 2 and -52 or 28))
         or actionId == "CivGuard" and CFrame.Angles(math.rad(-48), 0, math.rad(-30))
         or CFrame.Angles(math.rad(25), 0, math.rad(35))
@@ -1680,7 +1683,8 @@ local function civActionMotion(actionId, button)
       end
     end
     if waist and waist:IsA("Motor6D") then
-      local startWaist = waist.C0
+      local startWaist = actionJointBases[waist] or waist.C0
+      actionJointBases[waist] = startWaist
       local lean = actionId == "CivDodge" and 30 or actionId == "CivAttack" and (attackCombo == 3 and -28 or -22) or 12
       actionTweenService:Create(waist, TweenInfo.new(0.1),
         {C0 = startWaist * CFrame.Angles(math.rad(lean), 0, 0)}):Play()
