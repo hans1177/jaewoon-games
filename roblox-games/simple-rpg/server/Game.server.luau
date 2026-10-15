@@ -22,6 +22,32 @@ if not remote then
   remote.Parent = ReplicatedStorage
 end
 
+-- 기존 단일 게임 서버가 Remotes를 소유한다. 중복 서버 스크립트를 생성하지 않는다.
+local remotesFolder = ReplicatedStorage:FindFirstChild("Remotes")
+if remotesFolder then
+  assert(remotesFolder:IsA("Folder"), "CIV_REMOTE_FOLDER_CLASS_MISMATCH")
+else
+  remotesFolder = Instance.new("Folder")
+  remotesFolder.Name = "Remotes"
+  remotesFolder.Parent = ReplicatedStorage
+end
+local function ensureRemote(name, className)
+  local instance = remotesFolder:FindFirstChild(name)
+  if instance then
+    assert(instance.ClassName == className, "CIV_REMOTE_CLASS_MISMATCH:" .. name)
+    return instance
+  end
+  instance = Instance.new(className)
+  instance.Name = name
+  instance.Parent = remotesFolder
+  return instance
+end
+local parryEvent = ensureRemote("ParryEvent", "RemoteEvent")
+local dodgeEvent = ensureRemote("DodgeEvent", "RemoteEvent")
+local updateTechEvent = ensureRemote("UpdateTechEvent", "RemoteEvent")
+local syncInventoryEvent = ensureRemote("SyncInventoryEvent", "RemoteEvent")
+local unlockTechRequest = ensureRemote("UnlockTechRequest", "RemoteFunction")
+
 -- 시작 지면: 스폰 표시와 분리된 실제 고정 지면이다. 검수 통과를 대신하지 않는다.
 local STUDIO_ASSET_SELECTION = Config.StudioAssets.Families
 local startGround = workspace:FindFirstChild("SimpleRpgGround")
@@ -589,13 +615,25 @@ local function civGather(player, requestedType)
   civIncrease(player, "CivResearch", 1)
   civMessage(player, best.Label .. " +" .. amount .. " / 연구력 +1")
 end
-local function civResearch(player)
+-- 모든 연구 요청(구형 액션 이벤트/신규 RemoteFunction)은 이 서버 판정 한 곳을 거친다.
+local function civResearch(player, requestedTechID)
+  if player:GetAttribute("CivReady") ~= true then return false, "플레이어 데이터 로딩 중입니다." end
+  if requestedTechID ~= nil and (typeof(requestedTechID) ~= "number"
+    or requestedTechID % 1 ~= 0 or requestedTechID < 1 or requestedTechID > 72) then
+    return false, "기술 번호가 올바르지 않습니다."
+  end
   local race = civRace(player)
-  if not race or not civNowReady(player, "Research", 0.3) then return end
+  if not race then return false, "문명을 먼저 선택해야 합니다." end
   local nextID = readNumber(player, "CivTech", 0) + 1
+  if requestedTechID ~= nil and requestedTechID ~= nextID then
+    return false, "선행 기술을 먼저 연구해야 합니다."
+  end
   local tech = TechTreeData.GetTech(nextID)
-  if not tech then civMessage(player, "72개 연구를 모두 해금했어."); return end
-  if readNumber(player, "CivTech", 0) ~= tech.Prerequisite then return end
+  if not tech then return false, "72개 연구를 모두 해금했어." end
+  if readNumber(player, "CivTech", 0) ~= tech.Prerequisite then
+    return false, "선행 연구가 완료되지 않았습니다."
+  end
+  if not civNowReady(player, "Research", 0.3) then return false, "연구 요청이 너무 빠릅니다." end
   local factor = 1
   if readNumber(player, tech.EurekaMetric, 0) >= tech.EurekaCount then factor *= 0.5 end
   -- Owner age-chain eureka at the canonical stone/bronze/iron entry nodes (15, 29, 45).
@@ -610,16 +648,21 @@ local function civResearch(player)
   if race.PassiveType == "AgeDiscount" and (nextID == 15 or nextID == 29 or nextID == 45 or nextID == 61) then factor *= 0.85 end
   for resource, cost in pairs(tech.RequiredResources) do
     if readNumber(player, "Civ" .. resource, 0) < math.ceil(cost * factor) then
-      civMessage(player, resource .. " 부족: " .. math.ceil(cost * factor) .. " 필요")
-      return
+      local message = resource .. " 부족: " .. math.ceil(cost * factor) .. " 필요"
+      civMessage(player, message)
+      return false, message
     end
   end
+  -- 수치 변경/세이브는 기존 Player Attribute + UpdateAsync 경로만 사용한다.
   for resource, cost in pairs(tech.RequiredResources) do
     civIncrease(player, "Civ" .. resource, -math.ceil(cost * factor))
   end
   setNumber(player, "CivTech", nextID)
   setNumber(player, "CivEra", tech.Era)
-  civMessage(player, "연구 완료: " .. tech.Name .. " (" .. TechTreeData.EraName(tech.Era) .. ")")
+  local message = "연구 완료: " .. tech.Name .. " (" .. TechTreeData.EraName(tech.Era) .. ")"
+  civMessage(player, message)
+  updateTechEvent:FireClient(player, nextID, tech.Era)
+  return true, message
 end
 local function civGuard(player)
   if not civRace(player) or not civNowReady(player, "Guard", civ.GuardCooldown) then return end
@@ -972,7 +1015,33 @@ local handlers = {
   ["scope-mobileux-dc1239c515"] = scopeHandler6,
 }
 
+-- 속성 복제와 병행해 본인에게만 인벤토리 스냅샷 전송; 서버 값이 유일한 원본이다.
+local inventorySyncPending = {}
+local function queueInventorySync(player)
+  if inventorySyncPending[player] then return end
+  inventorySyncPending[player] = true
+  task.delay(0.1, function()
+    inventorySyncPending[player] = nil
+    if player.Parent ~= Players or player:GetAttribute("CivReady") ~= true then return end
+    local snapshot = {}
+    for key, fallback in pairs(Config.InitialState) do
+      if key:sub(1, 3) == "Civ" then
+        snapshot[key] = readNumber(player, key, fallback)
+      end
+    end
+    syncInventoryEvent:FireClient(player, snapshot)
+  end)
+end
+local function bindInventorySync(player)
+  player.AttributeChanged:Connect(function(name)
+    if name:sub(1, 3) == "Civ" and name ~= "CivReady" then
+      queueInventorySync(player)
+    end
+  end)
+end
+
 Players.PlayerAdded:Connect(function(player)
+  bindInventorySync(player)
   player:SetAttribute("CivReady", false)
   bindFoundationPlayer(player)
   initializePlayer(player)
@@ -992,6 +1061,7 @@ Players.PlayerAdded:Connect(function(player)
     end
   end
   player:SetAttribute("CivReady", true)
+  queueInventorySync(player)
   civApplyCharacterPassive(player)
   civRestoreBuildings(player)
   player.CharacterAdded:Connect(function()
@@ -1003,9 +1073,23 @@ for _, player in ipairs(Players:GetPlayers()) do
   task.defer(function()
     bindFoundationPlayer(player)
     if player:GetAttribute("Score") == nil then initializePlayer(player) end
+    bindInventorySync(player)
     player:SetAttribute("CivReady", true)
+    queueInventorySync(player)
     civRestoreBuildings(player)
   end)
+end
+-- 신규 통신은 기존 전투/연구 권한 함수로 이어지고, 클라이언트가 보상을 결정하지 못한다.
+parryEvent.OnServerEvent:Connect(function(player)
+  if player:GetAttribute("CivReady") ~= true then return end
+  civGuard(player)
+end)
+dodgeEvent.OnServerEvent:Connect(function(player)
+  if player:GetAttribute("CivReady") ~= true then return end
+  civDodge(player)
+end)
+unlockTechRequest.OnServerInvoke = function(player, techID)
+  return civResearch(player, techID)
 end
 -- 통합 액션 입력: 기존 ID는 그대로 두고 문명 전용 ID만 추가한다.
 remote.OnServerEvent:Connect(function(player, actionId, argument)
@@ -1062,6 +1146,7 @@ Players.PlayerRemoving:Connect(function(player)
   if civBuildings[player] then civBuildings[player]:Destroy(); civBuildings[player] = nil end
   lastAction[player] = nil
   civCooldowns[player] = nil
+  inventorySyncPending[player] = nil
 end)
 task.spawn(function()
   while task.wait(120) do
