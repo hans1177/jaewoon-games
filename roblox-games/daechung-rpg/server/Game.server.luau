@@ -8,6 +8,7 @@ local Lighting=game:GetService("Lighting")
 local AssetService=game:GetService("AssetService")
 local InsertService=game:GetService("InsertService")
 local TweenService=game:GetService("TweenService")
+local TeleportService=game:GetService("TeleportService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local RaceData=require(Shared:WaitForChild("RaceData"))
@@ -936,6 +937,7 @@ local SAVE_SCHEMA_VERSION=4
 local SAVE_MAX_ATTEMPTS=3
 local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture","HouseModules","AvatarStyle","AvatarArchetype","AvatarArmor","AvatarDecoration","RaceID","CivTechCount","CivKills","CivParries","CivBossKills","CivMyth","CivStone","CivBronze","CivIron","CivHero"}
 local saveReady={}
+local privateRealmCodes={} -- 예약 서버 코드는 클라이언트에 복제하지 않고 서버 저장소에 보관한다.
 local saveSurface=RS:FindFirstChild("SavePersistence")
 if not saveSurface then
  saveSurface=Instance.new("Folder")
@@ -986,6 +988,7 @@ local function load(p)
   return
  end
  if typeof(data)=="table"then
+  if typeof(data.CivPrivateRealmCode)=="string" and #data.CivPrivateRealmCode<512 then privateRealmCodes[p]=data.CivPrivateRealmCode end
   for _,k in ipairs(SAVE)do if data[k]~=nil then p:SetAttribute(k,data[k])end end
  end
  saveReady[p]=true
@@ -995,6 +998,7 @@ end
 local function save(p)
  if C.SaveEnabled~=true or not store or saveReady[p]~=true or p:GetAttribute("SaveState")=="SESSION_ONLY" then return false end
  local data={};for _,k in ipairs(SAVE)do data[k]=p:GetAttribute(k)end
+ if privateRealmCodes[p]then data.CivPrivateRealmCode=privateRealmCodes[p]end
  setSaveState(p,"SAVING")
  local lastError=nil
  for attempt=1,SAVE_MAX_ATTEMPTS do
@@ -1202,6 +1206,35 @@ task.spawn(function()
  end
 end)
 
+-- 전용 영지: 기존 저장 게임 PlaceId의 예약 서버를 소유주만 이용한다.
+local realmEntryBusy={}
+local function enterPrivateRealm(player)
+ if realmEntryBusy[player] then return end
+ if not player.Parent or not saveReady[player] or player:GetAttribute("SaveState")=="SESSION_ONLY"then msg(player,"영지 서버는 저장 연결이 필요해.");return end
+ if RunService:IsStudio()or game.PlaceId<=0 then msg(player,"예약 서버는 로블록스 게시 게임에서 이용할 수 있어.");return end
+ if n(player,"CurrentZone",0)~=0 or player:GetAttribute("InCombat")==true then msg(player,"마을에서 전투를 끝내고 이용해.");return end
+ realmEntryBusy[player]=true
+ task.spawn(function()
+  local code=privateRealmCodes[player]
+  if not code then
+   local ok,result=pcall(function()return TeleportService:ReserveServerAsync(game.PlaceId)end)
+   if not ok or type(result)~="string"then
+    realmEntryBusy[player]=nil;msg(player,"개인 영지 예약 실패");warn("Civ realm reservation",result);return
+   end
+   code=result;privateRealmCodes[player]=code
+   if not save(player) then
+    privateRealmCodes[player]=nil;realmEntryBusy[player]=nil;msg(player,"영지 정보 저장에 실패했어.");return
+   end
+  end
+  local options=Instance.new("TeleportOptions")
+  options.ReservedServerAccessCode=code
+  options:SetTeleportData({CivRealm="ESTATE",OwnerUserId=player.UserId})
+  local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,{player},options)end)
+  realmEntryBusy[player]=nil;options:Destroy()
+  if not ok then msg(player,"개인 영지 이동 실패");warn("Civ realm teleport",err)end
+ end)
+end
+
 local function makeVillage()
  table.clear(livingResidents)
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
@@ -1229,6 +1262,22 @@ local function makeVillage()
   local pl=Instance.new("PointLight");pl.Color=light.Color;pl.Range=20;pl.Brightness=.75;pl.Parent=light
  end
  createCivRivalCamps(f)
+ -- 멀티버스 개인 영지 포털과 공용 무역 광장. 중앙 스폰은 비워 둔다.
+ local estateGate=ppart(f,"PrivateRealmPortal",Vector3.new(5,10,3),Vector3.new(-14,7,-35),Color3.fromRGB(118,85,178),Enum.Material.Slate)
+ estateGate.CanCollide=false;label(estateGate,"개인 영지 · 예약 서버",Color3.fromRGB(234,205,255),65)
+ prompt(estateGate,"멀티버스 영지","내 영지로 이동","CIV_ESTATE","CivilizationEstate").Triggered:Connect(enterPrivateRealm)
+ local tradeGate=ppart(f,"MultiverseTradePortal",Vector3.new(5,10,3),Vector3.new(14,7,-35),Color3.fromRGB(194,148,77),Enum.Material.Slate)
+ tradeGate.CanCollide=false;label(tradeGate,"멀티버스 무역 광장",Color3.fromRGB(255,229,163),65)
+ prompt(tradeGate,"무역 광장","이동하기","CIV_TRADE","MultiverseTrade").Triggered:Connect(function(player)
+  if n(player,"CurrentZone",0)==0 then teleportPlayer(player,Vector3.new(0,2,-94));msg(player,"공용 무역 광장에 도착했어.");feedback(player,"CIV_TRADE")end
+ end)
+ local tradeFloor=ppart(f,"MultiverseTradeSquare",Vector3.new(51,1,30),Vector3.new(0,1.9,-94),Color3.fromRGB(165,140,104),Enum.Material.Cobblestone)
+ tradeFloor.CanCollide=true
+ for index=1,4 do
+  local x=(index-2.5)*12
+  local stand=ppart(f,"CivTradeStand"..index,Vector3.new(9,3,4),Vector3.new(x,4,-104),Color3.fromRGB(134,93,58),Enum.Material.WoodPlanks)
+  stand.CanCollide=false;label(stand,({"석기 교역","청동 교역","철기 교역","영웅 교역"})[index],Color3.fromRGB(255,226,169),42)
+ end
  -- 상자형 시장·중앙 분수 대신 기존 자산의 실제 소품을 광장 가장자리에 배치한다.
  decorateVillageAssets(f)
  for i=1,4 do
@@ -2189,16 +2238,30 @@ buildWorld()
 local function bindPlayer(p)
  load(p)
  refreshHouse(p)
+ local joinData=p:GetJoinData()
+ local arrival=typeof(joinData)=="table" and joinData.TeleportData
+ local isEstate=game.PrivateServerId~="" and typeof(arrival)=="table" and arrival.CivRealm=="ESTATE" and arrival.OwnerUserId==p.UserId
+ if isEstate then
+  p:SetAttribute("CivPrivateEstate",true)
+  if n(p,"HouseLevel",0)<1 then
+   local pos=housePosition(p)
+   local ground=ppart(houses,"EmptyEstatePlot_"..p.UserId,Vector3.new(44,2,44),pos+Vector3.new(0,-2,0),Color3.fromRGB(91,135,86),Enum.Material.Grass)
+   ground.CanCollide=true
+  end
+ end
+ local function spawnDestination()
+  return isEstate and (housePosition(p)+Vector3.new(0,6,-10)) or C.VillageCenter
+ end
  local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end
  p:GetAttributeChangedSignal("ClassId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("AdvancementId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("WeaponTier"):Connect(refreshAppearance);p:GetAttributeChangedSignal("ArmorTier"):Connect(refreshAppearance)
  p.CharacterAdded:Connect(function(c)
-  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);p:SetAttribute("Blocking",false);p:SetAttribute("Guard",C.GuardMax);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,c)
+  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);p:SetAttribute("Blocking",false);p:SetAttribute("Guard",C.GuardMax);teleportPlayer(p,spawnDestination());applyPlayerAppearance(p);validateCharacterFoundation(p,c)
  end)
- if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,p.Character)end)end
+ if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,spawnDestination());applyPlayerAppearance(p);validateCharacterFoundation(p,p.Character)end)end
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)comboState[p]=nil;save(p);local oldHouse=houses:FindFirstChild("House_"..p.UserId);if oldHouse then oldHouse:Destroy()end;saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)comboState[p]=nil;save(p);privateRealmCodes[p]=nil;realmEntryBusy[p]=nil;local oldHouse=houses:FindFirstChild("House_"..p.UserId);if oldHouse then oldHouse:Destroy()end;saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 -- 기존 저장소·저장 키 그대로 60초 자동 저장. 다른 임시 저장 파이프라인을 만들지 않는다.
 task.spawn(function()
