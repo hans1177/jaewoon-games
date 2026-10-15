@@ -1628,6 +1628,49 @@ local function civActionMotion(actionId, button)
       {FieldOfView = baseFov}):Play()
   end)
 end
+-- 동료 및 몬스터의 기존 파츠를 클라이언트에서만 움직인다. 서버 판정과 위치는 그대로 둔다.
+local creatureMotionRunService = game:GetService("RunService")
+local creatureMotionPhase = 0
+local creatureMotionAccumulator = 0
+creatureMotionRunService.RenderStepped:Connect(function(dt)
+  creatureMotionAccumulator += dt
+  if creatureMotionAccumulator < 1 / 20 then return end
+  creatureMotionPhase += creatureMotionAccumulator
+  creatureMotionAccumulator = 0
+  local character = player.Character
+  local viewer = character and character:FindFirstChild("HumanoidRootPart")
+  if not viewer then return end
+  local visible = 0
+  for _, model in ipairs(workspace:GetDescendants()) do
+    if visible >= 30 then break end
+    if model:IsA("Model") and
+      (model:GetAttribute("CivilizationEnemy") == true or model:GetAttribute("CompanionOwnerUserId") ~= nil) then
+      local rootPart = model.PrimaryPart
+      if rootPart and (viewer.Position - rootPart.Position).Magnitude <= 85 then
+        visible += 1
+        local moving = model:GetAttribute("MotionState") == "Walk"
+          or model:GetAttribute("AIState") == "Chase"
+          or model:GetAttribute("AIState") == "Combat"
+        local preparing = model:GetAttribute("IsPreparingAttack") == true
+        local amplitude = moving and 0.22 or 0.035
+        if preparing then amplitude = 0.08 end
+        local swing = math.sin(creatureMotionPhase * (moving and 8 or 2.1)) * amplitude
+        for _, name in ipairs({"Left Arm", "Right Arm", "LeftLimb", "RightLimb"}) do
+          local part = model:FindFirstChild(name)
+          if part and part:IsA("BasePart") then
+            local sign = (name == "Left Arm" or name == "LeftLimb") and 1 or -1
+            local base = part:GetAttribute("MotionBaseOffset")
+            if typeof(base) ~= "CFrame" then
+              base = rootPart.CFrame:ToObjectSpace(part.CFrame)
+              part:SetAttribute("MotionBaseOffset", base)
+            end
+            part.CFrame = rootPart.CFrame * base * CFrame.Angles(sign * swing, 0, 0)
+          end
+        end
+      end
+    end
+  end
+end)
 -- Touch combat/harvesting is handled by world taps instead of four fixed HUD buttons.
 if nativeTouchEnabled then
   UserInputService.TouchTapInWorld:Connect(function(position, processedByUI)
