@@ -4,6 +4,33 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local ContextActionService = game:GetService("ContextActionService")
 local player = Players.LocalPlayer
+-- 시대별 연출은 각 플레이어 화면에서만 적용한다.
+-- 서버 전역 Lighting 시간/날씨는 건드리지 않아 멀티플레이어의 시대 차이를 유지한다.
+local eraLighting = game:GetService("Lighting")
+local eraColor = eraLighting:FindFirstChild("CivilizationEraColor")
+if not eraColor or not eraColor:IsA("ColorCorrectionEffect") then
+  eraColor = Instance.new("ColorCorrectionEffect")
+  eraColor.Name = "CivilizationEraColor"
+  eraColor.Parent = eraLighting
+end
+local eraThemes = {
+  [1] = {TintColor = Color3.fromRGB(223, 205, 239), Saturation = -0.08, Contrast = 0.08},
+  [2] = {TintColor = Color3.fromRGB(214, 234, 206), Saturation = 0.04, Contrast = 0.06},
+  [3] = {TintColor = Color3.fromRGB(247, 220, 182), Saturation = 0.05, Contrast = 0.08},
+  [4] = {TintColor = Color3.fromRGB(211, 213, 225), Saturation = -0.06, Contrast = 0.12},
+  [5] = {TintColor = Color3.fromRGB(255, 238, 191), Saturation = 0.09, Contrast = 0.09},
+}
+local eraVisualTween = nil
+local function applyLocalEraTheme()
+  local era = math.clamp(math.floor(tonumber(player:GetAttribute("CivEra")) or 1), 1, 5)
+  local theme = eraThemes[era]
+  if eraVisualTween then eraVisualTween:Cancel() end
+  eraVisualTween = game:GetService("TweenService"):Create(
+    eraColor, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), theme)
+  eraVisualTween:Play()
+end
+player:GetAttributeChangedSignal("CivEra"):Connect(applyLocalEraTheme)
+task.defer(applyLocalEraTheme)
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
