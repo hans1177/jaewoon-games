@@ -1040,6 +1040,7 @@ local function civTravel(player, raceID)
   local character = player.Character
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
   if not destination or not character or not humanoid or humanoid.Health <= 0 then return end
+  character:SetAttribute("CivTravelCompleted", true)
   character:PivotTo(CFrame.new(destination + Vector3.new(0, 5, -11)))
 end
 -- 기존 캐릭터의 기준 수치를 보존하면서 문명 고유 특성만 적용한다.
@@ -2595,6 +2596,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
       if selected <= 0 then civMessage(player, "게임 데이터를 확인할 수 없어. 잠시 후 다시 시도해."); return end
       action(player, argument)
     elseif argument == "Lobby" then
+      character:SetAttribute("CivTravelCompleted", true)
       character:PivotTo(CFrame.new(0, 5, 0))
     elseif selected > 0 then
       local root = character:FindFirstChild("HumanoidRootPart")
