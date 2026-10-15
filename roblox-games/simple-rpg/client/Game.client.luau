@@ -1217,7 +1217,7 @@ local function civOpen(mode)
       local race = RaceData.GetRace(id)
       local destination = id
       local button = civButton(civList, "RegionTravel" .. id,
-        string.format("%02d. %s · %s", id, race.Name, race.Landmark),
+        string.format("%02d. 탐험 지역 · %s", id, race.Landmark),
         UDim2.new(1, -9, 0, 48), UDim2.new(), function()
           if (player:GetAttribute("CivRaceID") or 0) <= 0 then
             civMessage.Text = "게임 데이터를 불러오는 중이야."
@@ -1225,6 +1225,7 @@ local function civOpen(mode)
           end
           remote:FireServer("CivTravel", destination)
           civPanel.Visible = false
+          civMenuRail.Visible = false
         end)
       button.LayoutOrder = id + 1
       button.TextSize = 13
