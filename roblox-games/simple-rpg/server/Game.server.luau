@@ -52,6 +52,7 @@ local syncInventoryEvent = ensureRemote("SyncInventoryEvent", "RemoteEvent")
 local unlockTechRequest = ensureRemote("UnlockTechRequest", "RemoteFunction")
 local craftRequestRemote = ensureRemote("CraftRequestRemote", "RemoteEvent")
 local portalTeleportEvent = ensureRemote("PortalTeleportEvent", "RemoteEvent")
+local autoCombatEvent = ensureRemote("AutoCombatEvent", "RemoteEvent")
 
 -- 시작 지면: 스폰 표시와 분리된 실제 고정 지면이다. 검수 통과를 대신하지 않는다.
 local STUDIO_ASSET_SELECTION = Config.StudioAssets.Families
@@ -365,6 +366,7 @@ local civWorlds = {}
 local civStations = {}
 local civBuildings = {}
 local pendingTimedCraft = {}
+-- Per-session opt-in from the touch HUD; server damage authority remains unchanged.
 local savePlayer = nil -- forward declaration: portal save must complete before TeleportAsync
 local civHub = Instance.new("Folder")
 civHub.Name = "CivilizationWorlds"
@@ -782,6 +784,8 @@ local function civSpawnEnemy(raceID, center, special)
     or race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
   enemy:SetAttribute("CivilizationEnemy", true)
   enemy:SetAttribute("RaceID", raceID)
+  enemy:SetAttribute("IsPreparingAttack", false)
+  enemy:SetAttribute("AIState", "Idle")
   local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + Vector3.new(special and -9 or 0, 4, 9)), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
   root.Transparency = 0.35
   local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
@@ -795,7 +799,7 @@ local function civSpawnEnemy(raceID, center, special)
   enemy.PrimaryPart = root
   enemy.Parent = civHub
   civSign(head, head, enemy.Name, 3.3)
-  local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, Special = special, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0 }
+  local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, Special = special, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0, TargetUserId = nil }
   table.insert(civEnemies, item)
   return item
 end
@@ -818,7 +822,8 @@ local function civSpawnGrazer(raceID, center)
   civWildlife[raceID] = state
   return state
 end
-local function civAttack(player)
+-- targetModel is an optional mobile hint; only a server-owned enemy may be selected.
+local function civAttack(player, targetModel)
   if not civRace(player) or not civNowReady(player, "Attack", civ.AttackCooldown) then return end
   local character = player.Character
   local root = character and character:FindFirstChild("HumanoidRootPart")
@@ -826,15 +831,20 @@ local function civAttack(player)
   if not root or not humanoid or humanoid.Health <= 0 then return end
   local chosen, dist = nil, 12
   for _, enemy in ipairs(civEnemies) do
-    if enemy.Humanoid.Health > 0 then
+    if enemy.Humanoid.Health > 0 and enemy.Model.Parent == civHub then
       local delta = enemy.Root.Position - root.Position
       local d = delta.Magnitude
-      if d < dist and d > 0.01 and root.CFrame.LookVector:Dot(delta.Unit) > -0.1 then
+      if d < dist and d > 0.01
+        and ((targetModel ~= nil and targetModel == enemy.Model)
+          or (targetModel == nil and root.CFrame.LookVector:Dot(delta.Unit) > -0.1)) then
         chosen = enemy; dist = d
       end
     end
   end
-  if not chosen then civMessage(player, "적을 바라보고 가까이 가서 공격해."); return end
+  if not chosen then
+    if targetModel == nil then civMessage(player, "적을 바라보고 가까이 가서 공격해.") end
+    return
+  end
   local race = civRace(player)
   local weapon = readNumber(player, "CivEquippedWeapon", 0)
   local requiredWeapon = chosen.Special == "WildBoar" and 1
@@ -867,6 +877,8 @@ local function civAttack(player)
     if race.PassiveType == "Victory" then player:SetAttribute("CivVictoryUntil", os.clock() + 10) end
     civMessage(player, chosen.Model.Name .. " 처치! 연구력 +8 / 은화 +3" .. additionalLoot)
     chosen.TelegraphAt = 0
+    chosen.TargetUserId = nil
+    chosen.Model:SetAttribute("IsPreparingAttack", false)
     task.delay(9, function()
       if chosen.Model.Parent then
         chosen.Model:PivotTo(CFrame.new(chosen.Home))
@@ -1034,6 +1046,8 @@ task.spawn(function()
             if enemy.Humanoid.Health <= enemy.Humanoid.MaxHealth * 0.2 and dist < 10 then
               AdvancedAIEcosystem.SetState(enemy, "Flee")
               enemy.TelegraphAt = 0
+              enemy.TargetUserId = nil
+              enemy.Model:SetAttribute("IsPreparingAttack", false)
               local away = enemy.Root.Position - root.Position
               local planar = Vector3.new(away.X, 0, away.Z)
               if planar.Magnitude > 0.1 then
@@ -1045,10 +1059,20 @@ task.spawn(function()
             else
               AdvancedAIEcosystem.SetState(enemy, "Combat")
               if enemy.TelegraphAt > 0 and now >= enemy.TelegraphAt then
-              enemy.TelegraphAt = 0
-              enemy.LastHit = now
-              civOnEnemyStrike(enemy, target, now)
-            elseif enemy.TelegraphAt <= 0 then
+                local intendedUserId = enemy.TargetUserId
+                enemy.TelegraphAt = 0
+                enemy.TargetUserId = nil
+                enemy.Model:SetAttribute("IsPreparingAttack", false)
+                enemy.LastHit = now
+                -- Only the real server-telegraphed target can receive mobile smart guard.
+                if intendedUserId == target.UserId then
+                  if target:GetAttribute("CivAutoCombatEnabled") == true
+                    and (root.Position - enemy.Root.Position).Magnitude <= 9 then
+                    civGuard(target) -- preserves existing GuardCooldown and parry reward window
+                  end
+                  civOnEnemyStrike(enemy, target, now)
+                end
+              elseif enemy.TelegraphAt <= 0 then
               if dist > 7 then
                 local chasePosition = AdvancedAIEcosystem.ChaseTarget(enemy, root.Position, now)
                 local step = chasePosition - enemy.Root.Position
@@ -1061,6 +1085,8 @@ task.spawn(function()
                 end
               elseif now - enemy.LastHit >= 1.5 then
                 enemy.TelegraphAt = now + 0.65
+                enemy.TargetUserId = target.UserId
+                enemy.Model:SetAttribute("IsPreparingAttack", true)
                 remote:FireClient(target, "CIV_TELEGRAPH", {Enemy = enemy.Model.Name})
               end
             end
@@ -1069,7 +1095,10 @@ task.spawn(function()
         elseif enemy.TelegraphAt > 0 then
           AdvancedAIEcosystem.SetState(enemy, "Idle")
           enemy.TelegraphAt = 0
+          enemy.TargetUserId = nil
+          enemy.Model:SetAttribute("IsPreparingAttack", false)
         elseif now - enemy.LastHit >= 3 then
+          enemy.Model:SetAttribute("IsPreparingAttack", false)
           AdvancedAIEcosystem.SetState(enemy, "Patrol")
           -- Predation runs only when no living player is targeted.
           local grazer = civWildlife[enemy.RaceID]
@@ -1202,6 +1231,32 @@ end)
 portalTeleportEvent.OnServerEvent:Connect(function(player, destinationID)
   civPortalTeleport(player, destinationID)
 end)
+autoCombatEvent.OnServerEvent:Connect(function(player, actionType, targetModel)
+  if player:GetAttribute("CivReady") ~= true then return end
+  if typeof(actionType) ~= "string" then return end
+  if actionType == "SetEnabled" then
+    if typeof(targetModel) ~= "boolean" then return end
+    player:SetAttribute("CivAutoCombatEnabled", targetModel)
+    return
+  end
+  if actionType ~= "AutoAttack" or player:GetAttribute("CivAutoCombatEnabled") ~= true then return end
+  if typeof(targetModel) ~= "Instance" or not targetModel:IsA("Model") then return end
+  if targetModel.Parent ~= civHub or targetModel:GetAttribute("CivilizationEnemy") ~= true then return end
+  local verified = false
+  for _, enemy in ipairs(civEnemies) do
+    if enemy.Model == targetModel and enemy.Humanoid.Health > 0 then verified = true; break end
+  end
+  if not verified then return end
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  local targetRoot = targetModel:FindFirstChild("HumanoidRootPart")
+  if not root or not root:IsA("BasePart") or not humanoid or humanoid.Health <= 0
+    or not targetRoot or not targetRoot:IsA("BasePart") then return end
+  if (targetRoot.Position - root.Position).Magnitude > 12 then return end
+  -- No arbitrary 15-damage injection: existing attack weapon gates, rewards and cooldown.
+  civAttack(player, targetModel)
+end)
 -- 통합 액션 입력: 기존 ID는 그대로 두고 문명 전용 ID만 추가한다.
 remote.OnServerEvent:Connect(function(player, actionId, argument)
   if player:GetAttribute("CivReady") ~= true then return end
@@ -1260,6 +1315,7 @@ Players.PlayerRemoving:Connect(function(player)
   civCooldowns[player] = nil
   inventorySyncPending[player] = nil
   pendingTimedCraft[player] = nil
+  player:SetAttribute("CivAutoCombatEnabled", false)
 end)
 task.spawn(function()
   while task.wait(120) do
