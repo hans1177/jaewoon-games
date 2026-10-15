@@ -2919,8 +2919,16 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
   if now - previous < Config.RateLimitSeconds then return end
   lastAction[player] = now
   if actionId == "CivTravel" then
+    -- 저장 읽기에 실패한 세션은 이동시키지 않는다. 실패 사유는 바로 클라이언트에 알린다.
+    if civDataLoadValid[player] ~= true or player:GetAttribute("CivSaveAvailable") ~= true then
+      civMessage(player, "저장 확인 실패: 기존 데이터를 보호하려고 모험 이동을 막았어. 재접속해 줘.")
+      return
+    end
     local selected = readNumber(player, "CivRaceID", 0)
-    if not civNowReady(player, "Travel", 1.5) then return end
+    if not civNowReady(player, "Travel", 1.5) then
+      civMessage(player, "이동 준비 중이야. 잠시 후 다시 눌러줘.")
+      return
+    end
     local character = player.Character
     local humanoid = character and character:FindFirstChildOfClass("Humanoid")
     if not character or not humanoid or humanoid.Health <= 0 then return end
