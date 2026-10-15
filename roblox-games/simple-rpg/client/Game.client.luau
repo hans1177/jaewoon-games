@@ -1073,6 +1073,30 @@ local function civOpen(mode)
       "거래는 가까운 문명 무역소 16칸 이내에서만 가능해.",
       UDim2.new(1, -9, 0, 38), UDim2.new(), false)
     hint.LayoutOrder = 42
+  elseif mode == "Regions" then
+    panelTitle.Text = "문명 맵 이동 · 24개 지역"
+    local lobby = civButton(civList, "ReturnToLobby", "중앙 로비로 이동",
+      UDim2.new(1, -9, 0, 48), UDim2.new(), function()
+        remote:FireServer("CivTravel", "Lobby")
+        civPanel.Visible = false
+      end)
+    lobby.LayoutOrder = 1
+    for id = 1, 24 do
+      local race = RaceData.GetRace(id)
+      local destination = id
+      local button = civButton(civList, "RegionTravel" .. id,
+        string.format("%02d. %s · %s", id, race.Name, race.Landmark),
+        UDim2.new(1, -9, 0, 48), UDim2.new(), function()
+          if (player:GetAttribute("CivRaceID") or 0) <= 0 then
+            civMessage.Text = "먼저 문명을 선택해."
+            return
+          end
+          remote:FireServer("CivTravel", destination)
+          civPanel.Visible = false
+        end)
+      button.LayoutOrder = id + 1
+      button.TextSize = 13
+    end
   elseif mode == "Portals" then
     local unlocked = (player:GetAttribute("CivTech") or 0) >= 72
     panelTitle.Text = unlocked and "영웅 시대 · 24개 차원 포털" or "차원 포털 · 최종 연구 72 필요"
@@ -1333,6 +1357,8 @@ civButton(civMenuRail, "TradeMenu", "무역",
     civOpen("Trade")
     tradeRequestRemote:FireServer("Snapshot", 0, false, "Silver")
   end)
+civButton(civMenuRail, "RegionMapMenu", "맵 이동",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Regions") end)
 civButton(civMenuRail, "MultiverseMenu", "차원 포털",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Portals") end)
 civButton(civMenuRail, "InventoryMenu", "가방",
@@ -1349,7 +1375,7 @@ civButton(civMenuRail, "TechMenu", "연구",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Techs") end)
 civButton(civMenuRail, "Travel", "영지/로비",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function()
-    remote:FireServer("CivTravel")
+    remote:FireServer("CivTravel", "Lobby")
   end)
 civButton(civMenuRail, "Legacy", "기존 RPG",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function()
@@ -1359,7 +1385,7 @@ civButton(civMenuRail, "Legacy", "기존 RPG",
 -- Keep the player's main navigation consistent even when content is created in another order.
 for index, name in ipairs({
   "RaceMenu", "TechMenu", "InventoryMenu", "CraftMenu", "BuildingMenu",
-  "CompanionMenu", "TradeMenu", "MultiverseMenu", "Travel", "Legacy",
+  "CompanionMenu", "TradeMenu", "RegionMapMenu", "MultiverseMenu", "Travel", "Legacy",
 }) do
   local menuItem = civMenuRail:FindFirstChild(name)
   if menuItem and menuItem:IsA("GuiButton") then menuItem.LayoutOrder = index end
