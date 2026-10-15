@@ -1556,6 +1556,7 @@ local actionJointBases = setmetatable({}, {__mode = "k"})
 local actionJointTweens = setmetatable({}, {__mode = "k"})
 local actionCameraTweens = setmetatable({}, {__mode = "k"})
 local actionCameraBases = setmetatable({}, {__mode = "k"})
+local actionButtonEffects = setmetatable({}, {__mode = "k"})
 local attackCombo = 0
 local lastAttackMotionAt = 0
 local function civActionMotion(actionId, button)
@@ -1567,16 +1568,26 @@ local function civActionMotion(actionId, button)
   actionMotionToken += 1
   local token = actionMotionToken
   if button then
-    local originalColor = button.BackgroundColor3
+    local state = actionButtonEffects[button]
+    if not state then
+      state = {baseColor = button.BackgroundColor3, generation = 0}
+      actionButtonEffects[button] = state
+    end
+    state.generation += 1
+    local generation = state.generation
+    if state.tween then state.tween:Cancel() end
     local flash = actionId == "CivGuard" and Color3.fromRGB(100, 170, 205)
       or actionId == "CivDodge" and Color3.fromRGB(130, 178, 98)
       or Color3.fromRGB(232, 163, 61)
-    actionTweenService:Create(button, TweenInfo.new(0.09, Enum.EasingStyle.Quad),
-      {BackgroundColor3 = flash}):Play()
+    state.tween = actionTweenService:Create(button, TweenInfo.new(0.09, Enum.EasingStyle.Quad),
+      {BackgroundColor3 = flash})
+    state.tween:Play()
     task.delay(0.16, function()
-      if button.Parent then
-        actionTweenService:Create(button, TweenInfo.new(0.18, Enum.EasingStyle.Quad),
-          {BackgroundColor3 = originalColor}):Play()
+      if button.Parent and state.generation == generation then
+        if state.tween then state.tween:Cancel() end
+        state.tween = actionTweenService:Create(button, TweenInfo.new(0.18, Enum.EasingStyle.Quad),
+          {BackgroundColor3 = state.baseColor})
+        state.tween:Play()
       end
     end)
   end
