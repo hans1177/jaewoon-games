@@ -619,6 +619,8 @@ local civPreviewStyles = {
   {Color3.fromRGB(90, 97, 105), Color3.fromRGB(172, 160, 134), "helmet"},
   {Color3.fromRGB(125, 68, 74), Color3.fromRGB(184, 175, 160), "fur"},
 }
+local civPreviewTone = 1
+local civSkinTones = {Color3.fromRGB(190, 148, 114), Color3.fromRGB(225, 184, 145), Color3.fromRGB(145, 100, 70), Color3.fromRGB(98, 68, 49)}
 local function civBuildCharacterPreview(viewport, raceId)
   local style = civPreviewStyles[raceId]
   if not style then return end
@@ -643,7 +645,7 @@ local function civBuildCharacterPreview(viewport, raceId)
     return part
   end
   local cloth, metal, headwear = style[1], style[2], style[3]
-  local skin = Color3.fromRGB(190, 148, 114)
+  local skin = civSkinTones[civPreviewTone]
   block("Torso", Vector3.new(1.8, 1.85, 0.9), Vector3.new(0, 2.85, 0), cloth)
   block("Waist", Vector3.new(1.7, 0.4, 0.85), Vector3.new(0, 1.9, 0), metal)
   for _, side in ipairs({-1, 1}) do
@@ -700,7 +702,7 @@ local function civOpen(mode)
     -- 한 번에 하나의 ViewportFrame만 렌더링하여 모바일 메모리/드로우콜을 제한한다.
     local racePreview = Instance.new("Frame")
     racePreview.Name = "CivilizationCharacterPreview"
-    racePreview.Size = UDim2.new(1, -9, 0, 236)
+    racePreview.Size = UDim2.new(1, -9, 0, 292)
     racePreview.BackgroundColor3 = Color3.fromRGB(107, 74, 47)
     racePreview.BorderSizePixel = 0
     racePreview.LayoutOrder = 0
@@ -731,6 +733,12 @@ local function civOpen(mode)
       UDim2.fromOffset(7, 70), function() showPreview(currentPreviewId - 1) end)
     civButton(racePreview, "NextRacePreview", "▶", UDim2.fromOffset(60, 54),
       UDim2.new(1, -67, 0, 70), function() showPreview(currentPreviewId + 1) end)
+    local toneButton = civButton(racePreview, "SkinTonePreview", "외형 미리보기 · 피부색 변경",
+      UDim2.new(1, -16, 0, 38), UDim2.fromOffset(8, 178), function()
+        civPreviewTone = civPreviewTone % #civSkinTones + 1
+        showPreview(currentPreviewId)
+      end)
+    toneButton.TextSize = 13
     showPreview(currentPreviewId)
     for id = 1, 24 do
       local race = RaceData.GetRace(id)
