@@ -2089,8 +2089,15 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             if leg.joint.Parent then
               local angle = walking and math.sin(clock) * leg.side * leg.amplitude * speedFactor or 0
               -- 실제 공격 예고 중에는 리그 팔을 들어 올리고 짧게 떨도록 한다.
-              if windingUp and not down and leg.isArm then
-                angle = -0.6 + math.sin(creatureMotionPhase * 12) * 0.07
+              if leg.isArm and not down then
+                local strikeAt = model:GetAttribute("LastAttackAnimationAt")
+                local elapsed = typeof(strikeAt) == "number"
+                  and (workspace:GetServerTimeNow() - strikeAt) or math.huge
+                if elapsed >= 0 and elapsed < 0.32 then
+                  angle = -0.6 + math.sin((elapsed / 0.32) * math.pi) * 1.15
+                elseif windingUp then
+                  angle = -0.6 + math.sin(creatureMotionPhase * 12) * 0.07
+                end
               end
               if leg.isBone then
                 leg.joint.Transform = leg.base * CFrame.Angles(angle, 0, 0)
