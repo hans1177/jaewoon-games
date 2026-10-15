@@ -1951,15 +1951,17 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         local rootPosition = rootPart.Position
         local realMoving = false
         local horizontalSpeed = 0
+        local gaitPhase = oldRootMotion and oldRootMotion.phase or 0
         if oldRootMotion then
           local displacement = rootPosition - oldRootMotion.position
           local planar = Vector3.new(displacement.X, 0, displacement.Z).Magnitude
           local elapsed = math.max(0.01, creatureMotionPhase - oldRootMotion.at)
           horizontalSpeed = planar / elapsed
-          -- 네트워크 위치 보간의 작은 오차를 제거하고 급격한 복귀 텔레포트는 무시.
+          -- 걷는 거리만큼 다리 위상을 누적한다. 서버 재배치/순간이동으로는 보행하지 않는다.
           realMoving = horizontalSpeed > 0.35 and horizontalSpeed < 65
+          if realMoving then gaitPhase += math.min(planar, 2) * 1.4 end
         end
-        creatureRootMotion[rootPart] = {position = rootPosition, at = creatureMotionPhase}
+        creatureRootMotion[rootPart] = {position = rootPosition, at = creatureMotionPhase, phase = gaitPhase}
         -- 서버는 Patrol/Flee에서도 몬스터를 실제로 움직인다. AIState 문자열만으로
         -- 걷기를 제한하면 이동 중에도 발이 고정되므로 실제 변위만 사용한다.
         local moving = realMoving
@@ -1977,8 +1979,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           -- 모델마다 위상을 달리하고 실제 속도에 따라 보폭/주기를 조절한다.
           -- 동일한 타이밍으로 모든 몬스터가 제자리 행진하던 문제를 줄인다.
           local speedFactor = math.clamp(horizontalSpeed / 5, 0.55, 1.65)
-          local phaseOffset = (math.abs(math.floor(rootPart.Position.X * 19 + rootPart.Position.Z * 11)) % 23) * 0.27
-          local clock = creatureMotionPhase * (7 * speedFactor) + phaseOffset
+          -- 좌표 기반 위상은 이동할 때 매 프레임 변해 발이 튀므로 누적 보행 거리 사용.
+          local clock = gaitPhase
           local stride = moving and not down and math.sin(clock) * 0.12 * speedFactor or 0
           local roll = moving and not down and math.sin(clock) * 0.055 or 0
           local pitch = down and math.rad(65) or state == "Stunned" and math.rad(20)
