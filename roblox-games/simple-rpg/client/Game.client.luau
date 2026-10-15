@@ -1768,6 +1768,7 @@ local creatureMotionSearchAt = 0
 local creatureMotionModels = {}
 local creatureMotionLimbNames = {"Left Arm", "Right Arm", "Left Leg", "Right Leg", "LeftLimb", "RightLimb"}
 local creatureMotionLimbBases = setmetatable({}, {__mode = "k"})
+local creatureMotionJointChecks = setmetatable({}, {__mode = "k"})
 local creatureMotionLastSearchPosition = nil
 local creatureMotionLastSearchCharacter = nil
 local creatureMotionQueryParams = OverlapParams.new()
@@ -1869,12 +1870,18 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           -- 수동 CFrame 연출은 별도 관절이 없는 로우폴리 몬스터 파츠에만 적용한다.
           local animatedJoint = false
           if part and part:IsA("BasePart") then
-            for _, joint in ipairs(part:GetJoints()) do
-              if joint:IsA("Motor6D") then
-                animatedJoint = true
-                break
+            local cached = creatureMotionJointChecks[part]
+            if cached == nil then
+              cached = false
+              for _, joint in ipairs(part:GetJoints()) do
+                if joint:IsA("Motor6D") then
+                  cached = true
+                  break
+                end
               end
+              creatureMotionJointChecks[part] = cached
             end
+            animatedJoint = cached
           end
           if part and part:IsA("BasePart") and not animatedJoint then
             local sign = (name == "Left Arm" or name == "Left Leg" or name == "LeftLimb") and 1 or -1
