@@ -1871,18 +1871,19 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local animatedJoint = false
           if part and part:IsA("BasePart") then
             local cached = creatureMotionJointChecks[part]
-            -- 양성 판정은 유지하고 음성 판정은 재검사해 늦게 연결된 관절을 보호한다.
-            if cached ~= true then
-              cached = false
+            -- 관절이 나중에 연결되거나 제거될 수 있으므로 결과를 짧게만 보관한다.
+            if not cached or creatureMotionPhase >= cached.expiresAt then
+              local hasMotor = false
               for _, joint in ipairs(part:GetJoints()) do
                 if joint:IsA("Motor6D") then
-                  cached = true
+                  hasMotor = true
                   break
                 end
               end
-              if cached then creatureMotionJointChecks[part] = true end
+              cached = {hasMotor = hasMotor, expiresAt = creatureMotionPhase + 0.5}
+              creatureMotionJointChecks[part] = cached
             end
-            animatedJoint = cached
+            animatedJoint = cached.hasMotor
           end
           if part and part:IsA("BasePart") and not animatedJoint then
             local sign = (name == "Left Arm" or name == "Left Leg" or name == "LeftLimb") and 1 or -1
