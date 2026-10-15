@@ -1990,16 +1990,21 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           if not joints then
             joints = {}
             for _, item in ipairs(importedVisual:GetDescendants()) do
-              if item:IsA("Motor6D") then
+              if item:IsA("Motor6D") or item:IsA("Bone") then
                 local lower = string.lower(item.Name)
-                local limb = item.Part1 and string.lower(item.Part1.Name) or ""
+                local limb = item:IsA("Motor6D") and item.Part1 and string.lower(item.Part1.Name) or ""
                 local label = lower .. " " .. limb
                 if string.find(label, "leg", 1, true) or string.find(label, "thigh", 1, true)
                   or string.find(label, "hip", 1, true) then
                   local left = string.find(label, "left", 1, true) or string.find(label, "_l", 1, true)
                   local right = string.find(label, "right", 1, true) or string.find(label, "_r", 1, true)
                   if left or right then
-                    table.insert(joints, {joint=item, base=item.C0, side=left and 1 or -1})
+                    table.insert(joints, {
+                      joint=item,
+                      base=item:IsA("Motor6D") and item.C0 or item.Transform,
+                      isBone=item:IsA("Bone"),
+                      side=left and 1 or -1
+                    })
                   end
                 end
               end
@@ -2010,7 +2015,11 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           for _, leg in ipairs(joints) do
             if leg.joint.Parent then
               local angle = walking and math.sin(clock) * leg.side * 0.38 or 0
-              leg.joint.C0 = leg.base * CFrame.Angles(angle, 0, 0)
+              if leg.isBone then
+                leg.joint.Transform = leg.base * CFrame.Angles(angle, 0, 0)
+              else
+                leg.joint.C0 = leg.base * CFrame.Angles(angle, 0, 0)
+              end
             end
           end
         end
