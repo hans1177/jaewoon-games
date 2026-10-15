@@ -1086,7 +1086,30 @@ end
 
 local function fantasyHouse(parent,index,pos,yaw)
  local assetId=index%2==0 and ASSETS.MedievalHouseA or ASSETS.MedievalHouseB
- return wholeAsset(parent,assetId,pos,1,"MedievalVillageHouse"..index,yaw,26)
+ local native=wholeAsset(parent,assetId,pos,1,"MedievalVillageHouse"..index,yaw,26)
+ if native then return native end
+ -- 메인: 외부 건물 에셋 로딩 실패 시 기존 마을이 빈 터로 남지 않게 보존형 기본 건물을 구성한다.
+ local house=Instance.new("Model");house.Name="MedievalVillageHouse"..index;house.Parent=parent
+ local angle=CFrame.new(pos)*CFrame.Angles(0,math.rad(yaw or 0),0)
+ local function part(name,size,offset,color,material)
+  local item=Instance.new("Part");item.Name=name;item.Anchored=true;item.Size=size
+  item.CFrame=angle*CFrame.new(offset);item.Color=color;item.Material=material
+  item.TopSurface=Enum.SurfaceType.Smooth;item.BottomSurface=Enum.SurfaceType.Smooth;item.Parent=house
+  return item
+ end
+ local wall=Color3.fromRGB(186,160,122)
+ local wood=Color3.fromRGB(93,65,45)
+ part("Foundation",Vector3.new(22,1,18),Vector3.new(0,.5,0),Color3.fromRGB(106,100,91),Enum.Material.Cobblestone)
+ part("HouseWalls",Vector3.new(20,12,16),Vector3.new(0,7,0),wall,Enum.Material.Plaster)
+ part("Roof",Vector3.new(24,3,21),Vector3.new(0,14.5,0),Color3.fromRGB(106,62,51),Enum.Material.Slate)
+ part("RoofRidge",Vector3.new(3,3,21),Vector3.new(0,16.5,0),Color3.fromRGB(123,72,55),Enum.Material.Slate)
+ part("Entrance",Vector3.new(5,8,.55),Vector3.new(0,4.5,-8.35),wood,Enum.Material.WoodPlanks)
+ for _,x in ipairs({-6,6})do
+  part("Window",Vector3.new(3.2,3.2,.6),Vector3.new(x,8,-8.4),Color3.fromRGB(119,186,205),Enum.Material.Glass)
+  part("WindowFrame",Vector3.new(3.8,.5,.8),Vector3.new(x,10,-8.5),wood,Enum.Material.Wood)
+ end
+ house:SetAttribute("NativeAssetFallback",true)
+ return house
 end
 local function trialInstruction(classId)
  if classId=="BREAKER"then return"파쇄기사 시험 · 스킬 공격 5회 적중"
