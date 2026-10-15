@@ -1956,9 +1956,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           realMoving = planar > 0.025 and planar < 8
         end
         creatureRootMotion[rootPart] = {position = rootPosition}
-        local moving = realMoving and (model:GetAttribute("MotionState") == "Walk"
-          or model:GetAttribute("AIState") == "Chase"
-          or model:GetAttribute("AIState") == "Combat")
+        -- 서버는 Patrol/Flee에서도 몬스터를 실제로 움직인다. AIState 문자열만으로
+        -- 걷기를 제한하면 이동 중에도 발이 고정되므로 실제 변위만 사용한다.
+        local moving = realMoving
         -- Studio에서 가져온 MeshPart 모델을 적 루트 위치에 붙여 이동 중에도 따라오게 한다.
         -- 기본 모형·서버 히트박스는 건드리지 않고 표시 모델만 클라이언트에서 이동.
         local importedVisual = model:FindFirstChild("ImportedCreatureVisual")
