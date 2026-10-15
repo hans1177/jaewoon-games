@@ -903,7 +903,7 @@ local function civOpen(mode)
           end)
         button.LayoutOrder = id + 5
         button.TextSize = 13
-        if complete then button.BackgroundColor3 = Color3.fromRGB(126, 101, 44)
+        if complete then button.BackgroundColor3 = Color3.fromRGB(95, 110, 60)
         elseif missing or id ~= techCount + 1 then button.BackgroundColor3 = Color3.fromRGB(85, 86, 84) end
       end
     end
