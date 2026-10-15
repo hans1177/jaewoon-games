@@ -254,3 +254,68 @@ test('mobile touch auto combat is optional, enemy-only, bounded and respects pri
   assert.ok(client.includes('Enum.KeyCode.F then parryEvent:FireServer()'));
   assert.doesNotMatch(client, /:TakeDamage\(/);
 });
+
+test('multiverse market uses real balances and bounded server settlement', () => {
+  const data = read('shared/TradeMarketData.luau');
+  const economy = read('server/MultiverseEconomy.luau');
+  assert.ok(data.startsWith('--!strict'));
+  assert.ok(economy.startsWith('--!strict'));
+  for (const [itemID, base] of [['Marble', 50], ['Gold', 200], ['Spice', 120]]) {
+    assert.ok(data.includes('BasePrice = ' + base), itemID);
+    assert.ok(data.includes(itemID + ' = {ItemID = "' + itemID + '"'));
+  }
+  for (const field of ['CivGold', 'CivMarble', 'CivGoldOre', 'CivSpice'])
+    assert.ok(config.includes(field + ' = 0'), field);
+  assert.ok(server.includes('ensureRemote("TradeRequestRemote", "RemoteEvent")'));
+  assert.ok(server.includes('ensureRemote("MarketUpdateEvent", "RemoteEvent")'));
+  assert.ok(server.includes('tradeRequestRemote.OnServerEvent:Connect(function(player, itemID, amount, isBuying, currency)'));
+  assert.ok(server.includes('amount % 1 ~= 0 or amount < 1 or amount > 20'));
+  assert.ok(server.includes('currency ~= "Silver" and currency ~= "Gold"'));
+  assert.ok(server.includes('not civNearTradeStall(player)'));
+  assert.ok(server.includes('civNowReady(player, "Trade", 0.75)'));
+  assert.ok(server.includes('MultiverseEconomy.Quote(itemID, amount, isBuying)'));
+  assert.ok(server.includes('MultiverseEconomy.HasSupply(itemID, amount)'));
+  assert.ok(server.includes('readNumber(player, moneyField, 0) < price'));
+  assert.ok(server.includes('readNumber(player, item.ItemField, 0) < amount'));
+  assert.ok(server.includes('civIncrease(player, moneyField, -price)'));
+  assert.ok(server.includes('civIncrease(player, item.ItemField, amount)'));
+  assert.ok(server.includes('civIncrease(player, item.ItemField, -amount)'));
+  assert.ok(server.includes('MultiverseEconomy.ApplyTrade(itemID, amount, isBuying)'));
+  assert.ok(server.includes('store:UpdateAsync("player:" .. player.UserId'));
+});
+
+test('market dynamics and asynchronous three-caravan supply changes stay bounded', () => {
+  const economy = read('server/MultiverseEconomy.luau');
+  assert.ok(economy.includes('local MARKET_INTERVAL = 10'));
+  assert.ok(economy.includes('local MAX_SUPPLY = 1000'));
+  assert.ok(economy.includes('local travelItems = {"Marble", "Gold", "Spice"}'));
+  assert.ok(economy.includes('math.clamp(row.InitialSupply / math.max(1, row.CurrentSupply), 0.5, 2)'));
+  assert.ok(economy.includes('math.clamp(row.DemandFactor + amount * 0.012, 0.5, 2.5)'));
+  assert.ok(economy.includes('math.clamp(row.DemandFactor - amount * 0.008, 0.5, 2.5)'));
+  assert.ok(economy.includes('function MultiverseEconomy.StartCaravans(hub: Instance, regions: {[number]: Vector3})'));
+  assert.ok(economy.includes('CivilizationTradeCaravans'));
+  assert.ok(economy.includes('caravan.Model:PivotTo(CFrame.new(position))'));
+  assert.ok(economy.includes('item.CurrentSupply = math.min(MAX_SUPPLY, item.CurrentSupply + 3)'));
+  assert.ok(server.includes('MultiverseEconomy.StartCaravans(civHub, civWorlds)'));
+  assert.ok(server.includes('if MultiverseEconomy.Tick(now) then'));
+  assert.ok(server.includes('marketUpdateEvent:FireAllClients(MultiverseEconomy.Snapshot())'));
+  assert.doesNotMatch(economy, /while true|OnServerEvent|:FireServer\(/);
+});
+
+test('market UI requests valid quotes with M and keeps other controls', () => {
+  assert.ok(client.includes('TradeMarketData.ItemIDs()'));
+  assert.ok(client.includes('marketUpdateEvent.OnClientEvent:Connect(function(quotes, openTrade)'));
+  assert.ok(client.includes('tradeRequestRemote:FireServer(selectedItem, 5, true, tradeCurrency)'));
+  assert.ok(client.includes('tradeRequestRemote:FireServer(selectedItem, 1, false, tradeCurrency)'));
+  assert.ok(client.includes('tradeRequestRemote:FireServer("Currency", 1, true, "Silver")'));
+  assert.ok(client.includes('tradeRequestRemote:FireServer("Currency", 1, false, "Gold")'));
+  assert.ok(client.includes('tradeRequestRemote:FireServer("Snapshot", 0, false, "Silver")'));
+  assert.ok(client.includes('Enum.KeyCode.M then'));
+  assert.ok(client.includes('"TradeMenu", "무역"'));
+  assert.ok(client.includes('{"CivGold", "골드"}'));
+  assert.ok(client.includes('{"CivMarble", "대리석"}'));
+  assert.ok(client.includes('Enum.KeyCode.C then civOpen("Companions")'));
+  assert.ok(client.includes('Enum.KeyCode.E then remote:FireServer("CivGather")'));
+  assert.ok(server.includes('tradePrompt.KeyboardKeyCode = Enum.KeyCode.R'));
+  assert.doesNotMatch(client, /player:SetAttribute\("Civ(?:Silver|Gold|Marble|Spice)"/);
+});
