@@ -1767,6 +1767,7 @@ local creatureMotionAccumulator = 0
 local creatureMotionSearchAt = 0
 local creatureMotionModels = {}
 local creatureMotionLimbNames = {"Left Arm", "Right Arm", "Left Leg", "Right Leg", "LeftLimb", "RightLimb"}
+local creatureMotionLimbBases = setmetatable({}, {__mode = "k"})
 local creatureMotionLastSearchPosition = nil
 local creatureMotionLastSearchCharacter = nil
 local creatureMotionQueryParams = OverlapParams.new()
@@ -1866,11 +1867,14 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local part = model:FindFirstChild(name)
           if part and part:IsA("BasePart") then
             local sign = (name == "Left Arm" or name == "Left Leg" or name == "LeftLimb") and 1 or -1
-            local base = part:GetAttribute("MotionBaseOffset")
-            if typeof(base) ~= "CFrame" then
-              base = rootPart.CFrame:ToObjectSpace(part.CFrame)
-              part:SetAttribute("MotionBaseOffset", base)
+            -- 서버에 복제되는 Attribute를 매 프레임 모션 캐시로 쓰지 않는다.
+            -- 루트 파츠가 교체되면 기존 기준 자세도 다시 산출한다.
+            local state = creatureMotionLimbBases[part]
+            if not state or state.root ~= rootPart then
+              state = {root = rootPart, base = rootPart.CFrame:ToObjectSpace(part.CFrame)}
+              creatureMotionLimbBases[part] = state
             end
+            local base = state.base
             local leg = name == "Left Leg" or name == "Right Leg"
             local angle = leg and -sign * swing or sign * swing
             part.CFrame = rootPart.CFrame * base * CFrame.Angles(angle, 0, 0)
