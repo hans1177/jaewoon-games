@@ -5,7 +5,7 @@ local Config = {
   MobileFirst = true,
   SaveEnabled = true,
   GameId = "simple-rpg",
-  GameName = "작은 모험 RPG",
+  GameName = "문명 멀티버스 서바이벌 RPG",
   Genre = "RPG",
   Subgenre = "Action RPG",
   PlayMode = "COOP",
@@ -15,6 +15,7 @@ local Config = {
   MinimumParticipants = 2,
   RemoteName = "GameAction",
   RateLimitSeconds = 0.10,
+  Civilization = { BaseParryWindow = 0.25, DodgeIFrame = 0.30, GuardCooldown = 0.50, DodgeCooldown = 0.80, AttackCooldown = 0.55, GatherCooldown = 0.70, WorldRadius = 220, RaceCount = 24, TechCount = 72 },
   DesignBaseline = {
     Required = true,
     AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -299,6 +300,11 @@ local Config = {
     Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,
     PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,
     SharedObjective = 0, RoundScore = 0,
+    -- 문명 저장 필드: 기존 필드를 변경하지 않고 같은 저장 레코드에 확장한다.
+    CivRaceID = 0, CivEra = 1, CivTech = 0,
+    CivWood = 25, CivStone = 25, CivBronze = 0, CivIron = 0,
+    CivResearch = 24, CivFood = 0, CivSilver = 0,
+    CivGather = 0, CivKills = 0, CivParries = 0, CivDodges = 0,
   },
   Actions = {
     { Id = "genre-core", Label = "Strategy / Board & Card Games core gameplay", Kind = "OBJECTIVE", Order = 1, LearningPattern = "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view." },
