@@ -2796,13 +2796,47 @@ for _, player in ipairs(Players:GetPlayers()) do
     bindFoundationPlayer(player)
     if player:GetAttribute("Score") == nil then initializePlayer(player) end
     bindInventorySync(player)
-    -- No verified GetAsync in a hot-injected preexisting-player session.
-    civDataLoadValid[player] = false
+    -- 스크립트 재시작 중 이미 접속한 사용자도 검증된 세이브를 읽는다.
+    -- 읽기 전에는 조작/저장을 열지 않는다. 실패 시 기존 값을 덮어쓰지 않는다.
+    player:SetAttribute("CivReady", false)
     player:SetAttribute("CivSaveAvailable", false)
+    local readOk, persisted = false, nil
+    if store then
+      for attempt = 1, 5 do
+        readOk, persisted = pcall(function()
+          return store:GetAsync("player:" .. player.UserId)
+        end)
+        if readOk then break end
+        warn("CIV_PREEXISTING_DATASTORE_RETRY", player.UserId, attempt, tostring(persisted))
+        if attempt < 5 then task.wait(math.min(2 ^ (attempt - 1), 8)) end
+      end
+    end
+    if player.Parent ~= Players then return end
+    local verified = readOk and (persisted == nil or typeof(persisted) == "table")
+    civDataLoadValid[player] = verified
+    if verified then
+      if typeof(persisted) == "table" then
+        for key, fallback in pairs(Config.InitialState) do
+          local value = persisted[key]
+          if typeof(value) == "number" and value == value and value ~= math.huge and value ~= -math.huge then
+            player:SetAttribute(key, value)
+          else
+            player:SetAttribute(key, fallback)
+          end
+        end
+      end
+      if readNumber(player, "CivRaceID", 0) == 0 then setNumber(player, "CivRaceID", 1) end
+    else
+      warn("CIV_PREEXISTING_LOAD_FAILED_BLOCKS_SAVE", player.UserId, tostring(persisted))
+    end
+    player:SetAttribute("CivSaveAvailable", verified)
+    civRestoreBuildings(player)
+    if verified and typeof(persisted) == "table" then
+      civRestoreHousing(player, persisted.CivHousingPieces)
+    end
     player:SetAttribute("CivReady", true)
     weatherSyncEvent:FireClient(player, WeatherSystem.Snapshot())
     queueInventorySync(player)
-    civRestoreBuildings(player)
   end)
 end
 -- 신규 통신은 기존 전투/연구 권한 함수로 이어지고, 클라이언트가 보상을 결정하지 못한다.
