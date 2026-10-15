@@ -1803,7 +1803,7 @@ local lobbyInfoStone = civPart(civHub, "로비 모험 안내석", Vector3.new(5,
   CFrame.new(-11, 2.5, -14), Color3.fromRGB(152, 143, 122), Enum.Material.Slate, false)
 lobbyInfoStone.CanTouch = false
 lobbyInfoStone.CanQuery = false
-civSign(civHub, lobbyInfoStone, "문명 선택 · 맵 이동\\n채집 · 전투 · 연구", 4)
+civSign(civHub, lobbyInfoStone, "지역 탐험 · 채집\\n전투 · 연구 · 건축", 4)
 
 local lobbyBase = civPart(civHub, "광장 석상 기단", Vector3.new(8, 0.8, 5),
   CFrame.new(0, 0.4, -11), Color3.fromRGB(107, 74, 47), Enum.Material.Slate, false)
@@ -1821,7 +1821,7 @@ lobbyLight.Shadows = false
 lobbyLight.Parent = lobbyCore
 lobbyCore.CanTouch = false
   lobbyCore.CanQuery = false
-civSign(civHub, lobbyCore, "대충알피지\n24개 문명 포털 광장", 6.5)
+civSign(civHub, lobbyCore, "대충알피지\n모험가 로비 광장", 6.5)
 for _, side in ipairs({-1, 1}) do
   local pillar = civPart(civHub, "광장 석상 기둥 " .. side, Vector3.new(1.5, 6, 1.8),
     CFrame.new(side * 2.8, 3.5, -11), Color3.fromRGB(184, 166, 125), Enum.Material.Sandstone, false)
@@ -2067,44 +2067,7 @@ for id = 1, 24 do
     if not civRace(trader) or not civNearTradeStall(trader) then return end
     marketUpdateEvent:FireClient(trader, MultiverseEconomy.Snapshot(), true)
   end)
-  local portal = civPart(civHub, "포털 " .. race.Name, Vector3.new(4, 0.3, 4),
-    CFrame.new(math.cos(angle) * 24, 0.2, math.sin(angle) * 24), Color3.fromRGB(111, 191, 222), Enum.Material.Neon, false)
-  civSign(civHub, portal, race.Name, 3)
-  -- 기존 Touched 이동 패드는 건드리지 않고 뒤편에 4문명 장식 아치를 배치한다.
-  local accent = featuredPortalColors[id]
-  if accent then
-    local portalFrame = CFrame.lookAt(portal.Position,
-      Vector3.new(0, portal.Position.Y, 0))
-    decorateFeaturedPortal(id, portalFrame)
-    local shimmer = civPart(civHub, race.Name .. " 차원문 빛",
-      Vector3.new(3.1, 4.2, 0.25), portalFrame * CFrame.new(0, 2.8, 2),
-      accent, Enum.Material.Neon, false)
-    shimmer.Transparency = 0.52
-    shimmer.CanTouch = false
-  shimmer.CanQuery = false
-    for _, side in ipairs({-1, 1}) do
-      local column = civPart(civHub, race.Name .. " 차원문 기둥 " .. side,
-        Vector3.new(1, 5.8, 1.1), portalFrame * CFrame.new(side * 2.25, 3.0, 2),
-        Color3.fromRGB(184, 166, 125), Enum.Material.Sandstone, false)
-      column.CanTouch = false
-  column.CanQuery = false
-    end
-    local lintel = civPart(civHub, race.Name .. " 차원문 관석",
-      Vector3.new(5.7, 0.9, 1.1), portalFrame * CFrame.new(0, 6.15, 2),
-      accent, Enum.Material.Slate, false)
-    lintel.CanTouch = false
-  lintel.CanQuery = false
-  end
-  local lastPortal = {}
-  portal.Touched:Connect(function(hit)
-    local character = hit:FindFirstAncestorOfClass("Model")
-    local player = character and Players:GetPlayerFromCharacter(character)
-    if not player or readNumber(player, "CivRaceID", 0) == 0 then return end
-    local now = os.clock()
-    if now - (lastPortal[player] or -1e9) < 2 then return end
-    lastPortal[player] = now
-    civTravel(player, id)
-  end)
+
 end
 MultiverseEconomy.StartCaravans(civHub, civWorlds)
 -- 적 추적과 예고 공격: 클라이언트 타임스탬프를 절대 신뢰하지 않는다.
@@ -2369,6 +2332,9 @@ Players.PlayerAdded:Connect(function(player)
     -- Never overwrite a previously saved player with a fallback when GetAsync failed.
     civDataLoadValid[player] = false
     warn("CIV_LOAD_FAILURE_BLOCKS_SAVE", player.UserId, tostring(saved))
+  end
+  if civDataLoadValid[player] == true and readNumber(player, "CivRaceID", 0) == 0 then
+    setNumber(player, "CivRaceID", 1)
   end
   player:SetAttribute("CivSaveAvailable", civDataLoadValid[player] == true)
   player:SetAttribute("CivReady", true)
