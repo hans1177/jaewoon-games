@@ -1152,6 +1152,56 @@ local function purchaseMerchantEquipment(p,kind)
  return true
 end
 
+-- AI 문명: 24개 문명이 서버에서 자원을 모으고 연구하며 시대를 발전시킨다.
+local civRivals={}
+local function createCivRivalCamps(folder)
+ table.clear(civRivals)
+ local camps=Instance.new("Folder");camps.Name="AutonomousCivilizations";camps.Parent=folder
+ for id=1,24 do
+  local race=RaceData.GetRace(id)
+  if race then
+   local angle=(id-1)/24*math.pi*2
+   local pos=Vector3.new(math.cos(angle)*133,2.5,math.sin(angle)*133)
+   local base=ppart(camps,"CivCamp_"..id,Vector3.new(8,1,8),pos,Color3.fromRGB(111,85,60),Enum.Material.WoodPlanks)
+   base.CanCollide=false
+   local banner=ppart(camps,race.Name.."_Banner",Vector3.new(3,9,1),pos+Vector3.new(0,5,0),Color3.fromRGB(65+id*5,98+id*3,118),Enum.Material.Slate)
+   banner.CanCollide=false;banner.CanTouch=false
+   banner:SetAttribute("IsCivAI",true);banner:SetAttribute("RaceID",id)
+   banner:SetAttribute("TechProgress",0);banner:SetAttribute("CivResources",0)
+   banner:SetAttribute("CurrentEra",1)
+   local sign=label(banner,race.Name.." · 신화 시대",colors and colors.gold or Color3.fromRGB(243,214,163),70)
+   table.insert(civRivals,{banner=banner,label=sign:FindFirstChildOfClass("TextLabel"),race=race})
+  end
+ end
+end
+task.spawn(function()
+ while task.wait(5) do
+  if world and world.Parent then
+   for _,entry in ipairs(civRivals)do
+    local actor=entry.banner
+    if actor and actor.Parent then
+     local progress=math.clamp(math.floor(actor:GetAttribute("TechProgress")or 0),0,TechTreeData.Count)
+     if progress<TechTreeData.Count then
+      local nextTech=TechTreeData.Next(progress)
+      if nextTech then
+       local bonus=entry.race.Bonuses.FoodProduction or entry.race.Bonuses.MiningYield or 0
+       local resources=(actor:GetAttribute("CivResources")or 0)+2+bonus*5
+       local cost=4+nextTech.Era*3
+       if resources>=cost then
+        resources-=cost;progress+=1
+        actor:SetAttribute("TechProgress",progress)
+        actor:SetAttribute("CurrentEra",nextTech.Era)
+        if entry.label then entry.label.Text=entry.race.Name.." · "..TechTreeData.EraNames[nextTech.Era].." "..progress.."/72"end
+       end
+       actor:SetAttribute("CivResources",math.floor(resources*100)/100)
+      end
+     end
+    end
+   end
+  end
+ end
+end)
+
 local function makeVillage()
  table.clear(livingResidents)
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
@@ -1178,6 +1228,7 @@ local function makeVillage()
   local light=ppart(f,"VillageLampGlow",Vector3.new(2,2,2),pole.Position+Vector3.new(0,4,0),Color3.fromRGB(245,202,116),Enum.Material.Neon);light.CanCollide=false
   local pl=Instance.new("PointLight");pl.Color=light.Color;pl.Range=20;pl.Brightness=.75;pl.Parent=light
  end
+ createCivRivalCamps(f)
  -- 상자형 시장·중앙 분수 대신 기존 자산의 실제 소품을 광장 가장자리에 배치한다.
  decorateVillageAssets(f)
  for i=1,4 do
