@@ -1666,7 +1666,13 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         local preparing = model:GetAttribute("IsPreparingAttack") == true
         local amplitude = moving and 0.22 or 0.035
         if preparing then amplitude = 0.08 end
+        local enemyHumanoid = model:FindFirstChildOfClass("Humanoid")
+        local defeated = enemyHumanoid and enemyHumanoid.Health <= 0
+        local stunned = model:GetAttribute("AIState") == "Stunned"
+        if defeated or stunned then amplitude = 0 end
         local swing = math.sin(creatureMotionPhase * (moving and 8 or 2.1)) * amplitude
+        if preparing then swing = -0.48 + swing end
+        if defeated then swing = 0.9 end
         for _, name in ipairs({"Left Arm", "Right Arm", "LeftLimb", "RightLimb"}) do
           local part = model:FindFirstChild(name)
           if part and part:IsA("BasePart") then
