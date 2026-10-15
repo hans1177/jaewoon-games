@@ -1553,6 +1553,7 @@ local studioMotionPreviewEnabled = game:GetService("RunService"):IsStudio()
 local actionMotionToken = 0
 -- 연속 입력 중 이전 동작의 임시 관절 각도가 다음 동작의 기준으로 누적되지 않게 한다.
 local actionJointBases = setmetatable({}, {__mode = "k"})
+local actionJointTweens = setmetatable({}, {__mode = "k"})
 local attackCombo = 0
 local lastAttackMotionAt = 0
 local function civActionMotion(actionId, button)
@@ -1607,6 +1608,8 @@ local function civActionMotion(actionId, button)
     local waist = torso and torso:FindFirstChild("Waist")
     local joint = shoulder and shoulder:IsA("Motor6D") and shoulder or nil
     if joint then
+      local previousJointTween = actionJointTweens[joint]
+      if previousJointTween then previousJointTween:Cancel() end
       local startC0 = actionJointBases[joint] or joint.C0
       actionJointBases[joint] = startC0
       local swing = actionId == "CivAttack" and CFrame.Angles(math.rad(attackCombo == 3 and -145 or -105), math.rad(attackCombo == 2 and -46 or 24), math.rad(attackCombo == 2 and -52 or 28))
@@ -1615,8 +1618,10 @@ local function civActionMotion(actionId, button)
       if actionId == "CivAttack" then
         -- 준비 자세를 짧게 거쳐 내려베기로 연결한다. 판정·피해량은 서버가 담당한다.
         joint.C0 = startC0 * CFrame.Angles(math.rad(attackCombo == 3 and 60 or 42), math.rad(attackCombo == 2 and 35 or -28), math.rad(attackCombo == 2 and -22 or 22))
-        actionTweenService:Create(joint, TweenInfo.new(attackCombo == 3 and 0.18 or 0.11, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-          {C0 = startC0 * swing * CFrame.Angles(0, math.rad(40), 0)}):Play()
+        local swingTween = actionTweenService:Create(joint, TweenInfo.new(attackCombo == 3 and 0.18 or 0.11, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+          {C0 = startC0 * swing * CFrame.Angles(0, math.rad(40), 0)})
+        actionJointTweens[joint] = swingTween
+        swingTween:Play()
         local hand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
         if hand and hand:IsA("BasePart") then
           local low = Instance.new("Attachment")
@@ -1648,13 +1653,17 @@ local function civActionMotion(actionId, button)
           end)
         end
       else
-        actionTweenService:Create(joint, TweenInfo.new(0.1, Enum.EasingStyle.Quad),
-          {C0 = startC0 * swing}):Play()
+        local guardTween = actionTweenService:Create(joint, TweenInfo.new(0.1, Enum.EasingStyle.Quad),
+          {C0 = startC0 * swing})
+        actionJointTweens[joint] = guardTween
+        guardTween:Play()
       end
       task.delay(actionId == "CivAttack" and (attackCombo == 3 and 0.24 or 0.17) or 0.15, function()
         if token == actionMotionToken and joint.Parent and character == player.Character then
-          actionTweenService:Create(joint, TweenInfo.new(0.16, Enum.EasingStyle.Quad),
-            {C0 = startC0}):Play()
+          local restoreTween = actionTweenService:Create(joint, TweenInfo.new(0.16, Enum.EasingStyle.Quad),
+            {C0 = startC0})
+          actionJointTweens[joint] = restoreTween
+          restoreTween:Play()
         end
       end)
     end
@@ -1683,14 +1692,20 @@ local function civActionMotion(actionId, button)
       end
     end
     if waist and waist:IsA("Motor6D") then
+      local previousWaistTween = actionJointTweens[waist]
+      if previousWaistTween then previousWaistTween:Cancel() end
       local startWaist = actionJointBases[waist] or waist.C0
       actionJointBases[waist] = startWaist
       local lean = actionId == "CivDodge" and 30 or actionId == "CivAttack" and (attackCombo == 3 and -28 or -22) or 12
-      actionTweenService:Create(waist, TweenInfo.new(0.1),
-        {C0 = startWaist * CFrame.Angles(math.rad(lean), 0, 0)}):Play()
+      local leanTween = actionTweenService:Create(waist, TweenInfo.new(0.1),
+        {C0 = startWaist * CFrame.Angles(math.rad(lean), 0, 0)})
+      actionJointTweens[waist] = leanTween
+      leanTween:Play()
       task.delay(actionId == "CivAttack" and (attackCombo == 3 and 0.23 or 0.15) or 0.12, function()
         if token == actionMotionToken and waist.Parent and character == player.Character then
-          actionTweenService:Create(waist, TweenInfo.new(0.16), {C0 = startWaist}):Play()
+          local waistRestore = actionTweenService:Create(waist, TweenInfo.new(0.16), {C0 = startWaist})
+          actionJointTweens[waist] = waistRestore
+          waistRestore:Play()
         end
       end)
     end
