@@ -2108,9 +2108,11 @@ local lobbyDescription = civLabel(lobbyCard, "LobbyDescription",
 lobbyDescription.ZIndex = 32
 lobbyDescription.TextSize = 13
 local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1, -36, 0, 48), UDim2.new(0, 18, 1, -115), function()
-  if player:GetAttribute("CivSaveAvailable") == false then
+  if player:GetAttribute("CivSaveAvailable") ~= true then
     lobbyDescription.Visible = true
-    lobbyDescription.Text = "저장 데이터를 불러오지 못했어. 재접속해서 다시 시도해."
+    lobbyDescription.Text = player:GetAttribute("CivReady") == true
+      and "저장 데이터를 불러오지 못했어. 재접속해서 다시 시도해."
+      or "저장 데이터를 확인 중이야. 잠시 후 다시 눌러줘."
     return
   end
   if player:GetAttribute("CivReady") ~= true or (player:GetAttribute("CivRaceID") or 0) <= 0 then
@@ -2169,7 +2171,9 @@ local function openLobby()
   civMenuRail.Visible = false
   lobbyScreen.Visible = true
   lobbyPlay.Text = "모험 시작"
-  lobbyDescription.Text = "로비 → 모험 → 채집과 전투 → 연구와 건축"
+  lobbyDescription.Text = player:GetAttribute("CivSaveAvailable") == false
+    and "저장 데이터를 불러오지 못했어. 재접속해서 다시 시도해."
+    or "로비 → 모험 → 채집과 전투 → 연구와 건축"
   resizeLobby()
 end
 local lobbyMenu = civButton(civMenuRail, "LobbyWelcomeMenu", "로비 안내",
