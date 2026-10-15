@@ -963,6 +963,7 @@ local function civOpen(mode)
               if researchRequestPending then return end
               researchRequestPending = true
               local pendingNode = civList:FindFirstChild("Tech" .. id)
+              local previousNodeColor = pendingNode and pendingNode.BackgroundColor3
               if pendingNode and pendingNode:IsA("TextButton") then
                 pendingNode.BackgroundColor3 = Color3.fromRGB(232, 163, 61)
                 pendingNode.TextColor3 = Color3.fromRGB(107, 74, 47)
