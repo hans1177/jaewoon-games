@@ -18,6 +18,7 @@ local TradeMarketData = require(Shared:WaitForChild("TradeMarketData"))
 local CompanionAI = require(script.Parent:WaitForChild("CompanionAI"))
 local AdvancedAIEcosystem = require(script.Parent:WaitForChild("AdvancedAIEcosystem"))
 local MultiverseEconomy = require(script.Parent:WaitForChild("MultiverseEconomy"))
+local WeatherSystem = require(script.Parent:WaitForChild("WeatherSystem"))
 
 local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)
 if remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end
@@ -57,6 +58,8 @@ local portalTeleportEvent = ensureRemote("PortalTeleportEvent", "RemoteEvent")
 local autoCombatEvent = ensureRemote("AutoCombatEvent", "RemoteEvent")
 local tradeRequestRemote = ensureRemote("TradeRequestRemote", "RemoteEvent")
 local marketUpdateEvent = ensureRemote("MarketUpdateEvent", "RemoteEvent")
+local buildRequestRemote = ensureRemote("BuildRequestRemote", "RemoteEvent")
+local weatherSyncEvent = ensureRemote("WeatherSyncEvent", "RemoteEvent")
 
 -- 시작 지면: 스폰 표시와 분리된 실제 고정 지면이다. 검수 통과를 대신하지 않는다.
 local STUDIO_ASSET_SELECTION = Config.StudioAssets.Families
@@ -369,6 +372,7 @@ local civNodes = {}
 local civWorlds = {}
 local civStations = {}
 local civTradeStalls = {}
+local civDataLoadValid = {}
 local civBuildings = {}
 local pendingTimedCraft = {}
 -- Per-session opt-in from the touch HUD; server damage authority remains unchanged.
@@ -442,17 +446,27 @@ local function civOwnerBuildings(player)
   civBuildings[player] = owned
   return owned
 end
-local function civVisualBuilding(player, key)
+local function civBuildDefaultPosition(key, center)
+  local index = table.find(ProgressionData.StructureKeys(), key) or 1
+  return center + Vector3.new(-14 + (index - 1) * 6, 3.5, 15)
+end
+
+local function civVisualBuilding(player, key, explicitPosition)
   local definition = ProgressionData.GetStructure(key)
   local center = civWorlds[readNumber(player, "CivRaceID", 0)]
   if not definition or not center then return end
   local folder = civOwnerBuildings(player)
   if folder:FindFirstChild(key) then return end
-  local index = table.find(ProgressionData.StructureKeys(), key) or 1
-  local position = center + Vector3.new(-14 + (index - 1) * 6, 3.5, 15)
+  local savedX = readNumber(player, "Civ" .. key .. "PosX", 0)
+  local savedZ = readNumber(player, "Civ" .. key .. "PosZ", 0)
+  local savedPosition = if savedX ~= 0 or savedZ ~= 0
+    then Vector3.new(savedX, center.Y + 3.5, savedZ) else nil
+  local position = explicitPosition or savedPosition or civBuildDefaultPosition(key, center)
   local model = Instance.new("Model")
   model.Name = key
   model:SetAttribute("CivOwnerUserId", player.UserId)
+  model:SetAttribute("CivPlacedX", position.X)
+  model:SetAttribute("CivPlacedZ", position.Z)
   model.Parent = folder
   local anchor = civPart(model, "Foundation", Vector3.new(7, 2, 7), CFrame.new(position),
     definition.ModelColor, Enum.Material.Slate, false)
@@ -565,7 +579,7 @@ local function civTimedCraft(player, recipeID)
   end)
 end
 
-local function civBuild(player, buildingKey)
+local function civBuild(player, buildingKey, positionHint)
   if typeof(buildingKey) ~= "string" or #buildingKey > 32 then return end
   local race = civRace(player)
   local definition = ProgressionData.GetStructure(buildingKey)
@@ -583,14 +597,77 @@ local function civBuild(player, buildingKey)
   local center = civWorlds[race.ID]
   local character = player.Character
   local root = character and character:FindFirstChild("HumanoidRootPart")
-  if not center or not root or (root.Position - center).Magnitude > 28 then return end
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not center or not root or not root:IsA("BasePart")
+    or not humanoid or humanoid.Health <= 0 or (root.Position - center).Magnitude > 28 then return end
+  local placement = nil
+  if positionHint ~= nil then
+    if typeof(positionHint) ~= "Vector3" then return end
+    -- Finite bounded coordinates: never trust client-specified height.
+    if positionHint.X ~= positionHint.X or positionHint.Z ~= positionHint.Z
+      or math.abs(positionHint.X) > 10000 or math.abs(positionHint.Z) > 10000 then return end
+    local snappedX = math.round((positionHint.X - center.X) / 4) * 4
+    local snappedZ = math.round((positionHint.Z - center.Z) / 4) * 4
+    if math.abs(snappedX) > 16 or math.abs(snappedZ) > 16 then
+      civMessage(player, "자기 문명 영지 안에서만 건설할 수 있어.")
+      return
+    end
+    placement = center + Vector3.new(snappedX, 3.5, snappedZ)
+    local distance = (Vector2.new(placement.X - root.Position.X, placement.Z - root.Position.Z)).Magnitude
+    if distance > 20 then
+      civMessage(player, "설치할 위치에 더 가까이 가야 해.")
+      return
+    end
+    -- Block occupied props / stations / other players' structure foundations.
+    local function tooClose(otherPos, required)
+      local delta = Vector2.new(placement.X - otherPos.X, placement.Z - otherPos.Z)
+      return delta.Magnitude < required
+    end
+    if tooClose(center + Vector3.new(-11, 0, -9), 8) then
+      civMessage(player, "랜드마크 위에는 건설할 수 없어.")
+      return
+    end
+    for _, node in ipairs(civNodes) do
+      if node.Part.Parent and tooClose(node.Part.Position, 6) then
+        civMessage(player, "채집 지점과 겹치지 않게 배치해.")
+        return
+      end
+    end
+    for _, station in pairs(civStations[race.ID] or {}) do
+      if tooClose(station.Position, 6) then
+        civMessage(player, "제작 시설 근처에는 건설할 수 없어.")
+        return
+      end
+    end
+    local stall = civTradeStalls[race.ID]
+    if stall and tooClose(stall.Position, 7) then
+      civMessage(player, "무역소 통로를 막을 수 없어.")
+      return
+    end
+    for _, ownerFolder in ipairs(civHub:GetChildren()) do
+      if ownerFolder:IsA("Folder") and ownerFolder.Name:find("^OwnerBuildings%-") then
+        for _, model in ipairs(ownerFolder:GetChildren()) do
+          local foundation = model:FindFirstChild("Foundation")
+          if foundation and foundation:IsA("BasePart") and tooClose(foundation.Position, 8) then
+            civMessage(player, "이미 건설된 건물과 겹쳐.")
+            return
+          end
+        end
+      end
+    end
+  end
   -- Egyptian pyramid decreases only building-action cooldown by 20%.
   local cooldown = race.ID == 2 and readNumber(player, "CivPyramid", 0) > 0 and 1.6 or 2
   if not civNowReady(player, "Build", cooldown) then return end
   local paid, missing = civSpend(player, definition.Costs)
   if not paid then civMessage(player, "건축 자원 부족: " .. missing); return end
   setNumber(player, "Civ" .. buildingKey, 1)
-  civVisualBuilding(player, buildingKey)
+  if placement then
+    -- Save exact snapped world coordinates in existing numeric UpdateAsync record.
+    player:SetAttribute("Civ" .. buildingKey .. "PosX", placement.X)
+    player:SetAttribute("Civ" .. buildingKey .. "PosZ", placement.Z)
+  end
+  civVisualBuilding(player, buildingKey, placement)
   civMessage(player, definition.Label .. " 건축 완료")
 end
 local civWeaponIds = {StoneSpear=1, BronzeSword=2, IronGreatsword=3}
@@ -1129,6 +1206,7 @@ for id = 1, 24 do
   end)
 end
 MultiverseEconomy.StartCaravans(civHub, civWorlds)
+local weatherTickInitialized = os.clock()
 -- 적 추적과 예고 공격: 클라이언트 타임스탬프를 절대 신뢰하지 않는다.
 task.spawn(function()
   while task.wait(0.25) do
@@ -1137,6 +1215,9 @@ task.spawn(function()
     AdvancedAIEcosystem.RefreshPlayerIndex(now)
     if MultiverseEconomy.Tick(now) then
       marketUpdateEvent:FireAllClients(MultiverseEconomy.Snapshot())
+    end
+    if WeatherSystem.Tick(now, civWorlds) then
+      weatherSyncEvent:FireAllClients(WeatherSystem.Snapshot())
     end
     -- Herbivores graze occasionally; this loop is shared with the existing monster AI.
     for _, grazer in pairs(civWildlife) do
@@ -1355,6 +1436,15 @@ portalTeleportEvent.OnServerEvent:Connect(function(player, destinationID)
 end)
 tradeRequestRemote.OnServerEvent:Connect(function(player, itemID, amount, isBuying, currency)
   civTrade(player, itemID, amount, isBuying, currency)
+end)
+buildRequestRemote.OnServerEvent:Connect(function(player, buildingKey, requestedPosition)
+  if player:GetAttribute("CivReady") ~= true or typeof(requestedPosition) ~= "Vector3" then return end
+  civBuild(player, buildingKey, requestedPosition)
+end)
+weatherSyncEvent.OnServerEvent:Connect(function(player, request)
+  if request ~= "Snapshot" or player:GetAttribute("CivReady") ~= true then return end
+  if not civNowReady(player, "WeatherSnapshot", 2) then return end
+  weatherSyncEvent:FireClient(player, WeatherSystem.Snapshot())
 end)
 autoCombatEvent.OnServerEvent:Connect(function(player, actionType, targetModel)
   if player:GetAttribute("CivReady") ~= true then return end
