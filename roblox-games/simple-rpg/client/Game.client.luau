@@ -588,6 +588,9 @@ local function civOpen(mode)
     civTechEra = nextTech and nextTech.Era or 5
   end
   civPanelMode = mode
+  -- 연구 화면은 양피지, 기타 화면은 원목 톤을 유지한다.
+  civPanel.BackgroundColor3 = mode == "Techs" and Color3.fromRGB(232, 213, 168) or Color3.fromRGB(107, 74, 47)
+  panelTitle.TextColor3 = mode == "Techs" and Color3.fromRGB(107, 74, 47) or Color3.fromRGB(232, 213, 168)
   civPanel.Visible = true
   for _, item in ipairs(civList:GetChildren()) do
     if item:IsA("GuiObject") then item:Destroy() end
