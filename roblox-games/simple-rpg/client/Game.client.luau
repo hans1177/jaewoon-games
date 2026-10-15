@@ -2131,6 +2131,9 @@ local function resizeLobby()
   local height = math.max(1, math.min(360, viewport.Y - 24))
   lobbyCard.Size = UDim2.fromOffset(width, height)
   local compact = height < 310
+  -- 화면이 매우 낮을 때 설명문을 접어 시작 버튼의 터치 영역을 확보한다.
+  lobbyDescription.Visible = height >= 250
+  lobbySubtitle.Visible = height >= 190
   lobbyHeading.TextSize = compact and 22 or 28
   lobbyHeading.Position = UDim2.fromOffset(12, compact and 7 or 13)
   lobbySubtitle.Position = UDim2.fromOffset(14, compact and 49 or 65)
