@@ -201,3 +201,56 @@ test('one bounded octree and A-star FSM module uses the existing AI loop', () =>
   assert.ok(server.includes('grazer.Humanoid:TakeDamage(8)'));
   assert.doesNotMatch(ai, /while true|OnServerEvent|SetAttribute\("Civ/);
 });
+
+test('mobile auto-combat rejects arbitrary targets and keeps existing damage/cooldown authority', () => {
+  assert.ok(server.includes('ensureRemote("AutoCombatEvent", "RemoteEvent")'));
+  assert.ok(server.includes('autoCombatEvent.OnServerEvent:Connect(function(player, actionType, targetModel)'));
+  assert.ok(server.includes('if actionType == "SetEnabled" then'));
+  assert.ok(server.includes('if typeof(targetModel) ~= "boolean" then return end'));
+  assert.ok(server.includes('player:SetAttribute("CivAutoCombatEnabled", targetModel)'));
+  assert.ok(server.includes('player:GetAttribute("CivAutoCombatEnabled") ~= true'));
+  assert.ok(server.includes('targetModel:GetAttribute("CivilizationEnemy") ~= true'));
+  assert.ok(server.includes('enemy.Model == targetModel and enemy.Humanoid.Health > 0'));
+  assert.ok(server.includes('(targetRoot.Position - root.Position).Magnitude > 12'));
+  assert.ok(server.includes('civAttack(player, targetModel)'));
+  assert.ok(server.includes('civNowReady(player, "Attack", civ.AttackCooldown)'));
+  assert.ok(server.includes('requiredWeapon > 0 and weapon < requiredWeapon'));
+  assert.ok(server.includes('civIncrease(player, "CivResearch", 8)'));
+  assert.ok(server.includes('local function civAttack(player, targetModel)'));
+  assert.doesNotMatch(server, /targetHumanoid:TakeDamage\(15\)/);
+});
+
+test('smart parry is server telegraph-derived, not random and uses original guard window', () => {
+  assert.ok(server.includes('enemy:SetAttribute("IsPreparingAttack", false)'));
+  assert.ok(server.includes('enemy.Model:SetAttribute("IsPreparingAttack", true)'));
+  assert.ok(server.includes('enemy.TargetUserId = target.UserId'));
+  assert.ok(server.includes('local intendedUserId = enemy.TargetUserId'));
+  assert.ok(server.includes('if intendedUserId == target.UserId then'));
+  assert.ok(server.includes('target:GetAttribute("CivAutoCombatEnabled") == true'));
+  assert.ok(server.includes('civGuard(target) -- preserves existing GuardCooldown'));
+  assert.ok(server.includes('civ.BaseParryWindow'));
+  assert.ok(server.includes('civNowReady(player, "Guard", civ.GuardCooldown)'));
+  assert.ok(server.includes('enemy.Humanoid.Health <= 0 or now < enemy.StunnedUntil'));
+  assert.ok(server.includes('enemy.Model:SetAttribute("IsPreparingAttack", false)'));
+  assert.doesNotMatch(server, /math\.random\(\)\s*>\s*0\.7/);
+});
+
+test('mobile touch auto combat is optional, enemy-only, bounded and respects prior shortcuts', () => {
+  assert.ok(client.includes('local autoCombatEnabled = nativeTouchEnabled'));
+  assert.ok(client.includes('local autoCombatToggle'));
+  assert.ok(client.includes('"AutoCombatToggle", "자동 전투 ON"'));
+  assert.ok(client.includes('autoCombatEvent:FireServer("SetEnabled", autoCombatEnabled)'));
+  assert.ok(client.includes('task.wait(0.4)'));
+  assert.ok(client.includes('local shortest = 15.0'));
+  assert.ok(client.includes('nativeTouchEnabled and autoCombatEnabled and not civPanel.Visible'));
+  assert.ok(client.includes('obj:GetAttribute("CivilizationEnemy") == true'));
+  assert.ok(client.includes('autoCombatEvent:FireServer("AutoAttack", nearest)'));
+  assert.ok(client.includes('UserInputService.TouchStarted:Connect'));
+  assert.ok(client.includes('UserInputService.TouchEnded:Connect'));
+  assert.ok(client.includes('if distance >= 70 then'));
+  assert.ok(client.includes('now - lastTouchTapAt <= 0.32'));
+  assert.ok(client.includes('Enum.KeyCode.C then civOpen("Companions")'));
+  assert.ok(client.includes('Enum.KeyCode.E then remote:FireServer("CivGather")'));
+  assert.ok(client.includes('Enum.KeyCode.F then parryEvent:FireServer()'));
+  assert.doesNotMatch(client, /:TakeDamage\(/);
+});
