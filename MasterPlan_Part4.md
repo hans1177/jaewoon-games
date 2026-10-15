@@ -33,3 +33,54 @@ src/
 
 아래 예제는 사용자가 제공한 명세 원문이다. 모듈 36~50은 아직 개별 코드가 제시되지 않았으며, 파일명과 소스가 있다고 가정하지 않는다.
 
+#### 📄 [29] src/ReplicatedStorage/Modules/ShopMonetizationData.luau
+
+GamePass, Developer Products(로벅스 유료 상품), 한정판 종족 외형 및 패스권을 관리하는 상점 데이터 모듈입니다.
+
+~~~luau
+--!strict
+local ShopMonetizationData = {}
+
+export type ProductInfo = {
+	ProductID: number, -- 로블록스 DeveloperProduct ID 또는 GamePass ID
+	Name: string,
+	Type: "GamePass" | "DevProduct",
+	PriceRobux: number,
+	Category: "Cosmetic" | "ResourcePack" | "VIPPass",
+	Description: string,
+}
+
+local PRODUCTS: {[string]: ProductInfo} = {
+	["VIP_CivilizationPass"] = {
+		ProductID = 1000001,
+		Name = "VIP 문명 특권 패스",
+		Type = "GamePass",
+		PriceRobux = 499,
+		Category = "VIPPass",
+		Description = "영지 세금 -50%, 채집 속도 +20%, 황금 테두리 칭호 지급"
+	},
+	["Resource_StarterPack"] = {
+		ProductID = 2000001,
+		Name = "초보 문명 지원 상자",
+		Type = "DevProduct",
+		PriceRobux = 99,
+		Category = "ResourcePack",
+		Description = "목재 x500, 석재 x300, 청동 주괴 x50 즉시 지급"
+	},
+	["RaceSkin_AncientGold"] = {
+		ProductID = 1000002,
+		Name = "고조선 황금 천부경 외형",
+		Type = "GamePass",
+		PriceRobux = 299,
+		Category = "Cosmetic",
+		Description = "고조선 종족 전용 황금 이펙트 및 스킨"
+	}
+}
+
+function ShopMonetizationData.GetProduct(productKey: string): ProductInfo?
+	return PRODUCTS[productKey]
+end
+
+return ShopMonetizationData
+~~~
+
