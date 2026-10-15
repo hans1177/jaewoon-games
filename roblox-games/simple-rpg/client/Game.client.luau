@@ -1974,8 +1974,12 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local windingUp = model:GetAttribute("IsPreparingAttack") == true
           local humanoid = model:FindFirstChildOfClass("Humanoid")
           local down = humanoid and humanoid.Health <= 0
-          local clock = creatureMotionPhase * 8
-          local stride = moving and not down and math.sin(clock) * 0.12 or 0
+          -- 모델마다 위상을 달리하고 실제 속도에 따라 보폭/주기를 조절한다.
+          -- 동일한 타이밍으로 모든 몬스터가 제자리 행진하던 문제를 줄인다.
+          local speedFactor = math.clamp(horizontalSpeed / 5, 0.55, 1.65)
+          local phaseOffset = (math.abs(math.floor(rootPart.Position.X * 19 + rootPart.Position.Z * 11)) % 23) * 0.27
+          local clock = creatureMotionPhase * (7 * speedFactor) + phaseOffset
+          local stride = moving and not down and math.sin(clock) * 0.12 * speedFactor or 0
           local roll = moving and not down and math.sin(clock) * 0.055 or 0
           local pitch = down and math.rad(65) or state == "Stunned" and math.rad(20)
             or windingUp and math.rad(-16) or 0
@@ -2014,7 +2018,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local walking = moving and not down and state ~= "Stunned" and not windingUp
           for _, leg in ipairs(joints) do
             if leg.joint.Parent then
-              local angle = walking and math.sin(clock) * leg.side * 0.38 or 0
+              local angle = walking and math.sin(clock) * leg.side * 0.38 * speedFactor or 0
               if leg.isBone then
                 leg.joint.Transform = leg.base * CFrame.Angles(angle, 0, 0)
               else
