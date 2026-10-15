@@ -2481,7 +2481,12 @@ local function civWalkModel(model, target, duration)
   end
   local start = model:GetPivot()
   local distance = (target.Position - start.Position).Magnitude
-  if distance < 0.015 then return end
+  -- A previous tween may have been cancelled mid-step. Avoid introducing
+  -- jitter for tiny corrections while still accepting in-place turning.
+  local _, currentYaw = start:ToOrientation()
+  local _, desiredYaw = target:ToOrientation()
+  local headingError = math.abs(math.atan2(math.sin(desiredYaw - currentYaw), math.cos(desiredYaw - currentYaw)))
+  if distance < 0.015 and headingError < math.rad(2) then return end
   -- AI가 매 틱 목표 방향을 바꾸더라도 180도 즉시 회전하지 않고
   -- 이동 거리와 회전 각도에 맞춰 자연스럽게 바라보는 방향을 갱신한다.
   local _, startYaw = start:ToOrientation()
