@@ -2540,6 +2540,9 @@ local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1
   end)
 end)
 lobbyPlay.ZIndex = 33
+lobbyPlay.TextColor3 = Color3.fromRGB(255, 243, 204)
+lobbyPlay.TextStrokeTransparency = 0.08
+lobbyPlay.TextSize = 18
 player:GetAttributeChangedSignal("CivTravelAck"):Connect(function()
   if not lobbyTravelPending or (player:GetAttribute("CivTravelAck") or 0) <= lobbyPreviousAck
     or player:GetAttribute("CivTravelDestination") ~= lobbyRequestedDestination then return end
@@ -2553,12 +2556,15 @@ local lobbyExplore = civButton(lobbyCard, "LobbyExplore", "로비 광장 둘러�
   remote:FireServer("CivTravel", "Lobby")
 end)
 lobbyExplore.ZIndex = 33
+lobbyExplore.TextColor3 = Color3.fromRGB(255, 243, 204)
+lobbyExplore.TextStrokeTransparency = 0.08
+lobbyExplore.TextSize = 17
 -- 로비는 기기 회전·화면 크기에 맞춰 버튼과 안내문을 다시 배치한다.
 local function resizeLobby()
   local camera = workspace.CurrentCamera
   local viewport = camera and camera.ViewportSize or Vector2.new(390, 720)
-  local width = math.max(1, math.min(480, viewport.X - 24))
-  local height = math.max(1, math.min(360, viewport.Y - 24))
+  local width = math.max(1, math.min(460, viewport.X * 0.82, viewport.X - 32))
+  local height = math.max(1, math.min(330, viewport.Y * 0.72, viewport.Y - 32))
   lobbyCard.Size = UDim2.fromOffset(width, height)
   local compact = height < 310
   -- 화면이 매우 낮을 때 설명문을 접어 시작 버튼의 터치 영역을 확보한다.
@@ -2588,6 +2594,9 @@ local function bindLobbyViewport()
 end
 workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(bindLobbyViewport)
 bindLobbyViewport()
+-- 클라이언트 초기 카메라 크기가 0/임시 값인 경우에도 최종 화면 크기를 반영한다.
+task.defer(resizeLobby)
+task.delay(1, resizeLobby)
 local function openLobby()
   civPanel.Visible = false
   housingPanel.Visible = false
