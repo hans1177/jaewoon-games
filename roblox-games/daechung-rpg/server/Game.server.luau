@@ -1240,6 +1240,30 @@ local function makeVillage()
  foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="VillageSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Position=C.VillageCenter+Vector3.new(0,2,0);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=true;foundationSpawn.Parent=f
  ppart(f,"VillageGround",Vector3.new(300,2,300),Vector3.new(0,0,0),Color3.fromRGB(93,141,85),Enum.Material.Grass)
  ppart(f,"VillagePlaza",Vector3.new(96,2.3,96),Vector3.new(0,1.2,0),Color3.fromRGB(128,122,111),Enum.Material.Cobblestone)
+ -- 메인: 처음 입장한 플레이어가 즉시 마을임을 알아보도록 광장과 입구를 명확히 표시한다.
+ local pathColor=Color3.fromRGB(176,147,107)
+ for _,z in ipairs({-46,-30,-14,14,30,46})do
+  local pavement=ppart(f,"VillageCentralWalk",Vector3.new(13,.35,15),Vector3.new(0,2.53,z),pathColor,Enum.Material.Cobblestone)
+  pavement.CanCollide=false
+ end
+ local gateLeft=ppart(f,"VillageEntrancePillarLeft",Vector3.new(4,15,4),Vector3.new(-13,8,47),Color3.fromRGB(95,71,54),Enum.Material.Wood)
+ local gateRight=ppart(f,"VillageEntrancePillarRight",Vector3.new(4,15,4),Vector3.new(13,8,47),Color3.fromRGB(95,71,54),Enum.Material.Wood)
+ ppart(f,"VillageEntranceBeam",Vector3.new(30,4,5),Vector3.new(0,16,47),Color3.fromRGB(101,69,44),Enum.Material.WoodPlanks)
+ local welcome=ppart(f,"VillageWelcomeSign",Vector3.new(24,5,1),Vector3.new(0,15,43.9),Color3.fromRGB(75,52,37),Enum.Material.WoodPlanks)
+ welcome.CanCollide=false
+ label(welcome,"대충 RPG · 모험가 마을",Color3.fromRGB(255,229,169),44)
+ local landmarkBase=ppart(f,"VillageLandmarkBase",Vector3.new(14,2,14),Vector3.new(0,3,-18),Color3.fromRGB(95,100,106),Enum.Material.Slate)
+ local landmark=ppart(f,"VillageLandmark",Vector3.new(4,13,4),Vector3.new(0,10,-18),Color3.fromRGB(153,129,92),Enum.Material.Marble)
+ landmark.CanCollide=false
+ local landmarkSign=ppart(f,"VillageLandmarkSign",Vector3.new(11,3,1),Vector3.new(0,10,-15.6),Color3.fromRGB(72,57,42),Enum.Material.WoodPlanks)
+ landmarkSign.CanCollide=false
+ label(landmarkSign,"모험가 광장",Color3.fromRGB(255,230,164),46)
+ for _,location in ipairs({Vector3.new(-43,3,43),Vector3.new(43,3,43),Vector3.new(-43,3,-43),Vector3.new(43,3,-43)})do
+  local garden=ppart(f,"VillageGarden",Vector3.new(12,1,12),location,Color3.fromRGB(66,111,59),Enum.Material.Grass)
+  garden.CanCollide=false
+  local flowers=ppart(f,"VillageFlowers",Vector3.new(8,.3,8),location+Vector3.new(0,.7,0),Color3.fromRGB(213,162,104),Enum.Material.SmoothPlastic)
+  flowers.CanCollide=false
+ end
  for _,z in ipairs({-112,-84,-56,56,84,112})do ppart(f,"MainRoad",Vector3.new(16,1,36),Vector3.new(0,1.15,z),Color3.fromRGB(119,105,88),Enum.Material.Cobblestone)end
  -- 로비 중심·포탈 진입로는 비우고 기존 네이티브 식생 원본을 외곽에 배치한다.
  for i=1,10 do
@@ -1296,7 +1320,7 @@ local function makeVillage()
  for i=1,4 do
   assetProp(f,ASSETS.City,{"market","stall","cart"},Vector3.new(-30+i*20,2.35,38),.65,i,false)
  end
- f:SetAttribute("LobbyVisualRevision","NATIVE_VILLAGE_OPEN_PLAZA_V1")
+ f:SetAttribute("LobbyVisualRevision","VILLAGE_ENTRANCE_PLAZA_V2")
  f:SetAttribute("LobbyRuntimeVisualReview","PENDING")
 
  local chief=humanoidFigure(f,"VillageChief",Vector3.new(-18,6,10),Color3.fromRGB(142,98,68),Color3.fromRGB(80,67,54),1);label(chief,"이장",Color3.fromRGB(255,221,145),28)
