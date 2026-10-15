@@ -2072,7 +2072,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           end
         end
         local preparing = model:GetAttribute("IsPreparingAttack") == true
-        local amplitude = moving and 0.22 or 0.035
+        -- 실제 이동속도를 반영해 정지/보행/추격의 팔다리 동작을 구분한다.
+        local amplitude = moving and math.clamp(horizontalSpeed / 10, 0.24, 0.55) or 0.035
         if preparing then amplitude = 0.08 end
         local enemyHumanoid = model:FindFirstChildOfClass("Humanoid")
         local defeated = enemyHumanoid and enemyHumanoid.Health <= 0
@@ -2087,7 +2088,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         elseif stunned then
           swing = 0.18
         elseif preparing then
-          swing = -0.48 + math.sin(creatureMotionPhase * 13) * 0.045
+          swing = -0.65 + math.sin(creatureMotionPhase * 13) * 0.06
         end
         -- 공격 예고 중인 적의 중심부를 짧게 점멸시켜 모바일에서도 타이밍을 읽기 쉽게 한다.
         -- 적 서버 판정/히트박스/자원은 변경하지 않는다.
