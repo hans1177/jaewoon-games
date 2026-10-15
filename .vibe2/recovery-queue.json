@@ -149764,7 +149764,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-09T18:59:50.578Z",
-      "updatedAt": "2026-10-15T07:17:05.061Z"
+      "updatedAt": "2026-10-15T07:21:57.998Z"
     },
     {
       "id": "recovery-e94ce206a41f3f0ca95f",
@@ -198497,7 +198497,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-15T07:17:05.085Z"
+      "updatedAt": "2026-10-15T07:21:58.068Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -198718,7 +198718,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-15T07:17:05.108Z"
+      "updatedAt": "2026-10-15T07:21:58.086Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -205918,7 +205918,42 @@
         "recovery-route:VIBE2_VIBE3",
         "primary-ai-collaboration:REQUESTED",
         "primary-ai-collaboration-reason:REPEATED_FAILURE_SIGNATURE",
-        "primary-ai-collaboration-task:internal-motion-headless-horseman-walk-v1"
+        "primary-ai-collaboration-task:internal-motion-headless-horseman-walk-v1",
+        "recovery-queue:recovery-612cd8e41ff7d400f737",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:1",
+        "worker-artifact-run:38514471735",
+        "base-main:c71d51891da66f7c05f8569ece21f6c14407c21b",
+        "actions-run:38514471735",
+        "reservation-id:38514471735:1",
+        "workload:prep-ms:21683",
+        "workload:cycle-ms:751303",
+        "exploration-reuse:b4bdad565ce88a0ec0ec79fd",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22CAUSAL_EVIDENCE_REFRESH_REQUIRED%22%2C%22failureFingerprint%22%3A%22roblox%7CINVALID_PATH%7CTIMEOUT%22%2C%22failureClass%22%3A%22INVALID_PATH%22%2C%22runEvidence%22%3A%22actions-run%3A38514471735%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22internal-motion-headless-horseman-walk-v1%7C38514471735%3A1%7Cprimary%22%2C%22feedback%22%3A%22MATCH%22%2C%22critic%22%3A%22PIPELINE_SUPPORTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "worker-artifact-run:38666154155",
+        "base-main:d4f3b9d19be9ab0839c024f3ebcd05ac157642a5",
+        "actions-run:38666154155",
+        "reservation-id:38666154155:1",
+        "workload:prep-ms:22221",
+        "workload:cycle-ms:300970",
+        "exploration-reuse:4544ec2b0819be8420ffd544",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22CAUSAL_EVIDENCE_REFRESH_REQUIRED%22%2C%22failureFingerprint%22%3A%22roblox%7CINVALID_PATH%7CTIMEOUT%22%2C%22failureClass%22%3A%22TIMEOUT%22%2C%22runEvidence%22%3A%22actions-run%3A38666154155%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22internal-motion-headless-horseman-walk-v1%7C38666154155%3A1%7Cprimary%22%2C%22feedback%22%3A%22MATCH%22%2C%22critic%22%3A%22PIPELINE_SUPPORTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "base-main:fee038d9c34f832d6674a163d6b65e5ca770ce90",
+        "actions-run:38692233411",
+        "reservation-id:38692233411:1",
+        "workload:prep-ms:24131",
+        "workload:cycle-ms:783528",
+        "exploration-reuse:446fe70c0d47719a78c5dd3a",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22CAUSAL_EVIDENCE_REFRESH_REQUIRED%22%2C%22failureFingerprint%22%3A%22roblox%7CINVALID_PATH%7CTIMEOUT%22%2C%22failureClass%22%3A%22TIMEOUT%22%2C%22runEvidence%22%3A%22actions-run%3A38692233411%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "neural-atomic-transaction:%7B%22version%22%3A1%2C%22sampleId%22%3A%22internal-motion-headless-horseman-walk-v1%7C38692233411%3A1%7Cprimary%22%2C%22feedback%22%3A%22MATCH%22%2C%22critic%22%3A%22PIPELINE_SUPPORTED%22%2C%22rootCause%22%3A%22UNRESOLVED%22%2C%22route%22%3A%22REQUEST_EVIDENCE%22%7D",
+        "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22internal-motion-headless-horseman-walk-v1%7C38692233411%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MATCH%22%2C%22responsibilityMatch%22%3Atrue%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
+        "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22internal-motion-headless-horseman-walk-v1%7C38692233411%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
+        "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22internal-motion-headless-horseman-walk-v1%7C38692233411%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
+        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22internal-motion-headless-horseman-walk-v1%7C38692233411%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22internal-motion-headless-horseman-walk-v1%7C38692233411%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A16%2C%22edgeCount%22%3A14%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "recovery-reactivated-after-source-refailure"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -205936,7 +205971,11 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T23:15:09.796Z",
-      "updatedAt": "2026-10-13T23:15:11.794Z"
+      "updatedAt": "2026-10-15T07:22:01.716Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:vibe2_vibe3",
+        "recovery-dispatched-at:2026-10-15T07:22:01.716Z"
+      ]
     }
   ]
 }
