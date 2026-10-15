@@ -1206,7 +1206,6 @@ for id = 1, 24 do
   end)
 end
 MultiverseEconomy.StartCaravans(civHub, civWorlds)
-local weatherTickInitialized = os.clock()
 -- 적 추적과 예고 공격: 클라이언트 타임스탬프를 절대 신뢰하지 않는다.
 task.spawn(function()
   while task.wait(0.25) do
@@ -1367,11 +1366,19 @@ Players.PlayerAdded:Connect(function(player)
   player:SetAttribute("CivReady", false)
   bindFoundationPlayer(player)
   initializePlayer(player)
+  local loadOk, saved = false, nil
   if store then
-    local ok, saved = pcall(function()
-      return store:GetAsync("player:" .. player.UserId)
-    end)
-    if ok and typeof(saved) == "table" then
+    for attempt = 1, 3 do
+      loadOk, saved = pcall(function()
+        return store:GetAsync("player:" .. player.UserId)
+      end)
+      if loadOk then break end
+      task.wait(0.4 * attempt)
+    end
+  end
+  if loadOk and (saved == nil or typeof(saved) == "table") then
+    civDataLoadValid[player] = true
+    if typeof(saved) == "table" then
       for key, fallback in pairs(Config.InitialState) do
         local value = saved[key]
         if typeof(value) == "number" and value == value and value ~= math.huge and value ~= -math.huge then
@@ -1381,8 +1388,14 @@ Players.PlayerAdded:Connect(function(player)
         end
       end
     end
+  else
+    -- Never overwrite a previously saved player with a fallback when GetAsync failed.
+    civDataLoadValid[player] = false
+    warn("CIV_LOAD_FAILURE_BLOCKS_SAVE", player.UserId, tostring(saved))
   end
+  player:SetAttribute("CivSaveAvailable", civDataLoadValid[player] == true)
   player:SetAttribute("CivReady", true)
+  weatherSyncEvent:FireClient(player, WeatherSystem.Snapshot())
   queueInventorySync(player)
   civApplyCharacterPassive(player)
   civRestoreBuildings(player)
@@ -1411,7 +1424,11 @@ for _, player in ipairs(Players:GetPlayers()) do
     bindFoundationPlayer(player)
     if player:GetAttribute("Score") == nil then initializePlayer(player) end
     bindInventorySync(player)
+    -- No verified GetAsync in a hot-injected preexisting-player session.
+    civDataLoadValid[player] = false
+    player:SetAttribute("CivSaveAvailable", false)
     player:SetAttribute("CivReady", true)
+    weatherSyncEvent:FireClient(player, WeatherSystem.Snapshot())
     queueInventorySync(player)
     civRestoreBuildings(player)
   end)
@@ -1508,18 +1525,26 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
 end)
 -- 같은 기존 저장소/키 사용, 수치 필드를 병합해 기존 데이터와 신규 연구를 함께 저장한다.
 savePlayer = function(player)
-  if not store then return false end
+  if not store or civDataLoadValid[player] ~= true then
+    warn("CIV_SAVE_SKIPPED_UNVERIFIED_LOAD", player.UserId)
+    return false
+  end
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do
     snapshot[key] = readNumber(player, key, fallback)
   end
-  local ok, err = pcall(function()
-    store:UpdateAsync("player:" .. player.UserId, function(existing)
-      local merged = typeof(existing) == "table" and existing or {}
-      for key, value in pairs(snapshot) do merged[key] = value end
-      return merged
+  local ok, err = false, nil
+  for attempt = 1, 3 do
+    ok, err = pcall(function()
+      store:UpdateAsync("player:" .. player.UserId, function(existing)
+        local merged = typeof(existing) == "table" and existing or {}
+        for key, value in pairs(snapshot) do merged[key] = value end
+        return merged
+      end)
     end)
-  end)
+    if ok then break end
+    task.wait(0.5 * attempt)
+  end
   if not ok then warn("CIV_SAVE_FAILURE", player.UserId, tostring(err)) end
   return ok
 end
@@ -1530,6 +1555,7 @@ Players.PlayerRemoving:Connect(function(player)
   civCooldowns[player] = nil
   inventorySyncPending[player] = nil
   pendingTimedCraft[player] = nil
+  civDataLoadValid[player] = nil
   player:SetAttribute("CivAutoCombatEnabled", false)
 end)
 task.spawn(function()
