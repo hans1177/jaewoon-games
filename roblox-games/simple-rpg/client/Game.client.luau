@@ -2106,9 +2106,13 @@ local lobbyDescription = civLabel(lobbyCard, "LobbyDescription",
 lobbyDescription.ZIndex = 32
 lobbyDescription.TextSize = 13
 local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1, -36, 0, 48), UDim2.new(0, 18, 1, -115), function()
+  if (player:GetAttribute("CivRaceID") or 0) <= 0 then
+    lobbyDescription.Text = "게임 데이터를 불러오는 중이야. 잠시 후 다시 눌러줘."
+    return
+  end
   lobbyScreen.Visible = false
   civMenuRail.Visible = false
-  civOpen("Regions")
+  remote:FireServer("CivTravel", player:GetAttribute("CivRaceID"))
 end)
 lobbyPlay.ZIndex = 33
 local lobbyExplore = civButton(lobbyCard, "LobbyExplore", "로비 광장 둘러보기", UDim2.new(1, -36, 0, 40), UDim2.new(0, 18, 1, -59), function()
@@ -2143,7 +2147,8 @@ local function openLobby()
   civPanel.Visible = false
   civMenuRail.Visible = false
   lobbyScreen.Visible = true
-  lobbyPlay.Text = "지역 선택하고 출발"
+  lobbyPlay.Text = "모험 시작"
+  lobbyDescription.Text = "로비 → 모험 → 채집과 전투 → 연구와 건축"
   resizeLobby()
 end
 local lobbyMenu = civButton(civMenuRail, "LobbyWelcomeMenu", "로비 안내",
