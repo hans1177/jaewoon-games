@@ -565,7 +565,7 @@ local function resizeCivMenuRail()
   if civMenuRail.CanvasPosition.Y > maxScroll then
     civMenuRail.CanvasPosition = Vector2.new(0, maxScroll)
   end
-  civMenuRail.Size = UDim2.fromOffset;
+  civMenuRail.Size = UDim2.fromOffset(
     math.floor(math.min(108, math.max(72, viewport.X * 0.28))),
     menuHeight
   )
