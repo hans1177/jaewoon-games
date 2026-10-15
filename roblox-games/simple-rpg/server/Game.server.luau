@@ -749,6 +749,26 @@ task.spawn(function()
           end
         elseif enemy.TelegraphAt > 0 then
           enemy.TelegraphAt = 0
+        elseif now - enemy.LastHit >= 3 then
+          -- Predation runs only when no living player is targeted.
+          local grazer = civWildlife[enemy.RaceID]
+          if grazer and grazer.Humanoid.Health > 0
+              and (grazer.Root.Position - enemy.Home).Magnitude <= 16 then
+            local delta = grazer.Root.Position - enemy.Root.Position
+            if delta.Magnitude > 4 then
+              local planar = Vector3.new(delta.X, 0, delta.Z)
+              if planar.Magnitude > 0.1 then
+                local candidate = enemy.Root.Position + planar.Unit * math.min(1.1, planar.Magnitude)
+                if (Vector3.new(candidate.X - enemy.Home.X, 0, candidate.Z - enemy.Home.Z)).Magnitude <= 16 then
+                  enemy.Model:PivotTo(CFrame.lookAt(candidate, Vector3.new(grazer.Root.Position.X, candidate.Y, grazer.Root.Position.Z)))
+                end
+              end
+            else
+              enemy.LastHit = now
+              grazer.Humanoid:TakeDamage(8)
+              if grazer.Humanoid.Health <= 0 then grazer.LastPredated = now end
+            end
+          end
         end
       end
     end
