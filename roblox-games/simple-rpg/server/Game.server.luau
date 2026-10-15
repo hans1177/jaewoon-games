@@ -1001,6 +1001,9 @@ local function civSpawnEnemy(raceID, center, special)
     or special == "IronKnight" and "암흑 철기 기사"
     or race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
   enemy:SetAttribute("CivilizationEnemy", true)
+  local isRaidBoss = special == "BronzeGolem" or special == "IronKnight"
+  enemy:SetAttribute("IsRaidBoss", isRaidBoss)
+  if isRaidBoss then enemy:SetAttribute("BossPhase", "Phase1") end
   enemy:SetAttribute("RaceID", raceID)
   -- 기존 시대별 특수 몬스터를 레이드 보스로 분류한다. 기본 체력·피해·보상은 유지한다.
   if special == "WildBoar" or special == "BronzeGolem" or special == "IronKnight" then
@@ -1157,6 +1160,7 @@ local function civAttack(player, targetModel)
       if chosen.Model.Parent then
         chosen.Model:PivotTo(CFrame.new(chosen.Home))
         chosen.Humanoid.Health = chosen.Humanoid.MaxHealth
+        if chosen.Model:GetAttribute("IsRaidBoss") == true then chosen.Model:SetAttribute("BossPhase", "Phase1") end
         chosen.LastHit = os.clock()
         chosen.StunnedUntil = 0
       end
@@ -1193,7 +1197,9 @@ local function civOnEnemyStrike(enemy, player, now)
   end
   local defense = race and race.DefenseMultiplier or 1
   if race and race.ID == 1 and readNumber(player, "CivColosseum", 0) > 0 then defense *= 1.15 end
-  local damage = math.max(1, math.floor(12 / defense + 0.5))
+  local bossPhase = enemy.Model:GetAttribute("IsRaidBoss") == true and enemy.Model:GetAttribute("BossPhase") or "Phase1"
+  local baseDamage = bossPhase == "Phase3" and 20 or bossPhase == "Phase2" and 16 or 12
+  local damage = math.max(1, math.floor(baseDamage / defense + 0.5))
   humanoid:TakeDamage(damage)
   civMessage(player, enemy.Model.Name .. "의 공격! 체력 -" .. damage)
 end
@@ -1689,6 +1695,17 @@ task.spawn(function()
           enemy.Model:SetAttribute("RaidPhaseChangedAt", now)
         end
       end
+      -- Existing raid bosses use server-side health thresholds for the three phases.
+      if enemy.Model:GetAttribute("IsRaidBoss") == true and enemy.Humanoid.Health > 0 then
+        local ratio = enemy.Humanoid.Health / math.max(1, enemy.Humanoid.MaxHealth)
+        local phase = ratio <= 0.3 and "Phase3" or ratio <= 0.6 and "Phase2" or "Phase1"
+        if enemy.Model:GetAttribute("BossPhase") ~= phase then
+          enemy.Model:SetAttribute("BossPhase", phase)
+          enemy.Root.Color = phase == "Phase3" and Color3.fromRGB(174, 66, 73)
+            or phase == "Phase2" and Color3.fromRGB(191, 125, 66)
+            or Color3.fromRGB(81 + enemy.RaceID % 4 * 25, 75, 64)
+        end
+      end
       -- Dead or stunned enemies cannot keep a stale attack windup or auto-parry cue.
       if enemy.Humanoid.Health <= 0 or now < enemy.StunnedUntil then
         enemy.TelegraphAt = 0
@@ -1742,8 +1759,9 @@ task.spawn(function()
                     enemy.Model:PivotTo(CFrame.lookAt(p, Vector3.new(chasePosition.X, p.Y, chasePosition.Z)))
                   end
                 end
-              elseif now - enemy.LastHit >= 1.5 then
-                enemy.TelegraphAt = now + 0.65
+              elseif now - enemy.LastHit >= (enemy.Model:GetAttribute("BossPhase") == "Phase3" and 0.95
+                  or enemy.Model:GetAttribute("BossPhase") == "Phase2" and 1.2 or 1.5) then
+                enemy.TelegraphAt = now + (enemy.Model:GetAttribute("BossPhase") == "Phase3" and 0.45 or 0.65)
                 enemy.TargetUserId = target.UserId
                 enemy.Model:SetAttribute("IsPreparingAttack", true)
                 remote:FireClient(target, "CIV_TELEGRAPH", {Enemy = enemy.Model.Name})
