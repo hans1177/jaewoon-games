@@ -1038,6 +1038,14 @@ task.spawn(function()
       end
     end
     for _, enemy in ipairs(civEnemies) do
+      -- Dead or stunned enemies cannot keep a stale attack windup or auto-parry cue.
+      if enemy.Humanoid.Health <= 0 or now < enemy.StunnedUntil then
+        enemy.TelegraphAt = 0
+        enemy.TargetUserId = nil
+        if enemy.Model:GetAttribute("IsPreparingAttack") == true then
+          enemy.Model:SetAttribute("IsPreparingAttack", false)
+        end
+      end
       if enemy.Humanoid.Health > 0 and now >= enemy.StunnedUntil then
         local target, dist = AdvancedAIEcosystem.ClosestPlayer(enemy.Root.Position, 32)
         if target then
