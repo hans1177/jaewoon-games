@@ -410,9 +410,39 @@ local function civVisualBuilding(player, key)
   if folder:FindFirstChild(key) then return end
   local index = table.find(ProgressionData.StructureKeys(), key) or 1
   local position = center + Vector3.new(-14 + (index - 1) * 6, 3.5, 15)
-  local part = civPart(folder, key, Vector3.new(5, 7, 3), CFrame.new(position), definition.ModelColor, Enum.Material.Slate, false)
-  part:SetAttribute("CivOwnerUserId", player.UserId)
-  civSign(folder, part, definition.Label, 6)
+  local model = Instance.new("Model")
+  model.Name = key
+  model:SetAttribute("CivOwnerUserId", player.UserId)
+  model.Parent = folder
+  local anchor = civPart(model, "Foundation", Vector3.new(7, 2, 7), CFrame.new(position),
+    definition.ModelColor, Enum.Material.Slate, false)
+  if key == "Pyramid" then
+    for level = 1, 3 do
+      civPart(model, "PyramidTier" .. level,
+        Vector3.new(9 - level * 2, 1.5, 9 - level * 2),
+        CFrame.new(position + Vector3.new(0, level * 1.5, 0)),
+        definition.ModelColor, Enum.Material.Sandstone, false)
+    end
+  elseif key == "Colosseum" then
+    for index = 1, 6 do
+      local angle = index * math.pi / 3
+      civPart(model, "ArcColumn" .. index, Vector3.new(1.2, 5, 1.2),
+        CFrame.new(position + Vector3.new(math.cos(angle) * 3, 3, math.sin(angle) * 3)),
+        definition.ModelColor, Enum.Material.Sandstone, false)
+    end
+  elseif key == "DrakkarShipyard" then
+    civPart(model, "ShipyardDock", Vector3.new(4, 0.8, 13),
+      CFrame.new(position + Vector3.new(0, 1, 0)), definition.ModelColor, Enum.Material.WoodPlanks, false)
+    civPart(model, "ShipyardMast", Vector3.new(0.5, 10, 0.5),
+      CFrame.new(position + Vector3.new(0, 6, 0)), definition.ModelColor, Enum.Material.Wood, false)
+  elseif key == "DangunAltar" then
+    civPart(model, "AltarMonument", Vector3.new(2.5, 6, 2.5),
+      CFrame.new(position + Vector3.new(0, 4, 0)), definition.ModelColor, Enum.Material.Sandstone, false)
+  else
+    civPart(model, "StoneBattlement", Vector3.new(7, 4, 2),
+      CFrame.new(position + Vector3.new(0, 3, 0)), definition.ModelColor, Enum.Material.Rock, false)
+  end
+  civSign(model, anchor, definition.Label, 6)
 end
 local function civRestoreBuildings(player)
   for _, key in ipairs(ProgressionData.StructureKeys()) do
