@@ -678,6 +678,8 @@ local function civOpen(mode)
     end
   end
 end
+civButton(civGui, "InventoryMenu", "가방",
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 252), function() civOpen("Inventory") end)
 civButton(civGui, "CraftMenu", "제작",
   UDim2.fromOffset(78, 45), UDim2.fromOffset(92, 200), function() civOpen("Crafts") end)
 civButton(civGui, "BuildingMenu", "건축",
