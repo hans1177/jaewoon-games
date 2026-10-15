@@ -1771,6 +1771,7 @@ local creatureMotionLimbBases = setmetatable({}, {__mode = "k"})
 local creatureMotionJointChecks = setmetatable({}, {__mode = "k"})
 local creatureMotionLastSearchPosition = nil
 local creatureMotionLastSearchCharacter = nil
+local creatureMotionLastSearchRoot = nil
 local creatureMotionQueryParams = OverlapParams.new()
 creatureMotionQueryParams.FilterType = Enum.RaycastFilterType.Exclude
 creatureMotionRunService.RenderStepped:Connect(function(dt)
@@ -1784,17 +1785,19 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
   if not viewer then
     -- 부활 중 이전 캐릭터의 몬스터 목록을 남기지 않는다.
     creatureMotionLastSearchCharacter = nil
+    creatureMotionLastSearchRoot = nil
     creatureMotionLastSearchPosition = nil
     creatureMotionSearchAt = 0
     table.clear(creatureMotionModels)
     return
   end
   local movedSinceSearch = creatureMotionLastSearchPosition and (viewer.Position - creatureMotionLastSearchPosition).Magnitude > 35
-  local characterChanged = creatureMotionLastSearchCharacter ~= character
+  local characterChanged = creatureMotionLastSearchCharacter ~= character or creatureMotionLastSearchRoot ~= viewer
   if creatureMotionPhase >= creatureMotionSearchAt or movedSinceSearch or characterChanged then
     creatureMotionSearchAt = creatureMotionPhase + 2
     creatureMotionLastSearchPosition = viewer.Position
     creatureMotionLastSearchCharacter = character
+    creatureMotionLastSearchRoot = viewer
     table.clear(creatureMotionModels)
     -- 플레이어의 새 캐릭터는 제외하고, 대시/포털 이동 직후 즉시 주변 대상을 갱신한다.
     creatureMotionQueryParams.FilterDescendantsInstances = {character}
