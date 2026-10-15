@@ -1847,7 +1847,8 @@ task.spawn(function()
     if now >= (civNextPredation or 0) then
       civNextPredation = now + 3
       for _, predator in ipairs(civEnemies) do
-        if predator.Humanoid.Health > 0 and predator.Model.Parent == civHub then
+        if predator.Humanoid.Health > 0 and predator.Model.Parent == civHub
+          and predator.Model:GetAttribute("EcosystemSpecies") == "StoneAgeWolf" then
           local prey = civWildlife[predator.RaceID]
           if prey and prey.Humanoid.Health > 0 and prey.Model.Parent == civHub then
             local delta = prey.Root.Position - predator.Root.Position
@@ -1894,12 +1895,11 @@ task.spawn(function()
           enemy.Model:SetAttribute("RaidPhaseChangedAt", now)
         end
       end
-      -- Existing raid bosses use server-side health thresholds for the three phases.
+      -- Read the single authoritative phase, including its visual transition.
       if enemy.Model:GetAttribute("IsRaidBoss") == true and enemy.Humanoid.Health > 0 then
-        local ratio = enemy.Humanoid.Health / math.max(1, enemy.Humanoid.MaxHealth)
-        local phase = ratio <= 0.3 and "Phase3" or ratio <= 0.6 and "Phase2" or "Phase1"
-        if enemy.Model:GetAttribute("BossPhase") ~= phase then
-          enemy.Model:SetAttribute("BossPhase", phase)
+        local phase = enemy.Model:GetAttribute("BossPhase")
+        if enemy.LastVisualPhase ~= phase then
+          enemy.LastVisualPhase = phase
           enemy.Root.Color = phase == "Phase3" and Color3.fromRGB(174, 66, 73)
             or phase == "Phase2" and Color3.fromRGB(191, 125, 66)
             or Color3.fromRGB(81 + enemy.RaceID % 4 * 25, 75, 64)
@@ -1977,7 +1977,8 @@ task.spawn(function()
           enemy.Model:SetAttribute("IsPreparingAttack", false)
           AdvancedAIEcosystem.SetState(enemy, "Patrol")
           -- Predation runs only when no living player is targeted.
-          local grazer = civWildlife[enemy.RaceID]
+          local grazer = enemy.Model:GetAttribute("EcosystemSpecies") == "StoneAgeWolf"
+            and civWildlife[enemy.RaceID] or nil
           if grazer and grazer.Humanoid.Health > 0
               and (grazer.Root.Position - enemy.Home).Magnitude <= 16 then
             local delta = grazer.Root.Position - enemy.Root.Position
