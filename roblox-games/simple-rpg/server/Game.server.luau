@@ -1919,8 +1919,28 @@ task.spawn(function()
         end
       elseif now - grazer.LastGraze >= 3.5 then
         grazer.LastGraze = now
-        local angle = now * 0.19 + grazer.Home.X * 0.05
-        grazer.Model:PivotTo(CFrame.new(grazer.Home + Vector3.new(math.cos(angle) * 5, 0, math.sin(angle) * 5)))
+        local threatPosition = nil
+        if grazer.Model:GetAttribute("EcosystemSpecies") == "StoneAgeDeer" then
+          for _, predator in ipairs(civEnemies) do
+            if predator.Model:GetAttribute("EcosystemSpecies") == "StoneAgeWolf"
+              and predator.Humanoid.Health > 0 and (predator.Root.Position - grazer.Root.Position).Magnitude <= 14 then
+              threatPosition = predator.Root.Position
+              break
+            end
+          end
+        end
+        if threatPosition then
+          local delta = grazer.Root.Position - threatPosition
+          local planar = Vector3.new(delta.X, 0, delta.Z)
+          if planar.Magnitude > 0.1 then
+            local nextPosition = grazer.Root.Position + planar.Unit * 6
+            local homeDelta = Vector3.new(nextPosition.X - grazer.Home.X, 0, nextPosition.Z - grazer.Home.Z)
+            if homeDelta.Magnitude <= 14 then grazer.Model:PivotTo(CFrame.new(nextPosition)) end
+          end
+        else
+          local angle = now * 0.19 + grazer.Home.X * 0.05
+          grazer.Model:PivotTo(CFrame.new(grazer.Home + Vector3.new(math.cos(angle) * 5, 0, math.sin(angle) * 5)))
+        end
       end
     end
     for _, enemy in ipairs(civEnemies) do
