@@ -1716,9 +1716,16 @@ game:GetService("RunService").RenderStepped:Connect(function()
   local size=housingSizes[housingSelected]
   housingPreview.Size=size
   housingPreview.CFrame=CFrame.new(center+Vector3.new(x,level*8+size.Y/2,z))*CFrame.Angles(0,math.rad(housingRotation),0)
+  local character=player.Character
+  local root=character and character:FindFirstChild("HumanoidRootPart")
+  local placementBase=center+Vector3.new(x,level*8,z)
+  local validParent=parentPart and parentPart:GetAttribute("HousingPiece")==true
+    and parentPart:GetAttribute("CivOwnerUserId")==player.UserId
+    and (parentPart.Position-placementBase).Magnitude<=12
+    and (tonumber(parentPart:GetAttribute("Stability")) or 0)>20
   local allowed=raceId>0 and math.abs(x)<=32 and math.abs(z)<=32
-    and (base or (parentPart and parentPart:GetAttribute("HousingPiece")==true
-    and parentPart:GetAttribute("CivOwnerUserId")==player.UserId))
+    and root~=nil and (root.Position-placementBase).Magnitude<=23
+    and (base or validParent)
   housingPreview.Color=allowed and Color3.fromRGB(90,220,140) or Color3.fromRGB(235,90,90)
   housingPreview.Transparency=0.57
 end)
