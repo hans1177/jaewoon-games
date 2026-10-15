@@ -991,7 +991,8 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     else
       action(player, selected)
     end
-  elseif actionId == "CivSelect" or actionId == "CivCompanion" then
+  elseif actionId == "CivSelect" or actionId == "CivCompanion" or actionId == "CivCraft"
+    or actionId == "CivBuild" or actionId == "CivEquip" then
     action(player, argument)
   else
     action(player)
