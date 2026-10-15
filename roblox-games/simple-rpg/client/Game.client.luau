@@ -887,6 +887,7 @@ local function civOpen(mode)
     local unlocked = civLabel(civList, "Unlocked", "연구 완료 " .. techCount .. "/72",
       UDim2.new(1, -9, 0, 36), UDim2.new(), false)
     unlocked.LayoutOrder = 0
+    unlocked.TextColor3 = Color3.fromRGB(107, 74, 47)
     -- 연구는 서버의 기존 선형 순서를 유지하고, 화면에서만 시대별로 묶는다.
     for era = 1, 5 do
       local selectedEra = era
