@@ -2282,6 +2282,36 @@ local function decorateFeaturedPortal(id, frame)
     scenery.CanQuery = false
   end
 end
+-- 24문명의 땅을 1개의 초대형 대륙으로 잇는다.
+-- 문명 중심은 기존 3,200스터드 위치를 유지하므로 저장/스폰/건축 좌표는 불변.
+-- 길이 1,750, 폭 1,080의 부채꼴 겹침 지면 48개로 외곽까지 끊김 없이 걸어갈 수 있다.
+-- 먼 거리를 포털로만 이동하던 이전의 허공 구간을 실제 충돌 지형으로 대체.
+local continentRadius = civ.WorldRadius
+local connectedLand = Instance.new("Folder")
+connectedLand.Name = "Connected24CivilizationsLand"
+connectedLand.Parent = civHub
+connectedLand:SetAttribute("LandRevision", "CONTIGUOUS_24_WORLD_V1")
+connectedLand:SetAttribute("WorldDiameterStuds", continentRadius * 2 + 560)
+for sector = 1, 24 do
+  local bearing = 2 * math.pi * (sector - 1) / 24
+  local direction = Vector3.new(math.cos(bearing), 0, math.sin(bearing))
+  local biomeTint = civRegions[((sector - 1) % #civRegions) + 1]
+  local biomeMaterial = (sector % 6 == 2 or sector % 6 == 0) and Enum.Material.Sand
+    or (sector % 6 == 4) and Enum.Material.Snow or Enum.Material.Grass
+  for segment = 1, 2 do
+    local travel = segment == 1 and 850 or 2450
+    local middle = direction * travel + Vector3.new(0, -2, 0)
+    local ground = civPart(connectedLand,
+      "연결 대륙 " .. sector .. "-" .. segment,
+      Vector3.new(1080, 2, 1750),
+      CFrame.lookAt(middle, middle + direction),
+      biomeTint, biomeMaterial, true)
+    ground:SetAttribute("WalkableGround", true)
+    ground:SetAttribute("ContinentSector", sector)
+    ground.CanTouch = false
+  end
+end
+civHub:SetAttribute("ConnectedContinentDiameterStuds", continentRadius * 2 + 560)
 -- 네 대표 문명만 특색 있는 입구를 추가하고 나머지 20개 포털은 그대로 둔다.
 local featuredPortalColors = {
   [1] = Color3.fromRGB(169, 82, 64),  -- 로마
