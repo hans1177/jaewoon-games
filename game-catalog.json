@@ -1,6 +1,6 @@
 {
   "version": 32,
-  "updatedAt": "2026-10-04",
+  "updatedAt": "2026-10-15",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -9291,244 +9291,6 @@
       }
     },
     {
-      "id": "simple-rpg",
-      "name": "작은 모험 RPG",
-      "description": "사용자 직접 업로드 웹게임",
-      "genre": [
-        "RPG",
-        "경영",
-        "시뮬레이션",
-        "보드"
-      ],
-      "image": "",
-      "webPath": "/web-games/simple-rpg/",
-      "hasWebArchive": true,
-      "homepageWebPlayable": false,
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "homepageDisplayMode": "",
-      "lifecycleState": "ACTIVE",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "homepageCategory": "development-confirmed",
-      "ownerDirectWebUpload": true,
-      "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
-      "ownerWebSourceRevision": "b09eaf8a8e69687a3d5a8d11149bc5cac83664fbef554bae53d4c93562a11111",
-      "ownerWebEntryFile": "web-games/simple-rpg/index.html",
-      "webDevelopmentResetRequired": false,
-      "productionTarget": "ROBLOX_UNITY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "RPG",
-          "경영",
-          "시뮬레이션",
-          "보드"
-        ],
-        "genreLabel": "RPG · 경영 · 시뮬레이션 · 보드",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-        "updatedAt": "2026-10-15T07:56:11.984Z",
-        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "selectedPlatform": "UNITY",
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 41,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "simple-rpg",
-          "name": "작은 모험 RPG",
-          "description": "사용자 직접 업로드 웹게임",
-          "genres": [
-            "RPG",
-            "경영",
-            "시뮬레이션",
-            "보드"
-          ],
-          "image": "assets/pwa-icon-512.png",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/pwa-icon-512.png",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": {
-            "gameId": "simple-rpg",
-            "titleEn": "LITTLE QUEST",
-            "titleKo": "작은 모험 RPG",
-            "cover": {
-              "src": "assets/homepage-covers/simple-rpg.webp",
-              "width": 960,
-              "height": 540,
-              "bytes": 47660,
-              "sha256": "16dfee71edf4d78e68bba665863fb8bc77b0de79b4e6ad5e7af877f84a5ffad2"
-            },
-            "small": {
-              "src": "assets/homepage-covers/simple-rpg-480.webp",
-              "width": 480,
-              "height": 270,
-              "bytes": 21540,
-              "sha256": "44337b9a7783662bd59a601d6f35e0c813c2e0dcce9e0e8b9337b6d93422a8b9"
-            },
-            "kind": "MARKETING_ARTWORK",
-            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
-            "typography": "friendly storybook hand-cut serif, flat warm yellow"
-          },
-          "robloxThumbnail": null,
-          "robloxTitleArtwork": {
-            "gameId": "simple-rpg",
-            "src": "assets/homepage-covers/simple-rpg.webp",
-            "sha256": "16dfee71edf4d78e68bba665863fb8bc77b0de79b4e6ad5e7af877f84a5ffad2",
-            "style": "ROBLOX_LIBRARY_TITLE_ARTWORK",
-            "source": "EXISTING_GAME_TITLE_ARTWORK",
-            "runtimeScreenshot": false,
-            "small": {
-              "src": "assets/homepage-covers/simple-rpg-480.webp",
-              "width": 480,
-              "height": 270,
-              "bytes": 21540,
-              "sha256": "44337b9a7783662bd59a601d6f35e0c813c2e0dcce9e0e8b9337b6d93422a8b9"
-            }
-          }
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "",
-          "selectedPlatform": "UNITY",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/simple-rpg/",
-            "archive": true,
-            "playable": false,
-            "state": "UNITY_WEB_VERIFICATION_REQUIRED",
-            "purpose": ""
-          },
-          "unity": {
-            "projectPath": "unity-games/simple-rpg"
-          },
-          "roblox": {
-            "projectPath": "roblox-games/simple-rpg"
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "development-confirmed",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "RPG",
-              "경영",
-              "시뮬레이션",
-              "보드"
-            ],
-            "genreLabel": "RPG · 경영 · 시뮬레이션 · 보드",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "updatedAt": "2026-10-15T07:56:11.984Z",
-            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 41,
-      "homepageMedia": {
-        "gameId": "simple-rpg",
-        "titleEn": "LITTLE QUEST",
-        "titleKo": "작은 모험 RPG",
-        "cover": {
-          "src": "assets/homepage-covers/simple-rpg.webp",
-          "width": 960,
-          "height": 540,
-          "bytes": 47660,
-          "sha256": "16dfee71edf4d78e68bba665863fb8bc77b0de79b4e6ad5e7af877f84a5ffad2"
-        },
-        "small": {
-          "src": "assets/homepage-covers/simple-rpg-480.webp",
-          "width": 480,
-          "height": 270,
-          "bytes": 21540,
-          "sha256": "44337b9a7783662bd59a601d6f35e0c813c2e0dcce9e0e8b9337b6d93422a8b9"
-        },
-        "kind": "MARKETING_ARTWORK",
-        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
-        "typography": "friendly storybook hand-cut serif, flat warm yellow"
-      },
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "robloxProjectPath": "roblox-games/simple-rpg",
-      "unityProjectPath": "unity-games/simple-rpg",
-      "robloxTitleArtwork": {
-        "gameId": "simple-rpg",
-        "src": "assets/homepage-covers/simple-rpg.webp",
-        "sha256": "16dfee71edf4d78e68bba665863fb8bc77b0de79b4e6ad5e7af877f84a5ffad2",
-        "style": "ROBLOX_LIBRARY_TITLE_ARTWORK",
-        "source": "EXISTING_GAME_TITLE_ARTWORK",
-        "runtimeScreenshot": false,
-        "small": {
-          "src": "assets/homepage-covers/simple-rpg-480.webp",
-          "width": 480,
-          "height": 270,
-          "bytes": 21540,
-          "sha256": "44337b9a7783662bd59a601d6f35e0c813c2e0dcce9e0e8b9337b6d93422a8b9"
-        }
-      }
-    },
-    {
       "id": "star-frontier",
       "name": "별길 개척자",
       "description": "사용자 직접 업로드 웹게임",
@@ -9581,7 +9343,7 @@
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 42,
+        "catalogOrder": 41,
         "authority": "company-runtime",
         "identity": {
           "gameId": "star-frontier",
@@ -9717,7 +9479,7 @@
           }
         }
       },
-      "catalogOrder": 42,
+      "catalogOrder": 41,
       "homepageMedia": {
         "gameId": "star-frontier",
         "titleEn": "STAR FRONTIER",
@@ -9812,7 +9574,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 43,
+        "catalogOrder": 42,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -9918,7 +9680,7 @@
           }
         }
       },
-      "catalogOrder": 43,
+      "catalogOrder": 42,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -9996,7 +9758,7 @@
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 44,
+        "catalogOrder": 43,
         "authority": "company-runtime",
         "identity": {
           "gameId": "tower-choice-rpg",
@@ -10134,7 +9896,7 @@
           }
         }
       },
-      "catalogOrder": 44,
+      "catalogOrder": 43,
       "homepageMedia": {
         "gameId": "tower-choice-rpg",
         "titleEn": "TEN FLOOR TOWER",
@@ -10231,7 +9993,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 45,
+        "catalogOrder": 44,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -10369,7 +10131,7 @@
           }
         }
       },
-      "catalogOrder": 45,
+      "catalogOrder": 44,
       "selectedPlatform": "UNITY",
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
@@ -10429,9 +10191,9 @@
     "UNITY"
   ],
   "runtimeCounts": {
-    "canonicalGames": 45,
-    "homepageInfo": 45,
-    "normalizedGames": 45,
+    "canonicalGames": 44,
+    "homepageInfo": 44,
+    "normalizedGames": 44,
     "ownerWebAdded": 0,
     "ownerWebUpdated": 0,
     "ownerWebDisabled": 0
@@ -10460,9 +10222,10 @@
     "automaticMaintenanceAllowed": false,
     "ids": [
       "seed-roblox-battleground-fight-welcome-to-bloxburg",
-      "seed-roblox-obby-party-minigam-tower-of-hell"
+      "seed-roblox-obby-party-minigam-tower-of-hell",
+      "simple-rpg"
     ],
-    "reason": "OWNER_PERMANENT_REMOVAL_INACCESSIBLE_DEPLOYED_GAMES_2026-09-19"
+    "reason": "OWNER_PERMANENT_REMOVALS_2026-09-19_AND_DISCONTINUED_WEB_UNITY_LITTLE_QUEST_2026-10-15"
   },
   "webExposurePolicy": {
     "authority": "OWNER_DIRECTIVE_2026-10-05",
