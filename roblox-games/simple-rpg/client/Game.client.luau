@@ -908,6 +908,32 @@ local function civOpen(mode)
       eraButton.TextSize = 14
       if selectedEra == civTechEra then eraButton.BackgroundColor3 = Color3.fromRGB(119, 94, 41) end
     end
+    -- 5개 시대 배너: 기존 연구 순서는 유지하며 시각적 테마만 표시한다.
+    local eraScenes = {
+      "룬 바위 · 신비의 불꽃 · 원시 오두막",
+      "뗀석기 · 모닥불 · 가죽 천막",
+      "청동 제련로 · 청동검과 방패 · 범선",
+      "고로 · 투석기 · 철갑 기사",
+      "황금 랜드마크 · 수호자 · 멀티버스 포털",
+    }
+    local eraColors = {
+      Color3.fromRGB(95, 110, 60),
+      Color3.fromRGB(93, 101, 106),
+      Color3.fromRGB(44, 74, 110),
+      Color3.fromRGB(78, 81, 86),
+      Color3.fromRGB(232, 163, 61),
+    }
+    local eraBanner = civLabel(civList, "CurrentEraBanner",
+      TechTreeData.EraName(civTechEra) .. "\n" .. eraScenes[civTechEra],
+      UDim2.new(1, -9, 0, 70), UDim2.new(), true)
+    eraBanner.LayoutOrder = 6
+    eraBanner.TextSize = 15
+    eraBanner.BackgroundColor3 = eraColors[civTechEra]
+    eraBanner.BackgroundTransparency = 0
+    eraBanner.TextColor3 = civTechEra == 5 and Color3.fromRGB(62, 47, 34) or Color3.fromRGB(232, 213, 168)
+    local bannerCorner = Instance.new("UICorner")
+    bannerCorner.CornerRadius = UDim.new(0, 8)
+    bannerCorner.Parent = eraBanner
     for _, tech in ipairs(TechTreeData.All()) do
       if tech.Era == civTechEra then
         local id = tech.TechID
