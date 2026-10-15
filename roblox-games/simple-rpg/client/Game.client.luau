@@ -1781,11 +1781,18 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
     local nearbyParts = workspace:GetPartBoundsInRadius(viewer.Position, 85)
     local seen = {}
     for _, part in ipairs(nearbyParts) do
+      -- 몬스터 내부 장비/리그가 별도 Model로 감싸져 있어도 상위 소유 모델을 찾는다.
       local model = part:FindFirstAncestorOfClass("Model")
-      if model and not seen[model] and
-        (model:GetAttribute("CivilizationEnemy") == true or model:GetAttribute("CompanionOwnerUserId") ~= nil) then
-        seen[model] = true
-        table.insert(creatureMotionModels, model)
+      while model and model ~= workspace do
+        if model:GetAttribute("CivilizationEnemy") == true
+          or model:GetAttribute("CompanionOwnerUserId") ~= nil then
+          if not seen[model] then
+            seen[model] = true
+            table.insert(creatureMotionModels, model)
+          end
+          break
+        end
+        model = model.Parent and model.Parent:FindFirstAncestorOfClass("Model")
       end
     end
   end
