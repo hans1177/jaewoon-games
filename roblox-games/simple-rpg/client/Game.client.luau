@@ -1646,7 +1646,12 @@ local function civActionMotion(actionId, button)
           local trail = Instance.new("Trail")
           trail.Attachment0 = low
           trail.Attachment1 = high
-          trail.Color = ColorSequence.new(Color3.fromRGB(255, 228, 165), Color3.fromRGB(231, 154, 62))
+          -- 콤보 1·2타와 강한 3타의 궤적을 구별한다.
+          trail.Color = attackCombo == 3
+            and ColorSequence.new(Color3.fromRGB(255, 247, 199), Color3.fromRGB(255, 112, 42))
+            or attackCombo == 2
+              and ColorSequence.new(Color3.fromRGB(175, 223, 255), Color3.fromRGB(92, 157, 255))
+              or ColorSequence.new(Color3.fromRGB(255, 228, 165), Color3.fromRGB(231, 154, 62))
           trail.Transparency = NumberSequence.new(0.2, 1)
           trail.Lifetime = attackCombo == 3 and 0.24 or 0.17
           trail.WidthScale = NumberSequence.new({
