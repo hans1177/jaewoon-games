@@ -8,6 +8,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
+local ProgressionData = require(Shared:WaitForChild("ProgressionData"))
 local CommonUI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
