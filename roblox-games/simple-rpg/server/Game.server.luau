@@ -732,6 +732,74 @@ local function civBuild(player, buildingKey, positionHint)
   civVisualBuilding(player, buildingKey, placement)
   civMessage(player, definition.Label .. " 건축 완료")
 end
+-- 서버 권한 소켓/그리드 하우징. 게임의 기존 영지 건축과 저장 키는 변경하지 않는다.
+local civHousingPieces = {
+  SquareFoundation={Size=Vector3.new(8,1,8), Wood=4, Stone=4, Base=true},
+  TriangleFoundation={Size=Vector3.new(8,1,8), Wood=4, Stone=3, Base=true},
+  Wall={Size=Vector3.new(8,7,1), Wood=5, Stone=1},
+  WindowWall={Size=Vector3.new(8,7,1), Wood=6, Stone=2},
+  Doorframe={Size=Vector3.new(8,7,1), Wood=5, Stone=1},
+  FlatRoof={Size=Vector3.new(8,1,8), Wood=6, Stone=2},
+  Pillar={Size=Vector3.new(1,8,1), Wood=3, Stone=1},
+  Stairs={Size=Vector3.new(8,1,3), Wood=6, Stone=2},
+}
+local civHousingCounts = {}
+local function civBuildHousing(player, request)
+  if typeof(request) ~= "table" or typeof(request.Key) ~= "string"
+    or typeof(request.Position) ~= "Vector3" then return end
+  local definition = civHousingPieces[request.Key]
+  local race = civRace(player)
+  if not definition or not race or player:GetAttribute("CivReady") ~= true then return end
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  local world = request.Position
+  if not root or not humanoid or humanoid.Health <= 0
+    or world.X ~= world.X or world.Y ~= world.Y or world.Z ~= world.Z
+    or math.abs(world.X) > 10000 or math.abs(world.Z) > 10000 then return end
+  local center = civWorlds[race.ID]
+  if not center then return end
+  local snappedX = math.round((world.X-center.X)/8)*8
+  local snappedZ = math.round((world.Z-center.Z)/8)*8
+  if math.abs(snappedX) > 32 or math.abs(snappedZ) > 32 then return end
+  local level = if definition.Base then 0 else math.clamp(math.round((world.Y-center.Y)/8),0,3)
+  local basePosition = center + Vector3.new(snappedX,level*8,snappedZ)
+  if (basePosition-root.Position).Magnitude > 23 then return end
+  if (civHousingCounts[player] or 0) >= 40 then
+    civMessage(player,"건축 부품 상한 40개에 도달했어.") return
+  end
+  local ownerFolder = civOwnerBuildings(player)
+  local parentPiece = request.ParentPart
+  local stability = 100
+  if definition.Base then
+    if level ~= 0 then return end
+  else
+    if typeof(parentPiece) ~= "Instance" or not parentPiece:IsA("BasePart")
+      or not parentPiece:IsDescendantOf(ownerFolder)
+      or parentPiece:GetAttribute("HousingPiece") ~= true
+      or parentPiece:GetAttribute("CivOwnerUserId") ~= player.UserId then return end
+    if (parentPiece.Position-basePosition).Magnitude > 12 then return end
+    stability = math.clamp((tonumber(parentPiece:GetAttribute("Stability")) or 0)-20,0,100)
+    if stability <= 0 then civMessage(player,"구조 안정성이 부족해.") return end
+  end
+  for _, part in ipairs(ownerFolder:GetDescendants()) do
+    if part:IsA("BasePart") and part:GetAttribute("HousingPiece") == true
+      and (part.Position-basePosition).Magnitude < 3 then return end
+  end
+  if not civNowReady(player,"BuildHousing",0.7) then return end
+  local paid,missing = civSpend(player,{CivWood=definition.Wood,CivStone=definition.Stone})
+  if not paid then civMessage(player,"건축 자원 부족: "..missing) return end
+  local placeAt = basePosition + Vector3.new(0,definition.Size.Y/2,0)
+  local piece = civPart(ownerFolder,request.Key.."_"..tostring(civHousingCounts[player] or 0),
+    definition.Size,CFrame.new(placeAt),Color3.fromRGB(149,129,102),
+    Enum.Material.WoodPlanks,true)
+  if request.Key == "TriangleFoundation" then piece.Shape=Enum.PartType.Wedge end
+  piece:SetAttribute("HousingPiece",true)
+  piece:SetAttribute("Stability",stability)
+  piece:SetAttribute("CivOwnerUserId",player.UserId)
+  civHousingCounts[player]=(civHousingCounts[player] or 0)+1
+  civMessage(player,"건축 완료 / 안정성 "..tostring(stability).."%")
+end
 local civWeaponIds = {StoneSpear=1, BronzeSword=2, IronGreatsword=3}
 local function civEquip(player, weaponKey)
   if typeof(weaponKey) ~= "string" or #weaponKey > 32 or not civRace(player) then return end
@@ -2099,7 +2167,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     CivSelect = civSelect, CivTravel = civTravel, CivAttack = civAttack,
     CivGuard = civGuard, CivDodge = civDodge, CivGather = civGather,
     CivResearch = civResearch, CivCompanion = civCompanion,
-    CivCraft = civCraft, CivBuild = civBuild, CivEquip = civEquip,
+    CivCraft = civCraft, CivBuild = civBuild, CivBuildHousing = civBuildHousing, CivEquip = civEquip,
     CivSkinTone = civSetSkinTone,
   }
   local action = handler or civActions[actionId]
@@ -2128,7 +2196,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
       character:PivotTo(CFrame.new(0, 5, 0))
     end
   elseif actionId == "CivSelect" or actionId == "CivCompanion" or actionId == "CivCraft"
-    or actionId == "CivBuild" or actionId == "CivEquip" or actionId == "CivSkinTone" then
+    or actionId == "CivBuild" or actionId == "CivBuildHousing" or actionId == "CivEquip" or actionId == "CivSkinTone" then
     action(player, argument)
   else
     action(player)
@@ -2164,6 +2232,7 @@ Players.PlayerRemoving:Connect(function(player)
   if civBuildings[player] then civBuildings[player]:Destroy(); civBuildings[player] = nil end
   lastAction[player] = nil
   civCooldowns[player] = nil
+  civHousingCounts[player] = nil
   inventorySyncPending[player] = nil
   pendingTimedCraft[player] = nil
   civDataLoadValid[player] = nil
