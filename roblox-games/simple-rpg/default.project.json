@@ -1,17 +1,27 @@
 {
-  "name": "simple-rpg",
+  "name": "대충알피지",
   "tree": {
     "$className": "DataModel",
     "Lighting": {
       "$properties": {
-        "Technology": "Voxel",
-        "LightingStyle": "Soft",
-        "PrioritizeLightingQuality": false
+        "Technology": "Future",
+        "LightingStyle": "Realistic",
+        "PrioritizeLightingQuality": true,
+        "GlobalShadows": true
       },
       "CompatibilityToneMap": {
         "$className": "ColorGradingEffect",
         "$properties": {
           "TonemapperPreset": "Retro"
+        }
+      },
+      "CivilizationAtmosphere": {
+        "$className": "Atmosphere",
+        "$properties": {
+          "Density": 0.26,
+          "Offset": 0.15,
+          "Haze": 1.3,
+          "Glare": 0.06
         }
       }
     },
