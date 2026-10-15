@@ -879,6 +879,8 @@ local function civRestoreHousing(player, saved)
   if not center then return end
   local ownerFolder = civOwnerBuildings(player)
   local records = {}
+  local restoredIds = {}
+  local nextLegacyId = 1
   for _,entry in ipairs(saved) do
     if #records >= 40 then break end
     if typeof(entry) == "table" and typeof(entry.Key) == "string"
@@ -892,7 +894,17 @@ local function civRestoreHousing(player, saved)
       and entry.Rotation % 90 == 0 and entry.Rotation >= 0 and entry.Rotation < 360
       and entry.Stability > 0 and entry.Stability <= 100 then
       local definition = civHousingPieces[entry.Key]
-      if not (definition.Base and entry.Level ~= 0) then
+      local candidateId = typeof(entry.Id) == "number" and entry.Id % 1 == 0
+        and entry.Id >= 1 and entry.Id <= 1000000 and entry.Id or nil
+      if not candidateId then
+        while restoredIds[nextLegacyId] do nextLegacyId += 1 end
+        candidateId = nextLegacyId
+      end
+      local parentId = entry.ParentId
+      local validParent = definition.Base or parentId == nil
+        or (typeof(parentId) == "number" and restoredIds[parentId] == true)
+      if not restoredIds[candidateId] and validParent
+        and not (definition.Base and entry.Level ~= 0) then
         local location = center + Vector3.new(entry.X,entry.Level*8+definition.Size.Y/2,entry.Z)
         local piece = civPart(ownerFolder,entry.Key.."_Restored"..tostring(#records+1),
           definition.Size,CFrame.new(location)*CFrame.Angles(0,math.rad(entry.Rotation),0),
@@ -909,8 +921,8 @@ local function civRestoreHousing(player, saved)
           climb.CanCollide=true
           climb.Parent=piece
         end
-        local pieceId = typeof(entry.Id) == "number" and entry.Id % 1 == 0
-          and entry.Id >= 1 and entry.Id <= 1000000 and entry.Id or (#records + 1)
+        local pieceId = candidateId
+        restoredIds[pieceId] = true
         decorateHousingPiece(piece,entry.Key)
         piece:SetAttribute("HousingPiece",true)
         piece:SetAttribute("HousingId",pieceId)
@@ -2445,7 +2457,11 @@ savePlayer = function(player)
   for key, fallback in pairs(Config.InitialState) do
     snapshot[key] = readNumber(player, key, fallback)
   end
-  local housingSnapshot = civHousingRecords[player] or {}
+  -- 저장 중 플레이어가 철거/건설하더라도 스냅샷 배열이 변하지 않도록 복사한다.
+  local housingSnapshot = {}
+  for _, record in ipairs(civHousingRecords[player] or {}) do
+    table.insert(housingSnapshot, table.clone(record))
+  end
   local ok, err = false, nil
   for attempt = 1, 3 do
     ok, err = pcall(function()
