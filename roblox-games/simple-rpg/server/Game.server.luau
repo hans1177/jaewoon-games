@@ -1002,6 +1002,11 @@ local function civSpawnEnemy(raceID, center, special)
     or race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
   enemy:SetAttribute("CivilizationEnemy", true)
   enemy:SetAttribute("RaceID", raceID)
+  -- 기존 시대별 특수 몬스터를 레이드 보스로 분류한다. 기본 체력·피해·보상은 유지한다.
+  if special == "WildBoar" or special == "BronzeGolem" or special == "IronKnight" then
+    enemy:SetAttribute("IsRaidBoss", true)
+    enemy:SetAttribute("BossPhase", "Phase1")
+  end
   enemy:SetAttribute("IsPreparingAttack", false)
   enemy:SetAttribute("AIState", "Idle")
   local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + Vector3.new(special and -9 or 0, 4, 9)), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
@@ -1672,6 +1677,18 @@ task.spawn(function()
       end
     end
     for _, enemy in ipairs(civEnemies) do
+      -- 레이드 페이즈는 서버 체력값만 사용하고 기존 몬스터 AI 틱에서 처리한다.
+      if enemy.Model:GetAttribute("IsRaidBoss") == true and enemy.Humanoid.Health > 0
+        and enemy.Humanoid.MaxHealth > 0 then
+        local fraction = enemy.Humanoid.Health / enemy.Humanoid.MaxHealth
+        local phase = enemy.Model:GetAttribute("BossPhase") or "Phase1"
+        local nextPhase = fraction <= 0.3 and "Phase3"
+          or (fraction <= 0.6 and phase == "Phase1") and "Phase2" or phase
+        if nextPhase ~= phase then
+          enemy.Model:SetAttribute("BossPhase", nextPhase)
+          enemy.Model:SetAttribute("RaidPhaseChangedAt", now)
+        end
+      end
       -- Dead or stunned enemies cannot keep a stale attack windup or auto-parry cue.
       if enemy.Humanoid.Health <= 0 or now < enemy.StunnedUntil then
         enemy.TelegraphAt = 0
