@@ -51,17 +51,17 @@ const models = [
   ['kaykit-skeletons/Skeleton_Rogue.glb', 'SkeletonRogue'],
   ['kaykit-skeletons/Skeleton_Minion.glb', 'SkeletonMinion'],
   // Additional distinct source GLBs; not claimed to be 20 distinct monster species.
-  ['../../native/mini-character-male-a.glb', 'HumanMaleA'],
-  ['../../native/mini-character-male-b.glb', 'HumanMaleB'],
-  ['../../native/mini-character-male-c.glb', 'HumanMaleC'],
-  ['../../native/mini-character-male-d.glb', 'HumanMaleD'],
-  ['../../native/mini-character-male-e.glb', 'HumanMaleE'],
-  ['../../native/mini-character-male-f.glb', 'HumanMaleF'],
-  ['../../native/mini-character-female-a.glb', 'HumanFemaleA'],
-  ['../../native/mini-character-female-b.glb', 'HumanFemaleB'],
-  ['../../native/mini-character-female-c.glb', 'HumanFemaleC'],
-  ['../../native/mini-character-female-d.glb', 'HumanFemaleD'],
-  ['../../native/mini-character-female-e.glb', 'HumanFemaleE'],
+  ['../native/mini-character-male-a.glb', 'HumanMaleA'],
+  ['../native/mini-character-male-b.glb', 'HumanMaleB'],
+  ['../native/mini-character-male-c.glb', 'HumanMaleC'],
+  ['../native/mini-character-male-d.glb', 'HumanMaleD'],
+  ['../native/mini-character-male-e.glb', 'HumanMaleE'],
+  ['../native/mini-character-male-f.glb', 'HumanMaleF'],
+  ['../native/mini-character-female-a.glb', 'HumanFemaleA'],
+  ['../native/mini-character-female-b.glb', 'HumanFemaleB'],
+  ['../native/mini-character-female-c.glb', 'HumanFemaleC'],
+  ['../native/mini-character-female-d.glb', 'HumanFemaleD'],
+  ['../native/mini-character-female-e.glb', 'HumanFemaleE'],
 ];
 const rawCookie = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
 const cookie = rawCookie.includes('.ROBLOSECURITY=') ? rawCookie : (rawCookie ? '.ROBLOSECURITY='+rawCookie+';' : '');
