@@ -754,7 +754,7 @@ local function decorateHousingPiece(piece, key)
   if not assetId then return end
   local ok, result = pcall(function()
     return CommonBuilding.Create(assetId, {
-      parent=piece, pivot=piece.CFrame, quality="low",
+      parent=piece, pivot=piece.CFrame, quality="far",
       scale=0.85, anchored=true,
     })
   end)
