@@ -129,3 +129,58 @@ Players.PlayerAdded:Connect(function(player)
 end)
 ~~~
 
+#### 📄 [31] src/ServerScriptService/Systems/CompanionPlayerAI.server.luau
+
+플레이어가 동료로 고용한 AI NPC가 플레이어를 추적하고, 전투 지원, 패링, 명령 수행(채집/공격/대기)을 수행하는 스크립트입니다.
+
+~~~luau
+--!strict
+local Workspace = game:GetService("Workspace")
+
+export type AICommand = "Follow" | "AttackTarget" | "GatherWood" | "GuardArea"
+
+local CompanionPlayerAI = {}
+
+function CompanionPlayerAI.CreateCompanion(ownerPlayer: Player, spawnCFrame: CFrame): Model
+	local npc = Instance.new("Model")
+	npc.Name = ownerPlayer.Name .. "의 AI 부족원"
+	
+	local humanoid = Instance.new("Humanoid")
+	humanoid.Parent = npc
+	
+	local root = Instance.new("Part")
+	root.Name = "HumanoidRootPart"
+	root.Size = Vector3.new(2, 2, 1)
+	root.CFrame = spawnCFrame
+	root.Parent = npc
+	npc.PrimaryPart = root
+	
+	npc.Parent = Workspace
+	
+	local currentCommand: AICommand = "Follow"
+	
+	-- AI 자율 행동 루프
+	task.spawn(function()
+		while humanoid.Health > 0 do
+			task.wait(0.5)
+			
+			local ownerChar = ownerPlayer.Character
+			if ownerChar and ownerChar:FindFirstChild("HumanoidRootPart") then
+				local ownerRoot = ownerChar.HumanoidRootPart :: BasePart
+				local dist = (root.Position - ownerRoot.Position).Magnitude
+				
+				if currentCommand == "Follow" then
+					if dist > 8 then
+						humanoid:MoveTo(ownerRoot.Position + Vector3.new(3, 0, 3))
+					end
+				end
+			end
+		end
+	end)
+	
+	return npc
+end
+
+return CompanionPlayerAI
+~~~
+
