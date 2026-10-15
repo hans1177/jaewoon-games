@@ -1257,6 +1257,44 @@ for id = 1, 24 do
   region.Parent = civHub
   local ground = civPart(region, "CivilizationGround", Vector3.new(39, 2, 39), CFrame.new(center), civRegions[((id - 1) % #civRegions) + 1], Enum.Material.Slate, true)
   ground:SetAttribute("WalkableGround", true)
+  -- 문명 지역의 로우폴리 자연 경관: 전투·채집 경로를 막지 않는 비충돌 장식.
+  local foliageColors = {
+    Color3.fromRGB(86, 115, 79),
+    Color3.fromRGB(121, 129, 91),
+    Color3.fromRGB(102, 124, 116),
+    Color3.fromRGB(158, 141, 95),
+  }
+  for index, offset in ipairs({
+    Vector3.new(-17, 0, -17),
+    Vector3.new(17, 0, -16),
+    Vector3.new(17, 0, 17),
+  }) do
+    local base = center + offset
+    local trunk = civPart(region, "고목 줄기 " .. index, Vector3.new(1.8, 7, 1.8),
+      CFrame.new(base + Vector3.new(0, 4.5, 0)),
+      Color3.fromRGB(108, 79, 57), Enum.Material.Wood, false)
+    trunk.CanTouch = false
+    trunk.CanQuery = false
+    local canopy = civPart(region, "숲 수관 " .. index, Vector3.new(7, 7, 7),
+      CFrame.new(base + Vector3.new(0, 9, 0)),
+      foliageColors[((id + index - 2) % #foliageColors) + 1],
+      Enum.Material.Grass, false)
+    canopy.Shape = Enum.PartType.Ball
+    canopy.CanTouch = false
+    canopy.CanQuery = false
+  end
+  for index, offset in ipairs({
+    Vector3.new(-18, 0, 13),
+    Vector3.new(12, 0, -18),
+  }) do
+    local rock = civPart(region, "풍화 암석 " .. index, Vector3.new(5, 3 + id % 3, 4),
+      CFrame.new(center + offset + Vector3.new(0, 2, 0))
+        * CFrame.Angles(0, math.rad((id * 19 + index * 37) % 90), math.rad(8)),
+      Color3.fromRGB(110 + id % 4 * 8, 107 + id % 3 * 8, 98),
+      Enum.Material.Rock, false)
+    rock.CanTouch = false
+    rock.CanQuery = false
+  end
   local monument = civPart(region, "Landmark", Vector3.new(8, 13, 8), CFrame.new(center + Vector3.new(-11, 7.5, -9)), Color3.fromRGB(184, 166, 125), Enum.Material.Sandstone, true)
   monument.Shape = (id % 3 == 0) and Enum.PartType.Cylinder or Enum.PartType.Block
   civSign(region, monument, race.Name .. "\n" .. race.Landmark, 9)
