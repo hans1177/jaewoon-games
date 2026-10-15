@@ -1805,6 +1805,7 @@ local creatureMotionLimbNames = {"Left Arm", "Right Arm", "Left Leg", "Right Leg
 local creatureMotionLimbBases = setmetatable({}, {__mode = "k"})
 local creatureMotionJointChecks = setmetatable({}, {__mode = "k"})
 local creatureTelegraphHighlights = setmetatable({}, {__mode = "k"})
+local creatureImportedRig = setmetatable({}, {__mode = "k"})
 local creatureMotionLastSearchPosition = nil
 local creatureMotionLastSearchCharacter = nil
 local creatureMotionLastSearchRoot = nil
@@ -1929,6 +1930,35 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           if typeof(visualPose) ~= "CFrame" then visualPose = CFrame.new() end
           importedVisual:PivotTo(rootPart.CFrame * CFrame.new(0, stride, 0)
             * CFrame.Angles(pitch, 0, roll) * visualPose)
+          -- 가져온 스킨드/리그 모델의 Motor6D 다리를 좌우 교대로 구동한다.
+          -- 원본 C0는 보존하고 20Hz 클라이언트 시각 효과만 수정한다.
+          local joints = creatureImportedRig[importedVisual]
+          if not joints then
+            joints = {}
+            for _, item in ipairs(importedVisual:GetDescendants()) do
+              if item:IsA("Motor6D") then
+                local lower = string.lower(item.Name)
+                local limb = item.Part1 and string.lower(item.Part1.Name) or ""
+                local label = lower .. " " .. limb
+                if string.find(label, "leg", 1, true) or string.find(label, "thigh", 1, true)
+                  or string.find(label, "hip", 1, true) then
+                  local left = string.find(label, "left", 1, true) or string.find(label, "_l", 1, true)
+                  local right = string.find(label, "right", 1, true) or string.find(label, "_r", 1, true)
+                  if left or right then
+                    table.insert(joints, {joint=item, base=item.C0, side=left and 1 or -1})
+                  end
+                end
+              end
+            end
+            creatureImportedRig[importedVisual] = joints
+          end
+          local walking = moving and not down and state ~= "Stunned" and not windingUp
+          for _, leg in ipairs(joints) do
+            if leg.joint.Parent then
+              local angle = walking and math.sin(clock) * leg.side * 0.38 or 0
+              leg.joint.C0 = leg.base * CFrame.Angles(angle, 0, 0)
+            end
+          end
         end
         local preparing = model:GetAttribute("IsPreparingAttack") == true
         local amplitude = moving and 0.22 or 0.035
