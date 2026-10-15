@@ -50,6 +50,13 @@
           "$path": "client"
         }
       }
+    },
+    "Workspace": {
+      "$properties": {
+        "StreamingEnabled": true,
+        "StreamingMinRadius": 64,
+        "StreamingTargetRadius": 256
+      }
     }
   }
 }
