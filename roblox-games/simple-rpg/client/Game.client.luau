@@ -1781,7 +1781,13 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
   creatureMotionAccumulator = 0
   local character = player.Character
   local viewer = character and character:FindFirstChild("HumanoidRootPart")
-  if not viewer then return end
+  if not viewer then
+    -- 부활 중 이전 캐릭터의 몬스터 목록을 남기지 않는다.
+    creatureMotionLastSearchCharacter = nil
+    creatureMotionLastSearchPosition = nil
+    table.clear(creatureMotionModels)
+    return
+  end
   local movedSinceSearch = creatureMotionLastSearchPosition and (viewer.Position - creatureMotionLastSearchPosition).Magnitude > 35
   local characterChanged = creatureMotionLastSearchCharacter ~= character
   if creatureMotionPhase >= creatureMotionSearchAt or movedSinceSearch or characterChanged then
