@@ -1101,6 +1101,13 @@ lobbyBase.CanTouch = false
 local lobbyCore = civPart(civHub, "광장 차원 심장", Vector3.new(3.2, 5, 0.5),
   CFrame.new(0, 3.5, -11), Color3.fromRGB(232, 163, 61), Enum.Material.Neon, false)
 lobbyCore.Transparency = 0.38
+local lobbyLight = Instance.new("PointLight")
+lobbyLight.Name = "AmberPortalGlow"
+lobbyLight.Color = Color3.fromRGB(232, 163, 61)
+lobbyLight.Brightness = 0.65
+lobbyLight.Range = 12
+lobbyLight.Shadows = false
+lobbyLight.Parent = lobbyCore
 lobbyCore.CanTouch = false
   lobbyCore.CanQuery = false
 civSign(civHub, lobbyCore, "대충알피지\n24개 문명 포털 광장", 6.5)
