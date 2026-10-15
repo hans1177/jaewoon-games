@@ -1,0 +1,115 @@
+# 파일명: .github/workflows/owner-simple-rpg-direct-publish.yml
+# 오너 직접배포: 기존 로블록스 전용 게시기를 호출한다. 다른 게임/자동개발 흐름에 영향 없음.
+name: Owner Simple RPG Direct Publish
+run-name: Owner Simple RPG publish · ${{ github.sha }}
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/owner-simple-rpg-direct-publish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-simple-rpg-direct-publish
+  cancel-in-progress: false
+
+env:
+  GAME_ID: simple-rpg
+  GAME_NAME: '대충알피지'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: main
+          fetch-depth: 1
+
+      - name: Checkout existing publication targets
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Resolve only Simple RPG dedicated target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
+          const row=(q.items||[]).find(v=>v.gameId==='simple-rpg')||{};
+          const r=JSON.parse(fs.readFileSync('runtime/roblox-dedicated-targets.json','utf8'));
+          const registered=(r.targets||[]).find(v=>v.gameId==='simple-rpg')||{};
+          const valid=v=>/^[1-9][0-9]*$/.test(String(v||''));
+          const safe=v=>v?.dedicated===true&&v?.shared!==true&&valid(v?.universeId)&&valid(v?.placeId);
+          const t=safe(row.robloxPublicationTarget)?row.robloxPublicationTarget:(safe(registered)?registered:null);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+(t?.universeId||'')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+(t?.placeId||'')+'\n');
+          console.log('SIMPLE_RPG_EXISTING_DEDICATED_TARGET='+(t?'YES':'NO'));
+          NODE
+
+      - name: Build exact Simple RPG place with pinned Rojo
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/owner-simple-rpg /tmp/rojo-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          chmod +x /tmp/rojo-bin/rojo
+          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/owner-simple-rpg/$GAME_ID.rbxlx"
+          test -s "/tmp/owner-simple-rpg/$GAME_ID.rbxlx"
+
+      - name: Owner direct publish to private Roblox Experience
+        working-directory: main
+        env:
+          EXISTING_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
+          EXISTING_PLACE_ID: ${{ steps.target.outputs.place_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/owner-simple-rpg/$GAME_ID.rbxlx" --source-revision "$GITHUB_SHA" --output "/tmp/owner-simple-rpg/result.json")
+          if [[ -n "${EXISTING_UNIVERSE_ID:-}" && -n "${EXISTING_PLACE_ID:-}" ]]; then
+            args+=(--reuse-universe-id "$EXISTING_UNIVERSE_ID" --reuse-place-id "$EXISTING_PLACE_ID")
+          fi
+          node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
+
+      - name: Report actual published Roblox version
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('/tmp/owner-simple-rpg/result.json','utf8'));
+          if(r.published!==true||r.private!==true||r.pass!==true||!(r.versionNumber>0))throw new Error('SIMPLE_RPG_NOT_PUBLISHED');
+          console.log('SIMPLE_RPG_PUBLISHED_VERSION='+r.versionNumber);
+          console.log('SIMPLE_RPG_PLACE_ID='+r.placeId);
+          console.log('SIMPLE_RPG_UNIVERSE_ID='+r.universeId);
+          console.log('SIMPLE_RPG_LINK=https://www.roblox.com/games/'+r.placeId);
+          NODE
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: owner-simple-rpg-direct-publication
+          path: /tmp/owner-simple-rpg/result.json
+          if-no-files-found: warn
+          retention-days: 14
