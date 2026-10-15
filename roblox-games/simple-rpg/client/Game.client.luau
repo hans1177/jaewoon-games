@@ -1700,7 +1700,7 @@ local function housingTryPlace()
   local pos,parentPart=housingTarget()
   if not pos then housingInfo.Text="건축 위치를 바라봐." return end
   -- 건축 소켓에 직접 조준했을 때만 상단 부품이 연결된다.
-  remote:FireServer("CivBuildHousing",{Key=housingSelected,Position=pos,ParentPart=parentPart})
+  remote:FireServer("CivBuildHousing",{Key=housingSelected,Position=pos,ParentPart=parentPart,Rotation=housingRotation})
 end
 civButton(housingPanel,"HousingPlace","선택한 부품 설치",
   UDim2.new(1,-8,0,34),UDim2.new(),housingTryPlace)
