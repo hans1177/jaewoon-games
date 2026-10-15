@@ -1894,8 +1894,11 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local roll = moving and not down and math.sin(clock) * 0.055 or 0
           local pitch = down and math.rad(65) or state == "Stunned" and math.rad(20)
             or windingUp and math.rad(-16) or 0
+          -- 시작 포즈의 높이/회전을 보존해서 실제 메시가 루트 안에 파묻히지 않게 한다.
+          local visualPose = importedVisual:GetAttribute("VisualPivotOffset")
+          if typeof(visualPose) ~= "CFrame" then visualPose = CFrame.new() end
           importedVisual:PivotTo(rootPart.CFrame * CFrame.new(0, stride, 0)
-            * CFrame.Angles(pitch, 0, roll))
+            * CFrame.Angles(pitch, 0, roll) * visualPose)
         end
         local preparing = model:GetAttribute("IsPreparingAttack") == true
         local amplitude = moving and 0.22 or 0.035
