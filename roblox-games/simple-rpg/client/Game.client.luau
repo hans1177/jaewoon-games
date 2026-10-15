@@ -2157,9 +2157,11 @@ local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1
   remote:FireServer("CivTravel", player:GetAttribute("CivRaceID"))
   task.delay(4, function()
     if not lobbyTravelPending then return end
+    local confirmed = (player:GetAttribute("CivTravelAck") or 0) > previousAck
+      and player:GetAttribute("CivTravelDestination") == lobbyRequestedDestination
     lobbyTravelPending = false
-    if (player:GetAttribute("CivTravelAck") or 0) > previousAck
-      and player:GetAttribute("CivTravelDestination") == lobbyRequestedDestination then
+    lobbyRequestedDestination = nil
+    if confirmed then
       lobbyScreen.Visible = false
       civMenuRail.Visible = false
     else
