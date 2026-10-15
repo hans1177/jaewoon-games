@@ -536,7 +536,9 @@ local function civButton(parent, name, text, size, pos, callback)
   button.Size = size
   button.Position = pos
   button.BackgroundColor3 = Color3.fromRGB(113, 75, 47)
-  button.TextColor3 = Color3.fromRGB(250, 231, 185)
+  button.TextColor3 = Color3.fromRGB(255, 244, 211)
+  button.TextStrokeColor3 = Color3.fromRGB(40, 27, 18)
+  button.TextStrokeTransparency = 0.2
   button.TextWrapped = true
   button.TextSize = 14
   button.Font = Enum.Font.GothamBold
@@ -557,7 +559,7 @@ local function civButton(parent, name, text, size, pos, callback)
   grain.BackgroundTransparency = 1
   grain.Size = UDim2.fromScale(1, 1)
   grain.Image = "rbxassetid://124882110895040"
-  grain.ImageTransparency = 0.78
+  grain.ImageTransparency = 0.9
   grain.ImageColor3 = Color3.fromRGB(222, 185, 129)
   grain.ScaleType = Enum.ScaleType.Crop
   grain.ZIndex = button.ZIndex
@@ -619,6 +621,8 @@ if nativeTouchEnabled then
   civTitle.Size = UDim2.fromOffset(170, 24)
   civTitle.TextSize = 16
   civTitle.TextColor3 = Color3.fromRGB(255, 242, 202)
+  civTitle.TextStrokeColor3 = Color3.fromRGB(32, 21, 15)
+  civTitle.TextStrokeTransparency = 0.35
   civStatus.AnchorPoint = Vector2.new(0, 0)
   civStatus.Position = UDim2.fromOffset(8, 36)
   civStatus.Size = UDim2.fromOffset(235, 34)
