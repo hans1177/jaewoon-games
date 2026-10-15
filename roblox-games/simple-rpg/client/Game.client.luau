@@ -1878,6 +1878,14 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         local moving = model:GetAttribute("MotionState") == "Walk"
           or model:GetAttribute("AIState") == "Chase"
           or model:GetAttribute("AIState") == "Combat"
+        -- Studio에서 가져온 MeshPart 모델을 적 루트 위치에 붙여 이동 중에도 따라오게 한다.
+        -- 기본 모형·서버 히트박스는 건드리지 않고 표시 모델만 클라이언트에서 이동.
+        local importedVisual = model:FindFirstChild("ImportedCreatureVisual")
+        if importedVisual and importedVisual:IsA("Model")
+          and importedVisual:GetAttribute("ImportedVisualFollowRoot") == true then
+          local stride = moving and math.sin(creatureMotionPhase * 8) * 0.08 or 0
+          importedVisual:PivotTo(rootPart.CFrame * CFrame.new(0, stride, 0))
+        end
         local preparing = model:GetAttribute("IsPreparingAttack") == true
         local amplitude = moving and 0.22 or 0.035
         if preparing then amplitude = 0.08 end
