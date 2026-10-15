@@ -747,6 +747,20 @@ local function civOpen(mode)
     end
     civPreviewTone = math.clamp(player:GetAttribute("CivSkinTone") or 1, 1, #civSkinTones)
     refreshToneLabel()
+    -- 서버 저장 상태가 갱신되면 미리보기와 버튼도 동일한 색상으로 복원한다.
+    local toneChangedConnection
+    toneChangedConnection = player:GetAttributeChangedSignal("CivSkinTone"):Connect(function()
+      if not racePreview.Parent then
+        toneChangedConnection:Disconnect()
+        return
+      end
+      local savedTone = player:GetAttribute("CivSkinTone")
+      if typeof(savedTone) == "number" and savedTone % 1 == 0 and civSkinTones[savedTone] then
+        civPreviewTone = savedTone
+        refreshToneLabel()
+        showPreview(currentPreviewId)
+      end
+    end)
     showPreview(currentPreviewId)
     for id = 1, 24 do
       local race = RaceData.GetRace(id)
