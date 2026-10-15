@@ -11,6 +11,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
+local CompanionAI = require(script.Parent:WaitForChild("CompanionAI"))
 
 local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)
 if remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end
@@ -565,6 +566,14 @@ local function civAttack(player)
     end)
   end
 end
+-- AI companion actions are validated on the authoritative game server.
+local function civCompanion(player, command)
+  if not civNowReady(player, "Companion", 0.35) then return end
+  local allowed = civRace(player) ~= nil
+  if CompanionAI.Command(player, command, allowed) then
+    civMessage(player, "AI 동료 명령: " .. tostring(player:GetAttribute("CivCompanionMode")))
+  end
+end
 local function civOnEnemyStrike(enemy, player, now)
   if enemy.Humanoid.Health <= 0 then return end
   local character = player.Character
@@ -637,6 +646,7 @@ end
 task.spawn(function()
   while task.wait(0.25) do
     local now = os.clock()
+    CompanionAI.Tick(civEnemies, civNodes, civIncrease)
     for _, enemy in ipairs(civEnemies) do
       if enemy.Humanoid.Health > 0 and now >= enemy.StunnedUntil then
         local target, dist = nil, 32
@@ -730,7 +740,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
   local civActions = {
     CivSelect = civSelect, CivTravel = civTravel, CivAttack = civAttack,
     CivGuard = civGuard, CivDodge = civDodge, CivGather = civGather,
-    CivResearch = civResearch,
+    CivResearch = civResearch, CivCompanion = civCompanion,
   }
   local action = handler or civActions[actionId]
   if typeof(action) ~= "function" then return end
@@ -748,7 +758,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     else
       action(player, selected)
     end
-  elseif actionId == "CivSelect" then
+  elseif actionId == "CivSelect" or actionId == "CivCompanion" then
     action(player, argument)
   else
     action(player)
