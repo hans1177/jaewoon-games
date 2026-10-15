@@ -2047,7 +2047,15 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                   or string.find(label, "hip", 1, true)
                 local isArm = string.find(label, "arm", 1, true)
                   or string.find(label, "shoulder", 1, true)
-                if isLeg or isArm then
+                -- Hip/Shoulder 아래 자식 Bone은 상하 관절을 전부 회전하면
+                -- 움직임이 과장되므로 상위 관절에만 보행을 적용한다.
+                local parentBone = item.Parent
+                local parentLabel = parentBone and string.lower(parentBone.Name) or ""
+                local nestedLimb = item:IsA("Bone") and (
+                  string.find(parentLabel, "leg", 1, true)
+                  or string.find(parentLabel, "arm", 1, true)
+                  or string.find(parentLabel, "thigh", 1, true))
+                if (isLeg or isArm) and not nestedLimb then
                   local left = string.find(label, "left", 1, true)
                     or string.match(label, "^l[_%.%-]") or string.match(label, "[_%.%-]l$")
                     or string.find(label, "_l", 1, true)
