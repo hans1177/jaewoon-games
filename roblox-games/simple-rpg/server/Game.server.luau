@@ -950,6 +950,7 @@ Players.PlayerAdded:Connect(function(player)
   end
   player:SetAttribute("CivReady", true)
   civApplyCharacterPassive(player)
+  civRestoreBuildings(player)
   player.CharacterAdded:Connect(function()
     task.wait(0.1)
     civApplyCharacterPassive(player)
