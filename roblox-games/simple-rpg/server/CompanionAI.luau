@@ -116,6 +116,9 @@ function CompanionAI.Tick(enemies: {Enemy}, nodes: {Node}, increase: (Player, st
             local facing = Vector3.new(delta.X, 0, delta.Z)
             local nextFrame = if facing.Magnitude > 0.01 then CFrame.lookAt(nextPos, nextPos + facing) else CFrame.new(nextPos)
             state.Model:PivotTo(nextFrame)
+            state.Model:SetAttribute("MotionState", "Walk")
+        else
+            state.Model:SetAttribute("MotionState", "Idle")
         end
         if mode == "Attack" or mode == "Guard" then
             if now - state.LastStrike >= 2 then
