@@ -316,6 +316,12 @@ local Config = {
     CivBoarKills = 0, CivBronzeSmelts = 0, CivIronKnightKills = 0,
     CivStoneWall = 0, CivDangunAltar = 0, CivPyramid = 0,
     CivColosseum = 0, CivDrakkarShipyard = 0,
+    -- V3 placed-building coordinates: zero/zero means restore the legacy default layout.
+    CivStoneWallPosX = 0, CivStoneWallPosZ = 0,
+    CivDangunAltarPosX = 0, CivDangunAltarPosZ = 0,
+    CivPyramidPosX = 0, CivPyramidPosZ = 0,
+    CivColosseumPosX = 0, CivColosseumPosZ = 0,
+    CivDrakkarShipyardPosX = 0, CivDrakkarShipyardPosZ = 0,
   },
   Actions = {
     { Id = "genre-core", Label = "Strategy / Board & Card Games core gameplay", Kind = "OBJECTIVE", Order = 1, LearningPattern = "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view." },
