@@ -327,6 +327,7 @@ end
 local civ = Config.Civilization
 local civCooldowns = {}
 local civEnemies = {}
+local civWildlife = {}
 local civNodes = {}
 local civWorlds = {}
 local civHub = Instance.new("Folder")
