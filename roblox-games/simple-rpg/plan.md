@@ -66,10 +66,12 @@
 - 중앙 정책 `company-learning/platform-release-roadmap.json`과 잠긴 기존 개발/QA/게시 체인 준수.
 
 ## 9. 이 작업의 검증 상태 (2026-10-15)
-- 작업 브랜치: `owner-simple-rpg-title-20261015`, PR #8082. `main` 반영이나 Roblox 게시를 뜻하지 않는다.
-- 2026-10-15 GitHub Vibe QA `38682808577`: **FAIL**. 실패 검사: `qa/vibe-studio-asset-universe.test.mjs`의 다른 RPG 메뉴 바이트 일치, 에셋 검색 필터 관련 검사. 이 PR은 해당 책임 파일을 변경하지 않았다. 실패를 건너뛰거나 PASS로 표시하지 않는다.
-- Roblox 소스/GUI 실제 플레이, Rojo 패키지, 서버 DataStore, 모바일 기기, Open Cloud Place 버전 게시 검증: **미확인**.
-- `homepage-platform-exposure.json`의 현행 `simple-rpg`는 Roblox `placeId=null`, `runtimePassed=false`, `independentQaPassed=false`라서 게임별 직접 출시는 진행하지 않는다.
+- 기준 게임은 오직 `simple-rpg`(출시 표시명 **대충알피지**)이다. `daechung-rpg`(5포탈 RPG) 및 다른 게임의 Place/저장소/게시 대상은 재사용하지 않는다.
+- 실제 책임 코드 `server/Game.server.luau`, `client/Game.client.luau` 및 `qa/simple-rpg-ai-authoring.test.mjs`를 `main`에 업데이트했다. 로컬 코드 검토/정적 확인 **15/15**를 수행했으며 엔진 실행/네트워크 실제 테스트로 간주하지 않는다.
+- 이전 GitHub QA `38686327386`는 **FAIL** (대상 밖 `qa/vibe-studio-asset-universe.test.mjs`의 2개 검사가 실패). 통신 변경 뒤 새 CI `38688511463`는 상태를 다시 조회해야 하며 사전 완료 또는 PASS로 기록하지 않는다.
+- Roblox Studio/Rojo 빌드, 패링/회피 실제 판정, 서버-클라이언트 실제 통신, DataStore 재접속, 모바일 UI, 독립 QA: **미검증**.
+- 운영 브랜치 `roblox-dedicated-targets.json` 및 개발 대기열에서 `simple-rpg`의 오너 전용 `universeId/placeId`가 확인되지 않았고, 현재 세션에는 인증된 Roblox 직접 게시 수단이 없다. **로블록스 게시 미실행 / 게시 버전 없음**. 
+- 오너 직접 배포 시 게임별 승인된 대상과 인증된 게시 세션을 확보한 후 해당 게임의 동일 빌드/소스 리비전과 게시 버전 확인이 필수다. 타 게임 게시 또는 자동개발·자동게시 파이프라인을 이용해 직접 배포라고 표시하지 않는다.
 
 
 ---
@@ -142,3 +144,33 @@
 - 원문에 없는 건축 비용·기본 무기 피해·몬스터 체력·건축 대기시간은 현행 플레이 테스트를 위한 초깃값이고 원문에서 확정한 수치가 아니다.
 - 4~5시대 상세 인과관계는 아직 제공되지 않았다. 200개 스크립트를 제작·검증했다거나 실제 Roblox 게시까지 완료했다고 표기하지 않는다.
 - 배포 단계에서 중복 검증을 추가하지 않으며 기존 F0~F9 자동 정본 플로우를 이용한다.
+
+---
+
+## 12. 통신/동기화 마스터 스크립트 통합 (2026-10-15)
+
+### 단일 실행 경로
+- 사용자 예시의 `ReplicatedStorage/Modules`, `ServerScriptService/Systems/TechTreeServer.server.luau`는 개념상의 폴더 구조다. 이 게임에는 **기존 단일 서버** `server/Game.server.luau`와 **기존 단일 클라이언트** `client/Game.client.luau`가 있으므로 별도 경쟁 서버/인벤토리 스크립트를 추가하지 않는다.
+- 서버는 시작할 때 `ReplicatedStorage/Remotes` 폴더와 원격 5개를 생성/검증한다. 기존 `Config.RemoteName` 일반 액션 이벤트와 `ReplicatedStorage/Shared`의 데이터 모듈을 계속 사용한다.
+- `shared/TechTreeData.luau`의 기술 스키마는 `TechID`, `Prerequisite`, `RequiredResources`, `Era`이다. `shared/TypeDefinitions.luau`(v2.1 계약 참조)를 근거로 스키마 또는 저장 필드를 강제 마이그레이션하지 않는다.
+
+| 원격 | 방향 | 단일 처리 책임 | 반영 |
+| --- | --- | --- | --- |
+| `ParryEvent` | 클라이언트 → 서버 | 기존 `civGuard` 및 서버 패링 창/쿨다운 | 패링 액션·결과는 기존 서버 이벤트/속성 활용 |
+| `DodgeEvent` | 클라이언트 → 서버 | 기존 `civDodge`의 생존/지면/쿨다운 검증 | 실제 회피/카운터 |
+| `UnlockTechRequest` | 클라이언트 → 서버 → 클라이언트 | `civResearch(player, techID)`: 유효 ID, 다음 연구, 문명, 선행 조건, 유레카, 자원, 쿨다운 | 실제 비용 차감·해금 후 `(true, message)`; 실패 시 `(false, message)` |
+| `UpdateTechEvent` | 서버 → 클라이언트 | 기술 해금 성공 이후 기술 ID/시대 전달 | 테크트리 UI 새로 그리기 |
+| `SyncInventoryEvent` | 서버 → 해당 클라이언트 | 기존 `Config.InitialState`의 `Civ*` 서버 속성으로 스냅샷 생성, 속성 변경을 0.1초 묶음 전송 | 4×8 슬롯 UI와 서버 수치 동기화 |
+
+### 보존/보안
+- 기존 액션 ID `CivResearch`도 **동일** `civResearch`를 사용한다. 클라이언트가 전송한 임의 재고·연구 성공·피해량은 받아들이지 않는다.
+- `CivReady` 전 연구·패링·회피를 거부한다. 기술 번호는 정수 1~72 및 **다음 순차 연구**만 허용한다. 연구 자원은 오직 서버에서 차감한다. 원격 성공만으로 연구가 되었다고 말하지 않는다.
+- `SyncInventoryEvent`는 **클라이언트 → 서버 입력을 제공하지 않는** 단방향 복제이며 해당 플레이어에게만 전송한다. 서버의 숫자 어트리뷰트가 정본이다.
+- DataStore `simple-rpg-development-v1`, 저장 레코드의 `player:<UserId>` 형식, 숫자 키/기존 보상·전투 수치는 보존한다. 저장은 기존 `UpdateAsync`/주기 저장/퇴장 저장에 맡기며 연구 때마다 별도 저장소에 중복 저장하지 않는다.
+- 기존 대형 서버/클라이언트는 레거시 타입 불명 부분이 있으므로 파일 전체에 `--!strict`를 일괄 적용하지 않았다. 모든 신규 원격 판정은 기존 서버 검증 로직에 연결한다.
+
+### 검증 및 출하 체크
+1. 소스 정적 확인: 원격 생성, 연구 리턴의 실제 판정 연계, 구형 액션 유지, 스냅샷 단방향, 저장 원본 유지 — **15/15 항목 확인**.
+2. 자동 테스트 코드: `qa/simple-rpg-ai-authoring.test.mjs`에 통신 권한/클라이언트 갱신 회귀 항목 추가. 이 추가 자체는 CI PASS 증거가 아니다.
+3. 아직 필요한 엔진 검증: 진입→문명 선택→패링/회피 서버 판정→연구 비용 부족/선행 실패/성공→가방 반영→나갔다 재접속 후 자원/기술 유지→모바일 조작.
+4. **배포 상태: NOT_PUBLISHED.** 오너 직접 게시의 해당 게임 대상과 인증/빌드/런타임 증거가 없어 Roblox Place 배포 성공·버전 번호를 주장하지 않는다.
