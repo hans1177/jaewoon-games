@@ -102,6 +102,6 @@ for _, entry in ipairs(entries) do
   end
 end
 `;
-const loaderFile = outputFile.replace(/\\.json$/i, '') + '-studio-import.luau';
+const loaderFile = (outputFile.endsWith('.json') ? outputFile.slice(0, -5) : outputFile) + '-studio-import.luau';
 await fs.writeFile(loaderFile, loader);
 console.log('STUDIO_IMPORT_SCRIPT='+loaderFile);
