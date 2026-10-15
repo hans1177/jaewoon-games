@@ -10,6 +10,13 @@ on:
       - 'roblox-games/simple-rpg/**'
       - '.github/workflows/owner-simple-rpg-direct-publish.yml'
   workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        description: '게임 또는 그래픽 전용'
+        required: true
+        default: game
+        options: [game, graphics]
 
 permissions:
   contents: read
@@ -24,6 +31,7 @@ env:
 
 jobs:
   publish:
+    if: github.event_name == 'push' || inputs.mode == 'game'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -122,5 +130,75 @@ jobs:
         with:
           name: owner-simple-rpg-direct-publication
           path: /tmp/owner-simple-rpg/result.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  graphics:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'graphics'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Upload game-specific PNG assets without republishing Place
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          // 파일명: owner-simple-rpg-direct-publish.yml, 그래픽 전용 처리
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import {introspectRobloxApiKey} from './tools/company-roblox-dedicated-experience.mjs';
+          const root='assets/roblox/simple-rpg';
+          const key=process.env.ROBLOX_OPEN_CLOUD_API_KEY;
+          if(!key||!fs.existsSync(root))throw Error('GRAPHICS_SOURCE_OR_KEY_MISSING');
+          const list=fs.readdirSync(root).filter(n=>/^[a-z0-9_-]+\.png$/i.test(n)).sort();
+          if(!list.length)throw Error('GRAPHICS_SOURCE_EMPTY');
+          const scope=await introspectRobloxApiKey({apiKey:key});
+          const owners=[];
+          for(const row of scope.scopes||[]){
+            if(!/asset/i.test(row.name)||!/write|create/i.test(row.name+' '+(row.operations||[]).join(' ')))continue;
+            for(const id of row.userIds||[])if(Number(id)>0)owners.push({userId:String(id)});
+            for(const id of row.groupIds||[])if(Number(id)>0)owners.push({groupId:String(id)});
+          }
+          const unique=[...new Map(owners.map(o=>[JSON.stringify(o),o])).values()];
+          if(unique.length!==1)throw Error('GRAPHICS_CREATOR_MUST_BE_UNIQUE');
+          const creator=unique[0];
+          const receipts=[];
+          for(const name of list){
+            const bytes=fs.readFileSync(root+'/'+name);
+            if(bytes.length<24||bytes.length>20e6||bytes.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')throw Error('GRAPHICS_INVALID_PNG:'+name);
+            const hash=crypto.createHash('sha256').update(bytes).digest('hex');
+            const form=new FormData();
+            form.append('request',JSON.stringify({assetType:'Decal',displayName:'simple-rpg '+name.replace(/\.png$/i,''),description:hash,creationContext:{creator}}));
+            form.append('fileContent',new Blob([bytes],{type:'image/png'}),name);
+            let response=await fetch('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form,signal:AbortSignal.timeout(60000)});
+            let op=await response.json().catch(()=>({}));
+            if(!response.ok||!/^operations\/[\w-]+$/.test(op.path||''))throw Error('GRAPHICS_UPLOAD_FAILED:'+name+':'+response.status);
+            for(let i=0;i<60&&!op.done;i++){
+              await new Promise(resolve=>setTimeout(resolve,4000));
+              response=await fetch('https://apis.roblox.com/assets/v1/'+op.path,{headers:{'x-api-key':key},signal:AbortSignal.timeout(60000)});
+              op=await response.json().catch(()=>({}));
+              if(!response.ok)throw Error('GRAPHICS_STATUS_FAILED:'+name);
+            }
+            if(!op.done||op.error||!Number(op.response?.assetId))throw Error('GRAPHICS_NOT_VERIFIED:'+name);
+            receipts.push({name,sha256:hash,assetId:String(op.response.assetId),verifiedInGame:false});
+          }
+          fs.mkdirSync('/tmp/owner-simple-rpg',{recursive:true});
+          fs.writeFileSync('/tmp/owner-simple-rpg/graphics.json',JSON.stringify({gameId:'simple-rpg',placePublished:false,assets:receipts},null,2));
+          console.log('GRAPHICS_ASSET_UPLOAD_COUNT='+receipts.length);
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: owner-simple-rpg-graphics
+          path: /tmp/owner-simple-rpg/graphics.json
           if-no-files-found: warn
           retention-days: 14
