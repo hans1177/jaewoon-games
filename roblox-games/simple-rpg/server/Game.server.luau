@@ -9,6 +9,39 @@ local storeOk, storeResult = pcall(function()
 end)
 if storeOk then store = storeResult end
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+-- Roblox Open Cloud 등록 성공 확인: KayKit CC0 실제 Model 에셋을 기존 스폰 코드에 연결한다.
+-- 권한/검수로 불러올 수 없는 경우에는 기존 파츠 모델을 유지한다.
+local approvedCreatureAssets = {
+  Knight = 117296982541430,
+  Humanoid = 77212056040925,
+  Race2_Mob1 = 72885356802214,
+  Race1_Mob2 = 119538890072143,
+  Race3_Mob2 = 94477039152948,
+  Race4_Mob1 = 75690087240567,
+  Race4_Mob2 = 132858382607872,
+  Race5_Mob2 = 75474116878978,
+  Race5_Mob1 = 102454505662046,
+}
+local creatureFolder = Shared:FindFirstChild("CreatureModels")
+if creatureFolder then
+  local insertService = game:GetService("InsertService")
+  for name, assetId in pairs(approvedCreatureAssets) do
+    if not creatureFolder:FindFirstChild(name) then
+      local ok, container = pcall(function() return insertService:LoadAsset(assetId) end)
+      if ok and container then
+        local assetModel = container:FindFirstChildWhichIsA("Model", true) or container
+        if assetModel:IsA("Model") then
+          local template = assetModel:Clone()
+          template.Name = name
+          template.Parent = creatureFolder
+        end
+        container:Destroy()
+      else
+        warn("DAECHUNG_CREATURE_ASSET_LOAD_FAILED", name, assetId)
+      end
+    end
+  end
+end
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
