@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "simple-rpg-build-up-g8-7fcc45fde8de",
-  "directiveFingerprint": "7fcc45fde8dea1540af106288cd1610f7533340b63d6f2edbfb57a235b8b42ef",
-  "previousDirectiveFingerprint": "dafd080537a43fb9c7349619ee018995946967d61fb2045ceae43379249cd302",
-  "forbiddenRepeatFingerprint": "dafd080537a43fb9c7349619ee018995946967d61fb2045ceae43379249cd302",
+  "directiveId": "simple-rpg-build-up-g9-72ba1d07efd5",
+  "directiveFingerprint": "72ba1d07efd5d5e07e972eaaed007229b8afd10ea33c89efdd69051c755f0fe8",
+  "previousDirectiveFingerprint": "7fcc45fde8dea1540af106288cd1610f7533340b63d6f2edbfb57a235b8b42ef",
+  "forbiddenRepeatFingerprint": "7fcc45fde8dea1540af106288cd1610f7533340b63d6f2edbfb57a235b8b42ef",
   "gameId": "simple-rpg",
   "gameName": "작은 모험 RPG",
-  "generation": 8,
+  "generation": 9,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/simple-rpg",
-  "sourceTreeFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
+  "sourceTreeFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
   "designFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -292,7 +292,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
+        "sourceTreeFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -340,7 +340,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
-    "sourceTreeFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
+    "sourceTreeFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -836,11 +836,11 @@
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau",
-      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau"
     ],
     "executableCodeCandidateFiles": [
       "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
@@ -849,11 +849,11 @@
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau",
-      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau"
     ],
     "gapReasons": [
       "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
@@ -875,7 +875,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
+    "sourceTreeFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4456,44 +4456,44 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=17",
+      "CURRENT_SOURCE_FILES=18",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 449,
-      "progression": 793,
+      "combat": 450,
+      "progression": 803,
       "ai": 120,
-      "save": 141,
-      "multiplayer": 52,
-      "animation": 48,
-      "motionStates": 1001,
+      "save": 172,
+      "multiplayer": 54,
+      "animation": 49,
+      "motionStates": 1019,
       "gameFeel": 37,
-      "vfx": 45,
-      "camera": 67,
+      "vfx": 72,
+      "camera": 75,
       "audio": 4,
       "audioDynamics": 30,
       "ui": 1071,
-      "uiFlow": 1252,
+      "uiFlow": 1254,
       "entryFlow": 18,
       "loadingFlow": 0,
-      "input": 203,
-      "map": 443,
-      "landmark": 124,
+      "input": 204,
+      "map": 446,
+      "landmark": 128,
       "interaction": 346,
       "inventory": 347,
       "equipment": 80,
       "settings": 25,
-      "feedback": 253,
-      "session": 51,
-      "content": 1116,
-      "choice": 1738,
+      "feedback": 261,
+      "session": 52,
+      "content": 1140,
+      "choice": 1749,
       "connection": 13,
-      "performance": 38,
-      "lighting": 67,
-      "primitive": 21,
+      "performance": 54,
+      "lighting": 81,
+      "primitive": 22,
       "todo": 0,
-      "errorRecovery": 35
+      "errorRecovery": 36
     },
     "topFiles": [
       {
@@ -4502,7 +4502,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "score": 950
+        "score": 1024
       },
       {
         "file": "roblox-games/simple-rpg/shared/GameConfig.luau",
@@ -4525,6 +4525,10 @@
         "score": 43
       },
       {
+        "file": "roblox-games/simple-rpg/client/WeatherVFX.luau",
+        "score": 34
+      },
+      {
         "file": "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
         "score": 34
       },
@@ -4539,10 +4543,6 @@
       {
         "file": "roblox-games/simple-rpg/shared/ProgressionData.luau",
         "score": 18
-      },
-      {
-        "file": "roblox-games/simple-rpg/shared/CraftingRecipeData.luau",
-        "score": 15
       }
     ],
     "sourceAnchors": [
@@ -4628,7 +4628,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 918,
+        "line": 995,
         "kind": "FUNCTION",
         "symbol": "civAttack",
         "context": "local function civAttack(player, targetModel)",
@@ -4652,7 +4652,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 214,
+        "line": 217,
         "kind": "FUNCTION",
         "symbol": "scopeHandler1",
         "context": "local function scopeHandler1(player)",
@@ -4660,7 +4660,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 237,
+        "line": 240,
         "kind": "FUNCTION",
         "symbol": "scopeHandler2",
         "context": "local function scopeHandler2(player)",
@@ -4668,7 +4668,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 315,
+        "line": 318,
         "kind": "FUNCTION",
         "symbol": "scopeHandler5",
         "context": "local function scopeHandler5(player)",
@@ -4676,7 +4676,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 339,
+        "line": 342,
         "kind": "FUNCTION",
         "symbol": "scopeHandler6",
         "context": "local function scopeHandler6(player)",
@@ -4708,7 +4708,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 421,
+        "line": 425,
         "kind": "FUNCTION",
         "symbol": "civNowReady",
         "context": "local function civNowReady(player, action, cooldown)",
@@ -4716,7 +4716,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 510,
+        "line": 524,
         "kind": "FUNCTION",
         "symbol": "civCraft",
         "context": "local function civCraft(player, itemKey)",
@@ -4724,15 +4724,15 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 568,
+        "line": 582,
         "kind": "FUNCTION",
         "symbol": "civBuild",
-        "context": "local function civBuild(player, buildingKey)",
+        "context": "local function civBuild(player, buildingKey, positionHint)",
         "score": 90
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 794,
+        "line": 871,
         "kind": "FUNCTION",
         "symbol": "civResearch",
         "context": "local function civResearch(player, requestedTechID)",
@@ -4796,7 +4796,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 206,
+        "line": 209,
         "kind": "FUNCTION",
         "symbol": "initializePlayer",
         "context": "local function initializePlayer(player)",
@@ -4804,7 +4804,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 487,
+        "line": 501,
         "kind": "FUNCTION",
         "symbol": "civRestoreBuildings",
         "context": "local function civRestoreBuildings(player)",
@@ -4812,7 +4812,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 1261,
+        "line": 1341,
         "kind": "FUNCTION",
         "symbol": "queueInventorySync",
         "context": "local function queueInventorySync(player)",
@@ -4916,7 +4916,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 432,
+        "line": 436,
         "kind": "FUNCTION",
         "symbol": "civIncrease",
         "context": "local function civIncrease(player, key, count)",
@@ -4924,7 +4924,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 436,
+        "line": 440,
         "kind": "FUNCTION",
         "symbol": "civOwnerBuildings",
         "context": "local function civOwnerBuildings(player)",
@@ -4935,9 +4935,9 @@
   "previousVersionDelta": {
     "previousGoal": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 7,
-    "previousSourceTreeFingerprint": "6ba8f32a08885ae7ca054aebf1d327c736fb287d166b426bca800f5aded5e020",
-    "currentSourceTreeFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
+    "previousGeneration": 8,
+    "previousSourceTreeFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
+    "currentSourceTreeFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6094,7 +6094,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 600254,
+        "sourceBytes": 609599,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6127,8 +6127,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 8,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=7; uncoveredBefore=6.",
+    "themeDepth": 9,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6138,9 +6138,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 8
+        "PRESENTATION_WORLD_COHESION": 9
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6183,7 +6184,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 102,
+        "score": 84,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6297,11 +6298,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 8,
-    "previousGeneration": 7,
+    "generation": 9,
+    "previousGeneration": 8,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
-    "priorSourceFingerprint": "6ba8f32a08885ae7ca054aebf1d327c736fb287d166b426bca800f5aded5e020",
+    "sourceFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
+    "priorSourceFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6371,7 +6372,7 @@
     "gameId": "simple-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
+    "sourceTreeFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6567,11 +6568,11 @@
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau",
-      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau"
     ],
     "requiredEvidenceFields": [
       "gameId",
@@ -6787,11 +6788,11 @@
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau",
-      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
@@ -6814,7 +6815,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 918,
+        "line": 995,
         "kind": "FUNCTION",
         "symbol": "civAttack",
         "currentBehavior": "local function civAttack(player, targetModel)",
@@ -6823,7 +6824,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 214,
+        "line": 217,
         "kind": "FUNCTION",
         "symbol": "scopeHandler1",
         "currentBehavior": "local function scopeHandler1(player)",
@@ -6832,7 +6833,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 237,
+        "line": 240,
         "kind": "FUNCTION",
         "symbol": "scopeHandler2",
         "currentBehavior": "local function scopeHandler2(player)",
@@ -6841,7 +6842,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 315,
+        "line": 318,
         "kind": "FUNCTION",
         "symbol": "scopeHandler5",
         "currentBehavior": "local function scopeHandler5(player)",
@@ -6850,7 +6851,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 339,
+        "line": 342,
         "kind": "FUNCTION",
         "symbol": "scopeHandler6",
         "currentBehavior": "local function scopeHandler6(player)",
@@ -6859,7 +6860,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 421,
+        "line": 425,
         "kind": "FUNCTION",
         "symbol": "civNowReady",
         "currentBehavior": "local function civNowReady(player, action, cooldown)",
@@ -6998,7 +6999,8 @@
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/simple-rpg/client/Game.client.luau"
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/client/WeatherVFX.luau"
         ],
         "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
       },
@@ -7009,13 +7011,12 @@
           "roblox-games/simple-rpg/shared/GameConfig.luau",
           "roblox-games/simple-rpg/shared/RaceData.luau",
           "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-          "roblox-games/simple-rpg/shared/ProgressionData.luau",
-          "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
+          "roblox-games/simple-rpg/shared/ProgressionData.luau"
         ],
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
+    "sourceTreeFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -7104,7 +7105,8 @@
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/simple-rpg/client/Game.client.luau"
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/client/WeatherVFX.luau"
         ],
         "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
       },
@@ -7115,13 +7117,12 @@
           "roblox-games/simple-rpg/shared/GameConfig.luau",
           "roblox-games/simple-rpg/shared/RaceData.luau",
           "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-          "roblox-games/simple-rpg/shared/ProgressionData.luau",
-          "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
+          "roblox-games/simple-rpg/shared/ProgressionData.luau"
         ],
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
+    "sourceTreeFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -7169,11 +7170,11 @@
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau",
-      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau"
     ],
     "sourceAnchors": [
       {
@@ -7202,7 +7203,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 918,
+        "line": 995,
         "kind": "FUNCTION",
         "symbol": "civAttack",
         "context": "local function civAttack(player, targetModel)",
@@ -7214,7 +7215,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 214,
+        "line": 217,
         "kind": "FUNCTION",
         "symbol": "scopeHandler1",
         "context": "local function scopeHandler1(player)",
@@ -7226,7 +7227,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 237,
+        "line": 240,
         "kind": "FUNCTION",
         "symbol": "scopeHandler2",
         "context": "local function scopeHandler2(player)",
@@ -7238,7 +7239,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 315,
+        "line": 318,
         "kind": "FUNCTION",
         "symbol": "scopeHandler5",
         "context": "local function scopeHandler5(player)",
@@ -7250,7 +7251,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 339,
+        "line": 342,
         "kind": "FUNCTION",
         "symbol": "scopeHandler6",
         "context": "local function scopeHandler6(player)",
@@ -7262,7 +7263,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 421,
+        "line": 425,
         "kind": "FUNCTION",
         "symbol": "civNowReady",
         "context": "local function civNowReady(player, action, cooldown)",
@@ -7323,11 +7324,11 @@
       "roblox-games/simple-rpg/server/WeatherSystem.luau",
       "roblox-games/simple-rpg/server/MultiverseEconomy.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
+      "roblox-games/simple-rpg/client/WeatherVFX.luau",
       "roblox-games/simple-rpg/server/AdvancedAIEcosystem.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
       "roblox-games/simple-rpg/shared/TradeMarketData.luau",
-      "roblox-games/simple-rpg/shared/ProgressionData.luau",
-      "roblox-games/simple-rpg/shared/CraftingRecipeData.luau"
+      "roblox-games/simple-rpg/shared/ProgressionData.luau"
     ],
     "impact": {
       "version": 1,
@@ -7404,7 +7405,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "c5ec2451a32164e04b197ca0b29445eb364b82fce159816405c5f3dd88a0cce6",
+      "sourceTreeFingerprint": "7def95d5c17ab9f71f2c8731b7c9a2fffac2c67f7201d0f351118ebd63037004",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
@@ -7463,7 +7464,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 9,
+    "nextGeneration": 10,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7525,5 +7526,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-15T06:19:28.824Z"
+  "generatedAt": "2026-10-15T06:43:23.704Z"
 }
