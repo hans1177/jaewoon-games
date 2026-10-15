@@ -1491,6 +1491,58 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
       ear.CanCollide = false
     end
   end
+  -- 외부 모델이 없을 때도 실루엣으로 적 종류를 구분할 수 있는 경량 로우폴리 외형.
+  -- 히트박스·체력·AI와 분리된 비충돌 장식만 생성한다.
+  if enemy:GetAttribute("CreatureAssetSource") ~= "StudioImported" then
+    local function visualPiece(name, size, frame, color, shape, material)
+      local piece = civPart(enemy, name, size, frame, color, material or Enum.Material.SmoothPlastic, false)
+      piece.CanCollide = false
+      piece.CanTouch = false
+      piece.CanQuery = false
+      if shape then piece.Shape = shape end
+      return piece
+    end
+    if beast then
+      -- 늑대와 멧돼지는 사람 형태 대신 길게 뻗은 몸통·주둥이·꼬리로 구별한다.
+      local fur = special == "StoneWolf" and Color3.fromRGB(91, 103, 112) or Color3.fromRGB(116, 81, 57)
+      visualPiece("BeastTorso", Vector3.new(2.7, 1.9, 4.1),
+        root.CFrame * CFrame.new(0, 0.1, 0.3), fur, Enum.PartType.Ball)
+      visualPiece("BeastMuzzle", Vector3.new(1.4, 0.9, 1.8),
+        root.CFrame * CFrame.new(0, 2.45, -1.85), fur, Enum.PartType.Ball)
+      visualPiece("BeastNose", Vector3.new(0.6, 0.5, 0.4),
+        root.CFrame * CFrame.new(0, 2.25, -2.72), Color3.fromRGB(42, 37, 36), Enum.PartType.Ball)
+      visualPiece("BeastTail", Vector3.new(0.65, 0.65, 2.1),
+        root.CFrame * CFrame.new(0, 0.45, 2.35) * CFrame.Angles(math.rad(-30), 0, 0),
+        fur, Enum.PartType.Ball)
+      for side = -1, 1, 2 do
+        visualPiece(side < 0 and "BeastEarLeft" or "BeastEarRight",
+          Vector3.new(0.6, 1.15, 0.55),
+          head.CFrame * CFrame.new(side * 0.8, 1.65, -0.25) * CFrame.Angles(0, 0, side * math.rad(-18)),
+          fur)
+        if special == "WildBoar" then
+          visualPiece(side < 0 and "BoarTuskLeft" or "BoarTuskRight",
+            Vector3.new(0.3, 1.0, 0.32),
+            root.CFrame * CFrame.new(side * 0.78, 2.05, -2.45) * CFrame.Angles(0, 0, side * math.rad(22)),
+            Color3.fromRGB(230, 213, 169))
+        end
+      end
+    elseif armor then
+      -- 청동 골렘과 철기 기사는 헬멧·견갑·흉갑으로 맨몸 모형과 구분한다.
+      local metal = special == "BronzeGolem" and Color3.fromRGB(164, 117, 65)
+        or Color3.fromRGB(93, 109, 122)
+      visualPiece("ArmoredChest", Vector3.new(3.35, 2.9, 1.55),
+        root.CFrame * CFrame.new(0, 0.45, -0.45), metal)
+      visualPiece("ArmoredHelm", Vector3.new(2.7, 1.15, 2.8),
+        head.CFrame * CFrame.new(0, 0.9, 0), metal)
+      visualPiece("HelmetCrest", Vector3.new(0.4, 1.0, 2.2),
+        head.CFrame * CFrame.new(0, 1.75, 0), Color3.fromRGB(180, 75, 48))
+      for side = -1, 1, 2 do
+        visualPiece(side < 0 and "PauldronLeft" or "PauldronRight",
+          Vector3.new(1.4, 1.0, 1.7),
+          root.CFrame * CFrame.new(side * 2.0, 1.6, -0.3), metal, Enum.PartType.Ball)
+      end
+    end
+  end
   -- 업로드 모델이 있으면 기존 장식 파츠를 가려 겹쳐 보이지 않게 한다.
   -- 투명화만 수행하며 히트박스, Humanoid, 저장·보상 상태는 변경하지 않는다.
   if enemy:GetAttribute("CreatureAssetSource") == "StudioImported" then
