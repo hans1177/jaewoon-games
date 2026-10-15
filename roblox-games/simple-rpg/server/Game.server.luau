@@ -708,6 +708,34 @@ local function civApplyCharacterPassive(player)
   humanoid.MaxHealth = baseHealth * healthMultiplier
   humanoid.WalkSpeed = baseSpeed * speedMultiplier
 end
+-- 외형 전용 색상은 서버가 허용한 네 가지 중 하나만 실제 캐릭터에 적용한다.
+local civSkinTones = {
+  Color3.fromRGB(190, 148, 114), Color3.fromRGB(225, 184, 145),
+  Color3.fromRGB(145, 100, 70), Color3.fromRGB(98, 68, 49),
+}
+local function civApplySkinTone(player)
+  local character = player.Character
+  if not character then return end
+  local id = readNumber(player, "CivSkinTone", 1)
+  if id % 1 ~= 0 or not civSkinTones[id] then id = 1 end
+  local skin = civSkinTones[id]
+  local colors = character:FindFirstChildOfClass("BodyColors")
+  if not colors then
+    colors = Instance.new("BodyColors")
+    colors.Parent = character
+  end
+  colors.HeadColor3 = skin
+  colors.LeftArmColor3 = skin
+  colors.RightArmColor3 = skin
+  colors.LeftLegColor3 = skin
+  colors.RightLegColor3 = skin
+end
+local function civSetSkinTone(player, id)
+  if typeof(id) ~= "number" or id % 1 ~= 0 or not civSkinTones[id] then return end
+  if not civNowReady(player, "SkinTone", 0.5) then return end
+  setNumber(player, "CivSkinTone", id)
+  civApplySkinTone(player)
+end
 -- 영웅 시대 최종 연구 72 완료 시에만 현재 게임의 리저브 서버로 이동한다.
 -- 외부 Place ID 또는 가짜 ReservedServerAccessKey를 사용하지 않는다.
 local function civPortalTeleport(player, destinationID)
@@ -1518,6 +1546,7 @@ Players.PlayerAdded:Connect(function(player)
   weatherSyncEvent:FireClient(player, WeatherSystem.Snapshot())
   queueInventorySync(player)
   civApplyCharacterPassive(player)
+  civApplySkinTone(player)
   civRestoreBuildings(player)
   -- 리저브 서버 도착 후 실제 저장된 최종 연구 완료 여부를 재검증한다.
   local joinOk, joinData = pcall(function() return player:GetJoinData() end)
@@ -1537,6 +1566,7 @@ Players.PlayerAdded:Connect(function(player)
   player.CharacterAdded:Connect(function()
     task.wait(0.1)
     civApplyCharacterPassive(player)
+    civApplySkinTone(player)
   end)
 end)
 for _, player in ipairs(Players:GetPlayers()) do
@@ -1619,6 +1649,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     CivGuard = civGuard, CivDodge = civDodge, CivGather = civGather,
     CivResearch = civResearch, CivCompanion = civCompanion,
     CivCraft = civCraft, CivBuild = civBuild, CivEquip = civEquip,
+    CivSkinTone = civSetSkinTone,
   }
   local action = handler or civActions[actionId]
   if typeof(action) ~= "function" then return end
@@ -1637,7 +1668,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
       action(player, selected)
     end
   elseif actionId == "CivSelect" or actionId == "CivCompanion" or actionId == "CivCraft"
-    or actionId == "CivBuild" or actionId == "CivEquip" then
+    or actionId == "CivBuild" or actionId == "CivEquip" or actionId == "CivSkinTone" then
     action(player, argument)
   else
     action(player)
