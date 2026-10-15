@@ -1374,6 +1374,37 @@ local function civSpawnEnemy(raceID, center, special)
   local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + Vector3.new(special == "StoneWolf" and 9 or special and -9 or 0, 4, 9)), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
   root.Transparency = 0.35
   local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
+  -- 몬스터 외형 에셋: 기존 생성 경로에서 경량 파츠를 조립한다.
+  local beast = special == "StoneWolf" or special == "WildBoar"
+  local armor = special == "BronzeGolem" or special == "IronKnight"
+  local bodyColor = armor and Color3.fromRGB(111, 119, 126) or beast and Color3.fromRGB(102, 91, 77) or Color3.fromRGB(123, 103, 79)
+  for side = -1, 1, 2 do
+    local offset = beast and Vector3.new(side * 1.4, -0.7, 1.1) or Vector3.new(side * 1.9, 0.1, 0)
+    local limb = civPart(enemy, side < 0 and "LeftLimb" or "RightLimb",
+      beast and Vector3.new(0.8, 2.1, 0.8) or Vector3.new(1.0, 3, 1.1),
+      root.CFrame * CFrame.new(offset), bodyColor, Enum.Material.SmoothPlastic, false)
+    limb.CanCollide = false
+    if armor then
+      local plate = civPart(enemy, side < 0 and "LeftArmor" or "RightArmor",
+        Vector3.new(1.2, 0.8, 1.3), root.CFrame * CFrame.new(side * 1.9, 1.2, 0),
+        Color3.fromRGB(174, 137, 77), Enum.Material.Metal, false)
+      plate.CanCollide = false
+    end
+  end
+  for side = -1, 1, 2 do
+    local eye = civPart(enemy, side < 0 and "LeftEye" or "RightEye", Vector3.new(0.32, 0.32, 0.2),
+      head.CFrame * CFrame.new(side * 0.55, 0.22, -1.27),
+      armor and Color3.fromRGB(255, 161, 70) or Color3.fromRGB(248, 207, 130),
+      Enum.Material.Neon, false)
+    eye.CanCollide = false
+  end
+  if beast then
+    for side = -1, 1, 2 do
+      local ear = civPart(enemy, side < 0 and "LeftEar" or "RightEar", Vector3.new(0.55, 0.85, 0.55),
+        head.CFrame * CFrame.new(side * 0.85, 1.55, 0), bodyColor, Enum.Material.SmoothPlastic, false)
+      ear.CanCollide = false
+    end
+  end
   local humanoid = Instance.new("Humanoid")
   humanoid.RequiresNeck = false
   humanoid.MaxHealth = special == "WildBoar" and 42 or special == "BronzeGolem" and 100
