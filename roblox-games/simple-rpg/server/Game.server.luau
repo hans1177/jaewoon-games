@@ -23,6 +23,8 @@ local approvedCreatureAssets = {
   Race5_Mob1 = 102454505662046,
 }
 local creatureFolder = Shared:FindFirstChild("CreatureModels")
+local creatureAssetReady = 0
+local creatureAssetFailed = 0
 if creatureFolder then
   local insertService = game:GetService("InsertService")
   for name, assetId in pairs(approvedCreatureAssets) do
@@ -34,14 +36,23 @@ if creatureFolder then
           local template = assetModel:Clone()
           template.Name = name
           template.Parent = creatureFolder
+          creatureAssetReady += 1
+        else
+          creatureAssetFailed += 1
+          warn("DAECHUNG_CREATURE_ASSET_NOT_MODEL", name, assetId)
         end
         container:Destroy()
       else
+        creatureAssetFailed += 1
         warn("DAECHUNG_CREATURE_ASSET_LOAD_FAILED", name, assetId)
       end
     end
   end
 end
+Shared:SetAttribute("CreatureAssetsLoaded", creatureAssetReady)
+Shared:SetAttribute("CreatureAssetsFailed", creatureAssetFailed)
+Shared:SetAttribute("CreatureAssetsExpected", 9)
+warn("DAECHUNG_CREATURE_ASSET_STATUS", creatureAssetReady, creatureAssetFailed, "of 9")
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
