@@ -613,6 +613,22 @@ for id = 1, 24 do
   local monument = civPart(region, "Landmark", Vector3.new(8, 13, 8), CFrame.new(center + Vector3.new(-11, 7.5, -9)), Color3.fromRGB(184, 166, 125), Enum.Material.Sandstone, true)
   monument.Shape = (id % 3 == 0) and Enum.PartType.Cylinder or Enum.PartType.Block
   civSign(region, monument, race.Name .. "\n" .. race.Landmark, 9)
+  -- Existing landmark is the authoritative interaction target, not a client-controlled reward.
+  local landmarkPrompt = Instance.new("ProximityPrompt")
+  landmarkPrompt.Name = "LandmarkHistory"
+  landmarkPrompt.ActionText = "유적 살펴보기"
+  landmarkPrompt.ObjectText = race.Landmark
+  landmarkPrompt.KeyboardKeyCode = Enum.KeyCode.E
+  landmarkPrompt.MaxActivationDistance = 11
+  landmarkPrompt.RequiresLineOfSight = false
+  landmarkPrompt.Parent = monument
+  landmarkPrompt.Triggered:Connect(function(visitor)
+    if not visitor:IsA("Player") or not civRace(visitor) then return end
+    local character = visitor.Character
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not root or (root.Position - monument.Position).Magnitude > 13 then return end
+    civMessage(visitor, race.Name .. " 유적: " .. race.Landmark)
+  end)
   local resources = {
     {Type = "Wood", Label = "목재", Color = Color3.fromRGB(91, 121, 79)},
     {Type = "Stone", Label = "석재", Color = Color3.fromRGB(109, 113, 116)},
@@ -625,6 +641,21 @@ for id = 1, 24 do
     local node = civPart(region, resource.Label, Vector3.new(4, 5, 4), CFrame.new(center + Vector3.new(x + 5, 3.5, z + 5)), resource.Color, Enum.Material.Rock, true)
     node.Shape = Enum.PartType.Ball
     civSign(region, node, resource.Label .. " 채집", 4)
+    local gatherPrompt = Instance.new("ProximityPrompt")
+    gatherPrompt.Name = "GatherResource"
+    gatherPrompt.ActionText = "채집"
+    gatherPrompt.ObjectText = resource.Label
+    gatherPrompt.KeyboardKeyCode = Enum.KeyCode.E
+    gatherPrompt.MaxActivationDistance = 10
+    gatherPrompt.RequiresLineOfSight = false
+    gatherPrompt.Parent = node
+    gatherPrompt.Triggered:Connect(function(gatherer)
+      if not gatherer:IsA("Player") or not civRace(gatherer) then return end
+      local character = gatherer.Character
+      local root = character and character:FindFirstChild("HumanoidRootPart")
+      if not root or (root.Position - node.Position).Magnitude > 12 then return end
+      civGather(gatherer)
+    end)
     table.insert(civNodes, {Part = node, Type = resource.Type, Label = resource.Label})
   end
   civSpawnEnemy(id, center)
