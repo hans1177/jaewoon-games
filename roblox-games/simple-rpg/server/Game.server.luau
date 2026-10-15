@@ -2070,14 +2070,14 @@ for id = 1, 24 do
   local region = Instance.new("Folder")
   region.Name = race.Name
   region.Parent = civHub
-  local ground = civPart(region, "CivilizationGround", Vector3.new(39, 2, 39), CFrame.new(center), civRegions[((id - 1) % #civRegions) + 1], Enum.Material.Slate, true)
+  local ground = civPart(region, "CivilizationGround", Vector3.new(105, 2, 105), CFrame.new(center), civRegions[((id - 1) % #civRegions) + 1], Enum.Material.Slate, true)
   ground:SetAttribute("WalkableGround", true)
   -- 문명마다 지표 색·질감이 다른 야외 생태 지대를 연결한다.
   -- 주요 채집 시설 및 보스 생성 좌표는 기존 섬 위에 그대로 둔다.
   local biomeColor = civRegions[((id - 1) % #civRegions) + 1]
   local biomeMat = (id % 6 == 2 or id % 6 == 0) and Enum.Material.Sand
     or (id % 6 == 4) and Enum.Material.Snow or Enum.Material.Grass
-  local biome = civPart(region, "문명 외곽 야생지", Vector3.new(51, 0.3, 51),
+  local biome = civPart(region, "문명 외곽 야생지", Vector3.new(125, 0.3, 125),
     CFrame.new(center + Vector3.new(0, -0.82, 0)), biomeColor, biomeMat, false)
   biome.CanTouch = false
   biome.CanQuery = false
