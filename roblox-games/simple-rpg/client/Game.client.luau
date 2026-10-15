@@ -543,7 +543,9 @@ local function civOpen(mode)
           if (player:GetAttribute(resource) or 0) < count then missing = true end
         end
         table.sort(resources)
-        local locked = techCount < row.MinimumTech or (row.RequiredRace ~= nil and row.RequiredRace ~= 0 and row.RequiredRace ~= selectedRace)
+        local requiresMilestone = row.RequiredMetric ~= nil and (player:GetAttribute(row.RequiredMetric) or 0) < 1
+        local locked = techCount < row.MinimumTech or requiresMilestone
+          or (row.RequiredRace ~= nil and row.RequiredRace ~= 0 and row.RequiredRace ~= selectedRace)
         local owned = mode == "Buildings" and (player:GetAttribute("Civ" .. key) or 0) >= 1
         local label = string.format("%s%s | %s\\n%s | 연구 %d 필요%s",
           row.Label, owned and " [건설 완료]" or "", row.Station or "영지",
