@@ -664,6 +664,45 @@ local function civOpen(mode)
       slotBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
       slotBorder.Parent = label
     end
+    -- 장비 시각화는 현재 서버 속성만 표시한다. 미지원 부위는 장착/저장 기능을 만들지 않는다.
+    local gearTitle = civLabel(civList, "EquipmentPreviewTitle", "장비 현황 · 무기만 장착 가능",
+      UDim2.new(1, -9, 0, 36), UDim2.new(), false)
+    gearTitle.LayoutOrder = 2
+    gearTitle.TextSize = 14
+    local gearFrame = Instance.new("Frame")
+    gearFrame.Name = "EquipmentPreview"
+    gearFrame.Size = UDim2.new(1, -9, 0, 167)
+    gearFrame.BackgroundTransparency = 1
+    gearFrame.LayoutOrder = 3
+    gearFrame.Parent = civList
+    local gearGrid = Instance.new("UIGridLayout")
+    gearGrid.Name = "TwoColumnsThreeRows"
+    gearGrid.FillDirectionMaxCells = 2
+    gearGrid.CellSize = UDim2.new(0.5, -5, 0, 49)
+    gearGrid.CellPadding = UDim2.fromOffset(6, 7)
+    gearGrid.SortOrder = Enum.SortOrder.LayoutOrder
+    gearGrid.Parent = gearFrame
+    local gearSlots = {
+      {"무기", weaponNames[equipId + 1], true},
+      {"방패", "미지원", false}, {"투구", "미지원", false},
+      {"갑옷", "미지원", false}, {"장신구", "미지원", false}, {"신발", "미지원", false},
+    }
+    for index, gear in ipairs(gearSlots) do
+      local preview = civLabel(gearFrame, "Gear" .. index, gear[1] .. "\n" .. gear[2],
+        UDim2.fromScale(1, 1), UDim2.new(), true)
+      preview.LayoutOrder = index
+      preview.TextSize = 13
+      preview.BackgroundColor3 = gear[3] and Color3.fromRGB(95, 110, 60) or Color3.fromRGB(90, 79, 66)
+      preview.BackgroundTransparency = 0.08
+      local corner = Instance.new("UICorner")
+      corner.CornerRadius = UDim.new(0, 5)
+      corner.Parent = preview
+      local border = Instance.new("UIStroke")
+      border.Color = Color3.fromRGB(200, 154, 91)
+      border.Thickness = 1
+      border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+      border.Parent = preview
+    end
   elseif mode == "Crafts" or mode == "Buildings" then
     panelTitle.Text = mode == "Crafts" and "제작·제련 | 석기→청동→철기" or "영지 건축·문명 랜드마크"
     local keys = mode == "Crafts" and ProgressionData.RecipeKeys() or ProgressionData.StructureKeys()
