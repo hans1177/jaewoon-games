@@ -44963,11 +44963,144 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_fcba5da0584a1d5f6ae79cdd",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8091",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "127e3dfe423e7398885444bf5b262948fb5c05a4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8091,
+        "baseBranch": "main",
+        "headBranch": "feat-simple-rpg-age-chain-20261015",
+        "baseSha": "127e3dfe423e7398885444bf5b262948fb5c05a4",
+        "headSha": "d3283f8e3083e9721bfd675fd80ae99991c60f04",
+        "mergeCommitSha": "22007a310ce521cbb2281c3347d0d9a62f71f690",
+        "mergedAt": "2026-10-15T05:25:27Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8ec0ad90a011bf96375d0c784c5ec9e67f26d1169202869a320c2ff11b5a93b5",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat-simple-rpg-age-chain-20261015",
+        "candidateSha": "d3283f8e3083e9721bfd675fd80ae99991c60f04"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 541,
+        "deletedLineCount": 26,
+        "changedFiles": [
+          ".github/workflows/vibe-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/simple-rpg-age-chain.test.mjs",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/default.project.json",
+          "roblox-games/simple-rpg/plan.md",
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/shared/ProgressionData.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-qa.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/simple-rpg-age-chain.test.mjs",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/default.project.json",
+          "roblox-games/simple-rpg/server/Game.server.luau",
+          "roblox-games/simple-rpg/shared/GameConfig.luau",
+          "roblox-games/simple-rpg/shared/ProgressionData.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8091",
+        "merge-commit:22007a310ce521cbb2281c3347d0d9a62f71f690",
+        "base-main:127e3dfe423e7398885444bf5b262948fb5c05a4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 361
+    "total": 362
   }
 }
