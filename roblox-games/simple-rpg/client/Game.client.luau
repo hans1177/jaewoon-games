@@ -1789,8 +1789,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
     if visible >= 30 then break end
     if model.Parent and
       (model:GetAttribute("CivilizationEnemy") == true or model:GetAttribute("CompanionOwnerUserId") ~= nil) then
-      local rootPart = model.PrimaryPart
-      if rootPart and (viewer.Position - rootPart.Position).Magnitude <= 85 then
+      -- 일부 몬스터 모델은 PrimaryPart가 없으므로 실제 루트 파츠로도 모션을 구동한다.
+      local rootPart = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Root")
+      if rootPart and rootPart:IsA("BasePart") and (viewer.Position - rootPart.Position).Magnitude <= 85 then
         visible += 1
         local moving = model:GetAttribute("MotionState") == "Walk"
           or model:GetAttribute("AIState") == "Chase"
