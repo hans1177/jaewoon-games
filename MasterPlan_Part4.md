@@ -250,3 +250,72 @@ end
 return MultiverseTeleport
 ~~~
 
+#### 📄 [34] src/StarterPlayer/StarterPlayerScripts/InteractiveWorldClient.client.luau
+
+마을 주민 NPC, 고대 유적 상자, 우물 등 오브젝트 근처 접근 시 [E] 상호작용 프롬프트를 띄우고 연출을 처리하는 스크립트입니다.
+
+~~~luau
+--!strict
+local ProximityPromptService = game:GetService("ProximityPromptService")
+local Players = game:GetService("Players")
+
+local LocalPlayer = Players.LocalPlayer
+
+ProximityPromptService.PromptTriggered:Connect(function(prompt, player)
+	if player == LocalPlayer then
+		print("오브젝트 상호작용 실행: " .. prompt.ObjectText .. " - " .. prompt.ActionText)
+		-- 상호작용 연출 및 사운드 재생
+	end
+end)
+~~~
+
+#### 📄 [35] src/StarterPlayer/StarterPlayerScripts/ShopUIController.client.luau
+
+유료 로벅스 아이템 상점 및 지원 상자 구매창을 시각적으로 구현한 UI 스크립트입니다.
+
+~~~luau
+--!strict
+local MarketplaceService = game:GetService("MarketplaceService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui") :: PlayerGui
+
+local shopGui = Instance.new("ScreenGui")
+shopGui.Name = "CivShopGui"
+shopGui.ResetOnSpawn = false
+shopGui.Parent = PlayerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 500, 0, 380)
+frame.Position = UDim2.new(0.5, -250, 0.5, -190)
+frame.BackgroundColor3 = Color3.fromRGB(35, 30, 25)
+frame.Visible = false
+frame.Parent = shopGui
+
+local buyBtn = Instance.new("TextButton")
+buyBtn.Size = UDim2.new(0, 200, 0, 50)
+buyBtn.Position = UDim2.new(0.5, -100, 0.7, 0)
+buyBtn.BackgroundColor3 = Color3.fromRGB(220, 160, 40)
+buyBtn.Text = "초보 지원 상자 (99 Robux)"
+buyBtn.Parent = frame
+
+buyBtn.MouseButton1Click:Connect(function()
+	MarketplaceService:PromptProductPurchase(LocalPlayer, 2000001)
+end)
+
+UserInputService.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.KeyCode == Enum.KeyCode.P then
+		frame.Visible = not frame.Visible
+	end
+end)
+~~~
+
+### 🛠️ 3. 핸드폰 ChatGPT & Rojo 200개 모듈 지시 가이드
+
+200개 모듈 확장 방식: 위 구조도(Modules 001~200)를 기준으로, 핸드폰 ChatGPT 창에 "045번 RemoteValidation 스크립트 써줘" 또는 "125번 터치 드래그 UI 컨트롤러 작성해줘"라고 개별 지시하면 완벽한 코드가 출력됩니다.
+
+통합 관리: GitHub 저장소에 Part1.md부터 Part4.md까지 차례대로 저장해 두시면 모바일과 PC 스튜디오 개발 환경이 완벽히 동기화.
+
