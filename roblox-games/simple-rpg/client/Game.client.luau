@@ -1367,7 +1367,7 @@ local function civActionMotion(actionId, button)
       actionTweenService:Create(joint, TweenInfo.new(0.1, Enum.EasingStyle.Quad),
         {C0 = startC0 * swing}):Play()
       task.delay(0.12, function()
-        if joint.Parent and character == player.Character then
+        if token == actionMotionToken and joint.Parent and character == player.Character then
           actionTweenService:Create(joint, TweenInfo.new(0.16, Enum.EasingStyle.Quad),
             {C0 = startC0}):Play()
         end
@@ -1379,7 +1379,7 @@ local function civActionMotion(actionId, button)
       actionTweenService:Create(waist, TweenInfo.new(0.1),
         {C0 = startWaist * CFrame.Angles(math.rad(lean), 0, 0)}):Play()
       task.delay(0.12, function()
-        if waist.Parent and character == player.Character then
+        if token == actionMotionToken and waist.Parent and character == player.Character then
           actionTweenService:Create(waist, TweenInfo.new(0.16), {C0 = startWaist}):Play()
         end
       end)
