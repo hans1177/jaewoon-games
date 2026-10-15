@@ -465,6 +465,120 @@ local civMessage = civLabel(civGui, "CombatNotice", "",
   UDim2.new(1, -100, 0, 43), UDim2.fromOffset(10, 97), true)
 civMessage.TextSize = 14
 civMessage.BackgroundColor3 = Color3.fromRGB(62, 47, 34)
+civMessage.Position = UDim2.fromOffset(10, 121)
+civMessage.Size = UDim2.new(1, -100, 0, 34)
+-- 실제 Humanoid 체력과 서버가 제공하는 지구력 상태를 별도로 표시한다.
+local vitalTrack = Instance.new("Frame")
+vitalTrack.Name = "CivilizationVitals"
+vitalTrack.Size = UDim2.new(1, -20, 0, 20)
+vitalTrack.Position = UDim2.fromOffset(10, 97)
+vitalTrack.BackgroundTransparency = 1
+vitalTrack.Parent = civGui
+local healthBar = Instance.new("Frame")
+healthBar.Name = "Health"
+healthBar.Size = UDim2.new(0.5, -3, 1, 0)
+healthBar.BackgroundColor3 = Color3.fromRGB(77, 33, 31)
+healthBar.BorderSizePixel = 0
+healthBar.Parent = vitalTrack
+local healthFill = Instance.new("Frame")
+healthFill.Size = UDim2.fromScale(1, 1)
+healthFill.BackgroundColor3 = Color3.fromRGB(202, 75, 66)
+healthFill.BorderSizePixel = 0
+healthFill.Parent = healthBar
+local staminaBar = Instance.new("Frame")
+staminaBar.Name = "Stamina"
+staminaBar.Size = UDim2.new(0.5, -3, 1, 0)
+staminaBar.Position = UDim2.fromScale(0.5, 0)
+staminaBar.BackgroundColor3 = Color3.fromRGB(58, 55, 43)
+staminaBar.BorderSizePixel = 0
+staminaBar.Parent = vitalTrack
+local staminaFill = Instance.new("Frame")
+staminaFill.Size = UDim2.fromScale(0, 1)
+staminaFill.BackgroundColor3 = Color3.fromRGB(213, 167, 68)
+staminaFill.BorderSizePixel = 0
+staminaFill.Parent = staminaBar
+local healthCaption = civLabel(healthBar, "HealthText", "체력",
+  UDim2.fromScale(1, 1), UDim2.new(), false)
+healthCaption.TextSize = 12
+local staminaCaption = civLabel(staminaBar, "StaminaText", "지구력 -",
+  UDim2.fromScale(1, 1), UDim2.new(), false)
+staminaCaption.TextSize = 12
+local function civRenderVitals()
+  local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+  local current = humanoid and humanoid.Health or 0
+  local max = humanoid and math.max(1, humanoid.MaxHealth) or 100
+  healthFill.Size = UDim2.fromScale(math.clamp(current / max, 0, 1), 1)
+  healthCaption.Text = "체력 " .. math.ceil(current) .. "/" .. math.ceil(max)
+  local stamina = player:GetAttribute("CivStamina")
+  if typeof(stamina) == "number" then
+    staminaFill.Size = UDim2.fromScale(math.clamp(stamina / 100, 0, 1), 1)
+    staminaCaption.Text = "지구력 " .. math.floor(stamina)
+  else
+    staminaFill.Size = UDim2.fromScale(0, 1)
+    staminaCaption.Text = "지구력 -"
+  end
+end
+local vitalConnection
+local function civBindVitals(character)
+  if vitalConnection then vitalConnection:Disconnect() end
+  local humanoid = character:WaitForChild("Humanoid", 5)
+  if humanoid then vitalConnection = humanoid.HealthChanged:Connect(civRenderVitals) end
+  civRenderVitals()
+end
+player:GetAttributeChangedSignal("CivStamina"):Connect(civRenderVitals)
+player.CharacterAdded:Connect(civBindVitals)
+if player.Character then task.defer(civBindVitals, player.Character) end
+-- 작은 월드 미니맵: 고정 문명 지형과 실제 동료 위치만 표시한다.
+local civMap = Instance.new("Frame")
+civMap.Name = "CivilizationMinimap"
+civMap.Size = UDim2.fromOffset(94, 94)
+civMap.Position = UDim2.fromOffset(112, 212)
+civMap.BackgroundColor3 = Color3.fromRGB(35, 44, 39)
+civMap.BackgroundTransparency = 0.12
+civMap.BorderSizePixel = 0
+civMap.Parent = civGui
+for id = 1, 24 do
+  local dot = Instance.new("Frame")
+  dot.Name = "Region" .. id
+  dot.Size = UDim2.fromOffset(3, 3)
+  dot.AnchorPoint = Vector2.new(0.5, 0.5)
+  local angle = (id - 1) * 2 * math.pi / 24
+  dot.Position = UDim2.fromScale(0.5 + math.cos(angle) * 0.43, 0.5 + math.sin(angle) * 0.43)
+  dot.BorderSizePixel = 0
+  dot.BackgroundColor3 = Color3.fromRGB(183, 160, 114)
+  dot.Parent = civMap
+end
+task.spawn(function()
+  while civMap.Parent do
+    local active = {}
+    for _, other in ipairs(Players:GetPlayers()) do
+      local id = "Player_" .. other.UserId
+      local marker = civMap:FindFirstChild(id)
+      if not marker then
+        marker = Instance.new("Frame")
+        marker.Name = id
+        marker.Size = UDim2.fromOffset(6, 6)
+        marker.AnchorPoint = Vector2.new(0.5, 0.5)
+        marker.BorderSizePixel = 0
+        marker.BackgroundColor3 = other == player and Color3.fromRGB(111, 240, 127) or Color3.fromRGB(112, 192, 255)
+        marker.Parent = civMap
+      end
+      local root = other.Character and other.Character:FindFirstChild("HumanoidRootPart")
+      marker.Visible = root ~= nil
+      if root then
+        local radius = (Config.Civilization.WorldRadius or 220) + 45
+        marker.Position = UDim2.fromScale(
+          math.clamp(0.5 + root.Position.X / (radius * 2), 0.04, 0.96),
+          math.clamp(0.5 + root.Position.Z / (radius * 2), 0.04, 0.96))
+      end
+      active[id] = true
+    end
+    for _, item in ipairs(civMap:GetChildren()) do
+      if item.Name:sub(1, 7) == "Player_" and not active[item.Name] then item:Destroy() end
+    end
+    task.wait(1)
+  end
+end)
 local civPanel = Instance.new("Frame")
 civPanel.Name = "CivilizationPanel"
 civPanel.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -594,20 +708,20 @@ local function civOpen(mode)
   end
 end
 local civRaceButton = civButton(civGui, "RaceMenu", "문명",
-  UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 148), function() civOpen("Races") end)
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 161), function() civOpen("Races") end)
 civButton(civGui, "TechMenu", "연구",
-  UDim2.fromOffset(78, 45), UDim2.fromOffset(92, 148), function() civOpen("Techs") end)
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(92, 161), function() civOpen("Techs") end)
 civButton(civGui, "Travel", "영지/로비",
-  UDim2.fromOffset(90, 45), UDim2.fromOffset(174, 148), function()
+  UDim2.fromOffset(90, 45), UDim2.fromOffset(174, 161), function()
     remote:FireServer("CivTravel")
   end)
 civButton(civGui, "Legacy", "기존 RPG",
-  UDim2.fromOffset(93, 40), UDim2.new(1, -101, 0, 148), function()
+  UDim2.fromOffset(93, 40), UDim2.new(1, -101, 0, 161), function()
     gui.Enabled = not gui.Enabled
     civPanel.Visible = false
   end)
 civButton(civGui, "BagMenu", "가방 4×8",
-  UDim2.fromOffset(90, 40), UDim2.fromOffset(10, 201), function() civOpen("Inventory") end)
+  UDim2.fromOffset(90, 40), UDim2.fromOffset(10, 213), function() civOpen("Inventory") end)
 -- 퀵슬롯은 기존 서버 검증 액션을 그대로 호출한다.
 local civQuick = {
   {"공격", function() remote:FireServer("CivAttack") end},
@@ -678,6 +792,43 @@ remote.OnClientEvent:Connect(function(kind, payload)
   elseif kind == "CIV_PARRY" then
     civMessage.Text = "퍼펙트 패링! 적 2초 기절"
     civMessage.TextColor3 = Color3.fromRGB(112, 252, 163)
+    -- 서버가 성공을 확정한 경우에만 파티클·카메라 피드백을 실행한다.
+    local character = player.Character
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    if root then
+      local attachment = Instance.new("Attachment")
+      attachment.Name = "PerfectParrySparks"
+      attachment.Parent = root
+      local sparks = Instance.new("ParticleEmitter")
+      sparks.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+      sparks.Rate = 0
+      sparks.Lifetime = NumberRange.new(0.12, 0.26)
+      sparks.Speed = NumberRange.new(7, 12)
+      sparks.SpreadAngle = Vector2.new(150, 150)
+      sparks.LightEmission = 1
+      sparks.Parent = attachment
+      sparks:Emit(20)
+      task.delay(0.4, function() if attachment.Parent then attachment:Destroy() end end)
+    end
+    if humanoid then
+      local previousOffset = humanoid.CameraOffset
+      humanoid.CameraOffset = previousOffset + Vector3.new(0.12, 0.15, 0)
+      task.delay(0.09, function()
+        if humanoid.Parent then humanoid.CameraOffset = previousOffset end
+      end)
+    end
+    local camera = workspace.CurrentCamera
+    if camera and camera.CameraType == Enum.CameraType.Custom then
+      local freezeFrame = camera.CFrame
+      camera.CameraType = Enum.CameraType.Scriptable
+      camera.CFrame = freezeFrame
+      task.delay(0.05, function()
+        if camera.Parent and camera.CameraType == Enum.CameraType.Scriptable then
+          camera.CameraType = Enum.CameraType.Custom
+        end
+      end)
+    end
   elseif kind == "CIV_HIT" and typeof(payload) == "table" then
     civMessage.TextColor3 = Color3.fromRGB(250, 235, 191)
     civMessage.Text = tostring(payload.Enemy) .. "에게 " .. tostring(payload.Damage) .. " 피해!"
