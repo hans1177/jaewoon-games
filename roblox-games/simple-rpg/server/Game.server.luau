@@ -796,6 +796,13 @@ local function civGather(player, requestedType)
     end
   end
   if not best then civMessage(player, "자원 기둥에 가까이 가서 채집해."); return end
+  local now = os.clock()
+  if now < (best.ReadyAt or 0) then
+    civMessage(player, "자원이 재생 중이야. 잠시 후 다시 채집해.")
+    return
+  end
+  best.ReadyAt = now + 8
+  best.Part:SetAttribute("ResourceReadyAt", best.ReadyAt)
   local race = civRace(player)
   local bonus = (race.PassiveType == "OceanGather" and best.Type == "Wood") and 1.30
     or (race.PassiveType == "Harvest" and best.Type == "Food") and 1.25
