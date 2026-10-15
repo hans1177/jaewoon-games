@@ -1994,15 +1994,19 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             smoothedSpeed = 0
             lastMovedAt = -100
           end
-          realMoving = creatureMotionPhase - lastMovedAt < 0.32
+          local walkingUntil = model:GetAttribute("MotionWalkingUntil")
+          local serverWalking = typeof(walkingUntil) == "number"
+            and workspace:GetServerTimeNow() < walkingUntil
+          realMoving = serverWalking or creatureMotionPhase - lastMovedAt < 0.32
           if realMoving then
-            gaitPhase += math.min(smoothedSpeed, 12) * elapsed * 1.4
+            -- 위치 복제 사이에도 서버 보행 상태를 사용해 발을 계속 움직인다.
+            local cadenceSpeed = math.max(smoothedSpeed, serverWalking and 4.5 or 0)
+            gaitPhase += math.min(cadenceSpeed, 12) * elapsed * 1.4
           else
-            -- Network gaps must not preserve stale running speed indefinitely.
             smoothedSpeed = 0
           end
         end
-        horizontalSpeed = smoothedSpeed
+        horizontalSpeed = realMoving and math.max(smoothedSpeed, 4.5) or smoothedSpeed
         creatureRootMotion[rootPart] = {
           position = rootPosition, at = creatureMotionPhase, phase = gaitPhase,
           speed = smoothedSpeed, lastMovedAt = lastMovedAt
