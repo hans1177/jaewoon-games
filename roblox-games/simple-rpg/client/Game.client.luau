@@ -528,6 +528,45 @@ local function civOpen(mode)
       button.TextSize = 14
       if selected == id then button.BackgroundColor3 = Color3.fromRGB(119, 94, 41) end
     end
+  elseif mode == "Inventory" then
+    panelTitle.Text = "인벤토리 4×8 · 자원/장비 현황"
+    local weaponNames = {"맨손", "돌창", "청동검", "철제 대검"}
+    local equipId = math.clamp(player:GetAttribute("CivEquippedWeapon") or 0, 0, 3)
+    local statusLine = civLabel(civList, "InventoryEquipped",
+      "장착 무기: " .. weaponNames[equipId + 1] .. " | 제작 메뉴에서 변경 가능",
+      UDim2.new(1, -9, 0, 43), UDim2.new(), false)
+    statusLine.LayoutOrder = 0
+    local container = Instance.new("Frame")
+    container.Name = "Inventory32Slots"
+    container.Size = UDim2.new(1, -9, 0, 464)
+    container.BackgroundTransparency = 1
+    container.LayoutOrder = 1
+    container.Parent = civList
+    local grid = Instance.new("UIGridLayout")
+    grid.Name = "FourColumnsEightRows"
+    grid.FillDirectionMaxCells = 4
+    grid.CellSize = UDim2.new(0.25, -6, 0, 51)
+    grid.CellPadding = UDim2.fromOffset(5, 7)
+    grid.SortOrder = Enum.SortOrder.LayoutOrder
+    grid.Parent = container
+    local fields = {
+      {"CivWood", "목재"}, {"CivStone", "석재"}, {"CivBronze", "청동"}, {"CivIron", "철"},
+      {"CivCopperOre", "구리"}, {"CivTinOre", "주석"}, {"CivIronOre", "철광석"}, {"CivCoal", "석탄"},
+      {"CivBronzeIngot", "청동 주괴"}, {"CivIronIngot", "철 주괴"}, {"CivHide", "가죽"}, {"CivCoreCrystal", "코어"},
+      {"CivDarkIron", "다크 아이언"}, {"CivStoneSpear", "돌창"}, {"CivBronzeSword", "청동검"}, {"CivIronGreatsword", "대검"},
+      {"CivFood", "식량"}, {"CivSilver", "은화"}, {"CivResearch", "연구력"},
+      {"CivStoneWall", "성벽"}, {"CivDangunAltar", "단군 제단"}, {"CivPyramid", "피라미드"},
+      {"CivColosseum", "콜로세움"}, {"CivDrakkarShipyard", "드라카르 조선소"},
+    }
+    for slot = 1, 32 do
+      local item = fields[slot]
+      local amount = item and (player:GetAttribute(item[1]) or 0) or 0
+      local label = civLabel(container, "Slot" .. slot,
+        item and (item[2] .. "\\n×" .. tostring(amount)) or "빈 칸",
+        UDim2.fromScale(1, 1), UDim2.new(), true)
+      label.LayoutOrder = slot
+      label.TextSize = 12
+    end
   elseif mode == "Crafts" or mode == "Buildings" then
     panelTitle.Text = mode == "Crafts" and "제작·제련 | 석기→청동→철기" or "영지 건축·문명 랜드마크"
     local keys = mode == "Crafts" and ProgressionData.RecipeKeys() or ProgressionData.StructureKeys()
