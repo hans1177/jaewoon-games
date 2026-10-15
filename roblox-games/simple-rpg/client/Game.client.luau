@@ -1197,8 +1197,12 @@ local function civOpen(mode)
         local items = {}
         local missing = false
         local eureka = (player:GetAttribute(tech.EurekaMetric) or 0) >= tech.EurekaCount
-        local factor = eureka and 0.5 or 1
+        local ageEureka = (id == 15 and (player:GetAttribute("CivBoarKills") or 0) >= 1)
+          or (id == 29 and (player:GetAttribute("CivBronzeSmelts") or 0) >= 5)
+          or (id == 45 and (player:GetAttribute("CivIronKnightKills") or 0) >= 1)
+        local factor = (eureka or ageEureka) and 0.5 or 1
         local race = RaceData.GetRace(selected)
+        if race and race.ID == 15 and (player:GetAttribute("CivDangunAltar") or 0) >= 1 then factor *= 0.85 end
         if race and race.PassiveType == "Research" then factor *= 0.85 end
         if race and race.PassiveType == "MythDiscount" and tech.Era == 1 then factor *= 0.8 end
         if race and race.PassiveType == "AgeDiscount" and (id == 15 or id == 29 or id == 45 or id == 61) then factor *= 0.85 end
@@ -1213,7 +1217,7 @@ local function civOpen(mode)
         local complete = id <= techCount
         local label = string.format("#%02d %s · %s\n%s\n유레카: %s %s",
           id, tech.Name, TechTreeData.EraName(tech.Era),
-          table.concat(items, " / "), tech.EurekaCondition, eureka and "✓" or "미달성")
+          table.concat(items, " / "), tech.EurekaCondition, (eureka or ageEureka) and "✓" or "미달성")
         local button = civButton(civList, "Tech" .. id, label, UDim2.new(1, -9, 0, 88), UDim2.new(),
           function()
             if id == (player:GetAttribute("CivTech") or 0) + 1 then
