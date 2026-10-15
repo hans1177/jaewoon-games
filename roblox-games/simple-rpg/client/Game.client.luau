@@ -1555,14 +1555,15 @@ local function civActionMotion(actionId, button)
     if studioMotionPreviewEnabled and humanoid.RigType == Enum.HumanoidRigType.R15 then
       local animator = humanoid:FindFirstChildOfClass("Animator")
       if animator then
-        local atom = actionId == "CivAttack" and "ATTACK_LIGHT_1"
+        local atom = actionId == "CivAttack" and "LIGHT_ATTACK_1"
           or actionId == "CivGuard" and "PARRY_PERFECT"
           or actionId == "CivDodge" and "DODGE_RIGHT"
           or nil
         if atom then
           local ok, track, animation, sequence = pcall(commonMotion.PlayPreview, animator, atom, {fadeTime = 0.08})
           if ok then
-            task.delay(0.85, function()
+            local motion = commonMotion.Describe(atom)
+            task.delay(motion.duration + 0.2, function()
               if track then track:Stop(0.12); track:Destroy() end
               if animation then animation:Destroy() end
               if sequence then sequence:Destroy() end
