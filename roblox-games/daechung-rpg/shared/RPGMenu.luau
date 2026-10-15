@@ -9,7 +9,7 @@ local Input = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
 local TweenService = game:GetService("TweenService")
 local Menu = {}
-local colors = {base=Color3.fromRGB(19,23,29),panel=Color3.fromRGB(29,35,43),card=Color3.fromRGB(39,47,56),gold=Color3.fromRGB(232,193,120),text=Color3.fromRGB(240,237,225),muted=Color3.fromRGB(171,184,192)}
+local colors = {base=Color3.fromRGB(64,43,29),panel=Color3.fromRGB(92,68,45),card=Color3.fromRGB(112,82,52),gold=Color3.fromRGB(232,193,120),text=Color3.fromRGB(253,237,201),muted=Color3.fromRGB(199,174,138)}
 
 -- 유틸: 기존 메뉴 요소 생성.
 local function make(class,parent,name,properties)
@@ -59,6 +59,12 @@ function Menu.install(config,gui,player,options)
  local overlay=make("Frame",gui,"RPGSystemMenu",{Visible=false,Active=true,BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=.28,Size=UDim2.fromScale(1,1),ZIndex=50})
  local panel=make("Frame",overlay,"MenuPanel",{AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5),BackgroundColor3=colors.base,BorderSizePixel=0,ZIndex=51})
  round(panel,16)
+ make("UIGradient",panel,"WoodGrain",{Rotation=87,Color=ColorSequence.new(Color3.fromRGB(135,103,64),Color3.fromRGB(66,44,30))})
+ -- 등록된 소유 원목 9-Slice 이미지만 적용한다. 미등록이면 원목 그라데이션으로 표시.
+ local uiArt=config.CivilizationUIArt or {}
+ if typeof(uiArt.Wood)=="string" and uiArt.Wood~=""then
+  make("ImageLabel",panel,"WoodNineSlice",{BackgroundTransparency=1,Image=uiArt.Wood,ScaleType=Enum.ScaleType.Slice,SliceCenter=Rect.new(24,24,40,40),Size=UDim2.fromScale(1,1),ZIndex=panel.ZIndex})
+ end
  -- Presentation only: interruptible entrance; never delays menu input or changes game state.
  local entranceTween=nil
  local panelTween=nil
@@ -97,6 +103,12 @@ function Menu.install(config,gui,player,options)
  sortButton.Activated:Connect(function()sortByName=not sortByName;refresh()end)
  local items=make("ScrollingFrame",inventory,"InventoryGrid",{Position=UDim2.fromOffset(0,162),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y})
  local grid=make("UIGridLayout",items,"ItemGridLayout",{CellPadding=UDim2.fromOffset(8,8),SortOrder=Enum.SortOrder.LayoutOrder})
+ grid.FillDirectionMaxCells=4
+ local emptySlots={}
+ for index=1,32 do
+  local slot=make("TextLabel",items,"EmptySlot"..index,{LayoutOrder=10000+index,Text=tostring(index),Font=Enum.Font.Gotham,TextSize=12,TextColor3=colors.muted,BackgroundColor3=Color3.fromRGB(69,53,35),BorderSizePixel=0})
+  round(slot,6);emptySlots[index]=slot
+ end
  local empty=label(items,"EmptyInventory","표시할 아이템이 없어.",15);empty.Size=UDim2.fromOffset(140,110)
  local details=make("ScrollingFrame",inventory,"ItemDetails",{BackgroundColor3=colors.panel,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y});round(details)
  local detailTitle=label(details,"SelectedItemName","아이템을 선택해",19);detailTitle.Font=Enum.Font.GothamBold;detailTitle.Position=UDim2.fromOffset(14,14);detailTitle.Size=UDim2.new(1,-28,0,50)
@@ -222,6 +234,7 @@ function Menu.install(config,gui,player,options)
   end
   -- 같은 아이템 버튼은 유지해 상태 갱신 중 터치·게임패드 선택이 끊기지 않게 한다.
   local filtered=Model.filter(rows,category,search.Text,sortByName)
+  for index,slot in ipairs(emptySlots)do slot.Visible=index<=math.max(0,32-#filtered)end
   sortButton.Text=sortByName and "정렬: 이름순"or"정렬: 장착순"
   itemRows={}
   empty.Visible=#filtered==0
@@ -353,7 +366,7 @@ function Menu.install(config,gui,player,options)
   local detailGap=8
   local listHeight=split and math.max(64,math.floor((availableHeight-listStart-detailGap)*.5)) or math.max(64,availableHeight-listStart)
   items.Size=UDim2.fromOffset(listWidth,listHeight)
-  grid.CellSize=UDim2.fromOffset(math.floor((listWidth-8*(layout.columns-1)-6)/layout.columns),106)
+  grid.CellSize=UDim2.fromOffset(math.floor((listWidth-8*3-6)/4),106)
   details.Position=split and UDim2.fromOffset(0,listStart+listHeight+detailGap) or UDim2.fromOffset(listWidth+12,listStart)
   details.Size=split and UDim2.fromOffset(availableWidth,math.max(64,availableHeight-listStart-listHeight-detailGap)) or UDim2.fromOffset(availableWidth-listWidth-12,listHeight)
  end
