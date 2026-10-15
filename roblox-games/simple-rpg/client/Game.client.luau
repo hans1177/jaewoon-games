@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/simple-rpg/client/Game.client.luau
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -5,6 +6,8 @@ local ContextActionService = game:GetService("ContextActionService")
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
+local RaceData = require(Shared:WaitForChild("RaceData"))
+local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
 local CommonUI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
@@ -408,3 +411,239 @@ end
 CommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,Config.Actions[1]and{
  label=CommonUI.ActionLabel(Config.Actions[1],1),activate=function()remote:FireServer(Config.Actions[1].Id)end
 }or nil)
+
+-- 문명 멀티버스 주 화면: 기존 RPG 기능은 별도 '기존 RPG' 버튼으로 유지한다.
+local civGui = Instance.new("ScreenGui")
+civGui.Name = "CivilizationHud"
+civGui.ResetOnSpawn = false
+civGui.DisplayOrder = 12
+civGui.IgnoreGuiInset = false
+civGui.Parent = player:WaitForChild("PlayerGui")
+local function civLabel(parent, name, text, size, pos, background)
+  local label = Instance.new("TextLabel")
+  label.Name = name
+  label.Text = text
+  label.TextColor3 = Color3.fromRGB(250, 235, 191)
+  label.TextSize = 15
+  label.TextWrapped = true
+  label.Font = Enum.Font.GothamBold
+  label.TextXAlignment = Enum.TextXAlignment.Center
+  label.BackgroundColor3 = Color3.fromRGB(38, 43, 42)
+  label.BackgroundTransparency = background and 0.15 or 1
+  label.BorderSizePixel = 0
+  label.Size = size
+  label.Position = pos
+  label.Parent = parent
+  return label
+end
+local function civButton(parent, name, text, size, pos, callback)
+  local button = Instance.new("TextButton")
+  button.Name = name
+  button.Size = size
+  button.Position = pos
+  button.BackgroundColor3 = Color3.fromRGB(93, 75, 54)
+  button.TextColor3 = Color3.fromRGB(255, 243, 215)
+  button.TextWrapped = true
+  button.TextSize = 16
+  button.Font = Enum.Font.GothamBold
+  button.BorderSizePixel = 0
+  button.Text = text
+  button.AutoButtonColor = true
+  button.Parent = parent
+  local corner = Instance.new("UICorner")
+  corner.CornerRadius = UDim.new(0, 8)
+  corner.Parent = button
+  button.Activated:Connect(callback)
+  return button
+end
+local civTitle = civLabel(civGui, "CivilizationTitle", "문명 멀티버스 RPG",
+  UDim2.new(1, -20, 0, 35), UDim2.fromOffset(10, 0), true)
+local civStatus = civLabel(civGui, "CivilizationStatus", "",
+  UDim2.new(1, -20, 0, 54), UDim2.fromOffset(10, 39), true)
+civStatus.TextSize = 13
+local civMessage = civLabel(civGui, "CombatNotice", "",
+  UDim2.new(1, -100, 0, 43), UDim2.fromOffset(10, 97), true)
+civMessage.TextSize = 14
+civMessage.BackgroundColor3 = Color3.fromRGB(62, 47, 34)
+local civPanel = Instance.new("Frame")
+civPanel.Name = "CivilizationPanel"
+civPanel.AnchorPoint = Vector2.new(0.5, 0.5)
+civPanel.Position = UDim2.fromScale(0.5, 0.52)
+civPanel.Size = UDim2.new(1, -28, 0.70, 0)
+civPanel.BackgroundColor3 = Color3.fromRGB(49, 47, 39)
+civPanel.BackgroundTransparency = 0.04
+civPanel.BorderSizePixel = 0
+civPanel.Visible = false
+civPanel.Parent = civGui
+local panelCorner = Instance.new("UICorner")
+panelCorner.CornerRadius = UDim.new(0, 12)
+panelCorner.Parent = civPanel
+local panelTitle = civLabel(civPanel, "PanelTitle", "문명 선택",
+  UDim2.new(1, -64, 0, 46), UDim2.fromOffset(10, 8), false)
+panelTitle.TextSize = 20
+civButton(civPanel, "Close", "닫기", UDim2.fromOffset(60, 45),
+  UDim2.new(1, -65, 0, 6), function() civPanel.Visible = false end)
+local civList = Instance.new("ScrollingFrame")
+civList.Name = "CivilizationList"
+civList.Size = UDim2.new(1, -24, 1, -67)
+civList.Position = UDim2.fromOffset(12, 60)
+civList.BackgroundTransparency = 1
+civList.BorderSizePixel = 0
+civList.ScrollBarThickness = 6
+civList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+civList.CanvasSize = UDim2.new()
+civList.Parent = civPanel
+local civLayout = Instance.new("UIListLayout")
+civLayout.Padding = UDim.new(0, 7)
+civLayout.SortOrder = Enum.SortOrder.LayoutOrder
+civLayout.Parent = civList
+local civPanelMode = "Races"
+local function civOpen(mode)
+  if civPanel.Visible and civPanelMode == mode then
+    civPanel.Visible = false
+    return
+  end
+  civPanelMode = mode
+  civPanel.Visible = true
+  for _, item in ipairs(civList:GetChildren()) do
+    if item:IsA("GuiObject") then item:Destroy() end
+  end
+  local selected = player:GetAttribute("CivRaceID") or 0
+  if mode == "Races" then
+    panelTitle.Text = selected == 0 and "24개 문명 중 하나를 선택해" or "24개 문명 정보"
+    for id = 1, 24 do
+      local race = RaceData.GetRace(id)
+      local text = string.format("%02d. %s / %s\n%s", id, race.Name, race.Landmark, race.Passive)
+      local button = civButton(civList, "Race" .. id, text,
+        UDim2.new(1, -9, 0, 70), UDim2.new(), function()
+          if selected == 0 then
+            remote:FireServer("CivSelect", id)
+            civPanel.Visible = false
+          else
+            civMessage.Text = race.Name .. " / " .. race.SpecialResources
+          end
+        end)
+      button.LayoutOrder = id
+      button.TextSize = 14
+      if selected == id then button.BackgroundColor3 = Color3.fromRGB(119, 94, 41) end
+    end
+  else
+    panelTitle.Text = "파피루스 테크트리 · 72개"
+    local techCount = player:GetAttribute("CivTech") or 0
+    local unlocked = civLabel(civList, "Unlocked", "연구 완료 " .. techCount .. "/72",
+      UDim2.new(1, -9, 0, 36), UDim2.new(), false)
+    unlocked.LayoutOrder = 0
+    for id = math.max(1, techCount - 1), math.min(72, techCount + 6) do
+      local tech = TechTreeData.GetTech(id)
+      if tech then
+        local items = {}
+        local missing = false
+        local eureka = (player:GetAttribute(tech.EurekaMetric) or 0) >= tech.EurekaCount
+        local factor = eureka and 0.5 or 1
+        local race = RaceData.GetRace(selected)
+        if race and race.PassiveType == "Research" then factor *= 0.85 end
+        if race and race.PassiveType == "MythDiscount" and tech.Era == 1 then factor *= 0.8 end
+        if race and race.PassiveType == "AgeDiscount" and (id == 15 or id == 29 or id == 45 or id == 61) then factor *= 0.85 end
+        for _, resource in ipairs({"Wood", "Stone", "Bronze", "Iron", "Research"}) do
+          local price = tech.RequiredResources[resource]
+          if price then
+            local cost = math.ceil(price * factor)
+            table.insert(items, resource .. " " .. cost)
+            if (player:GetAttribute("Civ" .. resource) or 0) < cost then missing = true end
+          end
+        end
+        local complete = id <= techCount
+        local label = string.format("#%02d %s · %s\n%s\n유레카: %s %s",
+          id, tech.Name, TechTreeData.EraName(tech.Era),
+          table.concat(items, " / "), tech.EurekaCondition, eureka and "✓" or "미달성")
+        local button = civButton(civList, "Tech" .. id, label, UDim2.new(1, -9, 0, 88), UDim2.new(),
+          function()
+            if id == (player:GetAttribute("CivTech") or 0) + 1 then remote:FireServer("CivResearch")
+            else civMessage.Text = "선행 기술을 먼저 연구해야 해." end
+          end)
+        button.LayoutOrder = id
+        button.TextSize = 13
+        if complete then button.BackgroundColor3 = Color3.fromRGB(126, 101, 44)
+        elseif missing or id ~= techCount + 1 then button.BackgroundColor3 = Color3.fromRGB(85, 86, 84) end
+      end
+    end
+  end
+end
+local civRaceButton = civButton(civGui, "RaceMenu", "문명",
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 148), function() civOpen("Races") end)
+civButton(civGui, "TechMenu", "연구",
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(92, 148), function() civOpen("Techs") end)
+civButton(civGui, "Travel", "내 영지",
+  UDim2.fromOffset(90, 45), UDim2.fromOffset(174, 148), function()
+    remote:FireServer("CivTravel")
+  end)
+civButton(civGui, "Legacy", "기존 RPG",
+  UDim2.fromOffset(93, 40), UDim2.new(1, -101, 0, 148), function()
+    gui.Enabled = not gui.Enabled
+    civPanel.Visible = false
+  end)
+local civButtons = {
+  {"Attack", "공격", "CivAttack", 94, 105},
+  {"Guard", "패링", "CivGuard", 94, 172},
+  {"Dodge", "회피", "CivDodge", 94, 239},
+  {"Gather", "채집", "CivGather", 178, 105},
+}
+for _, entry in ipairs(civButtons) do
+  civButton(civGui, entry[1], entry[2], UDim2.fromOffset(78, 60),
+    UDim2.new(1, -entry[4], 1, -entry[5]), function() remote:FireServer(entry[3]) end)
+end
+local civWatched = {
+  "CivRaceID", "CivEra", "CivTech", "CivWood", "CivStone",
+  "CivBronze", "CivIron", "CivResearch", "CivKills", "CivParries",
+  "CivDodges", "CivGather",
+}
+local function civRender()
+  local id = player:GetAttribute("CivRaceID") or 0
+  local race = RaceData.GetRace(id)
+  local era = player:GetAttribute("CivEra") or 1
+  local unlocked = player:GetAttribute("CivTech") or 0
+  civStatus.Text = string.format("%s · %s · 연구 %d/72\n목재 %d / 석재 %d / 청동 %d / 철 %d / 연구력 %d",
+    race and race.Name or "문명 미선택", TechTreeData.EraName(era), unlocked,
+    player:GetAttribute("CivWood") or 0, player:GetAttribute("CivStone") or 0,
+    player:GetAttribute("CivBronze") or 0, player:GetAttribute("CivIron") or 0,
+    player:GetAttribute("CivResearch") or 0)
+  civRaceButton.Text = race and race.Name or "문명 선택"
+end
+for _, name in ipairs(civWatched) do
+  player:GetAttributeChangedSignal(name):Connect(function()
+    civRender()
+    if civPanel.Visible and civPanelMode == "Techs" then civOpen("Techs"); civPanel.Visible = true end
+  end)
+end
+civRender()
+remote.OnClientEvent:Connect(function(kind, payload)
+  if kind == "CIV_MESSAGE" and typeof(payload) == "string" then
+    civMessage.Text = payload
+  elseif kind == "CIV_TELEGRAPH" then
+    civMessage.Text = "⚠ 공격 예고! 맞기 직전 패링(F) 또는 회피(Shift)!"
+    civMessage.TextColor3 = Color3.fromRGB(255, 129, 97)
+  elseif kind == "CIV_PARRY" then
+    civMessage.Text = "퍼펙트 패링! 적 2초 기절"
+    civMessage.TextColor3 = Color3.fromRGB(112, 252, 163)
+  elseif kind == "CIV_HIT" and typeof(payload) == "table" then
+    civMessage.Text = tostring(payload.Enemy) .. "에게 " .. tostring(payload.Damage) .. " 피해!"
+  end
+end)
+UserInputService.InputBegan:Connect(function(input, consumed)
+  if consumed or UserInputService:GetFocusedTextBox() then return end
+  if input.KeyCode == Enum.KeyCode.F then remote:FireServer("CivGuard")
+  elseif input.KeyCode == Enum.KeyCode.LeftShift then remote:FireServer("CivDodge")
+  elseif input.KeyCode == Enum.KeyCode.E then remote:FireServer("CivGather")
+  elseif input.KeyCode == Enum.KeyCode.T then civOpen("Techs")
+  elseif input.UserInputType == Enum.UserInputType.MouseButton1 and not civPanel.Visible then
+    remote:FireServer("CivAttack")
+  end
+end)
+-- 기존 기능은 삭제하지 않고 별도 메뉴를 통해 접근한다.
+gui.Enabled = false
+if (player:GetAttribute("CivRaceID") or 0) == 0 then
+  task.delay(1, function()
+    if civGui.Parent and (player:GetAttribute("CivRaceID") or 0) == 0 then civOpen("Races") end
+  end)
+end
+
