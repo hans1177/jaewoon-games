@@ -2101,6 +2101,10 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           end
         end
         local preparing = model:GetAttribute("IsPreparingAttack") == true
+        local attackAt = model:GetAttribute("LastAttackAnimationAt")
+        local attackElapsed = typeof(attackAt) == "number"
+          and (workspace:GetServerTimeNow() - attackAt) or math.huge
+        local attacking = attackElapsed >= 0 and attackElapsed < 0.32
         -- 실제 이동속도를 반영해 정지/보행/추격의 팔다리 동작을 구분한다.
         local amplitude = moving and math.clamp(horizontalSpeed / 10, 0.24, 0.55) or 0.035
         if preparing then amplitude = 0.08 end
@@ -2116,6 +2120,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           swing = 0.9
         elseif stunned then
           swing = 0.18
+        elseif attacking then
+          swing = math.sin((attackElapsed / 0.32) * math.pi) * 0.85
         elseif preparing then
           swing = -0.65 + math.sin(creatureMotionPhase * 13) * 0.06
         end
