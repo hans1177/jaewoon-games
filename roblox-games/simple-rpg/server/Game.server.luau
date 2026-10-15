@@ -1423,6 +1423,36 @@ local lobbyCrown = civPart(civHub, "광장 석상 관석", Vector3.new(7.5, 1.5,
   CFrame.new(0, 7.2, -11), Color3.fromRGB(138, 90, 56), Enum.Material.Sandstone, false)
 lobbyCrown.CanTouch = false
   lobbyCrown.CanQuery = false
+-- Five era ecology exhibits in the multiverse lobby are visual previews, not extra regions.
+-- All parts are non-colliding and do not alter the existing 24 civilization maps.
+local eraDisplays = {
+  {name="신화 시대", color=Color3.fromRGB(131, 94, 157), mat=Enum.Material.Slate, feature="신성한 나무"},
+  {name="석기 시대", color=Color3.fromRGB(70, 108, 72), mat=Enum.Material.Grass, feature="원시림"},
+  {name="청동기 시대", color=Color3.fromRGB(179, 132, 79), mat=Enum.Material.Sand, feature="황토 강변"},
+  {name="철기 시대", color=Color3.fromRGB(108, 115, 120), mat=Enum.Material.Rock, feature="고원 제철소"},
+  {name="영웅 시대", color=Color3.fromRGB(207, 172, 84), mat=Enum.Material.Marble, feature="황금 성역"},
+}
+for eraID, display in ipairs(eraDisplays) do
+  local x = -24 + (eraID - 1) * 12
+  local z = 22
+  local platform = civPart(civHub, display.name .. " 생태 전시대", Vector3.new(9, 0.4, 8),
+    CFrame.new(x, 0.15, z), display.color, display.mat, false)
+  platform.CanTouch = false
+  platform.CanQuery = false
+  platform:SetAttribute("DisplayEra", eraID)
+  local pillar = civPart(civHub, display.feature .. " 표본", Vector3.new(2.4, 4 + eraID * 0.5, 2.4),
+    CFrame.new(x, 2.4 + eraID * 0.25, z), display.color, display.mat, false)
+  pillar.CanTouch = false
+  pillar.CanQuery = false
+  civSign(civHub, pillar, display.name .. "\\n" .. display.feature, 3.6)
+  if eraID == 1 or eraID == 5 then
+    local aura = civPart(civHub, display.name .. " 영기", Vector3.new(4, 0.45, 4),
+      CFrame.new(x, 5.1 + eraID * 0.5, z), display.color, Enum.Material.Neon, false)
+    aura.Transparency = 0.55
+    aura.CanTouch = false
+    aura.CanQuery = false
+  end
+end
 -- 네 대표 문명 포털을 계획서의 피오르드·사막·산악·평원 테마로 장식한다.
 -- 장식은 이동 패드와 독립적이며 길막/터치 판정에 참여하지 않는다.
 local portalThemes = {
