@@ -1171,7 +1171,7 @@ local function civOpen(mode)
       UDim2.new(1, -9, 0, 38), UDim2.new(), false)
     hint.LayoutOrder = 42
   elseif mode == "Regions" then
-    panelTitle.Text = "문명 맵 이동 · 24개 지역"
+    panelTitle.Text = "지역 선택 · 탐험"
     local lobby = civButton(civList, "ReturnToLobby", "중앙 로비로 이동",
       UDim2.new(1, -9, 0, 48), UDim2.new(), function()
         remote:FireServer("CivTravel", "Lobby")
@@ -1185,7 +1185,7 @@ local function civOpen(mode)
         string.format("%02d. %s · %s", id, race.Name, race.Landmark),
         UDim2.new(1, -9, 0, 48), UDim2.new(), function()
           if (player:GetAttribute("CivRaceID") or 0) <= 0 then
-            civMessage.Text = "먼저 문명을 선택해."
+            civMessage.Text = "게임 데이터를 불러오는 중이야."
             return
           end
           remote:FireServer("CivTravel", destination)
@@ -1460,8 +1460,6 @@ civButton(civMenuRail, "TradeMenu", "무역",
   end)
 civButton(civMenuRail, "RegionMapMenu", "맵 이동",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Regions") end)
-civButton(civMenuRail, "MultiverseMenu", "차원 포털",
-  UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Portals") end)
 civButton(civMenuRail, "InventoryMenu", "가방",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Inventory") end)
 civButton(civMenuRail, "CraftMenu", "제작",
@@ -1470,8 +1468,6 @@ civButton(civMenuRail, "BuildingMenu", "건축",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Buildings") end)
 civButton(civMenuRail, "CompanionMenu", "AI 동료",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Companions") end)
-local civRaceButton = civButton(civMenuRail, "RaceMenu", "문명",
-  UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Races") end)
 civButton(civMenuRail, "TechMenu", "연구",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Techs") end)
 civButton(civMenuRail, "Travel", "영지/로비",
@@ -1485,8 +1481,8 @@ civButton(civMenuRail, "Legacy", "기존 RPG",
   end)
 -- Keep the player's main navigation consistent even when content is created in another order.
 for index, name in ipairs({
-  "RaceMenu", "TechMenu", "InventoryMenu", "CraftMenu", "BuildingMenu",
-  "CompanionMenu", "TradeMenu", "RegionMapMenu", "MultiverseMenu", "Travel", "Legacy",
+  "TechMenu", "InventoryMenu", "CraftMenu", "BuildingMenu",
+  "CompanionMenu", "TradeMenu", "RegionMapMenu", "Travel", "Legacy",
 }) do
   local menuItem = civMenuRail:FindFirstChild(name)
   if menuItem and menuItem:IsA("GuiButton") then menuItem.LayoutOrder = index end
@@ -1819,7 +1815,6 @@ local function civRender()
     player:GetAttribute("CivWood") or 0, player:GetAttribute("CivStone") or 0,
     player:GetAttribute("CivBronze") or 0, player:GetAttribute("CivIron") or 0,
     player:GetAttribute("CivResearch") or 0)
-  civRaceButton.Text = race and race.Name or "문명 선택"
 end
 for _, name in ipairs(civWatched) do
   player:GetAttributeChangedSignal(name):Connect(function()
@@ -1975,16 +1970,16 @@ lobbyHeading.ZIndex = 32
 lobbyHeading.TextSize = 28
 lobbyHeading.TextColor3 = Color3.fromRGB(255, 227, 163)
 local lobbySubtitle = civLabel(lobbyCard, "LobbySubtitle",
-  "고대의 문을 열고 24개 문명의 세계로", UDim2.new(1, -28, 0, 44), UDim2.fromOffset(14, 65), false)
+  "광장에서 모험을 준비하고 탐험을 시작해", UDim2.new(1, -28, 0, 44), UDim2.fromOffset(14, 65), false)
 lobbySubtitle.ZIndex = 32
 lobbySubtitle.TextSize = 14
 local lobbyDescription = civLabel(lobbyCard, "LobbyDescription",
-  "문명 선택 → 맵 탐험 → 채집과 전투 → 연구와 건축", UDim2.new(1, -28, 0, 54), UDim2.fromOffset(14, 115), false)
+  "로비 → 지역 이동 → 채집과 전투 → 연구와 건축", UDim2.new(1, -28, 0, 54), UDim2.fromOffset(14, 115), false)
 lobbyDescription.ZIndex = 32
 lobbyDescription.TextSize = 13
 local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1, -36, 0, 48), UDim2.new(0, 18, 1, -115), function()
   lobbyScreen.Visible = false
-  if (player:GetAttribute("CivRaceID") or 0) <= 0 then civOpen("Races") else civOpen("Regions") end
+  civOpen("Regions")
 end)
 lobbyPlay.ZIndex = 33
 local lobbyExplore = civButton(lobbyCard, "LobbyExplore", "로비 광장 둘러보기", UDim2.new(1, -36, 0, 40), UDim2.new(0, 18, 1, -59), function()
@@ -1995,7 +1990,7 @@ lobbyExplore.ZIndex = 33
 local function openLobby()
   civPanel.Visible = false
   lobbyScreen.Visible = true
-  lobbyPlay.Text = (player:GetAttribute("CivRaceID") or 0) > 0 and "지역 선택하고 출발" or "문명 선택하고 출발"
+  lobbyPlay.Text = "지역 선택하고 출발"
   local camera = workspace.CurrentCamera
   local viewport = camera and camera.ViewportSize or Vector2.new(390, 720)
   lobbyCard.Size = UDim2.fromOffset(math.min(480, math.max(1, viewport.X - 32)), math.min(360, math.max(1, viewport.Y - 28)))
@@ -2016,12 +2011,4 @@ task.defer(function()
     openLobby()
   end
 end)
-
-local function civShowRaceSelection()
-  if player:GetAttribute("CivReady") == true and (player:GetAttribute("CivRaceID") or 0) == 0 and civGui.Parent then
-    if not lobbyScreen.Visible and not civPanel.Visible then civOpen("Races") end
-  end
-end
-player:GetAttributeChangedSignal("CivReady"):Connect(civShowRaceSelection)
-task.defer(civShowRaceSelection)
 
