@@ -958,7 +958,7 @@ local function init(p)
  for _,resource in ipairs(TechTreeData.EraResources)do p:SetAttribute(resource,0)end
  p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
- p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
+ p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("DodgeCooldownUntil",0);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
  p:SetAttribute("AutoCombat",true);p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
  p:SetAttribute("PartyCount",0);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0);p:SetAttribute("PartyHuntActive",false);p:SetAttribute("RoomCode",1)
  msg(p,"직업을 고르고 보스를 격파해 AI 동료를 해금해.")
@@ -1169,7 +1169,7 @@ local function createCivRivalCamps(folder)
    banner:SetAttribute("IsCivAI",true);banner:SetAttribute("RaceID",id)
    banner:SetAttribute("TechProgress",0);banner:SetAttribute("CivResources",0)
    banner:SetAttribute("CurrentEra",1)
-   local sign=label(banner,race.Name.." · 신화 시대",colors and colors.gold or Color3.fromRGB(243,214,163),70)
+   local sign=label(banner,race.Name.." · 신화 시대",Color3.fromRGB(243,214,163),70)
    table.insert(civRivals,{banner=banner,label=sign:FindFirstChildOfClass("TextLabel"),race=race})
   end
  end
@@ -2142,11 +2142,12 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.ATTACK then p:SetAttribute("Blocking",false);p:SetAttribute("ManualAttackUntil",now+.1);playerAttack(p,false);accepted=true
  elseif a==C.Actions.SKILL then p:SetAttribute("Blocking",false);playerAttack(p,true);accepted=true
  elseif a==C.Actions.DODGE then
+  if n(p,"DodgeCooldownUntil",0)>now then return end
   p:SetAttribute("Blocking",false);local r=root(p);if r then
    local classId=tostring(p:GetAttribute("ClassId")or"NONE");local adv=tostring(p:GetAttribute("AdvancementId")or"")
    local stamina=n(p,"Guard",C.GuardMax)
     if stamina<24 then msg(p,"회피 스태미나 부족");return end
-    p:SetAttribute("Guard",stamina-24)
+    p:SetAttribute("Guard",stamina-24);p:SetAttribute("DodgeCooldownUntil",now+.8)
     local evade=adv=="MIRAGE_TRACKER"and .75 or .30;p:SetAttribute("EvasionUntil",now+evade)
    if classId=="SHADOW"then p:SetAttribute("BackstabUntil",now+2.2)end
    r.AssemblyLinearVelocity=r.CFrame.LookVector*52+Vector3.new(0,r.AssemblyLinearVelocity.Y,0);accepted=true;feedback(p,"DODGE")
