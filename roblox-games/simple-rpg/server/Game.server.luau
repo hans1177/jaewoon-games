@@ -1185,7 +1185,10 @@ local function civBuildCultureFigure(region, race, id, center)
 end
 
 -- 문명 지역과 중앙 포털: 메인 지면/저장 키는 그대로 유지한다.
--- 중앙 문명 광장: 포털 이동 기능을 가진 패드와 독립된 비충돌 장식이다.
+-- 실제 로비 지면: 기본 스폰 및 24개 문명 이동 패드까지 걸어갈 수 있도록 유지한다.
+local lobbyGround = civPart(civHub, "CivilizationLobbyGround", Vector3.new(64, 2, 64),
+  CFrame.new(0, -1, 0), Color3.fromRGB(111, 132, 101), Enum.Material.Slate, true)
+lobbyGround:SetAttribute("WalkableGround", true)
 local lobbyBase = civPart(civHub, "광장 석상 기단", Vector3.new(8, 0.8, 5),
   CFrame.new(0, 0.4, -11), Color3.fromRGB(107, 74, 47), Enum.Material.Slate, false)
 lobbyBase.CanTouch = false
@@ -1668,13 +1671,22 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
   lastAction[player] = now
   if actionId == "CivTravel" then
     local selected = readNumber(player, "CivRaceID", 0)
-    if selected <= 0 or not civNowReady(player, "Travel", 2) then return end
+    if not civNowReady(player, "Travel", 1.5) then return end
     local character = player.Character
-    local root = character and character:FindFirstChild("HumanoidRootPart")
-    if root and Vector3.new(root.Position.X, 0, root.Position.Z).Magnitude > 80 then
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    if not character or not humanoid or humanoid.Health <= 0 then return end
+    if typeof(argument) == "number" and argument % 1 == 0 and RaceData.GetRace(argument) then
+      if selected <= 0 then civMessage(player, "먼저 문명을 선택해."); return end
+      action(player, argument)
+    elseif argument == "Lobby" then
       character:PivotTo(CFrame.new(0, 5, 0))
+    elseif selected > 0 then
+      local root = character:FindFirstChild("HumanoidRootPart")
+      if root and Vector3.new(root.Position.X, 0, root.Position.Z).Magnitude > 80 then
+        character:PivotTo(CFrame.new(0, 5, 0))
+      else action(player, selected) end
     else
-      action(player, selected)
+      character:PivotTo(CFrame.new(0, 5, 0))
     end
   elseif actionId == "CivSelect" or actionId == "CivCompanion" or actionId == "CivCraft"
     or actionId == "CivBuild" or actionId == "CivEquip" or actionId == "CivSkinTone" then
