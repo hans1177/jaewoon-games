@@ -1380,6 +1380,48 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   -- 몬스터 외형 에셋: 기존 생성 경로에서 경량 파츠를 조립한다.
   local beast = special == "StoneWolf" or special == "WildBoar"
   local armor = special == "BronzeGolem" or special == "IronKnight"
+  -- 문명별 전용 몬스터 두 종의 외형 구분: 인간형/짐승형/뿔 달린 거수/정령형.
+  -- 기존 스폰, 체력, 보상, 공격 판정은 변경하지 않는다.
+  local mobName = enemy.Name
+  local horned = string.find(mobName, "미노타우로스", 1, true) ~= nil
+    or string.find(mobName, "거수", 1, true) ~= nil
+    or string.find(mobName, "악마", 1, true) ~= nil
+  local spirit = string.find(mobName, "정령", 1, true) ~= nil
+    or string.find(mobName, "영혼", 1, true) ~= nil
+    or string.find(mobName, "망령", 1, true) ~= nil
+    or string.find(mobName, "환영", 1, true) ~= nil
+  local creature = beast or string.find(mobName, "늑대", 1, true) ~= nil
+    or string.find(mobName, "뱀", 1, true) ~= nil
+    or string.find(mobName, "곰", 1, true) ~= nil
+    or string.find(mobName, "재규어", 1, true) ~= nil
+  local variantColor = Color3.fromHSV((raceID * 0.063 + (mobSlot == 2 and 0.17 or 0)) % 1, 0.43, 0.71)
+  if horned then
+    for side = -1, 1, 2 do
+      local horn = civPart(enemy, side < 0 and "LeftHorn" or "RightHorn",
+        Vector3.new(0.42, 1.5, 0.42),
+        head.CFrame * CFrame.new(side * 0.91, 1.54, -0.1) * CFrame.Angles(0, 0, side * 0.25),
+        Color3.fromRGB(210, 185, 125), Enum.Material.SmoothPlastic, false)
+      horn.CanCollide = false
+    end
+  end
+  if spirit then
+    local aura = civPart(enemy, "SpiritCore", Vector3.new(1.25, 1.25, 1.25),
+      root.CFrame * CFrame.new(0, 0.8, -1.7), variantColor, Enum.Material.Neon, false)
+    aura.Shape = Enum.PartType.Ball
+    aura.Transparency = 0.22
+    aura.CanCollide = false
+  elseif creature and not beast then
+    for side = -1, 1, 2 do
+      local ear = civPart(enemy, side < 0 and "LeftCreatureEar" or "RightCreatureEar",
+        Vector3.new(0.65, 0.9, 0.55), head.CFrame * CFrame.new(side * 0.93, 1.4, 0),
+        variantColor, Enum.Material.SmoothPlastic, false)
+      ear.CanCollide = false
+    end
+  elseif mobSlot == 2 and not armor then
+    local crest = civPart(enemy, "CultureCrest", Vector3.new(1.5, 0.35, 0.3),
+      head.CFrame * CFrame.new(0, 1.45, -0.4), variantColor, Enum.Material.Metal, false)
+    crest.CanCollide = false
+  end
   local bodyColor = armor and Color3.fromRGB(111, 119, 126) or beast and Color3.fromRGB(102, 91, 77) or Color3.fromRGB(123, 103, 79)
   for side = -1, 1, 2 do
     local offset = beast and Vector3.new(side * 1.4, -0.7, 1.1) or Vector3.new(side * 1.9, 0.1, 0)
