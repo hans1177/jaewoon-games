@@ -741,6 +741,13 @@ local function civOpen(mode)
         showPreview(currentPreviewId)
       end)
     toneButton.TextSize = 13
+    toneButton.BackgroundColor3 = Color3.fromRGB(44, 74, 110)
+    local toneAccent = Instance.new("UIStroke")
+    toneAccent.Name = "SkinToneAccent"
+    toneAccent.Color = Color3.fromRGB(232, 163, 61)
+    toneAccent.Thickness = 2
+    toneAccent.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    toneAccent.Parent = toneButton
     -- 현재 서버에 저장된 피부색을 화면에 표시한다. 직업 선택은 만들지 않는다.
     local function refreshToneLabel()
       toneButton.Text = "피부색 " .. tostring(civPreviewTone) .. "/" .. tostring(#civSkinTones) .. " · 변경"
