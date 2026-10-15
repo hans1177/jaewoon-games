@@ -1631,9 +1631,82 @@ UserInputService.InputBegan:Connect(function(input, consumed)
 end)
 -- 기존 기능은 삭제하지 않고 별도 메뉴를 통해 접근한다.
 gui.Enabled = false
+-- Main lobby: parchment first-entry screen, no right-side combat controls.
+local lobbyScreen = Instance.new("Frame")
+lobbyScreen.Name = "AncientCivilizationLobby"
+lobbyScreen.Size = UDim2.fromScale(1, 1)
+lobbyScreen.BackgroundColor3 = Color3.fromRGB(20, 27, 25)
+lobbyScreen.BackgroundTransparency = 0.16
+lobbyScreen.BorderSizePixel = 0
+lobbyScreen.ZIndex = 30
+lobbyScreen.Visible = false
+lobbyScreen.Parent = civGui
+local lobbyCard = Instance.new("Frame")
+lobbyCard.Name = "ParchmentWelcome"
+lobbyCard.AnchorPoint = Vector2.new(0.5, 0.5)
+lobbyCard.Position = UDim2.fromScale(0.5, 0.5)
+lobbyCard.Size = UDim2.new(0.8, 0, 0.72, 0)
+lobbyCard.BackgroundColor3 = Color3.fromRGB(75, 53, 36)
+lobbyCard.BorderSizePixel = 0
+lobbyCard.ZIndex = 31
+lobbyCard.Parent = lobbyScreen
+local lobbyCorner = Instance.new("UICorner")
+lobbyCorner.CornerRadius = UDim.new(0, 12)
+lobbyCorner.Parent = lobbyCard
+local lobbyStroke = Instance.new("UIStroke")
+lobbyStroke.Color = Color3.fromRGB(208, 163, 93)
+lobbyStroke.Thickness = 3
+lobbyStroke.Parent = lobbyCard
+local lobbyHeading = civLabel(lobbyCard, "LobbyHeading", "대충알피지", UDim2.new(1, -24, 0, 46), UDim2.fromOffset(12, 13), false)
+lobbyHeading.ZIndex = 32
+lobbyHeading.TextSize = 28
+lobbyHeading.TextColor3 = Color3.fromRGB(255, 227, 163)
+local lobbySubtitle = civLabel(lobbyCard, "LobbySubtitle",
+  "고대의 문을 열고 24개 문명의 세계로", UDim2.new(1, -28, 0, 44), UDim2.fromOffset(14, 65), false)
+lobbySubtitle.ZIndex = 32
+lobbySubtitle.TextSize = 14
+local lobbyDescription = civLabel(lobbyCard, "LobbyDescription",
+  "문명 선택 → 맵 탐험 → 채집과 전투 → 연구와 건축", UDim2.new(1, -28, 0, 54), UDim2.fromOffset(14, 115), false)
+lobbyDescription.ZIndex = 32
+lobbyDescription.TextSize = 13
+local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1, -36, 0, 48), UDim2.new(0, 18, 1, -115), function()
+  lobbyScreen.Visible = false
+  if (player:GetAttribute("CivRaceID") or 0) <= 0 then civOpen("Races") else civOpen("Regions") end
+end)
+lobbyPlay.ZIndex = 33
+local lobbyExplore = civButton(lobbyCard, "LobbyExplore", "로비 광장 둘러보기", UDim2.new(1, -36, 0, 40), UDim2.new(0, 18, 1, -59), function()
+  lobbyScreen.Visible = false
+  remote:FireServer("CivTravel", "Lobby")
+end)
+lobbyExplore.ZIndex = 33
+local function openLobby()
+  civPanel.Visible = false
+  lobbyScreen.Visible = true
+  lobbyPlay.Text = (player:GetAttribute("CivRaceID") or 0) > 0 and "지역 선택하고 출발" or "문명 선택하고 출발"
+  local camera = workspace.CurrentCamera
+  local viewport = camera and camera.ViewportSize or Vector2.new(390, 720)
+  lobbyCard.Size = UDim2.fromOffset(math.min(480, math.max(1, viewport.X - 32)), math.min(360, math.max(1, viewport.Y - 28)))
+end
+local lobbyMenu = civButton(civMenuRail, "LobbyWelcomeMenu", "로비 안내",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), openLobby)
+lobbyMenu.LayoutOrder = 0
+local lobbyShown = false
+player:GetAttributeChangedSignal("CivReady"):Connect(function()
+  if player:GetAttribute("CivReady") == true and not lobbyShown then
+    lobbyShown = true
+    openLobby()
+  end
+end)
+task.defer(function()
+  if player:GetAttribute("CivReady") == true and not lobbyShown then
+    lobbyShown = true
+    openLobby()
+  end
+end)
+
 local function civShowRaceSelection()
   if player:GetAttribute("CivReady") == true and (player:GetAttribute("CivRaceID") or 0) == 0 and civGui.Parent then
-    if not civPanel.Visible then civOpen("Races") end
+    if not lobbyScreen.Visible and not civPanel.Visible then civOpen("Races") end
   end
 end
 player:GetAttributeChangedSignal("CivReady"):Connect(civShowRaceSelection)
