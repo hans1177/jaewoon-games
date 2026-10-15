@@ -49,6 +49,16 @@ local function summon(player: Player, root: BasePart): State
     bodyPart(model, "Right Arm", Vector3.new(0.7, 1.8, 0.8), cf * CFrame.new(1.4, -0.1, 0), Color3.fromRGB(157, 122, 82))
     bodyPart(model, "Left Leg", Vector3.new(0.8, 1.9, 0.8), cf * CFrame.new(-0.5, -1.9, 0), Color3.fromRGB(92, 84, 71))
     bodyPart(model, "Right Leg", Vector3.new(0.8, 1.9, 0.8), cf * CFrame.new(0.5, -1.9, 0), Color3.fromRGB(92, 84, 71))
+    -- 기존 동료 모델의 장비·얼굴 외형을 강화한다. 전투와 저장 상태는 변경하지 않는다.
+    bodyPart(model, "ChestArmor", Vector3.new(1.75, 1.25, 0.22), cf * CFrame.new(0, 0.1, -0.64), Color3.fromRGB(148, 116, 70))
+    bodyPart(model, "Helmet", Vector3.new(1.4, 0.42, 1.34), cf * CFrame.new(0, 2.33, 0), Color3.fromRGB(103, 85, 61))
+    bodyPart(model, "Cape", Vector3.new(1.65, 2.4, 0.16), cf * CFrame.new(0, -0.55, 0.7), Color3.fromRGB(87, 112, 93))
+    for _, side in ipairs({-1, 1}) do
+        bodyPart(model, "Eye" .. side, Vector3.new(0.14, 0.16, 0.09),
+            cf * CFrame.new(side * 0.28, 1.77, -0.63), Color3.fromRGB(43, 38, 34))
+        bodyPart(model, "Shoulder" .. side, Vector3.new(0.96, 0.48, 0.97),
+            cf * CFrame.new(side * 1.4, 0.72, 0), Color3.fromRGB(138, 115, 75))
+    end
     local humanoid = Instance.new("Humanoid")
     humanoid.RequiresNeck = false
     humanoid.MaxHealth = 80
