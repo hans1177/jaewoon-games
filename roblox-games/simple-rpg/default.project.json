@@ -4,14 +4,34 @@
     "$className": "DataModel",
     "Lighting": {
       "$properties": {
-        "Technology": "Voxel",
-        "LightingStyle": "Soft",
-        "PrioritizeLightingQuality": false
+        "Technology": "Future",
+        "LightingStyle": "Realistic",
+        "PrioritizeLightingQuality": true,
+        "GlobalShadows": true
       },
       "CompatibilityToneMap": {
         "$className": "ColorGradingEffect",
         "$properties": {
           "TonemapperPreset": "Retro"
+        }
+      },
+      "CivilizationAtmosphere": {
+        "$className": "Atmosphere",
+        "$properties": {
+          "Density": 0.27,
+          "Offset": 0.08,
+          "Haze": 1.4,
+          "Glare": 0.08,
+          "Color": [
+            160,
+            178,
+            190
+          ],
+          "Decay": [
+            84,
+            102,
+            120
+          ]
         }
       }
     },
