@@ -35,7 +35,7 @@ test('all five requested civilization buildings are race/era/cost scoped', () =>
 test('existing data store identity and full 72 tech chain are kept', () => {
   assert.match(config, /GameId\s*=\s*"simple-rpg"/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
-  assert.match(server, /UpdateAsync\("player:"\.\. player.UserId/);
+  assert.match(server, /UpdateAsync\("player:"\s*\.\.\s*player\.UserId/);
   assert.match(tree, /assert\(id == 72, "72 TECHS REQUIRED"\)/);
   assert.match(server, /nextID == 15.*CivBoarKills/);
   assert.match(server, /nextID == 29.*CivBronzeSmelts/);
