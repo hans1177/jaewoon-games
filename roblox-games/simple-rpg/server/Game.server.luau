@@ -1222,6 +1222,27 @@ for id = 1, 24 do
   local portal = civPart(civHub, "포털 " .. race.Name, Vector3.new(4, 0.3, 4),
     CFrame.new(math.cos(angle) * 24, 0.2, math.sin(angle) * 24), Color3.fromRGB(111, 191, 222), Enum.Material.Neon, false)
   civSign(civHub, portal, race.Name, 3)
+  -- 기존 Touched 이동 패드는 건드리지 않고 뒤편에 4문명 장식 아치를 배치한다.
+  local accent = featuredPortalColors[id]
+  if accent then
+    local portalFrame = CFrame.lookAt(portal.Position,
+      Vector3.new(0, portal.Position.Y, 0))
+    local shimmer = civPart(civHub, race.Name .. " 차원문 빛",
+      Vector3.new(3.1, 4.2, 0.25), portalFrame * CFrame.new(0, 2.8, 2),
+      accent, Enum.Material.Neon, false)
+    shimmer.Transparency = 0.52
+    shimmer.CanTouch = false
+    for _, side in ipairs({-1, 1}) do
+      local column = civPart(civHub, race.Name .. " 차원문 기둥 " .. side,
+        Vector3.new(1, 5.8, 1.1), portalFrame * CFrame.new(side * 2.25, 3.0, 2),
+        Color3.fromRGB(184, 166, 125), Enum.Material.Sandstone, false)
+      column.CanTouch = false
+    end
+    local lintel = civPart(civHub, race.Name .. " 차원문 관석",
+      Vector3.new(5.7, 0.9, 1.1), portalFrame * CFrame.new(0, 6.15, 2),
+      accent, Enum.Material.Slate, false)
+    lintel.CanTouch = false
+  end
   local lastPortal = {}
   portal.Touched:Connect(function(hit)
     local character = hit:FindFirstAncestorOfClass("Model")
