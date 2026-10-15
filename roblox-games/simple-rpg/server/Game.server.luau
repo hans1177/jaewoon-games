@@ -1837,6 +1837,39 @@ local lobbyCrown = civPart(civHub, "광장 석상 관석", Vector3.new(7.5, 1.5,
   CFrame.new(0, 7.2, -11), Color3.fromRGB(138, 90, 56), Enum.Material.Sandstone, false)
 lobbyCrown.CanTouch = false
   lobbyCrown.CanQuery = false
+-- 로비 생활 공간: 기존 제작 함수로 낮은 부하의 목조 상점과 표지판을 배치한다.
+-- 상점은 장식 전용이며 구매/화폐/저장 데이터는 변경하지 않는다.
+local lobbyShops = {
+  {name="장비 상점", x=-17, z=-4, color=Color3.fromRGB(114, 67, 49)},
+  {name="잡화 상점", x=17, z=-4, color=Color3.fromRGB(80, 111, 94)},
+  {name="모험 안내소", x=-17, z=13, color=Color3.fromRGB(89, 105, 138)},
+  {name="휴식 쉼터", x=17, z=13, color=Color3.fromRGB(153, 113, 72)},
+}
+for _, shop in ipairs(lobbyShops) do
+  local floor = civPart(civHub, shop.name .. " 마루", Vector3.new(10, 0.45, 8),
+    CFrame.new(shop.x, 0.38, shop.z), Color3.fromRGB(132, 95, 64), Enum.Material.WoodPlanks, false)
+  floor.CanTouch = false
+  floor.CanQuery = false
+  local roof = civPart(civHub, shop.name .. " 지붕", Vector3.new(11, 0.8, 9),
+    CFrame.new(shop.x, 6, shop.z), shop.color, Enum.Material.Fabric, false)
+  roof.CanTouch = false
+  roof.CanQuery = false
+  for _, side in ipairs({-1, 1}) do
+    for _, depth in ipairs({-1, 1}) do
+      local post = civPart(civHub, shop.name .. " 기둥", Vector3.new(0.65, 5, 0.65),
+        CFrame.new(shop.x + side * 4.3, 3.1, shop.z + depth * 3.2),
+        Color3.fromRGB(105, 73, 50), Enum.Material.Wood, false)
+      post.CanTouch = false
+      post.CanQuery = false
+    end
+  end
+  local counter = civPart(civHub, shop.name .. " 진열대", Vector3.new(7.5, 1.3, 1.5),
+    CFrame.new(shop.x, 1.25, shop.z - 2.6),
+    Color3.fromRGB(154, 111, 72), Enum.Material.Wood, false)
+  counter.CanTouch = false
+  counter.CanQuery = false
+  civSign(civHub, roof, shop.name, 3.2)
+end
 -- Five era ecology exhibits in the multiverse lobby are visual previews, not extra regions.
 -- All parts are non-colliding and do not alter the existing 24 civilization maps.
 local eraDisplays = {
