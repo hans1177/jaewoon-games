@@ -2482,6 +2482,15 @@ local function civWalkModel(model, target, duration)
   local start = model:GetPivot()
   local distance = (target.Position - start.Position).Magnitude
   if distance < 0.015 then return end
+  -- AI가 매 틱 목표 방향을 바꾸더라도 180도 즉시 회전하지 않고
+  -- 이동 거리와 회전 각도에 맞춰 자연스럽게 바라보는 방향을 갱신한다.
+  local _, startYaw = start:ToOrientation()
+  local _, targetYaw = target:ToOrientation()
+  local deltaYaw = math.atan2(math.sin(targetYaw - startYaw), math.cos(targetYaw - startYaw))
+  local maxTurn = math.rad(48)
+  if math.abs(deltaYaw) > maxTurn then
+    target = CFrame.new(target.Position) * CFrame.Angles(0, startYaw + math.clamp(deltaYaw, -maxTurn, maxTurn), 0)
+  end
   -- 스폰/귀환 등 큰 좌표 차이는 걷기로 오인하지 않고 즉시 복구한다.
   if distance > 12 then
     -- AI movement never teleports across the map; only explicit spawn/respawn may.
