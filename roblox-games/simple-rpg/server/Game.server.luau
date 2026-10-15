@@ -2603,7 +2603,10 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     if not character or not humanoid or humanoid.Health <= 0 then return end
     if typeof(argument) == "number" and argument % 1 == 0 and RaceData.GetRace(argument) then
       if selected <= 0 then civMessage(player, "게임 데이터를 확인할 수 없어. 잠시 후 다시 시도해."); return end
-      action(player, argument)
+      -- 로비 모험 이동은 현재 캐릭터의 저장된 지역에만 허용한다.
+      -- 삭제된 24종족 포털을 임의 원격 요청으로 우회하지 못하게 한다.
+      if argument ~= selected then return end
+      action(player, selected)
     elseif argument == "Lobby" then
       character:SetAttribute("CivTravelCompleted", true)
       character:PivotTo(CFrame.new(0, 5, 0))
