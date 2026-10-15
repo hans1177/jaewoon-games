@@ -90,14 +90,14 @@ test('companion UX is accessible by mobile button and keyboard shortcut', () => 
 
 test('v2.1 shared types and era browser preserve authoritative research and save flow', () => {
   const types = read('shared/TypeDefinitions.luau');
-  assert.ok(types.startsWith('--!strict\\n'));
+  assert.ok(types.startsWith('--!strict'));
   for (const name of ['RaceInfo', 'PlayerData', 'TechNode']) {
-    assert.match(types, new RegExp('export type ' + name + ' = \\\\{'));
+    assert.ok(types.includes('export type ' + name + ' = {'));
   }
-  assert.match(types, /TechProgress: \\{\\[number\\]: boolean\\}/);
-  assert.match(client, /for _, tech in ipairs\\(TechTreeData\\.All\\(\\)\\) do/);
-  assert.match(client, /if tech\\.Era == civTechEra then/);
-  assert.match(client, /"TechEra" \\.\\. era/);
-  assert.match(client, /civTechEra = selectedEra/);
-  assert.match(server, /GetDataStore\\("simple-rpg-development-v1"\\)/);
+  assert.ok(types.includes('TechProgress: {[number]: boolean}'));
+  assert.ok(client.includes('for _, tech in ipairs(TechTreeData.All()) do'));
+  assert.ok(client.includes('if tech.Era == civTechEra then'));
+  assert.ok(client.includes('"TechEra" .. era'));
+  assert.ok(client.includes('civTechEra = selectedEra'));
+  assert.ok(server.includes('GetDataStore("simple-rpg-development-v1")'));
 });
