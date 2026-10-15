@@ -1917,8 +1917,6 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
               local storedBase = part:GetAttribute("MotionBaseOffset")
               if typeof(storedBase) == "CFrame" then
                 state.base = storedBase
-              else
-                state.base = rootPart.CFrame:ToObjectSpace(part.CFrame)
               end
             end
             state.lastAnimatedAt = creatureMotionPhase
