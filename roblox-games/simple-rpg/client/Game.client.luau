@@ -2071,6 +2071,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                       base=item:IsA("Motor6D") and item.C0 or item.Transform,
                       isBone=item:IsA("Bone"),
                       side=(left and 1 or -1) * (isArm and -1 or 1),
+                      isArm=isArm,
                       amplitude=isArm and 0.20 or 0.38
                     })
                   end
@@ -2083,6 +2084,10 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           for _, leg in ipairs(joints) do
             if leg.joint.Parent then
               local angle = walking and math.sin(clock) * leg.side * leg.amplitude * speedFactor or 0
+              -- 실제 공격 예고 중에는 리그 팔을 들어 올리고 짧게 떨도록 한다.
+              if windingUp and not down and leg.isArm then
+                angle = -0.6 + math.sin(creatureMotionPhase * 12) * 0.07
+              end
               if leg.isBone then
                 leg.joint.Transform = leg.base * CFrame.Angles(angle, 0, 0)
               else
