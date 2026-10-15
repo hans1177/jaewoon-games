@@ -2043,9 +2043,15 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                 local limb = item:IsA("Motor6D") and item.Part1 and string.lower(item.Part1.Name) or ""
                 local label = lower .. " " .. limb
                 if string.find(label, "leg", 1, true) or string.find(label, "thigh", 1, true)
-                  or string.find(label, "hip", 1, true) then
-                  local left = string.find(label, "left", 1, true) or string.find(label, "_l", 1, true)
-                  local right = string.find(label, "right", 1, true) or string.find(label, "_r", 1, true)
+                  or string.find(label, "hip", 1, true)
+                  or string.find(label, "upperleg", 1, true)
+                  or string.find(label, "lowerleg", 1, true) then
+                  local left = string.find(label, "left", 1, true)
+                    or string.match(label, "^l[_%.%-]") or string.match(label, "[_%.%-]l$")
+                    or string.find(label, "_l", 1, true)
+                  local right = string.find(label, "right", 1, true)
+                    or string.match(label, "^r[_%.%-]") or string.match(label, "[_%.%-]r$")
+                    or string.find(label, "_r", 1, true)
                   if left or right then
                     table.insert(joints, {
                       joint=item,
