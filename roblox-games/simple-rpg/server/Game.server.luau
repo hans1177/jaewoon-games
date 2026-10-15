@@ -2492,8 +2492,9 @@ Players.PlayerAdded:Connect(function(player)
       if player.Parent ~= Players then return end
       local character = player.Character or player.CharacterAdded:Wait()
       local humanoid = character and character:WaitForChild("Humanoid", 10)
-      if player.Parent ~= Players or not humanoid or humanoid.Health <= 0 then return end
-      -- 다른 이동 요청이 먼저 처리된 경우, 위치를 뒤늦게 덮어쓰지 않는다.
+      if player.Parent ~= Players or player.Character ~= character
+        or not humanoid or humanoid.Health <= 0 then return end
+      -- 로딩 중 새 캐릭터가 생기거나 먼저 이동했다면 늦은 로비 배치를 하지 않는다.
       if character:GetAttribute("CivTravelCompleted") then return end
       character:PivotTo(CFrame.new(0, 5, 0))
     end)
