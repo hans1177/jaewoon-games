@@ -1785,6 +1785,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
     -- 부활 중 이전 캐릭터의 몬스터 목록을 남기지 않는다.
     creatureMotionLastSearchCharacter = nil
     creatureMotionLastSearchPosition = nil
+    creatureMotionSearchAt = 0
     table.clear(creatureMotionModels)
     return
   end
