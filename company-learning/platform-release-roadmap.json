@@ -3835,7 +3835,7 @@
         "VIBE2",
         "VIBE3"
       ],
-      "gameSourceGenerationProvider": "LOCAL_OLLAMA",
+      "gameSourceGenerationProvider": "DETERMINISTIC_ONLY",
       "gameSourceGenerationModel": "qwen3:1.7b",
       "gameSourceWritePolicy": {
         "allowedWorker": "tools/vibe2-source-worker.mjs",
@@ -3903,7 +3903,7 @@
         "qa": "qa/vibe2-source-worker.test.mjs",
         "requiredEnvironment": {
           "VIBE2_GAME_DEVELOPMENT_OWNER": "VIBE2_VIBE3",
-          "VIBE2_GAME_SOURCE_PROVIDER": "LOCAL_OLLAMA",
+          "VIBE2_GAME_SOURCE_PROVIDER": "DETERMINISTIC_ONLY",
           "VIBE2_CODEX_GAME_SOURCE_WRITE": "FORBIDDEN",
           "VIBE2_OPENAI_PAID_API_ALLOWED": "false",
           "VIBE2_CODEX_ROLE": "DISABLED"
@@ -23245,6 +23245,18 @@
       "audio": "MUSIC_SFX_AMBIENCE_AND_RUNTIME_AUDIO_EVIDENCE"
     }
   },
+  "ownerModelFreeProduction20261014": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-10-14",
+    "scope": ["GAME_DESIGN", "GAME_SOURCE", "GAME_REPAIR", "ASSET_AUTHORING", "ASSET_ADAPTATION"],
+    "productionModelCallsAllowed": false,
+    "externalAiProductionAllowed": false,
+    "localOllamaProductionAllowed": false,
+    "existingDeterministicSourceAdaptationAllowed": true,
+    "modelRequiredTaskWithoutDeterministicCandidate": "BLOCKED_NOT_VERIFIED",
+    "releaseQaSecurityAndRuntimeGatesUnchanged": true,
+    "supersedes": "EXTERNAL_AI_AND_LOCAL_MODEL_PRODUCTION_EXECUTION_ONLY"
+  },
   "externalAiVibeFullProcessCollaboration": {
     "version": 1,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
@@ -23269,8 +23281,8 @@
       "POST_RELEASE_MAINTENANCE"
     ],
     "execution": {
-      "externalAiMayReceiveDevelopmentTasks": true,
-      "externalAiMayEditGameSourceOnIsolatedCandidateBranch": true,
+      "externalAiMayReceiveDevelopmentTasks": false,
+      "externalAiMayEditGameSourceOnIsolatedCandidateBranch": false,
       "externalAiDirectMainWrite": false,
       "externalAiCentralPolicyWrite": false,
       "externalAiSelfAcceptance": false,
@@ -23293,9 +23305,9 @@
       "finalApplicationScopeAndTimingAuthority": "VIBE_UNDER_OWNER_POLICY"
     },
     "routing": {
-      "developmentBottlenecksMayDispatchToExternalAi": true,
-      "implementationTasksMayDispatchToExternalAi": true,
-      "platformTasksMayDispatchToExternalAi": true,
+      "developmentBottlenecksMayDispatchToExternalAi": false,
+      "implementationTasksMayDispatchToExternalAi": false,
+      "platformTasksMayDispatchToExternalAi": false,
       "externalAiCapacityShouldNotIdleWhileEligibleDisjointDevelopmentWorkExists": true
     }
   },

@@ -325,7 +325,7 @@ export function validateSharedWorkerContext({
       fail('CODEX_NO_USE_POLICY_DRIFT');
     if(clean(architecture?.workerRoles?.CODEX)!=='DISABLED'||!architecture?.forbidden?.includes('CODEX_ANY_SCOPE'))
       fail('CODEX_NO_USE_ARCHITECTURE_DRIFT');
-    if(clean(authority.gameSourceGenerationProvider)!=='LOCAL_OLLAMA'
+    if(clean(authority.gameSourceGenerationProvider)!=='DETERMINISTIC_ONLY'
       ||clean(authority.gameSourceWritePolicy?.allowedWorker)!=='tools/vibe2-source-worker.mjs')
       fail('CODEX_NO_USE_CANONICAL_ALTERNATIVE_DRIFT');
     if(clean(authority.enforcement?.requiredEnvironment?.VIBE2_CODEX_ROLE)!=='DISABLED'

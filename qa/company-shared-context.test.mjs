@@ -68,11 +68,11 @@ test('roadmap-first shared context validates registered worker launcher',()=>{
   }finally{process.chdir(previous);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
-test('central shared context rejects Codex reactivation and keeps the current Vibe local Ollama alternative',()=>{
+test('central shared context rejects Codex reactivation and keeps deterministic-only source authority',()=>{
   const cwd=root(),f=fixtures(),previous=process.cwd(),oldRole=process.env.VIBE2_CODEX_ROLE;
   f.policyJson.developmentLifecycleMachine.developmentToolAuthority={
     codex:{role:'DISABLED',allowedScopes:[],allUseForbidden:true},
-    gameSourceGenerationProvider:'LOCAL_OLLAMA',
+    gameSourceGenerationProvider:'DETERMINISTIC_ONLY',
     gameSourceWritePolicy:{allowedWorker:'tools/vibe2-source-worker.mjs'},
     enforcement:{requiredEnvironment:{VIBE2_CODEX_ROLE:'DISABLED',VIBE2_CODEX_GAME_SOURCE_WRITE:'FORBIDDEN'}}
   };

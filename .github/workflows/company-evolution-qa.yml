@@ -182,6 +182,8 @@ jobs:
           node --check tools/company-baseline-gate.mjs
           node --check tools/artbook-production-pipeline.mjs
           node --check qa/company-release-production-cycle.test.mjs
+          node --check qa/owner-model-free-production.test.mjs
+          node --test qa/owner-model-free-production.test.mjs
           node --check qa/release-stale-artifact-guard.test.mjs
           node --check qa/company-design-pre-gate-resume.test.mjs
           node --check qa/tier1-development-baseline-gate.test.mjs
@@ -239,8 +241,8 @@ jobs:
       - name: Validate production pipeline contracts
         run: |
           set -euo pipefail
-          grep -Fq 'Pull configured free department models' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'DEPARTMENT_LEAD_PREFLIGHT=PASS' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'DESIGN_AI_MODEL_CALLS=DISABLED' .github/workflows/artbook-free-department-bots.yml
+          if grep -Eq 'ollama.com/install.sh|ollama pull |GEMINI_API_KEY:.*secrets' .github/workflows/artbook-free-department-bots.yml; then echo 'AI_MODEL_IN_DESIGN_WORKFLOW_FORBIDDEN' >&2; exit 1; fi
           grep -Fq 'tools/company-release-production-cycle.mjs' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'design/**/vibe2-release-implementation.json' .github/workflows/artbook-free-department-bots.yml
           grep -Fq 'design/**/unity-android-build.json' .github/workflows/artbook-free-department-bots.yml

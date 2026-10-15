@@ -47,21 +47,24 @@ const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
 const INTERNAL_ASSET_API_SIGNATURE_CACHE=new Map();
 const INTERNAL_ASSET_TOOL_EXPORT_CACHE=new Map();
 const INTERNAL_ASSET_CACHE_MAX_ENTRIES=2048;
-function assertGameDevelopmentAuthority(){
+function assertGameDevelopmentAuthority({cwd=process.cwd()}={}){
   const owner=clean(process.env.VIBE2_GAME_DEVELOPMENT_OWNER||'VIBE2_VIBE3').toUpperCase();
-  const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'LOCAL_OLLAMA').toUpperCase();
+  const modelFree=readJson(path.resolve(cwd,'company-learning/platform-release-roadmap.json'),{})?.ownerModelFreeProduction20261014?.productionModelCallsAllowed===false
+    ||clean(process.env.VIBE2_PRODUCTION_MODEL_CALLS_ENABLED).toLowerCase()==='false';
+  const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||(modelFree?'DETERMINISTIC_ONLY':'LOCAL_OLLAMA')).toUpperCase();
   const codexRole=clean(process.env.VIBE2_CODEX_ROLE||'DISABLED').toUpperCase();
   const codexGameSourceWrite=clean(process.env.VIBE2_CODEX_GAME_SOURCE_WRITE||'FORBIDDEN').toUpperCase();
   const paidOpenAiAllowed=clean(process.env.VIBE2_OPENAI_PAID_API_ALLOWED||'false').toLowerCase();
   if(owner!=='VIBE2_VIBE3')throw new Error(`GAME_DEVELOPMENT_OWNER_INVALID:${owner||'EMPTY'}`);
-  if(provider!=='LOCAL_OLLAMA')throw new Error(`GAME_SOURCE_PROVIDER_INVALID:${provider||'EMPTY'}`);
+  if(provider!==(modelFree?'DETERMINISTIC_ONLY':'LOCAL_OLLAMA'))throw new Error(`GAME_SOURCE_PROVIDER_INVALID:${provider||'EMPTY'}`);
   if(codexRole!=='DISABLED')throw new Error(`CODEX_USE_FORBIDDEN:${codexRole||'EMPTY'}`);
   if(codexGameSourceWrite!=='FORBIDDEN')throw new Error(`CODEX_GAME_SOURCE_WRITE_FORBIDDEN:${codexGameSourceWrite||'EMPTY'}`);
   if(paidOpenAiAllowed!=='false')throw new Error(`OPENAI_PAID_API_GAME_SOURCE_FORBIDDEN:${paidOpenAiAllowed||'EMPTY'}`);
   return{
     owner,
     provider,
-    model:DEFAULT_MODEL,
+    model:modelFree?'NONE':DEFAULT_MODEL,
+    modelFreeProduction:modelFree,
     codexRole:'DISABLED',
     codexGameSourceWrite:'FORBIDDEN',
     paidOpenAiApiAllowed:false,
@@ -6719,7 +6722,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const effectiveModel=modelRouting.selectedModel;
   const developmentAuthority=target==='system'
     ?{owner:'VIBE2_VIBE3',provider:'LOCAL_OLLAMA',model:DEFAULT_MODEL,role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
-    :assertGameDevelopmentAuthority();
+    :assertGameDevelopmentAuthority({cwd});
   const bootstrap=sourceRootBootstrapAllowed(order,target,sourceRootRelative,responsibleFiles);
   const sourceRootExists=fs.existsSync(sourceRoot)&&fs.statSync(sourceRoot).isDirectory();
   if(!sourceRootExists&&!bootstrap)throw new Error(`source root 없음: ${sourceRootRelative}`);
@@ -7009,6 +7012,14 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(!generated&&deterministicRobloxRequired){
     const error=new Error('DETERMINISTIC_ROBLOX_BUILDUP_REQUIRED:NO_VALID_LOCAL_CANDIDATE');
     error.vibe2GenerationFailureClass='DETERMINISTIC_ROBLOX_BUILDUP';
+    throw error;
+  }
+  if(!generated && (readJson(path.resolve(cwd,'company-learning/platform-release-roadmap.json'),{})?.ownerModelFreeProduction20261014?.productionModelCallsAllowed===false
+    ||clean(process.env.VIBE2_PRODUCTION_MODEL_CALLS_ENABLED).toLowerCase()==='false')){
+    // Owner production rule: preserve deterministic fixes, but never invoke any AI
+    // text model to fabricate a candidate when a deterministic edit is unavailable.
+    const error=new Error('PRODUCTION_AI_MODELS_DISABLED:DETERMINISTIC_CANDIDATE_REQUIRED');
+    error.vibe2GenerationFailureClass='PRODUCTION_MODELS_DISABLED';
     throw error;
   }
   if(!generated){

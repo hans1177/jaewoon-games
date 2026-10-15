@@ -3961,14 +3961,14 @@ test('central owner Codex no-use contract keeps canonical Vibe and deterministic
   assert.equal(contract.codex.allUseForbidden,true);
   assert.equal(contract.codex.gameSourceWriteAllowed,false);
   assert.equal(contract.codex.unattendedGitHubActionsGameSourceUse,false);
-  assert.equal(contract.gameSourceGenerationProvider,'LOCAL_OLLAMA');
+  assert.equal(contract.gameSourceGenerationProvider,'DETERMINISTIC_ONLY');
   assert.equal(contract.gameSourceWritePolicy.allowedWorker,'tools/vibe2-source-worker.mjs');
   assert.equal(contract.enforcement.requiredEnvironment.VIBE2_CODEX_ROLE,'DISABLED');
   assert.equal(contract.enforcement.requiredEnvironment.VIBE2_CODEX_GAME_SOURCE_WRITE,'FORBIDDEN');
   assert.equal(architecture.workerRoles.CODEX,'DISABLED');
   assert.ok(architecture.forbidden.includes('CODEX_ANY_SCOPE'));
   assert.equal(architecture.workerRoles.VIBE2_VIBE3,'GAME_SOURCE_IMPLEMENTATION_OWNER');
-  assert.match(workflow,/VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA/);
+  assert.match(workflow,/VIBE2_GAME_SOURCE_PROVIDER: DETERMINISTIC_ONLY/);
   assert.match(workflow,/VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'/);
   assert.ok(workflow.includes('test "$VIBE2_CODEX_ROLE" = "DISABLED"'));
   assert.ok(workflow.includes('VIBE2_CODEX_ROLE: DISABLED'));

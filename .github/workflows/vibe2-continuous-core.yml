@@ -78,7 +78,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  VIBE2_LOCAL_MODEL: qwen3:1.7b
+  VIBE2_PRODUCTION_MODEL_CALLS_ENABLED: 'false' # Owner: no external or local AI models for game/asset source production
+  VIBE2_LOCAL_MODEL: 'NONE' # model-free production
   VIBE2_MODEL_MAX_PREDICT: '3072'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
@@ -89,7 +90,7 @@ env:
   VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
-  VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
+  VIBE2_GAME_SOURCE_PROVIDER: DETERMINISTIC_ONLY
   VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'
   VIBE2_CODEX_ROLE: DISABLED
   VIBE2_CODEX_GAME_SOURCE_WRITE: FORBIDDEN
@@ -1049,7 +1050,7 @@ jobs:
 
       - name: Probe dedicated Vibe2 model cache
         id: ollama_model_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
+        if: false # owner model-free production: skip Ollama model/runtime cache lookups
         uses: actions/cache/restore@v4
         with:
           path: ~/.ollama/models
@@ -1058,7 +1059,7 @@ jobs:
 
       - name: Probe canonical Ollama runtime cache
         id: ollama_runtime_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
+        if: false # owner model-free production: skip Ollama model/runtime cache lookups
         uses: actions/cache/restore@v4
         with:
           path: ~/.cache/jaewoon-ollama/ollama-linux-*-cpu-0.33.3.tar.zst
@@ -1067,7 +1068,7 @@ jobs:
 
       - name: Record reserve model cache decision
         id: ollama_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
+        if: false # owner model-free production: skip Ollama model/runtime cache lookups
         env:
           MODEL_CACHE_HIT: ${{ steps.ollama_model_cache_probe.outputs.cache-hit }}
           RUNTIME_CACHE_HIT: ${{ steps.ollama_runtime_cache_probe.outputs.cache-hit }}
@@ -1151,7 +1152,7 @@ jobs:
 
   model_cache:
     needs: reserve
-    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle'
+    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle' && false # production models disabled
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     timeout-minutes: 12
     continue-on-error: true
@@ -1388,7 +1389,10 @@ jobs:
           set -euo pipefail
           required='false'
           reason='ROUTE_NO_LOCAL_MODEL'
-          if [ "$ORDER_RUN" != 'true' ]; then
+          if [ "${VIBE2_PRODUCTION_MODEL_CALLS_ENABLED:-false}" != 'true' ]; then
+            required='false'
+            reason='OWNER_MODEL_FREE_PRODUCTION'
+          elif [ "$ORDER_RUN" != 'true' ]; then
             reason='WORK_ORDER_NOT_RUNNABLE'
           elif [ "$ROUTE" = 'analysis-only' ] || [ "$ROUTE" = 'learning-web-artifact' ]; then
             required='true'
@@ -1451,7 +1455,7 @@ jobs:
 
       - name: Prepare declared native DCC authoring runtime
         timeout-minutes: 5
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
+        if: false # owner model-free production: skip AI-backed DCC generation recipes
         shell: bash
         run: |
           set -euo pipefail
@@ -1463,7 +1467,7 @@ jobs:
           echo 'VIBE2_NATIVE_DCC_RUNTIME=BLENDER_READY'
 
       - name: Execute declared native DCC authoring verification
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
+        if: false # owner model-free production: skip AI-backed DCC generation recipes
         env:
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           VIBE2_BASE_MAIN_SHA: ${{ needs.reserve.outputs.contract_sha }}
@@ -1490,7 +1494,7 @@ jobs:
 
       - name: Run isolated learning practice
         id: practice
-        if: steps.order.outputs.run == 'true' && (steps.order.outputs.route == 'analysis-only' || steps.order.outputs.route == 'learning-web-artifact')
+        if: false # model-based practice disabled for the production runner
         continue-on-error: true
         env:
           SAFE_TASK: ${{ matrix.safeTask }}
@@ -1594,6 +1598,7 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           target="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.target||''))")"
           model_calls=1
+          if [ "${VIBE2_PRODUCTION_MODEL_CALLS_ENABLED:-false}" != 'true' ]; then model_calls=0; fi
           deterministic_source="${{ steps.order.outputs.deterministic_source }}"
           if [ "$deterministic_source" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then model_calls=0; fi
           node "$contract_root/tools/free-budget-telemetry.mjs" \
@@ -1609,7 +1614,7 @@ jobs:
           echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
           echo 'VIBE2_FREE_AI_SCALE=ONE_WORKER_PER_INDEPENDENT_TASK'
           test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3"
-          test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA"
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "DETERMINISTIC_ONLY"
           test "$VIBE2_CODEX_ROLE" = "DISABLED"
           test "$VIBE2_CODEX_GAME_SOURCE_WRITE" = "FORBIDDEN"
           test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false"
@@ -1698,15 +1703,18 @@ jobs:
           cp /tmp/vibe2-exploration/vibe2-exploration.json "$candidate_dir/.vibe2/exploration.json"
 
           test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3" || { echo "GAME_DEVELOPMENT_OWNER_INVALID=$VIBE2_GAME_DEVELOPMENT_OWNER" >&2; exit 1; }
-          test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA" || { echo "GAME_SOURCE_PROVIDER_INVALID=$VIBE2_GAME_SOURCE_PROVIDER" >&2; exit 1; }
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "DETERMINISTIC_ONLY" || { echo "GAME_SOURCE_PROVIDER_INVALID=$VIBE2_GAME_SOURCE_PROVIDER" >&2; exit 1; }
           test "$VIBE2_CODEX_ROLE" = "DISABLED" || { echo "CODEX_USE_FORBIDDEN=$VIBE2_CODEX_ROLE" >&2; exit 1; }
           test "$VIBE2_CODEX_GAME_SOURCE_WRITE" = "FORBIDDEN" || { echo "CODEX_GAME_SOURCE_WRITE_FORBIDDEN=$VIBE2_CODEX_GAME_SOURCE_WRITE" >&2; exit 1; }
           test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false" || { echo "OPENAI_PAID_API_GAME_SOURCE_FORBIDDEN=$VIBE2_OPENAI_PAID_API_ALLOWED" >&2; exit 1; }
           echo 'VIBE2_GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3'
-          echo 'VIBE2_GAME_SOURCE_PROVIDER=LOCAL_OLLAMA'
+          echo 'VIBE2_GAME_SOURCE_PROVIDER=DETERMINISTIC_ONLY'
           echo 'VIBE2_CODEX_GAME_SOURCE_WRITE=FORBIDDEN'
 
-          if [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
+          if [ "${VIBE2_PRODUCTION_MODEL_CALLS_ENABLED:-false}" != 'true' ]; then
+            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_ONLY'
+            echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
+          elif [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
             echo 'VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL'
             echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_LOCAL'
             echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
