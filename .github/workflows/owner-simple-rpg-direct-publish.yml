@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       upload_actor_assets:
-        description: 'KayKit CC0 GLB 9종을 Roblox 에셋에 등록 (게임 게시와 별도)'
+        description: '보유 CC0 GLB 20개를 Roblox 에셋에 등록 (게임 게시와 별도)'
         type: boolean
         required: false
         default: false
