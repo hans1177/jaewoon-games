@@ -1554,6 +1554,8 @@ local actionMotionToken = 0
 -- 연속 입력 중 이전 동작의 임시 관절 각도가 다음 동작의 기준으로 누적되지 않게 한다.
 local actionJointBases = setmetatable({}, {__mode = "k"})
 local actionJointTweens = setmetatable({}, {__mode = "k"})
+local actionCameraTweens = setmetatable({}, {__mode = "k"})
+local actionCameraBases = setmetatable({}, {__mode = "k"})
 local attackCombo = 0
 local lastAttackMotionAt = 0
 local function civActionMotion(actionId, button)
@@ -1712,14 +1714,21 @@ local function civActionMotion(actionId, button)
   end
   local camera = workspace.CurrentCamera
   if not camera then return end
-  local baseFov = camera.FieldOfView
+  local priorCameraTween = actionCameraTweens[camera]
+  if priorCameraTween then priorCameraTween:Cancel() end
+  local baseFov = actionCameraBases[camera] or camera.FieldOfView
+  actionCameraBases[camera] = baseFov
   local offset = actionId == "CivDodge" and 7 or actionId == "CivAttack" and (attackCombo == 3 and 5 or 3) or -2
-  actionTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-    {FieldOfView = math.clamp(baseFov + offset, 40, 100)}):Play()
+  local cameraPulse = actionTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+    {FieldOfView = math.clamp(baseFov + offset, 40, 100)})
+  actionCameraTweens[camera] = cameraPulse
+  cameraPulse:Play()
   task.delay(0.15, function()
     if token ~= actionMotionToken or workspace.CurrentCamera ~= camera then return end
-    actionTweenService:Create(camera, TweenInfo.new(0.2, Enum.EasingStyle.Quad),
-      {FieldOfView = baseFov}):Play()
+    local cameraRestore = actionTweenService:Create(camera, TweenInfo.new(0.2, Enum.EasingStyle.Quad),
+      {FieldOfView = baseFov})
+    actionCameraTweens[camera] = cameraRestore
+    cameraRestore:Play()
   end)
 end
 -- 동료 및 몬스터의 기존 파츠를 클라이언트에서만 움직인다. 서버 판정과 위치는 그대로 둔다.
