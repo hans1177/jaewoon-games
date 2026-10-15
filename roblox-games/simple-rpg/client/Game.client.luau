@@ -907,6 +907,10 @@ local function civOpen(mode)
                   return unlockTechRequest:InvokeServer(id)
                 end)
                 researchRequestPending = false
+                if pendingNode and pendingNode.Parent then
+                  pendingNode.BackgroundColor3 = Color3.fromRGB(44, 74, 110)
+                  pendingNode.TextColor3 = Color3.fromRGB(232, 213, 168)
+                end
                 if not ok then
                   civMessage.Text = "서버 연구 요청에 실패했어. 다시 시도해."
                 elseif typeof(success) == "boolean" and typeof(message) == "string" then
