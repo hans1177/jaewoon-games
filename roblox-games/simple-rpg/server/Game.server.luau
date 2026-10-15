@@ -1269,6 +1269,7 @@ for id = 1, 24 do
     local pz = index <= 4 and (math.floor((index - 1) / 2) * 12 - 2) or -14
     local node = civPart(region, resource.Label, Vector3.new(4, 5, 4), CFrame.new(center + Vector3.new(px, 3.5, pz)), resource.Color, Enum.Material.Rock, true)
     node.Shape = Enum.PartType.Ball
+    node:SetAttribute("CivilizationResourceType", resource.Type)
     civSign(region, node, resource.Label .. " 채집", 4)
     local gatherPrompt = Instance.new("ProximityPrompt")
     gatherPrompt.Name = "GatherResource"
