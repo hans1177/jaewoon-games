@@ -2070,14 +2070,14 @@ for id = 1, 24 do
   local region = Instance.new("Folder")
   region.Name = race.Name
   region.Parent = civHub
-  local ground = civPart(region, "CivilizationGround", Vector3.new(105, 2, 105), CFrame.new(center), civRegions[((id - 1) % #civRegions) + 1], Enum.Material.Slate, true)
+  local ground = civPart(region, "CivilizationGround", Vector3.new(560, 2, 560), CFrame.new(center), civRegions[((id - 1) % #civRegions) + 1], Enum.Material.Slate, true)
   ground:SetAttribute("WalkableGround", true)
   -- 문명마다 지표 색·질감이 다른 야외 생태 지대를 연결한다.
   -- 주요 채집 시설 및 보스 생성 좌표는 기존 섬 위에 그대로 둔다.
   local biomeColor = civRegions[((id - 1) % #civRegions) + 1]
   local biomeMat = (id % 6 == 2 or id % 6 == 0) and Enum.Material.Sand
     or (id % 6 == 4) and Enum.Material.Snow or Enum.Material.Grass
-  local biome = civPart(region, "문명 외곽 야생지", Vector3.new(125, 0.3, 125),
+  local biome = civPart(region, "문명 외곽 야생지", Vector3.new(610, 0.3, 610),
     CFrame.new(center + Vector3.new(0, -0.82, 0)), biomeColor, biomeMat, false)
   biome.CanTouch = false
   biome.CanQuery = false
@@ -2085,15 +2085,15 @@ for id = 1, 24 do
   for era=1,5 do makeEraScenery(region,center,era) end
   -- 중앙과 지역 사이에 실제 걷는 길을 시각적으로 표시한다.
   local direction = Vector3.new(center.X, 0, center.Z).Unit
-  local roadCenter = direction * (civ.WorldRadius * 0.5)
-  local road = civPart(region, "문명 연결 산책로", Vector3.new(8, 0.13, civ.WorldRadius - 45),
+  local roadCenter = center - direction * 125
+  local road = civPart(region, "문명 연결 산책로", Vector3.new(8, 0.13, 250),
     CFrame.lookAt(roadCenter + Vector3.new(0, -0.85, 0), center), 
     Color3.fromRGB(151, 132, 101), Enum.Material.Ground, false)
   road.CanTouch = false
   road.CanQuery = false
   -- 길가 표지석으로 넓어진 필드에서도 각 문명까지의 방향을 읽을 수 있게 한다.
   for step = 1, 2 do
-    local markerPosition = direction * (civ.WorldRadius * (0.35 + step * 0.2))
+    local markerPosition = center - direction * (180 - step * 75)
       + Vector3.new(-direction.Z, 0, direction.X) * 7
     local marker = civPart(region, "문명 길잡이 " .. step,
       Vector3.new(2, 3.5, 2), CFrame.new(markerPosition + Vector3.new(0, 1, 0)),
