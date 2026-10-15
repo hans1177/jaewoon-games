@@ -8,6 +8,7 @@ local Lighting=game:GetService("Lighting")
 local AssetService=game:GetService("AssetService")
 local InsertService=game:GetService("InsertService")
 local TweenService=game:GetService("TweenService")
+local TeleportService=game:GetService("TeleportService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local RaceData=require(Shared:WaitForChild("RaceData"))
@@ -56,6 +57,7 @@ local parties={}
 local clickTimes={}
 local lastRequest={}
 local lastBlockRequest={}
+local comboState={}
 local lastCombat={}
 local movementProbeStart={}
 local foundationSeen={}
@@ -538,9 +540,10 @@ local function staggerEnemy(e,amount,now)
  e.stagger=math.max(0,(e.stagger or e.staggerMax or 40)-(amount or 20));e.part:SetAttribute("Stagger",e.stagger)
  if e.stagger<=0 then
   e.stunnedUntil=now+(e.boss and 2.1 or 1.45);e.attackPending=false;e.attackToken=(e.attackToken or 0)+1;e.stagger=e.staggerMax or 40;e.part:SetAttribute("Stagger",e.stagger);e.part:SetAttribute("Staggered",true)
-  task.delay(e.boss and 2.1 or 1.45,function()if e.part and e.part.Parent then e.part:SetAttribute("Staggered",false)end end)
+  task.delay(e.boss and 2.1 or 1.45,function()if e.part and e.part.Parent and os.clock()>=(e.stunnedUntil or 0)then e.part:SetAttribute("Staggered",false)end end)
  end
 end
+local killEnemy
 local function resolveIncomingAttack(p,e,attack)
  local h=hum(p);local pr=root(p);if not h or not pr or h.Health<=0 or not e.part or not e.part.Parent then return end
  local now=os.clock()
@@ -564,6 +567,18 @@ local function resolveIncomingAttack(p,e,attack)
    p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1);p:SetAttribute("CivParries",n(p,"CivParries",0)+1);p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+12))
    feedback(p,"PARRY");msg(p,"완벽 패링 · "..tostring(attack.Name or"공격"))
    staggerEnemy(e,(attack.GuardDamage or 20)*1.55,now)
+   -- 패링 성공 시 공격을 취소하고 최소 2초 동안 적을 기절시킨다.
+   e.stunnedUntil=math.max(e.stunnedUntil or 0,now+2)
+   e.attackPending=false;e.attackToken=(e.attackToken or 0)+1
+   e.part:SetAttribute("Staggered",true)
+   task.delay(2,function()
+    if e.part and e.part.Parent and (e.stunnedUntil or 0)<=os.clock() then e.part:SetAttribute("Staggered",false)end
+   end)
+   -- 서버 확정 패링만 적의 실제 공격 피해 100% 반사.
+   local reflect=math.max(0,(e.damage or 8)*(attack.DamageMult or 1)*(e.enragedUntil and e.enragedUntil>now and 1.22 or 1))
+   e.hp=math.max(0,e.hp-reflect);e.part:SetAttribute("HP",e.hp)
+   combatFlash(e.part.Position+Vector3.new(0,2,0),Color3.fromRGB(255,226,145),2.2)
+   if e.hp<=0 then killEnemy(p,e,3)end
    local classId=tostring(p:GetAttribute("ClassId")or"");local adv=tostring(p:GetAttribute("AdvancementId")or"")
    if classId=="BREAKER"then p:SetAttribute("GuardUntil",now+1.2)end
    if classId=="SHADOW"then p:SetAttribute("BackstabUntil",now+2.4)end
@@ -921,6 +936,7 @@ local SAVE_SCHEMA_VERSION=4
 local SAVE_MAX_ATTEMPTS=3
 local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture","HouseModules","AvatarStyle","AvatarArchetype","AvatarArmor","AvatarDecoration","RaceID","CivTechCount","CivKills","CivParries","CivBossKills","CivMyth","CivStone","CivBronze","CivIron","CivHero"}
 local saveReady={}
+local privateRealmCodes={} -- 예약 서버 코드는 클라이언트에 복제하지 않고 서버 저장소에 보관한다.
 local saveSurface=RS:FindFirstChild("SavePersistence")
 if not saveSurface then
  saveSurface=Instance.new("Folder")
@@ -943,7 +959,7 @@ local function init(p)
  for _,resource in ipairs(TechTreeData.EraResources)do p:SetAttribute(resource,0)end
  p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
- p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
+ p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("DodgeCooldownUntil",0);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
  p:SetAttribute("AutoCombat",true);p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
  p:SetAttribute("PartyCount",0);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0);p:SetAttribute("PartyHuntActive",false);p:SetAttribute("RoomCode",1)
  msg(p,"직업을 고르고 보스를 격파해 AI 동료를 해금해.")
@@ -971,6 +987,7 @@ local function load(p)
   return
  end
  if typeof(data)=="table"then
+  if typeof(data.CivPrivateRealmCode)=="string" and #data.CivPrivateRealmCode<512 then privateRealmCodes[p]=data.CivPrivateRealmCode end
   for _,k in ipairs(SAVE)do if data[k]~=nil then p:SetAttribute(k,data[k])end end
  end
  saveReady[p]=true
@@ -980,11 +997,16 @@ end
 local function save(p)
  if C.SaveEnabled~=true or not store or saveReady[p]~=true or p:GetAttribute("SaveState")=="SESSION_ONLY" then return false end
  local data={};for _,k in ipairs(SAVE)do data[k]=p:GetAttribute(k)end
+ if privateRealmCodes[p]then data.CivPrivateRealmCode=privateRealmCodes[p]end
  setSaveState(p,"SAVING")
  local lastError=nil
  for attempt=1,SAVE_MAX_ATTEMPTS do
   local ok,err=pcall(function()
-   store:UpdateAsync("p:"..p.UserId,function()return data end)
+   store:UpdateAsync("p:"..p.UserId,function(existing)
+     local current=typeof(existing)=="table" and existing or {}
+     for key,value in pairs(data)do current[key]=value end
+     return current
+    end)
   end)
   if ok then
    setSaveState(p,"SAVED")
@@ -1133,6 +1155,85 @@ local function purchaseMerchantEquipment(p,kind)
  return true
 end
 
+-- AI 문명: 24개 문명이 서버에서 자원을 모으고 연구하며 시대를 발전시킨다.
+local civRivals={}
+local function createCivRivalCamps(folder)
+ table.clear(civRivals)
+ local camps=Instance.new("Folder");camps.Name="AutonomousCivilizations";camps.Parent=folder
+ for id=1,24 do
+  local race=RaceData.GetRace(id)
+  if race then
+   local angle=(id-1)/24*math.pi*2
+   local pos=Vector3.new(math.cos(angle)*133,2.5,math.sin(angle)*133)
+   local base=ppart(camps,"CivCamp_"..id,Vector3.new(8,1,8),pos,Color3.fromRGB(111,85,60),Enum.Material.WoodPlanks)
+   base.CanCollide=false
+   local banner=ppart(camps,race.Name.."_Banner",Vector3.new(3,9,1),pos+Vector3.new(0,5,0),Color3.fromRGB(65+id*5,98+id*3,118),Enum.Material.Slate)
+   banner.CanCollide=false;banner.CanTouch=false
+   banner:SetAttribute("IsCivAI",true);banner:SetAttribute("RaceID",id)
+   banner:SetAttribute("TechProgress",0);banner:SetAttribute("CivResources",0)
+   banner:SetAttribute("CurrentEra",1)
+   local sign=label(banner,race.Name.." · 신화 시대",Color3.fromRGB(243,214,163),70)
+   table.insert(civRivals,{banner=banner,label=sign:FindFirstChildOfClass("TextLabel"),race=race})
+  end
+ end
+end
+task.spawn(function()
+ while task.wait(5) do
+  if world and world.Parent then
+   for _,entry in ipairs(civRivals)do
+    local actor=entry.banner
+    if actor and actor.Parent then
+     local progress=math.clamp(math.floor(actor:GetAttribute("TechProgress")or 0),0,TechTreeData.Count)
+     if progress<TechTreeData.Count then
+      local nextTech=TechTreeData.Next(progress)
+      if nextTech then
+       local bonus=entry.race.Bonuses.FoodProduction or entry.race.Bonuses.MiningYield or 0
+       local resources=(actor:GetAttribute("CivResources")or 0)+2+bonus*5
+       local cost=4+nextTech.Era*3
+       if resources>=cost then
+        resources-=cost;progress+=1
+        actor:SetAttribute("TechProgress",progress)
+        actor:SetAttribute("CurrentEra",nextTech.Era)
+        if entry.label then entry.label.Text=entry.race.Name.." · "..TechTreeData.EraNames[nextTech.Era].." "..progress.."/72"end
+       end
+       actor:SetAttribute("CivResources",math.floor(resources*100)/100)
+      end
+     end
+    end
+   end
+  end
+ end
+end)
+
+-- 전용 영지: 기존 저장 게임 PlaceId의 예약 서버를 소유주만 이용한다.
+local realmEntryBusy={}
+local function enterPrivateRealm(player)
+ if realmEntryBusy[player] then return end
+ if not player.Parent or not saveReady[player] or player:GetAttribute("SaveState")=="SESSION_ONLY"then msg(player,"영지 서버는 저장 연결이 필요해.");return end
+ if RunService:IsStudio()or game.PlaceId<=0 then msg(player,"예약 서버는 로블록스 게시 게임에서 이용할 수 있어.");return end
+ if n(player,"CurrentZone",0)~=0 or player:GetAttribute("InCombat")==true then msg(player,"마을에서 전투를 끝내고 이용해.");return end
+ realmEntryBusy[player]=true
+ task.spawn(function()
+  local code=privateRealmCodes[player]
+  if not code then
+   local ok,result=pcall(function()return TeleportService:ReserveServerAsync(game.PlaceId)end)
+   if not ok or type(result)~="string"then
+    realmEntryBusy[player]=nil;msg(player,"개인 영지 예약 실패");warn("Civ realm reservation",result);return
+   end
+   code=result;privateRealmCodes[player]=code
+   if not save(player) then
+    privateRealmCodes[player]=nil;realmEntryBusy[player]=nil;msg(player,"영지 정보 저장에 실패했어.");return
+   end
+  end
+  local options=Instance.new("TeleportOptions")
+  options.ReservedServerAccessCode=code
+  options:SetTeleportData({CivRealm="ESTATE",OwnerUserId=player.UserId})
+  local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,{player},options)end)
+  realmEntryBusy[player]=nil;options:Destroy()
+  if not ok then msg(player,"개인 영지 이동 실패");warn("Civ realm teleport",err)end
+ end)
+end
+
 local function makeVillage()
  table.clear(livingResidents)
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
@@ -1158,6 +1259,37 @@ local function makeVillage()
   local pole=ppart(f,"VillageLamp",Vector3.new(1,8,1),Vector3.new(x,5,25),Color3.fromRGB(70,66,62),Enum.Material.Metal)
   local light=ppart(f,"VillageLampGlow",Vector3.new(2,2,2),pole.Position+Vector3.new(0,4,0),Color3.fromRGB(245,202,116),Enum.Material.Neon);light.CanCollide=false
   local pl=Instance.new("PointLight");pl.Color=light.Color;pl.Range=20;pl.Brightness=.75;pl.Parent=light
+ end
+ createCivRivalCamps(f)
+ -- 멀티버스 개인 영지 포털과 공용 무역 광장. 중앙 스폰은 비워 둔다.
+ local estateGate=ppart(f,"PrivateRealmPortal",Vector3.new(5,10,3),Vector3.new(-14,7,-35),Color3.fromRGB(118,85,178),Enum.Material.Slate)
+ estateGate.CanCollide=false;label(estateGate,"개인 영지 · 예약 서버",Color3.fromRGB(234,205,255),65)
+ prompt(estateGate,"멀티버스 영지","내 영지로 이동","CIV_ESTATE","CivilizationEstate").Triggered:Connect(enterPrivateRealm)
+ local tradeGate=ppart(f,"MultiverseTradePortal",Vector3.new(5,10,3),Vector3.new(14,7,-35),Color3.fromRGB(194,148,77),Enum.Material.Slate)
+ tradeGate.CanCollide=false;label(tradeGate,"멀티버스 무역 광장",Color3.fromRGB(255,229,163),65)
+ prompt(tradeGate,"무역 광장","이동하기","CIV_TRADE","MultiverseTrade").Triggered:Connect(function(player)
+  if n(player,"CurrentZone",0)==0 then teleportPlayer(player,Vector3.new(0,2,-94));msg(player,"공용 무역 광장에 도착했어.");feedback(player,"CIV_TRADE")end
+ end)
+ local tradeFloor=ppart(f,"MultiverseTradeSquare",Vector3.new(51,1,30),Vector3.new(0,1.9,-94),Color3.fromRGB(165,140,104),Enum.Material.Cobblestone)
+ tradeFloor.CanCollide=true
+ for index=1,4 do
+  local x=(index-2.5)*12
+  local stand=ppart(f,"CivTradeStand"..index,Vector3.new(9,3,4),Vector3.new(x,4,-104),Color3.fromRGB(134,93,58),Enum.Material.WoodPlanks)
+  stand.CanCollide=false
+  local tradeResources={"CivStone","CivBronze","CivIron","CivHero"}
+  local names={"석재","청동","철","영웅 인장"}
+  local prices={20,45,85,160}
+  local item=tradeResources[index];local cost=prices[index]
+  label(stand,names[index].." · "..cost.."G",Color3.fromRGB(255,226,169),42)
+  prompt(stand,names[index].." 교역","1개 구입","CIV_TRADE_BUY","CivilizationTrade"..index).Triggered:Connect(function(player)
+   if n(player,"CurrentZone",0)~=0 or n(player,"RaceID",0)<=0 or saveReady[player]~=true or player:GetAttribute("SaveState")=="SESSION_ONLY"then
+    msg(player,"문명을 선택하고 저장에 연결한 뒤 거래해.");return
+   end
+   if n(player,"Gold",0)<cost then msg(player,names[index].." 구매 골드 부족");return end
+   player:SetAttribute("Gold",n(player,"Gold",0)-cost)
+   player:SetAttribute(item,n(player,item,0)+1)
+   msg(player,names[index].." 1개 구매 · "..cost.."골드");feedback(player,"CIV_TRADE")
+  end)
  end
  -- 상자형 시장·중앙 분수 대신 기존 자산의 실제 소품을 광장 가장자리에 배치한다.
  decorateVillageAssets(f)
@@ -1664,7 +1796,7 @@ local function partyKill(p,contribution)
  end
  broadcastMultiplayerSync(p)
 end
-local function killEnemy(p,e,contribution)
+killEnemy=function(p,e,contribution)
  if e.hp>0 then return end
  local z=portalDef(e.zone);local display=e.def and e.def.Name or(e.boss and z.Boss and z.Boss.Name or z.Enemy)
  if e.part.Parent then e.part:Destroy()end
@@ -1707,6 +1839,15 @@ local function playerAttack(p,skill)
  local range=skill and(classId=="RUNE"and 28 or classId=="SOUL"and 26 or 20)or 15
  local e=nearestEnemy(r.Position,zone,range);if not e then msg(p,"사거리 안에 몬스터가 없어");feedback(p,"ATTACK_NO_TARGET")return end
  local now=os.clock();local adv=tostring(p:GetAttribute("AdvancementId")or"");local damage=n(p,"AttackPower",10)*(skill and cd.SkillMult or 1)
+ -- 자동 공격과 스킬은 기존 공격력/드랍 규칙 유지. 수동 기본 공격만 콤보를 연결한다.
+ local combo=comboState[p]or{step=0,at=0}
+ if not skill and (n(p,"ManualAttackUntil",0)>=now or p:GetAttribute("AutoCombat")==false) then
+  combo.step=(now-combo.at<=1.0)and(combo.step%3+1)or 1
+  combo.at=now;p:SetAttribute("CombatCombo",combo.step)
+ else
+  combo.step=0;p:SetAttribute("CombatCombo",0)
+ end
+ comboState[p]=combo
  local backstab=classId=="SHADOW"and n(p,"BackstabUntil",0)>now
  if classId=="BREAKER"then
   if adv=="RAGE_BREAKER"then local h=hum(p);if h and h.Health/h.MaxHealth<=.5 then damage*=1.28 end end
@@ -1739,6 +1880,11 @@ local function playerAttack(p,skill)
   end
  end
  e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp));staggerEnemy(e,skill and 18 or 8,now);lastCombat[p]=now;p:SetAttribute("InCombat",true)
+ if not skill and combo.step==3 and e.hp>0 and e.part and e.part.Parent then
+  local away=Vector3.new(e.part.Position.X-r.Position.X,0,e.part.Position.Z-r.Position.Z)
+  local zoneDef=portalDef(zone)
+  if away.Magnitude>.01 and zoneDef and (e.part.Position+away.Unit*4-zoneDef.Center).Magnitude<230 then e.part.CFrame=e.part.CFrame+away.Unit*4 end
+ end
  pulseWeaponTrail(p.Character);combatFlash(e.part.Position,cd.Color,skill and 1.7 or 1.15);feedback(p,skill and"SKILL"or"ATTACK")
  if e.hp<=0 then killEnemy(p,e,skill and 3 or 2)end
  local stamp=lastCombat[p];task.delay(C.CombatLockSeconds,function()if p.Parent and lastCombat[p]==stamp then p:SetAttribute("InCombat",false)end end)
@@ -2048,19 +2194,23 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.ADVANCE_B then accepted=chooseAdvancement(p,"B")
  elseif a==C.Actions.START_ADVANCEMENT_TRIAL then startAdvancementTrial(p);accepted=true
  elseif a==C.Actions.BLOCK_START then
-  if n(p,"GuardBrokenUntil",0)<=now and n(p,"Guard",C.GuardMax)>0 then
-   p:SetAttribute("Blocking",true)
+  if n(p,"GuardBrokenUntil",0)<=now and n(p,"Guard",C.GuardMax)>14 then
+   p:SetAttribute("Guard",n(p,"Guard",C.GuardMax)-14);p:SetAttribute("Blocking",true)
    if now>=n(p,"ParryRearmUntil",0)then p:SetAttribute("BlockStartedAt",now);p:SetAttribute("ParryRearmUntil",now+C.ParryRearmSeconds);feedback(p,"BLOCK_READY")
    else p:SetAttribute("BlockStartedAt",0)end
    accepted=true
   end
  elseif a==C.Actions.BLOCK_END then p:SetAttribute("Blocking",false);accepted=true
- elseif a==C.Actions.ATTACK then p:SetAttribute("Blocking",false);playerAttack(p,false);accepted=true
+ elseif a==C.Actions.ATTACK then p:SetAttribute("Blocking",false);p:SetAttribute("ManualAttackUntil",now+.1);playerAttack(p,false);accepted=true
  elseif a==C.Actions.SKILL then p:SetAttribute("Blocking",false);playerAttack(p,true);accepted=true
  elseif a==C.Actions.DODGE then
+  if n(p,"DodgeCooldownUntil",0)>now then return end
   p:SetAttribute("Blocking",false);local r=root(p);if r then
    local classId=tostring(p:GetAttribute("ClassId")or"NONE");local adv=tostring(p:GetAttribute("AdvancementId")or"")
-   local evade=adv=="MIRAGE_TRACKER"and .75 or .45;p:SetAttribute("EvasionUntil",now+evade)
+   local stamina=n(p,"Guard",C.GuardMax)
+    if stamina<24 then msg(p,"회피 스태미나 부족");return end
+    p:SetAttribute("Guard",stamina-24);p:SetAttribute("DodgeCooldownUntil",now+.8)
+    local evade=adv=="MIRAGE_TRACKER"and .75 or .30;p:SetAttribute("EvasionUntil",now+evade)
    if classId=="SHADOW"then p:SetAttribute("BackstabUntil",now+2.2)end
    r.AssemblyLinearVelocity=r.CFrame.LookVector*52+Vector3.new(0,r.AssemblyLinearVelocity.Y,0);accepted=true;feedback(p,"DODGE")
   end
@@ -2101,17 +2251,39 @@ buildWorld()
 local function bindPlayer(p)
  load(p)
  refreshHouse(p)
+ local joinData=p:GetJoinData()
+ local arrival=typeof(joinData)=="table" and joinData.TeleportData
+ local isEstate=game.PrivateServerId~="" and typeof(arrival)=="table" and arrival.CivRealm=="ESTATE" and arrival.OwnerUserId==p.UserId
+ if isEstate then
+  p:SetAttribute("CivPrivateEstate",true)
+  if n(p,"HouseLevel",0)<1 then
+   local pos=housePosition(p)
+   local ground=ppart(houses,"EmptyEstatePlot_"..p.UserId,Vector3.new(44,2,44),pos+Vector3.new(0,-2,0),Color3.fromRGB(91,135,86),Enum.Material.Grass)
+   ground.CanCollide=true
+  end
+ end
+ local function spawnDestination()
+  return isEstate and (housePosition(p)+Vector3.new(0,6,-10)) or C.VillageCenter
+ end
  local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end
  p:GetAttributeChangedSignal("ClassId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("AdvancementId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("WeaponTier"):Connect(refreshAppearance);p:GetAttributeChangedSignal("ArmorTier"):Connect(refreshAppearance)
  p.CharacterAdded:Connect(function(c)
-  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);p:SetAttribute("Blocking",false);p:SetAttribute("Guard",C.GuardMax);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,c)
+  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);p:SetAttribute("Blocking",false);p:SetAttribute("Guard",C.GuardMax);teleportPlayer(p,spawnDestination());applyPlayerAppearance(p);validateCharacterFoundation(p,c)
  end)
- if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,p.Character)end)end
+ if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,spawnDestination());applyPlayerAppearance(p);validateCharacterFoundation(p,p.Character)end)end
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);local oldHouse=houses:FindFirstChild("House_"..p.UserId);if oldHouse then oldHouse:Destroy()end;saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)comboState[p]=nil;save(p);privateRealmCodes[p]=nil;realmEntryBusy[p]=nil;local oldHouse=houses:FindFirstChild("House_"..p.UserId);if oldHouse then oldHouse:Destroy()end;saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
+-- 기존 저장소·저장 키 그대로 60초 자동 저장. 다른 임시 저장 파이프라인을 만들지 않는다.
+task.spawn(function()
+ while task.wait(60)do
+  for _,p in ipairs(Players:GetPlayers())do
+   if saveReady[p]==true and p:GetAttribute("SaveState")~="SESSION_ONLY"then task.spawn(save,p)end
+  end
+ end
+end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
  if typeof(name)~="string"then return end

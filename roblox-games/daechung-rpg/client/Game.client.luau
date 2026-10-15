@@ -797,12 +797,12 @@ local function poseRig(rig,kind)
  local waist=torso:FindFirstChild("Waist")
  if not right or not left or not right:IsA("Motor6D") or not left:IsA("Motor6D") then return false end
  local epoch=(jointEpoch[rig] or 0)+1;jointEpoch[rig]=epoch
- local pitch=kind=="PARRY_PERFECT" and -1.25 or kind=="DODGE_LEFT" and .5 or kind=="CAST_RELEASE" and -1.65 or -1.1
- local twist=kind=="DODGE_LEFT" and -.5 or kind=="HEAVY_ATTACK_1" and .55 or .28
- local duration=kind=="DODGE_LEFT" and .42 or kind=="HEAVY_ATTACK_1" and .52 or .32
+ local pitch=kind=="PARRY_PERFECT" and -1.25 or kind=="DODGE_LEFT" and .5 or kind=="CAST_RELEASE" and -1.65 or kind=="LIGHT_ATTACK_2" and -.75 or kind=="LIGHT_ATTACK_3" and -1.6 or -1.1
+ local twist=kind=="DODGE_LEFT" and -.5 or kind=="LIGHT_ATTACK_2" and -.55 or kind=="LIGHT_ATTACK_3" and 1.0 or kind=="HEAVY_ATTACK_1" and .55 or .28
+ local duration=kind=="DODGE_LEFT" and .42 or kind=="LIGHT_ATTACK_3" and .48 or kind=="HEAVY_ATTACK_1" and .52 or .32
  local motors={{right,right.C0,right.C0*CFrame.Angles(pitch,0,twist)},{left,left.C0,left.C0*CFrame.Angles(-pitch*.55,0,-twist)}}
  if waist and waist:IsA("Motor6D") then table.insert(motors,{waist,waist.C0,waist.C0*CFrame.Angles(0,twist*.6,0)})end
- for _,m in ipairs(motors)do TweenService:Create(m[1],TweenInfo.new(.09,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{C0=m[3]}):Play()end
+ for _,m in ipairs(motors)do TweenService:Create(m[1],TweenInfo.new(kind=="PARRY_PERFECT" and .05 or .09,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{C0=m[3]}):Play()end
  task.delay(duration,function()
   if jointEpoch[rig]~=epoch or not rig.Parent then return end
   for _,m in ipairs(motors)do
@@ -907,29 +907,76 @@ task.spawn(function()
   task.wait(1.2)
  end
 end)
+-- 모션: 기존 게시 R15 액션 트랙과 관절 폴백을 한 함수에서 제어한다.
 local combatTracks={}
+local activeCombatTrack=nil
+local lastComboInput=0
+local localComboIndex=0
+local function stopCombatTrack(fade)
+ if activeCombatTrack and activeCombatTrack.IsPlaying then activeCombatTrack:Stop(fade or .05)end
+ activeCombatTrack=nil
+end
 local function playCombatAnimation(skillCast)
- local c=p.Character;local h=c and c:FindFirstChildOfClass("Humanoid");if not h then return end
- local animator=h:FindFirstChildOfClass("Animator")or Instance.new("Animator",h)
- local classId=tostring(p:GetAttribute("ClassId")or"NONE")
- local weaponTier=tonumber(p:GetAttribute("WeaponTier"))or 1
- local atom=skillCast and "CAST_RELEASE" or (weaponTier>=4 and "HEAVY_ATTACK_1" or "LIGHT_ATTACK_1")
- if playCommonMotion(atom)then return end
- local key=skillCast and"LUNGE"or"SLASH";local track=combatTracks[key]
- if not track or track.Parent==nil then
-  local a=Instance.new("Animation");a.AnimationId=skillCast and"rbxassetid://522638767"or"rbxassetid://522635514"
-  local ok,t=pcall(function()return animator:LoadAnimation(a)end);a:Destroy();if ok then track=t;combatTracks[key]=t end
+ local character=p.Character
+ local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+ if not humanoid then return end
+ local now=os.clock()
+ if skillCast then localComboIndex=0
+ else
+  localComboIndex=(now-lastComboInput<=1)and(localComboIndex%3+1)or 1
+  lastComboInput=now
  end
+ local atom=skillCast and "CAST_RELEASE" or localComboIndex==2 and "LIGHT_ATTACK_2" or localComboIndex==3 and "LIGHT_ATTACK_3"
+   or ((tonumber(p:GetAttribute("WeaponTier"))or 1)>=4 and "HEAVY_ATTACK_1" or "LIGHT_ATTACK_1")
+ local animator=humanoid:FindFirstChildOfClass("Animator")
+ if not animator then animator=Instance.new("Animator");animator.Parent=humanoid end
+ local key=skillCast and "LUNGE" or localComboIndex==3 and "FINISH" or "SLASH"
+ local track=combatTracks[key]
+ if not track then
+  local animation=Instance.new("Animation")
+  animation.AnimationId=skillCast and "rbxassetid://522638767" or "rbxassetid://522635514"
+  local ok,loaded=pcall(function()return animator:LoadAnimation(animation)end)
+  animation:Destroy()
+  if ok and loaded then
+   track=loaded;track.Priority=Enum.AnimationPriority.Action;combatTracks[key]=track
+   track.Stopped:Connect(function()if activeCombatTrack==track then activeCombatTrack=nil end end)
+  end
+ end
+ stopCombatTrack(.05)
  if track then
-  track.Priority=Enum.AnimationPriority.Action
-  local classId=tostring(p:GetAttribute("ClassId")or"NONE");local speed=classId=="SHADOW"and 1.45 or classId=="BREAKER"and .82 or 1
-  track:Play(.08,1,speed)
+  activeCombatTrack=track
+  local classId=tostring(p:GetAttribute("ClassId")or"NONE")
+  local speed=classId=="SHADOW"and 1.45 or classId=="BREAKER"and .82 or 1
+  track:Play(.07,1,speed)
+  track:AdjustWeight(1,.05)
+ else
+  playCommonMotion(atom)
+ end
+end
+-- 카메라 및 히트스탑은 연출 전용. 월드 시간과 서버 전투 판정은 멈추지 않는다.
+local shakeUntil=0
+local shakeIntensity=0
+RunService:BindToRenderStep("DaechungCombatShake",Enum.RenderPriority.Camera.Value+1,function()
+ local camera=workspace.CurrentCamera
+ if not camera or shakeUntil<=os.clock() then return end
+ local amplitude=shakeIntensity*math.clamp((shakeUntil-os.clock())/.15,0,1)*.08
+ camera.CFrame=camera.CFrame*CFrame.new((math.random()-.5)*amplitude,(math.random()-.5)*amplitude,0)
+end)
+local function combatShake(intensity,duration)
+ shakeIntensity=intensity;shakeUntil=os.clock()+duration
+end
+local function parryHitstop()
+ local track=activeCombatTrack
+ if track and track.IsPlaying then
+  track:AdjustSpeed(0)
+  task.delay(.05,function()if track.IsPlaying then track:AdjustSpeed(1)end end)
  end
 end
 local blockHeld=false
 local blockInput=nil
 local function setBlock(on)
  if blockHeld==on then return end;blockHeld=on
+ if on then stopCombatTrack(.05);playCommonMotion("PARRY_PERFECT")end
  remote:FireServer(on and C.Actions.BLOCK_START or C.Actions.BLOCK_END)
 end
 attack.Activated:Connect(function()setBlock(false);playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)end)
@@ -947,7 +994,9 @@ end)
 UserInputService.InputBegan:Connect(function(input,processed)
  if processed or gui:GetAttribute("RPGMenuOpen")==true or startupOverlay.Parent~=nil then return end
  if input.KeyCode==Enum.KeyCode.F then
-  setBlock(true)
+   setBlock(true)
+  elseif input.KeyCode==Enum.KeyCode.LeftShift then
+   setBlock(false);playCommonMotion("DODGE_LEFT");remote:FireServer(C.Actions.DODGE)
  elseif input.UserInputType==Enum.UserInputType.MouseButton1 then
   setBlock(false);playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)
  end
@@ -1326,7 +1375,10 @@ local function syncAutoMotion()
  local action=tostring(p:GetAttribute("FeedbackEvent")or"")
  if action~=lastActionMotion then
   lastActionMotion=action
-  if action:find("PARRY",1,true)then playCommonMotion("PARRY_PERFECT")
+  if action:find("PARRY",1,true)then
+    stopCombatTrack(.05);playCommonMotion("PARRY_PERFECT")
+    combatShake(1.2,.15);parryHitstop()
+    if studioSkillEmitter and studioSkillEmitter.Parent then studioSkillEmitter:Emit(touchEnabled and 8 or 18)end
   elseif action:find("DODGE",1,true)then playCommonMotion("DODGE_LEFT")
   elseif action:find("ATTACK",1,true)or action:find("SKILL",1,true)then playCombatAnimation(action:find("SKILL",1,true)~=nil) end
  end
