@@ -1206,30 +1206,26 @@ local function civOpen(mode)
       UDim2.new(1, -9, 0, 38), UDim2.new(), false)
     hint.LayoutOrder = 42
   elseif mode == "Regions" then
-    panelTitle.Text = "지역 선택 · 탐험"
+    panelTitle.Text = "모험 시작"
+    local adventure = civButton(civList, "StartAdventure", "모험 시작",
+      UDim2.new(1, -9, 0, 52), UDim2.new(), function()
+        if (player:GetAttribute("CivRaceID") or 0) <= 0 then
+          civMessage.Text = "게임 데이터를 불러오는 중이야."
+          civMessage.Visible = true
+          return
+        end
+        remote:FireServer("CivTravel", player:GetAttribute("CivRaceID"))
+        civPanel.Visible = false
+        civMenuRail.Visible = false
+      end)
+    adventure.LayoutOrder = 1
     local lobby = civButton(civList, "ReturnToLobby", "중앙 로비로 이동",
       UDim2.new(1, -9, 0, 48), UDim2.new(), function()
         remote:FireServer("CivTravel", "Lobby")
         civPanel.Visible = false
+        civMenuRail.Visible = false
       end)
-    lobby.LayoutOrder = 1
-    for id = 1, 24 do
-      local race = RaceData.GetRace(id)
-      local destination = id
-      local button = civButton(civList, "RegionTravel" .. id,
-        string.format("%02d. 탐험 지역 · %s", id, race.Landmark),
-        UDim2.new(1, -9, 0, 48), UDim2.new(), function()
-          if (player:GetAttribute("CivRaceID") or 0) <= 0 then
-            civMessage.Text = "게임 데이터를 불러오는 중이야."
-            return
-          end
-          remote:FireServer("CivTravel", destination)
-          civPanel.Visible = false
-          civMenuRail.Visible = false
-        end)
-      button.LayoutOrder = id + 1
-      button.TextSize = 13
-    end
+    lobby.LayoutOrder = 2
   elseif mode == "Portals" then
     local unlocked = (player:GetAttribute("CivTech") or 0) >= 72
     panelTitle.Text = unlocked and "영웅 시대 · 24개 차원 포털" or "차원 포털 · 최종 연구 72 필요"
