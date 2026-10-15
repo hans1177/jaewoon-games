@@ -310,6 +310,7 @@ local Config = {
     CivHide = 0, CivCoreCrystal = 0, CivDarkIron = 0,
     CivBronzeIngot = 0, CivIronIngot = 0,
     CivStoneSpear = 0, CivBronzeSword = 0, CivIronGreatsword = 0,
+    CivEquippedWeapon = 0,
     CivBoarKills = 0, CivBronzeSmelts = 0, CivIronKnightKills = 0,
     CivStoneWall = 0, CivDangunAltar = 0, CivPyramid = 0,
     CivColosseum = 0, CivDrakkarShipyard = 0,
