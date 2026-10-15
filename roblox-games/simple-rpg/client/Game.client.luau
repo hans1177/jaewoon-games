@@ -1555,7 +1555,7 @@ local function civActionMotion(actionId, button)
     if studioMotionPreviewEnabled and humanoid.RigType == Enum.HumanoidRigType.R15 then
       local animator = humanoid:FindFirstChildOfClass("Animator")
       if animator then
-        local atom = actionId == "CivAttack" and "LIGHT_ATTACK_1"
+        local atom = actionId == "CivAttack" and (attackCombo == 3 and "HEAVY_ATTACK_1" or "LIGHT_ATTACK_1")
           or actionId == "CivGuard" and "PARRY_PERFECT"
           or actionId == "CivDodge" and "DODGE_RIGHT"
           or nil
