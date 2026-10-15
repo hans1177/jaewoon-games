@@ -1689,7 +1689,17 @@ local function housingTarget()
   housingRayParams.FilterDescendantsInstances = character and {character,housingPreview} or {housingPreview}
   local hit = workspace:Raycast(camera.CFrame.Position,camera.CFrame.LookVector*45,housingRayParams)
   if not hit then return nil,nil end
-  return hit.Position,hit.Instance
+  local target = hit.Instance
+  -- 공용 비주얼 모델을 조준해도 실제 서버 판정 부품으로 승격한다.
+  local current = target
+  while current and current ~= workspace do
+    if current:IsA("BasePart") and current:GetAttribute("HousingPiece") == true then
+      target = current
+      break
+    end
+    current = current.Parent
+  end
+  return hit.Position,target
 end
 game:GetService("RunService").RenderStepped:Connect(function()
   if not housingPanel.Visible then housingPreview.Transparency=1 return end
@@ -1702,7 +1712,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
   local x=math.round((position.X-center.X)/8)*8
   local z=math.round((position.Z-center.Z)/8)*8
   local base=housingSelected=="SquareFoundation" or housingSelected=="TriangleFoundation" or housingSelected=="FenceBase"
-  local level=base and 0 or math.clamp(math.round(position.Y/8),0,3)
+  local level=base and 0 or math.clamp(math.round((position.Y-center.Y)/8),0,3)
   local size=housingSizes[housingSelected]
   housingPreview.Size=size
   housingPreview.CFrame=CFrame.new(center+Vector3.new(x,level*8+size.Y/2,z))*CFrame.Angles(0,math.rad(housingRotation),0)
