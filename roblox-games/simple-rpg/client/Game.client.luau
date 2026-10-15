@@ -1676,6 +1676,12 @@ local function civActionMotion(actionId, button)
           local restoreTween = actionTweenService:Create(joint, TweenInfo.new(0.16, Enum.EasingStyle.Quad),
             {C0 = startC0})
           actionJointTweens[joint] = restoreTween
+          restoreTween.Completed:Connect(function()
+            if actionJointTweens[joint] == restoreTween then
+              actionJointTweens[joint] = nil
+              actionJointBases[joint] = nil
+            end
+          end)
           restoreTween:Play()
         end
       end)
@@ -1718,6 +1724,12 @@ local function civActionMotion(actionId, button)
         if token == actionMotionToken and waist.Parent and character == player.Character then
           local waistRestore = actionTweenService:Create(waist, TweenInfo.new(0.16), {C0 = startWaist})
           actionJointTweens[waist] = waistRestore
+          waistRestore.Completed:Connect(function()
+            if actionJointTweens[waist] == waistRestore then
+              actionJointTweens[waist] = nil
+              actionJointBases[waist] = nil
+            end
+          end)
           waistRestore:Play()
         end
       end)
