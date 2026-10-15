@@ -2436,14 +2436,22 @@ local function civWalkModel(model, target, duration)
   local start = model:GetPivot()
   local distance = (target.Position - start.Position).Magnitude
   if distance < 0.015 then return end
-  -- 큰 위치 점프는 걷기 애니메이션이 아닌 복귀 처리에서 직접 PivotTo 한다.
+  -- 스폰/귀환 등 큰 좌표 차이는 걷기로 오인하지 않고 즉시 복구한다.
+  if distance > 12 then
+    model:PivotTo(target)
+    return
+  end
+  -- AI가 0.25초마다 목표를 갱신하므로 다음 틱 직전까지 연속 이동한다.
+  -- 0.23초 종료 후 정지했다가 다시 움직이는 미세한 끊김을 줄인다.
+  local smoothDuration = math.max(0.08, duration or 0.25)
+  if smoothDuration < 0.3 then smoothDuration = 0.25 end
   local frameValue = Instance.new("CFrameValue")
   frameValue.Value = start
   local connection = frameValue:GetPropertyChangedSignal("Value"):Connect(function()
     if model.Parent then model:PivotTo(frameValue.Value) end
   end)
   local tween = civMoveTweenService:Create(frameValue,
-    TweenInfo.new(duration or 0.23, Enum.EasingStyle.Linear), {Value = target})
+    TweenInfo.new(smoothDuration, Enum.EasingStyle.Linear), {Value = target})
   civMoveTweens[model] = {tween=tween, connection=connection, value=frameValue}
   tween.Completed:Connect(function(state)
     if civMoveTweens[model] and civMoveTweens[model].tween == tween then
