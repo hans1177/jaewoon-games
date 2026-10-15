@@ -733,7 +733,8 @@ local function civOpen(mode)
       UDim2.fromOffset(7, 70), function() showPreview(currentPreviewId - 1) end)
     civButton(racePreview, "NextRacePreview", "▶", UDim2.fromOffset(60, 54),
       UDim2.new(1, -67, 0, 70), function() showPreview(currentPreviewId + 1) end)
-    local toneButton = civButton(racePreview, "SkinTonePreview", "외형 미리보기 · 피부색 변경",
+    local toneButton
+    toneButton = civButton(racePreview, "SkinTonePreview", "외형 미리보기 · 피부색 변경",
       UDim2.new(1, -16, 0, 38), UDim2.fromOffset(8, 178), function()
         civPreviewTone = civPreviewTone % #civSkinTones + 1
         remote:FireServer("CivSkinTone", civPreviewTone)
