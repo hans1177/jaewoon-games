@@ -1490,7 +1490,7 @@ civButton(civMenuRail, "TradeMenu", "무역",
     civOpen("Trade")
     tradeRequestRemote:FireServer("Snapshot", 0, false, "Silver")
   end)
-civButton(civMenuRail, "RegionMapMenu", "맵 이동",
+civButton(civMenuRail, "RegionMapMenu", "지역 선택",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Regions") end)
 civButton(civMenuRail, "InventoryMenu", "가방",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Inventory") end)
@@ -2072,21 +2072,44 @@ lobbyDescription.ZIndex = 32
 lobbyDescription.TextSize = 13
 local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1, -36, 0, 48), UDim2.new(0, 18, 1, -115), function()
   lobbyScreen.Visible = false
+  civMenuRail.Visible = false
   civOpen("Regions")
 end)
 lobbyPlay.ZIndex = 33
 local lobbyExplore = civButton(lobbyCard, "LobbyExplore", "로비 광장 둘러보기", UDim2.new(1, -36, 0, 40), UDim2.new(0, 18, 1, -59), function()
   lobbyScreen.Visible = false
+  civMenuRail.Visible = false
   remote:FireServer("CivTravel", "Lobby")
 end)
 lobbyExplore.ZIndex = 33
-local function openLobby()
-  civPanel.Visible = false
-  lobbyScreen.Visible = true
-  lobbyPlay.Text = "지역 선택하고 출발"
+-- 로비는 기기 회전·화면 크기에 맞춰 버튼과 안내문을 다시 배치한다.
+local function resizeLobby()
   local camera = workspace.CurrentCamera
   local viewport = camera and camera.ViewportSize or Vector2.new(390, 720)
-  lobbyCard.Size = UDim2.fromOffset(math.min(480, math.max(1, viewport.X - 32)), math.min(360, math.max(1, viewport.Y - 28)))
+  local width = math.min(480, math.max(240, viewport.X - 24))
+  local height = math.min(360, math.max(220, viewport.Y - 24))
+  lobbyCard.Size = UDim2.fromOffset(width, height)
+  local compact = height < 310
+  lobbyHeading.TextSize = compact and 22 or 28
+  lobbySubtitle.Position = UDim2.fromOffset(14, compact and 51 or 65)
+  lobbyDescription.Position = UDim2.fromOffset(14, compact and 91 or 115)
+  lobbyDescription.Size = UDim2.new(1, -28, 0, compact and 43 or 54)
+end
+local lobbyViewportConnection
+local function bindLobbyViewport()
+  if lobbyViewportConnection then lobbyViewportConnection:Disconnect() end
+  local camera = workspace.CurrentCamera
+  if camera then lobbyViewportConnection = camera:GetPropertyChangedSignal("ViewportSize"):Connect(resizeLobby) end
+  resizeLobby()
+end
+workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(bindLobbyViewport)
+bindLobbyViewport()
+local function openLobby()
+  civPanel.Visible = false
+  civMenuRail.Visible = false
+  lobbyScreen.Visible = true
+  lobbyPlay.Text = "지역 선택하고 출발"
+  resizeLobby()
 end
 local lobbyMenu = civButton(civMenuRail, "LobbyWelcomeMenu", "로비 안내",
   UDim2.new(1, -8, 0, 45), UDim2.new(), openLobby)
