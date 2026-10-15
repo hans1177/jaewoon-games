@@ -612,12 +612,13 @@ end
 for _, name in ipairs(civWatched) do
   player:GetAttributeChangedSignal(name):Connect(function()
     civRender()
-    if civPanel.Visible and civPanelMode == "Techs" then civOpen("Techs"); civPanel.Visible = true end
+    if civPanel.Visible and civPanelMode == "Techs" then civPanel.Visible = false; civOpen("Techs") end
   end)
 end
 civRender()
 remote.OnClientEvent:Connect(function(kind, payload)
   if kind == "CIV_MESSAGE" and typeof(payload) == "string" then
+    civMessage.TextColor3 = Color3.fromRGB(250, 235, 191)
     civMessage.Text = payload
   elseif kind == "CIV_TELEGRAPH" then
     civMessage.Text = "⚠ 공격 예고! 맞기 직전 패링(F) 또는 회피(Shift)!"
@@ -626,6 +627,7 @@ remote.OnClientEvent:Connect(function(kind, payload)
     civMessage.Text = "퍼펙트 패링! 적 2초 기절"
     civMessage.TextColor3 = Color3.fromRGB(112, 252, 163)
   elseif kind == "CIV_HIT" and typeof(payload) == "table" then
+    civMessage.TextColor3 = Color3.fromRGB(250, 235, 191)
     civMessage.Text = tostring(payload.Enemy) .. "에게 " .. tostring(payload.Damage) .. " 피해!"
   end
 end)
@@ -641,9 +643,11 @@ UserInputService.InputBegan:Connect(function(input, consumed)
 end)
 -- 기존 기능은 삭제하지 않고 별도 메뉴를 통해 접근한다.
 gui.Enabled = false
-if (player:GetAttribute("CivRaceID") or 0) == 0 then
-  task.delay(1, function()
-    if civGui.Parent and (player:GetAttribute("CivRaceID") or 0) == 0 then civOpen("Races") end
-  end)
+local function civShowRaceSelection()
+  if player:GetAttribute("CivReady") == true and (player:GetAttribute("CivRaceID") or 0) == 0 and civGui.Parent then
+    if not civPanel.Visible then civOpen("Races") end
+  end
 end
+player:GetAttributeChangedSignal("CivReady"):Connect(civShowRaceSelection)
+task.defer(civShowRaceSelection)
 
