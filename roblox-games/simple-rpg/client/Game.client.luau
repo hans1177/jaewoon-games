@@ -2147,6 +2147,7 @@ workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(bindLobbyViewport)
 bindLobbyViewport()
 local function openLobby()
   civPanel.Visible = false
+  housingPanel.Visible = false
   civMenuRail.Visible = false
   lobbyScreen.Visible = true
   lobbyPlay.Text = "모험 시작"
@@ -2158,15 +2159,17 @@ local lobbyMenu = civButton(civMenuRail, "LobbyWelcomeMenu", "로비 안내",
 lobbyMenu.LayoutOrder = 0
 local lobbyShown = false
 player:GetAttributeChangedSignal("CivReady"):Connect(function()
-  if player:GetAttribute("CivReady") == true and not lobbyShown then
+  if player:GetAttribute("CivReady") == true and not lobbyShown
+    and not civPanel.Visible and not housingPanel.Visible then
     lobbyShown = true
-    if not civPanel.Visible and not housingPanel.Visible then openLobby() end
+    openLobby()
   end
 end)
 task.defer(function()
-  if player:GetAttribute("CivReady") == true and not lobbyShown then
+  if player:GetAttribute("CivReady") == true and not lobbyShown
+    and not civPanel.Visible and not housingPanel.Visible then
     lobbyShown = true
-    if not civPanel.Visible and not housingPanel.Visible then openLobby() end
+    openLobby()
   end
 end)
 
