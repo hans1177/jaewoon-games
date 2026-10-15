@@ -1374,8 +1374,12 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   end
   enemy:SetAttribute("IsPreparingAttack", false)
   enemy:SetAttribute("AIState", "Idle")
-  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + (mobSlot == 2 and Vector3.new(-9, 4, -9)
-    or Vector3.new(special == "StoneWolf" and 9 or special and -9 or 0, 4, 9))), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
+  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + (special == "StoneWolf" and Vector3.new(17, 4, -15)
+    or special == "WildBoar" and Vector3.new(-17, 4, -15)
+    or special == "BronzeGolem" and Vector3.new(-17, 4, -15)
+    or special == "IronKnight" and Vector3.new(-17, 4, -15)
+    or mobSlot == 2 and Vector3.new(-13, 4, -11)
+    or Vector3.new(0, 4, 16))), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
   root.Transparency = 0.35
   local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
   -- 몬스터 외형 에셋: 기존 생성 경로에서 경량 파츠를 조립한다.
