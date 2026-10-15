@@ -15,7 +15,7 @@ local Config = {
   MinimumParticipants = 2,
   RemoteName = "GameAction",
   RateLimitSeconds = 0.10,
-  Civilization = { BaseParryWindow = 0.25, DodgeIFrame = 0.30, GuardCooldown = 0.50, DodgeCooldown = 0.80, AttackCooldown = 0.55, GatherCooldown = 0.70, WorldRadius = 600, RaceCount = 24, TechCount = 72 },
+  Civilization = { BaseParryWindow = 0.25, DodgeIFrame = 0.30, GuardCooldown = 0.50, DodgeCooldown = 0.80, AttackCooldown = 0.55, GatherCooldown = 0.70, WorldRadius = 3200, RaceCount = 24, TechCount = 72 },
   DesignBaseline = {
     Required = true,
     AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
