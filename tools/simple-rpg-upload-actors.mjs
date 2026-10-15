@@ -62,3 +62,46 @@ for (const [relativeFile, name] of models) {
 const outputFile = process.argv[2] || '/tmp/simple-rpg-imported-actors.json';
 await fs.writeFile(outputFile, JSON.stringify(out,null,2)+'\n');
 console.log('VERIFIED_ASSET_MANIFEST='+outputFile);
+// Studio Command Bar loader uses only IDs returned by successful Roblox uploads.
+// The loader is generated locally after upload; it does not claim the assets are in the place.
+const aliases = {
+  Knight:'Knight', Barbarian:'Humanoid', Mage:'Race2_Mob1',
+  Rogue:'Race1_Mob2', RogueHooded:'Race3_Mob2',
+  SkeletonWarrior:'Race4_Mob1', SkeletonMage:'Race4_Mob2',
+  SkeletonRogue:'Race5_Mob2', SkeletonMinion:'Race5_Mob1',
+};
+const assetEntries = Object.entries(out.assets).map(([key, item]) => {
+  const name = aliases[key] ?? key;
+  return `{name=${JSON.stringify(name)},id=${item.assetId}}`;
+});
+const loader = `-- Run in Roblox Studio Command Bar while the 대충알피지 place is open.
+-- After inserting, publish the actual Studio place. This is NOT a run-time script.
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local InsertService = game:GetService("InsertService")
+local shared = ReplicatedStorage:WaitForChild("Shared")
+local folder = shared:FindFirstChild("CreatureModels") or Instance.new("Folder")
+folder.Name = "CreatureModels"
+folder.Parent = shared
+local entries = {${assetEntries.join(',')}}
+for _, entry in ipairs(entries) do
+  local ok, container = pcall(function() return InsertService:LoadAsset(entry.id) end)
+  if not ok or not container then
+    warn("ASSET_IMPORT_FAILED", entry.name, entry.id, container)
+  else
+    local model = container:FindFirstChildWhichIsA("Model", true)
+    if model then
+      local previous = folder:FindFirstChild(entry.name)
+      if previous then previous:Destroy() end
+      model.Name = entry.name
+      model.Parent = folder
+      print("ASSET_INSERTED", entry.name, entry.id)
+    else
+      warn("ASSET_NO_MODEL", entry.name, entry.id)
+    end
+    container:Destroy()
+  end
+end
+`;
+const loaderFile = outputFile.replace(/\\.json$/i, '') + '-studio-import.luau';
+await fs.writeFile(loaderFile, loader);
+console.log('STUDIO_IMPORT_SCRIPT='+loaderFile);
