@@ -555,11 +555,13 @@ civMenuLayout.Parent = civMenuRail
 local function resizeCivMenuRail()
   local camera = workspace.CurrentCamera
   local viewport = camera and camera.ViewportSize or Vector2.new(390, 720)
-  local reservedBottom = nativeTouchEnabled and 244 or 164
-  local availableHeight = viewport.Y - 146 - reservedBottom
+  -- 작은 모바일 화면에서도 하단 전투 조작 영역을 침범하지 않도록 메뉴 높이를 제한한다.
+  local reservedBottom = nativeTouchEnabled and math.min(244, math.floor(viewport.Y * 0.34))
+    or math.min(164, math.floor(viewport.Y * 0.24))
+  local availableHeight = math.max(0, viewport.Y - 146 - reservedBottom)
   civMenuRail.Size = UDim2.fromOffset(
-    math.floor(math.min(108, math.max(84, viewport.X * 0.28))),
-    math.floor(math.max(75, math.min(440, availableHeight)))
+    math.floor(math.min(108, math.max(72, viewport.X * 0.28))),
+    math.floor(math.min(440, availableHeight))
   )
 end
 local civMenuViewportConnection
