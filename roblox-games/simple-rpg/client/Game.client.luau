@@ -658,6 +658,11 @@ local function civOpen(mode)
       local slotCorner = Instance.new("UICorner")
       slotCorner.CornerRadius = UDim.new(0, 5)
       slotCorner.Parent = label
+      local slotBorder = Instance.new("UIStroke")
+      slotBorder.Color = Color3.fromRGB(107, 74, 47)
+      slotBorder.Thickness = 1
+      slotBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+      slotBorder.Parent = label
     end
   elseif mode == "Crafts" or mode == "Buildings" then
     panelTitle.Text = mode == "Crafts" and "제작·제련 | 석기→청동→철기" or "영지 건축·문명 랜드마크"
