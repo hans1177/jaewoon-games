@@ -2,6 +2,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
+local TeleportService = game:GetService("TeleportService")
 local store = nil
 local storeOk, storeResult = pcall(function()
   return DataStoreService:GetDataStore("simple-rpg-development-v1")
@@ -12,7 +13,9 @@ local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
 local ProgressionData = require(Shared:WaitForChild("ProgressionData"))
+local CraftingRecipeData = require(Shared:WaitForChild("CraftingRecipeData"))
 local CompanionAI = require(script.Parent:WaitForChild("CompanionAI"))
+local AdvancedAIEcosystem = require(script.Parent:WaitForChild("AdvancedAIEcosystem"))
 
 local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)
 if remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end
@@ -47,6 +50,8 @@ local dodgeEvent = ensureRemote("DodgeEvent", "RemoteEvent")
 local updateTechEvent = ensureRemote("UpdateTechEvent", "RemoteEvent")
 local syncInventoryEvent = ensureRemote("SyncInventoryEvent", "RemoteEvent")
 local unlockTechRequest = ensureRemote("UnlockTechRequest", "RemoteFunction")
+local craftRequestRemote = ensureRemote("CraftRequestRemote", "RemoteEvent")
+local portalTeleportEvent = ensureRemote("PortalTeleportEvent", "RemoteEvent")
 
 -- 시작 지면: 스폰 표시와 분리된 실제 고정 지면이다. 검수 통과를 대신하지 않는다.
 local STUDIO_ASSET_SELECTION = Config.StudioAssets.Families
@@ -359,6 +364,7 @@ local civNodes = {}
 local civWorlds = {}
 local civStations = {}
 local civBuildings = {}
+local pendingTimedCraft = {}
 local civHub = Instance.new("Folder")
 civHub.Name = "CivilizationWorlds"
 civHub.Parent = workspace
@@ -512,6 +518,45 @@ local function civCraft(player, itemKey)
   if itemKey == "BronzeIngot" then civIncrease(player, "CivBronzeSmelts", recipe.YieldCount) end
   civMessage(player, recipe.Label .. " 제작 완료")
 end
+-- 수치 지급은 대기 완료 후 서버에서 한 번만 실행한다; 퇴장 시에는 비용도 빠지지 않는다.
+local function civTimedCraft(player, recipeID)
+  if player:GetAttribute("CivReady") ~= true or typeof(recipeID) ~= "number"
+    or recipeID % 1 ~= 0 or not civRace(player) then return end
+  local recipe = CraftingRecipeData.GetRecipe(recipeID)
+  if not recipe then return end
+  if pendingTimedCraft[player] or not civNowReady(player, "TimedCraft", 0.8) then return end
+  if readNumber(player, "CivTech", 0) < recipe.RequiredTechID then
+    civMessage(player, "선행 연구 필요: " .. tostring(recipe.RequiredTechID))
+    return
+  end
+  if not civNearStation(player, recipe.Station) then
+    civMessage(player, "제작 작업대 15칸 이내에서 제작할 수 있어.")
+    return
+  end
+  for key, amount in pairs(recipe.Ingredients) do
+    if readNumber(player, key, 0) < amount then
+      civMessage(player, "제작 자원 부족: " .. key)
+      return
+    end
+  end
+  pendingTimedCraft[player] = recipeID
+  civMessage(player, recipe.ItemName .. " 제작 중 (" .. recipe.CraftTime .. "초)")
+  task.delay(recipe.CraftTime, function()
+    if pendingTimedCraft[player] ~= recipeID then return end
+    pendingTimedCraft[player] = nil
+    if player.Parent ~= Players or player:GetAttribute("CivReady") ~= true
+      or not civRace(player) or readNumber(player, "CivTech", 0) < recipe.RequiredTechID
+      or not civNearStation(player, recipe.Station) then
+      if player.Parent == Players then civMessage(player, "제작 취소: 작업대에서 멀어졌거나 조건이 변경됐어.") end
+      return
+    end
+    local paid, missing = civSpend(player, recipe.Ingredients)
+    if not paid then civMessage(player, "제작 자원 부족: " .. missing); return end
+    civIncrease(player, recipe.OutputField, recipe.OutputAmount)
+    civMessage(player, recipe.ItemName .. " 제작 완료! +" .. recipe.OutputAmount)
+  end)
+end
+
 local function civBuild(player, buildingKey)
   if typeof(buildingKey) ~= "string" or #buildingKey > 32 then return end
   local race = civRace(player)
@@ -578,6 +623,35 @@ local function civApplyCharacterPassive(player)
   humanoid.MaxHealth = baseHealth * healthMultiplier
   humanoid.WalkSpeed = baseSpeed * speedMultiplier
 end
+-- 영웅 시대 최종 연구 72 완료 시에만 현재 게임의 리저브 서버로 이동한다.
+-- 외부 Place ID 또는 가짜 ReservedServerAccessKey를 사용하지 않는다.
+local function civPortalTeleport(player, destinationID)
+  if player:GetAttribute("CivReady") ~= true or typeof(destinationID) ~= "number"
+    or destinationID % 1 ~= 0 or not RaceData.GetRace(destinationID) then return end
+  if readNumber(player, "CivTech", 0) < 72 then
+    civMessage(player, "멀티버스 포털은 72번 최종 연구를 완료해야 사용할 수 있어.")
+    return
+  end
+  if game.PlaceId <= 0 then
+    civMessage(player, "게시된 Roblox Place에서만 차원 서버 이동을 사용할 수 있어.")
+    return
+  end
+  local character = player.Character
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not humanoid or humanoid.Health <= 0 then return end
+  if not civNowReady(player, "MultiversePortal", 5) then return end
+  local options = Instance.new("TeleportOptions")
+  options.ShouldReserveServer = true
+  options:SetTeleportData({CivDestinationRaceID = destinationID, CivPortalGameId = "simple-rpg"})
+  local ok, err = pcall(function()
+    TeleportService:TeleportAsync(game.PlaceId, {player}, options)
+  end)
+  if not ok then
+    warn("CIV_PORTAL_TELEPORT_FAILED", player.UserId, tostring(err))
+    civMessage(player, "차원 이동 실패. 잠시 후 다시 시도해.")
+  end
+end
+
 local function civSelect(player, raceID)
   if typeof(raceID) ~= "number" or raceID % 1 ~= 0 or not RaceData.GetRace(raceID) then return end
   if readNumber(player, "CivRaceID", 0) ~= 0 then
@@ -608,7 +682,8 @@ local function civGather(player, requestedType)
   local bonus = (race.PassiveType == "OceanGather" and best.Type == "Wood") and 1.30
     or (race.PassiveType == "Harvest" and best.Type == "Food") and 1.25
     or (race.PassiveType == "Industry" and best.Type == "Iron") and 1.15
-    or (race.PassiveType == "Cold" and (best.Type == "Iron" or best.Type == "Bronze")) and 1.25 or 1
+    or (race.ID == 24 and (best.Type == "Stone" or best.Type == "Iron" or best.Type == "Bronze"
+      or best.Type == "CopperOre" or best.Type == "TinOre" or best.Type == "IronOre" or best.Type == "Coal")) and 1.25 or 1
   local amount = math.max(1, math.floor(3 * bonus + 0.5))
   civIncrease(player, "Civ" .. best.Type, amount)
   civIncrease(player, "CivGather", 1)
@@ -930,6 +1005,7 @@ task.spawn(function()
   while task.wait(0.25) do
     local now = os.clock()
     CompanionAI.Tick(civEnemies, civNodes, civIncrease)
+    AdvancedAIEcosystem.RefreshPlayerIndex(now)
     -- Herbivores graze occasionally; this loop is shared with the existing monster AI.
     for _, grazer in pairs(civWildlife) do
       if grazer.Humanoid.Health <= 0 then
@@ -945,31 +1021,36 @@ task.spawn(function()
     end
     for _, enemy in ipairs(civEnemies) do
       if enemy.Humanoid.Health > 0 and now >= enemy.StunnedUntil then
-        local target, dist = nil, 32
-        for _, player in ipairs(Players:GetPlayers()) do
-          local character = player.Character
-          local root = character and character:FindFirstChild("HumanoidRootPart")
-          local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-          if root and humanoid and humanoid.Health > 0 and civRace(player) then
-            local d = (root.Position - enemy.Root.Position).Magnitude
-            if d < dist then target = player; dist = d end
-          end
-        end
+        local target, dist = AdvancedAIEcosystem.ClosestPlayer(enemy.Root.Position, 32)
         if target then
           local root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
           if root then
-            if enemy.TelegraphAt > 0 and now >= enemy.TelegraphAt then
+            if enemy.Humanoid.Health <= enemy.Humanoid.MaxHealth * 0.2 and dist < 10 then
+              AdvancedAIEcosystem.SetState(enemy, "Flee")
+              enemy.TelegraphAt = 0
+              local away = enemy.Root.Position - root.Position
+              local planar = Vector3.new(away.X, 0, away.Z)
+              if planar.Magnitude > 0.1 then
+                local nextPos = enemy.Root.Position + planar.Unit * 1.2
+                if (Vector3.new(nextPos.X - enemy.Home.X, 0, nextPos.Z - enemy.Home.Z)).Magnitude <= 16 then
+                  enemy.Model:PivotTo(CFrame.new(nextPos))
+                end
+              end
+            else
+              AdvancedAIEcosystem.SetState(enemy, "Combat")
+              if enemy.TelegraphAt > 0 and now >= enemy.TelegraphAt then
               enemy.TelegraphAt = 0
               enemy.LastHit = now
               civOnEnemyStrike(enemy, target, now)
             elseif enemy.TelegraphAt <= 0 then
               if dist > 7 then
-                local step = root.Position - enemy.Root.Position
+                local chasePosition = AdvancedAIEcosystem.ChaseTarget(enemy, root.Position, now)
+                local step = chasePosition - enemy.Root.Position
                 local planar = Vector3.new(step.X, 0, step.Z)
                 if planar.Magnitude > 0.1 then
                   local p = enemy.Root.Position + planar.Unit * math.min(1.2, planar.Magnitude)
                   if (Vector3.new(p.X - enemy.Home.X, 0, p.Z - enemy.Home.Z)).Magnitude <= 16 then
-                    enemy.Model:PivotTo(CFrame.lookAt(p, Vector3.new(root.Position.X, p.Y, root.Position.Z)))
+                    enemy.Model:PivotTo(CFrame.lookAt(p, Vector3.new(chasePosition.X, p.Y, chasePosition.Z)))
                   end
                 end
               elseif now - enemy.LastHit >= 1.5 then
@@ -977,10 +1058,13 @@ task.spawn(function()
                 remote:FireClient(target, "CIV_TELEGRAPH", {Enemy = enemy.Model.Name})
               end
             end
+            end
           end
         elseif enemy.TelegraphAt > 0 then
+          AdvancedAIEcosystem.SetState(enemy, "Idle")
           enemy.TelegraphAt = 0
         elseif now - enemy.LastHit >= 3 then
+          AdvancedAIEcosystem.SetState(enemy, "Patrol")
           -- Predation runs only when no living player is targeted.
           local grazer = civWildlife[enemy.RaceID]
           if grazer and grazer.Humanoid.Health > 0
@@ -1064,6 +1148,16 @@ Players.PlayerAdded:Connect(function(player)
   queueInventorySync(player)
   civApplyCharacterPassive(player)
   civRestoreBuildings(player)
+  -- 리저브 서버 도착 후 실제 저장된 최종 연구 완료 여부를 재검증한다.
+  local joinOk, joinData = pcall(function() return player:GetJoinData() end)
+  local portalData = joinOk and joinData and joinData.TeleportData
+  if typeof(portalData) == "table" and portalData.CivPortalGameId == "simple-rpg"
+    and readNumber(player, "CivTech", 0) >= 72
+    and typeof(portalData.CivDestinationRaceID) == "number"
+    and portalData.CivDestinationRaceID % 1 == 0
+    and RaceData.GetRace(portalData.CivDestinationRaceID) then
+    task.defer(civTravel, player, portalData.CivDestinationRaceID)
+  end
   player.CharacterAdded:Connect(function()
     task.wait(0.1)
     civApplyCharacterPassive(player)
@@ -1091,6 +1185,12 @@ end)
 unlockTechRequest.OnServerInvoke = function(player, techID)
   return civResearch(player, techID)
 end
+craftRequestRemote.OnServerEvent:Connect(function(player, recipeID)
+  civTimedCraft(player, recipeID)
+end)
+portalTeleportEvent.OnServerEvent:Connect(function(player, destinationID)
+  civPortalTeleport(player, destinationID)
+end)
 -- 통합 액션 입력: 기존 ID는 그대로 두고 문명 전용 ID만 추가한다.
 remote.OnServerEvent:Connect(function(player, actionId, argument)
   if player:GetAttribute("CivReady") ~= true then return end
@@ -1147,6 +1247,7 @@ Players.PlayerRemoving:Connect(function(player)
   lastAction[player] = nil
   civCooldowns[player] = nil
   inventorySyncPending[player] = nil
+  pendingTimedCraft[player] = nil
 end)
 task.spawn(function()
   while task.wait(120) do
