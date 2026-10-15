@@ -2148,12 +2148,29 @@ local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1
   end
   if lobbyTravelPending then return end
   lobbyTravelPending = true
-  lobbyScreen.Visible = false
-  civMenuRail.Visible = false
+  local previousAck = player:GetAttribute("CivTravelAck") or 0
+  lobbyDescription.Visible = true
+  lobbyDescription.Text = "모험 지역으로 이동 중이야..."
   remote:FireServer("CivTravel", player:GetAttribute("CivRaceID"))
-  task.delay(2, function() lobbyTravelPending = false end)
+  task.delay(4, function()
+    if not lobbyTravelPending then return end
+    lobbyTravelPending = false
+    if (player:GetAttribute("CivTravelAck") or 0) > previousAck then
+      lobbyScreen.Visible = false
+      civMenuRail.Visible = false
+    else
+      lobbyDescription.Visible = true
+      lobbyDescription.Text = "이동하지 못했어. 캐릭터 상태를 확인하고 다시 눌러줘."
+    end
+  end)
 end)
 lobbyPlay.ZIndex = 33
+player:GetAttributeChangedSignal("CivTravelAck"):Connect(function()
+  if not lobbyTravelPending then return end
+  lobbyTravelPending = false
+  lobbyScreen.Visible = false
+  civMenuRail.Visible = false
+end)
 local lobbyExplore = civButton(lobbyCard, "LobbyExplore", "로비 광장 둘러보기", UDim2.new(1, -36, 0, 40), UDim2.new(0, 18, 1, -59), function()
   lobbyScreen.Visible = false
   civMenuRail.Visible = false
