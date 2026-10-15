@@ -2507,6 +2507,10 @@ local function civWalkModel(model, target, duration)
   -- 0.23초 종료 후 정지했다가 다시 움직이는 미세한 끊김을 줄인다.
   local smoothDuration = math.max(0.08, duration or 0.25)
   if smoothDuration < 0.3 then smoothDuration = 0.25 end
+  -- 보행 시각 상태를 서버가 제공해 저주파 위치 복제에서도 발이 멈추지 않는다.
+  if model:GetAttribute("CivilizationEnemy") == true then
+    model:SetAttribute("MotionWalkingUntil", workspace:GetServerTimeNow() + smoothDuration + 0.1)
+  end
   local frameValue = Instance.new("CFrameValue")
   frameValue.Value = start
   local connection = frameValue:GetPropertyChangedSignal("Value"):Connect(function()
