@@ -789,7 +789,7 @@ local function civOpen(mode)
       slotCorner.Parent = label
       local slotBorder = Instance.new("UIStroke")
       slotBorder.Color = amount > 0 and Color3.fromRGB(200, 154, 91) or Color3.fromRGB(107, 74, 47)
-      slotBorder.Thickness = 1
+      slotBorder.Thickness = amount > 0 and 2 or 1
       slotBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
       slotBorder.Parent = label
     end
