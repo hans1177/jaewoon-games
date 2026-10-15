@@ -607,25 +607,29 @@ local function civDodge(player)
   character:PivotTo(character:GetPivot() + (Vector3.new(target.X, ground.Position.Y + 4, target.Z) - root.Position))
   civIncrease(player, "CivDodges", 1)
 end
-local function civSpawnEnemy(raceID, center)
+local function civSpawnEnemy(raceID, center, special)
   local race = RaceData.GetRace(raceID)
   local enemy = Instance.new("Model")
-  enemy.Name = race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
+  enemy.Name = special == "WildBoar" and "야생 멧돼지"
+    or special == "BronzeGolem" and "청동 골렘"
+    or special == "IronKnight" and "암흑 철기 기사"
+    or race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
   enemy:SetAttribute("CivilizationEnemy", true)
   enemy:SetAttribute("RaceID", raceID)
-  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + Vector3.new(0, 4, 9)), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
+  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + Vector3.new(special and -9 or 0, 4, 9)), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
   root.Transparency = 0.35
   local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
   local humanoid = Instance.new("Humanoid")
   humanoid.RequiresNeck = false
-  humanoid.MaxHealth = 52 + raceID * 3
+  humanoid.MaxHealth = special == "WildBoar" and 42 or special == "BronzeGolem" and 100
+    or special == "IronKnight" and 155 or (52 + raceID * 3)
   humanoid.Health = humanoid.MaxHealth
   humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
   humanoid.Parent = enemy
   enemy.PrimaryPart = root
   enemy.Parent = civHub
   civSign(head, head, enemy.Name, 3.3)
-  local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0 }
+  local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, Special = special, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0 }
   table.insert(civEnemies, item)
   return item
 end
@@ -666,7 +670,14 @@ local function civAttack(player)
   end
   if not chosen then civMessage(player, "적을 바라보고 가까이 가서 공격해."); return end
   local race = civRace(player)
-  local damage = 12
+  local weapon = readNumber(player, "CivEquippedWeapon", 0)
+  local requiredWeapon = chosen.Special == "WildBoar" and 1
+    or chosen.Special == "BronzeGolem" and 2 or chosen.Special == "IronKnight" and 3 or 0
+  if requiredWeapon > 0 and weapon < requiredWeapon then
+    civMessage(player, chosen.Model.Name .. " 사냥에는 해당 시대 무기를 장착해야 해.")
+    return
+  end
+  local damage = requiredWeapon == 2 and 17 or requiredWeapon == 3 and 23 or 12
   if race.PassiveType == "Victory" and (player:GetAttribute("CivVictoryUntil") or 0) > os.clock() then damage = math.floor(damage * 1.1 + 0.5) end
   chosen.Humanoid:TakeDamage(damage)
   remote:FireClient(player, "CIV_HIT", {Damage = damage, Enemy = chosen.Model.Name})
@@ -674,6 +685,18 @@ local function civAttack(player)
     civIncrease(player, "CivKills", 1)
     civIncrease(player, "CivResearch", 8)
     civIncrease(player, "CivSilver", 3)
+    if chosen.Special == "WildBoar" then
+      civIncrease(player, "CivHide", 1)
+      civIncrease(player, "CivBoarKills", 1)
+      civMessage(player, "멧돼지 드롭: 가죽 +1 / 석기 유레카!")
+    elseif chosen.Special == "BronzeGolem" then
+      civIncrease(player, "CivCoreCrystal", 1)
+      civMessage(player, "청동 골렘 드롭: 코어 크리스탈 +1")
+    elseif chosen.Special == "IronKnight" then
+      civIncrease(player, "CivDarkIron", 1)
+      civIncrease(player, "CivIronKnightKills", 1)
+      civMessage(player, "철기 기사 드롭: 다크 아이언 +1 / 철기 유레카!")
+    end
     if race.PassiveType == "Victory" then player:SetAttribute("CivVictoryUntil", os.clock() + 10) end
     civMessage(player, chosen.Model.Name .. " 처치! 연구력 +8 / 은화 +3")
     chosen.TelegraphAt = 0
@@ -716,6 +739,7 @@ local function civOnEnemyStrike(enemy, player, now)
     return
   end
   local defense = race and race.DefenseMultiplier or 1
+  if race and race.ID == 1 and readNumber(player, "CivColosseum", 0) > 0 then defense *= 1.15 end
   local damage = math.max(1, math.floor(12 / defense + 0.5))
   humanoid:TakeDamage(damage)
   civMessage(player, enemy.Model.Name .. "의 공격! 체력 -" .. damage)
