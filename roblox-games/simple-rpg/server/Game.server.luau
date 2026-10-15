@@ -1356,6 +1356,19 @@ for id = 1, 24 do
     Color3.fromRGB(151, 132, 101), Enum.Material.Ground, false)
   road.CanTouch = false
   road.CanQuery = false
+  -- 길가 표지석으로 넓어진 필드에서도 각 문명까지의 방향을 읽을 수 있게 한다.
+  for step = 1, 2 do
+    local markerPosition = direction * (civ.WorldRadius * (0.35 + step * 0.2))
+      + Vector3.new(-direction.Z, 0, direction.X) * 7
+    local marker = civPart(region, "문명 길잡이 " .. step,
+      Vector3.new(2, 3.5, 2), CFrame.new(markerPosition + Vector3.new(0, 1, 0)),
+      Color3.fromRGB(135, 125, 108), Enum.Material.Slate, false)
+    marker.CanTouch = false
+    marker.CanQuery = false
+    if step == 2 then
+      civSign(region, marker, race.Name .. " 방면", 3.2)
+    end
+  end
   -- 문명 지역의 로우폴리 자연 경관: 전투·채집 경로를 막지 않는 비충돌 장식.
   local foliageColors = {
     Color3.fromRGB(86, 115, 79),
