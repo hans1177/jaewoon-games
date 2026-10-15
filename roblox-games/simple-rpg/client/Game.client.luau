@@ -974,7 +974,7 @@ local function civOpen(mode)
                 end)
                 researchRequestPending = false
                 if pendingNode and pendingNode.Parent then
-                  pendingNode.BackgroundColor3 = Color3.fromRGB(44, 74, 110)
+                  pendingNode.BackgroundColor3 = (ok and success == true) and Color3.fromRGB(95, 110, 60) or previousNodeColor
                   pendingNode.TextColor3 = Color3.fromRGB(232, 213, 168)
                 end
                 if not ok then
