@@ -1632,6 +1632,8 @@ end
 local creatureMotionRunService = game:GetService("RunService")
 local creatureMotionPhase = 0
 local creatureMotionAccumulator = 0
+local creatureMotionSearchAt = 0
+local creatureMotionModels = {}
 creatureMotionRunService.RenderStepped:Connect(function(dt)
   creatureMotionAccumulator += dt
   if creatureMotionAccumulator < 1 / 20 then return end
@@ -1640,10 +1642,20 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
   local character = player.Character
   local viewer = character and character:FindFirstChild("HumanoidRootPart")
   if not viewer then return end
+  if creatureMotionPhase >= creatureMotionSearchAt then
+    creatureMotionSearchAt = creatureMotionPhase + 2
+    table.clear(creatureMotionModels)
+    for _, model in ipairs(workspace:GetDescendants()) do
+      if model:IsA("Model") and
+        (model:GetAttribute("CivilizationEnemy") == true or model:GetAttribute("CompanionOwnerUserId") ~= nil) then
+        table.insert(creatureMotionModels, model)
+      end
+    end
+  end
   local visible = 0
-  for _, model in ipairs(workspace:GetDescendants()) do
+  for _, model in ipairs(creatureMotionModels) do
     if visible >= 30 then break end
-    if model:IsA("Model") and
+    if model.Parent and
       (model:GetAttribute("CivilizationEnemy") == true or model:GetAttribute("CompanionOwnerUserId") ~= nil) then
       local rootPart = model.PrimaryPart
       if rootPart and (viewer.Position - rootPart.Position).Magnitude <= 85 then
