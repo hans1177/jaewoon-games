@@ -1334,6 +1334,35 @@ for index, name in ipairs({
   local menuItem = civMenuRail:FindFirstChild(name)
   if menuItem and menuItem:IsA("GuiButton") then menuItem.LayoutOrder = index end
 end
+local actionTweenService = game:GetService("TweenService")
+local actionMotionToken = 0
+local function civActionMotion(actionId, button)
+  actionMotionToken += 1
+  local token = actionMotionToken
+  local originalColor = button.BackgroundColor3
+  local flash = actionId == "CivGuard" and Color3.fromRGB(100, 170, 205)
+    or actionId == "CivDodge" and Color3.fromRGB(130, 178, 98)
+    or Color3.fromRGB(232, 163, 61)
+  actionTweenService:Create(button, TweenInfo.new(0.09, Enum.EasingStyle.Quad),
+    {BackgroundColor3 = flash}):Play()
+  task.delay(0.16, function()
+    if button.Parent then
+      actionTweenService:Create(button, TweenInfo.new(0.18, Enum.EasingStyle.Quad),
+        {BackgroundColor3 = originalColor}):Play()
+    end
+  end)
+  local camera = workspace.CurrentCamera
+  if not camera then return end
+  local baseFov = camera.FieldOfView
+  local offset = actionId == "CivDodge" and 7 or actionId == "CivAttack" and 3 or -2
+  actionTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+    {FieldOfView = math.clamp(baseFov + offset, 40, 100)}):Play()
+  task.delay(0.15, function()
+    if token ~= actionMotionToken or workspace.CurrentCamera ~= camera then return end
+    actionTweenService:Create(camera, TweenInfo.new(0.2, Enum.EasingStyle.Quad),
+      {FieldOfView = baseFov}):Play()
+  end)
+end
 local civButtons = {
   {"Attack", "공격", "CivAttack", 94, 105},
   {"Guard", "패링", "CivGuard", 94, 172},
@@ -1343,6 +1372,10 @@ local civButtons = {
 for _, entry in ipairs(civButtons) do
   civButton(civGui, entry[1], entry[2], UDim2.fromOffset(78, 60),
     UDim2.new(1, -entry[4], 1, -entry[5]), function()
+      if entry[3] ~= "CivGather" then
+        local button = civGui:FindFirstChild(entry[1])
+        if button and button:IsA("GuiButton") then civActionMotion(entry[3], button) end
+      end
       if entry[3] == "CivGuard" then parryEvent:FireServer()
       elseif entry[3] == "CivDodge" then dodgeEvent:FireServer()
       else remote:FireServer(entry[3]) end
