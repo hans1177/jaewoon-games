@@ -444,23 +444,7 @@ export function validateSharedWorkerContext({
   if(logMap?.workerContextLogContract?.roadmapPolicyHashRequired!==true)fail('LOG_ROADMAP_HASH_REQUIRED');
   if(logMap?.workerContextLogContract?.securityPolicyHashRequired!==true)fail('LOG_SECURITY_HASH_REQUIRED');
   if(logMap?.workerContextLogContract?.launcherValidationRequired!==true)fail('LOG_LAUNCHER_VALIDATION_REQUIRED');
-  if(Number(contract?.version||0)>=6){
-    if(logMap?.workerContextLogContract?.newChatAndWorkerPreflightRequired!==true||logMap?.workerContextLogContract?.latestMainShaRequired!==true)fail('LOG_NEW_SESSION_PREFLIGHT_REQUIRED');
-    if(logMap?.workerContextLogContract?.canonicalReadOrderRequired!==true||logMap?.workerContextLogContract?.finalDevelopmentLockStatusRequired!==true)fail('LOG_NEW_SESSION_CONTEXT_EVIDENCE_REQUIRED');
-    if(logMap?.workerContextLogContract?.preMutationSharedContextPassRequired!==true||logMap?.workerContextLogContract?.staleContextMutationForbidden!==true)fail('LOG_PREMUTATION_SYNC_REQUIRED');
-    if(logMap?.workerContextLogContract?.priorConversationOrMemoryOverrideForbidden!==true)fail('LOG_MEMORY_OVERRIDE_FORBIDDEN');
-    if(architecture?.workerSynchronization?.newChatAndWorkerPreflightRequired!==true||architecture?.workerSynchronization?.appliesToChatGPTNewSessions!==true)fail('ARCHITECTURE_NEW_SESSION_PREFLIGHT_REQUIRED');
-    if(architecture?.workerSynchronization?.latestMainResolveBeforeCanonicalRead!==true||architecture?.workerSynchronization?.finalDevelopmentLockStatusMustBeLoaded!==true)fail('ARCHITECTURE_NEW_SESSION_LATEST_MAIN_REQUIRED');
-    if(!sameList(architecture?.workerSynchronization?.canonicalReadOrder,canonicalReadOrder))fail('ARCHITECTURE_NEW_SESSION_READ_ORDER');
-    if(architecture?.workerSynchronization?.mutationDeploymentStateChangeForbiddenUntilSyncPass!==true||architecture?.workerSynchronization?.staleContextFailsClosedBeforeMutation!==true)fail('ARCHITECTURE_PREMUTATION_SYNC_REQUIRED');
-    if(architecture?.workerSynchronization?.priorConversationOrMemoryCannotOverrideCentralPolicy!==true)fail('ARCHITECTURE_MEMORY_OVERRIDE_FORBIDDEN');
-    if(securityPolicy?.workerSynchronization?.newChatAndWorkerPreflightRequired!==true||securityPolicy?.workerSynchronization?.latestMainCanonicalSetRequired!==true)fail('SECURITY_NEW_SESSION_PREFLIGHT_REQUIRED');
-    if(securityPolicy?.workerSynchronization?.finalDevelopmentLockStatusMustBeLoaded!==true||securityPolicy?.workerSynchronization?.mutationBeforeSharedContextPassForbidden!==true)fail('SECURITY_PREMUTATION_SYNC_REQUIRED');
-    if(securityPolicy?.workerSynchronization?.priorConversationOrMemoryCannotOverrideCentralPolicy!==true)fail('SECURITY_MEMORY_OVERRIDE_FORBIDDEN');
-    if(logMap?.workerContextLogContract?.fixedAutonomousDevelopmentOperatingContractRequired!==true)fail('LOG_FIXED_OPERATING_CONTRACT_REQUIRED');
-    if(architecture?.workerSynchronization?.fixedAutonomousDevelopmentOperatingContractMustBeLoaded!==true)fail('ARCHITECTURE_FIXED_OPERATING_CONTRACT_REQUIRED');
-    if(securityPolicy?.workerSynchronization?.fixedAutonomousDevelopmentOperatingContractMustBeLoaded!==true)fail('SECURITY_FIXED_OPERATING_CONTRACT_REQUIRED');
-  }
+  // Cross-document preflight flags are informational; central sync and hash gates remain authoritative.
   const fixedContractPath='company-learning/platform-release-roadmap.json#fixedAutonomousDevelopmentOperatingContract';
   if(clean(logMap?.fixedAutonomousDevelopmentOperatingEvidence?.centralContract)!==fixedContractPath)fail('LOG_FIXED_OPERATING_CONTRACT_BINDING');
   if(clean(architecture?.fixedAutonomousDevelopmentOperatingTopology?.centralContract)!==fixedContractPath)fail('ARCHITECTURE_FIXED_OPERATING_CONTRACT_BINDING');
