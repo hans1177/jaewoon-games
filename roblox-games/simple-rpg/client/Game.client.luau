@@ -597,11 +597,13 @@ local function resizeCivMenuRail()
     menuHeight
   )
   -- Keep the central parchment window inside the screen and outside the left menu.
-  civPanel.Size = UDim2.fromOffset(
-    math.max(280, math.floor(math.min(viewport.X - civMenuRail.Size.X.Offset - 32, viewport.X * 0.75))),
-    math.max(180, math.floor(viewport.Y * 0.7))
-  )
-  civPanel.Position = UDim2.new(0.5, math.floor(civMenuRail.Size.X.Offset * 0.35), 0.5, 22)
+  local railRight = civMenuRail.Position.X.Offset + civMenuRail.Size.X.Offset
+  local panelLeft = railRight + 10
+  local panelWidth = math.max(1, math.floor(viewport.X - panelLeft - 12))
+  local panelHeight = math.max(1, math.floor(math.min(viewport.Y * 0.72, viewport.Y - 125)))
+  civPanel.AnchorPoint = Vector2.new(0, 0)
+  civPanel.Size = UDim2.fromOffset(panelWidth, panelHeight)
+  civPanel.Position = UDim2.fromOffset(panelLeft, math.max(106, math.floor((viewport.Y - panelHeight) * 0.5)))
 end
 local civMenuViewportConnection
 local function bindCivMenuViewport()
