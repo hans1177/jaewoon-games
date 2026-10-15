@@ -1797,6 +1797,14 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
       end
     end
   end
+  -- 가까운 모델부터 처리해 30마리 제한에 걸려도 먼 몬스터가 먼저 선택되지 않는다.
+  table.sort(creatureMotionModels, function(a, b)
+    local aRoot = a.PrimaryPart or a:FindFirstChild("HumanoidRootPart") or a:FindFirstChild("Root")
+    local bRoot = b.PrimaryPart or b:FindFirstChild("HumanoidRootPart") or b:FindFirstChild("Root")
+    local aDist = aRoot and (viewer.Position - aRoot.Position).Magnitude or math.huge
+    local bDist = bRoot and (viewer.Position - bRoot.Position).Magnitude or math.huge
+    return aDist < bDist
+  end)
   local visible = 0
   for _, model in ipairs(creatureMotionModels) do
     if visible >= 30 then break end
