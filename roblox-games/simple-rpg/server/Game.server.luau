@@ -32,7 +32,7 @@ if creatureFolder then
       local ok, container = pcall(function() return insertService:LoadAsset(assetId) end)
       if ok and container then
         local assetModel = container:FindFirstChildWhichIsA("Model", true) or container
-        if assetModel:IsA("Model") then
+        if assetModel:IsA("Model") and assetModel:FindFirstChildWhichIsA("BasePart", true) then
           local template = assetModel:Clone()
           template.Name = name
           template.Parent = creatureFolder
@@ -1447,7 +1447,9 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
       or sharedCreatureFolder:FindFirstChild(enemy.Name)
       or sharedCreatureFolder:FindFirstChild("Race" .. raceID .. "_Mob" .. (mobSlot or 1))
       or sharedCreatureFolder:FindFirstChild((special == "StoneWolf" or special == "WildBoar") and "Beast" or "Humanoid")
-    if visualTemplate and visualTemplate:IsA("Model") then
+    -- Empty imported packages must never hide the fallback monster body.
+    if visualTemplate and visualTemplate:IsA("Model")
+      and visualTemplate:FindFirstChildWhichIsA("BasePart", true) then
       local visual = visualTemplate:Clone()
       visual.Name = "ImportedCreatureVisual"
       for _, descendant in ipairs(visual:GetDescendants()) do
