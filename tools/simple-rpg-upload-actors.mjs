@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Upload the repository's existing CC0 KayKit GLB assets as Roblox Model assets.
+// Upload the repository's existing CC0 GLB actor assets as Roblox Model assets.
 // Requires ROBLOX_OPEN_CLOUD_API_KEY and ROBLOX_CREATOR_USER_ID.
 // Does not modify a Roblox place or claim imported models are already playable.
 import fs from 'node:fs/promises';
@@ -50,6 +50,18 @@ const models = [
   ['kaykit-skeletons/Skeleton_Mage.glb', 'SkeletonMage'],
   ['kaykit-skeletons/Skeleton_Rogue.glb', 'SkeletonRogue'],
   ['kaykit-skeletons/Skeleton_Minion.glb', 'SkeletonMinion'],
+  // Additional distinct source GLBs; not claimed to be 20 distinct monster species.
+  ['../../native/mini-character-male-a.glb', 'HumanMaleA'],
+  ['../../native/mini-character-male-b.glb', 'HumanMaleB'],
+  ['../../native/mini-character-male-c.glb', 'HumanMaleC'],
+  ['../../native/mini-character-male-d.glb', 'HumanMaleD'],
+  ['../../native/mini-character-male-e.glb', 'HumanMaleE'],
+  ['../../native/mini-character-male-f.glb', 'HumanMaleF'],
+  ['../../native/mini-character-female-a.glb', 'HumanFemaleA'],
+  ['../../native/mini-character-female-b.glb', 'HumanFemaleB'],
+  ['../../native/mini-character-female-c.glb', 'HumanFemaleC'],
+  ['../../native/mini-character-female-d.glb', 'HumanFemaleD'],
+  ['../../native/mini-character-female-e.glb', 'HumanFemaleE'],
 ];
 const rawCookie = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
 const cookie = rawCookie.includes('.ROBLOSECURITY=') ? rawCookie : (rawCookie ? '.ROBLOSECURITY='+rawCookie+';' : '');
