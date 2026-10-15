@@ -1704,6 +1704,16 @@ local function housingTryPlace()
 end
 civButton(housingPanel,"HousingPlace","선택한 부품 설치",
   UDim2.new(1,-8,0,34),UDim2.new(),housingTryPlace)
+civButton(housingPanel,"HousingRemove","조준한 내 건축물 철거",
+  UDim2.new(1,-8,0,30),UDim2.new(),function()
+    local _, target = housingTarget()
+    if target and target:GetAttribute("HousingPiece") == true
+      and target:GetAttribute("CivOwnerUserId") == player.UserId then
+      remote:FireServer("CivRemoveHousing",target)
+    else
+      housingInfo.Text="자신의 건축 부품을 조준해."
+    end
+  end)
 local housingToggle=civButton(civGui,"HousingToggle","건축",
   UDim2.fromOffset(76,36),UDim2.new(1,-84,1,-104),function()
     housingPanel.Visible=not housingPanel.Visible
