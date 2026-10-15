@@ -40,6 +40,7 @@ if creatureFolder then
         if assetModel and assetModel:IsA("Model") then
           local template = assetModel:Clone()
           template.Name = name
+          template:SetAttribute("VerifiedRobloxAssetId", tostring(assetId))
           template.Parent = creatureFolder
           creatureAssetReady += 1
         else
@@ -1466,6 +1467,8 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
         end
       end
       visual.Parent = enemy
+      local sourceAssetId = visualTemplate:GetAttribute("VerifiedRobloxAssetId")
+      if sourceAssetId then enemy:SetAttribute("CreatureVisualAssetId", sourceAssetId) end
       -- GLB 원본의 크기와 피벗을 기본 몬스터에 맞추고 발 높이를 보존한다.
       local bounds = visual:GetExtentsSize()
       if bounds.X > 0.01 and bounds.Y > 0.01 and bounds.Z > 0.01 then
