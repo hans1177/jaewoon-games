@@ -2042,10 +2042,12 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                 local lower = string.lower(item.Name)
                 local limb = item:IsA("Motor6D") and item.Part1 and string.lower(item.Part1.Name) or ""
                 local label = lower .. " " .. limb
-                if string.find(label, "leg", 1, true) or string.find(label, "thigh", 1, true)
+                local isLeg = string.find(label, "leg", 1, true)
+                  or string.find(label, "thigh", 1, true)
                   or string.find(label, "hip", 1, true)
-                  or string.find(label, "upperleg", 1, true)
-                  or string.find(label, "lowerleg", 1, true) then
+                local isArm = string.find(label, "arm", 1, true)
+                  or string.find(label, "shoulder", 1, true)
+                if isLeg or isArm then
                   local left = string.find(label, "left", 1, true)
                     or string.match(label, "^l[_%.%-]") or string.match(label, "[_%.%-]l$")
                     or string.find(label, "_l", 1, true)
@@ -2057,7 +2059,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                       joint=item,
                       base=item:IsA("Motor6D") and item.C0 or item.Transform,
                       isBone=item:IsA("Bone"),
-                      side=left and 1 or -1
+                      side=(left and 1 or -1) * (isArm and -1 or 1),
+                      amplitude=isArm and 0.20 or 0.38
                     })
                   end
                 end
@@ -2068,7 +2071,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local walking = moving and not down and state ~= "Stunned" and not windingUp
           for _, leg in ipairs(joints) do
             if leg.joint.Parent then
-              local angle = walking and math.sin(clock) * leg.side * 0.38 * speedFactor or 0
+              local angle = walking and math.sin(clock) * leg.side * leg.amplitude * speedFactor or 0
               if leg.isBone then
                 leg.joint.Transform = leg.base * CFrame.Angles(angle, 0, 0)
               else
