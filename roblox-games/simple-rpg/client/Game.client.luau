@@ -801,7 +801,8 @@ syncInventoryEvent.OnClientEvent:Connect(function(updatedInventory)
   end
 end)
 -- Touch-only auto-combat toggle: the server owns actual damage and guard timing.
-local autoCombatToggle = civButton(civGui, "AutoCombatToggle", "자동 전투 ON",
+local autoCombatToggle
+ autoCombatToggle = civButton(civGui, "AutoCombatToggle", "자동 전투 ON",
   UDim2.fromOffset(104, 45), UDim2.new(1, -112, 0, 94), function()
     autoCombatEnabled = not autoCombatEnabled
     autoCombatToggle.Text = autoCombatEnabled and "자동 전투 ON" or "자동 전투 OFF"
