@@ -429,6 +429,7 @@ CommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatu
 -- 문명 멀티버스 주 화면: 기존 RPG 기능은 별도 '기존 RPG' 버튼으로 유지한다.
 local civGui = Instance.new("ScreenGui")
 civGui.Name = "CivilizationHud"
+civGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 civGui.ResetOnSpawn = false
 civGui.DisplayOrder = 12
 civGui.IgnoreGuiInset = false
@@ -447,6 +448,7 @@ local function civLabel(parent, name, text, size, pos, background)
   label.BorderSizePixel = 0
   label.Size = size
   label.Position = pos
+  label.ZIndex = parent:IsA("ScreenGui") and 5 or 12
   label.Parent = parent
   return label
 end
@@ -463,6 +465,7 @@ local function civButton(parent, name, text, size, pos, callback)
   button.BorderSizePixel = 0
   button.Text = text
   button.AutoButtonColor = true
+  button.ZIndex = (parent:IsA("ScreenGui") or parent.Name == "CivilizationMenu") and 5 or 12
   button.Parent = parent
   local corner = Instance.new("UICorner")
   corner.CornerRadius = UDim.new(0, 8)
@@ -476,16 +479,17 @@ local civStatus = civLabel(civGui, "CivilizationStatus", "",
   UDim2.new(1, -20, 0, 54), UDim2.fromOffset(10, 39), true)
 civStatus.TextSize = 13
 local civMessage = civLabel(civGui, "CombatNotice", "",
-  UDim2.new(1, -100, 0, 43), UDim2.fromOffset(10, 97), true)
+  UDim2.new(1, -134, 0, 43), UDim2.fromOffset(10, 97), true)
 civMessage.TextSize = 14
 civMessage.BackgroundColor3 = Color3.fromRGB(62, 47, 34)
 local civPanel = Instance.new("Frame")
 civPanel.Name = "CivilizationPanel"
 civPanel.AnchorPoint = Vector2.new(0.5, 0.5)
-civPanel.Position = UDim2.fromScale(0.5, 0.52)
-civPanel.Size = UDim2.new(1, -28, 0.70, 0)
+civPanel.Position = UDim2.new(0.5, 0, 0.5, 58)
+civPanel.Size = UDim2.new(1, -28, 1, -176)
 civPanel.BackgroundColor3 = Color3.fromRGB(49, 47, 39)
 civPanel.BackgroundTransparency = 0.04
+civPanel.ZIndex = 10
 civPanel.BorderSizePixel = 0
 civPanel.Visible = false
 civPanel.Parent = civGui
@@ -495,8 +499,9 @@ panelCorner.Parent = civPanel
 local panelTitle = civLabel(civPanel, "PanelTitle", "문명 선택",
   UDim2.new(1, -64, 0, 46), UDim2.fromOffset(10, 8), false)
 panelTitle.TextSize = 20
-civButton(civPanel, "Close", "닫기", UDim2.fromOffset(60, 45),
+local civCloseButton = civButton(civPanel, "Close", "닫기", UDim2.fromOffset(60, 45),
   UDim2.new(1, -65, 0, 6), function() civPanel.Visible = false end)
+civCloseButton.ZIndex = 13
 local civList = Instance.new("ScrollingFrame")
 civList.Name = "CivilizationList"
 civList.Size = UDim2.new(1, -24, 1, -67)
@@ -504,13 +509,60 @@ civList.Position = UDim2.fromOffset(12, 60)
 civList.BackgroundTransparency = 1
 civList.BorderSizePixel = 0
 civList.ScrollBarThickness = 6
+civList.ZIndex = 11
+civList.ScrollingDirection = Enum.ScrollingDirection.Y
 civList.AutomaticCanvasSize = Enum.AutomaticSize.Y
 civList.CanvasSize = UDim2.new()
 civList.Parent = civPanel
 local civLayout = Instance.new("UIListLayout")
-civLayout.Padding = UDim.new(0, 7)
+civLayout.Padding = UDim.new(0, 8)
 civLayout.SortOrder = Enum.SortOrder.LayoutOrder
 civLayout.Parent = civList
+-- Left-side civilization controls use one scrollable layout; world/combat buttons keep their own positions.
+-- Never add UIListLayout to arbitrary Frames (inventory uses an independent UIGridLayout).
+local civMenuRail = Instance.new("ScrollingFrame")
+civMenuRail.Name = "CivilizationMenu"
+civMenuRail.Position = UDim2.fromOffset(10, 146)
+civMenuRail.Size = UDim2.fromOffset(104, 250)
+civMenuRail.BackgroundTransparency = 1
+civMenuRail.BorderSizePixel = 0
+civMenuRail.ZIndex = 2
+civMenuRail.Active = true
+civMenuRail.ScrollBarThickness = 4
+civMenuRail.ScrollingDirection = Enum.ScrollingDirection.Y
+civMenuRail.AutomaticCanvasSize = Enum.AutomaticSize.Y
+civMenuRail.CanvasSize = UDim2.new()
+civMenuRail.ClipsDescendants = true
+civMenuRail.Parent = civGui
+local civMenuLayout = Instance.new("UIListLayout")
+civMenuLayout.SortOrder = Enum.SortOrder.LayoutOrder
+civMenuLayout.Padding = UDim.new(0, 8)
+civMenuLayout.Parent = civMenuRail
+
+local function resizeCivMenuRail()
+  local camera = workspace.CurrentCamera
+  local viewport = camera and camera.ViewportSize or Vector2.new(390, 720)
+  local reservedBottom = nativeTouchEnabled and 244 or 164
+  local availableHeight = viewport.Y - 146 - reservedBottom
+  civMenuRail.Size = UDim2.fromOffset(
+    math.floor(math.min(108, math.max(84, viewport.X * 0.28))),
+    math.floor(math.max(75, math.min(440, availableHeight)))
+  )
+end
+local civMenuViewportConnection
+local function bindCivMenuViewport()
+  if civMenuViewportConnection then
+    civMenuViewportConnection:Disconnect()
+    civMenuViewportConnection = nil
+  end
+  local camera = workspace.CurrentCamera
+  if camera then
+    civMenuViewportConnection = camera:GetPropertyChangedSignal("ViewportSize"):Connect(resizeCivMenuRail)
+  end
+  resizeCivMenuRail()
+end
+workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(bindCivMenuViewport)
+bindCivMenuViewport()
 local civPanelMode = "Races"
 local civTechEra = 1
 local inventorySnapshot = {}
@@ -960,34 +1012,42 @@ task.spawn(function()
   end
 end)
 
-civButton(civGui, "TradeMenu", "무역",
-  UDim2.fromOffset(78, 45), UDim2.fromOffset(270, 252), function()
+civButton(civMenuRail, "TradeMenu", "무역",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function()
     civOpen("Trade")
     tradeRequestRemote:FireServer("Snapshot", 0, false, "Silver")
   end)
-civButton(civGui, "MultiverseMenu", "차원 포털",
-  UDim2.fromOffset(90, 45), UDim2.fromOffset(174, 252), function() civOpen("Portals") end)
-civButton(civGui, "InventoryMenu", "가방",
-  UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 252), function() civOpen("Inventory") end)
-civButton(civGui, "CraftMenu", "제작",
-  UDim2.fromOffset(78, 45), UDim2.fromOffset(92, 200), function() civOpen("Crafts") end)
-civButton(civGui, "BuildingMenu", "건축",
-  UDim2.fromOffset(78, 45), UDim2.fromOffset(174, 200), function() civOpen("Buildings") end)
-civButton(civGui, "CompanionMenu", "AI 동료",
-  UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 200), function() civOpen("Companions") end)
-local civRaceButton = civButton(civGui, "RaceMenu", "문명",
-  UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 148), function() civOpen("Races") end)
-civButton(civGui, "TechMenu", "연구",
-  UDim2.fromOffset(78, 45), UDim2.fromOffset(92, 148), function() civOpen("Techs") end)
-civButton(civGui, "Travel", "영지/로비",
-  UDim2.fromOffset(90, 45), UDim2.fromOffset(174, 148), function()
+civButton(civMenuRail, "MultiverseMenu", "차원 포털",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Portals") end)
+civButton(civMenuRail, "InventoryMenu", "가방",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Inventory") end)
+civButton(civMenuRail, "CraftMenu", "제작",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Crafts") end)
+civButton(civMenuRail, "BuildingMenu", "건축",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Buildings") end)
+civButton(civMenuRail, "CompanionMenu", "AI 동료",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Companions") end)
+local civRaceButton = civButton(civMenuRail, "RaceMenu", "문명",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Races") end)
+civButton(civMenuRail, "TechMenu", "연구",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Techs") end)
+civButton(civMenuRail, "Travel", "영지/로비",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function()
     remote:FireServer("CivTravel")
   end)
-civButton(civGui, "Legacy", "기존 RPG",
-  UDim2.fromOffset(93, 40), UDim2.new(1, -101, 0, 148), function()
+civButton(civMenuRail, "Legacy", "기존 RPG",
+  UDim2.new(1, -8, 0, 45), UDim2.new(), function()
     gui.Enabled = not gui.Enabled
     civPanel.Visible = false
   end)
+-- Keep the player's main navigation consistent even when content is created in another order.
+for index, name in ipairs({
+  "RaceMenu", "TechMenu", "InventoryMenu", "CraftMenu", "BuildingMenu",
+  "CompanionMenu", "TradeMenu", "MultiverseMenu", "Travel", "Legacy",
+}) do
+  local menuItem = civMenuRail:FindFirstChild(name)
+  if menuItem and menuItem:IsA("GuiButton") then menuItem.LayoutOrder = index end
+end
 local civButtons = {
   {"Attack", "공격", "CivAttack", 94, 105},
   {"Guard", "패링", "CivGuard", 94, 172},
