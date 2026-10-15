@@ -1384,6 +1384,28 @@ local lobbyCrown = civPart(civHub, "광장 석상 관석", Vector3.new(7.5, 1.5,
   CFrame.new(0, 7.2, -11), Color3.fromRGB(138, 90, 56), Enum.Material.Sandstone, false)
 lobbyCrown.CanTouch = false
   lobbyCrown.CanQuery = false
+-- 네 대표 문명 포털을 계획서의 피오르드·사막·산악·평원 테마로 장식한다.
+-- 장식은 이동 패드와 독립적이며 길막/터치 판정에 참여하지 않는다.
+local portalThemes = {
+  [1] = {name="로마 평원", color=Color3.fromRGB(130, 152, 91), material=Enum.Material.Grass},
+  [2] = {name="이집트 사막", color=Color3.fromRGB(198, 171, 108), material=Enum.Material.Sand},
+  [12] = {name="바이킹 피오르드", color=Color3.fromRGB(89, 133, 152), material=Enum.Material.Slate},
+  [15] = {name="고조선 산악", color=Color3.fromRGB(105, 124, 102), material=Enum.Material.Rock},
+}
+local function decorateFeaturedPortal(id, frame)
+  local theme = portalThemes[id]
+  if not theme then return end
+  for side = -1, 1, 2 do
+    local scenery = civPart(civHub, theme.name .. " 경관석 " .. side,
+      Vector3.new(3, 2.8 + id % 3, 2.4),
+      frame * CFrame.new(side * 6.8, 1.2, 4.4),
+      theme.color, theme.material, false)
+    scenery.Shape = (id == 12 or id == 15) and Enum.PartType.Wedge or Enum.PartType.Block
+    scenery.CanCollide = false
+    scenery.CanTouch = false
+    scenery.CanQuery = false
+  end
+end
 -- 네 대표 문명만 특색 있는 입구를 추가하고 나머지 20개 포털은 그대로 둔다.
 local featuredPortalColors = {
   [1] = Color3.fromRGB(169, 82, 64),  -- 로마
@@ -1566,6 +1588,7 @@ for id = 1, 24 do
   if accent then
     local portalFrame = CFrame.lookAt(portal.Position,
       Vector3.new(0, portal.Position.Y, 0))
+    decorateFeaturedPortal(id, portalFrame)
     local shimmer = civPart(civHub, race.Name .. " 차원문 빛",
       Vector3.new(3.1, 4.2, 0.25), portalFrame * CFrame.new(0, 2.8, 2),
       accent, Enum.Material.Neon, false)
