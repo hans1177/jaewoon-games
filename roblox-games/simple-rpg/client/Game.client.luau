@@ -1509,6 +1509,7 @@ if nativeTouchEnabled then
     end
     local model = part:FindFirstAncestorOfClass("Model")
     if model and model:GetAttribute("CivilizationEnemy") == true then
+      civActionMotion("CivAttack")
       autoCombatEvent:FireServer("AutoAttack", model)
     end
   end)
