@@ -1250,6 +1250,11 @@ end
 
 -- 문명 지역과 중앙 포털: 메인 지면/저장 키는 그대로 유지한다.
 -- 실제 로비 지면: 기본 스폰 및 24개 문명 이동 패드까지 걸어갈 수 있도록 유지한다.
+-- 하나의 대륙 바닥으로 광장과 모든 문명을 보행 가능한 오픈월드로 연결한다.
+-- 기존 문명 좌표·스폰·이동·전투 기준값은 변경하지 않는다.
+local continentGround = civPart(civHub, "문명 대륙", Vector3.new(520, 2, 520),
+  CFrame.new(0, -2, 0), Color3.fromRGB(112, 143, 103), Enum.Material.Grass, true)
+continentGround:SetAttribute("WalkableGround", true)
 local lobbyGround = civPart(civHub, "CivilizationLobbyGround", Vector3.new(64, 2, 64),
   CFrame.new(0, -1, 0), Color3.fromRGB(111, 132, 101), Enum.Material.Slate, true)
 lobbyGround:SetAttribute("WalkableGround", true)
@@ -1302,6 +1307,23 @@ for id = 1, 24 do
   region.Parent = civHub
   local ground = civPart(region, "CivilizationGround", Vector3.new(39, 2, 39), CFrame.new(center), civRegions[((id - 1) % #civRegions) + 1], Enum.Material.Slate, true)
   ground:SetAttribute("WalkableGround", true)
+  -- 문명마다 지표 색·질감이 다른 야외 생태 지대를 연결한다.
+  -- 주요 채집 시설 및 보스 생성 좌표는 기존 섬 위에 그대로 둔다.
+  local biomeColor = civRegions[((id - 1) % #civRegions) + 1]
+  local biomeMat = (id % 6 == 2 or id % 6 == 0) and Enum.Material.Sand
+    or (id % 6 == 4) and Enum.Material.Snow or Enum.Material.Grass
+  local biome = civPart(region, "문명 외곽 야생지", Vector3.new(51, 0.3, 51),
+    CFrame.new(center + Vector3.new(0, -0.82, 0)), biomeColor, biomeMat, false)
+  biome.CanTouch = false
+  biome.CanQuery = false
+  -- 중앙과 지역 사이에 실제 걷는 길을 시각적으로 표시한다.
+  local direction = Vector3.new(center.X, 0, center.Z).Unit
+  local roadCenter = direction * (civ.WorldRadius * 0.5)
+  local road = civPart(region, "문명 연결 산책로", Vector3.new(8, 0.13, civ.WorldRadius - 45),
+    CFrame.lookAt(roadCenter + Vector3.new(0, -0.85, 0), center), 
+    Color3.fromRGB(151, 132, 101), Enum.Material.Ground, false)
+  road.CanTouch = false
+  road.CanQuery = false
   -- 문명 지역의 로우폴리 자연 경관: 전투·채집 경로를 막지 않는 비충돌 장식.
   local foliageColors = {
     Color3.fromRGB(86, 115, 79),
