@@ -403,3 +403,15 @@ test('대충알피지 중앙 포털 광장은 비충돌 장식이고 기존 24�
   assert.match(server, /civPortalTeleport\(player, destinationID\)/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
+
+test('대충알피지 24문명 선택은 실제 종족 그래픽 설정을 표시하고 서버 선택을 보존한다', () => {
+  const races = read('shared/RaceData.luau');
+  assert.match(races, /Visual: string/);
+  assert.match(client, /for id = 1, 24 do/);
+  assert.match(client, /race\.Name, race\.Landmark, race\.Passive, race\.Visual/);
+  assert.match(client, /외형: %s/);
+  assert.match(client, /UDim2\.new\(1, -9, 0, 96\)/);
+  assert.match(client, /remote:FireServer\("CivSelect", id\)/);
+  assert.match(client, /if selected == 0 then/);
+  assert.match(server, /CivSelect/);
+});
