@@ -1997,6 +1997,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           realMoving = creatureMotionPhase - lastMovedAt < 0.32
           if realMoving then
             gaitPhase += math.min(smoothedSpeed, 12) * elapsed * 1.4
+          else
+            -- Network gaps must not preserve stale running speed indefinitely.
+            smoothedSpeed = 0
           end
         end
         horizontalSpeed = smoothedSpeed
