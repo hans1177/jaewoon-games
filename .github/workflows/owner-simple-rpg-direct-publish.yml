@@ -30,7 +30,7 @@ env:
 
 jobs:
   upload_actor_assets:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[upload-kaykit]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
