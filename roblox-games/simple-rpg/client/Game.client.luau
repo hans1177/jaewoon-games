@@ -1774,7 +1774,8 @@ local creatureMotionLastSearchCharacter = nil
 local creatureMotionQueryParams = OverlapParams.new()
 creatureMotionQueryParams.FilterType = Enum.RaycastFilterType.Exclude
 creatureMotionRunService.RenderStepped:Connect(function(dt)
-  creatureMotionAccumulator += dt
+  -- 화면 멈춤이나 앱 전환 뒤의 큰 dt가 모션 시계를 급격히 건너뛰지 않게 한다.
+  creatureMotionAccumulator += math.min(dt, 0.1)
   if creatureMotionAccumulator < 1 / 20 then return end
   creatureMotionPhase += creatureMotionAccumulator
   creatureMotionAccumulator = 0
