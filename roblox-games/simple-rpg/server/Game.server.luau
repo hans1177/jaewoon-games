@@ -961,6 +961,7 @@ for _, player in ipairs(Players:GetPlayers()) do
     bindFoundationPlayer(player)
     if player:GetAttribute("Score") == nil then initializePlayer(player) end
     player:SetAttribute("CivReady", true)
+    civRestoreBuildings(player)
   end)
 end
 -- 통합 액션 입력: 기존 ID는 그대로 두고 문명 전용 ID만 추가한다.
