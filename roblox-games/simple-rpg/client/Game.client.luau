@@ -1871,6 +1871,7 @@ local creatureMotionJointChecks = setmetatable({}, {__mode = "k"})
 local creatureTelegraphHighlights = setmetatable({}, {__mode = "k"})
 local creatureImportedRig = setmetatable({}, {__mode = "k"})
 local creatureRootMotion = setmetatable({}, {__mode = "k"})
+local creatureHealthMotion = setmetatable({}, {__mode = "k"})
 local creatureMotionLastSearchPosition = nil
 local creatureMotionLastSearchCharacter = nil
 local creatureMotionLastSearchRoot = nil
@@ -1999,14 +2000,27 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             and workspace:GetServerTimeNow() < walkingUntil
           realMoving = serverWalking or creatureMotionPhase - lastMovedAt < 0.32
           if realMoving then
-            -- 위치 복제 사이에도 서버 보행 상태를 사용해 발을 계속 움직인다.
-            local cadenceSpeed = math.max(smoothedSpeed, serverWalking and 4.5 or 0)
-            gaitPhase += math.min(cadenceSpeed, 12) * elapsed * 1.4
+            -- 서버의 보행 명령과 관측 속도를 동일한 보폭 시계에 반영한다.
+            -- 패킷 사이에는 최근 측정 속도를 사용하되 정지 시 보행을 누적하지 않는다.
+            local cadenceSpeed = math.clamp(smoothedSpeed > 0.35 and smoothedSpeed or 4.5, 2.5, 12)
+            gaitPhase += cadenceSpeed * elapsed * 1.4
           else
             smoothedSpeed = 0
           end
         end
-        horizontalSpeed = realMoving and math.max(smoothedSpeed, 4.5) or smoothedSpeed
+        horizontalSpeed = realMoving and (smoothedSpeed > 0.35 and smoothedSpeed or 4.5) or 0
+        local motionHumanoid = model:FindFirstChildOfClass("Humanoid")
+        local healthMotion = creatureHealthMotion[model]
+        local healthNow = motionHumanoid and motionHumanoid.Health or 0
+        if not healthMotion then
+          healthMotion = {health = healthNow, hitAt = -100}
+          creatureHealthMotion[model] = healthMotion
+        elseif healthNow < healthMotion.health and healthNow > 0 then
+          healthMotion.hitAt = creatureMotionPhase
+        end
+        healthMotion.health = healthNow
+        local hitElapsed = creatureMotionPhase - healthMotion.hitAt
+        local reactingToHit = hitElapsed >= 0 and hitElapsed < 0.28
         creatureRootMotion[rootPart] = {
           position = rootPosition, at = creatureMotionPhase, phase = gaitPhase,
           speed = smoothedSpeed, lastMovedAt = lastMovedAt
@@ -2030,9 +2044,10 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local speedFactor = math.clamp(horizontalSpeed / 5, 0.55, 1.65)
           -- 좌표 기반 위상은 이동할 때 매 프레임 변해 발이 튀므로 누적 보행 거리 사용.
           local clock = gaitPhase
-          local stride = moving and not down and math.sin(clock) * 0.12 * speedFactor or 0
-          local roll = moving and not down and math.sin(clock) * 0.055 or 0
+          local stride = moving and not down and math.abs(math.sin(clock)) * 0.20 * speedFactor or 0
+          local roll = moving and not down and math.sin(clock) * 0.075 or 0
           local pitch = down and math.rad(65) or state == "Stunned" and math.rad(20)
+            or reactingToHit and math.rad(16) * (1 - hitElapsed / 0.28)
             or windingUp and math.rad(-16) or 0
           -- 시작 포즈의 높이/회전을 보존해서 실제 메시가 루트 안에 파묻히지 않게 한다.
           local visualPose = importedVisual:GetAttribute("VisualPivotOffset")
@@ -2084,7 +2099,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             end
             creatureImportedRig[importedVisual] = joints
           end
-          local walking = moving and not down and state ~= "Stunned" and not windingUp
+          local walking = moving and not down and state ~= "Stunned" and not windingUp and not reactingToHit
           for _, leg in ipairs(joints) do
             if leg.joint.Parent then
               local angle = walking and math.sin(clock) * leg.side * leg.amplitude * speedFactor or 0
@@ -2125,6 +2140,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         local swing = math.sin(motionClock) * amplitude
         if defeated then
           swing = 0.9
+        elseif reactingToHit then
+          swing = -0.5 * (1 - hitElapsed / 0.28)
         elseif stunned then
           swing = 0.18
         elseif attacking then
