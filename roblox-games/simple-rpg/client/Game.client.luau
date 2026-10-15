@@ -1871,7 +1871,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local animatedJoint = false
           if part and part:IsA("BasePart") then
             local cached = creatureMotionJointChecks[part]
-            if cached == nil then
+            -- 양성 판정은 유지하고 음성 판정은 재검사해 늦게 연결된 관절을 보호한다.
+            if cached ~= true then
               cached = false
               for _, joint in ipairs(part:GetJoints()) do
                 if joint:IsA("Motor6D") then
@@ -1879,7 +1880,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                   break
                 end
               end
-              creatureMotionJointChecks[part] = cached
+              if cached then creatureMotionJointChecks[part] = true end
             end
             animatedJoint = cached
           end
