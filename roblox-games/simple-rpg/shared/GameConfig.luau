@@ -302,6 +302,7 @@ local Config = {
     SharedObjective = 0, RoundScore = 0,
     -- 문명 저장 필드: 기존 필드를 변경하지 않고 같은 저장 레코드에 확장한다.
     CivRaceID = 0, CivEra = 1, CivTech = 0,
+    CivSkinTone = 1, -- 외형 전용 저장값: 기존 저장에 없으면 기본 피부색 적용.
     CivWood = 25, CivStone = 25, CivBronze = 0, CivIron = 0,
     CivResearch = 24, CivFood = 0, CivSilver = 0,
     -- Compatible trade goods and multicurrency: new saves default to zero.
