@@ -363,3 +363,22 @@ test('대충알피지 그래픽 목업 팔레트는 기존 인벤토리·연구 
   assert.match(client, /unlockTechRequest:InvokeServer\(id\)/);
   assert.match(client, /autoCombatToggle\.Visible = nativeTouchEnabled/);
 });
+
+test('대충알피지 6칸 장비 미리보기와 5시대 배너는 기존 저장/연구 호출을 보존한다', () => {
+  assert.match(client, /gearFrame\.Name = "EquipmentPreview"/);
+  assert.match(client, /gearGrid\.FillDirectionMaxCells = 2/);
+  assert.match(client, /gearGrid\.Name = "TwoColumnsThreeRows"/);
+  assert.match(client, /\{"무기", weaponNames\[equipId \+ 1\], true\}/);
+  assert.equal((client.match(/\{"(?:방패|투구|갑옷|장신구|신발)", "미지원", false\}/g) || []).length, 5);
+  assert.match(client, /slotBorder\.Color = amount > 0/);
+  assert.match(client, /for slot = 1, 32 do/);
+  assert.match(client, /eraBanner = civLabel\(civList, "CurrentEraBanner"/);
+  assert.match(client, /eraBanner\.LayoutOrder = 6/);
+  assert.match(client, /button\.LayoutOrder = id \+ 6/);
+  assert.match(client, /previousNodeColor = pendingNode and pendingNode\.BackgroundColor3/);
+  assert.match(client, /\(ok and success == true\) and Color3\.fromRGB\(95, 110, 60\) or previousNodeColor/);
+  assert.match(client, /unlockTechRequest:InvokeServer\(id\)/);
+  assert.match(client, /syncInventoryEvent\.OnClientEvent:Connect/);
+  assert.match(config, /GameName = "대충알피지"/);
+  assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
+});
