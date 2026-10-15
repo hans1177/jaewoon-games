@@ -84,3 +84,48 @@ end
 return ShopMonetizationData
 ~~~
 
+#### 📄 [30] src/ServerScriptService/Systems/MonetizationServer.server.luau
+
+MarketplaceService와 연동하여 결제 성공 시 유저 인벤토리 및 VIP 특권을 안전하게 부여하는 서버 스크립트입니다.
+
+~~~luau
+--!strict
+local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ShopData = require(ReplicatedStorage.Modules.ShopMonetizationData)
+
+-- Developer Product 결제 승인 처리
+MarketplaceService.ProcessReceipt = function(receiptInfo)
+	local player = Players:GetPlayerByUserId(receiptInfo.PlayerId)
+	if not player then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	-- 리소스 팩 구입 시
+	if receiptInfo.ProductId == 2000001 then
+		print("[" .. player.Name .. "] 초보 지원 상자 구매 완료! 자원 지급 중...")
+		player:SetAttribute("Wood", (player:GetAttribute("Wood") or 0) + 500)
+		player:SetAttribute("Stone", (player:GetAttribute("Stone") or 0) + 300)
+		return Enum.ProductPurchaseDecision.PurchaseGranted
+	end
+
+	return Enum.ProductPurchaseDecision.PurchaseGranted
+end
+
+-- GamePass 소지 여부 검증
+Players.PlayerAdded:Connect(function(player)
+	local vipPass = ShopData.GetProduct("VIP_CivilizationPass")
+	if vipPass then
+		local hasPass = false
+		pcall(function()
+			hasPass = MarketplaceService:UserOwnsGamePassAsync(player.UserId, vipPass.ProductID)
+		end)
+		if hasPass then
+			player:SetAttribute("IsVIP", true)
+			print("⭐ [" .. player.Name .. "] VIP 유저 접속 확인!")
+		end
+	end
+end)
+~~~
+
