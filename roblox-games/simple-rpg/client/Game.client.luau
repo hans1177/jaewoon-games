@@ -339,12 +339,15 @@ local function syncVerifiedLearningCharacterMotion(character)
         local state = animate:FindFirstChild(folder)
         local clip = state and state:FindFirstChild(entry[1])
         if clip and clip:IsA("Animation") then
-          clip.AnimationId = "rbxassetid://" .. tostring(entry[2])
+          local assetId = "rbxassetid://" .. tostring(entry[2])
+          if clip.AnimationId ~= assetId then
+            clip.AnimationId = assetId
+          end
         end
       end
       local idle = animate:FindFirstChild("idle")
       if idle then
-        for index, id in ipairs({657595757, 657568135}) do
+        for index, id in ipairs({657595757, 657568135, 885499184}) do
           local clip = idle:FindFirstChild("Animation" .. index)
           if clip and clip:IsA("Animation") then
             clip.AnimationId = "rbxassetid://" .. tostring(id)
