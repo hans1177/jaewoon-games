@@ -2300,7 +2300,9 @@ for sector = 1, 24 do
     or (sector % 6 == 4) and Enum.Material.Snow or Enum.Material.Grass
   for segment = 1, 2 do
     local travel = segment == 1 and 850 or 2450
-    local middle = direction * travel + Vector3.new(0, -2, 0)
+    -- 인접 지면이 겹쳐도 똑같은 높이의 표면끼리 깜박이지 않도록 미세 단차를 둔다.
+    local rise = sector * 0.012 + segment * 0.006
+    local middle = direction * travel + Vector3.new(0, -2 + rise, 0)
     local ground = civPart(connectedLand,
       "연결 대륙 " .. sector .. "-" .. segment,
       Vector3.new(1080, 2, 1750),
@@ -2309,6 +2311,14 @@ for sector = 1, 24 do
     ground:SetAttribute("WalkableGround", true)
     ground:SetAttribute("ContinentSector", sector)
     ground.CanTouch = false
+    local highway = civPart(connectedLand,
+      "대륙 횡단길 " .. sector .. "-" .. segment,
+      Vector3.new(22, 0.12, 1750),
+      CFrame.lookAt(direction * travel + Vector3.new(0, -0.77 + rise, 0),
+        direction * (travel + 10) + Vector3.new(0, -0.77 + rise, 0)),
+      Color3.fromRGB(143, 119, 87), Enum.Material.Ground, false)
+    highway.CanTouch = false
+    highway.CanQuery = false
   end
 end
 civHub:SetAttribute("ConnectedContinentDiameterStuds", continentRadius * 2 + 560)
