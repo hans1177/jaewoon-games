@@ -32,7 +32,10 @@
     },
     "ServerScriptService": {
       "GameServer": {
-        "$path": "server"
+        "$path": "server",
+        "CommonEnvironment": {
+          "$path": "../../assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau"
+        }
       }
     },
     "StarterPlayer": {
