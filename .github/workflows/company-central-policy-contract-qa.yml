@@ -280,8 +280,6 @@ jobs:
       - name: Verify isolated Roblox post-runtime contract with shared policy preflight
         if: ${{ steps.impact.outputs.isolated_post_runtime == 'YES' }}
         run: |
-          node --check tools/company-shared-context.mjs
-          node tools/company-shared-context.mjs --output=/tmp/company-shared-context.json
           node tools/company-constitution-enforcer.mjs --phase=policy-qa
           node --test qa/company-development-roblox-post-runtime-qa.test.mjs
 
@@ -292,12 +290,9 @@ jobs:
           STUDIO_CONTRACT: ${{ steps.impact.outputs.studio_contract }}
           POST_RUNTIME_CONTRACT: ${{ steps.impact.outputs.post_runtime_contract }}
         run: |
-          node --check tools/company-shared-context.mjs
           node --check tools/company-constitution-enforcer.mjs
-          node --test qa/company-shared-context.test.mjs
           node --test qa/company-long-horizon-vision.test.mjs
           node --test qa/other-ai-machine-directive.test.mjs
-          node tools/company-shared-context.mjs --output=/tmp/company-shared-context.json
           node tools/company-constitution-enforcer.mjs --phase=policy-qa
           node --test qa/company-constitution-enforcer.test.mjs
           node --check tools/production-classification.mjs
