@@ -1798,12 +1798,18 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
     end
     -- 검색 갱신 때만 가까운 모델 순서로 정렬한다.
     -- 가까운 모델부터 처리해 30마리 제한에 걸려도 먼 몬스터가 먼저 선택되지 않는다.
+    local creatureDistanceSq = {}
+    for _, model in ipairs(creatureMotionModels) do
+      local root = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Root")
+      if root and root:IsA("BasePart") then
+        local offset = viewer.Position - root.Position
+        creatureDistanceSq[model] = offset:Dot(offset)
+      else
+        creatureDistanceSq[model] = math.huge
+      end
+    end
     table.sort(creatureMotionModels, function(a, b)
-      local aRoot = a.PrimaryPart or a:FindFirstChild("HumanoidRootPart") or a:FindFirstChild("Root")
-      local bRoot = b.PrimaryPart or b:FindFirstChild("HumanoidRootPart") or b:FindFirstChild("Root")
-      local aDist = aRoot and (viewer.Position - aRoot.Position).Magnitude or math.huge
-      local bDist = bRoot and (viewer.Position - bRoot.Position).Magnitude or math.huge
-      return aDist < bDist
+      return creatureDistanceSq[a] < creatureDistanceSq[b]
     end)
   end
   local visible = 0
