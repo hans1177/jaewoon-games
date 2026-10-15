@@ -438,12 +438,12 @@ local function civLabel(parent, name, text, size, pos, background)
   local label = Instance.new("TextLabel")
   label.Name = name
   label.Text = text
-  label.TextColor3 = Color3.fromRGB(250, 235, 191)
+  label.TextColor3 = Color3.fromRGB(232, 213, 168)
   label.TextSize = 15
   label.TextWrapped = true
   label.Font = Enum.Font.GothamBold
   label.TextXAlignment = Enum.TextXAlignment.Center
-  label.BackgroundColor3 = Color3.fromRGB(38, 43, 42)
+  label.BackgroundColor3 = Color3.fromRGB(107, 74, 47)
   label.BackgroundTransparency = background and 0.15 or 1
   label.BorderSizePixel = 0
   label.Size = size
@@ -457,8 +457,8 @@ local function civButton(parent, name, text, size, pos, callback)
   button.Name = name
   button.Size = size
   button.Position = pos
-  button.BackgroundColor3 = Color3.fromRGB(93, 75, 54)
-  button.TextColor3 = Color3.fromRGB(255, 243, 215)
+  button.BackgroundColor3 = Color3.fromRGB(138, 90, 56)
+  button.TextColor3 = Color3.fromRGB(232, 213, 168)
   button.TextWrapped = true
   button.TextSize = 16
   button.Font = Enum.Font.GothamBold
