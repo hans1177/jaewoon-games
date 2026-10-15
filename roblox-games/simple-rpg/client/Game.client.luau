@@ -1616,6 +1616,48 @@ local civWatched = {
   "CivBoarKills", "CivBronzeSmelts", "CivIronKnightKills",
   "CivStoneWall", "CivDangunAltar", "CivPyramid", "CivColosseum", "CivDrakkarShipyard",
 }
+-- 터치/PC 공용 건축 선택 패널. 설치 위치와 부모 소켓은 서버에서 재검증한다.
+local housingPanel = Instance.new("Frame")
+housingPanel.Name = "HousingBuildPanel"
+housingPanel.Size = UDim2.fromOffset(218, 340)
+housingPanel.Position = UDim2.new(1, -226, 0.5, -170)
+housingPanel.BackgroundColor3 = Color3.fromRGB(39, 43, 40)
+housingPanel.Visible = false
+housingPanel.Parent = civGui
+local housingLayout = Instance.new("UIListLayout")
+housingLayout.Padding = UDim.new(0, 3)
+housingLayout.Parent = housingPanel
+local housingSelected = "SquareFoundation"
+local housingKeys = {"SquareFoundation","TriangleFoundation","Wall","WindowWall","Doorframe","FlatRoof","Pillar","Stairs"}
+local housingNames = {"정사각 토대","삼각 토대","벽","창문 벽","문틀","평지붕","기둥","계단"}
+local housingInfo = civLabel(housingPanel,"HousingHint","부품을 선택하고 설치 버튼을 누르세요.",UDim2.new(1, -8, 0, 40),UDim2.new(),true)
+housingInfo.TextSize = 12
+for index,key in ipairs(housingKeys) do
+  civButton(housingPanel,"HousingChoice"..key,housingNames[index],
+    UDim2.new(1,-8,0,26),UDim2.new(),function()
+      housingSelected=key
+      housingInfo.Text="선택: "..housingNames[index]
+    end)
+end
+local function housingTryPlace()
+  local character=player.Character
+  local root=character and character:FindFirstChild("HumanoidRootPart")
+  local camera=workspace.CurrentCamera
+  if not root or not camera then return end
+  local origin=camera.CFrame.Position
+  local cast=workspace:Raycast(origin,camera.CFrame.LookVector*45)
+  local pos=cast and cast.Position or root.Position+root.CFrame.LookVector*8
+  local parentPart=cast and cast.Instance
+  -- 건축 소켓에 직접 조준했을 때만 상단 부품이 연결된다.
+  remote:FireServer("CivBuildHousing",{Key=housingSelected,Position=pos,ParentPart=parentPart})
+end
+civButton(housingPanel,"HousingPlace","선택한 부품 설치",
+  UDim2.new(1,-8,0,34),UDim2.new(),housingTryPlace)
+local housingToggle=civButton(civGui,"HousingToggle","건축",
+  UDim2.fromOffset(76,36),UDim2.new(1,-84,1,-104),function()
+    housingPanel.Visible=not housingPanel.Visible
+  end)
+housingToggle.ZIndex=15
 local function civRender()
   local id = player:GetAttribute("CivRaceID") or 0
   local race = RaceData.GetRace(id)
