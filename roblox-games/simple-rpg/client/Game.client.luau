@@ -72,6 +72,7 @@ local syncInventoryEvent = remotesFolder:WaitForChild("SyncInventoryEvent")
 local unlockTechRequest = remotesFolder:WaitForChild("UnlockTechRequest")
 local craftRequestRemote = remotesFolder:WaitForChild("CraftRequestRemote")
 local portalTeleportEvent = remotesFolder:WaitForChild("PortalTeleportEvent")
+local autoCombatEvent = remotesFolder:WaitForChild("AutoCombatEvent")
 local foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
 local nativeTouchEnabled = UserInputService.TouchEnabled
 local nativeFoundationCamera = workspace.CurrentCamera
@@ -511,6 +512,8 @@ local civPanelMode = "Races"
 local civTechEra = 1
 local inventorySnapshot = {}
 local researchRequestPending = false
+-- Native touch players opt in by default. PC controls and manual action buttons are unchanged.
+local autoCombatEnabled = nativeTouchEnabled
 local function civOpen(mode)
   if civPanel.Visible and civPanelMode == mode then
     civPanel.Visible = false
@@ -797,6 +800,86 @@ syncInventoryEvent.OnClientEvent:Connect(function(updatedInventory)
     civOpen("Inventory")
   end
 end)
+-- Touch-only auto-combat toggle: the server owns actual damage and guard timing.
+local autoCombatToggle = civButton(civGui, "AutoCombatToggle", "자동 전투 ON",
+  UDim2.fromOffset(104, 45), UDim2.new(1, -112, 0, 94), function()
+    autoCombatEnabled = not autoCombatEnabled
+    autoCombatToggle.Text = autoCombatEnabled and "자동 전투 ON" or "자동 전투 OFF"
+    if player:GetAttribute("CivReady") == true then
+      autoCombatEvent:FireServer("SetEnabled", autoCombatEnabled)
+    end
+  end)
+autoCombatToggle.Visible = nativeTouchEnabled
+local function syncAutoCombatSetting()
+  if player:GetAttribute("CivReady") == true then
+    autoCombatEvent:FireServer("SetEnabled", autoCombatEnabled)
+  end
+end
+player:GetAttributeChangedSignal("CivReady"):Connect(syncAutoCombatSetting)
+task.defer(syncAutoCombatSetting)
+
+-- Roblox's built-in mobile joystick remains the primary movement control.
+-- World-space lower-center swipe=dodge, double-tap=manual parry; GUI presses are excluded.
+local touchStart = {}
+local lastTouchTapAt = -1e9
+if nativeTouchEnabled then
+  UserInputService.TouchStarted:Connect(function(input, processed)
+    if processed or civPanel.Visible then return end
+    local camera = workspace.CurrentCamera
+    if not camera then return end
+    local size = camera.ViewportSize
+    local at = input.Position
+    if at.X < size.X * 0.34 or at.X > size.X * 0.7 or at.Y < size.Y * 0.52 then return end
+    touchStart[input] = {Position = at, At = os.clock()}
+  end)
+  UserInputService.TouchEnded:Connect(function(input, processed)
+    local gesture = touchStart[input]
+    touchStart[input] = nil
+    if not gesture or processed or civPanel.Visible then return end
+    if player:GetAttribute("CivReady") ~= true then return end
+    local duration = os.clock() - gesture.At
+    if duration > 0.5 then return end
+    local distance = (Vector2.new(input.Position.X, input.Position.Y)
+      - Vector2.new(gesture.Position.X, gesture.Position.Y)).Magnitude
+    if distance >= 70 then
+      dodgeEvent:FireServer()
+    elseif distance <= 25 then
+      local now = os.clock()
+      if now - lastTouchTapAt <= 0.32 then parryEvent:FireServer() end
+      lastTouchTapAt = now
+    end
+  end)
+end
+
+-- Target only server-tagged civilization enemies. No client-side damage or currency mutation.
+task.spawn(function()
+  while civGui.Parent do
+    task.wait(0.4)
+    if nativeTouchEnabled and autoCombatEnabled and not civPanel.Visible
+      and player:GetAttribute("CivReady") == true and (player:GetAttribute("CivRaceID") or 0) > 0 then
+      local character = player.Character
+      local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+      local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+      local civWorldFolder = workspace:FindFirstChild("CivilizationWorlds")
+      if rootPart and rootPart:IsA("BasePart") and humanoid and humanoid.Health > 0 and civWorldFolder then
+        local nearest = nil
+        local shortest = 15.0
+        for _, obj in ipairs(civWorldFolder:GetChildren()) do
+          if obj:IsA("Model") and obj:GetAttribute("CivilizationEnemy") == true then
+            local enemyRoot = obj:FindFirstChild("HumanoidRootPart")
+            local enemyHumanoid = obj:FindFirstChildOfClass("Humanoid")
+            if enemyRoot and enemyRoot:IsA("BasePart") and enemyHumanoid and enemyHumanoid.Health > 0 then
+              local distance = (enemyRoot.Position - rootPart.Position).Magnitude
+              if distance < shortest then nearest = obj; shortest = distance end
+            end
+          end
+        end
+        if nearest then autoCombatEvent:FireServer("AutoAttack", nearest) end
+      end
+    end
+  end
+end)
+
 civButton(civGui, "MultiverseMenu", "차원 포털",
   UDim2.fromOffset(90, 45), UDim2.fromOffset(174, 252), function() civOpen("Portals") end)
 civButton(civGui, "InventoryMenu", "가방",
