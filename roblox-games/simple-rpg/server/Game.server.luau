@@ -594,7 +594,11 @@ local function civGuard(player)
   local character = player.Character
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
   if not humanoid or humanoid.Health <= 0 then return end
-  player:SetAttribute("CivGuardAt", os.clock())
+  if not civSpendStamina(player, civ.GuardStamina) then return end
+  local state = civActionState[player]
+  state.guardAt = os.clock()
+  player:SetAttribute("CivGuardAt", state.guardAt)
+  remote:FireClient(player, "CIV_ACTION", {Action = "Guard"})
   civMessage(player, "방어 자세! 적이 공격할 때 패링 판정")
 end
 local function civDodge(player)
@@ -613,8 +617,13 @@ local function civDodge(player)
   local target = root.Position + offset.Unit * 7
   local ground = workspace:Raycast(target + Vector3.new(0, 5, 0), Vector3.new(0, -15, 0), parameters)
   if not ground or ground.Normal.Y < 0.6 or ground.Instance.CanCollide ~= true then return end
-  player:SetAttribute("CivDodgeAt", os.clock())
-  character:PivotTo(character:GetPivot() + (Vector3.new(target.X, ground.Position.Y + 4, target.Z) - root.Position))
+  if not civSpendStamina(player, civ.DodgeStamina) then return end
+  local state = civActionState[player]
+  state.dodgeAt = os.clock()
+  player:SetAttribute("CivDodgeAt", state.dodgeAt)
+  local velocity = offset.Unit * 38
+  root.AssemblyLinearVelocity = Vector3.new(velocity.X, math.clamp(root.AssemblyLinearVelocity.Y, -12, 15), velocity.Z)
+  remote:FireClient(player, "CIV_ACTION", {Action = "Dodge"})
   civIncrease(player, "CivDodges", 1)
 end
 local function civSpawnEnemy(raceID, center)
@@ -639,6 +648,30 @@ local function civSpawnEnemy(raceID, center)
   table.insert(civEnemies, item)
   return item
 end
+-- 처치 보상은 직접 공격과 퍼펙트 패링 반사에서 동일하게 정산한다.
+local function civDefeat(player, enemy)
+  if enemy.RespawnPending then return end
+  enemy.RespawnPending = true
+  civIncrease(player, "CivKills", 1)
+  civIncrease(player, "CivResearch", 8)
+  civIncrease(player, "CivSilver", 3)
+  civGrantItem(player, "Food", 1)
+  local race = civRace(player)
+  if race and race.PassiveType == "Victory" then
+    player:SetAttribute("CivVictoryUntil", os.clock() + 10)
+  end
+  civMessage(player, enemy.Model.Name .. " 처치! 연구력 +8 / 은화 +3")
+  enemy.TelegraphAt = 0
+  task.delay(9, function()
+    if enemy.Model.Parent then
+      enemy.Model:PivotTo(CFrame.new(enemy.Home))
+      enemy.Humanoid.Health = enemy.Humanoid.MaxHealth
+      enemy.LastHit = os.clock()
+      enemy.StunnedUntil = 0
+      enemy.RespawnPending = false
+    end
+  end)
+end
 local function civAttack(player)
   if not civRace(player) or not civNowReady(player, "Attack", civ.AttackCooldown) then return end
   local character = player.Character
@@ -647,55 +680,65 @@ local function civAttack(player)
   if not root or not humanoid or humanoid.Health <= 0 then return end
   local chosen, dist = nil, 12
   for _, enemy in ipairs(civEnemies) do
-    if enemy.Humanoid.Health > 0 then
+    if enemy.Humanoid.Health > 0 and not enemy.RespawnPending then
       local delta = enemy.Root.Position - root.Position
       local d = delta.Magnitude
       if d < dist and d > 0.01 and root.CFrame.LookVector:Dot(delta.Unit) > -0.1 then
-        chosen = enemy; dist = d
+        chosen = enemy
+        dist = d
       end
     end
   end
   if not chosen then civMessage(player, "적을 바라보고 가까이 가서 공격해."); return end
+  if not civSpendStamina(player, civ.AttackStamina) then return end
+  local state = civActionState[player]
+  local now = os.clock()
+  state.combo = now - (state.lastAttack or -1e9) <= 1.1 and (state.combo % 3) + 1 or 1
+  state.lastAttack = now
   local race = civRace(player)
-  local damage = 12
-  if race.PassiveType == "Victory" and (player:GetAttribute("CivVictoryUntil") or 0) > os.clock() then damage = math.floor(damage * 1.1 + 0.5) end
-  chosen.Humanoid:TakeDamage(damage)
-  remote:FireClient(player, "CIV_HIT", {Damage = damage, Enemy = chosen.Model.Name})
-  if chosen.Humanoid.Health <= 0 then
-    civIncrease(player, "CivKills", 1)
-    civIncrease(player, "CivResearch", 8)
-    civIncrease(player, "CivSilver", 3)
-    if race.PassiveType == "Victory" then player:SetAttribute("CivVictoryUntil", os.clock() + 10) end
-    civMessage(player, chosen.Model.Name .. " 처치! 연구력 +8 / 은화 +3")
-    chosen.TelegraphAt = 0
-    task.delay(9, function()
-      if chosen.Model.Parent then
-        chosen.Model:PivotTo(CFrame.new(chosen.Home))
-        chosen.Humanoid.Health = chosen.Humanoid.MaxHealth
-        chosen.LastHit = os.clock()
-        chosen.StunnedUntil = 0
-      end
-    end)
+  local damage = state.combo == 3 and 18 or state.combo == 2 and 14 or 12
+  if race.PassiveType == "Victory" and (player:GetAttribute("CivVictoryUntil") or 0) > now then
+    damage = math.floor(damage * 1.10 + 0.5)
   end
+  chosen.Humanoid:TakeDamage(damage)
+  if state.combo == 3 and chosen.Humanoid.Health > 0 then
+    local away = chosen.Root.Position - root.Position
+    local planar = Vector3.new(away.X, 0, away.Z)
+    if planar.Magnitude > 0.1 then
+      local nextPosition = chosen.Root.Position + planar.Unit * 3
+      if Vector3.new(nextPosition.X - chosen.Home.X, 0, nextPosition.Z - chosen.Home.Z).Magnitude < 17 then
+        chosen.Model:PivotTo(chosen.Model:GetPivot() + planar.Unit * 3)
+      end
+    end
+  end
+  remote:FireClient(player, "CIV_ACTION", {Action = "Attack", Combo = state.combo})
+  remote:FireClient(player, "CIV_HIT", {Damage = damage, Enemy = chosen.Model.Name})
+  if chosen.Humanoid.Health <= 0 then civDefeat(player, chosen) end
 end
 local function civOnEnemyStrike(enemy, player, now)
-  if enemy.Humanoid.Health <= 0 then return end
+  if enemy.Humanoid.Health <= 0 or enemy.RespawnPending then return end
   local character = player.Character
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
   local root = character and character:FindFirstChild("HumanoidRootPart")
   if not humanoid or not root or humanoid.Health <= 0 or (root.Position - enemy.Root.Position).Magnitude > 9 then return end
-  local dodgedAt = player:GetAttribute("CivDodgeAt") or -1e9
+  local state = civActionState[player]
+  if not state then return end
+  local dodgedAt = state.dodgeAt or -1e9
   if now >= dodgedAt and now - dodgedAt <= civ.DodgeIFrame then return end
-  local guardedAt = player:GetAttribute("CivGuardAt") or -1e9
+  local guardedAt = state.guardAt or -1e9
   local race = civRace(player)
   local parryWindow = civ.BaseParryWindow + (race and race.ParryWindowOffset or 0)
   if now >= guardedAt and now - guardedAt <= parryWindow then
+    state.guardAt = -1e9
     player:SetAttribute("CivGuardAt", -1e9)
     enemy.StunnedUntil = now + 2
+    enemy.TelegraphAt = 0
+    enemy.Humanoid:TakeDamage(12)
     civIncrease(player, "CivParries", 1)
     civIncrease(player, "CivResearch", 4)
-    civMessage(player, "퍼펙트 패링! 적 2초 기절 / 연구력 +4")
-    remote:FireClient(player, "CIV_PARRY", {Enemy = enemy.Model.Name})
+    civMessage(player, "퍼펙트 패링! 기절 2초·피해 100% 반사")
+    remote:FireClient(player, "CIV_PARRY", {Enemy = enemy.Model.Name, Damage = 12})
+    if enemy.Humanoid.Health <= 0 then civDefeat(player, enemy) end
     return
   end
   local defense = race and race.DefenseMultiplier or 1
