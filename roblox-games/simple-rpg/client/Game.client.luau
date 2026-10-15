@@ -1774,6 +1774,7 @@ local creatureMotionModels = {}
 local creatureMotionLimbNames = {"Left Arm", "Right Arm", "Left Leg", "Right Leg", "LeftLimb", "RightLimb"}
 local creatureMotionLimbBases = setmetatable({}, {__mode = "k"})
 local creatureMotionJointChecks = setmetatable({}, {__mode = "k"})
+local creatureTelegraphHighlights = setmetatable({}, {__mode = "k"})
 local creatureMotionLastSearchPosition = nil
 local creatureMotionLastSearchCharacter = nil
 local creatureMotionLastSearchRoot = nil
@@ -1879,6 +1880,29 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           swing = 0.18
         elseif preparing then
           swing = -0.48 + math.sin(creatureMotionPhase * 13) * 0.045
+        end
+        -- 공격 예고 중인 적의 중심부를 짧게 점멸시켜 모바일에서도 타이밍을 읽기 쉽게 한다.
+        -- 적 서버 판정/히트박스/자원은 변경하지 않는다.
+        local core = model:FindFirstChild("SpiritCore") or model:FindFirstChild("HumanoidRootPart")
+        if core and core:IsA("BasePart") then
+          local existing = creatureTelegraphHighlights[core]
+          if preparing and not defeated and not stunned then
+            if not existing then
+              local highlight = Instance.new("Highlight")
+              highlight.Name = "LocalAttackTelegraph"
+              highlight.Adornee = model
+              highlight.FillColor = Color3.fromRGB(242, 130, 54)
+              highlight.OutlineColor = Color3.fromRGB(255, 213, 118)
+              highlight.FillTransparency = 0.83
+              highlight.OutlineTransparency = 0.35
+              highlight.DepthMode = Enum.HighlightDepthMode.Occluded
+              highlight.Parent = model
+              creatureTelegraphHighlights[core] = highlight
+            end
+          elseif existing then
+            existing:Destroy()
+            creatureTelegraphHighlights[core] = nil
+          end
         end
         for _, name in ipairs(creatureMotionLimbNames) do
           local part = model:FindFirstChild(name)
