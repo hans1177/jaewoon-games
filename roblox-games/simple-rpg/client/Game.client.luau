@@ -1619,21 +1619,31 @@ local civWatched = {
 -- 터치/PC 공용 건축 선택 패널. 설치 위치와 부모 소켓은 서버에서 재검증한다.
 local housingPanel = Instance.new("Frame")
 housingPanel.Name = "HousingBuildPanel"
-housingPanel.Size = UDim2.fromOffset(218, 412)
-housingPanel.Position = UDim2.new(1, -226, 0.5, -206)
+housingPanel.Size = UDim2.fromOffset(218, 445)
+housingPanel.Position = UDim2.new(1, -226, 0.5, -222)
 housingPanel.BackgroundColor3 = Color3.fromRGB(39, 43, 40)
 housingPanel.Visible = false
 housingPanel.Parent = civGui
+local housingScroll = Instance.new("ScrollingFrame")
+housingScroll.Name = "HousingChoices"
+housingScroll.Size = UDim2.new(1,0,1,-142)
+housingScroll.BackgroundTransparency = 1
+housingScroll.BorderSizePixel = 0
+housingScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+housingScroll.ScrollBarThickness = 5
+housingScroll.Parent = housingPanel
 local housingLayout = Instance.new("UIListLayout")
-housingLayout.Padding = UDim.new(0, 3)
-housingLayout.Parent = housingPanel
+housingLayout.Padding = UDim.new(0, 2)
+housingLayout.Parent = housingScroll
 local housingSelected = "SquareFoundation"
-local housingKeys = {"SquareFoundation","TriangleFoundation","Wall","WindowWall","Doorframe","FlatRoof","Pillar","Stairs"}
-local housingNames = {"정사각 토대","삼각 토대","벽","창문 벽","문틀","평지붕","기둥","계단"}
+local housingKeys = {"SquareFoundation","TriangleFoundation","Wall","WindowWall","Doorframe","FlatRoof","Pillar","Stairs",
+  "Ceiling","TriangleCeiling","SlopedRoof","RoofCorner","FenceBase","GateFrame","Railing","Ladder"}
+local housingNames = {"정사각 토대","삼각 토대","벽","창문 벽","문틀","평지붕","기둥","계단",
+  "천장","삼각 천장","경사 지붕","지붕 모서리","울타리 기초","성문틀","난간","사다리"}
 local housingInfo = civLabel(housingPanel,"HousingHint","부품을 선택하고 설치 버튼을 누르세요.",UDim2.new(1, -8, 0, 40),UDim2.new(),true)
 housingInfo.TextSize = 12
 for index,key in ipairs(housingKeys) do
-  civButton(housingPanel,"HousingChoice"..key,housingNames[index],
+  civButton(housingScroll,"HousingChoice"..key,housingNames[index],
     UDim2.new(1,-8,0,26),UDim2.new(),function()
       housingSelected=key
       housingInfo.Text="선택: "..housingNames[index]
@@ -1655,6 +1665,10 @@ local housingSizes = {
   Wall=Vector3.new(8,7,1), WindowWall=Vector3.new(8,7,1),
   Doorframe=Vector3.new(8,7,1), FlatRoof=Vector3.new(8,1,8),
   Pillar=Vector3.new(1,8,1), Stairs=Vector3.new(8,1,3),
+  Ceiling=Vector3.new(8,1,8), TriangleCeiling=Vector3.new(8,1,8),
+  SlopedRoof=Vector3.new(8,3,8), RoofCorner=Vector3.new(8,3,8),
+  FenceBase=Vector3.new(8,1,2), GateFrame=Vector3.new(8,7,2),
+  Railing=Vector3.new(8,3,1), Ladder=Vector3.new(3,8,1),
 }
 local housingRayParams = RaycastParams.new()
 housingRayParams.FilterType = Enum.RaycastFilterType.Exclude
@@ -1677,7 +1691,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
   local center=Vector3.new(math.cos(angle)*worldRadius,0,math.sin(angle)*worldRadius)
   local x=math.round((position.X-center.X)/8)*8
   local z=math.round((position.Z-center.Z)/8)*8
-  local base=housingSelected=="SquareFoundation" or housingSelected=="TriangleFoundation"
+  local base=housingSelected=="SquareFoundation" or housingSelected=="TriangleFoundation" or housingSelected=="FenceBase"
   local level=base and 0 or math.clamp(math.round(position.Y/8),0,3)
   local size=housingSizes[housingSelected]
   housingPreview.Size=size
