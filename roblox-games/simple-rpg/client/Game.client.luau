@@ -1397,23 +1397,29 @@ local function civActionMotion(actionId, button)
       {FieldOfView = baseFov}):Play()
   end)
 end
-local civButtons = {
-  {"Attack", "공격", "CivAttack", 94, 105},
-  {"Guard", "패링", "CivGuard", 94, 172},
-  {"Dodge", "회피", "CivDodge", 94, 239},
-  {"Gather", "채집", "CivGather", 178, 105},
-}
-for _, entry in ipairs(civButtons) do
-  civButton(civGui, entry[1], entry[2], UDim2.fromOffset(78, 60),
-    UDim2.new(1, -entry[4], 1, -entry[5]), function()
-      if entry[3] ~= "CivGather" then
-        local button = civGui:FindFirstChild(entry[1])
-        if button and button:IsA("GuiButton") then civActionMotion(entry[3], button) end
-      end
-      if entry[3] == "CivGuard" then parryEvent:FireServer()
-      elseif entry[3] == "CivDodge" then dodgeEvent:FireServer()
-      else remote:FireServer(entry[3]) end
-    end)
+-- Touch combat/harvesting is handled by world taps instead of four fixed HUD buttons.
+if nativeTouchEnabled then
+  UserInputService.TouchTapInWorld:Connect(function(position, processedByUI)
+    if processedByUI or civPanel.Visible or player:GetAttribute("CivReady") ~= true then return end
+    local camera = workspace.CurrentCamera
+    if not camera then return end
+    local ray = camera:ViewportPointToRay(position.X, position.Y)
+    local params = RaycastParams.new()
+    params.FilterType = Enum.RaycastFilterType.Exclude
+    if player.Character then params.FilterDescendantsInstances = {player.Character} end
+    local result = workspace:Raycast(ray.Origin, ray.Direction * 350, params)
+    if not result then return end
+    local part = result.Instance
+    local resourceType = part:GetAttribute("CivilizationResourceType")
+    if typeof(resourceType) == "string" then
+      remote:FireServer("CivGather", resourceType)
+      return
+    end
+    local model = part:FindFirstAncestorOfClass("Model")
+    if model and model:GetAttribute("CivilizationEnemy") == true then
+      autoCombatEvent:FireServer("AutoAttack", model)
+    end
+  end)
 end
 local civWatched = {
   "CivRaceID", "CivEra", "CivTech", "CivWood", "CivStone",
