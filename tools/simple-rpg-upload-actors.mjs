@@ -4,11 +4,25 @@
 // Does not modify a Roblox place or claim imported models are already playable.
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
 
 const key = process.env.ROBLOX_OPEN_CLOUD_API_KEY;
-const creatorId = process.env.ROBLOX_CREATOR_USER_ID;
-if (!key || !/^[1-9][0-9]*$/.test(String(creatorId ?? ''))) {
-  throw new Error('MISSING_ROBLOX_ASSET_UPLOAD_CREDENTIALS: set ROBLOX_OPEN_CLOUD_API_KEY and ROBLOX_CREATOR_USER_ID');
+if (!key) throw new Error('MISSING_ROBLOX_OPEN_CLOUD_API_KEY');
+let creatorId = process.env.ROBLOX_CREATOR_USER_ID;
+if (!creatorId) {
+  // Reuse the creator already authorized by the Roblox key; never guess an account ID.
+  const permission = await introspectRobloxApiKey({apiKey:key});
+  const creators = new Set();
+  for (const scope of permission.scopes) {
+    if (!/asset/i.test(scope.name || '')) continue;
+    if (!scope.operations.some(op => /write|create/i.test(op))) continue;
+    for (const id of scope.userIds) if (/^[1-9][0-9]*$/.test(id)) creators.add(id);
+  }
+  if (creators.size !== 1) throw new Error('ASSET_CREATOR_AMBIGUOUS: provide ROBLOX_CREATOR_USER_ID');
+  creatorId = [...creators][0];
+}
+if (!/^[1-9][0-9]*$/.test(String(creatorId))) {
+  throw new Error('INVALID_ROBLOX_CREATOR_USER_ID');
 }
 const sourceDir = 'assets/roblox/actors/sources';
 const models = [
