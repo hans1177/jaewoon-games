@@ -1287,6 +1287,36 @@ for index = 1, 4 do
   lake.CanTouch = false
   lake.CanQuery = false
 end
+-- 탐험용 산악 협곡: 기존 지역 중심·자원·몬스터 좌표를 건드리지 않는다.
+-- 경사 지형과 계단은 실제로 걸을 수 있고 중앙 이동로는 비워 둔다.
+for side = -1, 1, 2 do
+  local valleyX = side * 145
+  for step = 1, 6 do
+    local height = 3 + step * 1.8
+    local ledge = civPart(civHub, "협곡 계단 " .. side .. " " .. step,
+      Vector3.new(12, 2, 9), CFrame.new(valleyX + side * step * 9, height - 2, 72 + step * 9),
+      Color3.fromRGB(125, 116, 99), Enum.Material.Rock, true)
+    ledge:SetAttribute("WalkableGround", true)
+  end
+end
+-- 대륙 가장자리의 작은 숲 지대. 탐험 길목과 기존 문명 시설은 가리지 않는다.
+for index = 1, 24 do
+  local angle = index * math.pi * 2 / 24
+  local radius = 175 + (index % 3) * 12
+  local x, z = math.cos(angle) * radius, math.sin(angle) * radius
+  local trunk = civPart(civHub, "야생숲 고목 " .. index,
+    Vector3.new(2, 7, 2), CFrame.new(x, 3, z),
+    Color3.fromRGB(102, 77, 53), Enum.Material.Wood, false)
+  trunk.CanTouch = false
+  trunk.CanQuery = false
+  local crown = civPart(civHub, "야생숲 수관 " .. index,
+    Vector3.new(8, 9, 8), CFrame.new(x, 9, z),
+    Color3.fromRGB(75 + index % 4 * 11, 107 + index % 3 * 9, 75),
+    Enum.Material.Grass, false)
+  crown.Shape = Enum.PartType.Ball
+  crown.CanTouch = false
+  crown.CanQuery = false
+end
 local lobbyGround = civPart(civHub, "CivilizationLobbyGround", Vector3.new(64, 2, 64),
   CFrame.new(0, -1, 0), Color3.fromRGB(111, 132, 101), Enum.Material.Slate, true)
 lobbyGround:SetAttribute("WalkableGround", true)
