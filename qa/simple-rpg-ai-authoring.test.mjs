@@ -321,23 +321,23 @@ test('market UI requests valid quotes with M and keeps other controls', () => {
 });
 
 test('대충알피지 mobile UI uses a responsive scrolling menu without disrupting inventory or combat controls', () => {
-  assert.match(client, /civGui\\.ZIndexBehavior = Enum\\.ZIndexBehavior\\.Global/);
-  assert.match(client, /civMenuRail = Instance\\.new\\("ScrollingFrame"\\)/);
-  assert.match(client, /civMenuLayout = Instance\\.new\\("UIListLayout"\\)/);
-  assert.match(client, /civMenuLayout\\.Padding = UDim\\.new\\(0, 8\\)/);
-  assert.match(client, /civMenuRail\\.AutomaticCanvasSize = Enum\\.AutomaticSize\\.Y/);
-  assert.match(client, /GetPropertyChangedSignal\\("ViewportSize"\\)/);
-  assert.match(client, /civPanel\\.ZIndex = 10/);
-  assert.match(client, /civCloseButton\\.ZIndex = 13/);
-  assert.match(client, /civList\\.ZIndex = 11/);
-  assert.match(client, /civMessage = civLabel\\(civGui,[\\s\\S]*UDim2\\.new\\(1, -134, 0, 43\\)/);
+  assert.match(client, /civGui\.ZIndexBehavior = Enum\.ZIndexBehavior\.Global/);
+  assert.match(client, /civMenuRail = Instance\.new\("ScrollingFrame"\)/);
+  assert.match(client, /civMenuLayout = Instance\.new\("UIListLayout"\)/);
+  assert.match(client, /civMenuLayout\.Padding = UDim\.new\(0, 8\)/);
+  assert.match(client, /civMenuRail\.AutomaticCanvasSize = Enum\.AutomaticSize\.Y/);
+  assert.match(client, /GetPropertyChangedSignal\("ViewportSize"\)/);
+  assert.match(client, /civPanel\.ZIndex = 10/);
+  assert.match(client, /civCloseButton\.ZIndex = 13/);
+  assert.match(client, /civList\.ZIndex = 11/);
+  assert.match(client, /civMessage = civLabel\(civGui,[\s\S]*UDim2\.new\(1, -134, 0, 43\)/);
   for (const name of ['RaceMenu', 'TechMenu', 'InventoryMenu', 'CraftMenu', 'BuildingMenu',
     'CompanionMenu', 'TradeMenu', 'MultiverseMenu', 'Travel', 'Legacy']) {
     assert.ok(client.includes('civButton(civMenuRail, "' + name + '"'), name);
     assert.ok(!client.includes('civButton(civGui, "' + name + '"'), name + ' must not retain fixed positions');
   }
-  assert.match(client, /grid = Instance\\.new\\("UIGridLayout"\\)/);
-  assert.match(client, /for _, entry in ipairs\\(civButtons\\) do/);
-  assert.match(client, /autoCombatToggle\\.Visible = nativeTouchEnabled/);
-  assert.doesNotMatch(client, /for _, child in mainGui:GetDescendants\\(\\)/);
+  assert.match(client, /grid = Instance\.new\("UIGridLayout"\)/);
+  assert.match(client, /for _, entry in ipairs\(civButtons\) do/);
+  assert.match(client, /autoCombatToggle\.Visible = nativeTouchEnabled/);
+  assert.doesNotMatch(client, /for _, child in mainGui:GetDescendants\(\)/);
 });
