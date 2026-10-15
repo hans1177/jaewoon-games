@@ -742,12 +742,24 @@ local civHousingPieces = {
   FlatRoof={Size=Vector3.new(8,1,8), Wood=6, Stone=2},
   Pillar={Size=Vector3.new(1,8,1), Wood=3, Stone=1},
   Stairs={Size=Vector3.new(8,1,3), Wood=6, Stone=2},
+  Ceiling={Size=Vector3.new(8,1,8), Wood=5, Stone=2},
+  TriangleCeiling={Size=Vector3.new(8,1,8), Wood=5, Stone=2},
+  SlopedRoof={Size=Vector3.new(8,3,8), Wood=7, Stone=2},
+  RoofCorner={Size=Vector3.new(8,3,8), Wood=7, Stone=3},
+  FenceBase={Size=Vector3.new(8,1,2), Wood=3, Stone=2, Base=true},
+  GateFrame={Size=Vector3.new(8,7,2), Wood=8, Stone=4},
+  Railing={Size=Vector3.new(8,3,1), Wood=4, Stone=1},
+  Ladder={Size=Vector3.new(3,8,1), Wood=5, Stone=1},
 }
 local CommonBuilding = require(script.Parent:WaitForChild("CommonBuilding"))
 local housingAssetIds = {
   SquareFoundation="FLOOR_TILE",TriangleFoundation="FOUNDATION_TRIANGLE",
   Wall="HALF_WALL",WindowWall="WALL_WINDOW",Doorframe="DOOR_FRAME",
   FlatRoof="ROOF_FLAT",Pillar="PILLAR_STONE",Stairs="STAIRS_STRAIGHT",
+  Ceiling="CEILING_TILE",TriangleCeiling="CEILING_WEDGE",
+  SlopedRoof="ROOF_SLOPE",RoofCorner="ROOF_CORNER",
+  FenceBase="FENCE_FOUNDATION",GateFrame="GATE_FRAME",
+  Railing="RAILING",Ladder="LADDER",
 }
 local function decorateHousingPiece(piece, key)
   local assetId = housingAssetIds[key]
