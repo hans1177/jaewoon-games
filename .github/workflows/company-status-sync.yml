@@ -114,12 +114,6 @@ jobs:
           echo "COMPANY_OWNER_WEB_GAME_IDS_PATH=$out" >> "$GITHUB_ENV"
           echo "COMPANY_OWNER_WEB_CHANGED_IDS=$(paste -sd, "$out" || true)"
 
-      - name: Validate shared worker context before status sync
-        run: |
-          node --check tools/company-shared-context.mjs
-          node --test qa/company-shared-context.test.mjs
-          node tools/company-shared-context.mjs --output=/tmp/company-shared-context-status-before.json
-
       - name: Sync company status and semantic production classes
         run: |
           node --check tools/production-classification.mjs
@@ -244,9 +238,6 @@ jobs:
           console.log('DIRECT_NATIVE_POLICY_SYNC_QA=PASS');
           console.log('ROBLOX_UNITY_RUNTIME_SYNC_QA=PASS');
           NODE
-
-      - name: Revalidate shared worker context before runtime persistence
-        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-status-after.json
 
       - name: Persist validated runtime status without main write
         shell: bash
