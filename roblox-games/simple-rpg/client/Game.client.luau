@@ -512,6 +512,22 @@ local function civLabel(parent, name, text, size, pos, background)
   label.Position = pos
   label.ZIndex = parent:IsA("ScreenGui") and 5 or 12
   label.Parent = parent
+  -- 원본 로블록스 에셋 지면/목재 텍스처를 문명 HUD 장식으로 재사용한다.
+  if background then
+    local parchment = Instance.new("ImageLabel")
+    parchment.Name = "ParchmentAssetSurface"
+    parchment.BackgroundTransparency = 1
+    parchment.Size = UDim2.fromScale(1, 1)
+    parchment.Image = "rbxassetid://128886287832599"
+    parchment.ImageColor3 = Color3.fromRGB(235, 213, 170)
+    parchment.ImageTransparency = 0.78
+    parchment.ScaleType = Enum.ScaleType.Crop
+    parchment.ZIndex = label.ZIndex
+    parchment.Parent = label
+    local edges = Instance.new("UICorner")
+    edges.CornerRadius = UDim.new(0, 7)
+    edges.Parent = parchment
+  end
   return label
 end
 local function civButton(parent, name, text, size, pos, callback)
@@ -536,6 +552,19 @@ local function civButton(parent, name, text, size, pos, callback)
   shading.Rotation = 90
   shading.Color = ColorSequence.new(Color3.fromRGB(153, 106, 64), Color3.fromRGB(84, 53, 35))
   shading.Parent = button
+  local grain = Instance.new("ImageLabel")
+  grain.Name = "WoodAssetGrain"
+  grain.BackgroundTransparency = 1
+  grain.Size = UDim2.fromScale(1, 1)
+  grain.Image = "rbxassetid://124882110895040"
+  grain.ImageTransparency = 0.78
+  grain.ImageColor3 = Color3.fromRGB(222, 185, 129)
+  grain.ScaleType = Enum.ScaleType.Crop
+  grain.ZIndex = button.ZIndex
+  grain.Parent = button
+  local grainCorner = Instance.new("UICorner")
+  grainCorner.CornerRadius = UDim.new(0, 7)
+  grainCorner.Parent = grain
   local woodBorder = Instance.new("UIStroke")
   woodBorder.Name = "OakBorder"
   woodBorder.Color = Color3.fromRGB(198, 151, 86)
@@ -588,11 +617,12 @@ if nativeTouchEnabled then
   civTitle.AnchorPoint = Vector2.new(0, 0)
   civTitle.Position = UDim2.fromOffset(8, 8)
   civTitle.Size = UDim2.fromOffset(170, 24)
-  civTitle.TextSize = 14
+  civTitle.TextSize = 16
+  civTitle.TextColor3 = Color3.fromRGB(255, 242, 202)
   civStatus.AnchorPoint = Vector2.new(0, 0)
   civStatus.Position = UDim2.fromOffset(8, 36)
   civStatus.Size = UDim2.fromOffset(235, 34)
-  civStatus.TextSize = 10
+  civStatus.TextSize = 12
   civMessage.AnchorPoint = Vector2.new(0, 0)
   civMessage.Position = UDim2.fromOffset(8, 74)
   civMessage.Size = UDim2.fromOffset(235, 26)
@@ -715,8 +745,8 @@ civMenuRail.CanvasSize = UDim2.new()
 civMenuRail.ClipsDescendants = true
 civMenuRail.Parent = civGui
 -- 전투 중 시야를 가리지 않도록 메뉴는 기본 접힘으로 시작한다.
-local civMenuToggle = civButton(civGui, "CivilizationMenuToggle", "메뉴 ☰",
-  UDim2.fromOffset(78, 34), UDim2.fromOffset(10, nativeTouchEnabled and 164 or 110), function()
+local civMenuToggle = civButton(civGui, "CivilizationMenuToggle", "☰ 메뉴",
+  UDim2.fromOffset(100, 44), UDim2.fromOffset(10, nativeTouchEnabled and 164 or 110), function()
     civMenuRail.Visible = not civMenuRail.Visible
   end)
 civMenuRail.Visible = false
