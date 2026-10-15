@@ -962,7 +962,7 @@ local function civResearch(player, requestedTechID)
   setNumber(player, "CivEra", tech.Era)
   local message = "연구 완료: " .. tech.Name .. " (" .. TechTreeData.EraName(tech.Era) .. ")"
   civMessage(player, message)
-  updateTechEvent:FireClient(player, nextID, tech.Era)
+  updateTechEvent:FireClient(player, nextID, tech.Era, factor < 1)
   return true, message
 end
 local function civGuard(player)
