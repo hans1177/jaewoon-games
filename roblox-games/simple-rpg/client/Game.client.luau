@@ -1308,9 +1308,25 @@ local function civOpen(mode)
           civMessage.Visible = true
           return
         end
-        remote:FireServer("CivTravel", player:GetAttribute("CivRaceID"))
-        civPanel.Visible = false
-        civMenuRail.Visible = false
+        if player:GetAttribute("CivSaveAvailable") ~= true or player:GetAttribute("CivReady") ~= true then
+          civMessage.Text = "저장 데이터를 확인할 수 없어. 데이터를 보호하기 위해 이동을 중단했어."
+          civMessage.Visible = true
+          return
+        end
+        local destination = player:GetAttribute("CivRaceID")
+        local oldAck = player:GetAttribute("CivTravelAck") or 0
+        remote:FireServer("CivTravel", destination)
+        task.delay(2.5, function()
+          local arrived = (player:GetAttribute("CivTravelAck") or 0) > oldAck
+            and player:GetAttribute("CivTravelDestination") == destination
+          if arrived then
+            civPanel.Visible = false
+            civMenuRail.Visible = false
+          else
+            civMessage.Text = "모험 지역으로 이동하지 못했어. 잠시 후 다시 눌러줘."
+            civMessage.Visible = true
+          end
+        end)
       end)
     adventure.LayoutOrder = 1
     local lobby = civButton(civList, "ReturnToLobby", "중앙 로비로 이동",
