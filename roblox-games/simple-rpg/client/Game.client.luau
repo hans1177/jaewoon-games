@@ -547,6 +547,52 @@ for _, panel in ipairs({civTitle, civStatus, civMessage}) do
   border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
   border.Parent = panel
 end
+-- Compact era and raid readout; not an interactive right-side control.
+local eraReadout = civLabel(civGui, "CurrentEraReadout", "신화 시대",
+  UDim2.fromOffset(118, 25), UDim2.fromOffset(8, 6), true)
+eraReadout.TextSize = 12
+eraReadout.BackgroundColor3 = Color3.fromRGB(58, 44, 59)
+local bossReadout = civLabel(civGui, "RaidBossPhase", "",
+  UDim2.new(0.5, 0, 0, 28), UDim2.new(0.5, 0, 0, 108), true)
+bossReadout.AnchorPoint = Vector2.new(0.5, 0)
+bossReadout.BackgroundColor3 = Color3.fromRGB(66, 39, 43)
+bossReadout.TextSize = 12
+bossReadout.Visible = false
+local eraNames = {"신화 시대", "석기 시대", "청동기 시대", "철기 시대", "영웅 시대"}
+local function refreshEraReadout()
+  local era = player:GetAttribute("CivEra")
+  if typeof(era) ~= "number" or era % 1 ~= 0 or not eraNames[era] then era = 1 end
+  eraReadout.Text = eraNames[era]
+end
+player:GetAttributeChangedSignal("CivEra"):Connect(refreshEraReadout)
+refreshEraReadout()
+task.spawn(function()
+  while civGui.Parent do
+    task.wait(0.6)
+    local character = player.Character
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    local folder = workspace:FindFirstChild("CivilizationWorlds")
+    local closest, distance = nil, 60
+    if root and folder then
+      for _, enemy in ipairs(folder:GetChildren()) do
+        if enemy:IsA("Model") and enemy:GetAttribute("IsRaidBoss") == true then
+          local part = enemy:FindFirstChild("HumanoidRootPart")
+          local humanoid = enemy:FindFirstChildOfClass("Humanoid")
+          if part and humanoid and humanoid.Health > 0 then
+            local d = (part.Position - root.Position).Magnitude
+            if d < distance then closest, distance = enemy, d end
+          end
+        end
+      end
+    end
+    bossReadout.Visible = closest ~= nil
+    if closest then
+      local phase = closest:GetAttribute("BossPhase")
+      local index = phase == "Phase3" and 3 or phase == "Phase2" and 2 or 1
+      bossReadout.Text = closest.Name .. " · 페이즈 " .. index
+    end
+  end
+end)
 local civPanel = Instance.new("Frame")
 civPanel.Name = "CivilizationPanel"
 civPanel.AnchorPoint = Vector2.new(0.5, 0.5)
