@@ -1093,6 +1093,34 @@ local function civOnEnemyStrike(enemy, player, now)
   civMessage(player, enemy.Model.Name .. "의 공격! 체력 -" .. damage)
 end
 -- 문명 지역과 중앙 포털: 메인 지면/저장 키는 그대로 유지한다.
+-- 중앙 문명 광장: 포털 이동 기능을 가진 패드와 독립된 비충돌 장식이다.
+local lobbyBase = civPart(civHub, "광장 석상 기단", Vector3.new(8, 0.8, 5),
+  CFrame.new(0, 0.4, -11), Color3.fromRGB(107, 74, 47), Enum.Material.Slate, false)
+lobbyBase.CanTouch = false
+local lobbyCore = civPart(civHub, "광장 차원 심장", Vector3.new(3.2, 5, 0.5),
+  CFrame.new(0, 3.5, -11), Color3.fromRGB(232, 163, 61), Enum.Material.Neon, false)
+lobbyCore.Transparency = 0.38
+lobbyCore.CanTouch = false
+civSign(civHub, lobbyCore, "대충알피지\n24개 문명 포털 광장", 6.5)
+for _, side in ipairs({-1, 1}) do
+  local pillar = civPart(civHub, "광장 석상 기둥 " .. side, Vector3.new(1.5, 6, 1.8),
+    CFrame.new(side * 2.8, 3.5, -11), Color3.fromRGB(184, 166, 125), Enum.Material.Sandstone, false)
+  pillar.CanTouch = false
+  local torch = civPart(civHub, "광장 횃불 " .. side, Vector3.new(0.9, 0.9, 0.9),
+    CFrame.new(side * 2.8, 6.9, -11), Color3.fromRGB(255, 243, 196), Enum.Material.Neon, false)
+  torch.Shape = Enum.PartType.Ball
+  torch.CanTouch = false
+end
+local lobbyCrown = civPart(civHub, "광장 석상 관석", Vector3.new(7.5, 1.5, 2.1),
+  CFrame.new(0, 7.2, -11), Color3.fromRGB(138, 90, 56), Enum.Material.Sandstone, false)
+lobbyCrown.CanTouch = false
+-- 네 대표 문명만 특색 있는 입구를 추가하고 나머지 20개 포털은 그대로 둔다.
+local featuredPortalColors = {
+  [1] = Color3.fromRGB(169, 82, 64),  -- 로마
+  [2] = Color3.fromRGB(232, 163, 61), -- 이집트
+  [12] = Color3.fromRGB(44, 74, 110), -- 바이킹
+  [15] = Color3.fromRGB(95, 110, 60), -- 고조선
+}
 for id = 1, 24 do
   local race = RaceData.GetRace(id)
   local angle = 2 * math.pi * (id - 1) / 24
