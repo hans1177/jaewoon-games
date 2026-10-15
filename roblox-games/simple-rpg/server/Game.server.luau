@@ -2,6 +2,8 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
 local store = nil
 local storeOk, storeResult = pcall(function()
   return DataStoreService:GetDataStore("simple-rpg-development-v1")
@@ -325,6 +327,9 @@ end
 -- 문명 멀티버스: 기존 저장/전투 액션을 보존한 서버 권한 게임플레이.
 local civ = Config.Civilization
 local civCooldowns = {}
+local civActionState = {}
+local civSessions = {}
+local civSessionToken = HttpService:GenerateGUID(false)
 local civEnemies = {}
 local civNodes = {}
 local civWorlds = {}
@@ -387,6 +392,110 @@ end
 local function civIncrease(player, key, count)
   setNumber(player, key, math.max(0, readNumber(player, key, 0) + count))
 end
+-- 인벤토리/퀵슬롯: 32개 슬롯과 8개 단축 슬롯의 서버 권한.
+local CIV_INVENTORY_SIZE = 32
+local CIV_HOTBAR_SIZE = 8
+local civItemLabels = {Wood="목재", Stone="석재", Bronze="청동", Iron="철광", Food="식량"}
+local function civReadInventory(player)
+  local raw = player:GetAttribute("CivInventoryJSON")
+  local ok, decoded = pcall(function() return HttpService:JSONDecode(typeof(raw) == "string" and raw or "[]") end)
+  if not ok or typeof(decoded) ~= "table" then decoded = {} end
+  local inventory = table.create(CIV_INVENTORY_SIZE)
+  for index = 1, CIV_INVENTORY_SIZE do
+    local entry = decoded[index]
+    if typeof(entry) == "table"
+      and typeof(entry.id) == "string" and civItemLabels[entry.id] ~= nil
+      and typeof(entry.count) == "number" and entry.count % 1 == 0 and entry.count >= 1 and entry.count <= 999 then
+      inventory[index] = {id = entry.id, count = entry.count}
+    else
+      inventory[index] = {id = "", count = 0}
+    end
+  end
+  return inventory
+end
+local function civReadHotbar(player)
+  local raw = player:GetAttribute("CivHotbarJSON")
+  local ok, decoded = pcall(function() return HttpService:JSONDecode(typeof(raw) == "string" and raw or "[]") end)
+  if not ok or typeof(decoded) ~= "table" then decoded = {} end
+  local bar = table.create(CIV_HOTBAR_SIZE)
+  for index = 1, CIV_HOTBAR_SIZE do
+    local slot = decoded[index]
+    bar[index] = typeof(slot) == "number" and slot % 1 == 0 and slot >= 1 and slot <= 32 and slot or 0
+  end
+  return bar
+end
+local function civWriteInventory(player, inventory)
+  player:SetAttribute("CivInventoryJSON", HttpService:JSONEncode(inventory))
+end
+local function civWriteHotbar(player, bar)
+  player:SetAttribute("CivHotbarJSON", HttpService:JSONEncode(bar))
+end
+local function civGrantItem(player, id, amount)
+  if not civItemLabels[id] or amount < 1 or amount % 1 ~= 0 then return false end
+  local inventory = civReadInventory(player)
+  local remaining = amount
+  for _, slot in ipairs(inventory) do
+    if slot.id == id and slot.count < 999 then
+      local chunk = math.min(999 - slot.count, remaining)
+      slot.count += chunk
+      remaining -= chunk
+      if remaining == 0 then break end
+    end
+  end
+  if remaining > 0 then
+    for _, slot in ipairs(inventory) do
+      if slot.id == "" then
+        local chunk = math.min(999, remaining)
+        slot.id, slot.count = id, chunk
+        remaining -= chunk
+        if remaining == 0 then break end
+      end
+    end
+  end
+  if remaining > 0 then return false end
+  civWriteInventory(player, inventory)
+  return true
+end
+local function civMoveInventory(player, fromIndex, toIndex)
+  if typeof(fromIndex) ~= "number" or fromIndex % 1 ~= 0
+    or typeof(toIndex) ~= "number" or toIndex % 1 ~= 0
+    or fromIndex < 1 or fromIndex > CIV_INVENTORY_SIZE
+    or toIndex < 1 or toIndex > CIV_INVENTORY_SIZE
+    or fromIndex == toIndex then return end
+  if not civNowReady(player, "Inventory", 0.12) then return end
+  local inventory = civReadInventory(player)
+  inventory[fromIndex], inventory[toIndex] = inventory[toIndex], inventory[fromIndex]
+  local bar = civReadHotbar(player)
+  for index, equipped in ipairs(bar) do
+    if equipped == fromIndex then bar[index] = toIndex
+    elseif equipped == toIndex then bar[index] = fromIndex end
+  end
+  civWriteInventory(player, inventory)
+  civWriteHotbar(player, bar)
+end
+local function civEquipHotbar(player, fromIndex, hotbarIndex)
+  if typeof(fromIndex) ~= "number" or fromIndex % 1 ~= 0
+    or typeof(hotbarIndex) ~= "number" or hotbarIndex % 1 ~= 0
+    or fromIndex < 0 or fromIndex > CIV_INVENTORY_SIZE
+    or hotbarIndex < 1 or hotbarIndex > CIV_HOTBAR_SIZE then return end
+  if not civNowReady(player, "Inventory", 0.12) then return end
+  local inventory = civReadInventory(player)
+  if fromIndex ~= 0 and inventory[fromIndex].id == "" then return end
+  local bar = civReadHotbar(player)
+  bar[hotbarIndex] = fromIndex
+  civWriteHotbar(player, bar)
+end
+local function civSpendStamina(player, cost)
+  local state = civActionState[player]
+  if not state or state.stamina < cost then
+    civMessage(player, "스태미나가 부족해.")
+    return false
+  end
+  state.stamina -= cost
+  player:SetAttribute("CivStamina", math.floor(state.stamina))
+  return true
+end
+
 local function civTravel(player, raceID)
   local destination = civWorlds[raceID]
   local character = player.Character
@@ -446,6 +555,10 @@ local function civGather(player)
     or (race.PassiveType == "Industry" and best.Type == "Iron") and 1.15
     or (race.PassiveType == "Cold" and (best.Type == "Iron" or best.Type == "Bronze")) and 1.25 or 1
   local amount = math.max(1, math.floor(3 * bonus + 0.5))
+  if not civGrantItem(player, best.Type, amount) then
+    civMessage(player, "인벤토리가 가득 찼어.")
+    return
+  end
   civIncrease(player, "Civ" .. best.Type, amount)
   civIncrease(player, "CivGather", 1)
   civIncrease(player, "CivResearch", 1)
@@ -723,14 +836,15 @@ for _, player in ipairs(Players:GetPlayers()) do
   end)
 end
 -- 통합 액션 입력: 기존 ID는 그대로 두고 문명 전용 ID만 추가한다.
-remote.OnServerEvent:Connect(function(player, actionId, argument)
+remote.OnServerEvent:Connect(function(player, actionId, argument, secondary)
   if player:GetAttribute("CivReady") ~= true then return end
   if typeof(actionId) ~= "string" or #actionId > 80 then return end
   local handler = handlers[actionId]
   local civActions = {
     CivSelect = civSelect, CivTravel = civTravel, CivAttack = civAttack,
     CivGuard = civGuard, CivDodge = civDodge, CivGather = civGather,
-    CivResearch = civResearch,
+    CivResearch = civResearch, CivInvSwap = civMoveInventory,
+    CivHotbarEquip = civEquipHotbar,
   }
   local action = handler or civActions[actionId]
   if typeof(action) ~= "function" then return end
@@ -750,6 +864,8 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     end
   elseif actionId == "CivSelect" then
     action(player, argument)
+  elseif actionId == "CivInvSwap" or actionId == "CivHotbarEquip" then
+    action(player, argument, secondary)
   else
     action(player)
   end
