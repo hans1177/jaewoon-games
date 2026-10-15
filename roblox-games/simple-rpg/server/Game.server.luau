@@ -1377,12 +1377,12 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   end
   enemy:SetAttribute("IsPreparingAttack", false)
   enemy:SetAttribute("AIState", "Idle")
-  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + (special == "StoneWolf" and Vector3.new(17, 4, -15)
-    or special == "WildBoar" and Vector3.new(-17, 4, -15)
-    or special == "BronzeGolem" and Vector3.new(-17, 4, -15)
-    or special == "IronKnight" and Vector3.new(-17, 4, -15)
-    or mobSlot == 2 and Vector3.new(-13, 4, -11)
-    or Vector3.new(0, 4, 16))), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
+  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + (special == "StoneWolf" and Vector3.new(43, 4, -34)
+    or special == "WildBoar" and Vector3.new(-43, 4, -34)
+    or special == "BronzeGolem" and Vector3.new(-43, 4, -34)
+    or special == "IronKnight" and Vector3.new(-43, 4, -34)
+    or mobSlot == 2 and Vector3.new(-34, 4, 29)
+    or Vector3.new(31, 4, 35))), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
   root.Transparency = 0.35
   enemy:SetAttribute("SpawnPosition", root.Position)
   local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
@@ -2172,9 +2172,11 @@ for id = 1, 24 do
     {Type = "Coal", Label = "석탄", Color = Color3.fromRGB(65, 67, 70)},
   }
   for index, resource in ipairs(resources) do
-    local px = index <= 4 and (((index - 1) % 2) * 11 - 1)
-      or ((index - 5) % 4) * 9 - 14
-    local pz = index <= 4 and (math.floor((index - 1) / 2) * 12 - 2) or -14
+    -- 넓어진 탐험 지역에 채집물을 방사형으로 분산한다 (시설·중앙 광장과 분리).
+    local harvestAngle = (index - 1) * math.pi / 4 + (id % 3) * 0.1
+    local harvestRadius = index % 2 == 0 and 43 or 34
+    local px = math.cos(harvestAngle) * harvestRadius
+    local pz = math.sin(harvestAngle) * harvestRadius
     local node = civPart(region, resource.Label, Vector3.new(4, 5, 4), CFrame.new(center + Vector3.new(px, 3.5, pz)), resource.Color, Enum.Material.Rock, true)
     node.Shape = Enum.PartType.Ball
     node:SetAttribute("CivilizationResourceType", resource.Type)
