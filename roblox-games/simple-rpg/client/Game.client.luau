@@ -528,14 +528,15 @@ civTitle.TextColor3 = Color3.fromRGB(232, 213, 168)
 civTitle.TextSize = 18
 civStatus.AnchorPoint = Vector2.new(0.5, 0)
 civStatus.Position = UDim2.new(0.5, 0, 0, 35)
-civStatus.Size = UDim2.new(0.76, 0, 0, 36)
+civStatus.Size = UDim2.new(0.62, 0, 0, 31)
 civStatus.BackgroundColor3 = Color3.fromRGB(232, 213, 168)
 civStatus.TextWrapped = true
-civStatus.TextSize = 12
+civStatus.TextSize = 11
 civStatus.TextColor3 = Color3.fromRGB(66, 44, 30)
 civMessage.AnchorPoint = Vector2.new(0.5, 0)
-civMessage.Position = UDim2.new(0.5, 0, 0, 76)
-civMessage.Size = UDim2.new(0.55, 0, 0, 27)
+civMessage.Position = UDim2.new(0.5, 0, 0, 70)
+civMessage.Size = UDim2.new(0.48, 0, 0, 24)
+civMessage.Visible = false
 civMessage.TextSize = 13
 for _, panel in ipairs({civTitle, civStatus, civMessage}) do
   local corner = Instance.new("UICorner")
@@ -641,7 +642,7 @@ civLayout.Parent = civList
 -- Never add UIListLayout to arbitrary Frames (inventory uses an independent UIGridLayout).
 local civMenuRail = Instance.new("ScrollingFrame")
 civMenuRail.Name = "CivilizationMenu"
-civMenuRail.Position = UDim2.fromOffset(10, 112)
+civMenuRail.Position = UDim2.fromOffset(10, 150)
 civMenuRail.Size = UDim2.fromOffset(104, 250)
 civMenuRail.BackgroundTransparency = 1
 civMenuRail.BorderSizePixel = 0
@@ -653,6 +654,12 @@ civMenuRail.AutomaticCanvasSize = Enum.AutomaticSize.Y
 civMenuRail.CanvasSize = UDim2.new()
 civMenuRail.ClipsDescendants = true
 civMenuRail.Parent = civGui
+-- 전투 중 시야를 가리지 않도록 메뉴는 기본 접힘으로 시작한다.
+local civMenuToggle = civButton(civGui, "CivilizationMenuToggle", "메뉴 ☰",
+  UDim2.fromOffset(78, 34), UDim2.fromOffset(10, 110), function()
+    civMenuRail.Visible = not civMenuRail.Visible
+  end)
+civMenuRail.Visible = false
 local civMenuLayout = Instance.new("UIListLayout")
 civMenuLayout.SortOrder = Enum.SortOrder.LayoutOrder
 civMenuLayout.Padding = UDim.new(0, 8)
@@ -664,7 +671,7 @@ local function resizeCivMenuRail()
   -- 작은 모바일 화면에서도 하단 전투 조작 영역을 침범하지 않도록 메뉴 높이를 제한한다.
   local reservedBottom = nativeTouchEnabled and math.min(244, math.floor(viewport.Y * 0.34))
     or math.min(164, math.floor(viewport.Y * 0.24))
-  local availableHeight = math.max(0, viewport.Y - 112 - reservedBottom)
+  local availableHeight = math.max(0, viewport.Y - 150 - reservedBottom)
   -- 메뉴 높이가 바뀌어도 이전 스크롤 위치가 범위를 벗어나지 않도록 보정한다.
   local menuHeight = math.floor(math.min(440, availableHeight))
   local maxScroll = math.max(0, civMenuRail.AbsoluteCanvasSize.Y - menuHeight)
@@ -676,7 +683,7 @@ local function resizeCivMenuRail()
     menuHeight
   )
   -- Keep the central parchment window inside the screen and outside the left menu.
-  local railRight = civMenuRail.Position.X.Offset + civMenuRail.Size.X.Offset
+  local railRight = civMenuRail.Visible and (civMenuRail.Position.X.Offset + civMenuRail.Size.X.Offset) or 0
   local panelLeft = railRight + 10
   local panelWidth = math.max(1, math.floor(viewport.X - panelLeft - 12))
   local panelTop = math.min(108, math.floor(viewport.Y * 0.23))
@@ -685,6 +692,7 @@ local function resizeCivMenuRail()
   civPanel.Size = UDim2.fromOffset(panelWidth, panelHeight)
   civPanel.Position = UDim2.fromOffset(panelLeft, panelTop)
 end
+civMenuToggle.Activated:Connect(resizeCivMenuRail)
 local civMenuViewportConnection
 local function bindCivMenuViewport()
   if civMenuViewportConnection then
@@ -1797,7 +1805,7 @@ civButton(housingFooter,"HousingDoorToggle","조준한 내 문 열기 / 닫기",
     end
   end)
 local housingToggle=civButton(civGui,"HousingToggle","건축",
-  UDim2.fromOffset(76,36),UDim2.new(1,-84,1,-104),function()
+  UDim2.fromOffset(76,36),UDim2.new(1,-88,0,110),function()
     housingPanel.Visible=not housingPanel.Visible
   end)
 housingToggle.ZIndex=15
@@ -1828,12 +1836,16 @@ remote.OnClientEvent:Connect(function(kind, payload)
   if kind == "CIV_MESSAGE" and typeof(payload) == "string" then
     civMessage.TextColor3 = Color3.fromRGB(250, 235, 191)
     civMessage.Text = payload
+    civMessage.Visible = true
+    task.delay(3.5, function() if civMessage.Text == payload then civMessage.Visible = false end end)
   elseif kind == "CIV_TELEGRAPH" then
     civMessage.Text = "⚠ 공격 예고! 맞기 직전 패링(F) 또는 회피(Shift)!"
     civMessage.TextColor3 = Color3.fromRGB(255, 129, 97)
+    civMessage.Visible = true
   elseif kind == "CIV_PARRY" then
     civMessage.Text = "PERFECT PARRY! STUNNED · 적 2초 기절"
     civMessage.TextColor3 = Color3.fromRGB(255, 228, 118)
+    civMessage.Visible = true
     local character = player.Character
     local rootPart = character and character:FindFirstChild("HumanoidRootPart")
     if rootPart and rootPart:IsA("BasePart") then
