@@ -650,7 +650,7 @@ local function civOpen(mode)
       local item = fields[slot]
       local amount = item and (inventorySnapshot[item[1]] or player:GetAttribute(item[1]) or 0) or 0
       local label = civLabel(container, "Slot" .. slot,
-        item and (item[2] .. "\\n×" .. tostring(amount)) or "빈 칸",
+        item and (item[2] .. "\n×" .. tostring(amount)) or "빈 칸",
         UDim2.fromScale(1, 1), UDim2.new(), true)
       label.LayoutOrder = slot
       label.TextSize = 12
