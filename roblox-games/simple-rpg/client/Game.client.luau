@@ -780,7 +780,10 @@ local function civOpen(mode)
         UDim2.fromScale(1, 1), UDim2.new(), true)
       label.LayoutOrder = slot
       label.TextSize = 12
-      label.BackgroundColor3 = Color3.fromRGB(138, 90, 56)
+      -- 모바일 가방: 빈 칸과 보유 자원을 명암·텍스트로 구분한다.
+      label.TextWrapped = true
+      label.TextColor3 = amount > 0 and Color3.fromRGB(255, 243, 218) or Color3.fromRGB(205, 187, 158)
+      label.BackgroundColor3 = amount > 0 and Color3.fromRGB(105, 67, 42) or Color3.fromRGB(138, 90, 56)
       local slotCorner = Instance.new("UICorner")
       slotCorner.CornerRadius = UDim.new(0, 5)
       slotCorner.Parent = label
