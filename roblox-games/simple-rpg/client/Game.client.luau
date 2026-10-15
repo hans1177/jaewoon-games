@@ -2108,8 +2108,14 @@ local lobbyDescription = civLabel(lobbyCard, "LobbyDescription",
 lobbyDescription.ZIndex = 32
 lobbyDescription.TextSize = 13
 local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1, -36, 0, 48), UDim2.new(0, 18, 1, -115), function()
-  if (player:GetAttribute("CivRaceID") or 0) <= 0 then
-    lobbyDescription.Text = "게임 데이터를 불러오는 중이야. 잠시 후 다시 눌러줘."
+  if player:GetAttribute("CivSaveAvailable") == false then
+    lobbyDescription.Visible = true
+    lobbyDescription.Text = "저장 데이터를 불러오지 못했어. 재접속해서 다시 시도해."
+    return
+  end
+  if player:GetAttribute("CivReady") ~= true or (player:GetAttribute("CivRaceID") or 0) <= 0 then
+    lobbyDescription.Visible = true
+    lobbyDescription.Text = "게임 데이터를 준비 중이야. 잠시 후 다시 눌러줘."
     return
   end
   lobbyScreen.Visible = false
