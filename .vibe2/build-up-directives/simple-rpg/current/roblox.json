@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "simple-rpg-build-up-g5-a55e18c1ccbf",
-  "directiveFingerprint": "a55e18c1ccbf4a988d16070aa68bf2f5477ad999ab75a723213b2f475351dd07",
-  "previousDirectiveFingerprint": "bf020b5de2bb6f450d9cb59b445856f832df86223ccff218d0cf363e6bb34e4e",
-  "forbiddenRepeatFingerprint": "bf020b5de2bb6f450d9cb59b445856f832df86223ccff218d0cf363e6bb34e4e",
+  "directiveId": "simple-rpg-build-up-g6-fe1e0c8646c9",
+  "directiveFingerprint": "fe1e0c8646c976919f0ccca50611b203540032a225dbceac7d51180f0fefe74e",
+  "previousDirectiveFingerprint": "a55e18c1ccbf4a988d16070aa68bf2f5477ad999ab75a723213b2f475351dd07",
+  "forbiddenRepeatFingerprint": "a55e18c1ccbf4a988d16070aa68bf2f5477ad999ab75a723213b2f475351dd07",
   "gameId": "simple-rpg",
   "gameName": "작은 모험 RPG",
-  "generation": 5,
+  "generation": 6,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "blocked",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/simple-rpg",
-  "sourceTreeFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
+  "sourceTreeFingerprint": "0e542188807a35db07ea7cde08b7ebda500a7ec54012e000d3b52c18d37403a5",
   "designFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -292,7 +292,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
+        "sourceTreeFingerprint": "0e542188807a35db07ea7cde08b7ebda500a7ec54012e000d3b52c18d37403a5",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -340,7 +340,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "28e7aad6ceb7712da9467e8f79063f712dcf602f582d32b39f05d772a1834dcd",
-    "sourceTreeFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
+    "sourceTreeFingerprint": "0e542188807a35db07ea7cde08b7ebda500a7ec54012e000d3b52c18d37403a5",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -831,6 +831,8 @@
       "roblox-games/simple-rpg/client/Game.client.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/shared/TypeDefinitions.luau",
       "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
       "roblox-games/simple-rpg/shared/TechTreeData.luau",
       "roblox-games/simple-rpg/client/MaterialPresentation.client.luau"
@@ -841,6 +843,7 @@
       "roblox-games/simple-rpg/client/Game.client.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
       "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
       "roblox-games/simple-rpg/shared/TechTreeData.luau",
       "roblox-games/simple-rpg/client/MaterialPresentation.client.luau"
@@ -865,7 +868,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
+    "sourceTreeFingerprint": "0e542188807a35db07ea7cde08b7ebda500a7ec54012e000d3b52c18d37403a5",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4446,42 +4449,42 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=10",
+      "CURRENT_SOURCE_FILES=12",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 302,
-      "progression": 557,
+      "combat": 332,
+      "progression": 617,
       "ai": 76,
-      "save": 128,
+      "save": 131,
       "multiplayer": 43,
       "animation": 47,
-      "motionStates": 821,
+      "motionStates": 854,
       "gameFeel": 36,
-      "vfx": 44,
-      "camera": 46,
+      "vfx": 45,
+      "camera": 63,
       "audio": 4,
       "audioDynamics": 30,
-      "ui": 996,
-      "uiFlow": 1200,
+      "ui": 1042,
+      "uiFlow": 1218,
       "entryFlow": 18,
       "loadingFlow": 0,
-      "input": 175,
-      "map": 350,
-      "landmark": 77,
-      "interaction": 318,
-      "inventory": 245,
-      "equipment": 65,
+      "input": 181,
+      "map": 354,
+      "landmark": 105,
+      "interaction": 325,
+      "inventory": 259,
+      "equipment": 80,
       "settings": 25,
-      "feedback": 202,
+      "feedback": 215,
       "session": 42,
-      "content": 621,
-      "choice": 1681,
-      "connection": 11,
-      "performance": 36,
-      "lighting": 64,
-      "primitive": 17,
+      "content": 724,
+      "choice": 1723,
+      "connection": 13,
+      "performance": 38,
+      "lighting": 65,
+      "primitive": 19,
       "todo": 0,
       "errorRecovery": 27
     },
@@ -4492,15 +4495,15 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "score": 519
+        "score": 664
       },
       {
         "file": "roblox-games/simple-rpg/shared/GameConfig.luau",
-        "score": 511
+        "score": 513
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "score": 235
+        "score": 322
       },
       {
         "file": "roblox-games/simple-rpg/server/CompanionAI.luau",
@@ -4509,6 +4512,14 @@
       {
         "file": "roblox-games/simple-rpg/shared/RaceData.luau",
         "score": 25
+      },
+      {
+        "file": "roblox-games/simple-rpg/shared/ProgressionData.luau",
+        "score": 18
+      },
+      {
+        "file": "roblox-games/simple-rpg/shared/TypeDefinitions.luau",
+        "score": 7
       },
       {
         "file": "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
@@ -4578,7 +4589,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 68,
+        "line": 69,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -4586,7 +4597,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 201,
+        "line": 202,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -4610,7 +4621,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 177,
+        "line": 178,
         "kind": "FUNCTION",
         "symbol": "scopeHandler1",
         "context": "local function scopeHandler1(player)",
@@ -4618,7 +4629,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 200,
+        "line": 201,
         "kind": "FUNCTION",
         "symbol": "scopeHandler2",
         "context": "local function scopeHandler2(player)",
@@ -4626,7 +4637,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 278,
+        "line": 279,
         "kind": "FUNCTION",
         "symbol": "scopeHandler5",
         "context": "local function scopeHandler5(player)",
@@ -4634,10 +4645,18 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 302,
+        "line": 303,
         "kind": "FUNCTION",
         "symbol": "scopeHandler6",
         "context": "local function scopeHandler6(player)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 489,
+        "kind": "FUNCTION",
+        "symbol": "civBuild",
+        "context": "local function civBuild(player, buildingKey)",
         "score": 98
       },
       {
@@ -4658,7 +4677,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 378,
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "civNowReady",
         "context": "local function civNowReady(player, action, cooldown)",
@@ -4666,7 +4685,15 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 550,
+        "line": 470,
+        "kind": "FUNCTION",
+        "symbol": "civCraft",
+        "context": "local function civCraft(player, itemKey)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 697,
         "kind": "FUNCTION",
         "symbol": "civAttack",
         "context": "local function civAttack(player)",
@@ -4730,10 +4757,18 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 169,
+        "line": 170,
         "kind": "FUNCTION",
         "symbol": "initializePlayer",
         "context": "local function initializePlayer(player)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 447,
+        "kind": "FUNCTION",
+        "symbol": "civRestoreBuildings",
+        "context": "local function civRestoreBuildings(player)",
         "score": 82
       },
       {
@@ -4802,7 +4837,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 422,
+        "line": 423,
         "kind": "FUNCTION",
         "symbol": "civLabel",
         "context": "local function civLabel(parent, name, text, size, pos, background)",
@@ -4818,10 +4853,34 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 509,
+        "line": 392,
+        "kind": "FUNCTION",
+        "symbol": "civIncrease",
+        "context": "local function civIncrease(player, key, count)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 396,
+        "kind": "FUNCTION",
+        "symbol": "civOwnerBuildings",
+        "context": "local function civOwnerBuildings(player)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 567,
+        "kind": "FUNCTION",
+        "symbol": "civGather",
+        "context": "local function civGather(player, requestedType)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 652,
         "kind": "FUNCTION",
         "symbol": "civSpawnEnemy",
-        "context": "local function civSpawnEnemy(raceID, center)",
+        "context": "local function civSpawnEnemy(raceID, center, special)",
         "score": 74
       },
       {
@@ -4834,7 +4893,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 150,
+        "line": 151,
         "kind": "FUNCTION",
         "symbol": "bindFoundationPlayer",
         "context": "local function bindFoundationPlayer(player)",
@@ -4842,7 +4901,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 230,
+        "line": 231,
         "kind": "FUNCTION",
         "symbol": "scopeHandler3",
         "context": "local function scopeHandler3(player)",
@@ -4850,7 +4909,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 254,
+        "line": 255,
         "kind": "FUNCTION",
         "symbol": "scopeHandler4",
         "context": "local function scopeHandler4(player)",
@@ -4858,68 +4917,20 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 389,
-        "kind": "FUNCTION",
-        "symbol": "civIncrease",
-        "context": "local function civIncrease(player, key, count)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 433,
-        "kind": "FUNCTION",
-        "symbol": "civGather",
-        "context": "local function civGather(player)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 456,
+        "line": 592,
         "kind": "FUNCTION",
         "symbol": "civResearch",
         "context": "local function civResearch(player)",
         "score": 66
-      },
-      {
-        "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 481,
-        "kind": "FUNCTION",
-        "symbol": "civGuard",
-        "context": "local function civGuard(player)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 489,
-        "kind": "FUNCTION",
-        "symbol": "civDodge",
-        "context": "local function civDodge(player)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 597,
-        "kind": "FUNCTION",
-        "symbol": "civOnEnemyStrike",
-        "context": "local function civOnEnemyStrike(enemy, player, now)",
-        "score": 66
-      },
-      {
-        "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 301,
-        "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
-        "score": 58
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 4,
-    "previousSourceTreeFingerprint": "4bf1fe3806b87ac09870cbd4aae82194a203d94f9e4d83063f498bb9c77edbec",
-    "currentSourceTreeFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
+    "previousGeneration": 5,
+    "previousSourceTreeFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
+    "currentSourceTreeFingerprint": "0e542188807a35db07ea7cde08b7ebda500a7ec54012e000d3b52c18d37403a5",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6019,9 +6030,9 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"작은 모험 RPG\", 현재 책임 소스는 roblox-games/simple-rpg/client/Game.client.luau::reportNativeFoundationReady, roblox-games/simple-rpg/client/Game.client.luau::render, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler1, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler2, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler5, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler6, roblox-games/simple-rpg/server/Game.server.luau::civNowReady, roblox-games/simple-rpg/server/Game.server.luau::civAttack이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"작은 모험 RPG\", 현재 책임 소스는 roblox-games/simple-rpg/client/Game.client.luau::reportNativeFoundationReady, roblox-games/simple-rpg/client/Game.client.luau::render, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler1, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler2, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler5, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler6, roblox-games/simple-rpg/server/Game.server.luau::civBuild, roblox-games/simple-rpg/server/Game.server.luau::civNowReady이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/simple-rpg/client/Game.client.luau::reportNativeFoundationReady, roblox-games/simple-rpg/client/Game.client.luau::render, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler1, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler2, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler5, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler6, roblox-games/simple-rpg/server/Game.server.luau::civNowReady, roblox-games/simple-rpg/server/Game.server.luau::civAttack에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/simple-rpg/client/Game.client.luau::reportNativeFoundationReady, roblox-games/simple-rpg/client/Game.client.luau::render, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler1, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler2, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler5, roblox-games/simple-rpg/server/Game.server.luau::scopeHandler6, roblox-games/simple-rpg/server/Game.server.luau::civBuild, roblox-games/simple-rpg/server/Game.server.luau::civNowReady에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "작은 모험 RPG를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "퀘스트와 인물 관계 × 서사시의 추방과 귀환가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"퀘스트와 인물 관계: 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6076,7 +6087,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 501566,
+        "sourceBytes": 527759,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6109,8 +6120,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 5,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=6.",
+    "themeDepth": 6,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6120,9 +6131,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 5
+        "PRESENTATION_WORLD_COHESION": 6
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6162,7 +6174,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 156,
+        "score": 138,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6276,11 +6288,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 5,
-    "previousGeneration": 4,
+    "generation": 6,
+    "previousGeneration": 5,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
-    "priorSourceFingerprint": "4bf1fe3806b87ac09870cbd4aae82194a203d94f9e4d83063f498bb9c77edbec",
+    "sourceFingerprint": "0e542188807a35db07ea7cde08b7ebda500a7ec54012e000d3b52c18d37403a5",
+    "priorSourceFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6350,7 +6362,7 @@
     "gameId": "simple-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
+    "sourceTreeFingerprint": "0e542188807a35db07ea7cde08b7ebda500a7ec54012e000d3b52c18d37403a5",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6545,6 +6557,8 @@
       "roblox-games/simple-rpg/shared/GameConfig.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/shared/TypeDefinitions.luau",
       "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
       "roblox-games/simple-rpg/shared/TechTreeData.luau",
       "roblox-games/simple-rpg/default.project.json",
@@ -6763,6 +6777,8 @@
       "roblox-games/simple-rpg/shared/GameConfig.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/shared/TypeDefinitions.luau",
       "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
       "roblox-games/simple-rpg/shared/TechTreeData.luau",
       "roblox-games/simple-rpg/default.project.json",
@@ -6771,7 +6787,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 68,
+        "line": 69,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -6780,7 +6796,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 201,
+        "line": 202,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -6789,7 +6805,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 177,
+        "line": 178,
         "kind": "FUNCTION",
         "symbol": "scopeHandler1",
         "currentBehavior": "local function scopeHandler1(player)",
@@ -6798,7 +6814,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 200,
+        "line": 201,
         "kind": "FUNCTION",
         "symbol": "scopeHandler2",
         "currentBehavior": "local function scopeHandler2(player)",
@@ -6807,7 +6823,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 278,
+        "line": 279,
         "kind": "FUNCTION",
         "symbol": "scopeHandler5",
         "currentBehavior": "local function scopeHandler5(player)",
@@ -6816,7 +6832,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 302,
+        "line": 303,
         "kind": "FUNCTION",
         "symbol": "scopeHandler6",
         "currentBehavior": "local function scopeHandler6(player)",
@@ -6825,20 +6841,20 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 378,
+        "line": 489,
         "kind": "FUNCTION",
-        "symbol": "civNowReady",
-        "currentBehavior": "local function civNowReady(player, action, cooldown)",
-        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civNowReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "civBuild",
+        "currentBehavior": "local function civBuild(player, buildingKey)",
+        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civBuild의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 550,
+        "line": 381,
         "kind": "FUNCTION",
-        "symbol": "civAttack",
-        "currentBehavior": "local function civAttack(player)",
-        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "symbol": "civNowReady",
+        "currentBehavior": "local function civNowReady(player, action, cooldown)",
+        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civNowReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -6881,13 +6897,13 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "symbol": "civNowReady",
+        "symbol": "civBuild",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "symbol": "civAttack",
+        "symbol": "civNowReady",
         "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -6981,13 +6997,15 @@
           "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
           "roblox-games/simple-rpg/shared/GameConfig.luau",
           "roblox-games/simple-rpg/shared/RaceData.luau",
+          "roblox-games/simple-rpg/shared/ProgressionData.luau",
+          "roblox-games/simple-rpg/shared/TypeDefinitions.luau",
           "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
           "roblox-games/simple-rpg/shared/TechTreeData.luau"
         ],
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
+    "sourceTreeFingerprint": "0e542188807a35db07ea7cde08b7ebda500a7ec54012e000d3b52c18d37403a5",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -7084,13 +7102,15 @@
           "roblox-games/simple-rpg/shared/RobloxCommonUI.luau",
           "roblox-games/simple-rpg/shared/GameConfig.luau",
           "roblox-games/simple-rpg/shared/RaceData.luau",
+          "roblox-games/simple-rpg/shared/ProgressionData.luau",
+          "roblox-games/simple-rpg/shared/TypeDefinitions.luau",
           "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
           "roblox-games/simple-rpg/shared/TechTreeData.luau"
         ],
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
+    "sourceTreeFingerprint": "0e542188807a35db07ea7cde08b7ebda500a7ec54012e000d3b52c18d37403a5",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -7137,6 +7157,8 @@
       "roblox-games/simple-rpg/shared/GameConfig.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/shared/TypeDefinitions.luau",
       "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
       "roblox-games/simple-rpg/shared/TechTreeData.luau",
       "roblox-games/simple-rpg/default.project.json",
@@ -7145,7 +7167,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 68,
+        "line": 69,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -7157,7 +7179,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/client/Game.client.luau",
-        "line": 201,
+        "line": 202,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -7169,7 +7191,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 177,
+        "line": 178,
         "kind": "FUNCTION",
         "symbol": "scopeHandler1",
         "context": "local function scopeHandler1(player)",
@@ -7181,7 +7203,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 200,
+        "line": 201,
         "kind": "FUNCTION",
         "symbol": "scopeHandler2",
         "context": "local function scopeHandler2(player)",
@@ -7193,7 +7215,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 278,
+        "line": 279,
         "kind": "FUNCTION",
         "symbol": "scopeHandler5",
         "context": "local function scopeHandler5(player)",
@@ -7205,7 +7227,7 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 302,
+        "line": 303,
         "kind": "FUNCTION",
         "symbol": "scopeHandler6",
         "context": "local function scopeHandler6(player)",
@@ -7217,7 +7239,19 @@
       },
       {
         "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 378,
+        "line": 489,
+        "kind": "FUNCTION",
+        "symbol": "civBuild",
+        "context": "local function civBuild(player, buildingKey)",
+        "score": 98,
+        "currentBehavior": "local function civBuild(player, buildingKey)",
+        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civBuild의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/simple-rpg/server/Game.server.luau::civBuild이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/simple-rpg/server/Game.server.luau",
+        "line": 381,
         "kind": "FUNCTION",
         "symbol": "civNowReady",
         "context": "local function civNowReady(player, action, cooldown)",
@@ -7225,18 +7259,6 @@
         "currentBehavior": "local function civNowReady(player, action, cooldown)",
         "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civNowReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/simple-rpg/server/Game.server.luau::civNowReady이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/simple-rpg/server/Game.server.luau",
-        "line": 550,
-        "kind": "FUNCTION",
-        "symbol": "civAttack",
-        "context": "local function civAttack(player)",
-        "score": 90,
-        "currentBehavior": "local function civAttack(player)",
-        "intendedBehavior": "STABILITY primary goal \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 civAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"작은 모험 RPG. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 작은 모험 RPG에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/simple-rpg/server/Game.server.luau::civAttack이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/simple-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -7250,13 +7272,15 @@
     "categories": [
       "GRAPHICS",
       "MAP",
-      "UI"
+      "UI",
+      "GAMEPLAY"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -7287,6 +7311,8 @@
       "roblox-games/simple-rpg/shared/GameConfig.luau",
       "roblox-games/simple-rpg/server/CompanionAI.luau",
       "roblox-games/simple-rpg/shared/RaceData.luau",
+      "roblox-games/simple-rpg/shared/ProgressionData.luau",
+      "roblox-games/simple-rpg/shared/TypeDefinitions.luau",
       "roblox-games/simple-rpg/shared/RobloxCommonMaterials.luau",
       "roblox-games/simple-rpg/shared/TechTreeData.luau",
       "roblox-games/simple-rpg/default.project.json",
@@ -7298,13 +7324,15 @@
       "categories": [
         "GRAPHICS",
         "MAP",
-        "UI"
+        "UI",
+        "GAMEPLAY"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
         "ROBLOX_LUAU_COMPILE",
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
+        "GAMEPLAY_STATE_DELTA_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
@@ -7336,6 +7364,7 @@
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
+      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -7364,7 +7393,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ed655fc1705c7570f31f03998d95dc5c4741ac5bfa581729c19b60da114f48be",
+      "sourceTreeFingerprint": "0e542188807a35db07ea7cde08b7ebda500a7ec54012e000d3b52c18d37403a5",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
@@ -7423,7 +7452,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 6,
+    "nextGeneration": 7,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7485,5 +7514,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-15T05:27:32.872Z"
+  "generatedAt": "2026-10-15T05:48:23.208Z"
 }
