@@ -654,6 +654,7 @@ local function civOpen(mode)
         UDim2.fromScale(1, 1), UDim2.new(), true)
       label.LayoutOrder = slot
       label.TextSize = 12
+      label.BackgroundColor3 = Color3.fromRGB(138, 90, 56)
     end
   elseif mode == "Crafts" or mode == "Buildings" then
     panelTitle.Text = mode == "Crafts" and "제작·제련 | 석기→청동→철기" or "영지 건축·문명 랜드마크"
