@@ -63,6 +63,12 @@ local STUDIO_ASSET_FAMILY_STATUS = {
 }
 -- STUDIO_ASSET_BINDING_CLIENT_END
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
+local remotesFolder = ReplicatedStorage:WaitForChild("Remotes")
+local parryEvent = remotesFolder:WaitForChild("ParryEvent")
+local dodgeEvent = remotesFolder:WaitForChild("DodgeEvent")
+local updateTechEvent = remotesFolder:WaitForChild("UpdateTechEvent")
+local syncInventoryEvent = remotesFolder:WaitForChild("SyncInventoryEvent")
+local unlockTechRequest = remotesFolder:WaitForChild("UnlockTechRequest")
 local foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
 local nativeTouchEnabled = UserInputService.TouchEnabled
 local nativeFoundationCamera = workspace.CurrentCamera
@@ -500,6 +506,8 @@ civLayout.SortOrder = Enum.SortOrder.LayoutOrder
 civLayout.Parent = civList
 local civPanelMode = "Races"
 local civTechEra = 1
+local inventorySnapshot = {}
+local researchRequestPending = false
 local function civOpen(mode)
   if civPanel.Visible and civPanelMode == mode then
     civPanel.Visible = false
@@ -565,7 +573,7 @@ local function civOpen(mode)
     }
     for slot = 1, 32 do
       local item = fields[slot]
-      local amount = item and (player:GetAttribute(item[1]) or 0) or 0
+      local amount = item and (inventorySnapshot[item[1]] or player:GetAttribute(item[1]) or 0) or 0
       local label = civLabel(container, "Slot" .. slot,
         item and (item[2] .. "\\n×" .. tostring(amount)) or "빈 칸",
         UDim2.fromScale(1, 1), UDim2.new(), true)
@@ -693,7 +701,20 @@ local function civOpen(mode)
           table.concat(items, " / "), tech.EurekaCondition, eureka and "✓" or "미달성")
         local button = civButton(civList, "Tech" .. id, label, UDim2.new(1, -9, 0, 88), UDim2.new(),
           function()
-            if id == (player:GetAttribute("CivTech") or 0) + 1 then remote:FireServer("CivResearch")
+            if id == (player:GetAttribute("CivTech") or 0) + 1 then
+              if researchRequestPending then return end
+              researchRequestPending = true
+              task.spawn(function()
+                local ok, success, message = pcall(function()
+                  return unlockTechRequest:InvokeServer(id)
+                end)
+                researchRequestPending = false
+                if not ok then
+                  civMessage.Text = "서버 연구 요청에 실패했어. 다시 시도해."
+                elseif typeof(success) == "boolean" and typeof(message) == "string" then
+                  civMessage.Text = message
+                end
+              end)
             else civMessage.Text = "선행 기술을 먼저 연구해야 해." end
           end)
         button.LayoutOrder = id + 5
@@ -704,6 +725,30 @@ local function civOpen(mode)
     end
   end
 end
+-- 실제 서버 연구 결과와 본인 인벤토리 복제 이벤트만 UI에 반영한다.
+updateTechEvent.OnClientEvent:Connect(function(techID, era)
+  if typeof(techID) ~= "number" or not TechTreeData.GetTech(techID) then return end
+  if typeof(era) ~= "number" or era < 1 or era > 5 then return end
+  if civPanel.Visible and civPanelMode == "Techs" then
+    civPanel.Visible = false
+    civOpen("Techs")
+  end
+end)
+syncInventoryEvent.OnClientEvent:Connect(function(updatedInventory)
+  if typeof(updatedInventory) ~= "table" then return end
+  local snapshot = {}
+  for key, value in pairs(updatedInventory) do
+    if typeof(key) == "string" and key:sub(1, 3) == "Civ"
+      and typeof(value) == "number" and value == value then
+      snapshot[key] = value
+    end
+  end
+  inventorySnapshot = snapshot
+  if civPanel.Visible and civPanelMode == "Inventory" then
+    civPanel.Visible = false
+    civOpen("Inventory")
+  end
+end)
 civButton(civGui, "InventoryMenu", "가방",
   UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 252), function() civOpen("Inventory") end)
 civButton(civGui, "CraftMenu", "제작",
@@ -733,7 +778,11 @@ local civButtons = {
 }
 for _, entry in ipairs(civButtons) do
   civButton(civGui, entry[1], entry[2], UDim2.fromOffset(78, 60),
-    UDim2.new(1, -entry[4], 1, -entry[5]), function() remote:FireServer(entry[3]) end)
+    UDim2.new(1, -entry[4], 1, -entry[5]), function()
+      if entry[3] == "CivGuard" then parryEvent:FireServer()
+      elseif entry[3] == "CivDodge" then dodgeEvent:FireServer()
+      else remote:FireServer(entry[3]) end
+    end)
 end
 local civWatched = {
   "CivRaceID", "CivEra", "CivTech", "CivWood", "CivStone",
@@ -811,8 +860,8 @@ remote.OnClientEvent:Connect(function(kind, payload)
 end)
 UserInputService.InputBegan:Connect(function(input, consumed)
   if consumed or UserInputService:GetFocusedTextBox() then return end
-  if input.KeyCode == Enum.KeyCode.F then remote:FireServer("CivGuard")
-  elseif input.KeyCode == Enum.KeyCode.LeftShift then remote:FireServer("CivDodge")
+  if input.KeyCode == Enum.KeyCode.F then parryEvent:FireServer()
+  elseif input.KeyCode == Enum.KeyCode.LeftShift then dodgeEvent:FireServer()
   elseif input.KeyCode == Enum.KeyCode.E then remote:FireServer("CivGather")
   elseif input.KeyCode == Enum.KeyCode.T then civOpen("Techs")
   elseif input.KeyCode == Enum.KeyCode.C then civOpen("Companions")
