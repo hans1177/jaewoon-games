@@ -528,6 +528,50 @@ local function civOpen(mode)
       button.TextSize = 14
       if selected == id then button.BackgroundColor3 = Color3.fromRGB(119, 94, 41) end
     end
+  elseif mode == "Crafts" or mode == "Buildings" then
+    panelTitle.Text = mode == "Crafts" and "제작·제련 | 석기→청동→철기" or "영지 건축·문명 랜드마크"
+    local keys = mode == "Crafts" and ProgressionData.RecipeKeys() or ProgressionData.StructureKeys()
+    local selectedRace = player:GetAttribute("CivRaceID") or 0
+    local techCount = player:GetAttribute("CivTech") or 0
+    for index, key in ipairs(keys) do
+      local row = mode == "Crafts" and ProgressionData.GetRecipe(key) or ProgressionData.GetStructure(key)
+      if row then
+        local resources = {}
+        local missing = false
+        for resource, count in pairs(row.Costs) do
+          table.insert(resources, resource:gsub("^Civ", "") .. " " .. count)
+          if (player:GetAttribute(resource) or 0) < count then missing = true end
+        end
+        table.sort(resources)
+        local locked = techCount < row.MinimumTech or (row.RequiredRace ~= nil and row.RequiredRace ~= 0 and row.RequiredRace ~= selectedRace)
+        local owned = mode == "Buildings" and (player:GetAttribute("Civ" .. key) or 0) >= 1
+        local label = string.format("%s%s | %s\\n%s | 연구 %d 필요%s",
+          row.Label, owned and " [건설 완료]" or "", row.Station or "영지",
+          table.concat(resources, " / "), row.MinimumTech,
+          locked and " [잠김]" or missing and " [자원 부족]" or "")
+        local button = civButton(civList, "Production" .. key, label,
+          UDim2.new(1, -9, 0, 82), UDim2.new(), function()
+            if mode == "Crafts" then remote:FireServer("CivCraft", key)
+            else remote:FireServer("CivBuild", key) end
+          end)
+        button.LayoutOrder = index
+        button.TextSize = 13
+        if locked or missing or owned then button.BackgroundColor3 = Color3.fromRGB(85, 86, 84) end
+      end
+    end
+    if mode == "Crafts" then
+      for index, key in ipairs({"StoneSpear", "BronzeSword", "IronGreatsword"}) do
+        local owned = player:GetAttribute("Civ" .. key) or 0
+        if owned > 0 then
+          local btn = civButton(civList, "Equip" .. key, "장착하기: " .. key,
+            UDim2.new(1, -9, 0, 50), UDim2.new(), function()
+              remote:FireServer("CivEquip", key)
+            end)
+          btn.LayoutOrder = 10 + index
+          btn.TextSize = 14
+        end
+      end
+    end
   elseif mode == "Companions" then
     panelTitle.Text = "AI 부족원 · 행동 명령"
     local current = player:GetAttribute("CivCompanionMode") or "Dismissed"
