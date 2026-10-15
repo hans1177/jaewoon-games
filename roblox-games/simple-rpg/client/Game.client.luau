@@ -1777,8 +1777,12 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
   if creatureMotionPhase >= creatureMotionSearchAt then
     creatureMotionSearchAt = creatureMotionPhase + 2
     table.clear(creatureMotionModels)
+    -- 로컬 플레이어 캐릭터 및 장식 파츠는 공간 검색에서 제외한다.
+    local queryParams = OverlapParams.new()
+    queryParams.FilterType = Enum.RaycastFilterType.Exclude
+    queryParams.FilterDescendantsInstances = {character}
     -- 탐색 범위를 플레이어 주변으로 제한해 대형 월드의 전체 후손 검색을 피한다.
-    local nearbyParts = workspace:GetPartBoundsInRadius(viewer.Position, 85)
+    local nearbyParts = workspace:GetPartBoundsInRadius(viewer.Position, 85, queryParams)
     local seen = {}
     for _, part in ipairs(nearbyParts) do
       -- 몬스터 내부 장비/리그가 별도 Model로 감싸져 있어도 상위 소유 모델을 찾는다.
