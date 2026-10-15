@@ -1016,6 +1016,7 @@ local function savePlayer(player)
 end
 Players.PlayerRemoving:Connect(function(player)
   savePlayer(player)
+  if civBuildings[player] then civBuildings[player]:Destroy(); civBuildings[player] = nil end
   lastAction[player] = nil
   civCooldowns[player] = nil
 end)
