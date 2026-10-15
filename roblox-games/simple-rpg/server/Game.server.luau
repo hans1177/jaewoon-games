@@ -446,9 +446,9 @@ local function civSign(parent, adornee, text, height)
   local board = Instance.new("BillboardGui")
   board.Name = "CivilizationSign"
   board.Adornee = adornee
-  board.Size = UDim2.fromOffset(138, 38)
+  board.Size = UDim2.fromOffset(116, 28)
   board.StudsOffsetWorldSpace = Vector3.new(0, height or 4, 0)
-  board.MaxDistance = 30
+  board.MaxDistance = 19
   board.AlwaysOnTop = false
   board.Parent = parent
   local label = Instance.new("TextLabel")
@@ -456,7 +456,7 @@ local function civSign(parent, adornee, text, height)
   label.BackgroundTransparency = 0.25
   label.Size = UDim2.fromScale(1, 1)
   label.TextScaled = false
-  label.TextSize = 13
+  label.TextSize = 11
   label.TextWrapped = true
   label.TextColor3 = Color3.fromRGB(255, 232, 174)
   label.Text = text
