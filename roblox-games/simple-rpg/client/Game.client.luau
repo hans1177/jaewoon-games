@@ -1777,9 +1777,14 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
   if creatureMotionPhase >= creatureMotionSearchAt then
     creatureMotionSearchAt = creatureMotionPhase + 2
     table.clear(creatureMotionModels)
-    for _, model in ipairs(workspace:GetDescendants()) do
-      if model:IsA("Model") and
+    -- 탐색 범위를 플레이어 주변으로 제한해 대형 월드의 전체 후손 검색을 피한다.
+    local nearbyParts = workspace:GetPartBoundsInRadius(viewer.Position, 85)
+    local seen = {}
+    for _, part in ipairs(nearbyParts) do
+      local model = part:FindFirstAncestorOfClass("Model")
+      if model and not seen[model] and
         (model:GetAttribute("CivilizationEnemy") == true or model:GetAttribute("CompanionOwnerUserId") ~= nil) then
+        seen[model] = true
         table.insert(creatureMotionModels, model)
       end
     end
@@ -1791,7 +1796,13 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
       (model:GetAttribute("CivilizationEnemy") == true or model:GetAttribute("CompanionOwnerUserId") ~= nil) then
       -- 일부 몬스터 모델은 PrimaryPart가 없으므로 실제 루트 파츠로도 모션을 구동한다.
       local rootPart = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Root")
-      if rootPart and rootPart:IsA("BasePart") and (viewer.Position - rootPart.Position).Magnitude <= 85 then
+      local camera = workspace.CurrentCamera
+      local onScreen = false
+      if camera and rootPart and rootPart:IsA("BasePart") then
+        local viewportPoint, visibleInViewport = camera:WorldToViewportPoint(rootPart.Position)
+        onScreen = visibleInViewport and viewportPoint.Z > 0
+      end
+      if rootPart and rootPart:IsA("BasePart") and onScreen and (viewer.Position - rootPart.Position).Magnitude <= 85 then
         visible += 1
         local moving = model:GetAttribute("MotionState") == "Walk"
           or model:GetAttribute("AIState") == "Chase"
