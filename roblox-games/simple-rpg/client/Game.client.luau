@@ -1351,6 +1351,40 @@ local function civActionMotion(actionId, button)
         {BackgroundColor3 = originalColor}):Play()
     end
   end)
+  -- Animate the actual avatar joints without uploading unverified animation asset IDs.
+  local character = player.Character
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if humanoid and humanoid.Health > 0 then
+    local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
+    local shoulder = torso and (torso:FindFirstChild("RightShoulder") or torso:FindFirstChild("Right Shoulder"))
+    local waist = torso and torso:FindFirstChild("Waist")
+    local joint = shoulder and shoulder:IsA("Motor6D") and shoulder or nil
+    if joint then
+      local startC0 = joint.C0
+      local swing = actionId == "CivAttack" and CFrame.Angles(math.rad(-75), 0, math.rad(15))
+        or actionId == "CivGuard" and CFrame.Angles(math.rad(-48), 0, math.rad(-30))
+        or CFrame.Angles(math.rad(25), 0, math.rad(35))
+      actionTweenService:Create(joint, TweenInfo.new(0.1, Enum.EasingStyle.Quad),
+        {C0 = startC0 * swing}):Play()
+      task.delay(0.12, function()
+        if joint.Parent and character == player.Character then
+          actionTweenService:Create(joint, TweenInfo.new(0.16, Enum.EasingStyle.Quad),
+            {C0 = startC0}):Play()
+        end
+      end)
+    end
+    if waist and waist:IsA("Motor6D") then
+      local startWaist = waist.C0
+      local lean = actionId == "CivDodge" and 25 or actionId == "CivAttack" and -18 or 8
+      actionTweenService:Create(waist, TweenInfo.new(0.1),
+        {C0 = startWaist * CFrame.Angles(math.rad(lean), 0, 0)}):Play()
+      task.delay(0.12, function()
+        if waist.Parent and character == player.Character then
+          actionTweenService:Create(waist, TweenInfo.new(0.16), {C0 = startWaist}):Play()
+        end
+      end)
+    end
+  end
   local camera = workspace.CurrentCamera
   if not camera then return end
   local baseFov = camera.FieldOfView
