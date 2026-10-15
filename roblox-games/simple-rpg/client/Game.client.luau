@@ -1841,6 +1841,21 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
       return creatureDistanceSq[a] < creatureDistanceSq[b]
     end)
   end
+  -- 화면 밖으로 나가거나 공격 준비가 끝난 적의 강조 이펙트를 즉시 정리한다.
+  for core, highlight in pairs(creatureTelegraphHighlights) do
+    local owner = core.Parent
+    if not owner or not owner.Parent or owner:GetAttribute("IsPreparingAttack") ~= true
+      or owner:GetAttribute("AIState") == "Stunned" then
+      highlight:Destroy()
+      creatureTelegraphHighlights[core] = nil
+    else
+      local health = owner:FindFirstChildOfClass("Humanoid")
+      if health and health.Health <= 0 then
+        highlight:Destroy()
+        creatureTelegraphHighlights[core] = nil
+      end
+    end
+  end
   local visible = 0
   local camera = workspace.CurrentCamera
   local viewportSize = camera and camera.ViewportSize
