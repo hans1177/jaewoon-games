@@ -573,7 +573,7 @@ local civRaceButton = civButton(civGui, "RaceMenu", "문명",
   UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 148), function() civOpen("Races") end)
 civButton(civGui, "TechMenu", "연구",
   UDim2.fromOffset(78, 45), UDim2.fromOffset(92, 148), function() civOpen("Techs") end)
-civButton(civGui, "Travel", "내 영지",
+civButton(civGui, "Travel", "영지/로비",
   UDim2.fromOffset(90, 45), UDim2.fromOffset(174, 148), function()
     remote:FireServer("CivTravel")
   end)
