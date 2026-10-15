@@ -907,7 +907,10 @@ local function civOpen(mode)
         end)
       eraButton.LayoutOrder = era
       eraButton.TextSize = 14
-      if selectedEra == civTechEra then eraButton.BackgroundColor3 = Color3.fromRGB(119, 94, 41) end
+      if selectedEra == civTechEra then
+        eraButton.BackgroundColor3 = Color3.fromRGB(232, 163, 61)
+        eraButton.TextColor3 = Color3.fromRGB(62, 47, 34)
+      end
     end
     -- 5개 시대 배너: 기존 연구 순서는 유지하며 시각적 테마만 표시한다.
     local eraScenes = {
