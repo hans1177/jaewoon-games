@@ -456,7 +456,7 @@ local function civButton(parent, name, text, size, pos, callback)
   button.Activated:Connect(callback)
   return button
 end
-local civTitle = civLabel(civGui, "CivilizationTitle", "문명 멀티버스 RPG",
+local civTitle = civLabel(civGui, "CivilizationTitle", "대충알피지",
   UDim2.new(1, -20, 0, 35), UDim2.fromOffset(10, 0), true)
 local civStatus = civLabel(civGui, "CivilizationStatus", "",
   UDim2.new(1, -20, 0, 54), UDim2.fromOffset(10, 39), true)
