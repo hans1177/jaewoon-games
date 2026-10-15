@@ -2509,7 +2509,12 @@ local function civWalkModel(model, target, duration)
   if smoothDuration < 0.3 then smoothDuration = 0.25 end
   -- 보행 시각 상태를 서버가 제공해 저주파 위치 복제에서도 발이 멈추지 않는다.
   if model:GetAttribute("CivilizationEnemy") == true then
-    model:SetAttribute("MotionWalkingUntil", workspace:GetServerTimeNow() + smoothDuration + 0.1)
+    -- 제자리 회전은 보행이 아니다. 정지한 몬스터가 허공에서 발을 구르지 않게 한다.
+    if (target.Position - start.Position).Magnitude >= 0.12 then
+      model:SetAttribute("MotionWalkingUntil", workspace:GetServerTimeNow() + smoothDuration + 0.05)
+    else
+      model:SetAttribute("MotionWalkingUntil", 0)
+    end
   end
   local frameValue = Instance.new("CFrameValue")
   frameValue.Value = start
