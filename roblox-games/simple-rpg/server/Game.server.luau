@@ -743,6 +743,23 @@ local civHousingPieces = {
   Pillar={Size=Vector3.new(1,8,1), Wood=3, Stone=1},
   Stairs={Size=Vector3.new(8,1,3), Wood=6, Stone=2},
 }
+local CommonBuilding = require(script.Parent:WaitForChild("CommonBuilding"))
+local housingAssetIds = {
+  SquareFoundation="FLOOR_TILE",TriangleFoundation="FOUNDATION_TRIANGLE",
+  Wall="HALF_WALL",WindowWall="WALL_WINDOW",Doorframe="DOOR_FRAME",
+  FlatRoof="ROOF_FLAT",Pillar="PILLAR_STONE",Stairs="STAIRS_STRAIGHT",
+}
+local function decorateHousingPiece(piece, key)
+  local assetId = housingAssetIds[key]
+  if not assetId then return end
+  local ok, result = pcall(function()
+    return CommonBuilding.Create(assetId, {
+      parent=piece, pivot=piece.CFrame, quality="low",
+      scale=0.85, anchored=true,
+    })
+  end)
+  if not ok then warn("CIV_HOUSING_ASSET_ERROR",assetId,tostring(result)) end
+end
 local civHousingCounts = {}
 local civHousingRecords = {}
 local function civBuildHousing(player, request)
@@ -800,6 +817,7 @@ local function civBuildHousing(player, request)
   local records = civHousingRecords[player] or {}
   local nextId = 1
   for _, existing in ipairs(records) do nextId = math.max(nextId, (existing.Id or 0) + 1) end
+  decorateHousingPiece(piece,request.Key)
   piece:SetAttribute("HousingPiece",true)
   piece:SetAttribute("HousingId",nextId)
   if request.Key == "Doorframe" then piece:SetAttribute("DoorOpen",false) end
@@ -839,6 +857,7 @@ local function civRestoreHousing(player, saved)
         if entry.Key == "TriangleFoundation" then piece.Shape = Enum.PartType.Wedge end
         local pieceId = typeof(entry.Id) == "number" and entry.Id % 1 == 0
           and entry.Id >= 1 and entry.Id <= 1000000 and entry.Id or (#records + 1)
+        decorateHousingPiece(piece,entry.Key)
         piece:SetAttribute("HousingPiece",true)
         piece:SetAttribute("HousingId",pieceId)
         if entry.Key == "Doorframe" then
