@@ -1781,6 +1781,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
     local queryParams = OverlapParams.new()
     queryParams.FilterType = Enum.RaycastFilterType.Exclude
     queryParams.FilterDescendantsInstances = {character}
+    -- 렌더링용 장식/바닥은 검색 결과 수를 불필요하게 늘리지 않는다.
+    queryParams.MaxParts = 0
     -- 탐색 범위를 플레이어 주변으로 제한해 대형 월드의 전체 후손 검색을 피한다.
     local nearbyParts = workspace:GetPartBoundsInRadius(viewer.Position, 85, queryParams)
     local seen = {}
@@ -1817,13 +1819,13 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
     end)
   end
   local visible = 0
+  local camera = workspace.CurrentCamera
   for _, model in ipairs(creatureMotionModels) do
     if visible >= 30 then break end
     if model.Parent and
       (model:GetAttribute("CivilizationEnemy") == true or model:GetAttribute("CompanionOwnerUserId") ~= nil) then
       -- 일부 몬스터 모델은 PrimaryPart가 없으므로 실제 루트 파츠로도 모션을 구동한다.
       local rootPart = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Root")
-      local camera = workspace.CurrentCamera
       local onScreen = false
       if camera and rootPart and rootPart:IsA("BasePart") then
         local viewportPoint, visibleInViewport = camera:WorldToViewportPoint(rootPart.Position)
