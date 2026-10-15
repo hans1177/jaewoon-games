@@ -1869,6 +1869,27 @@ for _, shop in ipairs(lobbyShops) do
   counter.CanTouch = false
   counter.CanQuery = false
   civSign(civHub, roof, shop.name, 3.2)
+  -- 안내는 서버가 직접 전달하며 상점 재화나 아이템을 생성하지 않는다.
+  local prompt = Instance.new("ProximityPrompt")
+  prompt.Name = "LobbyShopInfo"
+  prompt.ActionText = "안내 보기"
+  prompt.ObjectText = shop.name
+  prompt.KeyboardKeyCode = Enum.KeyCode.E
+  prompt.MaxActivationDistance = 10
+  prompt.RequiresLineOfSight = false
+  prompt.Parent = counter
+  prompt.Triggered:Connect(function(visitor)
+    if visitor.Parent ~= Players or visitor:GetAttribute("CivReady") ~= true then return end
+    if shop.name == "장비 상점" then
+      civMessage(visitor, "장비는 메뉴의 제작·가방에서 확인할 수 있어.")
+    elseif shop.name == "잡화 상점" then
+      civMessage(visitor, "재료는 탐험 지역에서 채집할 수 있어.")
+    elseif shop.name == "모험 안내소" then
+      civMessage(visitor, "메뉴에서 맵 이동을 누르면 탐험 지역을 고를 수 있어.")
+    else
+      civMessage(visitor, "로비에서 준비한 뒤 맵 이동으로 모험을 시작해.")
+    end
+  end)
 end
 -- Five era ecology exhibits in the multiverse lobby are visual previews, not extra regions.
 -- All parts are non-colliding and do not alter the existing 24 civilization maps.
