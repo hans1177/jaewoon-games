@@ -497,8 +497,9 @@ local panelCorner = Instance.new("UICorner")
 panelCorner.CornerRadius = UDim.new(0, 12)
 panelCorner.Parent = civPanel
 local panelTitle = civLabel(civPanel, "PanelTitle", "문명 선택",
-  UDim2.new(1, -64, 0, 46), UDim2.fromOffset(10, 8), false)
+  UDim2.new(1, -92, 0, 46), UDim2.fromOffset(10, 8), false)
 panelTitle.TextSize = 20
+panelTitle.TextXAlignment = Enum.TextXAlignment.Left
 local civCloseButton = civButton(civPanel, "Close", "닫기", UDim2.fromOffset(60, 45),
   UDim2.new(1, -65, 0, 6), function() civPanel.Visible = false end)
 civCloseButton.ZIndex = 13

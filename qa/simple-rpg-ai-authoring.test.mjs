@@ -341,3 +341,9 @@ test('대충알피지 mobile UI uses a responsive scrolling menu without disrupt
   assert.match(client, /autoCombatToggle\.Visible = nativeTouchEnabled/);
   assert.doesNotMatch(client, /for _, child in mainGui:GetDescendants\(\)/);
 });
+
+test('대충알피지 popup header does not overlap its close control', () => {
+  assert.match(client, /UDim2\.new\(1, -92, 0, 46\), UDim2\.fromOffset\(10, 8\), false\)/);
+  assert.match(client, /panelTitle\.TextXAlignment = Enum\.TextXAlignment\.Left/);
+  assert.match(client, /civCloseButton\.ZIndex = 13/);
+});

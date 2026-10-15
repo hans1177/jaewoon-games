@@ -63,14 +63,14 @@ jobs:
           for(const [origin,target] of [['queue',row.robloxPublicationTarget],['registry',registered]]){
             if(target && Object.keys(target).length > 0){
               if(!safe(target) || String(target.universeId)!==exact.universeId || String(target.placeId)!==exact.placeId){
-                throw new Error('DAECHUNG_RPG_OWNER_PLACE_MISMATCH:'+origin+':refusing Roblox publish');
+                throw new Error('대충알피지_OWNER_PLACE_MISMATCH:+origin+':refusing Roblox publish');
               }
             }
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+exact.universeId+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+exact.placeId+'\n');
-          console.log('DAECHUNG_RPG_OWNER_TARGET_REUSED=YES');
-          console.log('DAECHUNG_RPG_OWNER_EXPECTED_PLACE_ID='+exact.placeId);
+          console.log('DAECHUNGALPIGI_OWNER_TARGET_REUSED=YES');
+          console.log('DAECHUNGALPIGI_OWNER_EXPECTED_PLACE_ID='+exact.placeId);
           NODE
 
       - name: Build exact Simple RPG place with pinned Rojo
