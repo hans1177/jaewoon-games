@@ -1606,13 +1606,13 @@ local function civActionMotion(actionId, button)
     local joint = shoulder and shoulder:IsA("Motor6D") and shoulder or nil
     if joint then
       local startC0 = joint.C0
-      local swing = actionId == "CivAttack" and CFrame.Angles(math.rad(attackCombo == 3 and -110 or -75), math.rad(attackCombo == 2 and -32 or 14), math.rad(attackCombo == 2 and -35 or 15))
+      local swing = actionId == "CivAttack" and CFrame.Angles(math.rad(attackCombo == 3 and -145 or -105), math.rad(attackCombo == 2 and -46 or 24), math.rad(attackCombo == 2 and -52 or 28))
         or actionId == "CivGuard" and CFrame.Angles(math.rad(-48), 0, math.rad(-30))
         or CFrame.Angles(math.rad(25), 0, math.rad(35))
       if actionId == "CivAttack" then
         -- 준비 자세를 짧게 거쳐 내려베기로 연결한다. 판정·피해량은 서버가 담당한다.
-        joint.C0 = startC0 * CFrame.Angles(math.rad(attackCombo == 3 and 46 or 30), math.rad(attackCombo == 2 and 28 or -24), math.rad(attackCombo == 2 and -15 or 15))
-        actionTweenService:Create(joint, TweenInfo.new(0.13, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        joint.C0 = startC0 * CFrame.Angles(math.rad(attackCombo == 3 and 60 or 42), math.rad(attackCombo == 2 and 35 or -28), math.rad(attackCombo == 2 and -22 or 22))
+        actionTweenService:Create(joint, TweenInfo.new(attackCombo == 3 and 0.18 or 0.11, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
           {C0 = startC0 * swing * CFrame.Angles(0, math.rad(40), 0)}):Play()
         local hand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
         if hand and hand:IsA("BasePart") then
@@ -1627,15 +1627,15 @@ local function civActionMotion(actionId, button)
           trail.Attachment1 = high
           trail.Color = ColorSequence.new(Color3.fromRGB(255, 228, 165), Color3.fromRGB(231, 154, 62))
           trail.Transparency = NumberSequence.new(0.2, 1)
-          trail.Lifetime = attackCombo == 3 and 0.2 or 0.13
+          trail.Lifetime = attackCombo == 3 and 0.24 or 0.17
           trail.WidthScale = NumberSequence.new({
             NumberSequenceKeypoint.new(0, 0.2),
             NumberSequenceKeypoint.new(0.3, attackCombo == 3 and 1.7 or 1.25),
             NumberSequenceKeypoint.new(1, 0),
           })
-          trail.LightEmission = 0.7
+          trail.LightEmission = 0.85
           trail.Parent = hand
-          task.delay(0.22, function()
+          task.delay(attackCombo == 3 and 0.28 or 0.20, function()
             trail.Enabled = false
             task.delay(0.2, function()
               trail:Destroy()
@@ -1657,7 +1657,7 @@ local function civActionMotion(actionId, button)
     end
     if waist and waist:IsA("Motor6D") then
       local startWaist = waist.C0
-      local lean = actionId == "CivDodge" and 25 or actionId == "CivAttack" and -18 or 8
+      local lean = actionId == "CivDodge" and 30 or actionId == "CivAttack" and (attackCombo == 3 and -28 or -22) or 12
       actionTweenService:Create(waist, TweenInfo.new(0.1),
         {C0 = startWaist * CFrame.Angles(math.rad(lean), 0, 0)}):Play()
       task.delay(0.12, function()
@@ -1670,7 +1670,7 @@ local function civActionMotion(actionId, button)
   local camera = workspace.CurrentCamera
   if not camera then return end
   local baseFov = camera.FieldOfView
-  local offset = actionId == "CivDodge" and 7 or actionId == "CivAttack" and 3 or -2
+  local offset = actionId == "CivDodge" and 7 or actionId == "CivAttack" and (attackCombo == 3 and 5 or 3) or -2
   actionTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
     {FieldOfView = math.clamp(baseFov + offset, 40, 100)}):Play()
   task.delay(0.15, function()
