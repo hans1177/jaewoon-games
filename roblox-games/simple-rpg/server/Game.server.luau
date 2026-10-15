@@ -2375,6 +2375,41 @@ for id = 1, 24 do
 
 end
 MultiverseEconomy.StartCaravans(civHub, civWorlds)
+-- 서버에서 몬스터/초식동물 모델 전체를 0.25초 AI 틱 사이에 부드럽게 이동한다.
+-- 기존 서버 위치·거리·타격 판정과 동일한 모델 피벗을 연속 갱신한다.
+local civMoveTweenService = game:GetService("TweenService")
+local civMoveTweens = setmetatable({}, {__mode = "k"})
+local function civWalkModel(model, target, duration)
+  if not model or not model.Parent then return end
+  local prior = civMoveTweens[model]
+  if prior then
+    prior.tween:Cancel()
+    prior.connection:Disconnect()
+    prior.value:Destroy()
+    civMoveTweens[model] = nil
+  end
+  local start = model:GetPivot()
+  local distance = (target.Position - start.Position).Magnitude
+  if distance < 0.015 then return end
+  -- 큰 위치 점프는 걷기 애니메이션이 아닌 복귀 처리에서 직접 PivotTo 한다.
+  local frameValue = Instance.new("CFrameValue")
+  frameValue.Value = start
+  local connection = frameValue:GetPropertyChangedSignal("Value"):Connect(function()
+    if model.Parent then model:PivotTo(frameValue.Value) end
+  end)
+  local tween = civMoveTweenService:Create(frameValue,
+    TweenInfo.new(duration or 0.23, Enum.EasingStyle.Linear), {Value = target})
+  civMoveTweens[model] = {tween=tween, connection=connection, value=frameValue}
+  tween.Completed:Connect(function(state)
+    if civMoveTweens[model] and civMoveTweens[model].tween == tween then
+      if model.Parent and state == Enum.PlaybackState.Completed then model:PivotTo(target) end
+      civMoveTweens[model] = nil
+    end
+    connection:Disconnect()
+    frameValue:Destroy()
+  end)
+  tween:Play()
+end
 -- 적 추적과 예고 공격: 클라이언트 타임스탬프를 절대 신뢰하지 않는다.
 local civNextPredation = 0
 task.spawn(function()
@@ -2405,7 +2440,7 @@ task.spawn(function()
               if planar.Magnitude > 0.1 then
                 local nextPos = predator.Root.Position + planar.Unit * math.min(2.4, planar.Magnitude)
                 if (Vector3.new(nextPos.X - predator.Home.X, 0, nextPos.Z - predator.Home.Z)).Magnitude <= 16 then
-                  predator.Model:PivotTo(CFrame.new(nextPos))
+                  civWalkModel(predator.Model, CFrame.new(nextPos), 0.23)
                 end
               end
               if distance <= 5 then
@@ -2443,11 +2478,11 @@ task.spawn(function()
           if planar.Magnitude > 0.1 then
             local nextPosition = grazer.Root.Position + planar.Unit * 6
             local homeDelta = Vector3.new(nextPosition.X - grazer.Home.X, 0, nextPosition.Z - grazer.Home.Z)
-            if homeDelta.Magnitude <= 14 then grazer.Model:PivotTo(CFrame.new(nextPosition)) end
+            if homeDelta.Magnitude <= 14 then civWalkModel(grazer.Model, CFrame.new(nextPosition), 0.65) end
           end
         else
           local angle = now * 0.19 + grazer.Home.X * 0.05
-          grazer.Model:PivotTo(CFrame.new(grazer.Home + Vector3.new(math.cos(angle) * 5, 0, math.sin(angle) * 5)))
+          civWalkModel(grazer.Model, CFrame.new(grazer.Home + Vector3.new(math.cos(angle) * 5, 0, math.sin(angle) * 5)), 2.8)
         end
         end
       end
@@ -2498,7 +2533,7 @@ task.spawn(function()
               if planar.Magnitude > 0.1 then
                 local nextPos = enemy.Root.Position + planar.Unit * 1.2
                 if (Vector3.new(nextPos.X - enemy.Home.X, 0, nextPos.Z - enemy.Home.Z)).Magnitude <= 16 then
-                  enemy.Model:PivotTo(CFrame.new(nextPos))
+                  civWalkModel(enemy.Model, CFrame.new(nextPos), 0.23)
                 end
               end
             else
@@ -2525,7 +2560,7 @@ task.spawn(function()
                 if planar.Magnitude > 0.1 then
                   local p = enemy.Root.Position + planar.Unit * math.min(1.2, planar.Magnitude)
                   if (Vector3.new(p.X - enemy.Home.X, 0, p.Z - enemy.Home.Z)).Magnitude <= 16 then
-                    enemy.Model:PivotTo(CFrame.lookAt(p, Vector3.new(chasePosition.X, p.Y, chasePosition.Z)))
+                    civWalkModel(enemy.Model, CFrame.lookAt(p, Vector3.new(chasePosition.X, p.Y, chasePosition.Z)), 0.23)
                   end
                 end
               elseif now - enemy.LastHit >= (enemy.Model:GetAttribute("BossPhase") == "Phase3" and 0.95
@@ -2557,7 +2592,7 @@ task.spawn(function()
               if planar.Magnitude > 0.1 then
                 local candidate = enemy.Root.Position + planar.Unit * math.min(1.1, planar.Magnitude)
                 if (Vector3.new(candidate.X - enemy.Home.X, 0, candidate.Z - enemy.Home.Z)).Magnitude <= 16 then
-                  enemy.Model:PivotTo(CFrame.lookAt(candidate, Vector3.new(grazer.Root.Position.X, candidate.Y, grazer.Root.Position.Z)))
+                  civWalkModel(enemy.Model, CFrame.lookAt(candidate, Vector3.new(grazer.Root.Position.X, candidate.Y, grazer.Root.Position.Z)), 0.23)
                 end
               end
             else
