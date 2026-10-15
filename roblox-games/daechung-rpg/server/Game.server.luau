@@ -540,7 +540,7 @@ local function staggerEnemy(e,amount,now)
  e.stagger=math.max(0,(e.stagger or e.staggerMax or 40)-(amount or 20));e.part:SetAttribute("Stagger",e.stagger)
  if e.stagger<=0 then
   e.stunnedUntil=now+(e.boss and 2.1 or 1.45);e.attackPending=false;e.attackToken=(e.attackToken or 0)+1;e.stagger=e.staggerMax or 40;e.part:SetAttribute("Stagger",e.stagger);e.part:SetAttribute("Staggered",true)
-  task.delay(e.boss and 2.1 or 1.45,function()if e.part and e.part.Parent then e.part:SetAttribute("Staggered",false)end end)
+  task.delay(e.boss and 2.1 or 1.45,function()if e.part and e.part.Parent and os.clock()>=(e.stunnedUntil or 0)then e.part:SetAttribute("Staggered",false)end end)
  end
 end
 local killEnemy
@@ -571,9 +571,8 @@ local function resolveIncomingAttack(p,e,attack)
    e.stunnedUntil=math.max(e.stunnedUntil or 0,now+2)
    e.attackPending=false;e.attackToken=(e.attackToken or 0)+1
    e.part:SetAttribute("Staggered",true)
-   local releaseAt=e.stunnedUntil
    task.delay(2,function()
-    if e.part and e.part.Parent and (e.stunnedUntil or 0)<=releaseAt then e.part:SetAttribute("Staggered",false)end
+    if e.part and e.part.Parent and (e.stunnedUntil or 0)<=os.clock() then e.part:SetAttribute("Staggered",false)end
    end)
    -- 서버 확정 패링만 적의 실제 공격 피해 100% 반사.
    local reflect=math.max(0,(e.damage or 8)*(attack.DamageMult or 1)*(e.enragedUntil and e.enragedUntil>now and 1.22 or 1))
@@ -1276,7 +1275,21 @@ local function makeVillage()
  for index=1,4 do
   local x=(index-2.5)*12
   local stand=ppart(f,"CivTradeStand"..index,Vector3.new(9,3,4),Vector3.new(x,4,-104),Color3.fromRGB(134,93,58),Enum.Material.WoodPlanks)
-  stand.CanCollide=false;label(stand,({"석기 교역","청동 교역","철기 교역","영웅 교역"})[index],Color3.fromRGB(255,226,169),42)
+  stand.CanCollide=false
+  local tradeResources={"CivStone","CivBronze","CivIron","CivHero"}
+  local names={"석재","청동","철","영웅 인장"}
+  local prices={20,45,85,160}
+  local item=tradeResources[index];local cost=prices[index]
+  label(stand,names[index].." · "..cost.."G",Color3.fromRGB(255,226,169),42)
+  prompt(stand,names[index].." 교역","1개 구입","CIV_TRADE_BUY","CivilizationTrade"..index).Triggered:Connect(function(player)
+   if n(player,"CurrentZone",0)~=0 or n(player,"RaceID",0)<=0 or saveReady[player]~=true or player:GetAttribute("SaveState")=="SESSION_ONLY"then
+    msg(player,"문명을 선택하고 저장에 연결한 뒤 거래해.");return
+   end
+   if n(player,"Gold",0)<cost then msg(player,names[index].." 구매 골드 부족");return end
+   player:SetAttribute("Gold",n(player,"Gold",0)-cost)
+   player:SetAttribute(item,n(player,item,0)+1)
+   msg(player,names[index].." 1개 구매 · "..cost.."골드");feedback(player,"CIV_TRADE")
+  end)
  end
  -- 상자형 시장·중앙 분수 대신 기존 자산의 실제 소품을 광장 가장자리에 배치한다.
  decorateVillageAssets(f)
