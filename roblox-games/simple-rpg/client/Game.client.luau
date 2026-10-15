@@ -498,10 +498,15 @@ civLayout.Padding = UDim.new(0, 7)
 civLayout.SortOrder = Enum.SortOrder.LayoutOrder
 civLayout.Parent = civList
 local civPanelMode = "Races"
+local civTechEra = 1
 local function civOpen(mode)
   if civPanel.Visible and civPanelMode == mode then
     civPanel.Visible = false
     return
+  end
+  if mode == "Techs" and civPanelMode ~= "Techs" then
+    local nextTech = TechTreeData.GetTech(math.min(72, (player:GetAttribute("CivTech") or 0) + 1))
+    civTechEra = nextTech and nextTech.Era or 5
   end
   civPanelMode = mode
   civPanel.Visible = true
@@ -556,9 +561,30 @@ local function civOpen(mode)
     local unlocked = civLabel(civList, "Unlocked", "연구 완료 " .. techCount .. "/72",
       UDim2.new(1, -9, 0, 36), UDim2.new(), false)
     unlocked.LayoutOrder = 0
-    for id = math.max(1, techCount - 1), math.min(72, techCount + 6) do
-      local tech = TechTreeData.GetTech(id)
-      if tech then
+    -- 연구는 서버의 기존 선형 순서를 유지하고, 화면에서만 시대별로 묶는다.
+    for era = 1, 5 do
+      local selectedEra = era
+      local total, completed = 0, 0
+      for _, node in ipairs(TechTreeData.All()) do
+        if node.Era == selectedEra then
+          total += 1
+          if node.TechID <= techCount then completed += 1 end
+        end
+      end
+      local eraButton = civButton(civList, "TechEra" .. era,
+        string.format("%s · %d/%d", TechTreeData.EraName(era), completed, total),
+        UDim2.new(1, -9, 0, 44), UDim2.new(), function()
+          civTechEra = selectedEra
+          civPanel.Visible = false
+          civOpen("Techs")
+        end)
+      eraButton.LayoutOrder = era
+      eraButton.TextSize = 14
+      if selectedEra == civTechEra then eraButton.BackgroundColor3 = Color3.fromRGB(119, 94, 41) end
+    end
+    for _, tech in ipairs(TechTreeData.All()) do
+      if tech.Era == civTechEra then
+        local id = tech.TechID
         local items = {}
         local missing = false
         local eureka = (player:GetAttribute(tech.EurekaMetric) or 0) >= tech.EurekaCount
@@ -584,7 +610,7 @@ local function civOpen(mode)
             if id == (player:GetAttribute("CivTech") or 0) + 1 then remote:FireServer("CivResearch")
             else civMessage.Text = "선행 기술을 먼저 연구해야 해." end
           end)
-        button.LayoutOrder = id
+        button.LayoutOrder = id + 5
         button.TextSize = 13
         if complete then button.BackgroundColor3 = Color3.fromRGB(126, 101, 44)
         elseif missing or id ~= techCount + 1 then button.BackgroundColor3 = Color3.fromRGB(85, 86, 84) end
