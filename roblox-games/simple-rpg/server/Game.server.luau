@@ -2479,6 +2479,17 @@ Players.PlayerAdded:Connect(function(player)
       task.wait(0.1)
       if player.Parent == Players then civTravel(player, portalData.CivDestinationRaceID) end
     end)
+  else
+    -- 처음 접속 시 로비에서 시작. 기존 저장 데이터와 포털 도착 위치는 변경하지 않는다.
+    task.spawn(function()
+      if player.Parent ~= Players then return end
+      local character = player.Character or player.CharacterAdded:Wait()
+      local humanoid = character and character:WaitForChild("Humanoid", 10)
+      if player.Parent ~= Players or not humanoid or humanoid.Health <= 0 then return end
+      -- 다른 이동 요청이 먼저 처리된 경우, 위치를 뒤늦게 덮어쓰지 않는다.
+      if character:GetAttribute("CivTravelCompleted") then return end
+      character:PivotTo(CFrame.new(0, 5, 0))
+    end)
   end
   player.CharacterAdded:Connect(function()
     task.wait(0.1)
@@ -2581,7 +2592,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     local humanoid = character and character:FindFirstChildOfClass("Humanoid")
     if not character or not humanoid or humanoid.Health <= 0 then return end
     if typeof(argument) == "number" and argument % 1 == 0 and RaceData.GetRace(argument) then
-      if selected <= 0 then civMessage(player, "먼저 문명을 선택해."); return end
+      if selected <= 0 then civMessage(player, "게임 데이터를 확인할 수 없어. 잠시 후 다시 시도해."); return end
       action(player, argument)
     elseif argument == "Lobby" then
       character:PivotTo(CFrame.new(0, 5, 0))
