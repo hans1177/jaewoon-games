@@ -2539,7 +2539,7 @@ task.spawn(function()
               if planar.Magnitude > 0.1 then
                 local nextPos = predator.Root.Position + planar.Unit * math.min(2.4, planar.Magnitude)
                 if (Vector3.new(nextPos.X - predator.Home.X, 0, nextPos.Z - predator.Home.Z)).Magnitude <= 16 then
-                  civWalkModel(predator.Model, CFrame.new(nextPos), 0.23)
+                  civWalkModel(predator.Model, CFrame.lookAt(nextPos, Vector3.new(prey.Root.Position.X, nextPos.Y, prey.Root.Position.Z)), 0.23)
                 end
               end
               if distance <= 5 then
@@ -2632,7 +2632,7 @@ task.spawn(function()
               if planar.Magnitude > 0.1 then
                 local nextPos = enemy.Root.Position + planar.Unit * 1.2
                 if (Vector3.new(nextPos.X - enemy.Home.X, 0, nextPos.Z - enemy.Home.Z)).Magnitude <= 16 then
-                  civWalkModel(enemy.Model, CFrame.new(nextPos), 0.23)
+                  civWalkModel(enemy.Model, CFrame.lookAt(nextPos, nextPos + Vector3.new(planar.X, 0, planar.Z)), 0.23)
                 end
               end
             else
