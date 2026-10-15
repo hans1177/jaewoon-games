@@ -166,11 +166,10 @@ jobs:
           cp tools/company-platform-exposure-control.mjs /tmp/company-runtime/company-platform-exposure-control.mjs
           cp tools/company-shared-context.mjs /tmp/company-runtime/company-shared-context.mjs
           mkdir -p /tmp/company-runtime/company-learning
-          cp company-learning/platform-release-roadmap.json /tmp/company-runtime/company-learning/platform-release-roadmap.json
           (
             cd /tmp/company-runtime
             node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
-            rm -f company-homepage-platform-exposure-sync.mjs company-platform-exposure-control.mjs company-shared-context.mjs company-learning/platform-release-roadmap.json
+            rm -f company-homepage-platform-exposure-sync.mjs company-platform-exposure-control.mjs
           )
 
       - name: Persist runtime synchronization
@@ -213,11 +212,10 @@ jobs:
             cp tools/company-platform-exposure-control.mjs /tmp/company-runtime/company-platform-exposure-control.mjs
             cp tools/company-shared-context.mjs /tmp/company-runtime/company-shared-context.mjs
             mkdir -p /tmp/company-runtime/company-learning
-            cp company-learning/platform-release-roadmap.json /tmp/company-runtime/company-learning/platform-release-roadmap.json
             (
               cd /tmp/company-runtime
               node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
-              rm -f company-homepage-platform-exposure-sync.mjs company-platform-exposure-control.mjs company-shared-context.mjs company-learning/platform-release-roadmap.json
+              rm -f company-homepage-platform-exposure-sync.mjs company-platform-exposure-control.mjs
             )
           }
           cd /tmp/company-runtime
