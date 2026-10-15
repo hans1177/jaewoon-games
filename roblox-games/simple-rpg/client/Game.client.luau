@@ -637,6 +637,10 @@ local function civOpen(mode)
     end
   end
 end
+civButton(civGui, "CraftMenu", "제작",
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(92, 200), function() civOpen("Crafts") end)
+civButton(civGui, "BuildingMenu", "건축",
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(174, 200), function() civOpen("Buildings") end)
 civButton(civGui, "CompanionMenu", "AI 동료",
   UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 200), function() civOpen("Companions") end)
 local civRaceButton = civButton(civGui, "RaceMenu", "문명",
