@@ -1520,6 +1520,8 @@ for index, name in ipairs({
   if menuItem and menuItem:IsA("GuiButton") then menuItem.LayoutOrder = index end
 end
 local actionTweenService = game:GetService("TweenService")
+local commonMotion = require(Shared:WaitForChild("CommonMotion"))
+local studioMotionPreviewEnabled = game:GetService("RunService"):IsStudio()
 local actionMotionToken = 0
 local attackCombo = 0
 local lastAttackMotionAt = 0
@@ -1549,6 +1551,26 @@ local function civActionMotion(actionId, button)
   local character = player.Character
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
   if humanoid and humanoid.Health > 0 then
+    -- 공용 원본 모션은 Studio 임시 미리보기로만 사용한다. 게시 버전은 기존 모션을 유지한다.
+    if studioMotionPreviewEnabled and humanoid.RigType == Enum.HumanoidRigType.R15 then
+      local animator = humanoid:FindFirstChildOfClass("Animator")
+      if animator then
+        local atom = actionId == "CivAttack" and "ATTACK_LIGHT_1"
+          or actionId == "CivGuard" and "PARRY_PERFECT"
+          or actionId == "CivDodge" and "DODGE_RIGHT"
+          or nil
+        if atom then
+          local ok, track, animation, sequence = pcall(commonMotion.PlayPreview, animator, atom, {fadeTime = 0.08})
+          if ok then
+            task.delay(0.85, function()
+              if track then track:Stop(0.12); track:Destroy() end
+              if animation then animation:Destroy() end
+              if sequence then sequence:Destroy() end
+            end)
+          end
+        end
+      end
+    end
     local torso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")
     local shoulder = torso and (torso:FindFirstChild("RightShoulder") or torso:FindFirstChild("Right Shoulder"))
     local waist = torso and torso:FindFirstChild("Waist")
