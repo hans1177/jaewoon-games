@@ -1904,8 +1904,13 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             -- 서버에 복제되는 Attribute를 매 프레임 모션 캐시로 쓰지 않는다.
             -- 루트 파츠가 교체되면 기존 기준 자세도 다시 산출한다.
             local state = creatureMotionLimbBases[part]
+            -- 기존 서버 기준 오프셋이 설정돼 있으면 우선 사용한다.
+            -- 없을 때만 현재 위치에서 기준 자세를 계산한다.
             if not state or state.root ~= rootPart then
-              state = {root = rootPart, base = rootPart.CFrame:ToObjectSpace(part.CFrame)}
+              local storedBase = part:GetAttribute("MotionBaseOffset")
+              local base = typeof(storedBase) == "CFrame"
+                and storedBase or rootPart.CFrame:ToObjectSpace(part.CFrame)
+              state = {root = rootPart, base = base}
               creatureMotionLimbBases[part] = state
             end
             local base = state.base
