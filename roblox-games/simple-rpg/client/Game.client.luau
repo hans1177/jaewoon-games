@@ -670,6 +670,11 @@ local civWatched = {
   "CivRaceID", "CivEra", "CivTech", "CivWood", "CivStone",
   "CivBronze", "CivIron", "CivResearch", "CivKills", "CivParries",
   "CivDodges", "CivGather",
+  "CivCopperOre", "CivTinOre", "CivIronOre", "CivCoal",
+  "CivHide", "CivCoreCrystal", "CivDarkIron", "CivBronzeIngot", "CivIronIngot",
+  "CivStoneSpear", "CivBronzeSword", "CivIronGreatsword",
+  "CivBoarKills", "CivBronzeSmelts", "CivIronKnightKills",
+  "CivStoneWall", "CivDangunAltar", "CivPyramid", "CivColosseum", "CivDrakkarShipyard",
 }
 local function civRender()
   local id = player:GetAttribute("CivRaceID") or 0
@@ -686,7 +691,11 @@ end
 for _, name in ipairs(civWatched) do
   player:GetAttributeChangedSignal(name):Connect(function()
     civRender()
-    if civPanel.Visible and civPanelMode == "Techs" then civPanel.Visible = false; civOpen("Techs") end
+    if civPanel.Visible and (civPanelMode == "Techs" or civPanelMode == "Crafts" or civPanelMode == "Buildings") then
+      local currentMode = civPanelMode
+      civPanel.Visible = false
+      civOpen(currentMode)
+    end
   end)
 end
 civRender()
