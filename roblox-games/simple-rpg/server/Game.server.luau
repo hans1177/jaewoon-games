@@ -491,6 +491,7 @@ local function civSpawnEnemy(raceID, center)
   root.Transparency = 0.35
   local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
   local humanoid = Instance.new("Humanoid")
+  humanoid.RequiresNeck = false
   humanoid.MaxHealth = 52 + raceID * 3
   humanoid.Health = humanoid.MaxHealth
   humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
@@ -666,6 +667,7 @@ local handlers = {
 }
 
 Players.PlayerAdded:Connect(function(player)
+  player:SetAttribute("CivReady", false)
   bindFoundationPlayer(player)
   initializePlayer(player)
   if store then
@@ -683,15 +685,18 @@ Players.PlayerAdded:Connect(function(player)
       end
     end
   end
+  player:SetAttribute("CivReady", true)
 end)
 for _, player in ipairs(Players:GetPlayers()) do
   task.defer(function()
     bindFoundationPlayer(player)
     if player:GetAttribute("Score") == nil then initializePlayer(player) end
+    player:SetAttribute("CivReady", true)
   end)
 end
 -- 통합 액션 입력: 기존 ID는 그대로 두고 문명 전용 ID만 추가한다.
 remote.OnServerEvent:Connect(function(player, actionId, argument)
+  if player:GetAttribute("CivReady") ~= true then return end
   if typeof(actionId) ~= "string" or #actionId > 80 then return end
   local handler = handlers[actionId]
   local civActions = {
