@@ -137,6 +137,14 @@ const aliases = {
   Rogue:'Race1_Mob2', RogueHooded:'Race3_Mob2',
   SkeletonWarrior:'Race4_Mob1', SkeletonMage:'Race4_Mob2',
   SkeletonRogue:'Race5_Mob2', SkeletonMinion:'Race5_Mob1',
+  // Remaining models only act as temporary humanoid visual stand-ins.
+  // Creature-specific beast meshes must replace these before a 20-species claim.
+  HumanMaleA:'Race6_Mob1', HumanMaleB:'Race6_Mob2',
+  HumanMaleC:'Race7_Mob1', HumanMaleD:'Race7_Mob2',
+  HumanMaleE:'Race8_Mob1', HumanMaleF:'Race8_Mob2',
+  HumanFemaleA:'Race9_Mob1', HumanFemaleB:'Race9_Mob2',
+  HumanFemaleC:'Race10_Mob1', HumanFemaleD:'Race10_Mob2',
+  HumanFemaleE:'Race11_Mob1',
 };
 const assetEntries = Object.entries(out.assets).map(([key, item]) => {
   const name = aliases[key] ?? key;
