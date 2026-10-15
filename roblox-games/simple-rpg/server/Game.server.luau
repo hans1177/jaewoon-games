@@ -744,6 +744,7 @@ local civHousingPieces = {
   Stairs={Size=Vector3.new(8,1,3), Wood=6, Stone=2},
 }
 local civHousingCounts = {}
+local civHousingRecords = {}
 local function civBuildHousing(player, request)
   if typeof(request) ~= "table" or typeof(request.Key) ~= "string"
     or typeof(request.Position) ~= "Vector3" then return end
@@ -800,7 +801,47 @@ local function civBuildHousing(player, request)
   piece:SetAttribute("Stability",stability)
   piece:SetAttribute("CivOwnerUserId",player.UserId)
   civHousingCounts[player]=(civHousingCounts[player] or 0)+1
+  local records = civHousingRecords[player] or {}
+  civHousingRecords[player] = records
+  table.insert(records,{Key=request.Key,X=snappedX,Z=snappedZ,Level=level,Rotation=rotation,Stability=stability})
   civMessage(player,"건축 완료 / 안정성 "..tostring(stability).."%")
+end
+-- 서버가 저장한 부품만 재생성한다. DataStore의 배열 크기와 값은 복원 시 검증한다.
+local function civRestoreHousing(player, saved)
+  if typeof(saved) ~= "table" or readNumber(player,"CivRaceID",0) <= 0 then return end
+  local center = civWorlds[readNumber(player,"CivRaceID",0)]
+  if not center then return end
+  local ownerFolder = civOwnerBuildings(player)
+  local records = {}
+  for _,entry in ipairs(saved) do
+    if #records >= 40 then break end
+    if typeof(entry) == "table" and typeof(entry.Key) == "string"
+      and civHousingPieces[entry.Key] ~= nil
+      and typeof(entry.X) == "number" and typeof(entry.Z) == "number"
+      and typeof(entry.Level) == "number" and typeof(entry.Rotation) == "number"
+      and typeof(entry.Stability) == "number"
+      and entry.X % 8 == 0 and entry.Z % 8 == 0
+      and math.abs(entry.X) <= 32 and math.abs(entry.Z) <= 32
+      and entry.Level % 1 == 0 and entry.Level >= 0 and entry.Level <= 3
+      and entry.Rotation % 90 == 0 and entry.Rotation >= 0 and entry.Rotation < 360
+      and entry.Stability > 0 and entry.Stability <= 100 then
+      local definition = civHousingPieces[entry.Key]
+      if not (definition.Base and entry.Level ~= 0) then
+        local location = center + Vector3.new(entry.X,entry.Level*8+definition.Size.Y/2,entry.Z)
+        local piece = civPart(ownerFolder,entry.Key.."_Restored"..tostring(#records+1),
+          definition.Size,CFrame.new(location)*CFrame.Angles(0,math.rad(entry.Rotation),0),
+          Color3.fromRGB(149,129,102),Enum.Material.WoodPlanks,true)
+        if entry.Key == "TriangleFoundation" then piece.Shape = Enum.PartType.Wedge end
+        piece:SetAttribute("HousingPiece",true)
+        piece:SetAttribute("Stability",entry.Stability)
+        piece:SetAttribute("CivOwnerUserId",player.UserId)
+        table.insert(records,{Key=entry.Key,X=entry.X,Z=entry.Z,Level=entry.Level,
+          Rotation=entry.Rotation,Stability=entry.Stability})
+      end
+    end
+  end
+  civHousingRecords[player] = records
+  civHousingCounts[player] = #records
 end
 local civWeaponIds = {StoneSpear=1, BronzeSword=2, IronGreatsword=3}
 local function civEquip(player, weaponKey)
@@ -2075,6 +2116,9 @@ Players.PlayerAdded:Connect(function(player)
   civApplyCharacterPassive(player)
   civApplySkinTone(player)
   civRestoreBuildings(player)
+  if civDataLoadValid[player] == true and typeof(saved) == "table" then
+    civRestoreHousing(player,saved.CivHousingPieces)
+  end
   -- 리저브 서버 도착 후 실제 저장된 최종 연구 완료 여부를 재검증한다.
   local joinOk, joinData = pcall(function() return player:GetJoinData() end)
   local portalData = joinOk and joinData and joinData.TeleportData
@@ -2220,12 +2264,14 @@ savePlayer = function(player)
   for key, fallback in pairs(Config.InitialState) do
     snapshot[key] = readNumber(player, key, fallback)
   end
+  local housingSnapshot = civHousingRecords[player] or {}
   local ok, err = false, nil
   for attempt = 1, 3 do
     ok, err = pcall(function()
       store:UpdateAsync("player:" .. player.UserId, function(existing)
         local merged = typeof(existing) == "table" and existing or {}
         for key, value in pairs(snapshot) do merged[key] = value end
+        merged.CivHousingPieces = housingSnapshot
         return merged
       end)
     end)
@@ -2241,6 +2287,7 @@ Players.PlayerRemoving:Connect(function(player)
   lastAction[player] = nil
   civCooldowns[player] = nil
   civHousingCounts[player] = nil
+  civHousingRecords[player] = nil
   inventorySyncPending[player] = nil
   pendingTimedCraft[player] = nil
   civDataLoadValid[player] = nil
