@@ -28,7 +28,11 @@ local creatureAssetFailed = 0
 if creatureFolder then
   local insertService = game:GetService("InsertService")
   for name, assetId in pairs(approvedCreatureAssets) do
-    if not creatureFolder:FindFirstChild(name) then
+    local existing = creatureFolder:FindFirstChild(name)
+    if existing and existing:IsA("Model") and existing:FindFirstChildWhichIsA("BasePart", true) then
+      creatureAssetReady += 1
+    else
+      if existing then existing:Destroy() end
       local ok, container = pcall(function() return insertService:LoadAsset(assetId) end)
       if ok and container then
         -- Roblox GLB imports may contain nested empty wrapper Models. Prefer the
@@ -55,6 +59,7 @@ if creatureFolder then
     end
   end
 end
+-- CreatureAssetsLoaded includes valid preimported Studio models as well as new InsertService results.
 Shared:SetAttribute("CreatureAssetsLoaded", creatureAssetReady)
 Shared:SetAttribute("CreatureAssetsFailed", creatureAssetFailed)
 Shared:SetAttribute("CreatureAssetsExpected", 9)
