@@ -1626,7 +1626,8 @@ housingPanel.Visible = false
 housingPanel.Parent = civGui
 local housingScroll = Instance.new("ScrollingFrame")
 housingScroll.Name = "HousingChoices"
-housingScroll.Size = UDim2.new(1,0,1,-142)
+housingScroll.Position = UDim2.fromOffset(0,42)
+housingScroll.Size = UDim2.new(1,0,1,-194)
 housingScroll.BackgroundTransparency = 1
 housingScroll.BorderSizePixel = 0
 housingScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -1635,6 +1636,15 @@ housingScroll.Parent = housingPanel
 local housingLayout = Instance.new("UIListLayout")
 housingLayout.Padding = UDim.new(0, 2)
 housingLayout.Parent = housingScroll
+local housingFooter = Instance.new("Frame")
+housingFooter.Name = "HousingActions"
+housingFooter.Position = UDim2.new(0,0,1,-150)
+housingFooter.Size = UDim2.new(1,0,0,150)
+housingFooter.BackgroundTransparency = 1
+housingFooter.Parent = housingPanel
+local housingFooterLayout = Instance.new("UIListLayout")
+housingFooterLayout.Padding = UDim.new(0,3)
+housingFooterLayout.Parent = housingFooter
 local housingSelected = "SquareFoundation"
 local housingKeys = {"SquareFoundation","TriangleFoundation","Wall","WindowWall","Doorframe","FlatRoof","Pillar","Stairs",
   "Ceiling","TriangleCeiling","SlopedRoof","RoofCorner","FenceBase","GateFrame","Railing","Ladder"}
@@ -1702,7 +1712,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
   housingPreview.Color=allowed and Color3.fromRGB(90,220,140) or Color3.fromRGB(235,90,90)
   housingPreview.Transparency=0.57
 end)
-civButton(housingPanel,"HousingRotate","회전 90도",
+civButton(housingFooter,"HousingRotate","회전 90도",
   UDim2.new(1,-8,0,30),UDim2.new(),function()
     housingRotation=(housingRotation+90)%360
   end)
@@ -1716,9 +1726,9 @@ local function housingTryPlace()
   -- 건축 소켓에 직접 조준했을 때만 상단 부품이 연결된다.
   remote:FireServer("CivBuildHousing",{Key=housingSelected,Position=pos,ParentPart=parentPart,Rotation=housingRotation})
 end
-civButton(housingPanel,"HousingPlace","선택한 부품 설치",
+civButton(housingFooter,"HousingPlace","선택한 부품 설치",
   UDim2.new(1,-8,0,34),UDim2.new(),housingTryPlace)
-civButton(housingPanel,"HousingRemove","조준한 내 건축물 철거",
+civButton(housingFooter,"HousingRemove","조준한 내 건축물 철거",
   UDim2.new(1,-8,0,30),UDim2.new(),function()
     local _, target = housingTarget()
     if target and target:GetAttribute("HousingPiece") == true
@@ -1728,7 +1738,7 @@ civButton(housingPanel,"HousingRemove","조준한 내 건축물 철거",
       housingInfo.Text="자신의 건축 부품을 조준해."
     end
   end)
-civButton(housingPanel,"HousingDoorToggle","조준한 내 문 열기 / 닫기",
+civButton(housingFooter,"HousingDoorToggle","조준한 내 문 열기 / 닫기",
   UDim2.new(1,-8,0,29),UDim2.new(),function()
     local _,target=housingTarget()
     if target and target:GetAttribute("HousingPiece")==true
