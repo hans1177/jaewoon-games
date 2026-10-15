@@ -1384,6 +1384,36 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   root.Transparency = 0.35
   enemy:SetAttribute("SpawnPosition", root.Position)
   local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
+  -- Studio에서 업로드한 허가된 3D 모델을 ReplicatedStorage/Shared/CreatureModels에
+  -- 배치하면 기존 서버 스폰/AI/공격 판정은 유지하면서 외형만 교체한다.
+  -- 승인되지 않은 Marketplace asset ID는 불러오지 않는다.
+  local sharedCreatureFolder = game:GetService("ReplicatedStorage"):FindFirstChild("Shared")
+  sharedCreatureFolder = sharedCreatureFolder and sharedCreatureFolder:FindFirstChild("CreatureModels")
+  if sharedCreatureFolder then
+    local modelKey = special == "WildBoar" and "Boar"
+      or special == "StoneWolf" and "Wolf"
+      or special == "IronKnight" and "Knight"
+      or special == "BronzeGolem" and "Golem"
+      or nil
+    local visualTemplate = modelKey and sharedCreatureFolder:FindFirstChild(modelKey)
+    if visualTemplate and visualTemplate:IsA("Model") then
+      local visual = visualTemplate:Clone()
+      visual.Name = "ImportedCreatureVisual"
+      for _, descendant in ipairs(visual:GetDescendants()) do
+        if descendant:IsA("BasePart") then
+          descendant.Anchored = true
+          descendant.CanCollide = false
+          descendant.CanTouch = false
+          descendant.CanQuery = false
+        end
+      end
+      visual.Parent = enemy
+      visual:PivotTo(root.CFrame)
+      root.Transparency = 1
+      head.Transparency = 1
+      enemy:SetAttribute("CreatureAssetSource", "StudioImported")
+    end
+  end
   -- 몬스터 외형 에셋: 기존 생성 경로에서 경량 파츠를 조립한다.
   local beast = special == "StoneWolf" or special == "WildBoar"
   local armor = special == "BronzeGolem" or special == "IronKnight"
