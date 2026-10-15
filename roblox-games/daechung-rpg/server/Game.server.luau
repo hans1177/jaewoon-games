@@ -566,6 +566,14 @@ local function resolveIncomingAttack(p,e,attack)
    p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1);p:SetAttribute("CivParries",n(p,"CivParries",0)+1);p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+12))
    feedback(p,"PARRY");msg(p,"완벽 패링 · "..tostring(attack.Name or"공격"))
    staggerEnemy(e,(attack.GuardDamage or 20)*1.55,now)
+   -- 패링 성공 시 공격을 취소하고 최소 2초 동안 적을 기절시킨다.
+   e.stunnedUntil=math.max(e.stunnedUntil or 0,now+2)
+   e.attackPending=false;e.attackToken=(e.attackToken or 0)+1
+   e.part:SetAttribute("Staggered",true)
+   local releaseAt=e.stunnedUntil
+   task.delay(2,function()
+    if e.part and e.part.Parent and (e.stunnedUntil or 0)<=releaseAt then e.part:SetAttribute("Staggered",false)end
+   end)
    -- 서버 확정 패링만 적의 실제 공격 피해 100% 반사.
    local reflect=math.max(0,(e.damage or 8)*(attack.DamageMult or 1)*(e.enragedUntil and e.enragedUntil>now and 1.22 or 1))
    e.hp=math.max(0,e.hp-reflect);e.part:SetAttribute("HP",e.hp)
@@ -991,7 +999,11 @@ local function save(p)
  local lastError=nil
  for attempt=1,SAVE_MAX_ATTEMPTS do
   local ok,err=pcall(function()
-   store:UpdateAsync("p:"..p.UserId,function()return data end)
+   store:UpdateAsync("p:"..p.UserId,function(existing)
+     local current=typeof(existing)=="table" and existing or {}
+     for key,value in pairs(data)do current[key]=value end
+     return current
+    end)
   end)
   if ok then
    setSaveState(p,"SAVED")
@@ -2136,6 +2148,14 @@ Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
 Players.PlayerRemoving:Connect(function(p)comboState[p]=nil;save(p);local oldHouse=houses:FindFirstChild("House_"..p.UserId);if oldHouse then oldHouse:Destroy()end;saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
+-- 기존 저장소·저장 키 그대로 60초 자동 저장. 다른 임시 저장 파이프라인을 만들지 않는다.
+task.spawn(function()
+ while task.wait(60)do
+  for _,p in ipairs(Players:GetPlayers())do
+   if saveReady[p]==true and p:GetAttribute("SaveState")~="SESSION_ONLY"then task.spawn(save,p)end
+  end
+ end
+end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
  if typeof(name)~="string"then return end
