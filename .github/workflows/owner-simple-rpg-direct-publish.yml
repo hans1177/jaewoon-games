@@ -103,6 +103,7 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
         shell: bash
         run: |
           set -euo pipefail
@@ -161,16 +162,23 @@ jobs:
           if(!key||!fs.existsSync(root))throw Error('GRAPHICS_SOURCE_OR_KEY_MISSING');
           const list=fs.readdirSync(root).filter(n=>/^[a-z0-9_-]+\.png$/i.test(n)).sort();
           if(!list.length)throw Error('GRAPHICS_SOURCE_EMPTY');
-          const scope=await introspectRobloxApiKey({apiKey:key});
-          const owners=[];
-          for(const row of scope.scopes||[]){
-            if(!/asset/i.test(row.name)||!/write|create/i.test(row.name+' '+(row.operations||[]).join(' ')))continue;
-            for(const id of row.userIds||[])if(Number(id)>0)owners.push({userId:String(id)});
-            for(const id of row.groupIds||[])if(Number(id)>0)owners.push({groupId:String(id)});
+          // 게임 소유자를 먼저 확인한다. API 키의 타 게임 접근 권한은 소유 증거가 아니다.
+          const raw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
+          const cookie=raw.includes('.ROBLOSECURITY=')?raw:(raw?'.ROBLOSECURITY='+raw+';':'');
+          if(!cookie)throw Error('GRAPHICS_OWNER_VERIFICATION_CREDENTIAL_MISSING');
+          const gameResponse=await fetch('https://develop.roblox.com/v1/universes/10770997776',{headers:{cookie},signal:AbortSignal.timeout(30000)});
+          const gameInfo=await gameResponse.json().catch(()=>({}));
+          if(!gameResponse.ok||String(gameInfo.id)!=='10770997776'||Number(gameInfo.creatorTargetId)<=0||!['User','Group'].includes(gameInfo.creatorType)){
+            throw Error('GRAPHICS_GAME_OWNER_UNVERIFIED');
           }
-          const unique=[...new Map(owners.map(o=>[JSON.stringify(o),o])).values()];
-          if(unique.length!==1)throw Error('GRAPHICS_CREATOR_MUST_BE_UNIQUE');
-          const creator=unique[0];
+          const creator={[gameInfo.creatorType==='Group'?'groupId':'userId']:String(gameInfo.creatorTargetId)};
+          const scope=await introspectRobloxApiKey({apiKey:key});
+          const permitted=(scope.scopes||[]).some(row=>{
+            if(!/asset/i.test(row.name)||!/write|create/i.test(row.name+' '+(row.operations||[]).join(' ')))return false;
+            const ids=gameInfo.creatorType==='Group'?row.groupIds:row.userIds;
+            return (ids||[]).some(id=>String(id)===String(gameInfo.creatorTargetId));
+          });
+          if(!permitted)throw Error('GRAPHICS_KEY_NOT_AUTHORIZED_FOR_GAME_OWNER');
           const receipts=[];
           for(const name of list){
             const bytes=fs.readFileSync(root+'/'+name);
