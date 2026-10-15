@@ -117,9 +117,6 @@ jobs:
           echo "SECURITY_CONTRACT_FULL_QA=$contract_changed"
           echo 'SECURITY_PATCH_SCAN_ALWAYS=YES'
 
-      - name: Synchronize security context
-        run: node tools/company-shared-context.mjs --output=/tmp/security-shared-context.json
-
       - name: Scan changed attack surface
         id: scan
         shell: bash
