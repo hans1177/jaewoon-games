@@ -1,7 +1,7 @@
 # 파일명: .github/workflows/owner-simple-rpg-direct-publish.yml
-# 오너 직접배포: 기존 로블록스 전용 게시기를 호출한다. 다른 게임/자동개발 흐름에 영향 없음.
-name: Owner Simple RPG Direct Publish
-run-name: Owner Simple RPG publish · ${{ github.sha }}
+# 오너 직접배포: 기존 Roblox 전용 Place 120884036900477 재사용. 게임별 오너 지시 실행.
+name: Owner 대충알피지 Direct Publish
+run-name: Owner 대충알피지 publish · ${{ github.sha }}
 
 on:
   push:
@@ -57,10 +57,20 @@ jobs:
           const registered=(r.targets||[]).find(v=>v.gameId==='simple-rpg')||{};
           const valid=v=>/^[1-9][0-9]*$/.test(String(v||''));
           const safe=v=>v?.dedicated===true&&v?.shared!==true&&valid(v?.universeId)&&valid(v?.placeId);
-          const t=safe(row.robloxPublicationTarget)?row.robloxPublicationTarget:(safe(registered)?registered:null);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+(t?.universeId||'')+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+(t?.placeId||'')+'\n');
-          console.log('SIMPLE_RPG_EXISTING_DEDICATED_TARGET='+(t?'YES':'NO'));
+          const exact={universeId:'10770997776',placeId:'120884036900477'};
+          // The owner confirmed this exact private Roblox target by successful publication
+          // run 38692370854 (version 2). Do not create another game or reuse a foreign place.
+          for(const [origin,target] of [['queue',row.robloxPublicationTarget],['registry',registered]]){
+            if(target && Object.keys(target).length > 0){
+              if(!safe(target) || String(target.universeId)!==exact.universeId || String(target.placeId)!==exact.placeId){
+                throw new Error('DAECHUNG_RPG_OWNER_PLACE_MISMATCH:'+origin+':refusing Roblox publish');
+              }
+            }
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+exact.universeId+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+exact.placeId+'\n');
+          console.log('DAECHUNG_RPG_OWNER_TARGET_REUSED=YES');
+          console.log('DAECHUNG_RPG_OWNER_EXPECTED_PLACE_ID='+exact.placeId);
           NODE
 
       - name: Build exact Simple RPG place with pinned Rojo
