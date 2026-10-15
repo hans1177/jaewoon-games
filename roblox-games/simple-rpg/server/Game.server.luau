@@ -528,6 +528,25 @@ local function civSpawnEnemy(raceID, center)
   table.insert(civEnemies, item)
   return item
 end
+-- Bounded server wildlife: each civilization has one grazing prey model.
+local function civSpawnGrazer(raceID, center)
+  local animal = Instance.new("Model")
+  animal.Name = "초식 야생동물"
+  animal:SetAttribute("CivilizationWildlife", true)
+  animal:SetAttribute("RaceID", raceID)
+  local root = civPart(animal, "HumanoidRootPart", Vector3.new(2.4, 2, 3), CFrame.new(center + Vector3.new(9, 2.5, -6)), Color3.fromRGB(137, 128, 93), Enum.Material.SmoothPlastic, false)
+  civPart(animal, "Head", Vector3.new(1.5, 1.4, 1.3), root.CFrame * CFrame.new(0, 0.7, -1.8), Color3.fromRGB(161, 147, 107), Enum.Material.SmoothPlastic, false)
+  local health = Instance.new("Humanoid")
+  health.RequiresNeck = false
+  health.MaxHealth = 32
+  health.Health = health.MaxHealth
+  health.Parent = animal
+  animal.PrimaryPart = root
+  animal.Parent = civHub
+  local state = {Model = animal, Root = root, Humanoid = health, Home = root.Position, LastGraze = -1e9, LastPredated = -1e9}
+  civWildlife[raceID] = state
+  return state
+end
 local function civAttack(player)
   if not civRace(player) or not civNowReady(player, "Attack", civ.AttackCooldown) then return end
   local character = player.Character
@@ -660,6 +679,7 @@ for id = 1, 24 do
     table.insert(civNodes, {Part = node, Type = resource.Type, Label = resource.Label})
   end
   civSpawnEnemy(id, center)
+  civSpawnGrazer(id, center)
   local portal = civPart(civHub, "포털 " .. race.Name, Vector3.new(4, 0.3, 4),
     CFrame.new(math.cos(angle) * 24, 0.2, math.sin(angle) * 24), Color3.fromRGB(111, 191, 222), Enum.Material.Neon, false)
   civSign(civHub, portal, race.Name, 3)
