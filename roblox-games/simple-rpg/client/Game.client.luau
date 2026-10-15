@@ -583,10 +583,30 @@ for _, panel in ipairs({civTitle, civStatus, civMessage}) do
   border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
   border.Parent = panel
 end
+-- 모바일 화면에서는 제목·자원·전투 알림을 작은 좌측 카드로 쌓아 시야를 확보한다.
+if nativeTouchEnabled then
+  civTitle.AnchorPoint = Vector2.new(0, 0)
+  civTitle.Position = UDim2.fromOffset(8, 8)
+  civTitle.Size = UDim2.fromOffset(170, 24)
+  civTitle.TextSize = 14
+  civStatus.AnchorPoint = Vector2.new(0, 0)
+  civStatus.Position = UDim2.fromOffset(8, 36)
+  civStatus.Size = UDim2.fromOffset(235, 34)
+  civStatus.TextSize = 10
+  civMessage.AnchorPoint = Vector2.new(0, 0)
+  civMessage.Position = UDim2.fromOffset(8, 74)
+  civMessage.Size = UDim2.fromOffset(235, 26)
+  civMessage.TextSize = 11
+end
 -- Compact era and raid readout; not an interactive right-side control.
 local eraReadout = civLabel(civGui, "CurrentEraReadout", "신화 시대",
   UDim2.fromOffset(118, 25), UDim2.fromOffset(8, 6), true)
 eraReadout.TextSize = 12
+if nativeTouchEnabled then
+  eraReadout.Position = UDim2.fromOffset(8, 103)
+  eraReadout.Size = UDim2.fromOffset(110, 22)
+  eraReadout.TextSize = 11
+end
 eraReadout.BackgroundColor3 = Color3.fromRGB(58, 44, 59)
 local bossReadout = civLabel(civGui, "RaidBossPhase", "",
   UDim2.new(0.5, 0, 0, 28), UDim2.new(0.5, 0, 0, 108), true)
@@ -594,6 +614,11 @@ bossReadout.AnchorPoint = Vector2.new(0.5, 0)
 bossReadout.BackgroundColor3 = Color3.fromRGB(66, 39, 43)
 bossReadout.TextSize = 12
 bossReadout.Visible = false
+if nativeTouchEnabled then
+  bossReadout.AnchorPoint = Vector2.new(0, 0)
+  bossReadout.Position = UDim2.fromOffset(8, 129)
+  bossReadout.Size = UDim2.fromOffset(235, 25)
+end
 local eraNames = {"신화 시대", "석기 시대", "청동기 시대", "철기 시대", "영웅 시대"}
 local function refreshEraReadout()
   local era = player:GetAttribute("CivEra")
@@ -691,7 +716,7 @@ civMenuRail.ClipsDescendants = true
 civMenuRail.Parent = civGui
 -- 전투 중 시야를 가리지 않도록 메뉴는 기본 접힘으로 시작한다.
 local civMenuToggle = civButton(civGui, "CivilizationMenuToggle", "메뉴 ☰",
-  UDim2.fromOffset(78, 34), UDim2.fromOffset(10, 110), function()
+  UDim2.fromOffset(78, 34), UDim2.fromOffset(10, nativeTouchEnabled and 164 or 110), function()
     civMenuRail.Visible = not civMenuRail.Visible
   end)
 civMenuRail.Visible = false
