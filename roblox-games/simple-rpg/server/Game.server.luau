@@ -1397,7 +1397,12 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
       or special == "IronKnight" and "Knight"
       or special == "BronzeGolem" and "Golem"
       or nil
-    local visualTemplate = modelKey and sharedCreatureFolder:FindFirstChild(modelKey)
+    -- Studio에서 가져온 실물 모델은 특수 몬스터뿐 아니라 문명 일반 몬스터에도 연결한다.
+    -- 폴더 내 이름 우선순위: 종별 키 → 몬스터 이름 → 문명별 슬롯 → 범용 체형.
+    local visualTemplate = (modelKey and sharedCreatureFolder:FindFirstChild(modelKey))
+      or sharedCreatureFolder:FindFirstChild(enemy.Name)
+      or sharedCreatureFolder:FindFirstChild("Race" .. raceID .. "_Mob" .. (mobSlot or 1))
+      or sharedCreatureFolder:FindFirstChild((special == "StoneWolf" or special == "WildBoar") and "Beast" or "Humanoid")
     if visualTemplate and visualTemplate:IsA("Model") then
       local visual = visualTemplate:Clone()
       visual.Name = "ImportedCreatureVisual"
@@ -1411,6 +1416,7 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
       end
       visual.Parent = enemy
       visual:PivotTo(root.CFrame)
+      visual:SetAttribute("ImportedVisualFollowRoot", true)
       root.Transparency = 1
       head.Transparency = 1
       enemy:SetAttribute("CreatureAssetSource", "StudioImported")
