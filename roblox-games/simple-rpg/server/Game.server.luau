@@ -1441,6 +1441,10 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   -- 승인되지 않은 Marketplace asset ID는 불러오지 않는다.
   local sharedCreatureFolder = game:GetService("ReplicatedStorage"):FindFirstChild("Shared")
   sharedCreatureFolder = sharedCreatureFolder and sharedCreatureFolder:FindFirstChild("CreatureModels")
+  if not sharedCreatureFolder and not game:GetAttribute("CreatureModelsMissingReported") then
+    game:SetAttribute("CreatureModelsMissingReported", true)
+    warn("CIV_CREATURE_ASSETS_MISSING: ReplicatedStorage.Shared.CreatureModels 폴더 없음; 기본 파츠형 몬스터 표시")
+  end
   if sharedCreatureFolder then
     local modelKey = special == "WildBoar" and "Boar"
       or special == "StoneWolf" and "Wolf"
@@ -1453,6 +1457,11 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
       or sharedCreatureFolder:FindFirstChild(enemy.Name)
       or sharedCreatureFolder:FindFirstChild("Race" .. raceID .. "_Mob" .. (mobSlot or 1))
       or sharedCreatureFolder:FindFirstChild((special == "StoneWolf" or special == "WildBoar") and "Beast" or "Humanoid")
+    -- 에셋 폴더가 있어도 실제 BasePart가 없으면 외형을 교체하지 않는다.
+    if not visualTemplate and not game:GetAttribute("CreatureTemplateMissingReported") then
+      game:SetAttribute("CreatureTemplateMissingReported", true)
+      warn("CIV_CREATURE_TEMPLATE_MISSING: 몬스터용 실물 모델을 찾지 못해 기본 외형 사용", enemy.Name)
+    end
     -- Empty imported packages must never hide the fallback monster body.
     if visualTemplate and visualTemplate:IsA("Model")
       and visualTemplate:FindFirstChildWhichIsA("BasePart", true) then
