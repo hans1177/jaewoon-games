@@ -1639,15 +1639,66 @@ for index,key in ipairs(housingKeys) do
       housingInfo.Text="선택: "..housingNames[index]
     end)
 end
+local housingRotation = 0
+local housingPreview = Instance.new("Part")
+housingPreview.Name = "LocalHousingPlacementPreview"
+housingPreview.Anchored = true
+housingPreview.CanCollide = false
+housingPreview.CanTouch = false
+housingPreview.CanQuery = false
+housingPreview.Material = Enum.Material.ForceField
+housingPreview.Color = Color3.fromRGB(99, 220, 158)
+housingPreview.Transparency = 1
+housingPreview.Parent = workspace
+local housingSizes = {
+  SquareFoundation=Vector3.new(8,1,8), TriangleFoundation=Vector3.new(8,1,8),
+  Wall=Vector3.new(8,7,1), WindowWall=Vector3.new(8,7,1),
+  Doorframe=Vector3.new(8,7,1), FlatRoof=Vector3.new(8,1,8),
+  Pillar=Vector3.new(1,8,1), Stairs=Vector3.new(8,1,3),
+}
+local housingRayParams = RaycastParams.new()
+housingRayParams.FilterType = Enum.RaycastFilterType.Exclude
+local function housingTarget()
+  local camera = workspace.CurrentCamera
+  local character = player.Character
+  if not camera then return nil,nil end
+  housingRayParams.FilterDescendantsInstances = character and {character,housingPreview} or {housingPreview}
+  local hit = workspace:Raycast(camera.CFrame.Position,camera.CFrame.LookVector*45,housingRayParams)
+  if not hit then return nil,nil end
+  return hit.Position,hit.Instance
+end
+game:GetService("RunService").RenderStepped:Connect(function()
+  if not housingPanel.Visible then housingPreview.Transparency=1 return end
+  local position,parentPart = housingTarget()
+  if not position then housingPreview.Transparency=1 return end
+  local raceId=player:GetAttribute("CivRaceID") or 0
+  local angle=math.pi*2*(raceId-1)/24
+  local worldRadius=Config.Civilization and Config.Civilization.WorldRadius or 220
+  local center=Vector3.new(math.cos(angle)*worldRadius,0,math.sin(angle)*worldRadius)
+  local x=math.round((position.X-center.X)/8)*8
+  local z=math.round((position.Z-center.Z)/8)*8
+  local base=housingSelected=="SquareFoundation" or housingSelected=="TriangleFoundation"
+  local level=base and 0 or math.clamp(math.round(position.Y/8),0,3)
+  local size=housingSizes[housingSelected]
+  housingPreview.Size=size
+  housingPreview.CFrame=CFrame.new(center+Vector3.new(x,level*8+size.Y/2,z))*CFrame.Angles(0,math.rad(housingRotation),0)
+  local allowed=raceId>0 and math.abs(x)<=32 and math.abs(z)<=32
+    and (base or (parentPart and parentPart:GetAttribute("HousingPiece")==true
+    and parentPart:GetAttribute("CivOwnerUserId")==player.UserId))
+  housingPreview.Color=allowed and Color3.fromRGB(90,220,140) or Color3.fromRGB(235,90,90)
+  housingPreview.Transparency=0.57
+end)
+civButton(housingPanel,"HousingRotate","회전 90도",
+  UDim2.new(1,-8,0,30),UDim2.new(),function()
+    housingRotation=(housingRotation+90)%360
+  end)
 local function housingTryPlace()
   local character=player.Character
   local root=character and character:FindFirstChild("HumanoidRootPart")
   local camera=workspace.CurrentCamera
   if not root or not camera then return end
-  local origin=camera.CFrame.Position
-  local cast=workspace:Raycast(origin,camera.CFrame.LookVector*45)
-  local pos=cast and cast.Position or root.Position+root.CFrame.LookVector*8
-  local parentPart=cast and cast.Instance
+  local pos,parentPart=housingTarget()
+  if not pos then housingInfo.Text="건축 위치를 바라봐." return end
   -- 건축 소켓에 직접 조준했을 때만 상단 부품이 연결된다.
   remote:FireServer("CivBuildHousing",{Key=housingSelected,Position=pos,ParentPart=parentPart})
 end
