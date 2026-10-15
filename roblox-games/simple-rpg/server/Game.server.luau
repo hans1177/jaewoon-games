@@ -812,12 +812,31 @@ local function civBuildHousing(player, request)
     stability = math.clamp((tonumber(parentPiece:GetAttribute("Stability")) or 0)-20,0,100)
     if stability <= 0 then civMessage(player,"구조 안정성이 부족해.") return end
   end
-  for _, part in ipairs(ownerFolder:GetDescendants()) do
-    if part:IsA("BasePart") and part:GetAttribute("HousingPiece") == true
-      and (part.Position-basePosition).Magnitude < 3 then return end
-  end
   local rotation = tonumber(request.Rotation) or 0
   if rotation % 90 ~= 0 or rotation < 0 or rotation >= 360 then return end
+  local placementCFrame = CFrame.new(basePosition + Vector3.new(0,definition.Size.Y/2,0))
+    * CFrame.Angles(0,math.rad(rotation),0)
+  -- 회전된 실제 건축 부피를 검사한다. 미관용 공용 에셋은 판정에서 제외.
+  local overlapParams = OverlapParams.new()
+  overlapParams.FilterType = Enum.RaycastFilterType.Exclude
+  overlapParams.FilterDescendantsInstances = {character}
+  local overlaps = workspace:GetPartBoundsInBox(placementCFrame,
+    definition.Size - Vector3.new(0.12,0.12,0.12), overlapParams)
+  for _, hit in ipairs(overlaps) do
+    if hit:IsA("BasePart") and hit.CanCollide then
+      local isOwnSupport = hit == parentPiece and not definition.Base
+      local isGround = hit:GetAttribute("WalkableGround") == true
+      local isContinent = hit.Name == "문명 대륙"
+      if not isOwnSupport and not isGround and not isContinent then
+        civMessage(player,"다른 구조물과 겹쳐 건축할 수 없어.")
+        return
+      end
+    end
+  end
+  for _, part in ipairs(ownerFolder:GetDescendants()) do
+    if part:IsA("BasePart") and part:GetAttribute("HousingPiece") == true
+      and part ~= parentPiece and (part.Position-basePosition).Magnitude < 3 then return end
+  end
   if not civNowReady(player,"BuildHousing",0.7) then return end
   local paid,missing = civSpend(player,{CivWood=definition.Wood,CivStone=definition.Stone})
   if not paid then civMessage(player,"건축 자원 부족: "..missing) return end
