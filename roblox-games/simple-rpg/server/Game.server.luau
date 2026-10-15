@@ -497,6 +497,25 @@ local function civVisualBuilding(player, key, explicitPosition)
     civPart(model, "StoneBattlement", Vector3.new(7, 4, 2),
       CFrame.new(position + Vector3.new(0, 3, 0)), definition.ModelColor, Enum.Material.Rock, false)
   end
+  -- 공통 건축 부품 세트: 기존 영지 건축물에 토대/기둥/벽/문틀/지붕을 조립한다.
+  -- 전투 판정과 저장 상태는 기존 건축 시스템이 그대로 소유한다.
+  local kit = {
+    {Name = "SquareFoundation", Size = Vector3.new(6.8, 0.5, 6.8), Offset = Vector3.new(0, 1, 0), Mat = Enum.Material.Slate},
+    {Name = "WallLeft", Size = Vector3.new(0.6, 4, 6.8), Offset = Vector3.new(-3.2, 3, 0), Mat = Enum.Material.WoodPlanks},
+    {Name = "WallRight", Size = Vector3.new(0.6, 4, 6.8), Offset = Vector3.new(3.2, 3, 0), Mat = Enum.Material.WoodPlanks},
+    {Name = "DoorframeTop", Size = Vector3.new(6.8, 0.7, 0.7), Offset = Vector3.new(0, 4.6, -3.1), Mat = Enum.Material.Wood},
+    {Name = "Roof", Size = Vector3.new(7.6, 0.65, 7.6), Offset = Vector3.new(0, 5.6, 0), Mat = Enum.Material.WoodPlanks},
+    {Name = "SupportPillar1", Size = Vector3.new(0.8, 5, 0.8), Offset = Vector3.new(-3, 3.4, -3), Mat = Enum.Material.Wood},
+    {Name = "SupportPillar2", Size = Vector3.new(0.8, 5, 0.8), Offset = Vector3.new(3, 3.4, -3), Mat = Enum.Material.Wood},
+  }
+  for _, piece in ipairs(kit) do
+    local component = civPart(model, piece.Name, piece.Size,
+      CFrame.new(position + piece.Offset), definition.ModelColor, piece.Mat, false)
+    component.CanTouch = false
+    component.CanQuery = false
+    component:SetAttribute("BuildingComponent", true)
+    component:SetAttribute("BuildingOwnerId", player.UserId)
+  end
   civSign(model, anchor, definition.Label, 6)
 end
 local function civRestoreBuildings(player)
