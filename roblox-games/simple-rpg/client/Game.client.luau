@@ -457,10 +457,10 @@ local function civButton(parent, name, text, size, pos, callback)
   button.Name = name
   button.Size = size
   button.Position = pos
-  button.BackgroundColor3 = Color3.fromRGB(138, 90, 56)
-  button.TextColor3 = Color3.fromRGB(232, 213, 168)
+  button.BackgroundColor3 = Color3.fromRGB(113, 75, 47)
+  button.TextColor3 = Color3.fromRGB(250, 231, 185)
   button.TextWrapped = true
-  button.TextSize = 16
+  button.TextSize = 14
   button.Font = Enum.Font.GothamBold
   button.BorderSizePixel = 0
   button.Text = text
@@ -468,12 +468,16 @@ local function civButton(parent, name, text, size, pos, callback)
   button.ZIndex = (parent:IsA("ScreenGui") or parent.Name == "CivilizationMenu") and 5 or 12
   button.Parent = parent
   local corner = Instance.new("UICorner")
-  corner.CornerRadius = UDim.new(0, 8)
+  corner.CornerRadius = UDim.new(0, 7)
   corner.Parent = button
+  local shading = Instance.new("UIGradient")
+  shading.Rotation = 90
+  shading.Color = ColorSequence.new(Color3.fromRGB(153, 106, 64), Color3.fromRGB(84, 53, 35))
+  shading.Parent = button
   local woodBorder = Instance.new("UIStroke")
   woodBorder.Name = "OakBorder"
-  woodBorder.Color = Color3.fromRGB(107, 74, 47)
-  woodBorder.Thickness = 2
+  woodBorder.Color = Color3.fromRGB(198, 151, 86)
+  woodBorder.Thickness = 1.5
   woodBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
   woodBorder.Parent = button
   button.Activated:Connect(callback)
@@ -499,6 +503,8 @@ civStatus.AnchorPoint = Vector2.new(0.5, 0)
 civStatus.Position = UDim2.new(0.5, 0, 0, 35)
 civStatus.Size = UDim2.new(0.76, 0, 0, 36)
 civStatus.BackgroundColor3 = Color3.fromRGB(232, 213, 168)
+civStatus.TextWrapped = true
+civStatus.TextSize = 12
 civStatus.TextColor3 = Color3.fromRGB(66, 44, 30)
 civMessage.AnchorPoint = Vector2.new(0.5, 0)
 civMessage.Position = UDim2.new(0.5, 0, 0, 76)
@@ -520,7 +526,7 @@ civPanel.AnchorPoint = Vector2.new(0.5, 0.5)
 civPanel.Position = UDim2.new(0.5, 0, 0.5, 58)
 civPanel.Size = UDim2.new(0.78, 0, 0.76, 0)
 civPanel.ClipsDescendants = true
-civPanel.BackgroundColor3 = Color3.fromRGB(107, 74, 47)
+civPanel.BackgroundColor3 = Color3.fromRGB(63, 43, 30)
 civPanel.BackgroundTransparency = 0.04
 civPanel.ZIndex = 10
 civPanel.BorderSizePixel = 0
@@ -531,8 +537,8 @@ panelCorner.CornerRadius = UDim.new(0, 12)
 panelCorner.Parent = civPanel
 local panelBorder = Instance.new("UIStroke")
 panelBorder.Name = "CivilizationFrameBorder"
-panelBorder.Color = Color3.fromRGB(138, 90, 56)
-panelBorder.Thickness = 3
+panelBorder.Color = Color3.fromRGB(203, 159, 90)
+panelBorder.Thickness = 2
 panelBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 panelBorder.Parent = civPanel
 local panelTitle = civLabel(civPanel, "PanelTitle", "문명 선택",
@@ -600,10 +606,11 @@ local function resizeCivMenuRail()
   local railRight = civMenuRail.Position.X.Offset + civMenuRail.Size.X.Offset
   local panelLeft = railRight + 10
   local panelWidth = math.max(1, math.floor(viewport.X - panelLeft - 12))
-  local panelHeight = math.max(1, math.floor(math.min(viewport.Y * 0.72, viewport.Y - 125)))
+  local panelTop = math.min(108, math.floor(viewport.Y * 0.23))
+  local panelHeight = math.max(1, math.floor(viewport.Y - panelTop - 12))
   civPanel.AnchorPoint = Vector2.new(0, 0)
   civPanel.Size = UDim2.fromOffset(panelWidth, panelHeight)
-  civPanel.Position = UDim2.fromOffset(panelLeft, math.max(106, math.floor((viewport.Y - panelHeight) * 0.5)))
+  civPanel.Position = UDim2.fromOffset(panelLeft, panelTop)
 end
 local civMenuViewportConnection
 local function bindCivMenuViewport()
