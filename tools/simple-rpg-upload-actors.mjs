@@ -51,8 +51,26 @@ const models = [
   ['kaykit-skeletons/Skeleton_Rogue.glb', 'SkeletonRogue'],
   ['kaykit-skeletons/Skeleton_Minion.glb', 'SkeletonMinion'],
 ];
-async function request(url, options) {
-  const result = await fetch(url, { ...options, headers: { 'x-api-key': key, ...(options?.headers ?? {}) } });
+const rawCookie = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
+const cookie = rawCookie.includes('.ROBLOSECURITY=') ? rawCookie : (rawCookie ? '.ROBLOSECURITY='+rawCookie+';' : '');
+let csrf = '';
+async function request(url, options = {}) {
+  const authenticated = Boolean(cookie) && url.startsWith('https://apis.roblox.com/');
+  if (authenticated && url.startsWith('https://apis.roblox.com/assets/v1/')) {
+    url = url.replace('/assets/v1/', '/assets/user-auth/v1/');
+  }
+  const headers = { ...(options.headers ?? {}) };
+  if (authenticated) {
+    headers.cookie = cookie;
+    if (csrf) headers['x-csrf-token'] = csrf;
+  } else {
+    headers['x-api-key'] = key;
+  }
+  let result = await fetch(url, { ...options, headers, signal:AbortSignal.timeout(60000) });
+  if (authenticated && result.status === 403 && result.headers.get('x-csrf-token')) {
+    csrf = result.headers.get('x-csrf-token');
+    result = await fetch(url, { ...options, headers:{...headers,'x-csrf-token':csrf}, signal:AbortSignal.timeout(60000) });
+  }
   const data = await result.json().catch(() => ({}));
   if (!result.ok) throw new Error('ROBLOX_ASSET_API_'+result.status+': '+JSON.stringify(data).slice(0,400));
   return data;
