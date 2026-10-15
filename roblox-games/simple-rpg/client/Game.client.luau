@@ -2127,14 +2127,23 @@ lobbyExplore.ZIndex = 33
 local function resizeLobby()
   local camera = workspace.CurrentCamera
   local viewport = camera and camera.ViewportSize or Vector2.new(390, 720)
-  local width = math.min(480, math.max(240, viewport.X - 24))
-  local height = math.min(360, math.max(220, viewport.Y - 24))
+  local width = math.max(1, math.min(480, viewport.X - 24))
+  local height = math.max(1, math.min(360, viewport.Y - 24))
   lobbyCard.Size = UDim2.fromOffset(width, height)
   local compact = height < 310
   lobbyHeading.TextSize = compact and 22 or 28
-  lobbySubtitle.Position = UDim2.fromOffset(14, compact and 51 or 65)
-  lobbyDescription.Position = UDim2.fromOffset(14, compact and 91 or 115)
-  lobbyDescription.Size = UDim2.new(1, -28, 0, compact and 43 or 54)
+  lobbyHeading.Position = UDim2.fromOffset(12, compact and 7 or 13)
+  lobbySubtitle.Position = UDim2.fromOffset(14, compact and 49 or 65)
+  lobbySubtitle.Size = UDim2.new(1, -28, 0, compact and 33 or 44)
+  lobbyDescription.Position = UDim2.fromOffset(14, compact and 81 or 115)
+  lobbyDescription.Size = UDim2.new(1, -28, 0, compact and 36 or 54)
+  -- 버튼은 카드 아래쪽을 기준으로 배치해 작은 화면에서도 겹치지 않게 한다.
+  local lowerButtonHeight = math.max(24, math.min(40, height * 0.14))
+  local upperButtonHeight = math.max(28, math.min(48, height * 0.17))
+  lobbyExplore.Size = UDim2.new(1, -36, 0, lowerButtonHeight)
+  lobbyExplore.Position = UDim2.new(0, 18, 1, -lowerButtonHeight - 12)
+  lobbyPlay.Size = UDim2.new(1, -36, 0, upperButtonHeight)
+  lobbyPlay.Position = UDim2.new(0, 18, 1, -lowerButtonHeight - upperButtonHeight - 21)
 end
 local lobbyViewportConnection
 local function bindLobbyViewport()
