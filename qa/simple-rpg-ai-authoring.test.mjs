@@ -142,3 +142,62 @@ test('tech replies and server inventory snapshots update the actual in-game UI',
   assert.equal(project.tree.ServerScriptService.GameServer.$path, 'server');
   assert.equal(project.tree.StarterPlayer.StarterPlayerScripts.GameClient.$path, 'client');
 });
+
+test('timed crafting uses actual persisted inventory, tech and server station validation', () => {
+  const recipes = read('shared/CraftingRecipeData.luau');
+  assert.ok(recipes.startsWith('--!strict'));
+  for (const token of ['RecipeID = 1', 'ItemName = "석기 도끼"', 'RequiredTechID = 1',
+    'CraftTime = 2', 'CivWood = 5', 'CivStone = 3', 'RecipeID = 2',
+    'ItemName = "청동 검"', 'RequiredTechID = 29', 'CraftTime = 5',
+    'CivCopperOre = 10', 'CivTinOre = 5']) assert.ok(recipes.includes(token), token);
+  assert.ok(config.includes('CivStoneAxe = 0'));
+  assert.ok(server.includes('ensureRemote("CraftRequestRemote", "RemoteEvent")'));
+  assert.ok(server.includes('craftRequestRemote.OnServerEvent:Connect(function(player, recipeID)'));
+  assert.ok(server.includes('CraftingRecipeData.GetRecipe(recipeID)'));
+  assert.ok(server.includes('not civNearStation(player, recipe.Station)'));
+  assert.ok(server.includes('readNumber(player, "CivTech", 0) < recipe.RequiredTechID'));
+  assert.ok(server.includes('task.delay(recipe.CraftTime, function()'));
+  assert.ok(server.includes('local paid, missing = civSpend(player, recipe.Ingredients)'));
+  assert.ok(server.includes('civIncrease(player, recipe.OutputField, recipe.OutputAmount)'));
+  assert.ok(server.includes('pendingTimedCraft[player] = nil'));
+  assert.ok(server.includes('race.ID == 24 and (best.Type == "Stone"'));
+  assert.ok(client.includes('CraftingRecipeData.RecipeIDs()'));
+  assert.ok(client.includes('craftRequestRemote:FireServer(recipeID)'));
+  assert.ok(client.includes('{"CivStoneAxe", "석기 도끼"}'));
+});
+
+test('24-race reserved multiverse teleport is gated by canonical research and save', () => {
+  assert.ok(server.includes('ensureRemote("PortalTeleportEvent", "RemoteEvent")'));
+  assert.ok(server.includes('portalTeleportEvent.OnServerEvent:Connect(function(player, destinationID)'));
+  assert.ok(server.includes('readNumber(player, "CivTech", 0) < 72'));
+  assert.ok(server.includes('destinationID % 1 ~= 0 or not RaceData.GetRace(destinationID)'));
+  assert.ok(server.includes('if game.PlaceId <= 0 then'));
+  assert.ok(server.includes('if not savePlayer or savePlayer(player) ~= true then'));
+  assert.ok(server.includes('options.ShouldReserveServer = true'));
+  assert.ok(server.includes('TeleportService:TeleportAsync(game.PlaceId, {player}, options)'));
+  assert.ok(server.includes('player:GetJoinData()'));
+  assert.ok(server.includes('readNumber(player, "CivTech", 0) >= 72'));
+  assert.ok(client.includes('portalTeleportEvent:FireServer(destination)'));
+  assert.ok(client.includes('civOpen("Portals")'));
+  assert.ok(client.includes('Enum.KeyCode.C then civOpen("Companions")'));
+  assert.ok(client.includes('Enum.KeyCode.E then remote:FireServer("CivGather")'));
+  assert.doesNotMatch(server, /TARGET_UNIVERSE_PLACE_ID|CivMultiverseKey_/);
+});
+
+test('one bounded octree and A-star FSM module uses the existing AI loop', () => {
+  const ai = read('server/AdvancedAIEcosystem.luau');
+  assert.ok(ai.startsWith('--!strict'));
+  assert.ok(ai.includes('PathfindingService:CreatePath('));
+  assert.ok(ai.includes('result:ComputeAsync(root.Position, target)'));
+  assert.ok(ai.includes('local UPDATE_INTERVAL = 0.5'));
+  assert.ok(ai.includes('local MAX_PATHS_IN_FLIGHT = 2'));
+  assert.ok(ai.includes('buildOctree('));
+  assert.ok(ai.includes('function AdvancedAIEcosystem.ClosestPlayer('));
+  assert.ok(server.includes('AdvancedAIEcosystem.RefreshPlayerIndex(now)'));
+  assert.ok(server.includes('AdvancedAIEcosystem.ChaseTarget(enemy, root.Position, now)'));
+  for (const state of ['Idle', 'Patrol', 'Combat', 'Flee'])
+    assert.ok(server.includes('AdvancedAIEcosystem.SetState(enemy, "' + state + '")'));
+  assert.ok(server.includes('CompanionAI.Tick(civEnemies, civNodes, civIncrease)'));
+  assert.ok(server.includes('grazer.Humanoid:TakeDamage(8)'));
+  assert.doesNotMatch(ai, /while true|OnServerEvent|SetAttribute\("Civ/);
+});
