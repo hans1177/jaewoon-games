@@ -897,6 +897,11 @@ local function civOpen(mode)
             if id == (player:GetAttribute("CivTech") or 0) + 1 then
               if researchRequestPending then return end
               researchRequestPending = true
+              local pendingNode = civList:FindFirstChild("Tech" .. id)
+              if pendingNode and pendingNode:IsA("TextButton") then
+                pendingNode.BackgroundColor3 = Color3.fromRGB(232, 163, 61)
+                pendingNode.TextColor3 = Color3.fromRGB(107, 74, 47)
+              end
               task.spawn(function()
                 local ok, success, message = pcall(function()
                   return unlockTechRequest:InvokeServer(id)
