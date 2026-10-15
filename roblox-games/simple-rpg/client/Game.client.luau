@@ -2134,6 +2134,7 @@ local lobbyDescription = civLabel(lobbyCard, "LobbyDescription",
 lobbyDescription.ZIndex = 32
 lobbyDescription.TextSize = 13
 local lobbyTravelPending = false
+local lobbyRequestedDestination = nil
 local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1, -36, 0, 48), UDim2.new(0, 18, 1, -115), function()
   if player:GetAttribute("CivSaveAvailable") ~= true then
     lobbyDescription.Visible = true
@@ -2149,6 +2150,7 @@ local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1
   end
   if lobbyTravelPending then return end
   lobbyTravelPending = true
+  lobbyRequestedDestination = player:GetAttribute("CivRaceID")
   local previousAck = player:GetAttribute("CivTravelAck") or 0
   lobbyDescription.Visible = true
   lobbyDescription.Text = "모험 지역으로 이동 중이야..."
@@ -2156,7 +2158,8 @@ local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1
   task.delay(4, function()
     if not lobbyTravelPending then return end
     lobbyTravelPending = false
-    if (player:GetAttribute("CivTravelAck") or 0) > previousAck then
+    if (player:GetAttribute("CivTravelAck") or 0) > previousAck
+      and player:GetAttribute("CivTravelDestination") == lobbyRequestedDestination then
       lobbyScreen.Visible = false
       civMenuRail.Visible = false
     else
@@ -2167,7 +2170,7 @@ local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1
 end)
 lobbyPlay.ZIndex = 33
 player:GetAttributeChangedSignal("CivTravelAck"):Connect(function()
-  if not lobbyTravelPending then return end
+  if not lobbyTravelPending or player:GetAttribute("CivTravelDestination") ~= lobbyRequestedDestination then return end
   lobbyTravelPending = false
   lobbyScreen.Visible = false
   civMenuRail.Visible = false
@@ -2219,6 +2222,7 @@ local function openLobby()
   civMenuRail.Visible = false
   lobbyScreen.Visible = true
   lobbyTravelPending = false
+  lobbyRequestedDestination = nil
   lobbyPlay.Text = "모험 시작"
   local saveState = player:GetAttribute("CivSaveAvailable")
   lobbyDescription.Text = saveState == false
