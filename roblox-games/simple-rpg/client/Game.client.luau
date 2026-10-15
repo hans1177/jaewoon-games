@@ -2132,6 +2132,7 @@ local lobbyDescription = civLabel(lobbyCard, "LobbyDescription",
   "로비 → 지역 이동 → 채집과 전투 → 연구와 건축", UDim2.new(1, -28, 0, 54), UDim2.fromOffset(14, 115), false)
 lobbyDescription.ZIndex = 32
 lobbyDescription.TextSize = 13
+local lobbyTravelPending = false
 local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1, -36, 0, 48), UDim2.new(0, 18, 1, -115), function()
   if player:GetAttribute("CivSaveAvailable") ~= true then
     lobbyDescription.Visible = true
@@ -2145,9 +2146,12 @@ local lobbyPlay = civButton(lobbyCard, "LobbyPlay", "모험 시작", UDim2.new(1
     lobbyDescription.Text = "게임 데이터를 준비 중이야. 잠시 후 다시 눌러줘."
     return
   end
+  if lobbyTravelPending then return end
+  lobbyTravelPending = true
   lobbyScreen.Visible = false
   civMenuRail.Visible = false
   remote:FireServer("CivTravel", player:GetAttribute("CivRaceID"))
+  task.delay(2, function() lobbyTravelPending = false end)
 end)
 lobbyPlay.ZIndex = 33
 local lobbyExplore = civButton(lobbyCard, "LobbyExplore", "로비 광장 둘러보기", UDim2.new(1, -36, 0, 40), UDim2.new(0, 18, 1, -59), function()
@@ -2196,6 +2200,7 @@ local function openLobby()
   housingPanel.Visible = false
   civMenuRail.Visible = false
   lobbyScreen.Visible = true
+  lobbyTravelPending = false
   lobbyPlay.Text = "모험 시작"
   local saveState = player:GetAttribute("CivSaveAvailable")
   lobbyDescription.Text = saveState == false
