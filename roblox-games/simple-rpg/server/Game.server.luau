@@ -699,6 +699,19 @@ task.spawn(function()
   while task.wait(0.25) do
     local now = os.clock()
     CompanionAI.Tick(civEnemies, civNodes, civIncrease)
+    -- Herbivores graze occasionally; this loop is shared with the existing monster AI.
+    for _, grazer in pairs(civWildlife) do
+      if grazer.Humanoid.Health <= 0 then
+        if now - grazer.LastPredated >= 20 then
+          grazer.Humanoid.Health = grazer.Humanoid.MaxHealth
+          grazer.Model:PivotTo(CFrame.new(grazer.Home))
+        end
+      elseif now - grazer.LastGraze >= 3.5 then
+        grazer.LastGraze = now
+        local angle = now * 0.19 + grazer.Home.X * 0.05
+        grazer.Model:PivotTo(CFrame.new(grazer.Home + Vector3.new(math.cos(angle) * 5, 0, math.sin(angle) * 5)))
+      end
+    end
     for _, enemy in ipairs(civEnemies) do
       if enemy.Humanoid.Health > 0 and now >= enemy.StunnedUntil then
         local target, dist = nil, 32
