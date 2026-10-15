@@ -1978,16 +1978,32 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         local realMoving = false
         local horizontalSpeed = 0
         local gaitPhase = oldRootMotion and oldRootMotion.phase or 0
+        local lastMovedAt = oldRootMotion and oldRootMotion.lastMovedAt or -100
+        local smoothedSpeed = oldRootMotion and oldRootMotion.speed or 0
         if oldRootMotion then
           local displacement = rootPosition - oldRootMotion.position
           local planar = Vector3.new(displacement.X, 0, displacement.Z).Magnitude
           local elapsed = math.max(0.01, creatureMotionPhase - oldRootMotion.at)
           horizontalSpeed = planar / elapsed
-          -- 걷는 거리만큼 다리 위상을 누적한다. 서버 재배치/순간이동으로는 보행하지 않는다.
-          realMoving = horizontalSpeed > 0.35 and horizontalSpeed < 65
-          if realMoving then gaitPhase += math.min(planar, 2) * 1.4 end
+          -- 루트가 네트워크에서 4Hz로 갱신되더라도 20Hz 보행이 멈추지 않게
+          -- 마지막 실제 이동 이후 짧은 시간 동안만 보행을 이어간다.
+          if horizontalSpeed > 0.35 and horizontalSpeed < 65 then
+            lastMovedAt = creatureMotionPhase
+            smoothedSpeed = smoothedSpeed * 0.45 + horizontalSpeed * 0.55
+          elseif horizontalSpeed >= 65 then
+            smoothedSpeed = 0
+            lastMovedAt = -100
+          end
+          realMoving = creatureMotionPhase - lastMovedAt < 0.32
+          if realMoving then
+            gaitPhase += math.min(smoothedSpeed, 12) * elapsed * 1.4
+          end
         end
-        creatureRootMotion[rootPart] = {position = rootPosition, at = creatureMotionPhase, phase = gaitPhase}
+        horizontalSpeed = smoothedSpeed
+        creatureRootMotion[rootPart] = {
+          position = rootPosition, at = creatureMotionPhase, phase = gaitPhase,
+          speed = smoothedSpeed, lastMovedAt = lastMovedAt
+        }
         -- 서버는 Patrol/Flee에서도 몬스터를 실제로 움직인다. AIState 문자열만으로
         -- 걷기를 제한하면 이동 중에도 발이 고정되므로 실제 변위만 사용한다.
         local moving = realMoving
