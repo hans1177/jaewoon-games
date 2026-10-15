@@ -184,3 +184,69 @@ end
 return CompanionPlayerAI
 ~~~
 
+#### 📄 [32] src/ServerScriptService/Systems/EcosystemMonsterAI.server.luau
+
+몬스터들이 서로 무리를 짓고, 초식 몬스터는 풀을 뜯으며, 포식자는 초식동물을 사냥하는 생태계 상호작용 AI 스크립트입니다.
+
+~~~luau
+--!strict
+local Workspace = game:GetService("Workspace")
+
+local EcosystemMonsterAI = {}
+
+function EcosystemMonsterAI.RunEcosystemLoop(predator: Model, preyList: {Model})
+	local pHum = predator:FindFirstChildOfClass("Humanoid")
+	local pRoot = predator:FindFirstChild("HumanoidRootPart") :: BasePart
+	if not pHum or not pRoot then return end
+	
+	task.spawn(function()
+		while pHum.Health > 0 do
+			task.wait(1.5)
+			
+			-- 주변 먹이(초식동물) 검색 및 습격
+			for _, prey in preyList do
+				if prey and prey:FindFirstChild("HumanoidRootPart") then
+					local preyRoot = prey.HumanoidRootPart :: BasePart
+					local dist = (preyRoot.Position - pRoot.Position).Magnitude
+					
+					if dist < 40 then
+						print("🥩 [생태계 연동] 포식자가 초식동물을 발견하고 추적합니다!")
+						pHum:MoveTo(preyRoot.Position)
+						break
+					end
+				end
+			end
+		end
+	end)
+end
+
+return EcosystemMonsterAI
+~~~
+
+#### 📄 [33] src/ServerScriptService/Systems/MultiverseTeleport.server.luau
+
+TeleportService를 활용해 허브 광장에서 다른 시대로 이동하거나 대규모 전쟁 플레이스(Place)로 이동하는 멀티버스 이동 서버 모듈입니다.
+
+~~~luau
+--!strict
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+
+local MultiverseTeleport = {}
+
+-- 특정 차원/시대 Place ID로 이동
+function MultiverseTeleport.TeleportToEra(player: Player, targetPlaceID: number)
+	print("[" .. player.Name .. "] 차원문 통과 중... PlaceID: " .. targetPlaceID)
+	
+	local success, err = pcall(function()
+		TeleportService:Teleport(targetPlaceID, player)
+	end)
+	
+	if not success then
+		warn("텔레포트 실패: " .. tostring(err))
+	end
+end
+
+return MultiverseTeleport
+~~~
+
