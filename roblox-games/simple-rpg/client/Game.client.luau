@@ -518,7 +518,8 @@ local civPanel = Instance.new("Frame")
 civPanel.Name = "CivilizationPanel"
 civPanel.AnchorPoint = Vector2.new(0.5, 0.5)
 civPanel.Position = UDim2.new(0.5, 0, 0.5, 58)
-civPanel.Size = UDim2.new(1, -28, 1, -176)
+civPanel.Size = UDim2.new(0.78, 0, 0.76, 0)
+civPanel.ClipsDescendants = true
 civPanel.BackgroundColor3 = Color3.fromRGB(107, 74, 47)
 civPanel.BackgroundTransparency = 0.04
 civPanel.ZIndex = 10
@@ -595,6 +596,12 @@ local function resizeCivMenuRail()
     math.floor(math.min(100, math.max(72, viewport.X * 0.17))),
     menuHeight
   )
+  -- Keep the central parchment window inside the screen and outside the left menu.
+  civPanel.Size = UDim2.fromOffset(
+    math.max(280, math.floor(math.min(viewport.X - civMenuRail.Size.X.Offset - 32, viewport.X * 0.75))),
+    math.max(180, math.floor(viewport.Y * 0.7))
+  )
+  civPanel.Position = UDim2.new(0.5, math.floor(civMenuRail.Size.X.Offset * 0.35), 0.5, 22)
 end
 local civMenuViewportConnection
 local function bindCivMenuViewport()
@@ -1267,21 +1274,7 @@ syncInventoryEvent.OnClientEvent:Connect(function(updatedInventory)
     civOpen("Inventory")
   end
 end)
--- Touch-only auto-combat toggle: the server owns actual damage and guard timing.
-local autoCombatToggle
- autoCombatToggle = civButton(civGui, "AutoCombatToggle", "자동 전투 ON",
-  UDim2.fromOffset(104, 45), UDim2.new(1, -112, 0, 94), function()
-    autoCombatEnabled = not autoCombatEnabled
-    autoCombatToggle.Text = autoCombatEnabled and "자동 전투 ON" or "자동 전투 OFF"
-    if player:GetAttribute("CivReady") == true then
-      autoCombatEvent:FireServer("SetEnabled", autoCombatEnabled)
-    end
-  end)
-autoCombatToggle.Visible = nativeTouchEnabled
--- Keep the touch toggle clear of the status board and right edge on narrow landscape screens.
-autoCombatToggle.Position = UDim2.new(1, -112, 0, 112)
-autoCombatToggle.Size = UDim2.fromOffset(100, 38)
-autoCombatToggle.TextSize = 13
+-- Mobile auto-combat keeps its existing server setting without a right-side HUD button.
 local function syncAutoCombatSetting()
   if player:GetAttribute("CivReady") == true then
     autoCombatEvent:FireServer("SetEnabled", autoCombatEnabled)
