@@ -1064,14 +1064,20 @@ local function civAttack(player, targetModel)
     return
   end
   local race = civRace(player)
-  local weapon = readNumber(player, "CivEquippedWeapon", 0)
+  local equipped = readNumber(player, "CivEquippedWeapon", 0)
+  -- Damage follows the weapon the player actually crafted and equipped,
+  -- not the target's minimum weapon requirement.
+  local weaponFields = {"CivStoneSpear", "CivBronzeSword", "CivIronGreatsword"}
+  local weapon = equipped % 1 == 0 and equipped >= 1 and equipped <= 3
+    and readNumber(player, weaponFields[equipped], 0) >= 1 and equipped or 0
   local requiredWeapon = chosen.Special == "WildBoar" and 1
     or chosen.Special == "BronzeGolem" and 2 or chosen.Special == "IronKnight" and 3 or 0
   if requiredWeapon > 0 and weapon < requiredWeapon then
-    civMessage(player, chosen.Model.Name .. " 사냥에는 해당 시대 무기를 장착해야 해.")
+    civMessage(player, chosen.Model.Name .. " 사냥에는 해당 시대 무기를 제작하고 장착해야 해.")
     return
   end
-  local damage = requiredWeapon == 2 and 17 or requiredWeapon == 3 and 23 or 12
+  local weaponDamage = {12, 17, 23}
+  local damage = weapon == 0 and 12 or weaponDamage[weapon]
   if race.PassiveType == "Victory" and (player:GetAttribute("CivVictoryUntil") or 0) > os.clock() then damage = math.floor(damage * 1.1 + 0.5) end
   chosen.Humanoid:TakeDamage(damage)
   remote:FireClient(player, "CIV_HIT", {Damage = damage, Enemy = chosen.Model.Name})
