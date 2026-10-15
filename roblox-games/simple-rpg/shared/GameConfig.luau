@@ -304,6 +304,8 @@ local Config = {
     CivRaceID = 0, CivEra = 1, CivTech = 0,
     CivWood = 25, CivStone = 25, CivBronze = 0, CivIron = 0,
     CivResearch = 24, CivFood = 0, CivSilver = 0,
+    -- Compatible trade goods and multicurrency: new saves default to zero.
+    CivGold = 0, CivMarble = 0, CivGoldOre = 0, CivSpice = 0,
     CivGather = 0, CivKills = 0, CivParries = 0, CivDodges = 0,
     -- Permanent, backward-compatible stone/bronze/iron chain item and eureka counters.
     CivCopperOre = 0, CivTinOre = 0, CivIronOre = 0, CivCoal = 0,
