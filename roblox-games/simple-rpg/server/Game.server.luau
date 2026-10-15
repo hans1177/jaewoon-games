@@ -1001,6 +1001,7 @@ local function civSpawnEnemy(raceID, center, special)
     or special == "IronKnight" and "암흑 철기 기사"
     or race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
   enemy:SetAttribute("CivilizationEnemy", true)
+  enemy:SetAttribute("EcosystemRole", "Predator")
   local isRaidBoss = special == "BronzeGolem" or special == "IronKnight"
   enemy:SetAttribute("IsRaidBoss", isRaidBoss)
   if isRaidBoss then enemy:SetAttribute("BossPhase", "Phase1") end
@@ -1034,6 +1035,7 @@ local function civSpawnGrazer(raceID, center)
   local animal = Instance.new("Model")
   animal.Name = "초식 야생동물"
   animal:SetAttribute("CivilizationWildlife", true)
+  animal:SetAttribute("EcosystemRole", "Prey")
   animal:SetAttribute("RaceID", raceID)
   local root = civPart(animal, "HumanoidRootPart", Vector3.new(2.4, 2, 3), CFrame.new(center + Vector3.new(9, 2.5, -6)), Color3.fromRGB(137, 128, 93), Enum.Material.SmoothPlastic, false)
   civPart(animal, "Head", Vector3.new(1.5, 1.4, 1.3), root.CFrame * CFrame.new(0, 0.7, -1.8), Color3.fromRGB(161, 147, 107), Enum.Material.SmoothPlastic, false)
@@ -1658,6 +1660,7 @@ for id = 1, 24 do
 end
 MultiverseEconomy.StartCaravans(civHub, civWorlds)
 -- 적 추적과 예고 공격: 클라이언트 타임스탬프를 절대 신뢰하지 않는다.
+local civNextPredation = 0
 task.spawn(function()
   while task.wait(0.25) do
     local now = os.clock()
@@ -1670,6 +1673,33 @@ task.spawn(function()
       weatherSyncEvent:FireAllClients(WeatherSystem.Snapshot())
     end
     -- Herbivores graze occasionally; this loop is shared with the existing monster AI.
+    -- 기존 0.25초 AI 틱 안에서 3초마다 포식자-초식동물 먹이사슬을 처리한다.
+    -- 서버 소유 모델만 검사하므로 임의 Workspace 모델이 자원을 조작할 수 없다.
+    if now >= (civNextPredation or 0) then
+      civNextPredation = now + 3
+      for _, predator in ipairs(civEnemies) do
+        if predator.Humanoid.Health > 0 and predator.Model.Parent == civHub then
+          local prey = civWildlife[predator.RaceID]
+          if prey and prey.Humanoid.Health > 0 and prey.Model.Parent == civHub then
+            local delta = prey.Root.Position - predator.Root.Position
+            local distance = delta.Magnitude
+            if distance <= 28 and distance > 0.1 then
+              local planar = Vector3.new(delta.X, 0, delta.Z)
+              if planar.Magnitude > 0.1 then
+                local nextPos = predator.Root.Position + planar.Unit * math.min(2.4, planar.Magnitude)
+                if (Vector3.new(nextPos.X - predator.Home.X, 0, nextPos.Z - predator.Home.Z)).Magnitude <= 16 then
+                  predator.Model:PivotTo(CFrame.new(nextPos))
+                end
+              end
+              if distance <= 5 then
+                prey.Humanoid:TakeDamage(6)
+                if prey.Humanoid.Health <= 0 then prey.LastPredated = now end
+              end
+            end
+          end
+        end
+      end
+    end
     for _, grazer in pairs(civWildlife) do
       if grazer.Humanoid.Health <= 0 then
         if now - grazer.LastPredated >= 20 then
