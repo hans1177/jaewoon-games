@@ -1716,7 +1716,7 @@ local function playerAttack(p,skill)
  local now=os.clock();local adv=tostring(p:GetAttribute("AdvancementId")or"");local damage=n(p,"AttackPower",10)*(skill and cd.SkillMult or 1)
  -- 자동 공격과 스킬은 기존 공격력/드랍 규칙 유지. 수동 기본 공격만 콤보를 연결한다.
  local combo=comboState[p]or{step=0,at=0}
- if not skill and p:GetAttribute("AutoCombat")==false then
+ if not skill and (n(p,"ManualAttackUntil",0)>=now or p:GetAttribute("AutoCombat")==false) then
   combo.step=(now-combo.at<=1.0)and(combo.step%3+1)or 1
   combo.at=now;p:SetAttribute("CombatCombo",combo.step)
  else
@@ -2076,7 +2076,7 @@ remote.OnServerEvent:Connect(function(p,a)
    accepted=true
   end
  elseif a==C.Actions.BLOCK_END then p:SetAttribute("Blocking",false);accepted=true
- elseif a==C.Actions.ATTACK then p:SetAttribute("Blocking",false);playerAttack(p,false);accepted=true
+ elseif a==C.Actions.ATTACK then p:SetAttribute("Blocking",false);p:SetAttribute("ManualAttackUntil",now+.1);playerAttack(p,false);accepted=true
  elseif a==C.Actions.SKILL then p:SetAttribute("Blocking",false);playerAttack(p,true);accepted=true
  elseif a==C.Actions.DODGE then
   p:SetAttribute("Blocking",false);local r=root(p);if r then
