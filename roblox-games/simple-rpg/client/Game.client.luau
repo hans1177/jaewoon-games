@@ -721,6 +721,8 @@ local function civOpen(mode)
     local previewInfo = civLabel(racePreview, "PreviewRaceInfo", "",
       UDim2.new(1, -16, 0, 82), UDim2.new(0, 8, 1, -89), true)
     previewInfo.TextSize = 13
+    previewInfo.TextWrapped = true
+    previewInfo.TextYAlignment = Enum.TextYAlignment.Top
     previewInfo.TextColor3 = Color3.fromRGB(232, 213, 168)
     local previewBorder = Instance.new("UIStroke")
     previewBorder.Name = "ParchmentPreviewBorder"
