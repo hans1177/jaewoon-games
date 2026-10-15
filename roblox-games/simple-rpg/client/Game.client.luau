@@ -659,7 +659,7 @@ local function civOpen(mode)
       slotCorner.CornerRadius = UDim.new(0, 5)
       slotCorner.Parent = label
       local slotBorder = Instance.new("UIStroke")
-      slotBorder.Color = Color3.fromRGB(107, 74, 47)
+      slotBorder.Color = amount > 0 and Color3.fromRGB(200, 154, 91) or Color3.fromRGB(107, 74, 47)
       slotBorder.Thickness = 1
       slotBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
       slotBorder.Parent = label
