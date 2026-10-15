@@ -470,6 +470,12 @@ local function civButton(parent, name, text, size, pos, callback)
   local corner = Instance.new("UICorner")
   corner.CornerRadius = UDim.new(0, 8)
   corner.Parent = button
+  local woodBorder = Instance.new("UIStroke")
+  woodBorder.Name = "OakBorder"
+  woodBorder.Color = Color3.fromRGB(107, 74, 47)
+  woodBorder.Thickness = 2
+  woodBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+  woodBorder.Parent = button
   button.Activated:Connect(callback)
   return button
 end
