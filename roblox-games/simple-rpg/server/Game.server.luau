@@ -14,8 +14,10 @@ local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
 local ProgressionData = require(Shared:WaitForChild("ProgressionData"))
 local CraftingRecipeData = require(Shared:WaitForChild("CraftingRecipeData"))
+local TradeMarketData = require(Shared:WaitForChild("TradeMarketData"))
 local CompanionAI = require(script.Parent:WaitForChild("CompanionAI"))
 local AdvancedAIEcosystem = require(script.Parent:WaitForChild("AdvancedAIEcosystem"))
+local MultiverseEconomy = require(script.Parent:WaitForChild("MultiverseEconomy"))
 
 local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)
 if remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end
@@ -53,6 +55,8 @@ local unlockTechRequest = ensureRemote("UnlockTechRequest", "RemoteFunction")
 local craftRequestRemote = ensureRemote("CraftRequestRemote", "RemoteEvent")
 local portalTeleportEvent = ensureRemote("PortalTeleportEvent", "RemoteEvent")
 local autoCombatEvent = ensureRemote("AutoCombatEvent", "RemoteEvent")
+local tradeRequestRemote = ensureRemote("TradeRequestRemote", "RemoteEvent")
+local marketUpdateEvent = ensureRemote("MarketUpdateEvent", "RemoteEvent")
 
 -- 시작 지면: 스폰 표시와 분리된 실제 고정 지면이다. 검수 통과를 대신하지 않는다.
 local STUDIO_ASSET_SELECTION = Config.StudioAssets.Families
@@ -364,6 +368,7 @@ local civWildlife = {}
 local civNodes = {}
 local civWorlds = {}
 local civStations = {}
+local civTradeStalls = {}
 local civBuildings = {}
 local pendingTimedCraft = {}
 -- Per-session opt-in from the touch HUD; server damage authority remains unchanged.
@@ -698,6 +703,93 @@ local function civGather(player, requestedType)
   civIncrease(player, "CivResearch", 1)
   civMessage(player, best.Label .. " +" .. amount .. " / 연구력 +1")
 end
+-- Server-session market prices and saved player currencies are always server-owned.
+local function civNearTradeStall(player)
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not root or not root:IsA("BasePart") or not humanoid or humanoid.Health <= 0 then return false end
+  for _, stall in pairs(civTradeStalls) do
+    if stall.Parent and (root.Position - stall.Position).Magnitude <= 16 then return true end
+  end
+  return false
+end
+
+local function civTrade(player, itemID, amount, isBuying, currency)
+  if player:GetAttribute("CivReady") ~= true or not civRace(player) then return end
+  if itemID == "Snapshot" then
+    if civNowReady(player, "MarketSnapshot", 0.2) then
+      marketUpdateEvent:FireClient(player, MultiverseEconomy.Snapshot())
+    end
+    return
+  end
+  if typeof(itemID) ~= "string" or #itemID > 24 or typeof(amount) ~= "number"
+    or amount % 1 ~= 0 or amount < 1 or amount > 20 or typeof(isBuying) ~= "boolean" then return end
+  if currency ~= "Silver" and currency ~= "Gold" then return end
+  if not civNearTradeStall(player) then
+    civMessage(player, "문명 무역소 16칸 이내에서만 거래할 수 있어.")
+    return
+  end
+  if not civNowReady(player, "Trade", 0.75) then return end
+  if itemID == "Currency" then
+    -- Spread prevents gain from immediate two-way currency conversion.
+    if isBuying then
+      local silverCost = amount * 11
+      if readNumber(player, "CivSilver", 0) < silverCost then
+        civMessage(player, "골드 환전용 은화가 부족해.")
+        return
+      end
+      civIncrease(player, "CivSilver", -silverCost)
+      civIncrease(player, "CivGold", amount)
+      civMessage(player, "골드 +" .. amount .. " / 은화 -" .. silverCost)
+    else
+      if readNumber(player, "CivGold", 0) < amount then
+        civMessage(player, "은화 환전용 골드가 부족해.")
+        return
+      end
+      civIncrease(player, "CivGold", -amount)
+      civIncrease(player, "CivSilver", amount * 9)
+      civMessage(player, "은화 +" .. amount * 9 .. " / 골드 -" .. amount)
+    end
+    return
+  end
+  local item = TradeMarketData.GetItem(itemID)
+  if not item then return end
+  local silverPrice = MultiverseEconomy.Quote(itemID, amount, isBuying)
+  if not silverPrice then return end
+  local price = if currency == "Gold"
+    then (if isBuying then math.ceil(silverPrice / 10) else math.floor(silverPrice / 10))
+    else silverPrice
+  if price < 1 then
+    civMessage(player, "해당 수량은 이 화폐로 판매할 수 없어.")
+    return
+  end
+  local moneyField = "Civ" .. currency
+  if isBuying then
+    if not MultiverseEconomy.HasSupply(itemID, amount) then
+      civMessage(player, "무역소 재고가 부족해. 카라반 도착을 기다려.")
+      return
+    end
+    if readNumber(player, moneyField, 0) < price then
+      civMessage(player, currency .. " 부족: " .. price .. " 필요")
+      return
+    end
+    civIncrease(player, moneyField, -price)
+    civIncrease(player, item.ItemField, amount)
+  else
+    if readNumber(player, item.ItemField, 0) < amount then
+      civMessage(player, item.Label .. " 보유 수량이 부족해.")
+      return
+    end
+    civIncrease(player, item.ItemField, -amount)
+    civIncrease(player, moneyField, price)
+  end
+  MultiverseEconomy.ApplyTrade(itemID, amount, isBuying)
+  civMessage(player, item.Label .. " " .. amount .. "개 " ..
+    (isBuying and "매입" or "판매") .. " / " .. currency .. " " .. price)
+  marketUpdateEvent:FireAllClients(MultiverseEconomy.Snapshot())
+end
+
 -- 모든 연구 요청(구형 액션 이벤트/신규 RemoteFunction)은 이 서버 판정 한 곳을 거친다.
 local function civResearch(player, requestedTechID)
   if player:GetAttribute("CivReady") ~= true then return false, "플레이어 데이터 로딩 중입니다." end
@@ -1004,6 +1096,24 @@ for id = 1, 24 do
     stations[item.Key] = station
   end
   civStations[id] = stations
+  local tradeStall = civPart(region, "문명 무역소", Vector3.new(5, 4, 4),
+    CFrame.new(center + Vector3.new(12, 3, 12)), Color3.fromRGB(132, 105, 75),
+    Enum.Material.WoodPlanks, true)
+  civSign(region, tradeStall, race.Name .. " 무역 광장", 4)
+  civTradeStalls[id] = tradeStall
+  local tradePrompt = Instance.new("ProximityPrompt")
+  tradePrompt.Name = "TradeMarket"
+  tradePrompt.ActionText = "시세 확인/거래"
+  tradePrompt.ObjectText = race.Name .. " 무역소"
+  tradePrompt.KeyboardKeyCode = Enum.KeyCode.M
+  tradePrompt.MaxActivationDistance = 12
+  tradePrompt.RequiresLineOfSight = false
+  tradePrompt.Parent = tradeStall
+  tradePrompt.Triggered:Connect(function(trader)
+    if not trader:IsA("Player") or trader:GetAttribute("CivReady") ~= true then return end
+    if not civRace(trader) or not civNearTradeStall(trader) then return end
+    marketUpdateEvent:FireClient(trader, MultiverseEconomy.Snapshot(), true)
+  end)
   local portal = civPart(civHub, "포털 " .. race.Name, Vector3.new(4, 0.3, 4),
     CFrame.new(math.cos(angle) * 24, 0.2, math.sin(angle) * 24), Color3.fromRGB(111, 191, 222), Enum.Material.Neon, false)
   civSign(civHub, portal, race.Name, 3)
@@ -1018,12 +1128,16 @@ for id = 1, 24 do
     civTravel(player, id)
   end)
 end
+MultiverseEconomy.StartCaravans(civHub, civWorlds)
 -- 적 추적과 예고 공격: 클라이언트 타임스탬프를 절대 신뢰하지 않는다.
 task.spawn(function()
   while task.wait(0.25) do
     local now = os.clock()
     CompanionAI.Tick(civEnemies, civNodes, civIncrease)
     AdvancedAIEcosystem.RefreshPlayerIndex(now)
+    if MultiverseEconomy.Tick(now) then
+      marketUpdateEvent:FireAllClients(MultiverseEconomy.Snapshot())
+    end
     -- Herbivores graze occasionally; this loop is shared with the existing monster AI.
     for _, grazer in pairs(civWildlife) do
       if grazer.Humanoid.Health <= 0 then
@@ -1238,6 +1352,9 @@ craftRequestRemote.OnServerEvent:Connect(function(player, recipeID)
 end)
 portalTeleportEvent.OnServerEvent:Connect(function(player, destinationID)
   civPortalTeleport(player, destinationID)
+end)
+tradeRequestRemote.OnServerEvent:Connect(function(player, itemID, amount, isBuying, currency)
+  civTrade(player, itemID, amount, isBuying, currency)
 end)
 autoCombatEvent.OnServerEvent:Connect(function(player, actionType, targetModel)
   if player:GetAttribute("CivReady") ~= true then return end
