@@ -1840,6 +1840,7 @@ local creatureMotionLimbBases = setmetatable({}, {__mode = "k"})
 local creatureMotionJointChecks = setmetatable({}, {__mode = "k"})
 local creatureTelegraphHighlights = setmetatable({}, {__mode = "k"})
 local creatureImportedRig = setmetatable({}, {__mode = "k"})
+local creatureRootMotion = setmetatable({}, {__mode = "k"})
 local creatureMotionLastSearchPosition = nil
 local creatureMotionLastSearchCharacter = nil
 local creatureMotionLastSearchRoot = nil
@@ -1940,9 +1941,20 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
       end
       if rootPart and rootPart:IsA("BasePart") and onScreen and (viewer.Position - rootPart.Position).Magnitude <= 85 then
         visible += 1
-        local moving = model:GetAttribute("MotionState") == "Walk"
+        -- 서버 AI가 Combat 상태라도 제자리 공격 중이면 걷지 않는다.
+        -- 서버가 실제로 이동시킨 루트 좌표를 기준으로 보행 상태를 판정한다.
+        local oldRootMotion = creatureRootMotion[rootPart]
+        local rootPosition = rootPart.Position
+        local realMoving = false
+        if oldRootMotion then
+          local displacement = rootPosition - oldRootMotion.position
+          local planar = Vector3.new(displacement.X, 0, displacement.Z).Magnitude
+          realMoving = planar > 0.025 and planar < 8
+        end
+        creatureRootMotion[rootPart] = {position = rootPosition}
+        local moving = realMoving and (model:GetAttribute("MotionState") == "Walk"
           or model:GetAttribute("AIState") == "Chase"
-          or model:GetAttribute("AIState") == "Combat"
+          or model:GetAttribute("AIState") == "Combat")
         -- Studio에서 가져온 MeshPart 모델을 적 루트 위치에 붙여 이동 중에도 따라오게 한다.
         -- 기본 모형·서버 히트박스는 건드리지 않고 표시 모델만 클라이언트에서 이동.
         local importedVisual = model:FindFirstChild("ImportedCreatureVisual")
