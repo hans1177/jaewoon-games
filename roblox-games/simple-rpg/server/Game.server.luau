@@ -789,9 +789,11 @@ local function civBuildHousing(player, request)
   if not civNowReady(player,"BuildHousing",0.7) then return end
   local paid,missing = civSpend(player,{CivWood=definition.Wood,CivStone=definition.Stone})
   if not paid then civMessage(player,"건축 자원 부족: "..missing) return end
+  local rotation = tonumber(request.Rotation) or 0
+  if rotation % 90 ~= 0 or rotation < 0 or rotation >= 360 then return end
   local placeAt = basePosition + Vector3.new(0,definition.Size.Y/2,0)
   local piece = civPart(ownerFolder,request.Key.."_"..tostring(civHousingCounts[player] or 0),
-    definition.Size,CFrame.new(placeAt),Color3.fromRGB(149,129,102),
+    definition.Size,CFrame.new(placeAt)*CFrame.Angles(0,math.rad(rotation),0),Color3.fromRGB(149,129,102),
     Enum.Material.WoodPlanks,true)
   if request.Key == "TriangleFoundation" then piece.Shape=Enum.PartType.Wedge end
   piece:SetAttribute("HousingPiece",true)
