@@ -11,6 +11,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
+local ProgressionData = require(Shared:WaitForChild("ProgressionData"))
 local CompanionAI = require(script.Parent:WaitForChild("CompanionAI"))
 
 local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)
@@ -330,6 +331,8 @@ local civEnemies = {}
 local civWildlife = {}
 local civNodes = {}
 local civWorlds = {}
+local civStations = {}
+local civBuildings = {}
 local civHub = Instance.new("Folder")
 civHub.Name = "CivilizationWorlds"
 civHub.Parent = workspace
@@ -388,6 +391,93 @@ local function civRace(player)
 end
 local function civIncrease(player, key, count)
   setNumber(player, key, math.max(0, readNumber(player, key, 0) + count))
+end
+-- Persistent building ownership is reconstructed from the existing saved numeric fields.
+local function civOwnerBuildings(player)
+  local owned = civBuildings[player]
+  if owned and owned.Parent then return owned end
+  owned = Instance.new("Folder")
+  owned.Name = "OwnerBuildings-" .. tostring(player.UserId)
+  owned.Parent = civHub
+  civBuildings[player] = owned
+  return owned
+end
+local function civVisualBuilding(player, key)
+  local definition = ProgressionData.GetStructure(key)
+  local center = civWorlds[readNumber(player, "CivRaceID", 0)]
+  if not definition or not center then return end
+  local folder = civOwnerBuildings(player)
+  if folder:FindFirstChild(key) then return end
+  local index = table.find(ProgressionData.StructureKeys(), key) or 1
+  local position = center + Vector3.new(-14 + (index - 1) * 6, 3.5, 15)
+  local part = civPart(folder, key, Vector3.new(5, 7, 3), CFrame.new(position), definition.ModelColor, Enum.Material.Slate, false)
+  part:SetAttribute("CivOwnerUserId", player.UserId)
+  civSign(folder, part, definition.Label, 6)
+end
+local function civRestoreBuildings(player)
+  for _, key in ipairs(ProgressionData.StructureKeys()) do
+    if readNumber(player, "Civ" .. key, 0) >= 1 then civVisualBuilding(player, key) end
+  end
+end
+local function civNearStation(player, stationType)
+  local raceId = readNumber(player, "CivRaceID", 0)
+  local station = civStations[raceId] and civStations[raceId][stationType]
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  local hum = character and character:FindFirstChildOfClass("Humanoid")
+  return station and root and hum and hum.Health > 0
+    and (root.Position - station.Position).Magnitude <= 15
+end
+local function civSpend(player, costs)
+  for key, cost in pairs(costs) do
+    if readNumber(player, key, 0) < cost then return false, key end
+  end
+  for key, cost in pairs(costs) do
+    setNumber(player, key, readNumber(player, key, 0) - cost)
+  end
+  return true, ""
+end
+local function civCraft(player, itemKey)
+  if typeof(itemKey) ~= "string" or #itemKey > 32 or not civRace(player) then return end
+  local recipe = ProgressionData.GetRecipe(itemKey)
+  if not recipe or readNumber(player, "CivTech", 0) < recipe.MinimumTech then return end
+  if not civNearStation(player, recipe.Station) or not civNowReady(player, "Craft", 0.8) then return end
+  local paid, missing = civSpend(player, recipe.Costs)
+  if not paid then civMessage(player, "제작 자원 부족: " .. missing); return end
+  civIncrease(player, recipe.YieldField, recipe.YieldCount)
+  if itemKey == "BronzeIngot" then civIncrease(player, "CivBronzeSmelts", recipe.YieldCount) end
+  civMessage(player, recipe.Label .. " 제작 완료")
+end
+local function civBuild(player, buildingKey)
+  if typeof(buildingKey) ~= "string" or #buildingKey > 32 then return end
+  local race = civRace(player)
+  local definition = ProgressionData.GetStructure(buildingKey)
+  if not race or not definition then return end
+  if definition.RequiredRace ~= 0 and definition.RequiredRace ~= race.ID then return end
+  if readNumber(player, "CivTech", 0) < definition.MinimumTech
+    or readNumber(player, definition.RequiredMetric, 0) < 1
+    or readNumber(player, "Civ" .. buildingKey, 0) >= 1 then return end
+  local center = civWorlds[race.ID]
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  if not center or not root or (root.Position - center).Magnitude > 28 then return end
+  -- Egyptian pyramid decreases only building-action cooldown by 20%.
+  local cooldown = race.ID == 2 and readNumber(player, "CivPyramid", 0) > 0 and 1.6 or 2
+  if not civNowReady(player, "Build", cooldown) then return end
+  local paid, missing = civSpend(player, definition.Costs)
+  if not paid then civMessage(player, "건축 자원 부족: " .. missing); return end
+  setNumber(player, "Civ" .. buildingKey, 1)
+  civVisualBuilding(player, buildingKey)
+  civMessage(player, definition.Label .. " 건축 완료")
+end
+local civWeaponIds = {StoneSpear=1, BronzeSword=2, IronGreatsword=3}
+local function civEquip(player, weaponKey)
+  if typeof(weaponKey) ~= "string" or #weaponKey > 32 or not civRace(player) then return end
+  local weapon = civWeaponIds[weaponKey]
+  if not weapon or readNumber(player, "Civ" .. weaponKey, 0) < 1 then return end
+  if not civNowReady(player, "Equip", 0.25) then return end
+  setNumber(player, "CivEquippedWeapon", weapon)
+  civMessage(player, weaponKey .. " 장착")
 end
 local function civTravel(player, raceID)
   local destination = civWorlds[raceID]
