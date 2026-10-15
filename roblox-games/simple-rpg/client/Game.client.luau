@@ -502,6 +502,12 @@ civPanel.Parent = civGui
 local panelCorner = Instance.new("UICorner")
 panelCorner.CornerRadius = UDim.new(0, 12)
 panelCorner.Parent = civPanel
+local panelBorder = Instance.new("UIStroke")
+panelBorder.Name = "CivilizationFrameBorder"
+panelBorder.Color = Color3.fromRGB(138, 90, 56)
+panelBorder.Thickness = 3
+panelBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+panelBorder.Parent = civPanel
 local panelTitle = civLabel(civPanel, "PanelTitle", "문명 선택",
   UDim2.new(1, -92, 0, 46), UDim2.fromOffset(10, 8), false)
 panelTitle.TextSize = 20
