@@ -702,7 +702,7 @@ civLayout.Parent = civList
 -- Never add UIListLayout to arbitrary Frames (inventory uses an independent UIGridLayout).
 local civMenuRail = Instance.new("ScrollingFrame")
 civMenuRail.Name = "CivilizationMenu"
-civMenuRail.Position = UDim2.fromOffset(10, 150)
+civMenuRail.Position = UDim2.fromOffset(10, nativeTouchEnabled and 204 or 150)
 civMenuRail.Size = UDim2.fromOffset(104, 250)
 civMenuRail.BackgroundTransparency = 1
 civMenuRail.BorderSizePixel = 0
@@ -731,7 +731,8 @@ local function resizeCivMenuRail()
   -- 작은 모바일 화면에서도 하단 전투 조작 영역을 침범하지 않도록 메뉴 높이를 제한한다.
   local reservedBottom = nativeTouchEnabled and math.min(244, math.floor(viewport.Y * 0.34))
     or math.min(164, math.floor(viewport.Y * 0.24))
-  local availableHeight = math.max(0, viewport.Y - 150 - reservedBottom)
+  local railTop = nativeTouchEnabled and 204 or 150
+  local availableHeight = math.max(0, viewport.Y - railTop - reservedBottom)
   -- 메뉴 높이가 바뀌어도 이전 스크롤 위치가 범위를 벗어나지 않도록 보정한다.
   local menuHeight = math.floor(math.min(440, availableHeight))
   local maxScroll = math.max(0, civMenuRail.AbsoluteCanvasSize.Y - menuHeight)
