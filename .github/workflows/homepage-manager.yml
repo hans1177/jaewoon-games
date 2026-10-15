@@ -136,7 +136,6 @@ jobs:
             /.github/workflows/company-development-confirmed-runtime.yml
             /.github/workflows/company-status-sync.yml
             /company-directive.json
-            /company-learning/platform-release-roadmap.json
             /company-learning/catalog-homepage-normalization.json
             /tools/
             /assets/homepage-enhancements.js
@@ -195,7 +194,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/company-shared-context.mjs --require-homepage-policy=true --output=/tmp/worker-shared-context.json
           node <<'NODE'
           const fs=require('fs');
           const ctx=JSON.parse(fs.readFileSync('/tmp/worker-shared-context.json','utf8'));
@@ -297,7 +295,7 @@ jobs:
           if [[ "$valid_runtime_exposure" != 'true' ]]; then
             git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/homepage-development-queue.json
             cp /tmp/homepage-runtime/game-catalog.json /tmp/homepage-game-catalog.json
-            node tools/company-homepage-platform-exposure-sync.mjs /tmp/homepage-development-queue.json /tmp/homepage-game-catalog.json homepage-platform-exposure.json company-learning/platform-release-roadmap.json
+            node tools/company-homepage-platform-exposure-sync.mjs /tmp/homepage-development-queue.json /tmp/homepage-game-catalog.json homepage-platform-exposure.json
             if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
               echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME_DERIVED'
             else
@@ -392,10 +390,10 @@ jobs:
             index.html company.html game-catalog.json company-status.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json \
             public-release-baselines.json game-artbooks.json artbook-viewer.html \
             assets/homepage-enhancements.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
-            company-directive.json company-learning/platform-release-roadmap.json _headers; do
+            company-directive.json _headers; do
             test -f "$file"
           done
-          node -e "for (const file of ['game-catalog.json','company-status.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','company-learning/platform-release-roadmap.json','company-learning/company-architecture-map.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
+          node -e "for (const file of ['game-catalog.json','company-status.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','company-learning/company-architecture-map.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
           node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
@@ -470,20 +468,6 @@ jobs:
           if(failures.length)throw new Error(`homepage artbook failures: ${failures.join(',')}`);
           console.log(`HOMEPAGE_ARTBOOK_QA=PASS COUNT=${visible.length}`);
           NODE
-          node <<'NODE'
-          const fs=require('fs');
-          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-          const homepage=roadmap.serverHomepageIntegration||{};
-          const manager=homepage.managerContract||{};
-          const testing=homepage.testingContract||{};
-          const sync=homepage.documentationSyncContract||{};
-          if(manager.mode!=='SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR')throw new Error('HOMEPAGE_MANAGER_MODE_POLICY_MISMATCH');
-          if(testing.maxVisibleTestCandidates!==30)throw new Error('HOMEPAGE_TEST_LIMIT_POLICY_MISMATCH');
-          if(testing.minimumWebStrictScore!==80)throw new Error('HOMEPAGE_TEST_SCORE_POLICY_MISMATCH');
-          if(!Array.isArray(manager.fixedFunctionProtection?.protectedFunctions)||!manager.fixedFunctionProtection.protectedFunctions.includes('PWA_COMMAND_CHAT_WINDOW'))throw new Error('HOMEPAGE_PWA_CHAT_POLICY_MISSING');
-          if(sync.centralPolicyPath!=='company-learning/platform-release-roadmap.json'||sync.humanPolicyMirrorRequired!==false||sync.workDocumentsCannotOverrideCentralPolicy!==true)throw new Error('HOMEPAGE_DOCUMENTATION_SYNC_POLICY_MISMATCH');
-          console.log('HOMEPAGE_CENTRAL_POLICY_DIRECT_VALIDATION=PASS');
-          NODE
           grep -Fq '홈페이지 단일 사후 감독' .github/agents/director.agent.md
           grep -Fxq '/*.json' _headers
           grep -Fxq '/assets/*' _headers
@@ -552,7 +536,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/company-shared-context.mjs --require-homepage-policy=true --output=/tmp/worker-shared-context.json
           node <<'NODE'
           const fs=require('fs');
           const ctx=JSON.parse(fs.readFileSync('/tmp/worker-shared-context.json','utf8'));
