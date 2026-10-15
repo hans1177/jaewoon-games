@@ -1766,6 +1766,7 @@ local creatureMotionPhase = 0
 local creatureMotionAccumulator = 0
 local creatureMotionSearchAt = 0
 local creatureMotionModels = {}
+local creatureMotionLimbNames = {"Left Arm", "Right Arm", "Left Leg", "Right Leg", "LeftLimb", "RightLimb"}
 local creatureMotionLastSearchPosition = nil
 local creatureMotionLastSearchCharacter = nil
 local creatureMotionQueryParams = OverlapParams.new()
@@ -1861,7 +1862,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         elseif preparing then
           swing = -0.48 + math.sin(creatureMotionPhase * 13) * 0.045
         end
-        for _, name in ipairs({"Left Arm", "Right Arm", "Left Leg", "Right Leg", "LeftLimb", "RightLimb"}) do
+        for _, name in ipairs(creatureMotionLimbNames) do
           local part = model:FindFirstChild(name)
           if part and part:IsA("BasePart") then
             local sign = (name == "Left Arm" or name == "Left Leg" or name == "LeftLimb") and 1 or -1
