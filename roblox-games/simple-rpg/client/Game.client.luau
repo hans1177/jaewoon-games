@@ -1806,12 +1806,12 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         -- 판정과 이동은 기존 서버 AI가 그대로 담당한다.
         local motionClock = creatureMotionPhase * (moving and 8 or 2.1)
         local swing = math.sin(motionClock) * amplitude
-        if preparing then
-          swing = -0.48 + math.sin(creatureMotionPhase * 13) * 0.045
+        if defeated then
+          swing = 0.9
         elseif stunned then
           swing = 0.18
-        elseif defeated then
-          swing = 0.9
+        elseif preparing then
+          swing = -0.48 + math.sin(creatureMotionPhase * 13) * 0.045
         end
         for _, name in ipairs({"Left Arm", "Right Arm", "Left Leg", "Right Leg", "LeftLimb", "RightLimb"}) do
           local part = model:FindFirstChild(name)
