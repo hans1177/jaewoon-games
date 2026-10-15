@@ -63,7 +63,7 @@ jobs:
           for(const [origin,target] of [['queue',row.robloxPublicationTarget],['registry',registered]]){
             if(target && Object.keys(target).length > 0){
               if(!safe(target) || String(target.universeId)!==exact.universeId || String(target.placeId)!==exact.placeId){
-                throw new Error('대충알피지_OWNER_PLACE_MISMATCH:+origin+':refusing Roblox publish');
+                throw new Error('대충알피지_OWNER_PLACE_MISMATCH:'+origin+':refusing Roblox publish');
               }
             }
           }
