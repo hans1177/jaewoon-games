@@ -1252,9 +1252,23 @@ local function civOpen(mode)
   end
 end
 -- 실제 서버 연구 결과와 본인 인벤토리 복제 이벤트만 UI에 반영한다.
-updateTechEvent.OnClientEvent:Connect(function(techID, era)
+updateTechEvent.OnClientEvent:Connect(function(techID, era, eurekaDiscountApplied)
   if typeof(techID) ~= "number" or not TechTreeData.GetTech(techID) then return end
   if typeof(era) ~= "number" or era < 1 or era > 5 then return end
+  if eurekaDiscountApplied == true then
+    local originalColor = civMessage.BackgroundColor3
+    civMessage.Text = "✦ 유레카! 연구 비용 할인 적용 ✦"
+    civMessage.BackgroundColor3 = Color3.fromRGB(180, 125, 42)
+    local glow = Instance.new("UIStroke")
+    glow.Name = "ResearchEurekaGlow"
+    glow.Color = Color3.fromRGB(255, 222, 122)
+    glow.Thickness = 3
+    glow.Parent = civMessage
+    task.delay(1.6, function()
+      if glow.Parent then glow:Destroy() end
+      if civMessage.Parent then civMessage.BackgroundColor3 = originalColor end
+    end)
+  end
   if civPanel.Visible and civPanelMode == "Techs" then
     civPanel.Visible = false
     civOpen("Techs")
