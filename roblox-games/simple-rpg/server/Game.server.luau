@@ -365,6 +365,7 @@ local civWorlds = {}
 local civStations = {}
 local civBuildings = {}
 local pendingTimedCraft = {}
+local savePlayer = nil -- forward declaration: portal save must complete before TeleportAsync
 local civHub = Instance.new("Folder")
 civHub.Name = "CivilizationWorlds"
 civHub.Parent = workspace
@@ -640,6 +641,11 @@ local function civPortalTeleport(player, destinationID)
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
   if not humanoid or humanoid.Health <= 0 then return end
   if not civNowReady(player, "MultiversePortal", 5) then return end
+  -- Reserve-server transfer reloads DataStore, so flush this player's current inventory/tech first.
+  if not savePlayer or savePlayer(player) ~= true then
+    civMessage(player, "저장에 실패해 차원 이동을 취소했어. 나중에 다시 시도해.")
+    return
+  end
   local options = Instance.new("TeleportOptions")
   options.ShouldReserveServer = true
   options:SetTeleportData({CivDestinationRaceID = destinationID, CivPortalGameId = "simple-rpg"})
@@ -1156,7 +1162,12 @@ Players.PlayerAdded:Connect(function(player)
     and typeof(portalData.CivDestinationRaceID) == "number"
     and portalData.CivDestinationRaceID % 1 == 0
     and RaceData.GetRace(portalData.CivDestinationRaceID) then
-    task.defer(civTravel, player, portalData.CivDestinationRaceID)
+    task.spawn(function()
+      if player.Parent ~= Players then return end
+      if not player.Character then player.CharacterAdded:Wait() end
+      task.wait(0.1)
+      if player.Parent == Players then civTravel(player, portalData.CivDestinationRaceID) end
+    end)
   end
   player.CharacterAdded:Connect(function()
     task.wait(0.1)
@@ -1226,8 +1237,8 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
   end
 end)
 -- 같은 기존 저장소/키 사용, 수치 필드를 병합해 기존 데이터와 신규 연구를 함께 저장한다.
-local function savePlayer(player)
-  if not store then return end
+savePlayer = function(player)
+  if not store then return false end
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do
     snapshot[key] = readNumber(player, key, fallback)
@@ -1240,6 +1251,7 @@ local function savePlayer(player)
     end)
   end)
   if not ok then warn("CIV_SAVE_FAILURE", player.UserId, tostring(err)) end
+  return ok
 end
 Players.PlayerRemoving:Connect(function(player)
   savePlayer(player)
