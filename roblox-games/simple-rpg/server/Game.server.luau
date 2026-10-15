@@ -797,13 +797,16 @@ local function civBuildHousing(player, request)
     definition.Size,CFrame.new(placeAt)*CFrame.Angles(0,math.rad(rotation),0),Color3.fromRGB(149,129,102),
     Enum.Material.WoodPlanks,true)
   if request.Key == "TriangleFoundation" then piece.Shape=Enum.PartType.Wedge end
+  local records = civHousingRecords[player] or {}
+  local nextId = 1
+  for _, existing in ipairs(records) do nextId = math.max(nextId, (existing.Id or 0) + 1) end
   piece:SetAttribute("HousingPiece",true)
+  piece:SetAttribute("HousingId",nextId)
   piece:SetAttribute("Stability",stability)
   piece:SetAttribute("CivOwnerUserId",player.UserId)
   civHousingCounts[player]=(civHousingCounts[player] or 0)+1
-  local records = civHousingRecords[player] or {}
   civHousingRecords[player] = records
-  table.insert(records,{Key=request.Key,X=snappedX,Z=snappedZ,Level=level,Rotation=rotation,Stability=stability})
+  table.insert(records,{Id=nextId,Key=request.Key,X=snappedX,Z=snappedZ,Level=level,Rotation=rotation,Stability=stability})
   civMessage(player,"건축 완료 / 안정성 "..tostring(stability).."%")
 end
 -- 서버가 저장한 부품만 재생성한다. DataStore의 배열 크기와 값은 복원 시 검증한다.
@@ -832,16 +835,44 @@ local function civRestoreHousing(player, saved)
           definition.Size,CFrame.new(location)*CFrame.Angles(0,math.rad(entry.Rotation),0),
           Color3.fromRGB(149,129,102),Enum.Material.WoodPlanks,true)
         if entry.Key == "TriangleFoundation" then piece.Shape = Enum.PartType.Wedge end
+        local pieceId = typeof(entry.Id) == "number" and entry.Id % 1 == 0
+          and entry.Id >= 1 and entry.Id <= 1000000 and entry.Id or (#records + 1)
         piece:SetAttribute("HousingPiece",true)
+        piece:SetAttribute("HousingId",pieceId)
         piece:SetAttribute("Stability",entry.Stability)
         piece:SetAttribute("CivOwnerUserId",player.UserId)
-        table.insert(records,{Key=entry.Key,X=entry.X,Z=entry.Z,Level=entry.Level,
+        table.insert(records,{Id=pieceId,Key=entry.Key,X=entry.X,Z=entry.Z,Level=entry.Level,
           Rotation=entry.Rotation,Stability=entry.Stability})
       end
     end
   end
   civHousingRecords[player] = records
   civHousingCounts[player] = #records
+end
+-- 소유자만 가까운 건축 부품을 철거할 수 있다. 성공 시 저장 목록에서도 즉시 제외.
+local function civRemoveHousing(player, piece)
+  if typeof(piece) ~= "Instance" or not piece:IsA("BasePart") then return end
+  local folder = civBuildings[player]
+  if not folder or not piece:IsDescendantOf(folder)
+    or piece:GetAttribute("HousingPiece") ~= true
+    or piece:GetAttribute("CivOwnerUserId") ~= player.UserId then return end
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not root or not humanoid or humanoid.Health <= 0
+    or (root.Position - piece.Position).Magnitude > 18 then return end
+  local id = piece:GetAttribute("HousingId")
+  local records = civHousingRecords[player]
+  if typeof(id) ~= "number" or not records then return end
+  local index = nil
+  for i, record in ipairs(records) do
+    if record.Id == id then index = i break end
+  end
+  if not index or not civNowReady(player,"RemoveHousing",0.5) then return end
+  table.remove(records,index)
+  civHousingCounts[player] = #records
+  piece:Destroy()
+  civMessage(player,"건축 부품을 철거했어.")
 end
 local civWeaponIds = {StoneSpear=1, BronzeSword=2, IronGreatsword=3}
 local function civEquip(player, weaponKey)
@@ -2242,7 +2273,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     CivSelect = civSelect, CivTravel = civTravel, CivAttack = civAttack,
     CivGuard = civGuard, CivDodge = civDodge, CivGather = civGather,
     CivResearch = civResearch, CivCompanion = civCompanion,
-    CivCraft = civCraft, CivBuild = civBuild, CivBuildHousing = civBuildHousing, CivEquip = civEquip,
+    CivCraft = civCraft, CivBuild = civBuild, CivBuildHousing = civBuildHousing, CivRemoveHousing = civRemoveHousing, CivEquip = civEquip,
     CivSkinTone = civSetSkinTone,
   }
   local action = handler or civActions[actionId]
@@ -2271,7 +2302,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
       character:PivotTo(CFrame.new(0, 5, 0))
     end
   elseif actionId == "CivSelect" or actionId == "CivCompanion" or actionId == "CivCraft"
-    or actionId == "CivBuild" or actionId == "CivBuildHousing" or actionId == "CivEquip" or actionId == "CivSkinTone" then
+    or actionId == "CivBuild" or actionId == "CivBuildHousing" or actionId == "CivRemoveHousing" or actionId == "CivEquip" or actionId == "CivSkinTone" then
     action(player, argument)
   else
     action(player)
