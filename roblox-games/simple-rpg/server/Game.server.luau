@@ -1773,6 +1773,17 @@ end
 local lobbyGround = civPart(civHub, "CivilizationLobbyGround", Vector3.new(64, 2, 64),
   CFrame.new(0, -1, 0), Color3.fromRGB(111, 132, 101), Enum.Material.Slate, true)
 lobbyGround:SetAttribute("WalkableGround", true)
+-- ambientCG CC0 외부 재질: 저장소에서 업로드 번호가 확인된 색상맵만 적용한다.
+-- 텍스처 전송이 막혀도 기존 Roblox Slate/Wood 재질로 지면과 상점은 유지된다.
+local lobbyStoneTexture = Instance.new("Texture")
+lobbyStoneTexture.Name = "LobbyCC0Stone"
+lobbyStoneTexture.Texture = "rbxassetid://128886287832599"
+lobbyStoneTexture.Face = Enum.NormalId.Top
+lobbyStoneTexture.StudsPerTileU = 10
+lobbyStoneTexture.StudsPerTileV = 10
+lobbyStoneTexture.Transparency = 0.24
+lobbyStoneTexture.Parent = lobbyGround
+
 -- Ancient low-poly meeting square: radial stone path, timber stalls and monument stones.
 local centralPath = civPart(civHub, "로비 석재 산책로", Vector3.new(9, 0.15, 58),
   CFrame.new(0, 0.08, 0), Color3.fromRGB(162, 145, 116), Enum.Material.Cobblestone, false)
@@ -1850,6 +1861,14 @@ for _, shop in ipairs(lobbyShops) do
     CFrame.new(shop.x, 0.38, shop.z), Color3.fromRGB(132, 95, 64), Enum.Material.WoodPlanks, false)
   floor.CanTouch = false
   floor.CanQuery = false
+  local woodTexture = Instance.new("Texture")
+  woodTexture.Name = "LobbyCC0Wood"
+  woodTexture.Texture = "rbxassetid://124882110895040"
+  woodTexture.Face = Enum.NormalId.Top
+  woodTexture.StudsPerTileU = 4
+  woodTexture.StudsPerTileV = 4
+  woodTexture.Transparency = 0.16
+  woodTexture.Parent = floor
   local roof = civPart(civHub, shop.name .. " 지붕", Vector3.new(11, 0.8, 9),
     CFrame.new(shop.x, 6, shop.z), shop.color, Enum.Material.Fabric, false)
   roof.CanTouch = false
