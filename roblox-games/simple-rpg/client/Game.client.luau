@@ -1655,6 +1655,30 @@ local function civActionMotion(actionId, button)
         end
       end)
     end
+    -- 짧은 로컬 방어/회피 피드백: 서버 이동·무적·피해 판정에는 영향이 없다.
+    if actionId == "CivDodge" or actionId == "CivGuard" then
+      local root = character:FindFirstChild("HumanoidRootPart")
+      if root and root:IsA("BasePart") then
+        local burst = Instance.new("ParticleEmitter")
+        burst.Name = "CivActionBurst"
+        burst.Enabled = false
+        burst.Rate = 0
+        burst.Lifetime = NumberRange.new(0.18, 0.32)
+        burst.Speed = NumberRange.new(2, 5)
+        burst.Drag = 7
+        burst.SpreadAngle = Vector2.new(65, 65)
+        burst.Size = NumberSequence.new(0.24, 0)
+        burst.Transparency = NumberSequence.new(0.2, 1)
+        burst.Color = ColorSequence.new(actionId == "CivGuard"
+          and Color3.fromRGB(135, 206, 255) or Color3.fromRGB(178, 171, 145))
+        burst.LightEmission = actionId == "CivGuard" and 0.7 or 0.15
+        burst.Parent = root
+        burst:Emit(actionId == "CivGuard" and 8 or 5)
+        task.delay(0.45, function()
+          burst:Destroy()
+        end)
+      end
+    end
     if waist and waist:IsA("Motor6D") then
       local startWaist = waist.C0
       local lean = actionId == "CivDodge" and 30 or actionId == "CivAttack" and (attackCombo == 3 and -28 or -22) or 12
