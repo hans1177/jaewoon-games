@@ -709,8 +709,34 @@ remote.OnClientEvent:Connect(function(kind, payload)
     civMessage.Text = "⚠ 공격 예고! 맞기 직전 패링(F) 또는 회피(Shift)!"
     civMessage.TextColor3 = Color3.fromRGB(255, 129, 97)
   elseif kind == "CIV_PARRY" then
-    civMessage.Text = "퍼펙트 패링! 적 2초 기절"
-    civMessage.TextColor3 = Color3.fromRGB(112, 252, 163)
+    civMessage.Text = "PERFECT PARRY! STUNNED · 적 2초 기절"
+    civMessage.TextColor3 = Color3.fromRGB(255, 228, 118)
+    local character = player.Character
+    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+    if rootPart and rootPart:IsA("BasePart") then
+      local spark = Instance.new("ParticleEmitter")
+      spark.Name = "PerfectParrySparks"
+      spark.Color = ColorSequence.new(Color3.fromRGB(255, 217, 93))
+      spark.LightEmission = 1
+      spark.Size = NumberSequence.new(0.45, 0)
+      spark.Lifetime = NumberRange.new(0.14, 0.27)
+      spark.Speed = NumberRange.new(7, 12)
+      spark.Rate = 0
+      spark.SpreadAngle = Vector2.new(140, 140)
+      spark.Parent = rootPart
+      spark:Emit(16)
+      game:GetService("Debris"):AddItem(spark, 0.6)
+    end
+    local camera = workspace.CurrentCamera
+    if camera and camera.CameraType ~= Enum.CameraType.Scriptable then
+      local formerType = camera.CameraType
+      local formerFrame = camera.CFrame
+      camera.CameraType = Enum.CameraType.Scriptable
+      camera.CFrame = formerFrame * CFrame.new(math.random(-3, 3) / 100, math.random(-3, 3) / 100, 0)
+      task.delay(0.05, function()
+        if workspace.CurrentCamera == camera then camera.CameraType = formerType end
+      end)
+    end
   elseif kind == "CIV_HIT" and typeof(payload) == "table" then
     civMessage.TextColor3 = Color3.fromRGB(250, 235, 191)
     civMessage.Text = tostring(payload.Enemy) .. "에게 " .. tostring(payload.Damage) .. " 피해!"
