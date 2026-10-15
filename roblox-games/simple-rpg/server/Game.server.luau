@@ -778,12 +778,17 @@ for id = 1, 24 do
     {Type = "Wood", Label = "목재", Color = Color3.fromRGB(91, 121, 79)},
     {Type = "Stone", Label = "석재", Color = Color3.fromRGB(109, 113, 116)},
     {Type = "Bronze", Label = "청동", Color = Color3.fromRGB(191, 124, 56)},
-    {Type = "Iron", Label = "철광", Color = Color3.fromRGB(82, 110, 132)},
+    {Type = "Iron", Label = "기존 철 자원", Color = Color3.fromRGB(82, 110, 132)},
+    {Type = "CopperOre", Label = "구리 광석", Color = Color3.fromRGB(184, 110, 60)},
+    {Type = "TinOre", Label = "주석 광석", Color = Color3.fromRGB(157, 163, 172)},
+    {Type = "IronOre", Label = "철광석", Color = Color3.fromRGB(101, 120, 128)},
+    {Type = "Coal", Label = "석탄", Color = Color3.fromRGB(65, 67, 70)},
   }
   for index, resource in ipairs(resources) do
-    local x = ((index - 1) % 2) * 11 - 6
-    local z = math.floor((index - 1) / 2) * 12 - 7
-    local node = civPart(region, resource.Label, Vector3.new(4, 5, 4), CFrame.new(center + Vector3.new(x + 5, 3.5, z + 5)), resource.Color, Enum.Material.Rock, true)
+    local px = index <= 4 and (((index - 1) % 2) * 11 - 1)
+      or ((index - 5) % 4) * 9 - 14
+    local pz = index <= 4 and (math.floor((index - 1) / 2) * 12 - 2) or -14
+    local node = civPart(region, resource.Label, Vector3.new(4, 5, 4), CFrame.new(center + Vector3.new(px, 3.5, pz)), resource.Color, Enum.Material.Rock, true)
     node.Shape = Enum.PartType.Ball
     civSign(region, node, resource.Label .. " 채집", 4)
     local gatherPrompt = Instance.new("ProximityPrompt")
@@ -799,12 +804,27 @@ for id = 1, 24 do
       local character = gatherer.Character
       local root = character and character:FindFirstChild("HumanoidRootPart")
       if not root or (root.Position - node.Position).Magnitude > 12 then return end
-      civGather(gatherer)
+      civGather(gatherer, resource.Type)
     end)
     table.insert(civNodes, {Part = node, Type = resource.Type, Label = resource.Label})
   end
   civSpawnEnemy(id, center)
   civSpawnGrazer(id, center)
+  if id == 15 then civSpawnEnemy(id, center, "WildBoar")
+  elseif id == 2 then civSpawnEnemy(id, center, "BronzeGolem")
+  elseif id == 1 then civSpawnEnemy(id, center, "IronKnight") end
+  local stations = {}
+  local stationTypes = {
+    {Key="Bench", Label="제작 작업대", Offset=Vector3.new(-11, 2, 12), Material=Enum.Material.Wood},
+    {Key="Furnace", Label="용광로", Offset=Vector3.new(-13, 2, 5), Material=Enum.Material.Brick},
+    {Key="BlastFurnace", Label="고로", Offset=Vector3.new(-7, 2, 5), Material=Enum.Material.Metal},
+  }
+  for _, item in ipairs(stationTypes) do
+    local station = civPart(region, item.Label, Vector3.new(3, 4, 3), CFrame.new(center + item.Offset), Color3.fromRGB(110, 99, 84), item.Material, true)
+    civSign(region, station, item.Label, 4)
+    stations[item.Key] = station
+  end
+  civStations[id] = stations
   local portal = civPart(civHub, "포털 " .. race.Name, Vector3.new(4, 0.3, 4),
     CFrame.new(math.cos(angle) * 24, 0.2, math.sin(angle) * 24), Color3.fromRGB(111, 191, 222), Enum.Material.Neon, false)
   civSign(civHub, portal, race.Name, 3)
