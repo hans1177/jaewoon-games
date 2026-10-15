@@ -43,7 +43,7 @@ test('existing combat, research, gather and save gates stay in charge', () => {
   ]) assert.ok(server.includes(str), str);
   assert.match(server, /gatherPrompt\.Triggered:Connect\(function\(gatherer\)/);
   assert.match(server, /landmarkPrompt\.Triggered:Connect\(function\(visitor\)/);
-  assert.match(server, /civGather\(gatherer\)/);
+  assert.match(server, /civGather\(gatherer,\s*resource\.Type\)/);
   assert.match(server, /\(root.Position - node.Position\)\.Magnitude > 12/);
 });
 
