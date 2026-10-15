@@ -1485,7 +1485,14 @@ for index, name in ipairs({
 end
 local actionTweenService = game:GetService("TweenService")
 local actionMotionToken = 0
+local attackCombo = 0
+local lastAttackMotionAt = 0
 local function civActionMotion(actionId, button)
+  local now = os.clock()
+  if actionId == "CivAttack" then
+    attackCombo = now - lastAttackMotionAt <= 0.9 and (attackCombo % 3 + 1) or 1
+    lastAttackMotionAt = now
+  end
   actionMotionToken += 1
   local token = actionMotionToken
   if button then
@@ -1512,12 +1519,12 @@ local function civActionMotion(actionId, button)
     local joint = shoulder and shoulder:IsA("Motor6D") and shoulder or nil
     if joint then
       local startC0 = joint.C0
-      local swing = actionId == "CivAttack" and CFrame.Angles(math.rad(-75), 0, math.rad(15))
+      local swing = actionId == "CivAttack" and CFrame.Angles(math.rad(attackCombo == 3 and -110 or -75), math.rad(attackCombo == 2 and -32 or 14), math.rad(attackCombo == 2 and -35 or 15))
         or actionId == "CivGuard" and CFrame.Angles(math.rad(-48), 0, math.rad(-30))
         or CFrame.Angles(math.rad(25), 0, math.rad(35))
       if actionId == "CivAttack" then
         -- 준비 자세를 짧게 거쳐 내려베기로 연결한다. 판정·피해량은 서버가 담당한다.
-        joint.C0 = startC0 * CFrame.Angles(math.rad(30), math.rad(-24), math.rad(15))
+        joint.C0 = startC0 * CFrame.Angles(math.rad(attackCombo == 3 and 46 or 30), math.rad(attackCombo == 2 and 28 or -24), math.rad(attackCombo == 2 and -15 or 15))
         actionTweenService:Create(joint, TweenInfo.new(0.13, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
           {C0 = startC0 * swing * CFrame.Angles(0, math.rad(40), 0)}):Play()
         local hand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
@@ -1533,7 +1540,12 @@ local function civActionMotion(actionId, button)
           trail.Attachment1 = high
           trail.Color = ColorSequence.new(Color3.fromRGB(255, 228, 165), Color3.fromRGB(231, 154, 62))
           trail.Transparency = NumberSequence.new(0.2, 1)
-          trail.Lifetime = 0.13
+          trail.Lifetime = attackCombo == 3 and 0.2 or 0.13
+          trail.WidthScale = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.2),
+            NumberSequenceKeypoint.new(0.3, attackCombo == 3 and 1.7 or 1.25),
+            NumberSequenceKeypoint.new(1, 0),
+          })
           trail.LightEmission = 0.7
           trail.Parent = hand
           task.delay(0.22, function()
@@ -1851,6 +1863,18 @@ remote.OnClientEvent:Connect(function(kind, payload)
   elseif kind == "CIV_HIT" and typeof(payload) == "table" then
     civMessage.TextColor3 = Color3.fromRGB(250, 235, 191)
     civMessage.Text = tostring(payload.Enemy) .. "에게 " .. tostring(payload.Damage) .. " 피해!"
+    local hitCamera = workspace.CurrentCamera
+    if hitCamera then
+      local originalFov = hitCamera.FieldOfView
+      actionTweenService:Create(hitCamera, TweenInfo.new(0.06, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {FieldOfView = math.clamp(originalFov - 1.5, 40, 100)}):Play()
+      task.delay(0.065, function()
+        if workspace.CurrentCamera == hitCamera then
+          actionTweenService:Create(hitCamera, TweenInfo.new(0.14, Enum.EasingStyle.Quad),
+            {FieldOfView = originalFov}):Play()
+        end
+      end)
+    end
   end
 end)
 UserInputService.InputBegan:Connect(function(input, consumed)
