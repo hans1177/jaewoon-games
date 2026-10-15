@@ -151,7 +151,7 @@
 
 ### 단일 실행 경로
 - 사용자 예시의 `ReplicatedStorage/Modules`, `ServerScriptService/Systems/TechTreeServer.server.luau`는 개념상의 폴더 구조다. 이 게임에는 **기존 단일 서버** `server/Game.server.luau`와 **기존 단일 클라이언트** `client/Game.client.luau`가 있으므로 별도 경쟁 서버/인벤토리 스크립트를 추가하지 않는다.
-- 서버는 시작할 때 `ReplicatedStorage/Remotes` 폴더와 원격 5개를 생성/검증한다. 기존 `Config.RemoteName` 일반 액션 이벤트와 `ReplicatedStorage/Shared`의 데이터 모듈을 계속 사용한다.
+- 서버는 시작할 때 `ReplicatedStorage/Remotes` 폴더와 최초 원격 5개 및 제작/포털/모바일 자동 전투/무역/시세 원격을 생성·검증한다. 기존 `Config.RemoteName` 일반 액션 이벤트와 `ReplicatedStorage/Shared`의 데이터 모듈을 계속 사용한다.
 - `shared/TechTreeData.luau`의 기술 스키마는 `TechID`, `Prerequisite`, `RequiredResources`, `Era`이다. `shared/TypeDefinitions.luau`(v2.1 계약 참조)를 근거로 스키마 또는 저장 필드를 강제 마이그레이션하지 않는다.
 
 | 원격 | 방향 | 단일 처리 책임 | 반영 |
@@ -196,7 +196,13 @@
 4. 모바일 스와이프/터치 동작은 화면 HUD와 월드 제스처가 충돌하지 않게 제한한다. 이동은 Roblox 기본 모바일 조이스틱을 활용한다.
 5. QA: 원격 이벤트 생성 주체(서버), 정상/잘못된 적 모델 거부, 공격속도 제한, 패링 타이밍, 초기 ON 및 OFF, 0.4초 요청 제한, 화면 버튼 충돌, 재접속·서버 저장 유지. 실물 모바일 및 Roblox 엔진 검증은 별도 필요.
 
-**개발 기록**: 이 절을 소스 수정 전에 먼저 기록했다. 다음 소스 커밋과 정적 테스트 결과는 실제 작업 후 갱신하며, 문서만으로 구현·실기동·게시 완료를 선언하지 않는다.
+### 모바일 자동 전투 실제 구현 기록
+- 이 절을 먼저 기록하고 `server/Game.server.luau`, `client/Game.client.luau` 및 `qa/simple-rpg-ai-authoring.test.mjs`를 직접 수정해 `main`에 반영했다.
+- `AutoCombatEvent`는 서버가 생성한다. 서버 소유 `CivilizationEnemy` 모델만 12스터드 이내에서 기존 `civAttack`을 호출할 수 있다. 별도의 고정 피해 15나 공격 쿨다운 우회는 없다.
+- 스마트 패링은 `enemy.TargetUserId`와 `TelegraphAt`의 실제 적 예고·자동 전투 ON·거리 조건을 재검증한 뒤 기존 `civGuard` 창과 쿨다운을 사용한다. 죽거나 기절한 적의 예고 속성은 해제한다.
+- 모바일 기본 ON과 OFF 토글, 0.4초 적 탐색, 스와이프 회피/두 번 터치 수동 패링, C/E/F 키 유지가 소스에 반영됐다.
+- 사용자 제공 원문의 '실시간 모션 프레임 분석'은 Roblox 애니메이션 프레임을 직접 판독하는 기계학습 시스템을 의미하지 않는다. 현재 게임에서 실제 공격 선딜레이 상태를 기반으로 하는 유효한 모션 예고를 구현했다.
+- 게임 엔진·실제 모바일·키 중복/반응성·패링 보상 회귀 검증은 아직 미확인이다. 자동 실행/게시 PASS라 표기하지 않는다.
 
 ---
 
@@ -212,3 +218,13 @@
 - **범위 명시**: 시장 상태는 현재 Roblox **서버 인스턴스 안에서 공유**한다. MemoryStore 등을 통한 서로 다른 Roblox 서버 사이의 전역 시세 합의는 현재 요구 코드와 세션 검증 범위 밖이다. 전 서버 공통 영구 시세라고 주장하지 않는다.
 - **기존 작업 포함**: 시간 제작/러시아 채집 패시브/옥트리 AI/72연구 예약 포털 및 모바일 자동 전투의 실제 책임 코드는 별도 서버를 만들지 않고 `Game.server.luau`의 기존 관리 흐름을 사용한다.
 - **검증/배포 규칙**: 정적 회귀 검사는 실제 Roblox 엔진 동작/다중 기기 QA/오너 직접 게시를 대체하지 않는다. `simple-rpg`에 승인된 Universe/Place와 인증된 직접 게시 접근 및 실제 버전 확인이 없으면 `NOT_PUBLISHED` 유지.
+
+### 무역 실제 구현 기록
+- `shared/TradeMarketData.luau`: 대리석·금 특산품·향신료 초기 가격/초기 재고/기본 수요 계수.
+- `server/MultiverseEconomy.luau`: 10초 간격 수요·공급 갱신, 수량 제한 20개, 판매 할인 10%, 3대 무역 카라반의 비동기 이동/납품, 보유 재고 호가.
+- `server/Game.server.luau`: `TradeRequestRemote`/ `MarketUpdateEvent` 소유, 24개 무역소 거리 검증, 구매/판매/환전 서버 정산, 상품/통화 숫자 속성 변경. 11은화→1골드, 1골드→9은화. 기존 저장 키에 변화 없다.
+- `client/Game.client.luau`: M키/모바일 무역 버튼, 1개·5개 매입, 1개 판매, 은화/골드 선택, 양방향 환전, 서버 시세/보유량 갱신. 무역소 프롬프트는 M키 충돌 회피를 위해 R키를 사용한다.
+- 이전 자료의 `GlobalMarket` 이름처럼 다른 Roblox 서버까지 공유하는 진정한 전역 시장은 아님. **같은 게임 서버의 24문명 공통 가격/재고**만 구현했다.
+- `qa/simple-rpg-ai-authoring.test.mjs`의 **18개 정적 회귀 테스트**를 현재 `main` 소스와 대조해 **18/18 확인**했다. 이는 실제 Node 러너 실행/ Luau 컴파일/ Roblox Studio 장치 QA와 동일하지 않다.
+- **실제 Roblox 오너 직접 게시: 미실행**. `company-runtime/roblox-dedicated-targets.json`에서 `simple-rpg` 전용 Place가 없고 이 대화의 인증된 직접 게시 수단도 없다. 기존 5포탈 RPG의 Place를 재사용하지 않는다.
+
