@@ -2172,14 +2172,26 @@ local function openLobby()
   civMenuRail.Visible = false
   lobbyScreen.Visible = true
   lobbyPlay.Text = "모험 시작"
-  lobbyDescription.Text = player:GetAttribute("CivSaveAvailable") == false
+  local saveState = player:GetAttribute("CivSaveAvailable")
+  lobbyDescription.Text = saveState == false
     and "저장 데이터를 불러오지 못했어. 재접속해서 다시 시도해."
-    or "로비 → 모험 → 채집과 전투 → 연구와 건축"
+    or (saveState ~= true and "저장 데이터를 확인 중이야. 잠시 후 다시 눌러줘."
+      or "로비 → 모험 → 채집과 전투 → 연구와 건축")
   resizeLobby()
 end
 local lobbyMenu = civButton(civMenuRail, "LobbyWelcomeMenu", "로비 안내",
   UDim2.new(1, -8, 0, 45), UDim2.new(), openLobby)
 lobbyMenu.LayoutOrder = 0
+player:GetAttributeChangedSignal("CivSaveAvailable"):Connect(function()
+  if not lobbyScreen.Visible then return end
+  local state = player:GetAttribute("CivSaveAvailable")
+  if state == false then
+    lobbyDescription.Text = "저장 데이터를 불러오지 못했어. 재접속해서 다시 시도해."
+  elseif state == true then
+    lobbyDescription.Text = "로비 → 모험 → 채집과 전투 → 연구와 건축"
+  end
+  resizeLobby()
+end)
 local lobbyShown = false
 player:GetAttributeChangedSignal("CivReady"):Connect(function()
   if player:GetAttribute("CivReady") == true and not lobbyShown
