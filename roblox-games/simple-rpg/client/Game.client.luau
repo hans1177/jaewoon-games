@@ -1767,6 +1767,7 @@ local creatureMotionAccumulator = 0
 local creatureMotionSearchAt = 0
 local creatureMotionModels = {}
 local creatureMotionLastSearchPosition = nil
+local creatureMotionLastSearchCharacter = nil
 local creatureMotionQueryParams = OverlapParams.new()
 creatureMotionQueryParams.FilterType = Enum.RaycastFilterType.Exclude
 creatureMotionRunService.RenderStepped:Connect(function(dt)
@@ -1778,9 +1779,11 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
   local viewer = character and character:FindFirstChild("HumanoidRootPart")
   if not viewer then return end
   local movedSinceSearch = creatureMotionLastSearchPosition and (viewer.Position - creatureMotionLastSearchPosition).Magnitude > 35
-  if creatureMotionPhase >= creatureMotionSearchAt or movedSinceSearch then
+  local characterChanged = creatureMotionLastSearchCharacter ~= character
+  if creatureMotionPhase >= creatureMotionSearchAt or movedSinceSearch or characterChanged then
     creatureMotionSearchAt = creatureMotionPhase + 2
     creatureMotionLastSearchPosition = viewer.Position
+    creatureMotionLastSearchCharacter = character
     table.clear(creatureMotionModels)
     -- 플레이어의 새 캐릭터는 제외하고, 대시/포털 이동 직후 즉시 주변 대상을 갱신한다.
     creatureMotionQueryParams.FilterDescendantsInstances = {character}
