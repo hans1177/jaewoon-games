@@ -1726,6 +1726,24 @@ game:GetService("RunService").RenderStepped:Connect(function()
   local allowed=raceId>0 and math.abs(x)<=32 and math.abs(z)<=32
     and root~=nil and (root.Position-placementBase).Magnitude<=23
     and (base or validParent)
+  if allowed then
+    local params=OverlapParams.new()
+    params.FilterType=Enum.RaycastFilterType.Exclude
+    params.FilterDescendantsInstances=character and {character,housingPreview} or {housingPreview}
+    local hits=workspace:GetPartBoundsInBox(housingPreview.CFrame,
+      size-Vector3.new(0.12,0.12,0.12),params)
+    for _,hit in ipairs(hits) do
+      if hit:IsA("BasePart") and hit.CanCollide then
+        local isOwnSupport=hit==parentPart and not base
+        local isGround=hit:GetAttribute("WalkableGround")==true
+        local isContinent=hit.Name=="문명 대륙"
+        if not isOwnSupport and not isGround and not isContinent then
+          allowed=false
+          break
+        end
+      end
+    end
+  end
   housingPreview.Color=allowed and Color3.fromRGB(90,220,140) or Color3.fromRGB(235,90,90)
   housingPreview.Transparency=0.57
 end)
