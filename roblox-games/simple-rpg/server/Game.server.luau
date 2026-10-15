@@ -802,8 +802,21 @@ local function civGather(player, requestedType)
     civMessage(player, "자원이 재생 중이야. 잠시 후 다시 채집해.")
     return
   end
+  -- Depleted nodes visibly dim, then regrow on the authoritative server timer.
   best.ReadyAt = now + 8
   best.Part:SetAttribute("ResourceReadyAt", best.ReadyAt)
+  local nodePart = best.Part
+  local originalColor = best.OriginalColor or nodePart.Color
+  best.OriginalColor = originalColor
+  nodePart.Color = originalColor:Lerp(Color3.fromRGB(63, 66, 66), 0.65)
+  nodePart.Transparency = 0.35
+  local regenerationAt = best.ReadyAt
+  task.delay(8, function()
+    if not nodePart.Parent or best.ReadyAt ~= regenerationAt then return end
+    nodePart.Color = originalColor
+    nodePart.Transparency = 0
+    nodePart:SetAttribute("ResourceReadyAt", 0)
+  end)
   local race = civRace(player)
   local bonus = (race.PassiveType == "OceanGather" and best.Type == "Wood") and 1.30
     or (race.PassiveType == "Harvest" and best.Type == "Food") and 1.25
