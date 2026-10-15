@@ -1837,6 +1837,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
   end
   local visible = 0
   local camera = workspace.CurrentCamera
+  local viewportSize = camera and camera.ViewportSize
   for _, model in ipairs(creatureMotionModels) do
     if visible >= 30 then break end
     if model.Parent and
@@ -1846,7 +1847,6 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
       local onScreen = false
       if camera and rootPart and rootPart:IsA("BasePart") then
         local viewportPoint = camera:WorldToViewportPoint(rootPart.Position)
-        local viewportSize = camera.ViewportSize
         -- 화면 가장자리 48px 여유로 몬스터 팔다리 모션이 갑자기 켜지고 꺼지는 현상을 줄인다.
         onScreen = viewportPoint.Z > 0
           and viewportPoint.X >= -48 and viewportPoint.X <= viewportSize.X + 48
