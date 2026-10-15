@@ -8,6 +8,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
+local ProgressionData = require(Shared:WaitForChild("ProgressionData"))
 local CommonUI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
@@ -532,6 +533,91 @@ local function civOpen(mode)
       button.TextSize = 14
       if selected == id then button.BackgroundColor3 = Color3.fromRGB(119, 94, 41) end
     end
+  elseif mode == "Inventory" then
+    panelTitle.Text = "인벤토리 4×8 · 자원/장비 현황"
+    local weaponNames = {"맨손", "돌창", "청동검", "철제 대검"}
+    local equipId = math.clamp(player:GetAttribute("CivEquippedWeapon") or 0, 0, 3)
+    local statusLine = civLabel(civList, "InventoryEquipped",
+      "장착 무기: " .. weaponNames[equipId + 1] .. " | 제작 메뉴에서 변경 가능",
+      UDim2.new(1, -9, 0, 43), UDim2.new(), false)
+    statusLine.LayoutOrder = 0
+    local container = Instance.new("Frame")
+    container.Name = "Inventory32Slots"
+    container.Size = UDim2.new(1, -9, 0, 464)
+    container.BackgroundTransparency = 1
+    container.LayoutOrder = 1
+    container.Parent = civList
+    local grid = Instance.new("UIGridLayout")
+    grid.Name = "FourColumnsEightRows"
+    grid.FillDirectionMaxCells = 4
+    grid.CellSize = UDim2.new(0.25, -6, 0, 51)
+    grid.CellPadding = UDim2.fromOffset(5, 7)
+    grid.SortOrder = Enum.SortOrder.LayoutOrder
+    grid.Parent = container
+    local fields = {
+      {"CivWood", "목재"}, {"CivStone", "석재"}, {"CivBronze", "청동"}, {"CivIron", "철"},
+      {"CivCopperOre", "구리"}, {"CivTinOre", "주석"}, {"CivIronOre", "철광석"}, {"CivCoal", "석탄"},
+      {"CivBronzeIngot", "청동 주괴"}, {"CivIronIngot", "철 주괴"}, {"CivHide", "가죽"}, {"CivCoreCrystal", "코어"},
+      {"CivDarkIron", "다크 아이언"}, {"CivStoneSpear", "돌창"}, {"CivBronzeSword", "청동검"}, {"CivIronGreatsword", "대검"},
+      {"CivFood", "식량"}, {"CivSilver", "은화"}, {"CivResearch", "연구력"},
+      {"CivStoneWall", "성벽"}, {"CivDangunAltar", "단군 제단"}, {"CivPyramid", "피라미드"},
+      {"CivColosseum", "콜로세움"}, {"CivDrakkarShipyard", "드라카르 조선소"},
+    }
+    for slot = 1, 32 do
+      local item = fields[slot]
+      local amount = item and (player:GetAttribute(item[1]) or 0) or 0
+      local label = civLabel(container, "Slot" .. slot,
+        item and (item[2] .. "\\n×" .. tostring(amount)) or "빈 칸",
+        UDim2.fromScale(1, 1), UDim2.new(), true)
+      label.LayoutOrder = slot
+      label.TextSize = 12
+    end
+  elseif mode == "Crafts" or mode == "Buildings" then
+    panelTitle.Text = mode == "Crafts" and "제작·제련 | 석기→청동→철기" or "영지 건축·문명 랜드마크"
+    local keys = mode == "Crafts" and ProgressionData.RecipeKeys() or ProgressionData.StructureKeys()
+    local selectedRace = player:GetAttribute("CivRaceID") or 0
+    local techCount = player:GetAttribute("CivTech") or 0
+    for index, key in ipairs(keys) do
+      local row = mode == "Crafts" and ProgressionData.GetRecipe(key) or ProgressionData.GetStructure(key)
+      if row then
+        local resources = {}
+        local missing = false
+        for resource, count in pairs(row.Costs) do
+          table.insert(resources, resource:gsub("^Civ", "") .. " " .. count)
+          if (player:GetAttribute(resource) or 0) < count then missing = true end
+        end
+        table.sort(resources)
+        local requiresMilestone = row.RequiredMetric ~= nil and (player:GetAttribute(row.RequiredMetric) or 0) < 1
+        local locked = techCount < row.MinimumTech or requiresMilestone
+          or (row.RequiredRace ~= nil and row.RequiredRace ~= 0 and row.RequiredRace ~= selectedRace)
+        local owned = mode == "Buildings" and (player:GetAttribute("Civ" .. key) or 0) >= 1
+        local label = string.format("%s%s | %s\\n%s | 연구 %d 필요%s",
+          row.Label, owned and " [건설 완료]" or "", row.Station or "영지",
+          table.concat(resources, " / "), row.MinimumTech,
+          locked and " [잠김]" or missing and " [자원 부족]" or "")
+        local button = civButton(civList, "Production" .. key, label,
+          UDim2.new(1, -9, 0, 82), UDim2.new(), function()
+            if mode == "Crafts" then remote:FireServer("CivCraft", key)
+            else remote:FireServer("CivBuild", key) end
+          end)
+        button.LayoutOrder = index
+        button.TextSize = 13
+        if locked or missing or owned then button.BackgroundColor3 = Color3.fromRGB(85, 86, 84) end
+      end
+    end
+    if mode == "Crafts" then
+      for index, key in ipairs({"StoneSpear", "BronzeSword", "IronGreatsword"}) do
+        local owned = player:GetAttribute("Civ" .. key) or 0
+        if owned > 0 then
+          local btn = civButton(civList, "Equip" .. key, "장착하기: " .. key,
+            UDim2.new(1, -9, 0, 50), UDim2.new(), function()
+              remote:FireServer("CivEquip", key)
+            end)
+          btn.LayoutOrder = 10 + index
+          btn.TextSize = 14
+        end
+      end
+    end
   elseif mode == "Companions" then
     panelTitle.Text = "AI 부족원 · 행동 명령"
     local current = player:GetAttribute("CivCompanionMode") or "Dismissed"
@@ -618,6 +704,12 @@ local function civOpen(mode)
     end
   end
 end
+civButton(civGui, "InventoryMenu", "가방",
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 252), function() civOpen("Inventory") end)
+civButton(civGui, "CraftMenu", "제작",
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(92, 200), function() civOpen("Crafts") end)
+civButton(civGui, "BuildingMenu", "건축",
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(174, 200), function() civOpen("Buildings") end)
 civButton(civGui, "CompanionMenu", "AI 동료",
   UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 200), function() civOpen("Companions") end)
 local civRaceButton = civButton(civGui, "RaceMenu", "문명",
@@ -647,6 +739,11 @@ local civWatched = {
   "CivRaceID", "CivEra", "CivTech", "CivWood", "CivStone",
   "CivBronze", "CivIron", "CivResearch", "CivKills", "CivParries",
   "CivDodges", "CivGather",
+  "CivCopperOre", "CivTinOre", "CivIronOre", "CivCoal",
+  "CivHide", "CivCoreCrystal", "CivDarkIron", "CivBronzeIngot", "CivIronIngot",
+  "CivStoneSpear", "CivBronzeSword", "CivIronGreatsword", "CivEquippedWeapon",
+  "CivBoarKills", "CivBronzeSmelts", "CivIronKnightKills",
+  "CivStoneWall", "CivDangunAltar", "CivPyramid", "CivColosseum", "CivDrakkarShipyard",
 }
 local function civRender()
   local id = player:GetAttribute("CivRaceID") or 0
@@ -663,7 +760,11 @@ end
 for _, name in ipairs(civWatched) do
   player:GetAttributeChangedSignal(name):Connect(function()
     civRender()
-    if civPanel.Visible and civPanelMode == "Techs" then civPanel.Visible = false; civOpen("Techs") end
+    if civPanel.Visible and (civPanelMode == "Techs" or civPanelMode == "Crafts" or civPanelMode == "Buildings" or civPanelMode == "Inventory") then
+      local currentMode = civPanelMode
+      civPanel.Visible = false
+      civOpen(currentMode)
+    end
   end)
 end
 civRender()
@@ -675,8 +776,34 @@ remote.OnClientEvent:Connect(function(kind, payload)
     civMessage.Text = "⚠ 공격 예고! 맞기 직전 패링(F) 또는 회피(Shift)!"
     civMessage.TextColor3 = Color3.fromRGB(255, 129, 97)
   elseif kind == "CIV_PARRY" then
-    civMessage.Text = "퍼펙트 패링! 적 2초 기절"
-    civMessage.TextColor3 = Color3.fromRGB(112, 252, 163)
+    civMessage.Text = "PERFECT PARRY! STUNNED · 적 2초 기절"
+    civMessage.TextColor3 = Color3.fromRGB(255, 228, 118)
+    local character = player.Character
+    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+    if rootPart and rootPart:IsA("BasePart") then
+      local spark = Instance.new("ParticleEmitter")
+      spark.Name = "PerfectParrySparks"
+      spark.Color = ColorSequence.new(Color3.fromRGB(255, 217, 93))
+      spark.LightEmission = 1
+      spark.Size = NumberSequence.new(0.45, 0)
+      spark.Lifetime = NumberRange.new(0.14, 0.27)
+      spark.Speed = NumberRange.new(7, 12)
+      spark.Rate = 0
+      spark.SpreadAngle = Vector2.new(140, 140)
+      spark.Parent = rootPart
+      spark:Emit(16)
+      game:GetService("Debris"):AddItem(spark, 0.6)
+    end
+    local camera = workspace.CurrentCamera
+    if camera and camera.CameraType ~= Enum.CameraType.Scriptable then
+      local formerType = camera.CameraType
+      local formerFrame = camera.CFrame
+      camera.CameraType = Enum.CameraType.Scriptable
+      camera.CFrame = formerFrame * CFrame.new(math.random(-3, 3) / 100, math.random(-3, 3) / 100, 0)
+      task.delay(0.05, function()
+        if workspace.CurrentCamera == camera then camera.CameraType = formerType end
+      end)
+    end
   elseif kind == "CIV_HIT" and typeof(payload) == "table" then
     civMessage.TextColor3 = Color3.fromRGB(250, 235, 191)
     civMessage.Text = tostring(payload.Enemy) .. "에게 " .. tostring(payload.Damage) .. " 피해!"
@@ -689,6 +816,9 @@ UserInputService.InputBegan:Connect(function(input, consumed)
   elseif input.KeyCode == Enum.KeyCode.E then remote:FireServer("CivGather")
   elseif input.KeyCode == Enum.KeyCode.T then civOpen("Techs")
   elseif input.KeyCode == Enum.KeyCode.C then civOpen("Companions")
+  elseif input.KeyCode == Enum.KeyCode.V then civOpen("Crafts")
+  elseif input.KeyCode == Enum.KeyCode.B then civOpen("Buildings")
+  elseif input.KeyCode == Enum.KeyCode.I then civOpen("Inventory")
   elseif input.UserInputType == Enum.UserInputType.MouseButton1 and not civPanel.Visible then
     remote:FireServer("CivAttack")
   end

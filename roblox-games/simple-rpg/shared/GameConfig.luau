@@ -305,6 +305,15 @@ local Config = {
     CivWood = 25, CivStone = 25, CivBronze = 0, CivIron = 0,
     CivResearch = 24, CivFood = 0, CivSilver = 0,
     CivGather = 0, CivKills = 0, CivParries = 0, CivDodges = 0,
+    -- Permanent, backward-compatible stone/bronze/iron chain item and eureka counters.
+    CivCopperOre = 0, CivTinOre = 0, CivIronOre = 0, CivCoal = 0,
+    CivHide = 0, CivCoreCrystal = 0, CivDarkIron = 0,
+    CivBronzeIngot = 0, CivIronIngot = 0,
+    CivStoneSpear = 0, CivBronzeSword = 0, CivIronGreatsword = 0,
+    CivEquippedWeapon = 0,
+    CivBoarKills = 0, CivBronzeSmelts = 0, CivIronKnightKills = 0,
+    CivStoneWall = 0, CivDangunAltar = 0, CivPyramid = 0,
+    CivColosseum = 0, CivDrakkarShipyard = 0,
   },
   Actions = {
     { Id = "genre-core", Label = "Strategy / Board & Card Games core gameplay", Kind = "OBJECTIVE", Order = 1, LearningPattern = "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view." },

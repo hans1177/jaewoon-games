@@ -11,6 +11,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
+local ProgressionData = require(Shared:WaitForChild("ProgressionData"))
 local CompanionAI = require(script.Parent:WaitForChild("CompanionAI"))
 
 local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)
@@ -330,6 +331,8 @@ local civEnemies = {}
 local civWildlife = {}
 local civNodes = {}
 local civWorlds = {}
+local civStations = {}
+local civBuildings = {}
 local civHub = Instance.new("Folder")
 civHub.Name = "CivilizationWorlds"
 civHub.Parent = workspace
@@ -389,6 +392,137 @@ end
 local function civIncrease(player, key, count)
   setNumber(player, key, math.max(0, readNumber(player, key, 0) + count))
 end
+-- Persistent building ownership is reconstructed from the existing saved numeric fields.
+local function civOwnerBuildings(player)
+  local owned = civBuildings[player]
+  if owned and owned.Parent then return owned end
+  owned = Instance.new("Folder")
+  owned.Name = "OwnerBuildings-" .. tostring(player.UserId)
+  owned.Parent = civHub
+  civBuildings[player] = owned
+  return owned
+end
+local function civVisualBuilding(player, key)
+  local definition = ProgressionData.GetStructure(key)
+  local center = civWorlds[readNumber(player, "CivRaceID", 0)]
+  if not definition or not center then return end
+  local folder = civOwnerBuildings(player)
+  if folder:FindFirstChild(key) then return end
+  local index = table.find(ProgressionData.StructureKeys(), key) or 1
+  local position = center + Vector3.new(-14 + (index - 1) * 6, 3.5, 15)
+  local model = Instance.new("Model")
+  model.Name = key
+  model:SetAttribute("CivOwnerUserId", player.UserId)
+  model.Parent = folder
+  local anchor = civPart(model, "Foundation", Vector3.new(7, 2, 7), CFrame.new(position),
+    definition.ModelColor, Enum.Material.Slate, false)
+  if key == "Pyramid" then
+    for level = 1, 3 do
+      civPart(model, "PyramidTier" .. level,
+        Vector3.new(9 - level * 2, 1.5, 9 - level * 2),
+        CFrame.new(position + Vector3.new(0, level * 1.5, 0)),
+        definition.ModelColor, Enum.Material.Sandstone, false)
+    end
+  elseif key == "Colosseum" then
+    for index = 1, 6 do
+      local angle = index * math.pi / 3
+      civPart(model, "ArcColumn" .. index, Vector3.new(1.2, 5, 1.2),
+        CFrame.new(position + Vector3.new(math.cos(angle) * 3, 3, math.sin(angle) * 3)),
+        definition.ModelColor, Enum.Material.Sandstone, false)
+    end
+  elseif key == "DrakkarShipyard" then
+    civPart(model, "ShipyardDock", Vector3.new(4, 0.8, 13),
+      CFrame.new(position + Vector3.new(0, 1, 0)), definition.ModelColor, Enum.Material.WoodPlanks, false)
+    civPart(model, "ShipyardMast", Vector3.new(0.5, 10, 0.5),
+      CFrame.new(position + Vector3.new(0, 6, 0)), definition.ModelColor, Enum.Material.Wood, false)
+  elseif key == "DangunAltar" then
+    civPart(model, "AltarMonument", Vector3.new(2.5, 6, 2.5),
+      CFrame.new(position + Vector3.new(0, 4, 0)), definition.ModelColor, Enum.Material.Sandstone, false)
+  else
+    civPart(model, "StoneBattlement", Vector3.new(7, 4, 2),
+      CFrame.new(position + Vector3.new(0, 3, 0)), definition.ModelColor, Enum.Material.Rock, false)
+  end
+  civSign(model, anchor, definition.Label, 6)
+end
+local function civRestoreBuildings(player)
+  for _, key in ipairs(ProgressionData.StructureKeys()) do
+    if readNumber(player, "Civ" .. key, 0) >= 1 then civVisualBuilding(player, key) end
+  end
+end
+local function civNearStation(player, stationType)
+  local raceId = readNumber(player, "CivRaceID", 0)
+  local station = civStations[raceId] and civStations[raceId][stationType]
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  local hum = character and character:FindFirstChildOfClass("Humanoid")
+  return station and root and hum and hum.Health > 0
+    and (root.Position - station.Position).Magnitude <= 15
+end
+local function civSpend(player, costs)
+  for key, cost in pairs(costs) do
+    if readNumber(player, key, 0) < cost then return false, key end
+  end
+  for key, cost in pairs(costs) do
+    setNumber(player, key, readNumber(player, key, 0) - cost)
+  end
+  return true, ""
+end
+local function civCraft(player, itemKey)
+  if typeof(itemKey) ~= "string" or #itemKey > 32 or not civRace(player) then return end
+  local recipe = ProgressionData.GetRecipe(itemKey)
+  if not recipe then return end
+  if readNumber(player, "CivTech", 0) < recipe.MinimumTech then
+    civMessage(player, "선행 연구 필요: " .. tostring(recipe.MinimumTech))
+    return
+  end
+  if not civNearStation(player, recipe.Station) then
+    civMessage(player, "해당 제작 시설 15칸 이내로 이동해야 해.")
+    return
+  end
+  if not civNowReady(player, "Craft", 0.8) then return end
+  local paid, missing = civSpend(player, recipe.Costs)
+  if not paid then civMessage(player, "제작 자원 부족: " .. missing); return end
+  civIncrease(player, recipe.YieldField, recipe.YieldCount)
+  if itemKey == "BronzeIngot" then civIncrease(player, "CivBronzeSmelts", recipe.YieldCount) end
+  civMessage(player, recipe.Label .. " 제작 완료")
+end
+local function civBuild(player, buildingKey)
+  if typeof(buildingKey) ~= "string" or #buildingKey > 32 then return end
+  local race = civRace(player)
+  local definition = ProgressionData.GetStructure(buildingKey)
+  if not race or not definition then return end
+  if definition.RequiredRace ~= 0 and definition.RequiredRace ~= race.ID then return end
+  if readNumber(player, "Civ" .. buildingKey, 0) >= 1 then
+    civMessage(player, "이미 건설된 건축물이야.")
+    return
+  end
+  if readNumber(player, "CivTech", 0) < definition.MinimumTech
+    or readNumber(player, definition.RequiredMetric, 0) < 1 then
+    civMessage(player, "해당 시대 연구와 사냥·제련 유레카를 완료해야 해.")
+    return
+  end
+  local center = civWorlds[race.ID]
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  if not center or not root or (root.Position - center).Magnitude > 28 then return end
+  -- Egyptian pyramid decreases only building-action cooldown by 20%.
+  local cooldown = race.ID == 2 and readNumber(player, "CivPyramid", 0) > 0 and 1.6 or 2
+  if not civNowReady(player, "Build", cooldown) then return end
+  local paid, missing = civSpend(player, definition.Costs)
+  if not paid then civMessage(player, "건축 자원 부족: " .. missing); return end
+  setNumber(player, "Civ" .. buildingKey, 1)
+  civVisualBuilding(player, buildingKey)
+  civMessage(player, definition.Label .. " 건축 완료")
+end
+local civWeaponIds = {StoneSpear=1, BronzeSword=2, IronGreatsword=3}
+local function civEquip(player, weaponKey)
+  if typeof(weaponKey) ~= "string" or #weaponKey > 32 or not civRace(player) then return end
+  local weapon = civWeaponIds[weaponKey]
+  if not weapon or readNumber(player, "Civ" .. weaponKey, 0) < 1 then return end
+  if not civNowReady(player, "Equip", 0.25) then return end
+  setNumber(player, "CivEquippedWeapon", weapon)
+  civMessage(player, weaponKey .. " 장착")
+end
 local function civTravel(player, raceID)
   local destination = civWorlds[raceID]
   local character = player.Character
@@ -430,7 +564,7 @@ local function civSelect(player, raceID)
   civMessage(player, RaceData.GetRace(raceID).Name .. " 문명을 선택했어.")
   civTravel(player, raceID)
 end
-local function civGather(player)
+local function civGather(player, requestedType)
   if not civRace(player) or not civNowReady(player, "Gather", civ.GatherCooldown) then return end
   local character = player.Character
   local root = character and character:FindFirstChild("HumanoidRootPart")
@@ -438,8 +572,10 @@ local function civGather(player)
   if not root or not humanoid or humanoid.Health <= 0 then return end
   local best, dist = nil, 14
   for _, node in ipairs(civNodes) do
-    local d = (node.Part.Position - root.Position).Magnitude
-    if d < dist then best = node; dist = d end
+    if requestedType == nil or node.Type == requestedType then
+      local d = (node.Part.Position - root.Position).Magnitude
+      if d < dist then best = node; dist = d end
+    end
   end
   if not best then civMessage(player, "자원 기둥에 가까이 가서 채집해."); return end
   local race = civRace(player)
@@ -462,6 +598,13 @@ local function civResearch(player)
   if readNumber(player, "CivTech", 0) ~= tech.Prerequisite then return end
   local factor = 1
   if readNumber(player, tech.EurekaMetric, 0) >= tech.EurekaCount then factor *= 0.5 end
+  -- Owner age-chain eureka at the canonical stone/bronze/iron entry nodes (15, 29, 45).
+  if (nextID == 15 and readNumber(player, "CivBoarKills", 0) >= 1)
+    or (nextID == 29 and readNumber(player, "CivBronzeSmelts", 0) >= 5)
+    or (nextID == 45 and readNumber(player, "CivIronKnightKills", 0) >= 1) then
+    factor = math.min(factor, 0.5)
+  end
+  if race.ID == 15 and readNumber(player, "CivDangunAltar", 0) >= 1 then factor *= 0.85 end
   if race.PassiveType == "Research" then factor *= 0.85 end
   if race.PassiveType == "MythDiscount" and tech.Era == 1 then factor *= 0.8 end
   if race.PassiveType == "AgeDiscount" and (nextID == 15 or nextID == 29 or nextID == 45 or nextID == 61) then factor *= 0.85 end
@@ -506,25 +649,29 @@ local function civDodge(player)
   character:PivotTo(character:GetPivot() + (Vector3.new(target.X, ground.Position.Y + 4, target.Z) - root.Position))
   civIncrease(player, "CivDodges", 1)
 end
-local function civSpawnEnemy(raceID, center)
+local function civSpawnEnemy(raceID, center, special)
   local race = RaceData.GetRace(raceID)
   local enemy = Instance.new("Model")
-  enemy.Name = race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
+  enemy.Name = special == "WildBoar" and "야생 멧돼지"
+    or special == "BronzeGolem" and "청동 골렘"
+    or special == "IronKnight" and "암흑 철기 기사"
+    or race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
   enemy:SetAttribute("CivilizationEnemy", true)
   enemy:SetAttribute("RaceID", raceID)
-  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + Vector3.new(0, 4, 9)), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
+  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + Vector3.new(special and -9 or 0, 4, 9)), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
   root.Transparency = 0.35
   local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
   local humanoid = Instance.new("Humanoid")
   humanoid.RequiresNeck = false
-  humanoid.MaxHealth = 52 + raceID * 3
+  humanoid.MaxHealth = special == "WildBoar" and 42 or special == "BronzeGolem" and 100
+    or special == "IronKnight" and 155 or (52 + raceID * 3)
   humanoid.Health = humanoid.MaxHealth
   humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
   humanoid.Parent = enemy
   enemy.PrimaryPart = root
   enemy.Parent = civHub
   civSign(head, head, enemy.Name, 3.3)
-  local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0 }
+  local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, Special = special, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0 }
   table.insert(civEnemies, item)
   return item
 end
@@ -565,7 +712,14 @@ local function civAttack(player)
   end
   if not chosen then civMessage(player, "적을 바라보고 가까이 가서 공격해."); return end
   local race = civRace(player)
-  local damage = 12
+  local weapon = readNumber(player, "CivEquippedWeapon", 0)
+  local requiredWeapon = chosen.Special == "WildBoar" and 1
+    or chosen.Special == "BronzeGolem" and 2 or chosen.Special == "IronKnight" and 3 or 0
+  if requiredWeapon > 0 and weapon < requiredWeapon then
+    civMessage(player, chosen.Model.Name .. " 사냥에는 해당 시대 무기를 장착해야 해.")
+    return
+  end
+  local damage = requiredWeapon == 2 and 17 or requiredWeapon == 3 and 23 or 12
   if race.PassiveType == "Victory" and (player:GetAttribute("CivVictoryUntil") or 0) > os.clock() then damage = math.floor(damage * 1.1 + 0.5) end
   chosen.Humanoid:TakeDamage(damage)
   remote:FireClient(player, "CIV_HIT", {Damage = damage, Enemy = chosen.Model.Name})
@@ -573,8 +727,21 @@ local function civAttack(player)
     civIncrease(player, "CivKills", 1)
     civIncrease(player, "CivResearch", 8)
     civIncrease(player, "CivSilver", 3)
+    local additionalLoot = ""
+    if chosen.Special == "WildBoar" then
+      civIncrease(player, "CivHide", 1)
+      civIncrease(player, "CivBoarKills", 1)
+      additionalLoot = " / 가죽 +1 / 석기 유레카!"
+    elseif chosen.Special == "BronzeGolem" then
+      civIncrease(player, "CivCoreCrystal", 1)
+      additionalLoot = " / 코어 크리스탈 +1"
+    elseif chosen.Special == "IronKnight" then
+      civIncrease(player, "CivDarkIron", 1)
+      civIncrease(player, "CivIronKnightKills", 1)
+      additionalLoot = " / 다크 아이언 +1 / 철기 유레카!"
+    end
     if race.PassiveType == "Victory" then player:SetAttribute("CivVictoryUntil", os.clock() + 10) end
-    civMessage(player, chosen.Model.Name .. " 처치! 연구력 +8 / 은화 +3")
+    civMessage(player, chosen.Model.Name .. " 처치! 연구력 +8 / 은화 +3" .. additionalLoot)
     chosen.TelegraphAt = 0
     task.delay(9, function()
       if chosen.Model.Parent then
@@ -615,6 +782,7 @@ local function civOnEnemyStrike(enemy, player, now)
     return
   end
   local defense = race and race.DefenseMultiplier or 1
+  if race and race.ID == 1 and readNumber(player, "CivColosseum", 0) > 0 then defense *= 1.15 end
   local damage = math.max(1, math.floor(12 / defense + 0.5))
   humanoid:TakeDamage(damage)
   civMessage(player, enemy.Model.Name .. "의 공격! 체력 -" .. damage)
@@ -653,12 +821,17 @@ for id = 1, 24 do
     {Type = "Wood", Label = "목재", Color = Color3.fromRGB(91, 121, 79)},
     {Type = "Stone", Label = "석재", Color = Color3.fromRGB(109, 113, 116)},
     {Type = "Bronze", Label = "청동", Color = Color3.fromRGB(191, 124, 56)},
-    {Type = "Iron", Label = "철광", Color = Color3.fromRGB(82, 110, 132)},
+    {Type = "Iron", Label = "기존 철 자원", Color = Color3.fromRGB(82, 110, 132)},
+    {Type = "CopperOre", Label = "구리 광석", Color = Color3.fromRGB(184, 110, 60)},
+    {Type = "TinOre", Label = "주석 광석", Color = Color3.fromRGB(157, 163, 172)},
+    {Type = "IronOre", Label = "철광석", Color = Color3.fromRGB(101, 120, 128)},
+    {Type = "Coal", Label = "석탄", Color = Color3.fromRGB(65, 67, 70)},
   }
   for index, resource in ipairs(resources) do
-    local x = ((index - 1) % 2) * 11 - 6
-    local z = math.floor((index - 1) / 2) * 12 - 7
-    local node = civPart(region, resource.Label, Vector3.new(4, 5, 4), CFrame.new(center + Vector3.new(x + 5, 3.5, z + 5)), resource.Color, Enum.Material.Rock, true)
+    local px = index <= 4 and (((index - 1) % 2) * 11 - 1)
+      or ((index - 5) % 4) * 9 - 14
+    local pz = index <= 4 and (math.floor((index - 1) / 2) * 12 - 2) or -14
+    local node = civPart(region, resource.Label, Vector3.new(4, 5, 4), CFrame.new(center + Vector3.new(px, 3.5, pz)), resource.Color, Enum.Material.Rock, true)
     node.Shape = Enum.PartType.Ball
     civSign(region, node, resource.Label .. " 채집", 4)
     local gatherPrompt = Instance.new("ProximityPrompt")
@@ -674,12 +847,27 @@ for id = 1, 24 do
       local character = gatherer.Character
       local root = character and character:FindFirstChild("HumanoidRootPart")
       if not root or (root.Position - node.Position).Magnitude > 12 then return end
-      civGather(gatherer)
+      civGather(gatherer, resource.Type)
     end)
     table.insert(civNodes, {Part = node, Type = resource.Type, Label = resource.Label})
   end
   civSpawnEnemy(id, center)
   civSpawnGrazer(id, center)
+  if id == 15 then civSpawnEnemy(id, center, "WildBoar")
+  elseif id == 2 then civSpawnEnemy(id, center, "BronzeGolem")
+  elseif id == 1 then civSpawnEnemy(id, center, "IronKnight") end
+  local stations = {}
+  local stationTypes = {
+    {Key="Bench", Label="제작 작업대", Offset=Vector3.new(-11, 2, 12), Material=Enum.Material.Wood},
+    {Key="Furnace", Label="용광로", Offset=Vector3.new(-13, 2, 5), Material=Enum.Material.Brick},
+    {Key="BlastFurnace", Label="고로", Offset=Vector3.new(-7, 2, 5), Material=Enum.Material.Metal},
+  }
+  for _, item in ipairs(stationTypes) do
+    local station = civPart(region, item.Label, Vector3.new(3, 4, 3), CFrame.new(center + item.Offset), Color3.fromRGB(110, 99, 84), item.Material, true)
+    civSign(region, station, item.Label, 4)
+    stations[item.Key] = station
+  end
+  civStations[id] = stations
   local portal = civPart(civHub, "포털 " .. race.Name, Vector3.new(4, 0.3, 4),
     CFrame.new(math.cos(angle) * 24, 0.2, math.sin(angle) * 24), Color3.fromRGB(111, 191, 222), Enum.Material.Neon, false)
   civSign(civHub, portal, race.Name, 3)
@@ -805,6 +993,7 @@ Players.PlayerAdded:Connect(function(player)
   end
   player:SetAttribute("CivReady", true)
   civApplyCharacterPassive(player)
+  civRestoreBuildings(player)
   player.CharacterAdded:Connect(function()
     task.wait(0.1)
     civApplyCharacterPassive(player)
@@ -815,6 +1004,7 @@ for _, player in ipairs(Players:GetPlayers()) do
     bindFoundationPlayer(player)
     if player:GetAttribute("Score") == nil then initializePlayer(player) end
     player:SetAttribute("CivReady", true)
+    civRestoreBuildings(player)
   end)
 end
 -- 통합 액션 입력: 기존 ID는 그대로 두고 문명 전용 ID만 추가한다.
@@ -826,6 +1016,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     CivSelect = civSelect, CivTravel = civTravel, CivAttack = civAttack,
     CivGuard = civGuard, CivDodge = civDodge, CivGather = civGather,
     CivResearch = civResearch, CivCompanion = civCompanion,
+    CivCraft = civCraft, CivBuild = civBuild, CivEquip = civEquip,
   }
   local action = handler or civActions[actionId]
   if typeof(action) ~= "function" then return end
@@ -843,7 +1034,8 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     else
       action(player, selected)
     end
-  elseif actionId == "CivSelect" or actionId == "CivCompanion" then
+  elseif actionId == "CivSelect" or actionId == "CivCompanion" or actionId == "CivCraft"
+    or actionId == "CivBuild" or actionId == "CivEquip" then
     action(player, argument)
   else
     action(player)
@@ -867,6 +1059,7 @@ local function savePlayer(player)
 end
 Players.PlayerRemoving:Connect(function(player)
   savePlayer(player)
+  if civBuildings[player] then civBuildings[player]:Destroy(); civBuildings[player] = nil end
   lastAction[player] = nil
   civCooldowns[player] = nil
 end)
