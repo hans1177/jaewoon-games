@@ -559,9 +559,15 @@ local function resizeCivMenuRail()
   local reservedBottom = nativeTouchEnabled and math.min(244, math.floor(viewport.Y * 0.34))
     or math.min(164, math.floor(viewport.Y * 0.24))
   local availableHeight = math.max(0, viewport.Y - 146 - reservedBottom)
-  civMenuRail.Size = UDim2.fromOffset(
+  -- 메뉴 높이가 바뀌어도 이전 스크롤 위치가 범위를 벗어나지 않도록 보정한다.
+  local menuHeight = math.floor(math.min(440, availableHeight))
+  local maxScroll = math.max(0, civMenuRail.AbsoluteCanvasSize.Y - menuHeight)
+  if civMenuRail.CanvasPosition.Y > maxScroll then
+    civMenuRail.CanvasPosition = Vector2.new(0, maxScroll)
+  end
+  civMenuRail.Size = UDim2.fromOffset;
     math.floor(math.min(108, math.max(72, viewport.X * 0.28))),
-    math.floor(math.min(440, availableHeight))
+    menuHeight
   )
 end
 local civMenuViewportConnection
