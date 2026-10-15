@@ -1429,6 +1429,17 @@ local function civSpawnGrazer(raceID, center)
   animal:SetAttribute("RaceID", raceID)
   local root = civPart(animal, "HumanoidRootPart", Vector3.new(2.4, 2, 3), CFrame.new(center + Vector3.new(9, 2.5, -6)), Color3.fromRGB(137, 128, 93), Enum.Material.SmoothPlastic, false)
   civPart(animal, "Head", Vector3.new(1.5, 1.4, 1.3), root.CFrame * CFrame.new(0, 0.7, -1.8), Color3.fromRGB(161, 147, 107), Enum.Material.SmoothPlastic, false)
+  -- 초식 몬스터도 기존 월드 모델에서 외형을 구성한다.
+  for _, side in ipairs({-1, 1}) do
+    local leg = civPart(animal, "Leg" .. side, Vector3.new(0.6, 1.5, 0.75),
+      root.CFrame * CFrame.new(side * 0.82, -1.4, 0.9),
+      Color3.fromRGB(110, 91, 64), Enum.Material.SmoothPlastic, false)
+    leg.CanCollide = false
+    local ear = civPart(animal, "Ear" .. side, Vector3.new(0.35, 0.8, 0.45),
+      root.CFrame * CFrame.new(side * 0.65, 1.65, -1.85),
+      Color3.fromRGB(181, 151, 111), Enum.Material.SmoothPlastic, false)
+    ear.CanCollide = false
+  end
   local health = Instance.new("Humanoid")
   health.RequiresNeck = false
   health.MaxHealth = 32
@@ -1624,6 +1635,19 @@ local function civBuildCultureFigure(region, race, id, center)
       Vector3.new(side * 0.5, 0.85, 0), fabric)
   end
   part("Head", Vector3.new(1.12, 1.06, 1.06), Vector3.new(0, 4.25, 0), skin)
+  -- 문명 전사 조형물의 얼굴·장비 디테일: 기존 생성 모델에 직접 적용.
+  for _, side in ipairs({-1, 1}) do
+    part("Eye" .. side, Vector3.new(0.17, 0.16, 0.1),
+      Vector3.new(side * 0.26, 4.36, -0.55), Color3.fromRGB(46, 40, 34))
+    part("ShoulderGuard" .. side, Vector3.new(0.91, 0.48, 1.03),
+      Vector3.new(side * 1.22, 3.4, 0), bronze)
+    part("Boot" .. side, Vector3.new(0.76, 0.47, 0.99),
+      Vector3.new(side * 0.5, 0.24, -0.06), Color3.fromRGB(73, 54, 43))
+  end
+  part("ChestArmor", Vector3.new(1.53, 1.06, 0.22),
+    Vector3.new(0, 2.87, -0.59), bronze)
+  part("Cape", Vector3.new(1.65, 2.2, 0.17),
+    Vector3.new(0, 2.38, 0.66), fabric)
   local visual = race.Visual
   if visual:find("터번", 1, true) or visual:find("모피", 1, true)
     or visual:find("우샨카", 1, true) then
