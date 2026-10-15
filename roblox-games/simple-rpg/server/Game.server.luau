@@ -394,6 +394,28 @@ local function civTravel(player, raceID)
   if not destination or not character or not humanoid or humanoid.Health <= 0 then return end
   character:PivotTo(CFrame.new(destination + Vector3.new(0, 5, -11)))
 end
+-- 기존 캐릭터의 기준 수치를 보존하면서 문명 고유 특성만 적용한다.
+local function civApplyCharacterPassive(player)
+  local character = player.Character
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  local race = civRace(player)
+  if not humanoid or not race then return end
+  local baseHealth = humanoid:GetAttribute("CivBaseMaxHealth")
+  if typeof(baseHealth) ~= "number" then
+    baseHealth = humanoid.MaxHealth
+    humanoid:SetAttribute("CivBaseMaxHealth", baseHealth)
+  end
+  local baseSpeed = humanoid:GetAttribute("CivBaseWalkSpeed")
+  if typeof(baseSpeed) ~= "number" then
+    baseSpeed = humanoid.WalkSpeed
+    humanoid:SetAttribute("CivBaseWalkSpeed", baseSpeed)
+  end
+  local healthMultiplier = race.PassiveType == "Fortress" and 1.15 or 1
+  local speedMultiplier = race.PassiveType == "Mobility" and 1.2
+    or race.PassiveType == "Trade" and 1.1 or 1
+  humanoid.MaxHealth = baseHealth * healthMultiplier
+  humanoid.WalkSpeed = baseSpeed * speedMultiplier
+end
 local function civSelect(player, raceID)
   if typeof(raceID) ~= "number" or raceID % 1 ~= 0 or not RaceData.GetRace(raceID) then return end
   if readNumber(player, "CivRaceID", 0) ~= 0 then
@@ -402,6 +424,7 @@ local function civSelect(player, raceID)
   end
   if not civNowReady(player, "Select", 1) then return end
   setNumber(player, "CivRaceID", raceID)
+  civApplyCharacterPassive(player)
   civMessage(player, RaceData.GetRace(raceID).Name .. " 문명을 선택했어.")
   civTravel(player, raceID)
 end
@@ -686,6 +709,11 @@ Players.PlayerAdded:Connect(function(player)
     end
   end
   player:SetAttribute("CivReady", true)
+  civApplyCharacterPassive(player)
+  player.CharacterAdded:Connect(function()
+    task.wait(0.1)
+    civApplyCharacterPassive(player)
+  end)
 end)
 for _, player in ipairs(Players:GetPlayers()) do
   task.defer(function()
@@ -713,7 +741,13 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
   if actionId == "CivTravel" then
     local selected = readNumber(player, "CivRaceID", 0)
     if selected <= 0 or not civNowReady(player, "Travel", 2) then return end
-    action(player, selected)
+    local character = player.Character
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if root and Vector3.new(root.Position.X, 0, root.Position.Z).Magnitude > 80 then
+      character:PivotTo(CFrame.new(0, 5, 0))
+    else
+      action(player, selected)
+    end
   elseif actionId == "CivSelect" then
     action(player, argument)
   else
