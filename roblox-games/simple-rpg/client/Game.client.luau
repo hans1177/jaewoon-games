@@ -456,7 +456,7 @@ local function civButton(parent, name, text, size, pos, callback)
   button.Activated:Connect(callback)
   return button
 end
-local civTitle = civLabel(civGui, "CivilizationTitle", "문명 멀티버스 RPG",
+local civTitle = civLabel(civGui, "CivilizationTitle", "대충알피지",
   UDim2.new(1, -20, 0, 35), UDim2.fromOffset(10, 0), true)
 local civStatus = civLabel(civGui, "CivilizationStatus", "",
   UDim2.new(1, -20, 0, 54), UDim2.fromOffset(10, 39), true)
@@ -527,6 +527,29 @@ local function civOpen(mode)
       button.TextSize = 14
       if selected == id then button.BackgroundColor3 = Color3.fromRGB(119, 94, 41) end
     end
+  elseif mode == "Companions" then
+    panelTitle.Text = "AI 부족원 · 행동 명령"
+    local current = player:GetAttribute("CivCompanionMode") or "Dismissed"
+    local status = civLabel(civList, "CompanionStatus", "현재 상태: " .. tostring(current),
+      UDim2.new(1, -9, 0, 42), UDim2.new(), false)
+    status.LayoutOrder = 0
+    local commands = {
+      {"Summon", "부족원 소환 · 나를 따라와"},
+      {"Follow", "따라오기 · 플레이어 추적"},
+      {"Attack", "전투 지원 · 가까운 몬스터 공격"},
+      {"Gather", "목재 채집 · 주변 나무에서 보조"},
+      {"Guard", "현재 위치 경계 · 주변 적 방어"},
+      {"Dismiss", "부족원 해산"},
+    }
+    for index, item in ipairs(commands) do
+      local button = civButton(civList, "Companion" .. item[1], item[2],
+        UDim2.new(1, -9, 0, 60), UDim2.new(), function()
+          remote:FireServer("CivCompanion", item[1])
+          civPanel.Visible = false
+        end)
+      button.LayoutOrder = index
+      button.TextSize = 14
+    end
   else
     panelTitle.Text = "파피루스 테크트리 · 72개"
     local techCount = player:GetAttribute("CivTech") or 0
@@ -569,6 +592,8 @@ local function civOpen(mode)
     end
   end
 end
+civButton(civGui, "CompanionMenu", "AI 동료",
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 200), function() civOpen("Companions") end)
 local civRaceButton = civButton(civGui, "RaceMenu", "문명",
   UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 148), function() civOpen("Races") end)
 civButton(civGui, "TechMenu", "연구",
@@ -637,6 +662,7 @@ UserInputService.InputBegan:Connect(function(input, consumed)
   elseif input.KeyCode == Enum.KeyCode.LeftShift then remote:FireServer("CivDodge")
   elseif input.KeyCode == Enum.KeyCode.E then remote:FireServer("CivGather")
   elseif input.KeyCode == Enum.KeyCode.T then civOpen("Techs")
+  elseif input.KeyCode == Enum.KeyCode.C then civOpen("Companions")
   elseif input.UserInputType == Enum.UserInputType.MouseButton1 and not civPanel.Visible then
     remote:FireServer("CivAttack")
   end

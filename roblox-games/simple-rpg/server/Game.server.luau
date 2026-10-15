@@ -11,6 +11,7 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
+local CompanionAI = require(script.Parent:WaitForChild("CompanionAI"))
 
 local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)
 if remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end
@@ -326,6 +327,7 @@ end
 local civ = Config.Civilization
 local civCooldowns = {}
 local civEnemies = {}
+local civWildlife = {}
 local civNodes = {}
 local civWorlds = {}
 local civHub = Instance.new("Folder")
@@ -526,6 +528,25 @@ local function civSpawnEnemy(raceID, center)
   table.insert(civEnemies, item)
   return item
 end
+-- Bounded server wildlife: each civilization has one grazing prey model.
+local function civSpawnGrazer(raceID, center)
+  local animal = Instance.new("Model")
+  animal.Name = "초식 야생동물"
+  animal:SetAttribute("CivilizationWildlife", true)
+  animal:SetAttribute("RaceID", raceID)
+  local root = civPart(animal, "HumanoidRootPart", Vector3.new(2.4, 2, 3), CFrame.new(center + Vector3.new(9, 2.5, -6)), Color3.fromRGB(137, 128, 93), Enum.Material.SmoothPlastic, false)
+  civPart(animal, "Head", Vector3.new(1.5, 1.4, 1.3), root.CFrame * CFrame.new(0, 0.7, -1.8), Color3.fromRGB(161, 147, 107), Enum.Material.SmoothPlastic, false)
+  local health = Instance.new("Humanoid")
+  health.RequiresNeck = false
+  health.MaxHealth = 32
+  health.Health = health.MaxHealth
+  health.Parent = animal
+  animal.PrimaryPart = root
+  animal.Parent = civHub
+  local state = {Model = animal, Root = root, Humanoid = health, Home = root.Position, LastGraze = -1e9, LastPredated = -1e9}
+  civWildlife[raceID] = state
+  return state
+end
 local function civAttack(player)
   if not civRace(player) or not civNowReady(player, "Attack", civ.AttackCooldown) then return end
   local character = player.Character
@@ -563,6 +584,14 @@ local function civAttack(player)
         chosen.StunnedUntil = 0
       end
     end)
+  end
+end
+-- AI companion actions are validated on the authoritative game server.
+local function civCompanion(player, command)
+  if not civNowReady(player, "Companion", 0.35) then return end
+  local allowed = civRace(player) ~= nil
+  if CompanionAI.Command(player, command, allowed) then
+    civMessage(player, "AI 동료 명령: " .. tostring(player:GetAttribute("CivCompanionMode")))
   end
 end
 local function civOnEnemyStrike(enemy, player, now)
@@ -604,6 +633,22 @@ for id = 1, 24 do
   local monument = civPart(region, "Landmark", Vector3.new(8, 13, 8), CFrame.new(center + Vector3.new(-11, 7.5, -9)), Color3.fromRGB(184, 166, 125), Enum.Material.Sandstone, true)
   monument.Shape = (id % 3 == 0) and Enum.PartType.Cylinder or Enum.PartType.Block
   civSign(region, monument, race.Name .. "\n" .. race.Landmark, 9)
+  -- Existing landmark is the authoritative interaction target, not a client-controlled reward.
+  local landmarkPrompt = Instance.new("ProximityPrompt")
+  landmarkPrompt.Name = "LandmarkHistory"
+  landmarkPrompt.ActionText = "유적 살펴보기"
+  landmarkPrompt.ObjectText = race.Landmark
+  landmarkPrompt.KeyboardKeyCode = Enum.KeyCode.E
+  landmarkPrompt.MaxActivationDistance = 11
+  landmarkPrompt.RequiresLineOfSight = false
+  landmarkPrompt.Parent = monument
+  landmarkPrompt.Triggered:Connect(function(visitor)
+    if not visitor:IsA("Player") or not civRace(visitor) then return end
+    local character = visitor.Character
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not root or (root.Position - monument.Position).Magnitude > 13 then return end
+    civMessage(visitor, race.Name .. " 유적: " .. race.Landmark)
+  end)
   local resources = {
     {Type = "Wood", Label = "목재", Color = Color3.fromRGB(91, 121, 79)},
     {Type = "Stone", Label = "석재", Color = Color3.fromRGB(109, 113, 116)},
@@ -616,9 +661,25 @@ for id = 1, 24 do
     local node = civPart(region, resource.Label, Vector3.new(4, 5, 4), CFrame.new(center + Vector3.new(x + 5, 3.5, z + 5)), resource.Color, Enum.Material.Rock, true)
     node.Shape = Enum.PartType.Ball
     civSign(region, node, resource.Label .. " 채집", 4)
+    local gatherPrompt = Instance.new("ProximityPrompt")
+    gatherPrompt.Name = "GatherResource"
+    gatherPrompt.ActionText = "채집"
+    gatherPrompt.ObjectText = resource.Label
+    gatherPrompt.KeyboardKeyCode = Enum.KeyCode.E
+    gatherPrompt.MaxActivationDistance = 10
+    gatherPrompt.RequiresLineOfSight = false
+    gatherPrompt.Parent = node
+    gatherPrompt.Triggered:Connect(function(gatherer)
+      if not gatherer:IsA("Player") or not civRace(gatherer) then return end
+      local character = gatherer.Character
+      local root = character and character:FindFirstChild("HumanoidRootPart")
+      if not root or (root.Position - node.Position).Magnitude > 12 then return end
+      civGather(gatherer)
+    end)
     table.insert(civNodes, {Part = node, Type = resource.Type, Label = resource.Label})
   end
   civSpawnEnemy(id, center)
+  civSpawnGrazer(id, center)
   local portal = civPart(civHub, "포털 " .. race.Name, Vector3.new(4, 0.3, 4),
     CFrame.new(math.cos(angle) * 24, 0.2, math.sin(angle) * 24), Color3.fromRGB(111, 191, 222), Enum.Material.Neon, false)
   civSign(civHub, portal, race.Name, 3)
@@ -637,6 +698,20 @@ end
 task.spawn(function()
   while task.wait(0.25) do
     local now = os.clock()
+    CompanionAI.Tick(civEnemies, civNodes, civIncrease)
+    -- Herbivores graze occasionally; this loop is shared with the existing monster AI.
+    for _, grazer in pairs(civWildlife) do
+      if grazer.Humanoid.Health <= 0 then
+        if now - grazer.LastPredated >= 20 then
+          grazer.Humanoid.Health = grazer.Humanoid.MaxHealth
+          grazer.Model:PivotTo(CFrame.new(grazer.Home))
+        end
+      elseif now - grazer.LastGraze >= 3.5 then
+        grazer.LastGraze = now
+        local angle = now * 0.19 + grazer.Home.X * 0.05
+        grazer.Model:PivotTo(CFrame.new(grazer.Home + Vector3.new(math.cos(angle) * 5, 0, math.sin(angle) * 5)))
+      end
+    end
     for _, enemy in ipairs(civEnemies) do
       if enemy.Humanoid.Health > 0 and now >= enemy.StunnedUntil then
         local target, dist = nil, 32
@@ -674,6 +749,26 @@ task.spawn(function()
           end
         elseif enemy.TelegraphAt > 0 then
           enemy.TelegraphAt = 0
+        elseif now - enemy.LastHit >= 3 then
+          -- Predation runs only when no living player is targeted.
+          local grazer = civWildlife[enemy.RaceID]
+          if grazer and grazer.Humanoid.Health > 0
+              and (grazer.Root.Position - enemy.Home).Magnitude <= 16 then
+            local delta = grazer.Root.Position - enemy.Root.Position
+            if delta.Magnitude > 4 then
+              local planar = Vector3.new(delta.X, 0, delta.Z)
+              if planar.Magnitude > 0.1 then
+                local candidate = enemy.Root.Position + planar.Unit * math.min(1.1, planar.Magnitude)
+                if (Vector3.new(candidate.X - enemy.Home.X, 0, candidate.Z - enemy.Home.Z)).Magnitude <= 16 then
+                  enemy.Model:PivotTo(CFrame.lookAt(candidate, Vector3.new(grazer.Root.Position.X, candidate.Y, grazer.Root.Position.Z)))
+                end
+              end
+            else
+              enemy.LastHit = now
+              grazer.Humanoid:TakeDamage(8)
+              if grazer.Humanoid.Health <= 0 then grazer.LastPredated = now end
+            end
+          end
         end
       end
     end
@@ -730,7 +825,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
   local civActions = {
     CivSelect = civSelect, CivTravel = civTravel, CivAttack = civAttack,
     CivGuard = civGuard, CivDodge = civDodge, CivGather = civGather,
-    CivResearch = civResearch,
+    CivResearch = civResearch, CivCompanion = civCompanion,
   }
   local action = handler or civActions[actionId]
   if typeof(action) ~= "function" then return end
@@ -748,7 +843,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     else
       action(player, selected)
     end
-  elseif actionId == "CivSelect" then
+  elseif actionId == "CivSelect" or actionId == "CivCompanion" then
     action(player, argument)
   else
     action(player)
