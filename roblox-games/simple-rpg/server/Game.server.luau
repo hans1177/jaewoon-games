@@ -1349,13 +1349,14 @@ local function civDodge(player)
   character:PivotTo(character:GetPivot() + (Vector3.new(target.X, ground.Position.Y + 4, target.Z) - root.Position))
   civIncrease(player, "CivDodges", 1)
 end
-local function civSpawnEnemy(raceID, center, special)
+local function civSpawnEnemy(raceID, center, special, mobSlot)
   local race = RaceData.GetRace(raceID)
   local enemy = Instance.new("Model")
   enemy.Name = special == "StoneWolf" and "원시 늑대"
     or special == "WildBoar" and "야생 멧돼지"
     or special == "BronzeGolem" and "청동 골렘"
     or special == "IronKnight" and "암흑 철기 기사"
+    or (mobSlot == 2 and race.Mobs:match("·(.+)$"))
     or race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
   enemy:SetAttribute("CivilizationEnemy", true)
   enemy:SetAttribute("EcosystemRole", "Predator")
@@ -1364,6 +1365,7 @@ local function civSpawnEnemy(raceID, center, special)
   enemy:SetAttribute("IsRaidBoss", isRaidBoss)
   if isRaidBoss then enemy:SetAttribute("BossPhase", "Phase1") end
   enemy:SetAttribute("RaceID", raceID)
+  enemy:SetAttribute("MobSlot", mobSlot or 1)
   -- 기존 시대별 특수 몬스터를 레이드 보스로 분류한다. 기본 체력·피해·보상은 유지한다.
   if special == "WildBoar" or special == "BronzeGolem" or special == "IronKnight" then
     enemy:SetAttribute("IsRaidBoss", true)
@@ -1371,7 +1373,8 @@ local function civSpawnEnemy(raceID, center, special)
   end
   enemy:SetAttribute("IsPreparingAttack", false)
   enemy:SetAttribute("AIState", "Idle")
-  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + Vector3.new(special == "StoneWolf" and 9 or special and -9 or 0, 4, 9)), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
+  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + (mobSlot == 2 and Vector3.new(-9, 4, -9)
+    or Vector3.new(special == "StoneWolf" and 9 or special and -9 or 0, 4, 9))), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
   root.Transparency = 0.35
   local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
   -- 몬스터 외형 에셋: 기존 생성 경로에서 경량 파츠를 조립한다.
@@ -2103,7 +2106,8 @@ for id = 1, 24 do
     end)
     table.insert(civNodes, {Part = node, Type = resource.Type, Label = resource.Label})
   end
-  civSpawnEnemy(id, center)
+  civSpawnEnemy(id, center, nil, 1)
+  civSpawnEnemy(id, center, nil, 2)
   civSpawnGrazer(id, center)
   if id == 15 then
     civSpawnEnemy(id, center, "WildBoar")
