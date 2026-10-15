@@ -178,7 +178,7 @@ test('24-race reserved multiverse teleport is gated by canonical research and sa
   assert.ok(server.includes('player:GetJoinData()'));
   assert.ok(server.includes('readNumber(player, "CivTech", 0) >= 72'));
   assert.ok(client.includes('portalTeleportEvent:FireServer(destination)'));
-  assert.ok(client.includes('civOpen("Portals")'));
+  assert.doesNotMatch(client, /civButton\(civMenuRail, "MultiverseMenu"/);
   assert.ok(client.includes('Enum.KeyCode.C then civOpen("Companions")'));
   assert.ok(client.includes('Enum.KeyCode.E then remote:FireServer("CivGather")'));
   assert.doesNotMatch(server, /TARGET_UNIVERSE_PLACE_ID|CivMultiverseKey_/);
@@ -331,8 +331,8 @@ test('대충알피지 mobile UI uses a responsive scrolling menu without disrupt
   assert.match(client, /civCloseButton\.ZIndex = 13/);
   assert.match(client, /civList\.ZIndex = 11/);
   assert.match(client, /civMessage = civLabel\(civGui,[\s\S]*UDim2\.new\(1, -134, 0, 43\)/);
-  for (const name of ['RaceMenu', 'TechMenu', 'InventoryMenu', 'CraftMenu', 'BuildingMenu',
-    'CompanionMenu', 'TradeMenu', 'MultiverseMenu', 'Travel', 'Legacy']) {
+  for (const name of ['TechMenu', 'InventoryMenu', 'CraftMenu', 'BuildingMenu',
+    'CompanionMenu', 'TradeMenu', 'RegionMapMenu', 'Travel', 'Legacy', 'HousingMenu']) {
     assert.ok(client.includes('civButton(civMenuRail, "' + name + '"'), name);
     assert.ok(!client.includes('civButton(civGui, "' + name + '"'), name + ' must not retain fixed positions');
   }
@@ -396,7 +396,7 @@ test('대충알피지 모험가 로비는 종족 포탈 없이 기존 이동과 
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
 
-test('대충알피지 24문명 선택은 실제 종족 그래픽 설정을 표시하고 서버 선택을 보존한다', () => {
+test('대충알피지 기존 24종족 데이터는 보존하되 로비에서는 종족 선택을 노출하지 않는다', () => {
   const races = read('shared/RaceData.luau');
   assert.match(races, /Visual: string/);
   assert.match(client, /for id = 1, 24 do/);
@@ -406,4 +406,8 @@ test('대충알피지 24문명 선택은 실제 종족 그래픽 설정을 표�
   assert.match(client, /remote:FireServer\("CivSelect", id\)/);
   assert.match(client, /if selected == 0 then/);
   assert.match(server, /CivSelect/);
+  assert.doesNotMatch(client, /civButton\(civMenuRail, "RaceMenu"/);
+  assert.doesNotMatch(client, /civButton\(civList, "RegionTravel"/);
+  assert.match(client, /civButton\(civList, "StartAdventure"/);
+  assert.match(server, /if argument ~= selected then return end/);
 });
