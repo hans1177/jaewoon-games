@@ -367,6 +367,48 @@ end
 local civ = Config.Civilization
 local civCooldowns = {}
 local civEnemies = {}
+-- Five-era environmental identity is derived from existing research progress;
+-- civilization ID never determines the player's era.
+local eraThemes = {
+  [1]={Name="신화 시대", Ground=Color3.fromRGB(104,83,120), Flora=Color3.fromRGB(137,177,159), Ore=Color3.fromRGB(176,118,210)},
+  [2]={Name="석기 시대", Ground=Color3.fromRGB(86,117,78), Flora=Color3.fromRGB(72,108,65), Ore=Color3.fromRGB(49,49,61)},
+  [3]={Name="청동기 시대", Ground=Color3.fromRGB(165,128,85), Flora=Color3.fromRGB(123,141,83), Ore=Color3.fromRGB(181,118,64)},
+  [4]={Name="철기 시대", Ground=Color3.fromRGB(106,104,101), Flora=Color3.fromRGB(100,109,92), Ore=Color3.fromRGB(77,87,100)},
+  [5]={Name="영웅 시대", Ground=Color3.fromRGB(183,165,108), Flora=Color3.fromRGB(184,175,114), Ore=Color3.fromRGB(246,210,113)},
+}
+local function makeEraScenery(parent, center, era)
+  local theme=eraThemes[era]
+  local folder=Instance.new("Folder")
+  folder.Name="EraScenery_"..era
+  folder.Parent=parent
+  for i=1,3 do
+    local x=(i-2)*11
+    local trunk=civPart(folder, theme.Name.." 나무줄기", Vector3.new(1.4,5,1.4),
+      CFrame.new(center+Vector3.new(x,2.8,-19)),Color3.fromRGB(106,79,52),Enum.Material.Wood,false)
+    trunk.CanTouch=false; trunk.CanQuery=false
+    local crown=civPart(folder,theme.Name.." 나무수관",Vector3.new(5,5,5),
+      CFrame.new(center+Vector3.new(x,6.8,-19)),theme.Flora,Enum.Material.Grass,false)
+    crown.Shape=Enum.PartType.Ball; crown.CanTouch=false; crown.CanQuery=false
+  end
+  local ore=civPart(folder,theme.Name.." 광맥 장식",Vector3.new(4,3,4),
+    CFrame.new(center+Vector3.new(15,1.7,12)),theme.Ore,Enum.Material.Rock,false)
+  ore.CanTouch=false; ore.CanQuery=false
+  if era==3 then
+    local river=civPart(folder,"청동기 강변",Vector3.new(22,0.15,4),
+      CFrame.new(center+Vector3.new(0,-0.6,18)),Color3.fromRGB(96,150,173),Enum.Material.Glass,false)
+    river.CanTouch=false; river.CanQuery=false
+  elseif era==4 then
+    local mine=civPart(folder,"철기 수직 광산 장식",Vector3.new(5,11,5),
+      CFrame.new(center+Vector3.new(16,5,-15)),theme.Ore,Enum.Material.Rock,false)
+    mine.CanTouch=false; mine.CanQuery=false
+  elseif era==5 then
+    local beacon=civPart(folder,"영웅 시대 황금 표식",Vector3.new(3,7,1),
+      CFrame.new(center+Vector3.new(0,4,-17)),theme.Ore,Enum.Material.Neon,false)
+    beacon.CanTouch=false; beacon.CanQuery=false
+  end
+  return folder
+end
+
 local civWildlife = {}
 local civNodes = {}
 local civWorlds = {}
@@ -979,6 +1021,7 @@ local function civResearch(player, requestedTechID)
   end
   setNumber(player, "CivTech", nextID)
   setNumber(player, "CivEra", tech.Era)
+  player:SetAttribute("CurrentEra", tech.Era)
   local message = "연구 완료: " .. tech.Name .. " (" .. TechTreeData.EraName(tech.Era) .. ")"
   civMessage(player, message)
   updateTechEvent:FireClient(player, nextID, tech.Era, factor < 1)
@@ -1520,6 +1563,8 @@ for id = 1, 24 do
     CFrame.new(center + Vector3.new(0, -0.82, 0)), biomeColor, biomeMat, false)
   biome.CanTouch = false
   biome.CanQuery = false
+  -- Reuse the existing region; all five visual eras are lightweight, non-colliding sets.
+  for era=1,5 do makeEraScenery(region,center,era) end
   -- 중앙과 지역 사이에 실제 걷는 길을 시각적으로 표시한다.
   local direction = Vector3.new(center.X, 0, center.Z).Unit
   local roadCenter = direction * (civ.WorldRadius * 0.5)
