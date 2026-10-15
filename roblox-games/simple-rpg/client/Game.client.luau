@@ -1504,6 +1504,8 @@ civButton(civMenuRail, "TechMenu", "연구",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Techs") end)
 civButton(civMenuRail, "Travel", "로비 복귀",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function()
+    civPanel.Visible = false
+    civMenuRail.Visible = false
     remote:FireServer("CivTravel", "Lobby")
   end)
 civButton(civMenuRail, "Legacy", "기존 RPG",
@@ -2158,13 +2160,13 @@ local lobbyShown = false
 player:GetAttributeChangedSignal("CivReady"):Connect(function()
   if player:GetAttribute("CivReady") == true and not lobbyShown then
     lobbyShown = true
-    openLobby()
+    if not civPanel.Visible and not housingPanel.Visible then openLobby() end
   end
 end)
 task.defer(function()
   if player:GetAttribute("CivReady") == true and not lobbyShown then
     lobbyShown = true
-    openLobby()
+    if not civPanel.Visible and not housingPanel.Visible then openLobby() end
   end
 end)
 
