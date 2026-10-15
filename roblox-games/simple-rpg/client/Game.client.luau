@@ -491,18 +491,18 @@ civMessage.BackgroundColor3 = Color3.fromRGB(43, 34, 26)
 -- Fantasy HUD: compact centered sign and parchment resource board.
 civTitle.AnchorPoint = Vector2.new(0.5, 0)
 civTitle.Position = UDim2.new(0.5, 0, 0, 4)
-civTitle.Size = UDim2.new(0.56, 0, 0, 38)
+civTitle.Size = UDim2.new(0.42, 0, 0, 28)
 civTitle.BackgroundColor3 = Color3.fromRGB(55, 37, 26)
 civTitle.TextColor3 = Color3.fromRGB(232, 213, 168)
-civTitle.TextSize = 24
+civTitle.TextSize = 18
 civStatus.AnchorPoint = Vector2.new(0.5, 0)
-civStatus.Position = UDim2.new(0.5, 0, 0, 46)
-civStatus.Size = UDim2.new(0.7, 0, 0, 57)
+civStatus.Position = UDim2.new(0.5, 0, 0, 35)
+civStatus.Size = UDim2.new(0.76, 0, 0, 36)
 civStatus.BackgroundColor3 = Color3.fromRGB(232, 213, 168)
 civStatus.TextColor3 = Color3.fromRGB(66, 44, 30)
 civMessage.AnchorPoint = Vector2.new(0.5, 0)
-civMessage.Position = UDim2.new(0.5, 0, 0, 107)
-civMessage.Size = UDim2.new(0.55, 0, 0, 35)
+civMessage.Position = UDim2.new(0.5, 0, 0, 76)
+civMessage.Size = UDim2.new(0.55, 0, 0, 27)
 civMessage.TextSize = 13
 for _, panel in ipairs({civTitle, civStatus, civMessage}) do
   local corner = Instance.new("UICorner")
@@ -561,7 +561,7 @@ civLayout.Parent = civList
 -- Never add UIListLayout to arbitrary Frames (inventory uses an independent UIGridLayout).
 local civMenuRail = Instance.new("ScrollingFrame")
 civMenuRail.Name = "CivilizationMenu"
-civMenuRail.Position = UDim2.fromOffset(10, 146)
+civMenuRail.Position = UDim2.fromOffset(10, 112)
 civMenuRail.Size = UDim2.fromOffset(104, 250)
 civMenuRail.BackgroundTransparency = 1
 civMenuRail.BorderSizePixel = 0
@@ -584,7 +584,7 @@ local function resizeCivMenuRail()
   -- 작은 모바일 화면에서도 하단 전투 조작 영역을 침범하지 않도록 메뉴 높이를 제한한다.
   local reservedBottom = nativeTouchEnabled and math.min(244, math.floor(viewport.Y * 0.34))
     or math.min(164, math.floor(viewport.Y * 0.24))
-  local availableHeight = math.max(0, viewport.Y - 146 - reservedBottom)
+  local availableHeight = math.max(0, viewport.Y - 112 - reservedBottom)
   -- 메뉴 높이가 바뀌어도 이전 스크롤 위치가 범위를 벗어나지 않도록 보정한다.
   local menuHeight = math.floor(math.min(440, availableHeight))
   local maxScroll = math.max(0, civMenuRail.AbsoluteCanvasSize.Y - menuHeight)
@@ -592,7 +592,7 @@ local function resizeCivMenuRail()
     civMenuRail.CanvasPosition = Vector2.new(0, maxScroll)
   end
   civMenuRail.Size = UDim2.fromOffset(
-    math.floor(math.min(108, math.max(72, viewport.X * 0.28))),
+    math.floor(math.min(100, math.max(72, viewport.X * 0.17))),
     menuHeight
   )
 end
@@ -1254,6 +1254,10 @@ local autoCombatToggle
     end
   end)
 autoCombatToggle.Visible = nativeTouchEnabled
+-- Keep the touch toggle clear of the status board and right edge on narrow landscape screens.
+autoCombatToggle.Position = UDim2.new(1, -112, 0, 112)
+autoCombatToggle.Size = UDim2.fromOffset(100, 38)
+autoCombatToggle.TextSize = 13
 local function syncAutoCombatSetting()
   if player:GetAttribute("CivReady") == true then
     autoCombatEvent:FireServer("SetEnabled", autoCombatEnabled)
