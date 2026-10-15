@@ -3,6 +3,8 @@
 -- Responsive RPG menu; all progression comes from replicated state or real Tools.
 local Model = require(script.Parent:WaitForChild("RPGMenuModel"))
 local CommonUI = require(script.Parent:WaitForChild("RobloxCommonUI"))
+local RaceData = require(script.Parent:WaitForChild("RaceData"))
+local TechTreeData = require(script.Parent:WaitForChild("TechTreeData"))
 local Input = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
 local TweenService = game:GetService("TweenService")
@@ -51,7 +53,7 @@ function Menu.install(config,gui,player,options)
  local relayout
  local setOpen
 
- local tabNames={"배낭","장비","캐릭터","상점","퀘스트","파티","설정"}
+ local tabNames={"배낭","장비","캐릭터","상점","퀘스트","파티","문명","연구","설정"}
  local toggle=button(gui,"RPGMenuToggle","배낭 · 메뉴")
  toggle.Position=UDim2.fromOffset(12,150);toggle.Size=UDim2.fromOffset(136,52)
  local overlay=make("Frame",gui,"RPGSystemMenu",{Visible=false,Active=true,BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=.28,Size=UDim2.fromScale(1,1),ZIndex=50})
@@ -119,7 +121,7 @@ function Menu.install(config,gui,player,options)
  end)
 
  local content={}
- for _,name in ipairs({"장비","캐릭터","상점","퀘스트","파티","설정"})do
+ for _,name in ipairs({"장비","캐릭터","상점","퀘스트","파티","문명","연구","설정"})do
   local scroll=make("ScrollingFrame",pages[name],"Content",{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y})
   make("UIListLayout",scroll,"Rows",{Padding=UDim.new(0,12),SortOrder=Enum.SortOrder.LayoutOrder})
   content[name]=scroll
@@ -158,6 +160,31 @@ function Menu.install(config,gui,player,options)
  local room=button(content["파티"],"ChangePartyCode","멀티 코드 변경");room.Size=UDim2.new(1,-8,0,52)
  room.Activated:Connect(function()if options.changeRoom then options.changeRoom()end end)
  local companions=label(content["파티"],"CompanionRoster","",16);companions.Size=UDim2.new(1,-8,0,0);companions.AutomaticSize=Enum.AutomaticSize.Y;companions.TextYAlignment=Enum.TextYAlignment.Top
+-- 문명·연구: 기존 모바일 메뉴에 선택 카드와 파피루스 연구판 연결.
+ local civRemote=game:GetService("ReplicatedStorage"):WaitForChild(config.RemoteName)
+ local raceCards={}
+ local techCards={}
+ for id=1,24 do
+  local race=RaceData.GetRace(id)
+  local b=button(content["문명"],"Race"..id,race.Name.."\n"..race.Passive)
+  b.Size=UDim2.new(1,-8,0,78);b.TextWrapped=true;b.TextSize=14;b.LayoutOrder=id
+  b.Activated:Connect(function()
+   if player:GetAttribute("RaceID")==0 then civRemote:FireServer("CIV_SELECT:"..id)end
+  end)
+  raceCards[id]=b
+ end
+ local eraLabel=label(content["연구"],"EraSummary","",17)
+ eraLabel.Size=UDim2.new(1,-8,0,100);eraLabel.TextWrapped=true;eraLabel.LayoutOrder=0
+ local gridBox=make("ScrollingFrame",content["연구"],"TechGrid",{Size=UDim2.new(1,-8,0,340),BackgroundTransparency=1,BorderSizePixel=0,ScrollingDirection=Enum.ScrollingDirection.Y,ScrollBarThickness=4,AutomaticCanvasSize=Enum.AutomaticSize.Y,CanvasSize=UDim2.new(),LayoutOrder=1})
+ make("UIGridLayout",gridBox,"TechLayout",{CellSize=UDim2.new(.48,-4,0,94),CellPadding=UDim2.new(.02,0,0,6),SortOrder=Enum.SortOrder.LayoutOrder})
+ for id=1,TechTreeData.Count do
+  local tech=TechTreeData.GetTech(id)
+  local b=button(gridBox,"Tech"..id,tech.Name);b.TextSize=13;b.TextWrapped=true;b.LayoutOrder=id
+  b.Activated:Connect(function()
+   if (player:GetAttribute("CivTechCount")or 0)+1==id then civRemote:FireServer("CIV_RESEARCH:"..id)end
+  end)
+  techCards[id]=b
+ end
  local soundButton=button(content["설정"],"ToggleMenuSound","효과음 켜짐");soundButton.Size=UDim2.new(1,-8,0,52)
  soundButton.Activated:Connect(function()
   muted=not muted
@@ -279,6 +306,33 @@ function Menu.install(config,gui,player,options)
    end
   end
   companions.Text=table.concat(roster,"\n\n")
+  local raceId=tonumber(a.RaceID)or 0
+  local race=RaceData.GetRace(raceId)
+  local completed=math.clamp(tonumber(a.CivTechCount)or 0,0,TechTreeData.Count)
+  local nextTech=TechTreeData.Next(completed)
+  for id,b in ipairs(raceCards)do
+   local def=RaceData.GetRace(id)
+   b.Active=raceId==0;b.AutoButtonColor=b.Active
+   b.Text=(raceId==id and "◆ " or "")..def.Name.." · "..def.Landmark.."\n"..def.Passive
+   b.BackgroundColor3=raceId==id and Color3.fromRGB(100,80,43)or colors.card
+  end
+  local summary="모든 시대 연구 완료"
+  if nextTech then
+   local resource,cost=next(nextTech.RequiredResources)
+   local eureka=(tonumber(a[nextTech.EurekaMetric])or 0)>=nextTech.EurekaTarget
+   local discount=race and ((nextTech.Era==1 and race.Bonuses.MythResearchDiscount)or(nextTech.Era==3 and race.Bonuses.BronzeDiscount))or 0
+   local due=math.max(1,math.ceil(cost*(eureka and .5 or 1)*(1-discount)))
+   summary=string.format("다음 %s · 필요 %d / 보유 %d\n유레카 %s (%s)",nextTech.Name,due,tonumber(a[resource])or 0,nextTech.EurekaCondition,eureka and "달성"or"미달성")
+  end
+  eraLabel.Text=string.format("%s · %d/72\n%s",TechTreeData.EraNames[TechTreeData.EraForUnlocked(completed)],completed,summary)
+  for id,b in ipairs(techCards)do
+   local tech=TechTreeData.GetTech(id)
+   local unlocked=id<=completed;local nextUp=id==completed+1
+   b.Text=string.format("#%02d %s\n%s",id,tech.Name,unlocked and "완료"or nextUp and (raceId>0 and "연구 가능"or"문명 선택 필요")or"잠김")
+   b.BackgroundColor3=unlocked and Color3.fromRGB(82,67,44)or nextUp and Color3.fromRGB(54,77,73)or colors.card
+   b.TextColor3=unlocked and Color3.fromRGB(255,215,0)or nextUp and colors.text or colors.muted
+   b.Active=nextUp and raceId>0;b.AutoButtonColor=b.Active
+  end
   relayout()
  end
 
@@ -338,7 +392,7 @@ function Menu.install(config,gui,player,options)
   if pending or not opened then return end
   pending=true;task.defer(function()pending=false;if gui.Parent then refresh()end end)
  end
- local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,CompanionUnlockCount=true,LastAction=true,CurrentZone=true,XP=true,AdvancementId=true,SecondAdvancementId=true}
+ local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,CompanionUnlockCount=true,LastAction=true,CurrentZone=true,XP=true,AdvancementId=true,SecondAdvancementId=true,RaceID=true,CivTechCount=true,CivMyth=true,CivStone=true,CivBronze=true,CivIron=true,CivHero=true,CivKills=true,CivParries=true,CivBossKills=true,HouseLevel=true}
  table.insert(connections,player.AttributeChanged:Connect(function(name)if watched[name]then scheduleRefresh()end end))
  -- 게임에서 상인 위치를 제공할 때만 상점 탭을 저빈도로 갱신한다.
  -- 메뉴가 닫힌 동안 전체 인벤토리를 반복 갱신하지 않으며 서버 권한은 그대로다.

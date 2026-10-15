@@ -10,6 +10,8 @@ local InsertService=game:GetService("InsertService")
 local TweenService=game:GetService("TweenService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
+local RaceData=require(Shared:WaitForChild("RaceData"))
+local TechTreeData=require(Shared:WaitForChild("TechTreeData"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
 local CommonCharacterGear=require(Shared:WaitForChild("RobloxCommonCharacterGear"))
 local CommonCreatureParts=require(Shared:WaitForChild("RobloxCommonCreatureParts"))
@@ -524,10 +526,12 @@ local function classGuardReduction(p)
 end
 local function classParryWindow(p)
  local classId=tostring(p:GetAttribute("ClassId")or"")
- if classId=="SHADOW"then return C.ParryWindow+.06 end
- if classId=="RUNE"then return C.ParryWindow+.02 end
- if classId=="SOUL"then return C.ParryWindow+.03 end
- return C.ParryWindow
+ local race=RaceData.GetRace(n(p,"RaceID",0))
+ local offset=race and race.Bonuses.ParryWindow or 0
+ if classId=="SHADOW"then return C.ParryWindow+.06+offset end
+ if classId=="RUNE"then return C.ParryWindow+.02+offset end
+ if classId=="SOUL"then return C.ParryWindow+.03+offset end
+ return C.ParryWindow+offset
 end
 local function staggerEnemy(e,amount,now)
  if not e or e.hp<=0 then return end
@@ -544,7 +548,7 @@ local function resolveIncomingAttack(p,e,attack)
   if now>=n(p,"AutoDodgeReady",0) and math.random()<.18 then
    p:SetAttribute("AutoDodgeReady",now+4.5);p:SetAttribute("EvasionUntil",now+.28);feedback(p,"AUTO_DODGE")
   elseif attack.Parryable~=false and now>=n(p,"AutoParryReady",0) and n(p,"Guard",C.GuardMax)>16 and math.random()<.26 then
-   p:SetAttribute("AutoParryReady",now+3.2);p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1)
+   p:SetAttribute("AutoParryReady",now+3.2);p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1);p:SetAttribute("CivParries",n(p,"CivParries",0)+1)
    p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+8))
    staggerEnemy(e,(attack.GuardDamage or 20)*1.2,now);feedback(p,"PARRY");return
   end
@@ -557,7 +561,7 @@ local function resolveIncomingAttack(p,e,attack)
  if blocking and attack.Parryable~=false then
   local started=n(p,"BlockStartedAt",0)
   if started>0 and now-started<=classParryWindow(p)then
-   p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1);p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+12))
+   p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1);p:SetAttribute("CivParries",n(p,"CivParries",0)+1);p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+12))
    feedback(p,"PARRY");msg(p,"완벽 패링 · "..tostring(attack.Name or"공격"))
    staggerEnemy(e,(attack.GuardDamage or 20)*1.55,now)
    local classId=tostring(p:GetAttribute("ClassId")or"");local adv=tostring(p:GetAttribute("AdvancementId")or"")
@@ -569,7 +573,8 @@ local function resolveIncomingAttack(p,e,attack)
   end
  end
  if blocking and attack.Unblockable~=true then
-  local guard=math.max(0,n(p,"Guard",C.GuardMax)-(attack.GuardDamage or 20));p:SetAttribute("Guard",guard)
+  local race=RaceData.GetRace(n(p,"RaceID",0));local resist=race and race.Bonuses.GuardBreakResist or 0
+   local guard=math.max(0,n(p,"Guard",C.GuardMax)-(attack.GuardDamage or 20)*(1-resist));p:SetAttribute("Guard",guard)
   damage*=1-classGuardReduction(p);feedback(p,"BLOCK");msg(p,"막기 · "..math.floor(guard).."/"..C.GuardMax)
   if guard<=0 then
    p:SetAttribute("Blocking",false);p:SetAttribute("GuardBrokenUntil",now+C.GuardBreakSeconds);feedback(p,"GUARD_BREAK");msg(p,"가드 브레이크")
@@ -580,6 +585,7 @@ local function resolveIncomingAttack(p,e,attack)
  elseif skillGuard and attack.Unblockable~=true then
   damage*=.45;feedback(p,"GUARD");msg(p,"스킬 가드")
  end
+ local race=RaceData.GetRace(n(p,"RaceID",0));if race and race.Bonuses.Defense then damage*=1-race.Bonuses.Defense end
  if damage>0 then h:TakeDamage(damage)end
  lastCombat[p]=now;p:SetAttribute("InCombat",true)
  local special=tostring(attack.Special or"")
@@ -883,10 +889,11 @@ local function setStats(p,heal)
  local secondId=(level>=(C.SecondAdvancementLevel or 40)and ad and ad.SecondId)or""
  p:SetAttribute("SecondAdvancementId",secondId)
  local hpMult=cd and cd.HPMult or 1;local attackMult=cd and cd.AttackMult or 1
+ local race=RaceData.GetRace(n(p,"RaceID",0));hpMult*=1+(race and race.Bonuses.MaxHealth or 0)
  local maxHP=math.floor((C.BaseMaxHP+(level-1)*C.LevelHPGain+(C.ArmorBonus[at]or 0))*hpMult+.5)
  local attack=math.floor((C.BaseAttack+(level-1)*C.LevelAttackGain+(C.WeaponBonus[wt]or 0))*attackMult+.5)
  p:SetAttribute("MaxHP",maxHP);p:SetAttribute("AttackPower",attack);p:SetAttribute("ClassName",classDisplay(classId,advId,secondId))
- local h=hum(p);if h then h.MaxHealth=maxHP;if heal then h.Health=maxHP else h.Health=math.min(h.Health,maxHP)end end
+ local h=hum(p);if h then h.MaxHealth=maxHP;if race and race.Bonuses.MoveSpeed then h.WalkSpeed=16*(1+race.Bonuses.MoveSpeed)end;if heal then h.Health=maxHP else h.Health=math.min(h.Health,maxHP)end end
 end
 local function addMasteryXP(p,amount)
  local xp=n(p,"MasteryXP",0)+(amount or 0);local mastery=n(p,"MasteryLevel",0);local gained=false
@@ -910,9 +917,9 @@ local function grantXP(p,amount)
  end
 end
 -- Save schema v3 preserves every earlier key and adds level-cap, relic and boss-companion progression.
-local SAVE_SCHEMA_VERSION=3
+local SAVE_SCHEMA_VERSION=4
 local SAVE_MAX_ATTEMPTS=3
-local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture","HouseModules","AvatarStyle","AvatarArchetype","AvatarArmor","AvatarDecoration"}
+local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture","HouseModules","AvatarStyle","AvatarArchetype","AvatarArmor","AvatarDecoration","RaceID","CivTechCount","CivKills","CivParries","CivBossKills","CivMyth","CivStone","CivBronze","CivIron","CivHero"}
 local saveReady={}
 local saveSurface=RS:FindFirstChild("SavePersistence")
 if not saveSurface then
@@ -932,6 +939,8 @@ local function init(p)
  p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1);p:SetAttribute("RelicId",C.RelicDefault or"NONE")
  p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("SecondAdvancementId","");p:SetAttribute("ClassName","직업 미선택")
  p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0);p:SetAttribute("HouseLevel",0);p:SetAttribute("HouseFurniture",0);p:SetAttribute("HouseModules",0);p:SetAttribute("AvatarStyle",1);p:SetAttribute("AvatarArchetype",1);p:SetAttribute("AvatarArmor",0);p:SetAttribute("AvatarDecoration",0)
+ p:SetAttribute("RaceID",0);p:SetAttribute("CivTechCount",0);p:SetAttribute("CivKills",0);p:SetAttribute("CivParries",0);p:SetAttribute("CivBossKills",0)
+ for _,resource in ipairs(TechTreeData.EraResources)do p:SetAttribute(resource,0)end
  p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
  p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
@@ -1664,7 +1673,11 @@ local function killEnemy(p,e,contribution)
   p:SetAttribute("SoulCharge",math.min(5,n(p,"SoulCharge",0)+1))
   if p:GetAttribute("AdvancementTrialActive")==true then advanceTrial(p,1)end
  end
- p:SetAttribute("Gold",n(p,"Gold",0)+e.gold);grantXP(p,e.xp);completeQuestIfNeeded(p,e.zone);partyKill(p,contribution or 2);unlockBossCompanion(p,e)
+ p:SetAttribute("CivKills",n(p,"CivKills",0)+1)
+  if e.boss or e.runBoss or e.hiddenBoss then p:SetAttribute("CivBossKills",n(p,"CivBossKills",0)+1)end
+  local resource=TechTreeData.EraResources[TechTreeData.EraForUnlocked(n(p,"CivTechCount",0))]
+  if resource then p:SetAttribute(resource,n(p,resource,0)+(e.boss and 4 or 1))end
+  p:SetAttribute("Gold",n(p,"Gold",0)+e.gold);grantXP(p,e.xp);completeQuestIfNeeded(p,e.zone);partyKill(p,contribution or 2);unlockBossCompanion(p,e)
  if e.hiddenBoss then
   workspace:SetAttribute("MeadowHiddenBossDefeated",true);msg(p,"히든 보스 격파 · "..display);feedback(p,"HIDDEN_BOSS_KILL")
  elseif e.runBoss then
@@ -1976,6 +1989,33 @@ local function houseAction(p,action)
  refreshHouse(p);teleportPlayer(p,housePosition(p)+Vector3.new(0,5,-12));msg(p,"건축 변경 적용 · 내 집에서 확인해 ("..cost.."G)");feedback(p,"BUILD");return true
 end
 
+-- 문명·연구: 서버 검증으로만 상태와 자원을 변경한다.
+local function civilizationAction(p,a)
+ if saveReady[p]~=true or p:GetAttribute("SaveState")=="SESSION_ONLY" then msg(p,"저장 연결 후 이용해.");return false end
+ if n(p,"CurrentZone",0)~=0 or p:GetAttribute("InCombat")==true or os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds then msg(p,"전투가 끝난 마을에서만 가능해.");return false end
+ local raceId=tonumber(a:match("^CIV_SELECT:(%d+)$"))
+ if raceId then
+  local race=RaceData.GetRace(raceId)
+  if not race or n(p,"RaceID",0)~=0 then return false end
+  p:SetAttribute("RaceID",raceId);setStats(p,true)
+  msg(p,"문명 선택 · "..race.Name);feedback(p,"CIVILIZATION");return true
+ end
+ local techId=tonumber(a:match("^CIV_RESEARCH:(%d+)$"))
+ if not techId or n(p,"RaceID",0)==0 then return false end
+ local done=math.clamp(math.floor(n(p,"CivTechCount",0)),0,TechTreeData.Count)
+ if techId~=done+1 then return false end
+ local tech=TechTreeData.GetTech(techId);if not tech then return false end
+ local race=RaceData.GetRace(n(p,"RaceID",0))
+ local discount=race and ((tech.Era==1 and race.Bonuses.MythResearchDiscount)or(tech.Era==3 and race.Bonuses.BronzeDiscount))or 0
+ local eureka=n(p,tech.EurekaMetric,0)>=tech.EurekaTarget
+ local resource,cost=next(tech.RequiredResources)
+ local required=math.max(1,math.ceil(cost*(eureka and .5 or 1)*(1-discount)))
+ if n(p,resource,0)<required then msg(p,"연구 자원 부족 · "..required.."개 필요");return false end
+ p:SetAttribute(resource,n(p,resource,0)-required);p:SetAttribute("CivTechCount",done+1)
+ msg(p,(eureka and "유레카 · "or"연구 완료 · ")..tech.Name);feedback(p,"CIV_RESEARCH")
+ return true
+end
+
 remote.OnServerEvent:Connect(function(p,a)
  if typeof(a)~="string"then return end
  local now=os.clock();local isBlock=a==C.Actions.BLOCK_START or a==C.Actions.BLOCK_END
@@ -1985,7 +2025,8 @@ remote.OnServerEvent:Connect(function(p,a)
   if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end;lastRequest[p]=now
  end
  local accepted=false
- if a==C.Actions.CUSTOMIZE_NEXT then
+ if a:sub(1,4)=="CIV_" then accepted=civilizationAction(p,a)
+ elseif a==C.Actions.CUSTOMIZE_NEXT then
   if n(p,"CurrentZone",0)==0 and p:GetAttribute("InCombat")~=true and saveReady[p]==true then
    p:SetAttribute("AvatarStyle",n(p,"AvatarStyle",1)%6+1);applyPlayerAppearance(p)
    msg(p,"외형 스타일 "..n(p,"AvatarStyle",1).."/6");accepted=true
