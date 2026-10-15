@@ -1092,6 +1092,62 @@ local function civOnEnemyStrike(enemy, player, now)
   humanoid:TakeDamage(damage)
   civMessage(player, enemy.Model.Name .. "의 공격! 체력 -" .. damage)
 end
+-- 24문명 세계에 직접 보이는 R15 비율의 블록형 전사 조형물.
+-- 실제 NPC/동료나 Humanoid가 아니며 기존 전투 타깃과 물리 검사에 영향을 주지 않는다.
+local function civBuildCultureFigure(region, race, id, center)
+  local origin = center + Vector3.new(-16, 1, 0)
+  local fabric = civRegions[((id - 1) % #civRegions) + 1]
+  local bronze = Color3.fromRGB(200, 154, 91)
+  local skin = Color3.fromRGB(190, 148, 114)
+  local figure = Instance.new("Model")
+  figure.Name = race.Name .. " 전사 조형물"
+  figure:SetAttribute("CivilizationCultureDisplay", true)
+  figure.Parent = region
+  local function part(name, size, offset, color)
+    local piece = civPart(figure, name, size, CFrame.new(origin + offset),
+      color, Enum.Material.SmoothPlastic, false)
+    piece.CanTouch = false
+    piece.CanQuery = false
+    return piece
+  end
+  local chest = part("BlockyTorso", Vector3.new(1.8, 1.8, 0.9),
+    Vector3.new(0, 2.7, 0), fabric)
+  part("ChestEmblem", Vector3.new(0.6, 0.6, 0.12), Vector3.new(0, 2.9, -0.52), bronze)
+  part("Waist", Vector3.new(1.8, 0.38, 0.9), Vector3.new(0, 1.68, 0), bronze)
+  for _, side in ipairs({-1, 1}) do
+    part("Arm" .. side, Vector3.new(0.7, 1.65, 0.75),
+      Vector3.new(side * 1.23, 2.65, 0), fabric)
+    part("Leg" .. side, Vector3.new(0.72, 1.65, 0.8),
+      Vector3.new(side * 0.5, 0.85, 0), fabric)
+  end
+  part("Head", Vector3.new(1.12, 1.06, 1.06), Vector3.new(0, 4.25, 0), skin)
+  local visual = race.Visual
+  if visual:find("터번", 1, true) or visual:find("모피", 1, true)
+    or visual:find("우샨카", 1, true) then
+    part("ClothHeadwrap", Vector3.new(1.45, 0.55, 1.31),
+      Vector3.new(0, 4.85, 0), fabric)
+    part("HeadwrapBand", Vector3.new(1.25, 0.28, 1.2),
+      Vector3.new(0, 5.18, 0), bronze)
+  elseif visual:find("깃털", 1, true) or visual:find("월계관", 1, true) then
+    part("HeadBand", Vector3.new(1.4, 0.3, 1.25),
+      Vector3.new(0, 4.91, 0), bronze)
+    part("HeadCrest", Vector3.new(0.26, 0.95, 0.28),
+      Vector3.new(0, 5.49, 0), fabric)
+  elseif visual:find("네메스", 1, true) or visual:find("장신구", 1, true) then
+    part("CeremonialCrown", Vector3.new(1.38, 0.48, 1.25),
+      Vector3.new(0, 4.98, 0), bronze)
+    part("CrownGem", Vector3.new(0.3, 0.52, 0.16),
+      Vector3.new(0, 5.32, -0.65), fabric)
+  else
+    part("CulturalHelmet", Vector3.new(1.42, 0.56, 1.31),
+      Vector3.new(0, 4.95, 0), bronze)
+    part("HelmetCrest", Vector3.new(0.86, 0.26, 0.27),
+      Vector3.new(0, 5.36, 0), fabric)
+  end
+  civSign(region, chest, race.Name .. "\n" .. race.Visual, 4.8)
+  return figure
+end
+
 -- 문명 지역과 중앙 포털: 메인 지면/저장 키는 그대로 유지한다.
 -- 중앙 문명 광장: 포털 이동 기능을 가진 패드와 독립된 비충돌 장식이다.
 local lobbyBase = civPart(civHub, "광장 석상 기단", Vector3.new(8, 0.8, 5),
