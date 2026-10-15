@@ -382,3 +382,24 @@ test('대충알피지 6칸 장비 미리보기와 5시대 배너는 기존 저�
   assert.match(config, /GameName = "대충알피지"/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
+
+test('대충알피지 중앙 포털 광장은 비충돌 장식이고 기존 24문명 이동을 유지한다', () => {
+  assert.match(server, /local lobbyBase = civPart\(civHub, "광장 석상 기단"/);
+  assert.match(server, /local lobbyCore = civPart\(civHub, "광장 차원 심장"/);
+  assert.match(server, /lobbyLight\.Name = "AmberPortalGlow"/);
+  assert.match(server, /lobbyLight\.Range = 12/);
+  assert.match(server, /local featuredPortalColors = \{/);
+  for (const id of [1, 2, 12, 15]) {
+    assert.ok(server.includes('[' + id + '] = Color3.fromRGB('), 'featured portal ' + id);
+  }
+  for (const name of ['lobbyBase', 'lobbyCore', 'pillar', 'torch', 'lobbyCrown', 'shimmer', 'column', 'lintel']) {
+    assert.ok(server.includes(name + '.CanTouch = false'), name + ' must not activate touch');
+    assert.ok(server.includes(name + '.CanQuery = false'), name + ' must not block rays');
+  }
+  assert.match(server, /local portal = civPart\(civHub, "포털 " \.\. race\.Name/);
+  assert.match(server, /portal\.Touched:Connect\(function\(hit\)/);
+  assert.match(server, /civTravel\(player, id\)/);
+  assert.match(server, /for id = 1, 24 do/);
+  assert.match(server, /civPortalTeleport\(player, destinationID\)/);
+  assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
+});
