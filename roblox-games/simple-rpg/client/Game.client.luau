@@ -1903,6 +1903,8 @@ local housingToggle=civButton(civGui,"HousingToggle","건축",
     housingPanel.Visible=not housingPanel.Visible
   end)
 housingToggle.ZIndex=15
+-- 건축은 기존 왼쪽 메뉴에서 접근하며 별도 고정 버튼은 표시하지 않는다.
+housingToggle.Visible=false
 local function civRender()
   local id = player:GetAttribute("CivRaceID") or 0
   local race = RaceData.GetRace(id)
