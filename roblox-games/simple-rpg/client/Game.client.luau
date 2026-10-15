@@ -1490,7 +1490,7 @@ civButton(civMenuRail, "TradeMenu", "무역",
     civOpen("Trade")
     tradeRequestRemote:FireServer("Snapshot", 0, false, "Silver")
   end)
-civButton(civMenuRail, "RegionMapMenu", "지역 선택",
+civButton(civMenuRail, "RegionMapMenu", "모험 이동",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Regions") end)
 civButton(civMenuRail, "InventoryMenu", "가방",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Inventory") end)
@@ -1502,7 +1502,7 @@ civButton(civMenuRail, "CompanionMenu", "AI 동료",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Companions") end)
 civButton(civMenuRail, "TechMenu", "연구",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function() civOpen("Techs") end)
-civButton(civMenuRail, "Travel", "영지/로비",
+civButton(civMenuRail, "Travel", "로비 복귀",
   UDim2.new(1, -8, 0, 45), UDim2.new(), function()
     remote:FireServer("CivTravel", "Lobby")
   end)
