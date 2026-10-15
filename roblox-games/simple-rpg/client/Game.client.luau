@@ -769,6 +769,9 @@ local function civOpen(mode)
         showPreview(currentPreviewId)
       end
     end)
+    racePreview.Destroying:Once(function()
+      toneChangedConnection:Disconnect()
+    end)
     showPreview(currentPreviewId)
     for id = 1, 24 do
       local race = RaceData.GetRace(id)
