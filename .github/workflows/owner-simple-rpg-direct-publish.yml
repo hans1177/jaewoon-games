@@ -10,6 +10,12 @@ on:
       - 'roblox-games/simple-rpg/**'
       - '.github/workflows/owner-simple-rpg-direct-publish.yml'
   workflow_dispatch:
+    inputs:
+      upload_actor_assets:
+        description: 'KayKit CC0 GLB 9종을 Roblox 에셋에 등록 (게임 게시와 별도)'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -23,6 +29,32 @@ env:
   GAME_NAME: '대충알피지'
 
 jobs:
+  upload_actor_assets:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout owner asset sources
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Register existing CC0 GLB models into Roblox asset inventory
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_CREATOR_USER_ID: ${{ vars.ROBLOX_CREATOR_USER_ID }}
+        run: node tools/simple-rpg-upload-actors.mjs /tmp/simple-rpg-imported-actors.json
+      - name: Store Roblox model IDs and Studio import script
+        uses: actions/upload-artifact@v4
+        with:
+          name: daechungalpiji-verified-roblox-actor-assets
+          path: |
+            /tmp/simple-rpg-imported-actors.json
+            /tmp/simple-rpg-imported-actors-studio-import.luau
+          if-no-files-found: error
+          retention-days: 14
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 25
