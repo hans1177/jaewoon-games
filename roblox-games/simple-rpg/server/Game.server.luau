@@ -1926,6 +1926,82 @@ end
 local lobbyGround = civPart(civHub, "CivilizationLobbyGround", Vector3.new(64, 2, 64),
   CFrame.new(0, -1, 0), Color3.fromRGB(111, 132, 101), Enum.Material.Slate, true)
 lobbyGround:SetAttribute("WalkableGround", true)
+-- 메인: 기획서의 24문명 세계관을 표현하는 거대 신전형 로비.
+-- 기존 공용 건축 에셋을 사용하고, 전투·이동·저장 판정에는 참여하지 않는다.
+local monumentStone = Color3.fromRGB(161, 148, 124)
+local monumentGold = Color3.fromRGB(190, 144, 72)
+local function lobbyMonumentPart(name, size, frame, color, material)
+  local piece = civPart(civHub, name, size, frame, color, material, false)
+  piece.CanCollide = false
+  piece.CanTouch = false
+  piece.CanQuery = false
+  return piece
+end
+local function lobbyBuildingAsset(assetName, position, scale, rotation)
+  local frame = CFrame.new(position) * CFrame.Angles(0, math.rad(rotation or 0), 0)
+  local ok, model = pcall(function()
+    return CommonBuilding.Create(assetName, {
+      parent = civHub, pivot = frame, scale = scale, quality = "far", anchored = true,
+    })
+  end)
+  if ok and model then
+    for _, descendant in ipairs(model:GetDescendants()) do
+      if descendant:IsA("BasePart") then
+        descendant.CanCollide = false
+        descendant.CanTouch = false
+        descendant.CanQuery = false
+      end
+    end
+  else
+    warn("SIMPLE_RPG_LOBBY_ASSET_LOAD_FAILED", assetName)
+  end
+end
+-- 남쪽 진입로에서 정면으로 보이는 24문명 대문: 가운데 통로는 비운다.
+for _, side in ipairs({-1, 1}) do
+  local x = side * 19
+  lobbyMonumentPart("문명 대문 기단", Vector3.new(11, 4, 11),
+    CFrame.new(x, 2, 41), monumentStone, Enum.Material.Sandstone)
+  lobbyMonumentPart("문명 대문 석주", Vector3.new(6, 30, 6),
+    CFrame.new(x, 18, 41), monumentStone, Enum.Material.Marble)
+  lobbyMonumentPart("문명 대문 금장", Vector3.new(8, 2, 8),
+    CFrame.new(x, 32, 41), monumentGold, Enum.Material.Metal)
+  lobbyBuildingAsset("PILLAR_STONE", Vector3.new(x, 5, 41), 3.2)
+end
+lobbyMonumentPart("문명 대문 상부", Vector3.new(47, 6, 9),
+  CFrame.new(0, 37, 41), monumentStone, Enum.Material.Sandstone)
+local gateTitle = lobbyMonumentPart("대충알피지 신전 현판", Vector3.new(34, 4, 1),
+  CFrame.new(0, 37, 35.9), Color3.fromRGB(93, 68, 49), Enum.Material.WoodPlanks)
+civSign(civHub, gateTitle, "대충알피지 · 24문명의 시작", 14)
+-- 북쪽 신전은 광장 중심에서 바라보는 거대한 배경 랜드마크다.
+for tier = 1, 4 do
+  lobbyMonumentPart("고대 신전 계단 " .. tier,
+    Vector3.new(62 - tier * 7, 2, 38 - tier * 5),
+    CFrame.new(0, tier * 2 - 1, -62), monumentStone, Enum.Material.Sandstone)
+end
+for _, x in ipairs({-19, -11, -3, 5, 13, 21}) do
+  lobbyMonumentPart("고대 신전 기둥", Vector3.new(3, 24, 3),
+    CFrame.new(x - 1, 20, -62), Color3.fromRGB(191, 179, 155), Enum.Material.Marble)
+  lobbyBuildingAsset("PILLAR_STONE", Vector3.new(x - 1, 10, -62), 2.5)
+end
+lobbyMonumentPart("고대 신전 처마", Vector3.new(54, 5, 27),
+  CFrame.new(0, 34, -62), Color3.fromRGB(113, 85, 63), Enum.Material.Slate)
+local templeTitle = lobbyMonumentPart("고대 신전 문양", Vector3.new(28, 5, 1),
+  CFrame.new(0, 28, -48), monumentGold, Enum.Material.Metal)
+civSign(civHub, templeTitle, "고대 문명의 대전당", 15)
+-- 기존 세계 에셋으로 광장 가장자리와 문명 길목에 반복 조형을 구성한다.
+for _, side in ipairs({-1, 1}) do
+  for index = 1, 4 do
+    local z = -31 + (index - 1) * 19
+    lobbyBuildingAsset("PILLAR_STONE", Vector3.new(side * 41, 0, z), 1.9)
+    lobbyMonumentPart("문명 깃발 기둥", Vector3.new(1.2, 17, 1.2),
+      CFrame.new(side * 48, 9, z), monumentStone, Enum.Material.Wood)
+    lobbyMonumentPart("문명 깃발", Vector3.new(6, 8, 0.6),
+      CFrame.new(side * 45, 14, z),
+      index % 2 == 0 and Color3.fromRGB(117, 76, 61) or Color3.fromRGB(65, 91, 115),
+      Enum.Material.Fabric)
+  end
+end
+civHub:SetAttribute("LobbyVisualRevision", "GRAND_CIVILIZATION_TEMPLE_V1")
 -- ambientCG CC0 외부 재질: 저장소에서 업로드 번호가 확인된 색상맵만 적용한다.
 -- 텍스처 전송이 막혀도 기존 Roblox Slate/Wood 재질로 지면과 상점은 유지된다.
 local lobbyStoneTexture = Instance.new("Texture")
