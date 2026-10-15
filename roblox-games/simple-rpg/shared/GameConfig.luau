@@ -15,7 +15,18 @@ local Config = {
   MinimumParticipants = 2,
   RemoteName = "GameAction",
   RateLimitSeconds = 0.10,
-  Civilization = { BaseParryWindow = 0.25, DodgeIFrame = 0.30, GuardCooldown = 0.50, DodgeCooldown = 0.80, AttackCooldown = 0.55, GatherCooldown = 0.70, WorldRadius = 220, RaceCount = 24, TechCount = 72 },
+  Civilization = {
+    BaseParryWindow = 0.25, DodgeIFrame = 0.30,
+    GuardCooldown = 0.50, DodgeCooldown = 0.80,
+    AttackCooldown = 0.55, GatherCooldown = 0.70,
+    GuardStamina = 14, DodgeStamina = 24, AttackStamina = 11,
+    StaminaMax = 100, StaminaRegenPerSecond = 12,
+    WorldRadius = 220, RaceCount = 24, TechCount = 72,
+    -- 라이선스 검증된 소유 이미지가 업로드되면 9-Slice 질감을 적용한다.
+    UIWoodImage = "", UIParchmentImage = "", UISlice = {24,24,40,40},
+    -- 검증되지 않은 애니메이션 자산을 등록하지 않는다. R15 절차형 대체 모션 사용.
+    AnimationIds = {Attack1 = "", Attack2 = "", Attack3 = "", Guard = "", Dodge = ""},
+  },
   DesignBaseline = {
     Required = true,
     AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -305,6 +316,7 @@ local Config = {
     CivWood = 25, CivStone = 25, CivBronze = 0, CivIron = 0,
     CivResearch = 24, CivFood = 0, CivSilver = 0,
     CivGather = 0, CivKills = 0, CivParries = 0, CivDodges = 0,
+    CivInventoryJSON = "[]", CivHotbarJSON = "[]",
   },
   Actions = {
     { Id = "genre-core", Label = "Strategy / Board & Card Games core gameplay", Kind = "OBJECTIVE", Order = 1, LearningPattern = "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view." },
