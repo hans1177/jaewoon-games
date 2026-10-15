@@ -527,6 +527,30 @@ local function civOpen(mode)
       button.TextSize = 14
       if selected == id then button.BackgroundColor3 = Color3.fromRGB(119, 94, 41) end
     end
+  elseif mode == "Inventory" then
+    panelTitle.Text = "가방 · 4×8"
+    local resources = {
+      {"목재", "CivWood"}, {"석재", "CivStone"}, {"청동", "CivBronze"}, {"철광", "CivIron"},
+      {"식량", "CivFood"}, {"은화", "CivSilver"}, {"연구력", "CivResearch"},
+    }
+    local grid = Instance.new("Frame")
+    grid.Name = "InventoryGrid"
+    grid.Size = UDim2.new(1, -9, 0, 8 * 48)
+    grid.BackgroundTransparency = 1
+    grid.Parent = civList
+    local layout = Instance.new("UIGridLayout")
+    layout.CellSize = UDim2.new(0.25, -6, 0, 43)
+    layout.CellPadding = UDim2.fromOffset(4, 4)
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Parent = grid
+    for slot = 1, 32 do
+      local resource = resources[slot]
+      local caption = resource and (resource[1] .. "\n" .. tostring(player:GetAttribute(resource[2]) or 0)) or "빈 칸"
+      local cell = civLabel(grid, "BagSlot" .. slot, caption,
+        UDim2.fromScale(0.25, 0.1), UDim2.new(), true)
+      cell.LayoutOrder = slot
+      cell.TextSize = 12
+    end
   else
     panelTitle.Text = "파피루스 테크트리 · 72개"
     local techCount = player:GetAttribute("CivTech") or 0
@@ -582,6 +606,30 @@ civButton(civGui, "Legacy", "기존 RPG",
     gui.Enabled = not gui.Enabled
     civPanel.Visible = false
   end)
+civButton(civGui, "BagMenu", "가방 4×8",
+  UDim2.fromOffset(90, 40), UDim2.fromOffset(10, 201), function() civOpen("Inventory") end)
+-- 퀵슬롯은 기존 서버 검증 액션을 그대로 호출한다.
+local civQuick = {
+  {"공격", function() remote:FireServer("CivAttack") end},
+  {"패링", function() remote:FireServer("CivGuard") end},
+  {"회피", function() remote:FireServer("CivDodge") end},
+  {"채집", function() remote:FireServer("CivGather") end},
+  {"가방", function() civOpen("Inventory") end},
+  {"연구", function() civOpen("Techs") end},
+  {"문명", function() civOpen("Races") end},
+  {"영지", function() remote:FireServer("CivTravel") end},
+}
+local quickbar = Instance.new("Frame")
+quickbar.Name = "CivilizationQuickbar"
+quickbar.Size = UDim2.new(1, -16, 0, 40)
+quickbar.Position = UDim2.new(0, 8, 1, -47)
+quickbar.BackgroundTransparency = 1
+quickbar.Parent = civGui
+for index, entry in ipairs(civQuick) do
+  local quick = civButton(quickbar, "Quick" .. index, tostring(index) .. " " .. entry[1],
+    UDim2.new(0.125, -3, 1, 0), UDim2.new((index - 1) / 8, 0, 0, 0), entry[2])
+  quick.TextSize = 11
+end
 local civButtons = {
   {"Attack", "공격", "CivAttack", 94, 105},
   {"Guard", "패링", "CivGuard", 94, 172},
@@ -612,7 +660,11 @@ end
 for _, name in ipairs(civWatched) do
   player:GetAttributeChangedSignal(name):Connect(function()
     civRender()
-    if civPanel.Visible and civPanelMode == "Techs" then civPanel.Visible = false; civOpen("Techs") end
+    if civPanel.Visible and (civPanelMode == "Techs" or civPanelMode == "Inventory") then
+      local mode = civPanelMode
+      civPanel.Visible = false
+      civOpen(mode)
+    end
   end)
 end
 civRender()
@@ -637,6 +689,14 @@ UserInputService.InputBegan:Connect(function(input, consumed)
   elseif input.KeyCode == Enum.KeyCode.LeftShift then remote:FireServer("CivDodge")
   elseif input.KeyCode == Enum.KeyCode.E then remote:FireServer("CivGather")
   elseif input.KeyCode == Enum.KeyCode.T then civOpen("Techs")
+  elseif input.KeyCode == Enum.KeyCode.One then civQuick[1][2]()
+  elseif input.KeyCode == Enum.KeyCode.Two then civQuick[2][2]()
+  elseif input.KeyCode == Enum.KeyCode.Three then civQuick[3][2]()
+  elseif input.KeyCode == Enum.KeyCode.Four then civQuick[4][2]()
+  elseif input.KeyCode == Enum.KeyCode.Five then civQuick[5][2]()
+  elseif input.KeyCode == Enum.KeyCode.Six then civQuick[6][2]()
+  elseif input.KeyCode == Enum.KeyCode.Seven then civQuick[7][2]()
+  elseif input.KeyCode == Enum.KeyCode.Eight then civQuick[8][2]()
   elseif input.UserInputType == Enum.UserInputType.MouseButton1 and not civPanel.Visible then
     remote:FireServer("CivAttack")
   end
