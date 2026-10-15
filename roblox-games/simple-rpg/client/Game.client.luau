@@ -1676,16 +1676,18 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         local swing = math.sin(creatureMotionPhase * (moving and 8 or 2.1)) * amplitude
         if preparing then swing = -0.48 + swing end
         if defeated then swing = 0.9 end
-        for _, name in ipairs({"Left Arm", "Right Arm", "LeftLimb", "RightLimb"}) do
+        for _, name in ipairs({"Left Arm", "Right Arm", "Left Leg", "Right Leg", "LeftLimb", "RightLimb"}) do
           local part = model:FindFirstChild(name)
           if part and part:IsA("BasePart") then
-            local sign = (name == "Left Arm" or name == "LeftLimb") and 1 or -1
+            local sign = (name == "Left Arm" or name == "Left Leg" or name == "LeftLimb") and 1 or -1
             local base = part:GetAttribute("MotionBaseOffset")
             if typeof(base) ~= "CFrame" then
               base = rootPart.CFrame:ToObjectSpace(part.CFrame)
               part:SetAttribute("MotionBaseOffset", base)
             end
-            part.CFrame = rootPart.CFrame * base * CFrame.Angles(sign * swing, 0, 0)
+            local leg = name == "Left Leg" or name == "Right Leg"
+            local angle = leg and -sign * swing or sign * swing
+            part.CFrame = rootPart.CFrame * base * CFrame.Angles(angle, 0, 0)
           end
         end
       end
