@@ -540,9 +540,7 @@ local function civGather(player, requestedType)
     or (race.PassiveType == "Industry" and best.Type == "Iron") and 1.15
     or (race.PassiveType == "Cold" and (best.Type == "Iron" or best.Type == "Bronze")) and 1.25 or 1
   local amount = math.max(1, math.floor(3 * bonus + 0.5))
-  local resourceField = (best.Type == "CopperOre" or best.Type == "TinOre" or best.Type == "IronOre" or best.Type == "Coal")
-    and "Civ" .. best.Type or "Civ" .. best.Type
-  civIncrease(player, resourceField, amount)
+  civIncrease(player, "Civ" .. best.Type, amount)
   civIncrease(player, "CivGather", 1)
   civIncrease(player, "CivResearch", 1)
   civMessage(player, best.Label .. " +" .. amount .. " / 연구력 +1")
