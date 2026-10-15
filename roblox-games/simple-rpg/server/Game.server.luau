@@ -520,7 +520,7 @@ local function civSelect(player, raceID)
   civMessage(player, RaceData.GetRace(raceID).Name .. " 문명을 선택했어.")
   civTravel(player, raceID)
 end
-local function civGather(player)
+local function civGather(player, requestedType)
   if not civRace(player) or not civNowReady(player, "Gather", civ.GatherCooldown) then return end
   local character = player.Character
   local root = character and character:FindFirstChild("HumanoidRootPart")
@@ -528,8 +528,10 @@ local function civGather(player)
   if not root or not humanoid or humanoid.Health <= 0 then return end
   local best, dist = nil, 14
   for _, node in ipairs(civNodes) do
-    local d = (node.Part.Position - root.Position).Magnitude
-    if d < dist then best = node; dist = d end
+    if requestedType == nil or node.Type == requestedType then
+      local d = (node.Part.Position - root.Position).Magnitude
+      if d < dist then best = node; dist = d end
+    end
   end
   if not best then civMessage(player, "자원 기둥에 가까이 가서 채집해."); return end
   local race = civRace(player)
@@ -538,7 +540,9 @@ local function civGather(player)
     or (race.PassiveType == "Industry" and best.Type == "Iron") and 1.15
     or (race.PassiveType == "Cold" and (best.Type == "Iron" or best.Type == "Bronze")) and 1.25 or 1
   local amount = math.max(1, math.floor(3 * bonus + 0.5))
-  civIncrease(player, "Civ" .. best.Type, amount)
+  local resourceField = (best.Type == "CopperOre" or best.Type == "TinOre" or best.Type == "IronOre" or best.Type == "Coal")
+    and "Civ" .. best.Type or "Civ" .. best.Type
+  civIncrease(player, resourceField, amount)
   civIncrease(player, "CivGather", 1)
   civIncrease(player, "CivResearch", 1)
   civMessage(player, best.Label .. " +" .. amount .. " / 연구력 +1")
@@ -552,6 +556,13 @@ local function civResearch(player)
   if readNumber(player, "CivTech", 0) ~= tech.Prerequisite then return end
   local factor = 1
   if readNumber(player, tech.EurekaMetric, 0) >= tech.EurekaCount then factor *= 0.5 end
+  -- Owner age-chain eureka at the canonical stone/bronze/iron entry nodes (15, 29, 45).
+  if (nextID == 15 and readNumber(player, "CivBoarKills", 0) >= 1)
+    or (nextID == 29 and readNumber(player, "CivBronzeSmelts", 0) >= 5)
+    or (nextID == 45 and readNumber(player, "CivIronKnightKills", 0) >= 1) then
+    factor = math.min(factor, 0.5)
+  end
+  if race.ID == 15 and readNumber(player, "CivDangunAltar", 0) >= 1 then factor *= 0.85 end
   if race.PassiveType == "Research" then factor *= 0.85 end
   if race.PassiveType == "MythDiscount" and tech.Era == 1 then factor *= 0.8 end
   if race.PassiveType == "AgeDiscount" and (nextID == 15 or nextID == 29 or nextID == 45 or nextID == 61) then factor *= 0.85 end
