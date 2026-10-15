@@ -844,7 +844,19 @@ local function civBuildHousing(player, request)
   local piece = civPart(ownerFolder,request.Key.."_"..tostring(civHousingCounts[player] or 0),
     definition.Size,CFrame.new(placeAt)*CFrame.Angles(0,math.rad(rotation),0),Color3.fromRGB(149,129,102),
     Enum.Material.WoodPlanks,true)
-  if request.Key == "TriangleFoundation" then piece.Shape=Enum.PartType.Wedge end
+  if request.Key == "TriangleFoundation" or request.Key == "Stairs" then
+    piece.Shape=Enum.PartType.Wedge
+  elseif request.Key == "Ladder" then
+    -- 물리적 경사로 대신 사다리의 사다리꼴 충돌체와 Climbable 트러스를 사용한다.
+    piece.CanCollide=false
+    local climb=Instance.new("TrussPart")
+    climb.Name="HousingLadderClimb"
+    climb.Size=Vector3.new(2,8,2)
+    climb.CFrame=piece.CFrame
+    climb.Anchored=true
+    climb.CanCollide=true
+    climb.Parent=piece
+  end
   local records = civHousingRecords[player] or {}
   local nextId = 1
   for _, existing in ipairs(records) do nextId = math.max(nextId, (existing.Id or 0) + 1) end
@@ -885,7 +897,18 @@ local function civRestoreHousing(player, saved)
         local piece = civPart(ownerFolder,entry.Key.."_Restored"..tostring(#records+1),
           definition.Size,CFrame.new(location)*CFrame.Angles(0,math.rad(entry.Rotation),0),
           Color3.fromRGB(149,129,102),Enum.Material.WoodPlanks,true)
-        if entry.Key == "TriangleFoundation" then piece.Shape = Enum.PartType.Wedge end
+        if entry.Key == "TriangleFoundation" or entry.Key == "Stairs" then
+          piece.Shape = Enum.PartType.Wedge
+        elseif entry.Key == "Ladder" then
+          piece.CanCollide=false
+          local climb=Instance.new("TrussPart")
+          climb.Name="HousingLadderClimb"
+          climb.Size=Vector3.new(2,8,2)
+          climb.CFrame=piece.CFrame
+          climb.Anchored=true
+          climb.CanCollide=true
+          climb.Parent=piece
+        end
         local pieceId = typeof(entry.Id) == "number" and entry.Id % 1 == 0
           and entry.Id >= 1 and entry.Id <= 1000000 and entry.Id or (#records + 1)
         decorateHousingPiece(piece,entry.Key)
