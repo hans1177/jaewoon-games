@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-buma8q",
+      "worker": "vibe2",
+      "taskId": "internal-motion-phi-pop-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/phi-pop/init.luau"
+      ],
+      "baseSha": "e64b57a6f056d0114414a42b3ed6c40bfc9b34f0",
+      "runId": "38679617236",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-15T04:18:37.787Z",
+      "expiresAt": "2026-10-15T05:03:37.787Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-phi-pop-walk-v1"
+      ]
+    }
+  ]
 }
