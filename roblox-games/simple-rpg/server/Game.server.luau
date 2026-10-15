@@ -1099,6 +1099,23 @@ local function civAttack(player, targetModel)
       additionalLoot = " / 다크 아이언 +1 / 철기 유레카!"
     end
     if race.PassiveType == "Victory" then player:SetAttribute("CivVictoryUntil", os.clock() + 10) end
+    -- Loot is granted above by the server; this short-lived marker is visual only.
+    local trophy = Instance.new("Part")
+    trophy.Name = "DefeatedEnemyLootEffect"
+    trophy.Shape = Enum.PartType.Ball
+    trophy.Size = Vector3.new(1.2, 1.2, 1.2)
+    trophy.Material = Enum.Material.Neon
+    trophy.Color = chosen.Special == "BronzeGolem" and Color3.fromRGB(83, 207, 229)
+      or chosen.Special == "IronKnight" and Color3.fromRGB(133, 88, 180)
+      or chosen.Special == "WildBoar" and Color3.fromRGB(195, 154, 91)
+      or Color3.fromRGB(232, 189, 92)
+    trophy.Anchored = true
+    trophy.CanCollide = false
+    trophy.CanTouch = false
+    trophy.CanQuery = false
+    trophy.CFrame = CFrame.new(chosen.Root.Position + Vector3.new(0, 3, 0))
+    trophy.Parent = civHub
+    game:GetService("Debris"):AddItem(trophy, 2.5)
     civMessage(player, chosen.Model.Name .. " 처치! 연구력 +8 / 은화 +3" .. additionalLoot)
     chosen.TelegraphAt = 0
     chosen.TargetUserId = nil
