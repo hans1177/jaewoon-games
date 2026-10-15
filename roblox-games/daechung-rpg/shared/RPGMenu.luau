@@ -64,11 +64,6 @@ function Menu.install(config,gui,player,options)
  local overlay=make("Frame",gui,"RPGSystemMenu",{Visible=false,Active=true,BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=.28,Size=UDim2.fromScale(1,1),ZIndex=50})
  local panel=make("Frame",overlay,"MenuPanel",{AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5),BackgroundColor3=colors.base,BorderSizePixel=0,ZIndex=51})
  round(panel,16)
- -- 검증된 전용 이미지가 등록됐을 때만 9-Slice 텍스처를 사용한다.
- local textures=config.CivilizationUITextures or {}
- if typeof(textures.Wood)=="string" and textures.Wood~="" then
-  make("ImageLabel",panel,"WoodNineSlice",{BackgroundTransparency=1,Image=textures.Wood,ScaleType=Enum.ScaleType.Slice,SliceCenter=Rect.new(24,24,40,40),Size=UDim2.fromScale(1,1),ZIndex=panel.ZIndex})
- end
  make("UIGradient",panel,"WoodGrain",{Rotation=87,Color=ColorSequence.new(Color3.fromRGB(135,103,64),Color3.fromRGB(66,44,30))})
  -- 등록된 소유 원목 9-Slice 이미지만 적용한다. 미등록이면 원목 그라데이션으로 표시.
  local uiArt=config.CivilizationUIArt or {}
@@ -149,7 +144,9 @@ function Menu.install(config,gui,player,options)
   local b=button(quickGrid,"QuickSlot"..index,tostring(index).." · -")
   b.TextSize=12;b.TextWrapped=true;b.LayoutOrder=index
   b.Activated:Connect(function()
-   if selectedTool and selectedTool:IsA("Tool")then quickTools[index]=selectedTool;refreshQuickButtons()
+   if selectedTool and selectedTool:IsA("Tool")then
+    if quickTools[index]==selectedTool then equipQuick(index)
+    else quickTools[index]=selectedTool;refreshQuickButtons()end
    else equipQuick(index)end
   end)
   quickButtons[index]=b
