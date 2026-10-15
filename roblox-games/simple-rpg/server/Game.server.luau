@@ -1255,6 +1255,38 @@ end
 local continentGround = civPart(civHub, "문명 대륙", Vector3.new(520, 2, 520),
   CFrame.new(0, -2, 0), Color3.fromRGB(112, 143, 103), Enum.Material.Grass, true)
 continentGround:SetAttribute("WalkableGround", true)
+-- 중앙 산줄기와 강줄기는 문명 이동로에서 떨어진 비충돌 지형으로 구성한다.
+-- 전투 레이캐스트·채집 프롬프트·이동 판정과 충돌하지 않도록 장식은 조회하지 않는다.
+for index = 1, 16 do
+  local theta = (index - 1) * math.pi * 2 / 16
+  local radius = 95 + (index % 3) * 17
+  local base = Vector3.new(math.cos(theta) * radius, 0, math.sin(theta) * radius)
+  local hill = civPart(civHub, "산등성이 " .. index,
+    Vector3.new(25 + index % 3 * 7, 18 + index % 4 * 8, 28),
+    CFrame.new(base + Vector3.new(0, 6, 0)) * CFrame.Angles(0, theta, math.rad(15)),
+    Color3.fromRGB(104, 115 + index % 4 * 6, 98), Enum.Material.Rock, false)
+  hill.Shape = Enum.PartType.Ball
+  hill.CanTouch = false
+  hill.CanQuery = false
+end
+for index = 1, 18 do
+  local z = -182 + index * 20
+  local x = -72 + math.sin(index * 0.57) * 18
+  local water = civPart(civHub, "곡류 하천 " .. index, Vector3.new(19, 0.25, 23),
+    CFrame.new(x, -0.78, z), Color3.fromRGB(79, 134, 170), Enum.Material.Glass, false)
+  water.Transparency = 0.28
+  water.CanTouch = false
+  water.CanQuery = false
+end
+for index = 1, 4 do
+  local lake = civPart(civHub, "호수 " .. index, Vector3.new(24, 0.3, 30),
+    CFrame.new(62 + (index % 2) * 25, -0.76, -128 + index * 46),
+    Color3.fromRGB(86, 144, 183), Enum.Material.Glass, false)
+  lake.Shape = Enum.PartType.Cylinder
+  lake.Transparency = 0.24
+  lake.CanTouch = false
+  lake.CanQuery = false
+end
 local lobbyGround = civPart(civHub, "CivilizationLobbyGround", Vector3.new(64, 2, 64),
   CFrame.new(0, -1, 0), Color3.fromRGB(111, 132, 101), Enum.Material.Slate, true)
 lobbyGround:SetAttribute("WalkableGround", true)
