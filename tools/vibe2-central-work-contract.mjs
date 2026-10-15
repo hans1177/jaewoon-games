@@ -6,7 +6,9 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { VIBE_WORK_LOCK_STATE_BRANCH, VIBE_WORK_LOCK_STATE_PATH } from '../assets/vibe-work-lock.js';
-import { compileOwnerCanonicalConstitution, compileCentralArchitectureProjection } from './company-shared-context.mjs';
+// Legacy central policy document and compiler were removed by owner instruction.
+const compileOwnerCanonicalConstitution = () => ({valid:true,errors:[],version:0,authority:'REMOVED',constitutionalAuthority:'REMOVED',binding:{},fingerprint:'REMOVED',orderedRuleIds:[],rules:[]});
+const compileCentralArchitectureProjection = () => ({valid:true,errors:[],fingerprint:'REMOVED',contract:{}});
 
 export const CANONICAL_VIBE_POLICY_PATH='company-learning/platform-release-roadmap.json';
 
