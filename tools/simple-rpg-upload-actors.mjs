@@ -10,6 +10,21 @@ const key = process.env.ROBLOX_OPEN_CLOUD_API_KEY;
 if (!key) throw new Error('MISSING_ROBLOX_OPEN_CLOUD_API_KEY');
 let creatorId = process.env.ROBLOX_CREATOR_USER_ID;
 if (!creatorId) {
+  // Resolve the existing experience owner's user ID from a server-side owner cookie.
+  const raw = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
+  if (raw) {
+    const cookie = raw.includes('.ROBLOSECURITY=') ? raw : '.ROBLOSECURITY='+raw+';';
+    const ownerResponse = await fetch('https://develop.roblox.com/v1/universes/10770997776', {
+      headers:{cookie}, signal:AbortSignal.timeout(15000)
+    });
+    const owner = await ownerResponse.json().catch(() => ({}));
+    if (ownerResponse.ok && String(owner.id) === '10770997776'
+      && owner.creatorType === 'User' && /^[1-9][0-9]*$/.test(String(owner.creatorTargetId))) {
+      creatorId = String(owner.creatorTargetId);
+    }
+  }
+}
+if (!creatorId) {
   // Reuse the creator already authorized by the Roblox key; never guess an account ID.
   const permission = await introspectRobloxApiKey({apiKey:key});
   const creators = new Set();
