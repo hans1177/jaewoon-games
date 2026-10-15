@@ -1865,7 +1865,18 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         end
         for _, name in ipairs(creatureMotionLimbNames) do
           local part = model:FindFirstChild(name)
+          -- Motor6D로 연결된 실제 R15/R6 관절은 애니메이터가 담당한다.
+          -- 수동 CFrame 연출은 별도 관절이 없는 로우폴리 몬스터 파츠에만 적용한다.
+          local animatedJoint = false
           if part and part:IsA("BasePart") then
+            for _, joint in ipairs(part:GetJoints()) do
+              if joint:IsA("Motor6D") then
+                animatedJoint = true
+                break
+              end
+            end
+          end
+          if part and part:IsA("BasePart") and not animatedJoint then
             local sign = (name == "Left Arm" or name == "Left Leg" or name == "LeftLimb") and 1 or -1
             -- 서버에 복제되는 Attribute를 매 프레임 모션 캐시로 쓰지 않는다.
             -- 루트 파츠가 교체되면 기존 기준 자세도 다시 산출한다.
