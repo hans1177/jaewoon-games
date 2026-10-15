@@ -1487,6 +1487,15 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
       ear.CanCollide = false
     end
   end
+  -- 업로드 모델이 있으면 기존 장식 파츠를 가려 겹쳐 보이지 않게 한다.
+  -- 투명화만 수행하며 히트박스, Humanoid, 저장·보상 상태는 변경하지 않는다.
+  if enemy:GetAttribute("CreatureAssetSource") == "StudioImported" then
+    for _, decoration in ipairs(enemy:GetChildren()) do
+      if decoration:IsA("BasePart") and decoration ~= root then
+        decoration.Transparency = 1
+      end
+    end
+  end
   local humanoid = Instance.new("Humanoid")
   humanoid.RequiresNeck = false
   humanoid.MaxHealth = special == "WildBoar" and 42 or special == "BronzeGolem" and 100
