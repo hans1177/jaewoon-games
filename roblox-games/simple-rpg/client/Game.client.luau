@@ -721,6 +721,8 @@ UserInputService.InputBegan:Connect(function(input, consumed)
   elseif input.KeyCode == Enum.KeyCode.E then remote:FireServer("CivGather")
   elseif input.KeyCode == Enum.KeyCode.T then civOpen("Techs")
   elseif input.KeyCode == Enum.KeyCode.C then civOpen("Companions")
+  elseif input.KeyCode == Enum.KeyCode.V then civOpen("Crafts")
+  elseif input.KeyCode == Enum.KeyCode.B then civOpen("Buildings")
   elseif input.UserInputType == Enum.UserInputType.MouseButton1 and not civPanel.Visible then
     remote:FireServer("CivAttack")
   end
