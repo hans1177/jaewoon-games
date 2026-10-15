@@ -44,6 +44,11 @@ function Menu.install(config,gui,player,options)
  local rows={}
  local itemButtons={}
  local itemRows={}
+ local quickTools={}
+ local quickButtons={}
+ local order={}
+ local dragFrom=nil
+ local dragStart=nil
  local connections={}
  local toolConnections={}
  local previousSelection=nil
@@ -59,6 +64,11 @@ function Menu.install(config,gui,player,options)
  local overlay=make("Frame",gui,"RPGSystemMenu",{Visible=false,Active=true,BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=.28,Size=UDim2.fromScale(1,1),ZIndex=50})
  local panel=make("Frame",overlay,"MenuPanel",{AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5),BackgroundColor3=colors.base,BorderSizePixel=0,ZIndex=51})
  round(panel,16)
+ -- 검증된 전용 이미지가 등록됐을 때만 9-Slice 텍스처를 사용한다.
+ local textures=config.CivilizationUITextures or {}
+ if typeof(textures.Wood)=="string" and textures.Wood~="" then
+  make("ImageLabel",panel,"WoodNineSlice",{BackgroundTransparency=1,Image=textures.Wood,ScaleType=Enum.ScaleType.Slice,SliceCenter=Rect.new(24,24,40,40),Size=UDim2.fromScale(1,1),ZIndex=panel.ZIndex})
+ end
  make("UIGradient",panel,"WoodGrain",{Rotation=87,Color=ColorSequence.new(Color3.fromRGB(135,103,64),Color3.fromRGB(66,44,30))})
  -- 등록된 소유 원목 9-Slice 이미지만 적용한다. 미등록이면 원목 그라데이션으로 표시.
  local uiArt=config.CivilizationUIArt or {}
@@ -109,11 +119,41 @@ function Menu.install(config,gui,player,options)
   local slot=make("TextLabel",items,"EmptySlot"..index,{LayoutOrder=10000+index,Text=tostring(index),Font=Enum.Font.Gotham,TextSize=12,TextColor3=colors.muted,BackgroundColor3=Color3.fromRGB(69,53,35),BorderSizePixel=0})
   round(slot,6);emptySlots[index]=slot
  end
- local empty=label(items,"EmptyInventory","표시할 아이템이 없어.",15);empty.Size=UDim2.fromOffset(140,110)
+ local empty=label(items,"EmptyInventory","표시할 아이템이 없어.",15);empty.Size=UDim2.fromOffset(140,110);empty.LayoutOrder=20000
  local details=make("ScrollingFrame",inventory,"ItemDetails",{BackgroundColor3=colors.panel,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y});round(details)
  local detailTitle=label(details,"SelectedItemName","아이템을 선택해",19);detailTitle.Font=Enum.Font.GothamBold;detailTitle.Position=UDim2.fromOffset(14,14);detailTitle.Size=UDim2.new(1,-28,0,50)
  local detailText=label(details,"SelectedItemDescription","아이템을 눌러 장착해.",15);detailText.TextColor3=colors.muted;detailText.TextYAlignment=Enum.TextYAlignment.Top;detailText.Position=UDim2.fromOffset(14,72);detailText.Size=UDim2.new(1,-28,0,130)
  local itemAction=button(details,"ItemAction","착용 중");itemAction.Position=UDim2.fromOffset(14,218);itemAction.Size=UDim2.new(1,-28,0,52);itemAction.Visible=false
+ local quickTitle=label(details,"HotbarTitle","단축 슬롯 · 1~8",15)
+ quickTitle.Position=UDim2.fromOffset(14,282);quickTitle.Size=UDim2.new(1,-28,0,28)
+ local quickGrid=make("Frame",details,"HotbarGrid",{Position=UDim2.fromOffset(14,315),Size=UDim2.new(1,-28,0,125),BackgroundTransparency=1})
+ make("UIGridLayout",quickGrid,"HotbarLayout",{FillDirectionMaxCells=4,CellSize=UDim2.new(.25,-5,0,54),CellPadding=UDim2.fromOffset(5,5),SortOrder=Enum.SortOrder.LayoutOrder})
+ local function equipQuick(index)
+  local tool=quickTools[index]
+  if not tool or not tool:IsA("Tool")then return end
+  local character=player.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  local backpack=player:FindFirstChildOfClass("Backpack")
+  if not humanoid or humanoid.Health<=0 then return end
+  if tool.Parent==backpack then humanoid:EquipTool(tool)
+  elseif tool.Parent==character then humanoid:UnequipTools()end
+ end
+ local function refreshQuickButtons()
+  for index,b in ipairs(quickButtons)do
+   local tool=quickTools[index]
+   if tool and tool.Parent~=player.Character and tool.Parent~=player:FindFirstChildOfClass("Backpack")then quickTools[index]=nil;tool=nil end
+   b.Text=tostring(index)..(tool and (" · "..tool.Name)or " · -")
+  end
+ end
+ for index=1,8 do
+  local b=button(quickGrid,"QuickSlot"..index,tostring(index).." · -")
+  b.TextSize=12;b.TextWrapped=true;b.LayoutOrder=index
+  b.Activated:Connect(function()
+   if selectedTool and selectedTool:IsA("Tool")then quickTools[index]=selectedTool;refreshQuickButtons()
+   else equipQuick(index)end
+  end)
+  quickButtons[index]=b
+ end
  local function selectItem(row)
   selectedId=row.id;selectedTool=row.tool
   detailTitle.Text=row.name..(row.tier and (" · T"..row.tier) or "")
@@ -258,8 +298,15 @@ function Menu.install(config,gui,player,options)
      local current=itemRows[id]
      if current then selectItem(current)end
     end)
+    b.InputBegan:Connect(function(input)
+     if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+      dragFrom=id;dragStart=Vector2.new(input.Position.X,input.Position.Y)
+     end
+    end)
    end
-   b.Name="InventorySlot"..index;b.LayoutOrder=index
+   b.Name="InventorySlot"..index
+   if not order[id]then order[id]=index end
+   b.LayoutOrder=order[id]
    b.ItemIcon.Text=row.icon;b.ItemName.Text=row.name
    b.ItemState.Text=row.equipped and "착용 중" or (row.category=="장비" and "장비" or "도구")
    if id==selectedId then selection=row end
@@ -274,6 +321,7 @@ function Menu.install(config,gui,player,options)
   selection=selection or filtered[1]
   if selection then selectItem(selection)else selectedId=nil;selectedTool=nil;detailTitle.Text="아이템 없음";detailText.Text="검색어나 분류를 바꿔 봐. 없는 아이템은 표시되지 않아.";itemAction.Visible=false end
   if removedFocus then GuiService.SelectedObject=itemButtons[selectedId] or filterButtons[category]end
+  refreshQuickButtons()
   local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
   if humanoid then a.CurrentHP=humanoid.Health end
   local character=Model.character(a,config)
@@ -396,7 +444,9 @@ function Menu.install(config,gui,player,options)
  table.insert(connections,Input.InputBegan:Connect(function(input,processed)
   if Input:GetFocusedTextBox()then return end
   if opened and (input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB)then setOpen(false);return end
-  if not processed and (input.KeyCode==Enum.KeyCode.B or input.KeyCode==Enum.KeyCode.ButtonY)then setOpen(not opened)end
+  if not processed and (input.KeyCode==Enum.KeyCode.B or input.KeyCode==Enum.KeyCode.ButtonY)then setOpen(not opened);return end
+  local quickKeys={[Enum.KeyCode.One]=1,[Enum.KeyCode.Two]=2,[Enum.KeyCode.Three]=3,[Enum.KeyCode.Four]=4,[Enum.KeyCode.Five]=5,[Enum.KeyCode.Six]=6,[Enum.KeyCode.Seven]=7,[Enum.KeyCode.Eight]=8}
+  if not processed and not opened and quickKeys[input.KeyCode]then equipQuick(quickKeys[input.KeyCode])end
  end))
  table.insert(connections,search:GetPropertyChangedSignal("Text"):Connect(refresh))
  table.insert(connections,gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(relayout))
@@ -407,6 +457,28 @@ function Menu.install(config,gui,player,options)
  end
  local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,CompanionUnlockCount=true,LastAction=true,CurrentZone=true,XP=true,AdvancementId=true,SecondAdvancementId=true,RaceID=true,CivTechCount=true,CivMyth=true,CivStone=true,CivBronze=true,CivIron=true,CivHero=true,CivKills=true,CivParries=true,CivBossKills=true,HouseLevel=true}
  table.insert(connections,player.AttributeChanged:Connect(function(name)if watched[name]then scheduleRefresh()end end))
+ -- 드래그 시 표시 순서만 교환. 서버 소유 도구 및 장비 능력치는 수정하지 않는다.
+ table.insert(connections,Input.InputEnded:Connect(function(input)
+  if not dragFrom or not dragStart then return end
+  if input.UserInputType~=Enum.UserInputType.MouseButton1 and input.UserInputType~=Enum.UserInputType.Touch then return end
+  local source=dragFrom;local first=dragStart
+  dragFrom=nil;dragStart=nil
+  if not opened or activeTab~="배낭"then return end
+  local cursor=Vector2.new(input.Position.X,input.Position.Y)
+  if (cursor-first).Magnitude<14 then return end
+  for target,b in pairs(itemButtons)do
+   if target~=source and b.Parent and b.Visible then
+    local at=b.AbsolutePosition;local size=b.AbsoluteSize
+    if cursor.X>=at.X and cursor.X<=at.X+size.X and cursor.Y>=at.Y and cursor.Y<=at.Y+size.Y then
+     local old=order[source]or 0
+     order[source]=order[target]or old;order[target]=old
+     if itemButtons[source]then itemButtons[source].LayoutOrder=order[source]end
+     b.LayoutOrder=order[target]
+     break
+    end
+   end
+  end
+ end))
  -- 게임에서 상인 위치를 제공할 때만 상점 탭을 저빈도로 갱신한다.
  -- 메뉴가 닫힌 동안 전체 인벤토리를 반복 갱신하지 않으며 서버 권한은 그대로다.
  if type(options.merchantAccess)=="function"then
