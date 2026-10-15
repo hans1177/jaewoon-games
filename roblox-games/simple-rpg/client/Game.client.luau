@@ -10,6 +10,7 @@ local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
 local ProgressionData = require(Shared:WaitForChild("ProgressionData"))
 local CraftingRecipeData = require(Shared:WaitForChild("CraftingRecipeData"))
+local TradeMarketData = require(Shared:WaitForChild("TradeMarketData"))
 local CommonUI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
@@ -73,6 +74,8 @@ local unlockTechRequest = remotesFolder:WaitForChild("UnlockTechRequest")
 local craftRequestRemote = remotesFolder:WaitForChild("CraftRequestRemote")
 local portalTeleportEvent = remotesFolder:WaitForChild("PortalTeleportEvent")
 local autoCombatEvent = remotesFolder:WaitForChild("AutoCombatEvent")
+local tradeRequestRemote = remotesFolder:WaitForChild("TradeRequestRemote")
+local marketUpdateEvent = remotesFolder:WaitForChild("MarketUpdateEvent")
 local foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
 local nativeTouchEnabled = UserInputService.TouchEnabled
 local nativeFoundationCamera = workspace.CurrentCamera
@@ -514,6 +517,8 @@ local inventorySnapshot = {}
 local researchRequestPending = false
 -- Native touch players opt in by default. PC controls and manual action buttons are unchanged.
 local autoCombatEnabled = nativeTouchEnabled
+local marketSnapshot = {}
+local tradeCurrency = "Silver"
 local function civOpen(mode)
   if civPanel.Visible and civPanelMode == mode then
     civPanel.Visible = false
@@ -573,7 +578,9 @@ local function civOpen(mode)
       {"CivCopperOre", "구리"}, {"CivTinOre", "주석"}, {"CivIronOre", "철광석"}, {"CivCoal", "석탄"},
       {"CivBronzeIngot", "청동 주괴"}, {"CivIronIngot", "철 주괴"}, {"CivHide", "가죽"}, {"CivCoreCrystal", "코어"},
       {"CivDarkIron", "다크 아이언"}, {"CivStoneSpear", "돌창"}, {"CivStoneAxe", "석기 도끼"}, {"CivBronzeSword", "청동검"}, {"CivIronGreatsword", "대검"},
-      {"CivFood", "식량"}, {"CivSilver", "은화"}, {"CivResearch", "연구력"},
+      {"CivFood", "식량"}, {"CivSilver", "은화"}, {"CivGold", "골드"},
+      {"CivMarble", "대리석"}, {"CivGoldOre", "금 특산품"}, {"CivSpice", "향신료"},
+      {"CivResearch", "연구력"},
       {"CivStoneWall", "성벽"}, {"CivDangunAltar", "단군 제단"}, {"CivPyramid", "피라미드"},
       {"CivColosseum", "콜로세움"}, {"CivDrakkarShipyard", "드라카르 조선소"},
     }
@@ -679,6 +686,70 @@ local function civOpen(mode)
       button.LayoutOrder = index
       button.TextSize = 14
     end
+  elseif mode == "Trade" then
+    panelTitle.Text = "24문명 무역 · 서버 실시간 시세"
+    local silver = player:GetAttribute("CivSilver") or 0
+    local gold = player:GetAttribute("CivGold") or 0
+    local balances = civLabel(civList, "TradeBalances",
+      string.format("은화 %d · 골드 %d | 결제 %s", silver, gold,
+        tradeCurrency == "Silver" and "은화" or "골드"),
+      UDim2.new(1, -9, 0, 44), UDim2.new(), true)
+    balances.LayoutOrder = 0
+    local toggle = civButton(civList, "TradeCurrency",
+      tradeCurrency == "Silver" and "결제: 은화 → 골드로 변경" or "결제: 골드 → 은화로 변경",
+      UDim2.new(1, -9, 0, 44), UDim2.new(), function()
+        tradeCurrency = tradeCurrency == "Silver" and "Gold" or "Silver"
+        civPanel.Visible = false
+        civOpen("Trade")
+      end)
+    toggle.LayoutOrder = 1
+    for index, itemID in ipairs(TradeMarketData.ItemIDs()) do
+      local item = TradeMarketData.GetItem(itemID)
+      if item then
+        local price = marketSnapshot[itemID] or {}
+        local buySilver = price.SilverBuy or item.BasePrice
+        local sellSilver = price.SilverSell or math.floor(item.BasePrice * 0.9)
+        local buy = tradeCurrency == "Gold" and math.ceil(buySilver / 10) or buySilver
+        local sell = tradeCurrency == "Gold" and math.floor(sellSilver / 10) or sellSilver
+        local currencyLabel = tradeCurrency == "Silver" and "은화" or "골드"
+        local row = civLabel(civList, "MarketItem" .. itemID,
+          string.format("%s · 보유 %d · 재고 %d\\n매입 %d%s / 판매 %d%s (1개)",
+            item.Label, player:GetAttribute(item.ItemField) or 0, price.Supply or item.InitialSupply,
+            buy, currencyLabel, sell, currencyLabel),
+          UDim2.new(1, -9, 0, 60), UDim2.new(), true)
+        row.LayoutOrder = index * 10
+        local selectedItem = itemID
+        local buyOne = civButton(civList, "TradeBuy" .. itemID,
+          "1개 매입", UDim2.new(1, -9, 0, 36), UDim2.new(), function()
+            tradeRequestRemote:FireServer(selectedItem, 1, true, tradeCurrency)
+          end)
+        buyOne.LayoutOrder = index * 10 + 1
+        local buyFive = civButton(civList, "TradeBuyFive" .. itemID,
+          "5개 매입", UDim2.new(1, -9, 0, 36), UDim2.new(), function()
+            tradeRequestRemote:FireServer(selectedItem, 5, true, tradeCurrency)
+          end)
+        buyFive.LayoutOrder = index * 10 + 2
+        local sellOne = civButton(civList, "TradeSell" .. itemID,
+          "1개 판매", UDim2.new(1, -9, 0, 36), UDim2.new(), function()
+            tradeRequestRemote:FireServer(selectedItem, 1, false, tradeCurrency)
+          end)
+        sellOne.LayoutOrder = index * 10 + 3
+      end
+    end
+    local buyGold = civButton(civList, "ExchangeToGold",
+      "환전: 은화 11 → 골드 1", UDim2.new(1, -9, 0, 44), UDim2.new(), function()
+        tradeRequestRemote:FireServer("Currency", 1, true, "Silver")
+      end)
+    buyGold.LayoutOrder = 40
+    local sellGold = civButton(civList, "ExchangeToSilver",
+      "환전: 골드 1 → 은화 9", UDim2.new(1, -9, 0, 44), UDim2.new(), function()
+        tradeRequestRemote:FireServer("Currency", 1, false, "Gold")
+      end)
+    sellGold.LayoutOrder = 41
+    local hint = civLabel(civList, "TradeStallRequired",
+      "거래는 가까운 문명 무역소 16칸 이내에서만 가능해.",
+      UDim2.new(1, -9, 0, 38), UDim2.new(), false)
+    hint.LayoutOrder = 42
   elseif mode == "Portals" then
     local unlocked = (player:GetAttribute("CivTech") or 0) >= 72
     panelTitle.Text = unlocked and "영웅 시대 · 24개 차원 포털" or "차원 포털 · 최종 연구 72 필요"
@@ -785,6 +856,14 @@ updateTechEvent.OnClientEvent:Connect(function(techID, era)
     civOpen("Techs")
   end
 end)
+marketUpdateEvent.OnClientEvent:Connect(function(quotes, openTrade)
+  if typeof(quotes) ~= "table" then return end
+  marketSnapshot = quotes
+  if openTrade == true or (civPanel.Visible and civPanelMode == "Trade") then
+    civPanel.Visible = false
+    civOpen("Trade")
+  end
+end)
 syncInventoryEvent.OnClientEvent:Connect(function(updatedInventory)
   if typeof(updatedInventory) ~= "table" then return end
   local snapshot = {}
@@ -881,6 +960,11 @@ task.spawn(function()
   end
 end)
 
+civButton(civGui, "TradeMenu", "무역",
+  UDim2.fromOffset(78, 45), UDim2.fromOffset(270, 252), function()
+    civOpen("Trade")
+    tradeRequestRemote:FireServer("Snapshot", 0, false, "Silver")
+  end)
 civButton(civGui, "MultiverseMenu", "차원 포털",
   UDim2.fromOffset(90, 45), UDim2.fromOffset(174, 252), function() civOpen("Portals") end)
 civButton(civGui, "InventoryMenu", "가방",
@@ -925,6 +1009,7 @@ local civWatched = {
   "CivCopperOre", "CivTinOre", "CivIronOre", "CivCoal",
   "CivHide", "CivCoreCrystal", "CivDarkIron", "CivBronzeIngot", "CivIronIngot",
   "CivStoneSpear", "CivStoneAxe", "CivBronzeSword", "CivIronGreatsword", "CivEquippedWeapon",
+  "CivSilver", "CivGold", "CivMarble", "CivGoldOre", "CivSpice",
   "CivBoarKills", "CivBronzeSmelts", "CivIronKnightKills",
   "CivStoneWall", "CivDangunAltar", "CivPyramid", "CivColosseum", "CivDrakkarShipyard",
 }
@@ -943,7 +1028,7 @@ end
 for _, name in ipairs(civWatched) do
   player:GetAttributeChangedSignal(name):Connect(function()
     civRender()
-    if civPanel.Visible and (civPanelMode == "Techs" or civPanelMode == "Crafts" or civPanelMode == "Buildings" or civPanelMode == "Inventory" or civPanelMode == "Portals") then
+    if civPanel.Visible and (civPanelMode == "Techs" or civPanelMode == "Crafts" or civPanelMode == "Buildings" or civPanelMode == "Inventory" or civPanelMode == "Portals" or civPanelMode == "Trade") then
       local currentMode = civPanelMode
       civPanel.Visible = false
       civOpen(currentMode)
@@ -1002,6 +1087,9 @@ UserInputService.InputBegan:Connect(function(input, consumed)
   elseif input.KeyCode == Enum.KeyCode.V then civOpen("Crafts")
   elseif input.KeyCode == Enum.KeyCode.B then civOpen("Buildings")
   elseif input.KeyCode == Enum.KeyCode.I then civOpen("Inventory")
+  elseif input.KeyCode == Enum.KeyCode.M then
+    civOpen("Trade")
+    tradeRequestRemote:FireServer("Snapshot", 0, false, "Silver")
   elseif input.UserInputType == Enum.UserInputType.MouseButton1 and not civPanel.Visible then
     remote:FireServer("CivAttack")
   end
