@@ -9,6 +9,7 @@ local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
 local ProgressionData = require(Shared:WaitForChild("ProgressionData"))
+local CraftingRecipeData = require(Shared:WaitForChild("CraftingRecipeData"))
 local CommonUI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
@@ -69,6 +70,8 @@ local dodgeEvent = remotesFolder:WaitForChild("DodgeEvent")
 local updateTechEvent = remotesFolder:WaitForChild("UpdateTechEvent")
 local syncInventoryEvent = remotesFolder:WaitForChild("SyncInventoryEvent")
 local unlockTechRequest = remotesFolder:WaitForChild("UnlockTechRequest")
+local craftRequestRemote = remotesFolder:WaitForChild("CraftRequestRemote")
+local portalTeleportEvent = remotesFolder:WaitForChild("PortalTeleportEvent")
 local foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
 local nativeTouchEnabled = UserInputService.TouchEnabled
 local nativeFoundationCamera = workspace.CurrentCamera
@@ -566,7 +569,7 @@ local function civOpen(mode)
       {"CivWood", "목재"}, {"CivStone", "석재"}, {"CivBronze", "청동"}, {"CivIron", "철"},
       {"CivCopperOre", "구리"}, {"CivTinOre", "주석"}, {"CivIronOre", "철광석"}, {"CivCoal", "석탄"},
       {"CivBronzeIngot", "청동 주괴"}, {"CivIronIngot", "철 주괴"}, {"CivHide", "가죽"}, {"CivCoreCrystal", "코어"},
-      {"CivDarkIron", "다크 아이언"}, {"CivStoneSpear", "돌창"}, {"CivBronzeSword", "청동검"}, {"CivIronGreatsword", "대검"},
+      {"CivDarkIron", "다크 아이언"}, {"CivStoneSpear", "돌창"}, {"CivStoneAxe", "석기 도끼"}, {"CivBronzeSword", "청동검"}, {"CivIronGreatsword", "대검"},
       {"CivFood", "식량"}, {"CivSilver", "은화"}, {"CivResearch", "연구력"},
       {"CivStoneWall", "성벽"}, {"CivDangunAltar", "단군 제단"}, {"CivPyramid", "피라미드"},
       {"CivColosseum", "콜로세움"}, {"CivDrakkarShipyard", "드라카르 조선소"},
@@ -614,6 +617,30 @@ local function civOpen(mode)
       end
     end
     if mode == "Crafts" then
+      -- 소유자 지정 제작 시간은 별도 서버 큐가 처리하며 UI는 요청만 보낸다.
+      for _, recipeID in ipairs(CraftingRecipeData.RecipeIDs()) do
+        local recipe = CraftingRecipeData.GetRecipe(recipeID)
+        if recipe then
+          local materials = {}
+          local missing = false
+          for field, cost in pairs(recipe.Ingredients) do
+            table.insert(materials, field:gsub("^Civ", "") .. " " .. cost)
+            if (player:GetAttribute(field) or 0) < cost then missing = true end
+          end
+          table.sort(materials)
+          local locked = techCount < recipe.RequiredTechID
+          local label = string.format("%s · 제작 %d초\\n%s | 연구 %d 필요%s",
+            recipe.ItemName, recipe.CraftTime, table.concat(materials, " / "),
+            recipe.RequiredTechID, locked and " [잠김]" or missing and " [자원 부족]" or "")
+          local btn = civButton(civList, "TimedCraft" .. recipeID, label,
+            UDim2.new(1, -9, 0, 78), UDim2.new(), function()
+              craftRequestRemote:FireServer(recipeID)
+            end)
+          btn.LayoutOrder = 20 + recipeID
+          btn.TextSize = 13
+          if locked or missing then btn.BackgroundColor3 = Color3.fromRGB(85, 86, 84) end
+        end
+      end
       for index, key in ipairs({"StoneSpear", "BronzeSword", "IronGreatsword"}) do
         local owned = player:GetAttribute("Civ" .. key) or 0
         if owned > 0 then
@@ -648,6 +675,27 @@ local function civOpen(mode)
         end)
       button.LayoutOrder = index
       button.TextSize = 14
+    end
+  elseif mode == "Portals" then
+    local unlocked = (player:GetAttribute("CivTech") or 0) >= 72
+    panelTitle.Text = unlocked and "영웅 시대 · 24개 차원 포털" or "차원 포털 · 최종 연구 72 필요"
+    for id = 1, 24 do
+      local race = RaceData.GetRace(id)
+      local destination = id
+      local btn = civButton(civList, "Multiverse" .. id,
+        string.format("%02d. %s · %s%s", id, race.Name, race.Landmark,
+          unlocked and "" or " [잠김]"),
+        UDim2.new(1, -9, 0, 52), UDim2.new(), function()
+          if (player:GetAttribute("CivTech") or 0) < 72 then
+            civMessage.Text = "72번 최종 연구를 해금한 뒤 이동할 수 있어."
+          else
+            portalTeleportEvent:FireServer(destination)
+            civMessage.Text = "전용 차원 서버 이동 요청 중..."
+          end
+        end)
+      btn.LayoutOrder = id
+      btn.TextSize = 13
+      if not unlocked then btn.BackgroundColor3 = Color3.fromRGB(85, 86, 84) end
     end
   else
     panelTitle.Text = "파피루스 테크트리 · 72개"
@@ -749,6 +797,8 @@ syncInventoryEvent.OnClientEvent:Connect(function(updatedInventory)
     civOpen("Inventory")
   end
 end)
+civButton(civGui, "MultiverseMenu", "차원 포털",
+  UDim2.fromOffset(90, 45), UDim2.fromOffset(174, 252), function() civOpen("Portals") end)
 civButton(civGui, "InventoryMenu", "가방",
   UDim2.fromOffset(78, 45), UDim2.fromOffset(10, 252), function() civOpen("Inventory") end)
 civButton(civGui, "CraftMenu", "제작",
@@ -790,7 +840,7 @@ local civWatched = {
   "CivDodges", "CivGather",
   "CivCopperOre", "CivTinOre", "CivIronOre", "CivCoal",
   "CivHide", "CivCoreCrystal", "CivDarkIron", "CivBronzeIngot", "CivIronIngot",
-  "CivStoneSpear", "CivBronzeSword", "CivIronGreatsword", "CivEquippedWeapon",
+  "CivStoneSpear", "CivStoneAxe", "CivBronzeSword", "CivIronGreatsword", "CivEquippedWeapon",
   "CivBoarKills", "CivBronzeSmelts", "CivIronKnightKills",
   "CivStoneWall", "CivDangunAltar", "CivPyramid", "CivColosseum", "CivDrakkarShipyard",
 }
@@ -809,7 +859,7 @@ end
 for _, name in ipairs(civWatched) do
   player:GetAttributeChangedSignal(name):Connect(function()
     civRender()
-    if civPanel.Visible and (civPanelMode == "Techs" or civPanelMode == "Crafts" or civPanelMode == "Buildings" or civPanelMode == "Inventory") then
+    if civPanel.Visible and (civPanelMode == "Techs" or civPanelMode == "Crafts" or civPanelMode == "Buildings" or civPanelMode == "Inventory" or civPanelMode == "Portals") then
       local currentMode = civPanelMode
       civPanel.Visible = false
       civOpen(currentMode)
