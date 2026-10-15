@@ -1739,6 +1739,12 @@ local function civActionMotion(actionId, button)
     local cameraRestore = actionTweenService:Create(camera, TweenInfo.new(0.2, Enum.EasingStyle.Quad),
       {FieldOfView = baseFov})
     actionCameraTweens[camera] = cameraRestore
+    cameraRestore.Completed:Connect(function(state)
+      if actionCameraTweens[camera] == cameraRestore then
+        actionCameraTweens[camera] = nil
+        actionCameraBases[camera] = nil
+      end
+    end)
     cameraRestore:Play()
   end)
 end
