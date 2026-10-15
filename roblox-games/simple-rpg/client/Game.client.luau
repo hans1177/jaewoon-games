@@ -1792,7 +1792,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           end
           break
         end
-        model = model.Parent and model.Parent:FindFirstAncestorOfClass("Model")
+        local parent = model.Parent
+        model = parent and (parent:IsA("Model") and parent or parent:FindFirstAncestorOfClass("Model"))
       end
     end
   end
