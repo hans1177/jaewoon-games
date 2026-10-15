@@ -845,39 +845,80 @@ local handlers = {
   ["scope-mobileux-dc1239c515"] = scopeHandler6,
 }
 
-Players.PlayerAdded:Connect(function(player)
+-- 저장은 기존 DataStore/플레이어 키 그대로, 세션 단위 경쟁 기록을 막는다.
+local CIV_LEASE_SECONDS = 180
+local civSaveBusy = {}
+local civSaveWarned = {}
+local function civLoadPlayer(player)
   player:SetAttribute("CivReady", false)
   bindFoundationPlayer(player)
   initializePlayer(player)
+  local token = civSessionToken .. ":" .. tostring(player.UserId)
+  local saved = nil
   if store then
-    local ok, saved = pcall(function()
-      return store:GetAsync("player:" .. player.UserId)
-    end)
-    if ok and typeof(saved) == "table" then
-      for key, fallback in pairs(Config.InitialState) do
-        local value = saved[key]
-        if typeof(value) == "number" and value == value and value ~= math.huge and value ~= -math.huge then
-          player:SetAttribute(key, value)
-        else
-          player:SetAttribute(key, fallback)
+    local ok, result = pcall(function()
+      return store:UpdateAsync("player:" .. player.UserId, function(existing)
+        local record = typeof(existing) == "table" and existing or {}
+        local lease = record._civSession
+        if typeof(lease) == "table" and typeof(lease.expires) == "number"
+          and lease.expires > os.time() and lease.token ~= token then
+          return nil
         end
+        record._civSession = {token = token, expires = os.time() + CIV_LEASE_SECONDS}
+        return record
+      end)
+    end)
+    if ok and typeof(result) == "table"
+      and typeof(result._civSession) == "table" and result._civSession.token == token then
+      saved = result
+      civSessions[player] = token
+    elseif not RunService:IsStudio() then
+      player:SetAttribute("CivLoadFailed", true)
+      player:Kick("문명 데이터 로드 실패. 저장 데이터 보호를 위해 다시 접속해 줘.")
+      return
+    end
+  elseif not RunService:IsStudio() then
+    player:SetAttribute("CivLoadFailed", true)
+    player:Kick("저장소 연결에 실패해 데이터를 보호하려고 접속을 종료했어.")
+    return
+  end
+  if saved then
+    for key, fallback in pairs(Config.InitialState) do
+      local value = saved[key]
+      if typeof(fallback) == "number" then
+        if typeof(value) == "number" and value == value
+          and value ~= math.huge and value ~= -math.huge then
+          player:SetAttribute(key, value)
+        end
+      elseif typeof(fallback) == "string" and typeof(value) == "string" and #value <= 12000 then
+        player:SetAttribute(key, value)
       end
     end
   end
+  civActionState[player] = {stamina = civ.StaminaMax, combo = 0, lastAttack = -1e9,
+    guardAt = -1e9, dodgeAt = -1e9}
+  player:SetAttribute("CivStamina", civ.StaminaMax)
+  player:SetAttribute("CivUnsaved", civSessions[player] == nil)
   player:SetAttribute("CivReady", true)
   civApplyCharacterPassive(player)
   player.CharacterAdded:Connect(function()
     task.wait(0.1)
     civApplyCharacterPassive(player)
   end)
-end)
-for _, player in ipairs(Players:GetPlayers()) do
-  task.defer(function()
-    bindFoundationPlayer(player)
-    if player:GetAttribute("Score") == nil then initializePlayer(player) end
-    player:SetAttribute("CivReady", true)
-  end)
 end
+Players.PlayerAdded:Connect(civLoadPlayer)
+for _, player in ipairs(Players:GetPlayers()) do task.defer(civLoadPlayer, player) end
+task.spawn(function()
+  while task.wait(0.5) do
+    for _, player in ipairs(Players:GetPlayers()) do
+      local state = civActionState[player]
+      if state and state.stamina < civ.StaminaMax then
+        state.stamina = math.min(civ.StaminaMax, state.stamina + civ.StaminaRegenPerSecond * 0.5)
+        player:SetAttribute("CivStamina", math.floor(state.stamina))
+      end
+    end
+  end
+end)
 -- 통합 액션 입력: 기존 ID는 그대로 두고 문명 전용 ID만 추가한다.
 remote.OnServerEvent:Connect(function(player, actionId, argument, secondary)
   if player:GetAttribute("CivReady") ~= true then return end
@@ -913,34 +954,75 @@ remote.OnServerEvent:Connect(function(player, actionId, argument, secondary)
     action(player)
   end
 end)
--- 같은 기존 저장소/키 사용, 수치 필드를 병합해 기존 데이터와 신규 연구를 함께 저장한다.
-local function savePlayer(player)
-  if not store then return end
+-- 기존 저장 키 유지. 전체 숫자 필드와 문명 문자열 필드만 버전 호환 병합.
+local function savePlayer(player, releaseSession)
+  local token = civSessions[player]
+  if not store or not token or player:GetAttribute("CivReady") ~= true then return end
+  local deadline = os.clock() + 8
+  while civSaveBusy[player] and os.clock() < deadline do task.wait(0.1) end
+  if civSaveBusy[player] then return end
+  civSaveBusy[player] = true
   local snapshot = {}
   for key, fallback in pairs(Config.InitialState) do
-    snapshot[key] = readNumber(player, key, fallback)
+    local value = player:GetAttribute(key)
+    if typeof(fallback) == "number" then
+      snapshot[key] = typeof(value) == "number" and value == value and math.abs(value) < 1e12 and value or fallback
+    elseif typeof(fallback) == "string" then
+      snapshot[key] = typeof(value) == "string" and #value <= 12000 and value or fallback
+    end
   end
-  local ok, err = pcall(function()
-    store:UpdateAsync("player:" .. player.UserId, function(existing)
-      local merged = typeof(existing) == "table" and existing or {}
-      for key, value in pairs(snapshot) do merged[key] = value end
-      return merged
+  local succeeded = false
+  for attempt = 1, 3 do
+    local ok, result = pcall(function()
+      return store:UpdateAsync("player:" .. player.UserId, function(existing)
+        local record = typeof(existing) == "table" and existing or {}
+        if typeof(record._civSession) ~= "table" or record._civSession.token ~= token then
+          return nil
+        end
+        for key, value in pairs(snapshot) do record[key] = value end
+        record.CivSaveVersion = 2
+        record._civSession = releaseSession and nil or {token = token, expires = os.time() + CIV_LEASE_SECONDS}
+        return record
+      end)
     end)
-  end)
-  if not ok then warn("CIV_SAVE_FAILURE", player.UserId, tostring(err)) end
+    if ok and typeof(result) == "table" and
+      (releaseSession or (typeof(result._civSession) == "table" and result._civSession.token == token)) then
+      succeeded = true
+      break
+    end
+    if attempt < 3 then task.wait(0.5 * attempt) end
+  end
+  if not succeeded and not civSaveWarned[player] then
+    civSaveWarned[player] = true
+    warn("CIV_SAVE_FAILURE", player.UserId, "세션 저장 실패")
+  elseif succeeded then
+    civSaveWarned[player] = nil
+    if releaseSession then civSessions[player] = nil end
+  end
+  civSaveBusy[player] = nil
 end
 Players.PlayerRemoving:Connect(function(player)
-  savePlayer(player)
+  savePlayer(player, true)
   lastAction[player] = nil
   civCooldowns[player] = nil
+  civActionState[player] = nil
+  civSessions[player] = nil
+  civSaveWarned[player] = nil
 end)
 task.spawn(function()
-  while task.wait(120) do
-    for _, player in ipairs(Players:GetPlayers()) do
-      task.spawn(savePlayer, player)
-    end
+  while task.wait(60) do
+    for _, player in ipairs(Players:GetPlayers()) do task.spawn(savePlayer, player, false) end
   end
 end)
 game:BindToClose(function()
-  for _, player in ipairs(Players:GetPlayers()) do savePlayer(player) end
+  local pending = 0
+  for _, player in ipairs(Players:GetPlayers()) do
+    pending += 1
+    task.spawn(function()
+      savePlayer(player, true)
+      pending -= 1
+    end)
+  end
+  local deadline = os.clock() + 24
+  while pending > 0 and os.clock() < deadline do task.wait(0.1) end
 end)
