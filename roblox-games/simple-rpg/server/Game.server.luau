@@ -697,20 +697,21 @@ local function civAttack(player)
     civIncrease(player, "CivKills", 1)
     civIncrease(player, "CivResearch", 8)
     civIncrease(player, "CivSilver", 3)
+    local additionalLoot = ""
     if chosen.Special == "WildBoar" then
       civIncrease(player, "CivHide", 1)
       civIncrease(player, "CivBoarKills", 1)
-      civMessage(player, "멧돼지 드롭: 가죽 +1 / 석기 유레카!")
+      additionalLoot = " / 가죽 +1 / 석기 유레카!"
     elseif chosen.Special == "BronzeGolem" then
       civIncrease(player, "CivCoreCrystal", 1)
-      civMessage(player, "청동 골렘 드롭: 코어 크리스탈 +1")
+      additionalLoot = " / 코어 크리스탈 +1"
     elseif chosen.Special == "IronKnight" then
       civIncrease(player, "CivDarkIron", 1)
       civIncrease(player, "CivIronKnightKills", 1)
-      civMessage(player, "철기 기사 드롭: 다크 아이언 +1 / 철기 유레카!")
+      additionalLoot = " / 다크 아이언 +1 / 철기 유레카!"
     end
     if race.PassiveType == "Victory" then player:SetAttribute("CivVictoryUntil", os.clock() + 10) end
-    civMessage(player, chosen.Model.Name .. " 처치! 연구력 +8 / 은화 +3")
+    civMessage(player, chosen.Model.Name .. " 처치! 연구력 +8 / 은화 +3" .. additionalLoot)
     chosen.TelegraphAt = 0
     task.delay(9, function()
       if chosen.Model.Parent then
