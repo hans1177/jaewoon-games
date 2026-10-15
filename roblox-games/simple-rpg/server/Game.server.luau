@@ -973,6 +973,7 @@ remote.OnServerEvent:Connect(function(player, actionId, argument)
     CivSelect = civSelect, CivTravel = civTravel, CivAttack = civAttack,
     CivGuard = civGuard, CivDodge = civDodge, CivGather = civGather,
     CivResearch = civResearch, CivCompanion = civCompanion,
+    CivCraft = civCraft, CivBuild = civBuild, CivEquip = civEquip,
   }
   local action = handler or civActions[actionId]
   if typeof(action) ~= "function" then return end
