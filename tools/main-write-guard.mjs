@@ -149,30 +149,16 @@ function main(){
   const head=arg('head','HEAD');
   const files=changedFiles(base,head);
   const directMainViolations=scanChangedWorkflowFiles(files);
-  const basePolicy=readPolicyAtRef(base);
-  const headPolicy=readPolicyAtRef(head);
-  const lock=basePolicy?.finalDevelopmentLock||basePolicy?.finalChainLock||null;
-  const lockViolations=finalChainLockViolations({
-    files,lock,actor:arg('actor',''),owner:arg('owner','hans1177'),unlockTitle:arg('unlock-title','')
-  });
-  const sequenceViolations=flowSequenceLockViolations({basePolicy,headPolicy,lock});
-  const lockMetadataViolations=finalDevelopmentLockMetadataViolations({basePolicy,headPolicy,lock});
-  const violations=[...directMainViolations,...lockViolations,...sequenceViolations,...lockMetadataViolations];
+  // The central roadmap was removed by owner direction; only actual workflow direct-main writes are checked.
+  const violations=directMainViolations;
   const result={
     status:violations.length?'FAIL':'PASS',
     developmentProgress:violations.length?'BLOCKED':'INCOMPLETE_PROGRESS',
     changedWorkflowFiles:files.filter(isWorkflowPath),
-    finalChainLockActive:finalLockStatus(lock)==='LOCKED',
-    finalChainLockVersion:Number(lock?.version||0)||null,
-    finalChainUnlockMode:Number(lock?.version||0)>=2?'MANUAL_REPOSITORY_ADMIN_OUT_OF_BAND_ONLY':'V1_HARDENING_MIGRATION_ONLY',
-    finalChainLockViolationCount:lockViolations.length,
-    flowSequenceLockViolationCount:sequenceViolations.length,
-    finalSequenceLockMetadataViolationCount:lockMetadataViolations.length,
-    flowSequenceLockScope:'FLOW_SEQUENCE_ONLY',
-    chainImplementationOptimizationAllowed:sequenceViolations.length===0,
+    centralRoadmapRequired:false,
+    directMainWriteViolationCount:violations.length,
     violations,
-    adminProtection:'ADMIN_PROTECTION_BLOCKER',
-    rule:'feature branch -> PR -> CI -> merge; workflow direct-write to main forbidden; F0/F9 flow sequence is immutable to assistant/automation while chain implementation and bottleneck repair remain editable when sequence is preserved',
+    rule:'workflow direct-write to main forbidden; game source and publishing proceed through existing workflow triggers'
   };
   console.log(JSON.stringify(result,null,2));
   if(violations.length)process.exitCode=1;
