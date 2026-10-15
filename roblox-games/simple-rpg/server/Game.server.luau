@@ -367,6 +367,39 @@ end
 local civ = Config.Civilization
 local civCooldowns = {}
 local civEnemies = {}
+local civWildlife = {}
+local civNodes = {}
+local civWorlds = {}
+local civStations = {}
+local civTradeStalls = {}
+local civDataLoadValid = {}
+local civBuildings = {}
+local pendingTimedCraft = {}
+-- Per-session opt-in from the touch HUD; server damage authority remains unchanged.
+local savePlayer = nil -- forward declaration: portal save must complete before TeleportAsync
+local civHub = Instance.new("Folder")
+civHub.Name = "CivilizationWorlds"
+civHub.Parent = workspace
+local civRegions = {
+  Color3.fromRGB(171,135,91), Color3.fromRGB(214,183,110),
+  Color3.fromRGB(142,170,124), Color3.fromRGB(126,159,139),
+  Color3.fromRGB(165,140,101), Color3.fromRGB(205,169,112),
+  Color3.fromRGB(103,157,100), Color3.fromRGB(85,139,87),
+  Color3.fromRGB(133,153,124), Color3.fromRGB(117,169,148),
+  Color3.fromRGB(75,136,100), Color3.fromRGB(182,210,222),
+}
+local function civPart(parent, name, size, frame, color, material, collide)
+  local part = Instance.new("Part")
+  part.Name = name
+  part.Size = size
+  part.CFrame = frame
+  part.Color = color
+  part.Material = material or Enum.Material.SmoothPlastic
+  part.Anchored = true
+  part.CanCollide = collide ~= false
+  part.Parent = parent
+  return part
+end
 -- Five-era environmental identity is derived from existing research progress;
 -- civilization ID never determines the player's era.
 local eraThemes = {
@@ -409,39 +442,6 @@ local function makeEraScenery(parent, center, era)
   return folder
 end
 
-local civWildlife = {}
-local civNodes = {}
-local civWorlds = {}
-local civStations = {}
-local civTradeStalls = {}
-local civDataLoadValid = {}
-local civBuildings = {}
-local pendingTimedCraft = {}
--- Per-session opt-in from the touch HUD; server damage authority remains unchanged.
-local savePlayer = nil -- forward declaration: portal save must complete before TeleportAsync
-local civHub = Instance.new("Folder")
-civHub.Name = "CivilizationWorlds"
-civHub.Parent = workspace
-local civRegions = {
-  Color3.fromRGB(171,135,91), Color3.fromRGB(214,183,110),
-  Color3.fromRGB(142,170,124), Color3.fromRGB(126,159,139),
-  Color3.fromRGB(165,140,101), Color3.fromRGB(205,169,112),
-  Color3.fromRGB(103,157,100), Color3.fromRGB(85,139,87),
-  Color3.fromRGB(133,153,124), Color3.fromRGB(117,169,148),
-  Color3.fromRGB(75,136,100), Color3.fromRGB(182,210,222),
-}
-local function civPart(parent, name, size, frame, color, material, collide)
-  local part = Instance.new("Part")
-  part.Name = name
-  part.Size = size
-  part.CFrame = frame
-  part.Color = color
-  part.Material = material or Enum.Material.SmoothPlastic
-  part.Anchored = true
-  part.CanCollide = collide ~= false
-  part.Parent = parent
-  return part
-end
 local function civSign(parent, adornee, text, height)
   local board = Instance.new("BillboardGui")
   board.Name = "CivilizationSign"
