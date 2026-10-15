@@ -607,9 +607,9 @@ local function civOpen(mode)
     panelTitle.Text = selected == 0 and "24개 문명 중 하나를 선택해" or "24개 문명 정보"
     for id = 1, 24 do
       local race = RaceData.GetRace(id)
-      local text = string.format("%02d. %s / %s\n%s", id, race.Name, race.Landmark, race.Passive)
+      local text = string.format("%02d. %s / %s\n%s\n외형: %s", id, race.Name, race.Landmark, race.Passive, race.Visual)
       local button = civButton(civList, "Race" .. id, text,
-        UDim2.new(1, -9, 0, 70), UDim2.new(), function()
+        UDim2.new(1, -9, 0, 96), UDim2.new(), function()
           if selected == 0 then
             remote:FireServer("CivSelect", id)
             civPanel.Visible = false
@@ -618,7 +618,7 @@ local function civOpen(mode)
           end
         end)
       button.LayoutOrder = id
-      button.TextSize = 14
+      button.TextSize = 13
       if selected == id then button.BackgroundColor3 = Color3.fromRGB(119, 94, 41) end
     end
   elseif mode == "Inventory" then
