@@ -1397,18 +1397,20 @@ local actionMotionToken = 0
 local function civActionMotion(actionId, button)
   actionMotionToken += 1
   local token = actionMotionToken
-  local originalColor = button.BackgroundColor3
-  local flash = actionId == "CivGuard" and Color3.fromRGB(100, 170, 205)
-    or actionId == "CivDodge" and Color3.fromRGB(130, 178, 98)
-    or Color3.fromRGB(232, 163, 61)
-  actionTweenService:Create(button, TweenInfo.new(0.09, Enum.EasingStyle.Quad),
-    {BackgroundColor3 = flash}):Play()
-  task.delay(0.16, function()
-    if button.Parent then
-      actionTweenService:Create(button, TweenInfo.new(0.18, Enum.EasingStyle.Quad),
-        {BackgroundColor3 = originalColor}):Play()
-    end
-  end)
+  if button then
+    local originalColor = button.BackgroundColor3
+    local flash = actionId == "CivGuard" and Color3.fromRGB(100, 170, 205)
+      or actionId == "CivDodge" and Color3.fromRGB(130, 178, 98)
+      or Color3.fromRGB(232, 163, 61)
+    actionTweenService:Create(button, TweenInfo.new(0.09, Enum.EasingStyle.Quad),
+      {BackgroundColor3 = flash}):Play()
+    task.delay(0.16, function()
+      if button.Parent then
+        actionTweenService:Create(button, TweenInfo.new(0.18, Enum.EasingStyle.Quad),
+          {BackgroundColor3 = originalColor}):Play()
+      end
+    end)
+  end
   -- Animate the actual avatar joints without uploading unverified animation asset IDs.
   local character = player.Character
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
@@ -1422,9 +1424,41 @@ local function civActionMotion(actionId, button)
       local swing = actionId == "CivAttack" and CFrame.Angles(math.rad(-75), 0, math.rad(15))
         or actionId == "CivGuard" and CFrame.Angles(math.rad(-48), 0, math.rad(-30))
         or CFrame.Angles(math.rad(25), 0, math.rad(35))
-      actionTweenService:Create(joint, TweenInfo.new(0.1, Enum.EasingStyle.Quad),
-        {C0 = startC0 * swing}):Play()
-      task.delay(0.12, function()
+      if actionId == "CivAttack" then
+        -- 준비 자세를 짧게 거쳐 내려베기로 연결한다. 판정·피해량은 서버가 담당한다.
+        joint.C0 = startC0 * CFrame.Angles(math.rad(30), math.rad(-24), math.rad(15))
+        actionTweenService:Create(joint, TweenInfo.new(0.13, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+          {C0 = startC0 * swing * CFrame.Angles(0, math.rad(40), 0)}):Play()
+        local hand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
+        if hand and hand:IsA("BasePart") then
+          local low = Instance.new("Attachment")
+          low.Position = Vector3.new(0, -hand.Size.Y * 0.4, 0)
+          low.Parent = hand
+          local high = Instance.new("Attachment")
+          high.Position = Vector3.new(0, hand.Size.Y * 0.5, 0)
+          high.Parent = hand
+          local trail = Instance.new("Trail")
+          trail.Attachment0 = low
+          trail.Attachment1 = high
+          trail.Color = ColorSequence.new(Color3.fromRGB(255, 228, 165), Color3.fromRGB(231, 154, 62))
+          trail.Transparency = NumberSequence.new(0.2, 1)
+          trail.Lifetime = 0.13
+          trail.LightEmission = 0.7
+          trail.Parent = hand
+          task.delay(0.22, function()
+            trail.Enabled = false
+            task.delay(0.2, function()
+              trail:Destroy()
+              low:Destroy()
+              high:Destroy()
+            end)
+          end)
+        end
+      else
+        actionTweenService:Create(joint, TweenInfo.new(0.1, Enum.EasingStyle.Quad),
+          {C0 = startC0 * swing}):Play()
+      end
+      task.delay(0.15, function()
         if token == actionMotionToken and joint.Parent and character == player.Character then
           actionTweenService:Create(joint, TweenInfo.new(0.16, Enum.EasingStyle.Quad),
             {C0 = startC0}):Play()
@@ -1556,8 +1590,12 @@ remote.OnClientEvent:Connect(function(kind, payload)
 end)
 UserInputService.InputBegan:Connect(function(input, consumed)
   if consumed or UserInputService:GetFocusedTextBox() then return end
-  if input.KeyCode == Enum.KeyCode.F then parryEvent:FireServer()
-  elseif input.KeyCode == Enum.KeyCode.LeftShift then dodgeEvent:FireServer()
+  if input.KeyCode == Enum.KeyCode.F then
+    civActionMotion("CivGuard")
+    parryEvent:FireServer()
+  elseif input.KeyCode == Enum.KeyCode.LeftShift then
+    civActionMotion("CivDodge")
+    dodgeEvent:FireServer()
   elseif input.KeyCode == Enum.KeyCode.E then remote:FireServer("CivGather")
   elseif input.KeyCode == Enum.KeyCode.T then civOpen("Techs")
   elseif input.KeyCode == Enum.KeyCode.C then civOpen("Companions")
@@ -1568,6 +1606,7 @@ UserInputService.InputBegan:Connect(function(input, consumed)
     civOpen("Trade")
     tradeRequestRemote:FireServer("Snapshot", 0, false, "Silver")
   elseif input.UserInputType == Enum.UserInputType.MouseButton1 and not civPanel.Visible then
+    civActionMotion("CivAttack")
     remote:FireServer("CivAttack")
   end
 end)
