@@ -901,8 +901,21 @@ local function civRestoreHousing(player, saved)
         candidateId = nextLegacyId
       end
       local parentId = entry.ParentId
-      local validParent = definition.Base or parentId == nil
-        or (typeof(parentId) == "number" and restoredIds[parentId] == true)
+      local parentRecord = nil
+      if typeof(parentId) == "number" then
+        for _, prior in ipairs(records) do
+          if prior.Id == parentId then parentRecord = prior break end
+        end
+      end
+      -- 구형 저장 데이터는 ParentId가 없을 수 있으므로 보존한다.
+      -- 부모가 명시된 신형 데이터는 실제 존재하고 가까운 지지대여야 한다.
+      local validParent = definition.Base and parentId == nil
+        or (not definition.Base and parentId == nil)
+        or (not definition.Base and parentRecord ~= nil
+          and math.abs(parentRecord.X-entry.X) <= 8
+          and math.abs(parentRecord.Z-entry.Z) <= 8
+          and math.abs(parentRecord.Level-entry.Level) <= 1
+          and parentRecord.Stability >= entry.Stability + 20)
       if not restoredIds[candidateId] and validParent
         and not (definition.Base and entry.Level ~= 0) then
         local location = center + Vector3.new(entry.X,entry.Level*8+definition.Size.Y/2,entry.Z)
