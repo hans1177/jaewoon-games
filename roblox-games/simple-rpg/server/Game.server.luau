@@ -1115,6 +1115,34 @@ local function civAttack(player, targetModel)
     trophy.CanQuery = false
     trophy.CFrame = CFrame.new(chosen.Root.Position + Vector3.new(0, 3, 0))
     trophy.Parent = civHub
+    local lootLight = Instance.new("PointLight")
+    lootLight.Color = trophy.Color
+    lootLight.Brightness = 1.3
+    lootLight.Range = 9
+    lootLight.Parent = trophy
+    local lootInfo = Instance.new("BillboardGui")
+    lootInfo.Name = "LootRewardNotice"
+    lootInfo.Adornee = trophy
+    lootInfo.Size = UDim2.fromOffset(168, 44)
+    lootInfo.StudsOffsetWorldSpace = Vector3.new(0, 1.8, 0)
+    lootInfo.MaxDistance = 24
+    lootInfo.AlwaysOnTop = false
+    lootInfo.Parent = trophy
+    local lootLabel = Instance.new("TextLabel")
+    lootLabel.Name = "RewardText"
+    lootLabel.Size = UDim2.fromScale(1, 1)
+    lootLabel.BackgroundColor3 = Color3.fromRGB(43, 34, 26)
+    lootLabel.BackgroundTransparency = 0.2
+    lootLabel.TextColor3 = Color3.fromRGB(255, 233, 181)
+    lootLabel.TextScaled = false
+    lootLabel.TextSize = 13
+    lootLabel.TextWrapped = true
+    lootLabel.Font = Enum.Font.GothamBold
+    lootLabel.Text = chosen.Special == "WildBoar" and "가죽 +1"
+      or chosen.Special == "BronzeGolem" and "코어 크리스탈 +1"
+      or chosen.Special == "IronKnight" and "다크 아이언 +1"
+      or "연구력 +8 / 은화 +3"
+    lootLabel.Parent = lootInfo
     game:GetService("Debris"):AddItem(trophy, 2.5)
     civMessage(player, chosen.Model.Name .. " 처치! 연구력 +8 / 은화 +3" .. additionalLoot)
     chosen.TelegraphAt = 0
