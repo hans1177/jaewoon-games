@@ -655,6 +655,9 @@ local function civOpen(mode)
       label.LayoutOrder = slot
       label.TextSize = 12
       label.BackgroundColor3 = Color3.fromRGB(138, 90, 56)
+      local slotCorner = Instance.new("UICorner")
+      slotCorner.CornerRadius = UDim.new(0, 5)
+      slotCorner.Parent = label
     end
   elseif mode == "Crafts" or mode == "Buildings" then
     panelTitle.Text = mode == "Crafts" and "제작·제련 | 석기→청동→철기" or "영지 건축·문명 랜드마크"
