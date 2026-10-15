@@ -737,10 +737,16 @@ local function civOpen(mode)
       UDim2.new(1, -16, 0, 38), UDim2.fromOffset(8, 178), function()
         civPreviewTone = civPreviewTone % #civSkinTones + 1
         remote:FireServer("CivSkinTone", civPreviewTone)
+        toneButton.Text = "피부색 " .. tostring(civPreviewTone) .. "/" .. tostring(#civSkinTones) .. " · 변경"
         showPreview(currentPreviewId)
       end)
     toneButton.TextSize = 13
+    -- 현재 서버에 저장된 피부색을 화면에 표시한다. 직업 선택은 만들지 않는다.
+    local function refreshToneLabel()
+      toneButton.Text = "피부색 " .. tostring(civPreviewTone) .. "/" .. tostring(#civSkinTones) .. " · 변경"
+    end
     civPreviewTone = math.clamp(player:GetAttribute("CivSkinTone") or 1, 1, #civSkinTones)
+    refreshToneLabel()
     showPreview(currentPreviewId)
     for id = 1, 24 do
       local race = RaceData.GetRace(id)
