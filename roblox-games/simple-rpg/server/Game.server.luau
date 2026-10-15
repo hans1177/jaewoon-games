@@ -1126,12 +1126,14 @@ end
 local function civSpawnEnemy(raceID, center, special)
   local race = RaceData.GetRace(raceID)
   local enemy = Instance.new("Model")
-  enemy.Name = special == "WildBoar" and "야생 멧돼지"
+  enemy.Name = special == "StoneWolf" and "원시 늑대"
+    or special == "WildBoar" and "야생 멧돼지"
     or special == "BronzeGolem" and "청동 골렘"
     or special == "IronKnight" and "암흑 철기 기사"
     or race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
   enemy:SetAttribute("CivilizationEnemy", true)
   enemy:SetAttribute("EcosystemRole", "Predator")
+  if special == "StoneWolf" then enemy:SetAttribute("EcosystemSpecies", "StoneAgeWolf") end
   local isRaidBoss = special == "BronzeGolem" or special == "IronKnight"
   enemy:SetAttribute("IsRaidBoss", isRaidBoss)
   if isRaidBoss then enemy:SetAttribute("BossPhase", "Phase1") end
@@ -1163,9 +1165,10 @@ end
 -- Bounded server wildlife: each civilization has one grazing prey model.
 local function civSpawnGrazer(raceID, center)
   local animal = Instance.new("Model")
-  animal.Name = "초식 야생동물"
+  animal.Name = raceID == 15 and "원시 사슴" or "초식 야생동물"
   animal:SetAttribute("CivilizationWildlife", true)
   animal:SetAttribute("EcosystemRole", "Prey")
+  if raceID == 15 then animal:SetAttribute("EcosystemSpecies", "StoneAgeDeer") end
   animal:SetAttribute("RaceID", raceID)
   local root = civPart(animal, "HumanoidRootPart", Vector3.new(2.4, 2, 3), CFrame.new(center + Vector3.new(9, 2.5, -6)), Color3.fromRGB(137, 128, 93), Enum.Material.SmoothPlastic, false)
   civPart(animal, "Head", Vector3.new(1.5, 1.4, 1.3), root.CFrame * CFrame.new(0, 0.7, -1.8), Color3.fromRGB(161, 147, 107), Enum.Material.SmoothPlastic, false)
@@ -1748,7 +1751,9 @@ for id = 1, 24 do
   end
   civSpawnEnemy(id, center)
   civSpawnGrazer(id, center)
-  if id == 15 then civSpawnEnemy(id, center, "WildBoar")
+  if id == 15 then
+    civSpawnEnemy(id, center, "WildBoar")
+    civSpawnEnemy(id, center, "StoneWolf")
   elseif id == 2 then civSpawnEnemy(id, center, "BronzeGolem")
   elseif id == 1 then civSpawnEnemy(id, center, "IronKnight") end
   local stations = {}
