@@ -1320,6 +1320,38 @@ end
 local lobbyGround = civPart(civHub, "CivilizationLobbyGround", Vector3.new(64, 2, 64),
   CFrame.new(0, -1, 0), Color3.fromRGB(111, 132, 101), Enum.Material.Slate, true)
 lobbyGround:SetAttribute("WalkableGround", true)
+-- Ancient low-poly meeting square: radial stone path, timber stalls and monument stones.
+local centralPath = civPart(civHub, "로비 석재 산책로", Vector3.new(9, 0.15, 58),
+  CFrame.new(0, 0.08, 0), Color3.fromRGB(162, 145, 116), Enum.Material.Cobblestone, false)
+centralPath.CanTouch = false
+centralPath.CanQuery = false
+for _, side in ipairs({-1, 1}) do
+  local offset = side * 23
+  local garden = civPart(civHub, "로비 정원 " .. side, Vector3.new(9, 0.3, 27),
+    CFrame.new(offset, 0.05, 0), Color3.fromRGB(77, 116, 77), Enum.Material.Grass, false)
+  garden.CanTouch = false
+  garden.CanQuery = false
+  for index = 1, 3 do
+    local z = -16 + index * 10
+    local trunk = civPart(civHub, "로비 나무줄기 " .. side .. "-" .. index,
+      Vector3.new(1.3, 5, 1.3), CFrame.new(offset, 2.7, z),
+      Color3.fromRGB(103, 75, 52), Enum.Material.Wood, false)
+    trunk.CanTouch = false
+    trunk.CanQuery = false
+    local crown = civPart(civHub, "로비 로우폴리 수관 " .. side .. "-" .. index,
+      Vector3.new(6, 6, 6), CFrame.new(offset, 7, z),
+      Color3.fromRGB(81, 120, 86), Enum.Material.Grass, false)
+    crown.Shape = Enum.PartType.Ball
+    crown.CanTouch = false
+    crown.CanQuery = false
+  end
+end
+local lobbyInfoStone = civPart(civHub, "로비 모험 안내석", Vector3.new(5, 5, 1.5),
+  CFrame.new(-11, 2.5, -14), Color3.fromRGB(152, 143, 122), Enum.Material.Slate, false)
+lobbyInfoStone.CanTouch = false
+lobbyInfoStone.CanQuery = false
+civSign(civHub, lobbyInfoStone, "문명 선택 · 맵 이동\\n채집 · 전투 · 연구", 4)
+
 local lobbyBase = civPart(civHub, "광장 석상 기단", Vector3.new(8, 0.8, 5),
   CFrame.new(0, 0.4, -11), Color3.fromRGB(107, 74, 47), Enum.Material.Slate, false)
 lobbyBase.CanTouch = false
