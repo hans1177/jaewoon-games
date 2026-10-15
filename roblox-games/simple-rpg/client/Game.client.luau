@@ -1910,9 +1910,18 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
               local storedBase = part:GetAttribute("MotionBaseOffset")
               local base = typeof(storedBase) == "CFrame"
                 and storedBase or rootPart.CFrame:ToObjectSpace(part.CFrame)
-              state = {root = rootPart, base = base}
+              state = {root = rootPart, base = base, lastAnimatedAt = creatureMotionPhase}
               creatureMotionLimbBases[part] = state
+            elseif creatureMotionPhase - state.lastAnimatedAt > 0.25 then
+              -- 화면 밖에서 오랫동안 갱신되지 않았다면 현재 서버 기준 자세로 복귀한다.
+              local storedBase = part:GetAttribute("MotionBaseOffset")
+              if typeof(storedBase) == "CFrame" then
+                state.base = storedBase
+              else
+                state.base = rootPart.CFrame:ToObjectSpace(part.CFrame)
+              end
             end
+            state.lastAnimatedAt = creatureMotionPhase
             local base = state.base
             local leg = name == "Left Leg" or name == "Right Leg"
             local angle = leg and -sign * swing or sign * swing
