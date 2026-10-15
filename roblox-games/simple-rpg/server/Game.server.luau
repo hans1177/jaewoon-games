@@ -787,11 +787,11 @@ local function civBuildHousing(player, request)
     if part:IsA("BasePart") and part:GetAttribute("HousingPiece") == true
       and (part.Position-basePosition).Magnitude < 3 then return end
   end
+  local rotation = tonumber(request.Rotation) or 0
+  if rotation % 90 ~= 0 or rotation < 0 or rotation >= 360 then return end
   if not civNowReady(player,"BuildHousing",0.7) then return end
   local paid,missing = civSpend(player,{CivWood=definition.Wood,CivStone=definition.Stone})
   if not paid then civMessage(player,"건축 자원 부족: "..missing) return end
-  local rotation = tonumber(request.Rotation) or 0
-  if rotation % 90 ~= 0 or rotation < 0 or rotation >= 360 then return end
   local placeAt = basePosition + Vector3.new(0,definition.Size.Y/2,0)
   local piece = civPart(ownerFolder,request.Key.."_"..tostring(civHousingCounts[player] or 0),
     definition.Size,CFrame.new(placeAt)*CFrame.Angles(0,math.rad(rotation),0),Color3.fromRGB(149,129,102),
@@ -877,10 +877,29 @@ local function civRemoveHousing(player, piece)
     if record.Id == id then index = i break end
   end
   if not index or not civNowReady(player,"RemoveHousing",0.5) then return end
-  table.remove(records,index)
+  -- 연결된 자식 부품은 지지대를 잃으면 함께 붕괴한다.
+  local removed = {[id]=true}
+  local changed = true
+  while changed do
+    changed=false
+    for _,record in ipairs(records) do
+      if not removed[record.Id] and record.ParentId and removed[record.ParentId] then
+        removed[record.Id]=true
+        changed=true
+      end
+    end
+  end
+  for n=#records,1,-1 do
+    if removed[records[n].Id] then table.remove(records,n) end
+  end
+  for _,other in ipairs(folder:GetDescendants()) do
+    if other:IsA("BasePart") and other:GetAttribute("HousingPiece")==true
+      and removed[other:GetAttribute("HousingId")] then
+      other:Destroy()
+    end
+  end
   civHousingCounts[player] = #records
-  piece:Destroy()
-  civMessage(player,"건축 부품을 철거했어.")
+  civMessage(player,"건축 부품 철거 / 지지대 없는 연결 부품 붕괴")
 end
 -- 소유한 문틀을 간단한 여닫이 출입구로 사용한다.
 local function civToggleHousingDoor(player,piece)
