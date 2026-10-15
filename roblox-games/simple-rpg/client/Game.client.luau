@@ -1872,6 +1872,7 @@ local creatureTelegraphHighlights = setmetatable({}, {__mode = "k"})
 local creatureImportedRig = setmetatable({}, {__mode = "k"})
 local creatureRootMotion = setmetatable({}, {__mode = "k"})
 local creatureHealthMotion = setmetatable({}, {__mode = "k"})
+local creatureDeathMotion = setmetatable({}, {__mode = "k"})
 local creatureMotionLastSearchPosition = nil
 local creatureMotionLastSearchCharacter = nil
 local creatureMotionLastSearchRoot = nil
@@ -2021,6 +2022,14 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         healthMotion.health = healthNow
         local hitElapsed = creatureMotionPhase - healthMotion.hitAt
         local reactingToHit = hitElapsed >= 0 and hitElapsed < 0.28
+        local defeatedNow = motionHumanoid and healthNow <= 0
+        if defeatedNow and not creatureDeathMotion[model] then
+          creatureDeathMotion[model] = creatureMotionPhase
+        elseif not defeatedNow then
+          creatureDeathMotion[model] = nil
+        end
+        local deathElapsed = creatureDeathMotion[model] and (creatureMotionPhase - creatureDeathMotion[model]) or 0
+        local deathProgress = defeatedNow and math.clamp(deathElapsed / 0.5, 0, 1) or 0
         creatureRootMotion[rootPart] = {
           position = rootPosition, at = creatureMotionPhase, phase = gaitPhase,
           speed = smoothedSpeed, lastMovedAt = lastMovedAt
@@ -2046,14 +2055,20 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local clock = gaitPhase
           local stride = moving and not down and math.abs(math.sin(clock)) * 0.20 * speedFactor or 0
           local roll = moving and not down and math.sin(clock) * 0.075 or 0
-          local pitch = down and math.rad(65) or state == "Stunned" and math.rad(20)
+          local attackStamp = model:GetAttribute("LastAttackAnimationAt")
+          local strikeElapsed = typeof(attackStamp) == "number"
+            and workspace:GetServerTimeNow() - attackStamp or math.huge
+          local striking = strikeElapsed >= 0 and strikeElapsed < 0.32
+          local strikeProgress = striking and math.sin(strikeElapsed / 0.32 * math.pi) or 0
+          local pitch = down and math.rad(65) * deathProgress or state == "Stunned" and math.rad(20)
             or reactingToHit and math.rad(16) * (1 - hitElapsed / 0.28)
+            or striking and math.rad(-20) * strikeProgress
             or windingUp and math.rad(-16) or 0
           -- 시작 포즈의 높이/회전을 보존해서 실제 메시가 루트 안에 파묻히지 않게 한다.
           local visualPose = importedVisual:GetAttribute("VisualPivotOffset")
           if typeof(visualPose) ~= "CFrame" then visualPose = CFrame.new() end
-          importedVisual:PivotTo(rootPart.CFrame * CFrame.new(0, stride, 0)
-            * CFrame.Angles(pitch, 0, roll) * visualPose)
+          importedVisual:PivotTo(rootPart.CFrame * CFrame.new(0, stride - deathProgress * 0.6, 0)
+            * CFrame.Angles(pitch, 0, roll + deathProgress * math.rad(10)) * visualPose)
           -- 가져온 스킨드/리그 모델의 Motor6D 다리를 좌우 교대로 구동한다.
           -- 원본 C0는 보존하고 20Hz 클라이언트 시각 효과만 수정한다.
           local joints = creatureImportedRig[importedVisual]
@@ -2099,17 +2114,18 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             end
             creatureImportedRig[importedVisual] = joints
           end
-          local walking = moving and not down and state ~= "Stunned" and not windingUp and not reactingToHit
+          local walking = moving and not down and state ~= "Stunned" and not windingUp and not reactingToHit and not striking
           for _, leg in ipairs(joints) do
             if leg.joint.Parent then
               local angle = walking and math.sin(clock) * leg.side * leg.amplitude * speedFactor or 0
               -- 실제 공격 예고 중에는 리그 팔을 들어 올리고 짧게 떨도록 한다.
-              if leg.isArm and not down then
-                local strikeAt = model:GetAttribute("LastAttackAnimationAt")
-                local elapsed = typeof(strikeAt) == "number"
-                  and (workspace:GetServerTimeNow() - strikeAt) or math.huge
-                if elapsed >= 0 and elapsed < 0.32 then
-                  angle = -0.6 + math.sin((elapsed / 0.32) * math.pi) * 1.15
+              if down then
+                angle = leg.isArm and -0.4 * deathProgress or 0.65 * leg.side * deathProgress
+              elseif reactingToHit then
+                angle = leg.isArm and -0.55 * (1 - hitElapsed / 0.28) or 0
+              elseif leg.isArm then
+                if striking then
+                  angle = -0.6 + strikeProgress * 1.15
                 elseif windingUp then
                   angle = -0.6 + math.sin(creatureMotionPhase * 12) * 0.07
                 end
