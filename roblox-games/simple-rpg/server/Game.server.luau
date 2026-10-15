@@ -2474,18 +2474,20 @@ local function civWalkModel(model, target, duration)
   if not model or not model.Parent then return end
   local prior = civMoveTweens[model]
   if prior then
-    prior.tween:Cancel()
-    prior.connection:Disconnect()
-    prior.value:Destroy()
+    -- The completion callback owns the tween's CFrameValue. Do not destroy it
+    -- before Cancel fires, or an in-flight signal can access a deleted value.
     civMoveTweens[model] = nil
+    prior.tween:Cancel()
   end
   local start = model:GetPivot()
   local distance = (target.Position - start.Position).Magnitude
   if distance < 0.015 then return end
   -- 스폰/귀환 등 큰 좌표 차이는 걷기로 오인하지 않고 즉시 복구한다.
   if distance > 12 then
-    model:PivotTo(target)
-    return
+    -- AI movement never teleports across the map; only explicit spawn/respawn may.
+    -- Cap the motion command instead of snapping a chasing enemy to its destination.
+    local direction = (target.Position - start.Position).Unit
+    target = CFrame.new(start.Position + direction * 2.4) * target.Rotation
   end
   -- AI가 0.25초마다 목표를 갱신하므로 다음 틱 직전까지 연속 이동한다.
   -- 0.23초 종료 후 정지했다가 다시 움직이는 미세한 끊김을 줄인다.
