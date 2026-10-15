@@ -984,7 +984,7 @@ local function civOpen(mode)
               end)
             else civMessage.Text = "선행 기술을 먼저 연구해야 해." end
           end)
-        button.LayoutOrder = id + 5
+        button.LayoutOrder = id + 6
         button.TextSize = 13
         if complete then button.BackgroundColor3 = Color3.fromRGB(95, 110, 60)
         elseif missing or id ~= techCount + 1 then button.BackgroundColor3 = Color3.fromRGB(115, 110, 103)
