@@ -1896,7 +1896,10 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             end
             animatedJoint = cached.hasMotor
           end
-          if part and part:IsA("BasePart") and not animatedJoint then
+          -- 용접되거나 물리 시뮬레이션 중인 부품의 CFrame을 강제로 덮어쓰지 않는다.
+          -- 장식용 고정 파츠에만 클라이언트 시각 모션을 적용한다.
+          if part and part:IsA("BasePart") and part.Anchored and not animatedJoint
+            and #part:GetJoints() == 0 then
             local sign = (name == "Left Arm" or name == "Left Leg" or name == "LeftLimb") and 1 or -1
             -- 서버에 복제되는 Attribute를 매 프레임 모션 캐시로 쓰지 않는다.
             -- 루트 파츠가 교체되면 기존 기준 자세도 다시 산출한다.
