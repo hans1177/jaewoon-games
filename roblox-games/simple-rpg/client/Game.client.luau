@@ -1714,6 +1714,17 @@ civButton(housingPanel,"HousingRemove","조준한 내 건축물 철거",
       housingInfo.Text="자신의 건축 부품을 조준해."
     end
   end)
+civButton(housingPanel,"HousingDoorToggle","조준한 내 문 열기 / 닫기",
+  UDim2.new(1,-8,0,29),UDim2.new(),function()
+    local _,target=housingTarget()
+    if target and target:GetAttribute("HousingPiece")==true
+      and target.Name:match("^Doorframe")
+      and target:GetAttribute("CivOwnerUserId")==player.UserId then
+      remote:FireServer("CivToggleHousingDoor",target)
+    else
+      housingInfo.Text="자신의 문틀을 조준해."
+    end
+  end)
 local housingToggle=civButton(civGui,"HousingToggle","건축",
   UDim2.fromOffset(76,36),UDim2.new(1,-84,1,-104),function()
     housingPanel.Visible=not housingPanel.Visible
