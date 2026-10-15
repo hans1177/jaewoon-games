@@ -1367,6 +1367,7 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   if isRaidBoss then enemy:SetAttribute("BossPhase", "Phase1") end
   enemy:SetAttribute("RaceID", raceID)
   enemy:SetAttribute("MobSlot", mobSlot or 1)
+  enemy:SetAttribute("SpawnCategory", special and "EraSpecial" or "Civilization")
   -- 기존 시대별 특수 몬스터를 레이드 보스로 분류한다. 기본 체력·피해·보상은 유지한다.
   if special == "WildBoar" or special == "BronzeGolem" or special == "IronKnight" then
     enemy:SetAttribute("IsRaidBoss", true)
@@ -1381,6 +1382,7 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
     or mobSlot == 2 and Vector3.new(-13, 4, -11)
     or Vector3.new(0, 4, 16))), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
   root.Transparency = 0.35
+  enemy:SetAttribute("SpawnPosition", root.Position)
   local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
   -- 몬스터 외형 에셋: 기존 생성 경로에서 경량 파츠를 조립한다.
   local beast = special == "StoneWolf" or special == "WildBoar"
