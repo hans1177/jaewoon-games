@@ -1468,6 +1468,8 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
       beast and Vector3.new(0.8, 2.1, 0.8) or Vector3.new(1.0, 3, 1.1),
       root.CFrame * CFrame.new(offset), bodyColor, Enum.Material.SmoothPlastic, false)
     limb.CanCollide = false
+    -- 기본 로우폴리 몬스터의 독립 고정 팔다리만 클라이언트 모션을 허용한다.
+    limb:SetAttribute("AllowClientLimbMotion", true)
     if armor then
       local plate = civPart(enemy, side < 0 and "LeftArmor" or "RightArmor",
         Vector3.new(1.2, 0.8, 1.3), root.CFrame * CFrame.new(side * 1.9, 1.2, 0),
