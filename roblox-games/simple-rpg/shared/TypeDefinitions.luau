@@ -33,4 +33,30 @@ export type TechNode = {
   StatBonus: {[string]: number},
 }
 
+-- v3.0 authoring/serialization-shape types; no new live save store.
+-- Canonical runtime keys remain CivRaceID, CivTech, CivGold and Civ* numeric inventory.
+export type V3RaceInfo = {
+  ID: number,
+  Name: string,
+  Passive: string,
+  Landmark: string,
+  SpecialRes: string,
+  AttackBonus: number,
+  DefenseBonus: number,
+  ParryWindowOffset: number,
+}
+export type V3TechNode = {
+  TechID: number,
+  Era: number,
+  Name: string,
+  RequiredResources: {[string]: number},
+  EurekaCondition: string,
+}
+export type V3PlayerData = {
+  RaceID: number,
+  TechProgress: {number},
+  Inventory: {[string]: number},
+  Level: number,
+}
+
 return TypeDefinitions
