@@ -31,8 +31,13 @@ if creatureFolder then
     if not creatureFolder:FindFirstChild(name) then
       local ok, container = pcall(function() return insertService:LoadAsset(assetId) end)
       if ok and container then
-        local assetModel = container:FindFirstChildWhichIsA("Model", true) or container
-        if assetModel:IsA("Model") and assetModel:FindFirstChildWhichIsA("BasePart", true) then
+        -- Roblox GLB imports may contain nested empty wrapper Models. Prefer the
+        -- outer imported package that actually owns all meshes, not the first child.
+        local assetModel = container
+        if not assetModel:FindFirstChildWhichIsA("BasePart", true) then
+          assetModel = nil
+        end
+        if assetModel and assetModel:IsA("Model") then
           local template = assetModel:Clone()
           template.Name = name
           template.Parent = creatureFolder
