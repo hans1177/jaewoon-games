@@ -440,8 +440,16 @@ end
 local function civCraft(player, itemKey)
   if typeof(itemKey) ~= "string" or #itemKey > 32 or not civRace(player) then return end
   local recipe = ProgressionData.GetRecipe(itemKey)
-  if not recipe or readNumber(player, "CivTech", 0) < recipe.MinimumTech then return end
-  if not civNearStation(player, recipe.Station) or not civNowReady(player, "Craft", 0.8) then return end
+  if not recipe then return end
+  if readNumber(player, "CivTech", 0) < recipe.MinimumTech then
+    civMessage(player, "선행 연구 필요: " .. tostring(recipe.MinimumTech))
+    return
+  end
+  if not civNearStation(player, recipe.Station) then
+    civMessage(player, "해당 제작 시설 15칸 이내로 이동해야 해.")
+    return
+  end
+  if not civNowReady(player, "Craft", 0.8) then return end
   local paid, missing = civSpend(player, recipe.Costs)
   if not paid then civMessage(player, "제작 자원 부족: " .. missing); return end
   civIncrease(player, recipe.YieldField, recipe.YieldCount)
@@ -454,9 +462,15 @@ local function civBuild(player, buildingKey)
   local definition = ProgressionData.GetStructure(buildingKey)
   if not race or not definition then return end
   if definition.RequiredRace ~= 0 and definition.RequiredRace ~= race.ID then return end
+  if readNumber(player, "Civ" .. buildingKey, 0) >= 1 then
+    civMessage(player, "이미 건설된 건축물이야.")
+    return
+  end
   if readNumber(player, "CivTech", 0) < definition.MinimumTech
-    or readNumber(player, definition.RequiredMetric, 0) < 1
-    or readNumber(player, "Civ" .. buildingKey, 0) >= 1 then return end
+    or readNumber(player, definition.RequiredMetric, 0) < 1 then
+    civMessage(player, "해당 시대 연구와 사냥·제련 유레카를 완료해야 해.")
+    return
+  end
   local center = civWorlds[race.ID]
   local character = player.Character
   local root = character and character:FindFirstChild("HumanoidRootPart")
