@@ -1766,6 +1766,9 @@ local creatureMotionPhase = 0
 local creatureMotionAccumulator = 0
 local creatureMotionSearchAt = 0
 local creatureMotionModels = {}
+local creatureMotionLastSearchPosition = nil
+local creatureMotionQueryParams = OverlapParams.new()
+creatureMotionQueryParams.FilterType = Enum.RaycastFilterType.Exclude
 creatureMotionRunService.RenderStepped:Connect(function(dt)
   creatureMotionAccumulator += dt
   if creatureMotionAccumulator < 1 / 20 then return end
@@ -1774,17 +1777,14 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
   local character = player.Character
   local viewer = character and character:FindFirstChild("HumanoidRootPart")
   if not viewer then return end
-  if creatureMotionPhase >= creatureMotionSearchAt then
+  local movedSinceSearch = creatureMotionLastSearchPosition and (viewer.Position - creatureMotionLastSearchPosition).Magnitude > 35
+  if creatureMotionPhase >= creatureMotionSearchAt or movedSinceSearch then
     creatureMotionSearchAt = creatureMotionPhase + 2
+    creatureMotionLastSearchPosition = viewer.Position
     table.clear(creatureMotionModels)
-    -- 로컬 플레이어 캐릭터 및 장식 파츠는 공간 검색에서 제외한다.
-    local queryParams = OverlapParams.new()
-    queryParams.FilterType = Enum.RaycastFilterType.Exclude
-    queryParams.FilterDescendantsInstances = {character}
-    -- 렌더링용 장식/바닥은 검색 결과 수를 불필요하게 늘리지 않는다.
-    queryParams.MaxParts = 0
-    -- 탐색 범위를 플레이어 주변으로 제한해 대형 월드의 전체 후손 검색을 피한다.
-    local nearbyParts = workspace:GetPartBoundsInRadius(viewer.Position, 85, queryParams)
+    -- 플레이어의 새 캐릭터는 제외하고, 대시/포털 이동 직후 즉시 주변 대상을 갱신한다.
+    creatureMotionQueryParams.FilterDescendantsInstances = {character}
+    local nearbyParts = workspace:GetPartBoundsInRadius(viewer.Position, 85, creatureMotionQueryParams)
     local seen = {}
     for _, part in ipairs(nearbyParts) do
       -- 몬스터 내부 장비/리그가 별도 Model로 감싸져 있어도 상위 소유 모델을 찾는다.
