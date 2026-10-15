@@ -347,3 +347,19 @@ test('대충알피지 popup header does not overlap its close control', () => {
   assert.match(client, /panelTitle\.TextXAlignment = Enum\.TextXAlignment\.Left/);
   assert.match(client, /civCloseButton\.ZIndex = 13/);
 });
+
+test('대충알피지 그래픽 목업 팔레트는 기존 인벤토리·연구 흐름을 유지한다', () => {
+  // 원목·가죽·양피지, 기술 노드의 잠금/진행 가능/완료 색상.
+  assert.match(client, /label\.TextColor3 = Color3\.fromRGB\(232, 213, 168\)/);
+  assert.match(client, /button\.BackgroundColor3 = Color3\.fromRGB\(138, 90, 56\)/);
+  assert.match(client, /woodBorder\.Name = "OakBorder"/);
+  assert.match(client, /civPanel\.BackgroundColor3 = mode == "Techs" and Color3\.fromRGB\(232, 213, 168\)/);
+  for (const rgb of ['95, 110, 60', '115, 110, 103', '44, 74, 110']) {
+    assert.ok(client.includes('button.BackgroundColor3 = Color3.fromRGB(' + rgb + ')'));
+  }
+  // 기존 4×8 UI, 연구 서버 권한 및 모바일 조작을 그대로 사용한다.
+  assert.match(client, /for slot = 1, 32 do/);
+  assert.match(client, /grid\.FillDirectionMaxCells = 4/);
+  assert.match(client, /unlockTechRequest:InvokeServer\(id\)/);
+  assert.match(client, /autoCombatToggle\.Visible = nativeTouchEnabled/);
+});
