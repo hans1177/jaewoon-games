@@ -2697,6 +2697,7 @@ task.spawn(function()
                 enemy.TelegraphAt = 0
                 enemy.TargetUserId = nil
                 enemy.Model:SetAttribute("IsPreparingAttack", false)
+                enemy.Model:SetAttribute("LastAttackAnimationAt", workspace:GetServerTimeNow())
                 enemy.LastHit = now
                 -- Only the real server-telegraphed target can receive mobile smart guard.
                 if intendedUserId == target.UserId then
