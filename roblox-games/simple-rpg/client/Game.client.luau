@@ -689,6 +689,41 @@ local function civOpen(mode)
   local selected = player:GetAttribute("CivRaceID") or 0
   if mode == "Races" then
     panelTitle.Text = selected == 0 and "24개 문명 중 하나를 선택해" or "24개 문명 정보"
+    -- 한 번에 하나의 ViewportFrame만 렌더링하여 모바일 메모리/드로우콜을 제한한다.
+    local racePreview = Instance.new("Frame")
+    racePreview.Name = "CivilizationCharacterPreview"
+    racePreview.Size = UDim2.new(1, -9, 0, 236)
+    racePreview.BackgroundColor3 = Color3.fromRGB(107, 74, 47)
+    racePreview.BorderSizePixel = 0
+    racePreview.LayoutOrder = 0
+    racePreview.Parent = civList
+    local previewTitle = civLabel(racePreview, "PreviewTitle", "24문명 전사 · 블록형 3D 미리보기",
+      UDim2.new(1, -12, 0, 30), UDim2.fromOffset(6, 3), false)
+    previewTitle.TextSize = 14
+    local viewport = Instance.new("ViewportFrame")
+    viewport.Name = "OneCharacterViewport"
+    viewport.Size = UDim2.new(1, -152, 0, 130)
+    viewport.Position = UDim2.new(0, 76, 0, 33)
+    viewport.BackgroundColor3 = Color3.fromRGB(44, 74, 110)
+    viewport.BorderSizePixel = 0
+    viewport.ZIndex = 12
+    viewport.Parent = racePreview
+    local previewInfo = civLabel(racePreview, "PreviewRaceInfo", "",
+      UDim2.new(1, -16, 0, 62), UDim2.new(0, 8, 1, -69), true)
+    previewInfo.TextSize = 13
+    local currentPreviewId = selected > 0 and selected or 1
+    local function showPreview(raceId)
+      currentPreviewId = (raceId - 1) % 24 + 1
+      local display = RaceData.GetRace(currentPreviewId)
+      if not display then return end
+      civBuildCharacterPreview(viewport, currentPreviewId)
+      previewInfo.Text = display.Name .. " · " .. display.Visual .. "\n" .. display.Landmark
+    end
+    civButton(racePreview, "PreviousRacePreview", "◀", UDim2.fromOffset(60, 54),
+      UDim2.fromOffset(7, 70), function() showPreview(currentPreviewId - 1) end)
+    civButton(racePreview, "NextRacePreview", "▶", UDim2.fromOffset(60, 54),
+      UDim2.new(1, -67, 0, 70), function() showPreview(currentPreviewId + 1) end)
+    showPreview(currentPreviewId)
     for id = 1, 24 do
       local race = RaceData.GetRace(id)
       local text = string.format("%02d. %s / %s\n%s\n외형: %s", id, race.Name, race.Landmark, race.Passive, race.Visual)
