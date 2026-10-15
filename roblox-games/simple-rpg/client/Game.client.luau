@@ -1316,16 +1316,26 @@ local function civOpen(mode)
         local destination = player:GetAttribute("CivRaceID")
         local oldAck = player:GetAttribute("CivTravelAck") or 0
         remote:FireServer("CivTravel", destination)
-        task.delay(2.5, function()
+        local travelSettled = false
+        local travelConnection
+        local function settleAdventureTravel()
+          if travelSettled then return end
           local arrived = (player:GetAttribute("CivTravelAck") or 0) > oldAck
             and player:GetAttribute("CivTravelDestination") == destination
-          if arrived then
-            civPanel.Visible = false
-            civMenuRail.Visible = false
-          else
-            civMessage.Text = "모험 지역으로 이동하지 못했어. 잠시 후 다시 눌러줘."
-            civMessage.Visible = true
-          end
+          if not arrived then return end
+          travelSettled = true
+          if travelConnection then travelConnection:Disconnect() end
+          civPanel.Visible = false
+          civMenuRail.Visible = false
+        end
+        travelConnection = player:GetAttributeChangedSignal("CivTravelAck"):Connect(settleAdventureTravel)
+        settleAdventureTravel()
+        task.delay(3, function()
+          if travelSettled then return end
+          travelSettled = true
+          if travelConnection then travelConnection:Disconnect() end
+          civMessage.Text = "모험 이동 응답이 없어. 저장 상태와 캐릭터를 확인해 줘."
+          civMessage.Visible = true
         end)
       end)
     adventure.LayoutOrder = 1
