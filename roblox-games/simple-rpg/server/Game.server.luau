@@ -1917,8 +1917,7 @@ task.spawn(function()
           grazer.Humanoid.Health = grazer.Humanoid.MaxHealth
           grazer.Model:PivotTo(CFrame.new(grazer.Home))
         end
-      elseif now - grazer.LastGraze >= 3.5 then
-        grazer.LastGraze = now
+      else
         local threatPosition = nil
         if grazer.Model:GetAttribute("EcosystemSpecies") == "StoneAgeDeer" then
           for _, predator in ipairs(civEnemies) do
@@ -1929,6 +1928,9 @@ task.spawn(function()
             end
           end
         end
+        local updateInterval = threatPosition and 0.75 or 3.5
+        if now - grazer.LastGraze >= updateInterval then
+          grazer.LastGraze = now
         if threatPosition then
           local delta = grazer.Root.Position - threatPosition
           local planar = Vector3.new(delta.X, 0, delta.Z)
@@ -1940,6 +1942,7 @@ task.spawn(function()
         else
           local angle = now * 0.19 + grazer.Home.X * 0.05
           grazer.Model:PivotTo(CFrame.new(grazer.Home + Vector3.new(math.cos(angle) * 5, 0, math.sin(angle) * 5)))
+        end
         end
       end
     end
