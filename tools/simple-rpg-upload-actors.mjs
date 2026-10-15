@@ -66,8 +66,17 @@ for (const [relativeFile, name] of models) {
     if (op.done) {
       const id = op.response?.assetId || op.response?.asset?.assetId;
       if (!/^[1-9][0-9]*$/.test(String(id??''))) throw new Error('UPLOAD_NO_ASSET_ID: '+name);
-      out.assets[name] = {assetId:String(id), source:file, license:'CC0-1.0'};
-      console.log('UPLOADED_MODEL '+name+'='+id);
+      // Register use permission for this game's existing private universe.
+      const grant = await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions', {
+        method:'PATCH', headers:{'content-type':'application/json'},
+        body:JSON.stringify({
+          subjectType:'Universe', subjectId:'10770997776',
+          action:'Use', requests:[{assetId:Number(id), grantToDependencies:true}]
+        })
+      });
+      if (grant.errors?.length) throw new Error('ASSET_PERMISSION_DENIED_'+name);
+      out.assets[name] = {assetId:String(id), source:file, license:'CC0-1.0', universeId:'10770997776'};
+      console.log('UPLOADED_AND_GRANTED_MODEL '+name+'='+id);
       done=true; break;
     }
   }
