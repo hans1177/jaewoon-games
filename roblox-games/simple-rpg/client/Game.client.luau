@@ -487,7 +487,33 @@ civStatus.TextSize = 13
 local civMessage = civLabel(civGui, "CombatNotice", "",
   UDim2.new(1, -134, 0, 43), UDim2.fromOffset(10, 97), true)
 civMessage.TextSize = 14
-civMessage.BackgroundColor3 = Color3.fromRGB(62, 47, 34)
+civMessage.BackgroundColor3 = Color3.fromRGB(43, 34, 26)
+-- Fantasy HUD: compact centered sign and parchment resource board.
+civTitle.AnchorPoint = Vector2.new(0.5, 0)
+civTitle.Position = UDim2.new(0.5, 0, 0, 4)
+civTitle.Size = UDim2.new(0.56, 0, 0, 38)
+civTitle.BackgroundColor3 = Color3.fromRGB(55, 37, 26)
+civTitle.TextColor3 = Color3.fromRGB(232, 213, 168)
+civTitle.TextSize = 24
+civStatus.AnchorPoint = Vector2.new(0.5, 0)
+civStatus.Position = UDim2.new(0.5, 0, 0, 46)
+civStatus.Size = UDim2.new(0.7, 0, 0, 57)
+civStatus.BackgroundColor3 = Color3.fromRGB(232, 213, 168)
+civStatus.TextColor3 = Color3.fromRGB(66, 44, 30)
+civMessage.AnchorPoint = Vector2.new(0.5, 0)
+civMessage.Position = UDim2.new(0.5, 0, 0, 107)
+civMessage.Size = UDim2.new(0.55, 0, 0, 35)
+civMessage.TextSize = 13
+for _, panel in ipairs({civTitle, civStatus, civMessage}) do
+  local corner = Instance.new("UICorner")
+  corner.CornerRadius = UDim.new(0, 5)
+  corner.Parent = panel
+  local border = Instance.new("UIStroke")
+  border.Color = Color3.fromRGB(184, 135, 70)
+  border.Thickness = 2
+  border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+  border.Parent = panel
+end
 local civPanel = Instance.new("Frame")
 civPanel.Name = "CivilizationPanel"
 civPanel.AnchorPoint = Vector2.new(0.5, 0.5)
