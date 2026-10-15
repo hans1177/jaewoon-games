@@ -1,4 +1,4 @@
-# 파일명: .github/workflows/owner-simple-rpg-direct-publish.yml
+# 대충알피지 오너 배포. simple-rpg는 기존 프로젝트 연결에만 사용하는 기술 ID
 # 오너 직접배포: 기존 Roblox 전용 Place 120884036900477 재사용. 게임별 오너 지시 실행.
 name: Owner 대충알피지 Direct Publish
 run-name: Owner 대충알피지 publish · ${{ github.sha }}
@@ -7,6 +7,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'roblox-games/simple-rpg/**'
       - '.github/workflows/owner-simple-rpg-direct-publish.yml'
   workflow_dispatch:
 
@@ -44,7 +45,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Resolve only Simple RPG dedicated target
+      - name: Resolve only 대충알피지 dedicated target
         id: target
         shell: bash
         run: |
@@ -69,11 +70,11 @@ jobs:
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+exact.universeId+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+exact.placeId+'\n');
-          console.log('DAECHUNGALPIGI_OWNER_TARGET_REUSED=YES');
-          console.log('DAECHUNGALPIGI_OWNER_EXPECTED_PLACE_ID='+exact.placeId);
+          console.log('대충알피지_OWNER_TARGET_REUSED=YES');
+          console.log('대충알피지_OWNER_EXPECTED_PLACE_ID='+exact.placeId);
           NODE
 
-      - name: Build exact Simple RPG place with pinned Rojo
+      - name: Build exact 대충알피지 Roblox place with pinned Rojo
         working-directory: main
         shell: bash
         run: |
