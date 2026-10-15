@@ -2701,13 +2701,17 @@ Players.PlayerAdded:Connect(function(player)
   initializePlayer(player)
   local loadOk, saved = false, nil
   if store then
-    for attempt = 1, 3 do
+    -- 일시적인 DataStore 제한/장애에는 재시도하되 검증되지 않은 데이터를 저장하지 않는다.
+    for attempt = 1, 5 do
       loadOk, saved = pcall(function()
         return store:GetAsync("player:" .. player.UserId)
       end)
       if loadOk then break end
-      task.wait(0.4 * attempt)
+      warn("CIV_DATASTORE_READ_RETRY", player.UserId, attempt, tostring(saved))
+      if attempt < 5 then task.wait(math.min(2 ^ (attempt - 1), 8)) end
     end
+  else
+    warn("CIV_DATASTORE_UNAVAILABLE", player.UserId, tostring(storeResult))
   end
   if loadOk and (saved == nil or typeof(saved) == "table") then
     civDataLoadValid[player] = true
