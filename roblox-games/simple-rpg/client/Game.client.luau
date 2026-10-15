@@ -314,7 +314,8 @@ verifiedLearningDepth.InFocusRadius = 24
 
 end
 
-if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "COMBAT_IMPACT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
+-- Existing Roblox Animator motion blending applies to every playable character.
+do
 -- Roblox character animation / motion adaptation.
 local function syncVerifiedLearningCharacterMotion(character)
   local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 5)
