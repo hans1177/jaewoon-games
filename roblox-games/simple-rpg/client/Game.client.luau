@@ -1619,8 +1619,8 @@ local civWatched = {
 -- 터치/PC 공용 건축 선택 패널. 설치 위치와 부모 소켓은 서버에서 재검증한다.
 local housingPanel = Instance.new("Frame")
 housingPanel.Name = "HousingBuildPanel"
-housingPanel.Size = UDim2.fromOffset(218, 340)
-housingPanel.Position = UDim2.new(1, -226, 0.5, -170)
+housingPanel.Size = UDim2.fromOffset(218, 412)
+housingPanel.Position = UDim2.new(1, -226, 0.5, -206)
 housingPanel.BackgroundColor3 = Color3.fromRGB(39, 43, 40)
 housingPanel.Visible = false
 housingPanel.Parent = civGui
