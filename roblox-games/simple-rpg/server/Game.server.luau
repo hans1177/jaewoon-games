@@ -1542,6 +1542,17 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
     limb.CanCollide = false
     -- 기본 로우폴리 몬스터의 독립 고정 팔다리만 클라이언트 모션을 허용한다.
     limb:SetAttribute("AllowClientLimbMotion", true)
+    limb:SetAttribute("MotionBaseOffset", root.CFrame:ToObjectSpace(limb.CFrame))
+    -- 기존 파츠형 적도 실제 보행이 보이도록 양쪽 다리를 독립 시각 파츠로 만든다.
+    local legOffset = beast and Vector3.new(side * 1.05, -2.0, -0.9)
+      or Vector3.new(side * 0.9, -2.0, 0)
+    local leg = civPart(enemy, side < 0 and "Left Leg" or "Right Leg",
+      beast and Vector3.new(0.75, 2.2, 0.9) or Vector3.new(0.95, 2.6, 1.0),
+      root.CFrame * CFrame.new(legOffset), bodyColor, Enum.Material.SmoothPlastic, false)
+    leg.CanTouch = false
+    leg.CanQuery = false
+    leg:SetAttribute("AllowClientLimbMotion", true)
+    leg:SetAttribute("MotionBaseOffset", root.CFrame:ToObjectSpace(leg.CFrame))
     if armor then
       local plate = civPart(enemy, side < 0 and "LeftArmor" or "RightArmor",
         Vector3.new(1.2, 0.8, 1.3), root.CFrame * CFrame.new(side * 1.9, 1.2, 0),
