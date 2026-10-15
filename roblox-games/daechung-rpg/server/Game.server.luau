@@ -56,6 +56,7 @@ local parties={}
 local clickTimes={}
 local lastRequest={}
 local lastBlockRequest={}
+local comboState={}
 local lastCombat={}
 local movementProbeStart={}
 local foundationSeen={}
@@ -541,6 +542,7 @@ local function staggerEnemy(e,amount,now)
   task.delay(e.boss and 2.1 or 1.45,function()if e.part and e.part.Parent then e.part:SetAttribute("Staggered",false)end end)
  end
 end
+local killEnemy
 local function resolveIncomingAttack(p,e,attack)
  local h=hum(p);local pr=root(p);if not h or not pr or h.Health<=0 or not e.part or not e.part.Parent then return end
  local now=os.clock()
@@ -564,6 +566,11 @@ local function resolveIncomingAttack(p,e,attack)
    p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1);p:SetAttribute("CivParries",n(p,"CivParries",0)+1);p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+12))
    feedback(p,"PARRY");msg(p,"완벽 패링 · "..tostring(attack.Name or"공격"))
    staggerEnemy(e,(attack.GuardDamage or 20)*1.55,now)
+   -- 서버 확정 패링만 적의 실제 공격 피해 100% 반사.
+   local reflect=math.max(0,(e.damage or 8)*(attack.DamageMult or 1)*(e.enragedUntil and e.enragedUntil>now and 1.22 or 1))
+   e.hp=math.max(0,e.hp-reflect);e.part:SetAttribute("HP",e.hp)
+   combatFlash(e.part.Position+Vector3.new(0,2,0),Color3.fromRGB(255,226,145),2.2)
+   if e.hp<=0 then killEnemy(p,e,3)end
    local classId=tostring(p:GetAttribute("ClassId")or"");local adv=tostring(p:GetAttribute("AdvancementId")or"")
    if classId=="BREAKER"then p:SetAttribute("GuardUntil",now+1.2)end
    if classId=="SHADOW"then p:SetAttribute("BackstabUntil",now+2.4)end
@@ -1664,7 +1671,7 @@ local function partyKill(p,contribution)
  end
  broadcastMultiplayerSync(p)
 end
-local function killEnemy(p,e,contribution)
+killEnemy=function(p,e,contribution)
  if e.hp>0 then return end
  local z=portalDef(e.zone);local display=e.def and e.def.Name or(e.boss and z.Boss and z.Boss.Name or z.Enemy)
  if e.part.Parent then e.part:Destroy()end
@@ -1707,6 +1714,15 @@ local function playerAttack(p,skill)
  local range=skill and(classId=="RUNE"and 28 or classId=="SOUL"and 26 or 20)or 15
  local e=nearestEnemy(r.Position,zone,range);if not e then msg(p,"사거리 안에 몬스터가 없어");feedback(p,"ATTACK_NO_TARGET")return end
  local now=os.clock();local adv=tostring(p:GetAttribute("AdvancementId")or"");local damage=n(p,"AttackPower",10)*(skill and cd.SkillMult or 1)
+ -- 자동 공격과 스킬은 기존 공격력/드랍 규칙 유지. 수동 기본 공격만 콤보를 연결한다.
+ local combo=comboState[p]or{step=0,at=0}
+ if not skill and p:GetAttribute("AutoCombat")==false then
+  combo.step=(now-combo.at<=1.0)and(combo.step%3+1)or 1
+  combo.at=now;p:SetAttribute("CombatCombo",combo.step)
+ else
+  combo.step=0;p:SetAttribute("CombatCombo",0)
+ end
+ comboState[p]=combo
  local backstab=classId=="SHADOW"and n(p,"BackstabUntil",0)>now
  if classId=="BREAKER"then
   if adv=="RAGE_BREAKER"then local h=hum(p);if h and h.Health/h.MaxHealth<=.5 then damage*=1.28 end end
@@ -1739,6 +1755,11 @@ local function playerAttack(p,skill)
   end
  end
  e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp));staggerEnemy(e,skill and 18 or 8,now);lastCombat[p]=now;p:SetAttribute("InCombat",true)
+ if not skill and combo.step==3 and e.hp>0 and e.part and e.part.Parent then
+  local away=Vector3.new(e.part.Position.X-r.Position.X,0,e.part.Position.Z-r.Position.Z)
+  local zoneDef=portalDef(zone)
+  if away.Magnitude>.01 and zoneDef and (e.part.Position+away.Unit*4-zoneDef.Center).Magnitude<230 then e.part.CFrame=e.part.CFrame+away.Unit*4 end
+ end
  pulseWeaponTrail(p.Character);combatFlash(e.part.Position,cd.Color,skill and 1.7 or 1.15);feedback(p,skill and"SKILL"or"ATTACK")
  if e.hp<=0 then killEnemy(p,e,skill and 3 or 2)end
  local stamp=lastCombat[p];task.delay(C.CombatLockSeconds,function()if p.Parent and lastCombat[p]==stamp then p:SetAttribute("InCombat",false)end end)
@@ -2048,8 +2069,8 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.ADVANCE_B then accepted=chooseAdvancement(p,"B")
  elseif a==C.Actions.START_ADVANCEMENT_TRIAL then startAdvancementTrial(p);accepted=true
  elseif a==C.Actions.BLOCK_START then
-  if n(p,"GuardBrokenUntil",0)<=now and n(p,"Guard",C.GuardMax)>0 then
-   p:SetAttribute("Blocking",true)
+  if n(p,"GuardBrokenUntil",0)<=now and n(p,"Guard",C.GuardMax)>14 then
+   p:SetAttribute("Guard",n(p,"Guard",C.GuardMax)-14);p:SetAttribute("Blocking",true)
    if now>=n(p,"ParryRearmUntil",0)then p:SetAttribute("BlockStartedAt",now);p:SetAttribute("ParryRearmUntil",now+C.ParryRearmSeconds);feedback(p,"BLOCK_READY")
    else p:SetAttribute("BlockStartedAt",0)end
    accepted=true
@@ -2060,7 +2081,10 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.DODGE then
   p:SetAttribute("Blocking",false);local r=root(p);if r then
    local classId=tostring(p:GetAttribute("ClassId")or"NONE");local adv=tostring(p:GetAttribute("AdvancementId")or"")
-   local evade=adv=="MIRAGE_TRACKER"and .75 or .45;p:SetAttribute("EvasionUntil",now+evade)
+   local stamina=n(p,"Guard",C.GuardMax)
+    if stamina<24 then msg(p,"회피 스태미나 부족");return end
+    p:SetAttribute("Guard",stamina-24)
+    local evade=adv=="MIRAGE_TRACKER"and .75 or .30;p:SetAttribute("EvasionUntil",now+evade)
    if classId=="SHADOW"then p:SetAttribute("BackstabUntil",now+2.2)end
    r.AssemblyLinearVelocity=r.CFrame.LookVector*52+Vector3.new(0,r.AssemblyLinearVelocity.Y,0);accepted=true;feedback(p,"DODGE")
   end
@@ -2110,7 +2134,7 @@ local function bindPlayer(p)
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);local oldHouse=houses:FindFirstChild("House_"..p.UserId);if oldHouse then oldHouse:Destroy()end;saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)comboState[p]=nil;save(p);local oldHouse=houses:FindFirstChild("House_"..p.UserId);if oldHouse then oldHouse:Destroy()end;saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
