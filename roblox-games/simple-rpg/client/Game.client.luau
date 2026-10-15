@@ -1950,12 +1950,16 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         local oldRootMotion = creatureRootMotion[rootPart]
         local rootPosition = rootPart.Position
         local realMoving = false
+        local horizontalSpeed = 0
         if oldRootMotion then
           local displacement = rootPosition - oldRootMotion.position
           local planar = Vector3.new(displacement.X, 0, displacement.Z).Magnitude
-          realMoving = planar > 0.025 and planar < 8
+          local elapsed = math.max(0.01, creatureMotionPhase - oldRootMotion.at)
+          horizontalSpeed = planar / elapsed
+          -- 네트워크 위치 보간의 작은 오차를 제거하고 급격한 복귀 텔레포트는 무시.
+          realMoving = horizontalSpeed > 0.35 and horizontalSpeed < 65
         end
-        creatureRootMotion[rootPart] = {position = rootPosition}
+        creatureRootMotion[rootPart] = {position = rootPosition, at = creatureMotionPhase}
         -- 서버는 Patrol/Flee에서도 몬스터를 실제로 움직인다. AIState 문자열만으로
         -- 걷기를 제한하면 이동 중에도 발이 고정되므로 실제 변위만 사용한다.
         local moving = realMoving
