@@ -1448,7 +1448,19 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
         end
       end
       visual.Parent = enemy
+      -- GLB 원본의 크기와 피벗을 기본 몬스터에 맞추고 발 높이를 보존한다.
+      local bounds = visual:GetExtentsSize()
+      if bounds.X > 0.01 and bounds.Y > 0.01 and bounds.Z > 0.01 then
+        local fit = math.min(4.8 / math.max(bounds.X, bounds.Z), 6.5 / bounds.Y)
+        if fit > 0.01 and fit < 100 then visual:ScaleTo(fit) end
+      end
       visual:PivotTo(root.CFrame)
+      local boxFrame, boxSize = visual:GetBoundingBox()
+      local desiredFeet = root.Position.Y - root.Size.Y * 0.5
+      local currentFeet = boxFrame.Position.Y - boxSize.Y * 0.5
+      local visualOffset = CFrame.new(0, desiredFeet - currentFeet, 0)
+      visual:PivotTo(root.CFrame * visualOffset)
+      visual:SetAttribute("VisualPivotOffset", visualOffset)
       visual:SetAttribute("ImportedVisualFollowRoot", true)
       root.Transparency = 1
       head.Transparency = 1
