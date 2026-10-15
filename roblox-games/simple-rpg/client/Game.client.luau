@@ -715,7 +715,7 @@ local civWatched = {
   "CivDodges", "CivGather",
   "CivCopperOre", "CivTinOre", "CivIronOre", "CivCoal",
   "CivHide", "CivCoreCrystal", "CivDarkIron", "CivBronzeIngot", "CivIronIngot",
-  "CivStoneSpear", "CivBronzeSword", "CivIronGreatsword",
+  "CivStoneSpear", "CivBronzeSword", "CivIronGreatsword", "CivEquippedWeapon",
   "CivBoarKills", "CivBronzeSmelts", "CivIronKnightKills",
   "CivStoneWall", "CivDangunAltar", "CivPyramid", "CivColosseum", "CivDrakkarShipyard",
 }
@@ -734,7 +734,7 @@ end
 for _, name in ipairs(civWatched) do
   player:GetAttributeChangedSignal(name):Connect(function()
     civRender()
-    if civPanel.Visible and (civPanelMode == "Techs" or civPanelMode == "Crafts" or civPanelMode == "Buildings") then
+    if civPanel.Visible and (civPanelMode == "Techs" or civPanelMode == "Crafts" or civPanelMode == "Buildings" or civPanelMode == "Inventory") then
       local currentMode = civPanelMode
       civPanel.Visible = false
       civOpen(currentMode)
@@ -792,6 +792,7 @@ UserInputService.InputBegan:Connect(function(input, consumed)
   elseif input.KeyCode == Enum.KeyCode.C then civOpen("Companions")
   elseif input.KeyCode == Enum.KeyCode.V then civOpen("Crafts")
   elseif input.KeyCode == Enum.KeyCode.B then civOpen("Buildings")
+  elseif input.KeyCode == Enum.KeyCode.I then civOpen("Inventory")
   elseif input.UserInputType == Enum.UserInputType.MouseButton1 and not civPanel.Visible then
     remote:FireServer("CivAttack")
   end
