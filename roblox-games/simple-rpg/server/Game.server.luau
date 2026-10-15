@@ -1252,6 +1252,32 @@ end
 -- 실제 로비 지면: 기본 스폰 및 24개 문명 이동 패드까지 걸어갈 수 있도록 유지한다.
 -- 하나의 대륙 바닥으로 광장과 모든 문명을 보행 가능한 오픈월드로 연결한다.
 -- 기존 문명 좌표·스폰·이동·전투 기준값은 변경하지 않는다.
+-- 바이브 공용 바이옴 제작기를 사용한다. 생성된 지형은 시각용이며 판정은 기존 게임이 소유한다.
+local CommonEnvironment = require(script.Parent:WaitForChild("CommonEnvironment"))
+local vibeBiomes = {
+  {Id = "FOREST", Angle = 0.32, Distance = 124},
+  {Id = "DESERT", Angle = 1.35, Distance = 124},
+  {Id = "SNOW", Angle = 2.38, Distance = 124},
+  {Id = "CAVE", Angle = 3.4, Distance = 124},
+  {Id = "SWAMP", Angle = 4.45, Distance = 124},
+  {Id = "RUINS", Angle = 5.48, Distance = 124},
+}
+for index, biome in ipairs(vibeBiomes) do
+  local origin = Vector3.new(math.cos(biome.Angle) * biome.Distance, -0.6,
+    math.sin(biome.Angle) * biome.Distance)
+  local root = CommonEnvironment.CreateBiomeKit(biome.Id, {
+    origin = origin, name = "바이브 생태지대 " .. biome.Id,
+    scale = 0.82, dressingCount = 8, detailTier = "LOW",
+  })
+  root.Parent = civHub
+  for _, object in ipairs(root:GetDescendants()) do
+    if object:IsA("BasePart") then
+      object.CanCollide = false
+      object.CanTouch = false
+      object.CanQuery = false
+    end
+  end
+end
 local continentGround = civPart(civHub, "문명 대륙", Vector3.new(520, 2, 520),
   CFrame.new(0, -2, 0), Color3.fromRGB(112, 143, 103), Enum.Material.Grass, true)
 continentGround:SetAttribute("WalkableGround", true)
