@@ -410,4 +410,10 @@ test('대충알피지 기존 24종족 데이터는 보존하되 로비에서는 
   assert.doesNotMatch(client, /civButton\(civList, "RegionTravel"/);
   assert.match(client, /civButton\(civList, "StartAdventure"/);
   assert.match(server, /if argument ~= selected then return end/);
+  assert.match(client, /remote:FireServer\("CivTravel", player:GetAttribute\("CivRaceID"\)\)/);
+  assert.match(client, /lobbyPlay = civButton\(lobbyCard, "LobbyPlay"/);
+  assert.match(client, /lobbyExplore = civButton\(lobbyCard, "LobbyExplore"/);
+  assert.match(server, /character:SetAttribute\("CivTravelCompleted", true\)/);
+  assert.match(server, /player:SetAttribute\("CivReady", true\)/);
+  assert.match(server, /lobbyStoneTexture\.Texture = "rbxassetid:\/\/128886287832599"/);
 });
