@@ -1064,6 +1064,20 @@ local function civOpen(mode)
       slotBorder.Thickness = amount > 0 and 2 or 1
       slotBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
       slotBorder.Parent = label
+      -- 32칸 슬롯은 기존 목재 이미지 에셋을 바탕으로 금속 테두리와 자원 표식을 더한다.
+      local inset = Instance.new("UIStroke")
+      inset.Name = "InventoryMetalInlay"
+      inset.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+      inset.Color = amount > 0 and Color3.fromRGB(241, 204, 131) or Color3.fromRGB(122, 103, 82)
+      inset.Thickness = 1
+      inset.Transparency = 0.34
+      inset.Parent = label
+      local grain = label:FindFirstChild("ParchmentAssetSurface")
+      if grain and grain:IsA("ImageLabel") then
+        grain.Image = "rbxassetid://124882110895040"
+        grain.ImageColor3 = Color3.fromRGB(192, 149, 101)
+        grain.ImageTransparency = amount > 0 and 0.78 or 0.86
+      end
     end
     -- 장비 시각화는 현재 서버 속성만 표시한다. 미지원 부위는 장착/저장 기능을 만들지 않는다.
     local gearTitle = civLabel(civList, "EquipmentPreviewTitle", "장비 현황 · 무기만 장착 가능",
@@ -1103,6 +1117,12 @@ local function civOpen(mode)
       border.Thickness = 1
       border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
       border.Parent = preview
+      local equipmentGrain = preview:FindFirstChild("ParchmentAssetSurface")
+      if equipmentGrain and equipmentGrain:IsA("ImageLabel") then
+        equipmentGrain.Image = "rbxassetid://124882110895040"
+        equipmentGrain.ImageColor3 = gear[3] and Color3.fromRGB(204, 184, 126) or Color3.fromRGB(164, 150, 131)
+        equipmentGrain.ImageTransparency = 0.80
+      end
     end
   elseif mode == "Crafts" or mode == "Buildings" then
     panelTitle.Text = mode == "Crafts" and "제작·제련 | 석기→청동→철기" or "영지 건축·문명 랜드마크"
