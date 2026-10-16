@@ -292,6 +292,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: OpenAI provider scoped regression
+        run: node --test qa/company-system-ai-openai-provider.test.mjs
+
       - name: Syntax check
         run: |
           set -euo pipefail
@@ -412,7 +415,6 @@ jobs:
           node --test qa/vibe-roblox-co-development.test.mjs
           node --test qa/vibe-visual-runtime-quality.test.mjs
           node --test qa/vibe2-native-asset-production.test.mjs
-          node --test qa/company-system-ai-openai-provider.test.mjs
           node --test qa/vibe2-neural-diagnosis.test.mjs
           node --test qa/vibe2-neural-feedback.test.mjs
           node --test qa/vibe2-neural-critic.test.mjs
