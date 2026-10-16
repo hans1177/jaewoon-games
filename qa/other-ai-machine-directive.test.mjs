@@ -6,19 +6,18 @@ import fs from 'node:fs';
 
 const directive=JSON.parse(fs.readFileSync('company-learning/other-ai-machine-directive.json','utf8'));
 const company=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
 
-const lifecycle=roadmap.developmentLifecycleMachine||{};
-const dual=roadmap.directNativeDualPlatformDevelopment||{};
-const floor=dual.unityWebDevelopmentLane||{};
+const dual=company.directNativeDualPlatformDevelopment||{};
+const floor=directive.developmentLifecycle.unityWebDevelopmentFloor||{};
 
 assert.equal(directive.kind,'MACHINE_EXECUTION_DIRECTIVE');
 assert.equal(directive.audience,'OTHER_AI_AND_RUNNERS');
 assert.equal(directive.humanDocumentRequired,false);
 assert.equal(directive.authority,'NON_AUTHORITATIVE_EXECUTION_GUIDE');
-assert.equal(directive.sourceOfTruth,'company-learning/platform-release-roadmap.json');
+assert.equal(directive.sourceOfTruth,null);
 assert.equal(directive.policyOverrideAllowed,false);
 assert.equal(directive.version,3);
 
@@ -27,13 +26,17 @@ assert.equal(company.machineCompanions.otherAiExecutionDirective.mayOverrideCent
 assert.equal(company.machineCompanions.otherAiExecutionDirective.mustReadCentralPolicyFirst,true);
 
 const canonicalReads=[
-  'company-learning/platform-release-roadmap.json',
   'company-learning/company-log-map.json',
   'company-learning/company-architecture-map.json',
   'company-learning/security-immune-system.json'
 ];
 assert.deepEqual(architecture.sharedContextLoadOrder,canonicalReads);
-assert.deepEqual(directive.requiredReads.slice(0,4),canonicalReads);
+assert.deepEqual(directive.requiredReads.slice(0,3),canonicalReads);
+assert.equal(directive.requiredReads.includes(company.legacyCentralPolicyReferenceCleanup.removedPolicyPath),false);
+assert.equal(logMap.sourceOfTruth,'company-learning/company-log-map.json');
+assert.equal(architecture.sourceOfTruth,'company-learning/company-architecture-map.json');
+assert.equal(company.legacyCentralPolicyReferenceCleanup.replacementPolicyNotAsserted,true);
+assert.equal(company.legacyCentralPolicyReferenceCleanup.executionContractChangeNotAuthorized,true);
 assert.deepEqual(directive.sharedContext.loadOrder,canonicalReads);
 assert.equal(directive.sharedContext.beforeWorkRequired,true);
 assert.equal(directive.sharedContext.afterWorkRequired,true);
@@ -49,14 +52,12 @@ assert.equal(directive.executionRules.nonVibeGameSourceWriteAllowed,false);
 assert.equal(directive.executionRules.preserveExistingAutomation,true);
 assert.equal(directive.executionRules.preserveExistingSettings,true);
 
-assert.equal(roadmap.currentPhase,'ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT');
-assert.equal(roadmap.developmentAccess.ROBLOX,'ALWAYS_ALLOWED');
-assert.equal(roadmap.developmentAccess.UNITY_WEB,'OWNER_HOLD');
-assert.equal(roadmap.developmentAccess.UNITY_ANDROID,'OWNER_HOLD');
-assert.equal(roadmap.ownerUnityWeb3dOnly20261009?.finalGameplayDimension,'3D');
-assert.equal(roadmap.ownerUnityWeb3dOnly20261009?.internalSharedLibraryOnlyForGameplayAssets,true);
-assert.equal(roadmap.ownerUnityWeb3dOnly20261009?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame,true);
-assert.equal(roadmap.finalDevelopmentLock?.sequenceLock?.status,'LOCKED');
+assert.equal(company.currentExecutionMode,'ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT');
+assert.equal(company.platformStrategy.developmentAccess.ROBLOX,'ALWAYS_ALLOWED');
+assert.equal(company.platformStrategy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
+assert.equal(company.platformStrategy.developmentAccess.UNITY_ANDROID,'OWNER_HOLD');
+assert.equal(company.continuousLearning24h.enabled,true);
+assert.equal(company.continuousLearning24h.canonicalPipelineOnly,true);
 assert.equal(dual.unityWebRequired,false);
 assert.equal(dual.unityWebGateRequired,false);
 assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
@@ -120,7 +121,7 @@ assert.equal(directive.localExecution.doNotChangeCanonicalTrainingRoute,true);
 
 const workOrder=directive.workOrder;
 assert.equal(workOrder.authority,'EXECUTION_SEQUENCE_ONLY');
-assert.equal(workOrder.sourceOfTruth,'company-learning/platform-release-roadmap.json');
+assert.equal(workOrder.sourceOfTruth,null);
 assert.equal(workOrder.policyCreationAllowed,false);
 assert.equal(workOrder.implementationOwner,'VIBE2_VIBE3');
 assert.equal(workOrder.centralLifecycle,'UNITY_WEB_DEVELOPMENT_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT_UPPER_PLATFORM_DEVELOPMENT');
@@ -170,14 +171,12 @@ assert.ok(homepageByStage.PUBLIC_REVERIFY.required.includes('PUBLIC_STATUS_MATCH
 assert.ok(homepageSync.successSignals.includes('PUBLIC_HOMEPAGE_CURRENT'));
 assert.ok(homepageSync.successSignals.includes('NO_SHADOW_PIPELINE_CREATED'));
 
-assert.equal(lifecycle.sharedWorkerContext.syncMode,'ROADMAP_FIRST_FAIL_CLOSED');
-assert.equal(lifecycle.sharedWorkerContext.beforeWorkRequired,true);
-assert.equal(lifecycle.sharedWorkerContext.afterWorkRequired,false);
-assert.equal(lifecycle.sharedWorkerContext.singlePreWorkValidationPerExactWorkUnit,true);
-assert.equal(lifecycle.sharedWorkerContext.repeatedFullValidationWithinExactWorkUnitForbidden,true);
-assert.equal(lifecycle.sharedWorkerContext.runtimeMayNotCreatePolicy,true);
-assert.equal(lifecycle.sharedWorkerContext.postCentralDocumentWriteSharedContextResyncRequired,true);
-assert.equal(lifecycle.postReleaseFocusedDevelopment.enabled,true);
-assert.equal(lifecycle.intentAmplificationMultiverse.learningContinuity.continuous24h,true);
+assert.equal(directive.sharedContext.beforeWorkRequired,true);
+assert.equal(directive.sharedContext.afterWorkRequired,true);
+assert.equal(directive.sharedContext.runtimeMayNotCreatePolicy,true);
+assert.equal(directive.sharedContext.staleContextMayNotStartOrCompleteWork,true);
+assert.equal(directive.sharedContext.completionRequiresSync,true);
+assert.equal(directive.executionRules.postCentralDocumentWriteSharedContextResyncRequired,true);
+assert.equal(company.continuousLearning24h.noPause,true);
 
 console.log('PASS other AI machine directive follows current central Vibe policy and architecture');
