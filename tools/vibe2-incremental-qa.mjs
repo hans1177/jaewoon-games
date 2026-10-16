@@ -746,6 +746,8 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     require('MOBILE_INPUT',/(?:pointer|touch|virtual.?stick|joystick|UserInputService|ContextActionService|TouchEnabled|Input\.touch|Touchscreen|InputSystem)/i.test(text));
     require('FRAME_LOOP_OR_STABLE_RENDER',/(?:requestAnimationFrame|RenderStepped|Heartbeat|Update\s*\(|_process\s*\()/i.test(text));
     require('PRESENTATION_BUDGET_OR_LIFECYCLE',/(?:pool|maxParticles|maxEffects|devicePixelRatio|visibilitychange|pagehide|cleanup|dispose|remove|Destroy\s*\(|Debris|ttl|duration)/i.test(text));
+    require('MOBILE_QUALITY_ADAPTATION',/(?:devicePixelRatio|hardwareConcurrency|deviceMemory|qualityLevel|lowEnd|low.?power|adaptive|resolutionScale|renderScale|performanceBudget|frameBudget|fpsBudget|targetFPS|targetFrame|graphicsQuality|QualityLevel)/i.test(text));
+    require('MOBILE_RESOURCE_BOUND',/(?:pool|maxParticles|maxEffects|MAX_PARTICLES|MAX_EFFECTS|visibilitychange|pagehide|cleanup|dispose|Destroy\s*\(|Debris|(?:particle|effect|sprite).{0,35}(?:limit|budget|cap))/i.test(text));
     require('PRESENTATION_CONTRACT_MARKER',/(?:data-presentation-quality-version=["']1["']|PresentationQualityVersion\s*=\s*1|PRESENTATION_QUALITY_VERSION\s*=\s*1)/i.test(text));
   }
   if(issues.length)throw new Error(`PRESENTATION_STATIC_QA_FAILED:${pass}:${issues.join('|')}`);
