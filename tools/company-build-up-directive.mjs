@@ -2240,6 +2240,7 @@ export function directivePrompt(d={}){
     `EXPECTED_PLAYER_EFFECT: ${d.effectivenessMeasurement?.expectedPlayerEffect||'UNKNOWN'}`,
     `PREVIOUS_EFFECT: ${d.effectivenessMeasurement?.previousGeneration?.classification||'NO_PREVIOUS_GENERATION'} - ${d.effectivenessMeasurement?.previousGeneration?.reason||''}`,
     `NEXT_VIBE_ACTION: ${d.nextActionDecision?.action||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'} - ${d.nextActionDecision?.reason||''}`,
+    `INTERNAL_ALGORITHM_PRIORITY: ${d.internalAlgorithmUse?.rule||'USE_RELEVANT_VERIFIED_INTERNAL_GAME_ALGORITHMS_FIRST; EXTERNAL_AI_ADVISORY_ONLY_WHEN_REQUIRED; DO_NOT_INVENT_VERIFICATION'}`,
     `AUTONOMOUS_CONTENT_EXPANSION: mode=${expansion.executionMode||'AUTONOMOUS_CONTENT_BUILD_UP'}; theme=${expansion.selectedTheme||'AUTO'}; themeDepth=${expansion.themeDepth||1}; decisionOwner=${expansion.autonomousDecisionOwner||'VIBE'}; boundary=${expansion.executionBoundary||'EXISTING_BUILD_UP_ONLY'}`,
     `CONTENT_BREADTH_LEDGER: covered=${expansion.themeCoverageLedger?.distinctCovered||0}/${expansion.themeCoverageLedger?.totalThemes||0}; missing=${(expansion.themeCoverageLedger?.missingThemes||[]).join(',')||'NONE'}; leastCovered=${(expansion.themeCoverageLedger?.leastCoveredThemes||[]).join(',')||'NONE'}`,
     `DATA_CAPACITY_BUDGET: state=${expansion.dataCapacityBudget?.state||'NORMAL'}; strategy=${expansion.dataCapacityBudget?.strategy||'CONTINUE_BUILD_UP'}; saveMax=${expansion.dataCapacityBudget?.limits?.savePersistedDataBytes||0}; webMax=${expansion.dataCapacityBudget?.limits?.webDownloadBytes||0}; singleFileMax=${expansion.dataCapacityBudget?.limits?.singleFileBytes||0}; mobileMemoryTarget=${expansion.dataCapacityBudget?.limits?.mobileMemoryTargetBytes||0}; mobileMinFps=${expansion.dataCapacityBudget?.limits?.mobileMinimumFps||0}; generationLimit=NONE; contentCountLimit=NONE`,
@@ -2780,7 +2781,24 @@ export function buildGameSpecificBuildUpDirective({
     robloxNativeExecution,
     productionPlan,
     robloxProductionPlan:productionPlan?.platform==='ROBLOX'?productionPlan:null,
+    internalAlgorithmUse:Object.freeze({
+      mode:'MAXIMIZE_TASK_RELEVANT_VERIFIED_INTERNAL_ALGORITHMS',
+      priority:Object.freeze([
+        'SAME_GAME_SAME_FAILURE_VERIFIED_CAUSAL_AND_CODE_PATTERN',
+        'SAME_GAME_VERIFIED_IMPLEMENTATION_AND_RESPONSIBILITY',
+        'EXISTING_VIBE2_VIBE3_ANALYSIS_STRATEGY_RECOMBINATION_AND_GAMEPLAY_TOOLS',
+        'EXISTING_VERIFIED_GAME_MECHANICS_ASSETS_AND_SOURCE_COMPOSITION',
+        'EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY_ONLY_FOR_REMAINING_GAPS'
+      ]),
+      relevantAlgorithmsOnly:true,
+      noDuplicateSubsystemsOrNewPipeline:true,
+      noUnverifiedCapabilityClaims:true,
+      preserveApprovedGameplaySaveEconomyAndServerAuthority:true,
+      qaReleaseSecurityGatesUnchanged:true,
+      rule:'USE_VERIFIED_SAME_GAME_AND_SAME_FAILURE_PATTERNS_FIRST; MAXIMIZE_EXISTING_INTERNAL_RESPONSIBILITY_GRAPH_CAUSAL_DIAGNOSIS_CONTEXTUAL_CODING_STRATEGY_RECOMBINATION_GAMEPLAY_LOGIC_AND_ASSET_REUSE_WHERE_RELEVANT; REPAIR_DETERMINISTICALLY_BEFORE_EXTRA_MODEL_CALLS; EXTERNAL_AI_IS_LOWER_PRIORITY_VERIFIED_ADVISORY_ONLY; NEVER_CREATE_PARALLEL_PIPELINE_OR_CLAIM_UNVERIFIED_ALGORITHMS_OR_PASS'
+    }),
     preserveConstraints:[
+      '게임 제작은 동일 게임 검증 패턴과 Vibe2/Vibe3 기존 내부 분석·게임 로직·전략선택·재조합·에셋 재사용 알고리즘을 과제 관련 범위에서 최대 활용한다. 외부 AI는 검증된 보조 수단만 허용하고 새 중복 파이프라인·미검증 기능 주장은 금지한다.',
       '기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.',
       '승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.',
       '멀티플레이 권한과 authoritative state를 프레젠테이션 이유로 클라이언트로 이동하지 않는다.',
