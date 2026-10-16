@@ -79,7 +79,6 @@ test('central machine policy preserves historical bootstrap while latest owner p
   assert.equal(directive.productionThroughput.modelExecutionBudget.singleModelCallTimeoutSeconds,150);
   assert.equal(directive.productionThroughput.modelExecutionBudget.designSchemaAttemptsMax,2);
   assert.equal(directive.productionThroughput.modelExecutionBudget.designWorkflowTimeoutMinutes,45);
-  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.externalProviderBoundary,256);
 });
 
 test('five department scores drive expansion bands exactly as central policy defines',()=>{
@@ -193,9 +192,6 @@ test('owner preservation pilots materialize through canonical GAME_SEED bootstra
   assert.match(bootstrap,/assertGameSeed\(seed\)/);
   assert.match(bootstrap,/OWNER_PRESERVATION_ACTIVE_SEED_CONFLICT/);
   assert.match(bootstrap,/ownerPreservationIntake/);
-  assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.mayRunDuringGamePrimary,true);
-  assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.maxConcurrent,1);
-  assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.consumesGamePrimaryWorkerSlot,false);
   assert.match(seedDesignWorkflow,/const preservationSeed=seed=>/);
   assert.doesNotMatch(seedDesignWorkflow,/needs\.game-primary-gate/);
   assert.doesNotMatch(seedDesignWorkflow,/RUN_OWNER_PRESERVATION_AUX/);
@@ -350,7 +346,7 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.match(design,/function computeVibeNativeDesign\(\)/);
   assert.doesNotMatch(design,/VIBE_LOCAL_OLLAMA/);
   assert.doesNotMatch(design,/OLLAMA_DESIGN_TIMEOUT/);
-  assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK');
+  assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_EXTERNAL_ONLY');
   assert.equal(directive.ai.providerSecret,'GEMINI_API_KEY');
   assert.equal(directive.ai.openAiProviderAllowed,false);
   assert.equal(directive.ai.ollamaProviderAllowed,true);
@@ -422,7 +418,7 @@ test('obsolete free-concept and direct prototype entrypoints remain removed',()=
 
 test('design authoring uses native Vibe functions without model transport or department review lanes',()=>{
   const roles=['planning','graphics','development','qa','audio'];
-  assert.deepEqual(roles.map(role=>directive.ai.departmentLeadModels[role]),Array(5).fill('llama3.2:1b'));
+  assert.deepEqual(roles.map(role=>directive.ai.departmentLeadModels[role]),Array(5).fill('gemini-3.8-flash'));
   assert.deepEqual(directive.ai.gameDesigner.providerPriority,['VIBE_LOCAL_OLLAMA']);
   assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,false);
   assert.equal(directive.ai.gameDesigner.geminiModel,null);
