@@ -420,8 +420,10 @@ test('대충알피지 기존 24종족 데이터는 보존하되 로비에서는 
 
 test('civilization monsters patrol inside their existing habitat without changing combat or save authority', () => {
   assert.match(server, /NextPatrolAt = 0, PatrolStep = 0/);
-  assert.match(server, /enemy\.Model:GetAttribute\("IsRaidBoss"\) ~= true\s+and now >= \(enemy\.NextPatrolAt or 0\)/);
-  assert.match(server, /enemy\.NextPatrolAt = now \+ 3 \+ \(step % 3\)/);
+  assert.match(server, /enemy\.Model:GetAttribute\("IsRaidBoss"\) ~= true\s+and enemy\.PatrolDestination == nil and now >= \(enemy\.NextPatrolAt or 0\)/);
+  assert.match(server, /enemy\.NextPatrolAt = now \+ 0\.7/);
+  assert.match(server, /enemy\.PatrolDestination = nil/);
+  assert.match(server, /enemy\.NextPatrolAt = now \+ 2 \+ \(enemy\.PatrolStep % 3\)/);
   assert.match(server, /Magnitude <= 16 then\s+civWalkModel\(enemy\.Model/);
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
