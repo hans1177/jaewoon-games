@@ -2,29 +2,31 @@
 // 임포트
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {fileURLToPath} from 'node:url';
 
-// 메인: 삭제된 헌법을 임의 복구하거나 유효하다고 가장하지 않는다.
+// 메인: 검증 가능한 중앙정책이 없으면 권한을 임의로 부여하지 않는다.
 export function enforceConstitution({phase = 'runtime', root = process.cwd(), policy} = {}) {
   const errors = [];
-  const directivePath = path.join(root, 'company-directive.json');
   let directive;
   try {
-    directive = JSON.parse(fs.readFileSync(directivePath, 'utf8'));
+    directive = JSON.parse(fs.readFileSync(path.join(root, 'company-directive.json'), 'utf8'));
   } catch {
     errors.push('OWNER_DIRECTIVE_UNAVAILABLE');
   }
 
-  if (directive && (directive.policyDocument !== null || directive.documentationSynchronization?.centralPolicyPath !== null)) {
-    errors.push('OWNER_DIRECTIVE_POLICY_SOURCE_MISMATCH');
+  const policyPath = 'company-learning/platform-release-roadmap.json';
+  const exists = fs.existsSync(path.join(root, policyPath));
+  if (directive) {
+    if (directive.policyDocument !== null ||
+        directive.documentationSynchronization?.centralPolicyPath !== null) {
+      errors.push('OWNER_DIRECTIVE_POLICY_SOURCE_MISMATCH');
+    }
+    if (!String(directive.instruction || '').includes('Legacy central policy document was removed by owner commit')) {
+      errors.push('OWNER_DIRECTIVE_POLICY_DELETION_UNVERIFIED');
+    }
+    if (exists) errors.push('DELETED_POLICY_REAPPEARED_REQUIRES_OWNER_REVIEW');
   }
-  if (directive && !String(directive.instruction || '').includes('f2d13b369e27b8344342da025513687388011f8d')) {
-    errors.push('OWNER_DIRECTIVE_POLICY_DELETION_UNVERIFIED');
-  }
-  if (policy !== undefined) {
-    errors.push('DELETED_CONSTITUTION_CANNOT_BE_REINSTATED_BY_CALLER');
-  }
-  // 중앙 헌법 규칙의 검증 가능한 정본이 없다. PASS를 발급하지 않는다.
+  if (policy !== undefined) errors.push('DELETED_CONSTITUTION_CANNOT_BE_REINSTATED_BY_CALLER');
   errors.push('CONSTITUTION_AUTHORITY_UNAVAILABLE');
   return {
     pass: false,
