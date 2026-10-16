@@ -30,13 +30,16 @@ const canonicalReads=[
   'company-learning/company-architecture-map.json',
   'company-learning/security-immune-system.json'
 ];
-assert.deepEqual(architecture.sharedContextLoadOrder,canonicalReads);
+assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+assert.equal(architecture.constitutionalEnforcement.subordinateOverrideForbidden,true);
 assert.deepEqual(directive.requiredReads.slice(0,3),canonicalReads);
-assert.equal(directive.requiredReads.includes(company.legacyCentralPolicyReferenceCleanup.removedPolicyPath),false);
+assert.equal(company.policyDocument,'company-learning/platform-release-roadmap.json');
+assert.equal(company.documentationSynchronization.centralPolicyFirst,true);
+assert.equal(company.documentationSynchronization.workDocumentsCannotOverrideCentralPolicy,true);
 assert.equal(logMap.sourceOfTruth,'company-learning/company-log-map.json');
 assert.equal(architecture.sourceOfTruth,'company-learning/company-architecture-map.json');
-assert.equal(company.legacyCentralPolicyReferenceCleanup.replacementPolicyNotAsserted,true);
-assert.equal(company.legacyCentralPolicyReferenceCleanup.executionContractChangeNotAuthorized,true);
+assert.equal(architecture.release,'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS');
+assert.equal(architecture.constitutionalEnforcement.workerBeforeSourceWriteRequired,true);
 assert.deepEqual(directive.sharedContext.loadOrder,canonicalReads);
 assert.equal(directive.sharedContext.beforeWorkRequired,true);
 assert.equal(directive.sharedContext.afterWorkRequired,true);
@@ -45,7 +48,7 @@ assert.equal(directive.sharedContext.manualPolicyMirrorForbidden,true);
 assert.equal(directive.executionRules.canonicalSharedContextOrderRequired,true);
 assert.equal(directive.executionRules.runtimeStateCannotCreatePolicy,true);
 assert.equal(directive.executionRules.postCentralDocumentWriteSharedContextResyncRequired,true);
-assert.equal(security.sourceOfTruth,null);
+assert.equal(security.enforcement.unverified,'BLOCK');
 assert.equal(security.policyFile,'company-learning/security-immune-system.json');
 assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
 
