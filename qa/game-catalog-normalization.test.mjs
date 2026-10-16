@@ -145,6 +145,12 @@ assert.equal(catalog.webExposurePolicy?.nativeExecutionAccessUnaffected,true);
     write('upper-platform-development-readiness.json',readiness);
     for(const name of ['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'])write(name,qa);
     const confirmed=ingestOwnerWebGameIds(temp,[gameId],options);
+    if (!fs.existsSync('company-learning/platform-release-roadmap.json')) {
+      // Owner-deleted policy must not silently enable automatic homepage publication.
+      assert.deepEqual(confirmed.added,[]);
+      assert.equal(temp.games.length,0);
+      assert.equal(fs.existsSync(path.join(dir,'game.js')),true,'legacy game source preserved');
+    } else {
     assert.deepEqual(confirmed.added,[gameId]);
     assert.equal(temp.games[0].webPath,'/web-games/owner-upload/unity/');
     assert.equal(temp.games[0].ownerWebSourceState,'UNITY_WEB_VERIFIED');
@@ -164,6 +170,7 @@ assert.equal(catalog.webExposurePolicy?.nativeExecutionAccessUnaffected,true);
     ingestOwnerWebGameIds(temp,[gameId],options);
     assert.notEqual(temp.games[0].ownerWebSourceRevision,storedRevision);
     assert.equal(temp.games[0].webDevelopmentResetRequired,true);
+    }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
