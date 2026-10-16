@@ -2141,7 +2141,7 @@ export function buildGameSpecificBuildUpDirective({
 }={}){
   const id=clean(gameId);if(!id)throw new Error('BUILD_UP_GAME_ID_REQUIRED');
   const design=extractDesignContext(designRecord||{});
-  const multiplayerPolicy=readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
+  const multiplayerPolicy=readJson(path.join(repoRoot,clean(process.env.COMPANY_VERIFIED_POLICY_PATH)||'__retired_policy_not_available__'),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
   const multiplayerRequired=multiplayerPolicy.required===true;
   sourceRoot=posix(sourceRoot)||posix(sourceObservation?.sourceRoot);
   const source=sourceObservation||inspectGameSource({repoRoot,sourceRoot});
@@ -2517,7 +2517,7 @@ export function buildGameSpecificBuildUpDirective({
     previousPlan:previousDirective?.productionPlan||previousDirective?.robloxProductionPlan,focus,
     repair:['CAUSAL_REPAIR'].includes(clean(nextActionDecision?.action).toUpperCase())||keepPriorFocus,
     safeDesignlessMode,
-    policy:readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{}
+    policy:readJson(path.join(repoRoot,clean(process.env.COMPANY_VERIFIED_POLICY_PATH)||'__retired_policy_not_available__'),{})?.robloxStudioProductionFlowContract||{}
   });
   return Object.freeze({
     version:2,
