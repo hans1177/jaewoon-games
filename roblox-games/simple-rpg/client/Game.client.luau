@@ -2008,10 +2008,15 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local serverWalking = typeof(walkingUntil) == "number"
             and workspace:GetServerTimeNow() < walkingUntil
           local recentlyMoved = creatureMotionPhase - lastMovedAt < 0.20
+          local currentHumanoid = model:FindFirstChildOfClass("Humanoid")
           local movementBlocked = model:GetAttribute("IsPreparingAttack") == true
             or model:GetAttribute("AIState") == "Stunned"
-            or (model:FindFirstChildOfClass("Humanoid")
-              and model:FindFirstChildOfClass("Humanoid").Health <= 0)
+            or (currentHumanoid ~= nil and currentHumanoid.Health <= 0)
+          if movementBlocked then
+            -- 공격 예고·기절 도중 관측된 위치 변위를 복귀 후 보행으로 오인하지 않는다.
+            lastMovedAt = -100
+            smoothedSpeed = 0
+          end
           realMoving = not teleported and not movementBlocked and (serverWalking or recentlyMoved)
           if realMoving then
             -- 실제 이동량을 우선 사용하고 서버 보행 예고는 복제 사이에만 보완한다.
