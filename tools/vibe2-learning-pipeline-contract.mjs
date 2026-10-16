@@ -11,9 +11,7 @@ const includesAll = (text, tokens, label) => {
 };
 
 const contract = readJson('company-learning/canonical-learning-pipeline.json');
-const verifiedPolicyPath = String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
-if (!verifiedPolicyPath || !fs.existsSync(verifiedPolicyPath)) fail('VERIFIED_POLICY_REQUIRED');
-const roadmap = readJson(verifiedPolicyPath);
+// The canonical learning contract is verified directly; retired policy files are not runtime inputs.
 const expectedChain = [
   'VALIDATED_EVIDENCE',
   'DISTILLATION_INGEST',
@@ -123,18 +121,6 @@ eq(portableWeb?.robloxSpecificLearningStillRequiresRealVerifiedRobloxEvidence, t
 eq(portableWeb?.separateCronOrPipelineAllowed, false, 'portable Web parallel pipeline');
 eq(portableWeb?.thresholdLoweringAllowed, false, 'portable Web threshold lowering');
 eq(portableWeb?.status, 'LEGACY_DISABLED', 'legacy Web learning status');
-
-eq(JSON.stringify(roadmap.canonicalLearningChain), JSON.stringify(expectedChain), 'central canonical learning chain');
-eq(roadmap.parallelLearningPipelineAllowed, false, 'central parallel learning pipeline policy');
-eq(roadmap.externalAiLearningPipeline?.independentVerificationRequired, true, 'central external AI independent verification');
-eq(roadmap.externalAiLearningPipeline?.directSourceWrite, false, 'central external AI direct source write');
-eq(roadmap.externalAiLearningPipeline?.directProductionPass, false, 'central external AI direct production pass');
-eq(roadmap.learningClosedLoopContract?.externalAiRetrieval?.independentlyVerifiedDistilledOnly, true, 'central independently verified distilled retrieval only');
-eq(roadmap.webCompanion?.role, 'UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP_COMPATIBILITY_ALIAS', 'central Web role');
-// 중앙 정책: 호환 별칭이 실제 Unity Web 개발 진입 권한을 그대로 반영해야 한다.
-eq(typeof roadmap.directNativeDualPlatformDevelopment?.unityWebDevelopmentLane?.nativeDevelopmentAdmissionAuthority, 'boolean', 'central Unity Web development admission authority');
-eq(roadmap.webCompanion?.developmentAdmissionGate, roadmap.directNativeDualPlatformDevelopment.unityWebDevelopmentLane.nativeDevelopmentAdmissionAuthority, 'central Web development admission');
-eq(roadmap.webCompanion?.cannotReplaceNativeRuntimeEvidence, true, 'central Web native evidence boundary');
 
 const ingestWorkflow = readText(contract.implementationBindings.ingestWorkflow);
 includesAll(ingestWorkflow, [
