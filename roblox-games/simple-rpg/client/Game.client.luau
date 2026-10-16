@@ -1871,6 +1871,7 @@ local creatureMotionJointChecks = setmetatable({}, {__mode = "k"})
 local creatureTelegraphHighlights = setmetatable({}, {__mode = "k"})
 local creatureImportedRig = setmetatable({}, {__mode = "k"})
 local creatureRigDiagnostics = {}
+local creatureRigRetryAt = setmetatable({}, {__mode = "k"})
 local creatureRootMotion = setmetatable({}, {__mode = "k"})
 local creatureHealthMotion = setmetatable({}, {__mode = "k"})
 local creatureDeathMotion = setmetatable({}, {__mode = "k"})
@@ -2087,8 +2088,11 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           -- 가져온 스킨드/리그 모델의 Motor6D 다리를 좌우 교대로 구동한다.
           -- 원본 C0는 보존하고 20Hz 클라이언트 시각 효과만 수정한다.
           local joints = creatureImportedRig[importedVisual]
-          if not joints then
+          -- 늦게 복제된 Bone/Motor6D가 있으면 빈 리그 캐시를 주기적으로 갱신한다.
+          -- 매 프레임 전체 Descendants를 탐색하지 않도록 2초 간격으로 제한한다.
+          if not joints or (#joints == 0 and creatureMotionPhase >= (creatureRigRetryAt[importedVisual] or 0)) then
             joints = {}
+            creatureRigRetryAt[importedVisual] = creatureMotionPhase + 2
             for _, item in ipairs(importedVisual:GetDescendants()) do
               if item:IsA("Motor6D") or item:IsA("Bone") then
                 local lower = string.lower(item.Name)
@@ -2144,6 +2148,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
               end
             end
             creatureImportedRig[importedVisual] = joints
+            -- 관절이 뒤늦게 복제된 경우에는 과거 경고를 유지하되 정상 모션을 시작한다.
             -- 관절이 없는 Studio 메시/좌우 이름 누락을 에셋별 한 번만 보고한다.
             -- 출력은 클라이언트 진단 전용이며 서버 판정이나 저장 데이터는 바꾸지 않는다.
             local assetName = model:GetAttribute("CreatureVisualKey") or model.Name
