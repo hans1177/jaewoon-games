@@ -756,9 +756,7 @@ function companionArchiveRecord({plans,sourceRevision,createdAt,recordId}){
   };
 }
 
-export function archiveCentralCompanionCurrentUse({createdAt=new Date().toISOString(),sourceRevision=currentGitRevision()}={}){
-  // These owner-shortened, hash-locked contracts have no archiveable optional fields.
-  // The legacy pruning procedure must not rewrite their content or remove QA pins.
+export function archiveCentralCompanionCurrentUse(){
   for(const config of Object.values(CENTRAL_COMPANION_DOCUMENTS)){
     const doc=readJsonRel(config.sourcePath);
     if(!String(doc.status||'').startsWith('MINIMAL_')) {
@@ -767,39 +765,6 @@ export function archiveCentralCompanionCurrentUse({createdAt=new Date().toISOStr
   }
   return Object.freeze({changed:false,plans:{},archiveRecord:null,archivePath:null,
     reason:'RETAINED_MINIMAL_DOCUMENTS_LOCKED'});
-  /* legacy pre-shrink archiver is disabled below; retained for historical library calls.
-  const refs=findCurrentCompanionDocumentReferences();
-  const plans={};
-  for(const [documentKey,config] of Object.entries(CENTRAL_COMPANION_DOCUMENTS)){
-    const current=readJsonRel(config.sourcePath);
-    const plan=planCompanionCurrentUsePrune({
-      document:current,
-      currentReferences:refs[documentKey]||{},
-      pinnedCorePaths:config.pinnedCorePaths
-    });
-    if(plan.archivedPaths.length)plans[documentKey]={sourcePath:config.sourcePath,plan};
-  }
-  if(!Object.keys(plans).length)return Object.freeze({changed:false,plans,archiveRecord:null,archivePath:null});
-  const date=createdAt.slice(0,10),compact=date.replaceAll('-','');
-  const fingerprint=crypto.createHash('sha256').update(JSON.stringify(Object.fromEntries(
-    Object.entries(plans).map(([key,row])=>[key,row.plan.archivedPaths])
-  ))).digest('hex').slice(0,12);
-  const revision=(sourceRevision||'no-revision').slice(0,8).toLowerCase().replace(/[^a-z0-9]/g,'');
-  const recordId='central-companion-current-use-'+compact+'-'+revision+'-'+fingerprint;
-  const archiveRel='company-records/operations/'+date.slice(0,4)+'/'+date+'/company/central-document-archive--'+recordId+'.json';
-  if(existsRel(archiveRel))throw new Error('companion current-use archive record already exists: '+archiveRel);
-  const archive=companionArchiveRecord({plans,sourceRevision,createdAt,recordId});
-  const archiveAbs=path.join(ROOT,archiveRel);
-  fs.mkdirSync(path.dirname(archiveAbs),{recursive:true});
-  fs.writeFileSync(archiveAbs,JSON.stringify(archive,null,2)+'\n');
-  const validation=validateCompanyRecord(archiveRel);
-  if(validation.errors.length){
-    fs.rmSync(archiveAbs,{force:true});
-    throw new Error('companion current-use archive record validation failed: '+validation.errors.join(','));
-  }
-  for(const row of Object.values(plans))fs.writeFileSync(path.join(ROOT,row.sourcePath),JSON.stringify(row.plan.document,null,2)+'\n');
-  return Object.freeze({changed:true,plans,archiveRecord:archive,archivePath:archiveRel});
-  */
 }
 
 function currentGitRevision(){
