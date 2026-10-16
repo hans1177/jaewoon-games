@@ -217,14 +217,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Owner removed the obsolete central roadmap on 2026-10-15.
-          # Pin the remaining three authoritative documents; no synthetic policy file.
+          # Verify all four retained docs; no missing constitution can be treated as PASS.
+          ( cd /tmp/vibe2-main && node tools/company-shared-context.mjs --output=/tmp/vibe2-retained-context.json )
+          ( cd /tmp/vibe2-main && node --test qa/company-four-docs-fingerprint.test.mjs )
           node <<'NODE'
           const fs=require('node:fs');
           const crypto=require('node:crypto');
           const path=require('node:path');
           const root='/tmp/vibe2-main';
           const files={
+            directive_sha256:'company-directive.json',
             log_map_sha256:'company-learning/company-log-map.json',
             architecture_sha256:'company-learning/company-architecture-map.json',
             security_sha256:'company-learning/security-immune-system.json'
@@ -242,11 +244,13 @@ jobs:
             .update('OWNER_REMOVED:company-learning/platform-release-roadmap.json:2026-10-15').digest('hex');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`policy_sha256=${marker}\n`);
           fs.writeFileSync('/tmp/vibe2-reserve-shared-context.json',JSON.stringify({
-            pass:true,verificationMode:'REMAINING_DOCUMENT_HASHES',
-            hashes:{policySha256:marker,logMapSha256:hashes.log_map_sha256,
+            pass:false,integrityPass:true,verificationMode:'FOUR_DOCUMENT_INTEGRITY_ONLY',
+            policyAuthorityVerified:false,sourceWriteAuthorized:false,
+            hashes:{policySha256:marker,directiveSha256:hashes.directive_sha256,
+              logMapSha256:hashes.log_map_sha256,
               architectureSha256:hashes.architecture_sha256,securityPolicySha256:hashes.security_sha256}
           },null,2)+'\n');
-          console.log('WORKER_CONTEXT_SYNC=PASS');
+          console.log('WORKER_CONTEXT_SYNC=INTEGRITY_ONLY');
           NODE
 
       - name: Fast scheduler preflight
@@ -1206,6 +1210,7 @@ jobs:
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
           grep -q '^export function unpackVibeQueueStorage' "$contract_root/tools/vibe2-queue-control.mjs"
           node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"
+          ( cd "$contract_root" && node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-context.json )
           policy_sha="$(printf %s 'OWNER_REMOVED:company-learning/platform-release-roadmap.json:2026-10-15' | sha256sum | cut -d' ' -f1)"
           log_map_sha="$(sha256sum "$contract_root/company-learning/company-log-map.json" | cut -d' ' -f1)"
           architecture_sha="$(sha256sum "$contract_root/company-learning/company-architecture-map.json" | cut -d' ' -f1)"
@@ -1214,8 +1219,8 @@ jobs:
           test "$log_map_sha" = "$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256"
           test "$architecture_sha" = "$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256"
           test "$security_sha" = "$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256"
-          echo 'WORKER_CONTEXT_MODE=PINNED_SHA_ONLY'
-          echo 'WORKER_CONTEXT_SYNC=PASS'
+          echo 'WORKER_CONTEXT_MODE=FOUR_DOCUMENT_INTEGRITY_ONLY'
+          echo 'WORKER_CONTEXT_SYNC=INTEGRITY_ONLY'
           node "$contract_root/tools/vibe2-queue-control.mjs" verify-worker-sync             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"             --id="$TASK_ID"             --reservation-id="$RESERVATION_ID"             --reservation-run="$RESERVATION_RUN_ID"             --reservation-attempt="$RESERVATION_RUN_ATTEMPT"             --reserved-at="$RESERVED_AT" | tee /tmp/vibe2-worker-sync.log
           grep -q '^VIBE2_WORKER_SYNC=PASS$' /tmp/vibe2-worker-sync.log
           echo "VIBE2_WORKER_CONTRACT_SHA=$CONTRACT_SHA"
