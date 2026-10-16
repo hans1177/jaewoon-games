@@ -3053,8 +3053,13 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
     asset:currentAsset,gameDna,requirement,usage:usageByAsset[text(currentAsset?.id)]||{}
   }):null;
   const gain=best&&current?Math.round((best.reuse.effectiveQuality-current.effectiveQuality)*10)/10:null;
+  // Across all games, auto-replacement requires measured audit evidence and
+  // an actual runtime pass for the proposed asset. Unverified scoring is advisory.
+  const replacementQualityVerified=Boolean(best?.reuse?.qualityEvidenceGrounded
+    && usageByAsset[text(best?.asset?.id)]?.runtimePass===true);
   const replacementRecommended=Boolean(
     best&&current&&text(best.asset?.id)!==text(currentAsset?.id)&&
+    replacementQualityVerified&&
     gain>=INTERNAL_ASSET_REUSE_POLICY.replacement.minimumEffectiveGain
   );
   return Object.freeze({
@@ -3066,6 +3071,7 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
     currentEffectiveQuality:current?.effectiveQuality??null,
     effectiveGain:gain,
     replacementRecommended,
+    replacementQualityVerified,
     replacementAction:locked?'KEEP_LOCKED':
       !best?'NO_USABLE_INTERNAL_ASSET':
       !current?'USE_SELECTED':
