@@ -6332,7 +6332,7 @@ async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',ima
     const payload=await response.json();
     const raw=(payload.candidates?.[0]?.content?.parts||[]).filter(x=>typeof x.text==='string').map(x=>x.text).join('');
     if(!raw.trim())throw new Error('GEMINI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
-    if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&/(?:\\/no_think\\b|<\\/?think\\b|```)/i.test(raw))throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
+    if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&(/no_think|think|```/i).test(raw))throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
     return raw;
   }catch(error){
     if(error?.name==='AbortError')throw new Error('GEMINI_TIMEOUT_NO_LOCAL_FALLBACK');
