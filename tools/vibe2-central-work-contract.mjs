@@ -561,8 +561,8 @@ export function compiledWorkContractGuidance(contract={}){
 }
 
 export function assertCompiledWorkContractFresh({cwd=process.cwd(),contract={},phase='WORK'}={}){
-  if(contract?.required!==true)return{status:'NOT_REQUIRED',phase,fresh:true};
   if(contract?.validAtCompile!==true)throw new Error(`CENTRAL_POLICY_INVALID_AT_COMPILE:${phase}`);
+  if(contract?.required!==true)return{status:'NOT_REQUIRED',phase,fresh:true};
   const policyPath=contract?.policy?.path||CANONICAL_VIBE_POLICY_PATH;
   const current=loadCentralPolicySnapshot({repoRoot:cwd,policyPath,required:true});
   if(!current.valid)throw new Error(`CENTRAL_POLICY_INVALID:${phase}:${current.errors.join('|')||'UNKNOWN'}`);
