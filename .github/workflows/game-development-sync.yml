@@ -11,7 +11,9 @@ on:
       - 'uefn-games/**'
       - 'assets/external/**'
       - 'tools/game-development-sync.mjs'
+      - 'tools/game-development-qa-runner.mjs'
       - 'qa/game-development-sync.test.mjs'
+      - 'qa/game-development-qa-runner.test.mjs'
       - '.github/workflows/game-development-sync.yml'
   pull_request:
     paths:
@@ -23,7 +25,9 @@ on:
       - 'uefn-games/**'
       - 'assets/external/**'
       - 'tools/game-development-sync.mjs'
+      - 'tools/game-development-qa-runner.mjs'
       - 'qa/game-development-sync.test.mjs'
+      - 'qa/game-development-qa-runner.test.mjs'
       - '.github/workflows/game-development-sync.yml'
   workflow_dispatch:
     inputs:
@@ -41,13 +45,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Verify game-focused source and asset linking
         run: |
           node --check tools/game-development-sync.mjs
-          node --test qa/game-development-sync.test.mjs
+          node --check tools/game-development-qa-runner.mjs
+          node --test qa/game-development-sync.test.mjs qa/game-development-qa-runner.test.mjs
       - name: Generate all-game development connections
         env:
           GAME_ID: ${{ inputs.game_id || '' }}
@@ -58,9 +65,50 @@ jobs:
           else
             node tools/game-development-sync.mjs --output=/tmp/game-development-connections.json
           fi
-      - name: Keep source/asset/QA state report
+      - name: Resolve changed game files
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > /tmp/changed-game-files.txt
+          if [ "$EVENT_NAME" = workflow_dispatch ]; then
+            echo 'GAME_QA_SCOPE=MANUAL_REQUEST'
+            exit 0
+          fi
+          base="$PR_BASE"
+          if [ -z "$base" ]; then base="$PUSH_BASE"; fi
+          if [ -z "$base" ] || [[ "$base" =~ ^0+$ ]]; then
+            base="$(git rev-parse HEAD^ 2>/dev/null || true)"
+          fi
+          if [ -n "$base" ]; then
+            git cat-file -e "$base^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base"
+            git diff --name-only "$base" HEAD > /tmp/changed-game-files.txt
+          fi
+          echo "GAME_QA_CHANGED_FILES=$(wc -l < /tmp/changed-game-files.txt)"
+      - name: Run only game-relevant QA
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "$GAME_ID" ]; then
+            node tools/game-development-qa-runner.mjs --game-id="$GAME_ID" --run --output=/tmp/game-scoped-qa-report.json
+          elif [ "$EVENT_NAME" = workflow_dispatch ]; then
+            node tools/game-development-qa-runner.mjs --all --run --output=/tmp/game-scoped-qa-report.json
+          else
+            node tools/game-development-qa-runner.mjs --changed-files=/tmp/changed-game-files.txt --run --output=/tmp/game-scoped-qa-report.json
+          fi
+      - name: Keep source, asset and per-game QA reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: all-games-development-connections
-          path: /tmp/game-development-connections.json
+          path: |
+            /tmp/game-development-connections.json
+            /tmp/game-scoped-qa-report.json
+          if-no-files-found: warn
           retention-days: 7
