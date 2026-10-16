@@ -115,7 +115,12 @@ export function compileOwnerCanonicalConstitution(policy={}) {
     return Number(a[0].match(/\d+/)?.[0]||0)-Number(b[0].match(/\d+/)?.[0]||0);
   });
   const rules=sorted.map(([key,contract])=>({
-    key,id:contract.id,contract,
+    key,id:contract.id,
+    number:Number(key.match(/\d+/)?.[0]||0),
+    label:contract.label??null,
+    authority:contract.authority??null,
+    objective:contract.objective??null,
+    contract,
     fingerprint:hash(JSON.stringify({key,id:contract.id,contract}))
   }));
   return {
