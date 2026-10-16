@@ -38,14 +38,10 @@
       "target": "web",
       "department": "qa",
       "type": "implementation",
-      "goal": "[OWNER_IMMEDIATE] VIBE 자율 병목 해결: 개발·빌드·실제 실행·안전검증에 필요하지 않은 외부 정책/문서/메타데이터 의존성을 저장소 전반에서 찾아 제거한다. 삭제된 roadmap, COMPANY_FLOW.md 복원 금지; 새 필수 정책변수 도입 금지. 먼저 실제 실패 로그·의존 관계로 필요 여부를 판별하고 QA, 워커, 예약, 학습 계약을 최신 유지되는 코드/실제 증거에 맞춰 최소 변경한다. 컴파일러·기본 라이브러리·보안·테스트·세이브 데이터처럼 개발에 필요한 의존성은 유지한다. 테스트 스킵·안전게이트 우회·가짜 성공 금지. 책임 파일 충돌 방지, 후보 브랜치, 실제 회귀검증, 검토된 PR만 반영. 예약 단계에서 이 작업이 무기한 대기하면 시스템 작업 큐로 라우팅하는 별도 수정이 필요함을 명시하고 해결한다.",
+      "goal": "[OWNER_IMMEDIATE][PARALLEL QA] Remove obsolete reads of owner-retired roadmap and COMPANY_FLOW.md from the two named QA files. Replace them with meaningful checks of existing source, runtime behavior and evidence. Do not restore policy files, skip tests, weaken security/QA, or modify games or save data. Reproduce failing tests, apply bounded patch, retest, propose verified PR.",
       "responsibleFiles": [
         "qa/company-long-horizon-vision.test.mjs",
-        "qa/company-game-seed-flow.test.mjs",
-        "tools/vibe2-learning-pipeline-contract.mjs",
-        "tools/vibe2-system-evolution-verify.mjs",
-        "tools/company-system-ai-worker.mjs",
-        "tools/vibe2-incremental-qa.mjs"
+        "qa/company-game-seed-flow.test.mjs"
       ],
       "dependencies": [],
       "priority": "owner-immediate",
@@ -76,6 +72,95 @@
         "reviewRequired": true
       },
       "sourceRoot": "qa",
+      "speculativeEligible": false,
+      "estimatedRisk": "medium",
+      "shard": "web"
+    },
+    {
+      "id": "owner-policy-learning-repair-20261016",
+      "gameId": "company",
+      "target": "web",
+      "department": "qa",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE][PARALLEL LEARNING] Remove retired roadmap and COMPANY_VERIFIED_POLICY_PATH requirements from tools/vibe2-learning-pipeline-contract.mjs. Preserve canonical evidence chain, independent verification, actual QA and learning promotion safeguards. Reproduce contract failure, fix, run contract tests, open verified PR; coordinate with existing candidate branch fix/vibe-learning-independent-20261016 to avoid duplicate commits.",
+      "responsibleFiles": [
+        "tools/vibe2-learning-pipeline-contract.mjs"
+      ],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "evidence": [
+        "owner-directive:assistant-vibe-policy-cleanup-20261016",
+        "main-pr:8139",
+        "must-preserve-existing-verification",
+        "owner-clarification:remove-policy-dependency-do-not-restore-20261016",
+        "bottleneck-issue:8147",
+        "owner-directive:autonomous-remove-all-nondevelopment-dependencies-20261016",
+        "preserve-required-development-and-safety-dependencies",
+        "parallel-lane:learning"
+      ],
+      "lastOutcome": null,
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "owner-directive:assistant-vibe-policy-cleanup-20261016",
+        "reviewRequired": true
+      },
+      "sourceRoot": ".",
+      "speculativeEligible": false,
+      "estimatedRisk": "medium",
+      "shard": "web"
+    },
+    {
+      "id": "owner-policy-worker-reservation-repair-20261016",
+      "gameId": "company",
+      "target": "web",
+      "department": "qa",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE][PARALLEL WORKER] Fix deleted-policy-dependent worker reservation and retry paths in the existing tools/vibe2-continuous-runner.mjs and tools/vibe2-central-work-contract.mjs. Existing candidate branch fix/vibe-retired-policy-worker-unblock-20261016 contains initial reserve correction: inspect and integrate without duplicate edits. Verify queued owner tasks reach actual workers, preserve secure candidate isolation, QA, data and no direct-main write. Verify before PR merge.",
+      "responsibleFiles": [
+        "tools/vibe2-continuous-runner.mjs",
+        "tools/vibe2-central-work-contract.mjs"
+      ],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "evidence": [
+        "owner-directive:assistant-vibe-policy-cleanup-20261016",
+        "main-pr:8139",
+        "must-preserve-existing-verification",
+        "owner-clarification:remove-policy-dependency-do-not-restore-20261016",
+        "bottleneck-issue:8147",
+        "owner-directive:autonomous-remove-all-nondevelopment-dependencies-20261016",
+        "preserve-required-development-and-safety-dependencies",
+        "parallel-lane:worker"
+      ],
+      "lastOutcome": null,
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "owner-directive:assistant-vibe-policy-cleanup-20261016",
+        "reviewRequired": true
+      },
+      "sourceRoot": ".",
       "speculativeEligible": false,
       "estimatedRisk": "medium",
       "shard": "web"
