@@ -2099,8 +2099,10 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
               end
             end
           end
-          if not joints or staleRig
-            or (#joints == 0 and creatureMotionPhase >= (creatureRigRetryAt[importedVisual] or 0)) then
+          local rigCheckDue = creatureMotionPhase >= (creatureRigRetryAt[importedVisual] or 0)
+          -- 관절이 새로 추가된 모델도 최대 2초 이내 다시 검색한다.
+          -- 변경이 없는 모델은 캐시를 사용해 매 프레임 전체 탐색을 피한다.
+          if not joints or staleRig or rigCheckDue then
             joints = {}
             creatureRigRetryAt[importedVisual] = creatureMotionPhase + 2
             for _, item in ipairs(importedVisual:GetDescendants()) do
