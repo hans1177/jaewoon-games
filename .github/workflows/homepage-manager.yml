@@ -33,8 +33,6 @@ on:
       - 'test-game-candidates.json'
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
-      - 'artbook-viewer.html'
-      - 'artbook-submissions/**'
       - 'web-games/**'
       - 'roblox-games/**/default.project.json'
       - 'assets/**'
@@ -75,8 +73,6 @@ on:
       - 'test-game-candidates.json'
       - 'public-release-baselines.json'
       - 'game-artbooks.json'
-      - 'artbook-viewer.html'
-      - 'artbook-submissions/**'
       - 'web-games/**'
       - 'roblox-games/**/default.project.json'
       - 'assets/**'
@@ -141,7 +137,6 @@ jobs:
             /assets/homepage-enhancements.js
             /assets/homepage-covers/
             /assets/homepage-media/
-            /assets/artbook-viewer.js
             /qa/homepage-manager-publication-order.test.mjs
             /qa/company-homepage-runtime-propagation.test.mjs
             /qa/game-catalog-normalization.test.mjs
@@ -388,14 +383,13 @@ jobs:
           set -euo pipefail
           for file in \
             index.html company.html game-catalog.json company-status.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json \
-            public-release-baselines.json game-artbooks.json artbook-viewer.html \
-            assets/homepage-enhancements.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
+            public-release-baselines.json game-artbooks.json \
+            assets/homepage-enhancements.js manifest.webmanifest install.html sw.js offline.html command.html \
             company-directive.json _headers; do
             test -f "$file"
           done
           node -e "for (const file of ['game-catalog.json','company-status.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','company-learning/company-architecture-map.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
-          node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
           node --check tools/homepage-test-candidate-sync.mjs
           node --check tools/game-catalog-normalization.mjs
@@ -441,32 +435,6 @@ jobs:
           if(failures.length)throw new Error(`homepage route/test failures: ${failures.join(',')}`);
           console.log(`HOMEPAGE_TEST_SHELF_QA=PASS COUNT=${rows.length}/30 MIN_SCORE=80`);
           console.log('HOMEPAGE_OFFICIAL_CARD_BOUNDARY=PASS');
-          NODE
-          node <<'NODE'
-          const fs=require('fs');
-          const catalog=JSON.parse(fs.readFileSync(process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json','utf8'));
-          const registry=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
-          const tests=JSON.parse(fs.readFileSync('test-game-candidates.json','utf8'));
-          const games=new Set((catalog.games||[]).map(game=>String(game.id||'').trim()).filter(Boolean));
-          const testGameIds=new Set((tests.candidates||[]).filter(row=>row.homepageTestCandidate===true).map(row=>String(row.gameId||row.id||'').trim()).filter(Boolean));
-          const visible=(registry.artbooks||[]).filter(book=>book.published===true||book.homepageVisible===true);
-          const failures=[];
-          for(const book of visible){
-            const gameId=String(book.gameId||'').trim();
-            const currentTestArtbook=book.homepageTestCandidate===true&&testGameIds.has(gameId);
-            if(!games.has(gameId)&&!currentTestArtbook){failures.push(`${book.id}:catalog`);continue;}
-            const source=String(book.sourceFile||'').replace(/^\/+/, '');
-            if(!source||!fs.existsSync(source)){failures.push(`${book.id}:source`);continue;}
-            if(source.endsWith('.json')){try{JSON.parse(fs.readFileSync(source,'utf8'));}catch{failures.push(`${book.id}:json`);}}
-          }
-          const entry=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-          const candidateSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
-          const viewer=fs.readFileSync('assets/artbook-viewer.js','utf8');
-          if(entry.includes('아트북 보기')||entry.includes('foldGameArtbookBtn')||entry.includes('homepageArtbookPath'))failures.push('homepage:artbook-button-must-be-hidden');
-          if(!candidateSync.includes('const limit=30')||!candidateSync.includes('const minimumScore=WEB_HOMEPAGE_MINIMUM')||!candidateSync.includes('STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE'))failures.push('homepage:test-shelf-contract');
-          if(!viewer.includes("loadJson('/game-artbooks.json'"))failures.push('viewer:registry-contract');
-          if(failures.length)throw new Error(`homepage artbook failures: ${failures.join(',')}`);
-          console.log(`HOMEPAGE_ARTBOOK_QA=PASS COUNT=${visible.length}`);
           NODE
           grep -Fq '홈페이지 단일 사후 감독' .github/agents/director.agent.md
           grep -Fxq '/*.json' _headers
