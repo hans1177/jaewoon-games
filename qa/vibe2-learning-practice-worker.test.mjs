@@ -424,7 +424,7 @@ test('live Vibe coding: first attempt versus public-feedback repair on held-out 
   assert(!process.env.VIBE2_MODEL_RESPONSE_FILE,'fixture replay cannot be a live benchmark');
   const cases=[];
   const ids=['save','unity-menu-batch-transaction','unity-reward-prerequisites'];
-  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b',sourceCommit:process.env.GITHUB_SHA||null,
+  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_GEMINI_MODEL||'gemini-2.5-flash',sourceCommit:process.env.GITHUB_SHA||null,
     expectedSampleCount:ids.length,measurementComplete:false,sampleCount:0,firstAttemptPass:0,finalPass:0,recovered:0,regressed:0,modelCalls:0,
     modelWeightsChanged:false,generalizationVerified:false,productionPromotionAllowed:false,cases};
   const reportFile=path.join(process.env.RUNNER_TEMP||os.tmpdir(),'vibe2-coding-repair-benchmark.json');
@@ -439,7 +439,7 @@ test('live Vibe coding: first attempt versus public-feedback repair on held-out 
   }
   console.log('VIBE2_LIVE_CODING_BENCHMARK='+JSON.stringify({...report,cases:cases.map(({candidates,...evidence})=>evidence)}));
   assert.equal(report.measurementComplete,true);
-  assert(cases.every(row=>row.execution==='LOCAL_OLLAMA'));
+  assert(cases.every(row=>row.execution==='GEMINI_API'));
   assert.equal(report.regressed,0,'a repair must not lose an already passing implementation');
   assert(report.finalPass>0,'no generated implementation passed; do not claim coding improvement');
 });
