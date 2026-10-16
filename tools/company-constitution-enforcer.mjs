@@ -64,7 +64,11 @@ function enforceAssertions({assertions=[],source={},root=ROOT,prefix='',errors=[
 
 export function enforceConstitution({policy,root=ROOT,phase='runtime'}={}){
   const errors=[];
-  const p=policy||JSON.parse(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),'utf8'));
+  let p=policy;
+  if(p===undefined){
+    try {p=JSON.parse(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),'utf8'));}
+    catch {errors.push('CANONICAL_POLICY_UNAVAILABLE_OR_INVALID');p={};}
+  }
   const constitution=compileOwnerCanonicalConstitution(p);
   must(errors,constitution.valid===true,'CANONICAL_CONSTITUTION_INVALID:'+(constitution.errors||[]).join(','));
   must(errors,constitution.rules.length>0,'CANONICAL_RULE_SET_EMPTY');
