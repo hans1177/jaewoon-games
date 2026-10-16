@@ -3508,6 +3508,10 @@ test('missing design suppresses generic CORE_FUN and PROGRESSION guesses while s
 
 
 test('usable but unverified design cannot authorize CORE_FUN or PROGRESSION evolution',()=>{
+  // Bind real current policy for the implementation evaluator; do not bypass its fail-closed guard.
+  const priorPolicy=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+  try{
   const root=tempRepo();
   const gameId='unverified-design-game';
   const source=path.join(root,'roblox-games',gameId);
@@ -3526,6 +3530,10 @@ test('usable but unverified design cannot authorize CORE_FUN or PROGRESSION evol
   assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN'),null);
   assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PROGRESSION'),null);
   assert.ok(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION'));
+  }finally{
+    if(priorPolicy===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=priorPolicy;
+  }
 });
 
 
@@ -4660,6 +4668,10 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
 });
 
 test('owner-direct unfinished games bypass a full normal backlog and keep generating BUILD_UP generations',()=>{
+  // Bind real current policy for the implementation evaluator; do not bypass its fail-closed guard.
+  const priorPolicy=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+  try{
   const repoRoot=path.resolve(process.cwd());
   const catalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
   const plannerCatalog={...catalog,games:[...(catalog.games||[]),{
@@ -4769,6 +4781,10 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   assert.equal(resumed.maxRetries,null);
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
+  }finally{
+    if(priorPolicy===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=priorPolicy;
+  }
 });
 
 test('actual fantasy-survival preserves Unity sources while only Roblox development is active',()=>{
