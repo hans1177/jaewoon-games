@@ -2,7 +2,7 @@
 
 확정일: 2026-10-12. 오너가 확정한 기본설계 방법의 읽기용 설명이다.
 
-유일한 공식 정책 원본은 `company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod`다. 이 문서는 독립 정책이 아니다.
+이 문서는 게임 설계 참고 자료이며 독립적인 실행 정책이 아니다. 과거 중앙정책 참조는 삭제되었고 새 정책 권한을 이 문서에서 만들지 않는다.
 
 ## 적용 상태
 
