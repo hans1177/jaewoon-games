@@ -1,5 +1,5 @@
 import{test}from'node:test';import{strict as a}from'node:assert';import{readFileSync}from'node:fs';import{createHash}from'node:crypto';
-const files=[["company-directive.json","d651048edf567681cfd1e6160fd015abb91f83b9"],["company-learning/company-log-map.json","e16dc62d01410f411cdb7100135c93fa160bcd12"],["company-learning/company-architecture-map.json","57cfaeeb2821077456973c874245db4987005b71"],["company-learning/security-immune-system.json","4711d4456c77268d1bdf21af38f5ae06b71109f5"]];
-test('four company machine documents match approved Git blob IDs',()=>{
-for(const[p,id]of files){const b=readFileSync(p),h=createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex');a.equal(h,id,p+' changed without reapproval');a.doesNotThrow(()=>JSON.parse(b.toString('utf8')),p);}
+const files=[["company-directive.json","98a184d8d9dee60014c7ea89431b94e6c2ee9081"],["company-learning/company-log-map.json","ce2fef934e6d8ae68ae52d1ab4a3ea5e1ea216e7"],["company-learning/company-architecture-map.json","3886c851a9f946c3d3d6544f993ea09e41a1a142"],["company-learning/security-immune-system.json","e5923872a432d544c433e17d9910b61b6138b153"]];
+test('four company machine documents stay under 1000 chars and content-locked',()=>{
+for(const[p,id]of files){const b=readFileSync(p),s=b.toString('utf8'),h=createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex');a.ok([...s].length<1000,p+' too long');a.equal(h,id,p+' changed without approving new pinned blob');a.doesNotThrow(()=>JSON.parse(s),p);}
 });
