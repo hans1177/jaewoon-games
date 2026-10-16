@@ -497,3 +497,14 @@ test('monster alert clears immediately when a player leaves its habitat', () => 
   assert.match(server, /Magnitude > 22 then\s+target = nil/);
   assert.match(server, /AdvancedAIEcosystem\.SetState\(enemy, "ReturnHome"\)/);
 });
+
+
+test('imported monster rig refresh keeps original bind pose and combat authority', () => {
+  assert.match(client, /local previousBases = \{\}/);
+  assert.match(client, /previousBases\[entry\.joint\] = entry\.base/);
+  assert.match(client, /base=previousBases\[item\] or \(item:IsA\("Motor6D"\) and item\.C0 or item\.Transform\)/);
+  assert.match(client, /creatureRigRetryAt\[importedVisual\] = creatureMotionPhase \+ 2/);
+  assert.match(client, /importedVisual:PivotTo\(rootPart\.CFrame/);
+  assert.match(server, /civWalkModel\(enemy\.Model/);
+  assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
+});
