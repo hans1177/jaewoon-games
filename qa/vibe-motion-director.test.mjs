@@ -110,17 +110,17 @@ test('walk teacher stays scoped to an internal Roblox walk and never grants veri
 });
 
 test('basic motion work gets one hour without changing runtime verification or gameplay timing',()=>{
-  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const central=policy.assetProductionParallelContract.companyGraphicsLibrary24h.studioMotionProgram.baseQualityWorkSession;
+  // Owner removed the historical roadmap; preserve cross-platform motion timing invariants directly.
+  const baseline=createMotionDirectorPlan({platform:'ROBLOX'}).studioProduction.baseWorkSession;
   for(const platform of ['ROBLOX','UNITY','WEB']){
     const session=createMotionDirectorPlan({platform}).studioProduction.baseWorkSession;
     assert.equal(session.defaultMinutes,60);
     assert.equal(session.objectCount,1);
     assert.equal(session.motionCount,1);
-    assert.equal(session.budgetMeaning,central.budgetMeaning);
+    assert.equal(session.budgetMeaning,baseline.budgetMeaning);
     assert.equal(session.preparationAndQaIncludedInModificationBudget,false);
     assert.equal(session.separateWorkerRequired,false);
-    assert.deepEqual(session.stageMinutes,central.stageMinutes);
+    assert.deepEqual(session.stageMinutes,baseline.stageMinutes);
     assert.equal(Object.values(session.stageMinutes).reduce((a,b)=>a+b,0),60);
     assert.equal(session.existingModelsAndRigRequired,true);
     assert.equal(session.preserveClipDurationAndExistingEventTimes,true);
