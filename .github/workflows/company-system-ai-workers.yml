@@ -63,10 +63,8 @@ permissions:
   actions: write
 
 env:
-  SYSTEM_AI_MODEL: qwen3:1.7b
-  VIBE2_LOCAL_MODEL: qwen3:1.7b
+  SYSTEM_AI_GEMINI_MODEL: gemini-2.5-flash
   SYSTEM_AI_MAX_BATCH: '256'
-  OLLAMA_HOST: 127.0.0.1:11434
 
 concurrency:
   group: company-system-ai-${{ github.event_name == 'push' && 'push-qa' || github.run_id }}
@@ -387,59 +385,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Restore free local model cache
-        id: ollama_cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.ollama/models
-            ~/.cache/company-system-ai-ollama/bin/ollama
-            ~/.cache/company-system-ai-ollama/lib/ollama
-          key: company-system-ai-ollama-v1-Linux-qwen3-1.7b
-
-      - name: Prepare cached Ollama runtime
-        shell: bash
-        run: |
-          set -euo pipefail
-          cached="$HOME/.cache/company-system-ai-ollama/bin/ollama"
-          cached_lib="$HOME/.cache/company-system-ai-ollama/lib/ollama"
-          if [ -x "$cached" ] && [ -d "$cached_lib" ] && find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
-            sudo mkdir -p /usr/local/lib/ollama
-            sudo cp -a "$cached_lib/." /usr/local/lib/ollama/
-            echo "$HOME/.cache/company-system-ai-ollama/bin" >> "$GITHUB_PATH"
-            ollama_bin="$cached"
-            echo 'COMPANY_SYSTEM_AI_OLLAMA_RUNTIME=CACHE'
-          else
-            installed=0
-            for attempt in 1 2 3; do
-              if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-              sleep $((attempt * 4))
-            done
-            test "$installed" = 1
-            mkdir -p "$HOME/.cache/company-system-ai-ollama/bin" "$cached_lib"
-            cp "$(command -v ollama)" "$cached"
-            chmod +x "$cached"
-            runtime_lib=""
-            for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
-              if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then runtime_lib="$candidate"; break; fi
-            done
-            test -n "$runtime_lib"
-            cp -a "$runtime_lib/." "$cached_lib/"
-            echo "$HOME/.cache/company-system-ai-ollama/bin" >> "$GITHUB_PATH"
-            ollama_bin="$cached"
-            echo 'COMPANY_SYSTEM_AI_OLLAMA_RUNTIME=FRESH_INSTALL'
-          fi
-          test -x "$ollama_bin"
-          nohup "$ollama_bin" serve > /tmp/company-system-ai-ollama.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-            if [ "$i" = 30 ]; then cat /tmp/company-system-ai-ollama.log || true; exit 1; fi
-            sleep 2
-          done
-          if ! "$ollama_bin" list | awk 'NR>1 {print $1}' | grep -Fqx "$SYSTEM_AI_MODEL"; then
-            "$ollama_bin" pull "$SYSTEM_AI_MODEL"
-          fi
 
       - name: Load reserved assignment
         env:
