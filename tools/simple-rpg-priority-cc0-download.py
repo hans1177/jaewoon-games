@@ -26,7 +26,6 @@ PACKS = [
   ],
   [
     "01-insects",
-    "bug-robot.blend",
     "Robot_bug.blend",
     "low-poly-bug-robot",
     "blend"
@@ -55,7 +54,7 @@ PACKS = [
   [
     "03-equipment",
     "swordtember-30-glb.zip",
-    "swordtember2022_glb.zip",
+    "swordtember2022_glb_0.zip",
     "30-unique-lowpoly-swords-cc0-swordtember2022",
     "zip"
   ],
@@ -69,7 +68,7 @@ PACKS = [
   [
     "03-equipment",
     "rpg-items-8.zip",
-    "low-poly RPG item collection.zip",
+    "low-poly RPG item collection_0.zip",
     "rpg-item-collection-1",
     "zip"
   ],
@@ -209,7 +208,7 @@ PACKS = [
   [
     "05-environment-sfx",
     "rpg-sfx-80.zip",
-    "80-CC0-RPG-SFX.zip",
+    "80-CC0-RPG-SFX_0.zip",
     "80-cc0-rpg-sfx",
     "zip"
   ],
