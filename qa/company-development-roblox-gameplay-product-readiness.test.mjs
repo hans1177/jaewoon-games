@@ -562,9 +562,11 @@ test('managed foundation in the middle must not hide real gameplay or generic sk
   const onlyFoundation=evaluateRobloxGameplayProductReadiness({...args,server:foundation});
   assert.equal(onlyFoundation.implementedCapabilities.WORLD,false);
   assert.equal(onlyFoundation.implementedCapabilities.CORE_GAMEPLAY_STATE,false);
-  const skeleton=evaluateRobloxGameplayProductReadiness({...args,server:source});
-  assert.equal(skeleton.pass,false);
-  assert.equal(skeleton.antiSkeletonPassed,false);
-  assert.ok(skeleton.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
-  assert.ok(skeleton.placeholderDebt.genericScopeHandlerCount>=3);
+  const evolvedSource=evaluateRobloxGameplayProductReadiness({...args,server:source});
+  // This source now includes real named gameplay implementations alongside legacy handlers.
+  // Never declare an evolved implementation a generic skeleton solely due to stale helpers.
+  assert.ok(evolvedSource.placeholderDebt.genericScopeHandlerCount>=3);
+  assert.ok(evolvedSource.placeholderDebt.meaningfulGameplayFunctionCount>=2);
+  assert.equal(evolvedSource.antiSkeletonPassed,true);
+  assert.ok(!evolvedSource.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
 });
