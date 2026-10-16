@@ -1958,8 +1958,13 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           -- 마지막 실제 이동 이후 짧은 시간 동안만 보행을 이어간다.
           -- 서버의 짧은 이동 명령 사이에서도 움직임을 이어가되, 실제로
           -- 멈췄거나 순간 이동한 경우에는 미끄러운 제자리 걸음을 막는다.
-          local teleported = horizontalSpeed >= 65
-          if horizontalSpeed > 0.35 and not teleported then
+          -- 원격 복제가 한 번에 도착해도 서버가 실제 보행을 명령한 동안은
+          -- 좌표 속도 급등만 무시하고 정상 보행 동작은 유지한다.
+          local walkingDeadline = model:GetAttribute("MotionWalkingUntil")
+          local commandedWalking = typeof(walkingDeadline) == "number"
+            and workspace:GetServerTimeNow() < walkingDeadline
+          local teleported = horizontalSpeed >= 65 and not commandedWalking
+          if horizontalSpeed > 0.35 and horizontalSpeed < 65 then
             lastMovedAt = creatureMotionPhase
             -- 원격 위치 복제가 한꺼번에 도착하는 경우 순간 속도가 커진다.
             -- 서버가 짧게 이동시키는 NPC의 보행 주기는 현실적인 범위로 제한한다.
