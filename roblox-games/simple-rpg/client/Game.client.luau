@@ -2120,6 +2120,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           for _, leg in ipairs(joints) do
             if leg.joint.Parent then
               local angle = walking and math.sin(clock) * leg.side * leg.amplitude * speedFactor or 0
+              local lift = walking and not leg.isArm
+                and math.max(0, math.sin(clock * leg.side)) * 0.22 * speedFactor or 0
               -- 실제 공격 예고 중에는 리그 팔을 들어 올리고 짧게 떨도록 한다.
               if down then
                 angle = leg.isArm and -0.4 * deathProgress or 0.65 * leg.side * deathProgress
@@ -2133,9 +2135,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                 end
               end
               if leg.isBone then
-                leg.joint.Transform = leg.base * CFrame.Angles(angle, 0, 0)
+                leg.joint.Transform = leg.base * CFrame.new(0, lift, 0) * CFrame.Angles(angle, 0, 0)
               else
-                leg.joint.C0 = leg.base * CFrame.Angles(angle, 0, 0)
+                leg.joint.C0 = leg.base * CFrame.new(0, lift, 0) * CFrame.Angles(angle, 0, 0)
               end
             end
           end
