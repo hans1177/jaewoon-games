@@ -455,6 +455,7 @@ test('Homepage Manager binds the central homepage policy fingerprint from self-Q
   assert.doesNotMatch(director,/worker-shared-context\.json/);
   assert.match(manage,/HOMEPAGE_SUPPORTED_PLATFORMS_JSON/);
   assert.match(manage,/node tools\/company-homepage-platform-exposure-sync\.mjs[^\n]*company-learning\/platform-release-roadmap\.json/);
+  assert.match(manage,/COMPANY_VERIFIED_POLICY_PATH=company-learning\/platform-release-roadmap\.json node --input-type=module/);
   assert.match(manage,/COMPANY_VERIFIED_POLICY_PATH=company-learning\/platform-release-roadmap\.json node qa\/game-catalog-normalization\.test\.mjs/);
   assert.match(manager,/centralPolicyFingerprint===homepageCentral\.fingerprint/);
 });
