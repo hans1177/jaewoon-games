@@ -18,7 +18,8 @@ import {computeVibeSeedProposal} from './company-game-seed-bootstrap.mjs';
 import {buildConceptSystemBlueprint} from './company-vibe2-game-flow-architect.mjs';
 
 const ROLES=['planning','graphics','development','qa','audio'];
-const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
+const CANONICAL_POLICY_PATH=String(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH||'').trim();
+if(!CANONICAL_POLICY_PATH||!fs.existsSync(CANONICAL_POLICY_PATH))throw new Error('DESIGN_CYCLE_VERIFIED_POLICY_PATH_REQUIRED');
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
