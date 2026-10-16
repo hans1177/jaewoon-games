@@ -27,7 +27,10 @@ export function enforceConstitution({phase='runtime',root=process.cwd(),policy}=
     if(directive.policyDocument!==POLICY_PATH ||
        directive.documentationSynchronization?.centralPolicyPath!==POLICY_PATH)
       errors.push('OWNER_POLICY_AUTHORITY_NOT_MIGRATED');
-    if(directive.legacyCentralPolicyReferenceCleanup?.removedPolicyPath!==LEGACY_PATH)
+    if(directive.legacyCentralPolicyReferenceCleanup?.removedPolicyPath!==LEGACY_PATH ||
+       directive.legacyCentralPolicyReferenceCleanup?.replacementPolicyNotAsserted!==true ||
+       directive.legacyCentralPolicyReferenceCleanup?.executionContractChangeNotAuthorized!==true ||
+       !/^[0-9a-f]{40}$/.test(String(directive.legacyCentralPolicyReferenceCleanup?.removedByCommit||'')))
       errors.push('OWNER_POLICY_REMOVAL_RECORD_INVALID');
   }
   if(canonical) {
