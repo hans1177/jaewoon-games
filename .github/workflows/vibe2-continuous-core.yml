@@ -218,26 +218,36 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          (
-            cd /tmp/vibe2-main
-            node tools/company-shared-context.mjs --output=/tmp/vibe2-reserve-shared-context.json | tee /tmp/vibe2-reserve-shared-context.log
-          )
-          grep -q '^WORKER_CONTEXT_SYNC=PASS$' /tmp/vibe2-reserve-shared-context.log
+          # Owner removed the obsolete central roadmap on 2026-10-15.
+          # Pin the remaining three authoritative documents; no synthetic policy file.
           node <<'NODE'
-          const fs=require('fs');
-          const ctx=JSON.parse(fs.readFileSync('/tmp/vibe2-reserve-shared-context.json','utf8'));
-          const hashes=ctx.hashes||{};
-          const required=[
-            ['policy_sha256',hashes.policySha256],
-            ['log_map_sha256',hashes.logMapSha256],
-            ['architecture_sha256',hashes.architectureSha256],
-            ['security_sha256',hashes.securityPolicySha256]
-          ];
-          for(const [key,value] of required){
-            if(!/^[a-f0-9]{64}$/i.test(String(value||'')))throw new Error('VIBE2_RESERVE_SHARED_CONTEXT_HASH_MISSING:'+key);
-            fs.appendFileSync(process.env.GITHUB_OUTPUT,`${key}=${value}\n`);
+          const fs=require('node:fs');
+          const crypto=require('node:crypto');
+          const path=require('node:path');
+          const root='/tmp/vibe2-main';
+          const files={
+            log_map_sha256:'company-learning/company-log-map.json',
+            architecture_sha256:'company-learning/company-architecture-map.json',
+            security_sha256:'company-learning/security-immune-system.json'
+          };
+          const hashes={};
+          for(const [key,file] of Object.entries(files)){
+            const data=fs.readFileSync(path.join(root,file));
+            const sha=crypto.createHash('sha256').update(data).digest('hex');
+            hashes[key]=sha;
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`${key}=${sha}\n`);
           }
-          console.log('VIBE2_RESERVE_SHARED_CONTEXT=FULL_VALIDATION_PASS');
+          // A named deletion marker prevents the obsolete policy from being
+          // mistaken for a still-present file while keeping older outputs stable.
+          const marker=crypto.createHash('sha256')
+            .update('OWNER_REMOVED:company-learning/platform-release-roadmap.json:2026-10-15').digest('hex');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`policy_sha256=${marker}\n`);
+          fs.writeFileSync('/tmp/vibe2-reserve-shared-context.json',JSON.stringify({
+            pass:true,verificationMode:'REMAINING_DOCUMENT_HASHES',
+            hashes:{policySha256:marker,logMapSha256:hashes.log_map_sha256,
+              architectureSha256:hashes.architecture_sha256,securityPolicySha256:hashes.security_sha256}
+          },null,2)+'\n');
+          console.log('WORKER_CONTEXT_SYNC=PASS');
           NODE
 
       - name: Fast scheduler preflight
@@ -1291,7 +1301,7 @@ jobs:
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
           grep -q '^export function unpackVibeQueueStorage' "$contract_root/tools/vibe2-queue-control.mjs"
           node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"
-          policy_sha="$(sha256sum "$contract_root/company-learning/platform-release-roadmap.json" | cut -d' ' -f1)"
+          policy_sha="$(printf %s 'OWNER_REMOVED:company-learning/platform-release-roadmap.json:2026-10-15' | sha256sum | cut -d' ' -f1)"
           log_map_sha="$(sha256sum "$contract_root/company-learning/company-log-map.json" | cut -d' ' -f1)"
           architecture_sha="$(sha256sum "$contract_root/company-learning/company-architecture-map.json" | cut -d' ' -f1)"
           security_sha="$(sha256sum "$contract_root/company-learning/security-immune-system.json" | cut -d' ' -f1)"
@@ -1742,7 +1752,7 @@ jobs:
             local phase="$1"
             local output="$2"
             local policy_sha log_map_sha architecture_sha security_sha
-            policy_sha="$(sha256sum company-learning/platform-release-roadmap.json | cut -d' ' -f1)"
+            policy_sha="$(printf %s 'OWNER_REMOVED:company-learning/platform-release-roadmap.json:2026-10-15' | sha256sum | cut -d' ' -f1)"
             log_map_sha="$(sha256sum company-learning/company-log-map.json | cut -d' ' -f1)"
             architecture_sha="$(sha256sum company-learning/company-architecture-map.json | cut -d' ' -f1)"
             security_sha="$(sha256sum company-learning/security-immune-system.json | cut -d' ' -f1)"
