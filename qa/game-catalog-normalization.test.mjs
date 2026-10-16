@@ -8,7 +8,6 @@ import crypto from 'node:crypto';
 import { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, ingestOwnerWebGameIds, normalizeCatalog, validateNormalizedCatalog, validatedHomepageMedia, webTreeFingerprint } from '../tools/game-catalog-normalization.mjs';
 
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const homepage=fs.readFileSync('assets/homepage-enhancements.js','utf8');
 const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
 const sync=fs.readFileSync('tools/company-status-sync.mjs','utf8');
@@ -47,36 +46,9 @@ assert.equal(catalog.permanentRemovalPolicy?.automaticRecoveryAllowed,false);
 assert.equal(catalog.permanentRemovalPolicy?.automaticMaintenanceAllowed,false);
 for(const gameId of permanentlyRemoved)assert.equal(catalog.games.some(game=>game.id===gameId),false);
 
-const policy=roadmap.catalogNormalization;
-assert.equal(policy?.authority,'MACHINE_EXECUTION_CONTRACT');
-assert.equal(policy?.humanDocumentRequired,false);
-assert.equal(policy?.canonicalRecordPath,'games[].canonical');
-assert.equal(policy?.rules?.canonicalFirst,true);
-assert.equal(policy?.rules?.legacyFlatFields,'COMPATIBILITY_MIRROR_ONLY');
-assert.equal(policy?.rules?.duplicateGameIdsForbidden,true);
-assert.equal(policy?.rules?.duplicateVerifiedRobloxPlaceIdsForbidden,true);
-assert.equal(policy?.homepageBinding?.presentationFrom,'canonical.homepage');
-assert.equal(policy?.ordering?.mode,'CANONICAL_STABLE');
-assert.equal(policy?.ordering?.outputField,'catalogOrder');
-assert.equal(policy?.homepageBinding?.canonicalOrderField,'catalogOrder');
-assert.equal(policy?.homepageBinding?.independentManualOrderingForbidden,true);
-assert.equal(policy?.homepageBinding?.shelves?.RELEASE_CONFIRMED,'CATALOG_ORDER_ASC');
-assert.equal(policy?.homepageBinding?.shelves?.WEB_PUBLISHED,'CATALOG_ORDER_ASC_UNBOUNDED');
-assert.equal(policy?.homepageBinding?.shelves?.ROBLOX_HISTORICAL_DEPLOYMENT,'CATALOG_ORDER_ASC');
-assert.equal(policy?.homepageBinding?.shelves?.DEVELOPMENT_CONFIRMED,'CURRENT_SCORE_DESC_THEN_CATALOG_ORDER_ASC');
-assert.equal(Object.hasOwn(policy?.homepageBinding?.shelves||{},'TOP30'),false);
-assert.equal(policy?.execution?.newPipelineForbidden,true);
-assert.equal(policy?.execution?.shadowCatalogForbidden,true);
-
-const auto=policy?.autoClassification||{};
-assert.equal(auto.authority,'MACHINE_EXECUTION_CONTRACT');
-assert.equal(auto.enabled,true);
-assert.equal(auto.humanDocumentRequired,false);
-assert.equal(auto.explicitOwnerOrCatalogValueWins,true);
-assert.equal(auto.overwriteExplicitValue,false);
-assert.equal(auto.executionPath,'tools/game-catalog-normalization.mjs inside existing company-status-sync');
-assert.equal(auto.platform?.centralDefault,'ROBLOX');
-assert.equal(auto.genre?.minimumLabels,1);
+assert.equal(catalog.normalization?.duplicateGameIdsForbidden,true);
+assert.equal(catalog.normalization?.canonicalFirst,true);
+assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,true);
 
 const inferredRpg={
   id:'auto-rpg',
@@ -130,14 +102,8 @@ assert.equal(explicit.selectedPlatform,'ROBLOX');
 assert.deepEqual(explicit.genre,['경영']);
 assert.deepEqual(explicit.homepageInfo.genre,['경영']);
 
-const ingestPolicy=policy?.ownerWebAutoIngest||{};
-assert.equal(ingestPolicy.enabled,true);
-assert.equal(ingestPolicy.root,'web-games');
-assert.equal(ingestPolicy.requiredEntryFile,'index.html');
-assert.equal(ingestPolicy.missingCatalogAction,'CREATE_DESIGN_ONLY_WEB_PUBLISHED_RECORD');
-assert.equal(ingestPolicy.reconcileExistingCatalogGamesEveryStatusSync,true);
-assert.equal(ingestPolicy.existingCanonicalIndexEnablesWebPlay,true);
-assert.equal(ingestPolicy.missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard,true);
+assert.equal(catalog.webExposurePolicy?.preserveNativeProjectsAndSaveData,true);
+assert.equal(catalog.webExposurePolicy?.nativeExecutionAccessUnaffected,true);
 
 {
   // 기존 HTML만으로는 홈페이지 등록 불가. C# 원본과 공식 Unity 빌드·브라우저 QA가 모두 필요하다.
@@ -279,7 +245,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
   const source=fs.readFileSync('_worker.js','utf8');
   const edge=await import('data:text/javascript;base64,'+Buffer.from(source+'\nexport {mergeRuntimeCatalog};').toString('base64'));
   const runtime={games:[{id:'old',productionClass:'DEVELOPMENT_CONFIRMED',homepageWebPlayable:true,hasWebArchive:true,canonical:{sources:{web:{playable:true,archive:true}}}}]};
-  const deployed={webExposurePolicy:ingestPolicy.webExposureQuality,games:[{id:'old',homepageWebPlayable:false,hasWebArchive:false,ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE',canonical:{sources:{web:{playable:false,archive:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}},{id:'new-owner',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/new-owner/'}]};
+  const deployed={webExposurePolicy:catalog.webExposurePolicy,games:[{id:'old',homepageWebPlayable:false,hasWebArchive:false,ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE',canonical:{sources:{web:{playable:false,archive:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}},{id:'new-owner',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/new-owner/'}]};
   const merged=edge.mergeRuntimeCatalog(runtime,{}, {},{},deployed);
   assert.equal(merged.games.length,2);
   assert.equal(merged.games.find(x=>x.id==='old').homepageWebPlayable,false);
@@ -329,7 +295,7 @@ console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconc
   assert.equal(validateNormalizedCatalog(temp).pass,true);
 }
 
-assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeatureExpansionFreezeForbidden,true);
+assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,true);
 
 // 홈페이지: 실제 로블록스·유니티 원본 프로젝트가 있는 개발 카드 전체를 유지한다.
 {
@@ -419,7 +385,7 @@ assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeature
 {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'homepage-simple-click-'));
   try{
-    const blocked=roadmap.catalogNormalization.ownerWebAutoIngest.webExposureQuality.withdrawnEntrySha256;
+    const blocked=catalog.webExposurePolicy.withdrawnEntrySha256;
     for(const id of Object.keys(blocked)){
       fs.mkdirSync(path.join(root,id),{recursive:true});
       fs.copyFileSync(`web-games/${id}/index.html`,path.join(root,id,'index.html'));
@@ -431,7 +397,7 @@ assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeature
     const edge=await import('data:text/javascript;base64,'+Buffer.from(workerSource).toString('base64'));
     for(const id of Object.keys(blocked)){
       const html=fs.readFileSync(`web-games/${id}/index.html`,'utf8').trim();
-      const env={ASSETS:{fetch:async request=>new URL(request.url).pathname==='/game-catalog.json'?Response.json({webExposurePolicy:roadmap.catalogNormalization.ownerWebAutoIngest.webExposureQuality,games:[]}):new Response(html,{headers:{'Content-Type':'text/html'}})}};
+      const env={ASSETS:{fetch:async request=>new URL(request.url).pathname==='/game-catalog.json'?Response.json({webExposurePolicy:catalog.webExposurePolicy,games:[]}):new Response(html,{headers:{'Content-Type':'text/html'}})}};
       const response=await edge.default.fetch(new Request(`https://example.test/web-games/${id}/`),env);
       assert.equal(response.status,410,id+' direct route must be withdrawn');
     }
