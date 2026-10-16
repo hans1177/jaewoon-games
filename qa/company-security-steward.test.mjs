@@ -76,6 +76,32 @@ test('external instruction injection signal is treated as untrusted security inp
   assert.equal(hits[0].severity,'HIGH');
 });
 
+test('semantic delta suppresses redundant policy word reviews without removing authority security review',()=>{
+  const file='company-learning/platform-release-roadmap.json';
+  const patch=[
+    'diff --git a/'+file+' b/'+file,
+    '--- a/'+file,
+    '+++ b/'+file,
+    '@@ -1 +1 @@',
+    '+  "authority": "OWNER_DIRECTIVE_2026-10-17"',
+    ''
+  ].join('\\n');
+  const unchanged={authority:'OWNER_DIRECTIVE_2026-10-17',version:2,settings:{workerSelfAcceptance:false}};
+  const snapshot={before:JSON.stringify(unchanged),after:JSON.stringify(unchanged)};
+  const ignored=scanSecurityPatch({patch,changedFiles:[file],centralPolicySnapshots:{[file]:snapshot}});
+  assert.equal(ignored.verdict,'PASS','an unchanged authority string is not a security mutation');
+  assert.equal(ignored.reviewFindings,0);
+  const actual=scanSecurityPatch({patch,changedFiles:[file],centralPolicySnapshots:{[file]:{
+    before:JSON.stringify(unchanged),after:JSON.stringify({...unchanged,settings:{workerSelfAcceptance:true}})
+  }}});
+  assert.equal(actual.verdict,'REVIEW');
+  assert.equal(actual.findings.filter(row=>row.rule==='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW').length,1,'one structural review per real sensitive delta');
+  const missing=scanSecurityPatch({patch,changedFiles:[file]});
+  assert.equal(missing.verdict,'REVIEW','missing trusted snapshot remains fail-closed');
+  const attack=scanSecurityPatch({patch:patch+'+git push origin HEAD:main\\n',changedFiles:[file],centralPolicySnapshots:{[file]:snapshot}});
+  assert.equal(attack.verdict,'QUARANTINE','removing redundant review cannot suppress malicious writes');
+});
+
 test('central authority mutation requires direct review but is not attack quarantine',()=>{
   const patch='diff --git a/company-learning/company-architecture-map.json b/company-learning/company-architecture-map.json\n+++ b/company-learning/company-architecture-map.json\n@@ -1,0 +2 @@\n+  "authority": "OWNER_DIRECTIVE_2026-09-19"\n';
   const report=scanSecurityPatch({patch,changedFiles:['company-learning/company-architecture-map.json']});
