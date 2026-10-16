@@ -1674,6 +1674,7 @@ jobs:
           VARIANT: ${{ matrix.variant }}
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           VIBE2_LOCAL_MODEL: ${{ steps.order.outputs.local_model }}
           VIBE2_DCC_AUTHORING_EVIDENCE_FILE: /tmp/vibe2-dcc-authoring-evidence.json
         shell: bash
@@ -1705,13 +1706,12 @@ jobs:
             echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_LOCAL'
             echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
           else
-            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=LOCAL_OLLAMA'
-            command -v ollama >/dev/null
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
-            ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"
-            echo "VIBE2_LOCAL_MODEL_ACTIVE=$VIBE2_LOCAL_MODEL"
-            echo "VIBE2_HERO_ASSET_MODEL_ACTIVE=${{ steps.order.outputs.hero_model_requested }}"
-            echo 'VIBE2_LOCAL_MODEL_SOURCE=PREPARED_ONCE'
+            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=GEMINI_API'
+            if [ -z "${GEMINI_API_KEY:-}" ]; then
+              echo 'GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK' >&2
+              exit 1
+            fi
+            echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
           fi
 
           if [ "$TARGET" = 'roblox' ]; then
