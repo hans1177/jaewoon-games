@@ -87,7 +87,6 @@ env:
   VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '128'
   VIBE2_GAME_PRIMARY_WORK_BUDGET_MINUTES: '60'
   VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'
-  OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API
   VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'
@@ -1378,10 +1377,12 @@ jobs:
         run: |
           set -euo pipefail
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
-          command -v ollama >/dev/null
-          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
-          ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"
-          echo 'VIBE2_PRACTICE_OLLAMA_RUNTIME=PREPARED_ONCE'
+          echo 'VIBE2_PRACTICE_PROVIDER=EXTERNAL_ONLY'
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "GEMINI_API"
+          if [ -z "${GEMINI_API_KEY:-}" ]; then
+            echo 'GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK' >&2
+            exit 1
+          fi
           practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
           if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.robloxPracticeDrill?0:1)"; then
             luau_dir="$RUNNER_TEMP/vibe2-luau-practice"
