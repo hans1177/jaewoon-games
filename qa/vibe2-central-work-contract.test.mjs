@@ -631,3 +631,12 @@ test('default work contract never invents a valid central policy snapshot', () =
   assert.match(source,/snapshot\|\|\{required:false,present:false,valid:false/);
   assert.doesNotMatch(source,/snapshot\|\|\{required:false,present:false,valid:true/);
 });
+
+test('invalid optional contract cannot bypass freshness validation', () => {
+  const contract=compileVibeCentralWorkContract({});
+  assert.equal(contract.validAtCompile,false);
+  assert.throws(
+    () => assertCompiledWorkContractFresh({contract,phase:'PRE_WORK'}),
+    /CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_WORK/
+  );
+});
