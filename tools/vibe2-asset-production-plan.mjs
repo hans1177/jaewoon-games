@@ -1614,7 +1614,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         });
       }else{
         const unresolved=unresolvedFamilies.has(family)||roles.length===0;
-        pushAction({action:unresolved?'HOLD':'AUTHOR',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
+        pushAction({action:'HOLD',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
       }
     }
   }
@@ -4537,7 +4537,7 @@ export function buildVibeAssetProductionPlan({
     autonomousNextAction:currentExecutionPhase==='QUALITY_UP_1000'
       ?freeze({action:'IMPROVE',phase:'QUALITY_UP_1000',item:activeQualityActions[0]||null})
       :currentExecutionPhase==='VOLUME_UP'
-        ?freeze({action:'AUTHOR',phase:'VOLUME_UP',item:activeNextVolumeActions[0]||null})
+        ?freeze({action:'ADAPT',phase:'VOLUME_UP',item:activeNextVolumeActions[0]||null,existingAssetOnly:true,newAuthoringForbidden:true})
         :freeze({action:'HOLD',phase:'HOLD',reason:'NO_CURRENT_GAME_DEMAND_OR_SAFE_INDEPENDENT_WORK'}),
     autonomousContinuationRequired:true,
     ownerPresenceRequired:false,
@@ -4836,10 +4836,12 @@ export function buildVibeAssetProductionPlan({
       })
       :[]
   );
-  const primaryVolumeAction=effectiveNextVolumeActions[0]||null;
-  const primaryVolumeDecision=primaryVolumeAction&&(Number(primaryVolumeAction.internalReuseCandidateCount||0)>0||primaryVolumeAction.freeSourceAvailable===true)
-    ?'ADAPT'
-    :'AUTHOR';
+  // [검증·적용 전용] 바이브는 기존 실물 에셋을 재사용한다. 자동 신규 모델 제작을 예약하지 않는다.
+  const applicableVolumeActions=effectiveNextVolumeActions.filter(row=>
+    Number(row.internalReuseCandidateCount||0)>0||row.freeSourceAvailable===true
+  );
+  const primaryVolumeAction=applicableVolumeActions[0]||null;
+  const primaryVolumeDecision=primaryVolumeAction?'ADAPT':'HOLD';
   const effectiveAutonomousNextAction=internalLibraryEvolution.nextQualityActions.length>0&&!taskLocalReferenceVolumeActions.length
     ?freeze({
       kind:'ASSET_SUPPLY_DECISION',
@@ -4851,7 +4853,7 @@ export function buildVibeAssetProductionPlan({
       item:internalLibraryEvolution.nextQualityActions[0]||null,
       continueWithoutHuman:true
     })
-    :effectiveNextVolumeActions.length
+    :primaryVolumeAction
       ?freeze({
         kind:'ASSET_SUPPLY_DECISION',
         action:primaryVolumeDecision,
@@ -4870,9 +4872,9 @@ export function buildVibeAssetProductionPlan({
   const effectiveInternalLibraryEvolution=freeze({
     ...internalLibraryEvolution,
     phase:effectiveAutonomousNextAction.phase,
-    nextVolumeActions:effectiveNextVolumeActions,
-    activeNextVolumeAction:effectiveNextVolumeActions[0]||null,
-    activeDetailImprovement:internalLibraryEvolution.nextQualityActions.find(row=>row.assetId===effectiveNextVolumeActions[0]?.detailImprovementAssetId)||null,
+    nextVolumeActions:freezeList(applicableVolumeActions),
+    activeNextVolumeAction:primaryVolumeAction,
+    activeDetailImprovement:internalLibraryEvolution.nextQualityActions.find(row=>row.assetId===primaryVolumeAction?.detailImprovementAssetId)||null,
     autonomousNextAction:effectiveAutonomousNextAction,
     worklistSource:taskLocalReferenceVolumeActions.length
       ?'TASK_REFERENCE_IMAGE_OVERLAY_ON_'+internalLibraryEvolution.worklistSource
