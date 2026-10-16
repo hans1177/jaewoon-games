@@ -1389,7 +1389,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     roleEvidenceById.set(clean(asset.id),evidence);
     return evidence;
   };
-  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map();
+  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableCandidatesByFamily=new Map();
   let intendedOnlyCount=0;
   // The role gate above rejects incompatible candidates; among eligible assets,
   // a higher audited quality score must win regardless of matched-role count.
@@ -1418,6 +1418,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     if((asset?.intendedConsumerGameIds||[]).map(clean).includes(id))intendedOnlyCount+=1;
     if(family&&requiredFamilySet.has(family)&&assetSupplyCandidateAllowed(asset,target)){
       if(!roleFit.verifiedRoleMatch){if(!roleFit.requestedRoles.length||!clean(asset.role||asset.subfamily))unresolvedFamilies.add(family);continue;}
+      const eligible=reusableCandidatesByFamily.get(family)||[];
+      eligible.push(asset);reusableCandidatesByFamily.set(family,eligible);
       const currentBest=bestReusableByFamily.get(family);
       if(betterReusable(asset,currentBest))bestReusableByFamily.set(family,asset);
     }
@@ -1472,6 +1474,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           allowedAxes:freezeList(pbr?['PBR_BASE_COLOR_TINT','PBR_ROUGHNESS','PBR_METALNESS_WHEN_PHYSICAL','NORMAL_STRENGTH','CONTEXTUAL_LIGHT_WEAR']:[]),
           availableSemanticAtoms:freezeList(pbr?registry?.baseMaterialLibrary?.families?.MATERIAL||[]:[]),
           paletteMustFollowGameStyleLock:true,originalAssetImmutable:true,
+          newOriginalAssetAuthoringForbidden:true,materialAndSurfaceOnlyAdaptation:true,
+          geometryAlterationForbidden:true,rigAndAnimationAlterationForbidden:true,
           geometryRigAndGameplaySemanticsPreserved:true,mobileTextureMeshBudgetRequired:true
         }),
         assetization:freeze({
@@ -1481,7 +1485,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           nativeSourceLicenseField:modelReady?'task.assetAuthoring.sourceLicense':null,
           nativeSourceCreditField:modelReady?'task.assetAuthoring.sourceCredit':null,
           sourceInspectionRequired:true,sourceAndDerivativeSha256Required:true,
-          originalAndTransformHistoryRequired:true,
+          existingLicensedBaseRequired:true,newOriginalAssetAuthoringForbidden:true,
+          materialOrPlatformConversionOnly:true,originalAndTransformHistoryRequired:true,
           registryWriteOwner:'EXISTING_GRAPHICS_PRODUCTION_SYNC',
           gameSourceWorkerMayEditCentralRegistry:false,
           candidateState:'PREPARED_SOURCE_ONLY',productionVerified:false,runtimeVerified:false,
@@ -1512,10 +1517,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       // 일반 요청은 신규 사용 후보를 허용하지만 기존 역할 교체는 등록된 역할 근거가 필요하다.
       const currentRoles=unique([currentAsset?.role,currentAsset?.subfamily,currentAsset?.atomId,currentAsset?.factory])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value!==family.toLowerCase());
-      const improved=assets.filter(asset=>
-        clean(asset.family||asset.category).toUpperCase()===family
-        &&!currentAssetIds.has(clean(asset.id))&&assetSupplyCandidateAllowed(asset,target)
-        &&roleEvidenceById.get(clean(asset.id))?.verifiedRoleMatch===true
+      const improved=(reusableCandidatesByFamily.get(family)||[]).filter(asset=>
+        roleEvidenceById.get(clean(asset.id))?.verifiedRoleMatch===true
         &&unique([asset.role,asset.subfamily,asset.atomId,asset.factory])
           .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))
           .some(value=>currentRoles.includes(value))
@@ -1591,6 +1594,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
             allowedAxes:freezeList(pbrApplicable?['PBR_BASE_COLOR_TINT','PBR_ROUGHNESS','PBR_METALNESS_WHEN_PHYSICAL','NORMAL_STRENGTH','CONTEXTUAL_LIGHT_WEAR']:[]),
             availableSemanticAtoms:freezeList(pbrApplicable?(registry?.baseMaterialLibrary?.families?.MATERIAL||[]):[]),
             paletteMustFollowGameStyleLock:true,originalAssetImmutable:true,
+            newOriginalAssetAuthoringForbidden:true,materialAndSurfaceOnlyAdaptation:true,
+            geometryAlterationForbidden:true,rigAndAnimationAlterationForbidden:true,
             derivedAssetPathRequired:true,derivedParentSourceId:selected.sourceId,
             sourceAndDerivativeSha256Required:true,
             geometryRigAndGameplaySemanticsPreserved:true,mobileTextureMeshBudgetRequired:true,
@@ -1599,6 +1604,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           assetization:freeze({
             mode:'EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY',
             registerOnlyAfterActualBinaryAndLicenseAndStaticQa:true,
+            existingLicensedBaseRequired:true,newOriginalAssetAuthoringForbidden:true,
+            materialOrPlatformConversionOnly:true,
             requiredFields:freezeList(['id','family','path','license','sourceUrl','sourceHash','parentSourceId','transformHistory','platformVariants']),
             nativeDccScript:spatial?'assets/native-authoring/build-game-visual.py':null,
             nativeSourceModelField:spatial?'task.assetAuthoring.sourceModel':null,
