@@ -3,21 +3,18 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 
-const machineSource='company-learning/platform-release-roadmap.json';
-const machinePolicy=JSON.parse(fs.readFileSync(machineSource,'utf8'));
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const releaseCycle=fs.readFileSync('tools/company-release-production-cycle.mjs','utf8');
 const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const roles=['planning','graphics','development','qa','audio'];
 
-test('one canonical machine policy source owns class design meeting and release rules',()=>{
-  assert.equal(directive.policyDocument,machineSource);
-  assert.equal(directive.machineSourceOfTruth,machineSource);
-  assert.equal(directive.authority,'MACHINE_EXECUTION_CONTRACT');
-  assert.equal(machinePolicy.machineSourceOfTruth,machineSource);
-  assert.equal(machinePolicy.authority,'MACHINE_EXECUTION_CONTRACT');
-  assert.equal(machinePolicy.humanDocumentRequired,false);
+test('production evidence and release verification remain required without retired policy',()=>{
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.aiMayInventValidationPass,false);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.platformSpecificValidationRequired,true);
+  assert.equal(directive.classes.RELEASE_CONFIRMED.aiMayInventIndependentQaPass,false);
+  assert.equal(directive.classes.RELEASE_CONFIRMED.currentBuildEvidenceBindingRequired,true);
+  assert.match(releaseCycle,/FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS/);
 });
 
 test('GAME_SEED mirrors the current selected-platform policy while preserving legacy input compatibility',()=>{
@@ -117,12 +114,6 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary while assigned e
   assert.equal(directive.ai.vibe2.implementationOwner,true);
   assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,false);
   assert.equal(directive.ai.vibe2.ownsInternalPlaytestRepair,true);
-  const authority=machinePolicy.developmentLifecycleMachine?.gameDevelopmentAuthority||{};
-  assert.equal(authority.implementationOwner,'VIBE2_VIBE3_PRIMARY_WITH_ASSIGNED_EXTERNAL_AI_COLLABORATORS');
-  assert.equal(authority.nonVibeAiIsGameDevelopmentOwner,false);
-  assert.equal(authority.nonVibeAiGameSourceWriteMode,'EXPLICIT_RESPONSIBLE_FILES_ISOLATED_CANDIDATE_BRANCH_ONLY');
-  assert.equal(authority.externalAiSelfAcceptance,false);
-  assert.equal(authority.externalAiDirectMainWrite,false);
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
 });
 
@@ -148,15 +139,6 @@ test('DEVELOPMENT_CONFIRMED permits independent Roblox and Unity Web 3D developm
   assert.equal(dev.unityWebValidationSurface.upperPlatformReadinessGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
   assert.equal(dev.unityWebValidationSurface.missingOrFailedBuildDoesNotBlockNative,true);
   for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT','UNITY_WEBGL_BUILD','UNITY_WEB_ACTUAL_BROWSER_PLAY','UNITY_WEB_INDEPENDENT_QA','UNITY_WEB_REGRESSION','UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION'])assert.ok(dev.requiredFlow.includes(token),token);
-  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,false);
-  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
-  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.upperPlatformAdmission,'MINIMUM_DESIGN_READY');
-  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.existingNativeDevelopmentGrandfathered,true);
-  assert.equal(machinePolicy.directNativeDualPlatformDevelopment.upperPlatformAdmissionMigration.newNativeDevelopmentStartRequiresUnityWebReadiness,false);
-  assert.equal(machinePolicy.changeRecord.ownerRobloxUnityWebOnly20261009.robloxRequiresUnityWebReadiness,false);
-  assert.deepEqual(machinePolicy.changeRecord.ownerRobloxUnityWebOnly20261009.activeTargets,['ROBLOX','UNITY_WEB']);
-  assert.equal(machinePolicy.changeRecord.ownerRobloxUnityWebOnly20261009.unityWebRequiresActualBrowserIndependentQaAndRegression,true);
-  assert.deepEqual(machinePolicy.directNativeDualPlatformDevelopment.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
   assert.doesNotMatch(JSON.stringify(dev),/ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
 });
 test('RELEASE_CONFIRMED targets the project selected platform',()=>{
@@ -203,10 +185,6 @@ test('Roblox alone is active while both Unity targets and UEFN are owner-held',(
   assert.equal(strategy.UNITY.ownerExplicitResumeRequired,true);
   assert.equal(strategy.FORTNITE_UEFN.developmentAlwaysAllowed,false);
   assert.equal(strategy.FORTNITE_UEFN.role,'DEVELOPMENT_PAUSED_SUPPORTED_PLATFORM');
-  assert.equal(machinePolicy.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
-  assert.equal(machinePolicy.developmentAccess.UNITY_ANDROID,'OWNER_HOLD');
-  assert.equal(machinePolicy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
-  assert.deepEqual(machinePolicy.changeRecord.ownerRobloxUnityWebOnly20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
 });
 test('artbook authorship and provenance rules remain unchanged',()=>{
   assert.equal(directive.ai.artbookEditor.singleEditor,true);

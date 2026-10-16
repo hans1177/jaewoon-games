@@ -10,8 +10,7 @@ import { selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web
 
 const ROOT=process.cwd();
 const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'game-catalog.json'),'utf8'));
-const policy=JSON.parse(fs.readFileSync(path.join(ROOT,'company-learning/platform-release-roadmap.json'),'utf8'));
-const gameIds=selectDevelopmentWebValidationGames({catalog,policy})
+const gameIds=selectDevelopmentWebValidationGames({catalog})
   .map(game=>String(game.id||'').trim())
   .filter(Boolean)
   .sort();

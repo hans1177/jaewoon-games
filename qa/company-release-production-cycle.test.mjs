@@ -6,7 +6,6 @@ import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (relative) => fs.readFileSync(path.join(repoRoot, relative), 'utf8');
-const roadmap = JSON.parse(read('company-learning/platform-release-roadmap.json'));
 const runner = read('tools/company-release-production-cycle.mjs');
 
 function assertOrdered(text, tokens, label) {
@@ -19,22 +18,15 @@ function assertOrdered(text, tokens, label) {
   }
 }
 
-test('central native release policy keeps runtime QA regression and public exposure fail closed', () => {
-  const direct=roadmap.directNativeDualPlatformDevelopment;
-  const gate=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate;
-  assert.equal(direct.status,'OWNER_DIRECT_LOCKED');
-  assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
-  assert.equal(direct.platformSpecificIndependentQaRequired,true);
-  assert.equal(direct.platformSpecificRegressionRequired,true);
-  assert.equal(direct.externalRelease.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence,true);
-  assert.equal(gate.internalRelease.foundationValidationRequired,true);
-  assert.equal(gate.internalRelease.actualRuntimeFoundationF1ThroughF4Required,true);
-  assert.equal(gate.secondGate.requiredBeforeExternalPublicRelease,true);
-  for(const required of ['NATIVE_RUNTIME_PASS','INDEPENDENT_QA_PASS','REGRESSION_PASS','PLATFORM_ADAPTATION_RUNTIME_EVIDENCE_PASS']){
-    assert.ok(gate.secondGate.commonRequirements.includes(required),required);
-  }
-  assert.equal(gate.publicExposure.explicitExternalPublicationEvidenceRequiredAfterSecondGate,true);
-  assert.equal(gate.publicExposure.secondGatePassAloneDoesNotClaimPublication,true);
+test('native release evidence and public exposure remain fail closed in actual provider', () => {
+  for (const required of [
+    'FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_RUNTIME_PASS',
+    'FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS',
+    'currentBuildEvidenceBindingRequired:true',
+    'FINAL_DEPARTMENT_REVIEW_BUILD_RUNTIME_QA_BINDING=PASS',
+    'RELEASE_BLOCKED',
+    'RELEASE_READY'
+  ]) assert.ok(runner.includes(required),`release evidence guard missing: ${required}`);
 });
 
 test('current Unity provider binds implementation/build evidence to current Unity source', () => {
