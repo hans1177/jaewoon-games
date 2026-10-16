@@ -2823,14 +2823,29 @@ task.spawn(function()
             local destination = enemy.Home + Vector3.new(math.cos(angle) * radius, 0, math.sin(angle) * radius)
             local planar = Vector3.new(destination.X - enemy.Root.Position.X, 0,
               destination.Z - enemy.Root.Position.Z)
-            enemy.NextPatrolAt = now + 3 + (step % 3)
-            if planar.Magnitude > 0.5 then
+            -- 이동 후 잠깐 쉬고 다음 목표로 간다. 큰 간격의 1회 이동만 반복하지 않는다.
+            enemy.PatrolDestination = destination
+            enemy.NextPatrolAt = now + 0.7
+          end
+          if enemy.Model:GetAttribute("IsRaidBoss") ~= true
+              and enemy.PatrolDestination and now >= (enemy.NextPatrolAt or 0) then
+            local destination = enemy.PatrolDestination
+            local planar = Vector3.new(destination.X - enemy.Root.Position.X, 0,
+              destination.Z - enemy.Root.Position.Z)
+            if planar.Magnitude > 0.7 then
               local nextPosition = enemy.Root.Position + planar.Unit * math.min(1.1, planar.Magnitude)
               if (Vector3.new(nextPosition.X - enemy.Home.X, 0,
                   nextPosition.Z - enemy.Home.Z)).Magnitude <= 16 then
                 civWalkModel(enemy.Model, CFrame.lookAt(nextPosition,
                   Vector3.new(destination.X, nextPosition.Y, destination.Z)), 0.25)
+                enemy.NextPatrolAt = now + 0.35
+              else
+                enemy.PatrolDestination = nil
+                enemy.NextPatrolAt = now + 3
               end
+            else
+              enemy.PatrolDestination = nil
+              enemy.NextPatrolAt = now + 2 + (enemy.PatrolStep % 3)
             end
           end
           end -- ReturnHome / Patrol
