@@ -2152,10 +2152,10 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         if defeated or stunned then amplitude = 0 end
         -- 몬스터 공격 예고·기절·사망을 서로 다른 실루엣으로 표시한다.
         -- 판정과 이동은 기존 서버 AI가 그대로 담당한다.
-        local motionClock = creatureMotionPhase * (moving and 8 or 2.1)
-        local swing = math.sin(motionClock) * amplitude
+        -- 기본 파츠형 몬스터도 가져온 리그와 동일한 누적 보행 위상을 쓴다.
+        local swing = math.sin(gaitPhase) * amplitude
         if defeated then
-          swing = 0.9
+          swing = 0.9 * deathProgress
         elseif reactingToHit then
           swing = -0.5 * (1 - hitElapsed / 0.28)
         elseif stunned then
@@ -2236,7 +2236,11 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             local base = state.base
             local leg = name == "Left Leg" or name == "Right Leg"
             local angle = leg and -sign * swing or sign * swing
-            part.CFrame = rootPart.CFrame * base * CFrame.Angles(angle, 0, 0)
+            -- 이동 거리와 연동해 발을 들어 올리고, 사망 시 두 다리를 접는다.
+            local footLift = leg and moving and not defeated and not preparing
+              and math.max(0, math.sin(gaitPhase * sign)) * 0.28 or 0
+            if defeated and leg then angle = sign * 0.65 * deathProgress end
+            part.CFrame = rootPart.CFrame * base * CFrame.new(0, footLift, 0) * CFrame.Angles(angle, 0, 0)
           end
         end
       end
