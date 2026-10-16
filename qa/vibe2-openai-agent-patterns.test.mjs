@@ -124,6 +124,8 @@ test('all 17 existing algorithms are discoverable without adding a scheduler or 
   assert.equal(plan.executed,false);
   assert.equal(plan.qaPassed,false);
   assert.equal(plan.autoMerge,false);
+  const all=selectVibeExistingAlgorithms({task:{goal:'오류 dependency 반복 worker learning duplicate asset visual priority self-improvement isolation UI performance'}});
+  assert.equal(all.recommendations.length,17,'all relevant existing algorithms remain available to a multi-domain task');
   const p=planVibeAgentHandoff({task:{id:'ui-1',gameId:'demo',goal:'로비 UI 최적화'},route:'text-source-worker',
     responsibleFiles:['roblox-games/demo/client/Menu.client.luau']});
   assert.match(vibeAgentHandoffGuidance(p),/existing-algorithms=/);
