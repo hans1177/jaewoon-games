@@ -250,3 +250,14 @@ test('all games flag unverified native character and NPC bindings for existing v
   const verified=auditVibeRuntimeVisualEvidence({...base,primaryActors:[{id:'VillageChief',presentation:'native-model',nativeActorBindingState:'VERIFIED'}]});
   assert.deepEqual([...verified.actorBindingFailures],[]);
 });
+
+test('final visual review rejects leftover hero placeholders and actor fallbacks',()=>{
+  const revision='e'.repeat(40);
+  const base={stage:'FINAL',candidateRevision:revision,captures:captures(revision)};
+  const hero=auditVibeRuntimeVisualEvidence({...base,heroAssets:[{id:'hero',presentation:'primitive-placeholder'}]});
+  assert.equal(hero.pass,false);
+  assert.ok(hero.reasons.includes('hero-asset-placeholder-or-unmodified-sample'));
+  const fallback=auditVibeRuntimeVisualEvidence({...base,primaryActors:[{id:'player',presentation:'native-model',fallbackRendered:true}]});
+  assert.equal(fallback.pass,false);
+  assert.ok(fallback.reasons.includes('final-primary-actor-fallback-or-sample'));
+});
