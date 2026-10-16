@@ -5044,7 +5044,7 @@ test('downloaded shared CC0 originals auto-connect to game sourcing without bypa
     const gamePrompt=buildPrompt({target:'roblox',gameId:'village-game',goal:'house building',
       assetProduction:{assetSupplySummary:result,nativeAuthoringExecution:{enabled:false}}},
       {files:[{path:'server/Game.server.luau',content:'-- existing game source'}]});
-    assert.match(gamePrompt,/"sourceArchive":"assets\\/external\\/simple-rpg\\/priority-v1\\/medieval-house-a.zip"/);
+    assert.ok(gamePrompt.includes('"sourceArchive":"assets/external/simple-rpg/priority-v1/medieval-house-a.zip"'));
     assert.match(gamePrompt,/"sourceArchiveSha256":"[0-9a-f]{64}"/);
     assert.match(gamePrompt,/"sourceArchiveAcquired":true/);
     assert.match(gamePrompt,/"nativeBuildBlockedByUnacquiredSource":false/);
