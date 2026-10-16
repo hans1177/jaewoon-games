@@ -625,3 +625,9 @@ test('optional missing canonical source cannot masquerade as valid snapshot', ()
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
+
+test('default work contract never invents a valid central policy snapshot', () => {
+  const source=fs.readFileSync(new URL('../tools/vibe2-central-work-contract.mjs',import.meta.url),'utf8');
+  assert.match(source,/snapshot\|\|\{required:false,present:false,valid:false/);
+  assert.doesNotMatch(source,/snapshot\|\|\{required:false,present:false,valid:true/);
+});
