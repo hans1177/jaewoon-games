@@ -36,6 +36,8 @@ test('remaining server geometry is invisible physics and verified external art o
   assert.match(server, /part\.CastShadow = false/);
   assert.match(server, /part\.CanCollide = collide ~= false/);
   assert.doesNotMatch(server, /Instance\.new\("BillboardGui"\)|DefeatedEnemyLootEffect/);
+  assert.equal((server.match(/\.Style = Enum\.ProximityPromptStyle\.Custom/g) || []).length, 3);
+  assert.doesNotMatch(server, /\.Style = Enum\.ProximityPromptStyle\.Default/);
   assert.match(server, /visualTemplate:GetAttribute\("CuratedExternalAsset"\) == true\s+and \(tonumber\(visualTemplate:GetAttribute\("VerifiedRobloxAssetId"\)\) or 0\) > 0/);
   assert.match(client, /enemy:GetAttribute\("CreatureAssetSource"\) == "StudioImported"/);
 });
