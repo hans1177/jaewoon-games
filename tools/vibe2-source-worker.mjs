@@ -4436,7 +4436,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
         nativeBuildRequiresRegisteredAssetAndRealSource:true,
         sourceOwnership:'EXISTING_GRAPHICS_PRODUCTION',
         selectedActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
-          .filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'
+          .filter(row=>row.action==='ACQUIRE_ADAPT'
             ||row.action==='ADAPT'&&(row.libraryReuse?.derivativeCandidateReady===true
               ||row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
                 &&row.automaticReplacementAuthorized===true
@@ -4487,6 +4487,7 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
           })))
       })
     }),
+    'Only inspect, verify and apply existing company/common or downloaded license-cleared assets. Do not invent or generate new meshes, characters, artwork, props, audio, algorithms, or asset files. Inspect the sourceArchive bytes, SHA256, contained file types, licensing and model rig/animation before extraction and platform conversion. Reuse the existing conversion responsibility and bind the verified asset into the game consumer, preserving gameplay, save and networking. If the archive has no matching safe file, leave that role pending, never substitute an invented asset. Runtime, mobile and import QA remain mandatory before marking applied.',
     'Apply in the existing consumer; actual runtime QA remains required.',
     '[ASSET IMPLEMENTATION CONTRACT END]'
   ].join('\n'):'';
@@ -4494,7 +4495,9 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     '[PRECISION PRODUCTION CHAIN BEGIN]',
     JSON.stringify({mode:precisionProduction.mode,application:precisionProduction.application,sequence:precisionProduction.sequence,authoringOutputsRequired:precisionProduction.authoringOutputsRequired,continuation:precisionProduction.continuation,qualityDNA:precisionProduction.qualityDNA?.commonRules}),
     'Asset-library authoring owns reusable source assets. The current game source owner owns target conversion/import AND binding into the existing render/scene/material/rig/motion consumer in the same responsibility. Existing target runtime QA owns verification. Reuse compatible native variants; conversion must preserve source and artifact identity. A local GLB path is not a Roblox uploaded asset ID. Keep required permissions/import gaps explicit. Do not create a conversion queue, duplicate graphics root, wrapper, or parallel owner for the same file. Prepared/exported/registered assets are not applied assets. Missing source or tooling returns the affected scope to its existing task; do not restart unrelated production.',
-    'Continue through INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY within the current task whenever the responsible source and authoring capability are available. Inspection and repair planning are not terminal outputs. Produce or rebuild editable source plus the target-native derivative, then bind it directly into the existing responsible game system. Build detail in four readable scales: GAME_CAMERA silhouette/function, MID_RANGE structure/parts, CLOSEUP construction/material identity, CONTACT joints/grips/doors/footing/interaction. Every micro-detail needs a functional, construction, contact, weathering, damage, or cultural cause; random clutter/noise is not detail. Do not create a shadow asset path, wrapper binding, or duplicate responsibility. If the authoring tool is genuinely unavailable, leave the exact AUTHOR stage pending with required source/output contract and do not claim the asset was produced.',
+    order?.assetProduction
+      ?'For asset work use INSPECT -> VERIFY_ORIGINAL -> EXTRACT_OR_CONVERT_EXISTING -> APPLY -> RUNTIME_QA only. Never produce new source models or speculative content. Existing conversions preserve the exact original and provenance. If no safe compatible original is available, report HOLD and continue with other verifiable assets. Do not mark game application until real import, binding and runtime evidence exist.'
+      :'Continue through INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY within the current task whenever the responsible source and authoring capability are available. Inspection and repair planning are not terminal outputs. Produce or rebuild editable source plus the target-native derivative, then bind it directly into the existing responsible game system. Build detail in four readable scales: GAME_CAMERA silhouette/function, MID_RANGE structure/parts, CLOSEUP construction/material identity, CONTACT joints/grips/doors/footing/interaction. Every micro-detail needs a functional, construction, contact, weathering, damage, or cultural cause; random clutter/noise is not detail. Do not create a shadow asset path, wrapper binding, or duplicate responsibility. If the authoring tool is genuinely unavailable, leave the exact AUTHOR stage pending with required source/output contract and do not claim the asset was produced.',
     '[PRECISION PRODUCTION CHAIN END]'
   ].join('\n'):'';
   const runtimeVisual=order.runtimeVisualObservation;
