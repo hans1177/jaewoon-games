@@ -20,6 +20,7 @@ import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { CODING_ANALYSIS_VERSION, inspectSourceFunctions } from './company-vibe2-expert-development.mjs';
 import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.mjs';
+import { assertVibeAgentHandoffScope } from './vibe2-openai-agent-patterns.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples, learningGuidance } from './vibe2-learning-motor.mjs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
@@ -6727,6 +6728,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const sourceRootRelative=assertSourceRoot(order?.source?.root,target,order);
   const sourceRoot=path.resolve(cwd,sourceRootRelative);
   const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
+  // Existing Vibe agent assignment is checked before generation or candidate writes.
+  const agentHandoffPreflight=order?.agentHandoff
+    ?assertVibeAgentHandoffScope({plan:order.agentHandoff,task:order.selectedTask||{id:order.taskId,gameId:order.gameId,target:order.target},
+      route:order.executionRoute||'text-source-worker',target:order.target,responsibleFiles:order?.source?.responsibleFiles||[]})
+    :{pass:false,reason:'LEGACY_WORK_ORDER_HANDOFF_NOT_PRESENT'};
   const singleMotionPreflight=evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles});
   if(!singleMotionPreflight.pass)throw new Error(singleMotionPreflight.reason);
   let dccEvidence=null;
@@ -7278,6 +7284,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     generation,
     developmentAuthority,
     compiledWorkContract:order?.compiledWorkContract&&typeof order.compiledWorkContract==='object'?order.compiledWorkContract:null,
+    agentHandoff:order?.agentHandoff||null,
+    agentHandoffPreflight,
     centralPolicyFreshness:{preflight:centralPolicyPreflight,completion:centralPolicyCompletion},
     baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||null,
     goal:order.goal,
