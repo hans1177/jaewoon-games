@@ -30,6 +30,8 @@ on:
       - 'qa/company-roblox-production-plan.test.mjs'
       - 'qa/company-roblox-production-handoff.test.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-openai-agent-patterns.mjs'
+      - 'qa/vibe2-openai-agent-patterns.test.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
       - 'tools/vibe2-central-work-contract.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
@@ -158,6 +160,8 @@ on:
       - 'qa/company-roblox-production-plan.test.mjs'
       - 'qa/company-roblox-production-handoff.test.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-openai-agent-patterns.mjs'
+      - 'qa/vibe2-openai-agent-patterns.test.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
       - 'tools/vibe2-central-work-contract.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
@@ -307,6 +311,8 @@ jobs:
           node --check qa/company-build-up-directive.test.mjs
           node --check tools/company-roblox-production-plan.mjs
           node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-openai-agent-patterns.mjs
+          node --check qa/vibe2-openai-agent-patterns.test.mjs
           node --check tools/vibe2-asset-production-plan.mjs
           node --check tools/vibe2-central-work-contract.mjs
           node --check tools/vibe2-neural-diagnosis.mjs
@@ -434,6 +440,7 @@ jobs:
           node --test qa/vibe2-incremental-qa.test.mjs
           node --test qa/vibe2-parallelism-telemetry.test.mjs
           node --test qa/vibe2-adaptive-backpressure.test.mjs
+          node --test qa/vibe2-openai-agent-patterns.test.mjs
           node --test qa/vibe2-controller-contract.test.mjs
           node --test qa/vibe2-candidate-reconcile.test.mjs
           node --test qa/vibe2-experience-control.test.mjs
@@ -538,21 +545,17 @@ jobs:
           path: ${{ runner.temp }}/vibe2-glb-authoring-evidence
           if-no-files-found: error
           retention-days: 14
-      - name: Prepare the existing local Vibe model for coding measurement
-        id: local-model
-        if: always() && !cancelled() && steps.executors.outcome == 'success' && needs.scope.outputs.coding_benchmark == 'YES'
-        uses: ./.github/actions/prepare-ollama
-        with:
-          model: qwen3:1.7b
-          cache-model: 'true'
-          pull-model: 'true'
-          preload-model: 'true'
-      - name: Measure actual generated implementations and repairs
-        if: always() && !cancelled() && steps.local-model.outcome == 'success' && needs.scope.outputs.coding_benchmark == 'YES'
+      - name: Optional external Gemini coding benchmark (disabled by default)
+        if: always() && !cancelled() && steps.executors.outcome == 'success' && needs.scope.outputs.coding_benchmark == 'YES' && vars.VIBE2_ENABLE_LIVE_GEMINI_BENCHMARK == 'true'
         env:
           VIBE2_LIVE_CODING_BENCHMARK: '1'
-          VIBE2_LOCAL_MODEL: qwen3:1.7b
-        run: node --test --test-name-pattern="live Vibe coding" qa/vibe2-learning-practice-worker.test.mjs
+          VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API
+          VIBE2_GEMINI_MODEL: gemini-2.5-flash
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "${GEMINI_API_KEY:-}"
+          node --test --test-name-pattern="live Vibe coding" qa/vibe2-learning-practice-worker.test.mjs
       - name: Preserve coding performance evidence
         if: always() && needs.scope.outputs.coding_benchmark == 'YES'
         uses: actions/upload-artifact@v4
