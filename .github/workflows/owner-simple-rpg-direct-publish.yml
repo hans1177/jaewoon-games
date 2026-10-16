@@ -140,6 +140,8 @@ jobs:
     steps:
       - name: Checkout for wildlife asset acquisition
         uses: actions/checkout@v4
+        with:
+          lfs: true
       - name: Download license-verified CC0 3D creatures
         shell: bash
         run: |
@@ -169,6 +171,13 @@ jobs:
           ('frilled-dinosaur.zip','frilled_dino_base.zip','prehistoric','br-n518','frilled-dino'),
           ('triceratops.zip','low_spec_triceratops_oga.zip','prehistoric','pistachio','low-spec-triceratops'),
           ('mammoth.7z','Mammouth.7z','prehistoric','STKRudy85','mammuth-low-poly'),
+          ('snake-cobra.zip','cobra.zip','wildlife','Micket','cobra-0'),
+          ('turtle.blend','Turtle.blend','aquatic','Heathal','turtle-0'),
+          ('snail.zip','snail_tinyworlds.zip','invertebrate','TinyWorlds','snail-3d-model'),
+          ('elephant.blend','elephant-lowpoly.blend','wildlife','syncopika','low-poly-elephant-model'),
+          ('lemur.zip','Lemur_Blend_Fbx_Obj.zip','wildlife','NewDLC','lemur'),
+          ('spider.blend','spider.blend','insect','br-n518','spider-2'),
+          ('trex.blend','trex.blend','prehistoric','FacadeGaikan','t-rex'),
           ('crocodile.7z','crocodile.7z','wildlife','br-n518','crocodile-0'),
           ]
           present=set()
