@@ -2087,6 +2087,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                   or string.find(label, "hip", 1, true)
                   or string.find(label, "foot", 1, true)
                   or string.find(label, "calf", 1, true)
+                  or string.find(label, "paw", 1, true)
+                  or string.find(label, "hoof", 1, true)
                 local isArm = string.find(label, "arm", 1, true)
                   or string.find(label, "shoulder", 1, true)
                   or string.find(label, "hand", 1, true)
@@ -2103,10 +2105,14 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                   local left = string.find(label, "left", 1, true)
                     or string.match(lower, "^l[_%.%-]") or string.match(lower, "[_%.%-]l$")
                     or string.find(lower, "_l", 1, true)
+                    or string.match(limb, "^l[_%.%-]") or string.match(limb, "[_%.%-]l$")
+                    or string.find(limb, "_l", 1, true)
                   local right = string.find(label, "right", 1, true)
                     or string.match(lower, "^r[_%.%-]") or string.match(lower, "[_%.%-]r$")
                     or string.find(lower, "_r", 1, true)
-                  if left or right then
+                    or string.match(limb, "^r[_%.%-]") or string.match(limb, "[_%.%-]r$")
+                    or string.find(limb, "_r", 1, true)
+                  if (left and not right) or (right and not left) then
                     table.insert(joints, {
                       joint=item,
                       base=item:IsA("Motor6D") and item.C0 or item.Transform,
