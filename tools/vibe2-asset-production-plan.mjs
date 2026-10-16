@@ -1389,7 +1389,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     roleEvidenceById.set(clean(asset.id),evidence);
     return evidence;
   };
-  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map();
+  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map();
   let intendedOnlyCount=0;
   // The role gate above rejects incompatible candidates; among eligible assets,
   // a higher audited quality score must win regardless of matched-role count.
@@ -1418,6 +1418,15 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     if((asset?.intendedConsumerGameIds||[]).map(clean).includes(id))intendedOnlyCount+=1;
     if(family&&requiredFamilySet.has(family)&&assetSupplyCandidateAllowed(asset,target)){
       if(!roleFit.verifiedRoleMatch){if(!roleFit.requestedRoles.length||!clean(asset.role||asset.subfamily))unresolvedFamilies.add(family);continue;}
+      // 역할별 후보를 같은 원장 순회에서 색인한다. 기존 점수·출처 검증은 유지한다.
+      const roleIndex=reusableByFamilyRole.get(family)||new Map();
+      for(const role of unique([asset.role,asset.subfamily,asset.atomId,asset.factory])
+        .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))){
+        const candidates=roleIndex.get(role)||[];
+        candidates.push(asset);
+        roleIndex.set(role,candidates);
+      }
+      reusableByFamilyRole.set(family,roleIndex);
       const currentBest=bestReusableByFamily.get(family);
       if(betterReusable(asset,currentBest))bestReusableByFamily.set(family,asset);
     }
@@ -1512,14 +1521,14 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       // 일반 요청은 신규 사용 후보를 허용하지만 기존 역할 교체는 등록된 역할 근거가 필요하다.
       const currentRoles=unique([currentAsset?.role,currentAsset?.subfamily,currentAsset?.atomId,currentAsset?.factory])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value!==family.toLowerCase());
-      const improved=assets.filter(asset=>
-        clean(asset.family||asset.category).toUpperCase()===family
-        &&!currentAssetIds.has(clean(asset.id))&&assetSupplyCandidateAllowed(asset,target)
-        &&roleEvidenceById.get(clean(asset.id))?.verifiedRoleMatch===true
-        &&unique([asset.role,asset.subfamily,asset.atomId,asset.factory])
-          .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))
-          .some(value=>currentRoles.includes(value))
-      ).sort(compareReusable)[0];
+      let improved=null;
+      const roleIndex=reusableByFamilyRole.get(family);
+      for(const role of currentRoles){
+        for(const asset of roleIndex?.get(role)||[]){
+          if(currentAssetIds.has(clean(asset.id))||roleEvidenceById.get(clean(asset.id))?.verifiedRoleMatch!==true)continue;
+          if(betterReusable(asset,improved))improved=asset;
+        }
+      }
       const currentScore=Number(currentAsset?.internalAuditScore??currentAsset?.qualityScore??-1);
       const improvedScore=Number(improved?.internalAuditScore??improved?.qualityScore??-1);
       if(improved&&clean(improved.id)!==clean(currentAsset?.id)

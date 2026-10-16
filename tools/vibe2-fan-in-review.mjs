@@ -284,6 +284,13 @@ export function runPostNativeSpecializedReview({queueFile='.vibe2/queue.json',ca
 
 export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   const resultRows=Array.isArray(results)?results.filter(row=>row&&typeof row==='object'):[];
+  // [리뷰] 결과는 한 번만 작업별로 색인한다. 중복 전체 검색과 재검사를 줄이고 모든 필수 검증은 그대로 유지한다.
+  const resultRowsByTaskId=new Map();
+  for(const row of resultRows){
+    const id=clean(row?.taskId);
+    if(!resultRowsByTaskId.has(id))resultRowsByTaskId.set(id,[]);
+    resultRowsByTaskId.get(id).push(row);
+  }
   const ids=new Set([...(taskIds||[]).map(clean),...resultRows.map(row=>clean(row?.taskId))].filter(Boolean));
   const reviewed=[];
   const skipped=[];
@@ -307,7 +314,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     let presentationRuntimeVisual=null;
     if(!candidateBranch)missing.push('candidate-branch');
     else{
-      const rows=resultRows.filter(row=>clean(row?.taskId)===clean(task.id));
+      const rows=resultRowsByTaskId.get(clean(task.id))||[];
       selectedResult=rows.find(row=>resultCandidateBranch(row)===candidateBranch)||rows.find(row=>clean(row?.outcome).toUpperCase()==='PASS')||null;
       if(!selectedResult)missing.push('candidate-identity-result');
       else {
@@ -537,7 +544,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   }
   for(const taskId of ids){
     const task=taskById.get(clean(taskId))||{};
-    const pairRows=resultRows.filter(row=>clean(row?.taskId)===clean(taskId)&&row?.phase4BenchmarkVerification?.active===true);
+    const pairRows=(resultRowsByTaskId.get(clean(taskId))||[]).filter(row=>row?.phase4BenchmarkVerification?.active===true);
     if(pairRows.length<2)continue;
     const selectedResult=selectedResultByTaskId.get(clean(taskId))||null;
     for(const benchmarkReview of buildPairedCapabilityBenchmarkReviews({
