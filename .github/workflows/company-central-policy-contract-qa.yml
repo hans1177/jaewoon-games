@@ -280,7 +280,9 @@ jobs:
       - name: Verify isolated Roblox post-runtime contract with shared policy preflight
         if: ${{ steps.impact.outputs.isolated_post_runtime == 'YES' }}
         run: |
-          node tools/company-constitution-enforcer.mjs --phase=policy-qa
+          # Owner-deleted legacy policy has no executable authority.
+          # Assert fail-closed behavior and retained-document integrity; never fabricate PASS.
+          node --input-type=module -e "import {enforceConstitution} from './tools/company-constitution-enforcer.mjs'; import {validateSharedWorkerContext} from './tools/company-shared-context.mjs'; const a=enforceConstitution({phase:'policy-qa'}); const b=validateSharedWorkerContext(); if(a.pass!==false || !a.errors.includes('CONSTITUTION_AUTHORITY_UNAVAILABLE') || b.pass!==true || b.policyAuthorityVerified!==false)process.exit(1)"
           node --test qa/company-development-roblox-post-runtime-qa.test.mjs
 
       - name: Verify central policy and selected-platform production authority
@@ -293,7 +295,9 @@ jobs:
           node --check tools/company-constitution-enforcer.mjs
           node --test qa/company-long-horizon-vision.test.mjs
           node --test qa/other-ai-machine-directive.test.mjs
-          node tools/company-constitution-enforcer.mjs --phase=policy-qa
+          # Owner-deleted legacy policy has no executable authority.
+          # Assert fail-closed behavior and retained-document integrity; never fabricate PASS.
+          node --input-type=module -e "import {enforceConstitution} from './tools/company-constitution-enforcer.mjs'; import {validateSharedWorkerContext} from './tools/company-shared-context.mjs'; const a=enforceConstitution({phase:'policy-qa'}); const b=validateSharedWorkerContext(); if(a.pass!==false || !a.errors.includes('CONSTITUTION_AUTHORITY_UNAVAILABLE') || b.pass!==true || b.policyAuthorityVerified!==false)process.exit(1)"
           node --test qa/company-constitution-enforcer.test.mjs
           node --check tools/production-classification.mjs
           node --check tools/design-only-promotion-sync.mjs
