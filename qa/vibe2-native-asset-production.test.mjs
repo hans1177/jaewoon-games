@@ -5086,3 +5086,36 @@ test('Vibe game asset supply verifies and applies originals instead of schedulin
   assert.ok(!worker.includes(".filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'"));
   assert.match(worker,/Only inspect, verify and apply existing company\/common or downloaded license-cleared assets/);
 });
+
+test('external source has priority over unbound internal alternatives; only limited material adaptation is permitted',()=>{
+  const external={id:'licensed-house',name:'House Kit',category:'BUILDING',
+    status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',license:'CC0',
+    sourceUrl:'https://example.org/house',licenseEvidenceUrl:'https://example.org/license',
+    verifiedAt:'2026-10-17',platformTargets:['ROBLOX'],
+    automaticAcquisitionWhenSelected:true,commercialUseAllowed:true,derivativesAllowed:true};
+  const internal={id:'old-house',family:'BUILDING',role:'house',
+    status:'REPO_ASSET',license:'project-original',platform:'SHARED_MASTER',
+    path:'assets/shared/old-house.glb',internalAuditScore:900};
+  const request={gameId:'new-game',target:'roblox',request:'village house',
+    requirements:[{family:'BUILDING',role:'house'}]};
+  const plan=buildAssetSupplyDecisionSummary({...request,registry:{assets:[internal],externalSources:[external]}});
+  const selected=plan.nextActions.find(row=>row.family==='BUILDING');
+  assert.equal(selected.action,'ACQUIRE_ADAPT','external-first for roles not already applied');
+  assert.equal(selected.externalAcquisition.sourceId,'licensed-house');
+  assert.equal(selected.externalAcquisition.downloaded,false);
+  assert.equal(selected.assetization.existingLicensedBaseRequired,true);
+  assert.equal(selected.assetization.newOriginalAssetAuthoringForbidden,true);
+  assert.equal(selected.assetization.materialOrPlatformConversionOnly,true);
+  assert.equal(selected.materialRefinement.materialAndSurfaceOnlyAdaptation,true);
+  assert.equal(selected.materialRefinement.geometryAlterationForbidden,true);
+  assert.equal(selected.materialRefinement.rigAndAnimationAlterationForbidden,true);
+  assert.equal(selected.productionVerificationGranted,undefined);
+  assert.equal(plan.productionVerificationGranted,false);
+  const reusable=buildAssetSupplyDecisionSummary({...request,registry:{assets:[internal],externalSources:[]}});
+  const existing=reusable.nextActions.find(row=>row.family==='BUILDING');
+  assert.equal(existing.assetId,'old-house');
+  assert.equal(existing.assetization.newOriginalAssetAuthoringForbidden,true);
+  assert.equal(existing.materialRefinement.geometryAlterationForbidden,true);
+  const missing=buildAssetSupplyDecisionSummary({...request,registry:{assets:[],externalSources:[]}});
+  assert.equal(missing.nextActions.find(row=>row.family==='BUILDING').action,'HOLD');
+});
