@@ -1401,13 +1401,11 @@ for index, name in ipairs({
   local menuItem = civMenuRail:FindFirstChild(name)
   if menuItem and menuItem:IsA("GuiButton") then menuItem.LayoutOrder = index end
 end
-local actionTweenService = game:GetService("TweenService")
 -- Old in-house procedural poses, melee trails, burst particles and camera pulses deleted.
 -- Action inputs still invoke server-authoritative combat; motion requires curated external animations.
 local function civActionMotion(_actionId, _button)
   return nil
 end
-local actionTweenService = game:GetService("TweenService")
 -- Legacy manually authored creature limb posing and mesh wobbling permanently removed.
 -- Imported external mesh models follow server hitboxes, retaining their original rig.
 local importedCreatureVisuals = {}
