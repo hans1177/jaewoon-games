@@ -246,9 +246,6 @@ jobs:
           node --test qa/release-stale-artifact-guard.test.mjs
           node --test qa/tier1-development-baseline-gate.test.mjs
           node --test qa/company-design-pre-gate-resume.test.mjs
-            echo 'paid/external AI key leaked into free multimodel path' >&2
-            exit 1
-          fi
           echo 'PRODUCTION_PIPELINE_CONTRACT=PASS'
 
       - name: Validate DEVELOPMENT_CONFIRMED evidence cannot be faked
