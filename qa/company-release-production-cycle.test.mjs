@@ -89,7 +89,7 @@ test('release baseline is gated by same-build runtime, independent QA and final 
 });
 
 test('release producer fails closed on central roadmap, held Unity Android and independent runtime evidence',()=>{
-  assert.match(runner,/CANONICAL_RELEASE_POLICY='company-learning\\/platform-release-roadmap\\.json'/);
+  assert.ok(runner.includes("const CANONICAL_RELEASE_POLICY='company-learning/platform-release-roadmap.json'"));
   assert.match(runner,/RELEASE_CANONICAL_POLICY_PATH_REQUIRED/);
   assert.match(runner,/RELEASE_CANONICAL_EVIDENCE_GATE_INVALID/);
   assert.match(runner,/RELEASE_UNITY_ANDROID_OWNER_HOLD/);
