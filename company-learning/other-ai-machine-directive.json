@@ -130,7 +130,7 @@
     },
     "unityWebDevelopmentFloor": {
       "requiredWhenWebGLBuildable": true,
-      "source": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane",
+      "source": null,
       "role": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
       "canonicalSourceRoot": "unity-games/<gameId>/",
       "outputRoot": "web-games/<gameId>/",
@@ -207,7 +207,7 @@
   "workOrder": {
     "id": "WEB_TO_NATIVE_TO_POST_RELEASE_CONTINUOUS_DEVELOPMENT_V1",
     "authority": "EXECUTION_SEQUENCE_ONLY",
-    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "sourceOfTruth": null,
     "policyCreationAllowed": false,
     "implementationOwner": "VIBE2_VIBE3",
     "startCondition": "PRODUCTION_CLASS=DEVELOPMENT_CONFIRMED_AND_PLATFORM_AND_GENRE_LOCKED",
@@ -543,9 +543,8 @@
   },
   "sharedContext": {
     "authority": "REFERENCE_ONLY",
-    "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.sharedWorkerContext",
+    "source": null,
     "loadOrder": [
-      "company-learning/platform-release-roadmap.json",
       "company-learning/company-log-map.json",
       "company-learning/company-architecture-map.json",
       "company-learning/security-immune-system.json"
