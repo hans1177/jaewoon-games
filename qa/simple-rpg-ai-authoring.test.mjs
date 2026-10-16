@@ -491,3 +491,9 @@ test('combat and return-home discard stale habitat patrol waypoints', () => {
   assert.match(server, /enemy\.PatrolDestination = nil\s+enemy\.NextPatrolAt = now \+ 2\s+AdvancedAIEcosystem\.SetState\(enemy, "ReturnHome"\)/);
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
 });
+
+test('monster alert clears immediately when a player leaves its habitat', () => {
+  assert.match(server, /if not target then\s+enemy\.AlertUserId = nil\s+enemy\.AlertUntil = 0/);
+  assert.match(server, /Magnitude > 22 then\s+target = nil/);
+  assert.match(server, /AdvancedAIEcosystem\.SetState\(enemy, "ReturnHome"\)/);
+});
