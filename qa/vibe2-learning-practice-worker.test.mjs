@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {buildPracticePrompt,candidateDiagnostics,evaluatePracticeAnswer,evaluateWebPracticeArtifact,runLearningPractice,runPracticeRepairSession} from '../tools/vibe2-learning-practice-worker.mjs';
+import {buildPracticePrompt,candidateDiagnostics,evaluatePracticeAnswer,evaluateWebPracticeArtifact,runLearningPractice,runPracticeRepairSession,requestPracticeModel} from '../tools/vibe2-learning-practice-worker.mjs';
 
 test('practice accepts analysis or isolated Web artifact routes but rejects production source route',()=>{
   assert.throws(()=>buildPracticePrompt({executionRoute:'text-source-worker',goal:'[VIBE_LEARNING_PRACTICE] x'}),/analysis-only or learning-web-artifact/);
@@ -496,5 +496,40 @@ test('coding guidance clarifies language execution hazards without injecting an 
   for(const [prompt,drill] of [[lp,luau],[cp,csharp]]){
     assert(!prompt.includes(drill.reference));
     for(const hidden of drill.tests)assert(!prompt.includes(hidden));
+  }
+});
+
+test('learning practice uses external Gemini API with no local server fallback',async()=>{
+  const oldFetch=globalThis.fetch;
+  const oldKey=process.env.GEMINI_API_KEY;
+  const oldProvider=process.env.VIBE2_GAME_SOURCE_PROVIDER;
+  const oldModel=process.env.VIBE2_GEMINI_MODEL;
+  try{
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='GEMINI_API';
+    process.env.GEMINI_API_KEY='fixture-not-real';
+    process.env.VIBE2_GEMINI_MODEL='gemini-2.5-flash';
+    let calls=0;
+    globalThis.fetch=async(url,options)=>{
+      calls++;
+      assert.match(url,/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-2\.5-flash:generateContent$/);
+      assert.equal(options.headers['x-goog-api-key'],'fixture-not-real');
+      const req=JSON.parse(options.body);
+      assert.equal(req.contents[0].parts[0].text,'example practice');
+      return{ok:true,json:async()=>({candidates:[{content:{parts:[{text:'{"tests":["one","two","three"]}'}]}}]})};
+    };
+    const result=await requestPracticeModel('example practice');
+    assert.match(result,/"tests"/);
+    assert.equal(calls,1);
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='OLLAMA';
+    await assert.rejects(requestPracticeModel('example'),/PRACTICE_EXTERNAL_AI_PROVIDER_REQUIRED_NO_LOCAL_FALLBACK/);
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='GEMINI_API';
+    delete process.env.GEMINI_API_KEY;
+    await assert.rejects(requestPracticeModel('example'),/PRACTICE_GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK/);
+    assert.equal(calls,1);
+  }finally{
+    globalThis.fetch=oldFetch;
+    if(oldKey===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=oldKey;
+    if(oldProvider===undefined)delete process.env.VIBE2_GAME_SOURCE_PROVIDER;else process.env.VIBE2_GAME_SOURCE_PROVIDER=oldProvider;
+    if(oldModel===undefined)delete process.env.VIBE2_GEMINI_MODEL;else process.env.VIBE2_GEMINI_MODEL=oldModel;
   }
 });
