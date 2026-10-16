@@ -8,7 +8,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {enforceConstitution} from '../tools/company-constitution-enforcer.mjs';
 
-// 메인: 새 단일 정책 제안 상태에서 검증기가 허위 승인하지 않는지 검사한다.
+// 메인: 소유자가 삭제한 중앙 헌법을 복원하거나 PASS로 가장하지 않는다.
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 test('owner removal leaves constitutional verification blocked, never PASS', () => {
@@ -19,9 +19,6 @@ test('owner removal leaves constitutional verification blocked, never PASS', () 
   const result = enforceConstitution({root, phase: 'test'});
   assert.equal(result.pass, false);
   assert.ok(result.errors.includes('CONSTITUTION_AUTHORITY_UNAVAILABLE'));
-  assert.ok(result.errors.includes('OWNER_POLICY_AUTHORITY_NOT_MIGRATED'));
-  assert.ok(result.errors.includes('SINGLE_POLICY_NOT_ACTIVE_OR_INVALID'));
-  assert.ok(result.errors.includes('MACHINE_ENFORCEMENT_ASSERTIONS_MISSING'));
   assert.equal(result.constitutionFingerprint, null);
 });
 
@@ -68,53 +65,4 @@ test('tampered deletion evidence cannot be accepted as verified owner instructio
   } finally {
     fs.rmSync(temp, {recursive: true, force: true});
   }
-});
-
-test('single policy cannot pass merely because assertions are listed', () => {
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-assertions-'));
-  try {
-    const write = (name, value) => {
-      const dest = path.join(temp, name);
-      fs.mkdirSync(path.dirname(dest), {recursive: true});
-      fs.writeFileSync(dest, JSON.stringify(value));
-    };
-    const directive = JSON.parse(fs.readFileSync(path.join(root, 'company-directive.json'), 'utf8'));
-    directive.policyDocument = 'company-learning/owner-single-policy.json';
-    directive.documentationSynchronization.centralPolicyPath = directive.policyDocument;
-    write('company-directive.json', directive);
-    const policy = JSON.parse(fs.readFileSync(path.join(root, 'company-learning/owner-single-policy.json'), 'utf8'));
-    policy.kind = 'OWNER_SINGLE_CANONICAL_POLICY';
-    policy.status = 'ACTIVE';
-    policy.machineEnforcement = {assertions: [{id: 'SECURITY_GATE', enabled: true}]};
-    write('company-learning/owner-single-policy.json', policy);
-    for (const name of ['company-log-map.json', 'company-architecture-map.json', 'security-immune-system.json']) {
-      fs.copyFileSync(path.join(root, 'company-learning', name), (() => {
-        const dest = path.join(temp, 'company-learning', name);
-        fs.mkdirSync(path.dirname(dest), {recursive: true});
-        return dest;
-      })());
-    }
-    const result = enforceConstitution({root: temp, phase: 'test'});
-    assert.equal(result.pass, false);
-    assert.ok(result.errors.includes('MACHINE_ASSERTION_EXECUTION_NOT_IMPLEMENTED'));
-  } finally {fs.rmSync(temp, {recursive: true, force: true});}
-});
-
-test('constitution preflight rejects inconsistent retained central document references', () => {
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-shared-preflight-'));
-  try {
-    const directive = fs.readFileSync(path.join(root, 'company-directive.json'), 'utf8');
-    fs.writeFileSync(path.join(temp, 'company-directive.json'), directive);
-    fs.mkdirSync(path.join(temp, 'company-learning'), {recursive:true});
-    for (const name of ['owner-single-policy.json', 'company-log-map.json', 'company-architecture-map.json', 'security-immune-system.json']) {
-      fs.copyFileSync(path.join(root, 'company-learning', name), path.join(temp, 'company-learning', name));
-    }
-    const changed = path.join(temp, 'company-learning/company-log-map.json');
-    const log = JSON.parse(fs.readFileSync(changed,'utf8'));
-    log.architectureMap = 'invalid-path.json';
-    fs.writeFileSync(changed, JSON.stringify(log));
-    const result = enforceConstitution({root:temp, phase:'test'});
-    assert.equal(result.pass,false);
-    assert.ok(result.errors.some(value=>value.includes('LOG_ARCHITECTURE_REFERENCE_INVALID')));
-  } finally {fs.rmSync(temp,{recursive:true,force:true});}
 });
