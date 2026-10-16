@@ -411,7 +411,7 @@ function makeTarget(requestId,{category=null,platform=defaultTargetPlatform,gene
   const materials=composeSeedMaterials(state,{count:materialCount,platform:p,category:resolvedCategory,top30GameIds,learningSignals:signals});
   return {
     requestId,
-    basicDesignMethod:readJson('company-learning/platform-release-roadmap.json',{})?.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod,
+    basicDesignMethod:clean(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH)?readJson(clean(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH),{})?.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod:undefined,
     category:resolvedCategory,
     platform:p,
     generation,
