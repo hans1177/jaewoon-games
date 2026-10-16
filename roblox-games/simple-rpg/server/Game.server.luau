@@ -1659,7 +1659,7 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   enemy.PrimaryPart = root
   enemy.Parent = civHub
   civSign(head, head, enemy.Name, 3.3)
-  local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, Special = special, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0, TargetUserId = nil, NextPatrolAt = 0, PatrolStep = 0 }
+  local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, Special = special, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0, TargetUserId = nil, NextPatrolAt = 0, PatrolStep = 0, AlertUserId = nil, AlertUntil = 0 }
   table.insert(civEnemies, item)
   return item
 end
@@ -2696,6 +2696,28 @@ task.spawn(function()
             target = nil
           end
         end
+        -- 일반 몬스터는 플레이어를 발견하면 먼저 경계한다. 같은 문명의
+        -- 인접 몬스터가 이미 전투 중이면 경계 시간이 짧아진다.
+        if target and enemy.Model:GetAttribute("IsRaidBoss") ~= true then
+          if enemy.AlertUserId ~= target.UserId then
+            local packEngaged = false
+            for _, ally in ipairs(civEnemies) do
+              if ally ~= enemy and ally.RaceID == enemy.RaceID
+                and ally.Humanoid.Health > 0
+                and (ally.Root.Position - enemy.Root.Position).Magnitude <= 12
+                and ally.Model:GetAttribute("AIState") == "Combat" then
+                packEngaged = true
+                break
+              end
+            end
+            enemy.AlertUserId = target.UserId
+            enemy.AlertUntil = now + (packEngaged and 0.3 or 0.8)
+          end
+          if now < enemy.AlertUntil then
+            AdvancedAIEcosystem.SetState(enemy, "Alert")
+            target = nil
+          end
+        end
         if target then
           local root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
           if root then
@@ -2755,7 +2777,11 @@ task.spawn(function()
           enemy.TelegraphAt = 0
           enemy.TargetUserId = nil
           enemy.Model:SetAttribute("IsPreparingAttack", false)
+        elseif now < (enemy.AlertUntil or 0) then
+          -- 경계 중에는 순찰도 공격도 하지 않고 대상을 관찰한다.
+          AdvancedAIEcosystem.SetState(enemy, "Alert")
         elseif now - enemy.LastHit >= 3 then
+          enemy.AlertUserId = nil
           enemy.Model:SetAttribute("IsPreparingAttack", false)
           local homeOffset = Vector3.new(enemy.Home.X - enemy.Root.Position.X, 0,
             enemy.Home.Z - enemy.Root.Position.Z)
