@@ -14,7 +14,7 @@ import {
   compileVibeCentralWorkContract,
   assertCompiledWorkContractFresh
 } from '../tools/vibe2-central-work-contract.mjs';
-import { runVibe2SourceWorker } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, assertOwnerDevelopmentAvailable } from '../tools/vibe2-source-worker.mjs';
 
 function tempRoot(){return fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-central-contract-'));}
 function git(cwd,...args){return execFileSync('git',['-C',cwd,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();}
@@ -644,4 +644,31 @@ test('invalid optional contract cannot bypass freshness validation', () => {
     () => assertCompiledWorkContractFresh({contract,phase:'PRE_WORK'}),
     /CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_WORK/
   );
+});
+
+test('real production Roblox auto-coding preflight binds central policy and exact writable scope',()=>{
+  // [자동코딩] 큐의 입구에서는 실정책과 쓰기 범위만 직접 검사하고, 전체 모델 회귀는 독립 QA에서 수행한다.
+  const repoRoot=path.resolve(new URL('..',import.meta.url).pathname);
+  const snapshot=loadCentralPolicySnapshot({repoRoot,required:true});
+  assert.equal(snapshot.valid,true,snapshot.errors.join('|'));
+  const responsibleFile='roblox-games/simple-rpg/server/Game.server.luau';
+  const task={id:'owner-policy-bound-autocoding',gameId:'simple-rpg',target:'ROBLOX',department:'development'};
+  const contract=compileVibeCentralWorkContract({
+    snapshot,task,plan:{target:'ROBLOX',qa:['CODE_QA','STATIC_QA']},
+    route:{route:'text-source-worker'},responsibleFiles:[responsibleFile]
+  });
+  assert.equal(contract.required,true);
+  assert.equal(contract.validAtCompile,true);
+  assert.equal(contract.policy.executionFingerprint,snapshot.executionFingerprint);
+  assert.equal(contract.workLock.requiredBeforeSourceWrite,true);
+  assert.deepEqual(contract.workLock.files,[responsibleFile]);
+  assert.doesNotThrow(()=>assertOwnerDevelopmentAvailable({cwd:repoRoot,order:{
+    ...task,source:{root:'roblox-games/simple-rpg'}
+  }}));
+  assert.equal(assertCompiledWorkContractFresh({cwd:repoRoot,contract,phase:'PRE_SOURCE_GENERATION'}).status,'PASS');
+  assert.throws(()=>assertCompiledWorkContractFresh({cwd:repoRoot,contract:{},phase:'PRE_SOURCE_GENERATION'}),
+    /CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION/);
+  const stale={...contract,policy:{...contract.policy,executionFingerprint:'0'.repeat(64)}};
+  assert.throws(()=>assertCompiledWorkContractFresh({cwd:repoRoot,contract:stale,phase:'PRE_SOURCE_GENERATION'}),
+    /CENTRAL_POLICY_STALE:PRE_SOURCE_GENERATION/);
 });
