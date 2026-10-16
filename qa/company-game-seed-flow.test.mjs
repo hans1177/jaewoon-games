@@ -349,12 +349,12 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_EXTERNAL_ONLY');
   assert.equal(directive.ai.providerSecret,'GEMINI_API_KEY');
   assert.equal(directive.ai.openAiProviderAllowed,false);
-  assert.equal(directive.ai.ollamaProviderAllowed,true);
-  assert.equal(directive.ai.localModelFallbackAllowed,true);
-  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['VIBE_LOCAL_OLLAMA']);
-  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,false);
+  assert.equal(directive.ai.ollamaProviderAllowed,false);
+  assert.equal(directive.ai.localModelFallbackAllowed,false);
+  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['GEMINI_API']);
+  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,true);
   assert.equal(directive.ai.gameDesigner.cloudFailureFallsBackToLocal,false);
-  assert.deepEqual(directive.ai.gameDesigner.localFallbackModels,['qwen3:1.7b']);
+  assert.deepEqual(directive.ai.gameDesigner.localFallbackModels,[]);
   assert.doesNotMatch(design,/Math\.max\(900,Math\.ceil\(1400\*roles\.length\/ROLES\.length\)\)/);
 });
 
@@ -419,8 +419,8 @@ test('obsolete free-concept and direct prototype entrypoints remain removed',()=
 test('design authoring uses native Vibe functions without model transport or department review lanes',()=>{
   const roles=['planning','graphics','development','qa','audio'];
   assert.deepEqual(roles.map(role=>directive.ai.departmentLeadModels[role]),Array(5).fill('gemini-3.8-flash'));
-  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['VIBE_LOCAL_OLLAMA']);
-  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,false);
+  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['GEMINI_API']);
+  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,true);
   assert.equal(directive.ai.gameDesigner.geminiModel,null);
   assert.deepEqual(directive.ai.gameDesigner.geminiFallbackModels,[]);
   assert.doesNotMatch(seedDesignWorkflow,/COMPANY_EXTERNAL_AI_ENABLED:|COMPANY_GEMINI_|secrets\.GEMINI_API_KEY/);
