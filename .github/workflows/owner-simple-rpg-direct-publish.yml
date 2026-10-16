@@ -34,6 +34,11 @@ on:
         type: boolean
         required: false
         default: false
+      download_priority_cc0_assets:
+        description: '다섯 우선순위 CC0 곤충·동물·무기·NPC·건축·환경·사운드 실제 다운로드'
+        type: boolean
+        required: false
+        default: false
       upload_actor_assets:
         description: '검증된 캐릭터·스켈레톤 CC0 GLB 9개만 등록 (범용 대체 모델 제외)'
         type: boolean
@@ -344,6 +349,41 @@ jobs:
           path: assets/external/simple-rpg/icons-vfx-npc/manifest.json
           if-no-files-found: error
           retention-days: 14
+  download_priority_cc0_assets:
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_priority_cc0_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[priority-cc0-download]')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Download priority assets in requested order
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/simple-rpg-priority-cc0-download.py
+      - name: Commit verified source archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/external/simple-rpg/priority-v1/
+          if ! git diff --cached --quiet; then
+            git commit -m 'assets: preserve priority CC0 insects animals gear NPC world SFX archives'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Retain verified source inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-rpg-priority-cc0-manifest
+          path: assets/external/simple-rpg/priority-v1/manifest.json
+          if-no-files-found: error
+          retention-days: 14
   upload_actor_assets:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/'))) }}
     runs-on: ubuntu-latest
@@ -373,7 +413,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   publish:
-    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-icons-vfx-npc]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true || inputs.download_icons_vfx_npc == true)) }}
+    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-icons-vfx-npc]') || contains(github.event.head_commit.message, '[priority-cc0-download]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true || inputs.download_icons_vfx_npc == true || inputs.download_priority_cc0_assets == true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
