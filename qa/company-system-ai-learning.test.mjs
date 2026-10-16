@@ -297,52 +297,30 @@ test('primary domain outranks secondary domain even when secondary has similar k
   assert.ok(ui<0||save<ui);
 });
 
-test('bottleneck System AI receives policy-grounded advanced causal optimization playbook',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+test('bottleneck System AI cannot claim removed policy authority for advanced playbook',()=>{
+  const owner=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+  assert.equal(owner.legacyCentralPolicyReferenceCleanup?.replacementPolicyNotAsserted,true);
   const context=buildSystemAiLearningContext({
     task:{
       id:'sys-bottleneck-runner-queue-v1',
       taskType:'bottleneck-repair',
-      goal:'remove runner queue serialization and fan-in wait without weakening exact duplicate protection',
+      goal:'remove runner queue serialization without weakening exact duplicate protection',
       blocker:'runner-capacity-or-startup-serialization',
       failureStage:'WORKFLOW_RESERVATION',
       failureSignature:'RUNNER_QUEUE_SERIALIZATION',
       responsibleFiles:['tools/vibe2-queue-control.mjs']
     },
-    experienceInput:{records:[]},
-    codePatternsInput:{patterns:[]},
-    masteryInput:{},
-    policyInput:policy
+    experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{},policyInput:owner
   });
-  assert.equal(context.bottleneckPlaybook.applied,true);
-  assert.equal(context.bottleneckPlaybook.verifiedPolicyBound,true);
-  assert.equal(context.bottleneckPlaybook.authority,'company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution');
-  const ids=context.bottleneckPlaybook.methods.map(row=>row.id);
-  for(const required of [
-    'CAUSAL_WAIT_GRAPH','LOGICAL_PHYSICAL_CAPACITY_SPLIT','MINIMUM_LOCK_SCOPE','STAGE_SCOPED_EXACT_DEDUPE',
-    'CONTROL_PLANE_ISOLATION','EVENT_DRIVEN_REFILL','CHECKPOINT_PRESERVING_HANDOFF','REPRESENTATIVE_CANARY_COHORT',
-    'STALE_QA_TRIANGULATION','MULTI_HYPOTHESIS_CAUSAL_REPAIR','WORK_CONSERVING_DISJOINT_PARALLELISM',
-    'SPARE_CAPACITY_HEDGING','CAUSE_SCOPED_BACKPRESSURE','OBSERVABILITY_TO_VERIFIED_LEARNING',
-    'ASSET_CONSUMER_CAUSAL_TRIANGULATION','EXPLICIT_NATIVE_AUTHORING_REPAIR',
-    'RUNTIME_BOOT_CAUSE_BEFORE_WAIT','EXACT_FAILURE_AND_WAKE_IDENTITY','HOMEPAGE_DEPLOYMENT_VISIBILITY'
-  ])assert.ok(ids.includes(required),required);
-  assert.match(context.guidance,/POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK/);
-  assert.match(context.guidance,/STALE_QA_TRIANGULATION/);
-  assert.match(context.guidance,/Vibe3 실행 계약 투영값/);
-  assert.match(context.guidance,/Unity Web 실제 3D/);
-  assert.match(context.guidance,/MULTI_HYPOTHESIS_CAUSAL_REPAIR/);
-  assert.match(context.guidance,/Factory\.Create/);
-  assert.match(context.guidance,/applyFirst/);
-  assert.match(context.guidance,/Resources\.Load<AnimationClip>/);
-  assert.match(context.guidance,/Animation\.AddClip/);
-  assert.match(context.guidance,/BLOCKED\/CLOCK/);
-  assert.match(context.guidance,/동일 최신 main SHA/);
-  assert.match(context.guidance,/독립 QA·회귀·배포·다음 BUILD_UP/);
-  assert.deepEqual(context.exactKnowledgeIds,[],'repair guidance must not manufacture verified learning records');
+  assert.equal(context.bottleneckPlaybook.applied,false);
+  assert.deepEqual(context.bottleneckPlaybook.methods,[]);
+  assert.equal(context.floorRecovery,null);
+  assert.deepEqual(context.exactKnowledgeIds,[]);
   assert.equal(context.rawModelOutputIncluded,false);
   assert.equal(context.advisoryOnly,true);
   assert.equal(context.authorityExpanded,false);
 });
+
 
 test('ordinary non-bottleneck System AI task does not receive bottleneck playbook',()=>{
   const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
