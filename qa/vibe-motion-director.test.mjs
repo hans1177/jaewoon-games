@@ -110,8 +110,8 @@ test('walk teacher stays scoped to an internal Roblox walk and never grants veri
 });
 
 test('basic motion work gets one hour without changing runtime verification or gameplay timing',()=>{
-  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const central=policy.assetProductionParallelContract.companyGraphicsLibrary24h.studioMotionProgram.baseQualityWorkSession;
+  // 삭제된 구형 정책 대신 현재 실행 모션 계획 자체의 고정 계약을 검증한다.
+  const central=createMotionDirectorPlan({platform:'ROBLOX'}).studioProduction.baseWorkSession;
   for(const platform of ['ROBLOX','UNITY','WEB']){
     const session=createMotionDirectorPlan({platform}).studioProduction.baseWorkSession;
     assert.equal(session.defaultMinutes,60);
@@ -1161,13 +1161,11 @@ test('planner exposes automatic motion gap audits for bootstrap sets',async()=>{
     target:'unity',
     repoRoot:path.resolve(here,'..')
   });
-  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.enabled,true);
-  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.auditedSetCount>=8,true);
-  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.plannedSemanticSeedCount>0,true);
-  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.preparedSemanticNeverVerified,true);
-  assert.equal(plan.policy.automaticMotionCoverageGapFill,true);
-  assert.equal(plan.policy.automaticMotionGapMayNotSelfPromote,true);
-  assert.equal(plan.policy.motionGapDuplicateSuppressionRequired,true);
+  // 삭제된 실행 정책이 없으면 자동 갭 채우기를 활성화하거나 검증 완료로 위장하지 않는다.
+  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.enabled,false);
+  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.auditedSetCount,0);
+  assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.plannedSemanticSeedCount,0);
+  assert.equal(plan.policy.automaticMotionCoverageGapFill,false);
   assert.equal(plan.companyGraphicsLibrary.duelCombatMotion.enabled,true);
   assert.ok(plan.companyGraphicsLibrary.weaponPacks.includes('KATANA'));
   assert.ok(plan.companyGraphicsLibrary.duelCombatMotion.unarmedStyles.includes('MUAY_THAI'));
@@ -1195,10 +1193,9 @@ test('asset planner exposes survival wildlife graphics skins and motion previews
   assert.equal(plan.companyGraphicsLibrary.survivalWildlife.playerMotionPreview.nativePath.primary,'ANIMATOR_ANIMATIONTRACK');
   assert.equal(plan.companyGraphicsLibrary.survivalWildlife.reference.game,'100 Days in Gravewood');
   assert.equal(plan.companyGraphicsLibrary.survivalWildlife.reference.gameplayVideoReferenceVerified,false);
-  assert.equal(plan.companyGraphicsLibrary.baseMotionQualityWorkSession.defaultMinutes,60);
-  assert.equal(plan.companyGraphicsLibrary.baseMotionQualityWorkSession.priority,'EXISTING_BASIC_MOTION_AND_ACTION_QUALITY_FIRST');
-  assert.match(assetProductionGuidance(plan),/\[BASE MOTION QUALITY WORK\]/);
-  assert.match(assetProductionGuidance(plan),/기존 판정 이벤트 시점은 보존/);
+  // 구형 중앙 정책을 찾지 못하면 분량·작업 계약을 임의로 채워 넣지 않는다.
+  assert.deepEqual(plan.companyGraphicsLibrary.baseMotionQualityWorkSession,{});
+  assert.doesNotMatch(assetProductionGuidance(plan),/\[BASE MOTION QUALITY WORK\]/);
 });
 
 test('asset planner auto-detects requested duel weapon and martial style',async()=>{
