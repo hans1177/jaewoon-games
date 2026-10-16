@@ -1989,22 +1989,26 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           horizontalSpeed = planar / elapsed
           -- 루트가 네트워크에서 4Hz로 갱신되더라도 20Hz 보행이 멈추지 않게
           -- 마지막 실제 이동 이후 짧은 시간 동안만 보행을 이어간다.
-          if horizontalSpeed > 0.35 and horizontalSpeed < 65 then
+          -- 서버의 짧은 이동 명령 사이에서도 움직임을 이어가되, 실제로
+          -- 멈췄거나 순간 이동한 경우에는 미끄러운 제자리 걸음을 막는다.
+          local teleported = horizontalSpeed >= 65
+          if horizontalSpeed > 0.35 and not teleported then
             lastMovedAt = creatureMotionPhase
             smoothedSpeed = smoothedSpeed * 0.45 + horizontalSpeed * 0.55
-          elseif horizontalSpeed >= 65 then
+          elseif teleported then
             smoothedSpeed = 0
             lastMovedAt = -100
           end
           local walkingUntil = model:GetAttribute("MotionWalkingUntil")
           local serverWalking = typeof(walkingUntil) == "number"
             and workspace:GetServerTimeNow() < walkingUntil
-          realMoving = serverWalking or creatureMotionPhase - lastMovedAt < 0.20
+          local recentlyMoved = creatureMotionPhase - lastMovedAt < 0.20
+          realMoving = not teleported and (serverWalking or recentlyMoved)
           if realMoving then
-            -- 서버의 보행 명령과 관측 속도를 동일한 보폭 시계에 반영한다.
-            -- 패킷 사이에는 최근 측정 속도를 사용하되 정지 시 보행을 누적하지 않는다.
+            -- 복제 지연 때만 최근 보행 속도를 사용하고 관측된 이동량과
+            -- 크게 다른 위상 도약은 제한한다.
             local cadenceSpeed = math.clamp(smoothedSpeed > 0.35 and smoothedSpeed or 4.5, 2.5, 12)
-            gaitPhase += cadenceSpeed * elapsed * 1.4
+            gaitPhase += cadenceSpeed * math.min(elapsed, 0.12) * 1.4
           else
             smoothedSpeed = 0
           end
