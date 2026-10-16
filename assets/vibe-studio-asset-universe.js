@@ -3048,7 +3048,11 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
   })).filter(row=>row.reuse.usable&&!row.reuse.hardBlockers.length)
     .sort((a,b)=>b.reuse.effectiveQuality-a.reuse.effectiveQuality||b.reuse.baseQuality-a.reuse.baseQuality||assetSourceTier(normalizeRegistryAsset(b.asset))-assetSourceTier(normalizeRegistryAsset(a.asset))||text(a.asset?.id).localeCompare(text(b.asset?.id)));
   const locked=lockedAssetId?rows.find(row=>text(row.asset?.id)===lockedAssetId)||null:null;
-  const best=locked||rows[0]||null;
+  // Prefer independently evidenced candidates for replacements across games.
+  // Keep unverified suggestions visible, but never let them displace a verified option.
+  const verifiedRows=rows.filter(row=>row.reuse.qualityEvidenceGrounded
+    && usageByAsset[text(row.asset?.id)]?.runtimePass===true);
+  const best=locked||(currentAsset?verifiedRows[0]||rows[0]:rows[0])||null;
   const current=currentAsset?evaluateInternalAssetReuse({
     asset:currentAsset,gameDna,requirement,usage:usageByAsset[text(currentAsset?.id)]||{}
   }):null;
