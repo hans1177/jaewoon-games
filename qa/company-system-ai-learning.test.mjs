@@ -483,36 +483,30 @@ test('System AI workflow binds canonical distilled advisory knowledge into every
 });
 
 /* ── 기존 14개 방법 재사용 및 검증된 F0~F9 수리 지식만 학습 ── */
-test('System AI learns two hypotheses for exact Roblox failures without inventing a passed floor',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  for(const [signature,stage] of [
-    ['ROBLOX_BUILD_PREFLIGHT_BLOCKED','VIBE_SHARED_MODEL_BUILD_PREFLIGHT'],
-    ['ROBLOX_F0_SOURCE_PREFLIGHT_FAILED','F0_SOURCE_PREFLIGHT'],
-    ['ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING','PRIVATE_RUNTIME_CANDIDATE_DEPLOY'],
-    ['ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
-    ['ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
-    ['ROBLOX_FIRST_FRAME_GROUNDING_FAILED','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
-    ['roblox-package-asset-binding-failed','TARGET_PLATFORM_BUILD_OR_PACKAGE']
+test('removed legacy policy cannot silently grant Roblox recovery authority or passed floors',()=>{
+  const owner=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+  assert.equal(owner.legacyCentralPolicyReferenceCleanup?.replacementPolicyNotAsserted,true);
+  for(const signature of [
+    'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
+    'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+    'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING',
+    'ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE',
+    'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED',
+    'ROBLOX_FIRST_FRAME_GROUNDING_FAILED',
+    'roblox-package-asset-binding-failed'
   ]){
     const context=buildSystemAiLearningContext({
       task:{id:'floor-'+signature,taskType:'bottleneck-repair',gameId:'demo',target:'roblox',
         goal:'repair exact game F0-F9 stage',failureSignature:signature,responsibleFiles:['tools/company-development-roblox-build-preflight.mjs']},
-      policyInput:policy,experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{}
+      policyInput:owner,experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{}
     });
-    assert.equal(context.bottleneckPlaybook.methods.length,19);
-    assert.equal(context.floorRecovery.stage,stage);
-    assert.equal(context.floorRecovery.hypotheses.length,2);
-    assert.equal(context.floorRecovery.independentVerificationRequired,true);
-    assert.equal(context.floorRecovery.verifiedSuccessPromotionOnly,true);
-    if(signature.startsWith('ROBLOX_FIRST_FRAME_')){
-      assert.equal(context.floorRecovery.sourceRepairRequiresVerifiedCause,true);
-      assert.match(context.floorRecovery.next,/exact|Exact|EXACT/);
-      assert.match(context.floorRecovery.preserve,/not a runtime PASS|must invalidate/);
-    }
+    assert.equal(context.bottleneckPlaybook.applied,false,'removed policy must not authorize playbook');
+    assert.equal(context.floorRecovery,null,'removed policy must not invent floor recovery authority');
     assert.equal(context.authorityExpanded,false);
-    assert.match(context.guidance,/EXACT F0-F9 RECOVERY/);
+    assert.equal(context.rawModelOutputIncluded,false);
   }
 });
+
 
 test('System AI promotes failure-specific successful repair only after independently accepted evidence',()=>{
   const task={
