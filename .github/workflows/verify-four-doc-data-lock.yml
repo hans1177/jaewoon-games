@@ -1,0 +1,27 @@
+name: Verify Four Document Data Lock
+on:
+  push:
+    paths:
+      - 'company-directive.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/security-immune-system.json'
+      - 'qa/company-four-docs-fingerprint.test.mjs'
+  pull_request:
+    paths:
+      - 'company-directive.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/security-immune-system.json'
+      - 'qa/company-four-docs-fingerprint.test.mjs'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test qa/company-four-docs-fingerprint.test.mjs
