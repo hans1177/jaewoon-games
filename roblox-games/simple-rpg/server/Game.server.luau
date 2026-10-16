@@ -9,61 +9,21 @@ local storeOk, storeResult = pcall(function()
 end)
 if storeOk then store = storeResult end
 local Shared = ReplicatedStorage:WaitForChild("Shared")
--- Roblox Open Cloud 등록 성공 확인: KayKit CC0 실제 Model 에셋을 기존 스폰 코드에 연결한다.
--- 권한/검수로 불러올 수 없는 경우에는 기존 파츠 모델을 유지한다.
-local approvedCreatureAssets = {
-  Knight = 117296982541430,
-  Humanoid = 77212056040925,
-  Race2_Mob1 = 72885356802214,
-  Race1_Mob2 = 119538890072143,
-  Race3_Mob2 = 94477039152948,
-  Race4_Mob1 = 75690087240567,
-  Race4_Mob2 = 132858382607872,
-  Race5_Mob2 = 75474116878978,
-  Race5_Mob1 = 102454505662046,
-}
+-- 구형 고정 Asset ID는 사용자 요청으로 전부 해제한다.
+-- 현재 게임에 포함된 모델이라도 검증된 새 등록 표시가 없으면 사용하지 않는다.
 local creatureFolder = Shared:FindFirstChild("CreatureModels")
 local creatureAssetReady = 0
-local creatureAssetFailed = 0
 if creatureFolder then
-  local insertService = game:GetService("InsertService")
-  for name, assetId in pairs(approvedCreatureAssets) do
-    local existing = creatureFolder:FindFirstChild(name)
-    if existing and existing:IsA("Model") and existing:FindFirstChildWhichIsA("BasePart", true) then
+  for _, model in ipairs(creatureFolder:GetChildren()) do
+    if model:IsA("Model") and model:GetAttribute("CuratedExternalAsset") == true
+      and model:FindFirstChildWhichIsA("BasePart", true) then
       creatureAssetReady += 1
-    else
-      if existing then existing:Destroy() end
-      local ok, container = pcall(function() return insertService:LoadAsset(assetId) end)
-      if ok and container then
-        -- Roblox GLB imports may contain nested empty wrapper Models. Prefer the
-        -- outer imported package that actually owns all meshes, not the first child.
-        local assetModel = container
-        if not assetModel:FindFirstChildWhichIsA("BasePart", true) then
-          assetModel = nil
-        end
-        if assetModel and assetModel:IsA("Model") then
-          local template = assetModel:Clone()
-          template.Name = name
-          template:SetAttribute("VerifiedRobloxAssetId", tostring(assetId))
-          template.Parent = creatureFolder
-          creatureAssetReady += 1
-        else
-          creatureAssetFailed += 1
-          warn("DAECHUNG_CREATURE_ASSET_NOT_MODEL", name, assetId)
-        end
-        container:Destroy()
-      else
-        creatureAssetFailed += 1
-        warn("DAECHUNG_CREATURE_ASSET_LOAD_FAILED", name, assetId)
-      end
     end
   end
 end
--- CreatureAssetsLoaded includes valid preimported Studio models as well as new InsertService results.
 Shared:SetAttribute("CreatureAssetsLoaded", creatureAssetReady)
-Shared:SetAttribute("CreatureAssetsFailed", creatureAssetFailed)
-Shared:SetAttribute("CreatureAssetsExpected", 9)
-warn("DAECHUNG_CREATURE_ASSET_STATUS", creatureAssetReady, creatureAssetFailed, "of 9")
+Shared:SetAttribute("CreatureAssetsFailed", 0)
+Shared:SetAttribute("CreatureAssetsExpected", 0)
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
 local TechTreeData = require(Shared:WaitForChild("TechTreeData"))
@@ -1466,7 +1426,6 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
     local visualTemplate = (modelKey and sharedCreatureFolder:FindFirstChild(modelKey))
       or sharedCreatureFolder:FindFirstChild(enemy.Name)
       or sharedCreatureFolder:FindFirstChild("Race" .. raceID .. "_Mob" .. (mobSlot or 1))
-      or sharedCreatureFolder:FindFirstChild((special == "StoneWolf" or special == "WildBoar") and "Beast" or "Humanoid")
     -- 에셋 폴더가 있어도 실제 BasePart가 없으면 외형을 교체하지 않는다.
     if not visualTemplate and not game:GetAttribute("CreatureTemplateMissingReported") then
       game:SetAttribute("CreatureTemplateMissingReported", true)
@@ -1474,6 +1433,7 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
     end
     -- Empty imported packages must never hide the fallback monster body.
     if visualTemplate and visualTemplate:IsA("Model")
+      and visualTemplate:GetAttribute("CuratedExternalAsset") == true
       and visualTemplate:FindFirstChildWhichIsA("BasePart", true) then
       local visual = visualTemplate:Clone()
       visual.Name = "ImportedCreatureVisual"
