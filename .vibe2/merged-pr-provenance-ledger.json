@@ -48147,11 +48147,129 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0a6d0aed47591e36c62c7981",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8139",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "0377b4868376d9908ccb16bacc11cee8647833cf",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8139,
+        "baseBranch": "main",
+        "headBranch": "feature/vibe-policy-cleanup-cowork-20261016",
+        "baseSha": "0377b4868376d9908ccb16bacc11cee8647833cf",
+        "headSha": "2e746e02f740dae63e0c94353b5934e3fe09f45d",
+        "mergeCommitSha": "6ace40eeac40634d924d63da94e1ac0dae37153e",
+        "mergedAt": "2026-10-16T01:39:28Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b848203095f21d8dc25a35d3611f99d520a4c2a8485beb709e2c383aab6af76b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feature/vibe-policy-cleanup-cowork-20261016",
+        "candidateSha": "2e746e02f740dae63e0c94353b5934e3fe09f45d"
+      },
+      "changeStats": {
+        "changedFileCount": 2,
+        "codingRelevantFileCount": 2,
+        "addedLineCount": 59,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          ".vibe2/queue.json",
+          "vibe2-runtime.json"
+        ],
+        "codingRelevantFiles": [
+          ".vibe2/queue.json",
+          "vibe2-runtime.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8139",
+        "merge-commit:6ace40eeac40634d924d63da94e1ac0dae37153e",
+        "base-main:0377b4868376d9908ccb16bacc11cee8647833cf"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 388
+    "total": 389
   }
 }
