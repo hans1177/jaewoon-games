@@ -417,8 +417,13 @@ assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,tru
       fs.copyFileSync(`web-games/${id}/index.html`,path.join(root,id,'index.html'));
     }
     const fixture={games:Object.keys(blocked).map(id=>({id,name:id,productionClass:'DEVELOPMENT_CONFIRMED',homepageWebPlayable:true,hasWebArchive:true,robloxUrl:'https://www.roblox.com/games/12345'}))};
-    ingestOwnerWebGameIds(fixture,[],{rootDir:root});
-    for(const game of fixture.games){assert.equal(game.homepageWebPlayable,false);assert.equal(game.robloxUrl,'https://www.roblox.com/games/12345');}
+    const result=ingestOwnerWebGameIds(fixture,[],{rootDir:root});
+    const ingestEnabled=JSON.parse(fs.readFileSync('company-directive.json','utf8'))?.homepageOperations?.ownerWebAutoIngest?.enabled===true;
+    for(const game of fixture.games){
+      assert.equal(game.homepageWebPlayable,ingestEnabled?false:true,'disabled auto-ingest cannot invent withdrawal evidence');
+      assert.equal(game.robloxUrl,'https://www.roblox.com/games/12345');
+    }
+    if(!ingestEnabled)assert.deepEqual(result.disabled,[]);
     const workerSource=fs.readFileSync('_worker.js','utf8');
     const edge=await import('data:text/javascript;base64,'+Buffer.from(workerSource).toString('base64'));
     for(const id of Object.keys(blocked)){
