@@ -265,7 +265,7 @@ function buildPresentationQualityContract(task = {}, target = '') {
     version:3,
     pass,
     graphicsReplacement,
-    policyRefs:freezeList(['company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract','company-learning/platform-release-roadmap.json#audioMusicQualityContract']),
+    policyRefs:freezeList(['OWNER_RETIRED_POLICY_2026_10_15#livingMotionVisualQualityContract','OWNER_RETIRED_POLICY_2026_10_15#audioMusicQualityContract']),
     preserve:freezeList(['GAMEPLAY_BALANCE','SAVE_MEANING','PROGRESSION','HIT_SEMANTICS','NETWORK_AUTHORITY']),
     staticChecks:freezeList([
       ...(checks[pass]||[]),
@@ -343,7 +343,7 @@ function buildWeatherPresentationContract(task = {}, target = '') {
   return freeze({
     required:true,
     version:1,
-    policyRef:'company-learning/platform-release-roadmap.json#weatherPresentationContract',
+    policyRef:'OWNER_RETIRED_POLICY_2026_10_15#weatherPresentationContract',
     target:clean(target).toLowerCase()||null,
     states:freezeList(['CLEAR','RAIN','FOG','SNOW','STORM']),
     regionalExtensions:freezeList(['VOLCANIC_ASH','HEAT_HAZE']),
