@@ -210,7 +210,7 @@ test('director fallback wake reuses the canonical game-primary core without crea
 
 test('reserve batch persists control state only through the explicit Vibe2 control root',()=>{
   const start=core.indexOf('      - name: Reserve conflict-free DAG batch');
-  const end=core.indexOf('\n  model_cache:',start);
+  const end=core.indexOf('\n  worker:',start);
   assert.ok(start>=0&&end>start);
   const reserve=core.slice(start,end);
 
