@@ -1476,17 +1476,7 @@ continentGround:SetAttribute("WalkableGround", true)
 local lobbyGround = civPart(civHub, "CivilizationLobbyGround", Vector3.new(64, 2, 64),
   CFrame.new(0, -1, 0), Color3.fromRGB(111, 132, 101), Enum.Material.Slate, true)
 lobbyGround:SetAttribute("WalkableGround", true)
--- ambientCG CC0 외부 재질: 저장소에서 업로드 번호가 확인된 색상맵만 적용한다.
--- 텍스처 전송이 막혀도 기존 Roblox Slate/Wood 재질로 지면과 상점은 유지된다.
-local lobbyStoneTexture = Instance.new("Texture")
-lobbyStoneTexture.Name = "LobbyCC0Stone"
-lobbyStoneTexture.Texture = "rbxassetid://128886287832599"
-lobbyStoneTexture.Face = Enum.NormalId.Top
-lobbyStoneTexture.StudsPerTileU = 10
-lobbyStoneTexture.StudsPerTileV = 10
-lobbyStoneTexture.Transparency = 0.24
-lobbyStoneTexture.Parent = lobbyGround
-
+-- Texture overlay on an invisible physics-only floor deleted.
 -- 24문명의 땅을 1개의 초대형 대륙으로 잇는다.
 -- 문명 중심은 기존 3,200스터드 위치를 유지하므로 저장/스폰/건축 좌표는 불변.
 -- 길이 1,750, 폭 1,080의 부채꼴 겹침 지면 48개로 외곽까지 끊김 없이 걸어갈 수 있다.
