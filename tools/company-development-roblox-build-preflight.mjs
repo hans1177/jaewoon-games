@@ -50,9 +50,10 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   if(!COMMIT.test(sourceRevision))blockers.push('source-revision-invalid');
   if(buildSourceRevision!==sourceRevision)blockers.push('source-revision-mismatch');
   if(!SHA256.test(artifactIdentity))blockers.push('artifact-identity-invalid');
-  if(distinct.length<minDistinct)blockers.push('shared-review-model-missing');
-  if(!sharedModel)blockers.push('shared-review-model-missing');
-  else if(!pool.has(sharedModel))blockers.push('shared-review-model-not-in-model-pool');
+  // Model review is optional. A removed central AI configuration must not block
+  // exact game build/artifact verification; a configured model remains validated.
+  if(sharedModel&&distinct.length<minDistinct)blockers.push('shared-review-model-count-invalid');
+  if(sharedModel&&pool.size>0&&!pool.has(sharedModel))blockers.push('shared-review-model-not-in-model-pool');
   return Object.freeze({
     pass:blockers.length===0,
     blockers:Object.freeze([...new Set(blockers)]),
@@ -116,14 +117,17 @@ async function callLead(model,role,facts,{fetchImpl=globalThis.fetch}={}){
 export async function evaluateRobloxBuildPreflight({item={},directive={},fetchImpl=globalThis.fetch,secondaryOwnerFocus=false}={}){
   const facts=inspectRobloxBuildPreflight({item,directive,secondaryOwnerFocus});
   if(!facts.pass)return Object.freeze({version:2,gameId:item.gameId||null,pass:false,state:'BLOCKED',checkedAt:new Date().toISOString(),facts,leadReviews:[],blockers:[...facts.blockers],authority:'roblox-vibe-shared-model-build-preflight'});
-  const leadReviews=[await callLead(facts.sharedModel,'shared-review',facts,{fetchImpl})];
+  const leadReviews=facts.sharedModel
+    ?[await callLead(facts.sharedModel,'shared-review',facts,{fetchImpl})]
+    :[];
   const blockers=[];
   for(const review of leadReviews){if(review.decision!=='PASS')blockers.push(`lead-block:${review.role}:${review.blockers.join('|')||'unspecified'}`);}
   return Object.freeze({
     version:2,gameId:item.gameId||null,pass:blockers.length===0,state:blockers.length?'BLOCKED':'PASS',checkedAt:new Date().toISOString(),
     sourceRevision:facts.build.sourceRevision,artifactIdentity:facts.build.artifactIdentity,secondaryOwnerFocus:facts.secondaryOwnerFocus===true,facts,
     leadReviews:Object.freeze(leadReviews),blockers:Object.freeze(blockers),
-    authority:'roblox-vibe-shared-model-build-preflight',
+    reviewMode:facts.sharedModel?'OPTIONAL_LOCAL_MODEL_REVIEW':'DETERMINISTIC_GAME_BUILD_EVIDENCE_ONLY',
+    authority:'roblox-exact-package-build-preflight',
   });
 }
 
