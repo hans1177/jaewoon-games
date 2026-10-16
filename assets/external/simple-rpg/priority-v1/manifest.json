@@ -23,19 +23,19 @@
       "fileCandidates": 2
     },
     "03-equipment": {
-      "packs": 3,
-      "fileCandidates": 18
+      "packs": 5,
+      "fileCandidates": 57
     },
     "04-npc-buildings": {
       "packs": 9,
       "fileCandidates": 223
     },
     "05-environment-sfx": {
-      "packs": 10,
-      "fileCandidates": 353
+      "packs": 11,
+      "fileCandidates": 433
     }
   },
-  "verifiedPacks": 26,
+  "verifiedPacks": 29,
   "packs": [
     {
       "file": "bee-rigged.blend",
@@ -94,6 +94,20 @@
       "gameApplied": false
     },
     {
+      "file": "swordtember-30-glb.zip",
+      "priority": "03-equipment",
+      "sourceUrl": "https://opengameart.org/sites/default/files/swordtember2022_glb_0.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/30-unique-lowpoly-swords-cc0-swordtember2022",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "7bd10d5ab0aae89bf9a639ab8a21a336ba1652a537307bff0b2ab0cb8b59ff29",
+      "bytes": 184236,
+      "sourceFileCandidates": 30,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
       "file": "3d-swords-9.zip",
       "priority": "03-equipment",
       "sourceUrl": "https://opengameart.org/sites/default/files/swords_pack.zip",
@@ -101,6 +115,20 @@
       "licenseDeclared": "CC0-1.0",
       "sha256": "313b8d78ac9fb70277ad5389b275db9f1dcd79199d181ac2007a56232f31bc34",
       "bytes": 1999932,
+      "sourceFileCandidates": 9,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "rpg-items-8.zip",
+      "priority": "03-equipment",
+      "sourceUrl": "https://opengameart.org/sites/default/files/low-poly%20RPG%20item%20collection_0.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/rpg-item-collection-1",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "51acd89645ae49d9563a11f7314fea1b33ee16e764c071d8814c0c3b1642efc8",
+      "bytes": 4539621,
       "sourceFileCandidates": 9,
       "validation": "zip_crc_and_content",
       "sourceOnly": true,
@@ -374,6 +402,20 @@
       "gameApplied": false
     },
     {
+      "file": "rpg-sfx-80.zip",
+      "priority": "05-environment-sfx",
+      "sourceUrl": "https://opengameart.org/sites/default/files/80-CC0-RPG-SFX_0.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/80-cc0-rpg-sfx",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "1c2f06ff4e8563b5b8b745b23cf213c1474142a69bb82bd8f5e10d9b3f7a7bbd",
+      "bytes": 1845114,
+      "sourceFileCandidates": 80,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
       "file": "kenney-rpg-sfx-50.zip",
       "priority": "05-environment-sfx",
       "sourceUrl": "https://opengameart.org/sites/default/files/RPGsounds_Kenney.zip",
@@ -403,30 +445,5 @@
     }
   ],
   "duplicateSources": [],
-  "failed": [
-    {
-      "file": "bug-robot.blend",
-      "priority": "01-insects",
-      "reason": "INVALID_BLENDER",
-      "source": "https://opengameart.org/content/low-poly-bug-robot"
-    },
-    {
-      "file": "swordtember-30-glb.zip",
-      "priority": "03-equipment",
-      "reason": "DOWNLOAD_HTTP_OR_NETWORK_FAILED",
-      "source": "https://opengameart.org/content/30-unique-lowpoly-swords-cc0-swordtember2022"
-    },
-    {
-      "file": "rpg-items-8.zip",
-      "priority": "03-equipment",
-      "reason": "DOWNLOAD_HTTP_OR_NETWORK_FAILED",
-      "source": "https://opengameart.org/content/rpg-item-collection-1"
-    },
-    {
-      "file": "rpg-sfx-80.zip",
-      "priority": "05-environment-sfx",
-      "reason": "DOWNLOAD_HTTP_OR_NETWORK_FAILED",
-      "source": "https://opengameart.org/content/80-cc0-rpg-sfx"
-    }
-  ]
+  "failed": []
 }
