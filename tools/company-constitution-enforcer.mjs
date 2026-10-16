@@ -75,7 +75,7 @@ export function enforceConstitution({policy,root=ROOT,phase='runtime'}={}){
   must(errors,new Set(constitution.orderedRuleIds).size===constitution.orderedRuleIds.length,'CANONICAL_RULE_ORDER_DUPLICATE');
   must(errors,constitution.rules.every(r=>r.id&&r.fingerprint&&r.contract?.enabled===true),'CANONICAL_RULE_FINGERPRINT_OR_ENABLEMENT');
 
-  const owner=p.ownerCanonicalRules||{};
+  const owner=p?.ownerCanonicalRules||{};
   const binding=owner.constitutionalBinding||{};
   must(errors,binding.executableEnforcer==='tools/company-constitution-enforcer.mjs','CONSTITUTION_ENFORCER_BINDING');
   must(errors,binding.declarativeRuleEnforcementRequired===true,'CONSTITUTION_DECLARATIVE_ENFORCEMENT_REQUIRED');
@@ -126,7 +126,7 @@ export function enforceConstitution({policy,root=ROOT,phase='runtime'}={}){
 
 if(process.argv[1]===fileURLToPath(import.meta.url)){
   const args=Object.fromEntries(process.argv.slice(2).filter(v=>v.startsWith('--')).map(raw=>{const [k,...rest]=raw.slice(2).split('=');return[k,rest.join('=')||true];}));
-  const policy=args.policy?readJson(args.policy):null;
+  const policy=args.policy?readJson(args.policy):undefined;
   const result=enforceConstitution({policy,phase:clean(args.phase)||'runtime'});
   if(!result.pass)fail(result.errors,result.phase);
   console.log('CONSTITUTION_ENFORCEMENT=PASS');
