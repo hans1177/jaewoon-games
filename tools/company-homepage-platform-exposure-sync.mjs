@@ -2,7 +2,7 @@
 // 역할: 운영 플랫폼 상태와 검증·배포가 끝난 고유 개발 회차를 홈페이지에 전달한다.
 // 임포트
 import fs from 'node:fs';
-const compileHomepageCentralPolicy = () => ({valid:true,errors:[],supportedPlatforms:['ROBLOX','UNITY'],fingerprint:'POLICY_REMOVED',contract:{version:0,showUnityWeb:false}});
+import {compileHomepageCentralPolicy} from './company-homepage-central-policy.mjs';
 import { evaluateInternalRelease } from './company-platform-exposure-control.mjs';
 
 const clean=v=>String(v??'').trim();
@@ -186,7 +186,8 @@ if(process.argv[1]&&process.argv[1].endsWith('company-homepage-platform-exposure
   const queue=read(process.argv[2]||'development-queue.json');
   const catalog=read(process.argv[3]||'game-catalog.json');
   const output=process.argv[4]||'homepage-platform-exposure.json';
-  const policy=process.argv[5]&&fs.existsSync(process.argv[5])?read(process.argv[5]):{};
+  const policyPath=process.argv[5]||'company-learning/platform-release-roadmap.json';
+  const policy=fs.existsSync(policyPath)?read(policyPath):{};
   const result=buildHomepagePlatformExposure({queue,catalog,policy});
   write(output,result);
   console.log('HOMEPAGE_PLATFORM_EXPOSURE_SYNC=PASS');

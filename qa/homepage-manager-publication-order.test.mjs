@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {compileHomepageCentralPolicy} from '../tools/company-homepage-central-policy.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
 const statusSyncWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
@@ -570,4 +571,21 @@ test('PWA runtime metadata uses bounded server HTTP caching while scripts remain
   let promise;events.fetch({request:new Request('https://site.test'+path),respondWith:value=>{promise=value;}});await promise;
  }
  assert.equal(calls[0].cache,'default');assert.equal(calls[1].cache,'no-store');
+});
+
+
+test('homepage owner policy is compiled, fail-closed, and bound to the existing manager and Director publication',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const compiled=compileHomepageCentralPolicy(policy);
+  assert.equal(compiled.valid,true,compiled.errors.join('|'));
+  assert.deepEqual(compiled.supportedPlatforms,['ROBLOX','UNITY']);
+  assert.match(compiled.fingerprint,/^[a-f0-9]{64}$/);
+  assert.equal(compiled.contract.managerContract.manager,'HOMEPAGE');
+  assert.equal(compiled.contract.managerContract.supervisor,'DIRECTOR');
+  assert.equal(compiled.contract.homepageListingContract.unverifiedOrMissingGameBuildDisablesPlayButtonOnly,true);
+  assert.equal(compileHomepageCentralPolicy({}).valid,false);
+  const unsafe=structuredClone(policy);
+  unsafe.serverHomepageIntegration.directUnsupervisedPublicWriteForbidden=false;
+  assert.equal(compileHomepageCentralPolicy(unsafe).valid,false);
+  assert.equal((workflow.match(/node tools\/company-homepage-central-policy\.mjs --output=\/tmp\/worker-shared-context\.json/g)||[]).length,2);
 });

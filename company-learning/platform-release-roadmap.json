@@ -38,6 +38,7 @@
   "priorityMeaning": "ROBLOX_FOCUSED_DEVELOPMENT_UNITY_WEB_AND_ANDROID_OWNER_HOLD",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
+    "WEB": "ALWAYS_ALLOWED",
     "UNITY": "OWNER_HOLD",
     "FORTNITE_UEFN": "OWNER_HOLD",
     "UNITY_WEB": "OWNER_HOLD",
@@ -28936,6 +28937,28 @@
         "sameBuildVisualEvidenceRequired": true
       }
     }
+  },
+  "independentWebGameDevelopment20261017": {
+    "version": 1,
+    "authority": "OWNER_DIRECT_2026-10-17_STANDALONE_WEB_GAMES",
+    "status": "ACTIVE",
+    "enabled": true,
+    "target": "WEB",
+    "sourceRoot": "web-games/<gameId>/",
+    "engine": "HTML_JAVASCRIPT_BROWSER",
+    "existingVibeWebSourceImplementation": true,
+    "existingQueueAndWorkerOnly": true,
+    "independentOfNativePlatformRelease": true,
+    "robloxNativeDevelopmentScopePreserved": true,
+    "unityWebGlOwnerHoldUnchanged": true,
+    "unityAndroidOwnerHoldUnchanged": true,
+    "uefnOwnerHoldUnchanged": true,
+    "existingGameIdentitySaveBalanceAndMobileInputPreserved": true,
+    "candidateBranchOnly": true,
+    "independentBrowserGameplayQaRequired": true,
+    "homepagePlayableActionRequiresRealVerifiedTarget": true,
+    "publicReleaseAndHomepageDirectorGatesUnchanged": true,
+    "newPipelineCreated": false
   },
   "ownerActiveDevelopmentScope20261009": {
     "version": 2,

@@ -562,7 +562,9 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task
   const access=policy.developmentAccess?.[platform]||(platform==='UNITY_ANDROID'?policy.developmentAccess?.UNITY:null);
   if(access==='OWNER_HOLD')return true;
   if(scope?.status==='ACTIVE'){
-    if(targetName==='web')return true;
+    // Owner-approved standalone HTML/JS web games use the existing Vibe lane.
+    // Unity WebGL, Android and UEFN retain their independent owner holds.
+    if(targetName==='web')return !(policy.independentWebGameDevelopment20261017?.enabled===true&&policy.developmentAccess?.WEB==='ALWAYS_ALLOWED');
     const active=Array.isArray(scope.activeTargets)?scope.activeTargets:['ROBLOX','UNITY_WEB'];
     if(['ROBLOX','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'].includes(platform)&&!active.includes(platform))return true;
   }

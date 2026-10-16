@@ -67,7 +67,9 @@ export const EXISTING_WEB_STRATEGIES=Object.freeze(['KEEP_AND_CONTINUE','PARTIAL
 // Publicly playable Web entries still require validation during an owner development hold.
 export function selectDevelopmentWebValidationGames({catalog={},policy={}}={}){
   const scope=policy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||policy.ownerActiveDevelopmentScope20261009;
-  const webDevelopmentHeld=scope?.status==='ACTIVE'
+  // Native-platform holds do not suppress the separately approved HTML/JS Web lane.
+  const webDevelopmentHeld=policy.independentWebGameDevelopment20261017?.enabled!==true
+    &&scope?.status==='ACTIVE'
     &&!['WEB','UNITY_WEB'].some(target=>(scope.activeTargets||[]).includes(target));
   return(catalog.games||[]).filter(game=>
     clean(game.productionClass).toUpperCase()==='DEVELOPMENT_CONFIRMED'
