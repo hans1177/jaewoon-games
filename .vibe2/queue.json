@@ -1546,6 +1546,100 @@
       "speculativeEligible": false,
       "estimatedRisk": "low",
       "shard": "web"
+    },
+    {
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "other",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": null,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "lastOutcome": null,
+      "estimatedRisk": "medium",
+      "speculativeEligible": false,
+      "id": "owner-vibe-qa-failure-auto-repair-routing-20261016",
+      "gameId": "__vibe_system__",
+      "target": "system",
+      "department": "system-architecture",
+      "type": "implementation",
+      "sourceRoot": ".",
+      "systemSteward": true,
+      "executionLane": "RECOVERY_FAST",
+      "shard": "support",
+      "goal": "[OWNER_IMMEDIATE] Existing Vibe workers must autonomously close the loop for any reproducible incremental/graphics/motion/mobile QA failure: detect exact failure signature, assign the same game and responsible source files to existing production/graphics workers, make a causal source patch, rerun focused and independent QA, and promote only validated PRs through existing main merge gates. Never mark unverified failures PASS, bypass security/runtime/mobile checks, directly write main, restore deleted policy files, alter save semantics, or edit concurrent Copilot-owned files. Use existing event-routing and queue functions; no parallel scheduler or new subsystem. Include tests for QA result to retry routing, exhausted/repeated failures, and success settlement.",
+      "responsibleFiles": [
+        "tools/vibe2-neural-event-router.mjs",
+        "qa/vibe2-neural-event-router.test.mjs"
+      ],
+      "completionCriteria": [
+        "FAILING_QA_REPRODUCED",
+        "SAME_GAME_SOURCE_WORKER_REQUEUED",
+        "SOURCE_PATCH_VALIDATED",
+        "INDEPENDENT_QA_PASS",
+        "SECURITY_PASS",
+        "PR_MERGED_ONLY_AFTER_CHECKS"
+      ],
+      "evidence": [
+        "owner-directive:vibe-auto-repair-all-qa-20261016",
+        "vibe-self-architecture-evolution",
+        "architecture-authority-expansion:NO",
+        "architecture-gate-weakening:NO",
+        "architecture-system-construction-allowed",
+        "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
+        "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
+        "architecture-neural-expansion-readiness:PENDING",
+        "architecture-neural-expansion-allowed:NO"
+      ]
+    },
+    {
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": null,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "lastOutcome": null,
+      "estimatedRisk": "medium",
+      "speculativeEligible": false,
+      "id": "owner-vibe-tower-rpg-graphics-mobile-motion-20261016",
+      "gameId": "tower-choice-rpg",
+      "target": "web",
+      "department": "development",
+      "type": "implementation",
+      "sourceRoot": "web-games/tower-choice-rpg",
+      "shard": "web",
+      "goal": "[OWNER_IMMEDIATE] Vibe—not assistant—must actually improve running tower-choice-rpg game source (not just add checks). Reproduce and fix real player walking, attack windup and swing, hit reaction and recovery and enemy impact motion; replace clearly temporary visual placeholders where verified artwork exists; keep mobile touch input responsive, bound particles/render cost, avoid gameplay/save/balance changes. Apply bounded source edit in existing game file, perform browser/mobile smoke, graphics/motion runtime evidence and regression; on failure autonomously repair and retest until verified, then create PR and merge only after required checks. Do not touch Copilot-owned files until reservation ownership is clear.",
+      "responsibleFiles": [
+        "web-games/tower-choice-rpg/index.html"
+      ],
+      "completionCriteria": [
+        "ACTUAL_GAME_SOURCE_CHANGED",
+        "MOBILE_RUNTIME_SMOKE_PASS",
+        "WALK_ATTACK_HIT_MOTION_VERIFIED",
+        "VISUAL_PLACEHOLDER_AUDIT_PASS",
+        "PERFORMANCE_BUDGET_PASS",
+        "REGRESSION_PASS",
+        "MAIN_PR_MERGED_AFTER_QA"
+      ],
+      "evidence": [
+        "owner-directive:vibe-auto-repair-all-qa-20261016",
+        "owner-priority:actual-game-code-not-checks-only",
+        "source-root:web-games/tower-choice-rpg",
+        "repair-mode:MODEL",
+        "qa-failure-return-to-source-worker-required"
+      ]
     }
   ]
 }
