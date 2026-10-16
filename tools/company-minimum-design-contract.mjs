@@ -47,7 +47,9 @@ export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=
   const distinct=roblox&&unity&&JSON.stringify(profiles.ROBLOX)!==JSON.stringify(profiles.UNITY);
   const blockers=[];
   // 기본설계에도 모든 게임 멀티 필수 정책을 적용한다. SINGLE은 디자이너가 확장 설계해야 한다.
-  const multiplayerPolicy=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../company-learning/platform-release-roadmap.json'),'utf8'))
+  const verifiedPolicyPath=clean(process.env.COMPANY_VERIFIED_POLICY_PATH);
+  if(!verifiedPolicyPath||!fs.existsSync(verifiedPolicyPath))throw new Error('MINIMUM_DESIGN_VERIFIED_POLICY_REQUIRED');
+  const multiplayerPolicy=JSON.parse(fs.readFileSync(verifiedPolicyPath,'utf8'))
     ?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
   const multiplayerMandatory=multiplayerPolicy.required===true&&multiplayerPolicy.scope==='ALL_ACTIVE_AND_NEW_GAMES';
   const declaredMode=clean(content?.multiplayerMode).toUpperCase();
