@@ -10,6 +10,7 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
+import {planVibeAgentHandoff,vibeAgentHandoffGuidance} from './vibe2-openai-agent-patterns.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples, retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance, responsibilityCalibrationForTask, regressionHotspotRiskForTask, codingRiskGuidance, architectureDriftRiskForTask, architectureDriftGuidance, codingConstitutionRuleForTask, codingConstitutionGuidance } from './vibe2-learning-motor.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
 import { loadCentralPolicySnapshot, compileVibeCentralWorkContract, compiledWorkContractGuidance } from './vibe2-central-work-contract.mjs';
@@ -812,7 +813,13 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     livePolicyRef:clean(centralPolicyLiveRef)
   });
   const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  // OpenAI open-source-inspired handoffs annotate the existing game development
+  // worker. They do not add a second model call, separate pipeline, or QA bypass.
+  const agentHandoff=planVibeAgentHandoff({
+    task,route,target:plan.target,responsibleFiles,qa:plan.qa
+  });
+  const handoffGuidance=vibeAgentHandoffGuidance(agentHandoff);
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, handoffGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const taskEvidence=new Set((task.evidence||[]).map(clean));
   const webSourceRootBootstrapAllowed=plan.target==='web'
     &&taskEvidence.has('source-root-bootstrap-required')
@@ -858,6 +865,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles, tournament.candidateCount),
     supervisionContract,
     compiledWorkContract,
+    agentHandoff,
     neuralDiagnosis,
     workPackage,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
