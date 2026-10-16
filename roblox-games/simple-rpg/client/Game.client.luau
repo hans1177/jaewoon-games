@@ -1980,7 +1980,6 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local validCommandSpeed = serverWalking and typeof(commandedSpeed) == "number"
             and commandedSpeed > 0.35 and commandedSpeed < 65
           -- 보행 명령이 종료되면 위치 복제의 지연 프레임을 짧게만 허용한다.
-          local recentlyMoved = creatureMotionPhase - lastMovedAt < 0.14
           local currentHumanoid = model:FindFirstChildOfClass("Humanoid")
           local lastStrikeAt = model:GetAttribute("LastAttackAnimationAt")
           local strikeAge = typeof(lastStrikeAt) == "number"
@@ -1995,8 +1994,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             lastMovedAt = -100
             smoothedSpeed = 0
           end
-          -- 블록 상태 해제 시 이미 만료된 최근 이동 신호는 사용하지 않는다.
-          recentlyMoved = creatureMotionPhase - lastMovedAt < 0.14
+          -- 공격/기절로 이동 기록을 지운 다음 현재 보행 여부를 판정한다.
+          local recentlyMoved = creatureMotionPhase - lastMovedAt < 0.14
           realMoving = not teleported and not movementBlocked
             and (serverWalking or (recentlyMoved and smoothedSpeed > 0.35))
           if realMoving then
