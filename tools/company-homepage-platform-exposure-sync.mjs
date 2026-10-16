@@ -2,7 +2,7 @@
 // 역할: 운영 플랫폼 상태와 검증·배포가 끝난 고유 개발 회차를 홈페이지에 전달한다.
 // 임포트
 import fs from 'node:fs';
-const compileHomepageCentralPolicy = () => ({valid:true,errors:[],supportedPlatforms:['ROBLOX','UNITY'],fingerprint:'POLICY_REMOVED',contract:{version:0,showUnityWeb:false}});
+import { compileHomepageCentralPolicy } from './company-shared-context.mjs';
 import { evaluateInternalRelease } from './company-platform-exposure-control.mjs';
 
 const clean=v=>String(v??'').trim();
