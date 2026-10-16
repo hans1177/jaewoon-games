@@ -50,10 +50,9 @@ test('System AI cannot self-accept and malformed JSON uses strict retry',()=>{
   assert.match(queue,/primary-ai-review:PASS/);
 });
 
-test('cached local model and security scan remain mandatory before PR publication',()=>{
-  assert.match(workflow,/uses: actions\/cache@v4/);
-  assert.match(workflow,/\.cache\/company-system-ai-ollama\/bin\/ollama/);
-  assert.match(workflow,/nohup "\$ollama_bin" serve/);
+test('external Gemini provider and security scan remain mandatory before PR publication',()=>{
+  assert.doesNotMatch(workflow,/ollama\.com\/install\.sh|nohup "\$ollama_bin" serve|\.cache\/company-system-ai-ollama\/bin\/ollama/);
+  assert.match(workflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
   assert.match(workflow,/node tools\/company-security-steward\.mjs --output=\/tmp\/system-ai-security-report\.json/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_VERIFICATION=PASS/);
 });
