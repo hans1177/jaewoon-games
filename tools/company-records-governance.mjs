@@ -147,7 +147,7 @@ export function changedGovernedFiles(base='HEAD^',head='HEAD'){
 }
 
 
-const CENTRAL_POLICY_REL='company-learning/platform-release-roadmap.json';
+const CENTRAL_POLICY_REL=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
 const CENTRAL_ARCHITECTURE_REL='company-learning/company-architecture-map.json';
 const CENTRAL_LOG_MAP_REL='company-learning/company-log-map.json';
 const CENTRAL_SECURITY_REL='company-learning/security-immune-system.json';
@@ -175,7 +175,7 @@ const cloneJson=value=>JSON.parse(JSON.stringify(value));
 const utf8Bytes=value=>Buffer.byteLength(typeof value==='string'?value:JSON.stringify(value,null,2)+'\n','utf8');
 const readTextRel=rel=>fs.readFileSync(path.join(ROOT,rel),'utf8');
 const readJsonRel=rel=>JSON.parse(readTextRel(rel));
-const readCentralRoadmap=()=>readJsonRel(CENTRAL_POLICY_REL);
+const readCentralRoadmap=()=>{if(!CENTRAL_POLICY_REL)throw new Error('CENTRAL_RECORDS_VERIFIED_POLICY_PATH_REQUIRED');return readJsonRel(CENTRAL_POLICY_REL);};
 const escapeRegExp=value=>String(value??'').replace(/[|\\{}()[\]^$+*?.-]/g,'\\$&');
 
 // Formatting never removes policy data, including security rules consumed as whole documents.
