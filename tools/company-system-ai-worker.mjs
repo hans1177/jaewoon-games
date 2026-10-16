@@ -200,7 +200,9 @@ let qaContractReview={version:1,required:false,allowed:true,verifiedContractDrif
 if(qaEvolutionRequested&&changedFiles.some(file=>file.startsWith('qa/'))){
   const qaAfterByPath={};
   for(const file of changedFiles)if(file.startsWith('qa/')&&fs.existsSync(file))qaAfterByPath[file]=fs.readFileSync(file,'utf8');
-  const policy=readJson('company-learning/platform-release-roadmap.json');
+  const policyPath=clean(process.env.COMPANY_VERIFIED_POLICY_PATH);
+  if(!policyPath||!fs.existsSync(policyPath))throw new Error('SYSTEM_AI_QA_VERIFIED_POLICY_REQUIRED');
+  const policy=readJson(policyPath);
   const securityPolicy=readJson('company-learning/security-immune-system.json');
   qaContractReview=reviewSystemAiQaContract({task,beforeByPath:qaBeforeByPath,afterByPath:qaAfterByPath,policy,securityPolicy});
   if(!qaContractReview.allowed)throw new Error('SYSTEM_AI_QA_EVOLUTION_REJECTED:'+qaContractReview.reason);
