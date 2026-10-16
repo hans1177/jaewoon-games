@@ -1,77 +1,73 @@
-// 파일명: tools/company-shared-context.mjs
-// 임포트
+// Retained four-document compatibility. Integrity is not policy authority.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 
-// 메인: 삭제된 로드맵 대신 정책 권한을 만들지 않고 유지된 세 문서의 무결성만 검사한다.
-const DOCUMENTS = Object.freeze([
-  ['log','company-learning/company-log-map.json','MACHINE_EXECUTION_LOG_MAP'],
-  ['architecture','company-learning/company-architecture-map.json','MACHINE_EXECUTION_ARCHITECTURE_MAP'],
-  ['security','company-learning/security-immune-system.json','OWNER_DIRECTIVE_2026-09-19']
+export const RETAINED_DOCUMENTS = Object.freeze([
+  ['directive','company-directive.json',null,'MINIMAL_SUMMARY_NOT_REPLACEMENT_POLICY'],
+  ['log','company-learning/company-log-map.json','MACHINE_EXECUTION_LOG_MAP','MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE'],
+  ['architecture','company-learning/company-architecture-map.json','MACHINE_EXECUTION_ARCHITECTURE_MAP','MINIMAL_SUMMARY_NOT_EXECUTION_POLICY'],
+  ['security','company-learning/security-immune-system.json','OWNER_DIRECTIVE_2026-09-19','MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION']
 ]);
-const hash = value => crypto.createHash('sha256').update(value).digest('hex');
-function readJson(root, rel) {
-  const data = fs.readFileSync(path.join(root,rel),'utf8');
-  return {document:JSON.parse(data),sha256:hash(data)};
-}
-export function validateSharedWorkerContext({root=process.cwd(),expectedLogSha256,expectedArchitectureSha256,expectedSecuritySha256}={}) {
-  const errors=[];
-  let directive=null;
+const hash = contents => crypto.createHash('sha256').update(contents).digest('hex');
+const error = code => { throw new Error('WORKER_CONTEXT_SYNC_FAILED:' + code); };
+function readRetained(root, key, relative, authority, status) {
+  let contents, data;
   try {
-    directive=readJson(root,'company-directive.json').document;
-    const removal=directive.legacyCentralPolicyReferenceCleanup;
-    if(directive.policyDocument!==null || directive.documentationSynchronization?.centralPolicyPath!==null ||
-      removal?.removedPolicyPath!=='company-learning/platform-release-roadmap.json' ||
-      removal?.replacementPolicyNotAsserted!==true || removal?.executionContractChangeNotAuthorized!==true) {
-      errors.push('OWNER_POLICY_REMOVAL_CONTRACT_INVALID');
-    }
-  } catch { errors.push('OWNER_DIRECTIVE_MISSING_OR_INVALID'); }
-  if(fs.existsSync(path.join(root,'company-learning/platform-release-roadmap.json'))) {
-    errors.push('DELETED_ROADMAP_REAPPEARED');
+    contents = fs.readFileSync(path.join(root,relative),'utf8');
+    data = JSON.parse(contents);
+  } catch { return error(key.toUpperCase()+'_DOCUMENT_MISSING_OR_INVALID'); }
+  if ([...contents].length >= 1000) error(key.toUpperCase()+'_DOCUMENT_TOO_LARGE');
+  if (!Number.isInteger(data.version) || data.version < 1 ||
+      data.status !== status || (authority && data.authority !== authority) ||
+      (data.sourceOfTruth != null && data.sourceOfTruth !== relative)) {
+    error(key.toUpperCase()+'_DOCUMENT_CONTRACT_INVALID');
   }
-  const docs={};
-  const hashes={};
-  for(const [key,rel,authority] of DOCUMENTS) {
-    try {
-      const {document,sha256}=readJson(root,rel);
-      docs[key]=document;
-      hashes[key+'Sha256']=sha256;
-      if(!Number.isInteger(document.version) || document.version<=0 || document.authority!==authority ||
-         (document.sourceOfTruth!==undefined && document.sourceOfTruth!==null && document.sourceOfTruth!==rel)) {
-        errors.push(key.toUpperCase()+'_DOCUMENT_CONTRACT_INVALID');
-      }
-    } catch { errors.push(key.toUpperCase()+'_DOCUMENT_MISSING_OR_INVALID'); }
+  return {data, sha256:hash(contents)};
+}
+export function validateSharedWorkerContext({root=process.cwd(),expectedDirectiveSha256,expectedLogSha256,expectedArchitectureSha256,expectedSecuritySha256}={}) {
+  // A deleted constitution is never recreated or interpreted as an implicit PASS.
+  if (fs.existsSync(path.join(root,'company-learning/platform-release-roadmap.json'))) {
+    error('DELETED_ROADMAP_REAPPEARED');
   }
-  if(docs.log && docs.architecture && docs.log.architectureMap!=='company-learning/company-architecture-map.json') {
-    errors.push('LOG_ARCHITECTURE_REFERENCE_INVALID');
+  const docs={}, hashes={};
+  for(const [key,relative,authority,status] of RETAINED_DOCUMENTS) {
+    const item=readRetained(root,key,relative,authority,status);
+    docs[key]=item.data;
+    hashes[key+'Sha256']=item.sha256;
   }
-  if(docs.architecture && docs.architecture.logMap!=='company-learning/company-log-map.json') {
-    errors.push('ARCHITECTURE_LOG_REFERENCE_INVALID');
+  const directive=docs.directive, log=docs.log, architecture=docs.architecture, security=docs.security;
+  if (directive.policyDocument !== null ||
+      directive.documentationSynchronization?.centralPolicyPath !== null ||
+      directive.execution?.centralPolicyMissing !== 'FAIL_CLOSED') error('OWNER_POLICY_REMOVAL_CONTRACT_INVALID');
+  if (log.requiredForAllWorkers !== false ||
+      log.retained?.primaryLog !== 'GITHUB_ACTIONS_JOB_LOG' ||
+      log.retained?.unknownOrMissingPolicy !== 'FAIL_CLOSED') error('LOG_DOCUMENT_CONTRACT_INVALID');
+  if (architecture.centralPolicy !== null ||
+      architecture.branches?.main?.directGameWorkerWrite !== false ||
+      architecture.constitutionalEnforcement?.mode !== 'FAIL_CLOSED' ||
+      architecture.release !== 'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS') error('ARCHITECTURE_DOCUMENT_CONTRACT_INVALID');
+  if (security.policyFile !== 'company-learning/security-immune-system.json' ||
+      security.defaultTrust !== 'DENY_OR_QUARANTINE_UNTIL_VERIFIED' ||
+      security.enforcement?.unverified !== 'BLOCK') error('SECURITY_DOCUMENT_CONTRACT_INVALID');
+  const expected = {
+    directive:expectedDirectiveSha256,log:expectedLogSha256,
+    architecture:expectedArchitectureSha256,security:expectedSecuritySha256
+  };
+  for(const [key,sha] of Object.entries(expected)) {
+    if(sha !== undefined && sha !== hashes[key+'Sha256']) error(key.toUpperCase()+'_SHA_MISMATCH');
   }
-  if(docs.security && docs.security.policyFile!=='company-learning/security-immune-system.json') {
-    errors.push('SECURITY_DOCUMENT_REFERENCE_INVALID');
-  }
-  const expected={log:expectedLogSha256,architecture:expectedArchitectureSha256,security:expectedSecuritySha256};
-  for(const [key,value] of Object.entries(expected)) {
-    if(value!==undefined && value!==hashes[key+'Sha256']) errors.push(key.toUpperCase()+'_SHA_MISMATCH');
-  }
-  if(errors.length) throw new Error('WORKER_CONTEXT_SYNC_FAILED:'+errors.join(','));
   return {
-    pass:true,
-    scope:'RETAINED_THREE_DOCUMENT_INTEGRITY_ONLY',
-    policyAuthorityVerified:false,
-    deletedRoadmapRestored:false,
-    hashes,
-    documentVersions:Object.fromEntries(DOCUMENTS.map(([key])=>[key,docs[key].version]))
+    pass:true, scope:'RETAINED_FOUR_DOCUMENT_INTEGRITY_ONLY',
+    policyAuthorityVerified:false, sourceWriteAuthorized:false,
+    releaseAuthorized:false, deletedRoadmapRestored:false,
+    hashes, documentVersions:Object.fromEntries(RETAINED_DOCUMENTS.map(([key])=>[key,docs[key].version]))
   };
 }
 export function verifyPinnedSharedWorkerContext(options={}) {
   return validateSharedWorkerContext(options);
 }
-
-// 로그
 if(process.argv[1]===fileURLToPath(import.meta.url)) {
   try {
     const result=validateSharedWorkerContext();
@@ -79,13 +75,14 @@ if(process.argv[1]===fileURLToPath(import.meta.url)) {
     if(output) fs.writeFileSync(output.slice('--output='.length),JSON.stringify(result,null,2)+'\n');
     console.log('WORKER_CONTEXT_SCOPE='+result.scope);
     console.log('WORKER_CONTEXT_POLICY_AUTHORITY=UNVERIFIED');
-    console.log('WORKER_CONTEXT_LOG_MAP_SHA256='+result.hashes.logSha256);
-    console.log('WORKER_CONTEXT_ARCHITECTURE_SHA256='+result.hashes.architectureSha256);
-    console.log('WORKER_CONTEXT_SECURITY_POLICY_SHA256='+result.hashes.securitySha256);
-    console.log('WORKER_CONTEXT_SYNC=PASS');
-  } catch(error) {
+    for(const key of ['directive','log','architecture','security']) {
+      console.log('WORKER_CONTEXT_'+key.toUpperCase()+'_SHA256='+result.hashes[key+'Sha256']);
+    }
+    console.log('WORKER_CONTEXT_SYNC=INTEGRITY_ONLY');
+    console.log('WORKER_CONTEXT_MUTATION_AUTHORITY=DENIED');
+  } catch(e) {
     console.error('WORKER_CONTEXT_SYNC=FAIL');
-    console.error(String(error.message));
+    console.error(String(e.message));
     process.exitCode=1;
   }
 }
