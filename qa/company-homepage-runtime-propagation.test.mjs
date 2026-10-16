@@ -376,6 +376,22 @@ test('homepage keeps Roblox runtime truth separate from independent QA',()=>{
   assert.equal(row.externalPublicReleaseState,'INTERNAL_ONLY');
 });
 
+test('homepage platform policy fingerprint follows canonical changed fields and rejects missing authority',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const original=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
+  assert.match(original.centralPolicyFingerprint,/^[a-f0-9]{64}$/);
+  assert.equal(original.centralPolicy,'company-learning/platform-release-roadmap.json');
+  assert.deepEqual(original.supportedPlatforms,policy.serverHomepageIntegration.supportedPlatforms);
+  const changed=structuredClone(policy);
+  changed.serverHomepageIntegration.version+=1;
+  const updated=buildHomepagePlatformExposure({policy:changed,catalog:{games:[]},queue:{items:[]}});
+  assert.notEqual(original.centralPolicyFingerprint,updated.centralPolicyFingerprint);
+  const invalid=structuredClone(policy);
+  invalid.serverHomepageIntegration.runtimeAuthority='unknown';
+  assert.throws(()=>buildHomepagePlatformExposure({policy:invalid}),/HOMEPAGE_CENTRAL_POLICY_INVALID/);
+  assert.throws(()=>buildHomepagePlatformExposure({policy:{}}),/HOMEPAGE_CENTRAL_POLICY_INVALID/);
+});
+
 test('homepage platform exposure fails closed when central policy adds a platform without an implementation adapter',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const changed=structuredClone(policy);
