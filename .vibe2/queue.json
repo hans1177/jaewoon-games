@@ -33,6 +33,46 @@
   "defaultMaxRetries": 2,
   "tasks": [
     {
+      "id": "owner-simple-rpg-creature-motion-20261016",
+      "gameId": "simple-rpg",
+      "target": "roblox",
+      "department": "development",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE] 사용자 요청: 지금 ChatGPT가 계속 수정 중인 심플알피지(roblox-games/simple-rpg)의 몬스터 약 20종 이동 미끄러짐·걷기·공격·피격·사망 애니메이션 작업을 바이브도 계속 수행한다. main 최신 변경(보행 속도 MotionMoveSpeed/MotionWalkingUntil 연동, 리그 Motor6D/Bone 탐지)을 먼저 확인하고 실제 원인에 근거해 기존 함수만 개선한다. Roblox Studio CreatureModels 20종의 리그 누락과 CIV_CREATURE_RIG_UNANIMATED 로그를 확인 가능한 범위에서 분석한다. 주기적 미세 상수 변경과 진단만 반복하지 않는다. 별도 게임 daechung-rpg 수정 금지, 새 게임·새 데이터스토어·플레이스 생성 금지. 기존 전투 밸런스·드롭·세이브 키 변경 금지. ChatGPT 작업 및 다른 바이브 작업과 책임 파일 동시 수정 충돌 금지; 최신 main 기준 변경 후 QA 검증된 후보만 기존 정식 후보/배포 절차로 반영한다. 로블록스 실제 플레이 테스트를 수행하지 않았으면 성공으로 단정하지 않는다.",
+      "responsibleFiles": [
+        "roblox-games/simple-rpg/client/Game.client.luau",
+        "roblox-games/simple-rpg/server/Game.server.luau"
+      ],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "evidence": [
+        "owner-directive:chatgpt-20261016-vibe-creature-motion",
+        "main-motion-commit:42ee44eb1816aeb823208d17f3bd98e762e75a51",
+        "verified-qa-required"
+      ],
+      "lastOutcome": null,
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "owner-directive:chatgpt-20261016-vibe-creature-motion",
+        "reviewRequired": true
+      },
+      "sourceRoot": "roblox-games/simple-rpg",
+      "speculativeEligible": false,
+      "estimatedRisk": "medium",
+      "shard": "roblox"
+    },
+    {
       "id": "daechung-rpg-region-controls-4-7",
       "gameId": "daechung-rpg",
       "target": "unity",
