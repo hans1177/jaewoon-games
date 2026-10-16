@@ -418,7 +418,6 @@
     "departmentRepresentativeAuthoredByLead": false,
     "departmentRebuttalAuthoredByLead": false,
     "modelPool": [
-      "llama3.2:1b",
       "gemini-3.8-flash",
       "gemini-3.7-flash",
       "gemini-3.6-flash",
@@ -426,11 +425,11 @@
       "gemini-3.5-flash-lite"
     ],
     "departmentLeadModels": {
-      "planning": "llama3.2:1b",
-      "graphics": "llama3.2:1b",
-      "development": "llama3.2:1b",
-      "qa": "llama3.2:1b",
-      "audio": "llama3.2:1b"
+      "planning": "gemini-3.8-flash",
+      "graphics": "gemini-3.8-flash",
+      "development": "gemini-3.8-flash",
+      "qa": "gemini-3.8-flash",
+      "audio": "gemini-3.8-flash"
     },
     "gameDesigner": {
       "authorsInitialDetailedDesign": true,
@@ -438,16 +437,14 @@
       "sameModelRevisesAfterMeeting": false,
       "sameModelRevisesAfterLeadReview": false,
       "providerPriority": [
-        "VIBE_LOCAL_OLLAMA"
+        "GEMINI_API"
       ],
-      "externalProvidersAllowed": false,
-      "cloudProviderRequiresConfiguredSecret": false,
+      "externalProvidersAllowed": true,
+      "cloudProviderRequiresConfiguredSecret": true,
       "cloudFailureFallsBackToLocal": false,
       "openaiModel": null,
       "geminiModel": null,
-      "localFallbackModels": [
-        "qwen3:1.7b"
-      ],
+      "localFallbackModels": [],
       "autoBanOnRepeatedFailure": true,
       "autoBanThresholds": {
         "failures": 2,
@@ -526,11 +523,11 @@
       "ownsInternalPlaytestRepair": true
     },
     "designerBannedModels": [],
-    "providerMode": "GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK",
+    "providerMode": "GEMINI_PRIMARY_EXTERNAL_ONLY",
     "providerSecret": "GEMINI_API_KEY",
     "openAiProviderAllowed": false,
-    "ollamaProviderAllowed": true,
-    "localModelFallbackAllowed": true,
+    "ollamaProviderAllowed": false,
+    "localModelFallbackAllowed": false,
     "nonVibeDevelopmentAssistant": {
       "role": "ASSIGNED_FULL_PROCESS_COLLABORATOR",
       "gameDevelopmentOwner": false,
