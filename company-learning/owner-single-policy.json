@@ -41,7 +41,26 @@
       ".github/workflows/company-central-policy-contract-qa.yml"
     ],
     "activationRule": "Do not set active or merge until owner authority source, hash binding, locked sequence protection, impacted QA and release checks are aligned and independently verified.",
-    "currentDecision": "BLOCKED_PENDING_CONSTITUTIONAL_AUTHORITY_MIGRATION"
+    "currentDecision": "BLOCKED_PENDING_CONSTITUTIONAL_AUTHORITY_MIGRATION",
+    "failureEvidence": {
+      "commit": "74a77922605b8ed13e6b1be598ca854e35b9658f",
+      "check": "central-policy-contract",
+      "observedErrors": [
+        "OWNER_POLICY_AUTHORITY_NOT_MIGRATED",
+        "SINGLE_POLICY_NOT_ACTIVE_OR_INVALID",
+        "MACHINE_ENFORCEMENT_ASSERTIONS_MISSING",
+        "CONSTITUTION_AUTHORITY_UNAVAILABLE"
+      ],
+      "requiredOwnerDecision": "REPLACE_DELETED_CENTRAL_POLICY_AUTHORITY_WITH_SINGLE_CANONICAL_POLICY",
+      "mustPreserve": [
+        "FAIL_CLOSED_SECURITY",
+        "EXECUTABLE_RULE_ASSERTIONS",
+        "EXISTING_GAME_AND_SAVE_INTEGRITY",
+        "MAIN_WRITE_GUARD",
+        "IMPACT_SCOPED_QA"
+      ],
+      "activationVerified": false
+    }
   },
   "assetCleanup": {
     "target": "LOW_VISUAL_QUALITY_COMMON_ASSETS",
