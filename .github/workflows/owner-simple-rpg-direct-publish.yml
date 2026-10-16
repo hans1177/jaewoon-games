@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       upload_actor_assets:
-        description: '보유 CC0 GLB 20개를 Roblox 에셋에 등록 (게임 게시와 별도)'
+        description: '검증된 캐릭터·스켈레톤 CC0 GLB 9개만 등록 (범용 대체 모델 제외)'
         type: boolean
         required: false
         default: false
@@ -44,7 +44,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Register existing CC0 GLB models into Roblox asset inventory
+      - name: Register curated CC0 character assets into Roblox inventory
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_CREATOR_USER_ID: ${{ vars.ROBLOX_CREATOR_USER_ID }}
