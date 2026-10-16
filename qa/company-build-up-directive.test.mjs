@@ -1710,7 +1710,7 @@ test('auto composition refuses phantom UI and cross-game source while preserving
     fs.mkdirSync(path.join(repoRoot,two),{recursive:true});
     fs.writeFileSync(path.join(repoRoot,one,'Game.luau'),'local currentGame = "attack"\n');
     fs.writeFileSync(path.join(repoRoot,two,'Game.luau'),'local ScreenGui = "ScreenGui"\nlocal inventory="inventory"\nlocal lobby="Lobby"\n');
-    const observed=inspectGameSource({repoRoot,sourceRoot:one});
+    const observed=inspectGameSources({repoRoot,sourceRoots:[one]});
     const polluted={...observed,topFiles:[...observed.topFiles,{file:two+'/Game.luau',score:999}]};
     const p=buildGameInternalAutoCompositionPlan({gameId:'one',repoRoot,sourceRoot:one,
       sourceObservation:polluted,design:{interfacePlan:{ui:'inventory',hub:'lobby'}}});
