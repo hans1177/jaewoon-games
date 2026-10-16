@@ -5041,6 +5041,14 @@ test('downloaded shared CC0 originals auto-connect to game sourcing without bypa
     assert.equal(chosen.assetization.gameSourceWorkerMayEditCentralRegistry,false);
     assert.equal(result.productionVerificationGranted,false);
     assert.equal(result.runtimeVerificationGranted,false);
+    const gamePrompt=buildPrompt({target:'roblox',gameId:'village-game',goal:'house building',
+      assetProduction:{assetSupplySummary:result,nativeAuthoringExecution:{enabled:false}}},
+      {files:[{path:'server/Game.server.luau',content:'-- existing game source'}]});
+    assert.match(gamePrompt,/"sourceArchive":"assets\\/external\\/simple-rpg\\/priority-v1\\/medieval-house-a.zip"/);
+    assert.match(gamePrompt,/"sourceArchiveSha256":"[0-9a-f]{64}"/);
+    assert.match(gamePrompt,/"sourceArchiveAcquired":true/);
+    assert.match(gamePrompt,/"nativeBuildBlockedByUnacquiredSource":false/);
+    assert.match(gamePrompt,/"nativeBuildBlockedByUnadaptedArchive":true/);
 
     const noRole=buildAssetSupplyDecisionSummary({...params,requirements:[{family:'BUILDING',role:'castle'}],sharedOriginalArchives:[archive]});
     assert.notEqual(noRole.nextActions.find(row=>row.family==='BUILDING').action,'ACQUIRE_ADAPT','wrong object identity cannot bind by broad family alone');
