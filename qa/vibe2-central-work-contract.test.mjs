@@ -607,10 +607,14 @@ test('policy metadata version bump alone does not invalidate compiled architectu
   assert.equal(assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_WORK'}).status,'PASS');
 });
 
-test('deleted owner policy never yields a synthetic valid constitution or architecture projection', () => {
+test('real canonical compilers are imported, never hardcoded to pass or fail', () => {
   const source=fs.readFileSync(new URL('../tools/vibe2-central-work-contract.mjs',import.meta.url),'utf8');
-  assert.match(source,/compileOwnerCanonicalConstitution = \(\) => \(\{valid:false,errors:\['CONSTITUTION_AUTHORITY_UNAVAILABLE'\]/);
-  assert.match(source,/compileCentralArchitectureProjection = \(\) => \(\{valid:false,errors:\['CENTRAL_POLICY_SOURCE_UNAVAILABLE'\]/);
+  const compiler=fs.readFileSync(new URL('../tools/company-shared-context.mjs',import.meta.url),'utf8');
+  assert.match(source,/import \{compileOwnerCanonicalConstitution,compileCentralArchitectureProjection\}/);
+  assert.doesNotMatch(source,/const compileOwnerCanonicalConstitution = \(\)/);
+  assert.doesNotMatch(source,/const compileCentralArchitectureProjection = \(\)/);
+  assert.match(compiler,/export function compileOwnerCanonicalConstitution/);
+  assert.match(compiler,/export function compileCentralArchitectureProjection/);
   assert.doesNotMatch(source,/authority:'REMOVED',constitutionalAuthority:'REMOVED'/);
 });
 
