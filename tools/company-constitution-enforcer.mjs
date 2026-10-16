@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {validateSharedWorkerContext} from './company-shared-context.mjs';
 
 // 메인: 소유자 지시와 단일 정책이 명시적으로 연결된 경우에만 검증한다.
 const POLICY_PATH='company-learning/owner-single-policy.json';
@@ -44,18 +45,13 @@ export function enforceConstitution({phase='runtime',root=process.cwd(),policy}=
     if(!Array.isArray(canonical.machineEnforcement?.assertions) || canonical.machineEnforcement.assertions.length===0)
       errors.push('MACHINE_ENFORCEMENT_ASSERTIONS_MISSING');
   }
-  // 기존 세 중앙문서의 무결성 확인 없는 헌법 검증 통과 금지.
-  const required=[
-    ['company-learning/company-log-map.json','MACHINE_EXECUTION_LOG_MAP'],
-    ['company-learning/company-architecture-map.json','MACHINE_EXECUTION_ARCHITECTURE_MAP'],
-    ['company-learning/security-immune-system.json','OWNER_DIRECTIVE_2026-09-19']
-  ];
-  for(const [file,authority] of required) {
-    try {
-      const doc=JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
-      if(doc.authority!==authority || !Number.isInteger(doc.version) || doc.version<=0)
-        errors.push('RETAINED_DOCUMENT_INVALID:'+file);
-    } catch {errors.push('RETAINED_DOCUMENT_UNAVAILABLE:'+file);}
+  // 기존 정식 공유문서 검증기를 재사용해 문서 관계와 무결성까지 확인한다.
+  try {
+    const shared=validateSharedWorkerContext({root});
+    if(shared.pass!==true || shared.policyAuthorityVerified!==false)
+      errors.push('SHARED_CONTEXT_UNEXPECTED_AUTHORITY_STATE');
+  } catch(error) {
+    errors.push('SHARED_CONTEXT_VALIDATION_FAILED:'+String(error.message));
   }
   // 규칙 목록 존재만으로 PASS를 허용하면 실제 규칙 검사가 생략된다.
   // 각 규칙의 실행 검증기를 정식 연결하기 전까지 반드시 차단한다.
