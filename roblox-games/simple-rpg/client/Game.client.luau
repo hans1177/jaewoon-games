@@ -1974,9 +1974,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             smoothedSpeed = 0
             lastMovedAt = -100
           end
-          local walkingUntil = model:GetAttribute("MotionWalkingUntil")
-          local serverWalking = typeof(walkingUntil) == "number"
-            and workspace:GetServerTimeNow() < walkingUntil
+          local serverWalking = commandedWalking
           local commandedSpeed = model:GetAttribute("MotionMoveSpeed")
           local validCommandSpeed = serverWalking and typeof(commandedSpeed) == "number"
             and commandedSpeed > 0.35 and commandedSpeed < 65
