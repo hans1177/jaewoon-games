@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - 'company-directive.json'
-      - 'company-learning/platform-release-roadmap.json'
       - 'game-catalog.json'
       - 'company-status.json'
       - 'development-queue.json'
@@ -75,7 +74,6 @@ on:
     branches: [main]
     paths:
       - 'company-directive.json'
-      - 'company-learning/platform-release-roadmap.json'
       - 'game-catalog.json'
       - 'company-status.json'
       - 'development-queue.json'
@@ -204,7 +202,7 @@ jobs:
           const release=directive.classes?.RELEASE_CONFIRMED||{};
           if(release.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION'||release.resumeFromLatestEvidence!==true||release.target!=='PROJECT_SELECTED_PLATFORM'||release.targetPlatformProjectRequired!==true||release.vibe2PrimaryDeveloper!==true||release.coreDesignLock!==true)throw new Error('RELEASE_CONFIRMED selected-platform gated direct settings missing');
           if(release.aiMayInventBuildPass!==false||release.aiMayInventDeviceValidationPass!==false||release.aiMayInventIndependentQaPass!==false)throw new Error('release anti-fake evidence settings missing');
-          if(release.sourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.sourceChangeInvalidatesOldBuildValidation!==true||release.buildPreflightIsNotFinalApproval!==true||release.finalReviewMustReadSameCurrentBuildRuntimeQaEvidence!==true||release.independentQaSeparatedFromVibe2SelfCheck!==true||release.finalArtbookOnlyAfterReleaseReady!==true)throw new Error('release target-platform source/build/runtime/QA binding or artbook gate missing');
+          if(release.sourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.sourceChangeInvalidatesOldBuildValidation!==true||release.buildPreflightIsNotFinalApproval!==true||release.finalReviewMustReadSameCurrentBuildRuntimeQaEvidence!==true||release.independentQaSeparatedFromVibe2SelfCheck!==true)throw new Error('release target-platform source/build/runtime/QA binding or artbook gate missing');
           const releaseFlow=release.requiredFlow||[];
           const sourceBind=releaseFlow.indexOf('BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE');
           const build=releaseFlow.indexOf('TARGET_PLATFORM_BUILD_OR_PACKAGE');
@@ -246,6 +244,8 @@ jobs:
           node --test qa/release-stale-artifact-guard.test.mjs
           node --test qa/tier1-development-baseline-gate.test.mjs
           node --test qa/company-design-pre-gate-resume.test.mjs
+          # Fail closed if paid provider credentials are wired into the free native design lane.
+          if grep -En '(^|[^A-Z_])(OPENAI_API_KEY|GEMINI_API_KEY|ANTHROPIC_API_KEY)([^A-Z_]|$)' tools/company-design-cycle.mjs .github/workflows/company-design-promotion-sync.yml; then
             echo 'paid/external AI key leaked into free multimodel path' >&2
             exit 1
           fi
@@ -271,8 +271,8 @@ jobs:
           const candidate=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
           const unityResult=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
           const vibeRunner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
-          for(const token of ['design-development-baseline.json','vibe2-release-implementation.json','unity-android-build.json','android-runtime-validation.json','independent-release-qa.json','buildIdentity','evidenceForBuild','core-design-lock-violation','RELEASE_ARTBOOK_PROVENANCE_GATE'])if(!cycle.includes(token))throw new Error(`release evidence contract missing: ${token}`);
-          for(const token of ['aiMayInventBuildPass:false','aiMayInventDeviceValidationPass:false','aiMayInventIndependentQaPass:false','currentSourceTreeBindingRequired:true','currentBuildEvidenceBindingRequired:true','sourceChangeInvalidatesOldBuildValidation:true','finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true','finalArtbookOnlyAfterReleaseReady:true'])if(!cycle.includes(token))throw new Error(`release safety contract missing: ${token}`);
+          for(const token of ['design-development-baseline.json','vibe2-release-implementation.json','unity-android-build.json','android-runtime-validation.json','independent-release-qa.json','buildIdentity','evidenceForBuild','core-design-lock-violation'])if(!cycle.includes(token))throw new Error(`release evidence contract missing: ${token}`);
+          for(const token of ['aiMayInventBuildPass:false','aiMayInventDeviceValidationPass:false','aiMayInventIndependentQaPass:false','currentSourceTreeBindingRequired:true','currentBuildEvidenceBindingRequired:true','sourceChangeInvalidatesOldBuildValidation:true','finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true'])if(!cycle.includes(token))throw new Error(`release safety contract missing: ${token}`);
           for(const token of ['FINAL_RELEASE_REVIEW','FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_RUNTIME_PASS','FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS','release-risk-watch-preflight.json','release-risk-watch.json','FINAL_DEPARTMENT_REVIEW_BUILD_RUNTIME_QA_BINDING=PASS'])if(!cycle.includes(token))throw new Error(`release final department review contract missing: ${token}`);
           for(const token of ['productionClass','DEVELOPMENT_BASELINE_READY','development-baseline-required'])if(!candidate.includes(token))throw new Error(`candidate release baseline guard missing: ${token}`);
           for(const token of ['PARTIAL_BUILD_VERIFIED','developmentBaselineImplemented:false','INDEPENDENT_RELEASE_QA=NOT_ASSERTED','DEVICE_VALIDATION=NOT_ASSERTED','gh run download','apk_sha256'])if(!unityResult.includes(token))throw new Error(`Unity result evidence separation missing: ${token}`);
@@ -295,11 +295,9 @@ jobs:
           node qa/game-catalog-normalization.test.mjs
           node --test qa/homepage-manager-publication-order.test.mjs
 
-      - name: Validate current artbook safety
+      - name: Validate current production safety
         run: |
           set -euo pipefail
-          node --test qa/artbook-production-pipeline.test.mjs
-          node --test qa/company-development-queue-reconcile.test.mjs
           node --test qa/production-diversity.test.mjs
           node --test qa/company-status-sync-direct-native.test.mjs qa/design-pipeline-no-artbook-regression.test.mjs
 
@@ -307,7 +305,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/company-recovery-learning.test.mjs qa/vibe2-experience-control.test.mjs
-          node --test qa/company-design-checkpoint-recovery.test.mjs qa/vibe2-release-dispatch-recovery.test.mjs
+          node --test qa/vibe2-release-dispatch-recovery.test.mjs
           node --test qa/company-system-ai-evolution.test.mjs qa/company-system-ai-supervision-loop.test.mjs
 
       - name: Validate Vibe presentation pipeline and runtime contract

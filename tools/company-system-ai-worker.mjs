@@ -10,7 +10,8 @@ import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 import { reviewSystemAiQaContract } from './company-system-ai-qa-contract-review.mjs';
 
 const clean=v=>String(v??'').trim();
-const MODEL=process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-2.5-flash';
+const PROVIDER=process.env.SYSTEM_AI_PROVIDER||'gemini';
+const MODEL=PROVIDER==='openai'?(process.env.SYSTEM_AI_OPENAI_MODEL||'gpt-5-mini'):(process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-2.5-flash');
 const TIMEOUT=Math.max(30000,Math.min(600000,Number(process.env.SYSTEM_AI_TIMEOUT_MS||360000)));
 const NUM_PREDICT=Math.max(4096,Math.min(16384,Number(process.env.SYSTEM_AI_NUM_PREDICT||8192)));
 const MAX_TOTAL_CONTEXT=420000;
@@ -35,6 +36,34 @@ export function validateSystemAiTaskPreflight(task={}){if(clean(task.status)!=='
 function excerpt(file,patterns=[]){const text=fs.existsSync(file)?fs.readFileSync(file,'utf8'):'';if(text.length<=MAX_FILE_CONTEXT&&!patterns.length)return text;const lines=text.split('\n'),hits=[];for(let i=0;i<lines.length;i++)if(patterns.some(p=>lines[i].includes(p)))hits.push(i);if(!hits.length)return text.slice(0,MAX_FILE_CONTEXT);const ranges=[];for(const hit of hits.slice(0,12)){const a=Math.max(0,hit-55),b=Math.min(lines.length-1,hit+55),last=ranges.at(-1);if(last&&a<=last[1]+1)last[1]=Math.max(last[1],b);else ranges.push([a,b]);}return ranges.map(([a,b])=>`[LINES ${a+1}-${b+1}]\n${lines.slice(a,b+1).join('\n')}`).join('\n\n').slice(0,MAX_FILE_CONTEXT);}
 function parseModelJson(raw=''){const text=clean(raw).replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();const a=text.indexOf('{'),b=text.lastIndexOf('}');if(a<0||b<a)throw new Error('SYSTEM_AI_MODEL_JSON_MISSING');return JSON.parse(text.slice(a,b+1));}
 async function requestModel(prompt,{maxPredict=NUM_PREDICT}={}){
+  if(!['gemini','openai'].includes(PROVIDER))throw new Error('SYSTEM_AI_PROVIDER_INVALID');
+  if(PROVIDER==='openai'){
+    const key=clean(process.env.OPENAI_API_KEY);
+    if(!key)throw new Error('SYSTEM_AI_OPENAI_KEY_MISSING_NO_LOCAL_FALLBACK');
+    const model=clean(MODEL);
+    if(!/^gpt-[a-z0-9.-]+$/.test(model))throw new Error('SYSTEM_AI_OPENAI_MODEL_INVALID');
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),TIMEOUT);
+    try{
+      const response=await fetch('https://api.openai.com/v1/responses',{
+        method:'POST',signal:controller.signal,
+        headers:{'content-type':'application/json',authorization:'Bearer '+key},
+        body:JSON.stringify({model,input:String(prompt),max_output_tokens:Math.min(16384,Math.max(512,maxPredict)),store:false,text:{format:{type:'json_object'}}})
+      });
+      if(!response.ok){
+        if([401,402,403,429].includes(response.status))throw new Error('SYSTEM_AI_OPENAI_AUTH_QUOTA_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+response.status);
+        throw new Error('SYSTEM_AI_OPENAI_HTTP_ERROR_NO_LOCAL_FALLBACK:'+response.status);
+      }
+      const data=await response.json();
+      if(data.status!=='completed')throw new Error('SYSTEM_AI_OPENAI_RESPONSE_NOT_COMPLETE_NO_LOCAL_FALLBACK:'+clean(data.status));
+      const raw=(data.output||[]).filter(row=>row.type==='message').flatMap(row=>row.content||[]).filter(part=>part.type==='output_text'&&typeof part.text==='string').map(part=>part.text).join('');
+      if(!raw.trim())throw new Error('SYSTEM_AI_OPENAI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
+      return raw;
+    }catch(error){
+      if(error?.name==='AbortError')throw new Error('SYSTEM_AI_OPENAI_TIMEOUT_NO_LOCAL_FALLBACK');
+      throw error;
+    }finally{clearTimeout(timer);}
+  }
   const key=clean(process.env.GEMINI_API_KEY);
   if(!key)throw new Error('SYSTEM_AI_GEMINI_KEY_MISSING_NO_LOCAL_FALLBACK');
   const model=clean(process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-2.5-flash');

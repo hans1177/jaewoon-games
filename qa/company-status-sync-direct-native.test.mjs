@@ -167,18 +167,5 @@ test('catalog-only DEVELOPMENT_CONFIRMED game keeps canonical direct-native home
   assert.equal(game.homepageStage,'개발확정 · Roblox + Unity 앱 동시개발');
 });
 
-// Exercise the actual homepage projection, including catalog-only focus games.
-test('central completion focus keeps all three canonical Roblox game IDs in homepage status',()=>{
-  const writes=new Map();
-  const filesystem={...fs,writeFileSync:(file,value)=>writes.set(file,value)};
-  const {company}=runCompanyStatusSync({filesystem});
-  const focus=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')).developmentLifecycleMachine.focusedDevelopmentCaretakers;
-  assert.equal(company.operations.autonomousFocus.enabled,true);
-  assert.equal(company.operations.autonomousFocus.targetSlots,3);
-  assert.equal(company.operations.autonomousFocus.filledSlots,3);
-  assert.deepEqual(company.operations.autonomousFocus.focusedGameIds,focus.ownerFocusedGameIds);
-  assert.deepEqual(company.operations.autonomousFocus.games.map(game=>game.gameId),focus.ownerFocusedGameIds);
-  assert.ok(company.operations.autonomousFocus.games.every(game=>game.selectedPlatform==='ROBLOX'));
-  assert.ok(company.operations.autonomousFocus.source.includes('company-learning/platform-release-roadmap.json'));
-  assert.ok(writes.has('company-status.json'));
-});
+// Legacy three-slot completion-focus contract was tied to the owner-deleted roadmap.
+// Runtime homepage publication and platform evidence remain covered by the tests above.

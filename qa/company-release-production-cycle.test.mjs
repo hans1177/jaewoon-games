@@ -61,25 +61,23 @@ test('build preflight cannot replace same-build runtime, independent QA, or fina
   assert.match(runner, /finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true/);
 });
 
-test('release baseline and final artbook are reachable only after current-build evidence and final review', () => {
+test('release baseline is reachable only after current-build evidence and final review without removed artbook', () => {
   const runtimeIndex = runner.indexOf("latestFile('android-runtime-validation.json')");
   const qaIndex = runner.indexOf("latestFile('independent-release-qa.json')");
   const finalReviewIndex = runner.indexOf("phase:'FINAL_RELEASE_REVIEW'");
   const releaseBaselineIndex = runner.indexOf("const releaseBaselinePath=path.join(base,'release-baseline.json')");
-  const artbookEditorIndex = runner.indexOf("release-artbook-editor");
   const readyIndex = runner.indexOf("writeState('RELEASE_READY'");
 
-  for (const [name, index] of Object.entries({runtimeIndex, qaIndex, finalReviewIndex, releaseBaselineIndex, artbookEditorIndex, readyIndex})) {
+  for (const [name, index] of Object.entries({runtimeIndex, qaIndex, finalReviewIndex, releaseBaselineIndex, readyIndex})) {
     assert.ok(index >= 0, `missing ${name}`);
   }
   assert.ok(runtimeIndex < qaIndex);
   assert.ok(qaIndex < finalReviewIndex);
   assert.ok(finalReviewIndex < releaseBaselineIndex);
-  assert.ok(releaseBaselineIndex < artbookEditorIndex);
-  assert.ok(artbookEditorIndex < readyIndex);
+  assert.ok(releaseBaselineIndex < readyIndex);
 
   assert.match(runner, /finalDepartmentReviewEvidenceBound:true/);
-  assert.match(runner, /finalArtbookOnlyAfterReleaseReady:true/);
-  assert.match(runner, /departmentPageAuthorship:false/);
-  assert.match(runner, /newClaimsAdded:false/);
+  assert.match(runner, /coreDesignLockPreserved:true/);
+  assert.match(runner, /currentBuild:\{identity,sourceTreeSha:buildTree,evidence:build.path\}/);
+  assert.doesNotMatch(runner, /release-artbook-editor|finalArtbookOnlyAfterReleaseReady/);
 });

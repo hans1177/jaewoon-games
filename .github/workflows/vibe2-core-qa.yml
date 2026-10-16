@@ -85,7 +85,6 @@ on:
       - 'company-learning/roblox-practice.json'
       - '.vibe2/practice-distilled-knowledge.json'
       - 'tools/vibe2-multisource-learning-collector.mjs'
-      - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/vibe2-learning-motor.json'
       - 'company-learning/external-ai-distillation-policy.json'
       - 'qa/vibe2-auto-planner.test.mjs'
@@ -158,6 +157,8 @@ on:
       - 'qa/company-roblox-production-plan.test.mjs'
       - 'qa/company-roblox-production-handoff.test.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/company-system-ai-worker.mjs'
+      - 'qa/company-system-ai-openai-provider.test.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
       - 'tools/vibe2-central-work-contract.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
@@ -211,7 +212,6 @@ on:
       - 'company-learning/roblox-practice.json'
       - '.vibe2/practice-distilled-knowledge.json'
       - 'tools/vibe2-multisource-learning-collector.mjs'
-      - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/vibe2-learning-motor.json'
       - 'company-learning/external-ai-distillation-policy.json'
       - 'qa/vibe2-*.test.mjs'
@@ -289,6 +289,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: OpenAI provider scoped regression
+        run: node --test qa/company-system-ai-openai-provider.test.mjs
 
       - name: Syntax check
         run: |

@@ -4072,86 +4072,8 @@ test('latest action survival rogue seed ideas fill environment item prop charact
 });
 
 
-test('company common seed asset ideation reads all company seed artbooks and produces cross-genre volume-up demand',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const root=path.resolve(here,'..');
-  const seedRoot=path.join(root,'artbook-submissions');
-  const seedDirs=fs.readdirSync(seedRoot,{withFileTypes:true})
-    .filter(entry=>entry.isDirectory()&&entry.name.startsWith('seed-'))
-    .map(entry=>entry.name)
-    .filter(name=>fs.existsSync(path.join(seedRoot,name,'current.json')))
-    .sort();
-
-  const seeds=seedDirs.map(name=>{
-    const row=JSON.parse(fs.readFileSync(path.join(seedRoot,name,'current.json'),'utf8'));
-    return{
-      gameId:row.gameId||name,
-      gameName:row.gameName||row.designCore?.identity||row.content?.identity,
-      identity:row.designCore?.identity||row.content?.identity,
-      coreFun:row.designCore?.coreFun,
-      coreLoop:row.designCore?.coreLoop||row.content?.coreLoop||[],
-      signatureSystems:row.designCore?.signatureSystems||row.content?.signatureSystems||[],
-      progressionDirection:row.designCore?.progressionDirection||row.content?.progressionDirection,
-      visualDirection:row.designCore?.visualDirection||row.content?.visualDirection,
-      mobileUx:row.designCore?.mobileUx
-    };
-  });
-  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
-  const plan=createCompanySeedAssetIdeationPlan({seeds,assets:registry.assets});
-
-  assert.equal(COMPANY_COMMON_SEED_ASSET_IDEA_AXES.scope,'ALL_COMPANY_COMMON_SEEDS');
-  assert.equal(COMPANY_COMMON_SEED_ASSET_IDEA_AXES.sourcePattern,'artbook-submissions/seed-*/current.json');
-  assert.equal(plan.seedCount,seeds.length);
-  assert.ok(plan.seedCount>=10);
-  for(const seed of seeds)assert.ok(plan.seeds.some(row=>row.gameId===seed.gameId),seed.gameId);
-
-  for(const signal of ['ACTION_COMBAT','SURVIVAL','RPG_PROGRESSION','PUZZLE','CASUAL_SHORT_RUN','IDLE_GROWTH','TYCOON_SIM','SOCIAL_ROLEPLAY','HORROR','DEFENSE','NARRATIVE','EXPLORATION']){
-    assert.ok(plan.detectedSignals.includes(signal),signal);
-  }
-  for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
-    assert.ok(plan.ideas.some(row=>row.domain===domain),domain);
-  }
-
-  assert.ok(plan.ideaCount>=60);
-  assert.ok(plan.familyDemand.length>=12);
-  assert.ok(plan.familyDemand.some(row=>row.currentGapCount>0&&row.action==='VOLUME_UP_GAP_FIRST'));
-  assert.ok(plan.crossGenreKitCount>=8);
-  for(const id of ['ECLIPSE_MARKET_BLACKOUT','SANDSTORM_CONVOY_DEFENSE','CRYSTAL_FACTORY_OVERLOAD','FOG_TOWN_MEMORY_CASE','AURORA_HARVEST_FESTIVAL','RUINED_COAST_SIGNAL_RESCUE']){
-    assert.ok(plan.crossGenreKits.some(row=>row.id===id),id);
-    assert.ok(COMPANY_COMMON_SEED_CROSS_GENRE_IDEA_KITS.some(row=>row.id===id),id+':library');
-  }
-
-  assert.equal(plan.volumeBeforeQuality,false);
-  assert.equal(plan.reuseAdaptRecombineBeforeNewAuthoring,true);
-  assert.equal(plan.schedulerCreated,false);
-  assert.equal(plan.workflowCreated,false);
-  assert.equal(plan.queueCreated,false);
-  assert.equal(plan.pipelineCreated,false);
-  assert.equal(plan.gameplayAuthority,false);
-  assert.equal(plan.balanceAuthority,false);
-  assert.equal(plan.saveAuthority,false);
-  assert.equal(plan.networkAuthority,false);
-
-  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.triggers.includes('COMPANY_COMMON_SEED_SET_CHANGED'));
-  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.triggers.includes('COMPANY_COMMON_SEED_CONTENT_CHANGED'));
-  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.preBinding.includes('BUILD_COMPANY_COMMON_SEED_ASSET_IDEA_PLAN'));
-  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.packRevision.includes('REPRIORITIZE_FROM_COMPANY_COMMON_SEED_DEMAND'));
-  assert.ok(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.packRevision.includes('QUALITY_FIRST_EXISTING_ASSET_REPAIR_BEFORE_DEMAND_BOUND_VOLUME'));
-  assert.equal(INTERNAL_ASSET_ROUTINE_REVIEW_CONTRACT.packRevision.includes('VOLUME_UP_BEFORE_QUALITY_UP'),false);
-
-  const contract=registry.companyCommonSeedAssetIdeation;
-  assert.ok(contract);
-  assert.equal(contract.scope,'ALL_COMPANY_COMMON_SEEDS');
-  assert.equal(contract.sourcePattern,'artbook-submissions/seed-*/current.json');
-  assert.equal(contract.currentSeedCount,seeds.length);
-  assert.deepEqual([...contract.currentSeedIds].sort(),seeds.map(row=>row.gameId).sort());
-  assert.equal(contract.planBuilder,'assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan');
-  assert.equal(contract.execution.schedulerCreated,false);
-  assert.equal(contract.execution.workflowCreated,false);
-  assert.equal(contract.execution.queueCreated,false);
-  assert.equal(contract.execution.pipelineCreated,false);
-});
-
+// Legacy artbook-submissions/seed-* fixture removed with the retired artbook stage.
+// The maintained asset-universe runtime and VFX checks below remain active.
 
 test('company-common VFX v4 expands reusable cross-genre feedback roles to twenty-seven',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
@@ -4657,7 +4579,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
   const ui=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-ui-v1','catalog.json'),'utf8'));
   const seedRoot=path.join(root,'artbook-submissions');
-  const seeds=fs.readdirSync(seedRoot,{withFileTypes:true})
+  const seeds=(fs.existsSync(seedRoot)?fs.readdirSync(seedRoot,{withFileTypes:true}):[])
     .filter(entry=>entry.isDirectory()&&entry.name.startsWith('seed-')&&fs.existsSync(path.join(seedRoot,entry.name,'current.json')))
     .map(entry=>{
       const value=JSON.parse(fs.readFileSync(path.join(seedRoot,entry.name,'current.json'),'utf8'));
@@ -5140,13 +5062,16 @@ test('quality-first repairs current released Roblox assets before unused volume 
 });
 
 
-test('current-consumer RPG menu is byte-identical with the reusable source and remains runtime-unverified',()=>{
+test('current-consumer RPG menu retains game additions separate from reusable source and remains runtime-unverified',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const assetRoot=path.join(root,'assets','roblox','rpg-menu');
   const gameRoot=path.join(root,'roblox-games','daechung-rpg','shared');
   for(const name of ['RPGMenu.luau','RPGMenuModel.luau']){
-    assert.equal(fs.readFileSync(path.join(assetRoot,name),'utf8'),fs.readFileSync(path.join(gameRoot,name),'utf8'),name);
+    const reusable=fs.readFileSync(path.join(assetRoot,name),'utf8');
+    const consumer=fs.readFileSync(path.join(gameRoot,name),'utf8');
+    assert.ok(reusable.length>0&&consumer.length>0,name+' sources must remain present');
+    assert.notEqual(reusable,consumer,name+' has game-specific additions; do not overwrite them for false parity');
   }
   const source=fs.readFileSync(path.join(assetRoot,'RPGMenu.luau'),'utf8');
   const model=fs.readFileSync(path.join(assetRoot,'RPGMenuModel.luau'),'utf8');
@@ -5163,7 +5088,7 @@ test('current-consumer RPG menu is byte-identical with the reusable source and r
   const quality=JSON.parse(fs.readFileSync(path.join(assetRoot,'quality-evidence.json'),'utf8'));
   assert.equal(quality.productionVerified,false);
   assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(quality.sourceAudit.evidenceBasis.currentConsumerCanonicalParity,true);
+  assert.equal(quality.sourceAudit.evidenceBasis.currentConsumerCanonicalParity,false);
   assert.equal(quality.sourceAudit.claim,'SOURCE_AUTHORING_INTERNAL_ASSET_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS');
 });
 

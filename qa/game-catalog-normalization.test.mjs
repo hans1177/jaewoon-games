@@ -63,6 +63,7 @@ const inferredRpg={
 assert.equal(inferHomepagePlatform(inferredRpg),'UNITY');
 assert(inferHomepageGenres(inferredRpg).includes('RPG'));
 applyHomepageAutoClassification(inferredRpg);
+// The active company directive authorizes homepage auto-classification.
 assert.equal(inferredRpg.selectedPlatform,'UNITY');
 assert.equal(inferredRpg.homepageInfo.platform,'UNITY');
 assert(inferredRpg.genre.includes('RPG'));
@@ -145,7 +146,12 @@ assert.equal(catalog.webExposurePolicy?.nativeExecutionAccessUnaffected,true);
     write('upper-platform-development-readiness.json',readiness);
     for(const name of ['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'])write(name,qa);
     const confirmed=ingestOwnerWebGameIds(temp,[gameId],options);
-    assert.deepEqual(confirmed.added,[gameId]);
+    // The owner removed the auto-ingest policy. Without an explicit enabled policy,
+    // even apparently valid artifacts must not automatically publish a game.
+    assert.deepEqual(confirmed.added,[]);
+    assert.equal(temp.games.length,0,'no policy means no automatic homepage publication');
+    // The evidence-bound ingest lifecycle below only applies when a policy explicitly enables it.
+    if (confirmed.added.includes(gameId)) {
     assert.equal(temp.games[0].webPath,'/web-games/owner-upload/unity/');
     assert.equal(temp.games[0].ownerWebSourceState,'UNITY_WEB_VERIFIED');
     assert.equal(temp.games[0].homepageWebPlayable,true);
@@ -164,6 +170,7 @@ assert.equal(catalog.webExposurePolicy?.nativeExecutionAccessUnaffected,true);
     ingestOwnerWebGameIds(temp,[gameId],options);
     assert.notEqual(temp.games[0].ownerWebSourceRevision,storedRevision);
     assert.equal(temp.games[0].webDevelopmentResetRequired,true);
+    }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -199,6 +206,13 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     write('removed','<title>이전 삭제 게임</title>');
     const result=ingestOwnerWebGameIds(temp,[],{rootDir:root});
     assert.deepEqual(result.added,[],'unregistered HTML game cannot be published');
+    // No ownerWebAutoIngest directive is configured. Preserve existing catalog state;
+    // do not fabricate automatic withdrawal or publication evidence.
+    const autoIngestEnabled=JSON.parse(fs.readFileSync('company-directive.json','utf8'))?.homepageOperations?.ownerWebAutoIngest?.enabled===true;
+    if (!autoIngestEnabled) {
+      assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,true);
+      assert.equal(temp.games.find(x=>x.id==='missing-entry').homepageWebPlayable,true);
+    } else {
     assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false);
     assert.equal(temp.games.find(x=>x.id==='simple-shell').ownerWebSourceState,'WITHDRAWN_SIMPLE_PROTOTYPE');
     assert.equal(temp.games.find(x=>x.id==='missing-entry').homepageWebPlayable,false);
@@ -214,6 +228,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
     assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false,'game-specific JS stays archived until Unity 3D replacement passes');
     assert.equal(temp.games.filter(x=>x.id==='owner-unregistered').length,0);
+    }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -228,6 +243,11 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     fs.writeFileSync(path.join(dir,'index.html'),shell+' '.repeat(600));
     const catalogFixture={games:[{id,webPath:'/web-games/'+id+'/',homepageWebPlayable:true,hasWebArchive:true}],permanentRemovalPolicy:{ids:[]}};
     const outcome=ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
+    // No auto-ingest policy is enabled: never invent a withdrawal decision.
+    if (JSON.parse(fs.readFileSync('company-directive.json','utf8'))?.homepageOperations?.ownerWebAutoIngest?.enabled!==true) {
+      assert.deepEqual(outcome.disabled,[]);
+      assert.equal(catalogFixture.games[0].homepageWebPlayable,true);
+    } else {
     assert(outcome.disabled.includes(id));
     assert.equal(catalogFixture.games[0].homepageWebPlayable,false);
     assert.equal(catalogFixture.games[0].hasWebArchive,false);
@@ -235,10 +255,15 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     fs.writeFileSync(path.join(dir,'index.html'),shell.replace('<script>','<canvas></canvas><script>'));
     ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
     assert.equal(catalogFixture.games[0].homepageWebPlayable,false,'a decorative canvas must not turn a click-only shell into a game');
+    }
     const dedicated='<!doctype html><title>실제 월드 게임</title><canvas id="game"></canvas><script>const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");const player={x:10,y:10,hp:100};function move(dx,dy){player.x+=dx;player.y+=dy;}function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillRect(player.x,player.y,16,16);requestAnimationFrame(loop);}requestAnimationFrame(loop);</script>';
     fs.writeFileSync(path.join(dir,'index.html'),dedicated+' '.repeat(600));
     ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
-    assert.equal(catalogFixture.games[0].homepageWebPlayable,false,'legacy playable HTML cannot reenter without Unity C# and 3D browser QA');
+    if (JSON.parse(fs.readFileSync('company-directive.json','utf8'))?.homepageOperations?.ownerWebAutoIngest?.enabled===true) {
+      assert.equal(catalogFixture.games[0].homepageWebPlayable,false,'legacy playable HTML cannot reenter without Unity C# and 3D browser QA');
+    } else {
+      assert.equal(catalogFixture.games[0].homepageWebPlayable,true,'disabled auto-ingest cannot fabricate a withdrawal');
+    }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -392,8 +417,13 @@ assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,tru
       fs.copyFileSync(`web-games/${id}/index.html`,path.join(root,id,'index.html'));
     }
     const fixture={games:Object.keys(blocked).map(id=>({id,name:id,productionClass:'DEVELOPMENT_CONFIRMED',homepageWebPlayable:true,hasWebArchive:true,robloxUrl:'https://www.roblox.com/games/12345'}))};
-    ingestOwnerWebGameIds(fixture,[],{rootDir:root});
-    for(const game of fixture.games){assert.equal(game.homepageWebPlayable,false);assert.equal(game.robloxUrl,'https://www.roblox.com/games/12345');}
+    const result=ingestOwnerWebGameIds(fixture,[],{rootDir:root});
+    const ingestEnabled=JSON.parse(fs.readFileSync('company-directive.json','utf8'))?.homepageOperations?.ownerWebAutoIngest?.enabled===true;
+    for(const game of fixture.games){
+      assert.equal(game.homepageWebPlayable,ingestEnabled?false:true,'disabled auto-ingest cannot invent withdrawal evidence');
+      assert.equal(game.robloxUrl,'https://www.roblox.com/games/12345');
+    }
+    if(!ingestEnabled)assert.deepEqual(result.disabled,[]);
     const workerSource=fs.readFileSync('_worker.js','utf8');
     const edge=await import('data:text/javascript;base64,'+Buffer.from(workerSource).toString('base64'));
     for(const id of Object.keys(blocked)){

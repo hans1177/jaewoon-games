@@ -5,7 +5,7 @@
 <title>Approved Web Bootstrap</title>
 </head>
 <body>
-<main id="game"><script>var game = new Game(); game.init();</script></main>
+<main id="game" aria-label="Crystal Defense"></main>
 <script>
 // Complete playable Web baseline with mobile gameplay, save compatibility, and verified learning motor
 // This is an approved missing-source bootstrap
@@ -200,173 +200,54 @@ loseButton.addEventListener('click', () => {
     loseArea.style.borderColor = '#ff3333';
 });
 
-// Add real input handling
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('defense-button')) {
-        defend();
-    } else if (e.target.classList.contains('move-button')) {
-        move();
-    } else if (e.target.classList.contains('win-button')) {
-        restart();
-    } else if (e.target.classList.contains('lose-button')) {
-        restart();
-    }
-});
-
-function defend() {
-    // Simulate defending
-    document.querySelector('.defense-text').style.display = 'none';
-    document.querySelector('.defense-button').style.backgroundColor = '#007bff';
-    document.querySelector('.defense-button').style.color = '#fff';
-    document.querySelector('.defense-button').textContent = 'Defended!';
-    document.querySelector('.defense-area').style.backgroundColor = '#007bff';
-    document.querySelector('.defense-area').style.color = '#fff';
-    document.querySelector('.defense-area').style.borderRadius = '10px';
-    document.querySelector('.defense-area').style.borderColor = '#005f8a';
+// Bind the existing controls before exposing the playable state.
+for (const [area, button] of [[defenseArea,defenseButton],[moveArea,moveButton],[winArea,winButton],[loseArea,loseButton]]) {
+  area.appendChild(button);
 }
-
-function move() {
-    // Simulate moving
-    document.querySelector('.move-text').style.display = 'none';
-    document.querySelector('.move-button').style.backgroundColor = '#007bff';
-    document.querySelector('.move-button').style.color = '#fff';
-    document.querySelector('.move-button').textContent = 'Moved!';
-    document.querySelector('.move-area').style.backgroundColor = '#007bff';
-    document.querySelector('.move-area').style.color = '#fff';
-    document.querySelector('.move-area').style.borderRadius = '10px';
-    document.querySelector('.move-area').style.borderColor = '#005f8a';
+defenseButton.className='defense-button';
+moveButton.className='move-button';
+winButton.className='win-button';
+loseButton.className='lose-button';
+const state = {defense:0,move:0,score:0,ended:false};
+try {
+  const previous=JSON.parse(localStorage.getItem('gameState')||'null');
+  if(previous&&typeof previous==='object'){
+    state.defense=Math.max(0,Number(previous.defense)||0);
+    state.move=Math.max(0,Number(previous.move)||0);
+    state.score=Math.max(0,Number(previous.score)||0);
+    state.ended=previous.ended===true;
+  }
+} catch {}
+const status=document.createElement('p');
+status.setAttribute('role','status');
+game.prepend(status);
+function render(){
+  const won=state.defense>=3&&state.move>=3;
+  const lost=state.move>state.defense+3;
+  state.ended=state.ended||won||lost;
+  status.textContent='Score: '+state.score+' · Defense: '+state.defense+' · Moves: '+state.move;
+  winArea.style.display=state.ended&&won?'flex':'none';
+  loseArea.style.display=state.ended&&!won?'flex':'none';
+  defenseButton.disabled=state.ended;
+  moveButton.disabled=state.ended;
+  try{localStorage.setItem('gameState',JSON.stringify(state));}catch{}
 }
-
-function restart() {
-    // Reset game state
-    document.querySelector('.defense-text').style.display = 'block';
-    document.querySelector('.defense-button').style.backgroundColor = '#444';
-    document.querySelector('.defense-button').style.color = '#fff';
-    document.querySelector('.defense-button').textContent = 'Click to defend!';
-    document.querySelector('.defense-area').style.backgroundColor = '#444';
-    document.querySelector('.defense-area').style.color = '#fff';
-    document.querySelector('.defense-area').style.borderRadius = '10px';
-    document.querySelector('.defense-area').style.borderColor = '#444';
-
-    document.querySelector('.move-text').style.display = 'block';
-    document.querySelector('.move-button').style.backgroundColor = '#444';
-    document.querySelector('.move-button').style.color = '#fff';
-    document.querySelector('.move-button').textContent = 'Move to progress!';
-    document.querySelector('.move-area').style.backgroundColor = '#444';
-    document.querySelector('.move-area').style.color = '#fff';
-    document.querySelector('.move-area').style.borderRadius = '10px';
-    document.querySelector('.move-area').style.borderColor = '#444';
-
-    document.querySelector('.win-text').style.display = 'none';
-    document.querySelector('.win-button').style.backgroundColor = '#444';
-    document.querySelector('.win-button').style.color = '#fff';
-    document.querySelector('.win-button').textContent = 'Restart!';
-    document.querySelector('.win-area').style.backgroundColor = '#444';
-    document.querySelector('.win-area').style.color = '#fff';
-    document.querySelector('.win-area').style.borderRadius = '10px';
-    document.querySelector('.win-area').style.borderColor = '#444';
-
-    document.querySelector('.lose-text').style.display = 'none';
-    document.querySelector('.lose-button').style.backgroundColor = '#444';
-    document.querySelector('.lose-button').style.color = '#fff';
-    document.querySelector('.lose-button').textContent = 'Restart!';
-    document.querySelector('.lose-area').style.backgroundColor = '#444';
-    document.querySelector('.lose-area').style.color = '#fff';
-    document.querySelector('.lose-area').style.borderRadius = '10px';
-    document.querySelector('.lose-area').style.borderColor = '#444';
+function reset(){
+  state.defense=0;state.move=0;state.score=0;state.ended=false;
+  defenseText.style.display='block';moveText.style.display='block';
+  defenseButton.textContent='Defend!';moveButton.textContent='Move!';
+  render();
 }
-
-<script>
-// Add real gameplay state transition loop and mutable game state
-const game = document.getElementById('game');
-const state = {
-    defense: false,
-    move: false,
-    win: false,
-    lose: false,
-    score: 0,
-    lastAction: null
-};
-
-function updateState() {
-state.score++; state.lastAction = 'defend';
-        state.score++;
-        state.lastAction = 'defend';
-    } else if (state.move) {
-        state.score++;
-        state.lastAction = 'move';
-state.score += 100; state.lastAction = 'win';
-        state.score += 100;
-        state.lastAction = 'win';
-    } else if (state.lose) {
-        state.score -= 50;
-        state.lastAction = 'lose';
-    }
-
-    // Update UI based on state
-    document.querySelector('.defense-text').style.display = state.defense ? 'none' : 'block';
-    document.querySelector('.move-text').style.display = state.move ? 'none' : 'block';
-    document.querySelector('.win-text').style.display = state.win ? 'none' : 'block';
-    document.querySelector('.lose-text').style.display = state.lose ? 'none' : 'block';
-
-    document.querySelector('.score-text').textContent = `Score: ${state.score}`;
-    document.querySelector('.last-action').textContent = state.lastAction || 'None';
-}
-
-// Add real input handling and state transitions
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('defense-button')) {
-        state.defense = true;
-        updateState();
-    } else if (e.target.classList.contains('move-button')) {
-        state.move = true;
-        updateState();
-    } else if (e.target.classList.contains('win-button')) {
-        state.win = true;
-        updateState();
-    } else if (e.target.classList.contains('lose-button')) {
-        state.lose = true;
-        updateState();
-    }
+defenseButton.addEventListener('click',()=>{if(state.ended)return;state.defense++;state.score+=10;render();});
+moveButton.addEventListener('click',()=>{if(state.ended)return;state.move++;state.score+=5;render();});
+winButton.addEventListener('click',reset);
+loseButton.addEventListener('click',reset);
+document.addEventListener('keydown',e=>{
+  if(e.key==='d')defenseButton.click();
+  if(e.key==='m')moveButton.click();
+  if(e.key==='r'&&state.ended)reset();
 });
-
-// Add real state transitions and outcomes
-document.addEventListener('keydown', (e) => {
-document.addEventListener('keydown', (e) => {
-
-if (e.key === 'd') { state.defense = !state.defense; updateState(); }
-        state.defense = !state.defense;
-        updateState();
-    }
-});
-        state.defense = !state.defense;
-        updateState();
-    } else if (e.key === 'm') {
-        state.move = !state.move;
-        updateState();
-    } else if (e.key === 'w') {
-        state.win = !state.win;
-        updateState();
-    } else if (e.key === 'l') {
-        state.lose = !state.lose;
-        updateState();
-    }
-});
-
-// Add real save compatibility
-localStorage.setItem('gameState', JSON.stringify(state));
-document.addEventListener('DOMContentLoaded', () => {
-    const savedState = JSON.parse(localStorage.getItem('gameState'));
-    if (savedState) {
-        state.defense = savedState.defense || false;
-        state.move = savedState.move || false;
-        state.win = savedState.win || false;
-        state.lose = savedState.lose || false;
-        state.score = savedState.score || 0;
-        state.lastAction = savedState.lastAction || null;
-        updateState();
-    }
-});
+render();
 </script>
 </body>
 </html>

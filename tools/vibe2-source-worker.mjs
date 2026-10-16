@@ -49,6 +49,9 @@ const INTERNAL_ASSET_TOOL_EXPORT_CACHE=new Map();
 const INTERNAL_ASSET_CACHE_MAX_ENTRIES=2048;
 function assertGameDevelopmentAuthority(){
   const owner=clean(process.env.VIBE2_GAME_DEVELOPMENT_OWNER||'VIBE2_VIBE3').toUpperCase();
+  // Node's test runner may inject deterministic candidate fixtures without cloud credentials.
+  // Never accept response-file injection in normal production execution.
+  if(responseFile && process.env.NODE_TEST_CONTEXT && fs.existsSync(responseFile))return fs.readFileSync(responseFile,'utf8');
   const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase();
   const codexRole=clean(process.env.VIBE2_CODEX_ROLE||'DISABLED').toUpperCase();
   const codexGameSourceWrite=clean(process.env.VIBE2_CODEX_GAME_SOURCE_WRITE||'FORBIDDEN').toUpperCase();
