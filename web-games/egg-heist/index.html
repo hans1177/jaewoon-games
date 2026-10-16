@@ -229,53 +229,7 @@ document.addEventListener('touchstart', (e) => {
   }
 });
 
-// Add mobile pointer/touch interaction for mobile devices
-document.addEventListener('touchmove', (e) => { const rect = e.target.getBoundingClientRect(); const x = rect.x + e.touches[0].clientX - window.innerWidth / 2; })
-  const rect = e.target.getBoundingClientRect();
-  const x = rect.x + e.touches[0].clientX - window.innerWidth / 2;
-  const y = rect.y + e.touches[0].clientY - window.innerHeight / 2;
-
-  // Check if touch is within game area
-  if (x > 0 && x < 20 && y > 0 && y < 20) {
-    const tile = gameState.map.tiles[Math.floor(x / 20) * 20 + Math.floor(y / 20)];
-    if (tile === 1) {
-      // Player encounters a trap
-      gameState.player.health -= 20;
-      alert("You stepped on a trap! You're hurt.");
-      if (gameState.player.health <= 0) {
-        alert("You lost!");
-        resetGame();
-      }
-    } else if (tile === 3) {
-      // Player finds an item
-      gameState.items.push(Math.random() < 0.5 ? 'key' : 'potion');
-      alert("You found an item!");
-      if (gameState.items.length === 5) {
-        alert("You found all items! You win!");
-        winCondition = true;
-        resetGame();
-      }
-    } else if (tile === 5) {
-      // Player finds a key
-      gameState.items.push('key');
-      alert("You found a key!");
-      if (gameState.items.length === 5) {
-        alert("You found all items! You win!");
-        winCondition = true;
-        resetGame();
-      }
-    } else if (tile === 6) {
-      // Player finds a potion
-      gameState.items.push('potion');
-      alert("You found a potion!");
-      if (gameState.items.length === 5) {
-        alert("You found all items! You win!");
-        winCondition = true;
-        resetGame();
-      }
-    }
-  }
-});
+// Mobile touch interaction is handled by the valid touchstart handler above.
 
 // Add progression and save compatibility
 let saveState = JSON.parse(localStorage.getItem('vibe2_game_state')) || {
