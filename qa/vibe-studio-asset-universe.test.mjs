@@ -4579,7 +4579,7 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
   const ui=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-ui-v1','catalog.json'),'utf8'));
   const seedRoot=path.join(root,'artbook-submissions');
-  const seeds=fs.readdirSync(seedRoot,{withFileTypes:true})
+  const seeds=(fs.existsSync(seedRoot)?fs.readdirSync(seedRoot,{withFileTypes:true}):[])
     .filter(entry=>entry.isDirectory()&&entry.name.startsWith('seed-')&&fs.existsSync(path.join(seedRoot,entry.name,'current.json')))
     .map(entry=>{
       const value=JSON.parse(fs.readFileSync(path.join(seedRoot,entry.name,'current.json'),'utf8'));
