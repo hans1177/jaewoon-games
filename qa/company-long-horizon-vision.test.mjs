@@ -43,8 +43,9 @@ test('compact central maps never replace roadmap or grant permission',()=>{
   assert.equal(security.enforcement.unverified,'BLOCK');
   assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
   assert.equal(roadmap.longTermVibeVision.guardrails.securityImmuneSystemMayNotBeBypassedForLongTermVision,true);
-  assert.equal(company.legacyCentralPolicyReferenceCleanup.replacementPolicyNotAsserted,true);
-  assert.equal(company.legacyCentralPolicyReferenceCleanup.executionContractChangeNotAuthorized,true);
+  assert.equal(company.policyDocument,'company-learning/platform-release-roadmap.json');
+  assert.equal(company.documentationSynchronization.centralPolicyFirst,true);
+  assert.equal(company.documentationSynchronization.workDocumentsCannotOverrideCentralPolicy,true);
 });
 
 test('economic sustainability remains under owner-controlled actions',()=>{
