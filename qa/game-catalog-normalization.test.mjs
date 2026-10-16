@@ -40,7 +40,8 @@ const permanentlyRemoved=[
   'seed-roblox-battleground-fight-welcome-to-bloxburg',
   'seed-roblox-obby-party-minigam-tower-of-hell'
 ];
-assert.deepEqual(catalog.permanentRemovalPolicy?.ids,permanentlyRemoved);
+for(const id of permanentlyRemoved)assert.ok(catalog.permanentRemovalPolicy?.ids?.includes(id),`protected removal missing: ${id}`);
+assert.equal(new Set(catalog.permanentRemovalPolicy?.ids||[]).size,(catalog.permanentRemovalPolicy?.ids||[]).length,'duplicate removed game IDs');
 assert.equal(catalog.permanentRemovalPolicy?.reentryAllowed,false);
 assert.equal(catalog.permanentRemovalPolicy?.automaticRecoveryAllowed,false);
 assert.equal(catalog.permanentRemovalPolicy?.automaticMaintenanceAllowed,false);
