@@ -19,8 +19,8 @@ const LEGACY_DEVELOPMENT_FREEZE_FIELDS=Object.freeze(['newFeatureExpansionFrozen
 const platformLabel=platform=>platform==='ROBLOX'?'Roblox':platform==='UNITY'?'Unity Android':platform==='FORTNITE_UEFN'?'Fortnite UEFN':'';
 function autoClassificationPolicy(){
   try{
-    const roadmap=ROADMAP_PATH?JSON.parse(fs.readFileSync(ROADMAP_PATH,'utf8')):{};
-    return roadmap?.catalogNormalization?.autoClassification||{};
+    const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+    return directive?.homepageOperations?.autoClassification||{};
   }catch{
     return{};
   }
