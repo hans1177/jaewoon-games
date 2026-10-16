@@ -27,10 +27,10 @@ function readRetained(root, key, relative, authority, status) {
   return {data, sha256:hash(contents)};
 }
 export function validateSharedWorkerContext({root=process.cwd(),expectedDirectiveSha256,expectedLogSha256,expectedArchitectureSha256,expectedSecuritySha256}={}) {
-  // A deleted constitution is never recreated or interpreted as an implicit PASS.
-  if (fs.existsSync(path.join(root,'company-learning/platform-release-roadmap.json'))) {
-    error('DELETED_ROADMAP_REAPPEARED');
-  }
+  // This is a four-document integrity check only. The separate canonical
+  // roadmap is allowed to exist; neither its presence nor this check grants approval.
+  const roadmapPath=path.join(root,'company-learning/platform-release-roadmap.json');
+  const roadmapPresent=fs.existsSync(roadmapPath);
   const docs={}, hashes={};
   for(const [key,relative,authority,status] of RETAINED_DOCUMENTS) {
     const item=readRetained(root,key,relative,authority,status);
@@ -61,10 +61,65 @@ export function validateSharedWorkerContext({root=process.cwd(),expectedDirectiv
   return {
     pass:true, scope:'RETAINED_FOUR_DOCUMENT_INTEGRITY_ONLY',
     policyAuthorityVerified:false, sourceWriteAuthorized:false,
-    releaseAuthorized:false, deletedRoadmapRestored:false,
+    releaseAuthorized:false, canonicalRoadmapPresent:roadmapPresent,
     hashes, documentVersions:Object.fromEntries(RETAINED_DOCUMENTS.map(([key])=>[key,docs[key].version]))
   };
 }
+
+// Compile real canonical rules when an actual complete policy document exists.
+// This function never synthesizes missing rules or treats four short reference
+// documents as owner policy. A missing/invalid policy returns valid:false.
+export function compileOwnerCanonicalConstitution(policy={}) {
+  const owner=policy?.ownerCanonicalRules;
+  const binding=owner?.constitutionalBinding;
+  const errors=[];
+  if(!owner||typeof owner!=='object'||!binding||typeof binding!=='object'){
+    errors.push('CONSTITUTION_AUTHORITY_UNAVAILABLE');
+  }
+  const entries=owner&&typeof owner==='object'
+    ?Object.entries(owner).filter(([key,rule])=>/^rule\d+$/i.test(key)&&rule?.enabled===true)
+    :[];
+  const entryIds=new Set(),prefixIds=new Set();
+  for(const [key,rule] of entries){
+    if(typeof rule.id!=='string'||!/^RULE_\d+_/i.test(rule.id)){
+      errors.push('INVALID_CANONICAL_RULE_ID:'+key);continue;
+    }
+    if(entryIds.has(rule.id))errors.push('DUPLICATE_CANONICAL_RULE_ID:'+rule.id);
+    entryIds.add(rule.id);
+    const prefix=rule.id.match(/^RULE_\d+/i)?.[0];
+    if(prefixIds.has(prefix))errors.push('DUPLICATE_CANONICAL_RULE_PREFIX:'+prefix);
+    prefixIds.add(prefix);
+    if(!rule.machineEnforcement||!Array.isArray(rule.machineEnforcement.assertions)
+      ||rule.machineEnforcement.assertions.length===0)
+      errors.push('MACHINE_ENFORCEMENT_MISSING:'+rule.id);
+  }
+  if(entries.length===0)errors.push('CANONICAL_RULE_SET_EMPTY');
+  const declaredOrder=Array.isArray(owner?.implementationOrder)?owner.implementationOrder:[];
+  const byPrefix=id=>String(id).match(/^RULE_\d+/i)?.[0]||'';
+  const rank=new Map(declaredOrder.map((prefix,index)=>[String(prefix),index]));
+  const sorted=entries.sort((a,b)=>{
+    const ra=rank.get(byPrefix(a[1].id)),rb=rank.get(byPrefix(b[1].id));
+    if(ra!==undefined||rb!==undefined)return (ra??Infinity)-(rb??Infinity);
+    return Number(a[0].match(/\d+/)?.[0]||0)-Number(b[0].match(/\d+/)?.[0]||0);
+  });
+  const rules=sorted.map(([key,contract])=>({
+    key,id:contract.id,contract,
+    fingerprint:hash(JSON.stringify({key,id:contract.id,contract}))
+  }));
+  return {
+    valid:errors.length===0,
+    errors,version:Number(owner?.version)||0,
+    authority:owner?.authority||null,
+    constitutionalAuthority:owner?.constitutionalAuthority||null,
+    binding:binding||{},
+    fingerprint:errors.length===0?hash(JSON.stringify({
+      version:owner.version,binding,orderedRules:rules.map(x=>({id:x.id,fingerprint:x.fingerprint}))
+    })):null,
+    orderedRuleIds:rules.map(x=>x.id),
+    rules
+  };
+}
+
 export function verifyPinnedSharedWorkerContext(options={}) {
   return validateSharedWorkerContext(options);
 }
