@@ -396,8 +396,10 @@ async function runVibe2SourceWorker(args={}){
       if(fixturePolicy.developmentAccess)
         for(const key of Object.keys(fixturePolicy.developmentAccess))
           if(fixturePolicy.developmentAccess[key]==='OWNER_HOLD')delete fixturePolicy.developmentAccess[key];
-      if(fixturePolicy.assetProductionParallelContract?.activeProductionTargets)
-        fixturePolicy.assetProductionParallelContract.activeProductionTargets=['ROBLOX','UNITY_ANDROID','UNITY_WEB','WEB'];
+      // The isolated historical asset fixtures must not inherit production's
+      // Roblox-only asset-lane hold; production owner scope is unchanged.
+      if(fixturePolicy.assetProductionParallelContract)
+        delete fixturePolicy.assetProductionParallelContract.activeProductionTargets;
       fs.mkdirSync(path.dirname(policyFile),{recursive:true});
       fs.writeFileSync(policyFile,JSON.stringify(fixturePolicy));
     }
