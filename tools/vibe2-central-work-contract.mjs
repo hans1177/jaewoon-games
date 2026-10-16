@@ -205,9 +205,9 @@ export function loadCentralPolicySnapshot({repoRoot=process.cwd(),policyPath=CAN
   const file=path.resolve(repoRoot,policyPath);
   if(!fs.existsSync(file)){
     return{
-      required:required===true,present:false,valid:required!==true,path:policyPath,
+      required:required===true,present:false,valid:false,path:policyPath,
       fingerprint:null,executionFingerprint:null,version:null,status:null,policySource:null,syncMode:null,
-      errors:required===true?['CENTRAL_POLICY_MISSING']:[],document:null
+      errors:['CENTRAL_POLICY_MISSING'],document:null
     };
   }
   let raw='',document=null;
