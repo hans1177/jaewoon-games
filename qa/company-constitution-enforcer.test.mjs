@@ -38,3 +38,17 @@ test('missing owner directive is a hard failure, not implicit approval', () => {
     fs.rmSync(temp, {recursive: true, force: true});
   }
 });
+
+test('reintroduced deleted policy file requires owner review instead of passing', () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-reappearance-'));
+  try {
+    fs.mkdirSync(path.join(temp, 'company-learning'), {recursive: true});
+    fs.copyFileSync(path.join(root, 'company-directive.json'), path.join(temp, 'company-directive.json'));
+    fs.writeFileSync(path.join(temp, 'company-learning/platform-release-roadmap.json'), '{}');
+    const result = enforceConstitution({root: temp, phase: 'test'});
+    assert.equal(result.pass, false);
+    assert.ok(result.errors.includes('DELETED_POLICY_REAPPEARED_REQUIRES_OWNER_REVIEW'));
+  } finally {
+    fs.rmSync(temp, {recursive: true, force: true});
+  }
+});
