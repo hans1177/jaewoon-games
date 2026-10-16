@@ -219,7 +219,20 @@ PACKS = [
     "fox_source_v3.zip",
     "fox-0",
     "zip"
-  ]
+  ],
+  ["06-arthropods","crab-animated-3d.zip","crab.zip","crab-low-poly-animated-3d-model","zip"],
+  ["07-wildlife","deer-male-rigged.blend","deer1.blend","old-deer-male","blend"],
+  ["07-wildlife","deer-female-rigged.blend","doe.blend","deer-female","blend"],
+  ["07-wildlife","chicken-rigged.zip","chicken.zip","chicken-animated","zip"],
+  ["07-wildlife","rooster-rigged.zip","rooster.zip","rooster-animated","zip"],
+  ["08-npc","fantasy-rpg-npc-six.zip","rpg_characters_-_nov_2020.zip","lowpoly-rpg-characters","zip"],
+  ["08-npc","monk-rigged.blend","MONK.blend","monk","blend"],
+  ["08-npc","old-lady-rigged.blend","oldlady-v2.blend","old-lady","blend"],
+  ["08-npc","knight-animated.zip","Knight Character by @Quaternius.zip","lowpoly-animated-knight","zip"],
+  ["08-npc","knight-cartoon.zip","Cartoon Medieval Knight.zip","cartoon-medieval-knight","zip"],
+  ["08-npc","female-basic-rigged.zip","female_basic_rigged.zip","basic-female","zip"],
+  ["09-buildings","blacksmith-original.zip","75729_Blacksmith1Upload_blend.zip","medieval-blacksmith","zip"],
+  ["09-buildings","blacksmith-interior.blend","medievalblacksmith.blend","medieval-blacksmith-interior","blend"]
 ]
 
 def previous_hashes():
