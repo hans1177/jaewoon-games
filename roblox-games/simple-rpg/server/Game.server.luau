@@ -1569,8 +1569,8 @@ for id = 1, 24 do
     node:SetAttribute("CivilizationResourceType", resource.Type)
     civSign(region, node, resource.Label .. " 채집", 4)
     local gatherPrompt = Instance.new("ProximityPrompt")
-  -- Hide the Roblox default UI while preserving ProximityPrompt input.
-  gatherPrompt.Style = Enum.ProximityPromptStyle.Custom
+    -- Hide the Roblox default UI while preserving ProximityPrompt input.
+    gatherPrompt.Style = Enum.ProximityPromptStyle.Custom
     gatherPrompt.Name = "GatherResource"
     gatherPrompt.ActionText = "채집"
     gatherPrompt.ObjectText = resource.Label
