@@ -47,6 +47,22 @@ function looksRepoReference(ref=''){
   if(!v||/^https?:\/\//i.test(v)||/^[A-Z0-9_:-]+$/.test(v))return false;
   return v.includes('/')&&!v.includes(' ');
 }
+// Historical evidence can reference a file deliberately removed by the owner.
+// This is NOT an authorization to restore it or exempt other missing references.
+function isVerifiedOwnerDeletedReference(ref){
+  try {
+    const directive=JSON.parse(fs.readFileSync(path.join(ROOT,'company-directive.json'),'utf8'));
+    const cleanup=directive.legacyCentralPolicyReferenceCleanup;
+    return ref==='company-learning/platform-release-roadmap.json' &&
+      cleanup?.removedPolicyPath===ref &&
+      cleanup?.replacementPolicyNotAsserted===true &&
+      cleanup?.executionContractChangeNotAuthorized===true &&
+      /^[a-f0-9]{40}$/.test(String(cleanup?.removedByCommit||'')) &&
+      directive.policyDocument===null &&
+      directive.documentationSynchronization?.centralPolicyPath===null &&
+      !existsRel(ref);
+  }catch{return false;}
+}
 function recordPathInfo(rel){
   const m=rel.match(/^company-records\/([^/]+)\/(\d{4})\/(\d{4}-\d{2}-\d{2})\/([^/]+)\/([^/]+)--([^/]+)\.json$/);
   return m?{domain:m[1],year:m[2],date:m[3],scopeId:m[4],recordType:m[5],recordId:m[6]}:null;
@@ -105,7 +121,7 @@ export function validateCompanyRecord(file,{checkReferences=true,checkMediaHash=
   }
   if(checkReferences){
     for(const [field,refs] of [['evidenceRefs',row.evidenceRefs||[]],['relatedFiles',row.relatedFiles||[]],['supersedes',row.supersedes||[]],['sourceRefs',row.provenance?.sourceRefs||[]]]){
-      for(const ref of refs)if(looksRepoReference(ref)&&!existsRel(ref))errors.push(`${field}:BROKEN_REF:${ref}`);
+      for(const ref of refs)if(looksRepoReference(ref)&&!existsRel(ref)&&!isVerifiedOwnerDeletedReference(ref))errors.push(`${field}:BROKEN_REF:${ref}`);
     }
   }
   return{file:rel,managed:true,recordId:row.recordId,errors};

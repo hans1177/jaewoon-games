@@ -19,7 +19,6 @@ import {
 } from '../tools/company-game-seed-bootstrap.mjs';
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const stateTool=fs.readFileSync('tools/game-seed-state.mjs','utf8');
 const platformProfileTool=fs.readFileSync('tools/game-seed-platform-profile.mjs','utf8');
 const bootstrap=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
@@ -39,11 +38,9 @@ const scores=value=>({planning:value,graphics:value,development:value,qa:value,b
 const ROBLOX_CATEGORIES=['ROLEPLAY_LIFE_AVATAR','SIMULATOR_TYCOON_INCREMENTAL','BATTLEGROUND_FIGHTING_SHOOTER','SURVIVAL_HORROR_ESCAPE','OBBY_PARTY_MINIGAME','STORY_RPG_ADVENTURE_RPG'];
 
 test('central machine policy preserves historical bootstrap while latest owner production contract supersedes scheduling',()=>{
-  assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
-  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
-  assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
-  assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
-  assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
+  assert.equal(directive.policyDocument,null);
+  assert.equal(directive.legacyCentralPolicyReferenceCleanup?.replacementPolicyNotAsserted,true);
+  assert.equal(directive.legacyCentralPolicyReferenceCleanup?.executionContractChangeNotAuthorized,true);
   assert.equal(directive.portfolioGovernance.mode,'FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO');
   assert.equal(directive.portfolioGovernance.fixedGameSlots,false);
   assert.equal(directive.portfolioGovernance.oneForOneReplacementRule,false);
@@ -81,7 +78,6 @@ test('central machine policy preserves historical bootstrap while latest owner p
   assert.equal(directive.productionThroughput.modelExecutionBudget.singleModelCallTimeoutSeconds,150);
   assert.equal(directive.productionThroughput.modelExecutionBudget.designSchemaAttemptsMax,2);
   assert.equal(directive.productionThroughput.modelExecutionBudget.designWorkflowTimeoutMinutes,45);
-  assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.externalProviderBoundary,256);
 });
 
 test('five department scores drive expansion bands exactly as central policy defines',()=>{
@@ -195,9 +191,6 @@ test('owner preservation pilots materialize through canonical GAME_SEED bootstra
   assert.match(bootstrap,/assertGameSeed\(seed\)/);
   assert.match(bootstrap,/OWNER_PRESERVATION_ACTIVE_SEED_CONFLICT/);
   assert.match(bootstrap,/ownerPreservationIntake/);
-  assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.mayRunDuringGamePrimary,true);
-  assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.maxConcurrent,1);
-  assert.equal(roadmap.vibeExecutionLaneContract.ownerPreservationDesignLane.consumesGamePrimaryWorkerSlot,false);
   assert.match(seedDesignWorkflow,/const preservationSeed=seed=>/);
   assert.doesNotMatch(seedDesignWorkflow,/needs\.game-primary-gate/);
   assert.doesNotMatch(seedDesignWorkflow,/RUN_OWNER_PRESERVATION_AUX/);
@@ -292,7 +285,9 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=VIBE_NATIVE_FUNCTION/);
   assert.doesNotMatch(seedDesignWorkflow,/COMPANY_GEMINI_DESIGNER_MODEL:/);
   assert.doesNotMatch(seedDesignWorkflow,/COMPANY_GEMINI_FALLBACK_MODELS:/);
-  assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
+  // 구형 Vibe 네이티브 플래그는 현재 소유자 외부 AI 정책의 권한 근거가 아니다.
+  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['GEMINI_API']);
+  assert.equal(directive.ai.gameDesigner.cloudFailureFallsBackToLocal,false);
 
   assert.match(designSeedNormalize,/DESIGN_SEED_REFERENCE_GAMES_OPTIONAL_EMPTY=/);
   assert.match(designSeedNormalize,/ENSURE_REFERENCE_INPUTS_WITHOUT_INVENTING_REFERENCE_GAME/);
@@ -352,15 +347,15 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.match(design,/function computeVibeNativeDesign\(\)/);
   assert.doesNotMatch(design,/VIBE_LOCAL_OLLAMA/);
   assert.doesNotMatch(design,/OLLAMA_DESIGN_TIMEOUT/);
-  assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK');
+  assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_EXTERNAL_ONLY');
   assert.equal(directive.ai.providerSecret,'GEMINI_API_KEY');
   assert.equal(directive.ai.openAiProviderAllowed,false);
-  assert.equal(directive.ai.ollamaProviderAllowed,true);
-  assert.equal(directive.ai.localModelFallbackAllowed,true);
-  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['VIBE_LOCAL_OLLAMA']);
-  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,false);
+  assert.equal(directive.ai.ollamaProviderAllowed,false);
+  assert.equal(directive.ai.localModelFallbackAllowed,false);
+  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['GEMINI_API']);
+  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,true);
   assert.equal(directive.ai.gameDesigner.cloudFailureFallsBackToLocal,false);
-  assert.deepEqual(directive.ai.gameDesigner.localFallbackModels,['qwen3:1.7b']);
+  assert.deepEqual(directive.ai.gameDesigner.localFallbackModels,[]);
   assert.doesNotMatch(design,/Math\.max\(900,Math\.ceil\(1400\*roles\.length\/ROLES\.length\)\)/);
 });
 
@@ -422,16 +417,14 @@ test('obsolete free-concept and direct prototype entrypoints remain removed',()=
   assert.equal(fs.existsSync('.github/workflows/company-game-seed-bootstrap.yml'),true);
 });
 
-test('design authoring uses native Vibe functions without model transport or department review lanes',()=>{
+test('game design provider follows current owner directive without implicit local fallback',()=>{
   const roles=['planning','graphics','development','qa','audio'];
-  assert.deepEqual(roles.map(role=>directive.ai.departmentLeadModels[role]),Array(5).fill('llama3.2:1b'));
-  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['VIBE_LOCAL_OLLAMA']);
-  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,false);
-  assert.equal(directive.ai.gameDesigner.geminiModel,null);
-  assert.deepEqual(directive.ai.gameDesigner.geminiFallbackModels,[]);
-  assert.doesNotMatch(seedDesignWorkflow,/COMPANY_EXTERNAL_AI_ENABLED:|COMPANY_GEMINI_|secrets\.GEMINI_API_KEY/);
-  assert.doesNotMatch(design,/externalAiEnabled|callExternalDesignerModel|generativelanguage|process\.env\.GEMINI_API_KEY/);
-  assert.match(design,/GAME_DESIGNER_PROVIDER=VIBE_NATIVE_FUNCTION/);
-  assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
-  assert.match(seedDesignWorkflow,/DESIGN_AI_REVIEW_LANES=NONE/);
+  assert.deepEqual(roles.map(role=>directive.ai.departmentLeadModels[role]),Array(5).fill('gemini-3.8-flash'));
+  assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_EXTERNAL_ONLY');
+  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['GEMINI_API']);
+  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,true);
+  assert.equal(directive.ai.gameDesigner.cloudProviderRequiresConfiguredSecret,true);
+  assert.equal(directive.ai.gameDesigner.cloudFailureFallsBackToLocal,false);
+  assert.deepEqual(directive.ai.gameDesigner.localFallbackModels,[]);
+  assert.equal(directive.ai.gameDesigner.autoBanOnRepeatedFailure,true);
 });

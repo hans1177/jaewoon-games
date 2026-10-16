@@ -83,6 +83,13 @@ jobs:
           PUSH_BASE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
+          # Owner removed the former policy; do not run a retention report on a missing policy.
+          # The separate constitutional gate still fails closed until authority is restored.
+          if [ ! -f company-learning/platform-release-roadmap.json ]; then
+            node --input-type=module -e "import {validateSharedWorkerContext} from './tools/company-shared-context.mjs'; const r=validateSharedWorkerContext(); if(!r.pass || r.policyAuthorityVerified!==false)process.exit(1)"
+            echo 'CENTRAL_POLICY_RETENTION=NOT_APPLICABLE_OWNER_DELETED'
+            exit 0
+          fi
           base_sha="${PR_BASE_SHA:-${PUSH_BASE_SHA:-}}"
           if [ -n "$base_sha" ] && ! [[ "$base_sha" =~ ^0+$ ]]; then
             if ! git cat-file -e "$base_sha^{commit}" 2>/dev/null; then
