@@ -1268,7 +1268,7 @@ function assetSupplyCandidateAllowed(asset={},target=''){
   if(internalAssetHardBlockReason(asset))return false;
   return internalAssetPlatformApplicationMode(asset,target)!=='NOT_SUPPORTED';
 }
-export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',requirements=[],registry={},executionPlan={},sourceConsumerSummary=null}={}){
+export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',requirements=[],registry={},executionPlan={},sourceConsumerSummary=null,sharedOriginalArchives=[],repoRoot=process.cwd()}={}){
   const id=clean(gameId);
   const assets=Array.isArray(registry?.assets)?registry.assets:[];
   const requiredFamilies=requiredAssetFamilies({request,requirements});
@@ -1293,6 +1293,51 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   };
   const externalSourceCandidatesFor=(family,roles=[])=>{
     const candidates=[];
+    // [공용 원본 직접 연결] 이미 다운로드된 실물만 기존 수급 단계에 공급한다.
+    // 원본 ZIP/BLEND는 게임용 네이티브 에셋이 아니므로 게임 적용이나 QA PASS로 처리하지 않는다.
+    const seenSourceHashes=new Set();
+    for(const row of Array.isArray(sharedOriginalArchives)?sharedOriginalArchives:[]){
+      const relative=clean(row?.sourcePath).replaceAll('\\','/');
+      const declaredHash=clean(row?.sha256).toLowerCase();
+      const declaredBytes=Number(row?.bytes);
+      const license=clean(row?.licenseDeclared).toUpperCase();
+      if(row?.sourceOnly!==true||row?.gameApplied!==false||license!=='CC0-1.0')continue;
+      if(!/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz)$/.test(relative)||relative.includes('..'))continue;
+      if(!/^[0-9a-f]{64}$/.test(declaredHash)||!Number.isSafeInteger(declaredBytes)||declaredBytes<512||seenSourceHashes.has(declaredHash))continue;
+      if(!publicHttps(row?.sourceUrl)||!publicHttps(row?.licenseEvidenceUrl))continue;
+      const localFile=path.resolve(repoRoot,relative);
+      try{
+        const info=fs.statSync(localFile);
+        if(!info.isFile()||info.size!==declaredBytes)continue;
+      }catch{continue;}
+      const name=clean(row.file).toLowerCase(),role=clean(row.role).toLowerCase();
+      const sourceFamily=clean(row.family).toUpperCase()||(
+        role==='03-equipment'?(/potion|item|inventory/.test(name)?'PROP':'WEAPON'):
+        role==='04-npc-buildings'?(/castle|house|village|hexagon/.test(name)?'BUILDING':'CHARACTER'):
+        role==='05-environment-sfx'?(/sfx|sound/.test(name)?'AUDIO':/fox/.test(name)?'CREATURE':'ENVIRONMENT'):
+        role==='09-buildings'?'BUILDING':role==='12-dungeon-interiors'?'ENVIRONMENT':
+        /^(?:0[1267]-|11-)/.test(role)||['monster','wildlife','aquatic','insect','prehistoric','invertebrate'].includes(role)?'CREATURE':
+        /^(?:08-|10-)/.test(role)||role.includes('npc')?'CHARACTER':
+        role==='vfx'?'VFX':role==='model'?'PROP':
+        role==='png'||role.includes('ui')||role.includes('icon')?'UI':
+        role==='audio'||role==='sfx'?'AUDIO':'PROP');
+      if(sourceFamily!==family)continue;
+      const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz)$/,''),role].join(' ').replace(/[-_]+/g,' ');
+      const matchedRoles=roles.filter(value=>terms.includes(value.replaceAll('_',' ')));
+      if(roles.length&&!roles.every(value=>value==='generic')&&!matchedRoles.length)continue;
+      const nameFit=requestText.split(/\s+/).filter(word=>word.length>=4&&terms.includes(word)).length;
+      seenSourceHashes.add(declaredHash);
+      candidates.push(freeze({
+        sourceId:'shared-original-'+declaredHash.slice(0,16),sourceName:clean(row.file),family,
+        license,sourceUrl:clean(row.sourceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
+        licenseSnapshotDate:null,downloadUrl:null,sourcePath:relative,sourceHash:declaredHash,
+        archiveBytes:declaredBytes,downloaded:true,acquisitionState:'ACQUIRED_ORIGINAL_FILES',
+        matchedRoles:freezeList(matchedRoles),roleCompatibilityRequiresSourceInspection:true,
+        categoryMatchVerified:true,runtimeVerified:false,rawRedistributionAllowed:false,
+        sourceHashMustBeReverified:true,roleScore:100+matchedRoles.length*10+nameFit,
+        spatial3dSourceRequired:spatialFamilies.has(family)
+      }));
+    }
     for(const row of externalSources){
       if(clean(row?.status).toUpperCase()!=='LICENSE_VERIFIED_EXTERNAL_CANDIDATE')continue;
       if(row?.automaticAcquisitionWhenSelected!==true||row?.commercialUseAllowed===false||row?.derivativesAllowed===false)continue;
@@ -1530,7 +1575,9 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
             verifiedRoleMatch:false,requiresActualSourceInspection:true}),
           externalAcquisition:freeze({
             sourceId:selected.sourceId,sourceName:selected.sourceName,sourceUrl:selected.sourceUrl,
-            downloadUrl:selected.downloadUrl,license:selected.license,licenseEvidenceUrl:selected.licenseEvidenceUrl,
+            downloadUrl:selected.downloadUrl,localSourcePath:selected.sourcePath||null,
+            sourceHash:selected.sourceHash||null,downloaded:selected.downloaded===true,
+            license:selected.license,licenseEvidenceUrl:selected.licenseEvidenceUrl,
             licenseSnapshotDate:selected.licenseSnapshotDate,acquisitionState:selected.acquisitionState,
             candidateSources:externalCandidates,onDemandOnly:true,bulkPrefetchForbidden:true,
             sourceHashRequired:true,rightsRevalidationRequired:true,downloadFileIntegrityRequired:true,
@@ -4837,6 +4884,8 @@ export function buildVibeAssetProductionPlan({
     request,
     requirements:flowAssetRequirements,
     registry:librarySync.sourceConsumerRegistry||companyRegistry,
+    sharedOriginalArchives:manifestBase?.sharedOriginalArchives?.packs||[],
+    repoRoot,
     executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
     sourceConsumerSummary:librarySync.sourceConsumerSync
   });
