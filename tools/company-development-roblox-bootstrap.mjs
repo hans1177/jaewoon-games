@@ -1602,7 +1602,7 @@ async function main(){
       baseline,
     });
     const evidence={
-      version:6,gameId,gameName,platform:'ROBLOX',policyDocument:'company-learning/platform-release-roadmap.json',stage:'TARGET_PLATFORM_SOURCE_BIND',
+      version:6,gameId,gameName,platform:'ROBLOX',policyDocument:roadmapFile,stage:'TARGET_PLATFORM_SOURCE_BIND',
       sourcePath:outputRoot,sourceValidationPassed:staticContract.pass,sourceValidationBlockers:staticContract.blockers,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
       existingSourcePreserved:true,gameplayAuthorityChanged:false,serverSourceChanged:applied.serverSourceChanged===true,
       foundationRepairApplied:applied.foundationRepairApplied===true,
@@ -1648,7 +1648,7 @@ async function main(){
   if(built.learning.applied!==true)throw new Error('ROBLOX_VIBE3_LEARNING_CONTEXT_REQUIRED');
   writeSourceTree(outputRoot,built.result,gameId);
   const evidence={
-    version:4,gameId,gameName,platform:'ROBLOX',policyDocument:'company-learning/platform-release-roadmap.json',stage:'TARGET_PLATFORM_SOURCE_BIND',
+    version:4,gameId,gameName,platform:'ROBLOX',policyDocument:roadmapFile,stage:'TARGET_PLATFORM_SOURCE_BIND',
     sourcePath:outputRoot,sourceValidationPassed:true,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
     saveRequired:built.validation.saveRequired,approvedScopeCount:built.actions.length,
     robloxBuildProfile:built.profile,robloxPlatformProfile:built.platformProfile,minimumDesignContractRequired:true,genreImplementationRequired:true,multiplayerImplementationRequired:built.profile.multiplayerRequired,
