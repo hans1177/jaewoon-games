@@ -5,6 +5,12 @@ import os from 'node:os';
 import path from 'node:path';
 import {evaluateMinimumDesignContract,materializeVibeMinimumDesign} from '../tools/company-minimum-design-contract.mjs';
 
+// Exercise the actual current verified-policy contract; never substitute a stub.
+const previousVerifiedPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+test.before(()=>{process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');});
+test.after(()=>{if(previousVerifiedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicyPath;});
+
 const base=()=>({
   content:{
     identity:'A distinct survival RPG with a persistent village and dangerous expeditions.',
