@@ -22,7 +22,7 @@ export function enforceConstitution({phase='runtime',root=process.cwd(),policy}=
     fingerprint=sha256(bytes);
   } catch {errors.push('SINGLE_POLICY_MISSING_OR_INVALID');}
   if(fs.existsSync(path.join(root,LEGACY_PATH))) errors.push('DELETED_POLICY_REAPPEARED_REQUIRES_OWNER_REVIEW');
-  if(policy!==undefined) errors.push('CALLER_POLICY_OVERRIDE_FORBIDDEN');
+  if(policy!==undefined) errors.push('DELETED_CONSTITUTION_CANNOT_BE_REINSTATED_BY_CALLER');
   if(directive) {
     if(directive.policyDocument!==POLICY_PATH ||
        directive.documentationSynchronization?.centralPolicyPath!==POLICY_PATH)
@@ -38,6 +38,8 @@ export function enforceConstitution({phase='runtime',root=process.cwd(),policy}=
        canonical.principles?.neverFabricatePass!==true ||
        canonical.migration?.automaticPassOnCreation!==false)
       errors.push('SINGLE_POLICY_NOT_ACTIVE_OR_INVALID');
+    if(!Array.isArray(canonical.machineEnforcement?.assertions) || canonical.machineEnforcement.assertions.length===0)
+      errors.push('MACHINE_ENFORCEMENT_ASSERTIONS_MISSING');
   }
   // 기존 세 중앙문서의 무결성 확인 없는 헌법 검증 통과 금지.
   const required=[
@@ -52,6 +54,7 @@ export function enforceConstitution({phase='runtime',root=process.cwd(),policy}=
         errors.push('RETAINED_DOCUMENT_INVALID:'+file);
     } catch {errors.push('RETAINED_DOCUMENT_UNAVAILABLE:'+file);}
   }
+  if(errors.length)errors.push('CONSTITUTION_AUTHORITY_UNAVAILABLE');
   if(errors.length)return {pass:false,phase,errors,constitutionFingerprint:null,orderedRuleIds:[],enforcedRuleCount:0,enforcementSchemaVersion:0};
   return {pass:true,phase,errors:[],constitutionFingerprint:fingerprint,orderedRuleIds:['SINGLE_OWNER_POLICY'],enforcedRuleCount:1,enforcementSchemaVersion:1};
 }
