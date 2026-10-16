@@ -2093,7 +2093,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
               if item:IsA("Motor6D") or item:IsA("Bone") then
                 local lower = string.lower(item.Name)
                 local limb = item:IsA("Motor6D") and item.Part1 and string.lower(item.Part1.Name) or ""
-                local label = lower .. " " .. limb
+                -- 일부 가져온 Bone은 이름이 Bone001이므로 부모 계층의 부위명을 참조한다.
+                local parentName = item.Parent and string.lower(item.Parent.Name) or ""
+                local label = lower .. " " .. limb .. " " .. parentName
                 -- 가져온 리그의 대소문자/구분자 및 R15 Upper/Lower 이름을 함께 판별한다.
                 local isLeg = string.find(label, "leg", 1, true)
                   or string.find(label, "thigh", 1, true)
@@ -2114,6 +2116,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                   string.find(parentLabel, "leg", 1, true)
                   or string.find(parentLabel, "arm", 1, true)
                   or string.find(parentLabel, "thigh", 1, true))
+                  and (string.find(lower, "leg", 1, true)
+                    or string.find(lower, "arm", 1, true)
+                    or string.find(lower, "thigh", 1, true))
                 if (isLeg or isArm) and not nestedLimb then
                   local left = string.find(label, "left", 1, true)
                     or string.match(lower, "^l[_%.%-]") or string.match(lower, "[_%.%-]l$")
