@@ -2007,7 +2007,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local walkingUntil = model:GetAttribute("MotionWalkingUntil")
           local serverWalking = typeof(walkingUntil) == "number"
             and workspace:GetServerTimeNow() < walkingUntil
-          local recentlyMoved = creatureMotionPhase - lastMovedAt < 0.20
+          -- 보행 명령이 종료되면 위치 복제의 지연 프레임을 짧게만 허용한다.
+          local recentlyMoved = creatureMotionPhase - lastMovedAt < 0.14
           local currentHumanoid = model:FindFirstChildOfClass("Humanoid")
           local movementBlocked = model:GetAttribute("IsPreparingAttack") == true
             or model:GetAttribute("AIState") == "Stunned"
@@ -2017,7 +2018,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             lastMovedAt = -100
             smoothedSpeed = 0
           end
-          realMoving = not teleported and not movementBlocked and (serverWalking or recentlyMoved)
+          -- 종료된 서버 명령 뒤 새 이동 증거 없이 계속 걷는 현상을 제한한다.
+          realMoving = not teleported and not movementBlocked
+            and (serverWalking or (recentlyMoved and smoothedSpeed > 0.35))
           if realMoving then
             -- 실제 이동량을 우선 사용하고 서버 보행 예고는 복제 사이에만 보완한다.
             -- 공격·기절 중에는 위상도 멈춰 다시 걷기 시작할 때 튀지 않게 한다.
