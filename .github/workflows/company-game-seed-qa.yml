@@ -27,7 +27,7 @@ on:
       - 'qa/seed-material-dynamic-composition.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
       - 'qa/artbook-production-pipeline.test.mjs'
-      - 'qa/company-central-policy-contract.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
   pull_request:
     paths:
@@ -54,7 +54,7 @@ on:
       - 'qa/seed-material-dynamic-composition.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
       - 'qa/artbook-production-pipeline.test.mjs'
-      - 'qa/company-central-policy-contract.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
   workflow_dispatch:
 
@@ -102,7 +102,7 @@ jobs:
           node --test qa/seed-material-dynamic-composition.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
           node --test qa/artbook-production-pipeline.test.mjs
-          node --test qa/company-central-policy-contract.test.mjs
+          node --test qa/company-shared-context-retained.test.mjs
           node --test qa/company-central-pipeline-only.test.mjs
       - name: Ensure obsolete 3-class new-game entrypoints stay deleted
         shell: bash
