@@ -137,6 +137,10 @@ export function buildHomepagePlatformExposure({queue={},catalog={},policy={}}={}
   const supportedPlatforms=homepage?.supportedPlatforms;
   const platformStates=homepage?.perGamePlatformStates;
   if(homepage?.sourceOfTruth!=='company-learning/platform-release-roadmap.json'
+    ||homepage?.authority!=='MACHINE_EXECUTION_CONTRACT'
+    ||homepage?.runtimeAuthority!=='company-runtime'
+    ||homepage?.serverRuntimeBranch!=='company-runtime'
+    ||homepage?.publicSourceBranch!=='main'
     ||!Number.isInteger(homepage?.version)||homepage.version<1
     ||!Array.isArray(supportedPlatforms)||supportedPlatforms.length===0
     ||!Array.isArray(platformStates)||JSON.stringify(supportedPlatforms)!==JSON.stringify(platformStates)
@@ -149,6 +153,7 @@ export function buildHomepagePlatformExposure({queue={},catalog={},policy={}}={}
     fingerprint:crypto.createHash('sha256').update(JSON.stringify({
       version:homepage.version,sourceOfTruth:homepage.sourceOfTruth,
       runtimeAuthority:homepage.runtimeAuthority,
+      serverRuntimeBranch:homepage.serverRuntimeBranch,publicSourceBranch:homepage.publicSourceBranch,
       supportedPlatforms,perGamePlatformStates:platformStates,
       showUnityWeb:homepage.showUnityWeb===true
     })).digest('hex'),
