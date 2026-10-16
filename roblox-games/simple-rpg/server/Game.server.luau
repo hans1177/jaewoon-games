@@ -2814,7 +2814,7 @@ task.spawn(function()
               if grazer.Humanoid.Health <= 0 then grazer.LastPredated = now end
             end
           elseif enemy.Model:GetAttribute("IsRaidBoss") ~= true
-              and now >= (enemy.NextPatrolAt or 0) then
+              and enemy.PatrolDestination == nil and now >= (enemy.NextPatrolAt or 0) then
             -- 전투 밖에서는 기존 스폰 주변을 천천히 이동하고 휴식한다.
             enemy.PatrolStep = (enemy.PatrolStep or 0) + 1
             local step = enemy.PatrolStep
