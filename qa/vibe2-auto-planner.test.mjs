@@ -3840,7 +3840,7 @@ test('queued autonomous expansion v1 without breadth ledger upgrades to v2 witho
   assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
 });
 
-test('queued Unity and Web directives adopt native production plans without rewriting running work or consuming a generation',()=>{
+test('owner-held Unity and Web directives preserve queued generations without inventing native production plans',()=>{
   for(const [engine,gameId,target] of [['unity','demo','unity-android'],['web','dev-web','web']]){
     const root=tempRepo();
     writeStudioDesign(root,gameId);
@@ -3859,9 +3859,10 @@ test('queued Unity and Web directives adopt native production plans without rewr
     const updated=result.queue.tasks.find(row=>row.id===queued.id);
     const untouched=result.queue.tasks.find(row=>row.id===running.id);
     assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
-    assert.equal(updated.buildUpDirective.productionPlan.version,3);
-    assert.equal(updated.buildUpDirective.productionPlan.platform,engine.toUpperCase());
-    assert.equal(updated.buildUpDirective.productionPlan.qualityContract.runtimeVerified,false);
+    // Unity/Web remain owner-held in canonical policy: a queued task is not production authorization.
+    assert.equal(updated.buildUpDirective.productionPlan,null);
+    assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
+    assert.equal(updated.status,'queued');
     assert.deepEqual(untouched.buildUpDirective,running.buildUpDirective);
   }
 });
