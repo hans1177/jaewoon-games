@@ -11,7 +11,9 @@ const includesAll = (text, tokens, label) => {
 };
 
 const contract = readJson('company-learning/canonical-learning-pipeline.json');
-const roadmap = readJson('company-learning/platform-release-roadmap.json');
+const verifiedPolicyPath = String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+if (!verifiedPolicyPath || !fs.existsSync(verifiedPolicyPath)) fail('VERIFIED_POLICY_REQUIRED');
+const roadmap = readJson(verifiedPolicyPath);
 const expectedChain = [
   'VALIDATED_EVIDENCE',
   'DISTILLATION_INGEST',
