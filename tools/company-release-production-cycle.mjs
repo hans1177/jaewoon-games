@@ -46,6 +46,32 @@ const gameId=clean(process.env.GAME_ID||process.argv.find(x=>x.startsWith('--gam
 const date=clean(process.env.DESIGN_DATE||kstDate());
 if(!gameId)throw new Error('GAME_ID is required');
 
+// Release production reads the same owner-locked machine roadmap as the canonical
+// release gates. A missing, substituted, or held policy never authorizes a build.
+const CANONICAL_RELEASE_POLICY='company-learning/platform-release-roadmap.json';
+const requestedReleasePolicy=clean(process.env.COMPANY_VERIFIED_POLICY_PATH||CANONICAL_RELEASE_POLICY);
+if(path.resolve(requestedReleasePolicy)!==path.resolve(CANONICAL_RELEASE_POLICY))
+  throw new Error('RELEASE_CANONICAL_POLICY_PATH_REQUIRED');
+const releaseRoadmap=JSON.parse(fs.readFileSync(CANONICAL_RELEASE_POLICY,'utf8'));
+const directRelease=releaseRoadmap?.directNativeDualPlatformDevelopment||{};
+const releaseGate=releaseRoadmap?.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate||{};
+const releaseScope=directRelease?.ownerActiveDevelopmentScope20261009||releaseRoadmap?.ownerActiveDevelopmentScope20261009||{};
+if(releaseRoadmap?.status!=='OWNER_DIRECT_LOCKED'
+  ||releaseRoadmap?.finalDevelopmentLock?.status!=='LOCKED'
+  ||directRelease?.status!=='OWNER_DIRECT_LOCKED'
+  ||directRelease?.minimumDesignRequired!==true
+  ||directRelease?.platformSpecificRuntimeEvidenceRequired!==true
+  ||directRelease?.platformSpecificIndependentQaRequired!==true
+  ||directRelease?.platformSpecificRegressionRequired!==true
+  ||directRelease?.externalRelease?.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence!==true
+  ||releaseGate?.internalRelease?.foundationValidationRequired!==true
+  ||releaseGate?.internalRelease?.actualRuntimeFoundationF1ThroughF4Required!==true)
+  throw new Error('RELEASE_CANONICAL_EVIDENCE_GATE_INVALID');
+if(!Array.isArray(releaseScope.activeTargets)||!releaseScope.activeTargets.includes('UNITY_ANDROID')
+  ||releaseRoadmap?.developmentAccess?.UNITY==='OWNER_HOLD'
+  ||releaseScope?.unityAndroidDevelopmentAllowed===false)
+  throw new Error('RELEASE_UNITY_ANDROID_OWNER_HOLD');
+
 const catalog=readJson('game-catalog.json',{games:[]});
 const game=(catalog.games||[]).find(x=>x.id===gameId);
 if(!game)throw new Error(`Unknown game: ${gameId}`);

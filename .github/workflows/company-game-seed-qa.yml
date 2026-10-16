@@ -69,6 +69,9 @@ jobs:
   contract:
     runs-on: ubuntu-slim
     timeout-minutes: 8
+    env:
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

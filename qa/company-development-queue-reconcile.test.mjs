@@ -291,12 +291,13 @@ test('reconcile trigger bursts serialize and status feedback is change-driven',(
   assert.equal(state?.cancelRunningReconcileOnNewTrigger,false);
   assert.equal(state?.repeatedWorkflowRunTriggersMayNotCausePerpetualCancellation,true);
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
-  const topology=architecture.nonblockingCoordinationTelemetryTopology?.reconcileConcurrency;
-  assert.equal(topology?.stateWritesSerialized,true);
-  assert.equal(topology?.queueMutationDispatchesStatusSync,true);
-  assert.equal(topology?.unconditionalQueueCompletionStatusSyncTrigger,false);
+  // Compact maps are non-executable summaries; prove scheduling from actual workflows.
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
   const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
-  assert.equal(logMap.reconcileCancellationChurnContract?.queueMutationStatusSyncMarker,'COMPANY_STATUS_SYNC_DISPATCHED=QUEUE_CHANGED');
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
+  assert.match(workflow,/group: company-development-queue-reconcile-runtime-v2\s+cancel-in-progress: false/);
+  assert.match(workflow,/id: queue_state/);
+  assert.match(workflow,/COMPANY_STATUS_SYNC_DISPATCHED=QUEUE_CHANGED/);
 });
 
 
@@ -760,10 +761,11 @@ test('queue reconcile uses fixed 24.04 control capacity without changing seriali
   assert.equal(policy.concurrencyEpochAdvancedToBypassLegacyPendingGroup,true);
   assert.equal(policy.serializeStateWrites,true);
   assert.equal(policy.stateMutationLogicChanged,false);
-  assert.equal(architecture.developmentQueueReconcileRunnerIsolation?.gamePrimaryGateRunner,'ubuntu-24.04');
-  assert.equal(architecture.developmentQueueReconcileRunnerIsolation?.reconcileRunner,'ubuntu-24.04');
-  assert.equal(logMap.developmentQueueReconcileRunnerIsolationEvidence?.expectedRunnerLabels?.gamePrimaryGate,'ubuntu-24.04');
-  assert.equal(logMap.developmentQueueReconcileRunnerIsolationEvidence?.expectedRunnerLabels?.reconcile,'ubuntu-24.04');
+  // Historic mirror fields are not runtime authority; runner labels above are checked in YAML.
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
+  assert.match(gate,/runs-on:\s*ubuntu-24\.04/);
+  assert.match(reconcile,/runs-on:\s*ubuntu-24\.04/);
 });
 
 

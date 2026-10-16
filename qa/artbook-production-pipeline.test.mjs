@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const source=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const designSource=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
-const departmentWorkflow=fs.readFileSync('.github/workflows/artbook-free-department-bots.yml','utf8');
+const designWorkflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 
 test('DESIGN_ONLY pipeline is GAME_SEED-backed design -> baseline and stops before artbook',()=>{
@@ -61,6 +61,6 @@ test('canonical department contract is exactly five roles including audio',()=>{
   assert.match(designSource,/const ROLES=\['planning','graphics','development','qa','audio'\]/);
   assert.doesNotMatch(designSource,/const ROLES=\[[^\]]*'balance'/);
   assert.match(designSource,/ART_AUDIO_DIRECTION:\['graphics','audio'\]/);
-  assert.match(departmentWorkflow,/const designRoles=\['planning','graphics','development','qa','audio'\]/);
-  assert.doesNotMatch(departmentWorkflow,/\['planning','graphics','development','qa','balance','audio'\]/);
+  assert.match(designWorkflow,/node tools\/company-design-cycle\.mjs/);
+  assert.doesNotMatch(designWorkflow,/node tools\/artbook-free-department-bots\.mjs/);
 });

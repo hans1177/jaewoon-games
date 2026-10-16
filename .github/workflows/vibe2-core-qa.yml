@@ -290,6 +290,7 @@ jobs:
     env:
       # 검증된 main 중앙정책 문서 경로를 기존 핵심 QA 실행과 임시 테스트 저장소에 전달한다.
       COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
     steps:
       - uses: actions/checkout@v4
 
@@ -416,6 +417,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/vibe2-openai-agent-patterns.test.mjs
+          node --test qa/vibe2-neural-root-cause.test.mjs
           node --test qa/company-development-roblox-multiplayer-qa.test.mjs
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/company-build-up-directive.test.mjs
@@ -427,7 +429,6 @@ jobs:
           node --test qa/vibe2-neural-diagnosis.test.mjs
           node --test qa/vibe2-neural-feedback.test.mjs
           node --test qa/vibe2-neural-critic.test.mjs
-          node --test qa/vibe2-neural-root-cause.test.mjs
           node --test qa/vibe2-neural-event-router.test.mjs
           node --test qa/vibe2-neural-work-graph.test.mjs
           node --test qa/vibe2-neural-shadow-audit.test.mjs

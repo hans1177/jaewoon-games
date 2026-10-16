@@ -21,6 +21,22 @@ function explicitResponsibleSystem(evidence=[]){
   return null;
 }
 
+// 동일 장애 신호는 한 번만 조사하도록 묶되, 검증된 원인으로 추정하지 않는다.
+function groupFailureSignatures(evidence=[]){
+  const grouped=new Map();
+  for(const raw of Array.isArray(evidence)?evidence:[]){
+    const item=clean(raw);
+    const match=item.match(/^(?:failure-signature|error-signature|runtime-failure-signature|incremental-qa-failure-signature|retry-failure-signature|system-steward:failure-signature|shared-signature|failure-cause):(.+)$/i);
+    if(!match)continue;
+    const signature=clean(match[1]).slice(0,240);
+    if(!signature)continue;
+    grouped.set(signature,(grouped.get(signature)||0)+1);
+  }
+  return [...grouped.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))
+    .slice(0,16).map(([signature,occurrences])=>({signature,occurrences,
+      verification:'UNVERIFIED_FAILURE_OBSERVATION'}));
+}
+
 function causalEvidence(evidence=[]){
   const rows=new Set(evidence);
   return{
@@ -34,6 +50,7 @@ function causalEvidence(evidence=[]){
 
 export function verifyNeuralRootCause({diagnosis=null,evidence=[],sampleId='',verificationStage=''}={}){
   const rows=uniq(evidence);
+  const failureClusters=groupFailureSignatures(evidence);
   const causal=causalEvidence(rows);
   const responsible=explicitResponsibleSystem(rows);
   const causalRepairVerified=causal.prePatchReproduced&&causal.replayExecuted&&causal.replayPass;
@@ -68,6 +85,8 @@ export function verifyNeuralRootCause({diagnosis=null,evidence=[],sampleId='',ve
     responsibleSystem:responsible?.system||null,
     responsibleSystemEvidence:responsible?.marker||null,
     predictedResponsibleSystem:predicted,
+    failureClusters,
+    groupedFailureCount:failureClusters.reduce((sum,row)=>sum+row.occurrences,0),
     predictedSystemConsistentWithVerified:responsible&&predicted?systemConsistent:null,
     evidence:{
       prePatchReproduced:causal.prePatchReproduced,
@@ -102,6 +121,7 @@ export function neuralRootCauseEvidence(result={}){
     predictedResponsibleSystem:clean(result.predictedResponsibleSystem)||null,
     predictedSystemConsistentWithVerified:result.predictedSystemConsistentWithVerified===true?true:result.predictedSystemConsistentWithVerified===false?false:null,
     rootCauseVerified:result.rootCauseVerified===true,
+    failureClusters:(Array.isArray(result.failureClusters)?result.failureClusters:[]).slice(0,8),
     learningEligible:false,
     actionFiringAllowed:false,
     phase2AuthorityEligible:false,

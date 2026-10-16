@@ -9,7 +9,8 @@ import {
 } from './production-classification.mjs';
 
 export const CATALOG_CANONICAL_SCHEMA_VERSION=1;
-const ROADMAP_PATH=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+// 임포트: 검증 경로가 제공되지 않은 로컬/CI 실행에서도 동일한 canonical roadmap만 사용한다.
+const ROADMAP_PATH=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'company-learning/platform-release-roadmap.json').trim();
 const clean=value=>String(value??'').trim();
 const bool=value=>value===true;
 const list=value=>[...new Set((Array.isArray(value)?value:[]).map(clean).filter(Boolean))];

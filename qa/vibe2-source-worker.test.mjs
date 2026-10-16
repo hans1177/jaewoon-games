@@ -943,6 +943,9 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
     department: 'development',
     source: { root, responsibleFiles },
     qa: ['syntax', 'regression'],
+    // 합성 테스트 저장소에는 실행 정책이 없으므로 명시적인 비필수 계약만 사용한다.
+    // 실제 작업의 중앙정책 검증은 별도 계약 검사에서 계속 차단 우선으로 유지한다.
+    compiledWorkContract: { required: false, validAtCompile: true },
     workerPolicy: { directMainWrite: false }
   };
 }

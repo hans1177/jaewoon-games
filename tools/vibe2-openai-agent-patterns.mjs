@@ -12,6 +12,40 @@ const ROUTES=new Set(['text-source-worker','engine-editor','analysis-only','lear
 const GAME_ROOTS=/^(?:web-games|roblox-games|unity-games|unreal-games|godot-games|uefn-games)\//;
 const pathSafe=p=>!p.startsWith('/')&&!p.split('/').includes('..')&&!p.includes('\\');
 const freezeStages=stages=>Object.freeze(stages.map(s=>Object.freeze({...s})));
+
+// 기존 구현을 재사용하는 결정론적 알고리즘 라우팅. 권한·작업 큐·코드를 직접 변경하지 않는다.
+export const VIBE_EXISTING_ALGORITHMS=Object.freeze([
+  {id:'FAILURE_ROOT_CAUSE',module:'tools/vibe2-neural-root-cause.mjs',cue:/오류|에러|실패|복구|고장|crash|fail|error|repair|root.?cause/i},
+  {id:'DEPENDENCY_GRAPH',module:'tools/vibe2-neural-work-graph.mjs',cue:/의존|영향|연결|dependency|impact|graph|relation/i},
+  {id:'MINIMAL_SOURCE_EDIT',module:'tools/autonomous-safe-edit.mjs',baseline:true},
+  {id:'ADAPTIVE_RETRY',module:'tools/vibe2-source-worker.mjs',cue:/반복|재시도|복구|retry|recover|fail|실패/i},
+  {id:'PARALLEL_DAG',module:'tools/vibe2-queue-control.mjs',cue:/병렬|작업자|분배|queue|parallel|scheduler|worker/i},
+  {id:'IMPACT_SCOPED_QA',module:'tools/vibe2-incremental-qa.mjs',baseline:true},
+  {id:'VERIFIED_EXPERIENCE',module:'tools/vibe2-experience-control.mjs',cue:/학습|사례|기억|learning|memory|experience/i},
+  {id:'STRUCTURE_REUSE',module:'tools/company-vibe2-expert-development.mjs',cue:/중복|구조|함수|reuse|duplicate|architecture|refactor/i},
+  {id:'ASSET_REUSE',module:'assets/asset-selector.js',cue:/에셋|모델|재질|asset|texture|material/i},
+  {id:'VISUAL_DIFF_QA',module:'assets/vibe-visual-quality-gate.js',cue:/그래픽|시각|화면|렌더|visual|graphic|render|screenshot/i},
+  {id:'ADAPTIVE_PRIORITY',module:'tools/vibe2-adaptive-backpressure.mjs',cue:/우선|병목|슬롯|대기|priority|backpressure|capacity/i},
+  {id:'EVIDENCE_GATED_PROMOTION',module:'tools/vibe2-candidate-reconcile.mjs',baseline:true},
+  {id:'VERIFIED_SELF_IMPROVEMENT',module:'tools/vibe2-learning-motor.mjs',cue:/자가.?개선|자동.?학습|self.?improv|learn|학습/i},
+  {id:'FAULT_ISOLATION',module:'assets/vibe-continuous-queue.js',cue:/격리|독립|장애|다른 게임|isolation|independent|failure/i},
+  {id:'UI_COMPOSITION',module:'assets/vibe-art-pipeline.js',cue:/인벤|로비|버튼|화면|ui|hud|inventory|lobby/i},
+  {id:'PERFORMANCE_BOTTLENECK',module:'tools/vibe2-performance-sanity.mjs',cue:/속도|성능|프레임|로딩|최적|fps|performance|loading|optimi/i},
+  {id:'DETERMINISTIC_ALGORITHM_ROUTING',module:'tools/vibe2-openai-agent-patterns.mjs',baseline:true}
+].map(({id,module,cue,baseline})=>Object.freeze({id,module,cue:cue||null,baseline:baseline===true})));
+
+export function selectVibeExistingAlgorithms({task={},responsibleFiles=[],qa=[]}={}){
+  const words=[
+    task?.goal,task?.description,task?.title,task?.blocker,task?.currentStep,
+    ...(Array.isArray(task?.evidence)?task.evidence:[]),
+    ...(Array.isArray(responsibleFiles)?responsibleFiles:[]),
+    ...(Array.isArray(qa)?qa:[])
+  ].map(clean).filter(Boolean).join(' ');
+  const chosen=VIBE_EXISTING_ALGORITHMS.filter(row=>row.baseline||row.cue?.test(words))
+    .map(({id,module})=>Object.freeze({id,module}));
+  return Object.freeze({mode:'EXISTING_PIPELINE_ADVISORY_ONLY',recommendations:Object.freeze(chosen),
+    executed:false,qaPassed:false,authorityExpanded:false,autoMerge:false});
+}
 export const VIBE_OPENAI_PATTERN_REFERENCES=Object.freeze([
   'https://github.com/openai/openai-agents-js',
   'https://github.com/openai/simple-evals'
@@ -38,6 +72,7 @@ export function planVibeAgentHandoff({task={},route='',target='',responsibleFile
     {id:'HANDOFF',agent:'VIBE_EXISTING_FAN_IN',provider:'DETERMINISTIC',output:'VERIFIED_CANDIDATE_OR_RETRY'}
   ];
   const checks=uniq(qa);
+  const algorithmSelection=selectVibeExistingAlgorithms({task,responsibleFiles:files,qa:checks});
   const input={gameId,gameTarget,selectedRoute,files,checks,taskId:clean(task.id)};
   return Object.freeze({
     version:1,pattern:'OPENAI_AGENT_HANDOFF_AND_DETERMINISTIC_EVAL',
@@ -46,6 +81,7 @@ export function planVibeAgentHandoff({task={},route='',target='',responsibleFile
     localAiRequired:false,executionState:'PLANNED_NOT_EXECUTED',
     taskId:input.taskId,gameId,gameTarget,gameScoped,
     responsibleFiles:Object.freeze(files),gameQa:Object.freeze(checks),
+    algorithmSelection,
     handoffFingerprint:sha(input),stages:freezeStages(stages),
     evalContract:Object.freeze({
       exactTaskMatch:true,exactFilesOnly:true,
@@ -65,6 +101,15 @@ export function assertVibeAgentHandoffScope({plan={},task={},route='',target='',
     throw new Error('VIBE_HANDOFF_WORK_ORDER_DRIFT');
   if(plan.automaticSourceWrite!==false||plan.automaticPublication!==false)
     throw new Error('VIBE_HANDOFF_AUTHORITY_EXPANSION');
+  const selection=plan.algorithmSelection;
+  if(selection){
+    const known=new Map(VIBE_EXISTING_ALGORITHMS.map(row=>[row.id,row.module]));
+    if(selection.mode!=='EXISTING_PIPELINE_ADVISORY_ONLY'||selection.executed!==false||selection.qaPassed!==false||
+      selection.authorityExpanded!==false||selection.autoMerge!==false||
+      !Array.isArray(selection.recommendations)||selection.recommendations.length>VIBE_EXISTING_ALGORITHMS.length||
+      selection.recommendations.some(row=>known.get(row?.id)!==row?.module))
+      throw new Error('VIBE_HANDOFF_ALGORITHM_AUTHORITY_EXPANSION');
+  }
   return Object.freeze({pass:true,fingerprint:expected.handoffFingerprint,authorityExpanded:false});
 }
 
@@ -100,6 +145,8 @@ export function vibeAgentHandoffGuidance(plan={}){
     'handoff-sha256='+clean(plan.handoffFingerprint),
     'task='+clean(plan.taskId)+'; game='+clean(plan.gameId)+'; provider='+clean(plan.modelTransport),
     'steps='+steps,
+    'existing-algorithms='+((plan.algorithmSelection?.recommendations||[]).map(row=>row.id+'@'+row.module).join(',')||'NONE'),
+    'Algorithm recommendations are advisory only, not executed or verified. Use existing source, QA, asset and scheduler implementations.',
     'Only modify assigned game files; keep existing Vibe source locks and runtime game QA.',
     'Independent game QA and exact source revision are required before any published-claim.',
     'No local Ollama, no additional OpenAI API call, no new paid model dependency.'

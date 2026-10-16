@@ -153,6 +153,9 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-slim
+    env:
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
     steps:
       - uses: actions/checkout@v4
 
@@ -298,6 +301,8 @@ jobs:
           node --test qa/homepage-manager-publication-order.test.mjs
 
       - name: Validate current artbook safety
+        env:
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
         run: |
           set -euo pipefail
           node --test qa/artbook-production-pipeline.test.mjs

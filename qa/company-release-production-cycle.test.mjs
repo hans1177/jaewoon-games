@@ -87,3 +87,15 @@ test('release baseline is gated by same-build runtime, independent QA and final 
   ],'release pipeline ordering');
   assert.match(pipeline,/RELEASE_STALE_FINAL_ARTIFACT_GUARD=ENABLED/);
 });
+
+test('release producer fails closed on central roadmap, held Unity Android and independent runtime evidence',()=>{
+  assert.ok(runner.includes("const CANONICAL_RELEASE_POLICY='company-learning/platform-release-roadmap.json'"));
+  assert.match(runner,/RELEASE_CANONICAL_POLICY_PATH_REQUIRED/);
+  assert.match(runner,/RELEASE_CANONICAL_EVIDENCE_GATE_INVALID/);
+  assert.match(runner,/RELEASE_UNITY_ANDROID_OWNER_HOLD/);
+  for(const key of ['platformSpecificRuntimeEvidenceRequired','platformSpecificIndependentQaRequired',
+    'platformSpecificRegressionRequired','actualRuntimeFoundationF1ThroughF4Required',
+    'requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence'])
+    assert.ok(runner.includes(key),key);
+  assert.ok(runner.indexOf('RELEASE_UNITY_ANDROID_OWNER_HOLD')<runner.indexOf("const catalog=readJson('game-catalog.json'"));
+});
