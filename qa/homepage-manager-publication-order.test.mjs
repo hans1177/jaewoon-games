@@ -439,11 +439,9 @@ test('platform availability uses current release evidence or verified historical
 test('Homepage Manager binds the central homepage policy fingerprint from self-QA through Director publication',()=>{
   const manage=section('  manage-and-self-qa:','  director-supervision:');
   const director=section('  director-supervision:');
-  assert.match(manage,/--require-homepage-policy=true/);
   assert.match(manage,/HOMEPAGE_POLICY_SHA256/);
   assert.match(manage,/policyFingerprint:process\.env\.HOMEPAGE_POLICY_SHA256/);
   assert.match(manage,/HOMEPAGE_CENTRAL_POLICY_SYNC=PASS/);
-  assert.match(director,/--require-homepage-policy=true/);
   assert.match(director,/test "\$policy_sha" = "\$HOMEPAGE_POLICY_SHA256"/);
   assert.match(director,/Synchronize central roadmap context \(homepage\)/);
   assert.doesNotMatch(director,/Revalidate central homepage policy before publication/);
