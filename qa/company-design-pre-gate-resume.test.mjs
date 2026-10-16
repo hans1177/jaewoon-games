@@ -670,7 +670,8 @@ test('role-grounded asset selection beats an unrelated higher score without gran
   assert.equal(unknown.nextActions[0].action,'HOLD');
   assert.equal(unknown.nextActions[0].reason,'ROLE_REQUIREMENT_UNRESOLVED');
   const missing=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION',role:'RUN'}],registry});
-  assert.equal(missing.nextActions[0].action,'AUTHOR');
+  assert.equal(missing.nextActions[0].action,'HOLD','missing approved originals must not cause new AI asset creation');
+  assert.equal(missing.nextActions[0].reason,'NO_VERIFIED_EXISTING_ASSET_TO_APPLY');
   const current=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION'}],registry:{assets:[{...registry.assets[0],consumerGameIds:['g']} ]}});
   assert.equal(current.nextActions[0].assetId,'bed','existing consumers remain reusable and quality work is not globally stopped');
 });
