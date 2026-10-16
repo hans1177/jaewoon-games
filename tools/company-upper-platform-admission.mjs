@@ -667,8 +667,11 @@ export function classifyUpperPlatformAdmission(item,{repoRoot='.',grandfatherGam
   if(!targets.has('ROBLOX')||!targets.has('UNITY'))return{gameId,state:'BLOCKED',reason:'DUAL_NATIVE_TARGETS_REQUIRED'};
   const nativeStarted=nativeUpperPlatformAlreadyStarted(item);
   const grandfathered=new Set((Array.isArray(grandfatherGameIds)?grandfatherGameIds:[]).map(clean));
-  const policyFile=path.join(repoRoot,'company-learning/platform-release-roadmap.json');
-  const policy=fs.existsSync(policyFile)?JSON.parse(fs.readFileSync(policyFile,'utf8')):{};
+  const verifiedPolicyPath=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+  if(!verifiedPolicyPath)throw new Error('UPPER_PLATFORM_VERIFIED_POLICY_REQUIRED');
+  const policyFile=path.resolve(repoRoot,verifiedPolicyPath);
+  if(!fs.existsSync(policyFile))throw new Error('UPPER_PLATFORM_VERIFIED_POLICY_NOT_FOUND');
+  const policy=JSON.parse(fs.readFileSync(policyFile,'utf8'));
   if(policy.developmentAccess?.UNITY_WEB==='OWNER_HOLD'||policy.unityWebFirstStage?.enabled===false){
     return{gameId,state:'UPPER_PLATFORM',reason:'MINIMUM_DESIGN_READY',grandfathered:nativeStarted,
       grandfatherSource:nativeStarted?'DURABLE_NATIVE_PROGRESS_EVIDENCE':null,
