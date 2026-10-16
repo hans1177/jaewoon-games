@@ -290,7 +290,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   if(highEndRequired&&evidence.artBibleBound!==true)reasons.push('art-bible-not-bound');
   if(highEndRequired&&evidence.visualTargetFramesBound!==true)reasons.push('visual-target-frames-not-bound');
   if(highEndRequired&&!heroAssets.length)reasons.push('hero-quality-assets-missing');
-  if(highEndRequired&&heroPrimitiveViolations.length)reasons.push('hero-asset-placeholder-or-unmodified-sample');
+  if((highEndRequired||finalStage)&&heroPrimitiveViolations.length)reasons.push('hero-asset-placeholder-or-unmodified-sample');
   if(highEndRequired&&missingEnvironment.length)reasons.push('high-end-environment-incomplete');
   if(highEndRequired&&missingCohesion.length)reasons.push('art-cohesion-incomplete');
   if(highEndRequired&&missingPresentation.length)reasons.push('presentation-stack-incomplete');
@@ -299,6 +299,8 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   if(highEndRequired&&!visualRegressionPassed)reasons.push('before-after-visual-regression-missing-or-failed');
   if(highEndRequired&&evidence.performance?.pass!==true)reasons.push('platform-performance-evidence-missing-or-failed');
   if(primitiveViolations.length)reasons.push('primary-actor-primitive-placeholder');
+  // Final candidates cannot claim the source actor is replaced while a native fallback is still rendered.
+  if(finalStage&&primaryActors.some(actor=>actor?.fallbackRendered===true||actor?.sampleAssetUnmodified===true))reasons.push('final-primary-actor-fallback-or-sample');
   if(actorBindingFailures.length)reasons.push('primary-actor-native-binding-not-verified');
   if(finalStage&&openCriticalDebt.length)reasons.push('unresolved-critical-visual-debt');
   if(evidence.markerOnlyPass===true)reasons.push('marker-only-presentation-pass-forbidden');
