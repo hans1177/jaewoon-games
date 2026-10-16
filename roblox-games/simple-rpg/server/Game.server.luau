@@ -1616,6 +1616,24 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
       visualPiece("BeastTail", Vector3.new(0.65, 0.65, 2.1),
         root.CFrame * CFrame.new(0, 0.45, 2.35) * CFrame.Angles(math.rad(-30), 0, 0),
         fur, Enum.PartType.Ball)
+      -- 늑대 갈기와 멧돼지 등털은 서로 다른 실루엣을 만드는 비충돌 파츠다.
+      if special == "StoneWolf" then
+        visualPiece("WolfNeckRuff", Vector3.new(2.5, 2.35, 1.8),
+          root.CFrame * CFrame.new(0, 0.9, -0.95),
+          Color3.fromRGB(73, 82, 90), Enum.PartType.Ball)
+        visualPiece("WolfChest", Vector3.new(1.7, 1.6, 1.15),
+          root.CFrame * CFrame.new(0, -0.45, -1.2),
+          Color3.fromRGB(171, 161, 142), Enum.PartType.Ball)
+      elseif special == "WildBoar" then
+        visualPiece("BoarShoulderHump", Vector3.new(3.1, 2.2, 2.35),
+          root.CFrame * CFrame.new(0, 0.65, -0.7),
+          Color3.fromRGB(94, 66, 46), Enum.PartType.Ball)
+        for ridge = 1, 3 do
+          visualPiece("BoarBristle" .. ridge, Vector3.new(0.3, 0.85, 0.45),
+            root.CFrame * CFrame.new(0, 1.65, -1.4 + ridge * 0.9),
+            Color3.fromRGB(70, 55, 42))
+        end
+      end
       for side = -1, 1, 2 do
         visualPiece(side < 0 and "BeastEarLeft" or "BeastEarRight",
           Vector3.new(0.6, 1.15, 0.55),
