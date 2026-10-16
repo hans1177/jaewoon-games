@@ -613,3 +613,15 @@ test('deleted owner policy never yields a synthetic valid constitution or archit
   assert.match(source,/compileCentralArchitectureProjection = \(\) => \(\{valid:false,errors:\['CENTRAL_POLICY_SOURCE_UNAVAILABLE'\]/);
   assert.doesNotMatch(source,/authority:'REMOVED',constitutionalAuthority:'REMOVED'/);
 });
+
+test('optional missing canonical source cannot masquerade as valid snapshot', () => {
+  const root=tempRoot();
+  try {
+    const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:false});
+    assert.equal(snapshot.present,false);
+    assert.equal(snapshot.valid,false);
+    assert.ok(snapshot.errors.includes('CENTRAL_POLICY_MISSING'));
+  } finally {
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
