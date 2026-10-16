@@ -148,28 +148,32 @@ export function changedGovernedFiles(base='HEAD^',head='HEAD'){
 
 
 const CENTRAL_POLICY_REL=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+const CENTRAL_DIRECTIVE_REL='company-directive.json';
 const CENTRAL_ARCHITECTURE_REL='company-learning/company-architecture-map.json';
 const CENTRAL_LOG_MAP_REL='company-learning/company-log-map.json';
 const CENTRAL_SECURITY_REL='company-learning/security-immune-system.json';
 const CENTRAL_SCAN_ROOTS=Object.freeze(['qa','tools','.github','assets']);
+// The owner-retained four JSON documents are frozen minimal schemas.
 const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
   architecture:Object.freeze({
     sourcePath:CENTRAL_ARCHITECTURE_REL,
     aliases:Object.freeze(['architecture','architectureMap']),
-    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','logMap','securityPolicy','purpose','requiredForAllWorkers','branches','authorityOrder','sharedContextLoadOrder','workerSynchronization','centralArchitectureProjection'])
+    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','status',
+      'branches','constitutionalEnforcement','release','notes'])
   }),
   logMap:Object.freeze({
     sourcePath:CENTRAL_LOG_MAP_REL,
     aliases:Object.freeze(['logMap']),
-    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','architectureMap','securityPolicy','purpose','requiredForAllWorkers','canonicalCorrelationKeys','logChannels','requiredMarkers','workerContextLogContract','orchestrationLogContract'])
+    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','status',
+      'requiredForAllWorkers','retained','notes'])
   })
 });
 const CENTRAL_TEXT_EXTENSIONS=new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md']);
 const CENTRAL_DOCUMENT_BUDGETS=Object.freeze({
-  policy:Object.freeze({sourcePath:CENTRAL_POLICY_REL,hardMaxUtf8Bytes:null,maxGrowthUtf8Bytes:12000}),
-  architecture:Object.freeze({sourcePath:CENTRAL_ARCHITECTURE_REL,hardMaxUtf8Bytes:320000,maxGrowthUtf8Bytes:8000}),
-  logMap:Object.freeze({sourcePath:CENTRAL_LOG_MAP_REL,hardMaxUtf8Bytes:140000,maxGrowthUtf8Bytes:4000}),
-  security:Object.freeze({sourcePath:CENTRAL_SECURITY_REL,hardMaxUtf8Bytes:70000,maxGrowthUtf8Bytes:4000})
+  policy:Object.freeze({sourcePath:CENTRAL_DIRECTIVE_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0}),
+  architecture:Object.freeze({sourcePath:CENTRAL_ARCHITECTURE_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0}),
+  logMap:Object.freeze({sourcePath:CENTRAL_LOG_MAP_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0}),
+  security:Object.freeze({sourcePath:CENTRAL_SECURITY_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0})
 });
 const cloneJson=value=>JSON.parse(JSON.stringify(value));
 const utf8Bytes=value=>Buffer.byteLength(typeof value==='string'?value:JSON.stringify(value,null,2)+'\n','utf8');
@@ -190,16 +194,16 @@ export function planCentralDocumentFormatting(text,{hardMaxUtf8Bytes}={}){
   throw new Error('central document remains above hard limit; policy review required');
 }
 export function formatCentralDocuments(){
-  // Prepare every result before writing: an oversized document leaves all four untouched.
-  const plans=Object.entries(CENTRAL_DOCUMENT_BUDGETS).map(([key,budget])=>{
-    const text=readTextRel(budget.sourcePath);
-    const hardMaxUtf8Bytes=key==='policy'
-      ?Number(JSON.parse(text).centralDocumentRetention?.maxUtf8Bytes||1120000)
-      :budget.hardMaxUtf8Bytes;
-    return {...planCentralDocumentFormatting(text,{hardMaxUtf8Bytes}),sourcePath:budget.sourcePath};
-  });
-  for(const plan of plans)if(plan.changed)fs.writeFileSync(path.join(ROOT,plan.sourcePath),plan.text);
-  return plans.filter(plan=>plan.changed).map(plan=>plan.sourcePath);
+  // Locked minimal documents must never be auto-reformatted or archived.
+  for(const budget of Object.values(CENTRAL_DOCUMENT_BUDGETS)){
+    const contents=readTextRel(budget.sourcePath);
+    const parsed=JSON.parse(contents);
+    if(!Number.isInteger(parsed.version) || !String(parsed.status||'').startsWith('MINIMAL_')
+      || [...contents].length>=1000 || utf8Bytes(contents)>budget.hardMaxUtf8Bytes) {
+      throw new Error('RETAINED_DOCUMENT_LOCK_VIOLATION:'+budget.sourcePath);
+    }
+  }
+  return [];
 }
 
 function pathValue(root,dotted=''){
@@ -442,9 +446,7 @@ export function inspectCentralDocumentBudgets({baseRevision=''}={}){
   for(const [documentKey,budget] of Object.entries(CENTRAL_DOCUMENT_BUDGETS)){
     const currentText=readTextRel(budget.sourcePath);
     const currentJson=JSON.parse(currentText);
-    const hardMax=documentKey==='policy'
-      ?Number(currentJson?.centralDocumentRetention?.maxUtf8Bytes||1120000)
-      :Number(budget.hardMaxUtf8Bytes||0);
+    const hardMax=Number(budget.hardMaxUtf8Bytes||0);
     let baseBytes=null;
     if(base&& !/^0+$/.test(base)){
       if(base==='HEAD'){
@@ -755,6 +757,17 @@ function companionArchiveRecord({plans,sourceRevision,createdAt,recordId}){
 }
 
 export function archiveCentralCompanionCurrentUse({createdAt=new Date().toISOString(),sourceRevision=currentGitRevision()}={}){
+  // These owner-shortened, hash-locked contracts have no archiveable optional fields.
+  // The legacy pruning procedure must not rewrite their content or remove QA pins.
+  for(const config of Object.values(CENTRAL_COMPANION_DOCUMENTS)){
+    const doc=readJsonRel(config.sourcePath);
+    if(!String(doc.status||'').startsWith('MINIMAL_')) {
+      throw new Error('RETAINED_COMPANION_DOCUMENT_CONTRACT_INVALID:'+config.sourcePath);
+    }
+  }
+  return Object.freeze({changed:false,plans:{},archiveRecord:null,archivePath:null,
+    reason:'RETAINED_MINIMAL_DOCUMENTS_LOCKED'});
+  /* legacy pre-shrink archiver is disabled below; retained for historical library calls.
   const refs=findCurrentCompanionDocumentReferences();
   const plans={};
   for(const [documentKey,config] of Object.entries(CENTRAL_COMPANION_DOCUMENTS)){
@@ -786,6 +799,7 @@ export function archiveCentralCompanionCurrentUse({createdAt=new Date().toISOStr
   }
   for(const row of Object.values(plans))fs.writeFileSync(path.join(ROOT,row.sourcePath),JSON.stringify(row.plan.document,null,2)+'\n');
   return Object.freeze({changed:true,plans,archiveRecord:archive,archivePath:archiveRel});
+  */
 }
 
 function currentGitRevision(){
