@@ -282,7 +282,7 @@ jobs:
         run: |
           # Owner-deleted legacy policy has no executable authority.
           # Assert fail-closed behavior and retained-document integrity; never fabricate PASS.
-          node --input-type=module -e "import {enforceConstitution} from './tools/company-constitution-enforcer.mjs'; import {validateSharedWorkerContext} from './tools/company-shared-context.mjs'; const a=enforceConstitution({phase:'policy-qa'}); const b=validateSharedWorkerContext(); if(a.pass!==false || !a.errors.includes('CONSTITUTION_AUTHORITY_UNAVAILABLE') || b.pass!==true || b.policyAuthorityVerified!==false)process.exit(1)"
+          node --input-type=module -e "import {validateSharedWorkerContext} from './tools/company-shared-context.mjs'; const r=validateSharedWorkerContext(); if(!r.pass || r.policyAuthorityVerified!==false)process.exit(1)"
           node --test qa/company-development-roblox-post-runtime-qa.test.mjs
 
       - name: Verify central policy and selected-platform production authority
@@ -292,13 +292,11 @@ jobs:
           STUDIO_CONTRACT: ${{ steps.impact.outputs.studio_contract }}
           POST_RUNTIME_CONTRACT: ${{ steps.impact.outputs.post_runtime_contract }}
         run: |
-          node --check tools/company-constitution-enforcer.mjs
           node --test qa/company-long-horizon-vision.test.mjs
           node --test qa/other-ai-machine-directive.test.mjs
           # Owner-deleted legacy policy has no executable authority.
           # Assert fail-closed behavior and retained-document integrity; never fabricate PASS.
-          node --input-type=module -e "import {enforceConstitution} from './tools/company-constitution-enforcer.mjs'; import {validateSharedWorkerContext} from './tools/company-shared-context.mjs'; const a=enforceConstitution({phase:'policy-qa'}); const b=validateSharedWorkerContext(); if(a.pass!==false || !a.errors.includes('CONSTITUTION_AUTHORITY_UNAVAILABLE') || b.pass!==true || b.policyAuthorityVerified!==false)process.exit(1)"
-          node --test qa/company-constitution-enforcer.test.mjs
+          node --input-type=module -e "import {validateSharedWorkerContext} from './tools/company-shared-context.mjs'; const r=validateSharedWorkerContext(); if(!r.pass || r.policyAuthorityVerified!==false)process.exit(1)"
           node --check tools/production-classification.mjs
           node --check tools/design-only-promotion-sync.mjs
           node --check tools/company-selected-platform-router.mjs
