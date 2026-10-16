@@ -1551,8 +1551,10 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       }
       continue;
     }
+    // 현재 게임에 없는 역할은 실제 외부 원본을 먼저 검토한다. 미검증 소스를 자동 적용하지 않는다.
+    const externalCandidates=id?externalSourceCandidatesFor(family,requestedRolesByFamily.get(family)||[]):freezeList([]);
     const asset=bestReusableByFamily.get(family);
-    if(asset){
+    if(asset&&!externalCandidates.length){
       const mode=internalAssetPlatformApplicationMode(asset,target);
       const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
       pushAction({
@@ -1564,7 +1566,6 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       });
     }else{
       const roles=requestedRolesByFamily.get(family)||[];
-      const externalCandidates=id?externalSourceCandidatesFor(family,roles):freezeList([]);
       if(externalCandidates.length){
         const selected=externalCandidates[0];
         const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
