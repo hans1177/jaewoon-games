@@ -2081,11 +2081,16 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                 local lower = string.lower(item.Name)
                 local limb = item:IsA("Motor6D") and item.Part1 and string.lower(item.Part1.Name) or ""
                 local label = lower .. " " .. limb
+                -- 가져온 리그의 대소문자/구분자 및 R15 Upper/Lower 이름을 함께 판별한다.
                 local isLeg = string.find(label, "leg", 1, true)
                   or string.find(label, "thigh", 1, true)
                   or string.find(label, "hip", 1, true)
+                  or string.find(label, "foot", 1, true)
+                  or string.find(label, "calf", 1, true)
                 local isArm = string.find(label, "arm", 1, true)
                   or string.find(label, "shoulder", 1, true)
+                  or string.find(label, "hand", 1, true)
+                  or string.find(label, "forearm", 1, true)
                 -- Hip/Shoulder 아래 자식 Bone은 상하 관절을 전부 회전하면
                 -- 움직임이 과장되므로 상위 관절에만 보행을 적용한다.
                 local parentBone = item.Parent
@@ -2096,11 +2101,11 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                   or string.find(parentLabel, "thigh", 1, true))
                 if (isLeg or isArm) and not nestedLimb then
                   local left = string.find(label, "left", 1, true)
-                    or string.match(label, "^l[_%.%-]") or string.match(label, "[_%.%-]l$")
-                    or string.find(label, "_l", 1, true)
+                    or string.match(lower, "^l[_%.%-]") or string.match(lower, "[_%.%-]l$")
+                    or string.find(lower, "_l", 1, true)
                   local right = string.find(label, "right", 1, true)
-                    or string.match(label, "^r[_%.%-]") or string.match(label, "[_%.%-]r$")
-                    or string.find(label, "_r", 1, true)
+                    or string.match(lower, "^r[_%.%-]") or string.match(lower, "[_%.%-]r$")
+                    or string.find(lower, "_r", 1, true)
                   if left or right then
                     table.insert(joints, {
                       joint=item,
