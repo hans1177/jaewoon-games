@@ -1424,6 +1424,11 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   if isRaidBoss then enemy:SetAttribute("BossPhase", "Phase1") end
   enemy:SetAttribute("RaceID", raceID)
   enemy:SetAttribute("MobSlot", mobSlot or 1)
+  -- 문명별 기존 지면 재질과 같은 생태 분류. 스폰·전투 위치를 변경하지 않는다.
+  local habitatType = (raceID % 6 == 2 or raceID % 6 == 0) and "DESERT"
+    or (raceID % 6 == 4) and "SNOW" or "GRASSLAND"
+  enemy:SetAttribute("HabitatBiome", habitatType)
+  enemy:SetAttribute("HabitatRaceID", raceID)
   enemy:SetAttribute("SpawnCategory", special and "EraSpecial" or "Civilization")
   -- 기존 시대별 특수 몬스터를 레이드 보스로 분류한다. 기본 체력·피해·보상은 유지한다.
   if special == "WildBoar" or special == "BronzeGolem" or special == "IronKnight" then
@@ -2819,7 +2824,10 @@ task.spawn(function()
             enemy.PatrolStep = (enemy.PatrolStep or 0) + 1
             local step = enemy.PatrolStep
             local angle = step * 2.399963 + enemy.RaceID * 0.73
-            local radius = 5 + (step % 4) * 2
+            local habitat = enemy.Model:GetAttribute("HabitatBiome")
+            local radius = habitat == "DESERT" and (7 + step % 4 * 2)
+              or habitat == "SNOW" and (4 + step % 3 * 2)
+              or (5 + step % 4 * 2)
             local destination = enemy.Home + Vector3.new(math.cos(angle) * radius, 0, math.sin(angle) * radius)
             local planar = Vector3.new(destination.X - enemy.Root.Position.X, 0,
               destination.Z - enemy.Root.Position.Z)
