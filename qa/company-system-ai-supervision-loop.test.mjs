@@ -109,15 +109,17 @@ test('workflow wait telemetry separates runnable reservation, fan-in job wait, a
   assert.match(workflow,/String\(j\.name\|\|''\)==='fan_in'/);
 });
 
-test('push-triggered System AI runs are coalesced QA-only and never reserve workers',()=>{
-  assert.match(workflow,/group: company-system-ai-\$\{\{ github\.event_name == 'push' && 'push-qa' \|\| github\.run_id \}\}/);
-  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
-  assert.match(workflow,/group: \$\{\{ github\.event_name == 'push' && 'company-system-ai-push-qa-reserve' \|\| 'company-system-ai-reserve-control' \}\}/);
+test('normal push stays QA-only but explicit external AI request may reserve only one task',()=>{
+  assert.match(workflow,/group: company-system-ai-.*contains\(github\.event\.head_commit\.message/);
+  assert.match(workflow,/cancel-in-progress: .*contains\(github\.event\.head_commit\.message/);
   const reserve=workflow.slice(workflow.indexOf('- name: Reserve disjoint supervised assignments'),workflow.indexOf('\n  worker:'));
-  assert.match(reserve,/if \[ "\$\{GITHUB_EVENT_NAME\}" = 'push' \]; then/);
+  assert.match(reserve,/explicit_external_dispatch=NO/);
+  assert.match(reserve,/COMPANY_SYSTEM_AI_EXTERNAL_REQUEST=YES/);
+  assert.match(reserve,/SYSTEM_AI_MAX_BATCH=1/);
   assert.match(reserve,/COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES/);
   assert.match(reserve,/matrix=\{"include":\[\]\}/);
   assert.match(reserve,/count=0/);
+  assert.match(reserve,/if \[ "\$\{GITHUB_EVENT_NAME\}" = 'push' \] && \[ "\$explicit_external_dispatch" != 'YES' \]; then/);
   assert.match(reserve,/\.event!="push"/);
   assert.ok(reserve.indexOf('COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES')<reserve.indexOf('git fetch origin vibe2-unreal-core'));
 });
