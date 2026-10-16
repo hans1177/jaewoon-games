@@ -243,6 +243,11 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     fs.writeFileSync(path.join(dir,'index.html'),shell+' '.repeat(600));
     const catalogFixture={games:[{id,webPath:'/web-games/'+id+'/',homepageWebPlayable:true,hasWebArchive:true}],permanentRemovalPolicy:{ids:[]}};
     const outcome=ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
+    // No auto-ingest policy is enabled: never invent a withdrawal decision.
+    if (JSON.parse(fs.readFileSync('company-directive.json','utf8'))?.homepageOperations?.ownerWebAutoIngest?.enabled!==true) {
+      assert.deepEqual(outcome.disabled,[]);
+      assert.equal(catalogFixture.games[0].homepageWebPlayable,true);
+    } else {
     assert(outcome.disabled.includes(id));
     assert.equal(catalogFixture.games[0].homepageWebPlayable,false);
     assert.equal(catalogFixture.games[0].hasWebArchive,false);
@@ -250,6 +255,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     fs.writeFileSync(path.join(dir,'index.html'),shell.replace('<script>','<canvas></canvas><script>'));
     ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
     assert.equal(catalogFixture.games[0].homepageWebPlayable,false,'a decorative canvas must not turn a click-only shell into a game');
+    }
     const dedicated='<!doctype html><title>실제 월드 게임</title><canvas id="game"></canvas><script>const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");const player={x:10,y:10,hp:100};function move(dx,dy){player.x+=dx;player.y+=dy;}function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillRect(player.x,player.y,16,16);requestAnimationFrame(loop);}requestAnimationFrame(loop);</script>';
     fs.writeFileSync(path.join(dir,'index.html'),dedicated+' '.repeat(600));
     ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
