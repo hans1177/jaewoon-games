@@ -1648,6 +1648,48 @@
         "repair-mode:MODEL",
         "qa-failure-return-to-source-worker-required"
       ]
+    },
+    {
+      "id": "owner-simple-rpg-full-development-20261016",
+      "gameId": "simple-rpg",
+      "target": "roblox",
+      "department": "development",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE] 바이브는 대충알피지 계획서대로 24문명, 바이옴, 코난풍 몬스터 생태계, 장비·제작·연구·UI 등 게임 전체 개발을 책임진다. 기존 creature-motion 작업과 파일 책임이 겹치지 않도록 우선 shared/RaceData.luau·shared/ProgressionData.luau·shared/GameConfig.luau 및 qa/simple-rpg-age-chain.test.mjs 범위에서 검증된 개선을 수행한다. 기존 게임/저장키/Place 유지, 개발 후보 브랜치, 독립 QA, 승인된 Open Cloud 배포 체인 준수. 외부 에셋 업로드·등록 자동화의 소유권은 ChatGPT 작업으로 분리해 중복 수정 금지.",
+      "responsibleFiles": [
+        "roblox-games/simple-rpg/shared/RaceData.luau",
+        "roblox-games/simple-rpg/shared/ProgressionData.luau",
+        "roblox-games/simple-rpg/shared/GameConfig.luau",
+        "qa/simple-rpg-age-chain.test.mjs"
+      ],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "evidence": [
+        "owner-directive:vibe-full-simple-rpg-development-20261016",
+        "source:roblox-games/simple-rpg/대충알피지_작업계획서.md",
+        "responsible-files:disjoint-from-creature-motion"
+      ],
+      "lastOutcome": null,
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "owner-directive:vibe-full-simple-rpg-development-20261016",
+        "reviewRequired": true
+      },
+      "sourceRoot": "roblox-games/simple-rpg",
+      "speculativeEligible": false,
+      "estimatedRisk": "medium",
+      "shard": "roblox"
     }
   ]
 }
