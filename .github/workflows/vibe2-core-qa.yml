@@ -312,6 +312,9 @@ jobs:
           node --check tools/company-roblox-production-plan.mjs
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-openai-agent-patterns.mjs
+          node --input-type=module --check < multiplayer/worker.js
+          node --input-type=module --check < multiplayer/multiplayer-client.js
+          node --check qa/company-development-roblox-multiplayer-qa.test.mjs
           node --check qa/vibe2-openai-agent-patterns.test.mjs
           node --check tools/vibe2-asset-production-plan.mjs
           node --check tools/vibe2-central-work-contract.mjs
@@ -410,6 +413,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/vibe2-openai-agent-patterns.test.mjs
+          node --test qa/company-development-roblox-multiplayer-qa.test.mjs
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/company-build-up-directive.test.mjs
           node --test qa/company-build-up-experience-quality.test.mjs
