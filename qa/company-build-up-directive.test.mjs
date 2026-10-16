@@ -1724,3 +1724,41 @@ test('auto composition refuses phantom UI and cross-game source while preserving
     assert.equal(p.passed,false);
   }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
 });
+
+
+test('Vibe compact source-worker instructions retain internal composition across existing game owners',()=>{
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const begin=worker.indexOf('function gameSpecificBuildUpDirectiveGuidance(');
+  const end=worker.indexOf('export function buildRobloxNativeSourceInspection',begin);
+  assert.ok(begin>=0&&end>begin);
+  const {guide,compact}=runInNewContext(worker.slice(begin,end)
+    +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
+      clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines,
+      boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
+      COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+      Buffer,console:{log(){}}
+    });
+  const source='roblox-games/game-a/client/Game.client.luau';
+  const d={
+    directiveId:'game-a-1',gameId:'game-a',platform:'ROBLOX',generation:1,primaryFocus:'UI',
+    gameInternalAutoComposition:{
+      gameId:'game-a',sourceTreeFingerprint:'source-evidence',
+      components:[{id:'LOBBY',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',responsibleFiles:[source]},
+        {id:'INVENTORY',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',responsibleFiles:[source]}],
+      uiModeSelection:{combat:[],lobby:['EXISTING_GAME_ENTRY'],inventory:['OWNED_ITEM_LIST']},
+      worldGraph:{enabled:false},stateChain:{applicable:false},
+      sharedAssetSelection:{noNewAssetGeneration:true}
+    },
+    playerFacingInspectionContract:{cases:[]},
+    visualBuildUpDirective:{domains:{}},responsibleSystemsAndFiles:{sourceAnchors:[]},
+    gameplayImplementationDirectives:[],progressionContentWorldDirectives:[],preserveConstraints:[],acceptanceEvidence:[],
+    uxInputDirectives:[],nextEscalationCandidates:[]
+  };
+  const full=guide({target:'roblox',gameId:'game-a',buildUpDirective:d},[source]);
+  assert.match(full,/autoComposition=/);
+  assert.match(full,/autoCompositionRule=/);
+  const narrowed=compact(full,{compact:true,selectedPath:source,responsiblePaths:[source]});
+  assert.match(narrowed,/autoComposition=/);
+  assert.match(narrowed,/autoCompositionRule=/);
+});
