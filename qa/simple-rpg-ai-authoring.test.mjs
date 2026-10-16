@@ -466,3 +466,12 @@ test('existing civilization enemy habitats mirror terrain and keep patrol inside
   assert.match(server, /Magnitude <= 16 then/);
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
 });
+
+test('wolf and boar have distinct noncolliding low-poly silhouettes', () => {
+  for (const name of ['WolfNeckRuff','WolfChest','BoarShoulderHump','BoarBristle']) {
+    assert.ok(server.includes(name), name);
+  }
+  assert.match(server, /piece\.CanCollide = false\s+piece\.CanTouch = false\s+piece\.CanQuery = false/);
+  assert.match(server, /if enemy:GetAttribute\("CreatureAssetSource"\) ~= "StudioImported" then/);
+  assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
+});
