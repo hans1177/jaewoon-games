@@ -912,9 +912,12 @@ export function applyVibeFanInResults(queueInput, results = []) {
     if (!grouped.has(id)) grouped.set(id, []);
     grouped.get(id).push(raw);
   }
+  // [메인] 정규화 전후에 보존되는 작업 순서로 한 번만 위치를 색인한다.
+  // 그룹마다 전체 대기열을 재검색하지 않으면서 예약·중복 결과 검사는 기존 흐름을 유지한다.
+  const taskIndexById=new Map(queue.tasks.map((task,index)=>[task.id,index]));
   const applied = [];
   for (const [taskId, variants] of grouped.entries()) {
-    const currentTask = queue.tasks.find((task) => task.id === taskId);
+    const currentTask = queue.tasks[taskIndexById.get(taskId)];
     if (!currentTask) { applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'TASK_NOT_FOUND' }); continue; }
     const reservationIds = [...new Set(variants.map(resultReservationId).filter(Boolean))];
     if (reservationIds.length > 1) { applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'RESERVATION_CONFLICT' }); continue; }
