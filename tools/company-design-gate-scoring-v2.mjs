@@ -4,8 +4,9 @@
 import fs from 'node:fs';
 function loadBasicDesignMethod(){
   // Keep strict classification validation, but avoid breaking unrelated imports.
-  const file=new URL('../company-learning/platform-release-roadmap.json',import.meta.url);
-  if(!fs.existsSync(file))throw new Error('DESIGN_CLASSIFICATION_AUTHORITY_UNAVAILABLE: removed central policy; grammar validation requires a verified replacement');
+  const file=String(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH||'').trim();
+  if(!file)throw new Error('DESIGN_CLASSIFICATION_VERIFIED_POLICY_PATH_REQUIRED');
+  if(!fs.existsSync(file))throw new Error('DESIGN_CLASSIFICATION_AUTHORITY_UNAVAILABLE');
   const method=JSON.parse(fs.readFileSync(file,'utf8'))?.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod;
   if(!method?.gameGenreClassification||!method?.materialClassification)throw new Error('DESIGN_CLASSIFICATION_AUTHORITY_INVALID');
   return method;
