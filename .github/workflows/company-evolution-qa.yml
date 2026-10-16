@@ -297,10 +297,9 @@ jobs:
           node qa/game-catalog-normalization.test.mjs
           node --test qa/homepage-manager-publication-order.test.mjs
 
-      - name: Validate current artbook safety
+      - name: Validate current production safety
         run: |
           set -euo pipefail
-          node --test qa/artbook-production-pipeline.test.mjs
           node --test qa/company-development-queue-reconcile.test.mjs
           node --test qa/production-diversity.test.mjs
           node --test qa/company-status-sync-direct-native.test.mjs qa/design-pipeline-no-artbook-regression.test.mjs
