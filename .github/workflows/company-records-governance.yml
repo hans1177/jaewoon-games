@@ -41,6 +41,8 @@ concurrency:
 jobs:
   records-governance:
     name: Records Schema and File Hygiene
+    env:
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
     runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:

@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
+import { ownerDevelopmentHeld } from '../tools/vibe2-queue-control.mjs';
 
 const baseline={content:{coreFun:'위치를 선택해 방어 유닛을 배치하고 적의 경로를 막는다',coreLoop:['위치 선택','유닛 배치','적 이동과 전투','보상으로 강화']}};
 
@@ -157,4 +158,26 @@ test('native-only development hold excludes withdrawn Web prototypes but keeps a
   assert.equal(selectDevelopmentWebValidationGames({catalog,policy:{}}).length,4);
   policy.directNativeDualPlatformDevelopment.ownerActiveDevelopmentScope20261009.activeTargets.push('UNITY_WEB');
   assert.equal(selectDevelopmentWebValidationGames({catalog,policy}).length,4);
+});
+
+
+test('owner-approved standalone WEB is unheld without resuming Unity WebGL or Android',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+  assert.equal(roadmap.independentWebGameDevelopment20261017?.enabled,true);
+  assert.equal(roadmap.independentWebGameDevelopment20261017?.sourceRoot,'web-games/<gameId>/');
+  assert.equal(roadmap.developmentAccess.WEB,'ALWAYS_ALLOWED');
+  assert.equal(directive.platformStrategy.developmentAccess.WEB,'ALWAYS_ALLOWED');
+  assert.equal(directive.independentWebGameDevelopment20261017?.enabled,true);
+  assert.equal(ownerDevelopmentHeld(roadmap,'existing-web','web'),false);
+  assert.equal(ownerDevelopmentHeld(roadmap,'existing-unity','unity_web'),true);
+  assert.equal(ownerDevelopmentHeld(roadmap,'existing-unity','unity_android'),true);
+  assert.equal(ownerDevelopmentHeld(roadmap,'existing-uefn','unreal'),true);
+  const denied=structuredClone(roadmap);
+  denied.independentWebGameDevelopment20261017.enabled=false;
+  assert.equal(ownerDevelopmentHeld(denied,'existing-web','web'),true);
+  const catalog={games:[{id:'existing-web',productionClass:'DEVELOPMENT_CONFIRMED'},
+    {id:'other-web',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  assert.equal(selectDevelopmentWebValidationGames({catalog,policy:roadmap}).length,2);
+  assert.equal(selectDevelopmentWebValidationGames({catalog,policy:denied}).length,0);
 });

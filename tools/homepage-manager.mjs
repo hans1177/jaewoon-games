@@ -1,7 +1,7 @@
 // 파일명: tools/homepage-manager.mjs
 // 단일 홈페이지 관리 실행계약과 canonical Top30 실시간 미러/PWA/Web 링크를 self-QA 한다.
 import fs from 'node:fs';
-const compileHomepageCentralPolicy = () => ({valid:false,errors:['LEGACY_CENTRAL_POLICY_REMOVED'],fingerprint:null,runtimeAuthority:null,serverRuntimeBranch:null,publicSourceBranch:null,contract:{supportedPlatforms:[],managerContract:{},testingContract:{},documentationSyncContract:{},homepageListingContract:{}}});
+import {compileHomepageCentralPolicy} from './company-homepage-central-policy.mjs';
 import { normalizeCatalog, validatedHomepageMedia, webTreeFingerprint } from './game-catalog-normalization.mjs';
 
 // Media capture stays inside the existing manager / self-QA / Director chain.
