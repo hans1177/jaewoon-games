@@ -170,7 +170,8 @@ export function buildHomepagePlatformExposure({queue={},catalog={},policy={}}={}
   return{
     version:3,
     authority:'company-runtime',
-    centralPolicy:'company-learning/platform-release-roadmap.json',
+    // The former roadmap was deleted; do not advertise it as an active policy.
+    centralPolicy:null,
     centralPolicyFingerprint:central.fingerprint,
     centralPolicyVersion:central.contract.version,
     publicSafe:true,

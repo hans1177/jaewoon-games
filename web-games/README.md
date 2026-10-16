@@ -32,4 +32,4 @@ unity-games/<game-id>/
 
 Unity Web PASS 후에는 `unity-games/<game-id>/`가 Canonical Source이며 이 폴더는 빌드 결과로 취급한다.
 
-정책 원본: `company-learning/platform-release-roadmap.json` → `unityWebFirstStage`
+기존 중앙정책 문서와 `unityWebFirstStage` 참조는 제거되었다. 웹 빌드의 실제 동작 및 검증 기준은 현재 저장소의 실행 코드와 테스트에서 확인한다.

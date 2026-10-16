@@ -162,9 +162,11 @@ export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
     :[...PLATFORM_PRIORITY];
   company.policy ||= {};
   const policy=company.policy;
-  policy.sourceOfTruth=centralPolicyPath;
+  if(machine)policy.sourceOfTruth=centralPolicyPath;
+  else delete policy.sourceOfTruth;
   policy.focusedDevelopmentCaretakers=machine?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||null;
-  policy.policyAuthority='MACHINE_EXECUTION_CONTRACT';
+  if(machine)policy.policyAuthority='MACHINE_EXECUTION_CONTRACT';
+  else delete policy.policyAuthority;
   policy.primaryPlatform='ROBLOX';
   policy.allowedTargetPlatforms=[...supported];
   policy.platformPriority=[...supported];
@@ -180,7 +182,8 @@ export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
   policy.approvedDesignScopeMustBeFullyImplemented=true;
   policy.silentScopeReductionForbidden=true;
   policy.targetPlatformMayRunImmediately=true;
-  policy.unityWebValidationPolicySource=centralPolicyPath+'#directNativeDualPlatformDevelopment.unityWebValidationSurface';
+  if(machine)policy.unityWebValidationPolicySource=centralPolicyPath+'#directNativeDualPlatformDevelopment.unityWebValidationSurface';
+  else delete policy.unityWebValidationPolicySource;
   deleteKeys(policy,LEGACY_WEB_POLICY_KEYS);
   policy.fortniteUefnAutomaticDevelopment=false;
   policy.fortniteUefnState='OWNER_HOLD';
@@ -572,7 +575,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   company.operations.autonomousFocus={
     enabled:buildCompletionFocus||Boolean(focusPolicy),targetSlots,filledSlots:focusedGames.length,preferredGameIds:[],focusedGameIds,games:focusedGames,nextFocusGameIds,nextDevelopmentGameIds,
     selection:buildCompletionFocus?'THREE_OWNER_FOCUSED_BUILD_COMPLETION':focusPolicy?.selection||null,platformPriority:[...PLATFORM_PRIORITY],priorityMeaning:'DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE',activeDevelopmentRunId:supervision.activeDevelopmentRunId||null,syncIntervalMs:30000,updatedAtKst:supervision.dateKst||company.updatedAt||null,
-    source:buildCompletionFocus?[centralPolicyPath,portfolioPath,catalogPath,'tools/company-status-sync.mjs']:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs'],
+    source:buildCompletionFocus?[...(machine?[centralPolicyPath]:[]),portfolioPath,catalogPath,'tools/company-status-sync.mjs']:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs'],
   };
   company.operations.productionClasses={...classResult.state,source:[portfolioPath,catalogPath,artbooksPath,'tools/company-status-sync.mjs']};
   delete company.operations.productionTiers;

@@ -1,20 +1,19 @@
 {
   "version": 3,
-  "revision": 90,
-  "updatedAt": "2026-10-11",
+  "revision": 91,
+  "updatedAt": "2026-10-16",
   "priority": "owner-immediate",
-  "policyDocument": "company-learning/platform-release-roadmap.json",
-  "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
+  "policyDocument": null,
+  "instruction": "Legacy central policy document was removed by owner commit f2d13b369e27b8344342da025513687388011f8d. This directive cannot define replacement execution policy or override current verified machine rules.",
   "documentationSynchronization": {
     "centralPolicyFirst": true,
     "workDocumentsMustMirrorCurrentCentralPolicy": true,
     "syncRelevantWorkDocumentsOnEveryPolicyChange": true,
     "implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized": true,
     "workDocumentsCannotOverrideCentralPolicy": true,
-    "centralPolicyPath": "company-learning/platform-release-roadmap.json",
+    "centralPolicyPath": null,
     "genrePresentationAndCommercialReadinessMirrored": true,
     "syncTargets": [
-      "company-learning/platform-release-roadmap.json",
       ".github/agents/planning.agent.md",
       ".github/agents/development.agent.md",
       ".github/agents/graphics.agent.md",
@@ -149,7 +148,7 @@
       "playButtonRequiresVerifiedRunnableTarget": true
     },
     "autoClassification": {
-      "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
+      "sourceOfTruth": null,
       "enabled": true,
       "webGameOnly": false,
       "explicitOwnerOrCatalogValueWins": true,
@@ -809,7 +808,7 @@
     "platformReleaseMayProceedWhenItsOwnEvidenceGatesPass": true,
     "currentExperiencePhase": "ROBLOX_UNITY_DIRECT_NATIVE_INTERNAL_RELEASE_AND_PLAYTEST",
     "currentPrimaryExperiencePlatform": "UNITY_OR_ROBLOX_EQUAL_TIER",
-    "roadmapContract": "company-learning/platform-release-roadmap.json",
+    "roadmapContract": null,
     "parallelLearningPipelineAllowed": false,
     "webCompanionStrategy": {
       "status": "DEPRECATED_COMPATIBILITY_ALIAS",
@@ -891,7 +890,7 @@
       "seed-roblox-battleground-fight-welcome-to-bloxburg",
       "seed-roblox-obby-party-minigam-tower-of-hell"
     ],
-    "directNativeSourceOfTruth": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
+    "directNativeSourceOfTruth": null,
     "upperPlatformDevelopmentAdmissionGate": "MINIMUM_DESIGN_READY"
   },
   "learning": {
@@ -1010,7 +1009,7 @@
   },
   "stageGateScoringV2": {
     "version": 2,
-    "policyDocument": "company-learning/platform-release-roadmap.json",
+    "policyDocument": null,
     "scoreScalePerGate": 100,
     "scoresIndependentBetweenGates": true,
     "bonusPointsForbidden": true,
@@ -1051,7 +1050,7 @@
     "nativeDevelopmentPaused": false,
     "strictDesignReviewParallel": true
   },
-  "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
+  "machineSourceOfTruth": null,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "humanDocumentRequired": false,
   "machineCompanions": {
@@ -1066,7 +1065,7 @@
   "internalReleaseFastMvp": {
     "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-24",
-    "policyDocument": "company-learning/platform-release-roadmap.json",
+    "policyDocument": null,
     "appliesTo": "ROBLOX_PRIVATE_OR_RESTRICTED_INTERNAL_RELEASE",
     "publicReleaseUnaffected": true,
     "gates": [
@@ -1119,7 +1118,7 @@
     "publicationOutcomeBlocksNextCycle": false
   },
   "currentExecutionMode": "ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT",
-  "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
+  "currentExecutionAuthority": null,
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
     "mode": "ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR",
@@ -1191,7 +1190,7 @@
     }
   },
   "highEndVisualProduction": {
-    "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
+    "source": null,
     "status": "MIRROR_ONLY",
     "target": "HIGH_END_COMMERCIAL_NATIVE_PRESENTATION",
     "developmentAdmissionGate": false,
@@ -1269,7 +1268,7 @@
     "rawProtectedReferenceImagePersistentLearningForbidden": true
   },
   "graphicsProduction": {
-    "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
+    "source": null,
     "status": "MIRROR_ONLY",
     "externalWorkUnit": "GRAPHICS_PRODUCTION",
     "soleCoordinator": "assets/vibe-art-pipeline.js",
@@ -1284,7 +1283,7 @@
     "vibeGameSourceMutationOwner": true,
     "evidenceRoot": "graphics-production-evidence",
     "companyLibrary": {
-      "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
+      "source": null,
       "requiredPlatforms": [
         "UNITY",
         "ROBLOX"
@@ -1379,10 +1378,10 @@
     "activeProductionTargets": [
       "ROBLOX"
     ],
-    "ownerProductionFocusAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.ownerProductionFocus"
+    "ownerProductionFocusAuthority": null
   },
   "centralDocumentation": {
-    "sourceOfTruth": "company-learning/platform-release-roadmap.json#centralDocumentation",
+    "sourceOfTruth": null,
     "humanPolicyMirrorRequired": false,
     "duplicatePolicyDocumentAllowed": false,
     "completedMigrationArtifactRetentionRequired": false
@@ -1393,14 +1392,14 @@
     "flat2DFinalGameplayForbidden": true,
     "ui2DOverlayAllowed": true,
     "existing2DRepairRequired": true,
-    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation"
+    "authority": null
   },
   "webGameStartability": {
     "allExposedGamesMustActuallyStart": true,
     "validationProxyCannotCountAsGameplay": true,
     "emptyEntryPointForbidden": true,
     "failureState": "WEB_VIBE_REPAIR_REQUIRED",
-    "authority": "company-learning/platform-release-roadmap.json#webRuntimeStartabilityContract"
+    "authority": null
   },
   "continuousLearning24h": {
     "enabled": true,
@@ -1412,7 +1411,7 @@
     "canonicalPipelineOnly": true
   },
   "narrativeStorytelling": {
-    "source": "company-learning/platform-release-roadmap.json#narrativeStorytellingContract",
+    "source": null,
     "status": "MIRROR_ONLY",
     "narrativeDirector": true,
     "mainStoryQuestGraph": true,
@@ -1435,7 +1434,7 @@
     "factionRelationshipSaveRoundTripRequired": true
   },
   "specializedGameDevelopmentLearning": {
-    "source": "company-learning/platform-release-roadmap.json#learningClosedLoopContract.specializedGameDevelopmentMastery",
+    "source": null,
     "status": "MIRROR_ONLY",
     "existingCanonicalLearningMotorOnly": true,
     "domains": [
@@ -1476,7 +1475,7 @@
     "uefnPositiveBlockedUntilAuthoritativeExecutorEvidenceContractExists": true
   },
   "continuousGameplaySystemEvolution": {
-    "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract",
+    "source": null,
     "enabled": true,
     "latestRevisedDesignContextRequiredForCoreFunAndProgression": true,
     "coreFunAndProgressionRunAlongsidePresentationWhenResponsibilitiesDoNotOverlap": true,
@@ -1517,7 +1516,7 @@
     "publishOrDeployAfterEveryF9": true
   },
   "validationEfficiencyOptimization": {
-    "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
+    "source": null,
     "mirrorOnly": true,
     "appliesTo": [
       "WEB",
@@ -1551,7 +1550,7 @@
     "externalPublicApprovalAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY"
   },
   "verifiedExternalRobloxLearning": {
-    "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.machineOnlyProjectContinuation.verifiedLearningMaxUse.externalVerifiedBlackBoxFirstApplication",
+    "source": null,
     "mirrorOnly": true,
     "version": 3,
     "implementationPriority": "ROBLOX_FIRST_UNITY_IMPLEMENTATION_UNCHANGED",
@@ -1631,7 +1630,7 @@
     "runtimeCompletion": "REQUIRES_EXACT_RUNTIME_EVIDENCE_NOT_SOURCE_ONLY_PASS"
   },
   "platformVerifiedF0F9PublicationLoop": {
-    "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.verifiedF0F9PublicationLoop",
+    "authority": null,
     "platforms": [
       "WEB",
       "ROBLOX",
@@ -1679,5 +1678,12 @@
     "allSpatialGameAssetLibraries3dOnly": true,
     "unityWeb3dRuntimeProofRequired": true,
     "unityWebDevelopmentAllowed": false
+  },
+  "legacyCentralPolicyReferenceCleanup": {
+    "removedPolicyPath": "company-learning/platform-release-roadmap.json",
+    "removedByCommit": "f2d13b369e27b8344342da025513687388011f8d",
+    "referencesRetired": 24,
+    "replacementPolicyNotAsserted": true,
+    "executionContractChangeNotAuthorized": true
   }
 }

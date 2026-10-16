@@ -27,7 +27,7 @@ function taskFor(game={},roadmap={},stamp=''){
   const id=clean(game.id||game.gameId),name=clean(game.name||game?.canonical?.identity?.name||id),p=phase(game),surface=targetSurface(game);
   const file=marketingFile(id);
   const web=clean(game.webPath||game?.canonical?.sources?.web?.path||'').replace(/^\//,'').replace(/\/$/,'');
-  const contexts=['company-learning/platform-release-roadmap.json','game-catalog.json'];
+  const contexts=['game-catalog.json'];
   if(web)contexts.push(`${web}/index.html`);
   return{
     id:`marketing-${safe(id)}-${p.toLowerCase().replaceAll('_','-')}-v1`,

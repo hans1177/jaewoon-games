@@ -251,7 +251,7 @@ function resetSeed(game,existing={},timestamp=new Date().toISOString()){
 }
 export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=SEED_FILE,root='.',gameId='',timestamp=new Date().toISOString()}={}){
   const catalog=readJson(path.join(root,catalogFile),{games:[],permanentRemovalPolicy:{ids:[]}});
-  const state=readJson(path.join(root,seedFile),{version:2,policyDocument:'company-learning/platform-release-roadmap.json',seeds:[]});
+  const state=readJson(path.join(root,seedFile),{version:2,seeds:[]});
   state.seeds=Array.isArray(state.seeds)?state.seeds:[];
   const removed=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean).filter(Boolean));
   const targetId=clean(gameId);
@@ -284,7 +284,7 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
   }
   if(created.length||reactivated.length||grammarUpgraded.length){
     state.version=Math.max(2,Number(state.version)||0);
-    state.policyDocument='company-learning/platform-release-roadmap.json';
+    delete state.policyDocument; // Do not persist a removed policy as active authority.
     state.autoMissingDesignIntake={
       version:4,
       source:AUTO_MISSING_DESIGN_SOURCE,
@@ -310,7 +310,7 @@ export function runOwnerAllGamesDesignReset({catalogFile=CATALOG_FILE,seedFile=S
   const catalog=readJson(path.join(root,catalogFile),{games:[]});
   const designGames=(catalog.games||[]).filter(game=>clean(game.productionClass)==='DESIGN_ONLY');
   if(!designGames.length)throw new Error('NO_DESIGN_ONLY_GAMES_IN_CATALOG');
-  const state=readJson(path.join(root,seedFile),{version:2,policyDocument:'company-learning/platform-release-roadmap.json',seeds:[]});
+  const state=readJson(path.join(root,seedFile),{version:2,seeds:[]});
   state.seeds=Array.isArray(state.seeds)?state.seeds:[];
   const before=JSON.stringify(state);
   const previousReset=state.ownerAllGamesDesignReset||{};
@@ -342,7 +342,7 @@ export function runOwnerAllGamesDesignReset({catalogFile=CATALOG_FILE,seedFile=S
     if(clean(seed.status).toUpperCase()==='ACTIVE'){seed.status='PAUSED';seed.pausedReason='NOT_IN_CANONICAL_GAME_CATALOG';seed.pausedAt=timestamp;paused++;}
   }
   state.version=Math.max(2,Number(state.version)||0);
-  state.policyDocument='company-learning/platform-release-roadmap.json';
+  delete state.policyDocument; // Do not persist a removed policy as active authority.
   const priorTimestamp=Date.parse(previousReset.updatedAt||'');
   state.ownerAllGamesDesignReset={
     revision:RESET_REVISION,source:RESET_SOURCE,gameCount:designGames.length,

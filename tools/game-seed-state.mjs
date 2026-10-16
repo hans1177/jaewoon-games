@@ -127,7 +127,8 @@ export function normalizeSeedState(raw={}){
   const state=raw&&typeof raw==='object'&&!Array.isArray(raw)?structuredClone(raw):{};
   state.version=Math.max(2,Number(state.version)||0);
   delete state.policyDocument;
-  state.policyAuthority='company-learning/platform-release-roadmap.json';
+  // The retired roadmap must not be stamped as an active authority.
+  delete state.policyAuthority;
   if(!Array.isArray(state.categories)||!state.categories.length)state.categories=[...DEFAULT_SEED_CATEGORIES];
   if(!Array.isArray(state.seeds))state.seeds=[];
   else state.seeds=state.seeds.map(seed=>{

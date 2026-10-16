@@ -65,7 +65,10 @@ export function materializeDeterministicCheckpointCandidate({gameId,date,root='.
   const checkpoint=readJson(checkpointPath,null);
   if(!checkpoint)throw new Error(`DESIGN_CHECKPOINT_RECOVERY_MISSING ${checkpointPath}`);
 
-  const roadmap=readJson(path.join(root,'company-learning','platform-release-roadmap.json'),{});
+  const policyFile=clean(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH);
+  if(!policyFile)throw new Error('DESIGN_CHECKPOINT_RECOVERY_VERIFIED_POLICY_PATH_REQUIRED');
+  const roadmap=readJson(path.resolve(root,policyFile),null);
+  if(!roadmap)throw new Error('DESIGN_CHECKPOINT_RECOVERY_VERIFIED_POLICY_UNAVAILABLE');
   const authority=roadmap?.developmentLifecycleMachine?.deterministicGateAuthority||{};
   if(authority.enabled!==true||authority.aiMayDecidePassFail!==false)throw new Error('DETERMINISTIC_GATE_AUTHORITY_REQUIRED');
 
@@ -151,7 +154,7 @@ export function materializeDeterministicCheckpointCandidate({gameId,date,root='.
     .filter(event=>clean(event?.gameId)===gameId&&clean(event?.reviewStage)==='DESIGN_STRICT_REVIEW').slice(-8);
   const cycle={
     version:6,date,gameId,gameName:clean(game.name||seed.gameName||gameId),productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
-    status:'COMPLETE',policyDocument:'company-learning/platform-release-roadmap.json',
+    status:'COMPLETE',policyDocument:policyFile,
     flow:'GAME_SEED_TO_DETERMINISTIC_DESIGN_BASELINE_CANDIDATE',
     gameSeed:{seedId:clean(seed.seedId),category:clean(seed.GAME_CATEGORY),source:'game-seed-state.json',complete:true},
     designer:{role:'DESIGN_AUTHOR_CHECKPOINT',model:authorModel,singleAuthor:true,sameModelRevised:true},
