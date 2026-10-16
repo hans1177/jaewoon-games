@@ -2074,11 +2074,15 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             or reactingToHit and math.rad(16) * (1 - hitElapsed / 0.28)
             or striking and math.rad(-20) * strikeProgress
             or windingUp and math.rad(-16) or 0
-          -- 시작 포즈의 높이/회전을 보존해서 실제 메시가 루트 안에 파묻히지 않게 한다.
+          -- 리그 없는 일체형 메시도 정지 상태로 미끄러지지 않도록
+          -- 보행 때만 몸체를 기울이고 타격 순간에는 상체 반동을 준다.
           local visualPose = importedVisual:GetAttribute("VisualPivotOffset")
           if typeof(visualPose) ~= "CFrame" then visualPose = CFrame.new() end
+          local bodyLean = moving and math.sin(clock) * math.rad(5) * speedFactor or 0
+          local bodyTurn = striking and math.sin(strikeElapsed / 0.32 * math.pi)
+            * math.rad(9) or 0
           importedVisual:PivotTo(rootPart.CFrame * CFrame.new(0, stride - deathProgress * 0.6, 0)
-            * CFrame.Angles(pitch, 0, roll + deathProgress * math.rad(10)) * visualPose)
+            * CFrame.Angles(pitch + bodyLean, bodyTurn, roll + deathProgress * math.rad(10)) * visualPose)
           -- 가져온 스킨드/리그 모델의 Motor6D 다리를 좌우 교대로 구동한다.
           -- 원본 C0는 보존하고 20Hz 클라이언트 시각 효과만 수정한다.
           local joints = creatureImportedRig[importedVisual]
