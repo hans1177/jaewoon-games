@@ -33,6 +33,46 @@
   "defaultMaxRetries": 2,
   "tasks": [
     {
+      "id": "owner-policy-dependency-qa-repair-20261016",
+      "gameId": "company",
+      "target": "web",
+      "department": "qa",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE] VIBE도 ChatGPT와 병렬로 삭제된 company-learning/platform-release-roadmap.json 및 COMPANY_FLOW.md 의존성을 제거한다. qa/company-long-horizon-vision.test.mjs 와 qa/company-game-seed-flow.test.mjs 의 ENOENT를 실제 유지되는 권위 있는 계약의 필드로 이전하고 유효한 보안·권한 검사를 유지한다. 단순 테스트 스킵, 빈 객체로 우회, 삭제 정책 복원, 성공 허위 보고 금지. 수정 파일에 대한 재현 가능한 node --test 검사와 실패 원인 증거 확보. 최신 main 기반 후보 브랜치 PR을 작성하고 기존 검토/승인 절차를 따른다. ChatGPT 및 다른 워커가 수정 중인 파일을 사전에 확인하고 책임 파일 잠금을 따른다.",
+      "responsibleFiles": [
+        "qa/company-long-horizon-vision.test.mjs",
+        "qa/company-game-seed-flow.test.mjs"
+      ],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "evidence": [
+        "owner-directive:assistant-vibe-policy-cleanup-20261016",
+        "main-pr:8139",
+        "must-preserve-existing-verification"
+      ],
+      "lastOutcome": null,
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "owner-directive:assistant-vibe-policy-cleanup-20261016",
+        "reviewRequired": true
+      },
+      "sourceRoot": "qa",
+      "speculativeEligible": false,
+      "estimatedRisk": "medium",
+      "shard": "web"
+    },
+    {
       "id": "owner-simple-rpg-creature-motion-20261016",
       "gameId": "simple-rpg",
       "target": "roblox",
