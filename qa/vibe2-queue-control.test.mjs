@@ -262,6 +262,29 @@ test('transient work lock conflicts are requeued without consuming retry budget 
   assert.equal(result.applied[0].outcome,'REQUEUED_TRANSIENT_LOCK');
 });
 
+test('fan-in index preserves each task identity after earlier groups requeue and queue normalization',()=>{
+  const tasks=['first','middle','last'].map(id=>({
+    id,gameId:id,target:'roblox',department:'development',type:'implementation',
+    goal:'verified scoped asset fix',status:'running',sourceRoot:`roblox-games/${id}`,
+    responsibleFiles:['client/Game.client.luau'],retries:1,evidence:[]
+  }));
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:8,tasks});
+  const merged=applyVibeFanInResults(queue,[
+    {taskId:'last',variant:'primary',outcome:'BLOCKED',blocker:'work-lock-conflict:last'},
+    {taskId:'unknown',variant:'primary',outcome:'PASS'},
+    {taskId:'first',variant:'primary',outcome:'BLOCKED',blocker:'work-lock-conflict:first'}
+  ]);
+  const byId=new Map(merged.queue.tasks.map(task=>[task.id,task]));
+  assert.deepEqual(merged.queue.tasks.map(task=>task.id),['first','middle','last']);
+  assert.equal(byId.get('last').status,'queued');
+  assert.equal(byId.get('first').status,'queued');
+  assert.equal(byId.get('middle').status,'running');
+  assert.equal(byId.get('middle').retries,1);
+  assert.ok(byId.get('first').evidence.includes('transient-work-lock-deferred:work-lock-conflict:first'));
+  assert.ok(byId.get('last').evidence.includes('transient-work-lock-deferred:work-lock-conflict:last'));
+  assert.deepEqual(merged.applied.map(row=>row.outcome),['REQUEUED_TRANSIENT_LOCK','STALE_RESULT_SKIPPED','REQUEUED_TRANSIENT_LOCK']);
+});
+
 test('existing blocked work-lock tasks are recovered before the next reserve cycle',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
     id:'old-visual-lock',gameId:'old-visual',target:'roblox',department:'development',type:'implementation',
