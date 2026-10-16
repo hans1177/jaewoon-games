@@ -361,3 +361,54 @@ manifest = {
 print("PRIORITY_FINAL_ARCHIVES", len(passed), "FAILED", len(failed), "DUPLICATES", len(duplicates), flush=True)
 if len(passed) < 12 or not all(v["packs"] > 0 for v in bypriority.values()):
     raise SystemExit("PRIORITY_CATEGORY_OR_MINIMUM_PACKS_MISSING")
+
+
+# [공용 에셋 목록] 기존 원본 매니페스트 4종에서 실제 저장된 CC0 원본만
+# SHA256 기준으로 합치고 회사 공용 선택 목록을 자동 갱신한다. 게임 배포는 하지 않는다.
+shared_file = pathlib.Path("assets/asset-manifest.json")
+if shared_file.exists():
+    shared = json.loads(shared_file.read_text("utf-8"))
+    summary = shared.get("sharedOriginalArchives")
+    if isinstance(summary, dict):
+        seen = set()
+        common = []
+        for manifest_name in summary.get("canonicalArchiveManifests", []):
+            child_path = pathlib.Path(manifest_name)
+            if not str(child_path).startswith("assets/external/simple-rpg/") or child_path.name != "manifest.json":
+                raise SystemExit("INVALID_SHARED_SOURCE_MANIFEST")
+            child = json.loads(child_path.read_text("utf-8"))
+            if child.get("sourceOnly") is not True:
+                raise SystemExit("SHARED_SOURCE_MUST_BE_SOURCE_ONLY")
+            for row in child.get("packs", []):
+                name = row.get("file") or row.get("filename")
+                sha256 = str(row.get("sha256", "")).lower()
+                if not name or pathlib.PurePosixPath(name).name != name or ".." in name or len(sha256) != 64:
+                    raise SystemExit("INVALID_SHARED_SOURCE_IDENTITY")
+                if sha256 in seen:
+                    continue
+                license_name = row.get("licenseDeclared") or row.get("license") or child.get("license")
+                if str(license_name).upper() not in ("CC0", "CC0-1.0"):
+                    raise SystemExit("INVALID_SHARED_SOURCE_LICENSE")
+                relative = child_path.parent / name
+                if not relative.is_file():
+                    raise SystemExit("MISSING_SHARED_ORIGINAL: " + str(relative))
+                total_bytes = int(row.get("bytes") or row.get("archiveBytes") or 0)
+                if total_bytes < 512 or relative.stat().st_size != total_bytes:
+                    raise SystemExit("SHARED_ORIGINAL_SIZE_MISMATCH: " + str(relative))
+                url = row.get("sourceUrl") or row.get("originalUrl") or row.get("sourcePage")
+                license_url = row.get("licenseSourceUrl") or row.get("licenseEvidence") or row.get("sourcePage") or row.get("sourceUrl")
+                if not url or not license_url:
+                    raise SystemExit("SHARED_ORIGINAL_PROVENANCE_MISSING: " + str(relative))
+                common.append({
+                    "file": name, "sourcePath": relative.as_posix(), "sha256": sha256,
+                    "bytes": total_bytes, "sourceUrl": url, "licenseEvidenceUrl": license_url,
+                    "role": row.get("priority") or row.get("category") or row.get("assetKind") or "general",
+                    "licenseDeclared": "CC0-1.0", "sourceOnly": True, "gameApplied": False,
+                })
+                seen.add(sha256)
+        if summary.get("packs") != common:
+            summary["packs"] = common
+            shared_file.write_text(json.dumps(shared, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            print("COMPANY_SHARED_ORIGINALS_SYNCED", len(common), "NEW_PRIORITY", len(passed), flush=True)
+        else:
+            print("COMPANY_SHARED_ORIGINALS_UNCHANGED", len(common), flush=True)
