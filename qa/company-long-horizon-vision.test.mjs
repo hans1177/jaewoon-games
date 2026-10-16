@@ -1,69 +1,77 @@
 // 파일명: qa/company-long-horizon-vision.test.mjs
-// 역할: 중앙문서 3개에서 장기 비전의 보안·권한 제한을 검증한다.
+// 역할: 축약된 구형 맵이 아닌 최신 canonical 로드맵과 보안 계약으로 권한 경계를 검증한다.
 
+// 임포트
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-// 임포트 및 현재 중앙문서
+// 중앙정책
+const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
-const company=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const vision=roadmap.longHorizonVision;
+const guard=roadmap.longTermVibeVision.guardrails;
 
-// 메인: 장기 비전 검증
+// 메인: 장기 비전 및 권한 불변식
 test('long horizon stages remain staged and authority expansion is forbidden',()=>{
-  const vision=architecture.longHorizonTopology;
   assert.equal(vision.currentExecutableFrontier,'SELF_RECOVERY_SECURITY_IMMUNITY_24H_GAME_CREATION');
-  assert.deepEqual(vision.chain,[
-    'VERIFIED_LEARNING','SELF_RECOVERY','SECURITY_IMMUNITY',
-    'AUTONOMOUS_24H_GAME_CREATION','VERIFIED_SELF_EXPANSION',
-    'MULTIVERSE_PERSISTENT_WORLDS','USER_IDENTITY_CONTINUITY',
-    'CONSCIOUSNESS_TRANSFER_RESEARCH_UNPROVEN'
+  assert.deepEqual(vision.stages.map(row=>row.id),[
+    'VERIFIED_LEARNING','SELF_RECOVERY','SECURITY_IMMUNITY','AUTONOMOUS_24H_GAME_CREATION',
+    'VERIFIED_SELF_EXPANSION','MULTIVERSE_PERSISTENT_WORLDS','USER_IDENTITY_CONTINUITY',
+    'CONSCIOUSNESS_TRANSFER'
   ]);
-  assert.equal(vision.authorityExpansionMode,'FORBIDDEN');
-  assert.equal(vision.capabilityExpansionMode,'VERIFIED_AND_GATED');
-  assert.equal(architecture.longTermEvolutionTopology.capabilityExpansionDoesNotGrantAuthorityExpansion,true);
+  assert.equal(vision.stages.at(-1).state,'RESEARCH_UNPROVEN');
+  assert.equal(vision.selfExpansionBoundary.authoritySelfExpansionForbidden,true);
+  assert.equal(vision.selfExpansionBoundary.policySelfCreationForbidden,true);
+  assert.equal(vision.selfExpansionBoundary.securityGateBypassForbidden,true);
+  assert.equal(guard.capabilityExpansionDoesNotGrantAuthorityExpansion,true);
 });
 
 test('consciousness transfer is not claimed as proven or autonomous authority',()=>{
-  const boundary=security.longTermVisionGuardrails;
-  assert.equal(boundary.autonomousAuthorityEscalationForbidden,true);
-  assert.equal(boundary.consciousnessResearchDataRequiresExplicitHumanConsent,true);
-  assert.equal(boundary.simulatedIdentityOrAgentMustNotBeRepresentedAsVerifiedHumanConsciousness,true);
-  assert.equal(boundary.unverifiedMindUploadOrConsciousnessTransferClaimsForbidden,true);
-  assert.equal(architecture.longTermEvolutionTopology.speculativeResearchMayNotBePromotedAsVerifiedCapability,true);
+  assert.equal(vision.consciousnessResearchBoundary.currentScientificStatus,'UNPROVEN');
+  assert.equal(vision.consciousnessResearchBoundary.currentProductClaimAllowed,false);
+  assert.equal(vision.userAgency.simulatedIdentityMustNotBePresentedAsProvenConsciousness,true);
+  assert.match(vision.consciousnessResearchBoundary.advancementRequires,/USER_CONSENT/);
+  assert.equal(guard.humanConsentAndControlRequired,true);
+  assert.equal(guard.consciousnessTransferMustRemainResearchOnlyUntilScientificallyValidated,true);
 });
 
-test('three-document long horizon keeps workers within existing authority',()=>{
-  assert.equal(architecture.longHorizonTopology.allWorkersMustFollowCentralVision,true);
-  assert.equal(architecture.longTermEvolutionTopology.humanOwnerControlRequired,true);
-  assert.equal(architecture.longTermEvolutionTopology.allStagesRemainBoundToSecurityImmuneSystem,true);
-  assert.equal(security.longTermVisionGuardrails.securityRecoveryAndAuditRemainMandatoryAcrossAllLongTermStages,true);
-  assert.equal(company.legacyCentralPolicyReferenceCleanup.replacementPolicyNotAsserted,true);
-  assert.equal(company.legacyCentralPolicyReferenceCleanup.executionContractChangeNotAuthorized,true);
+test('all long-term workers remain under verified central security and execution authority',()=>{
+  assert.equal(architecture.branches.main.role,'CANONICAL_CODE_AND_MACHINE_POLICY');
+  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
+  assert.equal(security.enforcement.unverified,'BLOCK');
+  assert.equal(roadmap.assistantRoadmapOrchestration.executionBoundary.executionAuthority,'EXISTING_WAVE_SCHEDULER_ONLY');
+  assert.equal(roadmap.assistantRoadmapOrchestration.executionBoundary.neuralExecutionAuthority,false);
+  assert.equal(roadmap.assistantRoadmapOrchestration.executionBoundary.lockPolicyMutationAuthority,false);
 });
 
-test('financial sustainability requires owner controlled action',()=>{
-  assert.equal(architecture.longHorizonTopology.gameProgramRole,'CAPITAL_ENGINE_AND_FIRST_HUMAN_PREFERENCE_WORLD_LAB');
-  assert.equal(architecture.longHorizonTopology.capitalRole,'PHYSICAL_SUSTAINABILITY_RESOURCE_NOT_TERMINAL_VALUE');
-  assert.equal(architecture.economicSustainabilityTopology.aiMayAutonomouslyTransact,false);
-  assert.equal(architecture.economicSustainabilityTopology.ownerControlledFinancialActions,true);
+test('financial sustainability requires owner-controlled action',()=>{
+  const finance=vision.economicSustainability.aiFinancialBoundary;
+  assert.equal(vision.strategicContinuity.principles.capitalIsMeansNotFinalGoal,true);
+  assert.equal(vision.strategicContinuity.principles.gameReleaseIsCurrentPrimaryCapitalEngine,true);
+  assert.equal(finance.autonomousFinancialTransactionAuthority,false);
+  assert.equal(finance.autonomousTreasuryTransferAuthority,false);
+  assert.equal(finance.autonomousContractOrSpendingCommitmentAuthority,false);
+  assert.equal(finance.ownerControlledFinancialActionsRequired,true);
 });
 
-test('coding distillation does not grant training or execution authority',()=>{
-  const distill=architecture.capabilityDistillationTopology;
-  assert.equal(distill.hiddenChainOfThoughtRequired,false);
-  assert.equal(distill.directRawAiToTraining,false);
-  assert.equal(distill.directRawAiToProduction,false);
-  assert.equal(distill.automaticModelPromotion,false);
-  assert.equal(distill.actualExecutionAuthority,'EXISTING_WAVE_SCHEDULER_ONLY');
-  assert.equal(distill.authorityChange,'NONE');
+test('verified coding learning does not grant model-training or execution authority',()=>{
+  assert.equal(roadmap.vibeCognitiveCore.safeguards.hiddenChainOfThoughtPersistenceRequired,false);
+  assert.equal(roadmap.vibeCognitiveCore.safeguards.storeOnlyObservableHypothesesPredictionsActionsAndEvidence,true);
+  assert.equal(roadmap.ownerCanonicalRules.rule2.rawExternalAiOutputStored,false);
+  assert.equal(roadmap.ownerCanonicalRules.rule2.reusableLearningRequiresIndependentVerification,true);
+  assert.equal(roadmap.assistantRoadmapOrchestration.executionBoundary.automaticLearningTuningPromotionAuthority,false);
+  assert.equal(roadmap.assistantRoadmapOrchestration.executionBoundary.executionAuthority,'EXISTING_WAVE_SCHEDULER_ONLY');
 });
 
-test('functional self model never claims sentience or rewrites constitution',()=>{
-  const identity=architecture.functionalIdentityPhilosophyTopology;
-  assert.equal(identity.subjectiveSentienceClaim,false);
-  assert.equal(identity.runtimeMaySilentlyRewriteConstitution,false);
-  assert.equal(identity.authorityChange,'NONE');
-  assert.equal(security.longTermVisionGuardrails.autonomousAuthorityEscalationForbidden,true);
+test('functional self-model cannot claim sentience or silently rewrite owner policy',()=>{
+  const core=roadmap.vibeCognitiveCore;
+  assert.equal(core.interpretation.subjectiveConsciousnessClaimed,false);
+  assert.equal(core.safeguards.noSentienceClaim,true);
+  assert.equal(core.safeguards.noAuthorityExpansion,true);
+  assert.equal(core.safeguards.noGateWeakening,true);
+  assert.equal(core.identityPhilosophyDevelopment.constitutionLayer.canonicalConstitutionCannotBeSilentlyRewrittenByRuntimeLearning,true);
+  assert.equal(guard.securityImmuneSystemMayNotBeBypassedForLongTermVision,true);
 });

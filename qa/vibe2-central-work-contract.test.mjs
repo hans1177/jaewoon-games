@@ -290,14 +290,15 @@ test('Vibe candidate evidence binds all four canonical document hashes',()=>{
   assert.ok(workerSyncStart>=0&&workerSyncEnd>workerSyncStart);
   const workerSync=workflow.slice(workerSyncStart,workerSyncEnd);
   assert.match(workerSync,/sha256sum/);
-  assert.match(workerSync,/WORKER_CONTEXT_MODE=PINNED_SHA_ONLY/);
-  assert.doesNotMatch(workerSync,/company-shared-context\.mjs/);
-  assert.doesNotMatch(workerSync,/--pinned-hash-verify=true/);
-  assert.match(workflow,/WORKER_CONTEXT_EXPECTED_POLICY_SHA256/);
-  assert.deepEqual(logMap.workerContextLogContract.canonicalDocumentHashesRequired,[
-    'policySha256','logMapSha256','architectureSha256','securityPolicySha256'
-  ]);
-  assert.equal(logMap.workerContextLogContract.allCanonicalDocumentHashesMustBeBoundToExecutionEvidence,true);
+  assert.match(workerSync,/WORKER_CONTEXT_MODE=FOUR_DOCUMENT_INTEGRITY_ONLY/);
+  assert.match(workerSync,/company-shared-context\.mjs/);
+  assert.match(workerSync,/sha256sum "\$contract_root\/company-learning\/platform-release-roadmap\.json"/);
+  for(const name of ['POLICY','LOG_MAP','ARCHITECTURE','SECURITY_POLICY'])
+    assert.match(workflow,new RegExp('WORKER_CONTEXT_EXPECTED_'+name+'_SHA256'));
+  assert.match(workflow,/sourceWriteAuthorized:false/);
+  assert.match(workflow,/policyAuthorityVerified:false/);
+  assert.doesNotMatch(workflow,/OWNER_REMOVED:company-learning\/platform-release-roadmap/);
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
 });
 
 test('verified learning memory is validated once per cohort and workers reuse one immutable artifact',()=>{

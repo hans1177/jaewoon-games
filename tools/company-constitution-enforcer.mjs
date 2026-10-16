@@ -69,6 +69,10 @@ export function enforceConstitution({policy,root=ROOT,phase='runtime'}={}){
     try {p=JSON.parse(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),'utf8'));}
     catch {errors.push('CANONICAL_POLICY_UNAVAILABLE_OR_INVALID');p={};}
   }
+  if(!p||typeof p!=='object'||Array.isArray(p)){
+    errors.push('CANONICAL_POLICY_UNAVAILABLE_OR_INVALID');
+    p={};
+  }
   const constitution=compileOwnerCanonicalConstitution(p);
   must(errors,constitution.valid===true,'CANONICAL_CONSTITUTION_INVALID:'+(constitution.errors||[]).join(','));
   must(errors,constitution.rules.length>0,'CANONICAL_RULE_SET_EMPTY');
@@ -126,7 +130,7 @@ export function enforceConstitution({policy,root=ROOT,phase='runtime'}={}){
 
 if(process.argv[1]===fileURLToPath(import.meta.url)){
   const args=Object.fromEntries(process.argv.slice(2).filter(v=>v.startsWith('--')).map(raw=>{const [k,...rest]=raw.slice(2).split('=');return[k,rest.join('=')||true];}));
-  const policy=args.policy?readJson(args.policy):null;
+  const policy=args.policy?readJson(args.policy):undefined;
   const result=enforceConstitution({policy,phase:clean(args.phase)||'runtime'});
   if(!result.pass)fail(result.errors,result.phase);
   console.log('CONSTITUTION_ENFORCEMENT=PASS');

@@ -6,6 +6,7 @@ import fs from 'node:fs';
 
 const directive=JSON.parse(fs.readFileSync('company-learning/other-ai-machine-directive.json','utf8'));
 const company=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
@@ -30,13 +31,16 @@ const canonicalReads=[
   'company-learning/company-architecture-map.json',
   'company-learning/security-immune-system.json'
 ];
-assert.deepEqual(architecture.sharedContextLoadOrder,canonicalReads);
+assert.equal(architecture.centralPolicy,null);
+assert.equal(company.policyDocument,'company-learning/platform-release-roadmap.json');
+assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+// The compact architecture summary does not duplicate the ordered non-authoritative reads.
 assert.deepEqual(directive.requiredReads.slice(0,3),canonicalReads);
-assert.equal(directive.requiredReads.includes(company.legacyCentralPolicyReferenceCleanup.removedPolicyPath),false);
 assert.equal(logMap.sourceOfTruth,'company-learning/company-log-map.json');
 assert.equal(architecture.sourceOfTruth,'company-learning/company-architecture-map.json');
-assert.equal(company.legacyCentralPolicyReferenceCleanup.replacementPolicyNotAsserted,true);
-assert.equal(company.legacyCentralPolicyReferenceCleanup.executionContractChangeNotAuthorized,true);
+assert.equal(company.policyDocument,'company-learning/platform-release-roadmap.json');
+assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
+assert.equal(directive.policyOverrideAllowed,false);
 assert.deepEqual(directive.sharedContext.loadOrder,canonicalReads);
 assert.equal(directive.sharedContext.beforeWorkRequired,true);
 assert.equal(directive.sharedContext.afterWorkRequired,true);
@@ -45,7 +49,7 @@ assert.equal(directive.sharedContext.manualPolicyMirrorForbidden,true);
 assert.equal(directive.executionRules.canonicalSharedContextOrderRequired,true);
 assert.equal(directive.executionRules.runtimeStateCannotCreatePolicy,true);
 assert.equal(directive.executionRules.postCentralDocumentWriteSharedContextResyncRequired,true);
-assert.equal(security.sourceOfTruth,null);
+assert.equal(security.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
 assert.equal(security.policyFile,'company-learning/security-immune-system.json');
 assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
 

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {spawnSync} from 'node:child_process';
 import {enforceConstitution} from '../tools/company-constitution-enforcer.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -81,4 +82,14 @@ test('future enabled rule without declarative enforcement fails closed',()=>{
   const result=run(p);
   assert.equal(result.pass,false);
   assert.ok(result.errors.some(error=>error.includes('CONSTITUTION_MACHINE_ENFORCEMENT_MISSING')||error.includes('MACHINE_ENFORCEMENT_MISSING')));
+});
+
+// 기존 헌법 검사기의 CLI 진입도 정책 실물을 읽고 실패를 숨기지 않아야 한다.
+test('CLI policy QA reads canonical roadmap by default and rejects an explicit null',()=>{
+  const run=spawnSync(process.execPath,['tools/company-constitution-enforcer.mjs','--phase=policy-qa'],{cwd:root,encoding:'utf8',timeout:30000});
+  assert.equal(run.status,0,(run.stderr||'')+'\n'+(run.stdout||''));
+  assert.match(run.stdout,/CONSTITUTION_ENFORCEMENT=PASS/);
+  const invalid=enforceConstitution({policy:null,root,phase:'test'});
+  assert.equal(invalid.pass,false);
+  assert.ok(invalid.errors.includes('CANONICAL_POLICY_UNAVAILABLE_OR_INVALID'));
 });

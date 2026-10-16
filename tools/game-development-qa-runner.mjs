@@ -37,9 +37,13 @@ export function runGameQa({selected=[],repoRoot=ROOT,execute=false,timeoutMs=120
       results.push({gameId:game.gameId,state:'PENDING_EXECUTION',testCount:game.tests.length});continue;
     }
     // All tests come from repository discovery, never user-injected shell.
+    // A parent Node test runner sets NODE_TEST_CONTEXT; inherited by this child,
+    // it suppresses the standalone test result and can falsely report PASS.
+    const childEnv={...process.env,GAME_ID:game.gameId};
+    delete childEnv.NODE_TEST_CONTEXT;
     const check=spawnSync(process.execPath,['--test',...game.tests],{
       cwd:repoRoot,encoding:'utf8',timeout:timeoutMs,maxBuffer:4*1024*1024,
-      env:{...process.env,GAME_ID:game.gameId}
+      env:childEnv
     });
     results.push({
       gameId:game.gameId,testCount:game.tests.length,

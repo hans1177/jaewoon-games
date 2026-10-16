@@ -3508,6 +3508,10 @@ test('missing design suppresses generic CORE_FUN and PROGRESSION guesses while s
 
 
 test('usable but unverified design cannot authorize CORE_FUN or PROGRESSION evolution',()=>{
+  // Bind real current policy for the implementation evaluator; do not bypass its fail-closed guard.
+  const priorPolicy=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+  try{
   const root=tempRepo();
   const gameId='unverified-design-game';
   const source=path.join(root,'roblox-games',gameId);
@@ -3526,6 +3530,10 @@ test('usable but unverified design cannot authorize CORE_FUN or PROGRESSION evol
   assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN'),null);
   assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PROGRESSION'),null);
   assert.ok(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION'));
+  }finally{
+    if(priorPolicy===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=priorPolicy;
+  }
 });
 
 
@@ -3832,7 +3840,7 @@ test('queued autonomous expansion v1 without breadth ledger upgrades to v2 witho
   assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
 });
 
-test('queued Unity and Web directives adopt native production plans without rewriting running work or consuming a generation',()=>{
+test('owner-held Unity and Web directives preserve queued generations without inventing native production plans',()=>{
   for(const [engine,gameId,target] of [['unity','demo','unity-android'],['web','dev-web','web']]){
     const root=tempRepo();
     writeStudioDesign(root,gameId);
@@ -3851,9 +3859,10 @@ test('queued Unity and Web directives adopt native production plans without rewr
     const updated=result.queue.tasks.find(row=>row.id===queued.id);
     const untouched=result.queue.tasks.find(row=>row.id===running.id);
     assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
-    assert.equal(updated.buildUpDirective.productionPlan.version,3);
-    assert.equal(updated.buildUpDirective.productionPlan.platform,engine.toUpperCase());
-    assert.equal(updated.buildUpDirective.productionPlan.qualityContract.runtimeVerified,false);
+    // Unity/Web remain owner-held in canonical policy: a queued task is not production authorization.
+    assert.equal(updated.buildUpDirective.productionPlan,null);
+    assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
+    assert.equal(updated.status,'queued');
     assert.deepEqual(untouched.buildUpDirective,running.buildUpDirective);
   }
 });
@@ -4660,6 +4669,10 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
 });
 
 test('owner-direct unfinished games bypass a full normal backlog and keep generating BUILD_UP generations',()=>{
+  // Bind real current policy for the implementation evaluator; do not bypass its fail-closed guard.
+  const priorPolicy=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+  try{
   const repoRoot=path.resolve(process.cwd());
   const catalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
   const plannerCatalog={...catalog,games:[...(catalog.games||[]),{
@@ -4769,6 +4782,10 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   assert.equal(resumed.maxRetries,null);
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
+  }finally{
+    if(priorPolicy===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=priorPolicy;
+  }
 });
 
 test('actual fantasy-survival preserves Unity sources while only Roblox development is active',()=>{

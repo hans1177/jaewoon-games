@@ -265,6 +265,8 @@ test('unscoped directive never inherits unrelated repository files as implementa
 
 
 test('all-game multiplayer requirement creates local implementation work without blocking legacy single development',()=>{
+  const originalPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'mandatory-multiplayer-'));
   try{
     fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
@@ -282,7 +284,11 @@ test('all-game multiplayer requirement creates local implementation work without
       assert.equal(directive.multiplayerImplementation.actualMultiplayerPlayVerified,false);
       assert.match(directivePrompt(directive),/전 게임 멀티 필수/);
     }
-  }finally{fs.rmSync(root,{recursive:true,force:true});}
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+    if(originalPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=originalPolicyPath;
+  }
 });
 
 // 기존 작업 지시 캐시도 플랫폼별 독립 설계 지시를 계속 재사용하지 않는다.

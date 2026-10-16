@@ -67,7 +67,7 @@ function menuPlatformBindingProfile(project={},platformLane=studioQualityLane(pr
 function sameStudioQualityLane(item={},project={}){return studioQualityTaskLane(item)===studioQualityLane(project);}
 function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?catalog.games:[]).map(game=>[clean(game.id),game]));}
 function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.permanentRemovalPolicy?.ids)?catalog.permanentRemovalPolicy.ids:[]).map(clean).filter(Boolean));}
-const CANONICAL_POLICY_PATH=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+const CANONICAL_POLICY_PATH=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'company-learning/platform-release-roadmap.json').trim();
 const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
 const COMPANY_ASSET_LIBRARY_PATH='company-asset-library.json';
 const DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY=Object.freeze({

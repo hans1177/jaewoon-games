@@ -61,25 +61,29 @@ test('build preflight cannot replace same-build runtime, independent QA, or fina
   assert.match(runner, /finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true/);
 });
 
-test('release baseline and final artbook are reachable only after current-build evidence and final review', () => {
+test('release baseline is gated by same-build runtime, independent QA and final review before READY', () => {
   const runtimeIndex = runner.indexOf("latestFile('android-runtime-validation.json')");
   const qaIndex = runner.indexOf("latestFile('independent-release-qa.json')");
   const finalReviewIndex = runner.indexOf("phase:'FINAL_RELEASE_REVIEW'");
   const releaseBaselineIndex = runner.indexOf("const releaseBaselinePath=path.join(base,'release-baseline.json')");
-  const artbookEditorIndex = runner.indexOf("release-artbook-editor");
   const readyIndex = runner.indexOf("writeState('RELEASE_READY'");
 
-  for (const [name, index] of Object.entries({runtimeIndex, qaIndex, finalReviewIndex, releaseBaselineIndex, artbookEditorIndex, readyIndex})) {
-    assert.ok(index >= 0, `missing ${name}`);
-  }
-  assert.ok(runtimeIndex < qaIndex);
-  assert.ok(qaIndex < finalReviewIndex);
-  assert.ok(finalReviewIndex < releaseBaselineIndex);
-  assert.ok(releaseBaselineIndex < artbookEditorIndex);
-  assert.ok(artbookEditorIndex < readyIndex);
-
-  assert.match(runner, /finalDepartmentReviewEvidenceBound:true/);
-  assert.match(runner, /finalArtbookOnlyAfterReleaseReady:true/);
-  assert.match(runner, /departmentPageAuthorship:false/);
-  assert.match(runner, /newClaimsAdded:false/);
+  for (const [name,index] of Object.entries({runtimeIndex,qaIndex,finalReviewIndex,releaseBaselineIndex,readyIndex}))
+    assert.ok(index>=0,`missing ${name}`);
+  assert.ok(runtimeIndex<qaIndex);
+  assert.ok(qaIndex<finalReviewIndex);
+  assert.ok(finalReviewIndex<releaseBaselineIndex);
+  assert.ok(releaseBaselineIndex<readyIndex);
+  assert.match(runner,/finalDepartmentReviewEvidenceBound:true/);
+  assert.match(runner,/androidRuntimeValidation:runtime.path,independentQa:qa.path/);
+  assert.match(runner,/departmentRiskWatch:finalRiskWatch.path/);
+  // The release cycle produces evidence and READY only. It must never create a final artbook early.
+  assert.doesNotMatch(runner,/release-artbook-editor|company-design-artbook\\.mjs/);
+  const pipeline=read('tools/artbook-production-pipeline.mjs');
+  assertOrdered(pipeline,[
+    "await run('tools/company-release-production-cycle.mjs')",
+    "await run('tools/company-release-stale-artifact-guard.mjs')",
+    'RELEASE_FINAL_ARTBOOK_ONLY_AFTER_READY=YES'
+  ],'release pipeline ordering');
+  assert.match(pipeline,/RELEASE_STALE_FINAL_ARTIFACT_GUARD=ENABLED/);
 });
