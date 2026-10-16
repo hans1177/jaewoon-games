@@ -603,7 +603,7 @@ test('Core QA coalesces obsolete revisions of the same PR and preserves manual a
   const expression=workflow.match(/cancel-in-progress:\s*\$\{\{([^\n]+?)\}\}/)[1].trim();
   for(const [event_name,ref,expected]of [
     ['pull_request','refs/pull/7663/merge',true],
-    ['push','refs/heads/main',true],
+    ['push','refs/heads/main',false],
     ['push','refs/heads/review-branch',false],
     ['workflow_dispatch','refs/heads/main',false]
   ])assert.equal(runInNewContext(expression,{github:{event_name,ref}}),expected,event_name+':'+ref);
