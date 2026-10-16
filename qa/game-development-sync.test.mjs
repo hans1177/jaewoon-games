@@ -37,6 +37,9 @@ test('discovers every cataloged game and source-only game without inventing buil
       'assets/external/unlisted/manifest.json',
       'roblox-games/unlisted/default.project.json'
     ]);
+    assert.equal(orphan.assetEvidence.state,'SOURCE_ARCHIVE_ONLY');
+    assert.equal(orphan.assetEvidence.manifests[0].reportedImported,false);
+    assert.equal(orphan.assetEvidence.manifests[0].actualRuntimeVerified,false);
     for(const game of result.games){
       assert.equal(game.publicationStatus,'NOT_VERIFIED_BY_SYNC');
       assert.equal(game.runtimeStatus,'NOT_RUN_BY_SYNC');
@@ -76,4 +79,46 @@ test('duplicate game identifiers are rejected instead of silently overwriting',(
 });
 test('platform mappings include all five existing game development targets',()=>{
   assert.deepEqual(Object.keys(GAME_PLATFORM_ROOTS),['WEB','ROBLOX','UNITY','GODOT','UEFN']);
+});
+
+test('asset-manifest import/application claims never turn into invented runtime proof',()=>{
+  withSample(repoRoot=>{
+    const file=path.join(repoRoot,'assets/external/unlisted/manifest.json');
+    fs.writeFileSync(file,JSON.stringify({
+      gameId:'unlisted',sourceOnly:false,robloxImported:true,gameApplied:true,
+      verifiedPacks:2
+    }));
+    const row=buildGameDevelopmentMap({repoRoot,gameId:'unlisted'}).games[0];
+    assert.equal(row.assetEvidence.state,'MIXED_OR_UNVERIFIED');
+    assert.equal(row.assetEvidence.manifests[0].reportedImported,true);
+    assert.equal(row.assetEvidence.manifests[0].reportedApplied,true);
+    assert.equal(row.assetEvidence.manifests[0].actualRuntimeVerified,false);
+    assert.equal(row.publicationStatus,'NOT_VERIFIED_BY_SYNC');
+  });
+});
+test('malformed, mismatched and contradictory asset manifests report game-local issues',()=>{
+  withSample(repoRoot=>{
+    const p=path.join(repoRoot,'assets/external/unlisted/manifest.json');
+    fs.writeFileSync(p,'{nope');
+    let row=buildGameDevelopmentMap({repoRoot,gameId:'unlisted'}).games[0];
+    assert.ok(row.sourceIssues.some(x=>x.startsWith('ASSET_MANIFEST_INVALID:')));
+    fs.writeFileSync(p,JSON.stringify({gameId:'other-game',sourceOnly:true}));
+    row=buildGameDevelopmentMap({repoRoot,gameId:'unlisted'}).games[0];
+    assert.ok(row.sourceIssues.some(x=>x.startsWith('ASSET_MANIFEST_GAME_ID_MISMATCH:')));
+    fs.writeFileSync(p,JSON.stringify({gameId:'unlisted',sourceOnly:true,gameApplied:true}));
+    row=buildGameDevelopmentMap({repoRoot,gameId:'unlisted'}).games[0];
+    assert.ok(row.sourceIssues.some(x=>x.startsWith('ASSET_STATE_CONTRADICTION:')));
+  });
+});
+test('permanently removed game directories are not silently re-imported into the game roster',()=>{
+  withSample(repoRoot=>{
+    fs.mkdirSync(path.join(repoRoot,'web-games/removed-game'),{recursive:true});
+    const p=path.join(repoRoot,'game-catalog.json');
+    const d=JSON.parse(fs.readFileSync(p,'utf8'));
+    d.permanentRemovalPolicy={ids:['removed-game']};
+    fs.writeFileSync(p,JSON.stringify(d));
+    const map=buildGameDevelopmentMap({repoRoot});
+    assert.equal(map.games.some(x=>x.gameId==='removed-game'),false);
+    assert.equal(map.stats.selectedGameCount,3);
+  });
 });
