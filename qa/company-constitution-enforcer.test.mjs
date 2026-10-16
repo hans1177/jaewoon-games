@@ -53,15 +53,16 @@ test('reintroduced deleted policy file requires owner review instead of passing'
   }
 });
 
-test('tampered deletion evidence cannot be accepted as verified owner instruction', () => {
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-owner-record-'));
+test('tampered minimal directive fails closed without synthesizing legacy deletion records', () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-minimal-directive-'));
   try {
     const directive = JSON.parse(fs.readFileSync(path.join(root, 'company-directive.json'), 'utf8'));
-    directive.legacyCentralPolicyReferenceCleanup.executionContractChangeNotAuthorized = false;
+    directive.execution.centralPolicyMissing = 'PASS';
     fs.writeFileSync(path.join(temp, 'company-directive.json'), JSON.stringify(directive));
     const result = enforceConstitution({root: temp, phase: 'test'});
     assert.equal(result.pass, false);
-    assert.ok(result.errors.includes('OWNER_POLICY_REMOVAL_RECORD_INVALID'));
+    assert.ok(result.errors.includes('OWNER_DIRECTIVE_MINIMAL_CONTRACT_INVALID'));
+    assert.ok(result.errors.includes('CONSTITUTION_AUTHORITY_UNAVAILABLE'));
   } finally {
     fs.rmSync(temp, {recursive: true, force: true});
   }
