@@ -605,9 +605,9 @@ test('canonical parent preserves independent Roblox handoff, reusable Unity lane
   assert.ok(!workflow.includes('dispatch-unity-web-floor:'));
   assert.ok(!workflow.includes('dispatch-unity-web-bootstrap:'));
 
-  assert.ok(workflow.includes('--arg control_sha "$GITHUB_SHA"'));
-  assert.ok(workflow.includes('select(.head_sha == $control_sha)'));
-  assert.ok(workflow.includes('DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES'));
+  assert.ok(workflow.includes("if(exactHead&&String(run.head_sha||'')!==exactHead)continue;"),
+    'only the requested exact head revision may be considered');
+  assert.ok(workflow.includes('ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'));
   assert.ok(workflow.includes('fail-fast: false'));
   const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
   assert.ok(unity.includes('Immediately continue this successful Unity game'));
