@@ -2,6 +2,7 @@
 -- Server-owned companion AI. Requires an already selected civilization; never trusts client targets or rewards.
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
+local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 
 local CompanionAI = {}
 export type Command = "Summon" | "Follow" | "Guard" | "Attack" | "Gather" | "Dismiss"
@@ -13,18 +14,20 @@ local folder = Instance.new("Folder")
 folder.Name = "CivilizationCompanions"
 folder.Parent = Workspace
 
-local function bodyPart(model: Model, name: string, size: Vector3, cf: CFrame, color: Color3): Part
-    local part = Instance.new("Part")
-    part.Name = name
-    part.Size = size
-    part.CFrame = cf
-    part.Color = color
-    part.Material = Enum.Material.SmoothPlastic
-    part.Anchored = true
-    part.CanCollide = false
-    part.CanTouch = false
-    part.Parent = model
-    return part
+-- Imported, curated external models only. No locally generated primitive avatars.
+local function curatedCompanion(): Model?
+    local models = Shared:FindFirstChild("CreatureModels")
+    if not models then return nil end
+    for _, name in ipairs({"Companion", "AI 부족원", "Knight"}) do
+        local template = models:FindFirstChild(name)
+        if template and template:IsA("Model")
+            and template:GetAttribute("CuratedExternalAsset") == true
+            and (tonumber(template:GetAttribute("VerifiedRobloxAssetId")) or 0) > 0
+            and template:FindFirstChildWhichIsA("BasePart", true) then
+            return template
+        end
+    end
+    return nil
 end
 
 local function remove(player: Player)
@@ -36,38 +39,40 @@ local function remove(player: Player)
     player:SetAttribute("CivCompanionMode", "Dismissed")
 end
 
-local function summon(player: Player, root: BasePart): State
-    local model = Instance.new("Model")
+local function summon(player: Player, root: BasePart): State?
+    local template = curatedCompanion()
+    if not template then return nil end
+    local model = template:Clone()
     model.Name = "AI 부족원"
     model:SetAttribute("CompanionOwnerUserId", player.UserId)
-    local cf = root.CFrame * CFrame.new(4, 0, 2)
-    local rootPart = bodyPart(model, "HumanoidRootPart", Vector3.new(2, 2, 1), cf, Color3.fromRGB(110, 91, 63))
-    rootPart.Transparency = 1
-    bodyPart(model, "Torso", Vector3.new(2, 2, 1), cf, Color3.fromRGB(136, 103, 64))
-    bodyPart(model, "Head", Vector3.new(1.2, 1.2, 1.2), cf * CFrame.new(0, 1.65, 0), Color3.fromRGB(197, 163, 119))
-    bodyPart(model, "Left Arm", Vector3.new(0.7, 1.8, 0.8), cf * CFrame.new(-1.4, -0.1, 0), Color3.fromRGB(157, 122, 82))
-    bodyPart(model, "Right Arm", Vector3.new(0.7, 1.8, 0.8), cf * CFrame.new(1.4, -0.1, 0), Color3.fromRGB(157, 122, 82))
-    bodyPart(model, "Left Leg", Vector3.new(0.8, 1.9, 0.8), cf * CFrame.new(-0.5, -1.9, 0), Color3.fromRGB(92, 84, 71))
-    bodyPart(model, "Right Leg", Vector3.new(0.8, 1.9, 0.8), cf * CFrame.new(0.5, -1.9, 0), Color3.fromRGB(92, 84, 71))
-    -- 기존 동료 모델의 장비·얼굴 외형을 강화한다. 전투와 저장 상태는 변경하지 않는다.
-    bodyPart(model, "ChestArmor", Vector3.new(1.75, 1.25, 0.22), cf * CFrame.new(0, 0.1, -0.64), Color3.fromRGB(148, 116, 70))
-    bodyPart(model, "Helmet", Vector3.new(1.4, 0.42, 1.34), cf * CFrame.new(0, 2.33, 0), Color3.fromRGB(103, 85, 61))
-    bodyPart(model, "Cape", Vector3.new(1.65, 2.4, 0.16), cf * CFrame.new(0, -0.55, 0.7), Color3.fromRGB(87, 112, 93))
-    for _, side in ipairs({-1, 1}) do
-        bodyPart(model, "Eye" .. side, Vector3.new(0.14, 0.16, 0.09),
-            cf * CFrame.new(side * 0.28, 1.77, -0.63), Color3.fromRGB(43, 38, 34))
-        bodyPart(model, "Shoulder" .. side, Vector3.new(0.96, 0.48, 0.97),
-            cf * CFrame.new(side * 1.4, 0.72, 0), Color3.fromRGB(138, 115, 75))
+    local rootPart = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart", true)
+        or model:FindFirstChildWhichIsA("BasePart", true)
+    if not rootPart or not rootPart:IsA("BasePart") then
+        model:Destroy()
+        return nil
     end
-    local humanoid = Instance.new("Humanoid")
-    humanoid.RequiresNeck = false
+    model.PrimaryPart = rootPart
+    for _, part in ipairs(model:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Anchored = true
+            part.CanCollide = false
+            part.CanTouch = false
+            part.CanQuery = false
+        end
+    end
+    local humanoid = model:FindFirstChildWhichIsA("Humanoid", true)
+    if not humanoid then
+        humanoid = Instance.new("Humanoid")
+        humanoid.RequiresNeck = false
+        humanoid.Parent = model
+    end
     humanoid.MaxHealth = 80
     humanoid.Health = 80
     humanoid.DisplayName = "AI 부족원"
-    humanoid.Parent = model
-    model.PrimaryPart = rootPart
     model.Parent = folder
-    local state: State = {Model = model, Root = rootPart, Humanoid = humanoid, Command = "Follow", Hold = rootPart.Position, LastStrike = -1e9, LastGather = -1e9}
+    model:PivotTo(root.CFrame * CFrame.new(4, 0, 2))
+    local state: State = {Model = model, Root = rootPart, Humanoid = humanoid,
+        Command = "Follow", Hold = rootPart.Position, LastStrike = -1e9, LastGather = -1e9}
     live[player] = state
     return state
 end
@@ -85,6 +90,7 @@ function CompanionAI.Command(player: Player, command: any, hasCivilization: bool
     if state == nil or state.Model.Parent == nil or state.Humanoid.Health <= 0 then
         state = summon(player, ownerRoot)
     end
+    if not state then return false end
     local selected: Command = if command == "Summon" then "Follow" else (command :: Command)
     state.Command = selected
     if selected == "Guard" then state.Hold = state.Root.Position end
