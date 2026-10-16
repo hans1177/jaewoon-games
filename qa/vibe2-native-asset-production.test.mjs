@@ -254,7 +254,7 @@ test('blocked, manual or unverified external catalogs cannot authorize asset acq
     const plan=buildAssetSupplyDecisionSummary({gameId:'forest-game',target:'unity',request:'forest',
       requirements:[{family:'ENVIRONMENT',role:'tree'}],registry:{assets:[],externalSources:[source]}});
     assert.equal(plan.selectedOnDemandExternalGapCount,0,JSON.stringify(source));
-    assert.equal(plan.nextActions.find(row=>row.family==='ENVIRONMENT').action,'AUTHOR');
+    assert.equal(plan.nextActions.find(row=>row.family==='ENVIRONMENT').action,'HOLD','unverified originals must not trigger invented assets');
   }
 });
 
@@ -5062,4 +5062,21 @@ test('downloaded shared CC0 originals auto-connect to game sourcing without bypa
       assert.notEqual(plan.nextActions.find(row=>row.family==='BUILDING').action,'ACQUIRE_ADAPT');
     }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// [제작 AI 역할 한정] 미검증/부재 원본은 HOLD로 남기고 신규 모델 제작을 예약하지 않는다.
+test('Vibe game asset supply verifies and applies originals instead of scheduling new authoring',()=>{
+  const plan=buildAssetSupplyDecisionSummary({gameId:'source-only-game',target:'roblox',
+    request:'castle',requirements:[{family:'BUILDING',role:'castle'}],
+    registry:{assets:[],externalSources:[]}});
+  const action=plan.nextActions.find(row=>row.family==='BUILDING');
+  assert.equal(action.action,'HOLD');
+  assert.equal(action.reason,'NO_VERIFIED_EXISTING_ASSET_TO_APPLY');
+  assert.equal(plan.nextActions.some(row=>row.action==='AUTHOR'),false);
+  assert.equal(plan.productionVerificationGranted,false);
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(worker,/sourceArchiveSha256:/);
+  assert.match(worker,/nativeBuildBlockedByUnadaptedArchive:/);
+  assert.ok(!worker.includes(".filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'"));
+  assert.match(worker,/Only inspect, verify and apply existing company\/common or downloaded license-cleared assets/);
 });
