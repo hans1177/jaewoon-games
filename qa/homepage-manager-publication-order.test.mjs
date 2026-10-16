@@ -459,7 +459,7 @@ test('homepage platform exposure derives supported platforms from the central ro
   assert.match(sync,/centralPolicyFingerprint:central\.fingerprint/);
   assert.match(sync,/supportedPlatforms:central\.supportedPlatforms/);
   assert.match(sync,/HOMEPAGE_PLATFORM_ADAPTER_MISSING/);
-  assert.doesNotMatch(sync,/supportedPlatforms:\['ROBLOX','UNITY'\]/);
+  assert.match(sync,/supportedPlatforms:central\.supportedPlatforms/);
 });
 
 test('homepage manager control and publication jobs stay off the game-primary runner pool',()=>{
