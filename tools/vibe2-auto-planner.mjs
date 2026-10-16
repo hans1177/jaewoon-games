@@ -37,7 +37,7 @@ const SEVERITY_PRIORITY=Object.freeze({critical:'critical',high:'high',medium:'n
 const EXISTING_HOLISTIC_BACKFILL_PILLARS=Object.freeze(['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY']);
 const currentAssetConsumerGameIds=asset=>[...new Set([...(asset?.consumerGameIds||[]),...(asset?.sourceBoundConsumerGameIds||[])].map(clean).filter(Boolean))];
 
-function readJson(file,fallback={}){if(!file||!fs.existsSync(file))return fallback;return JSON.parse(fs.readFileSync(file,'utf8'));}
+function readJson(file,fallback={}){if(!file||!fs.existsSync(file)||!fs.statSync(file).isFile())return fallback;return JSON.parse(fs.readFileSync(file,'utf8'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const compactQueue=/(?:^|\/)\.vibe2\/queue\.json$/.test(String(file).replaceAll('\\','/'));fs.writeFileSync(file,`${JSON.stringify(value,null,compactQueue?0:2)}\n`,'utf8');}
 function parseArgs(argv=process.argv.slice(2)){const args={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)args[body]=true;else args[body.slice(0,at)]=body.slice(at+1);}return args;}
 function parallelLimit(value){
