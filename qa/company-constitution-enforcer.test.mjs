@@ -52,3 +52,17 @@ test('reintroduced deleted policy file requires owner review instead of passing'
     fs.rmSync(temp, {recursive: true, force: true});
   }
 });
+
+test('tampered deletion evidence cannot be accepted as verified owner instruction', () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-owner-record-'));
+  try {
+    const directive = JSON.parse(fs.readFileSync(path.join(root, 'company-directive.json'), 'utf8'));
+    directive.legacyCentralPolicyReferenceCleanup.executionContractChangeNotAuthorized = false;
+    fs.writeFileSync(path.join(temp, 'company-directive.json'), JSON.stringify(directive));
+    const result = enforceConstitution({root: temp, phase: 'test'});
+    assert.equal(result.pass, false);
+    assert.ok(result.errors.includes('OWNER_POLICY_REMOVAL_RECORD_INVALID'));
+  } finally {
+    fs.rmSync(temp, {recursive: true, force: true});
+  }
+});
