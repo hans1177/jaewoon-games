@@ -488,3 +488,48 @@ test('asset worker keeps the same authored auto-biome as the spatial design and 
   assert.equal(unspecified.autoBiomeEvaluation.missingDesignMustRouteToExistingDesignPipeline,true);
 });
 
+
+test('lobby customization material inventory and HUD use only observed native source and shared assets',()=>{
+  const ui='roblox-games/demo/client/Game.client.luau',server='roblox-games/demo/server/Game.server.luau';
+  const authored={identity:'맞춤 로비',coreLoop:['로비 입장','장비 선택','게임 시작'],ownerFeatureChanges:[]};
+  const observed={sourceAnchors:[
+    {file:ui,symbol:'OpenLobby',context:'function OpenLobby() end'},
+    {file:ui,symbol:'CustomizeAvatar',context:'function CustomizeAvatar() end'},
+    {file:ui,symbol:'PreviewMaterial',context:'function PreviewMaterial() end'},
+    {file:ui,symbol:'OpenInventory',context:'function OpenInventory() end'},
+    {file:ui,symbol:'UpdateHUD',context:'function UpdateHUD() end'},
+    {file:server,symbol:'OpenInventory',context:'server inventory authority'}
+  ]};
+  const opts={enabled:true,focus:'USABILITY',mode:'EXISTING_PLAY_PRESENTATION',platform:'ROBLOX',
+    design:authored,source:observed,files:[ui,server]};
+  const contract=buildInterfaceBlueprintContract(opts);
+  assert.deepEqual(contract.autoCompositionTargets.map(row=>row.id),['LOBBY','CUSTOMIZATION','MATERIAL','INVENTORY','GAME_UI']);
+  for(const target of contract.autoCompositionTargets){
+    assert.equal(target.status,'SOURCE_MATCH_REQUIRES_NATIVE_IMPLEMENTATION_AND_QA');
+    assert.deepEqual(target.sourceFiles,[ui]);
+    assert.equal(target.assetRegistry,'company-asset-library.json');
+    assert.equal(target.licenseLedger,'assets/asset-license-ledger.json');
+    assert.equal(target.reuseExistingAssetsOnly,true);
+    assert.equal(target.newAssetGeneration,false);
+    assert.equal(target.automaticImport,false);
+    assert.equal(target.saveSchemaUnchanged,true);
+    assert.equal(target.layout.minTouchTarget,44);
+    assert.equal(target.runtimeVerified,false);
+    assert.ok(target.qa.includes('EXACT_NATIVE_RUNTIME'));
+  }
+  const onlyDesign=buildInterfaceBlueprintContract({...opts,source:{sourceAnchors:[]}});
+  assert.ok(onlyDesign.autoCompositionTargets.some(row=>row.id==='LOBBY'&&row.status==='DESIGN_HINT_NOT_APPLIED'));
+  assert.ok(onlyDesign.autoCompositionTargets.every(row=>!row.sourceFiles.length));
+  const removed=buildInterfaceBlueprintContract({...opts,design:{...authored,ownerFeatureChanges:[
+    {featureId:'material-picker',requestId:'owner-removal',action:'REMOVE',requirement:'재질 선택 제거'}]}});
+  assert.ok(!removed.autoCompositionTargets.some(row=>row.id==='MATERIAL'));
+  const planned={interfaceBlueprintContract:contract,implementationPackages:[
+    {role:'CLIENT_PRESENTATION',files:[ui]},{role:'SERVER_AUTHORITY',files:[server]}
+  ]};
+  assert.deepEqual(productionBlueprintContractsForFiles(planned,{responsibleFiles:[server]}).interface.autoCompositionTargets,[]);
+  assert.equal(productionBlueprintContractsForFiles(planned,{responsibleFiles:[ui]}).interface.autoCompositionTargets.length,5);
+  const prompt=robloxProductionPromptLines({...planned,platform:'ROBLOX',qualityContract:{runtimeVerified:false}},{responsibleFiles:[ui]}).join('\n');
+  assert.match(prompt,/autoCompositionTargets/);
+  assert.match(prompt,/never generate or download new assets/);
+  assert.match(prompt,/EXACT_NATIVE_RUNTIME/);
+});
