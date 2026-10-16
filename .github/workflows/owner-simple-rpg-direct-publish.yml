@@ -14,6 +14,11 @@ on:
       - '.github/workflows/owner-simple-rpg-direct-publish.yml'
   workflow_dispatch:
     inputs:
+      download_ui_assets:
+        description: '검증된 CC0 UI 원본 ZIP 2종 다운로드 및 아티팩트 보관 (게임 미적용)'
+        type: boolean
+        required: false
+        default: false
       upload_actor_assets:
         description: '검증된 캐릭터·스켈레톤 CC0 GLB 9개만 등록 (범용 대체 모델 제외)'
         type: boolean
@@ -32,6 +37,33 @@ env:
   GAME_NAME: '대충알피지'
 
 jobs:
+  download_ui_assets:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.download_ui_assets == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Download verified original CC0 RPG UI archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/simple-rpg-ui
+          curl -fL --retry 3 --retry-delay 2 --max-time 120 -o /tmp/simple-rpg-ui/kenney_fantasy-ui-borders.zip 'https://opengameart.org/sites/default/files/kenney_fantasy-ui-borders.zip'
+          curl -fL --retry 3 --retry-delay 2 --max-time 120 -o /tmp/simple-rpg-ui/UIpack_RPG.zip 'https://opengameart.org/sites/default/files/UIpack_RPG.zip'
+          for archive in /tmp/simple-rpg-ui/*.zip; do
+            test "$(stat -c %s "$archive")" -gt 1000
+            unzip -tq "$archive"
+          done
+          sha256sum /tmp/simple-rpg-ui/*.zip > /tmp/simple-rpg-ui/SHA256SUMS
+          printf '%s\n' 'Kenney - Creative Commons CC0 1.0' 'https://opengameart.org/content/fantasy-ui-borders' 'https://opengameart.org/content/ui-pack-rpg-extension' 'Archives are source candidates only; Roblox upload and gameplay binding NOT VERIFIED.' > /tmp/simple-rpg-ui/SOURCE.txt
+      - name: Retain verified downloads for reviewed import
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-rpg-cc0-ui-sources
+          path: /tmp/simple-rpg-ui/
+          if-no-files-found: error
+          retention-days: 14
   upload_actor_assets:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/'))) }}
     runs-on: ubuntu-latest
