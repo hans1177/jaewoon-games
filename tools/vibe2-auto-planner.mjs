@@ -67,7 +67,7 @@ function menuPlatformBindingProfile(project={},platformLane=studioQualityLane(pr
 function sameStudioQualityLane(item={},project={}){return studioQualityTaskLane(item)===studioQualityLane(project);}
 function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?catalog.games:[]).map(game=>[clean(game.id),game]));}
 function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.permanentRemovalPolicy?.ids)?catalog.permanentRemovalPolicy.ids:[]).map(clean).filter(Boolean));}
-const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
+const CANONICAL_POLICY_PATH=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
 const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
 const COMPANY_ASSET_LIBRARY_PATH='company-asset-library.json';
 const DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY=Object.freeze({
@@ -2571,7 +2571,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   );
   const activeDirectiveMultiplayerState=clean((activeDirectiveTask?.buildUpDirective?.qualityGapMap||[]).find(row=>clean(row?.domain).toUpperCase()==='MULTIPLAYER_AND_SYNC')?.state).toUpperCase();
   const projectPlayMode=clean(project?.playMode).toUpperCase();
-  const sharedDesignPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.directNativeDualPlatformDevelopment||{};
+  const sharedDesignPolicy=readJson(sourceFile(repoRoot,CANONICAL_POLICY_PATH||'__policy_not_configured__'),{})?.directNativeDualPlatformDevelopment||{};
   const multiplayerPolicy=sharedDesignPolicy.multiplayerImplementation||{};
   const singleOriginalRequired=sharedDesignPolicy.design?.singleOriginalContract?.originalsPerGame===1;
   const projectRequiresMultiplayer=multiplayerPolicy.required===true||Boolean(projectPlayMode&&projectPlayMode!=='SINGLE');
@@ -2579,7 +2579,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const activeDirectiveSemanticCompatible=(!projectRequiresMultiplayer||activeDirectiveMultiplayerState!=='NOT_APPLICABLE')
     &&(multiplayerPolicy.required!==true||activeDirectiveTask?.buildUpDirective?.multiplayerImplementation?.policyVersion===multiplayerPolicy.version)
     &&(!singleOriginalRequired||activeDirectiveTask?.buildUpDirective?.designImplementationContext?.platformExpansionPolicy?.mode==='SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION');
-  const productionPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{};
+  const productionPolicy=readJson(sourceFile(repoRoot,CANONICAL_POLICY_PATH||'__policy_not_configured__'),{})?.robloxStudioProductionFlowContract||{};
   const productionTarget=platformLane.startsWith('unity')||posix(project.projectPath).startsWith('unity-games/')?'UNITY':platformLane.toUpperCase();
   const productionRequired=productionPolicy.status==='ACTIVE_EXECUTABLE_CONTRACT'&&(productionPolicy.platforms||[]).includes(productionTarget);
   const priorProduction=activeDirectiveTask?.buildUpDirective?.productionPlan||activeDirectiveTask?.buildUpDirective?.robloxProductionPlan;
@@ -3261,7 +3261,7 @@ function hasCurrentAutonomousContentExpansionDirective(directive={},productionPo
 }
 
 function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
-  const productionPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{};
+  const productionPolicy=readJson(sourceFile(repoRoot,CANONICAL_POLICY_PATH||'__policy_not_configured__'),{})?.robloxStudioProductionFlowContract||{};
   const projectByScope=new Map();
   for(const project of projects||[]){
     const gameId=clean(project?.gameId);
