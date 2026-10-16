@@ -104,3 +104,21 @@ test('root-cause evidence records the observation checkpoint without granting au
   assert.equal(payload.actionFiringAllowed,false);
   assert.equal(payload.phase2AuthorityEligible,false);
 });
+
+test('repeat failures group identical signatures without manufacturing a verified root cause',()=>{
+  const result=verifyNeuralRootCause({diagnosis,evidence:[
+    'failure-signature:CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION',
+    'failure-signature:UNRELATED_RUNTIME_ERROR',
+    'failure-signature:CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION',
+    'error-signature:CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION',
+    'role-result:regression:PASS'
+  ]});
+  assert.deepEqual(result.failureClusters.map(x=>x.occurrences),[3,1]);
+  assert.equal(result.failureClusters[0].verification,'UNVERIFIED_FAILURE_OBSERVATION');
+  assert.equal(result.groupedFailureCount,4);
+  assert.equal(result.rootCauseVerified,false);
+  assert.equal(result.actionFiringAllowed,false);
+  const marker=neuralRootCauseEvidence(result).find(x=>x.startsWith('neural-root-cause:'));
+  const payload=JSON.parse(decodeURIComponent(marker.slice('neural-root-cause:'.length)));
+  assert.equal(payload.failureClusters[0].occurrences,3);
+});
