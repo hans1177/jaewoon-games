@@ -54,6 +54,9 @@ test('real subprocess QA failures remain game-scoped and keep exact evidence',()
     assert.equal(report.pass,false);
     assert.equal(report.gameQaPassedCount,1);
     assert.equal(report.gameQaFailedCount,1);
+    assert.ok(report.results[0].outputTail.includes('# fail 0'));
+    assert.ok(report.results[1].outputTail.includes('# fail 1'));
+    assert.equal(report.results[1].exitCode===0&&report.results[1].state==='GAME_QA_PASSED',false);
     assert.equal(report.gameQaMissingCount,1);
     assert.deepEqual(report.results.map(x=>x.state),
       ['GAME_QA_PASSED','GAME_QA_FAILED','NO_GAME_SCOPED_QA']);
