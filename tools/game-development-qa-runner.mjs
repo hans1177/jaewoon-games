@@ -37,13 +37,17 @@ export function runGameQa({selected=[],repoRoot=ROOT,execute=false,timeoutMs=120
       results.push({gameId:game.gameId,state:'PENDING_EXECUTION',testCount:game.tests.length});continue;
     }
     // All tests come from repository discovery, never user-injected shell.
-    const check=spawnSync(process.execPath,['--test',...game.tests],{
+    const check=spawnSync(process.execPath,['--test','--test-reporter=tap',...game.tests],{
       cwd:repoRoot,encoding:'utf8',timeout:timeoutMs,maxBuffer:4*1024*1024,
       env:{...process.env,GAME_ID:game.gameId}
     });
+    // 자동검증: 일부 실행 환경의 성공 종료 코드만 믿지 않고 TAP의 실제 실패 집계도 확인한다.
+    const summaries=[...String(check.stdout||'').matchAll(/^# fail (\d+)\r?$/gm)];
+    const reportedFailures=summaries.length?Number(summaries.at(-1)[1]):null;
+    const passed=!check.error&&check.status===0&&reportedFailures===0;
     results.push({
       gameId:game.gameId,testCount:game.tests.length,
-      state:check.error||check.status!==0?'GAME_QA_FAILED':'GAME_QA_PASSED',
+      state:passed?'GAME_QA_PASSED':'GAME_QA_FAILED',
       exitCode:check.status,
       error:check.error?.message||null,
       outputTail:(check.stdout||'').slice(-3500),
