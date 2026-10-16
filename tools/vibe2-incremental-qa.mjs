@@ -714,6 +714,12 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     const hit=patternHits(text,[/anticipat/i,/hit.?stop|freeze.?frame/i,/recoil/i,/recover(?:y)?/i,/overshoot|settle/i,/smear|trail|afterimage/i,/squash|stretch/i]);
     require('IMPACT_SEQUENCE_SIGNALS',hit>=2);
     require('IMPACT_OR_ACTION_EVENT',/(?:impact|hit|attack|interact|damage|collision)/i.test(text));
+    // Combat motion must include both a wind-up/attack and a distinct reaction/recovery.
+    // A single decorative impact flash cannot stand in for character animation.
+    if(/(?:attack|strike|swing|slash|melee|combat)/i.test(text)&&/(?:damage|hurt|hit|impact)/i.test(text)){
+      require('ATTACK_PREPARATION_OR_TIMING',/(?:anticipat|wind.?up|startup|attack.?anim|attack.?track|swing.?phase|hit.?frame|active.?frame)/i.test(text));
+      require('HIT_REACTION_OR_RECOVERY',/(?:hit.?react|hurt.?anim|damage.?anim|stagger|knockback|recoil|recover(?:y)?|hit.?stop)/i.test(text));
+    }
   }else if(pass==='VFX'){
     const hit=patternHits(text,[/particle/i,/trail/i,/afterimage/i,/flash/i,/shake/i,/impact/i,/glow/i,/shockwave/i,/spark/i,/dust/i,/telegraph/i]);
     require('VFX_FEEDBACK_VARIETY',hit>=2);
