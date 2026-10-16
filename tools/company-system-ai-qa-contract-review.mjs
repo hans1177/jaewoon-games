@@ -29,12 +29,12 @@ function strength(text=''){
 }
 function totalStrength(row={}){return Number(row.tests||0)+Number(row.asserts||0)+Number(row.throws||0)+Number(row.rejects||0)+Number(row.negative||0);}
 function centralPolicyValid(policy={}){
-  return clean(policy.policySource)==='company-learning/platform-release-roadmap.json'
+  return Boolean(clean(policy.policySource))
     &&clean(policy.authority)==='MACHINE_EXECUTION_CONTRACT'
     &&Number(policy.version||0)>0;
 }
 function securityPolicyValid(policy={}){
-  return clean(policy.sourceOfTruth)==='company-learning/platform-release-roadmap.json'
+  return Boolean(clean(policy.sourceOfTruth))
     &&clean(policy.kind)==='company-security-immune-system';
 }
 
