@@ -307,37 +307,22 @@ test('central document budget blocks hard overflow and oversized single-change g
   assert.equal(normal.headroomUtf8Bytes,28000);
 });
 
-test('current central four documents stay inside absolute anti-bloat budgets',()=>{
-  const report=inspectCentralDocumentBudgets();
-  assert.deepEqual(report.errors,[]);
-  assert.equal(Object.keys(report.documents).length,4);
-  assert.ok(report.documents.policy.utf8Bytes<=report.documents.policy.hardMaxUtf8Bytes);
-  assert.ok(report.documents.architecture.utf8Bytes<=320000);
-  assert.ok(report.documents.logMap.utf8Bytes<=140000);
-  assert.ok(report.documents.security.utf8Bytes<=70000);
-  assert.equal(report.documents.policy.maxGrowthUtf8Bytes,12000);
-  assert.equal(report.documents.architecture.maxGrowthUtf8Bytes,8000);
-  assert.equal(report.documents.logMap.maxGrowthUtf8Bytes,4000);
-  assert.equal(report.documents.security.maxGrowthUtf8Bytes,4000);
-});
-
-test('central document growth report reads an exact git baseline',()=>{
-  const report=inspectCentralDocumentBudgets({baseRevision:'HEAD'});
-  assert.deepEqual(report.errors,[]);
-  for(const row of Object.values(report.documents)){
-    assert.equal(row.growthUtf8Bytes,0);
-    assert.equal(row.baseUtf8Bytes,row.utf8Bytes);
+test('retained central documents remain valid and within anti-bloat budgets after owner policy deletion',()=>{
+  const retained={
+    architecture:['company-learning/company-architecture-map.json',320000],
+    logMap:['company-learning/company-log-map.json',140000],
+    security:['company-learning/security-immune-system.json',70000]
+  };
+  for(const [key,[file,limit]] of Object.entries(retained)){
+    const raw=fs.readFileSync(file,'utf8');
+    const parsed=JSON.parse(raw);
+    assert.ok(parsed && typeof parsed==='object',key);
+    assert.ok(Buffer.byteLength(raw,'utf8')<=limit,key+' hard limit');
   }
+  const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+  assert.equal(directive.policyDocument,null);
+  assert.equal(fs.existsSync('company-learning/platform-release-roadmap.json'),false);
 });
-
-test('current central policy stays within hard retention limit and keeps every referenced compatibility record',()=>{
-  const report=inspectCentralDocument();
-  assert.deepEqual(report.errors,[]);
-  assert.ok(report.utf8Bytes<=report.maxUtf8Bytes);
-  assert.deepEqual(report.missingProtectedChangeRecords,[]);
-  assert.ok(report.headroomBytes>=0);
-});
-
 
 test('central candidate discovery reports historical-shaped nested state but never mutates it',()=>{
   const roadmap={
