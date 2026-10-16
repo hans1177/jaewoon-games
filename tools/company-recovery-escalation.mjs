@@ -78,7 +78,7 @@ function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-tas
     ?['tools/company-system-ai-worker.mjs','.github/workflows/company-system-ai-workers.yml','qa/company-system-ai-worker.test.mjs','qa/company-system-ai-supervision-loop.test.mjs']
     :uniq(task.responsibleFiles);
   const contextFiles=sharedInfrastructure
-    ?uniq([...(task.contextFiles||[]),'company-learning/platform-release-roadmap.json','company-learning/company-architecture-map.json'])
+    ?uniq([...(task.contextFiles||[]),'company-learning/company-architecture-map.json','company-learning/company-log-map.json','company-learning/security-immune-system.json'])
     :uniq(task.contextFiles);
   return{
     priority:sharedInfrastructure||blastRadius.startsWith('shared-worker-contract')||blastRadius.startsWith('portfolio')?'critical':'high',
