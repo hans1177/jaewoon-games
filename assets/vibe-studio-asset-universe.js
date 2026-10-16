@@ -3066,8 +3066,17 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
     replacementQualityVerified&&
     gain>=INTERNAL_ASSET_REUSE_POLICY.replacement.minimumEffectiveGain
   );
+  // Selection is an advisory proposal; only a verified improvement may change
+  // the binding of an already-used asset across the portfolio.
+  const automaticBindingAssetId=currentAsset
+    ? (replacementRecommended?text(best?.asset?.id):text(currentAsset?.id))
+    : (replacementQualityVerified?text(best?.asset?.id):null);
+  const automaticBindingAllowed=Boolean(automaticBindingAssetId
+    && (!currentAsset || replacementRecommended));
   return Object.freeze({
     selectedAssetId:text(best?.asset?.id)||null,
+    automaticBindingAssetId,
+    automaticBindingAllowed,
     selectedMode:best?.reuse?.mode||null,
     selectedBaseQuality:best?.reuse?.baseQuality??null,
     selectedEffectiveQuality:best?.reuse?.effectiveQuality??null,
