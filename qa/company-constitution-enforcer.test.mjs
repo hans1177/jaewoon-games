@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {execFileSync} from 'node:child_process';
 import {enforceConstitution} from '../tools/company-constitution-enforcer.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -81,4 +82,14 @@ test('future enabled rule without declarative enforcement fails closed',()=>{
   const result=run(p);
   assert.equal(result.pass,false);
   assert.ok(result.errors.some(error=>error.includes('CONSTITUTION_MACHINE_ENFORCEMENT_MISSING')||error.includes('MACHINE_ENFORCEMENT_MISSING')));
+});
+
+test('policy-free CLI loads the canonical roadmap while explicit null fails closed',()=>{
+  const output=execFileSync(process.execPath,['tools/company-constitution-enforcer.mjs','--phase=qa'],{
+    cwd:root,encoding:'utf8',timeout:15000,stdio:['ignore','pipe','pipe']
+  });
+  assert.match(output,/CONSTITUTION_ENFORCEMENT=PASS/);
+  const missing=enforceConstitution({policy:null,root,phase:'qa'});
+  assert.equal(missing.pass,false);
+  assert.ok(missing.errors.some(error=>error.startsWith('CANONICAL_CONSTITUTION_INVALID:')));
 });
