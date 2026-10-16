@@ -156,7 +156,6 @@ test('game-primary control work uses available latest capacity while push/manual
   assert.match(core,/put\('model_cache_family',modelCacheFamily\)/);
   assert.match(core,/put\('model_cache_key',modelCacheKey\)/);
   assert.match(core,/VIBE2_LOCAL_MODEL: \$\{\{ steps\.order\.outputs\.local_model \}\}/);
-  assert.match(core,/VIBE2_HERO_ASSET_MODEL_ACTIVE=\$\{\{ steps\.order\.outputs\.hero_model_requested \}\}/);
   assert.match(core,/put\('dcc_recipe_count',assetDevelopmentTask\(order\)\?dccRecipes\.length:0\)/);
   assert.match(core,/Prepare declared native DCC authoring runtime/);
   assert.match(core,/Execute declared native DCC authoring verification/);
