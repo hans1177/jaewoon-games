@@ -4454,6 +4454,9 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
             sourcePage:row.externalAcquisition?.sourceUrl||null,
             directDownload:row.externalAcquisition?.downloadUrl||null,
             acquisitionState:row.externalAcquisition?.acquisitionState||null,
+            sourceArchive:row.externalAcquisition?.localSourcePath||null,
+            sourceArchiveSha256:row.externalAcquisition?.sourceHash||null,
+            sourceArchiveAcquired:row.externalAcquisition?.downloaded===true,
             license:row.externalAcquisition?.license||row.libraryReuse?.sourceLicense||row.registeredSourceLicense||null,
             licenseEvidenceUrl:row.externalAcquisition?.licenseEvidenceUrl||null,
             // 내부 후보는 원본·해시·권리 검증 뒤 기존 Blender 제작 책임이 파생한다.
@@ -4466,8 +4469,16 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
             assetization:row.assetization||null,
             nativeDccScript:row.assetization?.nativeDccScript||null,
             sourceModelField:row.assetization?.nativeSourceModelField||null,
+            nativeBuildBlockedByUnadaptedArchive:row.action==='ACQUIRE_ADAPT'
+              &&row.externalAcquisition?.downloaded===true
+              &&Boolean(row.externalAcquisition?.localSourcePath)
+              &&!row.registeredSourceModel,
             runtimeVerified:false,productionVerified:false,
-            nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'&&!row.externalAcquisition?.downloadUrl
+            nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'
+              &&!row.externalAcquisition?.downloadUrl
+              &&!(row.externalAcquisition?.downloaded===true
+                &&row.externalAcquisition?.acquisitionState==='ACQUIRED_ORIGINAL_FILES'
+                &&row.externalAcquisition?.localSourcePath&&row.externalAcquisition?.sourceHash)
               ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady!==true
                 &&!(row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
                   &&row.automaticReplacementAuthorized===true
