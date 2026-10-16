@@ -2687,6 +2687,15 @@ task.spawn(function()
       end
       if enemy.Humanoid.Health > 0 and now >= enemy.StunnedUntil then
         local target, dist = AdvancedAIEcosystem.ClosestPlayer(enemy.Root.Position, 32)
+        -- 서식지 밖 플레이어는 공격하지 않고, 추격을 포기한 적은 집으로 복귀한다.
+        -- 기존 전투 사거리/텔레그래프/피해량 및 보스 페이즈는 변경하지 않는다.
+        if target then
+          local targetRoot = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+          if not targetRoot or (Vector3.new(targetRoot.Position.X - enemy.Home.X, 0,
+              targetRoot.Position.Z - enemy.Home.Z)).Magnitude > 22 then
+            target = nil
+          end
+        end
         if target then
           local root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
           if root then
@@ -2748,6 +2757,16 @@ task.spawn(function()
           enemy.Model:SetAttribute("IsPreparingAttack", false)
         elseif now - enemy.LastHit >= 3 then
           enemy.Model:SetAttribute("IsPreparingAttack", false)
+          local homeOffset = Vector3.new(enemy.Home.X - enemy.Root.Position.X, 0,
+            enemy.Home.Z - enemy.Root.Position.Z)
+          if homeOffset.Magnitude > 12 then
+            AdvancedAIEcosystem.SetState(enemy, "ReturnHome")
+            if homeOffset.Magnitude > 0.1 then
+              local step = enemy.Root.Position + homeOffset.Unit * math.min(1.2, homeOffset.Magnitude)
+              civWalkModel(enemy.Model, CFrame.lookAt(step,
+                Vector3.new(enemy.Home.X, step.Y, enemy.Home.Z)), 0.25)
+            end
+          else
           AdvancedAIEcosystem.SetState(enemy, "Patrol")
           -- Predation runs only when no living player is targeted.
           local grazer = enemy.Model:GetAttribute("EcosystemSpecies") == "StoneAgeWolf"
@@ -2788,6 +2807,7 @@ task.spawn(function()
               end
             end
           end
+          end -- ReturnHome / Patrol
         end
       end
     end
