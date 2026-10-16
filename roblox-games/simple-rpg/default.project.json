@@ -8,30 +8,18 @@
         "LightingStyle": "Realistic",
         "PrioritizeLightingQuality": true,
         "GlobalShadows": true
-      },
-      "CompatibilityToneMap": {
-        "$className": "ColorGradingEffect",
-        "$properties": {
-          "TonemapperPreset": "Retro"
-        }
-      },
-      "CivilizationAtmosphere": {
-        "$className": "Atmosphere",
-        "$properties": {
-          "Density": 0.27,
-          "Offset": 0.08,
-          "Haze": 1.4,
-          "Glare": 0.08
-        }
       }
     },
     "ReplicatedStorage": {
       "Shared": {
         "$path": "shared",
-        "CommonMotion": {
-          "$path": "../../assets/roblox/common-motion-v1/RobloxCommonMotion.luau"
-        },
         "CreatureModels": {
+          "$className": "Folder"
+        },
+        "CuratedWorldModels": {
+          "$className": "Folder"
+        },
+        "CuratedWeatherEffects": {
           "$className": "Folder"
         }
       }
