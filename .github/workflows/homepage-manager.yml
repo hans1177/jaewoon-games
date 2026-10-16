@@ -221,7 +221,7 @@ jobs:
             if ! git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/homepage-runtime/game-seed-state.json 2>/dev/null; then
               printf '%s\n' '{"seeds":[]}' > /tmp/homepage-runtime/game-seed-state.json
             fi
-            node --input-type=module <<'NODE'
+            COMPANY_VERIFIED_POLICY_PATH=company-learning/platform-release-roadmap.json node --input-type=module <<'NODE'
             import fs from 'node:fs';
             import { applyHomepageRuntimeInfo, mergeRuntimeCatalogMissingGames, syncProductionClasses } from './tools/company-status-sync.mjs';
             import { ingestOwnerWebGameIds, validateNormalizedCatalog } from './tools/game-catalog-normalization.mjs';
