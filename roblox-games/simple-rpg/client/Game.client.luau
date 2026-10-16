@@ -2090,7 +2090,17 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local joints = creatureImportedRig[importedVisual]
           -- 늦게 복제된 Bone/Motor6D가 있으면 빈 리그 캐시를 주기적으로 갱신한다.
           -- 매 프레임 전체 Descendants를 탐색하지 않도록 2초 간격으로 제한한다.
-          if not joints or (#joints == 0 and creatureMotionPhase >= (creatureRigRetryAt[importedVisual] or 0)) then
+          local staleRig = false
+          if joints then
+            for _, entry in ipairs(joints) do
+              if not entry.joint:IsDescendantOf(importedVisual) then
+                staleRig = true
+                break
+              end
+            end
+          end
+          if not joints or staleRig
+            or (#joints == 0 and creatureMotionPhase >= (creatureRigRetryAt[importedVisual] or 0)) then
             joints = {}
             creatureRigRetryAt[importedVisual] = creatureMotionPhase + 2
             for _, item in ipairs(importedVisual:GetDescendants()) do
