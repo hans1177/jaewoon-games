@@ -2090,19 +2090,10 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local joints = creatureImportedRig[importedVisual]
           -- 늦게 복제된 Bone/Motor6D가 있으면 빈 리그 캐시를 주기적으로 갱신한다.
           -- 매 프레임 전체 Descendants를 탐색하지 않도록 2초 간격으로 제한한다.
-          local staleRig = false
-          if joints then
-            for _, entry in ipairs(joints) do
-              if not entry.joint:IsDescendantOf(importedVisual) then
-                staleRig = true
-                break
-              end
-            end
-          end
           local rigCheckDue = creatureMotionPhase >= (creatureRigRetryAt[importedVisual] or 0)
-          -- 관절이 새로 추가된 모델도 최대 2초 이내 다시 검색한다.
-          -- 변경이 없는 모델은 캐시를 사용해 매 프레임 전체 탐색을 피한다.
-          if not joints or staleRig or rigCheckDue then
+          -- 매 프레임 모든 관절을 검사하지 않고 2초마다 신규/교체 관절을 확인한다.
+          -- 관절이 사라진 경우에는 주기 검사가 즉시 새 목록을 구성한다.
+          if not joints or rigCheckDue then
             joints = {}
             creatureRigRetryAt[importedVisual] = creatureMotionPhase + 2
             for _, item in ipairs(importedVisual:GetDescendants()) do
