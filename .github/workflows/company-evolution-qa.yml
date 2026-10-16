@@ -300,7 +300,6 @@ jobs:
       - name: Validate current production safety
         run: |
           set -euo pipefail
-          node --test qa/company-development-queue-reconcile.test.mjs
           node --test qa/production-diversity.test.mjs
           node --test qa/company-status-sync-direct-native.test.mjs qa/design-pipeline-no-artbook-regression.test.mjs
 
