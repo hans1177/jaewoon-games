@@ -47,8 +47,8 @@
       "fileCandidates": 24
     },
     "09-buildings": {
-      "packs": 2,
-      "fileCandidates": 2
+      "packs": 3,
+      "fileCandidates": 13
     },
     "10-npc-expanded": {
       "packs": 3,
@@ -59,11 +59,11 @@
       "fileCandidates": 1
     },
     "12-dungeon-interiors": {
-      "packs": 2,
-      "fileCandidates": 3
+      "packs": 4,
+      "fileCandidates": 16
     }
   },
-  "verifiedPacks": 53,
+  "verifiedPacks": 56,
   "packs": [
     {
       "file": "bee-rigged.blend",
@@ -788,6 +788,48 @@
       "sha256": "713a7e563e0526dcbb67363b740e81a24f1610af6c8c9c1c7f1007385743419c",
       "bytes": 7070804,
       "sourceFileCandidates": 2,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "apocalyptic-city-ruins.zip",
+      "priority": "09-buildings",
+      "sourceUrl": "https://opengameart.org/sites/default/files/lowpoly-apocalyptic-buildings-by-majadroid.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/3d-apocalyptic-building-city-cc0",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "4117bd1d2e815223762c1dbd53e80ee050f64ed7e2b4b43a2bc00ebf20b7df6b",
+      "bytes": 38420158,
+      "sourceFileCandidates": 11,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "fantasy-ruins-3td.zip",
+      "priority": "12-dungeon-interiors",
+      "sourceUrl": "https://opengameart.org/sites/default/files/Fantasy%20Ruins%20Pack.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/3td-fantasy-ruins-pack",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "12dad8708181bef31ac5e688fb61dc3232138206a6f004407044215f5fd64dfd",
+      "bytes": 30991009,
+      "sourceFileCandidates": 12,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "castle-labyrinth.zip",
+      "priority": "12-dungeon-interiors",
+      "sourceUrl": "https://opengameart.org/sites/default/files/labyrinth.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/3d-walls-props",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "dcebb9e44cb7d42513ac50b32e71464942ce5d34aff2c864ff5b4208fae6c9f1",
+      "bytes": 3333131,
+      "sourceFileCandidates": 1,
       "validation": "zip_crc_and_content",
       "sourceOnly": true,
       "robloxImported": false,
