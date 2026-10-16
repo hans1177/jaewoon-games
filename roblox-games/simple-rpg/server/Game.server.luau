@@ -1659,7 +1659,7 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   enemy.PrimaryPart = root
   enemy.Parent = civHub
   civSign(head, head, enemy.Name, 3.3)
-  local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, Special = special, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0, TargetUserId = nil }
+  local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, Special = special, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0, TargetUserId = nil, NextPatrolAt = 0, PatrolStep = 0 }
   table.insert(civEnemies, item)
   return item
 end
@@ -2767,6 +2767,25 @@ task.spawn(function()
               enemy.LastHit = now
               grazer.Humanoid:TakeDamage(8)
               if grazer.Humanoid.Health <= 0 then grazer.LastPredated = now end
+            end
+          elseif enemy.Model:GetAttribute("IsRaidBoss") ~= true
+              and now >= (enemy.NextPatrolAt or 0) then
+            -- 전투 밖에서는 기존 스폰 주변을 천천히 이동하고 휴식한다.
+            enemy.PatrolStep = (enemy.PatrolStep or 0) + 1
+            local step = enemy.PatrolStep
+            local angle = step * 2.399963 + enemy.RaceID * 0.73
+            local radius = 5 + (step % 4) * 2
+            local destination = enemy.Home + Vector3.new(math.cos(angle) * radius, 0, math.sin(angle) * radius)
+            local planar = Vector3.new(destination.X - enemy.Root.Position.X, 0,
+              destination.Z - enemy.Root.Position.Z)
+            enemy.NextPatrolAt = now + 3 + (step % 3)
+            if planar.Magnitude > 0.5 then
+              local nextPosition = enemy.Root.Position + planar.Unit * math.min(1.1, planar.Magnitude)
+              if (Vector3.new(nextPosition.X - enemy.Home.X, 0,
+                  nextPosition.Z - enemy.Home.Z)).Magnitude <= 16 then
+                civWalkModel(enemy.Model, CFrame.lookAt(nextPosition,
+                  Vector3.new(destination.X, nextPosition.Y, destination.Z)), 0.25)
+              end
             end
           end
         end
