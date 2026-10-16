@@ -244,71 +244,7 @@ verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticDomain", verifiedLear
 verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 verifiedLearningRoot:SetAttribute("VerifiedLearningGameSpecificMappingCount", #(verifiedLearningContext.GameSpecificSemanticMappings or {}))
 
--- Game-specific color and atmosphere response, authored locally in Roblox.
-local verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
-if not verifiedLearningColorGrade then
-  verifiedLearningColorGrade = Instance.new("ColorCorrectionEffect")
-  verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
-  verifiedLearningColorGrade.Parent = verifiedLearningLighting
-end
-verifiedLearningColorGrade.Saturation = 0
-verifiedLearningColorGrade.Contrast = 0
-verifiedLearningColorGrade.Brightness = 0
-verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
-if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
--- Survival alone receives atmospheric depth and threat haze.
-local verifiedLearningBloom = verifiedLearningLighting:FindFirstChild("VerifiedLearningBloom")
-if not verifiedLearningBloom then
-  verifiedLearningBloom = Instance.new("BloomEffect")
-  verifiedLearningBloom.Name = "VerifiedLearningBloom"
-  verifiedLearningBloom.Parent = verifiedLearningLighting
-end
-verifiedLearningBloom.Intensity = 0.22
-verifiedLearningBloom.Size = 18
-verifiedLearningBloom.Threshold = 1.1
-local verifiedLearningAtmosphere = verifiedLearningLighting:FindFirstChild("VerifiedLearningAtmosphere")
-if not verifiedLearningAtmosphere then
-  verifiedLearningAtmosphere = Instance.new("Atmosphere")
-  verifiedLearningAtmosphere.Name = "VerifiedLearningAtmosphere"
-  verifiedLearningAtmosphere.Parent = verifiedLearningLighting
-end
-verifiedLearningAtmosphere.Density = 0.22
-verifiedLearningAtmosphere.Haze = 1.1
-verifiedLearningAtmosphere.Glare = 0.08
-local verifiedLearningDepth = verifiedLearningLighting:FindFirstChild("VerifiedLearningDepthOfField")
-if not verifiedLearningDepth then
-  verifiedLearningDepth = Instance.new("DepthOfFieldEffect")
-  verifiedLearningDepth.Name = "VerifiedLearningDepthOfField"
-  verifiedLearningDepth.Parent = verifiedLearningLighting
-end
-verifiedLearningDepth.FarIntensity = 0.08
-verifiedLearningDepth.NearIntensity = 0.02
-verifiedLearningDepth.FocusDistance = 28
-verifiedLearningDepth.InFocusRadius = 24
-
-end
-
-if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "COMBAT_IMPACT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
--- Roblox character animation / motion adaptation.
-local function syncVerifiedLearningCharacterMotion(character)
-  local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 5)
-  if not humanoid then return end
-  local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 5)
-  if not animator then return end
-  humanoid.Running:Connect(function(speed)
-    local ratio = speed > 0.1 and math.clamp(speed / math.max(humanoid.WalkSpeed, 1), 0.82, 1.25) or 1
-    for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-      if track.Priority == Enum.AnimationPriority.Movement or track.Priority == Enum.AnimationPriority.Core then
-        track:AdjustSpeed(ratio)
-      end
-    end
-  end)
-end
-if verifiedLearningPlayer.Character then task.defer(syncVerifiedLearningCharacterMotion, verifiedLearningPlayer.Character) end
-verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotion)
-
-end
-
+-- Self-authored color grading, Bloom, fog and animation overrides removed.
 -- 안내 UI는 게임의 기존 HUD/메뉴가 소유한다. 학습 바인딩은 화면 위에 문구를 추가하지 않는다.
 verifiedLearningRoot:SetAttribute("VerifiedLearningProgressionRiskCue", verifiedLearningSemanticVariant)
 
@@ -316,17 +252,6 @@ verifiedLearningRoot:SetAttribute("VerifiedLearningProgressionRiskCue", verified
 local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control and control.Name or "GAMEPLAY_STATE")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
-
-  if control then
-    local scale = control:FindFirstChild("VerifiedLearningMotionScale")
-    if not scale then
-      scale = Instance.new("UIScale")
-      scale.Name = "VerifiedLearningMotionScale"
-      scale.Parent = control
-    end
-    scale.Scale = 0.94
-    verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
-  end
 
   -- Input telemetry and button feedback remain; procedural combat/camera VFX removed.
 
