@@ -5013,6 +5013,21 @@ test('detailed design candidates enter canonical binding targets only with verif
   assert.ok(source.includes('existingSelectionKeys.has(row.assetId)'));
 });
 
+test('canonical detailed asset reuse checks real source bytes before native binding or runtime QA',()=>{
+  const source=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  assert.ok(source.includes("const sourceFilesPresent=sourceFiles.length>0&&sourceFiles.every(file=>sourceHashes.get(file)!=null)"));
+  assert.ok(source.includes('fs.statSync(real).isFile()'));
+  assert.ok(source.includes('const sourceContentFingerprint=sourceFilesPresent'));
+  assert.ok(source.includes("const eligibleForNativeBinding=sourceFilesPresent&&asset?.productionVerified===true&&rightsVerified"));
+  assert.ok(source.includes(":!sourceFilesPresent?'SOURCE_ASSET_REQUIRED'"));
+  assert.ok(source.includes(":!rightsVerified?'SOURCE_BINDING_PROVENANCE_REQUIRED'"));
+  assert.ok(source.includes(":eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_BINDING_PROVENANCE_REQUIRED'"));
+  assert.ok(source.includes('sourceFilesPresent,sourceContentFingerprint,rightsVerified'));
+  assert.ok(source.includes('verifiedLibraryCandidate:asset?.productionVerified===true,nativeSelectionReady:eligibleForNativeBinding'));
+  assert.ok(source.includes('nativeRuntimeVerified:false'));
+  assert.ok(source.includes('preserveGameRulesSaveAndNetwork:true,sourceOnlyCannotProveRuntime:true'));
+});
+
 test('GLB adoption without applied master hash remains provenance required, not runtime QA',()=>{
   const source=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
   assert.ok(source.includes("masterUpgradeProvenanceRequired?'SOURCE_BINDING_PROVENANCE_REQUIRED'"));
