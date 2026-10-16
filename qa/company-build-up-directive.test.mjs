@@ -1763,7 +1763,7 @@ test('Vibe compact source-worker instructions retain internal composition across
   assert.match(narrowed,/autoCompositionRule=/);
 });
 
-test('maximizes verified internal game algorithms within the existing BUILD_UP worker',()=>{
+test('maximizes internal algorithms through authorized Vibe and AI collaboration in existing BUILD_UP',()=>{
   const d=buildGameSpecificBuildUpDirective({
     gameId:'simple-rpg',
     platform:'ROBLOX',
@@ -1773,15 +1773,22 @@ test('maximizes verified internal game algorithms within the existing BUILD_UP w
   const contract=d.internalAlgorithmUse;
   assert.equal(contract.mode,'MAXIMIZE_TASK_RELEVANT_VERIFIED_INTERNAL_ALGORITHMS');
   assert.equal(contract.priority[0],'SAME_GAME_SAME_FAILURE_VERIFIED_CAUSAL_AND_CODE_PATTERN');
-  assert.ok(contract.priority.at(-1).startsWith('EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY'));
+  assert.equal(contract.priority.at(-1),'AUTHORIZED_AI_COLLABORATION_ON_DISJOINT_RESPONSIBILITY_WITH_CANDIDATE_BRANCH_QA');
+  assert.equal(contract.aiCollaboration.vibePrimaryIntegrationAndLearning,true);
+  assert.equal(contract.aiCollaboration.approvedExternalAiMayImplementOnIsolatedCandidateBranch,true);
+  assert.equal(contract.aiCollaboration.externalAiUseRequiresExistingOptInAndAuthorization,true);
+  assert.equal(contract.aiCollaboration.disjointResponsibleFilesMayRunParallel,true);
+  assert.equal(contract.aiCollaboration.sameResponsibleFileConflictSerialized,true);
+  assert.equal(contract.aiCollaboration.deterministicallyVerifiedOutcomesFeedExistingLearningMotor,true);
+  assert.equal(contract.aiCollaboration.externalAiCannotWriteMainOrCentralPolicyOrApproveOwnWork,true);
   assert.equal(contract.relevantAlgorithmsOnly,true);
   assert.equal(contract.noDuplicateSubsystemsOrNewPipeline,true);
   assert.equal(contract.noUnverifiedCapabilityClaims,true);
   assert.equal(contract.qaReleaseSecurityGatesUnchanged,true);
-  assert.match(d.preserveConstraints[0],/기존 내부 분석/);
+  assert.match(d.preserveConstraints[0],/Vibe와 승인된 AI 협업/);
   const prompt=directivePrompt(d);
-  assert.match(prompt,/INTERNAL_ALGORITHM_PRIORITY: USE_VERIFIED_SAME_GAME_AND_SAME_FAILURE_PATTERNS_FIRST/);
-  assert.match(prompt,/EXTERNAL_AI_IS_LOWER_PRIORITY_VERIFIED_ADVISORY_ONLY/);
+  assert.match(prompt,/AI_COLLABORATION_INTERNAL_ALGORITHM: AI_COLLABORATION_VIBE_PRIMARY_INTEGRATION_AND_LEARNING/);
+  assert.match(prompt,/AUTHORIZED_EXTERNAL_AI_MAY_DEVELOP_AND_REPAIR_ON_ISOLATED_CANDIDATE_BRANCHES/);
   // Existing source workers propagate preserveConstraints through both full and compact prompts.
   const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   assert.match(worker, /preserve=\$\{\(d\.preserveConstraints\|\|\[\]\)/);
