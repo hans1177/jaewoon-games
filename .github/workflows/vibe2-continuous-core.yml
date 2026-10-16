@@ -1041,46 +1041,6 @@ jobs:
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
 
-      - name: Probe dedicated Vibe2 model cache
-        id: ollama_model_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.ollama/models
-          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
-          lookup-only: true
-
-      - name: Probe canonical Ollama runtime cache
-        id: ollama_runtime_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.cache/jaewoon-ollama/ollama-linux-*-cpu-0.33.3.tar.zst
-          key: jaewoon-ollama-cpu-runtime-v2-${{ runner.os }}-${{ runner.arch }}-0.33.3
-          lookup-only: true
-
-      - name: Record reserve model cache decision
-        id: ollama_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
-        env:
-          MODEL_CACHE_HIT: ${{ steps.ollama_model_cache_probe.outputs.cache-hit }}
-          RUNTIME_CACHE_HIT: ${{ steps.ollama_runtime_cache_probe.outputs.cache-hit }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          combined=false
-          if [ "$MODEL_CACHE_HIT" = 'true' ] && [ "$RUNTIME_CACHE_HIT" = 'true' ]; then combined=true; fi
-          echo "cache-hit=$combined" >> "$GITHUB_OUTPUT"
-          echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES'
-          echo "VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=$MODEL_CACHE_HIT"
-          echo "VIBE2_RUNTIME_CACHE_RESERVE_PROBE_HIT=$RUNTIME_CACHE_HIT"
-          echo "VIBE2_MODEL_RUNTIME_CACHE_COMBINED_HIT=$combined"
-          if [ "$combined" = 'true' ]; then
-            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT'
-          else
-            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=RUN_CACHE_MISS'
-          fi
-
       - name: Record asset no-model cache bypass
         if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE == 'asset-development'
         shell: bash
@@ -1143,46 +1103,8 @@ jobs:
             break
           done < /tmp/vibe2-stranded-review-runs.tsv
 
-  model_cache:
-    needs: reserve
-    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle'
-    runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
-    timeout-minutes: 12
-    continue-on-error: true
-    steps:
-      - name: Checkout pinned Ollama preparation action
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.reserve.outputs.contract_sha }}
-          path: vibe2-contract
-          fetch-depth: 1
-          sparse-checkout: |
-            .github/actions/prepare-ollama
-
-      - name: Recheck or persist dedicated Vibe2 model cache
-        id: ollama_cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.ollama/models
-          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
-
-      - name: Warm canonical Ollama runtime and local coding model once
-        uses: ./vibe2-contract/.github/actions/prepare-ollama
-        with:
-          model: ${{ env.VIBE2_LOCAL_MODEL }}
-          pull-model: 'true'
-
-      - name: Record model cache probe
-        shell: bash
-        run: |
-          echo 'VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=NO'
-          echo 'VIBE2_MODEL_CACHE_WARMUP_PERSIST_ON_MISS=YES'
-          echo "VIBE2_MODEL_CACHE_WARMUP_HIT=${{ steps.ollama_cache.outputs.cache-hit }}"
-          echo 'VIBE2_RUNTIME_CACHE_WARMUP=CANONICAL_PREPARE_OLLAMA'
-          echo 'VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS'
-
   worker:
-    needs: [reserve, model_cache]
+    needs: [reserve]
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
     if: always() && needs.reserve.result == 'success' && needs.reserve.outputs.worker_count != '0' && (!contains('game-primary,asset-development', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || needs.reserve.outputs.verified_learning_memory_sha != '')
     # Roblox asset work stays on x64 for the native Luau toolchain; Unity asset work keeps the dedicated ARM lane.
@@ -1405,43 +1327,6 @@ jobs:
           echo "VIBE2_WORKER_SELECTED_MODEL=${{ steps.order.outputs.local_model }}"
           echo "VIBE2_WORKER_MODEL_CACHE_KEY=${{ steps.order.outputs.model_cache_family }}-${{ runner.os }}-${{ runner.arch }}-${{ steps.order.outputs.model_cache_key }}"
           echo "VIBE2_WORKER_HERO_MODEL_REQUESTED=${{ steps.order.outputs.hero_model_requested }}"
-
-      - name: Restore and persist selected Vibe2 model cache
-        id: worker_ollama_cache
-        if: steps.model_need.outputs.required == 'true'
-        uses: actions/cache@v4
-        with:
-          path: ~/.ollama/models
-          key: ${{ steps.order.outputs.model_cache_family }}-${{ runner.os }}-${{ runner.arch }}-${{ steps.order.outputs.model_cache_key }}
-
-      - name: Mark worker Ollama preparation start
-        id: worker_ollama_prepare_start
-        if: steps.model_need.outputs.required == 'true'
-        shell: bash
-        run: echo "ms=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
-
-      - name: Prepare cached Ollama runtime
-        id: worker_ollama_runtime
-        if: steps.model_need.outputs.required == 'true'
-        uses: ./vibe2-contract/.github/actions/prepare-ollama
-        with:
-          model: ${{ steps.order.outputs.local_model }}
-          pull-model: 'true'
-          preload-model: ${{ steps.order.outputs.route == 'text-source-worker' && env.VIBE2_EXECUTION_LANE != 'asset-development' && 'true' || 'false' }}
-          preload-context: ${{ steps.order.outputs.route == 'text-source-worker' && env.VIBE2_EXECUTION_LANE != 'asset-development' && '12288' || '8192' }}
-
-      - name: Measure worker Ollama preparation
-        id: worker_ollama_metrics
-        if: steps.model_need.outputs.required == 'true'
-        env:
-          START_MS: ${{ steps.worker_ollama_prepare_start.outputs.ms }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          finished="$(date +%s%3N)"
-          start="${START_MS:-$finished}"
-          echo "duration_ms=$((finished-start))" >> "$GITHUB_OUTPUT"
-          echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA'
 
       - name: Prepare declared native DCC authoring runtime
         timeout-minutes: 5
