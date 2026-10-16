@@ -40,6 +40,7 @@ if (!/^[1-9][0-9]*$/.test(String(creatorId))) {
   throw new Error('INVALID_ROBLOX_CREATOR_USER_ID');
 }
 const sourceDir = 'assets/roblox/actors/sources';
+// Only thematic adventurer/skeleton models; no generic humanoids posing as beasts.
 const models = [
   ['kaykit-adventurers/Knight.glb', 'Knight'],
   ['kaykit-adventurers/Barbarian.glb', 'Barbarian'],
@@ -50,18 +51,8 @@ const models = [
   ['kaykit-skeletons/Skeleton_Mage.glb', 'SkeletonMage'],
   ['kaykit-skeletons/Skeleton_Rogue.glb', 'SkeletonRogue'],
   ['kaykit-skeletons/Skeleton_Minion.glb', 'SkeletonMinion'],
-  // Additional distinct source GLBs; not claimed to be 20 distinct monster species.
-  ['../native/mini-character-male-a.glb', 'HumanMaleA'],
-  ['../native/mini-character-male-b.glb', 'HumanMaleB'],
-  ['../native/mini-character-male-c.glb', 'HumanMaleC'],
-  ['../native/mini-character-male-d.glb', 'HumanMaleD'],
-  ['../native/mini-character-male-e.glb', 'HumanMaleE'],
-  ['../native/mini-character-male-f.glb', 'HumanMaleF'],
-  ['../native/mini-character-female-a.glb', 'HumanFemaleA'],
-  ['../native/mini-character-female-b.glb', 'HumanFemaleB'],
-  ['../native/mini-character-female-c.glb', 'HumanFemaleC'],
-  ['../native/mini-character-female-d.glb', 'HumanFemaleD'],
-  ['../native/mini-character-female-e.glb', 'HumanFemaleE'],
+  // Generic mini-characters are retained in the source archive but excluded from
+  // automatic RPG creature registration: they are not distinct creature species.
 ];
 const rawCookie = String(process.env.ROBLOX_ROBLOSECURITY || process.env.ROBLOX_SECURITY_COOKIE || '').trim();
 const cookie = rawCookie.includes('.ROBLOSECURITY=') ? rawCookie : (rawCookie ? '.ROBLOSECURITY='+rawCookie+';' : '');
@@ -137,14 +128,7 @@ const aliases = {
   Rogue:'Race1_Mob2', RogueHooded:'Race3_Mob2',
   SkeletonWarrior:'Race4_Mob1', SkeletonMage:'Race4_Mob2',
   SkeletonRogue:'Race5_Mob2', SkeletonMinion:'Race5_Mob1',
-  // Remaining models only act as temporary humanoid visual stand-ins.
-  // Creature-specific beast meshes must replace these before a 20-species claim.
-  HumanMaleA:'Race6_Mob1', HumanMaleB:'Race6_Mob2',
-  HumanMaleC:'Race7_Mob1', HumanMaleD:'Race7_Mob2',
-  HumanMaleE:'Race8_Mob1', HumanMaleF:'Race8_Mob2',
-  HumanFemaleA:'Race9_Mob1', HumanFemaleB:'Race9_Mob2',
-  HumanFemaleC:'Race10_Mob1', HumanFemaleD:'Race10_Mob2',
-  HumanFemaleE:'Race11_Mob1',
+
 };
 const assetEntries = Object.entries(out.assets).map(([key, item]) => {
   const name = aliases[key] ?? key;
