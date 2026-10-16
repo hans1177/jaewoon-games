@@ -295,7 +295,7 @@ jobs:
           if [[ "$valid_runtime_exposure" != 'true' ]]; then
             git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/homepage-development-queue.json
             cp /tmp/homepage-runtime/game-catalog.json /tmp/homepage-game-catalog.json
-            node tools/company-homepage-platform-exposure-sync.mjs /tmp/homepage-development-queue.json /tmp/homepage-game-catalog.json homepage-platform-exposure.json
+            node tools/company-homepage-platform-exposure-sync.mjs /tmp/homepage-development-queue.json /tmp/homepage-game-catalog.json homepage-platform-exposure.json company-learning/platform-release-roadmap.json
             if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
               echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME_DERIVED'
             else
@@ -362,7 +362,7 @@ jobs:
           set -euo pipefail
           cp /tmp/homepage-runtime/game-catalog.json game-catalog.json
           cp /tmp/homepage-runtime/company-status.json company-status.json
-          node qa/game-catalog-normalization.test.mjs
+          COMPANY_VERIFIED_POLICY_PATH=company-learning/platform-release-roadmap.json node qa/game-catalog-normalization.test.mjs
           node -e "JSON.parse(require('fs').readFileSync('game-catalog.json','utf8'));JSON.parse(require('fs').readFileSync('company-status.json','utf8'))"
           echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
           echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
