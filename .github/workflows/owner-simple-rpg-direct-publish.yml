@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       download_ui_assets:
-        description: '검증된 CC0 UI 원본 ZIP 2종 다운로드 및 아티팩트 보관 (게임 미적용)'
+        description: 'CC0 외부 에셋 원본 ZIP 3종 다운로드 및 검증 보관 (게임 미적용)'
         type: boolean
         required: false
         default: false
@@ -38,7 +38,7 @@ env:
 
 jobs:
   download_ui_assets:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.download_ui_assets == true }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_ui_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-external-assets]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -51,6 +51,7 @@ jobs:
           mkdir -p /tmp/simple-rpg-ui
           curl -fL --retry 3 --retry-delay 2 --max-time 120 -o /tmp/simple-rpg-ui/kenney_fantasy-ui-borders.zip 'https://opengameart.org/sites/default/files/kenney_fantasy-ui-borders.zip'
           curl -fL --retry 3 --retry-delay 2 --max-time 120 -o /tmp/simple-rpg-ui/UIpack_RPG.zip 'https://opengameart.org/sites/default/files/UIpack_RPG.zip'
+          curl -fL --retry 3 --retry-delay 2 --max-time 120 -o /tmp/simple-rpg-ui/kenney_fantasy-town-kit_2.0.zip 'https://opengameart.org/sites/default/files/kenney_fantasy-town-kit_2.0.zip'
           for archive in /tmp/simple-rpg-ui/*.zip; do
             test "$(stat -c %s "$archive")" -gt 1000
             unzip -tq "$archive"
@@ -93,6 +94,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   publish:
+    if: ${{ !(github.event_name == 'push' && contains(github.event.head_commit.message, '[download-external-assets]')) && !(github.event_name == 'workflow_dispatch' && inputs.download_ui_assets == true) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
