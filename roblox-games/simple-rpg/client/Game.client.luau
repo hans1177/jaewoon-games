@@ -1999,7 +1999,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local walkingUntil = model:GetAttribute("MotionWalkingUntil")
           local serverWalking = typeof(walkingUntil) == "number"
             and workspace:GetServerTimeNow() < walkingUntil
-          realMoving = serverWalking or creatureMotionPhase - lastMovedAt < 0.32
+          realMoving = serverWalking or creatureMotionPhase - lastMovedAt < 0.20
           if realMoving then
             -- 서버의 보행 명령과 관측 속도를 동일한 보폭 시계에 반영한다.
             -- 패킷 사이에는 최근 측정 속도를 사용하되 정지 시 보행을 누적하지 않는다.
@@ -2036,7 +2036,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         }
         -- 서버는 Patrol/Flee에서도 몬스터를 실제로 움직인다. AIState 문자열만으로
         -- 걷기를 제한하면 이동 중에도 발이 고정되므로 실제 변위만 사용한다.
-        local moving = realMoving
+        local moving = realMoving and healthNow > 0
+          and model:GetAttribute("AIState") ~= "Stunned"
+          and model:GetAttribute("IsPreparingAttack") ~= true
         -- Studio에서 가져온 MeshPart 모델을 적 루트 위치에 붙여 이동 중에도 따라오게 한다.
         -- 기본 모형·서버 히트박스는 건드리지 않고 표시 모델만 클라이언트에서 이동.
         local importedVisual = model:FindFirstChild("ImportedCreatureVisual")
