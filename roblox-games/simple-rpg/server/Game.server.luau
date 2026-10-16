@@ -91,6 +91,8 @@ if not startGround then
     startGround.Color = Color3.fromRGB(111, 116, 115)
   else error("SIMPLE_RPG_START_MATERIAL_ASSET_MISSING") end
   startGround.Anchored = true
+  startGround.Transparency = 1
+  startGround.CastShadow = false
   startGround.CanCollide = true
   startGround:SetAttribute("WalkableGround", true)
   startGround.Parent = workspace
@@ -403,39 +405,45 @@ local civRegions = {
   Color3.fromRGB(133,153,124), Color3.fromRGB(117,169,148),
   Color3.fromRGB(75,136,100), Color3.fromRGB(182,210,222),
 }
-local function civPart(parent, name, size, frame, color, material, collide)
+-- Former Vibe-made 3D props are removed from rendering. Interaction and
+-- collision parts are invisible; only verified imported prefabs may be visible.
+local function civPart(parent, name, size, frame, _color, _material, collide)
   local part = Instance.new("Part")
   part.Name = name
   part.Size = size
   part.CFrame = frame
-  part.Color = color
-  part.Material = material or Enum.Material.SmoothPlastic
+  part.Transparency = 1
+  part.CastShadow = false
   part.Anchored = true
   part.CanCollide = collide ~= false
   part.Parent = parent
+  local library = Shared:FindFirstChild("CuratedWorldModels")
+  local key = name:match("^([^_]+)_") or name
+  local template = library and (library:FindFirstChild(name) or library:FindFirstChild(key))
+  if template and template:IsA("Model")
+    and template:GetAttribute("CuratedExternalAsset") == true
+    and (tonumber(template:GetAttribute("VerifiedRobloxAssetId")) or 0) > 0
+    and template:FindFirstChildWhichIsA("BasePart", true) then
+    local visual = template:Clone()
+    visual.Name = "VerifiedExternalVisual"
+    for _, child in ipairs(visual:GetDescendants()) do
+      if child:IsA("BasePart") then
+        child.Anchored = true
+        child.CanCollide = false
+        child.CanTouch = false
+        child.CanQuery = false
+      end
+    end
+    visual.Parent = parent
+    visual:PivotTo(frame)
+  end
   return part
 end
 -- Five-era environmental identity is derived from existing research progress;
 -- civilization ID never determines the player's era.
-local function civSign(parent, adornee, text, height)
-  local board = Instance.new("BillboardGui")
-  board.Name = "CivilizationSign"
-  board.Adornee = adornee
-  board.Size = UDim2.fromOffset(116, 28)
-  board.StudsOffsetWorldSpace = Vector3.new(0, height or 4, 0)
-  board.MaxDistance = 19
-  board.AlwaysOnTop = false
-  board.Parent = parent
-  local label = Instance.new("TextLabel")
-  label.BackgroundColor3 = Color3.fromRGB(26, 28, 30)
-  label.BackgroundTransparency = 0.25
-  label.Size = UDim2.fromScale(1, 1)
-  label.TextScaled = false
-  label.TextSize = 11
-  label.TextWrapped = true
-  label.TextColor3 = Color3.fromRGB(255, 232, 174)
-  label.Text = text
-  label.Parent = board
+-- Self-authored billboard scenery labels removed. UI/interaction data remains.
+local function civSign(_parent, _adornee, _text, _height)
+  return nil
 end
 local function civMessage(player, text)
   remote:FireClient(player, "CIV_MESSAGE", tostring(text))
@@ -1400,51 +1408,7 @@ local function civAttack(player, targetModel)
       additionalLoot = " / 다크 아이언 +1 / 철기 유레카!"
     end
     if race.PassiveType == "Victory" then player:SetAttribute("CivVictoryUntil", os.clock() + 10) end
-    -- Loot is granted above by the server; this short-lived marker is visual only.
-    local trophy = Instance.new("Part")
-    trophy.Name = "DefeatedEnemyLootEffect"
-    trophy.Shape = Enum.PartType.Ball
-    trophy.Size = Vector3.new(1.2, 1.2, 1.2)
-    trophy.Material = Enum.Material.Neon
-    trophy.Color = chosen.Special == "BronzeGolem" and Color3.fromRGB(83, 207, 229)
-      or chosen.Special == "IronKnight" and Color3.fromRGB(133, 88, 180)
-      or chosen.Special == "WildBoar" and Color3.fromRGB(195, 154, 91)
-      or Color3.fromRGB(232, 189, 92)
-    trophy.Anchored = true
-    trophy.CanCollide = false
-    trophy.CanTouch = false
-    trophy.CanQuery = false
-    trophy.CFrame = CFrame.new(chosen.Root.Position + Vector3.new(0, 3, 0))
-    trophy.Parent = civHub
-    local lootLight = Instance.new("PointLight")
-    lootLight.Color = trophy.Color
-    lootLight.Brightness = 1.3
-    lootLight.Range = 9
-    lootLight.Parent = trophy
-    local lootInfo = Instance.new("BillboardGui")
-    lootInfo.Name = "LootRewardNotice"
-    lootInfo.Adornee = trophy
-    lootInfo.Size = UDim2.fromOffset(168, 44)
-    lootInfo.StudsOffsetWorldSpace = Vector3.new(0, 1.8, 0)
-    lootInfo.MaxDistance = 24
-    lootInfo.AlwaysOnTop = false
-    lootInfo.Parent = trophy
-    local lootLabel = Instance.new("TextLabel")
-    lootLabel.Name = "RewardText"
-    lootLabel.Size = UDim2.fromScale(1, 1)
-    lootLabel.BackgroundColor3 = Color3.fromRGB(43, 34, 26)
-    lootLabel.BackgroundTransparency = 0.2
-    lootLabel.TextColor3 = Color3.fromRGB(255, 233, 181)
-    lootLabel.TextScaled = false
-    lootLabel.TextSize = 13
-    lootLabel.TextWrapped = true
-    lootLabel.Font = Enum.Font.GothamBold
-    lootLabel.Text = chosen.Special == "WildBoar" and "가죽 +1"
-      or chosen.Special == "BronzeGolem" and "코어 크리스탈 +1"
-      or chosen.Special == "IronKnight" and "다크 아이언 +1"
-      or "연구력 +8 / 은화 +3"
-    lootLabel.Parent = lootInfo
-    game:GetService("Debris"):AddItem(trophy, 2.5)
+    -- Server loot reward remains; generated glowing loot prop was deleted.
     civMessage(player, chosen.Model.Name .. " 처치! 연구력 +8 / 은화 +3" .. additionalLoot)
     chosen.TelegraphAt = 0
     chosen.TargetUserId = nil
