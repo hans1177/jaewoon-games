@@ -445,3 +445,12 @@ test('civilization monster alert and pack awareness preserve the existing server
   assert.match(server, /enemy\.Model:GetAttribute\("IsRaidBoss"\) ~= true/);
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
 });
+
+test('Conan-inspired alert and return-home poses are visual-only and preserve server damage', () => {
+  assert.match(client, /state == "Alert" and math\.rad\(-9\)/);
+  assert.match(client, /state == "ReturnHome" and math\.rad\(4\)/);
+  assert.match(client, /local alerting = model:GetAttribute\("AIState"\) == "Alert"/);
+  assert.match(client, /elseif returningHome then/);
+  assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
+  assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
+});
