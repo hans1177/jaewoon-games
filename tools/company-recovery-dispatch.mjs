@@ -421,6 +421,49 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     dispatched.push({id:rec.id,owner,touched});
     return{...rec,status:'dispatched',recoveryOwner:owner,dispatchEvidence:uniq([...(rec.dispatchEvidence||[]),'recovery-dispatched:'+owner.toLowerCase(),'recovery-dispatched-at:'+stamp]),updatedAt:stamp};
   });
+  // 시스템 유지보수 작업은 게임 Web 예약 경로가 아니라 기존 System AI 예약 경로에서 수행한다.
+  // 작업 ID를 유지하고 이미 이관되었거나 실행 중이면 중복 생성하지 않는다.
+  if(['all','system-ai'].includes(mode)){
+    const task=gameQueue.tasks.find(row=>clean(row.id)==='owner-policy-dependency-qa-repair-20261016');
+    if(task&&clean(task.status)==='queued'&&!systemAi.tasks.some(row=>clean(row.id)===clean(task.id))){
+      const responsibleFiles=uniq([
+        ...(task.responsibleFiles||[]),
+        'qa/vibe2-source-worker.test.mjs',
+        'tools/vibe2-queue-control.mjs'
+      ]);
+      systemAi.tasks.push({
+        id:clean(task.id),status:'queued',priority:'critical',department:'system',
+        taskType:'bottleneck-repair',gameId:'company',goal:clean(task.goal),
+        responsibleFiles,contextFiles:[
+          '.github/workflows/vibe2-continuous-core.yml',
+          '.github/workflows/company-system-ai-workers.yml',
+          'tools/company-system-ai-queue.mjs'
+        ],
+        failureStage:'VIBE2_RESERVE',
+        failureSignature:'RETIRED_POLICY_FIXTURE_ENOENT_AND_WRONG_QUEUE_ROUTE',
+        sourceMutationRequired:true,sourceMutationBaseline:clean(process.env.GITHUB_SHA)||null,
+        acceptanceCriteria:[
+          'retain security authority QA and save compatibility validation',
+          'do not restore retired policy files or add mandatory policy dependency',
+          'verify actual reservation and exact regression before reviewed PR merge',
+          'report missing Luau compiler as unverified'
+        ],
+        verificationCommands:[
+          'node --test qa/vibe2-source-worker.test.mjs',
+          'node --test qa/company-long-horizon-vision.test.mjs',
+          'node --test qa/company-game-seed-flow.test.mjs',
+          'node --test qa/company-system-ai-worker.test.mjs'
+        ],
+        dependencies:[],retries:0,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',
+        maxRetries:null,reservationId:null,reservedAt:null,
+        candidateBranch:null,pullRequestUrl:null,lastOutcome:null,blocker:null,
+        evidence:uniq([...(task.evidence||[]),'system-ai-existing-worker-route:issue-8147']),
+        supervisorReviewRequired:true,workerSelfAcceptance:false,learningCandidate:true,
+        createdAt:stamp,updatedAt:stamp
+      });
+      dispatched.push({id:clean(task.id),owner:'SYSTEM_AI',touched:1});
+    }
+  }
   return{recovery,gameQueue,systemAi,dispatched,gameRequeuedTaskIds:[...gameRequeuedTaskIds]};
 }
 
