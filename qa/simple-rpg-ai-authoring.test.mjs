@@ -475,3 +475,13 @@ test('wolf and boar have distinct noncolliding low-poly silhouettes', () => {
   assert.match(server, /if enemy:GetAttribute\("CreatureAssetSource"\) ~= "StudioImported" then/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
+
+test('same-civilization patrol grouping is bounded and excludes raid bosses', () => {
+  assert.match(server, /ally\.RaceID == enemy\.RaceID/);
+  assert.match(server, /ally\.PatrolDestination/);
+  assert.match(server, /groupDestination = ally\.PatrolDestination \+ offset/);
+  assert.match(server, /groupDestination\.X - enemy\.Home\.X/);
+  assert.match(server, /Magnitude <= 13 then/);
+  assert.match(server, /ally\.Model:GetAttribute\("IsRaidBoss"\) ~= true/);
+  assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
+});
