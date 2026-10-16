@@ -377,8 +377,22 @@ jobs:
           git add -- assets/external/simple-rpg/priority-v1/
           if ! git diff --cached --quiet; then
             git commit -m 'assets: preserve priority CC0 insects animals gear NPC world SFX archives'
-            git pull --rebase origin main
-            git push origin HEAD:main
+            pushed=0
+            for attempt in 1 2 3 4 5 6 7 8; do
+              git fetch origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then
+                pushed=1
+                echo "ASSET_COMMIT_PUSH_VERIFIED=YES attempt=$attempt"
+                break
+              fi
+              echo "ASSET_COMMIT_RETRY=$attempt"
+              sleep 3
+            done
+            if [ "$pushed" -ne 1 ]; then
+              echo "ASSET_COMMIT_PUSH_VERIFIED=NO"
+              exit 1
+            fi
           fi
       - name: Retain verified source inventory
         uses: actions/upload-artifact@v4
