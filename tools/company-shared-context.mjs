@@ -18,29 +18,40 @@ function readRetained(root, key, relative, authority, status) {
     contents = fs.readFileSync(path.join(root,relative),'utf8');
     data = JSON.parse(contents);
   } catch { return error(key.toUpperCase()+'_DOCUMENT_MISSING_OR_INVALID'); }
-  if ([...contents].length >= 1000) error(key.toUpperCase()+'_DOCUMENT_TOO_LARGE');
+  const fullDirective=key==='directive' && data?.authority==='MACHINE_EXECUTION_CONTRACT'
+    && data?.policyDocument==='company-learning/platform-release-roadmap.json'
+    && data?.documentationSynchronization?.centralPolicyPath===data.policyDocument;
+  if (!fullDirective && [...contents].length >= 1000) error(key.toUpperCase()+'_DOCUMENT_TOO_LARGE');
   if (!Number.isInteger(data.version) || data.version < 1 ||
-      data.status !== status || (authority && data.authority !== authority) ||
+      (!fullDirective && data.status !== status) ||
+      (authority && data.authority !== authority) ||
       (data.sourceOfTruth != null && data.sourceOfTruth !== relative)) {
     error(key.toUpperCase()+'_DOCUMENT_CONTRACT_INVALID');
   }
-  return {data, sha256:hash(contents)};
+  return {data, sha256:hash(contents),format:fullDirective?'FULL_MACHINE_DIRECTIVE':'MINIMAL_SUMMARY'};
 }
 export function validateSharedWorkerContext({root=process.cwd(),expectedDirectiveSha256,expectedLogSha256,expectedArchitectureSha256,expectedSecuritySha256}={}) {
   // This is a four-document integrity check only. The separate canonical
   // roadmap is allowed to exist; neither its presence nor this check grants approval.
   const roadmapPath=path.join(root,'company-learning/platform-release-roadmap.json');
   const roadmapPresent=fs.existsSync(roadmapPath);
-  const docs={}, hashes={};
+  const docs={}, hashes={}, formats={};
   for(const [key,relative,authority,status] of RETAINED_DOCUMENTS) {
     const item=readRetained(root,key,relative,authority,status);
     docs[key]=item.data;
     hashes[key+'Sha256']=item.sha256;
+    formats[key]=item.format;
   }
   const directive=docs.directive, log=docs.log, architecture=docs.architecture, security=docs.security;
-  if (directive.policyDocument !== null ||
+  if (formats.directive==='MINIMAL_SUMMARY' &&
+      (directive.policyDocument !== null ||
       directive.documentationSynchronization?.centralPolicyPath !== null ||
-      directive.execution?.centralPolicyMissing !== 'FAIL_CLOSED') error('OWNER_POLICY_REMOVAL_CONTRACT_INVALID');
+      directive.execution?.centralPolicyMissing !== 'FAIL_CLOSED')) {
+    error('OWNER_POLICY_REMOVAL_CONTRACT_INVALID');
+  }
+  if (formats.directive==='FULL_MACHINE_DIRECTIVE' && !roadmapPresent) {
+    error('CANONICAL_ROADMAP_REFERENCED_BUT_MISSING');
+  }
   if (log.requiredForAllWorkers !== false ||
       log.retained?.primaryLog !== 'GITHUB_ACTIONS_JOB_LOG' ||
       log.retained?.unknownOrMissingPolicy !== 'FAIL_CLOSED') error('LOG_DOCUMENT_CONTRACT_INVALID');
@@ -62,7 +73,8 @@ export function validateSharedWorkerContext({root=process.cwd(),expectedDirectiv
     pass:true, scope:'RETAINED_FOUR_DOCUMENT_INTEGRITY_ONLY',
     policyAuthorityVerified:false, sourceWriteAuthorized:false,
     releaseAuthorized:false, canonicalRoadmapPresent:roadmapPresent,
-    hashes, documentVersions:Object.fromEntries(RETAINED_DOCUMENTS.map(([key])=>[key,docs[key].version]))
+    hashes, documentFormats:formats,
+    documentVersions:Object.fromEntries(RETAINED_DOCUMENTS.map(([key])=>[key,docs[key].version]))
   };
 }
 
