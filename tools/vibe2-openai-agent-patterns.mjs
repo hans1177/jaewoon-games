@@ -42,7 +42,7 @@ export function selectVibeExistingAlgorithms({task={},responsibleFiles=[],qa=[]}
     ...(Array.isArray(qa)?qa:[])
   ].map(clean).filter(Boolean).join(' ');
   const chosen=VIBE_EXISTING_ALGORITHMS.filter(row=>row.baseline||row.cue?.test(words))
-    .slice(0,12).map(({id,module})=>Object.freeze({id,module}));
+    .map(({id,module})=>Object.freeze({id,module}));
   return Object.freeze({mode:'EXISTING_PIPELINE_ADVISORY_ONLY',recommendations:Object.freeze(chosen),
     executed:false,qaPassed:false,authorityExpanded:false,autoMerge:false});
 }
@@ -106,7 +106,7 @@ export function assertVibeAgentHandoffScope({plan={},task={},route='',target='',
     const known=new Map(VIBE_EXISTING_ALGORITHMS.map(row=>[row.id,row.module]));
     if(selection.mode!=='EXISTING_PIPELINE_ADVISORY_ONLY'||selection.executed!==false||selection.qaPassed!==false||
       selection.authorityExpanded!==false||selection.autoMerge!==false||
-      !Array.isArray(selection.recommendations)||selection.recommendations.length>12||
+      !Array.isArray(selection.recommendations)||selection.recommendations.length>VIBE_EXISTING_ALGORITHMS.length||
       selection.recommendations.some(row=>known.get(row?.id)!==row?.module))
       throw new Error('VIBE_HANDOFF_ALGORITHM_AUTHORITY_EXPANSION');
   }
