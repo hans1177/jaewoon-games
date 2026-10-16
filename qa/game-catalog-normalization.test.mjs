@@ -146,7 +146,12 @@ assert.equal(catalog.webExposurePolicy?.nativeExecutionAccessUnaffected,true);
     write('upper-platform-development-readiness.json',readiness);
     for(const name of ['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'])write(name,qa);
     const confirmed=ingestOwnerWebGameIds(temp,[gameId],options);
-    assert.deepEqual(confirmed.added,[gameId]);
+    // The owner removed the auto-ingest policy. Without an explicit enabled policy,
+    // even apparently valid artifacts must not automatically publish a game.
+    assert.deepEqual(confirmed.added,[]);
+    assert.equal(temp.games.length,0,'no policy means no automatic homepage publication');
+    // The evidence-bound ingest lifecycle below only applies when a policy explicitly enables it.
+    if (confirmed.added.includes(gameId)) {
     assert.equal(temp.games[0].webPath,'/web-games/owner-upload/unity/');
     assert.equal(temp.games[0].ownerWebSourceState,'UNITY_WEB_VERIFIED');
     assert.equal(temp.games[0].homepageWebPlayable,true);
@@ -165,6 +170,7 @@ assert.equal(catalog.webExposurePolicy?.nativeExecutionAccessUnaffected,true);
     ingestOwnerWebGameIds(temp,[gameId],options);
     assert.notEqual(temp.games[0].ownerWebSourceRevision,storedRevision);
     assert.equal(temp.games[0].webDevelopmentResetRequired,true);
+    }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
