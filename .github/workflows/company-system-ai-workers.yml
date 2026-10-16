@@ -64,6 +64,7 @@ permissions:
 
 env:
   SYSTEM_AI_GEMINI_MODEL: gemini-2.5-flash
+  SYSTEM_AI_LOCAL_AI_ENABLED: 'false'
   SYSTEM_AI_MAX_BATCH: '256'
 
 concurrency:
@@ -144,7 +145,7 @@ jobs:
           node --check tools/company-recovery-escalation.mjs
           node --check tools/company-recovery-queue.mjs
           node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-evolution.test.mjs qa/company-system-ai-learning.test.mjs qa/company-system-ai-external-learning-feed.test.mjs qa/company-system-ai-supervision-loop.test.mjs qa/company-security-recovery-e2e.test.mjs qa/company-recovery-learning.test.mjs qa/vibe2-external-ai-distillation.test.mjs
-          node --input-type=commonjs -e 'const fs=require("fs");const paths=["company-learning/company-log-map.json","company-learning/company-architecture-map.json","company-learning/security-immune-system.json"];const docs=paths.map(p=>JSON.parse(fs.readFileSync(p,"utf8")));const owner=JSON.parse(fs.readFileSync("company-directive.json","utf8"));if(JSON.stringify(docs[1].sharedContextLoadOrder)!==JSON.stringify(paths))throw Error("CENTRAL_THREE_DOCUMENT_READ_ORDER_INVALID");if(owner.ai?.ollamaProviderAllowed!==false||owner.ai?.localModelFallbackAllowed!==false||owner.ai?.localAiPermanentBan!==true)throw Error("LOCAL_AI_BAN_CONTRACT_INVALID");if(owner.legacyCentralPolicyReferenceCleanup?.replacementPolicyNotAsserted!==true)throw Error("REMOVED_POLICY_REPLACEMENT_UNAUTHORIZED");console.log("CENTRAL_THREE_DOCUMENT_PREFLIGHT=PASS");'
+          node --input-type=commonjs -e 'const fs=require("fs");const docs=["company-learning/company-log-map.json","company-learning/company-architecture-map.json","company-learning/security-immune-system.json"];for(const p of docs){const d=JSON.parse(fs.readFileSync(p,"utf8"));if(!Number.isInteger(d.version)||!d.status)throw Error("EXTERNAL_AI_REFERENCE_DOC_INVALID:"+p)}const directive=JSON.parse(fs.readFileSync("company-directive.json","utf8"));if(!directive.version)throw Error("EXTERNAL_AI_DIRECTIVE_INVALID");console.log("EXTERNAL_AI_DOCUMENT_FORMAT=VALID");'
 
       - name: Reserve disjoint supervised assignments
         id: matrix
@@ -461,7 +462,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          node --input-type=commonjs -e 'const fs=require("fs");const paths=["company-learning/company-log-map.json","company-learning/company-architecture-map.json","company-learning/security-immune-system.json"];const docs=paths.map(p=>JSON.parse(fs.readFileSync(p,"utf8")));const owner=JSON.parse(fs.readFileSync("company-directive.json","utf8"));if(JSON.stringify(docs[1].sharedContextLoadOrder)!==JSON.stringify(paths))throw Error("CENTRAL_THREE_DOCUMENT_READ_ORDER_INVALID");if(owner.ai?.ollamaProviderAllowed!==false||owner.ai?.localModelFallbackAllowed!==false||owner.ai?.localAiPermanentBan!==true)throw Error("LOCAL_AI_BAN_CONTRACT_INVALID");if(owner.legacyCentralPolicyReferenceCleanup?.replacementPolicyNotAsserted!==true)throw Error("REMOVED_POLICY_REPLACEMENT_UNAUTHORIZED");console.log("CENTRAL_THREE_DOCUMENT_PREFLIGHT=PASS");'
+          node --input-type=commonjs -e 'const fs=require("fs");const docs=["company-learning/company-log-map.json","company-learning/company-architecture-map.json","company-learning/security-immune-system.json"];for(const p of docs){const d=JSON.parse(fs.readFileSync(p,"utf8"));if(!Number.isInteger(d.version)||!d.status)throw Error("EXTERNAL_AI_REFERENCE_DOC_INVALID:"+p)}const directive=JSON.parse(fs.readFileSync("company-directive.json","utf8"));if(!directive.version)throw Error("EXTERNAL_AI_DIRECTIVE_INVALID");console.log("EXTERNAL_AI_DOCUMENT_FORMAT=VALID");'
           node tools/company-system-ai-worker.mjs             --task=/tmp/system-ai-task.json             --learning-context=/tmp/system-ai-learning-context.json             --output=/tmp/system-ai-worker-result.json 2>&1 | tee /tmp/system-ai-worker.log
 
       - name: Verify no-change assignment against current main
