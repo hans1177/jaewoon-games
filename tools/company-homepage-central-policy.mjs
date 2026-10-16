@@ -15,7 +15,7 @@ export function compileHomepageCentralPolicy(policy={}){
     errors.push('HOMEPAGE_EXECUTION_CONTRACT_MISSING');
   const supportedPlatforms=home?.supportedPlatforms;
   if(!Array.isArray(supportedPlatforms)||!supportedPlatforms.length||
-     supportedPlatforms.some(x=>!['ROBLOX','UNITY'].includes(x)))
+     supportedPlatforms.some(x=>typeof x!=='string'||!/^[A-Z][A-Z0-9_]*$/.test(x)))
     errors.push('HOMEPAGE_NATIVE_PLATFORM_SCOPE_INVALID');
   if(home?.runtimeAuthority!=='company-runtime'||home?.serverRuntimeBranch!=='company-runtime'||
      home?.publicSourceBranch!=='main'||home?.directUnsupervisedPublicWriteForbidden!==true)
