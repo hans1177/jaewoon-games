@@ -906,7 +906,7 @@ test('internal motion sampler rejects invisible-only changes, frozen output, sta
     write(file,JSON.stringify({edits:[{path:'init.luau',find:' return result',replace:' '+code+'\n return result'}]}));
     return file;
   });
-  const recovered=await generateCandidateWithRecovery({prompt:'Engine: roblox\n[SINGLE MOTION WORK UNIT BEGIN]\none source-bound walk\n[SINGLE MOTION WORK UNIT END]',target:'roblox',responsibleFiles:['init.luau'],sourceRootRelative:'assets/roblox/world-ghosts/motions/gwisin-bride',sourceRoot,allowFullRewrite:false,singleMotionWorkUnit:true,responseFiles,candidateValidator:candidate=>validateCandidateSyntax({candidate,sourceRoot,target:'roblox',luauCompiler:process.env.VIBE2_TEST_LUAU_COMPILER,internalMotionUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-gwisin-bride'}})});
+  const recovered=await generateCandidateWithRecovery({prompt:'Engine: roblox\n[SINGLE MOTION WORK UNIT BEGIN]\none source-bound walk\n[SINGLE MOTION WORK UNIT END]',target:'roblox',responsibleFiles:['init.luau'],sourceRootRelative:'assets/roblox/world-ghosts/motions/gwisin-bride',sourceRoot,allowFullRewrite:false,singleMotionWorkUnit:true,responseFiles,responseFile:responseFiles[1],candidateValidator:candidate=>validateCandidateSyntax({candidate,sourceRoot,target:'roblox',luauCompiler:process.env.VIBE2_TEST_LUAU_COMPILER,internalMotionUnit:{scope:'INTERNAL_ASSET_LIBRARY',objectId:'roblox-world-ghost-gwisin-bride'}})});
   assert.equal(recovered.generation.attempts,2);
   assert.equal(recovered.generation.completionMode,'JSON_SINGLE_MOTION');
   assert.equal(fs.readFileSync(path.join(sourceRoot,'init.luau'),'utf8'),source);
