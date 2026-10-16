@@ -232,7 +232,7 @@ PACKS = [
   ["09-buildings","blacksmith-original.zip","75729_Blacksmith1Upload_blend.zip","medieval-blacksmith","zip"],
   ["09-buildings","blacksmith-interior.blend","medievalblacksmith.blend","medieval-blacksmith-interior","blend"],
   ["10-npc-expanded","npc-character-pack20.zip","modelspack2.zip","character-pack2","zip"],
-  ["10-npc-expanded","animated-human-rigged.zip","Animated Human by @Quaternius.zip","animated-human-low-poly","zip"],
+  ["10-npc-expanded","animated-human-rigged.zip","Animated Human by @Quaternius_0.zip","animated-human-low-poly","zip"],
   ["10-npc-expanded","hero-base-rigged.zip","character-base-model-rigged.zip","character-base-model","zip"],
   ["11-unique-bosses","giant-mutant-animated.zip","giant_mutant.zip","giant-mutant","zip"],
   ["12-dungeon-interiors","dungeon-interior-kit.zip","Dungeon.zip","dungeon-assets","zip"]
