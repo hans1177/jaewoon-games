@@ -65,7 +65,7 @@ function writePolicy(root,version=196,overrides={}){
         architectureMap:'company-learning/company-architecture-map.json',
         securityPolicy:'company-learning/security-immune-system.json',
         validator:'tools/company-shared-context.mjs',
-        qa:'qa/company-shared-context.test.mjs',
+        qa:'qa/company-four-docs-fingerprint.test.mjs',
         loadOrder:[
           CANONICAL_VIBE_POLICY_PATH,
           'company-learning/company-log-map.json',
