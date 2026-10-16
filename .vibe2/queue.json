@@ -38,10 +38,14 @@
       "target": "web",
       "department": "qa",
       "type": "implementation",
-      "goal": "[OWNER_IMMEDIATE] 삭제된 중앙정책 파일의 복구·재생성·대체 정책 요구 없이 VIBE 실행 병목과 정책 의존성을 제거한다. qa/company-long-horizon-vision.test.mjs 및 qa/company-game-seed-flow.test.mjs의 ENOENT를 확인하고 정책 파일이 존재해야만 통과하는 낡은 검사를 실제 코드/런타임 계약과 증거 기반 검증으로 옮긴다. COMPANY_VERIFIED_POLICY_PATH 등 새로운 정책 의존성 추가 금지. 보안·권한, 테스트, 저장 데이터 호환성 검증 유지. 테스트 스킵·빈 객체 우회·가짜 통과·기존 정책 파일 복구 금지. 수정된 코드의 실제 테스트 결과를 기록하고 검토된 PR만 반영한다.",
+      "goal": "[OWNER_IMMEDIATE] VIBE 자율 병목 해결: 개발·빌드·실제 실행·안전검증에 필요하지 않은 외부 정책/문서/메타데이터 의존성을 저장소 전반에서 찾아 제거한다. 삭제된 roadmap, COMPANY_FLOW.md 복원 금지; 새 필수 정책변수 도입 금지. 먼저 실제 실패 로그·의존 관계로 필요 여부를 판별하고 QA, 워커, 예약, 학습 계약을 최신 유지되는 코드/실제 증거에 맞춰 최소 변경한다. 컴파일러·기본 라이브러리·보안·테스트·세이브 데이터처럼 개발에 필요한 의존성은 유지한다. 테스트 스킵·안전게이트 우회·가짜 성공 금지. 책임 파일 충돌 방지, 후보 브랜치, 실제 회귀검증, 검토된 PR만 반영. 예약 단계에서 이 작업이 무기한 대기하면 시스템 작업 큐로 라우팅하는 별도 수정이 필요함을 명시하고 해결한다.",
       "responsibleFiles": [
         "qa/company-long-horizon-vision.test.mjs",
-        "qa/company-game-seed-flow.test.mjs"
+        "qa/company-game-seed-flow.test.mjs",
+        "tools/vibe2-learning-pipeline-contract.mjs",
+        "tools/vibe2-system-evolution-verify.mjs",
+        "tools/company-system-ai-worker.mjs",
+        "tools/vibe2-incremental-qa.mjs"
       ],
       "dependencies": [],
       "priority": "owner-immediate",
@@ -59,7 +63,9 @@
         "main-pr:8139",
         "must-preserve-existing-verification",
         "owner-clarification:remove-policy-dependency-do-not-restore-20261016",
-        "bottleneck-issue:8147"
+        "bottleneck-issue:8147",
+        "owner-directive:autonomous-remove-all-nondevelopment-dependencies-20261016",
+        "preserve-required-development-and-safety-dependencies"
       ],
       "lastOutcome": null,
       "companyContext": {
