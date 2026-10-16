@@ -2,7 +2,14 @@
 // 역할: 설계 점수와 실제 작성 내용의 모순·누락을 같은 검증 경로에서 판정한다.
 // 임포트: 분류의 권위는 최신 중앙 표준표다.
 import fs from 'node:fs';
-const basicDesignMethod=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8')).continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod;
+function loadBasicDesignMethod(){
+  // Keep strict classification validation, but avoid breaking unrelated imports.
+  const file=new URL('../company-learning/platform-release-roadmap.json',import.meta.url);
+  if(!fs.existsSync(file))throw new Error('DESIGN_CLASSIFICATION_AUTHORITY_UNAVAILABLE: removed central policy; grammar validation requires a verified replacement');
+  const method=JSON.parse(fs.readFileSync(file,'utf8'))?.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod;
+  if(!method?.gameGenreClassification||!method?.materialClassification)throw new Error('DESIGN_CLASSIFICATION_AUTHORITY_INVALID');
+  return method;
+}
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
 const list=value=>Array.isArray(value)?value:[];
 const distinct=values=>[...new Set(values.map(clean).filter(Boolean))];
@@ -159,6 +166,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     const standard=Number(seed.designGrammarStandardVersion||grammar?.standardVersion||0)>=1;
     const creations=list(grammar?.dCreations);
     if(standard){
+      const basicDesignMethod=loadBasicDesignMethod();
       const gameRows=basicDesignMethod.gameGenreClassification;
       const materialRows=basicDesignMethod.materialClassification;
       const a=grammar?.a||{},b=grammar?.b||{};
