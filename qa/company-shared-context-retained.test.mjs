@@ -21,7 +21,7 @@ function temporary(){
   return root;
 }
 function check(root,fn){
-  try {return fn();}finally{fs.rmSync(root,{recursive:true,force:true});}
+  try {return fn(root);}finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 test('the four shrunk documents are syntactically valid, under 1000 chars and integrity only',()=>{
   const r=validateSharedWorkerContext({root:repoRoot});
