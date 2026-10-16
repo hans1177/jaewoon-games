@@ -23,7 +23,7 @@ export const NEURAL_EXPANSION_READINESS_CHECKS=Object.freeze({
     'qa/vibe2-neural-event-telemetry.test.mjs',
     'qa/vibe2-neural-fanin-root-cause.test.mjs'
   ],
-  sharedContextQaPass:['qa/company-shared-context.test.mjs','qa/company-central-policy-contract.test.mjs'],
+  sharedContextQaPass:['qa/company-four-docs-fingerprint.test.mjs','qa/company-shared-context-retained.test.mjs'],
   securityQaPass:['qa/company-security-steward.test.mjs','qa/company-security-recovery-e2e.test.mjs'],
   bottleneckQaPass:['qa/vibe2-system-architecture-execution.test.mjs','qa/vibe2-parallelism-telemetry.test.mjs']
 });
