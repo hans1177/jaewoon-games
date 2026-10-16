@@ -1,0 +1,66 @@
+name: All Games Development Sync
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'game-catalog.json'
+      - 'web-games/**'
+      - 'roblox-games/**'
+      - 'unity-games/**'
+      - 'godot-games/**'
+      - 'uefn-games/**'
+      - 'assets/external/**'
+      - 'tools/game-development-sync.mjs'
+      - 'qa/game-development-sync.test.mjs'
+      - '.github/workflows/game-development-sync.yml'
+  pull_request:
+    paths:
+      - 'game-catalog.json'
+      - 'web-games/**'
+      - 'roblox-games/**'
+      - 'unity-games/**'
+      - 'godot-games/**'
+      - 'uefn-games/**'
+      - 'assets/external/**'
+      - 'tools/game-development-sync.mjs'
+      - 'qa/game-development-sync.test.mjs'
+      - '.github/workflows/game-development-sync.yml'
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: 'Optional exact game ID; empty checks all games'
+        type: string
+        required: false
+permissions:
+  contents: read
+concurrency:
+  group: game-development-sync-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  discover-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify game-focused source and asset linking
+        run: |
+          node --check tools/game-development-sync.mjs
+          node --test qa/game-development-sync.test.mjs
+      - name: Generate all-game development connections
+        env:
+          GAME_ID: ${{ inputs.game_id || '' }}
+        run: |
+          set -euo pipefail
+          if [ -n "$GAME_ID" ]; then
+            node tools/game-development-sync.mjs --game-id="$GAME_ID" --strict --output=/tmp/game-development-connections.json
+          else
+            node tools/game-development-sync.mjs --output=/tmp/game-development-connections.json
+          fi
+      - name: Keep source/asset/QA state report
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-games-development-connections
+          path: /tmp/game-development-connections.json
+          retention-days: 7
