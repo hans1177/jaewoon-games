@@ -485,3 +485,9 @@ test('same-civilization patrol grouping is bounded and excludes raid bosses', ()
   assert.match(server, /ally\.Model:GetAttribute\("IsRaidBoss"\) ~= true/);
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
 });
+
+test('combat and return-home discard stale habitat patrol waypoints', () => {
+  assert.match(server, /enemy\.PatrolDestination = nil\s+enemy\.NextPatrolAt = now \+ 2\s+AdvancedAIEcosystem\.SetState\(enemy, "Combat"\)/);
+  assert.match(server, /enemy\.PatrolDestination = nil\s+enemy\.NextPatrolAt = now \+ 2\s+AdvancedAIEcosystem\.SetState\(enemy, "ReturnHome"\)/);
+  assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
+});
