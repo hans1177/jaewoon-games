@@ -85,7 +85,7 @@ test('semantic delta suppresses redundant policy word reviews without removing a
     '@@ -1 +1 @@',
     '+  "authority": "OWNER_DIRECTIVE_2026-10-17"',
     ''
-  ].join('\\n');
+  ].join('\n');
   const unchanged={authority:'OWNER_DIRECTIVE_2026-10-17',version:2,settings:{workerSelfAcceptance:false}};
   const snapshot={before:JSON.stringify(unchanged),after:JSON.stringify(unchanged)};
   const ignored=scanSecurityPatch({patch,changedFiles:[file],centralPolicySnapshots:{[file]:snapshot}});
@@ -98,7 +98,7 @@ test('semantic delta suppresses redundant policy word reviews without removing a
   assert.equal(actual.findings.filter(row=>row.rule==='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW').length,1,'one structural review per real sensitive delta');
   const missing=scanSecurityPatch({patch,changedFiles:[file]});
   assert.equal(missing.verdict,'REVIEW','missing trusted snapshot remains fail-closed');
-  const attack=scanSecurityPatch({patch:patch+'+git push origin HEAD:main\\n',changedFiles:[file],centralPolicySnapshots:{[file]:snapshot}});
+  const attack=scanSecurityPatch({patch:patch+'+git push origin HEAD:main\n',changedFiles:[file],centralPolicySnapshots:{[file]:snapshot}});
   assert.equal(attack.verdict,'QUARANTINE','removing redundant review cannot suppress malicious writes');
 });
 
