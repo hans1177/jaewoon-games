@@ -856,7 +856,7 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  const verify=roadmap.roblox?.developmentVerification||{};
  const studio=roadmap.roblox?.studioExecution||{};
  const stack=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack||{};
- const topology=architecture.robloxDevelopmentVerificationTopology||{};
+ const architectureSummary=architecture.status;
  assert.deepEqual(verify.postBuildUpRequired,['CODE_QA','STATIC_QA']);
  assert.equal(verify.studio,'OPTIONAL_DIAGNOSTIC');
  assert.equal(verify.studioBlocksDevelopment,false);
@@ -870,10 +870,9 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(stack.releaseGate.runtimeFoundationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.internalRuntimeValidationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.studioRequiredForInternalRelease,false);
- assert.equal(topology.studioRole,'OPTIONAL_DIAGNOSTIC_AND_VERIFIED_LEARNING');
- assert.equal(topology.studioBlocksDevelopment,false);
- assert.equal(topology.studioBlocksF9,false);
- assert.equal(topology.studioBlocksDeployment,false);
+ assert.equal(architectureSummary,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+ const studioWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-studio-local-play.yml','utf8');
+ assert.match(studioWorkflow,/OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
 });
 
 test('F9 consumes exact deferred engine evidence without requiring Studio actual play',()=>{

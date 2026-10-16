@@ -1,4 +1,6 @@
+// 파일명: qa/company-development-roblox-multiplayer-qa.test.mjs
 import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {validateRobloxMultiplayerSourceContract} from '../tools/company-development-roblox-runtime-foundation.mjs';
@@ -53,4 +55,30 @@ test('multiplayer code gate accepts roster-count broadcast without requiring a l
 test('multiplayer code gate still rejects missing client sync handler',()=>{
   const server='local participants=Players:GetPlayers()\nremote:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#participants})';
   assert.equal(validateRobloxMultiplayerSourceContract({serverSource:server,clientSource:'print("no sync handler")'}).passed,false);
+});
+
+test('common multiplayer worker has a verifiable static-only contract on free Workers',()=>{
+  const worker=fs.readFileSync('multiplayer/worker.js','utf8');
+  const client=fs.readFileSync('multiplayer/multiplayer-client.js','utf8');
+  for(const [name,source] of [['worker',worker],['client',client]]){
+    const result=spawnSync(process.execPath,['--input-type=module','--check'],{input:source,encoding:'utf8'});
+    assert.equal(result.status,0,name+': '+result.stderr);
+  }
+  const config=fs.readFileSync('multiplayer/wrangler.toml','utf8');
+  assert.match(config,/^main\s*=\s*"worker\.js"\s*$/m);
+  assert.match(config,/^workers_dev\s*=\s*true\s*$/m);
+  assert.match(config,/new_sqlite_classes\s*=\s*\["Matchmaker",\s*"GameRoom"\]/);
+  for(const binding of ['MATCHMAKER','ROOMS'])
+    assert.match(config,new RegExp('name\\s*=\\s*"'+binding+'"'));
+  assert.match(worker,/export class Matchmaker/);
+  assert.match(worker,/export class GameRoom/);
+  assert.match(worker,/new WebSocketPair\(\)/);
+  assert.match(worker,/this\.ctx\.acceptWebSocket\(server\)/);
+  assert.match(worker,/async webSocketMessage\(ws,\s*message\)/);
+  assert.match(worker,/async webSocketClose\(ws\)/);
+  assert.match(worker,/r\.mode === mode && r\.gameId === gameId/);
+  for(const route of ['/matchmake','/friend/create','/friend/join'])
+    assert.ok(worker.includes(route),'missing '+route);
+  // Static contract is not evidence of live session, deployment or two clients.
+  assert.doesNotMatch(config,/^\s*route\s*=/m);
 });

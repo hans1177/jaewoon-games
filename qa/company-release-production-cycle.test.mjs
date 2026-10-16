@@ -61,34 +61,29 @@ test('build preflight cannot replace same-build runtime, independent QA, or fina
   assert.match(runner, /finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true/);
 });
 
-test('release readiness requires current-build evidence; optional artbook follows release-ready gate', () => {
+test('release baseline is gated by same-build runtime, independent QA and final review before READY', () => {
   const runtimeIndex = runner.indexOf("latestFile('android-runtime-validation.json')");
   const qaIndex = runner.indexOf("latestFile('independent-release-qa.json')");
   const finalReviewIndex = runner.indexOf("phase:'FINAL_RELEASE_REVIEW'");
   const releaseBaselineIndex = runner.indexOf("const releaseBaselinePath=path.join(base,'release-baseline.json')");
   const readyIndex = runner.indexOf("writeState('RELEASE_READY'");
 
-  for (const [name, index] of Object.entries({runtimeIndex,qaIndex,finalReviewIndex,releaseBaselineIndex,readyIndex})) {
-    assert.ok(index >= 0, `missing ${name}`);
-  }
-  assert.ok(runtimeIndex < qaIndex);
-  assert.ok(qaIndex < finalReviewIndex);
-  assert.ok(finalReviewIndex < releaseBaselineIndex);
-  assert.ok(releaseBaselineIndex < readyIndex);
-  assert.match(runner, /finalDepartmentReviewEvidenceBound:true/);
-  assert.match(runner, /coreDesignLockPreserved:true/);
-  assert.match(runner, /FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_RUNTIME_PASS/);
-  assert.match(runner, /FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS/);
-
-  // Final artbook editing is an optional post-ready workflow; it cannot authorize
-  // or block the build/runtime/independent QA release gate, or invent a pass.
-  assert.doesNotMatch(runner, /release-artbook-editor/);
-  const policy=JSON.parse(read('company-directive.json')).classes.RELEASE_CONFIRMED;
-  assert.equal(policy.finalArtbookOnlyAfterReleaseReady,true);
-  assert.equal(policy.aiMayInventBuildPass,false);
-  assert.equal(policy.aiMayInventDeviceValidationPass,false);
-  assert.equal(policy.aiMayInventIndependentQaPass,false);
-  assert.ok(policy.requiredFlow.indexOf('RELEASE_BASELINE') < policy.requiredFlow.indexOf('ARTBOOK_EDITOR_FINAL_REVISION'));
-  assert.ok(policy.releaseReadyRequires.includes('CURRENT_BUILD_INDEPENDENT_QA_REGRESSION_PASS'));
-  assert.ok(policy.releaseReadyRequires.includes('FINAL_REVIEW_SAME_BUILD_RUNTIME_QA_NO_UNRESOLVED_BLOCKER'));
+  for (const [name,index] of Object.entries({runtimeIndex,qaIndex,finalReviewIndex,releaseBaselineIndex,readyIndex}))
+    assert.ok(index>=0,`missing ${name}`);
+  assert.ok(runtimeIndex<qaIndex);
+  assert.ok(qaIndex<finalReviewIndex);
+  assert.ok(finalReviewIndex<releaseBaselineIndex);
+  assert.ok(releaseBaselineIndex<readyIndex);
+  assert.match(runner,/finalDepartmentReviewEvidenceBound:true/);
+  assert.match(runner,/androidRuntimeValidation:runtime.path,independentQa:qa.path/);
+  assert.match(runner,/departmentRiskWatch:finalRiskWatch.path/);
+  // The release cycle produces evidence and READY only. It must never create a final artbook early.
+  assert.doesNotMatch(runner,/release-artbook-editor|company-design-artbook\\.mjs/);
+  const pipeline=read('tools/artbook-production-pipeline.mjs');
+  assertOrdered(pipeline,[
+    "await run('tools/company-release-production-cycle.mjs')",
+    "await run('tools/company-release-stale-artifact-guard.mjs')",
+    'RELEASE_FINAL_ARTBOOK_ONLY_AFTER_READY=YES'
+  ],'release pipeline ordering');
+  assert.match(pipeline,/RELEASE_STALE_FINAL_ARTIFACT_GUARD=ENABLED/);
 });

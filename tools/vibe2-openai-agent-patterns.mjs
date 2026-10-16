@@ -1,4 +1,5 @@
-// OpenAI Agents SDK / Swarm-inspired handoff and Simple Evals-inspired scoring.
+// 파일명: tools/vibe2-openai-agent-patterns.mjs
+// OpenAI Agents SDK handoff / Simple Evals-inspired deterministic verification.
 // Independent implementation, no vendored SDK source or paid OpenAI API dependency.
 // References: https://github.com/openai/openai-agents-js
 //             https://github.com/openai/simple-evals
@@ -56,12 +57,26 @@ export function planVibeAgentHandoff({task={},route='',target='',responsibleFile
   });
 }
 
+// Check the live source-worker assignment against the immutable planner handoff.
+// This preflight does not grant source-write or release authority.
+export function assertVibeAgentHandoffScope({plan={},task={},route='',target='',responsibleFiles=[]}={}){
+  const expected=planVibeAgentHandoff({task,route,target,responsibleFiles,qa:plan.gameQa||[]});
+  if(plan.handoffFingerprint!==expected.handoffFingerprint||plan.executionState!=='PLANNED_NOT_EXECUTED')
+    throw new Error('VIBE_HANDOFF_WORK_ORDER_DRIFT');
+  if(plan.automaticSourceWrite!==false||plan.automaticPublication!==false)
+    throw new Error('VIBE_HANDOFF_AUTHORITY_EXPANSION');
+  return Object.freeze({pass:true,fingerprint:expected.handoffFingerprint,authorityExpanded:false});
+}
+
 // Simple deterministic evaluator; optional independent QA evidence, never an AI self-grade.
 export function evaluateVibeAgentHandoff(plan={},evidence={}){
   const failures=[];
   if(!plan?.handoffFingerprint)failures.push('HANDOFF_PLAN_MISSING');
   if(clean(evidence.taskId)!==clean(plan.taskId))failures.push('HANDOFF_TASK_MISMATCH');
   const observed=uniq(evidence.changedFiles);
+  if(plan.evalContract?.sourceRevisionRequired && !observed.length)failures.push('HANDOFF_CHANGED_FILES_MISSING');
+  if(clean(evidence.handoffFingerprint)&&clean(evidence.handoffFingerprint)!==clean(plan.handoffFingerprint))
+    failures.push('HANDOFF_FINGERPRINT_MISMATCH');
   if(observed.some(p=>!plan.responsibleFiles?.includes(p)))failures.push('HANDOFF_OUT_OF_SCOPE_FILE');
   if(plan.evalContract?.sourceRevisionRequired && !/^[a-f0-9]{40}$/i.test(clean(evidence.sourceRevision)))
     failures.push('HANDOFF_SOURCE_REVISION_MISSING');
@@ -69,9 +84,13 @@ export function evaluateVibeAgentHandoff(plan={},evidence={}){
   if(required.length && !(Array.isArray(evidence.qaEvidence)&&
     required.every(name=>evidence.qaEvidence.some(x=>x?.id===name&&x?.pass===true&&x?.independent===true))))
     failures.push('HANDOFF_GAME_QA_EVIDENCE_MISSING');
-  if(evidence.publicationClaimed===true && !(evidence.publishEvidence?.verified===true&&
-    /^[a-f0-9]{40}$/i.test(clean(evidence.publishEvidence?.sourceRevision))))
-    failures.push('HANDOFF_PUBLICATION_PROOF_MISSING');
+  if(evidence.publicationClaimed===true){
+    if(!(evidence.publishEvidence?.verified===true&&
+      /^[a-f0-9]{40}$/i.test(clean(evidence.publishEvidence?.sourceRevision))))
+      failures.push('HANDOFF_PUBLICATION_PROOF_MISSING');
+    else if(clean(evidence.publishEvidence.sourceRevision)!==clean(evidence.sourceRevision))
+      failures.push('HANDOFF_PUBLICATION_REVISION_MISMATCH');
+  }
   return Object.freeze({pass:failures.length===0,errors:Object.freeze(failures),review:'DETERMINISTIC_GAME_EVIDENCE_ONLY'});
 }
 export function vibeAgentHandoffGuidance(plan={}){

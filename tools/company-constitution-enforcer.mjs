@@ -69,13 +69,17 @@ export function enforceConstitution({policy,root=ROOT,phase='runtime'}={}){
     try {p=JSON.parse(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),'utf8'));}
     catch {errors.push('CANONICAL_POLICY_UNAVAILABLE_OR_INVALID');p={};}
   }
+  if(!p||typeof p!=='object'||Array.isArray(p)){
+    errors.push('CANONICAL_POLICY_UNAVAILABLE_OR_INVALID');
+    p={};
+  }
   const constitution=compileOwnerCanonicalConstitution(p);
   must(errors,constitution.valid===true,'CANONICAL_CONSTITUTION_INVALID:'+(constitution.errors||[]).join(','));
   must(errors,constitution.rules.length>0,'CANONICAL_RULE_SET_EMPTY');
   must(errors,new Set(constitution.orderedRuleIds).size===constitution.orderedRuleIds.length,'CANONICAL_RULE_ORDER_DUPLICATE');
   must(errors,constitution.rules.every(r=>r.id&&r.fingerprint&&r.contract?.enabled===true),'CANONICAL_RULE_FINGERPRINT_OR_ENABLEMENT');
 
-  const owner=p?.ownerCanonicalRules||{};
+  const owner=p.ownerCanonicalRules||{};
   const binding=owner.constitutionalBinding||{};
   must(errors,binding.executableEnforcer==='tools/company-constitution-enforcer.mjs','CONSTITUTION_ENFORCER_BINDING');
   must(errors,binding.declarativeRuleEnforcementRequired===true,'CONSTITUTION_DECLARATIVE_ENFORCEMENT_REQUIRED');

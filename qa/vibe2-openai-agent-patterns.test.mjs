@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {planVibeAgentHandoff,evaluateVibeAgentHandoff,vibeAgentHandoffGuidance,
+import {planVibeAgentHandoff,evaluateVibeAgentHandoff,assertVibeAgentHandoffScope,vibeAgentHandoffGuidance,
   VIBE_OPENAI_PATTERN_REFERENCES} from '../tools/vibe2-openai-agent-patterns.mjs';
 
 const sha='a'.repeat(40);
@@ -75,6 +75,32 @@ test('Unity editor and analysis/practice routes do not force local AI or OpenAI 
   assert.equal(read.stages[1].id,'ANALYZE');
   assert.equal(read.stages[1].provider,'GEMINI_API');
   assert.equal(read.evalContract.sourceRevisionRequired,false);
+});
+test('source-worker assignment enforces exact task, route, files and authority before writing',()=>{
+  const p=plan();
+  const trusted={task,route:'text-source-worker',target:'roblox',responsibleFiles:[file]};
+  assert.equal(assertVibeAgentHandoffScope({plan:p,...trusted}).pass,true);
+  assert.throws(()=>assertVibeAgentHandoffScope({plan:p,...trusted,responsibleFiles:['roblox-games/other/server/Game.server.luau']}),/WORK_ORDER_DRIFT/);
+  assert.throws(()=>assertVibeAgentHandoffScope({plan:p,...trusted,route:'analysis-only'}),/WORK_ORDER_DRIFT/);
+  assert.throws(()=>assertVibeAgentHandoffScope({plan:{...p,automaticPublication:true},...trusted}),/AUTHORITY_EXPANSION/);
+});
+test('missing source delta and mismatched published revision cannot pass an AI self-grade',()=>{
+  const p=plan();
+  const noEdit=evaluateVibeAgentHandoff(p,{taskId:task.id,sourceRevision:sha,
+    qaEvidence:[{id:'combat-regression',pass:true,independent:true},{id:'server-save',pass:true,independent:true}]});
+  assert.ok(noEdit.errors.includes('HANDOFF_CHANGED_FILES_MISSING'));
+  const misbound=evaluateVibeAgentHandoff(p,{taskId:task.id,sourceRevision:sha,changedFiles:[file],handoffFingerprint:'invalid',
+    qaEvidence:[{id:'combat-regression',pass:true,independent:true},{id:'server-save',pass:true,independent:true}],
+    publicationClaimed:true,publishEvidence:{verified:true,sourceRevision:'b'.repeat(40)}});
+  assert.ok(misbound.errors.includes('HANDOFF_FINGERPRINT_MISMATCH'));
+  assert.ok(misbound.errors.includes('HANDOFF_PUBLICATION_REVISION_MISMATCH'));
+});
+test('source worker carries the preflight fingerprint into the existing candidate manifest',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/assertVibeAgentHandoffScope\(/);
+  assert.match(source,/agentHandoffPreflight,/);
+  assert.match(source,/agentHandoff:order\?\.agentHandoff\|\|null/);
+  assert.match(source,/GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK/);
 });
 test('real Vibe continuous runner imports and injects handoff into the work order and goal',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');

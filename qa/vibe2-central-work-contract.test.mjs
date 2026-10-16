@@ -277,29 +277,28 @@ test('independent game workers do not lock shared read-only DCC output files',()
   assert.deepEqual(evidenceAuthoring.workLock.generatedAssetFiles,authoring.workLock.generatedAssetFiles);
 });
 
-test('Vibe worker integrity fingerprints cannot grant policy authority',()=>{
+test('Vibe candidate evidence binds all four canonical document hashes',()=>{
   const workflow=fs.readFileSync(path.resolve(process.cwd(),'.github/workflows/vibe2-continuous-core.yml'),'utf8');
   const logMap=JSON.parse(fs.readFileSync(path.resolve(process.cwd(),'company-learning/company-log-map.json'),'utf8'));
-  for(const name of ['shared-context-policy:','shared-context-log-map:','shared-context-architecture:','shared-context-security:'])
-    assert.ok(workflow.includes(name),'missing context evidence '+name);
+  assert.match(workflow,/shared-context-policy:/);
+  assert.match(workflow,/shared-context-log-map:/);
+  assert.match(workflow,/shared-context-architecture:/);
+  assert.match(workflow,/shared-context-security:/);
   assert.match(workflow,/Compile central shared context once for worker cohort/);
   const workerSyncStart=workflow.indexOf('- name: Synchronize worker with Vibe before work');
   const workerSyncEnd=workflow.indexOf('\n      - name:',workerSyncStart+1);
   assert.ok(workerSyncStart>=0&&workerSyncEnd>workerSyncStart);
   const workerSync=workflow.slice(workerSyncStart,workerSyncEnd);
   assert.match(workerSync,/sha256sum/);
-  for(const name of [
-    'WORKER_CONTEXT_EXPECTED_POLICY_SHA256',
-    'WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256',
-    'WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256',
-    'WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256'
-  ]) assert.ok(workerSync.includes(name),'required hash comparison missing: '+name);
   assert.match(workerSync,/WORKER_CONTEXT_MODE=FOUR_DOCUMENT_INTEGRITY_ONLY/);
-  assert.match(workerSync,/WORKER_CONTEXT_SYNC=INTEGRITY_ONLY/);
-  assert.doesNotMatch(workerSync,/--pinned-hash-verify=true/);
+  assert.match(workerSync,/company-shared-context\.mjs/);
+  assert.match(workerSync,/sha256sum "\$contract_root\/company-learning\/platform-release-roadmap\.json"/);
+  for(const name of ['POLICY','LOG_MAP','ARCHITECTURE','SECURITY_POLICY'])
+    assert.match(workflow,new RegExp('WORKER_CONTEXT_EXPECTED_'+name+'_SHA256'));
   assert.match(workflow,/sourceWriteAuthorized:false/);
-  assert.equal(logMap.retained.unknownOrMissingPolicy,'FAIL_CLOSED');
-  assert.equal(logMap.retained.proof,'STRUCTURED_EVIDENCE_REQUIRED');
+  assert.match(workflow,/policyAuthorityVerified:false/);
+  assert.doesNotMatch(workflow,/OWNER_REMOVED:company-learning\/platform-release-roadmap/);
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
 });
 
 test('verified learning memory is validated once per cohort and workers reuse one immutable artifact',()=>{

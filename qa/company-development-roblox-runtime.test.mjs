@@ -9,6 +9,12 @@ import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-cont
 import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
 import {buildTransformativeRecombination,recombinationDesignAxes,transformativeRecipeCompatibility} from '../tools/vibe3-transformative-recombination.mjs';
 
+// Keep native config source bound to the actual canonical policy during isolated QA.
+const previousVerifiedPolicySource=process.env.COMPANY_VERIFIED_POLICY_PATH;
+test.before(()=>{process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';});
+test.after(()=>{if(previousVerifiedPolicySource===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicySource;});
+
 const VERIFIED_ROBLOX_LEARNING_REUSE=Object.freeze({
   id:'external-black-box-runtime-test',
   project:'verified-runtime-reference',
