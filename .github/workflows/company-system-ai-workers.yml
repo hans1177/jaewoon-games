@@ -68,8 +68,8 @@ env:
   SYSTEM_AI_MAX_BATCH: '256'
 
 concurrency:
-  group: company-system-ai-${{ github.event_name == 'push' && 'push-qa' || github.run_id }}
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  group: company-system-ai-${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '[external-ai-dispatch]') && 'push-qa' || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '[external-ai-dispatch]') }}
 
 jobs:
   runner-pressure-bootstrap:
@@ -115,7 +115,7 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 10
     concurrency:
-      group: ${{ github.event_name == 'push' && 'company-system-ai-push-qa-reserve' || 'company-system-ai-reserve-control' }}
+      group: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '[external-ai-dispatch]') && 'company-system-ai-push-qa-reserve' || 'company-system-ai-reserve-control' }}
       cancel-in-progress: ${{ github.event_name == 'push' }}
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
@@ -156,7 +156,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Explicit user-directed push marker wakes a single existing external Gemini task.
+          # Ordinary source pushes remain QA-only and cannot consume provider quota.
+          explicit_external_dispatch=NO
           if [ "${GITHUB_EVENT_NAME}" = 'push' ]; then
+            commit_message="$(jq -r '.head_commit.message // ""' "$GITHUB_EVENT_PATH")"
+            if [[ "$commit_message" == *'[external-ai-dispatch]'* ]]; then
+              explicit_external_dispatch=YES
+              SYSTEM_AI_MAX_BATCH=1
+              echo 'COMPANY_SYSTEM_AI_EXTERNAL_REQUEST=YES'
+              echo 'COMPANY_SYSTEM_AI_REQUESTED_MAX_BATCH=1'
+            fi
+          fi
+          if [ "${GITHUB_EVENT_NAME}" = 'push' ] && [ "$explicit_external_dispatch" != 'YES' ]; then
             ROBLOX_INGRESS_FIX_SHA='99baeefb84a1846af862d71a515aeb8229ef9506'
             gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" --jq '.workflow_runs[] | select(.status=="queued" or .status=="pending" or .status=="requested" or .status=="waiting") | [.id,.head_sha] | @tsv' > /tmp/system-ai-roblox-runtime-active.tsv
             stale_cancelled=0
