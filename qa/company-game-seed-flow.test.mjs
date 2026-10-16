@@ -415,16 +415,14 @@ test('obsolete free-concept and direct prototype entrypoints remain removed',()=
   assert.equal(fs.existsSync('.github/workflows/company-game-seed-bootstrap.yml'),true);
 });
 
-test('design authoring uses native Vibe functions without model transport or department review lanes',()=>{
+test('game design provider follows current owner directive without implicit local fallback',()=>{
   const roles=['planning','graphics','development','qa','audio'];
-  assert.deepEqual(roles.map(role=>directive.ai.departmentLeadModels[role]),Array(5).fill('llama3.2:1b'));
-  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['VIBE_LOCAL_OLLAMA']);
-  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,false);
-  assert.equal(directive.ai.gameDesigner.geminiModel,null);
-  assert.deepEqual(directive.ai.gameDesigner.geminiFallbackModels,[]);
-  assert.doesNotMatch(seedDesignWorkflow,/COMPANY_EXTERNAL_AI_ENABLED:|COMPANY_GEMINI_|secrets\.GEMINI_API_KEY/);
-  assert.doesNotMatch(design,/externalAiEnabled|callExternalDesignerModel|generativelanguage|process\.env\.GEMINI_API_KEY/);
-  assert.match(design,/GAME_DESIGNER_PROVIDER=VIBE_NATIVE_FUNCTION/);
-  assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
-  assert.match(seedDesignWorkflow,/DESIGN_AI_REVIEW_LANES=NONE/);
+  assert.deepEqual(roles.map(role=>directive.ai.departmentLeadModels[role]),Array(5).fill('gemini-3.8-flash'));
+  assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_EXTERNAL_ONLY');
+  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['GEMINI_API']);
+  assert.equal(directive.ai.gameDesigner.externalProvidersAllowed,true);
+  assert.equal(directive.ai.gameDesigner.cloudProviderRequiresConfiguredSecret,true);
+  assert.equal(directive.ai.gameDesigner.cloudFailureFallsBackToLocal,false);
+  assert.deepEqual(directive.ai.gameDesigner.localFallbackModels,[]);
+  assert.equal(directive.ai.gameDesigner.autoBanOnRepeatedFailure,true);
 });
