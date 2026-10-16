@@ -5010,3 +5010,48 @@ test('GLB adoption without applied master hash remains provenance required, not 
   assert.ok(source.includes("status==='SOURCE_BINDING_PROVENANCE_REQUIRED'"));
   assert.ok(source.includes('glbAppliedVersionProvenanceRequiredCount:'));
 });
+
+// [공용 외부 원본] 다운로드한 CC0 모델은 게임 요구 역할에 자동 연결하고, 네이티브 변환/QA는 분리한다.
+test('downloaded shared CC0 originals auto-connect to game sourcing without bypassing native QA',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'shared-source-'));
+  try{
+    const sourcePath='assets/external/simple-rpg/priority-v1/medieval-house-a.zip';
+    const full=path.join(root,sourcePath);
+    fs.mkdirSync(path.dirname(full),{recursive:true});
+    const sourceBytes=Buffer.concat([Buffer.from('PK\\x03\\x04'),Buffer.alloc(700,17)]);
+    fs.writeFileSync(full,sourceBytes);
+    const sourceHash=createHash('sha256').update(sourceBytes).digest('hex');
+    const archive={file:'medieval-house-a.zip',sourcePath,role:'04-npc-buildings',
+      sha256:sourceHash,bytes:sourceBytes.length,
+      sourceUrl:'https://opengameart.org/sites/default/files/medieval-house.zip',
+      licenseEvidenceUrl:'https://opengameart.org/content/medieval-house',
+      licenseDeclared:'CC0-1.0',sourceOnly:true,gameApplied:false};
+    const params={gameId:'village-game',target:'roblox',request:'house building',
+      requirements:[{family:'BUILDING',role:'house'}],repoRoot:root,
+      registry:{assets:[],externalSources:[]}};
+    const result=buildAssetSupplyDecisionSummary({...params,sharedOriginalArchives:[archive]});
+    const chosen=result.nextActions.find(row=>row.family==='BUILDING');
+    assert.equal(chosen.action,'ACQUIRE_ADAPT');
+    assert.equal(chosen.externalAcquisition.acquisitionState,'ACQUIRED_ORIGINAL_FILES');
+    assert.equal(chosen.externalAcquisition.downloaded,true);
+    assert.equal(chosen.externalAcquisition.downloadUrl,null);
+    assert.equal(chosen.externalAcquisition.localSourcePath,sourcePath);
+    assert.equal(chosen.externalAcquisition.sourceHash,sourceHash);
+    assert.equal(chosen.assetization.registerOnlyAfterActualBinaryAndLicenseAndStaticQa,true);
+    assert.equal(chosen.assetization.gameSourceWorkerMayEditCentralRegistry,false);
+    assert.equal(result.productionVerificationGranted,false);
+    assert.equal(result.runtimeVerificationGranted,false);
+
+    const noRole=buildAssetSupplyDecisionSummary({...params,requirements:[{family:'BUILDING',role:'castle'}],sharedOriginalArchives:[archive]});
+    assert.notEqual(noRole.nextActions.find(row=>row.family==='BUILDING').action,'ACQUIRE_ADAPT','wrong object identity cannot bind by broad family alone');
+    for(const blocked of [
+      {...archive,licenseDeclared:'CC-BY-NC'},
+      {...archive,sourcePath:'assets/external/simple-rpg/../../evil.zip'},
+      {...archive,bytes:sourceBytes.length+1},
+      {...archive,sha256:'not-a-real-hash'}
+    ]){
+      const plan=buildAssetSupplyDecisionSummary({...params,sharedOriginalArchives:[blocked]});
+      assert.notEqual(plan.nextActions.find(row=>row.family==='BUILDING').action,'ACQUIRE_ADAPT');
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
