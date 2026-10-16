@@ -97,7 +97,7 @@ test('server-owned civilization remotes use the existing save, guard, dodge and 
   assert.ok(server.includes('civNowReady(player, "Research", 0.3)'));
   assert.ok(server.includes('civIncrease(player, "Civ" .. resource, -math.ceil(cost * factor))'));
   assert.ok(server.includes('setNumber(player, "CivTech", nextID)'));
-  assert.ok(server.includes('updateTechEvent:FireClient(player, nextID, tech.Era)'));
+  assert.ok(server.includes('updateTechEvent:FireClient(player, nextID, tech.Era, factor < 1)'));
   assert.ok(server.includes('parryEvent.OnServerEvent:Connect(function(player)'));
   assert.ok(server.includes('dodgeEvent.OnServerEvent:Connect(function(player)'));
   assert.ok(server.includes('civGuard(player)'));
