@@ -560,7 +560,8 @@ jobs:
           test -n "${GEMINI_API_KEY:-}"
           node --test --test-name-pattern="live Vibe coding" qa/vibe2-learning-practice-worker.test.mjs
       - name: Preserve coding performance evidence
-        if: always() && needs.scope.outputs.coding_benchmark == 'YES'
+        # Optional benchmark evidence exists only when the opted-in external API job ran.
+        if: always() && needs.scope.outputs.coding_benchmark == 'YES' && vars.VIBE2_ENABLE_LIVE_GEMINI_BENCHMARK == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: vibe2-coding-repair-benchmark
