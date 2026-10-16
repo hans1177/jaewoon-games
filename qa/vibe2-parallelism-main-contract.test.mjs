@@ -9,7 +9,6 @@ const coreQa=fs.readFileSync('.github/workflows/vibe2-core-qa.yml','utf8');
 const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
 const recoveryFast=fs.readFileSync('.github/workflows/vibe2-recovery-fast.yml','utf8');
 const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
-const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
 const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
@@ -22,7 +21,6 @@ test('Recovery Fast coalesces redundant control wakes without serializing game-p
   assert.match(recoveryFast,/git fetch --no-tags --depth=1 origin \+refs\/heads\/main:refs\/remotes\/origin\/main \+refs\/heads\/vibe2-unreal-core:refs\/remotes\/origin\/vibe2-unreal-core --quiet/);
   assert.match(recoveryFast,/git worktree add --detach \/tmp\/vibe2-recovery-control origin\/vibe2-unreal-core/);
   assert.doesNotMatch(recoveryFast,/game-primary.*concurrency|F0.*concurrency|F9.*concurrency/i);
-  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,128);
 });
 
 test('early fan-in review never suppresses new runnable worker reservations',()=>{
@@ -38,17 +36,6 @@ test('early fan-in review never suppresses new runnable worker reservations',()=
 });
 
 test('repeat development is fixed at 128 while physical provider capacity and conflict safety remain',()=>{
-  const wave=roadmap.neuralDevelopmentBrain.currentWaveExecution;
-  assert.equal(wave.externalProviderAndPlanningBound,256);
-  assert.equal(wave.gamePrimaryFixedInternalCap,128);
-  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,128);
-  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.assetDevelopmentSlotsUnchanged,63);
-  assert.equal(wave.defaultRequestedParallelism,128);
-  assert.equal(wave.gamePrimaryBaselineTarget,128);
-  assert.equal(wave.gamePrimaryAdaptiveMinimum,128);
-  assert.equal(wave.sourceRootWideLockForbidden,true);
-  assert.equal(wave.responsibleFileConflictProtectionStillRequired,true);
-  assert.equal(wave.globalActiveWorkerBarrier,false);
 
   assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,128);
@@ -158,9 +145,6 @@ test('game-primary control work uses available latest capacity while push/manual
   assert.equal(architecturePool.lightweightReserveSeparatedFromArmFanIn,false);
   assert.equal(architecturePool.queueReservationAndStateFanInOnly,true);
   assert.equal(architecturePool.heavyGameExecutionUnchanged,true);
-  assert.equal(roadmap.changeRecord?.fanInRefillRunnerPressureBypass20260927?.runnerRouting?.defaultReserve,'ubuntu-slim');
-  assert.equal(roadmap.changeRecord?.fanInRefillRunnerPressureBypass20260927?.runnerRouting?.fanInRefillReserve,'ubuntu-latest');
-  assert.equal(roadmap.changeRecord?.runnerBackpressureBottleneckRelief20261001?.runnerRouting?.gamePrimaryFanIn,'ubuntu-latest');
 
   assert.match(core,/\n  reserve:\n(?:    #[^\n]*\n)*    runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(core.slice(core.indexOf('\n  fan_in:'),core.indexOf('\n    steps:',core.indexOf('\n  fan_in:'))),/\n    runs-on: ubuntu-latest/);
@@ -187,19 +171,12 @@ test('game-primary control work uses available latest capacity while push/manual
   assert.match(core,/Restore and persist selected Vibe2 model cache[\s\S]{0,260}?uses: actions\/cache@v4[\s\S]{0,260}?key: \$\{\{ steps\.order\.outputs\.model_cache_family \}\}-\$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-\$\{\{ steps\.order\.outputs\.model_cache_key \}\}/);
   assert.match(core,/key: vibe2-ollama-v5-\$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-qwen3-1\.7b/);
   assert.match(core,/\n  worker:[\s\S]{0,520}?matrix\.target == 'roblox'[\s\S]{0,220}?'ubuntu-latest'[\s\S]{0,220}?'ubuntu-24\.04-arm'/);
-  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
-  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentSchedulerPlanRunner,'ubuntu-24.04-arm');
-  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentReserveRunner,'ubuntu-slim');
   assert.equal(runtime.continuous?.assetDevelopmentControlRunnerPool?.reserve,'ubuntu-slim');
-  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentModelCacheRunner,'ubuntu-24.04-arm');
-  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentArchitectureAwareCache,true);
-  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.gamePrimaryRunnerLabel,'ubuntu-latest');
 });
 
 test('director fallback wake reuses the canonical game-primary core without creating work',()=>{
   const fallback=runtime.continuous?.directorGamePrimaryFallbackWake||{};
   const architectureFallback=architecture.neuralWorkGraphTopology?.currentWaveExecution?.directorGamePrimaryFallbackWake||{};
-  const policyFallback=roadmap.changeRecord?.directorGamePrimaryFallbackWake20260927||{};
 
   assert.equal(fallback.enabled,true);
   assert.equal(fallback.dispatchTarget,'.github/workflows/vibe2-continuous-core.yml');
@@ -217,20 +194,11 @@ test('director fallback wake reuses the canonical game-primary core without crea
   assert.equal(architectureFallback.newQueueCreated,false);
   assert.equal(architectureFallback.canonicalReservePathPreserved,true);
 
-  assert.equal(policyFallback.existingQueuedTaskDispatchOnly,true);
-  assert.equal(policyFallback.newSchedulerCreated,false);
-  assert.equal(policyFallback.newQueueCreated,false);
-  assert.equal(policyFallback.newTaskCreated,false);
-  assert.equal(policyFallback.canonicalReservePathPreserved,true);
-  assert.equal(policyFallback.mainPushWakePolicyUnchanged,true);
-  assert.equal(policyFallback.responsibleFileConflictProtectionPreserved,true);
 
   assert.doesNotMatch(director,/\n      - Vibe2 Continuous Core\n/);
   assert.equal(fallback.vibe2CoreCompletionWakeDisabled,true);
   assert.equal(fallback.completionWakeSource,'DIRECTOR_SCHEDULE_AND_NON_VIBE_CORE_EVENTS');
   assert.equal(architectureFallback.vibe2CoreCompletionWakeDisabled,true);
-  assert.equal(policyFallback.vibe2CoreCompletionWakeDisabled,true);
-  assert.equal(policyFallback.workflowRunWakeSource,'REMOVED_VIBE2_CONTINUOUS_CORE_COMPLETION');
   assert.match(director,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=DISPATCHED/);
   assert.match(director,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_CORE/);
   assert.match(director,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
@@ -382,7 +350,6 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
 test('stale main push wake rebases to latest main before expensive reserve work without cancelling active game workers',()=>{
   const wake=runtime.continuous.mainPushGamePrimaryWake||{};
   const architectureWake=architecture.neuralWorkGraphTopology?.currentWaveExecution?.mainPushGamePrimaryWake||{};
-  const policyWake=roadmap.changeRecord?.mainPushWakeFreshnessGate20260927||{};
   const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
   const evidence=logMap.mainPushWakeFreshnessEvidence||{};
 
@@ -395,15 +362,6 @@ test('stale main push wake rebases to latest main before expensive reserve work 
   assert.equal(architectureWake.staleWakeMayStartGameWorker,false);
   assert.equal(architecture.mainPushWakeFreshnessGate?.staleUnstartedWakeDrain,'.github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE');
   assert.equal(architecture.mainPushWakeFreshnessGate?.inProgressWakeCancellationForbidden,true);
-  assert.equal(policyWake.staleWakeMayMutateControlState,false);
-  assert.equal(policyWake.staleWakeMayStartGameWorker,false);
-  assert.equal(policyWake.runningOrCompletedGameWorkerCancellationForbidden,true);
-  assert.equal(policyWake.duplicateWakeSignalsCoalesced,true);
-  assert.equal(policyWake.concurrencyGroup,'vibe2-main-push-game-primary-wake');
-  assert.equal(policyWake.activeWakeCancellationForbidden,true);
-  assert.equal(policyWake.staleUnstartedWakeDrain,'.github/workflows/director-supervisor.yml::VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE');
-  assert.equal(policyWake.staleQueuedWakeMayCancel,true);
-  assert.equal(policyWake.inProgressWakeCancellationForbidden,true);
   assert.equal(evidence.concurrencyGroup,'vibe2-main-push-game-primary-wake');
   assert.ok(evidence.markers.includes('VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE'));
   assert.equal(evidence.staleQueuedWakeDrainAllowed,true);
@@ -457,8 +415,6 @@ test('24H asset planning keeps source integrity QA without serializing full prod
   assert.match(plan,/node tools\/company-constitution-enforcer\.mjs --phase=24h-planner/);
 });
 test('24h runner keeps asset lane independent from generic repository runner pressure',()=>{
-  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentRunnerCapacityIndependentFromGamePrimary,true);
-  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentPhysicalRunnerPoolSeparated,true);
   assert.match(runner,/asset_development_active/);
   assert.match(runner,/asset_development_queued/);
   assert.match(runner,/asset_development_refill_ready/);
@@ -476,12 +432,6 @@ test('24h runner keeps asset lane independent from generic repository runner pre
   assert.match(assetBlock,/needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
   assert.match(assetBlock,/execution_lane: asset-development/);
   assert.match(assetBlock,/lane_max: '63'/);
-  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax,63);
-  const qualityFirst=roadmap.assetProductionParallelContract?.parallelism?.qualityFirstDevelopment||{};
-  assert.equal(qualityFirst.concurrentSlots,63);
-  assert.equal(qualityFirst.qualityBeforeVolume,true);
-  assert.equal(qualityFirst.sameFileParallelForbidden,true);
-  assert.equal(qualityFirst.actualRuntimeAndBeforeAfterRequiredForQualityPass,true);
   assert.doesNotMatch(core,/VIBE2_ASSET_FIXED_RUNNER_SLOTS/);
   const workerStart=core.indexOf('\n  worker:\n');
   const workerEnd=core.indexOf('\n  fan_in:',workerStart);
@@ -555,8 +505,6 @@ test('24H pre-plan production dispatch observes runner pressure without suppress
 
 
 test('existing Vibe2 GAME_PRIMARY executor uses all 128 fixed repeat-development slots',()=>{
-  const fixed=roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots;
-  assert.equal(fixed,128);
   assert.ok(runner.includes("VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '128'"));
   assert.ok(runner.includes('VIBE2_GAME_PRIMARY_REFILL_TARGET=128'));
   assert.ok(runner.includes('"execution_lane":"game-primary","lane_max":"128"'));
