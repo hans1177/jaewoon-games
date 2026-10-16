@@ -345,7 +345,7 @@ test('bottleneck System AI receives policy-grounded advanced causal optimization
 });
 
 test('ordinary non-bottleneck System AI task does not receive bottleneck playbook',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
   const context=buildSystemAiLearningContext({
     task:{id:'ordinary-copy',goal:'update one ordinary content string',responsibleFiles:['web-games/demo/index.html']},
     experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{},policyInput:policy
