@@ -2088,6 +2088,12 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           -- 매 프레임 모든 관절을 검사하지 않고 2초마다 신규/교체 관절을 확인한다.
           -- 관절이 사라진 경우에는 주기 검사가 즉시 새 목록을 구성한다.
           if not joints or rigCheckDue then
+            -- 기존 관절의 원본 기준 자세를 유지한다. 재탐색 시 현재 애니메이션
+            -- C0/Transform을 기준으로 덮어쓰면 2초마다 관절 자세가 누적된다.
+            local previousBases = {}
+            for _, entry in ipairs(joints or {}) do
+              previousBases[entry.joint] = entry.base
+            end
             joints = {}
             creatureRigRetryAt[importedVisual] = creatureMotionPhase + 2
             for _, item in ipairs(importedVisual:GetDescendants()) do
@@ -2134,7 +2140,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
                   if (left and not right) or (right and not left) then
                     table.insert(joints, {
                       joint=item,
-                      base=item:IsA("Motor6D") and item.C0 or item.Transform,
+                      base=previousBases[item] or (item:IsA("Motor6D") and item.C0 or item.Transform),
                       isBone=item:IsA("Bone"),
                       side=(left and 1 or -1) * (isArm and -1 or 1),
                       isArm=isArm,
