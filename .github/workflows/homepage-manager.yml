@@ -451,7 +451,7 @@ jobs:
           candidate_dir='.homepage-candidate'
           rm -rf "$candidate_dir"
           mkdir -p "$candidate_dir"
-          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games artbook-submissions assets/homepage-covers assets/homepage-media)
+          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games assets/homepage-covers assets/homepage-media)
           base_sha="$(git rev-parse HEAD)"
           git add -- "${published_paths[@]}"
           git diff --cached --binary HEAD -- "${published_paths[@]}" > "$candidate_dir/homepage-candidate.patch"
@@ -467,7 +467,7 @@ jobs:
             changed:process.env.CANDIDATE_CHANGED==='true',
             policyFingerprint:process.env.HOMEPAGE_POLICY_SHA256,
             supportedPlatforms:JSON.parse(process.env.HOMEPAGE_SUPPORTED_PLATFORMS_JSON||'[]'),
-            paths:['company-status.json','game-catalog.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','game-artbooks.json','web-games','artbook-submissions','assets/homepage-covers','assets/homepage-media'],
+            paths:['company-status.json','game-catalog.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','game-artbooks.json','web-games','assets/homepage-covers','assets/homepage-media'],
           },null,2)+'\n');
           NODE
           git reset --quiet
@@ -586,7 +586,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-director'
           git config user.email 'jaewoon-director@users.noreply.github.com'
-          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games artbook-submissions assets/homepage-covers assets/homepage-media)
+          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games assets/homepage-covers assets/homepage-media)
           git add -- "${published_paths[@]}"
           if git diff --cached --quiet; then
             echo 'HOMEPAGE_PUBLICATION=NO_CHANGES_AFTER_DIRECTOR'
