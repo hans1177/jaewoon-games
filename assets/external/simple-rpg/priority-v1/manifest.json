@@ -23,8 +23,8 @@
       "fileCandidates": 2
     },
     "03-equipment": {
-      "packs": 5,
-      "fileCandidates": 57
+      "packs": 8,
+      "fileCandidates": 165
     },
     "04-npc-buildings": {
       "packs": 9,
@@ -63,7 +63,7 @@
       "fileCandidates": 1
     }
   },
-  "verifiedPacks": 45,
+  "verifiedPacks": 48,
   "packs": [
     {
       "file": "bee-rigged.blend",
@@ -187,6 +187,48 @@
       "bytes": 2899123,
       "sourceFileCandidates": null,
       "validation": "7z_signature_only_contents_unverified",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "rpg-equipment-100.zip",
+      "priority": "03-equipment",
+      "sourceUrl": "https://opengameart.org/sites/default/files/ultimate_rpg_items_pack_by_quaternius_0.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/low-poly-rpg-pack",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "7079818e9a02bb0291c3f2b595ec0306ce138fabc26718e86889b19e81077834",
+      "bytes": 44643090,
+      "sourceFileCandidates": 106,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "wizard-staff-glb.zip",
+      "priority": "03-equipment",
+      "sourceUrl": "https://opengameart.org/sites/default/files/sws_glb.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/stylized-wizard-staff",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "1273e921cd268ebf7857dc9e270388e5369cb01a618a60918a84df1a973c9379",
+      "bytes": 527820,
+      "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "medieval-shields.blend",
+      "priority": "03-equipment",
+      "sourceUrl": "https://opengameart.org/sites/default/files/shields.blend",
+      "licenseSourceUrl": "https://opengameart.org/content/low-poly-medieval-shields",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "3982bea3d29c5e4036b6eaf74976222f9ecd427045d952af390fb321f39ecbf7",
+      "bytes": 430652,
+      "sourceFileCandidates": 1,
+      "validation": "blender_header_only",
       "sourceOnly": true,
       "robloxImported": false,
       "gameApplied": false
