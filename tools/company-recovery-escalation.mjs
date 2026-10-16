@@ -45,7 +45,7 @@ function failureStage(task={}){
   return clean(task.currentStep||task.phase||task.blocker||'UNKNOWN_STAGE');
 }
 const CENTRAL_POLICY_FILES=new Set([
-  // Retired policy remains protected by historical ownership, but is not an active input.
+  'company-learning/platform-release-roadmap.json',
   'company-learning/company-architecture-map.json',
   'company-learning/company-log-map.json',
   'company-directive.json'
