@@ -435,3 +435,13 @@ test('Conan-style enemy aggro stays inside habitat and returns home without chan
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
+
+test('civilization monster alert and pack awareness preserve the existing server combat path', () => {
+  assert.match(server, /AlertUserId = nil, AlertUntil = 0/);
+  assert.match(server, /ally\.RaceID == enemy\.RaceID/);
+  assert.match(server, /ally\.Model:GetAttribute\("AIState"\) == "Combat"/);
+  assert.match(server, /enemy\.AlertUntil = now \+ \(packEngaged and 0\.3 or 0\.8\)/);
+  assert.match(server, /AdvancedAIEcosystem\.SetState\(enemy, "Alert"\)/);
+  assert.match(server, /enemy\.Model:GetAttribute\("IsRaidBoss"\) ~= true/);
+  assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
+});
