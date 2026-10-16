@@ -133,6 +133,7 @@ jobs:
             /.github/workflows/company-status-sync.yml
             /company-directive.json
             /company-learning/catalog-homepage-normalization.json
+            /company-learning/platform-release-roadmap.json
             /tools/
             /assets/homepage-enhancements.js
             /assets/homepage-covers/
@@ -166,7 +167,7 @@ jobs:
           node --test qa/homepage-manager-publication-order.test.mjs
           node --input-type=module -e "await import('./tools/company-status-sync.mjs')"
           node --test qa/company-homepage-runtime-propagation.test.mjs
-          node qa/game-catalog-normalization.test.mjs
+          COMPANY_VERIFIED_POLICY_PATH=company-learning/platform-release-roadmap.json node qa/game-catalog-normalization.test.mjs
           echo 'HOMEPAGE_PR_FAST_QA=PASS'
 
   manage-and-self-qa:
