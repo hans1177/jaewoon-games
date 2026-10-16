@@ -1004,6 +1004,14 @@ export function applyVibeFanInResults(queueInput, results = []) {
     const outcome = blocked ? 'BLOCKED' : 'FAIL';
     const blocker=clean(winner.blocker) || (blocked ? 'worker-route-blocked' : 'parallel-candidate-generation-failed');
     const failureClass=clean(winner?.candidateFailure?.class).toUpperCase()||'UNCLASSIFIED';
+    // Route verified graphics/mobile QA failures back to their original source owner.
+    // Do not promote or override canonical runtime, security, or independent QA gates.
+    const qualityFailure=outcome==='FAIL'&&variants.some(row=>(Array.isArray(row?.evidence)?row.evidence:[]).some(value=>
+      /^incremental-qa-failure-signature:(?:PRESENTATION_STATIC_QA_FAILED|GRAPHICS_REPLACEMENT_GROUNDING_QA_FAILED|WEATHER_PRESENTATION_STATIC_QA_FAILED)/.test(clean(value))));
+    const qualityRepairEvidence=qualityFailure?[
+      'graphics-quality-repair:SOURCE_WORKER_RETRY_REQUIRED',
+      'graphics-quality-repair:CANONICAL_RUNTIME_QA_STILL_REQUIRED'
+    ]:[];
     const gatedTransaction=variants.map(row=>neuralTransactions.get(row)).find(transaction=>transaction?.eventRoute?.fireAllowed===true)||null;
     const gatedAction=clean(gatedTransaction?.eventRoute?.proposedAction?.kind);
     const retryStrategyEvidence=outcome==='FAIL'&&gatedTransaction
@@ -1020,7 +1028,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
       taskId,
       outcome,
       blocker,
-      evidence: [...allEvidence, ...retryStrategyEvidence, ...gatedExecutionEvidence, `failure-cause:${blocker}`],
+      evidence: [...allEvidence, ...qualityRepairEvidence, ...retryStrategyEvidence, ...gatedExecutionEvidence, `failure-cause:${blocker}`],
       retryable: outcome === 'FAIL'
     });
     queue = settled.queue;
