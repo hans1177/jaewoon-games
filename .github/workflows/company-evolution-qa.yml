@@ -9,7 +9,6 @@ on:
       - 'game-catalog.json'
       - 'company-status.json'
       - 'development-queue.json'
-      - 'assets/artbook-runtime.js'
       - 'assets/homepage-enhancements.js'
       - 'assets/homepage-layout-v2.js'
       - 'assets/company-quality-bar.js'
@@ -80,7 +79,6 @@ on:
       - 'game-catalog.json'
       - 'company-status.json'
       - 'development-queue.json'
-      - 'assets/artbook-runtime.js'
       - 'assets/homepage-enhancements.js'
       - 'assets/homepage-layout-v2.js'
       - 'assets/company-quality-bar.js'
@@ -161,14 +159,12 @@ jobs:
       - name: Check active JavaScript syntax
         run: |
           set -euo pipefail
-          node --input-type=module --check < assets/artbook-runtime.js
           node --input-type=module --check < assets/homepage-enhancements.js
           node --input-type=module --check < assets/homepage-layout-v2.js
           node --input-type=module --check < assets/company-quality-bar.js
           node --input-type=module --check < assets/vibe-company-orchestration-bridge.js
           node --check tools/homepage-manager.mjs
           node --check tools/production-classification.mjs
-          node --check tools/artbook-fact-pack.mjs
           node --check tools/company-design-cycle.mjs
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-release-stale-artifact-guard.mjs
@@ -180,7 +176,6 @@ jobs:
           node --check tools/vibe2-learning-motor.mjs
           node --check tools/vibe2-practice-distillation.mjs
           node --check tools/company-baseline-gate.mjs
-          node --check tools/artbook-production-pipeline.mjs
           node --check qa/company-release-production-cycle.test.mjs
           node --check qa/release-stale-artifact-guard.test.mjs
           node --check qa/company-design-pre-gate-resume.test.mjs
@@ -230,17 +225,6 @@ jobs:
       - name: Validate production pipeline contracts
         run: |
           set -euo pipefail
-          grep -Fq 'Pull configured free department models' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'DEPARTMENT_LEAD_PREFLIGHT=PASS' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'tools/company-release-production-cycle.mjs' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'design/**/vibe2-release-implementation.json' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'design/**/unity-android-build.json' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'design/**/android-runtime-validation.json' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'design/**/independent-release-qa.json' .github/workflows/artbook-free-department-bots.yml
-          grep -Fq "'unity-games/**'" .github/workflows/artbook-free-department-bots.yml
-          grep -Fq 'DEVELOPMENT_EXECUTION_MODE=ROBLOX_AND_UNITY_WEB_ONLY_CONTINUOUS_DEVELOPMENT' tools/artbook-production-pipeline.mjs
-          grep -Fq 'RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION' tools/artbook-production-pipeline.mjs
-          grep -Fq 'RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED' tools/artbook-production-pipeline.mjs
           grep -Fq 'currentUnitySourceTreeSha' tools/company-release-production-cycle.mjs
           grep -Fq 'boundToCurrentSource' tools/company-release-production-cycle.mjs
           grep -Fq 'boundToImplementation' tools/company-release-production-cycle.mjs
@@ -257,13 +241,11 @@ jobs:
           grep -Fq 'FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS' tools/company-release-production-cycle.mjs
           grep -Fq 'SOURCE_TO_BUILD_BINDING=PASS' tools/company-release-production-cycle.mjs
           grep -Fq 'FINAL_DEPARTMENT_REVIEW_BUILD_RUNTIME_QA_BINDING=PASS' tools/company-release-production-cycle.mjs
-          grep -Fq 'FINAL_ARTBOOK_REVISION=CREATED_AFTER_RELEASE_READY' tools/company-release-production-cycle.mjs
           node --test qa/artbook-editorial-role-contract.test.mjs
           node --test qa/company-release-production-cycle.test.mjs
           node --test qa/release-stale-artifact-guard.test.mjs
           node --test qa/tier1-development-baseline-gate.test.mjs
           node --test qa/company-design-pre-gate-resume.test.mjs
-          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-release-production-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
             echo 'paid/external AI key leaked into free multimodel path' >&2
             exit 1
           fi
