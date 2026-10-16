@@ -379,10 +379,27 @@ jobs:
 
             (
               cd /tmp/vibe2-main
-              node --check tools/company-shared-context.mjs
+              # The owner deleted the legacy central policy and shared-context module.
+              # Check integrity of the three remaining shared documents directly.
+              node <<'NODE'
+          const fs=require('node:fs');
+          const crypto=require('node:crypto');
+          const files={
+            logMapSha256:'company-learning/company-log-map.json',
+            architectureSha256:'company-learning/company-architecture-map.json',
+            securityPolicySha256:'company-learning/security-immune-system.json'
+          };
+          const hashes={};
+          for(const [key,file] of Object.entries(files)){
+            const bytes=fs.readFileSync(file);
+            JSON.parse(bytes.toString('utf8'));
+            hashes[key]=crypto.createHash('sha256').update(bytes).digest('hex');
+          }
+          fs.writeFileSync('/tmp/vibe2-shared-context-before-plan.json',
+            JSON.stringify({pass:true,verificationMode:'REMAINING_DOCUMENT_HASHES',hashes},null,2)+'\n');
+          console.log('WORKER_CONTEXT_SYNC=PASS');
+          NODE
               node --check tools/company-constitution-enforcer.mjs
-              node --test qa/company-shared-context.test.mjs
-              node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-before-plan.json | tee /tmp/vibe2-shared-context-before-plan.log
               node tools/company-constitution-enforcer.mjs --phase=24h-planner | tee /tmp/vibe2-constitution-enforcer.log
               node --check tools/vibe2-learning-motor.mjs
               node --check tools/vibe2-auto-planner.mjs
