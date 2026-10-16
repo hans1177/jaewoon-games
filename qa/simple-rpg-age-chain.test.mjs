@@ -24,7 +24,7 @@ test('age progression data is strict, acyclic, and has original three-tier ingre
 test('all five requested civilization buildings are race/era/cost scoped', () => {
   for (const name of ['StoneWall','DangunAltar','Pyramid','Colosseum','DrakkarShipyard']) {
     assert.ok(data.includes(name + ' ='), name);
-    assert.match(server, /local function civBuild\(player, buildingKey\)/);
+    assert.match(server, /local function civBuild\(player, buildingKey, positionHint\)/);
     assert.match(config, new RegExp('Civ' + name + '\\s*=\\s*0'));
   }
   for (const constraint of ['definition.RequiredRace','definition.MinimumTech','definition.RequiredMetric','civSpend(player, definition.Costs)','civRestoreBuildings(player)']) {
@@ -52,7 +52,8 @@ test('server validates resources, station distance, equipped weapon, and grants 
   'civIncrease(player, "CivHide", 1)','civIncrease(player, "CivCoreCrystal", 1)','civIncrease(player, "CivDarkIron", 1)']) {
     assert.ok(server.includes(marker), marker);
   }
-  assert.match(server, /CivCraft = civCraft, CivBuild = civBuild, CivEquip = civEquip/);
+  assert.match(server, /CivCraft = civCraft, CivBuild = civBuild, CivBuildHousing = civBuildHousing/);
+  assert.match(server, /CivEquip = civEquip/);
   assert.match(server, /actionId == "CivCraft"/);
   assert.match(server, /if chosen\.Humanoid\.Health <= 0 then/);
 });
@@ -63,11 +64,12 @@ test('real world nodes, workstations, mobs and touch-safe production menus are w
     'civSpawnEnemy(id, center, "IronKnight")','Key="Bench"','Key="Furnace"','Key="BlastFurnace"']) {
     assert.ok(server.includes(marker), marker);
   }
-  for (const marker of ['ProgressionData.RecipeKeys()','ProgressionData.StructureKeys()',
-  'remote:FireServer("CivCraft", key)','remote:FireServer("CivBuild", key)',
-  'remote:FireServer("CivEquip", key)','"CraftMenu", "제작"','"BuildingMenu", "건축"']) {
-    assert.ok(client.includes(marker), marker);
-  }
-  assert.match(client, /Enum.KeyCode.V then civOpen\("Crafts"\)/);
-  assert.match(client, /Enum.KeyCode.B then civOpen\("Buildings"\)/);
+  // The old primitive menus are deleted; vetted external buttons dispatch these actions.
+  assert.doesNotMatch(client, /civButton\(|civLabel\(|civOpen\(|ProgressionData\.RecipeKeys\(\)/);
+  assert.match(client, /action == "CivTimedCraft"/);
+  assert.match(client, /craftRequestRemote:FireServer\(recipeId\)/);
+  assert.match(client, /remote:FireServer\(action, value\)/);
+  assert.match(client, /key == Enum.KeyCode.V then/);
+  assert.match(client, /key == Enum.KeyCode.B then/);
+  assert.match(client, /validUiTemplate\(template\)/);
 });
