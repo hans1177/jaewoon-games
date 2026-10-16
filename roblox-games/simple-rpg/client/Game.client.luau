@@ -2067,7 +2067,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local pitch = down and math.rad(65) * deathProgress or state == "Stunned" and math.rad(20)
             or reactingToHit and math.rad(16) * (1 - hitElapsed / 0.28)
             or striking and math.rad(-20) * strikeProgress
-            or windingUp and math.rad(-16) or 0
+            or windingUp and math.rad(-16)
+            or state == "Alert" and math.rad(-9)
+            or state == "ReturnHome" and math.rad(4) or 0
           -- 리그 없는 일체형 메시도 정지 상태로 미끄러지지 않도록
           -- 보행 때만 몸체를 기울이고 타격 순간에는 상체 반동을 준다.
           local visualPose = importedVisual:GetAttribute("VisualPivotOffset")
@@ -2187,6 +2189,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         -- 실제 이동속도를 반영해 정지/보행/추격의 팔다리 동작을 구분한다.
         local amplitude = moving and math.clamp(horizontalSpeed / 10, 0.24, 0.55) or 0.035
         if preparing then amplitude = 0.08 end
+        local alerting = model:GetAttribute("AIState") == "Alert"
+        local returningHome = model:GetAttribute("AIState") == "ReturnHome"
+        if alerting then amplitude = 0 end
         local enemyHumanoid = model:FindFirstChildOfClass("Humanoid")
         local defeated = enemyHumanoid and enemyHumanoid.Health <= 0
         local stunned = model:GetAttribute("AIState") == "Stunned"
@@ -2205,6 +2210,11 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           swing = math.sin((attackElapsed / 0.32) * math.pi) * 0.85
         elseif preparing then
           swing = -0.65 + math.sin(creatureMotionPhase * 13) * 0.06
+        elseif alerting then
+          -- 경계 중 낮게 몸을 숙이고 작은 호흡만 표현한다.
+          swing = -0.22 + math.sin(creatureMotionPhase * 3) * 0.025
+        elseif returningHome then
+          swing = math.sin(gaitPhase) * amplitude * 0.65
         end
         -- 공격 예고 중인 적의 중심부를 짧게 점멸시켜 모바일에서도 타이밍을 읽기 쉽게 한다.
         -- 적 서버 판정/히트박스/자원은 변경하지 않는다.
