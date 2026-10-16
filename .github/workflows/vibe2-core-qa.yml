@@ -409,6 +409,7 @@ jobs:
       - name: Vibe2 core tests
         run: |
           set -euo pipefail
+          node --test qa/vibe2-openai-agent-patterns.test.mjs
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/company-build-up-directive.test.mjs
           node --test qa/company-build-up-experience-quality.test.mjs
@@ -440,7 +441,6 @@ jobs:
           node --test qa/vibe2-incremental-qa.test.mjs
           node --test qa/vibe2-parallelism-telemetry.test.mjs
           node --test qa/vibe2-adaptive-backpressure.test.mjs
-          node --test qa/vibe2-openai-agent-patterns.test.mjs
           node --test qa/vibe2-controller-contract.test.mjs
           node --test qa/vibe2-candidate-reconcile.test.mjs
           node --test qa/vibe2-experience-control.test.mjs
