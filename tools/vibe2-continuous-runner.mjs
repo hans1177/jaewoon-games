@@ -519,7 +519,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   if (runtime?.continuous?.enabled === false) return freeze({ ...base, reason:'CONTINUOUS_DISABLED' });
   if (!resolved.task) return freeze({ ...base, reason:resolved.reason || 'NO_ELIGIBLE_WORK' });
   const task = resolved.task;
-  const centralPolicy = centralPolicySnapshot || loadCentralPolicySnapshot({ repoRoot:process.cwd(), required:true });
+  const centralPolicy = centralPolicySnapshot || loadCentralPolicySnapshot({ repoRoot:process.cwd(), required:false });
   if (centralPolicy.required === true && centralPolicy.valid !== true) return freeze({ ...base, reason:`CENTRAL_POLICY_INVALID:${(centralPolicy.errors || []).join('|') || 'UNKNOWN'}`, selectedTask:task, centralPolicy });
   if(clean(task.target).toLowerCase()==='system'&&task.systemSteward===true&&clean(task.department).toLowerCase()==='system-architecture'){
     return buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicyLiveRef,runtime,variant});
@@ -936,7 +936,7 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
   const practiceDistilled=readJson(resolvedPracticeDistilledFile,{entries:[]});
   const resolvedExternalAiDistilledFile=clean(externalAiDistilledFile)||clean(runtime?.sources?.externalAiDistilledKnowledge)||'.vibe2/external-ai-distilled-knowledge.json';
   const externalAiDistilled=readJson(resolvedExternalAiDistilledFile,{entries:[]});
-  const centralPolicySnapshot=loadCentralPolicySnapshot({repoRoot:path.dirname(path.resolve(runtimeFile)),required:true});
+  const centralPolicySnapshot=loadCentralPolicySnapshot({repoRoot:path.dirname(path.resolve(runtimeFile)),required:false});
   const resolvedCentralPolicyLiveRef=clean(centralPolicyLiveRef)||clean(process.env.VIBE2_CENTRAL_POLICY_LIVE_REF)||'origin/main';
   const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled, externalAiDistilled, centralPolicySnapshot, centralPolicyLiveRef:resolvedCentralPolicyLiveRef });
   writeJson(resolvedOutputFile, order);
