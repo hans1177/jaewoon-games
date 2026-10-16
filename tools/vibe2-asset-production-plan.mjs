@@ -4433,6 +4433,36 @@ export function buildVibeAssetProductionPlan({
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const currentDemandFamilies=requiredAssetFamilies({request,requirements:flowAssetRequirements});
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
+  // [공용 에셋 자동 성장] 기존 원본 매니페스트에 새 검증 원본이 추가되면
+  // Vibe의 다음 기존 ASSET_DEVELOPMENT 회차에서 자동 발견한다. 별도 큐/새 파이프라인은 만들지 않는다.
+  const sharedOriginalArchives=[];
+  const scannedSourceHashes=new Set();
+  for(const catalogPath of manifestBase?.sharedOriginalArchives?.canonicalArchiveManifests||[]){
+    const relativeCatalog=clean(catalogPath).replaceAll('\\','/');
+    if(!/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*manifest\.json$/.test(relativeCatalog))continue;
+    const sourceCatalog=readJson(path.join(repoRoot,relativeCatalog),null);
+    if(!sourceCatalog||!Array.isArray(sourceCatalog.packs)||sourceCatalog.sourceOnly!==true)continue;
+    const folder=relativeCatalog.slice(0,relativeCatalog.lastIndexOf('/')+1);
+    for(const pack of sourceCatalog.packs){
+      const file=clean(pack.file||pack.filename);
+      const sha256=clean(pack.sha256).toLowerCase();
+      if(!/^[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz)$/.test(file)||file.includes('..'))continue;
+      if(!/^[0-9a-f]{64}$/.test(sha256)||scannedSourceHashes.has(sha256))continue;
+      const license=clean(pack.licenseDeclared||pack.license||sourceCatalog.license).toUpperCase();
+      if(!['CC0','CC0-1.0'].includes(license)||pack.gameApplied===true)continue;
+      const sourceUrl=clean(pack.sourceUrl||pack.originalUrl||pack.sourcePage);
+      const licenseEvidenceUrl=clean(pack.licenseSourceUrl||pack.licenseEvidence||pack.sourcePage||pack.sourceUrl);
+      if(!sourceUrl||!licenseEvidenceUrl)continue;
+      const bytes=Number(pack.bytes||pack.archiveBytes);
+      if(!Number.isSafeInteger(bytes)||bytes<512)continue;
+      scannedSourceHashes.add(sha256);
+      sharedOriginalArchives.push({
+        file,sourcePath:folder+file,sha256,bytes,sourceUrl,licenseEvidenceUrl,
+        licenseDeclared:'CC0-1.0',sourceOnly:true,gameApplied:false,
+        role:clean(pack.priority||pack.category||pack.assetKind)||'general'
+      });
+    }
+  }
   const currentGameId=clean(task.gameId);
   const persistedCompanyRegistry=readJson(path.join(repoRoot,'company-asset-library.json'),{version:0,assets:[],externalSources:[]});
   const librarySync=synchronizeCompanyCommonAssetRegistry({
@@ -4884,7 +4914,7 @@ export function buildVibeAssetProductionPlan({
     request,
     requirements:flowAssetRequirements,
     registry:librarySync.sourceConsumerRegistry||companyRegistry,
-    sharedOriginalArchives:manifestBase?.sharedOriginalArchives?.packs||[],
+    sharedOriginalArchives,
     repoRoot,
     executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
     sourceConsumerSummary:librarySync.sourceConsumerSync
