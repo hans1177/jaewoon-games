@@ -6,14 +6,14 @@ const args=Object.fromEntries(process.argv.slice(2).map(v=>{const i=v.indexOf('=
 const before=String(args.before||'').trim();
 const after=String(args.after||'').trim();
 const queuePath=String(args.queue||'').trim();
-const roadmapPath=String(args.roadmap||'company-learning/platform-release-roadmap.json').trim();
+const roadmapPath=String(args.roadmap||'').trim();
 const outputPath=String(args.output||'owner-web-edit-propagation.json').trim();
 if(!before||!after||!queuePath)throw new Error('before/after/queue required');
 const run=(a)=>execFileSync('git',a,{encoding:'utf8',maxBuffer:64*1024*1024});
 const changed=run(['diff','--name-only',before,after,'--','web-games/']).split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
 const ids=[...new Set(changed.map(p=>p.match(/^web-games\/([^/]+)\//)?.[1]).filter(Boolean))];
 const queue=JSON.parse(fs.readFileSync(queuePath,'utf8'));
-const roadmap=JSON.parse(fs.readFileSync(roadmapPath,'utf8'));
+const roadmap=roadmapPath?JSON.parse(fs.readFileSync(roadmapPath,'utf8')):{};
 const classify=diff=>{
   const t=diff.toLowerCase();
   const rules=[
