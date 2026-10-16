@@ -1,5 +1,5 @@
 // 파일명: tools/company-system-ai-worker.mjs
-// 역할: 무료 로컬 AI(Ollama)가 총괄이 배정한 시스템 작업만 격리 후보 브랜치에서 수행한다.
+// 역할: 외부 Gemini API가 배정된 시스템 작업을 격리 후보 브랜치에서 수행한다. 로컬 AI 대체 실행은 금지한다.
 // 안전: 게임 소스/중앙 정책 직접 수정 금지, 정확 일치 편집만 허용, 원문 모델 출력 저장 금지.
 
 import fs from 'node:fs';
@@ -185,7 +185,7 @@ function buildPrompt(task,contexts,learningContext={}){
   const hypothesisRows=hypothesisPlan.hypotheses.map((row,index)=>`${index+1}. ${row.id} system=${row.system} confidence=${row.confidence.toFixed(2)} rejected=${row.rejected?'YES':'NO'} reason=${row.reason}`);
   return[
     'You are an external system-engineering AI worker supervised by the primary AI.',
-    'You may modify ONLY the explicitly listed responsible system files. Game source editing belongs exclusively to the canonical local Ollama Vibe2 source worker; never modify game source from this system worker.',
+    'You may modify ONLY the explicitly listed responsible system files. Game source editing belongs exclusively to the canonical external-Gemini Vibe2 source worker; never modify game source from this system worker.',
     'Never modify central policy/log/architecture/security policy files. Never weaken QA, runtime, release, security, or regression gates.',
     'If this is a verified stale-QA-contract repair, change tests only when current central policy and current responsible implementation prove the contract drift. Never turn a real implementation failure into a test-only fix, and never reduce assertion or test coverage.',
     'Solve the assigned root cause directly; do not add catch-and-ignore bypasses, fake PASS evidence, or wrapper-only patches.',
