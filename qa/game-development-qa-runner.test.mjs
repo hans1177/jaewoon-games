@@ -34,6 +34,8 @@ test('missing game QA is reported missing, not passed',()=>{
   const selected=chooseGameQa({games,gameId:'untested'});
   const report=runGameQa({selected});
   assert.equal(report.pass,true);
+  assert.equal(report.mergeReady,false,'missing QA must never count as merge evidence');
+  assert.deepEqual(report.failureGroups,[{signature:'NO_GAME_SCOPED_QA',count:1,gameIds:['untested']}]);
   assert.equal(report.gameQaMissingCount,1);
   assert.equal(report.gameQaPassedCount,0);
   assert.equal(report.results[0].state,'NO_GAME_SCOPED_QA');
@@ -50,13 +52,33 @@ test('real subprocess QA failures remain game-scoped and keep exact evidence',()
       {gameId:'beta',tests:['qa/beta-fail.test.mjs']},
       {gameId:'untested',tests:[]}
     ];
-    const report=runGameQa({selected,repoRoot:root,execute:true});
+    // 상위 테스트 환경이 중첩되어도 실제 게임 QA를 실행해야 한다.
+    const originalContext=process.env.NODE_TEST_CONTEXT;
+    process.env.NODE_TEST_CONTEXT='child-v8';
+    let report;
+    try{report=runGameQa({selected,repoRoot:root,execute:true});}
+    finally{if(originalContext===undefined)delete process.env.NODE_TEST_CONTEXT;else process.env.NODE_TEST_CONTEXT=originalContext;}
     assert.equal(report.pass,false);
+    assert.equal(report.mergeReady,false);
+    assert.deepEqual(report.failureGroups.map(group=>[group.signature,group.count]),[
+      ['NO_GAME_SCOPED_QA',1],['QA_ASSERTION_FAILURE',1]
+    ]);
     assert.equal(report.gameQaPassedCount,1);
     assert.equal(report.gameQaFailedCount,1);
+    assert.ok(report.results[0].outputTail.includes('# fail 0'));
+    assert.ok(report.results[1].outputTail.includes('# fail 1'));
+    assert.equal(report.results[1].exitCode===0&&report.results[1].state==='GAME_QA_PASSED',false);
     assert.equal(report.gameQaMissingCount,1);
     assert.deepEqual(report.results.map(x=>x.state),
       ['GAME_QA_PASSED','GAME_QA_FAILED','NO_GAME_SCOPED_QA']);
     assert.match(report.results[1].outputTail,/real bug/);
   }finally{fs.rmSync(root,{recursive:true,force:true})}
+});
+
+test('merge readiness requires actual executed QA and never trusts pending or empty selection',()=>{
+  assert.equal(runGameQa({selected:[]}).mergeReady,false);
+  const pending=runGameQa({selected:[{gameId:'pending',tests:['qa/not-yet-executed.test.mjs']}]});
+  assert.equal(pending.pass,true,'legacy discovery behavior is unchanged');
+  assert.equal(pending.mergeReady,false);
+  assert.deepEqual(pending.failureGroups,[{signature:'PENDING_EXECUTION',count:1,gameIds:['pending']}]);
 });

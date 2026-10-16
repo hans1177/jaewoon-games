@@ -37,24 +37,45 @@ export function runGameQa({selected=[],repoRoot=ROOT,execute=false,timeoutMs=120
       results.push({gameId:game.gameId,state:'PENDING_EXECUTION',testCount:game.tests.length});continue;
     }
     // All tests come from repository discovery, never user-injected shell.
-    // A parent Node test runner sets NODE_TEST_CONTEXT; inherited by this child,
-    // it suppresses the standalone test result and can falsely report PASS.
-    const childEnv={...process.env,GAME_ID:game.gameId};
-    delete childEnv.NODE_TEST_CONTEXT;
-    const check=spawnSync(process.execPath,['--test',...game.tests],{
+    // 내부 node:test 실행 환경이 중첩 실행으로 전파되면 자식 테스트를 건너뛰므로 분리한다.
+    const env={...process.env,GAME_ID:game.gameId};
+    delete env.NODE_TEST_CONTEXT;
+    const check=spawnSync(process.execPath,['--test','--test-reporter=tap',...game.tests],{
       cwd:repoRoot,encoding:'utf8',timeout:timeoutMs,maxBuffer:4*1024*1024,
-      env:childEnv
+      env
     });
+    // 자동검증: 일부 실행 환경의 성공 종료 코드만 믿지 않고 TAP의 실제 실패 집계도 확인한다.
+    const summaries=[...String(check.stdout||'').matchAll(/^# fail (\d+)\r?$/gm)];
+    const reportedFailures=summaries.length?Number(summaries.at(-1)[1]):null;
+    const passed=!check.error&&check.status===0&&reportedFailures===0;
     results.push({
       gameId:game.gameId,testCount:game.tests.length,
-      state:check.error||check.status!==0?'GAME_QA_FAILED':'GAME_QA_PASSED',
+      state:passed?'GAME_QA_PASSED':'GAME_QA_FAILED',
       exitCode:check.status,
       error:check.error?.message||null,
       outputTail:(check.stdout||'').slice(-3500),
       errorTail:(check.stderr||'').slice(-1200)
     });
   }
+  // 실패를 게임별로 반복 처리하지 않고 실행 원인별 한 묶음으로 집계한다.
+  // 기존 pass는 영향 없는 게임 선택/미실행 보고와 호환되지만 병합 증거로 쓰지 않는다.
+  const groups=new Map();
+  for(const row of results){
+    if(row.state==='GAME_QA_PASSED')continue;
+    const signature=row.state==='GAME_QA_FAILED'
+      ?row.error?'QA_EXECUTION_ERROR'
+        :/^# fail [1-9]\d*\r?$/m.test(row.outputTail||'')?'QA_ASSERTION_FAILURE':'QA_EXIT_OR_INCOMPLETE_TAP'
+      :row.state;
+    if(!groups.has(signature))groups.set(signature,{signature,count:0,gameIds:[]});
+    const group=groups.get(signature);
+    group.count+=1;
+    group.gameIds.push(row.gameId);
+  }
+  const failureGroups=[...groups.values()].sort((a,b)=>a.signature.localeCompare(b.signature));
+  // 병합 가능은 모든 선택 게임의 테스트가 실제 실행되어 PASS인 경우에만 참이다.
+  const mergeReady=results.length>0&&results.every(row=>row.state==='GAME_QA_PASSED');
   return{
+    mergeReady,failureGroups,
     pass:results.every(x=>x.state!=='GAME_QA_FAILED'),
     gameQaPassedCount:results.filter(x=>x.state==='GAME_QA_PASSED').length,
     gameQaFailedCount:results.filter(x=>x.state==='GAME_QA_FAILED').length,
@@ -93,7 +114,9 @@ function main(){
   console.log('GAME_SCOPED_QA_PASSED='+report.gameQaPassedCount);
   console.log('GAME_SCOPED_QA_FAILED='+report.gameQaFailedCount);
   console.log('GAME_SCOPED_QA_NO_TEST='+report.gameQaMissingCount);
+  console.log('GAME_SCOPED_QA_MERGE_READY='+report.mergeReady);
+  for(const group of report.failureGroups)console.log('GAME_SCOPED_QA_FAILURE_GROUP='+group.signature+':'+group.gameIds.join(','));
   for(const r of report.results)console.log('GAME_SCOPED_QA='+r.gameId+':'+r.state);
-  if(!report.pass)process.exitCode=1;
+  if(!report.pass||(options['require-merge-ready']===true&&!report.mergeReady))process.exitCode=1;
 }
 if(process.argv[1]===fileURLToPath(import.meta.url))main();

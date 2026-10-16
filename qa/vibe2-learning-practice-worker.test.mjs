@@ -194,7 +194,7 @@ test('repair uses public execution feedback without leaking hidden checks or ref
   assert.equal(prompts.length,3);
   assert(formats.every(format=>format.required.includes('code')&&format.properties.tests.minItems===3&&format.additionalProperties===false));
   assert.match(prompts[0],/Sandbox contract: no using directives/);
-  assert(generation.every(options=>options.think===true&&options.maxPredict===6144));
+  assert(generation.every(options=>options.think===false&&options.maxPredict===3072),'external Gemini API uses the bounded JSON output budget without local-model think mode');
   assert.deepEqual(generation.map(options=>options.attempt),[0,1,2]);
   assert(prompts.every(prompt=>prompt.includes(JSON.stringify(formats[0]))));
   for(const prompt of prompts){assert(!prompt.includes('PRIVATE_REFERENCE'));assert(!prompt.includes('PRIVATE_ACCEPTANCE'));}

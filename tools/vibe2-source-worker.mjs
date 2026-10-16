@@ -4235,7 +4235,7 @@ function boundedPromptText(value='',maxBytes=COMPACT_DIRECTIVE_LINE_BYTES){
   }
   return best;
 }
-export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null,motionCoaching=null,robloxSourceCoaching=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
+export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null,motionCoaching=null,robloxSourceCoaching=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
   // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
   const motionUnit=order.assetProduction?.motionRepairWorkUnit;
@@ -6340,6 +6340,13 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
 async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){
   const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase();
   if(provider!=='GEMINI_API')throw new Error('LOCAL_AI_PERMANENTLY_FORBIDDEN: only Gemini API is authorized');
+  // node:test의 명시적 응답 파일은 결정론적 회귀검사용이며 AI 실행이 아니다.
+  // 실제 후보 생성에서는 파일 대체를 허용하지 않고 반드시 외부 API로 요청한다.
+  if(clean(responseFile)){
+    if(!/^child-/.test(clean(process.env.NODE_TEST_CONTEXT)))
+      throw new Error('MODEL_RESPONSE_FIXTURE_TEST_CONTEXT_REQUIRED');
+    return fs.readFileSync(path.resolve(responseFile),'utf8');
+  }
   const apiKey=clean(process.env.GEMINI_API_KEY);
   if(!apiKey)throw new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
   if(images.length)throw new Error('GEMINI_IMAGE_INPUT_ADAPTER_NOT_VERIFIED');

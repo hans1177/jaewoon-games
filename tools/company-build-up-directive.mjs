@@ -2183,6 +2183,22 @@ export function directivePrompt(d={}){
   // 전체 항목의 이름과 상태는 빠짐없이 전달하되, 상세 계약은 책임 워커가 현재 항목에만 펼친다.
   // 게임 전체의 반복 프롬프트 폭증을 막고 현재 큐·F0–F9 구조를 그대로 유지한다.
   const volumeRows=(volume.items||[]).map(row=>'- '+row.ref+' '+row.title+' | source='+row.sourceEvidenceState+' | ruleIds='+(row.linkedRuleIds||[]).join(',')+' | runtime=UNVERIFIED').join('\n');
+  // 대용량 승인 콘텐츠는 원본 directive에 보존하고, 전체 게임 프롬프트에는
+  // 이미 인덱싱된 상세 항목을 재출력하지 않는다. 담당 워커가 선택한 항목만 펼친다.
+  const fullDesignContext=d.designImplementationContext||{};
+  const variety=fullDesignContext.contentVarietyPlan;
+  const indexedFamilies={regions:'VARIETY_REGIONS',enemiesOrChallenges:'VARIETY_ENEMIESORCHALLENGES',abilities:'VARIETY_ABILITIES',
+    objectives:'VARIETY_OBJECTIVES',roleTransitions:'VARIETY_ROLETRANSITIONS'};
+  const promptDesignContext=variety&&typeof variety==='object'&&!Array.isArray(variety)
+    ?{...fullDesignContext,contentVarietyPlan:Object.fromEntries(Object.entries(variety).map(([key,entries])=>{
+      const family=indexedFamilies[key];
+      if(!family||!Array.isArray(entries)||entries.length<24)return[key,entries];
+      const indexed=(volume.items||[]).filter(row=>row.family===family);
+      if(indexed.length!==entries.length)return[key,entries];
+      return[key,{authoredCount:entries.length,detailSource:'designedGameVolume.items[].designDetail',
+        firstRef:indexed[0]?.ref,lastRef:indexed[indexed.length-1]?.ref,allItemsRetained:true}];
+    }))}
+    :fullDesignContext;
   const expansion=d.autonomousContentExpansion||{};
   const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
   const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
@@ -2191,7 +2207,7 @@ export function directivePrompt(d={}){
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
-    `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(d.designImplementationContext||{})}`,
+    `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(promptDesignContext)}`,
     `DESIGNED_GAME_VOLUME: mode=${volume.mode||'UNKNOWN'}; authored=${volume.authoredItemCount||0}; sourceNamedCandidates=${volume.namedSourceCandidateCount||0}; sourceReview=${volume.sourceReviewRequiredCount||0}; runtimeVerified=${volume.runtimeVerifiedCount||0}; countsAreNotPass=true`,
     'DESIGNED_GAME_VOLUME_ITEMS:',
     volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
