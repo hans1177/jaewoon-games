@@ -4,7 +4,6 @@
 
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -12,7 +11,7 @@ import { pathToFileURL } from 'node:url';
 import { learningGuidance } from './vibe2-learning-motor.mjs';
 
 const clean=v=>String(v??'').trim();
-const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+const DEFAULT_MODEL=process.env.VIBE2_GEMINI_MODEL||'gemini-2.5-flash';
 const DEFAULT_TIMEOUT=Math.max(10000,Math.min(300000,Number(process.env.VIBE2_MODEL_TIMEOUT_MS||240000)));
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const writeJson=(file,value)=>{fs.mkdirSync(new URL('.', 'file://'+file).pathname,{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
@@ -77,22 +76,47 @@ export function practiceInferenceOptions(model=DEFAULT_MODEL,attempt=0,thinkRequ
   return {think,temperature:hybrid?(think ? .6 : .7):.12,...(hybrid?{top_p:think ? .95 : .8,top_k:20,min_p:0}:{}),seed:20261008+attempt};
 }
 
-export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200,format='json',messages=null,think=false,attempt=0,inference=practiceInferenceOptions(model,attempt,think)}={}){
-  const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
-  if(fake)return fs.readFileSync(fake,'utf8');
-  const conversation=Array.isArray(messages)&&messages.length>0;
-  const {think:enabledThinking,...sampling}=inference;
-  // Coding reasoning is internal; only the final response enters repair history.
-  const body=JSON.stringify({model,...(conversation?{messages}:{prompt}),stream:false,think:enabledThinking===true,format,options:{num_ctx:enabledThinking?12288:8192,num_predict:maxPredict,...sampling}});
-  return await new Promise((resolve,reject)=>{
-    const req=http.request({hostname:'127.0.0.1',port:11434,path:conversation?'/api/chat':'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
-      let data='';res.setEncoding('utf8');res.on('data',x=>data+=x);res.on('end',()=>{
-        try{const row=JSON.parse(data);if(res.statusCode!==200||row?.error)throw new Error(row.error||'practice model HTTP '+res.statusCode);if(row.done_reason==='length')throw new Error('practice model output truncated');resolve(String(conversation?row?.message?.content||'':row?.response||''));}catch(e){reject(e);}
-      });res.on('error',reject);
+export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200,messages=null,attempt=0,inference={}}={}){
+  const fixture=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
+  if(fixture)return fs.readFileSync(fixture,'utf8');
+  if(clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase()!=='GEMINI_API')
+    throw new Error('PRACTICE_EXTERNAL_AI_PROVIDER_REQUIRED_NO_LOCAL_FALLBACK');
+  const key=clean(process.env.GEMINI_API_KEY);
+  if(!key)throw new Error('PRACTICE_GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
+  const selected=clean(process.env.VIBE2_GEMINI_MODEL||model||DEFAULT_MODEL);
+  if(!/^gemini-[a-z0-9.-]+$/.test(selected))
+    throw new Error('PRACTICE_GEMINI_MODEL_INVALID');
+  const contents=Array.isArray(messages)&&messages.length>0
+    ?messages.map(message=>({
+      role:message.role==='assistant'?'model':'user',
+      parts:[{text:String(message.content||'')}]
+    }))
+    :[{role:'user',parts:[{text:String(prompt)}]}];
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),timeoutMs);
+  try{
+    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(selected)+':generateContent',{
+      method:'POST',signal:controller.signal,
+      headers:{'content-type':'application/json','x-goog-api-key':key},
+      body:JSON.stringify({contents,generationConfig:{
+        temperature:Math.max(0,Math.min(.6,Number(inference?.temperature)||.12)),
+        maxOutputTokens:Math.max(512,Math.min(8192,Number(maxPredict)||1200)),
+        responseMimeType:'application/json'
+      }})
     });
-    req.setTimeout(timeoutMs,()=>req.destroy(new Error('practice model timeout')));
-    req.on('error',reject);req.end(body);
-  });
+    if(!res.ok){
+      if([402,403,429].includes(res.status))throw new Error('PRACTICE_GEMINI_QUOTA_OR_BILLING_NO_LOCAL_FALLBACK:'+res.status);
+      throw new Error('PRACTICE_GEMINI_HTTP_NO_LOCAL_FALLBACK:'+res.status);
+    }
+    const data=await res.json();
+    const output=(data.candidates?.[0]?.content?.parts||[])
+      .filter(x=>typeof x.text==='string').map(x=>x.text).join('');
+    if(!output.trim())throw new Error('PRACTICE_GEMINI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
+    return output;
+  }catch(error){
+    if(error?.name==='AbortError')throw new Error('PRACTICE_GEMINI_TIMEOUT_NO_LOCAL_FALLBACK');
+    throw error;
+  }finally{clearTimeout(timer);}
 }
 
 // Only bounded candidate diagnostics are exposed to public-example repair. Never copy
@@ -360,7 +384,7 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
   const finalHidden=selectedAttempt===1?firstHidden:await evaluateAttempt(parsed,{drill,fixtureCache,evaluationMode:'hidden'});
   evaluation={...finalHidden,pass:finalHidden?.pass===true&&evaluation.pass===true};
   return {parsed,raw,evaluation,...(captureCandidates?{candidateHistory}:{}),repairEvidence:{version:1,engineRevision:'VIBE2_CODING_PRACTICE_2.5',modelWeightsChanged:false,
-    execution:responseFile?'FIXTURE_REPLAY':request===requestPracticeModel?'LOCAL_OLLAMA':'INJECTED_TEST_PROVIDER',
+    execution:responseFile?'FIXTURE_REPLAY':request===requestPracticeModel?'GEMINI_API':'INJECTED_TEST_PROVIDER',
     maxAttempts:limit,modelCalls:attempts.length,selectedAttempt,specificationReviewRequested,firstAttemptPass:firstHidden?.pass===true,finalPass:evaluation.pass===true,
     generationFailures:attempts.filter(row=>row.generationError).length,generationBudgetFallbackUsed:attempts.some(row=>row.generationBudgetFallback===true),
     recovered:firstHidden?.pass!==true&&evaluation.pass===true,regressed:firstHidden?.pass===true&&evaluation.pass!==true,
