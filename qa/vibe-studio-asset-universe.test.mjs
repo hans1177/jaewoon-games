@@ -3546,8 +3546,17 @@ test('flexible internal asset reuse keeps low-score assets usable and adapts goo
     requirement:{family:'UI',subfamily:'HUD',currentAssetId:'low-ui'}
   });
   assert.equal(choice.selectedAssetId,'high-ui');
-  assert.equal(choice.replacementRecommended,true);
-  assert.equal(choice.replacementAction,'ADAPT_THEN_REPLACE');
+  assert.equal(choice.replacementRecommended,false,'unverified asset cannot auto-replace current UI');
+  assert.equal(choice.automaticBindingAssetId,'low-ui');
+  assert.equal(choice.replacementAction,'KEEP_CURRENT_AND_ITERATE');
+  const verifiedChoice=chooseInternalAssetReplacement({
+    currentAsset:low,candidates:[low,highStyleMismatch],
+    gameDna:{targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'DARK_FANTASY'})},
+    requirement:{family:'UI',subfamily:'HUD',currentAssetId:'low-ui'},
+    usageByAsset:{'high-ui':{runtimePass:true}}
+  });
+  assert.equal(verifiedChoice.replacementRecommended,true);
+  assert.equal(verifiedChoice.replacementAction,'ADAPT_THEN_REPLACE');
   assert.equal(choice.studioRequired,false);
 });
 
@@ -3572,7 +3581,17 @@ test('internal replacement respects locks and treats observed failure as priorit
     usageByAsset:{'failed-high':{runtimeFailure:true,verifiedFailureCount:2}}
   });
   assert.equal(unlocked.selectedAssetId,'better');
-  assert.equal(unlocked.replacementAction,'REPLACE_NOW');
+  assert.equal(unlocked.replacementAction,'KEEP_CURRENT_AND_ITERATE');
+  assert.equal(unlocked.replacementRecommended,false,'unverified better weapon stays advisory');
+  assert.equal(unlocked.automaticBindingAssetId,'current');
+  const runtimeVerified=chooseInternalAssetReplacement({
+    currentAsset:current,candidates:[current,better,failed],gameDna,
+    requirement:{family:'WEAPON',subfamily:'MELEE',currentAssetId:'current'},
+    usageByAsset:{better:{runtimePass:true},'failed-high':{runtimeFailure:true,verifiedFailureCount:2}}
+  });
+  assert.equal(runtimeVerified.selectedAssetId,'better');
+  assert.equal(runtimeVerified.replacementRecommended,true);
+  assert.equal(runtimeVerified.replacementAction,'REPLACE_NOW');
 
   const locked=chooseInternalAssetReplacement({
     currentAsset:current,candidates:[current,better],gameDna,
