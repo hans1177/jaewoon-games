@@ -77,8 +77,8 @@ local STUDIO_ASSET_SELECTION = {
   PROP = studioAssetFamily("PROP"),
 }
 local STUDIO_ASSET_FAMILY_STATUS = {
-  CHARACTER = "APPLIED_PROCEDURAL",
-  CREATURE = "APPLIED_PROCEDURAL",
+  CHARACTER = "EXTERNAL_VERIFIED_ONLY",
+  CREATURE = "EXTERNAL_VERIFIED_ONLY",
   BUILDING = "NOT_APPLICABLE",
   ENVIRONMENT = "APPLIED",
   WEAPON = "NOT_APPLICABLE",
@@ -370,48 +370,7 @@ local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   end
   end
 
-  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
-  local character = verifiedLearningPlayer.Character
-  local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-  if character and rootPart then
-    local highlight = Instance.new("Highlight")
-    highlight.Name = "VerifiedLearningSkillImpact"
-    highlight.FillTransparency = 0.35
-    highlight.OutlineTransparency = 0.12
-    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    highlight.Parent = character
-    verifiedLearningTweenService:Create(highlight, TweenInfo.new(0.20), {FillTransparency = 1, OutlineTransparency = 1}):Play()
-    local sparkles = Instance.new("Sparkles")
-    sparkles.Name = "VerifiedLearningSkillSparkles"
-    sparkles.SparkleColor = Color3.fromRGB(170, 220, 255)
-    sparkles.Parent = rootPart
-    local impactAttachment = Instance.new("Attachment")
-    impactAttachment.Name = "VerifiedLearningSkillAttachment"
-    impactAttachment.Parent = rootPart
-    local particles = Instance.new("ParticleEmitter")
-    particles.Name = "VerifiedLearningSkillParticles"
-    particles.Rate = 0
-    particles.Lifetime = NumberRange.new(0.18, 0.32)
-    particles.Speed = NumberRange.new(5, 9)
-    particles.SpreadAngle = Vector2.new(45, 45)
-    particles.LightEmission = 0.7
-    particles.Parent = impactAttachment
-    particles:Emit(18)
-    local impactLight = Instance.new("PointLight")
-    impactLight.Name = "VerifiedLearningSkillLight"
-    impactLight.Color = Color3.fromRGB(160, 215, 255)
-    impactLight.Brightness = 2.2
-    impactLight.Range = 10
-    impactLight.Parent = rootPart
-    verifiedLearningTweenService:Create(impactLight, TweenInfo.new(0.18), {Brightness = 0, Range = 4}):Play()
-    task.delay(0.24, function()
-      if impactAttachment then impactAttachment:Destroy() end
-      if impactLight then impactLight:Destroy() end
-      if sparkles then sparkles:Destroy() end
-      if highlight then highlight:Destroy() end
-    end)
-  end
-  end
+  -- Self-authored skill highlight, sparkles, particle sprites and lights deleted.
 
 end
 
@@ -789,91 +748,44 @@ local researchRequestPending = false
 local autoCombatEnabled = nativeTouchEnabled
 local marketSnapshot = {}
 local tradeCurrency = "Silver"
--- 24문명별 저비용 블록형 미리보기. 실제 R15 아바타/구매 에셋을 가장하지 않는다.
-local civPreviewStyles = {
-  {Color3.fromRGB(144, 64, 57), Color3.fromRGB(211, 166, 83), "crest"},
-  {Color3.fromRGB(210, 174, 98), Color3.fromRGB(237, 209, 103), "crown"},
-  {Color3.fromRGB(70, 108, 145), Color3.fromRGB(189, 143, 82), "helmet"},
-  {Color3.fromRGB(169, 67, 60), Color3.fromRGB(231, 185, 76), "cap"},
-  {Color3.fromRGB(120, 88, 66), Color3.fromRGB(198, 149, 86), "crown"},
-  {Color3.fromRGB(117, 75, 120), Color3.fromRGB(223, 179, 82), "crown"},
-  {Color3.fromRGB(180, 117, 72), Color3.fromRGB(239, 205, 113), "turban"},
-  {Color3.fromRGB(70, 130, 90), Color3.fromRGB(211, 164, 61), "feathers"},
-  {Color3.fromRGB(175, 83, 69), Color3.fromRGB(236, 189, 65), "sun"},
-  {Color3.fromRGB(56, 138, 136), Color3.fromRGB(219, 177, 84), "feathers"},
-  {Color3.fromRGB(79, 117, 73), Color3.fromRGB(151, 108, 64), "hood"},
-  {Color3.fromRGB(62, 95, 127), Color3.fromRGB(178, 182, 172), "helmet"},
-  {Color3.fromRGB(146, 112, 70), Color3.fromRGB(202, 165, 112), "fur"},
-  {Color3.fromRGB(153, 57, 58), Color3.fromRGB(65, 65, 71), "kabuto"},
-  {Color3.fromRGB(62, 102, 116), Color3.fromRGB(203, 151, 69), "sun"},
-  {Color3.fromRGB(112, 75, 118), Color3.fromRGB(180, 146, 82), "hat"},
-  {Color3.fromRGB(192, 156, 106), Color3.fromRGB(235, 218, 162), "turban"},
-  {Color3.fromRGB(84, 123, 82), Color3.fromRGB(218, 181, 95), "cross"},
-  {Color3.fromRGB(76, 140, 144), Color3.fromRGB(185, 211, 177), "band"},
-  {Color3.fromRGB(126, 100, 62), Color3.fromRGB(212, 192, 127), "feathers"},
-  {Color3.fromRGB(119, 123, 137), Color3.fromRGB(179, 70, 65), "helmet"},
-  {Color3.fromRGB(70, 99, 168), Color3.fromRGB(222, 180, 92), "plume"},
-  {Color3.fromRGB(90, 97, 105), Color3.fromRGB(172, 160, 134), "helmet"},
-  {Color3.fromRGB(125, 68, 74), Color3.fromRGB(184, 175, 160), "fur"},
-}
+-- Removed all 24 hand-built primitive civilization avatars.
 local civPreviewTone = 1
 local civSkinTones = {Color3.fromRGB(190, 148, 114), Color3.fromRGB(225, 184, 145), Color3.fromRGB(145, 100, 70), Color3.fromRGB(98, 68, 49)}
 local function civBuildCharacterPreview(viewport, raceId)
-  local style = civPreviewStyles[raceId]
-  if not style then return end
   for _, child in ipairs(viewport:GetChildren()) do
     if child:IsA("WorldModel") or child:IsA("Camera") then child:Destroy() end
   end
+  local folder = Shared:FindFirstChild("CreatureModels")
+  local template = folder and (folder:FindFirstChild("Race" .. tostring(raceId) .. "_Preview")
+    or folder:FindFirstChild("Race" .. tostring(raceId) .. "_Hero"))
+  if not (template and template:IsA("Model")
+    and template:GetAttribute("CuratedExternalAsset") == true
+    and (tonumber(template:GetAttribute("VerifiedRobloxAssetId")) or 0) > 0
+    and template:FindFirstChildWhichIsA("BasePart", true)) then
+    return
+  end
   local world = Instance.new("WorldModel")
   world.Parent = viewport
-  local function block(name, size, position, color, shape)
-    local part = Instance.new("Part")
-    part.Name = name
-    part.Size = size
-    part.CFrame = CFrame.new(position)
-    part.Color = color
-    part.Material = Enum.Material.SmoothPlastic
-    part.Anchored = true
-    part.CanCollide = false
-    part.CanTouch = false
-    part.CanQuery = false
-    if shape then part.Shape = shape end
-    part.Parent = world
-    return part
-  end
-  local cloth, metal, headwear = style[1], style[2], style[3]
-  local skin = civSkinTones[civPreviewTone]
-  block("Torso", Vector3.new(1.8, 1.85, 0.9), Vector3.new(0, 2.85, 0), cloth)
-  block("Waist", Vector3.new(1.7, 0.4, 0.85), Vector3.new(0, 1.9, 0), metal)
-  for _, side in ipairs({-1, 1}) do
-    block("Arm" .. side, Vector3.new(0.65, 1.7, 0.76), Vector3.new(side * 1.22, 2.82, 0), cloth)
-    block("Leg" .. side, Vector3.new(0.75, 1.7, 0.8), Vector3.new(side * 0.48, 0.9, 0), cloth)
-  end
-  block("Head", Vector3.new(1.18, 1.14, 1.1), Vector3.new(0, 4.38, 0), skin)
-  block("ChestEmblem", Vector3.new(0.65, 0.6, 0.12), Vector3.new(0, 3.1, 0.52), metal)
-  if headwear == "turban" or headwear == "fur" or headwear == "hood" then
-    block("Wrap", Vector3.new(1.42, 0.56, 1.3), Vector3.new(0, 4.96, 0), metal)
-    block("CrownWrap", Vector3.new(1.2, 0.38, 1.14), Vector3.new(0, 5.24, 0), cloth)
-  elseif headwear == "feathers" or headwear == "plume" or headwear == "crest" then
-    block("Headband", Vector3.new(1.4, 0.35, 1.24), Vector3.new(0, 5.02, 0), metal)
-    for _, side in ipairs({-1, 0, 1}) do
-      block("Plume" .. side, Vector3.new(0.22, 0.85 + (1 - math.abs(side)) * 0.35, 0.25),
-        Vector3.new(side * 0.33, 5.66, 0), cloth)
+  local model = template:Clone()
+  for _, part in ipairs(model:GetDescendants()) do
+    if part:IsA("BasePart") then
+      part.Anchored = true
+      part.CanCollide = false
+      part.CanTouch = false
+      part.CanQuery = false
     end
-  elseif headwear == "crown" or headwear == "sun" or headwear == "cross" then
-    block("CrownBase", Vector3.new(1.38, 0.33, 1.2), Vector3.new(0, 5.02, 0), metal)
-    block("CrownEmblem", Vector3.new(0.37, 0.77, 0.2), Vector3.new(0, 5.44, 0.36), metal)
-  else
-    block("Helmet", Vector3.new(1.45, 0.55, 1.33), Vector3.new(0, 5.03, 0), metal)
-    block("HelmetRidge", Vector3.new(1.1, 0.25, 0.2), Vector3.new(0, 5.37, 0), cloth)
   end
+  model.Parent = world
+  local extents = model:GetExtentsSize()
+  if extents.X > 0.01 and extents.Y > 0.01 and extents.Z > 0.01 then
+    local fit = math.min(3 / math.max(extents.X, extents.Z), 4.5 / extents.Y)
+    if fit > 0.01 and fit < 100 then model:ScaleTo(fit) end
+  end
+  model:PivotTo(CFrame.new(0, 2.75, 0))
   local camera = Instance.new("Camera")
-  camera.CFrame = CFrame.lookAt(Vector3.new(8.6, 5.0, 13), Vector3.new(0, 2.75, 0))
+  camera.CFrame = CFrame.lookAt(Vector3.new(8.6, 5, 13), Vector3.new(0, 2.75, 0))
   camera.Parent = viewport
   viewport.CurrentCamera = camera
-  viewport.Ambient = Color3.fromRGB(210, 193, 160)
-  viewport.LightColor = Color3.fromRGB(255, 243, 196)
-  viewport.LightDirection = Vector3.new(-1, -1, -1)
 end
 local function civOpen(mode)
   if civPanel.Visible and civPanelMode == mode then
@@ -904,7 +816,7 @@ local function civOpen(mode)
     racePreview.BorderSizePixel = 0
     racePreview.LayoutOrder = 0
     racePreview.Parent = civList
-    local previewTitle = civLabel(racePreview, "PreviewTitle", "24문명 전사 · 블록형 3D 미리보기",
+    local previewTitle = civLabel(racePreview, "PreviewTitle", "24문명 전사 · 검증된 외부 모델 미리보기",
       UDim2.new(1, -12, 0, 30), UDim2.fromOffset(6, 3), false)
     previewTitle.TextSize = 14
     local viewport = Instance.new("ViewportFrame")
@@ -2005,29 +1917,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         elseif returningHome then
           swing = math.sin(gaitPhase) * amplitude * 0.65
         end
-        -- 공격 예고 중인 적의 중심부를 짧게 점멸시켜 모바일에서도 타이밍을 읽기 쉽게 한다.
-        -- 적 서버 판정/히트박스/자원은 변경하지 않는다.
-        local core = model:FindFirstChild("SpiritCore") or model:FindFirstChild("HumanoidRootPart")
-        if core and core:IsA("BasePart") then
-          local existing = creatureTelegraphHighlights[core]
-          if preparing and not defeated and not stunned then
-            if not existing then
-              local highlight = Instance.new("Highlight")
-              highlight.Name = "LocalAttackTelegraph"
-              highlight.Adornee = model
-              highlight.FillColor = Color3.fromRGB(242, 130, 54)
-              highlight.OutlineColor = Color3.fromRGB(255, 213, 118)
-              highlight.FillTransparency = 0.83
-              highlight.OutlineTransparency = 0.35
-              highlight.DepthMode = Enum.HighlightDepthMode.Occluded
-              highlight.Parent = model
-              creatureTelegraphHighlights[core] = highlight
-            end
-          elseif existing then
-            existing:Destroy()
-            creatureTelegraphHighlights[core] = nil
-          end
-        end
+        -- Hand-made telegraph Highlight removed; external creature visuals are not recolored.
         for _, name in ipairs(creatureMotionLimbNames) do
           local part = model:FindFirstChild(name)
           -- Motor6D로 연결된 실제 R15/R6 관절은 애니메이터가 담당한다.
@@ -2252,7 +2142,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
     end
   end
   housingPreview.Color=allowed and Color3.fromRGB(90,220,140) or Color3.fromRGB(235,90,90)
-  housingPreview.Transparency=0.57
+  housingPreview.Transparency=1
 end)
 civButton(housingFooter,"HousingRotate","회전 90도",
   UDim2.new(1,-8,0,30),UDim2.new(),function()
@@ -2342,78 +2232,10 @@ remote.OnClientEvent:Connect(function(kind, payload)
     civMessage.Text = "PERFECT PARRY! STUNNED · 적 2초 기절"
     civMessage.TextColor3 = Color3.fromRGB(255, 228, 118)
     civMessage.Visible = true
-    local character = player.Character
-    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-    if rootPart and rootPart:IsA("BasePart") then
-      local spark = Instance.new("ParticleEmitter")
-      spark.Name = "PerfectParrySparks"
-      spark.Color = ColorSequence.new(Color3.fromRGB(255, 217, 93))
-      spark.LightEmission = 1
-      spark.Size = NumberSequence.new(0.45, 0)
-      spark.Lifetime = NumberRange.new(0.14, 0.27)
-      spark.Speed = NumberRange.new(7, 12)
-      spark.Rate = 0
-      spark.SpreadAngle = Vector2.new(140, 140)
-      spark.Parent = rootPart
-      spark:Emit(16)
-      game:GetService("Debris"):AddItem(spark, 0.6)
-    end
-    local camera = workspace.CurrentCamera
-    if camera and camera.CameraType ~= Enum.CameraType.Scriptable then
-      local formerType = camera.CameraType
-      local formerFrame = camera.CFrame
-      camera.CameraType = Enum.CameraType.Scriptable
-      camera.CFrame = formerFrame * CFrame.new(math.random(-3, 3) / 100, math.random(-3, 3) / 100, 0)
-      task.delay(0.05, function()
-        if workspace.CurrentCamera == camera then camera.CameraType = formerType end
-      end)
-    end
+    -- Vibe-generated parry sparks and camera shake removed.
   elseif kind == "CIV_HIT" and typeof(payload) == "table" then
-    -- 실제 서버 적중 결과에만 표시하는 로컬 타격 그래픽.
-    local character = player.Character
-    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-    if rootPart then
-      local nearest, distance = nil, 14
-      for _, model in ipairs(workspace:GetDescendants()) do
-        if model:IsA("Model") and model:GetAttribute("CivilizationEnemy") == true
-          and model.Name == tostring(payload.Enemy) then
-          local pivot = model.PrimaryPart
-          if pivot then
-            local d = (pivot.Position - rootPart.Position).Magnitude
-            if d < distance then nearest, distance = model, d end
-          end
-        end
-      end
-      if nearest then
-        local impact = Instance.new("Highlight")
-        impact.Name = "CombatHitFlash"
-        impact.FillColor = Color3.fromRGB(255, 201, 108)
-        impact.OutlineColor = Color3.fromRGB(255, 244, 214)
-        impact.FillTransparency = 0.25
-        impact.OutlineTransparency = 0.1
-        impact.DepthMode = Enum.HighlightDepthMode.Occluded
-        impact.Adornee = nearest
-        impact.Parent = nearest
-        actionTweenService:Create(impact, TweenInfo.new(0.18), {
-          FillTransparency = 1, OutlineTransparency = 1
-        }):Play()
-        task.delay(0.2, function() impact:Destroy() end)
-      end
-    end
     civMessage.TextColor3 = Color3.fromRGB(250, 235, 191)
     civMessage.Text = tostring(payload.Enemy) .. "에게 " .. tostring(payload.Damage) .. " 피해!"
-    local hitCamera = workspace.CurrentCamera
-    if hitCamera then
-      local originalFov = hitCamera.FieldOfView
-      actionTweenService:Create(hitCamera, TweenInfo.new(0.06, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-        {FieldOfView = math.clamp(originalFov - 1.5, 40, 100)}):Play()
-      task.delay(0.065, function()
-        if workspace.CurrentCamera == hitCamera then
-          actionTweenService:Create(hitCamera, TweenInfo.new(0.14, Enum.EasingStyle.Quad),
-            {FieldOfView = originalFov}):Play()
-        end
-      end)
-    end
   end
 end)
 UserInputService.InputBegan:Connect(function(input, consumed)
