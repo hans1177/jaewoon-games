@@ -16,6 +16,7 @@ local creatureAssetReady = 0
 if creatureFolder then
   for _, model in ipairs(creatureFolder:GetChildren()) do
     if model:IsA("Model") and model:GetAttribute("CuratedExternalAsset") == true
+      and (tonumber(model:GetAttribute("VerifiedRobloxAssetId")) or 0) > 0
       and model:FindFirstChildWhichIsA("BasePart", true) then
       creatureAssetReady += 1
     end
@@ -119,6 +120,8 @@ if not foundationSpawn then
 end
 -- native-foundation-spawn-grounding-v3
 foundationSpawn.Anchored = true
+foundationSpawn.Transparency = 1
+foundationSpawn.CastShadow = false
 -- This managed SpawnLocation is a marker, never its own physical support proof.
 foundationSpawn.CanCollide = false
 
@@ -1273,6 +1276,7 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   )
   if not (visualTemplate and visualTemplate:IsA("Model")
     and visualTemplate:GetAttribute("CuratedExternalAsset") == true
+    and (tonumber(visualTemplate:GetAttribute("VerifiedRobloxAssetId")) or 0) > 0
     and visualTemplate:FindFirstChildWhichIsA("BasePart", true)) then
     return nil
   end
