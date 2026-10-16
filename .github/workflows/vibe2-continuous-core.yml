@@ -1275,8 +1275,15 @@ jobs:
           put('game_id',order.gameId||'');
           put('target',order.target||'');
           put('route',order.executionRoute||'');
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const authorizedExternalGames=policy.externalAiVibeFullProcessCollaboration?.execution?.externalAiExplicitOwnerGameIds||[];
+          const delegatedExternalAi=order.gameId==='simple-rpg'
+            &&order.taskId==='owner-simple-rpg-creature-motion-20261016'
+            &&authorizedExternalGames.includes('simple-rpg')
+            &&order.target==='roblox';
           const deterministicRoblox=robloxDeterministicPresentationEligible(order);
-          put('deterministic_source',deterministicRoblox?'true':'false');
+          put('external_ai_delegated',delegatedExternalAi?'true':'false');
+          put('deterministic_source',delegatedExternalAi?'false':(deterministicRoblox?'true':'false'));
           const selectedModel=order.assetProduction?.modelRouting?.selectedModel||process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
           const heroModelRequested=order.assetProduction?.modelRouting?.heroRequested===true;
           const modelCacheFamily=order.assetProduction?.modelRouting?.cacheFamily||'vibe2-ollama-v5';
@@ -1538,6 +1545,7 @@ jobs:
           SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
           TARGET: ${{ steps.order.outputs.target }}
           DETERMINISTIC_SOURCE: ${{ steps.order.outputs.deterministic_source }}
+          VIBE2_OWNER_EXTERNAL_AI_DELEGATED: ${{ steps.order.outputs.external_ai_delegated }}
           VARIANT: ${{ matrix.variant }}
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
@@ -1567,6 +1575,13 @@ jobs:
           echo 'VIBE2_GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3'
           echo 'VIBE2_GAME_SOURCE_PROVIDER=GEMINI_API'
           echo 'VIBE2_CODEX_GAME_SOURCE_WRITE=FORBIDDEN'
+          if [ "${VIBE2_OWNER_EXTERNAL_AI_DELEGATED:-false}" = 'true' ]; then
+            test "$TASK_ID" = 'owner-simple-rpg-creature-motion-20261016'
+            test "$TARGET" = 'roblox'
+            test "$SOURCE_ROOT" = 'roblox-games/simple-rpg'
+            test "$DETERMINISTIC_SOURCE" = 'false'
+            echo 'VIBE2_OWNER_EXTERNAL_AI_SCOPE=SIMPLE_RPG_ROBLOX_GEMINI_ISOLATED_CANDIDATE'
+          fi
 
           if [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
             echo 'VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL'

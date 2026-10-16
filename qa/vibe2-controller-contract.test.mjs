@@ -1800,3 +1800,21 @@ done`;
   }
 });
 
+
+test('owner-scoped external Gemini source delegation is restricted to simple RPG and existing QA gates',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const contract=policy.externalAiVibeFullProcessCollaboration.execution;
+  assert.deepEqual(contract.externalAiExplicitOwnerGameIds,['simple-rpg']);
+  assert.equal(contract.externalAiDefaultEnabled,false);
+  assert.equal(contract.externalAiDirectMainWrite,false);
+  assert.equal(contract.deterministicQaRequired,true);
+  assert.equal(contract.securityScanRequired,true);
+  assert(workflow.includes("order.taskId==='owner-simple-rpg-creature-motion-20261016'"));
+  assert(workflow.includes("authorizedExternalGames.includes('simple-rpg')"));
+  assert(workflow.includes("put('deterministic_source',delegatedExternalAi?'false'"));
+  assert(workflow.includes("test \"$SOURCE_ROOT\" = 'roblox-games/simple-rpg'"));
+  assert(workflow.includes("test \"$DETERMINISTIC_SOURCE\" = 'false'"));
+  assert(workflow.includes('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK'));
+  assert(workflow.includes('tools/company-security-steward.mjs'));
+  assert(workflow.includes('tools/vibe2-source-worker.mjs'));
+});

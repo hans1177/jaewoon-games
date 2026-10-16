@@ -562,9 +562,9 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task
   const access=policy.developmentAccess?.[platform]||(platform==='UNITY_ANDROID'?policy.developmentAccess?.UNITY:null);
   if(access==='OWNER_HOLD')return true;
   if(scope?.status==='ACTIVE'){
-    if(targetName==='web')return true;
-    const active=Array.isArray(scope.activeTargets)?scope.activeTargets:['ROBLOX','UNITY_WEB'];
-    if(['ROBLOX','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'].includes(platform)&&!active.includes(platform))return true;
+    const active=Array.isArray(scope.activeTargets)?scope.activeTargets:['ROBLOX'];
+    // Direct HTML/JS Web is an independently authorized lane, never a Unity Web alias.
+    if(['ROBLOX','WEB','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'].includes(platform)&&!active.includes(platform))return true;
   }
   return Boolean(id && ((clean(exclusive?.status).toUpperCase()==='ACTIVE'
     && (exclusive?.gameIds||[]).includes(id))

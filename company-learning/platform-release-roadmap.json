@@ -1,8 +1,8 @@
 {
-  "version": 575,
+  "version": 576,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-10-11",
+  "recordedAt": "2026-10-17",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -34,14 +34,15 @@
     "existingRunningSafeWorkNotCancelledSolelyForPriority": true,
     "platformF0F9QualityGatesUnchanged": true
   },
-  "currentPhase": "ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT",
+  "currentPhase": "ROBLOX_AND_DIRECT_WEB_CONTINUOUS_DEVELOPMENT",
   "priorityMeaning": "ROBLOX_FOCUSED_DEVELOPMENT_UNITY_WEB_AND_ANDROID_OWNER_HOLD",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
     "UNITY": "OWNER_HOLD",
     "FORTNITE_UEFN": "OWNER_HOLD",
     "UNITY_WEB": "OWNER_HOLD",
-    "UNITY_ANDROID": "OWNER_HOLD"
+    "UNITY_ANDROID": "OWNER_HOLD",
+    "WEB": "ALWAYS_ALLOWED"
   },
   "crossPlatformDevelopmentLockedByPhase": false,
   "platformEntryGateAllowed": false,
@@ -1414,11 +1415,11 @@
       "qualityOrEvidenceGateWeakeningForbidden": true
     },
     "webGameFlow": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-10-06",
-      "enabled": false,
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_DIRECT_WEB",
+      "enabled": true,
       "targetConcurrentGames": 16,
-      "scope": "UNITY_WEB_SAME_CANONICAL_UNITY_PROJECT",
+      "scope": "DIRECT_WEB_GAME_SOURCE_IN_EXISTING_WEB_GAMES",
       "counting": "DISTINCT_GAMES_WITH_ACTIVE_SOURCE_WORK",
       "refillBeforeWeightedPlatformMix": true,
       "refillThroughExistingPlannerAndCompletionEvents": true,
@@ -1429,8 +1430,8 @@
       "plannerSeedsDistinctGamesBeforeNormalBacklogGate": true,
       "planningUsesExistingPersistentQueueCapacity": true,
       "distinctGameFirstScheduling": true,
-      "legacyDirectWebGameNotTarget": true,
-      "disabledReason": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY"
+      "legacyDirectWebGameNotTarget": false,
+      "disabledReason": null
     },
     "distinctGameDevelopmentTarget": 64
   },
@@ -23281,7 +23282,12 @@
       "externalAiRequiredForProduction": false,
       "externalAiDefaultEnabled": false,
       "externalAiOptInVariable": "COMPANY_EXTERNAL_AI_ENABLED",
-      "localAuthoringContinuesWithoutExternalAi": true
+      "localAuthoringContinuesWithoutExternalAi": true,
+      "externalAiExplicitOwnerGameIds": [
+        "simple-rpg"
+      ],
+      "externalAiExplicitOwnerScope": "ROBLOX_ISOLATED_CANDIDATE_BRANCH_ONLY",
+      "externalAiOtherGameDelegationAllowedByThisDirective": false
     },
     "vibe": {
       "remainsPrimaryLearningAndIntegrationAgent": true,
@@ -25820,11 +25826,12 @@
       "unityWebDevelopmentPaused": true
     },
     "ownerActiveDevelopmentScope20261009": {
-      "version": 2,
-      "authority": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY",
+      "version": 3,
+      "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_DIRECT_WEB",
       "status": "ACTIVE",
       "activeTargets": [
-        "ROBLOX"
+        "ROBLOX",
+        "WEB"
       ],
       "ownerHeldTargets": [
         "UNITY_WEB",
@@ -25849,7 +25856,8 @@
       "existingUnityWeb2dGamesMustRebuild3d": true,
       "allSpatialGameAssetLibraries3dOnly": true,
       "unityWeb3dRuntimeProofRequired": true,
-      "unityWebDevelopmentAllowed": false
+      "unityWebDevelopmentAllowed": false,
+      "directWebDevelopmentAllowed": true
     }
   },
   "centralDocumentation": {
@@ -28938,11 +28946,12 @@
     }
   },
   "ownerActiveDevelopmentScope20261009": {
-    "version": 2,
-    "authority": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY",
+    "version": 3,
+    "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_DIRECT_WEB",
     "status": "ACTIVE",
     "activeTargets": [
-      "ROBLOX"
+      "ROBLOX",
+      "WEB"
     ],
     "ownerHeldTargets": [
       "UNITY_WEB",
@@ -28967,7 +28976,8 @@
     "existingUnityWeb2dGamesMustRebuild3d": true,
     "allSpatialGameAssetLibraries3dOnly": true,
     "unityWeb3dRuntimeProofRequired": true,
-    "unityWebDevelopmentAllowed": false
+    "unityWebDevelopmentAllowed": false,
+    "directWebDevelopmentAllowed": true
   },
   "ownerUnityWeb3dOnly20261009": {
     "version": 2,

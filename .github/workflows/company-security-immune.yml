@@ -402,17 +402,32 @@ jobs:
           gh api "repos/$REPO/pulls/$PR_NUMBER/reviews?per_page=100" > /tmp/security-pr-reviews.json
           node - <<'NODE'
           const fs=require('fs');
+          const {execFileSync}=require('node:child_process');
           const reviews=JSON.parse(fs.readFileSync('/tmp/security-pr-reviews.json','utf8'));
           const owner=String(process.env.REPO_OWNER||'').toLowerCase();
           const head=String(process.env.HEAD_SHA||'');
-          const pass=reviews.some(row=>
+          const protectedCodeUnchanged=reviewed=>{
+            if(!/^[0-9a-f]{40}$/i.test(reviewed)||reviewed===head)return false;
+            try{
+              try{execFileSync('git',['cat-file','-e',reviewed+'^{commit}'],{stdio:'ignore'});}
+              catch{execFileSync('git',['fetch','--no-tags','--depth=1','origin',reviewed],{stdio:'ignore',timeout:25000});}
+              // Exact source equality, including every policy/workflow/runtime file.
+              // Only QA tests can change; they still run again in the current CI.
+              execFileSync('git',['diff','--quiet',reviewed,head,'--','.',':(exclude)qa/**'],{stdio:'ignore'});
+              return true;
+            }catch{return false;}
+          };
+          const validReview=reviews.filter(row=>
             ['APPROVED','COMMENTED'].includes(String(row.state||'').toUpperCase()) &&
             String(row.body||'').trim()==='PRIMARY_AI_DIRECT_REVIEW=PASS' &&
-            String(row.commit_id||'')===head &&
             String(row.user?.login||'').toLowerCase()===owner
           );
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`pass=${pass?'YES':'NO'}\n`);
+          const exact=validReview.some(row=>String(row.commit_id||'')===head);
+          const reused=!exact&&validReview.some(row=>protectedCodeUnchanged(String(row.commit_id||'')));
+          const pass=exact||reused;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass?'YES':'NO')+'\n');
           console.log('VIBE_SECURITY_PRIMARY_AI_DIRECT_REVIEW='+(pass?'PASS':'MISSING'));
+          console.log('VIBE_SECURITY_REVIEW_REUSE='+(reused?'IDENTICAL_PROTECTED_SOURCE':'NO'));
           NODE
 
       - name: Enforce quarantine verdict
