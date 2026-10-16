@@ -1,7 +1,7 @@
 // 파일명: tools/homepage-manager.mjs
 // 단일 홈페이지 관리 실행계약과 canonical Top30 실시간 미러/PWA/Web 링크를 self-QA 한다.
 import fs from 'node:fs';
-const compileHomepageCentralPolicy = () => ({valid:false,errors:['LEGACY_CENTRAL_POLICY_REMOVED'],fingerprint:null,runtimeAuthority:null,serverRuntimeBranch:null,publicSourceBranch:null,contract:{supportedPlatforms:[],managerContract:{},testingContract:{},documentationSyncContract:{},homepageListingContract:{}}});
+import { buildHomepagePlatformExposure } from './company-homepage-platform-exposure-sync.mjs';
 import { normalizeCatalog, validatedHomepageMedia, webTreeFingerprint } from './game-catalog-normalization.mjs';
 
 // Media capture stays inside the existing manager / self-QA / Director chain.
@@ -27,7 +27,13 @@ const books=readJson('game-artbooks.json');
 const testManifest=readJson('test-game-candidates.json');
 const directive=readJson('company-directive.json');
 const roadmap=exists('company-learning/platform-release-roadmap.json')?readJson('company-learning/platform-release-roadmap.json'):{};
-const homepageCentral=compileHomepageCentralPolicy(roadmap);
+// [중앙정책] 운영 플랫폼 계산과 홈페이지 관리가 동일한 검증된 정책 투영을 사용한다.
+const homepagePolicyExposure=buildHomepagePlatformExposure({policy:roadmap});
+const homepageCentral={
+  valid:true,errors:[],fingerprint:homepagePolicyExposure.centralPolicyFingerprint,
+  supportedPlatforms:homepagePolicyExposure.supportedPlatforms,
+  contract:roadmap.serverHomepageIntegration
+};
 const centralHomepage=homepageCentral.contract||{};
 const expectedHomepagePolicyFingerprint=String(process.env.HOMEPAGE_POLICY_SHA256||'').trim();
 const index=readText('index.html');
