@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "kind": "OWNER_SINGLE_POLICY_PROPOSAL",
+  "status": "REVIEW_REQUIRED_NOT_EXECUTION_AUTHORITY",
+  "ownerPriority": "LATEST_EXPLICIT_OWNER_DIRECTIVE",
+  "principles": {
+    "singleCanonicalPolicy": true,
+    "ownerDirectivesDetermineWorkPriority": true,
+    "preserveExistingGameLogicAndSaves": true,
+    "reuseCanonicalVibePipeline": true,
+    "retainSecurityAndReleaseVerification": true,
+    "neverFabricatePass": true
+  },
+  "migration": {
+    "legacyDeletedPath": "company-learning/platform-release-roadmap.json",
+    "currentDirective": "company-directive.json",
+    "requiredBeforeActivation": [
+      "OWNER_POLICY_AUTHORITY_MIGRATION_REVIEW",
+      "UPDATE_SHARED_CONTEXT_AND_CONSTITUTION_ENFORCER",
+      "UPDATE_STALE_CANONICAL_POLICY_TESTS_AND_WORKFLOWS",
+      "INDEPENDENT_QA_AND_MAIN_WRITE_GUARD",
+      "VERIFIED_MAIN_PROMOTION"
+    ],
+    "automaticPassOnCreation": false
+  },
+  "assetCleanup": {
+    "target": "LOW_VISUAL_QUALITY_COMMON_ASSETS",
+    "replacementRequires": [
+      "DEPENDENCY_COMPATIBILITY",
+      "SOURCE_EVIDENCE",
+      "RUNTIME_VISUAL_COMPARISON",
+      "SAVE_AND_GAMEPLAY_REGRESSION"
+    ],
+    "deleteBeforeVerifiedReplacement": false
+  }
+}
