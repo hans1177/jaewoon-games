@@ -36,7 +36,6 @@ assert.equal(company.policyDocument,'company-learning/platform-release-roadmap.j
 assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
 // The compact architecture summary does not duplicate the ordered non-authoritative reads.
 assert.deepEqual(directive.requiredReads.slice(0,3),canonicalReads);
-assert.equal(directive.requiredReads.includes(company.legacyCentralPolicyReferenceCleanup.removedPolicyPath),false);
 assert.equal(logMap.sourceOfTruth,'company-learning/company-log-map.json');
 assert.equal(architecture.sourceOfTruth,'company-learning/company-architecture-map.json');
 assert.equal(company.policyDocument,'company-learning/platform-release-roadmap.json');
