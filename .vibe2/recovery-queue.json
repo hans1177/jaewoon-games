@@ -149764,7 +149764,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-09T18:59:50.578Z",
-      "updatedAt": "2026-10-16T11:56:22.196Z"
+      "updatedAt": "2026-10-16T12:14:01.860Z"
     },
     {
       "id": "recovery-e94ce206a41f3f0ca95f",
@@ -200412,7 +200412,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-16T11:56:22.222Z"
+      "updatedAt": "2026-10-16T12:14:01.886Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -200633,7 +200633,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-16T11:56:22.238Z"
+      "updatedAt": "2026-10-16T12:14:01.908Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -208448,7 +208448,7 @@
     },
     {
       "id": "recovery-6f843bed22654b100cc5",
-      "status": "queued",
+      "status": "blocked-primary-ai-assignment-required",
       "priority": "critical",
       "sourceQueue": "security",
       "sourceTaskId": "security-run-38897984013",
@@ -208484,7 +208484,13 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-16T12:05:37.871Z",
-      "updatedAt": "2026-10-16T12:05:37.871Z"
+      "updatedAt": "2026-10-16T12:14:03.703Z",
+      "dispatchEvidence": [
+        "security-recovery-executor-missing",
+        "primary-ai-assignment-required",
+        "primary-ai-repair-file:.github/workflows/owner-simple-rpg-direct-publish.yml",
+        "recovery-dispatch-blocked-at:2026-10-16T12:14:03.703Z"
+      ]
     }
   ]
 }
