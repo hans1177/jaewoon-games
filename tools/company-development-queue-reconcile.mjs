@@ -7,7 +7,7 @@ import {pathToFileURL} from 'node:url';
 import {latestMinimumDesign} from './company-minimum-design-contract.mjs';
 import {resolveSelectedPlatform} from './company-selected-platform-router.mjs';
 
-const MACHINE_POLICY_SOURCE='company-learning/platform-release-roadmap.json';
+const MACHINE_POLICY_SOURCE=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
 const ACTIVE_LIFECYCLE=new Set(['ACTIVE','REBUILD']);
 const ACTIVE_SEED_STATUS=new Set(['ACTIVE']);
 const DIRECT_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
@@ -420,6 +420,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   const seedState=readJson(p('game-seed-state.json'),{version:1,seeds:[]});
   const queuePath=p('development-queue.json');
   const queue=readJson(queuePath,{version:1,items:[]});
+  if(!MACHINE_POLICY_SOURCE)throw new Error('DEVELOPMENT_QUEUE_VERIFIED_POLICY_PATH_REQUIRED');
   const roadmap=readJson(p(MACHINE_POLICY_SOURCE),{});
   const dedicatedRegistry=readJson(p(DEDICATED_TARGET_REGISTRY),{version:1,targets:[]});
   assertDirectNativePolicy(roadmap);
