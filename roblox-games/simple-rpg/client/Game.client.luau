@@ -17,6 +17,8 @@ local parry = remotes:WaitForChild("ParryEvent")
 local dodge = remotes:WaitForChild("DodgeEvent")
 local autoCombat = remotes:WaitForChild("AutoCombatEvent")
 local trade = remotes:WaitForChild("TradeRequestRemote")
+local craftRequestRemote = remotes:WaitForChild("CraftRequestRemote")
+local portalTeleportRemote = remotes:WaitForChild("PortalTeleportEvent")
 local marketUpdate = remotes:WaitForChild("MarketUpdateEvent")
 local inventoryUpdate = remotes:WaitForChild("SyncInventoryEvent")
 local techUpdate = remotes:WaitForChild("UpdateTechEvent")
@@ -77,8 +79,20 @@ local function invokeExternalAction(action: string, value: any): ()
         if not ok or succeeded ~= true then showNotice("연구 요청 실패") end
       end)
     end
+  elseif action == "CivTimedCraft" then
+    local recipeId = tonumber(value)
+    if recipeId and recipeId % 1 == 0 and recipeId >= 1 and recipeId <= 200 then
+      craftRequestRemote:FireServer(recipeId)
+    end
+  elseif action == "CivPortalTeleport" then
+    local destination = tonumber(value)
+    if destination and destination % 1 == 0 and destination >= 1 and destination <= 24 then
+      portalTeleportRemote:FireServer(destination)
+    end
   elseif action == "CivTradeSnapshot" then
     trade:FireServer("Snapshot", 0, false, "Silver")
+  elseif action == "CivTradeCurrencyBuy" or action == "CivTradeCurrencySell" then
+    trade:FireServer("Currency", 1, action == "CivTradeCurrencyBuy", "Silver")
   elseif action == "CivTradeBuy" or action == "CivTradeSell" then
     if typeof(value) == "string" and #value <= 40 then
       trade:FireServer(value, 1, action == "CivTradeBuy", "Silver")
@@ -91,6 +105,17 @@ local function invokeExternalAction(action: string, value: any): ()
     if typeof(value) == "boolean" then autoCombat:FireServer("SetEnabled", value) end
   elseif action == "CivPanel" then
     if typeof(value) == "string" and #value <= 35 then togglePanel(value) end
+  elseif action == "CivBuildHousing" and typeof(value) == "table" then
+    if typeof(value.Key) == "string" and #value.Key <= 32
+      and typeof(value.Position) == "Vector3" then
+      remote:FireServer(action, {
+        Key = value.Key, Position = value.Position,
+        ParentPart = value.ParentPart, Rotation = value.Rotation,
+      })
+    end
+  elseif (action == "CivRemoveHousing" or action == "CivToggleHousingDoor")
+    and typeof(value) == "Instance" and value:IsA("BasePart") then
+    remote:FireServer(action, value)
   elseif allowedActions[action] then
     if action == "CivGuard" then
       parry:FireServer()
@@ -123,7 +148,16 @@ local function bindExternalButton(descendant: Instance): ()
   descendant.Activated:Connect(function()
     local action = descendant:GetAttribute("GameAction")
     if typeof(action) == "string" then
-      invokeExternalAction(action, descendant:GetAttribute("GameArgument"))
+      local argument: any = descendant:GetAttribute("GameArgument")
+      if action == "CivBuildHousing" then
+        argument = {
+          Key = descendant:GetAttribute("GameHousingPiece"),
+          Position = descendant:GetAttribute("GamePlacement"),
+          Rotation = descendant:GetAttribute("GameRotation"),
+          ParentPart = descendant:GetAttribute("GameParentPart"),
+        }
+      end
+      invokeExternalAction(action, argument)
     end
   end)
 end
@@ -148,7 +182,7 @@ local function validUiTemplate(template: Instance): boolean
 end
 
 local function attachExternalHud(template: Instance): ()
-  if hud or not validUiTemplate(template) then return end
+  if hud or not validUiTemplate(template) or not template:IsA("ScreenGui") then return end
   local imported = template:Clone()
   imported.Name = "CuratedExternalHUD"
   imported.ResetOnSpawn = false
