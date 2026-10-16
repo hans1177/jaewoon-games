@@ -1574,7 +1574,7 @@ async function main(){
   const playbooksFile=clean(arg('playbooks'));
   const recombinationFile=clean(arg('recombination'));
   const webHandoffFile=clean(arg('web-handoff'));
-  const roadmapFile=clean(arg('roadmap','company-learning/platform-release-roadmap.json'));
+  const roadmapFile=clean(arg('roadmap',process.env.COMPANY_VERIFIED_POLICY_PATH||''));
   const assetLibraryFile=clean(arg('asset-library','company-asset-library.json'));
   const model=clean(arg('model',process.env.ROBLOX_DEV_MODEL||'none'));
   const foundationRepair=clean(arg('foundation-repair','false')).toLowerCase()==='true';
