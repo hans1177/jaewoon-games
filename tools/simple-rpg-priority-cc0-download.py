@@ -25,12 +25,6 @@ PACKS = [
     "blend"
   ],
   [
-    "01-insects",
-    "Robot_bug.blend",
-    "low-poly-bug-robot",
-    "blend"
-  ],
-  [
     "02-wildlife-prehistoric",
     "polar-bear.7z",
     "Bear.7z",
