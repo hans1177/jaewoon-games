@@ -10,6 +10,7 @@ import {execFileSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {
   synchronizeOwnerDevelopmentHolds,
+  ownerDevelopmentHeld,
   enqueueVibeTask,
   reserveNextVibeTask,
   reserveVibeTaskBatch,
@@ -2854,4 +2855,25 @@ test('24H lossless queue checkpoint follows accepted advisory learning and prece
   assert.match(saving,/VIBE2_QUEUE_STORAGE_EARLY_CHECKPOINT=STALE_CONTROL_REF_RETRY[\s\S]*?continue/);
   assert.match(saving,/VIBE2_QUEUE_TASKS_REMOVED=0/);
   assert.equal((workflow.match(/storage-migrate/g)||[]).length,1);
+});
+
+
+test('owner explicitly allows standalone HTML/JS Web while Unity Web and Android stay on hold',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const native=policy.ownerActiveDevelopmentScope20261009;
+  assert.deepEqual(native.activeTargets,['ROBLOX']);
+  assert.deepEqual(native.ownerHeldTargets,['UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN']);
+  assert.equal(policy.developmentAccess.WEB,'ALWAYS_ALLOWED');
+  assert.equal(policy.standaloneWebGameDevelopment?.enabled,true);
+  const standalone={gameId:'example',target:'web',sourceRoot:'web-games/example',responsibleFiles:['web-games/example/index.html']};
+  assert.equal(ownerDevelopmentHeld(policy,'example','web',standalone),false);
+  assert.equal(ownerDevelopmentHeld(policy,'example','unity_web',{...standalone,target:'unity_web'}),true);
+  assert.equal(ownerDevelopmentHeld(policy,'example','web',{...standalone,unityWebDevelopment:true}),true);
+  assert.equal(ownerDevelopmentHeld(policy,'example','web',{...standalone,sourceRoot:'unity-games/example'}),true);
+  const disabled=structuredClone(policy);
+  disabled.standaloneWebGameDevelopment.enabled=false;
+  assert.equal(ownerDevelopmentHeld(disabled,'example','web',standalone),true);
+  disabled.standaloneWebGameDevelopment.enabled=true;
+  disabled.developmentAccess.WEB='OWNER_HOLD';
+  assert.equal(ownerDevelopmentHeld(disabled,'example','web',standalone),true);
 });

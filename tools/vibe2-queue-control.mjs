@@ -561,8 +561,15 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task
   }
   const access=policy.developmentAccess?.[platform]||(platform==='UNITY_ANDROID'?policy.developmentAccess?.UNITY:null);
   if(access==='OWNER_HOLD')return true;
+  // General HTML/JS Web projects are an independent owner-authorized target.
+  // Unity WebGL work disguised as a Web task remains held.
+  if(targetName==='web'){
+    if(unityWeb)return true;
+    if(policy.standaloneWebGameDevelopment?.enabled!==true||access!=='ALWAYS_ALLOWED')return true;
+    const paths=[task.sourceRoot,task.source?.root,selected.sourceRoot,...(task.responsibleFiles||[]),...(selected.responsibleFiles||[])].map(v=>clean(v).replaceAll('\\','/'));
+    if(paths.some(file=>/^(?:unity-games|assets\/unity)(?:\/|$)/.test(file)))return true;
+  }
   if(scope?.status==='ACTIVE'){
-    if(targetName==='web')return true;
     const active=Array.isArray(scope.activeTargets)?scope.activeTargets:['ROBLOX','UNITY_WEB'];
     if(['ROBLOX','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'].includes(platform)&&!active.includes(platform))return true;
   }
