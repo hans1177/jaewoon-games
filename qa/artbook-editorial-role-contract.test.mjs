@@ -168,7 +168,7 @@ test('Roblox alone is active while both Unity targets and UEFN are owner-held',(
   assert.deepEqual(strategy.priority,['ROBLOX','UNITY']);
   assert.equal(strategy.priorityMeaning,'ROBLOX_FOCUSED_DEVELOPMENT_UNITY_WEB_AND_ANDROID_OWNER_HOLD');
   assert.deepEqual(strategy.developmentAccess,{
-    ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',FORTNITE_UEFN:'OWNER_HOLD',
+    ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',FORTNITE_UEFN:'OWNER_HOLD',
     UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'
   });
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
