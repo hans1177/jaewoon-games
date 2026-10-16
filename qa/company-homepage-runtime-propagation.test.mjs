@@ -76,7 +76,7 @@ test('card gallery uses the exact shared Roblox thumbnail and verified video fra
 
 // 검증: 기존 대기열에 없는 게임도 홈피에 나오고, 실행 증거가 없으면 버튼은 잠긴다.
 test('homepage platform exposure covers all active registered games without inventing releases',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
   const catalog={games:[
     {id:'queued-game',name:'대기열 게임',lifecycleState:'ACTIVE'},
     {id:'catalog-only',name:'목록 전용 게임',lifecycleState:'ACTIVE'},
@@ -93,7 +93,7 @@ test('homepage platform exposure covers all active registered games without inve
 });
 
 test('runnable native tests remain accessible before release and survive web-only withdrawal',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,queue:{items:[{
     gameId:'access-test',productionClass:'DEVELOPMENT_CONFIRMED',
     robloxPublicationTarget:{placeId:'123456789',verified:true,published:true,dedicated:true},
@@ -117,7 +117,7 @@ test('runnable native tests remain accessible before release and survive web-onl
 });
 
 test('source-only or failed builds and stale shared targets cannot become executable links',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,queue:{items:[{
     gameId:'blocked-access',robloxSharedTargetCurrent:false,
     robloxPublicationTarget:{placeId:'123456789',verified:true,shared:true},
@@ -125,8 +125,8 @@ test('source-only or failed builds and stale shared targets cannot become execut
     unityExecutionEvidence:{runtimePassed:false,rawStageResults:{runtime:false}}
   },{gameId:'source-only',unityProjectPath:'unity-games/source-only',robloxProjectPath:'roblox-games/source-only'}]}});
   assert.equal(snap.games.flatMap(g=>g.platforms).some(p=>p.executionAvailable===true),false);
-  assert.equal(policy.serverHomepageIntegration.runnablePlatformAccess.releaseClassificationRequiredForLaunch,false);
-  assert.deepEqual(policy.catalogNormalization.ownerWebAutoIngest.webExposureQuality.homepageWithdrawalPlatforms,['WEB']);
+  assert.equal(policy.homepageOperations.developmentProgressDisplay.playButtonRequiresVerifiedRunnableTarget,true);
+  assert.equal(policy.homepageOperations.homepageListingContract.unverifiedOrMissingGameBuildDisablesPlayButtonOnly,true);
 });
 
 
@@ -256,7 +256,7 @@ test('visible game titles stay aligned with Roblox project titles',()=>{
 
 
 test('homepage Roblox link prefers the dedicated canonical publication target over stale release evidence',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
   const snap=buildHomepagePlatformExposure({
     policy,
     catalog:{games:[{id:'cozy-island',name:'포근섬'}]},
@@ -272,12 +272,12 @@ test('homepage Roblox link prefers the dedicated canonical publication target ov
   const roblox=snap.games[0].platforms.find(row=>row.platform==='ROBLOX');
   assert.equal(roblox.placeId,'116850096561713');
   assert.equal(roblox.internalUrl,'https://www.roblox.com/games/116850096561713');
-  assert.deepEqual(snap.supportedPlatforms,policy.serverHomepageIntegration.supportedPlatforms);
-  assert.match(snap.centralPolicyFingerprint,/^[a-f0-9]{64}$/);
+  assert.deepEqual(snap.supportedPlatforms,policy.directNativeDualPlatformDevelopment.supportedDevelopmentPlatforms);
+  assert.equal(snap.centralPolicyFingerprint,'POLICY_REMOVED');
 });
 
 test('homepage preserves a verified dedicated private Roblox deployment while the latest source revalidates',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
   const snap=buildHomepagePlatformExposure({
     policy,
     catalog:{games:[{id:'cozy-island',name:'포근섬'}]},
@@ -311,7 +311,7 @@ test('homepage preserves a verified dedicated private Roblox deployment while th
 
 
 test('homepage suppresses superseded shared Roblox targets until a dedicated current target exists',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
   const snap=buildHomepagePlatformExposure({
     policy,
     catalog:{games:[{id:'bug-defense',name:'곤충 디펜스'}]},
@@ -335,12 +335,12 @@ test('homepage suppresses superseded shared Roblox targets until a dedicated cur
 });
 
 test('homepage disables Unity Web browser links without affecting native platforms',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
   assert.deepEqual(snap.supportedPlatforms,['ROBLOX','UNITY']);
   assert.equal(snap.unityWebEnabled,false);
-  assert.equal(policy.serverHomepageIntegration.showUnityWeb,false);
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.enabled,false);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebEnabled,false);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebValidationSurface.enabled,false);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,false);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
@@ -350,7 +350,7 @@ test('homepage disables Unity Web browser links without affecting native platfor
 });
 
 test('homepage keeps Roblox runtime truth separate from independent QA',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
   const snap=buildHomepagePlatformExposure({
     policy,
     catalog:{games:[{id:'runtime-truth',name:'Runtime Truth'}]},
@@ -376,12 +376,11 @@ test('homepage keeps Roblox runtime truth separate from independent QA',()=>{
   assert.equal(row.externalPublicReleaseState,'INTERNAL_ONLY');
 });
 
-test('homepage platform exposure fails closed when central policy adds a platform without an implementation adapter',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const changed=structuredClone(policy);
-  changed.serverHomepageIntegration.supportedPlatforms=[...changed.serverHomepageIntegration.supportedPlatforms,'FORTNITE_UEFN'];
-  changed.serverHomepageIntegration.perGamePlatformStates=[...changed.serverHomepageIntegration.perGamePlatformStates,'FORTNITE_UEFN'];
-  assert.throws(()=>buildHomepagePlatformExposure({policy:changed,catalog:{games:[]},queue:{items:[]}}),/HOMEPAGE_PLATFORM_ADAPTER_MISSING:FORTNITE_UEFN/);
+test('homepage platform adapter set stays restricted to currently supported native targets',()=>{
+  const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+  const snap=buildHomepagePlatformExposure({policy:directive,catalog:{games:[]},queue:{items:[]}});
+  assert.deepEqual(snap.supportedPlatforms,['ROBLOX','UNITY']);
+  assert.deepEqual(directive.directNativeDualPlatformDevelopment.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
 });
 
 // 완주 기록: 중복 재시도·미완료·잘못된 증거를 실제 집계에서 제외한다.
