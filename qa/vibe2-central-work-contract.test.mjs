@@ -606,3 +606,10 @@ test('policy metadata version bump alone does not invalidate compiled architectu
   assert.equal(after.executionFingerprint,before.executionFingerprint);
   assert.equal(assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_WORK'}).status,'PASS');
 });
+
+test('deleted owner policy never yields a synthetic valid constitution or architecture projection', () => {
+  const source=fs.readFileSync(new URL('../tools/vibe2-central-work-contract.mjs',import.meta.url),'utf8');
+  assert.match(source,/compileOwnerCanonicalConstitution = \(\) => \(\{valid:false,errors:\['CONSTITUTION_AUTHORITY_UNAVAILABLE'\]/);
+  assert.match(source,/compileCentralArchitectureProjection = \(\) => \(\{valid:false,errors:\['CENTRAL_POLICY_SOURCE_UNAVAILABLE'\]/);
+  assert.doesNotMatch(source,/authority:'REMOVED',constitutionalAuthority:'REMOVED'/);
+});
