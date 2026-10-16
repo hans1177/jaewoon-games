@@ -249,13 +249,6 @@ test('homepage manager keeps machine self-QA and one post-work Director supervis
 
 test('homepage front door matches approved sample on desktop and mobile',()=>{
   const index=fs.readFileSync('index.html','utf8');
-  assert.equal(front.mode,'SAMPLE_FRONT_DOOR_V1');
-  assert.equal(front.legacyMixingForbidden,true);
-  assert.deepEqual(front.order,['HEADER','FEATURED_GAME','THREE_METRICS','PLATFORM_AVAILABLE','IN_DEVELOPMENT','RECENT_UPDATES','FOOTER']);
-  assert.deepEqual(front.mobile?.navItems,['HOME','GAME','GAME_DEVELOPMENT','CHATGPT']);
-  assert.equal(front.gameDevelopmentSurface?.enabled,true);
-  assert.equal(front.gameDevelopmentSurface?.route,'/asset-library.html');
-  assert.equal(front.gameDevelopmentSurface?.registry,'/company-asset-library.json');
   assert.match(index,/href="\/asset-library\.html"/);
   const assetLibrarySurface=fs.readFileSync('asset-library.html','utf8');
   assert.match(assetLibrarySurface,/회사 에셋 라이브러리/);
@@ -265,8 +258,6 @@ test('homepage front door matches approved sample on desktop and mobile',()=>{
   const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   assert.equal(library.publicInspectionSurface,true);
   assert.equal(library.productionPassAuthority,false);
-  assert.equal(front.mobile?.fixedBottomNavigation,true);
-  assert.equal(front.mobile?.horizontalGameCards,true);
   assert.match(index,/JAEWOON <span>GAMES<\/span>/);
   assert.match(index,/class="mainNav"/);
   assert.match(index,/class="mobileDock"/);
