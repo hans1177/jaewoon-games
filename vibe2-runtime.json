@@ -170,21 +170,39 @@
     "policyDependencyCleanup": {
       "enabled": true,
       "priority": "owner-directed",
-      "goal": "Remove references to the owner-retired company-learning/platform-release-roadmap.json and missing COMPANY_FLOW.md without weakening verification or security. Resolve real failing QA contracts and preserve evidence.",
+      "goal": "VIBE autonomously identify and eliminate non-development dependencies across launch, scheduler, QA, learning and runtime code; no restoration of owner-retired policy files or replacement mandatory policy. Preserve genuine build/runtime requirements, security and verification gates, source compatibility and user data.",
       "responsibleFiles": [
+        "tools/vibe2-learning-pipeline-contract.mjs",
+        "tools/vibe2-system-evolution-verify.mjs",
+        "tools/company-system-ai-worker.mjs",
+        "tools/vibe2-incremental-qa.mjs",
         "qa/company-long-horizon-vision.test.mjs",
-        "qa/company-game-seed-flow.test.mjs",
-        "tools/vibe2-learning-pipeline-contract.mjs"
+        "qa/company-game-seed-flow.test.mjs"
       ],
       "executionMode": "candidate-branch-only",
       "conflictRule": "responsible-file-exclusive",
       "acceptance": [
-        "No direct reads from retired policy paths in modified files",
-        "Tests and security gates must not be bypassed",
-        "No recreation of retired policy documents",
-        "All updates require QA and reviewed PR before main merge"
+        "No recreating the removed roadmap or COMPANY_FLOW.md",
+        "No new COMPANY_VERIFIED_POLICY_PATH dependency",
+        "No blanket disabling of tests or security requirements",
+        "No deleting needed development toolchain dependencies",
+        "Preserve reviewed PR and verifiable QA evidence",
+        "Explicitly surface blocked work, including inactive queues and missing runners"
       ],
-      "automaticMainMerge": false
+      "automaticMainMerge": false,
+      "scope": "repository-wide discovery; apply narrowly scoped per-file PR patches only after impact analysis",
+      "classification": {
+        "remove": "Owner-retired policy documents, obsolete metadata and policy-only read dependencies, redundant non-development blockers",
+        "preserve": "Libraries, compilers, tools and artifacts actually required for development, tests, runtime safety, security, saves and deploy verification"
+      },
+      "requiredActions": [
+        "Discover exact dependency consumers and failing calls with logs",
+        "Classify whether dependency is necessary for development or security/runtime integrity",
+        "Patch minimal responsible file set per candidate while preventing concurrent conflicts",
+        "Run relevant regression and security tests; record failures without hiding them",
+        "Create candidate PR and await review before merging",
+        "Repeat against latest main until retired non-development dependencies are gone"
+      ]
     }
   },
   "continuous": {
