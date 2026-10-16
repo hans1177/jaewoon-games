@@ -47,5 +47,5 @@ test('default provider preserves Gemini request path',async()=>{
   let url='';
   const invoke=harness({GEMINI_API_KEY:'test-only'},async(u)=>{url=u;return {ok:true,json:async()=>({candidates:[{content:{parts:[{text:'{"summary":"gemini"}'}]}}]})}});
   assert.equal(await invoke('Return JSON'),'{"summary":"gemini"}');
-  assert.match(url,/generativelanguage\\.googleapis\\.com/);
+  assert.ok(url.includes('generativelanguage.googleapis.com'));
 });
