@@ -6738,7 +6738,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const modelRouting=resolveAssetSourceModel(order,model);
   const effectiveModel=modelRouting.selectedModel;
   const developmentAuthority=target==='system'
-    ?{owner:'VIBE2_VIBE3',provider:'LOCAL_OLLAMA',model:DEFAULT_MODEL,role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
+    ?{owner:'VIBE2_VIBE3',provider:'GEMINI_API',model:clean(process.env.VIBE2_GEMINI_MODEL||'gemini-2.5-flash'),role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
     :assertGameDevelopmentAuthority();
   const bootstrap=sourceRootBootstrapAllowed(order,target,sourceRootRelative,responsibleFiles);
   const sourceRootExists=fs.existsSync(sourceRoot)&&fs.statSync(sourceRoot).isDirectory();
