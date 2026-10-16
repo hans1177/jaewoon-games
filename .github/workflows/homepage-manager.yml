@@ -399,7 +399,7 @@ jobs:
           node --check tools/homepage-test-candidate-sync.mjs
           node --check tools/game-catalog-normalization.mjs
           node --check tools/company-status-sync.mjs
-          node qa/game-catalog-normalization.test.mjs
+          COMPANY_VERIFIED_POLICY_PATH=company-learning/platform-release-roadmap.json node qa/game-catalog-normalization.test.mjs
           node --test qa/homepage-manager-publication-order.test.mjs
           node --test qa/company-homepage-runtime-propagation.test.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
