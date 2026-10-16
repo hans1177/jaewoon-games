@@ -159,7 +159,7 @@ const checks={
 // The owner removed the central roadmap; obsolete policy assertions are not homepage QA.
 // Retain checks for catalog correctness, links, game cards, media, PWA and runtime UI.
 const removedPolicyChecks=new Set([
-  'centralHomepagePolicyExists','centralHomepageExecutionFingerprint','centralHomepageRuntimeAuthority',
+  'centralHomepagePolicyExists','centralHomepageRuntimeAuthority',
   'centralWebShelfPolicyExists','developmentAndWebShelfPlacementDocumented',
   'allDeployedGameCardVisibility','homepageUnityWebRetired','developmentNativeTestButtonsOnly',
   'developmentCurrentScoreRankingAvailable','documentationSyncPolicyExists',
