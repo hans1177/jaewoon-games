@@ -238,10 +238,9 @@ jobs:
             hashes[key]=sha;
             fs.appendFileSync(process.env.GITHUB_OUTPUT,`${key}=${sha}\n`);
           }
-          // A named deletion marker prevents the obsolete policy from being
-          // mistaken for a still-present file while keeping older outputs stable.
+          // Bind exact canonical policy bytes without granting source-write authority.
           const marker=crypto.createHash('sha256')
-            .update('OWNER_REMOVED:company-learning/platform-release-roadmap.json:2026-10-15').digest('hex');
+            .update(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'))).digest('hex');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`policy_sha256=${marker}\n`);
           fs.writeFileSync('/tmp/vibe2-reserve-shared-context.json',JSON.stringify({
             pass:false,integrityPass:true,verificationMode:'FOUR_DOCUMENT_INTEGRITY_ONLY',
@@ -1211,7 +1210,7 @@ jobs:
           grep -q '^export function unpackVibeQueueStorage' "$contract_root/tools/vibe2-queue-control.mjs"
           node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"
           ( cd "$contract_root" && node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-context.json )
-          policy_sha="$(printf %s 'OWNER_REMOVED:company-learning/platform-release-roadmap.json:2026-10-15' | sha256sum | cut -d' ' -f1)"
+          policy_sha="$(sha256sum "$contract_root/company-learning/platform-release-roadmap.json" | cut -d' ' -f1)"
           log_map_sha="$(sha256sum "$contract_root/company-learning/company-log-map.json" | cut -d' ' -f1)"
           architecture_sha="$(sha256sum "$contract_root/company-learning/company-architecture-map.json" | cut -d' ' -f1)"
           security_sha="$(sha256sum "$contract_root/company-learning/security-immune-system.json" | cut -d' ' -f1)"
@@ -1604,7 +1603,7 @@ jobs:
             local phase="$1"
             local output="$2"
             local policy_sha log_map_sha architecture_sha security_sha
-            policy_sha="$(printf %s 'OWNER_REMOVED:company-learning/platform-release-roadmap.json:2026-10-15' | sha256sum | cut -d' ' -f1)"
+            policy_sha="$(sha256sum company-learning/platform-release-roadmap.json | cut -d' ' -f1)"
             log_map_sha="$(sha256sum company-learning/company-log-map.json | cut -d' ' -f1)"
             architecture_sha="$(sha256sum company-learning/company-architecture-map.json | cut -d' ' -f1)"
             security_sha="$(sha256sum company-learning/security-immune-system.json | cut -d' ' -f1)"
