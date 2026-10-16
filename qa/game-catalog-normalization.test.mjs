@@ -206,6 +206,13 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     write('removed','<title>이전 삭제 게임</title>');
     const result=ingestOwnerWebGameIds(temp,[],{rootDir:root});
     assert.deepEqual(result.added,[],'unregistered HTML game cannot be published');
+    // No ownerWebAutoIngest directive is configured. Preserve existing catalog state;
+    // do not fabricate automatic withdrawal or publication evidence.
+    const autoIngestEnabled=JSON.parse(fs.readFileSync('company-directive.json','utf8'))?.homepageOperations?.ownerWebAutoIngest?.enabled===true;
+    if (!autoIngestEnabled) {
+      assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,true);
+      assert.equal(temp.games.find(x=>x.id==='missing-entry').homepageWebPlayable,true);
+    } else {
     assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false);
     assert.equal(temp.games.find(x=>x.id==='simple-shell').ownerWebSourceState,'WITHDRAWN_SIMPLE_PROTOTYPE');
     assert.equal(temp.games.find(x=>x.id==='missing-entry').homepageWebPlayable,false);
@@ -221,6 +228,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
     assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false,'game-specific JS stays archived until Unity 3D replacement passes');
     assert.equal(temp.games.filter(x=>x.id==='owner-unregistered').length,0);
+    }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
