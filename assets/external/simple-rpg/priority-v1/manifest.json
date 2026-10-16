@@ -51,8 +51,8 @@
       "fileCandidates": 2
     },
     "10-npc-expanded": {
-      "packs": 2,
-      "fileCandidates": 22
+      "packs": 3,
+      "fileCandidates": 23
     },
     "11-unique-bosses": {
       "packs": 1,
@@ -63,7 +63,7 @@
       "fileCandidates": 1
     }
   },
-  "verifiedPacks": 44,
+  "verifiedPacks": 45,
   "packs": [
     {
       "file": "bee-rigged.blend",
@@ -640,6 +640,20 @@
       "gameApplied": false
     },
     {
+      "file": "animated-human-rigged.zip",
+      "priority": "10-npc-expanded",
+      "sourceUrl": "https://opengameart.org/sites/default/files/Animated%20Human%20by%20%40Quaternius_0.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/animated-human-low-poly",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "dcd72162b5e59495efc629fb624d9e1deb12124b68291ad4fa3ce66b4fc24db3",
+      "bytes": 5010069,
+      "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
       "file": "hero-base-rigged.zip",
       "priority": "10-npc-expanded",
       "sourceUrl": "https://opengameart.org/sites/default/files/character-base-model-rigged.zip",
@@ -683,12 +697,5 @@
     }
   ],
   "duplicateSources": [],
-  "failed": [
-    {
-      "file": "animated-human-rigged.zip",
-      "priority": "10-npc-expanded",
-      "reason": "DOWNLOAD_HTTP_OR_NETWORK_FAILED",
-      "source": "https://opengameart.org/content/animated-human-low-poly"
-    }
-  ]
+  "failed": []
 }
