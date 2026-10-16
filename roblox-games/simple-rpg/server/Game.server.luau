@@ -2552,8 +2552,11 @@ local function civWalkModel(model, target, duration)
     -- 제자리 회전은 보행이 아니다. 정지한 몬스터가 허공에서 발을 구르지 않게 한다.
     if (target.Position - start.Position).Magnitude >= 0.12 then
       model:SetAttribute("MotionWalkingUntil", workspace:GetServerTimeNow() + smoothDuration + 0.05)
+      -- 서버가 목표 이동량을 알고 있으므로 위치 복제 지연과 무관한 보행 속도를 전달한다.
+      model:SetAttribute("MotionMoveSpeed", math.clamp((target.Position - start.Position).Magnitude / smoothDuration, 0, 12))
     else
       model:SetAttribute("MotionWalkingUntil", 0)
+      model:SetAttribute("MotionMoveSpeed", 0)
     end
   end
   local frameValue = Instance.new("CFrameValue")
