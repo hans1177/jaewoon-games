@@ -40,29 +40,72 @@ jobs:
   download_ui_assets:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_ui_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-external-assets]')) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
-      contents: read
+      contents: write
     steps:
-      - name: Download verified original CC0 RPG UI archives
+      - name: Checkout for external source preservation
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Download and verify all external CC0 assets
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p /tmp/simple-rpg-ui
-          curl -fL --retry 3 --retry-delay 2 --max-time 120 -o /tmp/simple-rpg-ui/kenney_fantasy-ui-borders.zip 'https://opengameart.org/sites/default/files/kenney_fantasy-ui-borders.zip'
-          curl -fL --retry 3 --retry-delay 2 --max-time 120 -o /tmp/simple-rpg-ui/UIpack_RPG.zip 'https://opengameart.org/sites/default/files/UIpack_RPG.zip'
-          curl -fL --retry 3 --retry-delay 2 --max-time 120 -o /tmp/simple-rpg-ui/kenney_fantasy-town-kit_2.0.zip 'https://opengameart.org/sites/default/files/kenney_fantasy-town-kit_2.0.zip'
-          for archive in /tmp/simple-rpg-ui/*.zip; do
-            test "$(stat -c %s "$archive")" -gt 1000
-            unzip -tq "$archive"
-          done
-          sha256sum /tmp/simple-rpg-ui/*.zip > /tmp/simple-rpg-ui/SHA256SUMS
-          printf '%s\n' 'Kenney - Creative Commons CC0 1.0' 'https://opengameart.org/content/fantasy-ui-borders' 'https://opengameart.org/content/ui-pack-rpg-extension' 'Archives are source candidates only; Roblox upload and gameplay binding NOT VERIFIED.' > /tmp/simple-rpg-ui/SOURCE.txt
-      - name: Retain verified downloads for reviewed import
+          mkdir -p assets/external/simple-rpg
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 150 -o assets/external/simple-rpg/kenney_fantasy-ui-borders.zip 'https://opengameart.org/sites/default/files/kenney_fantasy-ui-borders.zip'
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 150 -o assets/external/simple-rpg/UIpack_RPG.zip 'https://opengameart.org/sites/default/files/UIpack_RPG.zip'
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 150 -o assets/external/simple-rpg/kenney_fantasy-town-kit_2.0.zip 'https://opengameart.org/sites/default/files/kenney_fantasy-town-kit_2.0.zip'
+          python3 - <<'PY'
+          import hashlib, json, pathlib, zipfile
+          base=pathlib.Path('assets/external/simple-rpg')
+          packs=[
+            ('kenney_fantasy-ui-borders.zip','https://opengameart.org/content/fantasy-ui-borders','png',130),
+            ('UIpack_RPG.zip','https://opengameart.org/content/ui-pack-rpg-extension','png',87),
+            ('kenney_fantasy-town-kit_2.0.zip','https://opengameart.org/content/fantasy-town-kit','model',160),
+          ]
+          out={'gameId':'simple-rpg','license':'CC0-1.0','creator':'Kenney','sourceOnly':True,'robloxUploaded':False,'packs':[]}
+          total=0
+          for filename,url,kind,minimum in packs:
+            file=base/filename
+            if file.stat().st_size<1000 or not zipfile.is_zipfile(file): raise RuntimeError('INVALID_ZIP: '+filename)
+            with zipfile.ZipFile(file) as z:
+              if z.testzip() is not None: raise RuntimeError('ZIP_CORRUPTION: '+filename)
+              names=[n for n in z.namelist() if not n.endswith('/')]
+              if kind=='png':
+                assets={n.lower() for n in names if n.lower().endswith('.png')}
+              else:
+                groups=[{pathlib.PurePosixPath(n).stem.lower() for n in names if n.lower().endswith('.'+ext)} for ext in ('obj','fbx','gltf','glb')]
+                assets=max(groups,key=len)
+              count=len(assets)
+              if count<minimum: raise RuntimeError('INSUFFICIENT_ASSETS: '+filename+':'+str(count))
+              total+=count
+              out['packs'].append({'filename':filename,'sourceUrl':url,'archiveBytes':file.stat().st_size,'sha256':hashlib.sha256(file.read_bytes()).hexdigest(),'assetCount':count,'assetKind':kind})
+              print('EXTERNAL_ASSET_VERIFIED',filename,count)
+          if total<300: raise RuntimeError('EXTERNAL_ASSETS_TOTAL_BELOW_300: '+str(total))
+          out['minimumVerifiedDistinctAssets']=total
+          (base/'manifest.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('EXTERNAL_ASSETS_TOTAL_VERIFIED='+str(total))
+          PY
+      - name: Permanently retain downloaded original archives on main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/external/simple-rpg/
+          if git diff --cached --quiet; then
+            echo 'EXTERNAL_ASSETS_ALREADY_ARCHIVED=YES'
+          else
+            git commit -m "assets: preserve verified CC0 external source archives for 대충알피지"
+            git push origin HEAD:main
+          fi
+          echo 'EXTERNAL_ASSETS_ARCHIVE=assets/external/simple-rpg'
+      - name: Retain a separate verified download artifact
         uses: actions/upload-artifact@v4
         with:
-          name: simple-rpg-cc0-ui-sources
-          path: /tmp/simple-rpg-ui/
+          name: simple-rpg-cc0-external-sources
+          path: assets/external/simple-rpg/
           if-no-files-found: error
           retention-days: 14
   upload_actor_assets:
