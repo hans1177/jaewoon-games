@@ -48,7 +48,8 @@ test('existing combat, research, gather and save gates stay in charge', () => {
 });
 
 test('ecology is bounded to the existing world and does not grant farming rewards', () => {
-  assert.match(server, /civSpawnGrazer\(id, center\)/);
+  assert.match(server, /civSpawnEnemy\(id, center, nil, 1\)/);
+  assert.doesNotMatch(server, /civSpawnGrazer\(/);
   assert.match(server, /civWildlife\[enemy.RaceID\]/);
   assert.match(server, /grazer\.Humanoid:TakeDamage\(8\)/);
   assert.match(server, /now - grazer.LastPredated >= 20/);
@@ -337,8 +338,8 @@ test('대충알피지 mobile UI uses a responsive scrolling menu without disrupt
     assert.ok(!client.includes('civButton(civGui, "' + name + '"'), name + ' must not retain fixed positions');
   }
   assert.match(client, /grid = Instance\.new\("UIGridLayout"\)/);
-  assert.match(client, /for _, entry in ipairs\(civButtons\) do/);
-  assert.match(client, /autoCombatToggle\.Visible = nativeTouchEnabled/);
+  assert.match(client, /civMenuRail:FindFirstChild\(name\)/);
+  assert.match(client, /local autoCombatEnabled = nativeTouchEnabled/);
   assert.doesNotMatch(client, /for _, child in mainGui:GetDescendants\(\)/);
 });
 
@@ -351,7 +352,7 @@ test('대충알피지 popup header does not overlap its close control', () => {
 test('대충알피지 그래픽 목업 팔레트는 기존 인벤토리·연구 흐름을 유지한다', () => {
   // 원목·가죽·양피지, 기술 노드의 잠금/진행 가능/완료 색상.
   assert.match(client, /label\.TextColor3 = Color3\.fromRGB\(232, 213, 168\)/);
-  assert.match(client, /button\.BackgroundColor3 = Color3\.fromRGB\(138, 90, 56\)/);
+  assert.match(client, /button\.BackgroundColor3 = Color3\.fromRGB\(113, 75, 47\)/);
   assert.match(client, /woodBorder\.Name = "OakBorder"/);
   assert.match(client, /civPanel\.BackgroundColor3 = mode == "Techs" and Color3\.fromRGB\(232, 213, 168\)/);
   for (const rgb of ['95, 110, 60', '115, 110, 103', '44, 74, 110']) {
@@ -361,7 +362,7 @@ test('대충알피지 그래픽 목업 팔레트는 기존 인벤토리·연구 
   assert.match(client, /for slot = 1, 32 do/);
   assert.match(client, /grid\.FillDirectionMaxCells = 4/);
   assert.match(client, /unlockTechRequest:InvokeServer\(id\)/);
-  assert.match(client, /autoCombatToggle\.Visible = nativeTouchEnabled/);
+  assert.match(client, /autoCombatEvent:FireServer\("SetEnabled", autoCombatEnabled\)/);
 });
 
 test('대충알피지 6칸 장비 미리보기와 5시대 배너는 기존 저장/연구 호출을 보존한다', () => {
@@ -411,7 +412,8 @@ test('대충알피지 기존 24종족 데이터는 보존하되 로비에서는 
   assert.doesNotMatch(client, /civButton\(civList, "RegionTravel"/);
   assert.match(client, /civButton\(civList, "StartAdventure"/);
   assert.match(server, /if argument ~= selected then return end/);
-  assert.match(client, /remote:FireServer\("CivTravel", player:GetAttribute\("CivRaceID"\)\)/);
+  assert.match(client, /remote:FireServer\("CivTravel", destination\)/);
+  assert.match(client, /player:GetAttribute\("CivTravelAck"\)/);
   assert.match(client, /lobbyPlay = civButton\(lobbyCard, "LobbyPlay"/);
   assert.match(client, /lobbyExplore = civButton\(lobbyCard, "LobbyExplore"/);
   assert.match(server, /character:SetAttribute\("CivTravelCompleted", true\)/);
@@ -449,11 +451,10 @@ test('civilization monster alert and pack awareness preserve the existing server
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
 });
 
-test('Conan-inspired alert and return-home poses are visual-only and preserve server damage', () => {
-  assert.match(client, /state == "Alert" and math\.rad\(-9\)/);
-  assert.match(client, /state == "ReturnHome" and math\.rad\(4\)/);
-  assert.match(client, /local alerting = model:GetAttribute\("AIState"\) == "Alert"/);
-  assert.match(client, /elseif returningHome then/);
+test('external-model monsters no longer use hand-made alert and return-home poses', () => {
+  assert.doesNotMatch(client, /creatureMotionLimbNames|creatureImportedRig|state == "Alert" and math\.rad/);
+  assert.match(client, /entry\.visual:PivotTo\(entry\.root\.CFrame \* offset\)/);
+  assert.match(client, /enemy:GetAttribute\("CreatureAssetSource"\) == "StudioImported"/);
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
@@ -468,12 +469,13 @@ test('existing civilization enemy habitats mirror terrain and keep patrol inside
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
 });
 
-test('wolf and boar have distinct noncolliding low-poly silhouettes', () => {
-  for (const name of ['WolfNeckRuff','WolfChest','BoarShoulderHump','BoarBristle']) {
-    assert.ok(server.includes(name), name);
-  }
-  assert.match(server, /piece\.CanCollide = false\s+piece\.CanTouch = false\s+piece\.CanQuery = false/);
-  assert.match(server, /if enemy:GetAttribute\("CreatureAssetSource"\) ~= "StudioImported" then/);
+test('wolf and boar require verified imported external meshes; old procedural silhouettes stay deleted', () => {
+  assert.doesNotMatch(server, /WolfNeckRuff|WolfChest|BoarShoulderHump|BoarBristle/);
+  assert.match(server, /modelKey = special == "WildBoar" and "Boar"/);
+  assert.match(server, /special == "StoneWolf" and "Wolf"/);
+  assert.match(server, /visualTemplate:GetAttribute\("CuratedExternalAsset"\) == true/);
+  assert.match(server, /\(tonumber\(visualTemplate:GetAttribute\("VerifiedRobloxAssetId"\)\) or 0\) > 0/);
+  assert.match(server, /child\.CanCollide = false\s+child\.CanTouch = false\s+child\.CanQuery = false/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
 
