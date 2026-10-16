@@ -6306,34 +6306,40 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   }
   throw lastError||new Error('candidate generation failed');
 }
-async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){throw new Error('LOCAL_AI_PERMANENTLY_FORBIDDEN: external Gemini implementation required; no local fallback');const fake=images.length?'':clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);if(fake)return fs.readFileSync(path.resolve(fake),'utf8');const options={num_predict:maxPredict,temperature:Math.max(.02,Math.min(.4,Number(temperature)||.08))};if(contextWindow>0)options.num_ctx=contextWindow;const format=completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}:(completionMode==='JSON_SINGLE_MOTION'?singleMotionResponseSchema():(/^JSON_/.test(completionMode)?'json':null));const body=JSON.stringify({model,prompt,...(images.length?{images}:{}),stream:true,think:false,...(format?{format}:{}),options});return await new Promise((resolve,reject)=>{let settled=false,request=null,pending='',output='',doneReason='',firstOutputSeen=false,firstOutputAt=0;const requestStartedAt=Date.now();const finish=(error,value='')=>{if(settled)return;settled=true;const finishedAt=Date.now();const firstOutputMs=firstOutputAt?Math.max(0,firstOutputAt-requestStartedAt):0;const outputBytes=Buffer.byteLength(String(error?.vibe2PartialOutput??value??output??''),'utf8');console.log(`VIBE2_MODEL_GENERATION_DURATION_MS=${Math.max(0,finishedAt-requestStartedAt)}:firstOutputMs=${firstOutputMs||'NONE'}:outputBytes=${outputBytes}:status=${error?'ERROR':'COMPLETE'}`);clearTimeout(timer);clearTimeout(firstOutputTimer);if(request&&!request.destroyed)request.destroy();if(error)reject(error);else resolve(value);};const timer=setTimeout(()=>{const error=new Error(`Ollama 응답 시간 초과: ${timeoutMs}ms`);error.vibe2PartialOutput=output;finish(error);},timeoutMs);const firstOutputTimer=setTimeout(()=>{if(firstOutputSeen||settled)return;const error=new Error(`Ollama 첫 출력 시간 초과: ${firstOutputTimeoutMs}ms`);error.vibe2PartialOutput='';error.vibe2ZeroOutputTimeout=true;finish(error);},Math.min(timeoutMs,firstOutputTimeoutMs));request=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},response=>{if((response.statusCode||0)<200||(response.statusCode||0)>=300){response.resume();finish(new Error(`Ollama HTTP ${response.statusCode}`));return;}response.setEncoding('utf8');const consume=line=>{const text=line.trim();if(!text)return;let payload;try{payload=JSON.parse(text);}catch(error){throw new Error(`Ollama 스트림 JSON 파싱 실패: ${error.message}`);}if(payload?.error)throw new Error(`Ollama 오류: ${payload.error}`);if(payload?.done===true)doneReason=clean(payload.done_reason);if(typeof payload?.response==='string'){if(payload.response.length&&!firstOutputSeen){firstOutputSeen=true;firstOutputAt=Date.now();clearTimeout(firstOutputTimer);console.log(`VIBE2_MODEL_FIRST_OUTPUT_MS=${Math.max(0,firstOutputAt-requestStartedAt)}:promptBytes=${Buffer.byteLength(prompt,'utf8')}:contextWindow=${contextWindow||0}:model=${model}`);}output+=payload.response;
-// 교체 문자열 전용 응답은 제어 문자 혼입이 확정되면 남은 생성을 기다리지 않는다.
-if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&/(?:\/no_think\b|<\/?think\b|```)/i.test(output)){
-  const error=new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
-  error.vibe2PartialOutput=output;
-  console.log('VIBE2_MODEL_CONTROL_TOKEN_EARLY_ABORT=bytes:'+Buffer.byteLength(output,'utf8'));
-  finish(error);return;
+async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){
+  const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase();
+  if(provider!=='GEMINI_API')throw new Error('LOCAL_AI_PERMANENTLY_FORBIDDEN: only Gemini API is authorized');
+  const apiKey=clean(process.env.GEMINI_API_KEY);
+  if(!apiKey)throw new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
+  if(images.length)throw new Error('GEMINI_IMAGE_INPUT_ADAPTER_NOT_VERIFIED');
+  const geminiModel=clean(process.env.VIBE2_GEMINI_MODEL||'gemini-2.5-flash');
+  if(!/^gemini-[a-z0-9.-]+$/.test(geminiModel))throw new Error('GEMINI_MODEL_INVALID');
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),Math.max(10000,timeoutMs));
+  try{
+    const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(geminiModel)+':generateContent',{
+      method:'POST',signal:controller.signal,
+      headers:{'content-type':'application/json','x-goog-api-key':apiKey},
+      body:JSON.stringify({contents:[{role:'user',parts:[{text:String(prompt)}]}],
+        generationConfig:{temperature:Math.max(0,Math.min(.4,Number(temperature)||0)),
+          maxOutputTokens:Math.max(512,Math.min(8192,Number(maxPredict)||3072))}})
+    });
+    if(!response.ok){
+      const status=response.status;
+      if(status===429||status===402||status===403)throw new Error('GEMINI_QUOTA_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+status);
+      throw new Error('GEMINI_HTTP_ERROR_NO_LOCAL_FALLBACK:'+status);
+    }
+    const payload=await response.json();
+    const raw=(payload.candidates?.[0]?.content?.parts||[]).filter(x=>typeof x.text==='string').map(x=>x.text).join('');
+    if(!raw.trim())throw new Error('GEMINI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
+    if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&/(?:\\/no_think\\b|<\\/?think\\b|```)/i.test(raw))throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
+    return raw;
+  }catch(error){
+    if(error?.name==='AbortError')throw new Error('GEMINI_TIMEOUT_NO_LOCAL_FALLBACK');
+    throw error;
+  }finally{clearTimeout(timer);}
 }
-// 원본에 없는 긴 대입문 반복은 스트림 퇴행으로 처리하고 기존 재시도 경로로 돌린다.
-if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'){
-  const newline=output.lastIndexOf('\\n');
-  if(newline>=0){
-    try{
-      const partial=JSON.parse(output.slice(0,newline+2)+'"}');
-      const lines=String(partial.replace||'').split('\n').slice(0,-1).map(line=>line.trim());
-      const tail=lines.slice(-8),repeated=tail[0]||'';
-      if(tail.length===8&&repeated.length>=40&&/^[A-Za-z_][\w.]*\s*=\s*[^=]/.test(repeated)
-        &&tail.every(line=>line===repeated)
-        &&!String(prompt).split(/\r?\n/).map(line=>line.trim()).join('\n').includes(tail.join('\n'))){
-        const error=new Error('Ollama 오류: token repeat limit reached (SOURCE_LINE_REPETITION)');
-        error.vibe2PartialOutput=output;
-        console.log('VIBE2_MODEL_REPETITION_EARLY_ABORT=bytes:'+Buffer.byteLength(output,'utf8'));
-        finish(error);return;
-      }
-    }catch{} // 미완성 JSON 이스케이프는 다음 청크에서 다시 확인한다.
-  }
-}
-if(modelResponseComplete(output,completionMode))finish(null,output);}};response.on('data',chunk=>{if(settled)return;try{pending+=chunk;let at;while((at=pending.indexOf('\n'))>=0){const line=pending.slice(0,at);pending=pending.slice(at+1);consume(line);if(settled)return;}}catch(error){finish(error);}});response.on('end',()=>{if(settled)return;try{if(pending.trim())consume(pending);if(settled)return;if(!output.trim())throw new Error('Ollama 응답 비어 있음');if(doneReason==='length'&&!modelResponseComplete(output,completionMode)){const error=new Error('MODEL_OUTPUT_TRUNCATED: 모델 JSON 출력 한도 초과');error.vibe2OutputTruncated=true;error.vibe2MaxPredict=maxPredict;error.vibe2PartialOutput=output;console.log(`VIBE2_MODEL_OUTPUT_TRUNCATED=maxPredict:${maxPredict}:bytes:${Buffer.byteLength(output,'utf8')}`);throw error;}finish(null,output);}catch(error){finish(error);}});response.on('error',finish);});request.on('error',finish);request.end(body);});}
+
 function currentBranch(cwd){try{return clean(execFileSync('git',['rev-parse','--abbrev-ref','HEAD'],{cwd,encoding:'utf8'}));}catch{return'';}}
 function assertCandidateBranch(cwd){const branch=currentBranch(cwd);if(!branch||branch==='main'||branch==='master'||!branch.startsWith('vibe2/candidate/'))throw new Error(`source 적용은 vibe2/candidate/* 브랜치에서만 허용: ${branch||'unknown'}`);return branch;}
 function unityWebBootstrapScaffold(sourceRootRelative=''){
