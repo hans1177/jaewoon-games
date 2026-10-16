@@ -246,6 +246,8 @@ jobs:
           node --test qa/release-stale-artifact-guard.test.mjs
           node --test qa/tier1-development-baseline-gate.test.mjs
           node --test qa/company-design-pre-gate-resume.test.mjs
+          # Fail closed if paid provider credentials are wired into the free native design lane.
+          if grep -En '(^|[^A-Z_])(OPENAI_API_KEY|GEMINI_API_KEY|ANTHROPIC_API_KEY)([^A-Z_]|$)' .github/workflows/company-design-native.yml 2>/dev/null; then
             echo 'paid/external AI key leaked into free multimodel path' >&2
             exit 1
           fi
