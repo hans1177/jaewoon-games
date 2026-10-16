@@ -243,6 +243,9 @@ PACKS = [
   ["10-npc-expanded","hero-base-rigged.zip","character-base-model-rigged.zip","character-base-model","zip"],
   ["11-unique-bosses","giant-mutant-animated.zip","giant_mutant.zip","giant-mutant","zip"],
   ["12-dungeon-interiors", "modular-dungeon-3d.zip", "free_modular_low_poly_dungeon_by_rgsdev.zip", "free-modular-low-poly-dungeon-pack", "zip"],
+  ["09-buildings", "apocalyptic-city-ruins.zip", "lowpoly-apocalyptic-buildings-by-majadroid.zip", "3d-apocalyptic-building-city-cc0", "zip"],
+  ["12-dungeon-interiors", "fantasy-ruins-3td.zip", "Fantasy Ruins Pack.zip", "3td-fantasy-ruins-pack", "zip"],
+  ["12-dungeon-interiors", "castle-labyrinth.zip", "labyrinth.zip", "3d-walls-props", "zip"],
   ["12-dungeon-interiors","dungeon-interior-kit.zip","Dungeon.zip","dungeon-assets","zip"]
 ]
 
