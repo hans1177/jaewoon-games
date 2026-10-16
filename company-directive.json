@@ -590,7 +590,13 @@
     "robloxStudioHiddenRunnerHostRequired": true,
     "robloxStudioRebootSafeCheckpointRequired": true,
     "robloxStudioInterruptedHostSessionIsGameFailure": false,
-    "robloxStudioRunnerBootstrap": ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml#hidden-runner-bootstrap"
+    "robloxStudioRunnerBootstrap": ".github/workflows/company-roblox-runner-pwsh-bootstrap.yml#hidden-runner-bootstrap",
+    "localAiPermanentBan": true,
+    "localAiAutoInstallAllowed": false,
+    "localAiReactivationAllowed": false,
+    "localAiFallbackAllowed": false,
+    "localAiBanScope": "ALL_VIBE_AND_SYSTEM_AI_EXECUTION",
+    "externalProviderNoCredentialsAction": "BLOCK_MODEL_CALL_WITHOUT_LOCAL_FALLBACK"
   },
   "classes": {
     "DESIGN_ONLY": {
