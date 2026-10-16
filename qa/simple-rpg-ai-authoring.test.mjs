@@ -384,10 +384,11 @@ test('대충알피지 6칸 장비 미리보기와 5시대 배너는 기존 저�
 });
 
 test('대충알피지 모험가 로비는 종족 포탈 없이 기존 이동과 저장을 보존한다', () => {
-  assert.match(server, /local lobbyBase = civPart\(civHub, "광장 석상 기단"/);
-  assert.match(server, /local lobbyCore = civPart\(civHub, "광장 차원 심장"/);
-  assert.match(server, /local lobbyShops = \{/);
-  assert.match(server, /lobbyLight\.Range = 12/);
+  assert.match(server, /local lobbyGround = civPart\(civHub, "CivilizationLobbyGround"/);
+  assert.match(server, /continentGround:SetAttribute\("WalkableGround", true\)/);
+  assert.match(server, /lobbyGround:SetAttribute\("WalkableGround", true\)/);
+  assert.match(server, /part\.Transparency = 1/);
+  assert.doesNotMatch(server, /local lobbyBase = civPart|local lobbyCore = civPart|lobbyLight\.Range = 12/);
   assert.doesNotMatch(server, /local portal = civPart\(civHub, "포털 " \.\. race\.Name/);
   assert.doesNotMatch(server, /portal\.Touched:Connect/);
   assert.doesNotMatch(client, /civButton\(civMenuRail, "MultiverseMenu"/);
@@ -415,7 +416,7 @@ test('대충알피지 기존 24종족 데이터는 보존하되 로비에서는 
   assert.match(client, /lobbyExplore = civButton\(lobbyCard, "LobbyExplore"/);
   assert.match(server, /character:SetAttribute\("CivTravelCompleted", true\)/);
   assert.match(server, /player:SetAttribute\("CivReady", true\)/);
-  assert.match(server, /lobbyStoneTexture\.Texture = "rbxassetid:\/\/128886287832599"/);
+  assert.doesNotMatch(server, /lobbyStoneTexture|Instance\.new\("Texture"\)/);
 });
 
 test('civilization monsters patrol inside their existing habitat without changing combat or save authority', () => {
