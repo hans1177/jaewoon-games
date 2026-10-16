@@ -69,3 +69,33 @@ test('tampered deletion evidence cannot be accepted as verified owner instructio
     fs.rmSync(temp, {recursive: true, force: true});
   }
 });
+
+test('single policy cannot pass merely because assertions are listed', () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-assertions-'));
+  try {
+    const write = (name, value) => {
+      const dest = path.join(temp, name);
+      fs.mkdirSync(path.dirname(dest), {recursive: true});
+      fs.writeFileSync(dest, JSON.stringify(value));
+    };
+    const directive = JSON.parse(fs.readFileSync(path.join(root, 'company-directive.json'), 'utf8'));
+    directive.policyDocument = 'company-learning/owner-single-policy.json';
+    directive.documentationSynchronization.centralPolicyPath = directive.policyDocument;
+    write('company-directive.json', directive);
+    const policy = JSON.parse(fs.readFileSync(path.join(root, 'company-learning/owner-single-policy.json'), 'utf8'));
+    policy.kind = 'OWNER_SINGLE_CANONICAL_POLICY';
+    policy.status = 'ACTIVE';
+    policy.machineEnforcement = {assertions: [{id: 'SECURITY_GATE', enabled: true}]};
+    write('company-learning/owner-single-policy.json', policy);
+    for (const name of ['company-log-map.json', 'company-architecture-map.json', 'security-immune-system.json']) {
+      fs.copyFileSync(path.join(root, 'company-learning', name), (() => {
+        const dest = path.join(temp, 'company-learning', name);
+        fs.mkdirSync(path.dirname(dest), {recursive: true});
+        return dest;
+      })());
+    }
+    const result = enforceConstitution({root: temp, phase: 'test'});
+    assert.equal(result.pass, false);
+    assert.ok(result.errors.includes('MACHINE_ASSERTION_EXECUTION_NOT_IMPLEMENTED'));
+  } finally {fs.rmSync(temp, {recursive: true, force: true});}
+});
