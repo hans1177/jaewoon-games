@@ -11,7 +11,12 @@ const readText=relative=>fs.readFileSync(path.join(repoRoot,relative),'utf8');
 const readJson=relative=>JSON.parse(readText(relative));
 const obsoleteAgentsPath=path.join(repoRoot,'AGENTS.md');
 const directive=readJson('company-directive.json');
-const roadmap=readJson('company-learning/platform-release-roadmap.json');
+// 삭제된 중앙정책을 다른 문서로 몰래 대체하지 않고 명확한 실패로 보고한다.
+const roadmapPath='company-learning/platform-release-roadmap.json';
+if (!fs.existsSync(path.join(repoRoot,roadmapPath))) {
+  throw new Error('CANONICAL_POLICY_UNAVAILABLE: owner-deleted roadmap cannot be validated; no substitute policy or synthetic PASS is authorized');
+}
+const roadmap=readJson(roadmapPath);
 const architecture=readJson('company-learning/company-architecture-map.json');
 const security=readJson('company-learning/security-immune-system.json');
 const autonomousExpansionPolicy=readJson('company-learning/vibe-autonomous-content-expansion-policy.json');
