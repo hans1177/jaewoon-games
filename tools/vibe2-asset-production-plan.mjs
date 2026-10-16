@@ -5126,8 +5126,26 @@ export function buildVibeAssetProductionPlan({
     .filter(row=>row.stillInCurrentRegistry&&row.assetId&&!existingSelectionKeys.has(row.assetId))
     .map(row=>{
       const asset=currentLibraryAssets.get(row.assetId);
-      const sourceFiles=(Array.isArray(asset?.sourceFiles)?asset.sourceFiles:[])
-        .map(file=>typeof file==='string'?file:file?.path).map(clean).filter(Boolean);
+      const sourceFiles=unique([...(Array.isArray(asset?.sourceFiles)?asset.sourceFiles:[]),asset?.path,asset?.masterGlb]
+        .map(file=>typeof file==='string'?file:file?.path).map(clean)
+        .map(file=>file.replace(/^\\//,''))
+        .filter(file=>file.startsWith('assets/')&&!file.split('/').includes('..'))).sort();
+      // Registry entries are not proof that their original files actually exist.
+      // Reuse the exact-byte source hash cache used by the canonical loadout.
+      for(const file of sourceFiles){
+        if(sourceHashes.has(file))continue;
+        let hash=null;
+        try{
+          const real=fs.realpathSync(path.resolve(repoRoot,file));
+          if(repoRootReal&&real.startsWith(repoRootReal+path.sep)&&fs.statSync(real).isFile())
+            hash=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
+        }catch{}
+        sourceHashes.set(file,hash);
+      }
+      const sourceFilesPresent=sourceFiles.length>0&&sourceFiles.every(file=>sourceHashes.get(file)!=null);
+      const sourceContentFingerprint=sourceFilesPresent
+        ?crypto.createHash('sha256').update(JSON.stringify(sourceFiles.map(file=>[file,sourceHashes.get(file)]))).digest('hex')
+        :null;
       const sourceBound=actualGameConsumerIds.has(row.assetId);
       const sourceBinding=(librarySync.sourceConsumerBindings||[]).find(binding=>
         binding.gameId===currentGameId&&clean(binding.assetId)===row.assetId&&binding.sourceBound===true);
@@ -5137,17 +5155,24 @@ export function buildVibeAssetProductionPlan({
       const masterUpgradeReviewRequired=Boolean(sourceBound&&currentMasterGlbHash&&consumerAppliedMasterHash
         &&consumerAppliedMasterHash!==currentMasterGlbHash);
       const compatible=assetSupplyCandidateAllowed(asset,resolvedTarget);
-      const eligibleForNativeBinding=sourceFiles.length>0&&asset?.productionVerified===true&&asset?.rightsPass===true;
+      const rightsVerified=asset?.rightsPass===true;
+      const eligibleForNativeBinding=sourceFilesPresent&&asset?.productionVerified===true&&rightsVerified;
+      // A present original with incomplete QA is an inspect/adapt candidate, not
+      // a request to manufacture another asset. Never mark it native-ready.
       const status=!compatible?'ASSET_REPAIR_REQUIRED'
+        :!sourceFilesPresent?'SOURCE_ASSET_REQUIRED'
+        :!rightsVerified?'SOURCE_BINDING_PROVENANCE_REQUIRED'
         :masterUpgradeProvenanceRequired?'SOURCE_BINDING_PROVENANCE_REQUIRED'
-        :masterUpgradeReviewRequired?(eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED')
+        :masterUpgradeReviewRequired?(eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_BINDING_PROVENANCE_REQUIRED')
         :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
-        :eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED';
+        :eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_BINDING_PROVENANCE_REQUIRED';
       return freeze({requirementId:null,assetId:row.assetId,family:row.family,
         role:clean(asset?.role||asset?.subfamily)||null,status,sourceBound,
         sourceFiles:freezeList(sourceFiles),sourceHash:clean(asset?.sourceHash)||null,
+        sourceFilesPresent,sourceContentFingerprint,rightsVerified,
+        verifiedLibraryCandidate:asset?.productionVerified===true,nativeSelectionReady:eligibleForNativeBinding,
         libraryVersion:Number(companyRegistry.version||0),nativeRuntimeVerified:false,
-        repairOwner:status==='NATIVE_SOURCE_BINDING_REQUIRED'||status==='SOURCE_BINDING_PROVENANCE_REQUIRED'
+        repairOwner:status==='NATIVE_SOURCE_BINDING_REQUIRED'||(status==='SOURCE_BINDING_PROVENANCE_REQUIRED'&&rightsVerified)
           ?'EXISTING_GAME_SOURCE_WORKER':'EXISTING_ASSET_DEVELOPMENT',
         protectedGameplayAuthority:true,detailedDesignCandidate:true,
         roleAndPlatformRevalidationRequired:true,automaticReplacementAuthorized:false,
