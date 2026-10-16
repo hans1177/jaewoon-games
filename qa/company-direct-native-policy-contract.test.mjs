@@ -273,3 +273,28 @@ test('development orchestrator never globally serializes heavy platform or Unity
   assert.doesNotMatch(runtime,/dispatch-unity-web-floor:/);
   assert.doesNotMatch(runtime,/dispatch-unity-web-bootstrap:/);
 });
+
+
+test('owner-authorized general Web games use existing Vibe lane without unlocking Unity or bypassing QA',()=>{
+  const web=roadmap.standaloneWebGameDevelopment;
+  const mirror=directive.standaloneWebGameDevelopment;
+  assert.equal(web.status,'OWNER_DIRECT_ENABLED');
+  assert.equal(web.enabled,true);
+  assert.equal(web.target,'WEB');
+  assert.equal(web.canonicalSourceRoot,'web-games/<gameId>/');
+  assert.equal(web.directHtmlCssJavascriptCanvasAuthoringAllowed,true);
+  assert.equal(web.independentOfUnityWeb,true);
+  assert.equal(web.implementationOwner,'VIBE2_VIBE3');
+  assert.equal(web.sourceWriteOnlyOnCandidateBranch,true);
+  assert.equal(web.existingPipelineOnly,true);
+  assert.equal(web.qaOrSecurityBypassForbidden,true);
+  assert.equal(web.browserRuntimeAndIndependentQaRequired,true);
+  assert.equal(web.publicHomepageDeploymentOnlyAfterVerifiedBuildAndPublicationEvidence,true);
+  assert.equal(roadmap.developmentAccess.WEB,'ALWAYS_ALLOWED');
+  assert.equal(directive.platformStrategy.developmentAccess.WEB,'ALWAYS_ALLOWED');
+  assert.equal(mirror.enabled,true);
+  assert.equal(mirror.independentOfUnityWeb,true);
+  assert.equal(roadmap.developmentAccess.UNITY_WEB,'OWNER_HOLD');
+  assert.equal(roadmap.developmentAccess.UNITY_ANDROID,'OWNER_HOLD');
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX']);
+});
