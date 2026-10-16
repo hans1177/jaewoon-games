@@ -152,7 +152,14 @@ export function scanSecurityPatch({patch='',changedFiles=[],centralPolicySnapsho
   for(const file of changedFiles){
     if(SUSPICIOUS_BIN.test(file))findings.push(finding({rule:'EXECUTABLE_OR_BINARY_ARTIFACT_ADDED',severity:'HIGH',file,line:0,text:file,category:'malware'}));
   }
-  for(const row of rows)findings.push(...scanLine(row).filter(item=>item.rule!=='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW'||central.get(row.file)?.designOnly!==true));
+  for(const row of rows)findings.push(...scanLine(row).filter(item=>{
+    if(item.rule!=='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW')return true;
+    // A successfully parsed base/head policy snapshot is authoritative: its structural
+    // delta is checked below. Do not also require a human review just because a
+    // formatted JSON line repeats the word 'authority' or 'forbidden'.
+    // Missing or invalid snapshots retain the conservative line-level review.
+    return !central.has(row.file);
+  }));
   // 권한 키 변경과 삭제로 제한을 없애는 변경도 추가 줄 검사와 같은 검토를 받는다.
   for(const [file,entry] of central)if(!entry.designOnly){
     for(const change of entry.changes){
