@@ -345,7 +345,7 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.match(design,/function computeVibeNativeDesign\(\)/);
   assert.doesNotMatch(design,/VIBE_LOCAL_OLLAMA/);
   assert.doesNotMatch(design,/OLLAMA_DESIGN_TIMEOUT/);
-  assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK');
+  assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_EXTERNAL_ONLY');
   assert.equal(directive.ai.providerSecret,'GEMINI_API_KEY');
   assert.equal(directive.ai.openAiProviderAllowed,false);
   assert.equal(directive.ai.ollamaProviderAllowed,true);
