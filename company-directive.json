@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "revision": 90,
-  "updatedAt": "2026-10-11",
+  "revision": 91,
+  "updatedAt": "2026-10-17",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -1118,7 +1118,7 @@
     "f9PublishDispatchStartsNextF0ThroughF9Cycle": true,
     "publicationOutcomeBlocksNextCycle": false
   },
-  "currentExecutionMode": "ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT",
+  "currentExecutionMode": "ROBLOX_AND_DIRECT_WEB_CONTINUOUS_DEVELOPMENT",
   "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
@@ -1649,11 +1649,12 @@
     "publicationRetryPreservesExactFailedCycleIdentity": true
   },
   "ownerActiveDevelopmentScope20261009": {
-    "version": 2,
-    "authority": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY",
+    "version": 3,
+    "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_DIRECT_WEB",
     "status": "ACTIVE",
     "activeTargets": [
-      "ROBLOX"
+      "ROBLOX",
+      "WEB"
     ],
     "ownerHeldTargets": [
       "UNITY_WEB",
@@ -1678,6 +1679,7 @@
     "existingUnityWeb2dGamesMustRebuild3d": true,
     "allSpatialGameAssetLibraries3dOnly": true,
     "unityWeb3dRuntimeProofRequired": true,
-    "unityWebDevelopmentAllowed": false
+    "unityWebDevelopmentAllowed": false,
+    "directWebDevelopmentAllowed": true
   }
 }
