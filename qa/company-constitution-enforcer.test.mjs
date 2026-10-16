@@ -8,7 +8,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {enforceConstitution} from '../tools/company-constitution-enforcer.mjs';
 
-// 메인: 소유자가 삭제한 중앙 헌법을 복원하거나 PASS로 가장하지 않는다.
+// 메인: 새 단일 정책 제안 상태에서 검증기가 허위 승인하지 않는지 검사한다.
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 test('owner removal leaves constitutional verification blocked, never PASS', () => {
@@ -19,6 +19,9 @@ test('owner removal leaves constitutional verification blocked, never PASS', () 
   const result = enforceConstitution({root, phase: 'test'});
   assert.equal(result.pass, false);
   assert.ok(result.errors.includes('CONSTITUTION_AUTHORITY_UNAVAILABLE'));
+  assert.ok(result.errors.includes('OWNER_POLICY_AUTHORITY_NOT_MIGRATED'));
+  assert.ok(result.errors.includes('SINGLE_POLICY_NOT_ACTIVE_OR_INVALID'));
+  assert.ok(result.errors.includes('MACHINE_ENFORCEMENT_ASSERTIONS_MISSING'));
   assert.equal(result.constitutionFingerprint, null);
 });
 
