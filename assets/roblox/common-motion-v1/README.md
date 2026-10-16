@@ -14,7 +14,7 @@
 
 ## 기본 작업 예산
 
-기존 `ASSET_DEVELOPMENT` 작업에 60분 예산을 배정한다: 원본·리그 검토 10분, 실제 수정 30분, 접촉·반복·전환 검수 15분, 증거·인계 5분. 빈 대기로 시간을 채우지 않으며 개별 모델 호출 예산이나 게임 작업 권한은 확대하지 않는다. 중앙 기준은 `company-learning/platform-release-roadmap.json`의 `studioMotionProgram.baseQualityWorkSession`이다.
+기존 `ASSET_DEVELOPMENT` 작업에 60분 예산을 배정한다: 원본·리그 검토 10분, 실제 수정 30분, 접촉·반복·전환 검수 15분, 증거·인계 5분. 빈 대기로 시간을 채우지 않으며 개별 모델 호출 예산이나 게임 작업 권한은 확대하지 않는다. 기존 중앙정책의 `studioMotionProgram.baseQualityWorkSession` 경로는 삭제되었으므로 더 이상 실행 기준으로 참조하지 않는다. 앞의 시간 배분은 작업 참고값이며, 검증 완료 판단은 실제 모션·접촉·전환 증거로 한다.
 
 ## 검증 범위
 
