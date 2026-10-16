@@ -615,37 +615,9 @@ test('free MAIN is synthesized after independent A and B, fused C genres and exp
 });
 
 // 메인: 기존 게임은 새 문법 B 안의 보조 참고이며 A/B 중심과 C/D/@의 생성 근거를 대체하지 않는다.
-test('existing game is only a supporting reference inside fresh grammar B',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const method=policy.continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod;
-  const base={requestId:'existing-reference-only',category:'CASUAL',platform:'ROBLOX',designTopicMode:'VIBE_FREE_TOPIC',basicDesignMethod:method};
-  const reference={scope:'B_SUPPORTING_REFERENCE_ONLY',systemFamily:'기존 마을 건설과 주민 운영',playerChoice:'기존 주민에게 작업을 배정한다',source:'design/cozy-island/original.json'};
-  const control=computeVibeSeedProposal(base);
-  const result=computeVibeSeedProposal({...base,bSystemReference:reference});
-  const poisoned=computeVibeSeedProposal({...base,bSystemReference:reference,category:'SURVIVAL',gameName:'기존 생존 왕국',ownerBrief:'옛 세계관과 원래 중심',coreLoop:['옛 게임 루프'],materials:[{causalDNA:['DYNASTIC_INHERITANCE']}]});
-  assert.deepEqual({...result,category:undefined},{...poisoned,category:undefined},'existing routing metadata must not select the fresh grammar axes');
-  assert.deepEqual(result.gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes,control.gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes);
-  assert.notEqual(result.gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes[1].systemFamily,reference.systemFamily);
-  assert.equal(result.basicDesignSelection.existingSystemReference.scope,'B_SUPPORTING_REFERENCE_ONLY');
-  assert.equal(result.basicDesignSelection.existingSystemReference.systemFamily,reference.systemFamily);
-  assert.deepEqual(result.gameplaySketch.novelGameGrammar.dCreations,control.gameplaySketch.novelGameGrammar.dCreations);
-  assert.deepEqual(result.gameplaySketch.novelGameGrammar.delveLayer,control.gameplaySketch.novelGameGrammar.delveLayer);
-  assert.deepEqual(result.gameplaySketch.novelGameGrammar.gameplaySystemFusion.themeFusion,control.gameplaySketch.novelGameGrammar.gameplaySystemFusion.themeFusion);
-  const migrated=computeVibeSeedProposal({...base,aSystemReference:{...reference,scope:'A_SYSTEM_ONLY'}});
-  assert.deepEqual(migrated,result,'old A reference is migrated only into B supporting reference');
-  const sketch=normalizeGameplaySketch(base,result,result.coreLoop,result.gameName);
-  assert.equal(sketch.novelGameGrammar.gameplaySystemFusion.formula,method.formula);
-  assert.equal(sketch.novelGameGrammar.gameplaySystemFusion.themeFusion.themes,undefined);
-  assert.equal(sketch.novelGameGrammar.existingGameSystemRole,'B_SUPPORTING_REFERENCE');
-  const seed={...legacySeed(),GAMEPLAY_SKETCH:sketch,CORE_LOOP:result.coreLoop,DISTINCT_IDENTITY:result.distinctIdentity};
-  assert.equal(validateGameSeed(seed).pass,true,validateGameSeed(seed).errors.join('|'));
-  const broken=structuredClone(seed);
-  broken.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements[0].sourceDId='UNKNOWN_D';
-  assert.equal(validateGameSeed(broken).pass,false,'@ without a matching D must be rejected');
-  const oldFormula=structuredClone(seed);
-  oldFormula.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula='MAIN × A × B × C';
-  assert.equal(validateGameSeed(oldFormula).pass,false,'new grammar cannot regress to legacy formula');
-});
+// Retired: previous novel-grammar test required the owner-deleted machine policy.
+// Maintained GAME_SEED validation, sketch syntax, and basic-floor regression remain active.
+
 
 test('basic floor carries authored standard systems and B supporting reference without genre presets',()=>{
   const content={creativeGrammar:{standardVersion:1,a:{system:'새 중심 시스템'},b:{system:'새 B 시스템',existingSystemReference:{scope:'B_SUPPORTING_REFERENCE_ONLY',systemFamily:'기존 게임 시스템'}}},
