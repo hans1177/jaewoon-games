@@ -100,7 +100,7 @@ function runGameRepairQa({root,data={},causalReplay={}}={}){
     ?runRepairNodeTargets({root,data,targets:contract.saveMigration.testTargets,category:'SAVE_MIGRATION'}):[];
   const saveMigration=saveRequired?(saveResults.length?'PASS':'PENDING_RUNTIME_EVIDENCE'):'NOT_APPLICABLE';
   const multiplayerRequired=contract?.multiplayerLifecycle?.required===true;
-  const multiplayerPolicy=readJson(path.join(root,'company-learning/platform-release-roadmap.json'),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
+  const multiplayerPolicy=readJson(path.join(root,String(process.env.COMPANY_VERIFIED_POLICY_PATH||'__policy_not_configured__')),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
   const staticMultiplayer=multiplayerRequired&&(multiplayerPolicy.verificationScope==='STATIC_CODE_CONTRACT'||contract?.multiplayerLifecycle?.verificationScope==='STATIC_CODE_CONTRACT');
   let multiplayerSourceContract=null;
   if(staticMultiplayer){
