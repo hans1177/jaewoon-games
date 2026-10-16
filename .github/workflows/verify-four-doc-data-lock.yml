@@ -7,6 +7,11 @@ on:
       - 'company-learning/company-architecture-map.json'
       - 'company-learning/security-immune-system.json'
       - 'qa/company-four-docs-fingerprint.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
+      - 'qa/company-records-governance.test.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/company-records-governance.mjs'
+      - '.github/workflows/verify-four-doc-data-lock.yml'
   pull_request:
     paths:
       - 'company-directive.json'
@@ -14,6 +19,11 @@ on:
       - 'company-learning/company-architecture-map.json'
       - 'company-learning/security-immune-system.json'
       - 'qa/company-four-docs-fingerprint.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
+      - 'qa/company-records-governance.test.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/company-records-governance.mjs'
+      - '.github/workflows/verify-four-doc-data-lock.yml'
 permissions:
   contents: read
 jobs:
@@ -24,4 +34,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test qa/company-four-docs-fingerprint.test.mjs
+      - name: Static syntax on retained context and record tools
+        run: |
+          node --check tools/company-shared-context.mjs
+          node --check tools/company-records-governance.mjs
+      - name: Verify minimal JSON locks, fail-closed policy, and records limits
+        run: |
+          node --test qa/company-four-docs-fingerprint.test.mjs
+          node --test qa/company-shared-context-retained.test.mjs
+          node --test qa/company-records-governance.test.mjs
