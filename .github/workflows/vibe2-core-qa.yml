@@ -297,6 +297,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Verify production-bound auto-coding preflight before broader regression
+        run: node --test qa/vibe2-autocoding-preflight.test.mjs
+
       - name: Syntax check
         run: |
           set -euo pipefail

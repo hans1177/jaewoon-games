@@ -346,11 +346,11 @@ jobs:
             else
               echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_ACTIVE_GAME_SOURCE_AND_RESERVATION_REGRESSION'
             # Keep executable reservation, isolation, worker, and security contracts blocking.
-            # Legacy portfolio-policy fixture tests run in their own CI, not in the scheduler
-            # critical path after the owner intentionally removed the roadmap document.
+            # Full legacy source/model transport fixtures stay in Vibe2 Core QA. Scheduler
+            # admission instead checks the real canonical Roblox source contract fail-closed.
             (cd /tmp/vibe2-main && node --test --test-concurrency=4 \
             qa/vibe2-central-work-contract.test.mjs \
-            qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-autocoding-preflight.test.mjs \
             qa/vibe2-candidate-reconcile.test.mjs)
             # Current active development authority, worker identity, per-file conflicts, and owner holds.
             (cd /tmp/vibe2-main && node --test --test-name-pattern='^active owner Unity Web and Roblox reserve real game work without held platforms or file conflicts$' qa/vibe2-queue-control.test.mjs)
