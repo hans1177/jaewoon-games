@@ -609,7 +609,7 @@ test('Core QA coalesces obsolete revisions of the same PR and preserves manual a
     ['push','refs/heads/review-branch',false],
     ['workflow_dispatch','refs/heads/main',false]
   ])assert.equal(runInNewContext(expression,{github:{event_name,ref}}),expected,event_name+':'+ref);
-  const group=workflow.match(/group: (vibe2-core-qa-[^\n]+)/)[1];
-  const resolve=ref=>group.replace('${{ github.ref }}',ref);
+  const group=workflow.match(/group: vibe2-core-qa-\$\{\{([^\n]+?)\}\}/)[1];
+  const resolve=ref=>runInNewContext(group,{github:{event_name:'pull_request',ref,sha:'same-sha'}});
   assert.notEqual(resolve('refs/pull/7663/merge'),resolve('refs/pull/7665/merge'));
 });
