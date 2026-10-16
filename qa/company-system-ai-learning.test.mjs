@@ -298,9 +298,10 @@ test('primary domain outranks secondary domain even when secondary has similar k
   assert.ok(ui<0||save<ui);
 });
 
-test('bottleneck System AI cannot claim removed policy authority for advanced playbook',()=>{
+test('bottleneck System AI cannot claim game policy authority for advanced playbook',()=>{
   const owner=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-  assert.equal(owner.legacyCentralPolicyReferenceCleanup?.replacementPolicyNotAsserted,true);
+  assert.equal(owner.policyDocument,'company-learning/platform-release-roadmap.json');
+  assert.equal(fs.existsSync(owner.policyDocument),true);
   const context=buildSystemAiLearningContext({
     task:{
       id:'sys-bottleneck-runner-queue-v1',
@@ -462,9 +463,10 @@ test('System AI workflow binds canonical distilled advisory knowledge into every
 });
 
 /* ── 기존 14개 방법 재사용 및 검증된 F0~F9 수리 지식만 학습 ── */
-test('removed legacy policy cannot silently grant Roblox recovery authority or passed floors',()=>{
+test('system AI cannot silently grant Roblox recovery authority or passed floors',()=>{
   const owner=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-  assert.equal(owner.legacyCentralPolicyReferenceCleanup?.replacementPolicyNotAsserted,true);
+  assert.equal(owner.policyDocument,'company-learning/platform-release-roadmap.json');
+  assert.equal(fs.existsSync(owner.policyDocument),true);
   for(const signature of [
     'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
     'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
