@@ -3850,7 +3850,11 @@ test('owner-held Unity and Web directives preserve queued generations without in
     assert.equal(generated.buildUpDirective.productionPlan,null);
     const running={...generated,id:gameId+'-running',status:'running',reservationRunId:'existing-run'};
     const queued={...generated,id:gameId+'-queued',status:'queued'};
-    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']}}));
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({
+      robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']},
+      ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX'],ownerHeldTargets:['UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN']},
+      developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',UNITY_WEB:'OWNER_HOLD',UNITY:'OWNER_HOLD'}
+    }));
     const result=planVibe2AutonomousTasks({
       status:{projects:[{gameId,ownerDecision:'PASS',target,projectPath:project.projectPath,progress:80}]},
       catalog:{games:[{id:gameId,name:gameId,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',...(engine==='web'?{webPath:`/${project.projectPath}/`,hasWebArchive:true,homepageWebPlayable:true}:{})}]},
