@@ -5062,13 +5062,16 @@ test('quality-first repairs current released Roblox assets before unused volume 
 });
 
 
-test('current-consumer RPG menu is byte-identical with the reusable source and remains runtime-unverified',()=>{
+test('current-consumer RPG menu retains game additions separate from reusable source and remains runtime-unverified',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const assetRoot=path.join(root,'assets','roblox','rpg-menu');
   const gameRoot=path.join(root,'roblox-games','daechung-rpg','shared');
   for(const name of ['RPGMenu.luau','RPGMenuModel.luau']){
-    assert.equal(fs.readFileSync(path.join(assetRoot,name),'utf8'),fs.readFileSync(path.join(gameRoot,name),'utf8'),name);
+    const reusable=fs.readFileSync(path.join(assetRoot,name),'utf8');
+    const consumer=fs.readFileSync(path.join(gameRoot,name),'utf8');
+    assert.ok(reusable.length>0&&consumer.length>0,name+' sources must remain present');
+    assert.notEqual(reusable,consumer,name+' has game-specific additions; do not overwrite them for false parity');
   }
   const source=fs.readFileSync(path.join(assetRoot,'RPGMenu.luau'),'utf8');
   const model=fs.readFileSync(path.join(assetRoot,'RPGMenuModel.luau'),'utf8');
@@ -5085,7 +5088,7 @@ test('current-consumer RPG menu is byte-identical with the reusable source and r
   const quality=JSON.parse(fs.readFileSync(path.join(assetRoot,'quality-evidence.json'),'utf8'));
   assert.equal(quality.productionVerified,false);
   assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(quality.sourceAudit.evidenceBasis.currentConsumerCanonicalParity,true);
+  assert.equal(quality.sourceAudit.evidenceBasis.currentConsumerCanonicalParity,false);
   assert.equal(quality.sourceAudit.claim,'SOURCE_AUTHORING_INTERNAL_ASSET_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS');
 });
 
