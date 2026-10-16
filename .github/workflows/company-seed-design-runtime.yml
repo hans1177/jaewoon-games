@@ -21,7 +21,7 @@ on:
       - 'tools/company-strict-production-review.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'owner-design-reset-queue.json'
-      - 'qa/company-shared-context.test.mjs'
+      - 'qa/company-four-docs-fingerprint.test.mjs'
       - 'tools/company-shared-context.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
   schedule:
@@ -216,7 +216,7 @@ jobs:
         if: steps.main_snapshot.outputs.current == 'true'
         run: |
           node --check tools/company-shared-context.mjs
-          node --test qa/company-shared-context.test.mjs
+          node --test qa/company-four-docs-fingerprint.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-design-plan.json
 
       - name: Resolve central-policy active incomplete GAME_SEED targets
