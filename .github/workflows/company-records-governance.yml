@@ -12,7 +12,7 @@ on:
       - 'company-learning/security-immune-system.json'
       - 'tools/company-records-governance.mjs'
       - 'qa/company-records-governance.test.mjs'
-      - 'qa/company-central-policy-contract.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
       - '.github/workflows/company-records-governance.yml'
   push:
     branches: [main]
@@ -25,7 +25,7 @@ on:
       - 'company-learning/security-immune-system.json'
       - 'tools/company-records-governance.mjs'
       - 'qa/company-records-governance.test.mjs'
-      - 'qa/company-central-policy-contract.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
       - '.github/workflows/company-records-governance.yml'
   schedule:
     - cron: '10 21 * * *'
@@ -70,7 +70,7 @@ jobs:
         run: |
           set -euo pipefail
           node --test qa/company-records-governance.test.mjs
-          node --test qa/company-central-policy-contract.test.mjs
+          node --test qa/company-shared-context-retained.test.mjs
 
       - name: Scan all governed records and runtime media
         run: |
