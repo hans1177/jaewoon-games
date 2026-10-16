@@ -83,6 +83,8 @@ PACKS = [
   ["03-equipment", "rpg-equipment-100.zip", "ultimate_rpg_items_pack_by_quaternius_0.zip", "low-poly-rpg-pack", "zip"],
   ["03-equipment", "wizard-staff-glb.zip", "sws_glb.zip", "stylized-wizard-staff", "zip"],
   ["03-equipment", "medieval-shields.blend", "shields.blend", "low-poly-medieval-shields", "blend"],
+  ["03-equipment", "handpainted-rpg-weapons.zip", "handpainted weapons.zip", "cethiels-weapons-3d", "zip"],
+  ["03-equipment", "potion-bottles.blend", "potionBottlesOGA.blend", "potions-6", "blend"],
   [
     "04-npc-buildings",
     "modular-rpg-npc.7z",
@@ -146,6 +148,7 @@ PACKS = [
     "medieval-props-pack-3",
     "zip"
   ],
+  ["04-npc-buildings", "kenney-hexagon-world.zip", "kenney_hexagon-kit.zip", "hexagon-kit", "zip"],
   [
     "05-environment-sfx",
     "animated-forest-trees.zip",
@@ -223,6 +226,7 @@ PACKS = [
     "fox-0",
     "zip"
   ],
+  ["05-environment-sfx", "treasure-collection.zip", "treasure_pack.zip", "treasure-pack", "zip"],
   ["06-arthropods","crab-animated-3d.zip","crab.zip","crab-low-poly-animated-3d-model","zip"],
   ["07-wildlife","deer-male-rigged.blend","deer1.blend","old-deer-male","blend"],
   ["07-wildlife","deer-female-rigged.blend","doe.blend","deer-female","blend"],
@@ -238,6 +242,7 @@ PACKS = [
   ["10-npc-expanded","animated-human-rigged.zip","Animated Human by @Quaternius_0.zip","animated-human-low-poly","zip"],
   ["10-npc-expanded","hero-base-rigged.zip","character-base-model-rigged.zip","character-base-model","zip"],
   ["11-unique-bosses","giant-mutant-animated.zip","giant_mutant.zip","giant-mutant","zip"],
+  ["12-dungeon-interiors", "modular-dungeon-3d.zip", "free_modular_low_poly_dungeon_by_rgsdev.zip", "free-modular-low-poly-dungeon-pack", "zip"],
   ["12-dungeon-interiors","dungeon-interior-kit.zip","Dungeon.zip","dungeon-assets","zip"]
 ]
 
