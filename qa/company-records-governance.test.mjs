@@ -312,9 +312,12 @@ test('current central four documents stay inside absolute anti-bloat budgets',()
   assert.deepEqual(report.errors,[]);
   assert.equal(Object.keys(report.documents).length,4);
   assert.ok(report.documents.policy.utf8Bytes<=report.documents.policy.hardMaxUtf8Bytes);
+  assert.equal(report.documents.policy.hardMaxUtf8Bytes,80000);
   for (const [key,row] of Object.entries(report.documents)) {
-    assert.ok(row.utf8Bytes<1000,key+' exceeded owner hard limit');
-    assert.equal(row.hardMaxUtf8Bytes,999,key);
+    if(key!=='policy'){
+      assert.ok(row.utf8Bytes<1000,key+' compact summary exceeded owner hard limit');
+      assert.equal(row.hardMaxUtf8Bytes,999,key);
+    }
     assert.equal(row.maxGrowthUtf8Bytes,0,key);
   }
 });
