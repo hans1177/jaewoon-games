@@ -80,6 +80,9 @@ PACKS = [
     "medieval-weapon-pack",
     "7z"
   ],
+  ["03-equipment", "rpg-equipment-100.zip", "ultimate_rpg_items_pack_by_quaternius_0.zip", "low-poly-rpg-pack", "zip"],
+  ["03-equipment", "wizard-staff-glb.zip", "sws_glb.zip", "stylized-wizard-staff", "zip"],
+  ["03-equipment", "medieval-shields.blend", "shields.blend", "low-poly-medieval-shields", "blend"],
   [
     "04-npc-buildings",
     "modular-rpg-npc.7z",
