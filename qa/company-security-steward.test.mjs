@@ -426,6 +426,12 @@ test('policy REVIEW passes only through exact-head owner Primary-AI approval whi
   assert.ok(securityWorkflow.includes("test \"$REVIEW_ONLY\" = 'YES'"));
   assert.ok(securityWorkflow.includes("test \"$DIRECT_REVIEW_PASS\" = 'YES'"));
   assert.ok(securityWorkflow.includes("VIBE_SECURITY_REVIEW_STATE=EXACT_HEAD_OWNER_PRIMARY_AI_REVIEW_PASS"));
+  assert.ok(securityWorkflow.includes("const protectedCodeUnchanged=reviewed=>"));
+  assert.ok(securityWorkflow.includes("':(exclude)qa/**'"));
+  assert.ok(securityWorkflow.includes("execFileSync('git',['diff','--quiet',reviewed,head"));
+  assert.ok(securityWorkflow.includes("const reused=!exact&&validReview.some"));
+  assert.ok(securityWorkflow.includes("const pass=exact||reused"));
+  assert.ok(securityWorkflow.includes("VIBE_SECURITY_REVIEW_REUSE="));
   assert.ok(securityWorkflow.includes("VIBE_SECURITY_ACTION=QUARANTINE_AFFECTED_CHANGE"));
 });
 
