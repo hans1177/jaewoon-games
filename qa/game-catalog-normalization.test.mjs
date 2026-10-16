@@ -63,11 +63,11 @@ const inferredRpg={
 assert.equal(inferHomepagePlatform(inferredRpg),'UNITY');
 assert(inferHomepageGenres(inferredRpg).includes('RPG'));
 applyHomepageAutoClassification(inferredRpg);
-// With the owner-removed policy absent, classification is advisory only.
-assert.equal(inferredRpg.selectedPlatform,undefined);
-assert.equal(inferredRpg.homepageInfo.platform,undefined);
-assert.equal(inferredRpg.genre,undefined);
-assert.equal(inferredRpg.homepageInfo.genreLabel,undefined);
+// The active company directive authorizes homepage auto-classification.
+assert.equal(inferredRpg.selectedPlatform,'UNITY');
+assert.equal(inferredRpg.homepageInfo.platform,'UNITY');
+assert(inferredRpg.genre.includes('RPG'));
+assert.equal(inferredRpg.homepageInfo.genreLabel,inferredRpg.genre.join(' · '));
 
 const inferredSocial={
   id:'auto-social',
