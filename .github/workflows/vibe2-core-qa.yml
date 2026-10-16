@@ -1,6 +1,10 @@
 name: Vibe2 Core QA
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'qa/vibe2-source-worker.test.mjs'
   push:
     branches:
       - main
