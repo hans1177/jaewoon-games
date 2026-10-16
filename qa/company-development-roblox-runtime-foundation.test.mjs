@@ -871,7 +871,7 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(stack.releaseGate.internalRuntimeValidationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.studioRequiredForInternalRelease,false);
  assert.equal(architectureSummary,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
- const studioWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-studio-local-play.yml','utf8');
+ const studioWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(studioWorkflow,/OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
 });
 
