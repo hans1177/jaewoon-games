@@ -771,7 +771,11 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
     return false; // Android owner hold: do not generate new native work.
   }
   if(project.engine==='unreal'){const policy=centralPresentationPolicy(repoRoot);if(policy?.developmentAccess?.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
-  if(project.releaseState==='development-confirmed')return project.engine==='web'&&centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status!=='ACTIVE'; // Existing legacy tests stay readable; production only schedules Roblox and Unity Web.
+  if(project.engine==='web'&&project.releaseState==='development-confirmed'){
+    const scope=centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009;
+    // The owner scope explicitly admits direct Web without resuming held Unity Web.
+    return scope?.status!=='ACTIVE'||(scope.activeTargets||[]).includes('WEB');
+  }
   return false;
 }
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
@@ -3980,7 +3984,8 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   // 일반 대기 목표가 차도 총 큐 용량·소유자 보류·실제 소스 충돌은 그대로 지킨다.
   const webFlowPolicy=centralPresentationPolicy(repoRoot)?.developmentSpeedExecution?.webGameFlow;
   const webFlowTarget=webFlowPolicy?.enabled===true?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
-  const webFlowUnityOnly=centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status==='ACTIVE';
+  const currentScope=centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009;
+  const webFlowUnityOnly=currentScope?.status==='ACTIVE'&&!(currentScope.activeTargets||[]).includes('WEB');
   const webFlowMatches=item=>webFlowUnityOnly?(item.unityWebDevelopment===true||(item.evidence||[]).includes('unity-web-first-stage')):item.target==='web';
   const webFlowGames=new Set(developmentPool.filter(item=>webFlowMatches(item)&&item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)));
   const webSeedCapacity=Math.min(Math.max(0,webFlowTarget-webFlowGames.size),persistentCapacity);
