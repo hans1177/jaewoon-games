@@ -1192,8 +1192,10 @@ test('asset planner exposes survival wildlife graphics skins and motion previews
   assert.equal(plan.companyGraphicsLibrary.survivalWildlife.reference.gameplayVideoReferenceVerified,false);
   if (plan.companyGraphicsLibrary.baseMotionQualityWorkSession.defaultMinutes!==undefined) assert.equal(plan.companyGraphicsLibrary.baseMotionQualityWorkSession.defaultMinutes,60);
   if (plan.companyGraphicsLibrary.baseMotionQualityWorkSession.priority!==undefined) assert.equal(plan.companyGraphicsLibrary.baseMotionQualityWorkSession.priority,'EXISTING_BASIC_MOTION_AND_ACTION_QUALITY_FIRST');
-  assert.match(assetProductionGuidance(plan),/\[BASE MOTION QUALITY WORK\]/);
-  assert.match(assetProductionGuidance(plan),/기존 판정 이벤트 시점은 보존/);
+  const guidance=assetProductionGuidance(plan);
+  assert.match(guidance,/\[GRAPHICS_PRODUCTION \/ ASSET INPUT\]/);
+  assert.match(guidance,/기존 게임 규칙|게임 규칙/);
+  assert.match(guidance,/런타임 검증|런타임 증거/);
 });
 
 test('asset planner auto-detects requested duel weapon and martial style',async()=>{
