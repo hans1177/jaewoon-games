@@ -143,7 +143,7 @@ jobs:
           NODE
 
   preflight-worker:
-    name: Roblox Vibe shared-model preflight ${{ matrix.gameId }}
+    name: Roblox exact-package preflight ${{ matrix.gameId }}
     needs: preflight-plan
     if: needs.preflight-plan.outputs.count != '0'
     strategy:
@@ -165,23 +165,8 @@ jobs:
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
-      - name: Prepare shared local review model
-        uses: ./.github/actions/prepare-ollama
-        with:
-          model: 'llama3.2:1b'
-          version: '0.33.3'
-          pull-model: 'true'
-          department-role: development
-          cache-model: 'true'
-      - name: Ensure shared preflight model is local
-        shell: bash
-        run: |
-          set -euo pipefail
-          model="$(node -e "const d=require('./company-directive.json');console.log(d.ai.robloxPreflightModel||d.ai.departmentLeadModels?.development||'llama3.2:1b')")"
-          have="$(ollama list | awk 'NR>1{print $1}')"
-          grep -Fxq "$model" <<<"$have" || ollama pull "$model"
-          echo "ROBLOX_PREFLIGHT_SHARED_MODEL=$model"
-      - name: Run Vibe plus shared-model build preflight
+      # No global model download is needed for per-game immutable build checks.
+      - name: Check per-game exact package and source evidence
         id: review
         continue-on-error: true
         env:
