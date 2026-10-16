@@ -49,7 +49,7 @@ import { buildInternalMotionCoaching, singleMotionResponseSchema } from '../tool
 import { validateCandidateSyntax } from '../tools/vibe2-source-worker.mjs';
 import { focusedSymbolContext } from '../tools/vibe2-source-worker.mjs';
 import { requiredBlueprintFieldsFromPrompt } from '../tools/vibe2-source-worker.mjs';
-import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, rejectedSourcePatchFingerprint, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
+import { evaluateSingleMotionWorkUnit, SINGLE_MOTION_DEPTH_AXES, generateCandidateWithRecovery, runVibe2SourceWorker as runProductionVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, rejectedSourcePatchFingerprint, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateRobloxDesignAnchorGrounding, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, compactVerifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, localModelContextLimit, sourcePromptContextWindow, normalizeCandidate, buildGameContextCapsule, evaluateCandidateSelfReview, resolveAssetSourceModel, evaluateNativeAssetAuthoringCandidate, collectNativeAssetRuntimePromotionCandidates, executeDeclaredNativeDccAuthoringVerification, persistedGeneratedAssetBindings, attachSelectedInternalAssetApiContext, evaluateRobloxInternalAssetFamilyBindingCandidate, evaluateAllGameDynamicAssetBindingCandidate, assertAllGameDynamicAssetBindingContract, ROBLOX_INTERNAL_ASSET_FAMILIES } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance, inspectVibeSourceGlb } from '../tools/vibe2-asset-production-plan.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
@@ -370,6 +370,56 @@ test.afterEach(() => {
   if (inheritedExecutionLane === undefined) delete process.env.VIBE2_EXECUTION_LANE;
   else process.env.VIBE2_EXECUTION_LANE = inheritedExecutionLane;
 });
+
+// Source-worker integration fixtures must carry a *verified* compiled policy
+// just like an actual Vibe reservation. Never weaken the production preflight.
+import {
+  CANONICAL_VIBE_POLICY_PATH,
+  loadCentralPolicySnapshot,
+  compileVibeCentralWorkContract
+} from '../tools/vibe2-central-work-contract.mjs';
+
+async function runVibe2SourceWorker(args={}){
+  const cwd=path.resolve(args.cwd||process.cwd());
+  const orderPath=path.resolve(cwd,args.workOrderFile||'.vibe2/work-order.json');
+  if(fs.existsSync(orderPath) && !args.workOrderFile){
+    const orderJson=JSON.parse(fs.readFileSync(orderPath,'utf8'));
+    const policyFile=path.join(cwd,CANONICAL_VIBE_POLICY_PATH);
+    if(!fs.existsSync(policyFile)){
+      // This sandbox tests legacy Web/Unity source-edit scenarios in isolation.
+      // Its policy clone is NEVER written to the repository or used by real workers.
+      const fixturePolicy=structuredClone(JSON.parse(fs.readFileSync(CANONICAL_VIBE_POLICY_PATH,'utf8')));
+      if(fixturePolicy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009)
+        fixturePolicy.directNativeDualPlatformDevelopment.ownerActiveDevelopmentScope20261009.status='ISOLATED_FIXTURE_SCOPE';
+      if(fixturePolicy.ownerActiveDevelopmentScope20261009)
+        fixturePolicy.ownerActiveDevelopmentScope20261009.status='ISOLATED_FIXTURE_SCOPE';
+      if(fixturePolicy.developmentAccess)
+        for(const key of Object.keys(fixturePolicy.developmentAccess))
+          if(fixturePolicy.developmentAccess[key]==='OWNER_HOLD')delete fixturePolicy.developmentAccess[key];
+      if(fixturePolicy.assetProductionParallelContract?.activeProductionTargets)
+        fixturePolicy.assetProductionParallelContract.activeProductionTargets=['ROBLOX','UNITY_ANDROID','UNITY_WEB','WEB'];
+      fs.mkdirSync(path.dirname(policyFile),{recursive:true});
+      fs.writeFileSync(policyFile,JSON.stringify(fixturePolicy));
+    }
+    const snapshot=loadCentralPolicySnapshot({repoRoot:cwd,required:true});
+    assert.equal(snapshot.valid,true,'isolated test policy must pass the production contract validator: '+snapshot.errors.join(','));
+    const contract=compileVibeCentralWorkContract({
+      snapshot,
+      task:{...(orderJson.selectedTask||{}),id:orderJson.taskId,gameId:orderJson.gameId,target:orderJson.target},
+      plan:{target:orderJson.target},
+      route:{route:'text-source-worker'},
+      responsibleFiles:orderJson.source?.responsibleFiles||[],
+      mainSha:'isolated-fixture-no-remote',
+      livePolicyRef:''
+    });
+    assert.equal(contract.validAtCompile,true,'fixtures cannot fabricate compiled policy PASS');
+    // Preserve explicitly declared writable-file lock scopes used by DCC tests.
+    if(orderJson.compiledWorkContract?.workLock?.files)
+      contract.workLock={...contract.workLock,files:orderJson.compiledWorkContract.workLock.files};
+    fs.writeFileSync(orderPath,JSON.stringify({...orderJson,compiledWorkContract:contract}));
+  }
+  return runProductionVibe2SourceWorker(args);
+}
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
 test('photo teacher reaches actual image-byte observation and keeps inferred geometry unverified',async t=>{
