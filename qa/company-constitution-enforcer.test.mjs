@@ -99,3 +99,22 @@ test('single policy cannot pass merely because assertions are listed', () => {
     assert.ok(result.errors.includes('MACHINE_ASSERTION_EXECUTION_NOT_IMPLEMENTED'));
   } finally {fs.rmSync(temp, {recursive: true, force: true});}
 });
+
+test('constitution preflight rejects inconsistent retained central document references', () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'constitution-shared-preflight-'));
+  try {
+    const directive = fs.readFileSync(path.join(root, 'company-directive.json'), 'utf8');
+    fs.writeFileSync(path.join(temp, 'company-directive.json'), directive);
+    fs.mkdirSync(path.join(temp, 'company-learning'), {recursive:true});
+    for (const name of ['owner-single-policy.json', 'company-log-map.json', 'company-architecture-map.json', 'security-immune-system.json']) {
+      fs.copyFileSync(path.join(root, 'company-learning', name), path.join(temp, 'company-learning', name));
+    }
+    const changed = path.join(temp, 'company-learning/company-log-map.json');
+    const log = JSON.parse(fs.readFileSync(changed,'utf8'));
+    log.architectureMap = 'invalid-path.json';
+    fs.writeFileSync(changed, JSON.stringify(log));
+    const result = enforceConstitution({root:temp, phase:'test'});
+    assert.equal(result.pass,false);
+    assert.ok(result.errors.some(value=>value.includes('LOG_ARCHITECTURE_REFERENCE_INVALID')));
+  } finally {fs.rmSync(temp,{recursive:true,force:true});}
+});
