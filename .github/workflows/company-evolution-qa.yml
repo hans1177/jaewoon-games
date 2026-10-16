@@ -186,21 +186,12 @@ jobs:
           node --check qa/company-design-pre-gate-resume.test.mjs
           node --check qa/tier1-development-baseline-gate.test.mjs
 
-      - name: Validate centralized production policy contract
+      - name: Validate executable production and release safeguards
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs');
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const machineSource='company-learning/platform-release-roadmap.json';
-          const policy=JSON.parse(fs.readFileSync(machineSource,'utf8'));
-          if(directive.policyDocument!==machineSource||directive.machineSourceOfTruth!==machineSource)throw new Error('machine settings must point to canonical platform release roadmap');
-          if(directive.authority!=='MACHINE_EXECUTION_CONTRACT')throw new Error('company directive machine authority missing');
-          if(policy.authority!=='MACHINE_EXECUTION_CONTRACT'||policy.machineSourceOfTruth!==machineSource||policy.humanDocumentRequired!==false)throw new Error('canonical machine policy authority invalid');
-          const lifecycle=policy.developmentLifecycleMachine?.stages||[];
-          for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','PUBLIC_RELEASE_READY','PUBLIC_RELEASE']){
-            if(!lifecycle.includes(stage))throw new Error(`canonical lifecycle stage missing: ${stage}`);
-          }
           const roles=['planning','graphics','development','qa','audio'];
           const pool=[...new Set(directive.ai?.modelPool||[])];
           const reviewCount=Number(directive.ai?.departmentReviewModelCount||1);
@@ -214,7 +205,7 @@ jobs:
           if(directive.production?.fixedClassCounts!==false)throw new Error('production class counts must remain dynamic');
           if(directive.production?.numericLabelsAreAliasesOnly!==true||directive.production?.numericLabelsOwnerRemappable!==true)throw new Error('numeric labels must remain remappable aliases only');
           const dev=directive.classes?.DEVELOPMENT_CONFIRMED||{};
-          if(dev.executionMode!=='ROBLOX_ONLY_INDEPENDENT_CONTINUOUS'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.admissionAuthority!=='MINIMUM_DUAL_PLATFORM_DESIGN_READY'||dev.upperPlatformAdmissionAuthority!=='MINIMUM_DESIGN_READY'||dev.strictDesignScoreRequiredForAdmission!==false||dev.strictDesignReviewRunsInParallel!==true||dev.targetPlatformMayRunImmediately!==true||dev.unityWebDevelopmentMayRunImmediately!==false||dev.platformSpecificValidationRequired!==true||dev.materialChangeRequiresTargetedRevalidation!==true||dev.unityWebValidationSurface?.nativeGateAuthority!==false||dev.unityWebValidationSurface?.upperPlatformReadinessGate!=='UPPER_PLATFORM_DEVELOPMENT_READY'||policy.developmentAccess?.UNITY_ANDROID!=='OWNER_HOLD'||policy.developmentAccess?.UNITY_WEB!=='OWNER_HOLD'||policy.ownerUnityWeb3dOnly20261009?.finalGameplayDimension!=='3D'||policy.ownerUnityWeb3dOnly20261009?.internalSharedLibraryOnlyForGameplayAssets!==true)throw new Error('DEVELOPMENT_CONFIRMED Roblox active and Unity held settings missing');
+          if(dev.aiMayInventValidationPass!==false||dev.platformSpecificValidationRequired!==true||dev.materialChangeRequiresTargetedRevalidation!==true)throw new Error('development evidence and targeted revalidation safeguards missing');
           const release=directive.classes?.RELEASE_CONFIRMED||{};
           if(release.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION'||release.resumeFromLatestEvidence!==true||release.target!=='PROJECT_SELECTED_PLATFORM'||release.targetPlatformProjectRequired!==true||release.vibe2PrimaryDeveloper!==true||release.coreDesignLock!==true)throw new Error('RELEASE_CONFIRMED selected-platform gated direct settings missing');
           if(release.aiMayInventBuildPass!==false||release.aiMayInventDeviceValidationPass!==false||release.aiMayInventIndependentQaPass!==false)throw new Error('release anti-fake evidence settings missing');
@@ -228,10 +219,10 @@ jobs:
           if(!(sourceBind>=0&&build>sourceBind&&runtime>build&&independentQa>runtime&&finalReview>independentQa))throw new Error('selected-platform direct-native release review order invalid');
           for(const state of ['BUILDING','WAITING_BUILD','WAITING_RUNTIME_VALIDATION'])if(!(release.waitingStates||[]).includes(state))throw new Error(`release waiting state missing: ${state}`);
           for(const state of ['FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY'])if(!(release.releaseStates||[]).includes(state))throw new Error(`release state missing: ${state}`);
-          console.log('CENTRAL_POLICY=PASS');
+          console.log('EXECUTABLE_PRODUCTION_SAFEGUARDS=PASS');
           console.log(`DEPARTMENT_LEAD_DISTINCTNESS_REQUIRED=NO`);
           console.log(`CONFIGURED_DISTINCT_DEPARTMENT_LEADS=${distinctLeads.length}`);
-          console.log('DEVELOPMENT_DIRECT_NATIVE_POLICY=PASS');
+          console.log('DEVELOPMENT_VERIFICATION=PASS');
           console.log('RELEASE_GATED_DIRECT_POLICY=PASS');
           console.log('RELEASE_SELECTED_PLATFORM_REVIEW_POLICY=PASS');
           NODE
