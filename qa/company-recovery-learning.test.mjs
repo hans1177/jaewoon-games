@@ -636,7 +636,10 @@ test('fast recovery reuses canonical policies and listens to all three deploymen
     'Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment','Magic Forest Static Play']){
     assert.ok(workflow.includes('      - '+name));
   }
-  assert.match(workflow,/node tools\/company-shared-context\.mjs/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin/);
+  assert.match(workflow,/git reset --hard origin\/main/);
+  assert.match(workflow,/node tools\/vibe2-queue-control\.mjs storage-unpack/);
+  assert.match(workflow,/node --check tools\/company-recovery-dispatch\.mjs/);
   assert.match(workflow,/--deployment-event=\$GITHUB_EVENT_PATH/);
   assert.match(workflow,/node tools\/company-recovery-dispatch\.mjs --route=all/);
   assert.match(workflow,/unity-web.*?failure|UNITY_WEB_REPAIR_FAILURE_/s);
