@@ -416,13 +416,18 @@ test('canonical central policy documents bind the intelligent design loop to exi
   assert.equal(contract.narrativeAndDialogue.characterVoiceProfileRequired,true);
   assert.equal(contract.causalDefectOwnership.sameSymptomDualIndependentMutationForbidden,true);
   assert.equal(contract.designIntegrityChecks.required,true);
-  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.role,'STRUCTURAL_BINDINGS_ONLY');
-  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.policyAuthority,false);
-  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.semanticMirrorForbidden,true);
-  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.centralContract,'company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution');
-  assert.equal(logMap.designEvolutionEvidenceContract.role,'EVIDENCE_AND_CORRELATION_ONLY');
-  assert.equal(logMap.designEvolutionEvidenceContract.policyAuthority,false);
-  assert.equal(logMap.designEvolutionEvidenceContract.policySemanticsDefinedInCentralOnly,true);
+  // [중앙정책] 보존형 요약 문서는 정책 상세를 중복 보관하지 않는다.
+  // 상세 설계 알고리즘은 위 중앙 로드맵의 실행 계약에서만 검증한다.
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.centralPolicy,null);
+  assert.equal(architecture.branches.main.directGameWorkerWrite,false);
+  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  assert.equal(architecture.release,'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS');
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
+  assert.equal(logMap.retained.primaryLog,'GITHUB_ACTIONS_JOB_LOG');
+  assert.equal(logMap.retained.unknownOrMissingPolicy,'FAIL_CLOSED');
+  assert.equal(roadmap.centralDocumentation.canonicalSet.architectureMap,'company-learning/company-architecture-map.json');
+  assert.equal(roadmap.centralDocumentation.canonicalSet.logMap,'company-learning/company-log-map.json');
   const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
   assert.match(cycle,/CANONICAL_POLICY_PATH='company-learning\/platform-release-roadmap\.json'/);
   assert.doesNotMatch(cycle,/centralPolicy:'COMPANY_FLOW\.md'/);
