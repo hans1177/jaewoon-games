@@ -33,3 +33,10 @@ test('curated common actor library excludes generic stand-ins without treating a
     assert.notEqual(actor.productionVerified, true, 'no unverified runtime PASS');
   }
 });
+
+test('cross-game auto-replacement is blocked without measured and runtime-verified candidate quality', () => {
+  const source = fs.readFileSync('assets/vibe-studio-asset-universe.js', 'utf8');
+  assert.match(source, /const replacementQualityVerified=Boolean\(best\?\.reuse\?\.qualityEvidenceGrounded/);
+  assert.match(source, /usageByAsset\[text\(best\?\.asset\?\.id\)\]\?\.runtimePass===true/);
+  assert.match(source, /replacementQualityVerified&&\s*gain>=INTERNAL_ASSET_REUSE_POLICY\.replacement\.minimumEffectiveGain/);
+});
