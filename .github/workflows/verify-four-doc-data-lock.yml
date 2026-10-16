@@ -10,6 +10,12 @@ on:
       - 'qa/company-shared-context-retained.test.mjs'
       - 'qa/company-records-governance.test.mjs'
       - 'tools/company-shared-context.mjs'
+      - 'tools/company-constitution-enforcer.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
+      - 'tools/vibe2-continuous-runner.mjs'
+      - '.vibe2/external-ai-distilled-knowledge.json'
+      - 'qa/vibe2-restoration-smoke.test.mjs'
+      - 'qa/vibe2-central-work-contract.test.mjs'
       - 'tools/company-records-governance.mjs'
       - '.github/workflows/verify-four-doc-data-lock.yml'
   pull_request:
@@ -22,6 +28,12 @@ on:
       - 'qa/company-shared-context-retained.test.mjs'
       - 'qa/company-records-governance.test.mjs'
       - 'tools/company-shared-context.mjs'
+      - 'tools/company-constitution-enforcer.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
+      - 'tools/vibe2-continuous-runner.mjs'
+      - '.vibe2/external-ai-distilled-knowledge.json'
+      - 'qa/vibe2-restoration-smoke.test.mjs'
+      - 'qa/vibe2-central-work-contract.test.mjs'
       - 'tools/company-records-governance.mjs'
       - '.github/workflows/verify-four-doc-data-lock.yml'
 permissions:
@@ -37,9 +49,15 @@ jobs:
       - name: Static syntax on retained context and record tools
         run: |
           node --check tools/company-shared-context.mjs
+          node --check tools/company-constitution-enforcer.mjs
+          node --check tools/vibe2-central-work-contract.mjs
           node --check tools/company-records-governance.mjs
       - name: Verify minimal JSON locks, fail-closed policy, and records limits
         run: |
           node --test qa/company-four-docs-fingerprint.test.mjs
           node --test qa/company-shared-context-retained.test.mjs
           node --test qa/company-records-governance.test.mjs
+      - name: Verify Vibe worker contract and external AI learning integration
+        run: |
+          node --test qa/vibe2-restoration-smoke.test.mjs
+          node --test qa/vibe2-central-work-contract.test.mjs
