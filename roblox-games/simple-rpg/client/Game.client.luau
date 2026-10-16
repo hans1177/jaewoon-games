@@ -150,12 +150,16 @@ local function bindExternalButton(descendant: Instance): ()
     if typeof(action) == "string" then
       local argument: any = descendant:GetAttribute("GameArgument")
       if action == "CivBuildHousing" then
+        local supportLink = descendant:FindFirstChild("GameParentPart")
         argument = {
           Key = descendant:GetAttribute("GameHousingPiece"),
           Position = descendant:GetAttribute("GamePlacement"),
           Rotation = descendant:GetAttribute("GameRotation"),
-          ParentPart = descendant:GetAttribute("GameParentPart"),
+          ParentPart = supportLink and supportLink:IsA("ObjectValue") and supportLink.Value or nil,
         }
+      elseif action == "CivRemoveHousing" or action == "CivToggleHousingDoor" then
+        local targetLink = descendant:FindFirstChild("GameTargetPart")
+        argument = targetLink and targetLink:IsA("ObjectValue") and targetLink.Value or nil
       end
       invokeExternalAction(action, argument)
     end
