@@ -15,6 +15,7 @@ on:
       - 'assets/roblox/actors/sources/**'
       - 'assets/roblox/actors/native/**'
       - 'tools/simple-rpg-upload-actors.mjs'
+      - 'tools/simple-rpg-priority-cc0-download.py'
       - '.github/workflows/owner-simple-rpg-direct-publish.yml'
   workflow_dispatch:
     inputs:
