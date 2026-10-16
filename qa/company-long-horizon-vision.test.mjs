@@ -48,7 +48,7 @@ test('all long-term workers remain under verified central security and execution
 });
 
 test('financial sustainability requires owner-controlled action',()=>{
-  const finance=vision.strategicContinuity.economicSustainability.aiFinancialBoundary;
+  const finance=vision.economicSustainability.aiFinancialBoundary;
   assert.equal(vision.strategicContinuity.principles.capitalIsMeansNotFinalGoal,true);
   assert.equal(vision.strategicContinuity.principles.gameReleaseIsCurrentPrimaryCapitalEngine,true);
   assert.equal(finance.autonomousFinancialTransactionAuthority,false);
