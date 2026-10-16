@@ -285,7 +285,9 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=VIBE_NATIVE_FUNCTION/);
   assert.doesNotMatch(seedDesignWorkflow,/COMPANY_GEMINI_DESIGNER_MODEL:/);
   assert.doesNotMatch(seedDesignWorkflow,/COMPANY_GEMINI_FALLBACK_MODELS:/);
-  assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
+  // 구형 Vibe 네이티브 플래그는 현재 소유자 외부 AI 정책의 권한 근거가 아니다.
+  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['GEMINI_API']);
+  assert.equal(directive.ai.gameDesigner.cloudFailureFallsBackToLocal,false);
 
   assert.match(designSeedNormalize,/DESIGN_SEED_REFERENCE_GAMES_OPTIONAL_EMPTY=/);
   assert.match(designSeedNormalize,/ENSURE_REFERENCE_INPUTS_WITHOUT_INVENTING_REFERENCE_GAME/);
