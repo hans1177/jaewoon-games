@@ -64,8 +64,9 @@ test('verified Unity Web policy and Vibe3 QA bottleneck teaches a reusable cause
   });
   assert.ok(next.exactKnowledgeIds.includes('EXPERIENCE:'+lesson.id));
   assert.ok(next.exactKnowledgeIds.includes('CODE_PATTERN:'+first.library.patterns[0].id));
-  assert.match(next.guidance,/STALE_QA_TRIANGULATION/);
-  assert.match(next.guidance,/Vibe3 실행 계약/);
+  assert.match(next.guidance,/RECHECK_CURRENT_MAIN_POLICY_AND_EXACT_FAILED_STAGE_BEFORE_REPEATING_UNITY_WEB_PHASE_OLD_CONTRACT/);
+  assert.match(next.guidance,/VERIFIED_VIBE3_ENGINE_CONTRACT_UNITY_WEB_PHASE_OLD_CONTRACT_CAUSE_SCOPED_REPAIR/);
+  assert.equal(next.bottleneckPlaybook.applied,false,'removed policy cannot authorize new playbook');
   assert.equal(next.rawModelOutputIncluded,false);
   assert.equal(next.authorityExpanded,false);
   const again=promoteVerifiedSystemAiLearning({
