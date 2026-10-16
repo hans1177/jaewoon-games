@@ -8,6 +8,9 @@ on:
     branches: [main]
     paths:
       - 'roblox-games/simple-rpg/**'
+      - 'assets/roblox/actors/sources/**'
+      - 'assets/roblox/actors/native/**'
+      - 'tools/simple-rpg-upload-actors.mjs'
       - '.github/workflows/owner-simple-rpg-direct-publish.yml'
   workflow_dispatch:
     inputs:
@@ -30,7 +33,7 @@ env:
 
 jobs:
   upload_actor_assets:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[upload-kaykit]')) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
