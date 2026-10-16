@@ -227,59 +227,11 @@ jobs:
           set -euo pipefail
           node tools/company-shared-context.mjs --output=/tmp/worker-shared-context.json
 
-      - name: Install local Ollama
-        shell: bash
-        run: |
-          set -euo pipefail
-          installed=0
-          for attempt in 1 2 3; do
-            echo "OLLAMA_INSTALL_ATTEMPT=$attempt/3"
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
-          nohup ollama serve > /tmp/ollama.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
-            sleep 2
-          done
-          cat /tmp/ollama.log || true
-          exit 1
-
-      - name: Pull configured free department models
-        shell: bash
-        run: |
-          set -euo pipefail
-          node --input-type=module <<'NODE' > /tmp/models.txt
-          import fs from 'node:fs';
-          const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const roles=Array.isArray(d.ai?.departments)&&d.ai.departments.length?d.ai.departments:['planning','graphics','development','qa','audio'];
-          const pool=[...new Set((d.ai?.modelPool||[]).map(String).map(x=>x.trim()).filter(Boolean))];
-          const reviewCount=Math.max(Number(d.ai?.minDistinctModelsPerDepartment||1),Number(d.ai?.departmentReviewModelCount||1));
-          const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());
-          if(pool.length<reviewCount)throw new Error(`model pool too small: ${pool.length}/${reviewCount}`);
-          if(leads.some(x=>!x))throw new Error('department lead model missing');
-          if(d.ai?.departmentLeadModelsMustBeDistinct!==false&&new Set(leads).size<Number(d.ai?.minDistinctLeadModelsAcrossDepartments||1))throw new Error('minimum distinct department lead gate failed');
-          for(const lead of leads)if(!pool.includes(lead))throw new Error(`lead model not in pool: ${lead}`);
-          const localFallbacks=(d.ai?.gameDesigner?.localFallbackModels||[]).map(String).map(x=>x.trim()).filter(Boolean);
-          const localModels=[...new Set([...leads,...localFallbacks].filter(model=>model&&!/^gemini-/i.test(model)))];
-          if(!localModels.length)throw new Error('local department fallback model missing');
-          for(const model of localModels)console.log(model);
-          NODE
-          while IFS= read -r model; do
-            [ -n "$model" ] || continue
-            echo "PULL_MODEL=$model"
-            ollama pull "$model"
-          done < /tmp/models.txt
-          echo 'DEPARTMENT_LEAD_PREFLIGHT=PASS'
-          echo 'PAID_API=NO'
-
       - name: Run production class pipeline
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          COMPANY_LOCAL_DESIGN_FALLBACK_READY: 'true'
         run: node tools/artbook-production-pipeline.mjs
 
       - name: Verify direct or gated result
