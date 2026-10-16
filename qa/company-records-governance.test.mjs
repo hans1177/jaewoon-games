@@ -35,6 +35,21 @@ test('canonical record contract accepts a consistent governed record',()=>{
   }finally{rm(path.join(root,'company-records/qa/2026'));}
 });
 
+test('owner-deleted roadmap is historical evidence, not a replacement policy or broad broken-reference exemption',()=>{
+  const rel='company-records/qa/2026/2026-09-21/test-game/runtime-check--qa-test-001.json';
+  const abs=path.join(root,rel);
+  const row=baseRecord();
+  try{
+    row.provenance.sourceRefs=['company-learning/platform-release-roadmap.json'];
+    row.relatedFiles=['company-learning/platform-release-roadmap.json'];
+    writeJson(abs,row);
+    assert.deepEqual(validateCompanyRecord(rel).errors,[]);
+    row.relatedFiles.push('company-learning/nonexistent-protected-config.json');
+    writeJson(abs,row);
+    assert.ok(validateCompanyRecord(rel).errors.includes('relatedFiles:BROKEN_REF:company-learning/nonexistent-protected-config.json'));
+  }finally{rm(path.join(root,'company-records/qa/2026'));}
+});
+
 test('record governance rejects path, metadata and raw secret drift',()=>{
   const rel='company-records/qa/2026/2026-09-21/test-game/runtime-check--qa-test-002.json';
   const abs=path.join(root,rel),row=baseRecord();
