@@ -26,7 +26,7 @@ function groupFailureSignatures(evidence=[]){
   const grouped=new Map();
   for(const raw of Array.isArray(evidence)?evidence:[]){
     const item=clean(raw);
-    const match=item.match(/^(?:failure-signature|error-signature|runtime-failure-signature):(.+)$/i);
+    const match=item.match(/^(?:failure-signature|error-signature|runtime-failure-signature|incremental-qa-failure-signature|retry-failure-signature|system-steward:failure-signature|shared-signature|failure-cause):(.+)$/i);
     if(!match)continue;
     const signature=clean(match[1]).slice(0,240);
     if(!signature)continue;
