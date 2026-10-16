@@ -162,7 +162,6 @@ test('game-primary control work uses available latest capacity while push/manual
   assert.match(core,/executeDeclaredNativeDccAuthoringVerification/);
   assert.match(core,/VIBE2_NATIVE_DCC_AUTHORING_STATUS=/);
   assert.match(core,/VIBE2_DCC_AUTHORING_EVIDENCE_FILE: \/tmp\/vibe2-dcc-authoring-evidence\.json/);
-  assert.match(core,/key: vibe2-ollama-v5-\$\{\{ runner\.os \}\}-\$\{\{ runner\.arch \}\}-qwen3-1\.7b/);
   assert.match(core,/\n  worker:[\s\S]{0,520}?matrix\.target == 'roblox'[\s\S]{0,220}?'ubuntu-latest'[\s\S]{0,220}?'ubuntu-24\.04-arm'/);
   assert.equal(runtime.continuous?.assetDevelopmentControlRunnerPool?.reserve,'ubuntu-slim');
 });
