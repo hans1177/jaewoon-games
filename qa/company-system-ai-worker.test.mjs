@@ -522,3 +522,14 @@ test('critical-path score uses longest converging DAG chain and stays finite on 
   assert.ok(Number.isFinite(cycle.score));
   assert.ok(cycle.criticalPathDepth>=1&&cycle.criticalPathDepth<=cyclic.length);
 });
+
+test('external Gemini system worker never falls back to local Ollama',()=>{
+  const worker=fs.readFileSync('tools/company-system-ai-worker.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  assert.match(worker,/SYSTEM_AI_GEMINI_KEY_MISSING_NO_LOCAL_FALLBACK/);
+  assert.match(worker,/generativelanguage\.googleapis\.com/);
+  assert.doesNotMatch(worker,/:11434|127\.0\.0\.1|\/api\/generate/);
+  assert.match(workflow,/SYSTEM_AI_LOCAL_AI_ENABLED: 'false'/);
+  assert.match(workflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
+  assert.match(workflow,/COMPANY_SYSTEM_AI_REQUESTED_MAX_BATCH=1/);
+});
