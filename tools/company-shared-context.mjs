@@ -132,6 +132,41 @@ export function compileOwnerCanonicalConstitution(policy={}) {
   };
 }
 
+// Compile selected implementation topology from the actual central roadmap.
+export function compileCentralArchitectureProjection(policy={}) {
+  const canonical='company-learning/platform-release-roadmap.json';
+  const documentation=policy?.centralDocumentation;
+  const lifecycle=policy?.developmentLifecycleMachine;
+  const errors=[];
+  if(documentation?.canonicalSet?.policy!==canonical || !lifecycle ||
+     typeof lifecycle!=='object') errors.push('CENTRAL_POLICY_SOURCE_UNAVAILABLE');
+  const foundation=lifecycle?.nativeGameFoundationValidationStack;
+  const requiredLayers=Array.isArray(foundation?.layers)
+    ? foundation.layers.filter(layer=>layer?.alwaysRequired===true).map(layer=>layer.id) : [];
+  const nativeFoundation=foundation&&typeof foundation==='object' ? {
+    version:foundation.version??null,
+    status:foundation.status??null,
+    ownership:foundation.ownership??null,
+    requiredFoundationLayers:requiredLayers,
+    testerQaFlow:foundation.testerQaFlow??[],
+    releaseGate:foundation.releaseGate??null
+  }:null;
+  const contract={
+    sourceOfTruth:canonical,
+    authorityOrder:['OWNER_CANONICAL_RULES','CANONICAL_ROADMAP','EXISTING_GAME_EXECUTION'],
+    nativeFoundation,
+    implementationOwnership:lifecycle?.primaryAiOrchestration?.internalVibeAiCollaboration?.capabilityGrowthRoleLock??null,
+    machineProjectionSynchronization:documentation?.machineProjectionSynchronization??null,
+    sharedWorkerContext:lifecycle?.sharedWorkerContext?.compiledArchitectureProjection??null
+  };
+  return{
+    valid:errors.length===0,
+    errors,
+    fingerprint:errors.length?null:hash(JSON.stringify(contract)),
+    contract
+  };
+}
+
 export function verifyPinnedSharedWorkerContext(options={}) {
   return validateSharedWorkerContext(options);
 }
