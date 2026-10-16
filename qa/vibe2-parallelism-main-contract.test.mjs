@@ -89,7 +89,7 @@ test('director fallback wake reuses the canonical game-primary core without crea
   assert.equal(fallback.newQueueCreated,false);
   assert.equal(fallback.canonicalReservePathPreserved,true);
   assert.equal(fallback.activeNonPushCoreSuppressesFallbackDispatch,true);
-  assert.equal(fallback.activeWakeCancellationForbidden,true);
+  assert.equal(runtime.continuous.mainPushGamePrimaryWake.activeWakeCancellationForbidden,true);
   assert.equal(fallback.laneMax,128);
   assert.equal(fallback.vibe2CoreCompletionWakeDisabled,true);
   assert.match(director,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=DISPATCHED/);
@@ -100,7 +100,7 @@ test('director fallback wake reuses the canonical game-primary core without crea
 
 test('reserve batch persists control state only through the explicit Vibe2 control root',()=>{
   const start=core.indexOf('      - name: Reserve conflict-free DAG batch');
-  const end=core.indexOf('\n  model_cache:',start);
+  const end=core.indexOf('\n  worker:',start);
   assert.ok(start>=0&&end>start);
   const block=core.slice(start,end);
   assert.match(block,/control_root="\$GITHUB_WORKSPACE"/);
