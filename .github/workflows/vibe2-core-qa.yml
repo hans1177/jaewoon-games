@@ -290,6 +290,7 @@ jobs:
     env:
       # 검증된 main 중앙정책 문서 경로를 기존 핵심 QA 실행과 임시 테스트 저장소에 전달한다.
       COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
     steps:
       - uses: actions/checkout@v4
 
