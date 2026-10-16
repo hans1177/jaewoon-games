@@ -2490,6 +2490,13 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const platformKey=target==='ROBLOX'?'ROBLOX':target==='UNITY'?(order?.selectedTask?.firstStageUnityWeb===true?'UNITY_WEB':'UNITY_APP'):target==='WEB'?'WEB':['FORTNITE_UEFN','FORTNITE-UEFN','UEFN','UNREAL'].includes(target)?'FORTNITE_UEFN':'';
   const plan=d.productionPlan||d.robloxProductionPlan;
   const production=plan&&plan.gameId===order.gameId&&(plan.platform||'ROBLOX')===target?robloxProductionPromptLines(plan,{prefix:target==='ROBLOX'?'robloxProduction':'gameProduction',responsibleFiles}):[];
+  const auto=d?.gameInternalAutoComposition||null;
+  const relevantAutoComponents=(auto?.components||[]).filter(row=>
+    row.state==='EXISTING_SOURCE_CONNECTION_CANDIDATE'
+    &&(!responsibleFiles.length||(row.responsibleFiles||[]).some(file=>
+      responsibleFiles.some(owned=>posix(file)===posix(owned)||posix(file).endsWith('/'+posix(owned)))
+    ))
+  );
   const visual=Object.entries(d?.visualBuildUpDirective?.domains||{})
     .map(([domain,instruction])=>`${domain}=${clean(instruction)}`)
     .filter(Boolean);
@@ -2681,6 +2688,15 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `priorityDomains=${priorityDomains.join(' | ')}`,
     `progressionWorld=${(d.progressionContentWorldDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     `visual=${visual.join(' | ')}`,
+    auto?'autoComposition='+JSON.stringify({
+      gameId:auto.gameId,sourceTreeFingerprint:auto.sourceTreeFingerprint,
+      components:relevantAutoComponents.map(row=>({id:row.id,state:row.state,files:row.responsibleFiles})),
+      uiModeSelection:auto.uiModeSelection,worldGraph:auto.worldGraph,
+      stateChain:auto.stateChain?.applicable?auto.stateChain.checks:[],
+      sharedAssetSelection:auto.sharedAssetSelection,
+      runtimeVerified:false,noNewAssetGeneration:true
+    }):'',
+    auto?'autoCompositionRule=Source-grounded game layout and connections only: adapt EXISTING lobby/customization/material/inventory/equipment/UI; responsive combat/hub/inventory priority without fake buttons; world spawn-to-portal/return checks; acquisition->store->equip->stat/appearance->save->reconnect verification. Bind existing source with server authority; preserve saves and balance. Never generate new assets or mark implementation verified from a code keyword. Runtime/mobile QA required.':'',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
     `uxInput=${(d.uxInputDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     platformKey&&d?.platformAdaptationDirectives?.[platformKey]?`platform=${clean(d.platformAdaptationDirectives[platformKey])}`:'',
@@ -2703,7 +2719,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(finish<0)return'';
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
-  const inspectionPrefixes=['inspectionContract=','inspectionIndex=','inspectionEvidence=','inspectionRule=','inspectionScene=','inspectionFailure=','inspectionOwner=','inspectionRetest='];
+  const inspectionPrefixes=['autoComposition=','autoCompositionRule=','inspectionContract=','inspectionIndex=','inspectionEvidence=','inspectionRule=','inspectionScene=','inspectionFailure=','inspectionOwner=','inspectionRetest='];
   const keepPrefixes=focusedRobloxVisual?[
     ...inspectionPrefixes,
     'robloxProduction','gameProduction',
