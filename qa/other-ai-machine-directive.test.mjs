@@ -45,7 +45,9 @@ assert.equal(directive.sharedContext.manualPolicyMirrorForbidden,true);
 assert.equal(directive.executionRules.canonicalSharedContextOrderRequired,true);
 assert.equal(directive.executionRules.runtimeStateCannotCreatePolicy,true);
 assert.equal(directive.executionRules.postCentralDocumentWriteSharedContextResyncRequired,true);
-assert.equal(security.sourceOfTruth,'company-learning/platform-release-roadmap.json');
+assert.equal(security.sourceOfTruth,null);
+assert.equal(security.policyFile,'company-learning/security-immune-system.json');
+assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
 
 assert.equal(directive.executionRules.gameplayImplementationOwner,'VIBE2_VIBE3');
 assert.equal(directive.executionRules.nonVibeGameSourceWriteAllowed,false);
