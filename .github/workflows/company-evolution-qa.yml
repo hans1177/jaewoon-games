@@ -153,6 +153,9 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-slim
+    env:
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
     steps:
       - uses: actions/checkout@v4
 
