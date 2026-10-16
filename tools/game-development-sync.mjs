@@ -45,6 +45,45 @@ function curatedAssetLinks(root,id,platforms){
   }
   return sortedUnique(paths);
 }
+// Source manifests describe provenance; they do not prove imported or published runtime assets.
+function assetEvidence(root,id,links){
+  const manifests=[];
+  const issues=[];
+  for(const rel of links.filter(p=>p.endsWith('/manifest.json'))){
+    let doc;
+    try{doc=readJson(root,rel);}
+    catch{issues.push('ASSET_MANIFEST_INVALID:'+rel);continue;}
+    if(!doc||typeof doc!=='object'||Array.isArray(doc)){
+      issues.push('ASSET_MANIFEST_INVALID:'+rel);continue;
+    }
+    if(doc.gameId&&doc.gameId!==id){
+      issues.push('ASSET_MANIFEST_GAME_ID_MISMATCH:'+rel);
+      continue;
+    }
+    const sourceOnly=doc.sourceOnly===true;
+    const reportedImported=doc.robloxImported===true;
+    const reportedApplied=doc.gameApplied===true;
+    if((sourceOnly&&reportedApplied)||(reportedApplied&&!reportedImported&&rel.includes('/roblox/'))){
+      issues.push('ASSET_STATE_CONTRADICTION:'+rel);
+    }
+    manifests.push({
+      path:rel,
+      sourceOnly,
+      reportedImported,
+      reportedApplied,
+      claimSource:'MANIFEST_SELF_REPORTED',
+      actualRuntimeVerified:false,
+      verifiedPackCount:Number.isSafeInteger(doc.verifiedPacks)?doc.verifiedPacks:null
+    });
+  }
+  const states=manifests.map(m=>m.reportedApplied?'REPORTED_APPLIED_UNVERIFIED':
+    m.reportedImported?'REPORTED_IMPORTED_UNVERIFIED':
+    m.sourceOnly?'SOURCE_ARCHIVE_ONLY':'MANIFEST_PRESENT_STATE_UNKNOWN');
+  return{
+    state:manifests.length?(states.every(x=>x==='SOURCE_ARCHIVE_ONLY')?'SOURCE_ARCHIVE_ONLY':'MIXED_OR_UNVERIFIED'):'NO_EXTERNAL_ASSET_MANIFEST',
+    manifests,issues
+  };
+}
 export function buildGameDevelopmentMap({repoRoot=ROOT,gameId=''}={}){
   const catalog=readJson(repoRoot,'game-catalog.json');
   if(!Array.isArray(catalog.games))throw new Error('GAME_CATALOG_INVALID');
@@ -61,8 +100,11 @@ export function buildGameDevelopmentMap({repoRoot=ROOT,gameId=''}={}){
       !['shared','common','_shared','templates','template','node_modules'].includes(id)
     ));
   }
+  const removed=new Set((catalog.permanentRemovalPolicy?.ids||[]).filter(safeId));
   const discovered=new Set([...index.keys()]);
-  for(const ids of Object.values(platformIds))for(const id of ids)discovered.add(id);
+  for(const ids of Object.values(platformIds))for(const id of ids){
+    if(!removed.has(id))discovered.add(id);
+  }
   const qaFiles=exists(repoRoot,'qa')?
     fs.readdirSync(path.join(repoRoot,'qa')).filter(x=>x.endsWith('.test.mjs')):[];
   const games=[];
@@ -108,11 +150,14 @@ export function buildGameDevelopmentMap({repoRoot=ROOT,gameId=''}={}){
       }catch{issues.push('ROBLOX_BOOTSTRAP_JSON_INVALID');}
     }
     if(!Object.keys(sources).length)issues.push('SOURCE_NOT_FOUND');
+    const assetLinks=curatedAssetLinks(repoRoot,id,sources);
+    const assets=assetEvidence(repoRoot,id,assetLinks);
+    issues.push(...assets.issues);
     games.push({
       gameId:id,gameName:name,
       cataloged:!!item,productionClass:item?.productionClass||'SOURCE_ONLY',
       sources,qa:relevantQaFiles(qaFiles,id),
-      assetLinks:curatedAssetLinks(repoRoot,id,sources),
+      assetLinks,assetEvidence:assets,
       buildStatus:'NOT_RUN_BY_SYNC',runtimeStatus:'NOT_RUN_BY_SYNC',
       publicationStatus:'NOT_VERIFIED_BY_SYNC',
       sourceIssues:sortedUnique(issues)
