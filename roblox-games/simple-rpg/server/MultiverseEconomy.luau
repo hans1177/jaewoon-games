@@ -11,6 +11,7 @@ type Caravan = {Model: Model, Origin: number, Destination: number,
 local MultiverseEconomy = {}
 local market: {[string]: MarketState} = {}
 local caravans: {Caravan} = {}
+local caravansStarted = false
 local destinations: {[number]: Vector3} = {}
 local lastMarketAt = 0
 local nextCaravanDelivery = 0
@@ -70,36 +71,37 @@ function MultiverseEconomy.Snapshot(): {[string]: any}
     return snapshot
 end
 
-local function createCaravan(folder: Instance, itemID: string, index: number): Model
-    local model = Instance.new("Model")
+-- Procedural block wagons and cargo permanently removed; trades remain server-owned.
+local function createCaravan(folder: Instance, itemID: string, index: number): Model?
+    local library = Shared:FindFirstChild("CuratedWorldModels")
+    local template = library and (library:FindFirstChild("TradeCaravan_" .. itemID)
+        or library:FindFirstChild("TradeCaravan"))
+    if not (template and template:IsA("Model")
+        and template:GetAttribute("CuratedExternalAsset") == true
+        and (tonumber(template:GetAttribute("VerifiedRobloxAssetId")) or 0) > 0
+        and template:FindFirstChildWhichIsA("BasePart", true)) then
+        return nil
+    end
+    local model = template:Clone()
     model.Name = "무역 카라반 " .. itemID
     model:SetAttribute("CivilizationTradeCaravan", true)
     model:SetAttribute("MarketItemID", itemID)
-    local wagon = Instance.new("Part")
-    wagon.Name = "Wagon"
-    wagon.Size = Vector3.new(4.5, 1, 3)
-    wagon.Color = Color3.fromRGB(126, 90, 53)
-    wagon.Material = Enum.Material.WoodPlanks
-    wagon.Anchored = true
-    wagon.CanCollide = false
-    wagon.CFrame = CFrame.new(0, 4, index * 4)
-    wagon.Parent = model
-    local cargo = Instance.new("Part")
-    cargo.Name = "Cargo"
-    cargo.Size = Vector3.new(2.4, 1.5, 2)
-    cargo.Color = Color3.fromRGB(177, 149, 91)
-    cargo.Material = Enum.Material.Wood
-    cargo.Anchored = true
-    cargo.CanCollide = false
-    cargo.CFrame = wagon.CFrame * CFrame.new(0, 1.1, 0)
-    cargo.Parent = model
-    model.PrimaryPart = wagon
+    for _, part in ipairs(model:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Anchored = true
+            part.CanCollide = false
+            part.CanTouch = false
+            part.CanQuery = false
+        end
+    end
     model.Parent = folder
+    model:PivotTo(CFrame.new(0, 4, index * 4))
     return model
 end
 
 function MultiverseEconomy.StartCaravans(hub: Instance, regions: {[number]: Vector3}): ()
-    if #caravans > 0 then return end
+    if caravansStarted then return end
+    caravansStarted = true
     for id = 1, 24 do
         local region = regions[id]
         if region then destinations[id] = region end
@@ -112,9 +114,11 @@ function MultiverseEconomy.StartCaravans(hub: Instance, regions: {[number]: Vect
         local origin = 1 + (index - 1) * 8
         local destination = origin % 24 + 1
         local model = createCaravan(folder, itemID, index)
-        table.insert(caravans, {Model = model, Origin = origin,
-            Destination = destination, ItemID = itemID,
-            StartedAt = now + (index - 1) * 4, TravelSeconds = 25})
+        if model then
+            table.insert(caravans, {Model = model, Origin = origin,
+                Destination = destination, ItemID = itemID,
+                StartedAt = now + (index - 1) * 4, TravelSeconds = 25})
+        end
     end
     lastMarketAt = now
 end
