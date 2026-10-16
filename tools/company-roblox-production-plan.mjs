@@ -201,7 +201,7 @@ export const INTERFACE_AUTO_COMPOSITION_TARGETS=Object.freeze([
   {id:'CUSTOMIZATION',role:'CUSTOMIZATION',match:/customiz|customis|appearance|avatar|skin|outfit|dress|꾸미기|커스터마이징|외형|의상|스킨/i,assets:['CHARACTER','EQUIPMENT','UI']},
   {id:'MATERIAL',role:'CUSTOMIZATION',match:/material|texture|shader|surface|paint|color.?picker|재질|텍스처|색상|염색/i,assets:['MATERIAL','TEXTURE']},
   {id:'INVENTORY',role:'INVENTORY',match:/inventory|equipment|backpack|item.?slot|인벤|장비|가방|아이템/i,assets:['ITEM','EQUIPMENT','UI']},
-  {id:'GAME_UI',role:'GAMEPLAY',match:/\bhud\b|\bui\b|interface|status.?bar|menu|button|터치|조이스틱|상태창|메뉴|버튼/i,assets:['UI','ICON']}
+  {id:'GAME_UI',role:'GAMEPLAY',match:/hud|(?:^|[^a-z])ui(?:[^a-z]|$)|interface|status.?bar|menu|button|터치|조이스틱|상태창|메뉴|버튼/i,assets:['UI','ICON']}
 ]);
 
 // 메뉴 도안: 장르별 실제 행동을 화면·버튼·복귀 관계로 연결한다. 게임 상태 변경은 기존 책임 코드가 소유한다.
