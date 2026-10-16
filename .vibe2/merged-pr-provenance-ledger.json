@@ -49797,11 +49797,175 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_9358d7439bd1fda584149046",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8167",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b70830eb8b090d253736fc1afd0d838ca59a4484",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8167,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe-openai-handoff-qa-20261017",
+        "baseSha": "b70830eb8b090d253736fc1afd0d838ca59a4484",
+        "headSha": "b700e8c51cc4ec37f297e59622d7a83b39bf78e9",
+        "mergeCommitSha": "4bcb81a6dbe4710d5c71bdf8ea951d7b0508173e",
+        "mergedAt": "2026-10-16T16:05:15Z",
+        "authorLogin": "hans1177",
+        "titleHash": "fdf4579f0bbb66024e32be1d7d18741b8802561e7237512748182cfe58d163ca",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe-openai-handoff-qa-20261017",
+        "candidateSha": "b700e8c51cc4ec37f297e59622d7a83b39bf78e9"
+      },
+      "changeStats": {
+        "changedFileCount": 25,
+        "codingRelevantFileCount": 25,
+        "addedLineCount": 362,
+        "deletedLineCount": 533,
+        "changedFiles": [
+          ".github/workflows/company-evolution-qa.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/company-build-up-experience-quality.test.mjs",
+          "qa/company-constitution-enforcer.test.mjs",
+          "qa/company-design-pre-gate-resume.test.mjs",
+          "qa/company-development-roblox-gameplay-product-readiness.test.mjs",
+          "qa/company-development-roblox-multiplayer-qa.test.mjs",
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/company-long-horizon-vision.test.mjs",
+          "qa/company-minimum-design-contract.test.mjs",
+          "qa/company-release-production-cycle.test.mjs",
+          "qa/company-security-steward.test.mjs",
+          "qa/other-ai-machine-directive.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-central-work-contract.test.mjs",
+          "qa/vibe2-openai-agent-patterns.test.mjs",
+          "qa/vibe2-parallelism-main-contract.test.mjs",
+          "tools/company-constitution-enforcer.mjs",
+          "tools/game-development-qa-runner.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-openai-agent-patterns.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-evolution-qa.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/company-build-up-experience-quality.test.mjs",
+          "qa/company-constitution-enforcer.test.mjs",
+          "qa/company-design-pre-gate-resume.test.mjs",
+          "qa/company-development-roblox-gameplay-product-readiness.test.mjs",
+          "qa/company-development-roblox-multiplayer-qa.test.mjs",
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/company-long-horizon-vision.test.mjs",
+          "qa/company-minimum-design-contract.test.mjs",
+          "qa/company-release-production-cycle.test.mjs",
+          "qa/company-security-steward.test.mjs",
+          "qa/other-ai-machine-directive.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "qa/vibe2-central-work-contract.test.mjs",
+          "qa/vibe2-openai-agent-patterns.test.mjs",
+          "qa/vibe2-parallelism-main-contract.test.mjs",
+          "tools/company-constitution-enforcer.mjs",
+          "tools/game-development-qa-runner.mjs",
+          "tools/vibe2-auto-planner.mjs",
+          "tools/vibe2-openai-agent-patterns.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8167",
+        "merge-commit:4bcb81a6dbe4710d5c71bdf8ea951d7b0508173e",
+        "base-main:b70830eb8b090d253736fc1afd0d838ca59a4484"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 402
+    "total": 403
   }
 }
