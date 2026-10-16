@@ -312,13 +312,11 @@ test('current central four documents stay inside absolute anti-bloat budgets',()
   assert.deepEqual(report.errors,[]);
   assert.equal(Object.keys(report.documents).length,4);
   assert.ok(report.documents.policy.utf8Bytes<=report.documents.policy.hardMaxUtf8Bytes);
-  assert.ok(report.documents.architecture.utf8Bytes<=320000);
-  assert.ok(report.documents.logMap.utf8Bytes<=140000);
-  assert.ok(report.documents.security.utf8Bytes<=70000);
-  assert.equal(report.documents.policy.maxGrowthUtf8Bytes,12000);
-  assert.equal(report.documents.architecture.maxGrowthUtf8Bytes,8000);
-  assert.equal(report.documents.logMap.maxGrowthUtf8Bytes,4000);
-  assert.equal(report.documents.security.maxGrowthUtf8Bytes,4000);
+  for (const [key,row] of Object.entries(report.documents)) {
+    assert.ok(row.utf8Bytes<1000,key+' exceeded owner hard limit');
+    assert.equal(row.hardMaxUtf8Bytes,999,key);
+    assert.equal(row.maxGrowthUtf8Bytes,0,key);
+  }
 });
 
 test('central document growth report reads an exact git baseline',()=>{
@@ -330,12 +328,8 @@ test('central document growth report reads an exact git baseline',()=>{
   }
 });
 
-test('current central policy stays within hard retention limit and keeps every referenced compatibility record',()=>{
-  const report=inspectCentralDocument();
-  assert.deepEqual(report.errors,[]);
-  assert.ok(report.utf8Bytes<=report.maxUtf8Bytes);
-  assert.deepEqual(report.missingProtectedChangeRecords,[]);
-  assert.ok(report.headroomBytes>=0);
+test('missing central policy is never fabricated by the four small reference documents',()=>{
+  assert.throws(()=>inspectCentralDocument(),/CENTRAL_RECORDS_VERIFIED_POLICY_PATH_REQUIRED/);
 });
 
 
