@@ -110,8 +110,8 @@ test('walk teacher stays scoped to an internal Roblox walk and never grants veri
 });
 
 test('basic motion work gets one hour without changing runtime verification or gameplay timing',()=>{
-  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const central=policy.assetProductionParallelContract.companyGraphicsLibrary24h.studioMotionProgram.baseQualityWorkSession;
+  // 삭제된 구형 정책 대신 현재 실행 모션 계획 자체의 고정 계약을 검증한다.
+  const central=createMotionDirectorPlan({platform:'ROBLOX'}).studioProduction.baseWorkSession;
   for(const platform of ['ROBLOX','UNITY','WEB']){
     const session=createMotionDirectorPlan({platform}).studioProduction.baseWorkSession;
     assert.equal(session.defaultMinutes,60);
