@@ -6,25 +6,20 @@ import fs from 'node:fs';
 
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
-const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const minimum=fs.readFileSync('tools/company-minimum-design-contract.mjs','utf8');
 const robloxQa=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 const headlessQa=fs.readFileSync('tools/company-development-roblox-headless-fast-mvp.mjs','utf8');
 const modes=['COOP','COMPETITIVE','HYBRID'];
 
-test('central policy requires multiplayer mode inside the minimum game design contract',()=>{
-  const direct=policy.directNativeDualPlatformDevelopment;
-  assert.ok(direct.minimumDesignContract.includes('MULTIPLAYER_MODE'));
-  assert.ok(direct.design.minimumAdmissionContract.requiredCommonFields.includes('multiplayerMode'));
-  assert.equal(direct.minimumDesignRequired,true);
-  assert.equal(direct.design.required,true);
-  assert.equal(direct.design.sharedCoreRequired,true);
+test('current minimum design and baseline retain explicit multiplayer admission',()=>{
+  assert.match(minimum,/fields:\['identity','creativeGrammar','playerFantasy','coreFun','coreLoop','signatureSystems','multiplayerMode'\]/);
+  assert.match(gate,/const MULTIPLAYER_MODES=new Set\(\['COOP','COMPETITIVE','HYBRID'\]\)/);
+  assert.match(gate,/designMultiplayerModeValid=MULTIPLAYER_MODES\.has\(designMultiplayerMode\)/);
 });
 
 test('designer schema requires one explicit canonical multiplayer mode and no legacy single-player default',()=>{
   assert.match(design,/allGamesMultiplayerRequired\?\['COOP','COMPETITIVE','HYBRID'\]/);
   assert.match(design,/includes\(originalMultiplayerMode\)\?\[originalMultiplayerMode\]/);
-  assert.equal(policy.directNativeDualPlatformDevelopment.multiplayerImplementation.required,true);
-  assert.equal(policy.directNativeDualPlatformDevelopment.multiplayerImplementation.developmentAdmissionGate,false);
   assert.match(design,/required:\['identity'.*'multiplayerMode'.*'multiplayerExpansionDecision'/s);
   assert.match(design,/multiplayerMode:\{type:'string',enum:MULTIPLAYER_MODES\}/);
   assert.match(design,/COOP\/COMPETITIVE\/HYBRID 중 하나를 multiplayerMode에 반드시 명시/);
@@ -71,13 +66,9 @@ test('final gameplay keeps native 3D evidence without requiring Unity Web produc
   const scorer=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
   const minimum=fs.readFileSync('tools/company-minimum-design-contract.mjs','utf8');
   const repair=fs.readFileSync('tools/company-design-prepromotion-repair.mjs','utf8');
-  const central=policy.livingMotionVisualQualityContract.minimumSpatialPresentation;
-  assert.equal(central.minimumFinalGameplayDimension,'3D');
-  assert.equal(central.accepted2_5DTechniquesAreNotFinalPass,true);
-  assert.equal(central.runtimeEvidenceRequired,true);
-  assert.equal(central.beforeAfterVisualComparisonRequired,true);
-  assert.equal(central.flat2DFinalGameplayForbidden,true);
-  assert.equal(central.uiOverlayMayRemain2D,true);
+  // 삭제된 정책 파일을 재구성하지 않는다. 현재 설계·런타임 코드의 실제 제약을 검증한다.
+  assert.match(design,/3D 카메라 가림을 검증한다/);
+  assert.match(minimum,/multiplayerMode/);
   assert.doesNotMatch(design,/const UNITY_WEB_SPATIAL_PRESENTATION=/);
   assert.doesNotMatch(design,/required:\[\.\.\.PLATFORM_PROFILE\.required,'unityWebSpatialPresentation'\]/);
   assert.doesNotMatch(scorer,/DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED/);
