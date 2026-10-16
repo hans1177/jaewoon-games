@@ -456,6 +456,8 @@ jobs:
         id: implement
         if: steps.preflight.outcome == 'success' && steps.preverify.outcome != 'success'
         continue-on-error: true
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         shell: bash
         run: |
           set -o pipefail
