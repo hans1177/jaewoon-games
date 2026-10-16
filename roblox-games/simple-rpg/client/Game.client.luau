@@ -2007,14 +2007,15 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             smoothedSpeed = 0
           end
         end
-        -- 서버 속도를 걸음 주기뿐 아니라 보폭·발 높이에도 동일하게 적용한다.
-        local replicatedCommandSpeed = model:GetAttribute("MotionMoveSpeed")
-        local walkingExpiry = model:GetAttribute("MotionWalkingUntil")
-        local commandActive = typeof(walkingExpiry) == "number"
-          and workspace:GetServerTimeNow() < walkingExpiry
-          and typeof(replicatedCommandSpeed) == "number"
-          and replicatedCommandSpeed > 0.35 and replicatedCommandSpeed < 65
-        horizontalSpeed = realMoving and (commandActive and replicatedCommandSpeed
+        -- 보행 위상과 보폭이 같은 서버 이동속도를 사용하도록 통일한다.
+        -- 서버 이동 명령이 없으면 마지막으로 관측한 속도로 부드럽게 복귀한다.
+        local motionSpeed = model:GetAttribute("MotionMoveSpeed")
+        local motionUntil = model:GetAttribute("MotionWalkingUntil")
+        local serverMotionActive = typeof(motionUntil) == "number"
+          and workspace:GetServerTimeNow() < motionUntil
+          and typeof(motionSpeed) == "number"
+          and motionSpeed > 0.35 and motionSpeed < 65
+        horizontalSpeed = realMoving and (serverMotionActive and motionSpeed
           or (smoothedSpeed > 0.35 and smoothedSpeed or 4.5)) or 0
         local motionHumanoid = model:FindFirstChildOfClass("Humanoid")
         local healthMotion = creatureHealthMotion[model]
