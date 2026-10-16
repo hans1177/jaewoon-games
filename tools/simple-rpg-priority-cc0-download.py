@@ -230,7 +230,12 @@ PACKS = [
   ["08-npc","knight-cartoon.zip","Cartoon Medieval Knight.zip","cartoon-medieval-knight","zip"],
   ["08-npc","female-basic-rigged.zip","female_basic_rigged.zip","basic-female","zip"],
   ["09-buildings","blacksmith-original.zip","75729_Blacksmith1Upload_blend.zip","medieval-blacksmith","zip"],
-  ["09-buildings","blacksmith-interior.blend","medievalblacksmith.blend","medieval-blacksmith-interior","blend"]
+  ["09-buildings","blacksmith-interior.blend","medievalblacksmith.blend","medieval-blacksmith-interior","blend"],
+  ["10-npc-expanded","npc-character-pack20.zip","modelspack2.zip","character-pack2","zip"],
+  ["10-npc-expanded","animated-human-rigged.zip","Animated Human by @Quaternius.zip","animated-human-low-poly","zip"],
+  ["10-npc-expanded","hero-base-rigged.zip","character-base-model-rigged.zip","character-base-model","zip"],
+  ["11-unique-bosses","giant-mutant-animated.zip","giant_mutant.zip","giant-mutant","zip"],
+  ["12-dungeon-interiors","dungeon-interior-kit.zip","Dungeon.zip","dungeon-assets","zip"]
 ]
 
 def previous_hashes():
