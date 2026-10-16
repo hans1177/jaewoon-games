@@ -50,7 +50,12 @@ test('real subprocess QA failures remain game-scoped and keep exact evidence',()
       {gameId:'beta',tests:['qa/beta-fail.test.mjs']},
       {gameId:'untested',tests:[]}
     ];
-    const report=runGameQa({selected,repoRoot:root,execute:true});
+    // 상위 테스트 환경이 중첩되어도 실제 게임 QA를 실행해야 한다.
+    const originalContext=process.env.NODE_TEST_CONTEXT;
+    process.env.NODE_TEST_CONTEXT='child-v8';
+    let report;
+    try{report=runGameQa({selected,repoRoot:root,execute:true});}
+    finally{if(originalContext===undefined)delete process.env.NODE_TEST_CONTEXT;else process.env.NODE_TEST_CONTEXT=originalContext;}
     assert.equal(report.pass,false);
     assert.equal(report.gameQaPassedCount,1);
     assert.equal(report.gameQaFailedCount,1);
