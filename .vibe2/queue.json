@@ -33,6 +33,48 @@
   "defaultMaxRetries": 2,
   "tasks": [
     {
+      "id": "owner-common-asset-quality-cleanup-20261016",
+      "gameId": "__vibe_system__",
+      "target": "shared-assets",
+      "department": "graphics",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE][ALL_GAMES_COMMON_ASSET_QUALITY_CLEANUP] 바이브는 전체 게임 공용 에셋 라이브러리의 품질 청소를 실행한다. 시작 범위는 assets/shared/, assets/roblox/common-materials-v1/, assets/vibe-studio-asset-universe.js이며 필요하면 다른 공용 라이브러리 참조도 감사한다. 사용되지 않는다는 이유만으로 삭제 금지. 실제 퀄리티가 낮은 에셋을 외형 실루엣·메시 구조·텍스처/머티리얼·모션·시점별 가독성·모바일 성능·라이선스와 출처·게임별 스타일 적합성의 근거를 갖고 가려내라. 단순 파일 크기/폴리곤 수/사용 횟수만으로 저품질 확정 금지. 모든 게임의 현재 참조와 종속성 조사 후 검증된 대체 에셋을 확보·연결하고 QA를 통과한 경우에만 결함 에셋 정리. 대체 검증 전 게임 중단을 유발하는 기존 파일 삭제 금지. 콘텐츠/원본 라이선스 보존, 허위 고품질 PASS 금지, 오래된 score-only 저품질 자동 허용 경로는 엄격한 품질 증거 기반 평가로 개선하되 외부 AI 출력·정적 점수만으로 실물 품질 검증을 주장하지 마라. 기존 오너-ChatGPT의 simple-rpg/ 로직 및 actor upload 담당 파일과 병렬 수정 충돌 금지. 책임 파일은 감사·평가 및 QA에 한정해 분리 후보 브랜치에서 수정하고 독립 검증 후 기존 절차로 검토하라. Roblox Studio 필수 아님, 배포 시 게임별 Open Cloud API 기존 보안 유지.",
+      "responsibleFiles": [
+        "assets/vibe-studio-asset-universe.js",
+        "qa/asset-library-sync.test.mjs"
+      ],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "evidence": [
+        "owner-directive:all-games-common-asset-quality-cleanup-20261016",
+        "owner-clarification:quality-not-unused",
+        "source:assets/roblox/common-materials-v1/quality-evidence.json",
+        "protect-in-use-assets-until-verified-replacement",
+        "independent-qa-required"
+      ],
+      "lastOutcome": null,
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "owner-directive:all-games-common-asset-quality-cleanup-20261016",
+        "reviewRequired": true
+      },
+      "sourceRoot": "assets",
+      "speculativeEligible": false,
+      "estimatedRisk": "medium",
+      "shard": "support"
+    },
+    {
       "id": "owner-policy-dependency-qa-repair-20261016",
       "gameId": "__vibe_system__",
       "target": "system",
