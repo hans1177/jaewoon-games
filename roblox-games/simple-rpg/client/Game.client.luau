@@ -1996,7 +1996,10 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local teleported = horizontalSpeed >= 65
           if horizontalSpeed > 0.35 and not teleported then
             lastMovedAt = creatureMotionPhase
-            smoothedSpeed = smoothedSpeed * 0.45 + horizontalSpeed * 0.55
+            -- 원격 위치 복제가 한꺼번에 도착하는 경우 순간 속도가 커진다.
+            -- 서버가 짧게 이동시키는 NPC의 보행 주기는 현실적인 범위로 제한한다.
+            local observedSpeed = math.clamp(horizontalSpeed, 0, 12)
+            smoothedSpeed = smoothedSpeed * 0.65 + observedSpeed * 0.35
           elseif teleported then
             smoothedSpeed = 0
             lastMovedAt = -100
