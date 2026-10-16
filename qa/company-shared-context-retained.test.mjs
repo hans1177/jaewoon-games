@@ -14,6 +14,10 @@ function temporary(){
     fs.mkdirSync(path.dirname(target),{recursive:true});
     fs.copyFileSync(path.join(repoRoot,rel),target);
   }
+  const roadmap='company-learning/platform-release-roadmap.json';
+  if(fs.existsSync(path.join(repoRoot,roadmap))){
+    fs.copyFileSync(path.join(repoRoot,roadmap),path.join(root,roadmap));
+  }
   return root;
 }
 function check(root,fn){
@@ -57,13 +61,13 @@ test('hash pins work and a separate canonical roadmap does not invalidate four-d
     assert.throws(()=>validateSharedWorkerContext({root,expectedSecuritySha256:'0'.repeat(64)}),/SECURITY_SHA_MISMATCH/);
   });
   check(temporary(),root=>{
-    assert.equal(validateSharedWorkerContext({root}).canonicalRoadmapPresent,false);
-    const p=path.join(root,'company-learning/platform-release-roadmap.json');
-    fs.writeFileSync(p,JSON.stringify({ownerCanonicalRules:{}}));
     const result=validateSharedWorkerContext({root});
     assert.equal(result.pass,true);
     assert.equal(result.canonicalRoadmapPresent,true);
+    assert.equal(result.documentFormats.directive,'FULL_MACHINE_DIRECTIVE');
     assert.equal(result.policyAuthorityVerified,false);
+    fs.unlinkSync(path.join(root,'company-learning/platform-release-roadmap.json'));
+    assert.throws(()=>validateSharedWorkerContext({root}),/CANONICAL_ROADMAP_REFERENCED_BUT_MISSING/);
   });
 });
 test('four-document integrity alone does not certify gameplay release or owner policy',()=>{
