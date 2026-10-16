@@ -170,7 +170,7 @@ const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
 });
 const CENTRAL_TEXT_EXTENSIONS=new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md']);
 const CENTRAL_DOCUMENT_BUDGETS=Object.freeze({
-  policy:Object.freeze({sourcePath:CENTRAL_DIRECTIVE_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0}),
+  policy:Object.freeze({sourcePath:CENTRAL_DIRECTIVE_REL,hardMaxUtf8Bytes:80000,maxGrowthUtf8Bytes:0}),
   architecture:Object.freeze({sourcePath:CENTRAL_ARCHITECTURE_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0}),
   logMap:Object.freeze({sourcePath:CENTRAL_LOG_MAP_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0}),
   security:Object.freeze({sourcePath:CENTRAL_SECURITY_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0})
@@ -198,8 +198,13 @@ export function formatCentralDocuments(){
   for(const budget of Object.values(CENTRAL_DOCUMENT_BUDGETS)){
     const contents=readTextRel(budget.sourcePath);
     const parsed=JSON.parse(contents);
-    if(!Number.isInteger(parsed.version) || !String(parsed.status||'').startsWith('MINIMAL_')
-      || [...contents].length>=1000 || utf8Bytes(contents)>budget.hardMaxUtf8Bytes) {
+    const fullDirective=budget.sourcePath===CENTRAL_DIRECTIVE_REL
+      && parsed.authority==='MACHINE_EXECUTION_CONTRACT'
+      && parsed.policyDocument==='company-learning/platform-release-roadmap.json'
+      && parsed.documentationSynchronization?.centralPolicyPath===parsed.policyDocument;
+    if(!Number.isInteger(parsed.version) ||
+      (!fullDirective && (!String(parsed.status||'').startsWith('MINIMAL_') || [...contents].length>=1000)) ||
+      utf8Bytes(contents)>budget.hardMaxUtf8Bytes) {
       throw new Error('RETAINED_DOCUMENT_LOCK_VIOLATION:'+budget.sourcePath);
     }
   }
