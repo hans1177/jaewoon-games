@@ -331,7 +331,7 @@ export function compileVibeCentralWorkContract({
   mainSha='',
   livePolicyRef=''
 }={}){
-  const source=snapshot||{required:false,present:false,valid:true,path:CANONICAL_VIBE_POLICY_PATH,document:null};
+  const source=snapshot||{required:false,present:false,valid:false,path:CANONICAL_VIBE_POLICY_PATH,errors:['CENTRAL_POLICY_MISSING'],document:null};
   const policy=source.document||{};
   const constitution=compileOwnerCanonicalConstitution(policy);
   const architectureProjection=compileCentralArchitectureProjection(policy);
