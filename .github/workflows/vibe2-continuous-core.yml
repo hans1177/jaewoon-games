@@ -1296,41 +1296,17 @@ jobs:
           put('variant',process.env.VARIANT||'primary');
           NODE
 
-      - name: Decide worker local model requirement
+      - name: Declare external-only model routing (no local AI startup)
         id: model_need
-        env:
-          ORDER_RUN: ${{ steps.order.outputs.run }}
-          ROUTE: ${{ steps.order.outputs.route }}
-          TARGET: ${{ steps.order.outputs.target }}
-          DETERMINISTIC_SOURCE: ${{ steps.order.outputs.deterministic_source }}
         shell: bash
         run: |
           set -euo pipefail
-          required='false'
-          reason='ROUTE_NO_LOCAL_MODEL'
-          if [ "$ORDER_RUN" != 'true' ]; then
-            reason='WORK_ORDER_NOT_RUNNABLE'
-          elif [ "$ROUTE" = 'analysis-only' ] || [ "$ROUTE" = 'learning-web-artifact' ]; then
-            required='true'
-            reason='LEARNING_ROUTE'
-          elif [ "$ROUTE" = 'text-source-worker' ] && [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
-            required='false'
-            reason='ROBLOX_DETERMINISTIC_SOURCE'
-          elif [ "$ROUTE" = 'text-source-worker' ]; then
-            required='true'
-            reason='TEXT_SOURCE_ROUTE'
-          fi
-          echo "required=$required" >> "$GITHUB_OUTPUT"
-          echo "reason=$reason" >> "$GITHUB_OUTPUT"
-          if [ "$required" = 'true' ]; then
-            echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES'
-          else
-            echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO'
-          fi
-          echo "VIBE2_WORKER_MODEL_CACHE_REASON=$reason"
-          echo "VIBE2_WORKER_SELECTED_MODEL=${{ steps.order.outputs.local_model }}"
-          echo "VIBE2_WORKER_MODEL_CACHE_KEY=${{ steps.order.outputs.model_cache_family }}-${{ runner.os }}-${{ runner.arch }}-${{ steps.order.outputs.model_cache_key }}"
-          echo "VIBE2_WORKER_HERO_MODEL_REQUESTED=${{ steps.order.outputs.hero_model_requested }}"
+          echo 'required=false' >> "$GITHUB_OUTPUT"
+          echo 'reason=EXTERNAL_GEMINI_API_ONLY' >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO'
+          echo 'VIBE2_WORKER_MODEL_CACHE_REASON=EXTERNAL_GEMINI_API_ONLY'
+          echo 'VIBE2_LOCAL_AI_ENABLED=NO'
+          echo 'VIBE2_WORKER_PROVIDER=GEMINI_API'
 
       - name: Prepare declared native DCC authoring runtime
         timeout-minutes: 5
@@ -1567,7 +1543,7 @@ jobs:
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          VIBE2_LOCAL_MODEL: ${{ steps.order.outputs.local_model }}
+          VIBE2_GEMINI_MODEL: gemini-2.5-flash
           VIBE2_DCC_AUTHORING_EVIDENCE_FILE: /tmp/vibe2-dcc-authoring-evidence.json
         shell: bash
         run: |
