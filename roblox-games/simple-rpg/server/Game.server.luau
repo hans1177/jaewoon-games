@@ -417,46 +417,6 @@ local function civPart(parent, name, size, frame, color, material, collide)
 end
 -- Five-era environmental identity is derived from existing research progress;
 -- civilization ID never determines the player's era.
-local eraThemes = {
-  [1]={Name="신화 시대", Ground=Color3.fromRGB(104,83,120), Flora=Color3.fromRGB(137,177,159), Ore=Color3.fromRGB(176,118,210)},
-  [2]={Name="석기 시대", Ground=Color3.fromRGB(86,117,78), Flora=Color3.fromRGB(72,108,65), Ore=Color3.fromRGB(49,49,61)},
-  [3]={Name="청동기 시대", Ground=Color3.fromRGB(165,128,85), Flora=Color3.fromRGB(123,141,83), Ore=Color3.fromRGB(181,118,64)},
-  [4]={Name="철기 시대", Ground=Color3.fromRGB(106,104,101), Flora=Color3.fromRGB(100,109,92), Ore=Color3.fromRGB(77,87,100)},
-  [5]={Name="영웅 시대", Ground=Color3.fromRGB(183,165,108), Flora=Color3.fromRGB(184,175,114), Ore=Color3.fromRGB(246,210,113)},
-}
-local function makeEraScenery(parent, center, era)
-  local theme=eraThemes[era]
-  local folder=Instance.new("Folder")
-  folder.Name="EraScenery_"..era
-  folder.Parent=parent
-  for i=1,3 do
-    local x=(i-2)*11
-    local trunk=civPart(folder, theme.Name.." 나무줄기", Vector3.new(1.4,5,1.4),
-      CFrame.new(center+Vector3.new(x,2.8,-19)),Color3.fromRGB(106,79,52),Enum.Material.Wood,false)
-    trunk.CanTouch=false; trunk.CanQuery=false
-    local crown=civPart(folder,theme.Name.." 나무수관",Vector3.new(5,5,5),
-      CFrame.new(center+Vector3.new(x,6.8,-19)),theme.Flora,Enum.Material.Grass,false)
-    crown.Shape=Enum.PartType.Ball; crown.CanTouch=false; crown.CanQuery=false
-  end
-  local ore=civPart(folder,theme.Name.." 광맥 장식",Vector3.new(4,3,4),
-    CFrame.new(center+Vector3.new(15,1.7,12)),theme.Ore,Enum.Material.Rock,false)
-  ore.CanTouch=false; ore.CanQuery=false
-  if era==3 then
-    local river=civPart(folder,"청동기 강변",Vector3.new(22,0.15,4),
-      CFrame.new(center+Vector3.new(0,-0.6,18)),Color3.fromRGB(96,150,173),Enum.Material.Glass,false)
-    river.CanTouch=false; river.CanQuery=false
-  elseif era==4 then
-    local mine=civPart(folder,"철기 수직 광산 장식",Vector3.new(5,11,5),
-      CFrame.new(center+Vector3.new(16,5,-15)),theme.Ore,Enum.Material.Rock,false)
-    mine.CanTouch=false; mine.CanQuery=false
-  elseif era==5 then
-    local beacon=civPart(folder,"영웅 시대 황금 표식",Vector3.new(3,7,1),
-      CFrame.new(center+Vector3.new(0,4,-17)),theme.Ore,Enum.Material.Neon,false)
-    beacon.CanTouch=false; beacon.CanQuery=false
-  end
-  return folder
-end
-
 local function civSign(parent, adornee, text, height)
   local board = Instance.new("BillboardGui")
   board.Name = "CivilizationSign"
@@ -509,71 +469,9 @@ local function civBuildDefaultPosition(key, center)
   return center + Vector3.new(-14 + (index - 1) * 6, 3.5, 15)
 end
 
-local function civVisualBuilding(player, key, explicitPosition)
-  local definition = ProgressionData.GetStructure(key)
-  local center = civWorlds[readNumber(player, "CivRaceID", 0)]
-  if not definition or not center then return end
-  local folder = civOwnerBuildings(player)
-  if folder:FindFirstChild(key) then return end
-  local savedX = readNumber(player, "Civ" .. key .. "PosX", 0)
-  local savedZ = readNumber(player, "Civ" .. key .. "PosZ", 0)
-  local savedPosition = if savedX ~= 0 or savedZ ~= 0
-    then Vector3.new(savedX, center.Y + 3.5, savedZ) else nil
-  local position = explicitPosition or savedPosition or civBuildDefaultPosition(key, center)
-  local model = Instance.new("Model")
-  model.Name = key
-  model:SetAttribute("CivOwnerUserId", player.UserId)
-  model:SetAttribute("CivPlacedX", position.X)
-  model:SetAttribute("CivPlacedZ", position.Z)
-  model.Parent = folder
-  local anchor = civPart(model, "Foundation", Vector3.new(7, 2, 7), CFrame.new(position),
-    definition.ModelColor, Enum.Material.Slate, false)
-  if key == "Pyramid" then
-    for level = 1, 3 do
-      civPart(model, "PyramidTier" .. level,
-        Vector3.new(9 - level * 2, 1.5, 9 - level * 2),
-        CFrame.new(position + Vector3.new(0, level * 1.5, 0)),
-        definition.ModelColor, Enum.Material.Sandstone, false)
-    end
-  elseif key == "Colosseum" then
-    for index = 1, 6 do
-      local angle = index * math.pi / 3
-      civPart(model, "ArcColumn" .. index, Vector3.new(1.2, 5, 1.2),
-        CFrame.new(position + Vector3.new(math.cos(angle) * 3, 3, math.sin(angle) * 3)),
-        definition.ModelColor, Enum.Material.Sandstone, false)
-    end
-  elseif key == "DrakkarShipyard" then
-    civPart(model, "ShipyardDock", Vector3.new(4, 0.8, 13),
-      CFrame.new(position + Vector3.new(0, 1, 0)), definition.ModelColor, Enum.Material.WoodPlanks, false)
-    civPart(model, "ShipyardMast", Vector3.new(0.5, 10, 0.5),
-      CFrame.new(position + Vector3.new(0, 6, 0)), definition.ModelColor, Enum.Material.Wood, false)
-  elseif key == "DangunAltar" then
-    civPart(model, "AltarMonument", Vector3.new(2.5, 6, 2.5),
-      CFrame.new(position + Vector3.new(0, 4, 0)), definition.ModelColor, Enum.Material.Sandstone, false)
-  else
-    civPart(model, "StoneBattlement", Vector3.new(7, 4, 2),
-      CFrame.new(position + Vector3.new(0, 3, 0)), definition.ModelColor, Enum.Material.Rock, false)
-  end
-  -- 공통 건축 부품 세트: 기존 영지 건축물에 토대/기둥/벽/문틀/지붕을 조립한다.
-  -- 전투 판정과 저장 상태는 기존 건축 시스템이 그대로 소유한다.
-  local kit = {
-    {Name = "SquareFoundation", Size = Vector3.new(6.8, 0.5, 6.8), Offset = Vector3.new(0, 1, 0), Mat = Enum.Material.Slate},
-    {Name = "WallLeft", Size = Vector3.new(0.6, 4, 6.8), Offset = Vector3.new(-3.2, 3, 0), Mat = Enum.Material.WoodPlanks},
-    {Name = "WallRight", Size = Vector3.new(0.6, 4, 6.8), Offset = Vector3.new(3.2, 3, 0), Mat = Enum.Material.WoodPlanks},
-    {Name = "DoorframeTop", Size = Vector3.new(6.8, 0.7, 0.7), Offset = Vector3.new(0, 4.6, -3.1), Mat = Enum.Material.Wood},
-    {Name = "Roof", Size = Vector3.new(7.6, 0.65, 7.6), Offset = Vector3.new(0, 5.6, 0), Mat = Enum.Material.WoodPlanks},
-    {Name = "SupportPillar1", Size = Vector3.new(0.8, 5, 0.8), Offset = Vector3.new(-3, 3.4, -3), Mat = Enum.Material.Wood},
-    {Name = "SupportPillar2", Size = Vector3.new(0.8, 5, 0.8), Offset = Vector3.new(3, 3.4, -3), Mat = Enum.Material.Wood},
-  }
-  for _, piece in ipairs(kit) do
-    local component = civPart(model, piece.Name, piece.Size,
-      CFrame.new(position + piece.Offset), definition.ModelColor, piece.Mat, false)
-    component.CanTouch = false
-    component.CanQuery = false
-    component:SetAttribute("BuildingComponent", true)
-    component:SetAttribute("BuildingOwnerId", player.UserId)
-  end
-  civSign(model, anchor, definition.Label, 6)
+-- 바이브 파츠 건축 모델 영구 제거: 원본 데이터와 건축 기록만 유지.
+local function civVisualBuilding(_player, _key, _explicitPosition)
+  return nil
 end
 local function civRestoreBuildings(player)
   for _, key in ipairs(ProgressionData.StructureKeys()) do
@@ -766,27 +664,6 @@ local civHousingPieces = {
   Railing={Size=Vector3.new(8,3,1), Wood=4, Stone=1},
   Ladder={Size=Vector3.new(3,8,1), Wood=5, Stone=1},
 }
-local CommonBuilding = require(script.Parent:WaitForChild("CommonBuilding"))
-local housingAssetIds = {
-  SquareFoundation="FLOOR_TILE",TriangleFoundation="FOUNDATION_TRIANGLE",
-  Wall="HALF_WALL",WindowWall="WALL_WINDOW",Doorframe="DOOR_FRAME",
-  FlatRoof="ROOF_FLAT",Pillar="PILLAR_STONE",Stairs="STAIRS_STRAIGHT",
-  Ceiling="CEILING_TILE",TriangleCeiling="CEILING_WEDGE",
-  SlopedRoof="ROOF_SLOPE",RoofCorner="ROOF_CORNER",
-  FenceBase="FENCE_FOUNDATION",GateFrame="GATE_FRAME",
-  Railing="RAILING",Ladder="LADDER",
-}
-local function decorateHousingPiece(piece, key)
-  local assetId = housingAssetIds[key]
-  if not assetId then return end
-  local ok, result = pcall(function()
-    return CommonBuilding.Create(assetId, {
-      parent=piece, pivot=piece.CFrame, quality="far",
-      scale=0.85, anchored=true,
-    })
-  end)
-  if not ok then warn("CIV_HOUSING_ASSET_ERROR",assetId,tostring(result)) end
-end
 local civHousingCounts = {}
 local civHousingRecords = {}
 local function civBuildHousing(player, request)
@@ -875,7 +752,6 @@ local function civBuildHousing(player, request)
   local records = civHousingRecords[player] or {}
   local nextId = 1
   for _, existing in ipairs(records) do nextId = math.max(nextId, (existing.Id or 0) + 1) end
-  decorateHousingPiece(piece,request.Key)
   piece:SetAttribute("HousingPiece",true)
   piece:SetAttribute("HousingId",nextId)
   if request.Key == "Doorframe" then piece:SetAttribute("DoorOpen",false) end
@@ -951,7 +827,6 @@ local function civRestoreHousing(player, saved)
         end
         local pieceId = candidateId
         restoredIds[pieceId] = true
-        decorateHousingPiece(piece,entry.Key)
         piece:SetAttribute("HousingPiece",true)
         piece:SetAttribute("HousingId",pieceId)
         if entry.Key == "Doorframe" then
@@ -1376,6 +1251,23 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
     or special == "IronKnight" and "암흑 철기 기사"
     or (mobSlot == 2 and race.Mobs:match("·(.+)$"))
     or race.Mobs:match("^[^·]+") or race.Name .. " 수호자"
+  -- 외부 검증 모델이 없는 적은 스폰하지 않는다. 바이브 기본 외형 금지.
+  local creatureFolder = Shared:FindFirstChild("CreatureModels")
+  local modelKey = special == "WildBoar" and "Boar"
+    or special == "StoneWolf" and "Wolf"
+    or special == "IronKnight" and "Knight"
+    or special == "BronzeGolem" and "Golem"
+    or nil
+  local visualTemplate = creatureFolder and (
+    (modelKey and creatureFolder:FindFirstChild(modelKey))
+    or creatureFolder:FindFirstChild(enemy.Name)
+    or creatureFolder:FindFirstChild("Race" .. raceID .. "_Mob" .. (mobSlot or 1))
+  )
+  if not (visualTemplate and visualTemplate:IsA("Model")
+    and visualTemplate:GetAttribute("CuratedExternalAsset") == true
+    and visualTemplate:FindFirstChildWhichIsA("BasePart", true)) then
+    return nil
+  end
   enemy:SetAttribute("CivilizationEnemy", true)
   enemy:SetAttribute("EcosystemRole", "Predator")
   if special == "StoneWolf" then enemy:SetAttribute("EcosystemSpecies", "StoneAgeWolf") end
@@ -1403,235 +1295,38 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
     or special == "IronKnight" and Vector3.new(-43, 4, -34)
     or mobSlot == 2 and Vector3.new(-34, 4, 29)
     or Vector3.new(31, 4, 35))), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
-  root.Transparency = 0.35
+  root.Transparency = 1
+  root.CanTouch = false
+  root.CanQuery = false
   enemy:SetAttribute("SpawnPosition", root.Position)
-  local head = civPart(enemy, "Head", Vector3.new(2.6, 2.6, 2.6), root.CFrame * CFrame.new(0, 3, 0), Color3.fromRGB(190, 151, 116), Enum.Material.SmoothPlastic, false)
-  -- Studio에서 업로드한 허가된 3D 모델을 ReplicatedStorage/Shared/CreatureModels에
-  -- 배치하면 기존 서버 스폰/AI/공격 판정은 유지하면서 외형만 교체한다.
-  -- 승인되지 않은 Marketplace asset ID는 불러오지 않는다.
-  local sharedCreatureFolder = game:GetService("ReplicatedStorage"):FindFirstChild("Shared")
-  sharedCreatureFolder = sharedCreatureFolder and sharedCreatureFolder:FindFirstChild("CreatureModels")
-  if not sharedCreatureFolder and not game:GetAttribute("CreatureModelsMissingReported") then
-    game:SetAttribute("CreatureModelsMissingReported", true)
-    warn("CIV_CREATURE_ASSETS_MISSING: ReplicatedStorage.Shared.CreatureModels 폴더 없음; 기본 파츠형 몬스터 표시")
-  end
-  if sharedCreatureFolder then
-    local modelKey = special == "WildBoar" and "Boar"
-      or special == "StoneWolf" and "Wolf"
-      or special == "IronKnight" and "Knight"
-      or special == "BronzeGolem" and "Golem"
-      or nil
-    -- Studio에서 가져온 실물 모델은 특수 몬스터뿐 아니라 문명 일반 몬스터에도 연결한다.
-    -- 폴더 내 이름 우선순위: 종별 키 → 몬스터 이름 → 문명별 슬롯 → 범용 체형.
-    local visualTemplate = (modelKey and sharedCreatureFolder:FindFirstChild(modelKey))
-      or sharedCreatureFolder:FindFirstChild(enemy.Name)
-      or sharedCreatureFolder:FindFirstChild("Race" .. raceID .. "_Mob" .. (mobSlot or 1))
-    -- 에셋 폴더가 있어도 실제 BasePart가 없으면 외형을 교체하지 않는다.
-    if not visualTemplate and not game:GetAttribute("CreatureTemplateMissingReported") then
-      game:SetAttribute("CreatureTemplateMissingReported", true)
-      warn("CIV_CREATURE_TEMPLATE_MISSING: 몬스터용 실물 모델을 찾지 못해 기본 외형 사용", enemy.Name)
-    end
-    -- Empty imported packages must never hide the fallback monster body.
-    if visualTemplate and visualTemplate:IsA("Model")
-      and visualTemplate:GetAttribute("CuratedExternalAsset") == true
-      and visualTemplate:FindFirstChildWhichIsA("BasePart", true) then
-      local visual = visualTemplate:Clone()
-      visual.Name = "ImportedCreatureVisual"
-      for _, descendant in ipairs(visual:GetDescendants()) do
-        if descendant:IsA("BasePart") then
-          descendant.Anchored = true
-          descendant.CanCollide = false
-          descendant.CanTouch = false
-          descendant.CanQuery = false
-        end
-      end
-      visual.Parent = enemy
-      local sourceAssetId = visualTemplate:GetAttribute("VerifiedRobloxAssetId")
-      if sourceAssetId then enemy:SetAttribute("CreatureVisualAssetId", sourceAssetId) end
-      -- GLB 원본의 크기와 피벗을 기본 몬스터에 맞추고 발 높이를 보존한다.
-      local bounds = visual:GetExtentsSize()
-      if bounds.X > 0.01 and bounds.Y > 0.01 and bounds.Z > 0.01 then
-        local fit = math.min(4.8 / math.max(bounds.X, bounds.Z), 6.5 / bounds.Y)
-        if fit > 0.01 and fit < 100 then visual:ScaleTo(fit) end
-      end
-      visual:PivotTo(root.CFrame)
-      local boxFrame, boxSize = visual:GetBoundingBox()
-      local desiredFeet = root.Position.Y - root.Size.Y * 0.5
-      local currentFeet = boxFrame.Position.Y - boxSize.Y * 0.5
-      local visualOffset = CFrame.new(0, desiredFeet - currentFeet, 0)
-      visual:PivotTo(root.CFrame * visualOffset)
-      visual:SetAttribute("VisualPivotOffset", visualOffset)
-      visual:SetAttribute("ImportedVisualFollowRoot", true)
-      root.Transparency = 1
-      head.Transparency = 1
-      enemy:SetAttribute("CreatureAssetSource", "StudioImported")
+  -- 구입/추출 에셋이 아닌, 검증된 고급 외부 모델만 클론한다.
+  local visual = visualTemplate:Clone()
+  visual.Name = "ImportedCreatureVisual"
+  for _, descendant in ipairs(visual:GetDescendants()) do
+    if descendant:IsA("BasePart") then
+      descendant.Anchored = true
+      descendant.CanCollide = false
+      descendant.CanTouch = false
+      descendant.CanQuery = false
     end
   end
-  -- 몬스터 외형 에셋: 기존 생성 경로에서 경량 파츠를 조립한다.
-  local beast = special == "StoneWolf" or special == "WildBoar"
-  local armor = special == "BronzeGolem" or special == "IronKnight"
-  -- 문명별 전용 몬스터 두 종의 외형 구분: 인간형/짐승형/뿔 달린 거수/정령형.
-  -- 기존 스폰, 체력, 보상, 공격 판정은 변경하지 않는다.
-  local mobName = enemy.Name
-  local horned = string.find(mobName, "미노타우로스", 1, true) ~= nil
-    or string.find(mobName, "거수", 1, true) ~= nil
-    or string.find(mobName, "악마", 1, true) ~= nil
-  local spirit = string.find(mobName, "정령", 1, true) ~= nil
-    or string.find(mobName, "영혼", 1, true) ~= nil
-    or string.find(mobName, "망령", 1, true) ~= nil
-    or string.find(mobName, "환영", 1, true) ~= nil
-  local creature = beast or string.find(mobName, "늑대", 1, true) ~= nil
-    or string.find(mobName, "뱀", 1, true) ~= nil
-    or string.find(mobName, "곰", 1, true) ~= nil
-    or string.find(mobName, "재규어", 1, true) ~= nil
-  local variantColor = Color3.fromHSV((raceID * 0.063 + (mobSlot == 2 and 0.17 or 0)) % 1, 0.43, 0.71)
-  if horned then
-    for side = -1, 1, 2 do
-      local horn = civPart(enemy, side < 0 and "LeftHorn" or "RightHorn",
-        Vector3.new(0.42, 1.5, 0.42),
-        head.CFrame * CFrame.new(side * 0.91, 1.54, -0.1) * CFrame.Angles(0, 0, side * 0.25),
-        Color3.fromRGB(210, 185, 125), Enum.Material.SmoothPlastic, false)
-      horn.CanCollide = false
-    end
+  visual.Parent = enemy
+  local sourceAssetId = visualTemplate:GetAttribute("VerifiedRobloxAssetId")
+  if sourceAssetId then enemy:SetAttribute("CreatureVisualAssetId", sourceAssetId) end
+  local bounds = visual:GetExtentsSize()
+  if bounds.X > 0.01 and bounds.Y > 0.01 and bounds.Z > 0.01 then
+    local fit = math.min(4.8 / math.max(bounds.X, bounds.Z), 6.5 / bounds.Y)
+    if fit > 0.01 and fit < 100 then visual:ScaleTo(fit) end
   end
-  if spirit then
-    local aura = civPart(enemy, "SpiritCore", Vector3.new(1.25, 1.25, 1.25),
-      root.CFrame * CFrame.new(0, 0.8, -1.7), variantColor, Enum.Material.Neon, false)
-    aura.Shape = Enum.PartType.Ball
-    aura.Transparency = 0.22
-    aura.CanCollide = false
-  elseif creature and not beast then
-    for side = -1, 1, 2 do
-      local ear = civPart(enemy, side < 0 and "LeftCreatureEar" or "RightCreatureEar",
-        Vector3.new(0.65, 0.9, 0.55), head.CFrame * CFrame.new(side * 0.93, 1.4, 0),
-        variantColor, Enum.Material.SmoothPlastic, false)
-      ear.CanCollide = false
-    end
-  elseif mobSlot == 2 and not armor then
-    local crest = civPart(enemy, "CultureCrest", Vector3.new(1.5, 0.35, 0.3),
-      head.CFrame * CFrame.new(0, 1.45, -0.4), variantColor, Enum.Material.Metal, false)
-    crest.CanCollide = false
-  end
-  local bodyColor = armor and Color3.fromRGB(111, 119, 126) or beast and Color3.fromRGB(102, 91, 77) or Color3.fromRGB(123, 103, 79)
-  for side = -1, 1, 2 do
-    local offset = beast and Vector3.new(side * 1.4, -0.7, 1.1) or Vector3.new(side * 1.9, 0.1, 0)
-    local limb = civPart(enemy, side < 0 and "LeftLimb" or "RightLimb",
-      beast and Vector3.new(0.8, 2.1, 0.8) or Vector3.new(1.0, 3, 1.1),
-      root.CFrame * CFrame.new(offset), bodyColor, Enum.Material.SmoothPlastic, false)
-    limb.CanCollide = false
-    -- 기본 로우폴리 몬스터의 독립 고정 팔다리만 클라이언트 모션을 허용한다.
-    limb:SetAttribute("AllowClientLimbMotion", true)
-    limb:SetAttribute("MotionBaseOffset", root.CFrame:ToObjectSpace(limb.CFrame))
-    -- 기존 파츠형 적도 실제 보행이 보이도록 양쪽 다리를 독립 시각 파츠로 만든다.
-    local legOffset = beast and Vector3.new(side * 1.05, -2.0, -0.9)
-      or Vector3.new(side * 0.9, -2.0, 0)
-    local leg = civPart(enemy, side < 0 and "Left Leg" or "Right Leg",
-      beast and Vector3.new(0.75, 2.2, 0.9) or Vector3.new(0.95, 2.6, 1.0),
-      root.CFrame * CFrame.new(legOffset), bodyColor, Enum.Material.SmoothPlastic, false)
-    leg.CanTouch = false
-    leg.CanQuery = false
-    leg:SetAttribute("AllowClientLimbMotion", true)
-    leg:SetAttribute("MotionBaseOffset", root.CFrame:ToObjectSpace(leg.CFrame))
-    if armor then
-      local plate = civPart(enemy, side < 0 and "LeftArmor" or "RightArmor",
-        Vector3.new(1.2, 0.8, 1.3), root.CFrame * CFrame.new(side * 1.9, 1.2, 0),
-        Color3.fromRGB(174, 137, 77), Enum.Material.Metal, false)
-      plate.CanCollide = false
-    end
-  end
-  for side = -1, 1, 2 do
-    local eye = civPart(enemy, side < 0 and "LeftEye" or "RightEye", Vector3.new(0.32, 0.32, 0.2),
-      head.CFrame * CFrame.new(side * 0.55, 0.22, -1.27),
-      armor and Color3.fromRGB(255, 161, 70) or Color3.fromRGB(248, 207, 130),
-      Enum.Material.Neon, false)
-    eye.CanCollide = false
-  end
-  if beast then
-    for side = -1, 1, 2 do
-      local ear = civPart(enemy, side < 0 and "LeftEar" or "RightEar", Vector3.new(0.55, 0.85, 0.55),
-        head.CFrame * CFrame.new(side * 0.85, 1.55, 0), bodyColor, Enum.Material.SmoothPlastic, false)
-      ear.CanCollide = false
-    end
-  end
-  -- 외부 모델이 없을 때도 실루엣으로 적 종류를 구분할 수 있는 경량 로우폴리 외형.
-  -- 히트박스·체력·AI와 분리된 비충돌 장식만 생성한다.
-  if enemy:GetAttribute("CreatureAssetSource") ~= "StudioImported" then
-    local function visualPiece(name, size, frame, color, shape, material)
-      local piece = civPart(enemy, name, size, frame, color, material or Enum.Material.SmoothPlastic, false)
-      piece.CanCollide = false
-      piece.CanTouch = false
-      piece.CanQuery = false
-      if shape then piece.Shape = shape end
-      return piece
-    end
-    if beast then
-      -- 늑대와 멧돼지는 사람 형태 대신 길게 뻗은 몸통·주둥이·꼬리로 구별한다.
-      local fur = special == "StoneWolf" and Color3.fromRGB(91, 103, 112) or Color3.fromRGB(116, 81, 57)
-      visualPiece("BeastTorso", Vector3.new(2.7, 1.9, 4.1),
-        root.CFrame * CFrame.new(0, 0.1, 0.3), fur, Enum.PartType.Ball)
-      visualPiece("BeastMuzzle", Vector3.new(1.4, 0.9, 1.8),
-        root.CFrame * CFrame.new(0, 2.45, -1.85), fur, Enum.PartType.Ball)
-      visualPiece("BeastNose", Vector3.new(0.6, 0.5, 0.4),
-        root.CFrame * CFrame.new(0, 2.25, -2.72), Color3.fromRGB(42, 37, 36), Enum.PartType.Ball)
-      visualPiece("BeastTail", Vector3.new(0.65, 0.65, 2.1),
-        root.CFrame * CFrame.new(0, 0.45, 2.35) * CFrame.Angles(math.rad(-30), 0, 0),
-        fur, Enum.PartType.Ball)
-      -- 늑대 갈기와 멧돼지 등털은 서로 다른 실루엣을 만드는 비충돌 파츠다.
-      if special == "StoneWolf" then
-        visualPiece("WolfNeckRuff", Vector3.new(2.5, 2.35, 1.8),
-          root.CFrame * CFrame.new(0, 0.9, -0.95),
-          Color3.fromRGB(73, 82, 90), Enum.PartType.Ball)
-        visualPiece("WolfChest", Vector3.new(1.7, 1.6, 1.15),
-          root.CFrame * CFrame.new(0, -0.45, -1.2),
-          Color3.fromRGB(171, 161, 142), Enum.PartType.Ball)
-      elseif special == "WildBoar" then
-        visualPiece("BoarShoulderHump", Vector3.new(3.1, 2.2, 2.35),
-          root.CFrame * CFrame.new(0, 0.65, -0.7),
-          Color3.fromRGB(94, 66, 46), Enum.PartType.Ball)
-        for ridge = 1, 3 do
-          visualPiece("BoarBristle" .. ridge, Vector3.new(0.3, 0.85, 0.45),
-            root.CFrame * CFrame.new(0, 1.65, -1.4 + ridge * 0.9),
-            Color3.fromRGB(70, 55, 42))
-        end
-      end
-      for side = -1, 1, 2 do
-        visualPiece(side < 0 and "BeastEarLeft" or "BeastEarRight",
-          Vector3.new(0.6, 1.15, 0.55),
-          head.CFrame * CFrame.new(side * 0.8, 1.65, -0.25) * CFrame.Angles(0, 0, side * math.rad(-18)),
-          fur)
-        if special == "WildBoar" then
-          visualPiece(side < 0 and "BoarTuskLeft" or "BoarTuskRight",
-            Vector3.new(0.3, 1.0, 0.32),
-            root.CFrame * CFrame.new(side * 0.78, 2.05, -2.45) * CFrame.Angles(0, 0, side * math.rad(22)),
-            Color3.fromRGB(230, 213, 169))
-        end
-      end
-    elseif armor then
-      -- 청동 골렘과 철기 기사는 헬멧·견갑·흉갑으로 맨몸 모형과 구분한다.
-      local metal = special == "BronzeGolem" and Color3.fromRGB(164, 117, 65)
-        or Color3.fromRGB(93, 109, 122)
-      visualPiece("ArmoredChest", Vector3.new(3.35, 2.9, 1.55),
-        root.CFrame * CFrame.new(0, 0.45, -0.45), metal)
-      visualPiece("ArmoredHelm", Vector3.new(2.7, 1.15, 2.8),
-        head.CFrame * CFrame.new(0, 0.9, 0), metal)
-      visualPiece("HelmetCrest", Vector3.new(0.4, 1.0, 2.2),
-        head.CFrame * CFrame.new(0, 1.75, 0), Color3.fromRGB(180, 75, 48))
-      for side = -1, 1, 2 do
-        visualPiece(side < 0 and "PauldronLeft" or "PauldronRight",
-          Vector3.new(1.4, 1.0, 1.7),
-          root.CFrame * CFrame.new(side * 2.0, 1.6, -0.3), metal, Enum.PartType.Ball)
-      end
-    end
-  end
-  -- 업로드 모델이 있으면 기존 장식 파츠를 가려 겹쳐 보이지 않게 한다.
-  -- 투명화만 수행하며 히트박스, Humanoid, 저장·보상 상태는 변경하지 않는다.
-  if enemy:GetAttribute("CreatureAssetSource") == "StudioImported" then
-    for _, decoration in ipairs(enemy:GetChildren()) do
-      if decoration:IsA("BasePart") and decoration ~= root then
-        decoration.Transparency = 1
-      end
-    end
-  end
+  visual:PivotTo(root.CFrame)
+  local boxFrame, boxSize = visual:GetBoundingBox()
+  local desiredFeet = root.Position.Y - root.Size.Y * 0.5
+  local currentFeet = boxFrame.Position.Y - boxSize.Y * 0.5
+  local visualOffset = CFrame.new(0, desiredFeet - currentFeet, 0)
+  visual:PivotTo(root.CFrame * visualOffset)
+  visual:SetAttribute("VisualPivotOffset", visualOffset)
+  visual:SetAttribute("ImportedVisualFollowRoot", true)
+  enemy:SetAttribute("CreatureAssetSource", "StudioImported")
   local humanoid = Instance.new("Humanoid")
   humanoid.RequiresNeck = false
   humanoid.MaxHealth = special == "WildBoar" and 42 or special == "BronzeGolem" and 100
@@ -1641,42 +1336,10 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   humanoid.Parent = enemy
   enemy.PrimaryPart = root
   enemy.Parent = civHub
-  civSign(head, head, enemy.Name, 3.3)
+  civSign(root, root, enemy.Name, 3.3)
   local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, Special = special, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0, TargetUserId = nil, NextPatrolAt = 0, PatrolStep = 0, AlertUserId = nil, AlertUntil = 0 }
   table.insert(civEnemies, item)
   return item
-end
--- Bounded server wildlife: each civilization has one grazing prey model.
-local function civSpawnGrazer(raceID, center)
-  local animal = Instance.new("Model")
-  animal.Name = raceID == 15 and "원시 사슴" or "초식 야생동물"
-  animal:SetAttribute("CivilizationWildlife", true)
-  animal:SetAttribute("EcosystemRole", "Prey")
-  if raceID == 15 then animal:SetAttribute("EcosystemSpecies", "StoneAgeDeer") end
-  animal:SetAttribute("RaceID", raceID)
-  local root = civPart(animal, "HumanoidRootPart", Vector3.new(2.4, 2, 3), CFrame.new(center + Vector3.new(9, 2.5, -6)), Color3.fromRGB(137, 128, 93), Enum.Material.SmoothPlastic, false)
-  civPart(animal, "Head", Vector3.new(1.5, 1.4, 1.3), root.CFrame * CFrame.new(0, 0.7, -1.8), Color3.fromRGB(161, 147, 107), Enum.Material.SmoothPlastic, false)
-  -- 초식 몬스터도 기존 월드 모델에서 외형을 구성한다.
-  for _, side in ipairs({-1, 1}) do
-    local leg = civPart(animal, "Leg" .. side, Vector3.new(0.6, 1.5, 0.75),
-      root.CFrame * CFrame.new(side * 0.82, -1.4, 0.9),
-      Color3.fromRGB(110, 91, 64), Enum.Material.SmoothPlastic, false)
-    leg.CanCollide = false
-    local ear = civPart(animal, "Ear" .. side, Vector3.new(0.35, 0.8, 0.45),
-      root.CFrame * CFrame.new(side * 0.65, 1.65, -1.85),
-      Color3.fromRGB(181, 151, 111), Enum.Material.SmoothPlastic, false)
-    ear.CanCollide = false
-  end
-  local health = Instance.new("Humanoid")
-  health.RequiresNeck = false
-  health.MaxHealth = 32
-  health.Health = health.MaxHealth
-  health.Parent = animal
-  animal.PrimaryPart = root
-  animal.Parent = civHub
-  local state = {Model = animal, Root = root, Humanoid = health, Home = root.Position, LastGraze = -1e9, LastPredated = -1e9}
-  civWildlife[raceID] = state
-  return state
 end
 -- targetModel is an optional mobile hint; only a server-owned enemy may be selected.
 local function civAttack(player, targetModel)
@@ -1835,247 +1498,16 @@ local function civOnEnemyStrike(enemy, player, now)
 end
 -- 24문명 세계에 직접 보이는 R15 비율의 블록형 전사 조형물.
 -- 실제 NPC/동료나 Humanoid가 아니며 기존 전투 타깃과 물리 검사에 영향을 주지 않는다.
-local function civBuildCultureFigure(region, race, id, center)
-  local origin = center + Vector3.new(-16, 1, 0)
-  local fabric = civRegions[((id - 1) % #civRegions) + 1]
-  local bronze = Color3.fromRGB(200, 154, 91)
-  local skin = Color3.fromRGB(190, 148, 114)
-  local figure = Instance.new("Model")
-  figure.Name = race.Name .. " 전사 조형물"
-  figure:SetAttribute("CivilizationCultureDisplay", true)
-  figure.Parent = region
-  local function part(name, size, offset, color)
-    local piece = civPart(figure, name, size, CFrame.new(origin + offset),
-      color, Enum.Material.SmoothPlastic, false)
-    piece.CanTouch = false
-    piece.CanQuery = false
-    return piece
-  end
-  local chest = part("BlockyTorso", Vector3.new(1.8, 1.8, 0.9),
-    Vector3.new(0, 2.7, 0), fabric)
-  part("ChestEmblem", Vector3.new(0.6, 0.6, 0.12), Vector3.new(0, 2.9, -0.52), bronze)
-  part("Waist", Vector3.new(1.8, 0.38, 0.9), Vector3.new(0, 1.68, 0), bronze)
-  for _, side in ipairs({-1, 1}) do
-    part("Arm" .. side, Vector3.new(0.7, 1.65, 0.75),
-      Vector3.new(side * 1.23, 2.65, 0), fabric)
-    part("Leg" .. side, Vector3.new(0.72, 1.65, 0.8),
-      Vector3.new(side * 0.5, 0.85, 0), fabric)
-  end
-  part("Head", Vector3.new(1.12, 1.06, 1.06), Vector3.new(0, 4.25, 0), skin)
-  -- 문명 전사 조형물의 얼굴·장비 디테일: 기존 생성 모델에 직접 적용.
-  for _, side in ipairs({-1, 1}) do
-    part("Eye" .. side, Vector3.new(0.17, 0.16, 0.1),
-      Vector3.new(side * 0.26, 4.36, -0.55), Color3.fromRGB(46, 40, 34))
-    part("ShoulderGuard" .. side, Vector3.new(0.91, 0.48, 1.03),
-      Vector3.new(side * 1.22, 3.4, 0), bronze)
-    part("Boot" .. side, Vector3.new(0.76, 0.47, 0.99),
-      Vector3.new(side * 0.5, 0.24, -0.06), Color3.fromRGB(73, 54, 43))
-  end
-  part("ChestArmor", Vector3.new(1.53, 1.06, 0.22),
-    Vector3.new(0, 2.87, -0.59), bronze)
-  part("Cape", Vector3.new(1.65, 2.2, 0.17),
-    Vector3.new(0, 2.38, 0.66), fabric)
-  local visual = race.Visual
-  if visual:find("터번", 1, true) or visual:find("모피", 1, true)
-    or visual:find("우샨카", 1, true) then
-    part("ClothHeadwrap", Vector3.new(1.45, 0.55, 1.31),
-      Vector3.new(0, 4.85, 0), fabric)
-    part("HeadwrapBand", Vector3.new(1.25, 0.28, 1.2),
-      Vector3.new(0, 5.18, 0), bronze)
-  elseif visual:find("깃털", 1, true) or visual:find("월계관", 1, true) then
-    part("HeadBand", Vector3.new(1.4, 0.3, 1.25),
-      Vector3.new(0, 4.91, 0), bronze)
-    part("HeadCrest", Vector3.new(0.26, 0.95, 0.28),
-      Vector3.new(0, 5.49, 0), fabric)
-  elseif visual:find("네메스", 1, true) or visual:find("장신구", 1, true) then
-    part("CeremonialCrown", Vector3.new(1.38, 0.48, 1.25),
-      Vector3.new(0, 4.98, 0), bronze)
-    part("CrownGem", Vector3.new(0.3, 0.52, 0.16),
-      Vector3.new(0, 5.32, -0.65), fabric)
-  else
-    part("CulturalHelmet", Vector3.new(1.42, 0.56, 1.31),
-      Vector3.new(0, 4.95, 0), bronze)
-    part("HelmetCrest", Vector3.new(0.86, 0.26, 0.27),
-      Vector3.new(0, 5.36, 0), fabric)
-  end
-  civSign(region, chest, race.Name .. "\n" .. race.Visual, 4.8)
-  return figure
-end
-
 -- 문명 지역과 중앙 포털: 메인 지면/저장 키는 그대로 유지한다.
 -- 실제 로비 지면: 기본 스폰 및 24개 문명 이동 패드까지 걸어갈 수 있도록 유지한다.
 -- 하나의 대륙 바닥으로 광장과 모든 문명을 보행 가능한 오픈월드로 연결한다.
 -- 기존 문명 좌표·스폰·이동·전투 기준값은 변경하지 않는다.
--- 바이브 공용 바이옴 제작기를 사용한다. 생성된 지형은 시각용이며 판정은 기존 게임이 소유한다.
-local CommonEnvironment = require(script.Parent:WaitForChild("CommonEnvironment"))
-local vibeBiomes = {
-  {Id = "FOREST", Angle = 0.32, Distance = 124},
-  {Id = "DESERT", Angle = 1.35, Distance = 124},
-  {Id = "SNOW", Angle = 2.38, Distance = 124},
-  {Id = "CAVE", Angle = 3.4, Distance = 124},
-  {Id = "SWAMP", Angle = 4.45, Distance = 124},
-  {Id = "RUINS", Angle = 5.48, Distance = 124},
-}
-for index, biome in ipairs(vibeBiomes) do
-  local origin = Vector3.new(math.cos(biome.Angle) * biome.Distance, -0.6,
-    math.sin(biome.Angle) * biome.Distance)
-  local root = CommonEnvironment.CreateBiomeKit(biome.Id, {
-    origin = origin, name = "바이브 생태지대 " .. biome.Id,
-    scale = 0.82, dressingCount = 8, detailTier = "LOW",
-  })
-  root.Parent = civHub
-  for _, object in ipairs(root:GetDescendants()) do
-    if object:IsA("BasePart") then
-      object.CanCollide = false
-      object.CanTouch = false
-      object.CanQuery = false
-    end
-  end
-end
 local continentGround = civPart(civHub, "문명 대륙", Vector3.new(520, 2, 520),
   CFrame.new(0, -2, 0), Color3.fromRGB(112, 143, 103), Enum.Material.Grass, true)
 continentGround:SetAttribute("WalkableGround", true)
--- 중앙 산줄기와 강줄기는 문명 이동로에서 떨어진 비충돌 지형으로 구성한다.
--- 전투 레이캐스트·채집 프롬프트·이동 판정과 충돌하지 않도록 장식은 조회하지 않는다.
-for index = 1, 16 do
-  local theta = (index - 1) * math.pi * 2 / 16
-  local radius = 95 + (index % 3) * 17
-  local base = Vector3.new(math.cos(theta) * radius, 0, math.sin(theta) * radius)
-  local hill = civPart(civHub, "산등성이 " .. index,
-    Vector3.new(25 + index % 3 * 7, 18 + index % 4 * 8, 28),
-    CFrame.new(base + Vector3.new(0, 6, 0)) * CFrame.Angles(0, theta, math.rad(15)),
-    Color3.fromRGB(104, 115 + index % 4 * 6, 98), Enum.Material.Rock, false)
-  hill.Shape = Enum.PartType.Ball
-  hill.CanTouch = false
-  hill.CanQuery = false
-end
-for index = 1, 18 do
-  local z = -182 + index * 20
-  local x = -72 + math.sin(index * 0.57) * 18
-  local water = civPart(civHub, "곡류 하천 " .. index, Vector3.new(19, 0.25, 23),
-    CFrame.new(x, -0.78, z), Color3.fromRGB(79, 134, 170), Enum.Material.Glass, false)
-  water.Transparency = 0.28
-  water.CanTouch = false
-  water.CanQuery = false
-end
-for index = 1, 4 do
-  local lake = civPart(civHub, "호수 " .. index, Vector3.new(24, 0.3, 30),
-    CFrame.new(62 + (index % 2) * 25, -0.76, -128 + index * 46),
-    Color3.fromRGB(86, 144, 183), Enum.Material.Glass, false)
-  lake.Shape = Enum.PartType.Cylinder
-  lake.Transparency = 0.24
-  lake.CanTouch = false
-  lake.CanQuery = false
-end
--- 탐험용 산악 협곡: 기존 지역 중심·자원·몬스터 좌표를 건드리지 않는다.
--- 경사 지형과 계단은 실제로 걸을 수 있고 중앙 이동로는 비워 둔다.
-for side = -1, 1, 2 do
-  local valleyX = side * 145
-  for step = 1, 6 do
-    local height = 3 + step * 1.8
-    local ledge = civPart(civHub, "협곡 계단 " .. side .. " " .. step,
-      Vector3.new(12, 2, 9), CFrame.new(valleyX + side * step * 9, height - 2, 72 + step * 9),
-      Color3.fromRGB(125, 116, 99), Enum.Material.Rock, true)
-    ledge:SetAttribute("WalkableGround", true)
-  end
-end
--- 대륙 가장자리의 작은 숲 지대. 탐험 길목과 기존 문명 시설은 가리지 않는다.
-for index = 1, 24 do
-  local angle = index * math.pi * 2 / 24
-  local radius = 175 + (index % 3) * 12
-  local x, z = math.cos(angle) * radius, math.sin(angle) * radius
-  local trunk = civPart(civHub, "야생숲 고목 " .. index,
-    Vector3.new(2, 7, 2), CFrame.new(x, 3, z),
-    Color3.fromRGB(102, 77, 53), Enum.Material.Wood, false)
-  trunk.CanTouch = false
-  trunk.CanQuery = false
-  local crown = civPart(civHub, "야생숲 수관 " .. index,
-    Vector3.new(8, 9, 8), CFrame.new(x, 9, z),
-    Color3.fromRGB(75 + index % 4 * 11, 107 + index % 3 * 9, 75),
-    Enum.Material.Grass, false)
-  crown.Shape = Enum.PartType.Ball
-  crown.CanTouch = false
-  crown.CanQuery = false
-end
 local lobbyGround = civPart(civHub, "CivilizationLobbyGround", Vector3.new(64, 2, 64),
   CFrame.new(0, -1, 0), Color3.fromRGB(111, 132, 101), Enum.Material.Slate, true)
 lobbyGround:SetAttribute("WalkableGround", true)
--- 메인: 기획서의 24문명 세계관을 표현하는 거대 신전형 로비.
--- 기존 공용 건축 에셋을 사용하고, 전투·이동·저장 판정에는 참여하지 않는다.
-local monumentStone = Color3.fromRGB(161, 148, 124)
-local monumentGold = Color3.fromRGB(190, 144, 72)
-local function lobbyMonumentPart(name, size, frame, color, material)
-  local piece = civPart(civHub, name, size, frame, color, material, false)
-  piece.CanCollide = false
-  piece.CanTouch = false
-  piece.CanQuery = false
-  return piece
-end
-local function lobbyBuildingAsset(assetName, position, scale, rotation)
-  local frame = CFrame.new(position) * CFrame.Angles(0, math.rad(rotation or 0), 0)
-  local ok, model = pcall(function()
-    return CommonBuilding.Create(assetName, {
-      parent = civHub, pivot = frame, scale = scale, quality = "far", anchored = true,
-    })
-  end)
-  if ok and model then
-    for _, descendant in ipairs(model:GetDescendants()) do
-      if descendant:IsA("BasePart") then
-        descendant.CanCollide = false
-        descendant.CanTouch = false
-        descendant.CanQuery = false
-      end
-    end
-  else
-    warn("SIMPLE_RPG_LOBBY_ASSET_LOAD_FAILED", assetName)
-  end
-end
--- 남쪽 진입로에서 정면으로 보이는 24문명 대문: 가운데 통로는 비운다.
-for _, side in ipairs({-1, 1}) do
-  local x = side * 19
-  lobbyMonumentPart("문명 대문 기단", Vector3.new(11, 4, 11),
-    CFrame.new(x, 2, 41), monumentStone, Enum.Material.Sandstone)
-  lobbyMonumentPart("문명 대문 석주", Vector3.new(6, 30, 6),
-    CFrame.new(x, 18, 41), monumentStone, Enum.Material.Marble)
-  lobbyMonumentPart("문명 대문 금장", Vector3.new(8, 2, 8),
-    CFrame.new(x, 32, 41), monumentGold, Enum.Material.Metal)
-  lobbyBuildingAsset("PILLAR_STONE", Vector3.new(x, 5, 41), 3.2)
-end
-lobbyMonumentPart("문명 대문 상부", Vector3.new(47, 6, 9),
-  CFrame.new(0, 37, 41), monumentStone, Enum.Material.Sandstone)
-local gateTitle = lobbyMonumentPart("대충알피지 신전 현판", Vector3.new(34, 4, 1),
-  CFrame.new(0, 37, 35.9), Color3.fromRGB(93, 68, 49), Enum.Material.WoodPlanks)
-civSign(civHub, gateTitle, "대충알피지 · 24문명의 시작", 14)
--- 북쪽 신전은 광장 중심에서 바라보는 거대한 배경 랜드마크다.
-for tier = 1, 4 do
-  lobbyMonumentPart("고대 신전 계단 " .. tier,
-    Vector3.new(62 - tier * 7, 2, 38 - tier * 5),
-    CFrame.new(0, tier * 2 - 1, -62), monumentStone, Enum.Material.Sandstone)
-end
-for _, x in ipairs({-19, -11, -3, 5, 13, 21}) do
-  lobbyMonumentPart("고대 신전 기둥", Vector3.new(3, 24, 3),
-    CFrame.new(x - 1, 20, -62), Color3.fromRGB(191, 179, 155), Enum.Material.Marble)
-  lobbyBuildingAsset("PILLAR_STONE", Vector3.new(x - 1, 10, -62), 2.5)
-end
-lobbyMonumentPart("고대 신전 처마", Vector3.new(54, 5, 27),
-  CFrame.new(0, 34, -62), Color3.fromRGB(113, 85, 63), Enum.Material.Slate)
-local templeTitle = lobbyMonumentPart("고대 신전 문양", Vector3.new(28, 5, 1),
-  CFrame.new(0, 28, -48), monumentGold, Enum.Material.Metal)
-civSign(civHub, templeTitle, "고대 문명의 대전당", 15)
--- 기존 세계 에셋으로 광장 가장자리와 문명 길목에 반복 조형을 구성한다.
-for _, side in ipairs({-1, 1}) do
-  for index = 1, 4 do
-    local z = -31 + (index - 1) * 19
-    lobbyBuildingAsset("PILLAR_STONE", Vector3.new(side * 41, 0, z), 1.9)
-    lobbyMonumentPart("문명 깃발 기둥", Vector3.new(1.2, 17, 1.2),
-      CFrame.new(side * 48, 9, z), monumentStone, Enum.Material.Wood)
-    lobbyMonumentPart("문명 깃발", Vector3.new(6, 8, 0.6),
-      CFrame.new(side * 45, 14, z),
-      index % 2 == 0 and Color3.fromRGB(117, 76, 61) or Color3.fromRGB(65, 91, 115),
-      Enum.Material.Fabric)
-  end
-end
-civHub:SetAttribute("LobbyVisualRevision", "GRAND_CIVILIZATION_TEMPLE_V1")
 -- ambientCG CC0 외부 재질: 저장소에서 업로드 번호가 확인된 색상맵만 적용한다.
 -- 텍스처 전송이 막혀도 기존 Roblox Slate/Wood 재질로 지면과 상점은 유지된다.
 local lobbyStoneTexture = Instance.new("Texture")
@@ -2087,184 +1519,6 @@ lobbyStoneTexture.StudsPerTileV = 10
 lobbyStoneTexture.Transparency = 0.24
 lobbyStoneTexture.Parent = lobbyGround
 
--- Ancient low-poly meeting square: radial stone path, timber stalls and monument stones.
-local centralPath = civPart(civHub, "로비 석재 산책로", Vector3.new(9, 0.15, 58),
-  CFrame.new(0, 0.08, 0), Color3.fromRGB(162, 145, 116), Enum.Material.Cobblestone, false)
-centralPath.CanTouch = false
-centralPath.CanQuery = false
-for _, side in ipairs({-1, 1}) do
-  local offset = side * 23
-  local garden = civPart(civHub, "로비 정원 " .. side, Vector3.new(9, 0.3, 27),
-    CFrame.new(offset, 0.05, 0), Color3.fromRGB(77, 116, 77), Enum.Material.Grass, false)
-  garden.CanTouch = false
-  garden.CanQuery = false
-  for index = 1, 3 do
-    local z = -16 + index * 10
-    local trunk = civPart(civHub, "로비 나무줄기 " .. side .. "-" .. index,
-      Vector3.new(1.3, 5, 1.3), CFrame.new(offset, 2.7, z),
-      Color3.fromRGB(103, 75, 52), Enum.Material.Wood, false)
-    trunk.CanTouch = false
-    trunk.CanQuery = false
-    local crown = civPart(civHub, "로비 로우폴리 수관 " .. side .. "-" .. index,
-      Vector3.new(6, 6, 6), CFrame.new(offset, 7, z),
-      Color3.fromRGB(81, 120, 86), Enum.Material.Grass, false)
-    crown.Shape = Enum.PartType.Ball
-    crown.CanTouch = false
-    crown.CanQuery = false
-  end
-end
-local lobbyInfoStone = civPart(civHub, "로비 모험 안내석", Vector3.new(5, 5, 1.5),
-  CFrame.new(-11, 2.5, -14), Color3.fromRGB(152, 143, 122), Enum.Material.Slate, false)
-lobbyInfoStone.CanTouch = false
-lobbyInfoStone.CanQuery = false
-civSign(civHub, lobbyInfoStone, "지역 탐험 · 채집\\n전투 · 연구 · 건축", 4)
-
-local lobbyBase = civPart(civHub, "광장 석상 기단", Vector3.new(8, 0.8, 5),
-  CFrame.new(0, 0.4, -11), Color3.fromRGB(107, 74, 47), Enum.Material.Slate, false)
-lobbyBase.CanTouch = false
-  lobbyBase.CanQuery = false
-local lobbyCore = civPart(civHub, "광장 차원 심장", Vector3.new(3.2, 5, 0.5),
-  CFrame.new(0, 3.5, -11), Color3.fromRGB(232, 163, 61), Enum.Material.Neon, false)
-lobbyCore.Transparency = 0.38
-local lobbyLight = Instance.new("PointLight")
-lobbyLight.Name = "AmberPortalGlow"
-lobbyLight.Color = Color3.fromRGB(232, 163, 61)
-lobbyLight.Brightness = 0.65
-lobbyLight.Range = 12
-lobbyLight.Shadows = false
-lobbyLight.Parent = lobbyCore
-lobbyCore.CanTouch = false
-  lobbyCore.CanQuery = false
-civSign(civHub, lobbyCore, "대충알피지\n모험가 로비 광장", 6.5)
-for _, side in ipairs({-1, 1}) do
-  local pillar = civPart(civHub, "광장 석상 기둥 " .. side, Vector3.new(1.5, 6, 1.8),
-    CFrame.new(side * 2.8, 3.5, -11), Color3.fromRGB(184, 166, 125), Enum.Material.Sandstone, false)
-  pillar.CanTouch = false
-  pillar.CanQuery = false
-  local torch = civPart(civHub, "광장 횃불 " .. side, Vector3.new(0.9, 0.9, 0.9),
-    CFrame.new(side * 2.8, 6.9, -11), Color3.fromRGB(255, 243, 196), Enum.Material.Neon, false)
-  torch.Shape = Enum.PartType.Ball
-  torch.CanTouch = false
-  torch.CanQuery = false
-end
-local lobbyCrown = civPart(civHub, "광장 석상 관석", Vector3.new(7.5, 1.5, 2.1),
-  CFrame.new(0, 7.2, -11), Color3.fromRGB(138, 90, 56), Enum.Material.Sandstone, false)
-lobbyCrown.CanTouch = false
-  lobbyCrown.CanQuery = false
--- 로비 생활 공간: 기존 제작 함수로 낮은 부하의 목조 상점과 표지판을 배치한다.
--- 상점은 장식 전용이며 구매/화폐/저장 데이터는 변경하지 않는다.
-local lobbyShops = {
-  {name="장비 상점", x=-17, z=-4, color=Color3.fromRGB(114, 67, 49)},
-  {name="잡화 상점", x=17, z=-4, color=Color3.fromRGB(80, 111, 94)},
-  {name="모험 안내소", x=-17, z=13, color=Color3.fromRGB(89, 105, 138)},
-  {name="휴식 쉼터", x=17, z=13, color=Color3.fromRGB(153, 113, 72)},
-}
-for _, shop in ipairs(lobbyShops) do
-  local floor = civPart(civHub, shop.name .. " 마루", Vector3.new(10, 0.45, 8),
-    CFrame.new(shop.x, 0.38, shop.z), Color3.fromRGB(132, 95, 64), Enum.Material.WoodPlanks, false)
-  floor.CanTouch = false
-  floor.CanQuery = false
-  local woodTexture = Instance.new("Texture")
-  woodTexture.Name = "LobbyCC0Wood"
-  woodTexture.Texture = "rbxassetid://124882110895040"
-  woodTexture.Face = Enum.NormalId.Top
-  woodTexture.StudsPerTileU = 4
-  woodTexture.StudsPerTileV = 4
-  woodTexture.Transparency = 0.16
-  woodTexture.Parent = floor
-  local roof = civPart(civHub, shop.name .. " 지붕", Vector3.new(11, 0.8, 9),
-    CFrame.new(shop.x, 6, shop.z), shop.color, Enum.Material.Fabric, false)
-  roof.CanTouch = false
-  roof.CanQuery = false
-  for _, side in ipairs({-1, 1}) do
-    for _, depth in ipairs({-1, 1}) do
-      local post = civPart(civHub, shop.name .. " 기둥", Vector3.new(0.65, 5, 0.65),
-        CFrame.new(shop.x + side * 4.3, 3.1, shop.z + depth * 3.2),
-        Color3.fromRGB(105, 73, 50), Enum.Material.Wood, false)
-      post.CanTouch = false
-      post.CanQuery = false
-    end
-  end
-  local counter = civPart(civHub, shop.name .. " 진열대", Vector3.new(7.5, 1.3, 1.5),
-    CFrame.new(shop.x, 1.25, shop.z - 2.6),
-    Color3.fromRGB(154, 111, 72), Enum.Material.Wood, false)
-  counter.CanTouch = false
-  counter.CanQuery = false
-  civSign(civHub, roof, shop.name, 3.2)
-  -- 안내는 서버가 직접 전달하며 상점 재화나 아이템을 생성하지 않는다.
-  local prompt = Instance.new("ProximityPrompt")
-  prompt.Name = "LobbyShopInfo"
-  prompt.ActionText = "안내 보기"
-  prompt.ObjectText = shop.name
-  prompt.KeyboardKeyCode = Enum.KeyCode.E
-  prompt.MaxActivationDistance = 10
-  prompt.RequiresLineOfSight = false
-  prompt.Parent = counter
-  prompt.Triggered:Connect(function(visitor)
-    if visitor.Parent ~= Players or visitor:GetAttribute("CivReady") ~= true then return end
-    if shop.name == "장비 상점" then
-      civMessage(visitor, "장비는 메뉴의 제작·가방에서 확인할 수 있어.")
-    elseif shop.name == "잡화 상점" then
-      civMessage(visitor, "재료는 탐험 지역에서 채집할 수 있어.")
-    elseif shop.name == "모험 안내소" then
-      civMessage(visitor, "메뉴에서 맵 이동을 누르면 탐험 지역을 고를 수 있어.")
-    else
-      civMessage(visitor, "로비에서 준비한 뒤 맵 이동으로 모험을 시작해.")
-    end
-  end)
-end
--- Five era ecology exhibits in the multiverse lobby are visual previews, not extra regions.
--- All parts are non-colliding and do not alter the existing 24 civilization maps.
-local eraDisplays = {
-  {name="신화 시대", color=Color3.fromRGB(131, 94, 157), mat=Enum.Material.Slate, feature="신성한 나무"},
-  {name="석기 시대", color=Color3.fromRGB(70, 108, 72), mat=Enum.Material.Grass, feature="원시림"},
-  {name="청동기 시대", color=Color3.fromRGB(179, 132, 79), mat=Enum.Material.Sand, feature="황토 강변"},
-  {name="철기 시대", color=Color3.fromRGB(108, 115, 120), mat=Enum.Material.Rock, feature="고원 제철소"},
-  {name="영웅 시대", color=Color3.fromRGB(207, 172, 84), mat=Enum.Material.Marble, feature="황금 성역"},
-}
-for eraID, display in ipairs(eraDisplays) do
-  local x = -24 + (eraID - 1) * 12
-  local z = 22
-  local platform = civPart(civHub, display.name .. " 생태 전시대", Vector3.new(9, 0.4, 8),
-    CFrame.new(x, 0.15, z), display.color, display.mat, false)
-  platform.CanTouch = false
-  platform.CanQuery = false
-  platform:SetAttribute("DisplayEra", eraID)
-  local pillar = civPart(civHub, display.feature .. " 표본", Vector3.new(2.4, 4 + eraID * 0.5, 2.4),
-    CFrame.new(x, 2.4 + eraID * 0.25, z), display.color, display.mat, false)
-  pillar.CanTouch = false
-  pillar.CanQuery = false
-  civSign(civHub, pillar, display.name .. "\\n" .. display.feature, 3.6)
-  if eraID == 1 or eraID == 5 then
-    local aura = civPart(civHub, display.name .. " 영기", Vector3.new(4, 0.45, 4),
-      CFrame.new(x, 5.1 + eraID * 0.5, z), display.color, Enum.Material.Neon, false)
-    aura.Transparency = 0.55
-    aura.CanTouch = false
-    aura.CanQuery = false
-  end
-end
--- 네 대표 문명 포털을 계획서의 피오르드·사막·산악·평원 테마로 장식한다.
--- 장식은 이동 패드와 독립적이며 길막/터치 판정에 참여하지 않는다.
-local portalThemes = {
-  [1] = {name="로마 평원", color=Color3.fromRGB(130, 152, 91), material=Enum.Material.Grass},
-  [2] = {name="이집트 사막", color=Color3.fromRGB(198, 171, 108), material=Enum.Material.Sand},
-  [12] = {name="바이킹 피오르드", color=Color3.fromRGB(89, 133, 152), material=Enum.Material.Slate},
-  [15] = {name="고조선 산악", color=Color3.fromRGB(105, 124, 102), material=Enum.Material.Rock},
-}
-local function decorateFeaturedPortal(id, frame)
-  local theme = portalThemes[id]
-  if not theme then return end
-  for side = -1, 1, 2 do
-    local scenery = civPart(civHub, theme.name .. " 경관석 " .. side,
-      Vector3.new(3, 2.8 + id % 3, 2.4),
-      frame * CFrame.new(side * 6.8, 1.2, 4.4),
-      theme.color, theme.material, false)
-    scenery.Shape = (id == 12 or id == 15) and Enum.PartType.Wedge or Enum.PartType.Block
-    scenery.CanCollide = false
-    scenery.CanTouch = false
-    scenery.CanQuery = false
-  end
-end
 -- 24문명의 땅을 1개의 초대형 대륙으로 잇는다.
 -- 문명 중심은 기존 3,200스터드 위치를 유지하므로 저장/스폰/건축 좌표는 불변.
 -- 길이 1,750, 폭 1,080의 부채꼴 겹침 지면 48개로 외곽까지 끊김 없이 걸어갈 수 있다.
@@ -2305,13 +1559,6 @@ for sector = 1, 24 do
   end
 end
 civHub:SetAttribute("ConnectedContinentDiameterStuds", continentRadius * 2 + 560)
--- 네 대표 문명만 특색 있는 입구를 추가하고 나머지 20개 포털은 그대로 둔다.
-local featuredPortalColors = {
-  [1] = Color3.fromRGB(169, 82, 64),  -- 로마
-  [2] = Color3.fromRGB(232, 163, 61), -- 이집트
-  [12] = Color3.fromRGB(44, 74, 110), -- 바이킹
-  [15] = Color3.fromRGB(95, 110, 60), -- 고조선
-}
 for id = 1, 24 do
   local race = RaceData.GetRace(id)
   local angle = 2 * math.pi * (id - 1) / 24
@@ -2322,76 +1569,6 @@ for id = 1, 24 do
   region.Parent = civHub
   local ground = civPart(region, "CivilizationGround", Vector3.new(560, 2, 560), CFrame.new(center), civRegions[((id - 1) % #civRegions) + 1], Enum.Material.Slate, true)
   ground:SetAttribute("WalkableGround", true)
-  -- 문명마다 지표 색·질감이 다른 야외 생태 지대를 연결한다.
-  -- 주요 채집 시설 및 보스 생성 좌표는 기존 섬 위에 그대로 둔다.
-  local biomeColor = civRegions[((id - 1) % #civRegions) + 1]
-  local biomeMat = (id % 6 == 2 or id % 6 == 0) and Enum.Material.Sand
-    or (id % 6 == 4) and Enum.Material.Snow or Enum.Material.Grass
-  local biome = civPart(region, "문명 외곽 야생지", Vector3.new(610, 0.3, 610),
-    CFrame.new(center + Vector3.new(0, -0.82, 0)), biomeColor, biomeMat, false)
-  biome.CanTouch = false
-  biome.CanQuery = false
-  -- Reuse the existing region; all five visual eras are lightweight, non-colliding sets.
-  for era=1,5 do makeEraScenery(region,center,era) end
-  -- 중앙과 지역 사이에 실제 걷는 길을 시각적으로 표시한다.
-  local direction = Vector3.new(center.X, 0, center.Z).Unit
-  local roadCenter = center - direction * 125
-  local road = civPart(region, "문명 연결 산책로", Vector3.new(8, 0.13, 250),
-    CFrame.lookAt(roadCenter + Vector3.new(0, -0.85, 0), center), 
-    Color3.fromRGB(151, 132, 101), Enum.Material.Ground, false)
-  road.CanTouch = false
-  road.CanQuery = false
-  -- 길가 표지석으로 넓어진 필드에서도 각 문명까지의 방향을 읽을 수 있게 한다.
-  for step = 1, 2 do
-    local markerPosition = center - direction * (180 - step * 75)
-      + Vector3.new(-direction.Z, 0, direction.X) * 7
-    local marker = civPart(region, "문명 길잡이 " .. step,
-      Vector3.new(2, 3.5, 2), CFrame.new(markerPosition + Vector3.new(0, 1, 0)),
-      Color3.fromRGB(135, 125, 108), Enum.Material.Slate, false)
-    marker.CanTouch = false
-    marker.CanQuery = false
-    if step == 2 then
-      civSign(region, marker, race.Name .. " 방면", 3.2)
-    end
-  end
-  -- 문명 지역의 로우폴리 자연 경관: 전투·채집 경로를 막지 않는 비충돌 장식.
-  local foliageColors = {
-    Color3.fromRGB(86, 115, 79),
-    Color3.fromRGB(121, 129, 91),
-    Color3.fromRGB(102, 124, 116),
-    Color3.fromRGB(158, 141, 95),
-  }
-  for index, offset in ipairs({
-    Vector3.new(-17, 0, -17),
-    Vector3.new(17, 0, -16),
-    Vector3.new(17, 0, 17),
-  }) do
-    local base = center + offset
-    local trunk = civPart(region, "고목 줄기 " .. index, Vector3.new(1.8, 7, 1.8),
-      CFrame.new(base + Vector3.new(0, 4.5, 0)),
-      Color3.fromRGB(108, 79, 57), Enum.Material.Wood, false)
-    trunk.CanTouch = false
-    trunk.CanQuery = false
-    local canopy = civPart(region, "숲 수관 " .. index, Vector3.new(7, 7, 7),
-      CFrame.new(base + Vector3.new(0, 9, 0)),
-      foliageColors[((id + index - 2) % #foliageColors) + 1],
-      Enum.Material.Grass, false)
-    canopy.Shape = Enum.PartType.Ball
-    canopy.CanTouch = false
-    canopy.CanQuery = false
-  end
-  for index, offset in ipairs({
-    Vector3.new(-18, 0, 13),
-    Vector3.new(12, 0, -18),
-  }) do
-    local rock = civPart(region, "풍화 암석 " .. index, Vector3.new(5, 3 + id % 3, 4),
-      CFrame.new(center + offset + Vector3.new(0, 2, 0))
-        * CFrame.Angles(0, math.rad((id * 19 + index * 37) % 90), math.rad(8)),
-      Color3.fromRGB(110 + id % 4 * 8, 107 + id % 3 * 8, 98),
-      Enum.Material.Rock, false)
-    rock.CanTouch = false
-    rock.CanQuery = false
-  end
   local monument = civPart(region, "Landmark", Vector3.new(8, 13, 8), CFrame.new(center + Vector3.new(-11, 7.5, -9)), Color3.fromRGB(184, 166, 125), Enum.Material.Sandstone, true)
   monument.Shape = (id % 3 == 0) and Enum.PartType.Cylinder or Enum.PartType.Block
   civSign(region, monument, race.Name .. "\n" .. race.Landmark, 9)
@@ -2450,7 +1627,6 @@ for id = 1, 24 do
   end
   civSpawnEnemy(id, center, nil, 1)
   civSpawnEnemy(id, center, nil, 2)
-  civSpawnGrazer(id, center)
   if id == 15 then
     civSpawnEnemy(id, center, "WildBoar")
     civSpawnEnemy(id, center, "StoneWolf")
