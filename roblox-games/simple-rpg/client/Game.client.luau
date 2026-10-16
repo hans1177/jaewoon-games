@@ -2003,10 +2003,14 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local serverWalking = typeof(walkingUntil) == "number"
             and workspace:GetServerTimeNow() < walkingUntil
           local recentlyMoved = creatureMotionPhase - lastMovedAt < 0.20
-          realMoving = not teleported and (serverWalking or recentlyMoved)
+          local movementBlocked = model:GetAttribute("IsPreparingAttack") == true
+            or model:GetAttribute("AIState") == "Stunned"
+            or (model:FindFirstChildOfClass("Humanoid")
+              and model:FindFirstChildOfClass("Humanoid").Health <= 0)
+          realMoving = not teleported and not movementBlocked and (serverWalking or recentlyMoved)
           if realMoving then
-            -- 복제 지연 때만 최근 보행 속도를 사용하고 관측된 이동량과
-            -- 크게 다른 위상 도약은 제한한다.
+            -- 실제 이동량을 우선 사용하고 서버 보행 예고는 복제 사이에만 보완한다.
+            -- 공격·기절 중에는 위상도 멈춰 다시 걷기 시작할 때 튀지 않게 한다.
             local cadenceSpeed = math.clamp(smoothedSpeed > 0.35 and smoothedSpeed or 4.5, 2.5, 12)
             gaitPhase += cadenceSpeed * math.min(elapsed, 0.12) * 1.4
           else
