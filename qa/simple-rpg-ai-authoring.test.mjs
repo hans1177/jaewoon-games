@@ -456,3 +456,13 @@ test('Conan-inspired alert and return-home poses are visual-only and preserve se
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
+
+test('existing civilization enemy habitats mirror terrain and keep patrol inside leash', () => {
+  assert.match(server, /enemy:SetAttribute\("HabitatBiome", habitatType\)/);
+  assert.match(server, /enemy:SetAttribute\("HabitatRaceID", raceID\)/);
+  assert.match(server, /habitat == "DESERT"/);
+  assert.match(server, /habitat == "SNOW"/);
+  assert.match(server, /nextPosition\.X - enemy\.Home\.X/);
+  assert.match(server, /Magnitude <= 16 then/);
+  assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
+});
