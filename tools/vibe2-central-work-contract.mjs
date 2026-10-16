@@ -6,9 +6,10 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { VIBE_WORK_LOCK_STATE_BRANCH, VIBE_WORK_LOCK_STATE_PATH } from '../assets/vibe-work-lock.js';
-// Legacy central policy document and compiler were removed by owner instruction.
-const compileOwnerCanonicalConstitution = () => ({valid:false,errors:['CONSTITUTION_AUTHORITY_UNAVAILABLE'],version:0,authority:null,constitutionalAuthority:null,binding:{},fingerprint:null,orderedRuleIds:[],rules:[]});
-const compileCentralArchitectureProjection = () => ({valid:false,errors:['CENTRAL_POLICY_SOURCE_UNAVAILABLE'],fingerprint:null,contract:{}});
+// Canonical rules and execution topology are compiled from the real roadmap,
+// not a hardcoded synthetic PASS or permanent failure stub.
+import {compileOwnerCanonicalConstitution,compileCentralArchitectureProjection}
+  from './company-shared-context.mjs';
 
 export const CANONICAL_VIBE_POLICY_PATH='company-learning/platform-release-roadmap.json';
 
