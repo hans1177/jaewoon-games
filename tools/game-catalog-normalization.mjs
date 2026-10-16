@@ -9,7 +9,7 @@ import {
 } from './production-classification.mjs';
 
 export const CATALOG_CANONICAL_SCHEMA_VERSION=1;
-const ROADMAP_PATH='company-learning/platform-release-roadmap.json';
+const ROADMAP_PATH=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
 const clean=value=>String(value??'').trim();
 const bool=value=>value===true;
 const list=value=>[...new Set((Array.isArray(value)?value:[]).map(clean).filter(Boolean))];
@@ -19,7 +19,7 @@ const LEGACY_DEVELOPMENT_FREEZE_FIELDS=Object.freeze(['newFeatureExpansionFrozen
 const platformLabel=platform=>platform==='ROBLOX'?'Roblox':platform==='UNITY'?'Unity Android':platform==='FORTNITE_UEFN'?'Fortnite UEFN':'';
 function autoClassificationPolicy(){
   try{
-    const roadmap=JSON.parse(fs.readFileSync(ROADMAP_PATH,'utf8'));
+    const roadmap=ROADMAP_PATH?JSON.parse(fs.readFileSync(ROADMAP_PATH,'utf8')):{};
     return roadmap?.catalogNormalization?.autoClassification||{};
   }catch{
     return{};
@@ -142,7 +142,7 @@ export function applyHomepageAutoClassification(game={}){
 
 function normalizationPolicy(){
   try{
-    const roadmap=JSON.parse(fs.readFileSync(ROADMAP_PATH,'utf8'));
+    const roadmap=ROADMAP_PATH?JSON.parse(fs.readFileSync(ROADMAP_PATH,'utf8')):{};
     return roadmap?.catalogNormalization||{};
   }catch{
     return{};
@@ -603,7 +603,7 @@ export function normalizeCatalog(catalog={}){
   catalog.catalogSchemaVersion=2;
   catalog.normalization={
     version:2,
-    sourceOfTruth:policy?.sourceOfTruth||ROADMAP_PATH,
+    sourceOfTruth:policy?.sourceOfTruth||ROADMAP_PATH||null,
     canonicalRecordPath:'games[].canonical',
     legacyFlatFields:'COMPATIBILITY_MIRROR',
     canonicalFirst:true,
