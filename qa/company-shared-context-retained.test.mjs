@@ -1,67 +1,72 @@
-// 파일명: qa/company-shared-context-retained.test.mjs
-// 임포트
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {validateSharedWorkerContext} from '../tools/company-shared-context.mjs';
+import {validateSharedWorkerContext,RETAINED_DOCUMENTS} from '../tools/company-shared-context.mjs';
+import {enforceConstitution} from '../tools/company-constitution-enforcer.mjs';
 
-// 메인
-const documents=[
-  ['log','company-learning/company-log-map.json','MACHINE_EXECUTION_LOG_MAP'],
-  ['architecture','company-learning/company-architecture-map.json','MACHINE_EXECUTION_ARCHITECTURE_MAP'],
-  ['security','company-learning/security-immune-system.json','OWNER_DIRECTIVE_2026-09-19']
-];
-function fixture() {
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'retained-context-'));
-  const write=(name,content)=>{
-    const p=path.join(root,name);
-    fs.mkdirSync(path.dirname(p),{recursive:true});
-    fs.writeFileSync(p,JSON.stringify(content));
-  };
-  write('company-directive.json',{
-    policyDocument:null,
-    documentationSynchronization:{centralPolicyPath:null},
-    legacyCentralPolicyReferenceCleanup:{
-      removedPolicyPath:'company-learning/platform-release-roadmap.json',
-      replacementPolicyNotAsserted:true,
-      executionContractChangeNotAuthorized:true
-    }
-  });
-  for(const [,file,authority] of documents) write(file,{version:1,authority,sourceOfTruth:file,
-    ...(file.endsWith('company-log-map.json')?{architectureMap:'company-learning/company-architecture-map.json'}:{}),
-    ...(file.endsWith('company-architecture-map.json')?{logMap:'company-learning/company-log-map.json'}:{}),
-    ...(file.endsWith('security-immune-system.json')?{policyFile:file}:{})
-  });
-  return {root,write};
+const repoRoot=path.resolve(import.meta.dirname,'..');
+function temporary(){
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'retained-four-docs-'));
+  for(const [,rel] of RETAINED_DOCUMENTS){
+    const target=path.join(root,rel);
+    fs.mkdirSync(path.dirname(target),{recursive:true});
+    fs.copyFileSync(path.join(repoRoot,rel),target);
+  }
+  return root;
 }
-test('retained documents validate without restoring or promoting deleted policy',()=>{
-  const f=fixture();
-  try {
-    const result=validateSharedWorkerContext({root:f.root});
-    assert.equal(result.pass,true);
-    assert.equal(result.scope,'RETAINED_THREE_DOCUMENT_INTEGRITY_ONLY');
-    assert.equal(result.policyAuthorityVerified,false);
-  } finally {fs.rmSync(f.root,{force:true,recursive:true});}
+function check(root,fn){
+  try {return fn();}finally{fs.rmSync(root,{recursive:true,force:true});}
+}
+test('the four shrunk documents are syntactically valid, under 1000 chars and integrity only',()=>{
+  const r=validateSharedWorkerContext({root:repoRoot});
+  assert.equal(r.pass,true);
+  assert.equal(r.scope,'RETAINED_FOUR_DOCUMENT_INTEGRITY_ONLY');
+  assert.equal(r.policyAuthorityVerified,false);
+  assert.equal(r.sourceWriteAuthorized,false);
+  assert.equal(r.releaseAuthorized,false);
+  assert.equal(Object.keys(r.hashes).length,4);
 });
-test('missing retained document blocks validation',()=>{
-  const f=fixture();
-  try {
-    fs.unlinkSync(path.join(f.root,'company-learning/company-log-map.json'));
-    assert.throws(()=>validateSharedWorkerContext({root:f.root}),/LOG_DOCUMENT_MISSING_OR_INVALID/);
-  } finally {fs.rmSync(f.root,{force:true,recursive:true});}
+test('missing or malformed retained document is rejected',()=>{
+  check(temporary(),root=>{
+    fs.rmSync(path.join(root,'company-learning/company-log-map.json'));
+    assert.throws(()=>validateSharedWorkerContext({root}),/LOG_DOCUMENT_MISSING_OR_INVALID/);
+  });
+  check(temporary(),root=>{
+    fs.writeFileSync(path.join(root,'company-directive.json'),'{broken');
+    assert.throws(()=>validateSharedWorkerContext({root}),/DIRECTIVE_DOCUMENT_MISSING_OR_INVALID/);
+  });
 });
-test('changed document hash blocks pinned validation',()=>{
-  const f=fixture();
-  try {
-    assert.throws(()=>validateSharedWorkerContext({root:f.root,expectedSecuritySha256:'0'.repeat(64)}),/SECURITY_SHA_MISMATCH/);
-  } finally {fs.rmSync(f.root,{force:true,recursive:true});}
+test('oversize and unexpected legacy schemas are rejected, never silently accepted',()=>{
+  check(temporary(),root=>{
+    const p=path.join(root,'company-learning/company-architecture-map.json');
+    fs.appendFileSync(p,' '.repeat(1100));
+    assert.throws(()=>validateSharedWorkerContext({root}),/ARCHITECTURE_DOCUMENT_TOO_LARGE/);
+  });
+  check(temporary(),root=>{
+    const p=path.join(root,'company-learning/company-log-map.json');
+    const doc=JSON.parse(fs.readFileSync(p,'utf8'));
+    doc.status='LEGACY_EXECUTABLE_CONTRACT';
+    fs.writeFileSync(p,JSON.stringify(doc));
+    assert.throws(()=>validateSharedWorkerContext({root}),/LOG_DOCUMENT_CONTRACT_INVALID/);
+  });
 });
-test('restored deleted roadmap is blocked',()=>{
-  const f=fixture();
-  try {
-    f.write('company-learning/platform-release-roadmap.json',{version:1});
-    assert.throws(()=>validateSharedWorkerContext({root:f.root}),/DELETED_ROADMAP_REAPPEARED/);
-  } finally {fs.rmSync(f.root,{force:true,recursive:true});}
+test('a hash mismatch and attempted restoration of deleted roadmap are blocked',()=>{
+  check(temporary(),root=>{
+    assert.throws(()=>validateSharedWorkerContext({root,expectedSecuritySha256:'0'.repeat(64)}),/SECURITY_SHA_MISMATCH/);
+  });
+  check(temporary(),root=>{
+    const p=path.join(root,'company-learning/platform-release-roadmap.json');
+    fs.writeFileSync(p,'{}');
+    assert.throws(()=>validateSharedWorkerContext({root}),/DELETED_ROADMAP_REAPPEARED/);
+  });
+});
+test('passing four-document integrity does not grant source write or deployment',()=>{
+  const ctx=validateSharedWorkerContext({root:repoRoot});
+  const gate=enforceConstitution({root:repoRoot,phase:'policy-qa'});
+  assert.equal(ctx.pass,true);
+  assert.equal(ctx.policyAuthorityVerified,false);
+  assert.equal(gate.pass,false);
+  assert.ok(gate.errors.includes('CONSTITUTION_AUTHORITY_UNAVAILABLE'));
 });
