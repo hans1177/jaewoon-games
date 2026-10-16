@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {runInNewContext} from 'node:vm';
-import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
+import {inspectRobloxBuildPreflight,evaluateRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
 
 const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
 const headless=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
@@ -18,8 +18,8 @@ test('Roblox native path is package -> shared preflight -> F0 -> private validat
   assert.ok(preflight.includes('workflow_dispatch:'));
   assert.ok(!preflight.includes('company-development-roblox-package.mjs'));
   assert.ok(preflight.includes('company-development-roblox-build-preflight.mjs'));
-  assert.ok(preflight.includes("model: 'llama3.2:1b'"));
-  assert.ok(preflight.includes('Run Vibe plus shared-model build preflight'));
+  assert.ok(!preflight.includes("model: 'llama3.2:1b'"));
+  assert.ok(preflight.includes('Check per-game exact package and source evidence'));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
   assert.ok(headless.includes('Roblox F0 Source Preflight'));
   assert.ok(headless.includes('company-development-roblox-headless-fast-mvp.mjs'));
@@ -42,10 +42,27 @@ test('shared preflight requires exact immutable build and one shared model',()=>
   };
   const result=inspectRobloxBuildPreflight({item,directive});
   assert.equal(result.pass,true,result.blockers.join(','));
-  assert.equal(result.distinctLeadCount,1);
-  assert.equal(result.sharedModel,'llama3.2:1b');
+  assert.equal(result.distinctLeadCount,0);
+  assert.equal(result.sharedModel,'');
   assert.equal(inspectRobloxBuildPreflight({item:{...item,productionClass:'RELEASE_CONFIRMED'},directive}).pass,true);
   assert.equal(inspectRobloxBuildPreflight({item:{...item,productionClass:'DESIGN_ONLY'},directive}).pass,false);
+});
+
+test('exact game build evidence needs no global AI model and cannot skip package validation',async()=>{
+  const item={
+    gameId:'test-roblox',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',
+    robloxBuildOrPackagePassed:true,robloxSourceCommit:'a'.repeat(40),
+    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64)
+  };
+  const result=await evaluateRobloxBuildPreflight({
+    item,directive,fetchImpl:()=>{throw new Error('Unrelated model network should not run')}
+  });
+  assert.equal(result.pass,true);
+  assert.equal(result.reviewMode,'DETERMINISTIC_GAME_BUILD_EVIDENCE_ONLY');
+  assert.deepEqual(result.leadReviews,[]);
+  const failed=await evaluateRobloxBuildPreflight({item:{...item,robloxBuildOrPackagePassed:false},directive});
+  assert.equal(failed.pass,false);
+  assert.ok(failed.blockers.includes('build-package-not-passed'));
 });
 
 test('shared preflight admits canonical Roblox Unity concurrent lane without changing selected platform',()=>{
