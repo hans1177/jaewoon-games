@@ -1992,9 +1992,12 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           realMoving = not teleported and not movementBlocked
             and (serverWalking or (recentlyMoved and smoothedSpeed > 0.35))
           if realMoving then
-            -- 실제 이동량을 우선 사용하고 서버 보행 예고는 복제 사이에만 보완한다.
-            -- 공격·기절 중에는 위상도 멈춰 다시 걷기 시작할 때 튀지 않게 한다.
-            local cadenceSpeed = math.clamp(smoothedSpeed > 0.35 and smoothedSpeed or 4.5, 2.5, 12)
+            -- 서버가 명령한 이동 속도가 있으면 그것을 발걸음 주기에 사용한다.
+            -- 로컬 위치가 4Hz로 복제되더라도 발이 지나치게 빠르게 움직이지 않는다.
+            local commandedSpeed = model:GetAttribute("MotionMoveSpeed")
+            local gaitSpeed = serverWalking and typeof(commandedSpeed) == "number"
+              and commandedSpeed > 0.35 and commandedSpeed or smoothedSpeed
+            local cadenceSpeed = math.clamp(gaitSpeed > 0.35 and gaitSpeed or 4.5, 2.5, 12)
             gaitPhase += cadenceSpeed * math.min(elapsed, 0.12) * 1.4
           else
             smoothedSpeed = 0
