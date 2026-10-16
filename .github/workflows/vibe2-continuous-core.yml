@@ -1373,6 +1373,7 @@ jobs:
         env:
           SAFE_TASK: ${{ matrix.safeTask }}
           VARIANT: ${{ matrix.variant }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
