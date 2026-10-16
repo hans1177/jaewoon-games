@@ -15,7 +15,8 @@ import {
   classifyDevelopmentImpact,
   directivePrompt,
   playerFacingInspectionPromptLines,
-  inspectGameSources
+  inspectGameSources,
+  buildGameInternalAutoCompositionPlan
 } from '../tools/company-build-up-directive.mjs';
 
 test('every game worker receives concrete player-facing inspections without fabricated quality credit',()=>{
@@ -1660,4 +1661,66 @@ test('preservation-only approved design keeps all volume entries but forbids new
   assert.match(lines,/contentVolume=authored:/);
   assert.doesNotMatch(lines,/volumeImplementation=ref:/,
     'presentation-only preservation must not be executed as a new progression mechanic');
+});
+
+
+test('all-game auto composition connects existing lobby, customization, materials, inventory, UI and world with QA gates',()=>{
+  const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-internal-auto-'));
+  try{
+    const sourceRoot='roblox-games/composer-demo';
+    const client=sourceRoot+'/client/Game.client.luau';
+    const server=sourceRoot+'/server/Game.server.luau';
+    fs.mkdirSync(path.join(repoRoot,sourceRoot,'client'),{recursive:true});
+    fs.mkdirSync(path.join(repoRoot,sourceRoot,'server'),{recursive:true});
+    fs.writeFileSync(path.join(repoRoot,client),
+      'local ScreenGui = "ScreenGui"\nlocal lobby = "Lobby"\nlocal inventory = "Inventory"\nlocal avatar = "Appearance"\nlocal material = "SurfaceAppearance"\nlocal equip = "Equip"\nlocal portal = "Portal"\nlocal battle = "Attack"\nlocal shop = "Shop"\nlocal openChest = "ProximityPrompt"\nlocal loot = "Reward"\n');
+    fs.writeFileSync(path.join(repoRoot,server),
+      'local saveService = "DataStoreService"\nlocal UpdateAsync = "UpdateAsync"\nlocal Inventory = "Inventory"\nlocal Equipped = "Equipped"\n');
+    const observed=inspectGameSources({repoRoot,sourceRoots:[sourceRoot]});
+    const plan=buildGameInternalAutoCompositionPlan({
+      gameId:'composer-demo',platform:'ROBLOX',repoRoot,sourceRoot,sourceObservation:observed,
+      design:{identity:'Demo',interfacePlan:{main:'lobby/inventory'}}
+    });
+    assert.equal(plan.components.find(c=>c.id==='LOBBY').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='CUSTOMIZATION').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='MATERIAL').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='INVENTORY').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.ok(plan.components.find(c=>c.id==='UI').responsibleFiles.includes(client));
+    assert.equal(plan.worldGraph.enabled,true);
+    assert.equal(plan.worldGraph.runtimeTraversalVerified,false);
+    assert.equal(plan.uiModeSelection.combat.length>0,true);
+    assert.equal(plan.stateChain.applicable,true);
+    assert.deepEqual(plan.stateChain.checks.map(c=>c.id),['ACQUIRE','STORE','EQUIP','STAT_AND_APPEARANCE','SAVE','RECONNECT_RESTORE']);
+    assert.ok(plan.stateChain.checks.every(c=>c.passed===false));
+    assert.equal(plan.sharedAssetSelection.noNewAssetGeneration,true);
+    assert.equal(plan.runtimeVerified,false);
+    const directive=buildGameSpecificBuildUpDirective({gameId:'composer-demo',gameName:'Composer',
+      platform:'ROBLOX',repoRoot,sourceRoot,sourceObservation:observed,designRecord:{identity:'Demo'}});
+    assert.equal(directive.gameInternalAutoComposition.gameId,'composer-demo');
+    assert.match(directivePrompt(directive),/GAME_INTERNAL_AUTO_COMPOSITION:/);
+    assert.match(directivePrompt(directive),/AUTO_COMPOSITION_RULE:/);
+  }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
+});
+
+test('auto composition refuses phantom UI and cross-game source while preserving source-only quality state',()=>{
+  const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-compose-isolation-'));
+  try{
+    const one='roblox-games/one',two='roblox-games/two';
+    fs.mkdirSync(path.join(repoRoot,one),{recursive:true});
+    fs.mkdirSync(path.join(repoRoot,two),{recursive:true});
+    fs.writeFileSync(path.join(repoRoot,one,'Game.luau'),'local currentGame = "attack"\n');
+    fs.writeFileSync(path.join(repoRoot,two,'Game.luau'),'local ScreenGui = "ScreenGui"\nlocal inventory="inventory"\nlocal lobby="Lobby"\n');
+    const observed=inspectGameSource({repoRoot,sourceRoot:one});
+    const polluted={...observed,topFiles:[...observed.topFiles,{file:two+'/Game.luau',score:999}]};
+    const p=buildGameInternalAutoCompositionPlan({gameId:'one',repoRoot,sourceRoot:one,
+      sourceObservation:polluted,design:{interfacePlan:{ui:'inventory',hub:'lobby'}}});
+    assert.equal(p.components.find(c=>c.id==='UI').state,'REVIEW_REQUIRED_NO_SOURCE');
+    assert.equal(p.components.find(c=>c.id==='INVENTORY').state,'REVIEW_REQUIRED_NO_SOURCE');
+    assert.equal(p.components.find(c=>c.id==='LOBBY').state,'REVIEW_REQUIRED_NO_SOURCE');
+    assert.deepEqual(p.uiModeSelection.combat,[]);
+    assert.equal(p.worldGraph.enabled,false);
+    assert.equal(p.stateChain.applicable,false);
+    assert.equal(p.implementationProven,false);
+    assert.equal(p.passed,false);
+  }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
 });
