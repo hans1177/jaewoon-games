@@ -65,3 +65,18 @@ test('restored deleted roadmap is blocked',()=>{
     assert.throws(()=>validateSharedWorkerContext({root:f.root}),/DELETED_ROADMAP_REAPPEARED/);
   } finally {fs.rmSync(f.root,{force:true,recursive:true});}
 });
+
+test('proposed single policy is fingerprinted without gaining execution authority',()=>{
+  const f=fixture();
+  try {
+    const source=JSON.parse(fs.readFileSync('company-learning/owner-single-policy.json','utf8'));
+    f.write('company-learning/owner-single-policy.json',source);
+    const result=validateSharedWorkerContext({root:f.root});
+    assert.match(result.proposalSha256,/^[a-f0-9]{64}$/);
+    assert.equal(result.proposalStatus,'REVIEW_REQUIRED_NOT_EXECUTION_AUTHORITY');
+    assert.equal(result.policyAuthorityVerified,false);
+    source.status='ACTIVE';
+    f.write('company-learning/owner-single-policy.json',source);
+    assert.throws(()=>validateSharedWorkerContext({root:f.root}),/SINGLE_POLICY_PROPOSAL_STATE_INVALID/);
+  } finally {fs.rmSync(f.root,{force:true,recursive:true});}
+});
