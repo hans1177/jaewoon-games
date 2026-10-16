@@ -17,7 +17,7 @@ test('Rojo source owns companion module; exact title preserves internal save ide
   assert.match(config, /GameId\s*=\s*"simple-rpg"/);
   assert.match(config, /GameName\s*=\s*"대충알피지"/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
-  assert.doesNotMatch(client, /Instance\\.new\\("ScreenGui"\\)/);
+  assert.doesNotMatch(client, /Instance\.new\("ScreenGui"\)/);
   assert.equal(project.tree.ReplicatedStorage.Shared.CuratedUiTemplates.$className, 'Folder');
 });
 
@@ -127,7 +127,7 @@ test('timed crafting uses actual persisted inventory, tech and server station va
   assert.ok(server.includes('civIncrease(player, recipe.OutputField, recipe.OutputAmount)'));
   assert.ok(server.includes('pendingTimedCraft[player] = nil'));
   assert.ok(server.includes('race.ID == 24 and (best.Type == "Stone"'));
-  assert.match(client, /craftRequestRemote:FireServer\\(recipeId\\)/);
+  assert.match(client, /craftRequestRemote:FireServer\(recipeId\)/);
   assert.match(client, /action == "CivTimedCraft"/);
 });
 
@@ -142,7 +142,7 @@ test('24-race reserved multiverse teleport is gated by canonical research and sa
   assert.ok(server.includes('TeleportService:TeleportAsync(game.PlaceId, {player}, options)'));
   assert.ok(server.includes('player:GetJoinData()'));
   assert.ok(server.includes('readNumber(player, "CivTech", 0) >= 72'));
-  assert.match(client, /portalTeleportRemote:FireServer\\(destination\\)/);
+  assert.match(client, /portalTeleportRemote:FireServer\(destination\)/);
   assert.doesNotMatch(client, /civButton\(civMenuRail, "MultiverseMenu"/);
   assert.match(client, /key == Enum.KeyCode.C then/);
   assert.match(client, /key == Enum.KeyCode.E then/);
@@ -342,56 +342,56 @@ test('monster alert clears immediately when a player leaves its habitat', () => 
 });
 
 test('all homemade Roblox HUD, lobby, menu and mockup factories were removed', () => {
-  assert.doesNotMatch(client, /Instance\\.new\\("(ScreenGui|Frame|TextButton|TextLabel|ScrollingFrame|ImageLabel|ImageButton|UIStroke|UIGradient|UICorner)"\\)/);
-  assert.doesNotMatch(client, /RobloxCommonUI|CommonUI\\./);
+  assert.doesNotMatch(client, /Instance\.new\("(ScreenGui|Frame|TextButton|TextLabel|ScrollingFrame|ImageLabel|ImageButton|UIStroke|UIGradient|UICorner)"\)/);
+  assert.doesNotMatch(client, /RobloxCommonUI|CommonUI\./);
   assert.doesNotMatch(client, /CivilizationHud|ApprovedScopeHud|ParchmentWelcome|CivilizationMenuToggle|EquipmentPreview|ParchmentAssetSurface|WoodAssetGrain/);
-  assert.doesNotMatch(client, /civButton\\(|civLabel\\(|civOpen\\(|autoCombatToggle/);
+  assert.doesNotMatch(client, /civButton\(|civLabel\(|civOpen\(|autoCombatToggle/);
   assert.equal(project.tree.ReplicatedStorage.Shared.CuratedUiTemplates.$className, 'Folder');
 });
 
 test('only visibly textured, licensed and owner-reviewed external GUI can render', () => {
-  assert.match(client, /local function validUiTemplate\\(template: Instance\\): boolean/);
+  assert.match(client, /local function validUiTemplate\(template: Instance\): boolean/);
   for (const marker of ['CuratedExternalAsset', 'VisualQualityApproved', 'LicenseVerified', 'VerifiedRobloxAssetId', 'MainHUD']) {
     assert.ok(client.includes(marker), marker);
   }
-  assert.match(client, /descendant:IsA\\("ImageLabel"\\) or descendant:IsA\\("ImageButton"\\)/);
-  assert.match(client, /imported.Parent = player:WaitForChild\\("PlayerGui"\\)/);
-  assert.match(client, /if hud or not validUiTemplate\\(template\\) or not template:IsA\\("ScreenGui"\\) then return end/);
-  assert.doesNotMatch(client, /Instance\\.new\\("ScreenGui"\\)/);
+  assert.match(client, /descendant:IsA\("ImageLabel"\) or descendant:IsA\("ImageButton"\)/);
+  assert.match(client, /imported.Parent = player:WaitForChild\("PlayerGui"\)/);
+  assert.match(client, /if hud or not validUiTemplate\(template\) or not template:IsA\("ScreenGui"\) then return end/);
+  assert.doesNotMatch(client, /Instance\.new\("ScreenGui"\)/);
 });
 
 test('curated external UI retains server-verified research, trade, crafting and travel', () => {
-  assert.match(client, /invokeExternalAction\\(action, argument\\)/);
+  assert.match(client, /invokeExternalAction\(action, argument\)/);
   assert.match(client, /GameAction/);
-  assert.match(client, /research:InvokeServer\\(id\\)/);
-  assert.match(client, /craftRequestRemote:FireServer\\(recipeId\\)/);
-  assert.match(client, /portalTeleportRemote:FireServer\\(destination\\)/);
-  assert.match(client, /trade:FireServer\\("Snapshot", 0, false, "Silver"\\)/);
-  assert.match(client, /remote:FireServer\\("CivTravel", destination\\)/);
-  assert.match(client, /remote:FireServer\\(action, raceId\\)/);
-  assert.match(client, /remote:FireServer\\(action, tone\\)/);
-  assert.match(client, /remote:FireServer\\(action, value\\)/);
+  assert.match(client, /research:InvokeServer\(id\)/);
+  assert.match(client, /craftRequestRemote:FireServer\(recipeId\)/);
+  assert.match(client, /portalTeleportRemote:FireServer\(destination\)/);
+  assert.match(client, /trade:FireServer\("Snapshot", 0, false, "Silver"\)/);
+  assert.match(client, /remote:FireServer\("CivTravel", destination\)/);
+  assert.match(client, /remote:FireServer\(action, raceId\)/);
+  assert.match(client, /remote:FireServer\(action, tone\)/);
+  assert.match(client, /remote:FireServer\(action, value\)/);
   assert.match(client, /marketUpdate.OnClientEvent:Connect/);
   assert.match(client, /inventoryUpdate.OnClientEvent:Connect/);
   assert.match(client, /techUpdate.OnClientEvent:Connect/);
-  assert.match(server, /GetDataStore\\("simple-rpg-development-v1"\\)/);
+  assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
 
 test('native controls and mobile combat remain available even without a GUI', () => {
   assert.match(client, /UserInputService.InputBegan:Connect/);
-  assert.match(client, /ContextActionService:BindAction\\("RpgPrimaryAction"/);
+  assert.match(client, /ContextActionService:BindAction\("RpgPrimaryAction"/);
   assert.match(client, /UserInputService.TouchTapInWorld:Connect/);
-  assert.match(client, /autoCombat:FireServer\\("AutoAttack", model\\)/);
-  assert.match(client, /autoCombat:FireServer\\("SetEnabled", autoCombatEnabled\\)/);
-  assert.match(client, /parry:FireServer\\(\\)/);
-  assert.match(client, /dodge:FireServer\\(\\)/);
-  assert.match(client, /foundation:FireServer\\("CAMERA_READY"\\)/);
-  assert.doesNotMatch(client, /:TakeDamage\\(|DataStoreService|store:UpdateAsync/);
+  assert.match(client, /autoCombat:FireServer\("AutoAttack", model\)/);
+  assert.match(client, /autoCombat:FireServer\("SetEnabled", autoCombatEnabled\)/);
+  assert.match(client, /parry:FireServer\(\)/);
+  assert.match(client, /dodge:FireServer\(\)/);
+  assert.match(client, /foundation:FireServer\("CAMERA_READY"\)/);
+  assert.doesNotMatch(client, /:TakeDamage\(|DataStoreService|store:UpdateAsync/);
 });
 
 test('handmade creature poses stay removed, imported mesh movement remains', () => {
   assert.doesNotMatch(client, /creatureMotionLimbNames|creatureImportedRig|creatureTelegraphHighlights|civPreviewStyles/);
-  assert.match(client, /observed\\[enemy\\] = \\{Visual = visual, Root = core\\}/);
-  assert.match(client, /entry\\.Visual:PivotTo\\(entry\\.Root\\.CFrame \\* offset\\)/);
+  assert.match(client, /observed\[enemy\] = \{Visual = visual, Root = core\}/);
+  assert.match(client, /entry\.Visual:PivotTo\(entry\.Root\.CFrame \* offset\)/);
   assert.match(client, /CreatureVisualAssetId/);
 });
