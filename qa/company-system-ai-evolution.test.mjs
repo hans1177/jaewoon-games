@@ -595,14 +595,12 @@ test('external Roblox runtime failure preserves same immutable candidate without
   assert.ok(snapshot.development.rows.every(x=>x.unityF9IndependentRuntimeReviewRequired&&x.automaticPassClaim===false));
 });
 
-test('canonical reusable parent keeps final fan-in while successful games hand off without sibling completion',()=>{
+test('canonical parent preserves independent Roblox handoff, reusable Unity lane and final fan-in',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  for(const name of [
-    'company-development-roblox-runtime.yml','company-development-unity-runtime.yml'
-  ]){
-    assert.ok(workflow.includes('uses: ./.github/workflows/'+name),'missing canonical reusable workflow: '+name);
-    assert.ok(!workflow.includes('gh workflow run '+name),'duplicate API lane dispatch: '+name);
-  }
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"'));
+  assert.ok(workflow.includes('ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'));
+  assert.ok(workflow.includes('uses: ./.github/workflows/company-development-unity-runtime.yml'));
+  assert.ok(!workflow.includes('gh workflow run company-development-unity-runtime.yml'),'duplicate Unity API lane dispatch');
   assert.ok(workflow.includes('needs: [native-plan, dispatch-roblox, dispatch-unity]'));
   assert.ok(!workflow.includes('dispatch-unity-web-floor:'));
   assert.ok(!workflow.includes('dispatch-unity-web-bootstrap:'));
