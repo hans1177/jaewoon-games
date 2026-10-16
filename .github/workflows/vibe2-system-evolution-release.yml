@@ -140,6 +140,15 @@ jobs:
           git commit -m "vibe2: verified self architecture evolution ${TASK_ID}"
           git push origin "HEAD:$branch"
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "vibe2: self architecture evolution ${TASK_ID}" --body "Vibe self-architecture candidate. Verified base FAIL -> candidate PASS regression, full Vibe regression, security scan, exact writable scope, authority unchanged, gates unchanged. Direct main write: NO.")"
+          # The exact promotion PR must pass repository checks before Vibe merges it.
+          gh pr checks "$pr_url" --repo "$GITHUB_REPOSITORY" --watch --fail-fast --interval 10
+          expected_head="$(git rev-parse HEAD)"
+          actual_head="$(gh pr view "$pr_url" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq '.headRefOid')"
+          test "$expected_head" = "$actual_head" || { echo 'SYSTEM_EVOLUTION_PR_HEAD_DRIFT' >&2; exit 1; }
+          git fetch origin main --quiet
+          for file in "${changed[@]}"; do
+            [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$file")" ] || { echo "SYSTEM_EVOLUTION_MAIN_DRIFT_AFTER_QA=$file" >&2; exit 1; }
+          done
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
           git fetch origin main --quiet
           for file in "${changed[@]}"; do git diff --quiet "$CANDIDATE_SHA" origin/main -- "$file"; done
