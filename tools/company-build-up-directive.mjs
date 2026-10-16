@@ -1534,6 +1534,132 @@ function buildPlayerFacingInspectionContract({gameId,source,states,responsibleFi
   };
 }
 
+// [기존 BUILD_UP] 게임 내부 구성 자동 판단: 실제 게임 코드에 이미 존재하는 기능만 연결한다.
+// 분석 결과는 source signature이며 실제 동작/플랫폼 적용 증거는 아니다.
+export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX',repoRoot=process.cwd(),sourceRoot='',sourceObservation={},design={}}={}){
+  const roots=uniq(sourceObservation?.sourceRoots?.length?sourceObservation.sourceRoots:[sourceRoot||sourceObservation?.sourceRoot])
+    .map(posix).filter(Boolean);
+  const repo=path.resolve(repoRoot);
+  const validRoots=[];
+  for(const root of roots){
+    const full=path.resolve(repo,root),relative=path.relative(repo,full);
+    if(!relative||relative.startsWith('..')||path.isAbsolute(relative))continue;
+    try{
+      const actual=fs.realpathSync(full),original=fs.realpathSync(repo);
+      if(fs.statSync(actual).isDirectory()&&(actual.startsWith(original+path.sep)))validRoots.push(actual);
+    }catch{}
+  }
+  const topFiles=(sourceObservation?.topFiles||[]).slice(0,24);
+  const roles=Object.freeze({
+    LOBBY:/\b(lobby|hub|main.?menu|start.?game|start.?screen)\b/i,
+    CUSTOMIZATION:/customiz|avatar|appearance|skintone|cosmetic|outfit|race.?select|character.?select|wardrobe/i,
+    MATERIAL:/materialservice|surfaceappearance|materialvariant|textureid|pbr|roughness|metalness|\.Material\b/i,
+    INVENTORY:/\binventory\b|backpack|itemslot|hotbar|item.?stack/i,
+    EQUIPMENT:/\bequip(?:ped|ment)?\b|unequip|gear.?slot|armor.?slot/i,
+    UI:/screengui|screenui|canvas|hud\b|ui.?layout|button|menu.?panel|\.Activated\b/i,
+    WORLD:/teleport|portal|region|zone|checkpoint|waypoint|spawnpoint|destination/i,
+    INTERACTION:/proximityprompt|clickdetector|interact|pickup|collect|open.?chest/i,
+    REWARD:/\bdrop\b|reward|loot|pickup|collect|grant.?item/i,
+    SAVE:/datastore|GetAsync|UpdateAsync|SetAsync|SaveAsync|load.?data|save.?data|persist/i,
+    COMBAT:/\bcombat\b|\battack\b|\bdamage\b|parry|dodge|skill.?cast/i,
+    SHOP:/\bshop\b|merchant|vendor|purchase|buy.?item|trade.?request/i
+  });
+  const evidence=Object.fromEntries(Object.keys(roles).map(key=>[key,[]]));
+  for(const entry of topFiles){
+    const file=posix(entry?.file);
+    if(!file||file.split('/').some(part=>part==='.'||part==='..')||file.startsWith('/'))continue;
+    const full=path.resolve(repo,file);
+    if(!validRoots.some(root=>full.startsWith(root+path.sep)))continue;
+    try{
+      const actual=fs.realpathSync(full);
+      if(actual!==full||!validRoots.some(root=>actual.startsWith(root+path.sep)))continue;
+      const stat=fs.statSync(actual);
+      if(!stat.isFile()||stat.size>2*1024*1024||!/\.(?:luau?|js|mjs|tsx?|cs|gd|html|vue|json)$/i.test(file))continue;
+      const contents=fs.readFileSync(actual,'utf8');
+      for(const [key,pattern] of Object.entries(roles))
+        if(pattern.test(contents))evidence[key].push(file);
+    }catch{}
+  }
+  const found=key=>evidence[key].length>0;
+  const targets=Object.fromEntries(Object.entries(evidence).map(([key,files])=>[key,Object.freeze(uniq(files).slice(0,6))]));
+  const designText=JSON.stringify({
+    identity:design?.identity,genre:design?.genre,coreLoop:design?.coreLoop,
+    signatureSystems:design?.signatureSystems,interfacePlan:design?.interfacePlan
+  }).slice(0,8000);
+  const designDemand={
+    LOBBY:/lobby|hub|로비|허브/i.test(designText),
+    CUSTOMIZATION:/customiz|avatar|커스터마이징|외형/i.test(designText),
+    INVENTORY:/inventory|인벤토리|장비창/i.test(designText),
+    UI:/hud|interface|menu|메뉴|화면/i.test(designText)
+  };
+  const componentIds=['LOBBY','CUSTOMIZATION','MATERIAL','INVENTORY','EQUIPMENT','UI','WORLD','INTERACTION','SHOP'];
+  const components=componentIds.map(key=>Object.freeze({
+    id:key,
+    state:found(key)?'EXISTING_SOURCE_CONNECTION_CANDIDATE':designDemand[key]?'REVIEW_REQUIRED_NO_SOURCE':'NOT_APPLICABLE_WITHOUT_SOURCE',
+    responsibleFiles:targets[key],requiredByDesign:designDemand[key]===true,
+    useExistingGameStateOnly:true,createPlaceholderUi:false,
+    implementationProven:false,runtimeVerified:false
+  }));
+  const contextualUi=Object.freeze({
+    combat:found('UI')&&found('COMBAT')?Object.freeze(['HEALTH_STATUS','SKILL_AND_DODGE_FROM_EXISTING_BINDINGS','DANGER_FEEDBACK']):Object.freeze([]),
+    lobby:found('UI')&&found('LOBBY')?Object.freeze(['EXISTING_GAME_ENTRY','PARTY_SHOP_PORTAL_ONLY_WHEN_IMPLEMENTED']):Object.freeze([]),
+    inventory:found('UI')&&found('INVENTORY')?Object.freeze(['OWNED_ITEM_LIST','COMPARE_EQUIP_ONLY_WHEN_IMPLEMENTED','SCROLL_CLOSE_REOPEN']):Object.freeze([]),
+    mobile:['SAFE_AREA','TOUCH_TARGET_CLEARANCE','NO_OVERLAPPING_ACTIONS','MODAL_INPUT_CONSUMED','LANDSCAPE_PORTRAIT_REVIEW'],
+    noDeadButtons:true,noSyntheticGameplayActions:true,
+    resizeValidationState:'RUNTIME_VIEWPORT_QA_PENDING'
+  });
+  const worldGraph=Object.freeze({
+    enabled:found('WORLD'),
+    nodesDiscoveredFromExactRuntime:false,
+    sourceFiles:targets.WORLD,
+    entryFiles:targets.LOBBY,
+    interactionFiles:targets.INTERACTION,
+    edges:found('WORLD')&&found('LOBBY')?[Object.freeze({
+      from:'EXISTING_ENTRY',to:'EXISTING_WORLD_DESTINATION',
+      sourceEvidence:targets.WORLD[0],state:'SOURCE_ROUTE_CANDIDATE_NOT_WALKABILITY_PROOF'
+    })]:[],
+    requiredChecks:['SPAWN_TO_EXISTING_DESTINATIONS','PORTAL_OR_DOOR_SERVER_AUTHORITY','RETURN_PATH','BLOCKED_PATH','RESPAWN_ROUTE'],
+    inaccessibleAreasNotInvented:true,runtimeTraversalVerified:false
+  });
+  const steps=[
+    ['ACQUIRE',found('REWARD')||found('INTERACTION'),[...targets.REWARD,...targets.INTERACTION]],
+    ['STORE',found('INVENTORY'),targets.INVENTORY],
+    ['EQUIP',found('EQUIPMENT'),targets.EQUIPMENT],
+    ['STAT_AND_APPEARANCE',found('EQUIPMENT')&&found('CUSTOMIZATION'),[...targets.EQUIPMENT,...targets.CUSTOMIZATION]],
+    ['SAVE',found('SAVE'),targets.SAVE],
+    ['RECONNECT_RESTORE',found('SAVE')&&found('INVENTORY'),[...targets.SAVE,...targets.INVENTORY]]
+  ];
+  const stateChain=Object.freeze({
+    applicable:found('INVENTORY'),
+    checks:steps.map(([id,exists,files])=>Object.freeze({
+      id,state:exists?'SOURCE_SIGNATURE_FOUND_QA_PENDING':'MISSING_SOURCE_EVIDENCE',
+      responsibleFiles:Object.freeze(uniq(files).slice(0,5)),passed:false
+    })),
+    needsAuthoritativeInventoryState:true,
+    preserveSaveSchema:true,preserveEconomyAndCombatRules:true,
+    runtimeVerified:false,qaPassed:false
+  });
+  return Object.freeze({
+    version:1,gameId:clean(gameId),platform:clean(platform).toUpperCase(),
+    sourceTreeFingerprint:clean(sourceObservation?.sourceTreeFingerprint)||null,
+    sourceOnlyEvidence:true,applicableGameFeaturesOnly:true,
+    components:Object.freeze(components),sourceFilesByRole:Object.freeze(targets),
+    uiModeSelection:contextualUi,worldGraph,stateChain,
+    sharedAssetSelection:Object.freeze({
+      registry:'company-asset-library.json',archives:'assets/asset-manifest.json#sharedOriginalArchives',
+      ui:'assets/roblox/common-ui-v1/catalog.json',
+      materials:'assets/roblox/common-materials-v1/catalog.json',
+      equipment:'assets/roblox/common-character-gear-v1/catalog.json',
+      originalAssetsOnly:true,sourceHashAndLicenseRequired:true,
+      noNewAssetGeneration:true,roleAndTargetCompatibilityRequired:true,
+      gameBindingAndNativeRuntimeQaRequired:true
+    }),
+    editRule:'EDIT_EXISTING_RESPONSIBLE_GAME_FILES_ONLY',
+    requiredProof:['SOURCE_ANCHOR','EXISTING_GAME_STATE','REAL_EVENT_HANDLER','SERVER_AUTHORITY_WHERE_APPLICABLE','NATIVE_PLATFORM_AND_MOBILE_QA'],
+    implementationProven:false,runtimeVerified:false,passed:false
+  });
+}
+
 export function playerFacingInspectionPromptLines(contract={}, {focus='',generation=1}={}){
   const cases=Array.isArray(contract.cases)?contract.cases:[];
   if(!cases.length)return[];
@@ -2119,6 +2245,8 @@ export function directivePrompt(d={}){
     domainPriority,
     'VISUAL:',
     visual,
+    'GAME_INTERNAL_AUTO_COMPOSITION: '+JSON.stringify(d.gameInternalAutoComposition||{}),
+    'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI and world routes. Dynamic mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with actual authoritative state; a source signature alone never passes QA. No new asset generation or shadow system.',
     'PLAYER_FACING_INSPECTION_CONTRACT:',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
     `EXPERIENCE_BUILD_UP: ${JSON.stringify(d.experienceBuildUpContract||{})}`,
@@ -2627,6 +2755,7 @@ export function buildGameSpecificBuildUpDirective({
       generationLimit:null,
       shadowPipelineForbidden:true
     },
+    gameInternalAutoComposition:buildGameInternalAutoCompositionPlan({gameId:id,platform,repoRoot,sourceRoot,sourceObservation:source,design}),
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
     playerFacingInspectionContract:buildPlayerFacingInspectionContract({gameId:id,source,states,responsibleFiles:topFiles}),
     experienceBuildUpContract:buildExperienceBuildupContract({platform,design,source,focus}),
