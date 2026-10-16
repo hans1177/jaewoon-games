@@ -1994,7 +1994,8 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
             lastMovedAt = -100
             smoothedSpeed = 0
           end
-          -- 종료된 서버 명령 뒤 새 이동 증거 없이 계속 걷는 현상을 제한한다.
+          -- 블록 상태 해제 시 이미 만료된 최근 이동 신호는 사용하지 않는다.
+          recentlyMoved = creatureMotionPhase - lastMovedAt < 0.14
           realMoving = not teleported and not movementBlocked
             and (serverWalking or (recentlyMoved and smoothedSpeed > 0.35))
           if realMoving then
