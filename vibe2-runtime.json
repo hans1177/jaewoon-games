@@ -61,7 +61,6 @@
     ],
     "postReleaseFocusedDevelopment": "machine-policy-driven-per-game-persistent-caretaker",
     "sharedContextRequired": [
-      "company-learning/platform-release-roadmap.json",
       "company-learning/company-log-map.json",
       "company-learning/company-architecture-map.json"
     ],
@@ -167,6 +166,25 @@
         "LIVE_NEXT_REFILL_DISPATCHED_BEFORE_UNRELATED_COHORT_COMPLETION",
         "GRAPHICS_PRESENTATION_TASK_TRANSIENT_LOCK_REQUEUES_WITHOUT_FALSE_GRAPHICS_PASS"
       ]
+    },
+    "policyDependencyCleanup": {
+      "enabled": true,
+      "priority": "owner-directed",
+      "goal": "Remove references to the owner-retired company-learning/platform-release-roadmap.json and missing COMPANY_FLOW.md without weakening verification or security. Resolve real failing QA contracts and preserve evidence.",
+      "responsibleFiles": [
+        "qa/company-long-horizon-vision.test.mjs",
+        "qa/company-game-seed-flow.test.mjs",
+        "tools/vibe2-learning-pipeline-contract.mjs"
+      ],
+      "executionMode": "candidate-branch-only",
+      "conflictRule": "responsible-file-exclusive",
+      "acceptance": [
+        "No direct reads from retired policy paths in modified files",
+        "Tests and security gates must not be bypassed",
+        "No recreation of retired policy documents",
+        "All updates require QA and reviewed PR before main merge"
+      ],
+      "automaticMainMerge": false
     }
   },
   "continuous": {
