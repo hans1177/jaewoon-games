@@ -29,6 +29,11 @@ on:
         type: boolean
         required: false
         default: false
+      download_icons_vfx_npc:
+        description: 'CC0 아이템/특수 아이콘, 이펙트, 3D NPC 원본 다운로드 검증 보관'
+        type: boolean
+        required: false
+        default: false
       upload_actor_assets:
         description: '검증된 캐릭터·스켈레톤 CC0 GLB 9개만 등록 (범용 대체 모델 제외)'
         type: boolean
@@ -247,6 +252,98 @@ jobs:
           path: assets/external/simple-rpg/wildlife/manifest.json
           if-no-files-found: error
           retention-days: 14
+  download_icons_vfx_npc:
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_icons_vfx_npc == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-icons-vfx-npc]')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout original-asset repository
+        uses: actions/checkout@v4
+      - name: Fetch and validate CC0 icons FX NPC sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib,hashlib,zipfile,subprocess,json
+          from urllib.parse import quote
+          root=pathlib.Path('assets/external/simple-rpg/icons-vfx-npc')
+          root.mkdir(parents=True,exist_ok=True)
+          # (local name, real attachment, role, owner, license page, min actual files)
+          packs=[
+            ('generic-items.zip','kenney_genericItems_updatedCross.zip','item-icons','Kenney','generic-items',40),
+            ('rpg-inventory.zip','rpg_inventory.zip','item-icons','Kit','2d-rpg-item-icons',5),
+            ('fantasy-rpg-icons.zip','fantasy_rpg_icons.zip','item-icons','Drummyfish','fantasy-rpg-icons-0',15),
+            ('game-icons.zip','Kenney_gameIcons.zip','special-icons','Kenney','game-icons',40),
+            ('runes.zip','kenney_runepack.zip','special-icons','Kenney','rune-pack',30),
+            ('emotes.zip','kenney_emotesPack.zip','special-icons','Kenney','emotes-pack',40),
+            ('cursors.zip','kenney_cursor-pack.zip','special-icons','Kenney','cursor-pack-1',40),
+            ('ui-pack.zip','kenney_ui-pack.zip','special-icons','Kenney','ui-pack',40),
+            ('ui-adventure.zip','kenney_ui-pack-adventure.zip','special-icons','Kenney','ui-pack-adventure',40),
+            ('particles.zip','kenney_particlePack.zip','vfx','Kenney','particle-pack-80-sprites',40),
+            ('smoke.zip','smokeParticleAssets.zip','vfx','Kenney','smoke-particle-assets',30),
+            ('kenney-npc-1.zip','kenney_animated-characters-1.zip','characters-npc','Kenney','animated-characters-1',1),
+            ('kenney-npc-2.zip','kenney_animated-characters-2.zip','characters-npc','Kenney','animated-characters-2',1),
+            ('kenney-npc-3.zip','kenney_animated-characters-3.zip','characters-npc','Kenney','animated-characters-3',1),
+            ('cc0-npc-part3.zip','bravos_game_br_part_3.zip','characters-npc','byzmod3d','3d-character-pack',1),
+            ('cc0-npc-2023.zip','bravos_game_br_2023.zip','characters-npc','byzmod3d','3d-character-pack',1),
+            ('cc0-npc-2024.zip','bravos_game_br_2024.zip','characters-npc','byzmod3d','3d-character-pack',1)
+          ]
+          valid=[];failed=[]
+          for localname,filename,kind,owner,slug,minimum in packs:
+            dest=root/localname
+            url='https://opengameart.org/sites/default/files/'+quote(filename)
+            if not dest.exists():
+              result=subprocess.run(['curl','-fL','--retry','2','--retry-all-errors','--retry-delay','2','--connect-timeout','12','--max-time','120','-o',str(dest),url],stderr=subprocess.PIPE,stdout=subprocess.DEVNULL)
+              if result.returncode:
+                dest.unlink(missing_ok=True)
+                failed.append({'filename':localname,'cause':'HTTP_DOWNLOAD_FAILED','source':slug})
+                print('PACK_DOWNLOAD_FAILED',localname,flush=True)
+                continue
+            try:
+              if not 300<dest.stat().st_size<100_000_000:raise ValueError('ZIP_SIZE_INVALID')
+              if not zipfile.is_zipfile(dest):raise ValueError('NOT_ZIP')
+              with zipfile.ZipFile(dest) as z:
+                if len(z.infolist())>30000 or sum(i.file_size for i in z.infolist())>500_000_000:raise ValueError('ZIP_BOMB_GUARD')
+                if z.testzip() is not None:raise ValueError('CORRUPTED_ZIP')
+                if kind=='characters-npc':
+                  files={pathlib.PurePosixPath(i.filename).stem.lower() for i in z.infolist() if not i.is_dir() and i.filename.lower().endswith(('.fbx','.obj','.gltf','.glb','.blend','.dae','.3ds'))}
+                else:
+                  files={i.filename.lower() for i in z.infolist() if not i.is_dir() and i.filename.lower().endswith('.png')}
+                if len(files)<minimum:raise ValueError('ASSET_FILES_BELOW_MIN:'+str(len(files)))
+              valid.append({'filename':localname,'category':kind,'creator':owner,'license':'CC0-1.0','sourcePage':'https://opengameart.org/content/'+slug,'originalUrl':url,'sha256':hashlib.sha256(dest.read_bytes()).hexdigest(),'archiveBytes':dest.stat().st_size,'verifiedFileCount':len(files),'fileCountNotDistinctItems':True,'sourceOnly':True,'robloxImported':False})
+              print('PACK_VALIDATED',localname,len(files),flush=True)
+            except (ValueError,OSError,zipfile.BadZipFile) as ex:
+              dest.unlink(missing_ok=True)
+              failed.append({'filename':localname,'cause':str(ex),'source':slug})
+          kinds={x['category'] for x in valid}
+          manifest={'gameId':'simple-rpg','license':'CC0-1.0','sourceOnly':True,'robloxImported':False,'verifiedArchives':len(valid),'byCategory':{k:sum(x['verifiedFileCount'] for x in valid if x['category']==k) for k in sorted(kinds)},'packs':valid,'failed':failed}
+          (root/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('ASSET_CATEGORIES',sorted(kinds),'ARCHIVES',len(valid),'FAILED',len(failed),flush=True)
+          if not {'item-icons','special-icons','vfx','characters-npc'}.issubset(kinds):
+            raise SystemExit('REQUIRED_CATEGORY_NOT_DOWNLOADED')
+          PY
+      - name: Preserve validated external originals on main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/external/simple-rpg/icons-vfx-npc/
+          if ! git diff --cached --quiet; then
+            git commit -m 'assets: preserve CC0 RPG icons VFX NPC originals'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo 'CC0_ORIGINALS_STORED=assets/external/simple-rpg/icons-vfx-npc'
+      - name: Save verification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-rpg-icons-vfx-npc-evidence
+          path: assets/external/simple-rpg/icons-vfx-npc/manifest.json
+          if-no-files-found: error
+          retention-days: 14
   upload_actor_assets:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/'))) }}
     runs-on: ubuntu-latest
@@ -276,7 +373,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   publish:
-    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true)) }}
+    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-icons-vfx-npc]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true || inputs.download_icons_vfx_npc == true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
