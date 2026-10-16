@@ -25,6 +25,7 @@ const LOCOMOTION_STATES = Object.freeze(['move', 'walk', 'run', 'jump', 'fly', '
 const BLOCKED_LICENSE_WORDS = Object.freeze(['NC', 'unknown', '출처 불명', '재배포 제한']);
 function blockedLicense(license='') {
   const value = text(license);
+  if (!value) return true;
   const lower = value.toLowerCase();
   return BLOCKED_LICENSE_WORDS.some((blocked) => {
     const token = String(blocked).toLowerCase();
@@ -91,7 +92,10 @@ function actorMotionMode(asset, allAssets = []) {
 }
 
 function findCandidates(type, candidates) {
+  const seenIds = new Set();
   return candidates.filter((asset) => {
+    const id = text(asset?.id);
+    if (!id || seenIds.has(id)) return false;
     const tags = Array.isArray(asset?.tags) ? asset.tags.join(' ') : text(asset?.tags);
     const descriptor = `${asset?.id || ''} ${asset?.name || ''} ${tags}`;
     const declared = declaredTypes(asset);
@@ -103,6 +107,7 @@ function findCandidates(type, candidates) {
       if (!actorMotionMode(asset, candidates)) return false;
     }
 
+    seenIds.add(id);
     return true;
   }).map((asset) => ({
     type,
@@ -221,7 +226,12 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const assets = Array.isArray(manifest?.assets) ? manifest.assets : [];
   const candidates = assets.filter((asset) => {
     const license = text(asset?.license || asset?.policy || '');
-    return !blockedLicense(license);
+    const sources = [asset?.path, asset?.masterGlb, asset?.meshArtifact, asset?.robloxAssetId,
+      ...(Array.isArray(asset?.nativeArtifacts) ? asset.nativeArtifacts : [])];
+    const hasSource = sources.some((value) => Boolean(text(value)))
+      || Boolean(asset?.platformVariants && Object.keys(asset.platformVariants).length);
+    return Boolean(text(asset?.id)) && asset?.downloaded !== false
+      && hasSource && !blockedLicense(license);
   });
   const prototypePreset = choosePrototypePreset(request, presetCatalog);
   const production = buildProductionPlan(request, prototypePreset);
@@ -237,6 +247,8 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     matchedAssetIds:matched.filter((item) => item.type === type).map((item) => item.id),
     fallback:'none',
     replaceable:true,
+    sourceBindingRequired:true,
+    nativeRuntimeVerificationRequired:true,
   }));
   return Object.freeze({
     version:10,
@@ -250,6 +262,9 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     missingTypes:Object.freeze(missingTypes),
     binding:Object.freeze(binding),
     ready:missingTypes.length===0,
+    sourceBindingVerified:false,
+    nativeRuntimeVerified:false,
+    appliedToGame:false,
     animation:Object.freeze({
       required:true,
       actorAnimationRequired:true,

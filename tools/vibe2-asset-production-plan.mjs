@@ -5084,15 +5084,24 @@ export function buildVibeAssetProductionPlan({
     .filter(row=>row.required!==false)
     .map(row=>{
       const assetId=clean(row.assetId),sourceBound=Boolean(assetId&&actualGameConsumerIds.has(assetId));
+      // 이름·장부 등록만으로 연결하지 않는다. 원본 파일 증거와 native 사용 적격성을 함께 검사한다.
+      const sourceMaterialized=row.sourceFilesPresent===true&&Boolean((row.sourceFiles||[]).length)
+        &&Boolean(clean(row.sourceContentFingerprint));
+      const nativeSelectionReady=row.verified===true
+        &&(row.directBindingReady===true||row.adaptationReady===true);
       const status=!assetId||row.unresolved===true?'AUTHORING_REQUIRED'
+        :!sourceMaterialized?'SOURCE_ASSET_REQUIRED'
+        :!nativeSelectionReady?'SOURCE_BINDING_PROVENANCE_REQUIRED'
         :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
-        :row.sourceFilesPresent===false||!(row.sourceFiles||[]).length?'SOURCE_ASSET_REQUIRED'
         :'NATIVE_SOURCE_BINDING_REQUIRED';
       return freeze({
         requirementId:clean(row.requirementId)||null,assetId:assetId||null,
         family:clean(row.family),role:clean(row.role)||null,status,
         sourceBound,sourceFiles:freezeList(row.sourceFiles||[]),
         sourceHash:clean(row.sourceHash)||null,libraryVersion:Number(row.libraryVersion||0),
+        sourceFilesPresent:row.sourceFilesPresent===true,
+        sourceContentFingerprint:clean(row.sourceContentFingerprint)||null,
+        verifiedLibraryCandidate:row.verified===true,nativeSelectionReady,
         nativeRuntimeVerified:false,
         repairOwner:status==='AUTHORING_REQUIRED'||status==='SOURCE_ASSET_REQUIRED'
           ?'EXISTING_ASSET_DEVELOPMENT':'EXISTING_GAME_SOURCE_WORKER',
@@ -5146,6 +5155,7 @@ export function buildVibeAssetProductionPlan({
     actualSourceBoundCount:actualGameConsumerIds.size,
     selectedRequirementCount:automaticBindingTargets.length,
     pendingSourceBindingCount:automaticBindingTargets.filter(row=>row.status==='NATIVE_SOURCE_BINDING_REQUIRED').length,
+    provenanceRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BINDING_PROVENANCE_REQUIRED').length,
     authoringRequiredCount:automaticBindingTargets.filter(row=>['AUTHORING_REQUIRED','SOURCE_ASSET_REQUIRED'].includes(row.status)).length,
     runtimeQaRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BOUND_RUNTIME_QA_REQUIRED').length,
     glbMasterUpgradeCount:automaticBindingTargets.filter(row=>row.masterUpgradeReviewRequired===true).length,

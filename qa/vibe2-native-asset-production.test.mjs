@@ -4252,7 +4252,10 @@ test('flow asset requirements resolve through the latest company library and are
   assert.equal(auto.noNewQueue,true);
   assert.equal(auto.existingGraphicsProductionAndBuildUp,true);
   assert.equal(auto.verifiedRuntimeEvidenceRequiredBeforePositiveLearning,true);
-  assert.equal(auto.pendingSourceBindingCount+auto.authoringRequiredCount+auto.runtimeQaRequiredCount,auto.selectedRequirementCount);
+  assert.equal(auto.pendingSourceBindingCount+auto.provenanceRequiredCount+auto.authoringRequiredCount+auto.runtimeQaRequiredCount,auto.selectedRequirementCount);
+  assert.ok(auto.targets.every(row=>row.status!=='NATIVE_SOURCE_BINDING_REQUIRED'
+    ||(row.sourceFilesPresent===true&&Boolean(row.sourceContentFingerprint)
+      &&row.verifiedLibraryCandidate===true&&row.nativeSelectionReady===true)));
   assert.ok(auto.targets.every(row=>row.nativeRuntimeVerified===false&&row.protectedGameplayAuthority===true));
   const guidance=assetProductionGuidance(plan);
   assert.match(guidance,/VIBE AUTOMATIC GAME ASSET BINDING/);
