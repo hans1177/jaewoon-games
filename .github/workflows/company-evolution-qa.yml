@@ -294,7 +294,7 @@ jobs:
       - name: Validate homepage manager contract
         run: |
           set -euo pipefail
-          node qa/game-catalog-normalization.test.mjs
+          COMPANY_VERIFIED_POLICY_PATH=company-learning/platform-release-roadmap.json node qa/game-catalog-normalization.test.mjs
           node --test qa/homepage-manager-publication-order.test.mjs
 
       - name: Validate current artbook safety

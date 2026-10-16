@@ -447,7 +447,15 @@ test('Homepage Manager binds the central homepage policy fingerprint from self-Q
   assert.doesNotMatch(director,/Revalidate central homepage policy before publication/);
   assert.doesNotMatch(director,/HOMEPAGE_CENTRAL_POLICY_FINAL_SYNC=PASS/);
   assert.doesNotMatch(manage,/git checkout origin\/main -- tools\/company-homepage-platform-exposure-sync\.mjs/);
-  assert.match(manager,/compileHomepageCentralPolicy/);
+  assert.match(manager,/buildHomepagePlatformExposure/);
+  assert.doesNotMatch(manager,/LEGACY_CENTRAL_POLICY_REMOVED/);
+  assert.match(manage,/loadCentralPolicySnapshot\(\{required:true\}\)/);
+  assert.match(director,/loadCentralPolicySnapshot\(\{required:true\}\)/);
+  assert.doesNotMatch(manage,/worker-shared-context\.json/);
+  assert.doesNotMatch(director,/worker-shared-context\.json/);
+  assert.match(manage,/HOMEPAGE_SUPPORTED_PLATFORMS_JSON/);
+  assert.match(manage,/node tools\/company-homepage-platform-exposure-sync\.mjs[^\n]*company-learning\/platform-release-roadmap\.json/);
+  assert.match(manage,/COMPANY_VERIFIED_POLICY_PATH=company-learning\/platform-release-roadmap\.json node qa\/game-catalog-normalization\.test\.mjs/);
   assert.match(manager,/centralPolicyFingerprint===homepageCentral\.fingerprint/);
 });
 
