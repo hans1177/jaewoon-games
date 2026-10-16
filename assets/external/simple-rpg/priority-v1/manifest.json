@@ -33,9 +33,25 @@
     "05-environment-sfx": {
       "packs": 11,
       "fileCandidates": 433
+    },
+    "06-arthropods": {
+      "packs": 1,
+      "fileCandidates": 1
+    },
+    "07-wildlife": {
+      "packs": 3,
+      "fileCandidates": 3
+    },
+    "08-npc": {
+      "packs": 5,
+      "fileCandidates": 24
+    },
+    "09-buildings": {
+      "packs": 2,
+      "fileCandidates": 2
     }
   },
-  "verifiedPacks": 29,
+  "verifiedPacks": 40,
   "packs": [
     {
       "file": "bee-rigged.blend",
@@ -439,6 +455,160 @@
       "bytes": 11866164,
       "sourceFileCandidates": 1,
       "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "crab-animated-3d.zip",
+      "priority": "06-arthropods",
+      "sourceUrl": "https://opengameart.org/sites/default/files/crab.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/crab-low-poly-animated-3d-model",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "bf5a0c5c771d2be25903543eeb2cabdeea8f2b01b2c0ffe79a40fd9a78867909",
+      "bytes": 8296851,
+      "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "deer-male-rigged.blend",
+      "priority": "07-wildlife",
+      "sourceUrl": "https://opengameart.org/sites/default/files/deer1.blend",
+      "licenseSourceUrl": "https://opengameart.org/content/old-deer-male",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "729f47b10f29e13d128aa2e0a2a5ba47be40cb6593e1e86ac31e236e93bef003",
+      "bytes": 7710492,
+      "sourceFileCandidates": 1,
+      "validation": "blender_header_only",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "deer-female-rigged.blend",
+      "priority": "07-wildlife",
+      "sourceUrl": "https://opengameart.org/sites/default/files/doe.blend",
+      "licenseSourceUrl": "https://opengameart.org/content/deer-female",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "577b9e48ce7cee955c6dac1b0a70333eccdfcad3f11eaa1f96a15900b64ca25e",
+      "bytes": 5359688,
+      "sourceFileCandidates": 1,
+      "validation": "blender_header_only",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "rooster-rigged.zip",
+      "priority": "07-wildlife",
+      "sourceUrl": "https://opengameart.org/sites/default/files/rooster.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/rooster-animated",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "a8c9716b1d1e27df1faa7e83da05fb9e4c5088308116975fbdddfa1785a35917",
+      "bytes": 8023955,
+      "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "fantasy-rpg-npc-six.zip",
+      "priority": "08-npc",
+      "sourceUrl": "https://opengameart.org/sites/default/files/rpg_characters_-_nov_2020.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/lowpoly-rpg-characters",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "5399e0cfaf313ff362455de4086488d093465434b1b93b0ced649f3773a15fd7",
+      "bytes": 12852133,
+      "sourceFileCandidates": 12,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "old-lady-rigged.blend",
+      "priority": "08-npc",
+      "sourceUrl": "https://opengameart.org/sites/default/files/oldlady-v2.blend",
+      "licenseSourceUrl": "https://opengameart.org/content/old-lady",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "02e6acd66a07cdc1fb452516c87e8399b6a4b393b0501050b1b120fcb19e9b27",
+      "bytes": 14609456,
+      "sourceFileCandidates": 1,
+      "validation": "blender_header_only",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "knight-animated.zip",
+      "priority": "08-npc",
+      "sourceUrl": "https://opengameart.org/sites/default/files/Knight%20Character%20by%20%40Quaternius.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/lowpoly-animated-knight",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "36aed14d0e27282bd006982e00206a852b1d8c00fc72f95c2437d9b4b5dccdb9",
+      "bytes": 2452181,
+      "sourceFileCandidates": 9,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "knight-cartoon.zip",
+      "priority": "08-npc",
+      "sourceUrl": "https://opengameart.org/sites/default/files/Cartoon%20Medieval%20Knight.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/cartoon-medieval-knight",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "3a796cff133d5ac4155cd5accfef7435896d62474404849269e4a092641e22d1",
+      "bytes": 2071874,
+      "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "female-basic-rigged.zip",
+      "priority": "08-npc",
+      "sourceUrl": "https://opengameart.org/sites/default/files/female_basic_rigged.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/basic-female",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "0e506cc3066bdee918f09d50a92bd9672f0fe598950cd48cd75e2bbc89b27a42",
+      "bytes": 24755012,
+      "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "blacksmith-original.zip",
+      "priority": "09-buildings",
+      "sourceUrl": "https://opengameart.org/sites/default/files/75729_Blacksmith1Upload_blend.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/medieval-blacksmith",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "343c4f203d225bf9e4c731e0317d8d3871abc96e70b661526d57b9d96bdb6d1b",
+      "bytes": 10778600,
+      "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "blacksmith-interior.blend",
+      "priority": "09-buildings",
+      "sourceUrl": "https://opengameart.org/sites/default/files/medievalblacksmith.blend",
+      "licenseSourceUrl": "https://opengameart.org/content/medieval-blacksmith-interior",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "c5588328b81a545cb7c468bc3d23d49d00549ef1fc0e4acd34f4178a5c9b3691",
+      "bytes": 7625184,
+      "sourceFileCandidates": 1,
+      "validation": "blender_header_only",
       "sourceOnly": true,
       "robloxImported": false,
       "gameApplied": false
