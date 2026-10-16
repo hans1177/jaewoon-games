@@ -2719,6 +2719,12 @@ task.spawn(function()
             target = nil
           end
         end
+        -- 대상이 사라지거나 서식지 밖으로 벗어나면 경계를 즉시 해제한다.
+        -- 이전 대상의 경계 시간이 새 순찰/귀환을 붙잡지 않게 한다.
+        if not target then
+          enemy.AlertUserId = nil
+          enemy.AlertUntil = 0
+        end
         -- 일반 몬스터는 플레이어를 발견하면 먼저 경계한다. 같은 문명의
         -- 인접 몬스터가 이미 전투 중이면 경계 시간이 짧아진다.
         if target and enemy.Model:GetAttribute("IsRaidBoss") ~= true then
