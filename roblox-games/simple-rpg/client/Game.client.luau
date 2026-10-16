@@ -1949,6 +1949,7 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
         local gaitPhase = oldRootMotion and oldRootMotion.phase or 0
         local lastMovedAt = oldRootMotion and oldRootMotion.lastMovedAt or -100
         local smoothedSpeed = oldRootMotion and oldRootMotion.speed or 0
+        local effectiveGaitSpeed = 0
         if oldRootMotion then
           local displacement = rootPosition - oldRootMotion.position
           local planar = Vector3.new(displacement.X, 0, displacement.Z).Magnitude
@@ -2001,23 +2002,17 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           if realMoving then
             -- 서버가 명령한 이동 속도가 있으면 그것을 발걸음 주기에 사용한다.
             -- 로컬 위치가 4Hz로 복제되더라도 발이 지나치게 빠르게 움직이지 않는다.
-            local gaitSpeed = validCommandSpeed and commandedSpeed or smoothedSpeed
-            local cadenceSpeed = math.clamp(gaitSpeed > 0.35 and gaitSpeed or 4.5, 2.5, 12)
+            effectiveGaitSpeed = validCommandSpeed and commandedSpeed
+              or (smoothedSpeed > 0.35 and smoothedSpeed or 4.5)
+            local cadenceSpeed = math.clamp(effectiveGaitSpeed, 2.5, 12)
             gaitPhase += cadenceSpeed * math.min(elapsed, 0.12) * 1.4
           else
             smoothedSpeed = 0
           end
         end
-        -- 보행 위상과 보폭이 같은 서버 이동속도를 사용하도록 통일한다.
-        -- 서버 이동 명령이 없으면 마지막으로 관측한 속도로 부드럽게 복귀한다.
-        local motionSpeed = model:GetAttribute("MotionMoveSpeed")
-        local motionUntil = model:GetAttribute("MotionWalkingUntil")
-        local serverMotionActive = typeof(motionUntil) == "number"
-          and workspace:GetServerTimeNow() < motionUntil
-          and typeof(motionSpeed) == "number"
-          and motionSpeed > 0.35 and motionSpeed < 65
-        horizontalSpeed = realMoving and (serverMotionActive and motionSpeed
-          or (smoothedSpeed > 0.35 and smoothedSpeed or 4.5)) or 0
+        -- 보폭·발 높이는 같은 프레임의 보행 주기에 사용한 속도를 공유한다.
+        -- 속도 Attribute가 프레임 중간에 갱신돼도 다리 위상이 서로 어긋나지 않는다.
+        horizontalSpeed = realMoving and effectiveGaitSpeed or 0
         local motionHumanoid = model:FindFirstChildOfClass("Humanoid")
         local healthMotion = creatureHealthMotion[model]
         local healthNow = motionHumanoid and motionHumanoid.Health or 0
