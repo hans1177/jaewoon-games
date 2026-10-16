@@ -58,27 +58,8 @@ export function validateSharedWorkerContext({root=process.cwd(),expectedLogSha25
     if(value!==undefined && value!==hashes[key+'Sha256']) errors.push(key.toUpperCase()+'_SHA_MISMATCH');
   }
   if(errors.length) throw new Error('WORKER_CONTEXT_SYNC_FAILED:'+errors.join(','));
-  // 정책 후보 해시는 진단용이며 실행 권한을 생성하지 않는다.
-  const proposalPath='company-learning/owner-single-policy.json';
-  let proposalSha256=null;
-  let proposalStatus=null;
-  if(fs.existsSync(path.join(root,proposalPath))) {
-    try {
-      const proposal=readJson(root,proposalPath);
-      if(proposal.document.kind!=='OWNER_SINGLE_POLICY_PROPOSAL' ||
-         proposal.document.status!=='REVIEW_REQUIRED_NOT_EXECUTION_AUTHORITY') {
-        errors.push('SINGLE_POLICY_PROPOSAL_STATE_INVALID');
-      } else {
-        proposalSha256=proposal.sha256;
-        proposalStatus=proposal.document.status;
-      }
-    } catch { errors.push('SINGLE_POLICY_PROPOSAL_INVALID'); }
-  }
-  if(errors.length) throw new Error('WORKER_CONTEXT_SYNC_FAILED:'+errors.join(','));
   return {
     pass:true,
-    proposalSha256,
-    proposalStatus,
     scope:'RETAINED_THREE_DOCUMENT_INTEGRITY_ONLY',
     policyAuthorityVerified:false,
     deletedRoadmapRestored:false,
