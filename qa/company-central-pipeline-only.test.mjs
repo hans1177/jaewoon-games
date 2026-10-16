@@ -806,7 +806,7 @@ test('Roblox runtime planners reuse current central QA and keep responsibility-l
   const centralQa=read('.github/workflows/company-central-policy-contract-qa.yml');
 
   for(const testFile of [
-    'qa/company-shared-context.test.mjs',
+    'qa/company-four-docs-fingerprint.test.mjs',
     'qa/company-development-roblox-runtime.test.mjs',
     'qa/company-selected-platform-router.test.mjs',
     'qa/company-development-roblox-runtime-continuation.test.mjs',
@@ -837,7 +837,7 @@ test('Unity prepare delegates all contract tests to canonical QA and keeps only 
   const change=roadmap.changeRecord?.unityPlannerDuplicateContractQaRemoval20260927;
 
   for(const testFile of [
-    'qa/company-shared-context.test.mjs',
+    'qa/company-four-docs-fingerprint.test.mjs',
     'qa/company-selected-platform-router.test.mjs',
     'qa/company-development-unity-runtime.test.mjs',
     'qa/company-upper-platform-admission.test.mjs',
