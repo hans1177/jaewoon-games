@@ -4,14 +4,13 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import http from 'node:http';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 import { reviewSystemAiQaContract } from './company-system-ai-qa-contract-review.mjs';
 
 const clean=v=>String(v??'').trim();
-const MODEL=process.env.SYSTEM_AI_MODEL||process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+const MODEL=process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-2.5-flash';
 const TIMEOUT=Math.max(30000,Math.min(600000,Number(process.env.SYSTEM_AI_TIMEOUT_MS||360000)));
 const NUM_PREDICT=Math.max(4096,Math.min(16384,Number(process.env.SYSTEM_AI_NUM_PREDICT||8192)));
 const MAX_TOTAL_CONTEXT=420000;
@@ -35,7 +34,34 @@ function safeWritePath(file){const p=validateBasePath(file);if(GAME_SOURCE_PREFI
 export function validateSystemAiTaskPreflight(task={}){if(clean(task.status)!=='running')throw new Error('SYSTEM_AI_TASK_NOT_RESERVED');const responsibleFiles=unique(task.responsibleFiles).map(safeWritePath);if(!responsibleFiles.length)throw new Error('SYSTEM_AI_RESPONSIBLE_FILES_REQUIRED');const contextFiles=unique(task.contextFiles).map(safeReadPath);return{taskId:clean(task.id),responsibleFiles,contextFiles,infrastructureClass:'PREFLIGHT_PASS'};}
 function excerpt(file,patterns=[]){const text=fs.existsSync(file)?fs.readFileSync(file,'utf8'):'';if(text.length<=MAX_FILE_CONTEXT&&!patterns.length)return text;const lines=text.split('\n'),hits=[];for(let i=0;i<lines.length;i++)if(patterns.some(p=>lines[i].includes(p)))hits.push(i);if(!hits.length)return text.slice(0,MAX_FILE_CONTEXT);const ranges=[];for(const hit of hits.slice(0,12)){const a=Math.max(0,hit-55),b=Math.min(lines.length-1,hit+55),last=ranges.at(-1);if(last&&a<=last[1]+1)last[1]=Math.max(last[1],b);else ranges.push([a,b]);}return ranges.map(([a,b])=>`[LINES ${a+1}-${b+1}]\n${lines.slice(a,b+1).join('\n')}`).join('\n\n').slice(0,MAX_FILE_CONTEXT);}
 function parseModelJson(raw=''){const text=clean(raw).replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();const a=text.indexOf('{'),b=text.lastIndexOf('}');if(a<0||b<a)throw new Error('SYSTEM_AI_MODEL_JSON_MISSING');return JSON.parse(text.slice(a,b+1));}
-async function requestModel(prompt,{maxPredict=NUM_PREDICT}={}){const body=JSON.stringify({model:MODEL,prompt,stream:false,think:false,format:'json',options:{num_predict:maxPredict,temperature:.05}});return await new Promise((resolve,reject)=>{const req=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{let data='';res.setEncoding('utf8');res.on('data',x=>data+=x);res.on('end',()=>{try{const row=JSON.parse(data);if(row?.error)throw new Error(row.error);resolve(String(row?.response||''));}catch(e){reject(e);}});});req.setTimeout(TIMEOUT,()=>req.destroy(new Error('SYSTEM_AI_MODEL_TIMEOUT')));req.on('error',reject);req.end(body);});}
+async function requestModel(prompt,{maxPredict=NUM_PREDICT}={}){
+  const key=clean(process.env.GEMINI_API_KEY);
+  if(!key)throw new Error('SYSTEM_AI_GEMINI_KEY_MISSING_NO_LOCAL_FALLBACK');
+  const model=clean(process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-2.5-flash');
+  if(!/^gemini-[a-z0-9.-]+$/.test(model))throw new Error('SYSTEM_AI_GEMINI_MODEL_INVALID');
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),TIMEOUT);
+  try{
+    const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{
+      method:'POST',signal:controller.signal,
+      headers:{'content-type':'application/json','x-goog-api-key':key},
+      body:JSON.stringify({contents:[{role:'user',parts:[{text:String(prompt)}]}],
+        generationConfig:{temperature:.05,maxOutputTokens:Math.min(16384,Math.max(512,maxPredict)),responseMimeType:'application/json'}})
+    });
+    if(!response.ok){
+      if([402,403,429].includes(response.status))throw new Error('SYSTEM_AI_GEMINI_QUOTA_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+response.status);
+      throw new Error('SYSTEM_AI_GEMINI_HTTP_ERROR_NO_LOCAL_FALLBACK:'+response.status);
+    }
+    const data=await response.json();
+    const raw=(data.candidates?.[0]?.content?.parts||[]).filter(p=>typeof p.text==='string').map(p=>p.text).join('');
+    if(!raw.trim())throw new Error('SYSTEM_AI_GEMINI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
+    return raw;
+  }catch(error){
+    if(error?.name==='AbortError')throw new Error('SYSTEM_AI_GEMINI_TIMEOUT_NO_LOCAL_FALLBACK');
+    throw error;
+  }finally{clearTimeout(timer);}
+}
+
 function applyExactEdit(file,find,replace){const original=fs.readFileSync(file,'utf8'),first=original.indexOf(find);if(first<0)throw new Error(`SYSTEM_AI_FIND_MISSING:${file}`);if(original.indexOf(find,first+find.length)>=0)throw new Error(`SYSTEM_AI_FIND_NOT_UNIQUE:${file}`);fs.writeFileSync(file,original.slice(0,first)+replace+original.slice(first+find.length),'utf8');}
 function strategyHash(value){return crypto.createHash('sha256').update(String(value??''),'utf8').digest('hex');}
 function failedStrategyFingerprints(task={}){
