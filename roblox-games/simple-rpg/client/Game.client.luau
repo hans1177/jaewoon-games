@@ -4,33 +4,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local ContextActionService = game:GetService("ContextActionService")
 local player = Players.LocalPlayer
--- 시대별 연출은 각 플레이어 화면에서만 적용한다.
--- 서버 전역 Lighting 시간/날씨는 건드리지 않아 멀티플레이어의 시대 차이를 유지한다.
-local eraLighting = game:GetService("Lighting")
-local eraColor = eraLighting:FindFirstChild("CivilizationEraColor")
-if not eraColor or not eraColor:IsA("ColorCorrectionEffect") then
-  eraColor = Instance.new("ColorCorrectionEffect")
-  eraColor.Name = "CivilizationEraColor"
-  eraColor.Parent = eraLighting
-end
-local eraThemes = {
-  [1] = {TintColor = Color3.fromRGB(223, 205, 239), Saturation = -0.08, Contrast = 0.08},
-  [2] = {TintColor = Color3.fromRGB(214, 234, 206), Saturation = 0.04, Contrast = 0.06},
-  [3] = {TintColor = Color3.fromRGB(247, 220, 182), Saturation = 0.05, Contrast = 0.08},
-  [4] = {TintColor = Color3.fromRGB(211, 213, 225), Saturation = -0.06, Contrast = 0.12},
-  [5] = {TintColor = Color3.fromRGB(255, 238, 191), Saturation = 0.09, Contrast = 0.09},
-}
-local eraVisualTween = nil
-local function applyLocalEraTheme()
-  local era = math.clamp(math.floor(tonumber(player:GetAttribute("CivEra")) or 1), 1, 5)
-  local theme = eraThemes[era]
-  if eraVisualTween then eraVisualTween:Cancel() end
-  eraVisualTween = game:GetService("TweenService"):Create(
-    eraColor, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), theme)
-  eraVisualTween:Play()
-end
-player:GetAttributeChangedSignal("CivEra"):Connect(applyLocalEraTheme)
-task.defer(applyLocalEraTheme)
+-- Removed locally synthesized five-era color-grade presets. External environment art only.
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 local RaceData = require(Shared:WaitForChild("RaceData"))
@@ -354,23 +328,7 @@ local function playVerifiedLearningActionFeedback(control, serverConfirmed)
     verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
 
-  -- 메뉴 클릭은 버튼 응답만. 전투/카메라 연출은 서버가 확인한 해당 행동만 사용한다.
-  if serverConfirmed~=true then return end
-  local approvedScope=tostring(verifiedLearningPlayer:GetAttribute("LastApprovedScope")or""):upper()
-  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true))then return end
-
-  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
-  local camera = workspace.CurrentCamera
-  if camera then
-    local baseFov = camera.FieldOfView
-    verifiedLearningTweenService:Create(camera, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = math.clamp(baseFov + 3, 40, 100)}):Play()
-    task.delay(0.09, function()
-      if camera then verifiedLearningTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = baseFov}):Play() end
-    end)
-  end
-  end
-
-  -- Self-authored skill highlight, sparkles, particle sprites and lights deleted.
+  -- Input telemetry and button feedback remain; procedural combat/camera VFX removed.
 
 end
 
@@ -1525,455 +1483,48 @@ local function civActionMotion(_actionId, _button)
   return nil
 end
 local actionTweenService = game:GetService("TweenService")
--- 동료 및 몬스터의 기존 파츠를 클라이언트에서만 움직인다. 서버 판정과 위치는 그대로 둔다.
-local creatureMotionRunService = game:GetService("RunService")
-local creatureMotionPhase = 0
-local creatureMotionAccumulator = 0
-local creatureMotionSearchAt = 0
-local creatureMotionModels = {}
-local creatureMotionLimbNames = {"Left Arm", "Right Arm", "Left Leg", "Right Leg", "LeftLimb", "RightLimb"}
-local creatureMotionLimbBases = setmetatable({}, {__mode = "k"})
-local creatureMotionJointChecks = setmetatable({}, {__mode = "k"})
-local creatureTelegraphHighlights = setmetatable({}, {__mode = "k"})
-local creatureImportedRig = setmetatable({}, {__mode = "k"})
-local creatureRigDiagnostics = {}
-local creatureRigRetryAt = setmetatable({}, {__mode = "k"})
-local creatureRootMotion = setmetatable({}, {__mode = "k"})
-local creatureHealthMotion = setmetatable({}, {__mode = "k"})
-local creatureDeathMotion = setmetatable({}, {__mode = "k"})
-local creatureMotionLastSearchPosition = nil
-local creatureMotionLastSearchCharacter = nil
-local creatureMotionLastSearchRoot = nil
-local creatureMotionQueryParams = OverlapParams.new()
-creatureMotionQueryParams.FilterType = Enum.RaycastFilterType.Exclude
-creatureMotionRunService.RenderStepped:Connect(function(dt)
-  -- 화면 멈춤이나 앱 전환 뒤의 큰 dt가 모션 시계를 급격히 건너뛰지 않게 한다.
-  creatureMotionAccumulator += math.min(dt, 0.1)
-  if creatureMotionAccumulator < 1 / 20 then return end
-  creatureMotionPhase += creatureMotionAccumulator
-  creatureMotionAccumulator = 0
-  local character = player.Character
-  local viewer = character and character:FindFirstChild("HumanoidRootPart")
-  if not viewer then
-    -- 부활 중 이전 캐릭터의 몬스터 목록을 남기지 않는다.
-    creatureMotionLastSearchCharacter = nil
-    creatureMotionLastSearchRoot = nil
-    creatureMotionLastSearchPosition = nil
-    creatureMotionSearchAt = 0
-    table.clear(creatureMotionModels)
-    return
-  end
-  local movedSinceSearch = creatureMotionLastSearchPosition and (viewer.Position - creatureMotionLastSearchPosition).Magnitude > 35
-  local characterChanged = creatureMotionLastSearchCharacter ~= character or creatureMotionLastSearchRoot ~= viewer
-  if creatureMotionPhase >= creatureMotionSearchAt or movedSinceSearch or characterChanged then
-    creatureMotionSearchAt = creatureMotionPhase + 2
-    creatureMotionLastSearchPosition = viewer.Position
-    creatureMotionLastSearchCharacter = character
-    creatureMotionLastSearchRoot = viewer
-    table.clear(creatureMotionModels)
-    -- 플레이어의 새 캐릭터는 제외하고, 대시/포털 이동 직후 즉시 주변 대상을 갱신한다.
-    creatureMotionQueryParams.FilterDescendantsInstances = {character}
-    local nearbyParts = workspace:GetPartBoundsInRadius(viewer.Position, 85, creatureMotionQueryParams)
-    local seen = {}
-    for _, part in ipairs(nearbyParts) do
-      -- 몬스터 내부 장비/리그가 별도 Model로 감싸져 있어도 상위 소유 모델을 찾는다.
-      local model = part:FindFirstAncestorOfClass("Model")
-      while model and model ~= workspace do
-        if model:GetAttribute("CivilizationEnemy") == true
-          or model:GetAttribute("CompanionOwnerUserId") ~= nil then
-          if not seen[model] then
-            seen[model] = true
-            table.insert(creatureMotionModels, model)
+-- Legacy manually authored creature limb posing and mesh wobbling permanently removed.
+-- Imported external mesh models follow server hitboxes, retaining their original rig.
+local importedCreatureVisuals = {}
+local importedCreatureNextScan = 0
+local importedCreatureClock = 0
+game:GetService("RunService").RenderStepped:Connect(function(dt)
+  importedCreatureClock += math.min(dt, 0.1)
+  if importedCreatureClock >= importedCreatureNextScan then
+    importedCreatureNextScan = importedCreatureClock + 1.5
+    table.clear(importedCreatureVisuals)
+    local world = workspace:FindFirstChild("CivilizationWorlds")
+    local character = player.Character
+    local observerRoot = character and character:FindFirstChild("HumanoidRootPart")
+    if world and observerRoot then
+      local bounds = OverlapParams.new()
+      bounds.FilterType = Enum.RaycastFilterType.Exclude
+      bounds.FilterDescendantsInstances = {character}
+      for _, hit in ipairs(workspace:GetPartBoundsInRadius(observerRoot.Position, 100, bounds)) do
+        local enemy = hit:FindFirstAncestorOfClass("Model")
+        while enemy and enemy ~= world do
+          if enemy:GetAttribute("CivilizationEnemy") == true then
+            local visual = enemy:FindFirstChild("ImportedCreatureVisual")
+            local core = enemy:FindFirstChild("HumanoidRootPart")
+            if visual and visual:IsA("Model") and core and core:IsA("BasePart")
+              and enemy:GetAttribute("CreatureAssetSource") == "StudioImported"
+              and (tonumber(enemy:GetAttribute("CreatureVisualAssetId")) or 0) > 0 then
+              importedCreatureVisuals[enemy] = {visual = visual, root = core}
+            end
+            break
           end
-          break
+          enemy = enemy.Parent and enemy.Parent:FindFirstAncestorOfClass("Model")
         end
-        local parent = model.Parent
-        model = parent and (parent:IsA("Model") and parent or parent:FindFirstAncestorOfClass("Model"))
       end
     end
-    -- 검색 갱신 때만 가까운 모델 순서로 정렬한다.
-    -- 가까운 모델부터 처리해 30마리 제한에 걸려도 먼 몬스터가 먼저 선택되지 않는다.
-    local creatureDistanceSq = {}
-    for _, model in ipairs(creatureMotionModels) do
-      local root = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Root")
-      if root and root:IsA("BasePart") then
-        local offset = viewer.Position - root.Position
-        creatureDistanceSq[model] = offset:Dot(offset)
-      else
-        creatureDistanceSq[model] = math.huge
-      end
-    end
-    table.sort(creatureMotionModels, function(a, b)
-      return creatureDistanceSq[a] < creatureDistanceSq[b]
-    end)
   end
-  -- 화면 밖으로 나가거나 공격 준비가 끝난 적의 강조 이펙트를 즉시 정리한다.
-  for core, highlight in pairs(creatureTelegraphHighlights) do
-    local owner = core.Parent
-    if not owner or not owner.Parent or owner:GetAttribute("IsPreparingAttack") ~= true
-      or owner:GetAttribute("AIState") == "Stunned" then
-      highlight:Destroy()
-      creatureTelegraphHighlights[core] = nil
+  for enemy, entry in pairs(importedCreatureVisuals) do
+    if not enemy.Parent or not entry.visual.Parent or not entry.root.Parent then
+      importedCreatureVisuals[enemy] = nil
     else
-      local health = owner:FindFirstChildOfClass("Humanoid")
-      if health and health.Health <= 0 then
-        highlight:Destroy()
-        creatureTelegraphHighlights[core] = nil
-      end
-    end
-  end
-  local visible = 0
-  local camera = workspace.CurrentCamera
-  local viewportSize = camera and camera.ViewportSize
-  for _, model in ipairs(creatureMotionModels) do
-    if visible >= 30 then break end
-    if model.Parent and
-      (model:GetAttribute("CivilizationEnemy") == true or model:GetAttribute("CompanionOwnerUserId") ~= nil) then
-      -- 일부 몬스터 모델은 PrimaryPart가 없으므로 실제 루트 파츠로도 모션을 구동한다.
-      local rootPart = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Root")
-      local onScreen = false
-      if camera and rootPart and rootPart:IsA("BasePart") then
-        local viewportPoint = camera:WorldToViewportPoint(rootPart.Position)
-        -- 화면 가장자리 48px 여유로 몬스터 팔다리 모션이 갑자기 켜지고 꺼지는 현상을 줄인다.
-        onScreen = viewportPoint.Z > 0
-          and viewportPoint.X >= -48 and viewportPoint.X <= viewportSize.X + 48
-          and viewportPoint.Y >= -48 and viewportPoint.Y <= viewportSize.Y + 48
-      end
-      if rootPart and rootPart:IsA("BasePart") and onScreen and (viewer.Position - rootPart.Position).Magnitude <= 85 then
-        visible += 1
-        -- 서버 AI가 Combat 상태라도 제자리 공격 중이면 걷지 않는다.
-        -- 서버가 실제로 이동시킨 루트 좌표를 기준으로 보행 상태를 판정한다.
-        local oldRootMotion = creatureRootMotion[rootPart]
-        local rootPosition = rootPart.Position
-        local realMoving = false
-        local horizontalSpeed = 0
-        local gaitPhase = oldRootMotion and oldRootMotion.phase or 0
-        local lastMovedAt = oldRootMotion and oldRootMotion.lastMovedAt or -100
-        local smoothedSpeed = oldRootMotion and oldRootMotion.speed or 0
-        local effectiveGaitSpeed = 0
-        if oldRootMotion then
-          local displacement = rootPosition - oldRootMotion.position
-          local planar = Vector3.new(displacement.X, 0, displacement.Z).Magnitude
-          local elapsed = math.max(0.01, creatureMotionPhase - oldRootMotion.at)
-          horizontalSpeed = planar / elapsed
-          -- 루트가 네트워크에서 4Hz로 갱신되더라도 20Hz 보행이 멈추지 않게
-          -- 마지막 실제 이동 이후 짧은 시간 동안만 보행을 이어간다.
-          -- 서버의 짧은 이동 명령 사이에서도 움직임을 이어가되, 실제로
-          -- 멈췄거나 순간 이동한 경우에는 미끄러운 제자리 걸음을 막는다.
-          -- 원격 복제가 한 번에 도착해도 서버가 실제 보행을 명령한 동안은
-          -- 좌표 속도 급등만 무시하고 정상 보행 동작은 유지한다.
-          local walkingDeadline = model:GetAttribute("MotionWalkingUntil")
-          local commandedWalking = typeof(walkingDeadline) == "number"
-            and workspace:GetServerTimeNow() < walkingDeadline
-          local teleported = horizontalSpeed >= 65 and not commandedWalking
-          if horizontalSpeed > 0.35 and horizontalSpeed < 65 then
-            lastMovedAt = creatureMotionPhase
-            -- 원격 위치 복제가 한꺼번에 도착하는 경우 순간 속도가 커진다.
-            -- 서버가 짧게 이동시키는 NPC의 보행 주기는 현실적인 범위로 제한한다.
-            local observedSpeed = math.clamp(horizontalSpeed, 0, 12)
-            smoothedSpeed = smoothedSpeed * 0.65 + observedSpeed * 0.35
-          elseif teleported then
-            smoothedSpeed = 0
-            lastMovedAt = -100
-          end
-          local serverWalking = commandedWalking
-          local commandedSpeed = model:GetAttribute("MotionMoveSpeed")
-          local validCommandSpeed = serverWalking and typeof(commandedSpeed) == "number"
-            and commandedSpeed > 0.35 and commandedSpeed < 65
-          -- 보행 명령이 종료되면 위치 복제의 지연 프레임을 짧게만 허용한다.
-          local currentHumanoid = model:FindFirstChildOfClass("Humanoid")
-          local lastStrikeAt = model:GetAttribute("LastAttackAnimationAt")
-          local strikeAge = typeof(lastStrikeAt) == "number"
-            and workspace:GetServerTimeNow() - lastStrikeAt or math.huge
-          local strikeActive = strikeAge >= 0 and strikeAge < 0.32
-          local movementBlocked = model:GetAttribute("IsPreparingAttack") == true
-            or strikeActive
-            or model:GetAttribute("AIState") == "Stunned"
-            or (currentHumanoid ~= nil and currentHumanoid.Health <= 0)
-          if movementBlocked then
-            -- 공격 예고·기절 도중 관측된 위치 변위를 복귀 후 보행으로 오인하지 않는다.
-            lastMovedAt = -100
-            smoothedSpeed = 0
-          end
-          -- 공격/기절로 이동 기록을 지운 다음 현재 보행 여부를 판정한다.
-          local recentlyMoved = creatureMotionPhase - lastMovedAt < 0.14
-          realMoving = not teleported and not movementBlocked
-            and (serverWalking or (recentlyMoved and smoothedSpeed > 0.35))
-          if realMoving then
-            -- 서버가 명령한 이동 속도가 있으면 그것을 발걸음 주기에 사용한다.
-            -- 로컬 위치가 4Hz로 복제되더라도 발이 지나치게 빠르게 움직이지 않는다.
-            effectiveGaitSpeed = validCommandSpeed and commandedSpeed
-              or (smoothedSpeed > 0.35 and smoothedSpeed or 4.5)
-            local cadenceSpeed = math.clamp(effectiveGaitSpeed, 2.5, 12)
-            gaitPhase += cadenceSpeed * math.min(elapsed, 0.12) * 1.4
-          else
-            smoothedSpeed = 0
-          end
-        end
-        -- 보폭·발 높이는 같은 프레임의 보행 주기에 사용한 속도를 공유한다.
-        -- 속도 Attribute가 프레임 중간에 갱신돼도 다리 위상이 서로 어긋나지 않는다.
-        horizontalSpeed = realMoving and effectiveGaitSpeed or 0
-        local motionHumanoid = model:FindFirstChildOfClass("Humanoid")
-        local healthMotion = creatureHealthMotion[model]
-        local healthNow = motionHumanoid and motionHumanoid.Health or 0
-        if not healthMotion then
-          healthMotion = {health = healthNow, hitAt = -100}
-          creatureHealthMotion[model] = healthMotion
-        elseif healthNow < healthMotion.health and healthNow > 0 then
-          healthMotion.hitAt = creatureMotionPhase
-        end
-        healthMotion.health = healthNow
-        local hitElapsed = creatureMotionPhase - healthMotion.hitAt
-        local reactingToHit = hitElapsed >= 0 and hitElapsed < 0.28
-        local defeatedNow = motionHumanoid and healthNow <= 0
-        if defeatedNow and not creatureDeathMotion[model] then
-          creatureDeathMotion[model] = creatureMotionPhase
-        elseif not defeatedNow then
-          creatureDeathMotion[model] = nil
-        end
-        local deathElapsed = creatureDeathMotion[model] and (creatureMotionPhase - creatureDeathMotion[model]) or 0
-        local deathProgress = defeatedNow and math.clamp(deathElapsed / 0.5, 0, 1) or 0
-        creatureRootMotion[rootPart] = {
-          position = rootPosition, at = creatureMotionPhase, phase = gaitPhase,
-          speed = smoothedSpeed, lastMovedAt = lastMovedAt
-        }
-        -- 서버는 Patrol/Flee에서도 몬스터를 실제로 움직인다. AIState 문자열만으로
-        -- 걷기를 제한하면 이동 중에도 발이 고정되므로 실제 변위만 사용한다.
-        local moving = realMoving and healthNow > 0
-          and model:GetAttribute("AIState") ~= "Stunned"
-          and model:GetAttribute("IsPreparingAttack") ~= true
-        -- Studio에서 가져온 MeshPart 모델을 적 루트 위치에 붙여 이동 중에도 따라오게 한다.
-        -- 기본 모형·서버 히트박스는 건드리지 않고 표시 모델만 클라이언트에서 이동.
-        local importedVisual = model:FindFirstChild("ImportedCreatureVisual")
-        if importedVisual and importedVisual:IsA("Model")
-          and importedVisual:GetAttribute("ImportedVisualFollowRoot") == true then
-          -- 가져온 외형은 루트 좌표를 따라가며 걷기/공격 예고/기절 자세를 표시한다.
-          -- 실제 위치·공격 판정은 서버 몬스터 루트에서만 결정한다.
-          local state = model:GetAttribute("AIState")
-          local windingUp = model:GetAttribute("IsPreparingAttack") == true
-          local humanoid = model:FindFirstChildOfClass("Humanoid")
-          local down = humanoid and humanoid.Health <= 0
-          -- 모델마다 위상을 달리하고 실제 속도에 따라 보폭/주기를 조절한다.
-          -- 동일한 타이밍으로 모든 몬스터가 제자리 행진하던 문제를 줄인다.
-          local speedFactor = math.clamp(horizontalSpeed / 5, 0.55, 1.65)
-          -- 좌표 기반 위상은 이동할 때 매 프레임 변해 발이 튀므로 누적 보행 거리 사용.
-          local clock = gaitPhase
-          local stride = moving and not down and math.abs(math.sin(clock)) * 0.20 * speedFactor or 0
-          local roll = moving and not down and math.sin(clock) * 0.075 or 0
-          local attackStamp = model:GetAttribute("LastAttackAnimationAt")
-          local strikeElapsed = typeof(attackStamp) == "number"
-            and workspace:GetServerTimeNow() - attackStamp or math.huge
-          local striking = strikeElapsed >= 0 and strikeElapsed < 0.32
-          local strikeProgress = striking and math.sin(strikeElapsed / 0.32 * math.pi) or 0
-          local pitch = down and math.rad(65) * deathProgress or state == "Stunned" and math.rad(20)
-            or reactingToHit and math.rad(16) * (1 - hitElapsed / 0.28)
-            or striking and math.rad(-20) * strikeProgress
-            or windingUp and math.rad(-16)
-            or state == "Alert" and math.rad(-9)
-            or state == "ReturnHome" and math.rad(4) or 0
-          -- 리그 없는 일체형 메시도 정지 상태로 미끄러지지 않도록
-          -- 보행 때만 몸체를 기울이고 타격 순간에는 상체 반동을 준다.
-          local visualPose = importedVisual:GetAttribute("VisualPivotOffset")
-          if typeof(visualPose) ~= "CFrame" then visualPose = CFrame.new() end
-          local bodyLean = moving and math.sin(clock) * math.rad(5) * speedFactor or 0
-          local bodyTurn = striking and math.sin(strikeElapsed / 0.32 * math.pi)
-            * math.rad(9) or 0
-          importedVisual:PivotTo(rootPart.CFrame * CFrame.new(0, stride - deathProgress * 0.6, 0)
-            * CFrame.Angles(pitch + bodyLean, bodyTurn, roll + deathProgress * math.rad(10)) * visualPose)
-          -- 가져온 스킨드/리그 모델의 Motor6D 다리를 좌우 교대로 구동한다.
-          -- 원본 C0는 보존하고 20Hz 클라이언트 시각 효과만 수정한다.
-          local joints = creatureImportedRig[importedVisual]
-          -- 늦게 복제된 Bone/Motor6D가 있으면 빈 리그 캐시를 주기적으로 갱신한다.
-          -- 매 프레임 전체 Descendants를 탐색하지 않도록 2초 간격으로 제한한다.
-          local rigCheckDue = creatureMotionPhase >= (creatureRigRetryAt[importedVisual] or 0)
-          -- 매 프레임 모든 관절을 검사하지 않고 2초마다 신규/교체 관절을 확인한다.
-          -- 관절이 사라진 경우에는 주기 검사가 즉시 새 목록을 구성한다.
-          if not joints or rigCheckDue then
-            joints = {}
-            creatureRigRetryAt[importedVisual] = creatureMotionPhase + 2
-            for _, item in ipairs(importedVisual:GetDescendants()) do
-              if item:IsA("Motor6D") or item:IsA("Bone") then
-                local lower = string.lower(item.Name)
-                local limb = item:IsA("Motor6D") and item.Part1 and string.lower(item.Part1.Name) or ""
-                -- 일부 가져온 Bone은 이름이 Bone001이므로 부모 계층의 부위명을 참조한다.
-                local parentName = item.Parent and string.lower(item.Parent.Name) or ""
-                local label = lower .. " " .. limb .. " " .. parentName
-                -- 가져온 리그의 대소문자/구분자 및 R15 Upper/Lower 이름을 함께 판별한다.
-                local isLeg = string.find(label, "leg", 1, true)
-                  or string.find(label, "thigh", 1, true)
-                  or string.find(label, "hip", 1, true)
-                  or string.find(label, "foot", 1, true)
-                  or string.find(label, "calf", 1, true)
-                  or string.find(label, "paw", 1, true)
-                  or string.find(label, "hoof", 1, true)
-                local isArm = string.find(label, "arm", 1, true)
-                  or string.find(label, "shoulder", 1, true)
-                  or string.find(label, "hand", 1, true)
-                  or string.find(label, "forearm", 1, true)
-                -- Hip/Shoulder 아래 자식 Bone은 상하 관절을 전부 회전하면
-                -- 움직임이 과장되므로 상위 관절에만 보행을 적용한다.
-                local parentBone = item.Parent
-                local parentLabel = parentBone and string.lower(parentBone.Name) or ""
-                local nestedLimb = item:IsA("Bone") and (
-                  string.find(parentLabel, "leg", 1, true)
-                  or string.find(parentLabel, "arm", 1, true)
-                  or string.find(parentLabel, "thigh", 1, true))
-                  and (string.find(lower, "leg", 1, true)
-                    or string.find(lower, "arm", 1, true)
-                    or string.find(lower, "thigh", 1, true))
-                if (isLeg or isArm) and not nestedLimb then
-                  local left = string.find(label, "left", 1, true)
-                    or string.match(lower, "^l[_%.%-]") or string.match(lower, "[_%.%-]l$")
-                    or string.find(lower, "_l", 1, true)
-                    or string.match(limb, "^l[_%.%-]") or string.match(limb, "[_%.%-]l$")
-                    or string.find(limb, "_l", 1, true)
-                  local right = string.find(label, "right", 1, true)
-                    or string.match(lower, "^r[_%.%-]") or string.match(lower, "[_%.%-]r$")
-                    or string.find(lower, "_r", 1, true)
-                    or string.match(limb, "^r[_%.%-]") or string.match(limb, "[_%.%-]r$")
-                    or string.find(limb, "_r", 1, true)
-                  if (left and not right) or (right and not left) then
-                    table.insert(joints, {
-                      joint=item,
-                      base=item:IsA("Motor6D") and item.C0 or item.Transform,
-                      isBone=item:IsA("Bone"),
-                      side=(left and 1 or -1) * (isArm and -1 or 1),
-                      isArm=isArm,
-                      amplitude=isArm and 0.20 or 0.38
-                    })
-                  end
-                end
-              end
-            end
-            creatureImportedRig[importedVisual] = joints
-            -- 관절이 뒤늦게 복제된 경우에는 과거 경고를 유지하되 정상 모션을 시작한다.
-            -- 관절이 없는 Studio 메시/좌우 이름 누락을 에셋별 한 번만 보고한다.
-            -- 출력은 클라이언트 진단 전용이며 서버 판정이나 저장 데이터는 바꾸지 않는다.
-            local assetName = model:GetAttribute("CreatureVisualKey") or model.Name
-            if #joints == 0 and not creatureRigDiagnostics[assetName] then
-              creatureRigDiagnostics[assetName] = true
-              warn("CIV_CREATURE_RIG_UNANIMATED: " .. tostring(assetName)
-                .. " - 좌우 다리/팔 Motor6D 또는 Bone을 찾지 못함")
-            end
-          end
-          local walking = moving and not down and state ~= "Stunned" and not windingUp and not reactingToHit and not striking
-          for _, leg in ipairs(joints) do
-            if leg.joint.Parent then
-              local angle = walking and math.sin(clock) * leg.side * leg.amplitude * speedFactor or 0
-              local lift = walking and not leg.isArm
-                and math.max(0, math.sin(clock * leg.side)) * 0.22 * speedFactor or 0
-              -- 실제 공격 예고 중에는 리그 팔을 들어 올리고 짧게 떨도록 한다.
-              if down then
-                angle = leg.isArm and -0.4 * deathProgress or 0.65 * leg.side * deathProgress
-              elseif reactingToHit then
-                angle = leg.isArm and -0.55 * (1 - hitElapsed / 0.28) or 0
-              elseif leg.isArm then
-                if striking then
-                  angle = -0.6 + strikeProgress * 1.15
-                elseif windingUp then
-                  angle = -0.6 + math.sin(creatureMotionPhase * 12) * 0.07
-                end
-              end
-              if leg.isBone then
-                leg.joint.Transform = leg.base * CFrame.new(0, lift, 0) * CFrame.Angles(angle, 0, 0)
-              else
-                leg.joint.C0 = leg.base * CFrame.new(0, lift, 0) * CFrame.Angles(angle, 0, 0)
-              end
-            end
-          end
-        end
-        local preparing = model:GetAttribute("IsPreparingAttack") == true
-        local attackAt = model:GetAttribute("LastAttackAnimationAt")
-        local attackElapsed = typeof(attackAt) == "number"
-          and (workspace:GetServerTimeNow() - attackAt) or math.huge
-        local attacking = attackElapsed >= 0 and attackElapsed < 0.32
-        -- 실제 이동속도를 반영해 정지/보행/추격의 팔다리 동작을 구분한다.
-        local amplitude = moving and math.clamp(horizontalSpeed / 10, 0.24, 0.55) or 0.035
-        if preparing then amplitude = 0.08 end
-        local alerting = model:GetAttribute("AIState") == "Alert"
-        local returningHome = model:GetAttribute("AIState") == "ReturnHome"
-        if alerting then amplitude = 0 end
-        local enemyHumanoid = model:FindFirstChildOfClass("Humanoid")
-        local defeated = enemyHumanoid and enemyHumanoid.Health <= 0
-        local stunned = model:GetAttribute("AIState") == "Stunned"
-        if defeated or stunned then amplitude = 0 end
-        -- 몬스터 공격 예고·기절·사망을 서로 다른 실루엣으로 표시한다.
-        -- 판정과 이동은 기존 서버 AI가 그대로 담당한다.
-        -- 기본 파츠형 몬스터도 가져온 리그와 동일한 누적 보행 위상을 쓴다.
-        local swing = math.sin(gaitPhase) * amplitude
-        if defeated then
-          swing = 0.9 * deathProgress
-        elseif reactingToHit then
-          swing = -0.5 * (1 - hitElapsed / 0.28)
-        elseif stunned then
-          swing = 0.18
-        elseif attacking then
-          swing = math.sin((attackElapsed / 0.32) * math.pi) * 0.85
-        elseif preparing then
-          swing = -0.65 + math.sin(creatureMotionPhase * 13) * 0.06
-        elseif alerting then
-          -- 경계 중 낮게 몸을 숙이고 작은 호흡만 표현한다.
-          swing = -0.22 + math.sin(creatureMotionPhase * 3) * 0.025
-        elseif returningHome then
-          swing = math.sin(gaitPhase) * amplitude * 0.65
-        end
-        -- Hand-made telegraph Highlight removed; external creature visuals are not recolored.
-        for _, name in ipairs(creatureMotionLimbNames) do
-          local part = model:FindFirstChild(name)
-          -- Motor6D로 연결된 실제 R15/R6 관절은 애니메이터가 담당한다.
-          -- 수동 CFrame 연출은 별도 관절이 없는 로우폴리 몬스터 파츠에만 적용한다.
-          local animatedJoint = false
-          if part and part:IsA("BasePart") then
-            local cached = creatureMotionJointChecks[part]
-            -- 관절이 나중에 연결되거나 제거될 수 있으므로 결과를 짧게만 보관한다.
-            if not cached or creatureMotionPhase >= cached.expiresAt then
-              local hasMotor = false
-              for _, joint in ipairs(part:GetJoints()) do
-                if joint:IsA("Motor6D") then
-                  hasMotor = true
-                  break
-                end
-              end
-              cached = {hasMotor = hasMotor, expiresAt = creatureMotionPhase + 0.5}
-              creatureMotionJointChecks[part] = cached
-            end
-            animatedJoint = cached.hasMotor
-          end
-          -- 물리/리그 관절은 건드리지 않고 별도 연출 허용 파츠에만 적용한다.
-          -- 고정 파츠라도 서버 월드 장식이면 명시적 opt-in 없이는 움직이지 않는다.
-          if part and part:IsA("BasePart") and part.Anchored and not animatedJoint
-            and #part:GetJoints() == 0 and part:GetAttribute("AllowClientLimbMotion") == true then
-            local sign = (name == "Left Arm" or name == "Left Leg" or name == "LeftLimb") and 1 or -1
-            -- 서버에 복제되는 Attribute를 매 프레임 모션 캐시로 쓰지 않는다.
-            -- 루트 파츠가 교체되면 기존 기준 자세도 다시 산출한다.
-            local state = creatureMotionLimbBases[part]
-            -- 기존 서버 기준 오프셋이 설정돼 있으면 우선 사용한다.
-            -- 없을 때만 현재 위치에서 기준 자세를 계산한다.
-            if not state or state.root ~= rootPart then
-              local storedBase = part:GetAttribute("MotionBaseOffset")
-              local base = typeof(storedBase) == "CFrame"
-                and storedBase or rootPart.CFrame:ToObjectSpace(part.CFrame)
-              state = {root = rootPart, base = base, lastAnimatedAt = creatureMotionPhase}
-              creatureMotionLimbBases[part] = state
-            elseif creatureMotionPhase - state.lastAnimatedAt > 0.25 then
-              -- 화면 밖에서 오랫동안 갱신되지 않았다면 현재 서버 기준 자세로 복귀한다.
-              local storedBase = part:GetAttribute("MotionBaseOffset")
-              if typeof(storedBase) == "CFrame" then
-                state.base = storedBase
-              end
-            end
-            state.lastAnimatedAt = creatureMotionPhase
-            local base = state.base
-            local leg = name == "Left Leg" or name == "Right Leg"
-            local angle = leg and -sign * swing or sign * swing
-            -- 이동 거리와 연동해 발을 들어 올리고, 사망 시 두 다리를 접는다.
-            local footLift = leg and moving and not defeated and not preparing
-              and math.max(0, math.sin(gaitPhase * sign)) * 0.28 or 0
-            if defeated and leg then angle = sign * 0.65 * deathProgress end
-            part.CFrame = rootPart.CFrame * base * CFrame.new(0, footLift, 0) * CFrame.Angles(angle, 0, 0)
-          end
-        end
-      end
+      local offset = entry.visual:GetAttribute("VisualPivotOffset")
+      if typeof(offset) ~= "CFrame" then offset = CFrame.new() end
+      entry.visual:PivotTo(entry.root.CFrame * offset)
     end
   end
 end)
