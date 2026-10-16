@@ -62,11 +62,11 @@ const inferredRpg={
 };
 assert.equal(inferHomepagePlatform(inferredRpg),'UNITY');
 assert(inferHomepageGenres(inferredRpg).includes('RPG'));
+// The owner-deleted roadmap no longer enables automatic platform assignment.
 applyHomepageAutoClassification(inferredRpg);
-assert.equal(inferredRpg.selectedPlatform,'UNITY');
-assert.equal(inferredRpg.homepageInfo.platform,'UNITY');
-assert(inferredRpg.genre.includes('RPG'));
-assert.equal(inferredRpg.homepageInfo.genreLabel,inferredRpg.genre.join(' · '));
+assert.equal(inferredRpg.selectedPlatform,undefined);
+assert.equal(inferredRpg.homepageInfo.platform,undefined);
+assert(inferHomepageGenres(inferredRpg).includes('RPG'));
 
 const inferredSocial={
   id:'auto-social',
