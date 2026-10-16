@@ -417,3 +417,12 @@ test('대충알피지 기존 24종족 데이터는 보존하되 로비에서는 
   assert.match(server, /player:SetAttribute\("CivReady", true\)/);
   assert.match(server, /lobbyStoneTexture\.Texture = "rbxassetid:\/\/128886287832599"/);
 });
+
+test('civilization monsters patrol inside their existing habitat without changing combat or save authority', () => {
+  assert.match(server, /NextPatrolAt = 0, PatrolStep = 0/);
+  assert.match(server, /enemy\.Model:GetAttribute\("IsRaidBoss"\) ~= true\s+and now >= \(enemy\.NextPatrolAt or 0\)/);
+  assert.match(server, /enemy\.NextPatrolAt = now \+ 3 \+ \(step % 3\)/);
+  assert.match(server, /Magnitude <= 16 then\s+civWalkModel\(enemy\.Model/);
+  assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
+  assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
+});
