@@ -21,7 +21,27 @@
       "INDEPENDENT_QA_AND_MAIN_WRITE_GUARD",
       "VERIFIED_MAIN_PROMOTION"
     ],
-    "automaticPassOnCreation": false
+    "automaticPassOnCreation": false,
+    "verifiedCurrentState": {
+      "ownerDirectivePolicyDocument": null,
+      "ownerDirectiveReplacementPolicyNotAsserted": true,
+      "constitutionEnforcerResult": "CONSTITUTION_AUTHORITY_UNAVAILABLE",
+      "sharedContextScope": "RETAINED_THREE_DOCUMENT_INTEGRITY_ONLY",
+      "sharedContextPolicyAuthorityVerified": false,
+      "legacyContractTestRequiresDeletedRoadmap": true
+    },
+    "responsibleExistingFiles": [
+      "company-directive.json",
+      "tools/company-constitution-enforcer.mjs",
+      "tools/company-shared-context.mjs",
+      "qa/company-constitution-enforcer.test.mjs",
+      "qa/company-shared-context-retained.test.mjs",
+      "qa/company-central-policy-contract.test.mjs",
+      "tools/main-write-guard.mjs",
+      ".github/workflows/company-central-policy-contract-qa.yml"
+    ],
+    "activationRule": "Do not set active or merge until owner authority source, hash binding, locked sequence protection, impacted QA and release checks are aligned and independently verified.",
+    "currentDecision": "BLOCKED_PENDING_CONSTITUTIONAL_AUTHORITY_MIGRATION"
   },
   "assetCleanup": {
     "target": "LOW_VISUAL_QUALITY_COMMON_ASSETS",
