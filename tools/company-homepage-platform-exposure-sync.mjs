@@ -2,7 +2,7 @@
 // 역할: 운영 플랫폼 상태와 검증·배포가 끝난 고유 개발 회차를 홈페이지에 전달한다.
 // 임포트
 import fs from 'node:fs';
-const compileHomepageCentralPolicy = () => ({valid:true,errors:[],supportedPlatforms:['ROBLOX','UNITY'],fingerprint:'POLICY_REMOVED',contract:{version:0,showUnityWeb:false}});
+import crypto from 'node:crypto';
 import { evaluateInternalRelease } from './company-platform-exposure-control.mjs';
 
 const clean=v=>String(v??'').trim();
@@ -131,8 +131,29 @@ function unityState(item={},policy={}){
 const PLATFORM_STATE_BUILDERS={ROBLOX:robloxState,UNITY:unityState};
 
 export function buildHomepagePlatformExposure({queue={},catalog={},policy={}}={}){
-  const central=compileHomepageCentralPolicy(policy);
-  if(!central.valid)throw new Error('HOMEPAGE_CENTRAL_POLICY_INVALID:'+central.errors.join('|'));
+  // [정책] 변경에 관련된 플랫폼 구성만 중앙 원본에서 직접 컴파일한다.
+  // 이전 고정 반환값은 새 플랫폼을 놓치고 정상 정책 지문을 기록하지 못했다.
+  const homepage=policy?.serverHomepageIntegration;
+  const supportedPlatforms=homepage?.supportedPlatforms;
+  const platformStates=homepage?.perGamePlatformStates;
+  if(homepage?.sourceOfTruth!=='company-learning/platform-release-roadmap.json'
+    ||!Number.isInteger(homepage?.version)||homepage.version<1
+    ||!Array.isArray(supportedPlatforms)||supportedPlatforms.length===0
+    ||!Array.isArray(platformStates)||JSON.stringify(supportedPlatforms)!==JSON.stringify(platformStates)
+    ||new Set(supportedPlatforms).size!==supportedPlatforms.length
+    ||supportedPlatforms.some(platform=>typeof platform!=='string'||!platform)){
+    throw new Error('HOMEPAGE_CENTRAL_POLICY_INVALID:PLATFORM_POLICY_SOURCE_OR_CONFIGURATION');
+  }
+  const central={
+    supportedPlatforms,
+    fingerprint:crypto.createHash('sha256').update(JSON.stringify({
+      version:homepage.version,sourceOfTruth:homepage.sourceOfTruth,
+      runtimeAuthority:homepage.runtimeAuthority,
+      supportedPlatforms,perGamePlatformStates:platformStates,
+      showUnityWeb:homepage.showUnityWeb===true
+    })).digest('hex'),
+    contract:{version:homepage.version,showUnityWeb:homepage.showUnityWeb===true}
+  };
   for(const platform of central.supportedPlatforms){
     if(typeof PLATFORM_STATE_BUILDERS[platform]!=='function')throw new Error('HOMEPAGE_PLATFORM_ADAPTER_MISSING:'+platform);
   }
@@ -170,8 +191,7 @@ export function buildHomepagePlatformExposure({queue={},catalog={},policy={}}={}
   return{
     version:3,
     authority:'company-runtime',
-    // The former roadmap was deleted; do not advertise it as an active policy.
-    centralPolicy:null,
+    centralPolicy:'company-learning/platform-release-roadmap.json',
     centralPolicyFingerprint:central.fingerprint,
     centralPolicyVersion:central.contract.version,
     publicSafe:true,
