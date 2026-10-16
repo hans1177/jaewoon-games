@@ -780,6 +780,7 @@
     "priorityMeaning": "ROBLOX_FOCUSED_DEVELOPMENT_UNITY_WEB_AND_ANDROID_OWNER_HOLD",
     "developmentAccess": {
       "ROBLOX": "ALWAYS_ALLOWED",
+      "WEB": "ALWAYS_ALLOWED",
       "UNITY": "OWNER_HOLD",
       "FORTNITE_UEFN": "OWNER_HOLD",
       "UNITY_WEB": "OWNER_HOLD",
@@ -1117,6 +1118,21 @@
     "publicationVisibilityBlocksEvolution": false,
     "f9PublishDispatchStartsNextF0ThroughF9Cycle": true,
     "publicationOutcomeBlocksNextCycle": false
+  },
+  "standaloneWebGameDevelopment": {
+    "authority": "company-learning/platform-release-roadmap.json#standaloneWebGameDevelopment",
+    "status": "OWNER_DIRECT_ENABLED",
+    "enabled": true,
+    "target": "WEB",
+    "canonicalSourceRoot": "web-games/<gameId>/",
+    "directHtmlCssJavascriptCanvasAuthoringAllowed": true,
+    "independentOfUnityWeb": true,
+    "unityWebDevelopmentRemainsOwnerHeld": true,
+    "nativeExecutionModeUnchanged": true,
+    "implementationOwner": "VIBE2_VIBE3",
+    "existingPipelineOnly": true,
+    "verifiedBrowserAndIndependentQaRequired": true,
+    "qaAndSecurityBypassForbidden": true
   },
   "currentExecutionMode": "ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT",
   "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
