@@ -1497,23 +1497,18 @@ game:GetService("RunService").RenderStepped:Connect(function(dt)
     local character = player.Character
     local observerRoot = character and character:FindFirstChild("HumanoidRootPart")
     if world and observerRoot then
-      local bounds = OverlapParams.new()
-      bounds.FilterType = Enum.RaycastFilterType.Exclude
-      bounds.FilterDescendantsInstances = {character}
-      for _, hit in ipairs(workspace:GetPartBoundsInRadius(observerRoot.Position, 100, bounds)) do
-        local enemy = hit:FindFirstAncestorOfClass("Model")
-        while enemy and enemy ~= world do
-          if enemy:GetAttribute("CivilizationEnemy") == true then
-            local visual = enemy:FindFirstChild("ImportedCreatureVisual")
-            local core = enemy:FindFirstChild("HumanoidRootPart")
-            if visual and visual:IsA("Model") and core and core:IsA("BasePart")
-              and enemy:GetAttribute("CreatureAssetSource") == "StudioImported"
-              and (tonumber(enemy:GetAttribute("CreatureVisualAssetId")) or 0) > 0 then
-              importedCreatureVisuals[enemy] = {visual = visual, root = core}
-            end
-            break
+      -- Imported mesh parts and server hitboxes have CanQuery=false;
+      -- spatial part queries would miss every creature. Inspect only local world models.
+      for _, enemy in ipairs(world:GetDescendants()) do
+        if enemy:IsA("Model") and enemy:GetAttribute("CivilizationEnemy") == true then
+          local visual = enemy:FindFirstChild("ImportedCreatureVisual")
+          local core = enemy:FindFirstChild("HumanoidRootPart")
+          if visual and visual:IsA("Model") and core and core:IsA("BasePart")
+            and (core.Position - observerRoot.Position).Magnitude <= 110
+            and enemy:GetAttribute("CreatureAssetSource") == "StudioImported"
+            and (tonumber(enemy:GetAttribute("CreatureVisualAssetId")) or 0) > 0 then
+            importedCreatureVisuals[enemy] = {visual = visual, root = core}
           end
-          enemy = enemy.Parent and enemy.Parent:FindFirstAncestorOfClass("Model")
         end
       end
     end
