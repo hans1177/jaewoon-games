@@ -108,9 +108,9 @@ test('root-cause evidence records the observation checkpoint without granting au
 test('repeat failures group identical signatures without manufacturing a verified root cause',()=>{
   const result=verifyNeuralRootCause({diagnosis,evidence:[
     'failure-signature:CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION',
-    'failure-signature:UNRELATED_RUNTIME_ERROR',
-    'failure-signature:CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION',
-    'error-signature:CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION',
+    'retry-failure-signature:UNRELATED_RUNTIME_ERROR',
+    'incremental-qa-failure-signature:CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION',
+    'system-steward:failure-signature:CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION',
     'role-result:regression:PASS'
   ]});
   assert.deepEqual(result.failureClusters.map(x=>x.occurrences),[3,1]);
