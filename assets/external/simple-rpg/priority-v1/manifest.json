@@ -23,16 +23,16 @@
       "fileCandidates": 2
     },
     "03-equipment": {
-      "packs": 8,
-      "fileCandidates": 165
+      "packs": 10,
+      "fileCandidates": 182
     },
     "04-npc-buildings": {
-      "packs": 9,
-      "fileCandidates": 223
+      "packs": 10,
+      "fileCandidates": 295
     },
     "05-environment-sfx": {
-      "packs": 11,
-      "fileCandidates": 433
+      "packs": 12,
+      "fileCandidates": 501
     },
     "06-arthropods": {
       "packs": 1,
@@ -59,11 +59,11 @@
       "fileCandidates": 1
     },
     "12-dungeon-interiors": {
-      "packs": 1,
-      "fileCandidates": 1
+      "packs": 2,
+      "fileCandidates": 3
     }
   },
-  "verifiedPacks": 48,
+  "verifiedPacks": 53,
   "packs": [
     {
       "file": "bee-rigged.blend",
@@ -234,6 +234,34 @@
       "gameApplied": false
     },
     {
+      "file": "handpainted-rpg-weapons.zip",
+      "priority": "03-equipment",
+      "sourceUrl": "https://opengameart.org/sites/default/files/handpainted%20weapons.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/cethiels-weapons-3d",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "023c600f6727b7a80456656f030b0d2e83a6afe539d512851533d3c4c51d3051",
+      "bytes": 2104476,
+      "sourceFileCandidates": 16,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "potion-bottles.blend",
+      "priority": "03-equipment",
+      "sourceUrl": "https://opengameart.org/sites/default/files/potionBottlesOGA.blend",
+      "licenseSourceUrl": "https://opengameart.org/content/potions-6",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "ea0add9edab807738c40fb3801e1c03812b21379966159901edd7cb66b776704",
+      "bytes": 2859816,
+      "sourceFileCandidates": 1,
+      "validation": "blender_header_only",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
       "file": "modular-rpg-npc.7z",
       "priority": "04-npc-buildings",
       "sourceUrl": "https://opengameart.org/sites/default/files/modular_rpg_characters.7z",
@@ -354,6 +382,20 @@
       "sha256": "a6bdeeaf9b2a01ba3d9e043f298ca7cdc71924433be70063974f5f42ffd081f5",
       "bytes": 7787702,
       "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "kenney-hexagon-world.zip",
+      "priority": "04-npc-buildings",
+      "sourceUrl": "https://opengameart.org/sites/default/files/kenney_hexagon-kit.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/hexagon-kit",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "d14f7643852c4dd854c7530de8514c9eb77314fe9963636077f0de1da8901236",
+      "bytes": 2448931,
+      "sourceFileCandidates": 72,
       "validation": "zip_crc_and_content",
       "sourceOnly": true,
       "robloxImported": false,
@@ -508,6 +550,20 @@
       "sha256": "9faa5b363e003363d7cb4ad32c8ceae70ed3bb4b4e73afc249e0acd9be2787a3",
       "bytes": 11866164,
       "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "treasure-collection.zip",
+      "priority": "05-environment-sfx",
+      "sourceUrl": "https://opengameart.org/sites/default/files/treasure_pack.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/treasure-pack",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "f88b965b7ec9109d9d08bd6df237c0e6be0ae4c88754a749d40cdb603239d76c",
+      "bytes": 7690850,
+      "sourceFileCandidates": 68,
       "validation": "zip_crc_and_content",
       "sourceOnly": true,
       "robloxImported": false,
@@ -718,6 +774,20 @@
       "sha256": "52263cb5319d4d1ccf3fc36fddc162adcf6fa446cf405fda0e114275c44b5eba",
       "bytes": 2778175,
       "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "modular-dungeon-3d.zip",
+      "priority": "12-dungeon-interiors",
+      "sourceUrl": "https://opengameart.org/sites/default/files/free_modular_low_poly_dungeon_by_rgsdev.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/free-modular-low-poly-dungeon-pack",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "713a7e563e0526dcbb67363b740e81a24f1610af6c8c9c1c7f1007385743419c",
+      "bytes": 7070804,
+      "sourceFileCandidates": 2,
       "validation": "zip_crc_and_content",
       "sourceOnly": true,
       "robloxImported": false,
