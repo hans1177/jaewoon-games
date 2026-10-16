@@ -575,7 +575,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   company.operations.autonomousFocus={
     enabled:buildCompletionFocus||Boolean(focusPolicy),targetSlots,filledSlots:focusedGames.length,preferredGameIds:[],focusedGameIds,games:focusedGames,nextFocusGameIds,nextDevelopmentGameIds,
     selection:buildCompletionFocus?'THREE_OWNER_FOCUSED_BUILD_COMPLETION':focusPolicy?.selection||null,platformPriority:[...PLATFORM_PRIORITY],priorityMeaning:'DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE',activeDevelopmentRunId:supervision.activeDevelopmentRunId||null,syncIntervalMs:30000,updatedAtKst:supervision.dateKst||company.updatedAt||null,
-    source:buildCompletionFocus?[...(machine?[centralPolicyPath]:[]),portfolioPath,catalogPath,'tools/company-status-sync.mjs']:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs'],
+    source:buildCompletionFocus?[centralPolicyPath,portfolioPath,catalogPath,'tools/company-status-sync.mjs']:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs'],
   };
   company.operations.productionClasses={...classResult.state,source:[portfolioPath,catalogPath,artbooksPath,'tools/company-status-sync.mjs']};
   delete company.operations.productionTiers;
