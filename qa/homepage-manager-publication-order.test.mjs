@@ -453,7 +453,10 @@ test('Homepage Manager binds the central homepage policy fingerprint from self-Q
 
 test('homepage platform exposure derives supported platforms from the central roadmap rather than a workflow constant',()=>{
   const sync=fs.readFileSync('tools/company-homepage-platform-exposure-sync.mjs','utf8');
-  assert.match(sync,/compileHomepageCentralPolicy/);
+  assert.match(sync,/policy\?\.serverHomepageIntegration/);
+  assert.match(sync,/homepage\?\.sourceOfTruth/);
+  assert.match(sync,/crypto\.createHash\('sha256'\)/);
+  assert.doesNotMatch(sync,/POLICY_REMOVED/);
   assert.match(sync,/centralPolicyFingerprint:central\.fingerprint/);
   assert.match(sync,/supportedPlatforms:central\.supportedPlatforms/);
   assert.match(sync,/HOMEPAGE_PLATFORM_ADAPTER_MISSING/);
