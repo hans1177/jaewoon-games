@@ -16,11 +16,13 @@ const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace
 const sha256File=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const safeId=value=>clean(value).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100)||'game';
-const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const policyFile=clean(args.roadmap||process.env.COMPANY_VERIFIED_POLICY_PATH);
+if(!policyFile||!fs.existsSync(policyFile))throw new Error('UNITY_WEB_VERIFIED_POLICY_REQUIRED');
+const policy=JSON.parse(fs.readFileSync(policyFile,'utf8'));
 const contract=policy?.unityWebFirstStage;
 if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||contract?.enabled!==true||contract?.developmentAdmissionAuthority!==false||contract?.validationSurfaceOnly!==false)throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_POLICY_MISSING');
 if(contract?.canonicalGameSourceRoot!=='unity-games/<gameId>/'||contract?.publicWebBuildRoot!=='web-games/<gameId>/')throw new Error('UNITY_WEB_SOURCE_BUILD_BOUNDARY_MISMATCH');
-if(contract?.upperPlatformDevelopmentReadinessGate!=='company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate')throw new Error('UPPER_PLATFORM_READINESS_GATE_BINDING_REQUIRED');
+if(contract?.upperPlatformDevelopmentReadinessGate!==`${policyFile}#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate`)throw new Error('UPPER_PLATFORM_READINESS_GATE_BINDING_REQUIRED');
 
 function discoverBuildMethod(sourceRoot){
   const editorRoot=path.join(sourceRoot,'Assets','Editor');
