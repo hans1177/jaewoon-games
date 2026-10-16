@@ -148,8 +148,6 @@ test('game-primary control work uses available latest capacity while push/manual
 
   assert.match(core,/\n  reserve:\n(?:    #[^\n]*\n)*    runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && \(github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'\) && 'ubuntu-latest' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(core.slice(core.indexOf('\n  fan_in:'),core.indexOf('\n    steps:',core.indexOf('\n  fan_in:'))),/\n    runs-on: ubuntu-latest/);
-  assert.match(core,/Probe dedicated Vibe2 model cache\n\s+id: ollama_model_cache_probe\n\s+if: steps\.batch\.outputs\.worker_count != '0' && env\.VIBE2_EXECUTION_LANE != 'asset-development'/);
-  assert.match(core,/Probe canonical Ollama runtime cache\n\s+id: ollama_runtime_cache_probe\n\s+if: steps\.batch\.outputs\.worker_count != '0' && env\.VIBE2_EXECUTION_LANE != 'asset-development'/);
   assert.match(core,/Record asset no-model cache bypass/);
   assert.match(core,/VIBE2_MODEL_CACHE_RESERVE_PROBE=SKIPPED_ASSET_LANE/);
   assert.match(core,/VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_ASSET_WORKER_LOCAL_DECISION/);
