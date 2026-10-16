@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {planVibeAgentHandoff,evaluateVibeAgentHandoff,assertVibeAgentHandoffScope,vibeAgentHandoffGuidance,
-  VIBE_OPENAI_PATTERN_REFERENCES} from '../tools/vibe2-openai-agent-patterns.mjs';
+  VIBE_OPENAI_PATTERN_REFERENCES,VIBE_EXISTING_ALGORITHMS,selectVibeExistingAlgorithms} from '../tools/vibe2-openai-agent-patterns.mjs';
 
 const sha='a'.repeat(40);
 const task={id:'repair-world-tree',gameId:'simple-rpg',target:'roblox'};
@@ -109,4 +109,27 @@ test('real Vibe continuous runner imports and injects handoff into the work orde
   assert.match(source,/const handoffGuidance=vibeAgentHandoffGuidance\(agentHandoff\)/);
   assert.match(source,/centralWorkContractGuidance, handoffGuidance, neuralGuidance/);
   assert.match(source,/compiledWorkContract,\s*agentHandoff,\s*neuralDiagnosis/);
+});
+
+test('all 17 existing algorithms are discoverable without adding a scheduler or AI authority',()=>{
+  assert.equal(VIBE_EXISTING_ALGORITHMS.length,17);
+  assert.equal(new Set(VIBE_EXISTING_ALGORITHMS.map(row=>row.id)).size,17);
+  assert.ok(VIBE_EXISTING_ALGORITHMS.every(row=>row.module.startsWith('tools/')||row.module.startsWith('assets/')));
+  const plan=selectVibeExistingAlgorithms({task:{goal:'오류 원인 복구와 로비 UI 성능 최적화'},
+    responsibleFiles:['roblox-games/demo/client/Menu.client.luau'],qa:['mobile-ui-regression']});
+  const ids=plan.recommendations.map(row=>row.id);
+  for(const id of ['FAILURE_ROOT_CAUSE','MINIMAL_SOURCE_EDIT','IMPACT_SCOPED_QA',
+    'EVIDENCE_GATED_PROMOTION','UI_COMPOSITION','PERFORMANCE_BOTTLENECK',
+    'DETERMINISTIC_ALGORITHM_ROUTING'])assert.ok(ids.includes(id),id);
+  assert.equal(plan.executed,false);
+  assert.equal(plan.qaPassed,false);
+  assert.equal(plan.autoMerge,false);
+  const p=planVibeAgentHandoff({task:{id:'ui-1',gameId:'demo',goal:'로비 UI 최적화'},route:'text-source-worker',
+    responsibleFiles:['roblox-games/demo/client/Menu.client.luau']});
+  assert.match(vibeAgentHandoffGuidance(p),/existing-algorithms=/);
+  assert.equal(assertVibeAgentHandoffScope({plan:p,task:{id:'ui-1',gameId:'demo'},route:'text-source-worker',
+    responsibleFiles:['roblox-games/demo/client/Menu.client.luau']}).pass,true);
+  const mutated={...p,algorithmSelection:{...p.algorithmSelection,autoMerge:true}};
+  assert.throws(()=>assertVibeAgentHandoffScope({plan:mutated,task:{id:'ui-1',gameId:'demo'},
+    route:'text-source-worker',responsibleFiles:['roblox-games/demo/client/Menu.client.luau']}),/ALGORITHM_AUTHORITY_EXPANSION/);
 });
