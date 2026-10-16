@@ -57,6 +57,10 @@ export function enforceConstitution({phase='runtime',root=process.cwd(),policy}=
         errors.push('RETAINED_DOCUMENT_INVALID:'+file);
     } catch {errors.push('RETAINED_DOCUMENT_UNAVAILABLE:'+file);}
   }
+  // 규칙 목록 존재만으로 PASS를 허용하면 실제 규칙 검사가 생략된다.
+  // 각 규칙의 실행 검증기를 정식 연결하기 전까지 반드시 차단한다.
+  if(canonical?.machineEnforcement?.assertions?.length>0)
+    errors.push('MACHINE_ASSERTION_EXECUTION_NOT_IMPLEMENTED');
   if(errors.length)errors.push('CONSTITUTION_AUTHORITY_UNAVAILABLE');
   if(errors.length)return {pass:false,phase,errors,constitutionFingerprint:null,orderedRuleIds:[],enforcedRuleCount:0,enforcementSchemaVersion:0};
   return {pass:true,phase,errors:[],constitutionFingerprint:fingerprint,orderedRuleIds:['SINGLE_OWNER_POLICY'],enforcedRuleCount:1,enforcementSchemaVersion:1};
