@@ -47,3 +47,11 @@ test('verified cross-game replacements outrank higher unverified asset scores', 
   assert.match(source, /usageByAsset\[text\(row\.asset\?\.id\)\]\?\.runtimePass===true/);
   assert.match(source, /const best=locked\|\|\(currentAsset\?verifiedRows\[0\]\|\|rows\[0\]:rows\[0\]\)\|\|null/);
 });
+
+test('unverified advisory candidate cannot become automatic cross-game binding', () => {
+  const source = fs.readFileSync('assets/vibe-studio-asset-universe.js', 'utf8');
+  assert.match(source, /const automaticBindingAssetId=currentAsset/);
+  assert.match(source, /replacementRecommended\?text\(best\?\.asset\?\.id\):text\(currentAsset\?\.id\)/);
+  assert.match(source, /replacementQualityVerified\?text\(best\?\.asset\?\.id\):null/);
+  assert.match(source, /automaticBindingAllowed=Boolean\(automaticBindingAssetId/);
+});
