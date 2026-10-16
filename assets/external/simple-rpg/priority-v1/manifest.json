@@ -49,9 +49,21 @@
     "09-buildings": {
       "packs": 2,
       "fileCandidates": 2
+    },
+    "10-npc-expanded": {
+      "packs": 2,
+      "fileCandidates": 22
+    },
+    "11-unique-bosses": {
+      "packs": 1,
+      "fileCandidates": 1
+    },
+    "12-dungeon-interiors": {
+      "packs": 1,
+      "fileCandidates": 1
     }
   },
-  "verifiedPacks": 40,
+  "verifiedPacks": 44,
   "packs": [
     {
       "file": "bee-rigged.blend",
@@ -612,8 +624,71 @@
       "sourceOnly": true,
       "robloxImported": false,
       "gameApplied": false
+    },
+    {
+      "file": "npc-character-pack20.zip",
+      "priority": "10-npc-expanded",
+      "sourceUrl": "https://opengameart.org/sites/default/files/modelspack2.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/character-pack2",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "b21bcfe860f3df9f5e9ccc296364dfce7f666183a387b51c35f1ce7ff1012880",
+      "bytes": 7847928,
+      "sourceFileCandidates": 20,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "hero-base-rigged.zip",
+      "priority": "10-npc-expanded",
+      "sourceUrl": "https://opengameart.org/sites/default/files/character-base-model-rigged.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/character-base-model",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "a6837a6626b92776a358bc2a85c845af194b3ba2b4b2acc8531f107726cb0d9e",
+      "bytes": 2597209,
+      "sourceFileCandidates": 2,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "giant-mutant-animated.zip",
+      "priority": "11-unique-bosses",
+      "sourceUrl": "https://opengameart.org/sites/default/files/giant_mutant.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/giant-mutant",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "52263cb5319d4d1ccf3fc36fddc162adcf6fa446cf405fda0e114275c44b5eba",
+      "bytes": 2778175,
+      "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
+    },
+    {
+      "file": "dungeon-interior-kit.zip",
+      "priority": "12-dungeon-interiors",
+      "sourceUrl": "https://opengameart.org/sites/default/files/Dungeon.zip",
+      "licenseSourceUrl": "https://opengameart.org/content/dungeon-assets",
+      "licenseDeclared": "CC0-1.0",
+      "sha256": "3a60053ea009a7a51d433c076b0e45d9401de6bab26a8ac48422bc01f8f958a7",
+      "bytes": 1571595,
+      "sourceFileCandidates": 1,
+      "validation": "zip_crc_and_content",
+      "sourceOnly": true,
+      "robloxImported": false,
+      "gameApplied": false
     }
   ],
   "duplicateSources": [],
-  "failed": []
+  "failed": [
+    {
+      "file": "animated-human-rigged.zip",
+      "priority": "10-npc-expanded",
+      "reason": "DOWNLOAD_HTTP_OR_NETWORK_FAILED",
+      "source": "https://opengameart.org/content/animated-human-low-poly"
+    }
+  ]
 }
