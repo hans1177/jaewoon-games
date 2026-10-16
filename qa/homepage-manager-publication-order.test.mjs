@@ -458,6 +458,11 @@ test('Homepage Manager binds the central homepage policy fingerprint from self-Q
   assert.match(manage,/COMPANY_VERIFIED_POLICY_PATH=company-learning\/platform-release-roadmap\.json node --input-type=module/);
   assert.match(manage,/COMPANY_VERIFIED_POLICY_PATH=company-learning\/platform-release-roadmap\.json node qa\/game-catalog-normalization\.test\.mjs/);
   assert.match(manager,/centralPolicyFingerprint===homepageCentral\.fingerprint/);
+  assert.doesNotMatch(manager,/'centralHomepagePolicyExists','centralHomepageExecutionFingerprint'/);
+  const catalogChecks=[...manage.matchAll(/node qa\/game-catalog-normalization\.test\.mjs/g)].length;
+  const verifiedCatalogChecks=[...manage.matchAll(/COMPANY_VERIFIED_POLICY_PATH=company-learning\/platform-release-roadmap\.json node qa\/game-catalog-normalization\.test\.mjs/g)].length;
+  assert.ok(catalogChecks>=2);
+  assert.equal(verifiedCatalogChecks,catalogChecks,'every runtime catalog QA requires verified canonical policy');
 });
 
 test('homepage platform exposure derives supported platforms from the central roadmap rather than a workflow constant',()=>{
