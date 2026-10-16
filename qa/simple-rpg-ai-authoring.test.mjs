@@ -426,3 +426,12 @@ test('civilization monsters patrol inside their existing habitat without changin
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
+
+test('Conan-style enemy aggro stays inside habitat and returns home without changing strike authority', () => {
+  assert.match(server, /targetRoot\.Position\.X - enemy\.Home\.X/);
+  assert.match(server, /Magnitude > 22 then\s+target = nil/);
+  assert.match(server, /AdvancedAIEcosystem\.SetState\(enemy, "ReturnHome"\)/);
+  assert.match(server, /homeOffset\.Magnitude > 12/);
+  assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
+  assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
+});
