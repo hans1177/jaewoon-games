@@ -112,6 +112,7 @@ concurrency:
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   CONTROL_BRANCH: vibe2-unreal-core
+  COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
 
 jobs:
   pr-fast-qa:
