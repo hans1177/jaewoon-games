@@ -21,16 +21,11 @@ export function enforceConstitution({phase = 'runtime', root = process.cwd(), po
         directive.documentationSynchronization?.centralPolicyPath !== null) {
       errors.push('OWNER_DIRECTIVE_POLICY_SOURCE_MISMATCH');
     }
-    if (!String(directive.instruction || '').includes('Legacy central policy document was removed by owner commit')) {
-      errors.push('OWNER_DIRECTIVE_POLICY_DELETION_UNVERIFIED');
-    }
-    const cleanup = directive.legacyCentralPolicyReferenceCleanup;
-    if (cleanup?.removedPolicyPath !== policyPath ||
-        cleanup?.replacementPolicyNotAsserted !== true ||
-        cleanup?.executionContractChangeNotAuthorized !== true ||
-        !/^[0-9a-f]{40}$/.test(String(cleanup?.removedByCommit || '')) ||
-        !String(directive.instruction || '').includes(cleanup.removedByCommit)) {
-      errors.push('OWNER_POLICY_REMOVAL_RECORD_INVALID');
+    if (directive.status !== 'MINIMAL_SUMMARY_NOT_REPLACEMENT_POLICY' ||
+        directive.execution?.centralPolicyMissing !== 'FAIL_CLOSED' ||
+        directive.execution?.workerBeforeSourceWriteRequired !== true ||
+        directive.execution?.unverifiedClaimsForbidden !== true) {
+      errors.push('OWNER_DIRECTIVE_MINIMAL_CONTRACT_INVALID');
     }
     if (exists) errors.push('DELETED_POLICY_REAPPEARED_REQUIRES_OWNER_REVIEW');
   }
