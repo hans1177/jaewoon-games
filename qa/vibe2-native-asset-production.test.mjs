@@ -4132,7 +4132,8 @@ test('precision production continues from inspection through authoring and appli
   assert.match(execution,/gameBindingOwner/);
   assert.doesNotMatch(execution,/"assetItems"|"mapRegions"|"assetChain"|"mapChain"/);
   assert.match(prompt,/qualityDNA/);
-  assert.match(prompt,/INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY/);
+  assert.match(prompt,/INSPECT -> VERIFY_ORIGINAL -> EXTRACT_OR_CONVERT_EXISTING -> APPLY -> RUNTIME_QA/);
+  assert.match(prompt,/Never produce new source models or speculative content/);
   assert.match(prompt,/GAME_CAMERA silhouette\/function/);
 });
 
