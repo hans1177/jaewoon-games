@@ -1762,3 +1762,27 @@ test('Vibe compact source-worker instructions retain internal composition across
   assert.match(narrowed,/autoComposition=/);
   assert.match(narrowed,/autoCompositionRule=/);
 });
+
+test('maximizes verified internal game algorithms within the existing BUILD_UP worker',()=>{
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:'simple-rpg',
+    platform:'ROBLOX',
+    designRecord:design(),
+    responsibleFiles:['roblox-games/simple-rpg/server/Game.server.luau']
+  });
+  const contract=d.internalAlgorithmUse;
+  assert.equal(contract.mode,'MAXIMIZE_TASK_RELEVANT_VERIFIED_INTERNAL_ALGORITHMS');
+  assert.equal(contract.priority[0],'SAME_GAME_SAME_FAILURE_VERIFIED_CAUSAL_AND_CODE_PATTERN');
+  assert.ok(contract.priority.at(-1).startsWith('EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY'));
+  assert.equal(contract.relevantAlgorithmsOnly,true);
+  assert.equal(contract.noDuplicateSubsystemsOrNewPipeline,true);
+  assert.equal(contract.noUnverifiedCapabilityClaims,true);
+  assert.equal(contract.qaReleaseSecurityGatesUnchanged,true);
+  assert.match(d.preserveConstraints[0],/기존 내부 분석/);
+  const prompt=directivePrompt(d);
+  assert.match(prompt,/INTERNAL_ALGORITHM_PRIORITY: USE_VERIFIED_SAME_GAME_AND_SAME_FAILURE_PATTERNS_FIRST/);
+  assert.match(prompt,/EXTERNAL_AI_IS_LOWER_PRIORITY_VERIFIED_ADVISORY_ONLY/);
+  // Existing source workers propagate preserveConstraints through both full and compact prompts.
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(worker, /preserve=\$\{\(d\.preserveConstraints\|\|\[\]\)/);
+});
