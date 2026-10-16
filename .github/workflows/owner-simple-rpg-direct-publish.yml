@@ -19,6 +19,11 @@ on:
         type: boolean
         required: false
         default: false
+      download_wildlife_assets:
+        description: '대충알피지 무료 야생동물 곤충 고대생물 원본 다운로드 보관'
+        type: boolean
+        required: false
+        default: false
       download_monster_assets:
         description: 'CC0 외부 몬스터 원본 5묶음 다운로드·검증·GitHub 보관 (게임 미적용)'
         type: boolean
@@ -126,6 +131,107 @@ jobs:
           path: assets/external/simple-rpg/
           if-no-files-found: error
           retention-days: 14
+  download_wildlife_assets:
+    if: \${{ (github.event_name == 'workflow_dispatch' && inputs.download_wildlife_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-wildlife]')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout for wildlife asset acquisition
+        uses: actions/checkout@v4
+      - name: Download license-verified CC0 3D creatures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,pathlib,subprocess,zipfile
+          from urllib.parse import quote
+          root=pathlib.Path('assets/external/simple-rpg/wildlife')
+          root.mkdir(parents=True,exist_ok=True)
+          # file, OpenGameArt original attachment, category, creator, license evidence slug
+          packs=[
+          ('wolf-eagle.zip','Animal Pack Vol.2 by @Quaternius.zip','wildlife','quaternius','animated-animales-low-poly'),
+          ('farm-animals.zip','Farm Animals by @Quaternius.zip','wildlife','quaternius','lowpoly-animated-farm-animal-pack'),
+          ('fish-animated.zip','Animated Fish Pack by @Quaternius.zip','aquatic','quaternius','animated-fish'),
+          ('five-animals.zip','Animals Pack by Quaternius.zip','wildlife','quaternius','5-low-poly-animals'),
+          ('cube-pets.zip','kenney_cube-pets_1.0.zip','wildlife','Kenney','cube-pets'),
+          ('armadillo.zip','Armadillo-3D-Pack-Fbx-Obj.zip','wildlife','overactiongamestudio','armadillo-foe'),
+          ('rat-pack.zip','Rat-Pack-All-Files.zip','wildlife','overactiongamestudio','rat-pack'),
+          ('rhino.zip','white_rhino.zip','wildlife','Micket','white-rhinoceros'),
+          ('animal-bestiary.blend','animaux_0.blend','wildlife','rudy85','animal-bestiary'),
+          ('butterfly.zip','Butterfly.zip','insect','CDmir','butterfly-animated'),
+          ('shellbug.zip','shellbug.zip','insect','br-n518','shell-bug'),
+          ('ant.blend','ant.blend','insect','mujtaba-io','ant-3d-model-rigging-animated-low-poly-ish'),
+          ('ankylosaurus.zip','Anklyosaurus.zip','prehistoric','Manicaeks','anklyosaurus'),
+          ('albertosaurus.zip','Albertosaurus.zip','prehistoric','Manicaeks','albertosaurus'),
+          ('pentaceratops.zip','Pentaceratops.zip','prehistoric','Manicaeks','pentaceratops'),
+          ('frilled-dinosaur.zip','frilled_dino_base.zip','prehistoric','br-n518','frilled-dino'),
+          ('triceratops.zip','low_spec_triceratops_oga.zip','prehistoric','pistachio','low-spec-triceratops'),
+          ('mammoth.7z','Mammouth.7z','prehistoric','STKRudy85','mammuth-low-poly'),
+          ('crocodile.7z','crocodile.7z','wildlife','br-n518','crocodile-0'),
+          ]
+          present=set()
+          previous=pathlib.Path('assets/external/simple-rpg/manifest.json')
+          if previous.exists():
+            for row in json.loads(previous.read_text()).get('packs',[]):
+              present.add(row['filename'].lower())
+          verified=[];failed=[]
+          for filename,remote,kind,creator,slug in packs:
+            target=root/filename
+            url='https://opengameart.org/sites/default/files/'+quote(remote)
+            if not target.exists():
+              run=subprocess.run(['curl','-fL','--retry','2','--retry-delay','2','--connect-timeout','12','--max-time','90','-o',str(target),url],stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+              if run.returncode:
+                target.unlink(missing_ok=True)
+                failed.append({'file':filename,'reason':'HTTP_DOWNLOAD_FAILED','source':slug})
+                print('WILDLIFE_DOWNLOAD_FAILED',filename,run.returncode)
+                continue
+            try:
+              if target.stat().st_size<512:raise ValueError('TINY_FILE')
+              names=[]
+              if filename.endswith('.zip'):
+                if not zipfile.is_zipfile(target):raise ValueError('NOT_ZIP')
+                with zipfile.ZipFile(target) as z:
+                  if z.testzip() is not None:raise ValueError('ZIP_CORRUPT')
+                  names=sorted({pathlib.PurePosixPath(n).stem.lower() for n in z.namelist() if n.lower().endswith(('.fbx','.obj','.gltf','.glb','.blend','.vox','.3ds'))})
+                  if not names:raise ValueError('NO_3D_CONTENT')
+              elif filename.endswith('.blend'):
+                if target.open('rb').read(7)!=b'BLENDER':raise ValueError('INVALID_BLEND')
+                names=[pathlib.Path(filename).stem]
+              elif filename.endswith('.7z'):
+                if target.open('rb').read(6)!=bytes.fromhex('377abcaf271c'):raise ValueError('INVALID_7Z')
+                names=[pathlib.Path(filename).stem]
+              verified.append({'file':filename,'category':kind,'creator':creator,'license':'CC0-1.0','licenseEvidence':'https://opengameart.org/content/'+slug,'sourceUrl':url,'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'bytes':target.stat().st_size,'modelNameCandidates':names,'sourceOnly':True})
+              print('WILDLIFE_VERIFIED',filename,len(names))
+            except (ValueError,OSError,zipfile.BadZipFile) as ex:
+              target.unlink(missing_ok=True)
+              failed.append({'file':filename,'reason':str(ex),'source':slug})
+          result={'version':1,'gameId':'simple-rpg','license':'CC0-1.0','sourceOnly':True,'gameApplied':False,'distinctSpeciesUnverified':True,'packs':verified,'failed':failed}
+          (root/'manifest.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+          print('WILDLIFE_VERIFIED_PACKS',len(verified),'FAILED_PACKS',len(failed))
+          if not verified:raise SystemExit('NO_VALID_WILDLIFE_ASSETS_DOWNLOADED')
+          PY
+      - name: Commit verified CC0 animal insect and prehistoric archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/external/simple-rpg/wildlife/
+          if ! git diff --cached --quiet; then
+            git commit -m 'assets: retain licensed wildlife insect prehistoric source archives'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo 'WILDLIFE_SOURCE_ARCHIVE=assets/external/simple-rpg/wildlife'
+      - name: Save verification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-rpg-wildlife-manifest
+          path: assets/external/simple-rpg/wildlife/manifest.json
+          if-no-files-found: error
+          retention-days: 14
   upload_actor_assets:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/'))) }}
     runs-on: ubuntu-latest
@@ -155,7 +261,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   publish:
-    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true)) }}
+    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
