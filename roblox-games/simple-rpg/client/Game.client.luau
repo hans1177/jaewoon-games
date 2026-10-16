@@ -1972,6 +1972,9 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           local walkingUntil = model:GetAttribute("MotionWalkingUntil")
           local serverWalking = typeof(walkingUntil) == "number"
             and workspace:GetServerTimeNow() < walkingUntil
+          local commandedSpeed = model:GetAttribute("MotionMoveSpeed")
+          local validCommandSpeed = serverWalking and typeof(commandedSpeed) == "number"
+            and commandedSpeed > 0.35 and commandedSpeed < 65
           -- 보행 명령이 종료되면 위치 복제의 지연 프레임을 짧게만 허용한다.
           local recentlyMoved = creatureMotionPhase - lastMovedAt < 0.14
           local currentHumanoid = model:FindFirstChildOfClass("Humanoid")
@@ -1994,16 +1997,22 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           if realMoving then
             -- 서버가 명령한 이동 속도가 있으면 그것을 발걸음 주기에 사용한다.
             -- 로컬 위치가 4Hz로 복제되더라도 발이 지나치게 빠르게 움직이지 않는다.
-            local commandedSpeed = model:GetAttribute("MotionMoveSpeed")
-            local gaitSpeed = serverWalking and typeof(commandedSpeed) == "number"
-              and commandedSpeed > 0.35 and commandedSpeed or smoothedSpeed
+            local gaitSpeed = validCommandSpeed and commandedSpeed or smoothedSpeed
             local cadenceSpeed = math.clamp(gaitSpeed > 0.35 and gaitSpeed or 4.5, 2.5, 12)
             gaitPhase += cadenceSpeed * math.min(elapsed, 0.12) * 1.4
           else
             smoothedSpeed = 0
           end
         end
-        horizontalSpeed = realMoving and (smoothedSpeed > 0.35 and smoothedSpeed or 4.5) or 0
+        -- 서버 속도를 걸음 주기뿐 아니라 보폭·발 높이에도 동일하게 적용한다.
+        local replicatedCommandSpeed = model:GetAttribute("MotionMoveSpeed")
+        local walkingExpiry = model:GetAttribute("MotionWalkingUntil")
+        local commandActive = typeof(walkingExpiry) == "number"
+          and workspace:GetServerTimeNow() < walkingExpiry
+          and typeof(replicatedCommandSpeed) == "number"
+          and replicatedCommandSpeed > 0.35 and replicatedCommandSpeed < 65
+        horizontalSpeed = realMoving and (commandActive and replicatedCommandSpeed
+          or (smoothedSpeed > 0.35 and smoothedSpeed or 4.5)) or 0
         local motionHumanoid = model:FindFirstChildOfClass("Humanoid")
         local healthMotion = creatureHealthMotion[model]
         local healthNow = motionHumanoid and motionHumanoid.Health or 0
