@@ -2847,6 +2847,25 @@ task.spawn(function()
               or habitat == "SNOW" and (4 + step % 3 * 2)
               or (5 + step % 4 * 2)
             local destination = enemy.Home + Vector3.new(math.cos(angle) * radius, 0, math.sin(angle) * radius)
+            -- 같은 문명의 살아 있는 일반 몬스터가 가까우면 순찰 목적지를 조금 공유한다.
+            -- 플레이어 대상/보스/기존 생성 위치는 건드리지 않는다.
+            if enemy.Model:GetAttribute("IsRaidBoss") ~= true then
+              for _, ally in ipairs(civEnemies) do
+                if ally ~= enemy and ally.RaceID == enemy.RaceID
+                  and ally.Humanoid.Health > 0
+                  and ally.Model:GetAttribute("IsRaidBoss") ~= true
+                  and ally.PatrolDestination
+                  and (ally.Root.Position - enemy.Root.Position).Magnitude <= 14 then
+                  local offset = Vector3.new((enemy.Model:GetAttribute("MobSlot") or 1) == 2 and -3 or 3, 0, 3)
+                  local groupDestination = ally.PatrolDestination + offset
+                  if (Vector3.new(groupDestination.X - enemy.Home.X, 0,
+                      groupDestination.Z - enemy.Home.Z)).Magnitude <= 13 then
+                    destination = groupDestination
+                  end
+                  break
+                end
+              end
+            end
             local planar = Vector3.new(destination.X - enemy.Root.Position.X, 0,
               destination.Z - enemy.Root.Position.Z)
             -- 이동 후 잠깐 쉬고 다음 목표로 간다. 큰 간격의 1회 이동만 반복하지 않는다.
