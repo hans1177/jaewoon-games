@@ -2758,6 +2758,9 @@ task.spawn(function()
                 end
               end
             else
+              -- 교전 전 이전 순찰 목적지를 폐기해 전투 종료 후 오래된 경로로 뛰지 않는다.
+              enemy.PatrolDestination = nil
+              enemy.NextPatrolAt = now + 2
               AdvancedAIEcosystem.SetState(enemy, "Combat")
               if enemy.TelegraphAt > 0 and now >= enemy.TelegraphAt then
                 local intendedUserId = enemy.TargetUserId
@@ -2809,6 +2812,8 @@ task.spawn(function()
           local homeOffset = Vector3.new(enemy.Home.X - enemy.Root.Position.X, 0,
             enemy.Home.Z - enemy.Root.Position.Z)
           if homeOffset.Magnitude > 12 then
+            enemy.PatrolDestination = nil
+            enemy.NextPatrolAt = now + 2
             AdvancedAIEcosystem.SetState(enemy, "ReturnHome")
             if homeOffset.Magnitude > 0.1 then
               local step = enemy.Root.Position + homeOffset.Unit * math.min(1.2, homeOffset.Magnitude)
