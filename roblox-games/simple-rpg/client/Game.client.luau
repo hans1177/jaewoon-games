@@ -2010,7 +2010,12 @@ creatureMotionRunService.RenderStepped:Connect(function(dt)
           -- 보행 명령이 종료되면 위치 복제의 지연 프레임을 짧게만 허용한다.
           local recentlyMoved = creatureMotionPhase - lastMovedAt < 0.14
           local currentHumanoid = model:FindFirstChildOfClass("Humanoid")
+          local lastStrikeAt = model:GetAttribute("LastAttackAnimationAt")
+          local strikeAge = typeof(lastStrikeAt) == "number"
+            and workspace:GetServerTimeNow() - lastStrikeAt or math.huge
+          local strikeActive = strikeAge >= 0 and strikeAge < 0.32
           local movementBlocked = model:GetAttribute("IsPreparingAttack") == true
+            or strikeActive
             or model:GetAttribute("AIState") == "Stunned"
             or (currentHumanoid ~= nil and currentHumanoid.Health <= 0)
           if movementBlocked then
