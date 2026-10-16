@@ -195,6 +195,15 @@ export const INTERFACE_INTERNAL_TOOL_MATCHERS=Object.freeze([
   {id:'COMPANION_PARTY',match:/party|companion|squad|파티|동료|분대/i,signals:[],library:'assets/ai-party.js',screens:['GAMEPLAY']}
 ]);
 
+// 자동 화면 구성은 기존 화면·핸들러와 확인된 공용 에셋만 후보로 삼는다. 장르만으로 새 UI를 만들지 않는다.
+export const INTERFACE_AUTO_COMPOSITION_TARGETS=Object.freeze([
+  {id:'LOBBY',role:'LOBBY',match:/lobby|waiting.?room|main.?menu|로비|대기실|시작.?화면/i,assets:['ENVIRONMENT','PROP','UI']},
+  {id:'CUSTOMIZATION',role:'CUSTOMIZATION',match:/customiz|customis|appearance|avatar|skin|outfit|dress|꾸미기|커스터마이징|외형|의상|스킨/i,assets:['CHARACTER','EQUIPMENT','UI']},
+  {id:'MATERIAL',role:'CUSTOMIZATION',match:/material|texture|shader|surface|paint|color.?picker|재질|텍스처|색상|염색/i,assets:['MATERIAL','TEXTURE']},
+  {id:'INVENTORY',role:'INVENTORY',match:/inventory|equipment|backpack|item.?slot|인벤|장비|가방|아이템/i,assets:['ITEM','EQUIPMENT','UI']},
+  {id:'GAME_UI',role:'GAMEPLAY',match:/\bhud\b|\bui\b|interface|status.?bar|menu|button|터치|조이스틱|상태창|메뉴|버튼/i,assets:['UI','ICON']}
+]);
+
 // 메뉴 도안: 장르별 실제 행동을 화면·버튼·복귀 관계로 연결한다. 게임 상태 변경은 기존 책임 코드가 소유한다.
 export function buildInterfaceBlueprintContract({design={},source={},files=[],mode='',focus='',enabled=false,platform='WEB',availableLibraryPaths=[]}={}){
   if(!enabled||mode==='EXISTING_SOURCE_REPAIR')return null;
@@ -277,11 +286,34 @@ export function buildInterfaceBlueprintContract({design={},source={},files=[],mo
       runtimeVerified:false
     };
   }).filter(Boolean);
-  return{version:1,required:clean(focus).toUpperCase()==='USABILITY',designFingerprint:hash(JSON.stringify(requirements)),requirements,referencePatterns,externalAlgorithms,internalToolMatches,internalLibraryMatches,firstPartyLibraryCount:runtimeLibraries.length,genreContext:clean(design.genre)||'UNSPECIFIED',screenHints:unique(internalToolMatches.flatMap(row=>row.screens)),sourceFiles:files,
+  // 소스 관측과 담당 파일이 맞는 기존 화면만 자동 연결 대상으로 선택한다.
+  // 디자인 힌트는 실제 화면이 아니라 후보이며 기존 자산·저장소·게임 규칙을 변경하지 않는다.
+  const nativePlatform=clean(platform).toUpperCase().startsWith('UNITY')?'UNITY':clean(platform).toUpperCase();
+  const presentationFiles=list(files).map(spatialPath).filter(file=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(sourceRole(file,nativePlatform)));
+  const removed=latestOwnerChanges(design.ownerFeatureChanges).filter(row=>row.action==='REMOVE');
+  const autoCompositionTargets=INTERFACE_AUTO_COMPOSITION_TARGETS.map(target=>{
+    if(removed.some(row=>target.match.test(row.featureId+' '+row.requirement)))return null;
+    const designMatch=target.match.test(systemText);
+    const matchedAnchors=list(source?.sourceAnchors).filter(row=>target.match.test(clean(row?.symbol)+' '+clean(row?.context)))
+      .map(row=>({file:spatialPath(row?.file),symbol:clean(row?.symbol)}))
+      .filter(row=>row.file&&row.symbol&&presentationFiles.some(file=>file===row.file||file.endsWith('/'+row.file)||row.file.endsWith('/'+file)));
+    const sourceFiles=unique(matchedAnchors.map(row=>row.file));
+    if(!designMatch&&!sourceFiles.length)return null;
+    return{ id:target.id,screenRole:target.role,sourceFiles,
+      sourceAnchors:matchedAnchors.slice(0,8),designMatch,
+      status:sourceFiles.length?'SOURCE_MATCH_REQUIRES_NATIVE_IMPLEMENTATION_AND_QA':'DESIGN_HINT_NOT_APPLIED',
+      assetFamilies:target.assets,assetRegistry:'company-asset-library.json',licenseLedger:'assets/asset-license-ledger.json',
+      reuseExistingAssetsOnly:true,newAssetGeneration:false,automaticImport:false,
+      sourceOwnedHandlersRequired:true,gameplayStateOwnerUnchanged:true,saveSchemaUnchanged:true,inventoryRulesUnchanged:true,
+      layout:{mobileFirst:true,minTouchTarget:44,safeAreaRequired:true,scrollAndReturnRequired:true,screenOverlapForbidden:true},
+      qa:['EXISTING_NATIVE_HANDLER_BINDING','VERIFIED_ASSET_LICENSE_AND_SOURCE','GAME_SPECIFIC_STYLE_AND_MATERIAL_PREVIEW','MOBILE_TOUCH_AND_SAFE_AREA','SCROLL_OPEN_CLOSE_RETURN','DISABLED_ACTION_AND_FAILURE_RECOVERY','SAVE_RELOAD_AND_GAMEPLAY_REGRESSION','EXACT_NATIVE_RUNTIME'],
+      runtimeVerified:false};
+  }).filter(Boolean);
+  return{version:1,required:clean(focus).toUpperCase()==='USABILITY',designFingerprint:hash(JSON.stringify(requirements)),requirements,referencePatterns,externalAlgorithms,internalToolMatches,internalLibraryMatches,autoCompositionTargets,firstPartyLibraryCount:runtimeLibraries.length,genreContext:clean(design.genre)||'UNSPECIFIED',screenHints:unique(internalToolMatches.flatMap(row=>row.screens)),sourceFiles:files,
     selectionRule:'OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.',
     scope:'TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES',
     schema:{version:1,designFingerprint:'exact contract fingerprint',viewport:{width:390,height:844,safeTop:0,safeBottom:0},entryId:'first screen',
-      screens:[{id:'existing screen id',role:'MAIN_MENU or GAMEPLAY or INVENTORY or SHOP or QUEST or SETTINGS',modal:false,scrollable:false,contentHeight:844,
+      screens:[{id:'existing screen id',role:'LOBBY or CUSTOMIZATION or MAIN_MENU or GAMEPLAY or INVENTORY or SHOP or QUEST or SETTINGS',modal:false,scrollable:false,contentHeight:844,
         controls:[{id:'existing control id',action:'existing gameplay action',feedback:'observable feedback',enabledWhen:'existing state guard',rect:{x:0,y:0,width:44,height:44},binding:{path:'source file',symbol:'event handler',sourceEvidence:'exact event/handler source'}}]}],
       transitions:[{from:'screen id',controlId:'control id',to:'screen id',kind:'OPEN or BACK or CLOSE or ACTION',preservesState:true}],
       playerTasks:[{id:'frequent player intent',friction:'observed repeated work or information gap',patternId:'matched reference or algorithm id or ORIGINAL',toolId:'optional source-matched internal tool id',adaptation:'why this game needs it',from:'screen id',to:'completion screen',controlId:'completion action',maxNavigationSteps:2,retainedContext:['selection','filter','scroll','draft'],failureRecovery:'existing safe recovery',runtimeCheck:'exact-build input sequence and observable result; compare before/after without invented measurements'}]},
@@ -617,7 +649,8 @@ export function productionBlueprintContractsForFiles(plan,{responsibleFiles=[]}=
   const interfaceOwner=packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))||files.some(file=>/ui|hud|menu|interface/i.test(file.split('/').at(-1)));
   const scoped=(contract,owner)=>contract?{
     ...contract,sourceFiles:files,authoringScopeOwned:owner,required:contract.required===true&&owner&&files.length>0,
-    ...(!owner&&contract.externalAlgorithms?{externalAlgorithms:[],internalToolMatches:[],internalLibraryMatches:[],screenHints:[],referencePatterns:[],experienceScenarioContract:contract.experienceScenarioContract?{...contract.experienceScenarioContract,required:false}:undefined}:{}),
+    ...(!owner&&contract.externalAlgorithms?{externalAlgorithms:[],internalToolMatches:[],internalLibraryMatches:[],autoCompositionTargets:[],screenHints:[],referencePatterns:[],experienceScenarioContract:contract.experienceScenarioContract?{...contract.experienceScenarioContract,required:false}:undefined}:{}),
+    ...(owner&&contract.autoCompositionTargets?{autoCompositionTargets:list(contract.autoCompositionTargets).filter(row=>!list(row.sourceFiles).length||list(row.sourceFiles).some(owns))}:{}),
     ...(!owner&&contract.macroSketch?.proceduralWorldStudy?{macroSketch:{...contract.macroSketch,proceduralWorldStudy:undefined,authoredLayout:{...contract.macroSketch.authoredLayout,proceduralWorld:undefined}}}:{})
   }:null;
   return{spatial:scoped(plan?.spatialBlueprintContract,spatialOwner),interface:scoped(plan?.interfaceBlueprintContract,interfaceOwner)};
@@ -653,7 +686,7 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     ]:[]),
     ...(plan.interfaceBlueprintContract?[
       prefix+'INTERFACE='+JSON.stringify(blueprints.interface),
-      prefix+'INTERFACE_RULE=Automatically match external UX algorithms and internal tool hints by real gameplay systems, observed UI code and user friction, not by genre labels alone. All matches are optional, not mandatory menus or functionality. For relevant usability edits author task-local interfaceBlueprint first and connect actual existing handlers, preserved navigation and safe failure paths. Never auto-import hinted JS modules, invent a new gameplay system or use shadow UI. For UNITY_WEB use the SAME canonical Unity C# UI source and UI runtime as UNITY_APP, never new HTML/CSS/JS gameplay UI; Roblox must use native Luau. Preserve game rules, save, economy, restrictions, touch safety and existing return flow. Static interface validation cannot claim runtime PASS.'
+      prefix+'INTERFACE_RULE=Automatically match external UX algorithms and internal tool hints by real gameplay systems, observed UI code and user friction, not by genre labels alone. All matches are optional, not mandatory menus or functionality. For relevant usability edits author task-local interfaceBlueprint first and connect actual existing handlers, preserved navigation and safe failure paths. Never auto-import hinted JS modules, invent a new gameplay system or use shadow UI. For UNITY_WEB use the SAME canonical Unity C# UI source and UI runtime as UNITY_APP, never new HTML/CSS/JS gameplay UI; Roblox must use native Luau. For LOBBY, CUSTOMIZATION, MATERIAL, INVENTORY and GAME_UI use autoCompositionTargets only when existing native source files and handler evidence are present. Design hints are not implementation. Reuse the verified company-asset-library.json originals under assets/asset-license-ledger.json; never generate or download new assets. Keep material and visual changes presentation-only, never alter inventory rules, save identity, gameplay or server authority. Bind original game actions, mobile touch safe areas, scrolling, disabled states and return navigation; require exact-build native QA and save/reload regression. Preserve game rules, save, economy, restrictions, touch safety and existing return flow. Static interface validation cannot claim runtime PASS.'
     ]:[]),
     ...(plan.spatialBlueprintContract?[
       prefix+'SPATIAL='+JSON.stringify(blueprints.spatial),
