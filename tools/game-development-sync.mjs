@@ -86,11 +86,26 @@ export function buildGameDevelopmentMap({repoRoot=ROOT,gameId=''}={}){
       if(/^(web-games|roblox-games|unity-games|godot-games|uefn-games)\//.test(local)
         && !exists(repoRoot,local))issues.push('CATALOG_SOURCE_NOT_FOUND:'+local);
     }
-    const project=sources.ROBLOX&&exists(repoRoot,sources.ROBLOX+'/default.project.json')
-      ?readJson(repoRoot,sources.ROBLOX+'/default.project.json'):null;
+    let project=null;
+    if(sources.ROBLOX&&exists(repoRoot,sources.ROBLOX+'/default.project.json')){
+      try{project=readJson(repoRoot,sources.ROBLOX+'/default.project.json');}
+      catch{issues.push('ROBLOX_PROJECT_JSON_INVALID');}
+    }
     const name=item?.name||project?.name||id;
     if(project&&item?.name&&project.name&&project.name!==item.name){
       issues.push('NAME_DIFFERS_FROM_PROJECT:'+project.name);
+    }
+    // A per-game bootstrap is historical evidence, not a second source of truth.
+    if(sources.ROBLOX&&exists(repoRoot,sources.ROBLOX+'/roblox-source-bootstrap.json')){
+      try{
+        const bootstrap=readJson(repoRoot,sources.ROBLOX+'/roblox-source-bootstrap.json');
+        if(bootstrap.gameId&&bootstrap.gameId!==id)
+          issues.push('BOOTSTRAP_GAME_ID_MISMATCH');
+        if(bootstrap.gameName&&bootstrap.gameName!==name)
+          issues.push('BOOTSTRAP_GAME_NAME_MISMATCH:'+bootstrap.gameName);
+        if(bootstrap.policyDocument&&!exists(repoRoot,bootstrap.policyDocument))
+          issues.push('BOOTSTRAP_LEGACY_POLICY_REFERENCE');
+      }catch{issues.push('ROBLOX_BOOTSTRAP_JSON_INVALID');}
     }
     if(!Object.keys(sources).length)issues.push('SOURCE_NOT_FOUND');
     games.push({
