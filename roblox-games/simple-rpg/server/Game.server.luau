@@ -1532,6 +1532,8 @@ for id = 1, 24 do
   civSign(region, monument, race.Name .. "\n" .. race.Landmark, 9)
   -- Existing landmark is the authoritative interaction target, not a client-controlled reward.
   local landmarkPrompt = Instance.new("ProximityPrompt")
+  -- Hide the Roblox default UI while preserving ProximityPrompt input.
+  landmarkPrompt.Style = Enum.ProximityPromptStyle.Custom
   landmarkPrompt.Name = "LandmarkHistory"
   landmarkPrompt.ActionText = "유적 살펴보기"
   landmarkPrompt.ObjectText = race.Landmark
@@ -1567,6 +1569,8 @@ for id = 1, 24 do
     node:SetAttribute("CivilizationResourceType", resource.Type)
     civSign(region, node, resource.Label .. " 채집", 4)
     local gatherPrompt = Instance.new("ProximityPrompt")
+  -- Hide the Roblox default UI while preserving ProximityPrompt input.
+  gatherPrompt.Style = Enum.ProximityPromptStyle.Custom
     gatherPrompt.Name = "GatherResource"
     gatherPrompt.ActionText = "채집"
     gatherPrompt.ObjectText = resource.Label
@@ -1608,6 +1612,8 @@ for id = 1, 24 do
   civSign(region, tradeStall, race.Name .. " 무역 광장", 4)
   civTradeStalls[id] = tradeStall
   local tradePrompt = Instance.new("ProximityPrompt")
+  -- Hide the Roblox default UI while preserving ProximityPrompt input.
+  tradePrompt.Style = Enum.ProximityPromptStyle.Custom
   tradePrompt.Name = "TradeMarket"
   tradePrompt.ActionText = "시세 확인/거래"
   tradePrompt.ObjectText = race.Name .. " 무역소"
