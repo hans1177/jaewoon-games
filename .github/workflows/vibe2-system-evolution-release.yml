@@ -93,7 +93,7 @@ jobs:
           set -euo pipefail
           git diff --check "${{ steps.meta.outputs.base_sha }}" HEAD
           node --check tools/vibe2-system-evolution-verify.mjs
-          node --test --test-concurrency=4 qa/vibe2-*.test.mjs qa/company-central-policy-contract.test.mjs
+          node --test --test-concurrency=4 qa/vibe2-*.test.mjs qa/company-shared-context-retained.test.mjs
           node tools/company-security-steward.mjs --output=/tmp/vibe2-system-security.json
           test -s /tmp/vibe2-system-security.json
           echo 'VIBE2_SYSTEM_EVOLUTION_FULL_REGRESSION=PASS'
