@@ -297,6 +297,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Verify production-bound auto-coding preflight before broader regression
+        run: node --test --test-name-pattern='^real production Roblox auto-coding preflight' qa/vibe2-central-work-contract.test.mjs
+
       - name: Syntax check
         run: |
           set -euo pipefail
