@@ -93,8 +93,8 @@ test('lifecycle uses Unity Web as the pre-native development floor and keeps rel
   assert.equal(life.gameDevelopmentAuthority.ownsInternalPlaytestRepair,true);
 });
 
-test('directive mirrors Roblox-only development and holds Unity Web',()=>{
-  assert.equal(directive.currentExecutionMode,'ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT');
+test('directive mirrors Roblox and direct Web development while holding Unity Web',()=>{
+  assert.equal(directive.currentExecutionMode,'ROBLOX_AND_DIRECT_WEB_CONTINUOUS_DEVELOPMENT');
   assert.equal(Object.hasOwn(directive,'legacyWebFirstPolicy'),false);
   assert.equal(directive.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,false);
   assert.equal(directive.directNativeDualPlatformDevelopment.unityWebEnabled,false);
@@ -167,7 +167,7 @@ test('active scheduling cannot silently re-enable UEFN or weaken native evidence
   assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX']]);
   assert.deepEqual(roadmap.platformPriorityInvariant.schedulingOrder,['UNITY','ROBLOX']);
   assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStillAllowed,false);
-  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX']);
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','WEB']);
   assert.equal(roadmap.developmentLifecycleMachine.platformExecutionHolds.UNITY_ANDROID.developmentExecutionAllowed,false);
   assert.equal(roadmap.platformPriorityInvariant.qualityOrEvidenceGateWeakeningAllowed,false);
   assert.equal(roadmap.directNativeDualPlatformDevelopment.externalRelease.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence,true);
