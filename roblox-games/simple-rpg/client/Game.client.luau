@@ -314,48 +314,13 @@ verifiedLearningDepth.InFocusRadius = 24
 
 end
 
--- Existing Roblox Animator motion blending applies to every playable character.
-do
+if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "COMBAT_IMPACT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
 -- Roblox character animation / motion adaptation.
 local function syncVerifiedLearningCharacterMotion(character)
   local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 5)
   if not humanoid then return end
   local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 5)
   if not animator then return end
-  -- 공식 Roblox Knight R15 모션 에셋: 기본 Animate 책임을 그대로 사용한다.
-  if humanoid.RigType == Enum.HumanoidRigType.R15 then
-    local animate = character:FindFirstChild("Animate") or character:WaitForChild("Animate", 5)
-    if animate then
-      local motionIds = {
-        run = {"RunAnim", 657564596},
-        walk = {"WalkAnim", 657552124},
-        jump = {"JumpAnim", 658409194},
-        fall = {"FallAnim", 657600338},
-        climb = {"ClimbAnim", 658360781},
-        swim = {"Swim", 657560551},
-        swimidle = {"SwimIdle", 657557095},
-      }
-      for folder, entry in pairs(motionIds) do
-        local state = animate:FindFirstChild(folder)
-        local clip = state and state:FindFirstChild(entry[1])
-        if clip and clip:IsA("Animation") then
-          local assetId = "rbxassetid://" .. tostring(entry[2])
-          if clip.AnimationId ~= assetId then
-            clip.AnimationId = assetId
-          end
-        end
-      end
-      local idle = animate:FindFirstChild("idle")
-      if idle then
-        for index, id in ipairs({657595757, 657568135, 885499184}) do
-          local clip = idle:FindFirstChild("Animation" .. index)
-          if clip and clip:IsA("Animation") then
-            clip.AnimationId = "rbxassetid://" .. tostring(id)
-          end
-        end
-      end
-    end
-  end
   humanoid.Running:Connect(function(speed)
     local ratio = speed > 0.1 and math.clamp(speed / math.max(humanoid.WalkSpeed, 1), 0.82, 1.25) or 1
     for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
