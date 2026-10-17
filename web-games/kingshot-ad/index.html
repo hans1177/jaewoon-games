@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>킹샷 광고풍</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#132319;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+button{font:inherit}
+#game{position:relative;width:100%;height:100%;touch-action:none;background:linear-gradient(#7bb768,#4e7f48)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.hud{position:absolute;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;pointer-events:none}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pill{padding:7px 9px;border-radius:12px;background:#0c1813d9;border:1px solid #ffffff28;backdrop-filter:blur(8px);font-size:12px}
+.pill b{font-size:14px}
+.base{min-width:120px}.track{height:6px;margin-top:4px;background:#3b2b2b;border-radius:8px;overflow:hidden}.track span{display:block;height:100%;background:#5ed06e}
+.notice{margin-top:7px;max-width:min(94vw,560px);padding:7px 9px;border-radius:12px;background:#0c1813df;border:1px solid #ffffff24;font-size:12px;opacity:0;transition:.15s}.notice.show{opacity:1}
+.bottom{position:absolute;left:0;right:0;bottom:0;padding:8px 10px calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
+.joy{position:relative;width:122px;height:122px;border-radius:50%;border:2px solid #ffffff44;background:#08110a77;pointer-events:auto;touch-action:none}.stick{position:absolute;left:34px;top:34px;width:50px;height:50px;border-radius:50%;background:#ffffffaa;border:2px solid #fff}
+.actions{display:grid;grid-template-columns:76px 76px;gap:9px;pointer-events:auto}.act{width:76px;height:76px;border:2px solid #ffffff55;border-radius:50%;color:#fff;font-weight:900;font-size:12px;background:#6b3b27dd}.act.alt{background:#2f5e83dd}
+.panel{position:absolute;right:8px;top:92px;display:flex;flex-direction:column;gap:7px}.ui{border:1px solid #ffffff33;background:#10271de8;color:#fff;border-radius:12px;padding:10px 12px;font-weight:850;font-size:12px}
+.modalWrap{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:#07110bbb;padding:18px;z-index:20}.modalWrap.show{display:flex}.modal{width:min(92vw,430px);background:#12241a;border:1px solid #ffffff2d;border-radius:20px;padding:16px;text-align:center}.modal h1{margin:0 0 8px}.modal p{font-size:13px;line-height:1.5;color:#d8e7dc}.close{width:100%;margin-top:12px;border:0;border-radius:12px;padding:12px;background:#e9f5ea;color:#102016;font-weight:900}
+@media(min-width:760px){.joy{width:132px;height:132px}.stick{left:39px;top:39px}.actions{grid-template-columns:84px 84px}.act{width:84px;height:84px}}
+</style>
+</head>
+<body>
+<div id="game">
+<canvas id="cv"></canvas>
+<div class="hud">
+  <div class="row">
+    <div class="pill"><b id="wave">웨이브 1</b></div>
+    <div class="pill">🪙 <b id="coin">20</b></div>
+    <div class="pill">🪵 <b id="wood">0</b></div>
+    <div class="pill">병사 <b id="soldier">0</b></div>
+    <div class="pill base">성문 <b id="baseText">200/200</b><div class="track"><span id="baseBar" style="width:100%"></span></div></div>
+  </div>
+  <div id="notice" class="notice"></div>
+</div>
+<div class="panel">
+  <button id="recruitBtn" class="ui">병사 모집 20🪙</button>
+  <button id="upgradeBtn" class="ui">검 강화 30🪙</button>
+</div>
+<div class="bottom">
+  <div id="joy" class="joy"><div id="stick" class="stick"></div></div>
+  <div class="actions">
+    <button id="attackBtn" class="act">공격</button>
+    <button id="interactBtn" class="act alt">채집/건설</button>
+  </div>
+</div>
+<div id="end" class="modalWrap"><div class="modal"><h1 id="endTitle">성문이 무너졌어</h1><p id="endText"></p><button id="restart" class="close">다시 시작</button></div></div>
+</div>
+<script>
+// 파일명: web-games/kingshot-ad/index.html
+// 메인: 광고형 액션 디펜스 프로토타입
+(()=>{
+'use strict';
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),$=id=>document.getElementById(id);
+const WORLD_W=1800,WORLD_H=1200,BASE_X=250,BASE_Y=600;
+const state={coin:20,wood:0,wave:1,baseHp:200,baseMax:200,heroDamage:18,heroHp:100,dead:false,nextWave:8,notice:0};
+const hero={x:460,y:600,r:17,dx:1,dy:0,speed:180,lastAttack:0,hit:0};
+const camera={x:0,y:0}; let last=performance.now(),keys={},joy={active:false,pid:null,x:0,y:0};
+const soldiers=[],enemies=[],trees=[],pads=[];
+for(let i=0;i<18;i++)trees.push({x:650+(i%6)*150+Math.random()*70,y:140+Math.floor(i/6)*330+Math.random()*120,hp:2,alive:true,respawn:0});
+pads.push({x:430,y:400,built:false},{x:430,y:800,built:false},{x:620,y:600,built:false});
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function resize(){const d=Math.min(2,devicePixelRatio||1);cv.width=innerWidth*d;cv.height=innerHeight*d;cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0)}
+addEventListener('resize',resize);resize();
+function toast(t,s=1.6){$('notice').textContent=t;$('notice').classList.add('show');state.notice=s}
+function updateHud(){$('wave').textContent='웨이브 '+state.wave;$('coin').textContent=state.coin;$('wood').textContent=state.wood;$('soldier').textContent=soldiers.filter(s=>s.hp>0).length;$('baseText').textContent=Math.ceil(state.baseHp)+'/'+state.baseMax;$('baseBar').style.width=clamp(state.baseHp/state.baseMax*100,0,100)+'%';}
+function spawnWave(){const n=4+state.wave*2;for(let i=0;i<n;i++){const heavy=state.wave>=3&&i%5===0;enemies.push({x:WORLD_W-100+Math.random()*70,y:150+Math.random()*(WORLD_H-300),r:heavy?20:15,hp:heavy?90+state.wave*15:45+state.wave*10,max:heavy?90+state.wave*15:45+state.wave*10,speed:heavy?44:58+state.wave*2,damage:heavy?18:9+state.wave,lastAttack:0,hit:0});}toast('적 웨이브가 온다!');}
+function recruit(){if(state.coin<20){toast('금화가 부족해');return}state.coin-=20;const a=Math.random()*Math.PI*2;soldiers.push({x:hero.x+Math.cos(a)*35,y:hero.y+Math.sin(a)*35,r:12,hp:70,max:70,damage:10,lastAttack:0,hit:0});updateHud()}
+function upgrade(){if(state.coin<30){toast('금화가 부족해');return}state.coin-=30;state.heroDamage+=8;toast('검 공격력 +8');updateHud()}
+function buildOrGather(){if(state.dead)return;
+ let bestTree=null,bd=62;for(const t of trees){if(!t.alive)continue;const d=dist(hero,t);if(d<bd){bd=d;bestTree=t}}
+ if(bestTree){bestTree.hp--;if(bestTree.hp<=0){bestTree.alive=false;bestTree.respawn=18;state.wood+=8;state.coin+=3;toast('나무 +8 · 금화 +3')}else toast('나무를 베었어');updateHud();return}
+ let pad=null;bd=78;for(const p of pads){if(p.built)continue;const d=dist(hero,p);if(d<bd){bd=d;pad=p}}
+ if(pad){if(state.wood<20){toast('방어탑은 나무 20개 필요');return}state.wood-=20;pad.built=true;toast('궁수탑 건설 완료');updateHud();return}
+ toast('나무나 건설 위치에 가까이 가')}
+function attack(){const now=performance.now()/1000;if(now-hero.lastAttack<.35||state.dead)return;hero.lastAttack=now;let target=null,bd=78;for(const e of enemies){if(e.hp<=0)continue;const d=dist(hero,e);if(d<bd){const vx=(e.x-hero.x)/Math.max(1,d),vy=(e.y-hero.y)/Math.max(1,d);if(vx*hero.dx+vy*hero.dy>-.1){bd=d;target=e}}}if(target){target.hp-=state.heroDamage;target.hit=.12;if(target.hp<=0){state.coin+=8+state.wave;toast('적 처치! 금화 획득',.7)}updateHud()}}
+function endGame(){if(state.dead)return;state.dead=true;$('endTitle').textContent='성문이 무너졌어';$('endText').textContent='웨이브 '+state.wave+'까지 버텼어.';$('end').classList.add('show')}
+function update(dt){
+ if(state.dead)return;
+ state.nextWave-=dt;if(state.nextWave<=0&&enemies.filter(e=>e.hp>0).length===0){spawnWave();state.nextWave=999}
+ let mx=(keys.d||keys.ArrowRight?1:0)-(keys.a||keys.ArrowLeft?1:0),my=(keys.s||keys.ArrowDown?1:0)-(keys.w||keys.ArrowUp?1:0);if(joy.active){mx=joy.x;my=joy.y}let l=Math.hypot(mx,my);if(l>.05){mx/=Math.max(1,l);my/=Math.max(1,l);hero.dx=mx;hero.dy=my;hero.x=clamp(hero.x+mx*hero.speed*dt,90,WORLD_W-60);hero.y=clamp(hero.y+my*hero.speed*dt,60,WORLD_H-60)}
+ for(const t of trees)if(!t.alive){t.respawn-=dt;if(t.respawn<=0){t.alive=true;t.hp=2}}
+ for(const s of soldiers){if(s.hp<=0)continue;s.hit=Math.max(0,s.hit-dt);let target=null,bd=210;for(const e of enemies){if(e.hp<=0)continue;const d=dist(s,e);if(d<bd){bd=d;target=e}}if(target){const d=Math.max(1,dist(s,target));if(d>48){s.x+=(target.x-s.x)/d*88*dt;s.y+=(target.y-s.y)/d*88*dt}else if(performance.now()/1000-s.lastAttack>.75){s.lastAttack=performance.now()/1000;target.hp-=s.damage;target.hit=.1;if(target.hp<=0)state.coin+=5}}else{const d=Math.max(1,dist(s,hero));if(d>70){s.x+=(hero.x-s.x)/d*95*dt;s.y+=(hero.y-s.y)/d*95*dt}}}
+ for(const p of pads){if(!p.built)continue;let target=null,bd=260;for(const e of enemies){if(e.hp<=0)continue;const d=dist(p,e);if(d<bd){bd=d;target=e}}if(target){p.cd=(p.cd||0)-dt;if(p.cd<=0){p.cd=.7;target.hp-=14;target.hit=.1;if(target.hp<=0)state.coin+=6}}}
+ let aliveEnemy=0;
+ for(const e of enemies){if(e.hp<=0)continue;aliveEnemy++;e.hit=Math.max(0,e.hit-dt);let target={x:BASE_X,y:BASE_Y,type:'base',hp:state.baseHp};let bd=dist(e,target);for(const s of soldiers){if(s.hp<=0)continue;const d=dist(e,s);if(d<bd&&d<170){bd=d;target=s;target.type='soldier'}}const dh=dist(e,hero);if(dh<bd&&dh<150){bd=dh;target=hero;target.type='hero'}
+ const d=Math.max(1,dist(e,target));if(d>e.r+(target.r||28)+4){e.x+=(target.x-e.x)/d*e.speed*dt;e.y+=(target.y-e.y)/d*e.speed*dt}else if(performance.now()/1000-e.lastAttack>.9){e.lastAttack=performance.now()/1000;if(target.type==='base'){state.baseHp-=e.damage;if(state.baseHp<=0){state.baseHp=0;endGame()}}else if(target.type==='soldier'){target.hp-=e.damage;target.hit=.15}else{hero.hit=.15}}
+ }
+ if(aliveEnemy===0&&state.nextWave>100){state.wave++;state.nextWave=6;state.coin+=10;toast('웨이브 클리어! 보너스 금화 +10');}
+ hero.hit=Math.max(0,hero.hit-dt);if(state.notice>0){state.notice-=dt;if(state.notice<=0)$('notice').classList.remove('show')}
+ camera.x=clamp(hero.x-innerWidth*.42,0,Math.max(0,WORLD_W-innerWidth));camera.y=clamp(hero.y-innerHeight*.5,0,Math.max(0,WORLD_H-innerHeight));updateHud();
+}
+function drawPerson(x,y,r,body,hit){ctx.fillStyle=hit>0?'#fff':body;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e7c39d';ctx.beginPath();ctx.arc(x,y-r*.85,r*.48,0,Math.PI*2);ctx.fill()}
+function draw(){
+ const w=innerWidth,h=innerHeight;ctx.clearRect(0,0,w,h);ctx.fillStyle='#6ca05a';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-camera.x,-camera.y);
+ for(let x=0;x<WORLD_W;x+=90){for(let y=0;y<WORLD_H;y+=90){ctx.fillStyle=(x/90+y/90)%2?'#6d9f59':'#719f5c';ctx.fillRect(x,y,90,90)}}
+ ctx.fillStyle='#7a5a37';ctx.fillRect(110,400,280,400);ctx.fillStyle='#684829';ctx.fillRect(135,430,230,340);ctx.fillStyle='#bca06a';ctx.fillRect(BASE_X-55,BASE_Y-80,110,160);ctx.fillStyle='#75452f';ctx.fillRect(BASE_X-25,BASE_Y-20,50,100);ctx.fillStyle='#fff';ctx.font='800 14px system-ui';ctx.textAlign='center';ctx.fillText('성문',BASE_X,BASE_Y-92);
+ for(const p of pads){ctx.strokeStyle=p.built?'#d8c583':'#ffffff66';ctx.lineWidth=4;ctx.beginPath();ctx.arc(p.x,p.y,34,0,Math.PI*2);ctx.stroke();if(p.built){ctx.fillStyle='#5c4a36';ctx.fillRect(p.x-12,p.y-36,24,54);ctx.fillStyle='#cbb786';ctx.beginPath();ctx.moveTo(p.x-24,p.y-36);ctx.lineTo(p.x,p.y-60);ctx.lineTo(p.x+24,p.y-36);ctx.closePath();ctx.fill()}else{ctx.fillStyle='#ffffffcc';ctx.font='11px system-ui';ctx.fillText('탑 20🪵',p.x,p.y+4)}}
+ for(const t of trees){if(!t.alive)continue;ctx.fillStyle='#5c3a24';ctx.fillRect(t.x-7,t.y,14,30);ctx.fillStyle='#275f31';ctx.beginPath();ctx.arc(t.x,t.y-10,26,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(t.x-17,t.y,18,0,Math.PI*2);ctx.arc(t.x+17,t.y,18,0,Math.PI*2);ctx.fill()}
+ for(const s of soldiers){if(s.hp<=0)continue;drawPerson(s.x,s.y,s.r,'#3f6fd1',s.hit);ctx.fillStyle='#17305c';ctx.fillRect(s.x-16,s.y+16,32,4);ctx.fillStyle='#65a4ff';ctx.fillRect(s.x-16,s.y+16,32*(s.hp/s.max),4)}
+ for(const e of enemies){if(e.hp<=0)continue;drawPerson(e.x,e.y,e.r,e.r>16?'#6a2f2f':'#8f3e34',e.hit);ctx.fillStyle='#4b1d1d';ctx.fillRect(e.x-18,e.y+e.r+5,36,4);ctx.fillStyle='#e05a4f';ctx.fillRect(e.x-18,e.y+e.r+5,36*(e.hp/e.max),4)}
+ drawPerson(hero.x,hero.y,hero.r,hero.hit>0?'#fff':'#f0b431',hero.hit);ctx.strokeStyle='#f7e9b0';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(hero.x,hero.y);ctx.lineTo(hero.x+hero.dx*30,hero.y+hero.dy*30);ctx.stroke();
+ ctx.restore();
+}
+function loop(t){const dt=Math.min(.04,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop)}
+function joyMove(e){const r=$('joy').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,m=r.width*.32,d=Math.hypot(dx,dy),k=d>m?m/d:1,px=dx*k,py=dy*k;joy.x=px/m;joy.y=py/m;$('stick').style.transform='translate('+px+'px,'+py+'px)'}
+$('joy').addEventListener('pointerdown',e=>{joy.active=true;joy.pid=e.pointerId;$('joy').setPointerCapture(e.pointerId);joyMove(e)});$('joy').addEventListener('pointermove',e=>{if(joy.active&&e.pointerId===joy.pid)joyMove(e)});function joyEnd(e){if(e.pointerId!==joy.pid)return;joy.active=false;joy.x=joy.y=0;$('stick').style.transform='translate(0,0)'}$('joy').addEventListener('pointerup',joyEnd);$('joy').addEventListener('pointercancel',joyEnd);
+addEventListener('keydown',e=>{keys[e.key]=true;if(e.code==='Space'){e.preventDefault();attack()}});addEventListener('keyup',e=>keys[e.key]=false);
+$('attackBtn').addEventListener('pointerdown',attack);$('interactBtn').addEventListener('pointerdown',buildOrGather);$('recruitBtn').addEventListener('click',recruit);$('upgradeBtn').addEventListener('click',upgrade);$('restart').addEventListener('click',()=>location.reload());
+updateHud();toast('나무를 모으고 병사와 탑으로 성문을 지켜');requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

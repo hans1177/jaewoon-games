@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#071018">
+<title>심야 감염전 [4대4]</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071018;color:#eef7ff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}button{font:inherit}
+#game{position:fixed;inset:0;width:100%;height:100%;background:#0b1720}
+.hud{position:fixed;z-index:5;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 8px) 10px 0;pointer-events:none}
+.row{display:flex;gap:7px;justify-content:space-between}.pill{padding:7px 9px;border-radius:12px;background:#071019dd;border:1px solid #ffffff20;font-size:11px;font-weight:900;backdrop-filter:blur(7px)}
+#rolePill.human{color:#8be9ff}#rolePill.monster{color:#ff8f9c}.center{text-align:center;flex:1}.bar{height:7px;border-radius:999px;background:#ffffff16;overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;background:#8bd9ff;width:100%}
+.controls{position:fixed;z-index:6;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:end;pointer-events:none}
+.pad{width:132px;height:132px;display:grid;grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;pointer-events:auto}.pad button,.actions button{border:1px solid #ffffff2c;background:#0e2435e8;color:#fff;font-weight:1000;box-shadow:0 5px 18px #0007}.pad button{border-radius:12px}.pad .up{grid-column:2}.pad .left{grid-row:2;grid-column:1}.pad .down{grid-row:2;grid-column:2}.pad .right{grid-row:2;grid-column:3}.actions{display:grid;gap:8px;width:116px;pointer-events:auto}.actions button{min-height:54px;border-radius:15px}.actions .main{background:#d9f4ff;color:#0b2230}.actions .dash{background:#f6d76d;color:#261b00}
+.overlay{position:fixed;z-index:10;inset:0;display:grid;place-items:center;background:#02080ee8;padding:18px;overflow:auto}.card{width:min(94vw,460px);padding:18px;border-radius:20px;background:#0d1d29;border:1px solid #ffffff22;box-shadow:0 22px 60px #000b}.card h1{margin:0 0 6px;font-size:28px}.card p{margin:7px 0;color:#bfd0dc;line-height:1.55;font-size:13px}.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:15px 0}.choices button,.wide{min-height:54px;border:0;border-radius:14px;font-weight:1000}.choices .human{background:#b8eeff;color:#08202c}.choices .monster{background:#ffb3bd;color:#301016}.wide{width:100%;background:#f2df85;color:#241d00}.small{font-size:11px;color:#91a8b6}.hidden{display:none!important}
+#toast{position:fixed;z-index:8;left:50%;top:84px;transform:translateX(-50%);min-width:180px;max-width:82vw;padding:9px 12px;border-radius:12px;background:#06111ce8;border:1px solid #ffffff22;text-align:center;font-size:12px;font-weight:850;opacity:0;transition:.2s;pointer-events:none}#toast.on{opacity:1}
+@media(min-width:700px){.pad{width:156px;height:156px;grid-template-columns:52px 52px 52px;grid-template-rows:52px 52px 52px}.actions{width:140px}.actions button{min-height:62px}}
+</style>
+</head>
+<body data-web-artifact-type="REAL_PLAYABLE_GAME" data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE">
+<canvas id="game"></canvas>
+<div class="hud">
+  <div class="row">
+    <div class="pill" id="rolePill">역할</div>
+    <div class="pill center"><b id="mapName">학교</b><div id="timer">04:00</div></div>
+    <div class="pill">인간 <b id="humanCount">4</b> : <b id="monsterCount">4</b> 몬스터</div>
+  </div>
+  <div class="bar"><i id="timeBar"></i></div>
+</div>
+<div id="toast"></div>
+<div class="controls hidden" id="controls">
+  <div class="pad">
+    <button class="up" data-dir="up">▲</button>
+    <button class="left" data-dir="left">◀</button>
+    <button class="down" data-dir="down">▼</button>
+    <button class="right" data-dir="right">▶</button>
+  </div>
+  <div class="actions">
+    <button class="main" id="mainAction">정화</button>
+    <button class="dash" id="dashAction">대시</button>
+  </div>
+</div>
+<section class="overlay" id="start">
+  <div class="card">
+    <div class="small">DEVELOPMENT_CONFIRMED · 4대4 감염 추격전</div>
+    <h1>심야 감염전 [4대4]</h1>
+    <p>인간 4명과 몬스터 4명이 시작해. 인간은 정화와 대시로 버티고, 몬스터는 인간을 감염시켜 즉시 같은 편으로 바꿔.</p>
+    <div class="choices">
+      <button class="human" id="startHuman">인간으로 시작</button>
+      <button class="monster" id="startMonster">몬스터로 시작</button>
+    </div>
+    <p class="small">빈자리는 AI가 채워. 한 진영이 0명이 되면 즉시 끝나고, 240초까지 양쪽이 남으면 무승부야.</p>
+  </div>
+</section>
+<section class="overlay hidden" id="result">
+  <div class="card">
+    <div class="small" id="resultTag">라운드 종료</div>
+    <h1 id="resultTitle">결과</h1>
+    <p id="resultDesc"></p>
+    <button class="wide" id="restart">다음 라운드</button>
+  </div>
+</section>
+<script>
+(()=>{
+'use strict';
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id),TAU=Math.PI*2,SAVE_KEY='horror-escape-room-web-v1';
+const MAPS=[
+  {name:'학교',bg:'#132330',floor:'#263b47',accent:'#3a7f8a'},
+  {name:'폐병원',bg:'#172026',floor:'#303b3a',accent:'#5a8378'},
+  {name:'폐놀이공원',bg:'#221a2c',floor:'#3a2c45',accent:'#845684'}
+];
+const HUMANS=['방송부','전기기사','배달부','사진가','경비원'];
+const MONSTERS=['드라큘라','프랑켄슈타인','늑대인간','미라','사신'];
+let W=innerWidth,H=innerHeight,dpr=1,round=0,running=false,ended=false,timeLeft=240,last=0,map=MAPS[0];
+let entities=[],player=null,keys=new Set(),hold={up:false,down:false,left:false,right:false},toastTimer=0;
+let save={wins:0,losses:0,draws:0,lastRole:'human'};try{save={...save,...JSON.parse(localStorage.getItem(SAVE_KEY)||'{}')}}catch{}
+function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch{}}
+function resize(){dpr=Math.min(devicePixelRatio||1,1.6);W=innerWidth;H=innerHeight;canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',resize);resize();
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('on'),1400)}
+function makeEntity(team,index,isPlayer=false){
+  const pad=75,x=pad+Math.random()*Math.max(1,W-pad*2),y=120+Math.random()*Math.max(1,H-310);
+  return{id:team[0]+index+Math.random().toString(36).slice(2,6),team,index,name:team==='human'?HUMANS[index%HUMANS.length]:MONSTERS[index%MONSTERS.length],x,y,vx:0,vy:0,r:16,alive:true,isPlayer,cool:0,dash:0,flash:0};
+}
+function counts(){return{human:entities.filter(e=>e.alive&&e.team==='human').length,monster:entities.filter(e=>e.alive&&e.team==='monster').length}}
+function setup(role){
+  round++;map=MAPS[(round-1)%MAPS.length];entities=[];ended=false;timeLeft=240;
+  for(let i=0;i<4;i++)entities.push(makeEntity('human',i,false));
+  for(let i=0;i<4;i++)entities.push(makeEntity('monster',i,false));
+  player=role==='human'?entities[0]:entities[4];player.isPlayer=true;save.lastRole=role;persist();
+  $('start').classList.add('hidden');$('result').classList.add('hidden');$('controls').classList.remove('hidden');running=true;last=performance.now();syncHud();requestAnimationFrame(loop);toast(role==='human'?'인간팀 생존 시작':'몬스터팀 사냥 시작');
+}
+function syncHud(){
+  const c=counts();$('humanCount').textContent=c.human;$('monsterCount').textContent=c.monster;$('mapName').textContent=map.name;
+  const m=Math.max(0,Math.ceil(timeLeft));$('timer').textContent=String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');$('timeBar').style.width=(timeLeft/240*100)+'%';
+  const role=player?.alive?player.team:'out';$('rolePill').className='pill '+(role==='human'?'human':role==='monster'?'monster':'');
+  $('rolePill').textContent=role==='human'?'인간 · '+player.name:role==='monster'?'몬스터 · '+player.name:'탈락';
+  $('mainAction').textContent=role==='human'?'정화':role==='monster'?'감염':'관전';
+}
+function endRound(kind){
+  if(ended)return;ended=true;running=false;$('controls').classList.add('hidden');
+  const title=kind==='human'?'인간팀 승리':kind==='monster'?'몬스터팀 승리':'무승부';
+  if(kind==='draw')save.draws++;else if(player&&(kind===player.team))save.wins++;else save.losses++;persist();
+  $('resultTitle').textContent=title;$('resultDesc').textContent='기록 · 승 '+save.wins+' / 패 '+save.losses+' / 무 '+save.draws;
+  $('result').classList.remove('hidden');
+}
+function checkEnd(){const c=counts();if(c.human<=0)return endRound('monster');if(c.monster<=0)return endRound('human');if(timeLeft<=0)return endRound('draw')}
+function nearest(from,team,max=1e9){let best=null,bd=max;for(const e of entities){if(!e.alive||e.team!==team||e===from)continue;const d=dist(from,e);if(d<bd){bd=d;best=e}}return best}
+function infect(target,source){
+  if(!target||!target.alive||target.team!=='human')return false;
+  target.team='monster';target.index=Math.floor(Math.random()*MONSTERS.length);target.name=MONSTERS[target.index];target.flash=1;
+  if(target.isPlayer){toast('감염됐다! 이제 몬스터로 추격해');$('mainAction').textContent='감염'}
+  source.cool=1.8;syncHud();checkEnd();return true;
+}
+function purify(target,source){
+  if(!target||!target.alive||target.team!=='monster')return false;
+  target.alive=false;target.flash=1;source.cool=5;
+  if(target.isPlayer)toast('정화돼 이번 라운드에서 탈락했어');
+  syncHud();checkEnd();return true;
+}
+function mainAction(){
+  if(!running||!player?.alive)return;
+  if(player.cool>0)return toast('아직 재사용 대기 중');
+  if(player.team==='human'){
+    const t=nearest(player,'monster',105);if(!t)return toast('정화 범위에 몬스터가 없어');purify(t,player);
+  }else{
+    const t=nearest(player,'human',54);if(!t)return toast('감염할 인간이 가까이 없어');infect(t,player);
+  }
+}
+function dash(){if(!running||!player?.alive)return;if(player.dash>0)return toast('대시 충전 중');player.dash=4;toast('대시!')}
+$('mainAction').onclick=mainAction;$('dashAction').onclick=dash;
+for(const b of document.querySelectorAll('[data-dir]')){
+  const k=b.dataset.dir;
+  const on=e=>{e.preventDefault();hold[k]=true};
+  const off=e=>{e.preventDefault();hold[k]=false};
+  b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('pointerleave',off);
+}
+addEventListener('keydown',e=>{keys.add(e.code);if(e.code==='Space'){e.preventDefault();mainAction()}if(e.code==='ShiftLeft'||e.code==='ShiftRight')dash()});
+addEventListener('keyup',e=>keys.delete(e.code));
+function movePlayer(dt){
+  if(!player?.alive)return;
+  let x=0,y=0;if(keys.has('KeyA')||keys.has('ArrowLeft')||hold.left)x--;if(keys.has('KeyD')||keys.has('ArrowRight')||hold.right)x++;if(keys.has('KeyW')||keys.has('ArrowUp')||hold.up)y--;if(keys.has('KeyS')||keys.has('ArrowDown')||hold.down)y++;
+  const l=Math.hypot(x,y)||1,s=(player.dash>3.55?260:145);player.x=clamp(player.x+x/l*s*dt,24,W-24);player.y=clamp(player.y+y/l*s*dt,95,H-170);
+}
+function aiStep(e,dt){
+  if(!e.alive||e.isPlayer)return;
+  let t=null;
+  if(e.team==='monster')t=nearest(e,'human');else t=nearest(e,'monster');
+  if(!t)return;
+  let dx=t.x-e.x,dy=t.y-e.y,l=Math.hypot(dx,dy)||1;
+  if(e.team==='human'&&l<135){dx=-dx;dy=-dy}
+  const speed=e.team==='monster'?76:68;e.x=clamp(e.x+dx/l*speed*dt,22,W-22);e.y=clamp(e.y+dy/l*speed*dt,98,H-170);
+  if(e.cool<=0){
+    if(e.team==='monster'&&dist(e,t)<35)infect(t,e);
+    else if(e.team==='human'&&dist(e,t)<75&&Math.random()<dt*.8)purify(t,e);
+  }
+}
+function update(dt){
+  timeLeft-=dt;for(const e of entities){e.cool=Math.max(0,e.cool-dt);e.dash=Math.max(0,e.dash-dt);e.flash=Math.max(0,e.flash-dt*3)}
+  movePlayer(dt);for(const e of entities)aiStep(e,dt);checkEnd();syncHud();
+}
+function drawMap(){
+  ctx.fillStyle=map.bg;ctx.fillRect(0,0,W,H);ctx.fillStyle=map.floor;ctx.fillRect(0,80,W,H-80);
+  ctx.strokeStyle=map.accent;ctx.lineWidth=2;ctx.globalAlpha=.35;
+  for(let x=40;x<W;x+=120){ctx.strokeRect(x,120,70,50)}for(let y=220;y<H-170;y+=130){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}ctx.globalAlpha=1;
+}
+function draw(){
+  drawMap();
+  for(const e of entities){
+    if(!e.alive)continue;ctx.save();ctx.translate(e.x,e.y);
+    ctx.fillStyle=e.team==='human'?'#78dcff':'#ff7c8c';ctx.strokeStyle=e.isPlayer?'#fff':'#071018';ctx.lineWidth=e.isPlayer?4:2;ctx.beginPath();ctx.arc(0,0,e.r+(e.isPlayer?2:0),0,TAU);ctx.fill();ctx.stroke();
+    if(e.team==='monster'){ctx.fillStyle='#261018';ctx.beginPath();ctx.moveTo(-10,-10);ctx.lineTo(-3,-24);ctx.lineTo(3,-10);ctx.lineTo(10,-24);ctx.lineTo(12,-8);ctx.fill()}
+    if(e.flash>0){ctx.strokeStyle='#fff';ctx.globalAlpha=e.flash;ctx.lineWidth=5;ctx.beginPath();ctx.arc(0,0,25,0,TAU);ctx.stroke()}
+    ctx.globalAlpha=1;ctx.fillStyle='#fff';ctx.font='10px system-ui';ctx.textAlign='center';ctx.fillText(e.isPlayer?'나':e.name,0,30);ctx.restore();
+  }
+  if(player?.alive&&player.cool>0){ctx.fillStyle='#ffffffaa';ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillText('스킬 '+player.cool.toFixed(1)+'s',player.x,player.y-28)}
+}
+function loop(now){
+  if(!running)return;const dt=Math.min(.04,(now-last)/1000||.016);last=now;update(dt);draw();if(running)requestAnimationFrame(loop);
+}
+$('startHuman').onclick=()=>setup('human');$('startMonster').onclick=()=>setup('monster');$('restart').onclick=()=>setup(save.lastRole==='monster'?'monster':'human');
+})();
+</script>
+</body>
+</html>
