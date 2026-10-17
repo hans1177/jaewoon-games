@@ -100,7 +100,9 @@ const currentVibe3=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe3
 const currentWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe3-engine-contract.yml',import.meta.url),'utf8');
 assert.equal(currentRoadmap.currentPhase,'ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT');
 assert.equal(currentVibe3.platformRoadmap.currentPhase,currentRoadmap.currentPhase);
-assert.deepEqual(currentRoadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX']);
+assert.deepEqual(currentRoadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','WEB']);
+assert.equal(currentRoadmap.developmentAccess.WEB,'ALWAYS_ALLOWED');
+assert.equal(currentRoadmap.developmentAccess.UNITY_WEB,'OWNER_HOLD');
 assert.deepEqual(currentRoadmap.ownerActiveDevelopmentScope20261009.ownerHeldTargets,['UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN']);
 assert.equal(currentRoadmap.ownerActiveDevelopmentScope20261009.unityWebDistinctGameTarget,0);
 assert.equal(currentRoadmap.ownerActiveDevelopmentScope20261009.gamePrimaryLogicalWorkers,128);
