@@ -492,3 +492,15 @@ test('snake spell morphs actual roots to real hostile combat enemies and restore
  assert.doesNotMatch(source,/worldTreeSnakeIllusion|updateWorldTreeSnakeIllusion|IllusorySnake/);
  assert.match(source,/worldtreesnake:\{id:'worldtreesnake',name:'세계수 뱀',mood:'aggressive',hp:250,dmg:39/);
 });
+
+
+test('goblin outpost entrance is on the western world tree field and marked on maps',()=>{
+ const match=source.match(/const GOBLIN_OUTPOST_ENTRANCE=\{x:(\d+),y:(\d+),r:92\}/);
+ assert.ok(match,'전초기지 입구 좌표가 있어야 함');
+ const x=Number(match[1]),y=Number(match[2]);
+ assert.ok(x>=6180&&x<9000&&y>=9150&&y<=10000,'세계수 서쪽 지상에 있어야 함');
+ assert.match(functionBody('draw'),/drawGoblinOutpostEntrance\(cx,cy\)/);
+ assert.match(functionBody('drawGoblinOutpostEntrance'),/fillText\('고블린 전초기지'/);
+ assert.match(functionBody('drawMap'),/GOBLIN_OUTPOST_ENTRANCE\.x\*sx/);
+ assert.match(functionBody('drawMiniMap'),/landmark\(GOBLIN_OUTPOST_ENTRANCE\.x,GOBLIN_OUTPOST_ENTRANCE\.y/);
+});
