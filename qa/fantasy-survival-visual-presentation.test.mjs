@@ -468,3 +468,20 @@ test('world tree basement is bright without a torch while quest cave darkness re
   assert.match(functionBody('summonBoss'),/state\.bossSummoned=true/);
   assert.match(source,/worldtreegolem:\{id:'worldtreegolem',name:'세계수 골렘',mood:'neutral',hp:586,dmg:48/);
 });
+
+test('authored world tree snake illusion uses 250/39 and visible roots for three seconds at 67 percent every three seconds',()=>{
+  assert.match(source,/worldtreesnake:\{id:'worldtreesnake',name:'세계수 뱀',mood:'aggressive',hp:250,dmg:39,speed:110[^\n]*snakeIllusion:true/);
+  const effect=functionBody('updateWorldTreeSnakeIllusion'),interior=functionBody('drawWorldTreeInterior');
+  assert.match(source,/WORLD_TREE_SNAKE_ILLUSION=Object\.freeze\(\{intervalMs:3000,probability:\.67,durationMs:3000,maxRoots:5,range:400\}\)/);
+  assert.match(effect,/state\.area!=='worldtreeinside'/);
+  assert.match(effect,/e\.type\?\.id!=='worldtreesnake'/);
+  assert.match(effect,/Math\.random\(\)>=WORLD_TREE_SNAKE_ILLUSION\.probability/);
+  assert.match(effect,/visible\.slice\(0,WORLD_TREE_SNAKE_ILLUSION\.maxRoots\)/);
+  assert.match(effect,/worldTreeSnakeIllusion\.until=now\+WORLD_TREE_SNAKE_ILLUSION\.durationMs/);
+  assert.match(functionBody('update'),/updateWorldTreeSnakeIllusion\(now\)/);
+  assert.match(interior,/worldTreeSnakeIllusion\.rootIndices\.includes\(i\)/);
+  assert.match(interior,/ctx\.bezierCurveTo\(94,-41\+sway,-90,53-sway,70,142\)/);
+  assert.doesNotMatch(effect,/damagePlayer|enemyDamageTarget|state\.player\.hp|state\.dirty|sendMultiplayer/);
+  assert.match(functionBody('enemyHasBuiltInSpecial'),/type\.snakeIllusion/);
+  assert.match(functionBody('tryHardDifficultySkill'),/e\.type\.snakeIllusion/);
+});
