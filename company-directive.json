@@ -780,6 +780,7 @@
     "priorityMeaning": "ROBLOX_FOCUSED_DEVELOPMENT_UNITY_WEB_AND_ANDROID_OWNER_HOLD",
     "developmentAccess": {
       "ROBLOX": "ALWAYS_ALLOWED",
+      "WEB": "ALWAYS_ALLOWED",
       "UNITY": "OWNER_HOLD",
       "FORTNITE_UEFN": "OWNER_HOLD",
       "UNITY_WEB": "OWNER_HOLD",
@@ -1118,7 +1119,7 @@
     "f9PublishDispatchStartsNextF0ThroughF9Cycle": true,
     "publicationOutcomeBlocksNextCycle": false
   },
-  "currentExecutionMode": "ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT",
+  "currentExecutionMode": "ROBLOX_AND_GENERAL_WEB_3D_CONTINUOUS_DEVELOPMENT",
   "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
   "directNativeDualPlatformDevelopment": {
     "status": "OWNER_DIRECT_LOCKED",
@@ -1649,11 +1650,12 @@
     "publicationRetryPreservesExactFailedCycleIdentity": true
   },
   "ownerActiveDevelopmentScope20261009": {
-    "version": 2,
-    "authority": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY",
+    "version": 3,
+    "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB",
     "status": "ACTIVE",
     "activeTargets": [
-      "ROBLOX"
+      "ROBLOX",
+      "WEB"
     ],
     "ownerHeldTargets": [
       "UNITY_WEB",
