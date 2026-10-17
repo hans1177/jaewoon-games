@@ -10,6 +10,7 @@ import http from 'node:http';
 import {buildInternalAssetSourceUsageContract,selectWeb3dEngine} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
+import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
 
 test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
   const select=(source,task={})=>selectWeb3dEngine({
@@ -973,6 +974,14 @@ test('internal motion prompt keeps exact scope, short source anchors and complet
   assert.equal(schema.additionalProperties,false);
 });
 function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles = [], taskId = 'task-1' } = {}) {
+  // 실제 중앙 로드/컴파일러가 만든 계약을 테스트 work order에 포함한다.
+  // 계약이 누락된 운영 작업의 차단은 source worker에서 계속 강제한다.
+  const snapshot=loadCentralPolicySnapshot({repoRoot:process.cwd(),required:true});
+  assert.equal(snapshot.valid,true,snapshot.errors.join('|'));
+  const compiledWorkContract=compileVibeCentralWorkContract({
+    snapshot,task:{id:taskId,gameId:'demo',target},
+    plan:{target},responsibleFiles
+  });
   return {
     run: true,
     workMode: 'source-change-candidate',
@@ -983,7 +992,8 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
     department: 'development',
     source: { root, responsibleFiles },
     qa: ['syntax', 'regression'],
-    workerPolicy: { directMainWrite: false }
+    workerPolicy: { directMainWrite: false },
+    compiledWorkContract
   };
 }
 
