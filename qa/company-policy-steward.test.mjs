@@ -146,3 +146,26 @@ test('work contract fingerprint follows latest directive, not stale legacy holds
   const newest=loadCentralPolicySnapshot({repoRoot:tmp,required:true});
   assert.notEqual(newest.executionFingerprint,before.executionFingerprint);
 }));
+
+test('F0 live planner uses verified main policy only at production call site, not in fixture QA',()=>{
+  const policy=JSON.parse(fs.readFileSync(path.join(root,paths[0]),'utf8'));
+  const scope=resolveActiveOwnerPolicy(policy);
+  assert.deepEqual(scope.activeTargets.slice().sort(),['ROBLOX','WEB']);
+  assert.deepEqual(scope.ownerHeldTargets.slice().sort(),['FORTNITE_UEFN','UNITY_ANDROID','UNITY_WEB']);
+  assert.equal(ownerDevelopmentHeld(policy,'policy-f0-eligible','roblox',{}),false);
+  assert.equal(ownerDevelopmentHeld(policy,'policy-f0-eligible','web',{}),false);
+  for(const workflow of [
+    '.github/workflows/vibe2-24h-runner.yml',
+    '.github/workflows/vibe2-continuous-core.yml'
+  ]){
+    const content=fs.readFileSync(path.join(root,workflow),'utf8');
+    assert.ok(!content.includes('export COMPANY_VERIFIED_POLICY_PATH=') &&
+      !content.includes('export COMPANY_VERIFIED_DESIGN_POLICY_PATH='),
+      'Production policies must not contaminate isolated QA fixtures');
+    assert.ok(content.includes('COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json COMPANY_VERIFIED_DESIGN_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+    assert.ok(content.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+  }
+  const clock=fs.readFileSync(path.join(root,'.github/workflows/vibe2-24h-runner.yml'),'utf8');
+  assert.ok(clock.includes("cron: '*/5 * * * *'"));
+  assert.equal(policy.finalDevelopmentLock.sequenceLock.status,'LOCKED');
+});
