@@ -39,7 +39,8 @@ test('player presentation uses the forest mage asset without changing equipment 
   assert.match(player,/ctx\.drawImage\(playerImage/);
   assert.match(player,/p\.torchEquipped/);
   assert.match(player,/p\.weapon/);
-  assert.match(player,/currentRange\(\)/);
+  assert.match(player,/drawPlayerCombatVfx\(p,x,y,now,angle,attackPose,attackActive\)/);
+  assert.match(functionBody('drawPlayerCombatVfx'),/currentRange\(\)/);
 });
 
 test('protected save key and representative balance values remain present',()=>{
@@ -108,9 +109,9 @@ test('player living motion keeps authoritative movement, weapon direction and at
   assert.match(player,/fantasyLivingMotion\(p,now,angle,moveInput\)/);
   assert.match(player,/motion\.moveBlend/);
   assert.match(player,/motion\.breath/);
-  assert.match(player,/p\.faceX\*27/);
-  assert.match(player,/p\.faceY\*27/);
-  assert.match(player,/currentRange\(\)\*\.72/);
+  assert.match(player,/angle=Math\.atan2\(p\.faceY\|\|0,p\.faceX\|\|1\)/);
+  assert.match(player,/ctx\.lineTo\(x\+Math\.cos\(weaponAngle\)\*weaponLen,y\+Math\.sin\(weaponAngle\)\*weaponLen\)/);
+  assert.match(functionBody('drawPlayerCombatVfx'),/currentRange\(\)/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
 
@@ -146,7 +147,8 @@ test('player attack feel stays inside the existing attack presentation window an
   const player=functionBody('drawPlayer');
   assert.match(player,/fantasyPlayerAttackPose\(p,now,attackActive\)/);
   assert.match(player,/weaponOffset/);
-  assert.match(player,/currentRange\(\)\*\.72/);
+  assert.match(player,/drawPlayerCombatVfx\(p,x,y,now,angle,attackPose,attackActive\)/);
+  assert.match(functionBody('drawPlayerCombatVfx'),/currentRange\(\)/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
 
@@ -324,7 +326,7 @@ test('final presentation gate keeps all synchronized feel layers on the same pre
 });
 
 test('nearby auto gather keeps the existing manual gather path and mobile toggle reachable',()=>{
-  assert.match(source,/id="autoGather"[^>]*data-gameplay-action="auto-gather-toggle"[^>]*aria-pressed="false">자동 OFF<\/button>/);
+  assert.match(source,/id="autoGather"[^>]*data-mechanic-id="auto-gather-toggle"[^>]*aria-pressed="false">자동 OFF<\/button>/);
   assert.match(source,/\.autoGather\{height:44px/);
   assert.match(source,/@media\(max-width:430px\)[\s\S]*?\.autoGather\{height:44px;font-size:9px\}/);
   assert.match(source,/gather\(state\.gathering\.manualTarget,false\)/);
@@ -332,11 +334,12 @@ test('nearby auto gather keeps the existing manual gather path and mobile toggle
 
 test('auto gather reuses authoritative resource balance and tool gates instead of duplicating rewards',()=>{
   const gather=functionBody('gather');
-  assert.match(gather,/let amount=1;if\(tool\?\.target===best\.kind\)amount=tool\.mult;if\(best\.kind==='iron'\|\|best\.kind==='poisonstone'\)amount=1/);
+  assert.match(gather,/let amount=1;if\(tool\?\.target===best\.kind\)amount=tool\.mult;if\(best\.kind==='iron'\|\|best\.kind==='poisonstone'\|\|best\.kind==='sunstone'\)amount=1/);
   assert.match(gather,/best\.kind==='iron'.*stone-pick.*iron-pick.*gold-pick/);
   assert.match(gather,/best\.kind==='gold'.*p\.tool!=='iron-pick'/);
   assert.match(gather,/best\.kind==='poisonstone'.*p\.tool!=='gold-pick'/);
-  assert.match(gather,/best\.kind==='essence'.*iron-axe.*gold-axe/);
+  assert.match(gather,/best\.kind==='essence'&&!axeId/);
+  assert.match(functionBody('equippedAxeId'),/iron-axe.*gold-axe/);
   const auto=functionBody('updateAutoGather');
   assert.match(auto,/nearestGatherResource\(\)/);
   assert.match(auto,/gather\(target,true\)/);
@@ -344,14 +347,17 @@ test('auto gather reuses authoritative resource balance and tool gates instead o
 });
 
 test('auto gather is nearest-only local runtime state and does not alter save or multiplayer semantics',()=>{
-  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=38/);
+  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=(?:[7-9]\d|[1-9]\d{2,})/);
   assert.match(source,/gathering:\{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0\}/);
   const nearest=functionBody('nearestGatherResource');
   assert.match(nearest,/for\(const n of resourceNodes\(\)\)/);
   assert.match(nearest,/if\(d<bestD\)\{best=n;bestD=d\}/);
   const save=functionBody('saveGame');
-  assert.doesNotMatch(save,/gathering|autoGather/);
-  assert.doesNotMatch(functionBody('gather'),/multiSend|multiBroadcast|channel/);
+  assert.match(save,/settings:\{difficulty:.*autoGather/);
+  assert.doesNotMatch(save,/gathering:\{/);
+  const gather=functionBody('gather');
+  assert.match(gather,/multiplayer\.connected&&!multiIsHost\(\)/);
+  assert.match(gather,/multiSend\('resource-gather'/);
   assert.doesNotMatch(functionBody('updateAutoGather'),/multiSend|multiBroadcast|channel/);
 });
 
@@ -379,3 +385,47 @@ test('manual world targeting stays separate from automatic nearest selection',()
   assert.doesNotMatch(auto,/manualTarget/);
 });
 
+
+test('world tree inner room is reachable from original world tree without resizing the exterior region',()=>{
+  assert.match(source,/WORLD_TREE_POLY=\[\{x:6180,y:9150\},\{x:11820,y:9150\},\{x:11820,y:10000\},\{x:6180,y:10000\}\]/);
+  assert.match(source,/WORLD_TREE_INTERIOR=\{w:3200,h:2300/);
+  assert.match(functionBody('enterWorldTreeInterior'),/state\.area='worldtreeinside'/);
+  assert.match(functionBody('leaveWorldTreeInterior'),/state\.area='surface'/);
+  assert.match(functionBody('handleWorldTap'),/worldtree-inner-door/);
+  assert.match(functionBody('handleWorldTap'),/worldtree-inner-exit/);
+  assert.match(functionBody('drawWorldTreeInterior'),/Living|나이테|발광/);
+  assert.match(functionBody('draw'),/drawWorldTreeInterior/);
+  assert.match(functionBody('update'),/WORLD_TREE_INTERIOR\.w-85/);
+  assert.match(source,/s\.area==='worldtreeinside'\?'worldtreeinside'/);
+  assert.match(source,/jaewoon_fantasy_survival_v1/);
+  assert.match(functionBody('summonBoss'),/rootsovereign/);
+});
+
+test('world tree interior has bear golem and snake, and the neutral tier-three golem keeps exact owner numbers',()=>{
+  assert.match(source,/worldtreegolem:\{id:'worldtreegolem',name:'세계수 골렘',mood:'neutral',hp:586,dmg:48/);
+  assert.match(source,/worldtreesnake:\{id:'worldtreesnake',name:'세계수 뱀'/);
+  assert.match(source,/worldtreegolem:3,worldtreesnake:3/);
+  const init=functionBody('initWorld');
+  assert.match(init,/\['worldtreebear',800,1130\]/);
+  assert.match(init,/\['worldtreegolem',1610,950\]/);
+  assert.match(init,/\['worldtreesnake',970,1580\]/);
+  assert.match(init,/e\.area='worldtreeinside'/);
+  assert.match(source,/worldtreebear:\{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30/);
+});
+
+test('golem launches four roots every two seconds with 50 percent roll and no hit damage or attack lock',()=>{
+  const launch=functionBody('throwWorldTreeRoots'),update=functionBody('update');
+  assert.match(launch,/e\.nextWorldTreeRootsAt=now\+2000/);
+  assert.match(launch,/Math\.random\(\)>=\.5/);
+  assert.match(launch,/i<4/);
+  assert.match(launch,/kind:'worldtreeRoot'/);
+  assert.match(launch,/damage:0/);
+  const projectile=functionBody('updateProjectiles');
+  const rootEffect=projectile.slice(projectile.indexOf("if(q.kind==='worldtreeRoot'){"));
+  assert.match(rootEffect,/rootedUntil=Math\.max\(p\.rootedUntil\|\|0,now\+3000\)/);
+  assert.doesNotMatch(rootEffect.slice(0,rootEffect.indexOf("if(q.kind==='toxicGasShot')")) ,/damagePlayer\(/);
+  assert.match(update,/now>=\(p\.rootedUntil\|\|0\)/);
+  assert.doesNotMatch(functionBody('attack'),/rootedUntil/);
+  assert.match(functionBody('applyRemoteEnemyEffect'),/kind==='rootbind'/);
+  assert.match(functionBody('drawProjectiles'),/kind==='worldtreeRoot'/);
+});
