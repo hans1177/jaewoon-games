@@ -1,5 +1,5 @@
 {
-  "version": 578,
+  "version": 579,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -26021,7 +26021,10 @@
   "webRuntimeStartabilityContract": {
     "version": 2,
     "finalGameplayDimension": "3D",
-    "preferredOrdinaryWeb3dEngine": "THREE_JS",
+    "preferredOrdinaryWeb3dEngine": "PLAYCANVAS",
+    "complexPhysicsAlternativeWeb3dEngine": "BABYLON_JS",
+    "existingApprovedThreeJsOrNativeWebglMayBePreserved": true,
+    "onlyMigrateEngineAfterGameSpecificRuntimeProof": true,
     "existingApprovedBabylonOrPlayCanvasMayBePreserved": true,
     "webRenderingBaseline": "WEBGL2",
     "webGpuOptionalAfterMeasuredCompatibility": true,
