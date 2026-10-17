@@ -936,3 +936,31 @@ test('첫 화면은 현재 캐릭터 접지와 저택 장면 수신을 확인하
  assert.ok(loading.indexOf('loadingLayer:Destroy()')<loading.indexOf('p:SetAttribute("LobbyClientReady",true)'));
  assert.match(manorClient,/SpawnGroundedSequence/);assert.match(manorClient,/character.AttributeChanged:Connect\(visibility\)/);
 });
+
+
+test('verified owner-only publication saves queue and policy before resuming F0-F9',()=>{
+ const source=ownerWorkflow;
+ assert.match(source,/  owner-verified-resume:\n    needs: owner-direct-publish/);
+ assert.match(source,/  owner-verified-resume:[\s\S]*?permissions:\n      contents: write\n      actions: write/);
+ assert.match(source,/OWNER_DIRECT_HANDOFF=NO_ACTIVE_OWNER_SCOPE/);
+ assert.match(source,/test "\$\(git rev-parse origin\/main\)" = "\$GITHUB_SHA"/);
+ assert.match(source,/company-security-steward\.mjs[\s\S]*?verdict!=="PASS"/);
+ assert.match(source,/completeOwnerExclusiveGameScope\(/);
+ assert.match(source,/record\.privateOnly!==true\|\|record\.publicRelease!==false\|\|record\.f9Claim!==false/);
+ assert.match(source,/sourceSha:sha,mainSourceSha:sha/);
+ assert.match(source,/status!=='OWNER_DIRECT_PUBLISH_HANDOFF_READY_F0_F9_PENDING'/);
+ assert.match(source,/checkpointAction!=='RESUME_EXISTING_F0_F9_AFTER_OWNER_DIRECT_PUBLISH'/);
+ assert.match(source,/OWNER_PUBLICATION_EVIDENCE_MISMATCH/);
+ assert.match(source,/UNRELATED_OWNER_HOLD_LOST/);
+ assert.match(source,/storage-unpack[\s\S]*?packVibeQueueStorage\(queuePath\)/);
+ const queuePush=source.indexOf('push origin HEAD:vibe2-unreal-core');
+ const policyPush=source.indexOf('push origin HEAD:main');
+ const runnerWake=source.indexOf('gh workflow run vibe2-24h-runner.yml');
+ assert.ok(queuePush>0&&policyPush>queuePush&&runnerWake>policyPush,
+   'Persist lossless queue, then central policy, then wake existing F0-F9');
+ const ownerJobs=source.slice(0,source.indexOf('  owner-verified-resume:'));
+ assert.doesNotMatch(ownerJobs,/contents: write/,'publisher must remain read-only');
+ assert.ok(!source.slice(0,source.indexOf('\npermissions:')).includes(
+   "      - 'company-learning/platform-release-roadmap.json'"),
+   'policy-only owner release must not accidentally republish owner private place');
+});
