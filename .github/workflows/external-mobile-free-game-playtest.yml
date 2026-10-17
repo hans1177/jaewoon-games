@@ -188,7 +188,7 @@ jobs:
             game.installPass!==true&&
             game.launchPass!==true&&
             /Aurora anonymous auth failed with HTTP 429/i.test(String(game.installReason||'')));
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'throttled='+(throttled?'true':'false')+'\\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'throttled='+(throttled?'true':'false')+'\n');
           if(throttled)console.log('EXTERNAL_MOBILE_PROVIDER_THROTTLED=RETRY_AT_EXISTING_HOURLY_SCHEDULE');
           NODE
 
