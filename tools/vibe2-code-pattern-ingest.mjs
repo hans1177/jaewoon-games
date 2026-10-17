@@ -31,12 +31,52 @@ function engineOf(sample={}){
   return'web';
 }
 
+// Read only the added side of an independently verified patch. Never retain raw source.
+const REPAIR_OPERATIONS=Object.freeze([
+  ['GUARD_EVENT_BINDING',/\\baddEventListener\\s*\\(/i,/\\bif\\s*\\(|\\?\\./i,'Check the element or event target before registering its handler.','Run missing-element and duplicate-binding regression cases.'],
+  ['CLEANUP_LIFECYCLE',/\\b(?:clearInterval|clearTimeout|cancelAnimationFrame|removeEventListener|Disconnect|disconnect)\\s*\\(/i,null,'Release timers, listeners or subscriptions from the owning lifecycle.','Repeat start, stop and restart to detect duplicate work.'],
+  ['ATOMIC_SAVE_COMMIT',/\\b(?:setItem|UpdateAsync|SetAsync|SetAttribute|writeFileSync)\\s*\\(/i,/\\b(?:if|return|pcall|try|catch)\\b/i,'Validate the save preconditions before committing the new state once.','Test failed saves, reload and unchanged state on rejection.'],
+  ['SAVE_STATE_OWNER',/\\b(?:localStorage|DataStore|UpdateAsync|SetAsync|setItem)\\b/i,null,'Preserve the existing persistence owner and save-key meaning.','Verify save, reload, migration and error handling.'],
+  ['HANDLE_FAILURE_RESULT',/\\b(?:pcall|try|catch|Promise\\.catch)\\b/i,null,'Handle the operation result or exception before mutating shared state.','Test a rejected callback and a successful retry.'],
+  ['BOUND_NUMERIC_INPUT',/\\b(?:Math\\.min|Math\\.max|math\\.clamp|Mathf\\.Clamp)\\s*\\(/i,null,'Bound incoming numeric values before applying gameplay state changes.','Test lower, upper and invalid input boundaries.'],
+  ['MOBILE_INPUT_BINDING',/\\b(?:touch-action|pointerdown|pointermove|touchstart|touchmove)\\b/i,null,'Bind touch or pointer input to the existing gameplay owner without duplicate dispatch.','Verify tap, drag, pointer cancel and mobile viewport changes.'],
+  ['SERVER_INPUT_VALIDATION',/\\b(?:OnServerEvent|OnServerInvoke)\\b/i,/\\b(?:if|return|assert)\\b/i,'Validate client-originated input on the server before authoritative mutation.','Test malformed, repeated and unauthorized remote requests.']
+]);
+
+export function deriveObservedRepairRecipe(output=''){
+  const source=String(output??'');
+  const marker=source.indexOf('검증된 패치:');
+  const patch=marker>=0?source.slice(marker+'검증된 패치:'.length):source;
+  if(Buffer.byteLength(patch,'utf8')>120000)return null;
+  const added=patch.split(/\\r?\\n/).filter(line=>/^\\+(?!\\+)/.test(line)).map(line=>line.slice(1)).join('\\n');
+  let candidate=added;
+  if(!candidate){
+    try{
+      const parsed=JSON.parse(patch.trim());
+      const edits=Array.isArray(parsed?.edits)?parsed.edits:[];
+      candidate=edits.slice(0,32).flatMap(edit=>[edit?.replace,edit?.replacement,edit?.with,edit?.insert,edit?.content].filter(value=>typeof value==='string')).join('\\n');
+    }catch{/* Non-diff or non-JSON outputs cannot establish an observed repair recipe. */}
+  }
+  if(!candidate)return null;
+  const operations=REPAIR_OPERATIONS.filter(([,positive,guard])=>positive.test(candidate)&&(!guard||guard.test(candidate)));
+  if(!operations.length)return null;
+  return Object.freeze({
+    version:1,origin:'VERIFIED_PATCH_ADDED_CODE',rawCodeStored:false,
+    operationIds:operations.map(([id])=>id),
+    steps:operations.map(([, , ,step])=>step),
+    focusedChecks:operations.map(([, , , ,check])=>check)
+  });
+}
+
 function sampleVerified(sample={}){
   if(!['coding','bugfix','unity'].includes(clean(sample.taskType)))return false;
   if(upper(sample.independentQa)!=='PASS')return false;
   const browser=upper(sample.browserQa);
   if(browser&& !['PASS','NOT_APPLICABLE'].includes(browser))return false;
   if(sample.verification?.fullRegression&&upper(sample.verification.fullRegression)!=='PASS')return false;
+  if(sample.verification?.runtime&&upper(sample.verification.runtime)!=='PASS')return false;
+  if(sample.verification?.exactRevision&&upper(sample.verification.exactRevision)!=='PASS')return false;
+  if(sample.verification?.protectedState&&upper(sample.verification.protectedState)!=='PASS')return false;
   return Boolean(clean(sample.sourceRevision||sample.sourceCommit||sample.provenance?.sourceRevision));
 }
 
@@ -48,6 +88,7 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
     clean(sample.output).split('검증된 패치:')[0]
   ].filter(Boolean).join(' ');
   const systems=CLASSIFIERS.filter(([,re])=>re.test(text)).map(([name])=>name);
+  const repairRecipe=deriveObservedRepairRecipe(sample.output);
   const sourceRevision=clean(sample.sourceRevision||sample.sourceCommit||sample.provenance?.sourceRevision);
   const gameId=clean(sample.gameId||sample.project)||null;
   const engine=engineOf(sample);
@@ -56,7 +97,10 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
     id:`pat_${hash([gameId,engine,taskType,system,sourceRevision].join('|'))}`,
     gameId,engine,taskType,system,
     problem:clean(sample.instruction).slice(0,220),
-    pattern:`VERIFIED_${system}_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION`,
+    pattern:repairRecipe
+      ?`VERIFIED_${system}_REPAIR_${repairRecipe.operationIds.join('_THEN_')}`
+      :`VERIFIED_${system}_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION`,
+    ...(repairRecipe?{repairRecipe}:{}),
     tags:uniq([system,taskType,engine,'verified','smallest-responsible-change','regression-bound']),
     verified:true,
     sourceRevision,
