@@ -48,6 +48,8 @@ test('세계수 뱀은 250/39, 3초/67% 환각만 클라이언트 시야 속 뿌
     'part.CanCollide = false','part.CanTouch = false','part.CanQuery = false');
   const hallucination = client.slice(client.indexOf('elseif kind == "WORLD_TREE_HALLUCINATION"'),client.indexOf('local list = Instance.new'));
   assert.doesNotMatch(hallucination, /TakeDamage|SovereignCores|remote:FireServer/);
+  has(hallucination,'if activeWorldTreeIllusion ~= illusion then return end',
+    'activeWorldTreeIllusion.effects:Destroy()','root.LocalTransparencyModifier = transparency');
 });
 
 test('제단은 뿌리 한 개로 소환하고 원본 보상과 전투 중 탈출 제한을 보존한다', () => {
@@ -56,6 +58,10 @@ test('제단은 뿌리 한 개로 소환하고 원본 보상과 전투 중 탈�
     'if worldTreeBoss and worldTreeBoss.hp > 0 then',
     'SovereignCores','ForestWoodenSwords','worldBossReward()');
   has(server,'WorldTreeRootNextAt", os.time() + 60');
+  // 승리 보상 뒤 10초 후 서버가 지상 복귀시켜야 하고 대기 중 재소환은 금지한다.
+  has(server,'worldTreeReturnTimers[player] = token','task.delay(10, function()',
+    'if worldTreeReturnTimers[player] then worldNotice(player, "보스 처치 완료');
+  assert.match(server, /setWorldArea\(player, "surface", Vector3\.new\(93, 1, 71\)\)/);
 });
 
 test('기존 저장키, 서버 통신, 멀티, 기존 조작과 Roblox 모바일 입력을 유지한다', () => {
