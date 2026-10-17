@@ -1073,12 +1073,12 @@ export function applyVibeFanInResults(queueInput, results = []) {
       clean(row?.outcome).toUpperCase()==='FAIL'
       &&clean(row?.candidateFailure?.class).toUpperCase()==='EXTERNAL_AI_UNAVAILABLE'
       &&/GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:/.test(clean(row?.candidateFailure?.message))
-      &&/:HTTP_429\\b/.test(clean(row?.candidateFailure?.message))
+      &&/:HTTP_429\b/.test(clean(row?.candidateFailure?.message))
     );
     if(externalQuotaDeferred){
       const attempts=Math.min(12,Number(currentTask.externalAiQuotaDeferrals||0)+1);
       const retryTimes=variants.map(row=>{
-        const match=clean(row?.candidateFailure?.message).match(/NEXT_RETRY_AT=([^:,\\s]+)/);
+        const match=clean(row?.candidateFailure?.message).match(/NEXT_RETRY_AT=([0-9TZ:.+-]+)/);
         const millis=Date.parse(match?.[1]||'');
         return Number.isFinite(millis)?millis:0;
       });
