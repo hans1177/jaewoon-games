@@ -371,7 +371,7 @@ function vibeMatchingFamilies(asset={},families=[]){
  * Never executes external binaries, installs tools, mutates a game, or certifies runtime QA.
  */
 export function planVibeExternalCustomization({
-  request='',target='',gameId='',requirements=[],assets=[],styleBible={},
+  request='',target='',gameId='',requirements=[],assets=[],styleBible={},approvedDesign=null,
   approvedDesignFingerprint='',ownerScope=null,sourceRevision='',sourceRoot='',executionSurface='',unityWebDevelopment=false
 }={}){
   const unityOwned=unityWebDevelopment===true||/^(?:\.?\/)?unity-games\//i.test(text(sourceRoot).replaceAll('\\','/'))
@@ -396,6 +396,15 @@ export function planVibeExternalCustomization({
   const styleFingerprint=/^(?:sha256:)?[0-9a-f]{64}$/i.test(declaredDesignFingerprint)
     ?declaredDesignFingerprint:'';
   const sourceId=text(sourceRevision);
+  const contentComposition=planVibeUniversalComposition({
+    approvedDesign,designFingerprint:styleFingerprint,gameId,target:platform,ownerScope:scope,
+    sourceRoot,sourceRevision:sourceId,executionSurface,unityWebDevelopment
+  });
+  if(contentComposition.authorized){
+    for(const capability of contentComposition.designDeclaredCapabilities){
+      for(const role of capability.assetRoles)selectedRoles.add(role);
+    }
+  }
   const validAssets=(Array.isArray(assets)?assets:[]).filter(vibeSourceProvenance)
     .sort((a,b)=>text(a.id).localeCompare(text(b.id)));
   const approvedVisualAxes=Object.freeze(['SILHOUETTE','PROPORTION','MATERIAL_RESPONSE','SURFACE_DETAIL','PALETTE','LIGHTING','MOTION_LANGUAGE','UI_LANGUAGE']);
@@ -454,6 +463,7 @@ export function planVibeExternalCustomization({
     authority:'company-learning/platform-release-roadmap.json#ownerActiveDevelopmentScope20261009',
     status:eligible?(styleFingerprint?'EXISTING_ASSET_PRODUCTION_HANDOFF_REQUIRED':'APPROVED_GAME_DESIGN_REQUIRED'):'OWNER_POLICY_HELD',
     roles:Object.freeze([...selectedRoles].sort()),referenceCount:actions.length,
+    contentComposition,
     references:Object.freeze(actions),existingVerifiedSourceCount:validAssets.filter(asset=>
       asset.verifiedCompanyReusable===true||asset.runtimeVerificationState==='VERIFIED_RUNTIME').length,
     sourceRevision:sourceId||null,designFingerprint:styleFingerprint||null,
