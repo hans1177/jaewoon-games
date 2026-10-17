@@ -249,13 +249,17 @@ test('canonical narrative contract requires causal faction relationship state an
   assert.ok(contract.runtimeLearning.failureCanTeach.includes('FACTION_RELATIONSHIP_INCONSISTENCY'));
   assert.ok(contract.runtimeLearning.learnableVerifiedSignals.includes('FACTION_RELATIONSHIP_CAUSALITY'));
 
-  assert.equal(architecture.narrativeStoryTopology.factionRelationshipState.duplicateSourceEventIdempotent,true);
-  assert.equal(architecture.narrativeStoryTopology.persistence.factionRelationshipRoundTripRequired,true);
-
-  const evidence=logMap.narrativeRuntimeEvidenceContract;
-  assert.ok(evidence.correlationKeys.includes('SOURCE_EVENT_ID'));
-  assert.ok(evidence.requiredEvidence.includes('FACTION_RELATIONSHIP_IDEMPOTENCY_RESULT'));
-  assert.equal(evidence.duplicateFactionRelationshipSourceEventMustNotApplyDeltaTwice,true);
+  // The retained architecture/log maps intentionally no longer carry executable story contracts.
+  // Enforce central story authority together with actual event and snapshot semantics above.
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
+  assert.equal(logMap.retained.proof,'STRUCTURED_EVIDENCE_REQUIRED');
+  for(const key of ['GITHUB_RUN_ID','TASK_ID','GAME_ID','SOURCE_REVISION','FAILURE_STAGE','FAILURE_SIGNATURE']){
+    assert.ok(logMap.retained.keys.includes(key),key);
+  }
+  assert.equal(logMap.retained.unknownOrMissingPolicy,'FAIL_CLOSED');
+  assert.equal(architecture.branches.main.directGameWorkerWrite,false);
 });
 
 
