@@ -384,7 +384,7 @@ task.spawn(function()
 end)
 
 -- Imported mesh positioning only. Original creator-authored rig poses stay intact.
-local observed: {[Model]: {Visual: Model, Root: BasePart}} = {}
+local observed: {[Model]: {Visual: Model, Root: BasePart, LastFrame: CFrame?, LastOffset: CFrame?}} = {}
 local at = 0
 local scanAt = 0
 RunService.RenderStepped:Connect(function(dt)
@@ -416,7 +416,13 @@ RunService.RenderStepped:Connect(function(dt)
     else
       local offset = entry.Visual:GetAttribute("VisualPivotOffset")
       if typeof(offset) ~= "CFrame" then offset = CFrame.new() end
-      entry.Visual:PivotTo(entry.Root.CFrame * offset)
+      local rootFrame = entry.Root.CFrame
+      -- Server movement is discrete; stationary creature visuals need no redundant per-frame PivotTo.
+      if entry.LastFrame ~= rootFrame or entry.LastOffset ~= offset then
+        entry.Visual:PivotTo(rootFrame * offset)
+        entry.LastFrame = rootFrame
+        entry.LastOffset = offset
+      end
     end
   end
 end)
