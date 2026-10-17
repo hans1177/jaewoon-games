@@ -54,6 +54,8 @@ on:
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-existing-web-assessment.mjs'
       - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-gemini-free-rotation.mjs'
+      - 'qa/vibe2-gemini-free-rotation.test.mjs'
       - 'tools/vibe3-roblox-distillation.mjs'
       - 'tools/vibe3-roblox-studio-lessons.mjs'
       - 'qa/vibe3-roblox-studio-lessons.test.mjs'
@@ -185,6 +187,8 @@ on:
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-gemini-free-rotation.mjs'
+      - 'qa/vibe2-gemini-free-rotation.test.mjs'
       - 'tools/vibe3-roblox-distillation.mjs'
       - 'tools/vibe3-roblox-studio-lessons.mjs'
       - 'qa/vibe3-roblox-studio-lessons.test.mjs'
@@ -276,7 +280,7 @@ jobs:
           git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
           git diff --name-only "$base_sha" HEAD > /tmp/vibe2-core-qa-files.txt
           coding_benchmark=NO
-          if grep -Eq '^(tools/vibe2-learning-practice-worker\.mjs|company-learning/roblox-practice\.json|qa/vibe2-learning-practice-worker\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt; then
+          if grep -Eq '^(tools/vibe2-learning-practice-worker\.mjs|tools/vibe2-gemini-free-rotation\.mjs|qa/vibe2-gemini-free-rotation\.test\.mjs|company-learning/roblox-practice\.json|qa/vibe2-learning-practice-worker\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt; then
             coding_benchmark=YES
           fi
           echo "coding_benchmark=$coding_benchmark" >> "$GITHUB_OUTPUT"
@@ -345,6 +349,8 @@ jobs:
           node --check tools/vibe2-design-intelligence.mjs
           node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-existing-web-assessment.mjs
+          node --check tools/vibe2-gemini-free-rotation.mjs
+          node --check qa/vibe2-gemini-free-rotation.test.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-capability-distillation.mjs
           node --check tools/vibe2-merged-pr-provenance.mjs

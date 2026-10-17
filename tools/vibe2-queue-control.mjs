@@ -1067,6 +1067,41 @@ export function applyVibeFanInResults(queueInput, results = []) {
       applied.push({taskId,outcome:'REQUEUED_TRANSIENT_LOCK',reason:blockers.join('|')||'work-lock-conflict'});
       continue;
     }
+    // 무료 외부 AI 429는 게임 코드 오류가 아니다. 쿼터가 풀리기 전 재배정과
+    // 정상 코드 수리 재시도 예산 소비를 피하되 기존 큐/팬인/병렬 경로를 유지한다.
+    const externalQuotaDeferred=passes.length===0&&variants.length>0&&variants.every(row=>
+      clean(row?.outcome).toUpperCase()==='FAIL'
+      &&clean(row?.candidateFailure?.class).toUpperCase()==='EXTERNAL_AI_UNAVAILABLE'
+      &&/GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:/.test(clean(row?.candidateFailure?.message))
+      &&/:HTTP_429\b/.test(clean(row?.candidateFailure?.message))
+    );
+    if(externalQuotaDeferred){
+      const attempts=Math.min(12,Number(currentTask.externalAiQuotaDeferrals||0)+1);
+      const retryTimes=variants.map(row=>{
+        const match=clean(row?.candidateFailure?.message).match(/NEXT_RETRY_AT=([0-9TZ:.+-]+)/);
+        const millis=Date.parse(match?.[1]||'');
+        return Number.isFinite(millis)?millis:0;
+      });
+      const backoffMs=Math.min(3600000,60000*Math.pow(2,Math.min(6,attempts-1)));
+      const nextRetryAt=new Date(Math.max(Date.now()+backoffMs,...retryTimes)).toISOString();
+      queue=createVibeContinuousQueue({
+        maxConcurrentTasks:queue.maxConcurrentTasks,
+        tasks:queue.tasks.map(task=>task.id===taskId?{
+          ...task,
+          ...clearedReservation(),
+          status:'queued',
+          blocker:null,
+          lastOutcome:'DEFERRED_EXTERNAL_AI_QUOTA',
+          externalAiRetryNotBefore:nextRetryAt,
+          externalAiQuotaDeferrals:attempts,
+          neuronExpectedVariants:0,
+          neuronResults:[],
+          evidence:[...new Set([...(task.evidence||[]),'external-ai-quota-deferred','source-generation-failure:EXTERNAL_AI_UNAVAILABLE'])]
+        }:task)
+      });
+      applied.push({taskId,outcome:'DEFERRED_EXTERNAL_AI_QUOTA',nextRetryAt});
+      continue;
+    }
     const neuralTransactions=new Map(variants.map(row=>[row,buildNeuralWorkerTransaction(row)]));
     const neuralVariantFeedback=variants.map(row=>neuralTransactions.get(row).feedback);
     const neuralVariantEvidence=variants.flatMap(row=>neuralTransactions.get(row).evidence);
