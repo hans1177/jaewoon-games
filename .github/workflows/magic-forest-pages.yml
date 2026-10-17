@@ -117,6 +117,9 @@ jobs:
             fs.mkdirSync(path.dirname(target),{recursive:true});
             const source=cp.execFileSync('git',['show','HEAD:'+asset],{maxBuffer:105*1024*1024});
             if(source.length>100*1024*1024)throw Error('GITHUB_PAGES_ASSET_TOO_LARGE:'+asset);
+            if(source.subarray(0,100).toString('utf8').includes('version https://git-lfs.github.com/spec/v1')){
+              throw Error('GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE:'+asset);
+            }
             fs.writeFileSync(target,source);
           }
           fs.writeFileSync(path.join(site,'.nojekyll'),'');
@@ -137,13 +140,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "jaewoon-pages"
-          git config user.email "pages@users.noreply.github.com"
           gh auth setup-git
-          git fetch --no-tags --depth=1 origin gh-pages:refs/remotes/origin/gh-pages
+          # Use an isolated, complete gh-pages checkout: the source checkout is sparse.
+          # Reusing its worktree could omit old game files and stage accidental deletes.
           site="$RUNNER_TEMP/jaewoon-pages-publish"
-          git worktree add --detach "$site" origin/gh-pages
-          # Copy only, never delete previous published game directories.
+          git clone --quiet --depth=1 --single-branch --branch gh-pages             "https://github.com/$GITHUB_REPOSITORY.git" "$site"
+          git -C "$site" config user.name "jaewoon-pages"
+          git -C "$site" config user.email "pages@users.noreply.github.com"
+          test -f "$site/index.html"
+          test -f "$site/tier.html"
+          # Copy only; keep every previously published game without rewriting the originals.
           rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
           git -C "$site" add --all
           if ! git -C "$site" diff --cached --quiet; then
