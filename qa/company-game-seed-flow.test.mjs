@@ -31,9 +31,7 @@ const seedDesignWorkflow=fs.readFileSync('.github/workflows/company-seed-design-
 const statusWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
-const artbook=fs.readFileSync('tools/company-design-artbook.mjs','utf8');
 const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
-const devDisposition=fs.readFileSync('tools/company-development-disposition-gate.mjs','utf8');
 
 const scores=value=>({planning:value,graphics:value,development:value,qa:value,balance:value});
 const ROBLOX_CATEGORIES=['ROLEPLAY_LIFE_AVATAR','SIMULATOR_TYCOON_INCREMENTAL','BATTLEGROUND_FIGHTING_SHOOTER','SURVIVAL_HORROR_ESCAPE','OBBY_PARTY_MINIGAME','STORY_RPG_ADVENTURE_RPG'];
@@ -381,7 +379,7 @@ test('DESIGN_ONLY uses one designer plus deterministic department evidence witho
   assert.doesNotMatch(design,/vibe2-validator|VIBE2_VALIDATION_LEARNING/);
 });
 
-test('DESIGN_ONLY stops at design baseline; artbook is post-Web strict review only',()=>{
+test('DESIGN_ONLY preserves existing Vibe design and baseline without legacy artbook production',()=>{
   const designCall=pipeline.search(/await run(?:WithRetry)?\('tools\/company-design-cycle\.mjs'/);
   const gateCall=pipeline.indexOf("await run('tools/company-baseline-gate.mjs')",designCall);
   const artbookCall=pipeline.indexOf("await run('tools/company-design-artbook.mjs')",gateCall);
@@ -397,20 +395,11 @@ test('DESIGN_ONLY stops at design baseline; artbook is post-Web strict review on
   assert.match(gate,/deterministicDepartmentEvidenceCompleted===true/);
   assert.match(gate,/runtimeMetrics\?\.deterministicDepartmentEvidence===true/);
   assert.match(gate,/deterministic-design-recovery-provenance-required/);
-  assert.match(artbook,/postWebStrictReview:true/);
-  assert.match(artbook,/POST_WEB_ARTBOOK_REQUIRES_WEB_STRICT_80_NO_HARD_FAILURE/);
-  assert.match(artbook,/ARTBOOK_MODEL_CALL_TIMEOUT_MS/);
 });
 
-test('development discard or demotion still requires real evidence fix revalidation and five-lead agreement',()=>{
-  assert.match(devDisposition,/realEvidenceExists:data\.realEvidenceExists===true/);
-  assert.match(devDisposition,/targetedFixAttempted/);
-  assert.match(devDisposition,/targetedRevalidationPerformed/);
-  assert.match(devDisposition,/structuralFatalBlockerRemains/);
-  assert.match(devDisposition,/uniq\(Object\.values\(leadModels\)\)\.length!==5/);
-  assert.match(devDisposition,/unanimous&&commonFatal\.length/);
-  assert.match(devDisposition,/DEMOTE_TO_DESIGN_ONLY/);
-  assert.match(devDisposition,/markSeedDiscarded/);
+test('retired local AI disposition tool cannot mutate game state',()=>{
+  assert.equal(fs.existsSync('tools/company-development-disposition-gate.mjs'),false);
+  assert.doesNotMatch(pipeline,/await run\('tools\/company-development-disposition-gate\.mjs'\)/);
 });
 
 test('obsolete free-concept and direct prototype entrypoints remain removed',()=>{

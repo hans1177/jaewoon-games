@@ -4137,7 +4137,7 @@ test('precision production continues from inspection through authoring and appli
   assert.match(prompt,/qualityDNA/);
   assert.match(prompt,/INSPECT -> VERIFY_ORIGINAL -> EXTRACT_OR_CONVERT_EXISTING -> APPLY -> RUNTIME_QA/);
   assert.match(prompt,/Never produce new source models or speculative content/);
-  assert.match(prompt,/GAME_CAMERA silhouette\/function/);
+  assert.match(prompt,/All 12 asset families MUST be evaluated/);
 });
 
 

@@ -13,9 +13,7 @@ on:
       - 'tools/company-game-seed-semantic-normalize.mjs'
       - 'tools/company-game-seed-quality-gate.mjs'
       - 'tools/company-design-cycle.mjs'
-      - 'tools/company-design-artbook.mjs'
       - 'tools/company-baseline-gate.mjs'
-      - 'tools/company-development-disposition-gate.mjs'
       - 'tools/artbook-production-pipeline.mjs'
       - 'tools/autonomous-portfolio-continuation.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
@@ -40,9 +38,7 @@ on:
       - 'tools/company-game-seed-semantic-normalize.mjs'
       - 'tools/company-game-seed-quality-gate.mjs'
       - 'tools/company-design-cycle.mjs'
-      - 'tools/company-design-artbook.mjs'
       - 'tools/company-baseline-gate.mjs'
-      - 'tools/company-development-disposition-gate.mjs'
       - 'tools/artbook-production-pipeline.mjs'
       - 'tools/autonomous-portfolio-continuation.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
@@ -84,9 +80,7 @@ jobs:
             tools/company-game-seed-semantic-normalize.mjs \
             tools/company-game-seed-quality-gate.mjs \
             tools/company-design-cycle.mjs \
-            tools/company-design-artbook.mjs \
             tools/company-baseline-gate.mjs \
-            tools/company-development-disposition-gate.mjs \
             tools/artbook-production-pipeline.mjs \
             tools/autonomous-portfolio-continuation.mjs; do
             node --check "$file"
