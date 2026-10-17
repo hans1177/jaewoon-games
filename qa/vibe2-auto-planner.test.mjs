@@ -4788,7 +4788,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   }
 });
 
-test('actual fantasy-survival preserves Unity sources while only Roblox development is active',()=>{
+test('actual fantasy-survival resumes Web and Roblox while preserving owner-held Unity sources',()=>{
   const root=path.resolve(process.cwd());
   const oldWeb=path.join(root,'web-games','fantasy-survival','index.html');
   const unitySource=path.join(root,'unity-games','fantasy-survival','Assets','Scripts','UnityWebFloorGame.cs');
@@ -4798,7 +4798,8 @@ test('actual fantasy-survival preserves Unity sources while only Roblox developm
   const game=(catalogData.games||[]).find(row=>row.id==='fantasy-survival');
   assert.ok(game);
   const projects=collectProjects({projects:[]},{games:[game]},root,{items:[]});
-  assert.equal(projects.some(row=>row.engine==='unity'||row.engine==='web'),false);
+  assert.equal(projects.some(row=>row.engine==='unity'),false,'Unity remains owner-held');
+  assert.equal(projects.some(row=>row.engine==='web'),true,'ordinary Web resumes under the owner scope');
   assert.ok(projects.some(row=>row.gameId==='fantasy-survival'&&row.engine==='roblox'));
 });
 
