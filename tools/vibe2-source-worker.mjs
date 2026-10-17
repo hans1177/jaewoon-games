@@ -2448,6 +2448,8 @@ function presentationWorkerGuidance(order = {}) {
     '그래픽 작업의 외부 단위는 GRAPHICS_PRODUCTION 하나다. 캐릭터/환경/애니메이션/VFX/조명/UI를 별도 최상위 그래픽 작업으로 분리하지 말고 내부 단계로 처리한 뒤 같은 루트로 fan-in 한다.',
     'vibe-art-pipeline.js가 그래픽 생산 단일 코디네이터이며 asset planner/visual autopilot/presentation director/visual quality gate는 독립 승인 권한 없는 내부 모듈이다.',
     'Art Bible과 Visual Target Frame을 기준으로 Hero 대상(플레이어, 주 보스/적, 시그니처 장비, 핵심 랜드마크/시작지역)을 먼저 고품질 기준점으로 만든다.',
+    '화면의 시각적 완성도는 스타일 이름, 색상 변경, 에셋 개수, 화면 변화량만으로 증명되지 않는다. 실제 런타임 이미지가 제공되면 시선 집중, 원근과 거리감, 명암 구조, 재질 조화, 실루엣, 글자/여백, 게임 고유 정체성, 동작 가독성의 약한 책임을 먼저 특정하고 보이는 원인만 수정한다.',
+    '동일 구도·상태·조명에서 비교하고, 문제 있는 영역의 실제 기존 책임 오브젝트만 수정한다. 외부 3D 모델은 라이선스 허용 범위의 크기/방향/색/재질 등 간단한 게임별 보정과 기존 모션 연결을 우선하며 무리한 새 모델링이나 무관한 장식을 강제하지 않는다.',
     '배경은 빈 장식면이 아니다. 전경/중경/배경, 랜드마크, set dressing, 환경 스토리텔링, 이동/전투 가독성을 같은 Style Lock으로 구성한다.',
     '권리가 확인된 기존 에셋은 원본을 보존하고 derived 변형으로 파츠 재조합, 비율/실루엣/재질, 지역형/정예형/보스형, LOD 최적화까지 확장할 수 있다.',
     '서로 다른 에셋 팩을 원형 그대로 섞은 샘플/kitbash 느낌은 실패다. 재질·실루엣·조명·UI·VFX 언어를 하나의 게임으로 통일한다.',
@@ -4415,6 +4417,7 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
     '[RUNTIME VISUAL REPAIR BEGIN]',
     JSON.stringify(runtimeVisualRepair),
     'Repair only defects listed in defects and only inside the current responsible visual files. INTERFACE means only declared HUD/MENU/MINIMAP/INTERACTION presentation. SCENE_OBJECT means only declared required object binding/presentation. Preserve gameplay values, save meaning, multiplayer authority, hit timing, quest/progression rules and unrelated visual systems. Re-capture the same runtime role with the same camera, lighting and state after mutation. Do not close a defect from source markers, declarations, generated files, or a model claim; runtime re-observation is required.',
+    'For ART_DIRECTION repairs, use only pixel-observed findings with baseline/selected capture hashes and an exact sourcePath, targetId, property and expectedEffect. First locate that existing source owner and change its real camera, spatial arrangement, material/light, asset fit, UI spacing or presentation property. Prioritize the largest visible defect in the observed region; do not add random props, duplicate UI factories or entire wrapper pipelines. Do not mark visual quality improved before a new same-scene runtime review. An aesthetic score or visibleRenderDelta alone is not proof.',
     '[RUNTIME VISUAL REPAIR END]'
   ].join('\n'):'';
   const applyFirst=order.assetProduction?.applyFirstSummary;
