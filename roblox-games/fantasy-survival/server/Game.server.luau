@@ -478,7 +478,7 @@ local function makeWorldEnemy(spec, pos, region, ordinal)
   text.TextScaled = true
   text.Parent = hpBoard
   text.Text = spec.Name .. " " .. tostring(spec.HP)
-  local enemy = {model=model, label=text, kind=spec.Kind, region=region, position=pos, home=pos, hp=spec.HP, maxHp=spec.HP, damage=spec.Damage, speed=spec.Speed, aggro=spec.Aggressive, reach=spec.Reach or 8, nextMelee=0, nextSpecial=0, target=nil, alive=true}
+  local enemy = {model=model, label=text, kind=spec.Kind, region=region, position=pos, home=pos, pivotHeight=spec.Size * 0.7, hp=spec.HP, maxHp=spec.HP, damage=spec.Damage, speed=spec.Speed / 10, aggro=spec.Aggressive, reach=spec.Reach or 8, nextMelee=0, nextSpecial=0, target=nil, alive=true}
   table.insert(worldTreeEnemies, enemy)
   return enemy
 end
@@ -514,14 +514,11 @@ local function rootSnare(player)
   humanoid.JumpHeight = 0
   player:SetAttribute("WorldTreeRooted", true)
   worldNotice(player, "뿌리 속박 · 3초 이동 불가 / 공격 가능")
-  task.delay(worldTreeSpec.GolemRootLockSeconds, function()
-    if worldTreeSnares[player] ~= state then return end
-    if os.clock() < state.expires then
-      task.delay(math.max(0, state.expires - os.clock()), function()
-        if worldTreeSnares[player] == state and os.clock() >= state.expires then clearWorldSnare(player) end
-      end)
-    else
-      clearWorldSnare(player)
+  task.spawn(function()
+    while worldTreeSnares[player] == state do
+      local remaining = state.expires - os.clock()
+      if remaining <= 0 then clearWorldSnare(player) return end
+      task.wait(remaining)
     end
   end)
 end
@@ -568,13 +565,22 @@ worldPrompt(altar, "고대 뿌리 1개로 보스 소환", function(player)
   remote:FireAllClients("WORLD_TREE_NOTICE", "봉인이 깨졌다 · 근원포식자 녹스바르")
 end)
 
-local function worldEnemyDefeated(enemy)
+local function worldEnemyDefeated(enemy, killer)
   if not enemy.alive then return end
   enemy.alive = false
   if enemy.model then enemy.model:Destroy() end
+  if enemy.kind == "bear" and killer then
+    for _, resource in ipairs({"BearClaws", "BearHides", "BearFangs"}) do
+      killer:SetAttribute(resource, (killer:GetAttribute(resource) or 0) + 1)
+    end
+    worldNotice(killer, "세계수 곰 전리품 · 곰발톱, 곰가죽, 곰이빨 +1")
+  end
   if enemy == worldTreeBoss then
     worldTreeBoss = nil
     worldBossReward()
+  end
+  for index = #worldTreeEnemies, 1, -1 do
+    if worldTreeEnemies[index] == enemy then table.remove(worldTreeEnemies, index) break end
   end
 end
 
@@ -601,7 +607,7 @@ local function worldTreeAttack(player)
   if nearest.kind == "golem" then nearest.aggro = true; nearest.target = player end
   nearest.label.Text = nearest.model.Name .. " " .. tostring(nearest.hp) .. "/" .. tostring(nearest.maxHp)
   remote:FireClient(player, "WORLD_TREE_HIT", {name=nearest.model.Name, hp=nearest.hp, maxHp=nearest.maxHp, damage=damage})
-  if nearest.hp <= 0 then worldEnemyDefeated(nearest) end
+  if nearest.hp <= 0 then worldEnemyDefeated(nearest, player) end
 end
 
 local function worldRootProjectiles(enemy, player)
@@ -663,7 +669,7 @@ task.spawn(function()
           local nextPos = enemy.position + flat.Unit * step
           if (nextPos - enemy.home).Magnitude < 45 then
             enemy.position = nextPos
-            enemy.model:PivotTo(CFrame.lookAt(nextPos, nextPos + flat.Unit))
+            enemy.model:PivotTo(CFrame.lookAt(nextPos + Vector3.new(0, enemy.pivotHeight, 0), nextPos + Vector3.new(0, enemy.pivotHeight, 0) + flat.Unit))
           end
         elseif flat.Magnitude < enemy.reach + 2 then
           worldEnemyStrike(enemy, closest, now)
@@ -770,8 +776,8 @@ nativeFoundationSpawn.Neutral = true
 local function bindNativeFoundationCharacter(character)
   local humanoid = character:WaitForChild("Humanoid")
   local rootPart = character:WaitForChild("HumanoidRootPart")
-  clearWorldSnare(Players:GetPlayerFromCharacter(character))
   local owner = Players:GetPlayerFromCharacter(character)
+  if owner then clearWorldSnare(owner) end
   if owner then
     worldTreeRegions[owner] = "surface"
     owner:SetAttribute("WorldTreeArea", "surface")
