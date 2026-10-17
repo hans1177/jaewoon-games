@@ -884,7 +884,7 @@ jobs:
           else
             echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
           fi
-          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
+          COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
             --lane="$VIBE2_EXECUTION_LANE" \
