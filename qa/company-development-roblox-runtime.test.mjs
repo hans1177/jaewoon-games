@@ -1188,7 +1188,7 @@ test('Roblox runtime collapses duplicate exact-game and batch planners without w
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(workflow,/const winner=candidates\.find\(r=>String\(r\.status\|\|''\)\.toLowerCase\(\)==='in_progress'\)\|\|candidates\[candidates\.length-1\]/);
+  assert.match(workflow,/const winner=candidates\[0\];/);
   assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n/);
 });
 
@@ -1227,8 +1227,8 @@ test('Roblox source-plan winner preserves running work and filters exact game an
     return result;
   };
   assert.equal(winner([run(10,'in_progress'),run(11,'queued')]),'10');
-  assert.equal(winner([run(10,'queued'),run(11,'in_progress')]),'11');
-  assert.equal(winner([run(10,'queued'),run(11,'queued')]),'11');
+  assert.equal(winner([run(10,'queued'),run(11,'in_progress')]),'10');
+  assert.equal(winner([run(10,'queued'),run(11,'queued')]),'10');
   assert.equal(winner([run(10,'completed'),run(11,'queued')]),'11');
   assert.equal(winner([run(10,'in_progress','different'),run(11,'queued','cozy-island','b'.repeat(40)),run(12,'queued')]),'12');
   assert.equal(winner([run(10,'in_progress','different')]),'');
@@ -1293,10 +1293,10 @@ test('build revalidation pending waiting state remains eligible for exact Roblox
 });
 
 
-test('exact-game dedupe prefers in-progress work and compares only the same source revision',()=>{
+test('exact-game dedupe keeps oldest active work and compares only the same source revision',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/\.sort\(\(a,b\)=>Number\(a\.id\)-Number\(b\.id\)\)/);
-  assert.match(workflow,/const winner=candidates\.find\(r=>String\(r\.status\|\|''\)\.toLowerCase\(\)==='in_progress'\)\|\|candidates\[candidates\.length-1\]/);
+  assert.match(workflow,/const winner=candidates\[0\];/);
   assert.doesNotMatch(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
 });
 
