@@ -52787,11 +52787,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_4566ed5bdd76bc924e6a358d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8212",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d2375250868164b2f734c5a332c97cfd31fb9062",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8212,
+        "baseBranch": "main",
+        "headBranch": "fix/simple-rpg-keep-cc0-download-pr-20261017",
+        "baseSha": "d2375250868164b2f734c5a332c97cfd31fb9062",
+        "headSha": "65e3df483e11b656bd49fe92e8ccce1cd72480bc",
+        "mergeCommitSha": "782ff3146869b408b757c1d9ef41f60440ea0731",
+        "mergedAt": "2026-10-17T01:43:04Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a6d7165d29f7748d4ad19b689a1857d889b92d51b01bc0a9a0761750438e5c95",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/simple-rpg-keep-cc0-download-pr-20261017",
+        "candidateSha": "65e3df483e11b656bd49fe92e8ccce1cd72480bc"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 118,
+        "deletedLineCount": 2,
+        "changedFiles": [
+          ".github/workflows/owner-simple-rpg-direct-publish.yml",
+          "homepage-platform-exposure.json",
+          "tools/simple-rpg-propose-verified-downloads.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-simple-rpg-direct-publish.yml",
+          "homepage-platform-exposure.json",
+          "tools/simple-rpg-propose-verified-downloads.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8212",
+        "merge-commit:782ff3146869b408b757c1d9ef41f60440ea0731",
+        "base-main:d2375250868164b2f734c5a332c97cfd31fb9062"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 426
+    "total": 427
   }
 }
