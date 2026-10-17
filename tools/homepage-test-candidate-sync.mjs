@@ -46,7 +46,7 @@ const queue=showJson('development-queue.json',{items:[]});
 const runtimeCatalog=showJson('game-catalog.json',{games:[]});
 const catalogById=new Map((runtimeCatalog.games||[]).map(game=>[clean(game.id),game]));
 const candidates=[];
-let staleEvidenceCount=0,nonPlayableRejectedCount=0,substanceRejectedCount=0,postWebArtbookRejectedCount=0,lifecycleRejectedCount=0;
+let staleEvidenceCount=0,nonPlayableRejectedCount=0,substanceRejectedCount=0,lifecycleRejectedCount=0;
 for(const item of queue.items||[]){
   const gameId=clean(item.gameId);if(!gameId)continue;
   const game=catalogById.get(gameId);
@@ -54,12 +54,10 @@ for(const item of queue.items||[]){
   if(clean(game.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED'){lifecycleRejectedCount++;continue;}
   if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
   if(!item.webValidationPassedAt||item.musicValidationPassed!==true)continue;
-  if(item.postWebArtbookPassed!==true||item.homepageTestCandidate!==true||clean(item.homepageTestVerdict).toUpperCase()!=='PASS'){postWebArtbookRejectedCount++;continue;}
   const webSourcePath=clean(item.webSourcePath||`web-games/${gameId}`);
-  const artbookSource=clean(item.artbookSource||`artbook-submissions/${gameId}/current.json`);
   const evidencePath=clean(item.webValidationEvidencePath);
   const baselineSource=clean(item.designBaselineSource);
-  if(!evidencePath||!baselineSource||!existsRuntime(evidencePath)||!existsRuntime(`${webSourcePath}/index.html`)||!existsRuntime(baselineSource)||!existsRuntime(artbookSource))continue;
+  if(!evidencePath||!baselineSource||!existsRuntime(evidencePath)||!existsRuntime(`${webSourcePath}/index.html`)||!existsRuntime(baselineSource))continue;
   const evidence=showJson(evidencePath,null);if(!evidence)continue;
   const webHtml=showText(`${webSourcePath}/index.html`);
   if(!realPlayableGamePass(webHtml)){nonPlayableRejectedCount++;continue;}
@@ -71,8 +69,6 @@ for(const item of queue.items||[]){
     if(evaluation.blockers.some(x=>['WEB_VALIDATION_SCHEMA_STALE','WEB_FINAL_CONTENT_DEPTH_NOT_PASS','WEB_EVIDENCE_HASH_MISSING','WEB_SOURCE_HASH_STALE','WEB_BASELINE_HASH_STALE'].includes(x)))staleEvidenceCount++;
     continue;
   }
-  const artbook=showJson(artbookSource,null);
-  if(artbook?.postWebStrictReview!==true||Number(artbook?.webStrictScore)!==scoreOf(evidence)||clean(artbook?.webValidationEvidencePath)!==evidencePath){postWebArtbookRejectedCount++;continue;}
   candidates.push({
     id:gameId,
     gameId,
@@ -92,9 +88,6 @@ for(const item of queue.items||[]){
     finalContentDepthPassed:evaluation.finalContentDepthPass===true,
     testUrl:`/${webSourcePath.replace(/^\/+|\/+$/g,'')}/`,
     webPath:`/${webSourcePath.replace(/^\/+|\/+$/g,'')}/`,
-    artbookUrl:`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
-    artbookPath:`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
-    artbookSource,
     evidencePath,
     validationSchemaVersion:evaluation.schema||null,
     sourceIndexSha256:clean(evidence?.sourceIndexSha256)||null,
@@ -123,41 +116,24 @@ const cutlineScore=selected.length===limit?Number(selected[selected.length-1].sc
 for(const candidate of selected){
   const webDir=clean(candidate.webPath).replace(/^\/+|\/+$/g,'');
   checkoutRuntime(webDir);
-  checkoutRuntime(candidate.artbookSource);
 }
-
-const previousRegistry=readJson('game-artbooks.json',{version:1,artbooks:[],dailySubmissions:[]});
-const registry={
-  ...previousRegistry,
-  artbooks:Array.isArray(previousRegistry.artbooks)?previousRegistry.artbooks.filter(row=>row?.homepageTestCandidate!==true):[],
-};
-for(const candidate of selected){
-  const artbook=readJson(candidate.artbookSource,{});
-  registry.artbooks.push({
-    id:`${candidate.gameId}-test-current`,gameId:candidate.gameId,gameName:candidate.name,edition:Number(artbook.edition||1),
-    status:'completed-artbook',published:true,homepageVisible:true,productionApproval:false,homepageTestCandidate:true,
-    createdAt:clean(artbook.createdAt||artbook.date||candidate.validatedAt).slice(0,10),format:clean(artbook.format||'core-strategy'),sourceFile:candidate.artbookSource,
-  });
-}
-const registryChanged=writeJsonIfSemanticChanged('game-artbooks.json',previousRegistry,registry);
 
 const manifest={
   version:9,policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,canonicalLifecycleRequired:true,
   homepageTestShelf:{
-    limit,minimumScore,minimumValidationSchema,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresRealPlayableGame:true,requiresRealGameSubstance:true,requiredWebArtifactType:requiredArtifactType,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresFinal30MinuteContentDepth:true,requiredContentDepthValidationMode:'REAL_ELAPSED_GAMEPLAY',hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,allowedLifecycleStates:[...homepageActiveLifecycleStates],
+    limit,minimumScore,minimumValidationSchema,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresRealPlayableGame:true,requiresRealGameSubstance:true,requiredWebArtifactType:requiredArtifactType,requiresArtbook:false,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresFinal30MinuteContentDepth:true,requiredContentDepthValidationMode:'REAL_ELAPSED_GAMEPLAY',hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,allowedLifecycleStates:[...homepageActiveLifecycleStates],
     cutlineScore,replacementPolicy:'STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT',tieBreak:['EXISTING_TOP30_RANK','PROMOTION_REVALIDATION_PASS','LATEST_VALIDATION','GAME_ID'],
   },
   candidates:selected,
 };
 const manifestChanged=writeJsonIfSemanticChanged(manifestFile,previousManifest,manifest);
-const semanticChanged=registryChanged||manifestChanged;
+const semanticChanged=manifestChanged;
 console.log(`HOMEPAGE_TEST_CANDIDATE_COUNT=${selected.length}`);
 console.log(`HOMEPAGE_TEST_CANDIDATE_IDS=${selected.map(x=>x.gameId).join(',')}`);
 console.log(`HOMEPAGE_TEST_LIFECYCLE_REJECTED=${lifecycleRejectedCount}`);
 console.log(`HOMEPAGE_TEST_STALE_EVIDENCE_REJECTED=${staleEvidenceCount}`);
 console.log(`HOMEPAGE_TEST_NON_PLAYABLE_REJECTED=${nonPlayableRejectedCount}`);
 console.log(`HOMEPAGE_TEST_SUBSTANCE_REJECTED=${substanceRejectedCount}`);
-console.log(`HOMEPAGE_TEST_POST_WEB_ARTBOOK_REJECTED=${postWebArtbookRejectedCount}`);
 console.log('HOMEPAGE_TEST_CANDIDATE_LIMIT=30');
 console.log(`HOMEPAGE_TEST_MINIMUM_SCORE=${minimumScore}`);
 console.log(`HOMEPAGE_TEST_MINIMUM_VALIDATION_SCHEMA=${minimumValidationSchema}`);
@@ -165,5 +141,5 @@ console.log(`HOMEPAGE_TEST_REQUIRED_ARTIFACT_TYPE=${requiredArtifactType}`);
 console.log(`HOMEPAGE_TEST_CUTLINE_SCORE=${cutlineScore??'OPEN'}`);
 console.log('HOMEPAGE_TEST_REPLACEMENT=STRICTLY_HIGHER_SCORE;TIE_PRESERVES_INCUMBENT');
 console.log('HOMEPAGE_TEST_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');
-console.log('HOMEPAGE_TEST_REQUIRES=ACTIVE_OR_REBUILD_LIFECYCLE+REAL_PLAYABLE_WEB_GAME+REAL_GAME_SUBSTANCE+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES+REAL_ELAPSED_30MIN');
+console.log('HOMEPAGE_TEST_REQUIRES=ACTIVE_OR_REBUILD_LIFECYCLE+REAL_PLAYABLE_WEB_GAME+REAL_GAME_SUBSTANCE+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES+REAL_ELAPSED_30MIN');
 console.log(`HOMEPAGE_TEST_SYNC_CHANGED=${semanticChanged?'YES':'NO'}`);
