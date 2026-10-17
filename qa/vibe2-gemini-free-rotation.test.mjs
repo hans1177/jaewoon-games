@@ -47,6 +47,20 @@ test('actual Vibe2 game source function invokes only approved external AI and pr
   });
 });
 
+test('missing production API key is infrastructure failure and never makes a remote or local call',async()=>{
+  await withExternalFixture(async()=>{
+    delete process.env.GEMINI_API_KEY;
+    let calls=0;
+    globalThis.fetch=async()=>{calls++;throw new Error('unexpected fetch');};
+    await assert.rejects(requestLocalModel('code'),error=>{
+      assert.equal(error?.vibe2InfrastructureFailure,true);
+      assert.match(error.message,/GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK/);
+      return true;
+    });
+    assert.equal(calls,0);
+  });
+});
+
 test('existing learning practice function shares external free pair and requests structured JSON',async()=>{
   await withExternalFixture(async()=>{
     let count=0;
