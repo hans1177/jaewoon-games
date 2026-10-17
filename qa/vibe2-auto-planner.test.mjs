@@ -4577,7 +4577,7 @@ test('owner-active general Web 3D fills browser-native slots without starting he
     const policyPath=path.join(root,'company-learning/platform-release-roadmap.json');
     const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
     policy.developmentAccess={ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'};
-    policy.ownerActiveDevelopmentScope20261009={status:'ACTIVE',activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY_WEB','UNITY_ANDROID']};
+    policy.ownerActiveDevelopmentScope20261009={status:'ACTIVE',authority:'OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB',activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN']};
     policy.developmentSpeedExecution={webGameFlow:{enabled:true,targetConcurrentGames:2,scope:'GENERAL_WEB_HTML_JS_TRUE_3D'}};
     fs.writeFileSync(policyPath,JSON.stringify(policy));
     for(const id of ['dev-web','third-web'])writeStudioDesign(root,id);
@@ -4593,6 +4593,7 @@ test('owner-active general Web 3D fills browser-native slots without starting he
     assert.equal(again.tasks.filter(row=>row.target==='web').length,0,'do not queue the same Web games twice');
     policy.developmentAccess.WEB='OWNER_HOLD';
     policy.ownerActiveDevelopmentScope20261009.activeTargets=['ROBLOX'];
+    policy.ownerActiveDevelopmentScope20261009.ownerHeldTargets.push('WEB');
     fs.writeFileSync(policyPath,JSON.stringify(policy));
     const held=planVibe2AutonomousTasks(args);
     assert.equal(held.planningBacklog.webGameFlow.target,0,'owner-held Web must not reserve phantom slots');
