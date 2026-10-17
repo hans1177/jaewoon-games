@@ -10,6 +10,7 @@ import { VIBE_WORK_LOCK_STATE_BRANCH, VIBE_WORK_LOCK_STATE_PATH } from '../asset
 // not a hardcoded synthetic PASS or permanent failure stub.
 import {compileOwnerCanonicalConstitution,compileCentralArchitectureProjection}
   from './company-shared-context.mjs';
+import { resolveActiveOwnerPolicy } from './company-policy-steward.mjs';
 
 export const CANONICAL_VIBE_POLICY_PATH='company-learning/platform-release-roadmap.json';
 
@@ -19,6 +20,7 @@ const sha256=value=>crypto.createHash('sha256').update(String(value??''),'utf8')
 const GIT_POLICY_SNAPSHOT_MAX_BUFFER=16*1024*1024;
 
 function workerExecutionPolicyProjection(policy={}){
+  const effectiveScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
   const constitution=compileOwnerCanonicalConstitution(policy);
   const architectureProjection=compileCentralArchitectureProjection(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
@@ -31,6 +33,12 @@ function workerExecutionPolicyProjection(policy={}){
   return{
     status:clean(policy.status)||null,
     policySource:clean(policy.policySource)||null,
+    latestApprovedOwnerScope:effectiveScope?{
+      authority:effectiveScope.ownerDirective,
+      activeTargets:effectiveScope.activeTargets,
+      ownerHeldTargets:effectiveScope.ownerHeldTargets,
+      effectiveDevelopmentAccess:effectiveScope.effectiveDevelopmentAccess
+    }:null,
     ownerCanonicalConstitution:{
       version:constitution.version,
       authority:constitution.authority,
@@ -334,6 +342,7 @@ export function compileVibeCentralWorkContract({
 }={}){
   const source=snapshot||{required:false,present:false,valid:false,path:CANONICAL_VIBE_POLICY_PATH,errors:['CENTRAL_POLICY_MISSING'],document:null};
   const policy=source.document||{};
+  const latestOwnerScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
   const constitution=compileOwnerCanonicalConstitution(policy);
   const architectureProjection=compileCentralArchitectureProjection(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
@@ -409,6 +418,13 @@ export function compileVibeCentralWorkContract({
     version:2,
     required,
     validAtCompile:source.valid===true,
+    latestApprovedOwnerScope:latestOwnerScope?{
+      authority:latestOwnerScope.ownerDirective,
+      activeTargets:latestOwnerScope.activeTargets,
+      ownerHeldTargets:latestOwnerScope.ownerHeldTargets,
+      effectiveDevelopmentAccess:latestOwnerScope.effectiveDevelopmentAccess,
+      retiredOlderScopes:latestOwnerScope.retiredOwnerSections
+    }:null,
     constitution:{
       version:constitution.version,
       authority:constitution.authority,
