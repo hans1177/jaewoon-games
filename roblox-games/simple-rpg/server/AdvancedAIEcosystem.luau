@@ -6,15 +6,17 @@ local PathfindingService = game:GetService("PathfindingService")
 
 type Entry = {Player: Player, Position: Vector3}
 type OctreeNode = {Center: Vector3, Half: number, Entries: {Entry}?, Children: {OctreeNode}?}
-type PathState = {LastRequested: number, Busy: boolean, Waypoints: {PathWaypoint}?, Index: number}
+type PathState = {LastRequested: number, Busy: boolean, Waypoints: {PathWaypoint}?, Index: number, Goal: Vector3?, Desired: Vector3?, ResolvedAt: number}
 local AdvancedAIEcosystem = {}
 local tree: OctreeNode? = nil
 local lastIndexAt = -1e9
-local paths: {[Model]: PathState} = {}
+local paths: {[Model]: PathState} = setmetatable({}, {__mode = "k"}) :: {[Model]: PathState}
 local pendingPaths = 0
 local UPDATE_INTERVAL = 0.5
 local MAX_PATHS_IN_FLIGHT = 2
 local MIN_PATH_RETRY = 3
+local GOAL_REPLAN_DISTANCE = 8
+local MAX_ROUTE_AGE = 6
 
 local function buildOctree(entries: {Entry}, center: Vector3, half: number, depth: number): OctreeNode
     local node: OctreeNode = {Center = center, Half = half}
@@ -72,23 +74,26 @@ end
 
 function AdvancedAIEcosystem.ClosestPlayer(position: Vector3, radius: number): (Player?, number)
     local nearest: Player? = nil
-    local best = radius
+    -- Compare squared distances in the octree hot path. Only the final answer
+    -- needs a square root; the caller still receives distance in studs.
+    local bestSquared = radius * radius
     local function visit(node: OctreeNode)
         local offset = position - node.Center
         local dx = math.max(math.abs(offset.X) - node.Half, 0)
         local dy = math.max(math.abs(offset.Y) - node.Half, 0)
         local dz = math.max(math.abs(offset.Z) - node.Half, 0)
-        if dx * dx + dy * dy + dz * dz >= best * best then return end
+        if dx * dx + dy * dy + dz * dz >= bestSquared then return end
         if node.Entries then
             for _, row in ipairs(node.Entries) do
-                local distance = (row.Position - position).Magnitude
-                if distance < best then
+                local delta = row.Position - position
+                local distanceSquared = delta:Dot(delta)
+                if distanceSquared < bestSquared then
                     local character = row.Player.Character
                     local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
                     local humanoid = if character then character:FindFirstChildOfClass("Humanoid") else nil
                     if root and root:IsA("BasePart") and humanoid and humanoid.Health > 0 then
                         nearest = row.Player
-                        best = distance
+                        bestSquared = distanceSquared
                     end
                 end
             end
@@ -96,7 +101,7 @@ function AdvancedAIEcosystem.ClosestPlayer(position: Vector3, radius: number): (
         if node.Children then for _, child in ipairs(node.Children) do visit(child) end end
     end
     if tree then visit(tree) end
-    return nearest, best
+    return nearest, math.sqrt(bestSquared)
 end
 
 function AdvancedAIEcosystem.SetState(enemy: any, state: string): ()
@@ -105,16 +110,41 @@ function AdvancedAIEcosystem.SetState(enemy: any, state: string): ()
     end
 end
 
+-- Forget stale routes when the authoritative enemy has no living target.
+-- Releasing the state also invalidates any in-flight result for that model.
+function AdvancedAIEcosystem.ForgetEnemy(enemy: any): ()
+    paths[enemy.Model] = nil
+end
+
 -- A* runs asynchronously and is capped globally. Existing PivotTo motion follows waypoints.
 function AdvancedAIEcosystem.ChaseTarget(enemy: any, target: Vector3, now: number): Vector3
     local model: Model = enemy.Model
     local root: BasePart = enemy.Root
+    if (target - root.Position).Magnitude <= 8 then return target end
     local state = paths[model]
     if not state then
-        state = {LastRequested = -1e9, Busy = false, Waypoints = nil, Index = 1}
+        state = {LastRequested = -1e9, Busy = false, Waypoints = nil, Index = 1,
+            Goal = nil, Desired = nil, ResolvedAt = -1e9}
         paths[model] = state
     end
-    if (target - root.Position).Magnitude <= 8 then return target end
+    state.Desired = target
+    -- A route remains useful while the target stays near its original goal.
+    -- A moved goal or an old path must never steer the enemy indefinitely.
+    if state.Goal and (target - state.Goal).Magnitude >= GOAL_REPLAN_DISTANCE then
+        state.Waypoints = nil
+    elseif now - state.ResolvedAt >= MAX_ROUTE_AGE then
+        state.Waypoints = nil
+    end
+    local points = state.Waypoints
+    if points then
+        while state.Index <= #points and (points[state.Index].Position - root.Position).Magnitude <= 3 do
+            state.Index += 1
+        end
+        if state.Index <= #points then return points[state.Index].Position end
+        state.Waypoints = nil
+    end
+    -- Reuse a valid route instead of recomputing A* every retry interval.
+    -- When no valid route exists, preserve bounded retry and straight-line fallback.
     if not state.Busy and pendingPaths < MAX_PATHS_IN_FLIGHT and now - state.LastRequested >= MIN_PATH_RETRY then
         state.Busy = true
         state.LastRequested = now
@@ -126,22 +156,23 @@ function AdvancedAIEcosystem.ChaseTarget(enemy: any, target: Vector3, now: numbe
                 return result
             end)
             pendingPaths -= 1
+            -- A dead, forgotten or replaced enemy may never revive an old route.
+            if paths[model] ~= state or model.Parent == nil then return end
             state.Busy = false
-            if model.Parent == nil then paths[model] = nil; return end
+            local desired = state.Desired
+            if not desired or (desired - target).Magnitude >= GOAL_REPLAN_DISTANCE then
+                state.Waypoints = nil
+                return
+            end
             if ok and path.Status == Enum.PathStatus.Success then
                 state.Waypoints = path:GetWaypoints()
                 state.Index = 2
+                state.Goal = target
+                state.ResolvedAt = os.clock()
             else
                 state.Waypoints = nil
             end
         end)
-    end
-    local points = state.Waypoints
-    if points then
-        while state.Index <= #points and (points[state.Index].Position - root.Position).Magnitude <= 3 do
-            state.Index += 1
-        end
-        if state.Index <= #points then return points[state.Index].Position end
     end
     return target
 end
