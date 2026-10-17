@@ -35,21 +35,20 @@ test('genre production design reaches the real source worker and compact retry w
   assert.match(retry,/owner-add-2/);
 });
 
-test('ordinary Web source worker selects locally approved Three.js and fail-closed mobile real 3D',()=>{
+test('ordinary Web source worker uses the existing Three.js selector and mobile runtime safeguards',()=>{
   const order={id:'web-three-approval',gameId:'garden',target:'web',goal:'repair current 3D scene',selectedTask:{type:'implementation'},department:'development'};
-  const own='web-games/garden/index.html';
-  const context={files:[{path:own,editable:true,content:'<!doctype html><canvas id="game"></canvas>'}]};
+  const own='web-games/garden/index.html',context={files:[{path:own,editable:true,content:'<!doctype html><canvas id="game"></canvas>'}]};
   const prompt=buildPrompt(order,context,[own]);
-  assert.match(prompt,/GENERAL WEB TRUE 3D CODING METHOD BEGIN/);
-  assert.match(prompt,/Three\.js ES modules/);
+  assert.match(prompt,/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
+  assert.match(prompt,/engine=THREE_JS; reason=MOBILE_FIRST_NEW_WEB3D/);
   assert.match(prompt,/three\.module\.js/);
-  assert.match(prompt,/WebGL2 as the reliable mobile baseline/);
-  assert.match(prompt,/WebGPU is optional/);
-  assert.match(prompt,/device pixel ratio near 1\.5/);
-  assert.match(prompt,/frame-rate claims without browser evidence/);
-  assert.match(prompt,/Keep existing gameplay rules, balance, progression, multiplayer and save keys unchanged/);
+  assert.match(prompt,/mobile WebGL2 compatibility/);
+  assert.match(prompt,/WebGPU/);
+  assert.match(prompt,/pixel ratio near 1\.5/);
+  assert.match(prompt,/real mobile GPU\/frame cost/);
+  assert.match(prompt,/preserve combat ticks, saves, economy, multiplayer authority and controls/);
   const robloxPrompt=buildPrompt({...order,target:'roblox'},context,[own]);
-  assert.doesNotMatch(robloxPrompt,/GENERAL WEB TRUE 3D CODING METHOD BEGIN/);
+  assert.doesNotMatch(robloxPrompt,/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
 });
 
 test('non-Roblox worker cannot consume a stale Roblox production plan',()=>{
