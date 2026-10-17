@@ -749,7 +749,7 @@ test('Vibe MATERIAL repair binds selected asset atom to an existing visible nati
     'local Config = require(Shared:WaitForChild("GameConfig"))',
     'local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")',
     'local foundationMarker = Instance.new("SpawnLocation")',
-  ].join('\\n');
+  ].join('\n');
   assert.equal(robloxStudioAssetFamilyBoundInText(unboundNativeSource,'MATERIAL'),false);
   assert.throws(()=>bindExistingServerStudioMaterial({source:unboundNativeSource,familyStatus:{MATERIAL:'APPLIED'},selectedAtoms:['UNVERIFIED']}),/EXISTING_STUDIO_MATERIAL_SELECTED_NATIVE_ATOM_REQUIRED/);
 });
