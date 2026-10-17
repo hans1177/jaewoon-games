@@ -429,3 +429,41 @@ test('golem launches four roots every two seconds with 50 percent roll and no hi
   assert.match(functionBody('applyRemoteEnemyEffect'),/kind==='rootbind'/);
   assert.match(functionBody('drawProjectiles'),/kind==='worldtreeRoot'/);
 });
+
+test('world tree chamber art and cellar entrance are bound to the existing tap and floor renderer',()=>{
+  assert.match(source,/WORLD_TREE_INTERIOR=\{w:3200,h:2300,[^;]*basement:\{x:1600,y:335\}/);
+  const tap=functionBody('handleWorldTap'),inside=functionBody('drawWorldTreeInterior');
+  assert.match(tap,/worldtree-basement-entrance/);
+  assert.match(tap,/WORLD_TREE_INTERIOR\.basement\.x/);
+  assert.match(inside,/뿌리 회랑/);
+  assert.match(inside,/고목 심장/);
+  assert.match(inside,/수액 정원/);
+  assert.match(inside,/세계수 지하 · 두 번 눌러 내려가기/);
+  assert.match(functionBody('draw'),/drawWorldTreeInterior\(cx,cy/);
+});
+
+test('underground entrance and exit round-trip preserve the previous outdoor passage and saved world tree destination',()=>{
+  const enter=functionBody('enterCave'),leave=functionBody('leaveCave'),save=functionBody('saveGame'),load=functionBody('loadGame');
+  assert.match(enter,/state\.area==='worldtreeinside'/);
+  assert.match(enter,/if\(!fromInterior\)state\.surfacePos=/);
+  assert.match(enter,/state\.caveReturnArea=fromInterior\?'worldtreeinside':'surface'/);
+  assert.match(leave,/const toInterior=state\.caveReturnArea==='worldtreeinside'/);
+  assert.match(leave,/state\.area=toInterior\?'worldtreeinside':'surface'/);
+  assert.match(leave,/state\.caveReturnArea='surface'/);
+  assert.match(save,/caveReturnArea:state\.caveReturnArea/);
+  assert.match(load,/s\.caveReturnArea==='worldtreeinside'\?'worldtreeinside':'surface'/);
+  assert.match(enter,/CAVE_ENTRY/);
+  assert.match(leave,/TREE_HOLE/);
+});
+
+test('world tree basement is bright without a torch while quest cave darkness remains unchanged',()=>{
+  const underground=functionBody('drawCave'),dark=functionBody('drawQuestDarkness');
+  assert.match(underground,/stoneFloor\.addColorStop\(0,'#625966'\)/);
+  assert.match(underground,/세계수 지하 · 봉인의 뿌리/);
+  assert.match(underground,/BOSS_ALTAR/);
+  assert.match(dark,/const basement=state\.area==='underground'/);
+  assert.match(dark,/basement\?'rgba\(12,12,19,\.18\)':'rgba\(0,0,0,\.91\)'/);
+  assert.match(dark,/light\.lit\?430:78/);
+  assert.match(functionBody('summonBoss'),/state\.bossSummoned=true/);
+  assert.match(source,/worldtreegolem:\{id:'worldtreegolem',name:'세계수 골렘',mood:'neutral',hp:586,dmg:48/);
+});
