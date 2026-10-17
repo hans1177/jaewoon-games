@@ -8,6 +8,11 @@ on:
       - "web-games/**"
       - "game-catalog.json"
       - "assets/**"
+      - "!assets/external/**"
+      - "!assets/roblox/**"
+      - "!assets/native-authoring/**"
+      - "!assets/homepage-media/**"
+      - "!assets/homepage-covers/**"
       - ".github/workflows/magic-forest-pages.yml"
   workflow_dispatch:
 
@@ -26,7 +31,7 @@ jobs:
       - name: Checkout exact main source without hydrating large unused assets
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.sha }}
           fetch-depth: 1
           filter: blob:none
           sparse-checkout: |
@@ -37,6 +42,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           node <<'NODE'
           const fs=require('node:fs');
           const path=require('node:path');
@@ -146,7 +152,7 @@ jobs:
             fi
             sleep 10
           done
-          test "$verified" = true || { echo "WEB_PAGES_LIVE_SOURCE_NOT_VERIFIED" >&2; exit 1; }
+          if [ "$verified" != true ]; then echo "WEB_PAGES_LIVE_SOURCE_NOT_VERIFIED" >&2; exit 1; fi
           curl -fsSL --max-time 15 "$manifest_url" -o /tmp/web-pages-published.json
           node -e "const m=require('/tmp/web-pages-published.json');for(const p of m.routes)if(!/^web-games\/[a-z0-9-]+\/$/.test(p))process.exit(1)"
           node -p "require('/tmp/web-pages-published.json').routes.join('\n')" | while IFS= read -r route; do
