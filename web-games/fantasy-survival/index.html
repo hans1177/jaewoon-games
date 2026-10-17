@@ -1167,7 +1167,7 @@ function setDifficulty(level,notify=true){
  if(notify)showNotice('난이도 '+DIFFICULTY_PROFILES[next].label+' 적용')
 }
 function tryHardDifficultySkill(e,targetP,now,playerD){
- if(state.settings.difficulty!=='hard'||!e?.hostile||e.type.mood==='harmless'||e.type.boss||e.type.labBoss||e.type.tigerLeader)return false;
+ if(state.settings.difficulty!=='hard'||!e?.hostile||e.type.mood==='harmless'||e.type.boss||e.type.labBoss||e.type.tigerLeader||e.type.snakeIllusion)return false;
  if(!e.nextHardSkillAt)e.nextHardSkillAt=now+rand(5500,8000);
  if(now<e.nextHardSkillAt)return false;
  const range=e.type.r+55;if(playerD>range)return false;
@@ -3883,7 +3883,7 @@ function markEnemyAttack(e,now){
 }
 function enemyHasBuiltInSpecial(type){
  if(!type)return false;
- if(type.boss||type.labBoss||type.tigerLeader||type.guardian||type.crystalSpecial||type.caveLeader||type.vampireBat||type.flame||type.burrower||type.crocodile||type.sharkSpecial||type.leechLife||type.gorillaSpecial||type.anacondaSpecial||type.mudSpecial||type.yetiBoss||type.polarBearSpecial||type.polarWolfSpecial||type.templeSpearman||type.templeArcher||type.templeGuardian||type.mushroomGas||type.toxicMycelium||type.swampHarden||type.fearSpecial||type.tigerTear||type.squidInk||type.anglerLure)return true;
+ if(type.boss||type.labBoss||type.tigerLeader||type.guardian||type.crystalSpecial||type.caveLeader||type.vampireBat||type.flame||type.burrower||type.crocodile||type.sharkSpecial||type.leechLife||type.gorillaSpecial||type.anacondaSpecial||type.mudSpecial||type.yetiBoss||type.polarBearSpecial||type.polarWolfSpecial||type.templeSpearman||type.templeArcher||type.templeGuardian||type.mushroomGas||type.toxicMycelium||type.swampHarden||type.fearSpecial||type.tigerTear||type.squidInk||type.anglerLure||type.snakeIllusion||type.worldtreeRoots)return true;
  return type.id==='flowergoblin'||type.id==='giantbee'
 }
 function enemyCanUseCommonSpecial(e){
