@@ -14,15 +14,14 @@
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": true,
+  "serverSourceChanged": false,
   "foundationRepairApplied": false,
-  "studioMaterialRepairApplied": true,
+  "studioMaterialRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "client/Game.client.luau",
-    "server/Game.server.luau"
+    "client/Game.client.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_STUDIO_MATERIAL_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -586,5 +585,5 @@
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-  "createdAt": "2026-10-17T13:25:29.498Z"
+  "createdAt": "2026-10-17T13:30:46.314Z"
 }
