@@ -45,44 +45,6 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  policy-steward:
-    name: Nonblocking four-document mirror stewardship
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 6
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 1
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Reconcile only approved retained policy mirrors
-        run: |
-          set -euo pipefail
-          node --check tools/company-policy-steward.mjs
-          node tools/company-policy-steward.mjs --fix-mirrors
-          node --test qa/company-policy-steward.test.mjs qa/company-shared-context-retained.test.mjs
-          node tools/company-constitution-enforcer.mjs --phase=policy-mirror-steward
-          git diff --check
-      - name: Persist mirror-only metadata correction without delaying games
-        run: |
-          set -euo pipefail
-          git add -- company-learning/company-log-map.json company-learning/company-architecture-map.json company-learning/security-immune-system.json
-          if git diff --cached --quiet; then
-            echo 'POLICY_STEWARD_MIRRORS=CURRENT'
-            exit 0
-          fi
-          git config user.name 'jaewoon-policy-steward'
-          git config user.email 'actions@users.noreply.github.com'
-          git commit -m 'docs: synchronize approved owner directive in retained policy mirrors [skip ci]'
-          if ! git push origin HEAD:main; then
-            echo 'POLICY_STEWARD_MIRROR_PUSH=RACE_RETRY_ON_NEXT_RECORDS_RUN'
-          fi
-
   records-governance:
     name: Records Schema and File Hygiene
     runs-on: ubuntu-slim
@@ -104,6 +66,8 @@ jobs:
           set -euo pipefail
           node --test qa/company-records-governance.test.mjs
           node --test qa/company-shared-context-retained.test.mjs
+          node --check tools/company-policy-steward.mjs
+          node tools/company-policy-steward.mjs
           node --test qa/company-policy-steward.test.mjs
 
       - name: Scan all governed records and runtime media
