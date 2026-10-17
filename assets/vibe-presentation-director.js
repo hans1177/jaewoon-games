@@ -174,14 +174,48 @@ export function placeVibeTooltip({
   return Object.freeze({pass:best.cost<400,x:best.x,y:best.y,width:w,height:h,
     placement:best.placement,collisionCost:best.cost,authority:'PRESENTATION_ONLY'});
 }
+
+// Context changes emphasis, never authoritative game data or critical input anchors.
+export function resolveVibeContextualHud({
+  components=[],phase='EXPLORATION',viewport={width:393,height:852}
+}={}){
+  const roleWeights=Object.freeze({
+    EXPLORATION:{MAP:4,QUEST:3,RESOURCE:2,SKILL:0},
+    COMBAT:{HEALTH:5,SKILL:5,TARGET:4,STAMINA:4,MAP:0,QUEST:-2},
+    BOSS:{HEALTH:5,BOSS:7,SKILL:4,TARGET:3,QUEST:-3},
+    CRAFT:{RECIPE:6,RESOURCE:5,INVENTORY:4,QUEST:-2},
+    SHOP:{CURRENCY:5,COMPARE:5,INVENTORY:4,SKILL:-3},
+    PARTY:{PARTY:5,PING:5,HEALTH:3,QUEST:-2}
+  });
+  const active=roleWeights[String(phase).toUpperCase()]||roleWeights.EXPLORATION;
+  const narrow=Number(viewport.width)<420;
+  const ranked=(components||[]).map((row,index)=>{
+    const role=String(row?.role||'').toUpperCase();
+    const critical=row?.persistent===true||row?.touchControl===true;
+    const priority=finite(row?.priority,1)+(active[role]||0)+(critical?10:0);
+    return Object.freeze({...row,priority,persistent:critical,emphasized:(active[role]||0)>=4,
+      _index:index});
+  }).filter(x=>clean(x.id)).sort((a,b)=>b.priority-a.priority||a._index-b._index);
+  const limit=narrow?6:10;
+  const selected=ranked.filter(row=>row.persistent||ranked.indexOf(row)<limit);
+  const hidden=ranked.filter(row=>!selected.includes(row)).map(row=>row.id);
+  return Object.freeze({
+    phase:String(phase).toUpperCase(),narrow,
+    selected:Object.freeze(selected),deprioritized:Object.freeze(hidden),
+    existingTouchPositionsImmutable:true,
+    authority:'PRESENTATION_PRIORITY_ONLY'
+  });
+}
+
 export function buildVibePresentationCraft({game={},world={},surface='HUD',
-  viewport={width:393,height:852},components=[],safeInsets={},focalRegion=null}={}){
+  viewport={width:393,height:852},components=[],safeInsets={},focalRegion=null,phase='EXPLORATION'}={}){
   const type=String(surface||'HUD').toUpperCase(),grammar=PRESENTATION_SURFACE_GRAMMAR[type];
   if(!grammar)return Object.freeze({pass:false,reason:'UNKNOWN_SURFACE',surface:type});
   const materialRecipe=createVibeVisualMaterialRecipe({game,world,surface:type});
-  const layout=optimizeVibeScreenLayout({viewport,components,safeInsets,focalRegion});
+  const focus=resolveVibeContextualHud({components,phase,viewport});
+  const layout=optimizeVibeScreenLayout({viewport,components:focus.selected,safeInsets,focalRegion});
   return Object.freeze({version:1,surface:type,grammar:grammar.layout,
-    materialRecipe,layout,requiredPatterns:Object.freeze(VIBE_PRESENTATION_EFFECT_PATTERNS),
+    materialRecipe,focus,layout,requiredPatterns:Object.freeze(VIBE_PRESENTATION_EFFECT_PATTERNS),
     engineSpecificImplementationRequired:true,
     sourceBindingsVerified:false,runtimeVerified:false,gameplayMutationAllowed:false});
 }
