@@ -361,6 +361,16 @@ jobs:
               &&reconciliationRow.blockers.length===1
               &&reconciliationRow.blockers[0]==='ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL';
             if((reconciliationRow?.sourceRepairPending===true||reconciliationRow?.sourceContractRepairRequired===true)&&!materialRepairPending){
+              // 분류만 공개한다. Vibe 복구 소유권과 실제 F0 검증 문턱은 바꾸지 않는다.
+              console.log('ROBLOX_SOURCE_REPAIR_DEBT_DETAILS='+JSON.stringify({
+                gameId:item.gameId,
+                authority:String(reconciliationRow?.authority||''),
+                failure:String(reconciliationRow?.failure||''),
+                sourceRepairPending:reconciliationRow?.sourceRepairPending===true,
+                sourceContractRepairRequired:reconciliationRow?.sourceContractRepairRequired===true,
+                blockers:Array.isArray(reconciliationRow?.blockers)
+                  ?reconciliationRow.blockers.map(value=>String(value||'')).slice(0,20):[],
+              }));
               console.log('ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE='+item.gameId);
               continue;
             }

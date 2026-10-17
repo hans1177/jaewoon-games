@@ -1459,3 +1459,18 @@ test('director drains stale queued Roblox native work when a current-main batch 
   assert.match(director,/queued\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_ACTIVE_PRESERVED=/);
 });
+
+test('Vibe source repair logs exact current blockers without bypassing material or static contract ownership',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('const materialRepairPending=');
+  const end=workflow.indexOf('const existingSourceAssetRebind=',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/reconciliationRow\.blockers\.length===1/);
+  assert.match(block,/ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL/);
+  assert.match(block,/ROBLOX_SOURCE_REPAIR_DEBT_DETAILS=/);
+  assert.match(block,/sourceContractRepairRequired:reconciliationRow\?\.sourceContractRepairRequired===true/);
+  assert.match(block,/blockers:Array\.isArray\(reconciliationRow\?\.blockers\)/);
+  assert.match(block,/ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE=/);
+  assert.match(block,/continue;/);
+});
