@@ -6,6 +6,9 @@ import os from 'node:os';
 import path from 'node:path';
 import { materializeDeterministicCheckpointCandidate } from '../tools/company-design-checkpoint-recovery.mjs';
 
+// 검증용 체크포인트도 명시된 동일 상대 경로의 중앙정책을 읽으며 경로 미지정 시 운영 검사는 실패 폐쇄한다.
+process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH='company-learning/platform-release-roadmap.json';
+
 const write=(root,file,value)=>{const target=path.join(root,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n');};
 
 function fixture({score=80,hard=[],critical=[],repair=true}={}){
