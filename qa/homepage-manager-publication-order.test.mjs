@@ -8,7 +8,6 @@ const statusSyncWorkflow=fs.readFileSync('.github/workflows/company-status-sync.
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
 const testSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
-const artbookTool=fs.readFileSync('tools/company-design-artbook.mjs','utf8');
 const homepage=fs.readFileSync('assets/homepage-enhancements.js','utf8');
 const contract=fs.readFileSync('tools/company-web-validation-evidence-contract.mjs','utf8');
 const legacyHomepagePolicyMirror=['HOMEPAGE','OPERATIONS.md'].join('_');
