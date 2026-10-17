@@ -232,7 +232,7 @@ function attempt(dir){
     };
   }
   if(navigator.vibrate)navigator.vibrate(correct?18:[22,28,22]);
-  emitImpact(correct?'jump':'miss');
+  if(correct)emitImpact('jump');
 }
 function finishCorrect(){
   score++;
@@ -313,6 +313,18 @@ for(let i=0;i<6;i++){
   cloud.position.set(-16+i*6,6+(i%3)*2,-13-i%2);cloudGroups.push(cloud);
 }
 const ground=addPart(sceneRoot,boxGeo,mat(0x395e5c),[0,-12,-12],[64,1,18]);
+// 먼 거리의 빛나는 입체 별·결정, 별도 이미지/다운로드 없이 인스턴싱 한 번으로 배치.
+const skyGems=new THREE.InstancedMesh(new THREE.OctahedronGeometry(.23,0),mat(0xe6fff4),30);
+const gemTransform=new THREE.Object3D();
+for(let i=0;i<30;i++){
+  gemTransform.position.set(Math.sin(i*2.399)*18,Math.cos(i*.74)*11,-15-(i%5)*1.4);
+  gemTransform.scale.setScalar(.45+(i%4)*.17);
+  gemTransform.rotation.set(i*.5,i*.9,0);
+  gemTransform.updateMatrix();skyGems.setMatrixAt(i,gemTransform.matrix);
+}
+sceneRoot.add(skyGems);
+const sunGlow=addPart(sceneRoot,sphereGeo,new THREE.MeshBasicMaterial({color:0xffe7a1}),[-11,10,-26],[2.55,2.55,.45]);
+sunGlow.name='sun-gold';
 // 기존 자산 라이브러리의 진짜 OBJ 메시. 외부 URL·중복 모델 생성 없음.
 fetch('/assets/shared/homely-house/tree.obj').then(response=>{
   if(!response.ok)throw new Error('TREE_ASSET_HTTP_'+response.status);
@@ -360,7 +372,72 @@ function updateScene(now){
   cat.rotation.set(0,Math.sin(now*.0015)*.08,pose.tilt);
   cat.scale.set(1,1/pose.squash,1);
   tail.rotation.z=Math.sin(now*.006)*.21;
+  sunGlow.scale.set(2.55+Math.sin(now*.00055)*.12,2.55+Math.sin(now*.00055)*.12,.45);
+  skyGems.rotation.y=Math.sin(now*.00013)*.025;
   for(let i=0;i<cloudGroups.length;i++)cloudGroups[i].position.x=-16+i*6+Math.sin(now*.00009+i)*1.4;
+}
+// 공통 바이브 프레젠테이션 큐: 미리 만든 진짜 3D 파티클을 재활용한다.
+const effectGeo=new THREE.OctahedronGeometry(.15,0);
+const effectMats=[mat(0xffecc0),mat(0xa7f9eb),mat(0xff98b0)];
+const particlePool=Array.from({length:18},(_,i)=>{
+  const mesh=new THREE.Mesh(effectGeo,effectMats[i%3]);mesh.visible=false;
+  sceneRoot.add(mesh);return mesh;
+});
+const ringMat=new THREE.MeshBasicMaterial({color:0xffe8a2,transparent:true,opacity:.82,depthWrite:false});
+const impactRing=new THREE.Mesh(new THREE.TorusGeometry(.55,.045,6,26),ringMat);
+impactRing.visible=false;sceneRoot.add(impactRing);
+const motionReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ringStart=0,ringDuration=1,ringStrength=0;
+function emitImpact(event){
+  const cue=createVibePortableImpactCue({event,mobile,reducedMotion:motionReduced,
+    importance:event==='milestone'?'major':'normal'});
+  const now=performance.now();
+  const origin=cat.position.clone();
+  ringStart=now;ringDuration=cue.durationMs;ringStrength=cue.cameraPulse;
+  impactRing.visible=cue.worldPulse;
+  impactRing.position.copy(origin);
+  ringMat.color.setHex(cue.palette[0]);
+  for(let i=0;i<particlePool.length;i++){
+    const mesh=particlePool[i];mesh.visible=i<cue.particles;
+    if(!mesh.visible)continue;
+    const angle=i*2.39996,velocity=event==='milestone'?3.1:1.7;
+    mesh.position.copy(origin);
+    mesh.material=effectMats[i%effectMats.length];
+    mesh.userData={birth:now,duration:cue.durationMs,
+      dx:Math.cos(angle)*velocity,dy:Math.sin(angle)*velocity+1.0,
+      dz:Math.sin(angle*.73)*.5};
+  }
+  if(event==='land'||event==='milestone'||event==='miss'){
+    const message=event==='miss'?'앗! 다시 도전':event==='milestone'?'⭐ '+score+' 계단 돌파!':'GOOD! +1';
+    const toast=$('feedback');
+    toast.textContent=message;
+    toast.className='';
+    void toast.offsetWidth;
+    toast.className='show'+(event==='miss'?' warning':'');
+    if(event!=='miss'){
+      const scoreEl=$('score'),glow=$('sparkHud');
+      scoreEl.classList.remove('impact-pop');glow.classList.remove('flash');
+      void scoreEl.offsetWidth;
+      scoreEl.classList.add('impact-pop');glow.classList.add('flash');
+    }
+  }
+}
+function updateImpacts(now){
+  for(const mesh of particlePool){
+    if(!mesh.visible)continue;
+    const p=mesh.userData,phase=(now-p.birth)/p.duration;
+    if(phase>=1){mesh.visible=false;continue}
+    mesh.position.x+=p.dx*.016;
+    mesh.position.y+=p.dy*.016;
+    mesh.position.z+=p.dz*.016;
+    mesh.scale.setScalar(Math.max(.1,1-phase));
+    mesh.rotation.y+=.08;
+  }
+  if(impactRing.visible){
+    const t=(now-ringStart)/ringDuration;
+    if(t>=1)impactRing.visible=false;
+    else{impactRing.scale.setScalar(1+t*2);ringMat.opacity=.85*(1-t);}
+  }
 }
 let fpsWindow=0,fpsCount=0,lastDraw=0;
 function render3d(now){
@@ -419,6 +496,7 @@ function catPose(now){
 function draw(now){
   bgOffset+=.08;
   updateScene(now);
+  updateImpacts(now);
   render3d(now);
   requestAnimationFrame(draw);
 }
