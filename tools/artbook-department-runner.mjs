@@ -1,6 +1,7 @@
 // 파일명: tools/artbook-department-runner.mjs
-// 역할: 유료 API 없이 로컬 Ollama 모델로 모든 게임의 5개 아트북 부서를 독립 실행한다.
+// 역할: 유료 API 없이 기존 외부 Gemini 두 모델 교대로 모든 게임의 5개 아트북 부서를 독립 실행한다.
 // 원칙: Web 게임은 읽기 전용 근거로만 사용하고, 각 실행은 자기 부서 근거와 승인된 Vibe2 선행 초안만 읽는다.
+import {requestGeminiFreePair,GEMINI_FREE_MODELS} from './vibe2-gemini-free-rotation.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { gameplayEvidenceSnippets, REQUIRED_STAGES, stageKey } from './vibe2-artbook-story-core.mjs';
@@ -229,10 +230,9 @@ const candidateSchema={
     unverified:{type:'array',maxItems:4,items:{type:'string',maxLength:140}},visualNotes:{type:'array',minItems:1,maxItems:3,items:{type:'string',maxLength:140}}
   }
 };
-async function callLocalModel(model,numPredict){
-  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:candidateSchema,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}],options:{temperature:role==='planning'?0.12:0.08,seed:101+ROLES.indexOf(role)*97,num_ctx:8192,num_predict:numPredict}})});
-  if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-  const packet=await response.json(),raw=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim();
+async function callExternalModel(model,numPredict){
+  const response=await requestGeminiFreePair({apiKey:process.env.GEMINI_API_KEY,contents:[{role:'user',parts:[{text:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}].map(row=>row.role.toUpperCase()+': '+row.content).join('\n\n')}]}],responseMimeType:'application/json',temperature:role==='planning'?0.12:0.08,maxOutputTokens:numPredict,timeoutMs:120000});
+  const packet=response,raw=clean(packet?.text).replace(/^```json\s*/i,'').replace(/```$/,'').trim();
   if(!raw)throw new Error('empty structured output');
   return JSON.parse(raw);
 }
@@ -241,16 +241,16 @@ async function generateCandidate(model){
   let lastError=null,lastPlanningProblems=[];
   for(let i=0;i<attempts.length;i++){
     try{
-      const candidate=normalizeCandidate(await callLocalModel(model,attempts[i]));
+      const candidate=normalizeCandidate(await callExternalModel(model,attempts[i]));
       if(!validCandidate(candidate))throw new Error('invalid section/conceptPlan output');
       if(role==='planning'){
         const problems=planningInformationProblems(candidate);
         if(problems.length){lastPlanningProblems=problems;throw new Error(`planning semantic quality: ${problems.join(',')}`);}
       }
       return {candidate,modelAttempts:i+1,planningFallbackUsed:false,planningFallbackReason:null};
-    }catch(error){
+    }catch(error){if(error?.vibe2InfrastructureFailure===true)throw error;
       lastError=error;
-      console.error(`ARTBOOK_LOCAL_MODEL_RETRY=${role}:attempt=${i+1}:${error.message}`);
+      console.error(`ARTBOOK_EXTERNAL_MODEL_RETRY=${role}:attempt=${i+1}:${error.message}`);
     }
   }
   if(role==='planning'&&rawDraft){
@@ -260,10 +260,10 @@ async function generateCandidate(model){
     console.error(`ARTBOOK_PLANNING_FALLBACK=VIBE2_CAUSAL_REVIEW:${lastPlanningProblems.join(',')||clean(lastError?.message)}`);
     return {candidate,modelAttempts:attempts.length,planningFallbackUsed:true,planningFallbackReason:clean(lastError?.message||'planning model semantic quality failed')};
   }
-  throw lastError||new Error(`${role}: local model output failed`);
+  throw lastError||new Error(`${role}: external model output failed`);
 }
 
-const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:0.6b');
+const model=GEMINI_FREE_MODELS.join('|');
 const generated=await generateCandidate(model),candidate=generated.candidate;
 const headline=compactText(candidate.headline||`${ROLE_NAMES[role]} 부서 근거 검토`,140);
 let readiness=normalizeReadiness(candidate.readiness);
@@ -274,11 +274,11 @@ if(role==='planning'&&!vibe2FirstDraft){policyBlocks.push('Vibe2 1차 기획 초
 const unverified=[...safeArray(candidate.unverified,12),...policyBlocks].filter((v,i,a)=>a.indexOf(v)===i),visualNotes=safeArray(candidate.visualNotes,3).length?safeArray(candidate.visualNotes,3):[headline];
 const outBase=path.join('artbook-submissions',gameId,date),output=path.join(outBase,`${role}.json`),visualPath=path.join(outBase,'visuals',`${role}.svg`).replaceAll('\\','/');
 const existing=readJson(output,null);
-if(existing&&existing.runner?.type!=='vibe2-local-open-model-department-bot'){console.log(`ARTBOOK_DEPARTMENT_SKIP=${role}:existing-external-submission`);process.exit(0);}
+if(existing&&existing.runner?.type!=='vibe2-external-gemini-free-department-bot'){console.log(`ARTBOOK_DEPARTMENT_SKIP=${role}:existing-external-submission`);process.exit(0);}
 writeText(visualPath,createVisualSvg({gameName:sharedEvidence.gameName,role,headline,readiness,notes:visualNotes}));
 const submission={
   version:6,gameId,date,department:role,status:'SUBMITTED',departmentReadiness:readiness,
-  runner:{type:'vibe2-local-open-model-department-bot',model,localInference:true,paidApi:false,apiKeyRequired:false,independentInvocation:true,readsOtherDepartmentSubmissions:false,structuredOutput:true,think:false,modelAttempts:generated.modelAttempts,planningFallbackUsed:generated.planningFallbackUsed,planningFallbackReason:generated.planningFallbackReason},
+  runner:{type:'vibe2-external-gemini-free-department-bot',model,localInference:false,paidApi:false,apiKeyRequired:true,independentInvocation:true,readsOtherDepartmentSubmissions:false,structuredOutput:true,think:false,modelAttempts:generated.modelAttempts,planningFallbackUsed:generated.planningFallbackUsed,planningFallbackReason:generated.planningFallbackReason},
   headline,
   evidence:[...evidenceFiles.slice(0,24).map(source=>({source,usage:'role-scoped-read-only-evidence'})),{source:workOrderPath,usage:'department-work-order'},...(role==='planning'&&draftPath?[{source:draftPath,usage:'vibe2-first-draft-proposal-reviewed-by-planning'}]:[])],
   section:candidate.section,conceptPlan:candidate.conceptPlan,unverified,
@@ -290,7 +290,7 @@ console.log(`ARTBOOK_DEPARTMENT_SUBMITTED=${role}`);
 console.log(`ARTBOOK_DEPARTMENT_READINESS=${readiness}`);
 console.log(`ARTBOOK_SOURCE_MODE=${sourceMode}`);
 console.log(`ARTBOOK_DEPARTMENT_FILE=${output}`);
-console.log(`ARTBOOK_LOCAL_MODEL=${model}`);
+console.log(`ARTBOOK_EXTERNAL_MODEL=${model}`);
 if(role==='planning'){
   console.log(`VIBE2_FIRST_DRAFT_REVIEWED=${vibe2FirstDraft?'YES':'NO'}`);
   console.log(`ARTBOOK_PLANNING_SEMANTIC_QUALITY=${planningInformationProblems(candidate).length===0?'PASS':'FAIL'}`);
