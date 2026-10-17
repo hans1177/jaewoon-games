@@ -224,6 +224,9 @@ document.addEventListener('click', (e) => {
 });
 
 function defend() {
+    state.defense=true;
+    state.score++;
+    state.lastAction='defend';
     // Simulate defending
     document.querySelector('.defense-text').style.display = 'none';
     document.querySelector('.defense-button').style.backgroundColor = '#007bff';
@@ -233,9 +236,13 @@ function defend() {
     document.querySelector('.defense-area').style.color = '#fff';
     document.querySelector('.defense-area').style.borderRadius = '10px';
     document.querySelector('.defense-area').style.borderColor = '#005f8a';
+    updateState();
 }
 
 function move() {
+    state.move=true;
+    state.score++;
+    state.lastAction='move';
     // Simulate moving
     document.querySelector('.move-text').style.display = 'none';
     document.querySelector('.move-button').style.backgroundColor = '#007bff';
@@ -245,9 +252,16 @@ function move() {
     document.querySelector('.move-area').style.color = '#fff';
     document.querySelector('.move-area').style.borderRadius = '10px';
     document.querySelector('.move-area').style.borderColor = '#005f8a';
+    updateState();
 }
 
 function restart() {
+    state.defense=false;
+    state.move=false;
+    state.win=false;
+    state.lose=false;
+    state.score=0;
+    state.lastAction='restart';
     // Reset game state
     document.querySelector('.defense-text').style.display = 'block';
     document.querySelector('.defense-button').style.backgroundColor = '#444';
@@ -284,6 +298,7 @@ function restart() {
     document.querySelector('.lose-area').style.color = '#fff';
     document.querySelector('.lose-area').style.borderRadius = '10px';
     document.querySelector('.lose-area').style.borderColor = '#444';
+    updateState();
 }
 
 
@@ -314,33 +329,6 @@ function updateState(){
   actionText.textContent='Last action: '+(state.lastAction||'None');
   try{localStorage.setItem('gameState',JSON.stringify(state));}catch{/* 저장이 막혀도 게임은 계속된다. */}
 }
-const oldDefend=defend;
-defend=function(){
-  oldDefend();
-  state.defense=true;
-  state.score++;
-  state.lastAction='defend';
-  updateState();
-};
-const oldMove=move;
-move=function(){
-  oldMove();
-  state.move=true;
-  state.score++;
-  state.lastAction='move';
-  updateState();
-};
-const oldRestart=restart;
-restart=function(){
-  oldRestart();
-  state.defense=false;
-  state.move=false;
-  state.win=false;
-  state.lose=false;
-  state.score=0;
-  state.lastAction='restart';
-  updateState();
-};
 document.addEventListener('keydown',event=>{
   const key=event.key.toLowerCase();
   if(key==='d')defend();
