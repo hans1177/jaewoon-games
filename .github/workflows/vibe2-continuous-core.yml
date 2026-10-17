@@ -430,9 +430,8 @@ jobs:
           fi
           control_root="$GITHUB_WORKSPACE"
           test -d "$control_root/.git"
-          # The already-compiled, immutable main snapshot is the only verified design policy.
-          export COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json
-          test -s "$COMPANY_VERIFIED_POLICY_PATH"
+          # Verify exact main snapshot; do not leak the production policy env into standalone QA fixtures.
+          test -s /tmp/vibe2-main/company-learning/platform-release-roadmap.json
           git -C "$control_root" config user.name 'jaewoon-vibe2-scheduler'
           git -C "$control_root" config user.email 'vibe2-scheduler@users.noreply.github.com'
           echo "VIBE2_CONTROL_ROOT=$control_root"
@@ -601,7 +600,7 @@ jobs:
                 --root=/tmp/vibe2-main | tee /tmp/vibe2-reserve-post-release-focus.log
               echo 'VIBE2_RESERVE_FOCUSED_CARETAKER_REFILL=PASS'
 
-              node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
+              COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
                 --runtime=/tmp/vibe2-main/vibe2-runtime.json \
                 --status=/tmp/vibe2-main/company-status.json \
                 --catalog=/tmp/vibe2-main/game-catalog.json \
