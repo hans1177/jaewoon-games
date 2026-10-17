@@ -7,6 +7,9 @@ on:
       - 'company-records/**'
       - 'assets/runtime-evidence/**'
       - 'company-directive.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'tools/company-policy-steward.mjs'
+      - 'qa/company-policy-steward.test.mjs'
       - 'company-learning/company-architecture-map.json'
       - 'company-learning/company-log-map.json'
       - 'company-learning/security-immune-system.json'
@@ -20,6 +23,9 @@ on:
       - 'company-records/**'
       - 'assets/runtime-evidence/**'
       - 'company-directive.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'tools/company-policy-steward.mjs'
+      - 'qa/company-policy-steward.test.mjs'
       - 'company-learning/company-architecture-map.json'
       - 'company-learning/company-log-map.json'
       - 'company-learning/security-immune-system.json'
@@ -61,6 +67,14 @@ jobs:
           node --test qa/company-records-governance.test.mjs
           node --test qa/company-shared-context-retained.test.mjs
 
+      - name: Audit four central documents without blocking game development
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          node --check tools/company-policy-steward.mjs
+          node --test qa/company-policy-steward.test.mjs
+          node tools/company-policy-steward.mjs
+
       - name: Scan all governed records and runtime media
         run: |
           set -euo pipefail
@@ -68,10 +82,12 @@ jobs:
 
       - name: Validate central document retention and growth
         env:
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PUSH_BASE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
+          node tools/company-constitution-enforcer.mjs --phase=records-governance
           base_sha="${PR_BASE_SHA:-${PUSH_BASE_SHA:-}}"
           if [ -n "$base_sha" ] && ! [[ "$base_sha" =~ ^0+$ ]]; then
             if ! git cat-file -e "$base_sha^{commit}" 2>/dev/null; then
