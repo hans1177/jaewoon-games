@@ -560,7 +560,8 @@ jobs:
         env:
           VIBE2_LIVE_CODING_BENCHMARK: '1'
           VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API
-          VIBE2_GEMINI_MODEL: gemini-2.5-flash
+          VIBE2_GEMINI_MODEL: gemini-3.8-flash
+          VIBE2_GEMINI_BACKUP_MODEL: gemini-3.5-flash-lite
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           set -euo pipefail
