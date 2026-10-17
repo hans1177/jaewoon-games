@@ -11,7 +11,7 @@ test('DESIGN_ONLY continuation never creates artbook before minimum-design nativ
   assert.match(designBranch,/DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO/);
   assert.doesNotMatch(promotion,/company-design-artbook\.mjs/);
   assert.doesNotMatch(promotion,/PRE_WEB_ARTBOOK|POST_WEB_ARTBOOK/);
-  assert.match(promotion,/DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY/);
+  assert.match(promotion,/DEVELOPMENT_ADMISSION_GATE=MINIMUM_ROBLOX_DESIGN_READY/);
   assert.match(promotion,/STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE/);
   assert.match(promotion,/UNITY_WEB_PROMOTION_GATE=NO/);
 });
