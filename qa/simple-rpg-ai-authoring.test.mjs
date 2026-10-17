@@ -291,6 +291,18 @@ test('civilization monster alert and pack awareness preserve the existing server
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
 });
 
+test('same-race enemy index keeps existing pack and patrol scans bounded without changing combat', () => {
+  assert.match(server, /local civEnemiesByRace = \{\}/);
+  assert.match(server, /table\.insert\(civEnemies, item\)\s+-- Register only spawned, verified enemies; never index rejected external models\.\s+if not civEnemiesByRace\[raceID\] then civEnemiesByRace\[raceID\] = \{\} end\s+table\.insert\(civEnemiesByRace\[raceID\], item\)/);
+  assert.equal((server.match(/for _, ally in ipairs\(civEnemiesByRace\[enemy\.RaceID\] or \{\}\) do/g) || []).length, 2);
+  assert.doesNotMatch(server, /for _, ally in ipairs\(civEnemies\) do/);
+  assert.match(server, /ally\.RaceID == enemy\.RaceID/);
+  assert.match(server, /enemy\.AlertUntil = now \+ \(packEngaged and 0\.3 or 0\.8\)/);
+  assert.match(server, /groupDestination = ally\.PatrolDestination \+ offset/);
+  assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
+  assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
+});
+
 test('external-model monsters no longer use hand-made alert and return-home poses', () => {
   assert.doesNotMatch(client, /creatureMotionLimbNames|creatureImportedRig|state == "Alert" and math\.rad/);
   assert.ok(client.includes('entry.Visual:PivotTo(rootFrame * offset)'));
