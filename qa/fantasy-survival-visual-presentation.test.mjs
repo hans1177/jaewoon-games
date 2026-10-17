@@ -482,4 +482,6 @@ test('authored world tree snake illusion uses 250/39 and visible roots for three
   assert.match(interior,/worldTreeSnakeIllusion\.rootIndices\.includes\(i\)/);
   assert.match(interior,/ctx\.bezierCurveTo\(94,-41\+sway,-90,53-sway,70,142\)/);
   assert.doesNotMatch(effect,/damagePlayer|enemyDamageTarget|state\.player\.hp|state\.dirty|sendMultiplayer/);
+  assert.match(functionBody('enemyHasBuiltInSpecial'),/type\.snakeIllusion/);
+  assert.match(functionBody('tryHardDifficultySkill'),/e\.type\.snakeIllusion/);
 });
