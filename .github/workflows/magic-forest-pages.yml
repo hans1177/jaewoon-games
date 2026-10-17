@@ -80,6 +80,19 @@ jobs:
             routes.push(root+'/');
           }
           if(!routes.includes('web-games/fantasy-survival/'))throw Error('MAGIC_FOREST_REGISTERED_ROUTE_MISSING');
+          // GitHub project Pages is hosted under /jaewoon-games/, not the domain root.
+          // Adapt only published copies of static game URLs; the canonical source is unchanged.
+          const transformRoute=root=>{
+            for(const entry of fs.readdirSync(root,{withFileTypes:true})){
+              const file=path.join(root,entry.name);
+              if(entry.isDirectory()){transformRoute(file);continue;}
+              if(!entry.isFile()||!/\.(?:html|css|m?js|json)$/i.test(file))continue;
+              const raw=fs.readFileSync(file,'utf8');
+              const updated=raw.replace(/(["'(\s=])\/(assets|web-games)\//g,'$1/jaewoon-games/$2/');
+              if(raw!==updated)fs.writeFileSync(file,updated);
+            }
+          };
+          for(const route of routes)transformRoute(path.join(site,route));
           // Only direct files referenced by published games are hydrated from the canonical Git tree.
           // The original assets library stays untouched in GitHub and is never copied wholesale.
           const trackedAssets=new Set(cp.execFileSync('git',['ls-tree','-r','--name-only','HEAD','--','assets'],{encoding:'utf8'}).trim().split('\n'));
