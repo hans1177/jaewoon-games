@@ -308,3 +308,34 @@ test('approved canyon uses the existing seeded terrain owner, not an unexecuted 
   assert.equal(createVibeProceduralWorldLayout({...input,terrainMorphology:{...geometry,approved:false}}).status,'INVALID_GENERATION_INPUT');
   assert.equal(createVibeProceduralWorldLayout({...input,terrainMorphology:{...geometry,depth:.7}}).status,'INVALID_GENERATION_INPUT');
 });
+
+
+test('approved optional WFC room graph enforces socket adjacency and reachable start-to-exit',async()=>{
+  const {createVibeProceduralWorldLayout}=await import('../assets/vibe-environment-director.js');
+  const opts={seed:'room-connectivity',width:12,height:12,approvedDesign:true,target:'WEB'};
+  const rooms={approved:true,width:3,height:3,closedBoundary:false,
+    start:{x:0,z:0},exit:{x:2,z:2},tiles:[{id:'open',open:['N','E','S','W']}]};
+  const result=createVibeProceduralWorldLayout({...opts,roomConstraints:rooms});
+  const second=createVibeProceduralWorldLayout({...opts,roomConstraints:rooms});
+  assert.deepEqual(result,second,'same seed and designer sockets reproduce');
+  assert.equal(result.roomComposition.status,'ROOM_LAYOUT_STATIC_PROPOSAL');
+  assert.equal(result.roomComposition.cells.length,9);
+  assert.equal(result.roomComposition.route.length,5);
+  assert.deepEqual(result.roomComposition.route[0],rooms.start);
+  assert.deepEqual(result.roomComposition.route.at(-1),rooms.exit);
+  assert.equal(result.roomComposition.gameplayAuthority,false);
+  assert.equal(result.roomComposition.runtimeVerified,false);
+  assert.equal(result.sourceMutationPerformed,false);
+  assert.equal(result.saveMeaningMutation,false);
+  const impossible=createVibeProceduralWorldLayout({...opts,
+    roomConstraints:{...rooms,tiles:[{id:'sealed',open:[]}]}});
+  assert.equal(impossible.roomComposition.status,'ROOM_CONSTRAINT_UNSATISFIABLE');
+  assert.ok(impossible.issues.includes('ROOM_CONSTRAINT_UNSATISFIABLE'));
+  assert.equal(createVibeProceduralWorldLayout({...opts,
+    roomConstraints:{...rooms,approved:false}}).roomComposition.status,'ROOM_CONSTRAINT_INPUT_OR_APPROVAL_INVALID');
+  assert.equal(createVibeProceduralWorldLayout({...opts,
+    roomConstraints:{...rooms,fixedCells:[{x:1,z:1,tileId:'missing'}]}})
+    .roomComposition.status,'ROOM_CONSTRAINT_INPUT_OR_APPROVAL_INVALID');
+  assert.equal('roomComposition' in createVibeProceduralWorldLayout(opts),false,
+    'genres without explicit room design are unchanged');
+});
