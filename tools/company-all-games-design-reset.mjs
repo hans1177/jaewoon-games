@@ -259,7 +259,7 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
     const id=clean(game?.id),life=clean(game?.lifecycleState||game?.canonical?.lifecycle?.state||'ACTIVE').toUpperCase();
     return id&&!removed.has(id)&&['ACTIVE','REBUILD'].includes(life)&&(!targetId||id===targetId);
   });
-  const created=[],reactivated=[],alreadySeeded=[],designPresent=[],grammarUpgraded=[],grammarAlreadyCurrent=[],grammarPending=[];
+  const created=[],reactivated=[],alreadySeeded=[],designPresent=[],designerHandoff=[],grammarUpgraded=[],grammarAlreadyCurrent=[],grammarPending=[];
   for(const game of games){
     const id=clean(game.id);
     const candidates=state.seeds.filter(seed=>clean(seed?.gameId)===id);
@@ -279,7 +279,10 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
       else if(completeNovelGrammarV5(active))grammarAlreadyCurrent.push(id);
       else grammarPending.push(id);
     }
-    if(latestUsableDesign(root,id))designPresent.push(id);
+    // 설계 원본 MAIN/A/B/C/D/@와 엄격 검토·기준선의 실제 통과 증거를 확인한다.
+    // 접수용 스케치나 구식 디자인은 게임 구현 권한이 아니므로 기존 디자이너에게 인계한다.
+    if(latestVerifiedDesign(root,id))designPresent.push(id);
+    else designerHandoff.push(id);
     if(!created.includes(id)&&!reactivated.includes(id)&&!grammarUpgraded.includes(id))alreadySeeded.push(id);
   }
   if(created.length||reactivated.length||grammarUpgraded.length){
@@ -295,12 +298,13 @@ export function autoEnrollMissingDesignSeeds({catalogFile=CATALOG_FILE,seedFile=
       canonicalTargetGameIds:games.map(game=>clean(game.id)),
       grammarUpgradedGameIds:grammarUpgraded,
       grammarAlreadyCurrentGameIds:grammarAlreadyCurrent,
-      grammarPendingGameIds:grammarPending
+      grammarPendingGameIds:grammarPending,
+      designerHandoffGameIds:designerHandoff
     };
     writeJson(path.join(root,seedFile),state);
   }
   return{
-    created,reactivated,alreadySeeded,designPresent,grammarUpgraded,grammarAlreadyCurrent,grammarPending,
+    created,reactivated,alreadySeeded,designPresent,designerHandoff,grammarUpgraded,grammarAlreadyCurrent,grammarPending,
     canonicalTargets:games.map(game=>clean(game.id)),
     eligibleGames:games.map(game=>clean(game.id)),
     changed:created.length+reactivated.length+grammarUpgraded.length
@@ -365,6 +369,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
     console.log(`AUTO_MISSING_DESIGN_REACTIVATED=${result.reactivated.length}`);
     console.log(`AUTO_MISSING_DESIGN_ALREADY_SEEDED=${result.alreadySeeded.length}`);
     console.log(`AUTO_MISSING_DESIGN_PRESENT=${result.designPresent.length}`);
+    console.log(`AUTO_MISSING_DESIGN_DESIGNER_HANDOFF=${result.designerHandoff.join(',')||'NONE'}`);
     console.log(`AUTO_MISSING_DESIGN_CREATED_IDS=${result.created.join(',')||'NONE'}`);
     console.log(`CANONICAL_NOVEL_GRAMMAR_TARGETS=${result.canonicalTargets.join(',')||'NONE'}`);
     console.log(`CANONICAL_NOVEL_GRAMMAR_UPGRADED=${result.grammarUpgraded.join(',')||'NONE'}`);
