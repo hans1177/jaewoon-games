@@ -261,3 +261,33 @@ test('canonical Web/Roblox steps receive secrets without exposing values or alte
   }
   assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API/);
 });
+
+
+// Regression: a provider validation error does not disable an independently verified free route.
+test('non-policy Groq request error continues to the pinned free OpenRouter route',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='unit-groq';
+    process.env.OPENROUTER_API_KEY='unit-openrouter';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    const {requestGeminiFreePair:request}=await import('../tools/vibe2-gemini-free-rotation.mjs?regression=route-'+Date.now());
+    const calls=[];
+    const result=await request({
+      apiKey:'unit-gemini',
+      contents:[{role:'user',parts:[{text:'source repair'}]}],
+      fetchImpl:async(url,options)=>{
+        const endpoint=String(url);
+        calls.push({endpoint,body:JSON.parse(options.body)});
+        if(endpoint.includes('googleapis.com'))return {ok:false,status:429,headers:{get:()=> '120'}};
+        if(endpoint.includes('api.groq.com'))return {ok:false,status:400,json:async()=>({error:{type:'invalid_request_error',message:'unsupported argument'}})};
+        return {ok:true,json:async()=>({choices:[{message:{content:'{"edits":[]}'}}],usage:{cost:0}})};
+      }
+    });
+    assert.equal(result.text,'{"edits":[]}');
+    assert.equal(calls.length,4);
+    assert.equal(calls[2].body.service_tier,'on_demand');
+    assert.equal(calls[2].body.max_completion_tokens,3072);
+    assert.equal(Object.hasOwn(calls[2].body,'max_tokens'),false);
+    assert.equal(calls[3].body.model,VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER);
+  });
+});
