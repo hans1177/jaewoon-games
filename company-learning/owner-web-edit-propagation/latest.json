@@ -1,31 +1,31 @@
 {
   "version": 1,
-  "before": "d78d0b76be97065627cd0a8fdd775806d3935d6c",
-  "after": "2be47b57b5805724813171d0a15f826f90e0b932",
-  "generatedAt": "2026-10-11T15:05:48.154Z",
+  "before": "56d74310908c7af17484ce47fc280611fde23e69",
+  "after": "81ae6ec64b15a7f141f03e32eb1fe61bcec1caaf",
+  "generatedAt": "2026-10-17T17:21:26.765Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
-      "gameId": "fantasy-survival",
-      "sourcePath": "web-games/fantasy-survival",
-      "sourceBefore": "d78d0b76be97065627cd0a8fdd775806d3935d6c",
-      "sourceAfter": "2be47b57b5805724813171d0a15f826f90e0b932",
-      "semanticIntentFingerprint": "a91fc42ef207b1f75a10bf68371f0b8d8e326618e087bcf99848a75d5f3be8f8",
+      "gameId": "realistic-builder",
+      "sourcePath": "web-games/realistic-builder",
+      "sourceBefore": "56d74310908c7af17484ce47fc280611fde23e69",
+      "sourceAfter": "81ae6ec64b15a7f141f03e32eb1fe61bcec1caaf",
+      "semanticIntentFingerprint": "35573a0848fcf6899a36cc9759dd488bc07efbf26d95d7b474411719214508b7",
       "affectedSystems": [
-        "COMBAT",
+        "MOVEMENT",
+        "INVENTORY",
         "WORLD",
-        "BALANCE"
+        "SAVE"
       ],
       "platformTargets": [
-        "UNITY",
         "ROBLOX"
       ],
       "literalWebCodeCrossPlatformCopyForbidden": true,
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-10-11T15:05:48.154Z",
+      "detectedAt": "2026-10-17T17:21:26.765Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
