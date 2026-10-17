@@ -2677,7 +2677,11 @@ test('large mixed-platform queue reserves Unity Web without repeated full-candid
       evidence:unityWeb?['unity-web-first-stage']:[],unityWebDevelopment:unityWeb
     };
   });
-  const policy={ownerActiveDevelopmentScope20261009:{status:'ACTIVE'}};
+  // This fixture explicitly allows Unity Web and holds legacy Web. An ACTIVE-only
+  // scope defaults to Roblox-only, so it cannot exercise Unity Web priority.
+  const policy={ownerActiveDevelopmentScope20261009:{
+    status:'ACTIVE',activeTargets:['ROBLOX','UNITY_WEB'],ownerHeldTargets:['WEB','UNITY_ANDROID']
+  }};
   const first=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:256,tasks}),{
     maxConcurrentTasks:128,lane:'game-primary',policy
   });

@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
+import { validatedObservedRepairRecipe } from './vibe2-code-pattern-ingest.mjs';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
@@ -1303,7 +1304,7 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   const patterns=(codePatternsInput?.patterns||[])
     .filter(row=>row?.retrievalEligible!==false&&knowledgeStateFor(mastery,'CODE_PATTERN',row?.id)!=='RETIRED')
     .map(row=>{
-      const pWords=words([row.id,row.system,row.problem,row.pattern,row.tags].flat().filter(Boolean).join(' '));
+      const pWords=words([row.id,row.system,row.problem,row.pattern,row.tags,row.repairRecipe?.operationIds,row.repairRecipe?.steps].flat().filter(Boolean).join(' '));
       const overlap=overlapScore(qWords,pWords);
       const sameGame=Boolean(gameId&&clean(row.gameId)===gameId);
       const sameEngine=Boolean(engine&&lower(row.engine)===engine);
@@ -1452,7 +1453,13 @@ export function learningGuidance(context={}){
       :'';
     lines.push(`- experience=${row.id}; game=${row.gameId||'n/a'}; engine=${row.engine||'n/a'}; relevance=${row.relevance}; reuse=${(row.reusablePatterns||[]).slice(0,5).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,5).join('|')||row.failureCause||'none'}${externalTrace}`);
   }
-  for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
+  for(const row of context.codePatterns||[]){
+    lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
+    const recipe=validatedObservedRepairRecipe(row?.repairRecipe);
+    if(row?.verified===true&&row?.rawCodeStored===false&&recipe){
+      lines.push(`  - verified-implementation-recipe=${recipe.operationIds.slice(0,8).map(clean).join('|')}; steps=${recipe.steps.slice(0,8).map(value=>clean(value).slice(0,180)).join(' | ')}; focus-checks=${recipe.focusedChecks.slice(0,8).map(value=>clean(value).slice(0,160)).join(' | ')}; apply=ONLY_AFTER_CURRENT_SOURCE_AND_SCOPE_CHECK; validation=FRESH_QA_REQUIRED`);
+    }
+  }
   for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; reuse=${(row.reusablePatterns||[]).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).join('|')||'none'}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
   for(const row of context.externalAiDistilled||[]) lines.push(`- external-ai-distilled-advisory=${row.id}; provider=${row.provider||'unknown'}; relevance=${row.relevance}; patterns=${(row.patterns||[]).slice(0,4).join('|')}; cautions=${(row.cautions||[]).slice(0,3).join('|')}`);
   if(context.officialGameCodingReferences?.length){

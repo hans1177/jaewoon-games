@@ -299,7 +299,9 @@ jobs:
     needs: scope
     if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
     runs-on: ubuntu-slim
-    timeout-minutes: 10
+    # The unchanged full-suite sequential regressions exceeded the old 10m cap.
+    # Keep every gate; allow the existing complete run to produce a final verdict.
+    timeout-minutes: 25
     env:
       # 검증된 main 중앙정책 문서 경로를 기존 핵심 QA 실행과 임시 테스트 저장소에 전달한다.
       COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
@@ -430,6 +432,15 @@ jobs:
           node --check qa/vibe2-self-architecture-evolution.test.mjs
           node --check qa/vibe2-system-architecture-execution.test.mjs
           node --check qa/vibe2-system-evolution-verify.test.mjs
+
+      # Validate changed learning code before unrelated queue/release suites can fail.
+      # The full suite below remains required; this step never substitutes for it.
+      - name: Focused verified coding learning regression
+        run: |
+          set -euo pipefail
+          node --test qa/vibe2-code-pattern-ingest.test.mjs
+          node --test --test-name-pattern='practice rehearses only verified production failures' qa/vibe2-learning-practice-worker.test.mjs
+          node --test --test-name-pattern='reservation policy follows the main executable checkout|large mixed-platform queue reserves Unity Web' qa/vibe2-queue-control.test.mjs
 
       - name: Vibe2 core tests
         run: |
