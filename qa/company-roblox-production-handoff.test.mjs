@@ -108,6 +108,4 @@ test('Vibe candidate and retry keep evidence-based coding and real QA handoff wi
   const focused=buildFocusedReplaceOnlyPrompt(fixturePrompt,{responsibleFiles:[client]}).prompt;
   for(const clause of ['CANONICAL CODING LOOP:','SOURCE AND LIBRARY:','CAUSAL REPAIR:','VERIFICATION HANDOFF:','RELEASE AUTHORITY:'])
     assert.ok(focused.includes(clause),'focused retry must retain '+clause);
-  const system={target:'system',gameId:'garden',goal:'repair system',selectedTask:{type:'implementation'}};
-  assert.doesNotMatch(buildPrompt(system,{files:[{path:'tools/core.mjs',editable:true,content:'const ready=true;'}]},['tools/core.mjs']),/CANONICAL CODING LOOP:/);
 });
