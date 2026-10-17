@@ -32,7 +32,6 @@ on:
       - 'homepage-portfolio-status.json'
       - 'test-game-candidates.json'
       - 'public-release-baselines.json'
-      - 'game-artbooks.json'
       - 'web-games/**'
       - 'roblox-games/**/default.project.json'
       - 'assets/**'
@@ -72,7 +71,6 @@ on:
       - 'homepage-portfolio-status.json'
       - 'test-game-candidates.json'
       - 'public-release-baselines.json'
-      - 'game-artbooks.json'
       - 'web-games/**'
       - 'roblox-games/**/default.project.json'
       - 'assets/**'
@@ -388,12 +386,12 @@ jobs:
           set -euo pipefail
           for file in \
             index.html company.html game-catalog.json company-status.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json \
-            public-release-baselines.json game-artbooks.json \
+            public-release-baselines.json \
             assets/homepage-enhancements.js manifest.webmanifest install.html sw.js offline.html command.html \
             company-directive.json _headers; do
             test -f "$file"
           done
-          node -e "for (const file of ['game-catalog.json','company-status.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','company-learning/company-architecture-map.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
+          node -e "for (const file of ['game-catalog.json','company-status.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','public-release-baselines.json','company-directive.json','company-learning/company-architecture-map.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
           node --check tools/homepage-manager.mjs
           node --check tools/homepage-test-candidate-sync.mjs
@@ -435,7 +433,6 @@ jobs:
             if(i&&score>Number(rows[i-1].strictScore??rows[i-1].score))failures.push('test-score-order');
             const web=String(row.webPath||row.testUrl||'').replace(/^\/+|\/+$/g,'');
             if(!web||!fs.existsSync(`${web}/index.html`)||fs.statSync(`${web}/index.html`).size<512)failures.push(`test-web:${row.gameId||row.id}`);
-            if(!row.artbookSource||!fs.existsSync(row.artbookSource))failures.push(`test-artbook:${row.gameId||row.id}`);
           }
           if(failures.length)throw new Error(`homepage route/test failures: ${failures.join(',')}`);
           console.log(`HOMEPAGE_TEST_SHELF_QA=PASS COUNT=${rows.length}/30 MIN_SCORE=80`);
@@ -456,7 +453,7 @@ jobs:
           candidate_dir='.homepage-candidate'
           rm -rf "$candidate_dir"
           mkdir -p "$candidate_dir"
-          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games assets/homepage-covers assets/homepage-media)
+          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json web-games assets/homepage-covers assets/homepage-media)
           base_sha="$(git rev-parse HEAD)"
           git add -- "${published_paths[@]}"
           git diff --cached --binary HEAD -- "${published_paths[@]}" > "$candidate_dir/homepage-candidate.patch"
@@ -472,7 +469,7 @@ jobs:
             changed:process.env.CANDIDATE_CHANGED==='true',
             policyFingerprint:process.env.HOMEPAGE_POLICY_SHA256,
             supportedPlatforms:JSON.parse(process.env.HOMEPAGE_SUPPORTED_PLATFORMS_JSON||'[]'),
-            paths:['company-status.json','game-catalog.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','game-artbooks.json','web-games','assets/homepage-covers','assets/homepage-media'],
+            paths:['company-status.json','game-catalog.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','web-games','assets/homepage-covers','assets/homepage-media'],
           },null,2)+'\n');
           NODE
           git reset --quiet
@@ -595,7 +592,7 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-director'
           git config user.email 'jaewoon-director@users.noreply.github.com'
-          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games assets/homepage-covers assets/homepage-media)
+          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json web-games assets/homepage-covers assets/homepage-media)
           git add -- "${published_paths[@]}"
           if git diff --cached --quiet; then
             echo 'HOMEPAGE_PUBLICATION=NO_CHANGES_AFTER_DIRECTOR'
