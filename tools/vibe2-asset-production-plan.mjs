@@ -1315,15 +1315,15 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const declaredBytes=Number(row?.bytes);
       const license=clean(row?.licenseDeclared).toUpperCase();
       if(row?.sourceOnly!==true||row?.gameApplied!==false||license!=='CC0-1.0')continue;
-      if(!/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz)$/.test(relative)||relative.includes('..'))continue;
+      if(!/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/.test(relative)||relative.includes('..'))continue;
       if(!/^[0-9a-f]{64}$/.test(declaredHash)||!Number.isSafeInteger(declaredBytes)||declaredBytes<512||seenSourceHashes.has(declaredHash))continue;
       if(!publicHttps(row?.sourceUrl)||!publicHttps(row?.licenseEvidenceUrl))continue;
       const localFile=path.resolve(repoRoot,relative);
       const name=clean(row.file).toLowerCase(),role=clean(row.role).toLowerCase();
       const sourceFamily=clean(row.family).toUpperCase()||(
-        /^(?:music|bgm|audio|sound|sfx)$/.test(role)||/^(?:music|bgm|sound|audio)$/.test(role.split('-')[0])||/sfx|sound|audio|music|bgm|soundtrack|ambience/.test(name)?'AUDIO':
+        /^(?:music|bgm|audio|sound|sfx)$/.test(role)||/^(?:music|bgm|sound|audio)$/.test(role.split('-')[0])||/sfx|sound|audio|music|bgm|soundtrack|ambience|\.(?:mp3|ogg|wav|flac|aac|m4a)$/.test(name)?'AUDIO':
         /^(?:vfx|particle|particles|effect|effects)$/.test(role)||/particle|visual-effect|vfx/.test(name)?'VFX':
-        /^(?:ui|png|icon|icons|item-icons|special-icons|interface)$/.test(role)||/\bui[-_]|[-_]ui\b|icons?|sprites?|cursor|hud/.test(name)?'UI':
+        /^(?:ui|png|icon|icons|item-icons|special-icons|interface)$/.test(role)||/\bui[-_]|[-_]ui\b|icons?|sprites?|cursor|hud|\.(?:png|jpe?g|webp|svg|gif)$/.test(name)?'UI':
         /^(?:motion|animation|animations)$/.test(role)?'MOTION':
         /^(?:material|materials|texture|textures)$/.test(role)?'MATERIAL':
         /^(?:skill|skills|spell|spells)$/.test(role)?'SKILL':
@@ -1337,7 +1337,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         role==='png'||role.includes('ui')||role.includes('icon')?'UI':
         role==='audio'||role==='sfx'?'AUDIO':'PROP');
       if(sourceFamily!==family)continue;
-      const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz)$/,''),role].join(' ').replace(/[-_]+/g,' ');
+      const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/,''),role].join(' ').replace(/[-_]+/g,' ');
       const matchedRoles=roles.filter(value=>terms.includes(value.replaceAll('_',' ')));
       if(roles.length&&!roles.every(value=>value==='generic')&&!matchedRoles.length)continue;
       // All families can hydrate exact, manifest-pinned CC0 source bytes.
@@ -4495,7 +4495,7 @@ export function buildVibeAssetProductionPlan({
     for(const pack of sourceCatalog.packs){
       const file=clean(pack.file||pack.filename);
       const sha256=clean(pack.sha256).toLowerCase();
-      if(!/^[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz)$/.test(file)||file.includes('..'))continue;
+      if(!/^[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/.test(file)||file.includes('..'))continue;
       if(!/^[0-9a-f]{64}$/.test(sha256)||scannedSourceHashes.has(sha256))continue;
       const license=clean(pack.licenseDeclared||pack.license||sourceCatalog.license).toUpperCase();
       if(!['CC0','CC0-1.0'].includes(license)||pack.gameApplied===true)continue;
