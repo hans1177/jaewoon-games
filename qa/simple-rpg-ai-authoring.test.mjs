@@ -257,7 +257,7 @@ test('대충알피지 모험가 로비는 종족 포탈 없이 기존 이동과 
   assert.match(server, /local lobbyGround = civPart\(civHub, "CivilizationLobbyGround"/);
   assert.match(server, /continentGround:SetAttribute\("WalkableGround", true\)/);
   assert.match(server, /lobbyGround:SetAttribute\("WalkableGround", true\)/);
-  assert.match(server, /part\.Transparency = 1/);
+  assert.match(server, /local root = source:Clone\(\)/);
   assert.doesNotMatch(server, /local lobbyBase = civPart|local lobbyCore = civPart|lobbyLight\.Range = 12/);
   assert.doesNotMatch(server, /local portal = civPart\(civHub, "포털 " \.\. race\.Name/);
   assert.doesNotMatch(server, /portal\.Touched:Connect/);
@@ -379,10 +379,10 @@ test('old visual rollback is removed: only registered source-verified art can ap
   assert.match(server, /local function importCuratedModel\(folder, name, assetId\)/);
   assert.match(server, /InsertService:LoadAsset\(assetId\)/);
   assert.match(server, /local function worldModelFor\(name\)/);
-  assert.match(server, /part\.Transparency = 1/);
-  assert.match(server, /startGround\.Transparency = 1/);
+  assert.match(server, /local root = source:Clone\(\)/);
+  assert.match(server, /startGround = civPart\(workspace, "SimpleRpgGround"/);
   assert.doesNotMatch(server, /Instance\.new\("BillboardGui"\)/);
-  assert.doesNotMatch(server, /part\.Transparency = 0/);
+  assert.doesNotMatch(server, /Instance\.new\("Part"\)/);
   for(const action of ['CivAttack','CivGather','CivParry','CivDodge',
     'CivTravel','CivResearch','CivTimedCraft','CivCompanion','CivSelect'])
     assert.ok(client.includes('"'+action+'"'), action);
