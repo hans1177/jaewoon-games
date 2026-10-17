@@ -69,6 +69,7 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout for external source preservation
         uses: actions/checkout@v4
@@ -140,12 +141,20 @@ jobs:
           path: assets/external/simple-rpg/
           if-no-files-found: error
           retention-days: 14
+      - name: Propose verified external CC0 downloads for permanent repository archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-propose-verified-downloads.mjs external
   download_wildlife_assets:
-    if: \${{ (github.event_name == 'workflow_dispatch' && inputs.download_wildlife_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-wildlife]')) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_wildlife_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-wildlife]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout for wildlife asset acquisition
         uses: actions/checkout@v4
@@ -250,12 +259,20 @@ jobs:
           path: assets/external/simple-rpg/wildlife/
           if-no-files-found: error
           retention-days: 14
+      - name: Propose verified wildlife CC0 downloads for permanent repository archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-propose-verified-downloads.mjs wildlife
   download_icons_vfx_npc:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_icons_vfx_npc == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-icons-vfx-npc]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout original-asset repository
         uses: actions/checkout@v4
@@ -336,12 +353,20 @@ jobs:
           path: assets/external/simple-rpg/icons-vfx-npc/
           if-no-files-found: error
           retention-days: 14
+      - name: Propose verified icons CC0 downloads for permanent repository archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-propose-verified-downloads.mjs icons
   download_priority_cc0_assets:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_priority_cc0_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[priority-cc0-download]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -367,6 +392,13 @@ jobs:
           path: assets/external/simple-rpg/priority-v1/
           if-no-files-found: error
           retention-days: 14
+      - name: Propose verified priority CC0 downloads for permanent repository archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-propose-verified-downloads.mjs priority
   upload_actor_assets:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/'))) }}
     runs-on: ubuntu-latest
