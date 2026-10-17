@@ -23,7 +23,8 @@ test('owner-locked 2026-10-17 selected targets are Roblox and regular Web only',
 });
 
 test('retained central maps are descriptive only and cannot authorize historical Unity auto development',()=>{
-  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTABLE');
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
   assert.equal(logs.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
   assert.ok(security.status);
   assert.equal(roadmap.ownerActiveDevelopmentScope20261009.unityWebDevelopmentAllowed,false);
