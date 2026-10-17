@@ -2718,6 +2718,12 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     taskInput={...taskInput,responsibleFiles:[...new Set([...(taskInput.responsibleFiles||[]),...owners])]};
   }
   const sourceOnlyQualityFailure=qualityFailure&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure','roblox-source-static-contract-failure'].includes(project.queueRobloxQualityBuildUpEvidence?.authority);
+  // Actual F0 source/package repair must not starve behind cosmetic evolution.
+  // Priority changes only queue order; existing owner/platform/QA gates still apply.
+  if(sourceOnlyQualityFailure&&taskInput.ownerDirective!==true){
+    taskInput={...taskInput,priority:'critical',
+      evidence:[...new Set([...(taskInput.evidence||[]),'roblox-f0-exact-source-repair:priority-critical','roblox-f0-preflight-and-release-gates:unchanged'])]};
+  }
   const runtimeEvidence={
     platform,
     studioQualityFailure:qualityFailure?project.queueRobloxQualityBuildUpEvidence||null:null,
