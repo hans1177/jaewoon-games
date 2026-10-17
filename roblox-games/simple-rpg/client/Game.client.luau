@@ -119,6 +119,7 @@ local function invokeExternalAction(action: string, value: any): ()
     end
   elseif action == "CivTradeSnapshot" then
     trade:FireServer("Snapshot", 0, false, "Silver")
+    togglePanel("Trade")
   elseif action == "CivTradeCurrencyBuy" or action == "CivTradeCurrencySell" then
     trade:FireServer("Currency", 1, action == "CivTradeCurrencyBuy", "Silver")
   elseif action == "CivTradeBuy" or action == "CivTradeSell" then
