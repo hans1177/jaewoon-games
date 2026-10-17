@@ -136,7 +136,7 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.match(learningMotorSource,/collectVerifiedRobloxStudioPlayExperience/);
   assert.equal(roadmap.roblox.studioExecution.officialStudioMcpOnly,true);
   assert.equal(roadmap.roblox.studioExecution.deploymentGate,false);
-  assert.equal(roadmap.roblox.studioExecution.buildUpGate,false);
+  assert.equal(roadmap.roblox.studioExecution.requiredForInternalRelease,false);
   assert.equal(roadmap.roblox.studioExecution.f9Gate,false);
   assert.equal(roadmap.roblox.studioExecution.postBuildUpVerificationLevel,'CODE_AND_STATIC_QA');
   assert.equal(roadmap.roblox.studioExecution.required,false);
