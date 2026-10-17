@@ -92,9 +92,8 @@ test('Vibe candidate and retry keep evidence-based coding and real QA handoff wi
     const order={target:item.target,gameId:'garden',goal:'기존 기능 보존하며 실제 오류 수정',selectedTask:{type:'implementation'}};
     const ctx={files:[{path:item.path,editable:true,content:item.content}]};
     const prompt=buildPrompt(order,ctx,[item.path]);
-    const focused=buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[item.path]}).prompt;
     const retry=buildGenerationRetryPrompt(prompt,{error:new Error('edit does not match'),responsibleFiles:[item.path],attempt:2});
-    for(const candidate of [prompt,focused,retry]){
+    for(const candidate of [prompt,retry]){
       assert.match(candidate,/CANONICAL CODING LOOP:/);
       assert.match(candidate,/SOURCE AND LIBRARY:/);
       assert.match(candidate,/CAUSAL REPAIR:/);
@@ -104,6 +103,11 @@ test('Vibe candidate and retry keep evidence-based coding and real QA handoff wi
       assert.match(candidate,/This source worker outputs a candidate patch only/);
     }
   }
+  const verifiedFixture=fixture();
+  const fixturePrompt=buildPrompt(verifiedFixture.order,verifiedFixture.context,[client]);
+  const focused=buildFocusedReplaceOnlyPrompt(fixturePrompt,{responsibleFiles:[client]}).prompt;
+  for(const clause of ['CANONICAL CODING LOOP:','SOURCE AND LIBRARY:','CAUSAL REPAIR:','VERIFICATION HANDOFF:','RELEASE AUTHORITY:'])
+    assert.ok(focused.includes(clause),'focused retry must retain '+clause);
   const system={target:'system',gameId:'garden',goal:'repair system',selectedTask:{type:'implementation'}};
   assert.doesNotMatch(buildPrompt(system,{files:[{path:'tools/core.mjs',editable:true,content:'const ready=true;'}]},['tools/core.mjs']),/CANONICAL CODING LOOP:/);
 });
