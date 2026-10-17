@@ -297,7 +297,7 @@ test('game-primary BUILD_UP workers have a 60 minute maximum budget with immedia
   assert.equal(runtime.continuous.gamePrimaryWorkBudgetMode,'MAXIMUM_NOT_MINIMUM');
   assert.equal(runtime.continuous.gamePrimaryWorkBudgetScope,'ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE');
   assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.modelTimeoutAndRetry,true);
-  assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.fixedLogicalSlots64,true);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.fixedRepeatDevelopmentSlots,128);
   assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.workLockSemantics,true);
   assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.incrementalQa,true);
   assert.equal(runtime.continuous.gamePrimaryWorkBudgetPreserves.canonicalF0ThroughF9,true);
@@ -308,8 +308,9 @@ test('game-primary BUILD_UP workers have a 60 minute maximum budget with immedia
   assert.equal(deepPolicy.gamePrimaryWorkBudgetAppliesTo,'ALL_GAME_PRIMARY_GAME_BUILD_UP_WORKERS_PRE_AND_POST_RELEASE');
   assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.maxWorkMinutes,60);
   assert.equal(roadmap.vibeExecutionLaneContract.gamePrimary.earlyCompletionAllowed,true);
-  assert.equal(companyLogMap.fixedRepeatDevelopment64EvidenceContract.gamePrimaryMaxWorkMinutes,60);
-  assert.equal(companyArchitectureMap.neuralWorkGraphTopology.currentWaveExecution.gamePrimaryMaxWorkMinutes,60);
+  // 현재 반복 개발 128 슬롯은 실행 정책과 런타임에서 검증한다. 폐기된 로그/구조 미러는 권한이 아니다.
+  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,128);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.maxActiveWorkers,128);
   assert(workflow.includes("VIBE2_GAME_PRIMARY_WORK_BUDGET_MINUTES: '60'"));
   assert(workflow.includes('VIBE2_GAME_PRIMARY_WORK_BUDGET_MODE=MAXIMUM_NOT_MINIMUM'));
   assert(workflow.includes('VIBE2_GAME_PRIMARY_EARLY_COMPLETION=YES'));
@@ -471,7 +472,7 @@ test('one Vibe2 wave uses the same reserved main contract without a global explo
   assert(workflow.includes('--project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json"'));
   assert(workflow.includes('Build task-local exploration handoff'));
   assert(workflow.includes('VIBE2_TASK_LOCAL_EXPLORATION=PASS'));
-  assert(workflow.includes('needs: [reserve, model_cache]'));
+  assert(workflow.includes('needs: [reserve]'));
   assert.equal(workflow.includes('needs: [reserve, model_cache, exploration]'),false);
   assert.equal(workflow.includes('\n  exploration:\n'),false);
   assert(workflow.includes('Generate isolated candidate from pinned main contract'));
@@ -479,7 +480,7 @@ test('one Vibe2 wave uses the same reserved main contract without a global explo
   assert(workflow.includes('VIBE2_RESERVE_PREFLIGHT_STEWARD=PASS'));
   assert(workflow.includes('VIBE2_RESERVE_STEWARD=PASS'));
   const reserveStart=workflow.indexOf('- name: Reserve conflict-free DAG batch');
-  const reserveEnd=workflow.indexOf('  model_cache:');
+  const reserveEnd=workflow.indexOf('  worker:',reserveStart);
   const reserveBlock=workflow.slice(reserveStart,reserveEnd);
   assert(reserveBlock.indexOf('tools/vibe2-system-steward.mjs') < reserveBlock.indexOf('tools/vibe2-handoff.mjs --check'));
   assert(reserveBlock.includes('state_paths=('));
@@ -767,7 +768,7 @@ test('fan-in reuses reserve or successful exact-commit engine regression and ret
 test('idle learning fixes one worker regardless of game pressure',()=>{
   const idle=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('  learning_idle:'),safetyNetWorkflow.indexOf('  game_study:'));
   assert.match(idle,/lane_max: '1'/);
-  assert.ok(workflow.includes("!= 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle'"));
+  assert.ok(workflow.includes("if: steps.result.outputs.file != '' && env.VIBE2_EXECUTION_LANE != 'learning-idle'"));
 });
 
 test('candidate formatting whitespace does not abort development but conflict markers still fail',()=>{
@@ -1671,7 +1672,8 @@ test('asset candidates enter the same regression review and release gates as gam
 
 test('completed worker results batch into early fan-in without per-worker dispatch or partial-task leakage',()=>{
   const start=workflow.indexOf('      - name: Resume completed candidate review from immutable worker results');
-  const block=workflow.slice(start,workflow.indexOf('\n  model_cache:',start));
+  // 레거시 model_cache 단계는 제거되었으므로 실제 복구 단계 본문만 분리한다.
+  const block=workflow.slice(start,workflow.indexOf('\n      - name:',start+1));
   const script=block.match(/node <<'NODE' > \/tmp\/vibe2-stranded-review-runs\.tsv\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-stranded-'));
   fs.mkdirSync(path.join(root,'.vibe2'));
