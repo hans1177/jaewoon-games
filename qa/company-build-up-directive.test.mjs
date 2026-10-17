@@ -26,7 +26,8 @@ test('ordinary Web authorization stays separate from Unity Web owner hold',()=>{
   const policy={
     robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']},
     developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY_WEB:'OWNER_HOLD',UNITY:'OWNER_HOLD'},
-    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','WEB']}
+    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',authority:'OWNER_DIRECTIVE_2026-10-09',activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY','UNITY_WEB']},
+    ownerCurrentScope20261017:{status:'ACTIVE',authority:'OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB',activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY','UNITY_WEB']}
   };
   const source=(file)=>({sourceTreeFingerprint:'web-owner-scope',sourceRoot:file.split('/').slice(0,2).join('/'),
     topFiles:[{file,score:10}],sourceAnchors:[],observations:[],signals:{}});
@@ -56,7 +57,11 @@ test('ordinary Web authorization stays separate from Unity Web owner hold',()=>{
     assert.equal(make('WEB','unity-games/garden').productionPlan,null,'Unity Web output remains held');
     policy.developmentAccess.WEB='OWNER_HOLD';
     fs.writeFileSync(policyPath,JSON.stringify(policy));
-    assert.equal(make('WEB','web-games/garden').productionPlan,null,'ordinary Web owner hold fails closed');
+    assert.equal(make('WEB','web-games/garden').productionPlan?.platform,'WEB','latest approved active scope overrides stale raw access');
+    policy.ownerCurrentScope20261017.activeTargets=['ROBLOX'];
+    policy.ownerCurrentScope20261017.ownerHeldTargets.push('WEB');
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    assert.equal(make('WEB','web-games/garden').productionPlan,null,'latest owner Web hold fails closed without changing the earlier directive');
   }finally{
     if(prior===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
     else process.env.COMPANY_VERIFIED_POLICY_PATH=prior;
@@ -220,7 +225,7 @@ test('detailed verified design fields survive into build-up and implementation p
   assert.match(directivePrompt(directive),/GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION/);
   assert.match(directivePrompt(directive),/플랫폼별 재설계는 금지/);
   const unityDirective=buildGameSpecificBuildUpDirective({gameId:'detail-lineage',gameName:'상세 설계',platform:'UNITY',designRecord:detailed,sourceObservation,responsibleFiles:['roblox-games/detail-lineage/Game.luau']});
-  assert.match(directivePrompt(unityDirective),/동일 공통 원본의 규칙과 상태를 보존/);
+  assert.match(directivePrompt(unityDirective),/MAIN = A \+ B \+ C \+ D \+ @ 공통 원본의 규칙과 상태를 보존/);
   assert.match(directivePrompt(unityDirective),/게임 규칙 확장은 공통 원본 개정/);
 });
 
