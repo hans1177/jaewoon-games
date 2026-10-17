@@ -170,7 +170,26 @@ export function evaluatePracticeAnswer(value={}, {drill=null,luauBinary=process.
           try{
             const output=execFileSync('docker',['run','--rm','--name',container,'--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','128','--memory','768m','--cpus','1','--user','65534:65534','--tmpfs','/tmp:rw,exec,size=384m,mode=1777','-e','HOME=/tmp','-e','NUGET_PACKAGES=/tmp/nuget','-e','DOTNET_CLI_HOME=/tmp','-e','DOTNET_CLI_TELEMETRY_OPTOUT=1','-e','DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1','--mount','type=bind,src='+dir+',dst=/input,readonly','mcr.microsoft.com/dotnet/sdk:8.0','sh','-c','cp /input/* /tmp/; cd /tmp; dotnet run --project Practice.csproj --verbosity quiet'],{timeout:45000,maxBuffer:131072,encoding:'utf8',stdio:['ignore','pipe','pipe']});
             outcomes[kind]=output.trim().split(/\r?\n/).includes(proof);
-          }catch(error){outcomes[kind]=false;if(kind==='candidate')codeVerification.diagnostics=candidateDiagnostics(error,'csharp');}
+          }catch(error){
+            outcomes[kind]=false;
+            if(kind==='reference'){
+              // 기준 코드 실패는 유형만 기록하고 숨긴 테스트 내용과 원본 코드는 공개하지 않는다.
+              const output=String(error?.stderr||'')+'\n'+String(error?.stdout||'');
+              codeVerification.referenceExecutorFailure={
+                exitCode:Number.isInteger(error?.status)?error.status:null,
+                category:/permission denied|operation not permitted|access to the path/i.test(output)?'EXECUTOR_PERMISSION':
+                  /no space left|read-only file system/i.test(output)?'EXECUTOR_STORAGE':
+                  /docker:|error response from daemon|container create failed/i.test(output)?'DOCKER_CONTAINER_START':
+                  /NU[0-9]{4}|restore failed|unable to load the service index/i.test(output)?'DOTNET_RESTORE':
+                  /MSB[0-9]{4}|NETSDK[0-9]{4}|SDK not found/i.test(output)?'DOTNET_SDK':
+                  /error CS[0-9]{4}/i.test(output)?'REFERENCE_COMPILER':
+                  /PRACTICE_CASE_[0-9]+_CHECK_[0-9]+/i.test(output)?'REFERENCE_ASSERTION':
+                  /Out of memory|OOM|killed/i.test(output)?'EXECUTOR_RESOURCE':
+                  'UNCLASSIFIED_EXECUTOR_FAILURE'
+              };
+            }
+            if(kind==='candidate')codeVerification.diagnostics=candidateDiagnostics(error,'csharp');
+          }
           finally{try{execFileSync('docker',['rm','-f',container],{timeout:5000,stdio:'ignore'});}catch{}}
         }
         if(outcomes.baseline===false&&outcomes.reference===true)fixtureCache?.set(fixtureKey,Object.freeze({baseline:false,reference:true}));
