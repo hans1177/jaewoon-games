@@ -645,11 +645,13 @@ export function completeOwnerExclusiveGameScope({
     &&String(publication.targetId)===String(specificTarget.placeId)
     &&(!completion.temporaryPublishArtifactCreated
       ||checks.temporaryPublishArtifactRemoved===true);
-  // 출시 분류 및 평가 점수에 관계없이 검증된 정확한 F9 원본의 배포 증거만 인정한다.
-  // 미검증·실패·배포 생략은 완료로 처리하지 않고 기존 복구 단계에서 재시도한다.
+  // 최신 중앙정책은 모든 게임의 실제 배포 증거를 요구한다.
+  // 이전 정책으로 생성된 기록은 과거 상태 판독용으로만 해석한다.
+  const historicalDevelopmentSkip=policy?.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.developmentGamePublicationAllowed===false
+    &&releaseState==='development-confirmed'&&publication.status==='DEVELOPMENT_PUBLICATION_SKIPPED';
   const standardVerified=sourceEvidence
     &&['development-confirmed','release-confirmed'].includes(releaseState)
-    &&published;
+    &&(published||historicalDevelopmentSkip);
   const verified=standardVerified||ownerPublishVerified;
   if(!verified&&ownerExplicitRelease!==true)return unchanged('OWNER_WORK_EVIDENCE_OR_PUBLICATION_NOT_VERIFIED');
   const nextPolicy={
