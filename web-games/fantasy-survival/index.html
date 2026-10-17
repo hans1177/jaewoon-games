@@ -1889,7 +1889,7 @@ const BESTIARY_INFO={
  ironspirit:{cat:'aggressive',desc:'협곡 깊은 철맥에서 깨어난 정령. 금속이 많은 곳을 떠돌며 주변 생명체의 움직임에 예민하게 반응한다.'},
  worldtreebear:{cat:'aggressive',desc:'세계수 지역 부근을 순찰하며 도는 거대한 곰. 평소에는 묵묵히 영역을 지키지만 침입자를 발견한다면 자비를 베풀지 않는다.'},
  worldtreegolem:{cat:'neutral',desc:'세계수 내부의 중립 3티어 골렘. 반격하면서 2초마다 50% 확률로 뿌리 4개를 날린다. 뿌리는 피해 없이 3초간 이동을 봉쇄하며 공격은 가능하다.'},
- worldtreesnake:{cat:'aggressive',desc:'세계수 내부에서 3초마다 67% 확률로 3초간 시야 속 뿌리 최대 5개가 뱀처럼 보이는 환각을 일으킨다. 환각은 피해가 없다.'},
+ worldtreesnake:{cat:'aggressive',desc:'세계수 내부에서 3초마다 67% 확률로 뿌리 최대 5개가 진짜 세계수 뱀이 된다. 변한 뱀은 공격하고, 10초 뒤 또는 죽는 즉시 원래 위치의 뿌리로 돌아간다.'},
  fairy:{cat:'harmless',desc:'숲의 빛이 강한 곳에서 반짝이는 가루를 흩뿌리며 떠도는 작은 요정. 다른 생명체를 해치려 하지 않는다.'},
  rootsovereign:{cat:'boss',desc:'세계수의 깊은 뿌리 아래 오랫동안 잠들어 있던 고대의 존재. 숲의 오래된 힘과 함께 봉인된 채 침묵하고 있다.'},
  firewolf:{cat:'aggressive',desc:'부서진 콜로세움 주변의 열기 속을 떠도는 붉은 늑대. 뜨거운 돌바닥에서도 멈추지 않고 사냥감을 추적한다.'},
@@ -2816,7 +2816,7 @@ function queueDeathAnimation(e,now=performance.now()){
 
 function serializeWorld(){
  return{
-  enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null,faceX:e.faceX||1,faceY:e.faceY||0,moving:!!e.moving,attacking:performance.now()-(e.attackAt||0)<360,raidId:e.raidId||null,raidTargetId:e.raidTargetId||null,raidChase:!!e.raidChase})),
+  enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null,faceX:e.faceX||1,faceY:e.faceY||0,moving:!!e.moving,attacking:performance.now()-(e.attackAt||0)<360,raidId:e.raidId||null,raidTargetId:e.raidTargetId||null,raidChase:!!e.raidChase,rootMorphIndex:Number.isInteger(e.rootMorphIndex)?e.rootMorphIndex:null,rootMorphUntil:e.rootMorphUntil||0})),
   projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null,ownerId:q.ownerId||null,kind:q.kind||null,arrowId:q.arrowId||null,playerOwned:!!q.playerOwned,homingUntil:q.homingUntil||0,targetId:q.targetId||null,speed:q.speed||0,speedRatio:q.speedRatio||0,nextSlowAt:q.nextSlowAt||0,gasBatchId:q.gasBatchId||null,gasPlayerSpeed:q.gasPlayerSpeed||0})),
   sporeClouds:state.sporeClouds.filter(g=>g.area!=='storylab1'&&g.area!=='storylab2').map(g=>({...g})),
   mummyGases:state.mummyGases.map(g=>({x:g.x,y:g.y,r:g.r,until:g.until,sourceId:g.sourceId||null})),
@@ -2834,7 +2834,7 @@ function applyWorldSnapshot(w){
  state.enemies=list.map(n=>{
   const type=creatures[n.typeId];if(!type)return null;
   const old=previous.get(n.id),attackAt=n.attacking?now-100:(old?.attackAt||0),hitAt=old&&Number(n.hp)<Number(old.hp)?now+110:(old?.hitAt||0);
-  return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,slowedUntil:0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,nextYetiSummonAt:0,nextYetiSlamAt:0,nextHowlAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id,raidId:n.raidId||null,raidTargetId:n.raidTargetId||null,raidChase:!!n.raidChase}
+  return{type,hp:n.hp,maxHp:n.maxHp||type.hp,x:n.x,y:n.y,spawnX:n.x,spawnY:n.y,packId:null,area:n.area||'surface',enemyTarget:null,stunnedUntil:n.stunnedUntil||0,slowedUntil:0,bossState:n.bossState||null,emerged:n.emerged!==false,emergeAt:0,attackAt,hitAt,hostile:!!n.hostile,wander:0,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:(n.rageUntil||0)>0,rageUntil:n.rageUntil||0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,nextYetiSummonAt:0,nextYetiSlamAt:0,nextHowlAt:0,faceX:Number.isFinite(n.faceX)?n.faceX:(old?.faceX||1),faceY:Number.isFinite(n.faceY)?n.faceY:(old?.faceY||0),moving:!!n.moving,netId:n.id,raidId:n.raidId||null,raidTargetId:n.raidTargetId||null,raidChase:!!n.raidChase,rootMorphIndex:Number.isInteger(n.rootMorphIndex)&&n.rootMorphIndex>=0&&n.rootMorphIndex<19?n.rootMorphIndex:null,rootMorphUntil:Number(n.rootMorphUntil)||0,noRespawn:Number.isInteger(n.rootMorphIndex)}
  }).filter(Boolean);
  state.projectiles=Array.isArray(w.projectiles)?w.projectiles.map(q=>({...q})):[];state.sporeClouds=Array.isArray(w.sporeClouds)?w.sporeClouds.map(g=>({...g})):[];if(Array.isArray(w.mummyGases))state.mummyGases=w.mummyGases.map(g=>({x:Number(g.x)||0,y:Number(g.y)||0,r:Number(g.r)||126,until:Number(g.until)||0,nextPlayerTick:0,nextHealTick:Infinity,sourceId:g.sourceId||null}));
  if(Array.isArray(w.sunstones))state.sunstones=w.sunstones.filter(n=>n&&String(n.kind||'sunstone')==='sunstone'&&Number.isFinite(Number(n.x))&&Number.isFinite(Number(n.y))).slice(0,8).map((n,i)=>({id:String(n.id||('sunstone'+i)),kind:'sunstone',x:Number(n.x),y:Number(n.y),hp:Math.max(0,Number(n.hp)||0),maxHp:10,dead:!!n.dead,respawnAt:Math.max(0,Number(n.respawnAt)||0)}));
@@ -4587,45 +4587,58 @@ function spawnSporeCloud(x,y,area,ownerId,now,enhanced=false){state.sporeClouds.
 function updateSporeClouds(now){
  for(let i=state.sporeClouds.length-1;i>=0;i--){const g=state.sporeClouds[i];if(now>=g.until){state.sporeClouds.splice(i,1);continue}if(multiplayer.connected&&!multiIsHost())continue;if(now<(g.nextTick||0))continue;g.nextTick=now+(g.tick||500);for(const e of state.enemies){if(e.hp<=0||e.area!==g.area||(e.type.mood==='harmless'&&!e.type.huntable)||dist(g.x,g.y,e.x,e.y)>g.r+e.type.r)continue;const dmg=enemyIncomingDamage(e,Number(g.damage)||5,now);e.hp-=dmg;e.hitAt=now+110;if(e.type.mood==='neutral')markEnemyHitByPlayer(e);if(e.hp<=0)finishPlayerArrowKill(e,g.ownerId||multiplayer.playerId,now)}}
 }
-// 세계수 뱀 원본 설정: 3초마다 67% · 시야 속 뿌리 5개를 3초간 뱀처럼 보이게 한다.
-// 이 환각은 플레이어별 로컬 표현이며 전투, 충돌, 서버/세이브 데이터는 바꾸지 않는다.
-const WORLD_TREE_SNAKE_ILLUSION=Object.freeze({intervalMs:3000,probability:.67,durationMs:3000,maxRoots:5,range:400});
-const worldTreeSnakeIllusion={until:0,rootIndices:[]};
+// 실제 세계수 뱀 스킬: 3초마다 67% 확률로 뿌리 최대 5개가 살아 움직이는 세계수 뱀으로 변한다.
+// 변신한 뱀은 실제 공격/피해를 주고받고, 10초 경과 또는 사망 즉시 원래 위치의 뿌리로 복구된다.
+const WORLD_TREE_ROOT_SNAKES=Object.freeze({intervalMs:3000,probability:.67,durationMs:10000,maxRoots:5,range:400});
 const worldTreeSnakeRolls=new Map();
-function updateWorldTreeSnakeIllusion(now){
+function worldTreeRootPosition(index){
+ return{x:155+(index*421)%2940,y:140+(index*311)%2000}
+}
+function updateWorldTreeRootSnakes(now){
+ // 멀티에서는 호스트만 적 실체/만료 시간을 결정한다.
+ if(multiplayer.connected&&!multiIsHost())return;
+ const occupied=new Set();
+ for(const snake of state.enemies){
+  if(!Number.isInteger(snake.rootMorphIndex))continue;
+  if(snake.hp<=0||now>=(snake.rootMorphUntil||0)){
+   snake.hp=0;
+  }else occupied.add(snake.rootMorphIndex)
+ }
  if(state.area!=='worldtreeinside'||state.player.downedUntil){
-  worldTreeSnakeIllusion.until=0;worldTreeSnakeIllusion.rootIndices=[];
   worldTreeSnakeRolls.clear();return
  }
- const active=new Set();
- for(const e of state.enemies){
-  if(e.type?.id!=='worldtreesnake'||e.hp<=0||e.area!=='worldtreeinside'||!e.hostile)continue;
-  const id=e.netId;
-  active.add(id);
-  if(dist(e.x,e.y,state.player.x,state.player.y)>WORLD_TREE_SNAKE_ILLUSION.range){
-   worldTreeSnakeRolls.delete(id);continue
+ const casters=new Set();
+ for(const caster of state.enemies){
+  if(caster.type?.id!=='worldtreesnake'||caster.hp<=0||caster.area!=='worldtreeinside'||!caster.hostile||Number.isInteger(caster.rootMorphIndex))continue;
+  casters.add(caster.netId);
+  if(dist(caster.x,caster.y,state.player.x,state.player.y)>WORLD_TREE_ROOT_SNAKES.range){
+   worldTreeSnakeRolls.delete(caster.netId);continue
   }
-  const next=worldTreeSnakeRolls.get(id);
-  if(next===undefined){worldTreeSnakeRolls.set(id,now+WORLD_TREE_SNAKE_ILLUSION.intervalMs);continue}
+  const next=worldTreeSnakeRolls.get(caster.netId);
+  if(next===undefined){worldTreeSnakeRolls.set(caster.netId,now+WORLD_TREE_ROOT_SNAKES.intervalMs);continue}
   if(now<next)continue;
-  worldTreeSnakeRolls.set(id,now+WORLD_TREE_SNAKE_ILLUSION.intervalMs);
-  if(Math.random()>=WORLD_TREE_SNAKE_ILLUSION.probability)continue;
-  const visible=[],cx=state.camera.x,cy=state.camera.y;
+  worldTreeSnakeRolls.set(caster.netId,now+WORLD_TREE_ROOT_SNAKES.intervalMs);
+  if(Math.random()>=WORLD_TREE_ROOT_SNAKES.probability||occupied.size>=WORLD_TREE_ROOT_SNAKES.maxRoots)continue;
+  const nearby=[],cx=state.camera.x,cy=state.camera.y;
   for(let i=0;i<19;i++){
-   const x=155+(i*421)%2940,y=140+(i*311)%2000;
-   if(x<cx-140||x>cx+innerWidth+140||y<cy-155||y>cy+innerHeight+155)continue;
-   const d=dist(x,y,state.player.x,state.player.y);
-   if(d<1100)visible.push({index:i,d})
+   if(occupied.has(i))continue;
+   const a=worldTreeRootPosition(i);
+   if(a.x<cx-140||a.x>cx+innerWidth+140||a.y<cy-155||a.y>cy+innerHeight+155)continue;
+   const d=dist(a.x,a.y,state.player.x,state.player.y);
+   if(d<1100)nearby.push({index:i,d})
   }
-  visible.sort((a,b)=>a.d-b.d);
-  if(!visible.length)continue;
-  // 겹친 시전도 하나의 종료 시점만 쓰며 종료 시 기존 뿌리 그림으로 즉시 복구한다.
-  worldTreeSnakeIllusion.rootIndices=visible.slice(0,WORLD_TREE_SNAKE_ILLUSION.maxRoots).map(r=>r.index);
-  worldTreeSnakeIllusion.until=now+WORLD_TREE_SNAKE_ILLUSION.durationMs;
-  showNotice('세계수 뱀의 환각 · 눈앞의 뿌리가 뱀처럼 보여!')
+  nearby.sort((a,b)=>a.d-b.d);
+  const count=Math.min(nearby.length,WORLD_TREE_ROOT_SNAKES.maxRoots-occupied.size);
+  for(let i=0;i<count;i++){
+   const index=nearby[i].index,anchor=worldTreeRootPosition(index);
+   const snake=spawnAt(creatures.worldtreesnake,anchor.x,anchor.y,null);
+   snake.area='worldtreeinside';snake.hostile=true;snake.noRespawn=true;
+   snake.rootMorphIndex=index;snake.rootMorphUntil=now+WORLD_TREE_ROOT_SNAKES.durationMs;
+   state.enemies.push(snake);occupied.add(index)
+  }
+  if(count)showNotice('세계수 뱀 · 뿌리 '+count+'개가 진짜 뱀으로 변했다! · 10초 뒤 복구')
  }
- for(const id of worldTreeSnakeRolls.keys())if(!active.has(id))worldTreeSnakeRolls.delete(id);
- if(now>=worldTreeSnakeIllusion.until)worldTreeSnakeIllusion.rootIndices=[]
+ for(const id of worldTreeSnakeRolls.keys())if(!casters.has(id))worldTreeSnakeRolls.delete(id)
 }
 function throwWorldTreeRoots(e,targetP,now){
  if(!e.hostile||e.type.id!=='worldtreegolem'||e.area!=='worldtreeinside')return;
@@ -4871,8 +4884,8 @@ function update(dt,now){
    else{p.x=bed.x;p.y=bed.y;if(now>=(p.bedHealAt||0)){p.bedHealAt=now+1000;p.hp=Math.min(p.maxHp,p.hp+10);state.dirty=true;updateHud()}}
   }
   updatePet(dt,now);
-  // 호스트/게스트 모두 자신의 화면에만 환각을 표시한다.
-  updateWorldTreeSnakeIllusion(now);
+  // 진짜 몬스터로 변한 뿌리를 10초 경과 또는 처치 시 원상복구한다.
+  updateWorldTreeRootSnakes(now);
   if(!multiplayer.connected||multiIsHost()||state.area==='storylab1'||state.area==='storylab2'){
     for(const e of state.enemies){
       if(e.hp<=0||e.area!==state.area)continue;
@@ -5212,20 +5225,11 @@ function drawWorldTreeInterior(cx,cy,w,h){
   const radius=210+i*93;ctx.strokeStyle=i%3===0?'rgba(174,133,76,.21)':'rgba(153,116,74,.12)';
   ctx.lineWidth=8;ctx.beginPath();ctx.ellipse(room.w*.5,room.h*.49,radius*1.05,radius*.66,0,0,Math.PI*2);ctx.stroke()
  }
+ // 살아 있는 변신 뱀은 실제 적으로 그리므로 원래 뿌리는 숨긴다.
+ const transformedRoots=new Set(state.enemies.filter(e=>e.hp>0&&e.area==='worldtreeinside'&&Number.isInteger(e.rootMorphIndex)).map(e=>e.rootMorphIndex));
  for(let i=0;i<19;i++){
-  const x=155+(i*421)%2940,y=140+(i*311)%2000;
-  if(performance.now()<worldTreeSnakeIllusion.until&&worldTreeSnakeIllusion.rootIndices.includes(i)){
-   // 기존 뿌리를 3초 동안 환각 뱀으로 보이게 한다. 실제 적이나 공격 판정이 아님.
-   const sway=Math.sin(performance.now()*.009+i)*18;
-   ctx.save();ctx.translate(x,y);ctx.lineCap='round';
-   ctx.strokeStyle='rgba(72,211,119,.34)';ctx.lineWidth=43;
-   ctx.beginPath();ctx.moveTo(-82,-120);ctx.bezierCurveTo(94,-41+sway,-90,53-sway,70,142);ctx.stroke();
-   ctx.strokeStyle='#73d58c';ctx.lineWidth=28;
-   ctx.beginPath();ctx.moveTo(-82,-120);ctx.bezierCurveTo(94,-41+sway,-90,53-sway,70,142);ctx.stroke();
-   ctx.fillStyle='#b2fac0';ctx.beginPath();ctx.ellipse(70,142,22,15,.35,0,Math.PI*2);ctx.fill();
-   ctx.fillStyle='#f0eaaa';ctx.beginPath();ctx.arc(76,134,3.8,0,Math.PI*2);ctx.arc(84,138,3.8,0,Math.PI*2);ctx.fill();
-   ctx.restore();continue
-  }
+  if(transformedRoots.has(i))continue;
+  const {x,y}=worldTreeRootPosition(i);
   ctx.strokeStyle=i%3===0?'#795936':'#62492d';ctx.lineCap='round';ctx.lineWidth=28+i%4*4;
   ctx.beginPath();ctx.moveTo(x-84,y-120);ctx.bezierCurveTo(x+95,y-34,x-93,y+50,x+68,y+142);ctx.stroke();
   ctx.strokeStyle='#a1814c';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-65,y-105);ctx.quadraticCurveTo(x+54,y-10,x+20,y+76);ctx.stroke()
