@@ -32,6 +32,15 @@ if(policy.developmentAccess?.UNITY_WEB!=='ALWAYS_ALLOWED'
   ||ownerScope?.ownerHeldTargets?.includes('UNITY_WEB')
   ||ownerScope?.unityWebDevelopmentAllowed===false)
   throw new Error('UNITY_WEB_OWNER_HOLD');
+// 정책 · 승인된 개발에서만 2D·2.5D 최종판 금지 및 공용 3D 자산 계보까지 검사한다.
+const owner3dPolicy=policy.ownerUnityWeb3dOnly20261009||{};
+const mandatory3dFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'];
+if(owner3dPolicy.twoPointFiveDimensionalFinalPassForbidden!==true
+  ||owner3dPolicy.existing2dOr2_5dGameAction!=='MANDATORY_IN_PLACE_NATIVE_UNITY_3D_REDEVELOPMENT_ALL_EXISTING_GAMES'
+  ||owner3dPolicy.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true
+  ||!Array.isArray(owner3dPolicy.sharedLibraryGameWorldFamilies3dOnly)
+  ||!mandatory3dFamilies.every(family=>owner3dPolicy.sharedLibraryGameWorldFamilies3dOnly.includes(family)))
+  throw new Error('UNITY_WEB_3D_ONLY_CENTRAL_POLICY_INVALID');
 
 
 const required=[
