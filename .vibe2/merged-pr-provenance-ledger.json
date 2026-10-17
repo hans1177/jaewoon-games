@@ -51917,11 +51917,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_166942d44e52a061227d6423",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8200",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "5df73f184f3669fd192ce4ffc0dc3662895f2d5b",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8200,
+        "baseBranch": "main",
+        "headBranch": "opt/simple-rpg-race-ai-index-20261017",
+        "baseSha": "5df73f184f3669fd192ce4ffc0dc3662895f2d5b",
+        "headSha": "1dfe9caf4537b6027369330dd5b1c1c40c4d7ab6",
+        "mergeCommitSha": "b3968449e3edc813c750ae09b32b2a9c4ce70620",
+        "mergedAt": "2026-10-17T00:58:26Z",
+        "authorLogin": "hans1177",
+        "titleHash": "2af746de5739b69c9684a7ebeb796c3f13edde8c2f849925e6ca9cbe0af7f3ea",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "opt/simple-rpg-race-ai-index-20261017",
+        "candidateSha": "1dfe9caf4537b6027369330dd5b1c1c40c4d7ab6"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 57,
+        "deletedLineCount": 6,
+        "changedFiles": [
+          ".github/workflows/company-roblox-source-drift-sync.yml",
+          ".github/workflows/external-mobile-free-game-playtest.yml",
+          "qa/company-roblox-source-drift-sync.test.mjs",
+          "qa/external-mobile-free-game-playtest-workflow.test.mjs",
+          "qa/simple-rpg-ai-authoring.test.mjs",
+          "roblox-games/simple-rpg/server/Game.server.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-roblox-source-drift-sync.yml",
+          ".github/workflows/external-mobile-free-game-playtest.yml",
+          "qa/company-roblox-source-drift-sync.test.mjs",
+          "qa/external-mobile-free-game-playtest-workflow.test.mjs",
+          "qa/simple-rpg-ai-authoring.test.mjs",
+          "roblox-games/simple-rpg/server/Game.server.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8200",
+        "merge-commit:b3968449e3edc813c750ae09b32b2a9c4ce70620",
+        "base-main:5df73f184f3669fd192ce4ffc0dc3662895f2d5b"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 419
+    "total": 420
   }
 }
