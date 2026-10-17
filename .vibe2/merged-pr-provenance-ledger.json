@@ -57328,11 +57328,151 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_d82813e6196d5713be08043d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8274",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d07e00689a19ede7f3f0d3fd37b7438c401ea80e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8274,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe2-external-ai-rotation-only-20261017",
+        "baseSha": "d07e00689a19ede7f3f0d3fd37b7438c401ea80e",
+        "headSha": "38fe5602479dd7635a882808c4b8855ec8fb6a93",
+        "mergeCommitSha": "8b445cfc73813616367cb2b266de32d2d0bc26cb",
+        "mergedAt": "2026-10-17T09:05:58Z",
+        "authorLogin": "hans1177",
+        "titleHash": "f09d7210bc182d2bc271e1b19642202f5601768993309d200c67925891cf83d6",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe2-external-ai-rotation-only-20261017",
+        "candidateSha": "38fe5602479dd7635a882808c4b8855ec8fb6a93"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 255,
+        "deletedLineCount": 100,
+        "changedFiles": [
+          ".github/workflows/company-system-ai-workers.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/company-system-ai-evolution.test.mjs",
+          "qa/company-system-ai-worker.test.mjs",
+          "qa/vibe2-gemini-free-rotation.test.mjs",
+          "qa/vibe2-learning-practice-worker.test.mjs",
+          "qa/vibe2-native-asset-production.test.mjs",
+          "tools/company-system-ai-failure-classifier.mjs",
+          "tools/company-system-ai-worker.mjs",
+          "tools/vibe2-gemini-free-rotation.mjs",
+          "tools/vibe2-learning-practice-worker.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-system-ai-workers.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/company-system-ai-evolution.test.mjs",
+          "qa/company-system-ai-worker.test.mjs",
+          "qa/vibe2-gemini-free-rotation.test.mjs",
+          "qa/vibe2-learning-practice-worker.test.mjs",
+          "qa/vibe2-native-asset-production.test.mjs",
+          "tools/company-system-ai-failure-classifier.mjs",
+          "tools/company-system-ai-worker.mjs",
+          "tools/vibe2-gemini-free-rotation.mjs",
+          "tools/vibe2-learning-practice-worker.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8274",
+        "merge-commit:8b445cfc73813616367cb2b266de32d2d0bc26cb",
+        "base-main:d07e00689a19ede7f3f0d3fd37b7438c401ea80e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 463
+    "total": 464
   }
 }
