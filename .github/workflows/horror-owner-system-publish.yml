@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/horror-owner-system-publish.yml'
-      - 'company-learning/platform-release-roadmap.json'
+      # Policy-only handoff commits must not republish the same private place.
       - 'assets/roblox/midnight-manor/**'
       - 'roblox-games/horror-escape-room/**'
       - 'assets/roblox/world-ghosts/native/combat-roblox-assets.json'
@@ -259,3 +259,144 @@ jobs:
           gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo 'HORROR_CANONICAL_FLOW=DESIGN_PROMOTION_TO_DEVELOPMENT'
           echo 'HORROR_CANONICAL_FLOW_GAME_ID=horror-escape-room'
+
+# The publisher remains read-only. Only the verified handoff can write the
+  # canonical policy/queue and wake the existing scheduler (no new pipeline).
+  owner-verified-resume:
+    needs: owner-direct-publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: horror-owner-direct-publication
+          path: /tmp/horror-owner-publication
+
+      - name: Persist verified owner completion and wake original F0-F9
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # No scoped owner game means there is nothing to release; never
+          # relabel normal Vibe work as an owner handoff.
+          scoped="$(node -e 'const p=require("./company-learning/platform-release-roadmap.json");process.stdout.write(p.ownerCanonicalRules?.ownerExclusiveDevelopment?.gameIds?.includes("horror-escape-room")?"YES":"NO")')"
+          if [ "$scoped" != YES ]; then
+            echo 'OWNER_DIRECT_HANDOFF=NO_ACTIVE_OWNER_SCOPE'
+            exit 0
+          fi
+
+          # The prior job actually published and attached the private-target
+          # response. Verify the artifact and current main before any state write.
+          test -s /tmp/horror-owner-publication/publication.json
+          test -s /tmp/horror-owner-publication/package.sha256
+          node --check tools/vibe2-queue-control.mjs
+          node --test --test-name-pattern='owner scoped direct coding takes precedence' qa/vibe2-queue-control.test.mjs
+          git fetch --no-tags --depth=2 origin \
+            '+refs/heads/main:refs/remotes/origin/main' \
+            '+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core'
+          test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
+
+          # Reuse the existing immune scanner; a REVIEW or QUARANTINE does not
+          # count as security approval for releasing an owner-only source.
+          node tools/company-security-steward.mjs \
+            --base="$(git rev-parse "$GITHUB_SHA^")" \
+            --head="$GITHUB_SHA" \
+            --output=/tmp/horror-owner-handoff-security.json
+          node -e 'const p=require("/tmp/horror-owner-handoff-security.json");if(p.verdict!=="PASS")process.exit(1)'
+          echo 'OWNER_DIRECT_HANDOFF_SECURITY=PASS'
+
+          git config user.name 'jaewoon-owner-handoff'
+          git config user.email 'owner-handoff@users.noreply.github.com'
+          git worktree add --detach /tmp/horror-owner-control origin/vibe2-unreal-core
+          node tools/vibe2-queue-control.mjs storage-unpack \
+            --queue=/tmp/horror-owner-control/.vibe2/queue.json
+
+          # Existing evidence gate owns the release verdict. It cannot claim
+          # F9 on the strength of a private owner publication.
+          GITHUB_WORKSPACE="$PWD" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {completeOwnerExclusiveGameScope,packVibeQueueStorage} from './tools/vibe2-queue-control.mjs';
+          const policyPath='company-learning/platform-release-roadmap.json';
+          const queuePath='/tmp/horror-owner-control/.vibe2/queue.json';
+          const publicationPath='/tmp/horror-owner-publication/publication.json';
+          const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+          const queueInput=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const record=JSON.parse(fs.readFileSync(publicationPath,'utf8'));
+          const packageRecord=fs.readFileSync('/tmp/horror-owner-publication/package.sha256','utf8');
+          const sha=process.env.GITHUB_SHA;
+          const run=Number(process.env.GITHUB_RUN_ID);
+          const scope=policy.ownerCanonicalRules?.ownerExclusiveDevelopment;
+          if(!scope?.gameIds?.includes('horror-escape-room'))throw new Error('OWNER_SCOPE_CHANGED');
+          if(!/^[a-f0-9]{40}$/.test(sha)||!Number.isSafeInteger(run)||run<=0)throw new Error('OWNER_EVIDENCE_RUN_INVALID');
+          if(record.gameId!=='horror-escape-room'||record.sourceRevision!==sha
+            ||record.universeId!=='10767445796'||record.placeId!=='98222620265768'
+            ||record.privateOnly!==true||record.publicRelease!==false||record.f9Claim!==false
+            ||record.route!=='OWNER_DIRECT_CANONICAL_PRIVATE_PUBLISH'
+            ||!Number.isSafeInteger(record.publishedVersion)||record.publishedVersion<1
+            ||!/^[a-f0-9]{64}$/.test(record.packageSha256)
+            ||!packageRecord.startsWith(record.packageSha256+'  '))
+            throw new Error('OWNER_PUBLICATION_EVIDENCE_MISMATCH');
+          const result=completeOwnerExclusiveGameScope({
+            policy,queueInput,gameId:record.gameId,
+            completion:{
+              target:'ROBLOX',sourceSha:sha,mainSourceSha:sha,
+              releaseState:'development-confirmed',f9VerifiedSourceSha:'',
+              checks:{
+                sourceIntegrityPassed:true,exactMainSourceRevision:true,
+                staticSourceGuardPassed:true,buildPassed:true,securityPassed:true,
+                staticQaRunId:run,buildRunId:run,securityRunId:run
+              },
+              publication:{
+                status:'EXACT_REVISION_PUBLISHED',
+                sourceSha:sha,runId:run,targetId:record.placeId
+              }
+            }
+          });
+          if(!result.released||result.completionVerified!==true
+            ||result.status!=='OWNER_DIRECT_PUBLISH_HANDOFF_READY_F0_F9_PENDING'
+            ||result.checkpointAction!=='RESUME_EXISTING_F0_F9_AFTER_OWNER_DIRECT_PUBLISH'
+            ||result.handoffRequiresPersistedPolicyAndQueue!==true)
+            throw new Error('OWNER_COMPLETION_GATE_BLOCKED:'+result.status);
+          const remaining=result.policy.ownerCanonicalRules.ownerExclusiveDevelopment.gameIds;
+          if(remaining.includes(record.gameId))throw new Error('OWNER_SCOPE_STILL_ACTIVE');
+          for(const id of scope.gameIds.filter(id=>id!==record.gameId))
+            if(!remaining.includes(id))throw new Error('UNRELATED_OWNER_HOLD_LOST:'+id);
+          fs.writeFileSync('/tmp/horror-owner-next-policy.json',JSON.stringify(result.policy,null,2)+'\n');
+          fs.writeFileSync(queuePath,JSON.stringify(result.queue)+'\n');
+          packVibeQueueStorage(queuePath);
+          console.log('OWNER_DIRECT_HANDOFF=EVIDENCE_VERIFIED_F0_F9_PENDING');
+          NODE
+
+          # Save full queue and all lossless parts first. Until policy on main
+          # changes, other workers will continue to enforce the old owner hold.
+          git -C /tmp/horror-owner-control add -A -- .vibe2/queue.json .vibe2/queue
+          if ! git -C /tmp/horror-owner-control diff --cached --quiet; then
+            git -C /tmp/horror-owner-control commit -m 'vibe2: persist verified owner queue handoff [skip ci]'
+            git -C /tmp/horror-owner-control push origin HEAD:vibe2-unreal-core
+          fi
+          echo 'OWNER_DIRECT_HANDOFF_QUEUE=PERSISTED'
+
+          # An intervening main change invalidates the exact-revision release.
+          git fetch --no-tags --depth=1 origin \
+            '+refs/heads/main:refs/remotes/origin/main'
+          test "$(git rev-parse origin/main)" = "$GITHUB_SHA"
+          cp /tmp/horror-owner-next-policy.json company-learning/platform-release-roadmap.json
+          git add -- company-learning/platform-release-roadmap.json
+          git diff --cached --quiet && { echo 'OWNER_HANDOFF_POLICY_UNCHANGED'; exit 1; }
+          git commit -m 'vibe2: release verified owner scope to existing F0-F9 [skip ci]'
+          git push origin HEAD:main
+          echo 'OWNER_DIRECT_HANDOFF_POLICY=PERSISTED'
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'OWNER_DIRECT_HANDOFF_F0_F9_WAKE=DISPATCHED'
