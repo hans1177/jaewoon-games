@@ -596,15 +596,23 @@ test('Web requires F0-F9 proof, mandatory deployment, then resumes perpetual BUI
   assert.match(section,/web-f9-publish-attempted-retry-in-parallel-with-next-cycle/);
   assert.match(section,/WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED_AFTER_PUBLISH_ATTEMPT=/);
   assert.match(section,/AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED_AFTER_WEB_PUBLISH_ATTEMPT/);
-  const retry=section.slice(section.indexOf('          if [ "$result" = DEPLOY_RETRY_REQUIRED ]; then\\n            echo "WEB_PUBLICATION_RETRY_REQUIRED='),
-    section.indexOf('          rm -rf /tmp/vibe2-control'));
+  const retryStart=section.indexOf('echo "WEB_PUBLICATION_RETRY_REQUIRED=');
+  const retryEnd=section.indexOf('          rm -rf /tmp/vibe2-control',retryStart);
+  assert.ok(retryStart>0&&retryEnd>retryStart);
+  const retry=section.slice(retryStart,retryEnd);
   assert.match(retry,/WEB_NEXT_EVOLUTION_DISPATCH_AFTER_PUBLICATION_ATTEMPT=YES/);
   assert.doesNotMatch(retry,/exit 0/);
-  // 출시는 기존 F9 후보에만 재시도하며, 실패한 배포를 QA 실패로 재분류하지 않는다.
-  const queue=section.slice(section.indexOf('            if [ "$result" = PASS ]; then\\n              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass'),
-    section.indexOf('            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack'));
-  assert.match(queue,/elif \[ "\$result" = DEPLOY_RETRY_REQUIRED \]; then/);
-  assert.doesNotMatch(queue,/DEPLOY_RETRY_REQUIRED[\s\S]*web-release-qa-failed/);
+  // 기존 F9 상태를 보존하고 게시 실패를 QA 실패로 재분류하지 않는다.
+  const queueStart=section.indexOf('node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id=');
+  const queueEnd=section.indexOf('node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack',queueStart);
+  assert.ok(queueStart>0&&queueEnd>queueStart);
+  const queue=section.slice(queueStart,queueEnd);
+  const retryQueueStart=queue.indexOf('elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then');
+  const retryQueueEnd=queue.indexOf('else',retryQueueStart);
+  assert.ok(retryQueueStart>0&&retryQueueEnd>retryQueueStart);
+  const retryQueue=queue.slice(retryQueueStart,retryQueueEnd);
+  assert.match(retryQueue,/WEB_F9_VERIFIED_QUEUE_PRESERVED_FOR_SAME_CYCLE_PUBLISH_RETRY=YES/);
+  assert.doesNotMatch(retryQueue,/vibe2-queue-control\\.mjs fail|web-release-qa-failed/);
   assert.match(section,/vibe2-queue-control\.mjs pass[\s\S]*web-github-pages-deployment-pass/);
   assert.match(section,/WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=/);
   assert.match(section,/PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:/);
