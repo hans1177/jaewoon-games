@@ -43,7 +43,16 @@ test('ordinary Web authorization stays separate from Unity Web owner hold',()=>{
     fs.mkdirSync(path.dirname(policyPath),{recursive:true});
     process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
     fs.writeFileSync(policyPath,JSON.stringify(policy));
-    assert.equal(make('WEB','web-games/garden').productionPlan?.platform,'WEB');
+    const webDirective=make('WEB','web-games/garden');
+    assert.equal(webDirective.productionPlan?.platform,'WEB');
+    assert.match(webDirective.platformAdaptationDirectives.WEB,/MAIN = A \+ B \+ C \+ D \+ @/);
+    assert.match(webDirective.platformAdaptationDirectives.WEB,/PlayCanvas/);
+    assert.match(webDirective.platformAdaptationDirectives.WEB,/2D·2\.5D·DOM/);
+    assert.match(webDirective.platformAdaptationDirectives.WEB,/기존 BUILD_UP과 F0~F9/);
+    assert.match(webDirective.platformAdaptationDirectives.ROBLOX,/Luau/);
+    assert.match(webDirective.platformAdaptationDirectives.ROBLOX,/D는 출처를 가진 구체 창작/);
+    assert.match(webDirective.platformAdaptationDirectives.UNITY,/MAIN = A \+ B \+ C \+ D \+ @/);
+    assert.match(webDirective.platformAdaptationDirectives.FORTNITE_UEFN,/MAIN = A \+ B \+ C \+ D \+ @/);
     assert.equal(make('WEB','unity-games/garden').productionPlan,null,'Unity Web output remains held');
     policy.developmentAccess.WEB='OWNER_HOLD';
     fs.writeFileSync(policyPath,JSON.stringify(policy));
