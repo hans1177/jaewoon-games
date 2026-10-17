@@ -453,6 +453,7 @@ jobs:
             'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
             'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
             'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
+            'changeRecord.playableWebMandatoryDeployment20261002.nextBuildUpBeforeDeploymentSuccessForbidden',
             'changeRecord.ownerEveryGameF9Publish20261018'
           ]);
           const webFlow=/^(?:[^.]+\.)*webGameFlow\.(?:enabled|scope|legacyDirectWebGameNotTarget|disabledReason)$/;
@@ -502,6 +503,7 @@ jobs:
             'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
             'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
             'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
+            'changeRecord.playableWebMandatoryDeployment20261002.nextBuildUpBeforeDeploymentSuccessForbidden',
             'changeRecord.ownerEveryGameF9Publish20261018'
           ]);
           if(changes.some(key=>releaseKeys.has(key))){
@@ -540,6 +542,8 @@ jobs:
               ||loop?.exactVerifiedVersionRequiredForPublishAttempt!==true
               ||head.changeRecord?.playableWebMandatoryDeployment20261002?.cloudflareMainRequiredBeforeVibePass!==false
               ||head.changeRecord?.playableWebMandatoryDeployment20261002?.githubPagesMainRequiredBeforeVibePass!==true
+              ||base.changeRecord?.playableWebMandatoryDeployment20261002?.nextBuildUpBeforeDeploymentSuccessForbidden!==true
+              ||head.changeRecord?.playableWebMandatoryDeployment20261002?.nextBuildUpBeforeDeploymentSuccessForbidden!==false
               ||head.fixedAutonomousDevelopmentOperatingContract?.serverDeployment?.numericalScoreBlocksVerifiedDeployment!==false
               ||head.ownerCanonicalRules?.constitutionalBinding?.enforcerRequiredBeforeWorkerSourceWrite!==true
               ||!changes.some(key=>key==='changeRecord.ownerEveryGameF9Publish20261018')
