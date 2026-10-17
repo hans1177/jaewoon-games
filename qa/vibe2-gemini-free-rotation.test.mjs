@@ -291,3 +291,26 @@ test('non-policy Groq request error continues to the pinned free OpenRouter rout
     assert.equal(calls[3].body.model,VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER);
   });
 });
+
+
+test('provider policy rejection stops free-provider rotation without bypass',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='unit-groq';
+    process.env.OPENROUTER_API_KEY='unit-openrouter';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    const {requestGeminiFreePair:request}=await import('../tools/vibe2-gemini-free-rotation.mjs?regression=policy-'+Date.now());
+    const urls=[];
+    await assert.rejects(request({
+      apiKey:'unit-gemini',
+      contents:[{role:'user',parts:[{text:'fixture'}]}],
+      fetchImpl:async(url)=>{
+        urls.push(String(url));
+        if(String(url).includes('googleapis.com'))return {ok:false,status:429,headers:{get:()=> '120'}};
+        return {ok:false,status:400,json:async()=>({error:{type:'invalid_request_error',message:'content policy violation'}})};
+      }
+    }),/GROQ_CONTENT_POLICY_BLOCKED_NO_FALLBACK/);
+    assert.equal(urls.length,3);
+    assert.ok(urls.every(url=>!url.includes('openrouter.ai')));
+  });
+});
