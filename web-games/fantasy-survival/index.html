@@ -2734,6 +2734,7 @@ function applyRemoteEnemyEffect(payload){
  if(!payload||payload.targetId!==multiplayer.playerId)return;
  const p=state.player,now=performance.now(),duration=Math.max(0,Number(payload.duration)||0);
  if(payload.kind==='burn'){p.burnTicks=4;p.burnNext=now+1000;showNotice('화염 상태 · 4초')}
+ else if(payload.kind==='rootbind'){p.rootedUntil=Math.max(p.rootedUntil||0,now+Math.min(3000,duration));showNotice('세계수 뿌리 속박 · 3초 이동 불가 · 공격 가능')}
  else if(payload.kind==='stun'){p.stunnedUntil=Math.max(p.stunnedUntil||0,now+duration);showNotice('기절 · '+Math.max(1,Math.round(duration/1000))+'초')}
  else if(payload.kind==='weaken'){p.weakenedUntil=Math.max(p.weakenedUntil||0,now+duration);showNotice('수정 수호자의 포효 · 공격력/속도 15초 절반')}
  else if(payload.kind==='poison'){p.poisonDamage=5;p.poisonUntil=Math.max(p.poisonUntil||0,now+duration);p.poisonNext=now+1000;showNotice('독 상태 · '+Math.round(duration/1000)+'초')}
@@ -4734,9 +4735,9 @@ function update(dt,now){
   if(p.downedUntil){if(Date.now()>=p.downedUntil)completePlayerRespawn('부활 대기시간 종료');else{mx=0;my=0;m=0}}
   if(m>.01&&p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')}
   const flowerWebTrapped=updateFlowerWebTrap();
-  if(m>.01&&!flowerWebTrapped&&now>=(p.stunnedUntil||0)&&now>=(p.grabbedUntil||0)&&!(state.pet.mounted&&(state.pet.special||now<(state.pet.stunnedUntil||0)))){
+  if(m>.01&&!flowerWebTrapped&&now>=(p.stunnedUntil||0)&&now>=(p.rootedUntil||0)&&now>=(p.grabbedUntil||0)&&!(state.pet.mounted&&(state.pet.special||now<(state.pet.stunnedUntil||0)))){
     mx/=Math.max(1,m);my/=Math.max(1,m);
-    const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(now<(p.mudSlowUntil||0)?.5:1)*(now<(p.templeSlowUntil||0)?.7:1)*(now<(p.sandSlowUntil||0)?.7:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else if(state.area==='storylab1'||state.area==='storylab2'){moveStoryLabPlayer(mx*moveSpeed*dt,my*moveSpeed*dt)}else if(state.area==='underwater'){const nx=clamp(p.x+mx*moveSpeed*dt,24,UNDERWATER.w-24),deepLimit=nx>=DEEP_CORAL_FOREST.x?UNDERWATER.h-24:NORMAL_DEEP_MAX_Y;p.x=nx;p.y=clamp(p.y+my*moveSpeed*dt,24,deepLimit)}else if(state.area.startsWith('goblinoutpost-')){const room=goblinOutpostSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}else if(state.area.startsWith('jungletemple')){const room=jungleTempleSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}
+    const moveSpeed=p.speed*(now<(p.weakenedUntil||0)?.5:1)*(now<(p.mudSlowUntil||0)?.5:1)*(now<(p.templeSlowUntil||0)?.7:1)*(now<(p.sandSlowUntil||0)?.7:1)*(state.pet.mounted&&petAlive()?2.5:1);if(state.area==='underground'){p.x=clamp(p.x+mx*moveSpeed*dt,1150,4850);p.y=clamp(p.y+my*moveSpeed*dt,900,3450)}else if(state.area==='worldtreeinside'){p.x=clamp(p.x+mx*moveSpeed*dt,85,WORLD_TREE_INTERIOR.w-85);p.y=clamp(p.y+my*moveSpeed*dt,85,WORLD_TREE_INTERIOR.h-85)}else if(state.area==='questcave'){p.x=clamp(p.x+mx*moveSpeed*dt,90,QUEST_CAVE.w-90);p.y=clamp(p.y+my*moveSpeed*dt,90,QUEST_CAVE.h-90)}else if(state.area==='storylab1'||state.area==='storylab2'){moveStoryLabPlayer(mx*moveSpeed*dt,my*moveSpeed*dt)}else if(state.area==='underwater'){const nx=clamp(p.x+mx*moveSpeed*dt,24,UNDERWATER.w-24),deepLimit=nx>=DEEP_CORAL_FOREST.x?UNDERWATER.h-24:NORMAL_DEEP_MAX_Y;p.x=nx;p.y=clamp(p.y+my*moveSpeed*dt,24,deepLimit)}else if(state.area.startsWith('goblinoutpost-')){const room=goblinOutpostSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}else if(state.area.startsWith('jungletemple')){const room=jungleTempleSpec(state.area);p.x=clamp(p.x+mx*moveSpeed*dt,45,room.w-45);p.y=clamp(p.y+my*moveSpeed*dt,45,room.h-45)}
     else{const nx=clamp(p.x+mx*moveSpeed*dt,24,WORLD.w-24),ny=clamp(p.y+my*moveSpeed*dt,24,WORLD.h-24);if(!pointInGiantLakeWater(nx,ny)&&!blockedByPlayerBuilding(nx,ny)){p.x=nx;p.y=ny}}
     p.faceX=mx;p.faceY=my
   }
@@ -4902,7 +4903,7 @@ function update(dt,now){
           vx+=(e.spawnX-e.x)/(sd||1)*e.type.speed*.8;vy+=(e.spawnY-e.y)/(sd||1)*e.type.speed*.8
         }
       }
-      const goblinRoom=goblinOutpostSpec(e.area),enemyW=goblinRoom?goblinRoom.w:e.area==='storylab1'?STORY_LAB_1.w:e.area==='storylab2'?STORY_LAB_2.w:e.area==='questcave'?QUEST_CAVE.w:WORLD.w,enemyH=goblinRoom?goblinRoom.h:e.area==='storylab1'?STORY_LAB_1.h:e.area==='storylab2'?STORY_LAB_2.h:e.area==='questcave'?QUEST_CAVE.h:WORLD.h;
+      const goblinRoom=goblinOutpostSpec(e.area),enemyW=goblinRoom?goblinRoom.w:e.area==='storylab1'?STORY_LAB_1.w:e.area==='storylab2'?STORY_LAB_2.w:e.area==='questcave'?QUEST_CAVE.w:e.area==='worldtreeinside'?WORLD_TREE_INTERIOR.w:WORLD.w,enemyH=goblinRoom?goblinRoom.h:e.area==='storylab1'?STORY_LAB_1.h:e.area==='storylab2'?STORY_LAB_2.h:e.area==='questcave'?QUEST_CAVE.h:e.area==='worldtreeinside'?WORLD_TREE_INTERIOR.h:WORLD.h;
       if(now<(e.slowedUntil||0)){vx*=.5;vy*=.5}
       const visualSpeed=Math.hypot(vx,vy);e.moving=visualSpeed>.5;
       const liveEnemyTarget=e.enemyTarget&&e.enemyTarget.hp>0?e.enemyTarget:null;
@@ -4950,7 +4951,7 @@ function update(dt,now){
   musicTick();
   finishSmeltIfReady();
   if(ui.smeltPanel.classList.contains('open')){if(!nearStructure(state[ui.smeltStation],175))ui.smeltPanel.classList.remove('open');else updateSmeltUi()}
-  const goblinRoom=goblinOutpostSpec(state.area),templeRoom=jungleTempleSpec(state.area),camW=goblinRoom?goblinRoom.w:templeRoom?templeRoom.w:state.area==='underwater'?UNDERWATER.w:state.area==='questcave'?QUEST_CAVE.w:state.area==='storylab1'?STORY_LAB_1.w:state.area==='storylab2'?STORY_LAB_2.w:state.area==='underground'?6000:WORLD.w,camH=goblinRoom?goblinRoom.h:templeRoom?templeRoom.h:state.area==='underwater'?UNDERWATER.h:state.area==='questcave'?QUEST_CAVE.h:state.area==='storylab1'?STORY_LAB_1.h:state.area==='storylab2'?STORY_LAB_2.h:state.area==='underground'?4000:WORLD.h;
+  const goblinRoom=goblinOutpostSpec(state.area),templeRoom=jungleTempleSpec(state.area),camW=goblinRoom?goblinRoom.w:templeRoom?templeRoom.w:state.area==='underwater'?UNDERWATER.w:state.area==='questcave'?QUEST_CAVE.w:state.area==='storylab1'?STORY_LAB_1.w:state.area==='storylab2'?STORY_LAB_2.w:state.area==='underground'?6000:state.area==='worldtreeinside'?WORLD_TREE_INTERIOR.w:WORLD.w,camH=goblinRoom?goblinRoom.h:templeRoom?templeRoom.h:state.area==='underwater'?UNDERWATER.h:state.area==='questcave'?QUEST_CAVE.h:state.area==='storylab1'?STORY_LAB_1.h:state.area==='storylab2'?STORY_LAB_2.h:state.area==='underground'?4000:state.area==='worldtreeinside'?WORLD_TREE_INTERIOR.h:WORLD.h;
   updateCameraPresentation(p,dt,now,camW,camH);
   autosave+=dt;
   if(autosave>10&&state.dirty){autosave=0;saveGame(false)}
