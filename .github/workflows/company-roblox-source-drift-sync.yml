@@ -166,6 +166,10 @@ jobs:
           cp tools/company-platform-exposure-control.mjs /tmp/company-runtime/company-platform-exposure-control.mjs
           cp tools/company-shared-context.mjs /tmp/company-runtime/company-shared-context.mjs
           mkdir -p /tmp/company-runtime/company-learning
+          cp company-learning/platform-release-roadmap.json /tmp/company-runtime/company-learning/platform-release-roadmap.json
+          cp company-learning/company-log-map.json /tmp/company-runtime/company-learning/company-log-map.json
+          cp company-learning/company-architecture-map.json /tmp/company-runtime/company-learning/company-architecture-map.json
+          cp company-learning/security-immune-system.json /tmp/company-runtime/company-learning/security-immune-system.json
           (
             cd /tmp/company-runtime
             node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
@@ -212,6 +216,10 @@ jobs:
             cp tools/company-platform-exposure-control.mjs /tmp/company-runtime/company-platform-exposure-control.mjs
             cp tools/company-shared-context.mjs /tmp/company-runtime/company-shared-context.mjs
             mkdir -p /tmp/company-runtime/company-learning
+            cp company-learning/platform-release-roadmap.json /tmp/company-runtime/company-learning/platform-release-roadmap.json
+            cp company-learning/company-log-map.json /tmp/company-runtime/company-learning/company-log-map.json
+            cp company-learning/company-architecture-map.json /tmp/company-runtime/company-learning/company-architecture-map.json
+            cp company-learning/security-immune-system.json /tmp/company-runtime/company-learning/security-immune-system.json
             (
               cd /tmp/company-runtime
               node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
