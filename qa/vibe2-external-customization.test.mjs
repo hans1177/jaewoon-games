@@ -69,6 +69,16 @@ test('ordinary browser Web is authorized without giving Unity Web any authority'
     assert.equal(plan.authorized,true);
     assert.equal(plan.nativeRuntimeVerified,false);
   }
+  for(const options of [
+    {target:'WEB',sourceRoot:'unity-games/survival/Assets'},
+    {target:'WEB',executionSurface:'UNITY_WEB'},
+    {target:'WEB',executionSurface:'UNITY_ANDROID'},
+    {target:'WEB',unityWebDevelopment:true}
+  ]){
+    const held=planVibeExternalCustomization({...input,...options});
+    assert.equal(held.authorized,false,JSON.stringify(options));
+    assert.equal(held.target,'UNITY_WEB');
+  }
   for(const target of ['unity-web','unity','unity-android','fortnite-uefn','UEFN','']){
     const plan=planVibeExternalCustomization({...input,target});
     assert.equal(plan.authorized,false,target);
