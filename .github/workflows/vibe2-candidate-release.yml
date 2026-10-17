@@ -516,12 +516,16 @@ jobs:
           published=false
           for attempt in $(seq 1 60); do
             if curl --fail --silent --show-error --location --max-time 15 "$manifest_url" -o /tmp/vibe2-pages-manifest.json; then
-              if node - "$promotion_sha" "$target_route" <<'NODE'
+              if node - "$source_tree_sha" "$GAME_ID" "$target_route" <<'NODE'
           const fs=require('node:fs');
-          const [sha,route]=process.argv.slice(2);
+          const [treeSha,gameId,route]=process.argv.slice(2);
           let m;
           try{m=JSON.parse(fs.readFileSync('/tmp/vibe2-pages-manifest.json','utf8'));}catch{process.exit(1);}
-          if(m.sourceSha!==sha||!Array.isArray(m.routes)||!m.routes.includes(route))process.exit(1);
+          // A newer unrelated main commit cannot invalidate an otherwise exact F9 game artifact.
+          // The public manifest still pins the complete main SHA; this game must match its exact source tree.
+          if(!/^[a-f0-9]{40}$/.test(m.sourceSha)||
+             !Array.isArray(m.routes)||!m.routes.includes(route)||
+             m.sourceTreeShas?.[gameId]!==treeSha)process.exit(1);
           NODE
               then
                 if curl --fail --silent --show-error --location --max-time 15 -o /dev/null "$pages_base$target_route"; then
