@@ -6,7 +6,7 @@ import {
   VIBE_PRESENTATION_EFFECT_PATTERNS,
   createVibeVisualMaterialRecipe,
   optimizeVibeScreenLayout,placeVibeTooltip,
-  buildVibePresentationCraft,planVibePresentationAutopilot
+  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud
 } from '../assets/vibe-presentation-director.js';
 import '../assets/jaewoon-graphics-engine.js';
 
@@ -85,12 +85,23 @@ test('web presentation makes real DOM nodes only for confirmed deduplicated dama
   ctrl.destroy();assert.equal(host.children.length,0);
   assert.equal(ctrl.stats().destroyed,true);
 });
+test('contextual HUD emphasizes real action while keeping touch controls persistent',()=>{
+  const focus=resolveVibeContextualHud({phase:'BOSS',viewport:{width:393,height:852},
+    components:[{id:'health',role:'HEALTH',priority:1},{id:'boss',role:'BOSS',priority:1},
+      {id:'quest',role:'QUEST',priority:1},{id:'action',role:'ACTION',touchControl:true}]});
+  assert.deepEqual(focus.selected.map(row=>row.id),['action','boss','health','quest']);
+  assert.equal(focus.existingTouchPositionsImmutable,true);
+  assert.equal(focus.selected[1].emphasized,true);
+});
+
 test('both native platform adapters expose concrete event-safe visual abilities',()=>{
   const src=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
-  for(const name of ['CreateVisualFeedbackController','ShowDamage','PositionTooltip','AnimateIcon','UpdateStatusIcon','Notify']){
+  for(const name of ['CreateVisualFeedbackController','ShowDamage','PositionTooltip','AnimateIcon','UpdateStatusIcon','Notify','CreateItemModelPreview']){
     assert.ok(src.includes(name),name);
   }
   assert.match(src,/event\.confirmed ~= true/);
+  assert.match(src,/descendant:IsA\("BaseScript"\)/);
+  assert.match(src,/model:GetBoundingBox\(\)/);
   assert.match(src,/seen\[id\]/);
   assert.match(src,/surface\.ScaleType = typeof\(options\.sliceCenter\)/);
   const js=fs.readFileSync('assets/jaewoon-graphics-engine.js','utf8');
