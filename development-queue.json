@@ -60,7 +60,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -78,17 +78,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "6da1b5a0d23a500d752312b0d1a659c4612ac63d",
       "robloxBuildArtifactIdentity": "sha256:1628d3246c8dc88c9d6a547fcc00b7576222b9b43421810cc8ab8fda33719af5",
-      "robloxBuildPassedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPassedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:26:50.270Z",
+        "checkedAt": "2026-10-17T13:29:41.590Z",
         "sourceRevision": "6da1b5a0d23a500d752312b0d1a659c4612ac63d",
         "artifactIdentity": "sha256:1628d3246c8dc88c9d6a547fcc00b7576222b9b43421810cc8ab8fda33719af5",
         "secondaryOwnerFocus": false,
@@ -127,15 +127,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "All content and asset validation checks must pass before runtime testing can start."
+            "note": "Package preflight checks failed because webValidationPassed and musicValidationPassed are both false in the BUILD_EVIDENCE."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -1990,7 +1988,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2009,7 +2007,7 @@
       "robloxBuildSourceRevision": "d9a31a228260fb2ee2c051739a0becb4853cf8da",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -2065,8 +2063,8 @@
         "sourceRevision": "d9a31a228260fb2ee2c051739a0becb4853cf8da",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39036059588,
-        "testedAt": "2026-10-17T13:31:54.784Z",
+        "workflowRunId": 39036190778,
+        "testedAt": "2026-10-17T13:32:51.636Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
@@ -3207,7 +3205,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -3226,7 +3224,7 @@
       "robloxBuildSourceRevision": "2db0aa65c13a4c1e59000eb2fa8796dcd772dde9",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -3282,8 +3280,8 @@
         "sourceRevision": "2db0aa65c13a4c1e59000eb2fa8796dcd772dde9",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39036059588,
-        "testedAt": "2026-10-17T13:31:54.784Z",
+        "workflowRunId": 39036190778,
+        "testedAt": "2026-10-17T13:32:51.636Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
@@ -4424,7 +4422,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4440,11 +4438,67 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
       "robloxBuildArtifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
-      "robloxBuildPassedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPassedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:31:54.784Z",
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightFailedAt": "2026-10-17T13:32:51.636Z",
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "survival2",
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-17T13:29:11.244Z",
+        "sourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
+        "artifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
+            "artifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "gemini-3.5-flash-lite",
+            "decision": "BLOCK",
+            "blockers": [
+              "webValidationPassed is false",
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
+            ],
+            "note": "Required validation checks failed in the build evidence."
+          }
+        ],
+        "blockers": [
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+        ],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -6618,7 +6672,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -7145,13 +7199,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-puzzle-chromatic-cascade",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:26:48.687Z",
+        "checkedAt": "2026-10-17T13:30:27.611Z",
         "sourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
         "artifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
         "secondaryOwnerFocus": false,
@@ -7194,7 +7248,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks (web, music, nativeWeb, nativeMusic) have failed."
+            "note": "Package cannot start runtime testing because required validation checks failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -7233,7 +7287,7 @@
       "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
       "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
       "robloxBuildArtifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
-      "robloxBuildPassedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPassedAt": "2026-10-17T13:32:51.636Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -7320,7 +7374,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -7336,16 +7390,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
       "robloxBuildArtifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
-      "robloxBuildPassedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPassedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-casual-realm-weaver",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:25:58.306Z",
+        "checkedAt": "2026-10-17T13:29:39.173Z",
         "sourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "secondaryOwnerFocus": false,
@@ -7384,15 +7438,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web and music validation checks failed."
+            "note": "Package cannot start runtime testing because web validation and music validation have not passed."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -8022,7 +8074,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8038,16 +8090,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "afd6808209ac05a714b955854e733529920bcf69",
       "robloxBuildArtifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
-      "robloxBuildPassedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPassedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:26:41.695Z",
+        "checkedAt": "2026-10-17T13:30:18.492Z",
         "sourceRevision": "afd6808209ac05a714b955854e733529920bcf69",
         "artifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
         "secondaryOwnerFocus": false,
@@ -8090,7 +8142,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "The package cannot start runtime testing because web, music, and native validation checks have failed in the build evidence."
+            "note": "Package runtime testing cannot start because multiple required validation checks failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -8724,7 +8776,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8740,16 +8792,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
       "robloxBuildArtifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
-      "robloxBuildPassedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPassedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "monster-adventure",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:25:37.053Z",
+        "checkedAt": "2026-10-17T13:30:04.213Z",
         "sourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
         "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
         "secondaryOwnerFocus": false,
@@ -8792,7 +8844,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web and music validation checks failed."
+            "note": "Required validation checks failed in the build evidence."
           }
         ],
         "blockers": [
@@ -9426,7 +9478,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -9950,7 +10002,7 @@
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": "d9a31a228260fb2ee2c051739a0becb4853cf8da",
-      "robloxBuildFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -9993,8 +10045,8 @@
         "sourceRevision": "d9a31a228260fb2ee2c051739a0becb4853cf8da",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39036059588,
-        "testedAt": "2026-10-17T13:31:54.784Z",
+        "workflowRunId": 39036190778,
+        "testedAt": "2026-10-17T13:32:51.636Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
@@ -11354,7 +11406,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11878,7 +11930,7 @@
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": "d9a31a228260fb2ee2c051739a0becb4853cf8da",
-      "robloxBuildFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -11921,8 +11973,8 @@
         "sourceRevision": "d9a31a228260fb2ee2c051739a0becb4853cf8da",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39036059588,
-        "testedAt": "2026-10-17T13:31:54.784Z",
+        "workflowRunId": 39036190778,
+        "testedAt": "2026-10-17T13:32:51.636Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
@@ -14681,7 +14733,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -14697,16 +14749,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "90de3041eda929a7d2a66e28811680d2b7d8eae1",
       "robloxBuildArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
-      "robloxBuildPassedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPassedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "dice-battle-board",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:27:21.785Z",
+        "checkedAt": "2026-10-17T13:28:50.291Z",
         "sourceRevision": "90de3041eda929a7d2a66e28811680d2b7d8eae1",
         "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
         "secondaryOwnerFocus": false,
@@ -14745,15 +14797,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "The package cannot start runtime testing because required validation checks (web, music, nativeWeb, and nativeMusic) have failed in the build evidence."
+            "note": "Package cannot start runtime testing because web validation and music validation have not passed."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -15373,7 +15423,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -15392,7 +15442,7 @@
       "robloxBuildSourceRevision": "1ccad7bfc48dcf2cad7ed065247688ad826d728e",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -15448,8 +15498,8 @@
         "sourceRevision": "1ccad7bfc48dcf2cad7ed065247688ad826d728e",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39036059588,
-        "testedAt": "2026-10-17T13:31:54.784Z",
+        "workflowRunId": 39036190778,
+        "testedAt": "2026-10-17T13:32:51.636Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
@@ -17916,7 +17966,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -18440,7 +18490,7 @@
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": "2c6d41ab67cadb04aa1c63da9a6afa8690ac1fee",
-      "robloxBuildFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -18483,8 +18533,8 @@
         "sourceRevision": "2c6d41ab67cadb04aa1c63da9a6afa8690ac1fee",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39036059588,
-        "testedAt": "2026-10-17T13:31:54.784Z",
+        "workflowRunId": 39036190778,
+        "testedAt": "2026-10-17T13:32:51.636Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
@@ -21887,7 +21937,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -21903,16 +21953,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
       "robloxBuildArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-      "robloxBuildPassedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPassedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "defense",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:28:07.173Z",
+        "checkedAt": "2026-10-17T13:30:33.544Z",
         "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
         "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
         "secondaryOwnerFocus": false,
@@ -21951,13 +22001,15 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false"
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because webValidationPassed and musicValidationPassed are false in BUILD_EVIDENCE."
+            "note": "Required validations failed in the build evidence."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -25951,7 +26003,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:32:36.568Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -25970,7 +26022,7 @@
       "robloxBuildSourceRevision": "36ae23611d024a4cbe8172d9b20a38647cbc4676",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -26026,8 +26078,8 @@
         "sourceRevision": "36ae23611d024a4cbe8172d9b20a38647cbc4676",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39036059588,
-        "testedAt": "2026-10-17T13:31:54.784Z",
+        "workflowRunId": 39036190778,
+        "testedAt": "2026-10-17T13:32:51.636Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
@@ -27168,7 +27220,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:35:08.290Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -27187,7 +27239,7 @@
       "robloxBuildSourceRevision": "beec20f6ad80097f6a5c06a7bc5bd5355d51fc0e",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -27243,8 +27295,8 @@
         "sourceRevision": "beec20f6ad80097f6a5c06a7bc5bd5355d51fc0e",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39036059588,
-        "testedAt": "2026-10-17T13:31:54.784Z",
+        "workflowRunId": 39036190778,
+        "testedAt": "2026-10-17T13:32:51.636Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
@@ -30491,7 +30543,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:40:04.134Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -30510,7 +30562,7 @@
       "robloxBuildSourceRevision": "a40d44c6ae56843edab17843ad6f413f1b62df99",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -30566,8 +30618,8 @@
         "sourceRevision": "a40d44c6ae56843edab17843ad6f413f1b62df99",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39036059588,
-        "testedAt": "2026-10-17T13:31:54.784Z",
+        "workflowRunId": 39036190778,
+        "testedAt": "2026-10-17T13:32:51.636Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
@@ -34452,7 +34504,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-13T07:37:21.773Z",
-      "updatedAt": "2026-10-17T13:31:54.784Z",
+      "updatedAt": "2026-10-17T13:32:51.636Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -34472,16 +34524,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "5d8a7dde625ba52b58057f796da29f132f4cc20b",
       "robloxBuildArtifactIdentity": "sha256:b9e13f27c21e5039c647fd1af8f8f76acf186be7b25578208318197cc7291f6f",
-      "robloxBuildPassedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPassedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:31:54.784Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T13:32:51.636Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "ant-simulator",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:26:53.338Z",
+        "checkedAt": "2026-10-17T13:30:27.415Z",
         "sourceRevision": "5d8a7dde625ba52b58057f796da29f132f4cc20b",
         "artifactIdentity": "sha256:b9e13f27c21e5039c647fd1af8f8f76acf186be7b25578208318197cc7291f6f",
         "secondaryOwnerFocus": false,
@@ -34520,13 +34572,15 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false"
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required web and music validations failed in BUILD_EVIDENCE."
+            "note": "Package cannot start runtime testing because required validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed in the build evidence."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -36301,7 +36355,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-17T13:31:54.784Z",
+  "updatedAt": "2026-10-17T13:32:51.636Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
