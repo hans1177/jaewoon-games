@@ -4997,7 +4997,10 @@ export function buildVibeAssetProductionPlan({
     styleBible:approvedStyleBible,
     approvedDesignFingerprint:verifiedDesign?clean(task.buildUpDirective?.designFingerprint):'',
     ownerScope:currentRoadmap?.ownerActiveDevelopmentScope20261009||null,
-    sourceRevision:clean(task.sourceRevision||process.env.VIBE2_BASE_MAIN_SHA||process.env.GITHUB_SHA)
+    sourceRevision:clean(task.sourceRevision||process.env.VIBE2_BASE_MAIN_SHA||process.env.GITHUB_SHA),
+    sourceRoot:clean(task.sourceRoot||task.ownerSourceRoot||task.projectPath),
+    executionSurface:clean(task.executionSurface||task.selectedExecutionSurface),
+    unityWebDevelopment:task.unityWebDevelopment===true
   });
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
