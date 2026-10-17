@@ -182,6 +182,11 @@ test('mobile auto-combat rejects arbitrary targets and keeps existing damage/coo
   assert.ok(server.includes('requiredWeapon > 0 and weapon < requiredWeapon'));
   assert.ok(server.includes('civIncrease(player, "CivResearch", 8)'));
   assert.ok(server.includes('local function civAttack(player, targetModel)'));
+  assert.match(server, /local candidates = targetModel ~= nil and civEnemiesByRace\[targetModel:GetAttribute\("RaceID"\)\] or civEnemies/);
+  assert.match(server, /for _, enemy in ipairs\(candidates or \{\}\) do/);
+  assert.match(server, /local raceEnemies = typeof\(raceID\) == "number" and civEnemiesByRace\[raceID\] or nil/);
+  assert.match(server, /if not raceEnemies then return end\s+local verified = false\s+for _, enemy in ipairs\(raceEnemies\) do/);
+  assert.match(server, /enemy\.Model == targetModel and enemy\.Humanoid\.Health > 0/);
   assert.doesNotMatch(server, /targetHumanoid:TakeDamage\(15\)/);
 });
 
