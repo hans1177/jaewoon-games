@@ -25,6 +25,7 @@ on:
       - '.github/agents/homepage.agent.md'
       - '.github/agents/director.agent.md'
       - 'index.html'
+      - 'backup.html'
       - '_worker.js'
       - 'company.html'
       - 'game-catalog.json'
@@ -65,6 +66,7 @@ on:
       - '.github/agents/homepage.agent.md'
       - '.github/agents/director.agent.md'
       - 'index.html'
+      - 'backup.html'
       - '_worker.js'
       - 'company.html'
       - 'game-catalog.json'
@@ -142,6 +144,7 @@ jobs:
             /qa/company-homepage-runtime-propagation.test.mjs
             /qa/game-catalog-normalization.test.mjs
             /index.html
+            /backup.html
             /_worker.js
             /_routes.json
             /sw.js
@@ -403,7 +406,7 @@ jobs:
         run: |
           set -euo pipefail
           for file in \
-            index.html company.html game-catalog.json company-status.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json \
+            index.html backup.html company.html game-catalog.json company-status.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json \
             public-release-baselines.json game-artbooks.json \
             assets/homepage-enhancements.js manifest.webmanifest install.html sw.js offline.html command.html \
             company-directive.json _headers; do

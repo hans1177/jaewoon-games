@@ -601,3 +601,21 @@ test('unchanged homepage snapshot finishes self-QA without a redundant Director 
   assert.match(director,/test "\$patch_sha" = "\$\(sha256sum "\$patch"/);
   assert.match(director,/gh pr merge "\$pr_url"/);
 });
+
+
+test('read-only secondary homepage keeps primary authority and independently playable link',()=>{
+  const page=fs.readFileSync('backup.html','utf8');
+  const primary=fs.readFileSync('index.html','utf8');
+  const ci=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+  assert.ok(page.includes('https://jaewoon-games.pages.dev/'));
+  assert.ok(page.includes('https://hans1177.github.io/jaewoon-games/'));
+  assert.ok(page.includes('https://github.com/hans1177/jaewoon-games/actions'));
+  assert.ok(page.includes('Content-Security-Policy'));
+  assert.ok(page.includes('credentials:'));
+  assert.ok(page.includes('배포 완료 증거는 아니야'));
+  assert.ok(primary.includes('Vercel 보조 홈페이지'));
+  assert.ok(primary.includes('/backup.html'));
+  assert.equal(ci.split("      - 'backup.html'").length-1,2);
+  assert.ok(ci.includes('/backup.html'));
+  assert.ok(ci.includes('index.html backup.html company.html'));
+});
