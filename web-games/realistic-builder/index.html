@@ -171,15 +171,8 @@ function addNode(type,x,z){
 }
 addNode('soil',-7,-4);addNode('soil',7,5);addNode('wood',-6,6);addNode('wood',6,7);addNode('stone',7,-6);addNode('stone',-7,2);addNode('water',0,-8);addNode('fiber',-8,7);addNode('fiber',8,-1);
 
-function addRepoSprite(path,x,z,w,h){
-  new THREE.TextureLoader().load(path,function(tex){
-    tex.colorSpace=THREE.SRGBColorSpace;
-    var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,alphaTest:.15}));s.position.set(x,h*.45,z);s.scale.set(w,h,1);world.add(s);
-  },undefined,function(){});
-}
-addRepoSprite('/web-games/survival2/assets/tree.png',-10,9,3.3,4.6);
-addRepoSprite('/web-games/survival2/assets/tree.png',10,9,3.3,4.6);
-addRepoSprite('/web-games/survival2/assets/rock.png',10,-9,2.4,2.0);
+// [에셋] 존재하지 않는 survival2 이미지 참조를 제거한다.
+// 기존 3D 자원 노드(addNode)는 그대로 유지한다.
 
 var dryVisuals={};
 function syncDryVisuals(){
