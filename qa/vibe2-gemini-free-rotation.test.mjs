@@ -1,7 +1,7 @@
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import {GEMINI_FREE_MODELS,verifiedFreeGeminiModels,requestGeminiFreePair} from '../tools/vibe2-gemini-free-rotation.mjs';
+import {GEMINI_FREE_MODELS,verifiedFreeGeminiModels,requestGeminiFreePair,retryDelayMs} from '../tools/vibe2-gemini-free-rotation.mjs';
 import {requestLocalModel} from '../tools/vibe2-source-worker.mjs';
 import {requestPracticeModel} from '../tools/vibe2-learning-practice-worker.mjs';
 
@@ -82,6 +82,25 @@ test('billing/auth 403 never falls through to another model',async()=>{
     const fetchImpl=async()=>{count++;return{ok:false,status:403};};
     await assert.rejects(requestGeminiFreePair({apiKey:'test-key-not-real',contents:[],fetchImpl}),/GEMINI_AUTH_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:403/);
     assert.equal(count,1);
+  });
+});
+
+test('free quota cooldown honors provider retry metadata and stops daily quota retry storms',()=>{
+  assert.equal(retryDelayMs({headers:{get:()=> '10'}},429),10000);
+  assert.equal(retryDelayMs({},429,{error:{details:[{'@type':'type.googleapis.com/google.rpc.RetryInfo',retryDelay:'75s'}]}}),75000);
+  assert.equal(retryDelayMs({},429,{error:{message:'GenerateRequestsPerDayPerProjectPerModel-FreeTier reached'}}),86400000);
+});
+
+test('an empty external source response rotates to the other free model',async()=>{
+  await withExternalFixture(async()=>{
+    const urls=[];
+    const result=await requestGeminiFreePair({apiKey:'test-key-not-real',contents:[],fetchImpl:async url=>{
+      urls.push(String(url));
+      return fixtureResponse(urls.length===1?'':'{"edits":[]}');
+    }});
+    assert.equal(result.text,'{"edits":[]}');
+    assert.equal(urls.length,2);
+    assert.notEqual(urls[0],urls[1]);
   });
 });
 
