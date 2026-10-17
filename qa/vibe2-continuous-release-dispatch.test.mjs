@@ -525,6 +525,12 @@ test('Web main deployment requires exact GitHub Pages source SHA, real route and
   assert.match(section,/ref: \$\{\{ needs\.inspect\.outputs\.candidate_sha \}\}/);
   assert.match(promote,/promotion_sha="\$\(gh pr view[^\n]*--json mergeCommit/);
   assert.match(promote,/gh pr merge "\$pr_url"/);
+  assert.ok(promote.includes('gh workflow run magic-forest-pages.yml'),'candidate promotion must explicitly dispatch the existing Pages publisher after GITHUB_TOKEN PR merge');
+  assert.ok(promote.includes('WEB_PAGES_NATIVE_PUBLISH_DISPATCHED='));
+  assert.ok(promote.includes('WEB_PAGES_NATIVE_PUBLISH_ALREADY_ACTIVE='));
+  const pagesDispatch=promote.indexOf('gh workflow run magic-forest-pages.yml');
+  assert.ok(pagesDispatch>promote.indexOf('gh pr merge "$pr_url"'),'publisher must run only after approved merge');
+  assert.ok(promote.includes('.head_sha=='),'same exact SHA must suppress duplicate queued publisher');
   assert.match(promote,/Homepage PR Fast QA/);
   assert.match(promote,/publish-manifest\.json/);
   assert.match(promote,/m\.sourceSha!==sha/);
