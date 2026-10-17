@@ -216,7 +216,7 @@ jobs:
             url='https://opengameart.org/sites/default/files/'+quote(remote)
             # Re-fetch invalid cached originals without exposing partial downloads.
             if target.exists() and (target.stat().st_size<512 or
-              (filename.endswith('.blend') and target.open('rb').read(7)!=b'BLENDER') or
+              (filename.endswith('.blend') and target.open('rb').read(7)!=b'BLENDER' and target.open('rb').read(2)!=bytes.fromhex('1f8b')) or
               (filename.endswith('.zip') and not zipfile.is_zipfile(target)) or
               (filename.endswith('.7z') and target.open('rb').read(6)!=bytes.fromhex('377abcaf271c'))):
               print('WILDLIFE_CACHED_INVALID_REDOWNLOAD',filename,flush=True)
@@ -241,14 +241,28 @@ jobs:
                   names=sorted({pathlib.PurePosixPath(n).stem.lower() for n in z.namelist() if n.lower().endswith(('.fbx','.obj','.gltf','.glb','.blend','.vox','.3ds'))})
                   if not names:raise ValueError('NO_3D_CONTENT')
               elif filename.endswith('.blend'):
-                if target.open('rb').read(7)!=b'BLENDER':raise ValueError('INVALID_BLEND')
+                magic=target.open('rb').read(7)
+                if magic!=b'BLENDER':
+                  # Blender can store native .blend contents in gzip form.
+                  # Validate the real decompressed header and full gzip checksum.
+                  if magic[:2]!=bytes.fromhex('1f8b'):
+                    raise ValueError('INVALID_BLEND_MAGIC:'+magic[:4].hex())
+                  import gzip
+                  with gzip.open(target,'rb') as source:
+                    if source.read(7)!=b'BLENDER':raise ValueError('INVALID_COMPRESSED_BLEND')
+                    decoded_size=7
+                    while True:
+                      chunk=source.read(1024*1024)
+                      if not chunk:break
+                      decoded_size+=len(chunk)
+                      if decoded_size>500_000_000:raise ValueError('COMPRESSED_BLEND_LIMIT')
                 names=[pathlib.Path(filename).stem]
               elif filename.endswith('.7z'):
                 if target.open('rb').read(6)!=bytes.fromhex('377abcaf271c'):raise ValueError('INVALID_7Z')
                 names=[pathlib.Path(filename).stem]
               verified.append({'file':filename,'category':kind,'creator':creator,'license':'CC0-1.0','licenseEvidence':'https://opengameart.org/content/'+slug,'sourceUrl':url,'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'bytes':target.stat().st_size,'modelNameCandidates':names,'sourceOnly':True})
               print('WILDLIFE_VERIFIED',filename,len(names))
-            except (ValueError,OSError,zipfile.BadZipFile) as ex:
+            except (ValueError,OSError,EOFError,zipfile.BadZipFile) as ex:
               target.unlink(missing_ok=True)
               failed.append({'file':filename,'reason':str(ex),'source':slug})
           result={'version':1,'gameId':'simple-rpg','license':'CC0-1.0','sourceOnly':True,'gameApplied':False,'distinctSpeciesUnverified':True,'packs':verified,'failed':failed}
