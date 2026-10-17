@@ -395,7 +395,7 @@ jobs:
           cp /tmp/horror-owner-next-policy.json company-learning/platform-release-roadmap.json
           git add -- company-learning/platform-release-roadmap.json
           git diff --cached --quiet && { echo 'OWNER_HANDOFF_POLICY_UNCHANGED'; exit 1; }
-          git commit -m 'vibe2: release verified owner scope to existing F0-F9 [skip ci]'
+          git commit -m 'vibe2: release verified owner scope to existing F0-F9'
           git push origin HEAD:main
           echo 'OWNER_DIRECT_HANDOFF_POLICY=PERSISTED'
           gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
