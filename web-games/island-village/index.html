@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>섬 마을</title>
+    <style>body{margin:0;background:#0e2636;color:#edf7f5;font-family:system-ui,sans-serif}#game{max-width:820px;min-height:100dvh;margin:auto;padding:18px;display:grid;gap:10px;align-content:start;box-sizing:border-box}.enemy,.item,.effect,.sound-effect{padding:12px;background:#204d62;border:1px solid #3d7587;border-radius:10px}.enemy,.item,.effect{cursor:pointer;touch-action:manipulation}.player{font-size:22px;font-weight:bold}.ui,.game-status{padding:14px;background:#164554;border-radius:10px;line-height:1.6}.action-button,.restart-button{padding:14px;border:1px solid #63a6bd;background:#17445a;color:white;border-radius:10px;min-height:52px;text-align:left;font:inherit;touch-action:manipulation}.action-button:focus-visible{outline:3px solid #f8cb5f}.action-button:disabled{opacity:.65}.is-finished .game-status{background:#665d35}@media(min-width:550px){#game{grid-template-columns:repeat(2,minmax(0,1fr))}.player,.ui,.game-status,.restart-button{grid-column:1/-1}}</style>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 </head>
 <body>
@@ -86,10 +87,7 @@
         gameContainer.appendChild(animation);
 
         // Add sound effects
-        const soundEffects = [    { id: 1, type: 'damage', effect: 'play sound' },    { id: 2, type: 'heal', effect: 'play sound' }
-            { id: 1, type: 'damage', effect: 'play sound' },
-            { id: 2, type: 'heal', effect: 'play sound' }
-        ];
+        const soundEffects = [{id:1,type:'damage',effect:'play sound'}, {id:2,type:'heal',effect:'play sound'}];
         soundEffects.forEach(effect => {
             const effectDiv = document.createElement('div');
             effectDiv.className = 'sound-effect';
@@ -121,244 +119,145 @@ function gameLoop() { // Game logic here }
     </script>
 
 <script>
-    // Real gameplay system: player interaction with enemies and items
-    // This is a real gameplay system that changes game state and allows player interaction
-
-    // Player interaction with enemies
-    const player = document.querySelector('.player');
-    const enemies = document.querySelectorAll('.enemy');
-
-    // Handle player interaction with enemies
-    enemies.forEach(enemy => {
-        enemy.addEventListener('click', () => {
-            // Check if enemy is alive
-            if (gameState.game.enemies.some(e => e.id === enemy.dataset.id && e.health > 0)) {
-                // Deal damage to enemy
-                const damage = gameState.player.inventory.some(i => i.type === 'damage') ? 1 : 5;
-                gameState.game.enemies = gameState.game.enemies.map(e => {
-gameState.game.enemies = gameState.game.enemies.map(e => ({ ...e, health: e.health - damage }));
-                        e.health -= damage;
-                        if (e.health <= 0) {
-                            // Enemy defeated
-                            gameState.game.enemies = gameState.game.enemies.filter(e => e.id !== enemy.dataset.id);
-                            gameState.player.score += 100;
-                        }
-                    }
-                    return e;
-                });
-                // Update UI
-                document.querySelector('.ui').textContent = `Score: ${gameState.player.score}`;
-            }
-        });
-    });
-
-    // Player interaction with items
-    const items = document.querySelectorAll('.item');
-
-    // Handle player interaction with items
-    items.forEach(item => {
-        item.addEventListener('click', () => {
-            // Check if item is available
-            if (gameState.player.inventory.some(i => i.type === item.dataset.type)) {
-                // Use item
-                gameState.player.inventory = gameState.player.inventory.filter(i => i.type !== item.dataset.type);
-                gameState.player[gameState.player.inventory.length > 0 ? 'inventory' : 'score'] += parseInt(item.dataset.effect);
-                // Update UI
-                document.querySelector('.ui').textContent = `Score: ${gameState.player.score}`;
-            }
-        });
-    });
-
-    // Handle player interaction with effects
-    const effects = document.querySelectorAll('.effect');
-
-    // Handle player interaction with effects
-    effects.forEach(effect => {
-        effect.addEventListener('click', () => {
-            // Check if effect is available
-            if (gameState.player.inventory.some(i => i.type === effect.dataset.type)) {
-                // Apply effect
-                if (effect.dataset.type === 'damage') {
-                    gameState.player.health -= 1;
-                    if (gameState.player.health <= 0) {
-                        // Player defeated
-                        alert('You lost!');
-                        // Reset game state
-                        gameState = {
-                            player: {
-                                health: 100,
-                                score: 0,
-                                inventory: []
-                            },
-                            game: {
-                                level: 1,
-                                enemies: [],
-                                items: []
-                            }
-                        };
-                    }
-                } else if (effect.dataset.type === 'heal') {
-                    gameState.player.health += 10;
-                    if (gameState.player.health > 100) {
-                        gameState.player.health = 100;
-                    }
-                    // Update UI
-                    document.querySelector('.ui').textContent = `Health: ${gameState.player.health}`;
-                }
-            }
-        });
-    });
+// [게임 입력] 기존 적 체력·피해·보상·아이템 종류를 그대로 연결한다.
+const enemyButtons = [...document.querySelectorAll('.enemy')];
+const itemButtons = [...document.querySelectorAll('.item')];
+const effectButtons = [...document.querySelectorAll('.effect')];
+const updateHud = () => {
+  const ui = document.querySelector('.ui');
+  if (ui) ui.textContent = '체력: ' + gameState.player.health +
+    ' | 점수: ' + gameState.player.score +
+    ' | 소지품: ' + (gameState.player.inventory.map(item=>item.type).join(', ') || '없음');
+};
+gameState.game.enemies = enemies.map(enemy => ({...enemy}));
+gameState.game.items = items.map(item => ({...item}));
+enemyButtons.forEach((button,index) => {
+  const original=enemies[index];
+  button.dataset.id=String(original.id);
+  button.classList.add('action-button');
+  button.textContent='전투: ' + original.type + ' (체력 ' + original.health + ')';
+  button.addEventListener('click', () => {
+    if (gameState.player.health<=0 || gameState.player.score>=1000) return;
+    const enemy=gameState.game.enemies.find(entry=>entry.id===original.id);
+    if(!enemy || enemy.health<=0)return;
+    const damage=gameState.player.inventory.some(item=>item.type==='damage')?1:5;
+    enemy.health=Math.max(0,enemy.health-damage);
+    if(enemy.health===0){
+      gameState.player.score+=100;
+      button.disabled=true;
+      button.textContent=original.type+' 처치 (+100점)';
+    }else{
+      gameState.player.health=Math.max(0,gameState.player.health-enemy.damage);
+      button.textContent='전투: '+original.type+' (체력 '+enemy.health+')';
+    }
+    updateHud();
+    checkGameOutcome();
+  });
+});
+itemButtons.forEach((button,index)=>{
+  const item=items[index];
+  button.dataset.type=item.type;
+  button.classList.add('action-button');
+  button.textContent='획득: '+(item.type==='health-potion'?'체력 물약 (+20)':'점수 물약 (+100)');
+  button.addEventListener('click',()=>{
+    if(button.disabled || gameState.player.health<=0)return;
+    if(item.type==='health-potion')gameState.player.health=Math.min(100,gameState.player.health+20);
+    if(item.type==='score-potion')gameState.player.score+=100;
+    gameState.player.inventory.push({...item});
+    gameState.game.items=gameState.game.items.filter(entry=>entry.id!==item.id);
+    button.disabled=true;
+    button.textContent='획득 완료: '+item.type;
+    updateHud();
+    checkGameOutcome();
+  });
+});
+effectButtons.forEach((button,index)=>{
+  const effect=effects[index];
+  button.dataset.type=effect.type;
+  button.classList.add('action-button');
+  button.textContent=effect.type==='damage'?'피해 효과 (-1 체력)':'치유 효과 (+10 체력)';
+  button.addEventListener('click',()=>{
+    if(gameState.player.health<=0)return;
+    if(effect.type==='damage')gameState.player.health=Math.max(0,gameState.player.health-1);
+    if(effect.type==='heal')gameState.player.health=Math.min(100,gameState.player.health+10);
+    updateHud();
+    checkGameOutcome();
+  });
+});
+updateHud();
 </script>
 
 <script>
-    // State transition loop
-    let gameState = {
-        player: {
-            health: 100,
-            score: 0,
-            inventory: []
-        },
-        game: {
-            level: 1,
-            enemies: [],
-            items: []
-        }
-    };
-
-    // Game loop
-function gameLoop() {
-    // Update game state based on player interaction
-    // This is a simplified state transition loop
-    // Add additional game logic here to improve performance
+// [진행·결과] 기존 승리 기준 점수 1000, 패배 기준 체력 0을 유지한다.
+const statusNode=document.createElement('div');
+statusNode.className='game-status';
+statusNode.setAttribute('role','status');
+statusNode.setAttribute('aria-live','polite');
+statusNode.textContent='적과 아이템을 눌러 진행해.';
+gameContainer.appendChild(statusNode);
+const restartNode=document.createElement('button');
+restartNode.className='restart-button action-button';
+restartNode.type='button';
+restartNode.textContent='다시 시작';
+gameContainer.appendChild(restartNode);
+function checkGameOutcome(){
+  if(gameState.player.health<=0){
+    statusNode.textContent='패배: 체력이 0이 됐어. 다시 시작할 수 있어.';
+  }else if(gameState.player.score>=1000){
+    statusNode.textContent='승리: 1000점 달성!';
+  }else{
+    const remaining=gameState.game.enemies.filter(e=>e.health>0).length;
+    statusNode.textContent='남은 적 '+remaining+'명 · 현재 점수 '+gameState.player.score+' / 목표 1000';
+  }
+  gameContainer.classList.toggle('is-finished',gameState.player.health<=0||gameState.player.score>=1000);
 }
-        // Update game state based on player interaction
-        // This is a simplified state transition loop
-        // It handles player interaction, updates game state, and transitions between states
+function resetGame(){
+  // 기존 데이터 구조·기본 수치로 되돌린다.
+  gameState.player.health=100;
+  gameState.player.score=0;
+  gameState.player.inventory=[];
+  gameState.game.level=1;
+  gameState.game.enemies=enemies.map(e=>({...e}));
+  gameState.game.items=items.map(e=>({...e}));
+  enemyButtons.forEach((button,index)=>{
+    button.disabled=false;
+    button.textContent='전투: '+enemies[index].type+' (체력 '+enemies[index].health+')';
+  });
+  itemButtons.forEach((button,index)=>{
+    button.disabled=false;
+    button.textContent='획득: '+(items[index].type==='health-potion'?'체력 물약 (+20)':'점수 물약 (+100)');
+  });
+  updateHud();
+  checkGameOutcome();
+}
+restartNode.addEventListener('click',resetGame);
 
-        // Player interaction with enemies
-        const player = document.querySelector('.player');
-        const enemies = document.querySelectorAll('.enemy');
-
-        enemies.forEach(enemy => {
-            enemy.addEventListener('click', () => {
-                // Check if enemy is alive
-                if (gameState.game.enemies.some(e => e.id === enemy.dataset.id && e.health > 0)) {
-                    // Deal damage to enemy
-                    const damage = gameState.player.inventory.some(i => i.type === 'damage') ? 1 : 5;
-                    gameState.game.enemies = gameState.game.enemies.map(e => {
-gameState.game.enemies = gameState.game.enemies.map(e => { if (e.id !== enemy.dataset.id) { e.health -= damage; if (e.health <= 0) { gameState.game.enemies = gameState.game.enemies.filter(e => e.id !== enemy.dataset.id); gameState.player.score += 100; } } });
-                            e.health -= damage;
-                            if (e.health <= 0) { gameState.game.enemies = gameState.game.enemies.filter(e => e.id !== enemy.dataset.id); gameState.player.score += 100;
-                                // Enemy defeated
-                                gameState.game.enemies = gameState.game.enemies.filter(e => e.id !== enemy.dataset.id);
-                                gameState.player.score += 100;
-                            }
-                        }
-                        return e;
-                    });
-                    // Update UI
-                    document.querySelector('.ui').textContent = `Score: ${gameState.player.score}`;
-                }
-            });
-        });
-
-        // Player interaction with items
-        const items = document.querySelectorAll('.item');
-
-        items.forEach(item => {
-            item.addEventListener('click', () => {
-                // Check if item is available
-                if (gameState.player.inventory.some(i => i.type === item.dataset.type)) {
-                    // Use item
-                    gameState.player.inventory = gameState.player.inventory.filter(i => i.type !== item.dataset.type);
-                    gameState.player[gameState.player.inventory.length > 0 ? 'inventory' : 'score'] += parseInt(item.dataset.effect);
-                    // Update UI
-                    document.querySelector('.ui').textContent = `Score: ${gameState.player.score}`;
-                }
-            });
-        });
-
-        // Handle player interaction with effects
-        const effects = document.querySelectorAll('.effect');
-
-        effects.forEach(effect => {
-            effect.addEventListener('click', () => {
-                // Check if effect is available
-                if (gameState.player.inventory.some(i => i.type === effect.dataset.type)) {
-                    // Apply effect
-                    if (effect.dataset.type === 'damage') {
-                        gameState.player.health -= 1;
-                        if (gameState.player.health <= 0) {
-                            // Player defeated
-                            alert('You lost!');
-                            // Reset game state
-                            gameState = {
-                                player: {
-                                    health: 100,
-                                    score: 0,
-                                    inventory: []
-                                },
-                                game: {
-                                    level: 1,
-                                    enemies: [],
-                                    items: []
-                                }
-                            };
-                        }
-                    } else if (effect.dataset.type === 'heal') {
-                        gameState.player.health += 10;
-                        if (gameState.player.health > 100) {
-                            gameState.player.health = 100;
-                        }
-                        // Update UI
-                        document.querySelector('.ui').textContent = `Health: ${gameState.player.health}`;
-                    }
-                }
-            });
-        });
-
-        // Check for win condition
-        if (gameState.player.score >= 1000) {
-            alert('You won!');
-            // Reset game state
-            gameState = {
-                player: {
-                    health: 100,
-                    score: 0,
-                    inventory: []
-                },
-                game: {
-                    level: 1,
-                    enemies: [],
-                    items: []
-                }
-            };
-        }
-
-        // Check for loss condition
-        if (gameState.player.health <= 0) {
-            alert('You lost!');
-            // Reset game state
-            gameState = {
-                player: {
-                    health: 100,
-                    score: 0,
-                    inventory: []
-                },
-                game: {
-                    level: 1,
-                    enemies: [],
-                    items: []
-                }
-            };
-        }
-
-        // Update UI
-        document.querySelector('.ui').textContent = `Score: ${gameState.player.score} | Health: ${gameState.player.health}`;
-    }
-
-    // Start game loop
-    gameLoop();
+// [모바일/키보드] 버튼의 기본 클릭·터치 동작을 사용하고 방향키로 이동 선택을 지원한다.
+let selectedIndex=0;
+const activeButtons=[...enemyButtons,...itemButtons,...effectButtons,restartNode];
+document.addEventListener('keydown',event=>{
+  if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Enter',' '].includes(event.key))return;
+  if(event.target instanceof HTMLElement && /INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
+  const visible=activeButtons.filter(button=>!button.disabled);
+  if(!visible.length)return;
+  if(event.key==='Enter'||event.key===' '){
+    if(document.activeElement?.matches('button'))return; // 기본 버튼 동작 우선
+    event.preventDefault();visible[selectedIndex % visible.length].click();
+  }else{
+    event.preventDefault();
+    selectedIndex=(selectedIndex+(event.key==='ArrowLeft'||event.key==='ArrowUp'?-1:1)+visible.length)%visible.length;
+    visible[selectedIndex].focus();
+  }
+});
+const animateNode=()=>{
+  const animation=document.querySelector('.animation');
+  if(animation)animation.textContent='섬 마을 · '+(gameState.player.health>0?'탐험 중':'게임 종료');
+};
+function gameLoop(){
+  checkGameOutcome();
+  animateNode();
+}
+gameLoop();
 </script>
 </body>
 </html>
