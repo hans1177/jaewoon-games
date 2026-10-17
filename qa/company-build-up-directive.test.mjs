@@ -218,10 +218,14 @@ test('detailed verified design fields survive into build-up and implementation p
   assert.match(directivePrompt(directive),/SHARED_DESIGN_WEB_APPLICATION/);
   assert.doesNotMatch(directivePrompt(directive),/WEB_DETAILED_GAME_ORIGINAL|독립 확장/);
   assert.match(directivePrompt(directive),/GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION/);
-  assert.match(directivePrompt(directive),/플랫폼별 재설계는 금지/);
+  // [원본 보존 계약] 표면 문구가 아니라 실행 인계의 원본 언어·저장·권한 불변성을 확인한다.
+  assert.equal(directive.designToPlatformCodingTrace.originalSourcePlatform,'ROBLOX');
+  assert.equal(directive.designToPlatformCodingTrace.originalSourceLanguage,'LUAU');
+  assert.equal(directive.designToPlatformCodingTrace.saveBalanceAndExistingMultiplayerMeaningPreserved,true);
   const unityDirective=buildGameSpecificBuildUpDirective({gameId:'detail-lineage',gameName:'상세 설계',platform:'UNITY',designRecord:detailed,sourceObservation,responsibleFiles:['roblox-games/detail-lineage/Game.luau']});
-  assert.match(directivePrompt(unityDirective),/동일 공통 원본의 규칙과 상태를 보존/);
-  assert.match(directivePrompt(unityDirective),/게임 규칙 확장은 공통 원본 개정/);
+  assert.equal(unityDirective.designToPlatformCodingTrace.originalSourcePlatform,'ROBLOX');
+  assert.equal(unityDirective.designToPlatformCodingTrace.originalSourceLanguage,'LUAU');
+  assert.equal(unityDirective.designToPlatformCodingTrace.saveBalanceAndExistingMultiplayerMeaningPreserved,true);
 });
 
 test('existing UI without entry or loading flow becomes a cross-platform build-up gap',()=>{
