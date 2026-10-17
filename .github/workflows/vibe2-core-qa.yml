@@ -418,6 +418,7 @@ jobs:
       - name: Vibe2 core tests
         run: |
           set -euo pipefail
+          node --test qa/vibe2-gemini-free-rotation.test.mjs
           node --test qa/vibe2-openai-agent-patterns.test.mjs
           node --test qa/company-development-roblox-multiplayer-qa.test.mjs
           node --test qa/vibe2-auto-planner.test.mjs
