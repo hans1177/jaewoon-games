@@ -588,7 +588,10 @@ export function createVibeGraphicsProduction({
   const artSpec=createVibeArtPipeline({request,target:platforms.length===2?'native':String(platforms[0]||target).toLowerCase(),quality,style});
   const visualDirection=planVibeStyleAwareGraphicsAutopilot({game,world,characters,platform:platforms.length===2?'mobile':String(platforms[0]||'mobile').toLowerCase()});
   const visualWork=planVibeVisualAutopilot({files,graph,request});
-  const presentation=planVibePresentationAutopilot({files,events,request,changeRequest:changeRequestStability});
+  const presentation=planVibePresentationAutopilot({
+    files,events,request,changeRequest:changeRequestStability,game,world,
+    uiSurfaces:(game?.interfaceComposition||game?.uiSurfaces||[]).filter(row=>row&&typeof row==='object')
+  });
   const characterIdentity=planVibeCharacterIdentityAutopilot({characters,eventMap:characterEvents||{}});
   const mapDetail=mapDetailInput&&typeof mapDetailInput==='object'?createVibeMapDetailReconstruction(mapDetailInput):null;
   const assetPlanBound=assetProductionPlan?.kind==='vibe2-asset-production-plan';
