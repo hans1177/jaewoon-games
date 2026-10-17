@@ -37,11 +37,14 @@ function classifyFixture(item,options={}){
 test('upper platform authority remains fail-closed when policy proof is missing',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-no-policy-'));
   const previous=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  const item={gameId:'synthetic-missing-policy',minimumDesignContract:{pass:true},
+    platformDesignProfiles:{ROBLOX:{source:'design.json'},UNITY:{source:'design.json'}},
+    concurrentTargetPlatforms:['ROBLOX','UNITY']};
   try{
     delete process.env.COMPANY_VERIFIED_POLICY_PATH;
-    assert.throws(()=>classifyUpperPlatformAdmission(baseItem('synthetic-missing-policy'),{repoRoot:root}),/UPPER_PLATFORM_VERIFIED_POLICY_REQUIRED/);
+    assert.throws(()=>classifyUpperPlatformAdmission(item,{repoRoot:root}),/UPPER_PLATFORM_VERIFIED_POLICY_REQUIRED/);
     process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
-    assert.throws(()=>classifyUpperPlatformAdmission(baseItem('synthetic-missing-policy'),{repoRoot:root}),/UPPER_PLATFORM_VERIFIED_POLICY_NOT_FOUND/);
+    assert.throws(()=>classifyUpperPlatformAdmission(item,{repoRoot:root}),/UPPER_PLATFORM_VERIFIED_POLICY_NOT_FOUND/);
   }finally{
     if(previous===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
     else process.env.COMPANY_VERIFIED_POLICY_PATH=previous;
