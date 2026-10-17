@@ -424,7 +424,7 @@ test('live Vibe coding: first attempt versus public-feedback repair on held-out 
   assert(!process.env.VIBE2_MODEL_RESPONSE_FILE,'fixture replay cannot be a live benchmark');
   const cases=[];
   const ids=['save','unity-menu-batch-transaction','unity-reward-prerequisites'];
-  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_GEMINI_MODEL||'gemini-2.5-flash',sourceCommit:process.env.GITHUB_SHA||null,
+  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash',sourceCommit:process.env.GITHUB_SHA||null,
     expectedSampleCount:ids.length,measurementComplete:false,sampleCount:0,firstAttemptPass:0,finalPass:0,recovered:0,regressed:0,modelCalls:0,
     modelWeightsChanged:false,generalizationVerified:false,productionPromotionAllowed:false,cases};
   const reportFile=path.join(process.env.RUNNER_TEMP||os.tmpdir(),'vibe2-coding-repair-benchmark.json');
@@ -507,11 +507,11 @@ test('learning practice uses external Gemini API with no local server fallback',
   try{
     process.env.VIBE2_GAME_SOURCE_PROVIDER='GEMINI_API';
     process.env.GEMINI_API_KEY='fixture-not-real';
-    process.env.VIBE2_GEMINI_MODEL='gemini-2.5-flash';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
     let calls=0;
     globalThis.fetch=async(url,options)=>{
       calls++;
-      assert.match(url,/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-2\.5-flash:generateContent$/);
+      assert.match(url,/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-3\.(?:8-flash|5-flash-lite):generateContent$/);
       assert.equal(options.headers['x-goog-api-key'],'fixture-not-real');
       const req=JSON.parse(options.body);
       assert.equal(req.contents[0].parts[0].text,'example practice');
