@@ -33,14 +33,14 @@ function engineOf(sample={}){
 
 // Read only the added side of an independently verified patch. Never retain raw source.
 const REPAIR_OPERATIONS=Object.freeze([
-  ['GUARD_EVENT_BINDING',/\\baddEventListener\\s*\\(/i,/\\bif\\s*\\(|\\?\\./i,'Check the element or event target before registering its handler.','Run missing-element and duplicate-binding regression cases.'],
-  ['CLEANUP_LIFECYCLE',/\\b(?:clearInterval|clearTimeout|cancelAnimationFrame|removeEventListener|Disconnect|disconnect)\\s*\\(/i,null,'Release timers, listeners or subscriptions from the owning lifecycle.','Repeat start, stop and restart to detect duplicate work.'],
-  ['ATOMIC_SAVE_COMMIT',/\\b(?:setItem|UpdateAsync|SetAsync|SetAttribute|writeFileSync)\\s*\\(/i,/\\b(?:if|return|pcall|try|catch)\\b/i,'Validate the save preconditions before committing the new state once.','Test failed saves, reload and unchanged state on rejection.'],
-  ['SAVE_STATE_OWNER',/\\b(?:localStorage|DataStore|UpdateAsync|SetAsync|setItem)\\b/i,null,'Preserve the existing persistence owner and save-key meaning.','Verify save, reload, migration and error handling.'],
-  ['HANDLE_FAILURE_RESULT',/\\b(?:pcall|try|catch|Promise\\.catch)\\b/i,null,'Handle the operation result or exception before mutating shared state.','Test a rejected callback and a successful retry.'],
-  ['BOUND_NUMERIC_INPUT',/\\b(?:Math\\.min|Math\\.max|math\\.clamp|Mathf\\.Clamp)\\s*\\(/i,null,'Bound incoming numeric values before applying gameplay state changes.','Test lower, upper and invalid input boundaries.'],
-  ['MOBILE_INPUT_BINDING',/\\b(?:touch-action|pointerdown|pointermove|touchstart|touchmove)\\b/i,null,'Bind touch or pointer input to the existing gameplay owner without duplicate dispatch.','Verify tap, drag, pointer cancel and mobile viewport changes.'],
-  ['SERVER_INPUT_VALIDATION',/\\b(?:OnServerEvent|OnServerInvoke)\\b/i,/\\b(?:if|return|assert)\\b/i,'Validate client-originated input on the server before authoritative mutation.','Test malformed, repeated and unauthorized remote requests.']
+  ['GUARD_EVENT_BINDING',/\baddEventListener\s*\(/i,/\bif\s*\(|\?\./i,'Check the element or event target before registering its handler.','Run missing-element and duplicate-binding regression cases.'],
+  ['CLEANUP_LIFECYCLE',/\b(?:clearInterval|clearTimeout|cancelAnimationFrame|removeEventListener|Disconnect|disconnect)\s*\(/i,null,'Release timers, listeners or subscriptions from the owning lifecycle.','Repeat start, stop and restart to detect duplicate work.'],
+  ['ATOMIC_SAVE_COMMIT',/\b(?:setItem|UpdateAsync|SetAsync|SetAttribute|writeFileSync)\s*\(/i,/\b(?:if|return|pcall|try|catch)\b/i,'Validate the save preconditions before committing the new state once.','Test failed saves, reload and unchanged state on rejection.'],
+  ['SAVE_STATE_OWNER',/\b(?:localStorage|DataStore|UpdateAsync|SetAsync|setItem)\b/i,null,'Preserve the existing persistence owner and save-key meaning.','Verify save, reload, migration and error handling.'],
+  ['HANDLE_FAILURE_RESULT',/\b(?:pcall|try|catch|Promise\.catch)\b/i,null,'Handle the operation result or exception before mutating shared state.','Test a rejected callback and a successful retry.'],
+  ['BOUND_NUMERIC_INPUT',/\b(?:Math\.min|Math\.max|math\.clamp|Mathf\.Clamp)\s*\(/i,null,'Bound incoming numeric values before applying gameplay state changes.','Test lower, upper and invalid input boundaries.'],
+  ['MOBILE_INPUT_BINDING',/\b(?:touch-action|pointerdown|pointermove|touchstart|touchmove)\b/i,null,'Bind touch or pointer input to the existing gameplay owner without duplicate dispatch.','Verify tap, drag, pointer cancel and mobile viewport changes.'],
+  ['SERVER_INPUT_VALIDATION',/\b(?:OnServerEvent|OnServerInvoke)\b/i,/\b(?:if|return|assert)\b/i,'Validate client-originated input on the server before authoritative mutation.','Test malformed, repeated and unauthorized remote requests.']
 ]);
 
 export function deriveObservedRepairRecipe(output=''){
@@ -48,13 +48,13 @@ export function deriveObservedRepairRecipe(output=''){
   const marker=source.indexOf('검증된 패치:');
   const patch=marker>=0?source.slice(marker+'검증된 패치:'.length):source;
   if(Buffer.byteLength(patch,'utf8')>120000)return null;
-  const added=patch.split(/\\r?\\n/).filter(line=>/^\\+(?!\\+)/.test(line)).map(line=>line.slice(1)).join('\\n');
+  const added=patch.split(/\r?\n/).filter(line=>/^\+(?!\+)/.test(line)).map(line=>line.slice(1)).join('\n');
   let candidate=added;
   if(!candidate){
     try{
       const parsed=JSON.parse(patch.trim());
       const edits=Array.isArray(parsed?.edits)?parsed.edits:[];
-      candidate=edits.slice(0,32).flatMap(edit=>[edit?.replace,edit?.replacement,edit?.with,edit?.insert,edit?.content].filter(value=>typeof value==='string')).join('\\n');
+      candidate=edits.slice(0,32).flatMap(edit=>[edit?.replace,edit?.replacement,edit?.with,edit?.insert,edit?.content].filter(value=>typeof value==='string')).join('\n');
     }catch{/* Non-diff or non-JSON outputs cannot establish an observed repair recipe. */}
   }
   if(!candidate)return null;
