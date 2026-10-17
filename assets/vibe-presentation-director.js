@@ -64,6 +64,72 @@ export function createVibePortableImpactCue({event='land',importance='normal',mo
     worldPulse:!reducedMotion,protected:Object.freeze(['damage','reward','speed','timer','collision','save','progression'])
   });
 }
+// 장르와 실존 시스템을 교차 검증해 상용 UI 구성안을 만든다.
+// 컨셉에만 있는 기능은 후보로 기록한다. 실제 인벤/거래 권한은 기존 게임 로직만 가진다.
+const COMMERCIAL_UI_GENRES=Object.freeze({
+  CASUAL:{theme:'PLAYFUL_CLAY',primary:'SCORE_AND_NEXT_ACTION',density:'LOW',accent:'#ffcf78',slots:['score','progress','pause','help']},
+  RPG:{theme:'FANTASY_MATERIAL',primary:'CHARACTER_AND_QUEST',density:'MEDIUM',accent:'#b0dffb',slots:['health','quest','action','map']},
+  SURVIVAL:{theme:'EXPEDITION',primary:'VITALS_AND_RESOURCE',density:'MEDIUM',accent:'#a7e4b8',slots:['health','resource','objective','map']},
+  TYCOON:{theme:'SIMULATION_DASHBOARD',primary:'ECONOMY_AND_NEXT_UPGRADE',density:'MEDIUM',accent:'#d3bbff',slots:['currency','production','objective','build']},
+  STRATEGY:{theme:'TACTICAL_CLARITY',primary:'WAVE_AND_PLACEMENT',density:'MEDIUM',accent:'#a8d0f9',slots:['wave','budget','placement','pause']},
+  PUZZLE:{theme:'FOCUSED_DISCOVERY',primary:'CLUE_AND_PROGRESS',density:'LOW',accent:'#f1dba5',slots:['objective','hint','undo','pause']},
+  HORROR:{theme:'QUIET_TENSION',primary:'THREAT_AND_SURVIVAL',density:'LOW',accent:'#d3c5bb',slots:['health','objective','inventory','pause']}
+});
+const COMMERCIAL_UI_SURFACES=Object.freeze({
+  inventory:{system:'INVENTORY_EQUIPMENT',source:/\b(?:renderInventory|inventoryItems|inventorySlots|inventoryState|inventoryPanel|inventoryGrid)\b/i,layout:'GRID_WITH_SELECTED_ITEM_DETAILS',details:['capacity-used','rarity-and-stats','sort-filter-search','stack-count','compare-equip-use','disabled-reason','touch-inspect','save-owner']},
+  equipment:{system:'INVENTORY_EQUIPMENT',source:/\b(?:equipItem|unequipItem|equipmentSlots|equippedItems)\b/i,layout:'CHARACTER_PAPERDOLL_WITH_COMPARED_SLOTS',details:['slot-compatibility','before-after-stats','equipment-owner','explicit-confirmation']},
+  items:{system:'ITEM_LOOT',source:/\b(?:itemDatabase|itemCatalog|itemDefs|lootTable|itemRegistry)\b/i,layout:'SEMANTIC_ICON_AND_RARITY_DETAIL',details:['licensed-icon-or-local-vector','name-and-purpose','rarity-not-color-only','effect-and-source','quantity-and-description']},
+  crafting:{system:'CRAFTING',source:/\b(?:craftItem|craftRecipe|craftingRecipes|canCraft)\b/i,layout:'RECIPE_COST_AND_RESULT_PREVIEW',details:['ingredient-owner','available-vs-needed','batch-preview','one-shot-confirm','disabled-reason']},
+  merchant:{system:'ECONOMY_SHOP',source:/\b(?:buyItem|sellItem|purchaseItem|shopInventory|shopStock)\b/i,layout:'SHOP_BUY_SELL_WITH_TOTAL_PREVIEW',details:['price-and-owned-currency','stock-and-quantity','total-and-affordability','compare-item','undo-before-confirm','authority-owned-transaction']},
+  trade:{system:'TRADE_TRANSACTION',source:/\b(?:confirmTrade|commitTrade|transferItem|tradeSession|tradeOffer)\b/i,layout:'TWO_SIDED_TRADE_OFFER_AND_CONFIRM',details:['two-party-offers','quantity-and-currency','availability-check','totals-and-fees','offer-change-revokes-ready','cancel-before-commit','single-idempotent-commit','server-authority-if-multiplayer','no-shadow-wallet-or-inventory']},
+  quests:{system:'QUEST_DIALOGUE',source:/\b(?:questLog|questJournal|activeQuests|questProgress|updateQuest)\b/i,layout:'ACTIVE_GOAL_AND_TRACKER_WITH_JOURNAL',details:['one-active-objective','progress-from-owner','map-or-target-pointer','reward-preview','readable-completion-reason']},
+  building:{system:'HOUSING_BUILDING',source:/\b(?:placeBuilding|buildStructure|placementPreview|buildingCatalog|buildMenu)\b/i,layout:'BUILD_CATEGORY_COST_AND_WORLD_PREVIEW',details:['rotation-placement-ghost','validity-tint-and-reason','source-cost','cancel-without-loss','touch-friendly-confirm']},
+  upgrades:{system:'UPGRADE_BRANCH',source:/\b(?:upgradeBuilding|purchaseUpgrade|upgradeTree|upgradeOptions|upgradeLevel)\b/i,layout:'BEFORE_AFTER_UPGRADE_BRANCH',details:['cost-and-bottleneck','visible-difference','prerequisites','confirm-once','no-currency-shadow']},
+  skills:{system:'SKILL_BUILD',source:/\b(?:skillTree|learnSkill|skillBar|skillSlots|castSkill)\b/i,layout:'HOTBAR_AND_SKILL_DETAILS',details:['cooldown-from-owner','input-targets','level-prerequisite','failure-reason','reduced-motion-effects']}
+});
+const freezeRow=row=>Object.freeze(row);
+export function createVibeCommercialInterfaceBlueprint({genre='',systems=[],source='',platform='WEB',mobile=true,locale='ko-KR'}={}){
+  const raw=clean(genre).toUpperCase(),key=/HORROR|공포/.test(raw)?'HORROR':/SURVIV|ROGUE|생존/.test(raw)?'SURVIVAL':/TYCOON|SIMULAT|경영|타이쿤/.test(raw)?'TYCOON':/DEFEN|STRATEG|TACTIC|전략|디펜스/.test(raw)?'STRATEGY':/RPG|ADVENTUR|모험|역할/.test(raw)?'RPG':/PUZZLE|퍼즐/.test(raw)?'PUZZLE':'CASUAL';
+  const profile=COMMERCIAL_UI_GENRES[key];
+  const declared=new Set((Array.isArray(systems)?systems:[]).map(s=>clean(typeof s==='string'?s:s?.id||s?.name).toUpperCase()));
+  const sourceText=String(source||'');
+  const surfaces=Object.entries(COMMERCIAL_UI_SURFACES).map(([id,definition])=>{
+    const declaredOwner=declared.has(definition.system)||(id==='trade'&&['PLAYER_TRADE','NPC_TRADE','TRADE_TRANSACTION'].some(s=>declared.has(s)));
+    const sourceBindingPresent=definition.source.test(sourceText);
+    return freezeRow({id,system:definition.system,layout:definition.layout,
+      state:declaredOwner?(sourceBindingPresent?'SOURCE_BINDING_FOUND_RUNTIME_UNVERIFIED':'OWNER_IMPLEMENTATION_REQUIRED'):'NOT_REQUESTED_OR_NOT_AUTHORIZED',
+      visibleCandidate:declaredOwner&&sourceBindingPresent,
+      dataOwner:'EXISTING_GAME_SYSTEM_ONLY',details:Object.freeze([...definition.details]),
+      reason:declaredOwner&&!sourceBindingPresent?'CANONICAL_SYSTEM_WITHOUT_SOURCE_BINDING':!declaredOwner?'NO_DECLARED_CAPABILITY':null});
+  });
+  const active=surfaces.filter(x=>x.visibleCandidate).map(x=>x.id);
+  return Object.freeze({
+    version:1,authority:'PRESENTATION_DESIGN_ONLY',neverMutateGameplayState:true,
+    genre:key,platform:clean(platform).toUpperCase()||'WEB',theme:profile.theme,accent:profile.accent,
+    visualHierarchy:profile.primary,density:profile.density,hudSlots:Object.freeze([...profile.slots]),
+    surfaces:Object.freeze(surfaces),activeSurfaceIds:Object.freeze(active),
+    navigation:freezeRow({phone:'THUMB_REACH_PRIMARY_ACTIONS_WITH_ONE_COLLAPSIBLE_SHEET',desktop:'REUSABLE_DOCK_WITH_CONTEXTUAL_SIDE_PANEL',gameplayCanvasAlwaysVisible:true,
+      backClosesTopmostPanelFirst:true,focusReturnsToInvoker:true,modalTrapsFocus:true,doNotOccludeCriticalWorldActions:true}),
+    typography:freezeRow({locale:clean(locale)||'ko-KR',fontStack:'system-ui,-apple-system,"Noto Sans KR","Malgun Gothic",sans-serif',
+      noRemoteFontDependency:true,bodyMinPx:14,primaryActionMinPx:16,tabularNumbers:true,maxTextLinesBeforeCollapse:3,
+      semanticHeadings:true,readableContrastTarget:'WCAG_AA_WHEN_FEASIBLE'}),
+    touch:freezeRow({minimumTargetPx:48,spacingPx:8,safeAreas:true,portraitAndLandscape:true,
+      multiInput:['touch','mouse','keyboard','gamepad-when-supported'],dragRequiresTapAlternative:true,
+      noHoverOnlyTooltip:true,noAccidentalDoubleSubmit:true}),
+    visualSystem:freezeRow({icon: 'LICENSED_LOCAL_ASSET_OR_COHERENT_VECTOR_WITH_TEXT_LABEL',
+      hierarchy:['PRIMARY_ACTION','IMMEDIATE_GAME_STATE','CONTEXT_PANEL','SECONDARY_DETAIL'],
+      motions:['IDLE_FLOAT','VALID_ACTION_PRESS','ACQUIRED_ITEM_FLY_TO_OWNER_SLOT','SUCCESS_FEEDBACK','ERROR_REASON'],
+      animationAuthority:'PRESENTATION_ONLY',reducedMotionAlternative:'STATIC_FOCUS_AND_TEXT',
+      mobileParticlesMax:12,worldGpuResourcesReusable:true,noAlwaysOnBlurOverGameplay:true,
+      localAssetReuseFirst:true,noDuplicateDownloadedAssets:true}),
+    functionalContracts:freezeRow({sourceOwnerStateIsAuthority:true,noFakeItemTradeOrUpgradeButtons:true,
+      transactionConfirmOnlyAfterOwnerValidation:true,duplicateCommitPreventionRequired:true,
+      accessibilityAndSaveReloadRegression:true,displayMissingCapabilitiesAsDesignTasksNotActivePanels:true}),
+    integration:freezeRow({implementation:'MODIFY_EXISTING_RESPONSIBLE_UI_CODE_NOT_NEW_GLOBAL_OVERLAY',
+      requiredEvidence:['REAL_INPUT_TO_OWNER_STATE','MOBILE_PORTRAIT_LANDSCAPE','KEYBOARD_FOCUS_AND_CLOSE','ITEM_OR_TRADE_VALIDATION_IF_PRESENT','SAVE_RELOAD','LOCAL_ASSETS_AND_FONTS','NO_FATAL_BROWSER_ERRORS'],
+      verified:false})
+  });
+}
 export function createVibeHighEndPresentationStack({request=''}={}){return Object.freeze({
   version:2,
   target:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
