@@ -94,7 +94,13 @@ test('stale high validation does not hide current approved scope gaps',()=>{
 test('active or publicly playable development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const developmentGames=selectDevelopmentWebValidationGames({catalog,policy});
+  const developmentGames=selectDevelopmentWebValidationGames({catalog,policy,
+    webSourceExists:game=>{
+      const id=String(game.id||'').trim();
+      return /^[a-z0-9][a-z0-9-]*$/.test(id)
+        &&fs.existsSync(path.join('web-games',id,'index.html'));
+    }
+  });
   const checked=[];
   for(const game of developmentGames){
     const root=path.join('web-games',String(game.id||''));
@@ -154,6 +160,15 @@ test('native-only development hold excludes withdrawn Web prototypes but keeps a
   const catalog={games:[game('native'),game('withdrawn',{canonical:{sources:{web:{playable:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}}),game('public',{homepageWebPlayable:true}),game('canonical-public',{canonical:{sources:{web:{playable:true}}}})]};
   const policy={directNativeDualPlatformDevelopment:{ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX']}}};
   assert.deepEqual(selectDevelopmentWebValidationGames({catalog,policy}).map(game=>game.id),['public','canonical-public']);
+  // 선택 플랫폼이 Roblox이고 웹 엔트리 없음이 명시된 게임은 거짓으로 웹 테스트를 요구하지 않는다.
+  const verifiedOnly=selectDevelopmentWebValidationGames({catalog,policy:{},
+    webSourceExists:row=>row.id==='native'});
+  assert.deepEqual(verifiedOnly.map(row=>row.id),['native','public','canonical-public']);
+  assert.deepEqual(selectDevelopmentWebValidationGames({catalog:{games:[
+    game('web-target',{selectedPlatform:'WEB'}),
+    game('roblox-only',{selectedPlatform:'ROBLOX',homepageWebPlayable:false}),
+    game('claimed-web',{homepageWebPlayable:true})
+  ]},policy:{},webSourceExists:()=>false}).map(row=>row.id),['web-target','claimed-web']);
   assert.equal(selectDevelopmentWebValidationGames({catalog,policy:{}}).length,4);
   policy.directNativeDualPlatformDevelopment.ownerActiveDevelopmentScope20261009.activeTargets.push('UNITY_WEB');
   assert.equal(selectDevelopmentWebValidationGames({catalog,policy}).length,4);
