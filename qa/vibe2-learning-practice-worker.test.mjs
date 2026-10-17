@@ -256,15 +256,15 @@ test('public success still receives a bounded full-contract review before final 
   assert(!JSON.stringify(prompts).includes('PRIVATE'));
 });
 
-test('public repair activates bounded hybrid inference without duplicating failed source in the task',async()=>{
+test('public repair preserves external-only inference without duplicating failed source in the task',async()=>{
   const calls=[];
   const drill={id:'state-update',platform:'unity',scenario:'Validate before committing state.',broken:'BROKEN_INPUT',reference:'PRIVATE_REFERENCE',feedbackTests:['PUBLIC_CASE'],tests:['PRIVATE_CASE']};
-  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,model:'qwen3:1.7b',captureCandidates:true,
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,model:'gemini-3.8-flash',captureCandidates:true,
     request:async(prompt,options)=>{calls.push({prompt,...options});return JSON.stringify({...practiceAnswer,code:calls.length===1?'FAILED_SOURCE':'REPAIRED_SOURCE'});},
     evaluate:answer=>({pass:answer.code==='REPAIRED_SOURCE',codeVerification:{reason:'REGRESSION_OR_FIXTURE_FAILED',baselineRejected:true,referencePassed:true}})});
-  assert.equal(calls[0].inference.think,true);
-  assert.equal(calls[1].inference.think,true);
-  assert.equal(calls[1].maxPredict,6144);
+  assert.equal(calls[0].inference.think,false);
+  assert.equal(calls[1].inference.think,false);
+  assert.equal(calls[1].maxPredict,3072);
   assert.notEqual(calls[0].inference.seed,calls[1].inference.seed);
   assert(!calls[1].messages[0].content.includes('FAILED_SOURCE'));
   assert(!calls[1].messages[0].content.includes('BROKEN_INPUT'));
@@ -288,15 +288,15 @@ test('generation failures retain completed attempt evidence and remain failed',a
   assert.equal(result.candidateHistory[1].generationError,'practice model output truncated');
 });
 
-test('generation timeout retries a shorter mode without exposing hidden inputs or inventing success',async()=>{
+test('external model timeout retries bounded output without exposing hidden inputs or inventing success',async()=>{
   for(const recovers of [true,false]){
     const calls=[];
     const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},
-      drill:{platform:'unity',scenario:'PUBLIC_CONTRACT',feedbackTests:['PUBLIC_CASE'],tests:['HIDDEN_CASE'],reference:'PRIVATE_REFERENCE'},model:'qwen3:1.7b',captureCandidates:true,
+      drill:{platform:'unity',scenario:'PUBLIC_CONTRACT',feedbackTests:['PUBLIC_CASE'],tests:['HIDDEN_CASE'],reference:'PRIVATE_REFERENCE'},model:'gemini-3.8-flash',captureCandidates:true,
       request:async(prompt,options)=>{calls.push({prompt,...options});if(calls.length===1||!recovers)throw new Error('practice model timeout');return JSON.stringify({...practiceAnswer,code:'FIXED_SOURCE'});},
       evaluate:answer=>({pass:answer.code==='FIXED_SOURCE',codeVerification:{reason:'VERIFIED_LOGIC_ONLY',baselineRejected:true,referencePassed:true}})});
     assert.equal(calls.length,3);
-    assert.equal(calls[0].inference.think,true);
+    assert.equal(calls[0].inference.think,false);
     assert.equal(calls[1].inference.think,false);
     assert.equal(calls[1].maxPredict,3072);
     assert.equal(result.repairEvidence.firstAttemptPass,false);
