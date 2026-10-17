@@ -5,7 +5,7 @@
 import { resolveActiveOwnerPolicy } from './company-policy-steward.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import {
   createVibeContinuousQueue,
@@ -28,7 +28,11 @@ import { summarizeNeuralEventShadowEvidence } from './vibe2-neural-event-telemet
 
 const clean = (value) => String(value ?? '').trim();
 // The executable lives in the exact main contract checkout; cwd can be a stale control branch.
-const CANONICAL_RESERVATION_POLICY = String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+const CANONICAL_RESERVATION_POLICY = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..',
+  String(process.env.COMPANY_VERIFIED_POLICY_PATH||'company-learning/platform-release-roadmap.json').trim()
+);
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
 const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-generation-context-v3';
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
