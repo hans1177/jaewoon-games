@@ -716,3 +716,11 @@ ${familyRows}
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
+
+test('fantasy survival binds selected MATERIAL atoms to an existing visible world part',()=>{
+  const source=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(source,/studioAssetFamily\\("MATERIAL"\\)/);
+  assert.match(source,/nativeFoundationSpawn\\.Material\\s*=\\s*table\\.find\\(studioMaterialAtoms, "METAL"\\)/);
+  assert.equal(robloxStudioAssetFamilyBoundInText(source,'MATERIAL'),true);
+  assert.match(source,/nativeFoundationSpawn\\.CanCollide\\s*=\\s*false/);
+});
