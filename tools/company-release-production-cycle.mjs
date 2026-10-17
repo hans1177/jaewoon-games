@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {requestGeminiFreePair,GEMINI_FREE_MODELS} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
@@ -68,26 +69,21 @@ const RISK={type:'object',required:['blockers','warnings','evidence'],properties
   evidence:{type:'array',items:{type:'string'}}
 },additionalProperties:false};
 async function callModel(model,system,user,schema,{predict=700,temperature=0.15}={}){
-  let lastError=null;
-  for(let attempt=1;attempt<=2;attempt++){
-    try{
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{
-        method:'POST',
-        headers:{'content-type':'application/json'},
-        body:JSON.stringify({
-          model,stream:false,format:schema,
-          messages:[{role:'system',content:system},{role:'user',content:user}],
-          options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:predict}
-        })
-      });
-      if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-      const body=await response.json();
-      const text=clean(body?.message?.content);
-      if(!text)throw new Error('empty model response');
-      return JSON.parse(text);
-    }catch(error){lastError=error;}
-  }
-  throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
+  // Do not count historical local department labels as distinct external AI models.
+  if(reviewModelCount>GEMINI_FREE_MODELS.length||distinctLeadModels.length>GEMINI_FREE_MODELS.length)
+    throw new Error('RELEASE_EXTERNAL_FREE_MODEL_INDEPENDENCE_NOT_VERIFIED');
+  const response=await requestGeminiFreePair({
+    apiKey:process.env.GEMINI_API_KEY,
+    contents:[{role:'user',parts:[{text:'SYSTEM: '+system+'\\nUSER: '+user+'\\nOUTPUT_JSON_SCHEMA='+JSON.stringify(schema)}]}],
+    responseMimeType:'application/json',temperature,maxOutputTokens:predict,timeoutMs:120000
+  });
+  const raw=clean(response.text);
+  if(!raw)throw new Error('EXTERNAL_RELEASE_MODEL_EMPTY_RESPONSE');
+  const parsed=JSON.parse(raw);
+  if(!Array.isArray(parsed?.blockers)||!Array.isArray(parsed?.warnings)||!Array.isArray(parsed?.evidence))
+    throw new Error('EXTERNAL_RELEASE_REVIEW_SCHEMA_MISMATCH');
+  console.log('RELEASE_EXTERNAL_AI_PROVIDER='+response.model);
+  return parsed;
 }
 
 function latestFile(fileName){
