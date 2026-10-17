@@ -1,6 +1,6 @@
 // 파일명: tools/company-policy-steward.mjs
-// 역할: 중앙 네 문서의 무결성과 최신 승인된 owner 지시의 우선순위를 읽기 전용으로 판정한다.
-// 원칙: 잠긴 요약 원본, 정책, 게임, 큐, 보안 및 배포 결과는 변경하지 않는다.
+// 역할: 기존 중앙 4문서만 읽어 가장 최근에 승인된 사용자 지시의 해석을 우선한다.
+// 원칙: 문서 원본·게임·큐·보안·검증·배포 상태 불변. 별도 개발 파이프라인 없음.
 
 // 임포트
 import fs from 'node:fs';
@@ -11,57 +11,58 @@ import {fileURLToPath} from 'node:url';
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const CANONICAL='company-learning/platform-release-roadmap.json';
 const clean=value=>String(value??'').trim();
-const read=(root,relative)=>{
-  const data=JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
-  if(!data||typeof data!=='object'||Array.isArray(data))throw new Error('POLICY_STEWARD_INVALID_DOCUMENT:'+relative);
-  return data;
-};
+function read(root,file){
+  const value=JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
+  if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('POLICY_STEWARD_INVALID_DOCUMENT:'+file);
+  return value;
+}
 export function auditFourPolicyDocuments({root=ROOT}={}){
   const policy=read(root,CANONICAL);
-  const steward=policy.centralDocumentation?.policySteward;
-  const canonicalSet=policy.centralDocumentation?.canonicalSet;
-  const docs=[CANONICAL,canonicalSet?.logMap,canonicalSet?.architectureMap,canonicalSet?.securityPolicy];
-  if(steward?.role!=='CENTRAL_POLICY_STEWARD'||
-    steward?.autoRepairScope!=='RUNTIME_INTERPRETATION_ONLY_NO_FILE_REWRITE'||
-    steward?.neverWriteCanonicalPolicy!==true||
-    JSON.stringify(steward.managedDocuments)!==JSON.stringify(docs)||
-    canonicalSet?.policy!==CANONICAL||docs.some(p=>!clean(p))){
-    throw new Error('POLICY_STEWARD_CANONICAL_CONTRACT_MISSING');
+  const set=policy.centralDocumentation?.canonicalSet||{};
+  if(set.policy!==CANONICAL)throw new Error('POLICY_STEWARD_CANONICAL_REFERENCE_INVALID');
+  const managedDocuments=[set.policy,set.logMap,set.architectureMap,set.securityPolicy];
+  if(managedDocuments.some(f=>!clean(f)||!f.startsWith('company-learning/')))throw new Error('POLICY_STEWARD_DOCUMENT_SET_INVALID');
+  for(const file of managedDocuments.slice(1)){
+    const data=read(root,file);
+    if(!Number.isInteger(data.version)||data.version<1)throw new Error('POLICY_STEWARD_DOCUMENT_VERSION_INVALID:'+file);
   }
-  for(const file of docs.slice(1)){
-    const summary=read(root,file);
-    if(!Number.isInteger(summary.version)||summary.version<1)throw new Error('POLICY_STEWARD_SUMMARY_INVALID:'+file);
-  }
-  const pathText=clean(steward.latestOwnerDirectivePath);
-  if(!/^owner[A-Za-z0-9_.]+$/.test(pathText))throw new Error('POLICY_STEWARD_OWNER_PATH_INVALID');
-  const owner=pathText.split('.').reduce((value,key)=>value?.[key],policy);
-  const directive=clean(owner?.authority);
-  if(!/^OWNER_DIRECTIVE_\d{4}-\d{2}-\d{2}(?:_[A-Z0-9_]+)?$/.test(directive)||
-    owner?.status!=='ACTIVE')throw new Error('POLICY_STEWARD_APPROVED_OWNER_DIRECTIVE_MISSING');
-  const active=Array.isArray(owner.activeTargets)?owner.activeTargets:[];
-  const held=Array.isArray(owner.ownerHeldTargets)?owner.ownerHeldTargets:[];
-  if(!active.length||active.some(target=>held.includes(target)))throw new Error('POLICY_STEWARD_OWNER_SCOPE_INVALID');
+  // 가장 최근에 main 정책에 반영된 명시적 사용자 개발 범위만 선택한다.
+  // 날짜 없는 상태 정보나 이전 대화는 승인된 기계 정책을 대신할 수 없다.
+  const candidates=Object.entries(policy)
+    .filter(([key,value])=>key.startsWith('owner')&&value?.status==='ACTIVE'&&
+      Array.isArray(value.activeTargets)&&Array.isArray(value.ownerHeldTargets)&&
+      /^OWNER_DIRECTIVE_\d{4}-\d{2}-\d{2}(?:_[A-Z0-9_]+)?$/.test(clean(value.authority)))
+    .map(([key,value])=>({key,value,date:value.authority.slice('OWNER_DIRECTIVE_'.length,'OWNER_DIRECTIVE_'.length+10)}))
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  if(!candidates.length)throw new Error('POLICY_STEWARD_APPROVED_OWNER_DIRECTIVE_MISSING');
+  const newest=candidates[0];
+  const equallyRecent=candidates.filter(entry=>entry.date===newest.date);
+  const signatures=new Set(equallyRecent.map(entry=>JSON.stringify([entry.value.activeTargets,entry.value.ownerHeldTargets])));
+  if(signatures.size>1)throw new Error('POLICY_STEWARD_SAME_DATE_OWNER_CONFLICT');
+  const active=newest.value.activeTargets;
+  const held=newest.value.ownerHeldTargets;
+  if(!active.length||active.some(p=>held.includes(p)))throw new Error('POLICY_STEWARD_OWNER_SCOPE_INVALID');
   const effectiveDevelopmentAccess={...policy.developmentAccess};
-  for(const platform of active)effectiveDevelopmentAccess[platform]='ALWAYS_ALLOWED';
-  for(const platform of held)effectiveDevelopmentAccess[platform]='OWNER_HOLD';
+  for(const p of active)effectiveDevelopmentAccess[p]='ALWAYS_ALLOWED';
+  for(const p of held)effectiveDevelopmentAccess[p]='OWNER_HOLD';
   const staleLegacyPolicyFields=Object.keys(effectiveDevelopmentAccess)
-    .filter(platform=>effectiveDevelopmentAccess[platform]!==policy.developmentAccess?.[platform]);
-  // 이전 로드맵 표현과 충돌하면 최신 승인 범위로 해석하되 원본은 절대 수정하지 않는다.
-  // 실제 작업·보안·출시 권한에는 이 보고서만으로 어떠한 승인도 부여하지 않는다.
+    .filter(p=>effectiveDevelopmentAccess[p]!==policy.developmentAccess?.[p]);
   return{
-    role:steward.role,ownerDirective:directive,managedDocuments:docs,
+    role:'CENTRAL_FOUR_DOCUMENT_STEWARD',managedDocuments,
+    latestOwnerSection:newest.key,ownerDirective:newest.value.authority,
     effectiveDevelopmentAccess,staleLegacyPolicyFields,
-    writesAllowed:false,nonBlockingAudit:true,securityAndReleaseChecksUnchanged:true
+    sourcePolicyVersion:policy.version,nonBlockingAudit:true,writesAllowed:false,
+    securityAndReleaseChecksUnchanged:true
   };
 }
 
 // 로그
 if(process.argv[1]===fileURLToPath(import.meta.url)){
-  if(process.argv.some(arg=>arg.startsWith('--fix')))throw new Error('POLICY_STEWARD_DOCUMENT_WRITE_FORBIDDEN');
-  const audit=auditFourPolicyDocuments();
-  console.log('POLICY_STEWARD_ROLE='+audit.role);
-  console.log('POLICY_STEWARD_OWNER_DIRECTIVE='+audit.ownerDirective);
-  console.log('POLICY_STEWARD_OLD_SCOPE_CONFLICTS='+(audit.staleLegacyPolicyFields.join(',')||'NONE'));
-  console.log('POLICY_STEWARD_DOCUMENT_WRITES=NONE');
+  if(process.argv.some(arg=>arg.startsWith('--fix')))throw new Error('POLICY_STEWARD_FILE_WRITE_FORBIDDEN');
+  const result=auditFourPolicyDocuments();
+  console.log('POLICY_STEWARD_OWNER_DIRECTIVE='+result.ownerDirective);
+  console.log('POLICY_STEWARD_LATEST_OWNER_SECTION='+result.latestOwnerSection);
+  console.log('POLICY_STEWARD_LEGACY_SCOPE_CONFLICTS='+(result.staleLegacyPolicyFields.join(',')||'NONE'));
+  console.log('POLICY_STEWARD_FILE_WRITES=NONE');
   console.log('POLICY_STEWARD_GAME_FLOW_MUTATION=NONE');
 }
