@@ -440,6 +440,7 @@ jobs:
           set -euo pipefail
           node --test qa/vibe2-code-pattern-ingest.test.mjs
           node --test --test-name-pattern='practice rehearses only verified production failures' qa/vibe2-learning-practice-worker.test.mjs
+          node --test --test-name-pattern='reservation policy follows the main executable checkout|large mixed-platform queue reserves Unity Web' qa/vibe2-queue-control.test.mjs
 
       - name: Vibe2 core tests
         run: |
