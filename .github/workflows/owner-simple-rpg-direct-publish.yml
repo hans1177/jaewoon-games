@@ -214,13 +214,23 @@ jobs:
           for filename,remote,kind,creator,slug in packs:
             target=root/filename
             url='https://opengameart.org/sites/default/files/'+quote(remote)
+            # Re-fetch invalid cached originals without exposing partial downloads.
+            if target.exists() and (target.stat().st_size<512 or
+              (filename.endswith('.blend') and target.open('rb').read(7)!=b'BLENDER') or
+              (filename.endswith('.zip') and not zipfile.is_zipfile(target)) or
+              (filename.endswith('.7z') and target.open('rb').read(6)!=bytes.fromhex('377abcaf271c'))):
+              print('WILDLIFE_CACHED_INVALID_REDOWNLOAD',filename,flush=True)
+              target.unlink()
             if not target.exists():
-              run=subprocess.run(['curl','-fL','--retry','2','--retry-delay','2','--connect-timeout','12','--max-time','90','-o',str(target),url],stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
-              if run.returncode:
-                target.unlink(missing_ok=True)
+              partial=target.with_name(target.name+'.part')
+              partial.unlink(missing_ok=True)
+              run=subprocess.run(['curl','-fL','--retry','4','--retry-all-errors','--retry-delay','2','--connect-timeout','12','--max-time','160','-o',str(partial),url],stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+              if run.returncode or not partial.is_file():
+                partial.unlink(missing_ok=True)
                 failed.append({'file':filename,'reason':'HTTP_DOWNLOAD_FAILED','source':slug})
-                print('WILDLIFE_DOWNLOAD_FAILED',filename,run.returncode)
+                print('WILDLIFE_DOWNLOAD_FAILED',filename,run.returncode,flush=True)
                 continue
+              partial.replace(target)
             try:
               if target.stat().st_size<512:raise ValueError('TINY_FILE')
               names=[]
@@ -310,13 +320,20 @@ jobs:
           for localname,filename,kind,owner,slug,minimum in packs:
             dest=root/localname
             url='https://opengameart.org/sites/default/files/'+quote(filename)
+            # Re-fetch invalid cached ZIPs and retain valid source archives.
+            if dest.exists() and (dest.stat().st_size<=300 or not zipfile.is_zipfile(dest)):
+              print('PACK_CACHED_INVALID_REDOWNLOAD',localname,flush=True)
+              dest.unlink()
             if not dest.exists():
-              result=subprocess.run(['curl','-fL','--retry','2','--retry-all-errors','--retry-delay','2','--connect-timeout','12','--max-time','120','-o',str(dest),url],stderr=subprocess.PIPE,stdout=subprocess.DEVNULL)
-              if result.returncode:
-                dest.unlink(missing_ok=True)
+              partial=dest.with_name(dest.name+'.part')
+              partial.unlink(missing_ok=True)
+              result=subprocess.run(['curl','-fL','--retry','4','--retry-all-errors','--retry-delay','2','--connect-timeout','12','--max-time','180','-o',str(partial),url],stderr=subprocess.PIPE,stdout=subprocess.DEVNULL)
+              if result.returncode or not partial.is_file():
+                partial.unlink(missing_ok=True)
                 failed.append({'filename':localname,'cause':'HTTP_DOWNLOAD_FAILED','source':slug})
                 print('PACK_DOWNLOAD_FAILED',localname,flush=True)
                 continue
+              partial.replace(dest)
             try:
               if not 300<dest.stat().st_size<100_000_000:raise ValueError('ZIP_SIZE_INVALID')
               if not zipfile.is_zipfile(dest):raise ValueError('NOT_ZIP')
@@ -324,7 +341,19 @@ jobs:
                 if len(z.infolist())>30000 or sum(i.file_size for i in z.infolist())>500_000_000:raise ValueError('ZIP_BOMB_GUARD')
                 if z.testzip() is not None:raise ValueError('CORRUPTED_ZIP')
                 if kind=='characters-npc':
-                  files={pathlib.PurePosixPath(i.filename).stem.lower() for i in z.infolist() if not i.is_dir() and i.filename.lower().endswith(('.fbx','.obj','.gltf','.glb','.blend','.dae','.3ds'))}
+                  model_ext=('.fbx','.obj','.gltf','.glb','.blend','.dae','.3ds')
+                  files={pathlib.PurePosixPath(i.filename).stem.lower() for i in z.infolist() if not i.is_dir() and i.filename.lower().endswith(model_ext)}
+                  # Bounded inspection of nested licensed model ZIPs, no extraction.
+                  if len(files)<minimum:
+                    import io
+                    for member in z.infolist():
+                      if member.is_dir() or not member.filename.lower().endswith('.zip') or member.file_size>80_000_000:
+                        continue
+                      with zipfile.ZipFile(io.BytesIO(z.read(member))) as nested:
+                        inner=nested.infolist()
+                        if len(inner)>30000 or sum(x.file_size for x in inner)>500_000_000 or nested.testzip() is not None:
+                          raise ValueError('NESTED_ZIP_INVALID')
+                        files.update(pathlib.PurePosixPath(x.filename).stem.lower() for x in inner if not x.is_dir() and x.filename.lower().endswith(model_ext))
                 else:
                   files={i.filename.lower() for i in z.infolist() if not i.is_dir() and i.filename.lower().endswith('.png')}
                 if len(files)<minimum:raise ValueError('ASSET_FILES_BELOW_MIN:'+str(len(files)))
