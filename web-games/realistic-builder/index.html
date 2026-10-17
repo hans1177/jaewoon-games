@@ -171,15 +171,24 @@ function addNode(type,x,z){
 }
 addNode('soil',-7,-4);addNode('soil',7,5);addNode('wood',-6,6);addNode('wood',6,7);addNode('stone',7,-6);addNode('stone',-7,2);addNode('water',0,-8);addNode('fiber',-8,7);addNode('fiber',8,-1);
 
-function addRepoSprite(path,x,z,w,h){
-  new THREE.TextureLoader().load(path,function(tex){
-    tex.colorSpace=THREE.SRGBColorSpace;
-    var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,alphaTest:.15}));s.position.set(x,h*.45,z);s.scale.set(w,h,1);world.add(s);
-  },undefined,function(){});
+// 배경 장식: 기존 WebGL 3D 메시 재사용. 채집 자원 및 충돌 규칙은 변경하지 않는다.
+function addScenery(type,x,z){
+  var g=new THREE.Group();g.position.set(x,0,z);
+  if(type==='tree'){
+    var trunk=cyl(.24,.33,2.7,0x795a37,9);g.add(trunk);
+    for(var i=0;i<3;i++){
+      var crown=new THREE.Mesh(new THREE.ConeGeometry(1.25-i*.16,1.75,9),mat(i===1?0x496d40:0x547a45));
+      crown.position.y=2.5+i*.7;g.add(crown);
+    }
+  }else if(type==='rock'){
+    var stone=new THREE.Mesh(new THREE.DodecahedronGeometry(1.05,0),mat(0x767b76));
+    stone.scale.set(1.16,.78,.92);stone.position.y=.78;g.add(stone);
+  }
+  world.add(g);
 }
-addRepoSprite('/web-games/survival2/assets/tree.png',-10,9,3.3,4.6);
-addRepoSprite('/web-games/survival2/assets/tree.png',10,9,3.3,4.6);
-addRepoSprite('/web-games/survival2/assets/rock.png',10,-9,2.4,2.0);
+addScenery('tree',-10,9);
+addScenery('tree',10,9);
+addScenery('rock',10,-9);
 
 var dryVisuals={};
 function syncDryVisuals(){
