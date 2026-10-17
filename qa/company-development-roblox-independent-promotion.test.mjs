@@ -64,7 +64,10 @@ test('batch F0 private validation dispatch dedupes only current-main exact-game 
 });
 
 test('merged Roblox source stays in the Roblox lane while the central orchestrator reuses both native lanes behind readiness',()=>{
-  assert.ok(parentWorkflow.includes('uses: ./.github/workflows/company-development-roblox-runtime.yml'));
+  // 메인: Roblox는 게임별 기존 workflow_dispatch, Unity는 기존 reusable workflow로 분리된다.
+  assert.ok(parentWorkflow.includes('dispatch-roblox:'));
+  assert.ok(parentWorkflow.includes('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"'));
+  assert.ok(parentWorkflow.includes('ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'));
   assert.ok(parentWorkflow.includes('uses: ./.github/workflows/company-development-unity-runtime.yml'));
   assert.ok(parentWorkflow.includes('UPPER_PLATFORM_ELIGIBLE_COUNT='));
   assert.ok(parentWorkflow.includes('UPPER_PLATFORM_GRANDFATHERED_IDS='));
