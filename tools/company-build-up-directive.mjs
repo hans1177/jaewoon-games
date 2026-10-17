@@ -720,11 +720,13 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
     }))]);
     if(Array.isArray(design.creativeGrammar?.cGenres))groups.push(['CREATIVE_C_PRIMARY_SECONDARY_GENRE',design.creativeGrammar.cGenres.map(row=>({name:row.role+' '+row.name,trigger:row.role,stateChange:row.gameplayEffect}))]);
     if(design.creativeGrammar?.cGenreInterlock)groups.push(['CREATIVE_C_GENRE_INTERLOCK',[{name:'메인·보조 장르 플레이 인과',trigger:'두 장르 동시 발동',stateChange:design.creativeGrammar.cGenreInterlock}]]);
-    if(Array.isArray(design.creativeGrammar?.delveDiscoveries))groups.push(['CREATIVE_AT_DELVE',design.creativeGrammar.delveDiscoveries.map(row=>({
-      name:row.discovery,trigger:row.experiment||row.clue,stateChange:row.newChoice,
-      sourceDId:row.sourceDId,clue:row.clue,nextQuestion:row.nextQuestion,
-      observableAcceptance:row.nextQuestion
-    }))]);
+    if(Array.isArray(design.creativeGrammar?.delveDiscoveries))groups.push(['CREATIVE_AT_DELVE',design.creativeGrammar.delveDiscoveries.map(row=>
+      Number(design.creativeGrammar?.standardVersion||0)>=1?{
+        name:row.discovery,trigger:row.experiment||row.clue,stateChange:row.newChoice,
+        sourceDId:row.sourceDId,clue:row.clue,nextQuestion:row.nextQuestion,
+        observableAcceptance:row.nextQuestion
+      }:{name:row.discovery,trigger:row.clue,stateChange:row.newChoice}
+    )]);
     groups.push(['IMPLEMENTATION_TRACE',traces]);
     for(const [family,rows] of groups)if(Array.isArray(rows))rows.forEach((row,index)=>add(family,index,row));
   }
