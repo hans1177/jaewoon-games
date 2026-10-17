@@ -4214,6 +4214,60 @@ export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract=
   }
   return Object.freeze({required:true,pass:true,count:actualIds.length,ids:Object.freeze([...actualIds])});
 }
+// [일반 웹 3D 엔진] 오너의 3D 지시를 기존 웹 소스 책임에 적용한다.
+// 실제 게임 코드에 이미 연결된 엔진이 있으면 이름만 바꾸기 위해 재작성하지 않는다.
+export function selectWeb3dEngine({order={},files=[]}={}){
+  const source=(Array.isArray(files)?files:[]).map(file=>String(file?.content||'')).join('\n');
+  const has=pattern=>pattern.test(source);
+  const detected=[
+    has(/(?:from\s*['"]playcanvas['"]|import\s*\(['"]playcanvas['"]\)|\bpc\.Application\b|\bpc\.Entity\b)/i)?'PLAYCANVAS':null,
+    has(/(?:from\s*['"]@babylonjs\/|\bBABYLON\.(?:Engine|Scene|MeshBuilder|ArcRotateCamera|WebGPUEngine)\b|new\s+BABYLON\.Engine\b)/i)?'BABYLON_JS':null,
+    has(/(?:from\s*['"]three['"]|from\s*['"]three\/|\bTHREE\.(?:Scene|WebGLRenderer|PerspectiveCamera|Mesh|GLTFLoader)\b)/i)?'THREE_JS':null,
+    has(/(?:\.getContext\s*\(\s*['"](?:webgl2?|experimental-webgl)['"]|\.drawElements\s*\(|\.drawArrays\s*\()/i)?'EXISTING_WEBGL':null
+  ].filter(Boolean);
+  const existing=detected.filter(engine=>engine!=='EXISTING_WEBGL');
+  const ambiguous=existing.length>1;
+  const goal=[order?.goal,order?.selectedTask?.goal,order?.selectedTask?.focus].map(value=>String(value||'')).join(' ');
+  const preferred=String(order?.selectedTask?.preferredWeb3dEngine||order?.preferredWeb3dEngine||'').trim().toUpperCase();
+  const ownerChoice=['PLAYCANVAS','BABYLON_JS','THREE_JS'].includes(preferred)?preferred:null;
+  const physicsHeavy=Boolean(order?.selectedTask?.complexNativePhysics===true
+    ||/(?:ragdoll|havok|soft.?body|vehicle physics|character controller|물리.?시뮬레이션|강체.?물리)/i.test(goal));
+  const selected=ambiguous?null:existing[0]||(detected.includes('EXISTING_WEBGL')?'EXISTING_WEBGL':ownerChoice||(physicsHeavy?'BABYLON_JS':'PLAYCANVAS'));
+  const reuseExisting=Boolean(existing.length||detected.includes('EXISTING_WEBGL'));
+  return Object.freeze({
+    engine:selected||'EXISTING_ENGINE_REVIEW_REQUIRED',
+    reason:ambiguous?'MULTIPLE_EXISTING_ENGINES_REVIEW_REQUIRED':reuseExisting?'KEEP_ORIGINAL_ENGINE_SOURCE':
+      ownerChoice?'EXPLICIT_WEB_ENGINE_PREFERENCE':physicsHeavy?'COMPLEX_3D_PHYSICS':'MOBILE_FIRST_NEW_WEB3D',
+    rewriteExistingEngine:false,
+    engineChoiceVerifiedByRuntime:false,
+    existingEvidence:Object.freeze(detected),
+    backend:'WEBGL2_COMPATIBILITY_FIRST_WEBGPU_ONLY_IF_SUPPORTED_AND_TESTED',
+    finalDimension:'REAL_3D',
+    runtimeVerificationRequired:true
+  });
+}
+function ordinaryWeb3dEngineGuidance(order={},context={}){
+  if(String(order?.target||'').toLowerCase()!=='web')return'';
+  const engine=selectWeb3dEngine({order,files:context?.files||[]});
+  const hints={
+    PLAYCANVAS:'Use the PlayCanvas open-source JavaScript runtime and existing project asset loader when available. Choose its WebGL2 backend for mobile; WebGPU only after capability detection and device tests.',
+    BABYLON_JS:'Use the existing Babylon.js engine and genuine 3D scene/mesh/camera interfaces. Integrate physics only if the matching physics package is already installed and runtime-tested.',
+    THREE_JS:'Keep Three.js scene, renderer, camera and GLTFLoader in the original project. Do not port an existing Three.js game to another engine just for naming consistency.',
+    EXISTING_WEBGL:'Keep the existing hand-authored WebGL draw path, shaders, transforms and scene state. Improve real geometry, GL buffers, rendering and camera without swapping the renderer.',
+    EXISTING_ENGINE_REVIEW_REQUIRED:'Conflicting engine imports exist. Inspect the actual entrypoint before modifying the engine; preserve current dependencies and gameplay.'
+  };
+  return [
+    '[GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN]',
+    'engine='+engine.engine+'; reason='+engine.reason+'; sourceEvidence='+engine.existingEvidence.join(','),
+    hints[engine.engine],
+    'New games default to PlayCanvas; use Babylon.js only for proven complex physics/features, and retain Three.js or an existing WebGL engine when it already owns the game. Do not combine competing renderer runtimes or create an unused parallel scene.',
+    'Render genuine 3D volume meshes, depth-aware camera, world-space motion and player input. Flat 2D/canvas sprites, CSS perspective, isometric/2.5D tricks and labels are not final 3D evidence.',
+    'Keep bundled dependencies pinned to the original project and offline-capable where required. Never assume CDN reachability, auto-install missing packages or hardcode WebGPU availability; check WebGL2 compatibility and fallback without changing game semantics.',
+    'Reuse provenance-verified glTF/GLB meshes, compatible materials and motion assets. Use instancing, LOD/culling, compressed assets when supported, bounded mobile pixel ratio and GPU/frame profiling without changing combat ticks, saves, economy, multiplayer authority or controls.',
+    'Static code evidence is not a 3D PASS. Require mobile browser runtime checks for actual draw frames, mesh depth, camera and input changes, lifecycle/retry and save/load. Preserve old sources until the real replacement passes.',
+    '[GENERAL WEB REAL 3D ENGINE IMPLEMENTATION END]'
+  ].join('\n');
+}
 function fullWebGenerationTarget(order={}){const requirements=[...clean(order?.goal).matchAll(/REAL_GAME_FOOTPRINT_TOO_SMALL:\d+:(\d+)/gi)].map(match=>Number(match[1])).filter(Number.isFinite);const minBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MIN_BYTES,...requirements));const maxBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minBytes*2));return{minBytes,maxBytes};}
 function replaceOversizedEmbeddedLearningGuidance(goal='',replacement=''){
   const raw=String(goal??''),start=raw.indexOf(VERIFIED_LEARNING_MOTOR_BEGIN);
@@ -4553,6 +4607,7 @@ productionRequestBlock,
 `Department: ${order.department||'development'}`,
 learningContract.block,
 robloxSourceCoaching?.block||'',
+ordinaryWeb3dEngineGuidance(order,context),
 unityWeb3dCodingBlock,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
