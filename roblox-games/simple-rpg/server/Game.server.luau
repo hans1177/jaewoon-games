@@ -92,8 +92,8 @@ if not startGround then
     startGround.Color = Color3.fromRGB(111, 116, 115)
   else error("SIMPLE_RPG_START_MATERIAL_ASSET_MISSING") end
   startGround.Anchored = true
-  startGround.Transparency = 1
-  startGround.CastShadow = false
+  startGround.Transparency = 0
+  startGround.CastShadow = true
   startGround.CanCollide = true
   startGround:SetAttribute("WalkableGround", true)
   startGround.Parent = workspace
@@ -410,15 +410,17 @@ local civRegions = {
   Color3.fromRGB(133,153,124), Color3.fromRGB(117,169,148),
   Color3.fromRGB(75,136,100), Color3.fromRGB(182,210,222),
 }
--- Former Vibe-made 3D props are removed from rendering. Interaction and
--- collision parts are invisible; only verified imported prefabs may be visible.
-local function civPart(parent, name, size, frame, _color, _material, collide)
+-- 파일명: server/Game.server.luau
+-- 메인: Restore authored terrain/material visibility; verified external prefabs replace only their own visible geometry.
+local function civPart(parent, name, size, frame, color, material, collide)
   local part = Instance.new("Part")
   part.Name = name
   part.Size = size
   part.CFrame = frame
-  part.Transparency = 1
-  part.CastShadow = false
+  part.Color = color
+  part.Material = material or Enum.Material.SmoothPlastic
+  part.Transparency = 0
+  part.CastShadow = true
   part.Anchored = true
   part.CanCollide = collide ~= false
   part.Parent = parent
@@ -441,14 +443,32 @@ local function civPart(parent, name, size, frame, _color, _material, collide)
     end
     visual.Parent = parent
     visual:PivotTo(frame)
+    part.Transparency = 1
+    part.CastShadow = false
   end
   return part
 end
--- Five-era environmental identity is derived from existing research progress;
--- civilization ID never determines the player's era.
--- Self-authored billboard scenery labels removed. UI/interaction data remains.
-local function civSign(_parent, _adornee, _text, _height)
-  return nil
+-- 문명/자원 상호작용: restore readable labels on already-created server objects.
+local function civSign(parent, adornee, text, height)
+  local board = Instance.new("BillboardGui")
+  board.Name = "CivilizationSign"
+  board.Adornee = adornee
+  board.Size = UDim2.fromOffset(176, 48)
+  board.StudsOffsetWorldSpace = Vector3.new(0, height or 4, 0)
+  board.MaxDistance = 78
+  board.AlwaysOnTop = true
+  board.Parent = parent
+  local label = Instance.new("TextLabel")
+  label.Size = UDim2.fromScale(1, 1)
+  label.BackgroundColor3 = Color3.fromRGB(31, 37, 34)
+  label.BackgroundTransparency = 0.15
+  label.TextColor3 = Color3.fromRGB(255, 237, 199)
+  label.TextScaled = true
+  label.TextWrapped = true
+  label.Font = Enum.Font.GothamBold
+  label.Text = text
+  label.Parent = board
+  return board
 end
 local function civMessage(player, text)
   remote:FireClient(player, "CIV_MESSAGE", tostring(text))
@@ -1539,8 +1559,8 @@ for id = 1, 24 do
   civSign(region, monument, race.Name .. "\n" .. race.Landmark, 9)
   -- Existing landmark is the authoritative interaction target, not a client-controlled reward.
   local landmarkPrompt = Instance.new("ProximityPrompt")
-  -- Hide the Roblox default UI while preserving ProximityPrompt input.
-  landmarkPrompt.Style = Enum.ProximityPromptStyle.Custom
+  -- Native prompts remain visible and touch-operable even before external art is imported.
+  landmarkPrompt.Style = Enum.ProximityPromptStyle.Default
   landmarkPrompt.Name = "LandmarkHistory"
   landmarkPrompt.ActionText = "유적 살펴보기"
   landmarkPrompt.ObjectText = race.Landmark
@@ -1576,8 +1596,7 @@ for id = 1, 24 do
     node:SetAttribute("CivilizationResourceType", resource.Type)
     civSign(region, node, resource.Label .. " 채집", 4)
     local gatherPrompt = Instance.new("ProximityPrompt")
-    -- Hide the Roblox default UI while preserving ProximityPrompt input.
-    gatherPrompt.Style = Enum.ProximityPromptStyle.Custom
+    gatherPrompt.Style = Enum.ProximityPromptStyle.Default
     gatherPrompt.Name = "GatherResource"
     gatherPrompt.ActionText = "채집"
     gatherPrompt.ObjectText = resource.Label
@@ -1619,8 +1638,7 @@ for id = 1, 24 do
   civSign(region, tradeStall, race.Name .. " 무역 광장", 4)
   civTradeStalls[id] = tradeStall
   local tradePrompt = Instance.new("ProximityPrompt")
-  -- Hide the Roblox default UI while preserving ProximityPrompt input.
-  tradePrompt.Style = Enum.ProximityPromptStyle.Custom
+  tradePrompt.Style = Enum.ProximityPromptStyle.Default
   tradePrompt.Name = "TradeMarket"
   tradePrompt.ActionText = "시세 확인/거래"
   tradePrompt.ObjectText = race.Name .. " 무역소"

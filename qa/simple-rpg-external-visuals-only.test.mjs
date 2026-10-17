@@ -32,12 +32,16 @@ test('self-authored weather, impact VFX, camera pulses and limb rigs remain dele
 
 test('remaining server geometry is invisible physics and verified external art only', () => {
   assert.match(server, /local function civPart\(parent, name, size, frame, _color, _material, collide\)/);
+  assert.match(server, /part\.Transparency = 0/);
+  assert.match(server, /part\.CastShadow = true/);
+  assert.match(server, /part\.Color = color/);
+  assert.match(server, /part\.Material = material or Enum\.Material\.SmoothPlastic/);
   assert.match(server, /part\.Transparency = 1/);
-  assert.match(server, /part\.CastShadow = false/);
   assert.match(server, /part\.CanCollide = collide ~= false/);
-  assert.doesNotMatch(server, /Instance\.new\("BillboardGui"\)|DefeatedEnemyLootEffect/);
-  assert.equal((server.match(/\.Style = Enum\.ProximityPromptStyle\.Custom/g) || []).length, 3);
-  assert.doesNotMatch(server, /\.Style = Enum\.ProximityPromptStyle\.Default/);
+  assert.match(server, /Instance\.new\("BillboardGui"\)/);
+  assert.doesNotMatch(server, /DefeatedEnemyLootEffect/);
+  assert.equal((server.match(/\.Style = Enum\.ProximityPromptStyle\.Default/g) || []).length, 3);
+  assert.doesNotMatch(server, /\.Style = Enum\.ProximityPromptStyle\.Custom/);
   assert.match(server, /visualTemplate:GetAttribute\("CuratedExternalAsset"\) == true\s+and \(tonumber\(visualTemplate:GetAttribute\("VerifiedRobloxAssetId"\)\) or 0\) > 0/);
   assert.match(client, /enemy:GetAttribute\("CreatureAssetSource"\) == "StudioImported"/);
 });
@@ -48,7 +52,9 @@ test('external slots are present and generated shared motion is disconnected', (
   assert.equal(shared.CuratedWorldModels.$className, 'Folder');
   assert.equal(shared.CuratedWeatherEffects.$className, 'Folder');
   assert.equal(shared.CuratedUiTemplates.$className, 'Folder');
-  assert.doesNotMatch(client, /Instance\.new\("(ScreenGui|Frame|TextButton|TextLabel|ScrollingFrame|ImageLabel|ImageButton)"\)/);
+  assert.match(client, /local function attachNativeHud\(\): \(\)/);
+  assert.match(client, /gui\.Name = "CivilizationHud"/);
+  assert.match(client, /bindExternalButton\(button\)/);
   for (const moduleSource of [companion, market, weather]) {
     assert.match(moduleSource, /VerifiedRobloxAssetId/);
   }
