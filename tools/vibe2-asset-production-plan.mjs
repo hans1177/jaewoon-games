@@ -4492,7 +4492,7 @@ export function buildVibeAssetProductionPlan({
       const license=clean(pack.licenseDeclared||pack.license||sourceCatalog.license).toUpperCase();
       if(!['CC0','CC0-1.0'].includes(license)||pack.gameApplied===true)continue;
       const sourceUrl=clean(pack.sourceUrl||pack.originalUrl||pack.sourcePage);
-      const licenseEvidenceUrl=clean(pack.licenseSourceUrl||pack.licenseEvidence||pack.sourcePage||pack.sourceUrl);
+      const licenseEvidenceUrl=clean(pack.licenseEvidenceUrl||pack.licenseSourceUrl||pack.licenseEvidence||pack.sourcePage||pack.sourceUrl);
       if(!sourceUrl||!licenseEvidenceUrl)continue;
       const bytes=Number(pack.bytes||pack.archiveBytes);
       if(!Number.isSafeInteger(bytes)||bytes<512)continue;
@@ -4500,7 +4500,8 @@ export function buildVibeAssetProductionPlan({
       sharedOriginalArchives.push({
         file,sourcePath:folder+file,sha256,bytes,sourceUrl,licenseEvidenceUrl,
         licenseDeclared:'CC0-1.0',sourceOnly:true,gameApplied:false,
-        role:clean(pack.priority||pack.category||pack.assetKind)||'general'
+        role:clean(pack.role||pack.priority||pack.category||pack.assetKind)||'general',
+        family:clean(pack.family)
       });
     }
   }
