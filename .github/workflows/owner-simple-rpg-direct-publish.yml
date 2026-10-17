@@ -125,20 +125,13 @@ jobs:
           (base/'manifest.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print('EXTERNAL_ASSETS_TOTAL_VERIFIED='+str(total))
           PY
-      - name: Permanently retain downloaded original archives on main
+      - name: Preserve downloaded originals as workflow artifacts without direct main writes
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- assets/external/simple-rpg/
-          if git diff --cached --quiet; then
-            echo 'EXTERNAL_ASSETS_ALREADY_ARCHIVED=YES'
-          else
-            git commit -m "assets: preserve verified CC0 external source archives for 대충알피지"
-            git push origin HEAD:main
-          fi
-          echo 'EXTERNAL_ASSETS_ARCHIVE=assets/external/simple-rpg'
+          test -s assets/external/simple-rpg/manifest.json
+          echo 'EXTERNAL_ASSETS_STORAGE=ARTIFACT_ONLY'
+          echo 'EXTERNAL_ASSETS_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg'
       - name: Retain a separate verified download artifact
         uses: actions/upload-artifact@v4
         with:
@@ -242,24 +235,18 @@ jobs:
           print('WILDLIFE_VERIFIED_PACKS',len(verified),'FAILED_PACKS',len(failed))
           if not verified:raise SystemExit('NO_VALID_WILDLIFE_ASSETS_DOWNLOADED')
           PY
-      - name: Commit verified CC0 animal insect and prehistoric archives
+      - name: Stage verified CC0 wildlife source artifacts without main writes
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/external/simple-rpg/wildlife/
-          if ! git diff --cached --quiet; then
-            git commit -m 'assets: retain licensed wildlife insect prehistoric source archives'
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-          echo 'WILDLIFE_SOURCE_ARCHIVE=assets/external/simple-rpg/wildlife'
+          test -s assets/external/simple-rpg/wildlife/manifest.json
+          echo 'WILDLIFE_SOURCE_STORAGE=ARTIFACT_ONLY'
+          echo 'WILDLIFE_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg/wildlife'
       - name: Save verification evidence
         uses: actions/upload-artifact@v4
         with:
-          name: simple-rpg-wildlife-manifest
-          path: assets/external/simple-rpg/wildlife/manifest.json
+          name: simple-rpg-wildlife-sources
+          path: assets/external/simple-rpg/wildlife/
           if-no-files-found: error
           retention-days: 14
   download_icons_vfx_npc:
@@ -334,24 +321,18 @@ jobs:
           if not {'item-icons','special-icons','vfx','characters-npc'}.issubset(kinds):
             raise SystemExit('REQUIRED_CATEGORY_NOT_DOWNLOADED')
           PY
-      - name: Preserve validated external originals on main
+      - name: Stage original icons effects and NPC sources without main writes
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- assets/external/simple-rpg/icons-vfx-npc/
-          if ! git diff --cached --quiet; then
-            git commit -m 'assets: preserve CC0 RPG icons VFX NPC originals'
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-          echo 'CC0_ORIGINALS_STORED=assets/external/simple-rpg/icons-vfx-npc'
+          test -s assets/external/simple-rpg/icons-vfx-npc/manifest.json
+          echo 'CC0_ORIGINALS_STORAGE=ARTIFACT_ONLY'
+          echo 'CC0_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg/icons-vfx-npc'
       - name: Save verification evidence
         uses: actions/upload-artifact@v4
         with:
-          name: simple-rpg-icons-vfx-npc-evidence
-          path: assets/external/simple-rpg/icons-vfx-npc/manifest.json
+          name: simple-rpg-icons-vfx-npc-sources
+          path: assets/external/simple-rpg/icons-vfx-npc/
           if-no-files-found: error
           retention-days: 14
   download_priority_cc0_assets:
@@ -371,37 +352,18 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/simple-rpg-priority-cc0-download.py
-      - name: Commit verified source archives
+      - name: Stage original priority CC0 archives without main writes
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- assets/external/simple-rpg/priority-v1/ assets/asset-manifest.json
-          if ! git diff --cached --quiet; then
-            git commit -m 'assets: preserve priority CC0 insects animals gear NPC world SFX archives'
-            pushed=0
-            for attempt in 1 2 3 4 5 6 7 8; do
-              git fetch origin main
-              git rebase origin/main
-              if git push origin HEAD:main; then
-                pushed=1
-                echo "ASSET_COMMIT_PUSH_VERIFIED=YES attempt=$attempt"
-                break
-              fi
-              echo "ASSET_COMMIT_RETRY=$attempt"
-              sleep 3
-            done
-            if [ "$pushed" -ne 1 ]; then
-              echo "ASSET_COMMIT_PUSH_VERIFIED=NO"
-              exit 1
-            fi
-          fi
+          test -s assets/external/simple-rpg/priority-v1/manifest.json
+          echo 'PRIORITY_CC0_SOURCE_STORAGE=ARTIFACT_ONLY'
+          echo 'PRIORITY_CC0_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg/priority-v1'
       - name: Retain verified source inventory
         uses: actions/upload-artifact@v4
         with:
-          name: simple-rpg-priority-cc0-manifest
-          path: assets/external/simple-rpg/priority-v1/manifest.json
+          name: simple-rpg-priority-cc0-sources
+          path: assets/external/simple-rpg/priority-v1/
           if-no-files-found: error
           retention-days: 14
   upload_actor_assets:
