@@ -2881,3 +2881,23 @@ test('24H lossless queue checkpoint follows accepted advisory learning and prece
   assert.match(saving,/VIBE2_QUEUE_TASKS_REMOVED=0/);
   assert.equal((workflow.match(/storage-migrate/g)||[]).length,1);
 });
+
+test('explicit owner-to-GPT game edit routes to direct verified publish without overriding Vibe or QA gates',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const owner=policy.ownerCanonicalRules.ownerExclusiveDevelopment;
+  const route=owner.ownerDirectGptRouting;
+  assert.equal(route.status,'OWNER_DIRECT_LOCKED');
+  assert.equal(route.scope,'EXPLICIT_OWNER_TO_GPT_TASK_PER_GAME_OR_RESPONSIBLE_FILE');
+  assert.equal(route.ownerInstructionRequiredForEachTask,true);
+  assert.equal(route.ownerTaskDirectCodeEditRequired,true);
+  assert.equal(route.ownerTaskMayBeDeferredToVibe,false);
+  assert.equal(route.otherGamesRemainInVibeAutonomousBuildUpF0F9,true);
+  assert.equal(route.postVerificationAction,'IMMEDIATE_MAIN_MERGE_AND_EXISTING_DEPLOYMENT');
+  assert.equal(route.platformOwnerHoldOverride,false);
+  assert.equal(route.qaSecurityReleaseGateBypass,false);
+  assert.equal(route.requiresActualMainAndReleaseProof,true);
+  assert.equal(route.ifValidationUnavailableOrFails,'FAIL_CLOSED_KEEP_CANDIDATE_UNMERGED_AND_REPORT_EXACT_BLOCKER');
+  assert.equal(owner.rules.vibeGameSourceMutationForbidden,true);
+  assert.equal(policy.developmentAccess.UNITY,'OWNER_HOLD');
+  assert.equal(policy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
+});
