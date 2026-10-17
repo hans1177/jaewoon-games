@@ -463,6 +463,7 @@ test('owner-approved F9 Pages policy remains scoped to exact secure values and e
   const fields=[
     'developmentSpeedExecution.candidateReleasePromotionChecks.webRequiredDeploymentCheck',
     'developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence',
+    'roblox.deploymentControl.verifiedCyclePublication.sequence',
     'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
     'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
     'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
@@ -474,6 +475,10 @@ test('owner-approved F9 Pages policy remains scoped to exact secure values and e
   assert.match(securityWorkflow,/loop\?\.publishBeforeF9Forbidden!==true/);
   assert.match(securityWorkflow,/loop\?\.exactVerifiedVersionRequiredForPublishAttempt!==true/);
   assert.match(securityWorkflow,/record,requiredRecord/);
+  assert.match(securityWorkflow,/publicationClassificationGate:false/);
+  assert.match(securityWorkflow,/expectedRobloxBaseline/);
+  assert.match(securityWorkflow,/requiredRobloxSequence/);
+  assert.match(securityWorkflow,/head\.roblox\?\.deploymentControl\?\.verifiedCyclePublication\?\.sequence,requiredRobloxSequence/);
   assert.match(securityWorkflow,/security|quarantine|REVIEW/i);
   assert.match(securityWorkflow,/homepageOwner:'HOMEPAGE_MANAGER_AND_DIRECTOR'/);
   assert.match(securityWorkflow,/shadowPipelineForbidden:true/);
