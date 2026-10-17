@@ -4,9 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "web-games/fantasy-survival/index.html"
-      - "web-games/fantasy-survival/tier.html"
-      - ".github/workflows/magic-forest-pages.yml"
+      - 'web-games/**'
+      - '.github/workflows/magic-forest-pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -14,53 +13,66 @@ permissions:
 
 concurrency:
   group: magic-forest-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
+    # GitHub Pages is a supplemental static mirror, not a replacement for any
+    # existing Cloudflare production/release flow. Never deploy PR source.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - name: Checkout
+      - name: Checkout current main web game sources
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           sparse-checkout: |
-            web-games/fantasy-survival
+            web-games
           sparse-checkout-cone-mode: true
 
-      - name: Prepare static site
+      - name: Validate full static mirror inputs
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf _site
-          mkdir -p _site
-          cp web-games/fantasy-survival/index.html _site/index.html
-          cp web-games/fantasy-survival/tier.html _site/tier.html
-          touch _site/.nojekyll
+          test -s web-games/fantasy-survival/index.html
+          test -s web-games/fantasy-survival/tier.html
+          # Every web-games/<id>/ source folder is mirrored; no game-specific allowlist.
+          total="$(find web-games -mindepth 2 -maxdepth 2 -type f -name index.html | wc -l | tr -d ' ')"
+          test "$total" -gt 0
+          printf 'STATIC_WEB_GAME_SOURCES=%s\n' "$total"
 
-      - name: Publish gh-pages branch
+      - name: Publish supplemental game mirrors without replacing the existing forest URLs
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          # Sparse checkout와 무관한 정적 결과 디렉터리에서만 배포 커밋 생성.
-          # 기존 루트의 LFS 변환 파일을 checkout하지 않아 20개 파일 오염 오류 방지.
-          cd _site
-          git init -q
-          git config user.name "jaewoon-pages"
-          git config user.email "pages@users.noreply.github.com"
-          git checkout -qb magic-forest-pages-publish
-          git add -A
-          git commit -qm "pages: publish magic forest"
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
           gh auth setup-git
-          git push origin HEAD:gh-pages --force
-          # The repository's GitHub Pages source is already configured. Its admin API
-          # cannot be changed by GITHUB_TOKEN (HTTP 403); publishing needs only contents:write.
-          # Confirm the exact commit is on gh-pages before claiming a publish.
-          published_sha="$(git ls-remote --exit-code origin refs/heads/gh-pages | cut -f1)"
-          test "$(git rev-parse HEAD)" = "$published_sha"
+          # Existing Pages branch/source and forest root stay exactly in place.
+          git clone -q --depth=1 --branch gh-pages "https://github.com/${GITHUB_REPOSITORY}.git" _site
+          rm -rf _site/web-games
+          cp -a web-games _site/web-games
+          cp web-games/fantasy-survival/index.html _site/index.html
+          cp web-games/fantasy-survival/tier.html _site/tier.html
+          touch _site/.nojekyll
+          git -C _site config user.name 'jaewoon-pages'
+          git -C _site config user.email 'pages@users.noreply.github.com'
+          git -C _site add -A -- index.html tier.html .nojekyll web-games
+          if git -C _site diff --cached --quiet; then
+            echo 'PAGES_MIRROR=UNCHANGED'
+            exit 0
+          fi
+          git -C _site commit -qm 'pages: mirror main web games while preserving forest home'
+          # Normal non-force push prevents loss of an independent Pages publication.
+          git -C _site push origin HEAD:gh-pages
+          published_sha="$(git -C _site ls-remote --exit-code origin refs/heads/gh-pages | cut -f1)"
+          test "$(git -C _site rev-parse HEAD)" = "$published_sha"
+          echo 'PAGES_MIRROR=PUSH_VERIFIED'
 
-      - name: Show play URL
-        run: echo "MAGIC_FOREST_PLAY_URL=https://${GITHUB_REPOSITORY_OWNER}.github.io/jaewoon-games/"
+      - name: List unchanged and supplementary URLs
+        run: |
+          echo "MAGIC_FOREST_PLAY_URL=https://${GITHUB_REPOSITORY_OWNER}.github.io/jaewoon-games/"
+          echo "OTHER_WEB_GAME_MIRRORS=https://${GITHUB_REPOSITORY_OWNER}.github.io/jaewoon-games/web-games/<game-id>/"
+          echo 'CLOUDFLARE_ORIGINAL_RELEASE_FLOW=UNCHANGED'
+          echo 'GITHUB_PAGES_IS_SUPPLEMENTAL_NOT_RELEASE_GATE=YES'
