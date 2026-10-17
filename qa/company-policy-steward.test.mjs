@@ -169,3 +169,26 @@ test('F0 live planner uses verified main policy only at production call site, no
   assert.ok(clock.includes("cron: '*/5 * * * *'"));
   assert.equal(policy.finalDevelopmentLock.sequenceLock.status,'LOCKED');
 });
+
+
+test('issue 8239 reserve and DESIGN_ONLY use the verified canonical policy without changing the F0–F9 chain',()=>{
+  const canonical='company-learning/platform-release-roadmap.json';
+  const reserve=fs.readFileSync(path.join(root,'.github/workflows/vibe2-continuous-core.yml'),'utf8');
+  const design=fs.readFileSync(path.join(root,'.github/workflows/company-seed-design-runtime.yml'),'utf8');
+  assert.ok(reserve.includes('COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/'+canonical+' node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch'));
+  const resolve=design.split('  resolve-seed-targets:')[1]?.split('  design-cycle:')[0];
+  const cycle=design.split('  design-cycle:')[1]?.split('  promote')[0];
+  for(const job of [resolve,cycle]){
+    assert.ok(job,'both existing DESIGN_ONLY jobs must remain present');
+    assert.ok(job.includes('COMPANY_VERIFIED_POLICY_PATH: '+canonical));
+    assert.ok(job.includes('COMPANY_VERIFIED_DESIGN_POLICY_PATH: '+canonical));
+  }
+  assert.ok(cycle.includes('node tools/company-design-cycle.mjs &'));
+  assert.ok(cycle.includes('evaluateMinimumDesignContract'));
+  assert.equal((reserve.match(/COMPANY_VERIFIED_POLICY_PATH=\/tmp\/vibe2-main\/company-learning\/platform-release-roadmap.json node \/tmp\/vibe2-main\/tools\/vibe2-queue-control.mjs reserve-batch/g)||[]).length,1);
+  const policy=JSON.parse(fs.readFileSync(path.join(root,canonical),'utf8'));
+  assert.equal(policy.finalDevelopmentLock.sequenceLock.status,'LOCKED');
+  assert.deepEqual(policy.finalDevelopmentLock.sequenceLock.candidateOrderMustRemain.slice(0,2),['F0_SOURCE_PREFLIGHT_PASS','PRIVATE_RUNTIME_CANDIDATE_DEPLOY']);
+  assert.equal(policy.fixedAutonomousDevelopmentOperatingContract.sourceGrowthIntegrity.existingWorkingGameplayAndSaveSemanticsPreserved,true);
+  assert.equal(policy.fixedAutonomousDevelopmentOperatingContract.autonomousBottleneckManagement.mayNotBypassSecurityQaRuntimeOrReleaseGates,true);
+});
