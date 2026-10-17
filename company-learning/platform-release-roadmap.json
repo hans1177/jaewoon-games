@@ -1,5 +1,5 @@
 {
-  "version": 580,
+  "version": 581,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -1522,15 +1522,15 @@
       "publicationTargetFromStudioForbidden": true,
       "postInternalReleaseActualVibePlayRequired": true,
       "verifiedCyclePublication": {
-        "version": 4,
-        "authority": "OWNER_DIRECTIVE_2026-10-18",
-        "objective": "ALL_GAMES_PUBLISH_EXACT_F9_VERIFIED_CYCLE_REGARDLESS_OF_SCORE",
+        "version": 3,
+        "authority": "OWNER_DIRECTIVE_2026-09-30",
+        "objective": "ALL_GAMES_DISPATCH_EXACT_F9_VERIFIED_CANONICAL_PUBLISH_IN_EXISTING_FLOW_REGARDLESS_OF_SCORE_OR_RELEASE_CLASS; NEXT_CYCLE_CONTINUES",
         "sequence": [
           "EVOLUTION_SOURCE_MUTATION",
           "F0_SOURCE_INTEGRITY",
           "F1_TO_F8_CODE_AND_STATIC_QA",
           "F9_EXACT_FINAL_REVIEW",
-          "DISPATCH_EXACT_F9_ARTIFACT_TO_EXISTING_CANONICAL_TARGET",
+          "DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH",
           "START_NEXT_EVOLUTION_CYCLE_IMMEDIATELY",
           "RECONCILE_CANONICAL_PUBLISH_RESULT_ASYNC"
         ],
@@ -6198,15 +6198,15 @@
       }
     },
     "verifiedF0F9PublicationLoop": {
-      "version": 3,
-      "authority": "OWNER_DIRECTIVE_2026-10-18",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "appliesTo": [
         "WEB",
         "ROBLOX",
         "UNITY"
       ],
-      "objective": "ALL_GAMES_PUBLISH_EXACT_F9_VERIFIED_VERSION_REGARDLESS_OF_NUMERICAL_SCORE; KEEP_EXISTING_VALIDATION_AND_RETRY",
+      "objective": "EVERY_GAME_PUBLISH_EXACT_F9_VERIFIED_VERSION_WITHOUT_SCORE_THRESHOLD_AND_RETRY_UNTIL_SUCCESS",
       "sequence": [
         "GAME_SOURCE_MUTATION",
         "F0",
@@ -6220,7 +6220,7 @@
         "F8",
         "F9",
         "RELEASE_CLASSIFICATION",
-        "DISPATCH_EXACT_F9_PUBLISH_FOR_EVERY_GAME",
+        "PUBLISH_EVERY_F9_VERIFIED_GAME",
         "IMMEDIATE_NEXT_EVOLUTION_CYCLE"
       ],
       "f9Terminal": false,
@@ -6229,7 +6229,7 @@
       "publicationOutcomeBlocksNextEvolution": false,
       "publicationVisibilityBlocksNextEvolution": false,
       "internalOrExternalVisibilityIrrelevantToEvolutionLoop": true,
-      "nextCycleTrigger": "F9_VERIFIED_AND_PUBLISH_DISPATCHED_REGARDLESS_OF_PUBLISH_OUTCOME",
+      "nextCycleTrigger": "F9_VERIFIED_AND_PUBLISH_DISPATCHED_NEXT_EVOLUTION_INDEPENDENT_OF_PUBLICATION_RESULT",
       "publishFailureAction": "KEEP_EVOLUTION_RUNNING_AND_ROUTE_PUBLICATION_FAILURE_TO_EXISTING_CAUSAL_REPAIR_RETRY",
       "publicationFailureMustRemainRetryTracked": true,
       "publicationRetryMode": "AUTOMATIC_UNBOUNDED_CAUSAL_REDISPATCH",
@@ -9050,20 +9050,22 @@
     "ownerEveryGameF9Publish20261018": {
       "authority": "OWNER_DIRECT",
       "status": "ACTIVE",
-      "gameScope": "ALL_GAMES",
-      "when": "AFTER_EXACT_VERIFIED_F0_TO_F9",
-      "publicationMandatory": true,
-      "numericalScoreThresholdForbidden": true,
-      "platformTargets": {
+      "scope": "EVERY_GAME_AFTER_VERIFIED_F0_F9",
+      "publicationScoreGate": false,
+      "existingCanonicalF0F9": true,
+      "publicationMustBeAttempted": true,
+      "failedPublishUsesExistingRetry": true,
+      "nextEvolutionDoesNotWaitForPublishedVisibility": true,
+      "platforms": {
         "WEB": "GITHUB_PAGES",
-        "ROBLOX": "EXISTING_ROBLOX_PUBLICATION_TARGET",
-        "UNITY": "EXISTING_APP_DISTRIBUTION"
+        "ROBLOX": "ROBLOX_EXISTING_OPEN_CLOUD",
+        "UNITY": "EXISTING_APP_TEST_BUILD"
       },
-      "cloudflareWorkersRole": "MULTIPLAYER_ONLY",
-      "actualRuntimeAndSecurityQaRequired": true,
-      "failedPublication": "EXISTING_CAUSAL_REPAIR_RETRY",
-      "newWorkflowForbidden": true,
-      "sourceAndSaveDataMustBePreserved": true
+      "cloudflareWorkers": "MULTIPLAYER_ONLY",
+      "githubOriginalAssetsAndSaveKeysPreserved": true,
+      "homepageOwner": "HOMEPAGE_MANAGER_AND_DIRECTOR",
+      "freeExistingActionsOnly": true,
+      "shadowPipelineForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -30565,6 +30567,10 @@
       "everyVerifiedCycle": true,
       "eligibility": "EXACT_F9_AND_CURRENT_CANDIDATE_QA",
       "lobbyOrHomepageClassificationRequired": false,
+      "numericalScoreBlocksVerifiedDeployment": false,
+      "allGamesEligibleAfterExactF9": true,
+      "deployDispatchMandatoryAfterVerifiedFlow": true,
+      "failedOrUnverifiedFlowAction": "REPAIR_AND_RETRY_WITHOUT_FALSE_RELEASE_CLAIM",
       "publicReleaseDecisionOwner": "OWNER_ONLY",
       "automaticVisibilityChange": false,
       "preserveExistingTargetVisibility": true,
@@ -30573,8 +30579,7 @@
       "existingPublicationRetryOnly": true,
       "sequenceUnchanged": true,
       "ownerDirective": "2026-10-13",
-      "allowF9VerifiedLocalArtifact": true,
-      "numericalScoreBlocksVerifiedDeployment": false
+      "allowF9VerifiedLocalArtifact": true
     }
   },
   "homepageGameMediaContract": {
