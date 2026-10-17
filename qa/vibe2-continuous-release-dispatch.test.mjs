@@ -489,6 +489,10 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.equal((publisher.match(/^  workflow_dispatch:$/gm)||[]).length,1,'Pages publisher must declare manual workflow dispatch only once');
   assert.match(publisher,/web-games\/publish-manifest\.json/);
   assert.match(publisher,/sourceSha:process\.env\.GITHUB_SHA/);
+  assert.ok(publisher.includes('sourceTreeShas'), 'published manifest carries per-game source identity');
+  assert.ok(publisher.includes('HEAD:${root}'), 'source identity comes from the exact main Git tree');
+  assert.ok(publisher.includes('m.sourceTreeShas?.[id]'), 'missing per-game tree hashes must fail live verification');
+
   assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
   assert.match(publisher,/git clone --quiet --depth=1 --single-branch --branch gh-pages/);
   assert.match(publisher,/test -f "\$site\/index\.html"/);
@@ -519,7 +523,7 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.match(publisher,/WEB_PAGES_LIVE_SOURCE_SHA=/);
 });
 
-test('Web main deployment requires exact GitHub Pages source SHA, real route and non-200 failure handling',()=>{
+test('Web main deployment requires exact F9 game source tree in GitHub Pages, real route and non-200 failure handling',()=>{
   const section=releaseWorkflow.slice(releaseWorkflow.indexOf('  web-release:'),releaseWorkflow.indexOf('\n  unity-web-build:'));
   const promote=section.slice(section.indexOf('      - name: Promote approved web'),section.indexOf('      - name: Settle web result'));
   assert.match(section,/ref: \$\{\{ needs\.inspect\.outputs\.candidate_sha \}\}/);
@@ -533,7 +537,7 @@ test('Web main deployment requires exact GitHub Pages source SHA, real route and
   assert.ok(promote.includes('.head_sha=='),'same exact SHA must suppress duplicate queued publisher');
   assert.match(promote,/Homepage PR Fast QA/);
   assert.match(promote,/publish-manifest\.json/);
-  assert.match(promote,/m\.sourceSha!==sha/);
+  assert.ok(promote.includes('m.sourceTreeShas?.[gameId]!==treeSha'),'web must require exact F9 game tree in published manifest');
   assert.match(promote,/m\.routes\.includes\(route\)/);
   assert.match(promote,/curl --fail/);
   assert.match(promote,/target_route="web-games\/\$GAME_ID\/"/);
@@ -544,7 +548,7 @@ test('Web main deployment requires exact GitHub Pages source SHA, real route and
   assert.doesNotMatch(promote,/git push origin HEAD:gh-pages --force/);
   // Both SHA and individual game path must bind to the actual published manifest.
   const verification=promote.slice(promote.indexOf("          const fs=require('node:fs');"),promote.indexOf("          NODE",promote.indexOf("          const fs=require('node:fs');")));
-  assert.match(verification,/m\.sourceSha!==sha/);
+  assert.ok(verification.includes('m.sourceTreeShas?.[gameId]!==treeSha'),'verified game tree must agree with real published route');
   assert.match(verification,/!m\.routes\.includes\(route\)/);
 });
 
