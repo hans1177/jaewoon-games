@@ -2,6 +2,7 @@
 // 설계 게이트 점수와 필수 문법·멀티·공간 그래픽 회귀 검증
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {fileURLToPath} from 'node:url';
 import {runInNewContext} from 'node:vm';
 import {computeVibeSeedProposal} from '../tools/company-game-seed-bootstrap.mjs';
 import {repairDesignRequiredFields} from '../tools/company-design-prepromotion-repair.mjs';
@@ -9,6 +10,9 @@ import {CAUSAL_DNA_LIBRARY} from '../tools/game-seed-state.mjs';
 import {classifyRobloxGenre} from '../tools/roblox-genre-profile.mjs';
 import {buildConceptSystemBlueprint} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {designPlayabilityRequirements,DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2,validateDesignAuthoringContent} from '../tools/company-design-gate-scoring-v2.mjs';
+
+// 검증기는 명시적으로 선택된 현재 중앙정책만 읽는다. 테스트에서도 동일 원본을 지정한다.
+process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH ||= fileURLToPath(new URL('../company-learning/platform-release-roadmap.json',import.meta.url));
 
 assert.equal(Object.keys(DESIGN_GATE_WEIGHTS).length,11);
 assert.equal(Object.values(DESIGN_GATE_WEIGHTS).reduce((a,b)=>a+b,0),100);
