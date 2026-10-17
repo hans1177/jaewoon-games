@@ -59518,11 +59518,153 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_394f13cfeccc9dcaa379a518",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8318",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8318,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe-roblox-f0-repair-blocker-diagnostics",
+        "baseSha": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
+        "headSha": "912e29570964d6196ada59ea8c0b798a6c7a259c",
+        "mergeCommitSha": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
+        "mergedAt": "2026-10-17T13:02:26Z",
+        "authorLogin": "hans1177",
+        "titleHash": "970704326c254e07cbd26bee4c6076bd55dfc1a8a580f5d25f791f4175df132d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe-roblox-f0-repair-blocker-diagnostics",
+        "candidateSha": "912e29570964d6196ada59ea8c0b798a6c7a259c"
+      },
+      "changeStats": {
+        "changedFileCount": 14,
+        "codingRelevantFileCount": 14,
+        "addedLineCount": 144,
+        "deletedLineCount": 2287,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "roblox-games/defense/roblox-source-bootstrap.json",
+          "roblox-games/defense/server/Game.server.luau",
+          "roblox-games/defense/shared/GameConfig.luau",
+          "roblox-games/dice-battle-board/roblox-source-bootstrap.json",
+          "roblox-games/dice-battle-board/server/Game.server.luau",
+          "roblox-games/dice-battle-board/shared/GameConfig.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/roblox-source-bootstrap.json",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+          "roblox-games/survival2/roblox-source-bootstrap.json",
+          "roblox-games/survival2/server/Game.server.luau",
+          "roblox-games/survival2/shared/GameConfig.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "qa/company-development-roblox-runtime.test.mjs",
+          "roblox-games/defense/roblox-source-bootstrap.json",
+          "roblox-games/defense/server/Game.server.luau",
+          "roblox-games/defense/shared/GameConfig.luau",
+          "roblox-games/dice-battle-board/roblox-source-bootstrap.json",
+          "roblox-games/dice-battle-board/server/Game.server.luau",
+          "roblox-games/dice-battle-board/shared/GameConfig.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/roblox-source-bootstrap.json",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
+          "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
+          "roblox-games/survival2/roblox-source-bootstrap.json",
+          "roblox-games/survival2/server/Game.server.luau",
+          "roblox-games/survival2/shared/GameConfig.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8318",
+        "merge-commit:4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
+        "base-main:59a5f687c13db0b59b124db232f86b4c7d4bda63"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 479
+    "total": 480
   }
 }
