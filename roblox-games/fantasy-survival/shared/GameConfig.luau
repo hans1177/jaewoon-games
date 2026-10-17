@@ -71,7 +71,7 @@ local Config = {
     Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,
     PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,
     SharedObjective = 0, RoundScore = 0,
-    WorldTreeRoots = 0, WorldTreeBossClears = 0, SovereignCores = 0, ForestWoodenSwords = 0,
+    WorldTreeRoots = 0, WorldTreeRootNextAt = 0, WorldTreeBossClears = 0, SovereignCores = 0, ForestWoodenSwords = 0,
     BearClaws = 0, BearHides = 0, BearFangs = 0,
   },
 
