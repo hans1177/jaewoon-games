@@ -467,6 +467,7 @@ test('owner-approved F9 Pages policy remains scoped to exact secure values and e
     'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
     'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
     'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
+    'changeRecord.playableWebMandatoryDeployment20261002.nextBuildUpBeforeDeploymentSuccessForbidden',
     'changeRecord.ownerEveryGameF9Publish20261018'
   ];
   for(const key of fields)assert.ok(securityWorkflow.includes(key),'missing precisely reviewed owner field '+key);
@@ -476,6 +477,8 @@ test('owner-approved F9 Pages policy remains scoped to exact secure values and e
   assert.match(securityWorkflow,/loop\?\.exactVerifiedVersionRequiredForPublishAttempt!==true/);
   assert.match(securityWorkflow,/record,requiredRecord/);
   assert.match(securityWorkflow,/publicationClassificationGate:false/);
+  assert.match(securityWorkflow,/nextBuildUpBeforeDeploymentSuccessForbidden!==true/);
+  assert.match(securityWorkflow,/nextBuildUpBeforeDeploymentSuccessForbidden!==false/);
   assert.match(securityWorkflow,/expectedRobloxBaseline/);
   assert.match(securityWorkflow,/requiredRobloxSequence/);
   assert.match(securityWorkflow,/head\.roblox\?\.deploymentControl\?\.verifiedCyclePublication\?\.sequence,requiredRobloxSequence/);
