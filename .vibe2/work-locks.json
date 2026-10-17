@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-o0b6e6",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-unity-web-repair-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "cff34815c45fdece153b9f0e1f1786886b06a6d3",
+      "runId": "39006649440",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-17T05:50:39.579Z",
+      "expiresAt": "2026-10-17T06:35:39.579Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-unity-web-repair-v1"
+      ]
+    }
+  ]
 }
