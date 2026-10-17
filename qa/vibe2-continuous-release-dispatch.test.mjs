@@ -485,7 +485,9 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.match(publisher,/web-games\/publish-manifest\.json/);
   assert.match(publisher,/sourceSha:process\.env\.GITHUB_SHA/);
   assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
-  assert.match(publisher,/git fetch --no-tags --depth=1 origin gh-pages/);
+  assert.match(publisher,/git clone --quiet --depth=1 --single-branch --branch gh-pages/);
+  assert.match(publisher,/test -f "\$site\/index\.html"/);
+  assert.match(publisher,/GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
   assert.match(publisher,/git -C "\$site" push origin HEAD:gh-pages/);
   assert.doesNotMatch(publisher,/git push origin HEAD:gh-pages --force/);
   assert.match(publisher,/if: github\.event_name != 'pull_request'/);
