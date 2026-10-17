@@ -10,10 +10,22 @@ import { selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web
 
 const ROOT=process.cwd();
 const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'game-catalog.json'),'utf8'));
-const gameIds=selectDevelopmentWebValidationGames({catalog})
-  .map(game=>String(game.id||'').trim())
-  .filter(Boolean)
-  .sort();
+// 실제 HTML을 가진 기존 웹게임을 전수 검사한다. 웹게임으로 선언한 누락 소스는
+// selector가 여전히 반환하므로 반드시 HTTP 404 검사에서 실패한다.
+const webSourceExists=game=>{
+  const id=String(game.id||'').trim();
+  return /^[a-z0-9][a-z0-9-]*$/.test(id)
+    &&fs.existsSync(path.join(ROOT,'web-games',id,'index.html'));
+};
+const selected=selectDevelopmentWebValidationGames({catalog,webSourceExists});
+const gameIds=selected.map(game=>String(game.id||'').trim()).filter(Boolean).sort();
+const sourceUnclaimed=(catalog.games||[]).filter(game=>
+  game.productionClass==='DEVELOPMENT_CONFIRMED'&&!webSourceExists(game)
+  &&game.homepageWebPlayable!==true&&game.canonical?.sources?.web?.playable!==true
+  &&String(game.selectedPlatform||game.canonical?.production?.selectedPlatform||'').toUpperCase()!=='WEB'
+).map(game=>String(game.id||'')).filter(Boolean).sort();
+console.log('DEVELOPMENT_WEB_SOURCE_UNCLAIMED='+sourceUnclaimed.join(','));
+console.log('DEVELOPMENT_WEB_SOURCE_EXISTS_CHECKED='+gameIds.length);
 
 assert.ok((catalog.games||[]).length>=10,'DEVELOPMENT_CONFIRMED browser smoke requires current game catalog');
 if(!gameIds.length){
