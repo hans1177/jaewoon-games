@@ -52,6 +52,14 @@ test('native Roblox uses approved design and verified library assets before any 
   assert.ok(noise.roles.includes('TERRAIN'));
   assert.equal(noise.existingVerifiedSourceCount,1);
   assert.deepEqual(noise.sourceCandidates.map(row=>row.assetId),['verified-stone']);
+  const derived=noise.sourceCandidates[0].derivative;
+  assert.equal(derived.sourceAssetId,'verified-stone');
+  assert.equal(derived.designFingerprint,approved);
+  assert.equal(derived.approvedStyleProfile,'STYLIZED_FANTASY');
+  assert.equal(derived.status,'NATIVE_AUTHORING_SOURCE_REVIEW_REQUIRED');
+  assert.equal(derived.createdArtifact,false);
+  assert.equal(derived.gameplayAuthority,false);
+  assert.ok(derived.visualAxes.includes('MATERIAL_RESPONSE'));
   assert.equal(noise.status,'EXISTING_OWNER_ALGORITHM_REVIEW_REQUIRED');
   assert.equal(plan.references.find(row=>row.id==='BLENDER').externalExecutionPerformed,false);
   assert.equal(plan.sourceMutationPerformed,false);
