@@ -3,6 +3,7 @@
 // 기존 게임 루트만 사용하며, 소유자 지시가 명시된 Web 프로토타입은 같은 index 파일 전체 교체를 허용한다.
 
 import fs from 'node:fs';
+import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import crypto from 'node:crypto';
 import { inflateSync } from 'node:zlib';
 import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
@@ -4986,6 +4987,7 @@ function repeatedFailureStrategyGuidance(failureClass='',repeatCount=0){
 }
 export function generationFailureClass(error){
   const message=clean(error?.message||error);
+  if(error?.vibe2InfrastructureFailure===true||/GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE|GEMINI_AUTH_OR_BILLING_BLOCKED|GEMINI_HTTP_ERROR_NO_LOCAL_FALLBACK/i.test(message))return'EXTERNAL_AI_UNAVAILABLE';
   if(/SPATIAL_BLUEPRINT_INVALID/i.test(message))return'SPATIAL_BLUEPRINT';
   if(/INTERFACE_BLUEPRINT_INVALID/i.test(message))return'INTERFACE_BLUEPRINT';
   if(/^SINGLE_MOTION_/.test(message))return'SINGLE_MOTION_SCOPE';
@@ -6136,6 +6138,9 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
       return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,verifiedExternalLearningPromptChecks,verifiedExternalLearningPromptAllAttempts:(verifiedExternalLearningContract?.required!==true)||verifiedExternalLearningPromptChecks===attempt,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxRebuildFocused,initialPromptBytes:Buffer.byteLength(prompt,'utf8'),requestPromptBytes:attemptPromptBytes,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,gameSourcePairCompletion:multiFilePairRequired&&systemAtomicPairCompletion!=null,truncatedOutputCreditUsed,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,repeatedFailureStrategyShifts,repeatedRejectedPatchCount,repeatedRejectedPatchStrategyShifts,repeatedRejectedPatchGuidanceCount,rejectedPatchFingerprintCount:rejectedPatchHistory.size,failureHistory:[...failureHistory],focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
+      // Provider quota/access outages are infrastructure, not an invalid gameplay edit.
+      // Do not waste game-code retries or apply learning penalties on a model outage.
+      if(error?.vibe2InfrastructureFailure===true)throw error;
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
       if(partialOutput.trim())lastRaw=partialOutput;
@@ -6393,45 +6398,23 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   }
   throw lastError||new Error('candidate generation failed');
 }
-async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){
+export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){
   const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase();
   if(provider!=='GEMINI_API')throw new Error('LOCAL_AI_PERMANENTLY_FORBIDDEN: only Gemini API is authorized');
-  // node:test의 명시적 응답 파일은 결정론적 회귀검사용이며 AI 실행이 아니다.
-  // 실제 후보 생성에서는 파일 대체를 허용하지 않고 반드시 외부 API로 요청한다.
+  // Strictly test-only fixtures. Real candidates must call the external API.
   if(clean(responseFile)){
-    if(!/^child-/.test(clean(process.env.NODE_TEST_CONTEXT)))
-      throw new Error('MODEL_RESPONSE_FIXTURE_TEST_CONTEXT_REQUIRED');
+    if(!/^child-/.test(clean(process.env.NODE_TEST_CONTEXT)))throw new Error('MODEL_RESPONSE_FIXTURE_TEST_CONTEXT_REQUIRED');
     return fs.readFileSync(path.resolve(responseFile),'utf8');
   }
-  const apiKey=clean(process.env.GEMINI_API_KEY);
-  if(!apiKey)throw new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
   if(images.length)throw new Error('GEMINI_IMAGE_INPUT_ADAPTER_NOT_VERIFIED');
-  const geminiModel=clean(process.env.VIBE2_GEMINI_MODEL||'gemini-2.5-flash');
-  if(!/^gemini-[a-z0-9.-]+$/.test(geminiModel))throw new Error('GEMINI_MODEL_INVALID');
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),Math.max(10000,timeoutMs));
-  try{
-    const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(geminiModel)+':generateContent',{
-      method:'POST',signal:controller.signal,
-      headers:{'content-type':'application/json','x-goog-api-key':apiKey},
-      body:JSON.stringify({contents:[{role:'user',parts:[{text:String(prompt)}]}],
-        generationConfig:{temperature:Math.max(0,Math.min(.4,Number(temperature)||0)),
-          maxOutputTokens:Math.max(512,Math.min(8192,Number(maxPredict)||3072))}})
-    });
-    if(!response.ok){
-      const status=response.status;
-      if(status===429||status===402||status===403)throw new Error('GEMINI_QUOTA_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+status);
-      throw new Error('GEMINI_HTTP_ERROR_NO_LOCAL_FALLBACK:'+status);
-    }
-    const payload=await response.json();
-    const raw=(payload.candidates?.[0]?.content?.parts||[]).filter(x=>typeof x.text==='string').map(x=>x.text).join('');
-    if(!raw.trim())throw new Error('GEMINI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
-    if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&(/no_think|think|```/i).test(raw))throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
-    return raw;
-  }catch(error){
-    if(error?.name==='AbortError')throw new Error('GEMINI_TIMEOUT_NO_LOCAL_FALLBACK');
-    throw error;
-  }finally{clearTimeout(timer);}
+  const {text}=await requestGeminiFreePair({
+    apiKey:clean(process.env.GEMINI_API_KEY),
+    contents:[{role:'user',parts:[{text:String(prompt)}]}],
+    maxOutputTokens:maxPredict,timeoutMs,temperature
+  });
+  if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&(/no_think|think|```/i).test(text))
+    throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
+  return text;
 }
 
 function currentBranch(cwd){try{return clean(execFileSync('git',['rev-parse','--abbrev-ref','HEAD'],{cwd,encoding:'utf8'}));}catch{return'';}}
@@ -6938,7 +6921,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const modelRouting=resolveAssetSourceModel(order,model);
   const effectiveModel=modelRouting.selectedModel;
   const developmentAuthority=target==='system'
-    ?{owner:'VIBE2_VIBE3',provider:'GEMINI_API',model:clean(process.env.VIBE2_GEMINI_MODEL||'gemini-2.5-flash'),role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
+    ?{owner:'VIBE2_VIBE3',provider:'GEMINI_API',model:clean(process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash'),role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
     :assertGameDevelopmentAuthority();
   const bootstrap=sourceRootBootstrapAllowed(order,target,sourceRootRelative,responsibleFiles);
   const sourceRootExists=fs.existsSync(sourceRoot)&&fs.statSync(sourceRoot).isDirectory();
