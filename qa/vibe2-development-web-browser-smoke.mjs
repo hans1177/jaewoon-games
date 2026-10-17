@@ -18,7 +18,21 @@ const webSourceExists=game=>{
     &&fs.existsSync(path.join(ROOT,'web-games',id,'index.html'));
 };
 const selected=selectDevelopmentWebValidationGames({catalog,webSourceExists});
-const gameIds=selected.map(game=>String(game.id||'').trim()).filter(Boolean).sort();
+const allGameIds=selected.map(game=>String(game.id||'').trim()).filter(Boolean).sort();
+// [메인] PR은 실제 변경한 Web 게임의 독립 런타임을 검증하고, main/push는 모든 기존 Web 게임을 감사한다.
+// 허용되지 않은 경로 또는 선언되지 않은 게임을 조용히 빼지 않는다.
+const requestedScope=String(process.env.VIBE2_BROWSER_CHANGED_GAMES||'ALL').trim();
+const requestedIds=requestedScope==='ALL'?null:requestedScope==='NONE'?[]
+  :requestedScope.split(',').map(id=>id.trim()).filter(Boolean);
+if(requestedIds){
+  assert.ok(requestedIds.every(id=>/^[a-z0-9][a-z0-9-]*$/.test(id)),
+    'DEVELOPMENT_WEB_BROWSER_SCOPE_INVALID');
+  const unknown=requestedIds.filter(id=>!allGameIds.includes(id));
+  assert.equal(unknown.length,0,'DEVELOPMENT_WEB_BROWSER_SCOPE_SOURCE_UNCLAIMED:'+unknown.join(','));
+}
+const gameIds=requestedIds?allGameIds.filter(id=>requestedIds.includes(id)):allGameIds;
+console.log('DEVELOPMENT_WEB_BROWSER_SCOPE='+requestedScope);
+console.log('DEVELOPMENT_WEB_BROWSER_FULL_CATALOG='+allGameIds.length);
 const sourceUnclaimed=(catalog.games||[]).filter(game=>
   game.productionClass==='DEVELOPMENT_CONFIRMED'&&!webSourceExists(game)
   &&game.homepageWebPlayable!==true&&game.canonical?.sources?.web?.playable!==true
@@ -30,7 +44,7 @@ console.log('DEVELOPMENT_WEB_SOURCE_EXISTS_CHECKED='+gameIds.length);
 assert.ok((catalog.games||[]).length>=10,'DEVELOPMENT_CONFIRMED browser smoke requires current game catalog');
 if(!gameIds.length){
   console.log('DEVELOPMENT_WEB_BROWSER_SMOKE=NOT_APPLICABLE');
-  console.log('DEVELOPMENT_WEB_BROWSER_SMOKE_REASON=OWNER_NATIVE_ONLY_SCOPE_WITHOUT_PUBLIC_WEB_PLAYABILITY_CLAIMS');
+  console.log('DEVELOPMENT_WEB_BROWSER_SMOKE_REASON='+ (requestedScope==='NONE'?'NO_CHANGED_WEB_SOURCE':'NO_PUBLIC_WEB_PLAYABILITY_CLAIMS'));
   process.exit(0);
 }
 
