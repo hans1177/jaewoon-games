@@ -618,10 +618,37 @@ export function completeOwnerExclusiveGameScope({
       .every(value=>Number.isSafeInteger(Number(value))&&Number(value)>0)
     &&checks.sourceIntegrityPassed===true&&checks.f0ToF9Verified===true
     &&checks.policyPassed===true&&checks.securityPassed===true;
-  // 미검증, 실패, 테스트 계획은 완료 아님. 개발 게임은 중앙 정책상 정식 서버 발행 생략이 정상이다.
-  const verified=sourceEvidence
+  // 중앙정책의 명시적 오너 직접 비공개 게시 예외는 F9 PASS를 요구하지 않는다.
+  // 해당 경우에도 현재 main 소스 SHA·실제 소스 가드·빌드·기존 Place 게시 근거가
+  // 모두 필요하며, 별도 Vibe F0→F9 반복을 완료한 것으로 취급하지 않는다.
+  const ownerPublish=policy?.roblox?.deploymentControl?.ownerDirectCanonicalPublishException||{};
+  const specificTarget=exclusive.implementationScope?.publicationTarget||{};
+  const directPublishAllowed=ownerPublish.enabled===true
+    &&(ownerPublish.gameIds||[]).includes(id)
+    &&ownerPublish.trigger==='EXPLICIT_OWNER_DIRECT_PUBLISH_INSTRUCTION'
+    &&ownerPublish.f9RequiredForOwnerDirectPublish===false
+    &&ownerPublish.canonicalPrivateTargetOnly===true
+    &&scopeTarget==='ROBLOX';
+  const ownerPublishVerified=directPublishAllowed
+    &&/^[0-9a-f]{40}$/.test(sha)
+    &&completion.mainSourceSha===sha
+    &&checks.sourceIntegrityPassed===true
+    &&checks.exactMainSourceRevision===true
+    &&checks.staticSourceGuardPassed===true
+    &&checks.buildPassed===true
+    &&checks.securityPassed===true
+    &&[checks.staticQaRunId,checks.buildRunId,checks.securityRunId].every(value=>
+      Number.isSafeInteger(Number(value))&&Number(value)>0)
+    &&published
+    &&String(publication.targetId)===String(specificTarget.placeId)
+    &&(!completion.temporaryPublishArtifactCreated
+      ||checks.temporaryPublishArtifactRemoved===true);
+  // 미검증, 실패, 테스트 계획은 완료 아님. 개발 게임의 일반 배포 생략과
+  // 명시적 오너 전용 비공개 게시를 혼동하지 않는다.
+  const standardVerified=sourceEvidence
     &&['development-confirmed','release-confirmed'].includes(releaseState)
     &&(releaseState==='release-confirmed'?published:(developmentSkip||published));
+  const verified=standardVerified||ownerPublishVerified;
   if(!verified&&ownerExplicitRelease!==true)return unchanged('OWNER_WORK_EVIDENCE_OR_PUBLICATION_NOT_VERIFIED');
   const nextPolicy={
     ...policy,ownerCanonicalRules:{...rules,ownerExclusiveDevelopment:{
@@ -633,7 +660,9 @@ export function completeOwnerExclusiveGameScope({
   const newlyEligible=nextQueue.tasks.filter(task=>task.gameId===id&&!task.ownerDevelopmentHold
     &&task.status==='queued'&&previousTasks.some(prior=>prior.id===task.id&&prior.ownerDevelopmentHold));
   return Object.freeze({
-    released:true,status:verified?'OWNER_VERIFIED_HANDOFF_READY':'OWNER_EXPLICIT_RELEASE_UNVERIFIED_WORK',
+    released:true,status:ownerPublishVerified&&!standardVerified
+      ?'OWNER_DIRECT_PUBLISH_HANDOFF_READY_F0_F9_PENDING'
+      :verified?'OWNER_VERIFIED_HANDOFF_READY':'OWNER_EXPLICIT_RELEASE_UNVERIFIED_WORK',
     gameId:id,policy:nextPolicy,queue:nextQueue,
     completionVerified:verified,
     verificationReviewAuthority:'EXISTING_F0_F9_AND_RELEASE_GATES',
@@ -644,7 +673,9 @@ export function completeOwnerExclusiveGameScope({
     handoffRequiresPersistedPolicyAndQueue:true,
     nextEvolutionCycleRequired:true,otherGamesContinue:true,
     // release 후에도 확인된 마지막 소스/원래 QA 체크포인트에서 이어간다.
-    checkpointAction:verified?'RESUME_EXISTING_BUILD_UP_F0_F9':'RESUME_CAUSAL_REPAIR_WITH_UNVERIFIED_OWNER_WORK',
+    checkpointAction:ownerPublishVerified&&!standardVerified
+      ?'RESUME_EXISTING_F0_F9_AFTER_OWNER_DIRECT_PUBLISH'
+      :verified?'RESUME_EXISTING_BUILD_UP_F0_F9':'RESUME_CAUSAL_REPAIR_WITH_UNVERIFIED_OWNER_WORK',
     finalPublicationAndFanInStillAuthoritative:true
   });
 }
