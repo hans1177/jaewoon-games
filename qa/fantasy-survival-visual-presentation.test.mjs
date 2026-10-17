@@ -39,7 +39,8 @@ test('player presentation uses the forest mage asset without changing equipment 
   assert.match(player,/ctx\.drawImage\(playerImage/);
   assert.match(player,/p\.torchEquipped/);
   assert.match(player,/p\.weapon/);
-  assert.match(player,/currentRange\(\)/);
+  assert.match(player,/drawPlayerCombatVfx\(p,x,y,now,angle,attackPose,attackActive\)/);
+  assert.match(functionBody('drawPlayerCombatVfx'),/currentRange\(\)/);
 });
 
 test('protected save key and representative balance values remain present',()=>{
@@ -108,9 +109,9 @@ test('player living motion keeps authoritative movement, weapon direction and at
   assert.match(player,/fantasyLivingMotion\(p,now,angle,moveInput\)/);
   assert.match(player,/motion\.moveBlend/);
   assert.match(player,/motion\.breath/);
-  assert.match(player,/p\.faceX\*27/);
-  assert.match(player,/p\.faceY\*27/);
-  assert.match(player,/currentRange\(\)\*\.72/);
+  assert.match(player,/angle=Math\.atan2\(p\.faceY\|\|0,p\.faceX\|\|1\)/);
+  assert.match(player,/ctx\.lineTo\(x\+Math\.cos\(weaponAngle\)\*weaponLen,y\+Math\.sin\(weaponAngle\)\*weaponLen\)/);
+  assert.match(functionBody('drawPlayerCombatVfx'),/currentRange\(\)/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
 
@@ -146,7 +147,8 @@ test('player attack feel stays inside the existing attack presentation window an
   const player=functionBody('drawPlayer');
   assert.match(player,/fantasyPlayerAttackPose\(p,now,attackActive\)/);
   assert.match(player,/weaponOffset/);
-  assert.match(player,/currentRange\(\)\*\.72/);
+  assert.match(player,/drawPlayerCombatVfx\(p,x,y,now,angle,attackPose,attackActive\)/);
+  assert.match(functionBody('drawPlayerCombatVfx'),/currentRange\(\)/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
 
@@ -324,7 +326,7 @@ test('final presentation gate keeps all synchronized feel layers on the same pre
 });
 
 test('nearby auto gather keeps the existing manual gather path and mobile toggle reachable',()=>{
-  assert.match(source,/id="autoGather"[^>]*data-gameplay-action="auto-gather-toggle"[^>]*aria-pressed="false">자동 OFF<\/button>/);
+  assert.match(source,/id="autoGather"[^>]*data-mechanic-id="auto-gather-toggle"[^>]*aria-pressed="false">자동 OFF<\/button>/);
   assert.match(source,/\.autoGather\{height:44px/);
   assert.match(source,/@media\(max-width:430px\)[\s\S]*?\.autoGather\{height:44px;font-size:9px\}/);
   assert.match(source,/gather\(state\.gathering\.manualTarget,false\)/);
@@ -332,11 +334,12 @@ test('nearby auto gather keeps the existing manual gather path and mobile toggle
 
 test('auto gather reuses authoritative resource balance and tool gates instead of duplicating rewards',()=>{
   const gather=functionBody('gather');
-  assert.match(gather,/let amount=1;if\(tool\?\.target===best\.kind\)amount=tool\.mult;if\(best\.kind==='iron'\|\|best\.kind==='poisonstone'\)amount=1/);
+  assert.match(gather,/let amount=1;if\(tool\?\.target===best\.kind\)amount=tool\.mult;if\(best\.kind==='iron'\|\|best\.kind==='poisonstone'\|\|best\.kind==='sunstone'\)amount=1/);
   assert.match(gather,/best\.kind==='iron'.*stone-pick.*iron-pick.*gold-pick/);
   assert.match(gather,/best\.kind==='gold'.*p\.tool!=='iron-pick'/);
   assert.match(gather,/best\.kind==='poisonstone'.*p\.tool!=='gold-pick'/);
-  assert.match(gather,/best\.kind==='essence'.*iron-axe.*gold-axe/);
+  assert.match(gather,/best\.kind==='essence'&&!axeId/);
+  assert.match(functionBody('equippedAxeId'),/iron-axe.*gold-axe/);
   const auto=functionBody('updateAutoGather');
   assert.match(auto,/nearestGatherResource\(\)/);
   assert.match(auto,/gather\(target,true\)/);
@@ -344,14 +347,17 @@ test('auto gather reuses authoritative resource balance and tool gates instead o
 });
 
 test('auto gather is nearest-only local runtime state and does not alter save or multiplayer semantics',()=>{
-  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=38/);
+  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=(?:[7-9]\d|[1-9]\d{2,})/);
   assert.match(source,/gathering:\{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0\}/);
   const nearest=functionBody('nearestGatherResource');
   assert.match(nearest,/for\(const n of resourceNodes\(\)\)/);
   assert.match(nearest,/if\(d<bestD\)\{best=n;bestD=d\}/);
   const save=functionBody('saveGame');
-  assert.doesNotMatch(save,/gathering|autoGather/);
-  assert.doesNotMatch(functionBody('gather'),/multiSend|multiBroadcast|channel/);
+  assert.match(save,/settings:\{difficulty:.*autoGather/);
+  assert.doesNotMatch(save,/gathering:\{/);
+  const gather=functionBody('gather');
+  assert.match(gather,/multiplayer\.connected&&!multiIsHost\(\)/);
+  assert.match(gather,/multiSend\('resource-gather'/);
   assert.doesNotMatch(functionBody('updateAutoGather'),/multiSend|multiBroadcast|channel/);
 });
 
