@@ -477,7 +477,7 @@ sandSpirit:{id:'sandSpirit',name:'모래 정령',mood:'aggressive',hp:400,dmg:55
 giantVenomScorpion:{id:'giantVenomScorpion',name:'거대 맹독 전갈',mood:'aggressive',hp:2222,dmg:90,speed:82,r:38,color:'#6e4e35',detect:900,attackCooldown:1100,desert:true,venomScorpion:true},
 wastelandMummy:{id:'wastelandMummy',name:'황무지 미라',mood:'aggressive',hp:1800,dmg:88,speed:64,r:30,color:'#b79a69',detect:760,attackCooldown:1100,desert:true,mummyHealGas:true},
 worldtreegolem:{id:'worldtreegolem',name:'세계수 골렘',mood:'neutral',hp:586,dmg:48,speed:44,r:37,color:'#71845c',detect:680,attackCooldown:1350,area:'worldtreeinside',worldtreeRoots:true},
-worldtreesnake:{id:'worldtreesnake',name:'세계수 뱀',mood:'aggressive',hp:320,dmg:30,speed:112,r:23,color:'#39885a',detect:570,attackCooldown:1000,area:'worldtreeinside'}
+worldtreesnake:{id:'worldtreesnake',name:'세계수 뱀',mood:'aggressive',hp:250,dmg:39,speed:110,r:23,color:'#39885a',detect:570,attackCooldown:1000,area:'worldtreeinside',snakeIllusion:true}
 
 };
 const DROP_MATERIAL_NAMES={
@@ -1889,7 +1889,7 @@ const BESTIARY_INFO={
  ironspirit:{cat:'aggressive',desc:'협곡 깊은 철맥에서 깨어난 정령. 금속이 많은 곳을 떠돌며 주변 생명체의 움직임에 예민하게 반응한다.'},
  worldtreebear:{cat:'aggressive',desc:'세계수 지역 부근을 순찰하며 도는 거대한 곰. 평소에는 묵묵히 영역을 지키지만 침입자를 발견한다면 자비를 베풀지 않는다.'},
  worldtreegolem:{cat:'neutral',desc:'세계수 내부의 중립 3티어 골렘. 반격하면서 2초마다 50% 확률로 뿌리 4개를 날린다. 뿌리는 피해 없이 3초간 이동을 봉쇄하며 공격은 가능하다.'},
- worldtreesnake:{cat:'aggressive',desc:'세계수 줄기 안의 수액과 뿌리 틈을 빠르게 기어 다니는 뱀.'},
+ worldtreesnake:{cat:'aggressive',desc:'세계수 내부에서 3초마다 67% 확률로 3초간 시야 속 뿌리 최대 5개가 뱀처럼 보이는 환각을 일으킨다. 환각은 피해가 없다.'},
  fairy:{cat:'harmless',desc:'숲의 빛이 강한 곳에서 반짝이는 가루를 흩뿌리며 떠도는 작은 요정. 다른 생명체를 해치려 하지 않는다.'},
  rootsovereign:{cat:'boss',desc:'세계수의 깊은 뿌리 아래 오랫동안 잠들어 있던 고대의 존재. 숲의 오래된 힘과 함께 봉인된 채 침묵하고 있다.'},
  firewolf:{cat:'aggressive',desc:'부서진 콜로세움 주변의 열기 속을 떠도는 붉은 늑대. 뜨거운 돌바닥에서도 멈추지 않고 사냥감을 추적한다.'},
@@ -4587,6 +4587,46 @@ function spawnSporeCloud(x,y,area,ownerId,now,enhanced=false){state.sporeClouds.
 function updateSporeClouds(now){
  for(let i=state.sporeClouds.length-1;i>=0;i--){const g=state.sporeClouds[i];if(now>=g.until){state.sporeClouds.splice(i,1);continue}if(multiplayer.connected&&!multiIsHost())continue;if(now<(g.nextTick||0))continue;g.nextTick=now+(g.tick||500);for(const e of state.enemies){if(e.hp<=0||e.area!==g.area||(e.type.mood==='harmless'&&!e.type.huntable)||dist(g.x,g.y,e.x,e.y)>g.r+e.type.r)continue;const dmg=enemyIncomingDamage(e,Number(g.damage)||5,now);e.hp-=dmg;e.hitAt=now+110;if(e.type.mood==='neutral')markEnemyHitByPlayer(e);if(e.hp<=0)finishPlayerArrowKill(e,g.ownerId||multiplayer.playerId,now)}}
 }
+// 세계수 뱀 원본 설정: 3초마다 67% · 시야 속 뿌리 5개를 3초간 뱀처럼 보이게 한다.
+// 이 환각은 플레이어별 로컬 표현이며 전투, 충돌, 서버/세이브 데이터는 바꾸지 않는다.
+const WORLD_TREE_SNAKE_ILLUSION=Object.freeze({intervalMs:3000,probability:.67,durationMs:3000,maxRoots:5,range:400});
+const worldTreeSnakeIllusion={until:0,rootIndices:[]};
+const worldTreeSnakeRolls=new Map();
+function updateWorldTreeSnakeIllusion(now){
+ if(state.area!=='worldtreeinside'||state.player.downedUntil){
+  worldTreeSnakeIllusion.until=0;worldTreeSnakeIllusion.rootIndices=[];
+  worldTreeSnakeRolls.clear();return
+ }
+ const active=new Set();
+ for(const e of state.enemies){
+  if(e.type?.id!=='worldtreesnake'||e.hp<=0||e.area!=='worldtreeinside'||!e.hostile)continue;
+  const id=e.netId;
+  active.add(id);
+  if(dist(e.x,e.y,state.player.x,state.player.y)>WORLD_TREE_SNAKE_ILLUSION.range){
+   worldTreeSnakeRolls.delete(id);continue
+  }
+  const next=worldTreeSnakeRolls.get(id);
+  if(next===undefined){worldTreeSnakeRolls.set(id,now+WORLD_TREE_SNAKE_ILLUSION.intervalMs);continue}
+  if(now<next)continue;
+  worldTreeSnakeRolls.set(id,now+WORLD_TREE_SNAKE_ILLUSION.intervalMs);
+  if(Math.random()>=WORLD_TREE_SNAKE_ILLUSION.probability)continue;
+  const visible=[],cx=state.camera.x,cy=state.camera.y;
+  for(let i=0;i<19;i++){
+   const x=155+(i*421)%2940,y=140+(i*311)%2000;
+   if(x<cx-140||x>cx+innerWidth+140||y<cy-155||y>cy+innerHeight+155)continue;
+   const d=dist(x,y,state.player.x,state.player.y);
+   if(d<1100)visible.push({index:i,d})
+  }
+  visible.sort((a,b)=>a.d-b.d);
+  if(!visible.length)continue;
+  // 겹친 시전도 하나의 종료 시점만 쓰며 종료 시 기존 뿌리 그림으로 즉시 복구한다.
+  worldTreeSnakeIllusion.rootIndices=visible.slice(0,WORLD_TREE_SNAKE_ILLUSION.maxRoots).map(r=>r.index);
+  worldTreeSnakeIllusion.until=now+WORLD_TREE_SNAKE_ILLUSION.durationMs;
+  showNotice('세계수 뱀의 환각 · 눈앞의 뿌리가 뱀처럼 보여!')
+ }
+ for(const id of worldTreeSnakeRolls.keys())if(!active.has(id))worldTreeSnakeRolls.delete(id);
+ if(now>=worldTreeSnakeIllusion.until)worldTreeSnakeIllusion.rootIndices=[]
+}
 function throwWorldTreeRoots(e,targetP,now){
  if(!e.hostile||e.type.id!=='worldtreegolem'||e.area!=='worldtreeinside')return;
  if(!e.nextWorldTreeRootsAt){e.nextWorldTreeRootsAt=now+2000;return}
@@ -4831,6 +4871,8 @@ function update(dt,now){
    else{p.x=bed.x;p.y=bed.y;if(now>=(p.bedHealAt||0)){p.bedHealAt=now+1000;p.hp=Math.min(p.maxHp,p.hp+10);state.dirty=true;updateHud()}}
   }
   updatePet(dt,now);
+  // 호스트/게스트 모두 자신의 화면에만 환각을 표시한다.
+  updateWorldTreeSnakeIllusion(now);
   if(!multiplayer.connected||multiIsHost()||state.area==='storylab1'||state.area==='storylab2'){
     for(const e of state.enemies){
       if(e.hp<=0||e.area!==state.area)continue;
@@ -5172,6 +5214,18 @@ function drawWorldTreeInterior(cx,cy,w,h){
  }
  for(let i=0;i<19;i++){
   const x=155+(i*421)%2940,y=140+(i*311)%2000;
+  if(performance.now()<worldTreeSnakeIllusion.until&&worldTreeSnakeIllusion.rootIndices.includes(i)){
+   // 기존 뿌리를 3초 동안 환각 뱀으로 보이게 한다. 실제 적이나 공격 판정이 아님.
+   const sway=Math.sin(performance.now()*.009+i)*18;
+   ctx.save();ctx.translate(x,y);ctx.lineCap='round';
+   ctx.strokeStyle='rgba(72,211,119,.34)';ctx.lineWidth=43;
+   ctx.beginPath();ctx.moveTo(-82,-120);ctx.bezierCurveTo(94,-41+sway,-90,53-sway,70,142);ctx.stroke();
+   ctx.strokeStyle='#73d58c';ctx.lineWidth=28;
+   ctx.beginPath();ctx.moveTo(-82,-120);ctx.bezierCurveTo(94,-41+sway,-90,53-sway,70,142);ctx.stroke();
+   ctx.fillStyle='#b2fac0';ctx.beginPath();ctx.ellipse(70,142,22,15,.35,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#f0eaaa';ctx.beginPath();ctx.arc(76,134,3.8,0,Math.PI*2);ctx.arc(84,138,3.8,0,Math.PI*2);ctx.fill();
+   ctx.restore();continue
+  }
   ctx.strokeStyle=i%3===0?'#795936':'#62492d';ctx.lineCap='round';ctx.lineWidth=28+i%4*4;
   ctx.beginPath();ctx.moveTo(x-84,y-120);ctx.bezierCurveTo(x+95,y-34,x-93,y+50,x+68,y+142);ctx.stroke();
   ctx.strokeStyle='#a1814c';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-65,y-105);ctx.quadraticCurveTo(x+54,y-10,x+20,y+76);ctx.stroke()
