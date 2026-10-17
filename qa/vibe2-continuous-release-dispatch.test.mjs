@@ -136,8 +136,10 @@ function count(needle){
 test('work order resolves the asset library and game source from pinned main while retaining current control state',()=>{
   const start=workflow.indexOf('      - name: Build reserved task work order');
   const run=workflow.indexOf('        run: |\n',start)+'        run: |\n'.length;
-  const end=workflow.indexOf('          node --input-type=module',run);
-  assert.ok(start>0&&end>run);
+  // 실제 주문 생성 뒤에는 정책 경로를 지정한 별도 소스 검증 명령이 이어진다.
+  // 임시 폴더에서는 기존 주문 생성 단계만 격리 실행한다.
+  const end=workflow.indexOf('          COMPANY_VERIFIED_POLICY_PATH="$contract_root/company-learning/platform-release-roadmap.json" node --input-type=module',run);
+  assert.ok(start>0&&end>run,'the work-order command and separate verified source gate must both exist');
   const script=workflow.slice(run,end).replace(/^ {10}/gm,'');
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'work-order-roots-'));
   const contract=path.join(root,'vibe2-contract');
