@@ -404,7 +404,14 @@ test.afterEach(() => {
   else process.env.VIBE2_EXECUTION_LANE = inheritedExecutionLane;
 });
 
-function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
+function tempRoot() {
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-source-worker-'));
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  fs.mkdirSync(path.dirname(policyPath),{recursive:true});
+  // 격리 테스트도 최신 main의 실제 정책 바이트를 사용하며 임시 변경은 원본에 반영되지 않는다.
+  fs.copyFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),policyPath);
+  return root;
+}
 test('photo teacher reaches actual image-byte observation and keeps inferred geometry unverified',async t=>{
   const {observeAssetReferenceImages}=await import('../tools/vibe2-source-worker.mjs');
   const {createVibeReferenceImageStudyRequest}=await import('../assets/vibe-environment-director.js');
