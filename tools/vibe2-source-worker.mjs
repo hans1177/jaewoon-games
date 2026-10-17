@@ -4986,6 +4986,7 @@ function repeatedFailureStrategyGuidance(failureClass='',repeatCount=0){
 }
 export function generationFailureClass(error){
   const message=clean(error?.message||error);
+  if(/GEMINI_EXTERNAL_TWO_MODEL_POOL_UNAVAILABLE|GEMINI_QUOTA_OR_BILLING_BLOCKED|GEMINI_HTTP_ERROR_NO_LOCAL_FALLBACK/i.test(message))return'EXTERNAL_AI_UNAVAILABLE';
   if(/SPATIAL_BLUEPRINT_INVALID/i.test(message))return'SPATIAL_BLUEPRINT';
   if(/INTERFACE_BLUEPRINT_INVALID/i.test(message))return'INTERFACE_BLUEPRINT';
   if(/^SINGLE_MOTION_/.test(message))return'SINGLE_MOTION_SCOPE';
@@ -6393,11 +6394,13 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   }
   throw lastError||new Error('candidate generation failed');
 }
-async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){
+// 메인: 승인된 무료 Gemini 모델 2종만 교대한다. API 404/429/503은 모델별로 차단하고
+// 다음 슬롯을 한 번만 사용한다. 계정 과금/권한 오류는 우회하지 않으며 운영 모델 외 전환하지 않는다.
+const GEMINI_FREE_MODEL_COOLDOWNS=new Map();
+let geminiFreeNextSlot=0;
+export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){
   const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase();
   if(provider!=='GEMINI_API')throw new Error('LOCAL_AI_PERMANENTLY_FORBIDDEN: only Gemini API is authorized');
-  // node:test의 명시적 응답 파일은 결정론적 회귀검사용이며 AI 실행이 아니다.
-  // 실제 후보 생성에서는 파일 대체를 허용하지 않고 반드시 외부 API로 요청한다.
   if(clean(responseFile)){
     if(!/^child-/.test(clean(process.env.NODE_TEST_CONTEXT)))
       throw new Error('MODEL_RESPONSE_FIXTURE_TEST_CONTEXT_REQUIRED');
@@ -6406,32 +6409,58 @@ async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',ima
   const apiKey=clean(process.env.GEMINI_API_KEY);
   if(!apiKey)throw new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
   if(images.length)throw new Error('GEMINI_IMAGE_INPUT_ADAPTER_NOT_VERIFIED');
-  const geminiModel=clean(process.env.VIBE2_GEMINI_MODEL||'gemini-2.5-flash');
-  if(!/^gemini-[a-z0-9.-]+$/.test(geminiModel))throw new Error('GEMINI_MODEL_INVALID');
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),Math.max(10000,timeoutMs));
-  try{
-    const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(geminiModel)+':generateContent',{
-      method:'POST',signal:controller.signal,
-      headers:{'content-type':'application/json','x-goog-api-key':apiKey},
-      body:JSON.stringify({contents:[{role:'user',parts:[{text:String(prompt)}]}],
-        generationConfig:{temperature:Math.max(0,Math.min(.4,Number(temperature)||0)),
-          maxOutputTokens:Math.max(512,Math.min(8192,Number(maxPredict)||3072))}})
-    });
-    if(!response.ok){
-      const status=response.status;
-      if(status===429||status===402||status===403)throw new Error('GEMINI_QUOTA_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+status);
-      throw new Error('GEMINI_HTTP_ERROR_NO_LOCAL_FALLBACK:'+status);
+  const models=[clean(process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash'),clean(process.env.VIBE2_GEMINI_BACKUP_MODEL||'gemini-3.5-flash-lite')];
+  if(models[0]!=='gemini-3.8-flash'||models[1]!=='gemini-3.5-flash-lite')
+    throw new Error('GEMINI_FREE_MODEL_PAIR_INVALID');
+  const first=geminiFreeNextSlot++%2,failures=[];
+  for(let offset=0;offset<2;offset++){
+    const selected=models[(first+offset)%2];
+    const cooldown=GEMINI_FREE_MODEL_COOLDOWNS.get(selected)||0;
+    if(cooldown>Date.now()){
+      failures.push(selected+':COOLDOWN');
+      continue;
     }
-    const payload=await response.json();
-    const raw=(payload.candidates?.[0]?.content?.parts||[]).filter(x=>typeof x.text==='string').map(x=>x.text).join('');
-    if(!raw.trim())throw new Error('GEMINI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
-    if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&(/no_think|think|```/i).test(raw))throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
-    return raw;
-  }catch(error){
-    if(error?.name==='AbortError')throw new Error('GEMINI_TIMEOUT_NO_LOCAL_FALLBACK');
-    throw error;
-  }finally{clearTimeout(timer);}
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),Math.max(10000,timeoutMs));
+    try{
+      const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(selected)+':generateContent',{
+        method:'POST',signal:controller.signal,
+        headers:{'content-type':'application/json','x-goog-api-key':apiKey},
+        body:JSON.stringify({contents:[{role:'user',parts:[{text:String(prompt)}]}],
+          generationConfig:{temperature:Math.max(0,Math.min(.4,Number(temperature)||0)),
+            maxOutputTokens:Math.max(512,Math.min(8192,Number(maxPredict)||3072))}})
+      });
+      if(!response.ok){
+        const status=response.status;
+        if(status===402||status===403)throw new Error('GEMINI_QUOTA_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+status);
+        if([404,429,503].includes(status)){
+          const retryHeader=Number(response.headers?.get?.('retry-after'));
+          const retryMs=Number.isFinite(retryHeader)&&retryHeader>0
+            ?Math.min(86400000,retryHeader*1000):(status===404?86400000:status===429?60000:15000);
+          GEMINI_FREE_MODEL_COOLDOWNS.set(selected,Date.now()+retryMs);
+          failures.push(selected+':HTTP_'+status);
+          console.log('VIBE2_EXTERNAL_AI_ROTATE='+selected+':HTTP_'+status+':NEXT_FREE_MODEL');
+          continue;
+        }
+        throw new Error('GEMINI_HTTP_ERROR_NO_LOCAL_FALLBACK:'+status);
+      }
+      const payload=await response.json();
+      const raw=(payload.candidates?.[0]?.content?.parts||[]).filter(x=>typeof x.text==='string').map(x=>x.text).join('');
+      if(!raw.trim())throw new Error('GEMINI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
+      if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&(/no_think|think|```/i).test(raw))throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
+      console.log('VIBE2_EXTERNAL_AI_MODEL_USED='+selected);
+      return raw;
+    }catch(error){
+      if(error?.name==='AbortError'){
+        GEMINI_FREE_MODEL_COOLDOWNS.set(selected,Date.now()+15000);
+        failures.push(selected+':TIMEOUT');
+        console.log('VIBE2_EXTERNAL_AI_ROTATE='+selected+':TIMEOUT:NEXT_FREE_MODEL');
+        continue;
+      }
+      throw error;
+    }finally{clearTimeout(timer);}
+  }
+  throw new Error('GEMINI_EXTERNAL_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:'+failures.join(','));
 }
 
 function currentBranch(cwd){try{return clean(execFileSync('git',['rev-parse','--abbrev-ref','HEAD'],{cwd,encoding:'utf8'}));}catch{return'';}}
