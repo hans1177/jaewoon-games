@@ -504,3 +504,23 @@ test('goblin outpost entrance is on the western world tree field and marked on m
  assert.match(functionBody('drawMap'),/GOBLIN_OUTPOST_ENTRANCE\.x\*sx/);
  assert.match(functionBody('drawMiniMap'),/landmark\(GOBLIN_OUTPOST_ENTRANCE\.x,GOBLIN_OUTPOST_ENTRANCE\.y/);
 });
+
+test('goblin crossbow arrow velocity is 0.4x baseline without damage or lifetime changes',()=>{
+ const fire=functionBody('fireGoblinCrossbow');
+ assert.match(fire,/speed=\(Number\(p\.speed\)\|\|state\.player\.speed\)\*2/);
+ assert.doesNotMatch(fire,/\*5/);
+ assert.match(fire,/kind:'goblinCrossbowArrow'/);
+ assert.match(fire,/life:2600/);
+ assert.match(fire,/damage:23/);
+ assert.match(source,/쇠뇌병\. 2\.8초마다 플레이어 2배 속도의 비유도 화살을 발사한다\./);
+ const state={projectiles:[],player:{speed:185}};
+ const fireArrow=new Function('state','multiplayer',`return (${fire})`)(state,{playerId:'local-player'});
+ fireArrow({x:0,y:0,netId:'goblin-test',area:'goblinoutpost-1'}, {x:100,y:0,speed:185},1000);
+ assert.equal(state.projectiles.length,1);
+ const arrow=state.projectiles[0];
+ assert.equal(arrow.speed,370);
+ assert.equal(arrow.vx,370);
+ assert.equal(arrow.vy,0);
+ assert.equal(arrow.life,2600);
+ assert.equal(arrow.damage,23);
+});
