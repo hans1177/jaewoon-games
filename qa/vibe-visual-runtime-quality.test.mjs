@@ -281,5 +281,5 @@ test('PR changed Web game scope uses current synthetic merge parent while main c
   assert.match(workflow,/base_sha="\$\(git rev-parse 'HEAD\^1'\)"/);
   assert.match(workflow,/git diff --name-only "\$base_sha" HEAD/);
   assert.match(workflow,/changed_web_games=ALL/);
-  assert.match(workflow,/DEVELOPMENT Web browser startup smoke/);
+  assert.match(workflow,/Development Web browser startup smoke/);
 });
