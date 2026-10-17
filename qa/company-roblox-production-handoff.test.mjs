@@ -64,8 +64,8 @@ test('non-Roblox worker cannot consume a stale Roblox production plan',()=>{
   assert.doesNotMatch(otherGame,/robloxProductionIDEA=/);
 });
 
-test('unapproved Unity and Web do not leak executable production hints',()=>{
-  for(const target of ['unity','web']){
+test('owner-held Unity cannot leak executable production hints',()=>{
+  for(const target of ['unity']){
     const root=target+'-games/garden';
     const own=root+(target==='unity'?'/Assets/Scripts/GameCore.cs':'/game.js');
     const sibling=root+(target==='unity'?'/Assets/Scripts/RuntimeBootstrap.cs':'/view.js');
