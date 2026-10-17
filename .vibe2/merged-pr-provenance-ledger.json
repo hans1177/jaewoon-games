@@ -56122,11 +56122,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_9cbe00f0e412e3c0fdcdbffb",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8259",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "18b9f7efa6e9e7d036cbb04c8e4fb2e7f113681f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8259,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe2-retired-central-map-tests-20261017",
+        "baseSha": "18b9f7efa6e9e7d036cbb04c8e4fb2e7f113681f",
+        "headSha": "d78eb34a2a5c855b6237529773d1ad09b4552eb5",
+        "mergeCommitSha": "7fccc47a7f695d6082415f757623c6ab1a958dab",
+        "mergedAt": "2026-10-17T06:49:19Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8458020f870bfa81c62b2ce2af5f59ba9df0d3c64a952460b5d23d4ce4a00550",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe2-retired-central-map-tests-20261017",
+        "candidateSha": "d78eb34a2a5c855b6237529773d1ad09b4552eb5"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 35,
+        "deletedLineCount": 12,
+        "changedFiles": [
+          "qa/company-development-roblox-source-reconcile.test.mjs",
+          "qa/company-development-web-runtime.test.mjs",
+          "qa/game-catalog-normalization.test.mjs",
+          "qa/vibe2-artbook-story-core.test.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/company-development-roblox-source-reconcile.test.mjs",
+          "qa/company-development-web-runtime.test.mjs",
+          "qa/game-catalog-normalization.test.mjs",
+          "qa/vibe2-artbook-story-core.test.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8259",
+        "merge-commit:7fccc47a7f695d6082415f757623c6ab1a958dab",
+        "base-main:18b9f7efa6e9e7d036cbb04c8e4fb2e7f113681f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 453
+    "total": 454
   }
 }
