@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {reconcileDevelopmentQueue} from '../tools/company-development-queue-reconcile.mjs';
+// 기존 조정기는 모듈 로드 시 검증된 정책 경로를 고정하므로 실제 정책 파일을 명시한다.
+process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+const {reconcileDevelopmentQueue}=await import('../tools/company-development-queue-reconcile.mjs');
 
 const write=(root,file,value)=>{
   const target=path.join(root,file);
