@@ -1,4 +1,5 @@
 // 역할: 5부서 제출물을 서로 교차검토하고 다음 revision에서 재사용 가능한 검증 피드백을 남긴다.
+import {requestGeminiFreePair,GEMINI_FREE_MODELS} from './vibe2-gemini-free-rotation.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { validateDemoFeedback, decisions, defectRootCauses, dropRootCauses } from './artbook-demo-concept-gate.mjs';
@@ -14,7 +15,7 @@ const base=path.join('artbook-submissions',gameId,date),submissions=Object.fromE
 const missing=ROLES.filter(role=>!submissions[role]);
 if(missing.length){console.log(`ARTBOOK_CROSS_REVIEW_SKIP=missing:${missing.join(',')}`);process.exit(0);}
 const schema={type:'object',required:['DECISION','ROOT_CAUSE_CLASS','ROOT_CAUSE','EVIDENCE','UNITY_IMPLEMENTATION_NOTE','UNITY_ART_NOTE'],additionalProperties:false,properties:{DECISION:{type:'string',enum:decisions},ROOT_CAUSE_CLASS:{type:'string',enum:[...defectRootCauses,...dropRootCauses]},ROOT_CAUSE:{type:'string',minLength:20,maxLength:240},EVIDENCE:{type:'string',minLength:20,maxLength:300},UNITY_IMPLEMENTATION_NOTE:{type:'string',minLength:20,maxLength:260},UNITY_ART_NOTE:{type:'string',minLength:20,maxLength:260}}};
-const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:0.6b');
+const model=GEMINI_FREE_MODELS.join('|');
 const compactSubmission=(role,s)=>({role,readiness:s.departmentReadiness,headline:s.headline,section:s.section,conceptPlan:s.conceptPlan,unverified:s.unverified,verification:s.verification});
 async function review(reviewer){
   const packet=ROLES.map(role=>compactSubmission(role,submissions[role]));
@@ -23,20 +24,19 @@ async function review(reviewer){
   let last=null;
   for(let attempt=1;attempt<=2;attempt++){
     try{
-      const res=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:schema,messages:[{role:'system',content:system},{role:'user',content:user}],options:{temperature:0.08,seed:911+ROLES.indexOf(reviewer)*37+attempt,num_ctx:8192,num_predict:900}})});
-      if(!res.ok)throw new Error(`ollama ${res.status}`);
-      const body=await res.json(),raw=clean(body?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim();
+      const res=await requestGeminiFreePair({apiKey:process.env.GEMINI_API_KEY,contents:[{role:'user',parts:[{text:[{role:'system',content:system},{role:'user',content:user}].map(row=>row.role.toUpperCase()+': '+row.content).join('\n\n')}]}],responseMimeType:'application/json',temperature:0.08,maxOutputTokens:900,timeoutMs:120000});
+      const body=res,raw=clean(body?.text).replace(/^```json\s*/i,'').replace(/```$/,'').trim();
       const feedback=JSON.parse(raw);
       validateDemoFeedback(gameId,feedback);
       return {reviewer,feedback,attempts:attempt};
-    }catch(error){last=error;console.error(`ARTBOOK_CROSS_REVIEW_RETRY=${reviewer}:attempt=${attempt}:${clean(error.message)}`);}
+    }catch(error){if(error?.vibe2InfrastructureFailure===true)throw error;last=error;console.error(`ARTBOOK_CROSS_REVIEW_RETRY=${reviewer}:attempt=${attempt}:${clean(error.message)}`);}
   }
   throw last||new Error(`${reviewer}: cross review failed`);
 }
 const reviews=[];
 for(const role of ROLES)reviews.push(await review(role));
 const output=path.join(base,'cross-review.json');
-writeJson(output,{version:1,gameId,date,generatedBy:'vibe2-local-open-model-cross-review',model,localInference:true,paidApi:false,productionApproval:false,reviews,contracts:{fiveDepartments:true,validatedFeedbackContract:true,systemDefectMayNotBeDropped:true,dropRequiresDesignRootCause:true,nextRevisionLearningEligible:true}});
+writeJson(output,{version:1,gameId,date,generatedBy:'vibe2-external-gemini-free-cross-review',model,localInference:false,paidApi:false,productionApproval:false,reviews,contracts:{fiveDepartments:true,validatedFeedbackContract:true,systemDefectMayNotBeDropped:true,dropRequiresDesignRootCause:true,nextRevisionLearningEligible:true}});
 console.log(`ARTBOOK_CROSS_REVIEW=${output}`);
 console.log(`ARTBOOK_CROSS_REVIEW_COUNT=${reviews.length}`);
 console.log('ARTBOOK_CROSS_REVIEW_VALIDATED=YES');
