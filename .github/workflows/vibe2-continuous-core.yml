@@ -1248,7 +1248,7 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           # 자산과 게임 소스는 고정된 main에서 읽고 큐 상태는 아래 절대 경로를 유지한다.
           cd "$contract_root"
-          node "$contract_root/tools/vibe2-continuous-runner.mjs" \
+          COMPANY_VERIFIED_POLICY_PATH="$contract_root/company-learning/platform-release-roadmap.json" COMPANY_VERIFIED_DESIGN_POLICY_PATH="$contract_root/company-learning/platform-release-roadmap.json" node "$contract_root/tools/vibe2-continuous-runner.mjs" \
             --runtime="$contract_root/vibe2-runtime.json" \
             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json" \
             --control="$GITHUB_WORKSPACE/.vibe2/parallelism-control.json" \
@@ -1262,7 +1262,7 @@ jobs:
             --task-id="$TASK_ID" \
             --variant="$VARIANT" \
             --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
-          node --input-type=module - "$contract_root/tools/vibe2-source-worker.mjs" <<'NODE'
+          COMPANY_VERIFIED_POLICY_PATH="$contract_root/company-learning/platform-release-roadmap.json" node --input-type=module - "$contract_root/tools/vibe2-source-worker.mjs" <<'NODE'
           import fs from 'node:fs';
           import {pathToFileURL} from 'node:url';
           const {robloxDeterministicPresentationEligible,assetDevelopmentTask}=await import(pathToFileURL(process.argv[2]).href);
@@ -1639,7 +1639,7 @@ jobs:
           echo "candidate_dir=$candidate_dir" >> "$GITHUB_OUTPUT"
           echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
           set +e
-          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-source-worker.mjs" --apply-source=true 2>&1 | tee "$source_worker_log"
+          COMPANY_VERIFIED_POLICY_PATH="$GITHUB_WORKSPACE/vibe2-contract/company-learning/platform-release-roadmap.json" node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-source-worker.mjs" --apply-source=true 2>&1 | tee "$source_worker_log"
           worker_rc=${PIPESTATUS[0]}
           set -e
           candidate_finished="$(date +%s%3N)"
