@@ -81,6 +81,7 @@ jobs:
           node --check tools/company-game-seed-bootstrap.mjs
           node --check tools/company-game-seed-semantic-normalize.mjs
           node --check tools/company-strict-production-review.mjs
+          node --test qa/company-game-seed-gameplay-sketch.test.mjs
 
       - name: Decide creation mode
         id: need
