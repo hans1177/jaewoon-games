@@ -11,7 +11,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
 
 concurrency:
   group: magic-forest-pages
@@ -57,20 +56,11 @@ jobs:
           git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
           gh auth setup-git
           git push origin HEAD:gh-pages --force
-
-      - name: Enable branch-based GitHub Pages
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          if gh api "repos/${GITHUB_REPOSITORY}/pages" >/dev/null 2>&1; then
-            printf '%s\n' '{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}' |
-              gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" --input -
-          else
-            printf '%s\n' '{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}' |
-              gh api --method POST "repos/${GITHUB_REPOSITORY}/pages" --input -
-          fi
+          # The repository's GitHub Pages source is already configured. Its admin API
+          # cannot be changed by GITHUB_TOKEN (HTTP 403); publishing needs only contents:write.
+          # Confirm the exact commit is on gh-pages before claiming a publish.
+          published_sha="$(git ls-remote --exit-code origin refs/heads/gh-pages | cut -f1)"
+          test "$(git rev-parse HEAD)" = "$published_sha"
 
       - name: Show play URL
         run: echo "MAGIC_FOREST_PLAY_URL=https://${GITHUB_REPOSITORY_OWNER}.github.io/jaewoon-games/"
