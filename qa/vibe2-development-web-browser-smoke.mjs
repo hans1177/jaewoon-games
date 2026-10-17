@@ -6,7 +6,7 @@ import net from 'node:net';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
-import { selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
+import { assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
 
 const ROOT=process.cwd();
 const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'game-catalog.json'),'utf8'));
@@ -42,6 +42,28 @@ console.log('DEVELOPMENT_WEB_SOURCE_UNCLAIMED='+sourceUnclaimed.join(','));
 console.log('DEVELOPMENT_WEB_SOURCE_EXISTS_CHECKED='+gameIds.length);
 
 assert.ok((catalog.games||[]).length>=10,'DEVELOPMENT_CONFIRMED browser smoke requires current game catalog');
+// [대용량 원본] GitHub 단일 파일 조회 한도에 걸리는 HTML은 작업본에서 통째로 검사한다.
+// 파일을 나누거나 게임 코드를 수정하지 않고 기존 평가기의 원본 해시·기능 신호를 재사용한다.
+// 이 로그는 소스 판독 증거이며 실제 3D/모바일 런타임 통과 증거가 아니다.
+const largeSourceAudit=[];
+for(const gameId of gameIds){
+  const sourcePath=path.join(ROOT,'web-games',gameId,'index.html');
+  if(!fs.existsSync(sourcePath)||!fs.statSync(sourcePath).isFile())continue;
+  const sourceBytes=fs.statSync(sourcePath).size;
+  if(sourceBytes<=1024*1024)continue;
+  const source=fs.readFileSync(sourcePath,'utf8');
+  const readBytes=Buffer.byteLength(source,'utf8');
+  assert.equal(readBytes,sourceBytes,gameId+': LARGE_WEB_SOURCE_INCOMPLETE_UTF8_READ');
+  const assessed=assessExistingWebSource({html:source,sourceExists:true});
+  assert.equal(assessed.evidence.sourceBytes,sourceBytes,gameId+': LARGE_WEB_SOURCE_ASSESSMENT_TRUNCATED');
+  largeSourceAudit.push({
+    gameId,sourceBytes,sourceSha256:assessed.evidence.sourceSha256,
+    gameplaySignalCount:assessed.evidence.gameplaySignalCount,
+    sourceReadFull:true,runtime3dVerified:false
+  });
+}
+console.log('DEVELOPMENT_WEB_LARGE_SOURCE_AUDIT='+JSON.stringify(largeSourceAudit));
+
 if(!gameIds.length){
   console.log('DEVELOPMENT_WEB_BROWSER_SMOKE=NOT_APPLICABLE');
   console.log('DEVELOPMENT_WEB_BROWSER_SMOKE_REASON='+ (requestedScope==='NONE'?'NO_CHANGED_WEB_SOURCE':'NO_PUBLIC_WEB_PLAYABILITY_CLAIMS'));
