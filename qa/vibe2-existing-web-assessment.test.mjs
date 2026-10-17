@@ -228,3 +228,37 @@ test('large Web HTML is read completely from checkout and is never mistaken for 
     fs.rmSync(cwd,{recursive:true,force:true});
   }
 });
+
+test('star-frontier asteroid source replay terminates and preserves original sector counts and safe positions',()=>{
+  const html=fs.readFileSync(path.join('web-games','star-frontier','index.html'),'utf8');
+  const seeded=html.match(/function seeded\(n\)\{[^\n]*\}/)?.[0];
+  const start=html.indexOf('function spawnSector(){');
+  const end=html.indexOf('function spawnEnemy(index=0){',start);
+  assert.ok(seeded&&start>=0&&end>start,'current source functions must be found');
+  const actualSpawn=html.slice(start,end);
+  const replay=`
+    const WORLD={w:4200,h:3000};
+    const state={sector:0,asteroidSeq:1,enemies:[],asteroids:[],bullets:[],particles:[],
+      player:{x:0,y:0,vx:0,vy:0},station:{x:2100,y:1500},gate:{x:3900,y:1500}};
+    const dist=(x,y,a,b)=>Math.hypot(x-a,y-b);
+    const rand=(a,b)=>(a+b)/2;
+    const currentSector=()=>({oreMul:1});
+    const updateHud=()=>{};
+    const spawnEnemy=()=>{};
+    ${seeded}
+    ${actualSpawn}
+    const observed=[];
+    for(let sector=0;sector<3;sector++){
+      state.sector=sector;spawnSector();
+      observed.push({sector,count:state.asteroids.length,
+        unsafe:state.asteroids.filter(a=>dist(a.x,a.y,2100,1500)<380||dist(a.x,a.y,3900,1500)<220).length});
+    }
+    observed;
+  `;
+  const observed=vm.runInNewContext(replay,{Math},{timeout:1200});
+  assert.deepEqual(JSON.parse(JSON.stringify(observed)),[
+    {sector:0,count:38,unsafe:0},
+    {sector:1,count:48,unsafe:0},
+    {sector:2,count:58,unsafe:0}
+  ]);
+});
