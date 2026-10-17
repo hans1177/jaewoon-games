@@ -12,6 +12,10 @@ test('Cat Step uses native real 3D meshes and depth instead of 2D sprite project
   assert.match(js,/getContext\('webgl2'/);
   assert.match(js,/gl\.enable\(gl\.DEPTH_TEST\)/);
   assert.match(js,/gl\.drawArrays\(gl\.TRIANGLES/);
+  assert.match(js,/mat4\.perspective\(projection/);
+  assert.match(js,/gl\.uniformMatrix4fv\(uProjection/);
+  assert.match(js,/canvas\.dataset\.playerX=/);
+  assert.match(js,/canvas\.dataset\.cameraActive='true'/);
   assert.match(js,/gl\.uniform3f\(uSize/);
   assert.match(js,/gl\.uniform3f\(uOffset/);
   assert.match(js,/makePyramid\(\)/);
