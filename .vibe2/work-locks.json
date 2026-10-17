@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1hm89ur",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-existing-web-assessment-v1",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "web-games/seed-casual-realm-weaver/index.html"
+      ],
+      "baseSha": "1aee1fa008aec6fcbc9c4a8c3ad91dc4d13ea1e2",
+      "runId": "39047417479",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-17T16:12:04.895Z",
+      "expiresAt": "2026-10-17T16:57:04.895Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
