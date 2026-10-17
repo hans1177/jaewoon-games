@@ -110,4 +110,6 @@ test('both native platform adapters expose concrete event-safe visual abilities'
   const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   assert.match(worker,/CreateVisualFeedbackController/);
   assert.match(worker,/createWebPresentationController/);
+  assert.match(worker,/visualCraftWorkerGuidance\(order,context\)/);
+  assert.match(worker,/planVibePresentationAutopilot\(/);
 });
