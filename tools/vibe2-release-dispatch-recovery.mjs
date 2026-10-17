@@ -36,7 +36,13 @@ export function selectReviewedWinnerRecoveries(queueInput={}, {nowMs=Date.now(),
       .map(x=>Number(x.split(':').pop()))
       .filter(Number.isFinite);
     const last=stamps.length?Math.max(...stamps):0;
-    if(last>0 && Number(nowMs)-last<Math.max(60000,Number(cooldownMs)||DEFAULT_COOLDOWN_MS)) continue;
+    const baseCooldown=Math.max(60000,Number(cooldownMs)||DEFAULT_COOLDOWN_MS);
+    // Web의 정확한 F9 후보 게시가 반복 실패하면 기존 복구기 안에서만 재시도 간격을 늘린다.
+    // 첫 복구는 그대로 유지, 두 번째부터 2배씩 최대 60분. 비-Web 후보의 기존 정책은 유지한다.
+    const retryCooldown=webPublicationPending
+      ? Math.min(60*60*1000,baseCooldown*2**Math.min(6,Math.max(0,stamps.length-1)))
+      : baseCooldown;
+    if(last>0 && Number(nowMs)-last<retryCooldown) continue;
     selected.push({
       ...(evidenceOnly?{evidenceOnly:true}:{}),
       taskId:clean(task.id),

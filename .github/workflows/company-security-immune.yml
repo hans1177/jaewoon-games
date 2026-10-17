@@ -444,7 +444,17 @@ jobs:
             'webRuntimeStartabilityContract.actualWebGlDrawAnd3dSpatialRuntimeEvidenceRequired',
             'webRuntimeStartabilityContract.static3dTagsOrCssTransformsCannotPass',
             'webRuntimeStartabilityContract.legacyWebSourcePreservedUntilVerified3dReplacement',
-            'webRuntimeStartabilityContract.mobile3dPlayAndSaveRegressionRequired'
+            'webRuntimeStartabilityContract.mobile3dPlayAndSaveRegressionRequired',
+            // 오너 2026-10-18 명시 승인: F0~F9 후 전게임 배포/Pages 목적지만 한정.
+            // 아래 실제 값 검증을 통과해야만 REVIEW -> PASS로 승격한다.
+            'developmentSpeedExecution.candidateReleasePromotionChecks.webRequiredDeploymentCheck',
+            'developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence',
+            'roblox.deploymentControl.verifiedCyclePublication.sequence',
+            'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
+            'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
+            'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
+            'changeRecord.playableWebMandatoryDeployment20261002.nextBuildUpBeforeDeploymentSuccessForbidden',
+            'changeRecord.ownerEveryGameF9Publish20261018'
           ]);
           const webFlow=/^(?:[^.]+\.)*webGameFlow\.(?:enabled|scope|legacyDirectWebGameNotTarget|disabledReason)$/;
           const ownerScope=/^(?:[^.]+\.)*ownerActiveDevelopmentScope20261009\.(?:version|authority|activeTargets|generalWeb3dOnlyRequired|existingWeb2dFinalPassForbidden|legacyWebPreservedUntil3dRuntimeVerified)$/;
@@ -485,6 +495,63 @@ jobs:
             ||!same(base.developmentAccess?.UNITY,head.developmentAccess?.UNITY)
             ||!same(base.developmentAccess?.UNITY_WEB,head.developmentAccess?.UNITY_WEB)
             ||!same(base.developmentAccess?.UNITY_ANDROID,head.developmentAccess?.UNITY_ANDROID))throw new Error('SECURITY_AUTO_POLICY_OWNER_WEB3D_INVARIANT_FAIL');
+          // 정책 승인 범위를 검사한다. F0~F9·로블록스·Unity/Workers 검증은 그대로 유지한다.
+          const releaseKeys=new Set([
+            'developmentSpeedExecution.candidateReleasePromotionChecks.webRequiredDeploymentCheck',
+            'developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence',
+            'roblox.deploymentControl.verifiedCyclePublication.sequence',
+            'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
+            'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
+            'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
+            'changeRecord.playableWebMandatoryDeployment20261002.nextBuildUpBeforeDeploymentSuccessForbidden',
+            'changeRecord.ownerEveryGameF9Publish20261018'
+          ]);
+          if(changes.some(key=>releaseKeys.has(key))){
+            const loop=head.developmentLifecycleMachine?.verifiedF0F9PublicationLoop;
+            const record=head.changeRecord?.ownerEveryGameF9Publish20261018||{};
+            const requiredSequence=['GAME_SOURCE_MUTATION','F0','F1','F2','F3','F4','F5','F6','F7','F8','F9',
+              'PUBLISH_EVERY_F9_VERIFIED_GAME','IMMEDIATE_NEXT_EVOLUTION_CYCLE'];
+            const baselineSequence=base.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.sequence||[];
+            const expectedBaseline=['GAME_SOURCE_MUTATION','F0','F1','F2','F3','F4','F5','F6','F7','F8','F9',
+              'RELEASE_CLASSIFICATION','PUBLISH_ONLY_IF_RELEASED','IMMEDIATE_NEXT_EVOLUTION_CYCLE'];
+            const expectedRobloxBaseline=['EVOLUTION_SOURCE_MUTATION','F0_SOURCE_INTEGRITY',
+              'F1_TO_F8_CODE_AND_STATIC_QA','F9_EXACT_FINAL_REVIEW',
+              'DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH',
+              'START_NEXT_EVOLUTION_CYCLE_IMMEDIATELY','RECONCILE_CANONICAL_PUBLISH_RESULT_ASYNC'];
+            const requiredRobloxSequence=expectedRobloxBaseline.map(step=>
+              step==='DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH'
+                ?'DISPATCH_EXACT_F9_ARTIFACT_REGARDLESS_OF_RELEASE_CLASSIFICATION':step);
+            const requiredRecord={
+              authority:'OWNER_DIRECT',status:'ACTIVE',scope:'EVERY_GAME_AFTER_VERIFIED_F0_F9',
+              publicationScoreGate:false,publicationClassificationGate:false,existingCanonicalF0F9:true,publicationMustBeAttempted:true,
+              failedPublishUsesExistingRetry:true,nextEvolutionDoesNotWaitForPublishedVisibility:true,
+              platforms:{WEB:'GITHUB_PAGES',ROBLOX:'ROBLOX_EXISTING_OPEN_CLOUD',UNITY:'EXISTING_APP_TEST_BUILD'},
+              cloudflareWorkers:'MULTIPLAYER_ONLY',githubOriginalAssetsAndSaveKeysPreserved:true,
+              homepageOwner:'HOMEPAGE_MANAGER_AND_DIRECTOR',freeExistingActionsOnly:true,shadowPipelineForbidden:true
+            };
+            if(!same(baselineSequence,expectedBaseline)
+              ||!same(base.roblox?.deploymentControl?.verifiedCyclePublication?.sequence,expectedRobloxBaseline)
+              ||!same(head.roblox?.deploymentControl?.verifiedCyclePublication?.sequence,requiredRobloxSequence)
+              ||!same(loop?.sequence,requiredSequence)
+              ||!same(record,requiredRecord)
+              ||head.version!==base.version+1
+              ||head.developmentSpeedExecution?.candidateReleasePromotionChecks?.webRequiredDeploymentCheck!=='GitHub Pages'
+              ||loop?.platformBindings?.WEB?.deploymentTarget!=='GITHUB_PAGES_EXISTING_STATIC_SITE'
+              ||loop?.developmentGamePublicationAllowed!==true
+              ||loop?.publishBeforeF9Forbidden!==true
+              ||loop?.exactVerifiedVersionRequiredForPublishAttempt!==true
+              ||head.changeRecord?.playableWebMandatoryDeployment20261002?.cloudflareMainRequiredBeforeVibePass!==false
+              ||head.changeRecord?.playableWebMandatoryDeployment20261002?.githubPagesMainRequiredBeforeVibePass!==true
+              ||base.changeRecord?.playableWebMandatoryDeployment20261002?.nextBuildUpBeforeDeploymentSuccessForbidden!==true
+              ||head.changeRecord?.playableWebMandatoryDeployment20261002?.nextBuildUpBeforeDeploymentSuccessForbidden!==false
+              ||head.fixedAutonomousDevelopmentOperatingContract?.serverDeployment?.numericalScoreBlocksVerifiedDeployment!==false
+              ||head.ownerCanonicalRules?.constitutionalBinding?.enforcerRequiredBeforeWorkerSourceWrite!==true
+              ||!changes.some(key=>key==='changeRecord.ownerEveryGameF9Publish20261018')
+              ||changes.some(key=>releaseKeys.has(key)&&!same(key==='changeRecord.ownerEveryGameF9Publish20261018'?record:undefined,
+                key==='changeRecord.ownerEveryGameF9Publish20261018'?requiredRecord:undefined))
+            )throw new Error('SECURITY_OWNER_F9_PAGES_APPROVAL_INVARIANT_FAIL');
+            console.log('SECURITY_OWNER_APPROVED_F9_PAGES_POLICY_EXACT_SCOPE=PASS');
+          }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass=YES\n');
           console.log('SECURITY_AUTOMATED_OWNER_WEB3D_APPROVAL=PASS; changedKeys='+changes.length);
           NODE
