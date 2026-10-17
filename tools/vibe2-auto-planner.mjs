@@ -3762,8 +3762,8 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
     if(startupSpatialRepair){
       if(verifiedOriginal&&owner3dScope?.generalWeb3dOnlyRequired===true){
-        const robloxOriginal='roblox-games/'+project.gameId;
-        const provenance=fs.existsSync(path.join(repoRoot,robloxOriginal))?robloxOriginal:'design/'+project.gameId;
+        const originalPaths=['roblox-games/'+project.gameId,'unreal-games/'+project.gameId];
+        const provenance=originalPaths.find(relative=>fs.existsSync(path.join(repoRoot,relative)))||'design/'+project.gameId;
         startupSpatialRepair.goal+='\n[CANONICAL_ORIGINAL_TO_WEB_3D] 검증 설계 '+posix(path.relative(repoRoot,verifiedOriginal.file))+'의 MAIN/A/B/C/D/@ 인과 및 플레이·저장 의미를 보존한다. '+provenance+'의 실제 게임·자산은 읽기 전용 참조로 활용해 WebGL 네이티브 입체 장면·카메라·입력으로 구현한다. Unity/Unity Web/UEFN 빌드와 수정은 제외한다. F0~F9, 모바일 브라우저·런타임 검증 이전에는 PASS 금지.';
         startupSpatialRepair.evidence=[...new Set([...(startupSpatialRepair.evidence||[]),'verified-design:'+posix(path.relative(repoRoot,verifiedOriginal.file)),'web3d-upgrade:first-after-canonical-web-assessment','web3d-runtime-evidence-required'])];
       }
