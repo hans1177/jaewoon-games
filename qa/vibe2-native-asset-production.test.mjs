@@ -5151,8 +5151,8 @@ test('3D game sourcing accepts only exact canonical LFS pointers and rejects cor
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
 
-test('3D-only download contract leaves missing audio and image archives out of acquisition',()=>{
-  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-3d-filter-'));
+test('all library asset families including music UI icons and VFX are eligible for acquisition',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-all-family-'));
   try{
     const base={sourceOnly:true,gameApplied:false,licenseDeclared:'CC0-1.0',
       sha256:'3'.repeat(64),bytes:1024,
@@ -5161,18 +5161,41 @@ test('3D-only download contract leaves missing audio and image archives out of a
     for(const [family,role,file] of [
       ['UI','special-icons','game-icons.zip'],
       ['AUDIO','audio','ambient-loop.zip'],
+      ['AUDIO','music','background-music.zip'],
       ['VFX','vfx','effects.zip']
     ]){
       const archive={...base,role,file,sourcePath:'assets/external/simple-rpg/icons-vfx-npc/'+file};
       const plan=buildAssetSupplyDecisionSummary({gameId:'3d-only',target:'roblox',
         requirements:[{family}],request:family.toLowerCase(),
         registry:{assets:[],externalSources:[]},sharedOriginalArchives:[archive],repoRoot:tmp});
-      assert.notEqual(plan.nextActions.find(x=>x.family===family)?.action,'ACQUIRE_ADAPT',
-        family+' must not fetch missing non-3D archives');
+      const selected=plan.nextActions.find(x=>x.family===family);
+      assert.equal(selected?.action,'ACQUIRE_ADAPT',family+' should hydrate its missing verified library archive');
+      assert.equal(selected.externalAcquisition.downloaded,false);
+      assert.equal(selected.externalAcquisition.acquisitionState,'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED');
     }
     const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
-    assert.match(worker,/spatial3dFamilies\.has\(clean\(row\.family\)/);
+    assert.doesNotMatch(worker,/spatial3dFamilies\.has\(clean\(row\.family\)/);
     assert.match(worker,/lfsEligible\.has\(rel\)/);
     assert.match(worker,/BLOCKED_INVALID_SOURCE/);
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+
+test('all-family download still rejects mismatched UI and music binary hashes',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-media-corruption-'));
+  try{
+    for(const [family,role,file] of [['AUDIO','music','bgm.zip'],['UI','special-icons','ui-icons.zip']]){
+      const rel='assets/external/simple-rpg/icons-vfx-npc/'+file;
+      const full=path.join(root,rel);fs.mkdirSync(path.dirname(full),{recursive:true});
+      fs.writeFileSync(full,Buffer.alloc(1024,3));
+      const row={file,sourcePath:rel,role,sha256:'e'.repeat(64),bytes:1024,
+        licenseDeclared:'CC0-1.0',sourceOnly:true,gameApplied:false,
+        sourceUrl:'https://opengameart.org/sites/default/files/'+file,
+        licenseEvidenceUrl:'https://opengameart.org/content/'+file};
+      const result=buildAssetSupplyDecisionSummary({gameId:'media-verification',target:'web',
+        request:family,requirements:[{family}],registry:{assets:[],externalSources:[]},
+        sharedOriginalArchives:[row],repoRoot:root});
+      assert.notEqual(result.nextActions.find(x=>x.family===family)?.action,'ACQUIRE_ADAPT');
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
