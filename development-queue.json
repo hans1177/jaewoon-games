@@ -25622,7 +25622,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-17T16:39:52.993Z",
+      "updatedAt": "2026-10-17T16:50:36.252Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -25638,16 +25638,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
       "robloxBuildArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-      "robloxBuildPassedAt": "2026-10-17T16:39:52.993Z",
+      "robloxBuildPassedAt": "2026-10-17T16:50:36.252Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T16:39:52.993Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T16:50:36.252Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "defense",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T16:33:37.145Z",
+        "checkedAt": "2026-10-17T16:42:19.767Z",
         "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
         "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
         "secondaryOwnerFocus": false,
@@ -25690,7 +25690,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in the build evidence, preventing runtime testing start."
+            "note": "BUILD_EVIDENCE indicates that required validations (web, music, nativeWeb, nativeMusic) have not passed."
           }
         ],
         "blockers": [
@@ -39515,7 +39515,7 @@
       "robloxExactRevisionPassed": false
     }
   ],
-  "updatedAt": "2026-10-17T16:49:03.907Z",
+  "updatedAt": "2026-10-17T16:50:36.252Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
