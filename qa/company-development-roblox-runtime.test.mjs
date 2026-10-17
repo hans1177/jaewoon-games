@@ -1416,7 +1416,7 @@ test('verified learning refresh debt coalesces to one exact current-main batch s
 test('existing asset rebind migrates removed studioUi consumers and remains idempotent',()=>{
   const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   const start=source.indexOf('function studioAssetDynamicBindingBlock');
-  const end=source.indexOf('\nexport function foundationCharacterSource',start);
+  const end=source.indexOf('\nexport function bindExistingServerStudioMaterial',start);
   assert.ok(start>=0&&end>start);
   const familyPrelude='const ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES='+JSON.stringify(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'])+';\n';
   const bind=runInNewContext(familyPrelude+source.slice(start,end)+'\nbindExistingClientStudioAssets');
