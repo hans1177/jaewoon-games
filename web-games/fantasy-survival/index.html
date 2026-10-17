@@ -5158,10 +5158,10 @@ function drawBackground(cx,cy,w,h){
  if(state.player.torchEquipped&&state.player.torchDurability>0){const px=state.player.x-cx,py=state.player.y-cy,g=ctx.createRadialGradient(px,py,30,px,py,180);g.addColorStop(0,'#ffe6a322');g.addColorStop(1,'#ffe6a300');ctx.fillStyle=g;ctx.fillRect(0,0,w,h)}
 }
 function drawWorldTreeInterior(cx,cy,w,h){
- ctx.fillStyle='#0b120d';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
+ ctx.fillStyle='#283528';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
  const room=WORLD_TREE_INTERIOR;
  const floor=ctx.createRadialGradient(room.w*.5,room.h*.48,120,room.w*.5,room.h*.5,1900);
- floor.addColorStop(0,'#35442a');floor.addColorStop(.65,'#2a2d1e');floor.addColorStop(1,'#1a1b16');
+ floor.addColorStop(0,'#617756');floor.addColorStop(.65,'#4d5942');floor.addColorStop(1,'#313a2e');
  ctx.fillStyle=floor;ctx.fillRect(65,65,room.w-130,room.h-130);
  ctx.lineWidth=68;ctx.strokeStyle='#614b33';ctx.strokeRect(45,45,room.w-90,room.h-90);
  ctx.lineWidth=18;ctx.strokeStyle='#9f7847';ctx.strokeRect(72,72,room.w-144,room.h-144);
@@ -5247,16 +5247,16 @@ function drawWorldTreeInterior(cx,cy,w,h){
  ctx.restore()
 }
 function drawCave(cx,cy,w,h){
- ctx.fillStyle='#302c35';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
+ ctx.fillStyle='#514b58';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
  const stoneFloor=ctx.createRadialGradient(3000,2050,140,3000,2050,3100);
- stoneFloor.addColorStop(0,'#625966');stoneFloor.addColorStop(.66,'#4c4651');stoneFloor.addColorStop(1,'#393643');
+ stoneFloor.addColorStop(0,'#928797');stoneFloor.addColorStop(.66,'#776f7f');stoneFloor.addColorStop(1,'#625b6b');
  ctx.fillStyle=stoneFloor;ctx.fillRect(1050,800,3900,2750);
  ctx.strokeStyle='#8f7894';ctx.lineWidth=30;ctx.strokeRect(1050,800,3900,2750);
  // 뿌리 지하의 돌바닥, 동굴 기둥, 수액 발광석 및 보스 제단까지 이어지는 가시적인 길.
  ctx.save();ctx.lineCap='round';
  ctx.beginPath();ctx.moveTo(CAVE_ENTRY.x,CAVE_ENTRY.y);ctx.lineTo(3000,2720);ctx.quadraticCurveTo(2660,2220,BOSS_ALTAR.x,BOSS_ALTAR.y);
- ctx.strokeStyle='rgba(174,149,113,.60)';ctx.lineWidth=176;ctx.stroke();
- ctx.strokeStyle='rgba(233,209,164,.30)';ctx.lineWidth=14;ctx.setLineDash([55,48]);ctx.stroke();ctx.setLineDash([]);
+ ctx.strokeStyle='rgba(207,180,140,.80)';ctx.lineWidth=176;ctx.stroke();
+ ctx.strokeStyle='rgba(249,231,193,.50)';ctx.lineWidth=14;ctx.setLineDash([55,48]);ctx.stroke();ctx.setLineDash([]);
  for(let i=0;i<28;i++){
   const x=1230+(i*397)%3500,y=940+(i*521)%2370;
   ctx.strokeStyle=i%3===0?'rgba(163,123,151,.32)':'rgba(166,139,113,.31)';
@@ -5265,7 +5265,7 @@ function drawCave(cx,cy,w,h){
  }
  for(const [x,y] of [[1420,1240],[1960,2840],[4300,1280],[4400,2900],[2280,1580],[3710,2020]]){
   const g=ctx.createRadialGradient(x,y,5,x,y,265);
-  g.addColorStop(0,'rgba(181,217,245,.36)');g.addColorStop(1,'rgba(181,217,245,0)');
+  g.addColorStop(0,'rgba(202,234,255,.58)');g.addColorStop(1,'rgba(181,217,245,0)');
   ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,265,0,Math.PI*2);ctx.fill();
   ctx.fillStyle='#b7d9e4';ctx.strokeStyle='#e1eff7';ctx.lineWidth=5;
   ctx.beginPath();ctx.moveTo(x-30,y+48);ctx.lineTo(x-39,y-16);ctx.lineTo(x,y-97);ctx.lineTo(x+41,y-14);ctx.lineTo(x+30,y+48);ctx.closePath();ctx.fill();ctx.stroke()
@@ -5331,7 +5331,7 @@ function drawQuestDarkness(){
  // 지하는 횃불 없이도 길·제단·적을 볼 수 있게 기본 밝기를 확보한다.
  // 스토리 동굴의 기존 어둠 난이도는 유지한다.
  const basement=state.area==='underground';
- ctx.save();ctx.fillStyle=basement?'rgba(12,12,19,.18)':'rgba(0,0,0,.91)';ctx.fillRect(0,0,innerWidth,innerHeight);ctx.globalCompositeOperation='destination-out';
+ ctx.save();ctx.fillStyle=basement?'rgba(12,12,19,.06)':'rgba(0,0,0,.91)';ctx.fillRect(0,0,innerWidth,innerHeight);ctx.globalCompositeOperation='destination-out';
  for(const light of lights){
   const radius=basement?(light.lit?610:300):(light.lit?430:78),g=ctx.createRadialGradient(light.x,light.y,10,light.x,light.y,radius);
   g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.48,light.lit?'rgba(0,0,0,.96)':basement?'rgba(0,0,0,.82)':'rgba(0,0,0,.42)');g.addColorStop(1,'rgba(0,0,0,0)');
