@@ -1366,7 +1366,9 @@ local function civAttack(player, targetModel)
   local humanoid = character and character:FindFirstChildOfClass("Humanoid")
   if not root or not humanoid or humanoid.Health <= 0 then return end
   local chosen, dist = nil, 12
-  for _, enemy in ipairs(civEnemies) do
+  -- Manual attack still checks all enemies; an authorized mobile target only needs its own race.
+  local candidates = targetModel ~= nil and civEnemiesByRace[targetModel:GetAttribute("RaceID")] or civEnemies
+  for _, enemy in ipairs(candidates or {}) do
     if enemy.Humanoid.Health > 0 and enemy.Model.Parent == civHub then
       local delta = enemy.Root.Position - root.Position
       local d = delta.Magnitude
@@ -2225,8 +2227,11 @@ autoCombatEvent.OnServerEvent:Connect(function(player, actionType, targetModel)
   if actionType ~= "AutoAttack" or player:GetAttribute("CivAutoCombatEnabled") ~= true then return end
   if typeof(targetModel) ~= "Instance" or not targetModel:IsA("Model") then return end
   if targetModel.Parent ~= civHub or targetModel:GetAttribute("CivilizationEnemy") ~= true then return end
+  local raceID = targetModel:GetAttribute("RaceID")
+  local raceEnemies = typeof(raceID) == "number" and civEnemiesByRace[raceID] or nil
+  if not raceEnemies then return end
   local verified = false
-  for _, enemy in ipairs(civEnemies) do
+  for _, enemy in ipairs(raceEnemies) do
     if enemy.Model == targetModel and enemy.Humanoid.Health > 0 then verified = true; break end
   end
   if not verified then return end
