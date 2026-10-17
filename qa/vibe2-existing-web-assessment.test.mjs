@@ -262,3 +262,15 @@ test('star-frontier asteroid source replay terminates and preserves original sec
     {sector:2,count:58,unsafe:0}
   ]);
 });
+
+test('survival2 historical playable source recovery keeps saved progress and original atlas',()=>{
+  const root=path.join('web-games','survival2');
+  const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+  assert.match(html,/jaewoon-survival2-v3/);
+  assert.match(html,/requestAnimationFrame\(loop\)/);
+  assert.match(html,/getContext\('2d'\)/);
+  assert.doesNotMatch(html,/Approved Web Bootstrap|Simulated game logic/);
+  assert.ok(fs.statSync(path.join(root,'assets','survival-atlas.svg')).size>100);
+  for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))
+    if(match[1].trim())assert.doesNotThrow(()=>new vm.Script(match[1]));
+});
