@@ -136,7 +136,7 @@ test('lock Roblox and general Web as concurrent Vibe source-development platform
   ]);
   contains(release,[
     'WEB_F9_VERIFIED=YES',
-    'Cloudflare Pages main deployment check',
+    'VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=SUCCESS',
     'VIBE2_WEB_AUTO_DEPLOY=PASS',
     'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED_AFTER_WEB_DEPLOY',
     'ROBLOX_PRE_F9_CANONICAL_PUBLISH=FORBIDDEN',
@@ -159,7 +159,7 @@ test('lock F0 to F9 real verification and pre-F9 publication restrictions',()=>{
   assert.equal(f.developmentGamePublicationAllowed,false);
   assert.deepEqual(f.sequence,[
     'GAME_SOURCE_MUTATION','F0','F1','F2','F3','F4','F5','F6','F7','F8','F9',
-    'RELEASE_CLASSIFICATION','PUBLISH_ONLY_IF_RELEASED','IMMEDIATE_NEXT_EVOLUTION_CYCLE'
+    'RELEASE_CLASSIFICATION','DISPATCH_EXACT_F9_PUBLISH_FOR_EVERY_GAME','IMMEDIATE_NEXT_EVOLUTION_CYCLE'
   ]);
   assert.equal(f.platformBindings.ROBLOX.f9Authority,'.github/workflows/company-development-roblox-final-review-revalidation.yml');
   const roblox=workflow('company-development-roblox-runtime.yml');
