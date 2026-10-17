@@ -5122,6 +5122,43 @@ function drawBackground(cx,cy,w,h){
  ctx.strokeStyle='#8ec69a10';ctx.lineWidth=1;const s=80;for(let x=-(cx%s);x<w;x+=s){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=-(cy%s);y<h;y+=s){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
  if(state.player.torchEquipped&&state.player.torchDurability>0){const px=state.player.x-cx,py=state.player.y-cy,g=ctx.createRadialGradient(px,py,30,px,py,180);g.addColorStop(0,'#ffe6a322');g.addColorStop(1,'#ffe6a300');ctx.fillStyle=g;ctx.fillRect(0,0,w,h)}
 }
+function drawWorldTreeInterior(cx,cy,w,h){
+ ctx.fillStyle='#0b120d';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
+ const room=WORLD_TREE_INTERIOR;
+ const floor=ctx.createRadialGradient(room.w*.5,room.h*.48,120,room.w*.5,room.h*.5,1900);
+ floor.addColorStop(0,'#35442a');floor.addColorStop(.65,'#2a2d1e');floor.addColorStop(1,'#1a1b16');
+ ctx.fillStyle=floor;ctx.fillRect(65,65,room.w-130,room.h-130);
+ ctx.lineWidth=68;ctx.strokeStyle='#614b33';ctx.strokeRect(45,45,room.w-90,room.h-90);
+ ctx.lineWidth=18;ctx.strokeStyle='#9f7847';ctx.strokeRect(72,72,room.w-144,room.h-144);
+ // 살아 있는 나이테와 그 사이를 연결한 굵은 뿌리
+ for(let i=0;i<13;i++){
+  const radius=210+i*93;ctx.strokeStyle=i%3===0?'rgba(174,133,76,.21)':'rgba(153,116,74,.12)';
+  ctx.lineWidth=8;ctx.beginPath();ctx.ellipse(room.w*.5,room.h*.49,radius*1.05,radius*.66,0,0,Math.PI*2);ctx.stroke()
+ }
+ for(let i=0;i<19;i++){
+  const x=155+(i*421)%2940,y=140+(i*311)%2000;
+  ctx.strokeStyle=i%3===0?'#795936':'#62492d';ctx.lineCap='round';ctx.lineWidth=28+i%4*4;
+  ctx.beginPath();ctx.moveTo(x-84,y-120);ctx.bezierCurveTo(x+95,y-34,x-93,y+50,x+68,y+142);ctx.stroke();
+  ctx.strokeStyle='#a1814c';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-65,y-105);ctx.quadraticCurveTo(x+54,y-10,x+20,y+76);ctx.stroke()
+ }
+ // 정해진 위치의 발광 균류 · 매 프레임 무작위 배치하지 않음
+ for(let i=0;i<27;i++){
+  const x=170+(i*357)%2810,y=180+(i*487)%1880;
+  ctx.fillStyle='#284a37';ctx.beginPath();ctx.arc(x,y,18+(i%4)*7,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=i%3===0?'#92f7ab':'#71d799';ctx.beginPath();ctx.ellipse(x+13,y-7,9+i%3*3,8,0,0,Math.PI*2);ctx.fill()
+ }
+ const exit=room.exit;
+ ctx.fillStyle='#111d13';ctx.strokeStyle='#c9ec9d';ctx.lineWidth=8;ctx.beginPath();ctx.ellipse(exit.x,exit.y,68,40,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.fillStyle='#e2f6d6';ctx.font='bold 17px system-ui';ctx.textAlign='center';ctx.fillText('세계수 출구 · 두 번 누르기',exit.x,exit.y-70);
+ ctx.fillStyle='#c9f1b2';ctx.font='bold 27px system-ui';ctx.fillText('세계수 내부',room.w/2,145);
+ ctx.font='bold 16px system-ui';ctx.fillText('뿌리의 심장 · 중립 골렘을 공격하면 반격한다',room.w/2,182);
+ if(performance.now()<(state.player.rootedUntil||0)){
+  const remain=Math.ceil(((state.player.rootedUntil||0)-performance.now())/1000);
+  ctx.fillStyle='rgba(51,117,60,.35)';ctx.beginPath();ctx.arc(state.player.x,state.player.y,48,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#e5ffd2';ctx.font='bold 13px system-ui';ctx.fillText('뿌리 속박 '+remain+'초 · 공격 가능',state.player.x,state.player.y-66)
+ }
+ ctx.restore()
+}
 function drawCave(cx,cy,w,h){
  ctx.fillStyle='#100d12';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
  ctx.fillStyle='#241b28';ctx.fillRect(1050,800,3900,2750);ctx.strokeStyle='#59405e';ctx.lineWidth=20;ctx.strokeRect(1050,800,3900,2750);
@@ -6067,6 +6104,7 @@ function draw(){
  const cx=state.camera.x,cy=state.camera.y,now=performance.now();
  if(state.area==='underwater')drawUnderwater(cx,cy,innerWidth,innerHeight);
  else if(state.area==='underground')drawCave(cx,cy,innerWidth,innerHeight);
+ else if(state.area==='worldtreeinside')drawWorldTreeInterior(cx,cy,innerWidth,innerHeight);
  else if(state.area==='questcave')drawQuestCave(cx,cy,innerWidth,innerHeight);
  else if(state.area==='storylab1')drawStoryLab1(cx,cy,innerWidth,innerHeight);
  else if(state.area==='storylab2')drawStoryLab2(cx,cy,innerWidth,innerHeight);
