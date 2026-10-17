@@ -411,7 +411,13 @@ export function planVibeExternalCustomization({
     .sort((a,b)=>text(a.id).localeCompare(text(b.id)));
   const approvedVisualAxes=Object.freeze(['SILHOUETTE','PROPORTION','MATERIAL_RESPONSE','SURFACE_DETAIL','PALETTE','LIGHTING','MOTION_LANGUAGE','UI_LANGUAGE']);
   const actions=VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES.map(reference=>{
-    const matchingRoles=reference.roles.filter(role=>selectedRoles.has(role));
+    const suggestedRoles=reference.roles.filter(role=>selectedRoles.has(role));
+    // 제약조합(WFC)과 전술 경로탐색(A*)은 모든 맵에 무조건 호출하지 않는다.
+    const matchingRoles=reference.id==='WAVE_FUNCTION_COLLAPSE'
+      &&!selectedRoles.has('DUNGEON')&&!selectedRoles.has('BUILDING')?[]
+      :reference.id==='ASTAR_PATHFINDING'
+      &&!selectedRoles.has('ENEMY_AI')&&!selectedRoles.has('NPC')?[]
+      :suggestedRoles;
     const families=[...new Set(matchingRoles.flatMap(role=>VIBE_ROLE_FAMILIES[role]||[]))];
     const sourceCandidates=validAssets.filter(asset=>vibeMatchingFamilies(asset,families));
     const verifiedSources=sourceCandidates.filter(asset=>
