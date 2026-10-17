@@ -22,7 +22,8 @@ test('Cat Step uses native real 3D meshes and depth instead of 2D sprite project
   assert.match(js,/drawCat3d\(pose\)/);
   assert.match(js,/__catStep3dDiagnostics/);
   assert.doesNotMatch(js,/getContext\(['"]2d/);
-  assert.doesNotMatch(html,/<script\s+src=/i,'avoid external renderer download');
+  assert.match(html,/<script src="\/web-games\/_shared\/casual-feedback\.js"><\/script>/);
+  assert.doesNotMatch(html,/<script\s+src=["']https?:/i,'avoid external renderer downloads');
   assert.doesNotThrow(()=>new vm.Script(js));
 });
 
@@ -37,6 +38,13 @@ test('Cat Step original rules, touch inputs, restart and existing saves remain u
   assert.match(js,/Math\.max\(150,280-\(speedTier\(\)-1\)\*18\)/);
   assert.match(js,/localStorage\.setItem\('cat-step-best'/);
   assert.match(js,/mobileRender\?1:1\.5/);
+  assert.match(js,/feedback\.emit\('step'/);
+  assert.match(js,/feedback\.emit\('milestone'/);
+  assert.match(js,/feedback\.emit\('fail'/);
+  assert.match(js,/feedback\.emit\('start'/);
+  assert.match(html,/id="progressFill"/);
+  assert.match(html,/jg-casual-idle/);
+  assert.match(html,/aria-label="다음 10계단까지"/);
   assert.match(js,/document\.hidden/);
   assert.match(html,/id="score"/);
   assert.match(html,/id="best"/);
