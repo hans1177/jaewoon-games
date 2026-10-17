@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {deriveVerifiedCodePatterns,deriveObservedRepairRecipe} from '../tools/vibe2-code-pattern-ingest.mjs';
+import {deriveVerifiedCodePatterns,deriveObservedRepairRecipe,hasObviousMalformedAddedCode,ingestVerifiedCodePatterns} from '../tools/vibe2-code-pattern-ingest.mjs';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
 import {learningGuidance} from '../tools/vibe2-learning-motor.mjs';
 
 test('verified sample yields abstract code patterns without raw patch',()=>{
@@ -55,4 +58,34 @@ test('repair recipe ignores removed code and unverified conclusions',()=>{
     instruction:'save repair',output:'검증된 패치:\n+localStorage.setItem("x","y")',
     verification:{fullRegression:'PASS',runtime:'FAIL'}};
   assert.deepEqual(deriveVerifiedCodePatterns(sample),[]);
+});
+
+test('legacy PASS traces with malformed added code are quarantined instead of trained',()=>{
+  const source="검증된 패치:\n+$$('.starter')forEach(button => button.onclick = () => chooseStarter());";
+  assert.equal(hasObviousMalformedAddedCode(source),true);
+  assert.equal(deriveObservedRepairRecipe(source),null);
+  assert.deepEqual(deriveVerifiedCodePatterns({
+    taskType:'coding',gameId:'g1',sourceRevision:'d'.repeat(40),
+    independentQa:'PASS',browserQa:'PASS',instruction:'Repair starter click',
+    output:source,verification:{fullRegression:'PASS'}
+  }),[]);
+  const valid="검증된 패치:\n+$$('.starter').forEach(button => button.onclick = () => chooseStarter());";
+  assert.equal(hasObviousMalformedAddedCode(valid),false);
+  assert.ok(deriveObservedRepairRecipe(valid)?.operationIds.includes('EXISTING_INPUT_HANDLER_BINDING'));
+});
+
+test('previous pattern for a now rejected source is removed from the existing library',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-code-pattern-revoke-'));
+  try{
+    const samplePath=path.join(root,'bad.json');
+    fs.writeFileSync(samplePath,JSON.stringify({
+      taskType:'coding',gameId:'g1',sourceRevision:'e'.repeat(40),
+      independentQa:'PASS',browserQa:'PASS',instruction:'Repair bad handler',
+      output:"검증된 패치:\n+$$('.starter')forEach(b => b.onclick = () => chooseStarter());"
+    }));
+    const previous={patterns:[{id:'pat_old_unsafe',verified:true,evidencePath:samplePath,
+      pattern:'VERIFIED_BAD_CODE',rawCodeStored:false}]};
+    const result=ingestVerifiedCodePatterns({samplesDir:root,libraryInput:previous});
+    assert.equal(result.patterns.some(x=>x.id==='pat_old_unsafe'),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
