@@ -341,7 +341,8 @@ document.addEventListener('touchstart', (e) => {
 });
 
 // Add mobile pointer/touch interaction for mobile devices
-document.addEventListener('touchmove', (e) => { const rect = e.target.getBoundingClientRect(); const x = rect.x + e.touches[0].clientX - window.innerWidth / 2; })
+document.addEventListener('touchmove', (e) => {
+  if (!e.touches.length) return;
   const rect = e.target.getBoundingClientRect();
   const x = rect.x + e.touches[0].clientX - window.innerWidth / 2;
   const y = rect.y + e.touches[0].clientY - window.innerHeight / 2;
