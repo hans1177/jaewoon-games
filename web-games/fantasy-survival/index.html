@@ -1805,6 +1805,15 @@ function drawMiniMap(now=performance.now()){
  if(now-miniMapDrawAt<180)return;miniMapDrawAt=now;
  const c=document.getElementById('miniMap');if(!c)return;const m=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,r=Math.min(w,h)/2-3;
  if(state.area==='underwater'){drawUnderwaterMiniMap(c,m,w,h,cx,cy,r,now);return}
+ if(state.area==='worldtreeinside'){
+   const p=state.player,miniScale=r/1500;
+   m.clearRect(0,0,w,h);m.save();m.beginPath();m.arc(cx,cy,r,0,Math.PI*2);m.clip();
+   m.fillStyle='#2b221b';m.fillRect(0,0,w,h);m.strokeStyle='#8b7450';m.lineWidth=2;
+   m.strokeRect(cx-p.x*miniScale,cy-p.y*miniScale,WORLD_TREE_INTERIOR.w*miniScale,WORLD_TREE_INTERIOR.h*miniScale);
+   for(const e of state.enemies){if(e.hp<=0||e.area!=='worldtreeinside')continue;m.fillStyle=e.type.mood==='neutral'?'#d8c76d':'#f38f77';m.beginPath();m.arc(cx+(e.x-p.x)*miniScale,cy+(e.y-p.y)*miniScale,3,0,Math.PI*2);m.fill()}
+   if(multiplayer.connected)for(const remote of multiplayer.remote.values()){if(remote?.area!=='worldtreeinside')continue;m.fillStyle='#54d8ff';m.beginPath();m.arc(cx+(remote.x-p.x)*miniScale,cy+(remote.y-p.y)*miniScale,3,0,Math.PI*2);m.fill()}
+   m.fillStyle='#ffffff';m.beginPath();m.arc(cx,cy,4,0,Math.PI*2);m.fill();m.restore();return
+ }
  let anchor;
  if(state.area==='surface')anchor={x:state.player.x,y:state.player.y};
  else if(state.area.startsWith('jungletemple'))anchor={...JUNGLE_TEMPLE_ENTRANCE};
@@ -5101,6 +5110,8 @@ function drawBackground(cx,cy,w,h){
  // 세계수 지역
  ctx.beginPath();ctx.moveTo(WORLD_TREE_POLY[0].x,WORLD_TREE_POLY[0].y);for(let i=1;i<WORLD_TREE_POLY.length;i++)ctx.lineTo(WORLD_TREE_POLY[i].x,WORLD_TREE_POLY[i].y);ctx.closePath();ctx.fillStyle='#163820';ctx.fill();fillFantasyRegionTexturePolygon(WORLD_TREE_POLY,'forest',.38);ctx.strokeStyle='#315d39';ctx.lineWidth=18;ctx.stroke();
  ctx.fillStyle='#8fc78e';ctx.fillText('세계수',WORLD_TREE.x,WORLD_TREE.y-250);ctx.fillStyle='#6b4930';ctx.fillRect(WORLD_TREE.x-60,WORLD_TREE.y-70,120,300);ctx.fillStyle='#24572f';ctx.beginPath();ctx.arc(WORLD_TREE.x,WORLD_TREE.y-150,240,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2f6b39';ctx.beginPath();ctx.arc(WORLD_TREE.x-155,WORLD_TREE.y-70,165,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(WORLD_TREE.x+165,WORLD_TREE.y-60,175,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#0b170e';ctx.strokeStyle='#a2d27e';ctx.lineWidth=6;ctx.beginPath();ctx.ellipse(WORLD_TREE_INTERIOR.door.x,WORLD_TREE_INTERIOR.door.y,39,55,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.fillStyle='#d0efad';ctx.font='bold 13px system-ui';ctx.fillText('세계수 내부 · 두 번 누르기',WORLD_TREE_INTERIOR.door.x,WORLD_TREE_INTERIOR.door.y+81);
  ctx.fillStyle='#080604';ctx.beginPath();ctx.ellipse(TREE_HOLE.x,TREE_HOLE.y,58,32,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#d6efc6';ctx.font='bold 10px system-ui';ctx.fillText('닿으면 지하 진입',TREE_HOLE.x,TREE_HOLE.y+55);
  if(state.story.labUnlocked){
   ctx.fillStyle='#252b2c';ctx.fillRect(LAB_STORY_ENTRANCE.x-52,LAB_STORY_ENTRANCE.y-42,104,84);ctx.strokeStyle='#86a6a8';ctx.lineWidth=7;ctx.strokeRect(LAB_STORY_ENTRANCE.x-52,LAB_STORY_ENTRANCE.y-42,104,84);
@@ -5828,7 +5839,23 @@ function drawCreature(e,cx,cy){
   ctx.strokeStyle='#b89b6b';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x-34,y+30);ctx.lineTo(x-18,y-18);ctx.moveTo(x+34,y+30);ctx.lineTo(x+18,y-18);ctx.stroke();
   ctx.fillStyle='#786144';ctx.fillRect(x-34,y-42,68,18);ctx.strokeStyle='#d3c2a0';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,y-40);ctx.lineTo(x+(e.faceX||1)*36,y-40+(e.faceY||0)*36);ctx.stroke()
  }
- else if(e.type.id==='firesnake'||e.type.id==='crystalfiresnake')drawFireSnakeModel(e,x,y,now);
+ else if(e.type.id==='worldtreegolem'){
+    const sway=Math.sin(now*.0018+e.x*.01)*3;
+    ctx.fillStyle='#423b2e';ctx.beginPath();ctx.ellipse(x,y+17,44,16,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#5a6047';ctx.strokeStyle='#a0b785';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x-30,y+25);ctx.lineTo(x-36,y-22+sway);ctx.lineTo(x-10,y-40+sway);ctx.lineTo(x+16,y-35+sway);ctx.lineTo(x+35,y-14+sway);ctx.lineTo(x+30,y+25);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.strokeStyle='#7c6845';ctx.lineWidth=10;ctx.lineCap='round';for(const side of [-1,1]){ctx.beginPath();ctx.moveTo(x+side*21,y-13);ctx.quadraticCurveTo(x+side*47,y+8,x+side*32,y+31);ctx.stroke()}
+    ctx.fillStyle=e.hostile?'#e5a762':'#a3f7bb';for(const side of [-1,1]){ctx.beginPath();ctx.arc(x+side*10,y-18+sway,5,0,Math.PI*2);ctx.fill()}
+  }
+  else if(e.type.id==='worldtreesnake'){
+    const phase=Math.sin(now*.008+e.x*.01)*11,angle=Math.atan2(e.faceY||0,e.faceX||1);
+    ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+    ctx.strokeStyle='#24583e';ctx.lineWidth=29;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-54,phase);ctx.bezierCurveTo(-34,-26,4,24,14,0);ctx.stroke();
+    ctx.strokeStyle='#64b779';ctx.lineWidth=18;ctx.beginPath();ctx.moveTo(-54,phase);ctx.bezierCurveTo(-34,-26,4,24,14,0);ctx.stroke();
+    ctx.fillStyle='#35805d';ctx.beginPath();ctx.ellipse(25,0,22,15,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#dbff9b';for(const yy of [-7,7]){ctx.beginPath();ctx.arc(31,yy,3,0,Math.PI*2);ctx.fill()}
+    ctx.restore()
+  }
+  else if(e.type.id==='firesnake'||e.type.id==='crystalfiresnake')drawFireSnakeModel(e,x,y,now);
  else if(e.type.id==='worldtreebear'||e.type.id==='crystalbear'||e.type.id==='fearbear')drawBearModel(e,x,y,now);
  else if(e.type.id==='sporegiant'||e.type.id==='toxicmycelium')drawThemedCreatureAsset(e,x,y,now);
  else if(e.type.id==='shadowwolf'||e.type.id==='firewolf'||e.type.id==='shadowwolfleader')drawWolfModel(e,x,y,now);
@@ -5849,14 +5876,19 @@ function drawCreature(e,cx,cy){
  drawEnemyCombatVfx(e,x,y,now);
  if(state.arrowAim?.targetId===e.netId&&currentWeapon()?.ranged==='bow'){ctx.save();ctx.strokeStyle='#fff3a8';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,e.type.r+14,0,Math.PI*2);ctx.stroke();for(let a=0;a<4;a++){const ang=a*Math.PI/2,inner=e.type.r+7,outer=e.type.r+22;ctx.beginPath();ctx.moveTo(x+Math.cos(ang)*inner,y+Math.sin(ang)*inner);ctx.lineTo(x+Math.cos(ang)*outer,y+Math.sin(ang)*outer);ctx.stroke()}ctx.fillStyle='#fff3a8';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('조준',x,y-e.type.r-28);ctx.restore()}
  if(e.type.mood!=='harmless'||e.type.huntable){ctx.fillStyle='#07100d';ctx.fillRect(x-24,y-e.type.r-18,48,4);ctx.fillStyle=e.type.mood==='aggressive'?'#e65f66':'#e1b85f';ctx.fillRect(x-24,y-e.type.r-18,48*Math.max(0,e.hp/e.maxHp),4)}
- ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.labBoss?e.type.name+' · 3티어':(e.type.templeSpearman||e.type.templeArcher||e.type.templeGuardian||e.type.outpostPrimitive||(e.type.desert&&!e.type.noTierLabel)||e.type.id==='jungletiger'||e.type.tigerLeader)?e.type.name+' · '+creatureTier(e.type.id)+'티어':e.type.name,x,y+e.type.r+18)
+ ctx.fillStyle='#f4fff7';ctx.font='bold 9px system-ui';ctx.textAlign='center';ctx.fillText(e.type.worldtreeRoots?e.type.name+' · 3티어':e.type.labBoss?e.type.name+' · 3티어':(e.type.templeSpearman||e.type.templeArcher||e.type.templeGuardian||e.type.outpostPrimitive||(e.type.desert&&!e.type.noTierLabel)||e.type.id==='jungletiger'||e.type.tigerLeader)?e.type.name+' · '+creatureTier(e.type.id)+'티어':e.type.name,x,y+e.type.r+18)
 }
 function drawSporeClouds(cx,cy){const now=performance.now();for(const g of state.sporeClouds){if(g.area!==state.area||now>=g.until)continue;const x=g.x-cx,y=g.y-cy,life=Math.max(0,Math.min(1,(g.until-now)/3000));ctx.save();ctx.globalAlpha=.18+.18*life;ctx.fillStyle='#8c68a9';ctx.beginPath();ctx.arc(x,y,g.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#c99be5';ctx.lineWidth=2;ctx.stroke();ctx.restore()}for(const e of state.enemies){if(e.area!==state.area||!e.type.mushroomGas||now>=(e.sporeGasUntil||0))continue;const x=e.x-cx,y=e.y-cy;ctx.save();ctx.globalAlpha=.25;ctx.fillStyle='#7d5c94';ctx.beginPath();ctx.arc(x,y,145,0,Math.PI*2);ctx.fill();ctx.restore()}}
 function drawProjectiles(cx,cy){
  for(const q of state.projectiles){
   if(q.area!==state.area)continue;const x=q.x-cx,y=q.y-cy;if(x<-30||y<-30||x>innerWidth+30||y>innerHeight+30)continue;
   ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(q.vy,q.vx)+Math.PI/2);
-  if(q.kind==='playerArrow'){const colors=q.arrowId==='wood-arrow'?['#8b6a43','#d7b37a']:q.arrowId==='iron-arrow'?['#7d878c','#e0e6e8']:q.arrowId==='spider-arrow'?['#8f6fa4','#d9b8ef']:q.arrowId==='firewolf-arrow'?['#c85835','#ffab55']:q.arrowId==='shark-arrow'?['#668da3','#cde7ef']:['#d8e5ed','#ffffff'];ctx.strokeStyle=colors[0];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,16);ctx.lineTo(0,-15);ctx.stroke();ctx.fillStyle=colors[1];ctx.beginPath();ctx.moveTo(0,-21);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill();ctx.strokeStyle='#d8c09d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-5,12);ctx.lineTo(0,7);ctx.lineTo(5,12);ctx.stroke()}
+  if(q.kind==='worldtreeRoot'){
+     ctx.strokeStyle='#88623f';ctx.lineCap='round';ctx.lineWidth=8;
+     ctx.beginPath();ctx.moveTo(0,18);ctx.quadraticCurveTo(-5,-4,0,-21);ctx.stroke();
+     ctx.strokeStyle='#8bc474';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,10);ctx.lineTo(8,-1);ctx.moveTo(-1,2);ctx.lineTo(-9,-8);ctx.stroke()
+   }
+   else if(q.kind==='playerArrow'){const colors=q.arrowId==='wood-arrow'?['#8b6a43','#d7b37a']:q.arrowId==='iron-arrow'?['#7d878c','#e0e6e8']:q.arrowId==='spider-arrow'?['#8f6fa4','#d9b8ef']:q.arrowId==='firewolf-arrow'?['#c85835','#ffab55']:q.arrowId==='shark-arrow'?['#668da3','#cde7ef']:['#d8e5ed','#ffffff'];ctx.strokeStyle=colors[0];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,16);ctx.lineTo(0,-15);ctx.stroke();ctx.fillStyle=colors[1];ctx.beginPath();ctx.moveTo(0,-21);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill();ctx.strokeStyle='#d8c09d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-5,12);ctx.lineTo(0,7);ctx.lineTo(5,12);ctx.stroke()}
   else if(q.kind==='sunOrb'){ctx.strokeStyle='rgba(255,190,55,.65)';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(0,8);ctx.lineTo(0,30);ctx.stroke();ctx.fillStyle='rgba(255,220,90,.28)';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffd567';ctx.strokeStyle='#fff3bf';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='sporeOrb'){ctx.fillStyle='#b786d9';ctx.strokeStyle='#e6c9ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='mud'){ctx.fillStyle='#70583f';ctx.strokeStyle='#ad8c65';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
