@@ -1588,12 +1588,13 @@ export async function buildRobloxSource({gameId,gameName,baseline,artbook,playbo
   return compileRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,buildUpDirective});
 }
 function writeSourceTree(root,{sharedConfig,serverCode,clientCode},gameId){
+  // The client destination must exist before copying the pinned material presentation.
   fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
   fs.copyFileSync(new URL('../assets/roblox/common-ui-v1/RobloxCommonUI.luau',import.meta.url),path.join(root,'shared','RobloxCommonUI.luau'));
   fs.copyFileSync(new URL('../assets/roblox/common-materials-v1/RobloxCommonMaterials.luau',import.meta.url),path.join(root,'shared','RobloxCommonMaterials.luau'));
   fs.copyFileSync(new URL('../assets/roblox/common-materials-v1/MaterialPresentation.client.luau',import.meta.url),path.join(root,'client','MaterialPresentation.client.luau'));
-  fs.mkdirSync(path.join(root,'server'),{recursive:true});
-  fs.mkdirSync(path.join(root,'client'),{recursive:true});
   fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),sharedConfig.endsWith('\n')?sharedConfig:`${sharedConfig}\n`,'utf8');
   fs.writeFileSync(path.join(root,'server','Game.server.luau'),serverCode.endsWith('\n')?serverCode:`${serverCode}\n`,'utf8');
   fs.writeFileSync(path.join(root,'client','Game.client.luau'),clientCode.endsWith('\n')?clientCode:`${clientCode}\n`,'utf8');
