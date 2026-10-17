@@ -44,6 +44,26 @@ export function createVibeAudioUIExecution(event,{muted=false,reducedMotion=fals
 export function executeVibeAudioUIEvent(event,handlers={},options={}){const execution=createVibeAudioUIExecution(event,options);if(!execution.accepted)return execution;const results=[];for(const command of execution.commands){const handler=handlers[command.channel];if(typeof handler==='function')results.push(Object.freeze({channel:command.channel,result:handler(command,event)}))}return Object.freeze({...execution,handled:results.length>0,results:Object.freeze(results)})}
 export function routeVibePresentationEvent(event,handlers={}){if(!event||event.authority!=='presentation-only'||event.gameplayMutationAllowed!==false)return Object.freeze({handled:false,reason:'invalid-presentation-event',results:Object.freeze([])});const results=[];for(const channel of event.channels||[]){const handler=handlers[channel];if(typeof handler!=='function')continue;results.push(Object.freeze({channel,result:handler(event)}))}return Object.freeze({handled:results.length>0,eventId:event.presentationEventId,results:Object.freeze(results)})}
 export function buildVibePresentationTimeline(events=[]){const order=['spawn','wave','attack','hit','skill','boss','death','victory'],present=uniq(events),timeline=order.filter(x=>present.includes(x)).map(x=>createVibeCinematicBeat(x,{importance:x==='boss'||x==='victory'?'major':'normal'}));return Object.freeze(timeline)}
+// 장르 중립 상용게임 임팩트 예산: 판정 직후 연출에만 사용하며 게임 값은 변경하지 않는다.
+// 동일 이벤트·세기로 항상 동일 예산을 반환한다. 애니메이션과 파티클은 재사용 풀로 구현한다.
+export function createVibePortableImpactCue({event='land',importance='normal',mobile=true,reducedMotion=false}={}){
+  const aliases={jump:'jump',attack:'jump',land:'land',success:'land',reward:'land',
+    miss:'miss',fail:'miss',damage:'miss',milestone:'milestone',level:'milestone',victory:'milestone',start:'start',spawn:'start'};
+  const semantic=aliases[clean(event).toLowerCase()]||'land';
+  const major=importance==='major'||semantic==='milestone';
+  const palettes={jump:[0xcfeeff,0xffffff],land:[0x9efbd0,0xffdd82],miss:[0xff998d,0xffd9a3],milestone:[0xffdf76,0xe0fcff],start:[0xafddff,0xfff4c9]};
+  const durationMs=reducedMotion?120:major?610:semantic==='miss'?380:310;
+  const particles=reducedMotion?0:major?(mobile?12:18):(mobile?6:9);
+  return Object.freeze({
+    semantic,authority:'presentation-only',gameplayMutationAllowed:false,
+    palette:Object.freeze(palettes[semantic].slice()),durationMs,particles,
+    maxConcurrentEmitters:mobile?2:3,pooledGeometry:true,pooledMaterial:true,
+    uiCue:semantic==='milestone'?'milestone':semantic==='miss'?'warning':'bounce',
+    iconMotion:reducedMotion?'none':major?'sparkle':'float',
+    cameraPulse:reducedMotion?0:major?.25:semantic==='miss'?.12:.075,
+    worldPulse:!reducedMotion,protected:Object.freeze(['damage','reward','speed','timer','collision','save','progression'])
+  });
+}
 export function createVibeHighEndPresentationStack({request=''}={}){return Object.freeze({
   version:2,
   target:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
