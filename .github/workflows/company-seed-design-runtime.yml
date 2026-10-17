@@ -45,6 +45,9 @@ jobs:
   resolve-seed-targets:
     runs-on: ubuntu-slim
     timeout-minutes: 10
+    env:
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
     outputs:
       run: ${{ steps.targets.outputs.run }}
       targets: ${{ steps.targets.outputs.targets }}
@@ -491,6 +494,9 @@ jobs:
         target: ${{ fromJSON(needs.resolve-seed-targets.outputs.targets) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
     concurrency:
       # 동일 게임만 직렬화하고 다른 게임의 바이브 설계를 병렬 진행한다.
       group: company-seed-design-game-${{ matrix.target.game_id }}
