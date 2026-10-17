@@ -147,6 +147,20 @@ test('work contract fingerprint follows latest directive, not stale legacy holds
   assert.notEqual(newest.executionFingerprint,before.executionFingerprint);
 }));
 
+test('general Web remains admitted while Unity Web is held even when disguised as WEB',()=>{
+  const policy=JSON.parse(fs.readFileSync(path.join(root,paths[0]),'utf8'));
+  const id='web-target-owner-gate';
+  assert.equal(ownerDevelopmentHeld(policy,id,'web',{sourceRoot:'web-games/crystal-defense'}),false);
+  assert.equal(ownerDevelopmentHeld(policy,id,'web',{selectedTask:{sourceRoot:'web-games/crystal-defense'}}),false);
+  assert.equal(ownerDevelopmentHeld(policy,id,'web',{sourceRoot:'unity-games/crystal-defense'}),true);
+  assert.equal(ownerDevelopmentHeld(policy,id,'web',{responsibleFiles:['unity-games/crystal-defense/Assets/Scripts/Game.cs']}),true);
+  assert.equal(ownerDevelopmentHeld(policy,id,'web',{unityWebDevelopment:true}),true);
+  assert.equal(ownerDevelopmentHeld(policy,id,'web',{executionSurface:'UNITY_WEB'}),true);
+  assert.equal(ownerDevelopmentHeld(policy,id,'web',{selectedTask:{unityWebDevelopment:true}}),true);
+  assert.equal(ownerDevelopmentHeld(policy,id,'unity_web',{}),true);
+  assert.equal(ownerDevelopmentHeld(policy,id,'unity_android',{}),true);
+});
+
 test('F0 live planner uses verified main policy only at production call site, not in fixture QA',()=>{
   const policy=JSON.parse(fs.readFileSync(path.join(root,paths[0]),'utf8'));
   const scope=resolveActiveOwnerPolicy(policy);
