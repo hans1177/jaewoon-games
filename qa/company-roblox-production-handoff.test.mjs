@@ -43,7 +43,7 @@ test('non-Roblox worker cannot consume a stale Roblox production plan',()=>{
   assert.doesNotMatch(otherGame,/robloxProductionIDEA=/);
 });
 
-test('owner-held Unity and Web preserve design and owner removals without unauthorized production plans',()=>{
+test('owner-held Unity and Web emit no unauthorized production plans or executable worker hints',()=>{
   for(const target of ['unity','web']){
     const root=target+'-games/garden';
     const own=root+(target==='unity'?'/Assets/Scripts/GameCore.cs':'/game.js');
@@ -56,7 +56,7 @@ test('owner-held Unity and Web preserve design and owner removals without unauth
     assert.equal(directive.productionPlan,null,'owner-held target cannot produce an active platform plan');
     for(const text of [prompt,buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[own]}).prompt,buildGenerationRetryPrompt(prompt,{error:new Error('JSON parse error'),responsibleFiles:[own],attempt:2})]){
       assert.doesNotMatch(text,/gameProductionIDEA=|gameProductionQUALITY=|gameProductionFILES=/);
-      assert.match(text,/keep-removal/,'owner removal remains in the existing development instructions');
+      assert.doesNotMatch(text,/gameProductionCONNECTION=|gameProductionSCOPE=/,'held platforms cannot leak production steps');
       assert.doesNotMatch(text,/robloxProductionIDEA=/);
     }
   }
