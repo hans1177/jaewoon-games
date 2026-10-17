@@ -28,6 +28,16 @@ import {createHash} from 'node:crypto';
 const repo=process.cwd();
 const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
 
+function enableFixtureWeb(root){
+  const file=path.join(root,'company-learning/platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(file,'utf8'));
+  policy.unityWebFirstStage??={};
+  policy.unityWebFirstStage.enabled=true;
+  policy.developmentAccess.UNITY_WEB='ALWAYS_ALLOWED';
+  fs.writeFileSync(file,JSON.stringify(policy));
+}
+
+
 test('Fantasy Survival native importer retains authored PBR and validates animation interpolation in Unity',()=>{
   const importer=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityCompanyAssets.cs','utf8');
   const bytes=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/MagicForestGuardian.bytes');
