@@ -36,10 +36,11 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Checkout current queue storage contract
+      - name: Checkout tested executable contract
         uses: actions/checkout@v4
         with:
-          ref: main
+          # PR에서는 정확한 후보 소스를, 정기·main 실행에서는 최신 main을 검사.
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
           path: vibe2-main-contract
           fetch-depth: 1
 
