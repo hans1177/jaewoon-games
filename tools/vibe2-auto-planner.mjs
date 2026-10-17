@@ -767,7 +767,7 @@ function isWeatherPresentationPilot(project={},repoRoot=process.cwd()){
 function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot);
   const ownerScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
-  if(clean(process.env.COMPANY_VERIFIED_POLICY_PATH)&&!ownerScope)throw new Error('VIBE2_APPROVED_OWNER_SCOPE_REQUIRED');
+  if(policy?.status==='OWNER_DIRECT_LOCKED'&&!ownerScope)throw new Error('VIBE2_APPROVED_OWNER_SCOPE_REQUIRED');
   const access=ownerScope?.effectiveDevelopmentAccess||policy?.developmentAccess||{};
   if(project.engine==='roblox')return access.ROBLOX!=='OWNER_HOLD'&&['release-confirmed','development-confirmed'].includes(project.releaseState);
   if(project.engine==='unity'){
@@ -3993,7 +3993,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const flowOwnerPolicy=centralPresentationPolicy(repoRoot)||{};
   const webFlowPolicy=flowOwnerPolicy?.developmentSpeedExecution?.webGameFlow;
   const ownerScope=resolveActiveOwnerPolicy(flowOwnerPolicy,{allowMissing:true});
-  if(clean(process.env.COMPANY_VERIFIED_POLICY_PATH)&&!ownerScope)throw new Error('VIBE2_APPROVED_WEB_FLOW_SCOPE_REQUIRED');
+  if(flowOwnerPolicy?.status==='OWNER_DIRECT_LOCKED'&&!ownerScope)throw new Error('VIBE2_APPROVED_WEB_FLOW_SCOPE_REQUIRED');
   // 실제 활성 웹 슬롯은 폐기된 지시 대신 최신 승인된 소유자 권한에서 판정한다.
   const webFlowUnityOnly=webFlowPolicy?.scope==='UNITY_WEB_SAME_CANONICAL_UNITY_PROJECT';
   const activeTargets=ownerScope?.activeTargets||[];
