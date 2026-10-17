@@ -62,6 +62,8 @@ test('promotion persists only runtime state while machine policy comes from main
   assert.doesNotMatch(checkout,/fetch-depth: 0/);
   assert.match(promotion,/COMPANY_RUNTIME_BRANCH: company-runtime/);
   assert.match(promotion,/COMPANY_VERIFIED_POLICY_PATH: \$\{\{ github\.workspace \}\}\/company-learning\/platform-release-roadmap\.json/);
+  assert.match(promotion,/COMPANY_VERIFIED_DESIGN_POLICY_PATH: \\$\\{\\{ github\\.workspace \\$\\}\\}\\/company-learning\\/platform-release-roadmap\\.json/);
+  assert.match(promotion,/node tools\\/company-homepage-platform-exposure-sync\\.mjs development-queue\\.json game-catalog\\.json homepage-platform-exposure\\.json "\\$COMPANY_VERIFIED_POLICY_PATH"/);
   assert.match(promotion,/test -s "\$COMPANY_VERIFIED_POLICY_PATH"/);
   assert.match(promotion,/git checkout origin\/main -- company-directive\.json company-learning\/platform-release-roadmap\.json/);
   assert.match(promotion,/git reset -- company-directive\.json company-learning\/platform-release-roadmap\.json/);
