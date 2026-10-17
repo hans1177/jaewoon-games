@@ -2448,6 +2448,14 @@ function presentationWorkerGuidance(order = {}) {
     '그래픽 작업의 외부 단위는 GRAPHICS_PRODUCTION 하나다. 캐릭터/환경/애니메이션/VFX/조명/UI를 별도 최상위 그래픽 작업으로 분리하지 말고 내부 단계로 처리한 뒤 같은 루트로 fan-in 한다.',
     'vibe-art-pipeline.js가 그래픽 생산 단일 코디네이터이며 asset planner/visual autopilot/presentation director/visual quality gate는 독립 승인 권한 없는 내부 모듈이다.',
     'Art Bible과 Visual Target Frame을 기준으로 Hero 대상(플레이어, 주 보스/적, 시그니처 장비, 핵심 랜드마크/시작지역)을 먼저 고품질 기준점으로 만든다.',
+
+    'UI와 게임 장면의 모든 영역을 고정 사각형 템플릿으로 만들지 않는다. 실제 게임의 승인된 세계관/Style Lock, 기능과 현재 소스에 맞춰 프레임 형상, 9-slice 검증 이미지, 재질, 외곽선, 폰트 계층, 아이콘, 여백 및 애니메이션을 조합한다. 검증되지 않은 이미지 assetId, FontFace, 모듈 경로를 추측하거나 가짜 바이트를 넣지 않는다.',
+    '로블록스: 이미 프로젝트에 실제 연결된 RobloxCommonUI.luau를 사용한다. CreateVisualFeedbackController의 ShowDamage에는 confirmed=true와 중복되지 않는 실제 전투 결과 eventId 및 viewportPosition 또는 worldPosition을 전달한다. AnimateIcon, PositionTooltip, UpdateStatusIcon, Notify를 기존 클라이언트 표시 책임 함수에서 연결한다. 공유 라이브러리에 해당 함수가 없는 게임은 기존 허용된 패키지/공용 모듈 업데이트 경로로 먼저 연결하며 존재하지 않는 API 호출을 만들지 않는다.',
+    '일반 웹: 기존 렌더 루프·DOM UI 소스 안에서만 JaewoonGraphicsEngine.createWebPresentationController({host})를 연결한다. 실제 게임에 모듈이 포함되었는지 확인하고, 실제 확정 피해 이벤트만 showDamage({confirmed:true,eventId,amount,x,y,kind})로 전달한다. showTooltip, notify, animateIcon, updateStatusIcon을 현재 상태와 연결한다. host·script 경로를 검증하지 못하면 실패 상태로 두고 가짜 적용 보고를 금지한다.',
+    '아이템, 스킬, 도움창, 상태 효과, 보스, 퀘스트, 상점, 제작, 지도, 경영, 파티 이벤트의 시각 패턴을 실제 기능이 존재하는 화면에만 적용한다. 생성 가능한 패턴은 DAMAGE_POPUP_POOL, TOOLTIP_PLACEMENT, CONTEXTUAL_HUD, ICON_STATE_MOTION, STATUS_DURATION_TRACK, NOTIFICATION_STACK, NINE_SLICE_SURFACE, MATERIAL_HARMONIZATION, 3D_ITEM_PREVIEW, VISUAL_EFFECT_BUDGET 등이다. 단순 패턴 명칭/메타데이터 추가는 소스 구현으로 간주하지 않는다.',
+    '자원 획득/제작/피해/효과 이벤트가 실제로 없거나 미확정이면 시각 이벤트도 만들지 않는다. 이벤트 중복 제거, 팝업 수 제한, 클리핑/안전영역 검사, reduced-motion, UI 입력 보호, 기존 모바일 성능, 세이브·게임플레이·멀티 권한 보존을 직접 코드와 테스트로 증명한다.',
+    '게임별 작업은 요구한 모든 활성 UI 화면/시각 상태를 현재 코드에서 추출한 뒤 실제 렌더링 코드로 각각 보강한다. 검증된 공통 코딩 기법은 재사용하지만 게임별 화면 비율, 형태, 재질, 아이콘 언어 및 연출은 Style Lock에 맞춰 독자적으로 제작한다.',
+
     '화면의 시각적 완성도는 스타일 이름, 색상 변경, 에셋 개수, 화면 변화량만으로 증명되지 않는다. 실제 런타임 이미지가 제공되면 시선 집중, 원근과 거리감, 명암 구조, 재질 조화, 실루엣, 글자/여백, 게임 고유 정체성, 동작 가독성의 약한 책임을 먼저 특정하고 보이는 원인만 수정한다.',
     '동일 구도·상태·조명에서 비교하고, 문제 있는 영역의 실제 기존 책임 오브젝트만 수정한다. 외부 3D 모델은 라이선스 허용 범위의 크기/방향/색/재질 등 간단한 게임별 보정과 기존 모션 연결을 우선하며 무리한 새 모델링이나 무관한 장식을 강제하지 않는다.',
     '배경은 빈 장식면이 아니다. 전경/중경/배경, 랜드마크, set dressing, 환경 스토리텔링, 이동/전투 가독성을 같은 Style Lock으로 구성한다.',
