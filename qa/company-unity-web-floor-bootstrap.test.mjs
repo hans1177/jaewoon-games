@@ -69,7 +69,7 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
       }}
     }},null,2));
     const playbooks=writeVerifiedPlaybooks(root);
-    runUnityTool(
+    runUnityTool([
       '--game-id=test-survival',
       '--game-name=Test Survival',
       '--baseline='+baseline,
@@ -166,7 +166,7 @@ test('Unity Web floor bootstrap rejects non-canonical output path',()=>{
       internalReleaseTarget:'private internal release',
       validationEvidence:'runtime evidence contract'
     }}}}));
-    assert.throws(()=>runUnityTool(
+    assert.throws(()=>runUnityTool([
       '--game-id=test-game','--baseline='+baseline,'--output=web-games/test-game'
     ],{stdio:'pipe'}));
   }finally{
@@ -203,7 +203,7 @@ test('Unity Web floor consumes the exact Vibe directive without creating a platf
       thisLoopPrimaryGoal:'곤충별 역할과 공격 전조를 실제 전투에서 구별한다.'
     }));
     const playbooks=writeVerifiedPlaybooks(root);
-    runUnityTool(
+    runUnityTool([
       '--game-id=test-survival','--game-name=Test Survival','--baseline='+baseline,
       '--output=unity-games/test-survival','--build-up-directive='+directive,
       '--playbooks='+playbooks,'--learning-revision='+ 'd'.repeat(40)
@@ -238,7 +238,7 @@ test('Unity Web floor bootstrap rejects id-only verified external learning',()=>
       for(const item of row.reuse||[])if(item.id==='external-black-box-beta')item.distilledApplicationPrinciples=[];
     }
     fs.writeFileSync(playbooks,JSON.stringify(data,null,2));
-    assert.throws(()=>runUnityTool(
+    assert.throws(()=>runUnityTool([
       '--game-id=test-game','--baseline='+baseline,'--output=unity-games/test-game',
       '--playbooks='+playbooks,'--learning-revision='+ 'e'.repeat(40)
     ],{stdio:'pipe'}),/Command failed/);
@@ -259,7 +259,7 @@ test('Unity Web floor bootstrap refuses development when verified external learn
       performanceBudget:'performance budget enough',uiUx:'touch first ui ux',saveAndNetwork:'save and network contract',
       platformContentAdaptation:'platform adaptation contract',internalReleaseTarget:'private internal release',validationEvidence:'runtime evidence contract'
     }}}}));
-    assert.throws(()=>runUnityTool(
+    assert.throws(()=>runUnityTool([
       '--game-id=test-game','--baseline='+baseline,'--output=unity-games/test-game'
     ],{stdio:'pipe'}),/Command failed/);
   }finally{
@@ -351,7 +351,7 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     };
     fs.writeFileSync(baseline,JSON.stringify(input));
     const playbooks=writeVerifiedPlaybooks(root);
-    runUnityTool(
+    runUnityTool([
       '--game-id=approved-world','--game-name=Approved World',
       '--baseline='+baseline,'--playbooks='+playbooks,'--output=unity-games/approved-world'
     ],{stdio:'pipe'});
@@ -488,7 +488,7 @@ test('Unity Web world authoring stays opt-in and rejects unapproved or disconnec
       spatialLayout:{dimension:'3D',proceduralWorld:{approvedDesign:false,dimension:'3D',width:24,height:24,seed:'not-approved'}}}};
     fs.writeFileSync(baseline,JSON.stringify(original));
     const args=['--game-id=unchanged-world','--baseline='+baseline,'--playbooks='+playbooks,'--output=unity-games/unchanged-world'];
-    runUnityTool(...args],{stdio:'pipe'});
+    runUnityTool([...args],{stdio:'pipe'});
     const unchanged='unity-games/unchanged-world';
     const src=JSON.parse(fs.readFileSync(path.join(unchanged,'unity-web-floor-source.json'),'utf8'));
     const runtime=fs.readFileSync(path.join(unchanged,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
@@ -498,14 +498,14 @@ test('Unity Web world authoring stays opt-in and rejects unapproved or disconnec
     original.content.spatialLayout.dimension='2D';
     original.content.spatialLayout.proceduralWorld={approvedDesign:true,dimension:'2D',seed:'2d-not-3d'};
     fs.writeFileSync(baseline,JSON.stringify(original));
-    assert.throws(()=>runUnityTool(...args],{stdio:'pipe'}));
+    assert.throws(()=>runUnityTool([...args],{stdio:'pipe'}));
     original.content.spatialLayout.dimension='3D';
     original.content.spatialLayout.proceduralWorld={
       approvedDesign:true,dimension:'3D',width:24,height:24,seed:'blocked',
       reservedCells:Array.from({length:24},(_,z)=>({x:12,z}))
     };
     fs.writeFileSync(baseline,JSON.stringify(original));
-    assert.throws(()=>runUnityTool(...args],{stdio:'pipe'}));
+    assert.throws(()=>runUnityTool([...args],{stdio:'pipe'}));
     assert.equal(fs.existsSync(path.join(unchanged,'Assets/Resources/vibe-world-layout.json')),false);
   }finally{
     process.chdir(before);
@@ -541,8 +541,8 @@ test('Unity Web and Android share verified-only destructible world interactions 
     const playbooks=writeVerifiedPlaybooks(root);
     const args=['--game-id=test-harvest','--game-name=Verified Harvest','--baseline='+baseline,
       '--playbooks='+playbooks,'--build-up-directive='+directive,'--output='+output];
-    const rejectionReason=()=>{try{runUnityTool(...args],{stdio:'pipe'});return 'NOT_REJECTED';}catch(error){return String(error.stderr||error);}};
-    runUnityTool(...args],{stdio:'pipe'});
+    const rejectionReason=()=>{try{runUnityTool([...args],{stdio:'pipe'});return 'NOT_REJECTED';}catch(error){return String(error.stderr||error);}};
+    runUnityTool([...args],{stdio:'pipe'});
     const data=JSON.parse(fs.readFileSync(path.join(output,'Assets/Resources/vibe-world-layout.json'),'utf8'));
     const runtime=fs.readFileSync(path.join(output,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
     const build=fs.readFileSync(path.join(output,'Assets/Editor/UnityWebFloorBuild.cs'),'utf8');
@@ -598,7 +598,7 @@ test('approved procedural Unity bootstrap never overwrites an existing gameplay 
     fs.mkdirSync(path.dirname(script),{recursive:true});
     const existing='// existing authored gameplay state; never delete';
     fs.writeFileSync(script,existing);
-    assert.throws(()=>runUnityTool('--game-id=preserved-world','--baseline='+baseline,'--playbooks='+verified,'--output=unity-games/preserved-world'],{stdio:'pipe'}),/Command failed/);
+    assert.throws(()=>runUnityTool(['--game-id=preserved-world','--baseline='+baseline,'--playbooks='+verified,'--output=unity-games/preserved-world'],{stdio:'pipe'}),/Command failed/);
     assert.equal(fs.readFileSync(script,'utf8'),existing);
     assert.equal(fs.existsSync('unity-games/preserved-world/Assets/Resources/vibe-world-layout.json'),false);
   }finally{
