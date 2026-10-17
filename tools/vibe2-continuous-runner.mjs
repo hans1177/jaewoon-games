@@ -545,6 +545,16 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   if (!mayRun) return freeze({ ...base, reason:`EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`, selectedTask:task, gate:plan.executionGate });
 
   const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience });
+  // 메인 · 외부 설계 수정은 기존 디자이너에게 넘기고 코딩 워커 실행을 차단한다.
+  if(designIntelligence.designerHandoff?.required){
+    return freeze({
+      ...base,reason:designIntelligence.designerHandoff.ready
+        ?'DESIGNER_HANDOFF_REQUIRED':'DESIGNER_HANDOFF_INPUT_INVALID',
+      taskId:clean(task.id||task.taskId),gameId:clean(task.gameId),
+      selectedTask:task,designerHandoff:designIntelligence.designerHandoff,
+      gate:plan.executionGate,designIntelligence
+    });
+  }
   if (requiresWrite && designIntelligence.implementationGate.allowed !== true) {
     return freeze({
       ...base,
