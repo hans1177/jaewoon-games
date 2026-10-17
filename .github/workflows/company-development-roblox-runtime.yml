@@ -120,8 +120,11 @@ jobs:
                 .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title&&String(r.head_sha||'')===currentSha)
                 .filter(r=>Number.isFinite(Number(r.id)))
                 .sort((a,b)=>Number(a.id)-Number(b.id));
-              // An active same-revision plan owns the work. New queued ingress must not make it abandon progress.
-              const winner=candidates.find(r=>String(r.status||'').toLowerCase()==='in_progress')||candidates[candidates.length-1];
+              // One same-revision owner per exact game/batch: GitHub may label an old run
+              // 'queued' while its source, package, or F0 jobs are already running.
+              // Always keep the oldest active run, regardless of transient status;
+              // otherwise new pushes schedule duplicate source workers for the same SHA.
+              const winner=candidates[0];
               process.stdout.write(winner?String(winner.id):'');
             });
           ")"
@@ -361,6 +364,17 @@ jobs:
               &&reconciliationRow.blockers.length===1
               &&reconciliationRow.blockers[0]==='ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL';
             if((reconciliationRow?.sourceRepairPending===true||reconciliationRow?.sourceContractRepairRequired===true)&&!materialRepairPending){
+              // 분류만 공개한다. Vibe 복구 소유권과 실제 F0 검증 문턱은 바꾸지 않는다.
+              console.log('ROBLOX_SOURCE_REPAIR_DEBT_DETAILS='+JSON.stringify({
+                gameId:item.gameId,
+                authority:String(reconciliationRow?.authority||''),
+                failure:String(reconciliationRow?.failure||''),
+                sourceRepairPending:reconciliationRow?.sourceRepairPending===true,
+                sourceContractRepairRequired:reconciliationRow?.sourceContractRepairRequired===true,
+                blockers:Array.isArray(reconciliationRow?.blockers)
+                  ?reconciliationRow.blockers.map(value=>String(value||'')).slice(0,20):[],
+              }));
+
               console.log('ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE='+item.gameId);
               continue;
             }
