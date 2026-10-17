@@ -5,7 +5,7 @@
 import { resolveActiveOwnerPolicy } from './company-policy-steward.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import {
   createVibeContinuousQueue,
@@ -27,8 +27,10 @@ import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neur
 import { summarizeNeuralEventShadowEvidence } from './vibe2-neural-event-telemetry.mjs';
 
 const clean = (value) => String(value ?? '').trim();
-// The executable lives in the exact main contract checkout; cwd can be a stale control branch.
-const CANONICAL_RESERVATION_POLICY = String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+// [정책] 큐 실행 위치가 임시 작업 폴더여도 실행 파일이 속한 정식 체크아웃의 중앙정책만 읽는다.
+const CANONICAL_RESERVATION_POLICY = clean(process.env.COMPANY_VERIFIED_POLICY_PATH)
+  ? path.resolve(fileURLToPath(new URL('../',import.meta.url)),clean(process.env.COMPANY_VERIFIED_POLICY_PATH))
+  : '';
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
 const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-generation-context-v3';
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
