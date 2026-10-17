@@ -4270,6 +4270,15 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
   ].join('\n'):'';
   // 유니티 웹 3D 제작은 기존 Vibe 코드 생성/학습 경로에서 정밀 책임 함수 수정을 우선한다.
   // 과거 검증 실패를 같은 책임 함수의 원인별 수리로 연결하고, 가짜 3D 표식으로 통과시키지 않는다.
+  // [일반 웹 3D] 기존 웹 제작 책임 함수에서 실제 3차원 월드만 완성한다.
+  const ordinaryWeb3dCodingBlock=clean(order.target).toLowerCase()==='web'?[
+    '[GENERAL WEB TRUE 3D CODING METHOD BEGIN]',
+    'Owner directive: every ordinary HTML/JavaScript Web game must implement final gameplay in genuine 3D. 2D sprites, canvas 2d, CSS perspective, parallax, isometric/2.5D tricks and static data-spatial-dimension tags never count as 3D runtime evidence.',
+    'Reuse the existing web-games/<gameId> source, approved game-specific design and existing licensed 3D assets. Edit existing responsible functions directly; no wrapper, shadow pipeline, duplicate renderer, new game structure or new save format.',
+    'Use a real WebGL 3D scene with depth-bearing mesh geometry, camera/projection, actual frame drawing, playable spatial input and visible player/world state changes. Reuse existing GLB/GLTF compatible spatial actor and animation bindings where applicable.',
+    'Keep existing gameplay rules, balance, progression, multiplayer and save keys unchanged. Existing 2D Web sources stay intact until a real 3D replacement passes mobile rendering, input, save/load, runtime and regression QA. Never label unverified 3D as PASS.',
+    '[GENERAL WEB TRUE 3D CODING METHOD END]'
+  ].join('\\n'):'';
   const unityWeb3dCodingBlock=clean(order.target).toLowerCase()==='unity'
     &&(order.unityWebDevelopment===true||order.selectedTask?.firstStageUnityWeb===true
       ||(order.evidence||[]).some(value=>clean(value)==='unity-web-first-stage'))?[
@@ -4553,6 +4562,7 @@ productionRequestBlock,
 `Department: ${order.department||'development'}`,
 learningContract.block,
 robloxSourceCoaching?.block||'',
+ordinaryWeb3dCodingBlock,
 unityWeb3dCodingBlock,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
