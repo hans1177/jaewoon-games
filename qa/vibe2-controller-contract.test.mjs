@@ -561,6 +561,14 @@ test('core QA supersedes stale PR revisions but preserves full QA for each main 
   assert.equal(regression.coreQaActiveCompletion.runner,'ubuntu-slim');
 });
 
+test('core QA gives existing native asset regression sufficient time without skipping checks',()=>{
+  const testJob=coreQaWorkflow.slice(coreQaWorkflow.indexOf('\n  test:'),coreQaWorkflow.indexOf('\n  browser',coreQaWorkflow.indexOf('\n  test:')));
+  assert.match(testJob,/runs-on: ubuntu-slim/);
+  assert.match(testJob,/timeout-minutes: 25/);
+  assert.match(testJob,/node --test qa\/vibe2-native-asset-production\.test\.mjs/);
+  assert.match(testJob,/node --test qa\/vibe2-queue-control\.test\.mjs/);
+});
+
 test('core QA isolates Chrome browser smoke from the slim regression runner',()=>{
   const testAt=coreQaWorkflow.indexOf('\n  test:\n');
   const browserAt=coreQaWorkflow.indexOf('\n  browser-smoke:\n');
