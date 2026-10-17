@@ -1306,13 +1306,6 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       if(!/^[0-9a-f]{64}$/.test(declaredHash)||!Number.isSafeInteger(declaredBytes)||declaredBytes<512||seenSourceHashes.has(declaredHash))continue;
       if(!publicHttps(row?.sourceUrl)||!publicHttps(row?.licenseEvidenceUrl))continue;
       const localFile=path.resolve(repoRoot,relative);
-      // LFS pointer or absent original is still a selected, hash-pinned archive
-      // candidate. Hydration belongs to the current game's existing source worker.
-      let localReady=false;
-      try{
-        const info=fs.statSync(localFile);
-        localReady=info.isFile()&&info.size===declaredBytes;
-      }catch{}
       const name=clean(row.file).toLowerCase(),role=clean(row.role).toLowerCase();
       const sourceFamily=clean(row.family).toUpperCase()||(
         role==='03-equipment'?(/potion|item|inventory/.test(name)?'PROP':'WEAPON'):
@@ -1328,6 +1321,28 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz)$/,''),role].join(' ').replace(/[-_]+/g,' ');
       const matchedRoles=roles.filter(value=>terms.includes(value.replaceAll('_',' ')));
       if(roles.length&&!roles.every(value=>value==='generic')&&!matchedRoles.length)continue;
+      // Download is 3D-only. Existing non-3D originals remain eligible for
+      // reuse, but missing 2D/audio files never trigger network acquisition.
+      let localReady=false,needsHydration=false,corrupt=false;
+      try{
+        const info=fs.statSync(localFile);
+        if(!info.isFile()){corrupt=true;}
+        else if(info.size===declaredBytes){
+          localReady=crypto.createHash('sha256').update(fs.readFileSync(localFile)).digest('hex')===declaredHash;
+          corrupt=!localReady;
+        }else if(info.size<=256 && spatialFamilies.has(family)){
+          // A Git LFS pointer is not corrupt only when oid and size match
+          // this canonical manifest exactly. Never repair a different binary.
+          const pointer=fs.readFileSync(localFile,'utf8');
+          const match=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(pointer);
+          needsHydration=Boolean(match&&match[1]===declaredHash&&Number(match[2])===declaredBytes);
+          corrupt=!needsHydration;
+        }else{corrupt=true;}
+      }catch(error){
+        if(error?.code==='ENOENT')needsHydration=spatialFamilies.has(family);
+        else corrupt=true;
+      }
+      if(corrupt||(!localReady&&!needsHydration))continue;
       const nameFit=requestText.split(/\s+/).filter(word=>word.length>=4&&terms.includes(word)).length;
       seenSourceHashes.add(declaredHash);
       candidates.push(freeze({
