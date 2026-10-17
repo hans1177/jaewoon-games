@@ -72,23 +72,25 @@ end
 
 function AdvancedAIEcosystem.ClosestPlayer(position: Vector3, radius: number): (Player?, number)
     local nearest: Player? = nil
-    local best = radius
+    -- Squared-distance pruning avoids repeated square roots during target selection.
+    local bestSquared = radius * radius
     local function visit(node: OctreeNode)
         local offset = position - node.Center
         local dx = math.max(math.abs(offset.X) - node.Half, 0)
         local dy = math.max(math.abs(offset.Y) - node.Half, 0)
         local dz = math.max(math.abs(offset.Z) - node.Half, 0)
-        if dx * dx + dy * dy + dz * dz >= best * best then return end
+        if dx * dx + dy * dy + dz * dz >= bestSquared then return end
         if node.Entries then
             for _, row in ipairs(node.Entries) do
-                local distance = (row.Position - position).Magnitude
-                if distance < best then
+                local delta = row.Position - position
+                local distanceSquared = delta:Dot(delta)
+                if distanceSquared < bestSquared then
                     local character = row.Player.Character
                     local root = if character then character:FindFirstChild("HumanoidRootPart") else nil
                     local humanoid = if character then character:FindFirstChildOfClass("Humanoid") else nil
                     if root and root:IsA("BasePart") and humanoid and humanoid.Health > 0 then
                         nearest = row.Player
-                        best = distance
+                        bestSquared = distanceSquared
                     end
                 end
             end
@@ -96,7 +98,7 @@ function AdvancedAIEcosystem.ClosestPlayer(position: Vector3, radius: number): (
         if node.Children then for _, child in ipairs(node.Children) do visit(child) end end
     end
     if tree then visit(tree) end
-    return nearest, best
+    return nearest, if nearest then math.sqrt(bestSquared) else radius
 end
 
 function AdvancedAIEcosystem.SetState(enemy: any, state: string): ()
