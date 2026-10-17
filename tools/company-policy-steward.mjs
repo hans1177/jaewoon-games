@@ -54,8 +54,12 @@ export function resolveActiveOwnerPolicy(policy={}, {allowMissing=false}={}){
     if(!hasScope)continue;
     const authority=clean(value.authority);
     if(!/^OWNER_DIRECTIVE_\d{4}-\d{2}-\d{2}(?:_[A-Z0-9_]+)?$/.test(authority)||
-      !Array.isArray(value.activeTargets)||!Array.isArray(value.ownerHeldTargets))
+      !Array.isArray(value.activeTargets)||!Array.isArray(value.ownerHeldTargets)){
+      // 기존 임시/레거시 작업 컨텍스트의 날짜 없는 메타데이터는 승인된 신규 지시로 취급하지 않는다.
+      // 엄격한 중앙문서 audit에서는 여전히 실패하고, 작업 큐는 기존의 제한적 정책 판정으로 돌아간다.
+      if(allowMissing)continue;
       throw new Error('POLICY_STEWARD_OWNER_DIRECTIVE_INVALID:'+key);
+    }
     const date=authority.slice('OWNER_DIRECTIVE_'.length,'OWNER_DIRECTIVE_'.length+10);
     if(new Date(date+'T00:00:00Z').toISOString().slice(0,10)!==date)
       throw new Error('POLICY_STEWARD_OWNER_DIRECTIVE_DATE_INVALID:'+key);
