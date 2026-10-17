@@ -164,7 +164,15 @@ jobs:
         run: node --test qa/vibe-motion-director.test.mjs
 
       - name: Validate studio asset universe
-        run: node --test qa/vibe-studio-asset-universe.test.mjs
+        run: |
+          set -euo pipefail
+          # [설계 원본] 실제 승인 아트북은 company-runtime에 보관한다.
+          git fetch --no-tags --depth=1 origin '+refs/heads/company-runtime:refs/remotes/origin/company-runtime'
+          runtime_design_sha="$(git rev-parse origin/company-runtime)"
+          test "$(git ls-tree -d --name-only "$runtime_design_sha" -- artbook-submissions)" = 'artbook-submissions'
+          git restore --source="$runtime_design_sha" --worktree -- artbook-submissions
+          echo "VIBE_QA_SEED_ARTBOOK_SOURCE=company-runtime:$runtime_design_sha"
+          node --test qa/vibe-studio-asset-universe.test.mjs
 
       - name: Validate narrative story quest persona and memory
         run: |
