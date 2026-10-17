@@ -5277,7 +5277,7 @@ function drawCave(cx,cy,w,h){
  ctx.strokeStyle='#8b4b79';ctx.lineWidth=5;ctx.beginPath();ctx.arc(BOSS_ALTAR.x,BOSS_ALTAR.y,95,0,Math.PI*2);ctx.stroke();for(let i=0;i<6;i++){const a=i*Math.PI/3;ctx.beginPath();ctx.moveTo(BOSS_ALTAR.x+Math.cos(a)*40,BOSS_ALTAR.y+Math.sin(a)*40);ctx.lineTo(BOSS_ALTAR.x+Math.cos(a)*90,BOSS_ALTAR.y+Math.sin(a)*90);ctx.stroke()}
  ctx.fillStyle='#d9b1d0';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(state.bossDefeated?'잠든 제단':'뿌리를 바쳐 봉인을 해제',BOSS_ALTAR.x,BOSS_ALTAR.y+125);
  ctx.fillStyle=state.bossSummoned&&!state.bossDefeated?'#4b1118':'#09070b';ctx.beginPath();ctx.ellipse(CAVE_EXIT.x,CAVE_EXIT.y,60,30,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ddd';ctx.font='bold 10px system-ui';
- const exitLabel=state.bossSummoned&&!state.bossDefeated?'보스전 중 · 출구 봉쇄':state.bossDefeated&&state.bossExitAt>0?Math.max(0,Math.ceil((state.bossExitAt-Date.now())/1000))+'초 뒤 자동 복귀':'두 번 눌러 '+(state.caveReturnArea==='worldtreeinside'?'세계수 내부':'지상')+'로';
+ const exitLabel=state.bossSummoned&&!state.bossDefeated?'보스전 중 · 출구 봉쇄':state.bossDefeated&&state.bossExitAt>0?Math.max(0,Math.ceil((state.bossExitAt-Date.now())/1000))+'초 뒤 자동 복귀':'두 번 눌러 '+(state.caveReturnArea==='worldtreeinside'?'세계수 내부로':'지상으로');
  ctx.fillText(exitLabel,CAVE_EXIT.x,CAVE_EXIT.y+52);ctx.restore()
 }
 function drawQuestCave(cx,cy,w,h){
