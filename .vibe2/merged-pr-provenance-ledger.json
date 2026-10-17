@@ -60797,11 +60797,160 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_f62bf7cace654698812ea58f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8350",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6c531058f6cad438687d0ea0dd04f30e398f6c8a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8350,
+        "baseBranch": "main",
+        "headBranch": "perf/mobile-webgl-render-20261018",
+        "baseSha": "6c531058f6cad438687d0ea0dd04f30e398f6c8a",
+        "headSha": "c167aa34c3aa16dad2076c46a4a5bf5aab9f99c1",
+        "mergeCommitSha": "480ced04b4e26bd49a3648205ddb3444d53ea3bd",
+        "mergedAt": "2026-10-17T18:21:02Z",
+        "authorLogin": "hans1177",
+        "titleHash": "3c544a2c07ead3dee55b04c47915ea675c465cc4f4b51c965605f1f55d93316b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "perf/mobile-webgl-render-20261018",
+        "candidateSha": "c167aa34c3aa16dad2076c46a4a5bf5aab9f99c1"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 17,
+        "addedLineCount": 497,
+        "deletedLineCount": 727,
+        "changedFiles": [
+          ".github/workflows/vibe2-core-qa.yml",
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/amusement-tycoon-direct-buildup.test.mjs",
+          "qa/realistic-builder-mobile-render.test.mjs",
+          "qa/vibe-visual-runtime-quality.test.mjs",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "qa/vibe2-existing-web-assessment.test.mjs",
+          "qa/vibe2-owner-game-flow-lock.test.mjs",
+          "qa/village-dungeons-mobile-render.test.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "web-games/amusement-tycoon/index.html",
+          "web-games/realistic-builder/index.html",
+          "web-games/star-frontier/index.html",
+          "web-games/survival2/assets/survival-atlas.svg",
+          "web-games/survival2/index.html",
+          "web-games/village-dungeons/index.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-core-qa.yml",
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/amusement-tycoon-direct-buildup.test.mjs",
+          "qa/realistic-builder-mobile-render.test.mjs",
+          "qa/vibe-visual-runtime-quality.test.mjs",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "qa/vibe2-existing-web-assessment.test.mjs",
+          "qa/vibe2-owner-game-flow-lock.test.mjs",
+          "qa/village-dungeons-mobile-render.test.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "web-games/amusement-tycoon/index.html",
+          "web-games/realistic-builder/index.html",
+          "web-games/star-frontier/index.html",
+          "web-games/survival2/index.html",
+          "web-games/village-dungeons/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8350",
+        "merge-commit:480ced04b4e26bd49a3648205ddb3444d53ea3bd",
+        "base-main:6c531058f6cad438687d0ea0dd04f30e398f6c8a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 489
+    "total": 490
   }
 }
