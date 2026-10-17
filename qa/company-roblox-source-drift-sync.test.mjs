@@ -177,6 +177,7 @@ test('changed-source workflow binds homepage sync dependencies from main',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
   assert.match(workflow,/company-shared-context\.mjs/);
   assert.match(workflow,/company-learning\/platform-release-roadmap\.json/);
+  assert.equal(workflow.split('node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json company-learning/platform-release-roadmap.json').length-1,2);
 });
 
 
