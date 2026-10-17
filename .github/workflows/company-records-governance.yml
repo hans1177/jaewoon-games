@@ -82,10 +82,12 @@ jobs:
 
       - name: Validate central document retention and growth
         env:
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PUSH_BASE_SHA: ${{ github.event.before }}
         run: |
           set -euo pipefail
+          node tools/company-constitution-enforcer.mjs --phase=records-governance
           base_sha="${PR_BASE_SHA:-${PUSH_BASE_SHA:-}}"
           if [ -n "$base_sha" ] && ! [[ "$base_sha" =~ ^0+$ ]]; then
             if ! git cat-file -e "$base_sha^{commit}" 2>/dev/null; then
