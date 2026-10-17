@@ -1,60 +1,88 @@
 <!doctype html>
-<html lang="ko" data-presentation-quality-version="1">
+<html lang="ko" data-presentation-quality-version="2">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#25305d">
+<meta name="theme-color" content="#254e79">
 <title>캣 스텝</title>
 <style>
+:root{color-scheme:light;--ink:#153e58;--gold:#ffe69f;--mint:#7aefd2;--rose:#fa8ba8;--sky:#5392bd;--press:#395b88}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#20294f;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
-button{font:inherit}
-#game{position:relative;width:100vw;height:100vh;overflow:hidden;background:linear-gradient(#27335f 0%,#4a7ea4 55%,#84bfd0 100%)}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#2f688c;color:#fff;font:600 15px/1.45 system-ui,-apple-system,"Noto Sans KR","Malgun Gothic",sans-serif;touch-action:none}
+button{font:inherit;cursor:pointer}
+#game{position:relative;width:100vw;height:100vh;overflow:hidden;background:linear-gradient(180deg,#a3e1ff,#d0f6e9)}
 canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
-.hud{position:absolute;left:14px;right:14px;top:max(12px,env(safe-area-inset-top));z-index:5;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
-.score{text-align:center;position:absolute;left:50%;transform:translateX(-50%);top:0;min-width:130px}
-.score b{display:block;font-size:42px;line-height:.95;text-shadow:0 4px 12px rgba(0,0,0,.3)}
-.score span,.mini{font-size:12px;font-weight:800;color:#e9f4ff;text-shadow:0 2px 8px rgba(0,0,0,.35)}
-.mini{padding:8px 10px;border-radius:12px;background:rgba(17,25,48,.34);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px)}
-.tip{position:absolute;left:50%;top:104px;transform:translateX(-50%);z-index:6;padding:8px 12px;border-radius:12px;background:rgba(21,30,55,.52);font-size:13px;font-weight:900;white-space:nowrap;transition:opacity .25s;pointer-events:none}
-.controls{position:absolute;left:14px;right:14px;bottom:max(14px,env(safe-area-inset-bottom));z-index:8;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.controls button{min-height:72px;border:1px solid rgba(255,255,255,.18);border-radius:20px;color:#fff;font-size:20px;font-weight:1000;box-shadow:0 10px 26px rgba(12,18,39,.28);touch-action:manipulation}
-.controls button:first-child{background:linear-gradient(180deg,#527ed7,#355eb8)}
-.controls button:last-child{background:linear-gradient(180deg,#ef8181,#cf5c63)}
-.controls button:active{transform:translateY(2px) scale(.985)}
-.overlay{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:22px;background:rgba(12,17,34,.64);backdrop-filter:blur(5px)}
+.hud{position:absolute;z-index:5;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));top:max(14px,env(safe-area-inset-top));display:flex;align-items:flex-start;justify-content:space-between;gap:10px;pointer-events:none}
+.mini{display:flex;align-items:center;gap:6px;min-height:46px;padding:8px 11px;border:2px solid #ffffffed;border-radius:17px;background:linear-gradient(150deg,#fffefaef,#d7fff4f0);color:var(--ink);font-size:12px;font-weight:1000;letter-spacing:-.035em;white-space:nowrap;box-shadow:0 5px 0 #78b9c4,0 11px 24px #0c3e654f}
+.ui-art-icon{display:inline-block;flex:none;width:24px;height:24px;vertical-align:middle;filter:drop-shadow(0 2px 1px #204e6c33);animation:icon-float 2.3s ease-in-out infinite}
+#speed .ui-art-icon{animation-duration:1.55s}
+.score{position:absolute;left:50%;top:-3px;min-width:110px;text-align:center;transform:translateX(-50%);filter:drop-shadow(0 5px 12px #0b446c33)}
+.score span{display:block;color:#f8fff9;font-size:11px;font-weight:950;letter-spacing:.12em;text-shadow:0 2px 5px #2e5477}
+.score b{display:block;color:#fff4ba;font-size:clamp(40px,11vw,60px);font-weight:1000;line-height:1.06;-webkit-text-stroke:1px #745b81;text-shadow:0 4px #85597d,0 9px 18px #164e6e}
+.score b.impact-pop{animation:score-bounce .42s cubic-bezier(.2,1.4,.35,1)}
+.step-track{margin:8px auto 0;width:90px;height:8px;overflow:hidden;background:#2a5574b0;border:2px solid #eafff2ae;border-radius:25px;box-shadow:inset 0 2px 3px #14476777}
+.step-fill{width:0;height:100%;border-radius:25px;background:linear-gradient(90deg,#80efdc,#ffe8a3);transition:width .2s ease-out}
+.tip{position:absolute;left:50%;top:max(112px,calc(env(safe-area-inset-top) + 107px));z-index:6;transform:translateX(-50%);max-width:92vw;padding:8px 14px;text-align:center;border:2px solid #fff;border-radius:14px;background:linear-gradient(120deg,#fff1b9f2,#cefff1f2);color:#1f5061;font-size:12px;font-weight:950;box-shadow:0 4px 0 #7dbbb9,0 12px 22px #16456b5a;transition:opacity .25s;pointer-events:none}
+.controls{position:absolute;z-index:8;left:max(14px,env(safe-area-inset-left));right:max(14px,env(safe-area-inset-right));bottom:max(17px,env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.controls button{display:flex;align-items:center;justify-content:center;gap:9px;min-height:73px;padding:10px 14px;border:3px solid #ffffffcf;border-radius:22px;color:#fffefa;font-size:clamp(16px,4.2vw,21px);font-weight:1000;text-shadow:0 2px #315b7b;box-shadow:0 7px 0 #244e87,0 14px 26px #0a345c77;transition:transform .12s,filter .12s,box-shadow .12s;touch-action:manipulation}
+.controls button:first-child{background:linear-gradient(145deg,#89b7ff,#477bdc)}
+.controls button:last-child{background:linear-gradient(145deg,#ffc88a,#f1799e);box-shadow:0 7px 0 #b64f73,0 14px 26px #4b295c77}
+.controls .ui-art-icon{width:29px;height:29px;filter:drop-shadow(0 3px 1px #17436955)}
+.controls button:active{transform:translateY(5px) scale(.965);filter:brightness(1.07);box-shadow:0 2px 0 #284b78,0 5px 14px #0c2b4866}
+.controls button:focus-visible,.card button:focus-visible{outline:3px solid #ffdf71;outline-offset:4px}
+.overlay{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 34%,#7abcc64a,#102848c4 75%);backdrop-filter:blur(6px)}
 .overlay.hidden{display:none}
-.card{width:min(88vw,420px);padding:24px;border-radius:26px;background:rgba(27,35,65,.95);border:1px solid rgba(255,255,255,.15);box-shadow:0 26px 80px rgba(4,9,28,.45);text-align:center}
-.card .catface{font-size:52px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.2))}
-.card h1{margin:6px 0 8px;font-size:32px}
-.card p{margin:0 0 18px;color:#dbe8f4;line-height:1.55;font-size:14px}
-.card button{width:100%;min-height:56px;border:0;border-radius:16px;background:#83d5a7;color:#183b30;font-size:18px;font-weight:1000}
+.card{position:relative;width:min(88vw,410px);padding:23px;border:3px solid #fff3bb;border-radius:28px;background:linear-gradient(145deg,#fff9dc 0%,#e5fff0 50%,#bee9f6 100%);color:#24576b;text-align:center;box-shadow:0 8px 0 #5f9fae,0 26px 65px #0e2e5f88;overflow:hidden}
+.card:before{content:"SKY HOP ADVENTURE";display:block;margin:-23px -23px 10px;padding:9px 5px;background:linear-gradient(100deg,#ffaaa9,#ffe494,#a3f1d3);color:#685d7a;font-size:11px;font-weight:1000;letter-spacing:.11em}
+.card .catface{height:115px;display:grid;place-items:center}
+.card .catface .ui-art-icon{width:108px;height:108px;filter:drop-shadow(0 8px 0 #fbf8d0a6) drop-shadow(0 14px 14px #34698d3b)}
+.card h1{margin:5px 0 8px;color:#28627d;font-size:34px;font-weight:1000;letter-spacing:-.06em;text-shadow:0 2px #ffffff}
+.card p{margin:0 0 18px;color:#376274;font-weight:650;font-size:15px;line-height:1.58}
+.card button{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:59px;border:3px solid #fffae9;border-radius:16px;background:linear-gradient(165deg,#a2ffd0,#57d3a6);color:#1a5445;font-size:19px;font-weight:1000;box-shadow:0 6px 0 #2a9c7b}
+.card button:active{transform:translateY(4px);box-shadow:0 2px 0 #2a9c7b}
+.card button .ui-art-icon{width:27px;height:27px}
+#feedback{position:absolute;left:50%;top:32%;z-index:9;transform:translate(-50%,-50%);opacity:0;pointer-events:none;text-align:center;font-size:clamp(24px,7vw,42px);font-weight:1000;font-variant-numeric:tabular-nums;color:#fff7c0;-webkit-text-stroke:1px #9e6981;text-shadow:0 5px #d477a6,0 11px 25px #134577}
+#feedback.show{animation:impact-toast .72s both}
+#feedback.warning{color:#ffdddb;text-shadow:0 5px #ce507b,0 11px 25px #134577}
+#sparkHud{position:absolute;left:50%;top:12px;z-index:4;transform:translateX(-50%);width:150px;height:90px;pointer-events:none;background:radial-gradient(circle,#fff6bf75,transparent 70%);opacity:0}
+#sparkHud.flash{animation:hud-glow .5s ease-out}
+@keyframes icon-float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(5deg)}}
+@keyframes score-bounce{0%{transform:scale(.8)}52%{transform:scale(1.33) rotate(3deg)}100%{transform:scale(1)}}
+@keyframes impact-toast{0%{opacity:0;transform:translate(-50%,-25%) scale(.6)}22%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}65%{opacity:1;transform:translate(-50%,-65%)}100%{opacity:0;transform:translate(-50%,-105%) scale(.9)}}
+@keyframes hud-glow{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
 @media(min-width:760px){.controls{left:50%;right:auto;width:480px;transform:translateX(-50%)}}
+@media(max-width:370px){.mini{font-size:10px;padding:6px}.mini .ui-art-icon{width:19px;height:19px}.tip{font-size:11px;top:103px}}
+@media(max-height:570px) and (orientation:landscape){.hud{top:max(6px,env(safe-area-inset-top))}.score b{font-size:34px}.score span{font-size:10px}.step-track{height:5px;margin:3px auto 0}.mini{min-height:37px;padding:4px 7px;font-size:10px}.mini .ui-art-icon{width:19px;height:19px}.tip{left:max(14px,env(safe-area-inset-left));top:73px;transform:none;max-width:min(35vw,240px);font-size:11px}.controls{left:auto;right:max(12px,env(safe-area-inset-right));bottom:max(9px,env(safe-area-inset-bottom));width:min(46vw,345px);transform:none;gap:8px}.controls button{min-height:52px;font-size:14px}.controls .ui-art-icon{width:22px;height:22px}.card{padding:14px}.card:before{margin:-14px -14px 2px}.card .catface{height:68px}.card .catface .ui-art-icon{width:65px;height:65px}.card h1{font-size:25px}.card p{font-size:13px;margin-bottom:9px}.card button{min-height:47px;font-size:16px}}
+@media(prefers-reduced-motion:reduce){.ui-art-icon,.card .catface .ui-art-icon{animation:none}.score b.impact-pop,#feedback.show,#sparkHud.flash{animation:none}#feedback.show{opacity:1}.step-fill{transition:none}}
 </style>
 </head>
 <body>
 <div id="game">
 <canvas id="c" aria-label="캣 스텝 게임 화면"></canvas>
 <div class="hud">
-  <div class="mini" id="best">최고 0</div>
-  <div class="score"><span>현재 계단</span><b id="score">0</b></div>
-  <div class="mini" id="speed">속도 1</div>
+  <div class="mini" id="best"><svg class="ui-art-icon" aria-hidden="true" viewBox="0 0 48 48"><use href="/assets/vibe-commercial-ui-icons.svg#trophy"></use></svg><span class="value">최고 0</span></div>
+  <div class="score"><span>현재 계단</span><b id="score">0</b><div class="step-track" role="progressbar" aria-label="다음 속도 단계까지 계단" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"><div id="stepFill" class="step-fill"></div></div></div>
+  <div class="mini" id="speed"><svg class="ui-art-icon" aria-hidden="true" viewBox="0 0 48 48"><use href="/assets/vibe-commercial-ui-icons.svg#bolt"></use></svg><span class="value">속도 1</span></div>
 </div>
-<div class="tip" id="tip">다음 발판 방향으로 점프해</div>
+<div id="sparkHud" aria-hidden="true"></div>
+<div id="feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+<div class="tip" id="tip">✨ 빛나는 발판으로 점프해!</div>
 <div class="controls">
-  <button id="left" type="button">◀ 왼쪽</button>
-  <button id="right" type="button">오른쪽 ▶</button>
+  <button id="left" type="button"><svg class="ui-art-icon" aria-hidden="true" viewBox="0 0 48 48"><use href="/assets/vibe-commercial-ui-icons.svg#left"></use></svg><span>왼쪽</span></button>
+  <button id="right" type="button"><span>오른쪽</span><svg class="ui-art-icon" aria-hidden="true" viewBox="0 0 48 48"><use href="/assets/vibe-commercial-ui-icons.svg#right"></use></svg></button>
 </div>
 <div class="overlay" id="overlay">
   <div class="card">
-    <div class="catface">🐱</div>
+    <div class="catface" aria-hidden="true"><svg class="ui-art-icon" aria-hidden="true" viewBox="0 0 80 80"><use href="/assets/vibe-commercial-ui-icons.svg#cat"></use></svg></div>
     <h1 id="title">캣 스텝</h1>
-    <p id="desc">다음 발판이 있는 방향으로 점프해.<br>10계단마다 속도가 빨라져.</p>
-    <button id="start" type="button">시작</button>
+    <p id="desc">구름 위 발판을 콩콩!<br>10계단마다 속도가 빨라져.</p>
+    <button id="start" type="button"><svg class="ui-art-icon" aria-hidden="true" viewBox="0 0 48 48"><use href="/assets/vibe-commercial-ui-icons.svg#spark"></use></svg><span>시작하기</span></button>
   </div>
 </div>
 </div>
-<script>
+<script type="module">
+import * as THREE from '/assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+import {createVibePortableImpactCue} from '/assets/vibe-presentation-director.js';
 (() => {
 'use strict';
 
@@ -62,7 +90,18 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
 // 메인: 좌/우 점프 → 착지 → 연속 상승 → 추락 → 즉시 재시작
 
 const canvas=document.getElementById('c');
-const ctx=canvas.getContext('2d',{alpha:false});
+// 실제 GPU 깊이 렌더러: 사이트 내부에 이미 있는 MIT Three.js 원본만 사용한다.
+const renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'low-power'});
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,1,.08,125);
+camera.position.set(0,4.8,24);
+camera.lookAt(0,0,0);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.setClearColor(0x263c65);
+renderer.shadowMap.enabled=false;
+canvas.dataset.renderDimension='3d-webgl';
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();document.getElementById('tip').textContent='그래픽 연결이 끊어졌어. 다시 시작해';});
+canvas.addEventListener('webglcontextrestored',()=>location.reload());
 const $=id=>document.getElementById(id);
 const game=document.getElementById('game');
 
@@ -83,12 +122,15 @@ const COLORS={
   cat:'#f4a54e',catDark:'#61453e',white:'#ffffff'
 };
 
+const mobile=matchMedia('(pointer: coarse)').matches;
+let maxDpr=Math.min(devicePixelRatio||1,mobile?1:1.5);
 function resize(){
-  DPR=Math.min(2,devicePixelRatio||1);
   W=innerWidth;H=innerHeight;
-  canvas.width=Math.floor(W*DPR);
-  canvas.height=Math.floor(H*DPR);
-  ctx.setTransform(DPR,0,0,DPR,0,0);
+  DPR=Math.min(DPR,maxDpr);
+  renderer.setPixelRatio(DPR);
+  renderer.setSize(W,H,false);
+  camera.aspect=W/Math.max(1,H);
+  camera.updateProjectionMatrix();
 }
 addEventListener('resize',resize,{passive:true});
 resize();
@@ -134,8 +176,11 @@ function resetRun(){
 }
 function updateHud(){
   $('score').textContent=score;
-  $('best').textContent='최고 '+best;
-  $('speed').textContent='속도 '+speedTier();
+  const progress=score%10;
+  $('stepFill').style.width=(progress*10)+'%';
+  document.querySelector('.step-track').setAttribute('aria-valuenow',String(progress));
+  $('best').querySelector('.value').textContent='최고 '+best;
+  $('speed').querySelector('.value').textContent='속도 '+speedTier();
 }
 function gameOver(){
   running=false;
@@ -149,6 +194,7 @@ function gameOver(){
   $('desc').innerHTML='점수 <b>'+score+'</b><br>최고 <b>'+best+'</b>';
   $('start').textContent='다시 시작';
   $('overlay').classList.remove('hidden');
+  emitImpact('miss');
 }
 function scrollSteps(){
   steps.shift();
@@ -177,6 +223,7 @@ function attempt(dir){
     };
   }
   if(navigator.vibrate)navigator.vibrate(correct?18:[22,28,22]);
+  if(correct)emitImpact('jump');
 }
 function finishCorrect(){
   score++;
@@ -186,12 +233,14 @@ function finishCorrect(){
   jumpAnim=null;
   if(score>=3)$('tip').style.opacity='.15';
   updateHud();
+  emitImpact(score>0&&score%10===0?'milestone':'land');
 }
 function begin(){
   $('overlay').classList.add('hidden');
   $('title').textContent='캣 스텝';
   $('start').textContent='시작';
   resetRun();
+  emitImpact('start');
 }
 $('left').addEventListener('pointerdown',e=>{e.preventDefault();attempt(-1)});
 $('right').addEventListener('pointerdown',e=>{e.preventDefault();attempt(1)});
@@ -201,114 +250,203 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')attempt(1);
 });
 
-function drawSky(){
-  const g=ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,COLORS.skyTop);
-  g.addColorStop(1,COLORS.skyBottom);
-  ctx.fillStyle=g;
-  ctx.fillRect(0,0,W,H);
-
-  const t=performance.now()/1000;
-  for(let i=0;i<7;i++){
-    const x=((i*173+t*10*(i%2?1:-1)+W*2)% (W+180))-90;
-    const y=H*(.13+.09*(i%4));
-    ctx.globalAlpha=.15;
-    ctx.fillStyle='#fff';
-    ctx.beginPath();
-    ctx.ellipse(x,y,44+12*(i%3),14+3*(i%2),0,0,Math.PI*2);
-    ctx.fill();
+// 실세계 단위로 픽셀 기반 게임 좌표를 투영한다. 점프 판정 수치와 저장 키는 바꾸지 않는다.
+const visibleHeight=2*24*Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
+const unitsPerPixel=()=>visibleHeight/Math.max(1,H);
+const worldX=pixels=>(pixels-W*.5)*unitsPerPixel();
+const worldY=pixels=>(H*.5-pixels)*unitsPerPixel();
+const sceneRoot=new THREE.Group();scene.add(sceneRoot);
+scene.background=new THREE.Color(0x355879);
+scene.fog=new THREE.Fog(0x355879,28,70);
+scene.add(new THREE.HemisphereLight(0xd9ecff,0x3a465d,2.2));
+const sunlight=new THREE.DirectionalLight(0xffeac9,2.35);sunlight.position.set(-8,16,12);scene.add(sunlight);
+const mat=(color)=>new THREE.MeshLambertMaterial({color,flatShading:true});
+const bodyMat=mat(COLORS.cat),lightMat=mat(0xf8bf7b),faceMat=mat(COLORS.catDark);
+const platformMat=mat(COLORS.platform),topMat=mat(COLORS.platformTop);
+const goldMat=mat(COLORS.goldFront),goldTopMat=mat(COLORS.gold);
+const boxGeo=new THREE.BoxGeometry(1,1,1),sphereGeo=new THREE.SphereGeometry(1,12,8);
+const coneGeo=new THREE.ConeGeometry(1,1,4),tubeGeo=new THREE.CylinderGeometry(1,1,1,8);
+const cloudMat=new THREE.MeshLambertMaterial({color:0xd0efff,transparent:true,opacity:.42,depthWrite:false});
+const hillMat=mat(0x315665),trunkMat=mat(0x665344),leafMat=mat(0x4c7f69);
+function addPart(parent,geometry,material,pos,scale){
+  const mesh=new THREE.Mesh(geometry,material);mesh.position.set(...pos);mesh.scale.set(...scale);parent.add(mesh);return mesh;
+}
+// 3D 캐릭터: 몸통, 머리, 귀, 수염/코, 발, 꼬리 모두 별도의 입체 메시다.
+const cat=new THREE.Group();sceneRoot.add(cat);
+addPart(cat,sphereGeo,bodyMat,[0,.56,0],[.58,.63,.44]);
+addPart(cat,sphereGeo,bodyMat,[0,1.18,.1],[.71,.64,.58]);
+for(const side of [-1,1]){
+  const ear=addPart(cat,coneGeo,bodyMat,[side*.46,1.86,.1],[.28,.48,.31]);
+  ear.rotation.z=-side*.18;
+  addPart(cat,sphereGeo,faceMat,[side*.28,1.23,.64],[.075,.092,.05]);
+  addPart(cat,sphereGeo,lightMat,[side*.33,.22,.18],[.23,.19,.34]);
+}
+addPart(cat,sphereGeo,faceMat,[0,1.03,.69],[.10,.073,.06]);
+const tail=new THREE.Group();tail.position.set(.49,.66,-.18);cat.add(tail);
+const tailMesh=addPart(tail,tubeGeo,bodyMat,[.46,.18,0],[.16,.91,.17]);tailMesh.rotation.z=-.75;
+const stepMeshes=[];
+for(let i=0;i<steps.length+10;i++){
+  const group=new THREE.Group();
+  const block=addPart(group,boxGeo,platformMat,[0,0,0],[1,.27,1.6]);
+  const top=addPart(group,boxGeo,topMat,[0,.18,0],[1,.08,1.6]);
+  group.userData={block,top};
+  sceneRoot.add(group);stepMeshes.push(group);
+}
+// 입체 산, 나무 및 구름은 실제 삼각형 지오메트리로 렌더링한다.
+for(let i=0;i<9;i++){
+  const hill=addPart(sceneRoot,coneGeo,hillMat,[-22+i*5,-10,-20],[4.5,11+(i%3)*3,3.4]);
+  hill.rotation.y=i*.49;
+}
+const cloudGroups=[];
+for(let i=0;i<6;i++){
+  const cloud=new THREE.Group();sceneRoot.add(cloud);
+  for(let j=0;j<3;j++)addPart(cloud,sphereGeo,cloudMat,[(j-1)*1.05,0,(j%2)*.25],[1.16,.38,.49]);
+  cloud.position.set(-16+i*6,6+(i%3)*2,-13-i%2);cloudGroups.push(cloud);
+}
+const ground=addPart(sceneRoot,boxGeo,mat(0x395e5c),[0,-12,-12],[64,1,18]);
+// 먼 거리의 빛나는 입체 별·결정, 별도 이미지/다운로드 없이 인스턴싱 한 번으로 배치.
+const skyGems=new THREE.InstancedMesh(new THREE.OctahedronGeometry(.23,0),mat(0xe6fff4),30);
+const gemTransform=new THREE.Object3D();
+for(let i=0;i<30;i++){
+  gemTransform.position.set(Math.sin(i*2.399)*18,Math.cos(i*.74)*11,-15-(i%5)*1.4);
+  gemTransform.scale.setScalar(.45+(i%4)*.17);
+  gemTransform.rotation.set(i*.5,i*.9,0);
+  gemTransform.updateMatrix();skyGems.setMatrixAt(i,gemTransform.matrix);
+}
+sceneRoot.add(skyGems);
+const sunGlow=addPart(sceneRoot,sphereGeo,new THREE.MeshBasicMaterial({color:0xffe7a1}),[-11,10,-26],[2.55,2.55,.45]);
+sunGlow.name='sun-gold';
+// 기존 자산 라이브러리의 진짜 OBJ 메시. 외부 URL·중복 모델 생성 없음.
+fetch('/assets/shared/homely-house/tree.obj').then(response=>{
+  if(!response.ok)throw new Error('TREE_ASSET_HTTP_'+response.status);
+  return response.text();
+}).then(obj=>{
+  const vertices=[],triangles=[];
+  for(const line of obj.split(/\r?\n/)){
+    if(line.startsWith('v '))vertices.push(line.trim().split(/\s+/).slice(1,4).map(Number));
+    else if(line.startsWith('f ')){
+      const ids=line.trim().split(/\s+/).slice(1).map(s=>Number(s.split('/')[0])-1);
+      for(let k=1;k<ids.length-1;k++)for(const id of [ids[0],ids[k],ids[k+1]]){
+        const v=vertices[id];if(!v)return;triangles.push(...v);
+      }
+    }
   }
-  ctx.globalAlpha=1;
-
-  ctx.fillStyle='rgba(28,52,70,.28)';
-  ctx.beginPath();
-  ctx.moveTo(0,H);
-  ctx.lineTo(0,H*.82);
-  for(let x=0;x<=W;x+=80){
-    const y=H*.80-Math.sin((x+bgOffset)*.012)*18;
-    ctx.lineTo(x,y);
+  if(triangles.length<90)throw new Error('TREE_OBJ_GEOMETRY_EMPTY');
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(triangles,3));
+  geometry.computeVertexNormals();
+  for(let i=0;i<8;i++){
+    const m=new THREE.Mesh(geometry,i%3===0?leafMat:trunkMat);
+    m.position.set(-20+i*5,-9.3,-9+(i%2)*2.0);
+    m.scale.setScalar(2+(i%3)*.55);
+    m.rotation.y=i*.53;sceneRoot.add(m);
   }
-  ctx.lineTo(W,H);
-  ctx.closePath();
-  ctx.fill();
+}).catch(error=>{console.error('CAT_STEP_LOCAL_3D_ASSET:',error.message);});
+// 필요한 오브젝트 수만 유지한다. 프레임마다 지오메트리/재질을 생성하지 않는다.
+function updateScene(now){
+  const platformW=Math.max(92,Math.min(150,W*.24))*unitsPerPixel();
+  for(let i=0;i<stepMeshes.length;i++){
+    const obj=stepMeshes[i],step=steps[i];
+    if(!step){obj.visible=false;continue}
+    const y=platformY(i);
+    obj.visible=y>=-40&&y<=H+40;
+    if(!obj.visible)continue;
+    obj.position.set(worldX(laneX(step.lane)),worldY(y),-i*.14);
+    obj.userData.block.scale.x=platformW;
+    obj.userData.top.scale.x=platformW;
+    const isGold=step.number>0&&step.number%10===0;
+    obj.userData.block.material=isGold?goldMat:platformMat;
+    obj.userData.top.material=isGold?goldTopMat:topMat;
+  }
+  const pose=catPose(now);
+  cat.position.set(worldX(pose.x),worldY(pose.y)-.48,1);
+  cat.rotation.set(0,Math.sin(now*.0015)*.08,pose.tilt);
+  cat.scale.set(1,1/pose.squash,1);
+  tail.rotation.z=Math.sin(now*.006)*.21;
+  sunGlow.scale.set(2.55+Math.sin(now*.00055)*.12,2.55+Math.sin(now*.00055)*.12,.45);
+  skyGems.rotation.y=Math.sin(now*.00013)*.025;
+  for(let i=0;i<cloudGroups.length;i++)cloudGroups[i].position.x=-16+i*6+Math.sin(now*.00009+i)*1.4;
 }
-
-function drawPlatform(x,y,w,isGold){
-  const h=18,depth=13;
-  ctx.save();
-  ctx.shadowColor='rgba(8,14,31,.28)';
-  ctx.shadowBlur=16;
-  ctx.shadowOffsetY=8;
-  ctx.fillStyle=isGold?COLORS.goldFront:COLORS.platformFront;
-  ctx.beginPath();
-  ctx.moveTo(x-w/2,y);
-  ctx.lineTo(x+w/2,y);
-  ctx.lineTo(x+w*.42,y+depth);
-  ctx.lineTo(x-w*.42,y+depth);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.shadowColor='transparent';
-  ctx.fillStyle=isGold?COLORS.gold:COLORS.platform;
-  roundRect(x-w/2,y-h/2,w,h,8);
-  ctx.fill();
-
-  ctx.fillStyle=isGold?'#ffe09b':COLORS.platformTop;
-  roundRect(x-w/2,y-h/2,w,5,7);
-  ctx.fill();
-  ctx.restore();
+// 공통 바이브 프레젠테이션 큐: 미리 만든 진짜 3D 파티클을 재활용한다.
+const effectGeo=new THREE.OctahedronGeometry(.15,0);
+const effectMats=[mat(0xffecc0),mat(0xa7f9eb),mat(0xff98b0)];
+const particlePool=Array.from({length:18},(_,i)=>{
+  const mesh=new THREE.Mesh(effectGeo,effectMats[i%3]);mesh.visible=false;
+  sceneRoot.add(mesh);return mesh;
+});
+const ringMat=new THREE.MeshBasicMaterial({color:0xffe8a2,transparent:true,opacity:.82,depthWrite:false});
+const impactRing=new THREE.Mesh(new THREE.TorusGeometry(.55,.045,6,26),ringMat);
+impactRing.visible=false;sceneRoot.add(impactRing);
+const motionReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ringStart=0,ringDuration=1,ringStrength=0;
+function emitImpact(event){
+  const cue=createVibePortableImpactCue({event,mobile,reducedMotion:motionReduced,
+    importance:event==='milestone'?'major':'normal'});
+  const now=performance.now();
+  const origin=cat.position.clone();
+  ringStart=now;ringDuration=cue.durationMs;ringStrength=cue.cameraPulse;
+  impactRing.visible=cue.worldPulse;
+  impactRing.position.copy(origin);
+  ringMat.color.setHex(cue.palette[0]);
+  for(let i=0;i<particlePool.length;i++){
+    const mesh=particlePool[i];mesh.visible=i<cue.particles;
+    if(!mesh.visible)continue;
+    const angle=i*2.39996,velocity=event==='milestone'?3.1:1.7;
+    mesh.position.copy(origin);
+    mesh.material=effectMats[i%effectMats.length];
+    mesh.userData={birth:now,duration:cue.durationMs,
+      dx:Math.cos(angle)*velocity,dy:Math.sin(angle)*velocity+1.0,
+      dz:Math.sin(angle*.73)*.5};
+  }
+  if(event==='land'||event==='milestone'||event==='miss'){
+    const message=event==='miss'?'앗! 다시 도전':event==='milestone'?'⭐ '+score+' 계단 돌파!':'GOOD! +1';
+    const toast=$('feedback');
+    toast.textContent=message;
+    toast.className='';
+    void toast.offsetWidth;
+    toast.className='show'+(event==='miss'?' warning':'');
+    if(event!=='miss'){
+      const scoreEl=$('score'),glow=$('sparkHud');
+      scoreEl.classList.remove('impact-pop');glow.classList.remove('flash');
+      void scoreEl.offsetWidth;
+      scoreEl.classList.add('impact-pop');glow.classList.add('flash');
+    }
+  }
 }
-
-function roundRect(x,y,w,h,r){
-  r=Math.min(r,w/2,h/2);
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
+function updateImpacts(now){
+  for(const mesh of particlePool){
+    if(!mesh.visible)continue;
+    const p=mesh.userData,phase=(now-p.birth)/p.duration;
+    if(phase>=1){mesh.visible=false;continue}
+    mesh.position.x+=p.dx*.016;
+    mesh.position.y+=p.dy*.016;
+    mesh.position.z+=p.dz*.016;
+    mesh.scale.setScalar(Math.max(.1,1-phase));
+    mesh.rotation.y+=.08;
+  }
+  if(impactRing.visible){
+    const t=(now-ringStart)/ringDuration;
+    if(t>=1)impactRing.visible=false;
+    else{impactRing.scale.setScalar(1+t*2);ringMat.opacity=.85*(1-t);}
+  }
 }
-
-function drawCat(x,y,tilt=0,squash=1){
-  ctx.save();
-  ctx.translate(x,y);
-  ctx.rotate(tilt);
-  ctx.scale(1.04,1/squash);
-
-  ctx.strokeStyle=COLORS.cat;
-  ctx.lineWidth=8;
-  ctx.lineCap='round';
-  ctx.beginPath();
-  ctx.moveTo(18,10);
-  ctx.quadraticCurveTo(40,0,34,-19);
-  ctx.stroke();
-
-  ctx.fillStyle=COLORS.cat;
-  roundRect(-18,-28,36,34,12);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(0,-35,22,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(-17,-49);ctx.lineTo(-8,-65);ctx.lineTo(-2,-49);ctx.closePath();ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(17,-49);ctx.lineTo(8,-65);ctx.lineTo(2,-49);ctx.closePath();ctx.fill();
-
-  ctx.fillStyle=COLORS.catDark;
-  ctx.beginPath();ctx.arc(-8,-38,2.7,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(8,-38,2.7,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#a46361';
-  ctx.beginPath();ctx.arc(0,-31,2.5,0,Math.PI*2);ctx.fill();
-
-  ctx.fillStyle='#ef8f3e';
-  roundRect(-15,4,11,13,5);ctx.fill();
-  roundRect(4,4,11,13,5);ctx.fill();
-  ctx.restore();
+let fpsWindow=0,fpsCount=0,lastDraw=0;
+function render3d(now){
+  if(document.hidden){fpsWindow=0;fpsCount=0;return;}
+  if(mobile){
+    fpsCount++;
+    if(!fpsWindow)fpsWindow=now;
+    const elapsed=now-fpsWindow;
+    if(elapsed>=4500){
+      const fps=fpsCount*1000/elapsed;
+      const next=fps<42?Math.max(.75,DPR-.15):fps>56?Math.min(maxDpr,DPR+.1):DPR;
+      if(Math.abs(next-DPR)>.01){DPR=next;renderer.setPixelRatio(DPR);}
+      fpsWindow=now;fpsCount=0;
+    }
+  }
+  renderer.render(scene,camera);
+  lastDraw=now;
 }
-
 function catPose(now){
   if(!jumpAnim){
     const bob=Math.sin(now*.004)*2;
@@ -348,19 +486,9 @@ function catPose(now){
 
 function draw(now){
   bgOffset+=.08;
-  drawSky();
-
-  const platformW=Math.max(92,Math.min(150,W*.24));
-  for(let i=steps.length-1;i>=0;i--){
-    const step=steps[i];
-    const y=platformY(i);
-    if(y<-40||y>H+40)continue;
-    drawPlatform(laneX(step.lane),y,platformW,step.number>0&&step.number%10===0);
-  }
-
-  const pose=catPose(now);
-  drawCat(pose.x,pose.y,pose.tilt,pose.squash);
-
+  updateScene(now);
+  updateImpacts(now);
+  render3d(now);
   requestAnimationFrame(draw);
 }
 updateHud();

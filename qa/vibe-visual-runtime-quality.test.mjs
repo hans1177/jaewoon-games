@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {createVibePortableImpactCue,createVibeCommercialInterfaceBlueprint,planVibePresentationAutopilot,calculateVibeResponsiveUIZones,deriveVibeInventoryPresentation,deriveVibeTradeReview} from '../assets/vibe-presentation-director.js';
 import {
   createVibeArtPipeline,
   createVibeGraphicsProduction,
@@ -282,4 +283,183 @@ test('PR changed Web game scope uses current synthetic merge parent while main c
   assert.match(workflow,/git diff --name-only "\$base_sha" HEAD/);
   assert.match(workflow,/changed_web_games=ALL/);
   assert.match(workflow,/Development Web browser startup smoke/);
+});
+
+test('cat-step renders real local 3D world without replacing its jump loop or saved score',()=>{
+  const html=fs.readFileSync('web-games/cat-step/index.html','utf8');
+  const library='assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+  const tree='assets/shared/homely-house/tree.obj';
+  assert.ok(fs.statSync(library).size>100000,'reuse existing local Three.js');
+  assert.ok(fs.statSync(tree).size>1000,'reuse real OBJ in existing asset library');
+  assert.match(html,/import \* as THREE from '\/assets\/roblox\/world-ghosts\/native\/mesh\/three\/three\.module\.js'/);
+  assert.match(html,/new THREE\.WebGLRenderer\(\{canvas,/);
+  assert.match(html,/new THREE\.PerspectiveCamera\(/);
+  assert.match(html,/new THREE\.BoxGeometry\(/);
+  assert.match(html,/new THREE\.Mesh\(/);
+  assert.match(html,/new THREE\.BufferGeometry\(/);
+  assert.match(html,/fetch\('\/assets\/shared\/homely-house\/tree\.obj'\)/);
+  assert.match(html,/geometry\.computeVertexNormals\(\)/);
+  assert.match(html,/renderer\.render\(scene,camera\)/);
+  assert.match(html,/import \{createVibePortableImpactCue\} from '\/assets\/vibe-presentation-director\.js'/);
+  assert.match(html,/function emitImpact\(event\)/);
+  assert.match(html,/function updateImpacts\(now\)/);
+  assert.match(html,/new THREE\.InstancedMesh\(/);
+  assert.match(html,/new THREE\.TorusGeometry\(/);
+  assert.match(html,/particlePool=Array\.from\(\{length:18\}/);
+  assert.match(html,/\.controls button \.icon/);
+  assert.match(html,/@media\(prefers-reduced-motion:reduce\)/);
+  assert.match(html,/aria-live="polite"/);
+  assert.match(html,/const mobile=matchMedia\('\(pointer: coarse\)'\)\.matches/);
+  assert.match(html,/Math\.min\(devicePixelRatio\|\|1,mobile\?1:1\.5\)/);
+  assert.match(html,/if\(document\.hidden\)/);
+  for(const retained of [
+    "cat-step-best","Math.max(150,280-(speedTier()-1)*18)",
+    "function finishCorrect()","function gameOver()",
+    "function scrollSteps()","function attempt(dir)",
+    "function catPose(now)","requestAnimationFrame(draw)",
+    "$('left').addEventListener('pointerdown'",
+    "$('right').addEventListener('pointerdown'"
+  ])assert.ok(html.includes(retained),'original gameplay/save missing: '+retained);
+  assert.doesNotMatch(html,/getContext\(['"]2d/);
+  assert.doesNotMatch(html,/https?:\/\//);
+  const script=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1]||'';
+  assert.ok(script.length>8000);
+  assert.doesNotThrow(()=>new Function(script.replace(/^import .*$/gm,'')));
+});
+
+test('genre-neutral commercial impact cues are presentation-only, deterministic and bounded on mobile',()=>{
+  for(const [event,type] of [['success','land'],['damage','miss'],['level','milestone'],['spawn','start'],['attack','jump']]){
+    const cue=createVibePortableImpactCue({event,mobile:true});
+    assert.equal(cue.semantic,type);
+    assert.equal(cue.authority,'presentation-only');
+    assert.equal(cue.gameplayMutationAllowed,false);
+    assert.ok(cue.particles<=12);
+    assert.ok(cue.durationMs<=610);
+    assert.equal(cue.pooledGeometry,true);
+    assert.deepEqual(cue,createVibePortableImpactCue({event,mobile:true}));
+    assert.deepEqual(cue.protected,['damage','reward','speed','timer','collision','save','progression']);
+  }
+  const reduced=createVibePortableImpactCue({event:'victory',reducedMotion:true,mobile:true});
+  assert.equal(reduced.particles,0);
+  assert.equal(reduced.cameraPulse,0);
+  assert.equal(reduced.iconMotion,'none');
+  assert.equal(createVibePortableImpactCue({event:'victory',mobile:false}).particles,18);
+});
+
+test('commercial genre UI only enables panels with authoritative systems AND matching source functions',()=>{
+  const source=[
+    'function renderInventory(){}','function equipItem(){}','const itemCatalog={};',
+    'function buyItem(){}','function confirmTrade(){}','function transferItem(){}',
+    'function craftItem(){}','function questLog(){}','function buildMenu(){}'
+  ].join('\n');
+  const systems=['INVENTORY_EQUIPMENT','ITEM_LOOT','ECONOMY_SHOP','TRADE_TRANSACTION','CRAFTING','QUEST_DIALOGUE','HOUSING_BUILDING'];
+  const ui=createVibeCommercialInterfaceBlueprint({genre:'STORY_COMPLETE_RPG',systems,source,platform:'WEB',locale:'ko-KR'});
+  assert.equal(ui.genre,'RPG');
+  assert.equal(ui.authority,'PRESENTATION_DESIGN_ONLY');
+  for(const id of ['inventory','equipment','items','merchant','trade','crafting','quests','building'])
+    assert.ok(ui.activeSurfaceIds.includes(id),id+': real owner and source binding');
+  assert.ok(!ui.activeSurfaceIds.includes('upgrades'),'no source owner means no fake upgrades');
+  assert.ok(ui.surfaces.find(x=>x.id==='trade').details.includes('single-idempotent-commit'));
+  assert.ok(ui.surfaces.find(x=>x.id==='trade').details.includes('offer-change-revokes-ready'));
+  assert.equal(ui.functionalContracts.noFakeItemTradeOrUpgradeButtons,true);
+  assert.equal(ui.typography.noRemoteFontDependency,true);
+  assert.equal(ui.touch.minimumTargetPx,48);
+  assert.equal(ui.navigation.backClosesTopmostPanelFirst,true);
+  assert.equal(ui.integration.verified,false);
+  const noSource=createVibeCommercialInterfaceBlueprint({genre:'RPG',systems,source:''});
+  assert.equal(noSource.activeSurfaceIds.length,0,'concept alone never exposes pretend panels');
+  assert.equal(noSource.surfaces.find(x=>x.id==='trade').state,'OWNER_IMPLEMENTATION_REQUIRED');
+  const sourceButNoAuthority=createVibeCommercialInterfaceBlueprint({genre:'CASUAL',systems:[],source});
+  assert.equal(sourceButNoAuthority.activeSurfaceIds.length,0,'code symbol alone never grants gameplay authority');
+  assert.equal(sourceButNoAuthority.genre,'CASUAL');
+  assert.equal(sourceButNoAuthority.density,'LOW');
+});
+
+test('all genre profiles receive distinct presentation while graphics production retains same owner systems',()=>{
+  const cases=[
+    ['CASUAL','CASUAL','SCORE_AND_NEXT_ACTION'],
+    ['SURVIVAL_HORROR_ESCAPE','HORROR','THREAT_AND_SURVIVAL'],
+    ['ACTION_SURVIVAL_ROGUELITE','SURVIVAL','VITALS_AND_RESOURCE'],
+    ['SIMULATOR_TYCOON_INCREMENTAL','TYCOON','ECONOMY_AND_NEXT_UPGRADE'],
+    ['SINGLE_DEFENSE_STRATEGY','STRATEGY','WAVE_AND_PLACEMENT'],
+    ['STORY_COMPLETE_RPG','RPG','CHARACTER_AND_QUEST'],
+    ['PUZZLE','PUZZLE','CLUE_AND_PROGRESS']
+  ];
+  for(const [genre,family,primary] of cases){
+    const blueprint=createVibeCommercialInterfaceBlueprint({genre,systems:['INVENTORY_EQUIPMENT'],source:''});
+    assert.equal(blueprint.genre,family);
+    assert.equal(blueprint.visualHierarchy,primary);
+    assert.equal(blueprint.surfaces.find(x=>x.id==='inventory').visibleCandidate,false);
+    assert.equal(blueprint.navigation.gameplayCanvasAlwaysVisible,true);
+    assert.equal(blueprint.visualSystem.localAssetReuseFirst,true);
+    const plan=planVibePresentationAutopilot({genre,systems:['INVENTORY_EQUIPMENT'],files:[{path:'index.html',source:'function renderInventory(){}'}]});
+    assert.equal(plan.commercialUI.genre,family);
+    assert.deepEqual(plan.commercialUI.activeSurfaceIds,['inventory']);
+    assert.equal(plan.policy.noRuleMutation,true);
+  }
+});
+
+test('commercial portrait and landscape placement honors safe areas without ownership or game layout mutation',()=>{
+  const p=calculateVibeResponsiveUIZones({viewport:{width:390,height:844},safeArea:{top:32,bottom:20},panelOpen:true});
+  const l=calculateVibeResponsiveUIZones({viewport:{width:844,height:390},safeArea:{left:28,right:12},panelOpen:true});
+  assert.equal(p.portrait,true);
+  assert.equal(p.panel.mode,'BOTTOM_SHEET');
+  assert.equal(l.portrait,false);
+  assert.equal(l.panel.mode,'CONTEXT_SIDE_PANEL');
+  for(const rects of [p,l]){
+    assert.ok(rects.hud.y>=rects.safeArea.top);
+    assert.ok(rects.hud.x>=rects.safeArea.left);
+    assert.ok(rects.dock.y+rects.dock.height<=rects.viewport.height-rects.safeArea.bottom+0.01);
+    assert.ok(rects.panel.x+rects.panel.width<=rects.viewport.width-rects.safeArea.right+0.01);
+    assert.equal(rects.minTouchPx,48);
+    assert.equal(rects.allCoordinatesCssPixels,true);
+  }
+  assert.equal(calculateVibeResponsiveUIZones({panelOpen:false}).panel,null);
+});
+test('inventory presentation filters real game items and never authors equipment or save updates',()=>{
+  const owned=Object.freeze([{id:'sword',name:'검',quantity:1,rarity:'rare'},
+    {id:'ore',name:'광석',quantity:4,rarity:'common'},
+    {id:'empty',name:'없음',quantity:0,rarity:'common'}]);
+  const view=deriveVibeInventoryPresentation({items:owned,capacity:20,query:'광',sort:'rarity'});
+  assert.equal(view.rows.length,1);
+  assert.equal(view.rows[0].id,'ore');
+  assert.equal(view.usedSlots,2);
+  assert.equal(view.capacity,20);
+  assert.equal(view.readOnly,true);
+  assert.equal(view.canExecuteEquipOrConsume,false);
+  assert.equal(view.sourceOfTruth,'GAME_INVENTORY_OWNER');
+  assert.deepEqual(owned[0],{id:'sword',name:'검',quantity:1,rarity:'rare'});
+  assert.equal(deriveVibeInventoryPresentation({items:[]}).empty,true);
+});
+test('trade UI requires both offers, current quote and server validation and never commits client inventory',()=>{
+  const players=[{id:'alice',label:'재운',offerCount:2},{id:'bob',label:'상대',offerCount:1}];
+  const base={revision:4,participants:players,readyRevisions:{alice:4,bob:4},
+    quote:{revision:4,valid:true,totals:{offerA:100,offerB:100}},availabilityConfirmed:true};
+  const ready=deriveVibeTradeReview(base);
+  assert.equal(ready.canRequestOwnerCommit,true);
+  assert.equal(ready.committed,false);
+  assert.equal(ready.readOnly,true);
+  assert.equal(ready.quoteTotals.offerA,100);
+  assert.equal(ready.safety.noClientInventoryMutation,true);
+  assert.equal(deriveVibeTradeReview({...base,revision:5}).canRequestOwnerCommit,false,
+    'offer revision change revokes ready from both participants');
+  assert.equal(deriveVibeTradeReview({...base,commitInFlight:true}).canRequestOwnerCommit,false);
+  assert.equal(deriveVibeTradeReview({...base,availabilityConfirmed:false}).canRequestOwnerCommit,false);
+  assert.equal(deriveVibeTradeReview({...base,quote:{revision:3,valid:true}}).canRequestOwnerCommit,false);
+  assert.equal(deriveVibeTradeReview({...base,readyRevisions:{alice:4,bob:3}}).canRequestOwnerCommit,false);
+});
+test('cat-step UI uses one local authored SVG symbol atlas rather than inconsistent emoji glyphs',()=>{
+  const html=fs.readFileSync('web-games/cat-step/index.html','utf8');
+  const svg=fs.readFileSync('assets/vibe-commercial-ui-icons.svg','utf8');
+  for(const id of ['trophy','bolt','left','right','cat','spark']){
+    assert.match(svg,new RegExp('<symbol id="'+id+'"'));
+    assert.ok(html.includes('/assets/vibe-commercial-ui-icons.svg#'+id),'missing '+id+' icon reference');
+  }
+  assert.match(html,/role="progressbar"/);
+  assert.match(html,/id="stepFill"/);
+  assert.match(html,/aria-valuenow/);
+  assert.match(html,/@media\(max-height:570px\) and \(orientation:landscape\)/);
+  assert.match(html,/@media\(prefers-reduced-motion:reduce\)/);
+  assert.doesNotMatch(html,/🏆|⚡|🐱|⬅|➡/);
+  assert.ok(!svg.includes('http://www.w3.org/2000/svg')||svg.startsWith('<svg xmlns='));
 });

@@ -109,3 +109,39 @@ test('Vibe candidate and retry keep evidence-based coding and real QA handoff wi
   for(const clause of ['CANONICAL CODING LOOP:','SOURCE AND LIBRARY:','CAUSAL REPAIR:','VERIFICATION HANDOFF:','RELEASE AUTHORITY:'])
     assert.ok(focused.includes(clause),'focused retry must retain '+clause);
 });
+
+test('web worker and retry demand genuine local 3D and mobile runtime proof, never fake 3D tags',()=>{
+  const file='web-games/cat-step/index.html';
+  const order={target:'web',gameId:'cat-step',goal:'기존 고양이 점프 게임을 진짜 WebGL 3D로 전환',selectedTask:{type:'implementation'}};
+  const prompt=buildPrompt(order,{files:[{path:file,editable:true,content:'<canvas id="c"></canvas>'}]},[file]);
+  const retry=buildGenerationRetryPrompt(prompt,{error:new Error('missing mesh binding'),responsibleFiles:[file],attempt:2});
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[file]}).prompt;
+  for(const text of [prompt,retry,focused]){
+    assert.match(text,/WEB NATIVE 3D PLAN:/);
+    assert.match(text,/WEB RENDER IMPLEMENTATION:/);
+    assert.match(text,/WEB ASSET AND MOBILE BUDGET:/);
+    assert.match(text,/CSS perspective, sprite billboards, screenshot backgrounds or a WebGL tag alone do not prove 3D/);
+    assert.match(text,/real user input/);
+    assert.match(text,/actual WebGL draw/);
+    assert.match(text,/save compatibility/);
+  }
+});
+
+test('candidate, focused repair and retry carry commercial UI composition and trade-state authority',()=>{
+  const cases=[{target:'web',path:'web-games/garden/index.html',content:'<canvas></canvas>'},
+    {target:'roblox',path:client,content:'function showGoal() return true end'}];
+  for(const {target,path,content} of cases){
+    const order={target,gameId:'garden',goal:'인벤토리 거래창 UI 구조와 모바일 인터페이스 개선',selectedTask:{type:'implementation'}};
+    const prompt=buildPrompt(order,{files:[{path,editable:true,content}]},[path]);
+    const focused=buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[path]}).prompt;
+    const retry=buildGenerationRetryPrompt(prompt,{error:new Error('broken trade panel'),responsibleFiles:[path],attempt:2});
+    for(const text of [prompt,focused,retry]){
+      for(const label of ['COMMERCIAL GENRE UI:','INVENTORY AND TRANSACTIONS:','COMMERCIAL INTERFACE QUALITY:'])
+        assert.match(text,new RegExp(label));
+      assert.match(text,/one idempotent server-authorized commit/);
+      assert.match(text,/Never invent shadow stock/);
+      assert.match(text,/48 CSS px/);
+      assert.match(text,/no universal overlay/);
+    }
+  }
+});
