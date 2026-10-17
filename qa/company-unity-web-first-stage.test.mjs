@@ -56,7 +56,16 @@ test('held Unity Web and Android jobs consult current main and skip heavy builds
 function enableFixtureWeb(root){
   const file=path.join(root,'company-learning/platform-release-roadmap.json');
   const policy=JSON.parse(fs.readFileSync(file,'utf8'));
-  policy.unityWebFirstStage.enabled=true;policy.developmentAccess.UNITY_WEB='ALWAYS_ALLOWED';
+  // 유틸 · 격리된 허용 시나리오는 최신 오너 범위까지 명시적으로 변경한다.
+  // 실제 중앙정책 파일은 변경하지 않으며, 운영 Unity Web은 계속 OWNER_HOLD다.
+  policy.unityWebFirstStage.enabled=true;
+  policy.developmentAccess.UNITY_WEB='ALWAYS_ALLOWED';
+  if(policy.ownerActiveDevelopmentScope20261009){
+    const scope=policy.ownerActiveDevelopmentScope20261009;
+    scope.ownerHeldTargets=(scope.ownerHeldTargets||[]).filter(t=>t!=='UNITY_WEB');
+    scope.activeTargets=[...new Set([...(scope.activeTargets||[]),'UNITY_WEB'])];
+    scope.unityWebDevelopmentAllowed=true;
+  }
   fs.writeFileSync(file,JSON.stringify(policy));
 }
 
