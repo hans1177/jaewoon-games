@@ -1530,7 +1530,7 @@
           "F0_SOURCE_INTEGRITY",
           "F1_TO_F8_CODE_AND_STATIC_QA",
           "F9_EXACT_FINAL_REVIEW",
-          "DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH",
+          "DISPATCH_EXACT_F9_ARTIFACT_REGARDLESS_OF_RELEASE_CLASSIFICATION",
           "START_NEXT_EVOLUTION_CYCLE_IMMEDIATELY",
           "RECONCILE_CANONICAL_PUBLISH_RESULT_ASYNC"
         ],
@@ -6219,7 +6219,6 @@
         "F7",
         "F8",
         "F9",
-        "RELEASE_CLASSIFICATION",
         "PUBLISH_EVERY_F9_VERIFIED_GAME",
         "IMMEDIATE_NEXT_EVOLUTION_CYCLE"
       ],
@@ -7490,6 +7489,7 @@
       "status": "ACTIVE",
       "scope": "EVERY_GAME_AFTER_VERIFIED_F0_F9",
       "publicationScoreGate": false,
+      "publicationClassificationGate": false,
       "existingCanonicalF0F9": true,
       "publicationMustBeAttempted": true,
       "failedPublishUsesExistingRetry": true,
