@@ -58,6 +58,7 @@ test('active game without design receives one canonical GAME_SEED intake and is 
     // MAIN 소재만 있는 과거 설계는 재사용하지 않고 새 씨앗을 작성 대상으로 올린다.
     assert.deepEqual(first.created,['needs-design','already-designed']);
     assert.deepEqual(first.designPresent,[]);
+    assert.deepEqual(first.designerHandoff,['needs-design','already-designed'],'unverified MAIN-only input must return to the existing designer');
     const state=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
     assert.equal(state.seeds.length,2);
     const seed=state.seeds.find(row=>row.gameId==='needs-design');
