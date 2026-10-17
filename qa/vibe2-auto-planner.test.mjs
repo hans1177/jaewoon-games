@@ -5235,6 +5235,8 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.equal(task.buildUpDirective.effectivenessMeasurement.previousGeneration.runtimeObserved,false);
   assert.equal(task.buildUpDirective.autonomousContentExpansion.executionMode,'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT');
   assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
+  assert.equal(task.priority,'critical','exact F0 source repair outranks cosmetic evolution');
+  assert.ok(task.evidence.includes('roblox-f0-preflight-and-release-gates:unchanged'));
   assert.ok(task.goal.includes(hint));
   assert.ok(task.goal.includes(fallback.mode));
   assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/server/Game.server.luau`));
@@ -5270,6 +5272,7 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.ok(contractTask,'static contract failure must reach actual existing Vibe source repair');
   assert.equal(contractTask.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
   assert.equal(contractTask.buildUpNextAction,'CAUSAL_REPAIR');
+  assert.equal(contractTask.priority,'critical','exact design/source contract repair must be prioritized without changing design');
   for(const owner of ['server','client','shared'])assert.ok(contractTask.responsibleFiles.includes(`roblox-games/${gameId}/${owner}/${owner==='shared'?'GameConfig':'Game.'+owner}.luau`));
 
   fs.appendFileSync(path.join(gameRoot,'server','Game.server.luau'),'\n-- completed repair changed the exact game source tree\n');
