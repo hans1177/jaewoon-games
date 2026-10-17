@@ -1883,7 +1883,7 @@ function drawMiniMap(now=performance.now()){
 const BESTIARY_INFO={
  mossboar:{cat:'neutral',desc:'숲 바닥의 이끼와 흙을 헤집으며 먹이를 찾는 멧돼지. 먼저 자극하지 않으면 주변을 천천히 돌아다닌다.'},
  golem:{cat:'neutral',desc:'오래된 바위에 마력이 스며들어 생겨난 존재. 평소에는 바위처럼 조용하지만 자신의 영역을 침범한 존재는 오래 지켜본다.'},
- goblinCrossbow:{cat:'aggressive',desc:'고블린 전초기지의 1티어 쇠뇌병. 2.8초마다 플레이어 5배 속도의 비유도 화살을 발사한다.'},
+ goblinCrossbow:{cat:'aggressive',desc:'고블린 전초기지의 1티어 쇠뇌병. 2.8초마다 플레이어 2배 속도의 비유도 화살을 발사한다.'},
  goblinHeavy:{cat:'aggressive',desc:'고블린 전초기지 3층의 2티어 중갑병. 체력 350의 근접 전투원이다.'},
  goblinGeneral:{cat:'aggressive',desc:'고블린 전초기지 4층 장군. 쇠뇌병 소환과 3연타 유도 돌진을 사용한다.'},
  goblin:{cat:'aggressive',desc:'숲 가장자리와 길목을 배회하며 쓸 만한 물건을 노리는 고블린. 낯선 침입자를 발견하면 무리를 지키기 위해 거칠게 달려든다.'},
@@ -3627,7 +3627,7 @@ function updateGoblinOutpostProgress(){
  if(floor===3&&g.wave===1){g.wave=2;spawnGoblinOutpostWave(3,2);showNotice('3층 증원 · 중갑 1 · 쇠뇌 2');return}
  if(!g.cleared[floor-1]){g.cleared[floor-1]=true;state.dirty=true;showNotice(floor+'층 클리어 · 다음 층 문 개방')}
 }
-function fireGoblinCrossbow(e,p,now){const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1,speed=(Number(p.speed)||state.player.speed)*5;state.projectiles.push({kind:'goblinCrossbowArrow',x:e.x,y:e.y,vx:dx/d*speed,vy:dy/d*speed,speed,damage:23,createdAt:now,life:2600,area:e.area,sourceId:e.netId,targetId:e.playerTargetId||multiplayer.playerId})}
+function fireGoblinCrossbow(e,p,now){const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1,speed=(Number(p.speed)||state.player.speed)*2;state.projectiles.push({kind:'goblinCrossbowArrow',x:e.x,y:e.y,vx:dx/d*speed,vy:dy/d*speed,speed,damage:23,createdAt:now,life:2600,area:e.area,sourceId:e.netId,targetId:e.playerTargetId||multiplayer.playerId})}
 function summonGeneralCrossbows(e){const room=GOBLIN_OUTPOST_FLOORS[4];for(const off of [-1,1])spawnGoblinOutpostUnit(creatures.goblinCrossbow,clamp(e.x+off*150,80,room.w-80),clamp(e.y+110,80,room.h-80),e.area);showNotice('숲 고블린 장군 · 쇠뇌 숲 고블린 2마리 소환')}
 function updateGoblinOutpostEnemySpecial(e,p,now,playerD){
  if(!e.type.goblinOutpost)return null;
