@@ -2664,28 +2664,28 @@ test('owner active scope allows general Web but holds Unity Web and Android',()=
 });
 
 
-test('large mixed-platform queue reserves Unity Web without repeated full-candidate priority scans',()=>{
+test('large mixed-platform queue prioritizes authorized Web and Roblox while holding Unity without repeated scans',()=>{
   const tasks=Array.from({length:900},(_,index)=>{
     const platform=index%3===0?'unity':index%3===1?'roblox':'web';
     const gameId='bulk-'+String(index).padStart(4,'0');
     const unityWeb=platform==='unity';
     return {
       id:gameId,gameId,target:platform,department:'development',type:'implementation',
-      goal:'game-specific native source build-up',status:'queued',priority:index===600?'critical':'normal',
+      goal:'game-specific native source build-up',status:'queued',priority:index===601?'critical':'normal',
       releaseState:'development-confirmed',sourceRoot:(unityWeb?'unity-games':platform+'-games')+'/'+gameId,
       responsibleFiles:[(unityWeb?'unity-games':platform+'-games')+'/'+gameId+'/Assets/Scripts/GameCore.cs'],
       evidence:unityWeb?['unity-web-first-stage']:[],unityWebDevelopment:unityWeb
     };
   });
-  const policy={ownerActiveDevelopmentScope20261009:{status:'ACTIVE'}};
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const first=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:256,tasks}),{
     maxConcurrentTasks:128,lane:'game-primary',policy
   });
   assert.equal(first.tasks.length,128);
-  assert.ok(first.tasks.some(task=>task.unityWebDevelopment===true));
+  assert.ok(first.tasks.every(task=>task.unityWebDevelopment!==true),'Unity owner hold must not reserve a worker');
   assert.ok(first.tasks.some(task=>task.target==='roblox'));
-  assert.equal(first.tasks.some(task=>task.target==='web'),false,'owner-held legacy Web must not preempt Unity Web');
-  assert.ok(first.tasks.some(task=>task.id==='bulk-0600'),'critical Unity Web candidate must keep priority');
+  assert.ok(first.tasks.some(task=>task.target==='web'),'current owner allows Web game tasks');
+  assert.ok(first.tasks.some(task=>task.id==='bulk-0601'),'critical authorized Roblox work must keep priority');
   const uniqueIds=new Set(first.tasks.map(task=>task.id));
   assert.equal(uniqueIds.size,first.tasks.length);
   const source=fs.readFileSync('assets/vibe-continuous-queue.js','utf8');
