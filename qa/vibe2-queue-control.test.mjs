@@ -2941,6 +2941,51 @@ test('owner scoped direct coding takes precedence and resumes existing Vibe afte
   const stale=completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'unlisted',completion:candidate});
   assert.equal(stale.released,false);
   assert.equal(stale.status,'GAME_NOT_IN_OWNER_EXCLUSIVE_SCOPE');
+  const ownerPublishPolicy={
+    ...policy,
+    roblox:{deploymentControl:{ownerDirectCanonicalPublishException:{
+      enabled:true,gameIds:['owner-game'],
+      trigger:'EXPLICIT_OWNER_DIRECT_PUBLISH_INSTRUCTION',
+      f9RequiredForOwnerDirectPublish:false,canonicalPrivateTargetOnly:true
+    }}},
+    ownerCanonicalRules:{ownerExclusiveDevelopment:{
+      ...policy.ownerCanonicalRules.ownerExclusiveDevelopment,
+      implementationScope:{publicationTarget:{placeId:'98222620265768'}}
+    }}
+  };
+  const directPublish={
+    target:'ROBLOX',sourceSha:sha,mainSourceSha:sha,
+    releaseState:'development-confirmed',f9VerifiedSourceSha:'',
+    checks:{
+      sourceIntegrityPassed:true,exactMainSourceRevision:true,
+      staticSourceGuardPassed:true,buildPassed:true,securityPassed:true,
+      staticQaRunId:42,buildRunId:43,securityRunId:44
+    },
+    publication:{status:'EXACT_REVISION_PUBLISHED',sourceSha:sha,
+      runId:45,targetId:'98222620265768'}
+  };
+  const privateOwner=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',completion:directPublish
+  });
+  assert.equal(privateOwner.released,true);
+  assert.equal(privateOwner.status,'OWNER_DIRECT_PUBLISH_HANDOFF_READY_F0_F9_PENDING');
+  assert.equal(privateOwner.checkpointAction,'RESUME_EXISTING_F0_F9_AFTER_OWNER_DIRECT_PUBLISH');
+  assert.equal(privateOwner.finalPublicationAndFanInStillAuthoritative,true);
+  const wrongPlace=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',
+    completion:{...directPublish,publication:{...directPublish.publication,targetId:'999'}}
+  });
+  assert.equal(wrongPlace.released,false,'private owner place identity cannot change');
+  const wrongMain=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',
+    completion:{...directPublish,mainSourceSha:'b'.repeat(40)}
+  });
+  assert.equal(wrongMain.released,false,'owner direct publish must come from exact main');
+  const leftoverTempArtifact=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',
+    completion:{...directPublish,temporaryPublishArtifactCreated:true}
+  });
+  assert.equal(leftoverTempArtifact.released,false,'temporary publish artifact must be cleaned');
   const releaseRequired={...candidate,releaseState:'release-confirmed'};
   assert.equal(completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game',
     completion:releaseRequired}).released,false,'released games need exact published revision');
