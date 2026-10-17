@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { discoverExistingRobloxGames } from './company-development-queue-reconcile.mjs';
 import { ownerDevelopmentHeld, synchronizeOwnerDevelopmentHolds } from './vibe2-queue-control.mjs';
+import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../assets/vibe-continuous-queue.js';
@@ -764,23 +765,24 @@ function isWeatherPresentationPilot(project={},repoRoot=process.cwd()){
   return contract?.enabled===true&&clean(first.gameId)===clean(project.gameId)&&['unity','roblox','web'].includes(clean(project.engine).toLowerCase());
 }
 function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
-  if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);
+  const policy=centralPresentationPolicy(repoRoot);
+  const ownerScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
+  if(policy?.status==='OWNER_DIRECT_LOCKED'&&!ownerScope)throw new Error('VIBE2_APPROVED_OWNER_SCOPE_REQUIRED');
+  const access=ownerScope?.effectiveDevelopmentAccess||policy?.developmentAccess||{};
+  if(project.engine==='roblox')return access.ROBLOX!=='OWNER_HOLD'&&['release-confirmed','development-confirmed'].includes(project.releaseState);
   if(project.engine==='unity'){
     // Owner-held Unity cannot consume native production slots, including legacy Unity Web first stage.
-    const access=centralPresentationPolicy(repoRoot)?.developmentAccess||{};
     if(access.UNITY==='OWNER_HOLD'||(project.firstStageUnityWeb===true&&access.UNITY_WEB==='OWNER_HOLD'))return false;
     if(project.firstStageUnityWeb===true&&project.existingHolisticBackfillCatalog===true)return['release-confirmed','development-confirmed'].includes(project.releaseState);
     if(project.releaseState==='development-confirmed'&&project.firstStageUnityWeb===true)return true;
     return false; // Android owner hold: do not generate new native work.
   }
-  if(project.engine==='unreal'){const policy=centralPresentationPolicy(repoRoot);if(policy?.developmentAccess?.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
+  if(project.engine==='unreal'){if(access.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
   if(project.releaseState==='development-confirmed'){
-    // 검증된 오너 scope가 존재하면 일반 WEB 명시 허용이 필요하다.
-    // 구형/격리된 fixture와 정책 미적재 모드의 개발 상태 해석은 이전 동작을 유지한다.
-    const policy=centralPresentationPolicy(repoRoot),scope=policy?.ownerActiveDevelopmentScope20261009;
     if(project.engine!=='web')return false;
-    if(scope?.status!=='ACTIVE')return true;
-    return policy?.developmentAccess?.WEB==='ALWAYS_ALLOWED'&&(scope.activeTargets||[]).includes('WEB');
+    // 승인된 최신 소유자 지시가 있으면 이전 필드/원시 권한은 개발 슬롯을 열 수 없다.
+    if(!ownerScope)return true; // 격리된 레거시 설계 fixture; 실제 검증된 예약에는 ownerScope 필수.
+    return access.WEB==='ALWAYS_ALLOWED'&&ownerScope.activeTargets.includes('WEB');
   }
   return false;
 }
@@ -3990,14 +3992,16 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   // 일반 대기 목표가 차도 총 큐 용량·소유자 보류·실제 소스 충돌은 그대로 지킨다.
   const flowOwnerPolicy=centralPresentationPolicy(repoRoot)||{};
   const webFlowPolicy=flowOwnerPolicy?.developmentSpeedExecution?.webGameFlow;
-  const ownerScope=flowOwnerPolicy?.ownerActiveDevelopmentScope20261009;
-  // Use the declared flow surface, not merely an ACTIVE owner scope: Web 3D now runs independently of held Unity.
+  const ownerScope=resolveActiveOwnerPolicy(flowOwnerPolicy,{allowMissing:true});
+  if(flowOwnerPolicy?.status==='OWNER_DIRECT_LOCKED'&&!ownerScope)throw new Error('VIBE2_APPROVED_WEB_FLOW_SCOPE_REQUIRED');
+  // 실제 활성 웹 슬롯은 폐기된 지시 대신 최신 승인된 소유자 권한에서 판정한다.
   const webFlowUnityOnly=webFlowPolicy?.scope==='UNITY_WEB_SAME_CANONICAL_UNITY_PROJECT';
-  const activeTargets=Array.isArray(ownerScope?.activeTargets)?ownerScope.activeTargets:[];
-  const authorizedWebFlow=ownerScope?.status!=='ACTIVE'
+  const activeTargets=ownerScope?.activeTargets||[];
+  const effectiveAccess=ownerScope?.effectiveDevelopmentAccess||flowOwnerPolicy?.developmentAccess||{};
+  const authorizedWebFlow=!ownerScope
     ||(webFlowUnityOnly
-      ?activeTargets.includes('UNITY_WEB')&&flowOwnerPolicy.developmentAccess?.UNITY_WEB==='ALWAYS_ALLOWED'
-      :activeTargets.includes('WEB')&&flowOwnerPolicy.developmentAccess?.WEB==='ALWAYS_ALLOWED');
+      ?activeTargets.includes('UNITY_WEB')&&effectiveAccess.UNITY_WEB==='ALWAYS_ALLOWED'
+      :activeTargets.includes('WEB')&&effectiveAccess.WEB==='ALWAYS_ALLOWED');
   const webFlowTarget=webFlowPolicy?.enabled===true&&authorizedWebFlow?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
   const webFlowMatches=item=>webFlowUnityOnly
     ?(item.unityWebDevelopment===true||(item.evidence||[]).includes('unity-web-first-stage'))
