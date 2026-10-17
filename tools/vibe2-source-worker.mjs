@@ -30,7 +30,7 @@ import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-u
 import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
 import {inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType} from './vibe2-asset-production-plan.mjs';
 
-const clean=value=>String(value??'').trim();
+const clean = value => String(value ?? '').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
 const unique=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const safeId=value=>clean(value).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80)||'task';
