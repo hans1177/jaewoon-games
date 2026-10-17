@@ -1,6 +1,9 @@
 // 파일명: qa/company-web-real-game-regression.test.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {sourceFootprint} from '../tools/company-development-web-gameplay-validation.mjs';
 import {staticApprovedScopeCoverage,runtimeApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 import {
   WEB_VALIDATION_SCHEMA_VERSION,
@@ -228,3 +231,24 @@ assert.match(celestial,/const key='jg-final:'\+C\.id/,'inlined immutable source 
 assert.doesNotMatch(celestial,/<script\b[^>]*src=["']\/web-games\/_shared\/vibe2-final\.js/i,'runtime source must be immutable and inlined before Vibe repairs missing behavior');
 
 console.log('COMPANY_WEB_REAL_GAME_REGRESSION=PASS');
+test('ordinary Web final gameplay rejects flat 2D and requires measured WebGL 3D',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'company-web-3d-'));
+  try{
+    const html=body=>'<html><body data-spatial-dimension="3d"><canvas></canvas><script>'+body+'</script></body></html>';
+    fs.writeFileSync(path.join(root,'index.html'),html('const dummy="2.5d";const canvas=document.querySelector("canvas");canvas.getContext("2d");'));
+    const flat=sourceFootprint(root);
+    assert.equal(flat.trueThreeDimensionalSource,false);
+    assert.ok(flat.blockers.includes('GENERAL_WEB_REAL_3D_SOURCE_REQUIRED'));
+    fs.writeFileSync(path.join(root,'index.html'),html('const scene={};const renderer=new THREE.WebGLRenderer();const camera=new THREE.PerspectiveCamera();const geo=new THREE.BufferGeometry();'));
+    const candidate=sourceFootprint(root);
+    assert.equal(candidate.trueThreeDimensionalSource,true,'3D source can reach separate runtime validation, never auto-PASS');
+    assert.equal(candidate.pass,false);
+    const validator=read('tools/company-development-web-gameplay-validation.mjs');
+    for(const required of ['__VIBE_3D_DRAW_EVIDENCE__','depthTriangleDrawCalls','GENERAL_WEB_DEPTH_TESTED_3D_DRAW_REQUIRED','GENERAL_WEB_REAL_3D_RUNTIME_REQUIRED'])assert.ok(validator.includes(required),required);
+    const policy=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+    assert.equal(policy.webRuntimeStartabilityContract.finalGameplayDimension,'3D');
+    assert.equal(policy.webRuntimeStartabilityContract.actualWebGlDrawAnd3dSpatialRuntimeEvidenceRequired,true);
+    assert.equal(policy.developmentAccess.WEB,'ALWAYS_ALLOWED');
+    assert.equal(policy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
