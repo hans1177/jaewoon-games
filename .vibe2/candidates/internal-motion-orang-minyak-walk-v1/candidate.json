@@ -1,0 +1,61 @@
+{
+  "summary": "Improves Orang Minyak's slender walk motion by adding squared sine lift curves for natural step spacing, distinct left/right arm swing offset, torso lean over the support phase, and weighted head pitch for silhouette readability.",
+  "expectedEffect": "Removes rigid symmetric bobbing, prevents linear snap velocity at foot contact transitions, and establishes a characteristic creepy slouched slender gait profile.",
+  "edits": [
+    {
+      "path": "init.luau",
+      "find": " local moving=state==\"walk\" or state==\"chase\"\n local speed=state==\"chase\" and 10 or moving and 6 or 2\n local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)\n  elseif form==\"ARACHNID\"then\n   for i=1,4 do for _,side in ipairs({\"Left\",\"Right\"})do\n    local sign=side==\"Left\" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))\n    pose(\"Spider\"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)\n    pose(\"Spider\"..side..i..\"Knee\",0,0,0,0,0,sign*math.max(0,cycle)*.25)\n   end end\n  elseif form==\"WHEEL\"then pose(\"Torso\",0,0,0,0,0,-(time*2.8)%(math.pi*2))\n  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)\n  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.16,0,0,0,wave*.03)end\n end",
+      "replace": " local moving=state==\"walk\" or state==\"chase\"\n local speed=state==\"chase\" and 10 or moving and 6 or 2\n local phase=time*speed;local wave=math.sin(phase);local lift=math.max(0,math.sin(phase))^2;local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",.04*math.sin(phase),floating and math.sin(time*2.4)*.13 or -.15+0.03*lift,0,-0.08,moving and wave*.035 or breathe*.015,-0.02*math.sin(phase))\n pose(\"Head\",0,0,0,0.12+breathe*.035,math.sin(time*.9)*.07,0)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)\n  elseif form==\"ARACHNID\"then\n   for i=1,4 do for _,side in ipairs({\"Left\",\"Right\"})do\n    local sign=side==\"Left\" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))\n    pose(\"Spider\"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)\n    pose(\"Spider\"..side..i..\"Knee\",0,0,0,0,0,sign*math.max(0,cycle)*.25)\n   end end\n  elseif form==\"WHEEL\"then pose(\"Torso\",0,0,0,0,0,-(time*2.8)%(math.pi*2))\n  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,lift*.15,0,wave*.45,0,-0.02)\n   pose(\"RightLeg\",0,(1-lift)*.15,0,-wave*.45,0,0.02)\n   pose(\"LeftArm\",0,0,-0.06,-0.35-lift*.15,0.08,-0.12)\n   pose(\"RightArm\",0,0,-0.04,-0.35-(1-lift)*.15,-0.08,0.16)\n  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.16,0,0,0,wave*.03)end\n end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "Verify pose function returns zeroed transforms when bones table is empty or missing target names.",
+    "Sample walk at time=0 and time=2*pi/speed to ensure position and velocity match continuously across the loop seam.",
+    "Validate that reversing sampling order yields identical pose outputs without drift."
+  ],
+  "graphicsReplacementReport": null,
+  "motionRepairReport": {
+    "objectId": "roblox-world-ghost-orang-minyak",
+    "clipId": "walk",
+    "depthEvidence": [
+      {
+        "axis": "POSE_AND_STAGING",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)",
+        "after": "pose(\"Torso\",.04*math.sin(phase),floating and math.sin(time*2.4)*.13 or -.15+0.03*lift,0,-0.08,moving and wave*.035 or breathe*.015,-0.02*math.sin(phase))"
+      },
+      {
+        "axis": "WEIGHT_AND_BALANCE",
+        "status": "CHANGED",
+        "before": "pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": "pose(\"Head\",0,0,0,0.12+breathe*.035,math.sin(time*.9)*.07,0)"
+      },
+      {
+        "axis": "JOINT_ARCS_AND_SPACING",
+        "status": "CHANGED",
+        "before": "pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)",
+        "after": "pose(\"LeftLeg\",0,lift*.15,0,wave*.45,0,-0.02)"
+      },
+      {
+        "axis": "CONTACT_AND_CONSTRAINTS",
+        "status": "CHANGED",
+        "before": "pose(\"RightLeg\",0,0,0,-wave*.4)",
+        "after": "pose(\"RightLeg\",0,(1-lift)*.15,0,-wave*.45,0,0.02)"
+      },
+      {
+        "axis": "OVERLAP_AND_SETTLE",
+        "status": "CHANGED",
+        "before": "pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+        "after": "pose(\"LeftArm\",0,0,-0.06,-0.35-lift*.15,0.08,-0.12)"
+      },
+      {
+        "axis": "LOOP_AND_TRANSITION",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": "local phase=time*speed;local wave=math.sin(phase);local lift=math.max(0,math.sin(phase))^2;local breathe=math.sin(time*2)"
+      }
+    ]
+  }
+}
