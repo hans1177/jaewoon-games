@@ -432,3 +432,39 @@ test('canonical central policy documents bind the intelligent design loop to exi
   assert.match(cycle,/DESIGN_CHECKPOINT_CONTRACT_VERSION=4/);
 });
 
+
+test('non-grammar design revision enters existing designer and blocks source mutation',()=>{
+  const task={id:'owner-123',gameId:'survival',target:'web',type:'implementation',designChange:true,
+    designScope:'spatialLayout.housing',goal:'기존 설계에 하우징과 습격 설계를 추가한다'};
+  const out=buildVibeDesignIntelligence({task});
+  assert.equal(out.designerHandoff.required,true);
+  assert.equal(out.designerHandoff.ready,true);
+  assert.equal(out.designerHandoff.status,'DESIGNER_INTAKE_REQUIRED');
+  assert.equal(out.designerHandoff.existingModule,'tools/company-design-cycle.mjs');
+  assert.equal(out.designerHandoff.existingWorkflow,'.github/workflows/company-seed-design-runtime.yml');
+  assert.equal(out.designerHandoff.designCycleExecuted,false);
+  assert.equal(out.designerHandoff.sourceMutationAuthorized,false);
+  assert.equal(out.implementationGate.allowed,false);
+  assert.ok(out.implementationGate.blockers.includes('DESIGNER_HANDOFF_REQUIRED'));
+  for(const scope of ['A','B','C','D','@','creativeGrammar.a']){
+    const within=buildVibeDesignIntelligence({task:{...task,designScope:scope}});
+    assert.equal(within.designerHandoff.required,false,scope);
+  }
+  const fallback=buildVibeDesignIntelligence({task:{...task,designScope:'',type:'design'}});
+  assert.equal(fallback.designerHandoff.required,true,'unspecified design change is not coded directly');
+  const invalid=buildVibeDesignIntelligence({task:{...task,id:'',target:'unity'}});
+  assert.equal(invalid.designerHandoff.ready,false);
+  assert.equal(invalid.designerHandoff.status,'DESIGNER_INTAKE_INPUT_INVALID');
+});
+
+test('non-grammar handoff uses the current canonical Game Designer workflow without a new pipeline',()=>{
+  const runner=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
+  const worker=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const designer=fs.readFileSync(new URL('../.github/workflows/company-seed-design-runtime.yml',import.meta.url),'utf8');
+  assert.match(runner,/DESIGNER_HANDOFF_REQUIRED/);
+  assert.match(worker,/gh workflow run company-seed-design-runtime\.yml/);
+  assert.match(worker,/DESIGNER_HANDOFF_REQUIRED/);
+  assert.match(designer,/DESIGN_HANDOFF_REQUEST_ID/);
+  assert.match(designer,/ownerRequestInstanceId=revision/);
+  assert.match(designer,/saveSeedState\(state\)/);
+});
