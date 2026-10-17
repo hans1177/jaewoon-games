@@ -72,6 +72,7 @@ local Config = {
     PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,
     SharedObjective = 0, RoundScore = 0,
     WorldTreeRoots = 0, WorldTreeBossClears = 0, SovereignCores = 0, ForestWoodenSwords = 0,
+    BearClaws = 0, BearHides = 0, BearFangs = 0,
   },
 
   -- 세계수 · 기존 세계수 외부의 크기와 기존 몬스터/보스 전투 수치 보존
@@ -90,10 +91,10 @@ local Config = {
     SnakeIllusionInterval = 3,
     SnakeIllusionProbability = 0.67,
     Monsters = {
-      Bear = {Kind="bear", Name="세계수 곰", HP=380, Damage=28, Speed=7, Size=8, Reach=10, Color=Color3.fromRGB(107, 75, 50), Aggressive=true, Tier=2},
-      Golem = {Kind="golem", Name="세계수 골렘", HP=586, Damage=48, Speed=4, Size=10, Reach=10, Color=Color3.fromRGB(88, 108, 83), Aggressive=false, Tier=3},
-      Snake = {Kind="snake", Name="세계수 뱀", HP=250, Damage=39, Speed=11, Size=5, Reach=8, Color=Color3.fromRGB(55, 116, 67), Aggressive=true, Tier=3},
-      Boss = {Kind="boss", Name="근원포식자 녹스바르", HP=4500, Damage=150, Speed=10, Size=18, Reach=15, Color=Color3.fromRGB(59, 23, 44), Aggressive=true, Tier=4},
+      Bear = {Kind="bear", Name="세계수 곰", HP=380, Damage=28, Speed=70, Size=8, Reach=10, Color=Color3.fromRGB(107, 75, 50), Aggressive=true, Tier=2},
+      Golem = {Kind="golem", Name="세계수 골렘", HP=586, Damage=48, Speed=40, Size=10, Reach=10, Color=Color3.fromRGB(88, 108, 83), Aggressive=false, Tier=3},
+      Snake = {Kind="snake", Name="세계수 뱀", HP=250, Damage=39, Speed=110, Size=5, Reach=8, Color=Color3.fromRGB(55, 116, 67), Aggressive=true, Tier=3},
+      Boss = {Kind="boss", Name="근원포식자 녹스바르", HP=4500, Damage=150, Speed=186, Size=18, Reach=15, Color=Color3.fromRGB(59, 23, 44), Aggressive=true, Tier=4},
     },
   },
   Actions = {
