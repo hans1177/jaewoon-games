@@ -93,7 +93,7 @@ const COLOSSEUM={x:6800,y:2120,w:3600,h:900},CONSTRUCTION={x:6800,y:4380,w:3600,
 const OASIS={x:4300,y:3650,r:470},LAB={x:8600,y:2900},LAB_RECORDER={x:8600,y:2845},CONSTRUCTION_DIARY={x:8600,y:4710};
 const ROOT_NODE={x:12900,y:6750},TREE_HOLE={x:9000,y:9890},CAVE_ENTRY={x:3000,y:3200},CAVE_EXIT={x:3000,y:3380},BOSS_ALTAR={x:3000,y:1900};
 // 기존 세계수 지역 크기는 그대로 두고 내부만 별도 공간으로 추가한다.
-const WORLD_TREE_INTERIOR={w:3200,h:2300,door:{x:WORLD_TREE.x,y:WORLD_TREE.y+4,r:100},entry:{x:1600,y:2070},exit:{x:1600,y:2175}};
+const WORLD_TREE_INTERIOR={w:3200,h:2300,door:{x:WORLD_TREE.x,y:WORLD_TREE.y+4,r:100},entry:{x:1600,y:2070},exit:{x:1600,y:2175},basement:{x:1600,y:335}};
 
 const SURVIVOR={x:16200,y:520,r:25},WASTELAND_CAVE={x:2730,y:3600,r:72},QUEST_CAVE={w:5200,h:3000,entry:{x:520,y:1500},exit:{x:420,y:1500},radio:{x:4700,y:1500}};
 const LAB_STORY_ENTRANCE={x:6320,y:9650,r:72};
@@ -489,7 +489,7 @@ const DROP_MATERIAL_NAMES={
 };
 const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore','giantPetal','flowerLeather','giantSpiderSilk','giantSpiderWeb','giantSpiderFang','mantisBlade','sporeSac','toxicMycelium','swampCore','fearBearHide','fearBearClaw','sunstoneOre','crystalShard'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},arrowType:null,attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,sandSlowUntil:0,attackBlockedUntil:0,scorpionBurrowPoisonUntil:0,scorpionBurrowPoisonNext:0,scorpionStingPoisonExpiries:[],scorpionStingPoisonNext:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,inkUntil:0,anglerLureUntil:0,anglerLureSource:null,anglerStruggle:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,toxicFurnace:null,ironBench:null,goldBench:null,jungleBench:null,sunstoneBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],towers:[],beds:[],gardens:[],portals:[],crops:[],snowChests:[false,false],swampOutpostChestOpened:false,goblinOutpost:{floor:0,wave:0,cleared:[false,false,false,false],chestOpened:false,spawned:{}},goblinOutpostReturnPos:null,respawnPos:null,blueprint:null,activeWallId:null,activeTowerId:null,activePortalId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],sunstones:[],swampTrees:[],flowerGiantFlowers:[],flowerWebs:[],flowerBuildingLoot:[false,false,false,false],enemies:[],projectiles:[],sporeClouds:[],swampHazards:[],mummyGases:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null,warnedFor:0},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},toxicSmelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,swamp:false,desert:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeDiscovered:false,flowerBuildingLoot:[false,false,false,false],templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false,finalRadioPart:false,radioRepairReadyAt:0,commDeviceRepaired:false,tigerBossDefeated:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,giantCrocEggTaken:false,incubation:{eggPlaced:false,eggType:null,hatchAt:0},pet:{hatched:false,wolfHatched:false,crocHatched:false,form:'wolf',alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},arrowAim:{targetId:null,tapTargetId:null,taps:0,lastTapAt:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},arrowType:null,attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,sandSlowUntil:0,attackBlockedUntil:0,scorpionBurrowPoisonUntil:0,scorpionBurrowPoisonNext:0,scorpionStingPoisonExpiries:[],scorpionStingPoisonNext:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,inkUntil:0,anglerLureUntil:0,anglerLureSource:null,anglerStruggle:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,toxicFurnace:null,ironBench:null,goldBench:null,jungleBench:null,sunstoneBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],towers:[],beds:[],gardens:[],portals:[],crops:[],snowChests:[false,false],swampOutpostChestOpened:false,goblinOutpost:{floor:0,wave:0,cleared:[false,false,false,false],chestOpened:false,spawned:{}},goblinOutpostReturnPos:null,respawnPos:null,blueprint:null,activeWallId:null,activeTowerId:null,activePortalId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],sunstones:[],swampTrees:[],flowerGiantFlowers:[],flowerWebs:[],flowerBuildingLoot:[false,false,false,false],enemies:[],projectiles:[],sporeClouds:[],swampHazards:[],mummyGases:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null,warnedFor:0},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},toxicSmelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,swamp:false,desert:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},caveReturnArea:'surface',rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeDiscovered:false,flowerBuildingLoot:[false,false,false,false],templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false,finalRadioPart:false,radioRepairReadyAt:0,commDeviceRepaired:false,tigerBossDefeated:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,giantCrocEggTaken:false,incubation:{eggPlaced:false,eggType:null,hatchAt:0},pet:{hatched:false,wolfHatched:false,crocHatched:false,form:'wolf',alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},arrowAim:{targetId:null,tapTargetId:null,taps:0,lastTapAt:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
 // 메인: 일반/크리에이티브 저장은 기존 저장 키를 보존하며 독립적으로 관리한다.
 const CREATIVE_SAVE_KEY=SAVE_KEY+'_creative';let gameStarted=false;
 state.player.rootedUntil=0;state.mode='normal';state.creativeSpawners=[];state.creativePlacing=false;state.creativeSpawnerId=null;state.creativeSelectedId=null;
@@ -903,6 +903,7 @@ function desiredMusicTheme(){
  if(state.area==='storylab1'||state.area==='storylab2')return'underground';
  if(state.area==='questcave')return'questcave';
  if(state.area==='underground')return'underground';
+ if(state.area==='worldtreeinside')return'worldtree';
  if(state.area==='underwater'){
    if(pointInRect(p.x,p.y,DEEP_CORAL_FOREST))return'deepcoral';
    return'underwater'
@@ -3354,12 +3355,29 @@ function leaveWorldTreeInterior(){
  state.dirty=true;updateHud();showNotice('세계수 바깥으로 나왔다')
 }
 function enterCave(){
- if(state.area!=='surface')return;
- state.surfacePos={x:state.player.x,y:state.player.y};state.area='underground';state.player.x=CAVE_ENTRY.x;state.player.y=CAVE_ENTRY.y;state.dirty=true;showNotice('세계수 구멍으로 들어왔다')
+ const fromInterior=state.area==='worldtreeinside';
+ if(!fromInterior&&state.area!=='surface')return;
+ if(fromInterior&&dist(state.player.x,state.player.y,WORLD_TREE_INTERIOR.basement.x,WORLD_TREE_INTERIOR.basement.y)>210){showNotice('지하 뿌리 계단 가까이 가야 해');return}
+ if(state.pet.mounted)dismountPet(false);
+ if(!fromInterior)state.surfacePos={x:state.player.x,y:state.player.y};
+ state.caveReturnArea=fromInterior?'worldtreeinside':'surface';
+ state.area='underground';state.player.x=CAVE_ENTRY.x;state.player.y=CAVE_ENTRY.y;state.player.rootedUntil=0;
+ if(petAlive()){state.pet.x=state.player.x+56;state.pet.y=state.player.y+26;state.pet.targetId=null}
+ state.dirty=true;updateHud();showNotice(fromInterior?'세계수 뿌리 계단을 내려왔다 · 지하 제단을 찾아봐':'세계수 구멍으로 들어왔다')
 }
 function leaveCave(force=false){
  if(state.bossSummoned&&!state.bossDefeated&&!force){showNotice('보스전 중에는 나갈 수 없어');return false}
- state.area='surface';state.player.x=state.surfacePos?.x||TREE_HOLE.x;state.player.y=Math.min(WORLD.h-35,(state.surfacePos?.y||TREE_HOLE.y)-110);state.bossExitAt=0;state.dirty=true;showNotice('세계수 지상으로 나왔다');return true
+ const toInterior=state.caveReturnArea==='worldtreeinside';
+ state.area=toInterior?'worldtreeinside':'surface';
+ if(toInterior){
+  state.player.x=WORLD_TREE_INTERIOR.basement.x;state.player.y=WORLD_TREE_INTERIOR.basement.y+145
+ }else{
+  state.player.x=state.surfacePos?.x||TREE_HOLE.x;
+  state.player.y=Math.min(WORLD.h-35,(state.surfacePos?.y||TREE_HOLE.y)-110)
+ }
+ state.player.rootedUntil=0;state.caveReturnArea='surface';state.bossExitAt=0;
+ if(petAlive()){state.pet.x=state.player.x+55;state.pet.y=state.player.y+28;state.pet.targetId=null}
+ state.dirty=true;updateHud();showNotice(toInterior?'세계수 줄기 내부로 돌아왔다':'세계수 지상으로 나왔다');return true
 }
 function summonBoss(){
  if(state.bossSummoned){showNotice('이미 보스가 소환되어 있어');return}
@@ -3786,6 +3804,11 @@ function handleWorldTap(e){
    if(state.toxicFurnace&&dist(wx,wy,state.toxicFurnace.x,state.toxicFurnace.y)<62){if(!doubleTapTarget('toxic-furnace',now,()=>openSmelt('toxicFurnace')))showNotice('독가스 용광로를 한 번 더 눌러 태양석 제련 열기');return}
    if(state.furnace&&dist(wx,wy,state.furnace.x,state.furnace.y)<62){if(!doubleTapTarget('furnace',now,openSmelt))showNotice('화로를 한 번 더 눌러 굽기 열기');return}
  }else if(state.area==='worldtreeinside'){
+   if(dist(wx,wy,WORLD_TREE_INTERIOR.basement.x,WORLD_TREE_INTERIOR.basement.y)<115){
+     if(dist(state.player.x,state.player.y,WORLD_TREE_INTERIOR.basement.x,WORLD_TREE_INTERIOR.basement.y)>210)showNotice('뿌리 계단 가까이 가야 해');
+     else if(!doubleTapTarget('worldtree-basement-entrance',now,enterCave))showNotice('세계수 지하 · 한 번 더 눌러 내려가기');
+     return
+   }
    if(dist(wx,wy,WORLD_TREE_INTERIOR.exit.x,WORLD_TREE_INTERIOR.exit.y)<100){
      if(!doubleTapTarget('worldtree-inner-exit',now,leaveWorldTreeInterior))showNotice('세계수 출구 · 한 번 더 눌러 나가기');
      return
@@ -5159,6 +5182,58 @@ function drawWorldTreeInterior(cx,cy,w,h){
   ctx.fillStyle='#284a37';ctx.beginPath();ctx.arc(x,y,18+(i%4)*7,0,Math.PI*2);ctx.fill();
   ctx.fillStyle=i%3===0?'#92f7ab':'#71d799';ctx.beginPath();ctx.ellipse(x+13,y-7,9+i%3*3,8,0,0,Math.PI*2);ctx.fill()
  }
+
+ // 세 개의 층이 연결된 내부 회랑. 고정 배치로 모바일에서도 프레임마다 지형이 변하지 않는다.
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ const passages=[
+  [[1600,2080],[1580,1620],[1600,1190],[1600,535]],
+  [[1600,1190],[1120,1010],[720,815]],
+  [[1600,1190],[2130,1010],[2510,780]]
+ ];
+ for(const points of passages){
+  ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);
+  for(let i=1;i<points.length;i++)ctx.lineTo(points[i][0],points[i][1]);
+  ctx.strokeStyle='#362d20';ctx.lineWidth=142;ctx.stroke();
+  ctx.strokeStyle='#786b40';ctx.lineWidth=112;ctx.stroke();
+  ctx.strokeStyle='rgba(198,178,103,.27)';ctx.lineWidth=9;ctx.setLineDash([32,34]);ctx.stroke();ctx.setLineDash([])
+ }
+ const chambers=[
+  {x:745,y:825,rx:425,ry:400,label:'뿌리 회랑',color:'#8ad9a5'},
+  {x:1600,y:1190,rx:520,ry:490,label:'고목 심장',color:'#c4ecb5'},
+  {x:2460,y:810,rx:440,ry:395,label:'수액 정원',color:'#8fded7'}
+ ];
+ for(const t of chambers){
+  const l=ctx.createRadialGradient(t.x,t.y,45,t.x,t.y,t.rx);
+  l.addColorStop(0,'rgba(128,190,125,.22)');l.addColorStop(1,'rgba(128,190,125,0)');
+  ctx.fillStyle=l;ctx.beginPath();ctx.ellipse(t.x,t.y,t.rx,t.ry,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(194,158,91,.65)';ctx.lineWidth=22;ctx.beginPath();ctx.ellipse(t.x,t.y,t.rx,t.ry,0,0,Math.PI*2);ctx.stroke();
+  ctx.strokeStyle='rgba(227,207,123,.40)';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(t.x,t.y,t.rx-29,t.ry-25,0,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle=t.color;ctx.font='bold 19px system-ui';ctx.textAlign='center';ctx.fillText(t.label,t.x,t.y-t.ry+62)
+ }
+ // 수액 웅덩이와 발광 버섯/수정 기둥은 장식용이며 몬스터 충돌과 공격 범위를 바꾸지 않는다.
+ for(let i=0;i<12;i++){
+  const x=230+(i*613)%2700,y=260+(i*397)%1740,r=40+(i%4)*11;
+  const glow=ctx.createRadialGradient(x,y,6,x,y,r*2.3);
+  glow.addColorStop(0,i%2?'rgba(116,236,184,.39)':'rgba(140,204,243,.35)');
+  glow.addColorStop(1,'rgba(116,236,184,0)');
+  ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x,y,r*2.3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=i%2?'#76d9aa':'#83cfe2';ctx.beginPath();ctx.ellipse(x,y,r*.7,r*.32,-.3,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#d2f5b5';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x,y,r*.7,r*.32,-.3,0,Math.PI*2);ctx.stroke()
+ }
+ for(const [x,y] of [[500,430],[1190,480],[2130,450],[2840,450],[520,1740],[2650,1850]]){
+  ctx.fillStyle='rgba(166,237,166,.19)';ctx.beginPath();ctx.arc(x,y,90,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#6d9365';ctx.lineWidth=21;ctx.beginPath();ctx.moveTo(x,y+60);ctx.lineTo(x,y-55);ctx.stroke();
+  ctx.fillStyle='#c7fbb6';ctx.beginPath();ctx.ellipse(x,y-58,35,25,0,Math.PI,0);ctx.fill()
+ }
+ ctx.restore();
+ // 줄기 위쪽에서 세계수 지하의 기존 봉인 제단으로 내려간다.
+ const hatch=room.basement;
+ const hatchGlow=ctx.createRadialGradient(hatch.x,hatch.y,8,hatch.x,hatch.y,175);
+ hatchGlow.addColorStop(0,'rgba(169,236,154,.40)');hatchGlow.addColorStop(1,'rgba(169,236,154,0)');
+ ctx.fillStyle=hatchGlow;ctx.beginPath();ctx.arc(hatch.x,hatch.y,175,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#222016';ctx.strokeStyle='#e1c782';ctx.lineWidth=11;ctx.beginPath();ctx.ellipse(hatch.x,hatch.y,79,50,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.strokeStyle='#b6dc9a';ctx.lineWidth=8;for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(hatch.x-35,hatch.y-19+i*14);ctx.lineTo(hatch.x+35,hatch.y-19+i*14);ctx.stroke()}
+ ctx.fillStyle='#eefbc7';ctx.textAlign='center';ctx.font='bold 16px system-ui';ctx.fillText('세계수 지하 · 두 번 눌러 내려가기',hatch.x,hatch.y+98);
  const exit=room.exit;
  ctx.fillStyle='#111d13';ctx.strokeStyle='#c9ec9d';ctx.lineWidth=8;ctx.beginPath();ctx.ellipse(exit.x,exit.y,68,40,0,0,Math.PI*2);ctx.fill();ctx.stroke();
  ctx.fillStyle='#e2f6d6';ctx.font='bold 17px system-ui';ctx.textAlign='center';ctx.fillText('세계수 출구 · 두 번 누르기',exit.x,exit.y-70);
@@ -5172,12 +5247,37 @@ function drawWorldTreeInterior(cx,cy,w,h){
  ctx.restore()
 }
 function drawCave(cx,cy,w,h){
- ctx.fillStyle='#100d12';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
- ctx.fillStyle='#241b28';ctx.fillRect(1050,800,3900,2750);ctx.strokeStyle='#59405e';ctx.lineWidth=20;ctx.strokeRect(1050,800,3900,2750);
+ ctx.fillStyle='#302c35';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(-cx,-cy);
+ const stoneFloor=ctx.createRadialGradient(3000,2050,140,3000,2050,3100);
+ stoneFloor.addColorStop(0,'#625966');stoneFloor.addColorStop(.66,'#4c4651');stoneFloor.addColorStop(1,'#393643');
+ ctx.fillStyle=stoneFloor;ctx.fillRect(1050,800,3900,2750);
+ ctx.strokeStyle='#8f7894';ctx.lineWidth=30;ctx.strokeRect(1050,800,3900,2750);
+ // 뿌리 지하의 돌바닥, 동굴 기둥, 수액 발광석 및 보스 제단까지 이어지는 가시적인 길.
+ ctx.save();ctx.lineCap='round';
+ ctx.beginPath();ctx.moveTo(CAVE_ENTRY.x,CAVE_ENTRY.y);ctx.lineTo(3000,2720);ctx.quadraticCurveTo(2660,2220,BOSS_ALTAR.x,BOSS_ALTAR.y);
+ ctx.strokeStyle='rgba(174,149,113,.60)';ctx.lineWidth=176;ctx.stroke();
+ ctx.strokeStyle='rgba(233,209,164,.30)';ctx.lineWidth=14;ctx.setLineDash([55,48]);ctx.stroke();ctx.setLineDash([]);
+ for(let i=0;i<28;i++){
+  const x=1230+(i*397)%3500,y=940+(i*521)%2370;
+  ctx.strokeStyle=i%3===0?'rgba(163,123,151,.32)':'rgba(166,139,113,.31)';
+  ctx.lineWidth=13+i%4*4;ctx.beginPath();ctx.moveTo(x-75,y-48);
+  ctx.quadraticCurveTo(x+20,y+20,x+78,y+90);ctx.stroke();
+ }
+ for(const [x,y] of [[1420,1240],[1960,2840],[4300,1280],[4400,2900],[2280,1580],[3710,2020]]){
+  const g=ctx.createRadialGradient(x,y,5,x,y,265);
+  g.addColorStop(0,'rgba(181,217,245,.36)');g.addColorStop(1,'rgba(181,217,245,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,265,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#b7d9e4';ctx.strokeStyle='#e1eff7';ctx.lineWidth=5;
+  ctx.beginPath();ctx.moveTo(x-30,y+48);ctx.lineTo(x-39,y-16);ctx.lineTo(x,y-97);ctx.lineTo(x+41,y-14);ctx.lineTo(x+30,y+48);ctx.closePath();ctx.fill();ctx.stroke()
+ }
+ ctx.restore();
+ ctx.fillStyle='#f5e2c6';ctx.textAlign='center';ctx.font='bold 23px system-ui';
+ ctx.fillText('세계수 지하 · 봉인의 뿌리',3000,1030);
+ ctx.font='bold 14px system-ui';ctx.fillText('고대 뿌리 1개를 바쳐 보스를 소환할 수 있다',3000,1080);
  ctx.strokeStyle='#8b4b79';ctx.lineWidth=5;ctx.beginPath();ctx.arc(BOSS_ALTAR.x,BOSS_ALTAR.y,95,0,Math.PI*2);ctx.stroke();for(let i=0;i<6;i++){const a=i*Math.PI/3;ctx.beginPath();ctx.moveTo(BOSS_ALTAR.x+Math.cos(a)*40,BOSS_ALTAR.y+Math.sin(a)*40);ctx.lineTo(BOSS_ALTAR.x+Math.cos(a)*90,BOSS_ALTAR.y+Math.sin(a)*90);ctx.stroke()}
  ctx.fillStyle='#d9b1d0';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(state.bossDefeated?'잠든 제단':'뿌리를 바쳐 봉인을 해제',BOSS_ALTAR.x,BOSS_ALTAR.y+125);
  ctx.fillStyle=state.bossSummoned&&!state.bossDefeated?'#4b1118':'#09070b';ctx.beginPath();ctx.ellipse(CAVE_EXIT.x,CAVE_EXIT.y,60,30,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ddd';ctx.font='bold 10px system-ui';
- const exitLabel=state.bossSummoned&&!state.bossDefeated?'보스전 중 · 출구 봉쇄':state.bossDefeated&&state.bossExitAt>0?Math.max(0,Math.ceil((state.bossExitAt-Date.now())/1000))+'초 뒤 자동 복귀':'두 번 눌러 지상으로';
+ const exitLabel=state.bossSummoned&&!state.bossDefeated?'보스전 중 · 출구 봉쇄':state.bossDefeated&&state.bossExitAt>0?Math.max(0,Math.ceil((state.bossExitAt-Date.now())/1000))+'초 뒤 자동 복귀':'두 번 눌러 '+(state.caveReturnArea==='worldtreeinside'?'세계수 내부':'지상')+'로';
  ctx.fillText(exitLabel,CAVE_EXIT.x,CAVE_EXIT.y+52);ctx.restore()
 }
 function drawQuestCave(cx,cy,w,h){
@@ -5228,10 +5328,13 @@ function drawQuestDarkness(){
   if(!r||r.area!==state.area||now-(r.seenAt||0)>2000||!r.torchEquipped)continue;
   lights.push({x:r.x-state.camera.x,y:r.y-state.camera.y,lit:true})
  }
- ctx.save();ctx.fillStyle='rgba(0,0,0,.91)';ctx.fillRect(0,0,innerWidth,innerHeight);ctx.globalCompositeOperation='destination-out';
+ // 지하는 횃불 없이도 길·제단·적을 볼 수 있게 기본 밝기를 확보한다.
+ // 스토리 동굴의 기존 어둠 난이도는 유지한다.
+ const basement=state.area==='underground';
+ ctx.save();ctx.fillStyle=basement?'rgba(12,12,19,.18)':'rgba(0,0,0,.91)';ctx.fillRect(0,0,innerWidth,innerHeight);ctx.globalCompositeOperation='destination-out';
  for(const light of lights){
-  const radius=light.lit?430:78,g=ctx.createRadialGradient(light.x,light.y,10,light.x,light.y,radius);
-  g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.48,light.lit?'rgba(0,0,0,.96)':'rgba(0,0,0,.42)');g.addColorStop(1,'rgba(0,0,0,0)');
+  const radius=basement?(light.lit?610:300):(light.lit?430:78),g=ctx.createRadialGradient(light.x,light.y,10,light.x,light.y,radius);
+  g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.48,light.lit?'rgba(0,0,0,.96)':basement?'rgba(0,0,0,.82)':'rgba(0,0,0,.42)');g.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=g;ctx.fillRect(light.x-radius,light.y-radius,radius*2,radius*2)
  }
  ctx.restore()
@@ -6143,7 +6246,7 @@ function saveGame(manual=true){
  if(!gameStarted)return;
  try{
    const p=state.player;
-   localStorage.setItem(isCreative()?CREATIVE_SAVE_KEY:SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory,arrowType:p.arrowType},bench:state.bench,furnace:state.furnace,toxicFurnace:state.toxicFurnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,sunstoneBench:state.sunstoneBench,blacksmithAnvil:state.blacksmithAnvil,upgrades:state.upgrades,cookingStation:state.cookingStation,cookingSlots:state.cookingSlots,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,towers:state.towers,beds:state.beds,gardens:state.gardens,portals:state.portals,crops:state.crops,flowerWebs:state.flowerWebs,flowerBuildingLoot:state.flowerBuildingLoot,snowChests:state.snowChests,swampOutpostChestOpened:!!state.swampOutpostChestOpened,goblinOutpost:state.goblinOutpost,goblinOutpostReturnPos:state.goblinOutpostReturnPos,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,giantCrocEggTaken:state.giantCrocEggTaken,pet:state.pet,smelting:state.smelting,toxicSmelting:state.toxicSmelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,underwaterExplored:state.underwaterExplored,area:state.area,surfacePos:state.surfacePos,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeDiscovered:state.templeDiscovered,flowerBuildingLoot:state.flowerBuildingLoot,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},...(isCreative()?{creativeSpawners:state.creativeSpawners,creativeMonsters:state.enemies.filter(e=>e.creativeOwned&&e.hp>0).map(e=>({id:e.type.id,x:e.x,y:e.y,hp:e.hp,netId:e.netId,opponentId:e.creativeOpponentId||null,attackPlayer:!!e.creativeAttackPlayer}))}:{}),settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
+   localStorage.setItem(isCreative()?CREATIVE_SAVE_KEY:SAVE_KEY,JSON.stringify({v:SAVE_VERSION,player:{x:p.x,y:p.y,hp:p.hp,maxHp:p.maxHp,wood:p.wood,stone:p.stone,fiber:p.fiber,ironOre:p.ironOre,ironIngot:p.ironIngot,goldOre:p.goldOre,goldIngot:p.goldIngot,essence:p.essence,hunger:p.hunger,cold:p.cold,wolfHide:p.wolfHide,walkerClaw:p.walkerClaw,bearClaw:p.bearClaw,bearHide:p.bearHide,bearFang:p.bearFang,loot:p.loot,kills:p.kills,weapon:p.weapon,tool:p.tool,armor:p.armor,torch:p.torch,torchEquipped:p.torchEquipped,torchDurability:p.torchDurability,map:p.map,root:p.root,inventory:p.inventory,arrowType:p.arrowType},bench:state.bench,furnace:state.furnace,toxicFurnace:state.toxicFurnace,ironBench:state.ironBench,goldBench:state.goldBench,jungleBench:state.jungleBench,sunstoneBench:state.sunstoneBench,blacksmithAnvil:state.blacksmithAnvil,upgrades:state.upgrades,cookingStation:state.cookingStation,cookingSlots:state.cookingSlots,incubator:state.incubator,flags:state.flags,chests:state.chests,walls:state.walls,doors:state.doors,towers:state.towers,beds:state.beds,gardens:state.gardens,portals:state.portals,crops:state.crops,flowerWebs:state.flowerWebs,flowerBuildingLoot:state.flowerBuildingLoot,snowChests:state.snowChests,swampOutpostChestOpened:!!state.swampOutpostChestOpened,goblinOutpost:state.goblinOutpost,goblinOutpostReturnPos:state.goblinOutpostReturnPos,raid:{count:state.raid.count,nextAt:state.raid.nextAt},respawnPos:state.respawnPos,incubation:state.incubation,shadowEggTaken:state.shadowEggTaken,giantCrocEggTaken:state.giantCrocEggTaken,pet:state.pet,smelting:state.smelting,toxicSmelting:state.toxicSmelting,knownMaterials:state.knownMaterials,knownItems:state.knownItems,knownCookingRecipes:state.knownCookingRecipes,discovered:state.discovered,explored:state.explored,underwaterExplored:state.underwaterExplored,area:state.area,surfacePos:state.surfacePos,caveReturnArea:state.caveReturnArea,rootTaken:state.rootTaken,rootRespawnAt:state.rootRespawnAt,lakeReturnPos:state.lakeReturnPos,templeReturnPos:state.templeReturnPos,templeDiscovered:state.templeDiscovered,flowerBuildingLoot:state.flowerBuildingLoot,templeOfferingUsed:state.templeOfferingUsed,templeChestOpened:state.templeChestOpened,altarUsed:state.altarUsed,bossSummoned:state.bossSummoned,bossDefeated:state.bossDefeated,bossExitAt:state.bossExitAt,crystalSealReleased:state.crystalSealReleased,bestiary:state.bestiary,achievements:state.achievements,records:state.records,story:state.story,questCaveInit:state.questCaveInit,weather:{kind:validWeatherKind(state.weather?.kind),changedAt:state.weather?.changedAt||Date.now(),nextAt:state.weather?.nextAt||0,seed:state.weather?.seed||0},...(isCreative()?{creativeSpawners:state.creativeSpawners,creativeMonsters:state.enemies.filter(e=>e.creativeOwned&&e.hp>0).map(e=>({id:e.type.id,x:e.x,y:e.y,hp:e.hp,netId:e.netId,opponentId:e.creativeOpponentId||null,attackPlayer:!!e.creativeAttackPlayer}))}:{}),settings:{difficulty:state.settings.difficulty,autoGather:!!state.gathering.auto,bgmEnabled:!!music.enabled,bgmVolume:Math.round(clamp(music.volume/1.44,0,1)*100)}}));
    state.dirty=false;if(manual)showNotice('저장 완료')
  }catch(e){if(manual)showNotice('저장 실패')}
 }
@@ -6190,7 +6293,7 @@ function loadGame(){
   }else state.explored={};
   state.underwaterExplored=s.underwaterExplored&&typeof s.underwaterExplored==='object'?{...s.underwaterExplored}:{};
   state.area=s.area==='underwater'?'underwater':s.area==='underground'?'underground':s.area==='worldtreeinside'?'worldtreeinside':s.area==='questcave'?'questcave':s.area==='storylab1'?'storylab1':s.area==='storylab2'?'storylab2':s.area==='jungletemple'?'jungletemple':s.area==='jungletemple-upper'?'jungletemple-upper':s.area==='jungletemple-lower'?'jungletemple-lower':s.area==='jungletemple-secret'?'jungletemple-secret':'surface';if(version<43&&(state.area==='storylab1'||state.area==='storylab2')){p.x*=.4;p.y*=.4}state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale+shiftX,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale+shiftY,25,WORLD.h-25)}:{x:START.x,y:START.y};
-  state.rootTaken=!!s.rootTaken;state.rootRespawnAt=Math.max(0,Number(s.rootRespawnAt)||0);state.lakeReturnPos=s.lakeReturnPos&&Number.isFinite(Number(s.lakeReturnPos.x))?{x:Number(s.lakeReturnPos.x),y:Number(s.lakeReturnPos.y)}:null;state.templeReturnPos=s.templeReturnPos&&Number.isFinite(Number(s.templeReturnPos.x))?{x:Number(s.templeReturnPos.x),y:Number(s.templeReturnPos.y)}:null;state.templeDiscovered=!!s.templeDiscovered||String(s.area||'').startsWith('jungletemple');state.flowerBuildingLoot=Array.isArray(s.flowerBuildingLoot)?[0,1,2,3].map(i=>!!s.flowerBuildingLoot[i]):[false,false,false,false];state.templeOfferingUsed=!!s.templeOfferingUsed;state.templeChestOpened=!!s.templeChestOpened;state.templeUpperSpawned=false;state.templeGuardianSpawned=false;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.crystalSealReleased=!!s.crystalSealReleased;state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.achievements=s.achievements&&typeof s.achievements==='object'?{...s.achievements}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};state.story=s.story&&typeof s.story==='object'?{...state.story,...s.story}:{...state.story};if(version<29&&state.story.radioPart&&state.story.completed){state.story.completed=false;state.story.stage='sensor-briefing'}if(version<61&&state.story.completed&&state.story.stage==='done'){state.story.completed=false;state.story.stage='post-crystal-continue'}state.questCaveInit=!!s.questCaveInit;
+  state.caveReturnArea=s.caveReturnArea==='worldtreeinside'?'worldtreeinside':'surface';state.rootTaken=!!s.rootTaken;state.rootRespawnAt=Math.max(0,Number(s.rootRespawnAt)||0);state.lakeReturnPos=s.lakeReturnPos&&Number.isFinite(Number(s.lakeReturnPos.x))?{x:Number(s.lakeReturnPos.x),y:Number(s.lakeReturnPos.y)}:null;state.templeReturnPos=s.templeReturnPos&&Number.isFinite(Number(s.templeReturnPos.x))?{x:Number(s.templeReturnPos.x),y:Number(s.templeReturnPos.y)}:null;state.templeDiscovered=!!s.templeDiscovered||String(s.area||'').startsWith('jungletemple');state.flowerBuildingLoot=Array.isArray(s.flowerBuildingLoot)?[0,1,2,3].map(i=>!!s.flowerBuildingLoot[i]):[false,false,false,false];state.templeOfferingUsed=!!s.templeOfferingUsed;state.templeChestOpened=!!s.templeChestOpened;state.templeUpperSpawned=false;state.templeGuardianSpawned=false;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.crystalSealReleased=!!s.crystalSealReleased;state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.achievements=s.achievements&&typeof s.achievements==='object'?{...s.achievements}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};state.story=s.story&&typeof s.story==='object'?{...state.story,...s.story}:{...state.story};if(version<29&&state.story.radioPart&&state.story.completed){state.story.completed=false;state.story.stage='sensor-briefing'}if(version<61&&state.story.completed&&state.story.stage==='done'){state.story.completed=false;state.story.stage='post-crystal-continue'}state.questCaveInit=!!s.questCaveInit;
   const savedSettings=s.settings&&typeof s.settings==='object'?s.settings:{};state.settings.difficulty=DIFFICULTY_PROFILES[savedSettings.difficulty]?savedSettings.difficulty:'normal';state.gathering.auto=!!savedSettings.autoGather;music.enabled=savedSettings.bgmEnabled!==false;const savedVolume=Number(savedSettings.bgmVolume);setBgmVolume(Number.isFinite(savedVolume)?savedVolume:100);applyDifficultyToEnemies();syncOptionsUi();
   if(state.pet.mounted&&!state.pet.alive)state.pet.mounted=false;if(state.area==='underwater'){state.pet.mounted=false;const cap=underwaterOxygenCapacity();p.oxygen=Number.isFinite(cap)?cap:40000;p.oxygenEndsAt=Number.isFinite(cap)?performance.now()+cap:0;}if(state.area==='storylab1'||state.area==='storylab2')state.pet.mounted=false;if(state.area==='questcave')spawnQuestCaveEnemies();if(state.area==='jungletemple-upper')spawnTempleUpperEnemies();if(state.area==='jungletemple-lower')spawnTempleGuardian();if(state.area==='storylab2'&&!state.story.labBossDefeated)spawnStoryLabBoss();if(state.crystalSealReleased)spawnCrystalSealMonsters(false);if(state.story.stage==='tiger-ambush'&&!state.story.tigerBossDefeated)spawnStoryTigerLeader();
   if(state.bossSummoned&&!state.bossDefeated){const boss=spawnAt(creatures.rootsovereign,3000,1550,null);boss.area='underground';boss.bossState={mode:'idle',nextAt:performance.now()+rand(3000,4000),telegraphUntil:0,hitIndex:0,nextHitAt:0,chargeUntil:0,hitDone:false};state.enemies.push(boss)}
