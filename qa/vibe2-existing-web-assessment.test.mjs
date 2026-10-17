@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import vm from 'node:vm';
-import { assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
+import { assessExistingWebRepository, assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
 
 const baseline={content:{coreFun:'위치를 선택해 방어 유닛을 배치하고 적의 경로를 막는다',coreLoop:['위치 선택','유닛 배치','적 이동과 전투','보상으로 강화']}};
 
@@ -199,4 +200,31 @@ test('island-village legacy source retains save and playable startup without mis
   const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
   assert.ok(scripts.length>0,'existing source must have a startup script');
   for(const script of scripts)assert.doesNotThrow(()=>new vm.Script(script[1],{filename:file}));
+});
+
+test('large Web HTML is read completely from checkout and is never mistaken for missing source',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-large-web-'));
+  const dir=path.join(cwd,'web-games','large-game');
+  try{
+    fs.mkdirSync(dir,{recursive:true});
+    const html='<!doctype html><html><body><canvas></canvas><script>let hp=10,wave=1,score=0;'
+      +'addEventListener("pointerdown",()=>{score+=1});'
+      +'function update(){requestAnimationFrame(update)}update();'
+      +'const victory="victory",restart="restart";localStorage.setItem("save","1");'
+      +'/*'+'x'.repeat(1100000)+'*/'
+      +'</script></body></html>';
+    const file=path.join(dir,'index.html');
+    fs.writeFileSync(file,html,'utf8');
+    assert.ok(fs.statSync(file).size>1024*1024);
+    const a=assessExistingWebRepository({cwd,gameId:'large-game',sourceRoot:'web-games/large-game'});
+    const b=assessExistingWebSource({html,sourceExists:true});
+    assert.equal(a.evidence.sourceBytes,fs.statSync(file).size);
+    assert.equal(a.evidence.sourceSha256,b.evidence.sourceSha256);
+    assert.ok(a.evidence.gameplaySignalCount>=4);
+    assert.notEqual(a.strategy,'FULL_REBUILD');
+    assert.equal(a.fullRewriteAllowed,false);
+    assert.equal(fs.statSync(file).size,Buffer.byteLength(html,'utf8'),'source is never rewritten or truncated');
+  }finally{
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
 });
