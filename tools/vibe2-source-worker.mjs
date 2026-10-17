@@ -3852,6 +3852,13 @@ function preSubmitSelfReviewGuidance(order={}) {
   if(!target||target==='system')return'';
   return[
     '[PRE-SUBMIT SELF REVIEW BEGIN]',
+    // 실제 코딩 에이전트 방식은 기존 탐색·책임 그래프·후보 생성·QA·릴리스 레인을 통과한다.
+    // 이 워커는 승인·검수 권한을 갖지 않으며 원인 수정과 검증 가능한 증거만 제출한다.
+    'CANONICAL CODING LOOP: Read the exact current checkout, immutable source revision, authorized work order, central policy and latest failure evidence supplied in context. Treat missing or stale context as UNKNOWN, not as verified main. Select the existing responsible function and its direct dependencies before proposing code.',
+    'SOURCE AND LIBRARY: Inspect existing source, approved internal 3D assets and license lineage before making new geometry, downloads or files. Reuse the original renderer, gameplay systems and asset bindings; no missing external URLs, shadow pipeline, wrapper or override to conceal a failure.',
+    'CAUSAL REPAIR: State the actual failing behavior and its responsible symbol; make the minimum coherent executable edit inside allowed paths. Keep save keys/schema, game rules, economy, combat timing, multiplayer authority and progression unchanged unless explicitly authorized; check impact on neighboring responsibilities.',
+    'VERIFICATION HANDOFF: Include concrete tests that the existing QA runner can execute or verify: entry and first meaningful input, real 3D depth/draw where applicable, mobile touch and viewport, errors/missing requests, restart, save/load and changed behavior. Recheck the exact failure fingerprint and dependent regression. Distinguish static predictions from observed browser/device proof; never invent logs, run IDs, FPS or PASS.',
+    'RELEASE AUTHORITY: This source worker outputs a candidate patch only. Independent QA, PR review, merge to main, canonical deployment and post-deploy runtime verification remain separate existing gates; do not claim they happened merely because an edit was generated. If evidence is missing, say UNVERIFIED and preserve the playable legacy source.',
     'Before returning the candidate, silently re-read the exact writable source and your proposed delta once.',
     'Check: the edit hits the named responsibility; path/find are exact; the change is executable rather than comment/marker-only; protected gameplay/save/progression/economy/network meaning is unchanged unless explicitly authorized; no wrapper/shadow/override duplicate was added; unrelated working behavior remains intact.',
     'For presentation work also check that the player-visible result materially changes. If any check fails, rewrite the candidate before output.',
