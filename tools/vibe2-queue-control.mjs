@@ -2,6 +2,7 @@
 // 역할: Vibe2 병렬 DAG 큐의 추가·예약·원자 뉴런 결과·QA대기·완료·실패·gated 재계획 상태를 영속화한다.
 // 원칙: 기존 scheduler와 책임 파일 충돌 보호를 유지하고 source-root/game-wide lock은 만들지 않으며, 검증된 neural gated 실행은 재큐·재우선순위·refill 힌트만 직접 반영한다.
 
+import { resolveActiveOwnerPolicy } from './company-policy-steward.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -544,7 +545,8 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
 
 export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task = {}) {
   const id=clean(gameId), exclusive=policy.ownerCanonicalRules?.ownerExclusiveDevelopment;
-  const scope=policy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||policy.ownerActiveDevelopmentScope20261009;
+  const newestOwnerScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
+  const scope=newestOwnerScope||policy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||policy.ownerActiveDevelopmentScope20261009;
   const selected=task?.selectedTask||{};
   const targetName=clean(target||selected.target).toLowerCase();
   const evidence=[...(Array.isArray(task?.evidence)?task.evidence:[]),...(Array.isArray(selected?.evidence)?selected.evidence:[])].map(clean);
@@ -559,7 +561,13 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task
     const paths=[task.sourceRoot,task.source?.root,selected.sourceRoot,...(task.responsibleFiles||[]),...(selected.responsibleFiles||[])].map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,''));
     if(paths.some(file=>/^(?:unity-games|web-games|assets\/(?:unity|web))(?:\/|$)/.test(file)))return true;
   }
-  const access=policy.developmentAccess?.[platform]||(platform==='UNITY_ANDROID'?policy.developmentAccess?.UNITY:null);
+  // 최신 승인지시의 플랫폼 판정을 예전 developmentAccess보다 먼저 적용한다.
+  // 서명 없는 임의 권한 변경은 적용하지 않으며, 명시적인 게임별 보류는 아래에서 계속 강제한다.
+  const access=newestOwnerScope
+    ? (newestOwnerScope.effectiveDevelopmentAccess[platform]||
+      (platform==='UNITY_ANDROID'?newestOwnerScope.effectiveDevelopmentAccess.UNITY:null))
+    : (policy.developmentAccess?.[platform]||
+      (platform==='UNITY_ANDROID'?policy.developmentAccess?.UNITY:null));
   if(access==='OWNER_HOLD')return true;
   if(scope?.status==='ACTIVE'){
     const active=Array.isArray(scope.activeTargets)?scope.activeTargets:['ROBLOX'];
