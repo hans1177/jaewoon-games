@@ -58,19 +58,23 @@ jobs:
           gh auth setup-git
           git push origin HEAD:gh-pages --force
 
-      - name: Enable branch-based GitHub Pages
+      - name: Verify branch-based GitHub Pages configuration
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          if gh api "repos/${GITHUB_REPOSITORY}/pages" >/dev/null 2>&1; then
-            printf '%s\n' '{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}' |
-              gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" --input -
-          else
-            printf '%s\n' '{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}' |
-              gh api --method POST "repos/${GITHUB_REPOSITORY}/pages" --input -
-          fi
+          # 이 저장소의 Pages 설정은 이미 존재한다. Actions 토큰으로 관리자용
+          # PUT/POST를 반복하면 403이 발생하므로 읽은 실제 설정을 엄격히 검증한다.
+          pages="$(gh api "repos/${GITHUB_REPOSITORY}/pages")"
+          node -e '
+            const config=JSON.parse(process.argv[1]);
+            if(config.source?.branch!=="gh-pages"||config.source?.path!=="/"||config.build_type!=="legacy"){
+              console.error("MAGIC_FOREST_PAGES_CONFIG_MISMATCH: owner must configure gh-pages / (legacy)");
+              process.exit(1);
+            }
+            console.log("MAGIC_FOREST_PAGES_SOURCE_VERIFIED=gh-pages:/");
+          ' "$pages"
 
       - name: Show play URL
         run: echo "MAGIC_FOREST_PLAY_URL=https://${GITHUB_REPOSITORY_OWNER}.github.io/jaewoon-games/"

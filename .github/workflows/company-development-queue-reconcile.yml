@@ -33,6 +33,8 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  COMPANY_VERIFIED_POLICY_PATH: ${{ github.workspace }}/company-learning/platform-release-roadmap.json
+  COMPANY_VERIFIED_DESIGN_POLICY_PATH: ${{ github.workspace }}/company-learning/platform-release-roadmap.json
 
 jobs:
   game-primary-gate:
@@ -105,8 +107,8 @@ jobs:
             git checkout -f -B development-queue-reconcile-runtime "origin/$COMPANY_RUNTIME_BRANCH"
             git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
             git clean -fd
-            git checkout origin/main -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json
-            git reset -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json >/dev/null 2>&1 || true
+            git checkout origin/main -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-design-gate-scoring-v2.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json
+            git reset -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-design-gate-scoring-v2.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json >/dev/null 2>&1 || true
             git restore --source=origin/main --worktree -- roblox-games
 
             node tools/company-development-queue-reconcile.mjs

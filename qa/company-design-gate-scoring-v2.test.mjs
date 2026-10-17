@@ -19,6 +19,26 @@ assert.equal(Object.values(DESIGN_GATE_WEIGHTS).reduce((a,b)=>a+b,0),100);
 assert.deepEqual([...DESIGN_DIRECT_SCORE_LEVELS],[0,20,40,60,80,100]);
 assert.equal(DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,75);
 
+// 메인: 승인된 보존형 표현 단계 ID는 임시 문구가 아니며, 실제 임시 표식은 계속 차단한다.
+{
+  const stages=['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'];
+  const rows=stages.map(milestone=>({
+    milestone,
+    newGameplay:'기존 게임 규칙을 유지하고 플레이어 동작의 표현만 변경한다.',
+    systemImpact:'상태 판정, 진행과 세이브를 보존하며 원본에 근거한 검증을 수행한다.'
+  }));
+  const validate=contentExpansionPlan=>validateDesignAuthoringContent({
+    design:{contentExpansionPlan},fields:['contentExpansionPlan']
+  });
+  assert.equal(validate(rows).filter(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT').length,0);
+  const invalid=structuredClone(rows);
+  invalid[1].milestone='UNVERIFIED_PROMOTION_PLACEHOLDER';
+  assert.ok(validate(invalid).some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
+  const incomplete=structuredClone(rows);
+  incomplete[2].systemImpact='TBD';
+  assert.ok(validate(incomplete).some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
+}
+
 const seed={
   seedId:'SEED-ROBLOX-TEST-001',generation:'MATERIAL_COMPOSED',SEED_MATERIAL_IDS:['MAT-001','MAT-002'],
   GAME_CATEGORY:'ACTION_SURVIVAL_ROGUELITE',INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:'COOP'

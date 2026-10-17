@@ -30,6 +30,7 @@ concurrency:
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   COMPANY_VERIFIED_POLICY_PATH: ${{ github.workspace }}/company-learning/platform-release-roadmap.json
+  COMPANY_VERIFIED_DESIGN_POLICY_PATH: ${{ github.workspace }}/company-learning/platform-release-roadmap.json
 
 jobs:
   promote:
