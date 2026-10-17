@@ -254,9 +254,9 @@ test('canonical Web/Roblox steps receive secrets without exposing values or alte
     '.github/workflows/vibe2-candidate-release.yml'
   ]){
     const workflow=read(file);
-    assert.match(workflow,/GROQ_API_KEY: \\$\\{\\{ secrets\\.GROQ_API_KEY \\}\\}/);
-    assert.match(workflow,/OPENROUTER_API_KEY: \\$\\{\\{ secrets\\.OPENROUTER_API_KEY \\}\\}/);
-    assert.match(workflow,/VIBE2_GROQ_FREE_PLAN_VERIFIED: \\$\\{\\{ vars\\.VIBE2_GROQ_FREE_PLAN_VERIFIED \\}\\}/);
+    assert.ok(workflow.includes('GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}'),'required key is present only at the model call step');
+    assert.ok(workflow.includes('OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}'),'required key is present only at the model call step');
+    assert.ok(workflow.includes('VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED }}'),'required key is present only at the model call step');
     assert.match(workflow,/VIBE2_EXTERNAL_FREE_ROTATION: 'YES'/);
   }
   assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API/);
