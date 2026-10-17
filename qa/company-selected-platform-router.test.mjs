@@ -70,7 +70,7 @@ test('secondary Unity work remains blocked by owner hold even when Roblox is adv
   assert.equal(targetPlatformDevelopmentEligible(item),false);
   assert.equal(platformDevelopmentEligible(item,'ROBLOX'),false);
   assert.equal(platformDevelopmentEligible(item,'UNITY'),false);
-  assert.equal(selectTargetPlatformDevelopmentWindow([item]).length,1);
+  assert.equal(selectTargetPlatformDevelopmentWindow([item]).length,0);
   assert.equal(platformDevelopmentEligible({...item,unityInternalReleaseReady:true},'UNITY'),false);
 });
 
