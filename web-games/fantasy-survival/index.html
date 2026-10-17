@@ -864,8 +864,20 @@ function ambientRegionKey(){
 function playRegionAmbience(now){return;}
 function maybeMonsterVoice(now){return;}
 function updateFootstepSfx(now,moving){return;}
-function playCombatAudio(kind,weight=.5){return;}
-function playRewardAudio(kind='normal'){return;}
+function playCombatAudio(kind,weight=.5){
+ // 기존 공유 WebAudio 엔진 사용. 사용자 음소거와 오디오 초기화 상태를 존중하고 새 큐를 만들지 않는다.
+ if(!music.enabled||!music.started||!music.ctx||!music.master)return;
+ const at=music.ctx.currentTime,strength=clamp(Number(weight)||.5,.15,1);
+ if(kind==='swing'){noiseBrush(at,.07,.007+strength*.006,1600);smoothVoice(195+strength*110,at,.12,.008+strength*.006,'triangle',1900,.013)}
+ else if(kind==='hit'){noiseBrush(at,.08,.012+strength*.009,980);lowDrum(at,92,.014+strength*.010,.14)}
+ else if(kind==='hurt'){lowDrum(at,72,.025+strength*.015,.18);smoothVoice(160,at,.17,.009,'triangle',900,.025)}
+}
+function playRewardAudio(kind='normal'){
+ if(!music.enabled||!music.started||!music.ctx||!music.master)return;
+ const at=music.ctx.currentTime;
+ smoothVoice(kind==='boss'?520:420,at,.24,.014,'sine',2100,.025);
+ lowDrum(at+.03,kind==='boss'?110:130,.014,.2)
+}
 function pickBattleTheme(){const r=Math.random();return r<.30?'battle1':r<.70?'battle2':'battle3'}
 function playerCombatActive(){
  // 사망·다른 지역·감지 범위 밖 몬스터는 전투 음악 유지 조건에서 제외한다.
