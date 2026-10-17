@@ -248,9 +248,14 @@ try{
         document.querySelector('button#start'),
         document.querySelector('.starter')
       ].find(visible);
-      const byText=[...document.querySelectorAll('button')].find(button=>
-        visible(button)&&/(게임\\s*시작|시작|플레이|열기|입장|start|play)/i.test((button.id||'')+' '+(button.textContent||''))
-      );
+      const byText=[...document.querySelectorAll('button')].find(button=>{
+        if(!visible(button))return false;
+        const label=(button.id||'')+' '+(button.textContent||'');
+        // 리셋/삭제/새 기록은 시작처럼 보여도 원본 세이브를 파괴하거나 confirm()으로 브라우저 검사를 정지시킨다.
+        if(/(reset|restart|delete|erase|clear.?save|초기화|리셋|삭제|지우기|처음부터|새\\s*기록|재시작)/i.test(label))
+          return false;
+        return /(게임\\s*시작|시작|플레이|열기|입장|start|play)/i.test(label);
+      });
       const target=preferred||byText||null;
       if(target)target.click();
       return {
