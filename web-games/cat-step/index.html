@@ -54,7 +54,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
   </div>
 </div>
 </div>
-<script>
+<script type="module">
+import * as THREE from '/assets/roblox/world-ghosts/native/mesh/three/three.module.js';
 (() => {
 'use strict';
 
@@ -62,7 +63,18 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
 // 메인: 좌/우 점프 → 착지 → 연속 상승 → 추락 → 즉시 재시작
 
 const canvas=document.getElementById('c');
-const ctx=canvas.getContext('2d',{alpha:false});
+// 실제 GPU 깊이 렌더러: 사이트 내부에 이미 있는 MIT Three.js 원본만 사용한다.
+const renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'low-power'});
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(42,1,.08,125);
+camera.position.set(0,4.8,24);
+camera.lookAt(0,0,0);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.setClearColor(0x263c65);
+renderer.shadowMap.enabled=false;
+canvas.dataset.renderDimension='3d-webgl';
+canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();document.getElementById('tip').textContent='그래픽 연결이 끊어졌어. 다시 시작해';});
+canvas.addEventListener('webglcontextrestored',()=>location.reload());
 const $=id=>document.getElementById(id);
 const game=document.getElementById('game');
 
@@ -83,12 +95,15 @@ const COLORS={
   cat:'#f4a54e',catDark:'#61453e',white:'#ffffff'
 };
 
+const mobile=matchMedia('(pointer: coarse)').matches;
+let maxDpr=Math.min(devicePixelRatio||1,mobile?1:1.5);
 function resize(){
-  DPR=Math.min(2,devicePixelRatio||1);
   W=innerWidth;H=innerHeight;
-  canvas.width=Math.floor(W*DPR);
-  canvas.height=Math.floor(H*DPR);
-  ctx.setTransform(DPR,0,0,DPR,0,0);
+  DPR=Math.min(DPR,maxDpr);
+  renderer.setPixelRatio(DPR);
+  renderer.setSize(W,H,false);
+  camera.aspect=W/Math.max(1,H);
+  camera.updateProjectionMatrix();
 }
 addEventListener('resize',resize,{passive:true});
 resize();
@@ -201,114 +216,126 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')attempt(1);
 });
 
-function drawSky(){
-  const g=ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,COLORS.skyTop);
-  g.addColorStop(1,COLORS.skyBottom);
-  ctx.fillStyle=g;
-  ctx.fillRect(0,0,W,H);
-
-  const t=performance.now()/1000;
-  for(let i=0;i<7;i++){
-    const x=((i*173+t*10*(i%2?1:-1)+W*2)% (W+180))-90;
-    const y=H*(.13+.09*(i%4));
-    ctx.globalAlpha=.15;
-    ctx.fillStyle='#fff';
-    ctx.beginPath();
-    ctx.ellipse(x,y,44+12*(i%3),14+3*(i%2),0,0,Math.PI*2);
-    ctx.fill();
+// 실세계 단위로 픽셀 기반 게임 좌표를 투영한다. 점프 판정 수치와 저장 키는 바꾸지 않는다.
+const visibleHeight=2*24*Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
+const unitsPerPixel=()=>visibleHeight/Math.max(1,H);
+const worldX=pixels=>(pixels-W*.5)*unitsPerPixel();
+const worldY=pixels=>(H*.5-pixels)*unitsPerPixel();
+const sceneRoot=new THREE.Group();scene.add(sceneRoot);
+scene.background=new THREE.Color(0x355879);
+scene.fog=new THREE.Fog(0x355879,28,70);
+scene.add(new THREE.HemisphereLight(0xd9ecff,0x3a465d,2.2));
+const sunlight=new THREE.DirectionalLight(0xffeac9,2.35);sunlight.position.set(-8,16,12);scene.add(sunlight);
+const mat=(color)=>new THREE.MeshLambertMaterial({color,flatShading:true});
+const bodyMat=mat(COLORS.cat),lightMat=mat(0xf8bf7b),faceMat=mat(COLORS.catDark);
+const platformMat=mat(COLORS.platform),topMat=mat(COLORS.platformTop);
+const goldMat=mat(COLORS.goldFront),goldTopMat=mat(COLORS.gold);
+const boxGeo=new THREE.BoxGeometry(1,1,1),sphereGeo=new THREE.SphereGeometry(1,12,8);
+const coneGeo=new THREE.ConeGeometry(1,1,4),tubeGeo=new THREE.CylinderGeometry(1,1,1,8);
+const cloudMat=new THREE.MeshLambertMaterial({color:0xd0efff,transparent:true,opacity:.42,depthWrite:false});
+const hillMat=mat(0x315665),trunkMat=mat(0x665344),leafMat=mat(0x4c7f69);
+function addPart(parent,geometry,material,pos,scale){
+  const mesh=new THREE.Mesh(geometry,material);mesh.position.set(...pos);mesh.scale.set(...scale);parent.add(mesh);return mesh;
+}
+// 3D 캐릭터: 몸통, 머리, 귀, 수염/코, 발, 꼬리 모두 별도의 입체 메시다.
+const cat=new THREE.Group();sceneRoot.add(cat);
+addPart(cat,sphereGeo,bodyMat,[0,.56,0],[.58,.63,.44]);
+addPart(cat,sphereGeo,bodyMat,[0,1.18,.1],[.71,.64,.58]);
+for(const side of [-1,1]){
+  const ear=addPart(cat,coneGeo,bodyMat,[side*.46,1.86,.1],[.28,.48,.31]);
+  ear.rotation.z=-side*.18;
+  addPart(cat,sphereGeo,faceMat,[side*.28,1.23,.64],[.075,.092,.05]);
+  addPart(cat,sphereGeo,lightMat,[side*.33,.22,.18],[.23,.19,.34]);
+}
+addPart(cat,sphereGeo,faceMat,[0,1.03,.69],[.10,.073,.06]);
+const tail=new THREE.Group();tail.position.set(.49,.66,-.18);cat.add(tail);
+const tailMesh=addPart(tail,tubeGeo,bodyMat,[.46,.18,0],[.16,.91,.17]);tailMesh.rotation.z=-.75;
+const stepMeshes=[];
+for(let i=0;i<steps.length+10;i++){
+  const group=new THREE.Group();
+  const block=addPart(group,boxGeo,platformMat,[0,0,0],[1,.27,1.6]);
+  const top=addPart(group,boxGeo,topMat,[0,.18,0],[1,.08,1.6]);
+  group.userData={block,top};
+  sceneRoot.add(group);stepMeshes.push(group);
+}
+// 입체 산, 나무 및 구름은 실제 삼각형 지오메트리로 렌더링한다.
+for(let i=0;i<9;i++){
+  const hill=addPart(sceneRoot,coneGeo,hillMat,[-22+i*5,-10,-20],[4.5,11+(i%3)*3,3.4]);
+  hill.rotation.y=i*.49;
+}
+const cloudGroups=[];
+for(let i=0;i<6;i++){
+  const cloud=new THREE.Group();sceneRoot.add(cloud);
+  for(let j=0;j<3;j++)addPart(cloud,sphereGeo,cloudMat,[(j-1)*1.05,0,(j%2)*.25],[1.16,.38,.49]);
+  cloud.position.set(-16+i*6,6+(i%3)*2,-13-i%2);cloudGroups.push(cloud);
+}
+const ground=addPart(sceneRoot,boxGeo,mat(0x395e5c),[0,-12,-12],[64,1,18]);
+// 기존 자산 라이브러리의 진짜 OBJ 메시. 외부 URL·중복 모델 생성 없음.
+fetch('/assets/shared/homely-house/tree.obj').then(response=>{
+  if(!response.ok)throw new Error('TREE_ASSET_HTTP_'+response.status);
+  return response.text();
+}).then(obj=>{
+  const vertices=[],triangles=[];
+  for(const line of obj.split(/\r?\n/)){
+    if(line.startsWith('v '))vertices.push(line.trim().split(/\s+/).slice(1,4).map(Number));
+    else if(line.startsWith('f ')){
+      const ids=line.trim().split(/\s+/).slice(1).map(s=>Number(s.split('/')[0])-1);
+      for(let k=1;k<ids.length-1;k++)for(const id of [ids[0],ids[k],ids[k+1]]){
+        const v=vertices[id];if(!v)return;triangles.push(...v);
+      }
+    }
   }
-  ctx.globalAlpha=1;
-
-  ctx.fillStyle='rgba(28,52,70,.28)';
-  ctx.beginPath();
-  ctx.moveTo(0,H);
-  ctx.lineTo(0,H*.82);
-  for(let x=0;x<=W;x+=80){
-    const y=H*.80-Math.sin((x+bgOffset)*.012)*18;
-    ctx.lineTo(x,y);
+  if(triangles.length<90)throw new Error('TREE_OBJ_GEOMETRY_EMPTY');
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(triangles,3));
+  geometry.computeVertexNormals();
+  for(let i=0;i<8;i++){
+    const m=new THREE.Mesh(geometry,i%3===0?leafMat:trunkMat);
+    m.position.set(-20+i*5,-9.3,-9+(i%2)*2.0);
+    m.scale.setScalar(2+(i%3)*.55);
+    m.rotation.y=i*.53;sceneRoot.add(m);
   }
-  ctx.lineTo(W,H);
-  ctx.closePath();
-  ctx.fill();
+}).catch(error=>{console.error('CAT_STEP_LOCAL_3D_ASSET:',error.message);});
+// 필요한 오브젝트 수만 유지한다. 프레임마다 지오메트리/재질을 생성하지 않는다.
+function updateScene(now){
+  const platformW=Math.max(92,Math.min(150,W*.24))*unitsPerPixel();
+  for(let i=0;i<stepMeshes.length;i++){
+    const obj=stepMeshes[i],step=steps[i];
+    if(!step){obj.visible=false;continue}
+    const y=platformY(i);
+    obj.visible=y>=-40&&y<=H+40;
+    if(!obj.visible)continue;
+    obj.position.set(worldX(laneX(step.lane)),worldY(y),-i*.14);
+    obj.userData.block.scale.x=platformW;
+    obj.userData.top.scale.x=platformW;
+    const isGold=step.number>0&&step.number%10===0;
+    obj.userData.block.material=isGold?goldMat:platformMat;
+    obj.userData.top.material=isGold?goldTopMat:topMat;
+  }
+  const pose=catPose(now);
+  cat.position.set(worldX(pose.x),worldY(pose.y)-.48,1);
+  cat.rotation.set(0,Math.sin(now*.0015)*.08,pose.tilt);
+  cat.scale.set(1,1/pose.squash,1);
+  tail.rotation.z=Math.sin(now*.006)*.21;
+  for(let i=0;i<cloudGroups.length;i++)cloudGroups[i].position.x=-16+i*6+Math.sin(now*.00009+i)*1.4;
 }
-
-function drawPlatform(x,y,w,isGold){
-  const h=18,depth=13;
-  ctx.save();
-  ctx.shadowColor='rgba(8,14,31,.28)';
-  ctx.shadowBlur=16;
-  ctx.shadowOffsetY=8;
-  ctx.fillStyle=isGold?COLORS.goldFront:COLORS.platformFront;
-  ctx.beginPath();
-  ctx.moveTo(x-w/2,y);
-  ctx.lineTo(x+w/2,y);
-  ctx.lineTo(x+w*.42,y+depth);
-  ctx.lineTo(x-w*.42,y+depth);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.shadowColor='transparent';
-  ctx.fillStyle=isGold?COLORS.gold:COLORS.platform;
-  roundRect(x-w/2,y-h/2,w,h,8);
-  ctx.fill();
-
-  ctx.fillStyle=isGold?'#ffe09b':COLORS.platformTop;
-  roundRect(x-w/2,y-h/2,w,5,7);
-  ctx.fill();
-  ctx.restore();
+let fpsWindow=0,fpsCount=0,lastDraw=0;
+function render3d(now){
+  if(document.hidden){fpsWindow=0;fpsCount=0;return;}
+  if(mobile){
+    fpsCount++;
+    if(!fpsWindow)fpsWindow=now;
+    const elapsed=now-fpsWindow;
+    if(elapsed>=4500){
+      const fps=fpsCount*1000/elapsed;
+      const next=fps<42?Math.max(.75,DPR-.15):fps>56?Math.min(maxDpr,DPR+.1):DPR;
+      if(Math.abs(next-DPR)>.01){DPR=next;renderer.setPixelRatio(DPR);}
+      fpsWindow=now;fpsCount=0;
+    }
+  }
+  renderer.render(scene,camera);
+  lastDraw=now;
 }
-
-function roundRect(x,y,w,h,r){
-  r=Math.min(r,w/2,h/2);
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-
-function drawCat(x,y,tilt=0,squash=1){
-  ctx.save();
-  ctx.translate(x,y);
-  ctx.rotate(tilt);
-  ctx.scale(1.04,1/squash);
-
-  ctx.strokeStyle=COLORS.cat;
-  ctx.lineWidth=8;
-  ctx.lineCap='round';
-  ctx.beginPath();
-  ctx.moveTo(18,10);
-  ctx.quadraticCurveTo(40,0,34,-19);
-  ctx.stroke();
-
-  ctx.fillStyle=COLORS.cat;
-  roundRect(-18,-28,36,34,12);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(0,-35,22,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(-17,-49);ctx.lineTo(-8,-65);ctx.lineTo(-2,-49);ctx.closePath();ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(17,-49);ctx.lineTo(8,-65);ctx.lineTo(2,-49);ctx.closePath();ctx.fill();
-
-  ctx.fillStyle=COLORS.catDark;
-  ctx.beginPath();ctx.arc(-8,-38,2.7,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(8,-38,2.7,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#a46361';
-  ctx.beginPath();ctx.arc(0,-31,2.5,0,Math.PI*2);ctx.fill();
-
-  ctx.fillStyle='#ef8f3e';
-  roundRect(-15,4,11,13,5);ctx.fill();
-  roundRect(4,4,11,13,5);ctx.fill();
-  ctx.restore();
-}
-
 function catPose(now){
   if(!jumpAnim){
     const bob=Math.sin(now*.004)*2;
@@ -348,19 +375,8 @@ function catPose(now){
 
 function draw(now){
   bgOffset+=.08;
-  drawSky();
-
-  const platformW=Math.max(92,Math.min(150,W*.24));
-  for(let i=steps.length-1;i>=0;i--){
-    const step=steps[i];
-    const y=platformY(i);
-    if(y<-40||y>H+40)continue;
-    drawPlatform(laneX(step.lane),y,platformW,step.number>0&&step.number%10===0);
-  }
-
-  const pose=catPose(now);
-  drawCat(pose.x,pose.y,pose.tilt,pose.squash);
-
+  updateScene(now);
+  render3d(now);
   requestAnimationFrame(draw);
 }
 updateHud();
