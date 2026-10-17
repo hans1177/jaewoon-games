@@ -2250,6 +2250,7 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(promptDesignContext)}`,
+    'SHARED_DESIGN_PRESERVATION: 플랫폼별 재설계는 금지. 승인된 공통 원본의 규칙·상태·진행·저장 의미를 보존하고, 게임 규칙 확장은 공통 원본 개정 후 기존 플랫폼 책임 함수에 반영한다.',
     `DESIGNED_GAME_VOLUME: mode=${volume.mode||'UNKNOWN'}; authored=${volume.authoredItemCount||0}; sourceNamedCandidates=${volume.namedSourceCandidateCount||0}; sourceReview=${volume.sourceReviewRequiredCount||0}; runtimeVerified=${volume.runtimeVerifiedCount||0}; countsAreNotPass=true`,
     'DESIGNED_GAME_VOLUME_ITEMS:',
     volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
