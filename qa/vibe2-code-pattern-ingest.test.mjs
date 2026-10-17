@@ -26,7 +26,7 @@ test('verified added-code observations become actionable repair steps without ra
     independentQa:'PASS',browserQa:'PASS',
     instruction:'Repair mobile input and save restore state regression',
     input:'{"sourcePath":"web-games/real-web-game"}',
-    output:'summary\\n검증된 패치:\\n+if (!button) return false;\\n+button.addEventListener("pointerdown", onDown);\\n+localStorage.setItem("PRIVATE_SAVE_KEY","PRIVATE_VALUE");',
+    output:'summary\n검증된 패치:\n+if (!button) return false;\n+button.addEventListener("pointerdown", onDown);\n+localStorage.setItem("PRIVATE_SAVE_KEY","PRIVATE_VALUE");',
     verification:{fullRegression:'PASS',runtime:'PASS',exactRevision:'PASS',protectedState:'PASS'}
   };
   const rows=deriveVerifiedCodePatterns(sample,'verified.json');
@@ -48,11 +48,11 @@ test('verified added-code observations become actionable repair steps without ra
 });
 
 test('repair recipe ignores removed code and unverified conclusions',()=>{
-  const recipe=deriveObservedRepairRecipe('summary\\n검증된 패치:\\n-localStorage.setItem("REMOVED_SECRET", "x");\\n+clearInterval(timer);');
+  const recipe=deriveObservedRepairRecipe('summary\n검증된 패치:\n-localStorage.setItem("REMOVED_SECRET", "x");\n+clearInterval(timer);');
   assert.deepEqual(recipe.operationIds,['CLEANUP_LIFECYCLE']);
   assert.equal(deriveObservedRepairRecipe('summary only'),null);
   const sample={taskType:'bugfix',sourceRevision:'c'.repeat(40),independentQa:'PASS',
-    instruction:'save repair',output:'검증된 패치:\\n+localStorage.setItem("x","y")',
+    instruction:'save repair',output:'검증된 패치:\n+localStorage.setItem("x","y")',
     verification:{fullRegression:'PASS',runtime:'FAIL'}};
   assert.deepEqual(deriveVerifiedCodePatterns(sample),[]);
 });
