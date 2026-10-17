@@ -237,6 +237,7 @@ test('star-frontier asteroid source replay terminates and preserves original sec
   assert.ok(seeded&&start>=0&&end>start,'current source functions must be found');
   const actualSpawn=html.slice(start,end);
   const replay=`
+    const TAU=Math.PI*2;
     const WORLD={w:4200,h:3000};
     const state={sector:0,asteroidSeq:1,enemies:[],asteroids:[],bullets:[],particles:[],
       player:{x:0,y:0,vx:0,vy:0},station:{x:2100,y:1500},gate:{x:3900,y:1500}};
