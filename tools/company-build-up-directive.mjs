@@ -711,10 +711,22 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
     }
     if(design.creativeGrammar?.a)groups.push(['CREATIVE_A_SYSTEM_AND_SOURCE',[{name:design.creativeGrammar.a.system+' × '+design.creativeGrammar.a.material,trigger:design.creativeGrammar.a.system,stateChange:design.creativeGrammar.a.stateChange}]]);
     if(design.creativeGrammar?.b)groups.push(['CREATIVE_B_SYSTEM_AND_SOURCE',[{name:design.creativeGrammar.b.system+' × '+design.creativeGrammar.b.material,trigger:design.creativeGrammar.b.system,stateChange:design.creativeGrammar.b.stateChange}]]);
-    if(Array.isArray(design.creativeGrammar?.cThemes))groups.push(['CREATIVE_C_THEME_FUSION',design.creativeGrammar.cThemes.map(row=>({name:row.name,trigger:row.kind,stateChange:row.gameplayEffect}))]);
+    if(Number(design.creativeGrammar?.standardVersion||0)<1&&Array.isArray(design.creativeGrammar?.cThemes))groups.push(['CREATIVE_C_THEME_FUSION',design.creativeGrammar.cThemes.map(row=>({name:row.name,trigger:row.kind,stateChange:row.gameplayEffect}))]);
+    if(Array.isArray(design.creativeGrammar?.dCreations))groups.push(['CREATIVE_D_CREATIONS',design.creativeGrammar.dCreations.map(row=>({
+      id:row.id,name:row.creation,trigger:row.action,stateChange:row.gameplayEffect,
+      materialPath:row.materialPath,sourceFeature:row.sourceFeature,condition:row.condition,
+      consequence:row.consequence,risk:row.risk,genreRoles:row.genreRoles,
+      linkedElements:row.linkedElements,observableAcceptance:row.consequence
+    }))]);
     if(Array.isArray(design.creativeGrammar?.cGenres))groups.push(['CREATIVE_C_PRIMARY_SECONDARY_GENRE',design.creativeGrammar.cGenres.map(row=>({name:row.role+' '+row.name,trigger:row.role,stateChange:row.gameplayEffect}))]);
     if(design.creativeGrammar?.cGenreInterlock)groups.push(['CREATIVE_C_GENRE_INTERLOCK',[{name:'메인·보조 장르 플레이 인과',trigger:'두 장르 동시 발동',stateChange:design.creativeGrammar.cGenreInterlock}]]);
-    if(Array.isArray(design.creativeGrammar?.delveDiscoveries))groups.push(['CREATIVE_AT_DELVE',design.creativeGrammar.delveDiscoveries.map(row=>({name:row.discovery,trigger:row.clue,stateChange:row.newChoice}))]);
+    if(Array.isArray(design.creativeGrammar?.delveDiscoveries))groups.push(['CREATIVE_AT_DELVE',design.creativeGrammar.delveDiscoveries.map(row=>
+      Number(design.creativeGrammar?.standardVersion||0)>=1?{
+        name:row.discovery,trigger:row.experiment||row.clue,stateChange:row.newChoice,
+        sourceDId:row.sourceDId,clue:row.clue,nextQuestion:row.nextQuestion,
+        observableAcceptance:row.nextQuestion
+      }:{name:row.discovery,trigger:row.clue,stateChange:row.newChoice}
+    )]);
     groups.push(['IMPLEMENTATION_TRACE',traces]);
     for(const [family,rows] of groups)if(Array.isArray(rows))rows.forEach((row,index)=>add(family,index,row));
   }
@@ -773,16 +785,33 @@ export function buildDesignToPlatformCodingTrace({
   // V5의 C는 두 소재·두 장르의 인과 계약이다. 원본에 없는 예전 c 기계축을 요구하지 않는다.
   const creativeGrammar=design.creativeGrammar&&typeof design.creativeGrammar==='object'&&!Array.isArray(design.creativeGrammar)?design.creativeGrammar:null;
   const hasCreativeGrammar=Boolean(creativeGrammar&&Object.keys(creativeGrammar).length);
+  const standardGrammar=Number(creativeGrammar?.standardVersion||0)>=1;
   const cThemes=Array.isArray(creativeGrammar?.cThemes)?creativeGrammar.cThemes:[];
   const cGenres=Array.isArray(creativeGrammar?.cGenres)?creativeGrammar.cGenres:[];
+  const dCreations=Array.isArray(creativeGrammar?.dCreations)?creativeGrammar.dCreations:[];
+  const delveDiscoveries=Array.isArray(creativeGrammar?.delveDiscoveries)?creativeGrammar.delveDiscoveries:[];
   const sourcedAB=['a','b'].every(key=>clean(creativeGrammar?.[key]?.system)&&clean(creativeGrammar?.[key]?.material)
     &&clean(creativeGrammar?.[key]?.materialDomain)&&clean(creativeGrammar?.[key]?.stateChange));
-  const creativeCReady=hasCreativeGrammar&&sourcedAB&&clean(creativeGrammar?.abCausality)
-    &&cThemes.length===2&&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
-    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))
-    &&cGenres.length===2&&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.gameplayEffect)))
-    &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
-    &&clean(creativeGrammar?.cGenreInterlock)&&clean(creativeGrammar?.cWorldAndGameplayEffect);
+  const genreReady=cGenres.length===2
+    &&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.name)&&clean(row?.gameplayEffect)))
+    &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2;
+  const themesReady=cThemes.length===2
+    &&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect));
+  // [기본설계] 신문법 C는 작품 장르 두 개다. 예전 C 소재 두 개는 기존 설계 호환에만 적용한다.
+  const creativeCReady=Boolean(hasCreativeGrammar&&sourcedAB&&clean(creativeGrammar?.abCausality)
+    &&(standardGrammar||themesReady)&&genreReady
+    &&clean(creativeGrammar?.cGenreInterlock)&&clean(creativeGrammar?.cWorldAndGameplayEffect));
+  const dIds=new Set(dCreations.map(row=>clean(row?.id)).filter(Boolean));
+  const creativeDReady=!standardGrammar||(dCreations.length>0&&dIds.size===dCreations.length
+    &&dCreations.every(row=>Array.isArray(row?.materialPath)&&row.materialPath.length===3
+      &&clean(row?.creation)&&clean(row?.gameplayEffect)
+      &&['PRIMARY','SECONDARY'].every(role=>(row.genreRoles||[]).includes(role))
+      &&['A','B'].every(role=>(row.linkedElements||[]).includes(role))));
+  const creativeAtReady=!standardGrammar||(delveDiscoveries.length>=4
+    &&delveDiscoveries.every(row=>dIds.has(clean(row?.sourceDId))
+      &&clean(row?.clue)&&clean(row?.experiment)&&clean(row?.discovery)
+      &&clean(row?.newChoice)&&clean(row?.nextQuestion)));
   const includeLegacyC=!hasCreativeGrammar||designRoles.some(row=>row?.grammarRole==='c');
   const roles=['MAIN','A','B',...(includeLegacyC?['c']:[]),'DELVE'];
   const roleByName=new Map(roles.map(role=>[role,designRoles.filter(row=>row?.grammarRole===role)]));
@@ -995,6 +1024,8 @@ export function buildDesignToPlatformCodingTrace({
   const gapReasons=[
     ...(!authoredRolesComplete?[hasCreativeGrammar?'DESIGN_MAIN_A_B_C_AT_INCOMPLETE':'DESIGN_MAIN_A_B_c_AT_INCOMPLETE']:[]),
     ...(hasCreativeGrammar&&!creativeCReady?['DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING']:[]),
+    ...(standardGrammar&&!creativeDReady?['DESIGN_CREATIVE_D_CREATIONS_MISSING']:[]),
+    ...(standardGrammar&&!creativeAtReady?['DESIGN_CREATIVE_AT_D_RESEARCH_LINK_MISSING']:[]),
     ...(mandatory&&!modeReady?['MULTIPLAYER_DESIGN_MODE_MISSING']:[]),
     ...(selected==='UNITY_WEB'&&!spatialReady?['UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING']:[]),
     ...(!selectedRoot?['PLATFORM_SOURCE_NOT_SELECTED']:!observedCode?['NATIVE_GAME_CODE_OWNER_MISSING']:[]),
@@ -1206,7 +1237,18 @@ export function buildDesignToPlatformCodingTrace({
       genres:Object.freeze(cGenres.map(row=>Object.freeze({role:clean(row?.role),name:clean(row?.name),gameplayEffect:clean(row?.gameplayEffect)}))),
       genreInterlock:clean(creativeGrammar?.cGenreInterlock),
       abGameplayEffect:clean(creativeGrammar?.cWorldAndGameplayEffect),
-      designAuthored:Boolean(creativeCReady),runtimeVerified:false
+      standardVersion:standardGrammar?Number(creativeGrammar.standardVersion):null,
+      dCreations:Object.freeze(dCreations.map(row=>Object.freeze({
+        id:clean(row?.id),materialPath:Object.freeze(row?.materialPath||[]),
+        creation:clean(row?.creation),gameplayEffect:clean(row?.gameplayEffect),
+        genreRoles:Object.freeze(row?.genreRoles||[]),linkedElements:Object.freeze(row?.linkedElements||[])
+      }))),
+      delveDLinks:Object.freeze(delveDiscoveries.map(row=>Object.freeze({
+        sourceDId:clean(row?.sourceDId),discovery:clean(row?.discovery),
+        experiment:clean(row?.experiment),nextQuestion:clean(row?.nextQuestion)
+      }))),
+      designAuthored:Boolean(creativeCReady&&creativeDReady&&creativeAtReady),
+      runtimeVerified:false
     }):null,
     observedGameCodeFiles:Object.freeze(observedFiles),
     executableCodeCandidateFiles:Object.freeze(codeSignalFiles),
@@ -2158,10 +2200,10 @@ function buildAutonomousContentExpansion({
 }
 
 function platformDirectives({identity,goal}){
-  const web=`${identity}: 게임당 하나인 공통 설계 원본을 기준으로 "${goal}"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
-  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN/A/B/C/@의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 집중 대상은 Roblox다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
-  const unity=`${identity}: 동일 공통 원본의 규칙과 상태를 보존하며 "${goal}"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
-  const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
+  const web=`${identity}: "${goal}"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.`;
+  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN = A + B + C + D + @의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN = A + B + C + D + @·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 메인·보조 장르의 인과이며 D는 출처를 가진 구체 창작, @는 D와 연결된 연구·실험·다음 선택이다. 이전 C 소재 2개는 구형 설계 호환에서만 검증하며 소문자 c도 기존 원본에 있을 때만 보존한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 대상은 Roblox와 일반 WEB이며 Roblox 원본 언어는 Luau다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
+  const unity=`${identity}: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 "${goal}"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
+  const fortnite=`${identity}: MAIN = A + B + C + D + @ 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
     WEB:web,
     ROBLOX:roblox,
@@ -2227,7 +2269,7 @@ export function directivePrompt(d={}){
     `CAUSAL_GRAMMAR_EVIDENCE: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence||{})}`,
     `CAUSAL_GRAMMAR_BUILD_UP_RULE: ${d.identityReinforcement?.causalGrammarEvidence?.rule||'PRESERVE_APPROVED_CAUSAL_GAME_GRAMMAR'}`,
     `EXISTING_GAME_MAIN_A_B_c_AT_MAP: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap||{})}`,
-    'EXISTING_GAME_GRAMMAR_ACTION: 과거 MAIN 소재뿐인 설계를 정식 설계로 보존하지 않는다. 현재 실행 게임의 실제 행동·저장·밸런스·권한을 읽고 MAIN 게임 정체성, A/B 각각 시스템×창작 소재, C 두 소재와 메인·보조 장르, @ 발견·숙련을 새로 설계해 서로 실제 상태를 바꾸게 한다. 설계 문서만으로 구현 완료나 런타임 PASS를 인정하지 않는다.',
+    'EXISTING_GAME_GRAMMAR_ACTION: MAIN=A+B+C+D+@ 기준으로 A 중심 장르·시스템, B 보조 세부장르·시스템, C 작품 주/보조 장르, D 구체 존재·장소·사건·규칙, @ D 연관 연구·실험·새 선택을 직접 연결한다. 검증된 설계는 기존 Roblox Luau 서버/클라이언트 책임 함수에 구현하고 실제 입력→서버상태→결과→저장/재접속을 검수한다. 기존 게임 시스템은 B 보조 참조로만 사용한다. 구형 C 소재 두 개 요구로 새 기본설계를 거부하지 않는다. 설계 문서는 게임 런타임 PASS가 아니다.',
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
@@ -2335,24 +2377,36 @@ export function buildGameSpecificBuildUpDirective({
   const cSystems=design.signatureSystems.filter(system=>system.grammarRole==='c');
   const delveSystems=design.signatureSystems.filter(system=>system.grammarRole==='DELVE');
   const hasOwnerCreativeGrammar=Boolean(clean(design.creativeGrammar?.mainIdentity)
-    ||clean(design.creativeGrammar?.a?.system)||Array.isArray(design.creativeGrammar?.cThemes));
+    ||clean(design.creativeGrammar?.a?.system)
+    ||Array.isArray(design.creativeGrammar?.cGenres)
+    ||Array.isArray(design.creativeGrammar?.cThemes));
+  const ownerStandardGrammar=Number(design.creativeGrammar?.standardVersion||0)>=1;
   const sourcedCreativeAxes=['a','b'].every(key=>clean(design.creativeGrammar?.[key]?.system)
     &&clean(design.creativeGrammar?.[key]?.material)
     &&clean(design.creativeGrammar?.[key]?.materialDomain)
     &&clean(design.creativeGrammar?.[key]?.stateChange));
   const cThemes=Array.isArray(design.creativeGrammar?.cThemes)?design.creativeGrammar.cThemes:[];
   const cGenres=Array.isArray(design.creativeGrammar?.cGenres)?design.creativeGrammar.cGenres:[];
-  const authoredCreativeC=cThemes.length===2
+  const authoredCreativeC=(ownerStandardGrammar||(cThemes.length===2
     &&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
-    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))
+    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))))
     &&cGenres.length===2
     &&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.gameplayEffect)))
     &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
     &&clean(design.creativeGrammar?.cGenreInterlock)
     &&clean(design.creativeGrammar?.cWorldAndGameplayEffect);
+  const ownerDIds=new Set((design.creativeGrammar?.dCreations||[]).map(row=>clean(row?.id)).filter(Boolean));
+  const ownerDReady=!ownerStandardGrammar||Boolean(ownerDIds.size
+    &&(design.creativeGrammar?.dCreations||[]).every(row=>Array.isArray(row?.materialPath)
+      &&row.materialPath.length===3&&clean(row?.creation)&&clean(row?.gameplayEffect)
+      &&['PRIMARY','SECONDARY'].every(role=>(row.genreRoles||[]).includes(role))
+      &&['A','B'].every(role=>(row.linkedElements||[]).includes(role))));
+  const ownerAtReady=!ownerStandardGrammar||Boolean((design.creativeGrammar?.delveDiscoveries||[]).length>=4
+    &&design.creativeGrammar.delveDiscoveries.every(row=>ownerDIds.has(clean(row?.sourceDId))
+      &&clean(row?.experiment)&&clean(row?.discovery)&&clean(row?.newChoice)&&clean(row?.nextQuestion)));
   // V5는 오래된 c 태그로 C를 대신할 수 없다. V4 설계만 기존 c 호환 경로를 유지한다.
   const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&delveSystems.length
-    &&(hasOwnerCreativeGrammar?(sourcedCreativeAxes&&authoredCreativeC):cSystems.length));
+    &&(hasOwnerCreativeGrammar?(sourcedCreativeAxes&&authoredCreativeC&&ownerDReady&&ownerAtReady):cSystems.length));
   const reconstructedMain=clean(design.creativeGrammar?.mainIdentity)||clean(mainSystem?.name)||clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
   const reconstructedMajorAxes=Object.freeze([
     Object.freeze({key:'A',systemId:clean(aSystem?.id)||null,name:clean(aSystem?.name)||clean(design.signatureSystems?.[0]?.name)||secondary,source:authorMapped?'DESIGNER_AUTHORED_ROLE_A':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'}),
@@ -2371,21 +2425,23 @@ export function buildGameSpecificBuildUpDirective({
   ]).slice(0,10);
   const existingGameGrammarMap=Object.freeze({
     mode:'EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE',
-    formula:'MAIN × A × B × C + @',
+    formula:ownerStandardGrammar?'MAIN = A + B + C + D + @':'MAIN × A × B × C + @',
     main:reconstructedMain,
     source:authorMapped?'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS':'LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE',
     roleSystemIds:Object.freeze({MAIN:clean(mainSystem?.id)||null,A:clean(aSystem?.id)||null,B:clean(bSystem?.id)||null,c:cSystems.map(row=>clean(row.id)).filter(Boolean),AT:delveSystems.map(row=>clean(row.id)).filter(Boolean)}),
     majorAxes:reconstructedMajorAxes,
     cSubElements:Object.freeze(confirmedSubElements),
     sourcedAxes:Object.freeze({A:design.creativeGrammar?.a||null,B:design.creativeGrammar?.b||null}),
-    cGenreThemes:Object.freeze(design.creativeGrammar?.cThemes||[]),
+    cGenreThemes:Object.freeze(ownerStandardGrammar?[]:(design.creativeGrammar?.cThemes||[])),
+    dCreations:Object.freeze(design.creativeGrammar?.dCreations||[]),
     cPrimarySecondaryGenres:Object.freeze(design.creativeGrammar?.cGenres||[]),
     cGenreInterlock:clean(design.creativeGrammar?.cGenreInterlock),
     cCausalWorldEffect:clean(design.creativeGrammar?.cWorldAndGameplayEffect),
     atUnboundedGrowthRule:clean(design.creativeGrammar?.delveGrowthRule),
+    standardGrammarVersion:ownerStandardGrammar?Number(design.creativeGrammar.standardVersion):null,
     delveAtEvidence:Object.freeze(delveEvidence),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
-    rule:'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
+    rule:ownerStandardGrammar?'MAIN_A_PRIMARY_B_SUPPORTING; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL':'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
     identityRewriteRequired:false,
     existingBalanceSaveEconomyAndAuthorityPreserved:true
   });
@@ -2409,9 +2465,9 @@ export function buildGameSpecificBuildUpDirective({
       systemInterconnections:Object.freeze(design.systemInterconnections||[]),
       expansionPlan:Object.freeze(design.contentExpansionPlan||[]),
       integrityNotes:Object.freeze(design.designIntegrityNotes||[]),
-      formula:'MAIN × A × B × C + @',
+      formula:ownerStandardGrammar?'MAIN = A + B + C + D + @':'MAIN × A × B × C + @',
       existingGameGrammarMap,
-      rule:'NEW_CONTENT_MUST_DEEPEN_MAIN_TOPIC_A_B_SOURCED_SYSTEMS_C_CREATIVE_THEMES_AND_PRIMARY_SECONDARY_GENRE_INTERLOCK; OPTIONAL_LEGACY_c_IS_NOT_C_OR_A_MAJOR_AXIS; @ IS_DELVE_LAYER; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
+      rule:ownerStandardGrammar?'NEW_CONTENT_MUST_CONNECT_A_PRIMARY_B_SUPPORTING_C_STORY_GENRES_D_CREATIONS_AND_AT_D_RESEARCH_TO_EXACT_GAME_STATE; LUAU_OWNER_REQUIRED; DESIGN_IS_NOT_RUNTIME_PASS':'NEW_CONTENT_MUST_DEEPEN_MAIN_TOPIC_A_B_SOURCED_SYSTEMS_C_CREATIVE_THEMES_AND_PRIMARY_SECONDARY_GENRE_INTERLOCK; OPTIONAL_LEGACY_c_IS_NOT_C_OR_A_MAJOR_AXIS; @ IS_DELVE_LAYER; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
       familiarHumanConflictShouldRemainReadable:true
     }),
     buildUpRule:'EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT',
@@ -2657,13 +2713,21 @@ export function buildGameSpecificBuildUpDirective({
       .filter(entry=>entry.isFile()&&/^[a-z][a-z0-9-]*\.js$/i.test(entry.name))
       .map(entry=>'assets/'+entry.name).sort();
   }catch{}
-  const productionPlan=buildRobloxProductionPlan({
+  // [플랫폼 권한] 공통 빌드업은 전 게임을 분석하지만, 자동 제작 계획은 중앙정책상 실제 허용된 플랫폼만 생성한다.
+  const verifiedRoadmap=readJson(path.join(repoRoot,clean(process.env.COMPANY_VERIFIED_POLICY_PATH)||'__retired_policy_not_available__'),{});
+  const ownerPlatform=clean(productionPlatform).toUpperCase()==='WEB'?'WEB':
+    clean(productionPlatform).toUpperCase()==='UNITY_WEB'?'UNITY_WEB':
+      ['UNITY','UNITY_APP','UNITY_ANDROID'].includes(clean(productionPlatform).toUpperCase())?'UNITY':
+        clean(productionPlatform).toUpperCase()==='ROBLOX'?'ROBLOX':'';
+  const productionAuthorized=ownerPlatform==='ROBLOX'
+    ||(verifiedRoadmap?.developmentAccess?.[ownerPlatform]==='ALWAYS_ALLOWED'
+      &&(verifiedRoadmap?.ownerActiveDevelopmentScope20261009?.activeTargets||[]).includes(ownerPlatform));
+  const productionPlan=productionAuthorized?buildRobloxProductionPlan({
     gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,availableLibraryPaths,
     previousPlan:previousDirective?.productionPlan||previousDirective?.robloxProductionPlan,focus,
     repair:['CAUSAL_REPAIR'].includes(clean(nextActionDecision?.action).toUpperCase())||keepPriorFocus,
-    safeDesignlessMode,
-    policy:readJson(path.join(repoRoot,clean(process.env.COMPANY_VERIFIED_POLICY_PATH)||'__retired_policy_not_available__'),{})?.robloxStudioProductionFlowContract||{}
-  });
+    safeDesignlessMode,policy:verifiedRoadmap?.robloxStudioProductionFlowContract||{}
+  }):null;
   return Object.freeze({
     version:2,
     directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,

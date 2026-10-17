@@ -390,17 +390,23 @@ test('security workflow persists the upload artifact id and run id with every re
 });
 
 
-test('policy REVIEW passes only through exact-head owner Primary-AI approval while quarantine remains blocking',()=>{
+test('policy REVIEW uses deterministic owner Web3D approval while quarantine and unverified changes stay blocked',()=>{
   assert.ok(securityWorkflow.includes('pull-requests: read'));
   assert.ok(securityWorkflow.includes("review_only: ${{ steps.scan.outputs.review_only }}"));
-  assert.ok(securityWorkflow.includes("['APPROVED','COMMENTED'].includes(String(row.state||'').toUpperCase())"));
-  assert.ok(securityWorkflow.includes("String(row.body||'').trim()==='PRIMARY_AI_DIRECT_REVIEW=PASS'"));
-  assert.ok(securityWorkflow.includes("String(row.commit_id||'')===head"));
-  assert.ok(securityWorkflow.includes("String(row.user?.login||'').toLowerCase()===owner"));
-  assert.ok(securityWorkflow.includes("test \"$REVIEW_ONLY\" = 'YES'"));
-  assert.ok(securityWorkflow.includes("test \"$DIRECT_REVIEW_PASS\" = 'YES'"));
-  assert.ok(securityWorkflow.includes("VIBE_SECURITY_REVIEW_STATE=EXACT_HEAD_OWNER_PRIMARY_AI_REVIEW_PASS"));
-  assert.ok(securityWorkflow.includes("VIBE_SECURITY_ACTION=QUARANTINE_AFFECTED_CHANGE"));
+  assert.match(securityWorkflow,/Deterministically approve owner-authorized ordinary Web 3D policy/);
+  assert.match(securityWorkflow,/SECURITY_AUTO_POLICY_UNAPPROVED_SCOPE/);
+  assert.match(securityWorkflow,/SECURITY_AUTO_POLICY_OWNER_WEB3D_INVARIANT_FAIL/);
+  assert.match(securityWorkflow,/SECURITY_AUTOMATED_OWNER_WEB3D_APPROVAL=PASS/);
+  assert.match(securityWorkflow,/AUTO_POLICY_PASS: \$\{\{ steps\.auto_policy\.outputs\.pass \|\| 'NO' \}\}/);
+  assert.ok(securityWorkflow.includes('test "$REVIEW_ONLY" = \'YES\''));
+  assert.ok(securityWorkflow.includes('test "$AUTO_POLICY_PASS" = \'YES\''));
+  assert.ok(securityWorkflow.includes('VIBE_SECURITY_REVIEW_STATE=AUTOMATED_VERIFIED_OWNER_WEB3D_POLICY_PASS'));
+  assert.ok(securityWorkflow.includes('VIBE_SECURITY_ACTION=QUARANTINE_AFFECTED_CHANGE'));
+  assert.ok(securityWorkflow.includes("head.developmentAccess?.UNITY!=='OWNER_HOLD'"));
+  assert.ok(securityWorkflow.includes("head.developmentAccess?.UNITY_WEB!=='OWNER_HOLD'"));
+  assert.ok(securityWorkflow.includes("head.developmentAccess?.UNITY_ANDROID!=='OWNER_HOLD'"));
+  assert.ok(securityWorkflow.includes("head.webRuntimeStartabilityContract?.finalGameplayDimension!=='3D'"));
+  assert.doesNotMatch(securityWorkflow,/id: direct_review|PRIMARY_AI_DIRECT_REVIEW_REQUIRED/);
 });
 
 test('current security summary denies unverified execution and Roblox native source validates remote boundaries',()=>{

@@ -2570,9 +2570,9 @@ test('flat or unstartable Web games enter 2.5D repair after canonical existing-W
   assert.equal(task.productionMode,'SUPERVISED_VIBE_COAUTHORING');
   assert.equal(task.supervisionContract?.required,true);
   assert.ok(task.evidence.includes('owner-directive:all-web-games-must-start'));
-  assert.ok(task.evidence.includes('owner-directive:minimum-2.5d-final-gameplay'));
+  assert.ok(task.evidence.includes('owner-directive:real-3d-final-gameplay'));
   assert.ok(task.evidence.some(value=>value.includes('MINIMUM_2_5D_PRESENTATION_REQUIRED')));
-  assert.match(task.goal,/최소 2\.5D/);
+  assert.match(task.goal,/실제 WebGL 렌더/);
   assert.equal(task.maxRetries,null);
 });
 
@@ -3840,17 +3840,25 @@ test('queued autonomous expansion v1 without breadth ledger upgrades to v2 witho
   assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
 });
 
-test('owner-held Unity and Web directives preserve queued generations without inventing native production plans',()=>{
+test('owner-held Unity and active general Web preserve queued BUILD_UP without unauthorized platform plans',()=>{
+  const previousPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+  try{
   for(const [engine,gameId,target] of [['unity','demo','unity-android'],['web','dev-web','web']]){
     const root=tempRepo();
+    const ownerPolicy={
+      robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']},
+      developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'},
+      ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','WEB']}
+    };
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(ownerPolicy));
     writeStudioDesign(root,gameId);
     const project={gameId,name:gameId,engine,releaseState:'development-confirmed',projectPath:`${engine}-games/${gameId}`};
     const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
     assert.ok(generated?.buildUpDirective);
-    assert.equal(generated.buildUpDirective.productionPlan,null);
+    assert.equal(generated.buildUpDirective.productionPlan?.platform||null,engine==='web'?'WEB':null);
     const running={...generated,id:gameId+'-running',status:'running',reservationRunId:'existing-run'};
     const queued={...generated,id:gameId+'-queued',status:'queued'};
-    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']}}));
     const result=planVibe2AutonomousTasks({
       status:{projects:[{gameId,ownerDecision:'PASS',target,projectPath:project.projectPath,progress:80}]},
       catalog:{games:[{id:gameId,name:gameId,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',...(engine==='web'?{webPath:`/${project.projectPath}/`,hasWebArchive:true,homepageWebPlayable:true}:{})}]},
@@ -3859,11 +3867,13 @@ test('owner-held Unity and Web directives preserve queued generations without in
     const updated=result.queue.tasks.find(row=>row.id===queued.id);
     const untouched=result.queue.tasks.find(row=>row.id===running.id);
     assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
-    // Unity/Web remain owner-held in canonical policy: a queued task is not production authorization.
-    assert.equal(updated.buildUpDirective.productionPlan,null);
-    assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
+    assert.equal(updated.buildUpDirective.productionPlan?.platform||null,engine==='web'?'WEB':null);
     assert.equal(updated.status,'queued');
     assert.deepEqual(untouched.buildUpDirective,running.buildUpDirective);
+  }
+  }finally{
+    if(previousPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=previousPolicyPath;
   }
 });
 
@@ -4788,7 +4798,7 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   }
 });
 
-test('actual fantasy-survival preserves Unity sources while only Roblox development is active',()=>{
+test('actual fantasy-survival resumes Web and Roblox while preserving owner-held Unity sources',()=>{
   const root=path.resolve(process.cwd());
   const oldWeb=path.join(root,'web-games','fantasy-survival','index.html');
   const unitySource=path.join(root,'unity-games','fantasy-survival','Assets','Scripts','UnityWebFloorGame.cs');
@@ -4798,7 +4808,8 @@ test('actual fantasy-survival preserves Unity sources while only Roblox developm
   const game=(catalogData.games||[]).find(row=>row.id==='fantasy-survival');
   assert.ok(game);
   const projects=collectProjects({projects:[]},{games:[game]},root,{items:[]});
-  assert.equal(projects.some(row=>row.engine==='unity'||row.engine==='web'),false);
+  assert.equal(projects.some(row=>row.engine==='unity'),false,'Unity remains owner-held');
+  assert.equal(projects.some(row=>row.engine==='web'),true,'ordinary Web resumes under the owner scope');
   assert.ok(projects.some(row=>row.gameId==='fantasy-survival'&&row.engine==='roblox'));
 });
 

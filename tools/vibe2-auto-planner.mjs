@@ -771,7 +771,14 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
     return false; // Android owner hold: do not generate new native work.
   }
   if(project.engine==='unreal'){const policy=centralPresentationPolicy(repoRoot);if(policy?.developmentAccess?.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
-  if(project.releaseState==='development-confirmed')return project.engine==='web'&&centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status!=='ACTIVE'; // Existing legacy tests stay readable; production only schedules Roblox and Unity Web.
+  if(project.releaseState==='development-confirmed'){
+    // 검증된 오너 scope가 존재하면 일반 WEB 명시 허용이 필요하다.
+    // 구형/격리된 fixture와 정책 미적재 모드의 개발 상태 해석은 이전 동작을 유지한다.
+    const policy=centralPresentationPolicy(repoRoot),scope=policy?.ownerActiveDevelopmentScope20261009;
+    if(project.engine!=='web')return false;
+    if(scope?.status!=='ACTIVE')return true;
+    return policy?.developmentAccess?.WEB==='ALWAYS_ALLOWED'&&(scope.activeTargets||[]).includes('WEB');
+  }
   return false;
 }
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
@@ -1163,15 +1170,15 @@ function findWebStartupSpatialRepairTask(project,repoRoot,queue){
   if(audit.pass)return null;
   const id=nextCausalGenerationId(queue,`${project.gameId}-web-startup-spatial-repair`);if(!id)return null;
   const blockers=audit.blockers.join(' | ');
-  const goal=`[WEB_REPAIR] [STARTABILITY_AND_2_5D] 게임: ${project.name||project.gameId}
-현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 최종 게임플레이 표현을 최소 2.5D 이상으로 올린다.
+  const goal=`[WEB_REPAIR] [STARTABILITY_AND_TRUE_3D] 게임: ${project.name||project.gameId}
+현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 최종 게임플레이를 깊이 있는 3D 메시·실제 WebGL 렌더·3D 카메라와 상호작용으로 구현한다.
 확인된 실패: ${blockers}
 빈 화면·검증 단계 버튼·scope 테스트 컨트롤·시작 버튼 무반응을 실제 게임 시작으로 인정하지 않는다. 첫 실제 입력이 플레이어/월드/전투/진행 상태를 바꾸게 연결한다.
-평면 2D 단독 월드, 이모지 그리드, 카드형 검증 화면은 prototype 외 최종 표현으로 금지한다. 장르에 맞춰 등각/원근 카메라, 깊이 정렬, 전경/중경/후경 parallax, 높이·접지 그림자, 깊이 대응 VFX를 조합하거나 실제 3D를 사용한다. UI 오버레이만 2D를 유지할 수 있다.
+평면 2D 단독 월드, 이모지 그리드, 카드형 검증 화면은 prototype 외 최종 표현으로 금지한다. 장르에 맞춰 실제 3D 월드 메시·원근 카메라·깊이 버퍼·WebGL 삼각형 렌더와 공간 상호작용을 구현한다. CSS 원근 효과·등각·parallax·2.5D는 최종 통과 금지한다. UI 오버레이만 2D를 유지할 수 있다.
 기존 게임 규칙·세이브·밸런스·진행·경제·판정 의미는 보존하고 책임 소스를 직접 수정한다. 공용 템플릿이 게임 정체성을 평준화하면 게임 전용 구현으로 분리한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
   const out=task(id,project,goal,[audit.relative],'owner-immediate','high',[
     'owner-directive:all-web-games-must-start',
-    'owner-directive:minimum-2.5d-final-gameplay',
+    'owner-directive:real-3d-final-gameplay',
     'web-stage:WEB_REPAIR',
     'startup-spatial-audit:FAIL',
     ...audit.blockers.map(value=>`startup-spatial-blocker:${value}`)
