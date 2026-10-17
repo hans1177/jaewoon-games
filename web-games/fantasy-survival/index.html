@@ -75,7 +75,7 @@ const JUNGLE_TEMPLE_LOWER={w:4200,h:2600,return:{x:2100,y:2380}};
 const JUNGLE_TEMPLE_SECRET={w:2600,h:1800,return:{x:320,y:900},chest:{x:1950,y:900}};
 const CANYON_POLY=[{x:11950,y:5100},{x:14300,y:6000},{x:14300,y:8500},{x:12650,y:8500},{x:11550,y:7000}];
 const WORLD_TREE_POLY=[{x:6180,y:9150},{x:11820,y:9150},{x:11820,y:10000},{x:6180,y:10000}],WORLD_TREE={x:9000,y:9650},SHADOW_WOLF_EGG={x:11660,y:9560,r:30},SHADOW_WOLF_EGG_2={x:11480,y:9750,r:30},GIANT_CROC_EGG={x:7200,y:1720,r:32},MAP_CELL=400;
-const GOBLIN_OUTPOST_ENTRANCE={x:5680,y:9600,r:92};
+const GOBLIN_OUTPOST_ENTRANCE={x:6800,y:9600,r:92};
 const GOBLIN_OUTPOST_FLOORS={
   1:{w:3000,h:2000,entry:{x:1500,y:1770},up:{x:1500,y:180},down:{x:1500,y:1860}},
   2:{w:3200,h:2100,entry:{x:1600,y:1870},up:{x:1600,y:180},down:{x:1600,y:1970}},
@@ -1754,6 +1754,7 @@ function drawMap(){
  if(state.discovered.volcano){m.strokeStyle='#6d2426';m.lineWidth=2;m.strokeRect(2400*sx,2000*sy,12000*sx,3200*sy);m.font='bold 10px system-ui';m.fillStyle='#8fc9ff';m.fillText('오아시스',OASIS.x*sx-18,OASIS.y*sy);m.fillStyle='#ffe073';m.fillText('화산 황무지',(WASTELAND.x+250)*sx,(WASTELAND.y+250)*sy);m.fillStyle='#e88484';m.fillText('화산',12700*sx,2500*sy)}
  if(state.discovered.canyon){m.strokeStyle='#a27750';m.lineWidth=2;m.beginPath();m.moveTo(CANYON_POLY[0].x*sx,CANYON_POLY[0].y*sy);for(let i=1;i<CANYON_POLY.length;i++)m.lineTo(CANYON_POLY[i].x*sx,CANYON_POLY[i].y*sy);m.closePath();m.stroke();m.fillStyle='#e0b990';m.font='bold 11px system-ui';m.fillText('협곡',12900*sx,7000*sy)}
  if(state.discovered.worldtree){m.strokeStyle='#3d7c4c';m.lineWidth=2;m.strokeRect(6180*sx,9150*sy,5640*sx,850*sy);m.fillStyle='#9bd09e';m.font='bold 11px system-ui';m.fillText('세계수',WORLD_TREE.x*sx-16,WORLD_TREE.y*sy-8);m.fillStyle='#78b96f';m.beginPath();m.arc(WORLD_TREE.x*sx,WORLD_TREE.y*sy,6,0,Math.PI*2);m.fill()}
+  if(state.discovered.worldtree){const ox=GOBLIN_OUTPOST_ENTRANCE.x*sx,oy=GOBLIN_OUTPOST_ENTRANCE.y*sy;m.save();m.fillStyle='#e7c16e';m.fillRect(ox-4,oy-4,8,8);m.font='bold 10px system-ui';m.textAlign='left';m.fillText('전초기지',ox+7,oy+17);m.restore()}
  for(const flag of state.flags){const x=flag.x*sx,y=flag.y*sy;m.strokeStyle='#f2f2e8';m.lineWidth=1.5;m.beginPath();m.moveTo(x,y+5);m.lineTo(x,y-6);m.stroke();m.fillStyle='#ffdb58';m.beginPath();m.moveTo(x,y-6);m.lineTo(x+7,y-3);m.lineTo(x,y);m.closePath();m.fill()}
  if(multiplayer.connected){
    const now=performance.now();m.font='bold 9px system-ui';m.textAlign='center';
@@ -1856,6 +1857,7 @@ function drawMiniMap(now=performance.now()){
  };
  landmark(JUNGLE_TEMPLE_ENTRANCE.x,JUNGLE_TEMPLE_ENTRANCE.y,'#f0cf68',3.2);
  landmark(WORLD_TREE.x,WORLD_TREE.y,'#86d177',3.2);
+  landmark(GOBLIN_OUTPOST_ENTRANCE.x,GOBLIN_OUTPOST_ENTRANCE.y,'#e7c16e',3.2);
  landmark(CRYSTAL_HEART.x,CRYSTAL_HEART.y,'#c7a8ff',3);
  for(const o of SNOW_OUTPOSTS)landmark(o.x,o.y,'#b8dce8',2.6);
  for(const flag of state.flags)landmark(flag.x,flag.y,'#ffdb58',2.3);
