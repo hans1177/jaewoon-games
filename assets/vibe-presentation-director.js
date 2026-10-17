@@ -88,6 +88,65 @@ const COMMERCIAL_UI_SURFACES=Object.freeze({
   skills:{system:'SKILL_BUILD',source:/\b(?:skillTree|learnSkill|skillBar|skillSlots|castSkill)\b/i,layout:'HOTBAR_AND_SKILL_DETAILS',details:['cooldown-from-owner','input-targets','level-prerequisite','failure-reason','reduced-motion-effects']}
 });
 const freezeRow=row=>Object.freeze(row);
+// UI 배치 좌표만 계산한다. 실제 게임의 터치·거래·세이브 상태를 소유하지 않는다.
+export function calculateVibeResponsiveUIZones({viewport={width:390,height:844},safeArea={},panelOpen=false}={}){
+  const width=Math.max(240,Math.min(4096,Number(viewport.width)||390));
+  const height=Math.max(240,Math.min(4096,Number(viewport.height)||844));
+  const inset=side=>Math.max(0,Math.min(100,Number(safeArea[side])||0));
+  const left=inset('left'),right=inset('right'),top=inset('top'),bottom=inset('bottom');
+  const innerWidth=Math.max(180,width-left-right),innerHeight=Math.max(180,height-top-bottom);
+  const portrait=height>=width;
+  const margin=12,hit=48;
+  const hud=freezeRow({x:left+margin,y:top+margin,width:Math.max(120,innerWidth-margin*2),height:56});
+  const dockWidth=portrait?Math.min(innerWidth-margin*2,480):Math.min(innerWidth*.49,540);
+  const dock=freezeRow({x:left+(innerWidth-dockWidth)/2,y:top+innerHeight-hit*1.5-margin,
+    width:dockWidth,height:Math.max(hit,64)});
+  const panel=portrait
+    ?freezeRow({x:left+margin,y:top+innerHeight*.32,width:Math.max(160,innerWidth-margin*2),height:innerHeight*.68-margin,mode:'BOTTOM_SHEET'})
+    :freezeRow({x:left+innerWidth-Math.min(440,innerWidth*.38)-margin,y:top+84,
+      width:Math.min(440,innerWidth*.38),height:Math.max(132,innerHeight-108),mode:'CONTEXT_SIDE_PANEL'});
+  return Object.freeze({portrait,viewport:freezeRow({width,height}),
+    safeArea:freezeRow({left,right,top,bottom}),hud,dock,
+    panel:panelOpen?panel:null,minTouchPx:hit,
+    contentRegion:freezeRow({x:left+margin,y:top+80,width:Math.max(100,innerWidth-margin*2),
+      height:Math.max(100,innerHeight-80-96)}),
+    panelConsumesGameplaySpace:panelOpen,allCoordinatesCssPixels:true});
+}
+// 아이템 정보는 게임 원본으로부터 읽기 전용으로 받아 표시용 정렬/검색/슬롯만 생성한다.
+export function deriveVibeInventoryPresentation({items=[],capacity=0,query='',sort='name'}={}){
+  const q=clean(query).toLocaleLowerCase(),rarityOrder={common:0,uncommon:1,rare:2,epic:3,legendary:4};
+  const rows=(Array.isArray(items)?items:[]).filter(item=>item&&typeof item==='object'
+    &&clean(item.id)&&Number.isFinite(Number(item.quantity))&&Number(item.quantity)>0)
+    .map(item=>freezeRow({id:clean(item.id),name:clean(item.name)||clean(item.id),
+      quantity:Number(item.quantity),rarity:clean(item.rarity).toLowerCase()||'common',
+      iconRef:clean(item.iconRef),description:clean(item.description)}))
+    .filter(item=>!q||item.name.toLocaleLowerCase().includes(q)||item.id.toLocaleLowerCase().includes(q))
+    .sort((a,b)=>sort==='rarity'?(rarityOrder[b.rarity]??0)-(rarityOrder[a.rarity]??0)||a.name.localeCompare(b.name)
+      :sort==='quantity'?b.quantity-a.quantity||a.name.localeCompare(b.name)
+      :a.name.localeCompare(b.name));
+  const used=Array.isArray(items)?items.filter(x=>x&&Number(x.quantity)>0).length:0;
+  return Object.freeze({rows:Object.freeze(rows),usedSlots:used,capacity:Math.max(0,Number(capacity)||0),
+    empty:rows.length===0,readOnly:true,sourceOfTruth:'GAME_INVENTORY_OWNER',
+    canExecuteEquipOrConsume:false,actionsRequireOwnerCallback:true});
+}
+// 거래 제안/준비 여부/금액은 서버 또는 기존 권한 시스템 스냅샷을 그대로 표시한다.
+// 제안 수정 시 revision이 달라져 양측 ready 표시가 자동 해제되고 중복 확인 요청을 막는다.
+export function deriveVibeTradeReview({revision=0,participants=[],readyRevisions={},quote=null,
+  availabilityConfirmed=false,commitInFlight=false,connectionReady=true}={}){
+  const rev=clean(revision),people=(Array.isArray(participants)?participants:[]).slice(0,2)
+    .map(p=>freezeRow({id:clean(p?.id),label:clean(p?.label),offerCount:Math.max(0,Number(p?.offerCount)||0),
+      ready:Boolean(clean(p?.id)&&clean(readyRevisions?.[p.id])===rev&&rev)}));
+  const bothReady=people.length===2&&people.every(p=>p.id&&p.ready);
+  const quoteCurrent=quote&&clean(quote.revision)===rev&&quote.valid===true;
+  return Object.freeze({revision:rev,participants:Object.freeze(people),
+    quoteCurrent:Boolean(quoteCurrent),quoteTotals:quoteCurrent?freezeRow({...quote.totals}):null,
+    ready:bothReady,canRequestOwnerCommit:Boolean(bothReady&&quoteCurrent&&availabilityConfirmed
+      &&!commitInFlight&&connectionReady),serverCommitRequired:true,
+    committed:false,readOnly:true,ownerRevalidationRequired:true,
+    safety:freezeRow({offerEditInvalidatesReady:true,noClientInventoryMutation:true,
+      noDuplicateCommitWhilePending:true,cancelWithoutGameMutation:true})});
+}
+
 export function createVibeCommercialInterfaceBlueprint({genre='',systems=[],source='',platform='WEB',mobile=true,locale='ko-KR'}={}){
   const raw=clean(genre).toUpperCase(),key=/HORROR|공포/.test(raw)?'HORROR':/SURVIV|ROGUE|생존/.test(raw)?'SURVIVAL':/TYCOON|SIMULAT|경영|타이쿤/.test(raw)?'TYCOON':/DEFEN|STRATEG|TACTIC|전략|디펜스/.test(raw)?'STRATEGY':/RPG|ADVENTUR|모험|역할/.test(raw)?'RPG':/PUZZLE|퍼즐/.test(raw)?'PUZZLE':'CASUAL';
   const profile=COMMERCIAL_UI_GENRES[key];
@@ -122,6 +181,7 @@ export function createVibeCommercialInterfaceBlueprint({genre='',systems=[],sour
       animationAuthority:'PRESENTATION_ONLY',reducedMotionAlternative:'STATIC_FOCUS_AND_TEXT',
       mobileParticlesMax:12,worldGpuResourcesReusable:true,noAlwaysOnBlurOverGameplay:true,
       localAssetReuseFirst:true,noDuplicateDownloadedAssets:true}),
+    presenterAlgorithms:freezeRow({layout:'calculateVibeResponsiveUIZones',inventory:'deriveVibeInventoryPresentation',trade:'deriveVibeTradeReview'}),
     functionalContracts:freezeRow({sourceOwnerStateIsAuthority:true,noFakeItemTradeOrUpgradeButtons:true,
       transactionConfirmOnlyAfterOwnerValidation:true,duplicateCommitPreventionRequired:true,
       accessibilityAndSaveReloadRegression:true,displayMissingCapabilitiesAsDesignTasksNotActivePanels:true}),
