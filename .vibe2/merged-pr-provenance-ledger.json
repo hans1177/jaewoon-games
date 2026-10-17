@@ -60048,11 +60048,147 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a7232bb4de32eb818cdf0e14",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "ASSISTANT_OR_AUTOMATION_CODING",
+      "task": {
+        "taskId": "merged-pr-8337",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "70370a68a4d3a0b164d1485caac83946eab51739",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8337,
+        "baseBranch": "main",
+        "headBranch": "chatgpt/vibe-canary-main-code-20261017",
+        "baseSha": "70370a68a4d3a0b164d1485caac83946eab51739",
+        "headSha": "e6b0d9f7235a6b99aac2db6122e172ad21917b6d",
+        "mergeCommitSha": "1aee1fa008aec6fcbc9c4a8c3ad91dc4d13ea1e2",
+        "mergedAt": "2026-10-17T15:58:58Z",
+        "authorLogin": "hans1177",
+        "titleHash": "f0201d6525a54835cf0a2f6267fe41816c6977d0f29af310d2f5b11cf6e7caf5",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "chatgpt/vibe-canary-main-code-20261017",
+        "candidateSha": "e6b0d9f7235a6b99aac2db6122e172ad21917b6d"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 177,
+        "deletedLineCount": 54,
+        "changedFiles": [
+          ".github/workflows/vibe2-24h-canary.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/vibe2-adaptive-backpressure.test.mjs",
+          "qa/vibe2-continuous-release-dispatch.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-gemini-free-rotation.test.mjs",
+          "qa/vibe2-handoff.test.mjs",
+          "qa/vibe2-learning-closed-loop.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "tools/vibe2-gemini-free-rotation.mjs",
+          "tools/vibe2-queue-control.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-24h-canary.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/vibe2-adaptive-backpressure.test.mjs",
+          "qa/vibe2-continuous-release-dispatch.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-gemini-free-rotation.test.mjs",
+          "qa/vibe2-handoff.test.mjs",
+          "qa/vibe2-learning-closed-loop.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "tools/vibe2-gemini-free-rotation.mjs",
+          "tools/vibe2-queue-control.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8337",
+        "merge-commit:1aee1fa008aec6fcbc9c4a8c3ad91dc4d13ea1e2",
+        "base-main:70370a68a4d3a0b164d1485caac83946eab51739"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 483
+    "total": 484
   }
 }
