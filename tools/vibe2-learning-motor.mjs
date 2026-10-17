@@ -1456,8 +1456,7 @@ export function learningGuidance(context={}){
   for(const row of context.codePatterns||[]){
     lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
     const recipe=validatedObservedRepairRecipe(row?.repairRecipe);
-    if(row?.verified===true&&row?.rawCodeStored===false&&recipe?.origin==='VERIFIED_PATCH_ADDED_CODE'&&recipe?.rawCodeStored===false
-      &&Array.isArray(recipe.operationIds)&&Array.isArray(recipe.steps)&&Array.isArray(recipe.focusedChecks)){
+    if(row?.verified===true&&row?.rawCodeStored===false&&recipe){
       lines.push(`  - verified-implementation-recipe=${recipe.operationIds.slice(0,8).map(clean).join('|')}; steps=${recipe.steps.slice(0,8).map(value=>clean(value).slice(0,180)).join(' | ')}; focus-checks=${recipe.focusedChecks.slice(0,8).map(value=>clean(value).slice(0,160)).join(' | ')}; apply=ONLY_AFTER_CURRENT_SOURCE_AND_SCOPE_CHECK; validation=FRESH_QA_REQUIRED`);
     }
   }
