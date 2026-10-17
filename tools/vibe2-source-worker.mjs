@@ -25,6 +25,7 @@ import { assertVibeAgentHandoffScope } from './vibe2-openai-agent-patterns.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples, learningGuidance } from './vibe2-learning-motor.mjs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
+import {planVibePresentationAutopilot} from '../assets/vibe-presentation-director.js';
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
@@ -3883,6 +3884,42 @@ function preSubmitSelfReviewBlockFromPrompt(prompt='') {
   return raw.slice(start,finish+end.length);
 }
 
+
+// A concrete craft contract fed into the SAME existing source worker, not a new pipeline.
+function visualCraftWorkerGuidance(order={},context={}){
+  const target=clean(order?.target).toLowerCase();
+  if(!['web','roblox'].includes(target))return'';
+  const intent=[order?.goal,order?.selectedTask?.goal,order?.selectedTask?.focus]
+    .filter(Boolean).map(clean).join(' ');
+  const hasVisualWork=order?.presentationQuality?.required===true
+    ||order?.assetProduction?.required===true
+    ||/(?:그래픽|시각|꾸미|ui|hud|인벤|아이콘|대미지|데미지|tooltip|damage.?popup|visual|presentation|layout)/i.test(intent);
+  if(!hasVisualWork)return'';
+  const game=order?.gameDesign||order?.design||order?.selectedTask?.design||{};
+  const world=game?.world||order?.worldDesign||order?.selectedTask?.world||{};
+  const sourceSurfaces=order?.interfaceBlueprintContract?.surfaces
+    ||order?.presentationQuality?.uiSurfaces||order?.selectedTask?.uiSurfaces||[];
+  const uiSurfaces=Array.isArray(sourceSurfaces)
+    ?sourceSurfaces.filter(row=>row&&typeof row==='object'&&typeof row.surface==='string').slice(0,18):[];
+  const craft=planVibePresentationAutopilot({
+    files:(context?.files||[]).map(row=>({path:row.path,source:row.content})),
+    request:intent,game,world,uiSurfaces
+  });
+  return [
+    '[VIBE GAME VISUAL CRAFT BEGIN]',
+    'target='+target.toUpperCase()+'; gameId='+clean(order.gameId||order.selectedTask?.gameId),
+    'Actual renderable composition recipes, not visual approval:',
+    JSON.stringify({materialRecipes:craft.craftPlans.map(row=>row.materialRecipe),
+      surfaceLayouts:craft.craftPlans.map(row=>({surface:row.surface,grammar:row.grammar,
+        layout:row.layout,focus:row.focus})),supportedEffects:craft.craftPlans[0]?.requiredPatterns||[]}),
+    'For each actual UI surface present in the allowed source, implement the relevant visual behavior in that game client owner: frames/icons/fonts/spacing, damage numbers, tooltip placement, notice stacking, stateful icons, boss/status displays, and native 3D item preview when a verified model is actually available.',
+    'Use existing engine-native UI module and graphics runtime functions ONLY if actually imported/bound in the selected game source. Never treat a common library name as proof that the running game uses it; add the normal existing library binding within the authorized responsibility where necessary.',
+    'Avoid fixed default themes, fabricated asset IDs, synthetic gameplay events, new parallel render loops, semantic HP changes, save changes, server-authority shifts or broad unrelated rewrites.',
+    'Source owner edits must actually change rendered nodes or camera/model binding, not merely append descriptions or contract flags. Re-check portrait/landscape, touch input, popups on boundaries, duplicate event handling, reduced motion and runtime revision evidence.',
+    '[VIBE GAME VISUAL CRAFT END]'
+  ].join('\n');
+}
+
 function studioAssetQualityCoreGuidance(order={}) {
   const target=clean(order?.target).toLowerCase();
   if(!assetDevelopmentTask(order)||!['roblox','unity'].includes(target))return'';
@@ -4633,6 +4670,7 @@ ordinaryWeb3dEngineGuidance(order,context),
 unityWeb3dCodingBlock,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
+visualCraftWorkerGuidance(order,context),
 universalAssetWorkerGuidance(order),
 internalAssetSourceUsageGuidance(order),
 internalAssetApiIndexGuidance(context),
