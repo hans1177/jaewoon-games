@@ -131,7 +131,12 @@ export async function requestGeminiFreePair({
         temperature:Math.max(0,Math.min(.6,Number(temperature)||0)),
         max_tokens:Math.max(512,Math.min(16384,Number(maxOutputTokens)||3072))
       };
-      if(route.provider==='GROQ')body.service_tier='on_demand';
+      if(route.provider==='GROQ'){
+        // Groq GPT-OSS 명세의 completion 토큰 필드를 직접 사용한다.
+        body.max_completion_tokens=body.max_tokens;
+        delete body.max_tokens;
+        body.service_tier='on_demand';
+      }
       const response=await fetchImpl(route.endpoint,{
         method:'POST',signal:controller.signal,
         headers:{'content-type':'application/json','authorization':'Bearer '+route.key},
@@ -141,10 +146,21 @@ export async function requestGeminiFreePair({
         const status=response.status;
         if([401,402,403].includes(status))
           throw infrastructureFailure(route.provider+'_AUTH_OR_BILLING_BLOCKED_NO_PAID_FALLBACK:'+status);
-        if([404,429,500,502,503,504].includes(status)){
+        if([400,404,429,500,502,503,504].includes(status)){
           let errorBody=null;
-          if(status===429&&typeof response.json==='function')try{errorBody=await response.json();}catch{}
-          cooldownUntil.set(slot,Date.now()+retryDelayMs(response,status,errorBody));
+          if([400,429].includes(status)&&typeof response.json==='function')
+            try{errorBody=await response.json();}catch{/* HTTP 상태만 기록한다. */}
+          if(status===400){
+            // 제공자별 요청 호환성 실패는 다른 검증된 무료 제공자만 시도한다.
+            // 안전/정책 거절을 다른 제공자에서 우회하지 않는다.
+            const detail=[errorBody?.error?.code,errorBody?.error?.type,errorBody?.error?.message].map(clean).join(' ');
+            if(/content[-_ ]?(policy|filter)|safety|moderation|disallowed|policy[-_ ]?violation|prohibited|prompt[-_ ]?blocked/i.test(detail))
+              throw infrastructureFailure(route.provider+'_CONTENT_POLICY_BLOCKED_NO_FALLBACK');
+          }
+          // 잘못된 모델/파라미터 400은 다음 실행에서 반복 요청하지 않도록 식힌다.
+          const delay=status===400?Math.max(1800000,retryDelayMs(response,status,errorBody))
+            :retryDelayMs(response,status,errorBody);
+          cooldownUntil.set(slot,Date.now()+delay);
           failures.push(slot+':HTTP_'+status);
           console.log('VIBE2_EXTERNAL_FREE_ROTATE='+slot+':HTTP_'+status);
           continue;
