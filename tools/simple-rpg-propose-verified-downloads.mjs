@@ -13,6 +13,7 @@ const choices = Object.freeze({
   wildlife: 'assets/external/simple-rpg/wildlife',
   icons: 'assets/external/simple-rpg/icons-vfx-npc',
   priority: 'assets/external/simple-rpg/priority-v1',
+  music: 'assets/external/simple-rpg/music',
 });
 const kind = process.argv[2];
 const sourceDir = choices[kind];
