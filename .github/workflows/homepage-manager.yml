@@ -302,6 +302,22 @@ jobs:
               echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME_DERIVED_FRESH'
             fi
           fi
+          # Do not turn generation-time jitter into a new Director publication candidate.
+          # Keep the exact checked-out bytes when all verified release states are identical.
+          if git show HEAD:homepage-platform-exposure.json > /tmp/homepage-exposure-previous.json 2>/dev/null; then
+            exposure_delta="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {reuseUnchangedHomepageExposure} from './tools/company-homepage-platform-exposure-sync.mjs';
+          const before=JSON.parse(fs.readFileSync('/tmp/homepage-exposure-previous.json','utf8'));
+          const after=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
+          process.stdout.write(reuseUnchangedHomepageExposure(before,after)===before?'NO':'YES');
+          NODE
+            )"
+            if [[ "$exposure_delta" == NO ]]; then
+              cp /tmp/homepage-exposure-previous.json homepage-platform-exposure.json
+              echo 'HOMEPAGE_MANAGER_EXPOSURE_SEMANTIC_NOOP=YES'
+            fi
+          fi
           node -e "const x=require('./homepage-platform-exposure.json'),p=JSON.parse(process.env.HOMEPAGE_SUPPORTED_PLATFORMS_JSON||'[]');if(x.version!==3||x.authority!=='company-runtime'||x.internalCompanySurface!==true||x.centralPolicyFingerprint!==process.env.HOMEPAGE_POLICY_SHA256||JSON.stringify(x.supportedPlatforms)!==JSON.stringify(p)||!Array.isArray(x.games))process.exit(1)"
 
       - name: Persist platform exposure to company runtime
