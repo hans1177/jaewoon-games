@@ -93,8 +93,10 @@ test('free quota cooldown honors provider retry metadata and stops daily quota r
 
 test('an empty external source response rotates to the other free model',async()=>{
   await withExternalFixture(async()=>{
+    // Use an isolated module instance so its 15s cooldown never affects later quota tests.
+    const {requestGeminiFreePair:isolatedRequest}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=empty-output-rotation');
     const urls=[];
-    const result=await requestGeminiFreePair({apiKey:'test-key-not-real',contents:[],fetchImpl:async url=>{
+    const result=await isolatedRequest({apiKey:'test-key-not-real',contents:[],fetchImpl:async url=>{
       urls.push(String(url));
       return fixtureResponse(urls.length===1?'':'{"edits":[]}');
     }});
