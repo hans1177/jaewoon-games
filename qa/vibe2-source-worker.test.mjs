@@ -7,9 +7,42 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
-import {buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
+import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,buildPrompt} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
+
+test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
+  const select=(source,task={})=>selectWeb3dEngine({
+    order:{target:'web',selectedTask:task},files:[{path:'index.html',content:source}]
+  });
+  assert.deepEqual(select('<main>new game</main>').existingEvidence,[]);
+  assert.equal(select('<main>new game</main>').engine,'PLAYCANVAS');
+  assert.equal(select('',{complexNativePhysics:true}).engine,'BABYLON_JS');
+  assert.equal(select('',{preferredWeb3dEngine:'THREE_JS'}).engine,'THREE_JS');
+  assert.equal(select('import { Scene } from "three";\nconst s=new THREE.Scene();',{complexNativePhysics:true}).engine,'THREE_JS','existing real renderer overrides default and hints');
+  assert.equal(select('const app=new pc.Application(canvas);').engine,'PLAYCANVAS');
+  assert.equal(select('const scene=new BABYLON.Scene(engine);').engine,'BABYLON_JS');
+  assert.equal(select("const gl=canvas.getContext('webgl2'); gl.drawElements(4,3,2,0);").engine,'EXISTING_WEBGL');
+  assert.equal(select('const a=new THREE.Scene(); const b=new BABYLON.Scene(e);').engine,'EXISTING_ENGINE_REVIEW_REQUIRED');
+  assert.equal(select('').runtimeVerificationRequired,true);
+  assert.equal(select('').engineChoiceVerifiedByRuntime,false);
+});
+
+test('ordinary Web source prompt wires true 3D PlayCanvas Babylon and Three.js guidance only to Web',()=>{
+  const context={files:[{path:'index.html',editable:true,content:'<main>empty entrypoint</main>'}]};
+  const order={gameId:'3d-test',target:'web',goal:'build playable mobile 3D game',selectedTask:{type:'implementation'}};
+  const prompt=buildPrompt(order,context,['index.html']);
+  assert.match(prompt,/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
+  assert.match(prompt,/engine=PLAYCANVAS; reason=MOBILE_FIRST_NEW_WEB3D/);
+  assert.match(prompt,/Babylon\.js/);
+  assert.match(prompt,/Three\.js/);
+  assert.match(prompt,/WebGL2/);
+  assert.match(prompt,/Static code evidence is not a 3D PASS/);
+  const reused=buildPrompt(order,{files:[{...context.files[0],content:'const scene=new THREE.Scene();'}]},['index.html']);
+  assert.match(reused,/engine=THREE_JS; reason=KEEP_ORIGINAL_ENGINE_SOURCE/);
+  const heldUnity=buildPrompt({...order,target:'unity'},context,['index.html']);
+  assert.doesNotMatch(heldUnity,/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
+});
 
 test('asset synchronization detects same-size byte changes even when file metadata is unchanged',()=>{
   const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-sync-metadata-'));
