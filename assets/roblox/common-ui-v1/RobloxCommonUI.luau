@@ -4554,6 +4554,60 @@ end
 
 -- Presentation-only native controller, shared by Roblox games via the existing common UI.
 -- Confirmed combat/status events are supplied by each game's authoritative source.
+
+-- Native 3D item viewer for a real game-bound model; never constructs placeholder geometry.
+function RobloxCommonUI.CreateItemModelPreview(options)
+  options = options or {}
+  local source = options.model
+  assert(source and (source:IsA("Model") or source:IsA("BasePart")), "verified game item model required")
+  local theme = cloneTheme(options.theme)
+  local viewer = Instance.new("ViewportFrame")
+  viewer.Name = options.name or "BoundItemPreview"
+  viewer.Size = options.size or UDim2.fromOffset(240, 240)
+  viewer.BackgroundColor3 = theme.PanelInset
+  viewer.BorderSizePixel = 0
+  viewer.Ambient = Color3.fromRGB(135, 140, 150)
+  viewer.LightColor = Color3.fromRGB(250, 246, 234)
+  viewer.LightDirection = Vector3.new(-1, -1, -0.5)
+  tag(viewer, "VERIFIED_ITEM_MODEL_PREVIEW")
+  viewer:SetAttribute("OwnsGameplayAction", false)
+  corner(viewer, 10)
+  stroke(viewer, theme.Border, 1, 0.08)
+  local world = Instance.new("WorldModel")
+  world.Parent = viewer
+  local clone = source:Clone()
+  -- An imported model may include scripts. A visual-only copy never executes gameplay.
+  for _, descendant in ipairs(clone:GetDescendants()) do
+    if descendant:IsA("BaseScript") or descendant:IsA("ModuleScript") then
+      descendant:Destroy()
+    end
+  end
+  clone.Parent = world
+  local model = clone
+  if clone:IsA("BasePart") then
+    model = Instance.new("Model")
+    model.Name = "VisualPreviewRoot"
+    clone.Parent = model
+    model.Parent = world
+  end
+  for _, part in ipairs(model:GetDescendants()) do
+    if part:IsA("BasePart") then
+      part.Anchored = true
+      part.CanCollide = false
+      part.CanTouch = false
+      part.CanQuery = false
+    end
+  end
+  local origin, bounds = model:GetBoundingBox()
+  local diameter = math.max(bounds.X, bounds.Y, bounds.Z, 0.5)
+  local camera = Instance.new("Camera")
+  camera.FieldOfView = 35
+  camera.CFrame = CFrame.lookAt(origin.Position + Vector3.new(diameter,diameter*0.7,diameter*2.6),origin.Position)
+  camera.Parent = viewer
+  viewer.CurrentCamera = camera
+  return viewer,{model=model,camera=camera,bounds=bounds,ownsGameplayAuthority=false}
+end
+
 function RobloxCommonUI.CreateVisualFeedbackController(options)
   options = options or {}
   local parent = options.parent
