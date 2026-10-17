@@ -184,3 +184,19 @@ test('native-only development hold excludes withdrawn Web prototypes but keeps a
   policy.directNativeDualPlatformDevelopment.ownerActiveDevelopmentScope20261009.activeTargets.push('UNITY_WEB');
   assert.equal(selectDevelopmentWebValidationGames({catalog,policy}).length,4);
 });
+
+// 원본 자산/저장키가 없는 임시 부트스트랩으로 회귀하면 전체 검증을 실패시킨다.
+// Web 3D 출시는 승인하지 않으며 기존 보관 소스의 온전함만 확인한다.
+test('island-village legacy source retains save and playable startup without missing scripts',()=>{
+  const file='web-games/island-village/index.html';
+  const html=fs.readFileSync(file,'utf8');
+  assert.match(html,/SAVE_KEY\s*=\s*['"]jaewoon-island-v2['"]/);
+  assert.match(html,/function\s+load\s*\(/);
+  assert.match(html,/function\s+save\s*\(/);
+  assert.match(html,/requestAnimationFrame\(frame\)/);
+  assert.match(html,/<canvas\b[^>]*id=["']game["']/i);
+  assert.doesNotMatch(html,/Approved Web Bootstrap|\/path\/to\/source\.js/i);
+  const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+  assert.ok(scripts.length>0,'existing source must have a startup script');
+  for(const script of scripts)assert.doesNotThrow(()=>new vm.Script(script[1],{filename:file}));
+});
