@@ -328,7 +328,7 @@ function proceduralGradientNoise(seed,x,z){
   const u=fade(fx),v=fade(fz),lerp=(a,b,t)=>a+(b-a)*t;
   return lerp(lerp(dot(ix,iz,fx,fz),dot(ix+1,iz,fx-1,fz),u),lerp(dot(ix,iz+1,fx,fz-1),dot(ix+1,iz+1,fx-1,fz-1),u),v);
 }
-export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='AUTO',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[]}={}){
+export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='AUTO',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[],terrainMorphology=null}={}){
   const noMutation={sourceMutationPerformed:false,nativeAssetInstancingPerformed:false,runtimeVerified:false,gameplayRuleMutation:false,saveMeaningMutation:false};
   if(approvedDesign!==true)return Object.freeze({status:'APPROVED_DESIGN_REQUIRED',issues:Object.freeze(['APPROVED_WORLD_DESIGN_REQUIRED']),...noMutation});
   const maximum=mobile?48:72,validNumber=n=>typeof n==='number'&&Number.isFinite(n);
@@ -362,6 +362,19 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     !Array.isArray(ecologyActors)||!Array.isArray(authoredDungeonSites)){
     return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['ERA_WATER_OR_ACTOR_INPUT_INVALID']),...noMutation});
   }
+  // 승인된 지형 제작 입력만 사용한다. 기본값 null은 기존 월드의 지형·밸런스·seed를 그대로 보존.
+  // 외부 FastNoiseLite 실행이 아니라 기존 결정론적 gradient FBM의 지형 변형 입력이다.
+  if(terrainMorphology!==null&&(
+    !terrainMorphology||typeof terrainMorphology!=='object'||Array.isArray(terrainMorphology)
+    ||terrainMorphology.approved!==true||terrainMorphology.kind!=='CANYON'
+    ||typeof terrainMorphology.depth!=='number'||!Number.isFinite(terrainMorphology.depth)
+    ||terrainMorphology.depth<0||terrainMorphology.depth>.35
+    ||typeof terrainMorphology.halfWidth!=='number'||!Number.isFinite(terrainMorphology.halfWidth)
+    ||terrainMorphology.halfWidth<.04||terrainMorphology.halfWidth>.25
+    ||typeof terrainMorphology.meander!=='number'||!Number.isFinite(terrainMorphology.meander)
+    ||terrainMorphology.meander<0||terrainMorphology.meander>.15
+  ))return Object.freeze({status:'INVALID_GENERATION_INPUT',
+    issues:Object.freeze(['UNAPPROVED_OR_INVALID_TERRAIN_MORPHOLOGY']),...noMutation});
   const w=width,h=height,hash=String(seed).split('').reduce((v,c)=>Math.imul(v^c.charCodeAt(0),16777619)>>>0,2166136261);
   const objectNamespace='WORLD_'+hash.toString(36).toUpperCase();
   // 공용 자산은 게임에 통째로 복사하지 않는다. 실제 3D 원본+권리 확인 후보만 구조물에 매핑한다.
@@ -414,7 +427,13 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   for(let z=0;z<h;z++)for(let x=0;x<w;x++){
     const nx=x/w,nz=z/h,ridge=Math.abs(octave(nx*3,nz*3,0x102a));
     const regionalBiome=String(biome).toUpperCase(),wet=/WET|SWAMP|JUNGLE|RAIN/.test(regionalBiome+' '+climate),dry=/DESERT|ARID|DRY/.test(regionalBiome+' '+climate),mountain=/MOUNTAIN|ALPINE|RIDGE/.test(regionalBiome);
-    const elevation=Math.max(.05,Math.min(.95,.48+.5*octave(nx*4,nz*4,0x22bb)+.16*ridge+(mountain?.12:0)));
+    let elevation=Math.max(.05,Math.min(.95,.48+.5*octave(nx*4,nz*4,0x22bb)+.16*ridge+(mountain?.12:0)));
+    if(terrainMorphology?.kind==='CANYON'){
+      // 샘플링 좌표는 월드 seed에서 결정한다. 기존 heightfield 최종 지형만 제안한다.
+      const bend=octave(nz*2+7,.5,0x6c8a)*terrainMorphology.meander;
+      const falloff=Math.max(0,1-Math.abs(nx-.5+bend)/terrainMorphology.halfWidth);
+      elevation=Math.max(.05,elevation-terrainMorphology.depth*falloff*falloff);
+    }
     const moisture=Math.max(0,Math.min(1,.52+.58*octave(nx*3+11,nz*3-7,0x397a)+(wet?.2:0)-(dry?.25:0)));
     let type=elevation<(dry?.25:mountain?.31:.38)?'WATER':elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
     // 해양·섬·호수는 승인된 맵에서만 생성하며, 기본 AUTO는 과거 지형을 그대로 보존한다.
@@ -1114,6 +1133,10 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       candidatesEvaluated:natureCandidates.length,selectedVegetation:vegetation.length,stableGameObjectIds:true,
       spatialDepthMetersRequired:dimension==='3D',slopeAndNavClearancePreserved:true}),
     sightline:Object.freeze(sightline),drainage:'FOUR_NEIGHBOR_DOWNHILL',noise:'SEEDED_2D_GRADIENT_FBM',snapRules:Object.freeze({moduleGrid:cellSize,entrancesFaceConnectedRoad:true,foundationsFollowTerrain:true}),
+    ...(terrainMorphology?{terrainMorphology:Object.freeze({kind:'CANYON',
+      depth:terrainMorphology.depth,halfWidth:terrainMorphology.halfWidth,meander:terrainMorphology.meander,
+      generator:'EXISTING_SEEDED_GRADIENT_FBM',externalFastNoiseLiteExecuted:false,
+      appliedToNativeGame:false,gameplayAuthority:false,runtimeVerified:false})}:{}),
     mobileBudget:Object.freeze({cellCount:terrain.length,buildingLimit:maxBuildings,vegetationLimit:maxVegetation,instanceGroupCount:instanceGroups.size+natureGroups.size,actualDrawCallsMeasured:false}),
     // 안정 식별자는 오브젝트 이름/생성 순서에 의존하지 않는다. 보상·피해·저장은 기존 게임 규칙만 따른다.
     worldObjectBinding:Object.freeze({namespace:objectNamespace,idScheme:'WORLD_SEED_KIND_GRID_CELL',status:'GAMEPLAY_BINDING_REQUIRED',runtimeInteractionVerified:false,existingSaveSchemaRequired:true,gameplayDamageAndLootContractRequired:true,serverAuthorityValidationRequired:true,duplicateRewardGuardRequired:true,mobileActionBindingRequired:true}),
