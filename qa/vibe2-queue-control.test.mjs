@@ -2882,7 +2882,7 @@ test('24H lossless queue checkpoint follows accepted advisory learning and prece
   assert.match(saving,/VIBE2_QUEUE_TASKS_REMOVED=0/);
   assert.equal((workflow.match(/storage-migrate/g)||[]).length,1);
 });
-\n
+
 test('owner scoped direct coding takes precedence and resumes existing Vibe after verified F0-F9/publish handoff',()=>{
   const policy={
     ownerCanonicalRules:{ownerExclusiveDevelopment:{
