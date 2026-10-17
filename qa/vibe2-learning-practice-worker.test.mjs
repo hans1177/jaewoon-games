@@ -512,7 +512,7 @@ test('learning practice uses external Gemini API with no local server fallback',
     let calls=0;
     globalThis.fetch=async(url,options)=>{
       calls++;
-      assert.match(url,/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-2\.5-flash:generateContent$/);
+      assert.match(url,/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-3\.8-flash:generateContent$/);
       assert.equal(options.headers['x-goog-api-key'],'fixture-not-real');
       const req=JSON.parse(options.body);
       assert.equal(req.contents[0].parts[0].text,'example practice');
@@ -555,7 +555,7 @@ test('practice switches to the other approved Gemini model when a free slot is e
     assert.equal(await requestPracticeModel('rotation'), '{"recovered":true}');
     assert.equal(invoked.length,2);
     assert.notEqual(invoked[0],invoked[1]);
-    assert.ok(invoked.every(x=>/gemini-3\\.(?:8-flash|5-flash-lite):generateContent/.test(x)));
+    assert.ok(invoked.every(x=>/gemini-3\.(?:8-flash|5-flash-lite):generateContent/.test(x)));
   }finally{
     globalThis.fetch=originalFetch;
     for(const [name,value] of [['GEMINI_API_KEY',oldKey],['VIBE2_GAME_SOURCE_PROVIDER',oldProvider],['VIBE2_GEMINI_MODEL',oldPrimary],['VIBE2_GEMINI_BACKUP_MODEL',oldBackup]]){
