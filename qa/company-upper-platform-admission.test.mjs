@@ -764,3 +764,14 @@ test('upper-platform orchestration keeps independent native game dispatch with U
 
   for(const workflow of [roblox,unity,web,bootstrap])assert.match(workflow,/workflow_call:/);
 });
+
+test('Roblox F0 source-plan passes pinned canonical main policy to native admission',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const start=workflow.indexOf('      - name: Resolve next Roblox source execution slice from unbounded native queue');
+  const end=workflow.indexOf('      - name:',start+8);
+  assert.ok(start>=0&&end>start,'source-plan target resolver must exist');
+  const sourcePlan=workflow.slice(start,end);
+  assert.match(sourcePlan,/COMPANY_VERIFIED_POLICY_PATH: company-learning\/platform-release-roadmap\.json/);
+  assert.match(sourcePlan,/classifyUpperPlatformAdmission\(item,\{repoRoot:process\.cwd\(\),grandfatherGameIds\}\)/);
+  assert.match(sourcePlan,/const roadmap=JSON\.parse\(fs\.readFileSync\('company-learning\/platform-release-roadmap\.json','utf8'\)\)/);
+});
