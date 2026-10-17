@@ -283,3 +283,36 @@ test('PR changed Web game scope uses current synthetic merge parent while main c
   assert.match(workflow,/changed_web_games=ALL/);
   assert.match(workflow,/Development Web browser startup smoke/);
 });
+
+test('cat-step renders real local 3D world without replacing its jump loop or saved score',()=>{
+  const html=fs.readFileSync('web-games/cat-step/index.html','utf8');
+  const library='assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+  const tree='assets/shared/homely-house/tree.obj';
+  assert.ok(fs.statSync(library).size>100000,'reuse existing local Three.js');
+  assert.ok(fs.statSync(tree).size>1000,'reuse real OBJ in existing asset library');
+  assert.match(html,/import \* as THREE from '\/assets\/roblox\/world-ghosts\/native\/mesh\/three\/three\.module\.js'/);
+  assert.match(html,/new THREE\.WebGLRenderer\(\{canvas,/);
+  assert.match(html,/new THREE\.PerspectiveCamera\(/);
+  assert.match(html,/new THREE\.BoxGeometry\(/);
+  assert.match(html,/new THREE\.Mesh\(/);
+  assert.match(html,/new THREE\.BufferGeometry\(/);
+  assert.match(html,/fetch\('\/assets\/shared\/homely-house\/tree\.obj'\)/);
+  assert.match(html,/geometry\.computeVertexNormals\(\)/);
+  assert.match(html,/renderer\.render\(scene,camera\)/);
+  assert.match(html,/const mobile=matchMedia\('\(pointer: coarse\)'\)\.matches/);
+  assert.match(html,/Math\.min\(devicePixelRatio\|\|1,mobile\?1:1\.5\)/);
+  assert.match(html,/if\(document\.hidden\)/);
+  for(const retained of [
+    "cat-step-best","Math.max(150,280-(speedTier()-1)*18)",
+    "function finishCorrect()","function gameOver()",
+    "function scrollSteps()","function attempt(dir)",
+    "function catPose(now)","requestAnimationFrame(draw)",
+    "$('left').addEventListener('pointerdown'",
+    "$('right').addEventListener('pointerdown'"
+  ])assert.ok(html.includes(retained),'original gameplay/save missing: '+retained);
+  assert.doesNotMatch(html,/getContext\(['"]2d/);
+  assert.doesNotMatch(html,/https?:\/\//);
+  const script=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1]||'';
+  assert.ok(script.length>8000);
+  assert.doesNotThrow(()=>new Function(script.replace(/^import \* as THREE from '[^']+';/m,'')));
+});
