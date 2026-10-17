@@ -1075,8 +1075,8 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND=/);
   assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_OWNS_VERIFIED_LEARNING_REBIND=/);
   assert.match(workflow,/if\(existingSourceLearningRebind\)\{[\s\S]*?continue;/);
-  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\\|\\|materialRepairPending;/);
-  assert.match(workflow,/const materialRepairPending=reconciliationRow\\?\\.sourceRepairPending===true/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\|\|materialRepairPending;/);
+  assert.match(workflow,/const materialRepairPending=reconciliationRow\?\.sourceRepairPending===true/);
   assert.match(workflow,/const repairSupersedesCandidate=existingSourceMaintenanceRebind\|\|knownSourceRepairDebt/);
   assert.match(workflow,/if\(candidateReady&&!repairSupersedesCandidate\)continue/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR=/);
