@@ -273,3 +273,13 @@ test('existing native 3D Web games cap mobile pixel work without altering game l
     assert.doesNotMatch(html,/renderer\.shadowMap\.enabled\s*=\s*true/,id+': no additional shadow-map cost');
   }
 });
+  
+// PR 소스 범위가 기존 main 변경사항까지 커지더라도 QA 강도는 유지한다.
+test('PR changed Web game scope uses current synthetic merge parent while main checks all games',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-core-qa.yml','utf8');
+  assert.match(workflow,/git rev-parse --verify -q 'HEAD\^2'/);
+  assert.match(workflow,/base_sha="\$\(git rev-parse 'HEAD\^1'\)"/);
+  assert.match(workflow,/git diff --name-only "\$base_sha" HEAD/);
+  assert.match(workflow,/changed_web_games=ALL/);
+  assert.match(workflow,/DEVELOPMENT Web browser startup smoke/);
+});
