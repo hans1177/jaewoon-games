@@ -69,7 +69,7 @@ test('only approved exact GitHub Pages OIDC is REVIEW, never silent PASS',()=>{
     {before,after:after.replace('name: github-pages','name: unrelated-environment')},
     {before,after:after.replace('      pages: write','      pages: read')},
     {before,after:after.replace('      contents: read','      contents: write')},
-    {before,after:after.replace("  publish-pages:\\n    needs: deploy\\n    if: github.event_name != 'pull_request'", "  publish-pages:\\n    needs: deploy\\n    if: always()")},
+    {before,after:after.replace("  publish-pages:\n    needs: deploy\n    if: github.event_name != 'pull_request'", "  publish-pages:\n    needs: deploy\n    if: always()")},
     {before,after:after.replace('      id-token: write','      id-token: write\n      id-token: write')},
     {before:'',after},
   ]){
