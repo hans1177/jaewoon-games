@@ -156,7 +156,10 @@ test('lock F0 to F9 real verification and pre-F9 publication restrictions',()=>{
   assert.equal(f.f9Terminal,false);
   assert.equal(f.f10Forbidden,true);
   assert.equal(f.publishBeforeF9Forbidden,true);
-  assert.equal(f.developmentGamePublicationAllowed,false);
+  assert.equal(f.developmentGamePublicationAllowed,true);
+  assert.equal(f.canonicalServerPublicationEligibility,'EXACT_F9_AND_CURRENT_CANDIDATE_QA');
+  assert.equal(policy.fixedAutonomousDevelopmentOperatingContract.serverDeployment.numericalScoreBlocksVerifiedDeployment,false);
+  assert.equal(policy.roblox.deploymentControl.verifiedCyclePublication.publicationDispatchRequirementScope,'ALL_GAMES_AFTER_VERIFIED_F9');
   assert.deepEqual(f.sequence,[
     'GAME_SOURCE_MUTATION','F0','F1','F2','F3','F4','F5','F6','F7','F8','F9',
     'RELEASE_CLASSIFICATION','PUBLISH_ONLY_IF_RELEASED','IMMEDIATE_NEXT_EVOLUTION_CYCLE'
