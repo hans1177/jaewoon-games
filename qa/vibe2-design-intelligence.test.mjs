@@ -219,6 +219,7 @@ test('material design change requires plan A and B plus selected rationale',()=>
   assert.ok(missing.implementationGate.blockers.includes('PLAN_A_B_REQUIRED_FOR_MATERIAL_DESIGN_CHANGE'));
   const ready=buildVibeDesignIntelligence({task:{
     goal:'장르를 확장한다',type:'design',designChange:true,designRationale:'새 플레이 가능성 검토',
+    designFields:['MAIN','A','B','C','D','@'],
     designAlternatives:[
       {
         label:'PLAN_A',concept:'기존 생존 탐험을 깊게 확장',playerFantasy:'위험한 세계를 스스로 개척한다',
@@ -256,7 +257,11 @@ test('material design change requires plan A and B plus selected rationale',()=>
   assert.equal(ready.blueprint.genreChallengeAllowed,true);
   assert.equal(ready.blueprint.baseConceptIsReferenceNotPrison,true);
   assert.deepEqual(ready.blueprint.issues,[]);
+  assert.equal(ready.designerHandoff.required,false,'ABCD+@ is handled by the existing designer grammar');
   assert.equal(ready.implementationGate.allowed,true);
+  const outsideGrammar=buildVibeDesignIntelligence({task:{goal:'설계 바깥 새 규칙',type:'design',designChange:true,designFields:['CUSTOM_ENGINE_RULE']}});
+  assert.equal(outsideGrammar.designerHandoff.required,true);
+  assert.equal(outsideGrammar.implementationGate.allowed,false);
 });
 
 test('content diversity detects repeated map and enemy templates',()=>{
