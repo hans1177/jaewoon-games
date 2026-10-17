@@ -13,6 +13,24 @@ test('practice accepts analysis or isolated Web artifact routes but rejects prod
   assert.throws(()=>buildPracticePrompt({executionRoute:'analysis-only',goal:'ordinary'}),/marker/);
 });
 
+test('practice rehearses only verified production failures without exposing hidden source',()=>{
+  const base={executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] practice save repair',
+    unifiedLearning:{failureLocalMemory:[
+      {id:'verified-save-failure',gameId:'g1',outcome:'FAIL',verified:true,reusable:true,
+        failureCause:'Duplicate save writes on reload',reusablePatterns:['validate before commit'],avoidPatterns:['double mutation']},
+      {id:'untrusted-case',gameId:'g1',outcome:'FAIL',verified:false,reusable:true,
+        failureCause:'RAW_UNVERIFIED_INJECTION'},
+      {id:'not-reusable',outcome:'FAIL',verified:true,reusable:false,
+        failureCause:'NOT_REUSABLE_CASE'}
+    ]}};
+  const prompt=buildPracticePrompt(base);
+  assert.match(prompt,/VERIFIED REAL-WORLD FAILURE REHEARSAL/);
+  assert.match(prompt,/Duplicate save writes on reload/);
+  assert.match(prompt,/validate before commit/);
+  assert.doesNotMatch(prompt,/RAW_UNVERIFIED_INJECTION|NOT_REUSABLE_CASE/);
+  assert.match(prompt,/Do not copy case text as code/);
+});
+
 test('practice result can pass structurally but never becomes production pass',async()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-practice-'));
   const order=path.join(dir,'order.json'),response=path.join(dir,'response.json'),out=path.join(dir,'out.json');
