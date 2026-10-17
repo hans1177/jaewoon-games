@@ -524,3 +524,26 @@ test('goblin crossbow arrow velocity is 0.4x baseline without damage or lifetime
  assert.equal(arrow.life,2600);
  assert.equal(arrow.damage,23);
 });
+
+test('stone fiber and tree density is exactly fourfold only in ordinary forest and existing other biome nodes remain unchanged',()=>{
+ const generate=functionBody('spawnForestResourceNodes'),node=functionBody('makeNode');
+ assert.match(node,/forestOnly=false/);
+ assert.match(node,/forestOnly&&regionAt\(x,y\)!=='forest'/);
+ assert.match(generate,/forestCount\*3/);
+ assert.match(functionBody('initWorld'),/state\.trees=spawnForestResourceNodes\('tree',840\)/);
+ assert.match(functionBody('initWorld'),/state\.rocks=spawnForestResourceNodes\('rock',680\)/);
+ assert.match(functionBody('initWorld'),/state\.fibers=spawnForestResourceNodes\('fiber',880\)/);
+ const makeNode=(kind,i,forestOnly=false)=>({id:kind+i,kind,x:forestOnly?0:i%2,y:0});
+ const regionAt=(x,y)=>x===0?'forest':'snow';
+ const create=new Function('makeNode','regionAt',`return (${generate})`)(makeNode,regionAt);
+ for(const kind of ['tree','rock','fiber']){
+  const all=create(kind,6);
+  const original=all.slice(0,6);
+  assert.equal(original.filter(n=>regionAt(n.x,n.y)==='forest').length,3);
+  assert.equal(all.filter(n=>regionAt(n.x,n.y)==='forest').length,12);
+  assert.equal(all.filter(n=>regionAt(n.x,n.y)==='snow').length,3);
+  assert.equal(new Set(all.map(n=>n.id)).size,all.length);
+ }
+ assert.match(source,/RESOURCE_RESPAWN_MS=300000/);
+ assert.match(source,/jaewoon_fantasy_survival_v1/);
+});

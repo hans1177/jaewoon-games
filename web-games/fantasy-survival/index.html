@@ -1126,7 +1126,7 @@ function discoverUnderwaterRegion(){
   }
 }
 function randomCanyonPoint(){let x,y,guard=0;do{x=rand(11550,14320);y=rand(5050,8520);guard++}while((!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y))&&guard<400);return{x,y}}
-function makeNode(kind,i){
+function makeNode(kind,i,forestOnly=false){
  let x,y;
  if(kind==='iron'){const p=randomCanyonPoint();x=p.x;y=p.y}
  else if(kind==='gold'){const p=randomVolcanoPoint('core');x=p.x;y=p.y}
@@ -1135,7 +1135,7 @@ function makeNode(kind,i){
  else if(kind==='poisonstone'){const p=randomPoisonStonePoint();x=p.x;y=p.y}
  else if(kind==='sunstone'){const p=randomDesertPoint(180);x=p.x;y=p.y}
  else if(kind==='carrot'){do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeWater(x,y)||pointInJungle(x,y)||pointInSwamp(x,y)||pointInWildernessDesert(x,y))}
- else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeWater(x,y)||pointInWildernessDesert(x,y))}
+ else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeWater(x,y)||pointInWildernessDesert(x,y)||(forestOnly&&regionAt(x,y)!=='forest'))}
  const maxHp=kind==='sunstone'?10:kind==='poisonstone'?10:kind==='crystal'?4:kind==='tree'?3:kind==='rock'?4:kind==='iron'?3:kind==='gold'?6:kind==='essence'||kind==='carrot'?1:2;
  return{id:kind+i,kind,x,y,hp:maxHp,maxHp,dead:false,respawnAt:0}
 }
@@ -1192,10 +1192,16 @@ function spawnCreature(type,index=0,anchor=null,packId=null){
  const scaledHp=enemyDifficultyMaxHp(type);return{type,hp:scaledHp,maxHp:scaledHp,x,y,spawnX:x,spawnY:y,packId,area:type.underwater?'underwater':(type.area||'surface'),enemyTarget:null,stunnedUntil:0,slowedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,nextAttackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}
 }
 function spawnAt(type,x,y,packId=null){const scaledHp=enemyDifficultyMaxHp(type);return{type,hp:scaledHp,maxHp:scaledHp,x,y,spawnX:x,spawnY:y,packId,area:type.underwater?'underwater':(type.area||'surface'),enemyTarget:null,stunnedUntil:0,slowedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,nextAttackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}}
+function spawnForestResourceNodes(kind,count){
+ const nodes=Array.from({length:count},(_,i)=>makeNode(kind,i));
+ const forestCount=nodes.filter(n=>regionAt(n.x,n.y)==='forest').length;
+ for(let i=0;i<forestCount*3;i++)nodes.push(makeNode(kind,count+i,true));
+ return nodes
+}
 function initWorld(){
-  state.trees=Array.from({length:840},(_,i)=>makeNode('tree',i));
-  state.rocks=Array.from({length:680},(_,i)=>makeNode('rock',i));
-  state.fibers=Array.from({length:880},(_,i)=>makeNode('fiber',i));
+  state.trees=spawnForestResourceNodes('tree',840);
+  state.rocks=spawnForestResourceNodes('rock',680);
+  state.fibers=spawnForestResourceNodes('fiber',880);
   state.irons=Array.from({length:19},(_,i)=>makeNode('iron',i));
   state.golds=Array.from({length:13},(_,i)=>makeNode('gold',i));
   state.essences=Array.from({length:28},(_,i)=>makeNode('essence',i));
