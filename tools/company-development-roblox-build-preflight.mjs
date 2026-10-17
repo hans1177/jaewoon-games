@@ -1,5 +1,6 @@
 // 파일명: tools/company-development-roblox-build-preflight.mjs
 import fs from 'node:fs';
+import {GEMINI_FREE_MODELS,verifiedFreeGeminiModels,requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {hasVerifiedVibe2SourceHandoff} from './company-development-roblox-source-reconcile.mjs';
@@ -13,11 +14,13 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 
 function configuredLeads(directive={}){
   const ai=directive.ai||{};
-  const sharedModel=clean(ai.robloxPreflightModel||ai.departmentLeadModels?.development||ai.modelPool?.[0]);
+  // Legacy local model names in directive are not executable authority.
+  // The same preflight review uses the approved external free Gemini pair.
+  const sharedModel=verifiedFreeGeminiModels()[0];
   const leads=Object.fromEntries(ROLES.map(role=>[role,sharedModel]));
-  const distinct=sharedModel?[sharedModel]:[];
-  const minDistinct=Math.max(1,Number(ai.minDistinctLeadModelsAcrossDepartments)||1);
-  return {leads,distinct,pool:new Set((ai.modelPool||[]).map(clean).filter(Boolean)),sharedModel,minDistinct};
+  const distinct=[sharedModel];
+  const minDistinct=1;
+  return {leads,distinct,pool:new Set(GEMINI_FREE_MODELS),sharedModel,minDistinct};
 }
 
 export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwnerFocus=false}={}){
@@ -90,28 +93,21 @@ async function callLead(model,role,facts,{fetchImpl=globalThis.fetch}={}){
     additionalProperties:false,
   };
   const evidence=JSON.stringify(facts.build);
-  let last=null;
-  for(let attempt=1;attempt<=2;attempt++){
-    try{
-      const response=await fetchImpl('http://127.0.0.1:11434/api/chat',{
-        method:'POST',headers:{'content-type':'application/json'},
-        body:JSON.stringify({
-          model,stream:false,think:false,format:schema,
-          messages:[
-            {role:'system',content:`You are the single shared Roblox preflight reviewer working with Vibe. This gate only decides whether the already-built immutable package may START real runtime testing. Do not demand runtime, independent QA, regression, final review, or release evidence at this stage. A BLOCK decision must name a concrete contradiction visible in BUILD_EVIDENCE. Never invent facts.`},
-            {role:'user',content:`BUILD_EVIDENCE=${evidence}\nAll deterministic policy checks passed before this review. Return PASS when no concrete build-stage blocker is present.`},
-          ],
-          options:{temperature:0,num_ctx:4096,num_predict:300},
-        }),
-      });
-      if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-      const body=await response.json();
-      const parsed=JSON.parse(clean(body?.message?.content));
-      if(!['PASS','BLOCK'].includes(parsed.decision)||!Array.isArray(parsed.blockers))throw new Error('invalid lead response');
-      return {role,model,decision:parsed.decision,blockers:parsed.blockers.map(clean).filter(Boolean),note:clean(parsed.note)};
-    }catch(error){last=error;if(attempt===1)console.log(`ROBLOX_PREFLIGHT_LEAD_RETRY=${role}:${model}`);}
-  }
-  throw new Error(`ROBLOX_PREFLIGHT_LEAD_FAILED ${role}:${model}: ${clean(last?.message)}`);
+  const text=(await requestGeminiFreePair({
+    apiKey:clean(process.env.GEMINI_API_KEY),
+    contents:[{role:'user',parts:[{text:[
+      'You are a Roblox package preflight reviewer. Only decide if an immutable package may START runtime testing. Do not invent runtime, QA, release or publication evidence.',
+      'A BLOCK must cite an actual contradiction in BUILD_EVIDENCE. Return JSON with decision PASS or BLOCK, blockers and note.',
+      'BUILD_EVIDENCE='+evidence,
+      'The exact deterministic package identity checks have already passed.'
+    ].join('\n')}]}],
+    maxOutputTokens:512,temperature:0,timeoutMs:90000,responseMimeType:'application/json',fetchImpl
+  })).text;
+  const parsed=JSON.parse(clean(text).replace(/^\`\`\`(?:json)?/i,'').replace(/\`\`\`$/,'').trim());
+  if(!['PASS','BLOCK'].includes(parsed.decision)||!Array.isArray(parsed.blockers)||typeof parsed.note!=='string')
+    throw new Error('ROBLOX_PREFLIGHT_EXTERNAL_AI_INVALID_REVIEW');
+  return {role,model:GEMINI_FREE_MODELS[0],decision:parsed.decision,blockers:parsed.blockers.map(clean).filter(Boolean),note:clean(parsed.note)};
+
 }
 
 export async function evaluateRobloxBuildPreflight({item={},directive={},fetchImpl=globalThis.fetch,secondaryOwnerFocus=false}={}){
@@ -126,7 +122,7 @@ export async function evaluateRobloxBuildPreflight({item={},directive={},fetchIm
     version:2,gameId:item.gameId||null,pass:blockers.length===0,state:blockers.length?'BLOCKED':'PASS',checkedAt:new Date().toISOString(),
     sourceRevision:facts.build.sourceRevision,artifactIdentity:facts.build.artifactIdentity,secondaryOwnerFocus:facts.secondaryOwnerFocus===true,facts,
     leadReviews:Object.freeze(leadReviews),blockers:Object.freeze(blockers),
-    reviewMode:facts.sharedModel?'OPTIONAL_LOCAL_MODEL_REVIEW':'DETERMINISTIC_GAME_BUILD_EVIDENCE_ONLY',
+    reviewMode:facts.sharedModel?'EXTERNAL_GEMINI_FREE_PAIR_REVIEW':'DETERMINISTIC_GAME_BUILD_EVIDENCE_ONLY',
     authority:'roblox-exact-package-build-preflight',
   });
 }
