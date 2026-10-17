@@ -39,7 +39,7 @@ export async function requestGeminiFreePair({
     try{
       const generationConfig={
         temperature:Math.max(0,Math.min(.6,Number(temperature)||0)),
-        maxOutputTokens:Math.max(512,Math.min(8192,Number(maxOutputTokens)||3072))
+        maxOutputTokens:Math.max(512,Math.min(16384,Number(maxOutputTokens)||3072))
       };
       if(responseMimeType)generationConfig.responseMimeType=responseMimeType;
       const response=await fetchImpl(
