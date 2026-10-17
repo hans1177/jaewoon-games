@@ -42,6 +42,15 @@ assert.match(text,/EXTERNAL_MOBILE_PRODUCTION_QUEUE_DEPENDENCY=NONE/);
 assert.match(text,/name:\s*continuous refill/);
 assert.match(text,/EXTERNAL_MOBILE_CONTINUOUS_REFILL=DISPATCHED/);
 assert.match(text,/EXTERNAL_MOBILE_24H_CHAIN=ON/);
+// HTTP 429 from the delivery provider cannot burn runner time in an instant retry chain.
+assert.match(text,/provider_throttled:\s*\$\{\{ steps\.provider_status\.outputs\.throttled \}\}/);
+assert.match(text,/games\.length>0&&games\.every/);
+assert.match(text,/Aurora anonymous auth failed with HTTP 429/);
+assert.match(text,/needs\.playtest\.outputs\.provider_throttled != 'true'/);
+assert.match(text,/RETRY_AT_EXISTING_HOURLY_SCHEDULE/);
+assert.match(text,/sudo rm -rf -- "\$RUNNER_TEMP\/redroid-data"/);
+assert.match(text,/EXTERNAL_MOBILE_PLAYTEST=FAILED/);
+assert.match(text,/EXTERNAL_MOBILE_PLAYTEST=PASS/);
 assert.doesNotMatch(text,/active_other|queue_api|newer_pending|running_other/);
 assert.match(text,/external-mobile-free-game-playtest\.yml\/dispatches/);
 assert.equal(catalog.games.length,27);
