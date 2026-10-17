@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1pkga6t",
+      "worker": "vibe2",
+      "taskId": "survival-existing-web-assessment-v1",
+      "gameId": "survival",
+      "files": [
+        "web-games/survival/index.html"
+      ],
+      "baseSha": "70370a68a4d3a0b164d1485caac83946eab51739",
+      "runId": "39044047478",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-17T15:24:49.413Z",
+      "expiresAt": "2026-10-17T16:09:49.413Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
