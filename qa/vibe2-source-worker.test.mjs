@@ -11,12 +11,12 @@ import {buildInternalAssetSourceUsageContract,selectWeb3dEngine} from '../tools/
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
 
-test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
+test('Web true 3D engine selection preserves existing renderers and uses locally bundled Three.js for new games',()=>{
   const select=(source,task={})=>selectWeb3dEngine({
     order:{target:'web',selectedTask:task},files:[{path:'index.html',content:source}]
   });
   assert.deepEqual(select('<main>new game</main>').existingEvidence,[]);
-  assert.equal(select('<main>new game</main>').engine,'PLAYCANVAS');
+  assert.equal(select('<main>new game</main>').engine,'THREE_JS');
   assert.equal(select('',{complexNativePhysics:true}).engine,'BABYLON_JS');
   assert.equal(select('',{preferredWeb3dEngine:'THREE_JS'}).engine,'THREE_JS');
   assert.equal(select('import { Scene } from "three";\nconst s=new THREE.Scene();',{complexNativePhysics:true}).engine,'THREE_JS','existing real renderer overrides default and hints');
@@ -33,7 +33,7 @@ test('ordinary Web source prompt wires true 3D PlayCanvas Babylon and Three.js g
   const order={gameId:'3d-test',target:'web',goal:'build playable mobile 3D game',selectedTask:{type:'implementation'}};
   const prompt=buildPrompt(order,context,['index.html']);
   assert.match(prompt,/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
-  assert.match(prompt,/engine=PLAYCANVAS; reason=MOBILE_FIRST_NEW_WEB3D/);
+  assert.match(prompt,/engine=THREE_JS; reason=MOBILE_FIRST_NEW_WEB3D/);
   assert.match(prompt,/Babylon\.js/);
   assert.match(prompt,/Three\.js/);
   assert.match(prompt,/WebGL2/);
