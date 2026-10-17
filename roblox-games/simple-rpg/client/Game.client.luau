@@ -84,7 +84,18 @@ end
 
 local function togglePanel(name: string): ()
   local panel = findUi(name)
-  if panel and panel:IsA("GuiObject") then panel.Visible = not panel.Visible end
+  if not panel or not panel:IsA("GuiObject") then return end
+  local opening = not panel.Visible
+  if opening then
+    -- Single mobile overlay at a time, preserving the native joystick and touch zone.
+    for _, otherName in ipairs({"Actions", "Inventory", "Races", "Trade"}) do
+      if otherName ~= name then
+        local other = findUi(otherName)
+        if other and other:IsA("GuiObject") then other.Visible = false end
+      end
+    end
+  end
+  panel.Visible = opening
 end
 
 local function invokeExternalAction(action: string, value: any): ()
@@ -424,6 +435,42 @@ local function attachNativeHud(): ()
       option.Parent = races
       bindExternalButton(option)
     end
+  end
+  -- Mobile trade controls use the existing server-priced economy and remote validation.
+  local tradePanel = Instance.new("ScrollingFrame")
+  tradePanel.Name = "Trade"
+  tradePanel.AnchorPoint = Vector2.new(1, 0)
+  tradePanel.Position = UDim2.new(1, -8, 0, 193)
+  tradePanel.Size = UDim2.new(0, 174, 0.55, -193)
+  tradePanel.BackgroundColor3 = Color3.fromRGB(44, 46, 38)
+  tradePanel.Visible = false
+  tradePanel.AutomaticCanvasSize = Enum.AutomaticSize.Y
+  tradePanel.CanvasSize = UDim2.new()
+  tradePanel.ScrollBarThickness = 4
+  tradePanel.Parent = gui
+  local tradeLayout = Instance.new("UIListLayout")
+  tradeLayout.Padding = UDim.new(0, 6)
+  tradeLayout.SortOrder = Enum.SortOrder.LayoutOrder
+  tradeLayout.Parent = tradePanel
+  for _, row in ipairs({
+    {"대리석 구매", "CivTradeBuy", "Marble"},
+    {"대리석 판매", "CivTradeSell", "Marble"},
+    {"금 특산품 구매", "CivTradeBuy", "Gold"},
+    {"금 특산품 판매", "CivTradeSell", "Gold"},
+    {"향신료 구매", "CivTradeBuy", "Spice"},
+    {"향신료 판매", "CivTradeSell", "Spice"},
+  }) do
+    local button = Instance.new("TextButton")
+    button.Name = row[2] .. row[3]
+    button.Size = UDim2.new(1, -10, 0, 39)
+    button.Text = row[1]
+    button.TextSize = 13
+    button.TextColor3 = Color3.fromRGB(255, 240, 201)
+    button.BackgroundColor3 = Color3.fromRGB(99, 81, 57)
+    button:SetAttribute("GameAction", row[2])
+    button:SetAttribute("GameArgument", row[3])
+    button.Parent = tradePanel
+    bindExternalButton(button)
   end
   updateNumbers()
 end
