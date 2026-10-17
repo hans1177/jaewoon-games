@@ -109,6 +109,21 @@ function RobloxCommonUI.CreatePanel(options)
   stroke(frame, theme.Border, 1.5, 0.08)
   gradient(frame, theme.PanelRaised, theme.Panel, 90)
 
+  -- Optional licensed, already-bound texture. Never invent a Roblox asset ID.
+  if typeof(options.surfaceTexture) == "string" and options.surfaceTexture ~= "" then
+    local surface = Instance.new("ImageLabel")
+    surface.Name = "VerifiedSurfaceSkin"
+    surface.BackgroundTransparency = 1
+    surface.Size = UDim2.fromScale(1, 1)
+    surface.Image = options.surfaceTexture
+    surface.ScaleType = typeof(options.sliceCenter) == "Rect" and Enum.ScaleType.Slice or Enum.ScaleType.Stretch
+    if typeof(options.sliceCenter) == "Rect" then surface.SliceCenter = options.sliceCenter end
+    surface.ImageTransparency = math.clamp(tonumber(options.surfaceOpacity) or 0, 0, 1)
+    surface.ZIndex = frame.ZIndex
+    surface.Parent = frame
+    surface:SetAttribute("PresentationOnlySkin", true)
+  end
+
   local shadow = Instance.new("Frame")
   shadow.Name = "DepthShadow"
   shadow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -126,7 +141,7 @@ function RobloxCommonUI.CreatePanel(options)
   inner.Position = UDim2.fromOffset(7, 7)
   inner.Size = UDim2.new(1, -14, 1, -14)
   inner.BackgroundColor3 = theme.PanelInset
-  inner.BackgroundTransparency = 0.54
+  inner.BackgroundTransparency = options.surfaceTexture and 0.90 or 0.54
   inner.BorderSizePixel = 0
   inner.ZIndex = frame.ZIndex + 1
   inner.Parent = frame
