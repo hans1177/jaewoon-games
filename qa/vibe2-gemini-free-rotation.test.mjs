@@ -1,4 +1,5 @@
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {GEMINI_FREE_MODELS,verifiedFreeGeminiModels,requestGeminiFreePair} from '../tools/vibe2-gemini-free-rotation.mjs';
 import {requestLocalModel} from '../tools/vibe2-source-worker.mjs';
@@ -105,4 +106,35 @@ test('quota 429 rotates to the other model, honors Retry-After, and does not ret
     assert.equal(nextUrls.length,1,'cooldown skips 429 model rather than repeatedly consuming requests');
     assert.equal(nextUrls[0],urls[1]);
   });
+});
+
+test('active Vibe and Roblox release paths do not install, pull or request local Ollama models',()=>{
+  const read=file=>fs.readFileSync(new URL('../'+file,import.meta.url),'utf8');
+  const workflowPaths=[
+    '.github/workflows/vibe2-continuous-core.yml',
+    '.github/workflows/vibe2-candidate-release.yml',
+    '.github/workflows/company-development-roblox-runtime.yml',
+    '.github/workflows/post-modification-revote.yml'
+  ];
+  for(const file of workflowPaths){
+    const workflow=read(file);
+    assert.doesNotMatch(workflow,/uses:\s*\.\/\.github\/actions\/prepare-ollama/,'no active local model action: '+file);
+    assert.doesNotMatch(workflow,/ollama pull|ollama serve|ollama\.com\/install\.sh/,'no local model installation: '+file);
+  }
+  const scripts=[
+    'tools/vibe2-source-worker.mjs',
+    'tools/vibe2-learning-practice-worker.mjs',
+    'tools/company-development-roblox-build-preflight.mjs',
+    'tools/autonomous-development-worker.mjs',
+    'tools/autonomous-department-cycle.mjs',
+    'tools/company-post-modification-review.mjs'
+  ];
+  for(const file of scripts){
+    const source=read(file);
+    assert.doesNotMatch(source,/127\.0\.0\.1:11434|\/api\/generate|\/api\/chat|callOllama\(/,'no local HTTP calls: '+file);
+  }
+  assert.match(read('tools/company-development-roblox-build-preflight.mjs'),/requestGeminiFreePair\(/);
+  assert.match(read('.github/workflows/company-development-roblox-runtime.yml'),/ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED/);
+  assert.match(read('.github/workflows/vibe2-candidate-release.yml'),/company-development-roblox-build-preflight\.mjs/);
+  assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_WORKER_PROVIDER=GEMINI_API/);
 });

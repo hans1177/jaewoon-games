@@ -950,19 +950,12 @@ jobs:
           });
           fs.writeFileSync(file,JSON.stringify(q));
           NODE
-      - uses: ./.github/actions/prepare-ollama
-        with:
-          model: 'llama3.2:1b'
-          version: '0.33.3'
-          pull-model: 'true'
-          department-role: development
-          cache-model: 'true'
       - name: Verify candidate package with existing preflight and full Luau compilation
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
-          model="$(node -e "const d=require('./company-directive.json');console.log(d.ai.robloxPreflightModel||d.ai.departmentLeadModels?.development||'llama3.2:1b')")"
-          ollama pull "$model"
           node tools/company-development-roblox-build-preflight.mjs --game-id="$GAME_ID" --queue=/tmp/roblox-candidate/context/development-queue.json --directive=company-directive.json --output=/tmp/roblox-candidate/package/results/preflight.json
           mkdir -p /tmp/roblox-candidate/source
           git archive "$CANDIDATE_SHA" "$SOURCE_ROOT" | tar -x -C /tmp/roblox-candidate/source

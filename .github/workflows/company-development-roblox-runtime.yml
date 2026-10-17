@@ -1363,32 +1363,12 @@ jobs:
           echo "artifact_identity=$identity" >> "$GITHUB_OUTPUT"
           echo "build_evidence=$evidence" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare shared local review model in package worker
-        if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
-        uses: ./.github/actions/prepare-ollama
-        with:
-          model: 'llama3.2:1b'
-          version: '0.33.3'
-          pull-model: 'true'
-          department-role: development
-          cache-model: 'true'
-
-      - name: Ensure fused shared preflight model is local
-        if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
-        shell: bash
-        run: |
-          set -euo pipefail
-          model="$(node -e "const d=require('./company-directive.json');console.log(d.ai.robloxPreflightModel||d.ai.departmentLeadModels?.development||'llama3.2:1b')")"
-          have="$(ollama list | awk 'NR>1{print $1}')"
-          grep -Fxq "$model" <<<"$have" || ollama pull "$model"
-          echo "ROBLOX_PREFLIGHT_SHARED_MODEL=$model"
-          echo 'ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED'
-
       - name: Run fused shared-model build preflight
         id: fused_preflight
         if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
         continue-on-error: true
         env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GAME_ID: ${{ matrix.gameId }}
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
           SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
@@ -1419,6 +1399,8 @@ jobs:
           }
           fs.writeFileSync('/tmp/roblox-technical/preflight-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE
+          echo 'ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED'
+          echo 'ROBLOX_PREFLIGHT_SHARED_MODEL=GEMINI_FREE_EXTERNAL_PAIR'
           node tools/company-development-roblox-build-preflight.mjs \
             --game-id="$GAME_ID" \
             --queue=/tmp/roblox-technical/preflight-queue.json \

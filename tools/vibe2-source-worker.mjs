@@ -42,7 +42,7 @@ const MAX_FILE_BYTES=260000;
 const MIN_FULL_REWRITE_BYTES=1800;
 const FULL_WEB_GENERATION_TARGET_MIN_BYTES=12000;
 const FULL_WEB_GENERATION_TARGET_MAX_BYTES=24000;
-const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+const DEFAULT_MODEL=process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash';
 // 자산 · 동일 실행 프로세스에서 여러 게임이 참조하는 동일 원본은 재해시/전체 API 재파싱하지 않는다.
 // 크기, 생성 시각, 수정 시각, inode, device가 달라지면 다음 요청에서 다시 읽는다.
 // 원본 SHA-256 및 동일 원본 선택/권한/QA 계약은 유지한다. 파일 복제/우회 임포터는 만들지 않는다.

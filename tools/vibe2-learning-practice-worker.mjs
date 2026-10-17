@@ -70,11 +70,8 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
 }
 
 export function practiceInferenceOptions(model=DEFAULT_MODEL,attempt=0,thinkRequested=false){
-  // This is the installed hybrid model, not a claim that every model supports think.
-  // Qwen's model card recommends these sampling settings in the respective modes.
-  const hybrid=clean(model).toLowerCase()==='qwen3:1.7b';
-  const think=hybrid&&thinkRequested;
-  return {think,temperature:hybrid?(think ? .6 : .7):.12,...(hybrid?{top_p:think ? .95 : .8,top_k:20,min_p:0}:{}),seed:20261008+attempt};
+  // External Gemini-only route: no local hybrid model sampling or hidden think mode.
+  return {think:false,temperature:.12,seed:20261008+attempt};
 }
 
 export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200,messages=null,attempt=0,inference={}}={}){

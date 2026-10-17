@@ -1,13 +1,13 @@
 // 파일명: tools/autonomous-department-cycle.mjs
 // 역할: 실제 코드 후보를 만들기 전에 Vibe 공용 제작 엔진 제안과 AI 부서별 독립 검토를 실행하고 기획부가 최종 통합한다.
 import fs from 'node:fs';
+import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planCompanyDevelopmentTask } from '../assets/vibe-company-orchestration-bridge.js';
 import { selectVerifiedDepartmentLearning } from './department-learning-memory.mjs';
 
-const MODEL=process.env.AUTONOMOUS_LOCAL_MODEL||'qwen3:0.6b';
-const HOST=process.env.OLLAMA_HOST?`http://${process.env.OLLAMA_HOST}`:'http://127.0.0.1:11434';
+const MODEL=process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash';
 const TIMEOUT_MS=Math.max(30000,Math.min(180000,Number(process.env.AUTONOMOUS_DEPARTMENT_TIMEOUT_MS||120000)));
 const MAX_PREDICT=Math.max(180,Math.min(520,Number(process.env.AUTONOMOUS_DEPARTMENT_MAX_PREDICT||320)));
 const CORE_ROLES=['planning','development','graphics','qa','balance'];
@@ -68,21 +68,31 @@ function rolePrompt({role,order,book,previous,vibeCore}){
 }
 
 async function callRole(role,ctx){
-  let lastError=null;const startedAt=new Date().toISOString();console.log(`DEPARTMENT_STATE=${role}:ACTIVE`);
+  let lastError=null;const startedAt=new Date().toISOString();console.log('DEPARTMENT_STATE='+role+':ACTIVE');
+  const apiKey=clean(process.env.GEMINI_API_KEY);
+  if(!apiKey)throw new Error('DEPARTMENT_GEMINI_KEY_REQUIRED_NO_LOCAL_FALLBACK');
   for(let attempt=1;attempt<=2;attempt++){
-    const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),TIMEOUT_MS);
     try{
-      const response=await fetch(`${HOST}/api/generate`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model:MODEL,prompt:rolePrompt({role,...ctx}),stream:false,think:false,format:SCHEMA,options:{temperature:0.1,num_ctx:4096,num_predict:MAX_PREDICT}}),signal:controller.signal});
-      if(!response.ok)throw new Error(`Ollama ${response.status}`);
-      const payload=await response.json();const value=JSON.parse(clean(payload.response));
-      if(!SCHEMA.properties.decision.enum.includes(value.decision)||!clean(value.nextAction))throw new Error('department schema validation failed');
-      const metrics={promptEvalCount:Number(payload.prompt_eval_count||0),evalCount:Number(payload.eval_count||0),promptEvalMs:Math.round(Number(payload.prompt_eval_duration||0)/1e6),evalMs:Math.round(Number(payload.eval_duration||0)/1e6),totalMs:Math.round(Number(payload.total_duration||0)/1e6)};
-      console.log(`DEPARTMENT_MODEL_METRICS=${role}:prompt_tokens=${metrics.promptEvalCount}:output_tokens=${metrics.evalCount}:prompt_ms=${metrics.promptEvalMs}:output_ms=${metrics.evalMs}:total_ms=${metrics.totalMs}`);
-      const completedAt=new Date().toISOString();console.log(`DEPARTMENT_STATE=${role}:DONE`);
-      return {role,department:ROLE_NAME[role],workState:'DONE',decision:value.decision,summary:clean(value.summary),nextAction:clean(value.nextAction),checks:Array.isArray(value.checks)?value.checks.map(clean).filter(Boolean).slice(0,4):[],risks:Array.isArray(value.risks)?value.risks.map(clean).filter(Boolean).slice(0,4):[],model:MODEL,attempt,startedAt,completedAt,modelMetrics:metrics};
-    }catch(error){lastError=error;if(attempt===2){console.log(`DEPARTMENT_STATE=${role}:BLOCKED`);throw new Error(`${ROLE_NAME[role]} AI 작업 실패: ${clean(error?.message||error)}`);}}finally{clearTimeout(timeout);}
+      const response=await requestGeminiFreePair({
+        apiKey,contents:[{role:'user',parts:[{text:rolePrompt({role,...ctx})}]}],
+        maxOutputTokens:MAX_PREDICT,temperature:.1,timeoutMs:TIMEOUT_MS,
+        responseMimeType:'application/json'
+      });
+      const value=JSON.parse(clean(response.text));
+      if(!SCHEMA.properties.decision.enum.includes(value.decision)||!clean(value.nextAction))
+        throw new Error('DEPARTMENT_EXTERNAL_SCHEMA_INVALID');
+      const completedAt=new Date().toISOString();console.log('DEPARTMENT_STATE='+role+':DONE');
+      return {role,department:ROLE_NAME[role],workState:'DONE',decision:value.decision,summary:clean(value.summary),
+        nextAction:clean(value.nextAction),checks:Array.isArray(value.checks)?value.checks.map(clean).filter(Boolean).slice(0,4):[],
+        risks:Array.isArray(value.risks)?value.risks.map(clean).filter(Boolean).slice(0,4):[],
+        model:response.model,attempt,startedAt,completedAt,modelMetrics:null};
+    }catch(error){
+      lastError=error;
+      if(error?.vibe2InfrastructureFailure===true)break;
+    }
   }
-  throw lastError;
+  console.log('DEPARTMENT_STATE='+role+':BLOCKED');
+  throw new Error(ROLE_NAME[role]+' external AI failed: '+clean(lastError?.message||lastError));
 }
 
 function loadInputs(){

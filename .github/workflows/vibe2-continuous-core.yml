@@ -78,7 +78,6 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  VIBE2_LOCAL_MODEL: qwen3:1.7b
   VIBE2_MODEL_MAX_PREDICT: '3072'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
@@ -1280,9 +1279,9 @@ jobs:
           put('route',order.executionRoute||'');
           const deterministicRoblox=robloxDeterministicPresentationEligible(order);
           put('deterministic_source',deterministicRoblox?'true':'false');
-          const selectedModel=order.assetProduction?.modelRouting?.selectedModel||process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+          const selectedModel=process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash';
           const heroModelRequested=order.assetProduction?.modelRouting?.heroRequested===true;
-          const modelCacheFamily=order.assetProduction?.modelRouting?.cacheFamily||'vibe2-ollama-v5';
+          const modelCacheFamily='EXTERNAL_GEMINI_NO_LOCAL_CACHE';
           const modelCacheKey=order.assetProduction?.modelRouting?.cacheKey||String(selectedModel).toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||'local-model';
           put('local_model',selectedModel);
           put('hero_model_requested',heroModelRequested?'true':'false');
