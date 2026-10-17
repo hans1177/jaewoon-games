@@ -224,8 +224,61 @@ test('verified Groq free plan uses the pinned free-plan model and on-demand tier
     assert.equal(groq.url,'https://api.groq.com/openai/v1/chat/completions');
     const body=JSON.parse(groq.options.body);
     assert.equal(body.service_tier,'on_demand');
+    assert.equal(body.max_completion_tokens,3072);
+    assert.equal(Object.hasOwn(body,'max_tokens'),false);
     assert.equal(body.model,VERIFIED_FREE_FALLBACK_MODELS.GROQ);
     assert.ok(!JSON.stringify(body).includes('groq-test-secret'));
+  });
+});
+
+test('Groq HTTP 400 cools only its free route and continues into pinned zero-cost OpenRouter',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='groq-test-secret';
+    process.env.OPENROUTER_API_KEY='openrouter-test-secret';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=groq-400-'+Date.now());
+    const calls=[];
+    const fetchImpl=async(url,options)=>{
+      const endpoint=String(url);
+      calls.push({url:endpoint,body:JSON.parse(options.body)});
+      if(endpoint.includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '120'}};
+      if(endpoint.includes('api.groq.com'))return{ok:false,status:400,json:async()=>({error:{type:'invalid_request_error',message:'unsupported argument'}})};
+      return{ok:true,json:async()=>({choices:[{message:{content:'{"edits":[]}'}}],usage:{cost:0}})};
+    };
+    const contents=[{role:'user',parts:[{text:'repair source'}]}];
+    const first=await isolated({apiKey:'gemini-test-secret',contents,fetchImpl});
+    assert.equal(first.text,'{"edits":[]}');
+    assert.deepEqual(calls.map(row=>row.url.includes('googleapis.com')?'GEMINI':row.url.includes('api.groq.com')?'GROQ':'OPENROUTER'),
+      ['GEMINI','GEMINI','GROQ','OPENROUTER']);
+    assert.equal(calls[2].body.max_completion_tokens,3072);
+    assert.equal(Object.hasOwn(calls[2].body,'max_tokens'),false);
+    assert.equal(calls[3].body.model,VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER);
+    const secondCalls=[];
+    const second=await isolated({apiKey:'gemini-test-secret',contents,fetchImpl:async(url,options)=>{
+      secondCalls.push(String(url));
+      if(String(url).includes('googleapis.com')||String(url).includes('api.groq.com'))throw Error('cooldown must skip exhausted routes');
+      return{ok:true,json:async()=>({choices:[{message:{content:'{"edits":[1]}'}}],usage:{cost:0}})};
+    }});
+    assert.equal(second.text,'{"edits":[1]}');
+    assert.deepEqual(secondCalls,['https://openrouter.ai/api/v1/chat/completions']);
+  });
+});
+
+test('Groq content policy HTTP 400 fails closed without switching providers',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='groq-test-secret';
+    process.env.OPENROUTER_API_KEY='openrouter-test-secret';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=groq-content-policy-'+Date.now());
+    const calls=[];
+    await assert.rejects(isolated({apiKey:'test',contents:[{role:'user',parts:[{text:'request'}]}],fetchImpl:async url=>{
+      calls.push(String(url));
+      if(String(url).includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '45'}};
+      return{ok:false,status:400,json:async()=>({error:{type:'invalid_request_error',message:'content policy violation'}})};
+    }}),/GROQ_CONTENT_POLICY_BLOCKED_NO_FALLBACK/);
+    assert.equal(calls.length,3,'safety-blocked provider must not route to OpenRouter');
   });
 });
 
