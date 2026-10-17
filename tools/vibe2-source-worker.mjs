@@ -6821,9 +6821,14 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
           // authorize hydration. A different LFS oid is never repaired.
           let lfs=false;
           try{
-            const blob=execFileSync('git',['show','HEAD:'+rel],{cwd,timeout:10000,maxBuffer:512,stdio:'pipe'}).toString('utf8');
-            const m=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(blob);
-            lfs=Boolean(m&&m[1]===clean(entry.sourceHash).toLowerCase()&&Number(m[2])===Number(entry.archiveBytes));
+            // Avoid reading large normal ZIP blobs just to discover that they
+            // are not LFS. The tracked attributes are checked before git show.
+            const attr=execFileSync('git',['check-attr','filter','--',rel],{cwd,timeout:10000,maxBuffer:1024,stdio:'pipe'}).toString('utf8').trim();
+            if(attr.endsWith(': lfs')){
+              const blob=execFileSync('git',['show','HEAD:'+rel],{cwd,timeout:10000,maxBuffer:512,stdio:'pipe'}).toString('utf8');
+              const m=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(blob);
+              lfs=Boolean(m&&m[1]===clean(entry.sourceHash).toLowerCase()&&Number(m[2])===Number(entry.archiveBytes));
+            }
           }catch{}
           tracked.push(row);
           if(lfs)lfsEligible.add(rel);
