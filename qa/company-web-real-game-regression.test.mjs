@@ -243,6 +243,12 @@ test('ordinary Web final gameplay rejects flat 2D and requires measured WebGL 3D
     const candidate=sourceFootprint(root);
     assert.equal(candidate.trueThreeDimensionalSource,true,'3D source can reach separate runtime validation, never auto-PASS');
     assert.equal(candidate.pass,false);
+    fs.writeFileSync(path.join(root,'index.html'),html("import { Application, Entity } from 'playcanvas'; const app=new Application(canvas); const camera=new Entity('camera'); camera.addComponent('camera',{farClip:500}); const actor=new Entity('actor'); actor.addComponent('render',{type:'box'});"));
+    const playcanvasCandidate=sourceFootprint(root);
+    assert.equal(playcanvasCandidate.trueThreeDimensionalSource,true,'real PlayCanvas render entity and camera reach runtime drawing validation');
+    assert.equal(playcanvasCandidate.pass,false,'source shape never replaces real 3D draw and gameplay evidence');
+    fs.writeFileSync(path.join(root,'index.html'),html("const pc=undefined; document.body.dataset.spatialDimension='3d'; document.body.style.transform='perspective(500px) rotateY(15deg)';"));
+    assert.equal(sourceFootprint(root).trueThreeDimensionalSource,false,'3D markers and CSS perspective are not 3D game engines');
     const validator=read('tools/company-development-web-gameplay-validation.mjs');
     for(const required of ['__VIBE_3D_DRAW_EVIDENCE__','depthTriangleDrawCalls','GENERAL_WEB_DEPTH_TESTED_3D_DRAW_REQUIRED','GENERAL_WEB_REAL_3D_RUNTIME_REQUIRED'])assert.ok(validator.includes(required),required);
     const policy=JSON.parse(read('company-learning/platform-release-roadmap.json'));
