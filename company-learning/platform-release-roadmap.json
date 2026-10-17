@@ -1,5 +1,5 @@
 {
-  "version": 575,
+  "version": 576,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -38,6 +38,7 @@
   "priorityMeaning": "ROBLOX_FOCUSED_DEVELOPMENT_UNITY_WEB_AND_ANDROID_OWNER_HOLD",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
+    "WEB": "ALWAYS_ALLOWED",
     "UNITY": "OWNER_HOLD",
     "FORTNITE_UEFN": "OWNER_HOLD",
     "UNITY_WEB": "OWNER_HOLD",
@@ -25820,12 +25821,10 @@
       "unityWebDevelopmentPaused": true
     },
     "ownerActiveDevelopmentScope20261009": {
-      "version": 2,
-      "authority": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY",
+      "version": 3,
+      "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB",
       "status": "ACTIVE",
-      "activeTargets": [
-        "ROBLOX"
-      ],
+      "activeTargets": ["ROBLOX", "WEB"],
       "ownerHeldTargets": [
         "UNITY_WEB",
         "UNITY_ANDROID",
@@ -28938,12 +28937,10 @@
     }
   },
   "ownerActiveDevelopmentScope20261009": {
-    "version": 2,
-    "authority": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY",
+    "version": 3,
+    "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB",
     "status": "ACTIVE",
-    "activeTargets": [
-      "ROBLOX"
-    ],
+    "activeTargets": ["ROBLOX", "WEB"],
     "ownerHeldTargets": [
       "UNITY_WEB",
       "UNITY_ANDROID",
