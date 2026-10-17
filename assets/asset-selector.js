@@ -296,7 +296,9 @@ export function planVibeExternalCustomization({
   const style=styleBible&&typeof styleBible==='object'?styleBible:{};
   const styleFingerprint=text(approvedDesignFingerprint);
   const sourceId=text(sourceRevision);
-  const validAssets=(Array.isArray(assets)?assets:[]).filter(vibeSourceProvenance);
+  const validAssets=(Array.isArray(assets)?assets:[]).filter(vibeSourceProvenance)
+    .sort((a,b)=>text(a.id).localeCompare(text(b.id)));
+  const approvedVisualAxes=Object.freeze(['SILHOUETTE','PROPORTION','MATERIAL_RESPONSE','SURFACE_DETAIL','PALETTE','LIGHTING','MOTION_LANGUAGE','UI_LANGUAGE']);
   const actions=VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES.map(reference=>{
     const matchingRoles=reference.roles.filter(role=>selectedRoles.has(role));
     const families=[...new Set(matchingRoles.flatMap(role=>VIBE_ROLE_FAMILIES[role]||[]))];
@@ -320,7 +322,17 @@ export function planVibeExternalCustomization({
       existingVerifiedSourceCount:verifiedSources.length,
       sourceCandidates:Object.freeze(verifiedSources.slice(0,8).map(asset=>Object.freeze({
         assetId:text(asset.id),sourceHash:text(asset.sourceHash||asset.sha256||asset.contentHash),
-        license:text(asset.license||asset.licenseDeclared||asset.policy)
+        license:text(asset.license||asset.licenseDeclared||asset.policy),
+        derivative:Object.freeze({
+          status:eligible&&styleFingerprint?'NATIVE_AUTHORING_SOURCE_REVIEW_REQUIRED':'POLICY_OR_DESIGN_BLOCKED',
+          gameId:text(gameId),sourceAssetId:text(asset.id),designFingerprint:styleFingerprint,
+          target:platform,approvedStyleProfile:styleProfile,
+          visualAxes:Object.freeze((Array.isArray(asset.adaptationAxes)?asset.adaptationAxes:approvedVisualAxes)
+            .map(axis=>text(axis).toUpperCase()).filter(axis=>approvedVisualAxes.includes(axis))),
+          existingSourceMustRemainImmutable:true,outputArtifactHashRequired:true,
+          actualNativeSourceBindingRequired:true,gameplayAuthority:false,
+          runtimeVerified:false,createdArtifact:false
+        })
       }))),
       nextAction:relevant&&eligible&&styleFingerprint
         ?reference.kind==='ALGORITHM'?'MAP_PARAMETERS_TO_EXISTING_NATIVE_ALGORITHM_OWNER'
