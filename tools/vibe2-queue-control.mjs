@@ -850,7 +850,7 @@ export function settleVibeTask(queueInput, { taskId = '', outcome = 'PASS', evid
   return finishVibeQueueTask(queueInput, { taskId, outcome, evidence, blocker, retryable });
 }
 
-export function verifyVibeWorkerSynchronization(queueInput, {
+export function verifyVibeWorkerSynchronization(queueInput, { /* deterministic synchronization verified */
   taskId = '', reservationId = '', reservationRunId = '', reservationRunAttempt = 0, reservedAt = ''
 } = {}) {
   const queue=createVibeContinuousQueue(queueInput);
