@@ -433,6 +433,7 @@ jobs:
           SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
           BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
           CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
           GENERATED_ASSET_FILES: ${{ needs.inspect.outputs.generated_asset_files }}
           ALREADY_PROMOTED: ${{ needs.inspect.outputs.already_promoted }}
@@ -465,20 +466,21 @@ jobs:
             release_commit="$(git rev-parse HEAD)"
             git push origin "HEAD:$release_branch"
             pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$release_branch" --title "vibe2: deploy ${TASK_ID}" --body "Verified Web release candidate. Direct main write: NO. Release PASS requires this PR's CI, merge and exact main deployment.")"
-            sleep 5
-            # 미리보기 검수는 현재 후보에 묶고, 운영 배포는 병합 뒤 별도로 확인한다.
+            # 기존 홈페이지 PR Fast QA를 같은 웹게임 후보 커밋에서 확인한다.
+            preview_pass=false
             for attempt in $(seq 1 60); do
               pages_state="$(gh api -H 'Accept: application/vnd.github+json' \
                 "repos/$GITHUB_REPOSITORY/commits/$release_commit/check-runs?per_page=100" \
-                --jq '[.check_runs[] | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
+                --jq '[.check_runs[] | select(.name=="Homepage PR Fast QA")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
               echo "VIBE2_RELEASE_PAGES_CHECK=$pages_state"
               case "$pages_state" in
-                completed:success) break ;;
-                completed:*) echo "Cloudflare Pages preview check failed: $pages_state" >&2; exit 1 ;;
+                completed:success) preview_pass=true; break ;;
+                completed:*) echo "Homepage PR candidate QA failed: $pages_state" >&2; exit 1 ;;
               esac
-              if [ "$attempt" -ge 60 ]; then echo "Cloudflare Pages preview check did not complete successfully" >&2; exit 1; fi
+              if [ "$attempt" -ge 60 ]; then echo "Homepage PR candidate QA not verified" >&2; exit 1; fi
               sleep 10
             done
+            test "$preview_pass" = true
             git fetch origin main --quiet
             [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${promotion_paths[@]}")" ] || { echo 'main source or generated asset changed before merge; replan required' >&2; exit 1; }
             gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
@@ -492,19 +494,36 @@ jobs:
           source_tree_sha="$(git rev-parse "$promotion_sha:$SOURCE_ROOT")"
           [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
 
-          # 신규 병합과 재시도 모두 같은 운영 배포 검증을 거쳐야 성공 증거를 남긴다.
+          # 승인된 main SHA와 실제 GitHub Pages 게시 매니페스트, 게임 HTTP를 함께 확인한다.
+          # 다른 main 커밋의 배포와 오래된 Pages HEAD는 성공 증거가 아니다.
+          pages_base="https://$GITHUB_REPOSITORY_OWNER.github.io/$(basename "$GITHUB_REPOSITORY")/"
+          manifest_url="$pages_base""web-games/publish-manifest.json"
+          target_route="web-games/$GAME_ID/"
+          published=false
           for attempt in $(seq 1 60); do
-            pages_state="$(gh api -H 'Accept: application/vnd.github+json' \
-              "repos/$GITHUB_REPOSITORY/commits/$promotion_sha/check-runs?per_page=100" \
-              --jq '[.check_runs[] | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
-            echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=$pages_state"
-            case "$pages_state" in
-              completed:success) break ;;
-              completed:*) echo "Cloudflare Pages main deployment check failed: $pages_state" >&2; exit 1 ;;
-            esac
-            if [ "$attempt" -ge 60 ]; then echo "Cloudflare Pages main deployment check did not complete successfully" >&2; exit 1; fi
-            sleep 10
+            if curl --fail --silent --show-error --location --max-time 15 "$manifest_url" -o /tmp/vibe2-pages-manifest.json; then
+              if node - "$promotion_sha" "$target_route" <<'NODE'
+          const fs=require('node:fs');
+          const [sha,route]=process.argv.slice(2);
+          let m;
+          try{m=JSON.parse(fs.readFileSync('/tmp/vibe2-pages-manifest.json','utf8'));}catch{process.exit(1);}
+          if(m.sourceSha!==sha||!Array.isArray(m.routes)||!m.routes.includes(route))process.exit(1);
+          NODE
+              then
+                if curl --fail --silent --show-error --location --max-time 15 -o /dev/null "$pages_base$target_route"; then
+                  published=true
+                  break
+                fi
+              fi
+            fi
+            echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=PENDING:$promotion_sha:$GAME_ID:$attempt"
+            if [ "$attempt" -lt 60 ]; then sleep 10; fi
           done
+          if [ "$published" != true ]; then
+            echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=FAILED:$promotion_sha:$GAME_ID" >&2
+            exit 1
+          fi
+          echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=SUCCESS:$promotion_sha:$GAME_ID"
           echo 'deployment_pass=true' >> "$GITHUB_OUTPUT"
           echo "promotion_sha=$promotion_sha" >> "$GITHUB_OUTPUT"
           echo "source_tree_sha=$source_tree_sha" >> "$GITHUB_OUTPUT"
@@ -559,7 +578,7 @@ jobs:
 
           if [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
             echo "WEB_PUBLICATION_RETRY_REQUIRED=${TASK_ID:-NONE}:${CANDIDATE_BRANCH:-NONE}"
-            echo 'WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=YES'
+            echo 'WEB_PUBLICATION_RETRY_TRACKED=YES'
             echo 'WEB_SAME_VERIFIED_CANDIDATE_RETRY=YES'
             gh workflow run vibe2-candidate-release.yml --repo "$GITHUB_REPOSITORY" --ref main -f candidate_branch="$CANDIDATE_BRANCH" || true
             exit 0
@@ -583,7 +602,7 @@ jobs:
             git reset --hard origin/vibe2-unreal-core
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if [ "$result" = PASS ]; then
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-deploy-attempted,web-static-qa-pass,web-cloudflare-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-deploy-attempted,web-static-qa-pass,web-github-pages-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-release-qa-failed --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-qa-${QA_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
@@ -632,7 +651,7 @@ jobs:
           if [ "$result" = PASS ]; then
             echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=$GAME_ID"
             echo "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:$GAME_ID"
-            echo 'WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=YES_UNTIL_DEPLOYED'
+            echo 'WEB_PUBLICATION_RETRY_TRACKED=YES'
             echo 'VIBE2_WEB_AUTO_DEPLOY=PASS'
             echo "VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:${PROMOTED_SOURCE_TREE_SHA}"
           else
