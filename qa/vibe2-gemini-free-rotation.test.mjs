@@ -1,19 +1,21 @@
+// 파일명: qa/vibe2-gemini-free-rotation.test.mjs
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import {GEMINI_FREE_MODELS,verifiedFreeGeminiModels,requestGeminiFreePair,retryDelayMs} from '../tools/vibe2-gemini-free-rotation.mjs';
+import {GEMINI_FREE_MODELS,VERIFIED_FREE_FALLBACK_MODELS,verifiedFreeGeminiModels,requestGeminiFreePair,retryDelayMs} from '../tools/vibe2-gemini-free-rotation.mjs';
 import {requestLocalModel} from '../tools/vibe2-source-worker.mjs';
 import {requestPracticeModel} from '../tools/vibe2-learning-practice-worker.mjs';
 
 function fixtureResponse(text){return{ok:true,json:async()=>({candidates:[{content:{parts:[{text}]}}]})};}
 async function withExternalFixture(fn){
-  const keys=['GEMINI_API_KEY','VIBE2_GAME_SOURCE_PROVIDER','VIBE2_GEMINI_MODEL','VIBE2_GEMINI_BACKUP_MODEL'];
+  const keys=['GEMINI_API_KEY','VIBE2_GAME_SOURCE_PROVIDER','VIBE2_GEMINI_MODEL','VIBE2_GEMINI_BACKUP_MODEL','GROQ_API_KEY','OPENROUTER_API_KEY','VIBE2_EXTERNAL_FREE_ROTATION','VIBE2_GROQ_FREE_PLAN_VERIFIED'];
   const original=Object.fromEntries(keys.map(k=>[k,process.env[k]])),priorFetch=globalThis.fetch;
   try{
     process.env.GEMINI_API_KEY='test-key-not-real';
     process.env.VIBE2_GAME_SOURCE_PROVIDER='GEMINI_API';
     process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
     process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
+    for(const key of ['GROQ_API_KEY','OPENROUTER_API_KEY','VIBE2_EXTERNAL_FREE_ROTATION','VIBE2_GROQ_FREE_PLAN_VERIFIED'])delete process.env[key];
     await fn();
   }finally{
     globalThis.fetch=priorFetch;
@@ -158,4 +160,104 @@ test('active Vibe and Roblox release paths do not install, pull or request local
   assert.match(read('.github/workflows/company-development-roblox-runtime.yml'),/ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED/);
   assert.match(read('.github/workflows/vibe2-candidate-release.yml'),/company-development-roblox-build-preflight\.mjs/);
   assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_WORKER_PROVIDER=GEMINI_API/);
+});
+
+// [외부 무료 공급자] 추가 요금 없이 두 Gemini 슬롯이 제한되면 무료 OpenRouter만 대체한다.
+test('Gemini 429 failover reaches only a pinned OpenRouter free model',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.OPENROUTER_API_KEY='openrouter-test-secret';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=openrouter-free-'+Date.now());
+    const calls=[];
+    const response=await isolated({apiKey:'gemini-test-secret',
+      contents:[{role:'user',parts:[{text:'JSON source task'}]}],
+      fetchImpl:async(url,options)=>{
+        calls.push({url:String(url),options});
+        if(String(url).includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '90'}};
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"edits":[]}'}}],usage:{cost:0}})};
+      }
+    });
+    assert.equal(response.text,'{"edits":[]}');
+    assert.equal(calls.length,3);
+    const last=calls.at(-1),body=JSON.parse(last.options.body);
+    assert.equal(last.url,'https://openrouter.ai/api/v1/chat/completions');
+    assert.equal(body.model,VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER);
+    assert.ok(body.model.endsWith(':free'));
+    assert.equal(body.messages[0].content,'JSON source task');
+    assert.equal(last.options.headers.authorization,'Bearer openrouter-test-secret');
+    assert.ok(!last.options.body.includes('gemini-test-secret'));
+    assert.ok(!last.options.body.includes('openrouter-test-secret'));
+  });
+});
+
+test('Groq route requires an explicitly confirmed free plan; never infers it from API key',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='groq-test-secret';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=groq-unverified-'+Date.now());
+    const calls=[];
+    await assert.rejects(isolated({apiKey:'test',contents:[],fetchImpl:async url=>{
+      calls.push(String(url));
+      return{ok:false,status:429,headers:{get:()=> '30'}};
+    }}),/GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE/);
+    assert.equal(calls.length,2,'no unverified Groq free-plan request may leave the worker');
+  });
+});
+
+test('verified Groq free plan uses the pinned free-plan model and on-demand tier only',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='groq-test-secret';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=groq-verified-'+Date.now());
+    const calls=[];
+    const result=await isolated({apiKey:'test',contents:[{role:'user',parts:[{text:'code'}]}],
+      fetchImpl:async(url,options)=>{
+        calls.push({url:String(url),options});
+        if(String(url).includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '60'}};
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"ok":true}'}}]})};
+      }
+    });
+    assert.equal(result.text,'{"ok":true}');
+    assert.equal(calls.length,3);
+    const groq=calls.at(-1);
+    assert.equal(groq.url,'https://api.groq.com/openai/v1/chat/completions');
+    const body=JSON.parse(groq.options.body);
+    assert.equal(body.service_tier,'on_demand');
+    assert.equal(body.model,VERIFIED_FREE_FALLBACK_MODELS.GROQ);
+    assert.ok(!JSON.stringify(body).includes('groq-test-secret'));
+  });
+});
+
+test('paid billing rejection fails closed without calling a second provider',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='groq-test-secret';
+    process.env.OPENROUTER_API_KEY='openrouter-test-secret';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=billing-block-'+Date.now());
+    const urls=[];
+    await assert.rejects(isolated({apiKey:'test',contents:[{role:'user',parts:[{text:'x'}]}],fetchImpl:async url=>{
+      urls.push(String(url));
+      if(String(url).includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '45'}};
+      return{ok:false,status:402};
+    }}),/GROQ_AUTH_OR_BILLING_BLOCKED_NO_PAID_FALLBACK:402/);
+    assert.equal(urls.length,3,'no OpenRouter call after a billing block');
+  });
+});
+
+test('canonical Web/Roblox steps receive secrets without exposing values or altering the model ownership',()=>{
+  const read=p=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
+  for(const file of [
+    '.github/workflows/vibe2-continuous-core.yml',
+    '.github/workflows/company-development-roblox-runtime.yml',
+    '.github/workflows/vibe2-candidate-release.yml'
+  ]){
+    const workflow=read(file);
+    assert.ok(workflow.includes('GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}'),'required key is present only at the model call step');
+    assert.ok(workflow.includes('OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}'),'required key is present only at the model call step');
+    assert.ok(workflow.includes("VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}"),'owner-confirmed free plan may be disabled by setting NO');
+    assert.match(workflow,/VIBE2_EXTERNAL_FREE_ROTATION: 'YES'/);
+  }
+  assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API/);
 });
