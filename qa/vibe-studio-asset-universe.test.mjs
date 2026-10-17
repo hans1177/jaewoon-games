@@ -4148,8 +4148,13 @@ test('company common seed asset ideation reads all company seed artbooks and pro
   assert.ok(contract);
   assert.equal(contract.scope,'ALL_COMPANY_COMMON_SEEDS');
   assert.equal(contract.sourcePattern,'artbook-submissions/seed-*/current.json');
-  assert.equal(contract.currentSeedCount,seeds.length);
-  assert.deepEqual([...contract.currentSeedIds].sort(),seeds.map(row=>row.gameId).sort());
+  // [원본 신선도] company-runtime 신규 설계가 정적 레지스트리보다 앞서도 누락하지 않는다.
+  // 이전 레지스트리 수치를 최신 PASS로 간주하지 않고 실행 중 실제 설계 전체를 다시 분류한다.
+  assert.equal(contract.currentSeedCount,contract.currentSeedIds.length);
+  assert.ok(contract.currentSeedCount<=seeds.length);
+  for(const recordedId of contract.currentSeedIds)assert.ok(seeds.some(row=>row.gameId===recordedId),recordedId);
+  assert.equal(plan.seedCount,seeds.length);
+  assert.deepEqual(plan.seeds.map(row=>row.gameId).sort(),seeds.map(row=>row.gameId).sort());
   assert.equal(contract.planBuilder,'assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan');
   assert.equal(contract.execution.schedulerCreated,false);
   assert.equal(contract.execution.workflowCreated,false);
