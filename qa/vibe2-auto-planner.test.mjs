@@ -3841,6 +3841,9 @@ test('queued autonomous expansion v1 without breadth ledger upgrades to v2 witho
 });
 
 test('owner-held Unity and active general Web preserve queued BUILD_UP without unauthorized platform plans',()=>{
+  const previousPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+  try{
   for(const [engine,gameId,target] of [['unity','demo','unity-android'],['web','dev-web','web']]){
     const root=tempRepo();
     const ownerPolicy={
@@ -3867,6 +3870,10 @@ test('owner-held Unity and active general Web preserve queued BUILD_UP without u
     assert.equal(updated.buildUpDirective.productionPlan?.platform||null,engine==='web'?'WEB':null);
     assert.equal(updated.status,'queued');
     assert.deepEqual(untouched.buildUpDirective,running.buildUpDirective);
+  }
+  }finally{
+    if(previousPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=previousPolicyPath;
   }
 });
 
