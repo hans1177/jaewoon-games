@@ -80,5 +80,5 @@ test('retired standalone artbook model workers stay deleted and release has no O
   assert.equal(release.includes('ollama serve'),false);
   assert.match(release,/requestGeminiFreePair/);
   assert.match(release,/RELEASE_EXTERNAL_FREE_MODEL_INDEPENDENCE_NOT_VERIFIED/);
-  assert.match(source,/company-design-cycle\\.mjs/);
+  assert.ok(source.includes('company-design-cycle.mjs'));
 });
