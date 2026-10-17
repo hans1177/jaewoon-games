@@ -1474,3 +1474,35 @@ test('Vibe source repair logs exact current blockers without bypassing material 
   assert.match(block,/ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE=/);
   assert.match(block,/continue;/);
 });
+
+test('Roblox exact-SHA scheduler keeps oldest active run even when GitHub reports queued during downstream work',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const step=workflow.slice(workflow.indexOf('      - name: Reject superseded batch scheduler'),workflow.indexOf('      - name: Bind Roblox source-plan contract fingerprint'));
+  const start=step.indexOf("const states=new Set(['queued','pending','in_progress','requested']);");
+  const end=step.indexOf("\n            });",start);
+  assert.ok(start>=0&&end>start,'original canonical planner decision must be present');
+  const decide=step.slice(start,end);
+  assert.match(decide,/sort\(\(a,b\)=>Number\(a\.id\)-Number\(b\.id\)\)/);
+  assert.match(decide,/const winner=candidates\[0\];/);
+  const sha='a'.repeat(40),older=39034932991,newer=39035066181;
+  const decideOwner=(status1,status2,{title='Roblox runtime · batch',currentGame='',differentSha=false}={})=>{
+    let selection=null;
+    const j={workflow_runs:[
+      {id:newer,status:status2,display_title:title,head_sha:sha},
+      {id:older,status:status1,display_title:title,head_sha:differentSha?'b'.repeat(40):sha},
+      {id:older-1,status:'completed',display_title:title,head_sha:sha},
+      {id:older-2,status:'queued',display_title:'Roblox runtime · other-game',head_sha:sha},
+    ]};
+    runInNewContext(decide,{j,process:{
+      env:{REQUESTED_GAME_ID:currentGame,CURRENT_SHA:sha},
+      stdout:{write(value){selection=String(value)}}
+    }});
+    return selection;
+  };
+  assert.equal(decideOwner('queued','queued'),String(older));
+  assert.equal(decideOwner('queued','in_progress'),String(older),'the newer job cannot preempt an older queued workflow with live child jobs');
+  assert.equal(decideOwner('in_progress','queued'),String(older));
+  assert.equal(decideOwner('completed','queued'),String(newer));
+  assert.equal(decideOwner('queued','queued',{differentSha:true}),String(newer));
+  assert.equal(decideOwner('queued','queued',{title:'Roblox runtime · island-village',currentGame:'island-village'}),String(older));
+});
