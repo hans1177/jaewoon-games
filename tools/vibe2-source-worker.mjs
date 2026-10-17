@@ -3950,7 +3950,7 @@ export async function observeAssetRuntimeCaptures({order={},cwd=process.cwd(),mo
   if(!model)throw new Error('RUNTIME_VISUAL_VISION_MODEL_REQUIRED:VIBE2_VISION_MODEL');
   const requestedEvidenceRoot=clean(review.evidenceRoot);
   const root=fs.realpathSync(requestedEvidenceRoot||cwd),results=[],repairs=[],findingIds=new Set();
-  const allowedCategories=new Set(['MISSING_OBJECT','WEAK_DETAIL','CLIPPING_OR_OVERLAP','READABILITY','STYLE_OR_MATERIAL','COMPOSITION']);
+  const allowedCategories=new Set(['MISSING_OBJECT','WEAK_DETAIL','CLIPPING_OR_OVERLAP','READABILITY','STYLE_OR_MATERIAL','COMPOSITION','SPATIAL_DEPTH','LIGHTING_VALUE','TYPOGRAPHY_SPACING','SILHOUETTE_IDENTITY']);
   const allowedSeverity=new Set(['BLOCKER','HIGH','MEDIUM','LOW']);
   const expectedIds=new Set((review.expectedSubjects||[]).map(subject=>clean(subject.id)).filter(Boolean));
   const editableIds=new Set([...(review.editableTargets||[]).map(clean).filter(Boolean),...expectedIds]);
@@ -3986,7 +3986,9 @@ export async function observeAssetRuntimeCaptures({order={},cwd=process.cwd(),mo
       'Return one JSON object with arrays: visibleSubjects, missingSubjects, uncertainSubjects, findings.',
       'Classify every required subject ID into exactly one of visibleSubjects, missingSubjects, uncertainSubjects. Use uncertainSubjects for occlusion, off-camera framing, blur, ambiguity, or insufficient evidence.',
       'findings entries must contain: id, severity, category, regionNormalized, targetIds, observed, requestedChange.',
-      'severity is BLOCKER/HIGH/MEDIUM/LOW. category is MISSING_OBJECT/WEAK_DETAIL/CLIPPING_OR_OVERLAP/READABILITY/STYLE_OR_MATERIAL/COMPOSITION.',
+      'Evaluate actual visual appeal as well as object presence: focal hierarchy, purposeful negative space, scale/depth layers, lighting/value contrast, coherent external model materials, readable silhouettes, typography spacing and game-specific visual identity. A complete-looking list of assets does NOT imply an attractive frame.',
+      'For a pixel-proven ugly or awkward area, return a concrete observation and smallest visible edit target: reposition/rescale an existing asset, adjust camera composition, tune existing light/material, improve UI proportions/spacing. Do not invent missing objects, source paths, unseen geometry, timing or a repair outcome from one screenshot. If a scene already looks coherent, do not invent defects.',
+      'severity is BLOCKER/HIGH/MEDIUM/LOW. category is MISSING_OBJECT/WEAK_DETAIL/CLIPPING_OR_OVERLAP/READABILITY/STYLE_OR_MATERIAL/COMPOSITION/SPATIAL_DEPTH/LIGHTING_VALUE/TYPOGRAPHY_SPACING/SILHOUETTE_IDENTITY.',
       'regionNormalized is [x,y,width,height] in 0..1 image coordinates. A fully absent object may use [0,0,1,1].',
       'MISSING_OBJECT is allowed only for a required subject classified missing in this exact view. Never invent a new gameplay object that is absent from the review contract.',
       'Other findings must target only expectedSubjects or editableTargets. Preserve gameplay rules, balance, hitboxes, damage, cooldowns, progression, economy, save meaning and network authority.',
