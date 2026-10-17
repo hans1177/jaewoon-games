@@ -1,5 +1,5 @@
 {
-  "version": 579,
+  "version": 580,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -1524,7 +1524,7 @@
       "verifiedCyclePublication": {
         "version": 3,
         "authority": "OWNER_DIRECTIVE_2026-09-30",
-        "objective": "RELEASED_GAMES_DISPATCH_EXACT_F9_CANONICAL_PUBLISH; DEVELOPMENT_GAMES_SKIP_PUBLICATION; ALL_GAMES_IMMEDIATELY_CONTINUE_F0_TO_F9",
+        "objective": "ALL_GAMES_DISPATCH_EXACT_F9_VERIFIED_CANONICAL_PUBLISH_IN_EXISTING_FLOW_REGARDLESS_OF_SCORE_OR_RELEASE_CLASS; NEXT_CYCLE_CONTINUES",
         "sequence": [
           "EVOLUTION_SOURCE_MUTATION",
           "F0_SOURCE_INTEGRITY",
@@ -1558,10 +1558,10 @@
         "publicationRetryMustPreserveExactFailedCycleIdentity": true,
         "nextCycleStartsAfterPublishDispatch": true,
         "publicationOutcomeBlocksEvolution": false,
-        "canonicalServerPublicationEligibility": "VERIFIED_LOBBY_INTERNAL_RELEASE_OR_EXPLICIT_OWNER_CONFIRMED_RELEASE",
-        "developmentGameCanonicalPublicationAllowed": false,
-        "developmentGameNextCycleRequiresPublicationDispatch": false,
-        "publicationDispatchRequirementScope": "RELEASED_GAMES_ONLY",
+        "canonicalServerPublicationEligibility": "EXACT_F9_AND_CURRENT_CANDIDATE_QA",
+        "developmentGameCanonicalPublicationAllowed": true,
+        "developmentGameNextCycleRequiresPublicationDispatch": true,
+        "publicationDispatchRequirementScope": "ALL_GAMES_AFTER_VERIFIED_F9",
         "ownerDirectCanonicalPublishExceptionRef": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.ownerDirectCanonicalPublishException",
         "studioRequiredForCanonicalPublish": false,
         "postBuildUpVerificationLevel": "CODE_AND_STATIC_QA"
@@ -6206,7 +6206,7 @@
         "ROBLOX",
         "UNITY"
       ],
-      "objective": "RELEASED_GAMES_PUBLISH_EXACT_F9_VERIFIED_VERSION; DEVELOPMENT_GAMES_REPEAT_F0_TO_F9_WITHOUT_CANONICAL_SERVER_PUBLICATION",
+      "objective": "ALL_GAMES_PUBLISH_EXACT_F9_VERIFIED_VERSION_REGARDLESS_OF_SCORE_OR_RELEASE_CLASS; FAILED_CYCLE_REPAIRS_AND_RETRIES",
       "sequence": [
         "GAME_SOURCE_MUTATION",
         "F0",
@@ -6229,7 +6229,7 @@
       "publicationOutcomeBlocksNextEvolution": false,
       "publicationVisibilityBlocksNextEvolution": false,
       "internalOrExternalVisibilityIrrelevantToEvolutionLoop": true,
-      "nextCycleTrigger": "F9_VERIFIED_AND_RELEASED_PUBLISH_DISPATCHED_OR_DEVELOPMENT_PUBLICATION_SKIPPED",
+      "nextCycleTrigger": "F9_VERIFIED_PUBLISH_DISPATCHED_OR_FAILED_F9_REPAIR_ROUTE",
       "publishFailureAction": "KEEP_EVOLUTION_RUNNING_AND_ROUTE_PUBLICATION_FAILURE_TO_EXISTING_CAUSAL_REPAIR_RETRY",
       "publicationFailureMustRemainRetryTracked": true,
       "publicationRetryMode": "AUTOMATIC_UNBOUNDED_CAUSAL_REDISPATCH",
@@ -6261,9 +6261,9 @@
           "nextCycleRoute": "vibe2-fanin-refill"
         }
       },
-      "canonicalServerPublicationEligibility": "VERIFIED_LOBBY_INTERNAL_RELEASE_OR_EXPLICIT_OWNER_CONFIRMED_RELEASE",
-      "developmentGamePublicationAllowed": false,
-      "developmentGameNextCycleRequiresPublicationDispatch": false,
+      "canonicalServerPublicationEligibility": "EXACT_F9_AND_CURRENT_CANDIDATE_QA",
+      "developmentGamePublicationAllowed": true,
+      "developmentGameNextCycleRequiresPublicationDispatch": true,
       "privateValidationArtifactForF0ToF9Allowed": true,
       "validationArtifactMayReplaceCanonicalServer": false,
       "homepageClassificationAndPublicationMustUseSameGate": false,
@@ -28638,6 +28638,10 @@
       "everyVerifiedCycle": true,
       "eligibility": "EXACT_F9_AND_CURRENT_CANDIDATE_QA",
       "lobbyOrHomepageClassificationRequired": false,
+      "numericalScoreBlocksVerifiedDeployment": false,
+      "allGamesEligibleAfterExactF9": true,
+      "deployDispatchMandatoryAfterVerifiedFlow": true,
+      "failedOrUnverifiedFlowAction": "REPAIR_AND_RETRY_WITHOUT_FALSE_RELEASE_CLAIM",
       "publicReleaseDecisionOwner": "OWNER_ONLY",
       "automaticVisibilityChange": false,
       "preserveExistingTargetVisibility": true,
