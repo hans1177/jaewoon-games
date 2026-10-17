@@ -80,6 +80,22 @@ export function deriveObservedRepairRecipe(output=''){
   });
 }
 
+// Never trust persisted advice strings as instructions. Reconstruct from the local, immutable vocabulary.
+export function validatedObservedRepairRecipe(value={}){
+  if(value?.origin!=='VERIFIED_PATCH_ADDED_CODE'||value?.rawCodeStored!==false
+    ||!Array.isArray(value.operationIds)||!Array.isArray(value.steps)||!Array.isArray(value.focusedChecks)
+    ||value.operationIds.length<1||value.operationIds.length>REPAIR_OPERATIONS.length
+    ||value.steps.length!==value.operationIds.length||value.focusedChecks.length!==value.operationIds.length)return null;
+  const catalog=new Map(REPAIR_OPERATIONS.map(([id,, ,step,check])=>[id,{step,check}]));
+  const ids=[...new Set(value.operationIds)];
+  if(ids.length!==value.operationIds.length||ids.some(id=>!catalog.has(id)))return null;
+  if(ids.some((id,i)=>value.steps[i]!==catalog.get(id).step||value.focusedChecks[i]!==catalog.get(id).check))return null;
+  return Object.freeze({
+    operationIds:ids,steps:ids.map(id=>catalog.get(id).step),
+    focusedChecks:ids.map(id=>catalog.get(id).check)
+  });
+}
+
 function sampleVerified(sample={}){
   if(hasObviousMalformedAddedCode(sample.output))return false;
   if(!['coding','bugfix','unity'].includes(clean(sample.taskType)))return false;
