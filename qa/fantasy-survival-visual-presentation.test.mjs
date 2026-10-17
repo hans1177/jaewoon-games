@@ -1,5 +1,5 @@
 // 파일명: qa/fantasy-survival-visual-presentation.test.mjs
-// 역할: 마력숲 표현 개선이 실제 자산 바인딩을 사용하면서 기존 게임 의미를 보존하는지 검증한다.
+// 역할: 현행 마력숲 원본의 실제 표현·전투·채집 동작을 검사한다. 과거 애니메이션 배수·세이브 버전·버튼 속성 고정 문구를 사용하지 않는다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -39,7 +39,7 @@ test('player presentation uses the forest mage asset without changing equipment 
   assert.match(player,/ctx\.drawImage\(playerImage/);
   assert.match(player,/p\.torchEquipped/);
   assert.match(player,/p\.weapon/);
-  assert.match(player,/currentRange\(\)/);
+  assert.match(functionBody('attack'),/currentRange\(\)/);
 });
 
 test('protected save key and representative balance values remain present',()=>{
@@ -108,9 +108,9 @@ test('player living motion keeps authoritative movement, weapon direction and at
   assert.match(player,/fantasyLivingMotion\(p,now,angle,moveInput\)/);
   assert.match(player,/motion\.moveBlend/);
   assert.match(player,/motion\.breath/);
-  assert.match(player,/p\.faceX\*27/);
-  assert.match(player,/p\.faceY\*27/);
-  assert.match(player,/currentRange\(\)\*\.72/);
+  assert.match(player,/Math\.atan2\(p\.faceY\|\|0,p\.faceX\|\|1\)/);
+  assert.match(player,/const weaponAngle=angle\+attackPose\.weaponOffset/);
+  assert.match(player,/weaponLen=27\+attackPose\.impact\*5/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
 
@@ -146,7 +146,7 @@ test('player attack feel stays inside the existing attack presentation window an
   const player=functionBody('drawPlayer');
   assert.match(player,/fantasyPlayerAttackPose\(p,now,attackActive\)/);
   assert.match(player,/weaponOffset/);
-  assert.match(player,/currentRange\(\)\*\.72/);
+  assert.match(player,/weaponLen=27\+attackPose\.impact\*5/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
 
@@ -230,18 +230,18 @@ test('mobile canvas rendering degrades pixel density without changing gameplay r
   assert.match(source,/jaewoon_fantasy_survival_v1/);
 });
 
-test('audio feel reuses the existing bounded WebAudio primitives without a parallel sound queue',()=>{
+test('audio feel uses the existing bounded music engine without re-enabling duplicate audio queues',()=>{
   const combat=functionBody('playCombatAudio');
-  assert.match(combat,/music\.enabled/);
-  assert.match(combat,/music\.started/);
-  assert.match(combat,/noiseBrush\(/);
-  assert.match(combat,/smoothVoice\(/);
-  assert.match(combat,/lowDrum\(/);
-  assert.doesNotMatch(combat,/push\(|splice\(|new Array|\[\]/);
   const reward=functionBody('playRewardAudio');
-  assert.match(reward,/smoothVoice\(/);
-  assert.match(reward,/lowDrum\(/);
-  assert.doesNotMatch(reward,/push\(|splice\(|new Array|\[\]/);
+  // 별도 반복 음향은 현재 명시적으로 비활성; 실제 BGM은 기존 scheduleBandBeat가 담당한다.
+  assert.match(combat,/return;/);
+  assert.match(reward,/return;/);
+  const band=functionBody('scheduleBandBeat');
+  assert.match(band,/smoothVoice\(/);
+  assert.match(band,/noiseBrush\(/);
+  assert.match(band,/lowDrum\(/);
+  assert.match(functionBody('pickBattleTheme'),/r<\.30\?'battle1':r<\.70\?'battle2':'battle3'/);
+  assert.match(functionBody('attack'),/playGameSfx\('playerAttack'\)/);
   assert.doesNotMatch(source,/(?:audioFx|sfxQueue|soundQueue)\s*=\s*\[/);
 });
 
@@ -324,7 +324,7 @@ test('final presentation gate keeps all synchronized feel layers on the same pre
 });
 
 test('nearby auto gather keeps the existing manual gather path and mobile toggle reachable',()=>{
-  assert.match(source,/id="autoGather"[^>]*data-gameplay-action="auto-gather-toggle"[^>]*aria-pressed="false">자동 OFF<\/button>/);
+  assert.match(source,/id="autoGather"[^>]*data-mechanic-id="auto-gather-toggle"[^>]*aria-pressed="false">자동 OFF<\/button>/);
   assert.match(source,/\.autoGather\{height:44px/);
   assert.match(source,/@media\(max-width:430px\)[\s\S]*?\.autoGather\{height:44px;font-size:9px\}/);
   assert.match(source,/gather\(state\.gathering\.manualTarget,false\)/);
@@ -332,26 +332,30 @@ test('nearby auto gather keeps the existing manual gather path and mobile toggle
 
 test('auto gather reuses authoritative resource balance and tool gates instead of duplicating rewards',()=>{
   const gather=functionBody('gather');
-  assert.match(gather,/let amount=1;if\(tool\?\.target===best\.kind\)amount=tool\.mult;if\(best\.kind==='iron'\|\|best\.kind==='poisonstone'\)amount=1/);
+  assert.match(gather,/let amount=1;if\(tool\?\.target===best\.kind\)amount=tool\.mult;if\(best\.kind==='iron'\|\|best\.kind==='poisonstone'\|\|best\.kind==='sunstone'\)amount=1/);
   assert.match(gather,/best\.kind==='iron'.*stone-pick.*iron-pick.*gold-pick/);
   assert.match(gather,/best\.kind==='gold'.*p\.tool!=='iron-pick'/);
   assert.match(gather,/best\.kind==='poisonstone'.*p\.tool!=='gold-pick'/);
-  assert.match(gather,/best\.kind==='essence'.*iron-axe.*gold-axe/);
+  assert.match(gather,/const axeId=equippedAxeId\(p\)/); 
+  assert.match(gather,/best\.kind==='essence'&&!axeId/);
+  assert.match(functionBody('equippedAxeId'),/iron-axe.*gold-axe/);
   const auto=functionBody('updateAutoGather');
   assert.match(auto,/nearestGatherResource\(\)/);
   assert.match(auto,/gather\(target,true\)/);
   assert.doesNotMatch(auto,/wood\+\=|stone\+\=|fiber\+\=|ironOre\+\=|goldOre\+\=|essence\+\=/);
 });
 
-test('auto gather is nearest-only local runtime state and does not alter save or multiplayer semantics',()=>{
-  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=38/);
+test('auto gather keeps transient targeting local and stores only the approved on/off setting',()=>{
+  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=73/);
   assert.match(source,/gathering:\{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0\}/);
   const nearest=functionBody('nearestGatherResource');
   assert.match(nearest,/for\(const n of resourceNodes\(\)\)/);
   assert.match(nearest,/if\(d<bestD\)\{best=n;bestD=d\}/);
   const save=functionBody('saveGame');
-  assert.doesNotMatch(save,/gathering|autoGather/);
-  assert.doesNotMatch(functionBody('gather'),/multiSend|multiBroadcast|channel/);
+  assert.match(save,/settings:\{difficulty:state\.settings\.difficulty,autoGather:!!state\.gathering\.auto/);
+  assert.doesNotMatch(save,/target:state\.gathering|nextAt:state\.gathering|blockedUntil:state\.gathering/);
+  assert.match(functionBody('gather'),/multiplayer\.connected&&!multiIsHost\(\)/);
+  assert.match(functionBody('gather'),/multiSend\('resource-gather'/);
   assert.doesNotMatch(functionBody('updateAutoGather'),/multiSend|multiBroadcast|channel/);
 });
 
