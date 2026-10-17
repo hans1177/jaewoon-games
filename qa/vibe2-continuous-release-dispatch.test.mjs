@@ -482,6 +482,10 @@ test('Web F9 release admission rejects a branch whose current source differs fro
 test('existing GitHub Pages publisher preserves root paths, existing gh-pages history, games and necessary assets',()=>{
   const publisher=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
   assert.match(publisher,/name: Magic Forest Static Play/);
+  // Central release-policy changes must republish the exact main manifest through this same existing workflow.
+  assert.match(publisher,/company-learning\/platform-release-roadmap\.json/);
+  assert.match(publisher,/\.github\/workflows\/vibe2-candidate-release\.yml/);
+  assert.match(publisher,/workflow_dispatch:/);
   assert.match(publisher,/web-games\/publish-manifest\.json/);
   assert.match(publisher,/sourceSha:process\.env\.GITHUB_SHA/);
   assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
