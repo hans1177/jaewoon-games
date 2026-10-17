@@ -379,3 +379,47 @@ test('manual world targeting stays separate from automatic nearest selection',()
   assert.doesNotMatch(auto,/manualTarget/);
 });
 
+
+ 
+// 로블록스 세계수 내부 · 기존 웹 저장/지하보스와 별도로 동작하는 3D 지역
+test('fantasy survival Roblox world tree interior is actual native 3D space with preserved monster stats',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.match(server,/treeRegion.Name = "WorldTreeInterior"/);
+  assert.match(server,/treePart\("RootChamberFloor"/);
+  assert.match(server,/treePart\("RootChamberCeiling"/);
+  assert.match(server,/treePart\("LivingRootPillar"/);
+  assert.match(server,/id = "worldtreebear", name = "세계수 곰", hp = 380, damage = 28/);
+  assert.match(server,/id = "worldtreegolem", name = "세계수 골렘", hp = 586, damage = 48/);
+  assert.match(server,/id = "worldtreesnake", name = "세계수 뱀"/);
+  assert.match(server,/neutral = true, tint = Color3/);
+  assert.match(server,/inTreeRoom\(root\)/);
+  assert.match(server,/entrancePrompt\.Triggered:Connect/);
+  assert.match(server,/exitPrompt\.Triggered:Connect/);
+  assert.match(source,/WORLD_TREE_POLY=\[\{x:6180,y:9150\}/);
+  assert.match(source,/TREE_HOLE=\{x:9000,y:9890\}/);
+  assert.match(source,/jaewoon_fantasy_survival_v1/);
+});
+
+test('neutral golem launches four non-damaging immobilizing roots with two-second 50 percent roll',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const roots=server.slice(server.indexOf('local function launchGolemRoots'),server.indexOf('local function attackTreeMonster'));
+  assert.match(roots,/for i = 1, 4 do/);
+  assert.match(roots,/rootPlayer\(target, 3\)/);
+  assert.doesNotMatch(roots,/TakeDamage/);
+  assert.match(server,/now - mob.rootsAt >= 2/);
+  assert.match(server,/math\.random\(\) < 0\.5/);
+  assert.match(server,/target\.hostile = true/);
+  assert.match(server,/humanoid\.WalkSpeed = 0/);
+  assert.match(server,/state\.humanoid\.WalkSpeed = state\.speed/);
+});
+
+test('world tree combat uses validated server events and accessible mobile touch action',()=>{
+  const server=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  const client=fs.readFileSync('roblox-games/fantasy-survival/client/Game.client.luau','utf8');
+  assert.match(server,/actionId == "worldtree-attack" then handler = attackTreeMonster/);
+  assert.match(server,/Config\.RateLimitSeconds/);
+  assert.match(server,/if not root or not humanoid or humanoid\.Health <= 0 or not inTreeRoom\(root\) then return end/);
+  assert.match(client,/treeAttackButton\.Activated:Connect/);
+  assert.match(client,/remote:FireServer\("worldtree-attack"\)/);
+  assert.match(client,/Enum\.KeyCode\.F, Enum\.KeyCode\.ButtonR2/);
+});

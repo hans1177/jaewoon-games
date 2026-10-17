@@ -384,3 +384,37 @@ end
 task.defer(reportNativeFoundationReady)
 
 CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,Config.Actions[1]and{label=CommonUI.ActionLabel(Config.Actions[1],1),activate=function()remote:FireServer(Config.Actions[1].Id)end}or nil)
+
+-- 세계수 내부 · 기존 서버 GameAction 통신 사용, 터치/키보드/패드 전투
+local treeAttackButton = CommonUI.CreatePrimaryButton({minWidth = 70, minHeight = 52})
+treeAttackButton.Name = "WorldTreeAttack"
+treeAttackButton.Size = UDim2.fromOffset(138, 58)
+treeAttackButton.AnchorPoint = Vector2.new(1, 0)
+treeAttackButton.Position = UDim2.new(1, -12, 0, 105)
+treeAttackButton.Text = "세계수 · 공격"
+treeAttackButton.TextScaled = true
+treeAttackButton.BackgroundColor3 = Color3.fromRGB(68, 127, 83)
+treeAttackButton.TextColor3 = Color3.fromRGB(241, 255, 237)
+treeAttackButton.Visible = false
+treeAttackButton.Parent = gui
+local function updateTreeCombatButton()
+  treeAttackButton.Visible = player:GetAttribute("WorldTreeArea") == "inside"
+end
+treeAttackButton.Activated:Connect(function()
+  if player:GetAttribute("WorldTreeArea") == "inside" then
+    remote:FireServer("worldtree-attack")
+  end
+end)
+player:GetAttributeChangedSignal("WorldTreeArea"):Connect(updateTreeCombatButton)
+player.CharacterAdded:Connect(function()
+  updateTreeCombatButton()
+end)
+ContextActionService:BindAction("WorldTreeNativeAttack", function(_, state)
+  if state == Enum.UserInputState.Begin and player:GetAttribute("WorldTreeArea") == "inside" then
+    remote:FireServer("worldtree-attack")
+    return Enum.ContextActionResult.Sink
+  end
+  return Enum.ContextActionResult.Pass
+end, false, Enum.KeyCode.F, Enum.KeyCode.ButtonR2)
+updateTreeCombatButton()
+
