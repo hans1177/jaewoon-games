@@ -177,6 +177,14 @@ jobs:
           node -p "require('/tmp/web-pages-published.json').routes.join('\n')" | while IFS= read -r route; do
             curl -fsSL --max-time 15 -o /dev/null "$base$route" || { echo "WEB_PAGES_ROUTE_NOT_LIVE=$route" >&2; exit 1; }
           done
+          node -p "require('/tmp/web-pages-published.json').sharedAssets.join('\n')" | while IFS= read -r asset; do
+            [ -n "$asset" ] || continue
+            curl -fsSL --max-time 15 -o /dev/null "$base$asset" || { echo "WEB_PAGES_ASSET_NOT_LIVE=$asset" >&2; exit 1; }
+          done
+          for route in '' 'tier.html'; do
+            curl -fsSL --max-time 15 -o /dev/null "$base$route" || { echo "MAGIC_FOREST_ROOT_NOT_LIVE=$route" >&2; exit 1; }
+          done
+          echo "WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS"
           echo "WEB_PAGES_LIVE_SOURCE_SHA=$GITHUB_SHA"
           echo "WEB_PAGES_ROUTES_HTTP_200=PASS"
           echo "MAGIC_FOREST_PLAY_URL=$base"
