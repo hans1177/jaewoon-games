@@ -55,7 +55,7 @@ test('제단은 뿌리 한 개로 소환하고 원본 보상과 전투 중 탈�
     'WorldTreeRoots") or 0) < 1','worldTreeBoss = makeWorldEnemy(worldTreeSpec.Monsters.Boss',
     'if worldTreeBoss and worldTreeBoss.hp > 0 then',
     'SovereignCores','ForestWoodenSwords','worldBossReward()');
-  has(server,'rootRespawns[i][player.UserId] = os.clock() + 60');
+  has(server,'WorldTreeRootNextAt", os.time() + 60');
 });
 
 test('기존 저장키, 서버 통신, 멀티, 기존 조작과 Roblox 모바일 입력을 유지한다', () => {
@@ -65,7 +65,7 @@ test('기존 저장키, 서버 통신, 멀티, 기존 조작과 Roblox 모바일
     'local handlers = {','remote.OnServerEvent:Connect',
     'remote:FireAllClients("MULTIPLAYER_SYNC", snapshot)',
     'if actionId == "worldtree-attack" then worldTreeAttack(player) return end');
-  for(const key of ['WorldTreeRoots','WorldTreeBossClears','SovereignCores','ForestWoodenSwords'])
+  for(const key of ['WorldTreeRoots','WorldTreeRootNextAt','WorldTreeBossClears','SovereignCores','ForestWoodenSwords'])
     has(config,key + ' = 0');
   has(client, 'if kind == "MULTIPLAYER_SYNC"', 'WorldTreeMiniMap',
     'worldTreeMiniMap.Visible = inside','Enum.KeyCode.ButtonR2',
