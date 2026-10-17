@@ -486,6 +486,7 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.match(publisher,/company-learning\/platform-release-roadmap\.json/);
   assert.match(publisher,/\.github\/workflows\/vibe2-candidate-release\.yml/);
   assert.match(publisher,/workflow_dispatch:/);
+  assert.equal((publisher.match(/^  workflow_dispatch:$/gm)||[]).length,1,'Pages publisher must declare manual workflow dispatch only once');
   assert.match(publisher,/web-games\/publish-manifest\.json/);
   assert.match(publisher,/sourceSha:process\.env\.GITHUB_SHA/);
   assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
