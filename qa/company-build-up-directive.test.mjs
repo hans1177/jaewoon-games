@@ -1793,3 +1793,38 @@ test('maximizes internal algorithms through authorized Vibe and AI collaboration
   const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   assert.match(worker, /preserve=\$\{\(d\.preserveConstraints\|\|\[\]\)/);
 });
+
+test('source worker retains internal-first AI collaboration routing in compact source retries',()=>{
+  const source='roblox-games/simple-rpg/server/Game.server.luau';
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:'simple-rpg',platform:'ROBLOX',designRecord:design(),
+    responsibleFiles:[source]
+  });
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const start=worker.indexOf('function gameSpecificBuildUpDirectiveGuidance(');
+  const finish=worker.indexOf('export function buildRobloxNativeSourceInspection',start);
+  assert.ok(start>=0&&finish>start);
+  const {guide,compact}=runInNewContext(worker.slice(start,finish)
+    +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
+      clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\\\','/'),
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines:()=>[],
+      boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
+      COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+      Buffer,console:{log(){}}
+    });
+  const full=guide({target:'roblox',gameId:'simple-rpg',buildUpDirective:d},[source]);
+  for(const options of [
+    {compact:true,selectedPath:source,responsiblePaths:[source]},
+    {compact:true,focusedRobloxVisual:true,selectedPath:source,responsiblePaths:[source]}
+  ]){
+    const reduced=compact(full,options);
+    assert.match(reduced,/internalAlgorithmRoute=VERIFIED_SAME_GAME_SAME_FAILURE_FIRST/);
+    assert.match(reduced,/AUTHORIZED_AI_CAN_IMPLEMENT_ON_ISOLATED_CANDIDATES_WHEN_OPTED_IN/);
+    assert.match(reduced,/VIBE_INTEGRATES_AND_LEARNS/);
+    assert.match(reduced,/DETERMINISTIC_QA_SECURITY_RELEASE_UNCHANGED/);
+  }
+  const legacy=guide({target:'roblox',gameId:'simple-rpg',buildUpDirective:{
+    ...d,internalAlgorithmUse:null
+  }},[source]);
+  assert.doesNotMatch(legacy,/internalAlgorithmRoute=/);
+});
