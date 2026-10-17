@@ -41,7 +41,7 @@ const REPAIR_OPERATIONS=Object.freeze([
   ['BOUND_NUMERIC_INPUT',/\b(?:Math\.min|Math\.max|math\.clamp|Mathf\.Clamp)\s*\(/i,null,'Bound incoming numeric values before applying gameplay state changes.','Test lower, upper and invalid input boundaries.'],
   ['MOBILE_INPUT_BINDING',/\b(?:touch-action|pointerdown|pointermove|touchstart|touchmove)\b/i,null,'Bind touch or pointer input to the existing gameplay owner without duplicate dispatch.','Verify tap, drag, pointer cancel and mobile viewport changes.'],
   ['SERVER_INPUT_VALIDATION',/\b(?:OnServerEvent|OnServerInvoke)\b/i,/\b(?:if|return|assert)\b/i,'Validate client-originated input on the server before authoritative mutation.','Test malformed, repeated and unauthorized remote requests.'],
-  ['EXISTING_INPUT_HANDLER_BINDING',/\.on(?:click|pointerdown|touchstart|touchend|keydown|keyup)\s*=\s*(?:\(?\s*[A-Za-z_$]|function\b|async\b)/i,null,'Bind player input to the existing action handler without duplicating its owner.','Exercise the actual input action and verify it fires exactly once.']
+  ['EXISTING_INPUT_HANDLER_BINDING',/\.on(?:click|pointerdown|touchstart|touchend|keydown|keyup)\s*=\s*(?:\([^)]*\)\s*=>|[A-Za-z_$][\w$]*|function\b|async\b)/i,null,'Bind player input to the existing action handler without duplicating its owner.','Exercise the actual input action and verify it fires exactly once.']
 ]);
 
 // Old PASS-marked traces can contain malformed added JavaScript. Do not learn from them.
