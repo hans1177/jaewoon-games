@@ -274,9 +274,11 @@ function vibeMatchingFamilies(asset={},families=[]){
  */
 export function planVibeExternalCustomization({
   request='',target='',gameId='',requirements=[],assets=[],styleBible={},
-  approvedDesignFingerprint='',ownerScope=null,sourceRevision=''
+  approvedDesignFingerprint='',ownerScope=null,sourceRevision='',sourceRoot='',executionSurface='',unityWebDevelopment=false
 }={}){
-  const platform=vibeNormalizedTarget(target);
+  const unityOwned=unityWebDevelopment===true||/^(?:\.?\/)?unity-games\//i.test(text(sourceRoot).replaceAll('\\','/'))
+    ||/UNITY[_-]?WEB|UNITY[_-]?ANDROID/i.test(text(executionSurface));
+  const platform=unityOwned?'UNITY_WEB':vibeNormalizedTarget(target);
   const scope=ownerScope&&typeof ownerScope==='object'?ownerScope:null;
   const active=(scope?.activeTargets||[]).map(vibeNormalizedTarget);
   const held=(scope?.ownerHeldTargets||[]).map(vibeNormalizedTarget);
