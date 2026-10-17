@@ -14,6 +14,18 @@ import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} fr
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,VIBE_NPC_ROLE_MOTION_REQUIREMENTS,createVibeNpcRoleMotionRequirement,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {buildRobloxStudioAssetBootstrapPlan} from './company-development-roblox-bootstrap.mjs';
 
+// Multiple game decisions within one runner reuse an exact file verification.
+// Final hydration independently rehashes bytes before any source can be used.
+const SHARED_ARCHIVE_HASH_CACHE=new Map();
+function sharedArchiveSha256(full,info){
+  const identity=[info.dev,info.ino,info.size,info.mtimeMs,info.ctimeMs].join(':');
+  const cached=SHARED_ARCHIVE_HASH_CACHE.get(full);
+  if(cached?.identity===identity)return cached.sha256;
+  const sha256=crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex');
+  if(SHARED_ARCHIVE_HASH_CACHE.size>=128)SHARED_ARCHIVE_HASH_CACHE.delete(SHARED_ARCHIVE_HASH_CACHE.keys().next().value);
+  SHARED_ARCHIVE_HASH_CACHE.set(full,{identity,sha256});
+  return sha256;
+}
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
 const freezeList=value=>freeze([...(value||[])]);
@@ -1306,10 +1318,6 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       if(!/^[0-9a-f]{64}$/.test(declaredHash)||!Number.isSafeInteger(declaredBytes)||declaredBytes<512||seenSourceHashes.has(declaredHash))continue;
       if(!publicHttps(row?.sourceUrl)||!publicHttps(row?.licenseEvidenceUrl))continue;
       const localFile=path.resolve(repoRoot,relative);
-      try{
-        const info=fs.statSync(localFile);
-        if(!info.isFile()||info.size!==declaredBytes)continue;
-      }catch{continue;}
       const name=clean(row.file).toLowerCase(),role=clean(row.role).toLowerCase();
       const sourceFamily=clean(row.family).toUpperCase()||(
         role==='03-equipment'?(/potion|item|inventory/.test(name)?'PROP':'WEAPON'):
@@ -1325,13 +1333,36 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz)$/,''),role].join(' ').replace(/[-_]+/g,' ');
       const matchedRoles=roles.filter(value=>terms.includes(value.replaceAll('_',' ')));
       if(roles.length&&!roles.every(value=>value==='generic')&&!matchedRoles.length)continue;
+      // Download is 3D-only. Existing non-3D originals remain eligible for
+      // reuse, but missing 2D/audio files never trigger network acquisition.
+      let localReady=false,needsHydration=false,corrupt=false;
+      try{
+        const info=fs.statSync(localFile);
+        if(!info.isFile()){corrupt=true;}
+        else if(info.size===declaredBytes){
+          localReady=sharedArchiveSha256(localFile,info)===declaredHash;
+          corrupt=!localReady;
+        }else if(info.size<=256 && spatialFamilies.has(family)){
+          // A Git LFS pointer is not corrupt only when oid and size match
+          // this canonical manifest exactly. Never repair a different binary.
+          const pointer=fs.readFileSync(localFile,'utf8');
+          const match=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(pointer);
+          needsHydration=Boolean(match&&match[1]===declaredHash&&Number(match[2])===declaredBytes);
+          corrupt=!needsHydration;
+        }else{corrupt=true;}
+      }catch(error){
+        if(error?.code==='ENOENT')needsHydration=spatialFamilies.has(family);
+        else corrupt=true;
+      }
+      if(corrupt||(!localReady&&!needsHydration))continue;
       const nameFit=requestText.split(/\s+/).filter(word=>word.length>=4&&terms.includes(word)).length;
       seenSourceHashes.add(declaredHash);
       candidates.push(freeze({
         sourceId:'shared-original-'+declaredHash.slice(0,16),sourceName:clean(row.file),family,
         license,sourceUrl:clean(row.sourceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
         licenseSnapshotDate:null,downloadUrl:null,sourcePath:relative,sourceHash:declaredHash,
-        archiveBytes:declaredBytes,downloaded:true,acquisitionState:'ACQUIRED_ORIGINAL_FILES',
+        archiveBytes:declaredBytes,downloaded:localReady,
+        acquisitionState:localReady?'ACQUIRED_ORIGINAL_FILES':'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED',
         matchedRoles:freezeList(matchedRoles),roleCompatibilityRequiresSourceInspection:true,
         categoryMatchVerified:true,runtimeVerified:false,rawRedistributionAllowed:false,
         sourceHashMustBeReverified:true,roleScore:100+matchedRoles.length*10+nameFit,
@@ -1585,7 +1616,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           externalAcquisition:freeze({
             sourceId:selected.sourceId,sourceName:selected.sourceName,sourceUrl:selected.sourceUrl,
             downloadUrl:selected.downloadUrl,localSourcePath:selected.sourcePath||null,
-            sourceHash:selected.sourceHash||null,downloaded:selected.downloaded===true,
+            sourceHash:selected.sourceHash||null,archiveBytes:selected.archiveBytes||null,
+            downloaded:selected.downloaded===true,
             license:selected.license,licenseEvidenceUrl:selected.licenseEvidenceUrl,
             licenseSnapshotDate:selected.licenseSnapshotDate,acquisitionState:selected.acquisitionState,
             candidateSources:externalCandidates,onDemandOnly:true,bulkPrefetchForbidden:true,

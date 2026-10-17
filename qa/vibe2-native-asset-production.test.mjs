@@ -5089,3 +5089,90 @@ test('Vibe game asset supply verifies and applies originals instead of schedulin
   assert.ok(!worker.includes(".filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'"));
   assert.match(worker,/Only inspect, verify and apply existing company\/common or downloaded license-cleared assets/);
 });
+
+
+test('selected game hydrates only its missing hash-pinned source, not every archive',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-game-asset-demand-'));
+  try{
+    const rel='assets/external/simple-rpg/priority-v1/bee-rigged.blend';
+    const item={file:'bee-rigged.blend',role:'01-insects',sourcePath:rel,
+      sha256:'a'.repeat(64),bytes:1692676,sourceOnly:true,gameApplied:false,
+      licenseDeclared:'CC0-1.0',
+      sourceUrl:'https://opengameart.org/sites/default/files/bee_rigged_v1.1.blend',
+      licenseEvidenceUrl:'https://opengameart.org/content/bee-0'};
+    const summary=buildAssetSupplyDecisionSummary({
+      gameId:'bees-survival',target:'roblox',request:'bee',
+      requirements:[{family:'CREATURE',role:'bee'}],
+      registry:{assets:[],externalSources:[]},sharedOriginalArchives:[item],repoRoot:tmp
+    });
+    const picked=summary.nextActions.find(row=>row.action==='ACQUIRE_ADAPT');
+    assert.ok(picked,'missing LFS archive must remain selectable for the current game');
+    assert.equal(picked.externalAcquisition.localSourcePath,rel);
+    assert.equal(picked.externalAcquisition.downloaded,false);
+    assert.equal(picked.externalAcquisition.archiveBytes,item.bytes);
+    assert.equal(picked.externalAcquisition.sourceHash,item.sha256);
+    assert.equal(picked.externalAcquisition.acquisitionState,'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED');
+    assert.equal(picked.externalAcquisition.downloadUrl,null);
+    assert.equal(buildAssetSupplyDecisionSummary({
+      gameId:'bees-survival',target:'roblox',request:'bee',
+      requirements:[{family:'CREATURE',role:'bee'}],
+      registry:{assets:[],externalSources:[]},sharedOriginalArchives:[{...item,file:'wolf-rigged.blend'}],repoRoot:tmp
+    }).nextActions.some(row=>row.externalAcquisition?.localSourcePath===rel),false);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('3D game sourcing accepts only exact canonical LFS pointers and rejects corrupt binaries',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-3d-lfs-'));
+  const rel='assets/external/simple-rpg/priority-v1/bee-rigged.blend';
+  const full=path.join(tmp,rel);
+  const expectedHash='1'.repeat(64),expectedBytes=1692676;
+  const item={file:'bee-rigged.blend',role:'01-insects',sourcePath:rel,
+    sha256:expectedHash,bytes:expectedBytes,sourceOnly:true,gameApplied:false,
+    licenseDeclared:'CC0-1.0',
+    sourceUrl:'https://opengameart.org/sites/default/files/bee_rigged_v1.1.blend',
+    licenseEvidenceUrl:'https://opengameart.org/content/bee-0'};
+  const run=()=>buildAssetSupplyDecisionSummary({gameId:'bees-game',target:'roblox',
+    request:'bee',requirements:[{family:'CREATURE',role:'bee'}],
+    registry:{assets:[],externalSources:[]},sharedOriginalArchives:[item],repoRoot:tmp})
+    .nextActions.find(x=>x.family==='CREATURE');
+  try{
+    fs.mkdirSync(path.dirname(full),{recursive:true});
+    fs.writeFileSync(full,'version https://git-lfs.github.com/spec/v1\noid sha256:'+expectedHash+'\nsize '+expectedBytes+'\n');
+    let plan=run();
+    assert.equal(plan.action,'ACQUIRE_ADAPT');
+    assert.equal(plan.externalAcquisition.downloaded,false);
+    assert.equal(plan.externalAcquisition.acquisitionState,'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED');
+    fs.writeFileSync(full,'version https://git-lfs.github.com/spec/v1\noid sha256:'+'2'.repeat(64)+'\nsize '+expectedBytes+'\n');
+    assert.notEqual(run().action,'ACQUIRE_ADAPT','a different LFS oid cannot be trusted');
+    fs.writeFileSync(full,Buffer.alloc(650,42));
+    assert.notEqual(run().action,'ACQUIRE_ADAPT','damaged binary cannot become a download candidate');
+    fs.writeFileSync(full,Buffer.alloc(expectedBytes,33));
+    assert.notEqual(run().action,'ACQUIRE_ADAPT','same size but mismatched hash is still invalid');
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('3D-only download contract leaves missing audio and image archives out of acquisition',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-3d-filter-'));
+  try{
+    const base={sourceOnly:true,gameApplied:false,licenseDeclared:'CC0-1.0',
+      sha256:'3'.repeat(64),bytes:1024,
+      sourceUrl:'https://opengameart.org/sites/default/files/visual-source.zip',
+      licenseEvidenceUrl:'https://opengameart.org/content/visual-source'};
+    for(const [family,role,file] of [
+      ['UI','special-icons','game-icons.zip'],
+      ['AUDIO','audio','ambient-loop.zip'],
+      ['VFX','vfx','effects.zip']
+    ]){
+      const archive={...base,role,file,sourcePath:'assets/external/simple-rpg/icons-vfx-npc/'+file};
+      const plan=buildAssetSupplyDecisionSummary({gameId:'3d-only',target:'roblox',
+        requirements:[{family}],request:family.toLowerCase(),
+        registry:{assets:[],externalSources:[]},sharedOriginalArchives:[archive],repoRoot:tmp});
+      assert.notEqual(plan.nextActions.find(x=>x.family===family)?.action,'ACQUIRE_ADAPT',
+        family+' must not fetch missing non-3D archives');
+    }
+    const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+    assert.match(worker,/spatial3dFamilies\.has\(clean\(row\.family\)/);
+    assert.match(worker,/lfsEligible\.has\(rel\)/);
+    assert.match(worker,/BLOCKED_INVALID_SOURCE/);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});

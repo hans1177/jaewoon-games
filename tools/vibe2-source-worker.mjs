@@ -6796,6 +6796,113 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     ?assertVibeAgentHandoffScope({plan:order.agentHandoff,task:order.selectedTask||{id:order.taskId,gameId:order.gameId,target:order.target},
       route:order.executionRoute||'text-source-worker',target:order.target,responsibleFiles:order?.source?.responsibleFiles||[]})
     :{pass:false,reason:'LEGACY_WORK_ORDER_HANDOFF_NOT_PRESENT'};
+  // 현재 게임이 선택한 공용 원본만 필요할 때 내려받는다.
+  // 실물 해시를 통과하지 못한 파일은 게임용 라이브러리로 취급하지 않는다.
+  if(applySource){
+    const actions=order?.assetProduction?.assetSupplySummary?.nextActions||[];
+    const spatial3dFamilies=new Set(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN']);
+    const chosen=actions.filter(row=>row?.action==='ACQUIRE_ADAPT'
+      &&spatial3dFamilies.has(clean(row.family).toUpperCase())
+      &&row?.externalAcquisition?.sourceFileMustBeReal3d===true
+      &&clean(row?.externalAcquisition?.license).toUpperCase().replace('_','-')==='CC0-1.0'
+      &&/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz)$/.test(clean(row?.externalAcquisition?.localSourcePath))
+      &&/^[0-9a-f]{64}$/i.test(clean(row?.externalAcquisition?.sourceHash))
+      &&Number.isSafeInteger(Number(row?.externalAcquisition?.archiveBytes))
+      &&Number(row?.externalAcquisition?.archiveBytes)>=512
+      &&Number(row?.externalAcquisition?.archiveBytes)<=104857600);
+    if(chosen.length){
+      assertCandidateBranch(cwd);
+      const tracked=[],lfsEligible=new Set();
+      for(const row of chosen){
+        const rel=posix(row.externalAcquisition.localSourcePath),entry=row.externalAcquisition;
+        try{
+          execFileSync('git',['ls-files','--error-unmatch','--',rel],{cwd,timeout:10000,stdio:'pipe'});
+          // The canonical Git blob, not a damaged working-tree file, must
+          // authorize hydration. A different LFS oid is never repaired.
+          let lfs=false;
+          try{
+            // Avoid reading large normal ZIP blobs just to discover that they
+            // are not LFS. The tracked attributes are checked before git show.
+            const attr=execFileSync('git',['check-attr','filter','--',rel],{cwd,timeout:10000,maxBuffer:1024,stdio:'pipe'}).toString('utf8').trim();
+            if(attr.endsWith(': lfs')){
+              const blob=execFileSync('git',['show','HEAD:'+rel],{cwd,timeout:10000,maxBuffer:512,stdio:'pipe'}).toString('utf8');
+              const m=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(blob);
+              lfs=Boolean(m&&m[1]===clean(entry.sourceHash).toLowerCase()&&Number(m[2])===Number(entry.archiveBytes));
+            }
+          }catch{}
+          tracked.push(row);
+          if(lfs)lfsEligible.add(rel);
+        }catch{
+          console.log('VIBE2_SELECTED_ASSET_DOWNLOAD=BLOCKED_UNTRACKED:'+safeId(entry.sourceId));
+        }
+      }
+      const ready=new Map();
+      const verify=row=>{
+        const rel=posix(row.externalAcquisition.localSourcePath),full=path.resolve(cwd,rel);
+        try{
+          const bytes=Number(row.externalAcquisition.archiveBytes);
+          if(fs.statSync(full).size!==bytes)return false;
+          return crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex')===clean(row.externalAcquisition.sourceHash).toLowerCase();
+        }catch{return false;}
+      };
+      const missing=tracked.filter(row=>lfsEligible.has(posix(row.externalAcquisition.localSourcePath))&&!verify(row));
+      if(missing.length){
+        // A single targeted LFS request replaces checkout of unrelated game assets.
+        const include=[...new Set(missing.map(row=>posix(row.externalAcquisition.localSourcePath)))].sort();
+        try{
+          execFileSync('git',['lfs','pull','--include='+include.join(','),'--exclude=*'],{cwd,timeout:180000,stdio:'pipe'});
+          console.log('VIBE2_SELECTED_ASSET_LFS_DOWNLOAD=ATTEMPTED:'+include.length);
+        }catch(e){
+          console.log('VIBE2_SELECTED_ASSET_LFS_DOWNLOAD=UNAVAILABLE:'+safeId(clean(e?.code||'ERROR')));
+        }
+      }
+      for(const row of tracked){
+        const entry=row.externalAcquisition,rel=posix(entry.localSourcePath);
+        if(!verify(row)&&lfsEligible.has(rel)){
+          // Only an exact, registry-pinned public OpenGameArt attachment can
+          // replace an unavailable LFS original. Landing pages are forbidden.
+          let uri=null;
+          try{
+            const u=new URL(clean(entry.sourceUrl));
+            if(u.protocol==='https:'&&u.hostname==='opengameart.org'
+              &&u.pathname.startsWith('/sites/default/files/')
+              &&!u.username&&!u.password)uri=u.toString();
+          }catch{}
+          if(uri){
+            const temp=path.join(os.tmpdir(),'vibe2-asset-'+safeId(order.gameId||order.taskId)+'-'+crypto.createHash('sha256').update(rel).digest('hex').slice(0,16)+'.part');
+            try{
+              execFileSync('curl',['--fail','--silent','--show-error','--location','--max-redirs','2',
+                '--proto','=https','--proto-redir','=https','--retry','3','--retry-all-errors',
+                '--connect-timeout','12','--max-time','180','--max-filesize','104857600',
+                '--output',temp,uri],{cwd,timeout:240000,stdio:'pipe'});
+              const data=fs.readFileSync(temp);
+              if(data.length===Number(entry.archiveBytes)
+                &&crypto.createHash('sha256').update(data).digest('hex')===clean(entry.sourceHash).toLowerCase()){
+                const destination=path.resolve(cwd,rel),staged=destination+'.vibe2-download.part';
+                try{
+                  fs.writeFileSync(staged,data,{flag:'wx'});
+                  fs.renameSync(staged,destination);
+                }finally{try{fs.unlinkSync(staged);}catch{} }
+              }
+            }catch(e){
+              console.log('VIBE2_SELECTED_ASSET_ORIGIN_DOWNLOAD=FAILED:'+safeId(entry.sourceId));
+            }finally{try{fs.unlinkSync(temp);}catch{}}
+          }
+        }
+        const ok=verify(row);
+        ready.set(rel,ok);
+        console.log('VIBE2_SELECTED_3D_ASSET_DOWNLOAD='+(ok?'VERIFIED:':lfsEligible.has(rel)?'PENDING:':'BLOCKED_INVALID_SOURCE:')+safeId(order.gameId)+':'+safeId(entry.sourceId));
+      }
+      order={...order,assetProduction:{...order.assetProduction,
+        assetSupplySummary:{...order.assetProduction.assetSupplySummary,
+          nextActions:actions.map(row=>{
+            const e=row?.externalAcquisition;
+            if(!e||!ready.get(posix(e.localSourcePath)))return row;
+            return {...row,externalAcquisition:{...e,downloaded:true,
+              acquisitionState:'ACQUIRED_ORIGINAL_FILES'}};
+          })}}};
+    }
+  }
   const singleMotionPreflight=evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles});
   if(!singleMotionPreflight.pass)throw new Error(singleMotionPreflight.reason);
   let dccEvidence=null;
