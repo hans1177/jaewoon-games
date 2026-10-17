@@ -8,6 +8,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {auditFourPolicyDocuments,resolveActiveOwnerPolicy} from '../tools/company-policy-steward.mjs';
 import {ownerDevelopmentHeld} from '../tools/vibe2-queue-control.mjs';
+import {loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
 
 // 메인
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -126,4 +127,22 @@ test('conflicting date-less or malformed ACTIVE owner scope is rejected',()=>fix
     activeTargets:['WEB'],ownerHeldTargets:['ROBLOX']
   };
   assert.throws(()=>resolveActiveOwnerPolicy(doc),/OWNER_DIRECTIVE_INVALID/);
+}));
+
+test('work contract fingerprint follows latest directive, not stale legacy holds',()=>fixture(tmp=>{
+  const file=path.join(tmp,paths[0]);
+  const before=loadCentralPolicySnapshot({repoRoot:tmp,required:true});
+  assert.match(before.executionFingerprint,/^[a-f0-9]{64}$/);
+  const policy=JSON.parse(fs.readFileSync(file,'utf8'));
+  policy.developmentAccess.ROBLOX='OWNER_HOLD';
+  fs.writeFileSync(file,JSON.stringify(policy));
+  const legacyChange=loadCentralPolicySnapshot({repoRoot:tmp,required:true});
+  assert.equal(legacyChange.executionFingerprint,before.executionFingerprint);
+  policy.ownerNextDevelopment={
+    status:'ACTIVE',authority:'OWNER_DIRECTIVE_2026-10-18_WEB_ONLY',
+    activeTargets:['WEB'],ownerHeldTargets:['ROBLOX','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN']
+  };
+  fs.writeFileSync(file,JSON.stringify(policy));
+  const newest=loadCentralPolicySnapshot({repoRoot:tmp,required:true});
+  assert.notEqual(newest.executionFingerprint,before.executionFingerprint);
 }));
