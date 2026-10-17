@@ -17,7 +17,8 @@ test('Rojo source owns companion module; exact title preserves internal save ide
   assert.match(config, /GameId\s*=\s*"simple-rpg"/);
   assert.match(config, /GameName\s*=\s*"대충알피지"/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
-  assert.doesNotMatch(client, /Instance\.new\("ScreenGui"\)/);
+  assert.match(client, /Instance\.new\("ScreenGui"\)/);
+  assert.doesNotMatch(client, /Instance\.new\("(Frame|TextButton)"\)/);
   assert.equal(project.tree.ReplicatedStorage.Shared.CuratedUiTemplates.$className, 'Folder');
 });
 
@@ -363,32 +364,38 @@ test('monster alert clears immediately when a player leaves its habitat', () => 
   assert.match(server, /AdvancedAIEcosystem\.SetState\(enemy, "ReturnHome"\)/);
 });
 
-test('blank-screen regression: playable server-backed HUD appears without an imported GUI', () => {
-  assert.match(client, /local function attachNativeHud\(\): \(\)/);
-  assert.match(client, /gui\.Name = "CivilizationHud"/);
-  assert.match(client, /gui\.Parent = player:WaitForChild\("PlayerGui"\)/);
-  assert.match(client, /attachNativeHud\(\)/);
-  assert.match(client, /bindExternalButton\(button\)/);
-  assert.match(client, /tradePanel\.Name = "Trade"/);
-  assert.match(client, /togglePanel\("Trade"\)/);
-  assert.match(client, /for _, otherName in ipairs\(\{"Actions", "Inventory", "Races", "Trade"\}\) do/);
-  assert.match(client, /local RaceData = require\(Shared:WaitForChild\("RaceData"\)\)/);
-  for (const action of ['CivAttack', 'CivGather', 'CivParry', 'CivDodge', 'CivTravel', 'CivResearch', 'CivTimedCraft', 'CivCompanion', 'CivSelect'])
-    assert.ok(client.includes('"' + action + '"'), action);
-  assert.doesNotMatch(client, /RobloxCommonUI|CommonUI\./);
+test('old visual rollback is removed: only registered source-verified art can appear', () => {
+  assert.doesNotMatch(client, /attachNativeHud|gui\.Name = "CivilizationHud"/);
+  assert.doesNotMatch(client, /Instance\.new\("(Frame|TextButton|BillboardGui)"\)/);
+  assert.match(client, /local function attachDownloadedArtwork\(\): \(\)/);
+  assert.match(client, /assetModule = Shared:FindFirstChild\("CuratedAssets"\)/);
+  assert.match(client, /if not panelId or not buttonId or panelId < 1 or buttonId < 1 then return end/);
+  assert.match(client, /button\.Image = "rbxassetid:\/\/" \.\. buttonId/);
+  assert.match(client, /item\.Image = "rbxassetid:\/\/" \.\. panelId/);
+  assert.match(client, /template\.Name = "MainHUD"/);
+  assert.match(client, /attachDownloadedArtwork\(\)/);
+  assert.match(client, /local function validUiTemplate\(template: Instance\): boolean/);
+  assert.match(client, /imported\.Parent = player:WaitForChild\("PlayerGui"\)/);
+  assert.match(server, /local function importCuratedModel\(folder, name, assetId\)/);
+  assert.match(server, /InsertService:LoadAsset\(assetId\)/);
+  assert.match(server, /local function worldModelFor\(name\)/);
+  assert.match(server, /part\.Transparency = 1/);
+  assert.match(server, /startGround\.Transparency = 1/);
+  assert.doesNotMatch(server, /Instance\.new\("BillboardGui"\)/);
+  assert.doesNotMatch(server, /part\.Transparency = 0/);
+  for(const action of ['CivAttack','CivGather','CivParry','CivDodge',
+    'CivTravel','CivResearch','CivTimedCraft','CivCompanion','CivSelect'])
+    assert.ok(client.includes('"'+action+'"'), action);
   assert.equal(project.tree.ReplicatedStorage.Shared.CuratedUiTemplates.$className, 'Folder');
 });
 
-test('only visibly textured, licensed and owner-reviewed external GUI can render', () => {
-  assert.match(client, /local function validUiTemplate\(template: Instance\): boolean/);
-  for (const marker of ['CuratedExternalAsset', 'VisualQualityApproved', 'LicenseVerified', 'VerifiedRobloxAssetId', 'MainHUD']) {
-    assert.ok(client.includes(marker), marker);
-  }
+test('downloaded image HUD retains external asset verification gates', () => {
+  assert.match(client, /template:GetAttribute\("CuratedExternalAsset"\) ~= true/);
+  assert.match(client, /template:GetAttribute\("LicenseVerified"\) ~= true/);
+  assert.match(client, /template:GetAttribute\("VisualQualityApproved"\) ~= true/);
+  assert.match(client, /template:GetAttribute\("VerifiedRobloxAssetId"\)/);
   assert.match(client, /descendant:IsA\("ImageLabel"\) or descendant:IsA\("ImageButton"\)/);
-  assert.match(client, /imported.Parent = player:WaitForChild\("PlayerGui"\)/);
-  assert.match(client, /if not validUiTemplate\(template\) or not template:IsA\("ScreenGui"\) then return end/);
-  assert.match(client, /if hud.Name ~= "CivilizationHud" then return end/);
-  assert.match(client, /Instance\.new\("ScreenGui"\)/);
+  assert.match(client, /if hud or not validUiTemplate\(template\) or not template:IsA\("ScreenGui"\) then return end/);
 });
 
 test('curated external UI retains server-verified research, trade, crafting and travel', () => {

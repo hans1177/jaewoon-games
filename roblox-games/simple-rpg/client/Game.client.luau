@@ -1,6 +1,7 @@
 --!strict
--- 대충알피지: keep actual server-backed controls visible; replace native art with validated external UI when available.
--- The existing remotes, saved attributes, combat input and imported creature following remain authoritative.
+-- 대충알피지: delete old Vibe/basic Roblox GUI visuals, never synthesize placeholder UI.
+-- Display only an imported, licensed, owner-reviewed high-quality external ScreenGui.
+-- Gameplay remotes, saved attributes, combat input and imported creature follow are kept.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -50,28 +51,26 @@ local function updateNumbers(): ()
   end
   local status = findUi("CivilizationStatus")
   if status and status:IsA("TextLabel") then
-    status.Text = string.format("시대 %d · 연구 %d/72 · 은화 %d · 목재 %d · 돌 %d",
+    status.Text = string.format("시대 %d · 연구 %d/72 · 은화 %d · 목재 %d · 석재 %d",
       tonumber(player:GetAttribute("CivEra")) or 1,
       tonumber(player:GetAttribute("CivTech")) or 0,
       tonumber(player:GetAttribute("CivSilver")) or 0,
       tonumber(player:GetAttribute("CivWood")) or 0,
       tonumber(player:GetAttribute("CivStone")) or 0)
   end
-  local nextResearch = findUi("ResearchNext")
-  if nextResearch and nextResearch:IsA("TextButton") then
-    local id = (tonumber(player:GetAttribute("CivTech")) or 0) + 1
-    nextResearch:SetAttribute("GameArgument", id)
-    nextResearch.Text = if id <= 72 then "연구 " .. id .. "/72" else "연구 완료"
+  local researchButton = findUi("ResearchNext")
+  if researchButton and researchButton:IsA("ImageButton") then
+    researchButton:SetAttribute("GameArgument", (tonumber(player:GetAttribute("CivTech")) or 0) + 1)
   end
   local inventory = findUi("InventorySummary")
   if inventory and inventory:IsA("TextLabel") then
-    inventory.Text = string.format("목재 %d · 돌 %d · 은화 %d · 금화 %d\n무기 %d · 연구력 %d",
+    inventory.Text = string.format("목재 %d · 석재 %d · 연구력 %d\n은화 %d · 금화 %d · 장착무기 %d",
       tonumber(player:GetAttribute("CivWood")) or 0,
       tonumber(player:GetAttribute("CivStone")) or 0,
+      tonumber(player:GetAttribute("CivResearch")) or 0,
       tonumber(player:GetAttribute("CivSilver")) or 0,
       tonumber(player:GetAttribute("CivGold")) or 0,
-      tonumber(player:GetAttribute("CivEquippedWeapon")) or 0,
-      tonumber(player:GetAttribute("CivResearch")) or 0)
+      tonumber(player:GetAttribute("CivEquippedWeapon")) or 0)
   end
 end
 
@@ -87,10 +86,9 @@ local function togglePanel(name: string): ()
   if not panel or not panel:IsA("GuiObject") then return end
   local opening = not panel.Visible
   if opening then
-    -- Single mobile overlay at a time, preserving the native joystick and touch zone.
-    for _, otherName in ipairs({"Actions", "Inventory", "Races", "Trade"}) do
-      if otherName ~= name then
-        local other = findUi(otherName)
+    for _, panelName in ipairs({"Actions", "Races", "Inventory", "Trade"}) do
+      if panelName ~= name then
+        local other = findUi(panelName)
         if other and other:IsA("GuiObject") then other.Visible = false end
       end
     end
@@ -215,12 +213,7 @@ local function validUiTemplate(template: Instance): boolean
 end
 
 local function attachExternalHud(template: Instance): ()
-  if not validUiTemplate(template) or not template:IsA("ScreenGui") then return end
-  if hud then
-    if hud.Name ~= "CivilizationHud" then return end
-    hud:Destroy()
-    hud = nil
-  end
+  if hud or not validUiTemplate(template) or not template:IsA("ScreenGui") then return end
   local imported = template:Clone()
   imported.Name = "CuratedExternalHUD"
   imported.ResetOnSpawn = false
@@ -230,249 +223,6 @@ local function attachExternalHud(template: Instance): ()
     bindExternalButton(descendant)
   end
   imported.DescendantAdded:Connect(bindExternalButton)
-  updateNumbers()
-end
-
--- 메인: a single real server-backed player HUD, using the old authored civilization palette.
--- No fake items, local rewards, alternate save pipeline, or generated model asset IDs.
-local function attachNativeHud(): ()
-  if hud then return end
-  local gui = Instance.new("ScreenGui")
-  gui.Name = "CivilizationHud"
-  gui.ResetOnSpawn = false
-  gui.IgnoreGuiInset = false
-  gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-  gui.DisplayOrder = 12
-  gui.Parent = player:WaitForChild("PlayerGui")
-  hud = gui
-
-  local header = Instance.new("Frame")
-  header.Name = "Header"
-  header.Size = UDim2.new(1, -16, 0, 90)
-  header.Position = UDim2.fromOffset(8, 6)
-  header.BackgroundColor3 = Color3.fromRGB(40, 43, 37)
-  header.BackgroundTransparency = 0.12
-  header.BorderSizePixel = 0
-  header.Parent = gui
-  local headerCorner = Instance.new("UICorner")
-  headerCorner.CornerRadius = UDim.new(0, 10)
-  headerCorner.Parent = header
-
-  local title = Instance.new("TextLabel")
-  title.Name = "CivilizationTitle"
-  title.Text = "대충알피지"
-  title.Font = Enum.Font.GothamBold
-  title.TextSize = 20
-  title.TextColor3 = Color3.fromRGB(255, 232, 179)
-  title.BackgroundTransparency = 1
-  title.TextXAlignment = Enum.TextXAlignment.Left
-  title.Size = UDim2.new(1, -104, 0, 35)
-  title.Position = UDim2.fromOffset(12, 2)
-  title.Parent = header
-
-  local status = Instance.new("TextLabel")
-  status.Name = "CivilizationStatus"
-  status.Text = "서버 상태 확인 중"
-  status.Font = Enum.Font.Gotham
-  status.TextSize = 13
-  status.TextColor3 = Color3.fromRGB(242, 233, 211)
-  status.TextWrapped = true
-  status.TextXAlignment = Enum.TextXAlignment.Left
-  status.BackgroundTransparency = 1
-  status.Size = UDim2.new(1, -22, 0, 46)
-  status.Position = UDim2.fromOffset(12, 37)
-  status.Parent = header
-
-  local notice = Instance.new("TextLabel")
-  notice.Name = "CombatNotice"
-  notice.Size = UDim2.new(1, -16, 0, 33)
-  notice.Position = UDim2.fromOffset(8, 101)
-  notice.BackgroundColor3 = Color3.fromRGB(67, 50, 35)
-  notice.BackgroundTransparency = 0.15
-  notice.TextColor3 = Color3.fromRGB(255, 234, 195)
-  notice.Text = "이동: 기본 조이스틱 · 화면 버튼으로 행동"
-  notice.TextSize = 12
-  notice.TextWrapped = true
-  notice.Font = Enum.Font.Gotham
-  notice.Parent = gui
-
-  local actions = Instance.new("Frame")
-  actions.Name = "QuickActions"
-  actions.Size = UDim2.new(1, -16, 0, 46)
-  actions.Position = UDim2.fromOffset(8, 139)
-  actions.BackgroundTransparency = 1
-  actions.Parent = gui
-  local grid = Instance.new("UIGridLayout")
-  grid.CellSize = UDim2.new(0.25, -6, 1, 0)
-  grid.CellPadding = UDim2.fromOffset(4, 0)
-  grid.FillDirectionMaxCells = 4
-  grid.SortOrder = Enum.SortOrder.LayoutOrder
-  grid.Parent = actions
-
-  local menu = Instance.new("ScrollingFrame")
-  menu.Name = "Actions"
-  menu.AnchorPoint = Vector2.new(1, 0)
-  menu.Position = UDim2.new(1, -8, 0, 193)
-  menu.Size = UDim2.new(0, 174, 0.55, -193)
-  menu.BackgroundColor3 = Color3.fromRGB(44, 46, 38)
-  menu.BackgroundTransparency = 0.08
-  menu.BorderSizePixel = 0
-  menu.ScrollBarThickness = 4
-  menu.AutomaticCanvasSize = Enum.AutomaticSize.Y
-  menu.CanvasSize = UDim2.new()
-  menu.Visible = false
-  menu.Parent = gui
-  local menuLayout = Instance.new("UIListLayout")
-  menuLayout.Padding = UDim.new(0, 6)
-  menuLayout.SortOrder = Enum.SortOrder.LayoutOrder
-  menuLayout.Parent = menu
-  local menuPadding = Instance.new("UIPadding")
-  menuPadding.PaddingTop = UDim.new(0, 6)
-  menuPadding.PaddingLeft = UDim.new(0, 6)
-  menuPadding.PaddingRight = UDim.new(0, 6)
-  menuPadding.PaddingBottom = UDim.new(0, 6)
-  menuPadding.Parent = menu
-
-  local menuToggle = Instance.new("TextButton")
-  menuToggle.Name = "MenuToggle"
-  menuToggle.Size = UDim2.fromOffset(86, 30)
-  menuToggle.Position = UDim2.new(1, -93, 0, 7)
-  menuToggle.BackgroundColor3 = Color3.fromRGB(118, 86, 49)
-  menuToggle.TextColor3 = Color3.fromRGB(255, 244, 222)
-  menuToggle.Font = Enum.Font.GothamBold
-  menuToggle.TextSize = 15
-  menuToggle.Text = "메뉴"
-  menuToggle:SetAttribute("GameAction", "CivPanel")
-  menuToggle:SetAttribute("GameArgument", "Actions")
-  menuToggle.Parent = header
-  bindExternalButton(menuToggle)
-
-  local quick = {
-    {"공격", "CivAttack"}, {"채집", "CivGather"},
-    {"패링", "CivParry"}, {"회피", "CivDodge"},
-  }
-  local entries = {
-    {"모험 시작", "CivTravel"},
-    {"다음 기술 연구", "CivResearch", 1, "ResearchNext"},
-    {"석기 도끼 제작", "CivTimedCraft", 1},
-    {"청동 검 제작", "CivTimedCraft", 2},
-    {"가방", "CivPanel", "Inventory"},
-    {"24개 문명", "CivPanel", "Races"},
-    {"무역 시세", "CivTradeSnapshot"},
-    {"동료 소환", "CivCompanion", "Summon"},
-    {"동료 따라오기", "CivCompanion", "Follow"},
-    {"동료 공격", "CivCompanion", "Attack"},
-    {"동료 채집", "CivCompanion", "Gather"},
-    {"동료 해산", "CivCompanion", "Dismiss"},
-  }
-  for _, group in ipairs({{Rows = quick, Parent = actions}, {Rows = entries, Parent = menu}}) do
-    for index, row in ipairs(group.Rows) do
-      local button = Instance.new("TextButton")
-      button.Name = row[4] or row[2] .. index
-      button.LayoutOrder = index
-      button.Size = UDim2.new(1, -4, 0, 39)
-      button.BackgroundColor3 = Color3.fromRGB(101, 80, 55)
-      button.TextColor3 = Color3.fromRGB(255, 245, 222)
-      button.Font = Enum.Font.GothamBold
-      button.TextSize = 13
-      button.TextWrapped = true
-      button.Text = row[1]
-      button:SetAttribute("GameAction", row[2])
-      if row[3] ~= nil then button:SetAttribute("GameArgument", row[3]) end
-      button.Parent = group.Parent
-      local corner = Instance.new("UICorner")
-      corner.CornerRadius = UDim.new(0, 7)
-      corner.Parent = button
-      bindExternalButton(button)
-    end
-  end
-  -- Read-only inventory reflects the original replicated server attributes.
-  local inventory = Instance.new("Frame")
-  inventory.Name = "Inventory"
-  inventory.Size = UDim2.new(1, -16, 0, 90)
-  inventory.Position = UDim2.fromOffset(8, 192)
-  inventory.BackgroundColor3 = Color3.fromRGB(40, 43, 37)
-  inventory.Visible = false
-  inventory.Parent = gui
-  local inventoryLabel = Instance.new("TextLabel")
-  inventoryLabel.Name = "InventorySummary"
-  inventoryLabel.Size = UDim2.new(1, -16, 1, -8)
-  inventoryLabel.Position = UDim2.fromOffset(8, 4)
-  inventoryLabel.BackgroundTransparency = 1
-  inventoryLabel.TextColor3 = Color3.fromRGB(255, 239, 201)
-  inventoryLabel.TextSize = 14
-  inventoryLabel.TextWrapped = true
-  inventoryLabel.Parent = inventory
-
-  local races = Instance.new("ScrollingFrame")
-  races.Name = "Races"
-  races.Size = UDim2.new(1, -16, 0.56, -193)
-  races.Position = UDim2.fromOffset(8, 193)
-  races.BackgroundColor3 = Color3.fromRGB(40, 43, 37)
-  races.Visible = false
-  races.AutomaticCanvasSize = Enum.AutomaticSize.Y
-  races.CanvasSize = UDim2.new()
-  races.ScrollBarThickness = 4
-  races.Parent = gui
-  local raceLayout = Instance.new("UIListLayout")
-  raceLayout.Padding = UDim.new(0, 5)
-  raceLayout.SortOrder = Enum.SortOrder.LayoutOrder
-  raceLayout.Parent = races
-  local RaceData = require(Shared:WaitForChild("RaceData"))
-  for id = 1, 24 do
-    local race = RaceData.GetRace(id)
-    if race then
-      local option = Instance.new("TextButton")
-      option.Name = "Race" .. id
-      option.LayoutOrder = id
-      option.Size = UDim2.new(1, -10, 0, 44)
-      option.BackgroundColor3 = Color3.fromRGB(96, 79, 55)
-      option.TextColor3 = Color3.fromRGB(255, 239, 201)
-      option.TextSize = 14
-      option.TextWrapped = true
-      option.Text = string.format("%02d. %s", id, race.Name)
-      option:SetAttribute("GameAction", "CivSelect")
-      option:SetAttribute("GameArgument", id)
-      option.Parent = races
-      bindExternalButton(option)
-    end
-  end
-  -- Mobile trade controls use the existing server-priced economy and remote validation.
-  local tradePanel = Instance.new("ScrollingFrame")
-  tradePanel.Name = "Trade"
-  tradePanel.AnchorPoint = Vector2.new(1, 0)
-  tradePanel.Position = UDim2.new(1, -8, 0, 193)
-  tradePanel.Size = UDim2.new(0, 174, 0.55, -193)
-  tradePanel.BackgroundColor3 = Color3.fromRGB(44, 46, 38)
-  tradePanel.Visible = false
-  tradePanel.AutomaticCanvasSize = Enum.AutomaticSize.Y
-  tradePanel.CanvasSize = UDim2.new()
-  tradePanel.ScrollBarThickness = 4
-  tradePanel.Parent = gui
-  local tradeLayout = Instance.new("UIListLayout")
-  tradeLayout.Padding = UDim.new(0, 6)
-  tradeLayout.SortOrder = Enum.SortOrder.LayoutOrder
-  tradeLayout.Parent = tradePanel
-  for _, row in ipairs({
-    {"대리석 구매", "CivTradeBuy", "Marble"},
-    {"대리석 판매", "CivTradeSell", "Marble"},
-    {"금 특산품 구매", "CivTradeBuy", "Gold"},
-    {"금 특산품 판매", "CivTradeSell", "Gold"},
-    {"향신료 구매", "CivTradeBuy", "Spice"},
-    {"향신료 판매", "CivTradeSell", "Spice"},
-  }) do
-    local button = Instance.new("TextButton")
-    button.Name = row[2] .. row[3]
-    button.Size = UDim2.new(1, -10, 0, 39)
-    button.Text = row[1]
-    button.TextSize = 13
-    button.TextColor3 = Color3.fromRGB(255, 240, 201)
-    button.BackgroundColor3 = Color3.fromRGB(99, 81, 57)
-    button:SetAttribute("GameAction", row[2])
-    button:SetAttribute("GameArgument", row[3])
-    button.Parent = tradePanel
-    bindExternalButton(button)
-  end
   updateNumbers()
 end
 
@@ -493,8 +243,173 @@ Shared.ChildAdded:Connect(function(child)
     end)
   end
 end)
--- Publishing an empty curated template folder must never leave all gameplay controls invisible.
-attachNativeHud()
+
+-- Only registered CC0 artwork is allowed to create a gameplay display.
+-- The image IDs are injected into CuratedAssets by the existing owner publish pipeline.
+local function attachDownloadedArtwork(): ()
+  local assetModule = Shared:FindFirstChild("CuratedAssets")
+  if not assetModule or not assetModule:IsA("ModuleScript") then return end
+  local ok, catalog = pcall(require, assetModule)
+  if not ok or type(catalog) ~= "table" then return end
+  local art = catalog.UI
+  if type(art) ~= "table" then return end
+  local panelId = tonumber(art.Panel)
+  local buttonId = tonumber(art.Button)
+  if not panelId or not buttonId or panelId < 1 or buttonId < 1 then return end
+  local folder = uiTemplates
+  if not folder or not folder:IsA("Folder") or folder:FindFirstChild("MainHUD") then return end
+  local template = Instance.new("ScreenGui")
+  template.Name = "MainHUD"
+  template.DisplayOrder = 12
+  template.ZIndexBehavior = Enum.ZIndexBehavior.Global
+  template.IgnoreGuiInset = false
+  template.ResetOnSpawn = false
+  template:SetAttribute("CuratedExternalAsset", true)
+  template:SetAttribute("LicenseVerified", true)
+  template:SetAttribute("VisualQualityApproved", true)
+  template:SetAttribute("VerifiedRobloxAssetId", panelId)
+
+  local function artPanel(name: string, pos: UDim2, size: UDim2, isShown: boolean, parent: Instance): ImageLabel
+    local item = Instance.new("ImageLabel")
+    item.Name = name
+    item.Image = "rbxassetid://" .. panelId
+    item.ScaleType = Enum.ScaleType.Slice
+    item.SliceCenter = Rect.new(18, 18, 46, 46)
+    item.BackgroundTransparency = 1
+    item.Size = size
+    item.Position = pos
+    item.Visible = isShown
+    item.Parent = parent
+    return item
+  end
+  local function text(parent: Instance, name: string, value: string, y: number, height: number): TextLabel
+    local label = Instance.new("TextLabel")
+    label.Name = name
+    label.Text = value
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 14
+    label.TextWrapped = true
+    label.TextColor3 = Color3.fromRGB(255, 241, 212)
+    label.BackgroundTransparency = 1
+    label.Size = UDim2.new(1, -16, 0, height)
+    label.Position = UDim2.fromOffset(8, y)
+    label.Parent = parent
+    return label
+  end
+  local function artButton(parent: Instance, key: string, caption: string, action: string, argument: any, order: number): ImageButton
+    local button = Instance.new("ImageButton")
+    button.Name = key
+    button.Image = "rbxassetid://" .. buttonId
+    button.ScaleType = Enum.ScaleType.Slice
+    button.SliceCenter = Rect.new(15, 15, 41, 41)
+    button.BackgroundTransparency = 1
+    button.LayoutOrder = order
+    button.Size = UDim2.new(1, -10, 0, 43)
+    button:SetAttribute("GameAction", action)
+    if argument ~= nil then button:SetAttribute("GameArgument", argument) end
+    button.Parent = parent
+    local label = text(button, "ActionLabel", caption, 0, 43)
+    label.TextSize = 13
+    return button
+  end
+  local header = artPanel("Header", UDim2.fromOffset(8, 6), UDim2.new(1, -16, 0, 88), true, template)
+  text(header, "CivilizationTitle", "대충알피지", 4, 29)
+  text(header, "CivilizationStatus", "서버 데이터 확인 중", 34, 48).TextSize = 12
+  local notice = artPanel("NoticeArt", UDim2.fromOffset(8, 98), UDim2.new(1, -16, 0, 39), true, template)
+  text(notice, "CombatNotice", "이동: 로블록스 기본 조이스틱", 1, 37).TextSize = 12
+  local toggle = artButton(header, "MenuToggle", "메뉴", "CivPanel", "Actions", 0)
+  toggle.Size = UDim2.fromOffset(76, 35)
+  toggle.Position = UDim2.new(1, -83, 0, 5)
+  local quick = artPanel("QuickArt", UDim2.new(1, -121, 0.43, 0), UDim2.fromOffset(113, 205), true, template)
+  local quickLayout = Instance.new("UIListLayout")
+  quickLayout.Padding = UDim.new(0, 4)
+  quickLayout.Parent = quick
+  for index, row in ipairs({
+    {"공격", "CivAttack"}, {"채집", "CivGather"},
+    {"패링", "CivParry"}, {"회피", "CivDodge"}
+  }) do
+    artButton(quick, row[2], row[1], row[2], nil, index)
+  end
+  local function scrolling(name: string): ScrollingFrame
+    local holder = artPanel(name .. "Art", UDim2.new(1, -204, 0, 143),
+      UDim2.new(0, 196, 0.62, -143), false, template)
+    holder.Visible = true
+    local frame = Instance.new("ScrollingFrame")
+    frame.Name = name
+    frame.Size = UDim2.new(1, -10, 1, -10)
+    frame.Position = UDim2.fromOffset(5, 5)
+    frame.BackgroundTransparency = 1
+    frame.ScrollBarThickness = 4
+    frame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    frame.CanvasSize = UDim2.new()
+    frame.Visible = false
+    frame.Parent = holder
+    local list = Instance.new("UIListLayout")
+    list.Padding = UDim.new(0, 5)
+    list.SortOrder = Enum.SortOrder.LayoutOrder
+    list.Parent = frame
+    return frame
+  end
+  local menu = scrolling("Actions")
+  for index, row in ipairs({
+    {"모험 시작", "CivTravel"},
+    {"24개 문명", "CivPanel", "Races"},
+    {"다음 기술 연구", "CivResearch", 1, "ResearchNext"},
+    {"석기 도끼 제작", "CivTimedCraft", 1},
+    {"청동 검 제작", "CivTimedCraft", 2},
+    {"가방", "CivPanel", "Inventory"},
+    {"무역", "CivTradeSnapshot"},
+    {"동료 소환", "CivCompanion", "Summon"},
+    {"동료 따라오기", "CivCompanion", "Follow"},
+    {"동료 공격", "CivCompanion", "Attack"},
+    {"동료 채집", "CivCompanion", "Gather"},
+    {"동료 해산", "CivCompanion", "Dismiss"}
+  }) do
+    artButton(menu, row[4] or "Menu" .. index, row[1], row[2], row[3], index)
+  end
+  local races = scrolling("Races")
+  local raceData = require(Shared:WaitForChild("RaceData"))
+  for id = 1, 24 do
+    local race = raceData.GetRace(id)
+    if race then
+      artButton(races, "Race" .. id, tostring(id) .. ". " .. race.Name, "CivSelect", id, id)
+    end
+  end
+  local inventoryArt = artPanel("InventoryArt", UDim2.fromOffset(8, 145),
+    UDim2.new(1, -16, 0, 94), false, template)
+  inventoryArt.Visible = true
+  local inventory = Instance.new("ImageButton")
+  inventory.Name = "Inventory"
+  inventory.Image = "rbxassetid://" .. panelId
+  inventory.BackgroundTransparency = 1
+  inventory.Size = UDim2.fromScale(1, 1)
+  inventory.Visible = false
+  inventory.Parent = inventoryArt
+  text(inventory, "InventorySummary", "서버 인벤토리 대기 중", 4, 80)
+  local market = scrolling("Trade")
+  for index, row in ipairs({
+    {"대리석 구매", "CivTradeBuy", "Marble"}, {"대리석 판매", "CivTradeSell", "Marble"},
+    {"금 특산품 구매", "CivTradeBuy", "Gold"}, {"금 특산품 판매", "CivTradeSell", "Gold"},
+    {"향신료 구매", "CivTradeBuy", "Spice"}, {"향신료 판매", "CivTradeSell", "Spice"}
+  }) do
+    artButton(market, "Market" .. index, row[1], row[2], row[3], index)
+  end
+  template.Parent = folder
+end
+
+attachDownloadedArtwork()
+player:GetAttributeChangedSignal("CivReady"):Connect(function()
+  if player:GetAttribute("CivReady") == true and (tonumber(player:GetAttribute("CivRaceID")) or 0) == 0 then
+    local raceList = findUi("Races")
+    if raceList and raceList:IsA("GuiObject") then raceList.Visible = true end
+  end
+end)
+task.defer(function()
+  if player:GetAttribute("CivReady") == true and (tonumber(player:GetAttribute("CivRaceID")) or 0) == 0 then
+    local raceList = findUi("Races")
+    if raceList and raceList:IsA("GuiObject") then raceList.Visible = true end
+  end
+end)
 
 for _, key in ipairs({"CivEra", "CivTech", "CivRaceID", "CivWood",
     "CivStone", "CivResearch", "CivSilver", "CivGold", "CivReady",

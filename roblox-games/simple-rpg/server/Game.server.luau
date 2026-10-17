@@ -92,8 +92,8 @@ if not startGround then
     startGround.Color = Color3.fromRGB(111, 116, 115)
   else error("SIMPLE_RPG_START_MATERIAL_ASSET_MISSING") end
   startGround.Anchored = true
-  startGround.Transparency = 0
-  startGround.CastShadow = true
+  startGround.Transparency = 1
+  startGround.CastShadow = false
   startGround.CanCollide = true
   startGround:SetAttribute("WalkableGround", true)
   startGround.Parent = workspace
@@ -410,65 +410,108 @@ local civRegions = {
   Color3.fromRGB(133,153,124), Color3.fromRGB(117,169,148),
   Color3.fromRGB(75,136,100), Color3.fromRGB(182,210,222),
 }
--- 파일명: server/Game.server.luau
--- 메인: Restore authored terrain/material visibility; verified external prefabs replace only their own visible geometry.
-local function civPart(parent, name, size, frame, color, material, collide)
+-- Only newly registered, source-verified Roblox models are displayed.
+-- Legacy blocks remain invisible authoritative collision/interaction targets.
+local InsertService = game:GetService("InsertService")
+local worldModels = Shared:FindFirstChild("CuratedWorldModels")
+local creatureModels = Shared:FindFirstChild("CreatureModels")
+local assetModule = Shared:FindFirstChild("CuratedAssets")
+local registered = nil
+if assetModule and assetModule:IsA("ModuleScript") then
+  local ok, data = pcall(require, assetModule)
+  if ok and type(data) == "table" then registered = data end
+end
+local function importCuratedModel(folder, name, assetId)
+  if not folder or typeof(assetId) ~= "number" or assetId <= 0 or assetId % 1 ~= 0 then return end
+  local ok, container = pcall(function() return InsertService:LoadAsset(assetId) end)
+  if not ok or not container then
+    warn("SIMPLE_RPG_CURATED_ASSET_UNAVAILABLE", name, assetId)
+    return
+  end
+  local model = container:FindFirstChildWhichIsA("Model", true)
+  if not model and container:IsA("Model") then model = container end
+  if not model or not model:FindFirstChildWhichIsA("BasePart", true) then
+    container:Destroy()
+    warn("SIMPLE_RPG_CURATED_ASSET_HAS_NO_MESH", name, assetId)
+    return
+  end
+  model.Name = name
+  for _, item in ipairs(model:GetDescendants()) do
+    if item:IsA("BasePart") then
+      item.Anchored = true
+      item.CanCollide = false
+      item.CanTouch = false
+      item.CanQuery = false
+    end
+  end
+  model:SetAttribute("CuratedExternalAsset", true)
+  model:SetAttribute("VerifiedRobloxAssetId", assetId)
+  model.Parent = folder
+  if container ~= model then container:Destroy() end
+end
+if registered then
+  for name, id in pairs(registered.World or {}) do
+    importCuratedModel(worldModels, name, id)
+  end
+  for name, id in pairs(registered.Creatures or {}) do
+    importCuratedModel(creatureModels, name, id)
+  end
+end
+if worldModels and startGround then
+  local template = worldModels:FindFirstChild("Ground")
+  if template and template:IsA("Model") then
+    local visual = template:Clone()
+    visual.Name = "DownloadedSpawnGround"
+    visual.Parent = workspace
+    local bounds = visual:GetExtentsSize()
+    if bounds.X > 0.01 and bounds.Z > 0.01 then
+      local scale = math.min(70 / bounds.X, 70 / bounds.Z)
+      if scale > 0 and scale < 10000 then visual:ScaleTo(scale) end
+    end
+    visual:PivotTo(startGround.CFrame)
+  end
+end
+local function worldModelFor(name)
+  if name == "CivilizationGround" or name:find("연결 대륙", 1, true) then return "Ground" end
+  if name == "Landmark" or name:find("무역소", 1, true)
+    or name:find("작업대", 1, true) or name:find("용광로", 1, true)
+    or name:find("고로", 1, true) then return "Building" end
+  if name:find("목재", 1, true) then return "Tree" end
+  if name:find("석재", 1, true) then return "Rock" end
+  return name
+end
+local function civPart(parent, name, size, frame, _color, _material, collide)
   local part = Instance.new("Part")
   part.Name = name
   part.Size = size
   part.CFrame = frame
-  part.Color = color
-  part.Material = material or Enum.Material.SmoothPlastic
-  part.Transparency = 0
-  part.CastShadow = true
+  part.Transparency = 1
+  part.CastShadow = false
   part.Anchored = true
   part.CanCollide = collide ~= false
   part.Parent = parent
-  local library = Shared:FindFirstChild("CuratedWorldModels")
-  local key = name:match("^([^_]+)_") or name
-  local template = library and (library:FindFirstChild(name) or library:FindFirstChild(key))
+  local template = worldModels and worldModels:FindFirstChild(worldModelFor(name))
   if template and template:IsA("Model")
     and template:GetAttribute("CuratedExternalAsset") == true
     and (tonumber(template:GetAttribute("VerifiedRobloxAssetId")) or 0) > 0
     and template:FindFirstChildWhichIsA("BasePart", true) then
     local visual = template:Clone()
     visual.Name = "VerifiedExternalVisual"
-    for _, child in ipairs(visual:GetDescendants()) do
-      if child:IsA("BasePart") then
-        child.Anchored = true
-        child.CanCollide = false
-        child.CanTouch = false
-        child.CanQuery = false
-      end
-    end
     visual.Parent = parent
+    local bounds = visual:GetExtentsSize()
+    if bounds.X > 0.01 and bounds.Y > 0.01 and bounds.Z > 0.01 then
+      local factor = math.min(size.X / bounds.X, size.Z / bounds.Z)
+      if worldModelFor(name) ~= "Ground" then
+        factor = math.min(factor, math.max(1, size.Y * 3) / bounds.Y)
+      end
+      if factor > 0 and factor < 10000 then visual:ScaleTo(factor) end
+    end
     visual:PivotTo(frame)
-    part.Transparency = 1
-    part.CastShadow = false
   end
   return part
 end
--- 문명/자원 상호작용: restore readable labels on already-created server objects.
-local function civSign(parent, adornee, text, height)
-  local board = Instance.new("BillboardGui")
-  board.Name = "CivilizationSign"
-  board.Adornee = adornee
-  board.Size = UDim2.fromOffset(176, 48)
-  board.StudsOffsetWorldSpace = Vector3.new(0, height or 4, 0)
-  board.MaxDistance = 78
-  board.AlwaysOnTop = true
-  board.Parent = parent
-  local label = Instance.new("TextLabel")
-  label.Size = UDim2.fromScale(1, 1)
-  label.BackgroundColor3 = Color3.fromRGB(31, 37, 34)
-  label.BackgroundTransparency = 0.15
-  label.TextColor3 = Color3.fromRGB(255, 237, 199)
-  label.TextScaled = true
-  label.TextWrapped = true
-  label.Font = Enum.Font.GothamBold
-  label.Text = text
-  label.Parent = board
-  return board
+local function civSign(_parent, _adornee, _text, _height)
+  return nil
 end
 local function civMessage(player, text)
   remote:FireClient(player, "CIV_MESSAGE", tostring(text))
@@ -866,7 +909,7 @@ local function civRestoreHousing(player, saved)
           local isOpen = entry.Open == true
           piece:SetAttribute("DoorOpen",isOpen)
           piece.CanCollide = not isOpen
-          piece.Transparency = isOpen and 0.72 or 0
+          piece.Transparency = 1
         end
         piece:SetAttribute("Stability",entry.Stability)
         piece:SetAttribute("CivOwnerUserId",player.UserId)
@@ -943,7 +986,7 @@ local function civToggleHousingDoor(player,piece)
       record.Open=not (record.Open==true)
       piece:SetAttribute("DoorOpen",record.Open)
       piece.CanCollide=not record.Open
-      piece.Transparency=record.Open and 0.72 or 0
+      piece.Transparency = 1
       civMessage(player,record.Open and "문 열림" or "문 닫힘")
       return
     end
@@ -1090,12 +1133,12 @@ local function civGather(player, requestedType)
   local originalColor = best.OriginalColor or nodePart.Color
   best.OriginalColor = originalColor
   nodePart.Color = originalColor:Lerp(Color3.fromRGB(63, 66, 66), 0.65)
-  nodePart.Transparency = 0.35
+  nodePart.Transparency = 1
   local regenerationAt = best.ReadyAt
   task.delay(8, function()
     if not nodePart.Parent or best.ReadyAt ~= regenerationAt then return end
     nodePart.Color = originalColor
-    nodePart.Transparency = 0
+    nodePart.Transparency = 1
     nodePart:SetAttribute("ResourceReadyAt", 0)
   end)
   local race = civRace(player)
@@ -1560,7 +1603,7 @@ for id = 1, 24 do
   -- Existing landmark is the authoritative interaction target, not a client-controlled reward.
   local landmarkPrompt = Instance.new("ProximityPrompt")
   -- Native prompts remain visible and touch-operable even before external art is imported.
-  landmarkPrompt.Style = Enum.ProximityPromptStyle.Default
+  landmarkPrompt.Style = Enum.ProximityPromptStyle.Custom
   landmarkPrompt.Name = "LandmarkHistory"
   landmarkPrompt.ActionText = "유적 살펴보기"
   landmarkPrompt.ObjectText = race.Landmark
@@ -1596,7 +1639,7 @@ for id = 1, 24 do
     node:SetAttribute("CivilizationResourceType", resource.Type)
     civSign(region, node, resource.Label .. " 채집", 4)
     local gatherPrompt = Instance.new("ProximityPrompt")
-    gatherPrompt.Style = Enum.ProximityPromptStyle.Default
+    gatherPrompt.Style = Enum.ProximityPromptStyle.Custom
     gatherPrompt.Name = "GatherResource"
     gatherPrompt.ActionText = "채집"
     gatherPrompt.ObjectText = resource.Label
@@ -1638,7 +1681,7 @@ for id = 1, 24 do
   civSign(region, tradeStall, race.Name .. " 무역 광장", 4)
   civTradeStalls[id] = tradeStall
   local tradePrompt = Instance.new("ProximityPrompt")
-  tradePrompt.Style = Enum.ProximityPromptStyle.Default
+  tradePrompt.Style = Enum.ProximityPromptStyle.Custom
   tradePrompt.Name = "TradeMarket"
   tradePrompt.ActionText = "시세 확인/거래"
   tradePrompt.ObjectText = race.Name .. " 무역소"

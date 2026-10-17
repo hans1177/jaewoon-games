@@ -125,20 +125,13 @@ jobs:
           (base/'manifest.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
           print('EXTERNAL_ASSETS_TOTAL_VERIFIED='+str(total))
           PY
-      - name: Permanently retain downloaded original archives on main
+      - name: Preserve downloaded originals as workflow artifacts without direct main writes
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- assets/external/simple-rpg/
-          if git diff --cached --quiet; then
-            echo 'EXTERNAL_ASSETS_ALREADY_ARCHIVED=YES'
-          else
-            git commit -m "assets: preserve verified CC0 external source archives for 대충알피지"
-            git push origin HEAD:main
-          fi
-          echo 'EXTERNAL_ASSETS_ARCHIVE=assets/external/simple-rpg'
+          test -s assets/external/simple-rpg/manifest.json
+          echo 'EXTERNAL_ASSETS_STORAGE=ARTIFACT_ONLY'
+          echo 'EXTERNAL_ASSETS_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg'
       - name: Retain a separate verified download artifact
         uses: actions/upload-artifact@v4
         with:
@@ -242,24 +235,18 @@ jobs:
           print('WILDLIFE_VERIFIED_PACKS',len(verified),'FAILED_PACKS',len(failed))
           if not verified:raise SystemExit('NO_VALID_WILDLIFE_ASSETS_DOWNLOADED')
           PY
-      - name: Commit verified CC0 animal insect and prehistoric archives
+      - name: Stage verified CC0 wildlife source artifacts without main writes
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/external/simple-rpg/wildlife/
-          if ! git diff --cached --quiet; then
-            git commit -m 'assets: retain licensed wildlife insect prehistoric source archives'
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-          echo 'WILDLIFE_SOURCE_ARCHIVE=assets/external/simple-rpg/wildlife'
+          test -s assets/external/simple-rpg/wildlife/manifest.json
+          echo 'WILDLIFE_SOURCE_STORAGE=ARTIFACT_ONLY'
+          echo 'WILDLIFE_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg/wildlife'
       - name: Save verification evidence
         uses: actions/upload-artifact@v4
         with:
-          name: simple-rpg-wildlife-manifest
-          path: assets/external/simple-rpg/wildlife/manifest.json
+          name: simple-rpg-wildlife-sources
+          path: assets/external/simple-rpg/wildlife/
           if-no-files-found: error
           retention-days: 14
   download_icons_vfx_npc:
@@ -334,24 +321,18 @@ jobs:
           if not {'item-icons','special-icons','vfx','characters-npc'}.issubset(kinds):
             raise SystemExit('REQUIRED_CATEGORY_NOT_DOWNLOADED')
           PY
-      - name: Preserve validated external originals on main
+      - name: Stage original icons effects and NPC sources without main writes
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- assets/external/simple-rpg/icons-vfx-npc/
-          if ! git diff --cached --quiet; then
-            git commit -m 'assets: preserve CC0 RPG icons VFX NPC originals'
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-          echo 'CC0_ORIGINALS_STORED=assets/external/simple-rpg/icons-vfx-npc'
+          test -s assets/external/simple-rpg/icons-vfx-npc/manifest.json
+          echo 'CC0_ORIGINALS_STORAGE=ARTIFACT_ONLY'
+          echo 'CC0_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg/icons-vfx-npc'
       - name: Save verification evidence
         uses: actions/upload-artifact@v4
         with:
-          name: simple-rpg-icons-vfx-npc-evidence
-          path: assets/external/simple-rpg/icons-vfx-npc/manifest.json
+          name: simple-rpg-icons-vfx-npc-sources
+          path: assets/external/simple-rpg/icons-vfx-npc/
           if-no-files-found: error
           retention-days: 14
   download_priority_cc0_assets:
@@ -371,37 +352,18 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/simple-rpg-priority-cc0-download.py
-      - name: Commit verified source archives
+      - name: Stage original priority CC0 archives without main writes
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- assets/external/simple-rpg/priority-v1/ assets/asset-manifest.json
-          if ! git diff --cached --quiet; then
-            git commit -m 'assets: preserve priority CC0 insects animals gear NPC world SFX archives'
-            pushed=0
-            for attempt in 1 2 3 4 5 6 7 8; do
-              git fetch origin main
-              git rebase origin/main
-              if git push origin HEAD:main; then
-                pushed=1
-                echo "ASSET_COMMIT_PUSH_VERIFIED=YES attempt=$attempt"
-                break
-              fi
-              echo "ASSET_COMMIT_RETRY=$attempt"
-              sleep 3
-            done
-            if [ "$pushed" -ne 1 ]; then
-              echo "ASSET_COMMIT_PUSH_VERIFIED=NO"
-              exit 1
-            fi
-          fi
+          test -s assets/external/simple-rpg/priority-v1/manifest.json
+          echo 'PRIORITY_CC0_SOURCE_STORAGE=ARTIFACT_ONLY'
+          echo 'PRIORITY_CC0_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg/priority-v1'
       - name: Retain verified source inventory
         uses: actions/upload-artifact@v4
         with:
-          name: simple-rpg-priority-cc0-manifest
-          path: assets/external/simple-rpg/priority-v1/manifest.json
+          name: simple-rpg-priority-cc0-sources
+          path: assets/external/simple-rpg/priority-v1/
           if-no-files-found: error
           retention-days: 14
   upload_actor_assets:
@@ -482,6 +444,43 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+exact.placeId+'\n');
           console.log('대충알피지_OWNER_TARGET_REUSED=YES');
           console.log('대충알피지_OWNER_EXPECTED_PLACE_ID='+exact.placeId);
+          NODE
+
+      # Gate production to the already-downloaded licensed source files and actual
+      # Roblox Cloud asset IDs. Do not publish a blank or restored legacy art-only place.
+      - name: Prepare downloaded CC0 environment and UI images
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check 'trimesh>=4.5,<5' 'Pillow>=10,<13'
+          python3 tools/simple-rpg-prepare-curated-assets.py /tmp/simple-rpg-curated
+          test -s /tmp/simple-rpg-curated/world/Ground.glb
+          test -s /tmp/simple-rpg-curated/world/Building.glb
+          test -s /tmp/simple-rpg-curated/ui/Panel.png
+          test -s /tmp/simple-rpg-curated/ui/Button.png
+
+      - name: Register licensed CC0 actors world models and HUD images for this private Experience
+        working-directory: main
+        shell: bash
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_CREATOR_USER_ID: ${{ vars.ROBLOX_CREATOR_USER_ID }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-upload-actors.mjs --publish-curated-art
+          test -s /tmp/simple-rpg-curated/registered.json
+          test -s roblox-games/simple-rpg/shared/CuratedAssets.luau
+          node - <<'NODE'
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync('/tmp/simple-rpg-curated/registered.json'));
+          if(p.gameId!=='simple-rpg'||p.universeId!=='10770997776'
+            ||!(p.world.Ground>0)||!(p.world.Building>0)
+            ||!(p.ui.Panel>0)||!(p.ui.Button>0)
+            ||Object.keys(p.creatures).length<1)throw new Error('CURATED_ART_INCOMPLETE_NO_PUBLISH');
+          console.log('DOWNLOADED_ONLY_CURATED_ASSETS_REGISTERED=YES');
           NODE
 
       - name: Build exact 대충알피지 Roblox place with pinned Rojo
