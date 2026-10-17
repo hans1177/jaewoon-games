@@ -6,69 +6,27 @@ const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.ym
 const bootstrap=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const artbookPipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
-const prepareOllama=fs.readFileSync('.github/actions/prepare-ollama/action.yml','utf8');
 
-test('seed design runtime preserves the active fanout and revalidates matrix targets before model setup',()=>{
-  assert.match(workflow,/group: company-seed-design-runtime-\$\{\{ github\.sha \}\}\s+cancel-in-progress: false/);
-  assert.match(workflow,/group: company-seed-design-game-\$\{\{ matrix\.target\.game_id \}\}/);
-  assert.equal((workflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length,4);
-  const checkoutIndex=workflow.indexOf('- name: Checkout isolated company runtime branch');
-  const revalidateIndex=workflow.indexOf('- name: Revalidate current seed target');
-  const modelCacheIndex=workflow.indexOf('- name: Restore Ollama model cache');
-  const resolveModelsIndex=workflow.indexOf('- name: Resolve configured free department models');
-  const runtimeIndex=workflow.indexOf('- name: Prepare cached local Ollama runtime');
-  const pullIndex=workflow.indexOf('- name: Pull only missing configured free department models');
-  assert.ok(checkoutIndex>=0&&revalidateIndex>checkoutIndex&&modelCacheIndex>revalidateIndex&&resolveModelsIndex>modelCacheIndex&&runtimeIndex>resolveModelsIndex&&pullIndex>runtimeIndex);
-  assert.match(workflow,/TARGET_SEED_ID: \$\{\{ matrix\.target\.seed_id \}\}/);
+test('seed design runtime preserves target validation without starting local model servers',()=>{
+  assert.match(workflow,/group: company-seed-design-runtime-\\$\\{\\{ github\\.sha \\}\\}/);
   assert.match(workflow,/STALE_SEED_TARGET_SKIP/);
-  assert.match(workflow,/baselineGateState==='DESIGN_BASELINE_READY'/);
-  assert.match(workflow,/if: steps\.target\.outputs\.should_run == 'true'/);
+  assert.match(workflow,/TARGET_SEED_ID: \\$\\{\\{ matrix\\.target\\.seed_id \\}\\}/);
+  assert.doesNotMatch(workflow,/ollama pull|ollama serve|uses:.*prepare-ollama|127\\.0\\.0\\.1:11434/);
 });
-
-test('seed design runtime follows central unbounded WIP policy while bounding each external matrix wave',()=>{
-  assert.match(workflow,/const configuredWip=roadmap\?\.developmentSpeedExecution\?\.globalSelectedPlatformDevelopmentWipMax/);
-  assert.match(workflow,/const unboundedByPolicy=configuredWip===null\|\|typeof configuredWip==='undefined'/);
-  assert.match(workflow,/const externalBatchMax=Number\(roadmap\?\.developmentSpeedExecution\?\.externalMatrixBatchMax\|\|256\)/);
-  assert.match(workflow,/internalArtificialConcurrencyCapsForbidden!==true/);
-  assert.match(workflow,/const designWipMax=unboundedByPolicy\?externalBatchMax:Math\.min\(Number\(configuredWip\),externalBatchMax\)/);
-  assert.match(workflow,/const parallelMax=Math\.max\(1,Math\.min\(canaryVerified\?designWipMax:1,targets\.length\|\|1\)\)/);
-  assert.match(workflow,/GAME_DESIGN_WIP_MAX=\$\{unboundedByPolicy\?'UNBOUNDED_POLICY':designWipMax\}/);
-  assert.match(workflow,/GAME_DESIGN_EXTERNAL_MATRIX_BATCH_MAX=\$\{externalBatchMax\}/);
-  assert.match(workflow,/CANONICAL_ROADMAP_UNBOUNDED_EXTERNAL_BATCH/);
-  assert.match(workflow,/parallel_max=\$\{parallelMax\}/);
-  assert.match(workflow,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
-  assert.match(workflow,/runs-on: ubuntu-latest/);
-  assert.match(workflow,/uses: actions\/cache@v4/);
-  assert.match(workflow,/path: ~\/\.ollama\/models/);
-  assert.match(workflow,/ollama-seed-design-\$\{\{ runner\.os \}\}-\$\{\{ hashFiles\('company-directive\.json'\) \}\}/);
-  assert.match(workflow,/OLLAMA_VERSION: '0\.33\.3'/);
-  assert.match(workflow,/OLLAMA_MAX_LOADED_MODELS: '2'/);
-  assert.match(workflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '4'/);
-  assert.match(workflow,/COMPANY_MAX_ACTIVE_MODEL_LANES: '2'/);
-  assert.match(workflow,/COMPANY_MODEL_KEEP_ALIVE: '5m'/);
-  assert.match(workflow,/uses: \.\/\.github\/actions\/prepare-ollama/);
-  assert.match(workflow,/model: \$\{\{ steps\.models\.outputs\.primary_model \}\}/);
-  assert.match(workflow,/version: \$\{\{ env\.OLLAMA_VERSION \}\}/);
-  assert.doesNotMatch(workflow,/https:\/\/ollama\.com\/install\.sh/);
+test('seed design external execution remains parallel without a local model cache prerequisite',()=>{
+  assert.match(workflow,/externalMatrixBatchMax/);
+  assert.match(workflow,/max-parallel:/);
+  assert.doesNotMatch(workflow,/\\.ollama\\/models|OLLAMA_MAX_LOADED_MODELS|prepare-ollama/);
 });
-
-test('restored model cache skips unnecessary network pulls and transient model pulls retry',()=>{
-  assert.match(workflow,/ollama list \| awk 'NR>1 \{print \$1\}' > \/tmp\/ollama-present-models\.txt/);
-  assert.match(workflow,/grep -Fxq \"\$model\" \/tmp\/ollama-present-models\.txt/);
-  assert.match(workflow,/OLLAMA_MODEL_CACHE_HIT=\$model/);
-  assert.match(workflow,/OLLAMA_MODEL_CACHE_MISS=\$model/);
-  assert.match(workflow,/OLLAMA_MODEL_PULL_COUNT=\$pulls/);
-  assert.match(prepareOllama,/OLLAMA_MODEL_PULL_SKIPPED=YES/);
-  assert.match(prepareOllama,/for attempt in 1 2 3 4 5/);
-  assert.match(prepareOllama,/OLLAMA_MODEL_PULL_ATTEMPT=\$attempt\/5/);
-  assert.match(prepareOllama,/OLLAMA_MODEL_PULL_RETRY_TRANSIENT=YES/);
+test('obsolete local model downloader is removed rather than retried',()=>{
+  assert.equal(fs.existsSync('.github/actions/prepare-ollama/action.yml'),false);
+  assert.doesNotMatch(workflow,/ollama pull|ollama list|ollama-model-preload|ollama\\.com\\/download/);
 });
-
 test('engine pushes and normal dispatch preserve active DESIGN_ONLY work',()=>{
   const triggerSection=workflow.slice(0,workflow.indexOf('\npermissions:'));
   assert.match(triggerSection,/workflow_dispatch:/);
   assert.match(triggerSection,/push:[\s\S]*branches: \[main\]/);
-  assert.match(triggerSection,/\.github\/actions\/prepare-ollama\/action\.yml/);
+  assert.doesNotMatch(triggerSection,/\.github\/actions\/prepare-ollama\/action\.yml/);
   assert.match(triggerSection,/tools\/company-design-cycle\.mjs/);
   assert.match(triggerSection,/tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(triggerSection,/schedule:/);
