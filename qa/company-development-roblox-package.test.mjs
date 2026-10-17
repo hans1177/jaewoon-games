@@ -757,3 +757,18 @@ test('Roblox source-plan routes only an exact current MATERIAL package failure b
   assert.match(workflow,/--studio-material-repair="\$STUDIO_MATERIAL_REPAIR"/);
   assert.match(workflow,/--foundation-repair="\$FOUNDATION_REPAIR"/);
 });
+
+test('new Roblox source bootstraps client directory before copying pinned MATERIAL presentation',()=>{
+  const source=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
+  const start=source.indexOf('function writeSourceTree(');
+  const end=source.indexOf('\nasync function main()',start);
+  assert.ok(start>=0&&end>start,'canonical source writer must remain present');
+  const writer=source.slice(start,end);
+  const clientDir=writer.indexOf("fs.mkdirSync(path.join(root,'client'),{recursive:true})");
+  const serverDir=writer.indexOf("fs.mkdirSync(path.join(root,'server'),{recursive:true})");
+  const materialCopy=writer.indexOf("fs.copyFileSync(new URL('../assets/roblox/common-materials-v1/MaterialPresentation.client.luau'");
+  assert.ok(clientDir>=0&&serverDir>=0&&materialCopy>clientDir&&materialCopy>serverDir,
+    'both output directories must exist before copying pinned material asset');
+  assert.ok(fs.existsSync('assets/roblox/common-materials-v1/MaterialPresentation.client.luau'));
+  assert.match(writer,/fs\.writeFileSync\(path\.join\(root,'client','Game\.client\.luau'\)/);
+});
