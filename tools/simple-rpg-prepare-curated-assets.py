@@ -97,7 +97,12 @@ def assemble_existing_house_modules(archive):
     with tempfile.TemporaryDirectory(prefix="simple-rpg-cc0-house-") as td:
         base = pathlib.Path(td)
         safe_unpack(archive, base)
-        models = sorted([p for p in base.rglob("*.glb") if p.is_file()])
+        # Existing downloaded house packs mix GLB, glTF and Wavefront OBJ.
+        models = sorted([p for p in base.rglob("*") if p.is_file()
+                         and p.suffix.lower() in (".glb", ".gltf", ".obj")])
+        print("CURATED_HOUSE_ARCHIVE_MODEL_INVENTORY", archive,
+              "count", len(models),
+              "entries", [str(p.relative_to(base)) for p in models[:32]])
         def find_one(include, deny=()):
             return next((p for p in models
                          if any(w in p.stem.lower() for w in include)
