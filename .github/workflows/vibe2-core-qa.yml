@@ -33,6 +33,8 @@ on:
       - 'tools/vibe2-openai-agent-patterns.mjs'
       - 'qa/vibe2-openai-agent-patterns.test.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
+      - 'assets/asset-selector.js'
+      - 'qa/vibe2-external-customization.test.mjs'
       - 'tools/vibe2-central-work-contract.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
       - 'tools/vibe2-neural-feedback.mjs'
@@ -163,6 +165,8 @@ on:
       - 'tools/vibe2-openai-agent-patterns.mjs'
       - 'qa/vibe2-openai-agent-patterns.test.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
+      - 'assets/asset-selector.js'
+      - 'qa/vibe2-external-customization.test.mjs'
       - 'tools/vibe2-central-work-contract.mjs'
       - 'tools/vibe2-neural-diagnosis.mjs'
       - 'tools/vibe2-neural-feedback.mjs'
@@ -378,6 +382,8 @@ jobs:
           node --check qa/vibe-roblox-co-development.test.mjs
           node --check qa/vibe-visual-runtime-quality.test.mjs
           node --check qa/vibe2-native-asset-production.test.mjs
+          node --check assets/asset-selector.js
+          node --check qa/vibe2-external-customization.test.mjs
           node --check qa/vibe2-neural-diagnosis.test.mjs
           node --check qa/vibe2-neural-feedback.test.mjs
           node --check qa/vibe2-neural-critic.test.mjs
@@ -427,6 +433,7 @@ jobs:
           node --test qa/vibe-roblox-co-development.test.mjs
           node --test qa/vibe-visual-runtime-quality.test.mjs
           node --test qa/vibe2-native-asset-production.test.mjs
+          node --test qa/vibe2-external-customization.test.mjs
           node --test qa/vibe2-neural-diagnosis.test.mjs
           node --test qa/vibe2-neural-feedback.test.mjs
           node --test qa/vibe2-neural-critic.test.mjs
