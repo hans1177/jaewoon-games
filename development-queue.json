@@ -11057,7 +11057,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:55:23.825Z",
+      "updatedAt": "2026-10-17T14:17:31.477Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11073,16 +11073,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
       "robloxBuildArtifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
-      "robloxBuildPassedAt": "2026-10-17T13:55:23.825Z",
+      "robloxBuildPassedAt": "2026-10-17T14:17:31.477Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:55:23.825Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T14:17:31.477Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-casual-realm-weaver",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:46:52.136Z",
+        "checkedAt": "2026-10-17T14:00:07.792Z",
         "sourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "secondaryOwnerFocus": false,
@@ -11125,7 +11125,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Runtime testing cannot start because required validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed in the build evidence."
+            "note": "Package cannot start runtime testing because one or more validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed in the build evidence."
           }
         ],
         "blockers": [
@@ -39517,7 +39517,7 @@
       "robloxExactRevisionPassed": false
     }
   ],
-  "updatedAt": "2026-10-17T14:17:07.474Z",
+  "updatedAt": "2026-10-17T14:17:31.477Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
