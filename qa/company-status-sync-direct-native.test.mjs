@@ -1,12 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+
 import {
   runCompanyStatusSync,
   synchronizeCompanyStatusPolicy,
   syncProductionClasses,
   applyHomepageRuntimeInfo,
 } from '../tools/company-status-sync.mjs';
+
+// 카탈로그 자동 분류와 동기화 검사는 검증된 중앙정책을 같은 단계에서 사용한다.
+const statusSyncWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
+assert.match(statusSyncWorkflow,/name: Sync company status and semantic production classes\n\s*env:\n\s*COMPANY_VERIFIED_POLICY_PATH: company-learning\/platform-release-roadmap\.json/);
 
 const machinePolicy={
   authority:'MACHINE_EXECUTION_CONTRACT',
