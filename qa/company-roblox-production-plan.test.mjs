@@ -260,13 +260,15 @@ test('Unity and Web production plans preserve genre, owner intent and native sou
   }
 });
 
-test('Unity Web directive uses the real canonical C# project instead of browser source instructions',()=>{
+test('owner-held Unity Web retains C# source trace without unauthorized production plans',()=>{
   const root='unity-games/garden',own=[root+'/Assets/Scripts/GameCore.cs',root+'/Assets/Scripts/RuntimeBootstrap.cs'];
   const d=buildGameSpecificBuildUpDirective({gameId:'garden',platform:'WEB',sourceRoot:root,designRecord:{content:design},sourceObservation:{...source,topFiles:own.map(file=>({file,score:10}))},responsibleFiles:own});
-  assert.equal(d.productionPlan.platform,'UNITY');assert.equal(d.productionPlan.executionSurface,'UNITY_WEB');
+  assert.equal(d.productionPlan,null,'Unity Web owner hold blocks automatic implementation planning');
   assert.equal(d.robloxProductionPlan,null);
-  assert.match(directivePrompt(d),/UNITY_PRODUCTION_QUALITY=.*EXISTING_CSHARP/);
-  assert.doesNotMatch(directivePrompt(d),/WEB_PRODUCTION_FILES=/);
+  assert.equal(d.designToPlatformCodingTrace.activePlatform,'UNITY_WEB');
+  assert.equal(d.designToPlatformCodingTrace.originalSourceLanguage,'LUAU');
+  assert.equal(d.designToPlatformCodingTrace.sourceImplementationPassed,false);
+  assert.doesNotMatch(directivePrompt(d),/UNITY_PRODUCTION_QUALITY=|WEB_PRODUCTION_FILES=/);
 });
 
 test('approved genre produces distinct implementation choices instead of a shared combat template',()=>{
