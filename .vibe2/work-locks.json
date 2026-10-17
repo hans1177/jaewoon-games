@@ -1,27 +1,5 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": [
-    {
-      "id": "wl-1sdk2z8",
-      "worker": "vibe2",
-      "taskId": "bug-defense-roblox-second-gate-rebuild-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "roblox-games/bug-defense/client/Game.client.luau",
-        "roblox-games/bug-defense/shared/GameConfig.luau",
-        "roblox-games/bug-defense/server/Game.server.luau"
-      ],
-      "baseSha": "9de69898f3dd48d413d3554bd57bc0021f904672",
-      "runId": "39025544150",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-17T10:52:12.398Z",
-      "expiresAt": "2026-10-17T11:37:12.398Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-roblox-second-gate-rebuild-v1"
-      ]
-    }
-  ]
+  "locks": []
 }
