@@ -5095,5 +5095,6 @@ test('Vibe game asset supply verifies and applies originals instead of schedulin
   assert.match(worker,/sourceArchiveSha256:/);
   assert.match(worker,/nativeBuildBlockedByUnadaptedArchive:/);
   assert.ok(!worker.includes(".filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'"));
-  assert.match(worker,/Only inspect, verify and apply existing company\/common or downloaded license-cleared assets/);
+  assert.match(worker,/Automatically apply every compatible, rights-cleared external asset/);
+  assert.match(worker,/Never create or fall back to old primitive-shape models/);
 });
