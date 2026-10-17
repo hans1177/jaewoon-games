@@ -283,7 +283,331 @@ jobs:
           if [ "$EVENT_NAME" = 'pull_request' ]; then
             changed_web_games="$(awk -F/ '$1=="web-games" && $2 ~ /^[a-z0-9-]+$/ {print $2}' /tmp/vibe2-core-qa-files.txt | sort -u | paste -sd, -)"
             [ -n "$changed_web_games" ] || changed_web_games=NONE
-            if grep -Eq '^(game-catalog\.json|tools/vibe2-existing-web-assessment\.mjs)$' /tmp/vibe2-core-qa-files.txt; then changed_web_games=ALL; fi
+            if grep -Eq '^(game-catalog\.json|tools/vibe2-existing-web-assessment\.mjs|qa/vibe2-development-web-browser-smoke\.mjs)
+          fi
+          echo "changed_web_games=$changed_web_games" >> "$GITHUB_OUTPUT"
+          coding_benchmark=NO
+          if grep -Eq '^(tools/vibe2-learning-practice-worker\.mjs|company-learning/roblox-practice\.json|qa/vibe2-learning-practice-worker\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt; then
+            coding_benchmark=YES
+          fi
+          echo "coding_benchmark=$coding_benchmark" >> "$GITHUB_OUTPUT"
+          if [ -s /tmp/vibe2-core-qa-files.txt ] && ! grep -Ev '^(\.github/workflows/vibe2-(continuous-core|24h-runner|parallelism-contract-qa)\.yml|qa/vibe2-parallelism-(main|20)-contract\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt | grep -q .; then
+            parallelism_only=YES
+          fi
+          echo "parallelism_only=$parallelism_only" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_CORE_QA_PARALLELISM_ONLY=$parallelism_only"
+
+  test:
+    needs: scope
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
+    runs-on: ubuntu-slim
+    # native asset production full regression may exceed the previous 10-minute job limit.
+    # Keep every test and the slim control runner; only allow the existing full suite to finish.
+    timeout-minutes: 25
+    env:
+      # 검증된 main 중앙정책 문서 경로를 기존 핵심 QA 실행과 임시 테스트 저장소에 전달한다.
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      VIBE2_BROWSER_CHANGED_GAMES: ${{ needs.scope.outputs.changed_web_games || 'ALL' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify production-bound auto-coding preflight before broader regression
+        run: node --test --test-name-pattern='^real production Roblox auto-coding preflight' qa/vibe2-central-work-contract.test.mjs
+
+      - name: Syntax check
+        run: |
+          set -euo pipefail
+          node qa/external-mobile-free-game-playtest-workflow.test.mjs
+          node --test qa/jaewoon-motion-engine.test.cjs
+          node --check assets/vibe-engine-adapter.js
+          node --check assets/vibe-workbench.js
+          node --check assets/vibe-core-runtime.js
+          node --check assets/vibe-motion-core.js
+          node --check assets/vibe-experience-memory.js
+          node --check assets/vibe-continuous-queue.js
+          node --check tools/autonomous-safe-edit.mjs
+          node --check tools/vibe2-auto-planner.mjs
+          node --check tools/company-build-up-directive.mjs
+          node --check qa/company-build-up-directive.test.mjs
+          node --check tools/company-roblox-production-plan.mjs
+          node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-openai-agent-patterns.mjs
+          node --input-type=module --check < multiplayer/worker.js
+          node --input-type=module --check < multiplayer/multiplayer-client.js
+          node --check qa/company-development-roblox-multiplayer-qa.test.mjs
+          node --check qa/vibe2-openai-agent-patterns.test.mjs
+          node --check tools/vibe2-asset-production-plan.mjs
+          node --check tools/vibe2-central-work-contract.mjs
+          node --check tools/vibe2-neural-diagnosis.mjs
+          node --check tools/vibe2-neural-feedback.mjs
+          node --check tools/vibe2-neural-critic.mjs
+          node --check tools/vibe2-neural-root-cause.mjs
+          node --check tools/vibe2-neural-event-router.mjs
+          node --check tools/vibe2-neural-work-graph.mjs
+          node --check tools/vibe2-neural-shadow-audit.mjs
+          node --check tools/vibe2-neural-event-telemetry.mjs
+          node --check tools/vibe2-neural-phase2-readiness.mjs
+          node --check tools/vibe2-system-steward.mjs
+          node --check tools/vibe2-system-evolution-verify.mjs
+          node --check tools/vibe2-system-architecture-contract.mjs
+          node --check tools/vibe2-self-architecture-evolution.mjs
+          node --check tools/vibe2-neural-expansion-readiness.mjs
+          node --check tools/vibe2-design-intelligence.mjs
+          node --check tools/vibe2-exploration-worker.mjs
+          node --check tools/vibe2-existing-web-assessment.mjs
+          node --check tools/vibe2-source-worker.mjs
+          node --check tools/vibe2-capability-distillation.mjs
+          node --check tools/vibe2-merged-pr-provenance.mjs
+          node --check tools/vibe2-performance-sanity.mjs
+          node --check tools/vibe2-fan-in-review.mjs
+          node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-work-package.mjs
+          node --check tools/vibe2-incremental-qa.mjs
+          node --check tools/vibe2-parallelism-telemetry.mjs
+          node --check tools/vibe2-adaptive-backpressure.mjs
+          node --check tools/vibe2-candidate-reconcile.mjs
+          node --check tools/vibe2-experience-control.mjs
+          node --check tools/vibe2-handoff.mjs
+          node --check tools/vibe2-post-release-focus.mjs
+          node --check tools/vibe2-release-dispatch-recovery.mjs
+          node --check tools/vibe2-external-ai-distillation.mjs
+          node --check tools/vibe2-practice-distillation.mjs
+          node --check tools/vibe2-multisource-learning-collector.mjs
+          node --check tools/vibe2-fast-distillation-stage.mjs
+          node --check tools/vibe2-distillation-status.mjs
+          node --check tools/vibe2-weight-learning.mjs
+          node --check qa/vibe2-post-release-focus.test.mjs
+          node --check qa/vibe2-release-dispatch-recovery.test.mjs
+          node --check qa/vibe2-continuous-release-dispatch.test.mjs
+          node --check qa/vibe2-learning-motor.test.mjs
+          node --check qa/vibe2-learning-closed-loop.test.mjs
+          node --check qa/vibe2-code-pattern-ingest.test.mjs
+          node --check qa/vibe2-learning-practice-worker.test.mjs
+          node --check qa/vibe2-external-ai-distillation.test.mjs
+          node --check qa/vibe2-web-experience-ingest.test.mjs
+          node --check qa/company-design-pre-gate-resume.test.mjs
+          node --check qa/company-machine-development-lifecycle.test.mjs
+          node --check qa/vibe2-auto-planner.test.mjs
+          node --check qa/company-build-up-experience-quality.test.mjs
+          node --check qa/vibe-roblox-co-development.test.mjs
+          node --check qa/vibe-visual-runtime-quality.test.mjs
+          node --check qa/vibe2-native-asset-production.test.mjs
+          node --check assets/asset-selector.js
+          node --check qa/vibe2-external-customization.test.mjs
+          node --check qa/vibe2-neural-diagnosis.test.mjs
+          node --check qa/vibe2-neural-feedback.test.mjs
+          node --check qa/vibe2-neural-critic.test.mjs
+          node --check qa/vibe2-neural-root-cause.test.mjs
+          node --check qa/vibe2-neural-event-router.test.mjs
+          node --check qa/vibe2-neural-work-graph.test.mjs
+          node --check qa/vibe2-neural-shadow-audit.test.mjs
+          node --check qa/vibe2-neural-event-telemetry.test.mjs
+          node --check qa/vibe2-neural-phase2-readiness.test.mjs
+          node --check qa/vibe2-neural-fanin-root-cause.test.mjs
+          node --check qa/vibe2-core-engine-motion.test.mjs
+          node --check qa/vibe2-design-intelligence.test.mjs
+          node --check qa/vibe2-exploration-worker.test.mjs
+          node --check qa/vibe2-existing-web-assessment.test.mjs
+          node --check qa/vibe2-development-web-browser-smoke.mjs
+          node --check qa/vibe2-source-worker.test.mjs
+          node --check qa/vibe2-capability-distillation.test.mjs
+          node --check qa/vibe2-merged-pr-provenance.test.mjs
+          node --check qa/vibe2-central-work-contract.test.mjs
+          node --check qa/vibe2-queue-control.test.mjs
+          node --check qa/vibe2-work-package.test.mjs
+          node --check qa/vibe2-incremental-qa.test.mjs
+          node --check qa/vibe2-parallelism-telemetry.test.mjs
+          node --check qa/vibe2-adaptive-backpressure.test.mjs
+          node --check qa/vibe2-controller-contract.test.mjs
+          node --check qa/vibe2-candidate-reconcile.test.mjs
+          node --check qa/vibe2-experience-control.test.mjs
+          node --check qa/vibe2-handoff.test.mjs
+          node --check qa/vibe2-owner-rule1-continuity.test.mjs
+          node --check qa/vibe2-owner-rule2-external-ai.test.mjs
+          node --check qa/vibe2-owner-rule3-unbounded-learning.test.mjs
+          node --check qa/vibe2-owner-rule4-self-architecture.test.mjs
+          node --check qa/vibe2-neural-expansion-readiness.test.mjs
+          node --check qa/vibe2-self-architecture-evolution.test.mjs
+          node --check qa/vibe2-system-architecture-execution.test.mjs
+          node --check qa/vibe2-system-evolution-verify.test.mjs
+
+      - name: Vibe2 core tests
+        run: |
+          set -euo pipefail
+          # 기존 전체 회귀검사 보존: 가벼운 중앙정책·예약·학습 계약을 먼저 확인한다.
+          node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-adaptive-backpressure.test.mjs
+          node --test qa/vibe2-controller-contract.test.mjs
+          node --test qa/vibe2-handoff.test.mjs
+          node --test qa/vibe2-continuous-release-dispatch.test.mjs
+          node --test qa/vibe2-learning-closed-loop.test.mjs
+          node --test qa/vibe2-gemini-free-rotation.test.mjs
+          node --test qa/vibe2-openai-agent-patterns.test.mjs
+          node --test qa/company-development-roblox-multiplayer-qa.test.mjs
+          node --test qa/vibe2-auto-planner.test.mjs
+          node --test qa/company-build-up-directive.test.mjs
+          node --test qa/company-build-up-experience-quality.test.mjs
+          node --test qa/company-roblox-production-plan.test.mjs qa/company-roblox-production-handoff.test.mjs
+          node --test qa/vibe-roblox-co-development.test.mjs
+          node --test qa/vibe-visual-runtime-quality.test.mjs
+          node --test qa/vibe2-native-asset-production.test.mjs
+          node --test qa/vibe2-external-customization.test.mjs
+          node --test qa/vibe2-neural-diagnosis.test.mjs
+          node --test qa/vibe2-neural-feedback.test.mjs
+          node --test qa/vibe2-neural-critic.test.mjs
+          node --test qa/vibe2-neural-root-cause.test.mjs
+          node --test qa/vibe2-neural-event-router.test.mjs
+          node --test qa/vibe2-neural-work-graph.test.mjs
+          node --test qa/vibe2-neural-shadow-audit.test.mjs
+          node --test qa/vibe2-neural-event-telemetry.test.mjs
+          node --test qa/vibe2-neural-phase2-readiness.test.mjs
+          node --test qa/vibe2-neural-fanin-root-cause.test.mjs
+          node --test qa/vibe2-core-engine-motion.test.mjs
+          node --test qa/vibe2-design-intelligence.test.mjs
+          node --test qa/vibe2-exploration-worker.test.mjs
+          node --test qa/vibe2-existing-web-assessment.test.mjs
+          # 기존 중단된 로컬 모델·유니티 작업 시험은 제외하고 유효한 소스/저장/권한 검증은 유지.
+          node --test --test-name-pattern='Web true 3D engine selection keeps|asset synchronization detects|single motion work unit rejects stale source|game context capsule keeps|candidate self review rejects comment-only|full-file candidates compare against|rejected patch fingerprint ignores|repeat-rejected source candidates|Vibe libraries and development tools rematch|native game BUILD_UP receives bounded|source worker wires deterministic diagnostic|exact edit validates the entire batch|asset inspection and exact writes share|semantic diff hard gate protects existing save keys|semantic diff invariant blocks variable-backed save|native save key changes remain possible|invalid edit path recovery requires|exact edit accepts only unique indentation|exact edit still rejects materially different|model response completion stops only|failed source generation still performs post-work|runtime model-call gate rejects|source worker emits auditable APK learning' qa/vibe2-source-worker.test.mjs
+          node --test qa/vibe3-roblox-distillation.test.mjs
+          node --test qa/vibe2-capability-distillation.test.mjs
+          node --test qa/vibe2-merged-pr-provenance.test.mjs
+          node --test qa/vibe2-central-work-contract.test.mjs
+          node --test qa/vibe2-work-package.test.mjs
+          node --test qa/vibe2-incremental-qa.test.mjs
+          node --test qa/vibe2-parallelism-telemetry.test.mjs
+          node --test qa/vibe2-candidate-reconcile.test.mjs
+          node --test qa/vibe2-experience-control.test.mjs
+          node --test qa/vibe2-post-release-focus.test.mjs
+          node --test qa/vibe2-release-dispatch-recovery.test.mjs
+          node --test qa/vibe2-learning-motor.test.mjs
+          node --test qa/vibe2-code-pattern-ingest.test.mjs
+          node --test qa/vibe2-learning-practice-worker.test.mjs
+          node --test qa/vibe2-practice-distillation.test.mjs
+          node --test qa/vibe2-practice-weight-learning.test.mjs
+          node --test qa/vibe2-external-ai-distillation.test.mjs
+          node --test qa/vibe2-fast-distillation-stage.test.mjs qa/vibe2-distillation-status.test.mjs qa/vibe2-weight-learning.test.mjs
+          node --test qa/vibe2-web-experience-ingest.test.mjs
+          node --test qa/vibe2-owner-rule1-continuity.test.mjs
+          node --test qa/vibe2-owner-rule2-external-ai.test.mjs
+          node --test qa/vibe2-owner-rule3-unbounded-learning.test.mjs
+          node --test qa/vibe2-owner-rule4-self-architecture.test.mjs
+          node --test qa/vibe2-neural-expansion-readiness.test.mjs
+          node --test qa/vibe2-self-architecture-evolution.test.mjs
+          node --test qa/vibe2-system-architecture-execution.test.mjs
+          node --test qa/vibe2-system-evolution-verify.test.mjs
+          node --test qa/company-design-pre-gate-resume.test.mjs
+          node --test qa/company-machine-development-lifecycle.test.mjs
+
+      - name: Generate machine handoff
+        run: |
+          set -euo pipefail
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff.json >/tmp/vibe2-handoff.log
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/vibe2-handoff.json','utf8'));if(x.kind!=='vibe2-machine-handoff')process.exit(1)"
+
+  browser-smoke:
+    needs: scope
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
+    name: Development Web browser startup smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run browser startup smoke
+        env:
+          VIBE2_BROWSER_CHANGED_GAMES: ${{ needs.scope.outputs.changed_web_games || 'ALL' }}
+        run: |
+          set -euo pipefail
+          node qa/vibe2-development-web-browser-smoke.mjs
+
+
+
+  practice-runtime:
+    needs: scope
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
+    name: Practice fault cards runtime
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare isolated practice executors
+        id: executors
+        run: |
+          set -euo pipefail
+          practice_deps="$RUNNER_TEMP/vibe2-practice-browser"
+          npm install --prefix "$practice_deps" --no-audit --no-fund playwright@1.58.2
+          node "$practice_deps/node_modules/playwright/cli.js" install --with-deps chromium
+          echo "VIBE2_PLAYWRIGHT_MODULE=$practice_deps/node_modules/playwright/index.mjs" >> "$GITHUB_ENV"
+          # Unity is owner-held: C# executor is enabled only when the latest authorized platform scope resumes Unity Web.
+          if node -e "const p=require('./company-learning/platform-release-roadmap.json');process.exit(p.ownerActiveDevelopmentScope20261009?.activeTargets?.includes('UNITY_WEB')?0:1)"; then
+            docker pull mcr.microsoft.com/dotnet/sdk:8.0
+            echo 'VIBE2_TEST_CSHARP_RUNTIME=1' >> "$GITHUB_ENV"
+          else
+            echo 'VIBE2_UNITY_PRACTICE=OWNER_HOLD'
+          fi
+          luau_dir="$RUNNER_TEMP/vibe2-practice-luau"
+          mkdir -p "$luau_dir"
+          curl -fsSL --retry 3 -o "$luau_dir/luau.zip" https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
+          chmod +x "$luau_dir/luau" "$luau_dir/luau-compile"
+          echo "VIBE2_LUAU_BINARY=$luau_dir/luau" >> "$GITHUB_ENV"
+          echo "VIBE2_LUAU_COMPILER=$luau_dir/luau-compile" >> "$GITHUB_ENV"
+      - name: Execute baseline repair and hidden variants
+        run: |
+          test -x "$VIBE2_LUAU_BINARY"
+          node --test qa/roblox-common-motion-source.test.mjs
+          VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" node --test --test-name-pattern="internal motion sampler" qa/vibe2-source-worker.test.mjs
+          node --test qa/vibe3-roblox-studio-lessons.test.mjs
+          node --test qa/vibe2-learning-practice-worker.test.mjs
+          node --test --test-name-pattern="managed spawn executes" qa/company-development-roblox-runtime-foundation.test.mjs
+      - name: Execute native GLB authoring and platform material checks
+        if: always() && !cancelled() && steps.executors.outcome == 'success'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+          blender --background --factory-startup --python-exit-code 1 --python-expr "import numpy; import bpy; print('VIBE_GLB_EXPORT_DEPENDENCIES=PASS')"
+          VIBE2_BLENDER_BINARY=blender node --test --test-name-pattern="actual Blender authoring|GLB production inspection|native asset recipe preserves" qa/vibe2-native-asset-production.test.mjs
+      - name: Preserve authored GLB and preview evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-glb-authoring-evidence
+          path: ${{ runner.temp }}/vibe2-glb-authoring-evidence
+          if-no-files-found: error
+          retention-days: 14
+      - name: Optional external Gemini coding benchmark (disabled by default)
+        if: always() && !cancelled() && steps.executors.outcome == 'success' && needs.scope.outputs.coding_benchmark == 'YES' && vars.VIBE2_ENABLE_LIVE_GEMINI_BENCHMARK == 'true'
+        env:
+          VIBE2_LIVE_CODING_BENCHMARK: '1'
+          VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API
+          VIBE2_GEMINI_MODEL: gemini-3.8-flash
+          VIBE2_GEMINI_BACKUP_MODEL: gemini-3.5-flash-lite
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "${GEMINI_API_KEY:-}"
+          node --test --test-name-pattern="live Vibe coding" qa/vibe2-learning-practice-worker.test.mjs
+      - name: Preserve coding performance evidence
+        # Optional benchmark evidence exists only when the opted-in external API job ran.
+        if: always() && needs.scope.outputs.coding_benchmark == 'YES' && vars.VIBE2_ENABLE_LIVE_GEMINI_BENCHMARK == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-coding-repair-benchmark
+          path: ${{ runner.temp }}/vibe2-coding-repair-benchmark.json
+          if-no-files-found: error
+          retention-days: 14
+ /tmp/vibe2-core-qa-files.txt; then changed_web_games=ALL; fi
           fi
           echo "changed_web_games=$changed_web_games" >> "$GITHUB_OUTPUT"
           coding_benchmark=NO
