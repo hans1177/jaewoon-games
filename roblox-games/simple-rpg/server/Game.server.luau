@@ -387,6 +387,8 @@ end
 local civ = Config.Civilization
 local civCooldowns = {}
 local civEnemies = {}
+-- Same-race view of the authoritative enemy list, retained in spawn order for AI pack/patrol checks.
+local civEnemiesByRace = {}
 local civWildlife = {}
 local civNodes = {}
 local civWorlds = {}
@@ -1351,6 +1353,9 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   civSign(root, root, enemy.Name, 3.3)
   local item = { Model = enemy, Root = root, Humanoid = humanoid, Home = root.Position, RaceID = raceID, Special = special, LastHit = -1e9, TelegraphAt = 0, StunnedUntil = 0, TargetUserId = nil, NextPatrolAt = 0, PatrolStep = 0, AlertUserId = nil, AlertUntil = 0 }
   table.insert(civEnemies, item)
+  -- Register only spawned, verified enemies; never index rejected external models.
+  if not civEnemiesByRace[raceID] then civEnemiesByRace[raceID] = {} end
+  table.insert(civEnemiesByRace[raceID], item)
   return item
 end
 -- targetModel is an optional mobile hint; only a server-owned enemy may be selected.
@@ -1832,7 +1837,7 @@ task.spawn(function()
         if target and enemy.Model:GetAttribute("IsRaidBoss") ~= true then
           if enemy.AlertUserId ~= target.UserId then
             local packEngaged = false
-            for _, ally in ipairs(civEnemies) do
+            for _, ally in ipairs(civEnemiesByRace[enemy.RaceID] or {}) do
               if ally ~= enemy and ally.RaceID == enemy.RaceID
                 and ally.Humanoid.Health > 0
                 and (ally.Root.Position - enemy.Root.Position).Magnitude <= 12
@@ -1963,7 +1968,7 @@ task.spawn(function()
             -- 같은 문명의 살아 있는 일반 몬스터가 가까우면 순찰 목적지를 조금 공유한다.
             -- 플레이어 대상/보스/기존 생성 위치는 건드리지 않는다.
             if enemy.Model:GetAttribute("IsRaidBoss") ~= true then
-              for _, ally in ipairs(civEnemies) do
+              for _, ally in ipairs(civEnemiesByRace[enemy.RaceID] or {}) do
                 if ally ~= enemy and ally.RaceID == enemy.RaceID
                   and ally.Humanoid.Health > 0
                   and ally.Model:GetAttribute("IsRaidBoss") ~= true
