@@ -65,3 +65,26 @@ test('saves, server-side combat and existing game id remain intact', () => {
   assert.match(server, /MultiverseEconomy\.StartCaravans\(civHub, civWorlds\)/);
   assert.match(client, /autoCombat:FireServer\("AutoAttack", model\)/);
 });
+
+test('downloaded CC0 converter selects full building assemblies and real button images, not sample previews', () => {
+  const prep = readFileSync(new URL('../tools/simple-rpg-prepare-curated-assets.py', import.meta.url), 'utf8');
+  const uploader = readFileSync(new URL('../tools/simple-rpg-upload-actors.mjs', import.meta.url), 'utf8');
+  const evidence = JSON.parse(readFileSync(new URL('../assets/external/simple-rpg/registration-evidence-312.json', import.meta.url), 'utf8'));
+  assert.match(prep, /def assemble_existing_house_modules\(archive\):/);
+  assert.match(prep, /CURATED_COMPLETE_CC0_BUILDING_NOT_PREPARED/);
+  assert.match(prep, /assembledOnlyFromDownloadedSourceMeshes/);
+  assert.match(prep, /"sample", "preview", "screenshot"/);
+  assert.match(prep, /"UIpack_RPG\.zip"/);
+  assert.match(prep, /CURATED_REAL_PANEL_OR_BUTTON_MISSING/);
+  assert.doesNotMatch(prep, /choose_model\(town_archive, "Building", \("house", "tower", "building", "home"\), False\)/);
+  assert.match(uploader, /REUSED_PREVIOUSLY_GRANTED_CC0_ACTOR/);
+  assert.match(uploader, /old\.gitBlobSha===revision/);
+  assert.equal(evidence.publishedVersion, 312);
+  assert.equal(evidence.universeId, '10770997776');
+  assert.equal(evidence.placeId, '120884036900477');
+  assert.equal(Object.keys(evidence.actors).length, 9);
+  assert.equal(evidence.publishedWorldAndUiEvidence.World.Building.note,
+    'NOT_A_COMPLETE_BUILDING_DO_NOT_REUSE');
+  assert.equal(evidence.publishedWorldAndUiEvidence.UI.Button.note,
+    'SAMPLE_IMAGE_DO_NOT_REUSE');
+});
