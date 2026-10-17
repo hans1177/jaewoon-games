@@ -908,7 +908,7 @@ test('canonical production no longer installs local Ollama or caches downloaded 
     '.github/workflows/company-central-policy-contract-qa.yml'
   ]){
     const workflow=read(file);
-    assert.doesNotMatch(workflow,/uses:.*prepare-ollama|ollama pull|ollama serve|ollama\\.com\\/download/,file);
+    assert.doesNotMatch(workflow,/uses:.*prepare-ollama|ollama pull|ollama serve|ollama\.com\/download/,file);
   }
   assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_WORKER_PROVIDER=GEMINI_API/);
 });
