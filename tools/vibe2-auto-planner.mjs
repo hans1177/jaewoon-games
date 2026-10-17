@@ -771,7 +771,12 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
     return false; // Android owner hold: do not generate new native work.
   }
   if(project.engine==='unreal'){const policy=centralPresentationPolicy(repoRoot);if(policy?.developmentAccess?.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
-  if(project.releaseState==='development-confirmed')return project.engine==='web'&&centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status!=='ACTIVE'; // Existing legacy tests stay readable; production only schedules Roblox and Unity Web.
+  if(project.releaseState==='development-confirmed'){
+    // [일반 웹게임] 오너가 WEB을 활성화한 경우에만 기존 HTML/JS 제작을 기존 플로어로 재개한다.
+    const policy=centralPresentationPolicy(repoRoot),scope=policy?.ownerActiveDevelopmentScope20261009;
+    return project.engine==='web'&&policy?.developmentAccess?.WEB==='ALWAYS_ALLOWED'
+      &&scope?.status==='ACTIVE'&&(scope.activeTargets||[]).includes('WEB');
+  }
   return false;
 }
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
