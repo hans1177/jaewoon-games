@@ -395,3 +395,35 @@ test('handmade creature poses stay removed, imported mesh movement remains', () 
   assert.match(client, /entry\.Visual:PivotTo\(entry\.Root\.CFrame \* offset\)/);
   assert.match(client, /CreatureVisualAssetId/);
 });
+
+test('bounded A-star path reuse avoids repeat computation without changing combat authority', () => {
+  const ai = read('server/AdvancedAIEcosystem.luau');
+  assert.match(ai, /^--!strict/);
+  // The hot-path nearest lookup avoids a square root for each indexed player.
+  assert.match(ai, /local bestSquared = radius \* radius/);
+  assert.match(ai, /local distanceSquared = delta:Dot\(delta\)/);
+  assert.match(ai, /return nearest, math\.sqrt\(bestSquared\)/);
+  // Old waypoints can only be reused when the target and route are current.
+  assert.match(ai, /local GOAL_REPLAN_DISTANCE = 8/);
+  assert.match(ai, /local MAX_ROUTE_AGE = 6/);
+  assert.match(ai, /if state\.Goal and \(target - state\.Goal\)\.Magnitude >= GOAL_REPLAN_DISTANCE then/);
+  assert.match(ai, /if state\.Index <= #points then return points\[state\.Index\]\.Position end/);
+  assert.match(ai, /if not state\.Busy and pendingPaths < MAX_PATHS_IN_FLIGHT and now - state\.LastRequested >= MIN_PATH_RETRY then/);
+  assert.match(ai, /if paths\[model\] ~= state or model\.Parent == nil then return end/);
+  assert.match(ai, /if not desired or \(desired - target\)\.Magnitude >= GOAL_REPLAN_DISTANCE then/);
+  assert.match(ai, /function AdvancedAIEcosystem\.ForgetEnemy\(enemy: any\): \(\)/);
+  assert.match(ai, /local MAX_PATHS_IN_FLIGHT = 2/);
+  assert.match(ai, /local MIN_PATH_RETRY = 3/);
+  assert.doesNotMatch(ai, /while true|OnServerEvent|:TakeDamage\(/);
+  // The existing server-owned 0.25s tick, telegraph and damage are unchanged.
+  assert.match(server, /while task\.wait\(0\.25\) do/);
+  assert.match(server, /AdvancedAIEcosystem\.RefreshPlayerIndex\(now\)/);
+  assert.match(server, /AdvancedAIEcosystem\.ChaseTarget\(enemy, root\.Position, now\)/);
+  assert.equal((server.match(/AdvancedAIEcosystem\.ForgetEnemy\(enemy\)/g)||[]).length, 2);
+  assert.match(server, /if enemy\.Humanoid\.Health <= 0 or now < enemy\.StunnedUntil then\s+AdvancedAIEcosystem\.ForgetEnemy\(enemy\)/);
+  assert.match(server, /if not target then\s+AdvancedAIEcosystem\.ForgetEnemy\(enemy\)/);
+  assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
+  assert.match(server, /civGuard\(target\)/);
+  assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
+  assert.match(server, /UpdateAsync\("player:" \.\. player\.UserId/);
+});
