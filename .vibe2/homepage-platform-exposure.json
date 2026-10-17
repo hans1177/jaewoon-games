@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-10-17T09:12:24.652Z",
+  "updatedAt": "2026-10-17T13:56:48.224Z",
   "games": [
     {
       "gameId": "fantasy-survival",
@@ -336,7 +336,7 @@
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
-              "noBlockingTickets": true,
+              "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
@@ -353,6 +353,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
@@ -368,7 +369,9 @@
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-c164767f87b9ca9779cd"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
@@ -978,7 +981,7 @@
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
-              "noBlockingTickets": true,
+              "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
@@ -995,6 +998,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
@@ -1010,7 +1014,9 @@
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-1800ddf75c5bc2fa8c62"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
@@ -1174,8 +1180,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "f4d99fed53f21cb0781307d4cb4d96ecb5a3dbae",
-            "artifactIdentity": "sha256:8a098fc74152553d38d09669fc153ce977a3cece1c764c49db9f1b093f6097e0",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -1220,7 +1226,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 39
+            "candidateVersionNumber": 0
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
@@ -1630,7 +1636,7 @@
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
-              "noBlockingTickets": true,
+              "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
@@ -1647,6 +1653,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
@@ -1662,7 +1669,9 @@
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-6a3873f1ad51f266b2b4"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
@@ -1881,7 +1890,8 @@
           "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
-              "bug-0e778fae0d7491732692"
+              "bug-0e778fae0d7491732692",
+              "bug-c43adcc92da266a0f5df"
             ]
           },
           "publication": {
@@ -2098,7 +2108,8 @@
           "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
-              "bug-ad65fa030c0d96b78fa0"
+              "bug-ad65fa030c0d96b78fa0",
+              "bug-c807ea3638b2b4af389f"
             ]
           },
           "publication": {
@@ -2315,7 +2326,8 @@
           "perpetualBuildupActive": false,
           "testerTickets": {
             "openBlocking": [
-              "bug-6152d67e2c31cae915b4"
+              "bug-6152d67e2c31cae915b4",
+              "bug-16fa4512df19834b8f5d"
             ]
           },
           "publication": {
@@ -3786,7 +3798,7 @@
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
-              "noBlockingTickets": true,
+              "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
@@ -3803,6 +3815,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
@@ -3818,7 +3831,9 @@
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-38699e986c70cec1cb47"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
@@ -5721,7 +5736,7 @@
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
-              "noBlockingTickets": true,
+              "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
@@ -5738,6 +5753,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
@@ -5753,7 +5769,9 @@
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-10e004cf6efed11a6512"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
@@ -9169,7 +9187,7 @@
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
-              "noBlockingTickets": true,
+              "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
@@ -9186,6 +9204,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
@@ -9201,7 +9220,9 @@
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-91bd7be0ee938410805f"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
@@ -9383,7 +9404,7 @@
               "exactRuntime": false,
               "actualVibePlay": false,
               "vibeScenarioCoverage": false,
-              "noBlockingTickets": true,
+              "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
@@ -9400,6 +9421,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
@@ -9415,7 +9437,9 @@
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
-            "openBlocking": []
+            "openBlocking": [
+              "bug-f2c48e2e9e0d2e2a6c6f"
+            ]
           },
           "publication": {
             "explicitPublicEvidence": false,
