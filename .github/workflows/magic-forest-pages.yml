@@ -15,6 +15,10 @@ on:
       - "!assets/homepage-covers/**"
       - ".github/workflows/magic-forest-pages.yml"
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/magic-forest-pages.yml"
 
 permissions:
   contents: write
@@ -114,6 +118,7 @@ jobs:
           NODE
 
       - name: Publish gh-pages without force or deleting earlier games
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -138,6 +143,7 @@ jobs:
           echo "WEB_PAGES_SOURCE_SHA=$GITHUB_SHA"
 
       - name: Verify live GitHub Pages source and game routes
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
