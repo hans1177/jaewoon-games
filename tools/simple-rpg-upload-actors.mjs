@@ -79,11 +79,32 @@ async function request(url, options = {}) {
   return data;
 }
 const out = {schema:1, gameId:'simple-rpg', importedAt:new Date().toISOString(), creatorId, assets:{}};
+// Exact v312 Cloud registration evidence is reusable for byte-identical CC0 actor sources.
+const reusePublishedActors = process.argv.includes('--publish-curated-art');
+const prior = reusePublishedActors ? JSON.parse(await fs.readFile(
+  'assets/external/simple-rpg/registration-evidence-312.json','utf8')) : null;
+if (prior && (prior.gameId!=='simple-rpg'||prior.universeId!=='10770997776'
+  ||prior.placeId!=='120884036900477'||prior.publishedVersion!==312
+  ||prior.publicationRunId!==38992034382
+  ||prior.license!=='CC0-1.0'))throw new Error('ACTOR_REUSE_PUBLICATION_PROVENANCE_INVALID');
 for (const [relativeFile, name] of models) {
   const file = path.join(sourceDir, relativeFile);
   const binary = await fs.readFile(file);
   if (binary.length > 20 * 1024 * 1024 || binary.subarray(0,4).toString() !== 'glTF')
     throw new Error('INVALID_GLB: '+file);
+  const old = prior?.actors?.[name];
+  if (old) {
+    const {execFileSync} = await import('node:child_process');
+    const revision = execFileSync('git',['hash-object','--',file],{encoding:'utf8'}).trim();
+    if (old.source===relativeFile && old.gitBlobSha===revision
+      && Number.isSafeInteger(old.assetId) && old.assetId>0) {
+      out.assets[name] = {assetId:String(old.assetId),source:file,
+        license:'CC0-1.0',universeId:'10770997776'};
+      console.log('REUSED_PREVIOUSLY_GRANTED_CC0_ACTOR '+name+'='+old.assetId);
+      continue;
+    }
+    console.log('ACTOR_SOURCE_CHANGED_REUPLOAD_REQUIRED',name);
+  }
   const form = new FormData();
   form.set('request', JSON.stringify({
     assetType:'Model', displayName:'대충알피지 '+name,
