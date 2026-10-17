@@ -469,19 +469,26 @@ test('world tree basement is bright without a torch while quest cave darkness re
   assert.match(source,/worldtreegolem:\{id:'worldtreegolem',name:'세계수 골렘',mood:'neutral',hp:586,dmg:48/);
 });
 
-test('authored world tree snake illusion uses 250/39 and visible roots for three seconds at 67 percent every three seconds',()=>{
-  assert.match(source,/worldtreesnake:\{id:'worldtreesnake',name:'세계수 뱀',mood:'aggressive',hp:250,dmg:39,speed:110[^\n]*snakeIllusion:true/);
-  const effect=functionBody('updateWorldTreeSnakeIllusion'),interior=functionBody('drawWorldTreeInterior');
-  assert.match(source,/WORLD_TREE_SNAKE_ILLUSION=Object\.freeze\(\{intervalMs:3000,probability:\.67,durationMs:3000,maxRoots:5,range:400\}\)/);
-  assert.match(effect,/state\.area!=='worldtreeinside'/);
-  assert.match(effect,/e\.type\?\.id!=='worldtreesnake'/);
-  assert.match(effect,/Math\.random\(\)>=WORLD_TREE_SNAKE_ILLUSION\.probability/);
-  assert.match(effect,/visible\.slice\(0,WORLD_TREE_SNAKE_ILLUSION\.maxRoots\)/);
-  assert.match(effect,/worldTreeSnakeIllusion\.until=now\+WORLD_TREE_SNAKE_ILLUSION\.durationMs/);
-  assert.match(functionBody('update'),/updateWorldTreeSnakeIllusion\(now\)/);
-  assert.match(interior,/worldTreeSnakeIllusion\.rootIndices\.includes\(i\)/);
-  assert.match(interior,/ctx\.bezierCurveTo\(94,-41\+sway,-90,53-sway,70,142\)/);
-  assert.doesNotMatch(effect,/damagePlayer|enemyDamageTarget|state\.player\.hp|state\.dirty|sendMultiplayer/);
-  assert.match(functionBody('enemyHasBuiltInSpecial'),/type\.snakeIllusion/);
-  assert.match(functionBody('tryHardDifficultySkill'),/e\.type\.snakeIllusion/);
+
+test('snake spell morphs actual roots to real hostile combat enemies and restores originals after death or 10s',()=>{
+ const spell=functionBody('updateWorldTreeRootSnakes'),draw=functionBody('drawWorldTreeInterior');
+ assert.match(source,/WORLD_TREE_ROOT_SNAKES=Object\.freeze\(\{intervalMs:3000,probability:\.67,durationMs:10000,maxRoots:5,range:400\}\)/);
+ assert.match(spell,/multiplayer\.connected&&!multiIsHost\(\)/);
+ assert.match(spell,/caster\.type\?\.id!=='worldtreesnake'/);
+ assert.match(spell,/Number\.isInteger\(caster\.rootMorphIndex\)/);
+ assert.match(spell,/Math\.random\(\)>=WORLD_TREE_ROOT_SNAKES\.probability/);
+ assert.match(spell,/now>=\(snake\.rootMorphUntil\|\|0\)/);
+ assert.match(spell,/snake\.hp=0/);
+ assert.match(spell,/spawnAt\(creatures\.worldtreesnake,anchor\.x,anchor\.y,null\)/);
+ assert.match(spell,/snake\.rootMorphIndex=index/);
+ assert.match(spell,/snake\.rootMorphUntil=now\+WORLD_TREE_ROOT_SNAKES\.durationMs/);
+ assert.match(spell,/snake\.noRespawn=true/);
+ assert.match(spell,/state\.enemies\.push\(snake\)/);
+ assert.match(draw,/transformedRoots\.has\(i\)/);
+ assert.match(draw,/worldTreeRootPosition\(i\)/);
+ assert.match(functionBody('update'),/updateWorldTreeRootSnakes\(now\)/);
+ assert.match(functionBody('serializeWorld'),/rootMorphIndex:Number\.isInteger\(e\.rootMorphIndex\)/);
+ assert.match(functionBody('applyWorldSnapshot'),/rootMorphIndex:Number\.isInteger\(n\.rootMorphIndex\)/);
+ assert.doesNotMatch(source,/worldTreeSnakeIllusion|updateWorldTreeSnakeIllusion|IllusorySnake/);
+ assert.match(source,/worldtreesnake:\{id:'worldtreesnake',name:'세계수 뱀',mood:'aggressive',hp:250,dmg:39/);
 });
