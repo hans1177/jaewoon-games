@@ -562,8 +562,8 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task
   const access=policy.developmentAccess?.[platform]||(platform==='UNITY_ANDROID'?policy.developmentAccess?.UNITY:null);
   if(access==='OWNER_HOLD')return true;
   if(scope?.status==='ACTIVE'){
-    if(targetName==='web')return true;
-    const active=Array.isArray(scope.activeTargets)?scope.activeTargets:['ROBLOX','UNITY_WEB'];
+    const active=Array.isArray(scope.activeTargets)?scope.activeTargets:['ROBLOX'];
+    if(targetName==='web'&&!active.includes('WEB'))return true;
     if(['ROBLOX','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'].includes(platform)&&!active.includes(platform))return true;
   }
   return Boolean(id && ((clean(exclusive?.status).toUpperCase()==='ACTIVE'
