@@ -58,7 +58,7 @@ assert.equal(directive.executionRules.nonVibeGameSourceWriteAllowed,false);
 assert.equal(directive.executionRules.preserveExistingAutomation,true);
 assert.equal(directive.executionRules.preserveExistingSettings,true);
 
-assert.equal(company.currentExecutionMode,'ROBLOX_AND_GENERAL_WEB_3D_CONTINUOUS_DEVELOPMENT');
+assert.equal(company.currentExecutionMode,'ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT');
 assert.equal(company.platformStrategy.developmentAccess.ROBLOX,'ALWAYS_ALLOWED');
 assert.equal(company.platformStrategy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
 assert.equal(company.platformStrategy.developmentAccess.UNITY_ANDROID,'OWNER_HOLD');
