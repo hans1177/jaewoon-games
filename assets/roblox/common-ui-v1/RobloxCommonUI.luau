@@ -4687,6 +4687,8 @@ function RobloxCommonUI.CreateVisualFeedbackController(options)
     local index = 0
     for _, item in ipairs(pool) do if item.busy then index += 1 end end
     local jitter = ((index % 5) - 2) * 14
+    local safeX = math.clamp(xy.X + jitter, math.min(61,overlay.AbsoluteSize.X*0.5), math.max(overlay.AbsoluteSize.X*0.5,overlay.AbsoluteSize.X-61))
+    local safeY = math.clamp(xy.Y, math.min(26,overlay.AbsoluteSize.Y*0.5), math.max(overlay.AbsoluteSize.Y*0.5,overlay.AbsoluteSize.Y-26))
     local kind = string.upper(tostring(event.kind or "DAMAGE"))
     local label = entry.label
     label.Text = (kind == "MISS" and "MISS" or (kind == "HEAL" and "+" or "") .. tostring(math.floor(amount + 0.5)))
@@ -4694,10 +4696,10 @@ function RobloxCommonUI.CreateVisualFeedbackController(options)
     label.TextSize = kind == "CRITICAL" and 28 or 21
     label.TextTransparency = 0
     label.TextStrokeTransparency = 0.2
-    label.Position = UDim2.fromOffset(xy.X + jitter, xy.Y)
+    label.Position = UDim2.fromOffset(safeX, safeY)
     label.Visible = true
     local duration = reducedMotion and 0.18 or (kind == "CRITICAL" and 0.92 or 0.72)
-    local target = {Position = UDim2.fromOffset(xy.X + jitter + 8, xy.Y - (reducedMotion and 10 or 64)), TextTransparency = 1, TextStrokeTransparency = 1}
+    local target = {Position = UDim2.fromOffset(math.min(overlay.AbsoluteSize.X - 61,safeX + 8), math.max(24,safeY - (reducedMotion and 10 or 64))), TextTransparency = 1, TextStrokeTransparency = 1}
     local tween = TweenService:Create(label, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), target)
     active[entry] = tween
     tween:Play()
