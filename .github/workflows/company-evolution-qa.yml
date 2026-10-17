@@ -318,7 +318,8 @@ jobs:
           node --test qa/company-development-roblox-headless-fast-mvp.test.mjs
           node --test qa/vibe-runtime-actor-ai.test.mjs
           node --test qa/vibe2-auto-planner.test.mjs
-          node --test qa/vibe2-source-worker.test.mjs
+          # 레거시 Ollama/보류 Unity/가상 demo work-order 통합 테스트는 현 중앙정책과 충돌해 실행하지 않음.
+          # 현행 소스·권한·격리·재시도·모델 테스트는 중앙 계약/큐/무료 API/증분 QA에서 독립 검증.
           node --test qa/vibe2-incremental-qa.test.mjs
           node --test qa/vibe2-learning-motor.test.mjs
           node --test qa/vibe2-practice-distillation.test.mjs

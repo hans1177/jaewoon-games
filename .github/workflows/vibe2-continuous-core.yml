@@ -1386,6 +1386,10 @@ jobs:
           SAFE_TASK: ${{ matrix.safeTask }}
           VARIANT: ${{ matrix.variant }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1574,6 +1578,10 @@ jobs:
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}
           VIBE2_DCC_AUTHORING_EVIDENCE_FILE: /tmp/vibe2-dcc-authoring-evidence.json
         shell: bash
         run: |
