@@ -94,13 +94,24 @@ test('stale high validation does not hide current approved scope gaps',()=>{
 test('active or publicly playable development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const developmentGames=selectDevelopmentWebValidationGames({catalog,policy,
+  const allDevelopmentGames=selectDevelopmentWebValidationGames({catalog,policy,
     webSourceExists:game=>{
       const id=String(game.id||'').trim();
       return /^[a-z0-9][a-z0-9-]*$/.test(id)
         &&fs.existsSync(path.join('web-games',id,'index.html'));
     }
   });
+  // PR은 변경된 Web 게임의 진짜 시작 코드만 검사한다. main/push는 기존 전수 검사를 유지한다.
+  const scope=String(process.env.VIBE2_BROWSER_CHANGED_GAMES||'ALL').trim();
+  const scopedIds=scope==='ALL'?null:scope==='NONE'?[]:scope.split(',').map(id=>id.trim()).filter(Boolean);
+  if(scopedIds){
+    assert.ok(scopedIds.every(id=>/^[a-z0-9][a-z0-9-]*$/.test(id)),'WEB_STARTUP_SCOPE_INVALID');
+    assert.deepEqual(scopedIds.filter(id=>!allDevelopmentGames.some(game=>game.id===id)),[],
+      'WEB_STARTUP_SCOPE_UNCLAIMED');
+  }
+  const developmentGames=scopedIds
+    ?allDevelopmentGames.filter(game=>scopedIds.includes(game.id))
+    :allDevelopmentGames;
   const checked=[];
   for(const game of developmentGames){
     const root=path.join('web-games',String(game.id||''));

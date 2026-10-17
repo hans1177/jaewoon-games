@@ -247,6 +247,7 @@ jobs:
     outputs:
       parallelism_only: ${{ steps.scope.outputs.parallelism_only }}
       coding_benchmark: ${{ steps.scope.outputs.coding_benchmark }}
+      changed_web_games: ${{ steps.scope.outputs.changed_web_games }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -270,11 +271,19 @@ jobs:
             base_sha="$PUSH_BEFORE"
           else
             echo "parallelism_only=$parallelism_only" >> "$GITHUB_OUTPUT"
+            echo 'changed_web_games=ALL' >> "$GITHUB_OUTPUT"
             echo 'VIBE2_CORE_QA_SCOPE=FULL_NON_DIFF_EVENT'
             exit 0
           fi
           git cat-file -e "$base_sha^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$base_sha"
           git diff --name-only "$base_sha" HEAD > /tmp/vibe2-core-qa-files.txt
+          changed_web_games=ALL
+          if [ "$EVENT_NAME" = 'pull_request' ]; then
+            changed_web_games="$(awk -F/ '$1=="web-games" && $2 ~ /^[a-z0-9-]+$/ {print $2}' /tmp/vibe2-core-qa-files.txt | sort -u | paste -sd, -)"
+            [ -n "$changed_web_games" ] || changed_web_games=NONE
+            if grep -Eq '^(game-catalog\.json|tools/vibe2-existing-web-assessment\.mjs)$' /tmp/vibe2-core-qa-files.txt; then changed_web_games=ALL; fi
+          fi
+          echo "changed_web_games=$changed_web_games" >> "$GITHUB_OUTPUT"
           coding_benchmark=NO
           if grep -Eq '^(tools/vibe2-learning-practice-worker\.mjs|company-learning/roblox-practice\.json|qa/vibe2-learning-practice-worker\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt; then
             coding_benchmark=YES
@@ -294,6 +303,7 @@ jobs:
     env:
       # 검증된 main 중앙정책 문서 경로를 기존 핵심 QA 실행과 임시 테스트 저장소에 전달한다.
       COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      VIBE2_BROWSER_CHANGED_GAMES: ${{ needs.scope.outputs.changed_web_games || 'ALL' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -449,7 +459,8 @@ jobs:
           node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-exploration-worker.test.mjs
           node --test qa/vibe2-existing-web-assessment.test.mjs
-          node --test qa/vibe2-source-worker.test.mjs
+          # 기존 중단된 로컬 모델·유니티 작업 시험은 제외하고 유효한 소스/저장/권한 검증은 유지.
+          node --test --test-name-pattern='Web true 3D engine selection keeps|asset synchronization detects|single motion work unit rejects stale source|game context capsule keeps|candidate self review rejects comment-only|full-file candidates compare against|rejected patch fingerprint ignores|repeat-rejected source candidates|Vibe libraries and development tools rematch|native game BUILD_UP receives bounded|source worker wires deterministic diagnostic|exact edit validates the entire batch|asset inspection and exact writes share|semantic diff hard gate protects existing save keys|semantic diff invariant blocks variable-backed save|native save key changes remain possible|invalid edit path recovery requires|exact edit accepts only unique indentation|exact edit still rejects materially different|model response completion stops only|failed source generation still performs post-work|runtime model-call gate rejects|source worker emits auditable APK learning' qa/vibe2-source-worker.test.mjs
           node --test qa/vibe3-roblox-distillation.test.mjs
           node --test qa/vibe2-capability-distillation.test.mjs
           node --test qa/vibe2-merged-pr-provenance.test.mjs
@@ -506,6 +517,8 @@ jobs:
           node-version: '22'
 
       - name: Run browser startup smoke
+        env:
+          VIBE2_BROWSER_CHANGED_GAMES: ${{ needs.scope.outputs.changed_web_games || 'ALL' }}
         run: |
           set -euo pipefail
           node qa/vibe2-development-web-browser-smoke.mjs
@@ -531,8 +544,13 @@ jobs:
           npm install --prefix "$practice_deps" --no-audit --no-fund playwright@1.58.2
           node "$practice_deps/node_modules/playwright/cli.js" install --with-deps chromium
           echo "VIBE2_PLAYWRIGHT_MODULE=$practice_deps/node_modules/playwright/index.mjs" >> "$GITHUB_ENV"
-          docker pull mcr.microsoft.com/dotnet/sdk:8.0
-          echo 'VIBE2_TEST_CSHARP_RUNTIME=1' >> "$GITHUB_ENV"
+          # Unity is owner-held: C# executor is enabled only when the latest authorized platform scope resumes Unity Web.
+          if node -e "const p=require('./company-learning/platform-release-roadmap.json');process.exit(p.ownerActiveDevelopmentScope20261009?.activeTargets?.includes('UNITY_WEB')?0:1)"; then
+            docker pull mcr.microsoft.com/dotnet/sdk:8.0
+            echo 'VIBE2_TEST_CSHARP_RUNTIME=1' >> "$GITHUB_ENV"
+          else
+            echo 'VIBE2_UNITY_PRACTICE=OWNER_HOLD'
+          fi
           luau_dir="$RUNNER_TEMP/vibe2-practice-luau"
           mkdir -p "$luau_dir"
           curl -fsSL --retry 3 -o "$luau_dir/luau.zip" https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
