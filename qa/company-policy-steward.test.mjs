@@ -176,6 +176,8 @@ test('issue 8239 reserve and DESIGN_ONLY use the verified canonical policy witho
   const reserve=fs.readFileSync(path.join(root,'.github/workflows/vibe2-continuous-core.yml'),'utf8');
   const design=fs.readFileSync(path.join(root,'.github/workflows/company-seed-design-runtime.yml'),'utf8');
   assert.ok(reserve.includes('COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/'+canonical+' node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch'));
+  assert.ok(reserve.includes('COMPANY_VERIFIED_POLICY_PATH="$contract_root/'+canonical+'" COMPANY_VERIFIED_DESIGN_POLICY_PATH="$contract_root/'+canonical+'" node "$contract_root/tools/vibe2-continuous-runner.mjs"'));
+  assert.ok(reserve.includes('COMPANY_VERIFIED_POLICY_PATH="$GITHUB_WORKSPACE/vibe2-contract/'+canonical+'" node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-source-worker.mjs" --apply-source=true'));
   const resolve=design.split('  resolve-seed-targets:')[1]?.split('  design-cycle:')[0];
   const cycle=design.split('  design-cycle:')[1]?.split('  promote')[0];
   for(const job of [resolve,cycle]){
