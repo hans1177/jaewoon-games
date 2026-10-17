@@ -52415,11 +52415,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b9819e7be88307c9b6c1623c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8203",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b7f5584deb1bfc0b91d9abe5a297dc319663a92d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8203,
+        "baseBranch": "main",
+        "headBranch": "fix/simple-rpg-visible-world-hud-20261017",
+        "baseSha": "b7f5584deb1bfc0b91d9abe5a297dc319663a92d",
+        "headSha": "4545255249df1e5fa03a633805eaed97943dc0b0",
+        "mergeCommitSha": "728a8a183fef4fdeb5f9d6ab8623982bf7fe650c",
+        "mergedAt": "2026-10-17T01:14:30Z",
+        "authorLogin": "hans1177",
+        "titleHash": "c7b8c861ee41ed450539773fe4ca1015ee610ee5773394e1d23a90705db961ab",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/simple-rpg-visible-world-hud-20261017",
+        "candidateSha": "4545255249df1e5fa03a633805eaed97943dc0b0"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 362,
+        "deletedLineCount": 67,
+        "changedFiles": [
+          "company-status.json",
+          "homepage-platform-exposure.json",
+          "qa/simple-rpg-ai-authoring.test.mjs",
+          "qa/simple-rpg-external-visuals-only.test.mjs",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/Game.server.luau"
+        ],
+        "codingRelevantFiles": [
+          "company-status.json",
+          "homepage-platform-exposure.json",
+          "qa/simple-rpg-ai-authoring.test.mjs",
+          "qa/simple-rpg-external-visuals-only.test.mjs",
+          "roblox-games/simple-rpg/client/Game.client.luau",
+          "roblox-games/simple-rpg/server/Game.server.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8203",
+        "merge-commit:728a8a183fef4fdeb5f9d6ab8623982bf7fe650c",
+        "base-main:b7f5584deb1bfc0b91d9abe5a297dc319663a92d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 423
+    "total": 424
   }
 }
