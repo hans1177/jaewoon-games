@@ -3,6 +3,7 @@
 // 안전: 게임 소스 write 0, production PASS 0, 배포/승격 증거로 사용할 수 없다.
 
 import fs from 'node:fs';
+import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
@@ -11,7 +12,7 @@ import { pathToFileURL } from 'node:url';
 import { learningGuidance } from './vibe2-learning-motor.mjs';
 
 const clean=v=>String(v??'').trim();
-const DEFAULT_MODEL=process.env.VIBE2_GEMINI_MODEL||'gemini-2.5-flash';
+const DEFAULT_MODEL=process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash';
 const DEFAULT_TIMEOUT=Math.max(10000,Math.min(300000,Number(process.env.VIBE2_MODEL_TIMEOUT_MS||240000)));
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const writeJson=(file,value)=>{fs.mkdirSync(new URL('.', 'file://'+file).pathname,{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
@@ -83,40 +84,14 @@ export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseF
     throw new Error('PRACTICE_EXTERNAL_AI_PROVIDER_REQUIRED_NO_LOCAL_FALLBACK');
   const key=clean(process.env.GEMINI_API_KEY);
   if(!key)throw new Error('PRACTICE_GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
-  const selected=clean(process.env.VIBE2_GEMINI_MODEL||model||DEFAULT_MODEL);
-  if(!/^gemini-[a-z0-9.-]+$/.test(selected))
-    throw new Error('PRACTICE_GEMINI_MODEL_INVALID');
   const contents=Array.isArray(messages)&&messages.length>0
-    ?messages.map(message=>({
-      role:message.role==='assistant'?'model':'user',
-      parts:[{text:String(message.content||'')}]
-    }))
+    ?messages.map(message=>({role:message.role==='assistant'?'model':'user',parts:[{text:String(message.content||'')}]}))
     :[{role:'user',parts:[{text:String(prompt)}]}];
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),timeoutMs);
-  try{
-    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(selected)+':generateContent',{
-      method:'POST',signal:controller.signal,
-      headers:{'content-type':'application/json','x-goog-api-key':key},
-      body:JSON.stringify({contents,generationConfig:{
-        temperature:Math.max(0,Math.min(.6,Number(inference?.temperature)||.12)),
-        maxOutputTokens:Math.max(512,Math.min(8192,Number(maxPredict)||1200)),
-        responseMimeType:'application/json'
-      }})
-    });
-    if(!res.ok){
-      if([402,403,429].includes(res.status))throw new Error('PRACTICE_GEMINI_QUOTA_OR_BILLING_NO_LOCAL_FALLBACK:'+res.status);
-      throw new Error('PRACTICE_GEMINI_HTTP_NO_LOCAL_FALLBACK:'+res.status);
-    }
-    const data=await res.json();
-    const output=(data.candidates?.[0]?.content?.parts||[])
-      .filter(x=>typeof x.text==='string').map(x=>x.text).join('');
-    if(!output.trim())throw new Error('PRACTICE_GEMINI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
-    return output;
-  }catch(error){
-    if(error?.name==='AbortError')throw new Error('PRACTICE_GEMINI_TIMEOUT_NO_LOCAL_FALLBACK');
-    throw error;
-  }finally{clearTimeout(timer);}
+  const {text}=await requestGeminiFreePair({
+    apiKey:key,contents,timeoutMs,maxOutputTokens:maxPredict,
+    temperature:Number(inference?.temperature)||.12,responseMimeType:'application/json'
+  });
+  return text;
 }
 
 // Only bounded candidate diagnostics are exposed to public-example repair. Never copy
