@@ -81,3 +81,29 @@ test('owner-held Unity cannot leak executable production hints',()=>{
     }
   }
 });
+
+test('Vibe candidate and retry keep evidence-based coding and real QA handoff without promoting worker authority',()=>{
+  const cases=[
+    {target:'web',path:'web-games/garden/index.html',content:'<html><canvas></canvas></html>'},
+    {target:'roblox',path:client,content:'function showGoal() return true end'},
+    {target:'unity',path:'unity-games/garden/Assets/Scripts/GameCore.cs',content:'public class GameCore {}'}
+  ];
+  for(const item of cases){
+    const order={target:item.target,gameId:'garden',goal:'기존 기능 보존하며 실제 오류 수정',selectedTask:{type:'implementation'}};
+    const ctx={files:[{path:item.path,editable:true,content:item.content}]};
+    const prompt=buildPrompt(order,ctx,[item.path]);
+    const focused=buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[item.path]}).prompt;
+    const retry=buildGenerationRetryPrompt(prompt,{error:new Error('edit does not match'),responsibleFiles:[item.path],attempt:2});
+    for(const candidate of [prompt,focused,retry]){
+      assert.match(candidate,/CANONICAL CODING LOOP:/);
+      assert.match(candidate,/SOURCE AND LIBRARY:/);
+      assert.match(candidate,/CAUSAL REPAIR:/);
+      assert.match(candidate,/VERIFICATION HANDOFF:/);
+      assert.match(candidate,/RELEASE AUTHORITY:/);
+      assert.match(candidate,/never invent logs, run IDs, FPS or PASS/);
+      assert.match(candidate,/This source worker outputs a candidate patch only/);
+    }
+  }
+  const system={target:'system',gameId:'garden',goal:'repair system',selectedTask:{type:'implementation'}};
+  assert.doesNotMatch(buildPrompt(system,{files:[{path:'tools/core.mjs',editable:true,content:'const ready=true;'}]},['tools/core.mjs']),/CANONICAL CODING LOOP:/);
+});
