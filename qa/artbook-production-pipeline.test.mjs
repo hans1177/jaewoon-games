@@ -64,3 +64,21 @@ test('canonical department contract is exactly five roles including audio',()=>{
   assert.match(departmentWorkflow,/node tools\/company-design-cycle\.mjs/,'current design workflow runs the five-role canonical design engine');
   assert.doesNotMatch(departmentWorkflow,/node tools\/artbook-free-department-bots\.mjs/,'retired parallel design worker must stay absent');
 });
+
+test('retired standalone artbook model workers stay deleted and release has no Ollama transport',()=>{
+  const retired=[
+    'tools/artbook-department-runner.mjs','tools/artbook-department-rewrite.mjs',
+    'tools/artbook-director-review.mjs','tools/artbook-cross-review-feedback.mjs',
+    'tools/artbook-second-work-runner.mjs','tools/artbook-collaboration-runner.mjs',
+    'tools/artbook-director-presentation.mjs','tools/artbook-visual-plan-runner.mjs',
+    'tools/company-design-artbook.mjs','tools/company-development-disposition-gate.mjs'
+  ];
+  for(const file of retired)assert.equal(fs.existsSync(file),false,file+' must remain retired');
+  const release=fs.readFileSync('tools/company-release-production-cycle.mjs','utf8');
+  assert.equal(release.includes('127.0.0.1:11434'),false);
+  assert.equal(release.includes('ollama pull'),false);
+  assert.equal(release.includes('ollama serve'),false);
+  assert.match(release,/requestGeminiFreePair/);
+  assert.match(release,/RELEASE_EXTERNAL_FREE_MODEL_INDEPENDENCE_NOT_VERIFIED/);
+  assert.match(source,/company-design-cycle\\.mjs/);
+});
