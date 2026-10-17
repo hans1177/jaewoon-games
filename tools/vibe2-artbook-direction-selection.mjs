@@ -1,3 +1,4 @@
+import {requestGeminiFreePair,GEMINI_FREE_MODELS} from './vibe2-gemini-free-rotation.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -22,7 +23,7 @@ if(directions.length!==3||directions.some(row=>!row.focus||!row.playerExperience
 
 const gameName=clean(draft.gameFactPack?.gameName||workOrder.gameName||gameId);
 const terms=(Array.isArray(draft.gameFactPack?.gameSpecificTerms)?draft.gameFactPack.gameSpecificTerms:[]).map(clean).filter(Boolean).slice(0,12);
-const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:0.6b');
+const model=GEMINI_FREE_MODELS.join('|');
 const allowedChoices=new Set(['A','B','C','A+B','A+C','B+C']);
 function normalizeChoice(value){
   const parts=clean(value).toUpperCase().replace(/\s+/g,'').split('+').filter(Boolean);
@@ -51,13 +52,12 @@ async function selectDirection(){
   try{
     const system='/no_think\n너는 재운컴퍼니 기획부의 초안 방향 선택 담당이다. Vibe2가 만든 A/B/C 세 방향 중 하나를 선택하거나 최대 두 개만 혼합한다. 새 세계관이나 새 기능을 창작하지 않는다. 실제 게임 고유 용어와 현재 플레이 동기에 가장 잘 맞고, 그래픽·개발·QA·밸런스가 같은 기준으로 구체화하기 쉬운 방향을 고른다. 다른 게임에도 그대로 적용될 일반론은 피한다. choice는 A, B, C, A+B, A+C, B+C 중 하나만 쓴다. 짧은 한국어 JSON만 출력한다.';
     const payload={gameId,gameName,gameSpecificTerms:terms,playerMotivation:clean(draft.playerMotivation),centralConflict:clean(draft.centralConflict),directions};
-    const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:selectionSchema,messages:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload)}],options:{temperature:0.08,seed:9209,num_ctx:2048,num_predict:180}})});
-    if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-    const packet=await response.json(),raw=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'');
+    const response=await requestGeminiFreePair({apiKey:process.env.GEMINI_API_KEY,contents:[{role:'user',parts:[{text:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload)}].map(row=>row.role.toUpperCase()+': '+row.content).join('\n\n')}]}],responseMimeType:'application/json',temperature:0.08,maxOutputTokens:180,timeoutMs:120000});
+    const packet=response,raw=clean(packet?.text).replace(/^```json\s*/i,'').replace(/```$/,'');
     const parsed=JSON.parse(raw),choice=normalizeChoice(parsed.choice),reason=clean(parsed.reason);
     if(!choice||reason.length<16)throw new Error('planning selector output invalid');
     return {choice,reason,fallbackUsed:false,fallbackReason:null};
-  }catch(error){
+  }catch(error){if(error?.vibe2InfrastructureFailure===true)throw error;
     console.error(`ARTBOOK_DIRECTION_SELECTOR_FALLBACK=${clean(error?.message)}`);
     return fallbackSelection(error?.message);
   }
@@ -72,8 +72,8 @@ const selection={
   playerExperience:selected.map(row=>row.playerExperience).join(' + '),
   signatureMoment:selected.map(row=>row.signatureMoment).join(' + '),
   reason:picked.reason,
-  selectedBy:picked.fallbackUsed?'planning-deterministic-fallback':'planning-local-open-model',
-  model:picked.fallbackUsed?null:model,localInference:true,paidApi:false,apiKeyRequired:false,
+  selectedBy:picked.fallbackUsed?'planning-deterministic-fallback':'planning-external-gemini-free',
+  model:picked.fallbackUsed?null:model,localInference:false,paidApi:false,apiKeyRequired:true,
   fallbackUsed:picked.fallbackUsed,fallbackReason:picked.fallbackReason
 };
 
