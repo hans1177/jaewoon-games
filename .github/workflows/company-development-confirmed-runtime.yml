@@ -149,6 +149,7 @@ jobs:
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           CURRENT_CONTROL_SHA: ${{ github.sha }}
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
         shell: bash
         run: |
           set -euo pipefail
