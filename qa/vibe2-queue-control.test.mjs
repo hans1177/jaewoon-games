@@ -241,6 +241,61 @@ test('slot-released fan-in wait releases ordinary source conflicts while explici
   assert.equal(conflict.conflictTaskId,running.id);
 });
 
+// 외부 무료 AI의 호출 제한은 코드 버그가 아니므로 기존 fan-in에서 시간 제한을 보존한다.
+test('Gemini HTTP 429 waits for provider reset without spending game-code retries or blocking other games',()=>{
+  const quotaTask={
+    id:'quota-task',gameId:'quota-game',target:'web',department:'development',type:'implementation',
+    goal:'build 3D game',status:'running',sourceRoot:'web-games/quota-game',responsibleFiles:['index.html'],
+    retryPolicy:'BOUNDED',maxRetries:1,retries:1,reservationId:'worker-quota'
+  };
+  const otherTask={
+    id:'other-task',gameId:'other-game',target:'web',department:'development',type:'implementation',
+    goal:'repair another game',status:'queued',sourceRoot:'web-games/other-game',responsibleFiles:['index.html']
+  };
+  const retryAt=new Date(Date.now()+5*60*1000).toISOString();
+  const message='GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429:NEXT_RETRY_AT='+retryAt;
+  const input=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[quotaTask,otherTask]});
+  const result=applyVibeFanInResults(input,[{
+    taskId:'quota-task',reservationId:'worker-quota',variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'EXTERNAL_AI_UNAVAILABLE',message}
+  }]);
+  const waiting=result.queue.tasks.find(row=>row.id==='quota-task');
+  assert.equal(result.applied[0].outcome,'DEFERRED_EXTERNAL_AI_QUOTA');
+  assert.equal(waiting.status,'queued');
+  assert.equal(waiting.retries,1);
+  assert.equal(waiting.reservationId,null);
+  assert.equal(waiting.lastOutcome,'DEFERRED_EXTERNAL_AI_QUOTA');
+  assert.ok(Date.parse(waiting.externalAiRetryNotBefore)>=Date.parse(retryAt));
+  assert.equal(waiting.externalAiQuotaDeferrals,1);
+  assert.equal(waiting.evidence.filter(value=>value==='external-ai-quota-deferred').length,1);
+  const selection=selectVibeQueueBatch(result.queue,{lane:'game-primary',maxConcurrentTasks:4});
+  assert.deepEqual(selection.selected.map(row=>row.id),['other-task']);
+  assert.ok(selection.blocked.some(row=>row.task.id==='quota-task'&&row.reasons.includes('EXTERNAL_AI_QUOTA_BACKOFF')));
+  const ready=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:result.queue.tasks.map(task=>
+    task.id==='quota-task'?{...task,externalAiRetryNotBefore:new Date(Date.now()-1000).toISOString()}:task
+  )});
+  assert.ok(selectVibeQueueBatch(ready,{lane:'game-primary',maxConcurrentTasks:4}).selected.some(row=>row.id==='quota-task'));
+});
+
+test('external AI authentication failures cannot masquerade as quota backoff',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:3,tasks:[{
+    id:'auth-task',gameId:'auth-game',target:'web',department:'development',type:'implementation',
+    goal:'game source',status:'running',sourceRoot:'web-games/auth-game',
+    responsibleFiles:['index.html'],retries:0,maxRetries:1,retryPolicy:'BOUNDED'
+  }]});
+  const result=applyVibeFanInResults(queue,[{
+    taskId:'auth-task',variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'EXTERNAL_AI_UNAVAILABLE',message:'GEMINI_AUTH_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:403'}
+  }]);
+  const task=result.queue.tasks[0];
+  assert.notEqual(result.applied[0].outcome,'DEFERRED_EXTERNAL_AI_QUOTA');
+  assert.equal(task.retries,1);
+  assert.equal(task.externalAiRetryNotBefore,null);
+  assert.equal(task.externalAiQuotaDeferrals,0);
+});
+
 test('transient work lock conflicts are requeued without consuming retry budget or poisoning failure learning',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
     id:'visual-lock',gameId:'visual-game',target:'roblox',department:'development',type:'implementation',
