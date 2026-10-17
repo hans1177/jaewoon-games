@@ -128,15 +128,21 @@ test('central gameplay evolution policy binds verified design resume to the cano
   assert.equal(design.resumeShadowPipelineForbidden,true);
 });
 
-test('architecture projects verified design resume without a shadow pipeline',()=>{
+test('verified design resumes the existing scheduler with fail-closed central map evidence',()=>{
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
-  const resume=architecture?.continuousGameplaySystemEvolutionTopology?.verifiedDesignResume||{};
-  assert.equal(resume.promotionRuntime,'.github/workflows/company-design-promotion-sync.yml');
-  assert.equal(resume.scheduler,'.github/workflows/vibe2-24h-runner.yml');
-  assert.equal(resume.condition,'AFTER_CANONICAL_PROMOTION_RUNTIME_PERSIST_SUCCESS');
-  assert.equal(resume.mode,'WAKE_EXISTING_CANONICAL_VIBE_SCHEDULER');
-  assert.deepEqual(resume.plannerRuntimeOverlay,['company-runtime:design','company-runtime:game-seed-state.json']);
-  assert.equal(resume.shadowPipelineCreated,false);
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  assert.equal(architecture.branches.main.directGameWorkerWrite,false);
+  const resume=roadmap.continuousGameplaySystemEvolutionContract.designContext;
+  assert.equal(resume.resumeSchedulerBinding,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(resume.resumeDispatchCondition,'AFTER_CANONICAL_PROMOTION_RUNTIME_PERSIST_SUCCESS');
+  assert.equal(resume.resumeShadowPipelineForbidden,true);
+  const persist=promotion.indexOf('- name: Persist promoted state to company runtime branch');
+  const dispatch=promotion.indexOf('- name: Dispatch native development and immediate Vibe planner refill');
+  assert.ok(persist>=0&&dispatch>persist);
+  assert.match(promotion.slice(dispatch),/gh workflow run vibe2-24h-runner\.yml/);
+  assert.match(promotion.slice(dispatch),/VERIFIED_DESIGN_VIBE_REFILL_AFTER_RUNTIME_PERSIST=YES/);
 });
 
 
