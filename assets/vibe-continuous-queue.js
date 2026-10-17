@@ -361,6 +361,10 @@ function normalizeTask(input = {}, index = 0) {
     releaseState: normalizeReleaseState(input.releaseState || input.homepageCategory),
     status,
     retries: clampInt(input.retries),
+    // 외부 무료 모델 제한은 코드 실패가 아니므로 다음 실행 가능 시간을 큐에 보존한다.
+    externalAiRetryNotBefore: Number.isFinite(Date.parse(clean(input.externalAiRetryNotBefore)))
+      ? new Date(Date.parse(clean(input.externalAiRetryNotBefore))).toISOString() : null,
+    externalAiQuotaDeferrals: clampInt(input.externalAiQuotaDeferrals, 0, 12),
     retryPolicy,
     maxRetries: unlimitedRetry ? null : Math.max(0, clampInt(input.maxRetries ?? 2)),
     ownerDirective: Boolean(input.ownerDirective),
@@ -635,6 +639,11 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   queue.tasks.forEach((task, index) => {
     if (task.status !== 'queued') return;
     if(!taskMatchesExecutionLane(task,laneMode)||(laneMode==='asset-development'&&internalAssetOnly&&task.motionRepairWorkUnit?.scope!=='INTERNAL_ASSET_LIBRARY')){laneDeferred.push(task);return;}
+    const externalAiRetryAt=Date.parse(clean(task.externalAiRetryNotBefore));
+    if(Number.isFinite(externalAiRetryAt)&&externalAiRetryAt>Date.now()){
+      blocked.push(freeze({task,reasons:freezeList(['EXTERNAL_AI_QUOTA_BACKOFF'])}));
+      return;
+    }
     const reasons = taskBlockedReasons(task, completed);
     if (reasons.length) blocked.push(freeze({ task, reasons }));
     else candidates.push(freeze({ task, score: scoreTask(task, index) }));
