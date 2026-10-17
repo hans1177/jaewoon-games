@@ -310,7 +310,9 @@
       seen.set(eventId,now+4500);
       if(seen.size>300)seen.delete(seen.keys().next().value);
       const type=String(kind).toUpperCase(),isCrit=type==='CRITICAL',dx=((damage.size%5)-2)*17;
-      const pos='translate('+String(px+dx)+'px,'+String(py)+'px) translate(-50%,-50%)';
+      const safeX=clampTo(px+dx,Math.min(65,view.width/2),Math.max(view.width/2,view.width-65));
+      const safeY=clampTo(py,Math.min(26,view.height/2),Math.max(view.height/2,view.height-26));
+      const pos='translate('+String(safeX)+'px,'+String(safeY)+'px) translate(-50%,-50%)';
       const node=make('span',{
         position:'absolute',left:'0',top:'0',transform:pos,
         fontSize:isCrit?'27px':'19px',fontWeight:'900',lineHeight:'1',
@@ -322,9 +324,9 @@
       if(reducedMotion){timer(end,280);return true;}
       const move=(x,y,scale)=>'translate('+x+'px,'+y+'px) translate(-50%,-50%) scale('+scale+')';
       animate(node,[
-        {opacity:0,transform:move(px+dx,py+9,.75)},
-        {opacity:1,offset:.18,transform:move(px+dx,py-16,isCrit?1.38:1.06)},
-        {opacity:0,transform:move(px+dx+12,py-65,1)}
+        {opacity:0,transform:move(safeX,safeY+9,.75)},
+        {opacity:1,offset:.18,transform:move(safeX,safeY-16,isCrit?1.38:1.06)},
+        {opacity:0,transform:move(safeX+Math.min(12,Math.max(0,view.width-safeX-65)),Math.max(18,safeY-65),1)}
       ],isCrit?940:740,end);
       timer(end,1300);return true;
     }
