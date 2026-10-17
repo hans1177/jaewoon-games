@@ -2711,13 +2711,19 @@ export function buildGameSpecificBuildUpDirective({
       .filter(entry=>entry.isFile()&&/^[a-z][a-z0-9-]*\.js$/i.test(entry.name))
       .map(entry=>'assets/'+entry.name).sort();
   }catch{}
-  const productionPlan=buildRobloxProductionPlan({
+  // [플랫폼 권한] 공통 빌드업은 전 게임을 분석하지만, 자동 제작 계획은 중앙정책상 실제 허용된 플랫폼만 생성한다.
+  const verifiedRoadmap=readJson(path.join(repoRoot,clean(process.env.COMPANY_VERIFIED_POLICY_PATH)||'__retired_policy_not_available__'),{});
+  const ownerPlatform=productionPlatform==='WEB'||productionPlatform==='UNITY_WEB'?'UNITY_WEB':
+    ['UNITY','UNITY_APP','UNITY_ANDROID'].includes(clean(productionPlatform).toUpperCase())?'UNITY':'ROBLOX';
+  const productionAuthorized=ownerPlatform==='ROBLOX'
+    ||(verifiedRoadmap?.developmentAccess?.[ownerPlatform]==='ALWAYS_ALLOWED'
+      &&(verifiedRoadmap?.ownerActiveDevelopmentScope20261009?.activeTargets||[]).includes(ownerPlatform));
+  const productionPlan=productionAuthorized?buildRobloxProductionPlan({
     gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,availableLibraryPaths,
     previousPlan:previousDirective?.productionPlan||previousDirective?.robloxProductionPlan,focus,
     repair:['CAUSAL_REPAIR'].includes(clean(nextActionDecision?.action).toUpperCase())||keepPriorFocus,
-    safeDesignlessMode,
-    policy:readJson(path.join(repoRoot,clean(process.env.COMPANY_VERIFIED_POLICY_PATH)||'__retired_policy_not_available__'),{})?.robloxStudioProductionFlowContract||{}
-  });
+    safeDesignlessMode,policy:verifiedRoadmap?.robloxStudioProductionFlowContract||{}
+  }):null;
   return Object.freeze({
     version:2,
     directiveId:`${id}-build-up-g${generation}-${fingerprint.slice(0,12)}`,
