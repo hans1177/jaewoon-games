@@ -71,6 +71,30 @@ local Config = {
     Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,
     PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,
     SharedObjective = 0, RoundScore = 0,
+    WorldTreeRoots = 0, WorldTreeBossClears = 0, SovereignCores = 0, ForestWoodenSwords = 0,
+  },
+
+  -- 세계수 · 기존 세계수 외부의 크기와 기존 몬스터/보스 전투 수치 보존
+  WorldTree = {
+    InteriorSizeScale = 6.8,
+    InteriorRadius = 102,
+    GiantFlowers = 10,
+    GolemCount = 4,
+    SnakeCount = 2,
+    AttackRange = 20,
+    PlayerBasicDamage = 12,
+    GolemRootInterval = 2,
+    GolemRootProbability = 0.5,
+    GolemRootCount = 4,
+    GolemRootLockSeconds = 3,
+    SnakeIllusionInterval = 3,
+    SnakeIllusionProbability = 0.67,
+    Monsters = {
+      Bear = {Kind="bear", Name="세계수 곰", HP=380, Damage=28, Speed=7, Size=8, Reach=10, Color=Color3.fromRGB(107, 75, 50), Aggressive=true, Tier=2},
+      Golem = {Kind="golem", Name="세계수 골렘", HP=586, Damage=48, Speed=4, Size=10, Reach=10, Color=Color3.fromRGB(88, 108, 83), Aggressive=false, Tier=3},
+      Snake = {Kind="snake", Name="세계수 뱀", HP=250, Damage=39, Speed=11, Size=5, Reach=8, Color=Color3.fromRGB(55, 116, 67), Aggressive=true, Tier=3},
+      Boss = {Kind="boss", Name="근원포식자 녹스바르", HP=4500, Damage=150, Speed=10, Size=18, Reach=15, Color=Color3.fromRGB(59, 23, 44), Aggressive=true, Tier=4},
+    },
   },
   Actions = {
     { Id = "genre-core", Label = "Survival core gameplay", Kind = "SURVIVAL", Order = 1, LearningPattern = "idle-reward" },
