@@ -224,7 +224,6 @@ local worldTreeEnemies = {}
 local worldTreeCooldowns = {}
 local worldTreeSnares = {}
 local worldTreeBoss = nil
-local rootRespawns = {}
 local worldTreeContainer = workspace:FindFirstChild("MagicForestWorldTree")
 if worldTreeContainer then worldTreeContainer:Destroy() end
 worldTreeContainer = Instance.new("Folder")
@@ -539,11 +538,15 @@ for i = 1, 3 do
   local a = i * math.pi * 2 / 3
   local pos = worldTreeCave + Vector3.new(math.cos(a) * 44, -0.5, math.sin(a) * 44)
   local node = worldPart(cave, "AncientRootPickup" .. i, Vector3.new(8, 5, 8), CFrame.new(pos), worldMoss, Enum.Material.Wood, true, Enum.PartType.Ball)
-  rootRespawns[i] = {}
-  local prompt = worldPrompt(node, "고대 뿌리 채집", function(player)
+  worldPrompt(node, "고대 뿌리 채집", function(player)
     if worldTreeRegions[player] ~= "underground" then return end
-    if os.clock() < (rootRespawns[i][player.UserId] or 0) then worldNotice(player, "뿌리 재생 중") return end
-    rootRespawns[i][player.UserId] = os.clock() + 60
+    local nextAt = player:GetAttribute("WorldTreeRootNextAt") or 0
+    if os.time() < nextAt then
+      worldNotice(player, "고대 뿌리 재생까지 " .. tostring(nextAt - os.time()) .. "초")
+      return
+    end
+    -- 기존 세계수 지하의 60초 재생을 노드 간 공유하고 이전 방문에서도 보존한다.
+    player:SetAttribute("WorldTreeRootNextAt", os.time() + 60)
     worldLivingRoot(player)
   end)
   node:SetAttribute("RootRespawnSeconds", 60)
