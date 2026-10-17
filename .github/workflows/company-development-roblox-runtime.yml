@@ -1399,6 +1399,8 @@ jobs:
           }
           fs.writeFileSync('/tmp/roblox-technical/preflight-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE
+          echo 'ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED'
+          echo 'ROBLOX_PREFLIGHT_SHARED_MODEL=GEMINI_FREE_EXTERNAL_PAIR'
           node tools/company-development-roblox-build-preflight.mjs \
             --game-id="$GAME_ID" \
             --queue=/tmp/roblox-technical/preflight-queue.json \
