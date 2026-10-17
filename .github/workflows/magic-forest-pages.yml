@@ -104,7 +104,7 @@ jobs:
               if(entry.isDirectory()){collect(file);continue;}
               if(!entry.isFile()||!/\.(?:html|css|m?js|json|gltf|svg)$/i.test(file))continue;
               const source=fs.readFileSync(file,'utf8');
-              for(const match of source.matchAll(/(?:^|[^a-zA-Z0-9._/-])\/?assets\/([a-zA-Z0-9._/-]+)/gm)){
+              for(const match of source.matchAll(/(?:\/jaewoon-games)?\/assets\/([a-zA-Z0-9._/-]+)/gm)){
                 const relative=match[1].replace(/[^a-zA-Z0-9._/-].*$/,'');
                 const asset='assets/'+relative;
                 if(!asset.includes('..')&&trackedAssets.has(asset))refs.add(asset);
