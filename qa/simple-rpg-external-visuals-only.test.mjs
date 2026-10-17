@@ -30,16 +30,27 @@ test('self-authored weather, impact VFX, camera pulses and limb rigs remain dele
   assert.doesNotMatch(server, /DefeatedEnemyLootEffect|LootRewardNotice|Instance\.new\("PointLight"\)/);
 });
 
-test('remaining server geometry is invisible physics and verified external art only', () => {
+test('all native Part factories are forbidden: only downloaded MeshParts own collision and visuals', () => {
   assert.match(server, /local function civPart\(parent, name, size, frame, _color, _material, collide\)/);
-  assert.match(server, /startGround\.Transparency = 1/);
-  assert.doesNotMatch(server, /part\.Transparency = 0/);
-  assert.match(server, /part\.Transparency = 1/);
-  assert.match(server, /part\.CanCollide = collide ~= false/);
+  for (const file of [server, client, companion, market, weather]) {
+    assert.doesNotMatch(file, /Instance\.new\("(?:Part|WedgePart|MeshPart|TrussPart|SpawnLocation|UnionOperation|SpecialMesh)"\)/);
+  }
+  assert.doesNotMatch(server, /\.Shape\s*=\s*Enum\.PartType\./);
   assert.doesNotMatch(server, /Instance\.new\("BillboardGui"\)/);
+  assert.match(server, /local root = source:Clone\(\)/);
+  assert.match(server, /local root = sourceRoot:Clone\(\)/);
+  assert.match(server, /root\.CollisionFidelity = Enum\.CollisionFidelity\.Box/);
+  assert.match(server, /root:SetAttribute\("CuratedExternalAsset", true\)/);
+  assert.match(server, /root:SetAttribute\("VerifiedRobloxAssetId", template:GetAttribute\("VerifiedRobloxAssetId"\)\)/);
+  assert.match(server, /startGround = civPart\(workspace, "SimpleRpgGround"/);
+  assert.match(server, /foundationSpawn = spawnSource:Clone\(\)/);
+  assert.match(server, /visual\.Parent = root/);
+  assert.match(server, /SIMPLE_RPG_EXTERNAL_MESH_REQUIRED/);
+  assert.match(server, /if not curatedModelFor\(request.Key \.\. "_Housing"\) then/);
+  assert.match(server, /and curatedModelFor\(entry.Key \.\. "_Restored"\) then/);
+  assert.match(server, /setExternalHousingDoorOpen\(piece, record.Open\)/);
   assert.doesNotMatch(server, /DefeatedEnemyLootEffect/);
   assert.equal((server.match(/\.Style = Enum\.ProximityPromptStyle\.Custom/g) || []).length, 3);
-  assert.doesNotMatch(server, /\.Style = Enum\.ProximityPromptStyle\.Default/);
   assert.match(server, /visualTemplate:GetAttribute\("CuratedExternalAsset"\) == true\s+and \(tonumber\(visualTemplate:GetAttribute\("VerifiedRobloxAssetId"\)\) or 0\) > 0/);
   assert.match(client, /enemy:GetAttribute\("CreatureAssetSource"\) == "StudioImported"/);
 });
@@ -94,4 +105,13 @@ test('downloaded CC0 converter selects full building assemblies and real button 
     'NOT_A_COMPLETE_BUILDING_DO_NOT_REUSE');
   assert.equal(evidence.publishedWorldAndUiEvidence.UI.Button.note,
     'SAMPLE_IMAGE_DO_NOT_REUSE');
+  const common = JSON.parse(readFileSync(new URL('../assets/roblox/common-registered-external-assets-v1.json', import.meta.url), 'utf8'));
+  assert.equal(common.reuseScope, 'ALL_COMPANY_ROBLOX_GAMES_WITH_SAME_ASSET_AND_LICENSE');
+  assert.equal(common.rules.noProceduralVisualParts, true);
+  assert.equal(common.rules.requireUniverseGrantForEachGame, true);
+  assert.equal(common.registeredAssets.length, 15);
+  assert.equal(common.registeredAssets.filter(x => x.family === 'actor' && x.gitBlobSha).length, 9);
+  assert.ok(common.registeredAssets.every(x => x.approvedUniverseIds.includes('10770997776')));
+  assert.match(uploader, /common-registered-external-assets-v1\.json/);
+  assert.match(uploader, /old\.approvedUniverseIds\?\.includes\('10770997776'\)/);
 });

@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "libraryId": "roblox-company-common-registered-external-v1",
+  "reuseScope": "ALL_COMPANY_ROBLOX_GAMES_WITH_SAME_ASSET_AND_LICENSE",
+  "libraryOwner": "company",
+  "gameUseIsNotAssetOwnership": true,
+  "sourceOfTruth": "assets/roblox/common-registered-external-assets-v1.json",
+  "license": "CC0-1.0",
+  "sharedSourceRoots": [
+    "assets/roblox/actors/sources",
+    "assets/external/simple-rpg",
+    "assets/shared"
+  ],
+  "rules": {
+    "noProceduralVisualParts": true,
+    "useOnlyVerifiedDownloadedAssets": true,
+    "changeSourceOnlyWithProvenance": true,
+    "requireSourceDigestForReuse": true,
+    "requireUniverseGrantForEachGame": true,
+    "neverAssumeCrossUniversePermissions": true,
+    "noRuntimeVerificationClaimWithoutStudio": true
+  },
+  "registeredAssets": [
+    {
+      "family": "actor",
+      "key": "Knight",
+      "assetId": 132263407299485,
+      "license": "CC0-1.0",
+      "originalPath": "assets/roblox/actors/sources/kaykit-adventurers/Knight.glb",
+      "gitBlobSha": "717b56ca2b5ff5392679774725201ba03a3eefab",
+      "sourceVerification": "git-blob-sha",
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "cloudRegistrationRun": 38992034382,
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "actor",
+      "key": "Barbarian",
+      "assetId": 116038780084368,
+      "license": "CC0-1.0",
+      "originalPath": "assets/roblox/actors/sources/kaykit-adventurers/Barbarian.glb",
+      "gitBlobSha": "66d312ab6dc02b35fb648e7585bfdddb4e02eeef",
+      "sourceVerification": "git-blob-sha",
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "cloudRegistrationRun": 38992034382,
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "actor",
+      "key": "Mage",
+      "assetId": 70786111181272,
+      "license": "CC0-1.0",
+      "originalPath": "assets/roblox/actors/sources/kaykit-adventurers/Mage.glb",
+      "gitBlobSha": "c89f19f6e707f6e07e4632a08876bd6d0172b082",
+      "sourceVerification": "git-blob-sha",
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "cloudRegistrationRun": 38992034382,
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "actor",
+      "key": "Rogue",
+      "assetId": 85809121784004,
+      "license": "CC0-1.0",
+      "originalPath": "assets/roblox/actors/sources/kaykit-adventurers/Rogue.glb",
+      "gitBlobSha": "c8827661105eef7b2bfbef3bc676d41a47625733",
+      "sourceVerification": "git-blob-sha",
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "cloudRegistrationRun": 38992034382,
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "actor",
+      "key": "RogueHooded",
+      "assetId": 95194894650580,
+      "license": "CC0-1.0",
+      "originalPath": "assets/roblox/actors/sources/kaykit-adventurers/Rogue_Hooded.glb",
+      "gitBlobSha": "5d2b1403240d5f9ffff12e02c007572038eca2a8",
+      "sourceVerification": "git-blob-sha",
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "cloudRegistrationRun": 38992034382,
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "actor",
+      "key": "SkeletonWarrior",
+      "assetId": 140296381581463,
+      "license": "CC0-1.0",
+      "originalPath": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Warrior.glb",
+      "gitBlobSha": "769e85c9e4cee8d1bd0952ddb3e9d26293144581",
+      "sourceVerification": "git-blob-sha",
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "cloudRegistrationRun": 38992034382,
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "actor",
+      "key": "SkeletonMage",
+      "assetId": 115404804687687,
+      "license": "CC0-1.0",
+      "originalPath": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Mage.glb",
+      "gitBlobSha": "5f85aea26b4f33b88080d6eb57d25d1ae5d84d14",
+      "sourceVerification": "git-blob-sha",
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "cloudRegistrationRun": 38992034382,
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "actor",
+      "key": "SkeletonRogue",
+      "assetId": 98423600292533,
+      "license": "CC0-1.0",
+      "originalPath": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Rogue.glb",
+      "gitBlobSha": "182403932e4d4e00aa4182f2ac882ac27326dd19",
+      "sourceVerification": "git-blob-sha",
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "cloudRegistrationRun": 38992034382,
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "actor",
+      "key": "SkeletonMinion",
+      "assetId": 122314950313754,
+      "license": "CC0-1.0",
+      "originalPath": "assets/roblox/actors/sources/kaykit-skeletons/Skeleton_Minion.glb",
+      "gitBlobSha": "3b7e7ee4f1c8dd6dd99ddad27824ef1dc52ff12d",
+      "sourceVerification": "git-blob-sha",
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "cloudRegistrationRun": 38992034382,
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "world",
+      "key": "Ground",
+      "assetId": 90598684791241,
+      "license": "CC0-1.0",
+      "originalPath": "assets/external/simple-rpg/priority-v1/kenney-hexagon-world.zip",
+      "originalEntry": "Models/GLB format/grass.glb",
+      "cloudRegistrationRun": 38993303031,
+      "sourceVerification": "published-converter-log; runtime hash not retained; reuse requires a matching checked source digest",
+      "sourceDigest": null,
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "world",
+      "key": "Building",
+      "assetId": 116469764778921,
+      "license": "CC0-1.0",
+      "originalPath": "assets/external/simple-rpg/priority-v1/medieval-house-a.zip",
+      "originalEntry": "House1Upload.blend",
+      "cloudRegistrationRun": 38993303031,
+      "sourceVerification": "published-converter-log; runtime hash not retained; reuse requires a matching checked source digest",
+      "sourceDigest": null,
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "world",
+      "key": "Tree",
+      "assetId": 75263072697916,
+      "license": "CC0-1.0",
+      "originalPath": "assets/external/simple-rpg/priority-v1/animated-forest-trees.zip",
+      "originalEntry": "Low_Poly_Forest_Pack_Devilswork.Shop_v02/OBJ/Low_Poly_Forest_treeRoundTop12Snow.obj",
+      "cloudRegistrationRun": 38993303031,
+      "sourceVerification": "published-converter-log; runtime hash not retained; reuse requires a matching checked source digest",
+      "sourceDigest": null,
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "world",
+      "key": "Rock",
+      "assetId": 133030411777137,
+      "license": "CC0-1.0",
+      "originalPath": "assets/external/simple-rpg/priority-v1/kenney-hexagon-world.zip",
+      "originalEntry": "Models/GLB format/stone-rocks.glb",
+      "cloudRegistrationRun": 38993303031,
+      "sourceVerification": "published-converter-log; runtime hash not retained; reuse requires a matching checked source digest",
+      "sourceDigest": null,
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "ui",
+      "key": "Panel",
+      "assetId": 127929589857235,
+      "license": "CC0-1.0",
+      "originalPath": "assets/external/simple-rpg/kenney_fantasy-ui-borders.zip",
+      "originalEntry": "PNG/Double/Transparent border/panel-transparent-border-025.png",
+      "cloudRegistrationRun": 38993303031,
+      "sourceVerification": "published-converter-log; no source digest retained",
+      "sourceDigest": null,
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "studioRuntimeVerified": false
+    },
+    {
+      "family": "ui",
+      "key": "Button",
+      "assetId": 106102275003491,
+      "license": "CC0-1.0",
+      "originalPath": "assets/external/simple-rpg/kenney_fantasy-ui-borders.zip",
+      "originalEntry": "PNG/Double/Transparent border/panel-transparent-border-025.png",
+      "cloudRegistrationRun": 38993303031,
+      "sourceVerification": "published-converter-log; no source digest retained",
+      "sourceDigest": null,
+      "approvedUniverseIds": [
+        "10770997776"
+      ],
+      "studioRuntimeVerified": false
+    }
+  ]
+}

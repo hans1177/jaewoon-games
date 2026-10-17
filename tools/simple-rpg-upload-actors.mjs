@@ -79,31 +79,38 @@ async function request(url, options = {}) {
   return data;
 }
 const out = {schema:1, gameId:'simple-rpg', importedAt:new Date().toISOString(), creatorId, assets:{}};
-// Exact v312 Cloud registration evidence is reusable for byte-identical CC0 actor sources.
+// One company-wide inventory for every Roblox game. Provenance is shared;
+// actual asset-use grants are universe-scoped and must NEVER be assumed.
 const reusePublishedActors = process.argv.includes('--publish-curated-art');
-const prior = reusePublishedActors ? JSON.parse(await fs.readFile(
-  'assets/external/simple-rpg/registration-evidence-312.json','utf8')) : null;
-if (prior && (prior.gameId!=='simple-rpg'||prior.universeId!=='10770997776'
-  ||prior.placeId!=='120884036900477'||prior.publishedVersion!==312
-  ||prior.publicationRunId!==38992034382
-  ||prior.license!=='CC0-1.0'))throw new Error('ACTOR_REUSE_PUBLICATION_PROVENANCE_INVALID');
+const common = reusePublishedActors ? JSON.parse(await fs.readFile(
+  'assets/roblox/common-registered-external-assets-v1.json','utf8')) : null;
+if (common && (common.libraryId!=='roblox-company-common-registered-external-v1'
+  ||common.license!=='CC0-1.0'
+  ||common.rules?.requireSourceDigestForReuse!==true
+  ||common.rules?.requireUniverseGrantForEachGame!==true
+  ||!Array.isArray(common.registeredAssets))) {
+  throw new Error('COMMON_ROBLOX_ASSET_LIBRARY_INVALID');
+}
 for (const [relativeFile, name] of models) {
   const file = path.join(sourceDir, relativeFile);
   const binary = await fs.readFile(file);
   if (binary.length > 20 * 1024 * 1024 || binary.subarray(0,4).toString() !== 'glTF')
     throw new Error('INVALID_GLB: '+file);
-  const old = prior?.actors?.[name];
+  const old = common?.registeredAssets.find(item=>
+    item.family==='actor' && item.key===name && item.license==='CC0-1.0');
   if (old) {
     const {execFileSync} = await import('node:child_process');
     const revision = execFileSync('git',['hash-object','--',file],{encoding:'utf8'}).trim();
-    if (old.source===relativeFile && old.gitBlobSha===revision
+    // Different games reuse identical source assets only after their own Universe grant.
+    if (old.originalPath===file && old.gitBlobSha===revision
+      && old.approvedUniverseIds?.includes('10770997776')
       && Number.isSafeInteger(old.assetId) && old.assetId>0) {
       out.assets[name] = {assetId:String(old.assetId),source:file,
         license:'CC0-1.0',universeId:'10770997776'};
       console.log('REUSED_PREVIOUSLY_GRANTED_CC0_ACTOR '+name+'='+old.assetId);
       continue;
     }
-    console.log('ACTOR_SOURCE_CHANGED_REUPLOAD_REQUIRED',name);
+    console.log('COMMON_SOURCE_CHANGED_OR_GRANT_MISSING_REUPLOAD_REQUIRED',name);
   }
   const form = new FormData();
   form.set('request', JSON.stringify({
