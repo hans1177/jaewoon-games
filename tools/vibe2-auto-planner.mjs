@@ -1161,10 +1161,12 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
       const wired=direct||ids.some(id=>new RegExp(`(?:getElementById\\s*\\(\\s*['"]${id}['"]|querySelector\\s*\\(\\s*['"]#${id}['"]|\\b${id}\\s*\\.\\s*(?:onclick|addEventListener))`,'i').test(text));
       if(!wired)blockers.push('START_CONTROL_NOT_WIRED');
     }
-    const detected3D=/(?:data-spatial-dimension=["']3d["']|WebGLRenderingContext|WebGL2RenderingContext|THREE\.|BABYLON\.|PerspectiveCamera|OrthographicCamera|requestPointerLock)/i.test(text);
-    const declared2_5D=/data-spatial-dimension=["'](?:2\.5d|3d)["']/i.test(text);
-    const depthTechnique=detected3D||/(?:perspective\s*:|transform-style\s*:\s*preserve-3d|rotate[XY]\s*\(|translateZ\s*\(|\bisometric\b|\bparallax\b|depthSort|depth-sort|iso(?:metric)?(?:Projection|Project|X|Y)|foreground[\s\S]{0,160}midground[\s\S]{0,160}background)/i.test(text);
-    if(!(detected3D||(declared2_5D&&depthTechnique)))blockers.push('MINIMUM_2_5D_PRESENTATION_REQUIRED');
+    // 유효한 WebGL 렌더러 + 3D 공간·메시 소스가 함께 있어야 한다.
+    // CSS 원근·등각·2.5D 표식·THREE 이름만으로 3D 구현을 통과시키지 않는다.
+    const webglRenderer=/(?:WebGL2?RenderingContext|getContext\s*\(\s*['"]webgl2?['"]|(?:THREE\.)?WebGLRenderer|BABYLON\.Engine|new\s+(?:THREE\.)?WebGLRenderer)\b/i.test(text);
+    const spatialScene=/(?:THREE\.(?:Scene|PerspectiveCamera|Mesh)|new\s+(?:Scene|PerspectiveCamera|Mesh)\s*\(|BABYLON\.(?:Scene|MeshBuilder|UniversalCamera)|create(?:Box|Sphere|Ground|Mesh)\s*\()/i.test(text);
+    if(!webglRenderer)blockers.push('WEBGL_RENDERER_REQUIRED');
+    if(!spatialScene)blockers.push('TRUE_3D_SCENE_AND_MESH_REQUIRED');
     if(text.length<800&&!/\/web-games\/_shared\/vibe2-final\.js/i.test(text))blockers.push(`WEB_ENTRYPOINT_TOO_SMALL:${text.length}`);
   }
   return{pass:blockers.length===0,blockers:[...new Set(blockers)],relative};
@@ -3737,6 +3739,21 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     ]);
   }
   if(project.engine==='web'){
+    // 모든 기존 게임의 동일한 MAIN/A/B/C/D/@ 원본을 재검증한다.
+    // 승인 설계가 없으면 기존 GAME_SEED/디자이너로 인계하며 Web 소스는 변경하지 않는다.
+    const verifiedOriginal=latestVerifiedDesign(repoRoot,project.gameId);
+    if(!verifiedOriginal&&centralPresentationPolicy(repoRoot)?.status==='OWNER_DIRECT_LOCKED')return [];
+    if(verifiedOriginal){
+      const web3d=findWebStartupSpatialRepairTask(project,repoRoot,queue);
+      if(web3d){
+        const robloxOriginal='roblox-games/'+project.gameId;
+        const provenance=fs.existsSync(path.join(repoRoot,robloxOriginal))
+          ?robloxOriginal:'design/'+project.gameId;
+        web3d.goal+='\n[CANONICAL_ORIGINAL_TO_WEB_3D] 검증된 설계 원본 '+posix(path.relative(repoRoot,verifiedOriginal.file))+'에서 MAIN/A/B/C/D/@의 핵심 상태·진행·저장 규칙을 유지한다. 기존 Roblox 원본 '+provenance+'의 게임별 월드·자산 표현은 읽기 전용 참조로 사용하고 WebGL 3D 엔진의 실제 메시/카메라/깊이·모바일 입력으로 재구현한다. Unity/Unity Web/UEFN은 빌드·수정·배포하지 않는다. Web 2D를 최종 완료로 처리하지 않으며 기존 브라우저 QA와 F0~F9를 통과해야 한다.';
+        web3d.evidence=[...new Set([...(web3d.evidence||[]),'verified-design:'+posix(path.relative(repoRoot,verifiedOriginal.file)),'web3d-upgrade:first-priority','web3d-verified-runtime-still-required'])];
+        return [web3d];
+      }
+    }
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
       return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...holisticBackfillTasks,...normalStudioTasks,scanExplicitMarkerTask(project,repoRoot,queue)]);
