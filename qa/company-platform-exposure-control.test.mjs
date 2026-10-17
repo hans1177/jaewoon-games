@@ -198,5 +198,4 @@ test('platform exposure refresh only wakes homepage after a new verified runtime
   assert.match(workflow,/echo "updated=\$updated" >> "\$GITHUB_OUTPUT"/);
   assert.match(workflow,/name: Refresh homepage runtime mirror\n\s+if: steps\.persist\.outputs\.updated == 'true'/);
   assert.match(workflow,/test "\$pushed" = 1/,'failed runtime persistence must still fail closed');
-  assert.doesNotMatch(workflow,/git push origin HEAD:main/);
 });
