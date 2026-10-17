@@ -7,6 +7,8 @@ on:
     paths:
       - "web-games/**"
       - "game-catalog.json"
+      - "company-learning/platform-release-roadmap.json"
+      - ".github/workflows/vibe2-candidate-release.yml"
       - "assets/**"
       - "!assets/external/**"
       - "!assets/roblox/**"
@@ -19,6 +21,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/magic-forest-pages.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write
