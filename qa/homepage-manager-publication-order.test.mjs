@@ -593,6 +593,9 @@ test('unchanged homepage snapshot finishes self-QA without a redundant Director 
   const manage=section('  manage-and-self-qa:','  director-supervision:');
   const director=section('  director-supervision:');
   assert.match(manage,/candidate_changed=\$candidate_changed/);
+  assert.match(manage,/HOMEPAGE_MANAGER_EXPOSURE_SEMANTIC_NOOP=YES/);
+  assert.match(manage,/reuseUnchangedHomepageExposure/);
+  assert.match(manage,/git show HEAD:homepage-platform-exposure\.json/);
   assert.match(director,/needs\.manage-and-self-qa\.outputs\.candidate_changed == 'true'/);
   assert.match(director,/needs\.manage-and-self-qa\.result == 'success'/);
   assert.match(director,/test "\$patch_sha" = "\$\(sha256sum "\$patch"/);
