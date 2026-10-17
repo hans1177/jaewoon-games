@@ -3,6 +3,9 @@
 name: Vibe2 24H Canary
 
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/vibe2-24h-canary.yml'
   push:
     branches: [main]
     paths:
