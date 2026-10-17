@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1tyqc9t",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-roblox-second-gate-rebuild-v1",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
+        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau"
+      ],
+      "baseSha": "0a1bdf7458b037eefd65635ddab14d207dc79fa5",
+      "runId": "39026518287",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-17T11:05:37.611Z",
+      "expiresAt": "2026-10-17T11:50:37.611Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-roblox-second-gate-rebuild-v1"
+      ]
+    }
+  ]
 }
