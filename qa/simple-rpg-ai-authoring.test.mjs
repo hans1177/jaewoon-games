@@ -363,11 +363,16 @@ test('monster alert clears immediately when a player leaves its habitat', () => 
   assert.match(server, /AdvancedAIEcosystem\.SetState\(enemy, "ReturnHome"\)/);
 });
 
-test('all homemade Roblox HUD, lobby, menu and mockup factories were removed', () => {
-  assert.doesNotMatch(client, /Instance\.new\("(ScreenGui|Frame|TextButton|TextLabel|ScrollingFrame|ImageLabel|ImageButton|UIStroke|UIGradient|UICorner)"\)/);
+test('blank-screen regression: playable server-backed HUD appears without an imported GUI', () => {
+  assert.match(client, /local function attachNativeHud\(\): \(\)/);
+  assert.match(client, /gui\.Name = "CivilizationHud"/);
+  assert.match(client, /gui\.Parent = player:WaitForChild\("PlayerGui"\)/);
+  assert.match(client, /attachNativeHud\(\)/);
+  assert.match(client, /bindExternalButton\(button\)/);
+  assert.match(client, /local RaceData = require\(Shared:WaitForChild\("RaceData"\)\)/);
+  for (const action of ['CivAttack', 'CivGather', 'CivParry', 'CivDodge', 'CivTravel', 'CivResearch', 'CivTimedCraft', 'CivCompanion', 'CivSelect'])
+    assert.ok(client.includes('"' + action + '"'), action);
   assert.doesNotMatch(client, /RobloxCommonUI|CommonUI\./);
-  assert.doesNotMatch(client, /CivilizationHud|ApprovedScopeHud|ParchmentWelcome|CivilizationMenuToggle|EquipmentPreview|ParchmentAssetSurface|WoodAssetGrain/);
-  assert.doesNotMatch(client, /civButton\(|civLabel\(|civOpen\(|autoCombatToggle/);
   assert.equal(project.tree.ReplicatedStorage.Shared.CuratedUiTemplates.$className, 'Folder');
 });
 
@@ -378,8 +383,9 @@ test('only visibly textured, licensed and owner-reviewed external GUI can render
   }
   assert.match(client, /descendant:IsA\("ImageLabel"\) or descendant:IsA\("ImageButton"\)/);
   assert.match(client, /imported.Parent = player:WaitForChild\("PlayerGui"\)/);
-  assert.match(client, /if hud or not validUiTemplate\(template\) or not template:IsA\("ScreenGui"\) then return end/);
-  assert.doesNotMatch(client, /Instance\.new\("ScreenGui"\)/);
+  assert.match(client, /if not validUiTemplate\(template\) or not template:IsA\("ScreenGui"\) then return end/);
+  assert.match(client, /if hud.Name ~= "CivilizationHud" then return end/);
+  assert.match(client, /Instance\.new\("ScreenGui"\)/);
 });
 
 test('curated external UI retains server-verified research, trade, crafting and travel', () => {
