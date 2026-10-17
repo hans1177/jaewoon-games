@@ -251,6 +251,8 @@ function vibeDesignEvidenceText(value,depth=0){
   if(typeof value==='number'||typeof value==='boolean')return'';
   if(Array.isArray(value))return value.slice(0,48).map(row=>vibeDesignEvidenceText(row,depth+1)).join(' ');
   if(typeof value!=='object')return'';
+  if(value.enabled===false||value.active===false
+    ||/^(?:DISABLED|HELD|EXCLUDED|NOT_PLANNED|FORBIDDEN|REMOVED)$/i.test(text(value.status)))return'';
   return Object.entries(value).slice(0,55).flatMap(([key,item])=>
     // JSON 키가 존재한다는 이유만으로 사용하지 않는 기능을 활성화하지 않는다.
     /^(?:enabled|active|isEnabled|available|status)$/i.test(key)&&item===false?[]:
