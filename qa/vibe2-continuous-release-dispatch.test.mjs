@@ -576,7 +576,7 @@ test('Web requires F0-F9 proof, mandatory deployment, then resumes perpetual BUI
     workflow.indexOf('      - name: Dispatch verified system architecture candidates')
   );
   assert.match(dispatch,/VIBE2_RELEASE_DISPATCH_RETRY=/);
-  assert.match(dispatch,/if \[ "\$target" = web \]; then[\s\S]*PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=YES:WEB:/);
+  assert.match(dispatch,/if \[ "\$target" = web \]; then[\s\S]*PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO:WEB:/);
   assert.match(dispatch,/WEB_SAME_VERIFIED_CANDIDATE_DISPATCH_RETRY_REQUIRED=/);
 
   const start=releaseWorkflow.indexOf('  web-release:');
@@ -592,6 +592,19 @@ test('Web requires F0-F9 proof, mandatory deployment, then resumes perpetual BUI
   assert.match(section,/result=DEPLOY_RETRY_REQUIRED/);
   assert.match(section,/WEB_PUBLICATION_RETRY_TRACKED=YES/);
   assert.match(section,/WEB_SAME_VERIFIED_CANDIDATE_RETRY=YES/);
+  assert.match(section,/WEB_F9_VERIFIED_QUEUE_PRESERVED_FOR_SAME_CYCLE_PUBLISH_RETRY=YES/);
+  assert.match(section,/web-f9-publish-attempted-retry-in-parallel-with-next-cycle/);
+  assert.match(section,/WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED_AFTER_PUBLISH_ATTEMPT=/);
+  assert.match(section,/AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED_AFTER_WEB_PUBLISH_ATTEMPT/);
+  const retry=section.slice(section.indexOf('          if [ "$result" = DEPLOY_RETRY_REQUIRED ]; then\\n            echo "WEB_PUBLICATION_RETRY_REQUIRED='),
+    section.indexOf('          rm -rf /tmp/vibe2-control'));
+  assert.match(retry,/WEB_NEXT_EVOLUTION_DISPATCH_AFTER_PUBLICATION_ATTEMPT=YES/);
+  assert.doesNotMatch(retry,/exit 0/);
+  // 출시는 기존 F9 후보에만 재시도하며, 실패한 배포를 QA 실패로 재분류하지 않는다.
+  const queue=section.slice(section.indexOf('            if [ "$result" = PASS ]; then\\n              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass'),
+    section.indexOf('            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack'));
+  assert.match(queue,/elif \[ "\$result" = DEPLOY_RETRY_REQUIRED \]; then/);
+  assert.doesNotMatch(queue,/DEPLOY_RETRY_REQUIRED[\s\S]*web-release-qa-failed/);
   assert.match(section,/vibe2-queue-control\.mjs pass[\s\S]*web-github-pages-deployment-pass/);
   assert.match(section,/WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=/);
   assert.match(section,/PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:/);
@@ -609,7 +622,7 @@ test('playable Web deployment policy has no native readiness gate and deployment
   assert.equal(deployment?.nativeHomepageReadinessRequired,false);
   assert.equal(deployment?.cloudflareMainRequiredBeforeVibePass,false);
   assert.equal(deployment?.githubPagesMainRequiredBeforeVibePass,true);
-  assert.equal(deployment?.nextBuildUpBeforeDeploymentSuccessForbidden,true);
+  assert.equal(deployment?.nextBuildUpBeforeDeploymentSuccessForbidden,false);
   assert.equal(deployment?.postDeployment?.perpetualBuildUp,true);
   assert.equal(deployment?.postDeployment?.generationLimit,null);
   assert.equal(deployment?.postDeployment?.newIdeaRequiredEveryCycle,true);
