@@ -1,5 +1,6 @@
 // 파일명: tools/artbook-second-work-runner.mjs
 // 역할: 5표 평균이 전체 부서 평균 이하로 선택된 부서만 같은 날 즉시 보완하고, 나머지 부서는 1차 결과를 그대로 이월한다.
+import {requestGeminiFreePair,GEMINI_FREE_MODELS} from './vibe2-gemini-free-rotation.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -30,18 +31,17 @@ if(!selected.includes(role)){
 const feedback=(workOrder.secondWork?.feedbackByDepartment?.[role]||[]).map(x=>({reviewerDepartment:x.reviewerDepartment,reviewerType:x.reviewerType||'department',stars:x.stars,improvement:clean(x.improvement)}));
 if(feedback.length!==5)throw new Error(`${role}: exactly five feedback votes required`);
 if(feedback.filter(x=>x.reviewerDepartment==='director').length!==1)throw new Error(`${role}: director fifth vote missing`);
-const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:0.6b');
+const model=GEMINI_FREE_MODELS.join('|');
 const system=`/no_think\n너는 재운컴퍼니 ${NAMES[role]} 부서다. 같은 날 1차 결과가 타부서 4표 + 총괄 1표의 5표 평균 기준으로 전체 부서 평균 이하라 즉시 2차 작업을 한다. previousSubmission의 자기 부서 내용과 receivedFiveVoteFeedback의 보완점만 사용해 자기 부서 결과를 개선한다. 다른 부서 섹션을 대신 쓰지 않는다. 근거가 없는 새 사실/설정은 추가하지 않는다. 해결할 수 없는 보완점은 unverified에 남긴다. 별점 자체를 올리기 위한 과장이나 본개발/출시 승인을 만들지 않는다. JSON 객체만 반환하고 최상위 키는 headline, readiness, section, unverified다. section은 반드시 객체다.`;
 const payload={gameId,date,sourceDate,department:role,previousSubmission:{headline:previous.headline,departmentReadiness:previous.departmentReadiness,section:previous.section,evidence:previous.evidence,unverified:previous.unverified},receivedFiveVoteFeedback:feedback};
 async function call(limit,strict=false){
   const note=strict?'headline 80자 이하, section 각 값은 짧게, unverified 최대 4개. 완결된 JSON만 반환해.':'';
-  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:'json',messages:[{role:'system',content:system},{role:'user',content:`${note}\n${JSON.stringify(payload)}`}],options:{temperature:0.1,seed:1701+ROLES.indexOf(role)*97,num_ctx:8192,num_predict:limit}})});
-  if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-  const packet=await response.json();return JSON.parse(clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim());
+  const response=await requestGeminiFreePair({apiKey:process.env.GEMINI_API_KEY,contents:[{role:'user',parts:[{text:[{role:'system',content:system},{role:'user',content:`${note}\n${JSON.stringify(payload)}`}].map(row=>row.role.toUpperCase()+': '+row.content).join('\n\n')}]}],responseMimeType:'application/json',temperature:0.1,maxOutputTokens:limit,timeoutMs:120000});
+  const packet=response;return JSON.parse(clean(packet?.text).replace(/^```json\s*/i,'').replace(/```$/,'').trim());
 }
 let candidate=null,lastError=null;
 for(const [i,limit] of [620,420,300].entries()){
-  try{const x=await call(limit,i>0);if(x&&x.section&&typeof x.section==='object'&&!Array.isArray(x.section)&&Object.keys(x.section).length){candidate=x;break;}lastError=new Error('section object missing');}catch(error){lastError=error;}
+  try{const x=await call(limit,i>0);if(x&&x.section&&typeof x.section==='object'&&!Array.isArray(x.section)&&Object.keys(x.section).length){candidate=x;break;}lastError=new Error('section object missing');}catch(error){if(error?.vibe2InfrastructureFailure===true)throw error;lastError=error;}
 }
 if(!candidate)throw lastError||new Error(`${role}: second work failed`);
 const readiness=String(candidate.readiness||previous.departmentReadiness||'NEEDS_VALIDATION').toUpperCase();
