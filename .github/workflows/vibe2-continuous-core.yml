@@ -89,6 +89,8 @@ env:
   VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API
+  VIBE2_GEMINI_MODEL: gemini-3.8-flash
+  VIBE2_GEMINI_BACKUP_MODEL: gemini-3.5-flash-lite
   VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'
   VIBE2_CODEX_ROLE: DISABLED
   VIBE2_CODEX_GAME_SOURCE_WRITE: FORBIDDEN
@@ -1543,7 +1545,6 @@ jobs:
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          VIBE2_GEMINI_MODEL: gemini-2.5-flash
           VIBE2_DCC_AUTHORING_EVIDENCE_FILE: /tmp/vibe2-dcc-authoring-evidence.json
         shell: bash
         run: |

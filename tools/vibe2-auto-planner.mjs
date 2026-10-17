@@ -1161,10 +1161,20 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
       const wired=direct||ids.some(id=>new RegExp(`(?:getElementById\\s*\\(\\s*['"]${id}['"]|querySelector\\s*\\(\\s*['"]#${id}['"]|\\b${id}\\s*\\.\\s*(?:onclick|addEventListener))`,'i').test(text));
       if(!wired)blockers.push('START_CONTROL_NOT_WIRED');
     }
-    const detected3D=/(?:data-spatial-dimension=["']3d["']|WebGLRenderingContext|WebGL2RenderingContext|THREE\.|BABYLON\.|PerspectiveCamera|OrthographicCamera|requestPointerLock)/i.test(text);
-    const declared2_5D=/data-spatial-dimension=["'](?:2\.5d|3d)["']/i.test(text);
-    const depthTechnique=detected3D||/(?:perspective\s*:|transform-style\s*:\s*preserve-3d|rotate[XY]\s*\(|translateZ\s*\(|\bisometric\b|\bparallax\b|depthSort|depth-sort|iso(?:metric)?(?:Projection|Project|X|Y)|foreground[\s\S]{0,160}midground[\s\S]{0,160}background)/i.test(text);
-    if(!(detected3D||(declared2_5D&&depthTechnique)))blockers.push('MINIMUM_2_5D_PRESENTATION_REQUIRED');
+    const ownerTrue3dRequired=centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.generalWeb3dOnlyRequired===true;
+    if(ownerTrue3dRequired){
+      // 현재 승인 정책에서는 WebGL 렌더러와 실제 입체 장면이 함께 있어야 한다.
+      const webglRenderer=/(?:WebGL2?RenderingContext|getContext\s*\(\s*['"]webgl2?['"]|(?:THREE\.)?WebGLRenderer|BABYLON\.Engine|new\s+(?:THREE\.)?WebGLRenderer)\b/i.test(text);
+      const spatialScene=/(?:THREE\.(?:Scene|PerspectiveCamera|Mesh)|new\s+(?:Scene|PerspectiveCamera|Mesh)\s*\(|BABYLON\.(?:Scene|MeshBuilder|UniversalCamera)|create(?:Box|Sphere|Ground|Mesh)\s*\()/i.test(text);
+      if(!webglRenderer)blockers.push('WEBGL_RENDERER_REQUIRED');
+      if(!spatialScene)blockers.push('TRUE_3D_SCENE_AND_MESH_REQUIRED');
+    }else{
+      // 과거 격리 fixture 및 해당 시점의 별도 계약은 기존 정적 검사를 유지한다.
+      const detected3D=/(?:data-spatial-dimension=["']3d["']|WebGLRenderingContext|WebGL2RenderingContext|THREE\.|BABYLON\.|PerspectiveCamera|OrthographicCamera|requestPointerLock)/i.test(text);
+      const declared2_5D=/data-spatial-dimension=["'](?:2\.5d|3d)["']/i.test(text);
+      const depthTechnique=detected3D||/(?:perspective\s*:|transform-style\s*:\s*preserve-3d|rotate[XY]\s*\(|translateZ\s*\(|\bisometric\b|\bparallax\b|depthSort|depth-sort|iso(?:metric)?(?:Projection|Project|X|Y)|foreground[\s\S]{0,160}midground[\s\S]{0,160}background)/i.test(text);
+      if(!(detected3D||(declared2_5D&&depthTechnique)))blockers.push('MINIMUM_2_5D_PRESENTATION_REQUIRED');
+    }
     if(text.length<800&&!/\/web-games\/_shared\/vibe2-final\.js/i.test(text))blockers.push(`WEB_ENTRYPOINT_TOO_SMALL:${text.length}`);
   }
   return{pass:blockers.length===0,blockers:[...new Set(blockers)],relative};
@@ -3737,6 +3747,11 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     ]);
   }
   if(project.engine==='web'){
+    // 최신 소유자 3D 지시에서만 미검증 설계의 Web 소스 변경을 막는다.
+    // 기존 Web 원본 평가·승인 순서 및 다른 플랫폼 작업은 변경하지 않는다.
+    const owner3dScope=centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009;
+    const verifiedOriginal=latestVerifiedDesign(repoRoot,project.gameId);
+    if(!verifiedOriginal&&owner3dScope?.generalWeb3dOnlyRequired===true)return [];
     if(project.ownerPreservationPresentationUpgrade===true){
       const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
       return uniqueTaskCandidates([findPresentationQualityTask(project,repoRoot,queue),findWeatherPresentationTask(project,repoRoot,queue),startupSpatialRepair,findWebDiagnosticTask(project,repoRoot,queue),...holisticBackfillTasks,...normalStudioTasks,scanExplicitMarkerTask(project,repoRoot,queue)]);
@@ -3745,7 +3760,15 @@ export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
     const startupSpatialRepair=findWebStartupSpatialRepairTask(project,repoRoot,queue);
-    if(startupSpatialRepair)return[startupSpatialRepair];
+    if(startupSpatialRepair){
+      if(verifiedOriginal&&owner3dScope?.generalWeb3dOnlyRequired===true){
+        const originalPaths=['roblox-games/'+project.gameId,'unreal-games/'+project.gameId];
+        const provenance=originalPaths.find(relative=>fs.existsSync(path.join(repoRoot,relative)))||'design/'+project.gameId;
+        startupSpatialRepair.goal+='\n[CANONICAL_ORIGINAL_TO_WEB_3D] 검증 설계 '+posix(path.relative(repoRoot,verifiedOriginal.file))+'의 MAIN/A/B/C/D/@ 인과 및 플레이·저장 의미를 보존한다. '+provenance+'의 실제 게임·자산은 읽기 전용 참조로 활용해 WebGL 네이티브 입체 장면·카메라·입력으로 구현한다. Unity/Unity Web/UEFN 빌드와 수정은 제외한다. F0~F9, 모바일 브라우저·런타임 검증 이전에는 PASS 금지.';
+        startupSpatialRepair.evidence=[...new Set([...(startupSpatialRepair.evidence||[]),'verified-design:'+posix(path.relative(repoRoot,verifiedOriginal.file)),'web3d-upgrade:first-after-canonical-web-assessment','web3d-runtime-evidence-required'])];
+      }
+      return[startupSpatialRepair];
+    }
     return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),...holisticBackfillTasks,findPresentationQualityTask(project,repoRoot,queue),...normalStudioTasks,findWeatherPresentationTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];

@@ -424,7 +424,7 @@ test('live Vibe coding: first attempt versus public-feedback repair on held-out 
   assert(!process.env.VIBE2_MODEL_RESPONSE_FILE,'fixture replay cannot be a live benchmark');
   const cases=[];
   const ids=['save','unity-menu-batch-transaction','unity-reward-prerequisites'];
-  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_GEMINI_MODEL||'gemini-2.5-flash',sourceCommit:process.env.GITHUB_SHA||null,
+  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash',sourceCommit:process.env.GITHUB_SHA||null,
     expectedSampleCount:ids.length,measurementComplete:false,sampleCount:0,firstAttemptPass:0,finalPass:0,recovered:0,regressed:0,modelCalls:0,
     modelWeightsChanged:false,generalizationVerified:false,productionPromotionAllowed:false,cases};
   const reportFile=path.join(process.env.RUNNER_TEMP||os.tmpdir(),'vibe2-coding-repair-benchmark.json');
@@ -507,11 +507,12 @@ test('learning practice uses external Gemini API with no local server fallback',
   try{
     process.env.VIBE2_GAME_SOURCE_PROVIDER='GEMINI_API';
     process.env.GEMINI_API_KEY='fixture-not-real';
-    process.env.VIBE2_GEMINI_MODEL='gemini-2.5-flash';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
     let calls=0;
     globalThis.fetch=async(url,options)=>{
       calls++;
-      assert.match(url,/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-2\.5-flash:generateContent$/);
+      assert.match(url,/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-3\.8-flash:generateContent$/);
       assert.equal(options.headers['x-goog-api-key'],'fixture-not-real');
       const req=JSON.parse(options.body);
       assert.equal(req.contents[0].parts[0].text,'example practice');
@@ -531,5 +532,34 @@ test('learning practice uses external Gemini API with no local server fallback',
     if(oldKey===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=oldKey;
     if(oldProvider===undefined)delete process.env.VIBE2_GAME_SOURCE_PROVIDER;else process.env.VIBE2_GAME_SOURCE_PROVIDER=oldProvider;
     if(oldModel===undefined)delete process.env.VIBE2_GEMINI_MODEL;else process.env.VIBE2_GEMINI_MODEL=oldModel;
+  }
+});
+
+test('practice switches to the other approved Gemini model when a free slot is exhausted',async()=>{
+  const originalFetch=globalThis.fetch;
+  const oldKey=process.env.GEMINI_API_KEY;
+  const oldProvider=process.env.VIBE2_GAME_SOURCE_PROVIDER;
+  const oldPrimary=process.env.VIBE2_GEMINI_MODEL;
+  const oldBackup=process.env.VIBE2_GEMINI_BACKUP_MODEL;
+  try{
+    process.env.GEMINI_API_KEY='fixture-not-real';
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='GEMINI_API';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
+    const invoked=[];
+    globalThis.fetch=async(url)=>{
+      invoked.push(String(url));
+      if(invoked.length===1)return {ok:false,status:429,headers:{get:()=>null}};
+      return {ok:true,json:async()=>({candidates:[{content:{parts:[{text:'{"recovered":true}'}]}}]})};
+    };
+    assert.equal(await requestPracticeModel('rotation'), '{"recovered":true}');
+    assert.equal(invoked.length,2);
+    assert.notEqual(invoked[0],invoked[1]);
+    assert.ok(invoked.every(x=>/gemini-3\.(?:8-flash|5-flash-lite):generateContent/.test(x)));
+  }finally{
+    globalThis.fetch=originalFetch;
+    for(const [name,value] of [['GEMINI_API_KEY',oldKey],['VIBE2_GAME_SOURCE_PROVIDER',oldProvider],['VIBE2_GEMINI_MODEL',oldPrimary],['VIBE2_GEMINI_BACKUP_MODEL',oldBackup]]){
+      if(value===undefined)delete process.env[name];else process.env[name]=value;
+    }
   }
 });

@@ -34,6 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify reset regression and shared-context contracts
         run: |
+          node tools/company-shared-context.mjs --output=/tmp/owner-reset-shared-context.json
           node --check tools/company-all-games-design-reset.mjs
           node --test qa/owner-design-reset.test.mjs
 
@@ -51,6 +52,7 @@ jobs:
           fetch-depth: 1
       - name: Validate reset synchronizer and canonical QA
         run: |
+          node tools/company-shared-context.mjs --output=/tmp/owner-reset-shared-context.json
           node --check tools/company-all-games-design-reset.mjs
           node --test qa/owner-design-reset.test.mjs
       - name: Persist canonical DESIGN_ONLY seed state
