@@ -384,7 +384,7 @@ task.spawn(function()
 end)
 
 -- Imported mesh positioning only. Original creator-authored rig poses stay intact.
-local observed: {[Model]: {Visual: Model, Root: BasePart}} = {}
+local observed: {[Model]: {Visual: Model, Root: BasePart, LastFrame: CFrame?, LastOffset: CFrame?}} = {}
 local at = 0
 local scanAt = 0
 RunService.RenderStepped:Connect(function(dt)
@@ -396,7 +396,8 @@ RunService.RenderStepped:Connect(function(dt)
     local character = player.Character
     local viewer = character and character:FindFirstChild("HumanoidRootPart")
     if world and viewer and viewer:IsA("BasePart") then
-      for _, enemy in ipairs(world:GetDescendants()) do
+      -- Server enemies are direct CivilizationWorlds children; avoid scanning every map descendant.
+      for _, enemy in ipairs(world:GetChildren()) do
         if enemy:IsA("Model") and enemy:GetAttribute("CivilizationEnemy") == true
           and enemy:GetAttribute("CreatureAssetSource") == "StudioImported"
           and (tonumber(enemy:GetAttribute("CreatureVisualAssetId")) or 0) > 0 then
@@ -416,7 +417,13 @@ RunService.RenderStepped:Connect(function(dt)
     else
       local offset = entry.Visual:GetAttribute("VisualPivotOffset")
       if typeof(offset) ~= "CFrame" then offset = CFrame.new() end
-      entry.Visual:PivotTo(entry.Root.CFrame * offset)
+      local rootFrame = entry.Root.CFrame
+      -- Existing server-owned movement is discrete: skip unchanged visual transforms.
+      if entry.LastFrame ~= rootFrame or entry.LastOffset ~= offset then
+        entry.Visual:PivotTo(rootFrame * offset)
+        entry.LastFrame = rootFrame
+        entry.LastOffset = offset
+      end
     end
   end
 end)
