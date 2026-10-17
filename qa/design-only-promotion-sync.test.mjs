@@ -7,6 +7,14 @@ import {promoteReadyDesignSeeds} from '../tools/design-only-promotion-sync.mjs';
 import {evaluateMinimumDesignContract,latestMinimumDesign,materializeVibeMinimumDesign} from '../tools/company-minimum-design-contract.mjs';
 import {migrateDirectNativeRuntime} from '../tools/company-direct-native-design-migration.mjs';
 
+// Each isolated promotion fixture must bind the exact policy file it authored.
+// Real production resolves the independently checked out main policy in the workflow.
+const previousVerifiedPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+test.after(()=>{
+  if(previousVerifiedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicyPath;
+});
+
 const write=(root,file,value)=>{
   const out=path.join(root,file);
   fs.mkdirSync(path.dirname(out),{recursive:true});
@@ -46,6 +54,7 @@ function centralPolicy(root){
       unityWebValidationSurface:{requiredForDevelopmentAdmission:false}
     }
   });
+  process.env.COMPANY_VERIFIED_POLICY_PATH=path.join(root,'company-learning/platform-release-roadmap.json');
 }
 function designContent(){
   return {
