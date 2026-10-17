@@ -603,7 +603,16 @@ test('V5 code-admission grammar gate rejects a fake MAIN/A/B/C/@ label without s
     cGenres:[{role:'PRIMARY',name:'생존',gameplayEffect:'생존 위험을 다룬다'},{role:'SECONDARY',name:'탐험',gameplayEffect:'탐험을 하게 만든다'}],
     delveDiscoveries:[{clue:'나무',discovery:'껍질',newChoice:'더 모은다'}]
   }};
-  const gate=evaluateMinimumDesignContract({content:fake},{seed});
+  // This standalone grammar case has no temp-root policy; bind the current
+  // canonical main policy, not the already-deleted preceding fixture path.
+  const savedPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+  let gate;
+  try{gate=evaluateMinimumDesignContract({content:fake},{seed});}
+  finally{
+    if(savedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=savedPolicyPath;
+  }
   assert.equal(gate.pass,false);
   assert.equal(gate.creativeGrammarReady,false);
   assert.ok(gate.blockers.includes('DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE')||gate.blockers.includes('DESIGN_MAIN_A_B_DELVE_REQUIRED'));
