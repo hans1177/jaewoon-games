@@ -8,6 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {normalizeWebCanonicalAndExpansionPolicy} from './company-design-prepromotion-repair.mjs';
+import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import {buildRobloxProductionPlan,robloxProductionPromptLines} from './company-roblox-production-plan.mjs';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -2719,9 +2720,12 @@ export function buildGameSpecificBuildUpDirective({
     clean(productionPlatform).toUpperCase()==='UNITY_WEB'?'UNITY_WEB':
       ['UNITY','UNITY_APP','UNITY_ANDROID'].includes(clean(productionPlatform).toUpperCase())?'UNITY':
         clean(productionPlatform).toUpperCase()==='ROBLOX'?'ROBLOX':'';
-  const productionAuthorized=ownerPlatform==='ROBLOX'
-    ||(verifiedRoadmap?.developmentAccess?.[ownerPlatform]==='ALWAYS_ALLOWED'
-      &&(verifiedRoadmap?.ownerActiveDevelopmentScope20261009?.activeTargets||[]).includes(ownerPlatform));
+  // [최신 소유자 권한] 폐기된 지시/원시 developmentAccess가 최신 승인 범위를 덮지 못한다.
+  const approvedOwnerScope=resolveActiveOwnerPolicy(verifiedRoadmap,{allowMissing:true});
+  const productionAuthorized=approvedOwnerScope
+    ? approvedOwnerScope.activeTargets.includes(ownerPlatform)
+      &&approvedOwnerScope.effectiveDevelopmentAccess[ownerPlatform]==='ALWAYS_ALLOWED'
+    : ownerPlatform==='ROBLOX';
   const productionPlan=productionAuthorized?buildRobloxProductionPlan({
     gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,availableLibraryPaths,
     previousPlan:previousDirective?.productionPlan||previousDirective?.robloxProductionPlan,focus,
