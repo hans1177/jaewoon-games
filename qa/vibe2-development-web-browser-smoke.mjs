@@ -214,6 +214,7 @@ let chromeStderr='';
 chromeProc.stderr?.on('data',chunk=>{chromeStderr+=String(chunk)});
 
 let cdp;
+let currentGameId='CHROME_BOOT',currentPhase='CONNECT';
 try{
   const target=await waitForPageTarget(debugPort,45000);
   cdp=new CdpClient(target.webSocketDebuggerUrl);
@@ -223,6 +224,8 @@ try{
 
   const results=[];
   for(const gameId of gameIds){
+    currentGameId=gameId;currentPhase='NAVIGATE';
+    console.log('DEVELOPMENT_WEB_BROWSER_GAME='+gameId);
     cdp.exceptions.length=0;
     const missingStart=local404.length;
     const loaded=cdp.waitEvent('Page.loadEventFired',12000);
@@ -231,6 +234,7 @@ try{
     await loaded;
     await delay(500);
 
+    currentPhase='START_INPUT';
     const start=await cdp.evaluate(`(()=>{
       const visible=element=>{
         if(!element||element.disabled)return false;
@@ -258,6 +262,7 @@ try{
     })()`);
     await delay(start?.clicked?800:300);
 
+    currentPhase='STATE_SNAPSHOT';
     const state=await cdp.evaluate(`(()=>({
       title:document.title,
       bodyText:(document.body?.innerText||'').slice(0,1000),
@@ -267,6 +272,7 @@ try{
       href:location.href
     }))()`);
 
+    currentPhase='ASSERT';
     const missing=local404.slice(missingStart).filter(item=>item!=='/favicon.ico');
     const exceptions=cdp.exceptions.filter(error=>
       /TypeError|ReferenceError|SyntaxError|Error/i.test(error.description||error.text)
@@ -289,7 +295,7 @@ try{
   console.log('DEVELOPMENT_WEB_BROWSER_SMOKE=PASS');
   console.log(JSON.stringify({count:results.length,results}));
 }catch(error){
-  const detail=`chromeExit=${String(chromeProc.exitCode)} stderr=${chromeStderr.slice(-2000)}`;
+  const detail=`game=${currentGameId} phase=${currentPhase} chromeExit=${String(chromeProc.exitCode)} stderr=${chromeStderr.slice(-2000)}`;
   throw new Error(`${String(error?.message||error)} ${detail}`,{cause:error});
 }finally{
   cdp?.close();
