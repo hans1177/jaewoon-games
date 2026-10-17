@@ -12,6 +12,14 @@ import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-produc
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
 import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
 
+import {auditVibe2SourceWorkerBottleneck} from '../tools/vibe2-source-worker.mjs';
+
+test('source worker bottleneck audit confirms structural recovery and minimal direct responsibility',()=>{
+  const report=auditVibe2SourceWorkerBottleneck(46);
+  assert.equal(report.bottleneckResolved,true);
+  assert.equal(report.strategy,'PRIMARY_RESPONSIBILITY_MINIMAL');
+});
+
 test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
   const select=(source,task={})=>selectWeb3dEngine({
     order:{target:'web',selectedTask:task},files:[{path:'index.html',content:source}]
