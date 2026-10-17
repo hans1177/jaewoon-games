@@ -500,7 +500,9 @@ test('candidate release gate isolates candidates and requires the affected Web d
   assert(candidateReleaseWorkflow.includes('group: vibe2-release-${{ github.event.inputs.candidate_branch || github.ref_name }}'));
   assert(candidateReleaseWorkflow.includes('cancel-in-progress: false'));
   assert(!candidateReleaseWorkflow.includes('group: vibe2-release-serial'));
-  assert(candidateReleaseWorkflow.includes('select(.name=="Cloudflare Pages")'));
+  assert(candidateReleaseWorkflow.includes('web-games/publish-manifest.json'));
+  assert(candidateReleaseWorkflow.includes('m.sourceSha!==sha'));
+  assert(candidateReleaseWorkflow.includes('VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=SUCCESS'));
   assert(candidateReleaseWorkflow.includes('VIBE2_RELEASE_PAGES_CHECK='));
   assert(candidateReleaseWorkflow.includes('VIBE2_CANDIDATE_ALREADY_PROMOTED='));
   assert(candidateReleaseWorkflow.includes('already_promoted: ${{ steps.gate.outputs.already_promoted }}'));
