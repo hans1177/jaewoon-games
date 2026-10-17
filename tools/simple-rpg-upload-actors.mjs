@@ -118,6 +118,102 @@ for (const [relativeFile, name] of models) {
   }
   if (!done) throw new Error('UPLOAD_TIMED_OUT: '+name);
 }
+// Owner publish reuses the same authorized Cloud uploader; no second publication workflow.
+if (process.argv.includes('--publish-curated-art')) {
+  const sourceRoot = process.env.SIMPLE_RPG_CURATED_DIR || '/tmp/simple-rpg-curated';
+  const manifestPath = path.join(sourceRoot, 'conversion-evidence.json');
+  const provenance = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+  if (provenance.gameId !== 'simple-rpg' || provenance.license !== 'CC0-1.0'
+    || provenance.originalsUntouched !== true || provenance.robloxImported !== false) {
+    throw new Error('CURATED_SOURCE_PROVENANCE_NOT_VERIFIED');
+  }
+  const verified = {schema:1, gameId:'simple-rpg', universeId:'10770997776',
+    registration:'CLOUD_CREATE_AND_UNIVERSE_GRANT', license:'CC0-1.0',
+    creatures:{}, world:{}, ui:{}, sources:provenance};
+  const actorLabels = {
+    Knight:'Knight', Barbarian:'Race1_Mob1', Rogue:'Race1_Mob2',
+    Mage:'Race2_Mob1', RogueHooded:'Race3_Mob2',
+    SkeletonWarrior:'Race4_Mob1', SkeletonMage:'Race4_Mob2',
+    SkeletonRogue:'Race5_Mob2', SkeletonMinion:'Race5_Mob1'
+  };
+  for (const [name, alias] of Object.entries(actorLabels)) {
+    const entry = out.assets[name];
+    if (!entry || !/^[1-9][0-9]*$/.test(entry.assetId))
+      throw new Error('CURATED_ACTOR_REGISTRATION_MISSING:'+name);
+    verified.creatures[alias] = Number(entry.assetId);
+  }
+  async function registerNewArt(label, assetType, sourcePath, mime, evidence) {
+    const bytes = await fs.readFile(sourcePath);
+    const digest = (await import('node:crypto')).createHash('sha256').update(bytes).digest('hex');
+    if (evidence.sha256 !== digest || bytes.length !== evidence.bytes || bytes.length > 20*1024*1024)
+      throw new Error('CURATED_ART_HASH_MISMATCH:'+label);
+    const form = new FormData();
+    form.set('request', JSON.stringify({
+      assetType, displayName:'대충알피지 CC0 '+label,
+      description:'CC0 curated downloaded source for 대충알피지. '+evidence.archive+'/'+evidence.sourceEntry,
+      creationContext:{creator:{userId:Number(creatorId)}}
+    }));
+    form.set('fileContent', new Blob([bytes],{type:mime}),path.basename(sourcePath));
+    const initial = await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',body:form});
+    if (!/^operations\/[A-Za-z0-9_/-]+$/.test(String(initial.path)))
+      throw new Error('CURATED_ASSET_UPLOAD_NO_OPERATION:'+label);
+    for(let n=0;n<40;n++){
+      await new Promise(resolve=>setTimeout(resolve,1800));
+      const op=await request('https://apis.roblox.com/assets/v1/'+initial.path);
+      if (op.error) throw new Error('CURATED_ASSET_UPLOAD_FAILED:'+label+':'+JSON.stringify(op.error).slice(0,350));
+      if(!op.done)continue;
+      const id=Number(op.response?.assetId ?? op.response?.asset?.assetId);
+      if(!Number.isSafeInteger(id)||id<1)throw new Error('CURATED_ART_ID_MISSING:'+label);
+      const moderation=String(op.response?.moderationResult?.moderationState??'UNKNOWN');
+      if(/REJECT|BLOCK|DENIED/.test(moderation))throw new Error('CURATED_ART_MODERATION_REJECTED:'+label);
+      const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
+        method:'PATCH',headers:{'content-type':'application/json'},
+        body:JSON.stringify({subjectType:'Universe',subjectId:'10770997776',
+          action:'Use',requests:[{assetId:id,grantToDependencies:true}]})
+      });
+      if(grant.errors?.length)throw new Error('CURATED_ART_USE_PERMISSION_DENIED:'+label);
+      console.log('CURATED_CC0_CLOUD_REGISTERED',label,id,'MODERATION='+moderation);
+      return id;
+    }
+    throw new Error('CURATED_ART_OPERATION_TIMEOUT:'+label);
+  }
+  for(const [name,evidence] of Object.entries(provenance.world)){
+    verified.world[name] = await registerNewArt(name,'Model',
+      path.join(sourceRoot,'world',name+'.glb'),'model/gltf-binary',evidence);
+  }
+  for(const [name,evidence] of Object.entries(provenance.ui)){
+    verified.ui[name] = await registerNewArt(name,'Image',
+      path.join(sourceRoot,'ui',name+'.png'),'image/png',evidence);
+  }
+  for(const group of [verified.creatures,verified.world,verified.ui]){
+    if(Object.keys(group).length<2)throw new Error('CURATED_ASSET_SET_INCOMPLETE');
+    for(const id of Object.values(group))if(!Number.isSafeInteger(id)||id<1)
+      throw new Error('CURATED_ASSET_REGISTRATION_INVALID');
+  }
+  for(const required of ['Ground','Building'])if(!verified.world[required])
+    throw new Error('CURATED_WORLD_REQUIRED_MODEL_MISSING:'+required);
+  for(const required of ['Panel','Button'])if(!verified.ui[required])
+    throw new Error('CURATED_UI_REQUIRED_IMAGE_MISSING:'+required);
+  const luaTable=o=>'{'+Object.entries(o).map(([k,v])=>JSON.stringify(k)+' = '+v).join(', ')+'}';
+  const moduleContent = [
+    '--!strict','-- Downloaded CC0 files, verified checksums and real Roblox Cloud IDs; generated per owner build.',
+    '-- This module is not checked into source without registered assets.',
+    'return table.freeze({','  GameId = "simple-rpg",','  License = "CC0-1.0",',
+    '  World = table.freeze('+luaTable(verified.world)+'),',
+    '  Creatures = table.freeze('+luaTable(verified.creatures)+'),',
+    '  UI = table.freeze('+luaTable(verified.ui)+'),','})',''
+  ].join('\n');
+  // This relative path is inside the checked-out main/game source, for the pinned Rojo build.
+  await fs.writeFile('roblox-games/simple-rpg/shared/CuratedAssets.luau',moduleContent);
+  const manifestOut=path.join(sourceRoot,'registered.json');
+  await fs.writeFile(manifestOut,JSON.stringify(verified,null,2)+'\n');
+  console.log('CURATED_REGISTERED_REAL_WORLD_MODELS='+Object.keys(verified.world).length);
+  console.log('CURATED_REGISTERED_REAL_CREATURE_MODELS='+Object.keys(verified.creatures).length);
+  console.log('CURATED_REGISTERED_REAL_UI_IMAGES='+Object.keys(verified.ui).length);
+  console.log('CURATED_CLOUD_ASSET_MODULE_WRITTEN=YES');
+  process.exit(0);
+}
+
 const outputFile = process.argv[2] || '/tmp/simple-rpg-imported-actors.json';
 await fs.writeFile(outputFile, JSON.stringify(out,null,2)+'\n');
 console.log('VERIFIED_ASSET_MANIFEST='+outputFile);
