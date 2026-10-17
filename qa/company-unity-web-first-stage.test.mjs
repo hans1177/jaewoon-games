@@ -1038,6 +1038,6 @@ test('held Unity workflows are gated by current-main owner policy without starti
     assert.match(workflow,/owner-policy:/);
     assert.match(workflow,/ref: main/);
     assert.match(workflow,/needs: owner-policy/);
-    assert.match(workflow,/needs\\.owner-policy\\.outputs\\.allowed/);
+    assert.match(workflow,/needs\.owner-policy\.outputs\.allowed/);
   }
 });
