@@ -9,6 +9,13 @@ if storeOk then store = storeResult end
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 
+-- Apply an actual selected MATERIAL atom to an existing visible spawn marker.
+-- This does not change collision, movement, item economy, or saved player state.
+local function studioAssetFamily(family)
+  return (Config.StudioAssets and Config.StudioAssets.Families or {})[family] or {}
+end
+local studioMaterialAtoms = studioAssetFamily("MATERIAL")
+
 local remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)
 if remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end
 if not remote then
@@ -289,6 +296,7 @@ nativeFoundationSpawn.CanCollide = false
 nativeFoundationSpawn.CanTouch = false
 nativeFoundationSpawn.CanQuery = false
 nativeFoundationSpawn.Neutral = true
+nativeFoundationSpawn.Material = table.find(studioMaterialAtoms, "METAL") and Enum.Material.Metal or Enum.Material.Plastic
 
 local function bindNativeFoundationCharacter(character)
   local humanoid = character:WaitForChild("Humanoid")
