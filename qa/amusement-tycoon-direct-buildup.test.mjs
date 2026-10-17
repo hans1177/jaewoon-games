@@ -18,8 +18,12 @@ test('amusement tycoon direct seed exposes a real park operating loop',()=>{
 });
 
 test('Roblox source edits automatically wake the canonical runtime buildup pipeline',()=>{
-  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  assert.ok(workflow.includes("'roblox-games/**'"));
-  assert.ok(workflow.includes('company-development-roblox-source-reconcile.mjs'));
-  assert.ok(workflow.includes('technical-plan:'));
+  // 최신 실제 이벤트 경로: 소스 변경 → drift 동기화 → 기존 Roblox 런타임 재진입.
+  const sourceSync=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.ok(sourceSync.includes("'roblox-games/**'"));
+  assert.ok(sourceSync.includes('gh workflow run company-development-roblox-runtime.yml'));
+  assert.ok(sourceSync.includes('company-roblox-source-drift-sync.mjs'));
+  assert.ok(runtime.includes('company-development-roblox-source-reconcile.mjs'));
+  assert.ok(runtime.includes('technical-plan:'));
 });
