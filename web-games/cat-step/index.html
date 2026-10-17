@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ko" data-presentation-quality-version="1">
+<html lang="ko" data-presentation-quality-version="2">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#25305d">
+<meta name="theme-color" content="#254e79">
 <title>캣 스텝</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -30,32 +30,71 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
 .card p{margin:0 0 18px;color:#dbe8f4;line-height:1.55;font-size:14px}
 .card button{width:100%;min-height:56px;border:0;border-radius:16px;background:#83d5a7;color:#183b30;font-size:18px;font-weight:1000}
 @media(min-width:760px){.controls{left:50%;right:auto;width:480px;transform:translateX(-50%)}}
+/* 공통 상용게임 연출 어휘: 배지/터치 반응/점수 팝/미세 모션. 게임 판정과 분리. */
+:root{--ui-ink:#16354c;--ui-cream:#f7fffd;--ui-accent:#ffe48a;--ui-mint:#8df2d3;--ui-pink:#ff98ad}
+.hud{top:max(16px,env(safe-area-inset-top));left:12px;right:12px;align-items:center;gap:10px}
+.score{top:-2px;filter:drop-shadow(0 6px 13px rgba(9,51,79,.22))}
+.score span{display:block;font-size:11px;letter-spacing:.15em;color:#e9ffff;text-transform:uppercase}
+.score b{font-size:clamp(42px,12vw,62px);font-weight:1000;line-height:1.08;color:#fff8cd;-webkit-text-stroke:1px #735f8b;text-shadow:0 4px 0 #755b87,0 8px 18px #284e76}
+.score b.impact-pop{animation:score-bounce .42s cubic-bezier(.2,1.5,.4,1)}
+.mini{display:flex;align-items:center;gap:6px;min-height:45px;padding:8px 10px;border:2px solid rgba(255,255,255,.75);border-radius:18px;background:linear-gradient(150deg,#fffefaed,#d9fdffed);color:var(--ui-ink);font-weight:1000;text-shadow:none;box-shadow:0 5px 0 #7cbfc9,0 11px 22px #13476566}
+.mini .icon{display:inline-grid;place-items:center;font-size:21px;filter:drop-shadow(0 2px 1px #12586a35);animation:icon-float 2.1s ease-in-out infinite}
+#speed .icon{animation-duration:1.35s}
+.tip{top:112px;background:linear-gradient(120deg,#ffedb0ee,#c4fff2ee);color:#174354;font-size:12px;max-width:92vw;white-space:normal;text-align:center;border:2px solid #fff;box-shadow:0 5px 0 #7dbbb9,0 12px 24px #103d6a55}
+.controls{bottom:max(18px,env(safe-area-inset-bottom));gap:14px}
+.controls button{display:flex;align-items:center;justify-content:center;gap:9px;min-height:72px;border:3px solid #fff9;border-radius:23px;color:#fffefa;font-weight:1000;text-shadow:0 2px 0 #315783;font-size:clamp(16px,4.2vw,21px);box-shadow:0 7px 0 #1b5089,0 14px 26px #07233d80;transition:transform .12s,filter .12s}
+.controls button:first-child{background:linear-gradient(145deg,#8aaaff,#467de0)}
+.controls button:last-child{background:linear-gradient(145deg,#ffb98c,#f678a8);box-shadow:0 7px 0 #bc526f,0 14px 26px #4f183d80}
+.controls button .icon{font-size:25px;line-height:1;animation:icon-float 2.4s ease-in-out infinite}
+.controls button:active{transform:translateY(5px) scale(.965);filter:brightness(1.12);box-shadow:0 2px 0 #18456c,0 5px 14px #07233d55}
+.overlay{background:radial-gradient(circle at 50% 40%,#58a5b84a,#112b4cbf 70%);backdrop-filter:blur(8px)}
+.card{position:relative;border:3px solid #fff5b4;border-radius:30px;background:linear-gradient(145deg,#faf6da 0%,#dff9f4 46%,#b9e5f6 100%);color:#214c62;box-shadow:0 9px 0 #6aaabc,0 28px 60px #07274888;overflow:hidden}
+.card:before{content:'★ 3D SKY RUN ★';display:block;margin:-24px -24px 15px;padding:9px 8px;background:linear-gradient(110deg,#ffb1ad,#ffe592,#9af0dd);font-size:12px;font-weight:1000;letter-spacing:.14em;color:#6b5269}
+.card .catface{display:inline-block;font-size:62px;animation:icon-float 2.2s ease-in-out infinite}
+.card h1{color:#2a6380;text-shadow:0 3px #ffffff}
+.card p{color:#30576d}
+.card button{border:3px solid #fffbd4;background:linear-gradient(170deg,#9cffcb,#51d9ad);color:#205641;box-shadow:0 6px 0 #2ba57f;font-weight:1000}
+.card button:active{transform:translateY(4px);box-shadow:0 2px 0 #2ba57f}
+#feedback{position:absolute;left:50%;top:32%;transform:translate(-50%,-50%);z-index:9;pointer-events:none;text-align:center;font-size:clamp(24px,7vw,42px);font-weight:1000;color:#fff7c0;-webkit-text-stroke:1px #9e6981;text-shadow:0 5px #d477a6,0 11px 25px #134577;font-variant-numeric:tabular-nums;opacity:0}
+#feedback.show{animation:impact-toast .72s both}
+#feedback.warning{color:#ffdddb;text-shadow:0 5px #ce507b,0 11px 25px #134577}
+#sparkHud{position:absolute;left:50%;top:13px;transform:translateX(-50%);width:150px;height:92px;pointer-events:none;z-index:4;background:radial-gradient(circle,#fff6bf75 0%,transparent 70%);opacity:0}
+#sparkHud.flash{animation:hud-glow .5s ease-out}
+@keyframes icon-float{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-4px) rotate(5deg)}}
+@keyframes score-bounce{0%{transform:scale(.8)}53%{transform:scale(1.35) rotate(3deg)}100%{transform:scale(1)}}
+@keyframes impact-toast{0%{opacity:0;transform:translate(-50%,-25%) scale(.6)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.22)}65%{opacity:1;transform:translate(-50%,-65%) scale(1)}100%{opacity:0;transform:translate(-50%,-105%) scale(.9)}}
+@keyframes hud-glow{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+@media(max-width:370px){.hud{gap:4px}.mini{padding:6px;font-size:10px}.mini .icon{font-size:17px}.tip{top:103px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.mini .icon,.controls button .icon,.card .catface{animation:none}.score b.impact-pop{animation:none}#feedback.show{animation:none;opacity:1}#sparkHud.flash{animation:none}}
 </style>
 </head>
 <body>
 <div id="game">
 <canvas id="c" aria-label="캣 스텝 게임 화면"></canvas>
 <div class="hud">
-  <div class="mini" id="best">최고 0</div>
+  <div class="mini" id="best"><span class="icon" aria-hidden="true">🏆</span><span class="value">최고 0</span></div>
   <div class="score"><span>현재 계단</span><b id="score">0</b></div>
-  <div class="mini" id="speed">속도 1</div>
+  <div class="mini" id="speed"><span class="icon" aria-hidden="true">⚡</span><span class="value">속도 1</span></div>
 </div>
-<div class="tip" id="tip">다음 발판 방향으로 점프해</div>
+<div id="sparkHud" aria-hidden="true"></div>
+<div id="feedback" role="status" aria-live="polite" aria-atomic="true"></div>
+<div class="tip" id="tip">✨ 빛나는 발판으로 점프해!</div>
 <div class="controls">
-  <button id="left" type="button">◀ 왼쪽</button>
-  <button id="right" type="button">오른쪽 ▶</button>
+  <button id="left" type="button"><span class="icon" aria-hidden="true">⬅</span><span>왼쪽</span></button>
+  <button id="right" type="button"><span>오른쪽</span><span class="icon" aria-hidden="true">➡</span></button>
 </div>
 <div class="overlay" id="overlay">
   <div class="card">
     <div class="catface">🐱</div>
     <h1 id="title">캣 스텝</h1>
-    <p id="desc">다음 발판이 있는 방향으로 점프해.<br>10계단마다 속도가 빨라져.</p>
-    <button id="start" type="button">시작</button>
+    <p id="desc">구름 위 발판을 콩콩!<br>10계단마다 속도가 빨라져.</p>
+    <button id="start" type="button">✨ 시작하기</button>
   </div>
 </div>
 </div>
 <script type="module">
 import * as THREE from '/assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+import {createVibePortableImpactCue} from '/assets/vibe-presentation-director.js';
 (() => {
 'use strict';
 
@@ -149,8 +188,8 @@ function resetRun(){
 }
 function updateHud(){
   $('score').textContent=score;
-  $('best').textContent='최고 '+best;
-  $('speed').textContent='속도 '+speedTier();
+  $('best').querySelector('.value').textContent='최고 '+best;
+  $('speed').querySelector('.value').textContent='속도 '+speedTier();
 }
 function gameOver(){
   running=false;
@@ -164,6 +203,7 @@ function gameOver(){
   $('desc').innerHTML='점수 <b>'+score+'</b><br>최고 <b>'+best+'</b>';
   $('start').textContent='다시 시작';
   $('overlay').classList.remove('hidden');
+  emitImpact('miss');
 }
 function scrollSteps(){
   steps.shift();
@@ -192,6 +232,7 @@ function attempt(dir){
     };
   }
   if(navigator.vibrate)navigator.vibrate(correct?18:[22,28,22]);
+  emitImpact(correct?'jump':'miss');
 }
 function finishCorrect(){
   score++;
@@ -201,12 +242,14 @@ function finishCorrect(){
   jumpAnim=null;
   if(score>=3)$('tip').style.opacity='.15';
   updateHud();
+  emitImpact(score>0&&score%10===0?'milestone':'land');
 }
 function begin(){
   $('overlay').classList.add('hidden');
   $('title').textContent='캣 스텝';
   $('start').textContent='시작';
   resetRun();
+  emitImpact('start');
 }
 $('left').addEventListener('pointerdown',e=>{e.preventDefault();attempt(-1)});
 $('right').addEventListener('pointerdown',e=>{e.preventDefault();attempt(1)});
