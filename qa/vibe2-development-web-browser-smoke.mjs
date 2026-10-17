@@ -214,6 +214,7 @@ let chromeStderr='';
 chromeProc.stderr?.on('data',chunk=>{chromeStderr+=String(chunk)});
 
 let cdp;
+let currentGameId='BOOT';
 try{
   const target=await waitForPageTarget(debugPort,45000);
   cdp=new CdpClient(target.webSocketDebuggerUrl);
@@ -223,6 +224,7 @@ try{
 
   const results=[];
   for(const gameId of gameIds){
+    currentGameId=gameId;
     cdp.exceptions.length=0;
     const missingStart=local404.length;
     const loaded=cdp.waitEvent('Page.loadEventFired',12000);
@@ -290,7 +292,7 @@ try{
   console.log(JSON.stringify({count:results.length,results}));
 }catch(error){
   const detail=`chromeExit=${String(chromeProc.exitCode)} stderr=${chromeStderr.slice(-2000)}`;
-  throw new Error(`${String(error?.message||error)} ${detail}`,{cause:error});
+  throw new Error(`game=${currentGameId} ${String(error?.message||error)} ${detail}`,{cause:error});
 }finally{
   cdp?.close();
   try{chromeProc.kill('SIGTERM')}catch{}
