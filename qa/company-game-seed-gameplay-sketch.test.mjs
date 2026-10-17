@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 import {buildGameFlowArchitecture,evaluateGameFlowArchitecture,buildConceptSystemBlueprint} from '../tools/company-vibe2-game-flow-architect.mjs';
-import {computeVibeSeedProposal,normalizeGameplaySketch} from '../tools/company-game-seed-bootstrap.mjs';
+import {computeVibeSeedProposal,normalizeGameplaySketch,verifiedSeedBasicDesignMethod} from '../tools/company-game-seed-bootstrap.mjs';
 import {CAUSAL_DNA_LIBRARY} from '../tools/game-seed-state.mjs';
 
 const legacySeed=()=>({
@@ -23,6 +23,18 @@ const legacySeed=()=>({
   INITIAL_PLAY_MODE:'PROJECT_DEFINED',
   MULTIPLAYER_DESIGN_MODE:'SINGLE',
   CROSS_PLATFORM_EXPANSION_VALUE:'portable tactical loop',
+});
+
+test('new seed authors must use verified MAIN = A + B + C + D + @ policy',()=>{
+  const method=verifiedSeedBasicDesignMethod('company-learning/platform-release-roadmap.json');
+  assert.equal(method.formula,'MAIN = A + B + C + D + @');
+  assert.throws(()=>verifiedSeedBasicDesignMethod(''),/GAME_SEED_VERIFIED_DESIGN_POLICY_PATH_REQUIRED/);
+  assert.throws(()=>verifiedSeedBasicDesignMethod('/tmp/absent-seed-policy.json'),/GAME_SEED_VERIFIED_DESIGN_POLICY_PATH_REQUIRED/);
+  const workflow=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
+  assert.ok(workflow.includes('COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json'));
+  const implementation=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  assert.ok(implementation.includes('basicDesignMethod:verifiedSeedBasicDesignMethod()'));
+  assert.ok(implementation.includes('GAME_SEED_NONCANONICAL_DESIGN_GRAMMAR_REJECTED'));
 });
 
 test('GAME_SEED contract requires gameplay sketch while preserving legacy compatibility',()=>{

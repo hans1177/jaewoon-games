@@ -401,6 +401,22 @@ function nextCategory(platform=defaultTargetPlatform){
   state.categories=uniq([...(state.categories||[]),selected]);
   return selected;
 }
+// New creation must never use the legacy MAIN × A × B × C fallback when
+// the canonical design classification is unavailable. Historical records stay readable.
+export function verifiedSeedBasicDesignMethod(file=process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH){
+  const source=clean(file);
+  if(!source||!fs.existsSync(source))throw new Error('GAME_SEED_VERIFIED_DESIGN_POLICY_PATH_REQUIRED');
+  const roadmap=readJson(source,{});
+  const method=roadmap?.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod;
+  if(roadmap?.authority!=='MACHINE_EXECUTION_CONTRACT'
+    ||method?.formula!=='MAIN = A + B + C + D + @'
+    ||!Number.isInteger(method?.version)||method.version<1
+    ||!Array.isArray(method.gameGenreClassification)||method.gameGenreClassification.length===0
+    ||!Array.isArray(method.materialClassification)||method.materialClassification.length===0
+    ||!Array.isArray(method.creativeGenreExamplesKo)||method.creativeGenreExamplesKo.length<2)
+    throw new Error('GAME_SEED_OWNER_ABCD_PLUS_AT_STANDARD_REQUIRED');
+  return method;
+}
 function makeTarget(requestId,{category=null,platform=defaultTargetPlatform,generation='MATERIAL_COMPOSITION',portfolioRequest=null,lockedPlatform=false}={}){
   const p=normalizeSeedPlatform(platform)||defaultTargetPlatform;
   const resolvedCategory=clean(category)||nextCategory(p);
@@ -411,7 +427,7 @@ function makeTarget(requestId,{category=null,platform=defaultTargetPlatform,gene
   const materials=composeSeedMaterials(state,{count:materialCount,platform:p,category:resolvedCategory,top30GameIds,learningSignals:signals});
   return {
     requestId,
-    basicDesignMethod:clean(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH)?readJson(clean(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH),{})?.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod:undefined,
+    basicDesignMethod:verifiedSeedBasicDesignMethod(),
     category:resolvedCategory,
     platform:p,
     generation,
@@ -664,6 +680,15 @@ function normalizeProposal(target,p={}){
 }
 function validateProposal(target,p){
   const errors=[];
+  if(target.basicDesignMethod){
+    const grammar=p?.gameplaySketch?.novelGameGrammar;
+    const expected=target.basicDesignMethod.formula;
+    if(grammar?.standardVersion!==target.basicDesignMethod.version
+      ||grammar?.gameplaySystemFusion?.formula!==expected
+      ||grammar?.emergentGenre?.grammarFormula!==expected
+      ||!Array.isArray(grammar.dCreations)||grammar.dCreations.length===0)
+      throw new Error('GAME_SEED_NONCANONICAL_DESIGN_GRAMMAR_REJECTED');
+  }
   if(p.requestId!==target.requestId)errors.push('requestId');
   if(p.category!==target.category)errors.push('category');
   if(!clean(p.gameName))errors.push('gameName');
