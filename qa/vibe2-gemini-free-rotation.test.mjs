@@ -1,3 +1,4 @@
+// 파일명: qa/vibe2-gemini-free-rotation.test.mjs
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
@@ -158,4 +159,16 @@ test('active Vibe and Roblox release paths do not install, pull or request local
   assert.match(read('.github/workflows/company-development-roblox-runtime.yml'),/ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED/);
   assert.match(read('.github/workflows/vibe2-candidate-release.yml'),/company-development-roblox-build-preflight\.mjs/);
   assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_WORKER_PROVIDER=GEMINI_API/);
+});
+
+// 외부 AI 경로 수정 시 기존 Core QA를 실행해야 한다.
+test('Gemini route edits run existing Core QA and optional live benchmark',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-core-qa.yml',import.meta.url),'utf8');
+  for(const changedPath of ['tools/vibe2-gemini-free-rotation.mjs','qa/vibe2-gemini-free-rotation.test.mjs']){
+    assert.equal(workflow.split("      - '"+changedPath+"'").length-1,2,changedPath+' must trigger push and pull request QA');
+  }
+  assert.match(workflow,/node --check tools\/vibe2-gemini-free-rotation\.mjs/);
+  assert.match(workflow,/node --check qa\/vibe2-gemini-free-rotation\.test\.mjs/);
+  assert.match(workflow,/node --test qa\/vibe2-gemini-free-rotation\.test\.mjs/);
+  assert.ok(workflow.includes('tools/vibe2-gemini-free-rotation\\.mjs'),'live benchmark must cover shared model route');
 });
