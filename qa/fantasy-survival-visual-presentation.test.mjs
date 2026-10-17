@@ -354,7 +354,8 @@ test('auto gather keeps transient targeting local and stores only the approved o
   const save=functionBody('saveGame');
   assert.match(save,/settings:\{difficulty:state\.settings\.difficulty,autoGather:!!state\.gathering\.auto/);
   assert.doesNotMatch(save,/target:state\.gathering|nextAt:state\.gathering|blockedUntil:state\.gathering/);
-  assert.doesNotMatch(functionBody('gather'),/multiSend|multiBroadcast|channel/);
+  assert.match(functionBody('gather'),/multiplayer\.connected&&!multiIsHost\(\)/);
+  assert.match(functionBody('gather'),/multiSend\('resource-gather'/);
   assert.doesNotMatch(functionBody('updateAutoGather'),/multiSend|multiBroadcast|channel/);
 });
 
