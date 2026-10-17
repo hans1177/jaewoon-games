@@ -126,7 +126,7 @@ test('homepage fallback stays neutral until current runtime data renders',()=>{
   assert.match(homepage,/document\.getElementById\(id\)\?\.remove\(\)/);
 });
 
-test('homepage lists native Roblox and Unity app actions without Unity Web requests',()=>{
+test('homepage links ordinary web games, verified Roblox and optional Unity apps without Unity Web requests',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
@@ -136,10 +136,12 @@ test('homepage lists native Roblox and Unity app actions without Unity Web reque
   assert.match(homepage,/function internalReleaseLinks\(game\)/);
   assert.match(homepage,/buildShelf\(hub,'homePlatformAvailableGameCenter','출시 게임'/);
   assert.match(homepage,/robloxAction/);
+  assert.match(homepage,/webAction/);
+  assert.match(homepage,/일반 웹게임 · 플레이/);
   assert.match(homepage,/unityAction/);
   assert.doesNotMatch(homepage,/unityWebAction|bindAvailableUnityWebSurfaces|unityWebTestUrl/);
   assert.doesNotMatch(homepage,/아트북 보기|foldGameArtbookBtn|homepageArtbookPath/);
-  assert.doesNotMatch(homepage,/button\(links\.web,'웹 플레이'/);
+  assert.match(homepage,/button\(links\.web,'일반 웹게임 · 플레이'/);
   assert.match(homepage,/function playableWebHref\(row\)/);
   assert.doesNotMatch(homepage,/Fortnite 개발중|fortniteAction/);
   assert.match(homepage,/dataset\.homePlatformAvailableCount/);
@@ -174,7 +176,7 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.match(homepage,/publicRelease===true\?rp\.publicUrl:rp\.internalUrl/);
   assert.match(homepage,/publicRelease===true\?up\.publicUrl:up\.internalUrl/);
   assert.doesNotMatch(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
-  assert.match(homepage,/const direct=links\.roblox\|\|links\.unity\|\|''/);
+  assert.match(homepage,/const direct=links\.web\|\|links\.roblox\|\|links\.unity\|\|''/);
   assert.match(homepage,/exposureAuthority/);
   assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)!==JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
   assert.match(homepage,/function bindDirectGameLaunch\(\)/);
