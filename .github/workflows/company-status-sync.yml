@@ -115,6 +115,8 @@ jobs:
           echo "COMPANY_OWNER_WEB_CHANGED_IDS=$(paste -sd, "$out" || true)"
 
       - name: Sync company status and semantic production classes
+        env:
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
         run: |
           node --check tools/production-classification.mjs
           node --check tools/game-catalog-normalization.mjs
