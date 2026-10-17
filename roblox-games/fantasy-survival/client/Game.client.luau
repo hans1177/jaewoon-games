@@ -383,4 +383,166 @@ local function reportNativeFoundationReady()
 end
 task.defer(reportNativeFoundationReady)
 
+
+-- 세계수 지역 · 모바일 전투, 상태, 지역 지도, 환각은 기존 HUD와 기존 RemoteEvent에서 처리
+local worldTreeHud = Instance.new("Frame")
+worldTreeHud.Name = "WorldTreeHud"
+worldTreeHud.BackgroundColor3 = Color3.fromRGB(15, 33, 25)
+worldTreeHud.BackgroundTransparency = 0.15
+worldTreeHud.AnchorPoint = Vector2.new(1, 0)
+worldTreeHud.Position = UDim2.new(1, -12, 0, 12)
+worldTreeHud.Size = UDim2.fromOffset(220, 93)
+worldTreeHud.Visible = false
+worldTreeHud.Parent = gui
+local worldTreeCorner = Instance.new("UICorner")
+worldTreeCorner.CornerRadius = UDim.new(0, 11)
+worldTreeCorner.Parent = worldTreeHud
+local worldTreeTitle = Instance.new("TextLabel")
+worldTreeTitle.Name = "Region"
+worldTreeTitle.Size = UDim2.new(1, -12, 0, 31)
+worldTreeTitle.Position = UDim2.fromOffset(6, 2)
+worldTreeTitle.BackgroundTransparency = 1
+worldTreeTitle.TextScaled = true
+worldTreeTitle.TextColor3 = Color3.fromRGB(235, 224, 177)
+worldTreeTitle.Text = "세계수"
+worldTreeTitle.Parent = worldTreeHud
+local worldTreeInfo = Instance.new("TextLabel")
+worldTreeInfo.Name = "State"
+worldTreeInfo.Size = UDim2.new(1, -12, 0, 26)
+worldTreeInfo.Position = UDim2.fromOffset(6, 32)
+worldTreeInfo.BackgroundTransparency = 1
+worldTreeInfo.TextScaled = true
+worldTreeInfo.TextColor3 = Color3.fromRGB(208, 238, 210)
+worldTreeInfo.Text = "뿌리 0"
+worldTreeInfo.Parent = worldTreeHud
+local worldTreeMapButton = Instance.new("TextButton")
+worldTreeMapButton.Name = "WorldTreeMapButton"
+worldTreeMapButton.Text = "지역 지도"
+worldTreeMapButton.TextScaled = true
+worldTreeMapButton.TextColor3 = Color3.fromRGB(241, 252, 221)
+worldTreeMapButton.BackgroundColor3 = Color3.fromRGB(43, 92, 66)
+worldTreeMapButton.Size = UDim2.new(1, -12, 0, 30)
+worldTreeMapButton.Position = UDim2.fromOffset(6, 61)
+worldTreeMapButton.Parent = worldTreeHud
+Instance.new("UICorner", worldTreeMapButton).CornerRadius = UDim.new(0, 7)
+
+local worldTreeAttackButton = Instance.new("TextButton")
+worldTreeAttackButton.Name = "WorldTreeAttackButton"
+worldTreeAttackButton.AnchorPoint = Vector2.new(1, 1)
+worldTreeAttackButton.Position = UDim2.new(1, -12, 0.44, 0)
+worldTreeAttackButton.Size = UDim2.fromOffset(86, 66)
+worldTreeAttackButton.BackgroundColor3 = Color3.fromRGB(154, 74, 44)
+worldTreeAttackButton.TextColor3 = Color3.fromRGB(255, 252, 227)
+worldTreeAttackButton.TextScaled = true
+worldTreeAttackButton.Text = "공격"
+worldTreeAttackButton.Visible = false
+worldTreeAttackButton.Parent = gui
+Instance.new("UICorner", worldTreeAttackButton).CornerRadius = UDim.new(0, 14)
+worldTreeAttackButton.Activated:Connect(function()
+  if player:GetAttribute("WorldTreeArea") ~= "surface" then
+    remote:FireServer("worldtree-attack")
+  end
+end)
+
+local worldTreeMap = Instance.new("Frame")
+worldTreeMap.Name = "WorldTreeMap"
+worldTreeMap.AnchorPoint = Vector2.new(1, 0)
+worldTreeMap.Position = UDim2.new(1, -12, 0, 116)
+worldTreeMap.Size = UDim2.fromOffset(220, 185)
+worldTreeMap.BackgroundColor3 = Color3.fromRGB(20, 46, 31)
+worldTreeMap.Visible = false
+worldTreeMap.Parent = gui
+Instance.new("UICorner", worldTreeMap).CornerRadius = UDim.new(0, 11)
+local mapCopy = Instance.new("TextLabel")
+mapCopy.Name = "WorldTreeMapContent"
+mapCopy.BackgroundTransparency = 1
+mapCopy.Size = UDim2.new(1, -20, 1, -16)
+mapCopy.Position = UDim2.fromOffset(10, 8)
+mapCopy.TextColor3 = Color3.fromRGB(220, 245, 200)
+mapCopy.TextXAlignment = Enum.TextXAlignment.Left
+mapCopy.TextYAlignment = Enum.TextYAlignment.Top
+mapCopy.TextWrapped = true
+mapCopy.TextScaled = true
+mapCopy.Parent = worldTreeMap
+
+local worldTreeNotice = Instance.new("TextLabel")
+worldTreeNotice.Name = "WorldTreeNotice"
+worldTreeNotice.AnchorPoint = Vector2.new(0.5, 0)
+worldTreeNotice.Position = UDim2.new(0.5, 0, 0, 13)
+worldTreeNotice.Size = UDim2.new(0.65, 0, 0, 44)
+worldTreeNotice.BackgroundColor3 = Color3.fromRGB(25, 39, 28)
+worldTreeNotice.BackgroundTransparency = 0.12
+worldTreeNotice.TextColor3 = Color3.fromRGB(255, 239, 174)
+worldTreeNotice.TextWrapped = true
+worldTreeNotice.TextScaled = true
+worldTreeNotice.Visible = false
+worldTreeNotice.Parent = gui
+Instance.new("UICorner", worldTreeNotice).CornerRadius = UDim.new(0, 11)
+local worldNoticeSequence = 0
+
+local function refreshWorldTreeHud()
+  local area = player:GetAttribute("WorldTreeArea") or "surface"
+  local inside = area == "interior" or area == "underground"
+  worldTreeHud.Visible = inside
+  worldTreeAttackButton.Visible = inside
+  if not inside then worldTreeMap.Visible = false end
+  worldTreeTitle.Text = area == "interior" and "세계수 내부" or "세계수 지하"
+  local bound = player:GetAttribute("WorldTreeRooted") == true
+  local roots = player:GetAttribute("WorldTreeRoots") or 0
+  worldTreeInfo.Text = string.format("뿌리 %d | %s", roots, bound and "속박 · 공격 가능" or "이동 가능")
+  if area == "interior" then
+    mapCopy.Text = "세계수 내부\n북쪽: 지하로 내려가는 뿌리문\n남쪽: 지상으로 나가는 문\n중앙: 거대 꽃, 골렘, 뱀\n\n골렘은 먼저 공격하지 않아."
+  elseif area == "underground" then
+    mapCopy.Text = "세계수 지하\n북쪽: 고대 뿌리와 봉인 제단\n남쪽: 내부로 돌아가는 문\n뿌리 1개로 녹스바르 소환\n\n보스 처치: " .. tostring(player:GetAttribute("WorldTreeBossClears") or 0)
+  end
+end
+worldTreeMapButton.Activated:Connect(function()
+  worldTreeMap.Visible = worldTreeHud.Visible and not worldTreeMap.Visible
+end)
+for _, attribute in ipairs({"WorldTreeArea", "WorldTreeRoots", "WorldTreeRooted", "WorldTreeBossClears"}) do
+  player:GetAttributeChangedSignal(attribute):Connect(refreshWorldTreeHud)
+end
+refreshWorldTreeHud()
+
+remote.OnClientEvent:Connect(function(kind, payload)
+  if kind == "WORLD_TREE_NOTICE" and type(payload) == "string" then
+    worldNoticeSequence += 1
+    local sequence = worldNoticeSequence
+    worldTreeNotice.Text = payload
+    worldTreeNotice.Visible = true
+    task.delay(2.4, function()
+      if sequence == worldNoticeSequence then worldTreeNotice.Visible = false end
+    end)
+  elseif kind == "WORLD_TREE_HIT" and type(payload) == "table" then
+    worldTreeInfo.Text = string.format("%s | 체력 %d/%d", tostring(payload.name), payload.hp or 0, payload.maxHp or 1)
+    task.delay(0.7, refreshWorldTreeHud)
+  elseif kind == "WORLD_TREE_HALLUCINATION" then
+    -- 뿌리를 뱀으로 잘못 인식하는 착시. 클라이언트 효과로만 존재하며 타격/드랍/저장 불가
+    local character = player.Character
+    local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+    if not rootPart or player:GetAttribute("WorldTreeArea") ~= "interior" then return end
+    local count = math.clamp(tonumber(payload and payload.count) or 5, 1, 6)
+    local seconds = math.clamp(tonumber(payload and payload.seconds) or 3, 0.5, 4)
+    for i = 1, count do
+      local angle = i * math.pi * 2 / count
+      local at = rootPart.Position + Vector3.new(math.cos(angle) * 13, -2, math.sin(angle) * 13)
+      local illusion = Instance.new("Part")
+      illusion.Name = "RootSnakeIllusion"
+      illusion.Size = Vector3.new(2.7, 2.7, 8)
+      illusion.CFrame = CFrame.lookAt(at, rootPart.Position)
+      illusion.Anchored = true
+      illusion.CanCollide = false
+      illusion.CanTouch = false
+      illusion.CanQuery = false
+      illusion.Material = Enum.Material.Neon
+      illusion.Color = Color3.fromRGB(80, 178, 103)
+      illusion.Transparency = 0.27
+      illusion.Parent = workspace
+      verifiedLearningTweenService:Create(illusion, TweenInfo.new(seconds), {Transparency=1, Color=Color3.fromRGB(95, 68, 51)}):Play()
+      game:GetService("Debris"):AddItem(illusion, seconds + 0.15)
+    end
+  end
+end)
+
+
 CommonUI.AdaptActionMenu(gui,root,list,title,status,nil,multiplayerStatus,Config.Actions[1]and{label=CommonUI.ActionLabel(Config.Actions[1],1),activate=function()remote:FireServer(Config.Actions[1].Id)end}or nil)
