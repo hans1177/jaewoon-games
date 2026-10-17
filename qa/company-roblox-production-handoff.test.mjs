@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildGameSpecificBuildUpDirective} from '../tools/company-build-up-directive.mjs';
-import {buildPrompt,buildGenerationRetryPrompt,buildFocusedReplaceOnlyPrompt} from '../tools/vibe2-source-worker.mjs';
+import {buildPrompt,buildGenerationRetryPrompt,buildFocusedReplaceOnlyPrompt,selectWeb3dEngine} from '../tools/vibe2-source-worker.mjs';
 
 const server='roblox-games/garden/server/Game.server.luau';
 const client='roblox-games/garden/client/Game.client.luau';
@@ -33,6 +33,27 @@ test('genre production design reaches the real source worker and compact retry w
   assert.match(retry,/allowed write scope/);
   assert.match(retry,/owner-remove-1/);
   assert.match(retry,/owner-add-2/);
+});
+
+test('ordinary Web 3D chooses engine by existing source and mobile budget without touching Roblox',()=>{
+  const web={target:'web',gameId:'garden',goal:'repair source',selectedTask:{type:'implementation'},department:'development'};
+  const existing=(content)=>[{path:'web-games/garden/index.html',editable:true,content}];
+  assert.equal(selectWeb3dEngine({order:web,files:existing('<main></main>')}).engine,'PLAYCANVAS');
+  assert.equal(selectWeb3dEngine({order:{...web,goal:'vehicle physics character controller'},files:existing('<canvas></canvas>')}).engine,'BABYLON_JS');
+  assert.equal(selectWeb3dEngine({order:web,files:existing('new THREE.WebGLRenderer(); new THREE.Scene();')}).engine,'THREE_JS');
+  assert.equal(selectWeb3dEngine({order:{...web,preferredWeb3dEngine:'PLAYCANVAS'},files:existing('new BABYLON.Engine(canvas)')}).engine,'BABYLON_JS','existing framework wins');
+  assert.equal(selectWeb3dEngine({order:web,files:existing("new THREE.Scene(); new BABYLON.Engine(canvas);")}).engine,'EXISTING_ENGINE_REVIEW_REQUIRED');
+  const files=existing('<html><canvas id="game"></canvas></html>');
+  const prompt=buildPrompt(web,{files},[files[0].path]);
+  assert.match(prompt,/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
+  assert.match(prompt,/engine=PLAYCANVAS/);
+  assert.match(prompt,/WebGL2/);
+  assert.match(prompt,/device pixel ratio <= 1.5/);
+  assert.match(prompt,/document\.visibilityState/);
+  assert.match(prompt,/orientation\/viewport changes/);
+  assert.match(prompt,/save\/load/);
+  assert.match(prompt,/No unverified FPS claims/);
+  assert.doesNotMatch(buildPrompt({...web,target:'roblox'},{files},[files[0].path]),/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
 });
 
 test('non-Roblox worker cannot consume a stale Roblox production plan',()=>{
