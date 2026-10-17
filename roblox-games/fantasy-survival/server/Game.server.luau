@@ -245,7 +245,14 @@ local function worldPart(parent, name, size, cf, color, material, solid, shape)
   p.Color = color
   p.TopSurface = Enum.SurfaceType.Smooth
   p.BottomSurface = Enum.SurfaceType.Smooth
-  if shape then p.Shape = shape end
+  if shape then
+    p.Shape = shape
+    if shape == Enum.PartType.Cylinder then
+      -- 원기둥의 실제 길이축은 X축이므로 Y축 기준 높이에 맞춘다.
+      p.Size = Vector3.new(size.Y, size.X, size.Z)
+      p.CFrame = cf * CFrame.Angles(0, 0, math.rad(90))
+    end
+  end
   p.Parent = parent
   return p
 end
@@ -532,11 +539,11 @@ for i = 1, 3 do
   local a = i * math.pi * 2 / 3
   local pos = worldTreeCave + Vector3.new(math.cos(a) * 44, -0.5, math.sin(a) * 44)
   local node = worldPart(cave, "AncientRootPickup" .. i, Vector3.new(8, 5, 8), CFrame.new(pos), worldMoss, Enum.Material.Wood, true, Enum.PartType.Ball)
-  rootRespawns[i] = 0
+  rootRespawns[i] = {}
   local prompt = worldPrompt(node, "고대 뿌리 채집", function(player)
     if worldTreeRegions[player] ~= "underground" then return end
-    if os.clock() < rootRespawns[i] then worldNotice(player, "뿌리 재생 중") return end
-    rootRespawns[i] = os.clock() + 60
+    if os.clock() < (rootRespawns[i][player.UserId] or 0) then worldNotice(player, "뿌리 재생 중") return end
+    rootRespawns[i][player.UserId] = os.clock() + 60
     worldLivingRoot(player)
   end)
   node:SetAttribute("RootRespawnSeconds", 60)
