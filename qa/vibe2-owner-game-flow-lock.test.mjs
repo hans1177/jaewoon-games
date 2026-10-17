@@ -95,6 +95,62 @@ test('lock external Gemini development as Vibe source worker, never as designer 
   contains(core,['tools/vibe2-fan-in-review.mjs']);
 });
 
+test('lock Roblox and general Web as concurrent Vibe source-development platforms in one canonical stage flow',()=>{
+  const scope=policy.directNativeDualPlatformDevelopment.ownerActiveDevelopmentScope20261009;
+  assert.deepEqual(scope.activeTargets,['ROBLOX','WEB']);
+  assert.equal(policy.developmentAccess.ROBLOX,'ALWAYS_ALLOWED');
+  assert.equal(policy.developmentAccess.WEB,'ALWAYS_ALLOWED');
+  assert.equal(scope.independentGameExecution,true);
+  assert.equal(scope.sameResponsibleFileWriteConflictSerializes,true);
+  const planner=read('tools/vibe2-auto-planner.mjs');
+  contains(planner,[
+    "if(project.engine==='roblox')return",
+    "access.ROBLOX!=='OWNER_HOLD'",
+    "if(project.engine!=='web')return false;",
+    "return access.WEB==='ALWAYS_ALLOWED'&&ownerScope.activeTargets.includes('WEB')",
+    "engine:'web'",
+    "engine:'roblox'"
+  ]);
+  const core=workflow('vibe2-continuous-core.yml');
+  // Different platform work orders, one source worker and one guarded fan-in.
+  contains(core,[
+    'tools/vibe2-source-worker.mjs',
+    'tools/vibe2-fan-in-review.mjs',
+    'VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API',
+    'Acquire shared Work Lock before source write'
+  ]);
+  const fanIn=read('tools/vibe2-fan-in-review.mjs');
+  contains(fanIn,[
+    "if(platformTarget==='web')",
+    "evidence.add('web-f0-f9-verified')",
+    "evidence.add('web-f9-verified')",
+    'releaseCandidates.push('
+  ]);
+  const release=workflow('vibe2-candidate-release.yml');
+  ordered(release,[
+    'web-release:',
+    'Confirm Web F9 fan-in handoff before deployment',
+    'Confirm playable Web deployment authority',
+    'Promote approved web source root through reviewed PR',
+    'Settle web result and continue correct source queue'
+  ]);
+  contains(release,[
+    'WEB_F9_VERIFIED=YES',
+    'Cloudflare Pages main deployment check',
+    'VIBE2_WEB_AUTO_DEPLOY=PASS',
+    'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED_AFTER_WEB_DEPLOY',
+    'ROBLOX_PRE_F9_CANONICAL_PUBLISH=FORBIDDEN',
+    'ROBLOX_F0_F9_RUNTIME_HANDOFF=PASS'
+  ]);
+  const flow=policy.developmentLifecycleMachine.verifiedF0F9PublicationLoop;
+  for(const platform of ['ROBLOX','WEB']){
+    assert.ok(flow.appliesTo.includes(platform),platform+':F0_F9_POLICY_MISSING');
+    assert.ok(flow.platformBindings[platform]?.f9Authority,platform+':F9_AUTHORITY_MISSING');
+    assert.ok(flow.platformBindings[platform]?.deployRoute,platform+':RELEASE_ROUTE_MISSING');
+    assert.equal(flow.platformBindings[platform].nextCycleRoute,'vibe2-fanin-refill',platform+':NEXT_CYCLE_ROUTE_MISMATCH');
+  }
+});
+
 test('lock F0 to F9 real verification and pre-F9 publication restrictions',()=>{
   const f=policy.developmentLifecycleMachine.verifiedF0F9PublicationLoop;
   assert.equal(f.f9Terminal,false);
