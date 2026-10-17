@@ -65,7 +65,7 @@ env:
 
 jobs:
   download_ui_assets:
-    if: ${{ (github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true)) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]'))) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true)) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-all-assets]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -150,7 +150,7 @@ jobs:
           set -euo pipefail
           node tools/simple-rpg-propose-verified-downloads.mjs external
   download_wildlife_assets:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_wildlife_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-wildlife]')) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_wildlife_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-all-assets]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -292,7 +292,7 @@ jobs:
           set -euo pipefail
           node tools/simple-rpg-propose-verified-downloads.mjs wildlife
   download_icons_vfx_npc:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_icons_vfx_npc == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-icons-vfx-npc]')) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_icons_vfx_npc == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-icons-vfx-npc]') || contains(github.event.head_commit.message, '[download-all-assets]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     permissions:
@@ -405,7 +405,7 @@ jobs:
           set -euo pipefail
           node tools/simple-rpg-propose-verified-downloads.mjs icons
   download_priority_cc0_assets:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_priority_cc0_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[priority-cc0-download]')) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_priority_cc0_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[priority-cc0-download]') || contains(github.event.head_commit.message, '[download-all-assets]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -472,7 +472,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   publish:
-    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-icons-vfx-npc]') || contains(github.event.head_commit.message, '[priority-cc0-download]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true || inputs.download_icons_vfx_npc == true || inputs.download_priority_cc0_assets == true)) }}
+    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-icons-vfx-npc]') || contains(github.event.head_commit.message, '[priority-cc0-download]') || contains(github.event.head_commit.message, '[download-all-assets]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true || inputs.download_icons_vfx_npc == true || inputs.download_priority_cc0_assets == true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
