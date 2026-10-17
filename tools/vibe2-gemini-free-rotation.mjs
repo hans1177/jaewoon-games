@@ -5,17 +5,30 @@ export const GEMINI_FREE_MODELS=Object.freeze(['gemini-3.8-flash','gemini-3.5-fl
 const cooldownUntil=new Map();
 let nextSlot=0;
 const clean=value=>String(value??'').trim();
-function infrastructureFailure(message){
+function infrastructureFailure(message,retryAt=0){
   const error=new Error(message);
   error.vibe2InfrastructureFailure=true;
   error.vibe2GenerationFailureClass='EXTERNAL_AI_UNAVAILABLE';
+  if(Number.isFinite(retryAt)&&retryAt>Date.now()){
+    error.retryAfterMs=Math.max(1000,retryAt-Date.now());
+    error.nextRetryAt=new Date(retryAt).toISOString();
+  }
   return error;
 }
-function retryDelayMs(response,status){
+export function retryDelayMs(response,status,body=null){
   const value=clean(response?.headers?.get?.('retry-after'));
   const seconds=Number(value);
   let delay=Number.isFinite(seconds)&&seconds>0?seconds*1000:Date.parse(value)-Date.now();
-  if(!Number.isFinite(delay)||delay<=0)delay=status===404?86400000:status===429?60000:15000;
+  if(!Number.isFinite(delay)||delay<=0){
+    const providerDelay=clean(body?.error?.details?.find?.(row=>row?.['@type']?.includes('RetryInfo'))?.retryDelay);
+    if(/^\\d+(?:\\.\\d+)?s$/.test(providerDelay))delay=Number(providerDelay.slice(0,-1))*1000;
+  }
+  if(!Number.isFinite(delay)||delay<=0){
+    const detail=clean(body?.error?.message);
+    const dailyQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i.test(detail);
+    // Daily free-tier exhaustion must not hot-loop during the next GitHub Actions wave.
+    delay=status===404||(status===429&&dailyQuota)?86400000:status===429?60000:15000;
+  }
   return Math.min(86400000,Math.max(1000,delay));
 }
 export function verifiedFreeGeminiModels(env=process.env){
@@ -52,7 +65,11 @@ export async function requestGeminiFreePair({
         // Auth/billing/project access errors must never trigger key switching or paid routing.
         if([401,402,403].includes(status))throw infrastructureFailure('GEMINI_AUTH_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+status);
         if([404,429,500,502,503,504].includes(status)){
-          cooldownUntil.set(model,Date.now()+retryDelayMs(response,status));
+          let errorBody=null;
+          if(status===429&&typeof response.json==='function'){
+            try{errorBody=await response.json();}catch{/* Keep the HTTP status authoritative. */}
+          }
+          cooldownUntil.set(model,Date.now()+retryDelayMs(response,status,errorBody));
           failures.push(model+':HTTP_'+status);
           console.log('VIBE2_GEMINI_FREE_ROTATE='+model+':HTTP_'+status);
           continue;
@@ -62,12 +79,17 @@ export async function requestGeminiFreePair({
       const payload=await response.json();
       const text=(payload.candidates?.[0]?.content?.parts||[])
         .filter(part=>typeof part?.text==='string').map(part=>part.text).join('');
-      if(!text.trim())throw infrastructureFailure('GEMINI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
+      if(!text.trim()){
+        cooldownUntil.set(model,Date.now()+15000);
+        failures.push(model+':EMPTY_OUTPUT');
+        console.log('VIBE2_GEMINI_FREE_ROTATE='+model+':EMPTY_OUTPUT');
+        continue;
+      }
       console.log('VIBE2_EXTERNAL_AI_MODEL_USED='+model);
       return{text,model};
     }catch(error){
       // A cancelled/failed transport may rotate once; an authorization or content failure may not.
-      if(error?.name==='AbortError'||error instanceof TypeError){
+      if(error?.name==='AbortError'||error instanceof TypeError||error instanceof SyntaxError){
         cooldownUntil.set(model,Date.now()+15000);
         failures.push(model+':TRANSPORT_OR_TIMEOUT');
         console.log('VIBE2_GEMINI_FREE_ROTATE='+model+':TRANSPORT_OR_TIMEOUT');
@@ -76,5 +98,8 @@ export async function requestGeminiFreePair({
       throw error;
     }finally{clearTimeout(timeout);}
   }
-  throw infrastructureFailure('GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:'+failures.join(','));
+  const nextRetryAt=Math.min(...models.map(model=>cooldownUntil.get(model)||Infinity));
+  const retryAt=Number.isFinite(nextRetryAt)?nextRetryAt:0;
+  const suffix=retryAt?':NEXT_RETRY_AT='+new Date(retryAt).toISOString():'';
+  throw infrastructureFailure('GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:'+failures.join(',')+suffix,retryAt);
 }
