@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1yv5wck",
+      "worker": "vibe2",
+      "taskId": "territory-war-studio-evolution-roblox-stability-v1",
+      "gameId": "territory-war",
+      "files": [
+        "roblox-games/territory-war/client/Game.client.luau",
+        "roblox-games/territory-war/shared/GameConfig.luau",
+        "roblox-games/territory-war/server/Game.server.luau"
+      ],
+      "baseSha": "e81c86f9fe23db1f092b47391ea9338a9275f6df",
+      "runId": "39065241553",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-17T20:24:26.417Z",
+      "expiresAt": "2026-10-17T21:09:26.417Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:territory-war-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
