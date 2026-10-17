@@ -93,8 +93,8 @@ test('lifecycle uses Unity Web as the pre-native development floor and keeps rel
   assert.equal(life.gameDevelopmentAuthority.ownsInternalPlaytestRepair,true);
 });
 
-test('directive mirrors Roblox-only development and holds Unity Web',()=>{
-  assert.equal(directive.currentExecutionMode,'ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT');
+test('directive mirrors Roblox and genuine Web development while holding Unity Web',()=>{
+  assert.equal(directive.currentExecutionMode,'ROBLOX_AND_GENERAL_WEB_3D_CONTINUOUS_DEVELOPMENT');
   assert.equal(Object.hasOwn(directive,'legacyWebFirstPolicy'),false);
   assert.equal(directive.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,false);
   assert.equal(directive.directNativeDualPlatformDevelopment.unityWebEnabled,false);
