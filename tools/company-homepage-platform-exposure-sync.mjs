@@ -128,6 +128,17 @@ function unityState(item={},policy={}){
     publicUrl:publicRelease?clean(item.unityPublicUrl||item.unityStoreUrl)||null:null
   };
 }
+// Ignore only the volatile collection timestamp; all per-game timestamps, flags,
+// URLs, version and policy fingerprints remain exact-match publication evidence.
+export function reuseUnchangedHomepageExposure(previous,candidate){
+  const valid=row=>row&&row.version===3&&row.authority==='company-runtime'
+    &&row.internalCompanySurface===true&&Array.isArray(row.supportedPlatforms)
+    &&Array.isArray(row.games)&&Number.isFinite(Date.parse(row.generatedAt));
+  if(!valid(previous)||!valid(candidate))return candidate;
+  const stable=row=>{const copy={...row};delete copy.generatedAt;return copy;};
+  return JSON.stringify(stable(previous))===JSON.stringify(stable(candidate))?previous:candidate;
+}
+
 const PLATFORM_STATE_BUILDERS={ROBLOX:robloxState,UNITY:unityState};
 
 export function buildHomepagePlatformExposure({queue={},catalog={},policy={}}={}){
