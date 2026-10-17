@@ -1276,7 +1276,10 @@ test('asset Web zero-output and first-output timers keep the normal long model b
   assert.match(source,/ASSET_DEVELOPMENT_WEB_TIMEOUT_MS=Math\.max\(240000,DEFAULT_TIMEOUT_MS\)/);
   assert.match(source,/assetDevelopmentLane&&target==='web'\?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS/);
   assert.match(source,/firstOutputTimeoutMs=assetDevelopmentLane&&target==='web'\?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:Math\.min\(MODEL_FIRST_OUTPUT_TIMEOUT_MS,timeoutMs\)/);
-  assert.match(source,/setTimeout\(\(\)=>controller\.abort\(\),Math\.max\(10000,timeoutMs\)\)/);
+  // Timeout transport moved to the shared external Gemini adapter; do not weaken the budget.
+  const externalAdapter=fs.readFileSync(new URL('../tools/vibe2-gemini-free-rotation.mjs',import.meta.url),'utf8');
+  assert.match(source,/requestGeminiFreePair\(/);
+  assert.match(externalAdapter,/setTimeout\(\(\)=>controller\.abort\(\),Math\.max\(10000,Number\(timeoutMs\)\|\|240000\)\)/);
 });
 
 test('Web fully consumes the same visual loadout as Unity and imports a shared customization document',()=>{

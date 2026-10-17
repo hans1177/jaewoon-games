@@ -3,6 +3,7 @@
 // 안전: 게임 소스/중앙 정책 직접 수정 금지, 정확 일치 편집만 허용, 원문 모델 출력 저장 금지.
 
 import fs from 'node:fs';
+import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
@@ -10,7 +11,7 @@ import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 import { reviewSystemAiQaContract } from './company-system-ai-qa-contract-review.mjs';
 
 const clean=v=>String(v??'').trim();
-const MODEL=process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-2.5-flash';
+const MODEL=process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-3.8-flash';
 const TIMEOUT=Math.max(30000,Math.min(600000,Number(process.env.SYSTEM_AI_TIMEOUT_MS||360000)));
 const NUM_PREDICT=Math.max(4096,Math.min(16384,Number(process.env.SYSTEM_AI_NUM_PREDICT||8192)));
 const MAX_TOTAL_CONTEXT=420000;
@@ -37,29 +38,15 @@ function parseModelJson(raw=''){const text=clean(raw).replace(/^```(?:json)?/i,'
 async function requestModel(prompt,{maxPredict=NUM_PREDICT}={}){
   const key=clean(process.env.GEMINI_API_KEY);
   if(!key)throw new Error('SYSTEM_AI_GEMINI_KEY_MISSING_NO_LOCAL_FALLBACK');
-  const model=clean(process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-2.5-flash');
-  if(!/^gemini-[a-z0-9.-]+$/.test(model))throw new Error('SYSTEM_AI_GEMINI_MODEL_INVALID');
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),TIMEOUT);
-  try{
-    const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{
-      method:'POST',signal:controller.signal,
-      headers:{'content-type':'application/json','x-goog-api-key':key},
-      body:JSON.stringify({contents:[{role:'user',parts:[{text:String(prompt)}]}],
-        generationConfig:{temperature:.05,maxOutputTokens:Math.min(16384,Math.max(512,maxPredict)),responseMimeType:'application/json'}})
-    });
-    if(!response.ok){
-      if([402,403,429].includes(response.status))throw new Error('SYSTEM_AI_GEMINI_QUOTA_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+response.status);
-      throw new Error('SYSTEM_AI_GEMINI_HTTP_ERROR_NO_LOCAL_FALLBACK:'+response.status);
-    }
-    const data=await response.json();
-    const raw=(data.candidates?.[0]?.content?.parts||[]).filter(p=>typeof p.text==='string').map(p=>p.text).join('');
-    if(!raw.trim())throw new Error('SYSTEM_AI_GEMINI_EMPTY_OUTPUT_NO_LOCAL_FALLBACK');
-    return raw;
-  }catch(error){
-    if(error?.name==='AbortError')throw new Error('SYSTEM_AI_GEMINI_TIMEOUT_NO_LOCAL_FALLBACK');
-    throw error;
-  }finally{clearTimeout(timer);}
+  const declared=clean(process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-3.8-flash');
+  if(declared!=='gemini-3.8-flash')throw new Error('SYSTEM_AI_GEMINI_MODEL_INVALID');
+  const {text}=await requestGeminiFreePair({
+    apiKey:key,
+    contents:[{role:'user',parts:[{text:String(prompt)}]}],
+    temperature:.05,maxOutputTokens:Math.min(16384,Math.max(512,maxPredict)),
+    timeoutMs:TIMEOUT,responseMimeType:'application/json'
+  });
+  return text;
 }
 
 function applyExactEdit(file,find,replace){const original=fs.readFileSync(file,'utf8'),first=original.indexOf(find);if(first<0)throw new Error(`SYSTEM_AI_FIND_MISSING:${file}`);if(original.indexOf(find,first+find.length)>=0)throw new Error(`SYSTEM_AI_FIND_NOT_UNIQUE:${file}`);fs.writeFileSync(file,original.slice(0,first)+replace+original.slice(first+find.length),'utf8');}
