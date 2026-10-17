@@ -297,6 +297,8 @@ test('external-model monsters no longer use hand-made alert and return-home pose
   assert.ok(client.includes('if entry.LastFrame ~= rootFrame or entry.LastOffset ~= offset then'));
   assert.ok(client.includes('entry.LastFrame = rootFrame'));
   assert.ok(client.includes('entry.LastOffset = offset'))
+  assert.ok(client.includes('for _, enemy in ipairs(world:GetChildren()) do'));
+  assert.ok(server.includes('enemy.Parent = civHub'));
   assert.match(client, /enemy:GetAttribute\("CreatureAssetSource"\) == "StudioImported"/);
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
@@ -399,6 +401,8 @@ test('handmade creature poses stay removed, imported mesh movement remains', () 
   assert.ok(client.includes('if entry.LastFrame ~= rootFrame or entry.LastOffset ~= offset then'));
   assert.ok(client.includes('entry.LastFrame = rootFrame'));
   assert.ok(client.includes('entry.LastOffset = offset'))
+  assert.ok(client.includes('for _, enemy in ipairs(world:GetChildren()) do'));
+  assert.ok(server.includes('enemy.Parent = civHub'));
   assert.match(client, /CreatureVisualAssetId/);
 });
 
