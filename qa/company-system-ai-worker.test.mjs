@@ -527,7 +527,12 @@ test('external Gemini system worker never falls back to local Ollama',()=>{
   const worker=fs.readFileSync('tools/company-system-ai-worker.mjs','utf8');
   const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
   assert.match(worker,/SYSTEM_AI_GEMINI_KEY_MISSING_NO_LOCAL_FALLBACK/);
-  assert.match(worker,/generativelanguage\.googleapis\.com/);
+  assert.match(worker,/vibe2-gemini-free-rotation\.mjs/);
+  assert.match(worker,/requestGeminiFreePair\(/);
+  const adapter=fs.readFileSync('tools/vibe2-gemini-free-rotation.mjs','utf8');
+  assert.match(adapter,/generativelanguage\.googleapis\.com/);
+  assert.match(workflow,/SYSTEM_AI_GEMINI_MODEL: gemini-3\.8-flash/);
+  assert.match(workflow,/VIBE2_GEMINI_BACKUP_MODEL: gemini-3\.5-flash-lite/);
   assert.doesNotMatch(worker,/:11434|127\.0\.0\.1|\/api\/generate/);
   assert.match(workflow,/SYSTEM_AI_LOCAL_AI_ENABLED: 'false'/);
   assert.match(workflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
