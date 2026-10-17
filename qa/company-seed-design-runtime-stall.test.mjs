@@ -8,19 +8,19 @@ const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const artbookPipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 
 test('seed design runtime preserves target validation without starting local model servers',()=>{
-  assert.match(workflow,/group: company-seed-design-runtime-\\$\\{\\{ github\\.sha \\}\\}/);
+  assert.match(workflow,/group: company-seed-design-runtime-\$\{\{ github\.sha \}\}/);
   assert.match(workflow,/STALE_SEED_TARGET_SKIP/);
-  assert.match(workflow,/TARGET_SEED_ID: \\$\\{\\{ matrix\\.target\\.seed_id \\}\\}/);
-  assert.doesNotMatch(workflow,/ollama pull|ollama serve|uses:.*prepare-ollama|127\\.0\\.0\\.1:11434/);
+  assert.match(workflow,/TARGET_SEED_ID: \$\{\{ matrix\.target\.seed_id \}\}/);
+  assert.doesNotMatch(workflow,/ollama pull|ollama serve|uses:.*prepare-ollama|127\.0\.0\.1:11434/);
 });
 test('seed design external execution remains parallel without a local model cache prerequisite',()=>{
   assert.match(workflow,/externalMatrixBatchMax/);
   assert.match(workflow,/max-parallel:/);
-  assert.doesNotMatch(workflow,/\\.ollama\\/models|OLLAMA_MAX_LOADED_MODELS|prepare-ollama/);
+  assert.doesNotMatch(workflow,/\.ollama\/models|OLLAMA_MAX_LOADED_MODELS|prepare-ollama/);
 });
 test('obsolete local model downloader is removed rather than retried',()=>{
   assert.equal(fs.existsSync('.github/actions/prepare-ollama/action.yml'),false);
-  assert.doesNotMatch(workflow,/ollama pull|ollama list|ollama-model-preload|ollama\\.com\\/download/);
+  assert.doesNotMatch(workflow,/ollama pull|ollama list|ollama-model-preload|ollama\.com\/download/);
 });
 test('engine pushes and normal dispatch preserve active DESIGN_ONLY work',()=>{
   const triggerSection=workflow.slice(0,workflow.indexOf('\npermissions:'));
