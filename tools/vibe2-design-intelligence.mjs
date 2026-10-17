@@ -304,6 +304,37 @@ function evaluateConstraints(task = {}) {
   });
 }
 
+// 메인 · 기존 A/B/C/D/@ 외 설계 수정은 원래 Game Designer AI 책임으로 인계한다.
+// 디자인 브리프와 게임 ID만 넘기며 엔진 소스·밸런스·저장 규칙은 변경하지 않는다.
+function existingDesignerHandoff(task = {}) {
+  const requested=task.designChange===true || clean(task.type).toLowerCase()==='design'
+    || clean(task.department).toLowerCase()==='design';
+  const fields=[
+    ...(Array.isArray(task.proposedDesignChanges)?task.proposedDesignChanges:[]),
+    ...(Array.isArray(task.designFields)?task.designFields:[]),
+    ...(task.designScope?[task.designScope]:[])
+  ].map(row=>typeof row==='string'?clean(row):clean(row?.path||row?.field||row?.scope)).filter(Boolean);
+  const insideGrammar=field=>/^(?:MAIN|A|B|C|D|@)(?:$|[.\/[ ])/i.test(field)
+    ||/^creativeGrammar(?:$|[.\/[ ])/i.test(field);
+  const required=requested&&(!fields.length||fields.some(field=>!insideGrammar(field)));
+  const gameId=clean(task.gameId),requestId=clean(task.id||task.taskId),goal=clean(task.goal);
+  const ready=/^[a-z0-9][a-z0-9-]{0,79}$/.test(gameId)
+    &&/^[a-zA-Z0-9_.:-]{1,100}$/.test(requestId)
+    &&goal.length>0&&goal.length<=2000
+    &&['ROBLOX','WEB'].includes(clean(task.target).toUpperCase());
+  return freeze({
+    required,ready:required&&ready,
+    status:required?(ready?'DESIGNER_INTAKE_REQUIRED':'DESIGNER_INTAKE_INPUT_INVALID'):'NOT_REQUIRED',
+    gameId:required?gameId:null,requestId:required?requestId:null,
+    request:required?goal:null,changeFields:freezeList(fields),
+    owner:'EXISTING_GAME_DESIGNER',
+    existingModule:'tools/company-design-cycle.mjs',
+    existingWorkflow:'.github/workflows/company-seed-design-runtime.yml',
+    designCycleExecuted:false,requestPersisted:false,sourceMutationAuthorized:false,
+    authorityExpanded:false,runtimeVerified:false
+  });
+}
+
 function evaluateDesigner(task = {}) {
   const goal = clean(task.goal);
   const designChange = task.designChange === true || clean(task.type).toLowerCase() === 'design';
@@ -538,6 +569,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
   const stability = evaluateStabilityTriage(task);
   const defectOwnership = evaluateDefectOwnership(task, stability);
   const designer = evaluateDesigner(task);
+  const designerHandoff = existingDesignerHandoff(task);
   const blueprint = evaluateBlueprint(task, designer);
   const integrity = evaluateDesignIntegrity(task);
   const diversity = evaluateContentDiversity(task);
@@ -549,6 +581,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
   const playerModel = evaluatePlayerModel(task);
   const simulation = evaluateSimulation(task);
   const hardBlockers = unique([
+    ...(designerHandoff.required?[designerHandoff.ready?'DESIGNER_HANDOFF_REQUIRED':'DESIGNER_INTAKE_INPUT_INVALID']:[]),
     ...(designer.status === 'BLOCKED' ? designer.issues : []),
     ...(constraints.blockers || []),
     ...(blueprint.materialDesignChange && blueprint.issues.length ? blueprint.issues : []),
@@ -598,6 +631,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     stages,
     stability,
     defectOwnership,
+    designerHandoff,
     blueprint,
     integrity,
     diversity,
