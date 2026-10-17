@@ -7485,7 +7485,6 @@
     }
   },
   "changeRecord": {
-    "policySteward20261017": {"id":"OWNER_FOUR_DOC_POLICY_STEWARD_2026_10_17","authority":"OWNER_DIRECTIVE_2026-10-17","operation":"NONBLOCKING_FOUR_DOC_MIRROR_RECONCILIATION","latestExplicitOwnerInstructionWins":true,"noNewGameplayPipeline":true,"existingQaAndSecurityUnchanged":true},
     "id": "DIRECT_NATIVE_POLICY_DRIFT_CLEANUP_2026-09-23",
     "documentIsCode": true,
     "reason": "REMOVE_REMAINING_WEB_FIRST_AND_UEFN_ACTIVE_SCHEDULING_DRIFT_FROM_THE_OWNER_LOCKED_ROBLOX_UNITY_DIRECT_NATIVE_MACHINE_CONTRACT",
@@ -25855,34 +25854,6 @@
     }
   },
   "centralDocumentation": {
-    "policySteward": {
-      "version": 1,
-      "role": "CENTRAL_POLICY_STEWARD",
-      "authority": "OWNER_DIRECTIVE_2026-10-17",
-      "managedDocuments": [
-        "company-learning/platform-release-roadmap.json",
-        "company-learning/company-log-map.json",
-        "company-learning/company-architecture-map.json",
-        "company-learning/security-immune-system.json"
-      ],
-      "canonicalOwnerSource": "company-learning/platform-release-roadmap.json",
-      "latestOwnerDirectivePath": "ownerActiveDevelopmentScope20261009",
-      "precedence": "MOST_RECENT_EXPLICIT_OWNER_DIRECTIVE_IN_APPROVED_MAIN_POLICY",
-      "staleInstructionAction": "IGNORE_SUPERSEDED_DIRECTIVE_AND_REPAIR_VERIFIABLE_MIRROR_DRIFT",
-      "autoRepairScope": "NON_AUTHORITATIVE_MIRROR_METADATA_ONLY",
-      "neverWriteCanonicalPolicy": true,
-      "ambiguousPolicyConflictAction": "REPORT_FOR_OWNER_REVIEW_WITHOUT_BLOCKING_UNRELATED_GAMES",
-      "ownerPolicySemanticChangeAction": "REVIEW_AND_VERIFY_THROUGH_EXISTING_CENTRAL_POLICY_SECURITY_GATES",
-      "execution": "EXISTING_RECORDS_GOVERNANCE_JOB_ONLY_NO_NEW_PIPELINE",
-      "developmentFlow": "NON_BLOCKING_SEPARATE_FROM_GAME_WORKERS",
-      "mayBlockGameForDocumentMirrorDrift": false,
-      "mayOverrideExistingExplicitOwnerHold": false,
-      "mayChangeGameCodeSaveBalanceQueueOrRelease": false,
-      "securityQaReleaseGatesUnchanged": true,
-      "noPassingUnverifiedEvidence": true,
-      "autoSyncMode": "DOC_CHANGE_AND_EXISTING_DAILY_RECORDS_GOVERNANCE",
-      "policyMirrorMayCreatePolicy": false
-    },
     "version": 4,
     "status": "CANONICAL_MACHINE_DOCUMENTATION_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-09-22",
