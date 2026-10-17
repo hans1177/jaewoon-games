@@ -66,7 +66,7 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
   assert.equal(api.internalReleaseRows({games:[dev]},{}).length,0,'development must not be falsely promoted');
   const card=api.buildCard(dev);
   assert.match(card,/Roblox · 개발 중/);
-  assert.match(card,/Unity 앱 · 개발 중/);
+  assert.match(card,/일반 웹게임 · 게시 준비 중/);
   assert.doesNotMatch(card,/Unity Web/);
   assert.doesNotMatch(api.buildCard({...dev,unityWebAvailable:false}),/Unity Web/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*robloxAction"/);
