@@ -39,7 +39,7 @@ test('all native Part factories are forbidden: only downloaded MeshParts own col
   assert.doesNotMatch(server, /Instance\.new\("BillboardGui"\)/);
   assert.match(server, /local root = source:Clone\(\)/);
   assert.match(server, /local root = sourceRoot:Clone\(\)/);
-  assert.match(server, /root\.CollisionFidelity = Enum\.CollisionFidelity\.Box/);
+  assert.doesNotMatch(server, /\.CollisionFidelity\s*=/);
   assert.match(server, /root:SetAttribute\("CuratedExternalAsset", true\)/);
   assert.match(server, /root:SetAttribute\("VerifiedRobloxAssetId", template:GetAttribute\("VerifiedRobloxAssetId"\)\)/);
   assert.match(server, /startGround = civPart\(workspace, "SimpleRpgGround"/);
