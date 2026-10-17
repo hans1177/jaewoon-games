@@ -94,7 +94,9 @@ test('manor UI follows the current artbook and mobile-safe map board',()=>{
  assert.match(ui,/local brass=Color3\.fromRGB\(151,113,61\)/);
  assert.match(ui,/compactMobile=UserInputService\.TouchEnabled or v\.X<900 or v\.Y<600/);
  assert.match(ui,/panel\.AnchorPoint=Vector2\.new\(\.5,1\)/);
- assert.match(ui,/nav\.Size=UDim2\.fromOffset\(74,236\)/);
+ assert.match(ui,/nav\.Size=UDim2\.fromOffset\(84,274\)/,'baseline notebook dimensions');
+ assert.match(ui,/nav\.Size=UDim2\.fromOffset\(84,math\.min\(294,v\.Y-82\)\)/,'height-aware touch notebook');
+ assert.match(ui,/nav\.Size=UDim2\.fromOffset\(92,304\)/,'desktop notebook dimensions');
  assert.match(ui,/\{\{"PLAY","지도"\},\{"BOOK","도감"\},\{"DRESS","옷장"\},\{"EVENT","저택"\},\{"RECORD","기록"\}\}/);
  assert.match(ui,/label\(body,"1\. 맵 선택"/);
  assert.match(ui,/label\(body,"2\. 역할 · "/);
