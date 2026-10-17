@@ -247,7 +247,10 @@ const debugPort=await allocateLocalPort();
 const chromeProc=spawn(chrome,[
   '--headless=new',
   '--no-sandbox',
-  '--disable-gpu',
+  // GPU-less Actions runners need an actual software WebGL2 device for 3D draw/depth QA.
+  '--use-gl=angle',
+  '--use-angle=swiftshader',
+  '--enable-unsafe-swiftshader',
   '--disable-dev-shm-usage',
   '--disable-background-networking',
   '--no-first-run',
@@ -326,6 +329,37 @@ try{
     }))()`);
 
     currentPhase='ASSERT';
+    if(gameId==='cat-step'){
+      // Real WebGL2 draw proof: runtime GL context + depth test + mesh draw calls.
+      // This does not claim physical-device FPS, WebGL-only mobile support, or other games' 3D.
+      const actual3d=await cdp.evaluate(`(()=>{
+        const canvas=document.getElementById('c');
+        const gl=canvas?.getContext('webgl2');
+        const scene=window.__catStep3dDiagnostics||{};
+        return{version:gl?.getParameter(gl.VERSION)||'',depth:gl?.isEnabled(gl.DEPTH_TEST)===true,
+          draws:Number(scene.actualDrawCalls||0),meshes:Number(scene.meshCount||0),
+          ratio:Number(scene.ratio||0),startHidden:document.getElementById('overlay')?.classList.contains('hidden')};
+      })()`);
+      assert.match(actual3d?.version||'',/WebGL 2/i,'cat-step: native WebGL2 hardware/software context missing');
+      assert.equal(actual3d?.depth,true,'cat-step: actual GL_DEPTH_TEST must be enabled');
+      assert.ok(actual3d?.draws>=15,'cat-step: no real triangle mesh draw calls');
+      assert.ok(actual3d?.meshes>=10,'cat-step: incomplete 3D scene');
+      assert.equal(actual3d?.startHidden,true,'cat-step: start button did not enter real game');
+      // Mobile-equivalent pointer input, including both randomly selected first-step lanes.
+      await cdp.evaluate(`(()=>document.getElementById('left').dispatchEvent(
+        new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerType:'touch'})))()`);
+      await delay(750);
+      let moved=await cdp.evaluate(`(()=>Number(document.getElementById('score').textContent||0))()`);
+      if(moved===0){
+        await cdp.evaluate(`(()=>{document.getElementById('start').click();
+          document.getElementById('right').dispatchEvent(
+            new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerType:'touch'}));return true;})()`);
+        await delay(750);
+        moved=await cdp.evaluate(`(()=>Number(document.getElementById('score').textContent||0))()`);
+      }
+      assert.ok(moved>=1,'cat-step: touch pointer must move 3D character and complete original step');
+      console.log('DEVELOPMENT_WEB_REAL_3D_RUNTIME=cat-step:WEBGL2_DEPTH_MESH_INPUT_PASS');
+    }
     const missing=local404.slice(missingStart).filter(item=>item!=='/favicon.ico');
     const exceptions=cdp.exceptions.filter(error=>
       /TypeError|ReferenceError|SyntaxError|Error/i.test(error.description||error.text)
@@ -337,11 +371,27 @@ try{
     assert.ok(Number(state?.bodyChildren||0)>0,`${gameId}: empty body after browser boot`);
     assert.equal(state?.loadingFailure,false,`${gameId}: browser boot rendered a loading failure`);
 
+    // Per-game runtime evidence is diagnostic, not a blanket 3D PASS claim.
+    // A GL program+depth alone is not evidence of geometry draws; Cat Step above
+    // additionally proves real mesh draws and touch gameplay in the active scene.
+    const graphics=await cdp.evaluate(`(()=>{
+      const contexts=[...document.querySelectorAll('canvas')].map(canvas=>{
+        const gl=canvas.getContext('webgl2')||canvas.getContext('webgl');
+        if(!gl)return null;
+        return {api:gl.getParameter(gl.VERSION)||'',
+          shaderProgramBound:Boolean(gl.getParameter(gl.CURRENT_PROGRAM)),
+          depthEnabled:gl.isEnabled(gl.DEPTH_TEST),
+          framebufferWidth:gl.drawingBufferWidth,framebufferHeight:gl.drawingBufferHeight};
+      }).filter(Boolean);
+      return {contexts,realDrawProof:Number(window.__catStep3dDiagnostics?.actualDrawCalls||0)};
+    })()`);
     results.push({
       gameId,
       clickedStart:Boolean(start?.clicked),
       startTarget:start?.target||'',
-      canvasCount:Number(state?.canvasCount||0)
+      canvasCount:Number(state?.canvasCount||0),
+      graphics,
+      fullNative3dVerified:gameId==='cat-step'
     });
   }
 
