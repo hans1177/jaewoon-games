@@ -340,6 +340,9 @@ jobs:
             rm -rf /tmp/vibe2-main
             git worktree prune
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
+            # Bind actual current main; do not confuse missing policy with game-design failure.
+            export COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json
+            test -s "$COMPANY_VERIFIED_POLICY_PATH"
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack
             control_root="$PWD"
             main_sha="$(git -C /tmp/vibe2-main rev-parse HEAD)"
