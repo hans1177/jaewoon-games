@@ -726,11 +726,15 @@ test('reference image observations become task-local character customization ide
   assert.equal(plan.internalLibraryEvolution.referenceImageIdeasPersisted,false);
   assert.equal(plan.internalLibraryEvolution.rawReferenceImagePersisted,false);
   assert.equal(plan.internalLibraryEvolution.taskLocalReferenceActionCount,plan.imageAssetCreation.ideaWorklist.length);
-  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].kind,'REFERENCE_IMAGE_VOLUME');
-  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceId,sourceId);
-  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceHash,sourceHash);
-  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceImageRef,imageRef);
-  assert.ok(plan.internalLibraryEvolution.nextVolumeActions[0].referenceFeatureSummary.length>0);
+  // [원본 참조] 공용 작업 우선순위와 무관하게 사진 파생안은 작업 한정 오버레이에만 남는다.
+  const referenceAction=plan.imageAssetCreation.volumeWorklistOverlay[0];
+  assert.equal(referenceAction.kind,'REFERENCE_IMAGE_VOLUME');
+  assert.equal(referenceAction.referenceSourceId,sourceId);
+  assert.equal(referenceAction.referenceSourceHash,sourceHash);
+  assert.equal(referenceAction.referenceImageRef,imageRef);
+  assert.ok(referenceAction.referenceFeatureSummary.length>0);
+  assert.equal(referenceAction.persistToCentralWorklist,false);
+  assert.ok(plan.internalLibraryEvolution.nextVolumeActions.length>0);
   assert.match(plan.internalLibraryEvolution.worklistSource,/^TASK_REFERENCE_IMAGE_OVERLAY_ON_/);
   assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.requested,true);
   assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.playerAndNpcShareAssetPool,true);
@@ -3543,7 +3547,8 @@ test('flexible internal asset reuse keeps low-score assets usable and adapts goo
     currentAsset:low,
     candidates:[low,highStyleMismatch],
     gameDna:{targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'DARK_FANTASY'})},
-    requirement:{family:'UI',subfamily:'HUD',currentAssetId:'low-ui'}
+    requirement:{family:'UI',subfamily:'HUD',currentAssetId:'low-ui'},
+    usageByAsset:{'high-ui':{runtimePass:true}}
   });
   assert.equal(choice.selectedAssetId,'high-ui');
   assert.equal(choice.replacementRecommended,true);
@@ -3569,7 +3574,7 @@ test('internal replacement respects locks and treats observed failure as priorit
   const unlocked=chooseInternalAssetReplacement({
     currentAsset:current,candidates:[current,better,failed],gameDna,
     requirement:{family:'WEAPON',subfamily:'MELEE',currentAssetId:'current'},
-    usageByAsset:{'failed-high':{runtimeFailure:true,verifiedFailureCount:2}}
+    usageByAsset:{'better':{runtimePass:true},'failed-high':{runtimeFailure:true,verifiedFailureCount:2}}
   });
   assert.equal(unlocked.selectedAssetId,'better');
   assert.equal(unlocked.replacementAction,'REPLACE_NOW');
@@ -4143,8 +4148,13 @@ test('company common seed asset ideation reads all company seed artbooks and pro
   assert.ok(contract);
   assert.equal(contract.scope,'ALL_COMPANY_COMMON_SEEDS');
   assert.equal(contract.sourcePattern,'artbook-submissions/seed-*/current.json');
-  assert.equal(contract.currentSeedCount,seeds.length);
-  assert.deepEqual([...contract.currentSeedIds].sort(),seeds.map(row=>row.gameId).sort());
+  // [원본 신선도] company-runtime 신규 설계가 정적 레지스트리보다 앞서도 누락하지 않는다.
+  // 이전 레지스트리 수치를 최신 PASS로 간주하지 않고 실행 중 실제 설계 전체를 다시 분류한다.
+  assert.equal(contract.currentSeedCount,contract.currentSeedIds.length);
+  assert.ok(contract.currentSeedCount<=seeds.length);
+  for(const recordedId of contract.currentSeedIds)assert.ok(seeds.some(row=>row.gameId===recordedId),recordedId);
+  assert.equal(plan.seedCount,seeds.length);
+  assert.deepEqual(plan.seeds.map(row=>row.gameId).sort(),seeds.map(row=>row.gameId).sort());
   assert.equal(contract.planBuilder,'assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan');
   assert.equal(contract.execution.schedulerCreated,false);
   assert.equal(contract.execution.workflowCreated,false);
@@ -5140,16 +5150,20 @@ test('quality-first repairs current released Roblox assets before unused volume 
 });
 
 
-test('current-consumer RPG menu is byte-identical with the reusable source and remains runtime-unverified',()=>{
+test('current-consumer RPG menu preserves reusable APIs and game-specific race and tech without runtime claims',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const assetRoot=path.join(root,'assets','roblox','rpg-menu');
   const gameRoot=path.join(root,'roblox-games','daechung-rpg','shared');
-  for(const name of ['RPGMenu.luau','RPGMenuModel.luau']){
-    assert.equal(fs.readFileSync(path.join(assetRoot,name),'utf8'),fs.readFileSync(path.join(gameRoot,name),'utf8'),name);
-  }
   const source=fs.readFileSync(path.join(assetRoot,'RPGMenu.luau'),'utf8');
   const model=fs.readFileSync(path.join(assetRoot,'RPGMenuModel.luau'),'utf8');
+  const gameMenu=fs.readFileSync(path.join(gameRoot,'RPGMenu.luau'),'utf8');
+  const gameModel=fs.readFileSync(path.join(gameRoot,'RPGMenuModel.luau'),'utf8');
+  for(const text of [source,gameMenu])assert.match(text,/function Menu\.install\(config,gui,player,options\)/);
+  for(const text of [model,gameModel])assert.match(text,/function Model\.partySummary\(attributes, config\)/);
+  assert.match(gameMenu,/WaitForChild\("RaceData"\)/);
+  assert.match(gameMenu,/WaitForChild\("TechTreeData"\)/);
+  assert.doesNotMatch(source,/WaitForChild\("RaceData"\)|WaitForChild\("TechTreeData"\)/);
   assert.match(source,/local itemRows=\{\}/);
   assert.match(source,/GuiService\.SelectedObject=itemButtons\[selectedId\] or filterButtons\[category\]/);
   assert.match(model,/function Model\.partySummary\(attributes, config\)/);
@@ -5486,7 +5500,13 @@ test('demand-bound asset supply uses six decisions and holds quantity-only libra
   assert.ok(summary.requiredFamilies.includes('MOTION'));
   assert.ok(summary.nextActions.some(row=>row.action==='IMPROVE'&&row.assetId==='used-creature'));
   assert.ok(summary.nextActions.some(row=>row.action==='ADAPT'&&row.assetId==='common-motion'));
-  assert.ok(summary.nextActions.some(row=>row.action==='AUTHOR'&&['VFX','AUDIO'].includes(row.family)));
+  // [소스 보호] 검증된 공급 원본이 없으면 제작 완료를 가정하지 않고 작업을 보류한다.
+  for(const family of ['VFX','AUDIO']){
+    const action=summary.nextActions.find(row=>row.family===family);
+    assert.ok(action);
+    assert.equal(action.action,'HOLD');
+    assert.equal(action.reason,'NO_VERIFIED_EXISTING_ASSET_TO_APPLY');
+  }
   assert.equal(summary.heldVolumeActionCount,1);
   assert.equal(summary.heldActions[0].action,'HOLD');
   assert.equal(summary.heldActions[0].reason,'REFERENCE_VOLUME_ONLY_NO_CURRENT_GAME_DEMAND');

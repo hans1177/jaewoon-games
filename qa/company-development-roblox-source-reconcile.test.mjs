@@ -12,6 +12,18 @@ import {robloxDesignProfileFromBaseline} from '../tools/company-development-robl
 
 const gameId='seed-roblox-simulator-tycoon-i-adopt-me';
 
+// The production Roblox compiler embeds the verified central policy source
+// into Config.luau. Bind real current-main policy for isolated fixture compilation.
+const previousVerifiedPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+test.before(()=>{
+  assert.equal(fs.existsSync('company-learning/platform-release-roadmap.json'),true);
+  process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+});
+test.after(()=>{
+  if(previousVerifiedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicyPath;
+});
+
 test('common library compile selector discovers the actual native libraries',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe3-engine-contract.yml','utf8');
   const step=workflow.split('      - name: Compile common Roblox libraries before game binding')[1].split('      - name: ')[0];

@@ -338,7 +338,7 @@ test('wolf and boar require verified imported external meshes; old procedural si
   assert.match(server, /special == "StoneWolf" and "Wolf"/);
   assert.match(server, /visualTemplate:GetAttribute\("CuratedExternalAsset"\) == true/);
   assert.match(server, /\(tonumber\(visualTemplate:GetAttribute\("VerifiedRobloxAssetId"\)\) or 0\) > 0/);
-  assert.match(server, /child\.CanCollide = false\s+child\.CanTouch = false\s+child\.CanQuery = false/);
+  assert.match(server, /for _, descendant in ipairs\(visual:GetDescendants\(\)\) do\s+if descendant:IsA\("BasePart"\) then\s+descendant\.Anchored = true\s+descendant\.CanCollide = false\s+descendant\.CanTouch = false\s+descendant\.CanQuery = false/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
 });
 
@@ -359,7 +359,7 @@ test('combat and return-home discard stale habitat patrol waypoints', () => {
 });
 
 test('monster alert clears immediately when a player leaves its habitat', () => {
-  assert.match(server, /if not target then\s+enemy\.AlertUserId = nil\s+enemy\.AlertUntil = 0/);
+  assert.match(server, /if not target then\s+AdvancedAIEcosystem\.ForgetEnemy\(enemy\)\s+enemy\.AlertUserId = nil\s+enemy\.AlertUntil = 0/);
   assert.match(server, /Magnitude > 22 then\s+target = nil/);
   assert.match(server, /AdvancedAIEcosystem\.SetState\(enemy, "ReturnHome"\)/);
 });
