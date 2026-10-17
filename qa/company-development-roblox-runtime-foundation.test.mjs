@@ -873,7 +873,7 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(architectureSummary,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
  const runtimeWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(runtimeWorkflow,/OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
- assert.match(runtimeWorkflow,/run_studio:[\\s\\S]*?default:\\s*false/);
+ assert.match(runtimeWorkflow,/run_studio:[\s\S]*?default:\s*false/);
  assert.match(runtimeWorkflow,/probeRobloxOpenCloudEngine/);
 });
 
