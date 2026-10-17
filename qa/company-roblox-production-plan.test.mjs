@@ -535,3 +535,39 @@ test('lobby customization material inventory and HUD use only observed native so
   assert.match(prompt,/never generate or download new assets/);
   assert.match(prompt,/EXACT_NATIVE_RUNTIME/);
 });
+
+
+test('approved socket WFC and canyon remain Roblox/Web spatial-owner inputs until native source and runtime QA',()=>{
+  const baseWorld={approvedDesign:true,seed:'owned-spatial-wfc',width:12,height:12,dimension:'3D',
+    terrainMorphology:{approved:true,kind:'CANYON',depth:.15,halfWidth:.12,meander:.05},
+    roomConstraints:{approved:true,width:3,height:3,closedBoundary:false,
+      start:{x:0,z:0},exit:{x:2,z:2},tiles:[{id:'open',open:['N','E','S','W']}]}};
+  const design={identity:'approved rooms in canyon',spatialLayout:{dimension:'3D',proceduralWorld:baseWorld}};
+  for(const platform of ['ROBLOX','WEB']){
+    const files=[platform==='WEB'?'web-games/approved/index.js':'roblox-games/approved/server/World.server.luau'];
+    const plan=buildSpatialBlueprintContract({
+      enabled:true,mode:'CONNECTED_CONTENT_IMPLEMENTATION',platform,design,files
+    });
+    const study=plan.macroSketch.proceduralWorldStudy;
+    assert.equal(study.roomComposition.status,'ROOM_LAYOUT_STATIC_PROPOSAL');
+    assert.equal(study.roomComposition.route.length,5);
+    assert.equal(study.roomComposition.gameplayAuthority,false);
+    assert.equal(study.roomComposition.runtimeVerified,false);
+    assert.equal(study.terrainMorphology.kind,'CANYON');
+    assert.equal(study.terrainMorphology.appliedToNativeGame,false);
+    assert.equal(study.fullTerrainOrNativeMeshDelivered,false);
+    assert.equal(plan.runtimeVerified,false);
+    const unspecified=buildSpatialBlueprintContract({...{
+      enabled:true,mode:'CONNECTED_CONTENT_IMPLEMENTATION',platform,files,
+      design:{...design,spatialLayout:{dimension:'3D',proceduralWorld:{...baseWorld,roomConstraints:undefined,terrainMorphology:undefined}}}
+    }});
+    assert.equal(unspecified.macroSketch.proceduralWorldStudy.roomComposition,undefined);
+    assert.equal(unspecified.macroSketch.proceduralWorldStudy.terrainMorphology,undefined);
+  }
+  const held=buildSpatialBlueprintContract({
+    enabled:true,mode:'CONNECTED_CONTENT_IMPLEMENTATION',platform:'UNITY_WEB',
+    design,files:['unity-games/approved/Assets/Scripts/World.cs']
+  });
+  assert.equal(held.macroSketch.proceduralWorldStudy.roomComposition,undefined);
+  assert.equal(held.macroSketch.proceduralWorldStudy.terrainMorphology,undefined);
+});
