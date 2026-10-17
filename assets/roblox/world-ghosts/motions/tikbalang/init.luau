@@ -13,13 +13,16 @@ function Motion.walk(form,bones,time)
  local moving=state=="walk" or state=="chase"
  local speed=state=="chase" and 10 or moving and 6 or 2
  local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)
+ local stancePhase=phase%(math.pi*2);local liftEnv=math.max(0,math.sin(stancePhase))^2
  local floating=form=="SHROUD" or form=="FLOATING_HEAD" or form=="OBJECT_SWARM" or form=="RIBBON" or form=="LANTERN"
- pose("Torso",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)
- pose("Head",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)
+ pose("Torso",0,floating and math.sin(time*2.4)*.13 or -.08+.04*math.cos(stancePhase*2),0,.08*math.sin(stancePhase),moving and wave*.035 or breathe*.015,-.02*math.sin(stancePhase))
+ pose("Head",0,0,0,.05+breathe*.035,math.sin(time*.9)*.07,-.02*math.sin(stancePhase))
  if moving then
   if form=="BEAST" or form=="CENTAUR"then
-   pose("FrontLeftLeg",0,0,0,wave*.48);pose("BackRightLeg",0,0,0,wave*.48)
-   pose("FrontRightLeg",0,0,0,-wave*.48);pose("BackLeftLeg",0,0,0,-wave*.48)
+   pose("FrontLeftLeg",0,liftEnv*.12,0,wave*.55,0,0)
+   pose("BackRightLeg",0,liftEnv*.12,0,wave*.55,0,0)
+   pose("FrontRightLeg",0,(1-liftEnv)*.12,0,-wave*.55,0,0)
+   pose("BackLeftLeg",0,(1-liftEnv)*.12,0,-wave*.55,0,0)
   elseif form=="ARACHNID"then
    for i=1,4 do for _,side in ipairs({"Left","Right"})do
     local sign=side=="Left" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))

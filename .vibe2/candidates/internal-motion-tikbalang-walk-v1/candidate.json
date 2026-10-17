@@ -1,0 +1,66 @@
+{
+  "summary": "Refined the Tikbalang walk motion in tikbalang/init.luau with grounded support shifting, squared sine lift envelopes for arc spacing, subtle torso staging lean, and secondary head/torso settling without altering root motion or bone structure.",
+  "expectedEffect": "Improved silhouette readability, weighted stride support, and natural foot lift timing during locomotion.",
+  "edits": [
+    {
+      "path": "init.luau",
+      "find": "function Motion.walk(form,bones,time)\n local state=\"walk\"\n local result={}\n for name in pairs(bones)do result[name]={x=0,y=0,z=0,rx=0,ry=0,rz=0}end\n local function pose(name,x,y,z,rx,ry,rz)\n  if result[name]then result[name]={x=x or 0,y=y or 0,z=z or 0,rx=rx or 0,ry=ry or 0,rz=rz or 0}end\n end\n local moving=state==\"walk\" or state==\"chase\"\n local speed=state==\"chase\" and 10 or moving and 6 or 2\n local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+      "replace": "function Motion.walk(form,bones,time)\n local state=\"walk\"\n local result={}\n for name in pairs(bones)do result[name]={x=0,y=0,z=0,rx=0,ry=0,rz=0}end\n local function pose(name,x,y,z,rx,ry,rz)\n  if result[name]then result[name]={x=x or 0,y=y or 0,z=z or 0,rx=rx or 0,ry=ry or 0,rz=rz or 0}end\n end\n local moving=state==\"walk\" or state==\"chase\"\n local speed=state==\"chase\" and 10 or moving and 6 or 2\n local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local stancePhase=phase%(math.pi*2);local liftEnv=math.max(0,math.sin(stancePhase))^2"
+    },
+    {
+      "path": "init.luau",
+      "find": " pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)\n  elseif form==\"ARACHNID\"then",
+      "replace": " pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or -.08+.04*math.cos(stancePhase*2),0,.08*math.sin(stancePhase),moving and wave*.035 or breathe*.015,-.02*math.sin(stancePhase))\n pose(\"Head\",0,0,0,.05+breathe*.035,math.sin(time*.9)*.07,-.02*math.sin(stancePhase))\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,liftEnv*.12,0,wave*.55,0,0)\n   pose(\"BackRightLeg\",0,liftEnv*.12,0,wave*.55,0,0)\n   pose(\"FrontRightLeg\",0,(1-liftEnv)*.12,0,-wave*.55,0,0)\n   pose(\"BackLeftLeg\",0,(1-liftEnv)*.12,0,-wave*.55,0,0)\n  elseif form==\"ARACHNID\"then"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "Sample full walk cycle to confirm continuous finite joint offsets across all axes.",
+    "Verify identical pose output when sampling in reverse time order.",
+    "Confirm root position and gameplay collision boundaries remain unmodified."
+  ],
+  "graphicsReplacementReport": null,
+  "motionRepairReport": {
+    "objectId": "roblox-world-ghost-tikbalang",
+    "clipId": "walk",
+    "depthEvidence": [
+      {
+        "axis": "POSE_AND_STAGING",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)",
+        "after": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or -.08+.04*math.cos(stancePhase*2),0,.08*math.sin(stancePhase),moving and wave*.035 or breathe*.015,-.02*math.sin(stancePhase))"
+      },
+      {
+        "axis": "WEIGHT_AND_BALANCE",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local stancePhase=phase%(math.pi*2);local liftEnv=math.max(0,math.sin(stancePhase))^2"
+      },
+      {
+        "axis": "JOINT_ARCS_AND_SPACING",
+        "status": "CHANGED",
+        "before": "   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)",
+        "after": "   pose(\"FrontLeftLeg\",0,liftEnv*.12,0,wave*.55,0,0)\n   pose(\"BackRightLeg\",0,liftEnv*.12,0,wave*.55,0,0)\n   pose(\"FrontRightLeg\",0,(1-liftEnv)*.12,0,-wave*.55,0,0)\n   pose(\"BackLeftLeg\",0,(1-liftEnv)*.12,0,-wave*.55,0,0)"
+      },
+      {
+        "axis": "CONTACT_AND_CONSTRAINTS",
+        "status": "CHANGED",
+        "before": "   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)",
+        "after": "   pose(\"FrontLeftLeg\",0,liftEnv*.12,0,wave*.55,0,0)"
+      },
+      {
+        "axis": "OVERLAP_AND_SETTLE",
+        "status": "CHANGED",
+        "before": " pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": " pose(\"Head\",0,0,0,.05+breathe*.035,math.sin(time*.9)*.07,-.02*math.sin(stancePhase))"
+      },
+      {
+        "axis": "LOOP_AND_TRANSITION",
+        "status": "CHANGED",
+        "before": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local stancePhase=phase%(math.pi*2)"
+      }
+    ]
+  }
+}
