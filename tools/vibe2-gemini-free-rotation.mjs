@@ -1,7 +1,11 @@
-// File: tools/vibe2-gemini-free-rotation.mjs
-// One shared external-model route for source generation and learning practice.
-// No local model fallback, extra pipeline, credential switching or implicit paid tier escalation.
+// 파일명: tools/vibe2-gemini-free-rotation.mjs
+// 메인: 기존 Gemini 소스·학습 공용 API 요청 안에서만 무료 공급자 대체 순환.
+// 보안: API 키 출력·유료 모델·자동 결제·로컬 모델·추가 파이프라인 금지.
 export const GEMINI_FREE_MODELS=Object.freeze(['gemini-3.8-flash','gemini-3.5-flash-lite']);
+export const VERIFIED_FREE_FALLBACK_MODELS=Object.freeze({
+  GROQ:'openai/gpt-oss-20b',
+  OPENROUTER:'qwen/qwen3.8-27b:free'
+});
 const cooldownUntil=new Map();
 let nextSlot=0;
 const clean=value=>String(value??'').trim();
@@ -98,7 +102,79 @@ export async function requestGeminiFreePair({
       throw error;
     }finally{clearTimeout(timeout);}
   }
-  const nextRetryAt=Math.min(...models.map(model=>cooldownUntil.get(model)||Infinity));
+
+  // [메인] Gemini 2개 무료 슬롯이 막힐 때 기존 요청 안에서만 승인된 무료 API 사용.
+  // Groq는 키 보유만으로 무료 요금제를 증명하지 못하므로 명시적 요금제 확인이 필수.
+  // OpenRouter는 고정 :free 모델만 허용하며 유료 자동 라우터를 사용하지 않는다.
+  const externalRotation=clean(process.env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES';
+  const extraRoutes=externalRotation?[
+    ...(clean(process.env.GROQ_API_KEY)&&clean(process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED)==='YES'
+      ?[{provider:'GROQ',model:VERIFIED_FREE_FALLBACK_MODELS.GROQ,key:clean(process.env.GROQ_API_KEY),
+         endpoint:'https://api.groq.com/openai/v1/chat/completions'}]:[]),
+    ...(clean(process.env.OPENROUTER_API_KEY)
+      ?[{provider:'OPENROUTER',model:VERIFIED_FREE_FALLBACK_MODELS.OPENROUTER,key:clean(process.env.OPENROUTER_API_KEY),
+         endpoint:'https://openrouter.ai/api/v1/chat/completions'}]:[])
+  ]:[];
+  for(const route of extraRoutes){
+    const slot=route.provider+':'+route.model;
+    if((cooldownUntil.get(slot)||0)>Date.now()){failures.push(slot+':COOLDOWN');continue;}
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),Math.max(10000,Number(timeoutMs)||240000));
+    try{
+      const messages=(Array.isArray(contents)?contents:[]).map(row=>({
+        role:row?.role==='model'?'assistant':'user',
+        content:(row?.parts||[]).filter(part=>typeof part?.text==='string').map(part=>part.text).join('\n')
+      })).filter(row=>row.content);
+      if(!messages.length)throw infrastructureFailure('EXTERNAL_FREE_EMPTY_PROMPT_BLOCKED');
+      const body={
+        model:route.model,messages,stream:false,
+        temperature:Math.max(0,Math.min(.6,Number(temperature)||0)),
+        max_tokens:Math.max(512,Math.min(16384,Number(maxOutputTokens)||3072))
+      };
+      if(route.provider==='GROQ')body.service_tier='on_demand';
+      const response=await fetchImpl(route.endpoint,{
+        method:'POST',signal:controller.signal,
+        headers:{'content-type':'application/json','authorization':'Bearer '+route.key},
+        body:JSON.stringify(body)
+      });
+      if(!response.ok){
+        const status=response.status;
+        if([401,402,403].includes(status))
+          throw infrastructureFailure(route.provider+'_AUTH_OR_BILLING_BLOCKED_NO_PAID_FALLBACK:'+status);
+        if([404,429,500,502,503,504].includes(status)){
+          let errorBody=null;
+          if(status===429&&typeof response.json==='function')try{errorBody=await response.json();}catch{}
+          cooldownUntil.set(slot,Date.now()+retryDelayMs(response,status,errorBody));
+          failures.push(slot+':HTTP_'+status);
+          console.log('VIBE2_EXTERNAL_FREE_ROTATE='+slot+':HTTP_'+status);
+          continue;
+        }
+        throw infrastructureFailure(route.provider+'_HTTP_ERROR_NO_PAID_FALLBACK:'+status);
+      }
+      const payload=await response.json();
+      if(Number(payload?.usage?.cost||0)>0)
+        throw infrastructureFailure(route.provider+'_NONZERO_COST_RESPONSE_BLOCKED');
+      const content=payload?.choices?.[0]?.message?.content;
+      const text=typeof content==='string'?content:
+        Array.isArray(content)?content.filter(item=>typeof item?.text==='string').map(item=>item.text).join(''):'';
+      if(!text.trim()){
+        cooldownUntil.set(slot,Date.now()+15000);
+        failures.push(slot+':EMPTY_OUTPUT');
+        continue;
+      }
+      console.log('VIBE2_EXTERNAL_AI_MODEL_USED='+slot);
+      return{text,model:route.model};
+    }catch(error){
+      if(error?.name==='AbortError'||error instanceof TypeError||error instanceof SyntaxError){
+        cooldownUntil.set(slot,Date.now()+15000);
+        failures.push(slot+':TRANSPORT_OR_TIMEOUT');
+        console.log('VIBE2_EXTERNAL_FREE_ROTATE='+slot+':TRANSPORT_OR_TIMEOUT');
+        continue;
+      }
+      throw error;
+    }finally{clearTimeout(timeout);}
+  }
+  const nextRetryAt=Math.min(...models.map(model=>cooldownUntil.get(model)||Infinity),...extraRoutes.map(route=>cooldownUntil.get(route.provider+':'+route.model)||Infinity));
   const retryAt=Number.isFinite(nextRetryAt)?nextRetryAt:0;
   const suffix=retryAt?':NEXT_RETRY_AT='+new Date(retryAt).toISOString():'';
   throw infrastructureFailure('GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:'+failures.join(',')+suffix,retryAt);
