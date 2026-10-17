@@ -53,7 +53,7 @@ test('failure classifier separates infrastructure, QA drift, security, and imple
   assert.equal(credential.learningPenalty,false);
   assert.equal(credential.workerHandoffRecommended,false);
 
-  for(const signature of ['GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:gemini-3.8-flash:HTTP_429','GEMINI_AUTH_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:403']){
+  for(const signature of ['GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:gemini-3.8-flash:HTTP_429','GEMINI_AUTH_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:403','SYSTEM_AI_GEMINI_KEY_MISSING_NO_LOCAL_FALLBACK']){
     const modelOutage=classifySystemAiFailure({task:{id:'model-outage'},result:{outcome:'FAIL',failureSignature:signature}});
     assert.equal(modelOutage.failureClass,'EXTERNAL_SERVICE_OR_CREDENTIAL_FAILURE');
     assert.equal(modelOutage.retryBudgetConsumed,false);
