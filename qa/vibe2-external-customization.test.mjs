@@ -288,3 +288,23 @@ test('enemy search binds only approved route proposals without changing attacks 
   const near=ai.decide({...context,enemies:[{...enemy,distance:1}]});
   assert.equal(near.state,JaewoonCommonAI.State.ATTACK,'existing attack-range behavior remains intact');
 });
+
+test('approved canyon uses the existing seeded terrain owner, not an unexecuted FastNoiseLite binary',async()=>{
+  const {createVibeProceduralWorldLayout}=await import('../assets/vibe-environment-director.js');
+  const geometry={approved:true,kind:'CANYON',depth:.22,halfWidth:.18,meander:.1};
+  const input={seed:'approved-canyon',width:12,height:12,dimension:'3D',gameId:'canyon-survival',
+    target:'ROBLOX',approvedDesign:true,terrainMorphology:geometry};
+  const a=createVibeProceduralWorldLayout(input);
+  const b=createVibeProceduralWorldLayout(input);
+  const old=createVibeProceduralWorldLayout({...input,terrainMorphology:null});
+  assert.equal(a.terrain.length,144);
+  assert.deepEqual(a,b,'identical seed and approved terrain must reproduce the same geometry');
+  assert.ok(a.terrain.some((tile,i)=>tile.elevation!==old.terrain[i].elevation));
+  assert.ok(a.terrain.every(tile=>tile.elevation>=.05 && tile.elevation<=.95));
+  assert.equal(a.terrainMorphology.externalFastNoiseLiteExecuted,false);
+  assert.equal(a.terrainMorphology.appliedToNativeGame,false);
+  assert.equal(a.gameplayRuleMutation,false);
+  assert.equal(a.saveMeaningMutation,false);
+  assert.equal(createVibeProceduralWorldLayout({...input,terrainMorphology:{...geometry,approved:false}}).status,'INVALID_GENERATION_INPUT');
+  assert.equal(createVibeProceduralWorldLayout({...input,terrainMorphology:{...geometry,depth:.7}}).status,'INVALID_GENERATION_INPUT');
+});
