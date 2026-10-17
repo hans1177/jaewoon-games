@@ -53145,11 +53145,133 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3b16f1b8160fef09f98f2558",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8218",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "2e1d189a0ffcba71297a7bd62215304634165e9e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8218,
+        "baseBranch": "main",
+        "headBranch": "fix/simple-rpg-blender-house-source-20261017",
+        "baseSha": "2e1d189a0ffcba71297a7bd62215304634165e9e",
+        "headSha": "46b113f6d8c3cc655045c193e67e9433af0b55d9",
+        "mergeCommitSha": "d00044c41670d1bd041fda1f2ed89a4c537b6e82",
+        "mergedAt": "2026-10-17T02:01:53Z",
+        "authorLogin": "hans1177",
+        "titleHash": "13c1ea383e8a79de6d73da6b17b4bcd30f9c4cd2814e04e38a0580a35dd73582",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/simple-rpg-blender-house-source-20261017",
+        "candidateSha": "46b113f6d8c3cc655045c193e67e9433af0b55d9"
+      },
+      "changeStats": {
+        "changedFileCount": 4,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 128,
+        "deletedLineCount": 86,
+        "changedFiles": [
+          ".github/workflows/owner-simple-rpg-direct-publish.yml",
+          "qa/simple-rpg-external-visuals-only.test.mjs",
+          "tools/simple-rpg-blender-export-house.py",
+          "tools/simple-rpg-prepare-curated-assets.py"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-simple-rpg-direct-publish.yml",
+          "qa/simple-rpg-external-visuals-only.test.mjs",
+          "tools/simple-rpg-blender-export-house.py",
+          "tools/simple-rpg-prepare-curated-assets.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8218",
+        "merge-commit:d00044c41670d1bd041fda1f2ed89a4c537b6e82",
+        "base-main:2e1d189a0ffcba71297a7bd62215304634165e9e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 429
+    "total": 430
   }
 }
