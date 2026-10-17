@@ -5180,6 +5180,18 @@ test('all game-required library families include audio music UI images VFX and m
       assert.equal(action.externalAcquisition.acquisitionState,'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED');
       assert.equal(plan.productionVerificationGranted,false);
     }
+    // Direct media originals are eligible too; downloads are not ZIP-only.
+    for(const [family,role,file] of [
+      ['AUDIO','music','ambient-music.ogg'],['AUDIO','sfx','click.wav'],
+      ['UI','ui','hud-icon.png'],['UI','interface','layout.svg'],
+      ['VFX','vfx','impact-sparks.webp']
+    ]){
+      const archive={...base,role,file,sourcePath:'assets/external/simple-rpg/library/'+file};
+      const plan=buildAssetSupplyDecisionSummary({gameId:'all-media',target:'roblox',
+        requirements:[{family}],request:family.toLowerCase(),
+        registry:{assets:[],externalSources:[]},sharedOriginalArchives:[archive],repoRoot:tmp});
+      assert.equal(plan.nextActions.find(x=>x.family===family)?.action,'ACQUIRE_ADAPT',file);
+    }
     const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
     assert.ok(!worker.includes('spatial3dFamilies.has(clean(row.family)'));
     assert.ok(!worker.includes('row?.externalAcquisition?.sourceFileMustBeReal3d===true'));
