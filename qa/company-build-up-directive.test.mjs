@@ -352,6 +352,80 @@ test('V5 creative C and individually sourced A/B are required for authored build
   assert.ok(!legacyTrace.gapReasons.includes('DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING'));
 });
 
+test('standard A+B+C+D+@ design flows into Roblox Luau source guidance without obsolete C materials',()=>{
+  const record=design();
+  record.content.signatureSystems=['MAIN','A','B','DELVE'].map((role,index)=>({
+    id:'standard-rule-'+index,grammarRole:role,name:'연결 설계 '+role,
+    purpose:'선택의 결과가 현재 월드와 다음 상호작용 상태에 반영된다.',
+    playerChoice:'관측된 단서에 따라 다음 행동을 선택한다.',
+    stateInputs:['SharedState'],stateOutputs:['SharedState']
+  }));
+  const standard={
+    standardVersion:1,materialHierarchyVersion:2,
+    mainIdentity:'두 서사 장르에 기반한 연구와 직접 행동이 연결된 게임',
+    a:{system:'탐험 시스템',material:'신화',materialDomain:'신화',stateChange:'지역 조사가 다음 의뢰와 위험 상태를 바꾼다.'},
+    b:{system:'추리 시스템',material:'저승사자',materialDomain:'한국 신화',stateChange:'단서 해석이 탐험의 다음 경로와 보조 목표를 바꾼다.'},
+    abCausality:'탐험의 선택이 수집할 단서를 바꾸고 추리 결과가 다음 탐험 경로를 바꾼다.',
+    cGenres:[
+      {role:'PRIMARY',name:'미스터리',gameplayEffect:'단서로 사건 진실을 추적하고 선택을 바꾼다.'},
+      {role:'SECONDARY',name:'공포',gameplayEffect:'위협이 단서 탐색과 귀환 선택에 영향을 준다.'}
+    ],
+    cGenreInterlock:'공포 연출로 위험한 탐사 시간이 생기고 추리 결과는 탈출 경로를 바꾼다.',
+    cWorldAndGameplayEffect:'서사 사건과 플레이 상태가 연쇄적으로 새로운 탐험 조건을 만든다.',
+    dCreations:[{
+      id:'escort-story',materialPath:['신화','한국 신화','저승사자'],
+      creation:'망자 인도 기록을 조사하는 신화적 사건과 마을을 구체화한다.',
+      gameplayEffect:'올바른 조사 경로를 선택하면 마을의 접근 가능한 곳이 바뀐다.',
+      genreRoles:['PRIMARY','SECONDARY'],linkedElements:['A','B']
+    }],
+    delveDiscoveries:Array.from({length:4},(_,i)=>({
+      sourceDId:'escort-story',clue:'명부의 기록과 주민 증언 대조 '+i,
+      experiment:'두 기록의 차이를 조사하고 그 결과를 비교한다.',
+      discovery:'새 접근 경로의 상태 조건을 발견한다.',
+      newChoice:'연구한 조건을 이용해 새로운 우회 경로를 선택한다.',
+      nextQuestion:'변경된 접근 경로가 다른 주민에게 미치는 영향은 무엇인가?'
+    })),
+    delveGrowthRule:'연구를 반복할수록 다른 단서 연결과 새 사건 해법이 드러난다.'
+  };
+  record.content.creativeGrammar=standard;
+  const sourceObservation={sourceTreeFingerprint:'standard-luau-test',topFiles:[],sourceAnchors:[],observations:[],signals:{}};
+  const result=buildGameSpecificBuildUpDirective({
+    gameId:'standard-design-luau',platform:'ROBLOX',designRecord:record,sourceObservation
+  });
+  const map=result.identityReinforcement.causalGrammarEvidence.existingGameGrammarMap;
+  assert.equal(map.formula,'MAIN = A + B + C + D + @');
+  assert.equal(map.source,'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS');
+  assert.deepEqual(map.cGenreThemes,[],'new standard cannot require old C material themes');
+  assert.equal(map.dCreations.length,1);
+  assert.ok(result.designedGameVolume.items.some(row=>row.family==='CREATIVE_D_CREATIONS'&&row.authoredId==='escort-story'));
+  assert.equal(result.designedGameVolume.authoredCounts.CREATIVE_AT_DELVE,4);
+  const instruction=directivePrompt(result);
+  assert.match(instruction,/MAIN=A\+B\+C\+D\+@ 기준/);
+  assert.match(instruction,/Roblox Luau/);
+  const check=input=>buildDesignToPlatformCodingTrace({
+    gameId:'standard-design-luau',design:input,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  const trace=check(record.content);
+  assert.deepEqual(trace.roleBindings.map(row=>row.role),['MAIN','A','B','@']);
+  assert.equal(trace.originalSourceLanguage,'LUAU');
+  assert.equal(trace.creativeCBinding.designAuthored,true);
+  assert.equal(trace.creativeCBinding.dCreations[0].id,'escort-story');
+  assert.equal(trace.creativeCBinding.delveDLinks.length,4);
+  assert.equal(trace.gapReasons.includes('DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING'),false);
+  assert.equal(trace.gapReasons.includes('DESIGN_CREATIVE_D_CREATIONS_MISSING'),false);
+  assert.equal(trace.gapReasons.includes('DESIGN_CREATIVE_AT_D_RESEARCH_LINK_MISSING'),false);
+  assert.equal(trace.sourceImplementationPassed,false);
+  assert.equal(trace.actualTwoClientPassed,false);
+  const detached=structuredClone(record.content);
+  detached.creativeGrammar.delveDiscoveries[0].sourceDId='nonexistent';
+  const detachedTrace=check(detached);
+  assert.equal(detachedTrace.creativeCBinding.designAuthored,false);
+  assert.ok(detachedTrace.gapReasons.includes('DESIGN_CREATIVE_AT_D_RESEARCH_LINK_MISSING'));
+  const absent=structuredClone(record.content);
+  absent.creativeGrammar.dCreations=[];
+  assert.ok(check(absent).gapReasons.includes('DESIGN_CREATIVE_D_CREATIONS_MISSING'));
+});
+
 test('holistic build-up marks sparse map inventory UI session and convenience systems as explicit gaps',()=>{
   const sourceObservation={
     sourceRoot:'roblox-games/sample',
