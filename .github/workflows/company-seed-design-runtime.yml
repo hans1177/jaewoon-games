@@ -3,6 +3,19 @@ name: Company Seed DESIGN_ONLY Runtime
 
 on:
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: 'Existing game ID for Vibe2 design revision handoff'
+        type: string
+        required: false
+      design_request:
+        description: 'Original designer revision request'
+        type: string
+        required: false
+      request_id:
+        description: 'Vibe2 task identity for idempotent revision intake'
+        type: string
+        required: false
   push:
     branches: [main]
     paths:
@@ -179,6 +192,10 @@ jobs:
 
       - name: Auto-enroll and persist active GAME_SEED intake
         if: steps.main_snapshot.outputs.current == 'true'
+        env:
+          DESIGN_HANDOFF_GAME_ID: ${{ inputs.game_id || '' }}
+          DESIGN_HANDOFF_REQUEST: ${{ inputs.design_request || '' }}
+          DESIGN_HANDOFF_REQUEST_ID: ${{ inputs.request_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
