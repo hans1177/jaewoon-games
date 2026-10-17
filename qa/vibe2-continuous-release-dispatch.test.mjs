@@ -433,7 +433,7 @@ test('Web BUILD_UP closes on exact deployed Web source and never substitutes Rob
   assert.match(section,/VIBE2_WEB_MAIN_PROMOTION_SOURCE_TREE_SHA/);
   assert.match(section,/PROMOTED_SOURCE_TREE_SHA:/);
   assert.match(section,/WEB_PROMOTED_SOURCE_TREE_IDENTITY=INVALID/);
-  assert.match(section,/web-cloudflare-deployment-pass/);
+  assert.match(section,/web-github-pages-deployment-pass/);
   assert.match(section,/web-runtime-source-tree:\$\{PROMOTED_SOURCE_TREE_SHA\}/);
   assert.match(section,/VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT/);
   assert.match(section,/VIBE2_RELEASE_PAGES_CHECK=/);
@@ -479,49 +479,29 @@ test('Web F9 release admission rejects a branch whose current source differs fro
   }
 });
 
-test('Web main deployment must succeed after merge or retry before release evidence is emitted',()=>{
+test('Web main deployment requires exact GitHub Pages source SHA, real route and non-200 failure handling',()=>{
   const section=releaseWorkflow.slice(releaseWorkflow.indexOf('  web-release:'),releaseWorkflow.indexOf('\n  unity-web-build:'));
   const promote=section.slice(section.indexOf('      - name: Promote approved web'),section.indexOf('      - name: Settle web result'));
   assert.match(section,/ref: \$\{\{ needs\.inspect\.outputs\.candidate_sha \}\}/);
   assert.match(promote,/promotion_sha="\$\(gh pr view[^\n]*--json mergeCommit/);
-  const start=promote.indexOf('          # 신규 병합과 재시도');
-  assert.ok(start>promote.indexOf('gh pr merge'));
-  assert.doesNotMatch(promote.slice(0,start),/exit 0|deployment_pass=true/);
-  const script=promote.slice(start).replace(/^ {10}/gm,'');
-  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-main-deploy-'));
-  const bin=path.join(temp,'bin');fs.mkdirSync(bin);
-  const output=path.join(temp,'output'),calls=path.join(temp,'calls'),states=path.join(temp,'states');
-  fs.writeFileSync(path.join(bin,'sleep'),'#!/bin/sh\nexit 0\n',{mode:0o755});
-  fs.writeFileSync(path.join(bin,'gh'),`#!/bin/sh
-printf '%s\\n' "$*" >> "$WEB_CHECK_CALLS"
-head -n 1 "$WEB_CHECK_STATES"
-if [ "$(wc -l < "$WEB_CHECK_STATES")" -gt 1 ]; then
-  tail -n +2 "$WEB_CHECK_STATES" > "$WEB_CHECK_STATES.next"
-  mv "$WEB_CHECK_STATES.next" "$WEB_CHECK_STATES"
-fi
-`,{mode:0o755});
-  try{
-    for(const [sequence,pass] of [
-      [['queued:','in_progress:','completed:success'],true],
-      [['completed:failure'],false],
-      [['completed:cancelled'],false],
-      [['completed:skipped'],false],
-      [['missing:'],false]
-    ]){
-      fs.writeFileSync(output,'');fs.writeFileSync(calls,'');fs.writeFileSync(states,sequence.join('\n')+'\n');
-      const run=()=>execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',stdio:'pipe',env:{...process.env,
-        PATH:bin+path.delimiter+process.env.PATH,GITHUB_REPOSITORY:'owner/repo',GITHUB_OUTPUT:output,
-        WEB_CHECK_CALLS:calls,WEB_CHECK_STATES:states,promotion_sha:'c'.repeat(40),source_tree_sha:'d'.repeat(40)}});
-      if(pass)run();else assert.throws(run);
-      const evidence=fs.readFileSync(output,'utf8');
-      assert.equal(evidence.includes('deployment_pass=true'),pass);
-      assert.equal(evidence.includes('promotion_sha='+'c'.repeat(40)),pass);
-      const requests=fs.readFileSync(calls,'utf8').trim().split('\n');
-      assert.ok(requests.every(line=>line.includes('/commits/'+'c'.repeat(40)+'/check-runs')));
-      assert.equal(requests.length,sequence[0]==='missing:'?60:sequence.length);
-    }
-  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+  assert.match(promote,/gh pr merge "\$pr_url"/);
+  assert.match(promote,/Homepage PR Fast QA/);
+  assert.match(promote,/publish-manifest\.json/);
+  assert.match(promote,/m\.sourceSha!==sha/);
+  assert.match(promote,/m\.routes\.includes\(route\)/);
+  assert.match(promote,/curl --fail/);
+  assert.match(promote,/target_route="web-games\/\$GAME_ID\/"/);
+  assert.match(promote,/if \[ "\$published" != true \]; then/);
+  assert.match(promote,/VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=SUCCESS/);
+  assert.match(promote,/deployment_pass=true/);
+  assert.doesNotMatch(promote,/select\(\.name=="Cloudflare Pages"\)/);
+  assert.doesNotMatch(promote,/git push origin HEAD:gh-pages --force/);
+  // Both SHA and individual game path must bind to the actual published manifest.
+  const verification=promote.slice(promote.indexOf("          const fs=require('node:fs');"),promote.indexOf("          NODE",promote.indexOf("          const fs=require('node:fs');")));
+  assert.match(verification,/m\.sourceSha!==sha/);
+  assert.match(verification,/!m\.routes\.includes\(route\)/);
 });
+
 
 test('Web successful syntax and promotion cannot settle PASS without production deployment proof',()=>{
   const start=releaseWorkflow.indexOf('          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]');
@@ -587,9 +567,9 @@ test('Web requires F0-F9 proof, mandatory deployment, then resumes perpetual BUI
   assert.doesNotMatch(section,/evaluateInternalRelease/);
   assert.doesNotMatch(section,/DEVELOPMENT_VERIFIED/);
   assert.match(section,/result=DEPLOY_RETRY_REQUIRED/);
-  assert.match(section,/WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=YES/);
+  assert.match(section,/WEB_PUBLICATION_RETRY_TRACKED=YES/);
   assert.match(section,/WEB_SAME_VERIFIED_CANDIDATE_RETRY=YES/);
-  assert.match(section,/vibe2-queue-control\.mjs pass[\s\S]*web-cloudflare-deployment-pass/);
+  assert.match(section,/vibe2-queue-control\.mjs pass[\s\S]*web-github-pages-deployment-pass/);
   assert.match(section,/WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=/);
   assert.match(section,/PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:/);
   assert.match(section,/VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT/);
@@ -604,7 +584,8 @@ test('playable Web deployment policy has no native readiness gate and deployment
   const deployment=policy.changeRecord?.playableWebMandatoryDeployment20261002;
   const loop=policy.continuousGameplaySystemEvolutionContract?.webPostDeploymentPerpetualBuildUp;
   assert.equal(deployment?.nativeHomepageReadinessRequired,false);
-  assert.equal(deployment?.cloudflareMainRequiredBeforeVibePass,true);
+  assert.equal(deployment?.cloudflareMainRequiredBeforeVibePass,false);
+  assert.equal(deployment?.githubPagesMainRequiredBeforeVibePass,true);
   assert.equal(deployment?.nextBuildUpBeforeDeploymentSuccessForbidden,true);
   assert.equal(deployment?.postDeployment?.perpetualBuildUp,true);
   assert.equal(deployment?.postDeployment?.generationLimit,null);
