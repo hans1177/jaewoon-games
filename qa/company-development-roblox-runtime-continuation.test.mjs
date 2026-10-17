@@ -42,7 +42,7 @@ test('shared preflight requires exact immutable build and preserves configured s
   };
   const result=inspectRobloxBuildPreflight({item,directive});
   assert.equal(result.pass,true,result.blockers.join(','));
-  const configured=String(directive?.ai?.robloxPreflightModel||directive?.ai?.departmentLeadModels?.development||directive?.ai?.modelPool?.[0]||'').trim();
+  const configured='gemini-3.8-flash';
   assert.equal(result.distinctLeadCount,configured?1:0);
   assert.equal(result.sharedModel,configured);
   assert.equal(inspectRobloxBuildPreflight({item:{...item,productionClass:'RELEASE_CONFIRMED'},directive}).pass,true);
@@ -59,15 +59,19 @@ test('exact game build evidence checks configured shared reviewer and still bloc
   const fetchImpl=async (_url,options)=>{
     calls++;
     const request=JSON.parse(options.body);
-    assert.equal(request.model,inspectRobloxBuildPreflight({item,directive}).sharedModel);
-    assert.match(request.messages[1].content,/BUILD_EVIDENCE=/);
-    return {ok:true,json:async()=>({message:{content:JSON.stringify({decision:'PASS',blockers:[],note:'Exact immutable build is consistent.'})}})};
+    assert.match(_url,/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-3\.(?:8-flash|5-flash-lite):generateContent$/);
+    assert.match(request.contents[0].parts[0].text,/BUILD_EVIDENCE=/);
+    return {ok:true,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({decision:'PASS',blockers:[],note:'Exact immutable build is consistent.'})}]}}]})};
   };
-  const result=await evaluateRobloxBuildPreflight({item,directive,fetchImpl});
+  const priorKey=process.env.GEMINI_API_KEY;
+  process.env.GEMINI_API_KEY='mock-key-only';
+  let result;
+  try{result=await evaluateRobloxBuildPreflight({item,directive,fetchImpl});}
+  finally{if(priorKey===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=priorKey;}
   assert.equal(result.pass,true);
   const configured=inspectRobloxBuildPreflight({item,directive}).sharedModel;
   assert.equal(calls,configured?1:0);
-  assert.equal(result.reviewMode,configured?'OPTIONAL_LOCAL_MODEL_REVIEW':'DETERMINISTIC_GAME_BUILD_EVIDENCE_ONLY');
+  assert.equal(result.reviewMode,configured?'EXTERNAL_GEMINI_FREE_PAIR_REVIEW':'DETERMINISTIC_GAME_BUILD_EVIDENCE_ONLY');
   assert.equal(result.leadReviews.length,configured?1:0);
   const failed=await evaluateRobloxBuildPreflight({item:{...item,robloxBuildOrPackagePassed:false},directive,
     fetchImpl:()=>{throw new Error('Invalid package must be rejected before a model request')}});
