@@ -550,8 +550,18 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task
   const selected=task?.selectedTask||{};
   const targetName=clean(target||selected.target).toLowerCase();
   const evidence=[...(Array.isArray(task?.evidence)?task.evidence:[]),...(Array.isArray(selected?.evidence)?selected.evidence:[])].map(clean);
-  const unityWeb=[task,selected].some(row=>row?.unityWebDevelopment===true||row?.firstStageUnityWeb===true||clean(row?.executionSurface).toUpperCase()==='UNITY_WEB'||clean(row?.studioQualityEvolution?.platformLane).toLowerCase()==='unity-web')||evidence.includes('unity-web-first-stage')||evidence.includes('studio-quality-platform-lane:unity-web')||targetName==='unity_web';
-  const platform=targetName==='roblox'?'ROBLOX':['unity','unity_android','unity_web'].includes(targetName)?(unityWeb?'UNITY_WEB':'UNITY_ANDROID'):targetName==='unreal'?'FORTNITE_UEFN':targetName.toUpperCase();
+  // 일반 WEB은 web-games 원본만 허용한다. Unity Web의 WEB 표기/출력 경로는 보류를 우회할 수 없다.
+  const ownerRoots=[task.sourceRoot,task.source?.root,selected.sourceRoot,
+    ...(Array.isArray(task.responsibleFiles)?task.responsibleFiles:[]),
+    ...(Array.isArray(selected.responsibleFiles)?selected.responsibleFiles:[])]
+    .map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,''));
+  const unitySource=ownerRoots.some(file=>/^unity-games(?:\/|$)/.test(file));
+  const unityWeb=[task,selected].some(row=>row?.unityWebDevelopment===true||row?.firstStageUnityWeb===true||clean(row?.executionSurface).toUpperCase()==='UNITY_WEB'||clean(row?.studioQualityEvolution?.platformLane).toLowerCase()==='unity-web')||
+    evidence.includes('unity-web-first-stage')||evidence.includes('studio-quality-platform-lane:unity-web')||
+    targetName==='unity_web'||(targetName==='web'&&unitySource);
+  const platform=unityWeb?'UNITY_WEB':targetName==='roblox'?'ROBLOX':
+    ['unity','unity_android','unity_web'].includes(targetName)?'UNITY_ANDROID':
+    targetName==='unreal'?'FORTNITE_UEFN':targetName.toUpperCase();
   const assetTargets=policy.assetProductionParallelContract?.activeProductionTargets;
   const assetWork=[task,selected].some(row=>row?.assetProductionLane===true||row?.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')||evidence.includes('asset-production-parallel:v1')||evidence.includes('company-graphics-library-24h');
   if(assetWork&&Array.isArray(assetTargets)){
