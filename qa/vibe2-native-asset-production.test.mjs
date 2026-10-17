@@ -14,6 +14,9 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
 
+// 메인: 테스트에서 실제 main 중앙정책 경로를 명시한다. 생성된 Config.PolicySource도 동일한 canonical 상대경로를 사용한다.
+process.env.COMPANY_VERIFIED_POLICY_PATH ||= 'company-learning/platform-release-roadmap.json';
+
 // 중앙 정책: 외부 원본은 게임에서 필요한 경우만 선택하며 재질 수정·등록·런타임 승격은 별도 검증한다.
 test('current-game asset gap selects licensed external source for on-demand PBR derivative, not a verified asset',()=>{
   const external={
