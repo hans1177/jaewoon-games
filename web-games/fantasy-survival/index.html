@@ -4543,6 +4543,20 @@ function spawnSporeCloud(x,y,area,ownerId,now,enhanced=false){state.sporeClouds.
 function updateSporeClouds(now){
  for(let i=state.sporeClouds.length-1;i>=0;i--){const g=state.sporeClouds[i];if(now>=g.until){state.sporeClouds.splice(i,1);continue}if(multiplayer.connected&&!multiIsHost())continue;if(now<(g.nextTick||0))continue;g.nextTick=now+(g.tick||500);for(const e of state.enemies){if(e.hp<=0||e.area!==g.area||(e.type.mood==='harmless'&&!e.type.huntable)||dist(g.x,g.y,e.x,e.y)>g.r+e.type.r)continue;const dmg=enemyIncomingDamage(e,Number(g.damage)||5,now);e.hp-=dmg;e.hitAt=now+110;if(e.type.mood==='neutral')markEnemyHitByPlayer(e);if(e.hp<=0)finishPlayerArrowKill(e,g.ownerId||multiplayer.playerId,now)}}
 }
+function throwWorldTreeRoots(e,targetP,now){
+ if(!e.hostile||e.type.id!=='worldtreegolem'||e.area!=='worldtreeinside')return;
+ if(!e.nextWorldTreeRootsAt){e.nextWorldTreeRootsAt=now+2000;return}
+ if(now<e.nextWorldTreeRootsAt)return;
+ e.nextWorldTreeRootsAt=now+2000;
+ if(Math.random()>=.5)return;
+ // 서로 다른 방향에서 뿌리 4개가 목표 플레이어에게 날아간다.
+ for(let i=0;i<4;i++){
+  const a=i*Math.PI/2,sx=e.x+Math.cos(a)*34,sy=e.y+Math.sin(a)*34;
+  const dx=targetP.x-sx,dy=targetP.y-sy,d=Math.hypot(dx,dy)||1,speed=370;
+  state.projectiles.push({kind:'worldtreeRoot',x:sx,y:sy,vx:dx/d*speed,vy:dy/d*speed,speed,damage:0,createdAt:now,life:3200,area:'worldtreeinside',sourceId:e.netId,targetId:e.playerTargetId||multiplayer.playerId})
+ }
+ if(e.playerTargetId===multiplayer.playerId||!multiplayer.connected)showNotice('세계수 골렘 · 뿌리 4개 발사 · 회피해!')
+}
 function updateProjectiles(dt,now){
  const p=state.player;
  for(let i=state.projectiles.length-1;i>=0;i--){
@@ -4586,6 +4600,12 @@ function updateProjectiles(dt,now){
   }
   if(q.area===state.area&&dist(q.x,q.y,p.x,p.y)<25){
    const projectileSource=state.enemies.find(e=>e.netId===q.sourceId)||null;
+   if(q.kind==='worldtreeRoot'){
+    // 뿌리는 HP를 깎거나 공격을 막지 않고 이동만 3초 동안 봉쇄한다.
+    p.rootedUntil=Math.max(p.rootedUntil||0,now+3000);
+    showNotice('뿌리 적중 · 3초 이동 불가 · 공격 가능');state.dirty=true;
+    state.projectiles.splice(i,1);continue
+   }
    if(q.kind==='toxicGasShot'){
     if(!q.hitLocal){
      q.hitLocal=true;
@@ -4611,6 +4631,10 @@ function updateProjectiles(dt,now){
     if(!r||r.area!==q.area||now-(r.seenAt||0)>1500||(Number(r.hp)||0)<=0)continue;
     if(dist(q.x,q.y,Number(r.x)||0,Number(r.y)||0)<25){
      const projectileSource=state.enemies.find(e=>e.netId===q.sourceId)||null;
+     if(q.kind==='worldtreeRoot'){
+      multiSend('enemy-effect',{targetId:id,kind:'rootbind',duration:3000,sourceId:q.sourceId||null});
+      state.projectiles.splice(i,1);hitRemote=true;break
+     }
      if(q.kind==='toxicGasShot'){
       q.hitTargets=q.hitTargets||{};
       if(!q.hitTargets[id]){q.hitTargets[id]=true;multiSend('enemy-hit',{targetId:id,damage:enemyDifficultyDamage(q.damage*(projectileSource?.raidId?RAID_DIFFICULTY_SCALE:1)),force:true,sourceId:q.sourceId||null})}
@@ -4860,6 +4884,7 @@ function update(dt,now){
         if(playerD<enemyDetectRange(e,460)){if(!e.emergeAt)e.emergeAt=now+2000;if(now>=e.emergeAt){e.emerged=true;showNotice('모래 아래에서 거대한 벌레가 튀어나왔다')}}else e.emergeAt=0;
         vx=0;vy=0;monsterFight=true
       }
+      if(e.type.worldtreeRoots&&e.hostile&&playerD<e.type.detect)throwWorldTreeRoots(e,targetP,now);
       if(!monsterFight&&e.type.crystalSpecial){
         const sp=updateCrystalBoarSpecial(e,targetP,now);
         if(sp){vx=sp.vx;vy=sp.vy;monsterFight=true}
