@@ -2,7 +2,7 @@
 -- 역할: 새 Roblox 게임이 공통으로 읽는 최소 실행 설정
 
 local Config = {
-    PolicySource = "COMPANY_FLOW.md",
+    PolicySource = "company-learning/platform-release-roadmap.json",
     Platform = "ROBLOX",
     MobileFirst = true,
     SaveEnabled = false,
