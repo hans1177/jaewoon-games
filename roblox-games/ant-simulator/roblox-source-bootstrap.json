@@ -14,14 +14,15 @@
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": false,
+  "serverSourceChanged": true,
   "foundationRepairApplied": false,
-  "studioMaterialRepairApplied": false,
+  "studioMaterialRepairApplied": true,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "client/Game.client.luau"
+    "client/Game.client.luau",
+    "server/Game.server.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
+  "generationMode": "EXISTING_SOURCE_STUDIO_MATERIAL_REPAIR",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -578,12 +579,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": null,
-  "buildUpGeneration": null,
-  "buildUpGoal": null,
-  "buildUpDirectiveFingerprint": null,
-  "buildUpDirectiveConsumed": false,
+  "buildUpDirectiveId": "ant-simulator-build-up-g1-c69f2040dbca",
+  "buildUpGeneration": 1,
+  "buildUpGoal": "역사·실존주의 배틀로얄×드라마: 수도교: 공급원과 수요 지역이 연결됨의 성립. MAIN은 A(안전 구역과 수집 경로 × 역사)와 독립적인 B(투표와 집단 신뢰 결정 × 실존주의)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 스릴러 × 보조 드라마)의 판정 차이, @(수도교: 공급원과 수요 지역이 연결됨의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "buildUpDirectiveFingerprint": "c69f2040dbcadcc4cb6ebe1375bfb1bc09029c618a02aa0f6808fbf57fb05a48",
+  "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-  "createdAt": "2026-10-17T12:52:26.023Z"
+  "createdAt": "2026-10-17T13:13:38.890Z"
 }
