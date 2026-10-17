@@ -172,7 +172,7 @@ jobs:
           cp company-learning/security-immune-system.json /tmp/company-runtime/company-learning/security-immune-system.json
           (
             cd /tmp/company-runtime
-            node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
+            node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json company-learning/platform-release-roadmap.json
             rm -f company-homepage-platform-exposure-sync.mjs company-platform-exposure-control.mjs
           )
 
@@ -222,7 +222,7 @@ jobs:
             cp company-learning/security-immune-system.json /tmp/company-runtime/company-learning/security-immune-system.json
             (
               cd /tmp/company-runtime
-              node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
+              node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json company-learning/platform-release-roadmap.json
               rm -f company-homepage-platform-exposure-sync.mjs company-platform-exposure-control.mjs
             )
           }
