@@ -33,7 +33,7 @@ test('Roblox native path is package -> shared preflight -> F0 -> private validat
   assert.ok(f9.includes('publish_stage=final'));
 });
 
-test('shared preflight requires exact immutable build and one shared model',()=>{
+test('shared preflight requires exact immutable build and preserves configured shared model',()=>{
   const item={
     gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',
     robloxSourceBootstrapPassedAt:'2026-09-22T00:00:00Z',
@@ -42,25 +42,35 @@ test('shared preflight requires exact immutable build and one shared model',()=>
   };
   const result=inspectRobloxBuildPreflight({item,directive});
   assert.equal(result.pass,true,result.blockers.join(','));
-  assert.equal(result.distinctLeadCount,0);
-  assert.equal(result.sharedModel,'');
+  const configured=String(directive?.ai?.robloxPreflightModel||directive?.ai?.departmentLeadModels?.development||directive?.ai?.modelPool?.[0]||'').trim();
+  assert.equal(result.distinctLeadCount,configured?1:0);
+  assert.equal(result.sharedModel,configured);
   assert.equal(inspectRobloxBuildPreflight({item:{...item,productionClass:'RELEASE_CONFIRMED'},directive}).pass,true);
   assert.equal(inspectRobloxBuildPreflight({item:{...item,productionClass:'DESIGN_ONLY'},directive}).pass,false);
 });
 
-test('exact game build evidence needs no global AI model and cannot skip package validation',async()=>{
+test('exact game build evidence checks configured shared reviewer and still blocks invalid packages',async()=>{
   const item={
     gameId:'test-roblox',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',
     robloxBuildOrPackagePassed:true,robloxSourceCommit:'a'.repeat(40),
     robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64)
   };
-  const result=await evaluateRobloxBuildPreflight({
-    item,directive,fetchImpl:()=>{throw new Error('Unrelated model network should not run')}
-  });
+  let calls=0;
+  const fetchImpl=async (_url,options)=>{
+    calls++;
+    const request=JSON.parse(options.body);
+    assert.equal(request.model,inspectRobloxBuildPreflight({item,directive}).sharedModel);
+    assert.match(request.messages[1].content,/BUILD_EVIDENCE=/);
+    return {ok:true,json:async()=>({message:{content:JSON.stringify({decision:'PASS',blockers:[],note:'Exact immutable build is consistent.'})}})};
+  };
+  const result=await evaluateRobloxBuildPreflight({item,directive,fetchImpl});
   assert.equal(result.pass,true);
-  assert.equal(result.reviewMode,'DETERMINISTIC_GAME_BUILD_EVIDENCE_ONLY');
-  assert.deepEqual(result.leadReviews,[]);
-  const failed=await evaluateRobloxBuildPreflight({item:{...item,robloxBuildOrPackagePassed:false},directive});
+  const configured=inspectRobloxBuildPreflight({item,directive}).sharedModel;
+  assert.equal(calls,configured?1:0);
+  assert.equal(result.reviewMode,configured?'OPTIONAL_LOCAL_MODEL_REVIEW':'DETERMINISTIC_GAME_BUILD_EVIDENCE_ONLY');
+  assert.equal(result.leadReviews.length,configured?1:0);
+  const failed=await evaluateRobloxBuildPreflight({item:{...item,robloxBuildOrPackagePassed:false},directive,
+    fetchImpl:()=>{throw new Error('Invalid package must be rejected before a model request')}});
   assert.equal(failed.pass,false);
   assert.ok(failed.blockers.includes('build-package-not-passed'));
 });
