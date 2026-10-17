@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 const source = (name) => readFileSync(new URL('../roblox-games/simple-rpg/' + name, import.meta.url), 'utf8');
 const server = source('server/Game.server.luau');
@@ -114,4 +119,62 @@ test('downloaded CC0 converter selects full building assemblies and real button 
   assert.ok(common.registeredAssets.every(x => x.approvedUniverseIds.includes('10770997776')));
   assert.match(uploader, /common-registered-external-assets-v1\.json/);
   assert.match(uploader, /old\.approvedUniverseIds\?\.includes\('10770997776'\)/);
+});
+
+test('existing external CC0 archive proposal accepts all four manifest schemas and rejects tampered originals', () => {
+  const base = '../assets/external/simple-rpg/';
+  for (const rel of ['manifest.json', 'wildlife/manifest.json', 'icons-vfx-npc/manifest.json', 'priority-v1/manifest.json']) {
+    const data = JSON.parse(readFileSync(new URL(base + rel, import.meta.url), 'utf8'));
+    assert.equal(data.sourceOnly, true, rel);
+    assert.ok(data.packs.length > 0, rel);
+    for (const row of data.packs) {
+      assert.ok(['CC0', 'CC0-1.0'].includes(row.licenseDeclared || row.license || data.license), rel);
+      assert.match(row.sha256, /^[a-f0-9]{64}$/, rel);
+      assert.ok(row.bytes || row.archiveBytes, rel);
+    }
+  }
+
+  const root = mkdtempSync(join(tmpdir(), 'vibe-source-acquire-'));
+  const sourceDir = join(root, 'assets/external/simple-rpg/priority-v1');
+  const script = fileURLToPath(new URL('../tools/simple-rpg-propose-verified-downloads.mjs', import.meta.url));
+  const run = () => execFileSync(process.execPath, [script, 'priority'], {
+    cwd:root, encoding:'utf8', stdio:['ignore','pipe','pipe']
+  });
+  const git = (...args) => execFileSync('git', args, {cwd:root, stdio:'ignore'});
+  try {
+    mkdirSync(sourceDir, {recursive:true});
+    const name = 'sample.blend';
+    const original = Buffer.alloc(1024, 0x52);
+    const licenseSourceUrl = 'https://opengameart.org/content/verified-cc0-test';
+    const row = {
+      file:name, sourceUrl:'https://opengameart.org/sites/default/files/sample.blend',
+      licenseSourceUrl, licenseDeclared:'CC0-1.0',
+      sha256:createHash('sha256').update(original).digest('hex'), bytes:original.length
+    };
+    const manifest = {gameId:'simple-rpg', sourceOnly:true, gameApplied:false, packs:[row]};
+    const save = () => writeFileSync(join(sourceDir,'manifest.json'), JSON.stringify(manifest));
+    writeFileSync(join(sourceDir,name), original);
+    save();
+    git('init','-q');
+    git('config','user.name','Asset QA');
+    git('config','user.email','asset-qa@example.invalid');
+    git('add','.');
+    git('commit','-qm','source fixture');
+
+    assert.match(run(), /SIMPLE_RPG_DOWNLOAD_VALIDATED_ORIGINALS=1/);
+    assert.match(run(), /SIMPLE_RPG_DOWNLOAD_EXISTING_SOURCE_ALREADY_ARCHIVED=YES/);
+
+    writeFileSync(join(sourceDir,name), Buffer.alloc(1024, 0x41));
+    assert.throws(run, /DOWNLOADED_SOURCE_BINARY_MISMATCH/);
+    writeFileSync(join(sourceDir,name), original);
+    row.licenseDeclared = 'UNKNOWN';
+    save();
+    assert.throws(run, /DOWNLOADED_SOURCE_UNVERIFIED_LICENSE/);
+    row.licenseDeclared = 'CC0-1.0';
+    row.licenseSourceUrl = '';
+    save();
+    assert.throws(run, /DOWNLOADED_SOURCE_PROVENANCE_MISSING/);
+  } finally {
+    rmSync(root, {recursive:true, force:true});
+  }
 });

@@ -5058,6 +5058,9 @@ test('downloaded shared CC0 originals auto-connect to game sourcing without bypa
     assert.match(gamePrompt,/"sourceArchiveAcquired":true/);
     assert.match(gamePrompt,/"nativeBuildBlockedByUnacquiredSource":false/);
     assert.match(gamePrompt,/"nativeBuildBlockedByUnadaptedArchive":true/);
+    assert.match(gamePrompt,/Automatically apply every compatible, rights-cleared external asset/);
+    assert.match(gamePrompt,/Never create or fall back to old primitive-shape models/);
+    assert.match(gamePrompt,/An acquired archive alone is never runtime PASS/);
 
     const noRole=buildAssetSupplyDecisionSummary({...params,requirements:[{family:'BUILDING',role:'castle'}],sharedOriginalArchives:[archive]});
     assert.notEqual(noRole.nextActions.find(row=>row.family==='BUILDING').action,'ACQUIRE_ADAPT','wrong object identity cannot bind by broad family alone');
@@ -5070,6 +5073,11 @@ test('downloaded shared CC0 originals auto-connect to game sourcing without bypa
       const plan=buildAssetSupplyDecisionSummary({...params,sharedOriginalArchives:[blocked]});
       assert.notEqual(plan.nextActions.find(row=>row.family==='BUILDING').action,'ACQUIRE_ADAPT');
     }
+    // 파일 크기를 그대로 유지한 변조는 메타데이터 검사로는 찾을 수 없다.
+    fs.writeFileSync(full,Buffer.alloc(sourceBytes.length,31));
+    const tampered=buildAssetSupplyDecisionSummary({...params,sharedOriginalArchives:[archive]});
+    assert.notEqual(tampered.nextActions.find(row=>row.family==='BUILDING').action,'ACQUIRE_ADAPT',
+      'same-size modified external original must never enter automatic game binding');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -5087,5 +5095,6 @@ test('Vibe game asset supply verifies and applies originals instead of schedulin
   assert.match(worker,/sourceArchiveSha256:/);
   assert.match(worker,/nativeBuildBlockedByUnadaptedArchive:/);
   assert.ok(!worker.includes(".filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'"));
-  assert.match(worker,/Only inspect, verify and apply existing company\/common or downloaded license-cleared assets/);
+  assert.match(worker,/Automatically apply every compatible, rights-cleared external asset/);
+  assert.match(worker,/Never create or fall back to old primitive-shape models/);
 });

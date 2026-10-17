@@ -58,7 +58,12 @@ jobs:
         run: |
           node --check tools/game-development-sync.mjs
           node --check tools/game-development-qa-runner.mjs
+          node --check tools/simple-rpg-propose-verified-downloads.mjs
+          node --check tools/vibe2-asset-production-plan.mjs
+          node --check tools/vibe2-source-worker.mjs
           node --test qa/game-development-sync.test.mjs qa/game-development-qa-runner.test.mjs
+          node --test qa/simple-rpg-external-visuals-only.test.mjs
+          node --test --test-name-pattern='downloaded shared CC0 originals auto-connect' qa/vibe2-native-asset-production.test.mjs
       - name: Generate all-game development connections
         env:
           GAME_ID: ${{ inputs.game_id || '' }}

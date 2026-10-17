@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// 파일명: tools/simple-rpg-propose-verified-downloads.mjs
 // Keep the current CC0 download, verification, and 14-day artifact flows.
 // Persist new verified originals on a candidate branch and request a reviewable
 // GitHub PR; never push directly to the protected main branch.
@@ -7,6 +8,7 @@
 import {execFileSync} from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 
 const choices = Object.freeze({
   external: 'assets/external/simple-rpg',
@@ -20,9 +22,53 @@ if (!sourceDir) throw new Error('UNKNOWN_SIMPLE_RPG_DOWNLOAD_CATEGORY');
 const evidenceFile = path.join(sourceDir, 'manifest.json');
 if (!fs.existsSync(evidenceFile)) throw new Error('DOWNLOADED_SOURCE_MANIFEST_MISSING');
 const evidence = JSON.parse(fs.readFileSync(evidenceFile, 'utf8'));
-if (evidence.gameId !== 'simple-rpg' || evidence.license !== 'CC0-1.0') {
+if (evidence.gameId !== 'simple-rpg' || evidence.sourceOnly !== true
+    || evidence.gameApplied === true || evidence.robloxImported === true) {
   throw new Error('DOWNLOADED_SOURCE_LICENSE_OR_GAME_MISMATCH');
 }
+// [외부 원본 검증] 카테고리별 기존 manifest는 상위 license 또는
+// packs[].licenseDeclared/license를 사용한다. 실제 원본 바이트까지 검증한 뒤 보관한다.
+if (!Array.isArray(evidence.packs) || evidence.packs.length === 0) {
+  throw new Error('DOWNLOADED_SOURCE_PACKS_MISSING');
+}
+const acceptedLicenses = new Set(['CC0', 'CC0-1.0']);
+const checkedNames = new Set();
+for (const row of evidence.packs) {
+  const name = row.file || row.filename;
+  if (typeof name !== 'string' || !name || name === '.' || name === '..'
+      || path.basename(name) !== name || name.includes('\\')) {
+    throw new Error('DOWNLOADED_SOURCE_UNSAFE_FILE_NAME');
+  }
+  if (checkedNames.has(name)) throw new Error('DOWNLOADED_SOURCE_DUPLICATE_FILE:' + name);
+  checkedNames.add(name);
+  const license = row.licenseDeclared || row.license || evidence.license;
+  if (!acceptedLicenses.has(license)) throw new Error('DOWNLOADED_SOURCE_UNVERIFIED_LICENSE:' + name);
+  const source = row.originalUrl || row.sourceUrl || row.sourcePage;
+  const licensePage = row.licenseSourceUrl || row.licenseEvidence || row.sourcePage
+    || (String(row.sourceUrl || '').includes('/content/') ? row.sourceUrl : '');
+  const validHttps = value => {
+    try { const uri = new URL(value); return uri.protocol === 'https:' && uri.hostname === 'opengameart.org'; }
+    catch { return false; }
+  };
+  if (!validHttps(source) || !validHttps(licensePage)) {
+    throw new Error('DOWNLOADED_SOURCE_PROVENANCE_MISSING:' + name);
+  }
+  const expectedSha256 = String(row.sha256 || '').toLowerCase();
+  const expectedBytes = Number(row.bytes ?? row.archiveBytes);
+  if (!/^[a-f0-9]{64}$/.test(expectedSha256) || !Number.isSafeInteger(expectedBytes)
+      || expectedBytes <= 512 || expectedBytes > 500_000_000) {
+    throw new Error('DOWNLOADED_SOURCE_INVALID_DIGEST_OR_SIZE:' + name);
+  }
+  const original = path.join(sourceDir, name);
+  if (!fs.existsSync(original) || !fs.statSync(original).isFile()) {
+    throw new Error('DOWNLOADED_SOURCE_ORIGINAL_MISSING:' + name);
+  }
+  if (fs.statSync(original).size !== expectedBytes
+      || createHash('sha256').update(fs.readFileSync(original)).digest('hex') !== expectedSha256) {
+    throw new Error('DOWNLOADED_SOURCE_BINARY_MISMATCH:' + name);
+  }
+}
+console.log('SIMPLE_RPG_DOWNLOAD_VALIDATED_ORIGINALS=' + checkedNames.size);
 const execute = (command, args, options={}) => execFileSync(command, args, {
   encoding:'utf8', stdio:['ignore', 'pipe', 'pipe'], ...options
 }).trim();
