@@ -299,7 +299,9 @@ jobs:
     needs: scope
     if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
     runs-on: ubuntu-slim
-    timeout-minutes: 10
+    # native asset production full regression may exceed the previous 10-minute job limit.
+    # Keep every test and the slim control runner; only allow the existing full suite to finish.
+    timeout-minutes: 25
     env:
       # 검증된 main 중앙정책 문서 경로를 기존 핵심 QA 실행과 임시 테스트 저장소에 전달한다.
       COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
