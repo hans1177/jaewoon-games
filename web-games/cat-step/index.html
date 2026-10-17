@@ -9,36 +9,36 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#20294f;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
 button{font:inherit}
-#game{position:relative;width:100vw;height:100vh;overflow:hidden;background:linear-gradient(#27335f 0%,#4a7ea4 55%,#84bfd0 100%)}
+#game{position:relative;width:100vw;height:100vh;overflow:hidden;background:linear-gradient(180deg,#76bcd6 0%,#aae4d8 58%,#f8d4a4 100%)}
 canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .hud{position:absolute;left:14px;right:14px;top:max(12px,env(safe-area-inset-top));z-index:5;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
-.score{text-align:center;position:absolute;left:50%;transform:translateX(-50%);top:0;min-width:130px}
-.score b{display:block;font-size:42px;line-height:.95;text-shadow:0 4px 12px rgba(0,0,0,.3)}
+.score{text-align:center;position:absolute;left:50%;transform:translateX(-50%);top:0;min-width:142px;filter:drop-shadow(0 6px 6px #183b4c66)}
+.score b{display:block;font-size:44px;line-height:.99;color:#fff8de;-webkit-text-stroke:.6px #284864;text-shadow:0 3px 0 #163b59,0 7px 11px #15354e88}
 .score span,.mini{font-size:12px;font-weight:800;color:#e9f4ff;text-shadow:0 2px 8px rgba(0,0,0,.35)}
-.mini{padding:8px 10px;border-radius:12px;background:rgba(17,25,48,.34);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px)}
-.tip{position:absolute;left:50%;top:104px;transform:translateX(-50%);z-index:6;padding:8px 12px;border-radius:12px;background:rgba(21,30,55,.52);font-size:13px;font-weight:900;white-space:nowrap;transition:opacity .25s;pointer-events:none}
+.mini{padding:10px 12px;border-radius:18px;background:linear-gradient(145deg,#243a65dd,#172f53ba);border:1.5px solid rgba(255,255,255,.48);backdrop-filter:blur(8px);box-shadow:0 6px 0 #18334b7a,0 12px 25px #102b4452;display:flex;align-items:center;gap:7px;min-height:45px}
+.tip{position:absolute;left:50%;top:128px;transform:translateX(-50%);z-index:6;padding:8px 13px;border-radius:16px;background:#254665cf;border:1px solid #d4fff6aa;font-size:12px;font-weight:900;white-space:nowrap;transition:opacity .25s;pointer-events:none;box-shadow:0 4px 18px #102c4b40}
 .controls{position:absolute;left:14px;right:14px;bottom:max(14px,env(safe-area-inset-bottom));z-index:8;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .controls button{min-height:72px;border:1px solid rgba(255,255,255,.18);border-radius:20px;color:#fff;font-size:20px;font-weight:1000;box-shadow:0 10px 26px rgba(12,18,39,.28);touch-action:manipulation}
-.controls button:first-child{background:linear-gradient(180deg,#527ed7,#355eb8)}
-.controls button:last-child{background:linear-gradient(180deg,#ef8181,#cf5c63)}
+.controls button:first-child{background:linear-gradient(180deg,#72b8ff,#3268cc)}
+.controls button:last-child{background:linear-gradient(180deg,#ffac92,#dc567d)}
 .controls button:active{transform:translateY(2px) scale(.985)}
 .overlay{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:22px;background:rgba(12,17,34,.64);backdrop-filter:blur(5px)}
 .overlay.hidden{display:none}
-.card{width:min(88vw,420px);padding:24px;border-radius:26px;background:rgba(27,35,65,.95);border:1px solid rgba(255,255,255,.15);box-shadow:0 26px 80px rgba(4,9,28,.45);text-align:center}
+.card{width:min(88vw,420px);padding:25px;border-radius:30px;background:linear-gradient(170deg,#28547af2,#18365bf7);border:2px solid #e2faffab;box-shadow:0 6px 0 #123552,0 24px 70px #142b4366;text-align:center;animation:jgCardEnter .32s cubic-bezier(.2,.9,.2,1.2) both}
 .card .catface{font-size:52px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.2))}
 .card h1{margin:6px 0 8px;font-size:32px}
 .card p{margin:0 0 18px;color:#dbe8f4;line-height:1.55;font-size:14px}
-.card button{width:100%;min-height:56px;border:0;border-radius:16px;background:#83d5a7;color:#183b30;font-size:18px;font-weight:1000}
-@media(min-width:760px){.controls{left:50%;right:auto;width:480px;transform:translateX(-50%)}}
+.card button{width:100%;min-height:58px;border:2px solid #fff7;border-radius:18px;background:linear-gradient(180deg,#ffe898,#fbc766);color:#3d3a30;font-size:18px;font-weight:1000;box-shadow:0 5px 0 #bb8145,0 10px 20px #172f4466;touch-action:manipulation}
+.mini svg{width:20px;height:20px;fill:currentColor;flex:none}.score-progress{width:140px;height:7px;margin:6px auto 0;border-radius:30px;background:#14385680;overflow:hidden;border:1px solid #fff4}.score-progress i{display:block;width:0;height:100%;border-radius:30px;background:linear-gradient(90deg,#fcdf7f,#83f3cf);transition:width .2s ease}.score small{display:block;margin-top:2px;font-size:10px;letter-spacing:.04em;color:#e8f9ed;font-weight:900}.mini .jg-casual-idle{color:#ffde87}.mini:last-child .jg-casual-idle{color:#94fff0}.card .catface{display:inline-flex;align-items:center;justify-content:center;width:86px;height:86px;margin:auto;border-radius:26px;background:linear-gradient(150deg,#ffe8aa,#f4a85c);border:3px solid #fff7;box-shadow:0 5px 0 #a85e43,0 13px 18px #121f394a}.card .catface svg{width:61px;height:61px;fill:#fff7da;filter:drop-shadow(0 4px 2px #78483369)}@keyframes jgCardEnter{from{opacity:0;transform:translateY(16px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}@media(prefers-reduced-motion:reduce){.card,.score-progress i{animation:none!important;transition:none!important}}@media(max-width:420px){.hud{left:8px;right:8px}.mini{padding:8px 9px;font-size:11px}.score{min-width:106px}.score b{font-size:37px}.score-progress{width:106px}.tip{top:119px}}@media(min-width:760px){.controls{left:50%;right:auto;width:480px;transform:translateX(-50%)}}
 </style>
 </head>
 <body>
 <div id="game">
 <canvas id="c" aria-label="캣 스텝 게임 화면"></canvas>
 <div class="hud">
-  <div class="mini" id="best">최고 0</div>
-  <div class="score"><span>현재 계단</span><b id="score">0</b></div>
-  <div class="mini" id="speed">속도 1</div>
+  <div class="mini" id="best"><span class="jg-casual-idle" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 3h8v4h4v3c0 3-2 5-5 5h-1v3h3v3H7v-3h3v-3H9c-3 0-5-2-5-5V7h4Z"/></svg></span><span id="bestValue">최고 0</span></div>
+  <div class="score"><span>현재 계단</span><b id="score">0</b><div class="score-progress" role="progressbar" aria-label="다음 10계단까지" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"><i id="progressFill"></i></div><small>10계단마다 황금 발판</small></div>
+  <div class="mini" id="speed"><span class="jg-casual-idle" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2 5 13h6l-1 9 9-13h-7z"/></svg></span><span id="speedValue">속도 1</span></div>
 </div>
 <div class="tip" id="tip">다음 발판 방향으로 점프해</div>
 <div class="controls">
@@ -47,13 +47,14 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
 </div>
 <div class="overlay" id="overlay">
   <div class="card">
-    <div class="catface">🐱</div>
+    <div class="catface jg-casual-idle" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M15 44 17 12 38 27q12-4 24 0L83 12l2 32c10 27-5 43-34 44-32 0-47-17-36-44Z" fill="#fff0cf"/><circle cx="34" cy="52" r="5" fill="#64495a"/><circle cx="66" cy="52" r="5" fill="#64495a"/><path d="m47 62 6 0-3 4z" fill="#d77c89"/><path d="M50 67q-9 10-15 0m15 0q9 10 15 0" fill="none" stroke="#78546d" stroke-width="3" stroke-linecap="round"/></svg></div>
     <h1 id="title">캣 스텝</h1>
     <p id="desc">다음 발판이 있는 방향으로 점프해.<br>10계단마다 속도가 빨라져.</p>
     <button id="start" type="button">시작</button>
   </div>
 </div>
 </div>
+<script src="/web-games/_shared/casual-feedback.js"></script>
 <script>
 (() => {
 'use strict';
@@ -164,6 +165,7 @@ function mesh(meshType,x,y,z,w,h,d,color,tilt=0){
 
 const $=id=>document.getElementById(id);
 const game=document.getElementById('game');
+const feedback=window.JaewoonCasualFX.create({root:game,maxParticles:14});
 
 let W=0,H=0,DPR=1;
 let score=0,best=Number(localStorage.getItem('cat-step-best')||0);
@@ -239,8 +241,10 @@ function resetRun(){
 }
 function updateHud(){
   $('score').textContent=score;
-  $('best').textContent='최고 '+best;
-  $('speed').textContent='속도 '+speedTier();
+  $('bestValue').textContent='최고 '+best;
+  $('speedValue').textContent='속도 '+speedTier();
+  $('progressFill').style.width=(score%10)*10+'%';
+  document.querySelector('.score-progress').setAttribute('aria-valuenow',String(score%10));
 }
 function gameOver(){
   running=false;
@@ -254,6 +258,7 @@ function gameOver(){
   $('desc').innerHTML='점수 <b>'+score+'</b><br>최고 <b>'+best+'</b>';
   $('start').textContent='다시 시작';
   $('overlay').classList.remove('hidden');
+  feedback.emit('fail',{x:W/2,y:H*.32,text:'다시 도전!',count:6});
 }
 function scrollSteps(){
   steps.shift();
@@ -291,12 +296,16 @@ function finishCorrect(){
   jumpAnim=null;
   if(score>=3)$('tip').style.opacity='.15';
   updateHud();
+  feedback.bump($('score'));
+  if(score%10===0){feedback.emit('milestone',{x:W/2,y:H*.38,text:'레벨 업! · '+score+'계단',count:14});feedback.bump($('speed'));}
+  else feedback.emit('step',{x:laneX(currentLane),y:platformY(0)-66,text:'좋아! +1',count:5});
 }
 function begin(){
   $('overlay').classList.add('hidden');
   $('title').textContent='캣 스텝';
   $('start').textContent='시작';
   resetRun();
+  feedback.emit('start',{x:W/2,y:H*.43,text:'출발!',count:7});
 }
 $('left').addEventListener('pointerdown',e=>{e.preventDefault();attempt(-1)});
 $('right').addEventListener('pointerdown',e=>{e.preventDefault();attempt(1)});
