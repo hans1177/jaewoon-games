@@ -280,8 +280,8 @@ export function planVibeExternalCustomization({
     ||/UNITY[_-]?WEB|UNITY[_-]?ANDROID/i.test(text(executionSurface));
   const platform=unityOwned?'UNITY_WEB':vibeNormalizedTarget(target);
   const scope=ownerScope&&typeof ownerScope==='object'?ownerScope:null;
-  const active=(scope?.activeTargets||[]).map(vibeNormalizedTarget);
-  const held=(scope?.ownerHeldTargets||[]).map(vibeNormalizedTarget);
+  const active=(Array.isArray(scope?.activeTargets)?scope.activeTargets:[]).map(vibeNormalizedTarget);
+  const held=(Array.isArray(scope?.ownerHeldTargets)?scope.ownerHeldTargets:[]).map(vibeNormalizedTarget);
   const eligible=scope?.status==='ACTIVE'&&scope?.existingPipelineOnly===true
     &&active.includes(platform)&&!held.includes(platform)&&['ROBLOX','WEB'].includes(platform);
   const selectedRoles=new Set();
@@ -294,7 +294,9 @@ export function planVibeExternalCustomization({
     for(const [role,families]of Object.entries(VIBE_ROLE_FAMILIES))if(families.includes(family))selectedRoles.add(role);
   }
   const style=styleBible&&typeof styleBible==='object'?styleBible:{};
-  const styleFingerprint=text(approvedDesignFingerprint);
+  const declaredDesignFingerprint=text(approvedDesignFingerprint);
+  const styleFingerprint=/^(?:sha256:)?[0-9a-f]{64}$/i.test(declaredDesignFingerprint)
+    ?declaredDesignFingerprint:'';
   const sourceId=text(sourceRevision);
   const validAssets=(Array.isArray(assets)?assets:[]).filter(vibeSourceProvenance)
     .sort((a,b)=>text(a.id).localeCompare(text(b.id)));
