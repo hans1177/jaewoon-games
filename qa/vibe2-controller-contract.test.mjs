@@ -22,7 +22,6 @@ const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-r
 const companyLogMap=JSON.parse(fs.readFileSync(new URL('../company-learning/company-log-map.json',import.meta.url),'utf8'));
 const companyArchitectureMap=JSON.parse(fs.readFileSync(new URL('../company-learning/company-architecture-map.json',import.meta.url),'utf8'));
 const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
-const prepareOllamaAction=fs.readFileSync(new URL('../.github/actions/prepare-ollama/action.yml',import.meta.url),'utf8');
 
 test('legacy presentation tasks expand to existing native visual responsibility files at execution time',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-presentation-scope-'));
@@ -422,45 +421,17 @@ test('candidate publication rebases transport onto latest main only when respons
   assert.equal(publication.remoteRefCleanupOnPushFailure,false);
 });
 
-test('reserve probes model cache lookup-only and skips the dedicated warmup runner on hit',()=>{
+test('reserve and worker no longer depend on downloaded local AI runtimes',()=>{
   const reserveStart=workflow.indexOf('\n  reserve:');
-  const modelStart=workflow.indexOf('\n  model_cache:',reserveStart);
-  const workerStart=workflow.indexOf('\n  worker:',modelStart);
+  const workerStart=workflow.indexOf('\n  worker:',reserveStart);
   const fanInStart=workflow.indexOf('\n  fan_in:',workerStart);
-  assert.ok(reserveStart>=0&&modelStart>reserveStart&&workerStart>modelStart&&fanInStart>workerStart);
-  const reserveBlock=workflow.slice(reserveStart,modelStart);
-  const modelBlock=workflow.slice(modelStart,workerStart);
-  const workerBlock=workflow.slice(workerStart,fanInStart);
-  assert.match(reserveBlock,/model_cache_hit: \${{ steps\.ollama_cache_probe\.outputs\.cache-hit }}/);
-  assert.match(reserveBlock,/Probe dedicated Vibe2 model cache/);
-  assert.match(reserveBlock,/Probe canonical Ollama runtime cache/);
-  assert.match(reserveBlock,/uses: actions\/cache\/restore@v4/);
-  assert.match(reserveBlock,/lookup-only: true/);
-  assert.match(reserveBlock,/VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES/);
-  assert.match(reserveBlock,/VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT/);
-  assert.match(modelBlock,/if: needs\.reserve\.outputs\.worker_count != '0' && needs\.reserve\.outputs\.model_cache_hit != 'true'/);
-  assert.match(modelBlock,/Recheck or persist dedicated Vibe2 model cache/);
-  assert.match(modelBlock,/Warm canonical Ollama runtime and local coding model once/);
-  assert.match(modelBlock,/uses: \.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
-  assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS/);
-  assert.match(workerBlock,/needs: \[reserve, model_cache\]/);
-  assert.match(workerBlock,/if: always\(\) && needs\.reserve\.result == 'success' && needs\.reserve\.outputs\.worker_count != '0'/);
-  assert.match(workerBlock,/Restore and persist selected Vibe2 model cache/);
-  assert.match(workerBlock,/uses: actions\/cache@v4/);
-  assert.match(workerBlock,/Prepare cached Ollama runtime/);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.reserveCacheProbeLookupOnly,true);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmCacheProbeLookupOnlyOnHit,true);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmFullRestoreOnHitForbidden,true);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmJobSkippedOnReserveCacheHit,true);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmRunnerRequiredOnCacheHit,false);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreRemainsRequiredPerIsolatedRunner,true);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreDeferredUntilWorkOrder,true);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreRequiresLocalModel,true);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreSkippedWithoutSourceLock,false);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreIndependentOfSourceLock,true);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerModelBehaviorChanged,false);
+  assert.ok(reserveStart>=0&&workerStart>reserveStart&&fanInStart>workerStart);
+  const workerPart=workflow.slice(workerStart,fanInStart);
+  assert.doesNotMatch(workflow,/uses:\\s*\\.\\/vibe2-contract\\/\\.github\\/actions\\/prepare-ollama/);
+  assert.doesNotMatch(workflow,/ollama pull|ollama serve|ollama\\.com\\/download/);
+  assert.match(workerPart,/VIBE2_WORKER_PROVIDER=GEMINI_API/);
+  assert.match(workerPart,/VIBE2_LOCAL_AI_ENABLED=NO/);
 });
-
 test('Vibe worker uses external Gemini without local model startup before obtaining game source lock',()=>{
   const start=workflow.indexOf('  worker:');
   const end=workflow.indexOf('  fan_in:',start);
@@ -1118,37 +1089,12 @@ test('worker never mutates shared queue state and only emits an atomic completio
   assert(workerPart.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
 });
 
-test('worker model cache is architecture-aware while runtime preparation reuses the shared pinned action',()=>{
-  assert(workflow.includes('~/.cache/jaewoon-ollama/ollama-linux-*-cpu-0.33.3.tar.zst'));
-  assert(workflow.includes('vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b'));
-  assert(workflow.includes('uses: ./vibe2-contract/.github/actions/prepare-ollama'));
-  assert(workflow.includes("pull-model: 'true'"));
-  const workerStart=workflow.indexOf('\n  worker:');
-  const fanInStart=workflow.indexOf('\n  fan_in:',workerStart);
-  const workerPart=workflow.slice(workerStart,fanInStart);
-  assert.equal(workerPart.includes('ollama.com/install.sh'),false);
-  assert(prepareOllamaAction.includes("default: '0.33.3'"));
-  assert(prepareOllamaAction.includes('X64) ollama_arch=amd64'));
-  assert(prepareOllamaAction.includes('ARM64) ollama_arch=arm64'));
-  assert(prepareOllamaAction.includes('https://ollama.com/download/ollama-linux-${ollama_arch}.tar.zst?version='));
-  assert(prepareOllamaAction.includes("grep -qx 'lib/ollama/llama-server'"));
-  assert(prepareOllamaAction.includes('sudo tar --zstd -xf "$slim" -C /usr'));
-  assert(prepareOllamaAction.includes('preload-model:'));
-  assert(prepareOllamaAction.includes("default: 'false'"));
-  assert(prepareOllamaAction.includes('preload-context:'));
-  assert(prepareOllamaAction.includes("default: '8192'"));
-  assert(prepareOllamaAction.includes('- name: Preload requested local model'));
-  assert(prepareOllamaAction.includes('inputs.preload-model == \'true\''));
-  assert(prepareOllamaAction.includes('PRELOAD_CONTEXT: ${{ inputs.preload-context }}'));
-  assert(prepareOllamaAction.includes('--argjson num_ctx "$preload_context"'));
-  assert(prepareOllamaAction.includes('num_ctx:$num_ctx'));
-  assert(prepareOllamaAction.includes('keep_alive:"20m"'));
-  assert(prepareOllamaAction.includes('EXTERNAL_AI_REQUIRED=NO'));
-  assert(workerPart.includes("preload-model: ${{ steps.order.outputs.route == 'text-source-worker' && env.VIBE2_EXECUTION_LANE != 'asset-development' && 'true' || 'false' }}"));
-  assert(workerPart.includes("preload-context: ${{ steps.order.outputs.route == 'text-source-worker' && env.VIBE2_EXECUTION_LANE != 'asset-development' && '12288' || '8192' }}"));
-  assert(!workflow.includes('key: vibe2-ollama-v2-Linux-qwen3-1.7b'));
+test('removed local Ollama action cannot be restored as a coding prerequisite',()=>{
+  assert.equal(fs.existsSync(new URL('../.github/actions/prepare-ollama/action.yml',import.meta.url)),false);
+  assert.doesNotMatch(workflow,/uses:\\s*\\.\\/vibe2-contract\\/\\.github\\/actions\\/prepare-ollama/);
+  assert.match(workflow,/VIBE2_WORKER_PROVIDER=GEMINI_API/);
+  assert.match(workflow,/VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO/);
 });
-
 test('fan-in release requires exact candidate manifest identity',()=>{
   const branch='vibe2/candidate/demo/primary';
   const baseTask={
