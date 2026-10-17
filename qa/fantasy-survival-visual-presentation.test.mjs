@@ -437,6 +437,7 @@ test('world tree chamber art and cellar entrance are bound to the existing tap a
   assert.match(tap,/WORLD_TREE_INTERIOR\.basement\.x/);
   assert.match(inside,/뿌리 회랑/);
   assert.match(inside,/고목 심장/);
+  assert.match(inside,/floor\.addColorStop\(0,'#617756'\)/);
   assert.match(inside,/수액 정원/);
   assert.match(inside,/세계수 지하 · 두 번 눌러 내려가기/);
   assert.match(functionBody('draw'),/drawWorldTreeInterior\(cx,cy/);
@@ -458,11 +459,11 @@ test('underground entrance and exit round-trip preserve the previous outdoor pas
 
 test('world tree basement is bright without a torch while quest cave darkness remains unchanged',()=>{
   const underground=functionBody('drawCave'),dark=functionBody('drawQuestDarkness');
-  assert.match(underground,/stoneFloor\.addColorStop\(0,'#625966'\)/);
+  assert.match(underground,/stoneFloor\.addColorStop\(0,'#928797'\)/);
   assert.match(underground,/세계수 지하 · 봉인의 뿌리/);
   assert.match(underground,/BOSS_ALTAR/);
   assert.match(dark,/const basement=state\.area==='underground'/);
-  assert.match(dark,/basement\?'rgba\(12,12,19,\.18\)':'rgba\(0,0,0,\.91\)'/);
+  assert.match(dark,/basement\?'rgba\(12,12,19,\.06\)':'rgba\(0,0,0,\.91\)'/);
   assert.match(dark,/light\.lit\?430:78/);
   assert.match(functionBody('summonBoss'),/state\.bossSummoned=true/);
   assert.match(source,/worldtreegolem:\{id:'worldtreegolem',name:'세계수 골렘',mood:'neutral',hp:586,dmg:48/);
