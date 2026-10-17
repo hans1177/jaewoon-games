@@ -98,6 +98,7 @@ jobs:
           NODE
 
       - name: Persist exposure snapshot to company-runtime
+        id: persist
         shell: bash
         run: |
           set -euo pipefail
@@ -105,24 +106,46 @@ jobs:
           git config user.email 'platform-exposure@users.noreply.github.com'
           worktree="/tmp/platform-exposure-runtime"
           pushed=0
+          updated=false
           for attempt in 1 2 3 4; do
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
             git worktree remove --force "$worktree" 2>/dev/null || true
             rm -rf "$worktree"
             git worktree add --detach "$worktree" "origin/$COMPANY_RUNTIME_BRANCH"
-            cp /tmp/platform-exposure/homepage-platform-exposure.json "$worktree/homepage-platform-exposure.json"
+            # Collection time alone is not a new verified gameplay or publication state.
+            # Preserve the prior exact JSON when only generatedAt differs; this avoids
+            # redundant company-runtime commits and downstream Homepage Manager runs.
+            if [ -f "$worktree/homepage-platform-exposure.json" ]; then
+              exposure_state="$(PREVIOUS_EXPOSURE="$worktree/homepage-platform-exposure.json" CANDIDATE_EXPOSURE=/tmp/platform-exposure/homepage-platform-exposure.json node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {reuseUnchangedHomepageExposure} from './tools/company-homepage-platform-exposure-sync.mjs';
+          const previous=JSON.parse(fs.readFileSync(process.env.PREVIOUS_EXPOSURE,'utf8'));
+          const candidate=JSON.parse(fs.readFileSync(process.env.CANDIDATE_EXPOSURE,'utf8'));
+          process.stdout.write(reuseUnchangedHomepageExposure(previous,candidate)===previous?'UNCHANGED':'UPDATED');
+          NODE
+              )"
+            else
+              exposure_state=UPDATED
+            fi
+            if [ "$exposure_state" = UPDATED ]; then
+              cp /tmp/platform-exposure/homepage-platform-exposure.json "$worktree/homepage-platform-exposure.json"
+            else
+              echo 'HOMEPAGE_EXPOSURE_SEMANTIC_NOOP=YES'
+            fi
             git -C "$worktree" add homepage-platform-exposure.json
             if git -C "$worktree" diff --cached --quiet; then pushed=1; break; fi
             git -C "$worktree" commit -m 'runtime: sync Roblox Unity platform exposure [skip ci]'
-            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; updated=true; break; fi
             sleep $((attempt * 2))
           done
           git worktree remove --force "$worktree" 2>/dev/null || true
           git worktree prune
           test "$pushed" = 1
-          echo 'COMPANY_RUNTIME_PLATFORM_EXPOSURE=PERSISTED'
+          echo "updated=$updated" >> "$GITHUB_OUTPUT"
+          echo "COMPANY_RUNTIME_PLATFORM_EXPOSURE=$([[ "$updated" == true ]] && echo UPDATED || echo UNCHANGED)"
 
       - name: Refresh homepage runtime mirror
+        if: steps.persist.outputs.updated == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
