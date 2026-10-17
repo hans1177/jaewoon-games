@@ -430,6 +430,9 @@ jobs:
           fi
           control_root="$GITHUB_WORKSPACE"
           test -d "$control_root/.git"
+          # The already-compiled, immutable main snapshot is the only verified design policy.
+          export COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json
+          test -s "$COMPANY_VERIFIED_POLICY_PATH"
           git -C "$control_root" config user.name 'jaewoon-vibe2-scheduler'
           git -C "$control_root" config user.email 'vibe2-scheduler@users.noreply.github.com'
           echo "VIBE2_CONTROL_ROOT=$control_root"
