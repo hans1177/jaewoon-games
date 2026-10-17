@@ -391,24 +391,25 @@ test('featured hero is explicit and ChatGPT launcher opens internal PWA chat',()
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
   assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
-  assert.match(runtime,/const direct=links\.roblox\|\|links\.unity\|\|''/);
-  assert.match(runtime,/const actionLabel=links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':'게임 보기'/);
+  assert.match(runtime,/const direct=links\.web\|\|links\.roblox\|\|links\.unity\|\|''/);
+  assert.match(runtime,/const actionLabel=links\.web\?'일반 웹게임 플레이':links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':'게임 보기'/);
   assert.doesNotMatch(index,/package=com\.openai\.chatgpt|intent:\/\/chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
 });
 
-test('game cards expose Roblox and Unity app only',()=>{
+test('game cards expose ordinary web and published Roblox links while preserving optional Unity apps',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const index=fs.readFileSync('index.html','utf8');
   assert.match(runtime,/function platformLinks\(game\)/);
   assert.match(runtime,/robloxAction/);
   assert.match(runtime,/unityAction/);
+  assert.match(runtime,/webAction/);
   assert.doesNotMatch(runtime,/unityWebAction/);
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
   assert.doesNotMatch(runtime,/Unity Web · 개발중/);
-  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.match(runtime,/button\(links\.web,'일반 웹게임 · 플레이'/);
   assert.doesNotMatch(runtime,/button\(links\.unityWeb/);
   assert.doesNotMatch(runtime,/button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
@@ -432,7 +433,7 @@ test('platform availability uses current release evidence or verified historical
   assert.doesNotMatch(runtime,/internalReleaseReady===true\|\|(?:roblox|unity)\.publicRelease===true/);
   assert.match(runtime,/exposureAuthority/);
   assert.match(runtime,/supportedPlatforms/);
-  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.match(runtime,/button\(links\.web,'일반 웹게임 · 플레이'/);
   assert.doesNotMatch(runtime,/fortniteAction/);
 });
 
