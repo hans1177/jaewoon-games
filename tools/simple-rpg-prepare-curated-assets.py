@@ -84,89 +84,67 @@ def choose_model(archive, label, keywords, allow_any=False):
     return False
 
 
-def assemble_existing_house_modules(archive):
-    """Arrange existing licensed house-kit wall/roof pieces; create no new geometry.
-
-    CC0 house archives contain prefab *modules*, not whole-house meshes.
-    Preserve the downloaded GLBs and their UV textures; only combine copied
-    source modules for placement in Roblox as one building Model.
-    """
-    import numpy as np
+def export_original_blend_house(archive):
+    """Export the complete CC0 Blender house intact; never invent block geometry."""
+    import subprocess
     if not archive.is_file():
-        return False
-    with tempfile.TemporaryDirectory(prefix="simple-rpg-cc0-house-") as td:
-        base = pathlib.Path(td)
-        safe_unpack(archive, base)
-        # Existing downloaded house packs mix GLB, glTF and Wavefront OBJ.
-        models = sorted([p for p in base.rglob("*") if p.is_file()
-                         and p.suffix.lower() in (".glb", ".gltf", ".obj")])
-        print("CURATED_HOUSE_ARCHIVE_MODEL_INVENTORY", archive,
-              "count", len(models),
-              "entries", [str(p.relative_to(base)) for p in models[:32]])
-        def find_one(include, deny=()):
-            return next((p for p in models
-                         if any(w in p.stem.lower() for w in include)
-                         and not any(w in p.stem.lower() for w in deny)), None)
-        walls = find_one(("wall",), ("window", "shutter", "door", "broken"))
-        door = find_one(("wall-door", "door-wall", "wall_entrance"), ("broken",))
-        roof = find_one(("roof",), ("chimney", "support", "window", "broken"))
-        if not walls or not roof:
-            print("CURATED_HOUSE_KIT_MISSING_PARTS", archive,
-                  "wall=", bool(walls), "roof=", bool(roof))
+        raise RuntimeError("BLENDER_HOUSE_ARCHIVE_MISSING:" + str(archive))
+    if shutil.which("blender") is None:
+        raise RuntimeError("HEADLESS_BLENDER_REQUIRED_FOR_CC0_HOUSE")
+    with tempfile.TemporaryDirectory(prefix="simple-rpg-complete-house-") as td:
+        root = pathlib.Path(td)
+        safe_unpack(archive, root)
+        originals = sorted(
+            [p for p in root.rglob("*") if p.is_file() and p.suffix.lower() == ".blend"],
+            key=lambda p: (-p.stat().st_size, str(p)))
+        if not originals:
+            print("CURATED_HOUSE_ARCHIVE_NO_BLENDER_SOURCE", archive)
             return False
-        if not door:
-            door = walls
-        shell = trimesh.Scene()
-        used = []
-        def place(source, prefix, position, angle, footprint=6.0):
-            source_scene = trimesh.load(str(source), force="scene", process=False)
-            if not source_scene.geometry or source_scene.is_empty:
-                raise ValueError("CURATED_HOUSE_EMPTY_MODULE:" + source.name)
-            bounds = source_scene.bounds
-            extents = bounds[1] - bounds[0]
-            horizontal = max(float(extents[0]), float(extents[2]))
-            if horizontal <= 1e-5 or float(extents[1]) <= 1e-5:
-                raise ValueError("CURATED_HOUSE_FLAT_MODULE:" + source.name)
-            scale = footprint / horizontal
-            center = (bounds[0] + bounds[1]) / 2
-            shift = trimesh.transformations.translation_matrix(
-                [-float(center[0]), -float(bounds[0][1]), -float(center[2])])
-            resize = np.diag([scale, scale, scale, 1.0])
-            spin = trimesh.transformations.rotation_matrix(angle, [0, 1, 0])
-            move = trimesh.transformations.translation_matrix(position)
-            matrix = move @ spin @ resize @ shift
-            for i, piece in enumerate(source_scene.dump(concatenate=False)):
-                piece = piece.copy()
-                piece.apply_transform(matrix)
-                shell.add_geometry(piece, geom_name=prefix + "_" + str(i))
-            used.append(str(source.relative_to(base)))
-            return float(extents[1]) * scale
-        wall_height = place(door, "front", [0, 0, -3], 0)
-        place(walls, "back", [0, 0, 3], np.pi)
-        place(walls, "left", [-3, 0, 0], np.pi / 2)
-        place(walls, "right", [3, 0, 0], -np.pi / 2)
-        # Use the ORIGINAL roof module, twice if one module covers a half roof.
-        roof_angle = 0
-        place(roof, "roof_left", [-1.5, wall_height, 0], roof_angle)
-        place(roof, "roof_right", [1.5, wall_height, 0], np.pi)
-        if shell.is_empty or len(shell.geometry) < 6:
-            raise RuntimeError("CURATED_CC0_HOUSE_ASSEMBLY_INCOMPLETE")
-        binary = shell.export(file_type="glb")
-        if binary[:4] != b"glTF" or not 1000 < len(binary) < 20_000_000:
-            raise RuntimeError("CURATED_CC0_HOUSE_GLTF_INVALID")
-        target = OUT / "world" / "Building.glb"
-        target.write_bytes(binary)
-        evidence["world"]["Building"] = {
-            "archive": str(archive),
-            "sourceEntry": "existing-CC0-modular-house-assembly",
-            "assembledOnlyFromDownloadedSourceMeshes": True,
-            "sourceComponents": sorted(set(used)),
-            "sha256": hashlib.sha256(binary).hexdigest(),
-            "bytes": len(binary),
-        }
-        print("CURATED_REAL_HOUSE_ASSEMBLED_FROM_ORIGINAL_MODULES",
-              archive, sorted(set(used)), "bytes="+str(len(binary)))
-        return True
+        for source in originals:
+            if source.open("rb").read(7) != b"BLENDER":
+                print("CURATED_HOUSE_SOURCE_NOT_REAL_BLENDER_FILE", archive, source.name)
+                continue
+            dest = OUT / "world" / "Building.glb"
+            dest.unlink(missing_ok=True)
+            command = ["blender", "--background", "--factory-startup",
+                       "--python", "tools/simple-rpg-blender-export-house.py",
+                       "--", str(source.resolve()), str(dest.resolve())]
+            result = subprocess.run(command, capture_output=True, text=True,
+                                    timeout=170, check=False)
+            print("CURATED_ORIGINAL_BLENDER_EXPORT", archive, source.name,
+                  "exit", result.returncode,
+                  "tail", (result.stdout + result.stderr)[-600:])
+            if result.returncode != 0 or not dest.is_file():
+                continue
+            binary = dest.read_bytes()
+            if not (binary[:4] == b"glTF" and 1_000 < len(binary) < 20_000_000):
+                dest.unlink(missing_ok=True)
+                print("CURATED_HOUSE_EXPORTED_GLTF_INVALID", archive, source.name,
+                      "bytes", len(binary))
+                continue
+            try:
+                imported = trimesh.load(str(dest), force="scene", process=False)
+                bounds = imported.bounds
+                span = bounds[1] - bounds[0]
+                if imported.is_empty or len(imported.geometry) == 0 \
+                    or min(float(n) for n in span) <= 0.01:
+                    raise ValueError("EMPTY_OR_FLAT_GLTF_FROM_ORIGINAL")
+            except (ValueError, OSError, TypeError) as exc:
+                dest.unlink(missing_ok=True)
+                print("CURATED_HOUSE_GLTF_GEOMETRY_REJECTED", str(exc)[:200])
+                continue
+            evidence["world"]["Building"] = {
+                "archive": str(archive),
+                "sourceEntry": str(source.relative_to(root)),
+                "exportedFromOriginalUnmodifiedBlenderScene": True,
+                "originalBlenderSha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+                "sha256": hashlib.sha256(binary).hexdigest(),
+                "bytes": len(binary)
+            }
+            print("CURATED_COMPLETE_CC0_BLENDER_HOUSE_EXPORTED", archive,
+                  source.relative_to(root), "bytes", len(binary))
+            return True
+    return False
 
 
 # Exact CC0 source selections; fail instead of mislabeling an arbitrary person as a creature.
@@ -212,11 +190,13 @@ if not building_ready:
     for archive in [ROOT / "priority-v1" / ("medieval-house-" + key + ".zip")
                     for key in ("a", "b", "c", "d")]:
         try:
-            if assemble_existing_house_modules(archive):
+            if export_original_blend_house(archive):
                 building_ready = True
                 break
-        except (RuntimeError, ValueError, OSError, zipfile.BadZipFile) as exc:
-            print("CURATED_MODULAR_HOUSE_SOURCE_SKIP", archive, str(exc)[:180])
+        except (RuntimeError, ValueError, OSError, zipfile.BadZipFile,
+                subprocess.TimeoutExpired) as exc:
+            print("CURATED_COMPLETE_BLENDER_HOUSE_SOURCE_SKIP",
+                  archive, str(exc)[:220])
 if not building_ready:
     raise SystemExit("CURATED_COMPLETE_CC0_BUILDING_NOT_PREPARED")
 
