@@ -1322,19 +1322,19 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const sourceFamily=clean(row.family).toUpperCase()||(
         role==='03-equipment'?(/potion|item|inventory/.test(name)?'PROP':'WEAPON'):
         role==='04-npc-buildings'?(/castle|house|village|hexagon/.test(name)?'BUILDING':'CHARACTER'):
-        role==='05-environment-sfx'?(/sfx|sound/.test(name)?'AUDIO':/fox/.test(name)?'CREATURE':'ENVIRONMENT'):
+        role==='05-environment-sfx'?(/sfx|sound|music|bgm|ambient-audio/.test(name)?'AUDIO':/fox/.test(name)?'CREATURE':'ENVIRONMENT'):
         role==='09-buildings'?'BUILDING':role==='12-dungeon-interiors'?'ENVIRONMENT':
         /^(?:0[1267]-|11-)/.test(role)||['monster','wildlife','aquatic','insect','prehistoric','invertebrate'].includes(role)?'CREATURE':
         /^(?:08-|10-)/.test(role)||role.includes('npc')?'CHARACTER':
         role==='vfx'?'VFX':role==='model'?'PROP':
         role==='png'||role.includes('ui')||role.includes('icon')?'UI':
-        role==='audio'||role==='sfx'?'AUDIO':'PROP');
+        role==='audio'||role==='sfx'||role==='music'||role==='bgm'||role==='soundtrack'?'AUDIO':'PROP');
       if(sourceFamily!==family)continue;
       const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz)$/,''),role].join(' ').replace(/[-_]+/g,' ');
       const matchedRoles=roles.filter(value=>terms.includes(value.replaceAll('_',' ')));
       if(roles.length&&!roles.every(value=>value==='generic')&&!matchedRoles.length)continue;
-      // Download is 3D-only. Existing non-3D originals remain eligible for
-      // reuse, but missing 2D/audio files never trigger network acquisition.
+      // All licensed library families, including music, UI, icons and VFX,
+      // can hydrate exact originals. Asset type never bypasses source QA.
       let localReady=false,needsHydration=false,corrupt=false;
       try{
         const info=fs.statSync(localFile);
@@ -1342,7 +1342,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         else if(info.size===declaredBytes){
           localReady=sharedArchiveSha256(localFile,info)===declaredHash;
           corrupt=!localReady;
-        }else if(info.size<=256 && spatialFamilies.has(family)){
+        }else if(info.size<=256){
           // A Git LFS pointer is not corrupt only when oid and size match
           // this canonical manifest exactly. Never repair a different binary.
           const pointer=fs.readFileSync(localFile,'utf8');
@@ -1351,7 +1351,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           corrupt=!needsHydration;
         }else{corrupt=true;}
       }catch(error){
-        if(error?.code==='ENOENT')needsHydration=spatialFamilies.has(family);
+        if(error?.code==='ENOENT')needsHydration=true;
         else corrupt=true;
       }
       if(corrupt||(!localReady&&!needsHydration))continue;
