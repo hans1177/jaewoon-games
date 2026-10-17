@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "authority": "CLOUDFLARE_DASHBOARD_CONFIGURATION_REQUIRED",
+  "mode": "PRESERVE_ALL_GAME_RELEASE_FLOWS",
+  "source": "main",
+  "pages": {
+    "project": "jaewoon-games",
+    "settingsPath": "Workers & Pages > jaewoon-games > Settings > Build > Build watch paths",
+    "includes": [
+      "web-games/*",
+      "assets/*",
+      "*.html",
+      "index.html",
+      "backup.html",
+      "company.html",
+      "command.html",
+      "install.html",
+      "offline.html",
+      "sw.js",
+      "manifest.webmanifest",
+      "_worker.js",
+      "_headers",
+      "_redirects",
+      "game-catalog.json",
+      "game-artbooks.json",
+      "company-status.json",
+      "homepage-portfolio-status.json",
+      "test-game-candidates.json",
+      "public-release-baselines.json",
+      "homepage-faq.json",
+      "company-directive.json",
+      "_site/*"
+    ],
+    "excludes": [],
+    "note": "Never skip web-games/*; this includes all nested game resources. Actual Cloudflare settings must be entered in Cloudflare Dashboard."
+  },
+  "workers": {
+    "project": "jaewoon-multiplayer",
+    "settingsPath": "Workers & Pages > jaewoon-multiplayer > Settings > Build > Build watch paths",
+    "includes": [
+      "multiplayer/*",
+      "package.json",
+      "package-lock.json",
+      "wrangler.toml",
+      "wrangler.json",
+      "wrangler.jsonc"
+    ],
+    "excludes": [],
+    "note": "Preserves every multiplayer source/config change; independent of Pages builds."
+  },
+  "hardRules": {
+    "neverChangeExistingGameUrls": true,
+    "neverSkipReleaseFlow": true,
+    "neverTreatSkippedBuildAsDeployed": true,
+    "neverTreatQuotaAsCodePass": true,
+    "independentQaRequired": true
+  }
+}
