@@ -293,7 +293,10 @@ test('civilization monster alert and pack awareness preserve the existing server
 
 test('external-model monsters no longer use hand-made alert and return-home poses', () => {
   assert.doesNotMatch(client, /creatureMotionLimbNames|creatureImportedRig|state == "Alert" and math\.rad/);
-  assert.match(client, /entry\.Visual:PivotTo\(entry\.Root\.CFrame \* offset\)/);
+  assert.ok(client.includes('entry.Visual:PivotTo(rootFrame * offset)'));
+  assert.ok(client.includes('if entry.LastFrame ~= rootFrame or entry.LastOffset ~= offset then'));
+  assert.ok(client.includes('entry.LastFrame = rootFrame'));
+  assert.ok(client.includes('entry.LastOffset = offset'))
   assert.match(client, /enemy:GetAttribute\("CreatureAssetSource"\) == "StudioImported"/);
   assert.match(server, /civOnEnemyStrike\(enemy, target, now\)/);
   assert.match(server, /GetDataStore\("simple-rpg-development-v1"\)/);
@@ -392,7 +395,10 @@ test('native controls and mobile combat remain available even without a GUI', ()
 test('handmade creature poses stay removed, imported mesh movement remains', () => {
   assert.doesNotMatch(client, /creatureMotionLimbNames|creatureImportedRig|creatureTelegraphHighlights|civPreviewStyles/);
   assert.match(client, /observed\[enemy\] = \{Visual = visual, Root = core\}/);
-  assert.match(client, /entry\.Visual:PivotTo\(entry\.Root\.CFrame \* offset\)/);
+  assert.ok(client.includes('entry.Visual:PivotTo(rootFrame * offset)'));
+  assert.ok(client.includes('if entry.LastFrame ~= rootFrame or entry.LastOffset ~= offset then'));
+  assert.ok(client.includes('entry.LastFrame = rootFrame'));
+  assert.ok(client.includes('entry.LastOffset = offset'))
   assert.match(client, /CreatureVisualAssetId/);
 });
 
