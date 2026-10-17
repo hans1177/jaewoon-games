@@ -2663,6 +2663,10 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
     `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
+    // Keep the actual worker guidance across normal, focused and compact retries.
+    ...(d?.internalAlgorithmUse?.mode==='MAXIMIZE_TASK_RELEVANT_VERIFIED_INTERNAL_ALGORITHMS'?[
+      'internalAlgorithmRoute=VERIFIED_SAME_GAME_SAME_FAILURE_FIRST; SAME_GAME_VERIFIED_NEXT; TASK_RELEVANT_VIBE_GRAPH_CAUSAL_DIAGNOSIS_CODING_STRATEGY_RECOMBINATION_AND_ASSET_REUSE; AUTHORIZED_AI_CAN_IMPLEMENT_ON_ISOLATED_CANDIDATES_WHEN_OPTED_IN; VIBE_INTEGRATES_AND_LEARNS; DISJOINT_FILES_PARALLEL_CONFLICTING_FILES_SERIAL; DETERMINISTIC_QA_SECURITY_RELEASE_UNCHANGED; UNVERIFIED_IS_NOT_PASS'
+    ]:[]),
     'Complete one coherent player action-to-state-to-feedback/result chain inside this goal. Include every required dependency and atomic file pair. Defer unrelated expansion, not required connected improvements or acceptance gates.',
     target==='ROBLOX'&&['CORE_FUN','PROGRESSION','STABILITY'].includes(clean(d.primaryFocus).toUpperCase())?'Roblox gameplay BUILD_UP은 실제 server/shared 게임 상태 책임 또는 input→server→state 체인을 수정해야 한다. UI/VFX/색상/마커만 바꾸고 설계 구현 완료로 처리하지 않는다.':'',
     `whyNow=${clean(d.primaryGoalReason)}`,
@@ -2724,12 +2728,12 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const keepPrefixes=focusedRobloxVisual?[
     ...inspectionPrefixes,
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','internalAlgorithmRoute=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     ...inspectionPrefixes,
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','internalAlgorithmRoute=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2788,7 +2792,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const essentialPrefixes=[
     ...inspectionPrefixes,
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','internalAlgorithmRoute=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
