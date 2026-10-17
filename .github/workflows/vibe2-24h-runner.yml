@@ -342,6 +342,12 @@ jobs:
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
             # Verify current main policy exists; do not leak the production policy env into isolated QA fixtures.
             test -s /tmp/vibe2-main/company-learning/platform-release-roadmap.json
+            # [설계 원본] 버전 고정된 company-runtime 아트북을 기존 main 작업 공간에 읽기 전용으로 적재한다.
+            runtime_design_sha="$(git rev-parse origin/company-runtime)"
+            test "$(git -C /tmp/vibe2-main ls-tree -d --name-only "$runtime_design_sha" -- artbook-submissions)" = 'artbook-submissions'
+            git -C /tmp/vibe2-main restore --source="$runtime_design_sha" --worktree -- artbook-submissions
+            test -d /tmp/vibe2-main/artbook-submissions
+            echo "VIBE2_SEED_ARTBOOK_SOURCE=company-runtime:$runtime_design_sha"
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack
             control_root="$PWD"
             main_sha="$(git -C /tmp/vibe2-main rev-parse HEAD)"
