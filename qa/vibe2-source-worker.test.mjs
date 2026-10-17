@@ -973,16 +973,6 @@ test('internal motion prompt keeps exact scope, short source anchors and complet
   assert.equal(schema.properties.motionRepairReport.properties.depthEvidence.maxItems,6);
   assert.equal(schema.additionalProperties,false);
 });
-// 공통 게임 소스 테스트는 실제 계획기에서 계산한 자산 계약을 포함한다.
-// 운영 자산 기준/작업기 검사는 그대로 두고, 한 게임용 소형 등록소로 격리 실행한다.
-const sourceWorkerTestLibrary=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
-const sourceWorkerTestFamilies=Object.fromEntries(Object.entries(sourceWorkerTestLibrary.baseMaterialLibrary.families)
-  .map(([family,atoms])=>[family,atoms.slice(0,1)]));
-const sourceWorkerTestRegistry={
-  version:sourceWorkerTestLibrary.version,
-  assets:sourceWorkerTestLibrary.assets.filter(asset=>asset.id==='card-rpg-v2'),
-  baseMaterialLibrary:{families:sourceWorkerTestFamilies}
-};
 function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles = [], taskId = 'task-1' } = {}) {
   // 실제 중앙 로드/컴파일러가 만든 계약을 테스트 work order에 포함한다.
   // 계약이 누락된 운영 작업의 차단은 source worker에서 계속 강제한다.
@@ -1003,13 +993,6 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
     source: { root, responsibleFiles },
     qa: ['syntax', 'regression'],
     workerPolicy: { directMainWrite: false },
-    assetProduction:{
-      baseMaterialLoadout:{families:sourceWorkerTestFamilies,universalAssetFirst:{allFamiliesEvaluated:true,missingFamilies:[]}},
-      allGameDynamicLibraryBinding:buildAllGameDynamicLibraryBindingPlan({
-        companyRegistry:sourceWorkerTestRegistry,target,gameId:'demo',
-        baseMaterialLoadout:{families:sourceWorkerTestFamilies}
-      })
-    },
     compiledWorkContract
   };
 }
@@ -1049,7 +1032,7 @@ function robloxFullGraphicsMotionPatch(accent='70,95,130') {
 test('hero asset routing selects stronger local model without changing generation budget',()=>{
   const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'hero-model'});
   workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
-  workOrder.assetProduction={...workOrder.assetProduction,modelRouting:{heroRequested:true,selectedModel:'qwen3:4b-instruct',baselineModel:'qwen3:1.7b',heroModel:'qwen3:4b-instruct',fallbackToBaseline:true,generationBudgetUnchanged:true}};
+  workOrder.assetProduction={modelRouting:{heroRequested:true,selectedModel:'qwen3:4b-instruct',baselineModel:'qwen3:1.7b',heroModel:'qwen3:4b-instruct',fallbackToBaseline:true,generationBudgetUnchanged:true}};
   const route=resolveAssetSourceModel(workOrder,'qwen3:1.7b');
   assert.equal(route.heroRequested,true);
   assert.equal(route.selectedModel,'qwen3:4b-instruct');
@@ -1457,7 +1440,7 @@ test('internal asset detail rotation stays enabled while every selected API rema
 
 test('native asset authoring evidence requires real engine-native source delta and never claims runtime promotion',()=>{
   const workOrder=order({target:'roblox'});
-  workOrder.assetProduction={...workOrder.assetProduction,nativeAuthoringExecution:{
+  workOrder.assetProduction={nativeAuthoringExecution:{
     enabled:true,
     dcc:{requiredTypes:['character']},
     nativeText:{requiredTypes:['character']}
@@ -1482,7 +1465,7 @@ test('native asset authoring evidence requires real engine-native source delta a
 
 test('native DCC authoring stays incomplete until every required DCC type has execution evidence',()=>{
   const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'dcc-type-coverage'});
-  workOrder.assetProduction={...workOrder.assetProduction,nativeAuthoringExecution:{
+  workOrder.assetProduction={nativeAuthoringExecution:{
     enabled:true,target:'roblox',
     dcc:{
       requiredTypes:['background','prop'],
@@ -1527,7 +1510,7 @@ test('native DCC authoring stays incomplete until every required DCC type has ex
 
 test('generated native asset binding requires exact artifact path hash and engine-native source',()=>{
   const workOrder=order({target:'unity',root:'unity-games/demo',responsibleFiles:['unity-games/demo/Assets/Scripts/GameCore.cs'],taskId:'generated-binding'});
-  workOrder.assetProduction={...workOrder.assetProduction,nativeAuthoringExecution:{
+  workOrder.assetProduction={nativeAuthoringExecution:{
     enabled:true,target:'unity',platformReauthoringRequired:true,webAssetDirectReuseIntoRobloxOrUnityForbidden:true,
     dcc:{
       requiredTypes:['boss'],
@@ -1626,7 +1609,7 @@ test('persisted Roblox DCC assets cannot bypass native conversion with HUD metad
       sourceHash:'prop-source',preview:'assets/generated/roblox/demo/prop/preview.png',persistedForCandidate:true
     }
   ];
-  workOrder.assetProduction={...workOrder.assetProduction,nativeAuthoringExecution:{
+  workOrder.assetProduction={nativeAuthoringExecution:{
     enabled:true,target:'roblox',
     dcc:{
       requiredTypes:['background','item','prop'],
@@ -1708,7 +1691,7 @@ test('declared Blender verification executes only declared recipe and restores t
     execFileSync('git',['commit','-m','fixture'],{cwd:root});
     const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'dcc-verify'});
     workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
-    workOrder.assetProduction={...workOrder.assetProduction,nativeAuthoringExecution:{dcc:{executionRecipes:[{
+    workOrder.assetProduction={nativeAuthoringExecution:{dcc:{executionRecipes:[{
       id:'fixture-blender',executor:'BLENDER_PYTHON',script:'assets/test/build.py',runMode:'VERIFY_ONLY',
       args:['--output','assets/test/native/model'],outputs:['assets/test/native/model/model.glb','assets/test/native/model/preview.png','assets/test/native/model/evidence.json'],
       evidenceJson:'assets/test/native/model/evidence.json',preview:'assets/test/native/model/preview.png',editableSource:'assets/test/build.py'
@@ -1750,7 +1733,7 @@ test('declared Blender authoring persists exact generated outputs only inside th
     const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'dcc-persist'});
     workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
     workOrder.compiledWorkContract={workLock:{files:['roblox-games/demo/client/Game.client.luau',...outputs]}};
-    workOrder.assetProduction={...workOrder.assetProduction,nativeAuthoringExecution:{dcc:{executionRecipes:[{
+    workOrder.assetProduction={nativeAuthoringExecution:{dcc:{executionRecipes:[{
       id:'fixture-blender',executor:'BLENDER_PYTHON',script:'assets/test/build.py',runMode:'VERIFY_ONLY',
       args:['--output','assets/test/native/model'],outputs,
       evidenceJson:'assets/test/native/model/evidence.json',preview:'assets/test/native/model/preview.png',editableSource:'assets/test/build.py'
@@ -1814,7 +1797,7 @@ test('declared Blender application rejects desynchronized size axes and pivot an
     const workOrder=order({target:'roblox',taskId:'dcc-application'});
     workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
     workOrder.compiledWorkContract={workLock:{files:outputs}};
-    workOrder.assetProduction={...workOrder.assetProduction,nativeAuthoringExecution:{dcc:{executionRecipes:[{id:'application',executor:'BLENDER_PYTHON',script:'assets/test/build.py',runMode:'VERIFY_ONLY',outputs}]}}};
+    workOrder.assetProduction={nativeAuthoringExecution:{dcc:{executionRecipes:[{id:'application',executor:'BLENDER_PYTHON',script:'assets/test/build.py',runMode:'VERIFY_ONLY',outputs}]}}};
     for(const patch of [{boundsSizeMeters:[4,20,0]},{boundsSizeMeters:[4,2]},{boundsSizeMeters:['4',2,0]},{sourceUp:'Z'},{sourceUnits:'CENTIMETERS'},{pivot:'CENTER'}]){
       setApplication({...application,...patch});
       assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender,persistCandidateOutputs:true}),/NATIVE_GLB_APPLICATION_SPATIAL_MISMATCH/);
@@ -1862,7 +1845,7 @@ test('declared Blender application rejects desynchronized size axes and pivot an
 
 test('Web asset authoring recognizes native SVG Canvas CSS JS and WebAudio source without DCC reuse',()=>{
   const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'web-native-authoring'});
-  workOrder.assetProduction={...workOrder.assetProduction,nativeAuthoringExecution:{
+  workOrder.assetProduction={nativeAuthoringExecution:{
     enabled:true,target:'web',platformReauthoringRequired:true,webAssetDirectReuseIntoRobloxOrUnityForbidden:true,
     dcc:{requiredTypes:[]},
     nativeText:{requiredTypes:['ui','effect'],authoringMode:'SVG_CSS_CANVAS_JS_WEBAUDIO_NATIVE'}
@@ -1887,7 +1870,7 @@ test('Web asset authoring recognizes native SVG Canvas CSS JS and WebAudio sourc
 test('asset runtime promotion candidates require exact source binding to an unverified asset',()=>{
   const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/client/Game.client.luau'],taskId:'asset-promotion'});
   workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
-  workOrder.assetProduction={...workOrder.assetProduction,decisions:[{type:'enemy',qualityDNA:{profile:'CREATURE'},reuseCandidates:[
+  workOrder.assetProduction={decisions:[{type:'enemy',qualityDNA:{profile:'CREATURE'},reuseCandidates:[
     {id:'wolf-derived',family:'CREATURE',license:'project-original-derivative',path:'assets/wolf-derived.glb',sourceHash:'wolf-source',artifactHash:'wolf-artifact',productionVerified:false},
     {id:'already-verified',family:'CREATURE',license:'project-original',robloxAssetId:'123456789',sourceHash:'verified-source',productionVerified:true},
     {id:'unused-spider',family:'CREATURE',license:'project-original',robloxAssetId:'987654321',sourceHash:'spider-source',productionVerified:false}
@@ -1909,7 +1892,7 @@ test('game context capsule keeps responsibility save style and verified memory t
   const relative='client/Game.client.luau';
   const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/'+relative],taskId:'context-capsule'});
   workOrder.goal='improve the current visual responsibility without changing gameplay';
-  workOrder.assetProduction={...workOrder.assetProduction,qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',qualityDNA:{styleProfile:'STYLIZED_DARK'}};
+  workOrder.assetProduction={qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',qualityDNA:{styleProfile:'STYLIZED_DARK'}};
   workOrder.unifiedLearning={failureFingerprint:'old-failure',playbookReuse:[{id:'verified-playbook-a'}]};
   const exploration={editContract:{
     primaryTargets:['renderEnemy'],primarySystems:['PRESENTATION'],dependentSystems:['VFX'],ownedState:['enemyState'],
@@ -2351,7 +2334,7 @@ test('asset-development studio quality core survives initial focused and compact
   const workOrder=order({target:'roblox',root:'roblox-games/demo',responsibleFiles:['roblox-games/demo/'+relative],taskId:'asset-studio-core-prompt'});
   workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
   workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
-  workOrder.assetProduction={...workOrder.assetProduction,
+  workOrder.assetProduction={
     kind:'vibe2-asset-production-plan',
     qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
     qualityDNA:{contracts:[{type:'character',qualityDNA:{profile:'HERO_CHARACTER'}}]}
@@ -2396,7 +2379,7 @@ test('asset-development Roblox candidate retries until three studio quality axes
   workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve the existing visible asset presentation without changing gameplay';
   workOrder.selectedTask={id:workOrder.taskId,gameId:'demo',target:'roblox',assetProductionLane:true,evidence:['asset-production-parallel:v1']};
   workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
-  workOrder.assetProduction={...workOrder.assetProduction,kind:'vibe2-asset-production-plan',qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',qualityDNA:{contracts:[]}};
+  workOrder.assetProduction={kind:'vibe2-asset-production-plan',qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',qualityDNA:{contracts:[]}};
   const weak=path.join(cwd,'asset-studio-weak.json');
   const strong=path.join(cwd,'asset-studio-strong.json');
   write(path.join(cwd,root,relative),source);
@@ -3658,7 +3641,7 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
     target:'roblox',
     responsibleFiles:workOrder.source.responsibleFiles
   };
-  workOrder.assetProduction={...workOrder.assetProduction,
+  workOrder.assetProduction={
     baseMaterialLoadout:{
       families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']},
       robloxSelectionHandoff:{
@@ -3715,7 +3698,7 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
 test('Roblox handoff repairs a nested server consumer without duplicating existing selection metadata',async()=>{
   const cwd=tempRoot(),root='roblox-games/demo',owner='server/world/Menu.luau';
   const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${owner}`],taskId:'server-native-binding'});
-  workOrder.assetProduction={...workOrder.assetProduction,baseMaterialLoadout:{families:{UI:['FRAME_PANEL']},
+  workOrder.assetProduction={baseMaterialLoadout:{families:{UI:['FRAME_PANEL']},
     robloxSelectionHandoff:{handoffRequired:true,downstreamApplicationRequired:true,bindingVersion:2}}};
   const statuses=ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>`${family} = "${family==='UI'?'APPLIED':'NOT_APPLICABLE'}"`).join(', ');
   write(path.join(cwd,root,'shared/GameConfig.luau'),'return { StudioAssets = { Families = { UI = { "FRAME_PANEL" } } } }');
@@ -7964,7 +7947,7 @@ test('localized asset repair evidence and identity locks survive compact model r
     evidence:{artifactHash:'capture-current',artifactRef:'captures/grip.webm'},
     recipe:{previousParameters:{gripOffset:.05,hornCount:1,skinColor:[.2,.3,.4]},editableParameters:['gripOffset'],lockedParameters:['hornCount'],identityAnchors:['ONE_HORN']},
     closed:false};
-  work.assetProduction={...work.assetProduction,detailReview:{status:'LOCAL_REPAIR_REQUIRED',subjects:[{recipeId:'dokkaebi',sourceHash:'source-current'}],repairs:[repair],protectedSemantics:['GAMEPLAY_EVENTS','CLIP_DURATION']},
+  work.assetProduction={detailReview:{status:'LOCAL_REPAIR_REQUIRED',subjects:[{recipeId:'dokkaebi',sourceHash:'source-current'}],repairs:[repair],protectedSemantics:['GAMEPLAY_EVENTS','CLIP_DURATION']},
     motionContinuityAudit:{verdict:'FAIL',clipId:'swing',sourceHash:'source-current',violations:[{kind:'maxAttachmentOffset',region:'rightGrip',frameRange:[9,12],normalizedTimeRange:[.3,.4]}],runtimeVerified:false}};
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(work));
   const server=http.createServer((req,res)=>{
