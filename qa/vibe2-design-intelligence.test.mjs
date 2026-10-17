@@ -426,7 +426,8 @@ test('canonical central policy documents bind the intelligent design loop to exi
   assert.equal(logMap.retained.proof,'STRUCTURED_EVIDENCE_REQUIRED');
   assert.equal(logMap.retained.unknownOrMissingPolicy,'FAIL_CLOSED');
   const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
-  assert.match(cycle,/CANONICAL_POLICY_PATH='company-learning\/platform-release-roadmap\.json'/);
+  assert.ok(cycle.includes("const CANONICAL_POLICY_PATH=String(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH||'').trim();"));
+  assert.ok(cycle.includes("throw new Error('DESIGN_CYCLE_VERIFIED_POLICY_PATH_REQUIRED')"));
   assert.doesNotMatch(cycle,/centralPolicy:'COMPANY_FLOW\.md'/);
   assert.match(cycle,/DESIGN_CHECKPOINT_CONTRACT_VERSION=4/);
 });
