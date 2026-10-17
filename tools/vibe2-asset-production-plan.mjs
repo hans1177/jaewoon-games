@@ -1325,6 +1325,13 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz)$/,''),role].join(' ').replace(/[-_]+/g,' ');
       const matchedRoles=roles.filter(value=>terms.includes(value.replaceAll('_',' ')));
       if(roles.length&&!roles.every(value=>value==='generic')&&!matchedRoles.length)continue;
+      // [게임 자동 적용 안전선] 역할이 맞는 원본만 1회 해시 검증한다.
+      // 다운로드된 것으로 표시된 크기 일치 파일이라도 내용이 다르면 게임 소스에 넘기지 않는다.
+      try{
+        if(fs.lstatSync(localFile).isSymbolicLink())continue;
+        const actualHash=crypto.createHash('sha256').update(fs.readFileSync(localFile)).digest('hex');
+        if(actualHash!==declaredHash)continue;
+      }catch{continue;}
       const nameFit=requestText.split(/\s+/).filter(word=>word.length>=4&&terms.includes(word)).length;
       seenSourceHashes.add(declaredHash);
       candidates.push(freeze({
