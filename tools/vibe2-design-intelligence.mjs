@@ -314,8 +314,8 @@ function existingDesignerHandoff(task = {}) {
     ...(Array.isArray(task.designFields)?task.designFields:[]),
     ...(task.designScope?[task.designScope]:[])
   ].map(row=>typeof row==='string'?clean(row):clean(row?.path||row?.field||row?.scope)).filter(Boolean);
-  const insideGrammar=field=>/^(?:MAIN|A|B|C|D|@)(?:$|[.\/[ ])/i.test(field)
-    ||/^creativeGrammar(?:$|[.\/[ ])/i.test(field);
+  const insideGrammar=field=>/^(?:MAIN|A|B|C|D|@|ABCD\+@)(?:$|[.\/[ ])/i.test(field)
+    ||/^creativeGrammar[.\/](?:mainIdentity|a|b|cThemes|cGenres|cGenreInterlock|cWorldAndGameplayEffect|dCreations|delveDiscoveries|delveGrowthRule)(?:$|[.\/[ ])/i.test(field);
   const required=requested&&(!fields.length||fields.some(field=>!insideGrammar(field)));
   const gameId=clean(task.gameId),requestId=clean(task.id||task.taskId),goal=clean(task.goal);
   const ready=/^[a-z0-9][a-z0-9-]{0,79}$/.test(gameId)
