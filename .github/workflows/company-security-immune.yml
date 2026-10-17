@@ -419,11 +419,11 @@ jobs:
           import {execFileSync} from 'node:child_process';
           const policyPath='company-learning/platform-release-roadmap.json';
           const pagesPath='.github/workflows/magic-forest-pages.yml';
-          const changedPaths=execFileSync('git',['diff','--name-only',process.env.BASE_SHA,'HEAD'],{encoding:'utf8'}).trim().split('\\n');
+          const changedPaths=execFileSync('git',['diff','--name-only',process.env.BASE_SHA,'HEAD'],{encoding:'utf8'}).trim().split('\n');
           if(changedPaths.includes(pagesPath)){
             const pagesBefore=execFileSync('git',['show',process.env.BASE_SHA+':'+pagesPath],{encoding:'utf8'});
             const pagesAfter=fs.readFileSync(pagesPath,'utf8');
-            if(/id-token\\s*:\\s*write/i.test(pagesAfter)){
+            if(/id-token\s*:\s*write/i.test(pagesAfter)){
               const {isApprovedPagesOidcGrant}=await import('./tools/company-security-steward.mjs');
               if(!isApprovedPagesOidcGrant(pagesBefore,pagesAfter))
                 throw new Error('SECURITY_OWNER_PAGES_OIDC_SCOPE_PROOF_REQUIRED');
