@@ -729,6 +729,146 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:assistant-assistant_vibe_automatic_trace_ingress_20261012-b570f83a82be",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI_ASSISTANT_TRACE",
+      "model": "GPT_ASSISTANT_EXACT_MODEL_UNRECORDED",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ORCHESTRATION",
+        "DEBUGGING"
+      ],
+      "patterns": [
+        "Connect persisted assistant action records to the existing learning feed and existing scheduler rather than adding a parallel learning pipeline.",
+        "Classify every registered action with its content hash and verification disposition; self-reported success and learningState alone must not create verified knowledge.",
+        "Require traceable independent source or runtime evidence before distillation, preserve failed and unverified actions as review candidates, and keep native runtime and weight promotion separate."
+      ],
+      "cautions": [
+        "Do not claim that repository trace ingestion monitors all ChatGPT conversations or unrecorded tool calls.",
+        "Do not promote static code checks into gameplay, touch, engine, release or model-weight success."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "b570f83a82be631402ff268ebdd1b5cc5452a69818f99df0c3ff768bfdc4f7ef",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:https://github.com/hans1177/jaewoon-games/commit/7efe095afd571c24cb84e588381b92c78be0ab50",
+          "qa:qa/company-system-ai-learning.test.mjs#assistant actions enter the existing learning feed automatically",
+          "qa:qa/vibe2-external-ai-distillation.test.mjs"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:assistant-assistant_vibe_core_qa_supersession_repair_20261012-00eeb80d780a",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI_ASSISTANT_TRACE",
+      "model": "GPT_ASSISTANT_EXACT_MODEL_UNRECORDED",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ORCHESTRATION",
+        "DEBUGGING"
+      ],
+      "patterns": [
+        "When exact-head QA cannot qualify a newer PR revision, cancel only superseded runs in the same PR concurrency group so current verification can enter the runner queue.",
+        "Test the actual workflow cancellation expression for PR/main pushes versus manual/feature runs and verify that distinct PR refs resolve to distinct groups.",
+        "After rebasing a learning PR, preserve both source-verification and retrieval regressions; keep exact-head QA success mandatory for knowledge promotion."
+      ],
+      "cautions": [
+        "Do not cancel unrelated game production or manual runs to free a QA queue.",
+        "Do not call queued tests successful or treat stale-head QA success as latest-head evidence."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "00eeb80d780a09269803a60a1660e0eb1f1ac0914612e119e8e2e30edef8156a",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:https://github.com/hans1177/jaewoon-games/commit/b2a8562ebf7be2d8d40198ab5e909c7014ea4c65",
+          "qa:qa/company-system-ai-learning.test.mjs#Core QA coalesces obsolete revisions of the same PR",
+          "actions-run:38180450504:completed-cancelled",
+          "actions-run:38181335509:completed-cancelled"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:assistant-assistant_roblox_gameplay_sourcebind_reconciliation_20261012-894c614ecdee",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI_ASSISTANT_TRACE",
+      "model": "GPT_ASSISTANT_EXACT_MODEL_UNRECORDED",
+      "engine": "roblox",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "domains": [
+        "GAMEPLAY_PRODUCT_READINESS",
+        "SOURCE_BIND",
+        "F0",
+        "PACKAGE",
+        "QA"
+      ],
+      "patterns": [
+        "STRIP_ONLY_STRUCTURALLY_BOUND_MANAGED_CODE_BEFORE_SCORING_GAMEPLAY",
+        "TEST_REAL_GAMEPLAY_BEFORE_AND_AFTER_FOUNDATION_WITH_GENERIC_SKELETON_REJECTION",
+        "FENCE_LATE_SAME_SOURCE_F0_AND_PACKAGE_STATE_PERSISTENCE_BY_ACTIVE_SOURCE_REPAIR_STAGE",
+        "CONNECT_VERIFIED_REPAIR_TO_EXISTING_CANONICAL_VIBE_RETRIEVAL_AND_LEARNING_ONLY"
+      ],
+      "cautions": [
+        "TRUNCATE_EVERYTHING_AFTER_SENTINEL",
+        "CREDIT_FOUNDATION_SCAFFOLD_AS_GAMEPLAY",
+        "ALLOW_STALE_SAME_REVISION_RESULTS_TO_ERASE_NEW_SOURCE_BIND_FAILURE",
+        "PROMOTE_STATIC_QA_TO_NATIVE_RUNTIME_OR_TRAINED_MODEL_PASS"
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "894c614ecdeeb87c418bcfa9ee1d4c6e0f80d8b89946411ae93e24f2b799607a",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "independent-qa",
+        "evidence": [
+          "actions-run:38185935927:Vibe-QA-success:3fc65fb8b6a096c10803d5e3eaceba57ba6c985c",
+          "qa:managed-foundation-midblock-and-generic-skeleton-regression:PASS:38185935927",
+          "qa:late-package-and-F0-source-repair-preservation-regression:PASS:38185935927",
+          "source:github-merge-f83da5f45a55d01deae21626a47094ec6c9bc1d9"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   ],
   "policy": {
