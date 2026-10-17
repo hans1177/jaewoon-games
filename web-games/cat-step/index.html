@@ -62,7 +62,99 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-acti
 // 메인: 좌/우 점프 → 착지 → 연속 상승 → 추락 → 즉시 재시작
 
 const canvas=document.getElementById('c');
-const ctx=canvas.getContext('2d',{alpha:false});
+// Native WebGL2 3D renderer: real triangular meshes + GPU depth test; no remote images/scripts.
+const gl=canvas.getContext('webgl2',{alpha:false,antialias:false,depth:true,powerPreference:'low-power'});
+if(!gl)throw new Error('CAT_STEP_WEBGL2_REQUIRED');
+function compileShader(kind,source){
+  const shader=gl.createShader(kind);
+  gl.shaderSource(shader,source);gl.compileShader(shader);
+  if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS))throw new Error('CAT_STEP_3D_SHADER:'+gl.getShaderInfoLog(shader));
+  return shader;
+}
+const vertexShader=compileShader(gl.VERTEX_SHADER,`#version 300 es
+in vec3 aVertex;in vec3 aNormal;
+uniform vec3 uOffset;uniform vec3 uSize;uniform float uTilt;
+uniform vec2 uViewport;
+out float vLight;
+void main(){
+  vec3 p=aVertex*uSize;
+  float c=cos(uTilt),s=sin(uTilt);
+  p=vec3(p.x*c-p.y*s,p.x*s+p.y*c,p.z);
+  vec3 world=uOffset+p;
+  float w=(1400.0-world.z)/1400.0;
+  gl_Position=vec4(world.x/(uViewport.x*.5),world.y/(uViewport.y*.5),-world.z/600.0*w,w);
+  vec3 n=normalize(vec3(aNormal.x*c-aNormal.y*s,aNormal.x*s+aNormal.y*c,aNormal.z));
+  vLight=.46+.54*max(dot(n,normalize(vec3(-.3,.7,1.0))),0.0);
+}`);
+const fragmentShader=compileShader(gl.FRAGMENT_SHADER,`#version 300 es
+precision mediump float;
+in float vLight;uniform vec3 uColor;
+out vec4 fragColor;
+void main(){fragColor=vec4(uColor*vLight,1.0);}
+`);
+const program=gl.createProgram();
+gl.attachShader(program,vertexShader);gl.attachShader(program,fragmentShader);gl.linkProgram(program);
+if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error('CAT_STEP_3D_LINK:'+gl.getProgramInfoLog(program));
+gl.deleteShader(vertexShader);gl.deleteShader(fragmentShader);
+gl.useProgram(program);
+const uOffset=gl.getUniformLocation(program,'uOffset');
+const uSize=gl.getUniformLocation(program,'uSize');
+const uTilt=gl.getUniformLocation(program,'uTilt');
+const uViewport=gl.getUniformLocation(program,'uViewport');
+const uColor=gl.getUniformLocation(program,'uColor');
+const aVertex=gl.getAttribLocation(program,'aVertex'),aNormal=gl.getAttribLocation(program,'aNormal');
+function meshBuffer(vertices){
+  const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vertices),gl.STATIC_DRAW);
+  return{buffer,count:vertices.length/6};
+}
+function appendTriangle(out,a,b,c,n){
+  for(const p of [a,b,c])out.push(...p,...n);
+}
+function makeCube(){
+  const out=[];
+  const faces=[
+    [[0,0,1],[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]],
+    [[0,0,-1],[.5,-.5,-.5],[-.5,-.5,-.5],[-.5,.5,-.5],[.5,.5,-.5]],
+    [[0,1,0],[-.5,.5,.5],[.5,.5,.5],[.5,.5,-.5],[-.5,.5,-.5]],
+    [[0,-1,0],[-.5,-.5,-.5],[.5,-.5,-.5],[.5,-.5,.5],[-.5,-.5,.5]],
+    [[1,0,0],[.5,-.5,.5],[.5,-.5,-.5],[.5,.5,-.5],[.5,.5,.5]],
+    [[-1,0,0],[-.5,-.5,-.5],[-.5,-.5,.5],[-.5,.5,.5],[-.5,.5,-.5]]
+  ];
+  for(const [n,a,b,c,d] of faces){appendTriangle(out,a,b,c,n);appendTriangle(out,a,c,d,n);}
+  return meshBuffer(out);
+}
+function makePyramid(){
+  const out=[],top=[0,.5,0],base=[[-.5,-.5,.5],[.5,-.5,.5],[.5,-.5,-.5],[-.5,-.5,-.5]];
+  for(let i=0;i<4;i++){
+    const a=base[i],b=base[(i+1)%4],u=[b[0]-a[0],0,b[2]-a[2]],v=[top[0]-a[0],1,top[2]-a[2]];
+    const n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];
+    appendTriangle(out,a,b,top,n);
+  }
+  appendTriangle(out,base[0],base[2],base[1],[0,-1,0]);
+  appendTriangle(out,base[0],base[3],base[2],[0,-1,0]);
+  return meshBuffer(out);
+}
+const cubeMesh=makeCube(),pyramidMesh=makePyramid();
+gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.clearDepth(1);
+const mobileRender=matchMedia('(pointer: coarse)').matches;
+const maxRatio=Math.min(devicePixelRatio||1,mobileRender?1:1.5);
+let renderRatio=maxRatio,qualityWindow=0,qualityFrames=0;
+let renderDrawCalls=0;
+window.__catStep3dDiagnostics={renderer:'WEBGL2',actualDrawCalls:0,depthTest:false,meshCount:0,ratio:renderRatio};
+function mesh(meshType,x,y,z,w,h,d,color,tilt=0){
+  const geometry=meshType==='pyramid'?pyramidMesh:cubeMesh;
+  gl.bindBuffer(gl.ARRAY_BUFFER,geometry.buffer);
+  gl.enableVertexAttribArray(aVertex);gl.vertexAttribPointer(aVertex,3,gl.FLOAT,false,24,0);
+  gl.enableVertexAttribArray(aNormal);gl.vertexAttribPointer(aNormal,3,gl.FLOAT,false,24,12);
+  gl.uniform3f(uOffset,x-W*.5,H*.5-y,z);
+  gl.uniform3f(uSize,w,h,d);
+  gl.uniform1f(uTilt,tilt);
+  gl.uniform3fv(uColor,color);
+  gl.drawArrays(gl.TRIANGLES,0,geometry.count);
+  renderDrawCalls++;
+}
+
 const $=id=>document.getElementById(id);
 const game=document.getElementById('game');
 
@@ -84,11 +176,13 @@ const COLORS={
 };
 
 function resize(){
-  DPR=Math.min(2,devicePixelRatio||1);
+  DPR=renderRatio;
   W=innerWidth;H=innerHeight;
-  canvas.width=Math.floor(W*DPR);
-  canvas.height=Math.floor(H*DPR);
-  ctx.setTransform(DPR,0,0,DPR,0,0);
+  canvas.width=Math.max(1,Math.floor(W*DPR));
+  canvas.height=Math.max(1,Math.floor(H*DPR));
+  gl.viewport(0,0,canvas.width,canvas.height);
+  gl.useProgram(program);
+  gl.uniform2f(uViewport,W,H);
 }
 addEventListener('resize',resize,{passive:true});
 resize();
@@ -201,112 +295,43 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')attempt(1);
 });
 
-function drawSky(){
-  const g=ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,COLORS.skyTop);
-  g.addColorStop(1,COLORS.skyBottom);
-  ctx.fillStyle=g;
-  ctx.fillRect(0,0,W,H);
-
-  const t=performance.now()/1000;
-  for(let i=0;i<7;i++){
-    const x=((i*173+t*10*(i%2?1:-1)+W*2)% (W+180))-90;
-    const y=H*(.13+.09*(i%4));
-    ctx.globalAlpha=.15;
-    ctx.fillStyle='#fff';
-    ctx.beginPath();
-    ctx.ellipse(x,y,44+12*(i%3),14+3*(i%2),0,0,Math.PI*2);
-    ctx.fill();
+// World-space mountains, distant buildings and clouds have real volume, shading and depth.
+function drawWorld(now){
+  gl.clearColor(.10,.18,.31,1);
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  renderDrawCalls=0;
+  const t=now*.001;
+  for(let i=0;i<9;i++){
+    const x=((i*177+W*3)%(W+270))-130;
+    const y=H*.8-20*Math.sin(i*2.3);
+    mesh('pyramid',x,y,-300,190+(i%3)*70,250+(i%4)*48,100,[.18,.34,.37]);
   }
-  ctx.globalAlpha=1;
-
-  ctx.fillStyle='rgba(28,52,70,.28)';
-  ctx.beginPath();
-  ctx.moveTo(0,H);
-  ctx.lineTo(0,H*.82);
-  for(let x=0;x<=W;x+=80){
-    const y=H*.80-Math.sin((x+bgOffset)*.012)*18;
-    ctx.lineTo(x,y);
+  for(let i=0;i<5;i++){
+    const x=((i*W*.31+t*(i%2?9:-7)+W*4)%(W+200))-100;
+    mesh('cube',x,H*.16+(i%3)*25,-230,85,13,25,[.66,.78,.86]);
+    mesh('cube',x+22,H*.15+(i%3)*25,-230,49,20,18,[.73,.83,.9]);
   }
-  ctx.lineTo(W,H);
-  ctx.closePath();
-  ctx.fill();
+  for(let i=0;i<3;i++){
+    const x=W*(.12+.38*i);
+    mesh('cube',x,H*.9,-180,55,220,65,[.17,.28,.32]);
+    mesh('pyramid',x,H*.9-122,-180,70,58,77,[.22,.39,.39]);
+  }
 }
-
-function drawPlatform(x,y,w,isGold){
-  const h=18,depth=13;
-  ctx.save();
-  ctx.shadowColor='rgba(8,14,31,.28)';
-  ctx.shadowBlur=16;
-  ctx.shadowOffsetY=8;
-  ctx.fillStyle=isGold?COLORS.goldFront:COLORS.platformFront;
-  ctx.beginPath();
-  ctx.moveTo(x-w/2,y);
-  ctx.lineTo(x+w/2,y);
-  ctx.lineTo(x+w*.42,y+depth);
-  ctx.lineTo(x-w*.42,y+depth);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.shadowColor='transparent';
-  ctx.fillStyle=isGold?COLORS.gold:COLORS.platform;
-  roundRect(x-w/2,y-h/2,w,h,8);
-  ctx.fill();
-
-  ctx.fillStyle=isGold?'#ffe09b':COLORS.platformTop;
-  roundRect(x-w/2,y-h/2,w,5,7);
-  ctx.fill();
-  ctx.restore();
-}
-
-function roundRect(x,y,w,h,r){
-  r=Math.min(r,w/2,h/2);
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-
-function drawCat(x,y,tilt=0,squash=1){
-  ctx.save();
-  ctx.translate(x,y);
-  ctx.rotate(tilt);
-  ctx.scale(1.04,1/squash);
-
-  ctx.strokeStyle=COLORS.cat;
-  ctx.lineWidth=8;
-  ctx.lineCap='round';
-  ctx.beginPath();
-  ctx.moveTo(18,10);
-  ctx.quadraticCurveTo(40,0,34,-19);
-  ctx.stroke();
-
-  ctx.fillStyle=COLORS.cat;
-  roundRect(-18,-28,36,34,12);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(0,-35,22,0,Math.PI*2);
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(-17,-49);ctx.lineTo(-8,-65);ctx.lineTo(-2,-49);ctx.closePath();ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(17,-49);ctx.lineTo(8,-65);ctx.lineTo(2,-49);ctx.closePath();ctx.fill();
-
-  ctx.fillStyle=COLORS.catDark;
-  ctx.beginPath();ctx.arc(-8,-38,2.7,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(8,-38,2.7,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#a46361';
-  ctx.beginPath();ctx.arc(0,-31,2.5,0,Math.PI*2);ctx.fill();
-
-  ctx.fillStyle='#ef8f3e';
-  roundRect(-15,4,11,13,5);ctx.fill();
-  roundRect(4,4,11,13,5);ctx.fill();
-  ctx.restore();
+function drawCat3d(pose){
+  const x=pose.x,y=pose.y,s=pose.squash,tilt=pose.tilt;
+  const fur=[.98,.54,.23],paws=[.84,.38,.14],face=[.99,.67,.36];
+  // Every body part is a physical 3D mesh, not a billboard.
+  mesh('cube',x,y+12,60,36,35/s,30,fur,tilt);
+  mesh('cube',x,y-22,69,43,40/s,36,face,tilt);
+  mesh('pyramid',x-14,y-48,72,18,23,19,fur,tilt);
+  mesh('pyramid',x+14,y-48,72,18,23,19,fur,tilt);
+  mesh('cube',x-8,y-23,90,6,6,5,[.08,.07,.07],tilt);
+  mesh('cube',x+8,y-23,90,6,6,5,[.08,.07,.07],tilt);
+  mesh('pyramid',x,y-13,93,7,7,7,[.64,.26,.28],tilt);
+  mesh('cube',x-12,y+34,69,13,13,16,paws,tilt);
+  mesh('cube',x+12,y+34,69,13,13,16,paws,tilt);
+  mesh('cube',x+23,y+15,51,27,10,11,fur,tilt-.28);
+  mesh('cube',x+35,y+4,53,10,27,11,fur,tilt+.4);
 }
 
 function catPose(now){
@@ -347,20 +372,31 @@ function catPose(now){
 }
 
 function draw(now){
-  bgOffset+=.08;
-  drawSky();
-
-  const platformW=Math.max(92,Math.min(150,W*.24));
-  for(let i=steps.length-1;i>=0;i--){
-    const step=steps[i];
-    const y=platformY(i);
-    if(y<-40||y>H+40)continue;
-    drawPlatform(laneX(step.lane),y,platformW,step.number>0&&step.number%10===0);
-  }
-
-  const pose=catPose(now);
-  drawCat(pose.x,pose.y,pose.tilt,pose.squash);
-
+  // Gameplay animation and scoring are unchanged; reduce only mobile framebuffer work.
+  if(!document.hidden){
+    drawWorld(now);
+    const platformW=Math.max(92,Math.min(150,W*.24));
+    for(let i=steps.length-1;i>=0;i--){
+      const step=steps[i],y=platformY(i);
+      if(y<-40||y>H+40)continue;
+      const gold=step.number>0&&step.number%10===0;
+      mesh('cube',laneX(step.lane),y,0,platformW,19,48,
+        gold?[.92,.64,.15]:[.27,.36,.43]);
+      mesh('cube',laneX(step.lane),y-11,6,platformW-6,5,43,
+        gold?[1,.82,.38]:[.45,.76,.60]);
+    }
+    drawCat3d(catPose(now));
+    qualityFrames++;
+    if(!qualityWindow)qualityWindow=now;
+    if(mobileRender&&now-qualityWindow>4500){
+      const fps=qualityFrames*1000/(now-qualityWindow);
+      const next=fps<42?Math.max(.75,renderRatio-.125):fps>56?Math.min(maxRatio,renderRatio+.125):renderRatio;
+      if(Math.abs(next-renderRatio)>.001){renderRatio=next;resize();}
+      qualityFrames=0;qualityWindow=now;
+    }
+    window.__catStep3dDiagnostics={renderer:'WEBGL2',actualDrawCalls:renderDrawCalls,
+      depthTest:gl.isEnabled(gl.DEPTH_TEST),meshCount:steps.length+11,ratio:renderRatio};
+  }else{qualityWindow=0;qualityFrames=0;}
   requestAnimationFrame(draw);
 }
 updateHud();
