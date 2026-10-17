@@ -140,11 +140,12 @@ export function createVibeHighEndPresentationStack({request=''}={}){return Objec
   rules:Object.freeze(['presentation-follows-authoritative-gameplay-events','signature-events-use-dedicated-presentation','scene-intent-precedes-decoration','character-and-creature-acting-is-part-of-visual-quality','primary-secondary-procedural-motion-layers-compose-together','game-specific-vfx-language-and-intensity-hierarchy','lighting-supports-region-risk-and-event-readability','camera-never-hides-required-telegraph','audio-vfx-camera-lighting-share-one-art-direction','audio-selection-follows-game-concept-and-runtime-state','mobile-readability-and-reduced-motion-preserved','presentation-checkpoint-never-means-terminal-completion']),
   protected:Object.freeze(['damage','cooldown','reward','spawn-rule','save','progression','economy','hit-semantics'])
 })}
-export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null}={}){
+export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null,genre='',systems=[],platform='WEB'}={}){
   const audit=auditVibePresentation(files);
   const designSystem=createVibeDesignSystem(files);
   const timeline=buildVibePresentationTimeline(events);
   const highEnd=createVibeHighEndPresentationStack({request});
+  const commercialUI=createVibeCommercialInterfaceBlueprint({genre,systems,source:textOf(files),platform});
   const cinematicDirection=highEnd.cinematicDirection;
   const tasks=[];
   for(const area of audit.priority)tasks.push(Object.freeze({domain:'presentation',target:area,action:`improve-${area}`,risk:['camera','transition'].includes(area)?'medium':'low'}));
@@ -154,7 +155,7 @@ export function planVibePresentationAutopilot({files=[],events=[],request='',cha
     version:3,
     request:String(request),
     qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
-    audit,designSystem,timeline,highEnd,cinematicDirection,
+    audit,designSystem,timeline,highEnd,cinematicDirection,commercialUI,
     changeRequest:changeRequest||null,
     tasks:Object.freeze(tasks.slice(0,10)),
     policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true})
