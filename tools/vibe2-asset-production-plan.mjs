@@ -14,6 +14,18 @@ import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} fr
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,VIBE_NPC_ROLE_MOTION_REQUIREMENTS,createVibeNpcRoleMotionRequirement,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {buildRobloxStudioAssetBootstrapPlan} from './company-development-roblox-bootstrap.mjs';
 
+// Multiple game decisions within one runner reuse an exact file verification.
+// Final hydration independently rehashes bytes before any source can be used.
+const SHARED_ARCHIVE_HASH_CACHE=new Map();
+function sharedArchiveSha256(full,info){
+  const identity=[info.dev,info.ino,info.size,info.mtimeMs,info.ctimeMs].join(':');
+  const cached=SHARED_ARCHIVE_HASH_CACHE.get(full);
+  if(cached?.identity===identity)return cached.sha256;
+  const sha256=crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex');
+  if(SHARED_ARCHIVE_HASH_CACHE.size>=128)SHARED_ARCHIVE_HASH_CACHE.delete(SHARED_ARCHIVE_HASH_CACHE.keys().next().value);
+  SHARED_ARCHIVE_HASH_CACHE.set(full,{identity,sha256});
+  return sha256;
+}
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
 const freezeList=value=>freeze([...(value||[])]);
@@ -1328,7 +1340,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         const info=fs.statSync(localFile);
         if(!info.isFile()){corrupt=true;}
         else if(info.size===declaredBytes){
-          localReady=crypto.createHash('sha256').update(fs.readFileSync(localFile)).digest('hex')===declaredHash;
+          localReady=sharedArchiveSha256(localFile,info)===declaredHash;
           corrupt=!localReady;
         }else if(info.size<=256 && spatialFamilies.has(family)){
           // A Git LFS pointer is not corrupt only when oid and size match
