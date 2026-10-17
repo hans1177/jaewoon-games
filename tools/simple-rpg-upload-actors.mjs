@@ -194,7 +194,7 @@ if (process.argv.includes('--publish-curated-art')) {
     throw new Error('CURATED_WORLD_REQUIRED_MODEL_MISSING:'+required);
   for(const required of ['Panel','Button'])if(!verified.ui[required])
     throw new Error('CURATED_UI_REQUIRED_IMAGE_MISSING:'+required);
-  const luaTable=o=>'{'+Object.entries(o).map(([k,v])=>JSON.stringify(k)+' = '+v).join(', ')+'}';
+  const luaTable=o=>'{'+Object.entries(o).map(([k,v])=>'['+JSON.stringify(k)+'] = '+v).join(', ')+'}';
   const moduleContent = [
     '--!strict','-- Downloaded CC0 files, verified checksums and real Roblox Cloud IDs; generated per owner build.',
     '-- This module is not checked into source without registered assets.',
