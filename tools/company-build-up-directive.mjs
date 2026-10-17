@@ -711,10 +711,20 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
     }
     if(design.creativeGrammar?.a)groups.push(['CREATIVE_A_SYSTEM_AND_SOURCE',[{name:design.creativeGrammar.a.system+' × '+design.creativeGrammar.a.material,trigger:design.creativeGrammar.a.system,stateChange:design.creativeGrammar.a.stateChange}]]);
     if(design.creativeGrammar?.b)groups.push(['CREATIVE_B_SYSTEM_AND_SOURCE',[{name:design.creativeGrammar.b.system+' × '+design.creativeGrammar.b.material,trigger:design.creativeGrammar.b.system,stateChange:design.creativeGrammar.b.stateChange}]]);
-    if(Array.isArray(design.creativeGrammar?.cThemes))groups.push(['CREATIVE_C_THEME_FUSION',design.creativeGrammar.cThemes.map(row=>({name:row.name,trigger:row.kind,stateChange:row.gameplayEffect}))]);
+    if(Number(design.creativeGrammar?.standardVersion||0)<1&&Array.isArray(design.creativeGrammar?.cThemes))groups.push(['CREATIVE_C_THEME_FUSION',design.creativeGrammar.cThemes.map(row=>({name:row.name,trigger:row.kind,stateChange:row.gameplayEffect}))]);
+    if(Array.isArray(design.creativeGrammar?.dCreations))groups.push(['CREATIVE_D_CREATIONS',design.creativeGrammar.dCreations.map(row=>({
+      id:row.id,name:row.creation,trigger:row.action,stateChange:row.gameplayEffect,
+      materialPath:row.materialPath,sourceFeature:row.sourceFeature,condition:row.condition,
+      consequence:row.consequence,risk:row.risk,genreRoles:row.genreRoles,
+      linkedElements:row.linkedElements,observableAcceptance:row.consequence
+    }))]);
     if(Array.isArray(design.creativeGrammar?.cGenres))groups.push(['CREATIVE_C_PRIMARY_SECONDARY_GENRE',design.creativeGrammar.cGenres.map(row=>({name:row.role+' '+row.name,trigger:row.role,stateChange:row.gameplayEffect}))]);
     if(design.creativeGrammar?.cGenreInterlock)groups.push(['CREATIVE_C_GENRE_INTERLOCK',[{name:'메인·보조 장르 플레이 인과',trigger:'두 장르 동시 발동',stateChange:design.creativeGrammar.cGenreInterlock}]]);
-    if(Array.isArray(design.creativeGrammar?.delveDiscoveries))groups.push(['CREATIVE_AT_DELVE',design.creativeGrammar.delveDiscoveries.map(row=>({name:row.discovery,trigger:row.clue,stateChange:row.newChoice}))]);
+    if(Array.isArray(design.creativeGrammar?.delveDiscoveries))groups.push(['CREATIVE_AT_DELVE',design.creativeGrammar.delveDiscoveries.map(row=>({
+      name:row.discovery,trigger:row.experiment||row.clue,stateChange:row.newChoice,
+      sourceDId:row.sourceDId,clue:row.clue,nextQuestion:row.nextQuestion,
+      observableAcceptance:row.nextQuestion
+    }))]);
     groups.push(['IMPLEMENTATION_TRACE',traces]);
     for(const [family,rows] of groups)if(Array.isArray(rows))rows.forEach((row,index)=>add(family,index,row));
   }
@@ -773,16 +783,33 @@ export function buildDesignToPlatformCodingTrace({
   // V5의 C는 두 소재·두 장르의 인과 계약이다. 원본에 없는 예전 c 기계축을 요구하지 않는다.
   const creativeGrammar=design.creativeGrammar&&typeof design.creativeGrammar==='object'&&!Array.isArray(design.creativeGrammar)?design.creativeGrammar:null;
   const hasCreativeGrammar=Boolean(creativeGrammar&&Object.keys(creativeGrammar).length);
+  const standardGrammar=Number(creativeGrammar?.standardVersion||0)>=1;
   const cThemes=Array.isArray(creativeGrammar?.cThemes)?creativeGrammar.cThemes:[];
   const cGenres=Array.isArray(creativeGrammar?.cGenres)?creativeGrammar.cGenres:[];
+  const dCreations=Array.isArray(creativeGrammar?.dCreations)?creativeGrammar.dCreations:[];
+  const delveDiscoveries=Array.isArray(creativeGrammar?.delveDiscoveries)?creativeGrammar.delveDiscoveries:[];
   const sourcedAB=['a','b'].every(key=>clean(creativeGrammar?.[key]?.system)&&clean(creativeGrammar?.[key]?.material)
     &&clean(creativeGrammar?.[key]?.materialDomain)&&clean(creativeGrammar?.[key]?.stateChange));
-  const creativeCReady=hasCreativeGrammar&&sourcedAB&&clean(creativeGrammar?.abCausality)
-    &&cThemes.length===2&&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
-    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))
-    &&cGenres.length===2&&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.gameplayEffect)))
-    &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
-    &&clean(creativeGrammar?.cGenreInterlock)&&clean(creativeGrammar?.cWorldAndGameplayEffect);
+  const genreReady=cGenres.length===2
+    &&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.name)&&clean(row?.gameplayEffect)))
+    &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2;
+  const themesReady=cThemes.length===2
+    &&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect));
+  // [기본설계] 신문법 C는 작품 장르 두 개다. 예전 C 소재 두 개는 기존 설계 호환에만 적용한다.
+  const creativeCReady=Boolean(hasCreativeGrammar&&sourcedAB&&clean(creativeGrammar?.abCausality)
+    &&(standardGrammar||themesReady)&&genreReady
+    &&clean(creativeGrammar?.cGenreInterlock)&&clean(creativeGrammar?.cWorldAndGameplayEffect));
+  const dIds=new Set(dCreations.map(row=>clean(row?.id)).filter(Boolean));
+  const creativeDReady=!standardGrammar||(dCreations.length>0&&dIds.size===dCreations.length
+    &&dCreations.every(row=>Array.isArray(row?.materialPath)&&row.materialPath.length===3
+      &&clean(row?.creation)&&clean(row?.gameplayEffect)
+      &&['PRIMARY','SECONDARY'].every(role=>(row.genreRoles||[]).includes(role))
+      &&['A','B'].every(role=>(row.linkedElements||[]).includes(role))));
+  const creativeAtReady=!standardGrammar||(delveDiscoveries.length>=4
+    &&delveDiscoveries.every(row=>dIds.has(clean(row?.sourceDId))
+      &&clean(row?.clue)&&clean(row?.experiment)&&clean(row?.discovery)
+      &&clean(row?.newChoice)&&clean(row?.nextQuestion)));
   const includeLegacyC=!hasCreativeGrammar||designRoles.some(row=>row?.grammarRole==='c');
   const roles=['MAIN','A','B',...(includeLegacyC?['c']:[]),'DELVE'];
   const roleByName=new Map(roles.map(role=>[role,designRoles.filter(row=>row?.grammarRole===role)]));
@@ -995,6 +1022,8 @@ export function buildDesignToPlatformCodingTrace({
   const gapReasons=[
     ...(!authoredRolesComplete?[hasCreativeGrammar?'DESIGN_MAIN_A_B_C_AT_INCOMPLETE':'DESIGN_MAIN_A_B_c_AT_INCOMPLETE']:[]),
     ...(hasCreativeGrammar&&!creativeCReady?['DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING']:[]),
+    ...(standardGrammar&&!creativeDReady?['DESIGN_CREATIVE_D_CREATIONS_MISSING']:[]),
+    ...(standardGrammar&&!creativeAtReady?['DESIGN_CREATIVE_AT_D_RESEARCH_LINK_MISSING']:[]),
     ...(mandatory&&!modeReady?['MULTIPLAYER_DESIGN_MODE_MISSING']:[]),
     ...(selected==='UNITY_WEB'&&!spatialReady?['UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING']:[]),
     ...(!selectedRoot?['PLATFORM_SOURCE_NOT_SELECTED']:!observedCode?['NATIVE_GAME_CODE_OWNER_MISSING']:[]),
@@ -1206,7 +1235,18 @@ export function buildDesignToPlatformCodingTrace({
       genres:Object.freeze(cGenres.map(row=>Object.freeze({role:clean(row?.role),name:clean(row?.name),gameplayEffect:clean(row?.gameplayEffect)}))),
       genreInterlock:clean(creativeGrammar?.cGenreInterlock),
       abGameplayEffect:clean(creativeGrammar?.cWorldAndGameplayEffect),
-      designAuthored:Boolean(creativeCReady),runtimeVerified:false
+      standardVersion:standardGrammar?Number(creativeGrammar.standardVersion):null,
+      dCreations:Object.freeze(dCreations.map(row=>Object.freeze({
+        id:clean(row?.id),materialPath:Object.freeze(row?.materialPath||[]),
+        creation:clean(row?.creation),gameplayEffect:clean(row?.gameplayEffect),
+        genreRoles:Object.freeze(row?.genreRoles||[]),linkedElements:Object.freeze(row?.linkedElements||[])
+      }))),
+      delveDLinks:Object.freeze(delveDiscoveries.map(row=>Object.freeze({
+        sourceDId:clean(row?.sourceDId),discovery:clean(row?.discovery),
+        experiment:clean(row?.experiment),nextQuestion:clean(row?.nextQuestion)
+      }))),
+      designAuthored:Boolean(creativeCReady&&creativeDReady&&creativeAtReady),
+      runtimeVerified:false
     }):null,
     observedGameCodeFiles:Object.freeze(observedFiles),
     executableCodeCandidateFiles:Object.freeze(codeSignalFiles),
@@ -2227,7 +2267,7 @@ export function directivePrompt(d={}){
     `CAUSAL_GRAMMAR_EVIDENCE: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence||{})}`,
     `CAUSAL_GRAMMAR_BUILD_UP_RULE: ${d.identityReinforcement?.causalGrammarEvidence?.rule||'PRESERVE_APPROVED_CAUSAL_GAME_GRAMMAR'}`,
     `EXISTING_GAME_MAIN_A_B_c_AT_MAP: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap||{})}`,
-    'EXISTING_GAME_GRAMMAR_ACTION: 과거 MAIN 소재뿐인 설계를 정식 설계로 보존하지 않는다. 현재 실행 게임의 실제 행동·저장·밸런스·권한을 읽고 MAIN 게임 정체성, A/B 각각 시스템×창작 소재, C 두 소재와 메인·보조 장르, @ 발견·숙련을 새로 설계해 서로 실제 상태를 바꾸게 한다. 설계 문서만으로 구현 완료나 런타임 PASS를 인정하지 않는다.',
+    'EXISTING_GAME_GRAMMAR_ACTION: MAIN=A+B+C+D+@ 기준으로 A 중심 장르·시스템, B 보조 세부장르·시스템, C 작품 주/보조 장르, D 구체 존재·장소·사건·규칙, @ D 연관 연구·실험·새 선택을 직접 연결한다. 검증된 설계는 기존 Roblox Luau 서버/클라이언트 책임 함수에 구현하고 실제 입력→서버상태→결과→저장/재접속을 검수한다. 기존 게임 시스템은 B 보조 참조로만 사용한다. 구형 C 소재 두 개 요구로 새 기본설계를 거부하지 않는다. 설계 문서는 게임 런타임 PASS가 아니다.',
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
@@ -2335,24 +2375,36 @@ export function buildGameSpecificBuildUpDirective({
   const cSystems=design.signatureSystems.filter(system=>system.grammarRole==='c');
   const delveSystems=design.signatureSystems.filter(system=>system.grammarRole==='DELVE');
   const hasOwnerCreativeGrammar=Boolean(clean(design.creativeGrammar?.mainIdentity)
-    ||clean(design.creativeGrammar?.a?.system)||Array.isArray(design.creativeGrammar?.cThemes));
+    ||clean(design.creativeGrammar?.a?.system)
+    ||Array.isArray(design.creativeGrammar?.cGenres)
+    ||Array.isArray(design.creativeGrammar?.cThemes));
+  const ownerStandardGrammar=Number(design.creativeGrammar?.standardVersion||0)>=1;
   const sourcedCreativeAxes=['a','b'].every(key=>clean(design.creativeGrammar?.[key]?.system)
     &&clean(design.creativeGrammar?.[key]?.material)
     &&clean(design.creativeGrammar?.[key]?.materialDomain)
     &&clean(design.creativeGrammar?.[key]?.stateChange));
   const cThemes=Array.isArray(design.creativeGrammar?.cThemes)?design.creativeGrammar.cThemes:[];
   const cGenres=Array.isArray(design.creativeGrammar?.cGenres)?design.creativeGrammar.cGenres:[];
-  const authoredCreativeC=cThemes.length===2
+  const authoredCreativeC=(ownerStandardGrammar||(cThemes.length===2
     &&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
-    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))
+    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))))
     &&cGenres.length===2
     &&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.gameplayEffect)))
     &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
     &&clean(design.creativeGrammar?.cGenreInterlock)
     &&clean(design.creativeGrammar?.cWorldAndGameplayEffect);
+  const ownerDIds=new Set((design.creativeGrammar?.dCreations||[]).map(row=>clean(row?.id)).filter(Boolean));
+  const ownerDReady=!ownerStandardGrammar||Boolean(ownerDIds.size
+    &&(design.creativeGrammar?.dCreations||[]).every(row=>Array.isArray(row?.materialPath)
+      &&row.materialPath.length===3&&clean(row?.creation)&&clean(row?.gameplayEffect)
+      &&['PRIMARY','SECONDARY'].every(role=>(row.genreRoles||[]).includes(role))
+      &&['A','B'].every(role=>(row.linkedElements||[]).includes(role))));
+  const ownerAtReady=!ownerStandardGrammar||Boolean((design.creativeGrammar?.delveDiscoveries||[]).length>=4
+    &&design.creativeGrammar.delveDiscoveries.every(row=>ownerDIds.has(clean(row?.sourceDId))
+      &&clean(row?.experiment)&&clean(row?.discovery)&&clean(row?.newChoice)&&clean(row?.nextQuestion)));
   // V5는 오래된 c 태그로 C를 대신할 수 없다. V4 설계만 기존 c 호환 경로를 유지한다.
   const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&delveSystems.length
-    &&(hasOwnerCreativeGrammar?(sourcedCreativeAxes&&authoredCreativeC):cSystems.length));
+    &&(hasOwnerCreativeGrammar?(sourcedCreativeAxes&&authoredCreativeC&&ownerDReady&&ownerAtReady):cSystems.length));
   const reconstructedMain=clean(design.creativeGrammar?.mainIdentity)||clean(mainSystem?.name)||clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
   const reconstructedMajorAxes=Object.freeze([
     Object.freeze({key:'A',systemId:clean(aSystem?.id)||null,name:clean(aSystem?.name)||clean(design.signatureSystems?.[0]?.name)||secondary,source:authorMapped?'DESIGNER_AUTHORED_ROLE_A':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'}),
@@ -2371,21 +2423,23 @@ export function buildGameSpecificBuildUpDirective({
   ]).slice(0,10);
   const existingGameGrammarMap=Object.freeze({
     mode:'EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE',
-    formula:'MAIN × A × B × C + @',
+    formula:ownerStandardGrammar?'MAIN = A + B + C + D + @':'MAIN × A × B × C + @',
     main:reconstructedMain,
     source:authorMapped?'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS':'LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE',
     roleSystemIds:Object.freeze({MAIN:clean(mainSystem?.id)||null,A:clean(aSystem?.id)||null,B:clean(bSystem?.id)||null,c:cSystems.map(row=>clean(row.id)).filter(Boolean),AT:delveSystems.map(row=>clean(row.id)).filter(Boolean)}),
     majorAxes:reconstructedMajorAxes,
     cSubElements:Object.freeze(confirmedSubElements),
     sourcedAxes:Object.freeze({A:design.creativeGrammar?.a||null,B:design.creativeGrammar?.b||null}),
-    cGenreThemes:Object.freeze(design.creativeGrammar?.cThemes||[]),
+    cGenreThemes:Object.freeze(ownerStandardGrammar?[]:(design.creativeGrammar?.cThemes||[])),
+    dCreations:Object.freeze(design.creativeGrammar?.dCreations||[]),
     cPrimarySecondaryGenres:Object.freeze(design.creativeGrammar?.cGenres||[]),
     cGenreInterlock:clean(design.creativeGrammar?.cGenreInterlock),
     cCausalWorldEffect:clean(design.creativeGrammar?.cWorldAndGameplayEffect),
     atUnboundedGrowthRule:clean(design.creativeGrammar?.delveGrowthRule),
+    standardGrammarVersion:ownerStandardGrammar?Number(design.creativeGrammar.standardVersion):null,
     delveAtEvidence:Object.freeze(delveEvidence),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
-    rule:'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
+    rule:ownerStandardGrammar?'MAIN_A_PRIMARY_B_SUPPORTING; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL':'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
     identityRewriteRequired:false,
     existingBalanceSaveEconomyAndAuthorityPreserved:true
   });
@@ -2409,9 +2463,9 @@ export function buildGameSpecificBuildUpDirective({
       systemInterconnections:Object.freeze(design.systemInterconnections||[]),
       expansionPlan:Object.freeze(design.contentExpansionPlan||[]),
       integrityNotes:Object.freeze(design.designIntegrityNotes||[]),
-      formula:'MAIN × A × B × C + @',
+      formula:ownerStandardGrammar?'MAIN = A + B + C + D + @':'MAIN × A × B × C + @',
       existingGameGrammarMap,
-      rule:'NEW_CONTENT_MUST_DEEPEN_MAIN_TOPIC_A_B_SOURCED_SYSTEMS_C_CREATIVE_THEMES_AND_PRIMARY_SECONDARY_GENRE_INTERLOCK; OPTIONAL_LEGACY_c_IS_NOT_C_OR_A_MAJOR_AXIS; @ IS_DELVE_LAYER; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
+      rule:ownerStandardGrammar?'NEW_CONTENT_MUST_CONNECT_A_PRIMARY_B_SUPPORTING_C_STORY_GENRES_D_CREATIONS_AND_AT_D_RESEARCH_TO_EXACT_GAME_STATE; LUAU_OWNER_REQUIRED; DESIGN_IS_NOT_RUNTIME_PASS':'NEW_CONTENT_MUST_DEEPEN_MAIN_TOPIC_A_B_SOURCED_SYSTEMS_C_CREATIVE_THEMES_AND_PRIMARY_SECONDARY_GENRE_INTERLOCK; OPTIONAL_LEGACY_c_IS_NOT_C_OR_A_MAJOR_AXIS; @ IS_DELVE_LAYER; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
       familiarHumanConflictShouldRemainReadable:true
     }),
     buildUpRule:'EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT',
