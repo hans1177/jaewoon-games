@@ -6801,7 +6801,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(applySource){
     const actions=order?.assetProduction?.assetSupplySummary?.nextActions||[];
     const chosen=actions.filter(row=>row?.action==='ACQUIRE_ADAPT'
-      &&/^assets\\/external\\/simple-rpg\\/(?:[a-zA-Z0-9_-]+\\/)*[a-zA-Z0-9_.-]+\\.(?:zip|blend|7z|tar\\.gz)$/.test(clean(row?.externalAcquisition?.localSourcePath))
+      &&/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz)$/.test(clean(row?.externalAcquisition?.localSourcePath))
       &&/^[0-9a-f]{64}$/i.test(clean(row?.externalAcquisition?.sourceHash))
       &&Number.isSafeInteger(Number(row?.externalAcquisition?.archiveBytes))
       &&Number(row?.externalAcquisition?.archiveBytes)>=512
