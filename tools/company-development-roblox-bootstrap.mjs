@@ -1614,6 +1614,7 @@ async function main(){
   const assetLibraryFile=clean(arg('asset-library','company-asset-library.json'));
   const model=clean(arg('model',process.env.ROBLOX_DEV_MODEL||'none'));
   const foundationRepair=clean(arg('foundation-repair','false')).toLowerCase()==='true';
+  const studioMaterialRepair=clean(arg('studio-material-repair','false')).toLowerCase()==='true';
   const buildUpDirectiveFile=clean(arg('build-up-directive'));
   if(!gameId||!baselineFile||!artbookFile||!outputRoot||!evidenceFile||!playbooksFile||!recombinationFile||!roadmapFile)throw new Error('required Roblox bootstrap argument missing');
   if(outputRoot!==`roblox-games/${gameId}`)throw new Error(`invalid Roblox output root: ${outputRoot}`);
@@ -1630,7 +1631,7 @@ async function main(){
   const existingLearning=requireRobloxVerifiedExternalLearning(createRobloxVibe3LearningContext({gameId,profile:robloxBuildProfileFromBaseline(baseline),artbook,playbooks,recombination}));
   if(buildUpDirectiveConsumed&&clean(buildUpDirective?.gameId)!==gameId)throw new Error('BUILD_UP_DIRECTIVE_GAME_ID_MISMATCH');
   if(existingSource){
-    const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair,learning:existingLearning});
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair,studioMaterialRepair,learning:existingLearning});
     const staticContract=validateRobloxBootstrap({
       sharedConfig:fs.readFileSync(path.join(outputRoot,'shared','GameConfig.luau'),'utf8'),
       serverCode:fs.readFileSync(path.join(outputRoot,'server','Game.server.luau'),'utf8'),
@@ -1642,8 +1643,9 @@ async function main(){
       sourcePath:outputRoot,sourceValidationPassed:staticContract.pass,sourceValidationBlockers:staticContract.blockers,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
       existingSourcePreserved:true,gameplayAuthorityChanged:false,serverSourceChanged:applied.serverSourceChanged===true,
       foundationRepairApplied:applied.foundationRepairApplied===true,
+      studioMaterialRepairApplied:studioMaterialRepair===true&&applied.serverSourceChanged===true,
       generatedFiles:applied.changedFiles.map(file=>posix(path.relative(outputRoot,file))),
-      generationMode:foundationRepair?'EXISTING_SOURCE_FOUNDATION_REPAIR':'EXISTING_SOURCE_STUDIO_ASSET_REBIND',modelUsed:false,modelAttempts:0,modelContractFailures:[],
+      generationMode:foundationRepair?'EXISTING_SOURCE_FOUNDATION_REPAIR':studioMaterialRepair?'EXISTING_SOURCE_STUDIO_MATERIAL_REPAIR':'EXISTING_SOURCE_STUDIO_ASSET_REBIND',modelUsed:false,modelAttempts:0,modelContractFailures:[],
       vibe3LearningApplied:true,recombinationRecipeId:existingLearning.recipeId||null,
       verifiedExternalLearningAppliedToExistingSource:applied.verifiedExternalLearningApplied===true,
       verifiedExternalLearningFirst:existingLearning.verifiedExternalLearningFirst===true,
@@ -1680,6 +1682,7 @@ async function main(){
     console.log('ROBLOX_RELEASE_CLAIM=NO');
     return;
   }
+  if(studioMaterialRepair)throw new Error('ROBLOX_STUDIO_MATERIAL_REPAIR_EXISTING_SOURCE_REQUIRED');
   const built=await buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model,buildUpDirective});
   if(built.learning.applied!==true)throw new Error('ROBLOX_VIBE3_LEARNING_CONTEXT_REQUIRED');
   writeSourceTree(outputRoot,built.result,gameId);
