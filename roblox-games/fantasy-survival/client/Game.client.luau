@@ -321,6 +321,7 @@ multiplayerStatus.TextColor3 = Color3.fromRGB(180, 230, 255)
 multiplayerStatus.TextScaled = true
 multiplayerStatus.Text = "Multiplayer sync ready"
 multiplayerStatus.Parent = root
+local activeWorldTreeIllusion = nil
 remote.OnClientEvent:Connect(function(kind, payload)
   if kind == "MULTIPLAYER_SYNC" and typeof(payload) == "table" then
     multiplayerStatus.Text = string.format("Players %d · Shared %d · Round %d", payload.ParticipantCount or 0, payload.SharedObjective or 0, payload.RoundScore or 0)
@@ -346,6 +347,14 @@ remote.OnClientEvent:Connect(function(kind, payload)
     table.sort(candidates, function(a,b)
       return (a.Position-rootPart.Position).Magnitude < (b.Position-rootPart.Position).Magnitude
     end)
+    -- 여러 뱀의 환각이 겹쳐도 먼저 끝나는 효과가 새 환각의 뿌리를 드러내지 않게 한다.
+    if activeWorldTreeIllusion then
+      for root, transparency in pairs(activeWorldTreeIllusion.hidden) do
+        if root.Parent then root.LocalTransparencyModifier = transparency end
+      end
+      if activeWorldTreeIllusion.effects.Parent then activeWorldTreeIllusion.effects:Destroy() end
+      activeWorldTreeIllusion = nil
+    end
     local effects = Instance.new("Folder")
     effects.Name = "WorldTreeLocalHallucinations"
     effects.Parent = workspace
@@ -370,12 +379,16 @@ remote.OnClientEvent:Connect(function(kind, payload)
         part.Parent = effects
       end
     end
+    local illusion = {hidden = hidden, effects = effects}
+    activeWorldTreeIllusion = illusion
     gui:SetAttribute("WorldTreeNotice", "세계수 뱀의 환각 · 눈앞의 뿌리가 뱀처럼 보여")
     task.delay(math.clamp(tonumber(payload.seconds) or 3, 1, 5), function()
-      for root, transparency in pairs(hidden) do
+      if activeWorldTreeIllusion ~= illusion then return end
+      for root, transparency in pairs(illusion.hidden) do
         if root.Parent then root.LocalTransparencyModifier = transparency end
       end
-      if effects.Parent then effects:Destroy() end
+      if illusion.effects.Parent then illusion.effects:Destroy() end
+      activeWorldTreeIllusion = nil
     end)
   end
 end)
