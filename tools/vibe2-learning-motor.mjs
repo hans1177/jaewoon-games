@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
+import { validatedObservedRepairRecipe } from './vibe2-code-pattern-ingest.mjs';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
@@ -1454,7 +1455,7 @@ export function learningGuidance(context={}){
   }
   for(const row of context.codePatterns||[]){
     lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
-    const recipe=row?.repairRecipe;
+    const recipe=validatedObservedRepairRecipe(row?.repairRecipe);
     if(row?.verified===true&&row?.rawCodeStored===false&&recipe?.origin==='VERIFIED_PATCH_ADDED_CODE'&&recipe?.rawCodeStored===false
       &&Array.isArray(recipe.operationIds)&&Array.isArray(recipe.steps)&&Array.isArray(recipe.focusedChecks)){
       lines.push(`  - verified-implementation-recipe=${recipe.operationIds.slice(0,8).map(clean).join('|')}; steps=${recipe.steps.slice(0,8).map(value=>clean(value).slice(0,180)).join(' | ')}; focus-checks=${recipe.focusedChecks.slice(0,8).map(value=>clean(value).slice(0,160)).join(' | ')}; apply=ONLY_AFTER_CURRENT_SOURCE_AND_SCOPE_CHECK; validation=FRESH_QA_REQUIRED`);
