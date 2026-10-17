@@ -48,6 +48,8 @@ jobs:
 
       - name: Verify Vibe2 runtime and shared Work Lock contracts
         working-directory: vibe2-main-contract
+        env:
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
         shell: bash
         run: |
           set -euo pipefail
@@ -69,6 +71,8 @@ jobs:
 
       - name: Exercise continuous planner safely
         working-directory: vibe2-main-contract
+        env:
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
         shell: bash
         run: |
           set -euo pipefail
