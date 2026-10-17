@@ -495,6 +495,19 @@ jobs:
           source_tree_sha="$(git rev-parse "$promotion_sha:$SOURCE_ROOT")"
           [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
 
+          # GITHUB_TOKEN으로 main에 PR 병합한 커밋은 push-triggered Pages 게시를 깨우지 않는다.
+          # 기존 Magic Forest Static Play를 workflow_dispatch로 명시적으로 깨우고,
+          # 같은 exact SHA 게시가 이미 대기/실행 중이면 중복으로 보내지 않는다.
+          pages_active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/magic-forest-pages.yml/runs?per_page=100" \
+            --jq "[.workflow_runs[] | select(.head_sha==\"$promotion_sha\" and (.status==\"queued\" or .status==\"pending\" or .status==\"in_progress\"))] | length")"
+          [[ "$pages_active" =~ ^[0-9]+$ ]]
+          if [ "$pages_active" -eq 0 ]; then
+            gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "WEB_PAGES_NATIVE_PUBLISH_DISPATCHED=$promotion_sha"
+          else
+            echo "WEB_PAGES_NATIVE_PUBLISH_ALREADY_ACTIVE=$promotion_sha:$pages_active"
+          fi
+
           # 승인된 main SHA와 실제 GitHub Pages 게시 매니페스트, 게임 HTTP를 함께 확인한다.
           # 다른 main 커밋의 배포와 오래된 Pages HEAD는 성공 증거가 아니다.
           pages_base="https://$GITHUB_REPOSITORY_OWNER.github.io/$(basename "$GITHUB_REPOSITORY")/"
