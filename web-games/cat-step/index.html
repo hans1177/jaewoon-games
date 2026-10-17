@@ -317,24 +317,31 @@ addEventListener('keydown',e=>{
 
 // World-space mountains, distant buildings and clouds have real volume, shading and depth.
 function drawWorld(now){
-  gl.clearColor(.10,.18,.31,1);
+  gl.clearColor(.38,.69,.80,1);
   gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
   renderDrawCalls=0;
   const t=now*.001;
   for(let i=0;i<9;i++){
     const x=((i*177+W*3)%(W+270))-130;
     const y=H*.8-20*Math.sin(i*2.3);
-    mesh('pyramid',x,y,-300,190+(i%3)*70,250+(i%4)*48,100,[.18,.34,.37]);
+    mesh('pyramid',x,y,-300,190+(i%3)*70,250+(i%4)*48,100,[.20+(i%2)*.04,.50,.52]);
   }
   for(let i=0;i<5;i++){
     const x=((i*W*.31+t*(i%2?9:-7)+W*4)%(W+200))-100;
-    mesh('cube',x,H*.16+(i%3)*25,-230,85,13,25,[.66,.78,.86]);
-    mesh('cube',x+22,H*.15+(i%3)*25,-230,49,20,18,[.73,.83,.9]);
+    mesh('cube',x,H*.16+(i%3)*25,-230,85,13,25,[.85,.96,.93]);
+    mesh('cube',x+22,H*.15+(i%3)*25,-230,49,20,18,[.94,.98,.96]);
   }
   for(let i=0;i<3;i++){
     const x=W*(.12+.38*i);
-    mesh('cube',x,H*.9,-180,55,220,65,[.17,.28,.32]);
-    mesh('pyramid',x,H*.9-122,-180,70,58,77,[.22,.39,.39]);
+    mesh('cube',x,H*.9,-180,55,220,65,[.33+(i%2)*.12,.47,.57]);
+    mesh('pyramid',x,H*.9-122,-180,70,58,77,[.96,.64+(i%2)*.09,.61]);
+  }
+  // Low-poly kites orbit slowly in actual 3D space; no textures or per-frame allocations.
+  for(let i=0;i<4;i++){
+    const drift=Math.sin(t*.55+i*2.2),x=W*(.17+i*.22)+drift*21;
+    const y=H*(.22+(i%3)*.13)+Math.cos(t*.7+i)*13;
+    mesh('pyramid',x,y,-140,18,26,17,i%2?[.99,.72,.32]:[.91,.43,.62],t*.23);
+    mesh('cube',x+5,y+20,-142,2,30,2,[.89,.95,.89],t*.08);
   }
 }
 function drawCat3d(pose){
