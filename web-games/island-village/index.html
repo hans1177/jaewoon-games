@@ -1,363 +1,268 @@
 <!doctype html>
-<html>
+<html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <title>Approved Web Bootstrap</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>무인도 마을 — 탐색과 귀환</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,"Malgun Gothic",sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#091722;color:#f1f7f9}
+#world{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#ui{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.panel{pointer-events:auto;background:rgba(5,23,30,.81);border:1px solid rgba(141,218,205,.38);border-radius:13px;backdrop-filter:blur(6px);padding:10px 14px;max-width:min(510px,100%)}
+h1{font-size:1.1rem;margin:0 0 6px}p{margin:4px 0;font-size:.87rem;line-height:1.5}
+#objective{color:#d6f3cf}#feedback{color:#f5d4a6;min-height:2.5em}#marker{color:#a1e9d6}
+#controls{display:flex;align-items:end;justify-content:space-between;gap:12px}
+#pad{pointer-events:auto;display:grid;grid-template-columns:repeat(3,56px);grid-template-rows:repeat(2,53px);gap:3px;user-select:none}
+button{appearance:none;background:rgba(8,35,44,.86);color:#fff;border:1px solid #79c5b0;border-radius:12px;font-size:1rem;min-width:50px;min-height:48px;touch-action:none;cursor:pointer}
+button:focus-visible{outline:3px solid #ffc275}
+button:active,.pressed{background:#1e6659}
+#north{grid-column:2}#west{grid-column:1;grid-row:2}#south{grid-column:2;grid-row:2}#east{grid-column:3;grid-row:2}
+#action{pointer-events:auto;min-width:112px;height:62px;background:#126854;font-size:.95rem}
+#reset{font-size:.7rem;min-height:32px;border-color:#476d70;padding:4px 10px;margin-top:4px}
+#legend{max-width:min(500px,100%)}
+@media(max-height:650px){#legend{display:none}#ui{padding-top:8px;padding-bottom:8px}#pad{grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,44px)}}
+</style>
 </head>
 <body>
-<main id="game"><script>const source = document.createElement('script'); source.src = '/path/to/source.js'; document.head.appendChild(source);</script></main>
-    <script>
-        // Complete playable Web baseline implementation
-    </script>
-    <script>
-        // Complete playable Web baseline implementation
-        // This is an approved missing-source bootstrap
-        // Direct player input, real game-state progression, failure/success or escalating progression,
-        // restart, responsive layout, save compatibility scaffolding where required, and no external network dependency.
-
-        // Initialize game state with proper gameplay mechanics, runtime systems, and audio controls.
-        let gameState = {
-            player: {
-                health: 100,
-                score: 0,
-                inventory: []
-            },
-            game: {
-                level: 1,
-                enemies: [],
-                items: []
-            }
-        };
-
-        // Initialize game elements
-        const gameContainer = document.getElementById('game');
-        const player = document.createElement('div');
-        player.className = 'player';
-        player.textContent = 'Player';
-        gameContainer.appendChild(player);
-
-        // Add game elements
-        const enemies = [
-            { id: 1, type: 'slime', health: 10, damage: 1 },
-            { id: 2, type: 'monster', health: 50, damage: 5 }
-        ];
-        enemies.forEach(enemy => {
-            const enemyDiv = document.createElement('div');
-            enemyDiv.className = 'enemy';
-            enemyDiv.textContent = `Enemy ${enemy.id}`;
-            gameContainer.appendChild(enemyDiv);
-        });
-
-        // Add items
-        const items = [
-            { id: 1, type: 'health-potion', effect: 'increase health by 20' },
-            { id: 2, type: 'score-potion', effect: 'increase score by 100' }
-        ];
-        items.forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'item';
-            itemDiv.textContent = `Item ${item.id}`;
-            gameContainer.appendChild(itemDiv);
-        });
-
-        // Add effects
-        const effects = [
-            { id: 1, type: 'damage', effect: 'deal 1 damage to enemy' },
-            { id: 2, type: 'heal', effect: 'heal player by 10' }
-        ];
-        effects.forEach(effect => {
-            const effectDiv = document.createElement('div');
-            effectDiv.className = 'effect';
-            effectDiv.textContent = `Effect ${effect.id}`;
-            gameContainer.appendChild(effectDiv);
-        });
-
-        // Add UI elements
-        const ui = document.createElement('div');
-        ui.className = 'ui';
-        ui.textContent = 'UI';
-        gameContainer.appendChild(ui);
-
-        // Add animation
-        const animation = document.createElement('div');
-        animation.className = 'animation';
-        animation.textContent = 'Animation';
-        gameContainer.appendChild(animation);
-
-        // Add sound effects
-        const soundEffects = [    { id: 1, type: 'damage', effect: 'play sound' },    { id: 2, type: 'heal', effect: 'play sound' }
-            { id: 1, type: 'damage', effect: 'play sound' },
-            { id: 2, type: 'heal', effect: 'play sound' }
-        ];
-        soundEffects.forEach(effect => {
-            const effectDiv = document.createElement('div');
-            effectDiv.className = 'sound-effect';
-            effectDiv.textContent = `Sound Effect ${effect.id}`;
-            gameContainer.appendChild(effectDiv);
-        });
-
-        // Add game logic
-        const gameLogic = {
-            player: {
-                health: gameState.player.health,
-                score: gameState.player.score,
-                inventory: gameState.player.inventory
-            },
-            game: {
-                level: gameState.game.level,
-                enemies: gameState.game.enemies,
-                items: gameState.game.items
-            }
-        };
-
-        // Game loop
-function gameLoop() { // Game logic here }
-            // Game logic here
-        }
-
-        // Start game loop
-        gameLoop();
-    </script>
-
+<canvas id="world" aria-label="무인도 마을의 3차원 탐색 세계"></canvas>
+<div id="ui">
+  <section class="panel" aria-live="polite">
+    <h1>무인도 마을 — 탐색과 귀환</h1>
+    <p id="objective">첫 탐색: 섬을 돌아 식량과 목재를 확인하고 거점으로 돌아오세요.</p>
+    <p id="marker">현재 위치: 해변 거점</p>
+    <p id="feedback">이동: WASD / 방향키 · 행동: E · 모바일: 아래 버튼</p>
+    <button type="button" id="reset">첫 탐색 다시 시작</button>
+  </section>
+  <div id="controls">
+    <div id="pad" aria-label="이동">
+      <button id="north" type="button" aria-label="북쪽으로 이동">▲</button>
+      <button id="west" type="button" aria-label="서쪽으로 이동">◀</button>
+      <button id="south" type="button" aria-label="남쪽으로 이동">▼</button>
+      <button id="east" type="button" aria-label="동쪽으로 이동">▶</button>
+    </div>
+    <button id="action" type="button">살펴보기 / 행동</button>
+  </div>
+  <p id="legend" class="panel">녹색 식물은 식량 탐색, 갈색 묶음은 목재 탐색, 중앙 지지대는 거점 보강 대상입니다. 실제 서버 보상·제작 비용은 부여하지 않습니다.</p>
+</div>
 <script>
-    // Real gameplay system: player interaction with enemies and items
-    // This is a real gameplay system that changes game state and allows player interaction
-
-    // Player interaction with enemies
-    const player = document.querySelector('.player');
-    const enemies = document.querySelectorAll('.enemy');
-
-    // Handle player interaction with enemies
-    enemies.forEach(enemy => {
-        enemy.addEventListener('click', () => {
-            // Check if enemy is alive
-            if (gameState.game.enemies.some(e => e.id === enemy.dataset.id && e.health > 0)) {
-                // Deal damage to enemy
-                const damage = gameState.player.inventory.some(i => i.type === 'damage') ? 1 : 5;
-                gameState.game.enemies = gameState.game.enemies.map(e => {
-gameState.game.enemies = gameState.game.enemies.map(e => ({ ...e, health: e.health - damage }));
-                        e.health -= damage;
-                        if (e.health <= 0) {
-                            // Enemy defeated
-                            gameState.game.enemies = gameState.game.enemies.filter(e => e.id !== enemy.dataset.id);
-                            gameState.player.score += 100;
-                        }
-                    }
-                    return e;
-                });
-                // Update UI
-                document.querySelector('.ui').textContent = `Score: ${gameState.player.score}`;
-            }
-        });
-    });
-
-    // Player interaction with items
-    const items = document.querySelectorAll('.item');
-
-    // Handle player interaction with items
-    items.forEach(item => {
-        item.addEventListener('click', () => {
-            // Check if item is available
-            if (gameState.player.inventory.some(i => i.type === item.dataset.type)) {
-                // Use item
-                gameState.player.inventory = gameState.player.inventory.filter(i => i.type !== item.dataset.type);
-                gameState.player[gameState.player.inventory.length > 0 ? 'inventory' : 'score'] += parseInt(item.dataset.effect);
-                // Update UI
-                document.querySelector('.ui').textContent = `Score: ${gameState.player.score}`;
-            }
-        });
-    });
-
-    // Handle player interaction with effects
-    const effects = document.querySelectorAll('.effect');
-
-    // Handle player interaction with effects
-    effects.forEach(effect => {
-        effect.addEventListener('click', () => {
-            // Check if effect is available
-            if (gameState.player.inventory.some(i => i.type === effect.dataset.type)) {
-                // Apply effect
-                if (effect.dataset.type === 'damage') {
-                    gameState.player.health -= 1;
-                    if (gameState.player.health <= 0) {
-                        // Player defeated
-                        alert('You lost!');
-                        // Reset game state
-                        gameState = {
-                            player: {
-                                health: 100,
-                                score: 0,
-                                inventory: []
-                            },
-                            game: {
-                                level: 1,
-                                enemies: [],
-                                items: []
-                            }
-                        };
-                    }
-                } else if (effect.dataset.type === 'heal') {
-                    gameState.player.health += 10;
-                    if (gameState.player.health > 100) {
-                        gameState.player.health = 100;
-                    }
-                    // Update UI
-                    document.querySelector('.ui').textContent = `Health: ${gameState.player.health}`;
-                }
-            }
-        });
-    });
-</script>
-
-<script>
-    // State transition loop
-    let gameState = {
-        player: {
-            health: 100,
-            score: 0,
-            inventory: []
-        },
-        game: {
-            level: 1,
-            enemies: [],
-            items: []
-        }
-    };
-
-    // Game loop
-function gameLoop() {
-    // Update game state based on player interaction
-    // This is a simplified state transition loop
-    // Add additional game logic here to improve performance
-}
-        // Update game state based on player interaction
-        // This is a simplified state transition loop
-        // It handles player interaction, updates game state, and transitions between states
-
-        // Player interaction with enemies
-        const player = document.querySelector('.player');
-        const enemies = document.querySelectorAll('.enemy');
-
-        enemies.forEach(enemy => {
-            enemy.addEventListener('click', () => {
-                // Check if enemy is alive
-                if (gameState.game.enemies.some(e => e.id === enemy.dataset.id && e.health > 0)) {
-                    // Deal damage to enemy
-                    const damage = gameState.player.inventory.some(i => i.type === 'damage') ? 1 : 5;
-                    gameState.game.enemies = gameState.game.enemies.map(e => {
-gameState.game.enemies = gameState.game.enemies.map(e => { if (e.id !== enemy.dataset.id) { e.health -= damage; if (e.health <= 0) { gameState.game.enemies = gameState.game.enemies.filter(e => e.id !== enemy.dataset.id); gameState.player.score += 100; } } });
-                            e.health -= damage;
-                            if (e.health <= 0) { gameState.game.enemies = gameState.game.enemies.filter(e => e.id !== enemy.dataset.id); gameState.player.score += 100;
-                                // Enemy defeated
-                                gameState.game.enemies = gameState.game.enemies.filter(e => e.id !== enemy.dataset.id);
-                                gameState.player.score += 100;
-                            }
-                        }
-                        return e;
-                    });
-                    // Update UI
-                    document.querySelector('.ui').textContent = `Score: ${gameState.player.score}`;
-                }
-            });
-        });
-
-        // Player interaction with items
-        const items = document.querySelectorAll('.item');
-
-        items.forEach(item => {
-            item.addEventListener('click', () => {
-                // Check if item is available
-                if (gameState.player.inventory.some(i => i.type === item.dataset.type)) {
-                    // Use item
-                    gameState.player.inventory = gameState.player.inventory.filter(i => i.type !== item.dataset.type);
-                    gameState.player[gameState.player.inventory.length > 0 ? 'inventory' : 'score'] += parseInt(item.dataset.effect);
-                    // Update UI
-                    document.querySelector('.ui').textContent = `Score: ${gameState.player.score}`;
-                }
-            });
-        });
-
-        // Handle player interaction with effects
-        const effects = document.querySelectorAll('.effect');
-
-        effects.forEach(effect => {
-            effect.addEventListener('click', () => {
-                // Check if effect is available
-                if (gameState.player.inventory.some(i => i.type === effect.dataset.type)) {
-                    // Apply effect
-                    if (effect.dataset.type === 'damage') {
-                        gameState.player.health -= 1;
-                        if (gameState.player.health <= 0) {
-                            // Player defeated
-                            alert('You lost!');
-                            // Reset game state
-                            gameState = {
-                                player: {
-                                    health: 100,
-                                    score: 0,
-                                    inventory: []
-                                },
-                                game: {
-                                    level: 1,
-                                    enemies: [],
-                                    items: []
-                                }
-                            };
-                        }
-                    } else if (effect.dataset.type === 'heal') {
-                        gameState.player.health += 10;
-                        if (gameState.player.health > 100) {
-                            gameState.player.health = 100;
-                        }
-                        // Update UI
-                        document.querySelector('.ui').textContent = `Health: ${gameState.player.health}`;
-                    }
-                }
-            });
-        });
-
-        // Check for win condition
-        if (gameState.player.score >= 1000) {
-            alert('You won!');
-            // Reset game state
-            gameState = {
-                player: {
-                    health: 100,
-                    score: 0,
-                    inventory: []
-                },
-                game: {
-                    level: 1,
-                    enemies: [],
-                    items: []
-                }
-            };
-        }
-
-        // Check for loss condition
-        if (gameState.player.health <= 0) {
-            alert('You lost!');
-            // Reset game state
-            gameState = {
-                player: {
-                    health: 100,
-                    score: 0,
-                    inventory: []
-                },
-                game: {
-                    level: 1,
-                    enemies: [],
-                    items: []
-                }
-            };
-        }
-
-        // Update UI
-        document.querySelector('.ui').textContent = `Score: ${gameState.player.score} | Health: ${gameState.player.health}`;
+'use strict';
+// Approved MAIN/A/B first-route Web source candidate. This session does not grant or persist
+// currency, inventory, combat rewards, server ownership, or a production F0/F9 gate PASS.
+(() => {
+  const canvas=document.getElementById('world'),objective=document.getElementById('objective');
+  const feedback=document.getElementById('feedback'),marker=document.getElementById('marker');
+  const actions=document.getElementById('action');
+  const worldSize=9, supplies=[
+    {id:'FOOD',name:'식량 단서',x:5,z:-3},
+    {id:'WOOD',name:'목재 단서',x:-5,z:-3}
+  ];
+  const camp={id:'CAMP',name:'거점',x:0,z:2};
+  const controls=new Set();
+  const state={
+    x:0,z:0,foundFood:false,foundWood:false,fortified:false,returned:false,
+    lastEvent:'해변 거점에서 탐색을 시작했습니다.'
+  };
+  Object.defineProperty(window,'__islandVillageF0Candidate',{value:{
+    read:()=>Object.freeze({...state}),
+    input:()=>Object.freeze({keys:[...controls]}),
+    stage:'SOURCE_CANDIDATE_NOT_F0_RUNTIME_VERIFIED',
+    serverAuthority:false,saveMutation:false,externalAssetExecution:false
+  },configurable:false});
+  const gl=canvas.getContext('webgl',{alpha:false,antialias:true,preserveDrawingBuffer:false});
+  if(!gl){
+    feedback.textContent='이 기기는 WebGL을 사용할 수 없어 3D 실행 검증이 불가능합니다.';
+    actions.disabled=true;
+    return;
+  }
+  function shader(type,source){
+    const item=gl.createShader(type);
+    gl.shaderSource(item,source);gl.compileShader(item);
+    if(!gl.getShaderParameter(item,gl.COMPILE_STATUS))throw new Error('3D_SHADER_COMPILE_FAILED:'+gl.getShaderInfoLog(item));
+    return item;
+  }
+  const program=gl.createProgram();
+  gl.attachShader(program,shader(gl.VERTEX_SHADER,
+    'attribute vec3 position;attribute vec3 color;uniform mat4 projection;varying vec3 vColor;void main(){gl_Position=projection*vec4(position,1.);vColor=color;}'));
+  gl.attachShader(program,shader(gl.FRAGMENT_SHADER,
+    'precision mediump float;varying vec3 vColor;void main(){gl_FragColor=vec4(vColor,1.);}'));
+  gl.linkProgram(program);
+  if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error('3D_SHADER_LINK_FAILED');
+  const posLoc=gl.getAttribLocation(program,'position'),colorLoc=gl.getAttribLocation(program,'color');
+  const projectionLoc=gl.getUniformLocation(program,'projection');
+  const mesh=gl.createBuffer();
+  gl.useProgram(program);
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.CULL_FACE);
+  gl.clearColor(.035,.105,.145,1);
+  let vertices=[];
+  const face=(v,c)=>{
+    for(const point of [v[0],v[1],v[2],v[0],v[2],v[3]])vertices.push(point[0],point[1],point[2],...c);
+  };
+  function box(x,y,z,w,h,d,color){
+    const x0=x-w/2,x1=x+w/2,y0=y,y1=y+h,z0=z-d/2,z1=z+d/2;
+    const [r,g,b]=color;
+    face([[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0]],[r*.74,g*.74,b*.74]);
+    face([[x1,y0,z1],[x0,y0,z1],[x0,y1,z1],[x1,y1,z1]],[r*.82,g*.82,b*.82]);
+    face([[x1,y0,z0],[x1,y0,z1],[x1,y1,z1],[x1,y1,z0]],[r*.87,g*.87,b*.87]);
+    face([[x0,y0,z1],[x0,y0,z0],[x0,y1,z0],[x0,y1,z1]],[r*.65,g*.65,b*.65]);
+    face([[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]],[r,g,b]);
+    face([[x0,y0,z1],[x1,y0,z1],[x1,y0,z0],[x0,y0,z0]],[r*.45,g*.45,b*.45]);
+  }
+  function perspective(fov,aspect,near,far){
+    const f=1/Math.tan(fov/2),nf=1/(near-far);
+    return [f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0];
+  }
+  function lookAt(eye,center){
+    const normalize=v=>{const d=Math.hypot(...v)||1;return v.map(q=>q/d);};
+    const sub=(a,b)=>a.map((v,i)=>v-b[i]);
+    const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+    const z=normalize(sub(eye,center)),x=normalize(cross([0,1,0],z)),y=cross(z,x);
+    const dot=(a,b)=>a.reduce((sum,v,i)=>sum+v*b[i],0);
+    return [x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,eye),-dot(y,eye),-dot(z,eye),1];
+  }
+  function multiply(a,b){
+    const out=new Array(16).fill(0);
+    for(let c=0;c<4;c++)for(let row=0;row<4;row++)
+      for(let k=0;k<4;k++)out[c*4+row]+=a[k*4+row]*b[c*4+k];
+    return out;
+  }
+  function geometry(){
+    vertices=[];
+    box(0,-.65,0,21,.5,21,[.23,.40,.27]);
+    for(const i of [-10,-7,7,10]){
+      box(i,-.36,-10,.6,.1,20,[.25,.48,.29]);
+      box(-10,-.36,i,20,.1,.6,[.25,.48,.29]);
     }
-
-    // Start game loop
-    gameLoop();
+    // Water beyond the walkable island; actual vertices remain 3-dimensional.
+    box(0,-1.25,0,40,.15,40,[.07,.33,.40]);
+    box(0,-.32,-2,.9,.12,17,[.57,.48,.28]);
+    for(const [x,z] of [[-8,-7],[-7,4],[8,-4],[7,6],[-3,8],[3,8]]){
+      box(x,-.35,z,.55,2.5,.55,[.34,.25,.14]);
+      box(x,1.65,z,1.9,2,1.9,[.15,.40,.24]);
+      box(x,3.25,z,1.0,1.15,1.0,[.11,.30,.18]);
+    }
+    for(const [x,z] of [[-2,-6],[2,-6],[-7,0],[6,2]]){
+      box(x,-.35,z,1.5,.65,1.2,[.44,.48,.49]);
+      box(x,.23,z,.9,.28,.9,[.62,.62,.58]);
+    }
+    if(!state.foundWood){
+      box(-5,-.35,-3,2,.35,1.1,[.43,.26,.13]);
+      box(-5.25,.05,-3,.42,.5,.48,[.61,.35,.14]);
+    }
+    if(!state.foundFood){
+      box(5,-.35,-3,1.9,.48,1.7,[.20,.43,.14]);
+      for(const [dx,dz] of [[-.4,-.4],[.4,.3],[-.2,.45]])box(5+dx,.02,-3+dz,.38,.3,.35,[.75,.23,.15]);
+    }
+    // Camp: visual changes only after serverless session's authorized first-loop actions.
+    box(0,-.35,2,3,.24,2.4,[.48,.32,.18]);
+    for(const x of [-1.2,1.2])for(const z of [1.1,2.9])box(x,-.15,z,.25,1.9,.25,[.51,.30,.14]);
+    if(state.fortified){
+      box(0,1.7,2,3.3,.32,2.9,[.44,.33,.22]);
+      box(0,.0,2.94,2.1,1.6,.2,[.68,.52,.31]);
+    }
+    if(state.returned){
+      box(0,-.34,-6,1.4,.23,1.4,[.64,.57,.28]);
+      box(0,0,-6,.24,1.5,.24,[.77,.67,.37]);
+    }
+    box(state.x,-.35,state.z,.55,1.2,.52,[.87,.69,.42]);
+    box(state.x,.82,state.z,.43,.39,.40,[.94,.79,.59]);
+  }
+  function setStatus(){
+    const got=[state.foundFood?'식량 단서 ✓':'식량 단서 □',
+      state.foundWood?'목재 단서 ✓':'목재 단서 □'];
+    objective.textContent=state.returned
+      ?'탐색·자원 확인·거점 보강·귀환의 첫 루프가 연결됐습니다. (게임 런타임 F0 검증은 별도)'
+      :state.fortified?'보강된 거점을 확인했습니다. 출발지 남쪽 표식에 돌아가 변화된 길을 살펴보세요.'
+      :state.foundFood&&state.foundWood?'식량과 목재 단서를 확인했습니다. 중앙 거점을 살펴보세요.'
+      :'탐색: '+got.join(' · ')+' / 섬을 걸어 주변 대상을 살펴보세요.';
+    const current=nearest();
+    marker.textContent='현재 위치: '+(current?current.name+' 근처':'섬 탐색 중');
+    feedback.textContent=state.lastEvent;
+  }
+  function nearest(){
+    const choices=[...supplies,camp,...(state.fortified?[{id:'RETURN',name:'재방문 표식',x:0,z:-6}]:[])];
+    const near=choices.map(item=>({...item,distance:Math.hypot(state.x-item.x,state.z-item.z)}))
+      .filter(item=>item.distance<=2.25).sort((a,b)=>a.distance-b.distance);
+    return near[0]||null;
+  }
+  function interact(){
+    const item=nearest();
+    if(!item){state.lastEvent='근처에 상호작용할 대상이 없습니다. 이동 후 다시 시도하세요.';setStatus();return;}
+    if(item.id==='FOOD'&&!state.foundFood){
+      state.foundFood=true;state.lastEvent='식량이 있는 장소를 확인했습니다. 기존 보상·인벤토리 수치는 변경하지 않습니다.';
+    }else if(item.id==='WOOD'&&!state.foundWood){
+      state.foundWood=true;state.lastEvent='목재를 구할 수 있는 장소를 확인했습니다. 해당 지역의 탐색 상태가 달라졌습니다.';
+    }else if(item.id==='CAMP'&&state.foundFood&&state.foundWood&&!state.fortified){
+      state.fortified=true;state.lastEvent='확인한 자원 정보를 바탕으로 거점 외형이 보강됐습니다. 실제 비용·보상은 아직 적용하지 않습니다.';
+    }else if(item.id==='CAMP'&&!state.fortified){
+      state.lastEvent='거점을 보강하려면 식량과 목재 탐색 단서를 먼저 확인하세요.';
+    }else if(item.id==='RETURN'&&state.fortified&&!state.returned){
+      state.returned=true;state.lastEvent='귀환 완료: 앞선 탐색·거점 선택이 재방문 지역의 표식을 변경했습니다.';
+    }else state.lastEvent='이 대상의 탐색 정보는 이미 확인했습니다.';
+    setStatus();
+    geometry();
+  }
+  const bindings=[['north','w'],['west','a'],['south','s'],['east','d']];
+  for(const [id,key] of bindings){
+    const button=document.getElementById(id);
+    const press=event=>{event.preventDefault();controls.add(key);button.classList.add('pressed');};
+    const release=()=>{controls.delete(key);button.classList.remove('pressed');};
+    button.addEventListener('pointerdown',press);
+    for(const name of ['pointerup','pointercancel','pointerleave'])button.addEventListener(name,release);
+    button.addEventListener('click',()=>{move(key,.7);});
+  }
+  function move(key,amount){
+    const direction={w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]}[key];
+    if(!direction)return;
+    state.x=Math.max(-worldSize,Math.min(worldSize,state.x+direction[0]*amount));
+    state.z=Math.max(-worldSize,Math.min(worldSize,state.z+direction[1]*amount));
+    geometry();setStatus();
+  }
+  window.addEventListener('keydown',event=>{
+    const key=event.key.toLowerCase();
+    const mapped={arrowup:'w',arrowdown:'s',arrowleft:'a',arrowright:'d'}[key]||key;
+    if(['w','a','s','d'].includes(mapped)){event.preventDefault();controls.add(mapped);}
+    if(key==='e'&&!event.repeat){event.preventDefault();interact();}
+  });
+  window.addEventListener('keyup',event=>{
+    const key=event.key.toLowerCase();
+    controls.delete(({arrowup:'w',arrowdown:'s',arrowleft:'a',arrowright:'d'})[key]||key);
+  });
+  window.addEventListener('blur',()=>controls.clear());
+  actions.addEventListener('click',interact);
+  document.getElementById('reset').addEventListener('click',()=>{
+    controls.clear();state.x=0;state.z=0;
+    state.foundFood=false;state.foundWood=false;state.fortified=false;state.returned=false;
+    state.lastEvent='기존 서버 저장을 건드리지 않고 탐색 세션을 다시 시작했습니다.';
+    geometry();setStatus();
+  });
+  let previous=0;
+  function frame(now){
+    const elapsed=Math.min(.055,Math.max(0,(now-previous)/1000||0));previous=now;
+    for(const key of controls)move(key,elapsed*3);
+    const pixelRatio=Math.min(devicePixelRatio||1,1.5);
+    const width=Math.max(1,Math.round(canvas.clientWidth*pixelRatio));
+    const height=Math.max(1,Math.round(canvas.clientHeight*pixelRatio));
+    if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
+    const projection=multiply(
+      perspective(Math.PI/3,width/height,.1,120),
+      lookAt([state.x+11,17,state.z+19],[state.x,0,state.z])
+    );
+    gl.viewport(0,0,width,height);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    gl.uniformMatrix4fv(projectionLoc,false,new Float32Array(projection));
+    gl.bindBuffer(gl.ARRAY_BUFFER,mesh);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vertices),gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(posLoc);gl.enableVertexAttribArray(colorLoc);
+    gl.vertexAttribPointer(posLoc,3,gl.FLOAT,false,24,0);
+    gl.vertexAttribPointer(colorLoc,3,gl.FLOAT,false,24,12);
+    gl.drawArrays(gl.TRIANGLES,0,vertices.length/6);
+    requestAnimationFrame(frame);
+  }
+  geometry();setStatus();requestAnimationFrame(frame);
+})();
 </script>
 </body>
 </html>
