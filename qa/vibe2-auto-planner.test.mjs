@@ -3849,7 +3849,7 @@ test('owner-held Unity and active general Web preserve queued BUILD_UP without u
     const ownerPolicy={
       robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']},
       developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'},
-      ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','WEB']}
+      ownerActiveDevelopmentScope20261009:{status:'ACTIVE',authority:'OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB',activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN']}
     };
     fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(ownerPolicy));
     writeStudioDesign(root,gameId);
