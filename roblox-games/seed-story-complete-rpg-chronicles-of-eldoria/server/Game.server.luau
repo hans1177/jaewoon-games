@@ -271,3 +271,20 @@ nativeFoundationRemote.OnServerEvent:Connect(function(player, signal)
   player:SetAttribute("NativeFoundationReadyAt", os.time())
 end)
 game:BindToClose(function() end)
+
+-- STUDIO_ASSET_NATIVE_MATERIAL_REPAIR_BEGIN
+local function studioAssetFamily(family)
+  return (Config.StudioAssets and Config.StudioAssets.Families or {})[family] or {}
+end
+if nativeFoundationSpawn and nativeFoundationSpawn:IsA("BasePart") and nativeFoundationSpawn.Transparency < 1 then
+  if table.find(studioAssetFamily("MATERIAL"), "METAL") then
+    nativeFoundationSpawn.Material = Enum.Material.Metal
+  elseif table.find(studioAssetFamily("MATERIAL"), "STONE") then
+    nativeFoundationSpawn.Material = Enum.Material.Slate
+  elseif table.find(studioAssetFamily("MATERIAL"), "WOOD") then
+    nativeFoundationSpawn.Material = Enum.Material.WoodPlanks
+  elseif table.find(studioAssetFamily("MATERIAL"), "CLOTH") then
+    nativeFoundationSpawn.Material = Enum.Material.Fabric
+  end
+end
+-- STUDIO_ASSET_NATIVE_MATERIAL_REPAIR_END
