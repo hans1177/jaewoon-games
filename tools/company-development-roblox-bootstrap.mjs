@@ -1025,6 +1025,40 @@ ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"
   return output;
 }
 
+// 메인 Vibe 소스 복구: 승인된 MATERIAL atom을 기존 실제 렌더링 물체의 Material 속성에 연결한다.
+// 새 파트를 만들거나 충돌/저장/밸런스/네트워크 동작을 바꾸지 않는다. F0와 실플레이 검증은 별개다.
+export function bindExistingServerStudioMaterial({source='',familyStatus={},selectedAtoms=[]}={}){
+  const current=String(source||'');
+  if(familyStatus.MATERIAL!=='APPLIED'||robloxStudioAssetFamilyBoundInText(current,'MATERIAL'))return current;
+  const target=current.match(/\blocal\s+(nativeFoundationSpawn|foundationSpawn)\s*=\s*workspace:FindFirstChild\(["']NativeFoundationSpawn["']\)/)?.[1];
+  if(!target||!/\blocal\s+Config\s*=\s*require\([^\n]*GameConfig[^\n]*\)/.test(current)
+    ||!/Instance\.new\(["']SpawnLocation["']\)/.test(current))
+    throw new Error('EXISTING_STUDIO_MATERIAL_VISIBLE_NATIVE_TARGET_REQUIRED');
+  const selected=new Set((Array.isArray(selectedAtoms)?selectedAtoms:[]).map(clean));
+  if(!['METAL','STONE','WOOD','CLOTH'].some(atom=>selected.has(atom)))
+    throw new Error('EXISTING_STUDIO_MATERIAL_SELECTED_NATIVE_ATOM_REQUIRED');
+  const block=`-- STUDIO_ASSET_NATIVE_MATERIAL_REPAIR_BEGIN
+local function studioAssetFamily(family)
+  return (Config.StudioAssets and Config.StudioAssets.Families or {})[family] or {}
+end
+if ${target} and ${target}:IsA("BasePart") and ${target}.Transparency < 1 then
+  if table.find(studioAssetFamily("MATERIAL"), "METAL") then
+    ${target}.Material = Enum.Material.Metal
+  elseif table.find(studioAssetFamily("MATERIAL"), "STONE") then
+    ${target}.Material = Enum.Material.Slate
+  elseif table.find(studioAssetFamily("MATERIAL"), "WOOD") then
+    ${target}.Material = Enum.Material.WoodPlanks
+  elseif table.find(studioAssetFamily("MATERIAL"), "CLOTH") then
+    ${target}.Material = Enum.Material.Fabric
+  end
+end
+-- STUDIO_ASSET_NATIVE_MATERIAL_REPAIR_END`;
+  const repaired=current.replace(/\s*$/,'')+'\n\n'+block+'\n';
+  if(!robloxStudioAssetFamilyBoundInText(repaired,'MATERIAL'))
+    throw new Error('EXISTING_STUDIO_MATERIAL_ACTUAL_BINDING_NOT_VERIFIED');
+  return repaired;
+}
+
 export function foundationCharacterSource(name,spawn){
   return `-- native-foundation-spawn-grounding-v3
 ${spawn}.Anchored = true
@@ -1115,7 +1149,7 @@ local function ${name}(character)
 end`;
 }
 
-export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId='',baseline={},assetLibrary={},foundationRepair=false,learning={}}={}){
+export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId='',baseline={},assetLibrary={},foundationRepair=false,studioMaterialRepair=false,learning={}}={}){
   const verifiedLearning=requireRobloxVerifiedExternalLearning(learning);
   const profile=robloxBuildProfileFromBaseline(baseline);
   const studioAssets=buildRobloxStudioAssetBootstrapPlan({gameId,profile,assetLibrary});
@@ -1125,7 +1159,7 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const serverFile=path.join(root,'server','Game.server.luau');
   const projectFile=path.join(root,'default.project.json');
   for(const file of [configFile,clientFile,projectFile])if(!fs.existsSync(file))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(file));
-  if(foundationRepair===true&&!fs.existsSync(serverFile))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(serverFile));
+  if((foundationRepair===true||studioMaterialRepair===true)&&!fs.existsSync(serverFile))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(serverFile));
   const beforeConfig=fs.readFileSync(configFile,'utf8');
   const beforeClient=fs.readFileSync(clientFile,'utf8');
   const beforeServer=fs.existsSync(serverFile)?fs.readFileSync(serverFile,'utf8'):'';
@@ -1158,7 +1192,9 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const afterProject=`${JSON.stringify(project,null,2)}\n`;
   let afterConfig=replaceOrInsertStudioAssetConfig(beforeConfig,studioAssets);
   let afterClient=bindExistingClientStudioAssets(beforeClient,studioAssetFamilyStatus);
-  let afterServer=beforeServer;
+  let afterServer=studioMaterialRepair===true
+    ?bindExistingServerStudioMaterial({source:beforeServer,familyStatus:studioAssetFamilyStatus,selectedAtoms:studioAssets.families.MATERIAL})
+    :beforeServer;
   afterConfig=replaceOrInsertVerifiedExternalLearningConfig(afterConfig,verifiedLearning);
   afterClient=bindExistingClientVerifiedExternalLearning(afterClient,verifiedLearning);
 
@@ -1285,10 +1321,10 @@ task.defer(reportNativeFoundationReady)
   fs.writeFileSync(configFile,afterConfig,'utf8');
   fs.writeFileSync(clientFile,afterClient,'utf8');
   if(afterProject!==beforeProject)fs.writeFileSync(projectFile,afterProject,'utf8');
-  if(foundationRepair===true&&afterServer!==beforeServer)fs.writeFileSync(serverFile,afterServer,'utf8');
+  if((foundationRepair===true||studioMaterialRepair===true)&&afterServer!==beforeServer)fs.writeFileSync(serverFile,afterServer,'utf8');
   const changedFiles=[configFile,clientFile];
   if(afterProject!==beforeProject)changedFiles.push(projectFile);
-  if(foundationRepair===true&&afterServer!==beforeServer)changedFiles.push(serverFile);
+  if((foundationRepair===true||studioMaterialRepair===true)&&afterServer!==beforeServer)changedFiles.push(serverFile);
   return Object.freeze({
     existingSourcePreserved:true,
     changedFiles:Object.freeze(changedFiles),
@@ -1299,7 +1335,7 @@ task.defer(reportNativeFoundationReady)
     verifiedExternalLearningIds:Object.freeze([...(verifiedLearning.verifiedExternalLearningIds||[])]),
     foundationRepairApplied:foundationRepair===true,
     gameplayAuthorityChanged:false,
-    serverSourceChanged:foundationRepair===true&&afterServer!==beforeServer,
+    serverSourceChanged:afterServer!==beforeServer,
   });
 }
 function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
