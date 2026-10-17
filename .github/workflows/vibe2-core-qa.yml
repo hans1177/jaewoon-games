@@ -267,7 +267,11 @@ jobs:
         run: |
           set -euo pipefail
           parallelism_only=NO
-          if [ "$EVENT_NAME" = 'pull_request' ] && [ -n "${PR_BASE:-}" ]; then
+          # PR 검증은 GitHub가 만든 현재 합성 병합 커밋의 첫 부모와 비교한다.
+          # 오래된 PR 생성 당시 base SHA를 쓰면 이후 main 변경까지 PR 소스로 오분류한다.
+          if [ "$EVENT_NAME" = 'pull_request' ] && git rev-parse --verify -q 'HEAD^2' >/dev/null; then
+            base_sha="$(git rev-parse 'HEAD^1')"
+          elif [ "$EVENT_NAME" = 'pull_request' ] && [ -n "${PR_BASE:-}" ]; then
             base_sha="$PR_BASE"
           elif [ "$EVENT_NAME" = 'push' ] && [ -n "${PUSH_BEFORE:-}" ] && ! printf '%s' "$PUSH_BEFORE" | grep -Eq '^0+$'; then
             base_sha="$PUSH_BEFORE"

@@ -82,3 +82,25 @@ test('common multiplayer worker has a verifiable static-only contract on free Wo
   // Static contract is not evidence of live session, deployment or two clients.
   assert.doesNotMatch(config,/^\s*route\s*=/m);
 });
+
+
+test('worker permits the GitHub Pages browser origin without opening third-party CORS',async()=>{
+  const source=fs.readFileSync('multiplayer/worker.js','utf8');
+  const module=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+  const configured='https://jaewoon-games.pages.dev';
+  const origins=[
+    ['https://hans1177.github.io','https://hans1177.github.io'],
+    [configured,configured],
+    ['https://other.example',configured]
+  ];
+  for(const [origin,expected] of origins){
+    const request=new Request('https://jaewoon-multiplayer.anyanguy12.workers.dev/health',{
+      method:'OPTIONS',headers:{Origin:origin,'Access-Control-Request-Method':'POST'}
+    });
+    const response=await module.default.fetch(request,{ALLOWED_ORIGIN:configured});
+    assert.equal(response.status,204);
+    assert.equal(response.headers.get('access-control-allow-origin'),expected);
+    assert.equal(response.headers.get('vary'),'Origin');
+    assert.equal(response.headers.get('access-control-allow-methods'),'GET, POST, OPTIONS');
+  }
+});

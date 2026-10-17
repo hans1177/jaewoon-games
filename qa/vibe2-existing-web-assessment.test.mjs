@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import vm from 'node:vm';
-import { assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
+import { assessExistingWebRepository, assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
 
 const baseline={content:{coreFun:'위치를 선택해 방어 유닛을 배치하고 적의 경로를 막는다',coreLoop:['위치 선택','유닛 배치','적 이동과 전투','보상으로 강화']}};
 
@@ -199,4 +200,78 @@ test('island-village legacy source retains save and playable startup without mis
   const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
   assert.ok(scripts.length>0,'existing source must have a startup script');
   for(const script of scripts)assert.doesNotThrow(()=>new vm.Script(script[1],{filename:file}));
+});
+
+test('large Web HTML is read completely from checkout and is never mistaken for missing source',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-large-web-'));
+  const dir=path.join(cwd,'web-games','large-game');
+  try{
+    fs.mkdirSync(dir,{recursive:true});
+    const html='<!doctype html><html><body><canvas></canvas><script>let hp=10,wave=1,score=0;'
+      +'addEventListener("pointerdown",()=>{score+=1});'
+      +'function update(){requestAnimationFrame(update)}update();'
+      +'const victory="victory",restart="restart";localStorage.setItem("save","1");'
+      +'/*'+'x'.repeat(1100000)+'*/'
+      +'</script></body></html>';
+    const file=path.join(dir,'index.html');
+    fs.writeFileSync(file,html,'utf8');
+    assert.ok(fs.statSync(file).size>1024*1024);
+    const a=assessExistingWebRepository({cwd,gameId:'large-game',sourceRoot:'web-games/large-game'});
+    const b=assessExistingWebSource({html,sourceExists:true});
+    assert.equal(a.evidence.sourceBytes,fs.statSync(file).size);
+    assert.equal(a.evidence.sourceSha256,b.evidence.sourceSha256);
+    assert.ok(a.evidence.gameplaySignalCount>=4);
+    assert.notEqual(a.strategy,'FULL_REBUILD');
+    assert.equal(a.fullRewriteAllowed,false);
+    assert.equal(fs.statSync(file).size,Buffer.byteLength(html,'utf8'),'source is never rewritten or truncated');
+  }finally{
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
+test('star-frontier asteroid source replay terminates and preserves original sector counts and safe positions',()=>{
+  const html=fs.readFileSync(path.join('web-games','star-frontier','index.html'),'utf8');
+  const seeded=html.match(/function seeded\(n\)\{[^\n]*\}/)?.[0];
+  const start=html.indexOf('function spawnSector(){');
+  const end=html.indexOf('function spawnEnemy(index=0){',start);
+  assert.ok(seeded&&start>=0&&end>start,'current source functions must be found');
+  const actualSpawn=html.slice(start,end);
+  const replay=`
+    const TAU=Math.PI*2;
+    const WORLD={w:4200,h:3000};
+    const state={sector:0,asteroidSeq:1,enemies:[],asteroids:[],bullets:[],particles:[],
+      player:{x:0,y:0,vx:0,vy:0},station:{x:2100,y:1500},gate:{x:3900,y:1500}};
+    const dist=(x,y,a,b)=>Math.hypot(x-a,y-b);
+    const rand=(a,b)=>(a+b)/2;
+    const currentSector=()=>({oreMul:1});
+    const updateHud=()=>{};
+    const spawnEnemy=()=>{};
+    ${seeded}
+    ${actualSpawn}
+    const observed=[];
+    for(let sector=0;sector<3;sector++){
+      state.sector=sector;spawnSector();
+      observed.push({sector,count:state.asteroids.length,
+        unsafe:state.asteroids.filter(a=>dist(a.x,a.y,2100,1500)<380||dist(a.x,a.y,3900,1500)<220).length});
+    }
+    observed;
+  `;
+  const observed=vm.runInNewContext(replay,{Math},{timeout:1200});
+  assert.deepEqual(JSON.parse(JSON.stringify(observed)),[
+    {sector:0,count:38,unsafe:0},
+    {sector:1,count:48,unsafe:0},
+    {sector:2,count:58,unsafe:0}
+  ]);
+});
+
+test('survival2 historical playable source recovery keeps saved progress and original atlas',()=>{
+  const root=path.join('web-games','survival2');
+  const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+  assert.match(html,/jaewoon-survival2-v3/);
+  assert.match(html,/requestAnimationFrame\(loop\)/);
+  assert.match(html,/getContext\('2d'\)/);
+  assert.doesNotMatch(html,/Approved Web Bootstrap|Simulated game logic/);
+  assert.ok(fs.statSync(path.join(root,'assets','survival-atlas.svg')).size>100);
+  for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))
+    if(match[1].trim())assert.doesNotThrow(()=>new vm.Script(match[1]));
 });

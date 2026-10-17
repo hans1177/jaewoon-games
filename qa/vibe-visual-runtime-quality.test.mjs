@@ -2,6 +2,8 @@
 // 역할: 기존 Vibe 그래픽 파이프의 에셋 확보 순서·Golden Scene·primitive lifecycle·visual debt 계약 검증
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import {
   createVibeArtPipeline,
   createVibeGraphicsProduction,
@@ -249,4 +251,35 @@ test('all games flag unverified native character and NPC bindings for existing v
   assert.ok(missing.actorBindingFailures.includes('NPC2'));
   const verified=auditVibeRuntimeVisualEvidence({...base,primaryActors:[{id:'VillageChief',presentation:'native-model',nativeActorBindingState:'VERIFIED'}]});
   assert.deepEqual([...verified.actorBindingFailures],[]);
+});
+
+// 웹게임: 모바일 GPU 해상도 조절은 시각 출력만 건드리고 기존 게임 루프를 유지한다.
+test('existing native 3D Web games cap mobile pixel work without altering game loops or persistence',()=>{
+  for(const [id,loop] of [
+    ['realistic-builder','animate'],
+    ['village-dungeons','animate'],
+    ['amusement-tycoon','loop']
+  ]){
+    const html=fs.readFileSync(path.join('web-games',id,'index.html'),'utf8');
+    assert.match(html,/new THREE\.WebGLRenderer\(/,id+': actual 3D renderer required');
+    assert.match(html,/window\.matchMedia\('\(pointer: coarse\)'\)\.matches/,id+': mobile detection required');
+    assert.match(html,/mobileRender\?1:/,id+': mobile initial DPR must be capped at 1');
+    assert.match(html,/measuredFps<42\?Math\.max\(\.75,renderRatio-\.15\)/,id+': slow render reduces pixel count');
+    assert.match(html,/measuredFps>56\?Math\.min\(maxRenderRatio,renderRatio\+\.1\)/,id+': recovery never exceeds original DPR cap');
+    assert.match(html,/if\(!document\.hidden\)/,id+': hidden page must skip draw');
+    assert.equal((html.match(/renderer\.render\(scene,camera\)/g)||[]).length,1,id+': use original render loop only');
+    assert.match(html,new RegExp('requestAnimationFrame\\('+loop+'\\)'),id+': original game loop retained');
+    assert.match(html,/localStorage/,id+': saved game semantics retained');
+    assert.doesNotMatch(html,/renderer\.shadowMap\.enabled\s*=\s*true/,id+': no additional shadow-map cost');
+  }
+});
+  
+// PR 소스 범위가 기존 main 변경사항까지 커지더라도 QA 강도는 유지한다.
+test('PR changed Web game scope uses current synthetic merge parent while main checks all games',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-core-qa.yml','utf8');
+  assert.match(workflow,/git rev-parse --verify -q 'HEAD\^2'/);
+  assert.match(workflow,/base_sha="\$\(git rev-parse 'HEAD\^1'\)"/);
+  assert.match(workflow,/git diff --name-only "\$base_sha" HEAD/);
+  assert.match(workflow,/changed_web_games=ALL/);
+  assert.match(workflow,/Development Web browser startup smoke/);
 });

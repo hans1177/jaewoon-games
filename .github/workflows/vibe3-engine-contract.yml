@@ -235,6 +235,9 @@ jobs:
         run: |
           node --test             qa/company-development-roblox-gameplay-product-readiness.test.mjs             qa/company-development-roblox-runtime-foundation.test.mjs             qa/company-development-roblox-headless-fast-mvp.test.mjs             qa/company-development-roblox-final-review-revalidation.test.mjs             qa/company-development-roblox-release-promotion.test.mjs             qa/company-tester-debug-intake.test.mjs             qa/company-development-roblox-runtime.test.mjs
 
+      - name: Verify existing Workers multiplayer CORS and source contract
+        run: node --test qa/company-development-roblox-multiplayer-qa.test.mjs
+
       - name: Run Roblox platform-lane continuation regression
         run: node --test qa/company-development-roblox-runtime-continuation.test.mjs
 
