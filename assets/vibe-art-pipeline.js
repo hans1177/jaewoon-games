@@ -619,10 +619,14 @@ export function createVibeGraphicsProduction({
   const runtimeAudit=runtimeEvidenceBound?auditVibeRuntimeVisualEvidence(runtimeEvidenceBound):null;
   const beforeAfterAudit=runtimeEvidenceBound?.visualRegression?auditVibeRuntimeBeforeAfterComparison(runtimeEvidenceBound.visualRegression):null;
   const highEndFrameAudit=runtimeEvidenceBound&&(runtimeEvidenceBound.highEndVisualRequired===true||String(runtimeEvidenceBound.qualityProfile||'').toUpperCase()==='HIGH_END_COMMERCIAL_NATIVE_PRESENTATION')?auditVibeHighEndTargetFrameEvidence(runtimeEvidenceBound):null;
+  const artDirectionReview=runtimeAudit?.artDirectionReview||null;
+  const verifiedReferenceStructure=Object.freeze(referenceImageStudies.filter(row=>row.observation?.verifiedAgainstSource===true).map(row=>Object.freeze({sourceId:row.request.sourceId,structuralEvidence:row.observation.features,directSceneCopyAllowed:false})));
   const runtimeRepairLoop=runtimeAudit?Object.freeze({
     status:runtimeAudit.pass?'VERIFIED_CHECKPOINT':'RUNTIME_VISUAL_REPAIR_REQUIRED',
     defects:Object.freeze([...(runtimeAudit.repairTargets||[])]),
     beforeAfter:beforeAfterAudit,
+    artDirectionReview,
+    preciseArtDirectionRepairTargets:Object.freeze((artDirectionReview?.repairTargets||[]).filter(row=>row.sourcePath&&row.targetId&&row.property)),
     highEndFrames:highEndFrameAudit,
     sameCaptureConditionsRequired:true,
     changedVisualResponsibilityOnly:true,
@@ -668,6 +672,7 @@ export function createVibeGraphicsProduction({
     characterIdentity,
     mapDetail,
     referenceImageStudies,
+    verifiedReferenceStructure,
     referenceImageObservationReadyCount:referenceImageStudies.filter(row=>row.request.ready&&row.observation?.valid).length,
     verifiedReferenceImageObservationCount:referenceImageStudies.filter(row=>row.observation?.verifiedAgainstSource===true).length,
     changeRequestStability,
@@ -712,6 +717,10 @@ export function createVibeGraphicsProduction({
       directReferenceSceneOrMapCopyForbidden:true,
       referenceObservationIsProposalUntilVerifiedAgainstSource:true,
       runtimeVisualRepairLoopRequired:true,
+      sourceBoundAestheticReviewSupported:true,
+      visualChangeAloneCannotProveAestheticImprovement:true,
+      screenshotBoundTargetedArtRepairRequiredWhenReviewRequested:true,
+      multipleIndependentVisualCandidatesComparedWhenRequested:true,
       runtimeBeforeAfterComparisonRequiredForHighEnd:true,
       declaredInterfaceSurfacesRequireMobileRuntimeEvidence:true,
       declaredSceneObjectsRequireRuntimeBindingEvidence:true,
