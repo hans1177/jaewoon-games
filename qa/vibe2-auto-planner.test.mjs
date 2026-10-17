@@ -5241,6 +5241,26 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
   assert.ok(task.responsibleFiles.every(file=>!file.includes('..')&&!file.includes('assets/library.luau')));
 
+  // Production failures from multiple games point only to a shared material
+  // preset module. That module cannot fix a missing world material consumer.
+  fs.writeFileSync(path.join(gameRoot,'shared','RobloxCommonMaterials.luau'),'return {}\\n');
+  const presetOnlyEvidence={...evidence,assetThreshold:{...evidence.assetThreshold,
+    familyResults:[{family:'MATERIAL',responsibleFiles:['shared/RobloxCommonMaterials.luau']}]}};
+  const presetOnly=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,developmentQueue:{items:[{...item,robloxQualityBuildUpEvidence:presetOnlyEvidence}]},
+    queue:{maxConcurrentTasks:20,tasks:[]},repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,
+    planningBacklogTarget:5,planningBacklogMinimum:0
+  });
+  const materialTask=presetOnly.tasks.find(row=>row.gameId===gameId
+    &&row.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure?.authority===evidence.authority);
+  assert.ok(materialTask,'verified package failure must still reach an existing Vibe task');
+  assert.ok(materialTask.responsibleFiles.includes(`roblox-games/${gameId}/server/Game.server.luau`));
+  assert.equal(materialTask.responsibleFiles.includes(`roblox-games/${gameId}/shared/RobloxCommonMaterials.luau`),false,
+    'game worker must not patch shared material presets instead of fixing native consumption');
+  assert.match(materialTask.goal,/F0_MATERIAL_CONSUMER_REPAIR/);
+  assert.match(materialTask.goal,/Re-run the unchanged package asset threshold/);
+  assert.ok(materialTask.evidence.includes('f0-package-threshold-must-revalidate'));
+
   const contractEvidence={...evidence,authority:'roblox-source-static-contract-failure',assetThreshold:undefined,
     staticContract:{pass:false,blockers:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']},
     qualityFailureKinds:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']};
