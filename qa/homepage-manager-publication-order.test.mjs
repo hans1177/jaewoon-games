@@ -185,7 +185,7 @@ test('central development orchestrator runs Unity Web floor before new Roblox an
   const development=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const admission=fs.readFileSync('tools/company-upper-platform-admission.mjs','utf8');
   assert.match(admission,/MINIMUM_DESIGN_CONTRACT_REQUIRED/);
-  assert.match(admission,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
+  assert.match(admission,/ACTIVE_PLATFORM_DESIGN_PROFILE_REQUIRED/);
   assert.match(development,/eligible_json:/);
   assert.doesNotMatch(development,/unity_web_json:/);
   assert.doesNotMatch(development,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS/);

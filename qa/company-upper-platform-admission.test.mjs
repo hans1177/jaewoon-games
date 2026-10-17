@@ -54,7 +54,7 @@ test('upper platform authority remains fail-closed when policy proof is missing'
 test('owner-held Unity Web cannot create floor or bootstrap work while Roblox admission remains open',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-only-admission-'));
   try{
-    write(root,'company-learning/platform-release-roadmap.json',{developmentAccess:{UNITY_WEB:'OWNER_HOLD'},unityWebFirstStage:{enabled:false}});
+    write(root,'company-learning/platform-release-roadmap.json',{developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD'},ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','WEB']},unityWebFirstStage:{enabled:false}});
     const item={gameId:'sample-game',minimumDesignContract:{pass:true},platformDesignProfiles:{ROBLOX:{source:'design.json'},UNITY:{source:'design.json'}},concurrentTargetPlatforms:['ROBLOX','UNITY']};
     for(const withSource of [false,true]){
       if(withSource)write(root,'unity-games/sample-game/Assets/Editor/Build.cs','public static class GameBuild { public static void BuildWeb(){} }');
@@ -106,6 +106,36 @@ const baseItem=gameId=>({
   platformDesignProfiles:{ROBLOX:{source:'design.json'},UNITY:{source:'design.json'}},
   concurrentTargetPlatforms:['ROBLOX','UNITY'],
   currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+});
+
+// 활성 플랫폼 계약: Roblox 독립 진입, 필수 설계/대상 누락 차단, Unity 재개 시 이중 계약 복원.
+test('owner-active native admission follows verified platform activation without bypassing design requirements',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-owner-active-admission-'));
+  const policy={developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD'},
+    ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','WEB']},unityWebFirstStage:{enabled:false}};
+  const onlyRoblox={...baseItem('only-roblox'),
+    platformDesignProfiles:{ROBLOX:{source:'design.json'}},
+    concurrentTargetPlatforms:['ROBLOX']};
+  const check=item=>classifyUpperPlatformAdmission(item,{repoRoot:root});
+  try{
+    write(root,'company-learning/platform-release-roadmap.json',policy);
+    assert.equal(check(onlyRoblox).state,'UPPER_PLATFORM');
+    assert.equal(check(onlyRoblox).web.state,'OWNER_HOLD');
+    assert.equal(check({...onlyRoblox,minimumDesignContract:{pass:false}}).reason,'MINIMUM_DESIGN_CONTRACT_REQUIRED');
+    assert.equal(check({...onlyRoblox,platformDesignProfiles:{}}).reason,'ACTIVE_PLATFORM_DESIGN_PROFILE_REQUIRED');
+    assert.equal(check({...onlyRoblox,concurrentTargetPlatforms:[]}).reason,'ACTIVE_NATIVE_TARGETS_REQUIRED');
+    write(root,'company-learning/platform-release-roadmap.json',{
+      ...policy,developmentAccess:{...policy.developmentAccess,ROBLOX:'OWNER_HOLD'}});
+    assert.equal(check(onlyRoblox).reason,'ACTIVE_NATIVE_PLATFORM_NOT_AUTHORIZED');
+    write(root,'company-learning/platform-release-roadmap.json',{
+      ...policy,developmentAccess:{...policy.developmentAccess,UNITY:'ALWAYS_ALLOWED'},
+      ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','UNITY']}});
+    assert.equal(check(onlyRoblox).reason,'ACTIVE_PLATFORM_DESIGN_PROFILE_REQUIRED');
+    const withUnity={...onlyRoblox,platformDesignProfiles:{
+      ...onlyRoblox.platformDesignProfiles,UNITY:{source:'design.json'}}};
+    assert.equal(check(withUnity).reason,'ACTIVE_NATIVE_TARGETS_REQUIRED');
+    assert.equal(check({...withUnity,concurrentTargetPlatforms:['ROBLOX','UNITY']}).state,'UPPER_PLATFORM');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 const withNativeSystemAndPrecisionEvidence=(evidence,id,sourceTree)=>({
