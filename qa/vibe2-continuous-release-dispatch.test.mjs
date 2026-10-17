@@ -479,6 +479,23 @@ test('Web F9 release admission rejects a branch whose current source differs fro
   }
 });
 
+test('existing GitHub Pages publisher preserves root paths, existing gh-pages history, games and necessary assets',()=>{
+  const publisher=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+  assert.match(publisher,/name: Magic Forest Static Play/);
+  assert.match(publisher,/web-games\/publish-manifest\.json/);
+  assert.match(publisher,/sourceSha:process\.env\.GITHUB_SHA/);
+  assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
+  assert.match(publisher,/git fetch --no-tags --depth=1 origin gh-pages/);
+  assert.match(publisher,/git -C "\$site" push origin HEAD:gh-pages/);
+  assert.doesNotMatch(publisher,/git push origin HEAD:gh-pages --force/);
+  assert.match(publisher,/if: github\.event_name != 'pull_request'/);
+  assert.match(publisher,/WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS/);
+  assert.match(publisher,/MAGIC_FOREST_ROOT_NOT_LIVE=/);
+  assert.match(publisher,/WEB_PAGES_ROUTE_NOT_LIVE=/);
+  assert.match(publisher,/WEB_PAGES_SOURCE_SHA=/);
+  assert.match(publisher,/WEB_PAGES_LIVE_SOURCE_SHA=/);
+});
+
 test('Web main deployment requires exact GitHub Pages source SHA, real route and non-200 failure handling',()=>{
   const section=releaseWorkflow.slice(releaseWorkflow.indexOf('  web-release:'),releaseWorkflow.indexOf('\n  unity-web-build:'));
   const promote=section.slice(section.indexOf('      - name: Promote approved web'),section.indexOf('      - name: Settle web result'));
