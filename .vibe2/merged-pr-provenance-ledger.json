@@ -60662,11 +60662,146 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ba52cc423b77c416936c34c8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8348",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "81ae6ec64b15a7f141f03e32eb1fe61bcec1caaf",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8348,
+        "baseBranch": "main",
+        "headBranch": "fix/large-web-source-audit-20261018",
+        "baseSha": "81ae6ec64b15a7f141f03e32eb1fe61bcec1caaf",
+        "headSha": "08f41ebfc92cfb644e03a1bd253ea8cc494fa5d2",
+        "mergeCommitSha": "bb7c1591c9f326f80a6fb342ffdd1a442df37560",
+        "mergedAt": "2026-10-17T18:19:06Z",
+        "authorLogin": "hans1177",
+        "titleHash": "164609caa7a968d689d71275b7103f8e4a5f30474e9433c5f51cb9adc2daaa72",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/large-web-source-audit-20261018",
+        "candidateSha": "08f41ebfc92cfb644e03a1bd253ea8cc494fa5d2"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 333,
+        "deletedLineCount": 717,
+        "changedFiles": [
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "qa/vibe2-existing-web-assessment.test.mjs",
+          "qa/vibe2-owner-game-flow-lock.test.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "web-games/star-frontier/index.html",
+          "web-games/survival2/assets/survival-atlas.svg",
+          "web-games/survival2/index.html"
+        ],
+        "codingRelevantFiles": [
+          "company-learning/platform-release-roadmap.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/vibe2-development-web-browser-smoke.mjs",
+          "qa/vibe2-existing-web-assessment.test.mjs",
+          "qa/vibe2-owner-game-flow-lock.test.mjs",
+          "tools/vibe2-queue-control.mjs",
+          "web-games/star-frontier/index.html",
+          "web-games/survival2/index.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8348",
+        "merge-commit:bb7c1591c9f326f80a6fb342ffdd1a442df37560",
+        "base-main:81ae6ec64b15a7f141f03e32eb1fe61bcec1caaf"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 488
+    "total": 489
   }
 }
