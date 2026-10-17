@@ -4969,7 +4969,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:55:23.825Z",
+      "updatedAt": "2026-10-17T14:11:29.707Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4985,16 +4985,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "169c4bf6193df116c14ab2e0825585829429c580",
       "robloxBuildArtifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
-      "robloxBuildPassedAt": "2026-10-17T13:55:23.825Z",
+      "robloxBuildPassedAt": "2026-10-17T14:11:29.707Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:55:23.825Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T14:11:29.707Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "island-village",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:47:26.362Z",
+        "checkedAt": "2026-10-17T13:52:22.038Z",
         "sourceRevision": "169c4bf6193df116c14ab2e0825585829429c580",
         "artifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
         "secondaryOwnerFocus": false,
@@ -5037,7 +5037,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in the build evidence, preventing the package from starting runtime testing."
+            "note": "Required validation checks failed in the build evidence, preventing runtime testing from starting."
           }
         ],
         "blockers": [
@@ -39517,7 +39517,7 @@
       "robloxExactRevisionPassed": false
     }
   ],
-  "updatedAt": "2026-10-17T14:11:02.506Z",
+  "updatedAt": "2026-10-17T14:11:29.707Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
