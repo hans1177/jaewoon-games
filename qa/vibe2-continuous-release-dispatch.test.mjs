@@ -494,6 +494,22 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.match(publisher,/test -f "\$site\/index\.html"/);
   assert.match(publisher,/GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
   assert.match(publisher,/git -C "\$site" push origin HEAD:gh-pages/);
+
+  // The GITHUB_TOKEN push saves history but cannot initiate a Pages build.
+  // Official deployment uploads the retained gh-pages tree without Git metadata.
+  assert.ok(publisher.includes("rsync -a --exclude='.git/'"),'retained historical site must be staged without .git');
+  assert.ok(publisher.includes('WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA='));
+  assert.ok(publisher.includes('WEB_PAGES_RETAINED_GAME_COUNT='));
+  assert.ok(publisher.includes('uses: actions/upload-pages-artifact@v4'));
+  assert.ok(publisher.includes('uses: actions/deploy-pages@v4'));
+  assert.ok(publisher.includes('pages: write'));
+  assert.ok(publisher.includes('id-token: write'));
+  assert.ok(publisher.includes('name: github-pages'));
+  const nativeDeploy=publisher.indexOf('uses: actions/deploy-pages@v4');
+  const liveVerify=publisher.indexOf('      - name: Verify live GitHub Pages source and game routes');
+  assert.ok(nativeDeploy>0&&liveVerify>nativeDeploy,'actual Pages deploy must precede public verification');
+  assert.ok(publisher.includes('steps.deployment.outputs.page_url'));
+  assert.ok(publisher.includes('WEB_PAGES_DEPLOY_URL_MISSING'));
   assert.doesNotMatch(publisher,/git push origin HEAD:gh-pages --force/);
   assert.match(publisher,/if: github\.event_name != 'pull_request'/);
   assert.match(publisher,/WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS/);
