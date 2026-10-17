@@ -6801,7 +6801,6 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(applySource){
     const actions=order?.assetProduction?.assetSupplySummary?.nextActions||[];
     const chosen=actions.filter(row=>row?.action==='ACQUIRE_ADAPT'
-      &&row?.externalAcquisition?.downloaded!==true
       &&/^assets\\/external\\/simple-rpg\\/(?:[a-zA-Z0-9_-]+\\/)*[a-zA-Z0-9_.-]+\\.(?:zip|blend|7z|tar\\.gz)$/.test(clean(row?.externalAcquisition?.localSourcePath))
       &&/^[0-9a-f]{64}$/i.test(clean(row?.externalAcquisition?.sourceHash))
       &&Number.isSafeInteger(Number(row?.externalAcquisition?.archiveBytes))
@@ -6809,12 +6808,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       &&Number(row?.externalAcquisition?.archiveBytes)<=104857600);
     if(chosen.length){
       assertCandidateBranch(cwd);
-      const tracked=[], selectedPaths=new Set();
+      const tracked=[];
       for(const row of chosen){
         const rel=posix(row.externalAcquisition.localSourcePath);
         try{
           execFileSync('git',['ls-files','--error-unmatch','--',rel],{cwd,timeout:10000,stdio:'pipe'});
-          selectedPaths.add(rel);
           tracked.push(row);
         }catch{
           console.log('VIBE2_SELECTED_ASSET_DOWNLOAD=BLOCKED_UNTRACKED:'+safeId(row.externalAcquisition.sourceId));
