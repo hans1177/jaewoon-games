@@ -299,7 +299,9 @@ jobs:
     needs: scope
     if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
     runs-on: ubuntu-slim
-    timeout-minutes: 10
+    # native asset production full regression may exceed the previous 10-minute job limit.
+    # Keep every test and the slim control runner; only allow the existing full suite to finish.
+    timeout-minutes: 25
     env:
       # 검증된 main 중앙정책 문서 경로를 기존 핵심 QA 실행과 임시 테스트 저장소에 전달한다.
       COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
@@ -434,6 +436,13 @@ jobs:
       - name: Vibe2 core tests
         run: |
           set -euo pipefail
+          # 기존 전체 회귀검사 보존: 가벼운 중앙정책·예약·학습 계약을 먼저 확인한다.
+          node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-adaptive-backpressure.test.mjs
+          node --test qa/vibe2-controller-contract.test.mjs
+          node --test qa/vibe2-handoff.test.mjs
+          node --test qa/vibe2-continuous-release-dispatch.test.mjs
+          node --test qa/vibe2-learning-closed-loop.test.mjs
           node --test qa/vibe2-gemini-free-rotation.test.mjs
           node --test qa/vibe2-openai-agent-patterns.test.mjs
           node --test qa/company-development-roblox-multiplayer-qa.test.mjs
@@ -465,20 +474,14 @@ jobs:
           node --test qa/vibe2-capability-distillation.test.mjs
           node --test qa/vibe2-merged-pr-provenance.test.mjs
           node --test qa/vibe2-central-work-contract.test.mjs
-          node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-work-package.test.mjs
           node --test qa/vibe2-incremental-qa.test.mjs
           node --test qa/vibe2-parallelism-telemetry.test.mjs
-          node --test qa/vibe2-adaptive-backpressure.test.mjs
-          node --test qa/vibe2-controller-contract.test.mjs
           node --test qa/vibe2-candidate-reconcile.test.mjs
           node --test qa/vibe2-experience-control.test.mjs
-          node --test qa/vibe2-handoff.test.mjs
           node --test qa/vibe2-post-release-focus.test.mjs
           node --test qa/vibe2-release-dispatch-recovery.test.mjs
-          node --test qa/vibe2-continuous-release-dispatch.test.mjs
           node --test qa/vibe2-learning-motor.test.mjs
-          node --test qa/vibe2-learning-closed-loop.test.mjs
           node --test qa/vibe2-code-pattern-ingest.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
           node --test qa/vibe2-practice-distillation.test.mjs

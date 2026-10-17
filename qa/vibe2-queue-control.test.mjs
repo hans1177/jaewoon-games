@@ -2677,7 +2677,9 @@ test('large mixed-platform queue reserves Unity Web without repeated full-candid
       evidence:unityWeb?['unity-web-first-stage']:[],unityWebDevelopment:unityWeb
     };
   });
-  const policy={ownerActiveDevelopmentScope20261009:{status:'ACTIVE'}};
+  // 대규모 예약 알고리즘 테스트: 허용된 Unity Web/Roblox 상태를 명시한 격리 fixture.
+  // 실제 현행 오너 보류 정책은 변경하지 않는다.
+  const policy={ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','UNITY_WEB']}};
   const first=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:256,tasks}),{
     maxConcurrentTasks:128,lane:'game-primary',policy
   });

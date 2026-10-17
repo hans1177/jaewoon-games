@@ -175,7 +175,13 @@ test('game-primary keeps adaptive telemetry while reserving to fixed repeat-deve
     });
     assert.equal(result.adaptiveMaxConcurrentTasks,20);
     assert.equal(result.reservationMaxConcurrentTasks,128);
-    assert.equal(result.selection?.webGameFlow?.target,0);
+    // 활성 중앙정책이 로드되면 Web 목표도 정식 정책 수치로 검사한다.
+    // 원래의 고정 128 개발 슬롯과 Gemini 압력 수치는 그대로 검증한다.
+    const verifiedPolicy=process.env.COMPANY_VERIFIED_POLICY_PATH
+      ?JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'))
+      :null;
+    const flow=verifiedPolicy?.developmentSpeedExecution?.webGameFlow;
+    assert.equal(result.selection?.webGameFlow?.target,flow?.enabled===true?Number(flow.targetConcurrentGames||0):0);
     assert.equal(result.tasks.length,40);
   }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
 });

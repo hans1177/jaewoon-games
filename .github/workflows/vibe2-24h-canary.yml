@@ -1,6 +1,11 @@
+# 파일명: .github/workflows/vibe2-24h-canary.yml
+# 실행 코드는 최신 main에서, 상태는 기존 제어 브랜치에서 읽는다.
 name: Vibe2 24H Canary
 
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/vibe2-24h-canary.yml'
   push:
     branches: [main]
     paths:
@@ -31,10 +36,11 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Checkout current queue storage contract
+      - name: Checkout tested executable contract
         uses: actions/checkout@v4
         with:
-          ref: main
+          # PR에서는 정확한 후보 소스를, 정기·main 실행에서는 최신 main을 검사.
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
           path: vibe2-main-contract
           fetch-depth: 1
 
@@ -42,6 +48,9 @@ jobs:
         run: node vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack
 
       - name: Verify Vibe2 runtime and shared Work Lock contracts
+        working-directory: vibe2-main-contract
+        env:
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
         shell: bash
         run: |
           set -euo pipefail
@@ -59,18 +68,24 @@ jobs:
           node --test qa/vibe-work-lock.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-adaptive-backpressure.test.mjs
+          node --test qa/vibe2-handoff.test.mjs
           node --test qa/vibe2-controller-contract.test.mjs
 
       - name: Exercise continuous planner safely
+        working-directory: vibe2-main-contract
+        env:
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
         shell: bash
         run: |
           set -euo pipefail
-          rm -f .vibe2/work-order.json
-          node tools/vibe2-continuous-runner.mjs
-          test -s .vibe2/work-order.json
+          # 최신 main 실행 코드 + 기존 제어 브랜치의 복원된 읽기 전용 상태.
+          rm -f ../.vibe2/work-order.json
+          node tools/vibe2-continuous-runner.mjs --queue=../.vibe2/queue.json --control=../.vibe2/parallelism-control.json --experience=../.vibe2/experience.json --project-lifecycle=../.vibe2/web-roblox-handoffs.json --output=../.vibe2/work-order.json
+          test -s ../.vibe2/work-order.json
           node <<'NODE'
           const fs = require('fs');
-          const order = JSON.parse(fs.readFileSync('.vibe2/work-order.json', 'utf8'));
+          const order = JSON.parse(fs.readFileSync('../.vibe2/work-order.json', 'utf8'));
           if (order.run) {
             if (!order.taskId) throw new Error('Runnable canary plan requires taskId.');
             if (order.safety?.directMainWrite !== false) throw new Error('Runnable canary plan must forbid direct main write.');
