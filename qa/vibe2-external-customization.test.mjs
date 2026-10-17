@@ -229,3 +229,21 @@ test('existing Vibe2 production emits approved composition guidance with explici
   assert.match(source,/\[ALL-GENRE EXISTING F0-F9 CONTENT COMPOSITION\]/);
   assert.match(source,/planVibeExternalCustomization/);
 });
+
+
+test('non-dungeon and non-NPC map genres do not request WFC or A-star solely because a map exists',()=>{
+  const approvedDesign={coreLoop:'레이싱 경주용 트랙과 체크포인트 및 기록'};
+  const plan=planVibeExternalCustomization({
+    ...input,gameId:'race-track',request:'맵에 트랙 배치',requirements:[],
+    approvedDesign,approvedDesignFingerprint:approved,target:'WEB',
+    assets:[],sourceRoot:'web-games/race-track'
+  });
+  assert.equal(plan.contentComposition.authorized,true);
+  assert.ok(plan.contentComposition.designDeclaredCapabilities.some(row=>row.id==='RACING_OR_MOVEMENT'));
+  for(const id of ['WAVE_FUNCTION_COLLAPSE','ASTAR_PATHFINDING']){
+    const tool=plan.references.find(row=>row.id===id);
+    assert.deepEqual(tool.roles,[]);
+    assert.equal(tool.status,'NOT_REQUIRED_BY_CURRENT_GAME');
+    assert.equal(tool.nextAction,'NONE');
+  }
+});
