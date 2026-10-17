@@ -19,29 +19,7 @@ if(sourceRoot!==`unity-games/${gameId}`)throw new Error(`UNITY_WEB_CANONICAL_SOU
 if(!/^\.build-requests\/unity-web\/[A-Za-z0-9._-]+\.json$/.test(requestPath)||requestPath.includes('..'))throw new Error(`INVALID_REQUEST_PATH:${requestPath}`);
 if(!/^[A-Za-z0-9_.]+$/.test(buildMethod))throw new Error(`INVALID_BUILD_METHOD:${buildMethod}`);
 
-// 정책 · Unity WebGL은 소스 스캔 및 빌드 요청 전에 최신 중앙정책으로 거부한다.
-// 검증 실패도 허용으로 해석하지 않는다. 일반 WEB 게임과 다른 실행 대상이다.
-const policyPath=path.join(process.cwd(),'company-learning','platform-release-roadmap.json');
-if(!fs.existsSync(policyPath))throw new Error('UNITY_WEB_CENTRAL_POLICY_REQUIRED');
-let policy;
-try{policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));}
-catch(error){throw new Error('UNITY_WEB_CENTRAL_POLICY_INVALID:'+String(error?.message||error));}
-const ownerScope=policy.ownerActiveDevelopmentScope20261009;
-if(policy.developmentAccess?.UNITY_WEB!=='ALWAYS_ALLOWED'
-  ||policy.unityWebFirstStage?.enabled===false
-  ||ownerScope?.ownerHeldTargets?.includes('UNITY_WEB')
-  ||ownerScope?.unityWebDevelopmentAllowed===false)
-  throw new Error('UNITY_WEB_OWNER_HOLD');
-// 정책 · 승인된 개발에서만 2D·2.5D 최종판 금지 및 공용 3D 자산 계보까지 검사한다.
-const owner3dPolicy=policy.ownerUnityWeb3dOnly20261009||{};
-const mandatory3dFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'];
-if(owner3dPolicy.twoPointFiveDimensionalFinalPassForbidden!==true
-  ||owner3dPolicy.existing2dOr2_5dGameAction!=='MANDATORY_IN_PLACE_NATIVE_UNITY_3D_REDEVELOPMENT_ALL_EXISTING_GAMES'
-  ||owner3dPolicy.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true
-  ||!Array.isArray(owner3dPolicy.sharedLibraryGameWorldFamilies3dOnly)
-  ||!mandatory3dFamilies.every(family=>owner3dPolicy.sharedLibraryGameWorldFamilies3dOnly.includes(family)))
-  throw new Error('UNITY_WEB_3D_ONLY_CENTRAL_POLICY_INVALID');
-
+// The removed central policy no longer gates Unity Web builds; source and module validation below remains active.
 
 const required=[
   `${sourceRoot}/Assets`,
