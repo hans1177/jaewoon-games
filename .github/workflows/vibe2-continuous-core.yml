@@ -1314,7 +1314,7 @@ jobs:
           [ "${#design_request}" -le 2000 ]
           # company-runtime의 기존 GAME_SEED revision이 이미 같으면 실행을 중복 예약하지 않는다.
           if seed_b64="$(gh api "repos/$GITHUB_REPOSITORY/contents/game-seed-state.json?ref=company-runtime" --jq .content)"; then
-            already="$(printf "%s" "$seed_b64" | tr -d "\n" | base64 -d | jq -er --arg game "$game_id" --arg rid "VIBE2:$request_id" --arg req "$design_request" 'any(.seeds[]?; .gameId==$game and .ownerRequestInstanceId==$rid and .OWNER_LATEST_DESIGN_REQUEST==$req)' )"
+            already="$(printf "%s" "$seed_b64" | tr -d "\n" | base64 -d | jq -r --arg game "$game_id" --arg rid "VIBE2:$request_id" --arg req "$design_request" 'any(.seeds[]?; .gameId==$game and .ownerRequestInstanceId==$rid and .OWNER_LATEST_DESIGN_REQUEST==$req)' )"
             if [ "$already" = true ]; then
               echo "VIBE2_DESIGNER_HANDOFF=ALREADY_PERSISTED|game=$game_id|request=$request_id"
               exit 0
