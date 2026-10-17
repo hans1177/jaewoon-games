@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {deriveVerifiedCodePatterns} from '../tools/vibe2-code-pattern-ingest.mjs';
+import {deriveVerifiedCodePatterns,deriveObservedRepairRecipe} from '../tools/vibe2-code-pattern-ingest.mjs';
+import {learningGuidance} from '../tools/vibe2-learning-motor.mjs';
 
 test('verified sample yields abstract code patterns without raw patch',()=>{
   const rows=deriveVerifiedCodePatterns({
@@ -17,4 +18,41 @@ test('verified sample yields abstract code patterns without raw patch',()=>{
 
 test('unverified sample is rejected',()=>{
   assert.deepEqual(deriveVerifiedCodePatterns({taskType:'coding',sourceRevision:'a'.repeat(40),independentQa:'FAIL'}),[]);
+});
+
+test('verified added-code observations become actionable repair steps without raw code leakage',()=>{
+  const sample={
+    taskType:'coding',gameId:'real-web-game',sourceRevision:'b'.repeat(40),
+    independentQa:'PASS',browserQa:'PASS',
+    instruction:'Repair mobile input and save restore state regression',
+    input:'{"sourcePath":"web-games/real-web-game"}',
+    output:'summary\\n검증된 패치:\\n+if (!button) return false;\\n+button.addEventListener("pointerdown", onDown);\\n+localStorage.setItem("PRIVATE_SAVE_KEY","PRIVATE_VALUE");',
+    verification:{fullRegression:'PASS',runtime:'PASS',exactRevision:'PASS',protectedState:'PASS'}
+  };
+  const rows=deriveVerifiedCodePatterns(sample,'verified.json');
+  assert.ok(rows.length>=2);
+  const recipe=rows[0].repairRecipe;
+  assert.ok(recipe);
+  assert.deepEqual(recipe.operationIds.filter(x=>['GUARD_EVENT_BINDING','SAVE_STATE_OWNER','ATOMIC_SAVE_COMMIT'].includes(x)),
+    ['GUARD_EVENT_BINDING','ATOMIC_SAVE_COMMIT','SAVE_STATE_OWNER']);
+  assert.ok(recipe.steps.some(x=>x.includes('before registering')));
+  const stored=JSON.stringify(rows);
+  assert.ok(!stored.includes('PRIVATE_SAVE_KEY'));
+  assert.ok(!stored.includes('PRIVATE_VALUE'));
+  assert.ok(!stored.includes('button.addEventListener'));
+  assert.ok(rows.every(x=>x.rawCodeStored===false));
+  const prompt=learningGuidance({kind:'vibe2-unified-learning-context',codePatterns:[{...rows[0],relevance:90}]});
+  assert.match(prompt,/verified-implementation-recipe=GUARD_EVENT_BINDING/);
+  assert.match(prompt,/validation=FRESH_QA_REQUIRED/);
+  assert.ok(!prompt.includes('PRIVATE_SAVE_KEY'));
+});
+
+test('repair recipe ignores removed code and unverified conclusions',()=>{
+  const recipe=deriveObservedRepairRecipe('summary\\n검증된 패치:\\n-localStorage.setItem("REMOVED_SECRET", "x");\\n+clearInterval(timer);');
+  assert.deepEqual(recipe.operationIds,['CLEANUP_LIFECYCLE']);
+  assert.equal(deriveObservedRepairRecipe('summary only'),null);
+  const sample={taskType:'bugfix',sourceRevision:'c'.repeat(40),independentQa:'PASS',
+    instruction:'save repair',output:'검증된 패치:\\n+localStorage.setItem("x","y")',
+    verification:{fullRegression:'PASS',runtime:'FAIL'}};
+  assert.deepEqual(deriveVerifiedCodePatterns(sample),[]);
 });
