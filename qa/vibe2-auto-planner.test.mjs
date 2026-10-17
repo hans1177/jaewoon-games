@@ -5251,6 +5251,11 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.ok(contractTask,'static contract failure must reach actual existing Vibe source repair');
   assert.equal(contractTask.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
   assert.equal(contractTask.buildUpNextAction,'CAUSAL_REPAIR');
+  assert.deepEqual(
+    contractTask.buildUpDirective.playtestRuntimeFindings.studioQualityFailure.staticContract?.blockers,
+    contractEvidence.staticContract.blockers,
+    'the exact static blockers must survive the runtime-to-Vibe handoff'
+  );
   for(const owner of ['server','client','shared'])assert.ok(contractTask.responsibleFiles.includes(`roblox-games/${gameId}/${owner}/${owner==='shared'?'GameConfig':'Game.'+owner}.luau`));
 
   fs.appendFileSync(path.join(gameRoot,'server','Game.server.luau'),'\n-- completed repair changed the exact game source tree\n');
