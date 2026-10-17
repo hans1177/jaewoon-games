@@ -4380,15 +4380,63 @@ function RobloxCommonUI.CreateRouteRiskPreview(options)
 end
 
 function RobloxCommonUI.CreateThreatEdgeIndicator(options)
+  options = options or {}
   local root,parts=deepSystemPanel(options,"THREAT_EDGE_INDICATOR","THREAT_EDGE_INDICATOR","위협 방향",{"좌/우/후방","위협 등급","거리","시야 밖 상태"})
+  local theme = cloneTheme(options.theme)
+  local direction = commonText(parts.inner,"ThreatDirection","",UDim2.new(0,14,1,-64),UDim2.new(1,-28,0,50),theme.Danger,28,true)
+  direction.TextXAlignment = Enum.TextXAlignment.Center
+  local symbol = {LEFT="←",RIGHT="→",FRONT="↑",BACK="↓",NORTH="↑",SOUTH="↓",WEST="←",EAST="→"}
+  local function sync(state)
+    state = type(state) == "table" and state or {}
+    local facing = string.upper(tostring(state.direction or "UNKNOWN"))
+    direction.Text = (symbol[facing] or "•") .. "  " .. tostring(state.label or facing)
+    parts.labels[1].Text = "위협 · " .. tostring(state.label or facing)
+    parts.labels[2].Text = "단계 · " .. tostring(state.severity or "미확인")
+    parts.labels[3].Text = "거리 · " .. tostring(state.distance or "미확인")
+    parts.labels[4].Text = state.offscreen == true and "시야 밖" or "화면 안"
+  end
+  sync(options.threat)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,Direction=direction}
 end
 
 function RobloxCommonUI.CreateBossPhaseStrip(options)
-  local root,parts=deepSystemPanel(options,"BOSS_PHASE_STRIP","BOSS_PHASE_STRIP","보스 페이즈",{"현재 페이즈","다음 변화","위험 패턴","진행도"})
+  options = options or {}
+  local root,parts=deepSystemPanel(options,"BOSS_PHASE_STRIP","BOSS_PHASE_STRIP",options.title or "보스 페이즈",{"현재 페이즈","다음 변화","위험 패턴","진행도"})
+  local theme = cloneTheme(options.theme)
+  local track = Instance.new("Frame")
+  track.Name = "ConfirmedBossHealth"
+  track.Size = UDim2.new(1,-28,0,22)
+  track.Position = UDim2.new(0,14,1,-64)
+  track.BackgroundColor3 = theme.HealthTrack
+  track.BorderSizePixel = 0
+  track.Parent = parts.inner
+  corner(track,7)
+  local fill = Instance.new("Frame")
+  fill.Name = "VisualHealthFill"
+  fill.Size = UDim2.fromScale(1,1)
+  fill.BackgroundColor3 = theme.Danger
+  fill.BorderSizePixel = 0
+  fill.Parent = track
+  corner(fill,7)
+  local value = commonText(parts.inner,"ConfirmedValue","",UDim2.new(0,14,1,-37),UDim2.new(1,-28,0,24),theme.Text,12,true)
+  value.TextXAlignment = Enum.TextXAlignment.Right
+  local function sync(state)
+    state = type(state) == "table" and state or {}
+    local hp = math.max(0,tonumber(state.hp) or 0)
+    local maxHp = math.max(0,tonumber(state.maxHp) or 0)
+    local ratio = maxHp > 0 and math.clamp(hp/maxHp,0,1) or 0
+    fill.Size = UDim2.fromScale(ratio,1)
+    parts.labels[1].Text = "현재 페이즈 · " .. tostring(state.phase or "미확인")
+    parts.labels[2].Text = "다음 변화 · " .. tostring(state.nextPhase or "미확인")
+    parts.labels[3].Text = "위험 패턴 · " .. tostring(state.warning or "미확인")
+    parts.labels[4].Text = "진행도 · " .. tostring(math.floor(ratio*100)) .. "%"
+    value.Text = tostring(math.floor(hp)) .. " / " .. tostring(math.floor(maxHp))
+  end
+  sync(options.bossState)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsDamageAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,HealthFill=fill}
 end
 
 -- 디펜스: 웨이브/정예/준비시간은 실제 전투 디렉터가 준 현재 상태만 표시한다.
@@ -4427,9 +4475,38 @@ function RobloxCommonUI.CreateWaveForecastRibbon(options)
 end
 
 function RobloxCommonUI.CreateStatusEffectTimeline(options)
+  options = options or {}
   local root,parts=deepSystemPanel(options,"STATUS_EFFECT_TIMELINE","STATUS_EFFECT_TIMELINE","상태효과 타임라인",{"현재 효과","남은 시간","중첩","해제 가능"})
+  local theme = cloneTheme(options.theme)
+  local track = Instance.new("Frame")
+  track.Name = "RemainingStatusDuration"
+  track.Position = UDim2.new(0,14,1,-55)
+  track.Size = UDim2.new(1,-28,0,12)
+  track.BackgroundColor3 = theme.HealthTrack
+  track.BorderSizePixel = 0
+  track.Parent = parts.inner
+  corner(track,5)
+  local fill = Instance.new("Frame")
+  fill.Name = "DurationFill"
+  fill.Size = UDim2.fromScale(0,1)
+  fill.BackgroundColor3 = theme.Accent
+  fill.BorderSizePixel = 0
+  fill.Parent = track
+  corner(fill,5)
+  local function sync(status)
+    status = type(status) == "table" and status or {}
+    local remaining = math.max(0,tonumber(status.remaining) or 0)
+    local total = math.max(0,tonumber(status.total) or 0)
+    local ratio = total > 0 and math.clamp(remaining/total,0,1) or 0
+    fill.Size = UDim2.fromScale(ratio,1)
+    parts.labels[1].Text = "현재 효과 · " .. tostring(status.name or "없음")
+    parts.labels[2].Text = "남은 시간 · " .. tostring(math.floor(remaining*10)/10)
+    parts.labels[3].Text = "중첩 · " .. tostring(math.max(0,math.floor(tonumber(status.stacks) or 0)))
+    parts.labels[4].Text = status.dispellable == true and "해제 가능" or "해제 여부 미확인"
+  end
+  sync(options.status)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,DurationFill=fill}
 end
 
 function RobloxCommonUI.CreateHousingStructuralSupportOverlay(options)
