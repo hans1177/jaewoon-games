@@ -19,7 +19,20 @@ if(sourceRoot!==`unity-games/${gameId}`)throw new Error(`UNITY_WEB_CANONICAL_SOU
 if(!/^\.build-requests\/unity-web\/[A-Za-z0-9._-]+\.json$/.test(requestPath)||requestPath.includes('..'))throw new Error(`INVALID_REQUEST_PATH:${requestPath}`);
 if(!/^[A-Za-z0-9_.]+$/.test(buildMethod))throw new Error(`INVALID_BUILD_METHOD:${buildMethod}`);
 
-// The removed central policy no longer gates Unity Web builds; source and module validation below remains active.
+// 정책 · Unity WebGL은 소스 스캔 및 빌드 요청 전에 최신 중앙정책으로 거부한다.
+// 검증 실패도 허용으로 해석하지 않는다. 일반 WEB 게임과 다른 실행 대상이다.
+const policyPath=path.join(process.cwd(),'company-learning','platform-release-roadmap.json');
+if(!fs.existsSync(policyPath))throw new Error('UNITY_WEB_CENTRAL_POLICY_REQUIRED');
+let policy;
+try{policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));}
+catch(error){throw new Error('UNITY_WEB_CENTRAL_POLICY_INVALID:'+String(error?.message||error));}
+const ownerScope=policy.ownerActiveDevelopmentScope20261009;
+if(policy.developmentAccess?.UNITY_WEB!=='ALWAYS_ALLOWED'
+  ||policy.unityWebFirstStage?.enabled===false
+  ||ownerScope?.ownerHeldTargets?.includes('UNITY_WEB')
+  ||ownerScope?.unityWebDevelopmentAllowed===false)
+  throw new Error('UNITY_WEB_OWNER_HOLD');
+
 
 const required=[
   `${sourceRoot}/Assets`,
