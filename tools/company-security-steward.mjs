@@ -80,21 +80,23 @@ function domainFromUrl(text=''){
 export function isApprovedPagesOidcGrant(before='',after=''){
   const baseline=String(before),source=String(after);
   if(!baseline.includes('name: Magic Forest Static Play')||!source.includes('name: Magic Forest Static Play'))return false;
-  if(/id-token\\s*:\\s*write/i.test(baseline))return false;
-  const grants=[...source.matchAll(/^      id-token: write\\s*$/gm)];
+  if(/id-token\s*:\s*write/i.test(baseline))return false;
+  const grants=[...source.matchAll(/^      id-token: write\s*$/gm)];
   if(grants.length!==1)return false;
   if((source.match(/^  workflow_dispatch:$/gm)||[]).length!==1)return false;
-  const jobs=[...source.matchAll(/^  ([a-z][a-z-]*):\\s*$/gm)].map(m=>m[1]);
+  const jobRegion=source.split('\njobs:\n');
+  if(jobRegion.length!==2)return false;
+  const jobs=[...jobRegion[1].matchAll(/^  ([a-z][a-z-]*):\s*$/gm)].map(m=>m[1]);
   if(JSON.stringify(jobs)!==JSON.stringify(['deploy','publish-pages']))return false;
-  const start=source.indexOf('  publish-pages:\\n');
+  const start=source.indexOf('  publish-pages:\n');
   if(start<0)return false;
   const job=source.slice(start);
   if(grants[0].index<start)return false;
-  if(!/^    needs: deploy$/m.test(job)||!/^    if: github\\.event_name != 'pull_request'$/m.test(job))return false;
-  if(!/^    permissions:\\n      contents: read\\n      pages: write\\n      id-token: write\\n/m.test(job))return false;
-  if(!/^    environment:\\n      name: github-pages\\n/m.test(job))return false;
-  if((job.match(/^        uses: actions\\/deploy-pages@v4\\s*$/gm)||[]).length!==1)return false;
-  if((source.match(/^        uses: actions\\/upload-pages-artifact@v4\\s*$/gm)||[]).length!==1)return false;
+  if(!/^    needs: deploy$/m.test(job)||!/^    if: github\.event_name != 'pull_request'$/m.test(job))return false;
+  if(!/^    permissions:\n      contents: read\n      pages: write\n      id-token: write\n/m.test(job))return false;
+  if(!/^    environment:\n      name: github-pages\n/m.test(job))return false;
+  if((job.match(/^        uses: actions\/deploy-pages@v4\s*$/gm)||[]).length!==1)return false;
+  if((source.match(/^        uses: actions\/upload-pages-artifact@v4\s*$/gm)||[]).length!==1)return false;
   if(!source.includes('WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA=')||!source.includes('WEB_PAGES_LIVE_SOURCE_SHA='))return false;
   if(!source.includes('git -C "$site" push origin HEAD:gh-pages'))return false;
   return true;
@@ -126,7 +128,7 @@ function scanLine(row,{approvedPagesOidc=false}={}){
     }
   }
   if(/\.github\/workflows\//.test(file)&&/id-token\s*:\s*write/i.test(t)){
-    const approved=approvedPagesOidc&&file==='.github/workflows/magic-forest-pages.yml'&&/^      id-token: write\\s*$/.test(t);
+    const approved=approvedPagesOidc&&file==='.github/workflows/magic-forest-pages.yml'&&/^      id-token: write\s*$/.test(t);
     out.push(finding({rule:'OIDC_WRITE_PERMISSION_ADDED',severity:'HIGH',file,line,text:t,category:'privilege',
       disposition:approved?'REVIEW':'QUARANTINE'}));
   }
