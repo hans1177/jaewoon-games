@@ -371,11 +371,27 @@ try{
     assert.ok(Number(state?.bodyChildren||0)>0,`${gameId}: empty body after browser boot`);
     assert.equal(state?.loadingFailure,false,`${gameId}: browser boot rendered a loading failure`);
 
+    // Per-game runtime evidence is diagnostic, not a blanket 3D PASS claim.
+    // A GL program+depth alone is not evidence of geometry draws; Cat Step above
+    // additionally proves real mesh draws and touch gameplay in the active scene.
+    const graphics=await cdp.evaluate(`(()=>{
+      const contexts=[...document.querySelectorAll('canvas')].map(canvas=>{
+        const gl=canvas.getContext('webgl2')||canvas.getContext('webgl');
+        if(!gl)return null;
+        return {api:gl.getParameter(gl.VERSION)||'',
+          shaderProgramBound:Boolean(gl.getParameter(gl.CURRENT_PROGRAM)),
+          depthEnabled:gl.isEnabled(gl.DEPTH_TEST),
+          framebufferWidth:gl.drawingBufferWidth,framebufferHeight:gl.drawingBufferHeight};
+      }).filter(Boolean);
+      return {contexts,realDrawProof:Number(window.__catStep3dDiagnostics?.actualDrawCalls||0)};
+    })()`);
     results.push({
       gameId,
       clickedStart:Boolean(start?.clicked),
       startTarget:start?.target||'',
-      canvasCount:Number(state?.canvasCount||0)
+      canvasCount:Number(state?.canvasCount||0),
+      graphics,
+      fullNative3dVerified:gameId==='cat-step'
     });
   }
 
