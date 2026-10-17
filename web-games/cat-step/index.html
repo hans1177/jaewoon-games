@@ -74,15 +74,15 @@ function compileShader(kind,source){
 const vertexShader=compileShader(gl.VERTEX_SHADER,`#version 300 es
 in vec3 aVertex;in vec3 aNormal;
 uniform vec3 uOffset;uniform vec3 uSize;uniform float uTilt;
-uniform vec2 uViewport;
+uniform mat4 uProjection;
 out float vLight;
 void main(){
   vec3 p=aVertex*uSize;
   float c=cos(uTilt),s=sin(uTilt);
   p=vec3(p.x*c-p.y*s,p.x*s+p.y*c,p.z);
   vec3 world=uOffset+p;
-  float w=(1400.0-world.z)/1400.0;
-  gl_Position=vec4(world.x/(uViewport.x*.5),world.y/(uViewport.y*.5),-world.z/600.0*w,w);
+  // Hardware perspective divide and depth interpolation, not a 2D screen-space skew.
+  gl_Position=uProjection*vec4(world.xy,world.z-1400.0,1.0);
   vec3 n=normalize(vec3(aNormal.x*c-aNormal.y*s,aNormal.x*s+aNormal.y*c,aNormal.z));
   vLight=.46+.54*max(dot(n,normalize(vec3(-.3,.7,1.0))),0.0);
 }`);
@@ -100,7 +100,14 @@ gl.useProgram(program);
 const uOffset=gl.getUniformLocation(program,'uOffset');
 const uSize=gl.getUniformLocation(program,'uSize');
 const uTilt=gl.getUniformLocation(program,'uTilt');
-const uViewport=gl.getUniformLocation(program,'uViewport');
+const uProjection=gl.getUniformLocation(program,'uProjection');
+// The perspective camera is an actual matrix, shared by every vertex and depth write.
+const projection=new Float32Array(16);
+const mat4={perspective(out,fovy,aspect,near,far){
+  const f=1/Math.tan(fovy/2),nf=1/(near-far);
+  out.set([f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0]);
+  return out;
+}};
 const uColor=gl.getUniformLocation(program,'uColor');
 const aVertex=gl.getAttribLocation(program,'aVertex'),aNormal=gl.getAttribLocation(program,'aNormal');
 function meshBuffer(vertices){
@@ -182,7 +189,11 @@ function resize(){
   canvas.height=Math.max(1,Math.floor(H*DPR));
   gl.viewport(0,0,canvas.width,canvas.height);
   gl.useProgram(program);
-  gl.uniform2f(uViewport,W,H);
+  mat4.perspective(projection,2*Math.atan(H/(2*1400)),W/H,1,4000);
+  gl.uniformMatrix4fv(uProjection,false,projection);
+  canvas.dataset.spatialDimension='3d';
+  canvas.dataset.cameraX='0';canvas.dataset.cameraY='0';
+  canvas.dataset.cameraActive='true';canvas.dataset.collisionEnabled='true';
 }
 addEventListener('resize',resize,{passive:true});
 resize();
@@ -385,7 +396,12 @@ function draw(now){
       mesh('cube',laneX(step.lane),y-11,6,platformW-6,5,43,
         gold?[1,.82,.38]:[.45,.76,.60]);
     }
-    drawCat3d(catPose(now));
+    const pose=catPose(now);
+    drawCat3d(pose);
+    // Expose the real camera/actor positions used by the GPU, never synthetic QA PASS flags.
+    canvas.dataset.playerX=String(pose.x-W*.5);
+    canvas.dataset.playerY=String(H*.5-pose.y);
+    canvas.dataset.playerZ='60';
     qualityFrames++;
     if(!qualityWindow)qualityWindow=now;
     if(mobileRender&&now-qualityWindow>4500){
