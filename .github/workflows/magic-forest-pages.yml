@@ -54,7 +54,7 @@ jobs:
           const path=require('node:path');
           const cp=require('node:child_process');
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-          const site='_site',routes=[];
+          const site='_site',routes=[],sourceTreeShas={};
           fs.rmSync(site,{recursive:true,force:true});
           fs.mkdirSync(path.join(site,'web-games'),{recursive:true});
           const forest='web-games/fantasy-survival';
@@ -79,6 +79,9 @@ jobs:
               continue;
             }
             fs.cpSync(root,path.join(site,root),{recursive:true});
+            const treeSha=cp.execFileSync('git',['rev-parse',`HEAD:${root}`],{encoding:'utf8'}).trim();
+            if(!/^[a-f0-9]{40}$/.test(treeSha))throw Error('WEB_PAGES_GAME_SOURCE_TREE_INVALID:'+id);
+            sourceTreeShas[id]=treeSha;
             routes.push(root+'/');
           }
           if(!routes.includes('web-games/fantasy-survival/'))throw Error('MAGIC_FOREST_REGISTERED_ROUTE_MISSING');
@@ -127,7 +130,7 @@ jobs:
           fs.writeFileSync(path.join(site,'.nojekyll'),'');
           fs.writeFileSync(path.join(site,'web-games/publish-manifest.json'),JSON.stringify({
             version:1,sourceSha:process.env.GITHUB_SHA,routes:routes.sort(),sharedAssets:[...refs].sort(),
-            target:'GITHUB_PAGES_INTERNAL_STATIC',gameCount:routes.length
+            sourceTreeShas,target:'GITHUB_PAGES_INTERNAL_STATIC',gameCount:routes.length
           },null,2)+'\n');
           if(!routes.length)throw Error('WEB_GAME_ROUTES_EMPTY');
           console.log('WEB_PAGES_SOURCE_SHA='+process.env.GITHUB_SHA);
@@ -229,7 +232,7 @@ jobs:
           done
           if [ "$verified" != true ]; then echo "WEB_PAGES_LIVE_SOURCE_NOT_VERIFIED" >&2; exit 1; fi
           curl -fsSL --max-time 15 "$manifest_url" -o /tmp/web-pages-published.json
-          node -e "const m=require('/tmp/web-pages-published.json');for(const p of m.routes)if(!/^web-games\/[a-z0-9-]+\/$/.test(p))process.exit(1)"
+          node -e "const m=require('/tmp/web-pages-published.json');for(const p of m.routes){if(!/^web-games\/[a-z0-9-]+\/$/.test(p))process.exit(1);const id=p.split('/')[1];if(!/^[a-f0-9]{40}$/.test(m.sourceTreeShas?.[id]||''))process.exit(1)}"
           node -p "require('/tmp/web-pages-published.json').routes.join('\n')" | while IFS= read -r route; do
             curl -fsSL --max-time 15 -o /dev/null "$base$route" || { echo "WEB_PAGES_ROUTE_NOT_LIVE=$route" >&2; exit 1; }
           done
