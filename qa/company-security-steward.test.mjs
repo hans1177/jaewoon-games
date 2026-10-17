@@ -459,6 +459,29 @@ test('candidate workers cannot replace final verification with invented proof',(
   assert.match(learner,/verified-marker:/);
 });
 
+test('owner-approved F9 Pages policy remains scoped to exact secure values and existing gate',()=>{
+  const fields=[
+    'developmentSpeedExecution.candidateReleasePromotionChecks.webRequiredDeploymentCheck',
+    'developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence',
+    'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
+    'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
+    'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
+    'changeRecord.ownerEveryGameF9Publish20261018'
+  ];
+  for(const key of fields)assert.ok(securityWorkflow.includes(key),'missing precisely reviewed owner field '+key);
+  assert.match(securityWorkflow,/SECURITY_OWNER_F9_PAGES_APPROVAL_INVARIANT_FAIL/);
+  assert.match(securityWorkflow,/head\.version!==base\.version\+1/);
+  assert.match(securityWorkflow,/loop\?\.publishBeforeF9Forbidden!==true/);
+  assert.match(securityWorkflow,/loop\?\.exactVerifiedVersionRequiredForPublishAttempt!==true/);
+  assert.match(securityWorkflow,/record,requiredRecord/);
+  assert.match(securityWorkflow,/security|quarantine|REVIEW/i);
+  assert.match(securityWorkflow,/homepageOwner:'HOMEPAGE_MANAGER_AND_DIRECTOR'/);
+  assert.match(securityWorkflow,/shadowPipelineForbidden:true/);
+  assert.match(securityWorkflow,/githubOriginalAssetsAndSaveKeysPreserved:true/);
+  assert.match(securityWorkflow,/if \[ "\$VERDICT" = 'QUARANTINE' \]/);
+  assert.match(securityWorkflow,/test "\$AUTO_POLICY_PASS" = 'YES'/);
+});
+
 test('security workflow scans changed candidates without scheduled duplicate replay',()=>{
   assert.match(securityWorkflow,/Resolve impact-scoped security contract work/);
   assert.match(securityWorkflow,/SECURITY_PATCH_SCAN_ALWAYS=YES/);
