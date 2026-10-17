@@ -40,6 +40,8 @@ jobs:
   playtest:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
+    outputs:
+      provider_throttled: ${{ steps.provider_status.outputs.throttled }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -168,6 +170,28 @@ jobs:
           [[ "$valid" -ge 1 ]] || { echo NO_VALID_RUNTIME_OBSERVATION; exit 1; }
           echo "EXTERNAL_RUNTIME_VALID_GAMES=$valid"
 
+      - name: Detect Google Play anonymous authentication throttling
+        if: always()
+        id: provider_status
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          let games=[];
+          try{
+            const file=path.join(process.env.EXTERNAL_PLAYTEST_OUT||'', 'summary.json');
+            const summary=JSON.parse(fs.readFileSync(file,'utf8'));
+            games=Array.isArray(summary.games)?summary.games:[];
+          }catch{}
+          const throttled=games.length>0&&games.every(game=>
+            game.installPass!==true&&
+            game.launchPass!==true&&
+            /Aurora anonymous auth failed with HTTP 429/i.test(String(game.installReason||'')));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'throttled='+(throttled?'true':'false')+'\\n');
+          if(throttled)console.log('EXTERNAL_MOBILE_PROVIDER_THROTTLED=RETRY_AT_EXISTING_HOURLY_SCHEDULE');
+          NODE
+
       - name: Distill runtime behavior into Unity implementation judgment
         if: steps.playtest.outcome == 'success'
         shell: bash
@@ -215,7 +239,7 @@ jobs:
         shell: bash
         run: |
           docker rm -f vibe2-redroid >/dev/null 2>&1 || true
-          rm -rf "$RUNNER_TEMP/redroid-data" || true
+          sudo rm -rf -- "$RUNNER_TEMP/redroid-data" || true
 
       - name: Enforce real-playtest gate
         if: always()
@@ -257,7 +281,7 @@ jobs:
           echo "COMMERCIAL_RUNTIME_CANONICAL_INGEST_DISPATCHED=${CURRENT_RUN_ID}"
 
       - name: Continue the independent fixed Google Play worker
-        if: always() && !cancelled()
+        if: always() && !cancelled() && needs.playtest.outputs.provider_throttled != 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
