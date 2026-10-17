@@ -5184,7 +5184,10 @@ test('all game-required library families include audio music UI images VFX and m
     for(const [family,role,file] of [
       ['AUDIO','music','ambient-music.ogg'],['AUDIO','sfx','click.wav'],
       ['UI','ui','hud-icon.png'],['UI','interface','layout.svg'],
-      ['VFX','vfx','impact-sparks.webp']
+      ['VFX','vfx','impact-sparks.webp'],
+      ['SKILL','skill','fireball-icon.png'],
+      ['MATERIAL','material','stone-texture.png'],
+      ['MOTION','motion','sprite-animation.png']
     ]){
       const archive={...base,role,file,sourcePath:'assets/external/simple-rpg/library/'+file};
       const plan=buildAssetSupplyDecisionSummary({gameId:'all-media',target:'roblox',
