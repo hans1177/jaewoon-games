@@ -5151,28 +5151,55 @@ test('3D game sourcing accepts only exact canonical LFS pointers and rejects cor
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
 
-test('3D-only download contract leaves missing audio and image archives out of acquisition',()=>{
-  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-3d-filter-'));
+test('all game-required library families include audio music UI images VFX and motion',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-all-family-demand-'));
   try{
     const base={sourceOnly:true,gameApplied:false,licenseDeclared:'CC0-1.0',
       sha256:'3'.repeat(64),bytes:1024,
-      sourceUrl:'https://opengameart.org/sites/default/files/visual-source.zip',
-      licenseEvidenceUrl:'https://opengameart.org/content/visual-source'};
+      sourceUrl:'https://opengameart.org/sites/default/files/verified-pack.zip',
+      licenseEvidenceUrl:'https://opengameart.org/content/verified-pack'};
     for(const [family,role,file] of [
-      ['UI','special-icons','game-icons.zip'],
-      ['AUDIO','audio','ambient-loop.zip'],
-      ['VFX','vfx','effects.zip']
+      ['UI','item-icons','game-icons.zip'],
+      ['UI','png','kenney_fantasy-ui-borders.zip'],
+      ['AUDIO','music','bgm-theme.zip'],
+      ['AUDIO','05-environment-sfx','rpg-sfx-95.zip'],
+      ['VFX','vfx','particles.zip'],
+      ['MOTION','motion','walk-cycles.zip'],
+      ['MATERIAL','material','pbr-materials.zip'],
+      ['SKILL','skill','magic-spells.zip']
     ]){
-      const archive={...base,role,file,sourcePath:'assets/external/simple-rpg/icons-vfx-npc/'+file};
-      const plan=buildAssetSupplyDecisionSummary({gameId:'3d-only',target:'roblox',
+      const archive={...base,role,file,sourcePath:'assets/external/simple-rpg/library/'+file};
+      const plan=buildAssetSupplyDecisionSummary({gameId:'all-families',target:'roblox',
         requirements:[{family}],request:family.toLowerCase(),
         registry:{assets:[],externalSources:[]},sharedOriginalArchives:[archive],repoRoot:tmp});
-      assert.notEqual(plan.nextActions.find(x=>x.family===family)?.action,'ACQUIRE_ADAPT',
-        family+' must not fetch missing non-3D archives');
+      const action=plan.nextActions.find(x=>x.family===family);
+      assert.equal(action?.action,'ACQUIRE_ADAPT',family+' missing source must remain eligible');
+      assert.equal(action.externalAcquisition.downloaded,false,family+' not yet downloaded');
+      assert.equal(action.externalAcquisition.sourceHash,base.sha256);
+      assert.equal(action.externalAcquisition.archiveBytes,base.bytes);
+      assert.equal(action.externalAcquisition.acquisitionState,'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED');
+      assert.equal(plan.productionVerificationGranted,false);
+    }
+    // Direct media originals are eligible too; downloads are not ZIP-only.
+    for(const [family,role,file] of [
+      ['AUDIO','music','ambient-music.ogg'],['AUDIO','sfx','click.wav'],
+      ['UI','ui','hud-icon.png'],['UI','interface','layout.svg'],
+      ['VFX','vfx','impact-sparks.webp'],
+      ['SKILL','skill','fireball-icon.png'],
+      ['MATERIAL','material','stone-texture.png'],
+      ['MOTION','motion','sprite-animation.png']
+    ]){
+      const archive={...base,role,file,sourcePath:'assets/external/simple-rpg/library/'+file};
+      const plan=buildAssetSupplyDecisionSummary({gameId:'all-media',target:'roblox',
+        requirements:[{family}],request:family.toLowerCase(),
+        registry:{assets:[],externalSources:[]},sharedOriginalArchives:[archive],repoRoot:tmp});
+      assert.equal(plan.nextActions.find(x=>x.family===family)?.action,'ACQUIRE_ADAPT',file);
     }
     const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
-    assert.match(worker,/spatial3dFamilies\.has\(clean\(row\.family\)/);
-    assert.match(worker,/lfsEligible\.has\(rel\)/);
+    assert.ok(!worker.includes('spatial3dFamilies.has(clean(row.family)'));
+    assert.ok(!worker.includes('row?.externalAcquisition?.sourceFileMustBeReal3d===true'));
+    assert.match(worker,/plainGitMissing\.has\(rel\)/);
+    assert.match(worker,/VIBE2_SELECTED_ASSET_DOWNLOAD/);
     assert.match(worker,/BLOCKED_INVALID_SOURCE/);
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
