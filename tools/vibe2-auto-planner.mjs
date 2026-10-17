@@ -766,6 +766,9 @@ function isWeatherPresentationPilot(project={},repoRoot=process.cwd()){
 function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
   if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);
   if(project.engine==='unity'){
+    // Owner-held Unity cannot consume native production slots, including legacy Unity Web first stage.
+    const access=centralPresentationPolicy(repoRoot)?.developmentAccess||{};
+    if(access.UNITY==='OWNER_HOLD'||(project.firstStageUnityWeb===true&&access.UNITY_WEB==='OWNER_HOLD'))return false;
     if(project.firstStageUnityWeb===true&&project.existingHolisticBackfillCatalog===true)return['release-confirmed','development-confirmed'].includes(project.releaseState);
     if(project.releaseState==='development-confirmed'&&project.firstStageUnityWeb===true)return true;
     return false; // Android owner hold: do not generate new native work.
@@ -3985,10 +3988,20 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const ownerResumableSeedCapacity=Math.min(ownerResumableMissingLaneKeys.size,persistentCapacity);
   // 예약 단계에 넘길 서로 다른 웹 게임 후보를 기존 기획기에서 먼저 채운다.
   // 일반 대기 목표가 차도 총 큐 용량·소유자 보류·실제 소스 충돌은 그대로 지킨다.
-  const webFlowPolicy=centralPresentationPolicy(repoRoot)?.developmentSpeedExecution?.webGameFlow;
-  const webFlowTarget=webFlowPolicy?.enabled===true?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
-  const webFlowUnityOnly=centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status==='ACTIVE';
-  const webFlowMatches=item=>webFlowUnityOnly?(item.unityWebDevelopment===true||(item.evidence||[]).includes('unity-web-first-stage')):item.target==='web';
+  const flowOwnerPolicy=centralPresentationPolicy(repoRoot)||{};
+  const webFlowPolicy=flowOwnerPolicy?.developmentSpeedExecution?.webGameFlow;
+  const ownerScope=flowOwnerPolicy?.ownerActiveDevelopmentScope20261009;
+  // Use the declared flow surface, not merely an ACTIVE owner scope: Web 3D now runs independently of held Unity.
+  const webFlowUnityOnly=webFlowPolicy?.scope==='UNITY_WEB_SAME_CANONICAL_UNITY_PROJECT';
+  const activeTargets=Array.isArray(ownerScope?.activeTargets)?ownerScope.activeTargets:[];
+  const authorizedWebFlow=ownerScope?.status!=='ACTIVE'
+    ||(webFlowUnityOnly
+      ?activeTargets.includes('UNITY_WEB')&&flowOwnerPolicy.developmentAccess?.UNITY_WEB==='ALWAYS_ALLOWED'
+      :activeTargets.includes('WEB')&&flowOwnerPolicy.developmentAccess?.WEB==='ALWAYS_ALLOWED');
+  const webFlowTarget=webFlowPolicy?.enabled===true&&authorizedWebFlow?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
+  const webFlowMatches=item=>webFlowUnityOnly
+    ?(item.unityWebDevelopment===true||(item.evidence||[]).includes('unity-web-first-stage'))
+    :(clean(item.target).toLowerCase()==='web'&&posix(item.sourceRoot).startsWith('web-games/')&&item.unityWebDevelopment!==true);
   const webFlowGames=new Set(developmentPool.filter(item=>webFlowMatches(item)&&item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)));
   const webSeedCapacity=Math.min(Math.max(0,webFlowTarget-webFlowGames.size),persistentCapacity);
   const distinctTarget=Math.max(0,Math.floor(Number(centralPresentationPolicy(repoRoot)?.developmentSpeedExecution?.distinctGameDevelopmentTarget)||0));
