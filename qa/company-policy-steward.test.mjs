@@ -159,9 +159,10 @@ test('F0 live planner uses verified main policy only at production call site, no
     '.github/workflows/vibe2-continuous-core.yml'
   ]){
     const content=fs.readFileSync(path.join(root,workflow),'utf8');
-    assert.ok(!content.includes('export COMPANY_VERIFIED_POLICY_PATH='),
-      'Production policy must not contaminate isolated QA fixtures');
-    assert.ok(content.includes('COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+    assert.ok(!content.includes('export COMPANY_VERIFIED_POLICY_PATH=') &&
+      !content.includes('export COMPANY_VERIFIED_DESIGN_POLICY_PATH='),
+      'Production policies must not contaminate isolated QA fixtures');
+    assert.ok(content.includes('COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json COMPANY_VERIFIED_DESIGN_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
     assert.ok(content.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
   }
   const clock=fs.readFileSync(path.join(root,'.github/workflows/vibe2-24h-runner.yml'),'utf8');
