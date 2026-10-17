@@ -46,6 +46,11 @@ on:
         type: boolean
         required: false
         default: false
+      download_music_assets:
+        description: 'CC0 배경음악 4종 원본 다운로드 및 검증 보관 (게임 자동적용 아님)'
+        type: boolean
+        required: false
+        default: false
       upload_actor_assets:
         description: '검증된 캐릭터·스켈레톤 CC0 GLB 9개만 등록 (범용 대체 모델 제외)'
         type: boolean
@@ -65,7 +70,7 @@ env:
 
 jobs:
   download_ui_assets:
-    if: ${{ (github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true)) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]'))) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true)) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-all-assets]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -150,7 +155,7 @@ jobs:
           set -euo pipefail
           node tools/simple-rpg-propose-verified-downloads.mjs external
   download_wildlife_assets:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_wildlife_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-wildlife]')) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_wildlife_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-all-assets]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -292,7 +297,7 @@ jobs:
           set -euo pipefail
           node tools/simple-rpg-propose-verified-downloads.mjs wildlife
   download_icons_vfx_npc:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_icons_vfx_npc == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-icons-vfx-npc]')) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_icons_vfx_npc == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-icons-vfx-npc]') || contains(github.event.head_commit.message, '[download-all-assets]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     permissions:
@@ -405,7 +410,7 @@ jobs:
           set -euo pipefail
           node tools/simple-rpg-propose-verified-downloads.mjs icons
   download_priority_cc0_assets:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_priority_cc0_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[priority-cc0-download]')) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_priority_cc0_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[priority-cc0-download]') || contains(github.event.head_commit.message, '[download-all-assets]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -443,6 +448,87 @@ jobs:
         run: |
           set -euo pipefail
           node tools/simple-rpg-propose-verified-downloads.mjs priority
+  download_music_assets:
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_music_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-all-assets]')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout existing asset repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          lfs: false
+      - name: Acquire and validate CC0 background music originals
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,pathlib,subprocess
+          folder=pathlib.Path('assets/external/simple-rpg/music')
+          folder.mkdir(parents=True,exist_ok=True)
+          license_page='https://opengameart.org/content/short-loops-background-music-pack'
+          sources=[
+            ('brand-new-wisdom.ogg','A%20Brand%20New%20Wisdom.ogg'),
+            ('just-saying-tho.ogg','Just%20Saying%20Tho.ogg'),
+            ('winter-dust.ogg','Winter%20Dust.ogg'),
+            ('swinging-sweet.ogg','Swinging%20Sweet.ogg'),
+          ]
+          manifest={'gameId':'simple-rpg','license':'CC0-1.0','sourceOnly':True,
+                    'gameApplied':False,'robloxImported':False,'packs':[],'failed':[]}
+          for filename,original in sources:
+            url='https://opengameart.org/sites/default/files/'+original
+            destination=folder/filename
+            partial=folder/(filename+'.part')
+            partial.unlink(missing_ok=True)
+            if not (destination.is_file() and destination.stat().st_size>2048 and
+                    destination.open('rb').read(4)==b'OggS'):
+              cmd=['curl','-fL','--proto','=https','--proto-redir','=https',
+                   '--retry','4','--retry-all-errors','--retry-delay','2',
+                   '--connect-timeout','12','--max-time','160',
+                   '--max-filesize','20971520','-o',str(partial),url]
+              proc=subprocess.run(cmd,capture_output=True)
+              if proc.returncode:
+                partial.unlink(missing_ok=True)
+                manifest['failed'].append({'file':filename,'reason':'DOWNLOAD_FAILED'})
+                print('MUSIC_DOWNLOAD_FAILED',filename,proc.returncode,flush=True)
+                continue
+              if not partial.is_file() or partial.stat().st_size<2048 or partial.stat().st_size>20971520 or partial.open('rb').read(4)!=b'OggS':
+                partial.unlink(missing_ok=True)
+                manifest['failed'].append({'file':filename,'reason':'INVALID_OGG'})
+                print('MUSIC_SOURCE_INVALID',filename,flush=True)
+                continue
+              partial.replace(destination)
+            blob=destination.read_bytes()
+            if not (2048<len(blob)<=20971520 and blob[:4]==b'OggS'):
+              manifest['failed'].append({'file':filename,'reason':'INVALID_OGG'})
+              continue
+            sha=hashlib.sha256(blob).hexdigest()
+            manifest['packs'].append({'file':filename,'role':'music','family':'AUDIO',
+              'bytes':len(blob),'sha256':sha,'sourceUrl':url,'licenseEvidenceUrl':license_page,
+              'licenseDeclared':'CC0-1.0','sourceOnly':True,'gameApplied':False})
+            print('MUSIC_CC0_VERIFIED',filename,len(blob),sha,flush=True)
+          (folder/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('MUSIC_CC0_SOURCE_COUNT='+str(len(manifest['packs'])),flush=True)
+          if manifest['failed'] or len(manifest['packs'])!=len(sources):
+            raise SystemExit('MUSIC_CC0_DOWNLOAD_INCOMPLETE')
+          PY
+      - name: Preserve verified original music artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-rpg-cc0-background-music
+          path: assets/external/simple-rpg/music/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Propose verified CC0 music for permanent library storage
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-propose-verified-downloads.mjs music
   upload_actor_assets:
     if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/'))) }}
     runs-on: ubuntu-latest
@@ -472,7 +558,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   publish:
-    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-icons-vfx-npc]') || contains(github.event.head_commit.message, '[priority-cc0-download]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true || inputs.download_icons_vfx_npc == true || inputs.download_priority_cc0_assets == true)) }}
+    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-icons-vfx-npc]') || contains(github.event.head_commit.message, '[priority-cc0-download]') || contains(github.event.head_commit.message, '[download-all-assets]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true || inputs.download_icons_vfx_npc == true || inputs.download_priority_cc0_assets == true || inputs.download_music_assets == true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:

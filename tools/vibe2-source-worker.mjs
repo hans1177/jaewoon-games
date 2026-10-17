@@ -6800,12 +6800,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   // 실물 해시를 통과하지 못한 파일은 게임용 라이브러리로 취급하지 않는다.
   if(applySource){
     const actions=order?.assetProduction?.assetSupplySummary?.nextActions||[];
-    const spatial3dFamilies=new Set(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN']);
+    // An asset family is never excluded from library hydration: 3D, 2D,
+    // music, UI, VFX and other license-cleared originals share one path.
     const chosen=actions.filter(row=>row?.action==='ACQUIRE_ADAPT'
-      &&spatial3dFamilies.has(clean(row.family).toUpperCase())
-      &&row?.externalAcquisition?.sourceFileMustBeReal3d===true
       &&clean(row?.externalAcquisition?.license).toUpperCase().replace('_','-')==='CC0-1.0'
-      &&/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz)$/.test(clean(row?.externalAcquisition?.localSourcePath))
+      &&/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|ogg|mp3|wav)$/.test(clean(row?.externalAcquisition?.localSourcePath))
       &&/^[0-9a-f]{64}$/i.test(clean(row?.externalAcquisition?.sourceHash))
       &&Number.isSafeInteger(Number(row?.externalAcquisition?.archiveBytes))
       &&Number(row?.externalAcquisition?.archiveBytes)>=512
@@ -6891,7 +6890,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         }
         const ok=verify(row);
         ready.set(rel,ok);
-        console.log('VIBE2_SELECTED_3D_ASSET_DOWNLOAD='+(ok?'VERIFIED:':lfsEligible.has(rel)?'PENDING:':'BLOCKED_INVALID_SOURCE:')+safeId(order.gameId)+':'+safeId(entry.sourceId));
+        console.log('VIBE2_SELECTED_ASSET_DOWNLOAD='+(ok?'VERIFIED:':lfsEligible.has(rel)?'PENDING:':'BLOCKED_INVALID_SOURCE:')+safeId(order.gameId)+':'+safeId(entry.sourceId));
       }
       order={...order,assetProduction:{...order.assetProduction,
         assetSupplySummary:{...order.assetProduction.assetSupplySummary,

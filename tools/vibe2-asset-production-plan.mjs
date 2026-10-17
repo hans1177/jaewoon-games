@@ -1314,7 +1314,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const declaredBytes=Number(row?.bytes);
       const license=clean(row?.licenseDeclared).toUpperCase();
       if(row?.sourceOnly!==true||row?.gameApplied!==false||license!=='CC0-1.0')continue;
-      if(!/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz)$/.test(relative)||relative.includes('..'))continue;
+      if(!/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|ogg|mp3|wav)$/.test(relative)||relative.includes('..'))continue;
       if(!/^[0-9a-f]{64}$/.test(declaredHash)||!Number.isSafeInteger(declaredBytes)||declaredBytes<512||seenSourceHashes.has(declaredHash))continue;
       if(!publicHttps(row?.sourceUrl)||!publicHttps(row?.licenseEvidenceUrl))continue;
       const localFile=path.resolve(repoRoot,relative);
@@ -1322,19 +1322,19 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const sourceFamily=clean(row.family).toUpperCase()||(
         role==='03-equipment'?(/potion|item|inventory/.test(name)?'PROP':'WEAPON'):
         role==='04-npc-buildings'?(/castle|house|village|hexagon/.test(name)?'BUILDING':'CHARACTER'):
-        role==='05-environment-sfx'?(/sfx|sound/.test(name)?'AUDIO':/fox/.test(name)?'CREATURE':'ENVIRONMENT'):
+        role==='05-environment-sfx'?(/sfx|sound|music|bgm|ambient-audio/.test(name)?'AUDIO':/fox/.test(name)?'CREATURE':'ENVIRONMENT'):
         role==='09-buildings'?'BUILDING':role==='12-dungeon-interiors'?'ENVIRONMENT':
         /^(?:0[1267]-|11-)/.test(role)||['monster','wildlife','aquatic','insect','prehistoric','invertebrate'].includes(role)?'CREATURE':
         /^(?:08-|10-)/.test(role)||role.includes('npc')?'CHARACTER':
         role==='vfx'?'VFX':role==='model'?'PROP':
         role==='png'||role.includes('ui')||role.includes('icon')?'UI':
-        role==='audio'||role==='sfx'?'AUDIO':'PROP');
+        role==='audio'||role==='sfx'||role==='music'||role==='bgm'||role==='soundtrack'?'AUDIO':'PROP');
       if(sourceFamily!==family)continue;
-      const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz)$/,''),role].join(' ').replace(/[-_]+/g,' ');
+      const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz|ogg|mp3|wav)$/,''),role].join(' ').replace(/[-_]+/g,' ');
       const matchedRoles=roles.filter(value=>terms.includes(value.replaceAll('_',' ')));
       if(roles.length&&!roles.every(value=>value==='generic')&&!matchedRoles.length)continue;
-      // Download is 3D-only. Existing non-3D originals remain eligible for
-      // reuse, but missing 2D/audio files never trigger network acquisition.
+      // All licensed library families, including music, UI, icons and VFX,
+      // can hydrate exact originals. Asset type never bypasses source QA.
       let localReady=false,needsHydration=false,corrupt=false;
       try{
         const info=fs.statSync(localFile);
@@ -1342,7 +1342,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         else if(info.size===declaredBytes){
           localReady=sharedArchiveSha256(localFile,info)===declaredHash;
           corrupt=!localReady;
-        }else if(info.size<=256 && spatialFamilies.has(family)){
+        }else if(info.size<=256){
           // A Git LFS pointer is not corrupt only when oid and size match
           // this canonical manifest exactly. Never repair a different binary.
           const pointer=fs.readFileSync(localFile,'utf8');
@@ -1351,7 +1351,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           corrupt=!needsHydration;
         }else{corrupt=true;}
       }catch(error){
-        if(error?.code==='ENOENT')needsHydration=spatialFamilies.has(family);
+        if(error?.code==='ENOENT')needsHydration=true;
         else corrupt=true;
       }
       if(corrupt||(!localReady&&!needsHydration))continue;
@@ -4487,12 +4487,12 @@ export function buildVibeAssetProductionPlan({
     for(const pack of sourceCatalog.packs){
       const file=clean(pack.file||pack.filename);
       const sha256=clean(pack.sha256).toLowerCase();
-      if(!/^[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz)$/.test(file)||file.includes('..'))continue;
+      if(!/^[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|ogg|mp3|wav)$/.test(file)||file.includes('..'))continue;
       if(!/^[0-9a-f]{64}$/.test(sha256)||scannedSourceHashes.has(sha256))continue;
       const license=clean(pack.licenseDeclared||pack.license||sourceCatalog.license).toUpperCase();
       if(!['CC0','CC0-1.0'].includes(license)||pack.gameApplied===true)continue;
       const sourceUrl=clean(pack.sourceUrl||pack.originalUrl||pack.sourcePage);
-      const licenseEvidenceUrl=clean(pack.licenseSourceUrl||pack.licenseEvidence||pack.sourcePage||pack.sourceUrl);
+      const licenseEvidenceUrl=clean(pack.licenseEvidenceUrl||pack.licenseSourceUrl||pack.licenseEvidence||pack.sourcePage||pack.sourceUrl);
       if(!sourceUrl||!licenseEvidenceUrl)continue;
       const bytes=Number(pack.bytes||pack.archiveBytes);
       if(!Number.isSafeInteger(bytes)||bytes<512)continue;
@@ -4500,7 +4500,8 @@ export function buildVibeAssetProductionPlan({
       sharedOriginalArchives.push({
         file,sourcePath:folder+file,sha256,bytes,sourceUrl,licenseEvidenceUrl,
         licenseDeclared:'CC0-1.0',sourceOnly:true,gameApplied:false,
-        role:clean(pack.priority||pack.category||pack.assetKind)||'general'
+        role:clean(pack.role||pack.priority||pack.category||pack.assetKind)||'general',
+        family:clean(pack.family)
       });
     }
   }
