@@ -427,8 +427,8 @@ test('reserve and worker no longer depend on downloaded local AI runtimes',()=>{
   const fanInStart=workflow.indexOf('\n  fan_in:',workerStart);
   assert.ok(reserveStart>=0&&workerStart>reserveStart&&fanInStart>workerStart);
   const workerPart=workflow.slice(workerStart,fanInStart);
-  assert.doesNotMatch(workflow,/uses:\\s*\\.\\/vibe2-contract\\/\\.github\\/actions\\/prepare-ollama/);
-  assert.doesNotMatch(workflow,/ollama pull|ollama serve|ollama\\.com\\/download/);
+  assert.doesNotMatch(workflow,/uses:\s*\.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
+  assert.doesNotMatch(workflow,/ollama pull|ollama serve|ollama\.com\/download/);
   assert.match(workerPart,/VIBE2_WORKER_PROVIDER=GEMINI_API/);
   assert.match(workerPart,/VIBE2_LOCAL_AI_ENABLED=NO/);
 });
@@ -1091,7 +1091,7 @@ test('worker never mutates shared queue state and only emits an atomic completio
 
 test('removed local Ollama action cannot be restored as a coding prerequisite',()=>{
   assert.equal(fs.existsSync(new URL('../.github/actions/prepare-ollama/action.yml',import.meta.url)),false);
-  assert.doesNotMatch(workflow,/uses:\\s*\\.\\/vibe2-contract\\/\\.github\\/actions\\/prepare-ollama/);
+  assert.doesNotMatch(workflow,/uses:\s*\.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
   assert.match(workflow,/VIBE2_WORKER_PROVIDER=GEMINI_API/);
   assert.match(workflow,/VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO/);
 });
