@@ -112,7 +112,26 @@ jobs:
             git worktree remove --force "$worktree" 2>/dev/null || true
             rm -rf "$worktree"
             git worktree add --detach "$worktree" "origin/$COMPANY_RUNTIME_BRANCH"
-            cp /tmp/platform-exposure/homepage-platform-exposure.json "$worktree/homepage-platform-exposure.json"
+            # Collection time alone is not a new verified gameplay or publication state.
+            # Preserve the prior exact JSON when only generatedAt differs; this avoids
+            # redundant company-runtime commits and downstream Homepage Manager runs.
+            if [ -f "$worktree/homepage-platform-exposure.json" ]; then
+              exposure_state="$(PREVIOUS_EXPOSURE="$worktree/homepage-platform-exposure.json" CANDIDATE_EXPOSURE=/tmp/platform-exposure/homepage-platform-exposure.json node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {reuseUnchangedHomepageExposure} from './tools/company-homepage-platform-exposure-sync.mjs';
+          const previous=JSON.parse(fs.readFileSync(process.env.PREVIOUS_EXPOSURE,'utf8'));
+          const candidate=JSON.parse(fs.readFileSync(process.env.CANDIDATE_EXPOSURE,'utf8'));
+          process.stdout.write(reuseUnchangedHomepageExposure(previous,candidate)===previous?'UNCHANGED':'UPDATED');
+          NODE
+              )"
+            else
+              exposure_state=UPDATED
+            fi
+            if [ "$exposure_state" = UPDATED ]; then
+              cp /tmp/platform-exposure/homepage-platform-exposure.json "$worktree/homepage-platform-exposure.json"
+            else
+              echo 'HOMEPAGE_EXPOSURE_SEMANTIC_NOOP=YES'
+            fi
             git -C "$worktree" add homepage-platform-exposure.json
             if git -C "$worktree" diff --cached --quiet; then pushed=1; break; fi
             git -C "$worktree" commit -m 'runtime: sync Roblox Unity platform exposure [skip ci]'
