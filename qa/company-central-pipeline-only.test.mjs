@@ -899,55 +899,19 @@ test('central planner skips retired Unity Web workflow scans',()=>{
 });
 
 
-test('shared Ollama cache serves model consumers while Unity settlement needs no model download',()=>{
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  const action=read('.github/actions/prepare-ollama/action.yml');
-  const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
-  const continuation=read('.github/workflows/company-development-roblox-runtime-continuation.yml');
-  const unity=read('.github/workflows/company-development-unity-runtime.yml');
-  const vibe=read('.github/workflows/vibe2-continuous-core.yml');
-  const centralQa=read('.github/workflows/company-central-policy-contract-qa.yml');
-  const change=roadmap.changeRecord?.sharedOllamaModelCache20260927;
-
-  assert.match(action,/cache-model:\n\s+description:[\s\S]{0,240}?default: 'false'/);
-  assert.match(action,/Resolve requested Ollama model cache key/);
-  assert.match(action,/safe_model=.*sed -E/);
-  assert.match(action,/uses: actions\/cache\/restore@v4/);
-  assert.match(action,/uses: actions\/cache\/save@v4/);
-  assert.match(action,/key: \$\{\{ steps\.model-cache-key\.outputs\.key \}\}/);
-  assert.match(action,/Save requested Ollama model cache immediately/);
-  assert.match(action,/continue-on-error: true/);
-  assert.ok(action.indexOf('Ensure requested local model')<action.indexOf('Save requested Ollama model cache immediately'));
-
-  for(const workflow of [roblox,continuation]){
-    assert.match(workflow,/cache-model: 'true'/);
+test('canonical production no longer installs local Ollama or caches downloaded models',()=>{
+  assert.equal(exists('.github/actions/prepare-ollama/action.yml'),false);
+  for(const file of [
+    '.github/workflows/vibe2-continuous-core.yml',
+    '.github/workflows/company-development-roblox-runtime.yml',
+    '.github/workflows/company-development-roblox-runtime-continuation.yml',
+    '.github/workflows/company-central-policy-contract-qa.yml'
+  ]){
+    const workflow=read(file);
+    assert.doesNotMatch(workflow,/uses:.*prepare-ollama|ollama pull|ollama serve|ollama\.com\/download/,file);
   }
-  assert.doesNotMatch(unity,/prepare-ollama|ollama pull/);
-  assert.match(vibe,/key: vibe2-ollama-v5-/);
-  assert.match(vibe,/runner\.os/);
-  assert.match(vibe,/runner\.arch/);
-  assert.match(vibe,/path: ~\/\.ollama\/models/);
-  assert.match(vibe,/jaewoon-ollama-cpu-runtime-v2-/);
-  assert.doesNotMatch(vibe,/\.cache\/vibe2-ollama\/bin/);
-  assert.doesNotMatch(vibe,/\.cache\/vibe2-ollama\/lib/);
-  assert.doesNotMatch(vibe,/cache-model: 'true'/);
-
-  assert.ok(centralQa.includes(".github/actions/prepare-ollama/action.yml"));
-  assert.ok(centralQa.includes(".github/workflows/company-development-roblox-runtime-continuation.yml"));
-  assert.equal(change?.cacheOptInDefault,false);
-  assert.equal(change?.saveTiming,'IMMEDIATELY_AFTER_REQUESTED_MODEL_IS_CONFIRMED_LOCAL');
-  assert.equal(change?.saveFailureBlocksDevelopment,false);
-  assert.equal(change?.existingVibe2DedicatedModelCacheUnchanged,true);
-  assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
-  assert.equal(architecture.sharedOllamaModelCache?.optInDefault,false);
-  assert.equal(architecture.sharedOllamaModelCache?.saveImmediatelyAfterRequestedModelReady,true);
-  assert.equal(logMap.sharedOllamaModelCacheEvidence?.cacheHitSkipsModelPull,true);
-  assert.equal(logMap.sharedOllamaModelCacheEvidence?.cacheSaveFailureMayBlockDevelopment,false);
+  assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_WORKER_PROVIDER=GEMINI_API/);
 });
-
-
 test('Unity Web actual play supplies boot proof without a duplicate browser smoke launch',()=>{
   const web=read('.github/workflows/unity-web-first-stage-build.yml');
   assert.match(web,/Prepare Unity Web browser runtime/);

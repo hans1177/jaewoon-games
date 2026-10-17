@@ -44,7 +44,6 @@ on:
     paths:
       - '.vibe2/**'
       - '.github/workflows/vibe2-*.yml'
-      - '.github/actions/prepare-ollama/**'
       - 'vibe2-runtime.json'
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
@@ -123,7 +122,6 @@ jobs:
       verified_learning_memory_file_sha256: ${{ steps.learning_memory.outputs.file_sha256 }}
       task_review_required: ${{ steps.batch.outputs.task_review_required }}
       stranded_review_run: ${{ steps.stranded_review.outputs.source_run }}
-      model_cache_hit: ${{ steps.ollama_cache_probe.outputs.cache-hit }}
     steps:
       - name: Drop stale reserve wake before reserve work
         id: main_wake
