@@ -369,6 +369,9 @@ test('blank-screen regression: playable server-backed HUD appears without an imp
   assert.match(client, /gui\.Parent = player:WaitForChild\("PlayerGui"\)/);
   assert.match(client, /attachNativeHud\(\)/);
   assert.match(client, /bindExternalButton\(button\)/);
+  assert.match(client, /tradePanel\.Name = "Trade"/);
+  assert.match(client, /togglePanel\("Trade"\)/);
+  assert.match(client, /for _, otherName in ipairs\(\{"Actions", "Inventory", "Races", "Trade"\}\) do/);
   assert.match(client, /local RaceData = require\(Shared:WaitForChild\("RaceData"\)\)/);
   for (const action of ['CivAttack', 'CivGather', 'CivParry', 'CivDodge', 'CivTravel', 'CivResearch', 'CivTimedCraft', 'CivCompanion', 'CivSelect'])
     assert.ok(client.includes('"' + action + '"'), action);
