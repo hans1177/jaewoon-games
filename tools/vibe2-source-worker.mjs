@@ -4278,7 +4278,7 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
     'Use a real WebGL 3D scene with depth-bearing mesh geometry, camera/projection, actual frame drawing, playable spatial input and visible player/world state changes. Reuse existing GLB/GLTF compatible spatial actor and animation bindings where applicable.',
     'Keep existing gameplay rules, balance, progression, multiplayer and save keys unchanged. Existing 2D Web sources stay intact until a real 3D replacement passes mobile rendering, input, save/load, runtime and regression QA. Never label unverified 3D as PASS.',
     '[GENERAL WEB TRUE 3D CODING METHOD END]'
-  ].join('\\n'):'';
+  ].join('\n'):'';
   const unityWeb3dCodingBlock=clean(order.target).toLowerCase()==='unity'
     &&(order.unityWebDevelopment===true||order.selectedTask?.firstStageUnityWeb===true
       ||(order.evidence||[]).some(value=>clean(value)==='unity-web-first-stage'))?[
