@@ -222,6 +222,7 @@ local worldTreeCave = Vector3.new(650, -32, 305)
 local worldTreeRegions = {}
 local worldTreeEnemies = {}
 local worldTreeCooldowns = {}
+local worldTreeReturnTimers = {}
 local worldTreeSnares = {}
 local worldTreeBoss = nil
 local worldTreeContainer = workspace:FindFirstChild("MagicForestWorldTree")
@@ -411,6 +412,7 @@ local caveExit = worldPart(cave, "ReturnToTrunk", Vector3.new(12, 9, 2), CFrame.
 worldPrompt(caveExit, "세계수 내부로 올라가기", function(player)
   if worldTreeRegions[player] ~= "underground" then return end
   if worldTreeBoss and worldTreeBoss.hp > 0 then worldNotice(player, "보스전 중에는 나갈 수 없어") return end
+  if worldTreeReturnTimers[player] then worldNotice(player, "보스 처치 완료 · 곧 지상 복귀") return end
   setWorldArea(player, "interior", worldTreeCenter + Vector3.new(0, 0, -67))
 end)
 local altar = worldPart(cave, "AncientRootAltar", Vector3.new(15, 5, 15), CFrame.new(worldTreeCave + Vector3.new(0, 1, -3)), worldGold, Enum.Material.Slate, true, Enum.PartType.Cylinder)
@@ -560,7 +562,17 @@ local function worldBossReward()
         player:SetAttribute("WorldTreeBossClears", (player:GetAttribute("WorldTreeBossClears") or 0) + 1)
         player:SetAttribute("SovereignCores", (player:GetAttribute("SovereignCores") or 0) + math.random(2, 3))
         player:SetAttribute("ForestWoodenSwords", (player:GetAttribute("ForestWoodenSwords") or 0) + 1)
-        worldNotice(player, "녹스바르 처치 · 근원포식자 핵 2~3개, 숲의 목검 획득")
+        worldNotice(player, "녹스바르 처치 · 근원포식자 핵 2~3개, 숲의 목검 획득 · 10초 뒤 지상 복귀")
+        -- 보스 처치 후 원본의 복귀 대기를 서버에서 처리해 중복 소환/보상을 막는다.
+        local token = {}
+        worldTreeReturnTimers[player] = token
+        task.delay(10, function()
+          if worldTreeReturnTimers[player] ~= token then return end
+          worldTreeReturnTimers[player] = nil
+          if player.Parent == Players and worldTreeRegions[player] == "underground" then
+            setWorldArea(player, "surface", Vector3.new(93, 1, 71))
+          end
+        end)
       end
     end
   end
@@ -568,6 +580,7 @@ end
 
 worldPrompt(altar, "고대 뿌리 1개로 보스 소환", function(player)
   if worldTreeRegions[player] ~= "underground" then return end
+  if worldTreeReturnTimers[player] then worldNotice(player, "보스 처치 완료 · 곧 지상으로 복귀해") return end
   if worldTreeBoss and worldTreeBoss.alive then worldNotice(player, "이미 보스가 소환되어 있어") return end
   if (player:GetAttribute("WorldTreeRoots") or 0) < 1 then worldNotice(player, "제단에 바칠 고대 뿌리 필요") return end
   player:SetAttribute("WorldTreeRoots", (player:GetAttribute("WorldTreeRoots") or 0) - 1)
@@ -738,6 +751,7 @@ Players.PlayerRemoving:Connect(function(player)
   lastAction[player] = nil
   worldTreeRegions[player] = nil
   worldTreeCooldowns[player] = nil
+  worldTreeReturnTimers[player] = nil
   clearWorldSnare(player)
 end)
 
@@ -788,6 +802,7 @@ local function bindNativeFoundationCharacter(character)
   local rootPart = character:WaitForChild("HumanoidRootPart")
   local owner = Players:GetPlayerFromCharacter(character)
   if owner then clearWorldSnare(owner) end
+  if owner then worldTreeReturnTimers[owner] = nil end
   if owner then
     worldTreeRegions[owner] = "surface"
     owner:SetAttribute("WorldTreeArea", "surface")
