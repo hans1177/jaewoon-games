@@ -5339,6 +5339,7 @@ test('verified MAIN/A/B/C/D/@ makes general Web 2D-to-3D the first source task w
     const file=path.join(root,'company-learning/platform-release-roadmap.json');
     const policy=JSON.parse(fs.readFileSync(file,'utf8'));
     policy.status='OWNER_DIRECT_LOCKED';
+    policy.ownerActiveDevelopmentScope20261009={generalWeb3dOnlyRequired:true};
     policy.developmentAccess={ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'};
     fs.writeFileSync(file,JSON.stringify(policy));
     const project={gameId,engine:'web',name:'Web Upgrade',releaseState:'development-confirmed',projectPath:'web-games/'+gameId};
@@ -5347,9 +5348,11 @@ test('verified MAIN/A/B/C/D/@ makes general Web 2D-to-3D the first source task w
     fs.writeFileSync(path.join(webRoot,'index.html'),'<html><canvas></canvas><style>.world { transform:rotateX(45deg); }</style><script>const view = 1;</script></html>'.repeat(10));
     assert.deepEqual(findSafeTasks(project,root,{tasks:[]}),[],'missing design must not mutate the game');
     writeStudioDesign(root,gameId);
-    const work=findSafeTasks(project,root,{tasks:[]});
+    const assessment=findSafeTasks(project,root,{tasks:[]});
+    assert.match(assessment[0]?.id||'',/existing-web-assessment/,'canonical Web assessment must remain first');
+    const work=findSafeTasks(project,root,{tasks:[{...assessment[0],status:'verified'}]});
     assert.equal(work[0]?.target,'web');
-    assert.ok(work[0]?.evidence?.includes('web3d-upgrade:first-priority'));
+    assert.ok(work[0]?.evidence?.includes('web3d-upgrade:first-after-canonical-web-assessment'));
     assert.match(work[0].goal,/CANONICAL_ORIGINAL_TO_WEB_3D/);
     assert.match(work[0].goal,/WEBGL_RENDERER_REQUIRED/,'CSS fake 3D must not pass');
     assert.deepEqual(work[0].responsibleFiles,['web-games/'+gameId+'/index.html']);
