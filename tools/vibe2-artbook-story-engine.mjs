@@ -1,3 +1,4 @@
+import {requestGeminiFreePair,GEMINI_FREE_MODELS} from './vibe2-gemini-free-rotation.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { clean, clip, REQUIRED_STAGES, gameplayEvidenceSnippets, buildFallbackSeed, expandCompactSeed, validExpandedDraft } from './vibe2-artbook-story-core.mjs';
@@ -56,7 +57,7 @@ const combined=sourceFiles.map(f=>`\n### ${f.path}\n${f.text}`).join('\n').slice
 const evidenceSnippets=gameplayEvidenceSnippets(combined,{max:32,radius:150});
 const gameFactPack=buildGameFactPack({gameId,gameName,genreText,files:sourceFiles});
 const compactFactPack=factPackPromptView(gameFactPack);
-const model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:0.6b'),minimumPages=complexityMinimumPages();
+const model=GEMINI_FREE_MODELS.join('|'),minimumPages=complexityMinimumPages();
 const DIRECTION_IDS=['A','B','C'];
 function normalizeCreativeDirections(rows){
   if(!Array.isArray(rows))return[];
@@ -132,9 +133,8 @@ async function callCompact(){
   for(let attempt=1;attempt<=2;attempt++){
     try{
       const payload={gameId,gameName,genre:genreText,sourceMode,minimumRecommendedPages:minimumPages,seedNovelGameGrammar,gameFactPack:compactFactPack,evidenceSnippets:evidenceSnippets.slice(0,attempt===1?18:10)};
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,think:false,format:compactSchema,messages:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload)}],options:{temperature:attempt===1?0.24:0.12,seed:8100+attempt,num_ctx:6144,num_predict:1800}})});
-      if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-      const packet=await response.json(),text=clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'');
+      const response=await requestGeminiFreePair({apiKey:process.env.GEMINI_API_KEY,contents:[{role:'user',parts:[{text:[{role:'system',content:system},{role:'user',content:JSON.stringify(payload)}].map(row=>row.role.toUpperCase()+': '+row.content).join('\n\n')}]}],responseMimeType:'application/json',temperature:attempt===1?0.24:0.12,maxOutputTokens:1800,timeoutMs:120000});
+      const packet=response,text=clean(packet?.text).replace(/^```json\s*/i,'').replace(/```$/,'');
       const parsed=JSON.parse(text),normalized=normalizeCompactSeedStages(parsed);
       if(!normalized.valid)throw new Error(`compact ${normalized.reason}`);
       normalized.seed.creativeDirections=normalizeCreativeDirections(normalized.seed.creativeDirections);
@@ -148,7 +148,7 @@ async function callCompact(){
       if(semantic.length)throw new Error(`semantic quality: ${semantic.join(',')}`);
       if(normalized.normalized)console.error(`VIBE2_COMPACT_STAGE_LABELS_NORMALIZED=${normalized.originalStages.join('>')}`);
       return {seed:normalized.seed,attempt,stageLabelsNormalized:normalized.normalized,originalStages:normalized.originalStages};
-    }catch(error){last=error;console.error(`VIBE2_COMPACT_RETRY=${attempt}:${error.message}`);}
+    }catch(error){if(error?.vibe2InfrastructureFailure===true)throw error;last=error;console.error(`VIBE2_COMPACT_RETRY=${attempt}:${error.message}`);}
   }
   return {seed:{...buildFallbackSeed({gameName,genreText,minimumPages}),creativeDirections:fallbackCreativeDirections()},attempt:2,fallbackReason:clean(last?.message||'compact generation failed'),stageLabelsNormalized:false,originalStages:null};
 }
@@ -159,7 +159,7 @@ draft.storySpine={...(draft.storySpine||{}),creativeDirections:draft.creativeDir
 draft.generationMode=generated.fallbackReason?'DETERMINISTIC_FALLBACK':'COMPACT_MODEL_PLUS_DETERMINISTIC_EXPANSION';
 draft.fallbackReason=generated.fallbackReason||null;
 draft.seedNovelGameGrammar=seedNovelGameGrammar;
-draft.runner={type:'vibe2-local-open-model-compact-first-draft',model,localInference:true,paidApi:false,apiKeyRequired:false,modelAttempts:generated.attempt,stageLabelsNormalized:generated.stageLabelsNormalized===true,originalStageLabels:generated.originalStages||null,stages:['DETERMINISTIC_GAME_FACT_PACK','COMPACT_CAUSALITY_SEED','THREE_CREATIVE_DIRECTIONS','DETERMINISTIC_STAGE_LABEL_NORMALIZATION','DETERMINISTIC_EXPANSION','QUEST_GRAPH','FORESHADOWING_PAYOFF_GRAPH','CHARACTER_PERSONA_VOICE_MEMORY','WORLD_NARRATIVE_BINDING','SEMANTIC_GROUNDING_GATE','TECHNICAL_NARRATIVE_FILTER']};
+draft.runner={type:'vibe2-external-gemini-free-compact-first-draft',model,localInference:false,paidApi:false,apiKeyRequired:true,modelAttempts:generated.attempt,stageLabelsNormalized:generated.stageLabelsNormalized===true,originalStageLabels:generated.originalStages||null,stages:['DETERMINISTIC_GAME_FACT_PACK','COMPACT_CAUSALITY_SEED','THREE_CREATIVE_DIRECTIONS','DETERMINISTIC_STAGE_LABEL_NORMALIZATION','DETERMINISTIC_EXPANSION','QUEST_GRAPH','FORESHADOWING_PAYOFF_GRAPH','CHARACTER_PERSONA_VOICE_MEMORY','WORLD_NARRATIVE_BINDING','SEMANTIC_GROUNDING_GATE','TECHNICAL_NARRATIVE_FILTER']};
 draft.sourceMode=sourceMode;draft.evidenceFiles=evidenceFiles.slice(0,24);draft.evidenceSnippets=evidenceSnippets.slice(0,32);
 if(!validExpandedDraft(draft))throw new Error('Vibe2 draft quality contract failed after compact expansion');
 applyDraft(draft);
