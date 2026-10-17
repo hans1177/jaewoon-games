@@ -5235,11 +5235,32 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.equal(task.buildUpDirective.effectivenessMeasurement.previousGeneration.runtimeObserved,false);
   assert.equal(task.buildUpDirective.autonomousContentExpansion.executionMode,'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT');
   assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
+  assert.equal(task.priority,'critical','exact F0 source repair outranks cosmetic evolution');
+  assert.ok(task.evidence.includes('roblox-f0-preflight-and-release-gates:unchanged'));
   assert.ok(task.goal.includes(hint));
   assert.ok(task.goal.includes(fallback.mode));
   assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/server/Game.server.luau`));
   assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
   assert.ok(task.responsibleFiles.every(file=>!file.includes('..')&&!file.includes('assets/library.luau')));
+
+  // Production failures from multiple games point only to a shared material
+  // preset module. That module cannot fix a missing world material consumer.
+  const presetOnlyEvidence={...evidence,assetThreshold:{...evidence.assetThreshold,
+    familyResults:[{family:'MATERIAL',responsibleFiles:['shared/RobloxCommonMaterials.luau']}]}};
+  const presetOnly=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog,developmentQueue:{items:[{...item,robloxQualityBuildUpEvidence:presetOnlyEvidence}]},
+    queue:{maxConcurrentTasks:20,tasks:[]},repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,
+    planningBacklogTarget:5,planningBacklogMinimum:0
+  });
+  const materialTask=presetOnly.tasks.find(row=>row.gameId===gameId
+    &&row.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure?.authority===evidence.authority);
+  assert.ok(materialTask,'verified package failure must still reach an existing Vibe task');
+  assert.ok(materialTask.responsibleFiles.includes(`roblox-games/${gameId}/server/Game.server.luau`));
+  assert.equal(materialTask.responsibleFiles.includes(`roblox-games/${gameId}/shared/RobloxCommonMaterials.luau`),false,
+    'game worker must not patch shared material presets instead of fixing native consumption');
+  assert.match(materialTask.goal,/F0_MATERIAL_CONSUMER_REPAIR/);
+  assert.match(materialTask.goal,/Re-run the unchanged package asset threshold/);
+  assert.ok(materialTask.evidence.includes('f0-package-threshold-must-revalidate'));
 
   const contractEvidence={...evidence,authority:'roblox-source-static-contract-failure',assetThreshold:undefined,
     staticContract:{pass:false,blockers:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']},
@@ -5251,6 +5272,7 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.ok(contractTask,'static contract failure must reach actual existing Vibe source repair');
   assert.equal(contractTask.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
   assert.equal(contractTask.buildUpNextAction,'CAUSAL_REPAIR');
+  assert.equal(contractTask.priority,'critical','exact design/source contract repair must be prioritized without changing design');
   for(const owner of ['server','client','shared'])assert.ok(contractTask.responsibleFiles.includes(`roblox-games/${gameId}/${owner}/${owner==='shared'?'GameConfig':'Game.'+owner}.luau`));
 
   fs.appendFileSync(path.join(gameRoot,'server','Game.server.luau'),'\n-- completed repair changed the exact game source tree\n');
