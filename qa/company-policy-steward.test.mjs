@@ -26,45 +26,49 @@ function fixture(fn){
     return fn(tmp);
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 }
-test('four canonical files stay immutable during steward audit',()=>fixture(tmp=>{
-  const original=paths.map(p=>fs.readFileSync(path.join(tmp,p),'utf8'));
-  const result=auditFourPolicyDocuments({root:tmp});
-  assert.equal(result.managedDocuments.length,4);
-  assert.equal(result.writesAllowed,false);
-  assert.equal(result.nonBlockingAudit,true);
-  assert.equal(result.securityAndReleaseChecksUnchanged,true);
-  assert.deepEqual(paths.map(p=>fs.readFileSync(path.join(tmp,p),'utf8')),original);
+test('four existing documents stay bit-for-bit immutable',()=>fixture(tmp=>{
+  const originals=paths.map(p=>fs.readFileSync(path.join(tmp,p),'utf8'));
+  const audit=auditFourPolicyDocuments({root:tmp});
+  assert.deepEqual(audit.managedDocuments,paths);
+  assert.equal(audit.writesAllowed,false);
+  assert.equal(audit.nonBlockingAudit,true);
+  assert.equal(audit.securityAndReleaseChecksUnchanged,true);
+  assert.deepEqual(paths.map(p=>fs.readFileSync(path.join(tmp,p),'utf8')),originals);
 }));
-test('latest approved owner scope resolves conflicting old development access in memory only',()=>fixture(tmp=>{
-  const file=path.join(tmp,paths[0]);
-  const doc=JSON.parse(fs.readFileSync(file,'utf8'));
+test('latest approved owner scope wins over stale legacy access only in audit',()=>fixture(tmp=>{
+  const p=path.join(tmp,paths[0]);
+  const doc=JSON.parse(fs.readFileSync(p,'utf8'));
   doc.developmentAccess.ROBLOX='OWNER_HOLD';
-  fs.writeFileSync(file,JSON.stringify(doc));
-  const before=fs.readFileSync(file,'utf8');
-  const result=auditFourPolicyDocuments({root:tmp});
-  assert.equal(result.effectiveDevelopmentAccess.ROBLOX,'ALWAYS_ALLOWED');
-  assert.ok(result.staleLegacyPolicyFields.includes('ROBLOX'));
-  assert.equal(fs.readFileSync(file,'utf8'),before);
+  fs.writeFileSync(p,JSON.stringify(doc));
+  const before=fs.readFileSync(p,'utf8');
+  const audit=auditFourPolicyDocuments({root:tmp});
+  assert.equal(audit.effectiveDevelopmentAccess.ROBLOX,'ALWAYS_ALLOWED');
+  assert.ok(audit.staleLegacyPolicyFields.includes('ROBLOX'));
+  assert.equal(fs.readFileSync(p,'utf8'),before);
 }));
-test('newer approved owner directive wins when changed in canonical roadmap',()=>fixture(tmp=>{
-  const file=path.join(tmp,paths[0]);
-  const doc=JSON.parse(fs.readFileSync(file,'utf8'));
-  doc.ownerActiveDevelopmentScope20261009.authority='OWNER_DIRECTIVE_2026-10-18_NEW_SCOPE';
-  doc.ownerActiveDevelopmentScope20261009.activeTargets=['WEB'];
-  doc.ownerActiveDevelopmentScope20261009.ownerHeldTargets=['ROBLOX','UNITY_WEB'];
-  fs.writeFileSync(file,JSON.stringify(doc));
-  const result=auditFourPolicyDocuments({root:tmp});
-  assert.equal(result.ownerDirective,'OWNER_DIRECTIVE_2026-10-18_NEW_SCOPE');
-  assert.equal(result.effectiveDevelopmentAccess.ROBLOX,'OWNER_HOLD');
-  assert.equal(result.effectiveDevelopmentAccess.WEB,'ALWAYS_ALLOWED');
+test('a newer approved owner directive supersedes the old scope without changing game code',()=>fixture(tmp=>{
+  const p=path.join(tmp,paths[0]);
+  const doc=JSON.parse(fs.readFileSync(p,'utf8'));
+  doc.ownerNextDevelopment={authority:'OWNER_DIRECTIVE_2026-10-18_WEB_ONLY',status:'ACTIVE',activeTargets:['WEB'],ownerHeldTargets:['ROBLOX','UNITY_WEB']};
+  fs.writeFileSync(p,JSON.stringify(doc));
+  const audit=auditFourPolicyDocuments({root:tmp});
+  assert.equal(audit.latestOwnerSection,'ownerNextDevelopment');
+  assert.equal(audit.effectiveDevelopmentAccess.ROBLOX,'OWNER_HOLD');
+  assert.equal(audit.effectiveDevelopmentAccess.WEB,'ALWAYS_ALLOWED');
 }));
-test('invalid policy, missing source, conflicting owner scope fail closed',()=>fixture(tmp=>{
-  const file=path.join(tmp,paths[0]);
-  const doc=JSON.parse(fs.readFileSync(file,'utf8'));
-  doc.ownerActiveDevelopmentScope20261009.activeTargets=['WEB'];
-  doc.ownerActiveDevelopmentScope20261009.ownerHeldTargets=['WEB'];
-  fs.writeFileSync(file,JSON.stringify(doc));
+test('invalid, missing or contradictory approved policy never authorizes work',()=>fixture(tmp=>{
+  const p=path.join(tmp,paths[0]);
+  const doc=JSON.parse(fs.readFileSync(p,'utf8'));
+  doc.ownerActiveDevelopmentScope20261009.ownerHeldTargets.push('ROBLOX');
+  fs.writeFileSync(p,JSON.stringify(doc));
   assert.throws(()=>auditFourPolicyDocuments({root:tmp}),/OWNER_SCOPE_INVALID/);
-  fs.unlinkSync(file);
+  fs.unlinkSync(p);
   assert.throws(()=>auditFourPolicyDocuments({root:tmp}));
+}));
+test('ambiguous equally recent owner instructions are not silently merged',()=>fixture(tmp=>{
+  const p=path.join(tmp,paths[0]);
+  const doc=JSON.parse(fs.readFileSync(p,'utf8'));
+  doc.ownerConflictingScope={status:'ACTIVE',authority:'OWNER_DIRECTIVE_2026-10-17_SECOND_SAME_DAY',activeTargets:['UNITY'],ownerHeldTargets:['WEB']};
+  fs.writeFileSync(p,JSON.stringify(doc));
+  assert.throws(()=>auditFourPolicyDocuments({root:tmp}),/SAME_DATE_OWNER_CONFLICT/);
 }));
