@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {createVibePortableImpactCue} from '../assets/vibe-presentation-director.js';
 import {
   createVibeArtPipeline,
   createVibeGraphicsProduction,
@@ -299,6 +300,15 @@ test('cat-step renders real local 3D world without replacing its jump loop or sa
   assert.match(html,/fetch\('\/assets\/shared\/homely-house\/tree\.obj'\)/);
   assert.match(html,/geometry\.computeVertexNormals\(\)/);
   assert.match(html,/renderer\.render\(scene,camera\)/);
+  assert.match(html,/import \{createVibePortableImpactCue\} from '\/assets\/vibe-presentation-director\.js'/);
+  assert.match(html,/function emitImpact\(event\)/);
+  assert.match(html,/function updateImpacts\(now\)/);
+  assert.match(html,/new THREE\.InstancedMesh\(/);
+  assert.match(html,/new THREE\.TorusGeometry\(/);
+  assert.match(html,/particlePool=Array\.from\(\{length:18\}/);
+  assert.match(html,/\.controls button \.icon/);
+  assert.match(html,/@media\(prefers-reduced-motion:reduce\)/);
+  assert.match(html,/aria-live="polite"/);
   assert.match(html,/const mobile=matchMedia\('\(pointer: coarse\)'\)\.matches/);
   assert.match(html,/Math\.min\(devicePixelRatio\|\|1,mobile\?1:1\.5\)/);
   assert.match(html,/if\(document\.hidden\)/);
@@ -314,5 +324,24 @@ test('cat-step renders real local 3D world without replacing its jump loop or sa
   assert.doesNotMatch(html,/https?:\/\//);
   const script=html.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1]||'';
   assert.ok(script.length>8000);
-  assert.doesNotThrow(()=>new Function(script.replace(/^import \* as THREE from '[^']+';/m,'')));
+  assert.doesNotThrow(()=>new Function(script.replace(/^import .*$/gm,'')));
+});
+
+test('genre-neutral commercial impact cues are presentation-only, deterministic and bounded on mobile',()=>{
+  for(const [event,type] of [['success','land'],['damage','miss'],['level','milestone'],['spawn','start'],['attack','jump']]){
+    const cue=createVibePortableImpactCue({event,mobile:true});
+    assert.equal(cue.semantic,type);
+    assert.equal(cue.authority,'presentation-only');
+    assert.equal(cue.gameplayMutationAllowed,false);
+    assert.ok(cue.particles<=12);
+    assert.ok(cue.durationMs<=610);
+    assert.equal(cue.pooledGeometry,true);
+    assert.deepEqual(cue,createVibePortableImpactCue({event,mobile:true}));
+    assert.deepEqual(cue.protected,['damage','reward','speed','timer','collision','save','progression']);
+  }
+  const reduced=createVibePortableImpactCue({event:'victory',reducedMotion:true,mobile:true});
+  assert.equal(reduced.particles,0);
+  assert.equal(reduced.cameraPulse,0);
+  assert.equal(reduced.iconMotion,'none');
+  assert.equal(createVibePortableImpactCue({event:'victory',mobile:false}).particles,18);
 });
