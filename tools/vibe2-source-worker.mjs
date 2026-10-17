@@ -6408,7 +6408,7 @@ export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile
   }
   if(images.length)throw new Error('GEMINI_IMAGE_INPUT_ADAPTER_NOT_VERIFIED');
   const key=clean(process.env.GEMINI_API_KEY);
-  if(!key)throw new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
+  if(!key)throw Object.assign(new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK'),{vibe2InfrastructureFailure:true});
   const {text}=await requestGeminiFreePair({
     apiKey:key,
     contents:[{role:'user',parts:[{text:String(prompt)}]}],
