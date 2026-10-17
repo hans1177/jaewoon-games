@@ -318,7 +318,7 @@ end)
 -- 몬스터 · 세계수 곰 기존 수치 보존, 중립 골렘은 피격 후 반격
 local treeSpecies = {
   {id = "worldtreebear", name = "세계수 곰", hp = 380, damage = 28, speed = 8, radius = 5, neutral = false, tint = Color3.fromRGB(99, 71, 49)},
-  {id = "worldtreegolem", name = "세계수 골렘", hp = 586, damage = 48, speed = 5, radius = 6, neutral = true, tint = Color3.fromRGB(88, 112, 75)},
+  {id = "worldtreegolem", name = "세계수 골렘", hp = 586, damage = 48, tier = 3, speed = 5, radius = 6, neutral = true, tint = Color3.fromRGB(88, 112, 75)},
   {id = "worldtreesnake", name = "세계수 뱀", hp = 300, damage = 25, speed = 11, radius = 3, neutral = false, tint = Color3.fromRGB(55, 130, 77)}
 }
 local treeMobs = {}
@@ -343,9 +343,9 @@ local function makeTreeMonster(spec, position)
   text.TextScaled = true
   text.TextStrokeTransparency = 0.2
   text.TextColor3 = Color3.fromRGB(236, 250, 217)
-  text.Text = spec.name .. (spec.neutral and " · 중립" or "")
+  text.Text = spec.name .. (spec.tier and (" · " .. spec.tier .. "티어") or "") .. (spec.neutral and " · 중립" or "")
   text.Parent = label
-  local mob = {type = spec, model = model, body = body, spawn = position, health = spec.hp, hostile = not spec.neutral, hitAt = 0, rootsAt = 0, alive = true, label = text}
+  local mob = {type = spec, model = model, body = body, spawn = position, health = spec.hp, hostile = not spec.neutral, hitAt = 0, rootsAt = os.clock(), alive = true, label = text}
   table.insert(treeMobs, mob)
   return mob
 end
