@@ -4571,6 +4571,35 @@ test('web two-game planning floor fills a native backlog without duplicating gam
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('owner-active general Web 3D fills browser-native slots without starting held Unity',()=>{
+  const root=tempRepo();
+  try{
+    const policyPath=path.join(root,'company-learning/platform-release-roadmap.json');
+    const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+    policy.developmentAccess={ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'};
+    policy.ownerActiveDevelopmentScope20261009={status:'ACTIVE',activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY_WEB','UNITY_ANDROID']};
+    policy.developmentSpeedExecution={webGameFlow:{enabled:true,targetConcurrentGames:2,scope:'GENERAL_WEB_HTML_JS_TRUE_3D'}};
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    for(const id of ['dev-web','third-web'])writeStudioDesign(root,id);
+    const native={id:'held-unity',gameId:'demo',target:'unity',department:'development',type:'implementation',goal:'preserve held work',status:'running',sourceRoot:'unity-games/demo',responsibleFiles:['unity-games/demo/Assets/Scripts/GameCore.cs']};
+    const args={repoRoot:root,status,catalog,queue:{tasks:[native]},maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0};
+    const first=planVibe2AutonomousTasks(args);
+    const webGames=[...new Set(first.tasks.filter(row=>row.target==='web').map(row=>row.gameId))].sort();
+    assert.deepEqual(webGames,['dev-web','third-web'],'ordinary Web source must satisfy the Web floor under active owner scope');
+    assert.equal(first.planningBacklog.webGameFlow.shortfall,0);
+    assert.ok(first.tasks.every(row=>!String(row.sourceRoot||'').startsWith('unity-games/')),'held Unity is not new production');
+    const again=planVibe2AutonomousTasks({...args,queue:first.queue});
+    assert.equal(again.planningBacklog.webGameFlow.shortfall,0,'already-reserved ordinary Web games count toward the floor');
+    assert.equal(again.tasks.filter(row=>row.target==='web').length,0,'do not queue the same Web games twice');
+    policy.developmentAccess.WEB='OWNER_HOLD';
+    policy.ownerActiveDevelopmentScope20261009.activeTargets=['ROBLOX'];
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    const held=planVibe2AutonomousTasks(args);
+    assert.equal(held.planningBacklog.webGameFlow.target,0,'owner-held Web must not reserve phantom slots');
+    assert.equal(held.tasks.some(row=>row.target==='web'),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('unfinished source joins planning without design PASS and owner hold does not fill the backlog',()=>{
   const root=tempRepo();
   try{
