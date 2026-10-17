@@ -65,14 +65,25 @@ export const EXISTING_WEB_STRATEGIES=Object.freeze(['KEEP_AND_CONTINUE','PARTIAL
 
 // DEVELOPMENT_CONFIRMED is a native production state, not a Web release claim.
 // Publicly playable Web entries still require validation during an owner development hold.
-export function selectDevelopmentWebValidationGames({catalog={},policy={}}={}){
+export function selectDevelopmentWebValidationGames({catalog={},policy={},webSourceExists=null}={}){
+  // 메인 · 브라우저 검사는 실제 웹 엔트리 또는 웹 개발/플레이를 명시한 게임에만 실행한다.
+  // 웹 실행을 주장하는 항목은 파일 누락이어도 반드시 검사 대상에 남겨 FAIL로 처리한다.
+  // Roblox 전용 게임의 웹 실행 파일 누락을 가짜 HTML/게임으로 채우거나 전체 QA를 생략하지 않는다.
   const scope=policy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||policy.ownerActiveDevelopmentScope20261009;
   const webDevelopmentHeld=scope?.status==='ACTIVE'
     &&!['WEB','UNITY_WEB'].some(target=>(scope.activeTargets||[]).includes(target));
-  return(catalog.games||[]).filter(game=>
-    clean(game.productionClass).toUpperCase()==='DEVELOPMENT_CONFIRMED'
-    &&(!webDevelopmentHeld||game.homepageWebPlayable===true||game.canonical?.sources?.web?.playable===true)
-  );
+  return(catalog.games||[]).filter(game=>{
+    if(clean(game.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
+    const publiclyPlayable=game.homepageWebPlayable===true||game.canonical?.sources?.web?.playable===true;
+    if(webDevelopmentHeld)return publiclyPlayable;
+    // QA가 물리적 파일 존재를 확인할 수 있으면 기존 WEB 게임은 검사하고,
+    // 파일이 없는 비-웹 대상은 건너뛰되 웹 출시/개발을 주장한 항목은 실패시킨다.
+    if(typeof webSourceExists==='function'){
+      const explicitlyWeb=clean(game.selectedPlatform||game.canonical?.production?.selectedPlatform).toUpperCase()==='WEB';
+      return publiclyPlayable||explicitlyWeb||webSourceExists(game)===true;
+    }
+    return true;
+  });
 }
 
 export function assessExistingWebSource({html='',baseline={},approvedDesign=false,validationScore=null,sourceExists=true}={}){

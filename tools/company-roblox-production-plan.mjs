@@ -135,7 +135,23 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
     totalPlannedActorCount:worldProposal.livingBiomePopulation?.plannedActorCount||0,
     nativeLifeAndWaterRuntimeVerified:false,
     landmark:worldProposal.landmark||null,sightline:worldProposal.sightline||null,
-    budget:worldProposal.mobileBudget||null,fullTerrainOrNativeMeshDelivered:false
+    budget:worldProposal.mobileBudget||null,
+    // 승인된 방·문 제약 도안은 기존 Roblox/일반 WEB 월드 소스 작업자에게만 전달한다.
+    // 네이티브 배치와 실제 런타임 검증은 원래 BUILD_UP 책임이며 여기서 PASS로 승격하지 않는다.
+    ...(['ROBLOX','WEB'].includes(platform)&&worldProposal.roomComposition?{
+      roomComposition:{
+        status:worldProposal.roomComposition.status,
+        algorithm:worldProposal.roomComposition.algorithm||null,
+        cells:worldProposal.roomComposition.cells,
+        route:worldProposal.roomComposition.route,
+        statesExamined:worldProposal.roomComposition.statesExamined||0,
+        nativePlacementRequired:true,gameplayAuthority:false,runtimeVerified:false
+      }
+    }:{}),
+    ...(['ROBLOX','WEB'].includes(platform)&&worldProposal.terrainMorphology?{
+      terrainMorphology:worldProposal.terrainMorphology
+    }:{}),
+    fullTerrainOrNativeMeshDelivered:false
   }:null;
   return {
     version:1,required:mode==='CONNECTED_CONTENT_IMPLEMENTATION',dimension,platform,scope,

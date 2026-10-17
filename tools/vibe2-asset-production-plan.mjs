@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
-import { planAssetApplication } from '../assets/asset-selector.js';
+import { planAssetApplication, planVibeExternalCustomization } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,resolveCommonMotionGenre,COMMON_CAREER_MOTION_HIERARCHY,COMMON_MONSTER_ACTION_SPECIES,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction,createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
@@ -4987,6 +4987,22 @@ export function buildVibeAssetProductionPlan({
     }))),
     sourceBindingVerified:false,runtimeVerified:false
   });
+  // 외부 오픈소스 알고리즘과 DCC 도구는 현재 그래픽 제작 단계의 검증 대상 입력이다.
+  // 기존 중앙 승인 범위/상세 게임 설계/공용 에셋 원장 기반이며 실행·다운로드·게임 수정은 하지 않는다.
+  const currentRoadmap=readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),null);
+  const externalCustomization=planVibeExternalCustomization({
+    request,gameId:currentGameId,target:resolvedTarget,
+    requirements:flowAssetRequirements,
+    assets:selectionRegistry?.assets||[],
+    styleBible:approvedStyleBible,
+    approvedDesign:verifiedDesign,
+    approvedDesignFingerprint:verifiedDesign?clean(task.buildUpDirective?.designFingerprint):'',
+    ownerScope:currentRoadmap?.ownerActiveDevelopmentScope20261009||null,
+    sourceRevision:clean(task.sourceRevision||process.env.VIBE2_BASE_MAIN_SHA||process.env.GITHUB_SHA),
+    sourceRoot:clean(task.sourceRoot||task.ownerSourceRoot||task.projectPath),
+    executionSurface:clean(task.executionSurface||task.selectedExecutionSurface),
+    unityWebDevelopment:task.unityWebDevelopment===true
+  });
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
     task,
@@ -5793,6 +5809,7 @@ export function buildVibeAssetProductionPlan({
     assetSupplySummary,
     detailedAssetCandidateReview,
     automaticAssetBindingWork,
+    externalCustomization,
     genreMenuRecommendations,
     registrySync:freeze({
       changed:librarySync.changed===true,
@@ -6355,6 +6372,23 @@ export function assetProductionGuidance(plan={}){
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
     plan.gameConceptStyle?'[GAME CONCEPT STYLE] '+JSON.stringify(plan.gameConceptStyle)+'. 공용 나무·몬스터·건물·재질은 원본을 보존하고 이 게임의 컨셉·세계·스타일에 맞는 네이티브 파생으로 선택·변형·조합한다. 재질 분류 수와 색·표면 변형 수는 유행 스타일 종류 수가 아니다. 색만 바꾸지 말고 승인된 실루엣·비율·재질 반응·표면 디테일·조명·모션·UI 표현을 적용한다. 다른 게임이나 오래된 공유 스타일로 덮지 않는다. 스타일 명세가 없으면 누락으로 남기고 일반 프리셋으로 최종 스타일 일치를 주장하지 않는다. 원본 해시·게임별 파생·설계 식별·같은 빌드의 중립 비교와 실게임 카메라 증거를 연결하며 판정·충돌·저장·서버 권한은 보존한다.': '',
+    plan.externalCustomization?.contentComposition?.authorized
+      ?'[ALL-GENRE EXISTING F0-F9 CONTENT COMPOSITION] '+
+        JSON.stringify(plan.externalCustomization.contentComposition)+
+        '. 모든 게임 장르는 공통 책임 함수의 승인 설계를 기준으로 CONTENT CAPABILITIES를 선택한다. 플로어·방·던전·하우징·습격을 모든 게임에 강제하지 않는다. F0는 최소 실제 첫 플레이의 조작→상태 변경→관찰 가능한 결과와 기존 소스 검증이 필요하다. F0의 계획·컴파일·정적 검사만으로 런타임 PASS를 주장하지 않는다. F1~F8은 설계에 명시된 공간/층과 하우징 및 습격을 기존 BUILD_UP 해당 게임 책임 함수에 직접 구현한다. 하우징은 승인된 건설·설치·회수·비용·소유권·서버 권한·저장·재접속을 보존하고, 습격은 승인된 생성 주기·스폰·경로·공격 판정·방어·보상·종료·재접속 상태를 보존한다. 공간 생성은 시작점→종점 도달과 충돌·안전한 생성 위치를 검증하며 경주·퍼즐·경영·소셜처럼 공간 절차 제작이 불필요한 경우 억지로 추가하지 않는다. 외부 알고리즘과 DCC는 기존 제작의 시각·배치 입력이며 자체 게임 규칙 권한이 아니다. F9는 정확한 소스/아티팩트에서 실제 실행·모바일 조작·필요한 저장/재접속·회귀 증거를 요구한다. 검사 실패 시 해당 기존 책임 소스를 수정해 다시 검증하고 미검증 내용은 다음 회차 GAP로 남긴다. 중복 큐·새 파이프라인·검사 우회·임의 규칙 확장 금지.'
+      : '',
+    plan.externalCustomization?.authorized&&plan.externalCustomization?.roles?.length
+      ?'[VERIFIED EXTERNAL ALGORITHM / DCC LIBRARY HANDOFF] '+
+        JSON.stringify({gameId:plan.externalCustomization.gameId,target:plan.externalCustomization.target,
+          status:plan.externalCustomization.status,designFingerprint:plan.externalCustomization.designFingerprint,
+          applicationOrder:plan.externalCustomization.applicationOrder,
+          references:plan.externalCustomization.references.filter(row=>row.roles.length).map(row=>({
+            id:row.id,kind:row.kind,roles:row.roles,responsibleOwner:row.responsibleOwner,
+            integration:row.integration,sourceUrl:row.sourceUrl,status:row.status,
+            sourceCandidates:row.sourceCandidates,nextAction:row.nextAction
+          }))})+
+        '. 최신 승인된 게임 설계와 공용 자산 원장을 기반으로, 기존 GRAPHICS_PRODUCTION·ASSET_DEVELOPMENT·BUILD_UP 책임 코드에만 원본 보존형 파생/재질/지형/배치/경로/최적화 후보를 연결한다. FastNoiseLite/WFC/A*는 외부 알고리즘의 참고 문헌이며 검증된 실제 코드·라이선스 없이 실행된 것으로 처리하지 않는다. Blender/Material Maker/glTF Transform은 설치·실행·출력물 해시·라이선스·실제 플랫폼 바인딩을 각각 확인하기 전에는 후보일 뿐이다. 먼저 현재 게임에 맞는 라이브러리 자산을 재사용하고 중복 원본 제작을 막는다. 실제 원본 파일과 승인된 3D 설계, 라이선스, 동일 게임의 styleBible, 게임 엔진 성능 조건을 만족해야 한다. 개발은 로블록스와 일반 웹만 허용하며 유니티 웹·안드로이드는 개발 대상으로 잡지 않는다. 검증 실패 시 기존 체크포인트 복구만 사용한다. 그래픽 품질/게임 실행/CI/학습 PASS를 추정하거나 우회하지 않으며 게임 규칙·밸런스·저장·서버 권한을 변경하지 않는다.'
+      : '',
     plan.automaticAssetBindingWork?.enabled
       ?'[VIBE AUTOMATIC GAME ASSET BINDING] '+JSON.stringify(plan.automaticAssetBindingWork)+
        '. 기존 BUILD_UP에서 매 회차 실제 게임 소스 소비와 현재 내부 라이브러리 선택을 자동 대조한다. NATIVE_SOURCE_BINDING_REQUIRED는 현재 게임 책임 함수에만 역할·권리·플랫폼 호환 내부 자산을 직접 연결하고, SOURCE_BOUND_RUNTIME_QA_REQUIRED는 중복 재제작하지 않고 실제 엔진·모바일 표시 증거를 확인한다. SOURCE_ASSET_REQUIRED와 AUTHORING_REQUIRED는 기존 ASSET_DEVELOPMENT에서 원본·파생 제작으로 해결한다. 현재 적용된 게임 규칙, 저장, 멀티 권한은 유지한다. 변경 성공은 소스 해시/QA/런타임 검증까지 확인한 뒤 기존 학습 모터에만 전달하며 미확인 결과는 긍정 학습이나 완료 판정에 넣지 않는다. 기존 GRAPHICS_PRODUCTION·BUILD_UP 단계, 기존 권한 범위만 사용하고 별도 큐나 파이프라인을 만들지 않는다.'

@@ -10,6 +10,7 @@ import {execFileSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {
   synchronizeOwnerDevelopmentHolds,
+  completeOwnerExclusiveGameScope,
   enqueueVibeTask,
   reserveNextVibeTask,
   reserveVibeTaskBatch,
@@ -2880,4 +2881,130 @@ test('24H lossless queue checkpoint follows accepted advisory learning and prece
   assert.match(saving,/VIBE2_QUEUE_STORAGE_EARLY_CHECKPOINT=STALE_CONTROL_REF_RETRY[\s\S]*?continue/);
   assert.match(saving,/VIBE2_QUEUE_TASKS_REMOVED=0/);
   assert.equal((workflow.match(/storage-migrate/g)||[]).length,1);
+});
+
+test('owner scoped direct coding takes precedence and resumes existing Vibe after verified F0-F9/publish handoff',()=>{
+  const policy={
+    ownerCanonicalRules:{ownerExclusiveDevelopment:{
+      status:'ACTIVE',gameIds:['owner-game','unrelated-owner'],
+      handoff:{automaticResumeAfterVerifiedOwnerWork:true,
+        resumeRoute:'.github/workflows/vibe2-24h-runner.yml'}
+    }},
+    developmentLifecycleMachine:{verifiedF0F9PublicationLoop:{developmentGamePublicationAllowed:false}},
+    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','WEB']}
+  };
+  const items=['owner-game','unrelated-owner','autonomous'].map(id=>({
+    id:'work-'+id,gameId:id,target:'web',goal:'continue approved source',
+    status:'queued',department:'development',type:'implementation',responsibleFiles:['web-games/'+id+'/index.html']
+  }));
+  const original=createVibeContinuousQueue({tasks:items});
+  const held=synchronizeOwnerDevelopmentHolds(original,policy);
+  assert.equal(held.tasks[0].ownerDevelopmentHold,true);
+  assert.equal(held.tasks[1].ownerDevelopmentHold,true);
+  assert.equal(held.tasks[2].ownerDevelopmentHold,false,'other games do not pause');
+  const missing=completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game'});
+  assert.equal(missing.released,false);
+  assert.equal(missing.status,'OWNER_WORK_EVIDENCE_OR_PUBLICATION_NOT_VERIFIED');
+  assert.deepEqual(missing.policy.ownerCanonicalRules.ownerExclusiveDevelopment.gameIds,
+    ['owner-game','unrelated-owner']);
+  const sha='a'.repeat(40);
+  const candidate={
+    target:'WEB',releaseState:'development-confirmed',sourceSha:sha,f9VerifiedSourceSha:sha,
+    checks:{sourceIntegrityPassed:true,f0ToF9Verified:true,policyPassed:true,securityPassed:true,
+      staticQaRunId:101,buildRunId:102,f9RuntimeRunId:103,securityRunId:104},
+    publication:{status:'DEVELOPMENT_PUBLICATION_SKIPPED'}
+  };
+  const ready=completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game',completion:candidate});
+  assert.equal(ready.released,true);
+  assert.equal(ready.status,'OWNER_VERIFIED_HANDOFF_READY');
+  assert.deepEqual(ready.policy.ownerCanonicalRules.ownerExclusiveDevelopment.gameIds,['unrelated-owner']);
+  assert.equal(ready.queue.tasks[0].ownerDevelopmentHold,false);
+  assert.equal(ready.queue.tasks[1].ownerDevelopmentHold,true);
+  assert.equal(ready.queue.tasks[2].ownerDevelopmentHold,false);
+  assert.deepEqual(ready.newlyUnheldTaskIds,['work-owner-game']);
+  assert.equal(ready.schedulerWorkflow,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(ready.handoffRequiresPersistedPolicyAndQueue,true);
+  assert.equal(ready.nextEvolutionCycleRequired,true);
+  assert.equal(ready.sourceOrSaveChanged,false);
+  assert.equal(ready.publicationClaimed,false);
+  const failed=completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game',
+    completion:{...candidate,f9VerifiedSourceSha:'b'.repeat(40)}});
+  assert.equal(failed.released,false,'F9 mismatch must not auto-release');
+  const explicit=completeOwnerExclusiveGameScope({
+    queueInput:original,policy,gameId:'owner-game',ownerExplicitRelease:true,
+    completion:{target:'WEB'}
+  });
+  assert.equal(explicit.released,true);
+  assert.equal(explicit.completionVerified,false);
+  assert.equal(explicit.checkpointAction,'RESUME_CAUSAL_REPAIR_WITH_UNVERIFIED_OWNER_WORK');
+  assert.equal(explicit.finalPublicationAndFanInStillAuthoritative,true);
+  const stale=completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'unlisted',completion:candidate});
+  assert.equal(stale.released,false);
+  assert.equal(stale.status,'GAME_NOT_IN_OWNER_EXCLUSIVE_SCOPE');
+  const ownerPublishPolicy={
+    ...policy,
+    roblox:{deploymentControl:{ownerDirectCanonicalPublishException:{
+      enabled:true,gameIds:['owner-game'],
+      trigger:'EXPLICIT_OWNER_DIRECT_PUBLISH_INSTRUCTION',
+      f9RequiredForOwnerDirectPublish:false,canonicalPrivateTargetOnly:true
+    }}},
+    ownerCanonicalRules:{ownerExclusiveDevelopment:{
+      ...policy.ownerCanonicalRules.ownerExclusiveDevelopment,
+      implementationScope:{publicationTarget:{placeId:'98222620265768'}}
+    }}
+  };
+  const directPublish={
+    target:'ROBLOX',sourceSha:sha,mainSourceSha:sha,
+    releaseState:'development-confirmed',f9VerifiedSourceSha:'',
+    checks:{
+      sourceIntegrityPassed:true,exactMainSourceRevision:true,
+      staticSourceGuardPassed:true,buildPassed:true,securityPassed:true,
+      staticQaRunId:42,buildRunId:43,securityRunId:44
+    },
+    publication:{status:'EXACT_REVISION_PUBLISHED',sourceSha:sha,
+      runId:45,targetId:'98222620265768'}
+  };
+  const privateOwner=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',completion:directPublish
+  });
+  assert.equal(privateOwner.released,true);
+  assert.equal(privateOwner.status,'OWNER_DIRECT_PUBLISH_HANDOFF_READY_F0_F9_PENDING');
+  assert.equal(privateOwner.checkpointAction,'RESUME_EXISTING_F0_F9_AFTER_OWNER_DIRECT_PUBLISH');
+  assert.equal(privateOwner.finalPublicationAndFanInStillAuthoritative,true);
+  const wrongPlace=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',
+    completion:{...directPublish,publication:{...directPublish.publication,targetId:'999'}}
+  });
+  assert.equal(wrongPlace.released,false,'private owner place identity cannot change');
+  const wrongMain=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',
+    completion:{...directPublish,mainSourceSha:'b'.repeat(40)}
+  });
+  assert.equal(wrongMain.released,false,'owner direct publish must come from exact main');
+  const leftoverTempArtifact=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',
+    completion:{...directPublish,temporaryPublishArtifactCreated:true}
+  });
+  assert.equal(leftoverTempArtifact.released,false,'temporary publish artifact must be cleaned');
+  const releaseRequired={...candidate,releaseState:'release-confirmed'};
+  assert.equal(completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game',
+    completion:releaseRequired}).released,false,'released games need exact published revision');
+  releaseRequired.publication={status:'EXACT_REVISION_PUBLISHED',sourceSha:sha,runId:105,targetId:106};
+  assert.equal(completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game',
+    completion:releaseRequired}).released,true);
+});
+
+test('canonical owner-exclusive scope policy retains assistant-only coding while enabling automatic verified return',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const owner=policy.ownerCanonicalRules.ownerExclusiveDevelopment;
+  assert.equal(owner.mode,'OWNER_EXCLUSIVE_DIRECT_DEVELOPMENT');
+  assert.equal(owner.rules.ownerExplicitInstructionRequired,true);
+  assert.equal(owner.rules.vibeGameSourceMutationForbidden,true);
+  assert.equal(owner.rules.vibeQueueDevelopmentDispatchForbidden,true);
+  assert.equal(owner.handoff.automaticResumeAfterVerifiedOwnerWork,true);
+  assert.equal(owner.handoff.exactSourceAndGateEvidenceRequiredBeforeAutoRelease,true);
+  assert.equal(owner.handoff.sourceAndSaveResetForbidden,true);
+  assert.equal(owner.handoff.resumeRoute,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(policy.ownerCanonicalRules.rule1.terminalDoneStateForbidden,true);
+  assert.deepEqual(owner.gameIds,[],'owner scope never activates globally by this policy change');
 });

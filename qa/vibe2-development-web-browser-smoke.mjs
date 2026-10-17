@@ -10,10 +10,22 @@ import { selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web
 
 const ROOT=process.cwd();
 const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'game-catalog.json'),'utf8'));
-const gameIds=selectDevelopmentWebValidationGames({catalog})
-  .map(game=>String(game.id||'').trim())
-  .filter(Boolean)
-  .sort();
+// 실제 HTML을 가진 기존 웹게임을 전수 검사한다. 웹게임으로 선언한 누락 소스는
+// selector가 여전히 반환하므로 반드시 HTTP 404 검사에서 실패한다.
+const webSourceExists=game=>{
+  const id=String(game.id||'').trim();
+  return /^[a-z0-9][a-z0-9-]*$/.test(id)
+    &&fs.existsSync(path.join(ROOT,'web-games',id,'index.html'));
+};
+const selected=selectDevelopmentWebValidationGames({catalog,webSourceExists});
+const gameIds=selected.map(game=>String(game.id||'').trim()).filter(Boolean).sort();
+const sourceUnclaimed=(catalog.games||[]).filter(game=>
+  game.productionClass==='DEVELOPMENT_CONFIRMED'&&!webSourceExists(game)
+  &&game.homepageWebPlayable!==true&&game.canonical?.sources?.web?.playable!==true
+  &&String(game.selectedPlatform||game.canonical?.production?.selectedPlatform||'').toUpperCase()!=='WEB'
+).map(game=>String(game.id||'')).filter(Boolean).sort();
+console.log('DEVELOPMENT_WEB_SOURCE_UNCLAIMED='+sourceUnclaimed.join(','));
+console.log('DEVELOPMENT_WEB_SOURCE_EXISTS_CHECKED='+gameIds.length);
 
 assert.ok((catalog.games||[]).length>=10,'DEVELOPMENT_CONFIRMED browser smoke requires current game catalog');
 if(!gameIds.length){
@@ -214,6 +226,7 @@ let chromeStderr='';
 chromeProc.stderr?.on('data',chunk=>{chromeStderr+=String(chunk)});
 
 let cdp;
+let currentGameId='CHROME_BOOT',currentPhase='CONNECT';
 try{
   const target=await waitForPageTarget(debugPort,45000);
   cdp=new CdpClient(target.webSocketDebuggerUrl);
@@ -223,6 +236,8 @@ try{
 
   const results=[];
   for(const gameId of gameIds){
+    currentGameId=gameId;currentPhase='NAVIGATE';
+    console.log('DEVELOPMENT_WEB_BROWSER_GAME='+gameId);
     cdp.exceptions.length=0;
     const missingStart=local404.length;
     const loaded=cdp.waitEvent('Page.loadEventFired',12000);
@@ -231,6 +246,7 @@ try{
     await loaded;
     await delay(500);
 
+    currentPhase='START_INPUT';
     const start=await cdp.evaluate(`(()=>{
       const visible=element=>{
         if(!element||element.disabled)return false;
@@ -244,9 +260,14 @@ try{
         document.querySelector('button#start'),
         document.querySelector('.starter')
       ].find(visible);
-      const byText=[...document.querySelectorAll('button')].find(button=>
-        visible(button)&&/(게임\\s*시작|시작|플레이|열기|입장|start|play)/i.test((button.id||'')+' '+(button.textContent||''))
-      );
+      const byText=[...document.querySelectorAll('button')].find(button=>{
+        if(!visible(button))return false;
+        const label=(button.id||'')+' '+(button.textContent||'');
+        // 리셋/삭제/새 기록은 시작처럼 보여도 원본 세이브를 파괴하거나 confirm()으로 브라우저 검사를 정지시킨다.
+        if(/(reset|restart|delete|erase|clear.?save|초기화|리셋|삭제|지우기|처음부터|새\\s*기록|재시작)/i.test(label))
+          return false;
+        return /(게임\\s*시작|시작|플레이|열기|입장|start|play)/i.test(label);
+      });
       const target=preferred||byText||null;
       if(target)target.click();
       return {
@@ -258,6 +279,7 @@ try{
     })()`);
     await delay(start?.clicked?800:300);
 
+    currentPhase='STATE_SNAPSHOT';
     const state=await cdp.evaluate(`(()=>({
       title:document.title,
       bodyText:(document.body?.innerText||'').slice(0,1000),
@@ -267,6 +289,7 @@ try{
       href:location.href
     }))()`);
 
+    currentPhase='ASSERT';
     const missing=local404.slice(missingStart).filter(item=>item!=='/favicon.ico');
     const exceptions=cdp.exceptions.filter(error=>
       /TypeError|ReferenceError|SyntaxError|Error/i.test(error.description||error.text)
@@ -289,7 +312,7 @@ try{
   console.log('DEVELOPMENT_WEB_BROWSER_SMOKE=PASS');
   console.log(JSON.stringify({count:results.length,results}));
 }catch(error){
-  const detail=`chromeExit=${String(chromeProc.exitCode)} stderr=${chromeStderr.slice(-2000)}`;
+  const detail=`game=${currentGameId} phase=${currentPhase} chromeExit=${String(chromeProc.exitCode)} stderr=${chromeStderr.slice(-2000)}`;
   throw new Error(`${String(error?.message||error)} ${detail}`,{cause:error});
 }finally{
   cdp?.close();

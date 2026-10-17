@@ -1297,6 +1297,38 @@ jobs:
           put('variant',process.env.VARIANT||'primary');
           NODE
 
+      - name: Hand non-ABCD design request to canonical Game Designer
+        if: steps.order.outputs.reason == 'DESIGNER_HANDOFF_REQUIRED' && matrix.variant == 'primary'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # 기존 디자이너 워크플로만 호출한다. 원본 설계 요청은 입력으로 그대로 전달한다.
+          game_id="$(jq -er '.designerHandoff.gameId' /tmp/vibe2-work-order.json)"
+          request_id="$(jq -er '.designerHandoff.requestId' /tmp/vibe2-work-order.json)"
+          design_request="$(jq -er '.designerHandoff.request' /tmp/vibe2-work-order.json)"
+          test "$(jq -r '.designerHandoff.ready' /tmp/vibe2-work-order.json)" = true
+          [[ "$game_id" =~ ^[a-z0-9][a-z0-9-]{0,79}$ ]]
+          [[ "$request_id" =~ ^[a-zA-Z0-9_.:-]{1,100}$ ]]
+          [ -n "$design_request" ]
+          [ "${#design_request}" -le 2000 ]
+          # company-runtime의 기존 GAME_SEED revision이 이미 같으면 실행을 중복 예약하지 않는다.
+          if seed_b64="$(gh api "repos/$GITHUB_REPOSITORY/contents/game-seed-state.json?ref=company-runtime" --jq .content)"; then
+            already="$(printf "%s" "$seed_b64" | tr -d "\n" | base64 -d | jq -r --arg game "$game_id" --arg rid "VIBE2:$request_id" --arg req "$design_request" 'any(.seeds[]?; .gameId==$game and .ownerRequestInstanceId==$rid and .OWNER_LATEST_DESIGN_REQUEST==$req)' )"
+            if [ "$already" = true ]; then
+              echo "VIBE2_DESIGNER_HANDOFF=ALREADY_PERSISTED|game=$game_id|request=$request_id"
+              exit 0
+            fi
+          else
+            echo "DESIGNER_CANONICAL_SEED_STATE_UNAVAILABLE" >&2
+            exit 1
+          fi
+          gh workflow run company-seed-design-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f "game_id=$game_id" -f "design_request=$design_request" -f "request_id=$request_id"
+          echo "VIBE2_DESIGNER_HANDOFF=DISPATCHED|game=$game_id|request=$request_id"
+          echo 'VIBE2_DESIGNER_PASS=NOT_YET_VERIFIED'
+
       - name: Declare external-only model routing (no local AI startup)
         id: model_need
         shell: bash

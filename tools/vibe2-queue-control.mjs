@@ -579,6 +579,107 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task
     || (clean(target).toLowerCase()==='roblox' && (policy.robloxDevelopmentInvestment?.ownerHoldGameIds||[]).includes(id))));
 }
 
+// OWNER_EXCLUSIVE_DIRECT_DEVELOPMENT: 이 범위의 게임 원본은 오너가 직접 지시한 assistant만 수정한다.
+// 작업이 실제로 끝났거나 오너가 범위 해제를 명령하면 기존 Vibe2 큐/소스에서 계속 진행한다.
+// 이 함수는 영속화/Actions dispatch 전에 증거를 검증해 release 후보를 반환한다.
+// 중앙 정책의 gameIds를 자동 삭제했다고 주장하지 않으며 호출자는 결과를 영속화한 뒤
+// 기존 vibe2-24h-runner를 깨워야 한다. 새 큐·파이프라인·PASS 대체 경로는 없다.
+export function completeOwnerExclusiveGameScope({
+  queueInput={},policy={},gameId='',ownerExplicitRelease=false,completion={}
+}={}){
+  const id=clean(gameId);
+  const rules=policy?.ownerCanonicalRules||{};
+  const exclusive=rules.ownerExclusiveDevelopment||{};
+  const active=clean(exclusive.status).toUpperCase()==='ACTIVE'
+    &&Array.isArray(exclusive.gameIds)&&exclusive.gameIds.includes(id);
+  const hold=synchronizeOwnerDevelopmentHolds(queueInput,policy);
+  const unchanged=(reason)=>Object.freeze({
+    released:false,status:reason,gameId:id||null,policy,queue:hold,
+    existingSchedulerWakeRequired:false,sourceOrSaveChanged:false,publicationClaimed:false
+  });
+  if(!/^[a-z0-9][a-z0-9-]{0,79}$/.test(id))return unchanged('INVALID_GAME_ID');
+  if(!active)return unchanged('GAME_NOT_IN_OWNER_EXCLUSIVE_SCOPE');
+  if(exclusive.handoff?.automaticResumeAfterVerifiedOwnerWork!==true
+    &&ownerExplicitRelease!==true)return unchanged('OWNER_AUTO_RESUME_POLICY_REQUIRED');
+  const sha=clean(completion?.sourceSha),f9sha=clean(completion?.f9VerifiedSourceSha);
+  const checks=completion?.checks||{},publication=completion?.publication||{};
+  const scopeTarget=clean(completion?.target).toUpperCase();
+  const releaseState=clean(completion?.releaseState).toLowerCase();
+  const published=clean(publication.status)==='EXACT_REVISION_PUBLISHED'
+    &&publication.sourceSha===sha
+    &&/^[1-9]\d*$/.test(String(publication.runId||''))
+    &&/^[1-9]\d*$/.test(String(publication.targetId||''));
+  const developmentSkip=releaseState==='development-confirmed'
+    &&publication.status==='DEVELOPMENT_PUBLICATION_SKIPPED'
+    &&policy?.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.developmentGamePublicationAllowed===false;
+  const sourceEvidence=/^[0-9a-f]{40}$/.test(sha)&&f9sha===sha
+    &&['ROBLOX','WEB'].includes(scopeTarget)
+    &&[checks.staticQaRunId,checks.buildRunId,checks.f9RuntimeRunId,checks.securityRunId]
+      .every(value=>Number.isSafeInteger(Number(value))&&Number(value)>0)
+    &&checks.sourceIntegrityPassed===true&&checks.f0ToF9Verified===true
+    &&checks.policyPassed===true&&checks.securityPassed===true;
+  // 중앙정책의 명시적 오너 직접 비공개 게시 예외는 F9 PASS를 요구하지 않는다.
+  // 해당 경우에도 현재 main 소스 SHA·실제 소스 가드·빌드·기존 Place 게시 근거가
+  // 모두 필요하며, 별도 Vibe F0→F9 반복을 완료한 것으로 취급하지 않는다.
+  const ownerPublish=policy?.roblox?.deploymentControl?.ownerDirectCanonicalPublishException||{};
+  const specificTarget=exclusive.implementationScope?.publicationTarget||{};
+  const directPublishAllowed=ownerPublish.enabled===true
+    &&(ownerPublish.gameIds||[]).includes(id)
+    &&ownerPublish.trigger==='EXPLICIT_OWNER_DIRECT_PUBLISH_INSTRUCTION'
+    &&ownerPublish.f9RequiredForOwnerDirectPublish===false
+    &&ownerPublish.canonicalPrivateTargetOnly===true
+    &&scopeTarget==='ROBLOX';
+  const ownerPublishVerified=directPublishAllowed
+    &&/^[0-9a-f]{40}$/.test(sha)
+    &&completion.mainSourceSha===sha
+    &&checks.sourceIntegrityPassed===true
+    &&checks.exactMainSourceRevision===true
+    &&checks.staticSourceGuardPassed===true
+    &&checks.buildPassed===true
+    &&checks.securityPassed===true
+    &&[checks.staticQaRunId,checks.buildRunId,checks.securityRunId].every(value=>
+      Number.isSafeInteger(Number(value))&&Number(value)>0)
+    &&published
+    &&String(publication.targetId)===String(specificTarget.placeId)
+    &&(!completion.temporaryPublishArtifactCreated
+      ||checks.temporaryPublishArtifactRemoved===true);
+  // 미검증, 실패, 테스트 계획은 완료 아님. 개발 게임의 일반 배포 생략과
+  // 명시적 오너 전용 비공개 게시를 혼동하지 않는다.
+  const standardVerified=sourceEvidence
+    &&['development-confirmed','release-confirmed'].includes(releaseState)
+    &&(releaseState==='release-confirmed'?published:(developmentSkip||published));
+  const verified=standardVerified||ownerPublishVerified;
+  if(!verified&&ownerExplicitRelease!==true)return unchanged('OWNER_WORK_EVIDENCE_OR_PUBLICATION_NOT_VERIFIED');
+  const nextPolicy={
+    ...policy,ownerCanonicalRules:{...rules,ownerExclusiveDevelopment:{
+      ...exclusive,gameIds:exclusive.gameIds.filter(game=>game!==id)
+    }}
+  };
+  const nextQueue=synchronizeOwnerDevelopmentHolds(queueInput,nextPolicy);
+  const previousTasks=hold.tasks.filter(task=>task.gameId===id);
+  const newlyEligible=nextQueue.tasks.filter(task=>task.gameId===id&&!task.ownerDevelopmentHold
+    &&task.status==='queued'&&previousTasks.some(prior=>prior.id===task.id&&prior.ownerDevelopmentHold));
+  return Object.freeze({
+    released:true,status:ownerPublishVerified&&!standardVerified
+      ?'OWNER_DIRECT_PUBLISH_HANDOFF_READY_F0_F9_PENDING'
+      :verified?'OWNER_VERIFIED_HANDOFF_READY':'OWNER_EXPLICIT_RELEASE_UNVERIFIED_WORK',
+    gameId:id,policy:nextPolicy,queue:nextQueue,
+    completionVerified:verified,
+    verificationReviewAuthority:'EXISTING_F0_F9_AND_RELEASE_GATES',
+    sourceOrSaveChanged:false,publicationClaimed:false,
+    newlyUnheldTaskIds:Object.freeze(newlyEligible.map(task=>task.id)),
+    existingSchedulerWakeRequired:true,
+    schedulerWorkflow:exclusive.handoff?.resumeRoute||'.github/workflows/vibe2-24h-runner.yml',
+    handoffRequiresPersistedPolicyAndQueue:true,
+    nextEvolutionCycleRequired:true,otherGamesContinue:true,
+    // release 후에도 확인된 마지막 소스/원래 QA 체크포인트에서 이어간다.
+    checkpointAction:ownerPublishVerified&&!standardVerified
+      ?'RESUME_EXISTING_F0_F9_AFTER_OWNER_DIRECT_PUBLISH'
+      :verified?'RESUME_EXISTING_BUILD_UP_F0_F9':'RESUME_CAUSAL_REPAIR_WITH_UNVERIFIED_OWNER_WORK',
+    finalPublicationAndFanInStillAuthoritative:true
+  });
+}
+
 export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(CANONICAL_RESERVATION_POLICY)) {
   const queue=createVibeContinuousQueue(queueInput);
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>({
