@@ -480,8 +480,7 @@ local function civPart(parent, name, size, frame, _color, _material, collide)
   local root = source:Clone()
   root.Name = name
   root.Size = size
-  -- The collision volume is a box derived from this licensed mesh, not a Roblox Part.
-  root.CollisionFidelity = Enum.CollisionFidelity.Box
+  -- Keep the imported MeshPart collision fidelity: Roblox disallows changing it at runtime.
   root.CFrame = frame
   root.Transparency = 1
   root.Anchored = true
