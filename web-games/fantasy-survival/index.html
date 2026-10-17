@@ -3314,6 +3314,23 @@ function updateSmeltUi(){
  ui.smeltBtn.textContent='철 · 5초';ui.goldSmeltBtn.textContent='금 · 10초';ui.deerSmeltBtn.textContent='수액사슴 · 10초';ui.bugSmeltBtn.textContent='벌레 · 15초';ui.fishSmeltBtn.textContent='생선 · 10초';ui.hareSmeltBtn.textContent='토끼 · 10초';ui.lizardSmeltBtn.textContent='도마뱀 · 10초';ui.crystalDeerSmeltBtn.textContent='수정사슴 · 10초';ui.greensSmeltBtn.textContent='야채 · 10초';ui.birdSmeltBtn.textContent='꿩 · 10초';ui.goatSmeltBtn.textContent='수정염소 · 10초';ui.squidSmeltBtn.textContent='오징어 · 12초';ui.monopolySmeltBtn.textContent='독점석 · 20초'
 }
 function openSmelt(station='furnace'){if(!['furnace','toxicFurnace'].includes(station)||!state[station]||state.area!=='surface')return;if(!nearStructure(state[station],175)){showNotice('용광로 가까이 가야 해');return}ui.smeltStation=station;ui.smeltPanel.classList.add('open');updateSmeltUi()}
+function enterWorldTreeInterior(){
+ if(state.area!=='surface'||dist(state.player.x,state.player.y,WORLD_TREE_INTERIOR.door.x,WORLD_TREE_INTERIOR.door.y)>270){showNotice('세계수 줄기 가까이 가야 들어갈 수 있어');return}
+ if(state.pet.mounted)dismountPet(false);
+ state.surfacePos={x:state.player.x,y:state.player.y};
+ state.area='worldtreeinside';state.player.x=WORLD_TREE_INTERIOR.entry.x;state.player.y=WORLD_TREE_INTERIOR.entry.y;
+ state.player.rootedUntil=0;
+ if(petAlive()){state.pet.x=state.player.x+58;state.pet.y=state.player.y+20;state.pet.targetId=null}
+ state.dirty=true;updateHud();showNotice('세계수 내부에 들어왔다 · 곰, 골렘, 뱀 주의')
+}
+function leaveWorldTreeInterior(){
+ if(state.area!=='worldtreeinside'||dist(state.player.x,state.player.y,WORLD_TREE_INTERIOR.exit.x,WORLD_TREE_INTERIOR.exit.y)>180){showNotice('세계수 출구 가까이 가야 나갈 수 있어');return}
+ const last=state.surfacePos||WORLD_TREE_INTERIOR.door;
+ state.area='surface';state.player.x=clamp(last.x,25,WORLD.w-25);state.player.y=clamp(Math.min(last.y,WORLD_TREE.y-95),25,WORLD.h-25);
+ state.player.rootedUntil=0;
+ if(petAlive()){state.pet.x=state.player.x+55;state.pet.y=state.player.y+30;state.pet.targetId=null}
+ state.dirty=true;updateHud();showNotice('세계수 바깥으로 나왔다')
+}
 function enterCave(){
  if(state.area!=='surface')return;
  state.surfacePos={x:state.player.x,y:state.player.y};state.area='underground';state.player.x=CAVE_ENTRY.x;state.player.y=CAVE_ENTRY.y;state.dirty=true;showNotice('세계수 구멍으로 들어왔다')
@@ -3687,7 +3704,12 @@ function handleWorldTap(e){
  if(state.area==='surface'){
   for(let i=0;i<FLOWER_BUILDINGS.length;i++){const b=FLOWER_BUILDINGS[i];if(Math.abs(wx-b.x)<b.w/2&&Math.abs(wy-b.y)<b.h/2){if(!doubleTapTarget('flower-building:'+i,now,()=>openFlowerBuildingLoot(i)))showNotice(b.name+' · 보급 상자를 한 번 더 눌러');return}}
  }
- if(state.area==='surface'&&dist(wx,wy,GOBLIN_OUTPOST_ENTRANCE.x,GOBLIN_OUTPOST_ENTRANCE.y)<GOBLIN_OUTPOST_ENTRANCE.r+35){if(!doubleTapTarget('goblin-outpost-entry',now,enterGoblinOutpost))showNotice('고블린 전초기지 · 한 번 더 눌러 입장');return}
+ if(state.area==='surface'&&dist(wx,wy,WORLD_TREE_INTERIOR.door.x,WORLD_TREE_INTERIOR.door.y)<WORLD_TREE_INTERIOR.door.r+30){
+    if(dist(state.player.x,state.player.y,WORLD_TREE_INTERIOR.door.x,WORLD_TREE_INTERIOR.door.y)>270)showNotice('세계수 줄기 가까이 접근해');
+    else if(!doubleTapTarget('worldtree-inner-door',now,enterWorldTreeInterior))showNotice('세계수 줄기 · 한 번 더 눌러 내부로 입장');
+    return
+  }
+  if(state.area==='surface'&&dist(wx,wy,GOBLIN_OUTPOST_ENTRANCE.x,GOBLIN_OUTPOST_ENTRANCE.y)<GOBLIN_OUTPOST_ENTRANCE.r+35){if(!doubleTapTarget('goblin-outpost-entry',now,enterGoblinOutpost))showNotice('고블린 전초기지 · 한 번 더 눌러 입장');return}
  if(state.area.startsWith('goblinoutpost-')){const floor=goblinOutpostFloor(),room=GOBLIN_OUTPOST_FLOORS[floor];if(floor===4&&dist(wx,wy,room.chest.x,room.chest.y)<105){if(!doubleTapTarget('goblin-general-chest',now,openGoblinGeneralChest))showNotice(state.goblinOutpost.cleared[3]?'장군 상자 · 한 번 더 눌러 열기':'장군을 먼저 잡아야 해');return}if(room.up&&dist(wx,wy,room.up.x,room.up.y)<110){doubleTapTarget('goblin-up-'+floor,now,()=>goGoblinOutpostFloor(floor+1));return}if(room.down&&dist(wx,wy,room.down.x,room.down.y)<110){doubleTapTarget('goblin-down-'+floor,now,()=>floor===1?leaveGoblinOutpost():goGoblinOutpostFloor(floor-1));return}}
  if(state.area==='surface'&&dist(wx,wy,JUNGLE_TEMPLE_ENTRANCE.x,JUNGLE_TEMPLE_ENTRANCE.y)<JUNGLE_TEMPLE_ENTRANCE.r+30){if(!doubleTapTarget('jungle-temple-entry',now,enterJungleTemple))showNotice('밀림 신전 · 한 번 더 눌러 입장');return}
  if(state.area==='jungletemple'){
@@ -3741,6 +3763,11 @@ function handleWorldTap(e){
    if(state.cookingStation&&dist(wx,wy,state.cookingStation.x,state.cookingStation.y)<65){if(!doubleTapTarget('cooking-station',now,openCooking))showNotice('요리대를 한 번 더 눌러 요리 열기');return}
    if(state.toxicFurnace&&dist(wx,wy,state.toxicFurnace.x,state.toxicFurnace.y)<62){if(!doubleTapTarget('toxic-furnace',now,()=>openSmelt('toxicFurnace')))showNotice('독가스 용광로를 한 번 더 눌러 태양석 제련 열기');return}
    if(state.furnace&&dist(wx,wy,state.furnace.x,state.furnace.y)<62){if(!doubleTapTarget('furnace',now,openSmelt))showNotice('화로를 한 번 더 눌러 굽기 열기');return}
+ }else if(state.area==='worldtreeinside'){
+   if(dist(wx,wy,WORLD_TREE_INTERIOR.exit.x,WORLD_TREE_INTERIOR.exit.y)<100){
+     if(!doubleTapTarget('worldtree-inner-exit',now,leaveWorldTreeInterior))showNotice('세계수 출구 · 한 번 더 눌러 나가기');
+     return
+   }
  }else if(state.area==='underground'){
    if(dist(wx,wy,CAVE_EXIT.x,CAVE_EXIT.y)<80){doubleTapTarget('caveexit',now,leaveCave);return}
    if(dist(wx,wy,BOSS_ALTAR.x,BOSS_ALTAR.y)<90){doubleTapTarget('altar',now,summonBoss);return}
