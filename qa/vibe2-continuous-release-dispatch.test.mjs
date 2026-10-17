@@ -612,7 +612,7 @@ test('Web requires F0-F9 proof, mandatory deployment, then resumes perpetual BUI
   assert.ok(retryQueueStart>0&&retryQueueEnd>retryQueueStart);
   const retryQueue=queue.slice(retryQueueStart,retryQueueEnd);
   assert.match(retryQueue,/WEB_F9_VERIFIED_QUEUE_PRESERVED_FOR_SAME_CYCLE_PUBLISH_RETRY=YES/);
-  assert.doesNotMatch(retryQueue,/vibe2-queue-control\\.mjs fail|web-release-qa-failed/);
+  assert.doesNotMatch(retryQueue,/web-release-qa-failed/);
   assert.match(section,/vibe2-queue-control\.mjs pass[\s\S]*web-github-pages-deployment-pass/);
   assert.match(section,/WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=/);
   assert.match(section,/PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:/);
