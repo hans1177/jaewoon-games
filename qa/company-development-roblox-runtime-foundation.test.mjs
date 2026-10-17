@@ -871,8 +871,10 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(stack.releaseGate.internalRuntimeValidationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.studioRequiredForInternalRelease,false);
  assert.equal(architectureSummary,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
- const studioWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-studio-local-play.yml','utf8');
- assert.match(studioWorkflow,/OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+ const runtimeWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(runtimeWorkflow,/OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+ assert.match(runtimeWorkflow,/run_studio:[\\s\\S]*?default:\\s*false/);
+ assert.match(runtimeWorkflow,/probeRobloxOpenCloudEngine/);
 });
 
 test('F9 consumes exact deferred engine evidence without requiring Studio actual play',()=>{
