@@ -588,3 +588,13 @@ test('PWA runtime metadata uses bounded server HTTP caching while scripts remain
  }
  assert.equal(calls[0].cache,'default');assert.equal(calls[1].cache,'no-store');
 });
+
+test('unchanged homepage snapshot finishes self-QA without a redundant Director publication job',()=>{
+  const manage=section('  manage-and-self-qa:','  director-supervision:');
+  const director=section('  director-supervision:');
+  assert.match(manage,/candidate_changed=\$candidate_changed/);
+  assert.match(director,/needs\.manage-and-self-qa\.outputs\.candidate_changed == 'true'/);
+  assert.match(director,/needs\.manage-and-self-qa\.result == 'success'/);
+  assert.match(director,/test "\$patch_sha" = "\$\(sha256sum "\$patch"/);
+  assert.match(director,/gh pr merge "\$pr_url"/);
+});
