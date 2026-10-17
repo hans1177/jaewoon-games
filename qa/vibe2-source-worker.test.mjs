@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
-import {buildInternalAssetSourceUsageContract,selectWeb3dEngine} from '../tools/vibe2-source-worker.mjs';
+import {buildInternalAssetSourceUsageContract,selectWeb3dEngine,requestLocalModel} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
 import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
@@ -8796,3 +8796,31 @@ test('internal library source execution honors Roblox asset focus without a game
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+
+test('external source generator switches Gemini slots after 404 and never uses a local provider',async()=>{
+  const oldFetch=globalThis.fetch;
+  const preserved=Object.fromEntries(['GEMINI_API_KEY','VIBE2_GAME_SOURCE_PROVIDER','VIBE2_GEMINI_MODEL','VIBE2_GEMINI_BACKUP_MODEL'].map(key=>[key,process.env[key]]));
+  try{
+    process.env.GEMINI_API_KEY='unit-fixture-only';
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='GEMINI_API';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    process.env.VIBE2_GEMINI_BACKUP_MODEL='gemini-3.5-flash-lite';
+    const urls=[];
+    globalThis.fetch=async(url,options)=>{
+      urls.push(String(url));
+      assert.equal(options.headers['x-goog-api-key'],'unit-fixture-only');
+      if(urls.length===1)return {ok:false,status:404,headers:{get:()=>null}};
+      return {ok:true,json:async()=>({candidates:[{content:{parts:[{text:'{"edits":[]}'}]}}]})};
+    };
+    assert.equal(await requestLocalModel('source-edit-fixture'),'{"edits":[]}');
+    assert.equal(urls.length,2);
+    assert.notEqual(urls[0],urls[1]);
+    assert.ok(urls.every(value=>/generativelanguage[.]googleapis[.]com/.test(value)));
+    assert.ok(urls.every(value=>value.includes('gemini-3.8-flash')||value.includes('gemini-3.5-flash-lite')));
+  }finally{
+    globalThis.fetch=oldFetch;
+    for(const [key,value] of Object.entries(preserved)){
+      if(value===undefined)delete process.env[key];else process.env[key]=value;
+    }
+  }
+});
