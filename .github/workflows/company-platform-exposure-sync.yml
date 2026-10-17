@@ -98,6 +98,7 @@ jobs:
           NODE
 
       - name: Persist exposure snapshot to company-runtime
+        id: persist
         shell: bash
         run: |
           set -euo pipefail
@@ -105,6 +106,7 @@ jobs:
           git config user.email 'platform-exposure@users.noreply.github.com'
           worktree="/tmp/platform-exposure-runtime"
           pushed=0
+          updated=false
           for attempt in 1 2 3 4; do
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
             git worktree remove --force "$worktree" 2>/dev/null || true
@@ -114,15 +116,17 @@ jobs:
             git -C "$worktree" add homepage-platform-exposure.json
             if git -C "$worktree" diff --cached --quiet; then pushed=1; break; fi
             git -C "$worktree" commit -m 'runtime: sync Roblox Unity platform exposure [skip ci]'
-            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; updated=true; break; fi
             sleep $((attempt * 2))
           done
           git worktree remove --force "$worktree" 2>/dev/null || true
           git worktree prune
           test "$pushed" = 1
-          echo 'COMPANY_RUNTIME_PLATFORM_EXPOSURE=PERSISTED'
+          echo "updated=$updated" >> "$GITHUB_OUTPUT"
+          echo "COMPANY_RUNTIME_PLATFORM_EXPOSURE=$([[ "$updated" == true ]] && echo UPDATED || echo UNCHANGED)"
 
       - name: Refresh homepage runtime mirror
+        if: steps.persist.outputs.updated == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
