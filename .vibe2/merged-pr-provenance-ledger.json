@@ -55016,11 +55016,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_fb00dbc8ab8fabe268bb9f50",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8246",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "a155bc71a7ac7af71ad8459f79e916d9bd997ecc",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8246,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe-game-specific-asset-download",
+        "baseSha": "a155bc71a7ac7af71ad8459f79e916d9bd997ecc",
+        "headSha": "6b4b929a8e8b72c419ff3f91883471951908ffc5",
+        "mergeCommitSha": "0125baba62189c1cc21425dd7f413b830c6def0a",
+        "mergedAt": "2026-10-17T05:13:59Z",
+        "authorLogin": "hans1177",
+        "titleHash": "b44a497984cabffaa9fedf83e58e19516ab4820b48101c5c75e3f3b033d59a8d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe-game-specific-asset-download",
+        "candidateSha": "6b4b929a8e8b72c419ff3f91883471951908ffc5"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 390,
+        "deletedLineCount": 6,
+        "changedFiles": [
+          ".github/workflows/company-records-governance.yml",
+          "qa/company-policy-steward.test.mjs",
+          "qa/vibe2-native-asset-production.test.mjs",
+          "tools/company-policy-steward.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-records-governance.yml",
+          "qa/company-policy-steward.test.mjs",
+          "qa/vibe2-native-asset-production.test.mjs",
+          "tools/company-policy-steward.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-source-worker.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8246",
+        "merge-commit:0125baba62189c1cc21425dd7f413b830c6def0a",
+        "base-main:a155bc71a7ac7af71ad8459f79e916d9bd997ecc"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 444
+    "total": 445
   }
 }
