@@ -772,10 +772,12 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
   }
   if(project.engine==='unreal'){const policy=centralPresentationPolicy(repoRoot);if(policy?.developmentAccess?.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
   if(project.releaseState==='development-confirmed'){
-    // [일반 웹게임] 오너가 WEB을 활성화한 경우에만 기존 HTML/JS 제작을 기존 플로어로 재개한다.
+    // 검증된 오너 scope가 존재하면 일반 WEB 명시 허용이 필요하다.
+    // 구형/격리된 fixture와 정책 미적재 모드의 개발 상태 해석은 이전 동작을 유지한다.
     const policy=centralPresentationPolicy(repoRoot),scope=policy?.ownerActiveDevelopmentScope20261009;
-    return project.engine==='web'&&policy?.developmentAccess?.WEB==='ALWAYS_ALLOWED'
-      &&scope?.status==='ACTIVE'&&(scope.activeTargets||[]).includes('WEB');
+    if(project.engine!=='web')return false;
+    if(scope?.status!=='ACTIVE')return true;
+    return policy?.developmentAccess?.WEB==='ALWAYS_ALLOWED'&&(scope.activeTargets||[]).includes('WEB');
   }
   return false;
 }
