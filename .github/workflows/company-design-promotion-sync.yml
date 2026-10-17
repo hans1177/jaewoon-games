@@ -73,6 +73,8 @@ jobs:
           node --check tools/company-direct-native-design-migration.mjs
           node --test qa/company-minimum-design-contract.test.mjs
           node --test qa/design-only-promotion-sync.test.mjs qa/design-promotion-workflow-contract.test.mjs
+          node --check tools/vibe2-verified-design-handoff.mjs
+          node --test qa/vibe2-verified-design-handoff.test.mjs
 
       - name: Migrate legacy DEVELOPMENT_CONFIRMED designs to direct native profiles
         run: node tools/company-direct-native-design-migration.mjs
