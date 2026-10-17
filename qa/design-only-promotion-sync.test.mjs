@@ -25,18 +25,18 @@ const read=(root,file)=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'))
 function centralPolicy(root){
   write(root,'company-learning/platform-release-roadmap.json',{
     authority:'MACHINE_EXECUTION_CONTRACT',
-    developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',UNITY_WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD'},
+    developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY_WEB:'OWNER_HOLD',UNITY:'OWNER_HOLD'},
     directNativeDualPlatformDevelopment:{
       status:'OWNER_DIRECT_LOCKED',
       mode:'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR',
-      ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','UNITY_WEB']},
+      ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY_WEB','UNITY_ANDROID']},
       canonicalDevelopmentAdmissionAuthority:true,
       minimumDesignRequired:true,
       strictDesignScoreRequiredForDevelopmentAdmission:false,
       legacyWebFirstFallbackForbidden:true,
       webDevelopmentStageRemoved:false,
-      unityWebEnabled:true,
-      unityWebRequired:true,
+      unityWebEnabled:false,
+      unityWebRequired:false,
       unityWebGateRequired:false,
       unityWebMode:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
       upperPlatformAdmission:'MINIMUM_DESIGN_READY',
@@ -47,10 +47,10 @@ function centralPolicy(root){
       upperPlatformDevelopmentReadinessGate:{
         gateId:'UPPER_PLATFORM_DEVELOPMENT_READY',
         allCriteriaRequired:true,
-        targets:['ROBLOX']
+        targets:['ROBLOX','UNITY']
       },
-      supportedDevelopmentPlatforms:['ROBLOX'],
-      automaticPairing:{ROBLOX:['ROBLOX','UNITY_WEB_FLOOR'],UNITY:['UNITY_WEB_FLOOR']},
+      supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
+      automaticPairing:{ROBLOX:['ROBLOX'],UNITY:[]},
       unityWebValidationSurface:{requiredForDevelopmentAdmission:false}
     }
   });
@@ -192,7 +192,7 @@ test('intentional PAUSED state is preserved even when canonical catalog lifecycl
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('legacy Android preference maps to Unity but still starts both native lanes',()=>{
+test('historical Android preference is owner-held and promotes Roblox only',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-platform-'));
   base(root);
   write(root,'game-seed-state.json',{version:1,seeds:[{
