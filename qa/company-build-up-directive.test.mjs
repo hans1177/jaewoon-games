@@ -1819,9 +1819,9 @@ test('source worker retains internal-first AI collaboration routing in compact s
   ]){
     const reduced=compact(full,options);
     assert.match(reduced,/internalAlgorithmRoute=VERIFIED_SAME_GAME_SAME_FAILURE_FIRST/);
-    assert.match(reduced,/AUTHORIZED_AI_CAN_IMPLEMENT_ON_ISOLATED_CANDIDATES_WHEN_OPTED_IN/);
+    assert.match(reduced,/AUTHORIZED_AI_OPT_IN_ISOLATED_BRANCH/);
     assert.match(reduced,/VIBE_INTEGRATES_AND_LEARNS/);
-    assert.match(reduced,/DETERMINISTIC_QA_SECURITY_RELEASE_UNCHANGED/);
+    assert.match(reduced,/QA_SECURITY_RELEASE_UNCHANGED/);
   }
   const legacy=guide({target:'roblox',gameId:'simple-rpg',buildUpDirective:{
     ...d,internalAlgorithmUse:null
