@@ -329,16 +329,31 @@ remote.OnClientEvent:Connect(function(kind, payload)
   elseif kind == "WORLD_TREE_HIT" and typeof(payload) == "table" then
     gui:SetAttribute("WorldTreeNotice", string.format("%s -%d · 남은 체력 %d/%d", payload.name or "적", payload.damage or 0, payload.hp or 0, payload.maxHp or 0))
   elseif kind == "WORLD_TREE_HALLUCINATION" and typeof(payload) == "table" and player:GetAttribute("WorldTreeArea") == "interior" then
+    -- 환각은 기존 뿌리의 모습만 로컬에서 바꾼다. 서버 몬스터/타격/보상에는 영향이 없다.
     local character = player.Character
     local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-    if not rootPart then return end
+    local camera = workspace.CurrentCamera
+    local world = workspace:FindFirstChild("MagicForestWorldTree")
+    local interior = world and world:FindFirstChild("TrunkInterior")
+    if not rootPart or not camera or not interior then return end
+    local candidates = {}
+    for _, part in ipairs(interior:GetDescendants()) do
+      if part:IsA("BasePart") and part.Name:match("^AncientRoot") and (part.Position-rootPart.Position).Magnitude < 72 then
+        local _, visible = camera:WorldToViewportPoint(part.Position)
+        if visible then table.insert(candidates, part) end
+      end
+    end
+    table.sort(candidates, function(a,b)
+      return (a.Position-rootPart.Position).Magnitude < (b.Position-rootPart.Position).Magnitude
+    end)
     local effects = Instance.new("Folder")
     effects.Name = "WorldTreeLocalHallucinations"
     effects.Parent = workspace
-    local count = math.clamp(math.floor(tonumber(payload.count) or 0), 0, 8)
-    for i = 1, count do
-      local angle = math.pi * 2 * i / math.max(count, 1)
-      local origin = rootPart.Position + Vector3.new(math.cos(angle) * (9 + i), -2, math.sin(angle) * (9 + i))
+    local hidden = {}
+    for i = 1, math.min(math.clamp(math.floor(tonumber(payload.count) or 0), 0, 8), #candidates) do
+      local root = candidates[i]
+      hidden[root] = root.LocalTransparencyModifier
+      root.LocalTransparencyModifier = 1
       for segment = 1, 4 do
         local part = Instance.new("Part")
         part.Name = "IllusorySnake"
@@ -349,14 +364,17 @@ remote.OnClientEvent:Connect(function(kind, payload)
         part.Shape = Enum.PartType.Ball
         part.Material = Enum.Material.Neon
         part.Color = Color3.fromRGB(99, 192, 111)
-        part.Transparency = 0.55
-        part.Size = Vector3.new(1.7, 1.2, 2.4)
-        part.Position = origin + Vector3.new(math.sin(segment * 0.9) * 1.5, 0.5, segment * 2)
+        part.Transparency = 0.48
+        part.Size = Vector3.new(2.5, 2, 3)
+        part.Position = root.Position + Vector3.new(math.sin(segment * 0.9) * 1.3, 2, segment * 2-5)
         part.Parent = effects
       end
     end
-    gui:SetAttribute("WorldTreeNotice", "세계수 뱀의 환각 · 눈에 보이는 뱀이 진짜가 아닐 수 있어")
+    gui:SetAttribute("WorldTreeNotice", "세계수 뱀의 환각 · 눈앞의 뿌리가 뱀처럼 보여")
     task.delay(math.clamp(tonumber(payload.seconds) or 3, 1, 5), function()
+      for root, transparency in pairs(hidden) do
+        if root.Parent then root.LocalTransparencyModifier = transparency end
+      end
       if effects.Parent then effects:Destroy() end
     end)
   end
