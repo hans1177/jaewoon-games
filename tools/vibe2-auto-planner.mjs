@@ -4176,14 +4176,22 @@ export function runVibe2AutoPlanner({
     if(!directive?.directiveId||!directive?.gameId)continue;
     directivesById.set(directive.directiveId,directive);
   }
-  const persistence=selectBuildUpDirectivePersistence([...directivesById.values()]);
+  // [메인] 디렉티브를 게임별로 한 번만 색인해 작업마다 전체 후보를 다시 순회하지 않는다.
+  const allDirectives=[...directivesById.values()];
+  const directivesByGameId=new Map();
+  for(const directive of allDirectives){
+    const rows=directivesByGameId.get(directive.gameId)||[];
+    rows.push(directive);
+    directivesByGameId.set(directive.gameId,rows);
+  }
+  const persistence=selectBuildUpDirectivePersistence(allDirectives);
   for(const game of persistence){
     const gameRoot=path.join(directiveRoot,game.gameId);
     const currentRoot=path.join(gameRoot,'current');
     const historyRoot=path.join(gameRoot,'history');
     fs.mkdirSync(currentRoot,{recursive:true});
     fs.mkdirSync(historyRoot,{recursive:true});
-    const gameDirectives=[...directivesById.values()].filter(directive=>directive.gameId===game.gameId);
+    const gameDirectives=directivesByGameId.get(game.gameId)||[];
     for(const directive of gameDirectives){
       const historyFile=path.join(historyRoot,String(directive.generation).padStart(4,'0')+'-'+directive.directiveId+'.json');
       if(!fs.existsSync(historyFile))writeJson(historyFile,directive);

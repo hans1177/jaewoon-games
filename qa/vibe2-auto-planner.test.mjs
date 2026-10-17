@@ -13,6 +13,20 @@ import {robloxPackageAssetRepairContext} from '../tools/company-development-robl
 import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
 
+test('canonical planner uses verified policy on both entry points and indexes directives only once',()=>{
+  const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  assert.match(planner,/const directivesByGameId=new Map\(\)/);
+  assert.match(planner,/const gameDirectives=directivesByGameId\.get\(game\.gameId\)\|\|\[\]/);
+  assert.doesNotMatch(planner,/\[\.\.\.directivesById\.values\(\)\]\.filter\(directive=>directive\.gameId===game\.gameId\)/);
+  for(const workflow of [
+    '.github/workflows/vibe2-continuous-core.yml',
+    '.github/workflows/vibe2-24h-runner.yml'
+  ]){
+    const contents=fs.readFileSync(workflow,'utf8');
+    assert.match(contents,/COMPANY_VERIFIED_POLICY_PATH=\/tmp\/vibe2-main\/company-learning\/platform-release-roadmap\.json\s*\\\n\s*node \/tmp\/vibe2-main\/tools\/vibe2-auto-planner\.mjs/,workflow);
+  }
+});
+
 test('internal motion planning binds 100 registered parents to one current walk source each',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-plan-'));
   try{

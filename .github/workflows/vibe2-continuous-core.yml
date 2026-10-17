@@ -598,7 +598,8 @@ jobs:
                 --root=/tmp/vibe2-main | tee /tmp/vibe2-reserve-post-release-focus.log
               echo 'VIBE2_RESERVE_FOCUSED_CARETAKER_REFILL=PASS'
 
-              node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
+              COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
+                node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
                 --runtime=/tmp/vibe2-main/vibe2-runtime.json \
                 --status=/tmp/vibe2-main/company-status.json \
                 --catalog=/tmp/vibe2-main/game-catalog.json \
