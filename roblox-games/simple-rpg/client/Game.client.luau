@@ -396,7 +396,8 @@ RunService.RenderStepped:Connect(function(dt)
     local character = player.Character
     local viewer = character and character:FindFirstChild("HumanoidRootPart")
     if world and viewer and viewer:IsA("BasePart") then
-      for _, enemy in ipairs(world:GetDescendants()) do
+      -- Server enemies are direct CivilizationWorlds children; avoid scanning every map descendant.
+      for _, enemy in ipairs(world:GetChildren()) do
         if enemy:IsA("Model") and enemy:GetAttribute("CivilizationEnemy") == true
           and enemy:GetAttribute("CreatureAssetSource") == "StudioImported"
           and (tonumber(enemy:GetAttribute("CreatureVisualAssetId")) or 0) > 0 then
