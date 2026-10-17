@@ -77,4 +77,5 @@ test('current orchestrator dispatches independent Roblox games and keeps Unity A
   assert.ok(workflow.includes('persist Roblox source-bind results'));
   assert.ok(workflow.includes('technical-plan:'));
   assert.ok(workflow.includes('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'));
+  assert.ok(workflow.includes("'qa/company-development-roblox-independent-promotion.test.mjs'"));
 });
