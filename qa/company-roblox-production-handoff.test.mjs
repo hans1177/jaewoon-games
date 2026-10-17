@@ -43,7 +43,7 @@ test('non-Roblox worker cannot consume a stale Roblox production plan',()=>{
   assert.doesNotMatch(otherGame,/robloxProductionIDEA=/);
 });
 
-test('Unity and Web connected-quality plans survive real source prompts and focused retries',()=>{
+test('owner-held Unity and Web preserve design and owner removals without unauthorized production plans',()=>{
   for(const target of ['unity','web']){
     const root=target+'-games/garden';
     const own=root+(target==='unity'?'/Assets/Scripts/GameCore.cs':'/game.js');
@@ -53,11 +53,11 @@ test('Unity and Web connected-quality plans survive real source prompts and focu
     const directive=buildGameSpecificBuildUpDirective({gameId:'garden',platform:target.toUpperCase(),sourceRoot:root,sourceObservation:source,responsibleFiles:[own,sibling],designRecord:{content:{identity:'서식지 방어',genre:'DEFENSE',coreLoop:['관찰','배치','방어'],ownerFeatureChanges:[{requestId:'keep-removal',featureId:'shop',action:'REMOVE',requirement:'상점 복원 금지'}]}}});
     const order={gameId:'garden',target,goal:'기존 방어 흐름 완성',selectedTask:{type:'implementation',buildUpDirective:directive}};
     const prompt=buildPrompt(order,{files:[{path:own,editable:true,content:code},{path:sibling,editable:false,content:code}]},[own]);
-    const filesLine=prompt.split('\n').find(line=>line.startsWith('gameProductionFILES='));
-    assert.ok(filesLine.includes(own));assert.ok(!filesLine.includes(sibling));
+    assert.equal(directive.productionPlan,null,'owner-held target cannot produce an active platform plan');
     for(const text of [prompt,buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[own]}).prompt,buildGenerationRetryPrompt(prompt,{error:new Error('JSON parse error'),responsibleFiles:[own],attempt:2})]){
-      assert.match(text,/gameProductionIDEA=/);assert.match(text,/gameProductionQUALITY=/);
-      assert.match(text,/keep-removal/);assert.doesNotMatch(text,/robloxProductionIDEA=/);
+      assert.doesNotMatch(text,/gameProductionIDEA=|gameProductionQUALITY=|gameProductionFILES=/);
+      assert.match(text,/keep-removal/,'owner removal remains in the existing development instructions');
+      assert.doesNotMatch(text,/robloxProductionIDEA=/);
     }
   }
 });
