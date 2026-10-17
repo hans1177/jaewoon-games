@@ -1,22 +1,19 @@
 {
   "version": 1,
-  "before": "56d74310908c7af17484ce47fc280611fde23e69",
-  "after": "81ae6ec64b15a7f141f03e32eb1fe61bcec1caaf",
-  "generatedAt": "2026-10-17T17:21:26.765Z",
+  "before": "5b7bbcf9022d93b1e492ab31d5bc2c1040bc3da3",
+  "after": "bb7c1591c9f326f80a6fb342ffdd1a442df37560",
+  "generatedAt": "2026-10-17T18:33:05.247Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
-      "gameId": "realistic-builder",
-      "sourcePath": "web-games/realistic-builder",
-      "sourceBefore": "56d74310908c7af17484ce47fc280611fde23e69",
-      "sourceAfter": "81ae6ec64b15a7f141f03e32eb1fe61bcec1caaf",
-      "semanticIntentFingerprint": "35573a0848fcf6899a36cc9759dd488bc07efbf26d95d7b474411719214508b7",
+      "gameId": "star-frontier",
+      "sourcePath": "web-games/star-frontier",
+      "sourceBefore": "5b7bbcf9022d93b1e492ab31d5bc2c1040bc3da3",
+      "sourceAfter": "bb7c1591c9f326f80a6fb342ffdd1a442df37560",
+      "semanticIntentFingerprint": "072378a5185d6ecc234c66cb2fbdde1abea461d3dfec42feafaeeaeeed9d1bba",
       "affectedSystems": [
-        "MOVEMENT",
-        "INVENTORY",
-        "WORLD",
-        "SAVE"
+        "GENERAL_GAMEPLAY"
       ],
       "platformTargets": [
         "ROBLOX"
@@ -25,7 +22,37 @@
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-10-17T17:21:26.765Z",
+      "detectedAt": "2026-10-17T18:33:05.247Z",
+      "state": "PLATFORM_PROPAGATION_REQUIRED"
+    },
+    {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE",
+      "gameId": "survival2",
+      "sourcePath": "web-games/survival2",
+      "sourceBefore": "5b7bbcf9022d93b1e492ab31d5bc2c1040bc3da3",
+      "sourceAfter": "bb7c1591c9f326f80a6fb342ffdd1a442df37560",
+      "semanticIntentFingerprint": "97c8343ece688068da2565334edcca2959dc14e83775e5cf86b49aa9b9078c81",
+      "affectedSystems": [
+        "MOVEMENT",
+        "COMBAT",
+        "CRAFTING",
+        "INVENTORY",
+        "WORLD",
+        "MULTIPLAYER",
+        "PROGRESSION",
+        "UI_UX",
+        "SAVE",
+        "BALANCE"
+      ],
+      "platformTargets": [
+        "ROBLOX"
+      ],
+      "literalWebCodeCrossPlatformCopyForbidden": true,
+      "semanticIntentPropagationRequired": true,
+      "affectedWebQaRequired": true,
+      "affectedPlatformQaRequired": true,
+      "detectedAt": "2026-10-17T18:33:05.247Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]

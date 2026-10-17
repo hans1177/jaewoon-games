@@ -8624,7 +8624,39 @@
       "robloxBuildUpAssetSourceUsageLibraryVersion": 139,
       "robloxBuildAssetSelectionFingerprint": "3bed635aca13bc3fd00d7baa5759998290101167fbe9b8e36859c59ebf15464f",
       "robloxBuildAssetLibraryVersion": 139,
-      "robloxExactRevisionPassed": false
+      "robloxExactRevisionPassed": false,
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "survival2",
+        "sourcePath": "web-games/survival2",
+        "sourceBefore": "5b7bbcf9022d93b1e492ab31d5bc2c1040bc3da3",
+        "sourceAfter": "bb7c1591c9f326f80a6fb342ffdd1a442df37560",
+        "semanticIntentFingerprint": "97c8343ece688068da2565334edcca2959dc14e83775e5cf86b49aa9b9078c81",
+        "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "CRAFTING",
+          "INVENTORY",
+          "WORLD",
+          "MULTIPLAYER",
+          "PROGRESSION",
+          "UI_UX",
+          "SAVE",
+          "BALANCE"
+        ],
+        "platformTargets": [
+          "ROBLOX"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-10-17T18:33:05.247Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -37708,7 +37740,30 @@
         ],
         "workflowRunId": 39033969315,
         "testedAt": "2026-10-17T12:52:12.796Z"
-      }
+      },
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "star-frontier",
+        "sourcePath": "web-games/star-frontier",
+        "sourceBefore": "5b7bbcf9022d93b1e492ab31d5bc2c1040bc3da3",
+        "sourceAfter": "bb7c1591c9f326f80a6fb342ffdd1a442df37560",
+        "semanticIntentFingerprint": "072378a5185d6ecc234c66cb2fbdde1abea461d3dfec42feafaeeaeeed9d1bba",
+        "affectedSystems": [
+          "GENERAL_GAMEPLAY"
+        ],
+        "platformTargets": [
+          "ROBLOX"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-10-17T18:33:05.247Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     },
     {
       "gameId": "ant-simulator",
@@ -39039,7 +39094,7 @@
       "robloxExactRevisionPassed": false
     }
   ],
-  "updatedAt": "2026-10-17T18:31:16.594Z",
+  "updatedAt": "2026-10-17T18:33:05.247Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
