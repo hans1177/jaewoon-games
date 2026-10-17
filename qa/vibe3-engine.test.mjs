@@ -98,7 +98,7 @@ assert.equal(art.art.variantTournament,true);
 const currentRoadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const currentVibe3=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe3-engine-contract.json',import.meta.url),'utf8'));
 const currentWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe3-engine-contract.yml',import.meta.url),'utf8');
-assert.equal(currentRoadmap.currentPhase,'ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT');
+assert.equal(currentRoadmap.currentPhase,'ROBLOX_AND_GENERAL_WEB_3D_CONTINUOUS_DEVELOPMENT');
 assert.equal(currentVibe3.platformRoadmap.currentPhase,currentRoadmap.currentPhase);
 assert.deepEqual(currentRoadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','WEB']);
 assert.equal(currentRoadmap.developmentAccess.WEB,'ALWAYS_ALLOWED');
