@@ -525,6 +525,20 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   if(clean(task.target).toLowerCase()==='system'&&task.systemSteward===true&&clean(task.department).toLowerCase()==='system-architecture'){
     return buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicyLiveRef,runtime,variant});
   }
+  // 메인 · 코딩 타깃/실행 게이트와 무관하게 설계 소유권을 먼저 판별한다.
+  // 기존 디자이너 이관은 빌드 또는 게임 소스 쓰기 권한을 부여하지 않는다.
+  if(task.designChange===true||clean(task.type).toLowerCase()==='design'
+    ||clean(task.department).toLowerCase()==='design'){
+    const routing=buildVibeDesignIntelligence({task,plan:{target:task.target}});
+    if(routing.designerHandoff?.required){
+      return freeze({
+        ...base,reason:routing.designerHandoff.ready?'DESIGNER_HANDOFF_REQUIRED':'DESIGNER_HANDOFF_INPUT_INVALID',
+        taskId:clean(task.id||task.taskId),gameId:clean(task.gameId),
+        selectedTask:task,designerHandoff:routing.designerHandoff,
+        designIntelligence:routing
+      });
+    }
+  }
   const neuralDiagnosis = task?.neuralDiagnosis || buildNeuralDiagnosis({task});
   const neuralGuidance = neuralDiagnosisGuidance(neuralDiagnosis);
   const requiresWrite = taskRequiresWrite(task);
@@ -545,16 +559,6 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   if (!mayRun) return freeze({ ...base, reason:`EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`, selectedTask:task, gate:plan.executionGate });
 
   const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience });
-  // 메인 · 외부 설계 수정은 기존 디자이너에게 넘기고 코딩 워커 실행을 차단한다.
-  if(designIntelligence.designerHandoff?.required){
-    return freeze({
-      ...base,reason:designIntelligence.designerHandoff.ready
-        ?'DESIGNER_HANDOFF_REQUIRED':'DESIGNER_HANDOFF_INPUT_INVALID',
-      taskId:clean(task.id||task.taskId),gameId:clean(task.gameId),
-      selectedTask:task,designerHandoff:designIntelligence.designerHandoff,
-      gate:plan.executionGate,designIntelligence
-    });
-  }
   if (requiresWrite && designIntelligence.implementationGate.allowed !== true) {
     return freeze({
       ...base,
