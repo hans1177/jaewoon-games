@@ -230,6 +230,104 @@ export const VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES=Object.freeze([
   Object.freeze({id:'GLTF_TRANSFORM',kind:'AUTHORING_TOOL',roles:['CHARACTER','CREATURE','BUILDING','TERRAIN','PROP','ITEM'],sourceUrl:'https://gltf-transform.dev/',owner:'assets/native-authoring/build-game-visual.py',integration:'REVIEWED_3D_OPTIMIZATION',licenseReviewRequired:true}),
   Object.freeze({id:'KENNEY_ASSET_REFERENCE',kind:'SOURCE_REFERENCE',roles:['CHARACTER','CREATURE','BUILDING','TERRAIN','PROP','ITEM','UI'],sourceUrl:'https://kenney.nl/',owner:'tools/vibe2-asset-production-plan.mjs',integration:'LICENSE_VERIFIED_EXTERNAL_ASSET_CANDIDATE',licenseReviewRequired:true})
 ]);
+
+// 장르 분류에 매이지 않는 구성 능력. 승인 설계에 명시된 항목만 실제 제작 입력으로 보낸다.
+// 플로어/방은 선택적인 공간 단위이며 경기·퍼즐·사회적 상호작용 등에는 강제하지 않는다.
+export const VIBE_UNIVERSAL_CONTENT_CAPABILITIES=Object.freeze([
+  Object.freeze({id:'SPACE_OR_WORLD',designSignal:/\b(?:terrain|landscape|world map|open.world|biome|region|environment|zone)\b|지형|월드|지역|바이옴|대륙|맵|탐험구역/i,assetRoles:['TERRAIN','ENVIRONMENT','MAP','PROP'],checks:['EXISTING_WORLD_ANCHORS','NAVIGATION_AND_COLLISION','CAMERA_AND_MOBILE_BUDGET']}),
+  Object.freeze({id:'FLOOR_OR_ROOM',designSignal:/\b(?:floor|dungeon|maze|room layout|stage layout|procedural level|level layout)\b|플로어|층별|던전|미궁|방 배치|스테이지 구조/i,assetRoles:['DUNGEON','BUILDING','MAP','PROP'],checks:['ROOM_CONNECTIVITY','START_TO_GOAL_REACHABILITY','ENTRANCE_EXIT_PORTALS']}),
+  Object.freeze({id:'HOUSING',designSignal:/\b(?:housing|player housing|home ownership|base building|home decoration|buildable house|player home)\b|하우징|내집|개인 주택|건설 가능한 집|기지 건설|주거지|집 꾸미기/i,assetRoles:['BUILDING','PROP','MATERIAL','MAP'],checks:['PLACEMENT_AND_COLLISION','OWNER_PERMISSION_AND_SERVER_AUTHORITY','COST_AND_INVENTORY','SAVE_AND_REJOIN','CANCEL_AND_ROLLBACK']}),
+  Object.freeze({id:'RAID_OR_SIEGE',designSignal:/\b(?:raid|siege|invasion|base attack|wave defense|enemy assault)\b|습격|침공|공성|방어전|몬스터 웨이브|기지 공격|레이드/i,assetRoles:['ENEMY_AI','CREATURE','MAP','BUILDING'],checks:['APPROVED_SPAWN_AND_WAVE_RULES','ACTUAL_NAVIGATION_AND_SAFE_SPAWN','DEFENSE_COMBAT_SERVER_AUTHORITY','REWARD_AND_RETRY_IDEMPOTENCY','DISCONNECT_AND_EVENT_CLEANUP']}),
+  Object.freeze({id:'COMBAT_OR_CHASE',designSignal:/\b(?:combat|battle|fight|chase|shooter|arena combat)\b|전투|격투|추격|사격|보스전/i,assetRoles:['ENEMY_AI','CREATURE','CHARACTER','MAP'],checks:['AUTHORITATIVE_HIT_AND_COOLDOWN','INPUT_AND_MOTION','NAVIGATION_AND_REACTION']}),
+  Object.freeze({id:'RACING_OR_MOVEMENT',designSignal:/\b(?:race|racing|vehicle|track|parkour|platformer)\b|경주|레이싱|차량|트랙|파쿠르|플랫포머/i,assetRoles:['MAP','TERRAIN','PROP'],checks:['TRACK_OR_ROUTE_REACHABILITY','SPAWN_AND_CHECKPOINT','INPUT_AND_COLLISION']}),
+  Object.freeze({id:'PUZZLE_OR_ADVENTURE',designSignal:/\b(?:puzzle|quest|escape room|investigation|adventure)\b|퍼즐|퀘스트|방탈출|추리|탐정|모험/i,assetRoles:['MAP','DUNGEON','PROP','UI'],checks:['PUZZLE_STATE_AND_SOLUTION','SOFTLOCK_RECOVERY','RESET_AND_SAVE']}),
+  Object.freeze({id:'SOCIAL_OR_CREATIVE',designSignal:/\b(?:social|roleplay|sandbox build|creative mode|avatar customization)\b|소셜|롤플레잉|역할극|샌드박스|꾸미기|커스터마이징/i,assetRoles:['NPC','BUILDING','CHARACTER','UI'],checks:['PLAYER_OWNERSHIP_AND_MODERATION','INTERACTION_AND_MOBILE_UI','SAVED_STATE_AND_REJOIN']}),
+  Object.freeze({id:'ECONOMY_OR_SIMULATION',designSignal:/\b(?:tycoon|economy|economics|management|farming|factory|simulation)\b|타이쿤|경영|농사|농장|생산|공장|시뮬레이션/i,assetRoles:['BUILDING','PROP','ITEM','UI'],checks:['AUTHORITATIVE_ECONOMY_AND_INVENTORY','PRODUCTION_CYCLE','SAVE_AND_REJOIN']}),
+  Object.freeze({id:'SURVIVAL_OR_CRAFTING',designSignal:/\b(?:survival|crafting|gathering|resource harvest)\b|생존|제작|채집|자원 수집|크래프팅/i,assetRoles:['TERRAIN','ENVIRONMENT','ITEM','PROP'],checks:['RESOURCE_GATHERING_AND_CRAFT','APPROVED_DANGER_AND_REWARD','WORLD_STATE_AND_SAVE']})
+]);
+function vibeDesignEvidenceText(value,depth=0){
+  if(depth>5||value==null)return'';
+  if(typeof value==='string')return value.slice(0,500);
+  if(typeof value==='number'||typeof value==='boolean')return'';
+  if(Array.isArray(value))return value.slice(0,48).map(row=>vibeDesignEvidenceText(row,depth+1)).join(' ');
+  if(typeof value!=='object')return'';
+  return Object.entries(value).slice(0,55).flatMap(([key,item])=>
+    // JSON 키가 존재한다는 이유만으로 사용하지 않는 기능을 활성화하지 않는다.
+    /^(?:enabled|active|isEnabled|available|status)$/i.test(key)&&item===false?[]:
+    [vibeDesignEvidenceText(item,depth+1)]
+  ).join(' ');
+}
+/**
+ * 승인 설계 → 최소 첫 플레이(F0) → 장르 공통 원본 작업 → F1-F9 검증으로 이어지는
+ * 기존 BUILD_UP 작업 입력. 공간/던전/하우징/습격의 존재를 장르로부터 추측하지 않는다.
+ */
+export function planVibeUniversalComposition({
+  approvedDesign=null,designFingerprint='',gameId='',target='',ownerScope=null,
+  sourceRoot='',sourceRevision='',executionSurface='',unityWebDevelopment=false
+}={}){
+  const platform=vibeNormalizedTarget(target);
+  const unityOwned=unityWebDevelopment===true||/^(?:\.?\/)?unity-games\//i.test(text(sourceRoot).replaceAll('\\','/'))
+    ||/UNITY[_-]?WEB|UNITY[_-]?ANDROID/i.test(text(executionSurface));
+  const active=Array.isArray(ownerScope?.activeTargets)?ownerScope.activeTargets.map(vibeNormalizedTarget):[];
+  const held=Array.isArray(ownerScope?.ownerHeldTargets)?ownerScope.ownerHeldTargets.map(vibeNormalizedTarget):[];
+  const authorized=ownerScope?.status==='ACTIVE'&&ownerScope?.existingPipelineOnly===true
+    &&['ROBLOX','WEB'].includes(platform)&&active.includes(platform)&&!held.includes(platform)&&!unityOwned;
+  const verified=approvedDesign&&typeof approvedDesign==='object'&&!Array.isArray(approvedDesign)
+    &&/^(?:sha256:)?[a-f0-9]{64}$/i.test(text(designFingerprint));
+  const body=verified?[
+    approvedDesign.coreFun,approvedDesign.coreLoop,approvedDesign.signatureSystems,
+    approvedDesign.systemInterconnections,approvedDesign.spatialLayout,approvedDesign.detailedDesign,
+    approvedDesign.contentVarietyPlan,approvedDesign.contentExpansionPlan,
+    approvedDesign.selectedDesignPlan,approvedDesign.implementationTraceability,
+    approvedDesign.narrativeDialoguePlan,approvedDesign.interfacePlan
+  ].map(x=>vibeDesignEvidenceText(x)).join(' ').slice(0,16000):'';
+  const declared=VIBE_UNIVERSAL_CONTENT_CAPABILITIES.filter(row=>row.designSignal.test(body));
+  const ready=Boolean(authorized&&verified&&text(gameId));
+  const capabilities=declared.map(row=>Object.freeze({
+    id:row.id,designEvidence:'APPROVED_GAME_DESIGN_ONLY',
+    state:ready?'CANONICAL_SOURCE_OWNER_REVIEW_REQUIRED':'POLICY_OR_DESIGN_BLOCKED',
+    contentUnit:row.id==='FLOOR_OR_ROOM'?'OPTIONAL_DESIGN_DEFINED_FLOOR_OR_ROOM'
+      :row.id==='HOUSING'?'DESIGN_DEFINED_OWNED_BUILDING'
+      :row.id==='RAID_OR_SIEGE'?'DESIGN_DEFINED_EVENT_OR_RAID':'DESIGN_DEFINED_CONTENT_UNIT',
+    assetRoles:Object.freeze([...row.assetRoles]),validation:Object.freeze([...row.checks]),
+    sourceOwnerMustAlreadyExistOrBeExplicitlyApproved:true,
+    originalSourceAndApprovedMechanicsImmutable:true,
+    firstPlayableProofRequired:true,created:false,runtimeVerified:false
+  }));
+  const baseChecks=Object.freeze([
+    'APPROVED_MAIN_CORE_LOOP_WITH_REAL_GAME_STATE','REAL_PLAYER_INPUT_AND_OBSERVABLE_RESULT',
+    'REAL_SOURCE_OWNER_AND_SOURCE_REVISION','PREEXISTING_RULES_BALANCE_AND_SAVE_UNCHANGED',
+    'SAME_ARTIFACT_F0_PROOF_NOT_F9_OR_RUNTIME_PASS'
+  ]);
+  return Object.freeze({
+    version:1,kind:'vibe2-existing-build-up-universal-content-composition',
+    gameId:text(gameId),target:unityOwned?'UNITY_WEB':platform,
+    authorized:ready,designFingerprint:verified?text(designFingerprint):null,
+    sourceRevision:text(sourceRevision)||null,sourceRoot:text(sourceRoot)||null,
+    status:!authorized?'OWNER_POLICY_HELD':!verified?'APPROVED_GAME_DESIGN_REQUIRED'
+      :!text(gameId)?'GAME_ID_REQUIRED':'CANONICAL_BUILD_UP_SOURCE_WORK_REQUIRED',
+    genreRestriction:'NONE',genreDoesNotAutoEnableMechanics:true,
+    floorOrDungeonMandatory:false,housingMandatory:false,raidMandatory:false,
+    designDeclaredCapabilities:Object.freeze(capabilities),
+    f0:Object.freeze({objective:'ONE_AUTHENTIC_FIRST_PLAYABLE_SLICE',checks:baseChecks,
+      nativeGameSourceEditRequired:true,proofState:'NOT_EXECUTED',runtimeVerified:false}),
+    expansion:Object.freeze({
+      stage:'EXISTING_BUILD_UP_F1_TO_F8',
+      sequence:Object.freeze(['EXISTING_GAME_SYSTEMS','DESIGN_DEFINED_SPACES_OR_FLOORS',
+        'DESIGN_DEFINED_HOUSING_IF_PRESENT','DESIGN_DEFINED_RAID_IF_PRESENT',
+        'OTHER_DESIGN_DEFINED_CONTENT','CANONICAL_ASSET_BINDINGS']),
+      requiresExactNativeSourceAndSavedState:true,executed:false
+    }),
+    f9:Object.freeze({checks:Object.freeze(['ACTUAL_GAME_RUNTIME_AND_MOBILE_INPUT',
+      'SPAWN_NAV_COLLISION_OR_GENRE_RELEVANT_INPUT','PERSISTENCE_AND_REJOIN_IF_APPLICABLE',
+      'NO_GAMEPLAY_BALANCE_OR_AUTHORITY_REGRESSION','EXACT_BUILD_SOURCE_AND_ARTIFACT_EVIDENCE']),
+      pass:false,runtimeVerified:false}),
+    existingPipelineOnly:true,automaticNewFeatureAuthorization:false,
+    requiredExecutionOwner:'EXISTING_GAME_NATIVE_SOURCE',
+    algorithmAndDccToolsProvideVisualAndLayoutInputsOnly:true,
+    runtimeVerified:false,appliedToGame:false,newQueueCreated:false
+  });
+}
 const VIBE_ROLE_PATTERNS=Object.freeze({
   TERRAIN:/terrain|world|biome|landscape|valley|canyon|cliff|지형|월드|협곡|산|강|숲|바위|지질/i,
   ENVIRONMENT:/environment|forest|weather|nature|환경|자연|숲|날씨|바람/i,
