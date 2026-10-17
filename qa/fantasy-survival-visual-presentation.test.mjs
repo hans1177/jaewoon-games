@@ -336,21 +336,24 @@ test('auto gather reuses authoritative resource balance and tool gates instead o
   assert.match(gather,/best\.kind==='iron'.*stone-pick.*iron-pick.*gold-pick/);
   assert.match(gather,/best\.kind==='gold'.*p\.tool!=='iron-pick'/);
   assert.match(gather,/best\.kind==='poisonstone'.*p\.tool!=='gold-pick'/);
-  assert.match(gather,/best\.kind==='essence'.*iron-axe.*gold-axe/);
+  assert.match(gather,/const axeId=equippedAxeId\(p\)/); 
+  assert.match(gather,/best\.kind==='essence'&&!axeId/);
+  assert.match(functionBody('equippedAxeId'),/iron-axe.*gold-axe/);
   const auto=functionBody('updateAutoGather');
   assert.match(auto,/nearestGatherResource\(\)/);
   assert.match(auto,/gather\(target,true\)/);
   assert.doesNotMatch(auto,/wood\+\=|stone\+\=|fiber\+\=|ironOre\+\=|goldOre\+\=|essence\+\=/);
 });
 
-test('auto gather is nearest-only local runtime state and does not alter save or multiplayer semantics',()=>{
+test('auto gather keeps transient targeting local and stores only the approved on/off setting',()=>{
   assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=73/);
   assert.match(source,/gathering:\{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0\}/);
   const nearest=functionBody('nearestGatherResource');
   assert.match(nearest,/for\(const n of resourceNodes\(\)\)/);
   assert.match(nearest,/if\(d<bestD\)\{best=n;bestD=d\}/);
   const save=functionBody('saveGame');
-  assert.doesNotMatch(save,/gathering|autoGather/);
+  assert.match(save,/settings:\{difficulty:state\.settings\.difficulty,autoGather:!!state\.gathering\.auto/);
+  assert.doesNotMatch(save,/target:state\.gathering|nextAt:state\.gathering|blockedUntil:state\.gathering/);
   assert.doesNotMatch(functionBody('gather'),/multiSend|multiBroadcast|channel/);
   assert.doesNotMatch(functionBody('updateAutoGather'),/multiSend|multiBroadcast|channel/);
 });
