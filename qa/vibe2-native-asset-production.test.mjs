@@ -5089,3 +5089,34 @@ test('Vibe game asset supply verifies and applies originals instead of schedulin
   assert.ok(!worker.includes(".filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'"));
   assert.match(worker,/Only inspect, verify and apply existing company\/common or downloaded license-cleared assets/);
 });
+
+
+test('selected game hydrates only its missing hash-pinned source, not every archive',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-game-asset-demand-'));
+  try{
+    const rel='assets/external/simple-rpg/priority-v1/bee-rigged.blend';
+    const item={file:'bee-rigged.blend',role:'01-insects',sourcePath:rel,
+      sha256:'a'.repeat(64),bytes:1692676,sourceOnly:true,gameApplied:false,
+      licenseDeclared:'CC0-1.0',
+      sourceUrl:'https://opengameart.org/sites/default/files/bee_rigged_v1.1.blend',
+      licenseEvidenceUrl:'https://opengameart.org/content/bee-0'};
+    const summary=buildAssetSupplyDecisionSummary({
+      gameId:'bees-survival',target:'roblox',request:'bee',
+      requirements:[{family:'CREATURE',role:'bee'}],
+      registry:{assets:[],externalSources:[]},sharedOriginalArchives:[item],repoRoot:tmp
+    });
+    const picked=summary.nextActions.find(row=>row.action==='ACQUIRE_ADAPT');
+    assert.ok(picked,'missing LFS archive must remain selectable for the current game');
+    assert.equal(picked.externalAcquisition.localSourcePath,rel);
+    assert.equal(picked.externalAcquisition.downloaded,false);
+    assert.equal(picked.externalAcquisition.archiveBytes,item.bytes);
+    assert.equal(picked.externalAcquisition.sourceHash,item.sha256);
+    assert.equal(picked.externalAcquisition.acquisitionState,'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED');
+    assert.equal(picked.externalAcquisition.downloadUrl,null);
+    assert.equal(buildAssetSupplyDecisionSummary({
+      gameId:'bees-survival',target:'roblox',request:'bee',
+      requirements:[{family:'CREATURE',role:'bee'}],
+      registry:{assets:[],externalSources:[]},sharedOriginalArchives:[{...item,file:'wolf-rigged.blend'}],repoRoot:tmp
+    }).nextActions.some(row=>row.externalAcquisition?.localSourcePath===rel),false);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
