@@ -21,7 +21,7 @@ export function retryDelayMs(response,status,body=null){
   let delay=Number.isFinite(seconds)&&seconds>0?seconds*1000:Date.parse(value)-Date.now();
   if(!Number.isFinite(delay)||delay<=0){
     const providerDelay=clean(body?.error?.details?.find?.(row=>row?.['@type']?.includes('RetryInfo'))?.retryDelay);
-    if(/^\\d+(?:\\.\\d+)?s$/.test(providerDelay))delay=Number(providerDelay.slice(0,-1))*1000;
+    if(/^\d+(?:\.\d+)?s$/.test(providerDelay))delay=Number(providerDelay.slice(0,-1))*1000;
   }
   if(!Number.isFinite(delay)||delay<=0){
     const detail=clean(body?.error?.message);
