@@ -2689,12 +2689,28 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   if(packageAssetFailure){
     const threshold=project.queueRobloxQualityBuildUpEvidence.assetThreshold||{};
     const failedFamilies=new Set((threshold.blockers||[]).map(value=>clean(value).split(':').at(-1)));
-    const repairFiles=(threshold.familyResults||[]).filter(row=>failedFamilies.has(row.family))
-      .flatMap(row=>row.responsibleFiles||[]).map(posix)
+    const materialBindingMissing=failedFamilies.has('MATERIAL');
+    // CommonMaterials is the reusable preset library, not the missing game-side
+    // consumption. Route this exact failure to an existing native material consumer
+    // (the server/world script) without mutating preset assets or inventing PASS.
+    const materialConsumerFiles=materialBindingMissing?['server/Game.server.luau']:[];
+    const repairFiles=[
+      ...(threshold.familyResults||[]).filter(row=>failedFamilies.has(row.family))
+        .flatMap(row=>row.responsibleFiles||[]).map(posix)
+        .filter(file=>file!=='shared/RobloxCommonMaterials.luau'),
+      ...materialConsumerFiles
+    ]
       .filter(file=>/^(?:client|server|shared)\/(?!.*(?:^|\/)\.\.(?:\/|$)).+\.(?:lua|luau)$/.test(file))
       .map(file=>`roblox-games/${project.gameId}/${file}`)
       .filter(file=>fs.existsSync(sourceFile(repoRoot,file)));
-    taskInput={...taskInput,responsibleFiles:[...new Set([...(taskInput.responsibleFiles||[]),...repairFiles])]};
+    const materialRepairGoal=materialBindingMissing
+      ?'\n[F0_MATERIAL_CONSUMER_REPAIR] Repair the existing game-side MATERIAL atom consumer, e.g. an existing world BasePart in server/Game.server.luau. Reuse RobloxCommonMaterials without editing that preset module or company-asset-library.json. Read the exact approved material selection and apply its actual native visual material while preserving collisions, friction, save schema, balance, and game rules. A named atom, module existence, selection table, comment or pass marker alone is NOT a material binding. Re-run the unchanged package asset threshold and Luau compile before F0; no false PASS.'
+      :'';
+    taskInput={...taskInput,
+      responsibleFiles:[...new Set([...(taskInput.responsibleFiles||[]),...repairFiles])],
+      goal:clean(taskInput.goal)+materialRepairGoal,
+      evidence:[...new Set([...(taskInput.evidence||[]),...(materialBindingMissing?['f0-material-consumer-repair:game-source-only','f0-material-preset-originals-preserved','f0-package-threshold-must-revalidate']:[])])]
+    };
   }
   if(qualityFailure&&project.queueRobloxQualityBuildUpEvidence?.authority==='roblox-source-static-contract-failure'){
     const owners=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau']
