@@ -743,8 +743,15 @@ test('Vibe MATERIAL repair binds selected asset atom to an existing visible nati
     source:'local Config = require(Shared:WaitForChild("GameConfig"))\\nlocal part=Instance.new("Part")',
     familyStatus:{MATERIAL:'APPLIED'},selectedAtoms
   }),/EXISTING_STUDIO_MATERIAL_VISIBLE_NATIVE_TARGET_REQUIRED/);
-  const existing=fs.readFileSync('roblox-games/island-village/server/Game.server.luau','utf8');
-  assert.throws(()=>bindExistingServerStudioMaterial({source:existing,familyStatus:{MATERIAL:'APPLIED'},selectedAtoms:['UNVERIFIED']}),/EXISTING_STUDIO_MATERIAL_SELECTED_NATIVE_ATOM_REQUIRED/);
+  // This negative fixture must remain unbound even after Vibe merges the real game's repair.
+  // Reading a live game here incorrectly turns an expected failure into an idempotent no-op.
+  const unboundNativeSource=[
+    'local Config = require(Shared:WaitForChild("GameConfig"))',
+    'local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")',
+    'local foundationMarker = Instance.new("SpawnLocation")',
+  ].join('\n');
+  assert.equal(robloxStudioAssetFamilyBoundInText(unboundNativeSource,'MATERIAL'),false);
+  assert.throws(()=>bindExistingServerStudioMaterial({source:unboundNativeSource,familyStatus:{MATERIAL:'APPLIED'},selectedAtoms:['UNVERIFIED']}),/EXISTING_STUDIO_MATERIAL_SELECTED_NATIVE_ATOM_REQUIRED/);
 });
 
 test('Roblox source-plan routes only an exact current MATERIAL package failure back into Vibe source worker',()=>{

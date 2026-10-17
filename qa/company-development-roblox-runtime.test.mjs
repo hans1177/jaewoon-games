@@ -1188,7 +1188,7 @@ test('Roblox runtime collapses duplicate exact-game and batch planners without w
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(workflow,/const winner=candidates\.find\(r=>String\(r\.status\|\|''\)\.toLowerCase\(\)==='in_progress'\)\|\|candidates\[candidates\.length-1\]/);
+  assert.match(workflow,/const winner=candidates\[0\];/);
   assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n/);
 });
 
@@ -1227,8 +1227,8 @@ test('Roblox source-plan winner preserves running work and filters exact game an
     return result;
   };
   assert.equal(winner([run(10,'in_progress'),run(11,'queued')]),'10');
-  assert.equal(winner([run(10,'queued'),run(11,'in_progress')]),'11');
-  assert.equal(winner([run(10,'queued'),run(11,'queued')]),'11');
+  assert.equal(winner([run(10,'queued'),run(11,'in_progress')]),'10');
+  assert.equal(winner([run(10,'queued'),run(11,'queued')]),'10');
   assert.equal(winner([run(10,'completed'),run(11,'queued')]),'11');
   assert.equal(winner([run(10,'in_progress','different'),run(11,'queued','cozy-island','b'.repeat(40)),run(12,'queued')]),'12');
   assert.equal(winner([run(10,'in_progress','different')]),'');
@@ -1293,10 +1293,10 @@ test('build revalidation pending waiting state remains eligible for exact Roblox
 });
 
 
-test('exact-game dedupe prefers in-progress work and compares only the same source revision',()=>{
+test('exact-game dedupe keeps oldest active work and compares only the same source revision',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/\.sort\(\(a,b\)=>Number\(a\.id\)-Number\(b\.id\)\)/);
-  assert.match(workflow,/const winner=candidates\.find\(r=>String\(r\.status\|\|''\)\.toLowerCase\(\)==='in_progress'\)\|\|candidates\[candidates\.length-1\]/);
+  assert.match(workflow,/const winner=candidates\[0\];/);
   assert.doesNotMatch(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
 });
 
@@ -1458,4 +1458,51 @@ test('director drains stale queued Roblox native work when a current-main batch 
   assert.match(director,/ROBLOX_STALE_UNSTARTED_NATIVE_WORK_REPLACED_BY_CURRENT_BATCH/);
   assert.match(director,/queued\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_ACTIVE_PRESERVED=/);
+});
+
+test('Vibe source repair logs exact current blockers without bypassing material or static contract ownership',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('const materialRepairPending=');
+  const end=workflow.indexOf('const existingSourceAssetRebind=',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/reconciliationRow\.blockers\.length===1/);
+  assert.match(block,/ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL/);
+  assert.match(block,/ROBLOX_SOURCE_REPAIR_DEBT_DETAILS=/);
+  assert.match(block,/sourceContractRepairRequired:reconciliationRow\?\.sourceContractRepairRequired===true/);
+  assert.match(block,/blockers:Array\.isArray\(reconciliationRow\?\.blockers\)/);
+  assert.match(block,/ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE=/);
+  assert.match(block,/continue;/);
+});
+
+test('Roblox exact-SHA scheduler keeps oldest active run even when GitHub reports queued during downstream work',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const step=workflow.slice(workflow.indexOf('      - name: Reject superseded batch scheduler'),workflow.indexOf('      - name: Bind Roblox source-plan contract fingerprint'));
+  const start=step.indexOf("const states=new Set(['queued','pending','in_progress','requested']);");
+  const end=step.indexOf("\n            });",start);
+  assert.ok(start>=0&&end>start,'original canonical planner decision must be present');
+  const decide=step.slice(start,end);
+  assert.match(decide,/sort\(\(a,b\)=>Number\(a\.id\)-Number\(b\.id\)\)/);
+  assert.match(decide,/const winner=candidates\[0\];/);
+  const sha='a'.repeat(40),older=39034932991,newer=39035066181;
+  const decideOwner=(status1,status2,{title='Roblox runtime · batch',currentGame='',differentSha=false}={})=>{
+    let selection=null;
+    const j={workflow_runs:[
+      {id:newer,status:status2,display_title:title,head_sha:sha},
+      {id:older,status:status1,display_title:title,head_sha:differentSha?'b'.repeat(40):sha},
+      {id:older-1,status:'completed',display_title:title,head_sha:sha},
+      {id:older-2,status:'queued',display_title:'Roblox runtime · other-game',head_sha:sha},
+    ]};
+    runInNewContext(decide,{j,process:{
+      env:{REQUESTED_GAME_ID:currentGame,CURRENT_SHA:sha},
+      stdout:{write(value){selection=String(value)}}
+    }});
+    return selection;
+  };
+  assert.equal(decideOwner('queued','queued'),String(older));
+  assert.equal(decideOwner('queued','in_progress'),String(older),'the newer job cannot preempt an older queued workflow with live child jobs');
+  assert.equal(decideOwner('in_progress','queued'),String(older));
+  assert.equal(decideOwner('completed','queued'),String(newer));
+  assert.equal(decideOwner('queued','queued',{differentSha:true}),String(newer));
+  assert.equal(decideOwner('queued','queued',{title:'Roblox runtime · island-village',currentGame:'island-village'}),String(older));
 });

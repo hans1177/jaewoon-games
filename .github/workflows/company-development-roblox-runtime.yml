@@ -374,7 +374,6 @@ jobs:
                 blockers:Array.isArray(reconciliationRow?.blockers)
                   ?reconciliationRow.blockers.map(value=>String(value||'')).slice(0,20):[],
               }));
-
               console.log('ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE='+item.gameId);
               continue;
             }

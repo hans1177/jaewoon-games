@@ -14,14 +14,15 @@
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": false,
+  "serverSourceChanged": true,
   "foundationRepairApplied": false,
-  "studioMaterialRepairApplied": false,
+  "studioMaterialRepairApplied": true,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "client/Game.client.luau"
+    "client/Game.client.luau",
+    "server/Game.server.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
+  "generationMode": "EXISTING_SOURCE_STUDIO_MATERIAL_REPAIR",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
@@ -578,12 +579,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": null,
-  "buildUpGeneration": null,
-  "buildUpGoal": null,
-  "buildUpDirectiveFingerprint": null,
-  "buildUpDirectiveConsumed": false,
+  "buildUpDirectiveId": "wild-survival-build-up-g1-bf80875485a1",
+  "buildUpGeneration": 1,
+  "buildUpGoal": "예술·남아시아사 스포츠×모험: 중계기: 중계 지점 사이 연결이 확보됨의 성립. MAIN은 A(플레이 선택과 공간 점유 × 예술)와 독립적인 B(리듬 변화와 연주 목표 × 남아시아사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 공포 × 보조 모험)의 판정 차이, @(중계기: 중계 지점 사이 연결이 확보됨의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "buildUpDirectiveFingerprint": "bf80875485a18ced7c959c622d0a63a1963050abce2e2a540d4610622f07a720",
+  "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-  "createdAt": "2026-10-17T12:52:21.992Z"
+  "createdAt": "2026-10-17T13:25:22.335Z"
 }
