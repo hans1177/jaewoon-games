@@ -450,6 +450,10 @@ test('non-grammar design revision enters existing designer and blocks source mut
     const within=buildVibeDesignIntelligence({task:{...task,designScope:scope}});
     assert.equal(within.designerHandoff.required,false,scope);
   }
+  const outsideGrammarNamespace=buildVibeDesignIntelligence({task:{...task,designScope:'creativeGrammar.housing'}});
+  assert.equal(outsideGrammarNamespace.designerHandoff.required,true);
+  const actualGrammarField=buildVibeDesignIntelligence({task:{...task,designScope:'creativeGrammar.a.system'}});
+  assert.equal(actualGrammarField.designerHandoff.required,false);
   const fallback=buildVibeDesignIntelligence({task:{...task,designScope:'',type:'design'}});
   assert.equal(fallback.designerHandoff.required,true,'unspecified design change is not coded directly');
   const invalid=buildVibeDesignIntelligence({task:{...task,id:'',target:'unity'}});
