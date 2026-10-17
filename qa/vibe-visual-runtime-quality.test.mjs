@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import {createVibePortableImpactCue} from '../assets/vibe-presentation-director.js';
+import {createVibePortableImpactCue,createVibeCommercialInterfaceBlueprint,planVibePresentationAutopilot} from '../assets/vibe-presentation-director.js';
 import {
   createVibeArtPipeline,
   createVibeGraphicsProduction,
@@ -344,4 +344,57 @@ test('genre-neutral commercial impact cues are presentation-only, deterministic 
   assert.equal(reduced.cameraPulse,0);
   assert.equal(reduced.iconMotion,'none');
   assert.equal(createVibePortableImpactCue({event:'victory',mobile:false}).particles,18);
+});
+
+test('commercial genre UI only enables panels with authoritative systems AND matching source functions',()=>{
+  const source=[
+    'function renderInventory(){}','function equipItem(){}','const itemCatalog={};',
+    'function buyItem(){}','function confirmTrade(){}','function transferItem(){}',
+    'function craftItem(){}','function questLog(){}','function buildMenu(){}'
+  ].join('\n');
+  const systems=['INVENTORY_EQUIPMENT','ITEM_LOOT','ECONOMY_SHOP','TRADE_TRANSACTION','CRAFTING','QUEST_DIALOGUE','HOUSING_BUILDING'];
+  const ui=createVibeCommercialInterfaceBlueprint({genre:'STORY_COMPLETE_RPG',systems,source,platform:'WEB',locale:'ko-KR'});
+  assert.equal(ui.genre,'RPG');
+  assert.equal(ui.authority,'PRESENTATION_DESIGN_ONLY');
+  for(const id of ['inventory','equipment','items','merchant','trade','crafting','quests','building'])
+    assert.ok(ui.activeSurfaceIds.includes(id),id+': real owner and source binding');
+  assert.ok(!ui.activeSurfaceIds.includes('upgrades'),'no source owner means no fake upgrades');
+  assert.ok(ui.surfaces.find(x=>x.id==='trade').details.includes('single-idempotent-commit'));
+  assert.ok(ui.surfaces.find(x=>x.id==='trade').details.includes('offer-change-revokes-ready'));
+  assert.equal(ui.functionalContracts.noFakeItemTradeOrUpgradeButtons,true);
+  assert.equal(ui.typography.noRemoteFontDependency,true);
+  assert.equal(ui.touch.minimumTargetPx,48);
+  assert.equal(ui.navigation.backClosesTopmostPanelFirst,true);
+  assert.equal(ui.integration.verified,false);
+  const noSource=createVibeCommercialInterfaceBlueprint({genre:'RPG',systems,source:''});
+  assert.equal(noSource.activeSurfaceIds.length,0,'concept alone never exposes pretend panels');
+  assert.equal(noSource.surfaces.find(x=>x.id==='trade').state,'OWNER_IMPLEMENTATION_REQUIRED');
+  const sourceButNoAuthority=createVibeCommercialInterfaceBlueprint({genre:'CASUAL',systems:[],source});
+  assert.equal(sourceButNoAuthority.activeSurfaceIds.length,0,'code symbol alone never grants gameplay authority');
+  assert.equal(sourceButNoAuthority.genre,'CASUAL');
+  assert.equal(sourceButNoAuthority.density,'LOW');
+});
+
+test('all genre profiles receive distinct presentation while graphics production retains same owner systems',()=>{
+  const cases=[
+    ['CASUAL','CASUAL','SCORE_AND_NEXT_ACTION'],
+    ['SURVIVAL_HORROR_ESCAPE','HORROR','THREAT_AND_SURVIVAL'],
+    ['ACTION_SURVIVAL_ROGUELITE','SURVIVAL','VITALS_AND_RESOURCE'],
+    ['SIMULATOR_TYCOON_INCREMENTAL','TYCOON','ECONOMY_AND_NEXT_UPGRADE'],
+    ['SINGLE_DEFENSE_STRATEGY','STRATEGY','WAVE_AND_PLACEMENT'],
+    ['STORY_COMPLETE_RPG','RPG','CHARACTER_AND_QUEST'],
+    ['PUZZLE','PUZZLE','CLUE_AND_PROGRESS']
+  ];
+  for(const [genre,family,primary] of cases){
+    const blueprint=createVibeCommercialInterfaceBlueprint({genre,systems:['INVENTORY_EQUIPMENT'],source:''});
+    assert.equal(blueprint.genre,family);
+    assert.equal(blueprint.visualHierarchy,primary);
+    assert.equal(blueprint.surfaces.find(x=>x.id==='inventory').visibleCandidate,false);
+    assert.equal(blueprint.navigation.gameplayCanvasAlwaysVisible,true);
+    assert.equal(blueprint.visualSystem.localAssetReuseFirst,true);
+    const plan=planVibePresentationAutopilot({genre,systems:['INVENTORY_EQUIPMENT'],files:[{path:'index.html',source:'function renderInventory(){}'}]});
+    assert.equal(plan.commercialUI.genre,family);
+    assert.deepEqual(plan.commercialUI.activeSurfaceIds,['inventory']);
+    assert.equal(plan.policy.noRuleMutation,true);
+  }
 });
