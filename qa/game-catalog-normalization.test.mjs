@@ -5,7 +5,10 @@ import os from 'node:os';
 import path from 'node:path';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
-import { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, ingestOwnerWebGameIds, normalizeCatalog, validateNormalizedCatalog, validatedHomepageMedia, webTreeFingerprint } from '../tools/game-catalog-normalization.mjs';
+// Resolve the canonical, current main policy before importing the production normalizer.
+// The normalizer snapshots COMPANY_VERIFIED_POLICY_PATH at module initialization.
+process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+const { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, ingestOwnerWebGameIds, normalizeCatalog, validateNormalizedCatalog, validatedHomepageMedia, webTreeFingerprint }=await import('../tools/game-catalog-normalization.mjs');
 
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
 const homepage=fs.readFileSync('assets/homepage-enhancements.js','utf8');
