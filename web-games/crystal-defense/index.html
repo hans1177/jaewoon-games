@@ -1,372 +1,135 @@
 <!doctype html>
-<html>
+<html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>Approved Web Bootstrap</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crystal Defense</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#131b29;color:#f0f5ff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;min-height:100dvh}
+#game{width:min(960px,100%);margin:0 auto;padding:clamp(12px,3vw,28px);padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:clamp(24px,5vw,34px);margin:0}
+#score{font-size:22px;font-weight:700}
+#status{min-height:48px;padding:12px;border:1px solid #425577;border-radius:10px;background:#202e45}
+#actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.panel{min-height:155px;padding:16px;border-radius:12px;border:1px solid #465575;background:#29384e;display:flex;flex-direction:column;justify-content:space-between;gap:14px}
+.panel h2{font-size:19px;margin:0}
+.panel p{margin:0;line-height:1.4}
+button{min-height:48px;border:0;border-radius:9px;background:#3988e9;color:white;font-size:17px;font-weight:700;touch-action:manipulation;cursor:pointer}
+button:focus-visible{outline:3px solid #f3db80;outline-offset:2px}
+button:disabled{opacity:.55;cursor:default}
+.panel[data-done="true"]{border-color:#65b6d9;background:#204f63}
+.panel[data-done="true"] button{background:#216f74}
+#restart{display:block;width:100%;margin-top:16px;background:#45536b}
+#last-action{margin:12px 0 0;color:#bbcbe6}
+@media(max-width:460px){#actions{grid-template-columns:1fr}.panel{min-height:130px}#game{padding:12px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}}
+</style>
 </head>
 <body>
-<main id="game"><script>var game = new Game(); game.init();</script></main>
+<main id="game">
+  <header><h1>Crystal Defense</h1><output id="score" aria-live="polite">Score: 0</output></header>
+  <p id="status" role="status" aria-live="polite">Defend and move to progress.</p>
+  <section id="actions" aria-label="Game controls">
+    <article class="panel defense-area" data-action-panel="defend">
+      <h2>Defense</h2><p class="defense-text">Click to defend!</p>
+      <button type="button" class="defense-button" data-action="defend">Defend!</button>
+    </article>
+    <article class="panel move-area" data-action-panel="move">
+      <h2>Movement</h2><p class="move-text">Move to progress!</p>
+      <button type="button" class="move-button" data-action="move">Move!</button>
+    </article>
+    <article class="panel win-area" data-action-panel="win">
+      <h2>Victory</h2><p class="win-text">Complete the round after defending and moving.</p>
+      <button type="button" class="win-button" data-action="win">Win!</button>
+    </article>
+    <article class="panel lose-area" data-action-panel="lose">
+      <h2>Retreat</h2><p class="lose-text">End this round and restart.</p>
+      <button type="button" class="lose-button" data-action="lose">Lose!</button>
+    </article>
+  </section>
+  <button id="restart" type="button">Restart</button>
+  <p id="last-action" aria-live="polite">Last action: None</p>
+</main>
 <script>
-// Complete playable Web baseline with mobile gameplay, save compatibility, and verified learning motor
-// This is an approved missing-source bootstrap
-// Direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, save compatibility scaffolding where required, and no external network dependency.
-// This file is self-contained and must finish before the VIBE2_FILE_END marker.
-</script>
+// 파일명: web-games/crystal-defense/index.html
+// 메인: 기존 버튼 동작과 gameState 저장 형식을 유지한다.
+const state={defense:false,move:false,win:false,lose:false,score:0,lastAction:null};
+const actions=document.getElementById('actions');
+const scoreOutput=document.getElementById('score');
+const statusOutput=document.getElementById('status');
+const actionOutput=document.getElementById('last-action');
 
-<script>
-// Real gameplay expansion: click to defend, move to progress, win/lose, restart
-const game = document.getElementById('game');
-const defenseArea = document.createElement('div');
-defenseArea.className = 'defense-area';
-defenseArea.style.position = 'relative';
-defenseArea.style.width = '100%';
-defenseArea.style.height = '100%';
-defenseArea.style.display = 'flex';
-defenseArea.style.justifyContent = 'center';
-defenseArea.style.alignItems = 'center';
-defenseArea.style.textAlign = 'center';
-defenseArea.style.fontSize = '24px';
-defenseArea.style.color = '#fff';
-defenseArea.style.backgroundColor = '#444';
-defenseArea.style.borderRadius = '10px';
-defenseArea.style.padding = '20px';
-defenseArea.style.zIndex = 1000;
-
-game.appendChild(defenseArea);
-
-const defenseText = document.createElement('div');
-defenseText.className = 'defense-text';
-defenseText.textContent = 'Click to defend!';
-defenseText.style.marginTop = '10px';
-defenseArea.appendChild(defenseText);
-
-const defenseButton = document.createElement('button');
-defenseButton.textContent = 'Defend!';
-defenseButton.style.marginTop = '10px';
-defenseButton.style.padding = '10px 20px';
-defenseButton.style.fontSize = '18px';
-defenseButton.style.backgroundColor = '#222';
-defenseButton.style.color = '#fff';
-defenseButton.style.borderRadius = '5px';
-defenseButton.style.border = '1px solid #444';
-defenseButton.style.transition = 'background-color 0.3s';
-
-defenseButton.addEventListener('click', () => {
-    defenseText.style.display = 'none';
-    defenseButton.style.backgroundColor = '#007bff';
-    defenseButton.style.color = '#fff';
-    defenseButton.textContent = 'Defended!';
-    defenseArea.style.backgroundColor = '#007bff';
-    defenseArea.style.color = '#fff';
-    defenseArea.style.borderRadius = '10px';
-    defenseArea.style.borderColor = '#005f8a';
-});
-
-const moveArea = document.createElement('div');
-moveArea.className = 'move-area';
-moveArea.style.position = 'relative';
-moveArea.style.width = '100%';
-moveArea.style.height = '100%';
-moveArea.style.display = 'flex';
-moveArea.style.justifyContent = 'center';
-moveArea.style.alignItems = 'center';
-moveArea.style.textAlign = 'center';
-moveArea.style.fontSize = '24px';
-moveArea.style.color = '#fff';
-moveArea.style.backgroundColor = '#444';
-moveArea.style.borderRadius = '10px';
-moveArea.style.padding = '20px';
-moveArea.style.zIndex = 1000;
-
-game.appendChild(moveArea);
-
-const moveText = document.createElement('div');
-moveText.className = 'move-text';
-moveText.textContent = 'Move to progress!';
-moveText.style.marginTop = '10px';
-moveArea.appendChild(moveText);
-
-const moveButton = document.createElement('button');
-moveButton.textContent = 'Move!';
-moveButton.style.marginTop = '10px';
-moveButton.style.padding = '10px 20px';
-moveButton.style.fontSize = '18px';
-moveButton.style.backgroundColor = '#222';
-moveButton.style.color = '#fff';
-moveButton.style.borderRadius = '5px';
-moveButton.style.border = '1px solid #444';
-moveButton.style.transition = 'background-color 0.3s';
-
-moveButton.addEventListener('click', () => {
-    moveText.style.display = 'none';
-    moveButton.style.backgroundColor = '#007bff';
-    moveButton.style.color = '#fff';
-    moveButton.textContent = 'Moved!';
-    moveArea.style.backgroundColor = '#007bff';
-    moveArea.style.color = '#fff';
-    moveArea.style.borderRadius = '10px';
-    moveArea.style.borderColor = '#005f8a';
-});
-
-const winArea = document.createElement('div');
-winArea.className = 'win-area';
-winArea.style.position = 'relative';
-winArea.style.width = '100%';
-winArea.style.height = '100%';
-winArea.style.display = 'flex';
-winArea.style.justifyContent = 'center';
-winArea.style.alignItems = 'center';
-winArea.style.textAlign = 'center';
-winArea.style.fontSize = '36px';
-winArea.style.color = '#fff';
-winArea.style.backgroundColor = '#007bff';
-winArea.style.borderRadius = '10px';
-winArea.style.padding = '30px';
-winArea.style.zIndex = 1000;
-
-game.appendChild(winArea);
-
-const winText = document.createElement('div');
-winText.className = 'win-text';
-winText.textContent = 'You won!';
-winText.style.marginTop = '10px';
-winArea.appendChild(winText);
-
-const winButton = document.createElement('button');
-winButton.textContent = 'Restart';
-winButton.style.marginTop = '10px';
-winButton.style.padding = '10px 20px';
-winButton.style.fontSize = '18px';
-winButton.style.backgroundColor = '#005f8a';
-winButton.style.color = '#fff';
-winButton.style.borderRadius = '5px';
-winButton.style.border = '1px solid #444';
-winButton.style.transition = 'background-color 0.3s';
-
-winButton.addEventListener('click', () => {
-    winText.style.display = 'none';
-    winButton.style.backgroundColor = '#007bff';
-    winButton.style.color = '#fff';
-    winButton.textContent = 'Restart!';
-    winArea.style.backgroundColor = '#007bff';
-    winArea.style.color = '#fff';
-    winArea.style.borderRadius = '10px';
-    winArea.style.borderColor = '#005f8a';
-});
-
-const loseArea = document.createElement('div');
-loseArea.className = 'lose-area';
-loseArea.style.position = 'relative';
-loseArea.style.width = '100%';
-loseArea.style.height = '100%';
-loseArea.style.display = 'flex';
-loseArea.style.justifyContent = 'center';
-loseArea.style.alignItems = 'center';
-loseArea.style.textAlign = 'center';
-loseArea.style.fontSize = '36px';
-loseArea.style.color = '#fff';
-loseArea.style.backgroundColor = '#ff4d4d';
-loseArea.style.borderRadius = '10px';
-loseArea.style.padding = '30px';
-loseArea.style.zIndex = 1000;
-
-game.appendChild(loseArea);
-
-const loseText = document.createElement('div');
-loseText.className = 'lose-text';
-loseText.textContent = 'You lost!';
-loseText.style.marginTop = '10px';
-loseArea.appendChild(loseText);
-
-const loseButton = document.createElement('button');
-loseButton.textContent = 'Restart';
-loseButton.style.marginTop = '10px';
-loseButton.style.padding = '10px 20px';
-loseButton.style.fontSize = '18px';
-loseButton.style.backgroundColor = '#ff4d4d';
-loseButton.style.color = '#fff';
-loseButton.style.borderRadius = '5px';
-loseButton.style.border = '1px solid #444';
-loseButton.style.transition = 'background-color 0.3s';
-
-loseButton.addEventListener('click', () => {
-    loseText.style.display = 'none';
-    loseButton.style.backgroundColor = '#ff4d4d';
-    loseButton.style.color = '#fff';
-    loseButton.textContent = 'Restart!';
-    loseArea.style.backgroundColor = '#ff4d4d';
-    loseArea.style.color = '#fff';
-    loseArea.style.borderRadius = '10px';
-    loseArea.style.borderColor = '#ff3333';
-});
-
-// Add real input handling
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('defense-button')) {
-        defend();
-    } else if (e.target.classList.contains('move-button')) {
-        move();
-    } else if (e.target.classList.contains('win-button')) {
-        restart();
-    } else if (e.target.classList.contains('lose-button')) {
-        restart();
-    }
-});
-
-function defend() {
-    // Simulate defending
-    document.querySelector('.defense-text').style.display = 'none';
-    document.querySelector('.defense-button').style.backgroundColor = '#007bff';
-    document.querySelector('.defense-button').style.color = '#fff';
-    document.querySelector('.defense-button').textContent = 'Defended!';
-    document.querySelector('.defense-area').style.backgroundColor = '#007bff';
-    document.querySelector('.defense-area').style.color = '#fff';
-    document.querySelector('.defense-area').style.borderRadius = '10px';
-    document.querySelector('.defense-area').style.borderColor = '#005f8a';
+function updateState(){
+  scoreOutput.textContent='Score: '+state.score;
+  actionOutput.textContent='Last action: '+(state.lastAction||'None');
+  const finished=state.win||state.lose;
+  for(const [action,field] of [['defend','defense'],['move','move'],['win','win'],['lose','lose']]){
+    const panel=actions.querySelector('[data-action-panel="'+action+'"]');
+    const button=panel.querySelector('button');
+    panel.dataset.done=String(Boolean(state[field]));
+    button.disabled=finished||(action==='win'&&(!state.defense||!state.move));
+  }
+  statusOutput.textContent=state.win?'You won!':state.lose?'You lost!':state.defense&&state.move?'Ready to win!':state.defense?'Defended! Move to progress.':state.move?'Moved! Defend to proceed.':'Defend and move to progress.';
+  try{localStorage.setItem('gameState',JSON.stringify(state));}catch{}
 }
 
-function move() {
-    // Simulate moving
-    document.querySelector('.move-text').style.display = 'none';
-    document.querySelector('.move-button').style.backgroundColor = '#007bff';
-    document.querySelector('.move-button').style.color = '#fff';
-    document.querySelector('.move-button').textContent = 'Moved!';
-    document.querySelector('.move-area').style.backgroundColor = '#007bff';
-    document.querySelector('.move-area').style.color = '#fff';
-    document.querySelector('.move-area').style.borderRadius = '10px';
-    document.querySelector('.move-area').style.borderColor = '#005f8a';
+function defend(){
+  if(state.win||state.lose)return;
+  state.defense=true;
+  state.score+=1;
+  state.lastAction='defend';
+  updateState();
 }
 
-function restart() {
-    // Reset game state
-    document.querySelector('.defense-text').style.display = 'block';
-    document.querySelector('.defense-button').style.backgroundColor = '#444';
-    document.querySelector('.defense-button').style.color = '#fff';
-    document.querySelector('.defense-button').textContent = 'Click to defend!';
-    document.querySelector('.defense-area').style.backgroundColor = '#444';
-    document.querySelector('.defense-area').style.color = '#fff';
-    document.querySelector('.defense-area').style.borderRadius = '10px';
-    document.querySelector('.defense-area').style.borderColor = '#444';
-
-    document.querySelector('.move-text').style.display = 'block';
-    document.querySelector('.move-button').style.backgroundColor = '#444';
-    document.querySelector('.move-button').style.color = '#fff';
-    document.querySelector('.move-button').textContent = 'Move to progress!';
-    document.querySelector('.move-area').style.backgroundColor = '#444';
-    document.querySelector('.move-area').style.color = '#fff';
-    document.querySelector('.move-area').style.borderRadius = '10px';
-    document.querySelector('.move-area').style.borderColor = '#444';
-
-    document.querySelector('.win-text').style.display = 'none';
-    document.querySelector('.win-button').style.backgroundColor = '#444';
-    document.querySelector('.win-button').style.color = '#fff';
-    document.querySelector('.win-button').textContent = 'Restart!';
-    document.querySelector('.win-area').style.backgroundColor = '#444';
-    document.querySelector('.win-area').style.color = '#fff';
-    document.querySelector('.win-area').style.borderRadius = '10px';
-    document.querySelector('.win-area').style.borderColor = '#444';
-
-    document.querySelector('.lose-text').style.display = 'none';
-    document.querySelector('.lose-button').style.backgroundColor = '#444';
-    document.querySelector('.lose-button').style.color = '#fff';
-    document.querySelector('.lose-button').textContent = 'Restart!';
-    document.querySelector('.lose-area').style.backgroundColor = '#444';
-    document.querySelector('.lose-area').style.color = '#fff';
-    document.querySelector('.lose-area').style.borderRadius = '10px';
-    document.querySelector('.lose-area').style.borderColor = '#444';
+function move(){
+  if(state.win||state.lose)return;
+  state.move=true;
+  state.score+=1;
+  state.lastAction='move';
+  updateState();
 }
 
-<script>
-// Add real gameplay state transition loop and mutable game state
-const game = document.getElementById('game');
-const state = {
-    defense: false,
-    move: false,
-    win: false,
-    lose: false,
-    score: 0,
-    lastAction: null
-};
-
-function updateState() {
-state.score++; state.lastAction = 'defend';
-        state.score++;
-        state.lastAction = 'defend';
-    } else if (state.move) {
-        state.score++;
-        state.lastAction = 'move';
-state.score += 100; state.lastAction = 'win';
-        state.score += 100;
-        state.lastAction = 'win';
-    } else if (state.lose) {
-        state.score -= 50;
-        state.lastAction = 'lose';
-    }
-
-    // Update UI based on state
-    document.querySelector('.defense-text').style.display = state.defense ? 'none' : 'block';
-    document.querySelector('.move-text').style.display = state.move ? 'none' : 'block';
-    document.querySelector('.win-text').style.display = state.win ? 'none' : 'block';
-    document.querySelector('.lose-text').style.display = state.lose ? 'none' : 'block';
-
-    document.querySelector('.score-text').textContent = `Score: ${state.score}`;
-    document.querySelector('.last-action').textContent = state.lastAction || 'None';
+function restart(){
+  Object.assign(state,{defense:false,move:false,win:false,lose:false,score:0,lastAction:null});
+  updateState();
 }
 
-// Add real input handling and state transitions
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('defense-button')) {
-        state.defense = true;
-        updateState();
-    } else if (e.target.classList.contains('move-button')) {
-        state.move = true;
-        updateState();
-    } else if (e.target.classList.contains('win-button')) {
-        state.win = true;
-        updateState();
-    } else if (e.target.classList.contains('lose-button')) {
-        state.lose = true;
-        updateState();
-    }
+// 유틸: 저장 복원과 모바일 터치/키보드 입력.
+function finish(action){
+  if(state.win||state.lose)return;
+  if(action==='win'&&(!state.defense||!state.move))return;
+  state[action]=true;
+  state.score+=action==='win'?100:-50;
+  state.lastAction=action;
+  updateState();
+}
+actions.addEventListener('click',event=>{
+  const button=event.target.closest('button[data-action]');
+  if(!button||button.disabled)return;
+  const action=button.dataset.action;
+  if(action==='defend')defend();
+  else if(action==='move')move();
+  else if(action==='win'||action==='lose')finish(action);
 });
-
-// Add real state transitions and outcomes
-document.addEventListener('keydown', (e) => {
-document.addEventListener('keydown', (e) => {
-
-if (e.key === 'd') { state.defense = !state.defense; updateState(); }
-        state.defense = !state.defense;
-        updateState();
-    }
+document.getElementById('restart').addEventListener('click',restart);
+document.addEventListener('keydown',event=>{
+  if(event.altKey||event.ctrlKey||event.metaKey||event.repeat||event.target instanceof HTMLInputElement)return;
+  const action={d:'defend',m:'move',w:'win',l:'lose'}[event.key.toLowerCase()];
+  if(action==='defend')defend();
+  else if(action==='move')move();
+  else if(action)finish(action);
 });
-        state.defense = !state.defense;
-        updateState();
-    } else if (e.key === 'm') {
-        state.move = !state.move;
-        updateState();
-    } else if (e.key === 'w') {
-        state.win = !state.win;
-        updateState();
-    } else if (e.key === 'l') {
-        state.lose = !state.lose;
-        updateState();
-    }
-});
-
-// Add real save compatibility
-localStorage.setItem('gameState', JSON.stringify(state));
-document.addEventListener('DOMContentLoaded', () => {
-    const savedState = JSON.parse(localStorage.getItem('gameState'));
-    if (savedState) {
-        state.defense = savedState.defense || false;
-        state.move = savedState.move || false;
-        state.win = savedState.win || false;
-        state.lose = savedState.lose || false;
-        state.score = savedState.score || 0;
-        state.lastAction = savedState.lastAction || null;
-        updateState();
-    }
-});
+try{
+  const saved=JSON.parse(localStorage.getItem('gameState')||'null');
+  if(saved&&typeof saved==='object'&&!Array.isArray(saved)){
+    for(const key of ['defense','move','win','lose'])state[key]=saved[key]===true;
+    if(Number.isSafeInteger(saved.score))state.score=saved.score;
+    if(typeof saved.lastAction==='string')state.lastAction=saved.lastAction;
+  }
+}catch{}
+updateState();
 </script>
 </body>
 </html>
