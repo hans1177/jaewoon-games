@@ -18416,7 +18416,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-17T13:55:23.825Z",
+      "updatedAt": "2026-10-17T14:19:52.357Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -18432,16 +18432,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "90de3041eda929a7d2a66e28811680d2b7d8eae1",
       "robloxBuildArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
-      "robloxBuildPassedAt": "2026-10-17T13:55:23.825Z",
+      "robloxBuildPassedAt": "2026-10-17T14:19:52.357Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-17T13:55:23.825Z",
+      "robloxBuildPreflightFailedAt": "2026-10-17T14:19:52.357Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "dice-battle-board",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-17T13:46:51.946Z",
+        "checkedAt": "2026-10-17T14:02:22.269Z",
         "sourceRevision": "90de3041eda929a7d2a66e28811680d2b7d8eae1",
         "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
         "secondaryOwnerFocus": false,
@@ -18484,7 +18484,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "The package cannot start runtime testing because web validation, music validation, native web validation, and native music validation have all failed."
+            "note": "The build evidence indicates that web, music, and native validation checks have not passed, which contradicts the requirements for starting runtime testing."
           }
         ],
         "blockers": [
@@ -39515,7 +39515,7 @@
       "robloxExactRevisionPassed": false
     }
   ],
-  "updatedAt": "2026-10-17T14:19:35.249Z",
+  "updatedAt": "2026-10-17T14:19:52.357Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
