@@ -4459,6 +4459,208 @@ function RobloxCommonUI.CreateFailureRecoveryCheckpoint(options)
   return root,parts
 end
 
+
+-- Presentation-only native controller, shared by Roblox games via the existing common UI.
+-- Confirmed combat/status events are supplied by each game's authoritative source.
+function RobloxCommonUI.CreateVisualFeedbackController(options)
+  options = options or {}
+  local parent = options.parent
+  assert(parent and parent:IsA("GuiObject"), "visual feedback requires an existing GuiObject")
+  local TweenService = game:GetService("TweenService")
+  local theme = cloneTheme(options.theme)
+  local reducedMotion = options.reducedMotion == true
+  local maxDamage = math.clamp(math.floor(tonumber(options.maxDamage) or 28), 1, 60)
+  local maxNotices = math.clamp(math.floor(tonumber(options.maxNotices) or 3), 1, 5)
+  local overlay = Instance.new("Frame")
+  overlay.Name = "CommonVisualFeedback"
+  overlay.BackgroundTransparency = 1
+  overlay.Size = UDim2.fromScale(1, 1)
+  overlay.ClipsDescendants = true
+  overlay.ZIndex = 80
+  overlay.Parent = parent
+  tag(overlay, "PRESENTATION_FEEDBACK")
+  overlay:SetAttribute("GameplayAuthority", false)
+
+  local pool, active, seen, notices = {}, {}, {}, {}
+  local destroyed = false
+  local iconTweens = setmetatable({}, {__mode = "k"})
+  local function newPopup()
+    local label = Instance.new("TextLabel")
+    label.Name = "ConfirmedDamageNumber"
+    label.BackgroundTransparency = 1
+    label.AnchorPoint = Vector2.new(0.5, 0.5)
+    label.Size = UDim2.fromOffset(122, 44)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 21
+    label.TextStrokeColor3 = Color3.fromRGB(15, 16, 24)
+    label.TextStrokeTransparency = 0.2
+    label.TextXAlignment = Enum.TextXAlignment.Center
+    label.Visible = false
+    label.ZIndex = 82
+    label.Parent = overlay
+    tag(label, "DAMAGE_POPUP")
+    return label
+  end
+  for i = 1, maxDamage do pool[i] = {label = newPopup(), busy = false, generation = 0} end
+  local function popupColor(kind)
+    if kind == "CRITICAL" then return Color3.fromRGB(255, 224, 137) end
+    if kind == "HEAL" then return Color3.fromRGB(132, 249, 180) end
+    if kind == "SHIELD" then return Color3.fromRGB(136, 209, 255) end
+    if kind == "DOT" then return Color3.fromRGB(212, 170, 244) end
+    return theme.Text
+  end
+  local controller = {}
+  function controller.ShowDamage(event)
+    if destroyed or type(event) ~= "table" or event.confirmed ~= true then return false end
+    local id = tostring(event.eventId or "")
+    local amount = tonumber(event.amount)
+    if id == "" or not amount or amount ~= amount or seen[id] then return false end
+    local xy = event.viewportPosition
+    if typeof(xy) ~= "Vector2" and typeof(event.worldPosition) == "Vector3" then
+      local camera = options.camera or workspace.CurrentCamera
+      if camera then
+        local screen, visible = camera:WorldToViewportPoint(event.worldPosition)
+        if not visible then return false end
+        xy = Vector2.new(screen.X, screen.Y)
+        local origin = overlay.AbsolutePosition
+        xy = xy - origin
+      end
+    end
+    if typeof(xy) ~= "Vector2" or xy.X < 0 or xy.Y < 0
+      or xy.X > overlay.AbsoluteSize.X or xy.Y > overlay.AbsoluteSize.Y then return false end
+    local entry
+    for _, candidate in ipairs(pool) do
+      if not candidate.busy then entry = candidate break end
+    end
+    if not entry then return false end
+    seen[id] = true
+    task.delay(5, function() seen[id] = nil end)
+    entry.busy = true
+    entry.generation += 1
+    local generation = entry.generation
+    local index = 0
+    for _, item in ipairs(pool) do if item.busy then index += 1 end end
+    local jitter = ((index % 5) - 2) * 14
+    local kind = string.upper(tostring(event.kind or "DAMAGE"))
+    local label = entry.label
+    label.Text = (kind == "MISS" and "MISS" or (kind == "HEAL" and "+" or "") .. tostring(math.floor(amount + 0.5)))
+    label.TextColor3 = popupColor(kind)
+    label.TextSize = kind == "CRITICAL" and 28 or 21
+    label.TextTransparency = 0
+    label.TextStrokeTransparency = 0.2
+    label.Position = UDim2.fromOffset(xy.X + jitter, xy.Y)
+    label.Visible = true
+    local duration = reducedMotion and 0.18 or (kind == "CRITICAL" and 0.92 or 0.72)
+    local target = {Position = UDim2.fromOffset(xy.X + jitter + 8, xy.Y - (reducedMotion and 10 or 64)), TextTransparency = 1, TextStrokeTransparency = 1}
+    local tween = TweenService:Create(label, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), target)
+    active[entry] = tween
+    tween:Play()
+    task.delay(duration + 0.08, function()
+      if entry.generation ~= generation then return end
+      entry.busy = false
+      active[entry] = nil
+      if label.Parent then label.Visible = false end
+    end)
+    return true
+  end
+  function controller.PositionTooltip(tooltip, anchor)
+    if destroyed or not tooltip or not tooltip:IsA("GuiObject") or typeof(anchor) ~= "Vector2" then return false end
+    local size = overlay.AbsoluteSize
+    local width = math.min(tooltip.AbsoluteSize.X, math.max(1, size.X - 16))
+    local height = math.min(tooltip.AbsoluteSize.Y, math.max(1, size.Y - 16))
+    local x = math.clamp(anchor.X - width * 0.5, 8, math.max(8, size.X - width - 8))
+    local y = anchor.Y + 14
+    if y + height > size.Y - 8 then y = anchor.Y - height - 14 end
+    tooltip.AnchorPoint = Vector2.new(0, 0)
+    tooltip.Position = UDim2.fromOffset(x, math.clamp(y, 8, math.max(8, size.Y - height - 8)))
+    return true
+  end
+  function controller.AnimateIcon(icon, state)
+    if destroyed or not icon or not icon:IsA("GuiObject") then return false end
+    local old = iconTweens[icon]
+    if old then old:Cancel() end
+    local scale = icon:FindFirstChild("VibeVisualScale")
+    if not scale then
+      scale = Instance.new("UIScale")
+      scale.Name = "VibeVisualScale"
+      scale.Parent = icon
+    end
+    local mode = string.upper(tostring(state or "READY"))
+    local target = mode == "ACTIVATE" and 1.14 or mode == "COOLDOWN" and 0.94 or 1
+    local duration = reducedMotion and 0.01 or 0.18
+    local tween = TweenService:Create(scale, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = target})
+    iconTweens[icon] = tween
+    tween:Play()
+    if mode == "ACTIVATE" then
+      task.delay(duration, function()
+        if destroyed or not icon.Parent or iconTweens[icon] ~= tween then return end
+        local settle = TweenService:Create(scale, TweenInfo.new(reducedMotion and 0.01 or 0.16), {Scale = 1})
+        iconTweens[icon] = settle
+        settle:Play()
+      end)
+    end
+    return true
+  end
+  function controller.UpdateStatusIcon(icon, status)
+    if destroyed or not icon or not icon:IsA("GuiObject") then return false end
+    status = status or {}
+    local meter = icon:FindFirstChild("VisualDurationMeter")
+    if not meter then
+      meter = Instance.new("Frame")
+      meter.Name = "VisualDurationMeter"
+      meter.AnchorPoint = Vector2.new(0, 1)
+      meter.Position = UDim2.fromScale(0, 1)
+      meter.Size = UDim2.new(1, 0, 0, 3)
+      meter.BackgroundColor3 = theme.Accent
+      meter.BorderSizePixel = 0
+      meter.ZIndex = icon.ZIndex + 1
+      meter.Parent = icon
+    end
+    local total = math.max(0, tonumber(status.total) or 0)
+    local remaining = math.max(0, tonumber(status.remaining) or 0)
+    local ratio = total > 0 and math.clamp(remaining / total, 0, 1) or 0
+    meter.Size = UDim2.new(ratio, 0, 0, 3)
+    icon:SetAttribute("PresentationEffectStacks", math.max(0, math.floor(tonumber(status.stacks) or 0)))
+    return true
+  end
+  function controller.Notify(event)
+    if destroyed or type(event) ~= "table" then return false end
+    local id = tostring(event.id or "")
+    if id == "" then return false end
+    for _, notice in ipairs(notices) do if notice.id == id then return false end end
+    local toast = RobloxCommonUI.CreateNotificationToast({title = event.title, text = event.text, kind = event.kind, theme = theme})
+    toast.AnchorPoint = Vector2.new(1, 0)
+    toast.Parent = overlay
+    table.insert(notices, {id = id, frame = toast})
+    while #notices > maxNotices do
+      local oldest = table.remove(notices, 1)
+      oldest.frame:Destroy()
+    end
+    for index, item in ipairs(notices) do item.frame.Position = UDim2.new(1, -8, 0, 8 + (index - 1) * 78) end
+    task.delay(math.clamp(tonumber(event.duration) or 2.4, 0.3, 8), function()
+      for index, item in ipairs(notices) do
+        if item.id == id then
+          table.remove(notices, index)
+          if item.frame.Parent then item.frame:Destroy() end
+          break
+        end
+      end
+      for index, item in ipairs(notices) do item.frame.Position = UDim2.new(1, -8, 0, 8 + (index - 1) * 78) end
+    end)
+    return true
+  end
+  function controller.Destroy()
+    if destroyed then return end
+    destroyed = true
+    for _, tween in pairs(active) do tween:Cancel() end
+    for _, tween in pairs(iconTweens) do tween:Cancel() end
+    table.clear(seen)
+    overlay:Destroy()
+  end
+  controller.Root = overlay
+  return controller
+end
+
 function RobloxCommonUI.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "FRAME_PANEL" then
