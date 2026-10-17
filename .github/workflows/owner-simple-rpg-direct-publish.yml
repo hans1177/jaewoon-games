@@ -17,6 +17,7 @@ on:
       - 'tools/simple-rpg-upload-actors.mjs'
       - 'tools/simple-rpg-priority-cc0-download.py'
       - 'tools/simple-rpg-prepare-curated-assets.py'
+      - 'tools/simple-rpg-blender-export-house.py'
       - '.github/workflows/owner-simple-rpg-direct-publish.yml'
   workflow_dispatch:
     inputs:
@@ -481,6 +482,14 @@ jobs:
 
       # Gate production to the already-downloaded licensed source files and actual
       # Roblox Cloud asset IDs. Do not publish a blank or restored legacy art-only place.
+      - name: Enable Blender export for archived CC0 full-house sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq blender
+          blender --background --version | head -n 2
+
       - name: Prepare downloaded CC0 environment and UI images
         working-directory: main
         shell: bash

@@ -70,9 +70,16 @@ test('downloaded CC0 converter selects full building assemblies and real button 
   const prep = readFileSync(new URL('../tools/simple-rpg-prepare-curated-assets.py', import.meta.url), 'utf8');
   const uploader = readFileSync(new URL('../tools/simple-rpg-upload-actors.mjs', import.meta.url), 'utf8');
   const evidence = JSON.parse(readFileSync(new URL('../assets/external/simple-rpg/registration-evidence-312.json', import.meta.url), 'utf8'));
-  assert.match(prep, /def assemble_existing_house_modules\(archive\):/);
+  assert.match(prep, /def export_original_blend_house\(archive\):/);
+  assert.match(prep, /source\.open\("rb"\)\.read\(7\) != b"BLENDER"/);
+  assert.match(prep, /exportedFromOriginalUnmodifiedBlenderScene/);
+  assert.doesNotMatch(prep, /assemble_existing_house_modules/);
+  const blender = readFileSync(new URL('../tools/simple-rpg-blender-export-house.py', import.meta.url), 'utf8');
+  assert.match(blender, /bpy\.ops\.wm\.open_mainfile/);
+  assert.match(blender, /bpy\.ops\.export_scene\.gltf/);
+  assert.doesNotMatch(blender, /bpy\.ops\.mesh\.primitive_/);
   assert.match(prep, /CURATED_COMPLETE_CC0_BUILDING_NOT_PREPARED/);
-  assert.match(prep, /assembledOnlyFromDownloadedSourceMeshes/);
+  assert.match(prep, /originalBlenderSha256/);
   assert.match(prep, /"sample", "preview", "screenshot"/);
   assert.match(prep, /"UIpack_RPG\.zip"/);
   assert.match(prep, /CURATED_REAL_PANEL_OR_BUTTON_MISSING/);
