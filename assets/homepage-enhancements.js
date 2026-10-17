@@ -76,7 +76,7 @@ const activeLifecycle=row=>{
   const nativeDeployed=hasRunnableHomepageTarget(row)||hasInternalRelease(row);
   // 파일이나 원본 프로젝트가 있다는 이유로 버튼형 시제품을 게임으로 홍보하지 않는다.
   // 실제 실행 가능한 네이티브 배포만 웹 시제품 철회 상태와 별개로 유지한다.
-  if(state==='ENTRY_MISSING_OR_INVALID')return nativeDeployed;
+  if(state==='WITHDRAWN_SIMPLE_PROTOTYPE'||state==='ENTRY_MISSING_OR_INVALID')return nativeDeployed;
   return registered||nativeDeployed;
 };
 const classState=row=>{const mode=String(homepageOf(row).displayMode||row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
@@ -144,7 +144,7 @@ function playableWebHref(row){
   if(!/^[a-z0-9][a-z0-9-]*$/.test(id))return '';
   const source=sourcesOf(row).web||{};
   const state=String(source.state||row?.ownerWebSourceState||'').toUpperCase();
-  if(state==='NON_GAME_SURFACE'||state==='ENTRY_MISSING_OR_INVALID')return '';
+  if(['NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','WITHDRAWN_SIMPLE_PROTOTYPE'].includes(state)||source.archive===false)return '';
   const root=String(source.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
   if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return '';
   return `https://hans1177.github.io/jaewoon-games/${root}/`;
