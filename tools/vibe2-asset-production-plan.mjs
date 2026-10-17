@@ -1306,10 +1306,13 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       if(!/^[0-9a-f]{64}$/.test(declaredHash)||!Number.isSafeInteger(declaredBytes)||declaredBytes<512||seenSourceHashes.has(declaredHash))continue;
       if(!publicHttps(row?.sourceUrl)||!publicHttps(row?.licenseEvidenceUrl))continue;
       const localFile=path.resolve(repoRoot,relative);
+      // LFS pointer or absent original is still a selected, hash-pinned archive
+      // candidate. Hydration belongs to the current game's existing source worker.
+      let localReady=false;
       try{
         const info=fs.statSync(localFile);
-        if(!info.isFile()||info.size!==declaredBytes)continue;
-      }catch{continue;}
+        localReady=info.isFile()&&info.size===declaredBytes;
+      }catch{}
       const name=clean(row.file).toLowerCase(),role=clean(row.role).toLowerCase();
       const sourceFamily=clean(row.family).toUpperCase()||(
         role==='03-equipment'?(/potion|item|inventory/.test(name)?'PROP':'WEAPON'):
@@ -1331,7 +1334,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         sourceId:'shared-original-'+declaredHash.slice(0,16),sourceName:clean(row.file),family,
         license,sourceUrl:clean(row.sourceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
         licenseSnapshotDate:null,downloadUrl:null,sourcePath:relative,sourceHash:declaredHash,
-        archiveBytes:declaredBytes,downloaded:true,acquisitionState:'ACQUIRED_ORIGINAL_FILES',
+        archiveBytes:declaredBytes,downloaded:localReady,
+        acquisitionState:localReady?'ACQUIRED_ORIGINAL_FILES':'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED',
         matchedRoles:freezeList(matchedRoles),roleCompatibilityRequiresSourceInspection:true,
         categoryMatchVerified:true,runtimeVerified:false,rawRedistributionAllowed:false,
         sourceHashMustBeReverified:true,roleScore:100+matchedRoles.length*10+nameFit,
@@ -1585,7 +1589,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
           externalAcquisition:freeze({
             sourceId:selected.sourceId,sourceName:selected.sourceName,sourceUrl:selected.sourceUrl,
             downloadUrl:selected.downloadUrl,localSourcePath:selected.sourcePath||null,
-            sourceHash:selected.sourceHash||null,downloaded:selected.downloaded===true,
+            sourceHash:selected.sourceHash||null,archiveBytes:selected.archiveBytes||null,
+            downloaded:selected.downloaded===true,
             license:selected.license,licenseEvidenceUrl:selected.licenseEvidenceUrl,
             licenseSnapshotDate:selected.licenseSnapshotDate,acquisitionState:selected.acquisitionState,
             candidateSources:externalCandidates,onDemandOnly:true,bulkPrefetchForbidden:true,
