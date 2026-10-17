@@ -93,7 +93,7 @@ async function callLead(model,role,facts,{fetchImpl=globalThis.fetch}={}){
     additionalProperties:false,
   };
   const evidence=JSON.stringify(facts.build);
-  const text=(await requestGeminiFreePair({
+  const response=await requestGeminiFreePair({
     apiKey:clean(process.env.GEMINI_API_KEY),
     contents:[{role:'user',parts:[{text:[
       'You are a Roblox package preflight reviewer. Only decide if an immutable package may START runtime testing. Do not invent runtime, QA, release or publication evidence.',
@@ -102,11 +102,11 @@ async function callLead(model,role,facts,{fetchImpl=globalThis.fetch}={}){
       'The exact deterministic package identity checks have already passed.'
     ].join('\n')}]}],
     maxOutputTokens:512,temperature:0,timeoutMs:90000,responseMimeType:'application/json',fetchImpl
-  })).text;
-  const parsed=JSON.parse(clean(text).replace(/^\`\`\`(?:json)?/i,'').replace(/\`\`\`$/,'').trim());
+  });
+  const parsed=JSON.parse(clean(response.text));
   if(!['PASS','BLOCK'].includes(parsed.decision)||!Array.isArray(parsed.blockers)||typeof parsed.note!=='string')
     throw new Error('ROBLOX_PREFLIGHT_EXTERNAL_AI_INVALID_REVIEW');
-  return {role,model:GEMINI_FREE_MODELS[0],decision:parsed.decision,blockers:parsed.blockers.map(clean).filter(Boolean),note:clean(parsed.note)};
+  return {role,model:response.model,decision:parsed.decision,blockers:parsed.blockers.map(clean).filter(Boolean),note:clean(parsed.note)};
 
 }
 
