@@ -40,14 +40,26 @@ const REPAIR_OPERATIONS=Object.freeze([
   ['HANDLE_FAILURE_RESULT',/\b(?:pcall|try|catch|Promise\.catch)\b/i,null,'Handle the operation result or exception before mutating shared state.','Test a rejected callback and a successful retry.'],
   ['BOUND_NUMERIC_INPUT',/\b(?:Math\.min|Math\.max|math\.clamp|Mathf\.Clamp)\s*\(/i,null,'Bound incoming numeric values before applying gameplay state changes.','Test lower, upper and invalid input boundaries.'],
   ['MOBILE_INPUT_BINDING',/\b(?:touch-action|pointerdown|pointermove|touchstart|touchmove)\b/i,null,'Bind touch or pointer input to the existing gameplay owner without duplicate dispatch.','Verify tap, drag, pointer cancel and mobile viewport changes.'],
-  ['SERVER_INPUT_VALIDATION',/\b(?:OnServerEvent|OnServerInvoke)\b/i,/\b(?:if|return|assert)\b/i,'Validate client-originated input on the server before authoritative mutation.','Test malformed, repeated and unauthorized remote requests.']
+  ['SERVER_INPUT_VALIDATION',/\b(?:OnServerEvent|OnServerInvoke)\b/i,/\b(?:if|return|assert)\b/i,'Validate client-originated input on the server before authoritative mutation.','Test malformed, repeated and unauthorized remote requests.'],
+  ['EXISTING_INPUT_HANDLER_BINDING',/\.on(?:click|pointerdown|touchstart|touchend|keydown|keyup)\s*=\s*(?:\(?\s*[A-Za-z_$]|function\b|async\b)/i,null,'Bind player input to the existing action handler without duplicating its owner.','Exercise the actual input action and verify it fires exactly once.']
 ]);
+
+// Old PASS-marked traces can contain malformed added JavaScript. Do not learn from them.
+export function hasObviousMalformedAddedCode(output=''){
+  const source=String(output??''),at=source.indexOf('검증된 패치:');
+  const patch=at>=0?source.slice(at+'검증된 패치:'.length):source;
+  const added=patch.split(/\r?\n/).filter(line=>/^\+(?!\+)/.test(line)).map(line=>line.slice(1)).join('\n');
+  if(!added)return false;
+  return /\)\s*forEach\s*\(/.test(added)
+    || /;\s*\.(?:forEach|map|filter|addEventListener)\s*\(/.test(added);
+}
 
 export function deriveObservedRepairRecipe(output=''){
   const source=String(output??'');
   const marker=source.indexOf('검증된 패치:');
   const patch=marker>=0?source.slice(marker+'검증된 패치:'.length):source;
   if(Buffer.byteLength(patch,'utf8')>120000)return null;
+  if(hasObviousMalformedAddedCode(output))return null;
   const added=patch.split(/\r?\n/).filter(line=>/^\+(?!\+)/.test(line)).map(line=>line.slice(1)).join('\n');
   let candidate=added;
   if(!candidate){
@@ -69,6 +81,7 @@ export function deriveObservedRepairRecipe(output=''){
 }
 
 function sampleVerified(sample={}){
+  if(hasObviousMalformedAddedCode(sample.output))return false;
   if(!['coding','bugfix','unity'].includes(clean(sample.taskType)))return false;
   if(upper(sample.independentQa)!=='PASS')return false;
   const browser=upper(sample.browserQa);
@@ -113,7 +126,13 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
 }
 
 export function ingestVerifiedCodePatterns({samplesDir='company-learning/training-samples',libraryInput={}}={}){
-  const byId=new Map((libraryInput?.patterns||[]).filter(x=>x?.verified===true).map(x=>[clean(x.id),x]));
+  // Rebuild patterns for files observed in this run instead of preserving revoked legacy PASS records.
+  const scannedSourcePaths=new Set(fs.existsSync(samplesDir)
+    ?fs.readdirSync(samplesDir,{withFileTypes:true}).filter(x=>x.isFile()&&x.name.endsWith('.json')).map(x=>path.join(samplesDir,x.name))
+    :[]);
+  const byId=new Map((libraryInput?.patterns||[])
+    .filter(x=>x?.verified===true&&!scannedSourcePaths.has(clean(x.evidencePath)))
+    .map(x=>[clean(x.id),x]));
   let examined=0,added=0;
   if(fs.existsSync(samplesDir)){
     for(const entry of fs.readdirSync(samplesDir,{withFileTypes:true}).filter(x=>x.isFile()&&x.name.endsWith('.json')).sort((a,b)=>a.name.localeCompare(b.name))){
