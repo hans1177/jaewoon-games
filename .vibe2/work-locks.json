@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-69dygh",
+      "worker": "vibe2",
+      "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "files": [
+        "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+        "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
+        "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau"
+      ],
+      "baseSha": "9de69898f3dd48d413d3554bd57bc0021f904672",
+      "runId": "39025544150",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-17T10:59:36.736Z",
+      "expiresAt": "2026-10-17T11:44:36.736Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
