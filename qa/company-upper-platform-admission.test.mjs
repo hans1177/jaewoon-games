@@ -12,6 +12,9 @@ import {
   evaluateUnityWebPrecisionQa,
 } from '../tools/company-upper-platform-admission.mjs';
 
+// 운영 판정과 동일한 실패 폐쇄 경로를 사용하면서 격리된 시험 저장소의 정책을 읽는다.
+process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+
 const write=(root,rel,data)=>{
   const file=path.join(root,rel);
   fs.mkdirSync(path.dirname(file),{recursive:true});
