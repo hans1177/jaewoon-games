@@ -77,27 +77,9 @@ local marketUpdateEvent = ensureRemote("MarketUpdateEvent", "RemoteEvent")
 local buildRequestRemote = ensureRemote("BuildRequestRemote", "RemoteEvent")
 local weatherSyncEvent = ensureRemote("WeatherSyncEvent", "RemoteEvent")
 
--- 시작 지면: 스폰 표시와 분리된 실제 고정 지면이다. 검수 통과를 대신하지 않는다.
-local STUDIO_ASSET_SELECTION = Config.StudioAssets.Families
-local startGround = workspace:FindFirstChild("SimpleRpgGround")
-if not startGround then
-  if table.find(STUDIO_ASSET_SELECTION.ENVIRONMENT, "TERRAIN_FLAT") then
-    startGround = Instance.new("Part")
-    startGround.Name = "SimpleRpgGround"
-    startGround.Size = Vector3.new(72, 2, 72)
-    startGround.Position = Vector3.new(0, -1, 0)
-  else error("SIMPLE_RPG_START_TERRAIN_ASSET_MISSING") end
-  if table.find(STUDIO_ASSET_SELECTION.MATERIAL, "STONE") then
-    startGround.Material = Enum.Material.Slate
-    startGround.Color = Color3.fromRGB(111, 116, 115)
-  else error("SIMPLE_RPG_START_MATERIAL_ASSET_MISSING") end
-  startGround.Anchored = true
-  startGround.Transparency = 1
-  startGround.CastShadow = false
-  startGround.CanCollide = true
-  startGround:SetAttribute("WalkableGround", true)
-  startGround.Parent = workspace
-end
+-- Only verified downloaded meshes may supply walkable ground or interaction geometry.
+-- The source MeshParts are installed after the curated library is loaded below.
+local startGround: BasePart? = nil
 
 -- native-foundation-sentinel-v1
 local foundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")
@@ -107,23 +89,8 @@ if not foundationRemote then
   foundationRemote.Name = "RuntimeFoundationReport"
   foundationRemote.Parent = ReplicatedStorage
 end
-local foundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")
-if not foundationSpawn then
-  foundationSpawn = Instance.new("SpawnLocation")
-  foundationSpawn.Name = "NativeFoundationSpawn"
-  foundationSpawn.Size = Vector3.new(8, 1, 8)
-  foundationSpawn.Position = Vector3.new(0, 3, 0)
-  foundationSpawn.Neutral = true
-  foundationSpawn.Anchored = true
-  foundationSpawn.CanCollide = true
-  foundationSpawn.Parent = workspace
-end
--- native-foundation-spawn-grounding-v3
-foundationSpawn.Anchored = true
-foundationSpawn.Transparency = 1
-foundationSpawn.CastShadow = false
--- This managed SpawnLocation is a marker, never its own physical support proof.
-foundationSpawn.CanCollide = false
+-- No generated SpawnLocation (a Part subclass): the spawn marker also comes from CC0 geometry.
+local foundationSpawn: BasePart? = nil
 
 local function bindFoundationCharacter(character)
   local player = Players:GetPlayerFromCharacter(character)
@@ -457,62 +424,103 @@ if registered then
     importCuratedModel(creatureModels, name, id)
   end
 end
-if worldModels and startGround then
-  local template = worldModels:FindFirstChild("Ground")
-  if template and template:IsA("Model") then
-    local visual = template:Clone()
-    visual.Name = "DownloadedSpawnGround"
-    visual.Parent = workspace
-    local bounds = visual:GetExtentsSize()
-    if bounds.X > 0.01 and bounds.Z > 0.01 then
-      local scale = math.min(70 / bounds.X, 70 / bounds.Z)
-      if scale > 0 and scale < 10000 then visual:ScaleTo(scale) end
-    end
-    visual:PivotTo(startGround.CFrame)
-  end
-end
+-- Each world object is an imported external model plus a clone of its own original
+-- MeshPart for the authoritative collision, raycast, prompt and interaction attributes.
+-- No default Part, TrussPart, SpawnLocation, wedge/ball or placeholder is constructed.
 local function worldModelFor(name)
-  if name == "CivilizationGround" or name:find("연결 대륙", 1, true) then return "Ground" end
+  if name == "SimpleRpgGround" or name == "문명 대륙" or name == "CivilizationLobbyGround"
+    or name == "CivilizationGround" or name:find("연결 대륙", 1, true)
+    or name:find("대륙 횡단길", 1, true) then return "Ground" end
   if name == "Landmark" or name:find("무역소", 1, true)
     or name:find("작업대", 1, true) or name:find("용광로", 1, true)
     or name:find("고로", 1, true) then return "Building" end
-  if name:find("목재", 1, true) then return "Tree" end
-  if name:find("석재", 1, true) then return "Rock" end
-  return name
+  if name == "목재" then return "Tree" end
+  if name == "석재" or name == "청동" or name == "기존 철 자원"
+    or name == "구리 광석" or name == "주석 광석" or name == "철광석"
+    or name == "석탄" then return "Rock" end
+  -- Player-built pieces MUST have their own verified external source (e.g. Ladder).
+  -- A giant house must not be silently stretched into a staircase or ladder.
+  return name:match("^([%a]+)_")
+end
+local function curatedModelFor(name)
+  local key = worldModelFor(name)
+  local template = key and worldModels and worldModels:FindFirstChild(key)
+  if not (template and template:IsA("Model")
+    and template:GetAttribute("CuratedExternalAsset") == true
+    and (tonumber(template:GetAttribute("VerifiedRobloxAssetId")) or 0) > 0) then return nil end
+  local source = template:FindFirstChildWhichIsA("MeshPart", true)
+  if not source then return nil end
+  return template, source
 end
 local function civPart(parent, name, size, frame, _color, _material, collide)
-  local part = Instance.new("Part")
-  part.Name = name
-  part.Size = size
-  part.CFrame = frame
-  part.Transparency = 1
-  part.CastShadow = false
-  part.Anchored = true
-  part.CanCollide = collide ~= false
-  part.Parent = parent
-  local template = worldModels and worldModels:FindFirstChild(worldModelFor(name))
-  if template and template:IsA("Model")
-    and template:GetAttribute("CuratedExternalAsset") == true
-    and (tonumber(template:GetAttribute("VerifiedRobloxAssetId")) or 0) > 0
-    and template:FindFirstChildWhichIsA("BasePart", true) then
-    local visual = template:Clone()
-    visual.Name = "VerifiedExternalVisual"
-    visual.Parent = parent
-    local bounds = visual:GetExtentsSize()
-    if bounds.X > 0.01 and bounds.Y > 0.01 and bounds.Z > 0.01 then
-      local factor = math.min(size.X / bounds.X, size.Z / bounds.Z)
-      if worldModelFor(name) ~= "Ground" then
-        factor = math.min(factor, math.max(1, size.Y * 3) / bounds.Y)
-      end
-      if factor > 0 and factor < 10000 then visual:ScaleTo(factor) end
-    end
-    visual:PivotTo(frame)
+  local template, source = curatedModelFor(name)
+  if not template or not source then
+    error("SIMPLE_RPG_EXTERNAL_MESH_REQUIRED:" .. name)
   end
-  return part
+  local visual = template:Clone()
+  visual.Name = "VerifiedExternalVisual"
+  local bounds = visual:GetExtentsSize()
+  if bounds.X > 0.01 and bounds.Y > 0.01 and bounds.Z > 0.01 then
+    local scale = math.min(size.X / bounds.X, size.Z / bounds.Z)
+    if worldModelFor(name) ~= "Ground" then
+      scale = math.min(scale, math.max(1, size.Y * 3) / bounds.Y)
+    end
+    if scale > 0 and scale < 10000 then visual:ScaleTo(scale) end
+  end
+  for _, item in ipairs(visual:GetDescendants()) do
+    if item:IsA("BasePart") then
+      item.Anchored = true
+      item.CanCollide = false
+      item.CanTouch = false
+      item.CanQuery = false
+    end
+  end
+  visual:PivotTo(frame)
+  visual.Parent = parent
+  -- Clone an actual downloaded MeshPart; don't create a homemade invisible block.
+  local root = source:Clone()
+  root.Name = name
+  root.Size = size
+  root.CFrame = frame
+  root.Transparency = 1
+  root.Anchored = true
+  root.CanCollide = collide ~= false
+  root.CanTouch = false
+  root.CanQuery = true
+  root:SetAttribute("CuratedExternalAsset", true)
+  root:SetAttribute("VerifiedRobloxAssetId", template:GetAttribute("VerifiedRobloxAssetId"))
+  root:SetAttribute("ExternalMeshPhysicsOnly", true)
+  root.Parent = parent
+  return root
 end
 local function civSign(_parent, _adornee, _text, _height)
   return nil
 end
+-- The original origin ground and the spawn reference are both sourced from the
+-- verified CC0 ground mesh. All player positions and foundation probes are retained.
+for _, oldName in ipairs({"SimpleRpgGround", "NativeFoundationSpawn"}) do
+  local prior = workspace:FindFirstChild(oldName)
+  if prior then prior:Destroy() end
+end
+startGround = civPart(workspace, "SimpleRpgGround", Vector3.new(72, 2, 72),
+  CFrame.new(0, -1, 0), nil, nil, true)
+startGround:SetAttribute("WalkableGround", true)
+local _, spawnSource = curatedModelFor("SimpleRpgGround")
+if not spawnSource then error("SIMPLE_RPG_EXTERNAL_SPAWN_MESH_REQUIRED") end
+foundationSpawn = spawnSource:Clone()
+foundationSpawn.Name = "NativeFoundationSpawn"
+foundationSpawn.Size = Vector3.new(8, 1, 8)
+foundationSpawn.Position = Vector3.new(0, 3, 0)
+foundationSpawn.Transparency = 1
+foundationSpawn.Anchored = true
+foundationSpawn.CanCollide = false
+foundationSpawn.CanTouch = false
+foundationSpawn.CanQuery = false
+foundationSpawn:SetAttribute("SpawnMarkerOnly", true)
+foundationSpawn:SetAttribute("CuratedExternalAsset", true)
+foundationSpawn:SetAttribute("VerifiedRobloxAssetId", startGround:GetAttribute("VerifiedRobloxAssetId"))
+foundationSpawn.Parent = workspace
+
 local function civMessage(player, text)
   remote:FireClient(player, "CIV_MESSAGE", tostring(text))
 end
@@ -812,19 +820,7 @@ local function civBuildHousing(player, request)
   local piece = civPart(ownerFolder,request.Key.."_"..tostring(civHousingCounts[player] or 0),
     definition.Size,CFrame.new(placeAt)*CFrame.Angles(0,math.rad(rotation),0),Color3.fromRGB(149,129,102),
     Enum.Material.WoodPlanks,true)
-  if request.Key == "TriangleFoundation" or request.Key == "Stairs" then
-    piece.Shape=Enum.PartType.Wedge
-  elseif request.Key == "Ladder" then
-    -- 물리적 경사로 대신 사다리의 사다리꼴 충돌체와 Climbable 트러스를 사용한다.
-    piece.CanCollide=false
-    local climb=Instance.new("TrussPart")
-    climb.Name="HousingLadderClimb"
-    climb.Size=Vector3.new(2,8,2)
-    climb.CFrame=piece.CFrame
-    climb.Anchored=true
-    climb.CanCollide=true
-    climb.Parent=piece
-  end
+  -- Imported housing prefab provides both shape and physical collision.
   local records = civHousingRecords[player] or {}
   local nextId = 1
   for _, existing in ipairs(records) do nextId = math.max(nextId, (existing.Id or 0) + 1) end
@@ -889,18 +885,7 @@ local function civRestoreHousing(player, saved)
         local piece = civPart(ownerFolder,entry.Key.."_Restored"..tostring(#records+1),
           definition.Size,CFrame.new(location)*CFrame.Angles(0,math.rad(entry.Rotation),0),
           Color3.fromRGB(149,129,102),Enum.Material.WoodPlanks,true)
-        if entry.Key == "TriangleFoundation" or entry.Key == "Stairs" then
-          piece.Shape = Enum.PartType.Wedge
-        elseif entry.Key == "Ladder" then
-          piece.CanCollide=false
-          local climb=Instance.new("TrussPart")
-          climb.Name="HousingLadderClimb"
-          climb.Size=Vector3.new(2,8,2)
-          climb.CFrame=piece.CFrame
-          climb.Anchored=true
-          climb.CanCollide=true
-          climb.Parent=piece
-        end
+        -- Restore original licensed prefab geometry; never synthesize a wedge or ladder.
         local pieceId = candidateId
         restoredIds[pieceId] = true
         piece:SetAttribute("HousingPiece",true)
@@ -1366,15 +1351,26 @@ local function civSpawnEnemy(raceID, center, special, mobSlot)
   end
   enemy:SetAttribute("IsPreparingAttack", false)
   enemy:SetAttribute("AIState", "Idle")
-  local root = civPart(enemy, "HumanoidRootPart", Vector3.new(3, 4, 3), CFrame.new(center + (special == "StoneWolf" and Vector3.new(43, 4, -34)
+  -- Enemy root geometry is cloned from this exact imported creature, not a Part.
+  local sourceRoot = visualTemplate:FindFirstChildWhichIsA("MeshPart", true)
+  if not sourceRoot then return nil end
+  local root = sourceRoot:Clone()
+  root.Name = "HumanoidRootPart"
+  root.Size = Vector3.new(3, 4, 3)
+  root.CFrame = CFrame.new(center + (special == "StoneWolf" and Vector3.new(43, 4, -34)
     or special == "WildBoar" and Vector3.new(-43, 4, -34)
     or special == "BronzeGolem" and Vector3.new(-43, 4, -34)
     or special == "IronKnight" and Vector3.new(-43, 4, -34)
     or mobSlot == 2 and Vector3.new(-34, 4, 29)
-    or Vector3.new(31, 4, 35))), Color3.fromRGB(81 + raceID % 4 * 25, 75, 64), Enum.Material.SmoothPlastic, false)
+    or Vector3.new(31, 4, 35)))
+  root.Anchored = true
   root.Transparency = 1
+  root.CanCollide = false
   root.CanTouch = false
   root.CanQuery = false
+  root:SetAttribute("CuratedExternalAsset", true)
+  root:SetAttribute("VerifiedRobloxAssetId", visualTemplate:GetAttribute("VerifiedRobloxAssetId"))
+  root.Parent = enemy
   enemy:SetAttribute("SpawnPosition", root.Position)
   -- 구입/추출 에셋이 아닌, 검증된 고급 외부 모델만 클론한다.
   local visual = visualTemplate:Clone()
@@ -1598,7 +1594,7 @@ for id = 1, 24 do
   local ground = civPart(region, "CivilizationGround", Vector3.new(560, 2, 560), CFrame.new(center), civRegions[((id - 1) % #civRegions) + 1], Enum.Material.Slate, true)
   ground:SetAttribute("WalkableGround", true)
   local monument = civPart(region, "Landmark", Vector3.new(8, 13, 8), CFrame.new(center + Vector3.new(-11, 7.5, -9)), Color3.fromRGB(184, 166, 125), Enum.Material.Sandstone, true)
-  monument.Shape = (id % 3 == 0) and Enum.PartType.Cylinder or Enum.PartType.Block
+  -- The licensed external building determines its geometry; no cylinder/block override.
   civSign(region, monument, race.Name .. "\n" .. race.Landmark, 9)
   -- Existing landmark is the authoritative interaction target, not a client-controlled reward.
   local landmarkPrompt = Instance.new("ProximityPrompt")
@@ -1635,7 +1631,7 @@ for id = 1, 24 do
     local px = math.cos(harvestAngle) * harvestRadius
     local pz = math.sin(harvestAngle) * harvestRadius
     local node = civPart(region, resource.Label, Vector3.new(4, 5, 4), CFrame.new(center + Vector3.new(px, 3.5, pz)), resource.Color, Enum.Material.Rock, true)
-    node.Shape = Enum.PartType.Ball
+    -- Keep the original downloaded rock/tree mesh, not a generated sphere.
     node:SetAttribute("CivilizationResourceType", resource.Type)
     civSign(region, node, resource.Label .. " 채집", 4)
     local gatherPrompt = Instance.new("ProximityPrompt")
