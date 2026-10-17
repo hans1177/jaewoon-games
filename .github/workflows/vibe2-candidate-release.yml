@@ -134,7 +134,8 @@ jobs:
           else if(target==='roblox' && assetSelectionLibraryVersion<=0) reason='roblox-build-up-selection-library-version-missing';
           else if(target==='web' && root!==`web-games/${game}`) reason='web-source-root-mismatch';
           else if(target==='unity' && root!==`unity-games/${game}`) reason='unity-source-root-mismatch';
-          else if(!['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass)) reason='current-production-class-not-auto-deployable';
+          else if(!row) reason='game-not-in-canonical-catalog';
+          else if(!['ACTIVE','REBUILD'].includes(String(row?.canonical?.lifecycle?.state||row?.lifecycleState||'ACTIVE').toUpperCase())) reason='game-not-active';
           else {
             decision=target==='unity'&&executionSurface==='UNITY_WEB'?'unity-web':target;
             reason='candidate-authorized';
