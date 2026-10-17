@@ -153,7 +153,11 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`security_contract_changed=${r.securityContractChanged?'YES':'NO'}\n`);
           console.log('SECURITY_DESIGN_DIAGNOSTICS='+JSON.stringify(r.productionDesignDiagnostics||[]));
           const findings=r.findings||[];
-          const reviewOnly=r.verdict==='REVIEW'&&findings.length>0&&findings.every(row=>row.disposition==='REVIEW'&&row.rule==='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW');
+          const reviewOnly=r.verdict==='REVIEW'&&findings.length>0&&findings.every(row=>
+            row.disposition==='REVIEW'&&(row.rule==='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW'
+              ||(row.rule==='OIDC_WRITE_PERMISSION_ADDED'&&row.file==='.github/workflows/magic-forest-pages.yml')));
+          // Only the exact, whole-workflow verified owner Pages OIDC grant may join policy REVIEW.
+          // All other OIDC elevation remains QUARANTINE and cannot enter automated approval.
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`findings=${findings.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`review_only=${reviewOnly?'YES':'NO'}\n`);
           console.log('SECURITY_REPORT='+JSON.stringify({verdict:r.verdict,highestSeverity:r.highestSeverity,findings:findings.length,reviewOnly}));
@@ -414,6 +418,18 @@ jobs:
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
           const policyPath='company-learning/platform-release-roadmap.json';
+          const pagesPath='.github/workflows/magic-forest-pages.yml';
+          const changedPaths=execFileSync('git',['diff','--name-only',process.env.BASE_SHA,'HEAD'],{encoding:'utf8'}).trim().split('\\n');
+          if(changedPaths.includes(pagesPath)){
+            const pagesBefore=execFileSync('git',['show',process.env.BASE_SHA+':'+pagesPath],{encoding:'utf8'});
+            const pagesAfter=fs.readFileSync(pagesPath,'utf8');
+            if(/id-token\\s*:\\s*write/i.test(pagesAfter)){
+              const {isApprovedPagesOidcGrant}=await import('./tools/company-security-steward.mjs');
+              if(!isApprovedPagesOidcGrant(pagesBefore,pagesAfter))
+                throw new Error('SECURITY_OWNER_PAGES_OIDC_SCOPE_PROOF_REQUIRED');
+              console.log('SECURITY_OWNER_APPROVED_EXACT_PAGES_OIDC=PASS');
+            }
+          }
           const base=JSON.parse(execFileSync('git',['show',process.env.BASE_SHA+':'+policyPath],{encoding:'utf8',maxBuffer:16*1024*1024}));
           const head=JSON.parse(fs.readFileSync(policyPath,'utf8'));
           const changes=[];
