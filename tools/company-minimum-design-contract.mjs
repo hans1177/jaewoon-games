@@ -49,8 +49,12 @@ export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=
   // 기본설계에도 모든 게임 멀티 필수 정책을 적용한다. SINGLE은 디자이너가 확장 설계해야 한다.
   const verifiedPolicyPath=clean(process.env.COMPANY_VERIFIED_POLICY_PATH);
   if(!verifiedPolicyPath||!fs.existsSync(verifiedPolicyPath))throw new Error('MINIMUM_DESIGN_VERIFIED_POLICY_REQUIRED');
-  const multiplayerPolicy=JSON.parse(fs.readFileSync(verifiedPolicyPath,'utf8'))
-    ?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
+  const roadmap=JSON.parse(fs.readFileSync(verifiedPolicyPath,'utf8'));
+  const multiplayerPolicy=roadmap?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
+  const scope=roadmap?.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||{};
+  const unityRequired=(scope.activeTargets||[]).includes('UNITY_ANDROID')
+    &&!(scope.ownerHeldTargets||[]).includes('UNITY_ANDROID')
+    &&roadmap?.developmentAccess?.UNITY==='ALWAYS_ALLOWED';
   const multiplayerMandatory=multiplayerPolicy.required===true&&multiplayerPolicy.scope==='ALL_ACTIVE_AND_NEW_GAMES';
   const declaredMode=clean(content?.multiplayerMode).toUpperCase();
   const profileMode=clean(content?.robloxBuildProfile?.playMode).toUpperCase();
@@ -61,8 +65,8 @@ export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=
     blockers.push('MINIMUM_MULTIPLAYER_DESIGN_EXTENSION_REQUIRED');
   if(!common)blockers.push('MINIMUM_COMMON_CORE_INCOMPLETE');
   if(!roblox)blockers.push('ROBLOX_PLATFORM_PROFILE_INCOMPLETE');
-  if(!unity)blockers.push('UNITY_PLATFORM_PROFILE_INCOMPLETE');
-  if(roblox&&unity&&!distinct)blockers.push('PLATFORM_PROFILES_MUST_DIFFER');
+  if(unityRequired&&!unity)blockers.push('UNITY_PLATFORM_PROFILE_INCOMPLETE');
+  if(unityRequired&&roblox&&unity&&!distinct)blockers.push('PLATFORM_PROFILES_MUST_DIFFER');
   // 기본 설계도 v5 MAIN × A × B × C + @ 문법과 실제 상태 연결이 있어야 한다.
   const grammarRequired=requireGrammar||Math.max(
     Number(seed?.GAMEPLAY_SKETCH?.version||0),
@@ -87,9 +91,9 @@ export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=
   };
   return Object.freeze({
     version:1,
-    pass:common&&roblox&&unity&&distinct&&grammarReady&&(!multiplayerMandatory||['COOP','COMPETITIVE','HYBRID'].includes(authoredMode)),
+    pass:common&&roblox&&(!unityRequired||(unity&&distinct))&&grammarReady&&(!multiplayerMandatory||['COOP','COMPETITIVE','HYBRID'].includes(authoredMode)),
     commonCoreReady:common,creativeGrammarReady:grammarReady,
-    platformProfiles:{ROBLOX:roblox,UNITY:unity,distinct},
+    platformProfiles:{ROBLOX:roblox,UNITY:unity,distinct,unityRequired},
     releaseChecklist:Object.freeze(releaseChecklist),
     blockers:Object.freeze(blockers)
   });
@@ -209,18 +213,6 @@ export function materializeVibeMinimumDesign({root='.',seed={},catalogGame={},da
         platformContentAdaptation:'같은 핵심 루프를 Roblox 원본 네이티브 월드와 UI로 구현한다.',
         internalReleaseTarget:'Roblox 비공개 플레이 가능 빌드와 실제 기능 확인을 목표로 한다.',
         validationEvidence:'실제 Roblox 실행, 입력·저장·원본 규칙·독립 QA·회귀 증거가 별도로 필요하다.'
-      },
-      UNITY:{
-        platform:'UNITY',
-        inputModel:'Unity Input System 터치·드래그·가상 조이스틱과 원본 행동을 연결한다.',
-        sessionModel:'Unity 네이티브 앱은 오너 보류 중이다. 기존 세션·중단 복귀 의미를 호환 기록으로 유지한다.',
-        multiplayerRuntime:single?'원본 싱글 진행을 유지하고 불필요한 네트워크 플레이를 강제하지 않는다.':'원본 '+mode+' 규칙을 Unity 쪽 권한 검증·동기화와 동일하게 적용한다.',
-        performanceBudget:'Unity Android 네이티브 앱의 모바일 메모리·GPU·발열·저장 예산은 오너 보류 해제 후 검증한다.',
-        uiUx:'화면 크기와 터치 안전영역에 적응하는 Unity 모바일 HUD를 제공한다.',
-        saveAndNetwork:'버전 있는 저장 구조를 사용하고 '+savePolicy+' 의미를 유지한다.',
-        platformContentAdaptation:'기존 공통 원본은 보존한다. Unity 네이티브 앱 구현은 오너 보류 상태이며 WebGL 빌드를 새로 생성하지 않는다.',
-        internalReleaseTarget:'Unity 네이티브 앱은 오너 보류다. WebGL 제작·비공개 웹 배포는 진행하지 않는다.',
-        validationEvidence:'Unity는 오너 보류이므로 현재 제작 PASS가 없다. 향후 네이티브 앱 검증 증거는 따로 요구한다.'
       }
     }
   };

@@ -36,18 +36,18 @@ test('partial design-runtime failure still evaluates each persisted minimum-desi
   assert.match(promotion,/workflow_run\.conclusion == 'success'/);
   assert.match(promotion,/workflow_run\.conclusion == 'failure'/);
   assert.doesNotMatch(promotion,/workflow_run\.conclusion == 'cancelled'/);
-  assert.match(promotion,/Promote minimum dual-platform design directly to native development/);
+  assert.match(promotion,/Promote verified Roblox minimum design to native development/);
   assert.match(promotion,/company-minimum-design-contract\.mjs/);
-  assert.match(promotion,/DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY/);
+  assert.match(promotion,/DEVELOPMENT_ADMISSION_GATE=MINIMUM_ROBLOX_DESIGN_READY/);
   assert.match(promotion,/STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE/);
 });
 
 test('promotion source has one direct-native admission path and no Web-first or strict-score fallback',()=>{
   assert.match(source,/assertCanonicalDirectNativePolicy/);
-  assert.match(source,/MINIMUM_DUAL_PLATFORM_DESIGN_READY/);
+  assert.match(source,/MINIMUM_ROBLOX_DESIGN_READY/);
   assert.match(source,/strictDesignReviewRequiredForAdmission:false/);
-  assert.match(source,/concurrentTargetPlatforms:\['ROBLOX','UNITY'\]/);
-  assert.match(source,/UNITY_WEB_ROLE=OWNER_POLICY_CONTROLLED_DEVELOPMENT_LANE/);
+  assert.match(source,/concurrentTargetPlatforms:\['ROBLOX'\]/);
+  assert.match(source,/UNITY_WEB_ROLE=OWNER_HOLD_NO_DEVELOPMENT/);
   assert.doesNotMatch(source,/DESIGN_PASS_THRESHOLD/);
   assert.doesNotMatch(source,/bindRequiredWebStage/);
   assert.doesNotMatch(source,/WEB_PLAYABLE_BOOTSTRAP/);
@@ -98,12 +98,12 @@ test('promotion dispatches both native lanes and does not use Unity Web as a pro
   assert.match(designRuntime,/PER_GAME_PROMOTION_DISPATCH=YES/);
   assert.match(designRuntime,/PORTFOLIO_WIDE_PASS_WAIT=NO/);
   assert.match(promotion,/company-development-confirmed-runtime\.yml/);
-  assert.match(promotion,/DIRECT_NATIVE_DUAL_DISPATCH=CENTRAL_EXACT_FANOUT/);
+  assert.match(promotion,/ROBLOX_ONLY_DISPATCH=CENTRAL_EXACT_FANOUT/);
   assert.match(promotion,/DIRECT_NATIVE_BATCH_DISPATCH=FORBIDDEN/);
   assert.doesNotMatch(promotion,/gh workflow run company-development-roblox-runtime\.yml/);
   assert.doesNotMatch(promotion,/gh workflow run company-development-unity-runtime\.yml/);
   assert.match(promotion,/UNITY_WEB_PROMOTION_GATE=NO/);
-  assert.match(promotion,/ONE_PLATFORM_REQUEST_STARTS_BOTH=YES/);
+  assert.match(promotion,/OWNER_HELD_UNITY_DISPATCH=NO/);
 });
 
 

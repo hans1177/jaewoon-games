@@ -6,7 +6,7 @@ const upper=value=>clean(value).toUpperCase();
 const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
 
 export const SELECTED_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
-export const DEFAULT_CONCURRENT_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
+export const DEFAULT_CONCURRENT_PLATFORMS=Object.freeze(['ROBLOX']); // owner-hold: no Unity dispatch
 export const DEVELOPMENT_GAME_WIP_MAX=Number.POSITIVE_INFINITY;
 export const SPEED_EXECUTION_STAGES=Object.freeze([
   'CHANGE_DETECTION',

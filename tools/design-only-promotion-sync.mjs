@@ -12,8 +12,8 @@ const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=v=>String(v??'').trim();
 const nowIso=()=>new Date().toISOString();
-const selectedPlatformOf=seed=>resolveSelectedPlatform(seed?.INITIAL_TARGET_PLATFORM||'',seed)||'ROBLOX';
-const directNativeSourcePaths=gameId=>({ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`});
+const selectedPlatformOf=seed=>'ROBLOX'; // Unity is owner-held, including historical Android requests.
+const directNativeSourcePaths=gameId=>({ROBLOX:`roblox-games/${gameId}`});
 const DEDICATED_TARGET_REGISTRY='roblox-dedicated-targets.json';
 const LEGACY_WEB_ADMISSION_KEYS=Object.freeze([
   'webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired',
@@ -54,7 +54,7 @@ function assertCanonicalDirectNativePolicy(root='.'){
   const active=d.ownerActiveDevelopmentScope20261009?.activeTargets||[];
   const webActive=active.includes('UNITY_WEB');
   const nativeActive=active.includes('UNITY_ANDROID');
-  const pair=webActive?['ROBLOX','UNITY_WEB_FLOOR']:nativeActive?['ROBLOX','UNITY']:['ROBLOX'];
+  const pair=webActive?['ROBLOX','UNITY_WEB_FLOOR']:nativeActive?['ROBLOX']:['ROBLOX'];
   // 최소 공유 설계는 보존하고, 현재 오너가 연 플랫폼만 실행한다.
   // Android/Unity 앱은 오너 홀드이며, 오래된 Unity Web 선행 입장 관문을 되살리지 않는다.
   const ok=roadmap.authority==='MACHINE_EXECUTION_CONTRACT'
@@ -100,7 +100,7 @@ function recoverExactPrivateRuntimeCheckpoint(item,design){
   if(priorDesignSource&&priorDesignSource!==clean(design?.file))return null;
   const step=clean(item?.currentStep).toUpperCase();
   const state=clean(item?.canonicalState).toUpperCase();
-  if(step&&step!=='TARGET_PLATFORM_SOURCE_BIND'&&state!=='PENDING_DUAL_NATIVE_SOURCE_BIND')return null;
+  if(step&&step!=='TARGET_PLATFORM_SOURCE_BIND'&&state!=='PENDING_ROBLOX_SOURCE_BIND')return null;
   const candidate=item?.robloxRuntimeCandidateEvidence||{};
   const exact=candidate?.published===true
     &&clean(candidate.sourceRevision)===clean(item?.robloxSourceCommit)
@@ -151,7 +151,6 @@ function directQueueProgressIsCurrent(item,design){
     &&clean(item?.minimumDesignContract?.source)===clean(design?.file)
     &&Array.isArray(item?.concurrentTargetPlatforms)
     &&item.concurrentTargetPlatforms.includes('ROBLOX')
-    &&item.concurrentTargetPlatforms.includes('UNITY')
     &&clean(item?.currentStep)
     &&!/^WEB_|^WAITING_WEB/.test(clean(item.currentStep).toUpperCase());
 }
@@ -171,17 +170,16 @@ function bindDirectNativeQueueItem(item,{seed,design,stamp}){
     seedId:item.seedId||seed.seedId||null,
     gameName:item.gameName||seed.gameName||gameId,
     productionClass:'DEVELOPMENT_CONFIRMED',
-    productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+    productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',
     status:['DISABLED'].includes(clean(item.status).toUpperCase())?'ACTIVE':(item.status||'ACTIVE'),
     selectedPlatform,
     targetPlatform:selectedPlatform,
-    concurrentTargetPlatforms:['ROBLOX','UNITY'],
-    platformExecutionMode:'OWNER_ACTIVE_PLATFORMS_SAME_GAME',
-    bidirectionalAutoPair:true,
+    concurrentTargetPlatforms:['ROBLOX'],
+    platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE',
+    bidirectionalAutoPair:false,
     requestEitherStartsBoth:false,
     targetSourcePaths:paths,
     robloxProjectPath:paths.ROBLOX,
-    unityProjectPath:paths.UNITY,
     targetSourcePath:paths[selectedPlatform]||paths.ROBLOX,
     sourcePath:paths[selectedPlatform]||paths.ROBLOX,
     designBaselineSource:design.file,
@@ -192,19 +190,17 @@ function bindDirectNativeQueueItem(item,{seed,design,stamp}){
       commonCoreReady:true,platformProfiles:{ROBLOX:true,UNITY:true,distinct:true}
     },
     platformDesignProfiles:{
-      ROBLOX:{source:design.file,jsonPointer:'/content/platformProfiles/ROBLOX'},
-      UNITY:{source:design.file,jsonPointer:'/content/platformProfiles/UNITY'}
+      ROBLOX:{source:design.file,jsonPointer:'/content/platformProfiles/ROBLOX'}
     },
     artbookTiming:'PARALLEL_NATIVE_PRESENTATION_SUPPORT',
     ownerPreservationPresentationUpgrade,
     presentationFirstPass:ownerPreservationPresentationUpgrade?'ASSET_ADAPTATION':(item.presentationFirstPass||null),
     internalReleaseTarget:{
-      ROBLOX:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE',
-      UNITY:'INTERNAL_OR_CLOSED_APP_TEST_BUILD'
+      ROBLOX:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE'
     },
     externalReleasePolicy:'PLATFORM_INDEPENDENT_AFTER_OWN_QA',
     currentStep:previousStep||'TARGET_PLATFORM_SOURCE_BIND',
-    canonicalState:previousState||'PENDING_DUAL_NATIVE_SOURCE_BIND',
+    canonicalState:previousState||'PENDING_ROBLOX_SOURCE_BIND',
     enqueuedAt:item.enqueuedAt||stamp,
     updatedAt:stamp
   });
@@ -245,7 +241,7 @@ function demoteStaleAdmission({seed,queue,portfolio,catalog,gameId,reason,stamp}
     homepageCategory:'design-only',
     homepageOfficialCard:false,
     homepageTestCandidate:false,
-    homepageStage:'최소 Roblox/Unity 설계 보강 필요',
+    homepageStage:'최소 Roblox 설계 보강 필요',
     updatedAt:stamp
   });removeLegacyWebAdmissionFields(game);}
 }
@@ -258,22 +254,21 @@ function syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry
   Object.assign(seed,{
     productionClass:'DEVELOPMENT_CONFIRMED',
     productionTier:2,
-    productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+    productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',
     lifecycleState:'DEVELOPMENT_CONFIRMED',
     selectedPlatform,
-    concurrentTargetPlatforms:['ROBLOX','UNITY'],
-    platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+    concurrentTargetPlatforms:['ROBLOX'],
+    platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE',
     minimumDesignContract:{version:1,pass:true,source:design.file,date:design.date},
     platformDesignProfiles:{
-      ROBLOX:{source:design.file,jsonPointer:'/content/platformProfiles/ROBLOX'},
-      UNITY:{source:design.file,jsonPointer:'/content/platformProfiles/UNITY'}
+      ROBLOX:{source:design.file,jsonPointer:'/content/platformProfiles/ROBLOX'}
     },
     promotion:{
       from:wasConfirmed?'DEVELOPMENT_CONFIRMED':'DESIGN_ONLY',
       to:'DEVELOPMENT_CONFIRMED',
-      reason:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+      reason:'MINIMUM_ROBLOX_DESIGN_READY',
       requestedPlatform:selectedPlatform,
-      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      concurrentTargetPlatforms:['ROBLOX'],
       targetSourcePaths:paths,
       designBaselineSource:design.file,
       designDate:design.date,
@@ -291,13 +286,13 @@ function syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry
   }
   Object.assign(project,{
     productionClass:'DEVELOPMENT_CONFIRMED',
-    productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+    productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',
     profileStatus:'DEVELOPMENT_CONFIRMED',
-    mode:'ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT',
+    mode:'ROBLOX_ONLY_OWNER_ACTIVE',
     productionTier:2,
-    targetEngine:'ROBLOX_UNITY',
+    targetEngine:'ROBLOX',
     selectedPlatform,
-    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    concurrentTargetPlatforms:['ROBLOX'],
     targetSourcePaths:paths,
     sourcePath:paths[selectedPlatform]||paths.ROBLOX,
     designBaselineSource:design.file,
@@ -308,22 +303,22 @@ function syncReadyMirrors({seed,design,portfolio,catalog,queue,dedicatedRegistry
 
   let game=(catalog.games||[]).find(row=>clean(row?.id)===gameId);
   if(!game){
-    game={id:gameId,name:seed.gameName||gameId,description:'개발확정 · Roblox + Unity 앱 동시개발',genre:[clean(seed.GAME_CATEGORY).replaceAll('_',' ')],image:'',featured:false};
+    game={id:gameId,name:seed.gameName||gameId,description:'개발확정 · Roblox 개발',genre:[clean(seed.GAME_CATEGORY).replaceAll('_',' ')],image:'',featured:false};
     catalog.games.push(game);
   }
   Object.assign(game,{
     homepageCategory:'development-confirmed',
     productionClass:'DEVELOPMENT_CONFIRMED',
-    productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+    productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',
     productionTier:2,
     selectedPlatform,
-    concurrentTargetPlatforms:['ROBLOX','UNITY'],
-    productionTarget:'ROBLOX_UNITY',
+    concurrentTargetPlatforms:['ROBLOX'],
+    productionTarget:'ROBLOX',
     targetSourcePaths:paths,
     homepageOfficialCard:false,
     homepageTestCandidate:false,
-    homepageStage:'개발확정 · Roblox + Unity 앱 동시개발',
-    homepageRecentWork:'최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행',
+    homepageStage:'개발확정 · Roblox 개발',
+    homepageRecentWork:'최소 설계 계약 완료 · Roblox 개발 진행',
     homepageWebPlayable:Boolean(game.homepageWebPlayable),
     updatedAt:stamp
   });
@@ -415,7 +410,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   portfolio.updatedAt=stamp;
   catalog.updatedAt=stamp;
   queue.updatedAt=stamp;
-  queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT';
+  queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_ONLY';
   queue.developmentGameWipMax=null;
   for(const game of catalog.games||[])removeLegacyWebAdmissionFields(game);
   for(const item of queue.items||[])removeLegacyWebAdmissionFields(item);
@@ -436,7 +431,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     skipped,
     reactivatedLegacyCatalogPauses,
     queueCount:queue.items.length,
-    directNativeDual:true
+    directNativeDual:false
   };
 }
 
@@ -449,7 +444,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`STALE_DEVELOPMENT_CONFIRMED_DEMOTED=${result.demoted.join(',')||'NONE'}`);
   console.log(`STALE_CATALOG_PAUSES_REACTIVATED=${result.reactivatedLegacyCatalogPauses.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
-  console.log('DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+  console.log('DEVELOPMENT_ADMISSION_GATE=MINIMUM_ROBLOX_DESIGN_READY');
   console.log('STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE');
-  console.log('UNITY_WEB_ROLE=OWNER_POLICY_CONTROLLED_DEVELOPMENT_LANE');
+  console.log('UNITY_WEB_ROLE=OWNER_HOLD_NO_DEVELOPMENT');
 }

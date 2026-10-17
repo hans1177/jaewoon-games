@@ -54,15 +54,13 @@ function migrateOne(record,gameId){
   const content=record?.content&&typeof record.content==='object'?record.content:record;
   const current=content.platformProfiles&&typeof content.platformProfiles==='object'?content.platformProfiles:{};
   const generated=buildProfiles(content,gameId);
-  content.platformProfiles={
-    ROBLOX:profileFieldsReady(current.ROBLOX,'ROBLOX')?current.ROBLOX:generated.ROBLOX,
-    UNITY:profileFieldsReady(current.UNITY,'UNITY')?current.UNITY:generated.UNITY
-  };
+  // Historical Unity design metadata stays readable but never becomes a new work request.
+  content.platformProfiles={...current,ROBLOX:profileFieldsReady(current.ROBLOX,'ROBLOX')?current.ROBLOX:generated.ROBLOX};
   content.platformProfileMigration={
     version:1,
     mode:'COMMON_CORE_PRESERVED_PLATFORM_PROFILES_ADDED',
     commonCoreRewritten:false,
-    profilesDistinctByPlatformEnvironment:true,
+    profilesDistinctByPlatformEnvironment:false,
     strictReviewRefreshRequired:true,
     migratedAt:now()
   };
@@ -94,7 +92,7 @@ export function migrateDirectNativeRuntime(root='.'){
       migrated.push(gameId);
     }else alreadyReady.push(gameId);
 
-    const paths={ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`};
+    const paths={ROBLOX:`roblox-games/${gameId}`};
     // Repeated design migration must not rewind a source-bound native lane.
     // A new/migrated design or an unverified source still starts at source binding.
     const nativeStep=clean(item.currentStep).toUpperCase();
@@ -102,7 +100,7 @@ export function migrateDirectNativeRuntime(root='.'){
       &&item.minimumDesignContract?.pass===true
       &&clean(item.minimumDesignContract.source)===source
       &&/^(?:TARGET_PLATFORM_|ROBLOX_|UNITY_|PRIVATE_RUNTIME_|INTERNAL_PLATFORM_|POST_F9_|BUILD_UP(?:$|_))/.test(nativeStep)
-      &&['roblox','unity'].some(platform=>{
+      &&['roblox'].some(platform=>{
         const passedAt=Date.parse(item[platform+'SourceBootstrapPassedAt']||'');
         const failedAt=Date.parse(item[platform+'SourceBootstrapFailedAt']||'');
         return /^[0-9a-f]{40}$/i.test(clean(item[platform+'SourceCommit']))
@@ -117,23 +115,21 @@ export function migrateDirectNativeRuntime(root='.'){
       capturedAt:stamp
     };
     Object.assign(item,{
-      productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
-      selectedPlatform:['ROBLOX','UNITY'].includes(clean(item.selectedPlatform).toUpperCase())?clean(item.selectedPlatform).toUpperCase():'ROBLOX',
-      concurrentTargetPlatforms:['ROBLOX','UNITY'],
-      platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
-      bidirectionalAutoPair:true,
-      requestEitherStartsBoth:true,
+      productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',
+      selectedPlatform:'ROBLOX',
+      concurrentTargetPlatforms:['ROBLOX'],
+      platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE',
+      bidirectionalAutoPair:false,
+      requestEitherStartsBoth:false,
       targetSourcePaths:paths,
       robloxProjectPath:item.robloxProjectPath||paths.ROBLOX,
-      unityProjectPath:item.unityProjectPath||paths.UNITY,
       designBaselineSource:source,
-      minimumDesignContract:{version:1,pass:true,source,commonCoreReady:true,platformProfiles:{ROBLOX:true,UNITY:true,distinct:true},migratedFromLegacy:item.minimumDesignContract?.pass!==true},
+      minimumDesignContract:{version:1,pass:true,source,commonCoreReady:true,platformProfiles:{ROBLOX:true,UNITY:gate.platformProfiles.UNITY,distinct:gate.platformProfiles.distinct},migratedFromLegacy:item.minimumDesignContract?.pass!==true},
       platformDesignProfiles:{
-        ROBLOX:{source,jsonPointer:'/content/platformProfiles/ROBLOX'},
-        UNITY:{source,jsonPointer:'/content/platformProfiles/UNITY'}
+        ROBLOX:{source,jsonPointer:'/content/platformProfiles/ROBLOX'}
       },
       currentStep:preserveNativeProgress?item.currentStep:'TARGET_PLATFORM_SOURCE_BIND',
-      canonicalState:preserveNativeProgress?(item.canonicalState||'TARGET_PLATFORM_REPAIR_REQUIRED'):'PENDING_DUAL_NATIVE_SOURCE_BIND',
+      canonicalState:preserveNativeProgress?(item.canonicalState||'TARGET_PLATFORM_REPAIR_REQUIRED'):'PENDING_ROBLOX_SOURCE_BIND',
       webValidationRequired:false,
       musicValidationRequired:false,
       webSourcePath:null,
@@ -144,7 +140,7 @@ export function migrateDirectNativeRuntime(root='.'){
       unityWebFirstStagePassed:false,
       sourceRootBootstrapRequired:false,
       legacyWebReference:item.legacyWebReference||legacyWeb,
-      internalReleaseTarget:{ROBLOX:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE',UNITY:'INTERNAL_OR_CLOSED_APP_TEST_BUILD'},
+      internalReleaseTarget:{ROBLOX:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE'},
       externalReleasePolicy:'PLATFORM_INDEPENDENT_AFTER_OWN_QA',
       strictDesignReviewRefreshRequired:true,
       updatedAt:stamp
@@ -152,23 +148,23 @@ export function migrateDirectNativeRuntime(root='.'){
     const seed=seedState.seeds.find(x=>clean(x.gameId)===gameId);
     if(seed)Object.assign(seed,{
       productionClass:'DEVELOPMENT_CONFIRMED',
-      productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+      productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',
       lifecycleState:'DEVELOPMENT_CONFIRMED',
-      concurrentTargetPlatforms:['ROBLOX','UNITY'],
-      platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+      concurrentTargetPlatforms:['ROBLOX'],
+      platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE',
       minimumDesignContract:{version:1,pass:true,source},
       platformDesignProfiles:item.platformDesignProfiles,
       strictDesignReviewRefreshRequired:true,
       updatedAt:stamp,
-      promotion:{...(seed.promotion||{}),to:'DEVELOPMENT_CONFIRMED',reason:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',concurrentTargetPlatforms:['ROBLOX','UNITY'],designBaselineSource:source,strictDesignReviewRequiredForAdmission:false,strictDesignReviewContinuesInParallel:true,migratedAt:stamp}
+      promotion:{...(seed.promotion||{}),to:'DEVELOPMENT_CONFIRMED',reason:'MINIMUM_ROBLOX_DESIGN_READY',concurrentTargetPlatforms:['ROBLOX'],designBaselineSource:source,strictDesignReviewRequiredForAdmission:false,strictDesignReviewContinuesInParallel:true,migratedAt:stamp}
     });
     const project=portfolio.projects.find(x=>clean(x.slug)===gameId);
-    if(project)Object.assign(project,{mode:'ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',concurrentTargetPlatforms:['ROBLOX','UNITY'],targetSourcePaths:paths,designBaselineSource:source,platformDesignProfiles:item.platformDesignProfiles,webValidationRequired:false,updatedAt:stamp});
+    if(project)Object.assign(project,{mode:'ROBLOX_ONLY_OWNER_ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',concurrentTargetPlatforms:['ROBLOX'],targetSourcePaths:paths,designBaselineSource:source,platformDesignProfiles:item.platformDesignProfiles,webValidationRequired:false,updatedAt:stamp});
     const game=catalog.games.find(x=>clean(x.id)===gameId);
-    if(game)Object.assign(game,{productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',concurrentTargetPlatforms:['ROBLOX','UNITY'],productionTarget:'ROBLOX_UNITY',targetSourcePaths:paths,homepageWebPlayable:false,webPath:null,homepageStage:'개발확정 · Roblox + Unity 앱 동시개발',homepageRecentWork:'기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료',updatedAt:stamp});
+    if(game)Object.assign(game,{productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',concurrentTargetPlatforms:['ROBLOX'],productionTarget:'ROBLOX',targetSourcePaths:paths,homepageWebPlayable:false,webPath:null,homepageStage:'개발확정 · Roblox 개발',homepageRecentWork:'기존 공통 설계 보존 · Roblox 설계 보강 완료',updatedAt:stamp});
   }
   queue.webValidationPolicy='DISABLED_DIRECT_NATIVE_DUAL_PLATFORM';
-  queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT';
+  queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_ONLY';
   queue.developmentGameWipMax=null;
   queue.updatedAt=stamp;seedState.updatedAt=stamp;portfolio.updatedAt=stamp;catalog.updatedAt=stamp;
   write(queuePath,queue);write(seedPath,seedState);write(portfolioPath,portfolio);write(catalogPath,catalog);

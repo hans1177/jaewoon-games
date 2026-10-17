@@ -46,22 +46,25 @@ test('all-game policy rejects SINGLE even when minimum design fields are otherwi
 });
 
 
-test('minimum design requires common core and both distinct platform profiles',()=>{
+test('minimum design requires common core and Roblox when Unity is owner held',()=>{
   const gate=evaluateMinimumDesignContract(base());
   assert.equal(gate.pass,true);
   assert.equal(gate.platformProfiles.ROBLOX,true);
   assert.equal(gate.platformProfiles.UNITY,true);
   assert.equal(gate.platformProfiles.distinct,true);
+  assert.equal(gate.platformProfiles.unityRequired,false);
 });
 
-test('single copied or missing platform design cannot start native development',()=>{
+test('owner-held Unity is optional but Roblox profile is mandatory',()=>{
   const missing=base();delete missing.content.platformProfiles.UNITY;
-  assert.equal(evaluateMinimumDesignContract(missing).pass,false);
+  assert.equal(evaluateMinimumDesignContract(missing).pass,true);
+  const noRoblox=base();delete noRoblox.content.platformProfiles.ROBLOX;
+  assert.equal(evaluateMinimumDesignContract(noRoblox).pass,false);
   const copied=base();copied.content.platformProfiles.UNITY={...copied.content.platformProfiles.ROBLOX};
   copied.content.platformProfiles.UNITY.platform='UNITY';
   assert.equal(evaluateMinimumDesignContract(copied).pass,true);
   copied.content.platformProfiles.UNITY={...copied.content.platformProfiles.ROBLOX};
-  assert.equal(evaluateMinimumDesignContract(copied).pass,false);
+  assert.equal(evaluateMinimumDesignContract(copied).pass,true);
 });
 
 

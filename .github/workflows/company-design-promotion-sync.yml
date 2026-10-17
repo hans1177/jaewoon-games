@@ -30,6 +30,7 @@ concurrency:
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   COMPANY_VERIFIED_POLICY_PATH: ${{ github.workspace }}/company-learning/platform-release-roadmap.json
+  COMPANY_VERIFIED_DESIGN_POLICY_PATH: ${{ github.workspace }}/company-learning/platform-release-roadmap.json
 
 jobs:
   promote:
@@ -58,7 +59,7 @@ jobs:
           test -s "$COMPANY_VERIFIED_POLICY_PATH"
           echo "DESIGN_PROMOTION_VERIFIED_POLICY_PATH=$COMPANY_VERIFIED_POLICY_PATH"
           echo 'DESIGN_PROMOTION_RUNTIME_OVERLAY=YES'
-          echo 'DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY'
+          echo 'DEVELOPMENT_ADMISSION_GATE=MINIMUM_ROBLOX_DESIGN_READY'
           echo 'STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE'
           echo 'HUMAN_POLICY_DOCUMENT_REQUIRED=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
@@ -76,7 +77,7 @@ jobs:
       - name: Migrate legacy DEVELOPMENT_CONFIRMED designs to direct native profiles
         run: node tools/company-direct-native-design-migration.mjs
 
-      - name: Promote minimum dual-platform design directly to native development
+      - name: Promote verified Roblox minimum design to native development
         run: node tools/design-only-promotion-sync.mjs
 
       - name: Verify confirmed-seed dual-native queue invariant
@@ -98,20 +99,19 @@ jobs:
             if(!item)throw new Error(`development queue missing: ${seed.gameId}`);
             if(item.minimumDesignContract?.pass!==true)throw new Error(`minimum design contract missing: ${seed.gameId}`);
             const targets=new Set(item.concurrentTargetPlatforms||[]);
-            if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error(`dual native target pair missing: ${seed.gameId}`);
+            if(!targets.has('ROBLOX')||targets.has('UNITY'))throw new Error(`Roblox-only target invariant failed: ${seed.gameId}`);
             if(item.platformDesignProfiles?.ROBLOX?.jsonPointer!=='/content/platformProfiles/ROBLOX')throw new Error(`Roblox platform profile missing: ${seed.gameId}`);
-            if(item.platformDesignProfiles?.UNITY?.jsonPointer!=='/content/platformProfiles/UNITY')throw new Error(`Unity platform profile missing: ${seed.gameId}`);
             if(Object.hasOwn(item,'webValidationRequired')||Object.hasOwn(item,'musicValidationRequired'))throw new Error(`legacy Web gate key still present: ${seed.gameId}`);
             const currentStep=String(item.currentStep||'').trim().toUpperCase();
             if(!currentStep||/^WEB_|^WAITING_WEB/.test(currentStep))throw new Error(`direct-native progress invalid: ${seed.gameId}:${currentStep||'MISSING'}`);
             const project=(portfolio.projects||[]).find(row=>row.slug===seed.gameId);
-            if(project?.mode!=='ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT')throw new Error(`portfolio dual native mode missing: ${seed.gameId}`);
+            if(project?.mode!=='ROBLOX_ONLY_OWNER_ACTIVE')throw new Error(`portfolio dual native mode missing: ${seed.gameId}`);
           }
           console.log(`ACTIVE_DEVELOPMENT_CONFIRMED_SEED_COUNT=${confirmed}`);
-          console.log('DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+          console.log('DEVELOPMENT_ADMISSION_GATE=MINIMUM_ROBLOX_DESIGN_READY');
           console.log('STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE');
           console.log('UNITY_WEB_GATE=DISABLED');
-          console.log('DUAL_NATIVE_QUEUE_INVARIANT=PASS');
+          console.log('ROBLOX_ONLY_QUEUE_INVARIANT=PASS');
           NODE
 
       - name: Persist promoted state to company runtime branch
@@ -175,10 +175,10 @@ jobs:
           set -euo pipefail
           gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f trigger_source=DESIGN_PROMOTION
           gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'DIRECT_NATIVE_DUAL_DISPATCH=CENTRAL_EXACT_FANOUT'
+          echo 'ROBLOX_ONLY_DISPATCH=CENTRAL_EXACT_FANOUT'
           echo 'DIRECT_NATIVE_BATCH_DISPATCH=FORBIDDEN'
           echo 'VERIFIED_DESIGN_VIBE_REFILL_DISPATCH=YES'
           echo 'VERIFIED_DESIGN_VIBE_REFILL_SCHEDULER=vibe2-24h-runner.yml'
           echo 'VERIFIED_DESIGN_VIBE_REFILL_AFTER_RUNTIME_PERSIST=YES'
           echo 'UNITY_WEB_PROMOTION_GATE=NO'
-          echo 'ONE_PLATFORM_REQUEST_STARTS_BOTH=YES'
+          echo 'OWNER_HELD_UNITY_DISPATCH=NO'
