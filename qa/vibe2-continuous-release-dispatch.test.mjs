@@ -790,3 +790,23 @@ test('shallow Roblox promotion preserves exact candidate, main drift guard and m
     assert.equal(git(checkout,'rev-parse',release+':game'),git(checkout,'rev-parse','origin/main:game'));
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
+
+// F9 이후 게이트는 출시 등급·점수와 독립적이다. 등록·활성·검증된 게임만 기존 배포 경로를 사용한다.
+test('exact F9 publication excludes release classification and catalog scoring for every platform',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const loop=policy.developmentLifecycleMachine.verifiedF0F9PublicationLoop;
+  const owner=policy.changeRecord.ownerEveryGameF9Publish20261018;
+  const steps=loop.sequence;
+  assert.deepEqual(steps.slice(1,11),['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']);
+  assert.equal(steps[11],'PUBLISH_EVERY_F9_VERIFIED_GAME');
+  assert.equal(steps.includes('RELEASE_CLASSIFICATION'),false);
+  assert.equal(owner.publicationScoreGate,false);
+  assert.equal(owner.publicationClassificationGate,false);
+  assert.match(policy.roblox.deploymentControl.verifiedCyclePublication.sequence.join('|'),/DISPATCH_EXACT_F9_ARTIFACT_REGARDLESS_OF_RELEASE_CLASSIFICATION/);
+  assert.doesNotMatch(policy.roblox.deploymentControl.verifiedCyclePublication.sequence.join('|'),/ONLY_IF_RELEASED/);
+  const inspect=releaseWorkflow.slice(releaseWorkflow.indexOf('  inspect:'),releaseWorkflow.indexOf('  web-release:'));
+  assert.match(inspect,/game-not-in-canonical-catalog/);
+  assert.match(inspect,/game-not-active/);
+  assert.doesNotMatch(inspect,/current-production-class-not-auto-deployable/);
+  assert.match(releaseWorkflow,/WEB_DEPLOYMENT_ELIGIBILITY=PLAYABLE_F0_F9_PLUS_STATIC_SAVE_QA/);
+});
