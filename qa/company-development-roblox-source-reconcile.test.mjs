@@ -205,7 +205,7 @@ test('minimum-design Roblox SOURCE_BIND items are eligible for source reconcilia
   assert.equal(eligibleForRobloxSourceReconciliation(staleItem()),true);
   assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'}),false);
   assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),minimumDesignContract:{pass:false}}),false);
-  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),platformDesignProfiles:{ROBLOX:staleItem().platformDesignProfiles.ROBLOX}}),false);
+  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),platformDesignProfiles:{ROBLOX:staleItem().platformDesignProfiles.ROBLOX}}),true,'Unity remains owner-held and cannot be required for Roblox SOURCE_BIND');
 });
 
 
