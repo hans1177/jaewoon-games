@@ -313,6 +313,7 @@ jobs:
         id: targets
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
         shell: bash
         run: |
           set -euo pipefail
