@@ -54,4 +54,7 @@ test('Vibe coding worker explicitly enforces real GPU 3D, library reuse and devi
   const smoke=fs.readFileSync('qa/vibe2-development-web-browser-smoke.mjs','utf8');
   assert.match(smoke,/DEVELOPMENT_WEB_REAL_3D_RUNTIME=cat-step:WEBGL2_DEPTH_MESH_INPUT_PASS/);
   assert.match(smoke,/actual3d\?\.draws>=15/);
+  const workflow=fs.readFileSync('.github/workflows/vibe2-core-qa.yml','utf8');
+  assert.match(workflow,/qa\/vibe2-development-web-browser-smoke\\.mjs/);
+  assert.match(workflow,/changed_web_games=ALL/);
 });
