@@ -8,6 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {normalizeWebCanonicalAndExpansionPolicy} from './company-design-prepromotion-repair.mjs';
+import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import {buildRobloxProductionPlan,robloxProductionPromptLines} from './company-roblox-production-plan.mjs';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -2202,7 +2203,7 @@ function buildAutonomousContentExpansion({
 function platformDirectives({identity,goal}){
   const web=`${identity}: "${goal}"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.`;
   const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN = A + B + C + D + @의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN = A + B + C + D + @·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 메인·보조 장르의 인과이며 D는 출처를 가진 구체 창작, @는 D와 연결된 연구·실험·다음 선택이다. 이전 C 소재 2개는 구형 설계 호환에서만 검증하며 소문자 c도 기존 원본에 있을 때만 보존한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 대상은 Roblox와 일반 WEB이며 Roblox 원본 언어는 Luau다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
-  const unity=`${identity}: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 "${goal}"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
+  const unity=`${identity}: MAIN = A + B + C + D + @ 동일 공통 원본의 규칙과 상태를 보존하며 "${goal}"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
   const fortnite=`${identity}: MAIN = A + B + C + D + @ 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
     WEB:web,
@@ -2250,6 +2251,7 @@ export function directivePrompt(d={}){
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `DESIGN_IMPLEMENTATION_CONTEXT: ${JSON.stringify(promptDesignContext)}`,
+    'SHARED_DESIGN_PRESERVATION: 플랫폼별 재설계는 금지. 승인된 공통 원본의 규칙·상태·진행·저장 의미를 보존하고, 게임 규칙 확장은 공통 원본 개정 후 기존 플랫폼 책임 함수에 반영한다.',
     `DESIGNED_GAME_VOLUME: mode=${volume.mode||'UNKNOWN'}; authored=${volume.authoredItemCount||0}; sourceNamedCandidates=${volume.namedSourceCandidateCount||0}; sourceReview=${volume.sourceReviewRequiredCount||0}; runtimeVerified=${volume.runtimeVerifiedCount||0}; countsAreNotPass=true`,
     'DESIGNED_GAME_VOLUME_ITEMS:',
     volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
@@ -2719,9 +2721,15 @@ export function buildGameSpecificBuildUpDirective({
     clean(productionPlatform).toUpperCase()==='UNITY_WEB'?'UNITY_WEB':
       ['UNITY','UNITY_APP','UNITY_ANDROID'].includes(clean(productionPlatform).toUpperCase())?'UNITY':
         clean(productionPlatform).toUpperCase()==='ROBLOX'?'ROBLOX':'';
-  const productionAuthorized=ownerPlatform==='ROBLOX'
-    ||(verifiedRoadmap?.developmentAccess?.[ownerPlatform]==='ALWAYS_ALLOWED'
-      &&(verifiedRoadmap?.ownerActiveDevelopmentScope20261009?.activeTargets||[]).includes(ownerPlatform));
+  // 최신 승인 범위가 있을 때는 오래된 developmentAccess나 Roblox 기본 허용값이 이를 덮지 않는다.
+  // 범위 메타데이터가 없는 독립 기존 설계 테스트는 이전 빌드업 행동을 유지한다.
+  const latestOwnerScope=resolveActiveOwnerPolicy(verifiedRoadmap,{allowMissing:true});
+  const productionAuthorized=latestOwnerScope
+    ? latestOwnerScope.activeTargets.includes(ownerPlatform)
+      &&latestOwnerScope.effectiveDevelopmentAccess[ownerPlatform]==='ALWAYS_ALLOWED'
+    : ownerPlatform==='ROBLOX'
+      ||(verifiedRoadmap?.developmentAccess?.[ownerPlatform]==='ALWAYS_ALLOWED'
+        &&(verifiedRoadmap?.ownerActiveDevelopmentScope20261009?.activeTargets||[]).includes(ownerPlatform));
   const productionPlan=productionAuthorized?buildRobloxProductionPlan({
     gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,availableLibraryPaths,
     previousPlan:previousDirective?.productionPlan||previousDirective?.robloxProductionPlan,focus,
