@@ -1,0 +1,61 @@
+{
+  "summary": "Refined Orang Minyak walk motion to introduce structured support weight transfer, asymmetric torso leaning, grounded arm-leg balancing arcs, and continuous phase blending without root modification.",
+  "expectedEffect": "Character silhouette gains distinct staging depth, support-side weight shifts, and natural secondary oscillation during walking while preserving all runtime API contracts and locked root positions.",
+  "edits": [
+    {
+      "path": "init.luau",
+      "find": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)\n  elseif form==\"ARACHNID\"then\n   for i=1,4 do for _,side in ipairs({\"Left\",\"Right\"})do\n    local sign=side==\"Left\" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))\n    pose(\"Spider\"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)\n    pose(\"Spider\"..side..i..\"Knee\",0,0,0,0,0,sign*math.max(0,cycle)*.25)\n   end end\n  elseif form==\"WHEEL\"then pose(\"Torso\",0,0,0,0,0,-(time*2.8)%(math.pi*2))\n  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)\n  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.16,0,0,0,wave*.03)end\n end",
+      "replace": "local phase=time*speed;local wave=math.sin(phase);local supportWave=math.max(0,math.sin(phase));local supportWaveOpp=math.max(0,math.sin(phase+math.pi));local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",.035*math.sin(phase),floating and math.sin(time*2.4)*.13 or -.12+.02*math.cos(phase*2),-.05, -.12, moving and wave*.03 or breathe*.015, -.03*math.sin(phase))\n pose(\"Head\",0,0,.02,breathe*.035 + .05*supportWave,math.sin(time*.9)*.07 - .03*math.sin(phase),0)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\n    \"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)\n  elseif form==\"ARACHNID\"then\n   for i=1,4 do for _,side in ipairs({\"Left\",\"Right\"})do\n    local sign=side==\"Left\" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))\n    pose(\"Spider\"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)\n    pose(\"Spider\"..side..i..\"Knee\",0,0,0,0,0,sign*math.max(0,cycle)*.25)\n   end end\n  elseif form==\"WHEEL\"then pose(\"Torso\",0,0,0,0,0,-(time*2.8)%(math.pi*2))\n  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,supportWave*.12,0,wave*.4,0,-.015)\n   pose(\"RightLeg\",0,supportWaveOpp*.12,0,-wave*.4,0,.015)\n   pose(\n    \"LeftArm\",0,0,-.05,-.25-supportWave*.25,.06,-.1\n   )\n   pose(\"RightArm\",0,0,-.04,-.25-supportWaveOpp*.25,-.06,.1)\n  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.16,0,0,0,wave*.03)end\n end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "Verify pose dictionary is populated for all bound bones with finite numbers.",
+    "Verify reversing time sample order produces identical output poses.",
+    "Inspect support leg elevation and torso lateral lean in native Roblox player view."
+  ],
+  "graphicsReplacementReport": null,
+  "motionRepairReport": {
+    "objectId": "roblox-world-ghost-orang-minyak",
+    "clipId": "walk",
+    "depthEvidence": [
+      {
+        "axis": "POSE_AND_STAGING",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)",
+        "after": "pose(\"Torso\",.035*math.sin(phase),floating and math.sin(time*2.4)*.13 or -.12+.02*math.cos(phase*2),-.05, -.12, moving and wave*.03 or breathe*.015, -.03*math.sin(phase))"
+      },
+      {
+        "axis": "WEIGHT_AND_BALANCE",
+        "status": "CHANGED",
+        "before": "pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": "pose(\"Head\",0,0,.02,breathe*.035 + .05*supportWave,math.sin(time*.9)*.07 - .03*math.sin(phase),0)"
+      },
+      {
+        "axis": "JOINT_ARCS_AND_SPACING",
+        "status": "CHANGED",
+        "before": "pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)",
+        "after": "pose(\"LeftLeg\",0,supportWave*.12,0,wave*.4,0,-.015)\n   pose(\"RightLeg\",0,supportWaveOpp*.12,0,-wave*.4,0,.015)"
+      },
+      {
+        "axis": "CONTACT_AND_CONSTRAINTS",
+        "status": "CHANGED",
+        "before": "pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+        "after": "pose(\n    \"LeftArm\",0,0,-.05,-.25-supportWave*.25,.06,-.1\n   )\n   pose(\"RightArm\",0,0,-.04,-.25-supportWaveOpp*.25,-.06,.1)"
+      },
+      {
+        "axis": "OVERLAP_AND_SETTLE",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": "local phase=time*speed;local wave=math.sin(phase);local supportWave=math.max(0,math.sin(phase));local supportWaveOpp=math.max(0,math.sin(phase+math.pi));local breathe=math.sin(time*2)"
+      },
+      {
+        "axis": "LOOP_AND_TRANSITION",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);",
+        "after": "local phase=time*speed;local wave=math.sin(phase);local supportWave=math.max(0,math.sin(phase));local supportWaveOpp=math.max(0,math.sin(phase+math.pi));"
+      }
+    ]
+  }
+}
