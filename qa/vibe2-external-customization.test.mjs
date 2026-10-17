@@ -247,3 +247,44 @@ test('non-dungeon and non-NPC map genres do not request WFC or A-star solely bec
     assert.equal(tool.nextAction,'NONE');
   }
 });
+
+test('native A-star derives deterministic paths from server-approved grids without gameplay authority',async()=>{
+  const {JaewoonCommonAI}=await import('../assets/common-ai.js');
+  const ai=new JaewoonCommonAI({role:JaewoonCommonAI.Role.MELEE});
+  const input={engineApproved:true,movementAuthorized:true,width:5,height:5,
+    start:{x:0,z:0},goal:{x:4,z:0},
+    blockedCells:[{x:1,z:0},{x:1,z:1},{x:1,z:2}]};
+  const first=ai.planPath(input),second=ai.planPath(input);
+  assert.equal(first.status,'PATH_FOUND');
+  assert.deepEqual(first,second,'reproducible obstacle-aware route');
+  assert.deepEqual(first.cells[0],{x:0,z:0});
+  assert.deepEqual(first.cells.at(-1),{x:4,z:0});
+  assert.equal(first.cells.some(cell=>input.blockedCells.some(b=>b.x===cell.x&&b.z===cell.z)),false);
+  assert.equal(first.gameplayAuthority,false);
+  assert.equal(first.runtimeVerified,false);
+  assert.equal(ai.planPath({...input,blockedCells:[] ,engineApproved:false}).status,'ENGINE_APPROVAL_REQUIRED');
+  assert.equal(ai.planPath({...input,blockedCells:[{x:4,z:0}]}).status,'START_OR_GOAL_BLOCKED');
+  assert.equal(ai.planPath({...input,blockedCells:[{x:1,z:0},{x:1,z:1},{x:1,z:2},{x:1,z:3},{x:1,z:4}]}).status,'NO_ROUTE');
+  assert.equal(ai.planPath({...input,maxExplored:1}).status,'SEARCH_BUDGET_EXCEEDED');
+  assert.equal(ai.planPath({...input,width:100,height:100}).status,'NAVIGATION_INPUT_INVALID');
+});
+
+test('enemy search binds only approved route proposals without changing attacks or source targets',async()=>{
+  const {JaewoonCommonAI}=await import('../assets/common-ai.js');
+  const ai=new JaewoonCommonAI({role:JaewoonCommonAI.Role.MELEE});
+  const enemy=Object.freeze({id:'approved-monster',distance:9,threat:1,hpRatio:1,x:4,z:0});
+  const context={entityKind:'monster',hpRatio:1,danger:0,enemies:[enemy],
+    navigation:{engineApproved:true,movementAuthorized:true,width:5,height:5,
+      start:{x:0,z:0},blockedCells:[{x:1,z:0}]}};
+  const search=ai.decide(context);
+  assert.equal(search.state,JaewoonCommonAI.State.SEARCH);
+  assert.equal(search.targetId,enemy.id);
+  assert.equal(search.target.routeProposal.status,'PATH_FOUND');
+  assert.equal(search.gameplayAuthority,false);
+  assert.equal(enemy.routeProposal,undefined,'existing enemy data is never mutated');
+  const denied=ai.decide({...context,navigation:{...context.navigation,engineApproved:false}});
+  assert.equal(denied.state,search.state);
+  assert.equal(denied.target.routeProposal,undefined);
+  const near=ai.decide({...context,enemies:[{...enemy,distance:1}]});
+  assert.equal(near.state,JaewoonCommonAI.State.ATTACK,'existing attack-range behavior remains intact');
+});
