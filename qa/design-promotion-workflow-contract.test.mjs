@@ -119,6 +119,20 @@ test('verified design promotion wakes the existing Vibe scheduler only after run
   assert.match(promotion,/VERIFIED_DESIGN_VIBE_REFILL_AFTER_RUNTIME_PERSIST=YES/);
 });
 
+test('the Vibe scheduler verifies exact persisted runtime design sources before planning',()=>{
+  const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const handoff=fs.readFileSync('tools/vibe2-verified-design-handoff.mjs','utf8');
+  assert.match(promotion,/Verify exact promoted runtime design handoff for Vibe/);
+  assert.ok(promotion.indexOf('Verify exact promoted runtime design handoff for Vibe')>promotion.indexOf('Persist promoted state to company runtime branch'));
+  assert.ok(promotion.indexOf('Verify exact promoted runtime design handoff for Vibe')<promotion.indexOf('Dispatch native development and immediate Vibe planner refill'));
+  assert.ok(runner.includes('node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha"'));
+  assert.ok(runner.includes('VIBE2_VERIFIED_DESIGN_INTAKE=PASS'));
+  assert.ok(handoff.includes('evaluateMinimumDesignContract'));
+  assert.ok(handoff.includes("item?.minimumDesignContract?.pass!==true"));
+  assert.ok(handoff.includes('strictQaPassClaimed:false,releasePassClaimed:false'));
+  assert.ok(!handoff.includes('git push'));
+});
+
 test('central gameplay evolution policy binds verified design resume to the canonical Vibe scheduler',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const design=roadmap?.continuousGameplaySystemEvolutionContract?.designContext||{};

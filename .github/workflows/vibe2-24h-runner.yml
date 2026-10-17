@@ -407,6 +407,7 @@ jobs:
               node --check tools/company-development-web-gameplay-validation.mjs
               node --check tools/vibe2-practice-distillation.mjs
               node --check tools/vibe2-design-intelligence.mjs
+              node --check tools/vibe2-verified-design-handoff.mjs
               if [ "${VIBE2_24H_SAME_MAIN_QA_REUSE:-0}" = '1' ]; then
                 echo "VIBE2_24H_DUPLICATE_CORE_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:$main_sha"
               elif [ "${VIBE2_24H_CORE_QA_REUSE:-0}" = '1' ]; then
@@ -426,6 +427,7 @@ jobs:
                 node --test qa/vibe2-incremental-qa.test.mjs
                 node --test qa/vibe2-practice-distillation.test.mjs
                 node --test qa/vibe2-design-intelligence.test.mjs
+                node --test qa/vibe2-verified-design-handoff.test.mjs
               fi
               # 24H 전용 QA는 처음 실행에 반드시 통과해야 하며, 같은 main SHA 낙관적 재시도만 재사용한다.
               if [ "${VIBE2_24H_SAME_MAIN_QA_REUSE:-0}" = '1' ]; then
@@ -497,8 +499,16 @@ jobs:
               --root=/tmp/vibe2-main \
               --output=/tmp/vibe3-roblox-distillation-ledger.json | tee /tmp/vibe3-roblox-distillation.log
 
-            git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
             git -C /tmp/vibe2-main fetch origin '+refs/heads/company-runtime:refs/remotes/origin/company-runtime' --depth=2 --no-tags --quiet
+            runtime_design_sha="$(git -C /tmp/vibe2-main rev-parse origin/company-runtime)"
+            git -C /tmp/vibe2-main show "$runtime_design_sha:development-queue.json" > /tmp/vibe2-company-runtime-queue.json
+            (
+              cd /tmp/vibe2-main
+              COMPANY_VERIFIED_POLICY_PATH="$PWD/company-learning/platform-release-roadmap.json" \
+              COMPANY_VERIFIED_DESIGN_POLICY_PATH="$PWD/company-learning/platform-release-roadmap.json" \
+                node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha"
+            ) | tee /tmp/vibe2-verified-design-handoff.log
+            grep -q '^VIBE2_VERIFIED_DESIGN_INTAKE=PASS$' /tmp/vibe2-verified-design-handoff.log
             for runtime_design_path in design game-seed-state.json; do
               if git -C /tmp/vibe2-main cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
                 git -C /tmp/vibe2-main checkout origin/company-runtime -- "$runtime_design_path"
