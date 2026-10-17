@@ -263,11 +263,15 @@
   // Web overlay for confirmed presentation events; the game retains its renderer.
   function createWebPresentationController({
     host,documentRef=(typeof document!=='undefined'?document:null),
-    reducedMotion=false,maxDamagePopups=36,maxToasts=3,safeInsets={}
+    reducedMotion=false,maxDamagePopups=36,maxToasts=3,safeInsets={},skin={}
   }={}){
     if(!host||!documentRef||typeof documentRef.createElement!=='function'
       ||typeof host.appendChild!=='function')return Object.freeze({ready:false,reason:'EXISTING_DOM_HOST_REQUIRED'});
     const doc=documentRef,changedHostPosition=!host.style.position;
+    const ink=typeof skin.ink==='string'?skin.ink:'#f4f6fa';
+    const panel=typeof skin.panel==='string'?skin.panel:'rgba(19,23,34,.95)';
+    const edge=typeof skin.edge==='string'?skin.edge:'rgba(188,199,220,.68)';
+    const corner=Number.isFinite(Number(skin.corner))?Math.max(0,Math.min(24,Number(skin.corner))):9;
     if(changedHostPosition)host.style.position='relative';
     const stage=doc.createElement('div');
     Object.assign(stage.style,{position:'absolute',inset:'0',zIndex:'120',pointerEvents:'none',
@@ -339,9 +343,9 @@
       const node=make('div',{
         position:'absolute',left:left+'px',top:top+'px',width:w+'px',
         maxHeight:Math.max(60,v.height-top-8)+'px',overflowY:'auto',boxSizing:'border-box',
-        padding:'12px 14px',background:'rgba(19,23,34,.95)',
-        border:'1px solid rgba(188,199,220,.68)',borderRadius:'9px',
-        color:'#f4f6fa',fontSize:'14px',lineHeight:'1.45',textShadow:'0 1px 1px #151515',
+        padding:'12px 14px',background:panel,
+        border:'1px solid '+edge,borderRadius:corner+'px',
+        color:ink,fontSize:'14px',lineHeight:'1.45',textShadow:'0 1px 1px #151515',
         boxShadow:'0 10px 30px rgba(0,0,0,.32)',whiteSpace:'pre-wrap',
         overflowWrap:'anywhere',pointerEvents:'none'
       },String(text).slice(0,2200));
@@ -356,8 +360,8 @@
         position:'absolute',right:(Number(safeInsets.right)||8)+'px',
         top:'0',width:Math.min(310,v.width-16)+'px',
         maxWidth:'calc(100% - 16px)',boxSizing:'border-box',padding:'10px 12px',
-        borderLeft:'3px solid '+colorFor(kind),background:'rgba(24,28,39,.96)',
-        color:'#f7f7f7',fontSize:'14px',fontWeight:'600',borderRadius:'7px',
+        borderLeft:'3px solid '+colorFor(kind),background:panel,
+        color:ink,fontSize:'14px',fontWeight:'600',borderRadius:corner+'px',
         boxShadow:'0 4px 18px rgba(0,0,0,.25)',whiteSpace:'pre-wrap',overflowWrap:'anywhere'
       },String(text).slice(0,500));
       toasts.push({id,node});
