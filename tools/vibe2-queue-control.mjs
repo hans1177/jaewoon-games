@@ -614,9 +614,6 @@ export function completeOwnerExclusiveGameScope({
     &&publication.sourceSha===sha
     &&/^[1-9]\d*$/.test(String(publication.runId||''))
     &&/^[1-9]\d*$/.test(String(publication.targetId||''));
-  const developmentSkip=releaseState==='development-confirmed'
-    &&publication.status==='DEVELOPMENT_PUBLICATION_SKIPPED'
-    &&policy?.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.developmentGamePublicationAllowed===false;
   const sourceEvidence=/^[0-9a-f]{40}$/.test(sha)&&f9sha===sha
     &&['ROBLOX','WEB'].includes(scopeTarget)
     &&[checks.staticQaRunId,checks.buildRunId,checks.f9RuntimeRunId,checks.securityRunId]
@@ -648,11 +645,11 @@ export function completeOwnerExclusiveGameScope({
     &&String(publication.targetId)===String(specificTarget.placeId)
     &&(!completion.temporaryPublishArtifactCreated
       ||checks.temporaryPublishArtifactRemoved===true);
-  // 미검증, 실패, 테스트 계획은 완료 아님. 개발 게임의 일반 배포 생략과
-  // 명시적 오너 전용 비공개 게시를 혼동하지 않는다.
+  // 출시 분류 및 평가 점수에 관계없이 검증된 정확한 F9 원본의 배포 증거만 인정한다.
+  // 미검증·실패·배포 생략은 완료로 처리하지 않고 기존 복구 단계에서 재시도한다.
   const standardVerified=sourceEvidence
     &&['development-confirmed','release-confirmed'].includes(releaseState)
-    &&(releaseState==='release-confirmed'?published:(developmentSkip||published));
+    &&published;
   const verified=standardVerified||ownerPublishVerified;
   if(!verified&&ownerExplicitRelease!==true)return unchanged('OWNER_WORK_EVIDENCE_OR_PUBLICATION_NOT_VERIFIED');
   const nextPolicy={
