@@ -2,6 +2,7 @@ import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { DESIGN_INTELLIGENCE_STAGES, buildVibeDesignIntelligence, buildDesignEvolutionBrief, validateDesignAwareExperience } from '../tools/vibe2-design-intelligence.mjs';
+import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { validateVibeExperiencePromotion } from '../tools/vibe2-experience-control.mjs';
 
 test('evolution brief separates easy entry, systemic depth, small joys and reliable rewards from academic subject matter',()=>{
@@ -471,4 +472,30 @@ test('non-grammar handoff uses the current canonical Game Designer workflow with
   assert.match(designer,/DESIGN_HANDOFF_REQUEST_ID/);
   assert.match(designer,/ownerRequestInstanceId=revision/);
   assert.match(designer,/saveSeedState\(state\)/);
+});
+
+test('canonical queue preserves designer revision and scope for real worker handoff',()=>{
+  const raw={id:'designer-revision-101',gameId:'human-go',target:'roblox',department:'development',
+    type:'implementation',goal:'기존 설계 외 하우징 요청',designChange:true,
+    designScope:'spatialLayout.housing',proposedDesignChanges:['spatialLayout.housing'],
+    designFields:['spatialLayout.housing'],status:'queued'};
+  const queue=createVibeContinuousQueue({tasks:[raw]});
+  const task=queue.tasks[0];
+  assert.equal(task.designChange,true);
+  assert.equal(task.designScope,'spatialLayout.housing');
+  assert.deepEqual(task.proposedDesignChanges,['spatialLayout.housing']);
+  assert.deepEqual(task.designFields,['spatialLayout.housing']);
+  const intelligence=buildVibeDesignIntelligence({task});
+  assert.equal(intelligence.designerHandoff.required,true);
+  assert.equal(intelligence.designerHandoff.ready,true);
+  assert.equal(intelligence.designerHandoff.requestId,'designer-revision-101');
+  assert.equal(intelligence.implementationGate.allowed,false);
+  const reloaded=createVibeContinuousQueue(queue).tasks[0];
+  assert.equal(reloaded.designScope,task.designScope,'persisted queue re-normalization must not drop change scope');
+  assert.equal(buildVibeDesignIntelligence({task:reloaded}).designerHandoff.required,true);
+  const unchanged=createVibeContinuousQueue({tasks:[{
+    ...raw,id:'coder-102',goal:'기존 공격 함수 오류 수정',designChange:false,
+    designScope:'',designFields:[],proposedDesignChanges:[]
+  }]}).tasks[0];
+  assert.equal(buildVibeDesignIntelligence({task:unchanged}).designerHandoff.required,false);
 });
