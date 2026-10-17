@@ -3840,17 +3840,22 @@ test('queued autonomous expansion v1 without breadth ledger upgrades to v2 witho
   assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
 });
 
-test('owner-held Unity and Web directives preserve queued generations without inventing native production plans',()=>{
+test('owner-held Unity and active general Web preserve queued BUILD_UP without unauthorized platform plans',()=>{
   for(const [engine,gameId,target] of [['unity','demo','unity-android'],['web','dev-web','web']]){
     const root=tempRepo();
+    const ownerPolicy={
+      robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']},
+      developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'},
+      ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','WEB']}
+    };
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(ownerPolicy));
     writeStudioDesign(root,gameId);
     const project={gameId,name:gameId,engine,releaseState:'development-confirmed',projectPath:`${engine}-games/${gameId}`};
     const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
     assert.ok(generated?.buildUpDirective);
-    assert.equal(generated.buildUpDirective.productionPlan,null);
+    assert.equal(generated.buildUpDirective.productionPlan?.platform||null,engine==='web'?'WEB':null);
     const running={...generated,id:gameId+'-running',status:'running',reservationRunId:'existing-run'};
     const queued={...generated,id:gameId+'-queued',status:'queued'};
-    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']}}));
     const result=planVibe2AutonomousTasks({
       status:{projects:[{gameId,ownerDecision:'PASS',target,projectPath:project.projectPath,progress:80}]},
       catalog:{games:[{id:gameId,name:gameId,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',...(engine==='web'?{webPath:`/${project.projectPath}/`,hasWebArchive:true,homepageWebPlayable:true}:{})}]},
@@ -3859,9 +3864,7 @@ test('owner-held Unity and Web directives preserve queued generations without in
     const updated=result.queue.tasks.find(row=>row.id===queued.id);
     const untouched=result.queue.tasks.find(row=>row.id===running.id);
     assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
-    // Unity/Web remain owner-held in canonical policy: a queued task is not production authorization.
-    assert.equal(updated.buildUpDirective.productionPlan,null);
-    assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
+    assert.equal(updated.buildUpDirective.productionPlan?.platform||null,engine==='web'?'WEB':null);
     assert.equal(updated.status,'queued');
     assert.deepEqual(untouched.buildUpDirective,running.buildUpDirective);
   }
