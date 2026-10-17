@@ -222,8 +222,10 @@ try{
   await cdp.send('Runtime.enable');
 
   const results=[];
+  const failures=[];
   for(const gameId of gameIds){
-    cdp.exceptions.length=0;
+    try{
+      cdp.exceptions.length=0;
     const missingStart=local404.length;
     const loaded=cdp.waitEvent('Page.loadEventFired',12000);
     const url=`http://127.0.0.1:${sitePort}/web-games/${encodeURIComponent(gameId)}/index.html`;
@@ -284,6 +286,15 @@ try{
       startTarget:start?.target||'',
       canvasCount:Number(state?.canvasCount||0)
     });
+    }catch(error){
+      // [회귀] 한 게임의 실패가 다른 게임의 브라우저 검사까지 막지 않는다.
+      // 실패는 모두 보존하고 하나라도 있으면 최종 게이트를 실패시킨다.
+      failures.push({gameId,reason:String(error?.message||error).slice(0,1200)});
+      console.error('DEVELOPMENT_WEB_BROWSER_SMOKE_GAME_FAILED='+JSON.stringify(failures[failures.length-1]));
+    }
+  }
+  if(failures.length){
+    throw new Error('DEVELOPMENT_WEB_BROWSER_SMOKE_FAILED '+JSON.stringify({failed:failures.length,checked:gameIds.length,failures}));
   }
 
   console.log('DEVELOPMENT_WEB_BROWSER_SMOKE=PASS');

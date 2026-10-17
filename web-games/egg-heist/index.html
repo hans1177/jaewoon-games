@@ -2,7 +2,9 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Approved Web Bootstrap</title>
+<title>달걀 탈출</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0;background:#0e1a31;color:#e9f5ff;font:16px system-ui,sans-serif}#game{min-height:100dvh;max-width:740px;margin:auto;padding:15px;box-sizing:border-box}h1{font-size:1.5rem;margin:4px 0 10px}#eggHud{padding:14px;border-radius:12px;background:#223952}.eggHelp{font-size:.89rem;line-height:1.5}#eggBoard{display:grid;grid-template-columns:repeat(20,1fr);aspect-ratio:1;margin:12px auto;max-width:min(90vw,560px);background:#14263d;border:2px solid #375e7f;border-radius:8px;overflow:hidden}.eggCell{border:.5px solid #ffffff0d;background:#2a4155}.eggCell:nth-child(odd){background:#30475a}.eggCell.trap{background:#ae5b53}.eggCell.item{background:#dac268}.eggCell.goal{background:#37a79e}.eggCell.player{background:#ffd76d;box-shadow:inset 0 0 0 2px #543c16;z-index:1}.eggControls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.eggControls button{font:inherit;min-height:55px;background:#244c73;color:white;border:1px solid #548bae;border-radius:10px;touch-action:manipulation}.eggControls button:focus-visible{outline:3px solid #ffd76d}</style>
 </head>
 <body>
 <main id="game"></main>
@@ -74,7 +76,7 @@ function updateGameState() {
 }
 
 // Game loop
-setInterval(updateGameState, 1000);
+// [회귀] 중복 자동 이동 타이머를 제거한다.
 
 // Check for win condition
 function checkWinCondition() {
@@ -95,7 +97,7 @@ function resetGame() {
 }
 
 // Trigger win condition
-setInterval(checkWinCondition, 5000);
+// [회귀] 중복 판정 타이머 제거
 </script>
 
 <script>
@@ -117,7 +119,7 @@ function checkWinCondition() {
 }
 
 // Trigger win condition
-setInterval(checkWinCondition, 5000);
+// [회귀] 중복 판정 타이머 제거
 // Add mobile pointer/touch interaction for mobile devices
 
 // Check win condition
@@ -133,7 +135,7 @@ function checkWinCondition() {
 }
 
 // Trigger win condition
-setInterval(checkWinCondition, 5000);
+// [회귀] 중복 판정 타이머 제거
 
 // Add interactive outcomes
 document.addEventListener('click', (e) => {
@@ -232,23 +234,16 @@ document.addEventListener('touchstart', (e) => {
 });
 
 // Add progression and save compatibility
-let saveState = JSON.parse(localStorage.getItem('vibe2_game_state')) || {
-  player: {
-    health: 100,
-    inventory: [],
-    position: { x: 0, y: 0 }
-  },
-  map: {
-    width: 20,
-    height: 20,
-    tiles: Array(20).fill().map(() => Array(20).fill(0))
-  },
-  items: []
-};
+try {
+  const oldSave=JSON.parse(localStorage.getItem('vibe2_game_state')||'null');
+  if(oldSave && oldSave.player && oldSave.map && Array.isArray(oldSave.items)){
+    gameState=oldSave;
+  }
+} catch (_) { /* 저장 불가·손상 시 기존 초기값 */ }
 
 // Save game state
 function saveGame() {
-  localStorage.setItem('vibe2_game_state', JSON.stringify(saveState));
+  localStorage.setItem('vibe2_game_state', JSON.stringify(gameState));
 }
 
 // Update game state
@@ -289,163 +284,62 @@ function resetGame() {
 
 // Trigger win condition
 setInterval(checkWinCondition, 5000);
+
+// [화면] 기존 20x20 맵·체력·아이템 상태를 보여준다. 값과 저장 키는 유지한다.
+const gameRoot=document.getElementById('game');
+const eggHud=document.createElement('section');
+eggHud.id='eggHud';
+eggHud.innerHTML='<h1>달걀 탈출</h1><p id="eggStatus" aria-live="polite"></p><p class="eggHelp">이동 버튼으로 지도를 탐색해. 체력이 0이면 패배하고 오른쪽 아래 지점에 도착하면 승리해.</p>';
+gameRoot.appendChild(eggHud);
+const eggBoard=document.createElement('div');
+eggBoard.id='eggBoard';
+eggBoard.setAttribute('aria-label','20 곱하기 20 게임 지도');
+gameRoot.appendChild(eggBoard);
+const eggCells=[];
+for(let y=0;y<20;y++)for(let x=0;x<20;x++){
+  const cell=document.createElement('span');
+  cell.className='eggCell';
+  cell.setAttribute('aria-hidden','true');
+  eggBoard.appendChild(cell);
+  eggCells.push(cell);
+}
+const eggControls=document.createElement('section');
+eggControls.className='eggControls';
+eggControls.setAttribute('aria-label','이동 조작');
+eggControls.innerHTML='<button type="button" data-dx="0" data-dy="-1">위</button>' +
+  '<button type="button" data-dx="-1" data-dy="0">왼쪽</button>' +
+  '<button type="button" data-dx="1" data-dy="0">오른쪽</button>' +
+  '<button type="button" data-dx="0" data-dy="1">아래</button>';
+gameRoot.appendChild(eggControls);
+function renderEggHud(){
+  const x=gameState.player.position.x,y=gameState.player.position.y;
+  document.getElementById('eggStatus').textContent='체력 '+gameState.player.health+
+    ' · 좌표 ('+x+','+y+') · 아이템 '+gameState.items.length+'개';
+  for(let row=0;row<20;row++)for(let col=0;col<20;col++){
+    const cell=eggCells[row*20+col];
+    const tile=gameState.map.tiles[row]?.[col]??0;
+    cell.className='eggCell'+(tile===1?' trap':tile===3||tile===5||tile===6?' item':'')+
+      (x===col&&y===row?' player':'')+
+      (col===19&&row===19?' goal':'');
+  }
+}
+function moveEgg(dx,dy){
+  gameState.player.position.x=Math.max(0,Math.min(19,gameState.player.position.x+dx));
+  gameState.player.position.y=Math.max(0,Math.min(19,gameState.player.position.y+dy));
+  saveGame();renderEggHud();
+  checkWinCondition();
+}
+eggControls.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{
+  moveEgg(Number(button.dataset.dx),Number(button.dataset.dy));
+}));
+document.addEventListener('keydown',event=>{
+  const move={ArrowUp:[0,-1],ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowDown:[0,1]}[event.key];
+  if(!move||event.repeat||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||''))return;
+  event.preventDefault();moveEgg(...move);
+});
+renderEggHud();
 </script>
 
-<script>
-// Add mobile pointer/touch interaction
-document.addEventListener('touchstart', (e) => {
-  const rect = e.target.getBoundingClientRect();
-  const x = rect.x + e.touches[0].clientX - window.innerWidth / 2;
-  const y = rect.y + e.touches[0].clientY - window.innerHeight / 2;
-
-  // Check if touch is within game area
-  if (x > 0 && x < 20 && y > 0 && y < 20) {
-    const tile = gameState.map.tiles[Math.floor(x / 20) * 20 + Math.floor(y / 20)];
-    if (tile === 1) {
-      // Player encounters a trap
-      gameState.player.health -= 20;
-      alert("You stepped on a trap! You're hurt.");
-      if (gameState.player.health <= 0) {
-        alert("You lost!");
-        resetGame();
-      }
-    } else if (tile === 3) {
-      // Player finds an item
-      gameState.items.push(Math.random() < 0.5 ? 'key' : 'potion');
-      alert("You found an item!");
-      if (gameState.items.length === 5) {
-        alert("You found all items! You win!");
-        winCondition = true;
-        resetGame();
-      }
-    } else if (tile === 5) {
-      // Player finds a key
-      gameState.items.push('key');
-      alert("You found a key!");
-      if (gameState.items.length === 5) {
-        alert("You found all items! You win!");
-        winCondition = true;
-        resetGame();
-      }
-    } else if (tile === 6) {
-      // Player finds a potion
-      gameState.items.push('potion');
-      alert("You found a potion!");
-      if (gameState.items.length === 5) {
-        alert("You found all items! You win!");
-        winCondition = true;
-        resetGame();
-      }
-    }
-  }
-});
-
-// Add mobile pointer/touch interaction for mobile devices
-document.addEventListener('touchmove', (e) => { const rect = e.target.getBoundingClientRect(); const x = rect.x + e.touches[0].clientX - window.innerWidth / 2; })
-  const rect = e.target.getBoundingClientRect();
-  const x = rect.x + e.touches[0].clientX - window.innerWidth / 2;
-  const y = rect.y + e.touches[0].clientY - window.innerHeight / 2;
-
-  // Check if touch is within game area
-  if (x > 0 && x < 20 && y > 0 && y < 20) {
-    const tile = gameState.map.tiles[Math.floor(x / 20) * 20 + Math.floor(y / 20)];
-    if (tile === 1) {
-      // Player encounters a trap
-      gameState.player.health -= 20;
-      alert("You stepped on a trap! You're hurt.");
-      if (gameState.player.health <= 0) {
-        alert("You lost!");
-        resetGame();
-      }
-    } else if (tile === 3) {
-      // Player finds an item
-      gameState.items.push(Math.random() < 0.5 ? 'key' : 'potion');
-      alert("You found an item!");
-      if (gameState.items.length === 5) {
-        alert("You found all items! You win!");
-        winCondition = true;
-        resetGame();
-      }
-    } else if (tile === 5) {
-      // Player finds a key
-      gameState.items.push('key');
-      alert("You found a key!");
-      if (gameState.items.length === 5) {
-        alert("You found all items! You win!");
-        winCondition = true;
-        resetGame();
-      }
-    } else if (tile === 6) {
-      // Player finds a potion
-      gameState.items.push('potion');
-      alert("You found a potion!");
-      if (gameState.items.length === 5) {
-        alert("You found all items! You win!");
-        winCondition = true;
-        resetGame();
-      }
-    }
-  }
-});
-
-// Add progression and save compatibility
-let saveState = JSON.parse(localStorage.getItem('vibe2_game_state')) || {
-  player: {
-    health: 100,
-    inventory: [],
-    position: { x: 0, y: 0 }
-  },
-  map: {
-    width: 20,
-    height: 20,
-    tiles: Array(20).fill().map(() => Array(20).fill(0))
-  },
-  items: []
-};
-
-// Save game state
-function saveGame() {
-  localStorage.setItem('vibe2_game_state', JSON.stringify(saveState));
-}
-
-// Update game state
-function updateGameState() {
-  // Simple state transition: player moves right
-  gameState.player.position.x += 1;
-  if (gameState.player.position.x >= gameState.map.width) {
-    gameState.player.position.x = 0;
-  }
-  saveGame();
-}
-
-// Game loop
-setInterval(updateGameState, 1000);
-
-// Check for win condition
-function checkWinCondition() {
-  if (gameState.player.health <= 0) {
-    alert("You lost!");
-    resetGame();
-  } else if (gameState.player.position.x === gameState.map.width - 1 && gameState.player.position.y === gameState.map.height - 1) {
-    alert("You won!");
-    winCondition = true;
-    resetGame();
-  }
-}
-
-// Reset game
-function resetGame() {
-  gameState.player.health = 100;
-  gameState.player.inventory = [];
-  gameState.player.position = { x: 0, y: 0 };
-  gameState.map.tiles = Array(20).fill().map(() => Array(20).fill(0));
-  gameState.items = [];
-  saveGame();
-  alert("Game reset. Start fresh!");
-}
-
-// Trigger win condition
-setInterval(checkWinCondition, 5000);
-</script>
+<!-- [중복 제거] 실제 입력·저장 로직은 앞의 기존 스크립트에서 실행한다. -->
 </body>
 </html>

@@ -2,10 +2,12 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Approved Web Bootstrap</title>
+<title>수정 디펜스</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0;background:#142033;color:white;font-family:system-ui,sans-serif}#game{max-width:760px;margin:auto;padding:16px;min-height:100dvh;box-sizing:border-box}button{min-height:52px;min-width:110px;font-size:18px;touch-action:manipulation}.defense-area,.move-area,.win-area,.lose-area{box-sizing:border-box}#game .game-stats{padding:14px;line-height:1.8;background:#253e5e;border-radius:10px;margin-bottom:14px}</style>
 </head>
 <body>
-<main id="game"><script>var game = new Game(); game.init();</script></main>
+<main id="game"></main>
 <script>
 // Complete playable Web baseline with mobile gameplay, save compatibility, and verified learning motor
 // This is an approved missing-source bootstrap
@@ -200,19 +202,7 @@ loseButton.addEventListener('click', () => {
     loseArea.style.borderColor = '#ff3333';
 });
 
-// Add real input handling
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('defense-button')) {
-        defend();
-    } else if (e.target.classList.contains('move-button')) {
-        move();
-    } else if (e.target.classList.contains('win-button')) {
-        restart();
-    } else if (e.target.classList.contains('lose-button')) {
-        restart();
-    }
-});
-
+// [입력] 기존 함수는 아래 상태 전환과 연결한다.
 function defend() {
     // Simulate defending
     document.querySelector('.defense-text').style.display = 'none';
@@ -276,97 +266,107 @@ function restart() {
     document.querySelector('.lose-area').style.borderColor = '#444';
 }
 
-<script>
-// Add real gameplay state transition loop and mutable game state
-const game = document.getElementById('game');
-const state = {
-    defense: false,
-    move: false,
-    win: false,
-    lose: false,
-    score: 0,
-    lastAction: null
-};
+// [화면] 기존 네 영역, 버튼 및 점수 표시를 그대로 사용한다.
+for(const [area,button,kind] of [
+  [defenseArea,defenseButton,'defense-button'],
+  [moveArea,moveButton,'move-button'],
+  [winArea,winButton,'win-button'],
+  [loseArea,loseButton,'lose-button']
+]){
+  button.className=kind;
+  area.appendChild(button);
+  area.style.height='auto';
+  area.style.minHeight='180px';
+  area.style.margin='12px 0';
+  area.style.boxSizing='border-box';
+  area.style.flexDirection='column';
+  area.style.gap='12px';
+}
+const stats=document.createElement('div');
+stats.className='game-stats';
+stats.innerHTML='<strong>수정 디펜스</strong><div class="score-text">점수: <span id="score">0</span></div><div class="last-action">마지막 행동: <span id="last-action">없음</span></div>';
+game.prepend(stats);
+const resetButton=document.createElement('button');
+resetButton.type='button';
+resetButton.className='restart-button';
+resetButton.textContent='다시 시작';
+resetButton.style.width='100%';
+game.appendChild(resetButton);
 
-function updateState() {
-state.score++; state.lastAction = 'defend';
-        state.score++;
-        state.lastAction = 'defend';
-    } else if (state.move) {
-        state.score++;
-        state.lastAction = 'move';
-state.score += 100; state.lastAction = 'win';
-        state.score += 100;
-        state.lastAction = 'win';
-    } else if (state.lose) {
-        state.score -= 50;
-        state.lastAction = 'lose';
-    }
-
-    // Update UI based on state
-    document.querySelector('.defense-text').style.display = state.defense ? 'none' : 'block';
-    document.querySelector('.move-text').style.display = state.move ? 'none' : 'block';
-    document.querySelector('.win-text').style.display = state.win ? 'none' : 'block';
-    document.querySelector('.lose-text').style.display = state.lose ? 'none' : 'block';
-
-    document.querySelector('.score-text').textContent = `Score: ${state.score}`;
-    document.querySelector('.last-action').textContent = state.lastAction || 'None';
+// [저장] 기존 키와 필드를 보존하고 이전 진행을 먼저 복구한다.
+const emptyState=()=>({defense:false,move:false,win:false,lose:false,score:0,lastAction:null});
+let state=emptyState();
+try {
+  const saved=JSON.parse(localStorage.getItem('gameState')||'null');
+  if(saved&&typeof saved==='object'&&!Array.isArray(saved)){
+    state={
+      defense:saved.defense===true,
+      move:saved.move===true,
+      win:saved.win===true,
+      lose:saved.lose===true,
+      score:Number.isFinite(saved.score)?saved.score:0,
+      lastAction:typeof saved.lastAction==='string'?saved.lastAction:null
+    };
+  }
+}catch(_){ /* 저장 데이터 손상 또는 저장소 접근 제한 */ }
+function saveState(){
+  try{localStorage.setItem('gameState',JSON.stringify(state))}catch(_){ /* 플레이는 계속 */ }
 }
 
-// Add real input handling and state transitions
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('defense-button')) {
-        state.defense = true;
-        updateState();
-    } else if (e.target.classList.contains('move-button')) {
-        state.move = true;
-        updateState();
-    } else if (e.target.classList.contains('win-button')) {
-        state.win = true;
-        updateState();
-    } else if (e.target.classList.contains('lose-button')) {
-        state.lose = true;
-        updateState();
-    }
+// [메인] 최초 화면·결과·진행 단계의 단일 상태 렌더링
+function updateState(){
+  const ended=state.win||state.lose;
+  defenseArea.style.display=!state.defense&&!ended?'flex':'none';
+  moveArea.style.display=state.defense&&!state.move&&!ended?'flex':'none';
+  winArea.style.display=state.win?'flex':'none';
+  loseArea.style.display=state.lose?'flex':'none';
+  defenseText.style.display='block';
+  moveText.style.display='block';
+  winText.style.display='block';
+  loseText.style.display='block';
+  defenseButton.textContent='방어!';
+  moveButton.textContent='이동!';
+  winButton.textContent='다시 시작';
+  loseButton.textContent='다시 시작';
+  document.getElementById('score').textContent=String(state.score);
+  document.getElementById('last-action').textContent=state.lastAction||'없음';
+}
+function perform(action){
+  if(action==='defend'){
+    state.defense=true;
+    state.lastAction='defend';
+    state.score+=1;
+    defend();
+  }else if(action==='move'){
+    state.move=true;
+    state.lastAction='move';
+    state.score+=1;
+    if(state.defense){state.win=true;state.score+=100;state.lastAction='win';}
+    move();
+  }else if(action==='lose'){
+    if(!state.lose)state.score-=50;
+    state.lose=true;state.win=false;state.lastAction='lose';
+  }else if(action==='win'){
+    if(!state.win)state.score+=100;
+    state.win=true;state.lose=false;state.lastAction='win';
+  }else if(action==='restart'){
+    state=emptyState();
+    restart();
+  }else return;
+  saveState();
+  updateState();
+}
+defenseButton.addEventListener('click',()=>perform('defend'));
+moveButton.addEventListener('click',()=>perform('move'));
+winButton.addEventListener('click',()=>perform('restart'));
+loseButton.addEventListener('click',()=>perform('restart'));
+resetButton.addEventListener('click',()=>perform('restart'));
+document.addEventListener('keydown',event=>{
+  if(event.repeat||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||''))return;
+  const action={d:'defend',m:'move',w:'win',l:'lose',r:'restart'}[event.key.toLowerCase()];
+  if(action)perform(action);
 });
-
-// Add real state transitions and outcomes
-document.addEventListener('keydown', (e) => {
-document.addEventListener('keydown', (e) => {
-
-if (e.key === 'd') { state.defense = !state.defense; updateState(); }
-        state.defense = !state.defense;
-        updateState();
-    }
-});
-        state.defense = !state.defense;
-        updateState();
-    } else if (e.key === 'm') {
-        state.move = !state.move;
-        updateState();
-    } else if (e.key === 'w') {
-        state.win = !state.win;
-        updateState();
-    } else if (e.key === 'l') {
-        state.lose = !state.lose;
-        updateState();
-    }
-});
-
-// Add real save compatibility
-localStorage.setItem('gameState', JSON.stringify(state));
-document.addEventListener('DOMContentLoaded', () => {
-    const savedState = JSON.parse(localStorage.getItem('gameState'));
-    if (savedState) {
-        state.defense = savedState.defense || false;
-        state.move = savedState.move || false;
-        state.win = savedState.win || false;
-        state.lose = savedState.lose || false;
-        state.score = savedState.score || 0;
-        state.lastAction = savedState.lastAction || null;
-        updateState();
-    }
-});
+updateState();
 </script>
 </body>
 </html>
