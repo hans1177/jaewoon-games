@@ -32,7 +32,9 @@ export function reconcileFourPolicyDocuments({root=ROOT,fixMirrors=false}={}){
     canon?.policy!==CANONICAL){
     throw new Error('POLICY_STEWARD_CANONICAL_CONTRACT_MISSING');
   }
-  const owner=policy.ownerActiveDevelopmentScope20261009;
+  const ownerPath=clean(contract.latestOwnerDirectivePath);
+  if(!/^owner[A-Za-z0-9_.]+$/.test(ownerPath))throw new Error('POLICY_STEWARD_OWNER_PATH_INVALID');
+  const owner=ownerPath.split('.').reduce((value,key)=>value?.[key],policy);
   const directive=clean(owner?.authority);
   if(!/^OWNER_DIRECTIVE_\d{4}-\d{2}-\d{2}(?:_[A-Z0-9_]+)?$/.test(directive)||
     owner?.status!=='ACTIVE')throw new Error('POLICY_STEWARD_APPROVED_OWNER_DIRECTIVE_MISSING');
