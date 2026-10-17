@@ -19,6 +19,42 @@ import {
   buildGameInternalAutoCompositionPlan
 } from '../tools/company-build-up-directive.mjs';
 
+test('ordinary Web authorization stays separate from Unity Web owner hold',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-web-owner-'));
+  const prior=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy={
+    robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']},
+    developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY_WEB:'OWNER_HOLD',UNITY:'OWNER_HOLD'},
+    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','WEB']}
+  };
+  const source=(file)=>({sourceTreeFingerprint:'web-owner-scope',sourceRoot:file.split('/').slice(0,2).join('/'),
+    topFiles:[{file,score:10}],sourceAnchors:[],observations:[],signals:{}});
+  const make=(platform,rootPath)=>{
+    const ext=rootPath.startsWith('unity-games/')?'Assets/Scripts/GameCore.cs':'game.js';
+    const file=rootPath+'/'+ext;
+    return buildGameSpecificBuildUpDirective({
+      gameId:'garden',platform,repoRoot:root,sourceRoot:rootPath,
+      sourceObservation:source(file),responsibleFiles:[file],
+      designRecord:{content:{identity:'정원 방어',genre:'DEFENSE',coreLoop:['적 분석','배치','방어']}}
+    });
+  };
+  try{
+    fs.mkdirSync(path.dirname(policyPath),{recursive:true});
+    process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    assert.equal(make('WEB','web-games/garden').productionPlan?.platform,'WEB');
+    assert.equal(make('WEB','unity-games/garden').productionPlan,null,'Unity Web output remains held');
+    policy.developmentAccess.WEB='OWNER_HOLD';
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    assert.equal(make('WEB','web-games/garden').productionPlan,null,'ordinary Web owner hold fails closed');
+  }finally{
+    if(prior===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=prior;
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
 test('every game worker receives concrete player-facing inspections without fabricated quality credit',()=>{
   for(const gameId of ['daechung-rpg','puzzle','bug-defense']){
     const d=buildGameSpecificBuildUpDirective({gameId,platform:'ROBLOX',designRecord:design(),responsibleFiles:[`roblox-games/${gameId}/client/Game.client.luau`]});
