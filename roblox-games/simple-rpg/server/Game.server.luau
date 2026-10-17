@@ -1802,6 +1802,7 @@ task.spawn(function()
       end
       -- Dead or stunned enemies cannot keep a stale attack windup or auto-parry cue.
       if enemy.Humanoid.Health <= 0 or now < enemy.StunnedUntil then
+        AdvancedAIEcosystem.ForgetEnemy(enemy)
         enemy.TelegraphAt = 0
         enemy.TargetUserId = nil
         if enemy.Model:GetAttribute("IsPreparingAttack") == true then
@@ -1822,6 +1823,7 @@ task.spawn(function()
         -- 대상이 사라지거나 서식지 밖으로 벗어나면 경계를 즉시 해제한다.
         -- 이전 대상의 경계 시간이 새 순찰/귀환을 붙잡지 않게 한다.
         if not target then
+          AdvancedAIEcosystem.ForgetEnemy(enemy)
           enemy.AlertUserId = nil
           enemy.AlertUntil = 0
         end
