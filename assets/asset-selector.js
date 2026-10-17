@@ -218,6 +218,142 @@ function buildProductionPlan(request, preset) {
   });
 }
 
+
+// 검증된 외부 알고리즘/제작 도구는 후보 레시피다. 실행·다운로드·배포 권한이 아니다.
+// 기존 환경 감독, 공용 에셋 제작 및 QA 책임 경로만 사용한다.
+export const VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES=Object.freeze([
+  Object.freeze({id:'FASTNOISELITE',kind:'ALGORITHM',roles:['TERRAIN','ENVIRONMENT'],sourceUrl:'https://github.com/Auburn/FastNoiseLite',owner:'assets/vibe-environment-director.js',integration:'EXISTING_PROCEDURAL_WORLD_NOISE',licenseReviewRequired:true}),
+  Object.freeze({id:'WAVE_FUNCTION_COLLAPSE',kind:'ALGORITHM',roles:['DUNGEON','BUILDING','MAP'],sourceUrl:'https://github.com/mxgmn/WaveFunctionCollapse',owner:'tools/company-roblox-production-plan.mjs',integration:'RULE_CONSTRAINED_LAYOUT_REFERENCE',licenseReviewRequired:true}),
+  Object.freeze({id:'ASTAR_PATHFINDING',kind:'ALGORITHM',roles:['ENEMY_AI','NPC','MAP'],sourceUrl:'https://github.com/libgdx/gdx-ai',owner:'assets/common-ai.js',integration:'EXISTING_NATIVE_NAVIGATION_REVIEW',licenseReviewRequired:true}),
+  Object.freeze({id:'BLENDER',kind:'AUTHORING_TOOL',roles:['CHARACTER','CREATURE','BUILDING','TERRAIN','PROP','ITEM'],sourceUrl:'https://www.blender.org/',owner:'assets/native-authoring/build-game-visual.py',integration:'REVIEWED_NATIVE_3D_AUTHORING',licenseReviewRequired:true}),
+  Object.freeze({id:'MATERIAL_MAKER',kind:'AUTHORING_TOOL',roles:['MATERIAL','TERRAIN','BUILDING','PROP'],sourceUrl:'https://github.com/RodZill4/material-maker',owner:'tools/vibe2-asset-production-plan.mjs',integration:'REVIEWED_MATERIAL_AUTHORING',licenseReviewRequired:true}),
+  Object.freeze({id:'GLTF_TRANSFORM',kind:'AUTHORING_TOOL',roles:['CHARACTER','CREATURE','BUILDING','TERRAIN','PROP','ITEM'],sourceUrl:'https://gltf-transform.dev/',owner:'assets/native-authoring/build-game-visual.py',integration:'REVIEWED_3D_OPTIMIZATION',licenseReviewRequired:true}),
+  Object.freeze({id:'KENNEY_ASSET_REFERENCE',kind:'SOURCE_REFERENCE',roles:['CHARACTER','CREATURE','BUILDING','TERRAIN','PROP','ITEM','UI'],sourceUrl:'https://kenney.nl/',owner:'tools/vibe2-asset-production-plan.mjs',integration:'LICENSE_VERIFIED_EXTERNAL_ASSET_CANDIDATE',licenseReviewRequired:true})
+]);
+const VIBE_ROLE_PATTERNS=Object.freeze({
+  TERRAIN:/terrain|world|biome|landscape|valley|canyon|cliff|지형|월드|협곡|산|강|숲|바위|지질/i,
+  ENVIRONMENT:/environment|forest|weather|nature|환경|자연|숲|날씨|바람/i,
+  DUNGEON:/dungeon|room|maze|level|던전|미궁|동굴|방|미로/i,
+  BUILDING:/building|architecture|house|town|village|건물|집|마을|건축/i,
+  MAP:/map|path|route|level|tile|맵|경로|지도|타일/i,
+  ENEMY_AI:/enemy|monster|boss|combat|hostile|몬스터|적|보스|전투/i,
+  NPC:/npc|villager|citizen|주민|상인|대화/i,
+  CHARACTER:/character|avatar|player|hero|캐릭터|아바타|플레이어|주인공/i,
+  CREATURE:/creature|animal|wildlife|pet|monster|크리처|동물|야생|몬스터/i,
+  PROP:/prop|object|rock|tree|decoration|소품|오브젝트|돌|나무|장식/i,
+  ITEM:/item|weapon|armor|equipment|검|무기|방어구|아이템|장비/i,
+  MATERIAL:/material|texture|shader|surface|stone|metal|wood|재질|텍스처|표면|금속|나무/i,
+  UI:/interface|hud|button|menu|inventory|ui|버튼|메뉴|인벤토리/i
+});
+const VIBE_ROLE_FAMILIES=Object.freeze({
+  TERRAIN:['TERRAIN','ENVIRONMENT'],ENVIRONMENT:['ENVIRONMENT','TERRAIN'],
+  DUNGEON:['BUILDING','ENVIRONMENT'],BUILDING:['BUILDING','PROP'],MAP:['ENVIRONMENT','TERRAIN'],
+  ENEMY_AI:['CREATURE','CHARACTER'],NPC:['CHARACTER'],CHARACTER:['CHARACTER'],
+  CREATURE:['CREATURE'],PROP:['PROP'],ITEM:['WEAPON','EQUIPMENT','ITEM'],MATERIAL:['MATERIAL','TEXTURE'],UI:['UI']
+});
+function vibeNormalizedTarget(value=''){
+  const raw=text(value).toUpperCase().replace(/[\s-]+/g,'_');
+  if(raw==='ROBLOX')return'ROBLOX';
+  if(['WEB','GENERAL_WEB','MOBILE_WEB','BROWSER'].includes(raw))return'WEB';
+  return raw;
+}
+function vibeSourceProvenance(asset={}){
+  const id=text(asset.id),sourceHash=text(asset.sourceHash||asset.sha256||asset.contentHash);
+  const license=text(asset.license||asset.licenseDeclared||asset.policy).toUpperCase();
+  const source=Boolean(asset.path||asset.masterGlb||asset.sourceFiles?.length||asset.nativeArtifacts?.length);
+  return Boolean(id&&source&&/^[0-9a-f]{64}$/i.test(sourceHash)&&license&&!blockedLicense(license)
+    &&asset.securityBlocked!==true&&asset.internalUseForbidden!==true);
+}
+function vibeMatchingFamilies(asset={},families=[]){
+  const family=text(asset.family||asset.category).toUpperCase();
+  return families.includes(family);
+}
+/**
+ * Read-only native authoring handoff used by the existing Vibe2 asset production stage.
+ * Never executes external binaries, installs tools, mutates a game, or certifies runtime QA.
+ */
+export function planVibeExternalCustomization({
+  request='',target='',gameId='',requirements=[],assets=[],styleBible={},
+  approvedDesignFingerprint='',ownerScope=null,sourceRevision=''
+}={}){
+  const platform=vibeNormalizedTarget(target);
+  const scope=ownerScope&&typeof ownerScope==='object'?ownerScope:null;
+  const active=(scope?.activeTargets||[]).map(vibeNormalizedTarget);
+  const held=(scope?.ownerHeldTargets||[]).map(vibeNormalizedTarget);
+  const eligible=scope?.status==='ACTIVE'&&scope?.existingPipelineOnly===true
+    &&active.includes(platform)&&!held.includes(platform)&&['ROBLOX','WEB'].includes(platform);
+  const selectedRoles=new Set();
+  const context=[request,...(Array.isArray(requirements)?requirements:[]).map(row=>
+    [row?.family,row?.role,row?.assetRole,row?.subfamily,row?.description].filter(Boolean).join(' ')
+  )].join(' ');
+  for(const [role,pattern]of Object.entries(VIBE_ROLE_PATTERNS))if(pattern.test(context))selectedRoles.add(role);
+  for(const requirement of Array.isArray(requirements)?requirements:[]){
+    const family=text(requirement?.family).toUpperCase();
+    for(const [role,families]of Object.entries(VIBE_ROLE_FAMILIES))if(families.includes(family))selectedRoles.add(role);
+  }
+  const style=styleBible&&typeof styleBible==='object'?styleBible:{};
+  const styleFingerprint=text(approvedDesignFingerprint);
+  const sourceId=text(sourceRevision);
+  const validAssets=(Array.isArray(assets)?assets:[]).filter(vibeSourceProvenance);
+  const actions=VIBE_EXTERNAL_CUSTOMIZATION_REFERENCES.map(reference=>{
+    const matchingRoles=reference.roles.filter(role=>selectedRoles.has(role));
+    const families=[...new Set(matchingRoles.flatMap(role=>VIBE_ROLE_FAMILIES[role]||[]))];
+    const sourceCandidates=validAssets.filter(asset=>vibeMatchingFamilies(asset,families));
+    const verifiedSources=sourceCandidates.filter(asset=>
+      asset.verifiedCompanyReusable===true||asset.runtimeVerificationState==='VERIFIED_RUNTIME'
+    );
+    const requiresNativeBindings=matchingRoles.some(role=>!['UI','MATERIAL'].includes(role));
+    const styleProfile=text(style.profileKey||style.styleFamily||'');
+    const relevant=matchingRoles.length>0;
+    const status=!eligible?'OWNER_POLICY_HELD'
+      :!relevant?'NOT_REQUIRED_BY_CURRENT_GAME'
+      :!styleFingerprint?'APPROVED_GAME_DESIGN_REQUIRED'
+      :reference.kind==='ALGORITHM'?'EXISTING_OWNER_ALGORITHM_REVIEW_REQUIRED'
+      :reference.kind==='AUTHORING_TOOL'?'EXTERNAL_TOOL_AUTHORIZATION_AND_LOCAL_AVAILABILITY_REQUIRED'
+      :'EXTERNAL_LICENSE_AND_SOURCE_REVIEW_REQUIRED';
+    return Object.freeze({
+      id:reference.id,kind:reference.kind,sourceUrl:reference.sourceUrl,
+      responsibleOwner:reference.owner,integration:reference.integration,
+      roles:Object.freeze(matchingRoles),status,
+      existingVerifiedSourceCount:verifiedSources.length,
+      sourceCandidates:Object.freeze(verifiedSources.slice(0,8).map(asset=>Object.freeze({
+        assetId:text(asset.id),sourceHash:text(asset.sourceHash||asset.sha256||asset.contentHash),
+        license:text(asset.license||asset.licenseDeclared||asset.policy)
+      }))),
+      nextAction:relevant&&eligible&&styleFingerprint
+        ?reference.kind==='ALGORITHM'?'MAP_PARAMETERS_TO_EXISTING_NATIVE_ALGORITHM_OWNER'
+          :'VERIFY_TOOL_LICENSE_BINARY_AND_SOURCE_IN_EXISTING_ASSET_DEVELOPMENT'
+        :'NONE',
+      parameters:Object.freeze({
+        gameId:text(gameId),target:platform,styleProfile,
+        approvedDesignFingerprint:styleFingerprint,sourceRevision:sourceId,
+        preserveExistingGameplayAndSave:true,requiresNativeBindings
+      }),
+      externalExecutionPerformed:false,gameSourceModified:false,
+      nativeRuntimeVerified:false,licenseReviewRequired:reference.licenseReviewRequired,
+      availableForAutomaticInstallation:false
+    });
+  });
+  return Object.freeze({
+    version:1,kind:'vibe2-existing-asset-external-customization',
+    gameId:text(gameId),target:platform,authorized:eligible,
+    authority:'company-learning/platform-release-roadmap.json#ownerActiveDevelopmentScope20261009',
+    status:eligible?(styleFingerprint?'EXISTING_ASSET_PRODUCTION_HANDOFF_REQUIRED':'APPROVED_GAME_DESIGN_REQUIRED'):'OWNER_POLICY_HELD',
+    roles:Object.freeze([...selectedRoles].sort()),referenceCount:actions.length,
+    references:Object.freeze(actions),existingVerifiedSourceCount:validAssets.filter(asset=>
+      asset.verifiedCompanyReusable===true||asset.runtimeVerificationState==='VERIFIED_RUNTIME').length,
+    sourceRevision:sourceId||null,designFingerprint:styleFingerprint||null,
+    applicationOrder:Object.freeze(['REUSE_VERIFIED_LIBRARY','DERIVE_APPROVED_NATIVE_VARIANT',
+      'RECOMBINE_SOURCE_COMPATIBLE_PARTS','REVIEW_LICENSED_EXTERNAL_ALGORITHM_OR_TOOL','NATIVE_BINDING','EXACT_RUNTIME_QA']),
+    sourceHashesRequired:true,externalInstallRequiresExplicitAuthorization:true,
+    requireExactRuntimeVisualAndInputEvidence:true,sourceMutationPerformed:false,
+    nativeRuntimeVerified:false,appliedToGame:false,qaPassed:false,
+    rollbackContract:'EXISTING_WORKSPACE_CHECKPOINT_RESTORE_ON_FAILURE',
+    preserved:Object.freeze(['CORE_RULES','BALANCE','PROGRESSION','SAVE_KEYS','SERVER_AUTHORITY','SOURCE_ORIGINAL']),
+    newQueueOrShadowPipelineCreated:false
+  });
+}
+
 export function planAssetApplication({ prompt = '', manifest = null, presetCatalog = null, rebuild = false } = {}) {
   const request = text(prompt);
   if (!request) throw new Error('asset request required');
