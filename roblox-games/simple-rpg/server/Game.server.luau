@@ -476,7 +476,6 @@ local function civPart(parent, name, size, frame, _color, _material, collide)
     end
   end
   visual:PivotTo(frame)
-  visual.Parent = parent
   -- Clone an actual downloaded MeshPart; don't create a homemade invisible block.
   local root = source:Clone()
   root.Name = name
@@ -491,10 +490,25 @@ local function civPart(parent, name, size, frame, _color, _material, collide)
   root:SetAttribute("VerifiedRobloxAssetId", template:GetAttribute("VerifiedRobloxAssetId"))
   root:SetAttribute("ExternalMeshPhysicsOnly", true)
   root.Parent = parent
+  -- Keep the whole original external visual linked to its root and lifetime.
+  visual.Parent = root
   return root
 end
 local function civSign(_parent, _adornee, _text, _height)
   return nil
+end
+local function setExternalHousingDoorOpen(piece, open)
+  -- Only hide or restore imported mesh materials; never replace the door with a Part.
+  for _, node in ipairs(piece:GetDescendants()) do
+    if node:IsA("BasePart") and node ~= piece then
+      local original = node:GetAttribute("ImportedOriginalTransparency")
+      if original == nil then
+        original = node.Transparency
+        node:SetAttribute("ImportedOriginalTransparency", original)
+      end
+      node.Transparency = open and 1 or original
+    end
+  end
 end
 -- The original origin ground and the spawn reference are both sourced from the
 -- verified CC0 ground mesh. All player positions and foundation probes are retained.
@@ -813,6 +827,12 @@ local function civBuildHousing(player, request)
     if part:IsA("BasePart") and part:GetAttribute("HousingPiece") == true
       and part ~= parentPiece and (part.Position-basePosition).Magnitude < 3 then return end
   end
+  -- Never charge materials for an unsupported handmade housing shape.
+  -- Every authored piece needs its own source-verified external model.
+  if not curatedModelFor(request.Key .. "_Housing") then
+    civMessage(player, "해당 건축 부품의 외부 에셋이 등록되지 않았어.")
+    return
+  end
   if not civNowReady(player,"BuildHousing",0.7) then return end
   local paid,missing = civSpend(player,{CivWood=definition.Wood,CivStone=definition.Stone})
   if not paid then civMessage(player,"건축 자원 부족: "..missing) return end
@@ -880,7 +900,8 @@ local function civRestoreHousing(player, saved)
           and math.abs(parentRecord.Level-entry.Level) <= 1
           and parentRecord.Stability >= entry.Stability + 20)
       if not restoredIds[candidateId] and validParent
-        and not (definition.Base and entry.Level ~= 0) then
+        and not (definition.Base and entry.Level ~= 0)
+        and curatedModelFor(entry.Key .. "_Restored") then
         local location = center + Vector3.new(entry.X,entry.Level*8+definition.Size.Y/2,entry.Z)
         local piece = civPart(ownerFolder,entry.Key.."_Restored"..tostring(#records+1),
           definition.Size,CFrame.new(location)*CFrame.Angles(0,math.rad(entry.Rotation),0),
@@ -894,7 +915,7 @@ local function civRestoreHousing(player, saved)
           local isOpen = entry.Open == true
           piece:SetAttribute("DoorOpen",isOpen)
           piece.CanCollide = not isOpen
-          piece.Transparency = 1
+          setExternalHousingDoorOpen(piece, isOpen)
         end
         piece:SetAttribute("Stability",entry.Stability)
         piece:SetAttribute("CivOwnerUserId",player.UserId)
@@ -971,7 +992,7 @@ local function civToggleHousingDoor(player,piece)
       record.Open=not (record.Open==true)
       piece:SetAttribute("DoorOpen",record.Open)
       piece.CanCollide=not record.Open
-      piece.Transparency = 1
+      setExternalHousingDoorOpen(piece, record.Open)
       civMessage(player,record.Open and "문 열림" or "문 닫힘")
       return
     end
