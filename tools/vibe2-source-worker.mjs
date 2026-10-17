@@ -6407,8 +6407,10 @@ export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile
     return fs.readFileSync(path.resolve(responseFile),'utf8');
   }
   if(images.length)throw new Error('GEMINI_IMAGE_INPUT_ADAPTER_NOT_VERIFIED');
+  const key=clean(process.env.GEMINI_API_KEY);
+  if(!key)throw new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
   const {text}=await requestGeminiFreePair({
-    apiKey:clean(process.env.GEMINI_API_KEY),
+    apiKey:key,
     contents:[{role:'user',parts:[{text:String(prompt)}]}],
     maxOutputTokens:maxPredict,timeoutMs,temperature
   });
