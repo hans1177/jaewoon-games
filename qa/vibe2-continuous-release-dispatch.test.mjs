@@ -601,6 +601,18 @@ test('Web requires F0-F9 proof, mandatory deployment, then resumes perpetual BUI
   assert.ok(retryStart>0&&retryEnd>retryStart);
   const retry=section.slice(retryStart,retryEnd);
   assert.match(retry,/WEB_NEXT_EVOLUTION_DISPATCH_AFTER_PUBLICATION_ATTEMPT=YES/);
+  assert.match(retry,/WEB_PUBLICATION_RETRY_OWNER=VIBE2_24H_EXACT_F9_RECOVERY/);
+  assert.doesNotMatch(retry,/gh workflow run vibe2-candidate-release\.yml/);
+  const recovery=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const recoveryStart=recovery.indexOf('      - name: Recover reviewed winners stranded before release dispatch');
+  const recoveryEnd=recovery.indexOf('      - name: Upload generated machine handoff',recoveryStart);
+  assert.ok(recoveryStart>0&&recoveryEnd>recoveryStart);
+  const recoverySection=recovery.slice(recoveryStart,recoveryEnd);
+  assert.match(recoverySection,/vibe2-release-dispatch-recovery\.mjs/);
+  assert.match(recoverySection,/if \[ "\$remote_sha" != "\$candidate_sha" \]; then/);
+  assert.match(recoverySection,/release-dispatch-recovery-at:\$stamp/);
+  assert.match(recoverySection,/vibe2-candidate-release\.yml\/dispatches/);
+
   assert.doesNotMatch(retry,/exit 0/);
   // 기존 F9 상태를 보존하고 게시 실패를 QA 실패로 재분류하지 않는다.
   const queueStart=section.indexOf('node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id=');
