@@ -1,0 +1,66 @@
+{
+  "summary": "orang-minyak 오랑미냑 슬림 체형의 walk 동작에 대해 지지 중심 이동, 제곱형 아크 수직 리프트, 어깨 팔 상호위상 후행 운동, 주기적 seam 연속성을 일괄 반영하여 실루엣의 왜곡을 방지하고 균형 잡힌 보행감을 구축했습니다.",
+  "expectedEffect": "게임 카메라 거리에서 오랑미냑의 기계실 보행 시 무게 중심의 좌우 이동과 수직 바운스, 정밀한 발 들어올림과 자연스러운 상지 후행 운동이 결합되어 실루엣 가독성과 무게감이 크게 향상됩니다.",
+  "edits": [
+    {
+      "path": "init.luau",
+      "find": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+      "replace": " local phase=time*speed;local wave=math.sin(phase);local coswave=math.cos(phase*2);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0.04*math.sin(phase), floating and math.sin(time*2.4)*.13 or -.12+0.03*coswave, 0, 0.05, moving and wave*.035 or breathe*.015, -0.02*math.sin(phase))\n pose(\"Head\",0,0,0,breathe*.035+0.04*math.sin(phase*0.5),math.sin(time*.9)*.07,-0.02*math.sin(phase))"
+    },
+    {
+      "path": "init.luau",
+      "find": "  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+      "replace": "  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   local liftL=math.max(0,wave)^2;\n   local liftR=math.max(0,-wave)^2;\n   pose(\"LeftLeg\",0,liftL*0.12,0,wave*.44,0,-0.03)\n   pose(\"RightLeg\",0,liftR*0.12,0,-wave*.44,0,0.03)\n   pose(\"LeftArm\",0,0,-0.05,-0.32-wave*0.15,0.05,-0.15)\n   pose(\"RightArm\",0,0,-0.05,-0.32+wave*0.15,-0.05,0.15)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "Sample the full existing cycle and contact boundaries; all original bones retain finite bounded x/y/z/rx/ry/rz and Root stays unchanged.",
+    "Sample times in reverse order too: identical inputs must yield identical poses.",
+    "Inspect silhouette, support balance, foot lift separation, and loop velocity seams on the target Roblox rig."
+  ],
+  "graphicsReplacementReport": null,
+  "motionRepairReport": {
+    "objectId": "roblox-world-ghost-orang-minyak",
+    "clipId": "walk",
+    "depthEvidence": [
+      {
+        "axis": "POSE_AND_STAGING",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": "pose(\"Torso\",0.04*math.sin(phase), floating and math.sin(time*2.4)*.13 or -.12+0.03*coswave, 0, 0.05, moving and wave*.035 or breathe*.015, -0.02*math.sin(phase))\n pose(\"Head\",0,0,0,breathe*.035+0.04*math.sin(phase*0.5),math.sin(time*.9)*.07,-0.02*math.sin(phase))"
+      },
+      {
+        "axis": "WEIGHT_AND_BALANCE",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": "local phase=time*speed;local wave=math.sin(phase);local coswave=math.cos(phase*2);local breathe=math.sin(time*2)"
+      },
+      {
+        "axis": "JOINT_ARCS_AND_SPACING",
+        "status": "CHANGED",
+        "before": "   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+        "after": "   local liftL=math.max(0,wave)^2;\n   local liftR=math.max(0,-wave)^2;\n   pose(\"LeftLeg\",0,liftL*0.12,0,wave*.44,0,-0.03)\n   pose(\"RightLeg\",0,liftR*0.12,0,-wave*.44,0,0.03)"
+      },
+      {
+        "axis": "CONTACT_AND_CONSTRAINTS",
+        "status": "CHANGED",
+        "before": "   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)",
+        "after": "   local liftL=math.max(0,wave)^2;\n   local liftR=math.max(0,-wave)^2;\n   pose(\"LeftLeg\",0,liftL*0.12,0,wave*.44,0,-0.03)\n   pose(\"RightLeg\",0,liftR*0.12,0,-wave*.44,0,0.03)"
+      },
+      {
+        "axis": "OVERLAP_AND_SETTLE",
+        "status": "CHANGED",
+        "before": "   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+        "after": "   pose(\"LeftArm\",0,0,-0.05,-0.32-wave*0.15,0.05,-0.15)\n   pose(\"RightArm\",0,0,-0.05,-0.32+wave*0.15,-0.05,0.15)"
+      },
+      {
+        "axis": "LOOP_AND_TRANSITION",
+        "status": "CHANGED",
+        "before": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": " local phase=time*speed;local wave=math.sin(phase);local coswave=math.cos(phase*2);local breathe=math.sin(time*2)"
+      }
+    ]
+  }
+}
