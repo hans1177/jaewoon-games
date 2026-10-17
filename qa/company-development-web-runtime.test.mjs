@@ -202,8 +202,8 @@ test('owner-held Unity Web does not gate canonical DEVELOPMENT_CONFIRMED native 
   assert.match(source,/platformDevelopmentEligible\(item,'ROBLOX'\)\|\|platformDevelopmentEligible\(item,'UNITY'\)/);
   assert.match(source,/const webActive=r\.developmentAccess\?\.UNITY_WEB==='ALWAYS_ALLOWED'/);
   assert.match(admission,/MINIMUM_DESIGN_CONTRACT_REQUIRED/);
-  assert.match(admission,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
-  assert.match(admission,/DUAL_NATIVE_TARGETS_REQUIRED/);
+  assert.match(admission,/ACTIVE_PLATFORM_DESIGN_PROFILE_REQUIRED/);
+  assert.match(admission,/ACTIVE_NATIVE_TARGETS_REQUIRED/);
   assert.match(admission,/UPPER_PLATFORM_DEVELOPMENT_READY/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.match(source,/UPPER_PLATFORM_ELIGIBLE_IDS=/);
@@ -227,8 +227,8 @@ test('native admission retains strict design evidence while owner-held Web is no
   assert.match(source,/if\(nativeAdmitted\)\{/);
   assert.match(source,/if\(decision\.grandfathered===true\)grandfatheredIds\.push\(item\.gameId\)/);
   assert.match(admission,/if\(item\.minimumDesignContract\?\.pass!==true\)return\{gameId,state:'BLOCKED'/);
-  assert.match(admission,/if\(!profiles\.ROBLOX\?\.source\|\|!profiles\.UNITY\?\.source\)return\{gameId,state:'BLOCKED'/);
-  assert.match(admission,/if\(!targets\.has\('ROBLOX'\)\|\|!targets\.has\('UNITY'\)\)return\{gameId,state:'BLOCKED'/);
+  assert.match(admission,/activeNativePlatforms\.some\(platform=>!clean\(profiles\[platform\]\?\.source\)\)/);
+  assert.match(admission,/activeNativePlatforms\.some\(platform=>!targets\.has\(platform\)\)/);
   assert.match(admission,/const nativeStarted=nativeUpperPlatformAlreadyStarted\(item\)/);
   assert.match(admission,/const readiness=readUpperPlatformReadiness\(repoRoot,gameId\)/);
   assert.match(admission,/return\{gameId,state:'UPPER_PLATFORM',reason:'MINIMUM_DESIGN_READY',grandfathered:nativeStarted/);
