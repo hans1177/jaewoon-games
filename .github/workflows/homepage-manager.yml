@@ -495,7 +495,7 @@ jobs:
   director-supervision:
     name: Director Review and Publish
     needs: manage-and-self-qa
-    if: github.event_name != 'pull_request' && needs.manage-and-self-qa.result == 'success'
+    if: github.event_name != 'pull_request' && needs.manage-and-self-qa.result == 'success' && needs.manage-and-self-qa.outputs.candidate_changed == 'true'
     runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
