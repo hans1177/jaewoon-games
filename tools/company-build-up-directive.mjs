@@ -2713,8 +2713,9 @@ export function buildGameSpecificBuildUpDirective({
   }catch{}
   // [플랫폼 권한] 공통 빌드업은 전 게임을 분석하지만, 자동 제작 계획은 중앙정책상 실제 허용된 플랫폼만 생성한다.
   const verifiedRoadmap=readJson(path.join(repoRoot,clean(process.env.COMPANY_VERIFIED_POLICY_PATH)||'__retired_policy_not_available__'),{});
-  const ownerPlatform=productionPlatform==='WEB'||productionPlatform==='UNITY_WEB'?'UNITY_WEB':
-    ['UNITY','UNITY_APP','UNITY_ANDROID'].includes(clean(productionPlatform).toUpperCase())?'UNITY':'ROBLOX';
+  const ownerPlatform=['WEB','UNITY_WEB'].includes(clean(productionPlatform).toUpperCase())?'UNITY_WEB':
+    ['UNITY','UNITY_APP','UNITY_ANDROID'].includes(clean(productionPlatform).toUpperCase())?'UNITY':
+      clean(productionPlatform).toUpperCase()==='ROBLOX'?'ROBLOX':'';
   const productionAuthorized=ownerPlatform==='ROBLOX'
     ||(verifiedRoadmap?.developmentAccess?.[ownerPlatform]==='ALWAYS_ALLOWED'
       &&(verifiedRoadmap?.ownerActiveDevelopmentScope20261009?.activeTargets||[]).includes(ownerPlatform));
