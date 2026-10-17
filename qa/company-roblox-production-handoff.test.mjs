@@ -126,3 +126,22 @@ test('web worker and retry demand genuine local 3D and mobile runtime proof, nev
     assert.match(text,/save compatibility/);
   }
 });
+
+test('candidate, focused repair and retry carry commercial UI composition and trade-state authority',()=>{
+  const cases=[{target:'web',path:'web-games/garden/index.html',content:'<canvas></canvas>'},
+    {target:'roblox',path:client,content:'function showGoal() return true end'}];
+  for(const {target,path,content} of cases){
+    const order={target,gameId:'garden',goal:'인벤토리 거래창 UI 구조와 모바일 인터페이스 개선',selectedTask:{type:'implementation'}};
+    const prompt=buildPrompt(order,{files:[{path,editable:true,content}]},[path]);
+    const focused=buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[path]}).prompt;
+    const retry=buildGenerationRetryPrompt(prompt,{error:new Error('broken trade panel'),responsibleFiles:[path],attempt:2});
+    for(const text of [prompt,focused,retry]){
+      for(const label of ['COMMERCIAL GENRE UI:','INVENTORY AND TRANSACTIONS:','COMMERCIAL INTERFACE QUALITY:'])
+        assert.match(text,new RegExp(label));
+      assert.match(text,/one idempotent server-authorized commit/);
+      assert.match(text,/Never invent shadow stock/);
+      assert.match(text,/48 CSS px/);
+      assert.match(text,/no universal overlay/);
+    }
+  }
+});
