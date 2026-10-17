@@ -5243,7 +5243,6 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
 
   // Production failures from multiple games point only to a shared material
   // preset module. That module cannot fix a missing world material consumer.
-  fs.writeFileSync(path.join(gameRoot,'shared','RobloxCommonMaterials.luau'),'return {}\\n');
   const presetOnlyEvidence={...evidence,assetThreshold:{...evidence.assetThreshold,
     familyResults:[{family:'MATERIAL',responsibleFiles:['shared/RobloxCommonMaterials.luau']}]}};
   const presetOnly=planVibe2AutonomousTasks({
