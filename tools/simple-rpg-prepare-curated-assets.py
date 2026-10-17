@@ -90,10 +90,42 @@ town_archive = ROOT / "kenney_fantasy-town-kit_2.0.zip"
 if not choose_model(ground_archive, "Ground",
                     ("ground", "grass", "hex", "tile", "plain"), True):
     raise SystemExit("CURATED_GROUND_MODEL_NOT_PREPARED")
-if not choose_model(town_archive, "Building", ("house", "tower", "building", "home"), False):
-    raise SystemExit("CURATED_BUILDING_MODEL_NOT_PREPARED")
-choose_model(town_archive, "Tree", ("tree", "bush"), False)
-choose_model(ground_archive, "Rock", ("rock", "stone", "cliff"), False)
+# Keep the original town-kit source as the first preference. Its verified ZIP
+# sometimes uses internal IDs rather than descriptive "house" filenames.
+# Use the already archived *house-specific* CC0 originals before claiming a
+# random prop from a town pack is a building.
+building_candidates = [
+    (town_archive, ("house", "tower", "building", "home", "cottage", "hut"), False),
+    (ROOT / "priority-v1" / "medieval-house-a.zip", ("house", "home", "building", "roof", "complete"), True),
+    (ROOT / "priority-v1" / "medieval-house-b.zip", ("house", "home", "building", "roof", "complete"), True),
+    (ROOT / "priority-v1" / "medieval-house-c.zip", ("house", "home", "building", "roof", "complete"), True),
+    (ROOT / "priority-v1" / "medieval-house-d.zip", ("house", "home", "building", "roof", "complete"), True),
+]
+building_ready = False
+for archive, keywords, homogeneous_house_pack in building_candidates:
+    try:
+        if choose_model(archive, "Building", keywords, homogeneous_house_pack):
+            building_ready = True
+            break
+    except (RuntimeError, zipfile.BadZipFile) as exc:
+        print("CURATED_EXISTING_HOUSE_SOURCE_SKIP", archive, str(exc)[:180])
+if not building_ready:
+    raise SystemExit("CURATED_BUILDING_MODEL_NOT_PREPARED_FROM_EXISTING_ARCHIVES")
+
+# Optional art is imported only when the content is genuinely of that family.
+# Missing tree/rock conversions never turn into a generic block model.
+for label, sources, words in [
+    ("Tree", [ROOT / "priority-v1" / "animated-forest-trees.zip", town_archive],
+     ("tree", "bush", "forest")),
+    ("Rock", [ground_archive, ROOT / "priority-v1" / "big-forest-landscape.zip"],
+     ("rock", "stone", "cliff", "boulder"))
+]:
+    for archive in sources:
+        try:
+            if choose_model(archive, label, words, False):
+                break
+        except (RuntimeError, zipfile.BadZipFile) as exc:
+            print("CURATED_OPTIONAL_SOURCE_SKIP", label, archive, str(exc)[:180])
 
 ui_archive = ROOT / "kenney_fantasy-ui-borders.zip"
 if not ui_archive.is_file():
