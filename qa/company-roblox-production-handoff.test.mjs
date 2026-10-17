@@ -35,6 +35,23 @@ test('genre production design reaches the real source worker and compact retry w
   assert.match(retry,/owner-add-2/);
 });
 
+test('ordinary Web source worker selects locally approved Three.js and fail-closed mobile real 3D',()=>{
+  const order={id:'web-three-approval',gameId:'garden',target:'web',goal:'repair current 3D scene',selectedTask:{type:'implementation'},department:'development'};
+  const own='web-games/garden/index.html';
+  const context={files:[{path:own,editable:true,content:'<!doctype html><canvas id="game"></canvas>'}]};
+  const prompt=buildPrompt(order,context,[own]);
+  assert.match(prompt,/GENERAL WEB TRUE 3D CODING METHOD BEGIN/);
+  assert.match(prompt,/Three\.js ES modules/);
+  assert.match(prompt,/three\.module\.js/);
+  assert.match(prompt,/WebGL2 as the reliable mobile baseline/);
+  assert.match(prompt,/WebGPU is optional/);
+  assert.match(prompt,/device pixel ratio near 1\.5/);
+  assert.match(prompt,/frame-rate claims without browser evidence/);
+  assert.match(prompt,/Keep existing gameplay rules, balance, progression, multiplayer and save keys unchanged/);
+  const robloxPrompt=buildPrompt({...order,target:'roblox'},context,[own]);
+  assert.doesNotMatch(robloxPrompt,/GENERAL WEB TRUE 3D CODING METHOD BEGIN/);
+});
+
 test('non-Roblox worker cannot consume a stale Roblox production plan',()=>{
   const {order,context}=fixture();
   const prompt=buildPrompt({...order,target:'web'},context,[client]);
