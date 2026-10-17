@@ -13,9 +13,10 @@ function Motion.walk(form,bones,time)
  local moving=state=="walk" or state=="chase"
  local speed=state=="chase" and 10 or moving and 6 or 2
  local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)
+ local liftSwing=math.max(0,math.sin(phase))
  local floating=form=="SHROUD" or form=="FLOATING_HEAD" or form=="OBJECT_SWARM" or form=="RIBBON" or form=="LANTERN"
- pose("Torso",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)
- pose("Head",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)
+ pose("Torso",0,floating and (math.sin(time*2.4)*.13 + 0.05*liftSwing*liftSwing) or .03*breathe,0,0,moving and wave*.035 or breathe*.015,0)
+ pose("Head",0,0,0,breathe*.035 + 0.02*math.sin(phase*2),math.sin(time*.9)*.07 + 0.03*wave,0)
  if moving then
   if form=="BEAST" or form=="CENTAUR"then
    pose("FrontLeftLeg",0,0,0,wave*.48);pose("BackRightLeg",0,0,0,wave*.48)
@@ -38,8 +39,8 @@ function Motion.walk(form,bones,time)
   if coil then pose(name,math.sin(phase-coil*.55)*.045,0,0,0,math.sin(phase-coil*.55)*.12,0)
   elseif tail then pose(name,0,0,0,math.sin(time*2-tail*.4)*.07,math.sin(time*2-tail*.4)*.11,0)end
  end
- pose("LeftWing",0,0,0,0,math.sin(phase)*.3,-.06)
- pose("RightWing",0,0,0,0,-math.sin(phase)*.3,.06)
+ pose("LeftWing",0,0,0,0,math.sin(phase-0.2)*.33,-.06)
+ pose("RightWing",0,0,0,0,-math.sin(phase-0.2)*.33,.06)
  return result
 end
 return Motion
