@@ -1323,10 +1323,11 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const sourceFamily=clean(row.family).toUpperCase()||(
         /^(?:music|bgm|audio|sound|sfx)$/.test(role)||/^(?:music|bgm|sound|audio)$/.test(role.split('-')[0])||/sfx|sound|audio|music|bgm|soundtrack|ambience|\.(?:mp3|ogg|wav|flac|aac|m4a)$/.test(name)?'AUDIO':
         /^(?:vfx|particle|particles|effect|effects)$/.test(role)||/particle|visual-effect|vfx/.test(name)?'VFX':
-        /^(?:ui|png|icon|icons|item-icons|special-icons|interface)$/.test(role)||/\bui[-_]|[-_]ui\b|icons?|sprites?|cursor|hud|\.(?:png|jpe?g|webp|svg|gif)$/.test(name)?'UI':
+        // Explicit library role wins over a generic image extension.
         /^(?:motion|animation|animations)$/.test(role)?'MOTION':
         /^(?:material|materials|texture|textures)$/.test(role)?'MATERIAL':
         /^(?:skill|skills|spell|spells)$/.test(role)?'SKILL':
+        /^(?:ui|png|icon|icons|item-icons|special-icons|interface)$/.test(role)||/\bui[-_]|[-_]ui\b|icons?|sprites?|cursor|hud|\.(?:png|jpe?g|webp|svg|gif)$/.test(name)?'UI':
         role==='03-equipment'?(/potion|item|inventory/.test(name)?'PROP':'WEAPON'):
         role==='04-npc-buildings'?(/castle|house|village|hexagon/.test(name)?'BUILDING':'CHARACTER'):
         role==='05-environment-sfx'?(/sfx|sound/.test(name)?'AUDIO':/fox/.test(name)?'CREATURE':'ENVIRONMENT'):
