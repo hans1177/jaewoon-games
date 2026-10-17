@@ -5137,12 +5137,12 @@ test('3D game sourcing accepts only exact canonical LFS pointers and rejects cor
     .nextActions.find(x=>x.family==='CREATURE');
   try{
     fs.mkdirSync(path.dirname(full),{recursive:true});
-    fs.writeFileSync(full,'version https://git-lfs.github.com/spec/v1\\noid sha256:'+expectedHash+'\\nsize '+expectedBytes+'\\n');
+    fs.writeFileSync(full,'version https://git-lfs.github.com/spec/v1\noid sha256:'+expectedHash+'\nsize '+expectedBytes+'\n');
     let plan=run();
     assert.equal(plan.action,'ACQUIRE_ADAPT');
     assert.equal(plan.externalAcquisition.downloaded,false);
     assert.equal(plan.externalAcquisition.acquisitionState,'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED');
-    fs.writeFileSync(full,'version https://git-lfs.github.com/spec/v1\\noid sha256:'+'2'.repeat(64)+'\\nsize '+expectedBytes+'\\n');
+    fs.writeFileSync(full,'version https://git-lfs.github.com/spec/v1\noid sha256:'+'2'.repeat(64)+'\nsize '+expectedBytes+'\n');
     assert.notEqual(run().action,'ACQUIRE_ADAPT','a different LFS oid cannot be trusted');
     fs.writeFileSync(full,Buffer.alloc(650,42));
     assert.notEqual(run().action,'ACQUIRE_ADAPT','damaged binary cannot become a download candidate');
