@@ -33,6 +33,53 @@
   "defaultMaxRetries": 2,
   "tasks": [
     {
+      "id": "owner-fantasy-survival-worldtree-interior-20261017",
+      "gameId": "fantasy-survival",
+      "target": "roblox",
+      "department": "development",
+      "type": "implementation",
+      "goal": "[OWNER_IMMEDIATE][WORLD_TREE_COMPLETE_20261017][ISSUE_8168] 마력숲 생존기 세계수 내부를 영상 설명/이슈등록이 아닌 실제 기존 Roblox canonical 게임코드에 구현한다. 기존 main 네 중앙문서와 회사 헌법 선검증 후 기존 게임의 책임 함수/원본 구조를 직접 수정하고, 새 쉐도 파이프라인·래퍼·임시우회 금지. 기존 세계수 외부 크기·위치·지형·저장·게임규칙·데이터·전투·멀티·지도·제작·몬스터 수치 유지. 세계수 지하 북쪽 끝에서 내부 진입, 세계수 내부는 원 합의 기준 6.8배 규모의 공간; 나무줄기·뿌리 통로·탐험 가능한 방, 지도 표시, 거대 꽃 9~11개, 뿌리·이끼·나무, 돌·섬유 자원 없음. 세계수 곰은 기존 수치 보존하고 배치. 세계수 골렘 중립 3티어, 약 4마리, 체력 586 공격력 48; 매 2초 50% 확률로 뿌리 4개 투척, 뿌리 명중 피해 0, 3초 이동 불가(공격 가능), 서버 판정·상태 해제 필수. 세계수 뱀 체력 250 공격력 39, 매 3초 67% 확률로 시야 내 뿌리를 뱀으로 보이게 하는 환각, 환각이 실제 몬스터/타격/보상/저장 오염을 일으키면 안 됨. 기존 세계수 지하 통로·고대 뿌리·제단과 보스 근원포식자 녹스바르(원본 HP 4500/공격 150, 기존 드랍) 소환 조건을 유지해 입출구와 전투가 막힘없이 연결되게 구현한다. 기존 보스전 퇴장 제한과 처치 후 복귀 처리 보존. 기존 3D 에셋·라이선스 확인한 에셋 우선 재사용, 외형·모션·효과 모바일 가독성 개선. 실제 실행·터치·조이스틱·공격 중 속박·멀티·보스·세이브/불러오기·맵·프레임·버튼 QA, 독립 회귀와 F0-F9 정확한 원본 revision 증거 통과 후만 main 반영/승인된 Open Cloud 공개를 보고한다. Unity Web/Android 현재 OWNER_HOLD이므로 이 작업은 승인된 Roblox 경로로만 시행; 보류 플랫폼 해제/기존 2D 웹 우회/허위 완료 절대 금지.",
+      "responsibleFiles": [
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau",
+        "roblox-games/fantasy-survival/shared/GameConfig.luau"
+      ],
+      "dependencies": [],
+      "priority": "owner-immediate",
+      "releaseState": "development-confirmed",
+      "status": "queued",
+      "retries": 0,
+      "maxRetries": 2,
+      "ownerDirective": true,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "blocker": null,
+      "evidence": [
+        "issue:8168",
+        "owner-directive:20261017-fantasy-survival-world-tree-full-completion",
+        "world-tree-exterior-size-preserved",
+        "golem:neutral-tier3-586hp-48attack-4roots-50pct-per2sec-root-stun3s-zero-damage",
+        "snake:250hp-39attack-hallucination67pct-per3sec",
+        "north-end-underground-interior-6.8x",
+        "preserve-existing-boss-summon-and-save",
+        "canonical-qa-and-publish-evidence-required",
+        "unity-web-owner-hold-respected"
+      ],
+      "lastOutcome": null,
+      "companyContext": {
+        "stageId": "owner-immediate",
+        "role": "director",
+        "assignmentAuthority": "owner-directive",
+        "sourceRef": "issue:8168",
+        "reviewRequired": true
+      },
+      "sourceRoot": "roblox-games/fantasy-survival",
+      "speculativeEligible": false,
+      "estimatedRisk": "high",
+      "shard": "roblox"
+    },
+    {
       "id": "owner-common-asset-quality-cleanup-20261016",
       "gameId": "__vibe_system__",
       "target": "shared-assets",
