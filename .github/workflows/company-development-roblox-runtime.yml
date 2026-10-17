@@ -352,7 +352,15 @@ jobs:
             if(state==='DEVELOPMENT_BLOCKED')continue;
             const target=`roblox-games/${item.gameId}`;
             const reconciliationRow=reconciliationById.get(item.gameId);
-            if(reconciliationRow?.sourceRepairPending===true||reconciliationRow?.sourceContractRepairRequired===true){
+            // 메인 Vibe 복구: 현재 정확한 소스/에셋 진단에서 MATERIAL 소비만 빠졌을 때만
+            // 기존 source-worker가 실제 native 물체의 재질 바인딩을 생성하게 한다.
+            const materialRepairPending=reconciliationRow?.sourceRepairPending===true
+              &&reconciliationRow?.sourceContractRepairRequired!==true
+              &&reconciliationRow?.failure==='existing-source-package-asset-repair-required'
+              &&Array.isArray(reconciliationRow.blockers)
+              &&reconciliationRow.blockers.length===1
+              &&reconciliationRow.blockers[0]==='ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL';
+            if((reconciliationRow?.sourceRepairPending===true||reconciliationRow?.sourceContractRepairRequired===true)&&!materialRepairPending){
               console.log('ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE='+item.gameId);
               continue;
             }
@@ -362,7 +370,7 @@ jobs:
               console.log('ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND='+item.gameId);
               continue;
             }
-            const existingSourceMaintenanceRebind=existingSourceAssetRebind;
+            const existingSourceMaintenanceRebind=existingSourceAssetRebind||materialRepairPending;
             const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
             const f0FoundationRepair=!secondaryOwnerFocus
               &&((item.robloxFoundationF0Passed!==true
@@ -374,7 +382,7 @@ jobs:
               &&currentReconciliationPass
               &&String(item.currentStep||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND'
               &&String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND';
-            const knownSourceRepairDebt=(Boolean(bootstrapFailed)&&!resolvedSourceBindDebt)||f0FoundationRepair;
+            const knownSourceRepairDebt=(Boolean(bootstrapFailed)&&!resolvedSourceBindDebt)||f0FoundationRepair||materialRepairPending;
             if(resolvedSourceBindDebt)console.log('ROBLOX_STALE_SOURCE_BIND_DEBT_RESOLVED_BY_EXACT_RECONCILIATION='+item.gameId);
             const candidateReady=secondaryOwnerFocus
               ?Boolean(item.ownerFocusRobloxSourceCandidateReadyAt)&&String(item.ownerFocusRobloxSourceCandidateBranch||'').trim()
@@ -396,6 +404,7 @@ jobs:
               secondaryOwnerFocus,
               existingSourceAssetRebind,
               existingSourceLearningRebind,
+              studioMaterialRepair:materialRepairPending,
               reconciliationSourceTreeSha:String(reconciliationRow?.sourceTreeSha||''),
               foundationRepair:f0FoundationRepair,
               knownSourceRepairDebt,
@@ -475,6 +484,7 @@ jobs:
           ARTBOOK_SOURCE: ${{ matrix.artbook }}
           TARGET_SOURCE: ${{ matrix.target }}
           FOUNDATION_REPAIR: ${{ matrix.foundationRepair || false }}
+          STUDIO_MATERIAL_REPAIR: ${{ matrix.studioMaterialRepair || false }}
           BUILD_UP_DIRECTIVE: /tmp/build-up-directive-${{ matrix.gameId }}.json
           RECONCILIATION_SOURCE_TREE_SHA: ${{ matrix.reconciliationSourceTreeSha || '' }}
           SOURCE_PLAN_CONTRACT_FINGERPRINT: ${{ needs.source-plan.outputs.contract_fingerprint }}
@@ -539,6 +549,7 @@ jobs:
             --roadmap=company-learning/platform-release-roadmap.json \
             --output-root="$TARGET_SOURCE" \
             --foundation-repair="$FOUNDATION_REPAIR" \
+            --studio-material-repair="$STUDIO_MATERIAL_REPAIR" \
             --evidence="$evidence" \
             "${directive_args[@]}"
           node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs

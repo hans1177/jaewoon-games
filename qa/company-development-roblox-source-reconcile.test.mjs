@@ -847,7 +847,7 @@ test('verified APK refresh is owned by one Roblox sweep instead of duplicate per
   assert.match(workflow,/existing-source-verified-external-learning-required/);
   assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND/);
   assert.match(workflow,/if\(existingSourceLearningRebind\)\{/);
-  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind;/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\|\|materialRepairPending;/);
 });
 
 

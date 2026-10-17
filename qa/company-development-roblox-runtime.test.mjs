@@ -1075,7 +1075,8 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND=/);
   assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_OWNS_VERIFIED_LEARNING_REBIND=/);
   assert.match(workflow,/if\(existingSourceLearningRebind\)\{[\s\S]*?continue;/);
-  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind;/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\|\|materialRepairPending;/);
+  assert.match(workflow,/const materialRepairPending=reconciliationRow\?\.sourceRepairPending===true/);
   assert.match(workflow,/const repairSupersedesCandidate=existingSourceMaintenanceRebind\|\|knownSourceRepairDebt/);
   assert.match(workflow,/if\(candidateReady&&!repairSupersedesCandidate\)continue/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR=/);
@@ -1415,7 +1416,7 @@ test('verified learning refresh debt coalesces to one exact current-main batch s
 test('existing asset rebind migrates removed studioUi consumers and remains idempotent',()=>{
   const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   const start=source.indexOf('function studioAssetDynamicBindingBlock');
-  const end=source.indexOf('\nexport function foundationCharacterSource',start);
+  const end=source.indexOf('\nexport function bindExistingServerStudioMaterial',start);
   assert.ok(start>=0&&end>start);
   const familyPrelude='const ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES='+JSON.stringify(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'])+';\n';
   const bind=runInNewContext(familyPrelude+source.slice(start,end)+'\nbindExistingClientStudioAssets');
