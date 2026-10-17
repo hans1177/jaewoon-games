@@ -449,6 +449,7 @@ jobs:
             // 아래 실제 값 검증을 통과해야만 REVIEW -> PASS로 승격한다.
             'developmentSpeedExecution.candidateReleasePromotionChecks.webRequiredDeploymentCheck',
             'developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence',
+            'roblox.deploymentControl.verifiedCyclePublication.sequence',
             'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
             'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
             'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
@@ -497,6 +498,7 @@ jobs:
           const releaseKeys=new Set([
             'developmentSpeedExecution.candidateReleasePromotionChecks.webRequiredDeploymentCheck',
             'developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence',
+            'roblox.deploymentControl.verifiedCyclePublication.sequence',
             'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
             'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
             'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
@@ -506,18 +508,28 @@ jobs:
             const loop=head.developmentLifecycleMachine?.verifiedF0F9PublicationLoop;
             const record=head.changeRecord?.ownerEveryGameF9Publish20261018||{};
             const requiredSequence=['GAME_SOURCE_MUTATION','F0','F1','F2','F3','F4','F5','F6','F7','F8','F9',
-              'RELEASE_CLASSIFICATION','PUBLISH_EVERY_F9_VERIFIED_GAME','IMMEDIATE_NEXT_EVOLUTION_CYCLE'];
+              'PUBLISH_EVERY_F9_VERIFIED_GAME','IMMEDIATE_NEXT_EVOLUTION_CYCLE'];
             const baselineSequence=base.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.sequence||[];
-            const expectedBaseline=requiredSequence.map(x=>x==='PUBLISH_EVERY_F9_VERIFIED_GAME'?'PUBLISH_ONLY_IF_RELEASED':x);
+            const expectedBaseline=['GAME_SOURCE_MUTATION','F0','F1','F2','F3','F4','F5','F6','F7','F8','F9',
+              'RELEASE_CLASSIFICATION','PUBLISH_ONLY_IF_RELEASED','IMMEDIATE_NEXT_EVOLUTION_CYCLE'];
+            const expectedRobloxBaseline=['EVOLUTION_SOURCE_MUTATION','F0_SOURCE_INTEGRITY',
+              'F1_TO_F8_CODE_AND_STATIC_QA','F9_EXACT_FINAL_REVIEW',
+              'DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH',
+              'START_NEXT_EVOLUTION_CYCLE_IMMEDIATELY','RECONCILE_CANONICAL_PUBLISH_RESULT_ASYNC'];
+            const requiredRobloxSequence=expectedRobloxBaseline.map(step=>
+              step==='DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH'
+                ?'DISPATCH_EXACT_F9_ARTIFACT_REGARDLESS_OF_RELEASE_CLASSIFICATION':step);
             const requiredRecord={
               authority:'OWNER_DIRECT',status:'ACTIVE',scope:'EVERY_GAME_AFTER_VERIFIED_F0_F9',
-              publicationScoreGate:false,existingCanonicalF0F9:true,publicationMustBeAttempted:true,
+              publicationScoreGate:false,publicationClassificationGate:false,existingCanonicalF0F9:true,publicationMustBeAttempted:true,
               failedPublishUsesExistingRetry:true,nextEvolutionDoesNotWaitForPublishedVisibility:true,
               platforms:{WEB:'GITHUB_PAGES',ROBLOX:'ROBLOX_EXISTING_OPEN_CLOUD',UNITY:'EXISTING_APP_TEST_BUILD'},
               cloudflareWorkers:'MULTIPLAYER_ONLY',githubOriginalAssetsAndSaveKeysPreserved:true,
               homepageOwner:'HOMEPAGE_MANAGER_AND_DIRECTOR',freeExistingActionsOnly:true,shadowPipelineForbidden:true
             };
             if(!same(baselineSequence,expectedBaseline)
+              ||!same(base.roblox?.deploymentControl?.verifiedCyclePublication?.sequence,expectedRobloxBaseline)
+              ||!same(head.roblox?.deploymentControl?.verifiedCyclePublication?.sequence,requiredRobloxSequence)
               ||!same(loop?.sequence,requiredSequence)
               ||!same(record,requiredRecord)
               ||head.version!==base.version+1
