@@ -1,5 +1,5 @@
 {
-  "version": 577,
+  "version": 578,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -26021,6 +26021,14 @@
   "webRuntimeStartabilityContract": {
     "version": 2,
     "finalGameplayDimension": "3D",
+    "preferredOrdinaryWeb3dEngine": "THREE_JS",
+    "existingApprovedBabylonOrPlayCanvasMayBePreserved": true,
+    "webRenderingBaseline": "WEBGL2",
+    "webGpuOptionalAfterMeasuredCompatibility": true,
+    "enginePackagesMustBeServedFromExistingApprovedLocalAssets": true,
+    "mobileDevicePixelRatioBudget": 1.5,
+    "requireDynamicQualityAndVisibilityThrottling": true,
+    "keepSaveBalanceGameplayAndAssetLicenseLineage": true,
     "appliesToAllOrdinaryWebGames": true,
     "twoDimensionalAndTwoPointFiveDimensionalFinalGameplayForbidden": true,
     "actualWebGlDrawAnd3dSpatialRuntimeEvidenceRequired": true,
