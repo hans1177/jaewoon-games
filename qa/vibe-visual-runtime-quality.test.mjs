@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import {createVibePortableImpactCue,createVibeCommercialInterfaceBlueprint,planVibePresentationAutopilot} from '../assets/vibe-presentation-director.js';
+import {createVibePortableImpactCue,createVibeCommercialInterfaceBlueprint,planVibePresentationAutopilot,calculateVibeResponsiveUIZones,deriveVibeInventoryPresentation,deriveVibeTradeReview} from '../assets/vibe-presentation-director.js';
 import {
   createVibeArtPipeline,
   createVibeGraphicsProduction,
@@ -397,4 +397,69 @@ test('all genre profiles receive distinct presentation while graphics production
     assert.deepEqual(plan.commercialUI.activeSurfaceIds,['inventory']);
     assert.equal(plan.policy.noRuleMutation,true);
   }
+});
+
+test('commercial portrait and landscape placement honors safe areas without ownership or game layout mutation',()=>{
+  const p=calculateVibeResponsiveUIZones({viewport:{width:390,height:844},safeArea:{top:32,bottom:20},panelOpen:true});
+  const l=calculateVibeResponsiveUIZones({viewport:{width:844,height:390},safeArea:{left:28,right:12},panelOpen:true});
+  assert.equal(p.portrait,true);
+  assert.equal(p.panel.mode,'BOTTOM_SHEET');
+  assert.equal(l.portrait,false);
+  assert.equal(l.panel.mode,'CONTEXT_SIDE_PANEL');
+  for(const rects of [p,l]){
+    assert.ok(rects.hud.y>=rects.safeArea.top);
+    assert.ok(rects.hud.x>=rects.safeArea.left);
+    assert.ok(rects.dock.y+rects.dock.height<=rects.viewport.height-rects.safeArea.bottom+0.01);
+    assert.ok(rects.panel.x+rects.panel.width<=rects.viewport.width-rects.safeArea.right+0.01);
+    assert.equal(rects.minTouchPx,48);
+    assert.equal(rects.allCoordinatesCssPixels,true);
+  }
+  assert.equal(calculateVibeResponsiveUIZones({panelOpen:false}).panel,null);
+});
+test('inventory presentation filters real game items and never authors equipment or save updates',()=>{
+  const owned=Object.freeze([{id:'sword',name:'검',quantity:1,rarity:'rare'},
+    {id:'ore',name:'광석',quantity:4,rarity:'common'},
+    {id:'empty',name:'없음',quantity:0,rarity:'common'}]);
+  const view=deriveVibeInventoryPresentation({items:owned,capacity:20,query:'광',sort:'rarity'});
+  assert.equal(view.rows.length,1);
+  assert.equal(view.rows[0].id,'ore');
+  assert.equal(view.usedSlots,2);
+  assert.equal(view.capacity,20);
+  assert.equal(view.readOnly,true);
+  assert.equal(view.canExecuteEquipOrConsume,false);
+  assert.equal(view.sourceOfTruth,'GAME_INVENTORY_OWNER');
+  assert.deepEqual(owned[0],{id:'sword',name:'검',quantity:1,rarity:'rare'});
+  assert.equal(deriveVibeInventoryPresentation({items:[]}).empty,true);
+});
+test('trade UI requires both offers, current quote and server validation and never commits client inventory',()=>{
+  const players=[{id:'alice',label:'재운',offerCount:2},{id:'bob',label:'상대',offerCount:1}];
+  const base={revision:4,participants:players,readyRevisions:{alice:4,bob:4},
+    quote:{revision:4,valid:true,totals:{offerA:100,offerB:100}},availabilityConfirmed:true};
+  const ready=deriveVibeTradeReview(base);
+  assert.equal(ready.canRequestOwnerCommit,true);
+  assert.equal(ready.committed,false);
+  assert.equal(ready.readOnly,true);
+  assert.equal(ready.quoteTotals.offerA,100);
+  assert.equal(ready.safety.noClientInventoryMutation,true);
+  assert.equal(deriveVibeTradeReview({...base,revision:5}).canRequestOwnerCommit,false,
+    'offer revision change revokes ready from both participants');
+  assert.equal(deriveVibeTradeReview({...base,commitInFlight:true}).canRequestOwnerCommit,false);
+  assert.equal(deriveVibeTradeReview({...base,availabilityConfirmed:false}).canRequestOwnerCommit,false);
+  assert.equal(deriveVibeTradeReview({...base,quote:{revision:3,valid:true}}).canRequestOwnerCommit,false);
+  assert.equal(deriveVibeTradeReview({...base,readyRevisions:{alice:4,bob:3}}).canRequestOwnerCommit,false);
+});
+test('cat-step UI uses one local authored SVG symbol atlas rather than inconsistent emoji glyphs',()=>{
+  const html=fs.readFileSync('web-games/cat-step/index.html','utf8');
+  const svg=fs.readFileSync('assets/vibe-commercial-ui-icons.svg','utf8');
+  for(const id of ['trophy','bolt','left','right','cat','spark']){
+    assert.match(svg,new RegExp('<symbol id="'+id+'"'));
+    assert.ok(html.includes('/assets/vibe-commercial-ui-icons.svg#'+id),'missing '+id+' icon reference');
+  }
+  assert.match(html,/role="progressbar"/);
+  assert.match(html,/id="stepFill"/);
+  assert.match(html,/aria-valuenow/);
+  assert.match(html,/@media\(max-height:570px\) and \(orientation:landscape\)/);
+  assert.match(html,/@media\(prefers-reduced-motion:reduce\)/);
+  assert.doesNotMatch(html,/🏆|⚡|🐱|⬅|➡/);
+  assert.ok(!svg.includes('http://www.w3.org/2000/svg')||svg.startsWith('<svg xmlns='));
 });
