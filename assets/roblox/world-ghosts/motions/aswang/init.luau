@@ -13,13 +13,17 @@ function Motion.walk(form,bones,time)
  local moving=state=="walk" or state=="chase"
  local speed=state=="chase" and 10 or moving and 6 or 2
  local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)
+ local lift=math.max(0,math.sin(phase))^2
+ local sway=math.sin(phase*0.5)
  local floating=form=="SHROUD" or form=="FLOATING_HEAD" or form=="OBJECT_SWARM" or form=="RIBBON" or form=="LANTERN"
- pose("Torso",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)
- pose("Head",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)
+ pose("Torso",.04*sway,floating and math.sin(time*2.4)*.13 or -.08+.04*lift,0,-.12,moving and wave*.03 or breathe*.015,-.02*sway)
+ pose("Head",0,.02,0,.12+breathe*.035,-.05*sway,.02*sway)
  if moving then
   if form=="BEAST" or form=="CENTAUR"then
-   pose("FrontLeftLeg",0,0,0,wave*.48);pose("BackRightLeg",0,0,0,wave*.48)
-   pose("FrontRightLeg",0,0,0,-wave*.48);pose("BackLeftLeg",0,0,0,-wave*.48)
+   pose("FrontLeftLeg",0,lift*.15,0,wave*.52,0,-.02)
+   pose("BackRightLeg",0,math.max(0,-math.sin(phase))*.15,0,-wave*.52,0,.02)
+   pose("FrontRightLeg",0,math.max(0,-math.sin(phase))*.15,0,-wave*.52,0,.02)
+   pose("BackLeftLeg",0,lift*.15,0,wave*.52,0,-.02)
   elseif form=="ARACHNID"then
    for i=1,4 do for _,side in ipairs({"Left","Right"})do
     local sign=side=="Left" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))
@@ -28,8 +32,10 @@ function Motion.walk(form,bones,time)
    end end
   elseif form=="WHEEL"then pose("Torso",0,0,0,0,0,-(time*2.8)%(math.pi*2))
   elseif not floating and form~="SERPENT" and form~="WALL" and form~="BOUND"then
-   pose("LeftLeg",0,0,0,wave*.4);pose("RightLeg",0,0,0,-wave*.4)
-   pose("LeftArm",0,0,0,-wave*.3);pose("RightArm",0,0,0,wave*.3)
+   pose("LeftLeg",0,lift*.18,0,wave*.45,0,-.02)
+   pose("RightLeg",0,math.max(0,-math.sin(phase))*.18,0,-wave*.45,0,.02)
+   pose("LeftArm",0,0,-.05,-.35-wave*.2,.08,-.15)
+   pose("RightArm",0,0,-.05,-.35+wave*.2,-.08,.15)
   elseif form=="BOUND"then pose("Torso",0,math.abs(wave)*.16,0,0,0,wave*.03)end
  end
  for name in pairs(bones)do

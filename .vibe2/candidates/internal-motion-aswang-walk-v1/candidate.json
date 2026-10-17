@@ -1,0 +1,61 @@
+{
+  "summary": "Refined aswang walk motion with grounded stance weight transfer, squared sine arc lifting, staggered torso lean, and natural secondary head/arm overlap without altering root motion or clip duration.",
+  "expectedEffect": "Improved readability of silhouette, grounded weight response on support limbs, smooth joint arcs without velocity snapping at contact, and preserved game compatibility.",
+  "edits": [
+    {
+      "path": "init.luau",
+      "find": "function Motion.walk(form,bones,time)\n local state=\"walk\"\n local result={}\n for name in pairs(bones)do result[name]={x=0,y=0,z=0,rx=0,ry=0,rz=0}end\n local function pose(name,x,y,z,rx,ry,rz)\n  if result[name]then result[name]={x=x or 0,y=y or 0,z=z or 0,rx=rx or 0,ry=ry or 0,rz=rz or 0}end\n end\n local moving=state==\"walk\" or state==\"chase\"\n local speed=state==\"chase\" and 10 or moving and 6 or 2\n local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)\n  elseif form==\"ARACHNID\"then\n   for i=1,4 do for _,side in ipairs({\"Left\",\"Right\"})do\n    local sign=side==\"Left\" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))\n    pose(\"Spider\"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)\n    pose(\"Spider\"..side..i..\"Knee\",0,0,0,0,0,sign*math.max(0,cycle)*.25)\n   end end\n  elseif form==\"WHEEL\"then pose(\"Torso\",0,0,0,0,0,-(time*2.8)%(math.pi*2))\n  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)\n  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.16,0,0,0,wave*.03)end\n end",
+      "replace": "function Motion.walk(form,bones,time)\n local state=\"walk\"\n local result={}\n for name in pairs(bones)do result[name]={x=0,y=0,z=0,rx=0,ry=0,rz=0}end\n local function pose(name,x,y,z,rx,ry,rz)\n  if result[name]then result[name]={x=x or 0,y=y or 0,z=z or 0,rx=rx or 0,ry=ry or 0,rz=rz or 0}end\n end\n local moving=state==\"walk\" or state==\"chase\"\n local speed=state==\"chase\" and 10 or moving and 6 or 2\n local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local lift=math.max(0,math.sin(phase))^2\n local sway=math.sin(phase*0.5)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",.04*sway,floating and math.sin(time*2.4)*.13 or -.08+.04*lift,0,-.12,moving and wave*.03 or breathe*.015,-.02*sway)\n pose(\"Head\",0,.02,0,.12+breathe*.035,-.05*sway,.02*sway)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,lift*.15,0,wave*.52,0,-.02)\n   pose(\"BackRightLeg\",0,math.max(0,-math.sin(phase))*.15,0,-wave*.52,0,.02)\n   pose(\"FrontRightLeg\",0,math.max(0,-math.sin(phase))*.15,0,-wave*.52,0,.02)\n   pose(\"BackLeftLeg\",0,lift*.15,0,wave*.52,0,-.02)\n  elseif form==\"ARACHNID\"then\n   for i=1,4 do for _,side in ipairs({\"Left\",\"Right\"})do\n    local sign=side==\"Left\" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))\n    pose(\"Spider\"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)\n    pose(\"Spider\"..side..i..\"Knee\",0,0,0,0,0,sign*math.max(0,cycle)*.25)\n   end end\n  elseif form==\"WHEEL\"then pose(\"Torso\",0,0,0,0,0,-(time*2.8)%(math.pi*2))\n  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,lift*.18,0,wave*.45,0,-.02)\n   pose(\"RightLeg\",0,math.max(0,-math.sin(phase))*.18,0,-wave*.45,0,.02)\n   pose(\"LeftArm\",0,0,-.05,-.35-wave*.2,.08,-.15)\n   pose(\"RightArm\",0,0,-.05,-.35+wave*.2,-.08,.15)\n  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.16,0,0,0,wave*.03)end\n end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "Verify pose function returns valid rotations and translations for all bones across full period T=2*pi/speed without nil results.",
+    "Verify reverse time sampling produces identical pose output values.",
+    "Inspect in-engine camera view to ensure support foot placement and torso lean read clearly at mobile distance."
+  ],
+  "graphicsReplacementReport": null,
+  "motionRepairReport": {
+    "objectId": "roblox-world-ghost-aswang",
+    "clipId": "walk",
+    "depthEvidence": [
+      {
+        "axis": "POSE_AND_STAGING",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": "pose(\"Torso\",.04*sway,floating and math.sin(time*2.4)*.13 or -.08+.04*lift,0,-.12,moving and wave*.03 or breathe*.015,-.02*sway)\n pose(\"Head\",0,.02,0,.12+breathe*.035,-.05*sway,.02*sway)"
+      },
+      {
+        "axis": "WEIGHT_AND_BALANCE",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local lift=math.max(0,math.sin(phase))^2\n local sway=math.sin(phase*0.5)"
+      },
+      {
+        "axis": "JOINT_ARCS_AND_SPACING",
+        "status": "CHANGED",
+        "before": "   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+        "after": "   pose(\"LeftLeg\",0,lift*.18,0,wave*.45,0,-.02)\n   pose(\"RightLeg\",0,math.max(0,-math.sin(phase))*.18,0,-wave*.45,0,.02)\n   pose(\"LeftArm\",0,0,-.05,-.35-wave*.2,.08,-.15)\n   pose(\"RightArm\",0,0,-.05,-.35+wave*.2,-.08,.15)"
+      },
+      {
+        "axis": "CONTACT_AND_CONSTRAINTS",
+        "status": "CHANGED",
+        "before": "   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)",
+        "after": "   pose(\"LeftLeg\",0,lift*.18,0,wave*.45,0,-.02)\n   pose(\"RightLeg\",0,math.max(0,-math.sin(phase))*.18,0,-wave*.45,0,.02)"
+      },
+      {
+        "axis": "OVERLAP_AND_SETTLE",
+        "status": "CHANGED",
+        "before": " pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": " pose(\"Head\",0,.02,0,.12+breathe*.035,-.05*sway,.02*sway)"
+      },
+      {
+        "axis": "LOOP_AND_TRANSITION",
+        "status": "CHANGED",
+        "before": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local lift=math.max(0,math.sin(phase))^2"
+      }
+    ]
+  }
+}
