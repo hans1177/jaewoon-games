@@ -2570,9 +2570,9 @@ test('flat or unstartable Web games enter 2.5D repair after canonical existing-W
   assert.equal(task.productionMode,'SUPERVISED_VIBE_COAUTHORING');
   assert.equal(task.supervisionContract?.required,true);
   assert.ok(task.evidence.includes('owner-directive:all-web-games-must-start'));
-  assert.ok(task.evidence.includes('owner-directive:minimum-2.5d-final-gameplay'));
+  assert.ok(task.evidence.includes('owner-directive:real-3d-final-gameplay'));
   assert.ok(task.evidence.some(value=>value.includes('MINIMUM_2_5D_PRESENTATION_REQUIRED')));
-  assert.match(task.goal,/최소 2\.5D/);
+  assert.match(task.goal,/실제 WebGL 렌더/);
   assert.equal(task.maxRetries,null);
 });
 

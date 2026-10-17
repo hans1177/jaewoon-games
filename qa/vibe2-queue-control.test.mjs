@@ -2591,10 +2591,10 @@ test('Unity Web receives sixteen distinct-game priority slots without a seventee
   assert.ok(result.tasks.some(t=>t.id==='roblox-live'));
 });
 
-test('Roblox-only owner scope reserves real game work while preserving held source and file safety',()=>{
+test('owner scope resumes general Web and Roblox while keeping Unity held',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const scope=policy.ownerActiveDevelopmentScope20261009;
-  assert.deepEqual(scope.activeTargets,['ROBLOX']);
+  assert.deepEqual(scope.activeTargets,['ROBLOX','WEB']);
   assert.equal(scope.unityAndroidDevelopmentAllowed,false);
   const task=(id,target,unityWeb=false,file='Assets/Scripts/GameCore.cs')=>({
     id,gameId:id,target,goal:'repair actual gameplay source',type:'implementation',department:'development',
@@ -2613,12 +2613,15 @@ test('Roblox-only owner scope reserves real game work while preserving held sour
     lane:'game-primary',maxConcurrentTasks:8,policy,
     reservation:{id:'qa-current:1',runId:'qa-current',runAttempt:1,reservedAt:'2026-10-11T00:00:00Z'}
   });
-  assert.deepEqual(new Set(batch.tasks.map(row=>row.id)),new Set(['qa-active-roblox']));
-  for(const id of ['qa-active-unity-web','qa-held-unity-android','qa-held-legacy-web']){
+  assert.deepEqual(new Set(batch.tasks.map(row=>row.id)),new Set(['qa-active-roblox','qa-held-legacy-web']));
+  for(const id of ['qa-active-unity-web','qa-held-unity-android']){
     const row=batch.queue.tasks.find(t=>t.id===id);
     assert.equal(row.status,'queued');
     assert.equal(row.ownerDevelopmentHold,true);
   }
+  const restoredWeb=batch.queue.tasks.find(t=>t.id==='qa-held-legacy-web');
+  assert.equal(restoredWeb.status,'running');
+  assert.equal(restoredWeb.ownerDevelopmentHold,false);
   const unity=batch.queue.tasks.find(t=>t.id==='qa-active-roblox');
   assert.equal(unity.status,'running');
   assert.equal(unity.ownerDevelopmentHold,false);
@@ -2641,7 +2644,7 @@ test('Roblox-only owner scope reserves real game work while preserving held sour
   assert.equal(distinct.queue.tasks.filter(row=>row.status==='queued').length,1);
 });
 
-test('owner active scope holds Unity Web, legacy Web and Android while allowing Roblox',()=>{
+test('owner active scope allows general Web but holds Unity Web and Android',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   assert.equal(policy.ownerActiveDevelopmentScope20261009.status,'ACTIVE');
   const make=(gameId,target,evidence=[])=>({
@@ -2654,8 +2657,8 @@ test('owner active scope holds Unity Web, legacy Web and Android while allowing 
     make('native-web','unity',['unity-web-first-stage']),make('native-roblox','roblox')
   ]});
   const result=reserveVibeTaskBatch(queue,{maxConcurrentTasks:8,policy});
-  assert.deepEqual(new Set(result.tasks.map(item=>item.id)),new Set(['native-roblox']));
-  assert.equal(result.queue.tasks.find(item=>item.id==='legacy-web').ownerDevelopmentHold,true);
+  assert.deepEqual(new Set(result.tasks.map(item=>item.id)),new Set(['native-roblox','legacy-web']));
+  assert.equal(result.queue.tasks.find(item=>item.id==='legacy-web').ownerDevelopmentHold,false);
   assert.equal(result.queue.tasks.find(item=>item.id==='held-android').ownerDevelopmentHold,true);
 });
 

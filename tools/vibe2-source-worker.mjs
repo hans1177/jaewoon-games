@@ -4232,7 +4232,7 @@ export function selectWeb3dEngine({order={},files=[]}={}){
   const ownerChoice=['PLAYCANVAS','BABYLON_JS','THREE_JS'].includes(preferred)?preferred:null;
   const physicsHeavy=Boolean(order?.selectedTask?.complexNativePhysics===true
     ||/(?:ragdoll|havok|soft.?body|vehicle physics|character controller|물리.?시뮬레이션|강체.?물리)/i.test(goal));
-  const selected=ambiguous?null:existing[0]||(detected.includes('EXISTING_WEBGL')?'EXISTING_WEBGL':ownerChoice||(physicsHeavy?'BABYLON_JS':'PLAYCANVAS'));
+  const selected=ambiguous?null:existing[0]||(detected.includes('EXISTING_WEBGL')?'EXISTING_WEBGL':ownerChoice||(physicsHeavy?'BABYLON_JS':'THREE_JS'));
   const reuseExisting=Boolean(existing.length||detected.includes('EXISTING_WEBGL'));
   return Object.freeze({
     engine:selected||'EXISTING_ENGINE_REVIEW_REQUIRED',
@@ -4260,10 +4260,10 @@ function ordinaryWeb3dEngineGuidance(order={},context={}){
     '[GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN]',
     'engine='+engine.engine+'; reason='+engine.reason+'; sourceEvidence='+engine.existingEvidence.join(','),
     hints[engine.engine],
-    'New games default to PlayCanvas; use Babylon.js only for proven complex physics/features, and retain Three.js or an existing WebGL engine when it already owns the game. Do not combine competing renderer runtimes or create an unused parallel scene.',
+    'New ordinary Web 3D games default to the locally hosted existing Three.js ES modules at /assets/roblox/world-ghosts/native/mesh/three/three.module.js, with GLTFLoader for compatible assets. Use Babylon.js only for proven complex physics/features, and preserve existing verified PlayCanvas or hand-written WebGL source. Never combine competing renderer runtimes or create a parallel scene.',
     'Render genuine 3D volume meshes, depth-aware camera, world-space motion and player input. Flat 2D/canvas sprites, CSS perspective, isometric/2.5D tricks and labels are not final 3D evidence.',
-    'Keep bundled dependencies pinned to the original project and offline-capable where required. Never assume CDN reachability, auto-install missing packages or hardcode WebGPU availability; check WebGL2 compatibility and fallback without changing game semantics.',
-    'Reuse provenance-verified glTF/GLB meshes, compatible materials and motion assets. Use instancing, LOD/culling, compressed assets when supported, bounded mobile pixel ratio and GPU/frame profiling without changing combat ticks, saves, economy, multiplayer authority or controls.',
+    'Reuse verified locally served Three.js and GLB/GLTF assets, pin and bundle any dependency before gameplay. Never assume CDN reachability, auto-install missing packages or hardcode WebGPU availability; default to mobile WebGL2 compatibility, and test optional WebGPU/fallback without changing save, combat or game state.',
+    'Reuse provenance-verified glTF/GLB meshes, compatible materials and motion assets. Cap mobile device pixel ratio near 1.5 or lower, resize cameras and renderer together, pool effects, use instancing/LOD/culling and compressed assets where supported, throttle or pause when page is hidden. Measure real mobile GPU/frame cost; preserve combat ticks, saves, economy, multiplayer authority and controls.',
     'Static code evidence is not a 3D PASS. Require mobile browser runtime checks for actual draw frames, mesh depth, camera and input changes, lifecycle/retry and save/load. Preserve old sources until the real replacement passes.',
     '[GENERAL WEB REAL 3D ENGINE IMPLEMENTATION END]'
   ].join('\n');

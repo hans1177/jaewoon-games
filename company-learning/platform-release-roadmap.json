@@ -1,5 +1,5 @@
 {
-  "version": 575,
+  "version": 578,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -34,10 +34,11 @@
     "existingRunningSafeWorkNotCancelledSolelyForPriority": true,
     "platformF0F9QualityGatesUnchanged": true
   },
-  "currentPhase": "ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT",
+  "currentPhase": "ROBLOX_AND_GENERAL_WEB_3D_CONTINUOUS_DEVELOPMENT",
   "priorityMeaning": "ROBLOX_FOCUSED_DEVELOPMENT_UNITY_WEB_AND_ANDROID_OWNER_HOLD",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
+    "WEB": "ALWAYS_ALLOWED",
     "UNITY": "OWNER_HOLD",
     "FORTNITE_UEFN": "OWNER_HOLD",
     "UNITY_WEB": "OWNER_HOLD",
@@ -1416,9 +1417,9 @@
     "webGameFlow": {
       "version": 1,
       "authority": "OWNER_DIRECTIVE_2026-10-06",
-      "enabled": false,
+      "enabled": true,
       "targetConcurrentGames": 16,
-      "scope": "UNITY_WEB_SAME_CANONICAL_UNITY_PROJECT",
+      "scope": "GENERAL_WEB_HTML_JS_TRUE_3D",
       "counting": "DISTINCT_GAMES_WITH_ACTIVE_SOURCE_WORK",
       "refillBeforeWeightedPlatformMix": true,
       "refillThroughExistingPlannerAndCompletionEvents": true,
@@ -1429,8 +1430,7 @@
       "plannerSeedsDistinctGamesBeforeNormalBacklogGate": true,
       "planningUsesExistingPersistentQueueCapacity": true,
       "distinctGameFirstScheduling": true,
-      "legacyDirectWebGameNotTarget": true,
-      "disabledReason": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY"
+      "legacyDirectWebGameNotTarget": false
     },
     "distinctGameDevelopmentTarget": 64
   },
@@ -25820,12 +25820,10 @@
       "unityWebDevelopmentPaused": true
     },
     "ownerActiveDevelopmentScope20261009": {
-      "version": 2,
-      "authority": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY",
+      "version": 3,
+      "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB",
       "status": "ACTIVE",
-      "activeTargets": [
-        "ROBLOX"
-      ],
+      "activeTargets": ["ROBLOX", "WEB"],
       "ownerHeldTargets": [
         "UNITY_WEB",
         "UNITY_ANDROID",
@@ -25849,6 +25847,9 @@
       "existingUnityWeb2dGamesMustRebuild3d": true,
       "allSpatialGameAssetLibraries3dOnly": true,
       "unityWeb3dRuntimeProofRequired": true,
+      "generalWeb3dOnlyRequired": true,
+      "existingWeb2dFinalPassForbidden": true,
+      "legacyWebPreservedUntil3dRuntimeVerified": true,
       "unityWebDevelopmentAllowed": false
     }
   },
@@ -26018,7 +26019,22 @@
     "unityWebRole": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR"
   },
   "webRuntimeStartabilityContract": {
-    "version": 1,
+    "version": 2,
+    "finalGameplayDimension": "3D",
+    "preferredOrdinaryWeb3dEngine": "THREE_JS",
+    "existingApprovedBabylonOrPlayCanvasMayBePreserved": true,
+    "webRenderingBaseline": "WEBGL2",
+    "webGpuOptionalAfterMeasuredCompatibility": true,
+    "enginePackagesMustBeServedFromExistingApprovedLocalAssets": true,
+    "mobileDevicePixelRatioBudget": 1.5,
+    "requireDynamicQualityAndVisibilityThrottling": true,
+    "keepSaveBalanceGameplayAndAssetLicenseLineage": true,
+    "appliesToAllOrdinaryWebGames": true,
+    "twoDimensionalAndTwoPointFiveDimensionalFinalGameplayForbidden": true,
+    "actualWebGlDrawAnd3dSpatialRuntimeEvidenceRequired": true,
+    "static3dTagsOrCssTransformsCannotPass": true,
+    "legacyWebSourcePreservedUntilVerified3dReplacement": true,
+    "mobile3dPlayAndSaveRegressionRequired": true,
     "authority": "OWNER_DIRECTIVE_2026-09-24",
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "scope": "ALL_WEB_GAMES_AND_UNITY_WEB_VALIDATION_SURFACES",
@@ -28938,12 +28954,10 @@
     }
   },
   "ownerActiveDevelopmentScope20261009": {
-    "version": 2,
-    "authority": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY",
+    "version": 3,
+    "authority": "OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB",
     "status": "ACTIVE",
-    "activeTargets": [
-      "ROBLOX"
-    ],
+    "activeTargets": ["ROBLOX", "WEB"],
     "ownerHeldTargets": [
       "UNITY_WEB",
       "UNITY_ANDROID",
@@ -28967,6 +28981,9 @@
     "existingUnityWeb2dGamesMustRebuild3d": true,
     "allSpatialGameAssetLibraries3dOnly": true,
     "unityWeb3dRuntimeProofRequired": true,
+    "generalWeb3dOnlyRequired": true,
+    "existingWeb2dFinalPassForbidden": true,
+    "legacyWebPreservedUntil3dRuntimeVerified": true,
     "unityWebDevelopmentAllowed": false
   },
   "ownerUnityWeb3dOnly20261009": {
