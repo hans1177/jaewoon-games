@@ -379,3 +379,47 @@ test('manual world targeting stays separate from automatic nearest selection',()
   assert.doesNotMatch(auto,/manualTarget/);
 });
 
+
+test('world tree inner room is reachable from original world tree without resizing the exterior region',()=>{
+  assert.match(source,/WORLD_TREE_POLY=\[\{x:6180,y:9150\},\{x:11820,y:9150\},\{x:11820,y:10000\},\{x:6180,y:10000\}\]/);
+  assert.match(source,/WORLD_TREE_INTERIOR=\{w:3200,h:2300/);
+  assert.match(functionBody('enterWorldTreeInterior'),/state\.area='worldtreeinside'/);
+  assert.match(functionBody('leaveWorldTreeInterior'),/state\.area='surface'/);
+  assert.match(functionBody('handleWorldTap'),/worldtree-inner-door/);
+  assert.match(functionBody('handleWorldTap'),/worldtree-inner-exit/);
+  assert.match(functionBody('drawWorldTreeInterior'),/Living|나이테|발광/);
+  assert.match(functionBody('draw'),/drawWorldTreeInterior/);
+  assert.match(functionBody('update'),/WORLD_TREE_INTERIOR\.w-85/);
+  assert.match(source,/s\.area==='worldtreeinside'\?'worldtreeinside'/);
+  assert.match(source,/jaewoon_fantasy_survival_v1/);
+  assert.match(functionBody('summonBoss'),/rootsovereign/);
+});
+
+test('world tree interior has bear golem and snake, and the neutral tier-three golem keeps exact owner numbers',()=>{
+  assert.match(source,/worldtreegolem:\{id:'worldtreegolem',name:'세계수 골렘',mood:'neutral',hp:586,dmg:48/);
+  assert.match(source,/worldtreesnake:\{id:'worldtreesnake',name:'세계수 뱀'/);
+  assert.match(source,/worldtreegolem:3,worldtreesnake:3/);
+  const init=functionBody('initWorld');
+  assert.match(init,/\['worldtreebear',800,1130\]/);
+  assert.match(init,/\['worldtreegolem',1610,950\]/);
+  assert.match(init,/\['worldtreesnake',970,1580\]/);
+  assert.match(init,/e\.area='worldtreeinside'/);
+  assert.match(source,/worldtreebear:\{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30/);
+});
+
+test('golem launches four roots every two seconds with 50 percent roll and no hit damage or attack lock',()=>{
+  const launch=functionBody('throwWorldTreeRoots'),update=functionBody('update');
+  assert.match(launch,/e\.nextWorldTreeRootsAt=now\+2000/);
+  assert.match(launch,/Math\.random\(\)>=\.5/);
+  assert.match(launch,/i<4/);
+  assert.match(launch,/kind:'worldtreeRoot'/);
+  assert.match(launch,/damage:0/);
+  const projectile=functionBody('updateProjectiles');
+  const rootEffect=projectile.slice(projectile.indexOf("if(q.kind==='worldtreeRoot'){"));
+  assert.match(rootEffect,/rootedUntil=Math\.max\(p\.rootedUntil\|\|0,now\+3000\)/);
+  assert.doesNotMatch(rootEffect.slice(0,rootEffect.indexOf("if(q.kind==='toxicGasShot')")) ,/damagePlayer\(/);
+  assert.match(update,/now>=\(p\.rootedUntil\|\|0\)/);
+  assert.doesNotMatch(functionBody('attack'),/rootedUntil/);
+  assert.match(functionBody('applyRemoteEnemyEffect'),/kind==='rootbind'/);
+  assert.match(functionBody('drawProjectiles'),/kind==='worldtreeRoot'/);
+});
