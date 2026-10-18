@@ -92,11 +92,12 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
   const spatial=/world|map|terrain|region|room|building|spawn|route|level|village|dungeon|세계|맵|지형|지역|방|건물|배치|동선|경로|마을|던전|서식|사냥|출입/i.test(spatialText);
   if(!spatial&&!Object.keys(layout).length)return null;
   const declared=clean(layout.dimension||design.spatialDimension||layout.proceduralWorld?.dimension).toUpperCase();
-  const dimension=['2D','3D'].includes(declared)?declared:'SOURCE_BOUND_REQUIRED';
+  // Preserve an explicitly 2D legacy input only to report REPAIR_3D_REQUIRED; never generate it.
+  const dimension=declared==='3D'?'3D':declared==='2D'?'2D':'SOURCE_BOUND_REQUIRED';
   const scope=mode==='EXISTING_PLAY_PRESENTATION'?'PRESERVE_LAYOUT_PRESENTATION_ONLY':'DESIGN_BOUND_SPATIAL_IMPLEMENTATION';
   // 설계가 명시적으로 승인한 새 공간만 생성하며, 원본 월드나 충돌·저장은 수정하지 않는다.
   const worldRequest=layout.proceduralWorld&&typeof layout.proceduralWorld==='object'?layout.proceduralWorld:null;
-  const worldProposal=mode==='CONNECTED_CONTENT_IMPLEMENTATION'&&worldRequest?.approvedDesign===true&&dimension!=='SOURCE_BOUND_REQUIRED'
+  const worldProposal=mode==='CONNECTED_CONTENT_IMPLEMENTATION'&&worldRequest?.approvedDesign===true&&dimension==='3D'
     ?createVibeProceduralWorldLayout({...worldRequest,dimension,mobile:worldRequest.mobile!==false}):null;
   const proceduralWorldStudy=worldProposal?{
     status:worldProposal.status,issues:worldProposal.issues||[],runtimeVerified:false,sourceMutationPerformed:false,
@@ -155,6 +156,7 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
   }:null;
   return {
     version:1,required:mode==='CONNECTED_CONTENT_IMPLEMENTATION',dimension,platform,scope,
+    spatialPolicyStatus:dimension==='2D'?'REPAIR_3D_REQUIRED':'REAL_3D_SOURCE_AND_RUNTIME_BINDING_REQUIRED',
     designFingerprint:hash(JSON.stringify({identity:design.identity,genre:design.genre,layout,visual:design.visualDirection,art:design.artAudioDirection,systems:design.systemInterconnections})),
     macroSketch:{identity:clean(design.identity),genre:clean(design.genre),style:clean(design.visualDirection),artDirection:design.artAudioDirection||{},
       authoredLayout:layout,coreRoute:list(design.coreLoop),systemConnections:list(design.systemInterconnections),
@@ -171,7 +173,7 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
 
 // 소스 작업자의 같은 응답에 도안을 먼저 작성한다. 별도 파일·실행기·검수 단계는 만들지 않는다.
 export const SPATIAL_BLUEPRINT_SCHEMA=Object.freeze({
-  version:1,designFingerprint:'exact contract fingerprint',dimension:'2D or 3D',view:'TOP_DOWN or SIDE_VIEW or ISOMETRIC or PERSPECTIVE',
+  version:1,designFingerprint:'exact contract fingerprint',dimension:'3D',view:'PERSPECTIVE or ISOMETRIC with actual 3D meshes and camera',
   units:'existing source world units',upAxis:'Y or Z for 3D; Y for side view; NONE for top down',upDirection:'1 or -1; screen-down Y uses -1',
   player:{radius:'positive number',height:'positive number',maxStep:'nonnegative number',maxSlopeDegrees:'0..89'},
   worldBounds:{min:['number per dimension'],max:['number per dimension']},
@@ -434,7 +436,8 @@ export function validateSpatialBlueprint({contract=null,blueprint=null,sourceFil
   if(!contract||(!contract.required&&!blueprint))return{required:false,pass:true,status:'NOT_REQUIRED',runtimeVerified:false};
   const issues=[],add=(code,id='')=>issues.push(code+(id?':'+id:''));
   if(!blueprint||typeof blueprint!=='object'||Array.isArray(blueprint))return{required:true,pass:false,issues:['SPATIAL_BLUEPRINT_MISSING'],runtimeVerified:false};
-  const n=blueprint.dimension==='2D'?2:blueprint.dimension==='3D'?3:0;
+  const n=blueprint.dimension==='3D'?3:0;
+  if(blueprint.dimension==='2D'||contract.dimension==='2D')add('SPATIAL_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D');
   let b=blueprint;
   if(!n||b.version!==1)add('DIMENSION_OR_VERSION_INVALID');
   if(contract.dimension!=='SOURCE_BOUND_REQUIRED'&&b.dimension!==contract.dimension)add('DESIGN_DIMENSION_MISMATCH');
