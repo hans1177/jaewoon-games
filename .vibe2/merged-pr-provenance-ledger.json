@@ -65785,11 +65785,163 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_53b778fe61a9ccf7f10b2c4b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8467",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b0b836b3da1cd5e39d8e6989cf9a46a7cc650cba",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8467,
+        "baseBranch": "main",
+        "headBranch": "vibe-quality-five-axis-evidence-20261018",
+        "baseSha": "b0b836b3da1cd5e39d8e6989cf9a46a7cc650cba",
+        "headSha": "945acc2c71261d87a3954a68c467a94cddcbcc85",
+        "mergeCommitSha": "71c463aba78baabaeb55ff18502cbe88ec4c7e99",
+        "mergedAt": "2026-10-18T13:25:27Z",
+        "authorLogin": "hans1177",
+        "titleHash": "398cde7d23f3483b4ef1bb3635fe97e2c76ede618d6062521bcd326a4c07752f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe-quality-five-axis-evidence-20261018",
+        "candidateSha": "945acc2c71261d87a3954a68c467a94cddcbcc85"
+      },
+      "changeStats": {
+        "changedFileCount": 19,
+        "codingRelevantFileCount": 19,
+        "addedLineCount": 8824,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "assets/vibe-quality-runtime.js",
+          "assets/vibe-studio-animation.js",
+          "assets/vibe-studio-combat.js",
+          "assets/vibe-studio-gameplay.js",
+          "assets/vibe-studio-integration.js",
+          "assets/vibe-studio-world.js",
+          "qa/vibe-five-axis-evidence-audit.test.mjs",
+          "qa/vibe-quality-runtime.test.mjs",
+          "qa/vibe-studio-gameplay.test.mjs",
+          "qa/vibe-studio-systems.test.mjs",
+          "roblox-games/tekken/client/Game.client.luau",
+          "roblox-games/tekken/client/MaterialPresentation.client.luau",
+          "roblox-games/tekken/default.project.json",
+          "roblox-games/tekken/roblox-source-bootstrap.json",
+          "roblox-games/tekken/server/Game.server.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "tools/vibe-five-axis-evidence-audit.mjs"
+        ],
+        "codingRelevantFiles": [
+          "assets/vibe-quality-runtime.js",
+          "assets/vibe-studio-animation.js",
+          "assets/vibe-studio-combat.js",
+          "assets/vibe-studio-gameplay.js",
+          "assets/vibe-studio-integration.js",
+          "assets/vibe-studio-world.js",
+          "qa/vibe-five-axis-evidence-audit.test.mjs",
+          "qa/vibe-quality-runtime.test.mjs",
+          "qa/vibe-studio-gameplay.test.mjs",
+          "qa/vibe-studio-systems.test.mjs",
+          "roblox-games/tekken/client/Game.client.luau",
+          "roblox-games/tekken/client/MaterialPresentation.client.luau",
+          "roblox-games/tekken/default.project.json",
+          "roblox-games/tekken/roblox-source-bootstrap.json",
+          "roblox-games/tekken/server/Game.server.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "tools/vibe-five-axis-evidence-audit.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8467",
+        "merge-commit:71c463aba78baabaeb55ff18502cbe88ec4c7e99",
+        "base-main:b0b836b3da1cd5e39d8e6989cf9a46a7cc650cba"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 528
+    "total": 529
   }
 }
