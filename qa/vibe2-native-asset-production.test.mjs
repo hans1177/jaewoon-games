@@ -88,6 +88,18 @@ test('acquired Roblox CC0-1.0 GLB is selected as pending native-import reuse, ne
 });
 
 
+
+test('Vibe native source prompts mandate registered downloaded assets and no primitive fallback for every game',()=>{
+  for(const target of ['web','unity','roblox']){
+    const file=target==='unity'?'Assets/Scripts/Game.cs':target==='roblox'?'client/Game.client.luau':'index.html';
+    const prompt=buildPrompt({target,gameId:'library-required-'+target,goal:'플레이어와 나무 렌더링',department:'development'},
+      {files:[{path:file,content:target==='web'?'<html><canvas></canvas></html>':'-- source',editable:true}]},[file]);
+    assert.match(prompt,/OWNER MANDATORY DOWNLOADED LIBRARY DEFAULT 2026-10-18/);
+    assert.match(prompt,/EXISTING ASSET_DEVELOPMENT_LIBRARY_ACQUISITION/);
+    assert.match(prompt,/Never substitute a primitive or fake library marker/);
+  }
+});
+
 test('all games require downloaded registered library defaults and route missing roles to asset-library requests',()=>{
   const registered={
     id:'cc0-village-house',family:'BUILDING',role:'house',subfamily:'house',platform:'SHARED_MASTER',
