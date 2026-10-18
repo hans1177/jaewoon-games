@@ -523,6 +523,29 @@ jobs:
           console.log('대충알피지_OWNER_EXPECTED_PLACE_ID='+exact.placeId);
           NODE
 
+      - name: Verify curated visual binding source before Cloud publish
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          server=Path('roblox-games/simple-rpg/server/Game.server.luau').read_text()
+          client=Path('roblox-games/simple-rpg/client/Game.client.luau').read_text()
+          required={
+            'world meshes':'importCuratedModel(worldModels, name, id)',
+            'creature meshes':'importCuratedModel(creatureModels, name, id)',
+            'avatar meshes':'bindCuratedAvatar(player)',
+            'equipped weapons':'bindCuratedEquipment(player)',
+            'licensed asset ids':'VerifiedRobloxAssetId',
+          }
+          for label, marker in required.items():
+            if marker not in server: raise SystemExit('MISSING_CURATED_BINDING: '+label)
+          if 'attachDownloadedArtwork()' not in client or 'validUiTemplate' not in client:
+            raise SystemExit('MISSING_CURATED_HUD_BINDING')
+          print('CURATED_VISUAL_BINDINGS_SOURCE_CHECK=PASS')
+          PY
+
       # Gate production to the already-downloaded licensed source files and actual
       # Roblox Cloud asset IDs. Do not publish a blank or restored legacy art-only place.
       - name: Enable Blender export for archived CC0 full-house sources
