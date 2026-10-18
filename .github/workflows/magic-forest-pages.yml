@@ -332,7 +332,7 @@ jobs:
               verified=true
               break
             fi
-            sleep 10
+            if [ "$attempt" -lt 6 ]; then sleep 10; fi
           done
           if [ "$verified" != true ]; then echo "WEB_PAGES_LIVE_SOURCE_NOT_VERIFIED" >&2; exit 1; fi
           curl -fsSL --max-time 15 "$manifest_url" -o /tmp/web-pages-published.json
