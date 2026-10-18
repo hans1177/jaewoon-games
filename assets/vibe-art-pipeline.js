@@ -590,7 +590,7 @@ export function createVibeGraphicsProduction({
   const visualWork=planVibeVisualAutopilot({files,graph,request});
   const presentation=planVibePresentationAutopilot({
     files,events,request,changeRequest:changeRequestStability,game,world,
-    uiSurfaces:(game?.interfaceComposition||game?.uiSurfaces||[]).filter(row=>row&&typeof row==='object')
+    uiSurfaces:(Array.isArray(game?.interfaceComposition)?game.interfaceComposition:Array.isArray(game?.uiSurfaces)?game.uiSurfaces:[]).filter(row=>row&&typeof row==='object')
   });
   const characterIdentity=planVibeCharacterIdentityAutopilot({characters,eventMap:characterEvents||{}});
   const mapDetail=mapDetailInput&&typeof mapDetailInput==='object'?createVibeMapDetailReconstruction(mapDetailInput):null;
