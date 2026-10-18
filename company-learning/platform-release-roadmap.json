@@ -1,5 +1,5 @@
 {
-  "version": 582,
+  "version": 581,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -491,10 +491,6 @@
       "mobileReadabilityAndPerformanceRequired": true,
       "failureState": "ASSET_REPAIR_REQUIRED",
       "accepted2_5DTechniquesAreNotFinalPass": true,
-      "final2DOr2_5DWorldForbidden": true,
-      "realThreeDimensionalMeshCameraDepthInteractionRequired": true,
-      "appliesToAllApprovedGameGenres": true,
-      "platformHoldDoesNotChange": true,
       "realNative3dMeshEvidenceRequiredForEveryUnityWebGame": true,
       "allSpatialGameplayLibraryAssets3dOnly": true
     },
@@ -15754,7 +15750,7 @@
       "crossPlatformAssetImportRequiresExplicitCompatibility": true
     },
     "webPresentationQuality": {
-      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_REAL_3D_ONLY",
+      "target": "POLISHED_COMMERCIAL_MOBILE_WEB_2_5D_OR_3D",
       "prototypeOnlyGraphicsForbiddenAtFinalPass": true,
       "primitiveOrGeometricPlaceholderCannotSatisfyGraphicsPass": true,
       "characterEnemyAndCoreObjectVisualIdentityRequired": true,
@@ -16356,7 +16352,7 @@
       },
       "livingMotionFoundationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract",
       "minimumSpatialPresentationAuthority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
-      "minimumFinalGameplayDimension": "3D",
+      "minimumFinalGameplayDimension": "2.5D",
       "flat2DFinalPresentationForbidden": true,
       "ui2DOverlayAllowed": true,
       "existing2DGamesRequireSpatialPresentationRebuild": true

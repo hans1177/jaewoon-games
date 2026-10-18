@@ -1,21 +1,10 @@
 {
   "version": 3,
-  "revision": 91,
-  "updatedAt": "2026-10-18",
+  "revision": 90,
+  "updatedAt": "2026-10-11",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
-  "allGamesNative3dPolicyMirror": {
-    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
-    "minimumFinalGameplayDimension": "3D",
-    "appliesTo": ["WEB", "ROBLOX", "UNITY", "UNITY_WEB"],
-    "twoDimensionalOrTwoPointFiveDWorldFinalPassForbidden": true,
-    "actualMeshDepthCameraSpatialInteractionAndRuntimeEvidenceRequired": true,
-    "twoDimensionalOverlaysForHudTooltipIconsTextTexturesAllowed": true,
-    "existingTwoDimensionalGamesMustBeRebuiltInPlacePreservingGameplayAndSave": true,
-    "unityHoldPreserved": true,
-    "newPipelineForbidden": true
-  },
   "documentationSynchronization": {
     "centralPolicyFirst": true,
     "workDocumentsMustMirrorCurrentCentralPolicy": true,
