@@ -11,20 +11,40 @@ const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf
 const official='https://hans1177.github.io/jaewoon-games/';
 const pagesRoot='/jaewoon-games/';
 
-test('game source and homepage media changes trigger the existing automatic main Pages deployment',()=>{
+test('OWNER LOCK: every main merge triggers the existing Pages publisher without paths or approval gates',()=>{
   const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
   const push=workflow.split('  push:')[1]?.split('  workflow_dispatch:')[0]||'';
-  assert.match(push,/branches:\s*\[main\]/);
-  assert.match(push,/- "web-games\/\*\*"/);
-  assert.match(push,/- "game-catalog\.json"/);
-  assert.match(push,/- "assets\/\*\*"/);
-  assert.doesNotMatch(push,/- "!assets\/homepage-(?:media|covers)\/\*\*"/);
-  assert.match(workflow,/group: magic-forest-pages-\$\{\{ github\.event_name == 'pull_request'/);
+  assert.match(push,/branches:\\s*\\[main\\]/);
+  assert.doesNotMatch(push,/^\\s*(?:paths|paths-ignore|if):/m,'main merge publication must not be filtered or gated');
+  const deployHeader=workflow.split('  deploy:')[1]?.split('    steps:')[0]||'';
+  const publishHeader=workflow.split('  publish-pages:')[1]?.split('    steps:')[0]||'';
+  assert.doesNotMatch(deployHeader,/\\s+if:/,'build job cannot depend on QA or director preapproval');
+  assert.match(publishHeader,/needs: deploy/);
+  assert.match(publishHeader,/if: github\\.event_name != 'pull_request'/);
+  assert.doesNotMatch(publishHeader,/needs: \\[|success\\(\\)|result ==|approval|qa_pass/i);
+  assert.match(workflow,/group: magic-forest-pages-\\$\\{\\{ github\\.event_name == 'pull_request'/);
   assert.match(workflow,/cancel-in-progress: false/);
-  // Original work automatically republishes without an extra homepage-only deployment approval.
   assert.match(workflow,/name: Publish gh-pages without force or deleting earlier games/);
-  assert.match(workflow,/name: Verify every published game route and the canonical official homepage/);
-  assert.match(workflow,/name: Publish GitHub Pages|name: Deploy to GitHub Pages|uses: actions\/deploy-pages@v4/);
+  assert.match(workflow,/uses: actions\\/deploy-pages@v4/);
+});
+
+test('OWNER LOCK: Director tests published game routes and files issues without blocking Pages deployment',()=>{
+  const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+  const published=workflow.indexOf('uses: actions/deploy-pages@v4');
+  const live=workflow.indexOf('      - name: Verify live GitHub Pages source and game routes');
+  const issue=workflow.indexOf('      - name: Director register issues after live game testing');
+  assert.ok(published>0&&live>published&&issue>live,'post-deploy checking and issue registration must follow actual deployment');
+  const liveSection=workflow.slice(live,issue);
+  assert.match(liveSection,/id: director_live_qa/);
+  assert.match(liveSection,/continue-on-error: true/);
+  assert.match(liveSection,/WEB_PAGES_ROUTE_NOT_LIVE=/);
+  assert.match(liveSection,/DIRECTOR_POST_DEPLOY_GAME_TEST=PASS/);
+  const issueSection=workflow.slice(issue);
+  assert.match(issueSection,/steps\\.director_live_qa\\.outcome == 'failure'/);
+  assert.match(issueSection,/gh issue create/);
+  assert.match(issueSection,/gh issue list/);
+  assert.match(workflow,/issues: write/);
+  assert.doesNotMatch(workflow,/gh issue create[\\s\\S]*uses: actions\\/deploy-pages@v4/,'issue filing cannot be a precondition for publication');
 });
 
 test('GitHub Pages publishes the exact existing homepage markup, not a Cloudflare redirect',()=>{
