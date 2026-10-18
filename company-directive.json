@@ -1388,12 +1388,16 @@
     "completedMigrationArtifactRetentionRequired": false
   },
   "gameVisualQuality": {
-    "minimumFinalGameplayDimension": "2.5D",
+    "minimumFinalGameplayDimension": "3D",
     "preferredDimension": "3D",
     "flat2DFinalGameplayForbidden": true,
     "ui2DOverlayAllowed": true,
     "existing2DRepairRequired": true,
-    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation"
+    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
+    "twoPointFiveDFinalGameplayForbidden": true,
+    "allSpatialGameplayAssetsNative3dOnly": true,
+    "actual3dRuntimeProofRequired": true,
+    "existingGameplayAndSavePreservedUntil3dVerified": true
   },
   "webGameStartability": {
     "allExposedGamesMustActuallyStart": true,
