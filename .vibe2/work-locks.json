@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-14ndtim",
+      "worker": "vibe2",
+      "taskId": "line-defense-roblox-second-gate-rebuild-v1",
+      "gameId": "line-defense",
+      "files": [
+        "roblox-games/line-defense/client/Game.client.luau",
+        "roblox-games/line-defense/shared/GameConfig.luau",
+        "roblox-games/line-defense/server/Game.server.luau"
+      ],
+      "baseSha": "3d5db2c32709cac5b9b695cdd7ebc7c842d96aa4",
+      "runId": "39161179597",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-18T20:26:11.316Z",
+      "expiresAt": "2026-10-18T21:11:11.316Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-roblox-second-gate-rebuild-v1"
+      ]
+    }
+  ]
 }
