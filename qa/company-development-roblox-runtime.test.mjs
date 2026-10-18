@@ -291,6 +291,8 @@ test('deterministic Roblox compiler binds approved genre and play mode to genera
     assert.ok(compiled.result.clientCode.includes('UserInputService'));
     assert.ok(compiled.result.clientCode.includes('Activated'));
     assert.ok(compiled.result.clientCode.includes('FireServer(action.Id)'));
+    assert.match(compiled.result.clientCode,/CreateVisualFeedbackController\(\{parent=gui\}\)/);
+    assert.match(compiled.result.clientCode,/visualFeedback\.AnimateIcon\(button, "ACTIVATE"\)/);
     assert.ok(compiled.result.serverCode.includes('DataStoreService'));
     for(const row of inventory){
       assert.ok(compiled.result.sharedConfig.includes(row.id));
