@@ -4,6 +4,7 @@ import {createVibeBrowserPresentation} from './vibe-browser-presentation.mjs';
 import {connectMotionPresentation} from './vibe-presentation-engine.mjs';
 import {VibeCinematicDirector,createCharacterPerformance} from './vibe-cinematic-director.mjs';
 import {createVibeHero,createVibeHandAnimation,setupVibeCinematicLighting,vibeSceneShots} from './vibe-character-studio.mjs';
+import {createVibeFacialRig,createVibeHandRig,createVibeKeyframePlayer} from './vibe-premium-character-pipeline.mjs';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const status=document.getElementById('message'),asset=new URLSearchParams(location.search).get('asset')||'';
@@ -14,7 +15,7 @@ const camera=new THREE.PerspectiveCamera(45,1,0.01,1000);
 const presentation=createVibeBrowserPresentation({camera});
 const cinematic=new VibeCinematicDirector({adapter:{applyCamera:(name,pose)=>{if(name==='showcase'){camera.position.set(pose.position.x,pose.position.y,pose.position.z);camera.lookAt(pose.lookAt.x,pose.lookAt.y,pose.lookAt.z);camera.fov=pose.fov;camera.updateProjectionMatrix()}}}});
 const performance=createCharacterPerformance();
-let handAnimation=null;
+let handAnimation=null,facialRig=null,handRig=null,keyframePlayer=null;
 let showcaseActive=false;
 scene.add(new THREE.HemisphereLight(0xffffff,0x445577,1.5));
 const fill=new THREE.DirectionalLight(0x78b9ff,0.9);fill.position.set(-4,2,-5);scene.add(fill);
@@ -31,7 +32,7 @@ const studioControls=document.createElement('div');studioControls.style.cssText=
 for(const action of ['idle','walk','run','attack','wave','react']){const button=document.createElement('button');button.textContent=action;button.style.cssText='background:#203d59;color:white;border:1px solid #8ab6d5;border-radius:5px;padding:6px';button.addEventListener('click',()=>handAnimation?.play(action));studioControls.append(button)}
 const emotionPicker=document.createElement('select');emotionPicker.setAttribute('aria-label','표정');for(const emotion of ['neutral','joy','fear','pain']){const option=document.createElement('option');option.value=emotion;option.textContent=emotion;emotionPicker.append(option)}studioControls.append(emotionPicker);
 const shotPicker=document.createElement('select');shotPicker.setAttribute('aria-label','장면 연출');for(const name of Object.keys(vibeSceneShots)){const option=document.createElement('option');option.value=name;option.textContent=name;shotPicker.append(option)}studioControls.append(shotPicker);const shotButton=document.createElement('button');shotButton.textContent='장면 실행';shotButton.addEventListener('click',()=>{cinematic.addTrack('showcase',vibeSceneShots[shotPicker.value],{onComplete:()=>{showcaseActive=false}});showcaseActive=true});studioControls.append(shotButton);
-function loadStudioHero(){const hero=createVibeHero(THREE);activeModel=hero.root;scene.add(hero.root);handAnimation=createVibeHandAnimation(hero);handAnimation.play('idle');camera.position.set(3,2.4,5.5);camera.lookAt(0,1.2,0);status.textContent='바이브 오리지널 3D 캐릭터 · 얼굴 리깅 · 동작 · 조명';}
+function loadStudioHero(){const hero=createVibeHero(THREE);activeModel=hero.root;scene.add(hero.root);handAnimation=createVibeHandAnimation(hero);handAnimation.play('idle');facialRig=createVibeFacialRig(hero.root);handRig=createVibeHandRig(hero.root);camera.position.set(3,2.4,5.5);camera.lookAt(0,1.2,0);status.textContent='바이브 오리지널 3D 캐릭터 · 얼굴 리깅 · 동작 · 조명';}
 function restyle(){const [metal,rough,exposure]=styles[picker.value];renderer.toneMappingExposure=exposure;if(!activeModel)return;activeModel.traverse(obj=>{if(!obj.isMesh)return;for(const material of (Array.isArray(obj.material)?obj.material:[obj.material])){if(!material||typeof material.roughness!=='number')continue;if(!originals.has(material))originals.set(material,[material.metalness,material.roughness]);const [m,r]=originals.get(material);material.metalness=Math.min(1,m*.5+metal*.5);material.roughness=Math.min(1,Math.max(.05,r*.5+rough*.5));material.needsUpdate=true}})}
 picker.addEventListener('change',restyle);
 const resize=()=>{const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)};addEventListener('resize',resize);resize();
@@ -43,7 +44,7 @@ const motionToggle=document.createElement('label');motionToggle.style.cssText='p
 const animationPicker=document.createElement('select');animationPicker.setAttribute('aria-label','애니메이션 동작');animationPicker.style.cssText='position:absolute;top:84px;left:12px;z-index:3;padding:8px;border-radius:8px;background:#101b2e;color:white';document.body.append(animationPicker);
 const designPromise=fetch('./vibe-visual-design-system.json').then(r=>{if(!r.ok)throw Error('design unavailable');return r.json()});
 const ground=new THREE.GridHelper(20,20,0x486a91,0x273a54);ground.position.y=-1;scene.add(ground);if(url)new GLTFLoader().load(url.href,gltf=>{
-const model=gltf.scene;scene.add(model);activeModel=model;restyle();const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
+const model=gltf.scene;scene.add(model);activeModel=model;facialRig=createVibeFacialRig(model);handRig=createVibeHandRig(model);restyle();const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
 const radius=Math.max(size.x,size.y,size.z,0.1);ground.scale.setScalar(Math.max(radius/5,.05));ground.position.y=-size.y/2;camera.position.set(radius*1.5,radius*.9,radius*2.2);camera.lookAt(0,0,0);
 if(gltf.animations?.length){
  mixer=new THREE.AnimationMixer(model);
@@ -53,5 +54,5 @@ if(gltf.animations?.length){
  connectVibeCharacter({character:model,clips:gltf.animations,genre:picker.value,THREE}).then(adapter=>{characterMotion=adapter;connectMotionPresentation(adapter.engine,presentation.engine,{map:{'state-change':{sound:'state',cooldown:.12}}});picker.addEventListener('change',()=>adapter.engine.setGenre(picker.value));adapter.action('idle')}).catch(()=>{});
 }status.textContent='원본 3D · '+(gltf.animations?.length||0)+'개 애니메이션';
 },undefined,()=>{loadStudioHero();status.textContent='외부 모델 로딩 실패 · 오리지널 캐릭터로 대체'});else loadStudioHero();
-const clock=new THREE.Clock();let last=0;function draw(now){requestAnimationFrame(draw);if(document.hidden||now-last<33)return;last=now;const delta=Math.min(clock.getDelta(),.1);if(characterMotion)characterMotion.update(delta);else mixer?.update(delta);handAnimation?.update(delta,{emotion:emotionPicker.value});if(showcaseActive)cinematic.update(delta);if(activeModel){const acting=performance.update(delta);activeModel.rotation.z=acting.secondarySway*.12;}presentation.update(delta);renderer.render(scene,camera)}requestAnimationFrame(draw);
+const clock=new THREE.Clock();let last=0;function draw(now){requestAnimationFrame(draw);if(document.hidden||now-last<33)return;last=now;const delta=Math.min(clock.getDelta(),.1);if(characterMotion)characterMotion.update(delta);else mixer?.update(delta);handAnimation?.update(delta,{emotion:emotionPicker.value});keyframePlayer?.update(delta);if(facialRig&& !handAnimation){facialRig.pose({mouthSmileLeft:emotionPicker.value==='joy'?.7:0,mouthSmileRight:emotionPicker.value==='joy'?.7:0,browInnerUp:emotionPicker.value==='fear'?.6:0,jawOpen:emotionPicker.value==='pain'?.4:0})}if(showcaseActive)cinematic.update(delta);if(activeModel){const acting=performance.update(delta);activeModel.rotation.z=acting.secondarySway*.12;}presentation.update(delta);renderer.render(scene,camera)}requestAnimationFrame(draw);
 </script></html>
