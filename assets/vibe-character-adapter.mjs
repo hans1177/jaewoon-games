@@ -23,7 +23,9 @@ export async function connectVibeCharacter({character,clips,genre='realistic',TH
   engine,mixer,play,
   update(delta){if(!Number.isFinite(delta)||delta<=0)return;step(delta);mixer.update(Math.min(delta,.1));},
   move(input){engine.setMovement(input);},
-  action(state){return engine.enter(state);},
+  action(state,options){return options?.buffered ? engine.queueAction(state,options) : engine.enter(state,options);},
+  registerClipEvents(state,events){engine.registerClipEvents(state,events);},
+  onAnimationEvent(listener){if(typeof listener!=='function')throw Error('listener required');const previous=engine.adapter.onEvent;engine.adapter.onEvent=event=>{previous?.(event);listener(event)};return ()=>{engine.adapter.onEvent=previous}},
   dispose(){mixer.stopAllAction();mixer.uncacheRoot(character);},
  };
  if(controls?.subscribe){api.unsubscribe=controls.subscribe(input=>api.move(input));}
