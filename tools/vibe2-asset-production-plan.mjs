@@ -3690,6 +3690,11 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
       const variants=asset?.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{};
       const nativeVariant=Object.entries(variants).find(([platform])=>clean(platform).toLowerCase()===resolved)?.[1]||{};
       const masterSourcePath=clean(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath);
+      const downloadedOriginalDefault=Boolean(asset?.downloaded!==false&&asset?.sourceFilesPresent!==false
+        &&/^https:\/\/[^/]+\//i.test(clean(asset?.sourceUrl))
+        &&/^[a-f0-9]{64}$/i.test(clean(asset?.originalSourceHash||asset?.originalSha256))
+        &&/^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(clean(asset?.license))
+        &&clean(asset?.path||masterSourcePath));
       const row=freeze({
         assetId:clean(asset?.id),
         family,
@@ -3710,6 +3715,10 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
         fileRoles:freeze(Object.fromEntries(Object.entries(asset?.fileRoles||{}).map(([role,files])=>[role,freezeList(files)]))),
         companyCommonBase:asset?.companyCommonBase===true,
         verifiedCompanyReusable:asset?.verifiedCompanyReusable===true,
+        downloadedOriginalDefault,
+        defaultVisualBindingAllowed:downloadedOriginalDefault,
+        missingOriginalMustRequestCanonicalDownload:!downloadedOriginalDefault,
+        sourceInspectionRequiredBeforeRuntimeBinding:true,
         roleCompatibility:'EVALUATE_AGAINST_EXISTING_GAME_SYSTEM',
         gameplayAuthority:false
       });
@@ -3745,6 +3754,10 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
     libraryOrder:freezeList(UNIVERSAL_ASSET_FAMILIES),
     librarySortKeys:freezeList(['FAMILY_ORDER','SUBFAMILY','TITLE_KO','ASSET_ID']),
     allCompatibleGamesEligible:true,
+    downloadedLibraryOnlyDefaultForAllGames:true,
+    internalModelsRemainForAuditNotDefaultNewBindings:true,
+    primitiveVisualFallbackForbidden:true,
+    allTwelveFamiliesRequireDownloadedOriginalSource:true,
     sourcePackIdIsLineageOnly:true,
     intendedConsumerIdsDoNotRestrictEligibility:true,
     platformOrder:freezeList(['ROBLOX','UNITY','WEB']),
