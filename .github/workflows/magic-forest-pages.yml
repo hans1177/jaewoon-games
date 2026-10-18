@@ -168,7 +168,7 @@ jobs:
           const selectedAssets=[...refs].sort();
           if(selectedAssets.length){
             // Sparse checkout excludes most assets; widen only to the selected tracked paths.
-            cp.execFileSync('git',['-c','core.sparseCheckout=false','restore','--source=HEAD','--worktree','--',...selectedAssets],{
+            cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',...selectedAssets],{
               maxBuffer:16*1024*1024
             });
           }
