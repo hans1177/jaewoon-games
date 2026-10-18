@@ -495,13 +495,16 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
 
   assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
   assert.match(publisher,/git clone --quiet --depth=1 --single-branch --branch gh-pages/);
-  assert.match(publisher,/test -f "\$site\/index\.html"/);
+  assert.match(publisher,/test -s "\\$site\\/index\\.html"/);
+  assert.match(publisher,/grep -q 'data-jaewoon-pages-redirect/);
   assert.match(publisher,/GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
   assert.match(publisher,/git -C "\$site" push origin HEAD:gh-pages/);
 
   // The GITHUB_TOKEN push saves history but cannot initiate a Pages build.
   // Official deployment uploads the retained gh-pages tree without Git metadata.
-  assert.ok(publisher.includes("rsync -a --exclude='.git/'"),'retained historical site must be staged without .git');
+  assert.match(publisher,/fs\\.rmSync\\(site,\\{recursive:true,force:true\\}\\)/);
+  assert.ok(publisher.includes('rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"'),
+    'retained gh-pages site is updated only from the clean generated _site tree');
   assert.ok(publisher.includes('WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA='));
   assert.ok(publisher.includes('WEB_PAGES_RETAINED_GAME_COUNT='));
   assert.ok(publisher.includes('uses: actions/upload-pages-artifact@v4'));
