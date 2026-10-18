@@ -11677,7 +11677,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-18T08:02:35.650Z",
+      "updatedAt": "2026-10-18T08:12:54.022Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11693,16 +11693,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "afd6808209ac05a714b955854e733529920bcf69",
       "robloxBuildArtifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
-      "robloxBuildPassedAt": "2026-10-18T08:02:35.650Z",
+      "robloxBuildPassedAt": "2026-10-18T08:12:54.022Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-18T08:02:35.650Z",
+      "robloxBuildPreflightFailedAt": "2026-10-18T08:12:54.022Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-18T07:38:38.374Z",
+        "checkedAt": "2026-10-18T07:52:01.906Z",
         "sourceRevision": "afd6808209ac05a714b955854e733529920bcf69",
         "artifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
         "secondaryOwnerFocus": false,
@@ -11745,7 +11745,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks failed in BUILD_EVIDENCE."
+            "note": "The package cannot start runtime testing because web and music validations have not passed."
           }
         ],
         "blockers": [
@@ -39482,7 +39482,7 @@
       "robloxExactRevisionPassed": false
     }
   ],
-  "updatedAt": "2026-10-18T08:12:47.225Z",
+  "updatedAt": "2026-10-18T08:12:54.022Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
