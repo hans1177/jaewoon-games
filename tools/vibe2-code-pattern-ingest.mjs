@@ -33,7 +33,11 @@ const CLASSIFIERS=[
   ['STATUS_DURATION_TRACK',/status.?duration|buff.?timer|상태.?지속.?시간|버프.?타이머/i],
   ['ITEM_VISUAL_PREVIEW',/3d.?item.?preview|item.?turntable|장비.?미리보기|아이템.?회전/i],
   ['BOSS_PHASE_PRESENTATION',/boss.?phase.?strip|보스.?체력바|페이즈.?표시/i],
-  ['VISUAL_EFFECT_BUDGET',/effect.?budget|popup.?pool|ui.?performance|이펙트.?제한/i]
+  ['VISUAL_EFFECT_BUDGET',/effect.?budget|popup.?pool|ui.?performance|이펙트.?제한/i],
+  ['SOURCE_GROUNDED_VISUAL_SELECTION',/source.?grounded.?visual|source.?bound.?presentation|실제.?소스.?기반.?패턴|게임.?기능.?자동.?선택/i],
+  ['VISUAL_ASSET_ROLE_MATCHING',/asset.?role.?matching|role.?matched.?asset|asset.?style.?rank|에셋.?역할.?적합|게임.?스타일.?에셋/i],
+  ['MOBILE_TOUCH_LAYOUT_PINNING',/fixed.?touch.?control|touch.?layout.?pinn|mobile.?touch.?anchor|터치.?버튼.?위치.?고정|모바일.?조작.?고정/i],
+  ['ADAPTIVE_SCREEN_DISCOVERY',/auto.?screen.?discover|active.?visual.?surface|실제.?기능.?화면.?자동.?구성|화면.?자동.?발견/i]
 ];
 
 
@@ -49,7 +53,11 @@ const VISUAL_CODING_RECIPES=Object.freeze({
   STATUS_DURATION_TRACK:{source:'updateStatusIcon / UpdateStatusIcon',proof:['AUTHORITATIVE_REMAINING_DURATION','ZERO_STATE','STACKS_DISPLAY']},
   ITEM_VISUAL_PREVIEW:{source:'existing game native model camera and render target',proof:['REAL_BOUND_MODEL','VALID_CAMERA','MOBILE_BUDGET']},
   BOSS_PHASE_PRESENTATION:{source:'existing boss phase system plus client-only progress rendering',proof:['ACTUAL_BOSS_PHASE_STATE','NO_CLIENT_DAMAGE_AUTHORITY']},
-  VISUAL_EFFECT_BUDGET:{source:'existing game renderer presentation pool/caps',proof:['MAX_ACTIVE_EFFECTS','NO_INPUT_OCCLUSION','PERFORMANCE_CAPTURE']}
+  VISUAL_EFFECT_BUDGET:{source:'existing game renderer presentation pool/caps',proof:['MAX_ACTIVE_EFFECTS','NO_INPUT_OCCLUSION','PERFORMANCE_CAPTURE']},
+  SOURCE_GROUNDED_VISUAL_SELECTION:{source:'deriveVibeSourceVisualSystems / selectVibeSourceVisualPatterns',proof:['EXECUTABLE_GAME_SOURCE','NO_COMMON_LIBRARY_FALSE_EVIDENCE','FEATURE_EXISTENCE','GAMEPLAY_AUTHORITY_PRESERVED','RUNTIME_CAPTURE']},
+  VISUAL_ASSET_ROLE_MATCHING:{source:'rankVibeVisualAssetBindings / existing dynamic company asset selection',proof:['SOURCE_AND_LICENSE_VERIFIED','PLATFORM_COMPATIBLE','SCREEN_ROLE_MATCH','STYLE_PREF_ONLY','NATIVE_RENDER_BINDING']},
+  MOBILE_TOUCH_LAYOUT_PINNING:{source:'optimizeVibeScreenLayout / existing mobile game input owner',proof:['TOUCH_HITBOX_IMMUTABLE','SAFE_INSETS','NO_INPUT_OCCLUSION','PORTRAIT_LANDSCAPE']},
+  ADAPTIVE_SCREEN_DISCOVERY:{source:'deriveVibeActiveVisualSurfaces / planVibePresentationAutopilot',proof:['REAL_GAME_SYSTEM_SOURCE','EXPLICIT_BLUEPRINT_PRIORITY','NO_INVENTED_FEATURE','GAMESPECIFIC_RENDER_CHECK']}
 });
 
 function engineOf(sample={}){
@@ -75,7 +83,14 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
     ...(sample.verification?.proposedTests||[]),
     clean(sample.output).split('검증된 패치:')[0]
   ].filter(Boolean).join(' ');
-  const systems=CLASSIFIERS.filter(([,re])=>re.test(text)).map(([name])=>name);
+  const runtimeProvenPatterns=new Set([
+    'SOURCE_GROUNDED_VISUAL_SELECTION','VISUAL_ASSET_ROLE_MATCHING',
+    'MOBILE_TOUCH_LAYOUT_PINNING','ADAPTIVE_SCREEN_DISCOVERY'
+  ]);
+  const systems=CLASSIFIERS.filter(([,re])=>re.test(text)).map(([name])=>name)
+    .filter(name=>!runtimeProvenPatterns.has(name)
+      ||(upper(sample.verification?.visualRuntime)==='PASS'
+        &&upper(sample.verification?.sourceBinding)==='PASS'));
   const sourceRevision=clean(sample.sourceRevision||sample.sourceCommit||sample.provenance?.sourceRevision);
   const gameId=clean(sample.gameId||sample.project)||null;
   const engine=engineOf(sample);
