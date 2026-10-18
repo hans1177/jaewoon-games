@@ -203,13 +203,13 @@ export function rankVibeVisualAssetBindings({assets=[],surface='HUD',game={},wor
 
 export function selectVibeSourceVisualPatterns({
   files=[],surface='HUD',assets=[],viewport={width:393,height:852},
-  reducedMotion=false,performanceTier='MID',game={}
+  reducedMotion=false,performanceTier='MID',game={},world={}
 }={}){
   const observed=deriveVibeSourceVisualSystems(files);
   const systemSet=new Set(observed.systems);
   const target=clean(surface).toUpperCase()||'HUD';
   const vetted=(Array.isArray(assets)?assets:[]).filter(a=>verifiedVisualBinding(a));
-  const rankedAssets=rankVibeVisualAssetBindings({assets:vetted,surface:target,game});
+  const rankedAssets=rankVibeVisualAssetBindings({assets:vetted,surface:target,game,world});
   const matchingIds=new Set(rankedAssets.selectedAssetIds);
   const hasAsset=kind=>vetted.some(asset=>matchingIds.has(clean(asset.assetId||asset.id))
     &&verifiedVisualBinding(asset,kind)
@@ -457,7 +457,7 @@ export function planVibePresentationAutopilot({files=[],events=[],request='',cha
   const audit=auditVibePresentation(files);
   const designSystem=createVibeDesignSystem(files);
   const craftPlans=Object.freeze((Array.isArray(uiSurfaces)&&uiSurfaces.length?uiSurfaces:[{surface:'HUD',components:[]}]).map(row=>buildVibePresentationCraft({game,world,viewport,surface:row.surface,components:row.components||[],safeInsets:row.safeInsets||{},focalRegion:row.focalRegion||null})));
-  const adaptiveProfiles=Object.freeze(craftPlans.map(row=>selectVibeSourceVisualPatterns({files,surface:row.surface,assets,viewport,reducedMotion,performanceTier,game})));
+  const adaptiveProfiles=Object.freeze(craftPlans.map(row=>selectVibeSourceVisualPatterns({files,surface:row.surface,assets,viewport,reducedMotion,performanceTier,game,world})));
   const timeline=buildVibePresentationTimeline(events);
   const highEnd=createVibeHighEndPresentationStack({request});
   const cinematicDirection=highEnd.cinematicDirection;
