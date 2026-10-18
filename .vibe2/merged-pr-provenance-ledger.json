@@ -63610,11 +63610,164 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_9acc6ad4e7b1d31242f4e3ef",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8405",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "9936f893289b666e87ece985720657c81bb7f879",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8405,
+        "baseBranch": "main",
+        "headBranch": "vibe-asset-studio-native-first-20261018",
+        "baseSha": "9936f893289b666e87ece985720657c81bb7f879",
+        "headSha": "a264edb366e413573a5bbf33eceed81c9c284d41",
+        "mergeCommitSha": "fc2ba7c1cfe0ddb0858a412666eecf4c151f155b",
+        "mergedAt": "2026-10-18T07:24:14Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8848e824a269cb65cb39aaf74dd2009dc6cedb4d761110c0541869a5f21321a4",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe-asset-studio-native-first-20261018",
+        "candidateSha": "a264edb366e413573a5bbf33eceed81c9c284d41"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 19,
+        "addedLineCount": 734,
+        "deletedLineCount": 173,
+        "changedFiles": [
+          ".github/agents/director.agent.md",
+          ".github/workflows/homepage-manager.yml",
+          ".github/workflows/magic-forest-pages.yml",
+          "asset-library.html",
+          "assets/asset-library.css",
+          "assets/asset-library.js",
+          "assets/vibe-studio-asset-universe.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/asset-library-sync.test.mjs",
+          "qa/github-pages-landing.test.mjs",
+          "qa/homepage-manager-publication-order.test.mjs",
+          "qa/vibe-studio-asset-universe.test.mjs",
+          "qa/vibe2-continuous-release-dispatch.test.mjs",
+          "qa/vibe2-native-asset-production.test.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "web-games/fantasy-survival/research-log-2.html",
+          "web-games/fantasy-survival/research-log-3.html",
+          "web-games/fantasy-survival/research-log.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/homepage-manager.yml",
+          ".github/workflows/magic-forest-pages.yml",
+          "asset-library.html",
+          "assets/asset-library.css",
+          "assets/asset-library.js",
+          "assets/vibe-studio-asset-universe.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/asset-library-sync.test.mjs",
+          "qa/github-pages-landing.test.mjs",
+          "qa/homepage-manager-publication-order.test.mjs",
+          "qa/vibe-studio-asset-universe.test.mjs",
+          "qa/vibe2-continuous-release-dispatch.test.mjs",
+          "qa/vibe2-native-asset-production.test.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "web-games/fantasy-survival/research-log-2.html",
+          "web-games/fantasy-survival/research-log-3.html",
+          "web-games/fantasy-survival/research-log.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8405",
+        "merge-commit:fc2ba7c1cfe0ddb0858a412666eecf4c151f155b",
+        "base-main:9936f893289b666e87ece985720657c81bb7f879"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 511
+    "total": 512
   }
 }
