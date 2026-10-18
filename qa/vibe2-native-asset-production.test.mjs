@@ -297,7 +297,8 @@ test('downloaded original first: compare an existing authored tree against a lic
   assert.equal(acquisition.externalAcquisition.onDemandOnly,true);
   assert.equal(acquisition.externalAcquisition.downloaded,false);
   assert.equal(acquisition.automaticReplacementAuthorized,false);
-  assert.equal(acquisition.runtimeVerificationGranted,false);
+  assert.equal(acquisition.assetization.runtimeVerified,false);
+  assert.equal(acquisition.assetization.productionVerified,false);
   assert.ok(actions.some(row=>row.assetId===authored.id),'keep original game binding until actual runtime pass');
   const existingAcquired={...authored,sourceUrl:original.sourceUrl,originalSourceHash:'a'.repeat(64)};
   const retained=buildAssetSupplyDecisionSummary({...args,registry:{assets:[existingAcquired],externalSources:[original]}});
