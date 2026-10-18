@@ -6832,7 +6832,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-18T19:10:58.625Z",
+      "updatedAt": "2026-10-18T19:11:17.827Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -6851,7 +6851,7 @@
       "robloxBuildSourceRevision": "2db0aa65c13a4c1e59000eb2fa8796dcd772dde9",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-18T18:58:45.105Z",
+      "robloxBuildFailedAt": "2026-10-18T19:11:17.827Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -6907,8 +6907,8 @@
         "sourceRevision": "2db0aa65c13a4c1e59000eb2fa8796dcd772dde9",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39136374704,
-        "testedAt": "2026-10-18T18:58:45.105Z",
+        "workflowRunId": 39140412207,
+        "testedAt": "2026-10-18T19:11:17.827Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
         ],
@@ -40906,7 +40906,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-18T19:10:58.625Z",
+  "updatedAt": "2026-10-18T19:11:17.827Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -40972,5 +40972,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
