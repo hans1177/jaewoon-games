@@ -472,14 +472,14 @@ joyBase.addEventListener("pointerdown",function(e){joyId=e.pointerId;joyBase.set
 joyBase.addEventListener("pointermove",function(e){if(e.pointerId===joyId)joyMove(e);});
 function joyEnd(e){if(e.pointerId!==joyId)return;joyId=null;joy.x=0;joy.y=0;knob.style.transform="translate(0,0)";}
 joyBase.addEventListener("pointerup",joyEnd);joyBase.addEventListener("pointercancel",joyEnd);
-state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
+window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
 })();
 </script>
 <script type="module">
 /* Native 3D GLB assets from the verified Vibe company registry. No screenshots, cropping or primitive characters. */
 try {
  const THREE=await import('https://esm.sh/three@0.164.1');
- const {GLTFLoader}=await import('https://esm.sh/three@0.164.1/examples/jsm/loaders/GLTFLoader.js');
+ const {GLTFLoader}=await import('https://esm.sh/three@0.164.1/examples/jsm/loaders/GLTFLoader.js?external=three');
  const files={
  traveler:'/assets/shared/humanoid-traveler.glb',guardian:'/assets/shared/humanoid-guardian.glb',
  samurai:'/assets/shared/humanoid-samurai.glb',archer:'/assets/shared/humanoid-archer.glb',
@@ -492,7 +492,7 @@ try {
  const canvas=document.getElementById('game');
  const overlay=document.createElement('canvas');overlay.id='vibe3d';overlay.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2';canvas.after(overlay);
  const renderer=new THREE.WebGLRenderer({canvas:overlay,alpha:true,antialias:true});
- renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setClearColor(0,0);
+ renderer.setPixelRatio(1);renderer.setClearColor(0,0);
  const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xffffff,0x647386,2.5));
  const lamp=new THREE.DirectionalLight(0xffffff,2);lamp.position.set(-200,400,600);scene.add(lamp);
  const camera3=new THREE.OrthographicCamera(-400,400,300,-300,.1,4000);camera3.position.set(0,0,1000);camera3.lookAt(0,0,0);
@@ -502,9 +502,9 @@ try {
  window.vibe3dCanRender=(kind,obj)=>!!models[role(kind,obj)];
  window.vibe3dFrame=()=>{
   const w=canvas.width,h=canvas.height;renderer.setSize(w,h,false);camera3.left=-w/2;camera3.right=w/2;camera3.top=h/2;camera3.bottom=-h/2;camera3.updateProjectionMatrix();
-  const visible=[];if(typeof p!=='undefined')visible.push(['player',p,'player']);
-  if(typeof state!=='undefined'&&Array.isArray(state.ai))state.ai.forEach((a,i)=>{if((!dungeon&&(a.zone===state.zone||a.party))||(dungeon&&a.party))visible.push(['ai',a,'ai'+i]);});
-  if(typeof enemies!=='undefined')enemies.forEach((e,i)=>{if(!e.dead)visible.push(['enemy',e,'enemy'+i]);});
+  const live=window.partyRpgVibeState?.();if(!live)return;const {p,state,enemies,dungeon,camera}=live;const visible=[['player',p,'player']];
+  if(Array.isArray(state.ai))state.ai.forEach((a,i)=>{if((!dungeon&&(a.zone===state.zone||a.party))||(dungeon&&a.party))visible.push(['ai',a,'ai'+i]);});
+  enemies.forEach((e,i)=>{if(!e.dead)visible.push(['enemy',e,'enemy'+i]);});
   const used=new Set();
   for(const [kind,obj,key] of visible){const id=role(kind,obj);if(!models[id])continue;used.add(key);
    let entry=actors.get(key);if(!entry||entry.id!==id){if(entry)scene.remove(entry.group);const group=models[id].clone(true);const box=new THREE.Box3().setFromObject(group),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?Math.max(26,(obj.r||16)*2.5):43;const scale=height/Math.max(.001,size.y);group.scale.setScalar(scale);group.position.set(-center.x*scale,-box.min.y*scale,0);const root=new THREE.Group();root.add(group);scene.add(root);entry={id,group:root};actors.set(key,entry);}
