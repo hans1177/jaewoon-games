@@ -495,7 +495,19 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
 
   assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
   assert.match(publisher,/git clone --quiet --depth=1 --single-branch --branch gh-pages/);
-  assert.match(publisher,/test -f "\$site\/index\.html"/);
+  assert.match(publisher,/test -s "\$site\/index\.html"/);
+  // Owner-protected public front door: restore the exact pre-directory root once,
+  // then exclude index.html on all future game publication runs.
+  assert.ok(publisher.includes("expected_original=\"51e1232aa1dfc6c1826622a431b2263340a629e9\""));
+  assert.ok(publisher.includes('PAGES_ORIGINAL_FRONT_DOOR_RESTORED=YES'));
+  assert.ok(publisher.includes("rsync -a --exclude='/index.html'"));
+  assert.ok(publisher.includes('PAGES_ORIGINAL_FRONT_DOOR_SOURCE_CHANGED_REVIEW_REQUIRED'));
+  assert.ok(publisher.includes('PAGES_ARTIFACT_FRONT_DOOR_REPLACEMENT_FORBIDDEN'));
+  assert.ok(publisher.includes('PAGES_LIVE_FRONT_DOOR_REPLACEMENT_FORBIDDEN'));
+  assert.ok(!publisher.includes('node tools/github-pages-landing.mjs'), 'do not replace existing Pages root with directory');
+  assert.ok(!publisher.includes('node --test qa/github-pages-landing.test.mjs'), 'do not require changed front door');
+  assert.ok(!publisher.includes('PAGES_HOMEPAGE_VISIBLE_AND_TESTED=PASS'), 'do not revive replacement landing');
+  assert.ok(!publisher.includes('WEB_PAGES_HOME_DIRECTORY_ROUTES='), 'original homepage can remain unchanged');
   assert.match(publisher,/GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
   assert.match(publisher,/git -C "\$site" push origin HEAD:gh-pages/);
 
