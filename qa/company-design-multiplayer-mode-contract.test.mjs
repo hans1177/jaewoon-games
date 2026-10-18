@@ -77,7 +77,17 @@ test('final gameplay keeps native 3D evidence without requiring Unity Web produc
   assert.equal(central.runtimeEvidenceRequired,true);
   assert.equal(central.beforeAfterVisualComparisonRequired,true);
   assert.equal(central.flat2DFinalGameplayForbidden,true);
-  assert.equal(central.uiOverlayMayRemain2D,true);
+  assert.equal(central.uiOverlayMayRemain2D,false);
+  assert.equal(central.minimumFinalGameplayDimension,'3D');
+  assert.equal(central.allVisibleGameSurfacesRequireNative3D,true);
+  assert.equal(central.allUiAndHudNative3dRequired,true);
+  assert.equal(central.twoDimensionalDisplayForbiddenEverywhere,true);
+  assert.equal(central.robloxScreenGuiBillboardGuiSurfaceGuiAsVisibleUiForbidden,true);
+  assert.equal(central.webDomHtmlCssOverlayAsVisibleUiForbidden,true);
+  assert.equal(central.native3dMeshAndRealDepthTestRequiredForUserFacingUi,true);
+  assert.equal(central.native3dGlyphGeometryRequiredForVisibleUiText,true);
+  assert.equal(central.native3dSpatialPointerRaycastRequired,true);
+  assert.equal(central.runtimeVerified3dUiRequiredBeforeReleasePass,true);
   assert.doesNotMatch(design,/const UNITY_WEB_SPATIAL_PRESENTATION=/);
   assert.doesNotMatch(design,/required:\[\.\.\.PLATFORM_PROFILE\.required,'unityWebSpatialPresentation'\]/);
   assert.doesNotMatch(scorer,/DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED/);

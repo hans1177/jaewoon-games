@@ -38,17 +38,17 @@ const CLASSIFIERS=[
 
 
 const VISUAL_CODING_RECIPES=Object.freeze({
-  DAMAGE_POPUP_POOL:{source:'JaewoonGraphicsEngine.createWebPresentationController.showDamage / RobloxCommonUI.CreateVisualFeedbackController.ShowDamage',proof:['CONFIRMED_GAME_EVENT','EVENT_DEDUP','WORLD_TO_VIEWPORT','POPUP_CAP','SOURCE_BOUND_RUNTIME_CAPTURE']},
-  TOOLTIP_PLACEMENT:{source:'placeVibeTooltip / PositionTooltip / showTooltip',proof:['SAFE_AREA','ANCHOR_VISIBLE','EDGE_FLIP','NO_CRITICAL_INPUT_COVER']},
-  ICON_STATE_MOTION:{source:'animateIcon / AnimateIcon',proof:['SOURCE_STATE_BOUND','CANCEL_PREVIOUS_TWEEN','REDUCED_MOTION','NO_GAMEPLAY_MUTATION']},
+  DAMAGE_POPUP_POOL:{source:'Existing game's native 3D combat scene: confirmed event -> 3D glyph mesh -> depth-tested transform/pool',proof:['CONFIRMED_GAME_EVENT','EVENT_DEDUP','WORLD_TO_VIEWPORT','POPUP_CAP','SOURCE_BOUND_RUNTIME_CAPTURE']},
+  TOOLTIP_PLACEMENT:{source:'Existing 3D scene: camera-space 3D panel bounds + raycast anchor + occlusion-aware mesh placement',proof:['SAFE_AREA','ANCHOR_VISIBLE','EDGE_FLIP','NO_CRITICAL_INPUT_COVER']},
+  ICON_STATE_MOTION:{source:'Existing 3D scene: bound icon mesh transform/material animation without sprites',proof:['SOURCE_STATE_BOUND','CANCEL_PREVIOUS_TWEEN','REDUCED_MOTION','NO_GAMEPLAY_MUTATION']},
   CONTEXTUAL_HUD:{source:'buildVibePresentationCraft / optimizeVibeScreenLayout',proof:['VIEWPORT_BOUNDS','FOCAL_OCCLUSION','MOBILE_TOUCH','STATE_PRESERVATION']},
-  NINE_SLICE_SURFACE:{source:'RobloxCommonUI.CreatePanel surfaceTexture/sliceCenter; existing web CSS border-image',proof:['REAL_VERIFIED_TEXTURE_ASSET','SOURCE_IMAGE_PROVENANCE','FRAME_CORNERS_UNSTRETCHED']},
+  NINE_SLICE_SURFACE:{source:'Existing 3D scene: beveled edge mesh + original approved 3D material slots; NO flat 9-slice image panels',proof:['REAL_VERIFIED_TEXTURE_ASSET','SOURCE_IMAGE_PROVENANCE','FRAME_CORNERS_UNSTRETCHED']},
   MATERIAL_HARMONIZATION:{source:'createVibeVisualMaterialRecipe / existing native authoring',proof:['VERIFIED_ASSET_MATERIAL_SLOTS','STYLE_LOCK','ORIGINAL_ASSET_IMMUTABLE']},
   SCREEN_LAYOUT_OPTIMIZER:{source:'optimizeVibeScreenLayout',proof:['POSITIVE_VIEWPORT','NO_UNRESOLVED_OCCLUSION','PORTRAIT_LANDSCAPE']},
-  NOTIFICATION_STACK:{source:'notify / Notify',proof:['ACTIVE_BUDGET','REENTRANT_EVENTS','VISIBLE_POSITION','CLEANUP']},
-  STATUS_DURATION_TRACK:{source:'updateStatusIcon / UpdateStatusIcon',proof:['AUTHORITATIVE_REMAINING_DURATION','ZERO_STATE','STACKS_DISPLAY']},
-  ITEM_VISUAL_PREVIEW:{source:'existing game native model camera and render target',proof:['REAL_BOUND_MODEL','VALID_CAMERA','MOBILE_BUDGET']},
-  BOSS_PHASE_PRESENTATION:{source:'existing boss phase system plus client-only progress rendering',proof:['ACTUAL_BOSS_PHASE_STATE','NO_CLIENT_DAMAGE_AUTHORITY']},
+  NOTIFICATION_STACK:{source:'Existing 3D scene: 3D notification mesh composition with camera depth and real text meshes',proof:['ACTIVE_BUDGET','REENTRANT_EVENTS','VISIBLE_POSITION','CLEANUP']},
+  STATUS_DURATION_TRACK:{source:'Existing 3D scene: depth-tested progress mesh/material bound to confirmed effect duration',proof:['AUTHORITATIVE_REMAINING_DURATION','ZERO_STATE','STACKS_DISPLAY']},
+  ITEM_VISUAL_PREVIEW:{source:'Existing 3D scene: verified model with real geometry and direct camera projection; NO 2D viewport UI',proof:['REAL_BOUND_MODEL','VALID_CAMERA','MOBILE_BUDGET']},
+  BOSS_PHASE_PRESENTATION:{source:'Existing 3D scene: boss state drives depth-tested meshes and 3D glyphs; gameplay authority unchanged',proof:['ACTUAL_BOSS_PHASE_STATE','NO_CLIENT_DAMAGE_AUTHORITY']},
   VISUAL_EFFECT_BUDGET:{source:'existing game renderer presentation pool/caps',proof:['MAX_ACTIVE_EFFECTS','NO_INPUT_OCCLUSION','PERFORMANCE_CAPTURE']}
 });
 
@@ -80,12 +80,21 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
   const gameId=clean(sample.gameId||sample.project)||null;
   const engine=engineOf(sample);
   const taskType=clean(sample.taskType);
-  return systems.map(system=>({
+  // For Roblox/Web, past 2D visual code remains historical evidence, never
+  // a verified pattern suitable for 3D-only reuse without source-bound runtime proof.
+  const isGame3dTarget=['roblox','web'].includes(engine);
+  const threeD=sample?.verification?.native3dUiEvidence||sample?.native3dUiEvidence||{};
+  const verified3d=threeD.runtimeVerified===true
+    &&threeD.sourceRevision===sourceRevision
+    &&threeD.ui3dGeometryObserved===true
+    &&threeD.spatialInteractionObserved===true;
+  return systems.filter(system=>!(isGame3dTarget&&VISUAL_CODING_RECIPES[system]&&!verified3d)).map(system=>({
     id:`pat_${hash([gameId,engine,taskType,system,sourceRevision].join('|'))}`,
     gameId,engine,taskType,system,
     problem:clean(sample.instruction).slice(0,220),
     pattern:`VERIFIED_${system}_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION`,
     ...(VISUAL_CODING_RECIPES[system]?{implementationRecipe:VISUAL_CODING_RECIPES[system]}:{}),
+    ...(VISUAL_CODING_RECIPES[system]?{native3dUiEvidence:threeD}:{}),
     tags:uniq([system,taskType,engine,'verified','smallest-responsible-change','regression-bound']),
     verified:true,
     sourceRevision,
@@ -98,7 +107,16 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
 }
 
 export function ingestVerifiedCodePatterns({samplesDir='company-learning/training-samples',libraryInput={}}={}){
-  const byId=new Map((libraryInput?.patterns||[]).filter(x=>x?.verified===true).map(x=>[clean(x.id),x]));
+  const byId=new Map((libraryInput?.patterns||[]).filter(x=>{
+    if(x?.verified!==true)return false;
+    const engine=clean(x.engine).toLowerCase(),native=x?.native3dUiEvidence;
+    // Retain legacy source samples outside the promoted pattern registry.
+    // Only screen/visual presentation recipes require native 3D evidence.
+    if(['roblox','web'].includes(engine)&&VISUAL_CODING_RECIPES[clean(x.system)]
+      &&!(native?.runtimeVerified===true&&native?.sourceRevision===x.sourceRevision
+      &&native?.ui3dGeometryObserved===true&&native?.spatialInteractionObserved===true))return false;
+    return true;
+  }).map(x=>[clean(x.id),x]));
   let examined=0,added=0;
   if(fs.existsSync(samplesDir)){
     for(const entry of fs.readdirSync(samplesDir,{withFileTypes:true}).filter(x=>x.isFile()&&x.name.endsWith('.json')).sort((a,b)=>a.name.localeCompare(b.name))){

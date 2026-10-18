@@ -28,11 +28,28 @@ test('verified Web and Roblox aesthetic repairs distill concrete source-bound pa
     const rows=deriveVerifiedCodePatterns({
       taskType:'coding',sourceRevision:'b'.repeat(40),gameId:'a',
       independentQa:'PASS',browserQa:engine==='web'?'PASS':'NOT_APPLICABLE',
-      instruction:input,verification:{fullRegression:'PASS',proposedTests:['same scene runtime visual checks']}
+      instruction:input,verification:{fullRegression:'PASS',proposedTests:['same scene runtime visual checks'],native3dUiEvidence:{runtimeVerified:true,sourceRevision:'b'.repeat(40),ui3dGeometryObserved:true,spatialInteractionObserved:true}}
     },'qa-record.json');
     assert.ok(rows.some(row=>row.implementationRecipe));
     assert.ok(rows.every(row=>row.verified===true&&row.rawCodeStored===false));
     assert.ok(rows.filter(row=>row.implementationRecipe).every(row=>row.implementationRecipe.proof.length));
     assert.ok(rows.some(row=>row.system==='DAMAGE_POPUP_POOL'));
   }
+});
+
+test('legacy 2D visual source cannot be promoted as a reusable verified 3D UI recipe',()=>{
+  const base={taskType:'coding',sourceRevision:'c'.repeat(40),gameId:'legacy',
+    independentQa:'PASS',browserQa:'PASS',instruction:'web-games/legacy: damage popup, animated icon and tooltip placement',
+    verification:{fullRegression:'PASS'}};
+  const notConverted=deriveVerifiedCodePatterns(base,'old-record.json');
+  assert.ok(notConverted.every(row=>!row.implementationRecipe));
+  const insufficient=deriveVerifiedCodePatterns({...base,verification:{...base.verification,
+    native3dUiEvidence:{runtimeVerified:true,sourceRevision:'WRONG',ui3dGeometryObserved:true,spatialInteractionObserved:true}}});
+  assert.ok(insufficient.every(row=>!row.implementationRecipe));
+  const converted=deriveVerifiedCodePatterns({...base,verification:{...base.verification,
+    native3dUiEvidence:{runtimeVerified:true,sourceRevision:base.sourceRevision,
+      ui3dGeometryObserved:true,spatialInteractionObserved:true}}});
+  assert.ok(converted.some(row=>row.implementationRecipe));
+  assert.ok(converted.filter(row=>row.implementationRecipe).every(row=>row.native3dUiEvidence.runtimeVerified===true));
+  assert.ok(converted.every(row=>!String(row.implementationRecipe?.source||'').includes('createWebPresentationController')));
 });

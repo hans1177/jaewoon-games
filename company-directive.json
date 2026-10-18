@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "revision": 90,
-  "updatedAt": "2026-10-11",
+  "revision": 91,
+  "updatedAt": "2026-10-18",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -1388,12 +1388,17 @@
     "completedMigrationArtifactRetentionRequired": false
   },
   "gameVisualQuality": {
-    "minimumFinalGameplayDimension": "2.5D",
+    "minimumFinalGameplayDimension": "3D",
     "preferredDimension": "3D",
     "flat2DFinalGameplayForbidden": true,
-    "ui2DOverlayAllowed": true,
+    "ui2DOverlayAllowed": false,
     "existing2DRepairRequired": true,
-    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation"
+    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
+    "allExistingGameSourcesIncluded": true,
+    "existing2DUiForbidden": true,
+    "native3dWorldAndAllVisibleUiRequired": true,
+    "realMeshDepth3dGlyphsAndRaycastRequired": true,
+    "old2dScreensFinalPassAllowed": false
   },
   "webGameStartability": {
     "allExposedGamesMustActuallyStart": true,
