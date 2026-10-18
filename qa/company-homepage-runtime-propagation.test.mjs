@@ -26,7 +26,7 @@ test('paused Unity Web never generates build probes or launch links',()=>{
 // 실제 GitHub Pages 게시 검증은 기존 Web Release 파이프라인 책임이다.
 test('internal web game links use the registered source path without a score gate',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},platformLinks,buildCard,playableWebHref})',{
+  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},platformLinks,buildCard,playableWebHref,sourceWebHref})',{
     document:{readyState:'loading',addEventListener(){}},Date,Intl
   });
   api.setExposure({games:[]});
@@ -39,7 +39,10 @@ test('internal web game links use the registered source path without a score gat
   }});
   const eligible=row('fantasy-survival','UNITY_WEB_VERIFICATION_REQUIRED');
   assert.equal(api.playableWebHref(eligible),'https://hans1177.github.io/jaewoon-games/web-games/fantasy-survival/');
-  assert.equal(api.playableWebHref({...eligible,canonical:{...eligible.canonical,publication:{web:{}}}}),'','no publication evidence means no play button');
+  const unpublished={...eligible,canonical:{...eligible.canonical,publication:{web:{}}}};
+  assert.equal(api.playableWebHref(unpublished),'','unpublished route must not claim verified play');
+  assert.equal(api.sourceWebHref(unpublished),'https://hans1177.github.io/jaewoon-games/web-games/fantasy-survival/','original source links always work without a manifest');
+  assert.match(api.buildCard(unpublished),/원본 게임 · 열기/);
   assert.equal(api.platformLinks(eligible).web,api.playableWebHref(eligible));
   assert.match(api.buildCard(eligible),/일반 웹게임 · 플레이/);
   assert.doesNotMatch(api.buildCard(eligible),/href="[^"]+roblox\.com/);
@@ -124,13 +127,14 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
   assert.equal(api.internalReleaseRows({games:[dev]},{}).length,0,'development must not be falsely promoted');
   const card=api.buildCard(dev);
   assert.match(card,/Roblox · 개발 중/);
-  assert.match(card,/일반 웹게임 · 게시 준비 중/);
+  assert.match(card,/원본 게임 · 열기/);
+  assert.match(card,/https:\/\/hans1177.github.io\/jaewoon-games\/web-games\/dev-without-release\//);
   assert.doesNotMatch(card,/Unity Web/);
   assert.doesNotMatch(api.buildCard({...dev,unityWebAvailable:false}),/Unity Web/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*robloxAction"/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*unityAction"/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*unityWebAction"/);
-  assert.match(card,/data-direct-play=""/);
+  assert.match(card,/data-direct-play="https:\/\/hans1177.github.io\/jaewoon-games\/web-games\/dev-without-release\/"/);
 });
 
 // 회귀: 실행 링크는 선택적 QA 문서 장애와 무관하고, 하위 Unity 경로도 카드에 남아야 한다.
