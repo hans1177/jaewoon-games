@@ -16,7 +16,7 @@ export const vibeGenreCatalog=freeze({
 });
 export function resolveVibeGenre(name,overrides={}){
  const base=vibeGenreCatalog[name];if(!base)throw Error('Unknown genre: '+name);
- const result={...base,...overrides};
+ const result={...base,...overrides,id:name};
  for(const section of ['camera','movement','action','audio','fx','render'])result[section]={...base[section],...overrides[section]};
  result.fx.shake=clamp(result.fx.shake);result.fx.flash=clamp(result.fx.flash);result.fx.vignette=clamp(result.fx.vignette);
  result.movement.speed=clamp(result.movement.speed,0,20);
@@ -27,6 +27,6 @@ export function createVibeGenreDirector({genre='storybook',onChange=()=>{},overr
  return {
   get current(){return current},
   select(name,custom={}){current=resolveVibeGenre(name,custom);onChange(current);return current},
-  serialize(){return JSON.stringify({genre:Object.entries(vibeGenreCatalog).find(([,value])=>value===vibeGenreCatalog[current.id])?.[0]||current.id||genre,config:current})}
+  serialize(){return JSON.stringify({genre:current.id,config:current})}
  };
 }
