@@ -247,10 +247,21 @@ export function optimizeVibeScreenLayout({
   for(const element of ordered){
     const w=between(finite(element.width,160),Math.min(32,bounds.width),bounds.width);
     const h=between(finite(element.height,48),Math.min(28,bounds.height),bounds.height);
-    const candidates=visualCandidateAnchors(bounds,bounds,element.zone,{width:w,height:h});
-    if(presentationRect(element.preferredRect))candidates.unshift({
-      x:between(element.preferredRect.x,bounds.x,bounds.x+bounds.width-w),
-      y:between(element.preferredRect.y,bounds.y,bounds.y+bounds.height-h),width:w,height:h
+    const requested=presentationRect(element.preferredRect);
+    // Existing touch-control hit areas are not movable decoration. Reject a
+    // proposal that cannot keep its existing position inside the safe area.
+    const fixedTouch=element.touchControl===true&&requested!==null;
+    if(fixedTouch&&(requested.x<bounds.x||requested.y<bounds.y
+      ||requested.x+requested.width>bounds.x+bounds.width
+      ||requested.y+requested.height>bounds.y+bounds.height
+      ||requested.width!==w||requested.height!==h)){
+      failures.push(element.id);continue;
+    }
+    const candidates=fixedTouch?[requested]:
+      visualCandidateAnchors(bounds,bounds,element.zone,{width:w,height:h});
+    if(requested&&!fixedTouch)candidates.unshift({
+      x:between(requested.x,bounds.x,bounds.x+bounds.width-w),
+      y:between(requested.y,bounds.y,bounds.y+bounds.height-h),width:w,height:h
     });
     let best=null;
     for(const rect of candidates){
