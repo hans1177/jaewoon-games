@@ -6,7 +6,7 @@ import {
   VIBE_PRESENTATION_EFFECT_PATTERNS,
   createVibeVisualMaterialRecipe,
   optimizeVibeScreenLayout,placeVibeTooltip,
-  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud,deriveVibeSourceVisualSystems,selectVibeSourceVisualPatterns
+  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud,deriveVibeSourceVisualSystems,selectVibeSourceVisualPatterns,rankVibeVisualAssetBindings
 } from '../assets/vibe-presentation-director.js';
 import '../assets/jaewoon-graphics-engine.js';
 
@@ -168,9 +168,9 @@ test('licensed source-bound texture/model evidence gates native preview, sliced 
   assert.ok(noProof.deferredForAssetProof.some(x=>x.pattern==='NINE_SLICE_SURFACE'));
   assert.ok(!noProof.eligibleAssetIds.length);
   const approved=[
-    {id:'model-1',path:'assets/models/sword.glb',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true},
-    {id:'panel-1',path:'assets/ui/panel.png',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true,nineSliceVerified:true},
-    {id:'icons-1',path:'assets/ui/atlas.webp',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true,atlasFramesVerified:true},
+    {id:'model-1',path:'assets/models/sword.glb',family:'WEAPON',role:'sword',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true},
+    {id:'panel-1',path:'assets/ui/panel.png',family:'UI',role:'panel',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true,nineSliceVerified:true},
+    {id:'icons-1',path:'assets/ui/atlas.webp',family:'UI',role:'icon_atlas',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true,atlasFramesVerified:true},
     {id:'unsafe',path:'../broken.png',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true}
   ];
   const selected=selectVibeSourceVisualPatterns({files,surface:'EQUIPMENT',assets:approved});
@@ -178,6 +178,7 @@ test('licensed source-bound texture/model evidence gates native preview, sliced 
   assert.ok(selected.selected.some(x=>x.pattern==='NINE_SLICE_SURFACE'));
   assert.ok(selected.selected.some(x=>x.pattern==='ICON_ATLAS_ANIMATION'));
   assert.deepEqual(selected.eligibleAssetIds,['icons-1','model-1','panel-1']);
+  assert.deepEqual(selected.matchedAssetIds,['icons-1','model-1','panel-1']);
   assert.equal(selected.sourceBindingsVerified,false,'planning must never imply game-specific runtime binding');
 });
 test('adaptive visual craft honors reduced motion and device budget without suppressing critical warnings',()=>{
@@ -218,4 +219,26 @@ test('existing mobile touch controls remain pinned; impossible safe-area positio
   });
   assert.equal(broken.pass,false,'unsafe bottom control cannot silently move under player finger');
   assert.ok(broken.unresolved.includes('attack-control'));
+});
+
+test('game-specific asset ranking uses roles before styles and never promotes a tree to item preview',()=>{
+  const assets=[
+    {id:'tree',path:'assets/tree.glb',family:'ENVIRONMENT',role:'tree',
+      verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true},
+    {id:'neutral',path:'assets/sword.glb',family:'WEAPON',role:'sword',
+      verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true},
+    {id:'forest',path:'assets/sword-forest.glb',family:'WEAPON',role:'sword',
+      style:'forest moss',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true}
+  ];
+  const ranked=rankVibeVisualAssetBindings({assets,surface:'EQUIPMENT',game:{genre:'forest survival'},world:{materials:['moss']}});
+  assert.deepEqual(ranked.selectedAssetIds,['forest','neutral']);
+  assert.equal(ranked.candidates[0].identityMatches.includes('forest'),true);
+  const noWeapon=selectVibeSourceVisualPatterns({
+    files:[{path:'web-games/forest/index.js',source:'const equipment = [];'}],
+    surface:'EQUIPMENT',assets:[assets[0]]
+  });
+  assert.equal(noWeapon.selected.some(x=>x.pattern==='3D_ITEM_PREVIEW'),false);
+  assert.ok(noWeapon.deferredForAssetProof.some(x=>x.pattern==='3D_ITEM_PREVIEW'));
+  assert.deepEqual(noWeapon.eligibleAssetIds,['tree'],'licensed tree remains eligible elsewhere');
+  assert.deepEqual(noWeapon.matchedAssetIds,[],'but tree is not a suitable equipment model');
 });
