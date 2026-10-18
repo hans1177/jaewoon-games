@@ -2450,9 +2450,9 @@ function presentationWorkerGuidance(order = {}) {
     'vibe-art-pipeline.js가 그래픽 생산 단일 코디네이터이며 asset planner/visual autopilot/presentation director/visual quality gate는 독립 승인 권한 없는 내부 모듈이다.',
     'Art Bible과 Visual Target Frame을 기준으로 Hero 대상(플레이어, 주 보스/적, 시그니처 장비, 핵심 랜드마크/시작지역)을 먼저 고품질 기준점으로 만든다.',
 
-    'UI와 게임 장면의 모든 영역을 고정 사각형 템플릿으로 만들지 않는다. 실제 게임의 승인된 세계관/Style Lock, 기능과 현재 소스에 맞춰 프레임 형상, 9-slice 검증 이미지, 재질, 외곽선, 폰트 계층, 아이콘, 여백 및 애니메이션을 조합한다. 검증되지 않은 이미지 assetId, FontFace, 모듈 경로를 추측하거나 가짜 바이트를 넣지 않는다.',
-    '로블록스: 이미 프로젝트에 실제 연결된 RobloxCommonUI.luau를 사용한다. CreateVisualFeedbackController의 ShowDamage에는 confirmed=true와 중복되지 않는 실제 전투 결과 eventId 및 viewportPosition 또는 worldPosition을 전달한다. AnimateIcon, PositionTooltip, UpdateStatusIcon, Notify를 기존 클라이언트 표시 책임 함수에서 연결한다. 공유 라이브러리에 해당 함수가 없는 게임은 기존 허용된 패키지/공용 모듈 업데이트 경로로 먼저 연결하며 존재하지 않는 API 호출을 만들지 않는다.',
-    '일반 웹: 기존 렌더 루프·DOM UI 소스 안에서만 JaewoonGraphicsEngine.createWebPresentationController({host})를 연결한다. 실제 게임에 모듈이 포함되었는지 확인하고, 실제 확정 피해 이벤트만 showDamage({confirmed:true,eventId,amount,x,y,kind})로 전달한다. showTooltip, notify, animateIcon, updateStatusIcon을 현재 상태와 연결한다. host·script 경로를 검증하지 못하면 실패 상태로 두고 가짜 적용 보고를 금지한다.',
+    'UI와 게임 장면은 3D 메시 프레임·실제 두께·재질·법선·조명·글리프 메시와 3D 아이콘, 레이캐스트 조작으로 구성한다. 평면 9-slice, 2D 폰트 이미지, DOM/ScreenGui 오버레이는 기존 게임을 포함해 모두 불합격이다. 실제 검증되지 않은 에셋 ID를 추측하지 않는다.',
+    '로블록스: 기존 CommonUI의 2D GuiObject 제작 함수 및 2D 데미지 숫자 컨트롤러는 최종 화면에 사용 금지. 실제 공간의 3D 장비창/체력바/도움창/문자 메시를 기존 게임 클라이언트 코드에서 생성하고 검증된 3D 인터랙션 대상으로 연결한다.',
+    '일반 웹: 기존 실제 3D 렌더러에 UI 3D 메시·확인된 GLB/글리프 메시·광원·카메라 공간 레이아웃과 레이캐스트 클릭을 연결한다. JaewoonGraphicsEngine.createWebPresentationController DOM 오버레이는 2D이므로 최종 게임 제작에 사용 금지. 데미지는 서버/게임 로직에서 확정된 이벤트만 3D 월드 텍스트로 표시한다.',
     '아이템, 스킬, 도움창, 상태 효과, 보스, 퀘스트, 상점, 제작, 지도, 경영, 파티 이벤트의 시각 패턴을 실제 기능이 존재하는 화면에만 적용한다. 생성 가능한 패턴은 DAMAGE_POPUP_POOL, TOOLTIP_PLACEMENT, CONTEXTUAL_HUD, ICON_STATE_MOTION, STATUS_DURATION_TRACK, NOTIFICATION_STACK, NINE_SLICE_SURFACE, MATERIAL_HARMONIZATION, 3D_ITEM_PREVIEW, VISUAL_EFFECT_BUDGET 등이다. 단순 패턴 명칭/메타데이터 추가는 소스 구현으로 간주하지 않는다.',
     '자원 획득/제작/피해/효과 이벤트가 실제로 없거나 미확정이면 시각 이벤트도 만들지 않는다. 이벤트 중복 제거, 팝업 수 제한, 클리핑/안전영역 검사, reduced-motion, UI 입력 보호, 기존 모바일 성능, 세이브·게임플레이·멀티 권한 보존을 직접 코드와 테스트로 증명한다.',
     '게임별 작업은 요구한 모든 활성 UI 화면/시각 상태를 현재 코드에서 추출한 뒤 실제 렌더링 코드로 각각 보강한다. 검증된 공통 코딩 기법은 재사용하지만 게임별 화면 비율, 형태, 재질, 아이콘 언어 및 연출은 Style Lock에 맞춰 독자적으로 제작한다.',
@@ -3886,6 +3886,27 @@ function preSubmitSelfReviewBlockFromPrompt(prompt='') {
 
 
 // A concrete craft contract fed into the SAME existing source worker, not a new pipeline.
+// Canonical native 3D-only direction applies to every old and new game task, not
+// only GRAPHICS_PRODUCTION. 2D legacy UI is conversion debt, never a release pass.
+function native3dOnlyGameWorkerGuidance(order={}){
+  const target=clean(order?.target).toLowerCase();
+  if(!['web','roblox'].includes(target))return '';
+  const platform=target==='roblox'
+    ?'Roblox: native Workspace/Camera 3D Model, MeshPart/Part, verified 3D glyph meshes, real surface normals/material response and raycast/part hit interaction. ScreenGui, BillboardGui, SurfaceGui, TextLabel, ImageLabel, Frame, ViewportFrame, 2D GUI hierarchy are NOT valid visible HUD, windows, icon, labels or damage numbers.'
+    :'Web: use the existing 3D renderer (PlayCanvas/Three/Babylon/WebGL) with real mesh geometry, depth buffer, native 3D glyph geometry, camera-space or world-space panel objects and raycast interaction. DOM/HTML/CSS HUD, CanvasRenderingContext2D, SpriteText, CSS3DRenderer, a camera-facing unlit image card, fake perspective and 2D overlay text are NOT valid visible GUI.';
+  return [
+    '[OWNER NATIVE 3D-ONLY EVERY GAME SOURCE AND UI]',
+    'Applies to EVERY new AND existing game source. No grandfathering for previously playable 2D games.',
+    'All visible UI, menus, HUD, inventory, shop, dialog, tooltip, item labels, damage numbers, icons, maps, status effects, loading/setting/pause screens, spatial world and popups must be actual native 3D geometry with camera/depth testing, material, lighting, 3D glyphs and true 3D spatial hit/raycast input.',
+    platform,
+    'Replace the existing 2D UI within its actual client rendering responsibility; do not install a 2D helper or use a second wrapper renderer. Do not call legacy RobloxCommonUI GuiObject helpers or JaewoonGraphicsEngine.createWebPresentationController for visible final UI.',
+    'Even when preexisting 2D code remains for safe rollback, it is NONCOMPLIANT. Never report finished, promote, or claim verified 3D until the exact game source no longer uses 2D UI and the replacement passes platform-native runtime inspection.',
+    'Do not delete the only playable version before native 3D replacement has independent runtime, input, mobile, save and multiplayer verification. Preserve existing gameplay/authority and data compatibility.',
+    'If no verified 3D text/model/assets/raycast capability is available, report ASSET_REPAIR_REQUIRED/NOT_VERIFIED rather than substituting 2D or claiming completion.',
+    '[END OWNER NATIVE 3D-ONLY]'
+  ].join('\\n');
+}
+
 function visualCraftWorkerGuidance(order={},context={}){
   const target=clean(order?.target).toLowerCase();
   if(!['web','roblox'].includes(target))return'';
@@ -3912,8 +3933,8 @@ function visualCraftWorkerGuidance(order={},context={}){
     JSON.stringify({materialRecipes:craft.craftPlans.map(row=>row.materialRecipe),
       surfaceLayouts:craft.craftPlans.map(row=>({surface:row.surface,grammar:row.grammar,
         layout:row.layout,focus:row.focus})),supportedEffects:craft.craftPlans[0]?.requiredPatterns||[]}),
-    'For each actual UI surface present in the allowed source, implement the relevant visual behavior in that game client owner: frames/icons/fonts/spacing, damage numbers, tooltip placement, notice stacking, stateful icons, boss/status displays, and native 3D item preview when a verified model is actually available.',
-    'Use existing engine-native UI module and graphics runtime functions ONLY if actually imported/bound in the selected game source. Never treat a common library name as proof that the running game uses it; add the normal existing library binding within the authorized responsibility where necessary.',
+    'For ALL user-visible UI in the actual source, including existing game HUD/windows, author actual 3D mesh panels, bevels and material slots, extruded 3D glyphs/icons and real depth-tested damage numbers, tooltips, native-model previews and status elements inside the existing 3D scene. No Sprite, DOM text, ScreenGui, fake 3D CSS or 2D canvas.',
+    'Reuse existing engine/native 3D renderer and its real mesh/text asset binding only when inspected. Existing 2D UI utility modules may not be bound or extended as final UI; convert their current game owner instead.',
     'Avoid fixed default themes, fabricated asset IDs, synthetic gameplay events, new parallel render loops, semantic HP changes, save changes, server-authority shifts or broad unrelated rewrites.',
     'Source owner edits must actually change rendered nodes or camera/model binding, not merely append descriptions or contract flags. Re-check portrait/landscape, touch input, popups on boundaries, duplicate event handling, reduced motion and runtime revision evidence.',
     '[VIBE GAME VISUAL CRAFT END]'
@@ -4669,6 +4690,7 @@ robloxSourceCoaching?.block||'',
 ordinaryWeb3dEngineGuidance(order,context),
 unityWeb3dCodingBlock,
 explorationGuidance(exploration),
+native3dOnlyGameWorkerGuidance(order),
 presentationWorkerGuidance(order),
 visualCraftWorkerGuidance(order,context),
 universalAssetWorkerGuidance(order),
