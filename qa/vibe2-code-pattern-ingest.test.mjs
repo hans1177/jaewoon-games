@@ -36,3 +36,23 @@ test('verified Web and Roblox aesthetic repairs distill concrete source-bound pa
     assert.ok(rows.some(row=>row.system==='DAMAGE_POPUP_POOL'));
   }
 });
+
+test('new game-specific visual algorithms distill only after independent regression proof',()=>{
+  const base={
+    taskType:'coding',gameId:'survival',sourceRevision:'e'.repeat(40),independentQa:'PASS',
+    browserQa:'PASS',verification:{fullRegression:'PASS',proposedTests:['actual runtime UI check']},
+    instruction:'source grounded visual pattern selection, asset role matching, fixed touch control, auto screen discovery',
+    input:'web-games/survival/index.html',
+    output:'Existing game UI implementation, no source copied.'
+  };
+  const patterns=deriveVerifiedCodePatterns(base,'verified-ui.json');
+  for(const system of ['SOURCE_GROUNDED_VISUAL_SELECTION','VISUAL_ASSET_ROLE_MATCHING','MOBILE_TOUCH_LAYOUT_PINNING','ADAPTIVE_SCREEN_DISCOVERY']){
+    const row=patterns.find(x=>x.system===system);
+    assert.ok(row,'verified sample must distill '+system);
+    assert.ok(row.implementationRecipe.proof.length>=4);
+    assert.equal(row.rawCodeStored,false);
+    assert.equal(row.authority,'verified-internal-code-pattern');
+  }
+  assert.equal(deriveVerifiedCodePatterns({...base,independentQa:'FAIL'},'unverified.json').length,0);
+  assert.equal(deriveVerifiedCodePatterns({...base,verification:{fullRegression:'FAIL'}},'failed-regression.json').length,0);
+});
