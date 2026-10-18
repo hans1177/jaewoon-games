@@ -1,6 +1,7 @@
 // Standalone, dependency-free UI overlay for Vibe game previews.
 import {createVibeGameUi} from './vibe-genre-game-ui.mjs';
 import {createGenreGameplay,recipes,structures,arts} from './vibe-genre-gameplay.mjs';
+import {createVibeSaveSlots,calculateVibeCombatStats} from './vibe-game-world-runtime.mjs';
 const css=`
 .vibe-shell{position:fixed;right:14px;top:14px;z-index:2147480000;color:#f5f7fc;font:14px/1.45 system-ui,sans-serif;max-width:min(360px,calc(100vw - 28px));pointer-events:auto}
 .vibe-shell button,.vibe-shell select,.vibe-shell input{font:inherit}
@@ -12,7 +13,7 @@ const css=`
 .vibe-panel label{display:flex;justify-content:space-between;gap:10px;margin:10px 0}.vibe-panel input[type=range]{width:125px}
 `;
 export function mountVibeGenreUi({documentRef=document,genre='storybook',onAction=()=>{}}={}){
- const ui=createVibeGameUi({genre,onAction});const gameplay=createGenreGameplay();let buildingCell=0;const style=documentRef.createElement('style');style.textContent=css;documentRef.head.append(style);
+ const ui=createVibeGameUi({genre,onAction});const gameplay=createGenreGameplay();const saves=createVibeSaveSlots({storage:documentRef.defaultView?.localStorage||null,gameId:'vibe-preview'});let buildingCell=0;const style=documentRef.createElement('style');style.textContent=css;documentRef.head.append(style);
  const root=documentRef.createElement('aside');root.className='vibe-shell';root.setAttribute('aria-label','게임 구성창');
  const launch=documentRef.createElement('button');launch.className='vibe-launch';launch.textContent='☰ 게임 메뉴';launch.setAttribute('aria-expanded','false');
  const panel=documentRef.createElement('section');panel.className='vibe-panel';panel.hidden=true;root.append(launch,panel);documentRef.body.append(root);
@@ -35,10 +36,12 @@ export function mountVibeGenreUi({documentRef=document,genre='storybook',onActio
    }
   }else if(layout.openPanel){
    const id=layout.openPanel;const state=gameplay.snapshot();
-   const status=documentRef.createElement('p');status.setAttribute('aria-live','polite');status.textContent='수련 점수 '+state.points+' · 골드 '+state.gold+' · 소지품 '+Object.entries(state.items).filter(([,v])=>v>0).map(([k,v])=>k+':'+v).join(' / ');panel.append(status);
+   const status=documentRef.createElement('p');status.setAttribute('aria-live','polite');const stats=calculateVibeCombatStats(state);status.textContent='공격력 '+stats.attack+' · 기력 '+stats.stamina+' · 수련 점수 '+state.points+' · 골드 '+state.gold+' · 소지품 '+Object.entries(state.items).filter(([,v])=>v>0).map(([k,v])=>k+':'+v).join(' / ');panel.append(status);
    const actions=documentRef.createElement('div');actions.className='vibe-grid';panel.append(actions);
    const perform=(label,callback)=>actions.append(button(label,()=>{try{callback();render()}catch(error){status.textContent=error.message}}));
-   if(id==='martialArts'||id==='meridians'||id==='skills'){
+   if(id==='pause'){
+    perform('1번 슬롯 저장',()=>saves.save(1,gameplay,{genre:ui.genre}));perform('1번 슬롯 불러오기',()=>{if(!saves.load(1,gameplay))throw Error('저장 데이터 없음')});
+   }else if(id==='martialArts'||id==='meridians'||id==='skills'){
     for(const [key,spec] of Object.entries(arts))perform(key+' Lv.'+(state.arts[key]||0)+' / '+spec.max,()=>gameplay.train(key));
    }else if(id==='crafting'||id==='recipes'||id==='inventory'){
     for(const [key,cost] of Object.entries(recipes))perform(key+' ('+Object.entries(cost).map(([k,v])=>k+' '+v).join(', ')+')',()=>gameplay.craft(key));
@@ -53,5 +56,5 @@ export function mountVibeGenreUi({documentRef=document,genre='storybook',onActio
  }
  launch.addEventListener('click',()=>{panel.hidden=!panel.hidden;if(!panel.hidden)ui.open('pause');render()});
  render();
- return {ui,gameplay,setGenre(name){ui.selectGenre(name);render()},dispose(){root.remove();style.remove()},render};
+ return {ui,gameplay,saves,setGenre(name){ui.selectGenre(name);render()},dispose(){root.remove();style.remove()},render};
 }
