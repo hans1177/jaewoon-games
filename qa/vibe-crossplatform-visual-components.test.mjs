@@ -6,7 +6,7 @@ import {
   VIBE_PRESENTATION_EFFECT_PATTERNS,
   createVibeVisualMaterialRecipe,
   optimizeVibeScreenLayout,placeVibeTooltip,
-  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud
+  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud,deriveVibeSourceVisualSystems,selectVibeSourceVisualPatterns
 } from '../assets/vibe-presentation-director.js';
 import '../assets/jaewoon-graphics-engine.js';
 
@@ -131,4 +131,71 @@ test('both native platform adapters expose concrete event-safe visual abilities'
   assert.match(worker,/createWebPresentationController/);
   assert.match(worker,/visualCraftWorkerGuidance\(order,context\)/);
   assert.match(worker,/planVibePresentationAutopilot\(/);
+});
+
+test('source-derived visual patterns differ by real gameplay system, not genre name or commented hints',()=>{
+  const crafting=[{path:'web-games/forest/index.html',source:
+    'const craftRecipe = getRecipe(); const inventory = items; function harvest(){ return gather(); }'}];
+  const combat=[{path:'roblox-games/arena/Client.luau',source:
+    'local bossPhase = 2; local damage = 10; local statusEffect = {}; local incomingAttack = false;'}];
+  const fake=[{path:'web-games/empty/index.html',source:
+    '<!-- bossPhase damage craft recipe --><script>// bossPhase damage craft recipe\nconst scene = true;</script>'}];
+  const roleOnly=selectVibeSourceVisualPatterns({game:{genre:'combat RPG'},files:fake,surface:'HUD'});
+  assert.equal(roleOnly.selected.some(x=>x.pattern==='DAMAGE_POPUP_POOL'),false);
+  assert.equal(roleOnly.selected.some(x=>x.pattern==='BOSS_PHASE_TRANSITION'),false);
+  const crafter=selectVibeSourceVisualPatterns({game:{genre:'boss raid'},files:crafting,surface:'CRAFT'});
+  assert.ok(crafter.source.systems.includes('CRAFT'));
+  assert.ok(crafter.selected.some(x=>x.pattern==='CRAFT_PROGRESS'));
+  assert.ok(!crafter.selected.some(x=>x.pattern==='DAMAGE_POPUP_POOL'));
+  const raid=selectVibeSourceVisualPatterns({game:{genre:'farming'},files:combat,surface:'BOSS'});
+  assert.ok(raid.selected.some(x=>x.pattern==='DAMAGE_POPUP_POOL'));
+  assert.ok(raid.selected.some(x=>x.pattern==='BOSS_PHASE_TRANSITION'));
+  assert.ok(raid.selected.some(x=>x.pattern==='STATUS_DURATION_TRACK'));
+  assert.ok(!raid.selected.some(x=>x.pattern==='CRAFT_PROGRESS'));
+  assert.equal(raid.runtimeVerified,false);
+  assert.equal(raid.source.gameplayStateVerified,false);
+  assert.ok(raid.selected.every(x=>x.runtimeVerified===false));
+  assert.deepEqual(deriveVibeSourceVisualSystems([{path:'notes.md',source:'bossPhase damage'}]).systems,[]);
+});
+test('licensed source-bound texture/model evidence gates native preview, sliced frame and atlas motion',()=>{
+  const files=[{path:'web-games/rpg/index.html',
+    source:'const inventory = []; const equipment = {}; const image = document.createElement("img");'}];
+  const unverified={id:'invented',path:'assets/armor.glb',verified:false,
+    licenseVerified:true,platformCompatible:true,sourceBound:true};
+  const noProof=selectVibeSourceVisualPatterns({files,surface:'EQUIPMENT',assets:[unverified]});
+  assert.ok(noProof.deferredForAssetProof.some(x=>x.pattern==='3D_ITEM_PREVIEW'));
+  assert.ok(noProof.deferredForAssetProof.some(x=>x.pattern==='NINE_SLICE_SURFACE'));
+  assert.ok(!noProof.eligibleAssetIds.length);
+  const approved=[
+    {id:'model-1',path:'assets/models/sword.glb',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true},
+    {id:'panel-1',path:'assets/ui/panel.png',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true,nineSliceVerified:true},
+    {id:'icons-1',path:'assets/ui/atlas.webp',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true,atlasFramesVerified:true},
+    {id:'unsafe',path:'../broken.png',verified:true,licenseVerified:true,platformCompatible:true,sourceBound:true}
+  ];
+  const selected=selectVibeSourceVisualPatterns({files,surface:'EQUIPMENT',assets:approved});
+  assert.ok(selected.selected.some(x=>x.pattern==='3D_ITEM_PREVIEW'));
+  assert.ok(selected.selected.some(x=>x.pattern==='NINE_SLICE_SURFACE'));
+  assert.ok(selected.selected.some(x=>x.pattern==='ICON_ATLAS_ANIMATION'));
+  assert.deepEqual(selected.eligibleAssetIds,['icons-1','model-1','panel-1']);
+  assert.equal(selected.sourceBindingsVerified,false,'planning must never imply game-specific runtime binding');
+});
+test('adaptive visual craft honors reduced motion and device budget without suppressing critical warnings',()=>{
+  const files=[{path:'web-games/survival/index.js',
+    source:'const attack = {}; const dangerZone = true; const skillSlot = 1;'}];
+  const low=selectVibeSourceVisualPatterns({files,performanceTier:'LOW',surface:'COMBAT',viewport:{width:375,height:812}});
+  assert.equal(low.motion.mode,'ECONOMY');
+  assert.equal(low.motion.maxConcurrentDecorativeEffects,4);
+  const reduced=selectVibeSourceVisualPatterns({files,reducedMotion:true,surface:'COMBAT'});
+  assert.equal(reduced.motion.mode,'REDUCED');
+  assert.equal(reduced.motion.maxConcurrentDecorativeEffects,0);
+  assert.equal(reduced.motion.preserveTelegraph,true);
+  assert.equal(reduced.selected.some(x=>x.pattern==='TELEGRAPH_PRIORITY'),true);
+  const plan=planVibePresentationAutopilot({
+    files,game:{name:'green-forest'},performanceTier:'LOW',
+    uiSurfaces:[{surface:'COMBAT',components:[]},{surface:'CRAFT',components:[]}]
+  });
+  assert.deepEqual(plan.adaptiveProfiles.map(x=>x.surface),['COMBAT','CRAFT']);
+  assert.ok(plan.adaptiveProfiles[0].selected.some(x=>x.pattern==='DAMAGE_POPUP_POOL'));
+  assert.ok(!plan.adaptiveProfiles[1].selected.some(x=>x.pattern==='CRAFT_PROGRESS'));
+  assert.equal(plan.craftPlans.length,plan.adaptiveProfiles.length);
 });
