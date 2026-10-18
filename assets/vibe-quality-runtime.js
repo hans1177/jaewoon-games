@@ -29,10 +29,12 @@ export function makeCombatBrain({vision=16,hearing=10,attackRange=2,leash=35,coo
       }
       const range=dist(self,target);
       if(range>attackRange){state='CHASE';return{state,move:canReach(self,target)?{x:target.x,y:target.y}:lastSeen,attack:null};}
+      if(state==='WINDUP'){
+        if(now-attackAt<windup)return{state,move:null,attack:null};
+        state='ATTACK';attackAt=now;return{state,move:null,attack:{targetId:target.id,at:now}};
+      }
       if(now-attackAt<cooldown){state='RECOVER';return{state,move:null,attack:null};}
-      if(state!=='WINDUP'){state='WINDUP';attackAt=now;return{state,move:null,attack:null,telegraph:{targetId:target.id,until:now+windup}};}
-      if(now-attackAt<windup)return{state,move:null,attack:null};
-      state='ATTACK';attackAt=now;return{state,move:null,attack:{targetId:target.id,at:now}};
+      state='WINDUP';attackAt=now;return{state,move:null,attack:null,telegraph:{targetId:target.id,until:now+windup}};
     }
   };
 }
