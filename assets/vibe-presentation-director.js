@@ -154,6 +154,53 @@ function verifiedVisualBinding(asset={},kind=''){
   if(kind==='ATLAS')return /\.(?:png|webp)$/i.test(path)&&asset.atlasFramesVerified===true;
   return true;
 }
+const VISUAL_SURFACE_ASSET_FAMILIES=Object.freeze({
+  HUD:['UI','VFX','MATERIAL'],COMBAT:['UI','VFX','MATERIAL'],BOSS:['UI','VFX','MATERIAL'],
+  INVENTORY:['UI','WEAPON','PROP','CHARACTER','MATERIAL'],
+  EQUIPMENT:['UI','WEAPON','CHARACTER','PROP','MATERIAL'],
+  SHOP:['UI','WEAPON','PROP','MATERIAL'],
+  CRAFT:['UI','PROP','MATERIAL'],QUEST:['UI','PROP','MATERIAL'],
+  MAP:['UI','ENVIRONMENT','PROP','MATERIAL'],BUILD:['UI','BUILDING','PROP','MATERIAL'],
+  DIALOGUE:['UI','CHARACTER','MATERIAL'],PARTY:['UI','CHARACTER','MATERIAL']
+});
+function visualSurfaceAssetRole(asset,surface){
+  const family=clean(asset.family||asset.category).toUpperCase();
+  const text=[asset.role,...(Array.isArray(asset.roles)?asset.roles:[])].map(clean).join(' ').toLowerCase();
+  const accepted=VISUAL_SURFACE_ASSET_FAMILIES[surface]||['UI','MATERIAL','VFX'];
+  if(family&&!accepted.includes(family))return false;
+  if(family&&accepted.includes(family))return true;
+  if(/(?:icon|frame|panel|hud|interface|button|ui|background|material|weapon|gear|armor|sword|tool|item)/i.test(text))return true;
+  return false;
+}
+function previewVisualAsset(asset){
+  const family=clean(asset.family||asset.category).toUpperCase();
+  const role=[asset.role,...(Array.isArray(asset.roles)?asset.roles:[])]
+    .map(clean).join(' ').toLowerCase();
+  return family==='WEAPON'||/weapon|sword|shield|armor|gear|equipment|helmet|tool|item|staff|bow/i.test(role);
+}
+export function rankVibeVisualAssetBindings({assets=[],surface='HUD',game={},world={}}={}){
+  const target=clean(surface).toUpperCase()||'HUD';
+  const identity=clean(game.visualIdentity||game.identity||game.genre||world.theme).toLowerCase();
+  const worldTags=(Array.isArray(world.materials)?world.materials:[]).map(x=>clean(x).toLowerCase()).filter(Boolean);
+  const identityTokens=identity.split(/[^a-z0-9가-힣]+/).filter(x=>x.length>=3);
+  const rows=(Array.isArray(assets)?assets:[]).filter(a=>verifiedVisualBinding(a)&&visualSurfaceAssetRole(a,target));
+  const ranked=rows.map(a=>{
+    const tags=[a.style,a.material,a.role,...(Array.isArray(a.tags)?a.tags:[])]
+      .map(clean).join(' ').toLowerCase();
+    const matches=uniq([...identityTokens,...worldTags]).filter(tag=>tags.includes(tag));
+    const role=clean(a.role).toLowerCase();
+    const score=matches.length*4+(role===target.toLowerCase()?8:0)
+      +(clean(a.family||a.category).toUpperCase()==='UI'&&target!=='EQUIPMENT'?2:0);
+    return Object.freeze({assetId:clean(a.assetId||a.id),family:clean(a.family||a.category).toUpperCase()||null,
+      role:clean(a.role)||null,sourcePath:clean(a.path),score,
+      identityMatches:Object.freeze(matches),runtimeBound:false});
+  }).sort((a,b)=>b.score-a.score||a.assetId.localeCompare(b.assetId));
+  return Object.freeze({surface:target,candidates:Object.freeze(ranked),
+    selectedAssetIds:Object.freeze(ranked.map(a=>a.assetId)),assetProvenanceRequired:true,
+    sourceBindingsVerified:false,runtimeVerified:false,
+    rule:'ROLE_AND_PLATFORM_FIRST_STYLE_SCORE_ONLY_TIEBREAK'});
+}
+
 export function selectVibeSourceVisualPatterns({
   files=[],surface='HUD',assets=[],viewport={width:393,height:852},
   reducedMotion=false,performanceTier='MID',game={}
@@ -162,7 +209,13 @@ export function selectVibeSourceVisualPatterns({
   const systemSet=new Set(observed.systems);
   const target=clean(surface).toUpperCase()||'HUD';
   const vetted=(Array.isArray(assets)?assets:[]).filter(a=>verifiedVisualBinding(a));
-  const hasAsset=kind=>vetted.some(asset=>verifiedVisualBinding(asset,kind));
+  const rankedAssets=rankVibeVisualAssetBindings({assets:vetted,surface:target,game});
+  const matchingIds=new Set(rankedAssets.selectedAssetIds);
+  const hasAsset=kind=>vetted.some(asset=>matchingIds.has(clean(asset.assetId||asset.id))
+    &&verifiedVisualBinding(asset,kind)
+    &&(kind!=='MODEL'||previewVisualAsset(asset))
+    &&(kind!=='NINE_SLICE'||(/^(?:UI)$/i.test(clean(asset.family||asset.category))||/panel|frame|ui/i.test(clean(asset.role))))
+    &&(kind!=='ATLAS'||(/^(?:UI)$/i.test(clean(asset.family||asset.category))||/icon|atlas/i.test(clean(asset.role)))));
   const selected=[],deferred=[];
   for(const [id,signals,surfaces,proof] of SOURCE_VISUAL_PATTERN_RULES){
     if(!surfaces.includes('*')&&!surfaces.includes(target))continue;
@@ -170,7 +223,7 @@ export function selectVibeSourceVisualPatterns({
     const verifiedAsset=id==='3D_ITEM_PREVIEW'?hasAsset('MODEL')
       :id==='NINE_SLICE_SURFACE'?hasAsset('NINE_SLICE')
       :id==='ICON_ATLAS_ANIMATION'?hasAsset('ATLAS')
-      :id==='MATERIAL_HARMONIZATION'?vetted.some(a=>a.materialVerified===true):true;
+      :id==='MATERIAL_HARMONIZATION'?vetted.some(a=>matchingIds.has(clean(a.assetId||a.id))&&a.materialVerified===true):true;
     const row=Object.freeze({pattern:id,proofRequired:proof,
       evidence:Object.freeze(signals.flatMap(k=>observed.evidence[k]||[]).filter((v,i,a)=>a.indexOf(v)===i).sort()),
       gameStateVerified:false,sourceImplementationVerified:false,runtimeVerified:false});
@@ -192,6 +245,7 @@ export function selectVibeSourceVisualPatterns({
     source:observed,
     selected:Object.freeze(selected),deferredForAssetProof:Object.freeze(deferred),
     eligibleAssetIds:Object.freeze(vetted.map(a=>clean(a.assetId||a.id)).sort()),
+    matchedAssetIds:rankedAssets.selectedAssetIds,rankedAssets,
     styleFromGameNotGlobalTemplate:true,contentFromActualGameSourceOnly:true,
     motion,sourceBindingsVerified:false,runtimeVerified:false,
     protected:Object.freeze(['gameplay-state','damage','cooldown','rewards','save','network-authority'])
