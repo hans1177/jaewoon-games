@@ -1092,7 +1092,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
     );
     if(quotaFailures){
       const retryTimes=variants.map(row=>{
-        const stamp=/NEXT_RETRY_AT=([^\\s:]+(?:[:][^\\s:]+)*)/.exec(clean(row?.candidateFailure?.message))?.[1];
+        const stamp=/NEXT_RETRY_AT=([0-9TZ:.-]+)/.exec(clean(row?.candidateFailure?.message))?.[1];
         return Date.parse(stamp||'');
       }).filter(Number.isFinite);
       if(retryTimes.length===variants.length){
