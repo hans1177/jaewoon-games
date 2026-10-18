@@ -1,0 +1,8 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {planVibeGame,vibeCasualFive} from '../assets/vibe-genre-system-planner.mjs';
+import {calculateVibeCombatStats,createVibeSaveSlots} from '../assets/vibe-game-world-runtime.mjs';
+import {createGenreGameplay} from '../assets/vibe-genre-gameplay.mjs';
+test('RPG and survival systems combine without duplicates',()=>{const plan=planVibeGame({primary:'rpg',secondary:['survival']});assert.ok(plan.systems.includes('hunger'));assert.ok(plan.systems.includes('quests'));assert.equal(plan.systems.length,new Set(plan.systems).size)});
+test('auto picks strategy when requested and casual set has five genres',()=>{assert.equal(planVibeGame({primary:'auto',preferences:{strategy:true}}).primary,'strategy4x');assert.equal(vibeCasualFive.length,5)});
+test('upgrades increase combat damage',()=>{const game=createGenreGameplay(),before=calculateVibeCombatStats(game.snapshot());game.upgrade();const after=calculateVibeCombatStats(game.snapshot());assert.ok(after.attack>before.attack)});
+test('per-game saves are isolated and restorable',()=>{const storage=new Map(),backend={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)};const first=createVibeSaveSlots({storage:backend,gameId:'gameA'}),other=createVibeSaveSlots({storage:backend,gameId:'gameB'}),game=createGenreGameplay();game.train('swordArt');first.save(1,game);assert.equal(other.load(1,createGenreGameplay()),null);const copy=createGenreGameplay();assert.ok(first.load(1,copy));assert.equal(copy.snapshot().arts.swordArt,1)});
