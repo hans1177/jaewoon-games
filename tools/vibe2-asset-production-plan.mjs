@@ -1493,7 +1493,9 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       if(!roleFit.verifiedRoleMatch){if(!roleFit.requestedRoles.length||!clean(asset.role||asset.subfamily))unresolvedFamilies.add(family);continue;}
       // 역할별 후보를 같은 원장 순회에서 색인한다. 기존 점수·출처 검증은 유지한다.
       const roleIndex=reusableByFamilyRole.get(family)||new Map();
-      for(const role of unique([asset.role,asset.subfamily,asset.atomId,asset.factory])
+      const originalIdentity=acquiredOriginal(asset)?unique([asset.title,asset.name]
+        .map(value=>clean(value).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'_').replace(/^_+|_+$/g,''))):[];
+      for(const role of unique([asset.role,asset.subfamily,asset.atomId,asset.factory,...originalIdentity])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))){
         const candidates=roleIndex.get(role)||[];
         candidates.push(asset);
