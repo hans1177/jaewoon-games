@@ -225,6 +225,13 @@ jobs:
           if(!trackedAssets.has(previewSource))throw Error('VIBE_MODEL_PREVIEW_SOURCE_MISSING');
           if(!fs.existsSync(previewSource))cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',previewSource]);
           fs.copyFileSync(previewSource,path.join(site,previewSource));
+          // Publish every relative ES module dependency used by the preview and integrated game.
+          for(const shared of ['vibe-motion-engine.mjs','vibe-character-adapter.mjs','vibe-gameplay-controller.mjs','vibe-game-input-physics.mjs','vibe-presentation-engine.mjs','vibe-browser-presentation.mjs','vibe-visual-design-system.json']){
+            const source=path.join('assets',shared);
+            if(!fs.existsSync(source))throw Error('VIBE_RUNTIME_SOURCE_MISSING:'+source);
+            fs.mkdirSync(path.join(site,'assets'),{recursive:true});
+            fs.copyFileSync(source,path.join(site,source));
+          }
           // 원본 렌더러는 그대로 두고 Pages 사본의 절대 경로만 프로젝트 prefix로 보정한다.
           for(const file of ['assets/homepage-enhancements.js','assets/asset-library.js','assets/asset-library-viewer.js']){
             const pathname=path.join(site,file);
