@@ -1,5 +1,5 @@
-// Editable genre-specific Blender character production and hand-keyed animation.
-// Run: blender --background --python tools/vibe_genre_character_factory.py -- --output-dir build/genre-heroes
+# Editable genre-specific Blender character production and hand-keyed animation.
+# Run: blender --background --python tools/vibe_genre_character_factory.py -- --output-dir build/genre-heroes
 import bpy, math, sys, argparse
 from pathlib import Path
 from mathutils import Vector
@@ -53,6 +53,40 @@ def rig():
  bpy.ops.object.mode_set(mode='OBJECT');return arm
 def bind(obj,arm,bone):
  world=obj.matrix_world.copy();obj.parent=arm;obj.parent_type='BONE';obj.parent_bone=bone;obj.matrix_world=world
+def soft_skin(obj,arm,weights):
+ # Weights are based on object-local vertices transformed to rest-world coordinates.
+ world=obj.matrix_world.copy()
+ groups={name:obj.vertex_groups.new(name=name) for name in weights}
+ for v in obj.data.vertices:
+  p=world @ v.co
+  raw={name:max(0.,fn(p)) for name,fn in weights.items()}
+  total=sum(raw.values())
+  if total<1e-8:raw[next(iter(raw))]=1.;total=1.
+  for name,value in raw.items():
+   if value>0:groups[name].add([v.index],value/total,'REPLACE')
+ modifier=obj.modifiers.new('SmoothJointSkin','ARMATURE');modifier.object=arm
+ obj.parent=arm;obj.matrix_parent_inverse=arm.matrix_world.inverted()
+ return obj
+def smoothstep(a,b,x):
+ t=max(0.,min(1.,(x-a)/max(1e-6,b-a)))
+ return t*t*(3-2*t)
+def deformable_limb(name,position,scale,material,arm,proximal,distal,joint_height,blend_width=.13):
+ obj=sphere(name,position,scale,material,32,24)
+ # Smoothly distribute influence across the elbow/knee joint instead of rigid pieces.
+ soft_skin(obj,arm,{
+  proximal:lambda p:smoothstep(joint_height-blend_width,joint_height+blend_width,p.z),
+  distal:lambda p:1.-smoothstep(joint_height-blend_width,joint_height+blend_width,p.z)
+ })
+ return obj
+def finger_skin(name,position,scale,material,arm,first,second,third):
+ obj=sphere(name,position,scale,material,16,12)
+ z=position[2]
+ soft_skin(obj,arm,{
+  first:lambda p:smoothstep(z-.07,z-.015,p.z),
+  second:lambda p:1.-abs(2*smoothstep(z-.07,z+.07,p.z)-1),
+  third:lambda p:1.-smoothstep(z+.015,z+.07,p.z)
+ })
+ return obj
 def make_facial_keys(face):
  basis=face.shape_key_add(name='Basis')
  points=[v.co.copy() for v in face.data.vertices]
@@ -105,19 +139,16 @@ def create(genre):
   if name=='Face':make_facial_keys(obj)
   bind(obj,arm,bone)
  for side,sgn in [('L',-1),('R',1)]:
+  deformable_limb(side+'_ArmSkin',(sgn*.54,0,1.4),(.16,.16,.42),cloth,arm,side+'_UpperArm',side+'_Forearm',1.42)
+  deformable_limb(side+'_LegSkin',(sgn*.19,0,.53),(.18,.18,.51),cloth,arm,side+'_Thigh',side+'_Shin',.53)
   for name,pos,scale,m,bone in [
-   ('UpperArm',(sgn*.47,0,1.56),(.16,.16,.27),cloth,side+'_UpperArm'),
-   ('Forearm',(sgn*.61,0,1.27),(.13,.13,.2),skin,side+'_Forearm'),
    ('Hand',(sgn*.66,0,1.07),(.11,.09,.13),skin,side+'_Hand'),
-   ('Thigh',(sgn*.18,0,.74),(.19,.19,.32),cloth,side+'_Thigh'),
-   ('Shin',(sgn*.19,0,.33),(.16,.16,.28),cloth,side+'_Shin'),
    ('Boot',(sgn*.19,-.09,.12),(.19,.3,.13),dark,side+'_Foot'),
    ('Eye',(sgn*.11,-.245,2.27),(.043,.025,.058),dark,'Head')]:
    obj=sphere(side+'_'+name,pos,scale,m);bind(obj,arm,bone)
   for idx,finger in enumerate(['Thumb','Index','Middle','Ring','Pinky']):
-   for joint in range(1,4):
-    obj=sphere(f'{side}_{finger}{joint}_mesh',(sgn*(.61+(idx-2)*.025),0,1.04-(joint-.5)*.055),(.022,.025,.036),skin,12,8)
-    bind(obj,arm,f'{side}_{finger}{joint}')
+   names=[f'{side}_{finger}{joint}' for joint in range(1,4)]
+   finger_skin(f'{side}_{finger}_Skinned',(sgn*(.61+(idx-2)*.025),0,.95),(.025,.025,.105),skin,arm,*names)
  if hat in ['cap','beret','helmet','hood']:
   obj=sphere('Headwear',(0,0,2.48),(.33,.29,.17),cloth);bind(obj,arm,'Head')
  elif hat=='topknot':
