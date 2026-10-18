@@ -3081,7 +3081,7 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
   // 검증된 자체 제작품이 명백히 우월하면 위 정렬 정책의 예외를 유지한다.
   const originalPreferred=rows[0]?.downloadedOriginal===true
     &&rows[0].reuse.roleCompatible&&rows[0].reuse.platformCompatible;
-  const best=locked||(originalPreferred?rows[0]:(currentAsset?verifiedRows[0]||rows[0]:rows[0]))||null;
+  const best=locked||(originalPreferred?rows[0]:(currentAsset?verifiedRows.find(row=>row.downloadedOriginal)||rows[0]:null))||null;
   const current=currentAsset?evaluateInternalAssetReuse({
     asset:currentAsset,gameDna,requirement,usage:usageByAsset[text(currentAsset?.id)]||{}
   }):null;
