@@ -12,6 +12,7 @@ import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,dete
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
+import {planAssetApplication} from '../assets/asset-selector.js';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
 
 // 중앙 정책: 외부 원본은 게임에서 필요한 경우만 선택하며 재질 수정·등록·런타임 승격은 별도 검증한다.
@@ -145,6 +146,18 @@ test('unacquired or unsafe library candidates never masquerade as game assets',(
   assert.equal(result.productionVerificationGranted,false);
   assert.equal(result.runtimeVerificationGranted,false);
 });
+test('legacy preset-first asset selector policy is replaced by compulsory downloaded library and real 3D Web',()=>{
+  const plan=planAssetApplication({prompt:'3D fantasy castle library'});
+  assert.equal(plan.policy.downloadedRegisteredLibraryFirstMandatory,true);
+  assert.equal(plan.policy.allGamesAndExistingGameSystems,true);
+  assert.equal(plan.policy.prototypePresetFirst,false);
+  assert.equal(plan.policy.webValidationSurfaceOnly,false);
+  assert.equal(plan.policy.generalWebTrue3dDevelopmentEnabled,true);
+  assert.equal(plan.policy.noPrimitiveOrSpriteOnlyWorldCompletion,true);
+  assert.ok(plan.steps.some(step=>step.includes('기존 ASSET_DEVELOPMENT 수급 요청')));
+  assert.ok(plan.steps.some(step=>step.includes('실제 3D 모델/월드')));
+});
+
 test('existing central library policy already mandates asset-first binding for every game and platform',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const binding=policy.livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract;
