@@ -54,7 +54,7 @@ export function mountMonsterBattleEffects(doc=document){
     sprite.classList.add(settings.get().motionReduction?'vibeHitReduced':'vibeHit');
     fx.textContent=(guarded?'방어! ':'')+'−'+Math.max(0,Math.round(damage));
     fx.className='vibeImpact visible '+(target==='enemy'?'onEnemy':'onPlayer');
-    feedback.add({id:target,amount:damage,time:Date.now()});
+    feedback.hit({targetId:target,amount:damage,time:Date.now()});
     globalThis.clearTimeout(timer);
     timer=globalThis.setTimeout(()=>{fx.className='vibeImpact';sprite.classList.remove('vibeHit','vibeHitReduced');},650);
     status.textContent=(side==='player'?'아군':'야생 몬스터')+(special?' 기술':' 공격')+' · '+damage+' 피해'+(guarded?' (방어 적용)':'');
