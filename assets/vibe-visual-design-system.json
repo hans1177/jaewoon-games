@@ -1,0 +1,166 @@
+{
+  "version": 1,
+  "description": "Genre-based visual design tokens and UI/character/housing recipes; integration is opt-in and requires gameplay QA.",
+  "genres": {
+    "fantasy": {
+      "palette": {
+        "primary": "#bba06b",
+        "surface": "#172331",
+        "accent": "#79d5bb"
+      },
+      "character": {
+        "material": "cloth-leather-metal",
+        "roughness": 0.65,
+        "metalness": 0.16
+      },
+      "housing": {
+        "wall": "stone-and-wood",
+        "floor": "timber",
+        "lighting": "warm-torch"
+      },
+      "menu": {
+        "style": "ornamental",
+        "corners": 12
+      }
+    },
+    "scifi": {
+      "palette": {
+        "primary": "#71caff",
+        "surface": "#0a1528",
+        "accent": "#a5ffed"
+      },
+      "character": {
+        "material": "brushed-metal",
+        "roughness": 0.28,
+        "metalness": 0.7
+      },
+      "housing": {
+        "wall": "modular-panel",
+        "floor": "metal-grid",
+        "lighting": "cool-neon"
+      },
+      "menu": {
+        "style": "holographic",
+        "corners": 6
+      }
+    },
+    "horror": {
+      "palette": {
+        "primary": "#b4a39a",
+        "surface": "#100f14",
+        "accent": "#bd5262"
+      },
+      "character": {
+        "material": "worn-fabric",
+        "roughness": 0.86,
+        "metalness": 0.05
+      },
+      "housing": {
+        "wall": "aged-plaster",
+        "floor": "weathered-wood",
+        "lighting": "low-key"
+      },
+      "menu": {
+        "style": "minimal-dark",
+        "corners": 4
+      }
+    },
+    "cartoon": {
+      "palette": {
+        "primary": "#ffb15e",
+        "surface": "#233450",
+        "accent": "#8ce3ff"
+      },
+      "character": {
+        "material": "stylized",
+        "roughness": 0.88,
+        "metalness": 0
+      },
+      "housing": {
+        "wall": "painted",
+        "floor": "bright-tile",
+        "lighting": "soft"
+      },
+      "menu": {
+        "style": "rounded",
+        "corners": 18
+      }
+    },
+    "realistic": {
+      "palette": {
+        "primary": "#9daec1",
+        "surface": "#1c2532",
+        "accent": "#78b6d9"
+      },
+      "character": {
+        "material": "physically-based",
+        "roughness": 0.48,
+        "metalness": 0.25
+      },
+      "housing": {
+        "wall": "plaster",
+        "floor": "wood",
+        "lighting": "natural"
+      },
+      "menu": {
+        "style": "clean",
+        "corners": 8
+      }
+    }
+  },
+  "systems": {
+    "characterCustomization": {
+      "slots": [
+        "hair",
+        "face",
+        "skin",
+        "upper",
+        "lower",
+        "boots",
+        "accessory"
+      ],
+      "preview": "isolated-3d",
+      "saveScope": "per-game"
+    },
+    "housingCustomization": {
+      "categories": [
+        "walls",
+        "floors",
+        "furniture",
+        "lighting",
+        "decor"
+      ],
+      "placement": "grid-snap",
+      "validation": [
+        "collision",
+        "bounds",
+        "ownership"
+      ],
+      "saveScope": "per-game"
+    },
+    "menus": {
+      "screens": [
+        "main",
+        "settings",
+        "inventory",
+        "character",
+        "housing",
+        "pause"
+      ],
+      "requirements": [
+        "keyboard-navigation",
+        "mobile-safe-area",
+        "contrast",
+        "reduced-motion"
+      ]
+    }
+  },
+  "qualityGates": [
+    "asset-license-review",
+    "material-map-validation",
+    "mobile-frame-budget",
+    "save-migration",
+    "input-regression",
+    "visual-screenshot-review"
+  ]
+}
