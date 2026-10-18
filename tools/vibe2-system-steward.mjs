@@ -26,6 +26,7 @@ const failureSignature=t=>clean(t?.blocker)||clean(t?.lastOutcome)||'causal-repa
 const ADAPTIVE_STEPS=new Set(ADAPTIVE_PARALLELISM_STEPS);
 const adaptiveControlStepHealthy=input=>{const step=Number(input?.currentMax);return ADAPTIVE_STEPS.has(step)&&(step>=DEFAULT_ADAPTIVE_TARGET||(input?.lastTelemetry&&typeof input.lastTelemetry==='object'));};
 const staleMachineBlocker=v=>/^MACHINE_STATE_INCONSISTENT:.*(?:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED)/i.test(clean(v));
+const applyStaleLeaseRecoveryOutcome=task=>({...task,lastOutcome:'SYSTEM_STEWARD_STALE_LEASE_RECOVERED'});
 const rawMachineStateHealthy=({queueInput={},controlInput={}}={})=>
   Number(queueInput?.maxConcurrentTasks)===EXTERNAL_MATRIX_BATCH_MAX&&
   Number(controlInput?.version)===4&&

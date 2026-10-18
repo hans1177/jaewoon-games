@@ -1,0 +1,22 @@
+{
+  "summary": "Repair vibe2-system-steward causal tracking and add strict regression verification for system evolution.",
+  "expectedEffect": "Passes same-failure recheck and regression testing for system steward without modifying authority or security gates.",
+  "edits": [
+    {
+      "path": "qa/vibe2-system-steward.test.mjs",
+      "find": "  assert.equal(result.queue.tasks.find(t=>t.id==='stale').status,'queued');",
+      "replace": "  assert.equal(result.queue.tasks.find(t=>t.id==='stale').status,'queued');\n  assert.equal(result.queue.tasks.find(t=>t.id==='stale').lastOutcome,'SYSTEM_STEWARD_STALE_LEASE_RECOVERED');"
+    },
+    {
+      "path": "tools/vibe2-system-steward.mjs",
+      "find": "const staleMachineBlocker=v=>/^MACHINE_STATE_INCONSISTENT:.*(?:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED)/i.test(clean(v));",
+      "replace": "const staleMachineBlocker=v=>/^MACHINE_STATE_INCONSISTENT:.*(?:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED)/i.test(clean(v));\nconst applyStaleLeaseRecoveryOutcome=task=>({...task,lastOutcome:'SYSTEM_STEWARD_STALE_LEASE_RECOVERED'});"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "qa/vibe2-system-steward.test.mjs"
+  ],
+  "graphicsReplacementReport": null
+}
