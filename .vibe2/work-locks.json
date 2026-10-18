@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-15ntf00",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-28a2f2747401-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "baseSha": "d5f7a114434923b548e7a9594e339c0bc1f577e0",
+      "runId": "39133444475",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-18T14:23:16.465Z",
+      "expiresAt": "2026-10-18T15:08:16.465Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-28a2f2747401-v1"
+      ]
+    }
+  ]
 }
