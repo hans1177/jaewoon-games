@@ -83,7 +83,14 @@ export function deriveVerifiedCodePatterns(sample={},sourcePath=''){
     ...(sample.verification?.proposedTests||[]),
     clean(sample.output).split('검증된 패치:')[0]
   ].filter(Boolean).join(' ');
-  const systems=CLASSIFIERS.filter(([,re])=>re.test(text)).map(([name])=>name);
+  const runtimeProvenPatterns=new Set([
+    'SOURCE_GROUNDED_VISUAL_SELECTION','VISUAL_ASSET_ROLE_MATCHING',
+    'MOBILE_TOUCH_LAYOUT_PINNING','ADAPTIVE_SCREEN_DISCOVERY'
+  ]);
+  const systems=CLASSIFIERS.filter(([,re])=>re.test(text)).map(([name])=>name)
+    .filter(name=>!runtimeProvenPatterns.has(name)
+      ||(upper(sample.verification?.visualRuntime)==='PASS'
+        &&upper(sample.verification?.sourceBinding)==='PASS'));
   const sourceRevision=clean(sample.sourceRevision||sample.sourceCommit||sample.provenance?.sourceRevision);
   const gameId=clean(sample.gameId||sample.project)||null;
   const engine=engineOf(sample);
