@@ -5322,3 +5322,22 @@ test('web UI source consumers register actual company assets and invalidate remo
     assert.ok(stale.relations.some(row=>row.assetId==='nine-frame.png'&&row.classification==='STALE_SOURCE_BINDING'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('Blender humanoid DCC recipe declares every rendered preview for exact rollback',()=>{
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const asset=registry.assets.find(row=>row.id==='roblox-world-ghost-gwisin-bride');
+  const recipe=asset?.authoringRecipes?.find(row=>row.id==='shared-humanoid-motion-bride-v3');
+  assert.ok(recipe,'registered authored humanoid recipe required');
+  assert.equal(recipe.script,'assets/roblox/world-ghosts/refine-humanoid-motion.py');
+  const script=fs.readFileSync(recipe.script,'utf8');
+  const times=script.match(/preview_times=\\{([\\s\\S]*?)\\n    \\}/)?.[1];
+  assert.ok(times,'Blender preview names must remain discoverable from the executable recipe');
+  const names=[...times.matchAll(/'(hero_[a-z0-9_]+)'\\s*:\\s*\\d/g)].map(match=>match[1]);
+  assert.equal(names.length,17);
+  const prefix='assets/roblox/world-ghosts/native/mesh/bride-motion-v3/previews/';
+  const required=[prefix+'source-bind-reference.png',...names.map(name=>prefix+name+'.png')];
+  const declared=new Set(recipe.outputs||[]);
+  assert.equal(declared.size,recipe.outputs.length,'no duplicate output paths');
+  for(const file of required)assert.ok(declared.has(file),'DCC rollback scope missing generated preview: '+file);
+  assert.equal(recipe.preview,prefix+'source-bind-reference.png');
+});
