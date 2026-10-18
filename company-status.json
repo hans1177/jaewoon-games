@@ -303,7 +303,7 @@
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 44,
+        "developmentConfirmed": 45,
         "designOnly": 0
       },
       "releaseConfirmedGameIds": [],
@@ -348,6 +348,7 @@
         "RUNTIME-seed-single-defense-strat-celestial-bastion",
         "RUNTIME-seed-story-complete-rpg-chronicles-of-eldoria",
         "RUNTIME-star-frontier",
+        "RUNTIME-tekken",
         "RUNTIME-tower-choice-rpg",
         "RUNTIME-village-dungeons",
         "RUNTIME-wild-survival",
@@ -399,7 +400,8 @@
           "RUNTIME-star-frontier",
           "RUNTIME-tower-choice-rpg",
           "RUNTIME-ant-simulator",
-          "RUNTIME-wild-survival"
+          "RUNTIME-wild-survival",
+          "RUNTIME-tekken"
         ],
         "paused": [],
         "rebuild": [],
@@ -408,11 +410,11 @@
       },
       "pipeline": {
         "target": 60,
-        "count": 44,
+        "count": 45,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 16
+        "deficit": 15
       },
       "ranking": [
         {
@@ -1074,6 +1076,21 @@
           "targetPlatform": "ROBLOX",
           "targetPlatformReady": true,
           "sourceReady": true
+        },
+        {
+          "rank": 45,
+          "rawEvidenceRank": 45,
+          "gameId": "RUNTIME-tekken",
+          "slug": "tekken",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "UNCLASSIFIED",
+          "evidenceScore": 0,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": false,
+          "sourceReady": false
         }
       ],
       "source": [
