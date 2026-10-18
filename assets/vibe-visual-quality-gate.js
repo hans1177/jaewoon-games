@@ -1,12 +1,15 @@
-// Vibe2 mandatory visual quality + Web 2.5D gate
-// Web games are 2.5D by default: projected world coordinates, depth sorting, elevation/shadows and real coherent assets.
+// Vibe2 native real 3D gameplay-world acceptance for Web, Roblox and Unity.
+// 2D overlays may support an actual 3D world; a 2D or 2.5D world cannot pass.
 const IMAGE_EXT=/\.(png|webp|jpg|jpeg|gif|svg)$/i;
 const VISUAL_HINT=/(player|character|hero|companion|npc|enemy|boss|monster|background|terrain|tile|tree|rock|plant|resource|building|house|door|chest|weapon|armor|item|projectile|effect|vfx|icon|ui)/i;
 const PLACEHOLDER_CODE=/(ctx\.(?:arc|fillRect|strokeRect|ellipse)\s*\(|[😀-🙏🌀-🫿])/u;
 const REAL_RENDER=/(drawImage\s*\(|<img\b|background(?:-image)?\s*:\s*url\(|Sprite2D|AnimatedSprite2D|TextureRect|TextureButton|texture\s*=)/i;
-const WEB_25D_PROJECTION=/(iso(?:metric)?|dimetric|project(?:World|Iso|25D|3D)|worldToScreen|tileToScreen|screenToWorld|perspective\s*\(|rotateX\s*\(|matrix3d\s*\()/i;
-const WEB_25D_DEPTH=/(depthSort|depth\s*[=:]|sort\s*\(\s*\([^)]*\)\s*=>[^\n]*(?:x\s*\+\s*y|screenY|depth|zIndex)|z-index|zIndex)/i;
-const WEB_25D_HEIGHT=/(elevation|heightScale|worldZ|\bz\s*[=:]|shadow(?:Offset|Scale)?|groundShadow|castShadow)/i;
+const WEB_REAL_3D_RENDERER=/(?:THREE\.(?:WebGLRenderer|Scene|Mesh)|new\s+THREE\.WebGLRenderer|new\s+pc\.(?:Application|AppBase)|BABYLON\.(?:Engine|Scene|Mesh)|new\s+BABYLON\.Engine|new\s+WebGL2?RenderingContext|\.getContext\s*\(\s*['"]webgl2?['"]|gl\.draw(?:Arrays|Elements)|\.drawElements\s*\()/i;
+const WEB_REAL_3D_MESH=/(?:THREE\.(?:Mesh|SkinnedMesh|BoxGeometry|BufferGeometry)|pc\.(?:Entity|MeshInstance|Mesh)|BABYLON\.(?:Mesh|MeshBuilder)|mesh(?:Renderer|Instance|Geometry)|gl\.(?:drawElements|drawArrays)|\.glb\b|\.gltf\b)/i;
+const WEB_REAL_3D_CAMERA=/(?:PerspectiveCamera|OrthographicCamera|\.camera\b|\.fov\b|\.activeCamera|camera\.projection|mat4\.perspective|camera\.setPosition)/i;
+const WEB_REAL_3D_DEPTH=/(?:depthTest|depthBuffer|DEPTH_TEST|depthWrite|depthFunc|autoClearDepth|depth\s*:\s*true|WebGLRenderer)/i;
+const ROBLOX_REAL_3D_WORLD=/(?:Instance\.new\s*\(\s*['"](?:MeshPart|Part|Terrain|WedgePart|UnionOperation)['"]|\bMeshPart\b|\bworkspace\.Terrain\b|\bWorldModel\b)/i;
+const UNITY_REAL_3D_WORLD=/(?:MeshFilter|MeshRenderer|SkinnedMeshRenderer|TerrainData|CharacterController|Rigidbody\b|Physics\.Raycast)/i;
 export const REQUIRED_VISUAL_TYPES=['character','enemy','boss','background','item','prop','effect','ui','animation'];
 export const GOLDEN_SCENE_ROLES=Object.freeze([
   'PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP',
@@ -487,14 +490,61 @@ export function auditVibeVisualAssets(summary={}){
   const pass=assets.length>0&&usesRealAssets&&missing.length===0&&placeholderHits.length===0&&coherentAssetSet;
   return {pass,assets:assets.length,namedAssets:namedAssets.length,usesRealAssets,coherentAssetSet,missing,placeholderHits,reasons:[...(assets.length?[]:['실제 이미지/스프라이트 에셋 없음']),...(usesRealAssets?[]:['실제 에셋 렌더링 연결 없음']),...(missing.length?[`필수 에셋 분류 누락: ${missing.join(', ')}`]:[]),...(placeholderHits.length?[`도형/이모지 placeholder 잔존: ${placeholderHits.join(', ')}`]:[]),...(coherentAssetSet?[]:['통일된 실제 에셋 세트가 부족함'])]};
 }
-export function auditVibeWeb25D(summary={}){
+// Static source hints are a routing aid, never an approval of actual 3D gameplay.
+export function auditVibeNative3D(summary={}){
+  const target=String(summary.target||'web').toLowerCase();
   const files=Array.isArray(summary.files)?summary.files:[];
-  const web=files.filter(f=>/\.(?:js|mjs|html|css)$/i.test(f.path||'')&&typeof f.text==='string');
-  const joined=web.map(f=>f.text).join('\n');
-  const projection=WEB_25D_PROJECTION.test(joined),depthSorting=WEB_25D_DEPTH.test(joined),heightOrShadow=WEB_25D_HEIGHT.test(joined);
-  const pass=projection&&depthSorting&&heightOrShadow;
-  return {pass,projection,depthSorting,heightOrShadow,reasons:[...(projection?[]:['2.5D 투영/카메라 변환 없음']),...(depthSorting?[]:['2.5D 깊이 정렬 없음']),...(heightOrShadow?[]:['높이/그림자 표현 없음'])]};
+  const extensions=target==='roblox'?/\.(?:luau|lua)$/i
+    :target.startsWith('unity')?/\.cs$/i:/\.(?:js|mjs|html|ts)$/i;
+  const joined=files.filter(f=>extensions.test(f.path||'')&&typeof f.text==='string')
+    .map(f=>f.text).join('\n');
+  const engine=target==='roblox'?'ROBLOX_NATIVE_3D':target.startsWith('unity')?'UNITY_NATIVE_3D':'WEB_NATIVE_3D';
+  const renderer=target==='roblox'?ROBLOX_REAL_3D_WORLD.test(joined)
+    :target.startsWith('unity')?UNITY_REAL_3D_WORLD.test(joined)
+    :WEB_REAL_3D_RENDERER.test(joined);
+  const mesh=target==='roblox'?ROBLOX_REAL_3D_WORLD.test(joined)
+    :target.startsWith('unity')?UNITY_REAL_3D_WORLD.test(joined)
+    :WEB_REAL_3D_MESH.test(joined);
+  const camera=target==='roblox'?/(?:CurrentCamera|CameraType|CameraSubject|ViewportFrame|CFrame\.lookAt)/i.test(joined)
+    :target.startsWith('unity')?/(?:Camera\.main|Camera\b|CameraType)/i.test(joined)
+    :WEB_REAL_3D_CAMERA.test(joined);
+  const depth=target==='roblox'||target.startsWith('unity')
+    ?mesh&&camera:WEB_REAL_3D_DEPTH.test(joined);
+  const sourceReady=renderer&&mesh&&camera&&depth;
+  const evidence=summary.runtimeEvidence||{};
+  const revision=String(summary.candidateRevision||summary.sourceRevision||'').trim();
+  const evidenceRevision=String(evidence.sourceRevision||evidence.candidateRevision||'').trim();
+  const proofSource=['REAL_WEBGL_RUNTIME_CAPTURE','REAL_ROBLOX_RUNTIME_CAPTURE','REAL_UNITY_RUNTIME_CAPTURE']
+    .includes(String(evidence.source||'').trim());
+  const observedMeshCount=Number(evidence.observedMeshCount);
+  const actualRuntime=evidence.actualEngineRuntime===true&&evidence.observed===true
+    &&evidence.reviewed===true&&proofSource&&Boolean(revision)
+    &&evidenceRevision===revision&&Number.isFinite(observedMeshCount)
+    &&observedMeshCount>0&&evidence.depthTestPassed===true
+    &&evidence.camera3dObserved===true&&evidence.spatialInteractionObserved===true
+    &&evidence.markerOnly!==true&&Boolean(String(evidence.captureArtifactId||'').trim())
+    &&/^[a-f0-9]{64}$/i.test(String(evidence.captureSha256||''));
+  const reasons=[];
+  if(!renderer)reasons.push('native-3d-renderer-not-proven-in-source');
+  if(!mesh)reasons.push('real-three-dimensional-mesh-not-proven-in-source');
+  if(!camera)reasons.push('three-dimensional-camera-not-proven-in-source');
+  if(!depth)reasons.push('native-depth-test-not-proven-in-source');
+  if(!actualRuntime)reasons.push('source-revision-bound-real-3d-runtime-evidence-required');
+  return Object.freeze({
+    version:1,engine,minimumFinalGameplayDimension:'3D',pass:sourceReady&&actualRuntime,
+    sourceReady,actualRuntimeVerified:actualRuntime,renderer,mesh,camera,depth,
+    ui2DOverlayAllowed:true,twoPointFiveDGameplayPassForbidden:true,
+    screenshotOrSourceMarkerAloneCannotPass:true,sourceRevision:revision||null,
+    reasons:Object.freeze(reasons),authority:'CANONICAL_REAL_3D_GAMEPLAY_WORLD_GATE'
+  });
+}
+// Legacy names remain API-compatible but now enforce real 3D, never 2.5D.
+export function auditVibeWeb25D(summary={}){return auditVibeNative3D({...summary,target:'web'});}
+export function assertVibeNative3D(summary={}){
+  const audit=auditVibeNative3D(summary);
+  if(!audit.pass)throw new Error('Vibe2 native 3D gate blocked: '+audit.reasons.join(' · '));
+  return audit;
 }
 export function assertVibeVisualQuality(summary={}){const audit=auditVibeVisualAssets(summary);if(!audit.pass)throw new Error(`Vibe2 그래픽 품질 게이트 차단 · ${audit.reasons.join(' · ')}`);return audit;}
-export function assertVibeWeb25D(summary={}){const audit=auditVibeWeb25D(summary);if(!audit.pass)throw new Error(`Vibe2 Web 2.5D 게이트 차단 · ${audit.reasons.join(' · ')}`);return audit;}
-export function assertVibeWebRelease(summary={}){return {visual:assertVibeVisualQuality(summary),web25d:assertVibeWeb25D(summary)};}
+export function assertVibeWeb25D(summary={}){return assertVibeNative3D({...summary,target:'web'});}
+export function assertVibeWebRelease(summary={}){return {visual:assertVibeVisualQuality(summary),native3d:assertVibeNative3D({...summary,target:'web'})};}

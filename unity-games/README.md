@@ -2,6 +2,13 @@
 
 `unity-games/<game-id>/`는 재운게임즈 Unity **앱 네이티브 구현의 Canonical Source**다.
 
+## 전체 게임 공통 3D 정책
+
+- 개발 재개 승인이 나면 Unity 게임플레이 장면은 실제 3D MeshRenderer/SkinnedMeshRenderer·입체 지형·3D 카메라·공간 충돌 및 상호작용을 구현한다.
+- 2D·2.5D 화면·스프라이트 보드·UI 카드만으로 만든 월드는 최종 완료로 인정하지 않는다. HUD·툴팁·아이콘 등 2D 오버레이는 허용한다.
+- 원본 게임 규칙·저장·밸런스 보존을 전제로 같은 Unity 원본에서 재개발한다.
+- **현재 Unity/Unity Web/Unity Android의 OWNER_HOLD는 유지한다. 이 문서는 개발 또는 출시 재개 승인이 아니다.**
+
 ## 현재 흐름
 
 ```text

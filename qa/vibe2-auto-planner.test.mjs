@@ -62,6 +62,9 @@ test('internal motion planning binds 100 registered parents to one current walk 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+// Planning fixtures model authored 3D source; no test claims a browser runtime PASS.
+const PLANNER_3D_WORLD_FIXTURE = '<script type="module">import * as THREE from "three"; const renderer=new THREE.WebGLRenderer({antialias:true}); const scene=new THREE.Scene(); const hero=new THREE.Mesh(new THREE.BoxGeometry(2,2,2),new THREE.MeshNormalMaterial()); scene.add(hero); const camera=new THREE.PerspectiveCamera(60,1,0.1,100); camera.position.z=5; renderer.render(scene,camera);</script>';
+
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
   const dir=path.join(root,'design',gameId,'2026-09-11');
   fs.mkdirSync(dir,{recursive:true});
@@ -450,7 +453,7 @@ test('queued low-value micro diagnostics are consolidated so holistic studio bui
   const gameId='studio-web';
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
-  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main>${PLANNER_3D_WORLD_FIXTURE}</body></html>\n`,'utf8');
   writeStudioDesign(root,gameId);
   const validationDir=path.join(root,'design',gameId,'2026-09-24');
   fs.mkdirSync(validationDir,{recursive:true});
@@ -1148,7 +1151,7 @@ test('development web is assessed before deterministic diagnostics',()=>{
 test('planner groups disjoint post-assessment candidates into one work package',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/dev-web');
-  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><head><title>Dev</title></head><body data-spatial-dimension="2.5d" style="perspective:800px"><main>${'x'.repeat(900)}</main><button>Play</button></body></html>\n`,'utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><head><title>Dev</title></head><body data-spatial-dimension="2.5d" style="perspective:800px"><main>${'x'.repeat(900)}</main><button>Play</button>${PLANNER_3D_WORLD_FIXTURE}</body></html>\n`,'utf8');
   fs.writeFileSync(path.join(webRoot,'extra.js'),'// TODO: harden secondary UI path\n','utf8');
   const assessed={id:'dev-web-existing-web-assessment-v1',gameId:'dev-web',target:'web',sourceRoot:'web-games/dev-web',status:'verified',goal:'assessment complete',evidence:['existing-web-assessment-required']};
   const result=planVibe2AutonomousTasks({
@@ -1168,7 +1171,7 @@ test('completed diagnostic package is never recreated after assessment and compl
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/diag-web');
   fs.mkdirSync(webRoot,{recursive:true});
-  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><head><title>Diag</title></head><body data-spatial-dimension="2.5d" style="perspective:800px"><main>${'x'.repeat(900)}</main><button>Play</button></body></html>`,'utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><head><title>Diag</title></head><body data-spatial-dimension="2.5d" style="perspective:800px"><main>${'x'.repeat(900)}</main><button>Play</button>${PLANNER_3D_WORLD_FIXTURE}</body></html>`,'utf8');
   const diagCatalog={games:[{id:'diag-web',webPath:'/web-games/diag-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]};
   const assessed={id:'diag-web-existing-web-assessment-v1',gameId:'diag-web',target:'web',sourceRoot:'web-games/diag-web',status:'verified',goal:'assessment complete',evidence:['existing-web-assessment-required']};
   const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[assessed]},repoRoot:root,maxConcurrentTasks:4});
@@ -1600,7 +1603,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   const gameId='studio-full-queue-repeat';
   const webRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(webRoot,{recursive:true});
-  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main></body></html>\n`,'utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),`<!doctype html><html><body data-spatial-dimension="2.5d" style="perspective:900px"><canvas id="game"></canvas><main>${'world '.repeat(180)}</main>${PLANNER_3D_WORLD_FIXTURE}</body></html>\n`,'utf8');
   const validationDir=path.join(root,'design',gameId,'2026-09-24');
   fs.mkdirSync(validationDir,{recursive:true});
   fs.writeFileSync(path.join(validationDir,'development-validation-status.json'),JSON.stringify({gameId,state:'PASS',webStrictScore:90,blockers:[]},null,2),'utf8');
@@ -2571,7 +2574,7 @@ test('flat or unstartable Web games enter 2.5D repair after canonical existing-W
   assert.equal(task.supervisionContract?.required,true);
   assert.ok(task.evidence.includes('owner-directive:all-web-games-must-start'));
   assert.ok(task.evidence.includes('owner-directive:real-3d-final-gameplay'));
-  assert.ok(task.evidence.some(value=>value.includes('MINIMUM_2_5D_PRESENTATION_REQUIRED')));
+  assert.ok(task.evidence.some(value=>value.includes('REAL_3D_GAMEPLAY_SOURCE_REQUIRED')));
   assert.match(task.goal,/실제 WebGL 렌더/);
   assert.equal(task.maxRetries,null);
 });
