@@ -7,8 +7,6 @@ on:
     paths:
       - "web-games/**"
       - "game-catalog.json"
-      - "homepage-platform-exposure.json"
-      - "tools/github-pages-landing.mjs"
       - "company-learning/platform-release-roadmap.json"
       - ".github/workflows/vibe2-candidate-release.yml"
       - "assets/**"
@@ -23,8 +21,6 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/magic-forest-pages.yml"
-      - "tools/github-pages-landing.mjs"
-      - "qa/github-pages-landing.test.mjs"
 
 permissions:
   contents: write
@@ -47,9 +43,6 @@ jobs:
           sparse-checkout: |
             web-games
             game-catalog.json
-            homepage-platform-exposure.json
-            tools/github-pages-landing.mjs
-            qa/github-pages-landing.test.mjs
 
       - name: Prepare all registered game routes and necessary shared assets
         shell: bash
@@ -145,16 +138,6 @@ jobs:
           console.log('WEB_PAGES_SHARED_ASSETS='+refs.size);
           NODE
 
-      - name: Build mobile homepage with every published game route and retained Roblox targets
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/github-pages-landing.mjs
-          node --test qa/github-pages-landing.test.mjs
-          test -s _site/index.html
-          grep -q 'data-jaewoon-pages-home="1"' _site/index.html
-          echo "PAGES_HOMEPAGE_VISIBLE_AND_TESTED=PASS"
-
       - name: Publish gh-pages without force or deleting earlier games
         if: github.event_name != 'pull_request'
         env:
@@ -171,10 +154,27 @@ jobs:
           git -C "$site" config user.email "pages@users.noreply.github.com"
           test -s "$site/index.html"
           test -f "$site/tier.html"
-          # Copy only; keep every previously published game without rewriting the originals.
-          rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
+          # The owner did not authorize replacing the existing Pages front door.
+          # Restore the pre-directory page once, from the exact original source blob.
+          # After this recovery, never overwrite the root index while publishing games.
+          if grep -Fq 'data-jaewoon-pages-home="1"' "$site/index.html"; then
+            expected_original="51e1232aa1dfc6c1826622a431b2263340a629e9"
+            actual_original="$(git hash-object "$GITHUB_WORKSPACE/_site/index.html")"
+            test "$actual_original" = "$expected_original" || {
+              echo 'PAGES_ORIGINAL_FRONT_DOOR_SOURCE_CHANGED_REVIEW_REQUIRED' >&2
+              exit 1
+            }
+            cp "$GITHUB_WORKSPACE/_site/index.html" "$site/index.html"
+            echo 'PAGES_ORIGINAL_FRONT_DOOR_RESTORED=YES'
+          fi
+          # Keep root index untouched on every subsequent game publication.
+          # No --delete, no force push, and do not prune any existing game route.
+          rsync -a --exclude='/index.html' "$GITHUB_WORKSPACE/_site/" "$site/"
           test -s "$site/index.html"
-          grep -q 'data-jaewoon-pages-home="1"' "$site/index.html"
+          if grep -Fq 'data-jaewoon-pages-home="1"' "$site/index.html"; then
+            echo 'PAGES_UNAUTHORIZED_DIRECTORY_FRONT_DOOR_BLOCKED' >&2
+            exit 1
+          fi
           git -C "$site" add --all
           if ! git -C "$site" diff --cached --quiet; then
             git -C "$site" commit -m "pages: publish registered web games from main $GITHUB_SHA"
@@ -198,7 +198,10 @@ jobs:
           mkdir -p "$artifact"
           rsync -a --exclude='.git/' "$retained/" "$artifact/"
           test -s "$artifact/index.html"
-          grep -q 'data-jaewoon-pages-home="1"' "$artifact/index.html"
+          if grep -Fq 'data-jaewoon-pages-home="1"' "$artifact/index.html"; then
+            echo 'PAGES_ARTIFACT_FRONT_DOOR_REPLACEMENT_FORBIDDEN' >&2
+            exit 1
+          fi
           test -f "$artifact/tier.html"
           test -f "$artifact/web-games/publish-manifest.json"
           GITHUB_SHA="$GITHUB_SHA" node - "$artifact/web-games/publish-manifest.json" <<'NODE'
@@ -260,25 +263,14 @@ jobs:
             [ -n "$asset" ] || continue
             curl -fsSL --max-time 15 -o /dev/null "$base$asset" || { echo "WEB_PAGES_ASSET_NOT_LIVE=$asset" >&2; exit 1; }
           done
-          # A 200 on the old forest root did not make a game directory visible.
-          curl -fsSL --max-time 15 "$base" -o /tmp/jaewoon-pages-home-live.html
-          grep -q 'data-jaewoon-pages-home="1"' /tmp/jaewoon-pages-home-live.html || {
-            echo 'WEB_PAGES_HOME_DIRECTORY_NOT_LIVE' >&2; exit 1;
-          }
-          node - <<'NODE'
-          const fs=require('node:fs');
-          const m=JSON.parse(fs.readFileSync('/tmp/web-pages-published.json','utf8'));
-          const home=fs.readFileSync('/tmp/jaewoon-pages-home-live.html','utf8');
-          for(const route of m.routes){
-            if(!home.includes('href="./'+route+'"')){
-              console.error('WEB_PAGES_HOME_LINK_NOT_LIVE='+route);process.exitCode=1;
-            }
-          }
-          if(!home.includes('id="game-search"'))process.exitCode=1;
-          if(process.exitCode)throw Error('WEB_PAGES_HOME_DIRECTORY_INCOMPLETE');
-          console.log('WEB_PAGES_HOME_DIRECTORY_ROUTES='+m.routes.length);
-          NODE
-          curl -fsSL --max-time 15 -o /dev/null "$base""tier.html" || { echo 'MAGIC_FOREST_TIER_NOT_LIVE' >&2; exit 1; }
+          for route in '' 'tier.html'; do
+            curl -fsSL --max-time 15 -o /dev/null "$base$route" || { echo "MAGIC_FOREST_ROOT_NOT_LIVE=$route" >&2; exit 1; }
+          done
+          curl -fsSL --max-time 15 "$base" -o /tmp/pages-original-front-door.html
+          if grep -Fq 'data-jaewoon-pages-home="1"' /tmp/pages-original-front-door.html; then
+            echo 'PAGES_LIVE_FRONT_DOOR_REPLACEMENT_FORBIDDEN' >&2
+            exit 1
+          fi
           echo "WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS"
           echo "WEB_PAGES_LIVE_SOURCE_SHA=$GITHUB_SHA"
           echo "WEB_PAGES_ROUTES_HTTP_200=PASS"
