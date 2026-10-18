@@ -584,6 +584,27 @@ test('homepage does not advertise generic app icons or shared page backgrounds a
   assert.match(source,/scroll-snap-type:x mandatory/);
 });
 
+test('Cloudflare runtime keeps canonical published web-game buttons without overriding Roblox runtime authority',()=>{
+  const edge=fs.readFileSync('_worker.js','utf8').replace('export default {','const workerDefault = {');
+  const merge=vm.runInNewContext(edge+';mergeRuntimeCatalog', {Date,Intl});
+  const runtime={games:[{id:'demo',name:'Demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+    canonical:{publication:{roblox:{universeId:'runtime-authoritative'}},
+      sources:{web:{path:'web-games/demo',archive:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}}]};
+  const source={games:[{id:'demo',name:'Demo',webPath:'web-games/demo',hasWebArchive:true,
+    ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED',
+    canonical:{sources:{web:{path:'web-games/demo',archive:true,state:'UNITY_WEB_VERIFICATION_REQUIRED'}},
+      publication:{web:{route:'web-games/demo/',sourceTreeSha:'a'.repeat(40)},roblox:{universeId:'untrusted-static'}}}}]};
+  const merged=merge(runtime,{projects:[]},{seeds:[]},{items:[]},source);
+  assert.equal(merged.games.length,1);
+  assert.equal(merged.games[0].canonical.publication.web.route,'web-games/demo/');
+  assert.equal(merged.games[0].canonical.publication.web.sourceTreeSha,'a'.repeat(40));
+  assert.equal(merged.games[0].canonical.publication.roblox.universeId,'runtime-authoritative');
+  assert.equal(merged.games[0].canonical.sources.web.archive,true);
+  source.games[0].canonical.publication.web={};
+  const missing=merge(runtime,{projects:[]},{seeds:[]},{items:[]},source);
+  assert.equal(Object.keys(missing.games[0].canonical.publication.web).length,0,'stale server publication must not activate play');
+});
+
 test('Cloudflare Pages keeps native runtime APIs while bypassing static assets',()=>{
   const routes=JSON.parse(fs.readFileSync('_routes.json','utf8'));
   assert.deepEqual(routes,{version:1,include:['/*'],exclude:['/assets/*','/test-game-candidates.json','/homepage-portfolio-status.json']});
