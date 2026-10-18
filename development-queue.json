@@ -25402,7 +25402,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-18T13:16:28.343Z",
+      "updatedAt": "2026-10-18T13:25:29.879Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -25418,16 +25418,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
       "robloxBuildArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-      "robloxBuildPassedAt": "2026-10-18T12:33:00.693Z",
+      "robloxBuildPassedAt": "2026-10-18T13:25:29.879Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-18T12:33:00.693Z",
+      "robloxBuildPreflightFailedAt": "2026-10-18T13:25:29.879Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "defense",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-18T12:31:20.256Z",
+        "checkedAt": "2026-10-18T13:11:34.160Z",
         "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
         "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
         "secondaryOwnerFocus": false,
@@ -25470,7 +25470,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "BUILD_EVIDENCE indicates that required validations (web, music, nativeWeb, nativeMusic) have not passed, contradicting the prerequisites for starting runtime testing."
+            "note": "Package cannot start runtime testing because web and music validations (including native variants) have not passed according to BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -39387,7 +39387,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-18T13:24:30.616Z",
+  "updatedAt": "2026-10-18T13:25:29.879Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
