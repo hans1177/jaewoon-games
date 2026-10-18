@@ -475,11 +475,12 @@ joyBase.addEventListener("pointerup",joyEnd);joyBase.addEventListener("pointerca
 window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
 })();
 </script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"}}</script>
 <script type="module">
 /* Native 3D GLB assets from the verified Vibe company registry. No screenshots, cropping or primitive characters. */
 try {
- const THREE=await import('https://esm.sh/three@0.164.1');
- const {GLTFLoader}=await import('https://esm.sh/three@0.164.1/examples/jsm/loaders/GLTFLoader.js?external=three');
+ const THREE=await import('https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js');
+ const {GLTFLoader}=await import('https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/loaders/GLTFLoader.js');
  const files={
  traveler:'/assets/shared/humanoid-traveler.glb',guardian:'/assets/shared/humanoid-guardian.glb',
  samurai:'/assets/shared/humanoid-samurai.glb',archer:'/assets/shared/humanoid-archer.glb',
