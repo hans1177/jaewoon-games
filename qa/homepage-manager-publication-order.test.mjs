@@ -636,8 +636,12 @@ test('read-only secondary homepage keeps primary authority and independently pla
 test('homepage manager validates canonical web-first internal play links without weakening native readiness',()=>{
   const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
   const script=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  assert.ok(manager.includes("const direct=links.web||links.roblox||links.unity||''"),'manager requires web-first playable link');
+  assert.ok(manager.includes("const direct=links.web||links.roblox||links.unity||links.webSource||''"),'manager mirrors the exact web/native/source link priority from the canonical renderer');
   assert.ok(script.includes("const direct=links.web||links.roblox||links.unity||links.webSource||''"),'web-first source fallback link exists in rendered homepage');
+  assert.ok(script.includes('function sourceWebHref(row){'),'original source link must be derived from registered canonical game');
+  assert.ok(script.includes('const web=playableWebHref(game);'),'verified playable link must remain distinct from original source link');
+  assert.ok(script.includes('const webSource=sourceWebHref(game);'),'source fallback must remain independently available');
+  assert.ok(script.includes('return {roblox,unity,web,webSource};'),'the existing platform link contract must carry source fallback');
   assert.ok(!manager.includes("const direct=links.roblox||links.unity||''"),'stale native-only expectation rejected');
   assert.match(manager,/cleanRunnableShelfPresentation/);
   assert.ok(manager.includes("class=\"gameShelfHead\""),'existing shelf stays active');
