@@ -61716,11 +61716,167 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_8d5ba7a218801ac3ad54b60f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8370",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "996916e9ba8d3acc5d24d1082aa2d3bf2d744be4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8370,
+        "baseBranch": "main",
+        "headBranch": "vibe2/system/visual-craft-web-roblox-20261018",
+        "baseSha": "996916e9ba8d3acc5d24d1082aa2d3bf2d744be4",
+        "headSha": "26835e487f1d4f6882748ca82679d87dcf4fc711",
+        "mergeCommitSha": "a24a1efa97385b9b41c7a9fa02335e90661c538d",
+        "mergedAt": "2026-10-18T02:13:46Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e42dd0180da0e56fed70613f733a3c9476177518b0652335ff56b0cf3f3a8d39",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "vibe2/system/visual-craft-web-roblox-20261018",
+        "candidateSha": "26835e487f1d4f6882748ca82679d87dcf4fc711"
+      },
+      "changeStats": {
+        "changedFileCount": 21,
+        "codingRelevantFileCount": 21,
+        "addedLineCount": 1564,
+        "deletedLineCount": 151,
+        "changedFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "assets/jaewoon-graphics-engine.js",
+          "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+          "assets/vibe-art-pipeline.js",
+          "assets/vibe-presentation-director.js",
+          "assets/vibe-visual-quality-gate.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/github-pages-landing.test.mjs",
+          "qa/homepage-manager-publication-order.test.mjs",
+          "qa/vibe-crossplatform-visual-components.test.mjs",
+          "qa/vibe-visual-runtime-quality.test.mjs",
+          "qa/vibe2-code-pattern-ingest.test.mjs",
+          "tools/github-pages-landing.mjs",
+          "tools/homepage-manager.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-code-pattern-ingest.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "web-games/fantasy-survival/research-log.html"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "assets/jaewoon-graphics-engine.js",
+          "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+          "assets/vibe-art-pipeline.js",
+          "assets/vibe-presentation-director.js",
+          "assets/vibe-visual-quality-gate.js",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "homepage-portfolio-status.json",
+          "qa/github-pages-landing.test.mjs",
+          "qa/homepage-manager-publication-order.test.mjs",
+          "qa/vibe-crossplatform-visual-components.test.mjs",
+          "qa/vibe-visual-runtime-quality.test.mjs",
+          "qa/vibe2-code-pattern-ingest.test.mjs",
+          "tools/github-pages-landing.mjs",
+          "tools/homepage-manager.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-code-pattern-ingest.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "web-games/fantasy-survival/research-log.html"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8370",
+        "merge-commit:a24a1efa97385b9b41c7a9fa02335e90661c538d",
+        "base-main:996916e9ba8d3acc5d24d1082aa2d3bf2d744be4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 496
+    "total": 497
   }
 }
