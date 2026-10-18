@@ -1144,11 +1144,16 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
   const blockers=[];
   if(!fs.existsSync(file)||!text.trim())blockers.push('EMPTY_OR_MISSING_WEB_ENTRYPOINT');
   if(text){
+    const spatialSourceParts=[text];
     for(const match of text.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)){
       const src=clean(match[1]);
       if(!src||/^(?:https?:|\/\/|data:|blob:)/i.test(src))continue;
       const resolved=src.startsWith('/')?sourceFile(repoRoot,src.replace(/^\/+/,'')):path.resolve(path.dirname(file),src.split(/[?#]/)[0]);
       if(!fs.existsSync(resolved))blockers.push(`LOCAL_RUNTIME_DEPENDENCY_MISSING:${src}`);
+      else if(/\.(?:js|mjs|ts)$/i.test(resolved)&&resolved.startsWith(path.resolve(repoRoot)+path.sep)){
+        // Read actual local game source; HTML data attributes and CSS are not proof of a 3D world.
+        spatialSourceParts.push(readText(resolved).slice(0,180000));
+      }
     }
     const validationProxy=/<button\b[^>]*(?:data-session-stage|data-content-depth-stage|data-validation-stage|data-test-stage)|\bid=["']scope-control-/i.test(text);
     const realGameplay=/data-web-artifact-type=["']REAL_PLAYABLE_GAME["']|data-gameplay-action=|data-playable-cycle-contract=|<canvas\b/i.test(text);
@@ -1161,10 +1166,13 @@ function webStartupSpatialAudit(project={},repoRoot=process.cwd()){
       const wired=direct||ids.some(id=>new RegExp(`(?:getElementById\\s*\\(\\s*['"]${id}['"]|querySelector\\s*\\(\\s*['"]#${id}['"]|\\b${id}\\s*\\.\\s*(?:onclick|addEventListener))`,'i').test(text));
       if(!wired)blockers.push('START_CONTROL_NOT_WIRED');
     }
-    const detected3D=/(?:data-spatial-dimension=["']3d["']|WebGLRenderingContext|WebGL2RenderingContext|THREE\.|BABYLON\.|PerspectiveCamera|OrthographicCamera|requestPointerLock)/i.test(text);
-    const declared2_5D=/data-spatial-dimension=["'](?:2\.5d|3d)["']/i.test(text);
-    const depthTechnique=detected3D||/(?:perspective\s*:|transform-style\s*:\s*preserve-3d|rotate[XY]\s*\(|translateZ\s*\(|\bisometric\b|\bparallax\b|depthSort|depth-sort|iso(?:metric)?(?:Projection|Project|X|Y)|foreground[\s\S]{0,160}midground[\s\S]{0,160}background)/i.test(text);
-    if(!(detected3D||(declared2_5D&&depthTechnique)))blockers.push('MINIMUM_2_5D_PRESENTATION_REQUIRED');
+    const spatialSource=spatialSourceParts.join('\n');
+    const renderer=/(?:new\s+(?:THREE\.)?WebGLRenderer\s*\(|new\s+BABYLON\.Engine\s*\(|new\s+(?:pc\.)?Application\s*\(|\bpc\.Application\s*\(|getContext\s*\(\s*['"]webgl2?['"])/i.test(spatialSource);
+    const camera=/(?:PerspectiveCamera\s*\(|OrthographicCamera\s*\(|ArcRotateCamera\s*\(|FreeCamera\s*\(|addComponent\s*\(\s*['"]camera['"]|mat4\.perspective)/i.test(spatialSource);
+    const mesh=/(?:BufferGeometry\s*\(|BoxGeometry\s*\(|SphereGeometry\s*\(|Mesh\s*\(|addComponent\s*\(\s*['"](?:render|model)['"]|\.draw(?:Elements|Arrays)\s*\()/i.test(spatialSource);
+    if(!(renderer&&camera&&mesh))blockers.push('REAL_WEB_3D_SOURCE_REQUIRED');
+    // Runtime depth-tested triangles, actor XYZ and collision are independently checked in F0-F9 QA.
+
     if(text.length<800&&!/\/web-games\/_shared\/vibe2-final\.js/i.test(text))blockers.push(`WEB_ENTRYPOINT_TOO_SMALL:${text.length}`);
   }
   return{pass:blockers.length===0,blockers:[...new Set(blockers)],relative};
@@ -1205,7 +1213,7 @@ function webRepairImplementationHints(evidence=[]){
   add(/LOCAL_RUNTIME_DEPENDENCY_MISSING/,'누락된 로컬 script/asset 의존을 실제 파일과 경로에 맞게 복구한다.');
   add(/VALIDATION_PROXY_NOT_REAL_GAMEPLAY/,'검증 단계·scope 버튼을 실제 gameplay UI로 사용하지 말고 진짜 게임 시작/입력/상태 진행 화면으로 교체한다.');
   add(/START_CONTROL_NOT_WIRED/,'시작 버튼을 실제 게임 초기화·입력 활성화·게임 상태 전환 함수에 직접 연결한다.');
-  add(/MINIMUM_2_5D_PRESENTATION_REQUIRED/,'평면 2D 최종 표현을 최소 2.5D로 재구성한다. 등각/원근 카메라·깊이 정렬·전경/중경/후경 parallax·높이/접지 그림자·깊이 대응 VFX 중 실제 공간 단서를 결합하고 UI만 2D overlay로 남긴다.');
+  add(/REAL_WEB_3D_SOURCE_REQUIRED/,'평면 2D/2.5D 표현을 실제 3D 월드 메시·WebGL 깊이 테스트·3D 카메라·XYZ 게임플레이·공간 충돌로 책임 소스 안에서 교체한다. CSS 원근·isometric·parallax·data-spatial-dimension 속성은 3D 증거가 아니다. UI/폰트/아이콘 오버레이만 2D 보조 자산으로 유지한다. 3D 런타임/모바일 F0~F9 전에는 완료로 판정하지 않는다.');
   add(/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/,'카운터나 가짜 상태 대신 실제 엔티티 x/y 위치와 공간 상태를 런타임 게임 루프에 연결한다.');
   add(/APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED/,'실제 런타임 엔티티가 이동·타게팅·충돌·공격 등 승인된 상호작용을 수행하게 연결한다.');
   add(/REAL_GAME_MECHANIC_COUNT_TOO_LOW/,'누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.');
