@@ -15,6 +15,9 @@ import {
 } from '../assets/vibe-art-pipeline.js';
 import {
   auditVibeGoldenSceneEvidence,
+  auditVibeWeb3D,
+  auditVibeWeb25D,
+  assertVibeWeb3D,
   auditVibeRuntimeBeforeAfterComparison,
   auditVibeArtDirectionReview,
   auditVibeRuntimeVisualEvidence,
@@ -368,4 +371,77 @@ test('graphics root returns exact visual-repair instructions without a second pr
   assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets.length,1);
   assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets[0].property,'treeSpacingAndScale');
   assert.equal(production.runtimeRepairLoop.gameplaySaveBalanceMutationForbidden,true);
+});
+
+
+test('universal owner policy requires real 3D and 2.5D only for passive UI overlays',async()=>{
+  const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+  assert.equal(directive.gameVisualQuality.minimumFinalGameplayDimension,'3D');
+  assert.equal(directive.gameVisualQuality.twoPointFiveDGameplayWorldForbidden,true);
+  assert.equal(directive.gameVisualQuality.twoPointFiveDUiOverlayAllowed,true);
+  const legacy=await import('../assets/vibe-web-25d-policy.js');
+  assert.equal(legacy.VIBE_WEB_25D_POLICY.minimumFinalGameplayDimension,'3D');
+  assert.equal(legacy.requireVibeWeb25D('web'),legacy.requireVibeWeb3D('web'));
+  assert.equal(legacy.VIBE_WEB_3D_POLICY.overlays.presentationOnly,true);
+  assert.ok(legacy.VIBE_WEB_3D_POLICY.forbiddenFinalGameplay.includes('projected-2.5d-world'));
+});
+function actual3dFixture(){
+  const rev='a'.repeat(40);
+  return {
+    sourceRevision:rev,
+    files:[{path:'index.html',text:'perspective:900px; isometric, depthSort, worldZ'}],
+    overlays:[{kind:'HUD',presentationOnly:true},{kind:'HEALTH_BAR',presentationOnly:true},
+      {kind:'DAMAGE_NUMBER',presentationOnly:true},{kind:'INVENTORY',presentationOnly:true}],
+    runtimeEvidence:{
+      source:'independent-browser-qa',sourceRevision:rev,observed:true,reviewed:true,
+      gameplayDimension:'3D',
+      spatialEvidence:{
+        detected3D:true,cameraObserved:true,xyzMoved:true,
+        collisionObserved:true,raycastOrRouteObserved:true,spatialOutcomeObserved:true,
+        webglDraw:{triangleDrawCalls:5,depthTriangleDrawCalls:3}
+      }
+    }
+  };
+}
+test('legacy 2.5D source markers cannot pass native 3D runtime gate',()=>{
+  const sourceOnly={files:[{path:'game.js',text:'projectIso(worldX,worldY); depthSort(); shadow()'}]};
+  const result=auditVibeWeb3D(sourceOnly);
+  assert.equal(result.pass,false);
+  assert.equal(auditVibeWeb25D(sourceOnly).pass,false);
+  assert.ok(result.reasons.includes('WEB_NATIVE_3D_WORLD_REQUIRED'));
+  assert.throws(()=>assertVibeWeb3D(sourceOnly),/실제 3D 게이트/);
+});
+test('native 3D plus presentation-only HUD, damage and inventory passes dimensional audit',()=>{
+  const fixture=actual3dFixture();
+  const result=auditVibeWeb3D(fixture);
+  assert.equal(result.pass,true,JSON.stringify(result.reasons));
+  assert.equal(result.ui2Point5DOverlayOnly,true);
+  assert.equal(result.visualOverlayCount,4);
+  const wrong={...fixture,runtimeEvidence:{...fixture.runtimeEvidence,gameplayDimension:'2.5D'}};
+  assert.ok(auditVibeWeb3D(wrong).reasons.includes('WEB_2D_OR_2_5D_GAMEPLAY_WORLD_FORBIDDEN'));
+});
+test('UI overlay cannot impersonate gameplay world or override gameplay authority',()=>{
+  const fixture=actual3dFixture();
+  const forbidden=[
+    {kind:'PLAYER',presentationOnly:true},
+    {kind:'HUD',presentationOnly:false},
+    {kind:'INVENTORY',presentationOnly:true,replacesWorld:true},
+    {kind:'HEALTH_BAR',presentationOnly:true,authoritativeGameplay:true}
+  ];
+  for(const row of forbidden){
+    const result=auditVibeWeb3D({...fixture,overlays:[row]});
+    assert.equal(result.pass,false);
+    assert.ok(result.reasons.some(x=>x.startsWith('WEB_NON_UI_2_5D_OVERLAY_FORBIDDEN')));
+  }
+  const noDepth=actual3dFixture();
+  noDepth.runtimeEvidence.spatialEvidence.webglDraw.depthTriangleDrawCalls=0;
+  assert.equal(auditVibeWeb3D(noDepth).pass,false);
+  const wrongRevision=actual3dFixture();
+  wrongRevision.runtimeEvidence.sourceRevision='b'.repeat(40);
+  assert.equal(auditVibeWeb3D(wrongRevision).pass,false);
+});
+test('visual coding worker follows 3D-only gameplay world rule for Web and Roblox',()=>{
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(worker,/ALL game worlds, characters, creatures, weapons, buildings, combat, collision and spatial interactions MUST be native real 3D/);
+  assert.match(worker,/2\.5D is allowed ONLY for presentation-only UI overlays/);
 });
