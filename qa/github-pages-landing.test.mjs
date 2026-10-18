@@ -66,6 +66,13 @@ test('homepage uses canonical runtime data and links without separate availabili
   assert.ok(client.includes('new WebSocket(url)'));
 });
 
+test('game home button points back to project homepage instead of github.io host root',()=>{
+  const forest=fs.readFileSync('_site/web-games/fantasy-survival/index.html','utf8');
+  assert.match(forest,/class="home"\s+href="\/jaewoon-games\/"/);
+  assert.doesNotMatch(forest,/class="home"\s+href="\/"/);
+  assert.ok(fs.existsSync('_site/tier.html'));
+});
+
 test('unpublished game is never added to the published route list',()=>{
   const extra={...catalog,games:[...catalog.games,{id:'hidden-rogue',name:'Hidden'}]};
   const output=buildPagesLanding({catalog:extra,manifest,exposure});
