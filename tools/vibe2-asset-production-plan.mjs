@@ -1846,6 +1846,7 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         const webConsumer=root.relative.startsWith('web-games/');
         const pathUsageSource=webConsumer
           ?usageBody.replace(/<!--[\s\S]*?-->|\/\*[\s\S]*?\*\//g,' ')
+            .replace(/(?:^|[;>\r\n])\s*\/\/[^\r\n]*/g,' ')
           :source;
         for(const match of pathUsageSource.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           if(webConsumer){
