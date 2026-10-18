@@ -215,6 +215,28 @@ test('Roblox source generation carries approved style and concept through the bu
   assert.notEqual(compiled.learning.semanticMappingFingerprint,changed.learning.semanticMappingFingerprint);
 });
 
+
+test('Roblox new game source binds native visual feedback to real server-replicated state',()=>{
+  const compiled=compileRobloxSource({
+    gameId:'visual-feedback-source-check',gameName:'Feedback Source Check',
+    baseline,artbook:{},playbooks:verifiedRobloxPlaybooks()
+  });
+  const client=compiled.result.clientCode;
+  assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
+  assert.match(client,/CommonUI\.CreateVisualFeedbackController\(\{parent=gui,maxDamage=12/);
+  assert.match(client,/visualFeedback\.AnimateIcon\(button,"ACTIVATE"\)/);
+  assert.match(client,/remote:FireServer\(action\.Id\)/);
+  assert.match(client,/if previousObservedHealth ~= nil and currentHealth ~= previousObservedHealth then/);
+  assert.match(client,/healthAnimation:Cancel\(\)/);
+  assert.match(client,/visualFeedback\.AnimateIcon\(healthTrack,"ACTIVATE"\)/);
+  assert.match(client,/if previousObservedLevel ~= nil and currentLevel > previousObservedLevel then/);
+  assert.match(client,/visualFeedback\.Notify\(\{id="level-" \.\. tostring\(currentLevel\)/);
+  assert.doesNotMatch(client,/visualFeedback\.ShowDamage\(/,
+    'uncorroborated replicated health delta is not a confirmed hit event');
+  assert.doesNotMatch(compiled.result.serverCode,/visualFeedback/,
+    'visual feedback must not alter server state or authority');
+});
+
 test('Roblox bootstrap static gate accepts profile-bound server-authoritative mobile source with save',()=>{
   const verdict=validateRobloxBootstrap({sharedConfig:shared,serverCode:server,clientCode:client,baseline});
   assert.equal(verdict.pass,true,verdict.blockers.join(','));
