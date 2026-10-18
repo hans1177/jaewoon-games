@@ -6,7 +6,7 @@ import {
   VIBE_PRESENTATION_EFFECT_PATTERNS,
   createVibeVisualMaterialRecipe,
   optimizeVibeScreenLayout,placeVibeTooltip,
-  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud,deriveVibeSourceVisualSystems,selectVibeSourceVisualPatterns,rankVibeVisualAssetBindings
+  buildVibePresentationCraft,planVibePresentationAutopilot,resolveVibeContextualHud,deriveVibeSourceVisualSystems,selectVibeSourceVisualPatterns,rankVibeVisualAssetBindings,deriveVibeActiveVisualSurfaces
 } from '../assets/vibe-presentation-director.js';
 import '../assets/jaewoon-graphics-engine.js';
 
@@ -241,4 +241,21 @@ test('game-specific asset ranking uses roles before styles and never promotes a 
   assert.ok(noWeapon.deferredForAssetProof.some(x=>x.pattern==='3D_ITEM_PREVIEW'));
   assert.deepEqual(noWeapon.eligibleAssetIds,['tree'],'licensed tree remains eligible elsewhere');
   assert.deepEqual(noWeapon.matchedAssetIds,[],'but tree is not a suitable equipment model');
+});
+
+test('active game screens are discovered from code only and explicit interface blueprints win',()=>{
+  const files=[
+    {path:'roblox-games/world/a.luau',source:'local bossPhase = 2; local inventory = {}; local quest = nil;'},
+    {path:'roblox-games/world/b.luau',source:'-- shop vendor dialogue\nlocal x = 1;'},
+    {path:'company-asset-library.json',source:'{"shop":"true","dialogue":"true"}'}
+  ];
+  assert.deepEqual(deriveVibeActiveVisualSurfaces(files).surfaces,['HUD','BOSS','INVENTORY','QUEST']);
+  const auto=planVibePresentationAutopilot({files});
+  assert.deepEqual(auto.craftPlans.map(x=>x.surface),['HUD','BOSS','INVENTORY','QUEST']);
+  assert.deepEqual(auto.adaptiveProfiles.map(x=>x.surface),['HUD','BOSS','INVENTORY','QUEST']);
+  const explicit=planVibePresentationAutopilot({files,uiSurfaces:[{surface:'SETTINGS',components:[]}]});
+  assert.deepEqual(explicit.craftPlans.map(x=>x.surface),['SETTINGS']);
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(worker,/const actualGameFiles=/,'common-UI read-only APIs must not be treated as features of every game');
+  assert.match(worker,/row\.path\.startsWith\(gameRoot\)/,'game-specific source scope remains isolated');
 });
