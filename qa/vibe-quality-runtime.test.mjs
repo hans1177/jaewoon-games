@@ -7,10 +7,10 @@ test('combat perception, chase, telegraph, hit, recovery and leash',()=>{
  assert.equal(ai.update({now:0,dt:.1,self,players:[enemy]}).state,'CHASE');
  enemy.x=1;
  assert.equal(ai.update({now:1,dt:.1,self,players:[enemy]}).state,'WINDUP');
- assert.equal(ai.update({now:1.1,dt:.1,self,players:[enemy]}).state,'RECOVER');
- assert.equal(ai.update({now:1.3,dt:.1,self,players:[enemy]}).state,'RECOVER');
- assert.equal(ai.update({now:2.1,dt:.1,self,players:[enemy]}).state,'WINDUP');
- assert.equal(ai.update({now:2.4,dt:.1,self,players:[enemy]}).state,'RECOVER');
+ assert.equal(ai.update({now:1.1,dt:.1,self,players:[enemy]}).state,'WINDUP');
+ assert.equal(ai.update({now:1.3,dt:.1,self,players:[enemy]}).state,'ATTACK');
+ assert.equal(ai.update({now:2.1,dt:.1,self,players:[enemy]}).state,'RECOVER');
+ assert.equal(ai.update({now:2.4,dt:.1,self,players:[enemy]}).state,'WINDUP');
  assert.equal(ai.update({now:3,dt:.1,self:{x:100,y:0},players:[enemy]}).state,'RETURN');
 });
 test('streaming caps loaded chunks and unloads previous cells',async()=>{
