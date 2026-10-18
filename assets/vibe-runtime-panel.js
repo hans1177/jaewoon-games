@@ -17,8 +17,10 @@ const status=document.createElement('p');status.textContent='에셋 후보 불�
 const search=document.createElement('input');search.type='search';search.placeholder='에셋 이름·유형 검색';search.setAttribute('aria-label','에셋 검색');search.style.cssText='box-sizing:border-box;width:100%;margin:10px 0;padding:9px;border-radius:8px;border:1px solid #85baff;background:#0c1627;color:#fff';
 const kind=document.createElement('select');kind.setAttribute('aria-label','에셋 유형');kind.style.cssText='width:100%;padding:8px;border-radius:8px;background:#0c1627;color:#fff';
 for(const [value,label] of [['','전체'],['model','3D 모델'],['texture','이미지·텍스처'],['font','폰트'],['audio','오디오'],['ui','UI'],['data','데이터']]){const option=document.createElement('option');option.value=value;option.textContent=label;kind.append(option)}
+const favorites=new Set();try{for(const key of JSON.parse(localStorage.getItem('vibe-asset-favorites:'+gameId)||'[]'))if(typeof key==='string')favorites.add(key)}catch{}
+const favoriteOnly=document.createElement('label');favoriteOnly.style.cssText='display:block;margin-top:8px';const favoriteCheck=document.createElement('input');favoriteCheck.type='checkbox';favoriteOnly.append(favoriteCheck,document.createTextNode(' 즐겨찾기만 표시'));
 const list=document.createElement('ul');
-panel.append(title,close,status,search,kind,list);document.body.append(button,panel);
+panel.append(title,close,status,search,kind,favoriteOnly,list);document.body.append(button,panel);
 function toggle(show){panel.hidden=!show;button.setAttribute('aria-expanded',String(show));if(show)close.focus();else button.focus()}
 button.addEventListener('click',()=>toggle(panel.hidden));close.addEventListener('click',()=>toggle(false));panel.addEventListener('keydown',e=>{if(e.key==='Escape')toggle(false)});
 fetch(manifestUrl).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(data=>{
@@ -26,9 +28,9 @@ fetch(manifestUrl).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json
  const candidates=Array.isArray(profile.assetCandidates)?profile.assetCandidates:[];
  status.textContent=`사용 가능한 라이브러리 파일 ${profile.availableAssetCount||0}개 · 관련 후보 ${candidates.length}개 (미리보기, 자동 장착 아님)`;
  const render=()=>{list.replaceChildren();let count=0;const query=search.value.trim().toLowerCase();
- for(const item of candidates){if(count>=80)break;if(kind.value&&item.role!==kind.value)continue;if(query&&!item.path.toLowerCase().includes(query)&&!String(item.role).includes(query))continue;count++;
+ for(const item of candidates){if(count>=80)break;if(kind.value&&item.role!==kind.value)continue;if(favoriteCheck.checked&&!favorites.has(item.path))continue;if(query&&!item.path.toLowerCase().includes(query)&&!String(item.role).includes(query))continue;count++;
   if(typeof item.path!=='string'||!/^assets\/[a-zA-Z0-9._/-]+$/.test(item.path)||item.path.includes('..'))continue;
-  const li=document.createElement('li');const a=document.createElement('a');a.href=new URL(item.path,root).href;a.target='_blank';a.rel='noopener noreferrer';a.textContent=item.path.split('/').pop()+' ['+item.role+']';li.append(a);
+  const li=document.createElement('li');const a=document.createElement('a');a.href=new URL(item.path,root).href;a.target='_blank';a.rel='noopener noreferrer';a.textContent=item.path.split('/').pop()+' ['+item.role+']';li.append(a);const star=document.createElement('button');star.type='button';star.textContent=favorites.has(item.path)?'★':'☆';star.setAttribute('aria-label',favorites.has(item.path)?'즐겨찾기 해제':'즐겨찾기 추가');star.style.cssText='margin-left:8px;padding:3px 8px';star.addEventListener('click',()=>{if(favorites.has(item.path))favorites.delete(item.path);else favorites.add(item.path);try{localStorage.setItem('vibe-asset-favorites:'+gameId,JSON.stringify([...favorites].slice(0,500)))}catch{}render()});li.append(star);
   if(item.role==='texture'){const img=document.createElement('img');img.loading='lazy';img.alt='';img.src=a.href;li.append(document.createElement('br'),img)}
   if(item.role==='model'&&/\\.(?:glb|gltf)$/i.test(item.path)){
    const preview=document.createElement('button');preview.type='button';preview.textContent='3D 미리보기';preview.style.cssText='margin-left:8px;padding:4px 8px;border-radius:6px';
@@ -41,6 +43,6 @@ fetch(manifestUrl).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json
   list.append(li);
  }
  if(!list.children.length){const li=document.createElement('li');li.textContent='검색 조건에 맞는 에셋이 없습니다.';list.append(li)}
- };search.addEventListener('input',render);kind.addEventListener('change',render);render();
+ };search.addEventListener('input',render);kind.addEventListener('change',render);favoriteCheck.addEventListener('change',render);render();
 }).catch(err=>{status.textContent='에셋 목록을 불러오지 못했습니다: '+err.message});
 })();
