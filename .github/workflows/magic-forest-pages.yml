@@ -35,6 +35,7 @@ jobs:
           filter: blob:none
           sparse-checkout: |
             web-games
+            tools/vibe-game-asset-profiles.mjs
             game-catalog.json
             homepage-platform-exposure.json
             tools/github-pages-landing.mjs
