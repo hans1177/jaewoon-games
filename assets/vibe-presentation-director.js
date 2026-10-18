@@ -35,6 +35,27 @@ export const VIBE_PRESENTATION_EFFECT_PATTERNS=Object.freeze([
   'NINE_SLICE_SURFACE','MATERIAL_HARMONIZATION','UI_TRANSITION_STATE',
   'VISUAL_EFFECT_BUDGET','FOCAL_REGION_OCCLUSION','MULTIPLAYER_PING'
 ]);
+// Every surface is still identified by its semantic role, but it is compiled as
+// actual engine-native depth-tested geometry; 2D layouts are math only, not output.
+export const VIBE_NATIVE_3D_UI_CONTRACT=Object.freeze({
+  version:3,authority:'OWNER_2026_10_18_ALL_EXISTING_AND_NEW_GAME_SOURCES',
+  targets:Object.freeze(['ROBLOX','WEB']),
+  allExistingGamesIncluded:true,flat2dUiAllowed:false,
+  visibleRenderMode:'ENGINE_NATIVE_3D_MESH_WITH_DEPTH_TEST',
+  placement:'CAMERA_SPACE_3D_OR_WORLD_SPACE_3D',
+  glyphRendering:'VERIFIED_3D_GLYPH_GEOMETRY',
+  iconRendering:'MESH_AND_MATERIAL_NOT_FLAT_SPRITE',
+  interaction:'SPATIAL_RAYCAST_OR_NATIVE_3D_HIT_TARGET',
+  requires:Object.freeze(['MESH_GEOMETRY','TRUE_DEPTH','SURFACE_NORMALS',
+    'MATERIAL_AND_LIGHT','3D_GLYPHS','NATIVE_3D_INPUT','RUNTIME_SOURCE_REVISION_CAPTURE']),
+  forbiddenVisibleUi:Object.freeze(['DOM_HTML_CSS_HUD','CANVAS_2D','SPRITE_TEXT',
+    'SCREEN_GUI','BILLBOARD_GUI','SURFACE_GUI','TEXT_LABEL',
+    'IMAGE_LABEL','VIEWPORT_FRAME_2D_UI','FLAT_NINE_SLICE',
+    'CSS_FAKE_3D','BILLBOARD_TEXT_TEXTURE']),
+  legacy2dSourcePolicy:'MANDATORY_IN_PLACE_NATIVE_3D_CONVERSION_NOT_GRANDFATHERED',
+  gameplayAuthorityAllowed:false,runtimeVerified:false
+});
+
 const PRESENTATION_SURFACE_GRAMMAR=Object.freeze({
   HUD:Object.freeze({layout:'EDGE_BANDS',focalOcclusionForbidden:true}),
   INVENTORY:Object.freeze({layout:'ASYMMETRIC_DETAIL',focalOcclusionForbidden:false}),
@@ -222,7 +243,11 @@ export function buildVibePresentationCraft({game={},world={},surface='HUD',
   const focus=resolveVibeContextualHud({components,phase,viewport});
   const layout=optimizeVibeScreenLayout({viewport,components:focus.selected,safeInsets,focalRegion});
   return Object.freeze({version:1,surface:type,grammar:grammar.layout,
-    materialRecipe,focus,layout,requiredPatterns:Object.freeze(VIBE_PRESENTATION_EFFECT_PATTERNS),
+    materialRecipe,focus,layout,
+    native3dUi:VIBE_NATIVE_3D_UI_CONTRACT,
+    layoutIsPlanningMathNotRendered2d:true,
+    actual3dGeometryImplementationRequired:true,
+    requiredPatterns:Object.freeze(VIBE_PRESENTATION_EFFECT_PATTERNS),
     engineSpecificImplementationRequired:true,
     sourceBindingsVerified:false,runtimeVerified:false,gameplayMutationAllowed:false});
 }
