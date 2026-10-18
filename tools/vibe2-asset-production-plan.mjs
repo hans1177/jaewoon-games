@@ -1275,6 +1275,12 @@ function requiredAssetFamilies({request='',requirements=[]}={}){
   return [...families].sort();
 }
 function assetSupplyCandidateAllowed(asset={},target=''){
+  // Only registered, already-acquired library sources can be bound. Not-yet-downloaded
+  // originals are requested through the existing ASSET_DEVELOPMENT route instead.
+  if(asset?.downloaded===false)return false;
+  if(!clean(asset?.id)||!clean(asset?.path||asset?.masterGlb||asset?.masterSourcePath)
+    &&!(asset?.nativeArtifacts||[]).length
+    &&!Object.keys(asset?.platformVariants||{}).length)return false;
   if(asset?.catalogActive===false||asset?.rightsPass===false)return false;
   if(/STALE|QUARANTIN|RETIRED|REJECTED/.test((clean(asset?.catalogState)+' '+clean(asset?.status)).toUpperCase()))return false;
   if(internalAssetHardBlockReason(asset))return false;
@@ -1429,12 +1435,15 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     roleEvidenceById.set(clean(asset.id),evidence);
     return evidence;
   };
-  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map();
+  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map(),transformableDonorByFamily=new Map();
   let intendedOnlyCount=0;
   // The role gate above rejects incompatible candidates; among eligible assets,
   // a higher audited quality score must win regardless of matched-role count.
   const compareReusable=(a,b)=>
-    Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+    // Explicit acquired/registered downloaded originals take priority over generic
+    // placeholders or lower-confidence legacy candidates within the same safe role.
+    Number(b?.downloaded===true)-Number(a?.downloaded===true)
+    ||Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
     ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
     ||clean(a?.id).localeCompare(clean(b?.id));
   const betterReusable=(candidate,current)=>!current||compareReusable(candidate,current)<0;
@@ -1457,7 +1466,14 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     }
     if((asset?.intendedConsumerGameIds||[]).map(clean).includes(id))intendedOnlyCount+=1;
     if(family&&requiredFamilySet.has(family)&&assetSupplyCandidateAllowed(asset,target)){
-      if(!roleFit.verifiedRoleMatch){if(!roleFit.requestedRoles.length||!clean(asset.role||asset.subfamily))unresolvedFamilies.add(family);continue;}
+      if(!roleFit.verifiedRoleMatch){
+        // Similar same-family downloads remain mandatory adaptation donors, not
+        // falsely verified exact-role replacements. Actual geometry/role
+        // transformation and native runtime QA remain required.
+        const currentDonor=transformableDonorByFamily.get(family);
+        if(betterReusable(asset,currentDonor))transformableDonorByFamily.set(family,asset);
+        continue;
+      }
       // 역할별 후보를 같은 원장 순회에서 색인한다. 기존 점수·출처 검증은 유지한다.
       const roleIndex=reusableByFamilyRole.get(family)||new Map();
       for(const role of unique([asset.role,asset.subfamily,asset.atomId,asset.factory])
@@ -1675,7 +1691,10 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       continue;
     }
     const sourceRoles=requestedRolesByFamily.get(family)||[];
-    const asset=bestReusableByFamily.get(family);
+    const exactAsset=bestReusableByFamily.get(family);
+    const donorAsset=exactAsset?null:transformableDonorByFamily.get(family);
+    const asset=exactAsset||donorAsset;
+    const donorAdaptationRequired=Boolean(donorAsset);
     // 포괄적 family 힌트만으로 멀쩡한 공용 소스를 버리거나 무작정 원본을 다운로드하지 않는다.
     // 정확한 역할 수요가 있으면 다운로드 원본을 우선 제작 후보로 배정하되 내부 후보도 남긴다.
     const originalRequested=(!asset||sourceRoles.length>0)&&planOriginalAcquisition(
@@ -1686,14 +1705,29 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const mode=internalAssetPlatformApplicationMode(asset,target);
       const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
       pushAction({
-        action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
+        action:donorAdaptationRequired||pendingImport||mode!=='USE_AS_IS'?'ADAPT':'USE',
         assetId:clean(asset.id)||null,
         family,
-        reason:pendingImport?'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
-        applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
+        reason:donorAdaptationRequired?'DOWNLOADED_LIBRARY_SIMILAR_ROLE_DONOR_TRANSFORMATION_REQUIRED'
+          :pendingImport?'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED'
+          :mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
+        applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id)),
+        sourceRoleAdaptationRequired:donorAdaptationRequired,
+        actualNativeDerivedSourceRequired:donorAdaptationRequired,
+        finalGameSourceBindingAndRuntimeQaRequired:true,
+        downloadedRegisteredLibraryDefault:true
       });
     }else if(!originalRequested){
-      pushAction({action:'HOLD',assetId:null,family,reason:(unresolvedFamilies.has(family)||sourceRoles.length===0)?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
+      pushAction({action:'HOLD',assetId:null,family,reason:(unresolvedFamilies.has(family)||sourceRoles.length===0)?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',
+        roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false},
+        libraryRequest:Object.freeze({
+          mandatory:true,route:'EXISTING_ASSET_DEVELOPMENT_LIBRARY_ACQUISITION',
+          gameId:id,target:clean(target).toLowerCase(),family,
+          requiredRoles:freezeList(sourceRoles),
+          acceptableSupply:'LICENSE_VERIFIED_DOWNLOADED_REGISTERED_SOURCE_OR_TRANSFORMABLE_SAME_FAMILY_DONOR',
+          placeholderFallbackForbidden:true,sourceMutationAndRuntimeQaRequired:true,
+          noNewQueueOrWrapper:true
+        })});
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
@@ -1723,6 +1757,11 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
+    mandatoryDownloadedLibraryDefault:true,
+    everyRegisteredDownloadedAssetEvaluated:assets.every(asset=>Boolean(clean(asset?.id))||asset?.downloaded!==true),
+    similarFamilyDonorsRequireRealAdaptation:true,
+    primitiveOnlyOrMarkerOnlyCompletionForbidden:true,
+    missingLibraryRequestCount:actions.filter(row=>row.libraryRequest?.mandatory===true).length,
     selectedOnDemandExternalGapCount:actions.filter(row=>row.action==='ACQUIRE_ADAPT').length,
     externalSourcesDoNotBecomeRegisteredAssetsBySelection:true,
     decisionVocabulary:ASSET_SUPPLY_DECISIONS,
@@ -6466,6 +6505,14 @@ export function assetProductionGuidance(plan={}){
         materialRefinement:row.materialRefinement,assetization:row.assetization
       })+
       '. 내부 라이브러리에서 역할·게임 스타일이 맞는 실제 3D 원본만 먼저 선택한다. 원본 경로의 실제 파일·해시·상업 이용·수정 권리·메시/리그 호환을 검증하고 원본은 불변으로 둔다. 기존 Blender 제작기 assets/native-authoring/build-game-visual.py에서 게임 Style Lock에 맞춰 색상·거칠기·물리적으로 허용된 금속성·자연스러운 사용감만 소폭 보정한 별도 파생 GLB와 evidence.json을 만든다. 형태·모션·게임 판정·세이브·충돌·멀티 권한은 임의로 바꾸지 않는다. 생성물·변경 이력·원본/파생 SHA256·라이선스 근거가 모두 실제 존재해야 기존 GRAPHICS_PRODUCTION 원장 동기화에서 PREPARED 후보로 자산화한다. 게임 구현 담당은 기존 C#/Luau 렌더러·프리팹에 네이티브 적용하며 회사 원장을 직접 수정하지 않는다. 엔진 실행·모바일·게임 바인딩 검증 전에는 productionVerified와 품질 PASS를 선언하지 않는다. 원본 부재·역할 불일치·라이선스 차단은 기존 gap-fill 또는 authoring 경로로 넘기고 가짜 파일을 등록하지 않는다. 추가 큐·래퍼·우회 파이프라인을 만들지 않는다.',
+    ),
+    ...(plan.assetSupplySummary?.nextActions||[]).filter(row=>row.libraryRequest?.mandatory===true).map(row=>
+      '[MANDATORY DOWNLOADED LIBRARY REQUEST] '+JSON.stringify(row.libraryRequest)+
+      '. 해당 게임의 현재 시스템에 적용할 다운로드·등록 자산이 없거나 정확한 역할 원본이 없으면 기존 ASSET_DEVELOPMENT 자산 수급 책임으로 요청한다. 등록된 모든 12개 family를 다시 검색하고, 유사한 동종 역할 자산은 파생 모델·리그·재질·모션을 실제로 변형해 연결한다. 원본/파생 파일·권리·해시 없이 완료 선언 금지. 기본 도형/더미/빈 배경으로 대체 불가. 안전한 원본이 수급되면 기존 바이브 BUILD_UP 책임 소스를 수정해 런타임 QA로 되돌린다. 새 큐/래퍼/검증 우회 금지.',
+    ),
+    ...(plan.assetSupplySummary?.nextActions||[]).filter(row=>row.sourceRoleAdaptationRequired===true).map(row=>
+      '[MANDATORY SIMILAR LIBRARY DONOR ADAPTATION] '+JSON.stringify({gameId:plan.gameId,target:plan.target,family:row.family,assetId:row.assetId,roleEvidence:row.roleEvidence})+
+      '. 정확히 일치하는 다운로드 모델이 없으면 호환되는 같은 자산군의 다운로드 모델을 실제 원본 메시/파츠/재질/리그 기반으로 해당 게임 역할에 맞게 재구성한다. 기존 소스를 보존하고 실제 파생 자산 및 소스 바인딩·모바일/네이티브 런타임 증거까지 완료해야 통과. 단순 이름 변경/색상 변경/더미 대체는 불가.',
     ),
     ...(plan.assetSupplySummary?.nextActions||[]).filter(row=>row.action==='ACQUIRE_ADAPT').map(row=>
       '[ON-DEMAND LICENSED ASSET GAP FILL] '+JSON.stringify({
