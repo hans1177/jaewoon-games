@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "packId": "roblox-survival-combat-parts-v1",
+  "targetGameId": "survival",
+  "sourceOfTruth": "roblox-games/survival/shared/GameConfig.luau#StudioAssets.Families",
+  "license": "project-original",
+  "authoringQualityTarget": 100,
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "modular": true,
+  "gameplayAuthority": false,
+  "alignment": {
+    "weapon": {
+      "axis": "+Z",
+      "origin": "MODULE_CONNECTION_ZERO"
+    },
+    "character": {
+      "origin": "TORSO_CENTER_APPROXIMATE"
+    },
+    "creature": {
+      "forward": "-Y",
+      "origin": "HEAD_OR_LIMB_MODULE_CENTER"
+    }
+  },
+  "assets": [
+    {
+      "family": "WEAPON",
+      "atomId": "BLADE_LONG",
+      "file": "blade_long.obj",
+      "role": "LONG_BLADE_MODULE",
+      "vertices": 52,
+      "faces": 36,
+      "id": "blade_long",
+      "source": "blade_long.obj",
+      "productionVerified": false
+    },
+    {
+      "family": "WEAPON",
+      "atomId": "GUARD_CROSS",
+      "file": "guard_cross.obj",
+      "role": "CROSS_GUARD_MODULE",
+      "vertices": 204,
+      "faces": 148,
+      "id": "guard_cross",
+      "source": "guard_cross.obj",
+      "productionVerified": false
+    },
+    {
+      "family": "WEAPON",
+      "atomId": "GRIP_LONG",
+      "file": "grip_long.obj",
+      "role": "LONG_GRIP_MODULE",
+      "vertices": 344,
+      "faces": 246,
+      "id": "grip_long",
+      "source": "grip_long.obj",
+      "productionVerified": false
+    },
+    {
+      "family": "CHARACTER",
+      "atomId": "TORSO_CLOTH",
+      "file": "torso_cloth.obj",
+      "role": "SURVIVAL_TORSO_CLOTH_MODULE",
+      "vertices": 264,
+      "faces": 218,
+      "id": "torso_cloth",
+      "source": "torso_cloth.obj",
+      "productionVerified": false
+    },
+    {
+      "family": "CHARACTER",
+      "atomId": "SHOULDER_LIGHT",
+      "file": "shoulder_light.obj",
+      "role": "LIGHT_SHOULDER_MODULE",
+      "vertices": 284,
+      "faces": 232,
+      "id": "shoulder_light",
+      "source": "shoulder_light.obj",
+      "productionVerified": false
+    },
+    {
+      "family": "CHARACTER",
+      "atomId": "BACK_CAPE",
+      "file": "back_cape.obj",
+      "role": "BACK_CAPE_MODULE",
+      "vertices": 232,
+      "faces": 170,
+      "id": "back_cape",
+      "source": "back_cape.obj",
+      "productionVerified": false
+    },
+    {
+      "family": "CREATURE",
+      "atomId": "HEAD_CANINE",
+      "file": "head_canine.obj",
+      "role": "CANINE_HEAD_MODULE",
+      "vertices": 754,
+      "faces": 650,
+      "id": "head_canine",
+      "source": "head_canine.obj",
+      "productionVerified": false
+    },
+    {
+      "family": "CREATURE",
+      "atomId": "JAW_LONG",
+      "file": "jaw_long.obj",
+      "role": "LONG_JAW_MODULE",
+      "vertices": 544,
+      "faces": 420,
+      "id": "jaw_long",
+      "source": "jaw_long.obj",
+      "productionVerified": false
+    },
+    {
+      "family": "CREATURE",
+      "atomId": "CLAW",
+      "file": "claw.obj",
+      "role": "CREATURE_CLAW_MODULE",
+      "vertices": 558,
+      "faces": 406,
+      "id": "claw",
+      "source": "claw.obj",
+      "productionVerified": false
+    }
+  ]
+}

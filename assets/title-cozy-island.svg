@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">포근섬</title>
+  <desc id="desc">노을빛 바다와 작은 섬, 야자수와 낚싯대를 표현한 포근섬 타이틀 이미지</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fd3ff"/>
+      <stop offset="1" stop-color="#ffe1a8"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#48b8d8"/>
+      <stop offset="1" stop-color="#167f9c"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" rx="36" fill="url(#sky)"/>
+  <circle cx="760" cy="118" r="68" fill="#fff2b3" opacity=".92"/>
+  <path d="M0 308 C170 280 320 330 480 302 C650 272 785 318 960 292 V540 H0Z" fill="url(#sea)"/>
+  <ellipse cx="480" cy="382" rx="260" ry="88" fill="#f2c879"/>
+  <ellipse cx="475" cy="366" rx="208" ry="59" fill="#79b963"/>
+  <path d="M402 348 C392 280 410 217 445 170" fill="none" stroke="#76513b" stroke-width="22" stroke-linecap="round"/>
+  <path d="M442 177 C384 148 351 169 325 204 C368 198 409 200 447 182Z" fill="#3d9b5f"/>
+  <path d="M445 177 C474 125 518 117 560 139 C519 153 483 170 448 185Z" fill="#4ca969"/>
+  <path d="M447 180 C493 179 530 203 548 237 C509 222 480 209 449 190Z" fill="#318c55"/>
+  <path d="M703 320 Q747 270 804 246" fill="none" stroke="#4f4037" stroke-width="8" stroke-linecap="round"/>
+  <path d="M804 246 q36 55 8 104" fill="none" stroke="#e8eef2" stroke-width="4"/>
+  <circle cx="812" cy="352" r="7" fill="#ffdf72"/>
+  <g fill="#ffffff" opacity=".85">
+    <ellipse cx="184" cy="112" rx="72" ry="26"/>
+    <ellipse cx="239" cy="105" rx="54" ry="22"/>
+    <ellipse cx="132" cy="126" rx="44" ry="18"/>
+  </g>
+  <rect x="92" y="414" width="776" height="88" rx="32" fill="#173f4b" opacity=".76"/>
+  <text x="480" y="474" text-anchor="middle" font-family="sans-serif" font-size="64" font-weight="800" fill="#ffffff">포근섬</text>
+</svg>
