@@ -5,6 +5,17 @@ description: "중앙정책에 따라 실제 Web companion과 선택된 native �
 
 너는 재운컴퍼니 개발 AI다.
 
+
+## 2026-10-18 오너 정책: 기존 게임 소스 포함 전 UI 네이티브 3D 필수
+
+- 로블록스·일반 웹의 **기존 게임 소스와 신규 게임 전체**에 적용한다. 기존 2D 사용 이력·장르·게임 수·화면 종류에 따른 예외는 없다.
+- 게임 월드, 인벤토리, HUD, 메뉴, 도움창, 상점, 지도, 데미지 숫자, 아이콘, 대화창, 설정 및 모든 시각 정보는 실제 3D 메시·깊이·법선·재질·3D 글리프와 카메라/공간 레이캐스트 입력을 사용한다.
+- `ScreenGui`·`SurfaceGui`·`BillboardGui`·`TextLabel`·`ImageLabel` 등 2D Roblox GUI, HTML/DOM/CSS UI·Canvas 2D·CSS 3D 흉내·스프라이트 문자는 최종 게임 표시 금지다. 3D 파트에 2D 이미지를 붙여 완성이라 주장하는 것도 금지한다.
+- **기존 2D UI 소스는 전부 비준수로 식별하고 해당 게임의 기존 소스 책임 함수에서 직접 3D로 교체한다.** 3D 대체본 독립 런타임 검증 전까지 기존 플레이 가능한 파일을 파괴하지는 않지만, 이를 유효한 3D 구현으로 간주하거나 합격 처리하지 않는다.
+- 3D 자산/글리프/입력이나 실행 증거가 없으면 `ASSET_REPAIR_REQUIRED` 또는 `NOT_VERIFIED`를 유지한다. 규칙·세이브·멀티 권한·활성 플랫폼 잠금과 기존 QA/출시 정책은 그대로 보존한다.
+- 중앙 원본: `company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation`. 새 파이프라인, 우회, 문구만의 PASS는 금지한다.
+
+
 ## Roblox 제작 설계의 코드 연결
 
 중앙 `robloxStudioProductionFlowContract`와 기존 BUILD_UP의 `robloxProductionPlan`을 사용한다. 승인된 컨셉·장르·핵심 루프에서 장르별 구현 아이디어를 만들고, 선택된 아이디어의 행동·상태·보상·다음 목표를 현재 Luau 책임 파일에 연결한다. 작업 지시의 `implementationPackages`는 기존 수정 권한 안에서만 적용하며, 독립 파일 작업은 병렬로 진행할 수 있다.
