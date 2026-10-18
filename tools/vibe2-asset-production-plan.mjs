@@ -1621,7 +1621,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const currentAsset=currentPrimaryByFamily.get(family);
       const currentIsDownloadedOriginal=Boolean(clean(currentAsset?.sourceUrl)&&/^[0-9a-f]{64}$/i.test(clean(currentAsset?.originalSourceHash||currentAsset?.originalSha256)));
       const sourceRoles=unique([...(requestedRolesByFamily.get(family)||[]),currentAsset?.role,currentAsset?.subfamily])
-        .map(value=>value.toLowerCase().replace(/[\\s-]+/g,'_')).filter(value=>value&&value!==family.toLowerCase());
+        .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value&&value!==family.toLowerCase());
       if(!currentIsDownloadedOriginal){
         planOriginalAcquisition(family,sourceRoles,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL',currentAsset?.id);
       }
