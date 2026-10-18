@@ -2542,7 +2542,7 @@ test('higher-value owner signal outranks automatic presentation issue',()=>{
   assert.equal(next.ownerDirective,true);
 });
 
-test('flat or unstartable Web games enter 2.5D repair after canonical existing-Web assessment',()=>{
+test('flat or unstartable Web games enter native 3D repair after canonical existing-Web assessment',()=>{
   const root=tempRepo();
   const gameId='flat-start-game';
   const dir=path.join(root,'web-games',gameId);
@@ -2571,7 +2571,7 @@ test('flat or unstartable Web games enter 2.5D repair after canonical existing-W
   assert.equal(task.supervisionContract?.required,true);
   assert.ok(task.evidence.includes('owner-directive:all-web-games-must-start'));
   assert.ok(task.evidence.includes('owner-directive:real-3d-final-gameplay'));
-  assert.ok(task.evidence.some(value=>value.includes('MINIMUM_2_5D_PRESENTATION_REQUIRED')));
+  assert.ok(task.evidence.some(value=>value.includes('REAL_WEB_3D_SOURCE_REQUIRED')));
   assert.match(task.goal,/실제 WebGL 렌더/);
   assert.equal(task.maxRetries,null);
 });
