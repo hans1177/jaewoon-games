@@ -114,7 +114,14 @@ const checks={
   developmentAndWebShelfPlacementDocumented:developmentDisplay.autoRegisterProductionClass==='DEVELOPMENT_CONFIRMED'&&webShelfPolicy.source==='LEGACY_ARCHIVE_ONLY'&&Array.isArray(centralHomepage.supportedPlatforms)&&centralHomepage.supportedPlatforms.length>0,
   allDeployedGameCardVisibility:developmentDisplay.cardVisibilityRequiresRunnableTarget===false&&developmentDisplay.titleOnlyCardExposureForbidden===false&&centralHomepage.homepageListingContract?.allDeployedGamesVisible===true&&centralHomepage.homepageListingContract?.gameCardVisibilityIndependentOfReleaseClassification===true&&includesAll(enhancementEntry,['const activeLifecycle=row=>','const registered=root===`web-games/${id}`','WITHDRAWN_SIMPLE_PROTOTYPE','function developmentRows(catalog,status)','function hasRunnableHomepageTarget(game)'])&&!enhancementEntry.includes('.filter(hasRunnableHomepageTarget)'),
   homepageUnityWebRetired:roadmap.developmentAccess?.UNITY_WEB!=='ALWAYS_ALLOWED'&&!/unityWebAction|bindAvailableUnityWebSurfaces|unityWebTestUrl/.test(enhancementEntry),
-  cleanRunnableShelfPresentation:includesAll(index,['data-runtime-fallback="loading"','실행 가능한 게임을 불러오는 중'])&&includesAll(enhancementEntry,['class="gameShelfHead"','class="gameShelfCount"',"const direct=links.roblox||links.unity||''",'rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)']),
+  // GitHub Pages publication is now the first real play action for an eligible Web game.
+  // Keep the canonical source root/status guards; do not count an arbitrary URL as runnable.
+  cleanRunnableShelfPresentation:includesAll(index,['data-runtime-fallback="loading"','실행 가능한 게임을 불러오는 중'])
+    &&includesAll(enhancementEntry,['class="gameShelfHead"','class="gameShelfCount"',
+      'function playableWebHref(row)','const registered=root===`web-games/${id}`',
+      "if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return ''",
+      "const direct=links.web||links.roblox||links.unity||''",
+      'rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)']),
   developmentNativeTestButtonsOnly:developmentDisplay.platformTestButtonEnabled===true&&developmentDisplay.platformTestButtonLabelMode==='PLATFORM_NAME'&&includesAll(enhancementEntry,['function platformLinks(game)','robloxAction','unityAction'])&&!/unityWebAction|bindAvailableUnityWebSurfaces/.test(enhancementEntry),
   developmentCurrentScoreRankingAvailable:developmentDisplay.scoreDisplayEnabled===false&&developmentDisplay.scoreSource==='DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT'&&developmentDisplay.ranking==='CATALOG_ORDER'&&includesAll(enhancementEntry,['catalog?.runtimeInfoAuthority!==\'company-runtime\'','status?.runtimeAuthority!==\'company-runtime\'']),
   documentationSyncPolicyExists:documentationSync.centralPolicyFirst===true&&documentationSync.centralPolicyPath==='company-learning/platform-release-roadmap.json'&&documentationSync.implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized===true&&documentationSync.humanPolicyMirrorRequired===false&&documentationSync.workDocumentsCannotOverrideCentralPolicy===true,
