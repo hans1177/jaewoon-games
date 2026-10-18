@@ -97,8 +97,13 @@ function spatialFixture(dimension='2D'){
   return{contract,sourceFiles:{'scene.js':source},changedFiles:['scene.js'],blueprint:{version:1,designFingerprint:contract.designFingerprint,dimension,view:dimension==='2D'?'TOP_DOWN':'PERSPECTIVE',units:'meters',upAxis:dimension==='2D'?'NONE':'Y',player:{radius:.25,height:1.8,maxStep:.25,maxSlopeDegrees:40},worldBounds:bounds,regions:[{id:'room',bounds,purpose:'task-local room'}],objects,connections:[{id:'walk',from:'start',to:'goal',kind:'WALK',path:dimension==='2D'?[[2,2],[8.5,8.5]]:[[2,0,2],[8.5,0,8.5]],reason:'reach the objective',binding}],entryId:'start',objectiveIds:['goal']}};
 }
 
-test('spatial blueprints distinguish 2D and 3D and never claim engine runtime verification',()=>{
-  for(const dimension of ['2D','3D']){const result=validateSpatialBlueprint(spatialFixture(dimension));assert.equal(result.pass,true,JSON.stringify(result.issues));assert.equal(result.runtimeVerified,false);}
+test('spatial blueprints reject all 2D gameplay and retain runtime proof for real 3D',()=>{
+  const rejected=validateSpatialBlueprint(spatialFixture('2D'));
+  assert.equal(rejected.pass,false);
+  assert.ok(rejected.issues.includes('SPATIAL_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D'));
+  const result=validateSpatialBlueprint(spatialFixture('3D'));
+  assert.equal(result.pass,true,JSON.stringify(result.issues));
+  assert.equal(result.runtimeVerified,false);
   const f=spatialFixture();f.blueprint.dimension='3D';assert.equal(validateSpatialBlueprint(f).pass,false);
   assert.equal(buildSpatialBlueprintContract({enabled:true,mode:'EXISTING_SOURCE_REPAIR',design:{identity:'map'}}),null);
 });
@@ -384,8 +389,8 @@ test('approved procedural landscapes reach only the existing world source worker
   assert.ok(study.routes.every(route=>route.cellSample.length===route.worldPointSample.length));
   assert.ok(study.routes.every(route=>route.worldPointSample.every(point=>Number.isFinite(point.x)&&Number.isFinite(point.y)&&Number.isFinite(point.z))));
   const twoD=buildSpatialBlueprintContract({...input,design:{...design,spatialLayout:{dimension:'2D',proceduralWorld:{...spec,dimension:'2D'}}}});
-  assert.equal(twoD.macroSketch.proceduralWorldStudy.status,'STATIC_LAYOUT_PROPOSED');
-  assert.ok(twoD.macroSketch.proceduralWorldStudy.routes.every(route=>route.worldPointSample.every(point=>Number.isFinite(point.y)&&!('z' in point))));
+  assert.equal(twoD.spatialPolicyStatus,'REPAIR_3D_REQUIRED');
+  assert.equal(twoD.macroSketch.proceduralWorldStudy,undefined,'2D procedural layouts must not be authored for gameplay');
   assert.ok(study.totalBuildings>0);
   assert.ok(study.buildings.every(row=>row.modules.some(module=>module.endsWith('PITCHED_ROOF'))));
   assert.equal(study.fullTerrainOrNativeMeshDelivered,false);
