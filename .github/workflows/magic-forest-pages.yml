@@ -271,7 +271,10 @@ jobs:
           artifact="$RUNNER_TEMP/jaewoon-pages-artifact"
           test -d "$retained/.git"
           mkdir -p "$artifact"
-          rsync -a --exclude='.git/' "$retained/" "$artifact/"
+          # Copy retained history-preserving output without rescanning Git internals.
+          # Reflinks avoid physical duplicate writes when the runner filesystem supports them.
+          cp -a --reflink=auto "$retained/." "$artifact/"
+          rm -rf "$artifact/.git"
           test -s "$artifact/index.html"
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' "$artifact/index.html"
           test -f "$artifact/tier.html"
