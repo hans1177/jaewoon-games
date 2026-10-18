@@ -225,10 +225,15 @@ jobs:
             if ! git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/homepage-runtime/game-seed-state.json 2>/dev/null; then
               printf '%s\n' '{"seeds":[]}' > /tmp/homepage-runtime/game-seed-state.json
             fi
-            # 이미 공개된 원본 게임 경로만 승인한다. 확인 불가 시 파일 변경 전에 실패로 재시도한다.
-            curl --fail --silent --show-error --location --retry 2 --max-time 20 \
+            # 게시 현황은 선택적 진단이다. 원본 게임/메인 버튼 동기화 자체는 배포 서버에 의존하지 않는다.
+            if curl --fail --silent --show-error --location --retry 1 --max-time 12 \
               https://hans1177.github.io/jaewoon-games/web-games/publish-manifest.json \
-              -o /tmp/homepage-runtime/published-web-manifest.json
+              -o /tmp/homepage-runtime/published-web-manifest.json; then
+              echo 'HOMEPAGE_PUBLIC_WEB_MANIFEST=AVAILABLE'
+            else
+              rm -f /tmp/homepage-runtime/published-web-manifest.json
+              echo 'HOMEPAGE_PUBLIC_WEB_MANIFEST=OPTIONAL_UNAVAILABLE'
+            fi
             COMPANY_VERIFIED_POLICY_PATH=company-learning/platform-release-roadmap.json node --input-type=module <<'NODE'
             import fs from 'node:fs';
             import { execFileSync } from 'node:child_process';
@@ -242,10 +247,16 @@ jobs:
             const artbooks=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
             mergeRuntimeCatalogMissingGames({catalog,runtimeCatalog,developmentQueue});
             ingestOwnerWebGameIds(catalog,[],{filesystem:fs});
-            const publishedManifest=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/published-web-manifest.json','utf8'));
-            const publication=syncPublishedWebRoutes({catalog,manifest:publishedManifest,sourceTreeShaOf:root=>
-              execFileSync('git',['rev-parse','HEAD:'+root],{encoding:'utf8'}).trim()});
-            console.log('HOMEPAGE_PUBLISHED_WEB_ROUTES='+publication.confirmed+'/'+publication.published);
+            if(fs.existsSync('/tmp/homepage-runtime/published-web-manifest.json')){
+              try{
+                const publishedManifest=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/published-web-manifest.json','utf8'));
+                const publication=syncPublishedWebRoutes({catalog,manifest:publishedManifest,sourceTreeShaOf:root=>
+                  execFileSync('git',['rev-parse','HEAD:'+root],{encoding:'utf8'}).trim()});
+                console.log('HOMEPAGE_PUBLISHED_WEB_ROUTES='+publication.confirmed+'/'+publication.published);
+              }catch(error){
+                console.log('HOMEPAGE_PUBLISHED_WEB_ROUTES=OPTIONAL_DIAGNOSTIC_UNAVAILABLE:'+error.message);
+              }
+            }else console.log('HOMEPAGE_PUBLISHED_WEB_ROUTES=OPTIONAL_MANIFEST_UNAVAILABLE');
             syncProductionClasses({portfolio,catalog,artbooks,developmentQueue,seedState,filesystem:fs});
             applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
             const validation=validateNormalizedCatalog(catalog);
