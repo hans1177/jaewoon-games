@@ -381,7 +381,7 @@ export function auditNative3dOnlyUiSource({target='',sources=[]}={}){
     authority:'NATIVE_3D_ONLY_STATIC_REJECTION_NOT_A_RUNTIME_PASS'
   });
 }
-function runNative3dOnlyUiQa({root,data={},changed=[]}={}){
+export function runNative3dOnlyUiQa({root,data={},changed=[]}={}){
   const sourceRoots=new Map();
   const proposed=posix(data.sourceRoot);
   for(const file of [proposed,...changed.map(posix)]){
