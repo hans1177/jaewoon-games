@@ -18,7 +18,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Verify game loads on emulated Android browser
         run: |
-          cd ..\n          python3 -m http.server 8765 &
+          ln -s "$PWD" /tmp/jaewoon-games\n          (cd /tmp && python3 -m http.server 8765) &
           node --input-type=module <<'JS'
           import { chromium, devices } from 'playwright';
           const browser = await chromium.launch({headless:true});
