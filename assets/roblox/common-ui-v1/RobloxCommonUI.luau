@@ -4611,7 +4611,7 @@ end
 function RobloxCommonUI.CreateVisualFeedbackController(options)
   options = options or {}
   local parent = options.parent
-  assert(parent and parent:IsA("GuiObject"), "visual feedback requires an existing GuiObject")
+  assert(parent and (parent:IsA("GuiObject") or parent:IsA("LayerCollector")), "visual feedback requires an existing GUI container")
   local TweenService = game:GetService("TweenService")
   local theme = cloneTheme(options.theme)
   local reducedMotion = options.reducedMotion == true
