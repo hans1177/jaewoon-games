@@ -149,6 +149,14 @@ V0 PROPOSAL
 - 공유 브랜치 쓰기는 통합 후보 이후에만 허용한다.
 - 부서 코드 변경 직후 공개하지 않는다. 최종 통합 QA와 릴리즈 게이트를 통과해야 한다.
 
+## GitHub Pages 병합 후 자동 배포 · 총괄 사후 게임 점검
+
+- `main`에 병합된 모든 커밋은 기존 `Magic Forest Static Play`가 GitHub Pages 게시를 시작한다. 변경 파일 경로, Homepage Manager 상태, 총괄 사전 승인 또는 별도의 QA verdict를 **배포 트리거/선행 조건으로 추가하지 않는다**.
+- 이 규칙은 **이미 main으로 승격된 공개 홈페이지의 재게시**에 한정한다. Vibe의 F0~F9, 네이티브/서버 공개 권한, 소스 보안, 게임 로직·저장 규칙을 건너뛰는 허가는 아니다.
+- 총괄은 **실제 Pages 게시 이후** 같은 실행에서 공개 홈페이지·등록 게임별 URL·공유 자산의 HTTP 검사를 수행하고, 발견한 문제와 정확한 main SHA·실패 게임 경로·GitHub Actions 증거 링크를 GitHub Issue로 등록한다. 같은 SHA의 중복 이슈는 만들지 않는다.
+- 테스트 실패는 이미 수행된 Pages 배포를 취소하거나 다음 독립 게임 개발 플로우를 막는 조건이 아니다. 오류는 기존 Vibe 원인 수리·회귀 검증으로 연결한다. **HTTP 검사 성공은 게임 플레이 QA 성공으로 허위 표기하지 않는다**.
+- 자동 조건 추가를 막는 실행 계약은 기존 `qa/github-pages-landing.test.mjs`와 `qa/vibe2-continuous-release-dispatch.test.mjs`에서 확인한다. 사용자에게 없는 GitHub 저장소 관리자 수준의 불변 잠금을 주장하지 않는다.
+
 ## 릴리즈 후 운영
 
 ```text
