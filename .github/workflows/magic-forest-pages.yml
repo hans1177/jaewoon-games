@@ -145,15 +145,15 @@ jobs:
           console.log('WEB_PAGES_SHARED_ASSETS='+refs.size);
           NODE
 
-      - name: Build mobile homepage with every published game route and retained Roblox targets
+      - name: Verify every published game route and route visitors to the single official homepage
         shell: bash
         run: |
           set -euo pipefail
           node tools/github-pages-landing.mjs
           node --test qa/github-pages-landing.test.mjs
           test -s _site/index.html
-          grep -q 'data-jaewoon-pages-home="1"' _site/index.html
-          echo "PAGES_HOMEPAGE_VISIBLE_AND_TESTED=PASS"
+          grep -q 'data-jaewoon-pages-redirect="1"' _site/index.html
+          echo "PAGES_OFFICIAL_HOME_REDIRECT_QA=PASS"
 
       - name: Publish gh-pages without force or deleting earlier games
         if: github.event_name != 'pull_request'
@@ -174,7 +174,7 @@ jobs:
           # Copy only; keep every previously published game without rewriting the originals.
           rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
           test -s "$site/index.html"
-          grep -q 'data-jaewoon-pages-home="1"' "$site/index.html"
+          grep -q 'data-jaewoon-pages-redirect="1"' "$site/index.html"
           git -C "$site" add --all
           if ! git -C "$site" diff --cached --quiet; then
             git -C "$site" commit -m "pages: publish registered web games from main $GITHUB_SHA"
@@ -198,7 +198,7 @@ jobs:
           mkdir -p "$artifact"
           rsync -a --exclude='.git/' "$retained/" "$artifact/"
           test -s "$artifact/index.html"
-          grep -q 'data-jaewoon-pages-home="1"' "$artifact/index.html"
+          grep -q 'data-jaewoon-pages-redirect="1"' "$artifact/index.html"
           test -f "$artifact/tier.html"
           test -f "$artifact/web-games/publish-manifest.json"
           GITHUB_SHA="$GITHUB_SHA" node - "$artifact/web-games/publish-manifest.json" <<'NODE'
@@ -262,24 +262,17 @@ jobs:
           done
           # A 200 on the old forest root did not make a game directory visible.
           curl -fsSL --max-time 15 "$base" -o /tmp/jaewoon-pages-home-live.html
-          grep -q 'data-jaewoon-pages-home="1"' /tmp/jaewoon-pages-home-live.html || {
-            echo 'WEB_PAGES_HOME_DIRECTORY_NOT_LIVE' >&2; exit 1;
+          grep -q 'data-jaewoon-pages-redirect="1"' /tmp/jaewoon-pages-home-live.html || {
+            echo 'WEB_PAGES_OFFICIAL_HOME_REDIRECT_NOT_LIVE' >&2; exit 1;
           }
-          node - <<'NODE'
-          const fs=require('node:fs');
-          const m=JSON.parse(fs.readFileSync('/tmp/web-pages-published.json','utf8'));
-          const home=fs.readFileSync('/tmp/jaewoon-pages-home-live.html','utf8');
-          for(const route of m.routes){
-            if(!home.includes('href="./'+route+'"')){
-              console.error('WEB_PAGES_HOME_LINK_NOT_LIVE='+route);process.exitCode=1;
-            }
+          grep -q 'https://jaewoon-games.pages.dev/' /tmp/jaewoon-pages-home-live.html || {
+            echo 'WEB_PAGES_OFFICIAL_HOME_REDIRECT_TARGET_MISMATCH' >&2; exit 1;
           }
-          if(!home.includes('id="game-search"'))process.exitCode=1;
-          if(process.exitCode)throw Error('WEB_PAGES_HOME_DIRECTORY_INCOMPLETE');
-          console.log('WEB_PAGES_HOME_DIRECTORY_ROUTES='+m.routes.length);
-          NODE
+          # 게임 실행 경로는 위 HTTP 검사에서 개별 검증하며 두 번째 홈 목록은 만들지 않는다.
+          echo "WEB_PAGES_PUBLISHED_GAME_ROUTES=$(node -p "require('/tmp/web-pages-published.json').routes.length")"
           curl -fsSL --max-time 15 -o /dev/null "$base""tier.html" || { echo 'MAGIC_FOREST_TIER_NOT_LIVE' >&2; exit 1; }
           echo "WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS"
           echo "WEB_PAGES_LIVE_SOURCE_SHA=$GITHUB_SHA"
           echo "WEB_PAGES_ROUTES_HTTP_200=PASS"
-          echo "MAGIC_FOREST_PLAY_URL=$base"
+          echo "MAGIC_FOREST_PLAY_URL=${base}web-games/fantasy-survival/"
+          echo "OFFICIAL_HOMEPAGE_URL=https://jaewoon-games.pages.dev/"
