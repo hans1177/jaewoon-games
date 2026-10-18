@@ -486,6 +486,89 @@ export function planVibeExternalCustomization({
   });
 }
 
+
+// Source-bound spatial asset handoff for the existing BUILD_UP and GRAPHICS_PRODUCTION.
+// A file extension is only a candidate format, NOT evidence that real mesh geometry rendered.
+const SPATIAL_3D_ASSET_FAMILIES=new Set([
+  'CHARACTER','NPC','PLAYER','ENEMY','BOSS','COMPANION','CREATURE','MOUNT',
+  'ENVIRONMENT','BACKGROUND','TERRAIN','BUILDING','PROP','WORLD','VEHICLE',
+  'WEAPON','EQUIPMENT','ITEM','STRUCTURE','RESOURCE','FOLIAGE'
+]);
+const SPATIAL_3D_MODEL_PATH=/\.(?:glb|gltf|obj|fbx|rbxm|rbxmx)$/i;
+const SPATIAL_3D_NATIVE_SOURCE=/\.(?:luau|lua|js|jsx|ts|tsx|html|cs)$/i;
+function spatial3dPath(value=''){
+  const file=text(value).replaceAll('\\','/').replace(/^\.\//,'');
+  if(!file||file.startsWith('/')||file.split('/').some(part=>!part||part==='.'||part==='..')
+    ||/^[a-z]+:/i.test(file))return'';
+  return file;
+}
+export function createVibeSpatial3dAssetBindingContract({
+  gameId='',target='',sourceRevision='',bindings=[]
+}={}){
+  const id=text(gameId),platform=vibeNormalizedTarget(target);
+  const enabled=/^[a-z0-9][a-z0-9_-]*$/i.test(id)&&['ROBLOX','WEB'].includes(platform);
+  const sourceRoot=enabled?(platform==='WEB'?'web-games/':'roblox-games/')+id:null;
+  const rows=(Array.isArray(bindings)?bindings:[]).filter(Boolean).map(binding=>{
+    const family=text(binding.family||binding.type).toUpperCase().replaceAll('-','_');
+    const spatial3d=SPATIAL_3D_ASSET_FAMILIES.has(family);
+    const files=(Array.isArray(binding.sourceFiles)?binding.sourceFiles:[])
+      .map(row=>spatial3dPath(typeof row==='string'?row:row?.path)).filter(Boolean);
+    const modelFiles=files.filter(value=>SPATIAL_3D_MODEL_PATH.test(value));
+    const nativeSources=files.filter(value=>SPATIAL_3D_NATIVE_SOURCE.test(value));
+    const provenance=text(binding.sourceContentFingerprint||binding.sourceHash);
+    const sourceIntegrityDeclared=/^[a-f0-9]{64}$/i.test(provenance);
+    const sourceBound=binding.sourceBound===true;
+    const nativeSelectionReady=binding.nativeSelectionReady===true;
+    const status=text(binding.status).toUpperCase();
+    const blocked=!enabled?'OWNER_HELD_OR_GAME_ID_INVALID'
+      :!spatial3d?'NON_SPATIAL_SUPPORT_ASSET'
+      :['AUTHORING_REQUIRED','SOURCE_ASSET_REQUIRED','ASSET_REPAIR_REQUIRED'].includes(status)
+        ?'REAL_3D_MODEL_SOURCE_REQUIRED'
+      :!sourceIntegrityDeclared?'SOURCE_INTEGRITY_EVIDENCE_REQUIRED'
+      :!modelFiles.length&&!nativeSources.length?'REAL_3D_SOURCE_OR_NATIVE_MESH_REQUIRED'
+      :!nativeSelectionReady&&status!=='SOURCE_BOUND_RUNTIME_QA_REQUIRED'
+        ?'3D_PLATFORM_RIGHTS_OR_COMPATIBILITY_REVIEW_REQUIRED'
+      :sourceBound?'3D_NATIVE_RUNTIME_RENDER_AND_INTERACTION_QA_REQUIRED'
+      :'IMPLEMENT_3D_NATIVE_MODEL_BINDING';
+    return Object.freeze({
+      requirementId:text(binding.requirementId)||null,
+      assetId:text(binding.assetId)||null,family,
+      role:text(binding.role)||null,
+      sourceRoot,sourceFiles:Object.freeze(files),
+      modelFiles:Object.freeze(modelFiles),nativeSources:Object.freeze(nativeSources),
+      sourceIntegrityDeclared,sourceBound,nativeSelectionReady,
+      spatial3dRequired:spatial3d,flat2dSubstituteForbidden:spatial3d,
+      renderEvidenceNeeded:spatial3d&&enabled,
+      status,action:blocked,gameSourceEdited:false,runtime3dVerified:false,
+      visualAdjustmentsAllowed:Object.freeze(['SCALE','ORIENTATION','PALETTE','MATERIAL','ATTACHMENT']),
+      requiredNativeEvidence:spatial3d?Object.freeze([
+        'ACTUAL_MESH_AND_TRIANGLE_RENDER','3D_CAMERA_DEPTH','NATIVE_SOURCE_CONSUMER',
+        'MOBILE_INPUT_AND_COLLISION','SOURCE_REVISION_BOUND_RUNTIME_CAPTURE'
+      ]):Object.freeze([]),
+      preserve:Object.freeze(['SOURCE_ORIGINAL','SAVE','BALANCE','HIT_SEMANTICS','MULTIPLAYER_AUTHORITY'])
+    });
+  });
+  const spatial=rows.filter(row=>row.spatial3dRequired),blocked=spatial.filter(row=>
+    row.action!=='IMPLEMENT_3D_NATIVE_MODEL_BINDING'
+    &&row.action!=='3D_NATIVE_RUNTIME_RENDER_AND_INTERACTION_QA_REQUIRED');
+  return Object.freeze({
+    version:1,gameId:id||null,target:platform,sourceRoot,
+    sourceRevision:text(sourceRevision)||null,
+    authorized:enabled,
+    requiredSpatial3dCount:spatial.length,
+    unresolvedSpatial3dCount:blocked.length,
+    items:Object.freeze(rows),
+    boundRuntime3dCount:0,
+    bindingPlanOnly:true,gameSourceModified:false,runtime3dVerified:false,
+    status:!enabled?'OWNER_HELD_OR_GAME_ID_INVALID':blocked.length?'SPATIAL_3D_SOURCE_GAPS':
+      spatial.some(row=>!row.sourceBound)?'SOURCE_BINDING_REQUIRED':'NATIVE_RUNTIME_3D_QA_REQUIRED',
+    flat2dWorldForbidden:true,uiHud2dOverlayAllowed:true,
+    runtimePassRequiresIndependentEvidence:true,
+    owner:'EXISTING_GAME_SOURCE_WORKER',
+    productionPath:'EXISTING_GRAPHICS_PRODUCTION_AND_BUILD_UP_ONLY'
+  });
+}
+
 export function planAssetApplication({ prompt = '', manifest = null, presetCatalog = null, rebuild = false } = {}) {
   const request = text(prompt);
   if (!request) throw new Error('asset request required');
