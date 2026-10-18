@@ -515,6 +515,8 @@ export function createVibeSpatial3dAssetBindingContract({
       .map(row=>spatial3dPath(typeof row==='string'?row:row?.path)).filter(Boolean);
     const modelFiles=files.filter(value=>SPATIAL_3D_MODEL_PATH.test(value));
     const nativeSources=files.filter(value=>SPATIAL_3D_NATIVE_SOURCE.test(value));
+    // .js/.html/Luau can contain 2D rendering. Native mesh must be proven, never guessed.
+    const nativeMeshSourceVerified=binding.native3dMeshSourceVerified===true;
     const provenance=text(binding.sourceContentFingerprint||binding.sourceHash);
     const sourceIntegrityDeclared=/^[a-f0-9]{64}$/i.test(provenance);
     const sourceBound=binding.sourceBound===true;
@@ -526,6 +528,7 @@ export function createVibeSpatial3dAssetBindingContract({
         ?'REAL_3D_MODEL_SOURCE_REQUIRED'
       :!sourceIntegrityDeclared?'SOURCE_INTEGRITY_EVIDENCE_REQUIRED'
       :!modelFiles.length&&!nativeSources.length?'REAL_3D_SOURCE_OR_NATIVE_MESH_REQUIRED'
+      :!modelFiles.length&&!nativeMeshSourceVerified?'NATIVE_3D_MESH_SOURCE_EVIDENCE_REQUIRED'
       :status==='SOURCE_BINDING_PROVENANCE_REQUIRED'||!nativeSelectionReady
         ?'3D_PLATFORM_RIGHTS_OR_COMPATIBILITY_REVIEW_REQUIRED'
       :sourceBound?'3D_NATIVE_RUNTIME_RENDER_AND_INTERACTION_QA_REQUIRED'
@@ -536,7 +539,7 @@ export function createVibeSpatial3dAssetBindingContract({
       role:text(binding.role)||null,
       sourceRoot,sourceFiles:Object.freeze(files),
       modelFiles:Object.freeze(modelFiles),nativeSources:Object.freeze(nativeSources),
-      sourceIntegrityDeclared,sourceBound,nativeSelectionReady,
+      nativeMeshSourceVerified,sourceIntegrityDeclared,sourceBound,nativeSelectionReady,
       spatial3dRequired:spatial3d,flat2dSubstituteForbidden:spatial3d,
       renderEvidenceNeeded:spatial3d&&enabled,
       status,action:blocked,gameSourceEdited:false,runtime3dVerified:false,
