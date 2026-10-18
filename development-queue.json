@@ -12213,7 +12213,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-18T13:16:28.343Z",
+      "updatedAt": "2026-10-18T13:21:54.111Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -12229,16 +12229,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
       "robloxBuildArtifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
-      "robloxBuildPassedAt": "2026-10-18T12:33:00.693Z",
+      "robloxBuildPassedAt": "2026-10-18T13:21:54.111Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-18T12:33:00.693Z",
+      "robloxBuildPreflightFailedAt": "2026-10-18T13:21:54.111Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "monster-adventure",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-18T12:30:36.454Z",
+        "checkedAt": "2026-10-18T13:07:30.441Z",
         "sourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
         "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
         "secondaryOwnerFocus": false,
@@ -12281,7 +12281,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Runtime testing requires all validation checks (web, music, native web, native music) to pass. The BUILD_EVIDENCE indicates these validations failed, preventing the package from starting runtime testing."
+            "note": "Runtime testing requires all validation checks (web, music, native web, native music) to pass. The BUILD_EVIDENCE indicates all four validations failed, which contradicts the preflight requirement for starting runtime testing."
           }
         ],
         "blockers": [
@@ -39387,7 +39387,7 @@
       "strictDesignReviewRefreshRequired": true
     }
   ],
-  "updatedAt": "2026-10-18T13:21:45.768Z",
+  "updatedAt": "2026-10-18T13:21:54.111Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
