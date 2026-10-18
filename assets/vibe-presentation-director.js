@@ -78,7 +78,7 @@ const VIBE_GAME_VISUAL_SIGNALS=Object.freeze({
   COMBAT:/\b(?:hitbox|hitstun|damage|attack|combat|weapon|dealDamage|onHit)\b|(?:공격|전투|피해량)/i,
   BOSS:/\b(?:bossPhase|bossHealth|bossHp|bossBar|bossFight|bossEncounter|boss_state)\b|(?:보스전|보스체력)/i,
   QUEST:/\b(?:quest|objective|mission|questLog)\b|(?:퀘스트|임무)/i,
-  CRAFT:/\b(?:craft|recipe|smelt|forge|crafting)\b|(?:제작대|제작법|조합)/i,
+  CRAFT:/\b(?:craft|recipe|smelt|forge|crafting)\b|(?:craftRecipe|craftingQueue|recipeList|제작대|제작법|조합)/i,
   INVENTORY:/\b(?:inventory|backpack|itemSlot|lootTable)\b|(?:인벤토리|아이템창)/i,
   EQUIPMENT:/\b(?:equipment|equipItem|equipSlot|gearSlot|armorSlot)\b|(?:장비창|착용장비)/i,
   SHOP:/\b(?:shop|vendor|buyItem|sellItem|checkout)\b|(?:상점|구매)/i,
@@ -125,7 +125,9 @@ function visualSourceLines(files=[]){
     .map(row=>{
       const content=String(row.source??row.content??row.current??'');
       const executable=content.replace(/<!--[\s\S]*?-->|\/\*[\s\S]*?\*\//g,'')
-        .split('\n').filter(line=>!/^\s*(?:\/\/|--|#)\s/.test(line)).join('\n');
+        .replace(/(^|[\s;>}])\/\/[^\n]*/gm,'$1')
+        .replace(/(^|\s)--[^\n]*/gm,'$1')
+        .split('\n').filter(line=>!/^\s*#\s/.test(line)).join('\n');
       return {path:clean(row.path),executable};
     }).filter(row=>row.executable.trim());
 }
