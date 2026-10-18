@@ -594,7 +594,9 @@ test('acquired Roblox GLBs are previewable through the existing safe native view
   const start=library.indexOf('const nativeGLB='),end=library.indexOf('let nativeClip=',start);
   assert.ok(start>=0&&end>start);
   const nativeGLB=vm.runInNewContext(library.slice(start,end)+'\nnativeGLB');
-  assert.ok(manifest.models.length>=22);
+  assert.ok(manifest.models.length>0,'at least one acquired native model required');
+  assert.equal(manifest.models.length,manifest.adaptedGlbCount,'registered native previews must match actual converted GLB inventory');
+  assert.ok(manifest.sourceModelCount>=manifest.adaptedGlbCount,'unconverted source originals remain a separately counted acquisition gap');
   for(const model of manifest.models){
     const record=registry.assets.find(asset=>asset.id==='external-actor-'+model.id);
     assert.ok(record,'unregistered acquired actor '+model.id);
@@ -655,4 +657,30 @@ test('mobile asset preview skips extra frames and hidden-tab time instead of adv
  const before=frames.length;document.hidden=true;loop(2000);assert.equal(frames.length,before);
  document.hidden=false;loop(2010);assert.equal(frames.length,before);loop(2034);assert.ok(frames.at(-1)<.04);
  assert.match(source,/uri\+='\?v='\+sourceHash/);
+});
+
+test('complete native-first gallery distinguishes registered assets, material atoms and source catalogs',()=>{
+ const html=fs.readFileSync('asset-library.html','utf8');
+ const code=fs.readFileSync('assets/asset-library.js','utf8');
+ const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ const ids=['nativeTab','nativeCount','materialCount','sourceReferenceCount','sourcePackList',
+  'catalogPackCount','catalogEntryCount','inspectionMetrics','meshCount','triangleCount','meshMaterialCount','meshClipCount'];
+ for(const id of ids)assert.match(html,new RegExp('id="'+id+'"'));
+ assert.ok(registry.assets.length>0);
+ assert.ok(registry.baseMaterialLibrary.atomCount>0);
+ assert.ok(registry.externalSources.length>0);
+ const native=registry.assets.filter(row=>/^(?:\/)?assets\/(?:shared\/[a-z0-9-]+|roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?)\.glb$/i.test(String(row.path||'')));
+ assert.ok(native.length>0,'actual registered native models exist');
+ const catalogs=registry.assets.filter(row=>Number.isInteger(row.catalogRowCount)&&row.catalogRowCount>0);
+ assert.ok(catalogs.length>=10,'common registered catalogs must remain fully enumerable');
+ assert.match(code,/kind==='native'/);
+ assert.match(code,/nativeGLB\(asset\.path\)/);
+ assert.match(code,/renderSourceCollections\(registry\)/);
+ assert.match(code,/Promise\.allSettled\(sources\.map/);
+ assert.match(code,/\$\('inspectionMetrics'\)\.hidden=false/);
+ assert.match(code,/measured\.triangles\.toLocaleString/);
+ assert.match(code,/nativeAutoSelected/);
+ assert.match(code,/제작 레시피|공용 모션 제작 레시피/);
+ assert.match(html,/실행 검증은 서로 다른 상태/);
+ assert.ok(registry.assets.some(row=>row.productionVerified===false));
 });

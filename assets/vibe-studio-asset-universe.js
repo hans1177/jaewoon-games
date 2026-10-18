@@ -3044,9 +3044,33 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
   const lockedAssetId=text(requirement.lockedAssetId||requirement.manualAssetId||requirement.gameLockedAssetId);
   const rows=(candidates||[]).map(asset=>({
     asset,
-    reuse:evaluateInternalAssetReuse({asset,gameDna,requirement,usage:usageByAsset[text(asset?.id)]||{}})
+    reuse:evaluateInternalAssetReuse({asset,gameDna,requirement,usage:usageByAsset[text(asset?.id)]||{}}),
+    // 다운로드 원본은 실제 출처/원본 해시/메시 파일의 결합이 있어야만 우선 후보가 된다.
+    downloadedOriginal:Boolean(
+      asset?.downloaded!==false&&asset?.sourceFilesPresent!==false
+      &&/^https:\/\/[^/]+\//i.test(text(asset?.sourceUrl))
+      &&/^[a-f0-9]{64}$/i.test(text(asset?.originalSourceHash||asset?.originalSha256))
+      &&/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(text(asset?.path||asset?.masterGlb))
+      &&/^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(text(asset?.license))
+    )
   })).filter(row=>row.reuse.usable&&!row.reuse.hardBlockers.length)
-    .sort((a,b)=>b.reuse.effectiveQuality-a.reuse.effectiveQuality||b.reuse.baseQuality-a.reuse.baseQuality||assetSourceTier(normalizeRegistryAsset(b.asset))-assetSourceTier(normalizeRegistryAsset(a.asset))||text(a.asset?.id).localeCompare(text(b.asset?.id)));
+    .sort((a,b)=>{
+      // 역할/플랫폼/정체성이 같은 원본을 우선하며, 내부 제작본은 실제 런타임
+      // 성능과 감사 근거에서 압도적(150점 이상) 우월할 때만 원본보다 앞선다.
+      const aOriginal=a.downloadedOriginal&&a.reuse.roleCompatible&&a.reuse.platformCompatible;
+      const bOriginal=b.downloadedOriginal&&b.reuse.roleCompatible&&b.reuse.platformCompatible;
+      if(aOriginal!==bOriginal){
+        const original=aOriginal?a:b,internal=aOriginal?b:a;
+        const evidence=usageByAsset[text(internal.asset?.id)]||{};
+        const superior=internal.reuse.qualityEvidenceGrounded&&evidence.runtimePass===true
+          &&internal.reuse.effectiveQuality-original.reuse.effectiveQuality>=150;
+        if(!superior)return aOriginal?-1:1;
+        return aOriginal?1:-1;
+      }
+      return b.reuse.effectiveQuality-a.reuse.effectiveQuality||b.reuse.baseQuality-a.reuse.baseQuality
+        ||assetSourceTier(normalizeRegistryAsset(b.asset))-assetSourceTier(normalizeRegistryAsset(a.asset))
+        ||text(a.asset?.id).localeCompare(text(b.asset?.id));
+    });
   const locked=lockedAssetId?rows.find(row=>text(row.asset?.id)===lockedAssetId)||null:null;
   // Prefer independently evidenced candidates for replacements across games.
   // Keep unverified suggestions visible, but never let them displace a verified option.

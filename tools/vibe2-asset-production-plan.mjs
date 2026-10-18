@@ -1550,76 +1550,24 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       responsibleFiles:Object.freeze([...(repair.sourceFiles||[])])
     });
   }
-  for(const family of requiredFamilies){
-    const usedCount=currentFamilyCounts.get(family)||0;
-    if(usedCount){
-      // [공용 자산 즉시 업그레이드] 점수가 조금이라도 높고 현재 역할/플랫폼에 맞으면
-      // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
-      // 실제 게임 소스 적용 및 독립 런타임 QA 없이 완료로 승격하지 않는다.
-      const currentAsset=currentPrimaryByFamily.get(family);
-      // [교체 역할 보존] 같은 계열이라는 이유만으로 조명·문서, 패널·인트로를 서로 교체하지 않는다.
-      // 일반 요청은 신규 사용 후보를 허용하지만 기존 역할 교체는 등록된 역할 근거가 필요하다.
-      const currentRoles=unique([currentAsset?.role,currentAsset?.subfamily,currentAsset?.atomId,currentAsset?.factory])
-        .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value!==family.toLowerCase());
-      let improved=null;
-      const roleIndex=reusableByFamilyRole.get(family);
-      for(const role of currentRoles){
-        for(const asset of roleIndex?.get(role)||[]){
-          if(currentAssetIds.has(clean(asset.id))||roleEvidenceById.get(clean(asset.id))?.verifiedRoleMatch!==true)continue;
-          if(betterReusable(asset,improved))improved=asset;
-        }
-      }
-      const currentScore=Number(currentAsset?.internalAuditScore??currentAsset?.qualityScore??-1);
-      const improvedScore=Number(improved?.internalAuditScore??improved?.qualityScore??-1);
-      if(improved&&clean(improved.id)!==clean(currentAsset?.id)
-        &&Number.isFinite(improvedScore)&&improvedScore>currentScore
-        &&roleEvidenceById.get(clean(improved.id))?.verifiedRoleMatch===true){
-        pushAction({action:'ADAPT',assetId:clean(improved.id),family,
-          reason:'NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
-          replacesCandidateAssetId:clean(currentAsset?.id),
-          // Pass only registered model provenance; source existence/hash still
-          // require independent inspection before a native source edit.
-          registeredSourceModel:clean(improved.masterGlb||improved.masterSourcePath||improved.path)||null,
-          registeredSourceLicense:clean(improved.license)||null,
-          replacementExecution:'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE',
-          automaticReplacementAuthorized:true,independentNativeRuntimeQaRequired:true,
-          sourceCompatibilityAndRightsRequired:true,
-          runtimeVerificationGranted:false,
-          roleEvidence:roleEvidenceById.get(clean(improved.id))});
-      }
-      if(!(repairsByFamily.get(family)||[]).length){
-        const asset=currentPrimaryByFamily.get(family),mode=internalAssetPlatformApplicationMode(asset,target);
-        const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
-        pushAction({
-          action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
-          assetId:clean(asset?.id)||null,
-          family,
-          reason:pendingImport?'CURRENT_SOURCE_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'CURRENT_SOURCE_BOUND_READY':'CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT',
-          applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset?.id))
-        });
-      }
-      continue;
-    }
-    const asset=bestReusableByFamily.get(family);
-    if(asset){
-      const mode=internalAssetPlatformApplicationMode(asset,target);
-      const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
-      pushAction({
-        action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
-        assetId:clean(asset.id)||null,
-        family,
-        reason:pendingImport?'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
-        applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
-      });
-    }else{
-      const roles=requestedRolesByFamily.get(family)||[];
-      const externalCandidates=id?externalSourceCandidatesFor(family,roles):freezeList([]);
-      if(externalCandidates.length){
+
+  // [원본 우선 수급] 원본 확보·원본 해시·라이선스가 확인된 무료 소스를 역할별로 비교한다.
+  // 기존 소스 바인딩을 즉시 덮어쓰지 않고, 기존 제작 책임에서 요청형 취득/플랫폼 검증을 수행한다.
+  const planOriginalAcquisition=(family,roles,reason='',previousAssetId='')=>{
+    if(!id)return false;
+    const externalCandidates=externalSourceCandidatesFor(family,roles);
+    if(!externalCandidates.length)return false;
+    if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length)return false;
         const selected=externalCandidates[0];
         const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
         pushAction({
           action:'ACQUIRE_ADAPT',assetId:null,family,
-          reason:'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
+          reason:reason||'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
+          replacesCandidateAssetId:clean(previousAssetId)||null,
+          gameSourceComparisonRequired:true,
+          downloadedOriginalPreferred:true,
+          automaticReplacementAuthorized:false,
+          replacementRequiresMeasuredSourceRoleIdentityQualityAndRuntimePass:true,
           roleEvidence:freeze({requestedRoles:freezeList(roles),matchedRoles:selected.matchedRoles,
             verifiedRoleMatch:false,requiresActualSourceInspection:true}),
           externalAcquisition:freeze({
@@ -1662,10 +1610,90 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
             nativeRuntimeBindingAndIndependentQaRequiredForPromotion:true,newPipelineOrQueueCreated:false
           })
         });
-      }else{
-        const unresolved=unresolvedFamilies.has(family)||roles.length===0;
-        pushAction({action:'HOLD',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
+    return true;
+  };
+  for(const family of requiredFamilies){
+    const usedCount=currentFamilyCounts.get(family)||0;
+    if(usedCount){
+      // [공용 자산 즉시 업그레이드] 점수가 조금이라도 높고 현재 역할/플랫폼에 맞으면
+      // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
+      // 실제 게임 소스 적용 및 독립 런타임 QA 없이 완료로 승격하지 않는다.
+      const currentAsset=currentPrimaryByFamily.get(family);
+      const currentIsDownloadedOriginal=Boolean(clean(currentAsset?.sourceUrl)&&/^[0-9a-f]{64}$/i.test(clean(currentAsset?.originalSourceHash||currentAsset?.originalSha256)));
+      const sourceRoles=unique([...(requestedRolesByFamily.get(family)||[]),currentAsset?.role,currentAsset?.subfamily])
+        .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value&&value!==family.toLowerCase());
+      if(!currentIsDownloadedOriginal){
+        planOriginalAcquisition(family,sourceRoles,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL',currentAsset?.id);
       }
+      // [교체 역할 보존] 같은 계열이라는 이유만으로 조명·문서, 패널·인트로를 서로 교체하지 않는다.
+      // 일반 요청은 신규 사용 후보를 허용하지만 기존 역할 교체는 등록된 역할 근거가 필요하다.
+      const currentRoles=unique([currentAsset?.role,currentAsset?.subfamily,currentAsset?.atomId,currentAsset?.factory])
+        .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value!==family.toLowerCase());
+      let improved=null;
+      const roleIndex=reusableByFamilyRole.get(family);
+      for(const role of currentRoles){
+        for(const asset of roleIndex?.get(role)||[]){
+          if(currentAssetIds.has(clean(asset.id))||roleEvidenceById.get(clean(asset.id))?.verifiedRoleMatch!==true)continue;
+          if(betterReusable(asset,improved))improved=asset;
+        }
+      }
+      const currentScore=Number(currentAsset?.internalAuditScore??currentAsset?.qualityScore??-1);
+      const improvedScore=Number(improved?.internalAuditScore??improved?.qualityScore??-1);
+      if(improved&&clean(improved.id)!==clean(currentAsset?.id)
+        &&Number.isFinite(improvedScore)&&improvedScore>currentScore
+        &&(!currentIsDownloadedOriginal||(
+          improvedScore-currentScore>=150
+          &&improved?.productionVerified===true
+          &&assetRuntimeConsumerVerified(improved)
+          &&Boolean(clean(improved?.internalAuditEvidenceRef))
+        ))
+        &&roleEvidenceById.get(clean(improved.id))?.verifiedRoleMatch===true){
+        pushAction({action:'ADAPT',assetId:clean(improved.id),family,
+          reason:'NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
+          replacesCandidateAssetId:clean(currentAsset?.id),
+          // Pass only registered model provenance; source existence/hash still
+          // require independent inspection before a native source edit.
+          registeredSourceModel:clean(improved.masterGlb||improved.masterSourcePath||improved.path)||null,
+          registeredSourceLicense:clean(improved.license)||null,
+          replacementExecution:'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE',
+          automaticReplacementAuthorized:true,independentNativeRuntimeQaRequired:true,
+          sourceCompatibilityAndRightsRequired:true,
+          runtimeVerificationGranted:false,
+          roleEvidence:roleEvidenceById.get(clean(improved.id))});
+      }
+      if(!(repairsByFamily.get(family)||[]).length){
+        const asset=currentPrimaryByFamily.get(family),mode=internalAssetPlatformApplicationMode(asset,target);
+        const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
+        pushAction({
+          action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
+          assetId:clean(asset?.id)||null,
+          family,
+          reason:pendingImport?'CURRENT_SOURCE_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'CURRENT_SOURCE_BOUND_READY':'CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT',
+          applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset?.id))
+        });
+      }
+      continue;
+    }
+    const sourceRoles=requestedRolesByFamily.get(family)||[];
+    const asset=bestReusableByFamily.get(family);
+    // 포괄적 family 힌트만으로 멀쩡한 공용 소스를 버리거나 무작정 원본을 다운로드하지 않는다.
+    // 정확한 역할 수요가 있으면 다운로드 원본을 우선 제작 후보로 배정하되 내부 후보도 남긴다.
+    const originalRequested=(!asset||sourceRoles.length>0)&&planOriginalAcquisition(
+      family,sourceRoles,asset?'REUSABLE_LIBRARY_VS_DOWNLOADED_ORIGINAL':'ORIGINAL_SOURCE_FIRST_ON_DEMAND',
+      asset?.id||''
+    );
+    if(asset){
+      const mode=internalAssetPlatformApplicationMode(asset,target);
+      const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
+      pushAction({
+        action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
+        assetId:clean(asset.id)||null,
+        family,
+        reason:pendingImport?'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
+        applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
+      });
+    }else if(!originalRequested){
+      pushAction({action:'HOLD',assetId:null,family,reason:(unresolvedFamilies.has(family)||sourceRoles.length===0)?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>

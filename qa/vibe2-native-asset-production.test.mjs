@@ -275,6 +275,38 @@ test('2D references never count as ready spatial assets, while current real 3D r
   assert.ok(['USE','ADAPT'].includes(preferred.nextActions.find(row=>row.family==='BUILDING').action));
 });
 
+
+test('downloaded original first: compare an existing authored tree against a licensed source before replacing it',()=>{
+  const authored={id:'internal-pine-tree',family:'ENVIRONMENT',role:'pine_tree',platform:'ROBLOX',
+    path:'assets/roblox/survival-core-world-v1/tree_trunk_thick.obj',license:'project-original',
+    status:'REPO_ASSET',consumerGameIds:['forest-demo']};
+  const original={id:'cc0-pine',name:'Real Pine Tree',category:'ENVIRONMENT',capabilities:['pine_tree'],
+    status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',sourceUrl:'https://kenney.nl/assets/nature-kit',
+    licenseEvidenceUrl:'https://kenney.nl/assets/nature-kit',verifiedAt:'2026-10-01',
+    license:'CC0',platformTargets:['ROBLOX'],automaticAcquisitionWhenSelected:true,
+    downloadUrl:'https://example.org/real-pine.glb'};
+  const args={gameId:'forest-demo',target:'roblox',request:'pine tree',
+    requirements:[{family:'ENVIRONMENT',role:'pine_tree'}]};
+  const comparison=buildAssetSupplyDecisionSummary({...args,registry:{assets:[authored],externalSources:[original]}});
+  const actions=comparison.nextActions.filter(row=>row.family==='ENVIRONMENT');
+  const acquisition=actions.find(row=>row.action==='ACQUIRE_ADAPT');
+  assert.ok(acquisition,'compare original source before retaining the authored stand-in indefinitely');
+  assert.equal(acquisition.reason,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL');
+  assert.equal(acquisition.replacesCandidateAssetId,authored.id);
+  assert.equal(acquisition.externalAcquisition.sourceId,original.id);
+  assert.equal(acquisition.externalAcquisition.onDemandOnly,true);
+  assert.equal(acquisition.externalAcquisition.downloaded,false);
+  assert.equal(acquisition.automaticReplacementAuthorized,false);
+  assert.equal(acquisition.assetization.runtimeVerified,false);
+  assert.equal(acquisition.assetization.productionVerified,false);
+  assert.ok(actions.some(row=>row.assetId===authored.id),'keep original game binding until actual runtime pass');
+  const existingAcquired={...authored,sourceUrl:original.sourceUrl,originalSourceHash:'a'.repeat(64)};
+  const retained=buildAssetSupplyDecisionSummary({...args,registry:{assets:[existingAcquired],externalSources:[original]}});
+  assert.equal(retained.nextActions.some(row=>row.reason==='CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL'),false);
+  const mismatch=buildAssetSupplyDecisionSummary({...args,registry:{assets:[authored],
+    externalSources:[{...original,name:'Desert Cat',capabilities:['desert_cat']}]}});
+  assert.equal(mismatch.nextActions.some(row=>row.reason==='CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL'),false);
+});
 test('existing Vibe source worker passes on-demand library selection to native game build with no false completion',()=>{
   const order={target:'unity',gameId:'fantasy-survival',goal:'기존 3D 자산으로 환경 재질 보강',assetProduction:{
     assetSupplySummary:{nextActions:[{

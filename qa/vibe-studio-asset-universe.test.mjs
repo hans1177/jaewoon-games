@@ -3588,6 +3588,26 @@ test('internal replacement respects locks and treats observed failure as priorit
   assert.equal(locked.replacementRecommended,false);
 });
 
+
+test('licensed acquired original remains first unless a compatible internal has proven native superiority',()=>{
+ const gameDna={targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'STYLIZED_FANTASY'})};
+ const original={id:'acquired-knight',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',
+   status:'REPO_ASSET',license:'CC0-1.0',downloaded:true,sourceFilesPresent:true,
+   sourceUrl:'https://example.org/original/knight.glb',originalSourceHash:'a'.repeat(64),
+   path:'assets/roblox/actors/native/knight.glb'};
+ const common={id:'self-authored',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',
+   status:'REPO_ASSET',license:'project-original',path:'assets/shared/test-weapon.glb'};
+ const opts={candidates:[common,original],gameDna,requirement:{family:'WEAPON',subfamily:'MELEE'}};
+ const proposal=chooseInternalAssetReplacement(opts);
+ assert.equal(proposal.selectedAssetId,original.id,'original licensed binary must outrank unsupported authored quality');
+ assert.equal(proposal.automaticBindingAllowed,false,'source metadata cannot skip real native QA');
+ const locked=chooseInternalAssetReplacement({...opts,requirement:{...opts.requirement,lockedAssetId:common.id}});
+ assert.equal(locked.selectedAssetId,common.id,'manual identity lock still wins');
+ const blocked=chooseInternalAssetReplacement({...opts,candidates:[common,{...original,license:'CC-BY-NC'}]});
+ assert.equal(blocked.selectedAssetId,common.id,'forbidden source cannot be chosen');
+ const unchanged=chooseInternalAssetReplacement({...opts,currentAsset:common});
+ assert.equal(unchanged.automaticBindingAllowed,false,'an unverified acquired source must never silently replace a running game');
+});
 test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
   const base={id:'asset',family:'PROP',subfamily:'INTERACTIVE',platform:'ROBLOX',status:'REPO_ASSET',internalAuditScore:400,sourceFiles:['asset.luau']};
   const gameDna={targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'CARTOON'})};
