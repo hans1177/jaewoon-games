@@ -1,0 +1,38 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>3D 에셋 미리보기</title><style>html,body{margin:0;height:100%;background:#182238;color:#fff;font:14px system-ui}#message{position:absolute;left:12px;top:8px;z-index:2}canvas{display:block;width:100%;height:100%}</style><div id="message">모델 로딩 중</div><script type="module">
+import {connectVibeCharacter} from './vibe-character-adapter.mjs';
+import * as THREE from './roblox/world-ghosts/native/mesh/three/three.module.js';
+import {GLTFLoader} from './roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
+const status=document.getElementById('message'),asset=new URLSearchParams(location.search).get('asset')||'';
+if(!/^assets\/[a-zA-Z0-9._/-]+\.(?:glb|gltf)$/i.test(asset)||asset.includes('..')){status.textContent='잘못된 모델 경로';throw Error('invalid model')}
+const base=new URL('../',location.href),url=new URL(asset,base);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x182238);
+const camera=new THREE.PerspectiveCamera(45,1,0.01,1000);
+scene.add(new THREE.HemisphereLight(0xffffff,0x445577,1.5));
+const fill=new THREE.DirectionalLight(0x78b9ff,0.9);fill.position.set(-4,2,-5);scene.add(fill);
+const rim=new THREE.DirectionalLight(0xffd49a,1.1);rim.position.set(0,5,-6);scene.add(rim);
+const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(4,8,5);scene.add(light);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));document.body.append(renderer.domElement);
+const styles={realistic:[.25,.48,1],fantasy:[.12,.68,1.05],scifi:[.68,.28,1.2],horror:[.06,.82,.75],cartoon:[0,.9,1.15]};
+const picker=document.createElement('select');picker.setAttribute('aria-label','장르별 재질 스타일');picker.style.cssText='position:absolute;top:40px;left:12px;z-index:3;padding:8px;border-radius:8px;background:#101b2e;color:white';
+for(const [key,label] of [['realistic','실사'],['fantasy','판타지'],['scifi','SF'],['horror','호러'],['cartoon','카툰']]){const opt=document.createElement('option');opt.value=key;opt.textContent=label;picker.append(opt)}
+document.body.append(picker);
+let activeModel=null;const originals=new WeakMap();
+function restyle(){const [metal,rough,exposure]=styles[picker.value];renderer.toneMappingExposure=exposure;if(!activeModel)return;activeModel.traverse(obj=>{if(!obj.isMesh)return;for(const material of (Array.isArray(obj.material)?obj.material:[obj.material])){if(!material||typeof material.roughness!=='number')continue;if(!originals.has(material))originals.set(material,[material.metalness,material.roughness]);const [m,r]=originals.get(material);material.metalness=Math.min(1,m*.5+metal*.5);material.roughness=Math.min(1,Math.max(.05,r*.5+rough*.5));material.needsUpdate=true}})}
+picker.addEventListener('change',restyle);
+const resize=()=>{const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)};addEventListener('resize',resize);resize();
+let mixer=null, characterMotion=null;const clipNames=[];
+const animationPicker=document.createElement('select');animationPicker.setAttribute('aria-label','애니메이션 동작');animationPicker.style.cssText='position:absolute;top:84px;left:12px;z-index:3;padding:8px;border-radius:8px;background:#101b2e;color:white';document.body.append(animationPicker);
+const designPromise=fetch('./vibe-visual-design-system.json').then(r=>{if(!r.ok)throw Error('design unavailable');return r.json()});
+const ground=new THREE.GridHelper(20,20,0x486a91,0x273a54);ground.position.y=-1;scene.add(ground);new GLTFLoader().load(url.href,gltf=>{
+const model=gltf.scene;scene.add(model);activeModel=model;restyle();const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
+const radius=Math.max(size.x,size.y,size.z,0.1);ground.scale.setScalar(Math.max(radius/5,.05));ground.position.y=-size.y/2;camera.position.set(radius*1.5,radius*.9,radius*2.2);camera.lookAt(0,0,0);
+if(gltf.animations?.length){
+ mixer=new THREE.AnimationMixer(model);
+ for(const clip of gltf.animations){clipNames.push(clip.name);const opt=document.createElement('option');opt.value=clip.name;opt.textContent=clip.name||'동작 '+clipNames.length;animationPicker.append(opt)}
+ const activate=name=>{mixer.stopAllAction();const clip=gltf.animations.find(c=>c.name===name)||gltf.animations[0];mixer.clipAction(clip).reset().fadeIn(.15).play()};
+ animationPicker.addEventListener('change',()=>activate(animationPicker.value));activate(gltf.animations[0].name);
+ connectVibeCharacter({character:model,clips:gltf.animations,genre:picker.value,THREE}).then(adapter=>{characterMotion=adapter;picker.addEventListener('change',()=>adapter.engine.setGenre(picker.value));adapter.action('idle')}).catch(()=>{});
+}status.textContent='원본 3D · '+(gltf.animations?.length||0)+'개 애니메이션';
+},undefined,()=>{status.textContent='모델 로딩 실패 (파일 형식 또는 의존성 확인 필요)'});
+const clock=new THREE.Clock();let last=0;function draw(now){requestAnimationFrame(draw);if(document.hidden||now-last<33)return;last=now;const delta=Math.min(clock.getDelta(),.1);if(characterMotion)characterMotion.update(delta);else mixer?.update(delta);renderer.render(scene,camera)}requestAnimationFrame(draw);
+</script></html>

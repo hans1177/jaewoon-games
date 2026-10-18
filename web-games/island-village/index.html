@@ -50,4 +50,4 @@ function plot(p,i){if(state.buildings.some(b=>b.plot===i))return;ctx.save();ctx.
 function frame(now){let dt=Math.min(.05,(now-last)/1000);last=now;state.time+=dt/150;if(state.time>=1){state.time-=1;state.day++;showToast(`${state.day}일차 아침`)}updateVillagers(dt);ctx.clearRect(0,0,1000,700);let t=now/1000;water(t);island();plots.forEach(plot);resources.forEach(r=>drawResource(r,t));state.buildings.forEach(building);villagers.forEach(v=>villager(v,t));overlay();autosave+=dt;if(autosave>5){autosave=0;save()}requestAnimationFrame(frame)}
 document.querySelector('#startBtn').addEventListener('click',()=>{state.started=true;document.querySelector('#splash').classList.add('hide');save();showToast('섬의 자원을 눌러 주민에게 채집을 시켜보세요!')});setInterval(production,1000);window.addEventListener('beforeunload',save);load();requestAnimationFrame(frame);
 </script>
-</body></html>
+<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script></body></html>
