@@ -401,6 +401,18 @@ test('Web and Roblox asset selection distinguishes real 3D source from 2D world 
   assert.equal(flat.unresolvedSpatial3dCount,1);
   assert.equal(flat.items[0].action,'REAL_3D_SOURCE_OR_NATIVE_MESH_REQUIRED');
   assert.equal(flat.runtime3dVerified,false);
+  const scriptOnly=createVibeSpatial3dAssetBindingContract({
+    gameId:'fantasy-survival',target:'web',
+    bindings:[{...verified,sourceFiles:['web-games/fantasy-survival/index.html']}]
+  });
+  assert.equal(scriptOnly.unresolvedSpatial3dCount,1);
+  assert.equal(scriptOnly.items[0].action,'NATIVE_3D_MESH_SOURCE_EVIDENCE_REQUIRED');
+  const scriptProven=createVibeSpatial3dAssetBindingContract({
+    gameId:'fantasy-survival',target:'web',
+    bindings:[{...verified,sourceFiles:['web-games/fantasy-survival/scene.js'],
+      native3dMeshSourceVerified:true}]
+  });
+  assert.equal(scriptProven.items[0].action,'IMPLEMENT_3D_NATIVE_MODEL_BINDING');
   const held=createVibeSpatial3dAssetBindingContract({
     gameId:'fantasy-survival',target:'unity',bindings:[verified]
   });
