@@ -92,6 +92,15 @@ function actorMotionMode(asset, allAssets = []) {
 }
 
 function findCandidates(type, candidates) {
+  // [장르·플랫폼 공통] 정확한 태그를 우선하고 유사 역할은 같은 의미군에서만 찾는다.
+  // 적과 플레이어, UI와 월드 지형 등 게임 의미가 다른 역할끼리는 대체하지 않는다.
+  const familyTypes={
+    character:['CHARACTER'],npc:['CHARACTER'],companion:['CHARACTER','CREATURE'],
+    creature:['CREATURE'],enemy:['CREATURE'],boss:['CREATURE'],
+    background:['ENVIRONMENT','BUILDING'],item:['WEAPON','PROP'],
+    prop:['PROP','BUILDING','ENVIRONMENT'],effect:['VFX','SKILL'],
+    ui:['UI'],audio:['AUDIO'],animation:['MOTION']
+  };
   const seenIds = new Set();
   return candidates.filter((asset) => {
     const id = text(asset?.id);
@@ -99,7 +108,8 @@ function findCandidates(type, candidates) {
     const tags = Array.isArray(asset?.tags) ? asset.tags.join(' ') : text(asset?.tags);
     const descriptor = `${asset?.id || ''} ${asset?.name || ''} ${tags}`;
     const declared = declaredTypes(asset);
-    if (!declared.includes(type) && !hasAny(descriptor, TYPES[type])) return false;
+    const nearFamily=(familyTypes[type]||[]).includes(text(asset?.family||asset?.category).toUpperCase());
+    if (!declared.includes(type) && !hasAny(descriptor, TYPES[type]) && !nearFamily) return false;
 
     if (ACTOR_TYPES.includes(type)) {
       if (asset?.blockedForActorUse === true) return false;
@@ -118,7 +128,10 @@ function findCandidates(type, candidates) {
     downloaded:asset?.downloaded !== false,
     animated:ACTOR_TYPES.includes(type) ? Boolean(actorMotionMode(asset, candidates)) : Boolean(asset?.verifiedAnimation),
     motionMode:ACTOR_TYPES.includes(type) ? actorMotionMode(asset, candidates) : null,
-    sourceUrl:text(asset.sourceUrl),
+    sourceUrl:text(asset.sourceUrl||asset.externalSourceUrl),
+    originalSourceHash:text(asset.originalSourceHash||asset.originalSha256),
+    sourceFilesPresent:asset?.sourceFilesPresent!==false,
+    downloadedOriginal:asset?.downloadedOriginal===true,
     platforms:frozenList(asset.platforms),
     platformResearchTargets:frozenList(asset.platformResearchTargets),
     rigged:asset?.rigged===true,
@@ -492,13 +505,22 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const explicitRequestedTypes = Object.entries(TYPES).filter(([, words]) => hasAny(request, words)).map(([type]) => type);
   const types = unique([...REQUIRED_VISUAL_TYPES, ...explicitRequestedTypes]);
   const assets = Array.isArray(manifest?.assets) ? manifest.assets : [];
+  // 다운로드한 실물 원본만 새 바인딩 후보에 포함한다.
+  // 기본 제작 소스나 내부 조합은 라이브러리에는 남기되 새 게임의 기본 아트 후보가 아니다.
+  const isDownloadedOriginal=asset=>Boolean(
+    asset?.downloaded!==false&&asset?.sourceFilesPresent!==false
+    &&/^https:\/\/[^/]+\//i.test(text(asset?.sourceUrl||asset?.externalSourceUrl))
+    &&/^[a-f0-9]{64}$/i.test(text(asset?.originalSourceHash||asset?.originalSha256))
+    &&/^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(text(asset?.license||asset?.policy))
+    &&text(asset?.path||asset?.masterGlb||asset?.meshArtifact)
+  );
   const candidates = assets.filter((asset) => {
     const license = text(asset?.license || asset?.policy || '');
     const sources = [asset?.path, asset?.masterGlb, asset?.meshArtifact, asset?.robloxAssetId,
       ...(Array.isArray(asset?.nativeArtifacts) ? asset.nativeArtifacts : [])];
     const hasSource = sources.some((value) => Boolean(text(value)))
       || Boolean(asset?.platformVariants && Object.keys(asset.platformVariants).length);
-    return Boolean(text(asset?.id)) && asset?.downloaded !== false
+    return Boolean(text(asset?.id)) && isDownloadedOriginal(asset)
       && hasSource && !blockedLicense(license);
   });
   const prototypePreset = choosePrototypePreset(request, presetCatalog);
@@ -506,19 +528,10 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const preferredIds = presetPreferredIds(prototypePreset);
   // [다운로드 원본 기본] 모든 게임의 12개 에셋 분류에 적용한다.
   // 후보 조회는 유지하고, 승인된 원본 파일·출처·해시가 없는 자체 제작품을 기본 시각 공급원으로 고르지 않는다.
-  const matched = types.flatMap((type) => findCandidates(type, candidates))
-    .sort((a, b) => {
-      const acquired = row => Boolean(
-        row?.downloaded !== false && row?.sourceFilesPresent !== false
-        && /^https:\/\/[^/]+\//i.test(text(row?.sourceUrl||row?.externalSourceUrl))
-        && /^[a-f0-9]{64}$/i.test(text(row?.originalSourceHash||row?.originalSha256||row?.sourceSha256))
-        && /^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(text(row?.license||row?.policy))
-        && text(row?.path||row?.masterGlb||row?.meshArtifact)
-      );
-      return Number(acquired(b))-Number(acquired(a))
-        || Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id))
-        || Number(b.studioMotionCandidate === true) - Number(a.studioMotionCandidate === true);
-    });
+  const matched = types.flatMap((type) => findCandidates(type,candidates))
+    .sort((a,b)=>Number(preferredIds.has(b.id))-Number(preferredIds.has(a.id))
+      ||Number(b.studioMotionCandidate===true)-Number(a.studioMotionCandidate===true)
+      ||a.id.localeCompare(b.id));
   const missingTypes = types.filter((type) => !matched.some((item) => item.type === type));
   const binding = types.map((type) => Object.freeze({
     type,
@@ -563,6 +576,10 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       allTwelveAssetFamiliesScanned:true,
       allCompatibleOriginalsEligibleWithoutCountCap:true,
       missingOriginalHandling:'ON_DEMAND_ACQUIRE_KEEP_PLAYABLE_UNTIL_NATIVE_QA',
+    similarRoleBindingRequiresFamilyAndGameplayIdentityCompatibility:true,
+    selfAuthoredPrimitiveDefaultForbidden:true,
+    onlyAcquiredLicensedOriginalsInNewBinding:true,
+    missingFamiliesMustRequestOriginalsThroughCanonicalAcquisition:true,
       prototypePresetFirst:true,
       mobileFirst:true,
       activeNativeTargets:[...ACTIVE_NATIVE_TARGETS],
