@@ -73,7 +73,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03090c;col
 const el=id=>document.getElementById(id);
 const cv=el('scene'),gl=cv.getContext('webgl',{alpha:false,depth:true,antialias:false});
 if(!gl){el('start').querySelector('p').textContent='이 기기에서는 3D 기록을 재생할 수 없어.';el('play').disabled=true;return;}
-const vertex='attribute vec3 p;attribute vec3 c;uniform vec3 eye;uniform vec3 rot;uniform float aspect;uniform vec3 fog;varying vec3 tint;void main(){vec3 a=p-eye;float k=cos(rot.x),s=sin(rot.x);vec3 b=vec3(k*a.x-s*a.z,a.y,s*a.x+k*a.z);float q=cos(rot.y),r=sin(rot.y);vec3 d=vec3(b.x,q*b.y-r*b.z,r*b.y+q*b.z);float v=cos(rot.z),w=sin(rot.z);vec2 tilt=vec2(d.x*v-d.y*w,d.x*w+d.y*v);float z=-d.z;gl_Position=vec4(tilt.x*1.28/aspect,tilt.y*1.28,z*1.015-.19,z);tint=mix(c,fog,clamp((length(a)-5.)/28.,0.,.78));}';
+const vertex='attribute vec3 p;attribute vec3 c;uniform vec3 eye;uniform vec3 rot;uniform float aspect;uniform vec3 fog;varying vec3 tint;void main(){vec3 a=p-eye;float k=cos(rot.x),s=sin(rot.x);vec3 b=vec3(k*a.x-s*a.z,a.y,s*a.x+k*a.z);float q=cos(rot.y),r=sin(rot.y);vec3 d=vec3(b.x,q*b.y-r*b.z,r*b.y+q*b.z);float v=cos(rot.z),w=sin(rot.z);vec2 tilt=vec2(d.x*v-d.y*w,d.x*w+d.y*v);float z=-d.z;gl_Position=vec4(tilt.x*1.28/aspect,tilt.y*1.28,z*1.0025-.24,z);tint=mix(c,fog,clamp((length(a)-5.)/28.,0.,.78));}';
 const fragment='precision mediump float;varying vec3 tint;void main(){gl_FragColor=vec4(tint,1.0);}';
 function compile(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
 let program;
@@ -234,33 +234,48 @@ const worlds=[];
 for(const f of [labWorld,volcanoWorld,oasisWorld,caveWorld]){
  verts=[];seed=481;f();worlds.push(new Float32Array(verts));
 }
+// 연구원: 걷기·사격·조준을 별도의 3D 관절에서 동기화한다.
 function researcher(x,z,role,t,opt={}){
  const badge=role===2?C.blue:role===3?C.green:C.gold;
- const down=opt.down||0;const wobble=Math.sin(t*4+role)*.035*(1-down);
- const y=-.76-down*1.35;const uy=y+wobble;
+ const down=opt.down||0, walk=clamp(opt.walk||0),aim=clamp(opt.aim||0),shot=!!opt.fire;
+ const gait=Math.sin(t*8.1+role*.37),step=walk*gait,breath=Math.sin(t*2.7+role)*.018;
+ const bob=walk*(.055+.044*Math.cos(t*16.2+role))+breath*(1-walk);
+ const y=-.76-down*1.35,uy=y+bob;
  const suit=role===4?[.28,.34,.30]:[.46,.56,.56];
- // separate two legs, broad chest, helmet + visor, oxygen tank, arms and boots
- for(let side of [-1,1]){
-  const px=x+side*.27;
-  box(px,uy+.35,z-.05,.27,.81,.39,[.17,.22,.25]);
-  box(px,uy+.04,z+.08,.36,.28,.57,[.12,.16,.17]);
+ for(const side of [-1,1]){
+   const stride=step*side,px=x+side*.27;
+   const hip=[px,uy+.79,z-.04],knee=[px,uy+.36+Math.max(0,-stride)*.14,z-.04+stride*.35];
+   const boot=[px,uy+.09+Math.max(0,stride)*.12,z+.02+stride*.58];
+   rod(hip,knee,.165,[.20,.27,.30]);
+   rod(knee,boot,.16,[.17,.22,.25]);
+   box(boot[0],boot[1],boot[2]+.13,.35,.24,.50,[.12,.16,.17]);
  }
  box(x,uy+1.18,z,.94,1.18,.55,suit);
  box(x,uy+1.32,z+.31,.70,.52,.08,badge);
  box(x,uy+1.66,z+.27,.44,.12,.12,[.9,.87,.66]);
- // face mask, helmet visor with identifiable bright trim
  ell(x,uy+2.05,z,.48,.48,.45,[.86,.87,.80],9,7);
  ell(x,uy+2.04,z+.36,.38,.25,.18,[.06,.22,.31],9,6);
  box(x,uy+2.39,z+.17,.67,.10,.54,badge);
- box(x,uy+1.12,z-.48,.46,.91,.31,[.23,.28,.31]); // oxygen tank
- for(let sign of [-1,1]){
-   let a=[x+sign*.52,uy+1.49,z],b=[x+sign*.70,uy+.71,z+.21+Math.sin(t*2+role)*.06];
-   rod(a,b,.16,suit);
-   orb(b[0],b[1],b[2]+.05,.15,[.30,.35,.36]);
+ box(x,uy+1.12,z-.48,.46,.91,.31,[.23,.28,.31]);
+ for(const side of [-1,1]){
+   const shoulder=[x+side*.52,uy+1.49,z];
+   const elbow=aim?[x+side*.62,uy+1.30,z-.38]:[x+side*.70,uy+.82+step*side*.13,z+.19];
+   const hand=aim?[x+side*.26,uy+1.19,z-.83]:[x+side*.70,uy+.65+step*side*.18,z+.20];
+   rod(shoulder,elbow,.16,suit);rod(elbow,hand,.135,suit);
+   orb(...hand,.14,[.30,.35,.36]);
  }
- // horizontal suit belt and attached backpack
  box(x,uy+.73,z+.04,.98,.13,.58,[.17,.20,.21]);
- if(opt.weapon){rod([x+.72,uy+.75,z+.2],[x+.39,uy+1.13,z+1.12],.065,[.21,.25,.26]);}
+ if(opt.weapon||aim){
+   const recoil=shot?.16:0,barrelZ=z-.9+recoil;
+   box(x,uy+1.17,z-.48+recoil,.22,.22,.78,[.20,.24,.25]);
+   rod([x,uy+1.23,barrelZ],[x,uy+1.24,barrelZ-.95],.065,[.38,.44,.45]);
+   box(x,uy+1.01,z-.32+recoil,.18,.31,.18,[.13,.14,.14]);
+   if(shot){
+     orb(x,uy+1.24,barrelZ-1.00,.22,[1,.88,.40]);
+     orb(x,uy+1.24,barrelZ-1.10,.11,[1,.97,.75]);
+     rod([x,uy+1.24,barrelZ-1],[x*.55,uy+1.85,barrelZ-4.5],.022,[1,.78,.30]);
+   }
+ }
 }
 function gatorBlade(x,y,z,a=0){
  // curved tooth-edged blade, unmistakable jaw silhouette
@@ -274,21 +289,28 @@ function gatorBlade(x,y,z,a=0){
    spike([x-.16-u*.76,y+.08+u*.20,z+.3+u*.9],[x-.14-u*.76,y-.17+u*.25,z+.35+u*.9],.085,[.92,.87,.72]);
  }
 }
+// 생존자: 양다리 교차 보행과 악어 턱날 공격이 몸통/팔에 연결된다.
 function survivor(x,z,t,opt={}){
- const down=opt.down||0,y=-.76-down*1.35;
- for(const k of [-1,1]){
-  box(x+k*.25,y+.37,z,.32,.84,.4,[.20,.28,.26]);
-  box(x+k*.25,y+.06,z+.1,.39,.26,.55,[.19,.16,.11]);
+ const down=opt.down||0,walk=clamp(opt.walk||0),swing=walk*Math.sin(t*8.3+.6);
+ const strike=clamp(opt.attack||0),y=-.76-down*1.35+walk*.045*Math.cos(t*16.6);
+ for(const s of [-1,1]){
+   const hip=[x+s*.25,y+.76,z],knee=[x+s*.25,y+.36+Math.max(0,-s*swing)*.10,z+s*swing*.37];
+   const foot=[x+s*.25,y+.09+Math.max(0,s*swing)*.11,z+s*swing*.57];
+   rod(hip,knee,.16,[.20,.28,.26]);rod(knee,foot,.15,[.19,.25,.23]);
+   box(foot[0],foot[1],foot[2]+.12,.39,.26,.49,[.19,.16,.11]);
  }
  box(x,y+1.21,z,.95,1.04,.58,[.38,.30,.17]);
  box(x,y+1.63,z+.27,.88,.2,.12,[.9,.67,.15]);
  ell(x,y+2.04,z,.42,.45,.42,[.54,.37,.19],9,7);
  ell(x,y+2.0,z+.33,.28,.23,.15,[.76,.59,.38],9,6);
- for(let s of [-1,1])orb(x+s*.12,y+2.04,z+.48,.037,[.09,.09,.08]);
- rod([x-.50,y+1.52,z],[x-.69,y+.8,z+.31],.17,[.34,.27,.17]);
- rod([x+.49,y+1.54,z],[x+.65,y+.85,z+.30],.17,[.34,.27,.17]);
- if(opt.tool==='jaw')gatorBlade(x+.72,y+.76,z+.1);
- if(opt.tool==='pick')pickaxe(x+.8,y+.6,z+.45,.65);
+ for(const s of [-1,1])orb(x+s*.12,y+2.04,z+.48,.037,[.09,.09,.08]);
+ rod([x-.50,y+1.52,z],[x-.69,y+.80-swing*.12,z+.31],.17,[.34,.27,.17]);
+ const elbow=[x+.68,y+1.32+strike*.20,z-.2-strike*.30];
+ const hand=[x+.72,y+.78+strike*.85,z+.20-strike*.55];
+ rod([x+.49,y+1.54,z],elbow,.17,[.34,.27,.17]);
+ rod(elbow,hand,.16,[.34,.27,.17]);
+ if(opt.tool==='jaw')gatorBlade(hand[0],hand[1],hand[2],strike*1.2);
+ if(opt.tool==='pick')pickaxe(hand[0],hand[1],hand[2],.65);
 }
 function pickaxe(x,y,z,s=1){
  rod([x,y,z],[x+.07*s,y+1.8*s,z-.25*s],.085*s,[.50,.31,.13]);
@@ -375,14 +397,16 @@ function golem(t){
 function worm(t,cave=false){
  const emerge=cave?1:phase(t,105.4,108.0);
  const rage=cave?1:phase(t,114,116);
- const y0=-.90,baseZ=cave?-16.8:-13.0;
- const headY=y0+(cave?2.4:4.8*emerge)+.32*Math.sin(t*1.5);
- const headZ=baseZ+(cave?1.4:2.5)*Math.sin(t*.28);
+ const y0=-.90,baseZ=cave?-11.0:-13.0;
+ const headY=y0+(cave?4.40:4.8*emerge)+.32*Math.sin(t*1.5);
+ const headZ=baseZ+(cave?.4:2.5)*Math.sin(t*.28);
  if(!emerge)return;
  // 3D segmented tapering body, moving in and out of the soil
  for(let j=0;j<12;j++){
   const f=j/12,g=(j+1)/12;
-  const pt=u=>[Math.sin(t*.9+u*4.8)*(.35+u*.7),headY-u*5.3*emerge,headZ-u*3.2];
+  const pt=u=>cave
+     ?[Math.sin(t*.72+u*5.5)*(.34+u*1.55),headY-u*1.65+Math.sin(t+u*6)*.22,headZ-u*8.3]
+     :[Math.sin(t*.9+u*4.8)*(.35+u*.7),headY-u*5.3*emerge,headZ-u*3.2];
   taper(pt(f),pt(g),Math.max(.23,1.21-f*.64),Math.max(.20,1.18-g*.67),j%2?[.49,.25,.23]:[.61,.32,.28],11);
   if(j%3===0){let p=pt(f);ring(p[0],p[1],p[2],.78,.75,[.34,.17,.17],12);}
  }
@@ -487,16 +511,17 @@ function displayMarkers(stage,t,eye,rot,aspect){
  if(stage===2){
   if(t<83){add(t>=72?'화염 골렘 · 핵 노출':'화염 골렘',[0,5.8,-12.6],'enemy');add(t>=72?'냉각된 핵 · 공격!':'뜨거운 핵',[0,3.42,-10.95],'weak');}
   if(t<44)add('연구원 03',[2.4,1.85,-8],'ally3');
+   if(t>=53&&t<83)add('연구원 03',[2.25,1.85,-8.2],'ally3');
   if(t>=44&&t<53)add('연구원 03 · 포획됨',[2.12,2.6,-11.55],'ally3');
   if(t>=49&&t<83)add('생존자',[t<60?2.95:2.7,1.86,-8.7],'survivor');
-  if(t>=59&&t<83)add('연구원 02',[-2.25,1.85,-8.6],'ally2');
+  if(t>=28&&t<83)add('연구원 02',[-2.25,1.85,-8.6],'ally2');
  }
  if(stage===3){
    if(t<102){add('연구원 02',[-2.35,1.85,-7.9],'ally2');add('연구원 03',[-.2,1.85,-9.4],'ally3');add('생존자',[2.4,1.85,-8.6],'survivor');}
-   if(t>=105)add('초거대 벌레',[0,5.9,-10.3],'enemy');
+   if(t>=105)add('초거대 벌레',[0,4.0,-13.0],'enemy');
  }
  if(stage===4){
-   add('초거대 벌레',[0,4.7,-15.0],'enemy');
+   add('초거대 벌레',[0,3.7,-11.0],'enemy');
    add('연구원 02',[-2.3,1.85,-7.7],'ally2');
    add('연구원 03',[.5,1.85,-7.6],'ally3');
    add('생존자',[2.35,1.85,-7.9],'survivor');
@@ -525,66 +550,78 @@ function drawFogFX(stage,t,cam){
    }
  }
 }
+// 장면에 있는 연구원 2·3번과 생존자를 실제 위치 이동/걸음/공격 상태로 갱신한다.
 function drawStage(stage,t,cam){
  if(stage===0)return;
- const sceneNum=worldOf(stage);
- const fire=shots.some(s=>t>=s&&t<s+.14);
- const camZ=cam[2];
- let gunOn=stage>=2&&stage<=4 && !(stage===3&&t<104);
- let reloading=(t>=46&&t<48)?phase(t,46,47)*(1-phase(t,47.5,48)):
-                (t>=116&&t<118)?phase(t,116,116.6)*(1-phase(t,117.5,118)):0;
- const bob=Math.sin(t*4.4)*.06;
+ const fire=shots.some(s=>t>=s&&t<s+.14),camZ=cam[2];
+ const gunOn=stage>=2&&stage<=4&&!(stage===3&&t<104);
+ const reloading=(t>=46&&t<48)?phase(t,46,47)*(1-phase(t,47.5,48)):
+                 (t>=116&&t<118)?phase(t,116,116.6)*(1-phase(t,117.5,118)):0;
  verts=[];
  if(stage===1){
-   researcher(-1.65,-5.3,2,t);
-   researcher(1.65,-5.4,3,t);
-   // A dedicated three-dimensional memorial pedestal and softly lit archive plaque.
+   const depart=phase(t,23,27.5);
+   researcher(-1.65,-5.3+depart*3.0,2,t,{walk:depart});
+   researcher(1.65,-5.4+depart*2.9,3,t,{walk:depart});
    box(0,-.5,-12.5,2.8,.95,1.35,[.22,.26,.29]);
    box(0,.42,-12.5,1.8,1.1,.43,[.42,.46,.45]);
    box(0,.83,-12.25,1.48,.55,.075,[.12,.34,.39]);
    box(0,1.68,-12.5,.34,.75,.27,[.55,.62,.60]);
    orb(0,2.07,-12.5,.27,[.37,.85,.80]);
    for(let i=-1;i<=1;i++)orb(i*.31,.93,-11.98,.08,[.48,.77,.74]);
-   if(t>23){box(2.9,-.54,-4.4,1.7,.5,.9,C.metal);}
+   if(t>23)box(2.9,-.54,-4.4,1.7,.5,.9,C.metal);
  }
  if(stage===2){
-   if(t>=28&&t<37){researcher(-1.8,-7.0,2,t);researcher(1.8,-7.6,3,t);}
-   else {
-     if(t<44)researcher(2.4,-8.0,3,t);
-     if(t>=59){researcher(-2.25,-8.6,2,t,{weapon:true});
-       if(t<67)researcher(2.25,-8.3,3,t);
-       else researcher(2.25,-8.2,3,t,{weapon:true});
-     }
-     if(t>=52)survivor(2.95-(t>=61?.25:0),-8.7,t,{tool:t<60?'pick':'jaw'});
-     golem(t);
+   const march=phase(t,28,38),engaged=t>=38,allyShot=fire&&t<83;
+   researcher(mix(-1.8,-2.25,march),mix(-6.8,-8.6,march),2,t,
+     {walk:engaged?phase(t,58.5,60)*(1-phase(t,61,62)):1,aim:engaged?1:0,weapon:engaged,fire:allyShot});
+   if(t<44){
+     researcher(mix(1.8,2.4,march),mix(-7.6,-8,march),3,t,
+       {walk:engaged?0:1,aim:engaged?1:0,weapon:engaged,fire:allyShot});
+   }else if(t>=53){
+     const rescued=phase(t,53,58);
+     researcher(mix(2.12,2.25,rescued),mix(-10.0,-8.2,rescued),3,t,
+       {walk:rescued*(1-phase(t,59,60)),aim:rescued,weapon:rescued>.5,fire:rescued>.8&&allyShot});
    }
+   if(t>=52){
+     const enter=phase(t,52,58),charge=phase(t,59,62);
+     survivor(mix(4.1,2.7,Math.min(1,enter+charge*.15)),mix(-7.3,-8.7,enter),t,
+       {walk:t<62?1:0,tool:t<60?'pick':'jaw',attack:t>=59&&t<67?.55+.45*Math.abs(Math.sin(t*6)):0});
+   }
+   golem(t);
  }
  if(stage===3){
-   const d2=phase(t,94.3,99),d3=phase(t,96.1,101),ds=phase(t,99.2,104);
-   if(t<105){researcher(-2.35,-7.9,2,t,{down:d2});researcher(-.2,-9.4,3,t,{down:d3});survivor(2.4,-8.6,t,{down:ds,tool:'jaw'});}
+   const d2=phase(t,94.3,99),d3=phase(t,96.1,101),ds=phase(t,99.2,104),walk=1-phase(t,89,91);
+   if(t<105){
+     researcher(-2.35,-7.9,2,t,{down:d2,walk:walk*(1-d2)});
+     researcher(-.2,-9.4,3,t,{down:d3,walk:walk*(1-d3)});
+     survivor(2.4,-8.6,t,{down:ds,walk:walk*(1-ds),tool:'jaw'});
+   }
    worm(t,false);
  }
  if(stage===4){
    const stumble=phase(t,121,125)*(1-phase(t,125.4,127));
-   researcher(-2.3,-7.7,2,t,{down:stumble*.28,weapon:true});
-   researcher(.5,-7.6,3,t,{down:stumble*.35,weapon:true});
-   survivor(2.35,-7.9,t,{down:stumble*.16,tool:'jaw'});
+   const march=phase(t,125.5,131),move=1-phase(t,131,133);
+   researcher(mix(-2.3,-1.9,march),mix(-7.7,-8.7,march),2,t,
+     {down:stumble*.28,walk:move*(1-stumble),aim:1,weapon:true,fire});
+   researcher(mix(.5,.45,march),mix(-7.6,-8.5,march),3,t,
+     {down:stumble*.35,walk:move*(1-stumble),aim:1,weapon:true,fire});
+   survivor(mix(2.35,2.1,march),mix(-7.9,-9.05,march),t,
+     {down:stumble*.16,walk:move*(1-stumble),tool:'jaw',attack:t>=135&&t<=152?.45+.55*Math.abs(Math.sin(t*7.6)):0});
    const dead=phase(t,150.4,154);
    if(dead<.94)worm(t,true);
    else{
-     // fallen worm's segmented body stays in the 3D cave.
      for(let i=0;i<8;i++)ell(Math.sin(i*.64)*.85,-.56,-10-i*1.2,.97,.46,.85,[.47,.23,.22],10,6);
      ell(0,-.43,-10,1.4,.52,1.25,[.42,.22,.23],11,6);
    }
    if(t>=121&&t<128)for(let i=0;i<14;i++){
-     let x=(i-7)*.93,z=-5-(i%4)*4;
+     const x=(i-7)*.93,z=-5-(i%4)*4;
      pebble(x,3.4-phase(t,121+i*.14,127+i*.07)*4.4,z,.30,C.rock);
    }
  }
  if(gunOn){
    rifle(cam[0]+.38,camZ-.62,fire,reloading);
    if(fire){
-     const z=stage===2?-11.5:stage===3?-11.1:-14.5;
+     const z=stage===2?-11.5:stage===3?-11.1:-10.6;
      const ty=stage===2?3.0:stage===3?3.6:3.2;
      rod([cam[0]+.1,.52,camZ-2.85],[.10,ty,z],.018,[1,.84,.43]);
      for(let i=0;i<7;i++)spark(.1,ty,z,t,i,[1,.73,.27]);
@@ -592,12 +629,11 @@ function drawStage(stage,t,cam){
  }
  if(stage===2&&t>=64&&t<70){
    const bx=2.25;
-   box(bx+.6,.10,-6.2,.43,.50,.50,[.30,.48,.56]); // visible water bucket
+   box(bx+.6,.10,-6.2,.43,.50,.50,[.30,.48,.56]);
    rod([bx+.39,.39,-6.2],[bx+.81,.39,-6.2],.06,[.73,.81,.81]);
  }
  drawFogFX(stage,t,cam);
- const data=new Float32Array(verts);
- render(data);
+ render(new Float32Array(verts));
 }
 function resizeCanvas(){
  const ratio=Math.min(devicePixelRatio||1,1.4);
@@ -610,9 +646,9 @@ function cut(t,a,b){return phase(t,a,b)*(1-phase(t,b+.28,b+.95));}
 function cameraFor(stage,t){
  let x=0,y=1.57,z=3.1;
  if(stage===1){x=Math.sin(t*.14)*.12;z=2.5; y=1.59;}
- if(stage===2){x=Math.sin(t*.19)*.09;z=mix(4.3,.35,phase(t,28,40));y=1.58;}
+ if(stage===2){x=Math.sin(t*.19)*.09;z=mix(4.3,-.15,phase(t,28,40));y=1.58;}
  if(stage===3){x=Math.sin(t*.15)*.12;z=3.0;y=1.61;}
- if(stage===4){x=.05+Math.sin(t*.22)*.12;z=1.5;y=1.57;}
+ if(stage===4){x=.05+Math.sin(t*.22)*.12;z=1.8;y=1.57;}
  z+=Math.max(0,1.05-innerWidth/Math.max(1,innerHeight))*3.7;
  const walking=stage===2&&t<38||stage===3&&t<90;
  const bob=walking?Math.sin(t*7.2)*.030:Math.sin(t*2.5)*.010;
