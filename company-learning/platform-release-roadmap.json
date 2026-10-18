@@ -1,5 +1,5 @@
 {
-  "version": 580,
+  "version": 581,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -1195,7 +1195,7 @@
       "reason": "RELEASE_GATE_PENDING_RUNS_MUST_NOT_CANCEL_OTHER_CANDIDATES_OR_REDUCE_PRIMARY_WAVE_REFILL"
     },
     "candidateReleasePromotionChecks": {
-      "webRequiredDeploymentCheck": "Cloudflare Pages",
+      "webRequiredDeploymentCheck": "GitHub Pages",
       "sourceBoundaryProofRequired": true,
       "unrelatedRepositoryWideExternalCheckCannotBlockGameRelease": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
@@ -1530,7 +1530,7 @@
           "F0_SOURCE_INTEGRITY",
           "F1_TO_F8_CODE_AND_STATIC_QA",
           "F9_EXACT_FINAL_REVIEW",
-          "DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH",
+          "DISPATCH_EXACT_F9_ARTIFACT_REGARDLESS_OF_RELEASE_CLASSIFICATION",
           "START_NEXT_EVOLUTION_CYCLE_IMMEDIATELY",
           "RECONCILE_CANONICAL_PUBLISH_RESULT_ASYNC"
         ],
@@ -6219,8 +6219,7 @@
         "F7",
         "F8",
         "F9",
-        "RELEASE_CLASSIFICATION",
-        "PUBLISH_ONLY_IF_RELEASED",
+        "PUBLISH_EVERY_F9_VERIFIED_GAME",
         "IMMEDIATE_NEXT_EVOLUTION_CYCLE"
       ],
       "f9Terminal": false,
@@ -6242,7 +6241,7 @@
         "WEB": {
           "f9Authority": "VIBE2_FAN_IN_REVIEW",
           "deployRoute": ".github/workflows/vibe2-candidate-release.yml#web-release",
-          "deploymentTarget": "CLOUDFLARE_PAGES_CONFIGURED_WEB_TARGET",
+          "deploymentTarget": "GITHUB_PAGES_EXISTING_STATIC_SITE",
           "nextCycleRoute": "vibe2-fanin-refill"
         },
         "ROBLOX": {
@@ -7485,6 +7484,27 @@
     }
   },
   "changeRecord": {
+    "ownerEveryGameF9Publish20261018": {
+      "authority": "OWNER_DIRECT",
+      "status": "ACTIVE",
+      "scope": "EVERY_GAME_AFTER_VERIFIED_F0_F9",
+      "publicationScoreGate": false,
+      "publicationClassificationGate": false,
+      "existingCanonicalF0F9": true,
+      "publicationMustBeAttempted": true,
+      "failedPublishUsesExistingRetry": true,
+      "nextEvolutionDoesNotWaitForPublishedVisibility": true,
+      "platforms": {
+        "WEB": "GITHUB_PAGES",
+        "ROBLOX": "ROBLOX_EXISTING_OPEN_CLOUD",
+        "UNITY": "EXISTING_APP_TEST_BUILD"
+      },
+      "cloudflareWorkers": "MULTIPLAYER_ONLY",
+      "githubOriginalAssetsAndSaveKeysPreserved": true,
+      "homepageOwner": "HOMEPAGE_MANAGER_AND_DIRECTOR",
+      "freeExistingActionsOnly": true,
+      "shadowPipelineForbidden": true
+    },
     "id": "DIRECT_NATIVE_POLICY_DRIFT_CLEANUP_2026-09-23",
     "documentIsCode": true,
     "reason": "REMOVE_REMAINING_WEB_FIRST_AND_UEFN_ACTIVE_SCHEDULING_DRIFT_FROM_THE_OWNER_LOCKED_ROBLOX_UNITY_DIRECT_NATIVE_MACHINE_CONTRACT",
@@ -8621,8 +8641,9 @@
     },
     "playableWebMandatoryDeployment20261002": {
       "nativeHomepageReadinessRequired": false,
-      "cloudflareMainRequiredBeforeVibePass": true,
-      "nextBuildUpBeforeDeploymentSuccessForbidden": true,
+      "cloudflareMainRequiredBeforeVibePass": false,
+      "githubPagesMainRequiredBeforeVibePass": true,
+      "nextBuildUpBeforeDeploymentSuccessForbidden": false,
       "postDeployment": {
         "perpetualBuildUp": true,
         "generationLimit": null,

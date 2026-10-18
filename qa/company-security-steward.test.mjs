@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { spawnSync } from 'node:child_process';
-import { scanSecurityPatch, scanExternalInstruction } from '../tools/company-security-steward.mjs';
+import { scanSecurityPatch, scanExternalInstruction, isApprovedPagesOidcGrant } from '../tools/company-security-steward.mjs';
 import { compactPolicyReviewIncidents, recordSecurityReport, resolveSecurityIncident } from '../tools/company-security-incident.mjs';
 import { distillSecurityLearning } from '../tools/company-security-learning.mjs';
 
@@ -45,6 +45,47 @@ test('literal secret is quarantined and report stores only redacted evidence',()
   assert.equal(report.findings[0].severity,'CRITICAL');
   assert.match(report.findings[0].snippet,/REDACTED_SECRET/);
   assert.doesNotMatch(JSON.stringify(report),/ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ/);
+});
+
+test('only approved exact GitHub Pages OIDC is REVIEW, never silent PASS',()=>{
+  const file='.github/workflows/magic-forest-pages.yml';
+  const after=fs.readFileSync(file,'utf8');
+  const before=after.replace(/^      id-token: write\s*\n/m,'');
+  assert.notEqual(before,after,'test must detect the actual OIDC grant');
+  assert.equal(isApprovedPagesOidcGrant(before,after),true);
+  const patch=(target=file)=>'diff --git a/'+target+' b/'+target+'\n+++ b/'+target+
+    '\n@@ -0,0 +206 @@\n+      id-token: write\n';
+  const snapshots={[file]:{before,after}};
+  const result=scanSecurityPatch({patch:patch(),changedFiles:[file],workflowSnapshots:snapshots});
+  assert.equal(result.verdict,'REVIEW');
+  assert.equal(result.findings.length,1);
+  assert.equal(result.findings[0].rule,'OIDC_WRITE_PERMISSION_ADDED');
+  assert.equal(result.findings[0].severity,'HIGH');
+  assert.equal(result.findings[0].disposition,'REVIEW');
+  assert.equal(result.quarantineFindings,0);
+  for(const invalid of [
+    {before:after,after}, // cannot grant it anew when the base already allows OIDC
+    {before,after:after.replace('actions/deploy-pages@v4','some-unknown/deploy-pages@v4')},
+    {before,after:after.replace('name: github-pages','name: unrelated-environment')},
+    {before,after:after.replace('      pages: write','      pages: read')},
+    {before,after:after.replace('      contents: read','      contents: write')},
+    {before,after:after.replace("  publish-pages:\n    needs: deploy\n    if: github.event_name != 'pull_request'", "  publish-pages:\n    needs: deploy\n    if: always()")},
+    {before,after:after.replace('      id-token: write','      id-token: write\n      id-token: write')},
+    {before:'',after},
+  ]){
+    assert.equal(isApprovedPagesOidcGrant(invalid.before,invalid.after),false);
+    const q=scanSecurityPatch({patch:patch(),changedFiles:[file],workflowSnapshots:{[file]:invalid}});
+    assert.equal(q.verdict,'QUARANTINE','unapproved OIDC must remain blocked');
+  }
+  const unbound=scanSecurityPatch({patch:patch(),changedFiles:[file]});
+  assert.equal(unbound.verdict,'QUARANTINE','no exact snapshot means no approval');
+  const other='.github/workflows/any-other.yml';
+  const otherScan=scanSecurityPatch({patch:patch(other),changedFiles:[other],workflowSnapshots:snapshots});
+  assert.equal(otherScan.verdict,'QUARANTINE');
+  assert.match(securityWorkflow,/SECURITY_OWNER_PAGES_OIDC_SCOPE_PROOF_REQUIRED/);
+  assert.match(securityWorkflow,/SECURITY_OWNER_APPROVED_EXACT_PAGES_OIDC=PASS/);
+  assert.ok(securityWorkflow.includes("row.rule==='OIDC_WRITE_PERMISSION_ADDED'&&row.file==='.github/workflows/magic-forest-pages.yml'"));
+  assert.ok(securityWorkflow.includes("test \"$AUTO_POLICY_PASS\" = 'YES'"),'central owner policy review remains enforced');
 });
 
 test('safe secret reference is not treated as literal secret',()=>{
@@ -457,6 +498,37 @@ test('candidate workers cannot replace final verification with invented proof',(
   assert.match(reviewer,/nativeRuntimeRequired/);
   assert.match(learner,/nativePositiveMasteryAllowed/);
   assert.match(learner,/verified-marker:/);
+});
+
+test('owner-approved F9 Pages policy remains scoped to exact secure values and existing gate',()=>{
+  const fields=[
+    'developmentSpeedExecution.candidateReleasePromotionChecks.webRequiredDeploymentCheck',
+    'developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence',
+    'roblox.deploymentControl.verifiedCyclePublication.sequence',
+    'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
+    'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
+    'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
+    'changeRecord.playableWebMandatoryDeployment20261002.nextBuildUpBeforeDeploymentSuccessForbidden',
+    'changeRecord.ownerEveryGameF9Publish20261018'
+  ];
+  for(const key of fields)assert.ok(securityWorkflow.includes(key),'missing precisely reviewed owner field '+key);
+  assert.match(securityWorkflow,/SECURITY_OWNER_F9_PAGES_APPROVAL_INVARIANT_FAIL/);
+  assert.match(securityWorkflow,/head\.version!==base\.version\+1/);
+  assert.match(securityWorkflow,/loop\?\.publishBeforeF9Forbidden!==true/);
+  assert.match(securityWorkflow,/loop\?\.exactVerifiedVersionRequiredForPublishAttempt!==true/);
+  assert.match(securityWorkflow,/record,requiredRecord/);
+  assert.match(securityWorkflow,/publicationClassificationGate:false/);
+  assert.match(securityWorkflow,/nextBuildUpBeforeDeploymentSuccessForbidden!==true/);
+  assert.match(securityWorkflow,/nextBuildUpBeforeDeploymentSuccessForbidden!==false/);
+  assert.match(securityWorkflow,/expectedRobloxBaseline/);
+  assert.match(securityWorkflow,/requiredRobloxSequence/);
+  assert.match(securityWorkflow,/head\.roblox\?\.deploymentControl\?\.verifiedCyclePublication\?\.sequence,requiredRobloxSequence/);
+  assert.match(securityWorkflow,/security|quarantine|REVIEW/i);
+  assert.match(securityWorkflow,/homepageOwner:'HOMEPAGE_MANAGER_AND_DIRECTOR'/);
+  assert.match(securityWorkflow,/shadowPipelineForbidden:true/);
+  assert.match(securityWorkflow,/githubOriginalAssetsAndSaveKeysPreserved:true/);
+  assert.match(securityWorkflow,/if \[ "\$VERDICT" = 'QUARANTINE' \]/);
+  assert.match(securityWorkflow,/test "\$AUTO_POLICY_PASS" = 'YES'/);
 });
 
 test('security workflow scans changed candidates without scheduled duplicate replay',()=>{

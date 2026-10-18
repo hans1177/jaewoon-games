@@ -67,6 +67,25 @@ test('exact F9 Web publication waits remain recoverable until deployment is reso
 });
 
 
+
+test('repeated exact F9 Web publication recovery backs off while native winner recovery keeps its default',()=>{
+  const row={...winner(['web-f0-f9-verified','web-f9-verified','web-publish-after-f9-required']),
+    target:'web',status:'verified',blocker:null};
+  row.evidence=row.evidence.filter(value=>!value.startsWith('candidate-sha:'));
+  row.evidence.push('candidate-sha:'+'a'.repeat(40));
+  const check=(time)=>selectReviewedWinnerRecoveries({tasks:[row]},{nowMs:time}).count;
+  row.evidence.push('release-dispatch-recovery-at:1000000','release-dispatch-recovery-at:1150000');
+  assert.equal(check(1_389_999),0,'second F9 Web retry waits four minutes');
+  assert.equal(check(1_390_001),1);
+  row.evidence.push('release-dispatch-recovery-at:1390000');
+  assert.equal(check(1_869_999),0,'third F9 Web retry waits eight minutes');
+  assert.equal(check(1_870_001),1);
+  const native=winner(['release-dispatch-recovery-at:1000000','release-dispatch-recovery-at:1150000']);
+  assert.equal(selectReviewedWinnerRecoveries({tasks:[native]},{nowMs:1_270_001}).count,1,
+    'native retry default is unchanged');
+});
+
+
 test('24H recovery verifies exact candidate SHA before marking and dispatching',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   const start=workflow.indexOf('      - name: Recover reviewed winners stranded before release dispatch');
