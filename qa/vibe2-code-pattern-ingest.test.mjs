@@ -22,7 +22,7 @@ test('unverified sample is rejected',()=>{
 
 test('verified Web and Roblox aesthetic repairs distill concrete source-bound patterns',()=>{
   for(const [input,engine] of [
-    ['web-games/a: damaged combat popup visual, tooltip placement, animated icon, nine slice','web'],
+    ['web-games/a: damage popup, tooltip placement, animated icon, nine slice','web'],
     ['roblox-games/a: 데미지 숫자와 아이콘 애니, 보스 체력바 시각 개선','roblox']
   ]){
     const rows=deriveVerifiedCodePatterns({
