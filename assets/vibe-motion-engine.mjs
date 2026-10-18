@@ -15,6 +15,10 @@ export class VibeMotionEngine {
     this.genre = 'realistic';
     this.paused = false;
     this.transition = null;
+    this.actionQueue = [];
+    this.cooldowns = new Map();
+    this.clipEvents = new Map();
+    this.maxQueuedActions = 8;
   }
   setGenre(genre) {
     if (!Object.hasOwn(this.design.genreOverrides, genre)) throw new Error('Unknown genre');
@@ -38,6 +42,29 @@ export class VibeMotionEngine {
     this.adapter.play?.(state, {previous, blendSeconds: duration, genre: this.genre});
     return true;
   }
+  registerClipEvents(state, events) {
+    if (!this.allowed(state) || !Array.isArray(events)) throw Error('Invalid clip events');
+    this.clipEvents.set(state, events.filter(e => Number.isFinite(e.at) && e.at >= 0 && typeof e.type === 'string').sort((a,b)=>a.at-b.at));
+  }
+  queueAction(state, {priority = 0, cooldown = 0, durationMs} = {}) {
+    if (!this.allowed(state)) throw Error('Unknown motion state');
+    if (this.actionQueue.length >= this.maxQueuedActions) return false;
+    this.actionQueue.push({state, priority, cooldown, durationMs, order: this.sequence++});
+    this.actionQueue.sort((a,b)=>b.priority-a.priority||a.order-b.order);
+    return true;
+  }
+  flushActions() {
+    const remaining = [];
+    for (const action of this.actionQueue) {
+      if ((this.cooldowns.get(action.state) ?? 0) > this.time) {remaining.push(action);continue;}
+      this.enter(action.state,{durationMs:action.durationMs,force:true});
+      if (action.cooldown > 0) this.cooldowns.set(action.state,this.time+action.cooldown);
+      this.actionQueue = remaining.concat(this.actionQueue.slice(this.actionQueue.indexOf(action)+1));
+      return action.state;
+    }
+    this.actionQueue = remaining;
+    return null;
+  }
   emit(type, payload = {}) {
     const event = {id: ++this.sequence, type, state: this.state, time: this.time, ...payload};
     this.events.push(event);
@@ -57,7 +84,12 @@ export class VibeMotionEngine {
     if (this.paused || !Number.isFinite(dt) || dt <= 0) return;
     const delta = Math.min(dt, 0.1);
     this.time += delta;
+    const before = this.elapsed;
     this.elapsed += delta;
+    for (const event of this.clipEvents.get(this.state) ?? []) {
+      if (event.at > before && event.at <= this.elapsed) this.emit(event.type,{clipTime:event.at});
+    }
+    if (this.actionQueue.length && (!this.transition || this.transition.elapsed >= this.transition.duration)) this.flushActions();
     if (this.transition) {
       this.transition.elapsed += delta;
       const {elapsed, duration} = this.transition;
