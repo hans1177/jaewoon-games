@@ -495,7 +495,8 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
 
   assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
   assert.match(publisher,/git clone --quiet --depth=1 --single-branch --branch gh-pages/);
-  assert.match(publisher,/test -f "\$site\/index\.html"/);
+  // 새 공식 홈 리다이렉트는 존재 여부뿐 아니라 내용이 비어 있지 않아야 한다.
+  assert.match(publisher,/test -s "\$site\/index\.html"/);
   assert.match(publisher,/GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
   assert.match(publisher,/git -C "\$site" push origin HEAD:gh-pages/);
 
@@ -517,7 +518,9 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.doesNotMatch(publisher,/git push origin HEAD:gh-pages --force/);
   assert.match(publisher,/if: github\.event_name != 'pull_request'/);
   assert.match(publisher,/WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS/);
-  assert.match(publisher,/MAGIC_FOREST_ROOT_NOT_LIVE=/);
+  // 단일 공식 홈페이지 리다이렉트가 실제 배포에서 확인되어야 한다.
+  assert.match(publisher,/WEB_PAGES_OFFICIAL_HOME_REDIRECT_NOT_LIVE/);
+  assert.match(publisher,/WEB_PAGES_OFFICIAL_HOME_REDIRECT_TARGET_MISMATCH/);
   assert.match(publisher,/WEB_PAGES_ROUTE_NOT_LIVE=/);
   assert.match(publisher,/WEB_PAGES_SOURCE_SHA=/);
   assert.match(publisher,/WEB_PAGES_LIVE_SOURCE_SHA=/);
