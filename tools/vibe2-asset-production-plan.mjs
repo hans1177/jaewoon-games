@@ -1639,7 +1639,15 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       const sourceRoles=unique([...(requestedRolesByFamily.get(family)||[]),currentAsset?.role,currentAsset?.subfamily])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value&&value!==family.toLowerCase());
       if(!currentIsDownloadedOriginal){
-        planOriginalAcquisition(family,sourceRoles,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL',currentAsset?.id);
+        const requested=planOriginalAcquisition(family,sourceRoles,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL',currentAsset?.id);
+        if(!requested)pushAction({
+          action:'HOLD',assetId:null,family,reason:'DOWNLOADED_ORIGINAL_SOURCE_REQUEST_REQUIRED',
+          replacesCandidateAssetId:clean(currentAsset?.id)||null,
+          sourceCatalogSearchRequired:true,
+          sourceRequestOwner:'EXISTING_ASSET_DEVELOPMENT_GRAPHICS_PRODUCTION',
+          roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false},
+          existingNativeBindingsPreservedUntilDownloadAndQa:true
+        });
       }
       // [교체 역할 보존] 같은 계열이라는 이유만으로 조명·문서, 패널·인트로를 서로 교체하지 않는다.
       // 일반 요청은 신규 사용 후보를 허용하지만 기존 역할 교체는 등록된 역할 근거가 필요하다.
@@ -1715,6 +1723,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         reason:originalRequested?'DOWNLOADED_ORIGINAL_ACQUISITION_PENDING':'NO_DOWNLOADED_ORIGINAL_AVAILABLE',
         selfAuthoredVisualBindingForbidden:true,
         onDemandOriginalAcquisitionRequired:true,
+        sourceCatalogSearchRequired:!originalRequested,
+        sourceRequestOwner:'EXISTING_ASSET_DEVELOPMENT_GRAPHICS_PRODUCTION',
         roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
     }
   }
