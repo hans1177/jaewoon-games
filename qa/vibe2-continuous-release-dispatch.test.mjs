@@ -495,7 +495,8 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
 
   assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
   assert.match(publisher,/git clone --quiet --depth=1 --single-branch --branch gh-pages/);
-  assert.match(publisher,/test -f "\$site\/index\.html"/);
+  // 새 공식 홈 리다이렉트는 존재 여부뿐 아니라 내용이 비어 있지 않아야 한다.
+  assert.match(publisher,/test -s "\$site\/index\.html"/);
   assert.match(publisher,/GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
   assert.match(publisher,/git -C "\$site" push origin HEAD:gh-pages/);
 
