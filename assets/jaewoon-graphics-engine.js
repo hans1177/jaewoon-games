@@ -397,15 +397,63 @@
       element.setAttribute('aria-label','Effect '+Math.round(ratio*100)+'% remaining, stacks '+stackCount);
       return true;
     }
+
+    // Explicitly connect an existing game's verified event bus. Never poll or infer
+    // damage from client physics, and always release subscriptions on UI teardown.
+    const gameSubscriptions=new Set();
+    function bindGameEvents({
+      subscribe,damageEvent='combat:confirmed',noticeEvent='presentation:notice',
+      iconEvent='presentation:icon',statusEvent='presentation:status'
+    }={}){
+      if(destroyed||typeof subscribe!=='function')
+        return Object.freeze({bound:false,reason:'EXISTING_GAME_EVENT_SUBSCRIBER_REQUIRED'});
+      const localUnsubscribers=[];
+      const bindings=[
+        [damageEvent,event=>showDamage(event)],
+        [noticeEvent,event=>{
+          if(event?.confirmed===true||event?.uiOnly===true)notify(event);
+        }],
+        [iconEvent,event=>{
+          if(event?.element&&event?.state)animateIcon(event.element,event.state);
+        }],
+        [statusEvent,event=>{
+          if(event?.element&&event?.confirmed===true)updateStatusIcon(event.element,event);
+        }]
+      ];
+      try{
+        for(const [type,handler] of bindings){
+          if(typeof type!=='string'||!type.trim())throw Error('VISUAL_EVENT_NAME_REQUIRED');
+          const unsubscribe=subscribe(type,handler);
+          if(typeof unsubscribe!=='function')throw Error('VISUAL_EVENT_UNSUBSCRIBE_REQUIRED');
+          localUnsubscribers.push(unsubscribe);
+        }
+      }catch(error){
+        for(const off of localUnsubscribers)off();
+        return Object.freeze({bound:false,reason:String(error.message||error)});
+      }
+      let disposed=false;
+      function dispose(){
+        if(disposed)return;
+        disposed=true;
+        for(const off of localUnsubscribers)off();
+        gameSubscriptions.delete(dispose);
+      }
+      gameSubscriptions.add(dispose);
+      return Object.freeze({bound:true,dispose,
+        channels:Object.freeze(bindings.map(([type])=>type)),
+        authority:'EXISTING_GAME_EVENT_PRESENTATION_ONLY'});
+    }
+
     function destroy(){
       if(destroyed)return;destroyed=true;
+      for(const dispose of [...gameSubscriptions])dispose();
       for(const id of timers)clearTimeout(id);timers.clear();
       for(const animation of icons.values())if(animation&&animation.cancel)animation.cancel();
       icons.clear();damage.clear();seen.clear();toasts.length=0;tooltip=null;remove(stage);
       if(changedHostPosition&&host.style.position==='relative')host.style.position='';
     }
     return Object.freeze({ready:true,showDamage,showTooltip,hideTooltip,notify,animateIcon,
-      updateStatusIcon,destroy,
+      updateStatusIcon,bindGameEvents,destroy,
       stats:()=>Object.freeze({activeDamage:damage.size,activeNotices:toasts.length,
         tooltipVisible:Boolean(tooltip),destroyed}),
       authority:'WEB_PRESENTATION_ONLY_NO_GAMEPLAY_MUTATION'});

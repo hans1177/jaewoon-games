@@ -113,6 +113,44 @@ test('contextual HUD emphasizes real action while keeping touch controls persist
   assert.equal(focus.selected[1].emphasized,true);
 });
 
+test('web native game event binding uses only confirmed damage and unsubscribes',()=>{
+  const {doc,host}=fakeDom(),ctrl=getWeb()({host,documentRef:doc,reducedMotion:true});
+  const listeners=new Map();
+  const subscription=ctrl.bindGameEvents({subscribe(type,callback){
+    listeners.set(type,callback);return()=>{listeners.delete(type);};
+  }});
+  assert.equal(subscription.bound,true);
+  assert.equal(listeners.size,4);
+  listeners.get('combat:confirmed')({eventId:'unconfirmed',confirmed:false,amount:99,x:40,y:40});
+  assert.equal(ctrl.stats().activeDamage,0);
+  listeners.get('combat:confirmed')({eventId:'verified',confirmed:true,amount:21,x:40,y:40});
+  assert.equal(ctrl.stats().activeDamage,1);
+  listeners.get('presentation:notice')({id:'notice',text:'Progress',uiOnly:true});
+  assert.equal(ctrl.stats().activeNotices,1);
+  subscription.dispose();
+  assert.equal(listeners.size,0);
+  const resubscribe=ctrl.bindGameEvents({subscribe(type,fn){
+    listeners.set(type,fn);return()=>listeners.delete(type);
+  }});
+  assert.equal(resubscribe.bound,true);
+  ctrl.destroy();
+  assert.equal(listeners.size,0);
+  assert.equal(ctrl.stats().destroyed,true);
+});
+test('web binding fails closed when game bus cannot unsubscribe cleanly',()=>{
+  const {doc,host}=fakeDom(),ctrl=getWeb()({host,documentRef:doc});
+  const listeners=new Map();
+  const result=ctrl.bindGameEvents({subscribe(type,fn){
+    listeners.set(type,fn);
+    if(type==='presentation:icon')return null;
+    return()=>listeners.delete(type);
+  }});
+  assert.equal(result.bound,false);
+  assert.equal(listeners.has('combat:confirmed'),false);
+  assert.equal(listeners.has('presentation:notice'),false);
+  ctrl.destroy();
+});
+
 test('both native platform adapters expose concrete event-safe visual abilities',()=>{
   const src=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
   for(const name of ['CreateVisualFeedbackController','ShowDamage','PositionTooltip','AnimateIcon','UpdateStatusIcon','Notify','CreateItemModelPreview']){
