@@ -1,14 +1,14 @@
 // 파일명: tools/github-pages-landing.mjs
-// GitHub Pages는 게임 파일만 게시한다. 공식 홈페이지는 기존 Cloudflare 메인 하나만 사용한다.
+// GitHub Pages에서는 기존 메인 홈페이지를 동일하게 게시하고 게임 원본 경로를 보존한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 
-const OFFICIAL_HOME='https://jaewoon-games.pages.dev/';
+const OFFICIAL_HOME='https://hans1177.github.io/jaewoon-games/';
+const PAGES_ROOT='/jaewoon-games/';
 const validId=id=>/^[a-z0-9][a-z0-9-]*$/.test(String(id||''));
 
-// 배포된 원본 게임 경로와 실제로 등록된 Roblox 링크는 계속 검증한다.
-// 이 경로들을 제2의 홈페이지 목록으로 렌더링하지 않는다.
+// canonical 게임 경로 검증은 유지하고, 하나의 기존 메인 HTML을 그대로 게시한다.
 export function buildPagesLanding({catalog,manifest,exposure}){
   if(!Array.isArray(catalog?.games)||!Array.isArray(manifest?.routes)||!Array.isArray(exposure?.games)){
     throw new Error('PAGES_HOME_CATALOG_MANIFEST_EXPOSURE_REQUIRED');
@@ -31,19 +31,16 @@ export function buildPagesLanding({catalog,manifest,exposure}){
     const url=String(platform.internalUrl||'');
     return /^https:\/\/www\.roblox\.com\/games\/[1-9][0-9]*$/.test(url)&&url.endsWith('/'+String(platform.placeId||''));
   }).map(platform=>platform.internalUrl));
-  // 고정된 공식 주소로 바로 이동한다. 정적 HTML의 링크는 자동이동 미지원 브라우저용이다.
-  const html=[
-    '<!doctype html>',
-    '<!-- 파일명: GitHub Pages 배포용 index.html. 게임 루트와 공식 홈페이지를 구분한다. -->',
-    '<html lang="ko" data-jaewoon-pages-redirect="1">',
-    '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">',
-    '<meta http-equiv="refresh" content="0;url='+OFFICIAL_HOME+'">',
-    '<meta name="robots" content="noindex,follow">',
-    '<link rel="canonical" href="'+OFFICIAL_HOME+'">',
-    '<title>재운게임즈 공식 홈페이지 이동</title></head>',
-    '<body><p>재운게임즈 공식 홈페이지로 이동해. <a href="'+OFFICIAL_HOME+'">공식 홈페이지 열기</a></p></body>',
-    '</html>'
-  ].join('\n');
+  // 기존 메인 UI만 사용한다. 소스의 루트 절대경로는 Pages 프로젝트 경로로 변환한다.
+  const original=fs.readFileSync('index.html','utf8');
+  if(!original.includes('data-homepage-version="SAMPLE_FRONT_DOOR_V1"')
+     ||!original.includes('assets/homepage-enhancements.js')){
+    throw new Error('PAGES_HOME_CANONICAL_SOURCE_INVALID');
+  }
+  const html=original.replace(/(["'\x60])\/(?!\/)/g,'$1'+PAGES_ROOT);
+  if(html.includes('data-jaewoon-pages-redirect')||html.includes('http-equiv="refresh"')){
+    throw new Error('PAGES_HOME_REDIRECT_FORBIDDEN');
+  }
   return {html,webRoutes:routes,robloxLinks};
 }
 
@@ -59,6 +56,7 @@ export function writePagesLanding({site='_site',catalogPath='game-catalog.json',
   fs.writeFileSync(filename,result.html,'utf8');
   if(fs.statSync(filename).size<200)throw Error('PAGES_HOME_EMPTY_INDEX');
   console.log('PAGES_OFFICIAL_HOME='+OFFICIAL_HOME);
+  console.log('PAGES_CANONICAL_HOME=MAIN_INDEX');
   console.log('PAGES_GAME_ROUTES_RETAINED='+result.webRoutes.length);
   console.log('PAGES_EXISTING_ROBLOX_TARGETS_VERIFIED='+result.robloxLinks.length);
   return result;
