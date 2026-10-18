@@ -1716,13 +1716,14 @@ function sourceConsumerRoots({repoRoot,game}={}){
   const id=clean(game?.id||game?.gameId);
   const targets=game?.targetSourcePaths&&typeof game.targetSourcePaths==='object'?Object.values(game.targetSourcePaths):[];
   const candidates=unique([
-    game?.targetSourcePath,...targets,game?.robloxProjectPath,game?.unityProjectPath,game?.projectPath,
+    game?.targetSourcePath,...targets,game?.robloxProjectPath,game?.unityProjectPath,game?.webPath,game?.projectPath,
+    game?.canonical?.sources?.web?.projectPath,
     game?.canonical?.sources?.roblox?.projectPath,game?.canonical?.sources?.unity?.projectPath,
-    id?'roblox-games/'+id:'',id?'unity-games/'+id:''
+    id?'roblox-games/'+id:'',id?'unity-games/'+id:'',id?'web-games/'+id:''
   ].map(sourceConsumerPath).filter(Boolean));
   const out=[];
   for(const relative of candidates){
-    if(!/^(?:roblox-games|unity-games)\/[A-Za-z0-9._-]+(?:\/.*)?$/.test(relative))continue;
+    if(!/^(?:roblox-games|unity-games|web-games)\/[A-Za-z0-9._-]+(?:\/.*)?$/.test(relative))continue;
     const absolute=path.resolve(repoRoot,relative);
     const resolved=sourceConsumerPath(path.relative(repoRoot,absolute));
     if(resolved.startsWith('../'))continue;
@@ -1733,7 +1734,7 @@ function sourceConsumerRoots({repoRoot,game}={}){
 }
 function sourceConsumerAssetReference({repoRoot,file,raw}={}){
   const value=clean(raw).replaceAll('\\','/');
-  const allowed=/^(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
+  const allowed=/^(?:assets\/|web-games\/[A-Za-z0-9._-]+\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
   let absolute='';
   if(value.startsWith('/')&&allowed.test(value.slice(1)))absolute=path.resolve(repoRoot,value.slice(1));
   else if(allowed.test(value))absolute=path.resolve(repoRoot,value);
@@ -1840,7 +1841,17 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
             }
           }
         }
-        for(const match of source.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
+        // [웹 UI 자산 연결] 실제 렌더/로딩 문맥에 등장한 경로만 회사 자산 소비로 기록한다.
+        // 주석/등록부 선언은 증거가 아니며, 정적 소스 연결만으로 런타임 검증을 부여하지 않는다.
+        const webConsumer=root.relative.startsWith('web-games/');
+        const pathUsageSource=webConsumer
+          ?usageBody.replace(/<!--[\s\S]*?-->|\/\*[\s\S]*?\*\//g,' ')
+          :source;
+        for(const match of pathUsageSource.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
+          if(webConsumer){
+            const before=pathUsageSource.slice(Math.max(0,match.index-120),match.index);
+            if(!/\b(?:src|href|poster|url|load|loadAsync|fetch|import|texture|textures|tex|sprite|sprites|image|images|img|icon|icons|model|models|frame|frames|asset|assets|glb|surfaceTexture|background|font|audio|sound|effect|vfx)\b/i.test(before))continue;
+          }
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
         }
         // Count native imported IDs only at executable load sites, never mere catalog declarations.
@@ -1901,7 +1912,7 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   return snapshot;
 }
 function sourceConsumerAssetPaths(asset={}){
-  const allowed=/^(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
+  const allowed=/^(?:assets\/|web-games\/[A-Za-z0-9._-]+\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
   return unique([
     ...(asset.sourceFiles||[]),clean(asset.path).replace(/^\//,''),
     ...(asset.nativeArtifacts||[]),asset.masterGlb,asset.meshArtifact,
