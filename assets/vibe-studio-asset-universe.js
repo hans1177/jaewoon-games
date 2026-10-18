@@ -3081,7 +3081,7 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
   // 검증된 자체 제작품이 명백히 우월하면 위 정렬 정책의 예외를 유지한다.
   const originalPreferred=rows[0]?.downloadedOriginal===true
     &&rows[0].reuse.roleCompatible&&rows[0].reuse.platformCompatible;
-  const best=locked||(originalPreferred?rows[0]:(currentAsset?verifiedRows.find(row=>row.downloadedOriginal)||rows[0]:null))||null;
+  const best=locked||(originalPreferred?rows[0]:(currentAsset?verifiedRows[0]||rows[0]:rows[0]))||null;
   const current=currentAsset?evaluateInternalAssetReuse({
     asset:currentAsset,gameDna,requirement,usage:usageByAsset[text(currentAsset?.id)]||{}
   }):null;
@@ -3099,12 +3099,14 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
   // the binding of an already-used asset across the portfolio.
   const automaticBindingAssetId=currentAsset
     ? (replacementRecommended?text(best?.asset?.id):text(currentAsset?.id))
-    : (replacementQualityVerified?text(best?.asset?.id):null);
+    : (replacementQualityVerified&&best?.downloadedOriginal?text(best?.asset?.id):null);
   const automaticBindingAllowed=Boolean(automaticBindingAssetId
     && (!currentAsset || replacementRecommended));
   return Object.freeze({
     selectedAssetId:text(best?.asset?.id)||null,
     downloadedOriginalDefault:true,
+    newGameBindingRequiresDownloadedOriginal:true,
+    internalCandidatesAdvisoryOnlyUntilSuperiorNativeQa:true,
     selectedDownloadedOriginal:best?.downloadedOriginal===true,
     missingOriginalRequiresOnDemandAcquisition:!rows.some(row=>row.downloadedOriginal&&row.reuse.roleCompatible&&row.reuse.platformCompatible),
     allCompatibleCandidatesEvaluated:true,
