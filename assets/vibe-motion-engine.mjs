@@ -19,6 +19,8 @@ export class VibeMotionEngine {
     this.cooldowns = new Map();
     this.clipEvents = new Map();
     this.maxQueuedActions = 8;
+    this.actionRules = new Map();
+    this.activeActionUntil = 0;
   }
   setGenre(genre) {
     if (!Object.hasOwn(this.design.genreOverrides, genre)) throw new Error('Unknown genre');
@@ -32,6 +34,8 @@ export class VibeMotionEngine {
     if (!this.allowed(state)) throw new Error('Unknown motion state: ' + state);
     if (state === this.state && !force) return false;
     const previous = this.state;
+    const rule = this.actionRules.get(state);
+    this.activeActionUntil = this.time + (rule?.duration ?? 0);
     this.previous = previous;
     this.state = state;
     this.elapsed = 0;
@@ -46,14 +50,23 @@ export class VibeMotionEngine {
     if (!this.allowed(state) || !Array.isArray(events)) throw Error('Invalid clip events');
     this.clipEvents.set(state, events.filter(e => Number.isFinite(e.at) && e.at >= 0 && typeof e.type === 'string').sort((a,b)=>a.at-b.at));
   }
+  registerActionRule(state, {duration = 0, cancelFrom = 0, cancelTo = Infinity, staminaCost = 0} = {}) {
+    if (!this.allowed(state) || ![duration,cancelFrom,staminaCost].every(Number.isFinite) || duration < 0 || cancelFrom < 0 || staminaCost < 0 || !(cancelTo >= cancelFrom)) throw Error('Invalid action rule');
+    this.actionRules.set(state,{duration,cancelFrom,cancelTo,staminaCost});
+  }
+  canCancel() {
+    const rule = this.actionRules.get(this.state);
+    return !rule || this.elapsed >= rule.cancelFrom && this.elapsed <= rule.cancelTo;
+  }
   queueAction(state, {priority = 0, cooldown = 0, durationMs} = {}) {
     if (!this.allowed(state)) throw Error('Unknown motion state');
-    if (this.actionQueue.length >= this.maxQueuedActions) return false;
+    if (this.actionQueue.length >= this.maxQueuedActions || !Number.isFinite(priority) || !Number.isFinite(cooldown) || cooldown < 0) return false;
     this.actionQueue.push({state, priority, cooldown, durationMs, order: this.sequence++});
     this.actionQueue.sort((a,b)=>b.priority-a.priority||a.order-b.order);
     return true;
   }
   flushActions() {
+    if (!this.canCancel()) return null;
     const remaining = [];
     for (const action of this.actionQueue) {
       if ((this.cooldowns.get(action.state) ?? 0) > this.time) {remaining.push(action);continue;}
@@ -90,6 +103,8 @@ export class VibeMotionEngine {
       if (event.at > before && event.at <= this.elapsed) this.emit(event.type,{clipTime:event.at});
     }
     if (this.actionQueue.length && (!this.transition || this.transition.elapsed >= this.transition.duration)) this.flushActions();
+    const activeRule = this.actionRules.get(this.state);
+    if (activeRule?.duration > 0 && this.elapsed >= activeRule.duration && this.state !== 'idle') this.enter('idle');
     if (this.transition) {
       this.transition.elapsed += delta;
       const {elapsed, duration} = this.transition;
