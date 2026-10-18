@@ -93,7 +93,7 @@ def make_facial_keys(face):
  # Face local coordinates: front points toward negative Y.
  def mask(v,cx=0,cz=0,rx=.18,rz=.12):
   dx=(v.x-cx)/rx;dz=(v.z-cz)/rz
-  return max(0.,1.-dx*dx-dz*dz)**2 * smoothstep(-.08,-.19,v.y)
+  return max(0.,1.-dx*dx-dz*dz)**2 * (1.0 - smoothstep(-.19,-.08,v.y))
  def deform(name,fn):
   key=face.shape_key_add(name=name)
   for i,p in enumerate(points):
