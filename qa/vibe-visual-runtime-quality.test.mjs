@@ -423,3 +423,18 @@ test('Roblox and Unity 3D markers cannot be promoted without their actual native
     assert.equal(result.minimumFinalGameplayDimension,'3D');
   }
 });
+
+
+test('central policy keeps every final world 3D and does not regress to 2.5D',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const contract=policy.livingMotionVisualQualityContract.minimumSpatialPresentation;
+  assert.equal(contract.minimumFinalGameplayDimension,'3D');
+  assert.equal(contract.final2DOr2_5DWorldForbidden,true);
+  assert.equal(contract.realThreeDimensionalMeshCameraDepthInteractionRequired,true);
+  assert.equal(contract.uiOverlayMayRemain2D,true);
+  assert.equal(policy.assetProductionParallelContract.webPresentationQuality.target,
+    'POLISHED_COMMERCIAL_MOBILE_WEB_REAL_3D_ONLY');
+  assert.equal(policy.assetProductionParallelContract.highEndVisualProductionContract.minimumFinalGameplayDimension,'3D');
+  assert.equal(policy.developmentAccess.UNITY,'OWNER_HOLD');
+  assert.equal(policy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
+});
