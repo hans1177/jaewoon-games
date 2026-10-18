@@ -585,7 +585,7 @@ test('homepage does not advertise generic app icons or shared page backgrounds a
 });
 
 test('Cloudflare runtime keeps canonical published web-game buttons without overriding Roblox runtime authority',()=>{
-  const edge=fs.readFileSync('_worker.js','utf8').replace('export default {','const workerDefault = {');
+  const edge=fs.readFileSync('_worker.js','utf8').replace(/export\s+default\s*\{/,'const workerDefault = {');
   const merge=vm.runInNewContext(edge+';mergeRuntimeCatalog', {Date,Intl});
   const runtime={games:[{id:'demo',name:'Demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
     canonical:{publication:{roblox:{universeId:'runtime-authoritative'}},
