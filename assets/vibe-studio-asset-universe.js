@@ -3057,13 +3057,15 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
     .sort((a,b)=>{
       // 역할/플랫폼/정체성이 같은 원본을 우선하며, 내부 제작본은 실제 런타임
       // 성능과 감사 근거에서 압도적(150점 이상) 우월할 때만 원본보다 앞선다.
-      if(a.downloadedOriginal!==b.downloadedOriginal){
-        const original=a.downloadedOriginal?a:b,internal=a.downloadedOriginal?b:a;
+      const aOriginal=a.downloadedOriginal&&a.reuse.roleCompatible&&a.reuse.platformCompatible;
+      const bOriginal=b.downloadedOriginal&&b.reuse.roleCompatible&&b.reuse.platformCompatible;
+      if(aOriginal!==bOriginal){
+        const original=aOriginal?a:b,internal=aOriginal?b:a;
         const evidence=usageByAsset[text(internal.asset?.id)]||{};
         const superior=internal.reuse.qualityEvidenceGrounded&&evidence.runtimePass===true
           &&internal.reuse.effectiveQuality-original.reuse.effectiveQuality>=150;
-        if(!superior)return a.downloadedOriginal?-1:1;
-        return a.downloadedOriginal?1:-1;
+        if(!superior)return aOriginal?-1:1;
+        return aOriginal?1:-1;
       }
       return b.reuse.effectiveQuality-a.reuse.effectiveQuality||b.reuse.baseQuality-a.reuse.baseQuality
         ||assetSourceTier(normalizeRegistryAsset(b.asset))-assetSourceTier(normalizeRegistryAsset(a.asset))
