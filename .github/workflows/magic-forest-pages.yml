@@ -64,6 +64,7 @@ jobs:
             assets/vibe-cinematic-polish.mjs
             assets/vibe-premium-gameplay-fx.mjs
             assets/vibe-storybook-cinematics.mjs
+            assets/vibe-genre-director.mjs
             assets/vibe-visual-design-system.json
             .github/workflows/magic-forest-pages.yml
             index.html
@@ -238,7 +239,7 @@ jobs:
           if(!fs.existsSync(previewSource))cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',previewSource]);
           fs.copyFileSync(previewSource,path.join(site,previewSource));
           // Publish every relative ES module dependency used by the preview and integrated game.
-          for(const shared of ['vibe-motion-engine.mjs','vibe-character-adapter.mjs','vibe-gameplay-controller.mjs','vibe-game-input-physics.mjs','vibe-presentation-engine.mjs','vibe-browser-presentation.mjs','vibe-cinematic-director.mjs','vibe-character-studio.mjs','vibe-premium-character-pipeline.mjs','vibe-cinematic-polish.mjs','vibe-premium-gameplay-fx.mjs','vibe-storybook-cinematics.mjs','vibe-visual-design-system.json']){
+          for(const shared of ['vibe-motion-engine.mjs','vibe-character-adapter.mjs','vibe-gameplay-controller.mjs','vibe-game-input-physics.mjs','vibe-presentation-engine.mjs','vibe-browser-presentation.mjs','vibe-cinematic-director.mjs','vibe-character-studio.mjs','vibe-premium-character-pipeline.mjs','vibe-cinematic-polish.mjs','vibe-premium-gameplay-fx.mjs','vibe-storybook-cinematics.mjs','vibe-genre-director.mjs','vibe-visual-design-system.json']){
             const source=path.join('assets',shared);
             if(!fs.existsSync(source))throw Error('VIBE_RUNTIME_SOURCE_MISSING:'+source);
             fs.mkdirSync(path.join(site,'assets'),{recursive:true});
