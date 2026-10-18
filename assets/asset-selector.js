@@ -504,9 +504,21 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const prototypePreset = choosePrototypePreset(request, presetCatalog);
   const production = buildProductionPlan(request, prototypePreset);
   const preferredIds = presetPreferredIds(prototypePreset);
+  // [다운로드 원본 기본] 모든 게임의 12개 에셋 분류에 적용한다.
+  // 후보 조회는 유지하고, 승인된 원본 파일·출처·해시가 없는 자체 제작품을 기본 시각 공급원으로 고르지 않는다.
   const matched = types.flatMap((type) => findCandidates(type, candidates))
-    .sort((a, b) => Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id))
-      || Number(b.studioMotionCandidate === true) - Number(a.studioMotionCandidate === true));
+    .sort((a, b) => {
+      const acquired = row => Boolean(
+        row?.downloaded !== false && row?.sourceFilesPresent !== false
+        && /^https:\/\/[^/]+\//i.test(text(row?.sourceUrl||row?.externalSourceUrl))
+        && /^[a-f0-9]{64}$/i.test(text(row?.originalSourceHash||row?.originalSha256||row?.sourceSha256))
+        && /^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(text(row?.license||row?.policy))
+        && text(row?.path||row?.masterGlb||row?.meshArtifact)
+      );
+      return Number(acquired(b))-Number(acquired(a))
+        || Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id))
+        || Number(b.studioMotionCandidate === true) - Number(a.studioMotionCandidate === true);
+    });
   const missingTypes = types.filter((type) => !matched.some((item) => item.type === type));
   const binding = types.map((type) => Object.freeze({
     type,
@@ -546,6 +558,11 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     }),
     policy:Object.freeze({
       existingAssetsFirst:true,
+      downloadedLicensedOriginalDefault:true,
+      downloadedOriginalRequiredBeforeNewSelfAuthoredVisualBinding:true,
+      allTwelveAssetFamiliesScanned:true,
+      allCompatibleOriginalsEligibleWithoutCountCap:true,
+      missingOriginalHandling:'ON_DEMAND_ACQUIRE_KEEP_PLAYABLE_UNTIL_NATIVE_QA',
       prototypePresetFirst:true,
       mobileFirst:true,
       activeNativeTargets:[...ACTIVE_NATIVE_TARGETS],
