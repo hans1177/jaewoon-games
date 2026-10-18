@@ -1689,8 +1689,6 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       });
     }else{
       pushAction({action:'HOLD',assetId:null,family,reason:(unresolvedFamilies.has(family)||sourceRoles.length===0)?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
-
-      }
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
