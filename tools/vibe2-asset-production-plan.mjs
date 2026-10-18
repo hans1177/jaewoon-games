@@ -1433,10 +1433,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   let intendedOnlyCount=0;
   // The role gate above rejects incompatible candidates; among eligible assets,
   // a higher audited quality score must win regardless of matched-role count.
-  const compareReusable=(a,b)=>
-    Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
-    ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
-    ||clean(a?.id).localeCompare(clean(b?.id));
+  // 다운로드한 실제 원본(라이선스·출처·원본 해시) 우선. 분류별 수량 제한 없이 전체 탐색한다.
+  const compareReusable=(a,b)=>{
+    const acquired=row=>Boolean(row?.downloaded!==false&&row?.sourceFilesPresent!==false
+      &&/^https:\/\/[^/]+\//i.test(clean(row?.sourceUrl))
+      &&/^[a-f0-9]{64}$/i.test(clean(row?.originalSourceHash||row?.originalSha256))
+      &&/^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(clean(row?.license))
+      &&clean(row?.path||row?.masterGlb||row?.meshArtifact));
+    return Number(acquired(b))-Number(acquired(a))
+      ||Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+      ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
+      ||clean(a?.id).localeCompare(clean(b?.id));
+  };
   const betterReusable=(candidate,current)=>!current||compareReusable(candidate,current)<0;
   for(const asset of assets){
     const assetId=clean(asset?.id);
@@ -1619,7 +1627,12 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
       // 실제 게임 소스 적용 및 독립 런타임 QA 없이 완료로 승격하지 않는다.
       const currentAsset=currentPrimaryByFamily.get(family);
-      const currentIsDownloadedOriginal=Boolean(clean(currentAsset?.sourceUrl)&&/^[0-9a-f]{64}$/i.test(clean(currentAsset?.originalSourceHash||currentAsset?.originalSha256)));
+      const currentIsDownloadedOriginal=Boolean(
+        currentAsset?.downloaded!==false&&currentAsset?.sourceFilesPresent!==false
+        &&/^https:\/\/[^/]+\//i.test(clean(currentAsset?.sourceUrl))
+        &&/^[0-9a-f]{64}$/i.test(clean(currentAsset?.originalSourceHash||currentAsset?.originalSha256))
+        &&/^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(clean(currentAsset?.license))
+      );
       const sourceRoles=unique([...(requestedRolesByFamily.get(family)||[]),currentAsset?.role,currentAsset?.subfamily])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value&&value!==family.toLowerCase());
       if(!currentIsDownloadedOriginal){
@@ -1724,6 +1737,12 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
     selectedOnDemandExternalGapCount:actions.filter(row=>row.action==='ACQUIRE_ADAPT').length,
+    allGamesDownloadedOriginalDefault:true,
+    allTwelveRegisteredAssetFamiliesEligible:true,
+    allMatchingDownloadedOriginalsEvaluated:true,
+    selfAuthoredDefaultAllowed:false,
+    missingOriginalHandling:'ACQUIRE_ON_DEMAND_PRESERVE_CURRENT_UNTIL_NATIVE_RUNTIME_QA',
+    externalAcquisitionStillRequiresExactRoleLicenseFileHashAndPlatformQa:true,
     externalSourcesDoNotBecomeRegisteredAssetsBySelection:true,
     decisionVocabulary:ASSET_SUPPLY_DECISIONS,
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
