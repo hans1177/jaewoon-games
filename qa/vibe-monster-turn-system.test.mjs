@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {typeMultiplier,resolveOrder,calculateMoveDamage,moveFor,enemyMoveChoice} from '../assets/vibe-monster-turn-system.js';
+const species={a:{type:'불꽃',skill:'화염타'},b:{type:'풀',skill:'잎날'},c:{type:'물',skill:'물결'}};
+const a={id:'a',lv:8,atk:30,hp:90,maxHp:90},b={id:'b',lv:2,atk:12,hp:60,maxHp:60};
+test('elemental advantage and disadvantage',()=>{assert.equal(typeMultiplier('불꽃','풀'),1.6);assert.equal(typeMultiplier('불꽃','물'),.65);assert.equal(typeMultiplier('일반','물'),1);});
+test('faster monster acts first regardless of chosen attack',()=>{assert.deepEqual(resolveOrder(a,b,moveFor(a,species),moveFor(b,species)),['player','enemy']);assert.deepEqual(resolveOrder(b,a,moveFor(b,species),moveFor(a,species)),['enemy','player']);});
+test('priority overrides speed',()=>{assert.deepEqual(resolveOrder(b,a,{priority:2},{priority:0}),['player','enemy']);});
+test('damage is reproducible and respects effectiveness',()=>{const fire=calculateMoveDamage(a,b,species,species,moveFor(a,species,true),()=>0);assert.equal(fire.miss,false);assert.equal(fire.effectiveness,1.6);assert.ok(fire.damage>30);});
+test('misses do zero damage',()=>{const move={power:1,accuracy:.1,type:'불꽃'};assert.equal(calculateMoveDamage(a,b,species,species,move,()=>.9).damage,0);});
+test('enemy selects advantage skill',()=>{assert.equal(enemyMoveChoice(a,b,species,()=>1).name,'화염타');});
