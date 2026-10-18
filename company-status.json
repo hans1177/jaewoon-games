@@ -303,7 +303,7 @@
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 45,
+        "developmentConfirmed": 46,
         "designOnly": 0
       },
       "releaseConfirmedGameIds": [],
@@ -335,6 +335,7 @@
         "RUNTIME-human-go-temp",
         "RUNTIME-kingshot-ad",
         "RUNTIME-line-defense",
+        "RUNTIME-moon-ruins",
         "RUNTIME-party-rpg",
         "RUNTIME-realistic-builder",
         "RUNTIME-seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -401,7 +402,8 @@
           "RUNTIME-tower-choice-rpg",
           "RUNTIME-ant-simulator",
           "RUNTIME-wild-survival",
-          "RUNTIME-tekken"
+          "RUNTIME-tekken",
+          "RUNTIME-moon-ruins"
         ],
         "paused": [],
         "rebuild": [],
@@ -410,11 +412,11 @@
       },
       "pipeline": {
         "target": 60,
-        "count": 45,
+        "count": 46,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 15
+        "deficit": 14
       },
       "ranking": [
         {
@@ -1091,6 +1093,21 @@
           "targetPlatform": "ROBLOX",
           "targetPlatformReady": true,
           "sourceReady": true
+        },
+        {
+          "rank": 46,
+          "rawEvidenceRank": 46,
+          "gameId": "RUNTIME-moon-ruins",
+          "slug": "moon-ruins",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "SURVIVAL",
+          "evidenceScore": 0,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": false,
+          "sourceReady": false
         }
       ],
       "source": [
