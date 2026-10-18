@@ -380,9 +380,11 @@ local civRegions = {
 -- Only newly registered, source-verified Roblox models are displayed.
 -- Legacy blocks remain invisible authoritative collision/interaction targets.
 local InsertService = game:GetService("InsertService")
-local worldModels = Shared:FindFirstChild("CuratedWorldModels")
-local creatureModels = Shared:FindFirstChild("CreatureModels")
-local assetModule = Shared:FindFirstChild("CuratedAssets")
+-- The curated publisher may insert the verified catalog and model folders
+-- after the server script starts. Wait before constructing the world and mobs.
+local worldModels = Shared:FindFirstChild("CuratedWorldModels") or Shared:WaitForChild("CuratedWorldModels", 20)
+local creatureModels = Shared:FindFirstChild("CreatureModels") or Shared:WaitForChild("CreatureModels", 20)
+local assetModule = Shared:FindFirstChild("CuratedAssets") or Shared:WaitForChild("CuratedAssets", 20)
 local registered = nil
 if assetModule and assetModule:IsA("ModuleScript") then
   local ok, data = pcall(require, assetModule)
