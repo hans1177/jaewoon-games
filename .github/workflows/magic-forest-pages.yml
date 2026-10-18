@@ -212,6 +212,21 @@ jobs:
           console.log('WEB_PAGES_SHARED_ASSETS='+refs.size);
           NODE
 
+      - name: Generate deterministic Vibe engine asset profiles for every published game
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {buildGameAssetProfiles} from './tools/vibe-game-asset-profiles.mjs';
+          const manifest=JSON.parse(fs.readFileSync('_site/web-games/publish-manifest.json','utf8'));
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const profiles=buildGameAssetProfiles({routes:manifest.routes,assets:manifest.sharedAssets,catalog});
+          if(Object.keys(profiles).length!==manifest.routes.length)throw Error('VIBE_GAME_PROFILE_COUNT_MISMATCH');
+          fs.writeFileSync('_site/web-games/vibe-asset-profiles.json',JSON.stringify({sourceSha:manifest.sourceSha,profiles},null,2)+'\\n');
+          console.log('VIBE_GAME_ASSET_PROFILES='+Object.keys(profiles).length);
+          NODE
+
       # Generation is necessary to materialize the homepage; product QA is not a post-merge gate.
       - name: Assemble existing canonical homepage for automatic static publication
         shell: bash
