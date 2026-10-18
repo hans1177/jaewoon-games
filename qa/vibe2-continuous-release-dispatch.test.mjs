@@ -519,7 +519,10 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.doesNotMatch(publisher,/git push origin HEAD:gh-pages --force/);
   assert.match(publisher,/if: github\.event_name != 'pull_request'/);
   assert.match(publisher,/WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS/);
-  assert.match(publisher,/MAGIC_FOREST_ROOT_NOT_LIVE=/);
+  // The retained root is a complete searchable Pages directory, not only a 200 response.
+  assert.match(publisher,/WEB_PAGES_HOME_DIRECTORY_NOT_LIVE/);
+  assert.match(publisher,/WEB_PAGES_HOME_LINK_NOT_LIVE=/);
+  assert.match(publisher,/WEB_PAGES_HOME_DIRECTORY_ROUTES=/);
   assert.match(publisher,/WEB_PAGES_ROUTE_NOT_LIVE=/);
   assert.match(publisher,/WEB_PAGES_SOURCE_SHA=/);
   assert.match(publisher,/WEB_PAGES_LIVE_SOURCE_SHA=/);
