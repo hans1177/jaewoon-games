@@ -94,6 +94,17 @@ test('verified runtime status and catalog join the same supervised publication c
   assert.doesNotMatch(manage,/cp \/tmp\/homepage-runtime\/runtime-game-catalog\.json game-catalog\.json/);
 });
 
+test('published GitHub Pages game routes reconcile through the existing Homepage Manager only',()=>{
+  const source=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+  assert.match(source,/Magic Forest Static Play/);
+  assert.match(source,/published-web-manifest\.json/);
+  assert.match(source,/syncPublishedWebRoutes/);
+  assert.match(source,/HOMEPAGE_PUBLISHED_WEB_ROUTES/);
+  const browser=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.match(browser,/published\.route!==/);
+  assert.ok(!browser.includes("getJson('https://hans1177.github.io/"));
+});
+
 test('homepage live runtime state bypasses the PWA cache',()=>{
   const sw=fs.readFileSync('sw.js','utf8');
   assert.match(sw,/const CACHE_NAME='jaewoon-pwa-v\d+'/);
