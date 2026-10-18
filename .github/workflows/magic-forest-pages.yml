@@ -61,6 +61,13 @@ jobs:
             fs.copyFileSync(path.join(forest,filename),path.join(site,filename));
           }
           if(fs.existsSync('web-games/_shared'))fs.cpSync('web-games/_shared',path.join(site,'web-games/_shared'),{recursive:true});
+          // Resolve every game directory tree SHA with one Git invocation.
+          const gameTreeShas=new Map();
+          for(const row of cp.execFileSync('git',['ls-tree','-z','HEAD:web-games'],{encoding:'utf8'}).split('\0')){
+            if(!row)continue;
+            const match=/^040000 tree ([a-f0-9]{40})\t(.+)$/.exec(row);
+            if(match)gameTreeShas.set(match[2],match[1]);
+          }
           for(const game of catalog.games||[]){
             const id=String(game?.canonical?.identity?.gameId||game?.id||'').trim();
             if(!/^[a-z0-9][a-z0-9-]*$/.test(id))continue;
@@ -77,7 +84,7 @@ jobs:
               continue;
             }
             fs.cpSync(root,path.join(site,root),{recursive:true});
-            const treeSha=cp.execFileSync('git',['rev-parse',`HEAD:${root}`],{encoding:'utf8'}).trim();
+            const treeSha=gameTreeShas.get(id)||'';
             if(!/^[a-f0-9]{40}$/.test(treeSha))throw Error('WEB_PAGES_GAME_SOURCE_TREE_INVALID:'+id);
             sourceTreeShas[id]=treeSha;
             routes.push(root+'/');
