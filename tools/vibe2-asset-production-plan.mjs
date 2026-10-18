@@ -3126,9 +3126,14 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
   const sourceModel=clean(task.assetAuthoring?.sourceModel||linkedSourceModel).replaceAll('\\','/');
   if(exportedMotionProvider&&!/\.(?:fbx|glb)$/i.test(sourceModel))
     throw new Error('EXTERNAL_MOTION_FBX_OR_GLB_REQUIRED:'+exportedMotionProvider);
-  const sourceLicense=clean(task.assetAuthoring?.sourceLicense||librarySource?.sourceLicense
-    ||task.assetAuthoring?.imageLicense||imageRow?.license);
-  const sourceCredit=clean(task.assetAuthoring?.sourceCredit||librarySource?.sourceCredit||imageRow?.attribution||imageRow?.credit);
+  // An explicitly supplied/owned image keeps its OWN declared rights record.
+  // A default downloaded 3D donor cannot rewrite the provenance/license of that image.
+  const sourceLicense=clean(imageRequested
+    ?task.assetAuthoring?.sourceLicense||task.assetAuthoring?.imageLicense||imageRow?.license
+    :task.assetAuthoring?.sourceLicense||librarySource?.sourceLicense||task.assetAuthoring?.imageLicense||imageRow?.license);
+  const sourceCredit=clean(imageRequested
+    ?task.assetAuthoring?.sourceCredit||imageRow?.attribution||imageRow?.credit
+    :task.assetAuthoring?.sourceCredit||librarySource?.sourceCredit||imageRow?.attribution||imageRow?.credit);
   const checkSourceLicense=()=>{
     if(!['project-original','cc0','cc-by'].includes(sourceLicense.toLowerCase()))
       throw new Error('IMAGE_TO_MESH_LICENSE_REQUIRED');
