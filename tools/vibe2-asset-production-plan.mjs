@@ -1675,8 +1675,13 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       continue;
     }
     const sourceRoles=requestedRolesByFamily.get(family)||[];
-    if(planOriginalAcquisition(family,sourceRoles,'ORIGINAL_SOURCE_FIRST_ON_DEMAND'))continue;
     const asset=bestReusableByFamily.get(family);
+    // 포괄적 family 힌트만으로 멀쩡한 공용 소스를 버리거나 무작정 원본을 다운로드하지 않는다.
+    // 정확한 역할 수요가 있으면 다운로드 원본을 우선 제작 후보로 배정하되 내부 후보도 남긴다.
+    const originalRequested=(!asset||sourceRoles.length>0)&&planOriginalAcquisition(
+      family,sourceRoles,asset?'REUSABLE_LIBRARY_VS_DOWNLOADED_ORIGINAL':'ORIGINAL_SOURCE_FIRST_ON_DEMAND',
+      asset?.id||''
+    );
     if(asset){
       const mode=internalAssetPlatformApplicationMode(asset,target);
       const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
@@ -1687,7 +1692,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         reason:pendingImport?'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
         applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
       });
-    }else{
+    }else if(!originalRequested){
       pushAction({action:'HOLD',assetId:null,family,reason:(unresolvedFamilies.has(family)||sourceRoles.length===0)?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
     }
   }
