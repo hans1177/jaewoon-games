@@ -98,7 +98,7 @@ function updateFilters(){
  platformFilter.value=[...platformFilter.options].some(option=>option.value===oldPlatform)?oldPlatform:'';
 }
 function showList(){
- const query=$('assetSearch').value.trim().toLocaleLowerCase(),form=(kind==='monster'||kind==='all')?$('formFilter').value:'';
+ const query=$('assetSearch').value.trim().toLocaleLowerCase(),form=(kind==='monster'||kind==='all'||kind==='native')?$('formFilter').value:'';
  const selectedFolder=$('folderFilter').value,selectedPlatform=$('platformFilter').value;
  const verification=$('verificationFilter').value,sourceFilter=$('sourceFilter').value;
  const sourceCounts=new Map();
