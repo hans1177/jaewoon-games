@@ -1274,13 +1274,15 @@ function requiredAssetFamilies({request='',requirements=[]}={}){
   for(const rule of ASSET_REQUIREMENT_FAMILY_RULES)if(rule.re.test(clean(request)))for(const family of rule.families)families.add(family);
   return [...families].sort();
 }
+function assetSupplySourcePresent(asset={}){
+  return Boolean(clean(asset?.path||asset?.masterGlb||asset?.masterSourcePath||asset?.robloxAssetId)
+    ||(asset?.nativeArtifacts||[]).length||Object.keys(asset?.platformVariants||{}).length);
+}
 function assetSupplyCandidateAllowed(asset={},target=''){
-  // Only registered, already-acquired library sources can be bound. Not-yet-downloaded
-  // originals are requested through the existing ASSET_DEVELOPMENT route instead.
-  if(asset?.downloaded===false)return false;
-  if(!clean(asset?.id)||!clean(asset?.path||asset?.masterGlb||asset?.masterSourcePath)
-    &&!(asset?.nativeArtifacts||[]).length
-    &&!Object.keys(asset?.platformVariants||{}).length)return false;
+  // A legacy registered role may still be evaluated for an exact identity, but
+  // absent source bytes never authorize USE/ADAPT or native-runtime success.
+  // Unacquired records only enter the existing library acquisition pathway.
+  if(asset?.downloaded===false||!clean(asset?.id))return false;
   if(asset?.catalogActive===false||asset?.rightsPass===false)return false;
   if(/STALE|QUARANTIN|RETIRED|REJECTED/.test((clean(asset?.catalogState)+' '+clean(asset?.status)).toUpperCase()))return false;
   if(internalAssetHardBlockReason(asset))return false;
@@ -1470,8 +1472,10 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         // Similar same-family downloads remain mandatory adaptation donors, not
         // falsely verified exact-role replacements. Actual geometry/role
         // transformation and native runtime QA remain required.
-        const currentDonor=transformableDonorByFamily.get(family);
-        if(betterReusable(asset,currentDonor))transformableDonorByFamily.set(family,asset);
+        if(assetSupplySourcePresent(asset)){
+          const currentDonor=transformableDonorByFamily.get(family);
+          if(betterReusable(asset,currentDonor))transformableDonorByFamily.set(family,asset);
+        }
         continue;
       }
       // 역할별 후보를 같은 원장 순회에서 색인한다. 기존 점수·출처 검증은 유지한다.
@@ -1679,6 +1683,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       }
       if(!(repairsByFamily.get(family)||[]).length){
         const asset=currentPrimaryByFamily.get(family),mode=internalAssetPlatformApplicationMode(asset,target);
+        if(!assetSupplySourcePresent(asset)){
+          pushAction({action:'HOLD',assetId:clean(asset?.id)||null,family,
+            reason:'REGISTERED_LIBRARY_SOURCE_ACQUISITION_REQUIRED',
+            roleEvidence:roleEvidenceById.get(clean(asset?.id)),
+            libraryRequest:freeze({
+              mandatory:true,route:'EXISTING_ASSET_DEVELOPMENT_LIBRARY_ACQUISITION',
+              gameId:id,target:clean(target).toLowerCase(),family,
+              requiredRoles:freezeList(sourceRoles),placeholderFallbackForbidden:true,
+              sourceMutationAndRuntimeQaRequired:true,noNewQueueOrWrapper:true
+            })});
+          continue;
+        }
         const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
         pushAction({
           action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
@@ -1702,6 +1718,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       asset?.id||''
     );
     if(asset){
+      if(!assetSupplySourcePresent(asset)){
+        pushAction({action:'HOLD',assetId:clean(asset.id),family,
+          reason:'REGISTERED_LIBRARY_SOURCE_ACQUISITION_REQUIRED',
+          roleEvidence:roleEvidenceById.get(clean(asset.id)),
+          libraryRequest:freeze({
+            mandatory:true,route:'EXISTING_ASSET_DEVELOPMENT_LIBRARY_ACQUISITION',
+            gameId:id,target:clean(target).toLowerCase(),family,
+            requiredRoles:freezeList(sourceRoles),placeholderFallbackForbidden:true,
+            sourceMutationAndRuntimeQaRequired:true,noNewQueueOrWrapper:true
+          })});
+        continue;
+      }
       const mode=internalAssetPlatformApplicationMode(asset,target);
       const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
       pushAction({
