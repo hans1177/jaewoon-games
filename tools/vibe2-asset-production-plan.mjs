@@ -1782,7 +1782,11 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     intendedOnly:intendedOnlyCount,
     requiredFamilies:Object.freeze(requiredFamilies),
     families:Object.freeze(families),
-    nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
+    // Retain every missing-library request even when routine quality actions fill
+    // the bounded advisory summary. A user-required role must never disappear
+    // from the existing ASSET_DEVELOPMENT handoff due to a display limit.
+    nextActions:Object.freeze(actions.filter((row,index)=>index<INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit
+      ||row.libraryRequest?.mandatory===true)),
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
     mandatoryDownloadedLibraryDefault:true,
