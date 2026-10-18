@@ -102,6 +102,59 @@ for side,sign in [('Left',-1),('Right',1)]:
    bone(name,(x,0,z+.055),(x,0,z),previous);previous=name
 bpy.ops.object.mode_set(mode='OBJECT');arm.select_set(False)
 
+# Build deformable finger segment meshes with weighted vertices, not rigid bone parenting.
+def finger_segment(name,base,tip,radius,bone_name,parent_name=None):
+ direction=Vector(tip)-Vector(base)
+ middle=(Vector(base)+Vector(tip))*.5
+ bpy.ops.mesh.primitive_cylinder_add(vertices=12,radius=radius,depth=direction.length,location=middle)
+ obj=bpy.context.object;obj.name=name
+ obj.rotation_euler=direction.to_track_quat('Z','Y').to_euler()
+ bpy.ops.object.transform_apply(location=False,rotation=True,scale=True)
+ obj.data.materials.append(skin)
+ for polygon in obj.data.polygons:polygon.use_smooth=True
+ current=obj.vertex_groups.new(name=bone_name)
+ previous=obj.vertex_groups.new(name=parent_name) if parent_name else None
+ # Joint blending distributes deformation smoothly between neighboring phalanges.
+ for vertex in obj.data.vertices:
+  projection=(Vector(obj.matrix_world @ vertex.co)-Vector(base)).dot(direction.normalized())/direction.length
+  influence=max(.2,min(1.,.4+projection*.6))
+  current.add([vertex.index],influence,'REPLACE')
+  if previous:previous.add([vertex.index],1-influence,'REPLACE')
+  else:current.add([vertex.index],1,'REPLACE')
+ modifier=obj.modifiers.new('SkinFinger','ARMATURE');modifier.object=arm
+ obj.parent=arm
+ return obj
+
+for side,sign in [('Left',-1),('Right',1)]:
+ for finger,index in [('Thumb',0),('Index',1),('Middle',2),('Ring',3),('Pinky',4)]:
+  previous=side+'Hand'
+  for joint in range(1,4):
+   name=side+'Hand'+finger+str(joint)
+   b=arm.data.bones.get(name)
+   if b:
+    start=arm.matrix_world @ b.head_local
+    end=arm.matrix_world @ b.tail_local
+    finger_segment('FingerMesh_'+name,start,end,.023 if finger!='Thumb' else .029,name,previous)
+   previous=name
+
+# Add extra independently sculptable facial muscle targets to the head.
+def face_muscle(name,selector,delta):
+ def deformation(v):
+  if selector(v):
+   v.x+=delta[0];v.y+=delta[1];v.z+=delta[2]
+  return v
+ return shape(name,deformation)
+face_muscle('browDownLeft',lambda v:v.x<-.02 and v.z>.12 and v.y>.1,(0,0,-.032))
+face_muscle('browDownRight',lambda v:v.x>.02 and v.z>.12 and v.y>.1,(0,0,-.032))
+face_muscle('eyeWideLeft',lambda v:v.x<0 and .01<v.z<.18 and v.y>.14,(0,0,.027))
+face_muscle('eyeWideRight',lambda v:v.x>0 and .01<v.z<.18 and v.y>.14,(0,0,.027))
+face_muscle('cheekPuff',lambda v:abs(v.x)>.13 and v.z<0 and v.y>.1,(.02 if v.x>0 else -.02,.015,0))
+face_muscle('mouthPucker',lambda v:abs(v.x)<.17 and v.z<-.08 and v.y>.12,(-.035 if v.x>0 else .035,.03,0))
+face_muscle('mouthFunnel',lambda v:abs(v.x)<.15 and v.z<-.07 and v.y>.12,(-.02 if v.x>0 else .02,.045,0))
+face_muscle('mouthClose',lambda v:abs(v.x)<.16 and v.z<-.09 and v.y>.12,(0,0,.015))
+face_muscle('noseSneerLeft',lambda v:v.x<0 and -.02<v.z<.1 and v.y>.22,(0,.018,.017))
+face_muscle('noseSneerRight',lambda v:v.x>0 and -.02<v.z<.1 and v.y>.22,(0,.018,.017))
+
 # Parent rigid mesh pieces to animated bones, keeping editable original geometry.
 bindings={'Torso':'Spine','Neck':'Neck','Face':'Head','Hair':'Head','Belt':'Root'}
 for side,label in [('Left','L'),('Right','R')]:
