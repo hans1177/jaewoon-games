@@ -149,8 +149,7 @@ function playableWebHref(row){
   if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return '';
   const published=publicationOf(row).web||{};
   if(published.route!==`web-games/${id}/`
-    ||!/^[a-f0-9]{40}$/.test(String(published.sourceTreeSha||''))
-    ||!/^[a-f0-9]{40}$/.test(String(published.sourceCommit||'')))return '';
+    ||!/^[a-f0-9]{40}$/.test(String(published.sourceTreeSha||'')))return '';
   return `https://hans1177.github.io/jaewoon-games/${root}/`;
 }
 function verifiedRobloxDeploymentRows(catalog){
