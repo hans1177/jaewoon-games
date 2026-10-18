@@ -4047,6 +4047,7 @@ function assetApplyFirstCandidate(asset={},target='',binding={}){
     artifactHash:asset.artifactHash||null,
     nativeArtifactHash:asset.nativeArtifactHash||asset.artifactHash||null,
     acquiredExternal:asset.acquiredExternal===true,
+    downloadedRegisteredSource:asset.downloaded===true,
     acquisitionOrigin:asset.acquisitionOrigin||null,
     productionVerified:asset.productionVerified===true,
     ready:Boolean(masterGlbReady&&sourceObjReady&&hasNativeReference&&asset.downloaded!==false&&lane!=='D_AUTHORING_REQUIRED'),
@@ -4253,7 +4254,9 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const reuseCandidates=freezeList([...companyCandidates,...sameGameCandidates,...repositoryCandidates]);
   const directAuthoring=directAuthoringFor(target,type,conceptContext.task||{});
   const candidateRows=freezeList([...reuseCandidates,...externalCandidates].map(asset=>assetApplyFirstCandidate(asset,target,binding)));
-  const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
+  const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>
+    Number(b.downloadedRegisteredSource===true)-Number(a.downloadedRegisteredSource===true)
+    ||b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const conceptFit=createConceptFitContract({task:conceptContext.task||{},requestedConcept:conceptContext.requestedConcept||{},binding});
   const postDownloadComparison=createPostDownloadInternalComparison({matched,target,binding,conceptFit});
@@ -4296,7 +4299,7 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
       enabled:applyFirstCandidates.length>0,
       candidates:applyFirstCandidates,
       preferredCandidateId,
-      candidateLadder:freezeList(applyFirstCandidates.map((row,index)=>freeze({order:index+1,id:row.id,lane:row.lane,mode:row.mode,compatibilityScore:row.compatibilityScore,productionVerified:row.productionVerified}))),
+      candidateLadder:freezeList(applyFirstCandidates.map((row,index)=>freeze({order:index+1,id:row.id,lane:row.lane,mode:row.mode,downloadedRegisteredSource:row.downloadedRegisteredSource,compatibilityScore:row.compatibilityScore,productionVerified:row.productionVerified}))),
       donorCandidates:freezeList(donorCandidates.map(row=>freeze({id:row.id,lane:row.lane,sourceTier:row.sourceTier,qualityAxes:row.qualityAxes,donorCapabilities:row.donorCapabilities,sourceHash:row.sourceHash}))),
       lanes:freezeList(['A_SAME_GAME_BOUND','B_NATIVE_READY','C_MINIMAL_ADAPT','D_AUTHORING_REQUIRED']),
       sequence:freezeList([
