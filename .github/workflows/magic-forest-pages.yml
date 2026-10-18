@@ -167,7 +167,8 @@ jobs:
           // The checkout is restricted to validated paths; all existing size/LFS checks remain.
           const selectedAssets=[...refs].sort();
           if(selectedAssets.length){
-            cp.execFileSync('git',['restore','--source=HEAD','--worktree','--',...selectedAssets],{
+            // Sparse checkout excludes most assets; widen only to the selected tracked paths.
+            cp.execFileSync('git',['-c','core.sparseCheckout=false','restore','--source=HEAD','--worktree','--',...selectedAssets],{
               maxBuffer:16*1024*1024
             });
           }
