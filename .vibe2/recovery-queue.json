@@ -149943,7 +149943,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-09T18:59:50.578Z",
-      "updatedAt": "2026-10-18T15:50:05.516Z"
+      "updatedAt": "2026-10-18T15:56:21.119Z"
     },
     {
       "id": "recovery-e94ce206a41f3f0ca95f",
@@ -201671,7 +201671,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:16:03.181Z",
-      "updatedAt": "2026-10-18T15:50:05.548Z"
+      "updatedAt": "2026-10-18T15:56:21.137Z"
     },
     {
       "id": "recovery-15664cf93e948b83e66e",
@@ -201892,7 +201892,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-13T09:22:09.048Z",
-      "updatedAt": "2026-10-18T15:50:05.568Z"
+      "updatedAt": "2026-10-18T15:56:21.176Z"
     },
     {
       "id": "recovery-1ad2fc04416539ab16db",
@@ -216597,6 +216597,68 @@
       "maxRetries": null,
       "createdAt": "2026-10-18T15:37:30.603Z",
       "updatedAt": "2026-10-18T15:37:33.798Z"
+    },
+    {
+      "id": "recovery-9396b6de83cdb3d38dd8",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/magic-forest-pages.yml:2203a918267d353817b2f5005ef74f46e343fb6f:fantasy-survival",
+      "gameId": "fantasy-survival",
+      "responsibleFiles": [
+        ".github/workflows/magic-forest-pages.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/magic-forest-pages.yml",
+        "web-games/fantasy-survival"
+      ],
+      "goal": "Analyze the exact failed WEB deployment stage HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "DEPLOYMENT_WEB_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
+      "failureSignature": "WORKFLOW_FAILED_HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
+      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "checkpoint": "2203a918267d353817b2f5005ef74f46e343fb6f",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "2203a918267d353817b2f5005ef74f46e343fb6f",
+      "evidence": [
+        "deployment-failure-run:39139623573:1",
+        "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+        "deployment-platform:WEB",
+        "deployment-game:fantasy-survival",
+        "deployment-head-sha:2203a918267d353817b2f5005ef74f46e343fb6f",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:DEPLOY",
+        "deployment-failed-step:HEADLESS_CHROMIUM_VIBE_PRESENTATION_SMOKE",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/39139623573",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-10-18T15:56:20.826Z",
+      "updatedAt": "2026-10-18T15:56:24.285Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-10-18T15:56:24.285Z"
+      ]
     }
   ]
 }
