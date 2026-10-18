@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1juntwp",
+      "worker": "vibe2",
+      "taskId": "cat-step-studio-evolution-roblox-usability-v2",
+      "gameId": "cat-step",
+      "files": [
+        "roblox-games/cat-step/client/Game.client.luau",
+        "roblox-games/cat-step/shared/GameConfig.luau",
+        "roblox-games/cat-step/client/MaterialPresentation.client.luau"
+      ],
+      "baseSha": "cec5a2653da9bc93251462b3272e49c534b9e660",
+      "runId": "39091042964",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-18T03:00:57.022Z",
+      "expiresAt": "2026-10-18T03:45:57.022Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cat-step-studio-evolution-roblox-usability-v2"
+      ]
+    }
+  ]
 }
