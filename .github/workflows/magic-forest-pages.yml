@@ -111,8 +111,13 @@ jobs:
             'company-asset-library.json','backup.html','company.html',
             'multiplayer/multiplayer-client.js'
           ];
+          // Hydrate the fixed, trusted homepage source list in one Git operation.
+          // Preserve the original per-file 24MB size gate and output paths.
+          cp.execFileSync('git',['restore','--source=HEAD','--worktree','--',...staticFiles],{
+            maxBuffer:16*1024*1024
+          });
           for(const file of staticFiles){
-            const source=cp.execFileSync('git',['show','HEAD:'+file],{maxBuffer:32*1024*1024});
+            const source=fs.readFileSync(file);
             if(source.length>24*1024*1024)throw Error('PAGES_HOME_STATIC_FILE_TOO_LARGE:'+file);
             const destination=path.join(site,file);
             fs.mkdirSync(path.dirname(destination),{recursive:true});
