@@ -341,6 +341,86 @@ function checkHtmlInlineScriptSyntax(text, file) {
   return checked;
 }
 const GOLDEN_SCENE_RUNTIME_ROLES=Object.freeze(['PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP','PRIMARY_ENEMY_OR_CREATURE_CLOSEUP','CORE_GAMEPLAY_ACTION','WORLD_OR_REGION_WIDE','MOBILE_GAMEPLAY_HUD']);
+
+// Native 3D-only UI contract covers *existing* source roots, not just the edited file.
+// Static signs can reject prohibited 2D but never establish runtime 3D proof by themselves.
+const NATIVE_3D_UI_PATTERNS=Object.freeze({
+  roblox:Object.freeze([
+    ['ROBLOX_VISIBLE_2D_GUI',/\bInstance\s*\.\s*new\s*\(\s*["'](?:ScreenGui|BillboardGui|SurfaceGui|Frame|ScrollingFrame|TextLabel|TextButton|TextBox|ImageLabel|ImageButton|ViewportFrame|VideoFrame)["']\s*\)/i],
+    ['ROBLOX_2D_GUI_BINDING',/\b(?:PlayerGui|StarterGui)\b[\s\S]{0,180}\b(?:ScreenGui|SurfaceGui|BillboardGui)\b/i]
+  ]),
+  web:Object.freeze([
+    ['WEB_2D_CANVAS',/\b(?:getContext\s*\(\s*["']2d["']|CanvasRenderingContext2D|fillText\s*\(|strokeText\s*\(|drawImage\s*\()/i],
+    ['WEB_HTML_2D_CONTROL',/<(?:button|input|textarea|select|label|dialog|progress|meter)\b/i],
+    ['WEB_VISIBLE_DOM_UI',/<(?:div|section|aside|nav|header|footer)\b[^>]*(?:id|class)\s*=\s*["'][^"']*(?:hud|inventory|menu|dialog|overlay|tooltip|shop|quest|settings|health|status|damage|action|controls|map|panel|notification)/i],
+    ['WEB_DOM_UI_FACTORY',/(?:document\s*\.\s*createElement|createElementNS)\s*\(\s*["'](?:button|span|label|dialog|input|textarea|select|progress)["']\s*\)/i],
+    ['WEB_CSS_FAKE_3D',/\b(?:CSS2DRenderer|CSS3DRenderer|SpriteText|SpriteMaterial)\b/i],
+    ['WEB_CSS_UI_PERSPECTIVE',/\b(?:perspective\s*:|transform\s*:[^;\n]*rotate[XY]\s*\()/i]
+  ])
+});
+export function auditNative3dOnlyUiSource({target='',sources=[]}={}){
+  const engine=clean(target).toLowerCase();
+  if(!['roblox','web'].includes(engine))return Object.freeze({required:false,pass:null,issues:[],runtimeVerified:false});
+  const issues=[],tested=[];
+  for(const source of sources){
+    const relative=posix(source?.path),content=String(source?.content||'');
+    if(!relative||!content.trim())continue;
+    tested.push(relative);
+    // Comments alone should not trigger a 2D failure.
+    const executable=content.replace(/^\s*(?:\/\/|--|\/\*|\*|<!--).*$/gm,'');
+    for(const [reason,re] of NATIVE_3D_UI_PATTERNS[engine]){
+      if(re.test(executable))issues.push({path:relative,reason});
+    }
+  }
+  if(!tested.length)issues.push({path:null,reason:'NATIVE_3D_GAME_SOURCE_NOT_FOUND'});
+  return Object.freeze({
+    required:true,pass:issues.length===0,target:engine,
+    existingGameSourcesIncluded:true,
+    checkedFiles:Object.freeze(tested),issues:Object.freeze(issues.map(row=>Object.freeze(row))),
+    runtimeVerified:false,worldAndUi3dRuntimeEvidenceRequired:true,
+    authority:'NATIVE_3D_ONLY_STATIC_REJECTION_NOT_A_RUNTIME_PASS'
+  });
+}
+function runNative3dOnlyUiQa({root,data={},changed=[]}={}){
+  const sourceRoots=new Map();
+  const proposed=posix(data.sourceRoot);
+  for(const file of [proposed,...changed.map(posix)]){
+    const match=file.match(/^(web-games|roblox-games)\/([^/]+)/);
+    if(match)sourceRoots.set(match[1]+'/'+match[2],match[1]==='web-games'?'web':'roblox');
+  }
+  if(!sourceRoots.size)return{required:false,pass:null,gameRoots:[],runtimeVerified:false};
+  const policyFile=path.join(root,'company-learning/platform-release-roadmap.json');
+  const policy=readJson(policyFile,null)?.livingMotionVisualQualityContract?.minimumSpatialPresentation;
+  if(policy?.allUiAndHudNative3dRequired!==true||policy?.existingGameSource2dForbidden!==true
+    ||policy?.uiOverlayMayRemain2D!==false)throw new Error('NATIVE3D_UI_CANONICAL_POLICY_UNVERIFIED');
+  const audited=[];
+  for(const [gameRoot,engine] of sourceRoots){
+    const absolute=assertInside(root,gameRoot);
+    if(!fs.existsSync(absolute)||!fs.statSync(absolute).isDirectory()){
+      audited.push({gameRoot,engine,required:true,pass:false,issues:[{reason:'GAME_SOURCE_ROOT_NOT_FOUND'}]});
+      continue;
+    }
+    const sources=[],queue=[absolute];
+    for(let examined=0;queue.length&&examined<300;examined++){
+      const dir=queue.shift();
+      for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+        if(entry.name.startsWith('.')||/^(?:node_modules|dist|build|coverage|test-results|__tests__)$/i.test(entry.name))continue;
+        const full=path.join(dir,entry.name);
+        if(entry.isDirectory()){queue.push(full);continue;}
+        if(!entry.isFile()||!/\.(?:html?|css|js|mjs|cjs|jsx|tsx|ts|lua|luau)$/i.test(entry.name))continue;
+        if(fs.statSync(full).size>4_000_000)throw new Error('NATIVE3D_UI_SOURCE_TOO_LARGE:'+posix(path.relative(root,full)));
+        sources.push({path:posix(path.relative(root,full)),content:fs.readFileSync(full,'utf8')});
+      }
+    }
+    if(queue.length)throw new Error('NATIVE3D_UI_SOURCE_SCAN_LIMIT:'+gameRoot);
+    audited.push({gameRoot,...auditNative3dOnlyUiSource({target:engine,sources})});
+  }
+  const blockers=audited.flatMap(row=>row.issues.map(item=>row.gameRoot+':'+item.reason+'@'+(item.path||'NO_FILE')));
+  return {required:true,pass:blockers.length===0,gameRoots:audited,
+    blockers,existingGameSourcesIncluded:true,runtimeVerified:false,
+    final3dRuntimeGateStillRequired:true};
+}
+
 function presentationContract(data = {}) {
   const contract=data?.presentationQuality;
   return contract&&contract.required===true?contract:null;
@@ -984,6 +1064,10 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const interfaceBlueprintQa=validateInterfaceBlueprint({contract:data.interfaceBlueprintContract,blueprint:data.interfaceBlueprint,sourceFiles:blueprintSources});
   if(!spatialBlueprintQa.pass)throw new Error('SPATIAL_BLUEPRINT_INVALID:'+spatialBlueprintQa.issues.join('|'));
   if(!interfaceBlueprintQa.pass)throw new Error('INTERFACE_BLUEPRINT_INVALID:'+interfaceBlueprintQa.issues.join('|'));
+  const native3dUiQa=runNative3dOnlyUiQa({root,data,changed});
+  payload.push('NATIVE3D_UI_POLICY_AND_SOURCE_AUDIT',JSON.stringify(native3dUiQa));
+  if(native3dUiQa.required&&!native3dUiQa.pass)
+    throw new Error('NATIVE3D_UI_SOURCE_FORBIDDEN:'+native3dUiQa.blockers.slice(0,12).join('|'));
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
   const cache = cachePath ? readJson(cachePath,{version:13,entries:{}}) : {version:13,entries:{}};
@@ -1006,7 +1090,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const weatherPresentationQa=runWeatherPresentationStaticQa({root,data,changed});
   const robloxStudioAssetBindingQa=runRobloxStudioAssetBindingQa({root,data,changed});
   const specializedVerificationQa=runSpecializedFocusedQa({root,data,changed});
-  const result = { outcome:'PASS', cached:false, spatialBlueprintQa,interfaceBlueprintQa, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const result = { outcome:'PASS', cached:false, spatialBlueprintQa,interfaceBlueprintQa,native3dUiQa, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, native3dUiQa, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.entries=cache.entries||{};
     cache.version=13; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, savedAt:new Date().toISOString() };
@@ -1020,6 +1104,9 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
 export function incrementalQaFailureSignature(error){
   const message=clean(error?.message||error).replace(/\s+/g,' ');
   const known=[
+    'NATIVE3D_UI_CANONICAL_POLICY_UNVERIFIED',
+    'NATIVE3D_UI_SOURCE_FORBIDDEN',
+    'NATIVE3D_UI_SOURCE_SCAN_LIMIT',
     'CAUSAL_REPLAY_PREPATCH_REPRODUCTION_REQUIRED',
     'CAUSAL_REPLAY_EXECUTABLE_WITHOUT_TARGET',
     'CAUSAL_REPLAY_DIAGNOSTIC_IDENTITY_REQUIRED',
