@@ -1431,12 +1431,45 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   };
   const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map();
   let intendedOnlyCount=0;
-  // The role gate above rejects incompatible candidates; among eligible assets,
-  // a higher audited quality score must win regardless of matched-role count.
-  const compareReusable=(a,b)=>
-    Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
-    ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
-    ||clean(a?.id).localeCompare(clean(b?.id));
+  // [다운로드 원본 우선] 역할·권리·플랫폼 필터를 통과한 확보 원본을 우선한다.
+  // 출처 URL과 해시 외에 실제 파일이 없는 카탈로그 메타데이터는 우선하지 않는다.
+  const originalAvailability=new Map();
+  const acquiredOriginal=asset=>{
+    const id=clean(asset?.id);
+    if(originalAvailability.has(id))return originalAvailability.get(id);
+    const originalHash=clean(asset?.originalSourceHash||asset?.originalSha256);
+    const sourceUrl=clean(asset?.sourceUrl),relative=clean(asset?.path).replace(/^\/+/, '');
+    const safeSource=/^https:\/\//i.test(sourceUrl)&&/^[a-f0-9]{64}$/i.test(originalHash)
+      &&/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|gltf|fbx|obj|png|jpe?g|webp|svg|mp3|wav|ogg)$/i.test(relative)
+      &&!relative.split('/').includes('..')&&asset?.downloaded!==false;
+    let available=false;
+    if(safeSource){
+      try{
+        const actual=path.resolve(repoRoot,relative);
+        const stat=fs.statSync(actual);
+        available=actual.startsWith(path.resolve(repoRoot)+path.sep)&&stat.isFile()&&stat.size>256;
+      }catch{}
+    }
+    originalAvailability.set(id,available);
+    return available;
+  };
+  const measuredSuperior=(internal,original)=>{
+    const current=Number(internal?.internalAuditScore??internal?.qualityScore??-1);
+    const donor=Number(original?.internalAuditScore??original?.qualityScore??-1);
+    return internal?.productionVerified===true&&assetRuntimeConsumerVerified(internal)
+      &&internal?.internalAuditEvidenceResolved===true&&Number.isFinite(current)
+      &&Number.isFinite(donor)&&current-donor>=150;
+  };
+  const compareReusable=(a,b)=>{
+    const aOriginal=acquiredOriginal(a),bOriginal=acquiredOriginal(b);
+    if(aOriginal!==bOriginal){
+      const donor=aOriginal?a:b,internal=aOriginal?b:a;
+      if(!measuredSuperior(internal,donor))return aOriginal?-1:1;
+    }
+    return Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+      ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
+      ||clean(a?.id).localeCompare(clean(b?.id));
+  };
   const betterReusable=(candidate,current)=>!current||compareReusable(candidate,current)<0;
   for(const asset of assets){
     const assetId=clean(asset?.id);
@@ -1619,7 +1652,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
       // 실제 게임 소스 적용 및 독립 런타임 QA 없이 완료로 승격하지 않는다.
       const currentAsset=currentPrimaryByFamily.get(family);
-      const currentIsDownloadedOriginal=Boolean(clean(currentAsset?.sourceUrl)&&/^[0-9a-f]{64}$/i.test(clean(currentAsset?.originalSourceHash||currentAsset?.originalSha256)));
+      const currentIsDownloadedOriginal=acquiredOriginal(currentAsset);
       const sourceRoles=unique([...(requestedRolesByFamily.get(family)||[]),currentAsset?.role,currentAsset?.subfamily])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value&&value!==family.toLowerCase());
       if(!currentIsDownloadedOriginal){
@@ -1639,24 +1672,22 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       }
       const currentScore=Number(currentAsset?.internalAuditScore??currentAsset?.qualityScore??-1);
       const improvedScore=Number(improved?.internalAuditScore??improved?.qualityScore??-1);
+      const originalUpgrade=Boolean(improved&&acquiredOriginal(improved)&&!currentIsDownloadedOriginal);
+      const internalUpgrade=Boolean(improved&&Number.isFinite(improvedScore)&&improvedScore>currentScore
+        &&(!currentIsDownloadedOriginal||measuredSuperior(improved,currentAsset)));
       if(improved&&clean(improved.id)!==clean(currentAsset?.id)
-        &&Number.isFinite(improvedScore)&&improvedScore>currentScore
-        &&(!currentIsDownloadedOriginal||(
-          improvedScore-currentScore>=150
-          &&improved?.productionVerified===true
-          &&assetRuntimeConsumerVerified(improved)
-          &&Boolean(clean(improved?.internalAuditEvidenceRef))
-        ))
+        &&(originalUpgrade||internalUpgrade)
         &&roleEvidenceById.get(clean(improved.id))?.verifiedRoleMatch===true){
         pushAction({action:'ADAPT',assetId:clean(improved.id),family,
-          reason:'NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
+          reason:originalUpgrade?'DOWNLOADED_ORIGINAL_VISUAL_UPGRADE_CANDIDATE':'NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
           replacesCandidateAssetId:clean(currentAsset?.id),
           // Pass only registered model provenance; source existence/hash still
           // require independent inspection before a native source edit.
           registeredSourceModel:clean(improved.masterGlb||improved.masterSourcePath||improved.path)||null,
           registeredSourceLicense:clean(improved.license)||null,
           replacementExecution:'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE',
-          automaticReplacementAuthorized:true,independentNativeRuntimeQaRequired:true,
+          automaticReplacementAuthorized:!originalUpgrade,independentNativeRuntimeQaRequired:true,
+          gameSourceComparisonRequired:true,downloadedOriginalPreferred:originalUpgrade,
           sourceCompatibilityAndRightsRequired:true,
           runtimeVerificationGranted:false,
           roleEvidence:roleEvidenceById.get(clean(improved.id))});
