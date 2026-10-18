@@ -1,0 +1,806 @@
+{
+  "version": 3,
+  "description": "Genre-based visual design tokens and UI/character/housing recipes; integration is opt-in and requires gameplay QA.",
+  "genres": {
+    "fantasy": {
+      "palette": {
+        "primary": "#bba06b",
+        "surface": "#172331",
+        "accent": "#79d5bb"
+      },
+      "character": {
+        "material": "cloth-leather-metal",
+        "roughness": 0.65,
+        "metalness": 0.16
+      },
+      "housing": {
+        "wall": "stone-and-wood",
+        "floor": "timber",
+        "lighting": "warm-torch"
+      },
+      "menu": {
+        "style": "ornamental",
+        "corners": 12
+      }
+    },
+    "scifi": {
+      "palette": {
+        "primary": "#71caff",
+        "surface": "#0a1528",
+        "accent": "#a5ffed"
+      },
+      "character": {
+        "material": "brushed-metal",
+        "roughness": 0.28,
+        "metalness": 0.7
+      },
+      "housing": {
+        "wall": "modular-panel",
+        "floor": "metal-grid",
+        "lighting": "cool-neon"
+      },
+      "menu": {
+        "style": "holographic",
+        "corners": 6
+      }
+    },
+    "horror": {
+      "palette": {
+        "primary": "#b4a39a",
+        "surface": "#100f14",
+        "accent": "#bd5262"
+      },
+      "character": {
+        "material": "worn-fabric",
+        "roughness": 0.86,
+        "metalness": 0.05
+      },
+      "housing": {
+        "wall": "aged-plaster",
+        "floor": "weathered-wood",
+        "lighting": "low-key"
+      },
+      "menu": {
+        "style": "minimal-dark",
+        "corners": 4
+      }
+    },
+    "cartoon": {
+      "palette": {
+        "primary": "#ffb15e",
+        "surface": "#233450",
+        "accent": "#8ce3ff"
+      },
+      "character": {
+        "material": "stylized",
+        "roughness": 0.88,
+        "metalness": 0
+      },
+      "housing": {
+        "wall": "painted",
+        "floor": "bright-tile",
+        "lighting": "soft"
+      },
+      "menu": {
+        "style": "rounded",
+        "corners": 18
+      }
+    },
+    "realistic": {
+      "palette": {
+        "primary": "#9daec1",
+        "surface": "#1c2532",
+        "accent": "#78b6d9"
+      },
+      "character": {
+        "material": "physically-based",
+        "roughness": 0.48,
+        "metalness": 0.25
+      },
+      "housing": {
+        "wall": "plaster",
+        "floor": "wood",
+        "lighting": "natural"
+      },
+      "menu": {
+        "style": "clean",
+        "corners": 8
+      }
+    }
+  },
+  "systems": {
+    "characterCustomization": {
+      "slots": [
+        "body",
+        "skin",
+        "face",
+        "eyes",
+        "hair",
+        "headwear",
+        "upper",
+        "lower",
+        "boots",
+        "gloves",
+        "back",
+        "weapon",
+        "accessory"
+      ],
+      "preview": "isolated-3d",
+      "saveScope": "per-game",
+      "dyeChannels": [
+        "primary",
+        "secondary",
+        "trim"
+      ],
+      "cameraPresets": [
+        "fullBody",
+        "portrait",
+        "detail"
+      ],
+      "animationPreview": [
+        "idle",
+        "walk",
+        "attack",
+        "emote"
+      ],
+      "constraints": [
+        "skeleton-compatibility",
+        "slot-exclusivity",
+        "clipping-review",
+        "license-validation"
+      ],
+      "undoRedo": true
+    },
+    "housingCustomization": {
+      "categories": [
+        "foundation",
+        "walls",
+        "floors",
+        "roof",
+        "doors",
+        "windows",
+        "furniture",
+        "lighting",
+        "decor",
+        "garden"
+      ],
+      "placement": "grid-snap",
+      "validation": [
+        "collision",
+        "bounds",
+        "ownership"
+      ],
+      "saveScope": "per-game",
+      "tools": [
+        "place",
+        "move",
+        "rotate",
+        "duplicate",
+        "delete",
+        "eyedropper",
+        "undo",
+        "redo"
+      ],
+      "grid": {
+        "cellMeters": 0.5,
+        "rotationSnapDegrees": 15,
+        "freePlacementOption": true
+      },
+      "feedback": [
+        "valid-placement-ghost",
+        "invalid-placement-reason",
+        "surface-snap",
+        "collision-highlight"
+      ],
+      "camera": [
+        "orbit",
+        "pan",
+        "zoom"
+      ],
+      "constraints": [
+        "collision",
+        "bounds",
+        "ownership",
+        "budget",
+        "path-access"
+      ],
+      "save": {
+        "schemaVersion": 1,
+        "autosaveSeconds": 30,
+        "manualSave": true,
+        "rollbackSnapshots": 3
+      },
+      "animation": {
+        "states": [
+          "preview",
+          "place",
+          "rotate",
+          "invalid",
+          "confirm",
+          "undo",
+          "remove"
+        ],
+        "transitionsMs": {
+          "preview": 120,
+          "confirm": 200,
+          "remove": 160
+        },
+        "feedback": [
+          "ghost-material",
+          "snap-pulse",
+          "placement-audio",
+          "collision-highlight"
+        ]
+      }
+    },
+    "menus": {
+      "screens": [
+        "splash",
+        "main",
+        "character-select",
+        "settings",
+        "inventory",
+        "equipment",
+        "character",
+        "crafting",
+        "housing",
+        "map",
+        "quests",
+        "skills",
+        "social",
+        "pause",
+        "accessibility"
+      ],
+      "requirements": [
+        "keyboard-navigation",
+        "gamepad-navigation",
+        "touch-navigation",
+        "mobile-safe-area",
+        "contrast",
+        "reduced-motion",
+        "screen-reader-labels",
+        "focus-return",
+        "text-scaling"
+      ],
+      "patterns": [
+        "tabbed-navigation",
+        "breadcrumbs",
+        "tooltip",
+        "comparison-panel",
+        "modal-confirmation",
+        "toast",
+        "skeleton-loading",
+        "empty-state",
+        "error-retry",
+        "virtualized-list"
+      ],
+      "motion": {
+        "transitions": [
+          "fade",
+          "slide",
+          "scale"
+        ],
+        "durationMs": {
+          "open": 180,
+          "close": 140,
+          "tooltip": 90
+        },
+        "inputLockDuringTransition": false,
+        "focusManagement": "restore-origin",
+        "reducedMotionFallback": "instant"
+      }
+    },
+    "inventory": {
+      "gridColumns": {
+        "mobile": 4,
+        "desktop": 8
+      },
+      "features": [
+        "drag-drop",
+        "gamepad-move",
+        "sort",
+        "filter",
+        "search",
+        "stack",
+        "split",
+        "equip-preview",
+        "rarity-color-and-label",
+        "compare",
+        "favorite",
+        "locked-item-confirmation"
+      ],
+      "rarities": [
+        "common",
+        "uncommon",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "maxVisibleItems": 80,
+      "motion": {
+        "states": [
+          "hover",
+          "focus",
+          "drag",
+          "drop-valid",
+          "drop-invalid",
+          "equip",
+          "compare"
+        ],
+        "durationsMs": {
+          "hover": 100,
+          "drag": 90,
+          "equip": 180
+        },
+        "reducedMotionFallback": "instant"
+      }
+    },
+    "combatFeedback": {
+      "features": [
+        "hit-flash",
+        "damage-number",
+        "telegraph",
+        "impact-sound",
+        "camera-shake-toggle",
+        "screen-edge-warning",
+        "cooldown-indicator"
+      ],
+      "accessibility": [
+        "disable-flashes",
+        "disable-shake",
+        "color-independent-threat-cues"
+      ]
+    },
+    "worldPresentation": {
+      "features": [
+        "weather-presets",
+        "day-night-cycle",
+        "distance-fog",
+        "ambient-audio-zones",
+        "landmark-signposting",
+        "biome-palette",
+        "particle-budget"
+      ],
+      "biomeTypes": [
+        "forest",
+        "desert",
+        "snow",
+        "volcanic",
+        "cave",
+        "town"
+      ]
+    }
+  },
+  "qualityGates": [
+    "asset-license-review",
+    "material-map-validation",
+    "mobile-frame-budget",
+    "save-migration",
+    "input-regression",
+    "visual-screenshot-review",
+    "gamepad-and-touch-navigation",
+    "ui-state-snapshot-tests",
+    "colorblind-legibility",
+    "contrast-wcag-aa",
+    "housing-collision-validation",
+    "character-clipping-review",
+    "pbr-map-channel-validation",
+    "copyright-and-licensing",
+    "fallback-render-test"
+  ],
+  "designPrinciples": {
+    "references": [
+      "AAA-style clear visual hierarchy",
+      "console-quality controller focus states",
+      "responsive live-service inventory",
+      "cozy builder grid placement",
+      "PBR material consistency"
+    ],
+    "originality": "Use genre conventions, not copyrighted game artwork, logos, or cloned UI.",
+    "artDirection": [
+      "recognizable silhouettes",
+      "three-value readability",
+      "consistent material language",
+      "controlled VFX density",
+      "legible typography"
+    ]
+  },
+  "tokens": {
+    "spacing": {
+      "unit": 4,
+      "steps": [
+        4,
+        8,
+        12,
+        16,
+        24,
+        32,
+        48,
+        64
+      ]
+    },
+    "typography": {
+      "scale": [
+        12,
+        14,
+        16,
+        20,
+        24,
+        32,
+        40
+      ],
+      "minBodyPx": 14,
+      "lineHeight": 1.5,
+      "maxLineLength": 75
+    },
+    "elevation": {
+      "levels": [
+        0,
+        2,
+        8,
+        16,
+        32
+      ],
+      "modalBackdropOpacity": 0.7
+    },
+    "animation": {
+      "fastMs": 120,
+      "normalMs": 200,
+      "slowMs": 350,
+      "reducedMotionMs": 0
+    },
+    "hitTargets": {
+      "minimumPx": 44,
+      "controllerFocusOutlinePx": 3
+    },
+    "breakpoints": {
+      "mobile": 480,
+      "tablet": 900,
+      "desktop": 1440
+    }
+  },
+  "rendering": {
+    "colorSpace": "srgb",
+    "toneMapping": "aces-filmic",
+    "materials": {
+      "workflow": "metallic-roughness",
+      "maps": [
+        "baseColor",
+        "normal",
+        "roughness",
+        "metalness",
+        "ao",
+        "emissive"
+      ],
+      "textureCompression": [
+        "ktx2",
+        "basis"
+      ],
+      "lodLevels": 3
+    },
+    "lighting": {
+      "keyFillRim": true,
+      "shadowCascades": 2,
+      "shadowQuality": [
+        "off",
+        "low",
+        "medium",
+        "high"
+      ],
+      "reflectionFallback": "probe-or-environment"
+    },
+    "camera": {
+      "modes": [
+        "third-person",
+        "isometric",
+        "top-down",
+        "side-scroll",
+        "first-person"
+      ],
+      "collisionAvoidance": true,
+      "motionSicknessReduction": true
+    },
+    "performance": {
+      "mobile": {
+        "targetFps": 30,
+        "textureMax": 1024,
+        "shadow": "low",
+        "maxVisibleParticles": 150
+      },
+      "desktop": {
+        "targetFps": 60,
+        "textureMax": 2048,
+        "shadow": "high",
+        "maxVisibleParticles": 1000
+      },
+      "adaptiveQuality": {
+        "sampleWindowSeconds": 10,
+        "reduceBelowFps": 27,
+        "restoreAboveFps": 55
+      }
+    }
+  },
+  "productionPipeline": {
+    "stages": [
+      "asset-ingest",
+      "license-check",
+      "metadata-and-tags",
+      "semantic-match",
+      "style-recipe",
+      "render-preview",
+      "performance-profile",
+      "screenshot-diff",
+      "gameplay-regression",
+      "release-gate",
+      "rig-and-animation-validation",
+      "motion-state-regression",
+      "interaction-sync-review"
+    ],
+    "approvalRequired": [
+      "copyright-clearance",
+      "skeleton-rig-check",
+      "gameplay-impact",
+      "mobile-performance",
+      "visual-qa"
+    ],
+    "fallbacks": [
+      "missing-texture-neutral-material",
+      "unsupported-model-static-preview",
+      "low-fps-reduced-quality",
+      "broken-asset-hide-and-report"
+    ]
+  },
+  "motionSystem": {
+    "version": 1,
+    "principles": [
+      "animation-driven readability",
+      "responsive input",
+      "root-motion ownership",
+      "consistent transition windows",
+      "genre-specific timing",
+      "reduced-motion alternatives"
+    ],
+    "rig": {
+      "requiredBones": [
+        "hips",
+        "spine",
+        "head",
+        "leftUpperArm",
+        "rightUpperArm",
+        "leftUpperLeg",
+        "rightUpperLeg"
+      ],
+      "optionalBones": [
+        "neck",
+        "hands",
+        "feet",
+        "fingers",
+        "weaponSocket",
+        "backSocket"
+      ],
+      "retargeting": {
+        "normalizeScale": true,
+        "preserveFootContacts": true,
+        "hipHeightCorrection": true,
+        "twistBoneFallback": true
+      },
+      "validation": [
+        "bone-mapping",
+        "bind-pose",
+        "skin-weight",
+        "animation-clip-duration",
+        "loop-seam",
+        "foot-sliding",
+        "joint-limits"
+      ]
+    },
+    "locomotion": {
+      "states": [
+        "idle",
+        "start",
+        "walk",
+        "jog",
+        "sprint",
+        "strafe",
+        "crouch",
+        "crouch-walk",
+        "jump-start",
+        "jump-loop",
+        "fall",
+        "land",
+        "turn-in-place",
+        "stop",
+        "swim",
+        "climb",
+        "vault",
+        "slide"
+      ],
+      "blendSpace": {
+        "axes": [
+          "speed",
+          "direction"
+        ],
+        "sampleRatesHz": 60
+      },
+      "transitions": {
+        "defaultBlendMs": 150,
+        "landingBlendMs": 100,
+        "turnThresholdDegrees": 50
+      },
+      "rootMotion": {
+        "combat": "animation",
+        "navigation": "controller",
+        "syncToleranceMeters": 0.1
+      },
+      "footIK": {
+        "enabled": true,
+        "groundProbeMeters": 0.35,
+        "maxSlopeDegrees": 42
+      },
+      "movementFeedback": [
+        "lean",
+        "anticipation",
+        "follow-through",
+        "footstep-surface-audio",
+        "camera-bob-toggle"
+      ]
+    },
+    "combat": {
+      "states": [
+        "equip",
+        "unequip",
+        "light-attack",
+        "heavy-attack",
+        "combo",
+        "charge",
+        "aim",
+        "fire",
+        "reload",
+        "block",
+        "parry",
+        "dodge",
+        "stagger",
+        "knockback",
+        "downed",
+        "recover",
+        "death"
+      ],
+      "hitTiming": {
+        "source": "clip-events",
+        "serverAuthoritative": true
+      },
+      "cancelWindows": {
+        "attackToDodge": "explicit-frames",
+        "comboChain": "explicit-frames"
+      },
+      "layers": [
+        "upper-body-aim",
+        "full-body-melee",
+        "additive-recoil",
+        "facial-expression"
+      ],
+      "feedback": [
+        "hit-stop-budget",
+        "weapon-trail",
+        "contact-sparks",
+        "impact-audio",
+        "screen-shake-optional"
+      ],
+      "validation": [
+        "attack-hitbox-alignment",
+        "no-infinite-cancel",
+        "invulnerability-window",
+        "network-reconciliation"
+      ]
+    },
+    "interaction": {
+      "states": [
+        "pickup",
+        "gather",
+        "mine",
+        "chop",
+        "craft",
+        "build",
+        "place-furniture",
+        "open-door",
+        "talk",
+        "sit",
+        "sleep",
+        "eat",
+        "drink",
+        "emote"
+      ],
+      "alignment": {
+        "handIK": true,
+        "objectSnap": true,
+        "interactionRangeMeters": 2
+      },
+      "events": [
+        "start",
+        "contact",
+        "commit",
+        "cancel",
+        "finish"
+      ],
+      "interruptible": true
+    },
+    "characterExpression": {
+      "face": [
+        "blink",
+        "look-at",
+        "smile",
+        "frown",
+        "pain",
+        "surprise",
+        "talk"
+      ],
+      "secondaryMotion": [
+        "hair",
+        "cloth",
+        "accessories"
+      ],
+      "lodPolicy": {
+        "far": "disable-face-and-cloth",
+        "medium": "reduced-bones",
+        "near": "full"
+      },
+      "accessibility": [
+        "no-rapid-flash",
+        "reduced-camera-motion"
+      ]
+    },
+    "genreOverrides": {
+      "fantasy": {
+        "locomotionStyle": "grounded-heroic",
+        "combatWeight": "medium",
+        "idleVariants": 4
+      },
+      "scifi": {
+        "locomotionStyle": "precise-tactical",
+        "combatWeight": "snappy",
+        "idleVariants": 3
+      },
+      "horror": {
+        "locomotionStyle": "cautious-heavy",
+        "combatWeight": "heavy",
+        "idleVariants": 5
+      },
+      "cartoon": {
+        "locomotionStyle": "squash-and-stretch",
+        "combatWeight": "exaggerated",
+        "idleVariants": 4
+      },
+      "realistic": {
+        "locomotionStyle": "naturalistic",
+        "combatWeight": "physical",
+        "idleVariants": 3
+      }
+    },
+    "runtime": {
+      "updateOrder": [
+        "input",
+        "state-transition",
+        "animation-sampling",
+        "root-motion",
+        "collision",
+        "ik",
+        "event-dispatch",
+        "render"
+      ],
+      "fixedStepHz": 60,
+      "interpolation": true,
+      "offscreenPause": true,
+      "deterministicEventIds": true
+    },
+    "qualityGates": [
+      "transition-pop",
+      "foot-slide",
+      "weapon-contact",
+      "animation-event-sync",
+      "controller-input-latency",
+      "network-prediction",
+      "mobile-30fps",
+      "accessibility-reduced-motion"
+    ]
+  }
+}

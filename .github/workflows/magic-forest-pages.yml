@@ -40,6 +40,11 @@ jobs:
             homepage-platform-exposure.json
             tools/github-pages-landing.mjs
             qa/github-pages-landing.test.mjs
+            qa/vibe-motion-engine.test.mjs
+            qa/vibe-character-integration.test.mjs
+            assets/vibe-motion-engine.mjs
+            assets/vibe-character-adapter.mjs
+            assets/vibe-visual-design-system.json
             .github/workflows/magic-forest-pages.yml
             index.html
 
@@ -195,6 +200,23 @@ jobs:
             fs.mkdirSync(path.dirname(target),{recursive:true});
             fs.writeFileSync(target,source);
           }
+          // Add an optional, accessible library browser to all published HTML game routes.
+          // Existing game scripts, controls, save files, and renderers remain untouched.
+          for(const route of routes){
+            const entry=path.join(site,route,'index.html');
+            const html=fs.readFileSync(entry,'utf8');
+            const tag='<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script>';
+            if(!html.includes('vibe-runtime-panel.js')){
+              const updated=/<\/body>/i.test(html)?html.replace(/<\/body>/i,tag+'</body>'):html+'\n'+tag;
+              fs.writeFileSync(entry,updated);
+            }
+          }
+          // The preview is loaded in a sandboxed iframe only on user request.
+          // Preserve the source module paths and publish the preview under the assets root.
+          const previewSource='assets/vibe-model-preview.html';
+          if(!trackedAssets.has(previewSource))throw Error('VIBE_MODEL_PREVIEW_SOURCE_MISSING');
+          if(!fs.existsSync(previewSource))cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',previewSource]);
+          fs.copyFileSync(previewSource,path.join(site,previewSource));
           // 원본 렌더러는 그대로 두고 Pages 사본의 절대 경로만 프로젝트 prefix로 보정한다.
           for(const file of ['assets/homepage-enhancements.js','assets/asset-library.js','assets/asset-library-viewer.js']){
             const pathname=path.join(site,file);
@@ -241,7 +263,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test qa/github-pages-landing.test.mjs
+          node --test qa/github-pages-landing.test.mjs qa/vibe-motion-engine.test.mjs qa/vibe-character-integration.test.mjs
           test -s _site/index.html
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' _site/index.html
           grep -q '/jaewoon-games/assets/homepage-enhancements.js' _site/index.html
