@@ -159,7 +159,7 @@ function fixedGamePrimaryRepeatSlots() {
 }
 function configuredLaneReservationMax(executionLane='',requested=null,queueMax=null){
   const lane=clean(executionLane||'game-primary').toLowerCase();
-  if(lane==='game-primary')return fixedGamePrimaryRepeatSlots()||64;
+  if(lane==='game-primary')return fixedGamePrimaryRepeatSlots()||128;
   if(lane==='learning-idle')return 1;
   return optionalMaxConcurrent(requested) ?? queueMax;
 }
