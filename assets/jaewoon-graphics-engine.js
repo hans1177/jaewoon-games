@@ -367,6 +367,10 @@
         boxShadow:'0 4px 18px rgba(0,0,0,.25)',whiteSpace:'pre-wrap',overflowWrap:'anywhere'
       },String(text).slice(0,500));
       toasts.push({id,node});
+      if(!reducedMotion)animate(node,[
+        {opacity:0,transform:'translateX(16px)'},
+        {opacity:1,transform:'translateX(0)'}
+      ],230,()=>{});
       const maximum=Math.max(1,Math.floor(maxToasts));
       while(toasts.length>maximum){const old=toasts.shift();remove(old.node);}
       reflowRichHud();
@@ -416,7 +420,7 @@
         rich.status.style.top=statusTop+'px';
         rich.status.style.left=outerInset('left')+'px';
       }
-      let toastTop=narrow?statusTop+(rich.status?54:0)+(rich.objective||rich.boss?8:0)
+      let toastTop=narrow?statusTop+(rich.status?Math.max(54,Number(rich.status.offsetHeight)||54):0)+(rich.objective||rich.boss?8:0)
         :top+(rich.boss?82:0);
       for(const row of toasts){
         row.node.style.top=toastTop+'px';
