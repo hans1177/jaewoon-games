@@ -910,6 +910,41 @@
       "low-end-frame-budget",
       "subtitles-readable",
       "reduced-motion-test"
-    ]
+    ],
+    "cinematicDirection": {
+      "cameraTimelines": {
+        "easing": [
+          "smooth",
+          "quint",
+          "anticipate",
+          "overshoot",
+          "inOutCubic"
+        ],
+        "lookAtTracking": true,
+        "fieldOfViewAnimation": true,
+        "shotTypes": [
+          "establishing",
+          "tracking",
+          "over-shoulder",
+          "closeup",
+          "reaction",
+          "reveal"
+        ]
+      },
+      "acting": {
+        "breathing": true,
+        "blink": true,
+        "gazeTracking": true,
+        "emotionBlend": true,
+        "secondarySway": true,
+        "anticipationAndFollowThrough": true
+      },
+      "polish": {
+        "keyframeContinuity": true,
+        "deterministicEvents": true,
+        "reducedMotionCameraLock": true
+      },
+      "targetQuality": "feature-animation-inspired; quality depends on character assets, authored animation and shot direction"
+    }
   }
 }
