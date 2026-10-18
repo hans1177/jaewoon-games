@@ -3,7 +3,7 @@
   "gameId": "fantasy-survival",
   "date": "2026-10-18",
   "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
-  "fingerprint": "3bd329f3f3352c85b7d245096fb0adb9296fe34a79899ef97a41376aeb4051e6",
+  "fingerprint": "05ad8214cbd8a96d7f7bed877d54394f6a0b89eaf180f49cc92433bb592f2ce8",
   "policyDigest": "63993c227dd4a3ef274dfd35f329e8f4e54faef8ca613bbfebbae83c2e074f59",
   "engineDigest": "bb49fc24f93cd4dae61057133989bf36be1af7accc99022323d39cead175d548",
   "ownerDesignEventId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:fantasy-survival",
@@ -1381,8 +1381,8 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-18T02:05:39.880Z",
-  "updatedAt": "2026-10-18T02:05:40.186Z",
+  "createdAt": "2026-10-18T12:49:39.505Z",
+  "updatedAt": "2026-10-18T12:49:39.699Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1895,9 +1895,9 @@
           {
             "family": "CHARACTER",
             "action": "ADAPT",
-            "assetId": "roblox-survival-back_cape",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "NATIVE_REAUTHOR_BASE",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
@@ -2543,9 +2543,9 @@
           {
             "family": "CHARACTER",
             "action": "ADAPT",
-            "assetId": "roblox-survival-back_cape",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "assetId": "external-actor-barbarian",
+            "applicationMode": "NATIVE_REAUTHOR_BASE",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
@@ -3190,10 +3190,10 @@
           },
           {
             "family": "CHARACTER",
-            "action": "USE",
-            "assetId": "roblox-survival-back_cape",
+            "action": "ADAPT",
+            "assetId": "external-actor-barbarian",
             "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "reason": "REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
@@ -3414,7 +3414,7 @@
         "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
         "productionVerified": false
       },
-      "roblox-survival-back_cape": {
+      "external-actor-barbarian": {
         "family": "CHARACTER",
         "roleEvidence": {
           "requestedRoles": [],
@@ -3423,15 +3423,66 @@
           "genericFamilyRequest": true,
           "verifiedRoleMatch": true
         },
-        "role": "BACK_CAPE_MODULE",
-        "sourcePath": "/assets/roblox/survival-combat-parts-v1/back_cape.obj",
+        "libraryReuse": {
+          "sourceAssetId": "external-actor-barbarian",
+          "sourceModel": "assets/roblox/actors/native/barbarian.glb",
+          "sourceLicense": "cc0-1.0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [],
+            "currentSourceBound": false,
+            "genericFamilyRequest": true,
+            "verifiedRoleMatch": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": null,
+        "sourcePath": "assets/roblox/actors/native/barbarian.glb",
         "platform": "ROBLOX",
-        "license": "project-original",
+        "license": "CC0-1.0",
         "referenceOnly": false,
-        "auditScore": 800.5,
+        "auditScore": null,
         "auditState": "UNKNOWN",
         "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
+        "runtimeState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
         "productionVerified": false
       },
       "external-tinytreats-cobblestones-v1": {
