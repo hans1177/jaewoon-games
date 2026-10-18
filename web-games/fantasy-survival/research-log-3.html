@@ -1,25 +1,703 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>마력숲 연구 일지 · 3화</title><style>*{box-sizing:border-box}body{margin:0;background:#05080b;color:#edf3f3;font-family:system-ui,sans-serif;overflow:hidden}canvas{width:100vw;height:100dvh;display:block}#ui{position:fixed;inset:0;pointer-events:none}#top{position:absolute;top:15px;left:15px;font-size:12px;color:#cdd}#caption{position:absolute;bottom:8%;width:100%;padding:0 18px;text-align:center;font-weight:700;font-size:clamp(14px,3.8vw,21px);text-shadow:0 2px 8px #000}#overlay{position:absolute;inset:0;background:#000;display:grid;place-items:center;text-align:center;padding:24px;transition:opacity 1s}#intro{max-width:750px;line-height:1.9;font-size:clamp(18px,4.5vw,29px)}#start,#end{position:fixed;inset:0;display:grid;place-items:center;background:#070e12e8;padding:20px;text-align:center}#end{display:none}.panel{width:min(100%,500px);background:#0d2028;border:1px solid #496877;padding:26px;border-radius:16px}button{background:#307e95;border:0;color:white;padding:16px 35px;border-radius:8px;font-size:18px;font-weight:bold}a{color:#9ed7ef}#label{position:absolute;right:16px;top:15px;color:#ffba79;font-size:12px}</style></head><body><canvas id="scene"></canvas><div id="ui"><div id="top">● REC · 연구원 01 · <span id="clock">00:00</span></div><div id="label"></div><div id="caption"></div><div id="overlay"><div id="intro">4번 연구원은 형체를 알아볼 수 없을 정도로 신체의 일부가 사라져 있었으며,<br>몸에서는 다른 생물의 독가스가 남아있었습니다.</div></div></div><div id="start"><div class="panel"><small>연구 기록 03</small><h1>마력숲 연구 일지 · 3화</h1><p>화산의 화염 골렘과 오아시스의 초거대 벌레.<br>연구원 1의 1인칭 기록</p><button id="play">3화 재생</button></div></div><div id="end"><div class="panel"><h1>연구 기록 종료</h1><p>생존자와 연구원들은 초거대 벌레를 쓰러뜨렸다.</p><button id="again">다시 보기</button><p><a href="./research-log.html">1화 보기</a></p></div></div><script>
-(()=>{'use strict';const c=document.querySelector('canvas'),ctx=c.getContext('2d'),$=s=>document.querySelector(s);let start=0,playing=false,finished=false;const scenes=[
-[0,7,'검은 화면','4번 연구원은 형체를 알아볼 수 없을 정도로 신체의 일부가 사라져 있었으며, 몸에서는 다른 생물의 독가스가 남아있었습니다.'],
-[7,17,'연구소','연구원 1: 4번 연구원… 끝내 돌아오지 못했군.'],
-[17,24,'연구소','연구원 2: 우리가 반드시 기억할게.'],
-[24,31,'연구소','연구원 3: 이제 다음 탐사를 준비하자.'],
-[31,40,'화산','화산 방호복 착용 완료. 연구원 1, 2, 3이 화산으로 진입했다.'],
-[40,50,'화산','연구원 2: 열기가 엄청나! 앞에 화염 골렘이다!'],
-[50,62,'골렘','연구원 1: 거리를 벌려! 사격 개시! …총알이 거의 먹히지 않아!'],
-[62,70,'골렘','연구원 3: 으악! 골렘에게 붙잡혔어!'],
-[70,79,'골렘','생존자: 비켜! (금 곡괭이가 날아와 골렘 옆구리에 박힌다.)'],
-[79,91,'골렘','연구원 1: 2번, 나랑 시선을 끌자! 3번은 생존자에게 양동이를 받아!'],
-[91,102,'골렘','연구원 3: 물을 떠 왔어! 핵에 부을게!'],
-[102,113,'골렘 붕괴','뜨거운 핵이 식자 골렘의 돌덩어리가 하나씩 부서져 떨어진다!'],
-[113,125,'핵','연구원 2: 식은 핵이 약점이다! 세 번 공격해서 화염 골렘을 쓰러뜨렸다!'],
-[125,136,'오아시스','연구원 1: 오아시스에 도착했어. 잠시 쉬자.'],
-[136,146,'오아시스','연구원 2: 내 다리가! 땅속에서 뭔가 잡아당겨!'],
-[146,157,'오아시스','연구원 3과 생존자까지 땅속으로 끌려갔다!'],
-[157,169,'거대 벌레','연구원 1: 땅이 흔들려! 피해야 해! 초거대 벌레다!'],
-[169,181,'거대 벌레','벌레가 튀어나온 틈에 총을 쏘자 분노하며 땅을 연달아 들이받았다!'],
-[181,193,'지하 동굴','지반이 무너졌다! 아래에는 연구원들과 생존자, 수많은 시체가 있었다.'],
-[193,207,'최종 전투','연구원 1, 2, 3은 총과 무기를 들고, 생존자는 악어 턱날을 휘두른다!'],
-[207,219,'승리','모두 힘을 합쳐 초거대 벌레를 쓰러뜨렸다.']
-];function resize(){let d=Math.min(devicePixelRatio||1,1.5);c.width=innerWidth*d;c.height=innerHeight*d;ctx.setTransform(d,0,0,d,0,0)}addEventListener('resize',resize);resize();function polygon(points,color){ctx.fillStyle=color;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()}function circle(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}function person(x,y,s,color){ctx.fillStyle=color;ctx.fillRect(x-9*s,y-23*s,18*s,30*s);circle(x,y-31*s,9*s,'#d4bd9c');ctx.fillStyle='#131e25';ctx.fillRect(x-13*s,y+7*s,10*s,22*s);ctx.fillRect(x+3*s,y+7*s,10*s,22*s)}function golem(x,y,s,cracked){for(let i=0;i<8;i++){let a=i*2.4;ctx.fillStyle=cracked?'#665d52':'#4c3c31';ctx.save();ctx.translate(x+Math.sin(a)*45*s,y+Math.cos(a)*50*s);ctx.rotate(a);ctx.fillRect(-22*s,-24*s,44*s,48*s);ctx.restore()}circle(x,y,30*s,cracked?'#7188a0':'#ff7d13');circle(x,y,17*s,cracked?'#a6c9e5':'#ffeb69')}function worm(x,y,s){ctx.strokeStyle='#77453e';ctx.lineWidth=85*s;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x-150*s,y+210*s);ctx.bezierCurveTo(x-90*s,y+50*s,x+90*s,y+110*s,x,y);ctx.stroke();circle(x,y,45*s,'#9d6456');circle(x-13*s,y-5*s,7*s,'#ffda72');circle(x+13*s,y-5*s,7*s,'#ffda72');polygon([[x-30*s,y+20*s],[x,y+55*s],[x+30*s,y+20*s]],'#321a19')}function draw(t,name){const w=innerWidth,h=innerHeight,shift=Math.sin(t*1.9)*3;ctx.save();ctx.translate(0,shift);let volcanic=['화산','골렘','골렘 붕괴','핵'].includes(name),oasis=['오아시스','거대 벌레'].includes(name),lab=name==='연구소';let g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,lab?'#1c3539':volcanic?'#8e3220':oasis?'#428da2':'#26272f');g.addColorStop(1,lab?'#091318':volcanic?'#34100d':oasis?'#c9a46c':'#101014');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);const horizon=h*.67;if(lab){for(let i=0;i<7;i++){ctx.fillStyle='#263e42';ctx.fillRect(i*w/7+8,h*.22,w/9,h*.42);ctx.fillStyle='#82b3ac';ctx.fillRect(i*w/7+15,h*.29,w/13,h*.12)}person(w*.36,h*.67,1.2,'#e8e5d2');person(w*.64,h*.67,1.2,'#d7d3b7');ctx.fillStyle='#889';ctx.fillRect(w*.43,h*.5,w*.14,9)}else{polygon([[0,horizon],[w*.18,h*.4],[w*.35,h*.63],[w*.62,h*.35],[w,horizon]],volcanic?'#54231a':oasis?'#d5b17a':'#28282b');polygon([[0,horizon],[w,horizon],[w,h],[0,h]],volcanic?'#3c2520':oasis?'#bc9b68':'#292a2a');if(oasis){ctx.fillStyle='#43a8b5';ctx.beginPath();ctx.ellipse(w*.5,h*.79,w*.3,h*.09,0,0,Math.PI*2);ctx.fill()}}if(name.includes('골렘')||name==='핵'){golem(w*.5,h*.51,Math.min(w/470,h/600),name!=='골렘');if(t>=70&&t<79){ctx.strokeStyle='#edcb5d';ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(w*.18,h*.34);ctx.lineTo(w*.48,h*.5);ctx.stroke()}if(t>=91&&t<113){ctx.strokeStyle='#83d4f8';ctx.lineWidth=14;for(let i=0;i<8;i++){ctx.beginPath();ctx.moveTo(w*.22+i*5,h*.25);ctx.lineTo(w*.48+i*3,h*.49);ctx.stroke()}}}if(name==='거대 벌레'||name==='최종 전투'||name==='승리')worm(w*.55,h*.53,Math.min(w/520,h/600)*(name==='승리'?.5:1));if(name==='지하 동굴'||name==='최종 전투'||name==='승리'){for(let i=0;i<12;i++){ctx.fillStyle='#a0a0a0';ctx.fillRect((i+.3)*w/13,h*.84,15,5)}person(w*.22,h*.72,.75,'#d7c4a1');person(w*.33,h*.72,.75,'#d7c4a1');person(w*.43,h*.72,.75,'#d7c4a1')}if(!lab&&t>=31){ctx.fillStyle='#1b2226';ctx.fillRect(w*.68,h*.75,w*.08,h*.22);ctx.fillStyle='#56616b';ctx.fillRect(w*.68,h*.75,w*.24,h*.06);ctx.fillStyle='#c2a587';ctx.fillRect(w*.56,h*.83,w*.16,h*.12)}ctx.restore()}function frame(now){if(!playing)return;let t=(now-start)/1000;$('#clock').textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(Math.floor(t%60)).padStart(2,'0');let sc=scenes.find(s=>t>=s[0]&&t<s[1]);if(!sc){playing=false;$('#end').style.display='grid';return}let black=t<7;$('#overlay').style.display=black?'grid':'none';$('#label').textContent=black?'':sc[2];$('#caption').textContent=black?'':sc[3];if(!black)draw(t,sc[2]);requestAnimationFrame(frame)}function play(){playing=true;$('#start').style.display='none';$('#end').style.display='none';start=performance.now();requestAnimationFrame(frame)}$('#play').onclick=play;$('#again').onclick=play;})();
+<!doctype html>
+<!-- 파일명: web-games/fantasy-survival/research-log-3.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>마력숲 연구 일지 · 3화 | 1인칭 3D</title>
+<meta name="description" content="마력숲 연구일지 3화. 화산 화염 골렘의 뜨거운 핵을 식히고 오아시스 지하 초거대 벌레에 맞서는 1인칭 3D 연구 기록.">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03090c;color:#e8f1ed;font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif}
+#scene{display:block;width:100vw;height:100dvh;touch-action:none}
+#vignette,#flash,#heat,#damage,#fade{pointer-events:none;position:fixed;inset:0}
+#vignette{background:radial-gradient(ellipse at 50% 43%,transparent 30%,#03080b77 90%,#020508c9 100%);z-index:3}
+#heat{background:repeating-linear-gradient(170deg,transparent 0 28px,#ff7d160a 31px,transparent 37px);opacity:0;mix-blend-mode:screen;z-index:4;animation:thermals 2s infinite alternate}
+@keyframes thermals{from{transform:translateY(-9px) skewX(-1deg)}to{transform:translateY(9px) skewX(1deg)}}
+#flash{background:radial-gradient(circle at 52% 52%,#ffeebc68,transparent 58%);opacity:0;z-index:5}
+#damage{background:radial-gradient(ellipse,transparent 34%,#bb3b24a2);opacity:0;z-index:5}
+#fade{background:#000;opacity:0;z-index:8;transition:opacity .12s}
+#intro{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:clamp(20px,6vw,54px);z-index:9;pointer-events:none;color:#e8e8e8;background:#000}
+#intro blockquote{font-weight:700;font-size:clamp(17px,4.35vw,31px);line-height:1.9;max-width:780px;letter-spacing:.01em;margin:0}
+#intro small{display:block;color:#799394;font-size:11px;letter-spacing:.24em;margin-bottom:24px}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+#bar{position:absolute;top:0;left:0;width:100%;height:4px;background:#072329}
+#progress{height:4px;width:0;background:linear-gradient(90deg,#61aec6,#f7d379);transition:width .13s linear}
+#topline{position:absolute;top:max(16px,env(safe-area-inset-top));left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;color:#dce9ea;text-shadow:0 2px 5px #000;font-size:clamp(10px,2.7vw,13px);font-weight:700;letter-spacing:.03em}
+.rec{color:#ff5656}#meter{color:#ffb16e;text-align:right}
+#who{font-size:11px;color:#b8dfe7;letter-spacing:.14em;font-weight:800;margin-bottom:8px}
+#subtitleShell{position:absolute;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));max-width:740px;margin:auto;text-align:center;text-shadow:0 2px 7px #000,0 2px 17px #000}
+#subtitle{font-weight:800;font-size:clamp(15px,3.7vw,21px);line-height:1.55;min-height:30px;word-break:keep-all}
+#crosshair{position:absolute;left:50%;top:52%;height:14px;width:14px;transform:translate(-50%,-50%);opacity:0}
+#crosshair::before,#crosshair::after{content:"";position:absolute;background:#e5f5e7b3}
+#crosshair::before{height:1px;width:14px;top:6px}
+#crosshair::after{width:1px;height:14px;left:6px}
+#markers{position:absolute;inset:0;pointer-events:none}
+.marker{position:absolute;display:block;transform:translate(-50%,-120%);white-space:nowrap;padding:5px 9px;border-radius:6px;background:#051011dd;border:1px solid #6d878c99;color:#dfecec;font-size:clamp(10px,2.6vw,13px);font-weight:900;letter-spacing:.025em;text-shadow:0 1px 3px #000;box-shadow:0 2px 12px #0007}
+.marker.ally2{border-color:#5acbff;color:#9ee7ff}.marker.ally3{border-color:#a7df6d;color:#daf9a0}.marker.survivor{border-color:#e3b54d;color:#ffdf9d}
+.marker.enemy{border-color:#ff6554;color:#ffc3b2;background:#2a0b0bea}.marker.weak{border-color:#78e2f5;color:#baf6ff;background:#06323add}.marker.neutral{border-color:#a2bfc5;color:#d5f4f6}
+#chapter{position:absolute;top:19%;left:0;right:0;text-align:center;opacity:0;text-shadow:0 3px 22px #000;transition:opacity .16s;pointer-events:none}
+#chapterNum{font-size:11px;letter-spacing:.28em;color:#a5e1e4;font-weight:800}
+#chapterName{font-size:clamp(24px,6vw,48px);font-weight:900;margin-top:9px}
+#controls{pointer-events:auto;position:absolute;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:8px;background:#021318b8;border:1px solid #3a6973bb;padding:6px;border-radius:14px;white-space:nowrap}
+#controls button{background:#20454f;border:1px solid #527d85;color:#e5f4f3;border-radius:9px;padding:9px 12px;min-height:42px;font-size:clamp(11px,2.8vw,13px);font-weight:800;cursor:pointer}
+#controls button:active{background:#397480}
+#start,#end{position:fixed;inset:0;display:grid;place-items:center;padding:16px;background:radial-gradient(circle at 50% 20%,#1e4249,#030a0e 68%);z-index:20;text-align:center}
+#end{display:none;background:radial-gradient(circle,#163b40,#030a0e)}
+.panel{width:min(100%,485px);padding:29px 24px;background:#071c23e8;border:1px solid #54848b;border-radius:18px;box-shadow:0 14px 44px #0007}
+.panel small{font-size:11px;letter-spacing:.2em;color:#b0e3dc}
+.panel h1{font-size:clamp(25px,6vw,34px);line-height:1.3;margin:14px 0}
+.panel p{color:#c2dadd;font-size:clamp(13px,3.4vw,15px);line-height:1.85;word-break:keep-all}
+.panel button{width:100%;min-height:50px;color:#05232b;background:#a8e0dc;border:0;border-radius:10px;font-size:17px;font-weight:900;margin-top:18px;cursor:pointer}
+.panel nav{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:19px}
+.panel a{color:#9ce2dc;font-size:13px;text-decoration:none}
+@media(max-width:390px){#topline{font-size:10px}#controls button{padding:7px 9px}#subtitleShell{bottom:calc(74px + env(safe-area-inset-bottom))}.marker{font-size:10px;padding:4px 5px}}
+@media(prefers-reduced-motion:reduce){#heat{animation:none}*{scroll-behavior:auto}}
+</style>
+</head><body>
+<canvas id="scene" aria-label="WebGL 원근 투영과 깊이 검사를 적용한 1인칭 3차원 연구 기록"></canvas>
+<div id="vignette"></div><div id="heat"></div><div id="flash"></div><div id="damage"></div><div id="fade"></div>
+<div id="intro"><div><small>RESEARCH LOG 04 · 사망 기록</small><blockquote>4번 연구원은 형체를 알아볼 수 없을 정도로 신체의 일부가 사라져 있었으며,<br>몸에서는 다른 생물의 독가스가 남아있었습니다.</blockquote></div></div>
+<div id="hud" style="display:none">
+ <div id="bar"><div id="progress"></div></div>
+ <div id="topline"><span><b class="rec">● REC</b> &nbsp;연구원 01 · <span id="area">현장 기록</span> · <span id="time">00:00</span></span><span id="meter"></span></div>
+ <div id="markers"></div><div id="crosshair"></div>
+ <div id="chapter"><div id="chapterNum">PART 01</div><div id="chapterName">동료를 기리며</div></div>
+ <div id="subtitleShell"><div id="who"></div><div id="subtitle" aria-live="polite"></div></div>
+ <div id="controls"><button type="button" id="pause">일시정지</button><button type="button" id="speed" aria-label="재생 속도 변경">1×</button><button type="button" id="next">다음 장면 ▶▶</button></div>
+</div>
+<div id="start"><div class="panel"><small>RESEARCH LOG · EPISODE 03</small><h1>마력숲 연구일지<br>3화</h1><p>1·2화처럼 실제 <b>1인칭 WebGL 3D</b>로 재생되는 연구 기록.<br>화염 골렘의 핵을 식히고 오아시스 지하 괴물을 쓰러뜨린다.</p><button id="play">▶ 3화 재생</button><nav><a href="./research-log.html">1화 보기</a><a href="./research-log-2.html">2화 보기</a><a href="./">마력숲 본편</a></nav></div></div>
+<div id="end"><div class="panel"><small>RESEARCH LOG 03 · 종료</small><h1>지하의 거대 벌레 처치</h1><p>연구원 1, 2, 3과 생존자가 힘을 합쳐<br>화산과 오아시스에서 살아남았어.</p><button id="again">▶ 다시 재생</button><nav><a href="./research-log.html">1화 보기</a><a href="./research-log-2.html">2화 보기</a><a href="./">마력숲 본편</a></nav></div></div>
+<script>
+(()=>{'use strict';
+const el=id=>document.getElementById(id);
+const cv=el('scene'),gl=cv.getContext('webgl',{alpha:false,depth:true,antialias:false});
+if(!gl){el('start').querySelector('p').textContent='이 기기에서는 3D 기록을 재생할 수 없어.';el('play').disabled=true;return;}
+const vertex='attribute vec3 p;attribute vec3 c;uniform vec3 eye;uniform vec3 rot;uniform float aspect;uniform vec3 fog;varying vec3 tint;void main(){vec3 a=p-eye;float k=cos(rot.x),s=sin(rot.x);vec3 b=vec3(k*a.x-s*a.z,a.y,s*a.x+k*a.z);float q=cos(rot.y),r=sin(rot.y);vec3 d=vec3(b.x,q*b.y-r*b.z,r*b.y+q*b.z);float v=cos(rot.z),w=sin(rot.z);vec2 tilt=vec2(d.x*v-d.y*w,d.x*w+d.y*v);float z=-d.z;gl_Position=vec4(tilt.x*1.57/aspect,tilt.y*1.57,z*1.015-.19,z);tint=mix(c,fog,clamp((length(a)-5.)/28.,0.,.78));}';
+const fragment='precision mediump float;varying vec3 tint;void main(){gl_FragColor=vec4(tint,1.0);}';
+function compile(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
+let program;
+try{program=gl.createProgram();gl.attachShader(program,compile(gl.VERTEX_SHADER,vertex));gl.attachShader(program,compile(gl.FRAGMENT_SHADER,fragment));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));}catch(e){el('play').disabled=true;el('start').querySelector('p').textContent='3D 화면 초기화에 실패했어.';return;}
+gl.useProgram(program);gl.enable(gl.DEPTH_TEST);gl.disable(gl.CULL_FACE);
+const uniform=n=>gl.getUniformLocation(program,n);
+const U={eye:uniform('eye'),rot:uniform('rot'),aspect:uniform('aspect'),fog:uniform('fog')};
+const pos=gl.getAttribLocation(program,'p'),color=gl.getAttribLocation(program,'c'),buffer=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+gl.enableVertexAttribArray(pos);gl.enableVertexAttribArray(color);
+gl.vertexAttribPointer(pos,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(color,3,gl.FLOAT,false,24,12);
+let verts=[],seed=481;
+const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+const clamp=v=>Math.max(0,Math.min(1,v)),ease=v=>{v=clamp(v);return v*v*(3-2*v);},phase=(t,a,b)=>ease((t-a)/(b-a)),mix=(a,b,v)=>a+(b-a)*v;
+function tri(a,b,c,co){const u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],v=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];let nx=u[1]*v[2]-u[2]*v[1],ny=u[2]*v[0]-u[0]*v[2],nz=u[0]*v[1]-u[1]*v[0],len=Math.hypot(nx,ny,nz)||1;const shade=Math.max(.60,Math.min(1.16,.76+.22*(nx*.48+ny*.86+nz*.56)/len));for(const p of [a,b,c])verts.push(...p,...co.map(v=>Math.min(1,v*shade)));}
+function quad(a,b,c,d,co){tri(a,b,c,co);tri(a,c,d,co);}
+function box(x,y,z,sx,sy,sz,co){const a=x-sx/2,b=x+sx/2,d=y-sy/2,e=y+sy/2,f=z-sz/2,g=z+sz/2;
+quad([a,d,f],[b,d,f],[b,e,f],[a,e,f],co);quad([b,d,g],[a,d,g],[a,e,g],[b,e,g],co);
+quad([a,d,g],[a,d,f],[a,e,f],[a,e,g],co);quad([b,d,f],[b,d,g],[b,e,g],[b,e,f],co);
+quad([a,e,f],[b,e,f],[b,e,g],[a,e,g],co);quad([a,d,g],[b,d,g],[b,d,f],[a,d,f],co.map(v=>v*.81));}
+function rod(a,b,r,co){let dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],ll=Math.hypot(dx,dy,dz)||1;const up=Math.abs(dy/ll)>.91?[1,0,0]:[0,1,0];
+let ux=up[1]*dz-up[2]*dy,uy=up[2]*dx-up[0]*dz,uz=up[0]*dy-up[1]*dx,un=Math.hypot(ux,uy,uz)||1;ux/=un;uy/=un;uz/=un;
+let vx=dy*uz-dz*uy,vy=dz*ux-dx*uz,vz=dx*uy-dy*ux;vx/=ll;vy/=ll;vz/=ll;
+for(let i=0;i<7;i++){let h=i*Math.PI*2/7,j=(i+1)*Math.PI*2/7;const p=(c,ang)=>[c[0]+r*(ux*Math.cos(ang)+vx*Math.sin(ang)),c[1]+r*(uy*Math.cos(ang)+vy*Math.sin(ang)),c[2]+r*(uz*Math.cos(ang)+vz*Math.sin(ang))];quad(p(a,h),p(a,j),p(b,j),p(b,h),co);}}
+function orb(x,y,z,r,co){const N=8,M=5;for(let j=0;j<M;j++){let a=-Math.PI/2+j*Math.PI/M,b=-Math.PI/2+(j+1)*Math.PI/M;for(let i=0;i<N;i++){let h=i*Math.PI*2/N,g=(i+1)*Math.PI*2/N;let p=(e,f)=>[x+r*Math.cos(e)*Math.cos(f),y+r*Math.sin(e),z+r*Math.cos(e)*Math.sin(f)];quad(p(a,h),p(a,g),p(b,g),p(b,h),co.map(v=>v*(.82+.18*Math.cos(h+.9))));}}}
+function floor(x0,x1,z0,z1,co){for(let x=x0;x<x1;x+=1.8)for(let z=z0;z<z1;z+=1.8)box(x+.9,-.83,z+.9,1.8,.18,1.8,co.map(v=>v*(.85+rand()*.25)));}
+
+/* Episode 3: WebGL 3D - entirely rendered with perspective, depth testing and 3D geometry. */
+const C={
+ basalt:[.23,.21,.22],ash:[.14,.13,.15],magma:[1,.26,.055],hot:[1,.69,.17],
+ sand:[.66,.51,.32],water:[.12,.60,.76],sandlight:[.85,.69,.44],
+ rock:[.25,.23,.22],metal:[.23,.31,.34],navy:[.09,.15,.18],
+ suit:[.39,.51,.54],visor:[.07,.17,.21],blue:[.22,.76,.98],green:[.65,.88,.33],
+ gold:[.99,.76,.22],skin:[.71,.52,.35],bone:[.70,.66,.56]
+};
+const STARTS=[0,9,28,83,121,157],ENDS=[9,28,83,121,157,161];
+const stageAt=t=>t<9?0:t<28?1:t<83?2:t<121?3:t<157?4:5;
+const worldOf=stage=>stage===1?0:stage===2?1:stage===3?2:3;
+const worldNames=['연구소 · 추모','화산 · 골렘 교전','오아시스 · 지하 괴물','오아시스 지하 · 최후의 전투'];
+const state={
+ t:0,last:0,running:false,paused:false,ended:false,speed:1,stage:-1,
+ audio:null,events:new Set(),markCount:0
+};
+const fade=el('fade'),caption=el('subtitle'),area=el('area'),captionWho=el('who'),chapter=el('chapter'),chapterNum=el('chapterNum'),chapterName=el('chapterName');
+function taper(a,b,r1,r2,co,N=9){
+ const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz)||1;
+ let ux=-dz/L,uy=0,uz=dx/L;let s=Math.hypot(ux,uz);
+ if(s<.15){ux=1;uy=0;uz=0;}else{ux/=s;uz/=s;}
+ let vx=dy*uz-dz*uy,vy=dz*ux-dx*uz,vz=dx*uy-dy*ux;const vl=Math.hypot(vx,vy,vz)||1;vx/=vl;vy/=vl;vz/=vl;
+ for(let j=0;j<N;j++){let p=j*2*Math.PI/N,q=(j+1)*2*Math.PI/N;
+ const at=(r,n)=>[n[0]+r*(ux*Math.cos(atAngle)+vx*Math.sin(atAngle)),n[1]+r*(uy*Math.cos(atAngle)+vy*Math.sin(atAngle)),n[2]+r*(uz*Math.cos(atAngle)+vz*Math.sin(atAngle))];
+ const point=(n,r,k)=>[n[0]+r*(ux*Math.cos(k)+vx*Math.sin(k)),n[1]+r*(uy*Math.cos(k)+vy*Math.sin(k)),n[2]+r*(uz*Math.cos(k)+vz*Math.sin(k))];
+ quad(point(a,r1,p),point(a,r1,q),point(b,r2,q),point(b,r2,p),co);
+ }}
+function ell(x,y,z,rx,ry,rz,co,N=10,M=7){
+ for(let j=0;j<M;j++){let a=-Math.PI/2+j*Math.PI/M,b=-Math.PI/2+(j+1)*Math.PI/M;
+ for(let i=0;i<N;i++){let p=i*2*Math.PI/N,q=(i+1)*2*Math.PI/N;
+ const pt=(lat,lon)=>[x+rx*Math.cos(lat)*Math.cos(lon),y+ry*Math.sin(lat),z+rz*Math.cos(lat)*Math.sin(lon)];
+ quad(pt(a,p),pt(a,q),pt(b,q),pt(b,p),co.map(v=>v*(.85+.15*Math.cos(p+.7))));
+ }}}
+function pebble(x,y,z,r,c){ell(x,y,z,r*1.15,r*.73,r*.91,c,7,5);}
+function disc(x,y,z,rx,rz,co,N=32){
+ for(let j=0;j<N;j++){const a=j*2*Math.PI/N,b=(j+1)*2*Math.PI/N;
+ tri([x,y,z],[x+Math.cos(a)*rx,y,z+Math.sin(a)*rz],[x+Math.cos(b)*rx,y,z+Math.sin(b)*rz],co);
+ }}
+function ring(x,y,z,rx,rz,co,N=26){for(let j=0;j<N;j++){const a=j*2*Math.PI/N,b=(j+1)*2*Math.PI/N;rod([x+rx*Math.cos(a),y,z+rz*Math.sin(a)],[x+rx*Math.cos(b),y,z+rz*Math.sin(b)],.055,co);}}
+function spike(a,b,r,co){taper(a,b,r,.002,co,7);}
+function machine(x,y,z){box(x,y,z,1.1,1.7,.68,[.29,.37,.41]);box(x,y+.35,z+.36,.72,.49,.07,[.16,.66,.71]);box(x,y-.46,z+.36,.70,.25,.08,[.11,.18,.2]);for(let i=0;i<3;i++)orb(x-.21+i*.20,y-.47,z+.45,.048,i===0?[1,.24,.17]:[.32,.90,.59]);}
+function labWorld(){
+ box(0,-1.04,-7,13,.28,25,[.23,.28,.29]);
+ box(-6.4,2,-7,.28,6.4,25,[.32,.40,.43]);
+ box(6.4,2,-7,.28,6.4,25,[.33,.40,.41]);
+ box(0,1.9,-19.3,13,6.5,.25,[.24,.33,.37]);
+ box(0,5.15,-7,13,.26,25,[.21,.26,.29]);
+ for(let i=0;i<7;i++){
+   const z=2.5-i*3.3;
+   box(-6.18,2.4,z,.08,2.05,1.58,[.10,.26,.30]);
+   box(6.18,2.4,z,.08,2.05,1.58,[.10,.26,.30]);
+   box(0,5.0,z,9,.06,.25,[.43,.69,.71]);
+   box(-6.25,1.1,z+.7,.11,.16,1.55,[.48,.72,.65]);
+ }
+ box(0,2.2,-18.95,5.1,3.4,.11,[.13,.19,.22]);
+ box(0,2.18,-18.86,4.6,2.9,.07,[.075,.12,.15]);
+ for(let i=-2;i<=2;i++)box(i*.72,2.15,-18.78,.095,1.35,.065,[.40,.61,.63]);
+ for(let i=0;i<6;i++)machine(i%2?5.35:-5.35,.07,-2.5-Math.floor(i/2)*5);
+ box(0,-.66,-5.8,2.0,.22,3.7,[.49,.54,.55]);
+ for(let x of [-.82,.82])for(let z of [-4.6,-7.0])rod([x,-.70,z],[x,-.96,z],.085,[.2,.23,.23]);
+ for(let i=-6;i<=6;i++)box(i*.95,-.875,-1,.11,.02,17,[.30,.33,.34]);
+}
+function volcanoWorld(){
+ // Actual enclosed 3D landforms, lava stream, basalt ridges and spatial depth.
+ for(let x=-24;x<24;x+=3)for(let z=-52;z<12;z+=3){
+   const b=.13+.025*rand(),y=-.96-.24*rand();
+   box(x+1.5,y,z+1.5,3,.48,3,[b+.07,b+.04,b+.025]);
+ }
+ for(let j=0;j<25;j++){
+   let z=-42+j*1.96,wiggle=1.8+Math.sin(z*.31)*.56;
+   box(wiggle+5.4,-.77,z,4,.07,2.02,[.91,.24+rand()*.15,.035]);
+   box(wiggle+6.7,-.70,z+.36,1.2,.09,.23,[1,.70,.16]);
+   box(wiggle+4.5,-.68,z-.34,.7,.07,.28,[1,.56,.09]);
+ }
+ for(let i=0;i<50;i++){
+   const x=(rand()-.5)*46,z=rand()*58-48;
+   if(Math.abs(x)<3.4&&z>-19&&z<3)continue;
+   const h=1.4+rand()*5.1,scale=.4+rand()*.55;
+   taper([x,-.76,z],[x+(rand()-.5)*1.5,h,z-(rand()-.5)*1.3],scale,0.02,[.27+rand()*.11,.21,.19],6);
+   if(i%5===0){for(let a=0;a<3;a++)pebble(x+rand()*.7,-.62,z+rand()*.7,.7,[.20,.19,.19]);}
+ }
+ for(let i=0;i<26;i++){
+   let x=(rand()-.5)*42,z=rand()*51-41;
+   if(Math.abs(x)<2.8||x>4)continue;
+   rod([x,-.75,z],[x+.27,-.71,z+1.2],.045,[.96,.40,.085]);
+ }
+ // 3D raised caldera rim
+ for(let j=0;j<21;j++){const a=j*2*Math.PI/21;
+   let x=13+Math.sin(a)*5,z=-23+Math.cos(a)*5;
+   ell(x,.1,z,1.3,1.5,1.2,[.21,.17,.16],7,5);
+ }
+ disc(13,-.55,-23,4.3,4.3,[1,.29,.04]);
+ for(let i=0;i<16;i++)orb(13+(rand()-.5)*5,-.42,-23+(rand()-.5)*5,.23,[1,.78,.21]);
+}
+function palm(x,z,h){
+ rod([x,-.75,z],[x-.18,h,z+.12],.19,[.46,.29,.12]);
+ for(let j=0;j<8;j++){const a=j*2*Math.PI/8;
+   let m=[x+Math.cos(a)*.75,h+.28,z+Math.sin(a)*.75];
+   let tip=[x+Math.cos(a)*3.1,h-.43,z+Math.sin(a)*3.1];
+   rod([x-.18,h,z+.12],m,.105,[.10,.43,.22]);
+   taper(m,tip,.30,.005,[.12,.39+rand()*.16,.24],5);
+   taper([x+Math.cos(a)*1.08,h+.12,z+Math.sin(a)*1.08],[x+Math.cos(a)*2.1,h-.22,z+Math.sin(a)*2.1],.28,.006,[.21,.53,.29],5);
+ }
+ for(let i=0;i<3;i++)orb(x+Math.sin(i*2.1)*.4,h-.3,z+Math.cos(i*2.1)*.4,.20,[.37,.24,.10]);
+}
+function oasisWorld(){
+ for(let x=-24;x<24;x+=3)for(let z=-52;z<12;z+=3)box(x+1.5,-.98,z+1.5,3,.47,3,[.64+rand()*.10,.49+rand()*.08,.29+rand()*.06]);
+ for(let i=0;i<8;i++)ell(-12+i*4,-.27,-28-i%2*6,4,2.8,4.2,[.70,.52,.30],9,6);
+ disc(0,-.713,-9,7.5,5.2,[.79,.70,.47],38);
+ disc(0,-.679,-9,6.8,4.4,[.11,.42,.54],38);
+ disc(0,-.662,-9,5.8,3.65,[.15,.68,.81],38);
+ ring(0,-.62,-9,5.7,3.55,[.36,.86,.93],40);
+ for(let i=0;i<6;i++)palm((i%2?1:-1)*(7.9+(i%3)*1.3),-7-(i%3)*7,4.2+(i%3)*.8);
+ for(let i=0;i<30;i++){
+   let x=(rand()-.5)*34,z=rand()*35-34;if(Math.abs(x)<5&&z>-17)continue;
+   pebble(x,-.69,z,.22+rand()*.32,[.37,.36,.27]);
+ }
+}
+function skull(x,y,z,s){orb(x,y,z,.28*s,[.72,.67,.57]);orb(x-.085*s,y+.02*s,z+.22*s,.055*s,[.12,.12,.12]);orb(x+.085*s,y+.02*s,z+.22*s,.055*s,[.12,.12,.12]);box(x,y-.2*s,z+.21*s,.29*s,.10*s,.15*s,[.70,.66,.52]);}
+function caveWorld(){
+ for(let x=-24;x<24;x+=3)for(let z=-52;z<12;z+=3)box(x+1.5,-1.05,z+1.5,3,.5,3,[.16+rand()*.05,.17+rand()*.05,.19+rand()*.05]);
+ for(let j=0;j<50;j++){let x=(rand()-.5)*39,z=rand()*53-45;let h=2.0+rand()*4;
+ if(Math.abs(x)<4&&z>-20)continue;
+ taper([x,-.72,z],[x+(.5-rand())*.6,h,z],.65,0,[.21,.24,.26],7);
+ taper([x+(.5-rand())*.6,6.8,z],[x,.9+rand()*1.4,z],.58,0,[.26,.27,.30],7);
+ }
+ for(let i=0;i<30;i++){const x=(rand()-.5)*32,z=rand()*38-36;skull(x,-.44,z,.45+rand()*.6);}
+ disc(0,-.72,-16,8,6,[.12,.12,.15]);ring(0,-.69,-16,8,6,[.29,.26,.26],32);
+ for(let i=0;i<19;i++){let a=i*2*Math.PI/19,x=Math.sin(a)*9,z=-16+Math.cos(a)*6.8;pebble(x,-.43,z,.55+rand()*.9,[.21,.19,.18]);}
+}
+const worlds=[];
+for(const f of [labWorld,volcanoWorld,oasisWorld,caveWorld]){
+ verts=[];seed=481;f();worlds.push(new Float32Array(verts));
+}
+function researcher(x,z,role,t,opt={}){
+ const badge=role===2?C.blue:role===3?C.green:C.gold;
+ const down=opt.down||0;const wobble=Math.sin(t*4+role)*.035*(1-down);
+ const y=-.76-down*1.35;const uy=y+wobble;
+ const suit=role===4?[.28,.34,.30]:[.46,.56,.56];
+ // separate two legs, broad chest, helmet + visor, oxygen tank, arms and boots
+ for(let side of [-1,1]){
+  const px=x+side*.27;
+  box(px,uy+.35,z-.05,.27,.81,.39,[.17,.22,.25]);
+  box(px,uy+.04,z+.08,.36,.28,.57,[.12,.16,.17]);
+ }
+ box(x,uy+1.18,z,.94,1.18,.55,suit);
+ box(x,uy+1.32,z+.31,.70,.52,.08,badge);
+ box(x,uy+1.66,z+.27,.44,.12,.12,[.9,.87,.66]);
+ // face mask, helmet visor with identifiable bright trim
+ ell(x,uy+2.05,z,.48,.48,.45,[.86,.87,.80],9,7);
+ ell(x,uy+2.04,z+.36,.38,.25,.18,[.06,.22,.31],9,6);
+ box(x,uy+2.39,z+.17,.67,.10,.54,badge);
+ box(x,uy+1.12,z-.48,.46,.91,.31,[.23,.28,.31]); // oxygen tank
+ for(let sign of [-1,1]){
+   let a=[x+sign*.52,uy+1.49,z],b=[x+sign*.70,uy+.71,z+.21+Math.sin(t*2+role)*.06];
+   rod(a,b,.16,suit);
+   orb(b[0],b[1],b[2]+.05,.15,[.30,.35,.36]);
+ }
+ // horizontal suit belt and attached backpack
+ box(x,uy+.73,z+.04,.98,.13,.58,[.17,.20,.21]);
+ if(opt.weapon){rod([x+.72,uy+.75,z+.2],[x+.39,uy+1.13,z+1.12],.065,[.21,.25,.26]);}
+}
+function gatorBlade(x,y,z,a=0){
+ // curved tooth-edged blade, unmistakable jaw silhouette
+ let dx=Math.cos(a),dz=Math.sin(a);
+ rod([x,y,z],[x+dx*.12,y+.07,z+dz*.12],.12,[.37,.26,.15]);
+ const p=[x,y,z+.1],q=[x-1.03,y+.37,z+1.32];
+ rod(p,q,.16,[.52,.59,.56]);
+ rod([x-.08,y-.12,z+.14],[x-.93,y+.06,z+1.18],.13,[.37,.42,.39]);
+ for(let i=0;i<7;i++){
+   let u=i/7;
+   spike([x-.16-u*.76,y+.08+u*.20,z+.3+u*.9],[x-.14-u*.76,y-.17+u*.25,z+.35+u*.9],.085,[.92,.87,.72]);
+ }
+}
+function survivor(x,z,t,opt={}){
+ const down=opt.down||0,y=-.76-down*1.35;
+ for(const k of [-1,1]){
+  box(x+k*.25,y+.37,z,.32,.84,.4,[.20,.28,.26]);
+  box(x+k*.25,y+.06,z+.1,.39,.26,.55,[.19,.16,.11]);
+ }
+ box(x,y+1.21,z,.95,1.04,.58,[.38,.30,.17]);
+ box(x,y+1.63,z+.27,.88,.2,.12,[.9,.67,.15]);
+ ell(x,y+2.04,z,.42,.45,.42,[.54,.37,.19],9,7);
+ ell(x,y+2.0,z+.33,.28,.23,.15,[.76,.59,.38],9,6);
+ for(let s of [-1,1])orb(x+s*.12,y+2.04,z+.48,.037,[.09,.09,.08]);
+ rod([x-.50,y+1.52,z],[x-.69,y+.8,z+.31],.17,[.34,.27,.17]);
+ rod([x+.49,y+1.54,z],[x+.65,y+.85,z+.30],.17,[.34,.27,.17]);
+ if(opt.tool==='jaw')gatorBlade(x+.72,y+.76,z+.1);
+ if(opt.tool==='pick')pickaxe(x+.8,y+.6,z+.45,.65);
+}
+function pickaxe(x,y,z,s=1){
+ rod([x,y,z],[x+.07*s,y+1.8*s,z-.25*s],.085*s,[.50,.31,.13]);
+ const top=[x+.07*s,y+1.75*s,z-.25*s];
+ taper([top[0]-.79*s,top[1]+.07*s,top[2]],[top[0],top[1],top[2]],.006,.18*s,C.gold,8);
+ taper([top[0],top[1],top[2]],[top[0]+.84*s,top[1]-.08*s,top[2]],.17*s,.002,C.gold,8);
+ orb(top[0],top[1],top[2],.19*s,[1,.90,.49]);
+}
+function rifle(x,z,fire,reload){
+ const y=.20-(reload||0)*.42;
+ const forward=z-1.40;
+ rod([x+.27,y+.1,z+.28],[x-.18,y+.27,forward],.115,C.metal);
+ rod([x-.18,y+.27,forward],[x-.20,y+.31,forward-.75],.074,[.40,.43,.45]);
+ box(x+.24,y+.05,z+.30,.40,.30,.69,[.28,.20,.15]);
+ box(x+.08,y-.20,z-.48,.24,.51,.32,[.18,.18,.18]);
+ rod([x+.3,y-.04,z-.14],[x+.48,y-.55,z+.19],.11,[.36,.23,.15]);
+ rod([x+.77,y-.68,z+.55],[x+.32,y-.17,z-.25],.16,[.51,.46,.37]);
+ if(fire){orb(x-.20,y+.30,forward-.80,.23,[1,.79,.29]);orb(x-.20,y+.30,forward-.86,.14,[1,.98,.78]);}
+}
+function golem(t){
+ const cooldown=phase(t,67,73),fracture=phase(t,70,78),dying=phase(t,80.3,83.5);
+ const rage=t>=68&&t<78?Math.sin(t*24)*.16:0;
+ const z=-12.6,y=-.68-dying*1.1+rage*.2;
+ const alive=1-dying,red=[.93,.21,.05],dark=[.17,.14,.13];
+ const stone=[.31,.29,.28],armor=[.43,.38,.34],core=cooldown>.4?[.48,.83,.94]:[1,.54,.09];
+ if(alive>.02){
+  for(let s of [-1,1]){
+   ell(s*1.00,y+1.10,z,.72*alive,1.12*alive,.73*alive,stone,10,7);
+   ell(s*1.04,y+2.25,z-.03,.73*alive,.79*alive,.68*alive,armor,10,7);
+  }
+  ell(0,y+3.12,z,1.83*alive,1.45*alive,.91*alive,stone,11,8);
+  ell(0,y+5.10,z-.04,.88*alive,.90*alive,.88*alive,armor,12,7);
+  for(let s of [-1,1]){
+    orb(s*.36,y+5.30,z+.79,.155*alive,red);
+    orb(s*.36,y+5.30,z+.89,.06*alive,[1,.84,.27]);
+    let grab=t>=44&&t<53&&s===1;
+    const fistY=grab?2.16:1.52+Math.sin(t*.9+s)*.24;
+    const fistX=s*(grab?2.15:2.6);
+    rod([s*1.62,y+4.13,z],[s*2.20,y+3.12,z+.30],.56*alive,stone);
+    rod([s*2.20,y+3.12,z+.30],[fistX,y+fistY,z+.8],.54*alive,stone);
+    ell(fistX,y+fistY,z+.80,.77*alive,.72*alive,.78*alive,armor,8,6);
+   }
+  box(0,y+4.62,z+.76,.87,.21,.15,[.12,.10,.10]);
+  // Large armored chest pieces physically separate and fall during water cooling.
+  const plates=[[-1.06,3.77,-.01],[1.06,3.77,.01],[-.83,2.74,.07],[.83,2.74,.07],[0,4.02,-.10]];
+  plates.forEach(([x,yy,d],i)=>{
+   const fall=phase(t,70.7+i*1.0,74.2+i*.8);
+   if(fall>=1)return;
+   const xf=x+Math.sign(x||.4)*fall*(.85+i*.10), yf=yy-1.5*fall*fall;
+   ell(xf,y+yf,z+.76+d, i===4?.77:.77,.47,.42,armor,7,5);
+  });
+  if(fracture<.95){
+    for(let i=0;i<9;i++){let a=i*2.4;const radius=1.58;
+      let px=Math.sin(a)*radius,py=3.38+Math.cos(a)*.96,scatter=fracture*(1+.3*i);
+      pebble(px+Math.sin(a)*scatter,y+py-fracture*fracture*3.2,z+.55+Math.cos(a)*scatter,.40,stone);
+    }
+  }
+ }
+ // The hot energy core is the actual weak point and remains visible after armor breaks.
+ if(t<83.3){
+  const coreScale=1.04+.07*Math.sin(t*7)*(1-cooldown);
+  ell(0,y+3.31,z+1.02,1.04*coreScale,.98*coreScale,.59*coreScale,
+    cooldown>.64?[.38,.68,.78]:[.98,.35+.28*Math.sin(t*7)**2,.055],16,10);
+  ell(0,y+3.31,z+1.57,.52,.52,.20,core,12,7);
+  for(let j=0;j<7;j++){let a=j*2*Math.PI/7;
+    orb(Math.sin(a)*.58,y+3.31+Math.cos(a)*.59,z+1.60,.12,core);
+  }
+  const impacts=[79.0,80.5,82.0].filter(q=>t>=q&&t<q+.48);
+  if(impacts.length){orb(0,y+3.30,z+1.78,1.00,[.90,.95,1]);for(let j=0;j<15;j++){let a=j*2.399+t;rod([0,y+3.3,z+1.55],[Math.cos(a)*1.3,y+3.3+Math.sin(a)*1.2,z+2.0],.028,[.63,.92,1]);}}
+ }
+ if(t>=44&&t<53){const down=phase(t,44.3,46.2)*(1-phase(t,51.0,52.6));
+  researcher(2.12,-11.55,3,t,{down:-down*.3});
+ }
+ if(t>=53&&t<59){const flight=phase(t,53,56.8);
+  pickaxe(4.3-flight*2.45,1.35+flight*.6,-8.2-flight*3,.60);
+ }
+ if(t>=67&&t<71){
+  for(let i=0;i<35;i++){let a=i*2.399+t*3;
+   let p=phase(t,67+i*.03,69+i*.035);
+   orb(2.75-p*2.70,.75+p*1.94+Math.sin(a)*.65,-4.4-p*6.65+Math.cos(a)*.5,.095+(i%4)*.024,[.18,.65+(i%4)*.06,.95]);
+  }
+ }
+}
+function worm(t,cave=false){
+ const emerge=cave?1:phase(t,105.4,108.0);
+ const rage=cave?1:phase(t,114,116);
+ const y0=-.90,baseZ=cave?-16.8:-13.0;
+ const headY=y0+(cave?2.4:4.8*emerge)+.32*Math.sin(t*1.5);
+ const headZ=baseZ+(cave?1.4:2.5)*Math.sin(t*.28);
+ if(!emerge)return;
+ // 3D segmented tapering body, moving in and out of the soil
+ for(let j=0;j<12;j++){
+  const f=j/12,g=(j+1)/12;
+  const pt=u=>[Math.sin(t*.9+u*4.8)*(.35+u*.7),headY-u*5.3*emerge,headZ-u*3.2];
+  taper(pt(f),pt(g),Math.max(.23,1.21-f*.64),Math.max(.20,1.18-g*.67),j%2?[.49,.25,.23]:[.61,.32,.28],11);
+  if(j%3===0){let p=pt(f);ring(p[0],p[1],p[2],.78,.75,[.34,.17,.17],12);}
+ }
+ ell(0,headY,headZ,1.62,1.23,1.51,[.55,.31,.31],14,9);
+ for(let s of [-1,1]){
+  ell(s*.84,headY+.47,headZ+.92,.36,.35,.30,[.27,.35,.26],9,6);
+  orb(s*.83,headY+.49,headZ+1.19,.16,[.93,.93,.31]);
+  orb(s*.83,headY+.49,headZ+1.30,.060,[.06,.10,.08]);
+  spike([s*1.16,headY+.86,headZ],[s*1.49,headY+1.75,headZ-.2],.34,[.38,.26,.22]);
+ }
+ // Black round mouth aperture and numerous individually modelled ivory teeth.
+ ell(0,headY-.23,headZ+1.23,1.04,.77,.20,[.11,.055,.064],14,10);
+ ell(0,headY-.40,headZ+1.37,.66,.39,.09,[.33,.045,.069],14,7);
+ for(let j=0;j<14;j++){const a=j*2*Math.PI/14;
+   const px=Math.sin(a)*.92,py=Math.cos(a)*.65-.23;
+   spike([px,headY+py,headZ+1.49],[px*.68,headY+py*.67-.23,headZ+1.67],.13,C.bone);
+ }
+ // thick tentacles reach from below and drag three allies into sand
+ if(!cave&&t>=94&&t<107){
+  const p=phase(t,94,99),swing=Math.sin(t*5)*.18;
+  for(let j=0;j<3;j++){
+   const x=[-3.4,-.2,3.2][j],z=[-8.2,-9.5,-8.6][j];
+   rod([x,-.78,z],[x+swing,.2+p*.4,z+.18],.30,[.39,.22,.25]);
+   rod([x+swing,.2+p*.4,z+.18],[x+Math.sin(t*7+j)*.3,.62+p*.6,z+.52],.19,[.49,.29,.26]);
+  }
+ }
+ if(rage&& !cave){for(let i=0;i<12;i++){let a=i*2.4;
+   pebble(Math.sin(a)*3.2,-.57+Math.abs(Math.cos(t+i))*.5,baseZ+Math.cos(a)*2.8,.35,[.48,.38,.27]);
+ }}
+}
+function spark(x,y,z,t,i,color){let a=i*2.399+t*2;
+ orb(x+Math.cos(a)*(.3+(i%4)*.20),y+Math.sin(a)*(.25+(i%5)*.15),z+Math.sin(a*1.7)*.18,.06,color);}
+function project(p,eye,rot,aspect){
+ let ax=p[0]-eye[0],ay=p[1]-eye[1],az=p[2]-eye[2];
+ const k=Math.cos(rot[0]),s=Math.sin(rot[0]),bx=k*ax-s*az,bz=s*ax+k*az;
+ const q=Math.cos(rot[1]),r=Math.sin(rot[1]),by=q*ay-r*bz,dz=r*ay+q*bz;
+ if(dz>=-.3)return null;
+ let X=bx*1.57/aspect/(-dz),Y=by*1.57/(-dz);
+ if(Math.abs(X)>1.2||Math.abs(Y)>1.15)return null;
+ return [(X*.5+.5)*100,(-Y*.5+.5)*100];
+}
+const dialogues=[
+ [9,13,'연구원 01','4번 연구원… 결국 돌아오지 못했어.'],
+ [13,18,'연구원 02','독가스가 남아 있었어. 우리는 4번을 잊지 않을 거야.'],
+ [18,23,'연구원 03','마력숲의 모든 위험을 반드시 기록하자.'],
+ [23,28,'연구원 01','화산 방호복 점검. 1, 2, 3번 모두 출발한다.'],
+ [28,33,'연구원 02','방호복을 입었는데도 너무 뜨거워!'],
+ [33,38,'연구원 03','저 앞에 거대한 돌덩이가 움직인다!'],
+ [38,44,'연구원 01','공격적인 화염 골렘이다! 거리를 벌리고 사격!'],
+ [44,49,'연구원 02','총알이 튕겨 나가! 몸이 돌처럼 단단해!'],
+ [49,53,'연구원 03','살려 줘! 골렘이 날 붙잡았어!'],
+ [53,59,'생존자','비켜! (금 곡괭이가 날아와 골렘 옆구리에 박힌다.)'],
+ [59,64,'연구원 01','생존자다! 2번, 나와 함께 골렘을 유인해!'],
+ [64,67,'연구원 03','생존자에게 양동이를 받았어! 물을 떠 올게!'],
+ [67,71,'연구원 03','골렘의 뜨거운 핵에 물을 부었어!'],
+ [71,77,'연구원 02','골렘이 발작해! 돌덩이가 하나씩 떨어진다!'],
+ [77,83,'연구원 01','식은 핵을 공격해! 하나, 둘, 셋! 쓰러졌다!'],
+ [83,90,'연구원 03','여기는 오아시스야. 드디어 숨 좀 돌리겠네.'],
+ [90,95,'연구원 02','으악! 내 다리를 잡고 있는 게 뭐야?!'],
+ [95,100,'연구원 03','나도 끌려가! 이거 놔!'],
+ [100,105,'생존자','윽! 바닥 아래에 뭔가 있어!'],
+ [105,112,'연구원 01','땅이 흔들린다! 옆으로 피해! 초거대 벌레야!'],
+ [112,118,'연구원 01','놈이 튀어나온 틈에 쏴! 공격이 통한다!'],
+ [118,121,'연구원 01','분노해서 계속 땅을 들이받고 있어! 땅이 무너진다!'],
+ [121,129,'연구원 02','여기 지하에 갇힌 사람들과 시체가 이렇게 많았다니…'],
+ [129,136,'연구원 03','우린 살아 있어! 저 괴물을 함께 막자!'],
+ [136,143,'생존자','내 악어 턱날로 놈의 입을 노리겠어!'],
+ [143,151,'연구원 01','1, 2, 3번 연구원 사격! 생존자는 악어 턱날로 공격!'],
+ [151,157,'연구원 02','쓰러졌다! 초거대 벌레를 처치했어!']
+];
+function currentDialogue(t){for(const d of dialogues)if(t>=d[0]&&t<d[1])return d;return null;}
+function timelineMark(t){if(t<28)return '연구소';if(t<83)return '화산';if(t<121)return '오아시스';return '지하 동굴';}
+const phaseName=['사망 기록','동료를 기리며','화산의 화염 골렘','오아시스의 습격','초거대 벌레와 결전','연구 기록 종료'];
+const shots=[
+ 40,40.55,41.12,42.00,43.05,44.30,45.04,46.01,
+ 60,60.7,61.35,62.13,63.06,64.2,65.0,
+ 79,80.5,82,
+ 111.9,112.65,113.5,114.33,115.1,
+ 136.8,137.5,138.19,139.05,140.06,141.10,142.05,143.2,144.4,145.3,146.4,147.4,148.4,149.5,150.4,151.2
+];
+function sound(f,d=.15,type='sawtooth',amp=.03){
+ if(!state.audio)return;
+ const A=state.audio;const o=A.createOscillator(),g=A.createGain();
+ o.type=type;o.frequency.setValueAtTime(f,A.currentTime);
+ g.gain.setValueAtTime(amp,A.currentTime);g.gain.exponentialRampToValueAtTime(.0001,A.currentTime+d);
+ o.connect(g).connect(A.destination);o.start();o.stop(A.currentTime+d);
+}
+function playEffects(t){
+ const ev=[...shots,38.4,48.7,53.1,67,71,78.4,92.9,94.2,98.4,101,105.4,109.1,116.2,120.8,126,150.9];
+ for(const s of ev){if(t>=s&&!state.events.has(s)){state.events.add(s);
+ if(shots.includes(s)){sound(78,.19,'sawtooth',.075);sound(157,.1,'square',.02);}
+ else if(s===67){sound(710,.65,'triangle',.045);sound(360,.3,'sine',.03);}
+ else if(s===71||s===120.8){sound(49,.95,'sawtooth',.08);}
+ else if(s===53.1){sound(370,.36,'square',.05);}
+ else sound(70,.5,'sawtooth',.038);
+ }}}
+function displayMarkers(stage,t,eye,rot,aspect){
+ const list=[];
+ const add=(label,p,color)=>list.push({label,p,color});
+ if(stage===1){add('연구원 02',[-2,2.62,-5.3],'ally2');add('연구원 03',[2.2,2.62,-5.4],'ally3');add('4번 연구원 추모함',[0,3,-18.5],'neutral');}
+ if(stage===2){
+  if(t<83){add(t>=72?'화염 골렘 · 핵 노출':'화염 골렘',[0,5.8,-12.6],'enemy');add(t>=72?'냉각된 핵 · 공격!':'뜨거운 핵',[0,3.42,-10.95],'weak');}
+  if(t<44)add('연구원 03',[3.35,2.6,-7.5],'ally3');
+  if(t>=49&&t<83)add('생존자',[t<60?4.1:3.5,2.6,-8.7],'survivor');
+  if(t>=59&&t<83)add('연구원 02',[-3.3,2.7,-8],'ally2');
+ }
+ if(stage===3){
+   if(t<102){add('연구원 02',[-3.4,2.6,-7.9],'ally2');add('연구원 03',[-.2,2.6,-9.4],'ally3');add('생존자',[3.1,2.6,-8.6],'survivor');}
+   if(t>=105)add('초거대 벌레',[0,5.9,-10.3],'enemy');
+ }
+ if(stage===4){
+   add('초거대 벌레',[0,4.7,-15.0],'enemy');
+   add('연구원 02',[-3.0,2.65,-6.8],'ally2');
+   add('연구원 03',[.5,2.65,-7.6],'ally3');
+   add('생존자',[3.4,2.65,-6.8],'survivor');
+ }
+ const root=el('markers');
+ let html='';
+ for(const it of list){let p=project(it.p,eye,rot,aspect);if(!p)continue;
+ html+='<span class="marker '+it.color+'" style="left:'+p[0].toFixed(2)+'%;top:'+p[1].toFixed(2)+'%">'+it.label+'</span>';
+ }
+ root.innerHTML=html;
+}
+function drawFogFX(stage,t,cam){
+ const ex=cam[0],ez=cam[2];
+ if(stage===2){
+  for(let i=0;i<40;i++){let z=-2-(i*2.11)%31,x=-8+((i*7)%17);
+  orb(x+.15*Math.sin(t*2+i),-.12+(t*(.8+(i%4)*.2)+i*.9)%5,z,.045+(i%4)*.02,i%3?[1,.42,.06]:[1,.77,.25]);}
+  for(let i=0;i<8;i++)pebble((i-4)*1.7,-.7,-12+(i%3)*1.7,.27,C.basalt);
+ }
+ if(stage===3){
+  ring(0,-.55,-9,5.7+Math.sin(t*1.7)*.15,3.55+Math.cos(t*1.6)*.10,[.20,.81,.95],24);
+  for(let i=0;i<18;i++){let a=i*2.4+t*.1;orb(Math.sin(a)*5.3,-.52,-9+Math.cos(a)*2.9,.053,[.45,.87,1]);}
+ }
+ if(stage===4){
+   for(let i=0;i<17;i++){let x=Math.sin(i*2.4)*4.2,z=-15+Math.cos(i*2.4)*4.0;
+    pebble(x,-.68+Math.abs(Math.sin(t*3+i))*.07,z,.40,[.32,.30,.31]);
+   }
+ }
+}
+function drawStage(stage,t,cam){
+ if(stage===0)return;
+ const sceneNum=worldOf(stage);
+ const fire=shots.some(s=>t>=s&&t<s+.14);
+ const camZ=cam[2];
+ let gunOn=stage>=2&&stage<=4 && !(stage===3&&t<104);
+ let reloading=(t>=46&&t<48)?phase(t,46,47)*(1-phase(t,47.5,48)):
+                (t>=116&&t<118)?phase(t,116,116.6)*(1-phase(t,117.5,118)):0;
+ const bob=Math.sin(t*4.4)*.06;
+ verts=[];
+ if(stage===1){
+   researcher(-2,-5.3,2,t);
+   researcher(2.2,-5.4,3,t);
+   // A dedicated three-dimensional memorial pedestal and softly lit archive plaque.
+   box(0,-.5,-12.5,2.8,.95,1.35,[.22,.26,.29]);
+   box(0,.42,-12.5,1.8,1.1,.43,[.42,.46,.45]);
+   box(0,.83,-12.25,1.48,.55,.075,[.12,.34,.39]);
+   box(0,1.68,-12.5,.34,.75,.27,[.55,.62,.60]);
+   orb(0,2.07,-12.5,.27,[.37,.85,.80]);
+   for(let i=-1;i<=1;i++)orb(i*.31,.93,-11.98,.08,[.48,.77,.74]);
+   if(t>23){box(2.9,-.54,-4.4,1.7,.5,.9,C.metal);}
+ }
+ if(stage===2){
+   if(t>=28&&t<37){researcher(-2.0,-6.1,2,t);researcher(1.7,-6.9,3,t);}
+   else {
+     if(t<44)researcher(3.35,-7.5,3,t);
+     if(t>=59){researcher(-3.3,-8.0,2,t,{weapon:true});
+       if(t<67)researcher(3.1,-8.0,3,t);
+       else researcher(3.1,-7.8,3,t,{weapon:true});
+     }
+     if(t>=52)survivor(4.1-(t>=61?.6:0),-8.7,t,{tool:t<60?'pick':'jaw'});
+     golem(t);
+   }
+ }
+ if(stage===3){
+   const d2=phase(t,94.3,99),d3=phase(t,96.1,101),ds=phase(t,99.2,104);
+   if(t<105){researcher(-3.4,-7.9,2,t,{down:d2});researcher(-.2,-9.4,3,t,{down:d3});survivor(3.1,-8.6,t,{down:ds,tool:'jaw'});}
+   worm(t,false);
+ }
+ if(stage===4){
+   const stumble=phase(t,121,125)*(1-phase(t,125.4,127));
+   researcher(-3.0,-6.8,2,t,{down:stumble*.28,weapon:true});
+   researcher(.5,-7.6,3,t,{down:stumble*.35,weapon:true});
+   survivor(3.4,-6.8,t,{down:stumble*.16,tool:'jaw'});
+   const dead=phase(t,150.4,154);
+   if(dead<.94)worm(t,true);
+   else{
+     // fallen worm's segmented body stays in the 3D cave.
+     for(let i=0;i<8;i++)ell(Math.sin(i*.64)*.85,-.56,-10-i*1.2,.97,.46,.85,[.47,.23,.22],10,6);
+     ell(0,-.43,-10,1.4,.52,1.25,[.42,.22,.23],11,6);
+   }
+   if(t>=121&&t<128)for(let i=0;i<14;i++){
+     let x=(i-7)*.93,z=-5-(i%4)*4;
+     pebble(x,3.4-phase(t,121+i*.14,127+i*.07)*4.4,z,.30,C.rock);
+   }
+ }
+ if(gunOn){
+   rifle(cam[0]+.38,camZ-.62,fire,reloading);
+   if(fire){
+     const z=stage===2?-11.5:stage===3?-11.1:-14.5;
+     const ty=stage===2?3.0:stage===3?3.6:3.2;
+     rod([cam[0]+.1,.52,camZ-2.85],[.10,ty,z],.018,[1,.84,.43]);
+     for(let i=0;i<7;i++)spark(.1,ty,z,t,i,[1,.73,.27]);
+   }
+ }
+ if(stage===2&&t>=64&&t<70){
+   const bx=3.1;
+   box(bx+.6,.10,-6.2,.43,.50,.50,[.30,.48,.56]); // visible water bucket
+   rod([bx+.39,.39,-6.2],[bx+.81,.39,-6.2],.06,[.73,.81,.81]);
+ }
+ drawFogFX(stage,t,cam);
+ const data=new Float32Array(verts);
+ render(data);
+}
+function resizeCanvas(){
+ const ratio=Math.min(devicePixelRatio||1,1.4);
+ const sc=Math.min(1,Math.sqrt(1550000/Math.max(1,innerWidth*innerHeight*ratio*ratio)));
+ const w=Math.max(1,Math.floor(innerWidth*ratio*sc)),h=Math.max(1,Math.floor(innerHeight*ratio*sc));
+ if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h);}return w/h;
+}
+function render(arr){if(!arr||!arr.length)return;gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,arr,gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(pos);gl.enableVertexAttribArray(color);gl.vertexAttribPointer(pos,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(color,3,gl.FLOAT,false,24,12);gl.drawArrays(gl.TRIANGLES,0,arr.length/6);}
+function cut(t,a,b){return phase(t,a,b)*(1-phase(t,b+.28,b+.95));}
+function cameraFor(stage,t){
+ let x=0,y=1.57,z=3.1;
+ if(stage===1){x=Math.sin(t*.14)*.12;z=2.5; y=1.59;}
+ if(stage===2){x=Math.sin(t*.19)*.09;z=mix(4.3,.35,phase(t,28,40));y=1.58;}
+ if(stage===3){x=Math.sin(t*.15)*.12;z=3.0;y=1.61;}
+ if(stage===4){x=.05+Math.sin(t*.22)*.12;z=1.5;y=1.57;}
+ const walking=stage===2&&t<38||stage===3&&t<90;
+ const bob=walking?Math.sin(t*7.2)*.030:Math.sin(t*2.5)*.010;
+ const seismic=stage===3&&t>=106||stage===4&&t<125;
+ const shake=seismic?.14:stage===2&&t>=68&&t<78?.08:.005;
+ y+=bob+Math.sin(t*24)*shake;
+ x+=Math.sin(t*18)*shake*.5;
+ return [x,y,z];
+}
+function updateHUD(stage,t,eye,rot,aspect){
+ el('time').textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(Math.floor(t%60)).padStart(2,'0');
+ area.textContent=stage===0?'현장 기록':worldNames[worldOf(stage)]||'연구 기록';
+ const dia=currentDialogue(t);
+ captionWho.textContent=dia?dia[2]:'';
+ caption.textContent=dia?dia[3]:'';
+ el('progress').style.width=(t/161*100).toFixed(2)+'%';
+ el('meter').textContent=stage===2?'화산 열기: 위험':stage===3?'지반 안정성: 위험':stage===4?'산소 잔량: 주의':'';
+ el('heat').style.opacity=stage===2?'.36':'0';
+ const impact=shots.some(s=>t>=s&&t<s+.11);
+ el('flash').style.opacity=impact?'.55':'0';
+ const scare=t>=104&&t<106||t>=120&&t<122||t>=70&&t<71.2;
+ el('damage').style.opacity=scare?'.65':'0';
+ el('crosshair').style.opacity=stage>=2&&stage<5?'1':'0';
+ const fogscene=stage===0?0:worldOf(stage);
+ displayMarkers(stage,t,eye,rot,aspect);
+ let ck=0;
+ for(const boundary of [28,83,121,157])ck=Math.max(ck,cut(t,boundary,boundary+.6));
+ ck=Math.max(ck,cut(t,8.65,9.3));
+ fade.style.opacity=stage===0?'1':ck.toFixed(2);
+ chapter.style.opacity=t>=9&&t<12?String(1-phase(t,10.5,12)):t>=28&&t<31?String(1-phase(t,29.5,31)):t>=83&&t<86?String(1-phase(t,84.5,86)):t>=121&&t<124?String(1-phase(t,122.5,124)):'0';
+ chapterNum.textContent=stage===1?'PART 01':stage===2?'PART 02':stage===3?'PART 03':'PART 04';
+ chapterName.textContent=phaseName[stage];
+}
+function paint(){
+ const t=state.t,stage=stageAt(t);
+ const aspect=resizeCanvas();
+ if(stage===0){
+   gl.clearColor(0,0,0,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+   fade.style.opacity='1';el('intro').style.display='grid';el('markers').innerHTML='';
+   el('heat').style.opacity='0';el('crosshair').style.opacity='0';captionWho.textContent='';caption.textContent='';
+   el('time').textContent=String(Math.floor(t)).padStart(2,'0');
+   el('progress').style.width=(t/161*100).toFixed(2)+'%';return;
+ }
+ el('intro').style.display='none';
+ const fog=stage===1?[.15,.24,.26]:stage===2?[.34,.13,.09]:stage===3?[.45,.45,.33]:[.085,.093,.12];
+ gl.clearColor(...fog,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+ const eye=cameraFor(stage,t);
+ const tilt=stage===3&&t>=117?Math.sin(t*6)*.075:0;
+ const rot=[Math.sin(t*.17)*.018,stage===2?.045:stage===4?-.015:.02,tilt];
+ gl.uniform3f(U.eye,...eye);
+ gl.uniform3f(U.rot,...rot);
+ gl.uniform1f(U.aspect,aspect);
+ gl.uniform3f(U.fog,...fog);
+ render(worlds[worldOf(stage)]);
+ drawStage(stage,t,eye);
+ updateHUD(stage,t,eye,rot,aspect);
+}
+function finish(){
+ state.running=false;state.ended=true;el('end').style.display='grid';
+ el('markers').innerHTML='';el('hud').style.display='none';el('chapter').style.opacity='0';
+}
+function loop(now){
+ if(!state.running)return;
+ if(!state.last)state.last=now;
+ const delta=Math.max(0,Math.min(.09,(now-state.last)/1000));
+ state.last=now;
+ if(!state.paused&&!document.hidden){
+   state.t+=delta*state.speed;
+   if(state.t>=161){state.t=161;paint();finish();return;}
+   playEffects(state.t);
+   paint();
+ }
+ requestAnimationFrame(loop);
+}
+function begin(){
+ state.t=0;state.last=0;state.speed=1;state.ended=false;state.events.clear();state.running=true;state.paused=false;
+ el('play').closest('#start').style.display='none';el('end').style.display='none';el('hud').style.display='block';el('pause').textContent='일시정지';el('speed').textContent='1×';
+ try{state.audio=state.audio||new (window.AudioContext||window.webkitAudioContext)();state.audio.resume()}catch{}
+ paint();requestAnimationFrame(loop);
+}
+el('play').addEventListener('click',begin);
+el('again').addEventListener('click',begin);
+el('pause').addEventListener('click',()=>{if(!state.running)return;state.paused=!state.paused;state.last=0;el('pause').textContent=state.paused?'계속 재생':'일시정지';if(state.audio&&state.paused)state.audio.suspend();if(state.audio&&!state.paused)state.audio.resume();});
+el('speed').addEventListener('click',()=>{state.speed=state.speed===1?2:1;el('speed').textContent=state.speed+'×';});
+el('next').addEventListener('click',()=>{if(!state.running)return;const t=state.t;const next=STARTS.find(s=>s>t+1);if(next!==undefined){state.t=next+.05;state.last=0;paint();}});
+document.addEventListener('visibilitychange',()=>{state.last=0;});
+addEventListener('resize',()=>{if(state.running)paint();});
+
+})();
 </script></body></html>
