@@ -1,5 +1,28 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-fgarsi",
+      "worker": "vibe2",
+      "taskId": "crystal-defense-studio-evolution-roblox-usability-v2",
+      "gameId": "crystal-defense",
+      "files": [
+        "roblox-games/crystal-defense/client/Game.client.luau",
+        "roblox-games/crystal-defense/shared/GameConfig.luau",
+        "roblox-games/crystal-defense/server/Game.server.luau",
+        "roblox-games/crystal-defense/client/MaterialPresentation.client.luau"
+      ],
+      "baseSha": "944d638f9d5cfd3074e713dca1449606d396ec93",
+      "runId": "39146612902",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-18T17:16:28.389Z",
+      "expiresAt": "2026-10-18T18:01:28.389Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:crystal-defense-studio-evolution-roblox-usability-v2"
+      ]
+    }
+  ]
 }
