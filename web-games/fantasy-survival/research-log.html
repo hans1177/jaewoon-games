@@ -22,7 +22,7 @@ for(let i=0;i<50;i++){let x=(rnd()-.5)*9,z=rnd()*28-20;globe(x,-.2,z,.14,[.21,.4
 const cave=new Float32Array(data);
 function snake(x,z,size,t){let prev=[x,-.3,z];for(let i=1;i<14;i++){let f=i/13,next=[x+Math.sin(t*4-f*8)*.36*size,-.24+Math.sin(f*Math.PI)*.13,z+f*1.8*size];rod(prev,next,.18*size,[.14,.52,.25]);prev=next}globe(x+Math.sin(t*4)*.15*size,-.18,z-.2*size,.39*size,[.17,.58,.27]);for(let k of [-1,1])globe(x+k*.22*size,-.08,z-.48*size,.065*size,[.99,.79,.24])}
 function draw(a){gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,a,gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(pos);gl.enableVertexAttribArray(col);gl.vertexAttribPointer(pos,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(col,3,gl.FLOAT,false,24,12);gl.drawArrays(gl.TRIANGLES,0,a.length/6)}
-let playing=false,start=0,prev=0,t=0,ended=false,audio;
+let playing=false,start=0,prev=0,t=0,ended=false,audio,events=new Set();
 function tone(f,d=.15){if(!audio)return;let o=audio.createOscillator(),g=audio.createGain();o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.025,audio.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+d);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+d)}
 const noise=E('noise'),nx=noise.getContext('2d');noise.width=150;noise.height=90;
 function tick(now){requestAnimationFrame(tick);if(!playing)return;if(document.hidden){start+=now-prev;prev=now;return}prev=now;t=(now-start)/1000;let d=Math.min(devicePixelRatio||1,1.4),w=Math.floor(innerWidth*d),h=Math.floor(innerHeight*d),cv=E('scene');if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h)}
@@ -37,11 +37,11 @@ draw(new Float32Array(data));
 E('white').style.opacity=Math.max(phase(t,23,26)*(1-phase(t,26.5,29)),phase(t,45,45.7));E('black').style.opacity=phase(t,43,45)*(1-phase(t,45,45.6));
 const level=phase(t,38,44)*.85;noise.style.opacity=level;noise.width=Math.max(100,Math.floor(innerWidth/5));noise.height=Math.max(70,Math.floor(innerHeight/5));if(level>.01){let im=nx.createImageData(noise.width,noise.height);for(let i=0;i<im.data.length;i+=4){let v=rnd()*255;im.data[i]=v;im.data[i+1]=v;im.data[i+2]=v;im.data[i+3]=150}nx.putImageData(im,0,0)}
 E('clock').textContent='00:'+String(Math.floor(Math.min(50,t))).padStart(2,'0');E('rec').style.opacity=t>44?0:1;
-if(Math.floor(t)!==Math.floor((prev-start)/1000)&&[9,14,20,25,34,38,40].includes(Math.floor(t)))tone(t>37?70:200,.5);
+for(const sec of [9,14,20,25,34,38,40]){if(t>=sec&&!events.has(sec)){events.add(sec);tone(sec>=38?70:200,.5)}}
 if(t>45.7){E('caption').style.display='flex';E('l1').style.opacity=phase(t,46.2,47.1);E('l2').style.opacity=phase(t,47.7,48.8)}
 if(t>51&&!ended){ended=true;playing=false;E('end').style.display='grid'}
 }
-function begin(){playing=true;ended=false;start=performance.now();prev=start;t=0;E('start').style.display='none';E('end').style.display='none';E('caption').style.display='none';E('l1').style.opacity=0;E('l2').style.opacity=0;try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();audio.resume()}catch{}}
+function begin(){events.clear();playing=true;ended=false;start=performance.now();prev=start;t=0;E('start').style.display='none';E('end').style.display='none';E('caption').style.display='none';E('l1').style.opacity=0;E('l2').style.opacity=0;try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();audio.resume()}catch{}}
 E('play').onclick=begin;E('again').onclick=begin;requestAnimationFrame(tick);
 })();
 </script></body></html>
