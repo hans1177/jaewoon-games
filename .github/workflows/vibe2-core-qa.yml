@@ -10,6 +10,9 @@ on:
       - 'assets/roblox/common-motion-v1/**'
       - 'web-games/**'
       - 'qa/roblox-common-motion-source.test.mjs'
+      - 'qa/company-development-roblox-runtime.test.mjs'
+      - 'assets/jaewoon-graphics-engine.js'
+      - 'tools/company-development-roblox-bootstrap.mjs'
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
       - 'assets/vibe-engine-adapter.js'
@@ -154,6 +157,10 @@ on:
       - 'assets/roblox/common-motion-v1/**'
       - 'web-games/**'
       - 'qa/roblox-common-motion-source.test.mjs'
+      - 'qa/vibe-crossplatform-visual-components.test.mjs'
+      - 'qa/company-development-roblox-runtime.test.mjs'
+      - 'assets/jaewoon-graphics-engine.js'
+      - 'tools/company-development-roblox-bootstrap.mjs'
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
       - 'assets/vibe-continuous-queue.js'
@@ -460,6 +467,7 @@ jobs:
           node --test qa/vibe-roblox-co-development.test.mjs
           node --test qa/vibe-visual-runtime-quality.test.mjs
           node --test qa/vibe-crossplatform-visual-components.test.mjs
+          node --test qa/company-development-roblox-runtime.test.mjs
           node --test qa/vibe2-native-asset-production.test.mjs
           node --test qa/vibe2-external-customization.test.mjs
           node --test qa/vibe2-neural-diagnosis.test.mjs
