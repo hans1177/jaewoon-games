@@ -16,6 +16,7 @@ import {
 import {
   auditVibeGoldenSceneEvidence,
   auditVibeRuntimeBeforeAfterComparison,
+  auditVibeArtDirectionReview,
   auditVibeRuntimeVisualEvidence,
   assertVibeRuntimeVisualQuality,
   GOLDEN_SCENE_ROLES,
@@ -282,4 +283,89 @@ test('PR changed Web game scope uses current synthetic merge parent while main c
   assert.match(workflow,/git diff --name-only "\$base_sha" HEAD/);
   assert.match(workflow,/changed_web_games=ALL/);
   assert.match(workflow,/Development Web browser startup smoke/);
+});
+
+
+// Synthetic pixel/revision fixtures verify evidence contracts, not subjective art quality.
+function aestheticFixture(){
+  const baselineRevision='1'.repeat(40),candidateRevision='2'.repeat(40);
+  const baselineCapture={source:'runtime-capture',runtimeScreenshot:true,observed:true,reviewed:true,
+    artifactId:'baseline-scene',revision:baselineRevision,imageSha256:'a'.repeat(64)};
+  const selectedCapture={source:'runtime-capture',runtimeScreenshot:true,observed:true,reviewed:true,
+    artifactId:'candidate-scene',revision:candidateRevision,imageSha256:'b'.repeat(64)};
+  return {
+    required:true,baselineRevision,candidateRevision,baselineCapture,selectedCapture,
+    comparisonObserved:true,comparisonReviewed:true,sameCameraStateLighting:true,
+    comparisonMethod:'same-seed-game-camera-frame-pixel-critique',
+    findings:[{
+      id:'empty-forest-depth',axis:'SPATIAL_DEPTH_AND_SCALE',
+      observation:'the middle ground is empty while foreground trees repeat at the same height',
+      region:{x:.1,y:.2,width:.5,height:.55},
+      before:{observed:true,reviewed:true,imageSha256:baselineCapture.imageSha256,severity:3},
+      after:{observed:true,reviewed:true,imageSha256:selectedCapture.imageSha256,severity:1},
+      repair:{sourcePath:'roblox-games/survival/client/Game.client.luau',
+        targetId:'forestSetDressing',property:'treeSpacingAndScale',action:'vary-height-and-depth',
+        expectedEffect:'clear foreground-middle-ground separation without obscuring the path'}
+    }]
+  };
+}
+test('observed aesthetic improvement requires spatial finding with exact pixel and source owner',()=>{
+  const review=auditVibeArtDirectionReview(aestheticFixture());
+  assert.equal(review.pass,true);
+  assert.equal(review.observedImprovements,1);
+  assert.equal(review.repairTargets.length,0);
+  assert.equal(review.gameplayMutationAllowed,false);
+  const scene=aestheticFixture();
+  const runtime=auditVibeRuntimeVisualEvidence({stage:'INTERNAL_PLAYTEST',candidateRevision:scene.candidateRevision,
+    captures:captures(scene.candidateRevision),artDirectionReview:scene});
+  assert.equal(runtime.pass,true);
+  assert.equal(runtime.artDirectionReview.pass,true);
+});
+test('visible render difference does not close unresolved aesthetics or ungrounded repairs',()=>{
+  const unchanged=aestheticFixture();
+  unchanged.findings[0].after.severity=3;
+  const failed=auditVibeArtDirectionReview(unchanged);
+  assert.equal(failed.pass,false);
+  assert.ok(failed.reasons.includes('art-direction-observed-quality-improvement-required'));
+  assert.ok(failed.repairTargets[0].sourcePath.endsWith('/Game.client.luau'));
+  const scene=aestheticFixture();
+  scene.findings[0].repair.sourcePath='../../unrelated-save.lua';
+  assert.ok(auditVibeArtDirectionReview(scene).reasons.some(reason=>reason.startsWith('art-direction-finding-unverified')));
+  const runtime=auditVibeRuntimeVisualEvidence({stage:'INTERNAL_PLAYTEST',candidateRevision:unchanged.candidateRevision,
+    captures:captures(unchanged.candidateRevision),artDirectionReview:unchanged});
+  assert.equal(runtime.pass,false);
+  assert.ok(runtime.reasons.includes('art-direction-visible-quality-unverified'));
+  assert.equal(runtime.repairTargets[0].surface,'ART_DIRECTION');
+});
+test('independent visual candidate comparison is screenshot-bound and rejects weaker winner',()=>{
+  const review=aestheticFixture();
+  review.competitionRequired=true;
+  review.selectedCandidateId='winner';
+  review.candidates=[{id:'loser-a',revision:'3'.repeat(40),capture:{
+    ...review.selectedCapture,artifactId:'option-1',revision:'3'.repeat(40),imageSha256:'c'.repeat(64)},reviewed:true,score:65},
+    {id:'winner',revision:review.candidateRevision,capture:review.selectedCapture,reviewed:true,score:85},
+    {id:'loser-b',revision:'4'.repeat(40),capture:{
+      ...review.selectedCapture,artifactId:'option-2',revision:'4'.repeat(40),imageSha256:'d'.repeat(64)},reviewed:true,score:73}];
+  assert.equal(auditVibeArtDirectionReview(review).pass,true);
+  review.candidates[1].score=60;
+  assert.ok(auditVibeArtDirectionReview(review).reasons.includes('art-direction-selection-not-best-observed-candidate'));
+  review.candidates[1].score=85;
+  review.candidates[2].capture.imageSha256='b'.repeat(64);
+  assert.equal(auditVibeArtDirectionReview(review).pass,false);
+});
+test('graphics root returns exact visual-repair instructions without a second production pipeline',()=>{
+  const review=aestheticFixture();
+  review.findings[0].after.severity=2;
+  const production=createVibeGraphicsProduction({
+    gameId:'survival',request:'로블록스 숲 게임 그래픽 시각적 완성도 개선',target:'roblox',
+    game:{genre:'survival'},runtimeEvidence:{stage:'INTERNAL_PLAYTEST',
+      candidateRevision:review.candidateRevision,captures:captures(review.candidateRevision),
+      artDirectionReview:review}
+  });
+  assert.equal(production.kind,'GRAPHICS_PRODUCTION');
+  assert.equal(production.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
+  assert.equal(production.runtimeRepairLoop.artDirectionReview.pass,false);
+  assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets.length,1);
+  assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets[0].property,'treeSpacingAndScale');
+  assert.equal(production.runtimeRepairLoop.gameplaySaveBalanceMutationForbidden,true);
 });

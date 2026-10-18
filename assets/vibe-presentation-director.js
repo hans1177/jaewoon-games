@@ -19,6 +19,214 @@ const ADAPTIVE_AUDIO_STATES=Object.freeze(['EXPLORATION','DISCOVERY_OR_TENSION',
 
 export function auditVibePresentation(files=[]){const text=textOf(files).toLowerCase(),dimensions=[];for(const[name,hints]of Object.entries(DIMENSIONS)){const hits=hints.filter(x=>text.includes(x)).length,score=clamp(hits/hints.length*100);dimensions.push(Object.freeze({name,score,debt:100-score,priority:score<30?'critical':score<55?'high':score<75?'medium':'low'}))}dimensions.sort((a,b)=>b.debt-a.debt);const overall=clamp(dimensions.reduce((n,x)=>n+x.score,0)/(dimensions.length||1));return Object.freeze({score:overall,grade:overall>=85?'A':overall>=70?'B':overall>=50?'C':'D',dimensions:Object.freeze(dimensions),priority:Object.freeze(dimensions.slice(0,4).map(x=>x.name))})}
 export function createVibeDesignSystem(files=[]){const text=textOf(files),rounded=/border-radius|corner_radius/i.test(text),shadow=/box-shadow|shadow_/i.test(text),outline=/outline|stroke|border/i.test(text),largeTouch=/44px|48px|custom_minimum_size/i.test(text);return Object.freeze({version:1,principles:Object.freeze(['gameplay-first-hierarchy','one-primary-action','consistent-spacing','state-visible-at-glance','touch-first','safe-area-aware']),tokens:Object.freeze({radius:rounded?'existing':'12px-baseline',shadow:shadow?'existing':'subtle-depth',outline:outline?'existing':'readability-outline',touchTarget:largeTouch?'existing':'44px-minimum'}),protected:Object.freeze(['gameplay-layout-function','input-binding','game-rule-values','save-structure'])})}
+
+// Executable, engine-neutral presentation recipes. Coordinates are viewport pixels;
+// renderers own placement, animation and input. No gameplay/save/network authority.
+export const VIBE_VISUAL_SURFACES=Object.freeze([
+  'HUD','INVENTORY','EQUIPMENT','CRAFT','SHOP','QUEST','MAP','CODEX','DIALOGUE',
+  'TOOLTIP','HELP','BOSS','COMBAT','BUILD','RESULT','SETTINGS','PARTY','NOTIFICATION'
+]);
+export const VIBE_PRESENTATION_EFFECT_PATTERNS=Object.freeze([
+  'DAMAGE_POPUP_POOL','FLOATING_HEAL','WORLD_SPACE_LABEL','OFFSCREEN_INDICATOR',
+  'TOOLTIP_PLACEMENT','SAFE_AREA_LAYOUT','CONTEXTUAL_HUD','ICON_STATE_MOTION',
+  'ICON_ATLAS_ANIMATION','NOTIFICATION_STACK','STATUS_DURATION_TRACK',
+  'ITEM_RARITY_FRAME','EQUIPMENT_COMPARE_DELTA','CRAFT_PROGRESS','QUEST_PROGRESS',
+  'BOSS_PHASE_TRANSITION','TELEGRAPH_PRIORITY','3D_ITEM_PREVIEW',
+  'NINE_SLICE_SURFACE','MATERIAL_HARMONIZATION','UI_TRANSITION_STATE',
+  'VISUAL_EFFECT_BUDGET','FOCAL_REGION_OCCLUSION','MULTIPLAYER_PING'
+]);
+const PRESENTATION_SURFACE_GRAMMAR=Object.freeze({
+  HUD:Object.freeze({layout:'EDGE_BANDS',focalOcclusionForbidden:true}),
+  INVENTORY:Object.freeze({layout:'ASYMMETRIC_DETAIL',focalOcclusionForbidden:false}),
+  EQUIPMENT:Object.freeze({layout:'CHARACTER_FOCAL',focalOcclusionForbidden:false}),
+  CRAFT:Object.freeze({layout:'RECIPE_GRAPH',focalOcclusionForbidden:false}),
+  SHOP:Object.freeze({layout:'CATALOG_DETAIL',focalOcclusionForbidden:false}),
+  QUEST:Object.freeze({layout:'JOURNAL_TIMELINE',focalOcclusionForbidden:false}),
+  MAP:Object.freeze({layout:'MAP_FOCAL',focalOcclusionForbidden:false}),
+  CODEX:Object.freeze({layout:'COLLECTION_ATLAS',focalOcclusionForbidden:false}),
+  DIALOGUE:Object.freeze({layout:'CHARACTER_RESPONSE',focalOcclusionForbidden:true}),
+  TOOLTIP:Object.freeze({layout:'ANCHOR_FOLLOW',focalOcclusionForbidden:true}),
+  HELP:Object.freeze({layout:'ANCHOR_FOLLOW',focalOcclusionForbidden:true}),
+  BOSS:Object.freeze({layout:'TOP_BOSS_FOCUS',focalOcclusionForbidden:true}),
+  COMBAT:Object.freeze({layout:'EDGE_BANDS',focalOcclusionForbidden:true}),
+  BUILD:Object.freeze({layout:'SIDE_WORKBENCH',focalOcclusionForbidden:true}),
+  RESULT:Object.freeze({layout:'REWARD_REVEAL',focalOcclusionForbidden:false}),
+  SETTINGS:Object.freeze({layout:'CATEGORY_DETAIL',focalOcclusionForbidden:false}),
+  PARTY:Object.freeze({layout:'SIDE_ROSTER',focalOcclusionForbidden:true}),
+  NOTIFICATION:Object.freeze({layout:'EDGE_STACK',focalOcclusionForbidden:true})
+});
+const VISUAL_MATERIAL_CUES=Object.freeze({
+  leather:'STITCHED_EDGE',wood:'CARVED_JOINERY',metal:'RIVETED_INSET',
+  stone:'CHISELED_EDGE',paper:'FOLDED_CORNER',glass:'TRANSLUCENT_EDGE',
+  crystal:'FACET_HIGHLIGHT',fabric:'SEAMED_PANEL',plastic:'MOLDED_SURFACE',
+  moss:'ORGANIC_GROWTH',hologram:'SCANLINE_RIM',steel:'MECHANICAL_JOINT'
+});
+const finite=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
+const between=(value,min,max)=>Math.max(min,Math.min(max,value));
+function overlapArea(a,b){
+  return Math.max(0,Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x))
+    *Math.max(0,Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y));
+}
+function presentationRect(row){
+  if(!row||typeof row!=='object')return null;
+  const x=finite(row.x,NaN),y=finite(row.y,NaN),width=finite(row.width,NaN),height=finite(row.height,NaN);
+  return [x,y,width,height].every(Number.isFinite)&&width>0&&height>0?{x,y,width,height}:null;
+}
+export function createVibeVisualMaterialRecipe({game={},world={},surface='HUD'}={}){
+  const materials=uniq([...(world.materials||[]),...(game.materials||[])].map(x=>clean(x).toLowerCase())).slice(0,6);
+  const cues=materials.map(key=>({material:key,construction:VISUAL_MATERIAL_CUES[key]||'SOURCE_TEXTURE_INSPECTION_REQUIRED'}));
+  const identity=clean(game.visualIdentity||game.identity||game.name||world.theme||game.genre||'');
+  return Object.freeze({
+    version:1,surface:String(surface).toUpperCase(),identity:identity||null,
+    materialCues:Object.freeze(cues.map(row=>Object.freeze(row))),
+    layers:Object.freeze(['STRUCTURAL_FRAME','MAIN_SURFACE','CONTENT_PLANE','FOCAL_DETAIL','FEEDBACK_LAYER']),
+    textureAssetIds:Object.freeze([]),assetIdsNotInvented:true,
+    nineSliceAllowed:true,originalAssetsImmutable:true,
+    constraints:Object.freeze(['VISIBLE_ASSET_REQUIRED_FOR_TEXTURE','PROVENANCE_LICENSE_VERIFIED',
+      'NO_GENERIC_FRAME_FORCED_ON_GAME','PRESERVE_INPUT_AND_GAMEPLAY_AUTHORITY']),
+    authority:'VISUAL_CONSTRUCTION_RECIPE_ONLY'
+  });
+}
+function visualCandidateAnchors(rect,bounds,zone,desired){
+  const h=desired.height,w=desired.width;
+  const maxX=Math.max(0,rect.width-w),maxY=Math.max(0,rect.height-h);
+  const anchors=[[0,0],[maxX,0],[0,maxY],[maxX,maxY],[maxX/2,maxY/2],
+    [maxX/2,0],[maxX/2,maxY],[0,maxY/2],[maxX,maxY/2]];
+  // Pack narrow cards and HUD labels beyond nine generic presets.
+  // Bound the search work so production planning stays mobile-friendly.
+  const stepX=Math.max(1,w+8),stepY=Math.max(1,h+6);
+  for(let y=0;y<=maxY&&anchors.length<160;y+=stepY){
+    for(let x=0;x<=maxX&&anchors.length<160;x+=stepX)anchors.push([x,y]);
+    anchors.push([maxX,y]);
+  }
+  const seen=new Set();
+  return anchors.map(([rx,ry])=>({
+    x:between(rect.x+rx,bounds.x,bounds.x+bounds.width-w),
+    y:between(rect.y+ry,bounds.y,bounds.y+bounds.height-h),width:w,height:h
+  })).filter(v=>{const k=v.x.toFixed(2)+':'+v.y.toFixed(2);if(seen.has(k))return false;seen.add(k);return true;});
+}
+// Use a deterministic constrained placement instead of static genre templates.
+export function optimizeVibeScreenLayout({
+  viewport={width:393,height:852},safeInsets={},components=[],occupiedRects=[],
+  focalRegion=null,iterations=2
+}={}){
+  const width=finite(viewport.width),height=finite(viewport.height);
+  if(width<=0||height<=0)return Object.freeze({pass:false,reason:'INVALID_VIEWPORT',placements:Object.freeze([])});
+  const insets={left:between(finite(safeInsets.left),0,width/3),right:between(finite(safeInsets.right),0,width/3),
+    top:between(finite(safeInsets.top),0,height/3),bottom:between(finite(safeInsets.bottom),0,height/3)};
+  const bounds={x:insets.left,y:insets.top,width:width-insets.left-insets.right,height:height-insets.top-insets.bottom};
+  const focal=presentationRect(focalRegion);
+  const protectedRects=(occupiedRects||[]).map(presentationRect).filter(Boolean);
+  const ordered=(components||[]).filter(x=>clean(x?.id)).map((row,index)=>({...row,_index:index}))
+    .sort((a,b)=>finite(b.priority,1)-finite(a.priority,1)||a._index-b._index);
+  const placements=[],failures=[];
+  for(const element of ordered){
+    const w=between(finite(element.width,160),Math.min(32,bounds.width),bounds.width);
+    const h=between(finite(element.height,48),Math.min(28,bounds.height),bounds.height);
+    const candidates=visualCandidateAnchors(bounds,bounds,element.zone,{width:w,height:h});
+    if(presentationRect(element.preferredRect))candidates.unshift({
+      x:between(element.preferredRect.x,bounds.x,bounds.x+bounds.width-w),
+      y:between(element.preferredRect.y,bounds.y,bounds.y+bounds.height-h),width:w,height:h
+    });
+    let best=null;
+    for(const rect of candidates){
+      const overlap=[...protectedRects,...placements].reduce((sum,other)=>sum+overlapArea(rect,other),0);
+      const focalOverlap=focal&&element.allowFocalOcclusion!==true?overlapArea(rect,focal):0;
+      const normalizedOverlap=overlap/Math.max(1,w*h),normalizedFocal=focalOverlap/Math.max(1,w*h);
+      const wanted=clean(element.zone||'EDGE').toUpperCase();
+      const centerX=rect.x+w/2,centerY=rect.y+h/2;
+      const positionPenalty=wanted==='TOP'?centerY/height:wanted==='BOTTOM'?(height-centerY)/height:
+        wanted==='LEFT'?centerX/width:wanted==='RIGHT'?(width-centerX)/width:0;
+      const cost=normalizedOverlap*8+normalizedFocal*16+positionPenalty*.8;
+      if(!best||cost<best.cost)best={...rect,cost,overlap,occludesFocal:focalOverlap>0};
+    }
+    if(!best){failures.push(element.id);continue;}
+    placements.push(Object.freeze({id:element.id,x:best.x,y:best.y,width:w,height:h,
+      priority:finite(element.priority,1),collisionArea:best.overlap,
+      occludesFocal:best.occludesFocal,unresolved:best.overlap>0||best.occludesFocal}));
+  }
+  const unresolved=placements.filter(x=>x.unresolved).map(x=>x.id);
+  return Object.freeze({pass:!failures.length&&!unresolved.length,
+    bounds:Object.freeze(bounds),placements:Object.freeze(placements),
+    unresolved:Object.freeze([...failures,...unresolved]),iterationsPerformed:1,
+    ...(iterations>1?{additionalPassesSkipped:'NO_VISUAL_STATE_CHANGE_WITHOUT_REAL_RELAYOUT'}:{}),
+    authority:'SUGGESTED_PRESENTATION_LAYOUT_NOT_RUNTIME_PROOF'});
+}
+export function placeVibeTooltip({
+  anchorRect,tooltipSize={width:260,height:112},viewport={width:393,height:852},
+  safeInsets={},occupiedRects=[]
+}={}){
+  const a=presentationRect(anchorRect);
+  if(!a)return Object.freeze({pass:false,reason:'ANCHOR_REQUIRED'});
+  const w=between(finite(tooltipSize.width,260),32,Math.max(32,finite(viewport.width,393)));
+  const h=between(finite(tooltipSize.height,112),24,Math.max(24,finite(viewport.height,852)));
+  const left=finite(safeInsets.left),top=finite(safeInsets.top);
+  const right=finite(viewport.width,393)-finite(safeInsets.right);
+  const bottom=finite(viewport.height,852)-finite(safeInsets.bottom);
+  const slots=[
+    {placement:'BELOW',x:a.x+a.width/2-w/2,y:a.y+a.height+8},
+    {placement:'ABOVE',x:a.x+a.width/2-w/2,y:a.y-h-8},
+    {placement:'RIGHT',x:a.x+a.width+8,y:a.y+a.height/2-h/2},
+    {placement:'LEFT',x:a.x-w-8,y:a.y+a.height/2-h/2}
+  ];
+  const clipped=slot=>Math.max(0,left-slot.x)+Math.max(0,slot.x+w-right)
+    +Math.max(0,top-slot.y)+Math.max(0,slot.y+h-bottom);
+  const options=slots.map(slot=>{
+    const rect={x:between(slot.x,left,Math.max(left,right-w)),y:between(slot.y,top,Math.max(top,bottom-h)),width:w,height:h};
+    const collision=[a,...occupiedRects.map(presentationRect).filter(Boolean)]
+      .reduce((sum,row)=>sum+overlapArea(rect,row),0);
+    return {...rect,placement:slot.placement,cost:clipped(slot)*30+collision/Math.max(1,w*h)*400};
+  }).sort((a,b)=>a.cost-b.cost);
+  const best=options[0];
+  return Object.freeze({pass:best.cost<400,x:best.x,y:best.y,width:w,height:h,
+    placement:best.placement,collisionCost:best.cost,authority:'PRESENTATION_ONLY'});
+}
+
+// Context changes emphasis, never authoritative game data or critical input anchors.
+export function resolveVibeContextualHud({
+  components=[],phase='EXPLORATION',viewport={width:393,height:852}
+}={}){
+  const roleWeights=Object.freeze({
+    EXPLORATION:{MAP:4,QUEST:3,RESOURCE:2,SKILL:0},
+    COMBAT:{HEALTH:5,SKILL:5,TARGET:4,STAMINA:4,MAP:0,QUEST:-2},
+    BOSS:{HEALTH:5,BOSS:7,SKILL:4,TARGET:3,QUEST:-3},
+    CRAFT:{RECIPE:6,RESOURCE:5,INVENTORY:4,QUEST:-2},
+    SHOP:{CURRENCY:5,COMPARE:5,INVENTORY:4,SKILL:-3},
+    PARTY:{PARTY:5,PING:5,HEALTH:3,QUEST:-2}
+  });
+  const active=roleWeights[String(phase).toUpperCase()]||roleWeights.EXPLORATION;
+  const narrow=Number(viewport.width)<420;
+  const ranked=(components||[]).map((row,index)=>{
+    const role=String(row?.role||'').toUpperCase();
+    const critical=row?.persistent===true||row?.touchControl===true;
+    const priority=finite(row?.priority,1)+(active[role]||0)+(critical?10:0);
+    return Object.freeze({...row,priority,persistent:critical,emphasized:(active[role]||0)>=4,
+      _index:index});
+  }).filter(x=>clean(x.id)).sort((a,b)=>b.priority-a.priority||a._index-b._index);
+  const limit=narrow?6:10;
+  const selected=ranked.filter(row=>row.persistent||ranked.indexOf(row)<limit);
+  const hidden=ranked.filter(row=>!selected.includes(row)).map(row=>row.id);
+  return Object.freeze({
+    phase:String(phase).toUpperCase(),narrow,
+    selected:Object.freeze(selected),deprioritized:Object.freeze(hidden),
+    existingTouchPositionsImmutable:true,
+    authority:'PRESENTATION_PRIORITY_ONLY'
+  });
+}
+
+export function buildVibePresentationCraft({game={},world={},surface='HUD',
+  viewport={width:393,height:852},components=[],safeInsets={},focalRegion=null,phase='EXPLORATION'}={}){
+  const type=String(surface||'HUD').toUpperCase(),grammar=PRESENTATION_SURFACE_GRAMMAR[type];
+  if(!grammar)return Object.freeze({pass:false,reason:'UNKNOWN_SURFACE',surface:type});
+  const materialRecipe=createVibeVisualMaterialRecipe({game,world,surface:type});
+  const focus=resolveVibeContextualHud({components,phase,viewport});
+  const layout=optimizeVibeScreenLayout({viewport,components:focus.selected,safeInsets,focalRegion});
+  return Object.freeze({version:1,surface:type,grammar:grammar.layout,
+    materialRecipe,focus,layout,requiredPatterns:Object.freeze(VIBE_PRESENTATION_EFFECT_PATTERNS),
+    engineSpecificImplementationRequired:true,
+    sourceBindingsVerified:false,runtimeVerified:false,gameplayMutationAllowed:false});
+}
+
 export function createVibeCinematicDirection({request=''}={}){
   return Object.freeze({
     version:1,
@@ -54,9 +262,10 @@ export function createVibeHighEndPresentationStack({request=''}={}){return Objec
   rules:Object.freeze(['presentation-follows-authoritative-gameplay-events','signature-events-use-dedicated-presentation','scene-intent-precedes-decoration','character-and-creature-acting-is-part-of-visual-quality','primary-secondary-procedural-motion-layers-compose-together','game-specific-vfx-language-and-intensity-hierarchy','lighting-supports-region-risk-and-event-readability','camera-never-hides-required-telegraph','audio-vfx-camera-lighting-share-one-art-direction','audio-selection-follows-game-concept-and-runtime-state','mobile-readability-and-reduced-motion-preserved','presentation-checkpoint-never-means-terminal-completion']),
   protected:Object.freeze(['damage','cooldown','reward','spawn-rule','save','progression','economy','hit-semantics'])
 })}
-export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null}={}){
+export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null,game={},world={},viewport={width:393,height:852},uiSurfaces=[]}={}){
   const audit=auditVibePresentation(files);
   const designSystem=createVibeDesignSystem(files);
+  const craftPlans=Object.freeze((Array.isArray(uiSurfaces)&&uiSurfaces.length?uiSurfaces:[{surface:'HUD',components:[]}]).map(row=>buildVibePresentationCraft({game,world,viewport,surface:row.surface,components:row.components||[],safeInsets:row.safeInsets||{},focalRegion:row.focalRegion||null})));
   const timeline=buildVibePresentationTimeline(events);
   const highEnd=createVibeHighEndPresentationStack({request});
   const cinematicDirection=highEnd.cinematicDirection;
@@ -68,7 +277,7 @@ export function planVibePresentationAutopilot({files=[],events=[],request='',cha
     version:3,
     request:String(request),
     qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
-    audit,designSystem,timeline,highEnd,cinematicDirection,
+    audit,designSystem,craftPlans,timeline,highEnd,cinematicDirection,
     changeRequest:changeRequest||null,
     tasks:Object.freeze(tasks.slice(0,10)),
     policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true})
