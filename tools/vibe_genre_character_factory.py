@@ -92,7 +92,7 @@ def animate(arm):
   action=arm.animation_data.action
   if action:
    action.name=name
-   track=arm.animation_data.nla_tracks.new();track.name=name;track.strips.new(name,1,action);track.mute=True
+   track=arm.animation_data.nla_tracks.new();track.name=name;track.strips.new(name,1,action);track.mute=False
  arm.animation_data.action=None
 def create(genre):
  bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
