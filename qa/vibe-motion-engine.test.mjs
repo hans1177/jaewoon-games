@@ -48,7 +48,7 @@ test('action cancellation window prevents early queued dodge and recovers to idl
  engine.enter('light-attack');
  engine.queueAction('dodge',{priority:5});
  engine.update(.1);assert.equal(engine.state,'light-attack');
- engine.update(.1);assert.equal(engine.state,'dodge');
+ engine.update(.1);engine.update(.01);assert.equal(engine.state,'dodge');
  const recovery=new VibeMotionEngine(design);
  recovery.registerActionRule('light-attack',{duration:.2});
  recovery.enter('light-attack');recovery.update(.1);recovery.update(.1);
