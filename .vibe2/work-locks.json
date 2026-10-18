@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-d0lx0c",
+      "worker": "vibe2",
+      "taskId": "internal-motion-tikbalang-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/tikbalang/init.luau"
+      ],
+      "baseSha": "1c6b513d9b2e172c9d3e001c71a5768720b53415",
+      "runId": "39130885068",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-18T13:38:29.219Z",
+      "expiresAt": "2026-10-18T14:23:29.219Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-tikbalang-walk-v1"
+      ]
+    }
+  ]
 }
