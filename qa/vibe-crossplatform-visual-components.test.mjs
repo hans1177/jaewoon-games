@@ -82,7 +82,8 @@ test('web presentation makes real DOM nodes only for confirmed deduplicated dama
   assert.equal(ctrl.updateStatusIcon(icon,{remaining:4,total:8,stacks:3}),true);
   assert.equal(icon.attrs['data-vibe-stacks'],'3');
   assert.equal(icon.style['--vibe-status-ratio'],'0.5');
-  const firstPopup=overlay.children.find(node=>node.name==='span');
+  const firstPopup=overlay.children.find(node=>node.nodeName==='span');
+  assert.ok(firstPopup,'a confirmed hit must render a damage number');
   assert.ok(firstPopup.style.transform.includes('translate('));
   ctrl.destroy();assert.equal(host.children.length,0);
   assert.equal(ctrl.stats().destroyed,true);
