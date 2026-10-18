@@ -99,6 +99,7 @@ on:
       - 'qa/vibe-roblox-co-development.test.mjs'
       - 'qa/vibe-visual-runtime-quality.test.mjs'
       - 'qa/vibe-crossplatform-visual-components.test.mjs'
+      - 'qa/vibe-native3d-only-every-ui.test.mjs'
       - 'qa/vibe2-native-asset-production.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
@@ -460,6 +461,7 @@ jobs:
           node --test qa/vibe-roblox-co-development.test.mjs
           node --test qa/vibe-visual-runtime-quality.test.mjs
           node --test qa/vibe-crossplatform-visual-components.test.mjs
+          node --test qa/vibe-native3d-only-every-ui.test.mjs
           node --test qa/vibe2-native-asset-production.test.mjs
           node --test qa/vibe2-external-customization.test.mjs
           node --test qa/vibe2-neural-diagnosis.test.mjs
