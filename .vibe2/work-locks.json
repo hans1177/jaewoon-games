@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1h9rv6",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "roblox-games/monster-adventure/client/Game.client.luau",
+        "roblox-games/monster-adventure/shared/GameConfig.luau",
+        "roblox-games/monster-adventure/server/Game.server.luau"
+      ],
+      "baseSha": "5f8242faa3e0167071a6123353a40ceb9ce67b14",
+      "runId": "39159105159",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-18T20:01:17.228Z",
+      "expiresAt": "2026-10-18T20:46:17.228Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
