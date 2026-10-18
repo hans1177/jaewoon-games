@@ -3903,8 +3903,15 @@ function visualCraftWorkerGuidance(order={},context={}){
     ||order?.presentationQuality?.uiSurfaces||order?.selectedTask?.uiSurfaces||[];
   const uiSurfaces=Array.isArray(sourceSurfaces)
     ?sourceSurfaces.filter(row=>row&&typeof row==='object'&&typeof row.surface==='string').slice(0,18):[];
+  const taskGameId=clean(order.gameId||order.selectedTask?.gameId);
+  const gameRoot=taskGameId&&/^[A-Za-z0-9._-]+$/.test(taskGameId)
+    ?target+'-games/'+taskGameId+'/':null;
+  const actualGameFiles=(Array.isArray(context?.files)?context.files:[])
+    .filter(row=>typeof row?.path==='string'
+      &&(gameRoot?row.path.startsWith(gameRoot):/^(?:web|roblox|unity)-games\/[A-Za-z0-9._-]+\//.test(row.path)))
+    .map(row=>({path:row.path,source:row.content}));
   const craft=planVibePresentationAutopilot({
-    files:(Array.isArray(context?.files)?context.files:[]).map(row=>({path:row.path,source:row.content})),
+    files:actualGameFiles,
     request:intent,game,world,uiSurfaces,
     assets:Array.isArray(order?.assetProduction?.verifiedVisualBindings)?order.assetProduction.verifiedVisualBindings:[],
     reducedMotion:order?.presentationQuality?.reducedMotion===true,
