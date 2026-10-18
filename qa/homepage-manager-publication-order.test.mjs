@@ -621,3 +621,14 @@ test('read-only secondary homepage keeps primary authority and independently pla
   assert.ok(ci.includes('/backup.html'));
   assert.ok(ci.includes('index.html backup.html company.html'));
 });
+
+test('homepage manager validates canonical web-first internal play links without weakening native readiness',()=>{
+  const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
+  const script=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.ok(manager.includes("const direct=links.web||links.roblox||links.unity||''"),'manager requires web-first playable link');
+  assert.ok(script.includes("const direct=links.web||links.roblox||links.unity||''"),'web-first link exists in rendered homepage');
+  assert.ok(!manager.includes("const direct=links.roblox||links.unity||''"),'stale native-only expectation rejected');
+  assert.match(manager,/cleanRunnableShelfPresentation/);
+  assert.ok(manager.includes("class=\"gameShelfHead\""),'existing shelf stays active');
+  assert.ok(manager.includes("class=\"gameShelfCount\""),'existing game count stays visible');
+});
