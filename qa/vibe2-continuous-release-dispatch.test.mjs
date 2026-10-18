@@ -495,7 +495,9 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
 
   assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
   assert.match(publisher,/git clone --quiet --depth=1 --single-branch --branch gh-pages/);
-  assert.match(publisher,/test -f "\$site\/index\.html"/);
+  // The publisher now rejects a missing OR empty Pages homepage, not just a missing file.
+  assert.match(publisher,/test -s "\$site\/index\.html"/);
+  assert.match(publisher,/data-jaewoon-pages-home=/);
   assert.match(publisher,/GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
   assert.match(publisher,/git -C "\$site" push origin HEAD:gh-pages/);
 
