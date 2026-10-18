@@ -9,6 +9,15 @@ on:
       - "game-catalog.json"
       - "homepage-platform-exposure.json"
       - "tools/github-pages-landing.mjs"
+      - "index.html"
+      - "company-status.json"
+      - "homepage-portfolio-status.json"
+      - "manifest.webmanifest"
+      - "sw.js"
+      - "install.html"
+      - "command.html"
+      - "offline.html"
+      - "asset-library.html"
       - "company-learning/platform-release-roadmap.json"
       - ".github/workflows/vibe2-candidate-release.yml"
       - "assets/**"
@@ -50,6 +59,7 @@ jobs:
             homepage-platform-exposure.json
             tools/github-pages-landing.mjs
             qa/github-pages-landing.test.mjs
+            index.html
 
       - name: Prepare all registered game routes and necessary shared assets
         shell: bash
@@ -107,6 +117,35 @@ jobs:
           for(const route of routes)transformRoute(path.join(site,route));
           // Only direct files referenced by published games are hydrated from the canonical Git tree.
           // The original assets library stays untouched in GitHub and is never copied wholesale.
+          // 기존 홈페이지와 바이브 관리자/PWA 원본 파일을 동일 Git SHA에서 확보한다.
+          // Cloudflare Workers 및 서버 상태는 복사하거나 재배포하지 않는다.
+          const staticFiles=[
+            'index.html','game-catalog.json','company-status.json',
+            'homepage-platform-exposure.json','homepage-portfolio-status.json',
+            'manifest.webmanifest','sw.js','install.html','offline.html',
+            'command.html','emergency-ai.js','asset-library.html',
+            'company-asset-library.json','backup.html','company.html',
+            'multiplayer/multiplayer-client.js'
+          ];
+          for(const file of staticFiles){
+            const source=cp.execFileSync('git',['show','HEAD:'+file],{maxBuffer:32*1024*1024});
+            if(source.length>24*1024*1024)throw Error('PAGES_HOME_STATIC_FILE_TOO_LARGE:'+file);
+            const destination=path.join(site,file);
+            fs.mkdirSync(path.dirname(destination),{recursive:true});
+            fs.writeFileSync(destination,source);
+          }
+          // 모든 루트 절대경로는 배포 사본에서만 변환한다. 게임/카탈로그 원본은 수정하지 않는다.
+          // JSON 중 PWA manifest 이외에는 canonical /web-games/ 경로를 보존해야 한다.
+          const pathAdaptFiles=[
+            'manifest.webmanifest','sw.js','install.html','offline.html',
+            'command.html','asset-library.html','backup.html','company.html',
+            'emergency-ai.js'
+          ];
+          for(const file of pathAdaptFiles){
+            const pathname=path.join(site,file);
+            const original=fs.readFileSync(pathname,'utf8');
+            fs.writeFileSync(pathname,original.replace(/(["'])\\/(?!\\/)/g,'$1/jaewoon-games/'));
+          }
           const trackedAssets=new Set(cp.execFileSync('git',['ls-tree','-r','--name-only','HEAD','--','assets'],{encoding:'utf8'}).trim().split('\n'));
           const refs=new Set();
           const collect=root=>{
@@ -124,6 +163,16 @@ jobs:
             }
           };
           collect(site);
+          // 홈 카드 커버·프로필 이미지·PWA 아이콘은 게임별 등록 증가에 맞춰 자동 포함한다.
+          for(const asset of trackedAssets){
+            if(/^assets\/(homepage-covers\/|roblox-thumbnails\/)/.test(asset)
+              ||/^assets\/[^/]+\.(?:webp|png|jpe?g|svg)$/.test(asset)
+              ||/^assets\/homepage-media\/[^/]+\.mp4$/.test(asset))refs.add(asset);
+          }
+          for(const asset of [
+            'assets/homepage-enhancements.js','assets/asset-library.css',
+            'assets/asset-library.js','assets/asset-library-viewer.js'
+          ])if(trackedAssets.has(asset))refs.add(asset);
           for(const asset of [...refs].sort()){
             const target=path.join(site,asset);
             fs.mkdirSync(path.dirname(target),{recursive:true});
@@ -133,6 +182,13 @@ jobs:
               throw Error('GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE:'+asset);
             }
             fs.writeFileSync(target,source);
+          }
+          // 원본 렌더러는 그대로 두고 Pages 사본의 절대 경로만 프로젝트 prefix로 보정한다.
+          for(const file of ['assets/homepage-enhancements.js','assets/asset-library.js','assets/asset-library-viewer.js']){
+            const pathname=path.join(site,file);
+            if(!fs.existsSync(pathname))continue;
+            const original=fs.readFileSync(pathname,'utf8');
+            fs.writeFileSync(pathname,original.replace(/(["'])\\/(?!\\/)/g,'$1/jaewoon-games/'));
           }
           fs.writeFileSync(path.join(site,'.nojekyll'),'');
           fs.writeFileSync(path.join(site,'web-games/publish-manifest.json'),JSON.stringify({
@@ -145,15 +201,22 @@ jobs:
           console.log('WEB_PAGES_SHARED_ASSETS='+refs.size);
           NODE
 
-      - name: Verify every published game route and route visitors to the single official homepage
+      - name: Verify every published game route and the canonical official homepage
         shell: bash
         run: |
           set -euo pipefail
           node tools/github-pages-landing.mjs
           node --test qa/github-pages-landing.test.mjs
           test -s _site/index.html
-          grep -q 'data-jaewoon-pages-redirect="1"' _site/index.html
-          echo "PAGES_OFFICIAL_HOME_REDIRECT_QA=PASS"
+          grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' _site/index.html
+          grep -q '/jaewoon-games/assets/homepage-enhancements.js' _site/index.html
+          test -s _site/game-catalog.json
+          test -s _site/company-status.json
+          test -s _site/homepage-platform-exposure.json
+          test -s _site/manifest.webmanifest
+          test -s _site/sw.js
+          test -s _site/multiplayer/multiplayer-client.js
+          echo "PAGES_OFFICIAL_HOME_RENDER_QA=PASS"
 
       - name: Publish gh-pages without force or deleting earlier games
         if: github.event_name != 'pull_request'
@@ -174,7 +237,7 @@ jobs:
           # Copy only; keep every previously published game without rewriting the originals.
           rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
           test -s "$site/index.html"
-          grep -q 'data-jaewoon-pages-redirect="1"' "$site/index.html"
+          grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' "$site/index.html"
           git -C "$site" add --all
           if ! git -C "$site" diff --cached --quiet; then
             git -C "$site" commit -m "pages: publish registered web games from main $GITHUB_SHA"
@@ -198,7 +261,7 @@ jobs:
           mkdir -p "$artifact"
           rsync -a --exclude='.git/' "$retained/" "$artifact/"
           test -s "$artifact/index.html"
-          grep -q 'data-jaewoon-pages-redirect="1"' "$artifact/index.html"
+          grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' "$artifact/index.html"
           test -f "$artifact/tier.html"
           test -f "$artifact/web-games/publish-manifest.json"
           GITHUB_SHA="$GITHUB_SHA" node - "$artifact/web-games/publish-manifest.json" <<'NODE'
@@ -262,17 +325,20 @@ jobs:
           done
           # A 200 on the old forest root did not make a game directory visible.
           curl -fsSL --max-time 15 "$base" -o /tmp/jaewoon-pages-home-live.html
-          grep -q 'data-jaewoon-pages-redirect="1"' /tmp/jaewoon-pages-home-live.html || {
-            echo 'WEB_PAGES_OFFICIAL_HOME_REDIRECT_NOT_LIVE' >&2; exit 1;
+          grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' /tmp/jaewoon-pages-home-live.html || {
+            echo 'WEB_PAGES_CANONICAL_HOMEPAGE_NOT_LIVE' >&2; exit 1;
           }
-          grep -q 'https://jaewoon-games.pages.dev/' /tmp/jaewoon-pages-home-live.html || {
-            echo 'WEB_PAGES_OFFICIAL_HOME_REDIRECT_TARGET_MISMATCH' >&2; exit 1;
+          grep -q '/jaewoon-games/assets/homepage-enhancements.js' /tmp/jaewoon-pages-home-live.html || {
+            echo 'WEB_PAGES_HOME_RENDERER_PATH_MISMATCH' >&2; exit 1;
           }
-          # 게임 실행 경로는 위 HTTP 검사에서 개별 검증하며 두 번째 홈 목록은 만들지 않는다.
+          for file in game-catalog.json company-status.json homepage-platform-exposure.json manifest.webmanifest sw.js multiplayer/multiplayer-client.js; do
+            curl -fsSL --max-time 15 -o /dev/null "$base$file" || { echo "WEB_PAGES_HOME_DEPENDENCY_NOT_LIVE=$file" >&2; exit 1; }
+          done
+          # 모든 등록 게임의 정적 원본 실행 경로는 위에서 HTTP로 개별 검증한다.
           echo "WEB_PAGES_PUBLISHED_GAME_ROUTES=$(node -p "require('/tmp/web-pages-published.json').routes.length")"
           curl -fsSL --max-time 15 -o /dev/null "$base""tier.html" || { echo 'MAGIC_FOREST_TIER_NOT_LIVE' >&2; exit 1; }
           echo "WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS"
           echo "WEB_PAGES_LIVE_SOURCE_SHA=$GITHUB_SHA"
           echo "WEB_PAGES_ROUTES_HTTP_200=PASS"
           echo "MAGIC_FOREST_PLAY_URL=${base}web-games/fantasy-survival/"
-          echo "OFFICIAL_HOMEPAGE_URL=https://jaewoon-games.pages.dev/"
+          echo "OFFICIAL_HOMEPAGE_URL=https://hans1177.github.io/jaewoon-games/"
