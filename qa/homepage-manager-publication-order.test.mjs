@@ -64,6 +64,10 @@ test('Director reviews and publishes the exact Homepage Manager candidate in one
 test('homepage publication explicitly refreshes the company-runtime catalog used by the live worker',()=>{
   const director=section('  director-supervision:');
   assert.match(workflow,/actions: write/);
+  assert.match(director,/gh workflow run magic-forest-pages\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(director,/HOMEPAGE_PAGES_POST_MERGE_DISPATCHED=YES/);
+  assert.ok(director.indexOf('gh workflow run magic-forest-pages.yml')>director.indexOf('gh pr merge "$pr_url"'),'Pages must dispatch only after the supervised merge');
+  assert.ok(director.indexOf('gh workflow run magic-forest-pages.yml')<director.indexOf('gh workflow run company-status-sync.yml'),'Pages publication must not await another runtime sync');
   assert.match(director,/gh workflow run company-status-sync\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
   assert.match(director,/HOMEPAGE_RUNTIME_STATUS_SYNC=DISPATCHED/);
   assert.match(statusSyncWorkflow,/workflow_dispatch:/);
