@@ -2,29 +2,10 @@
 name: Magic Forest Static Play
 
 on:
+  # OWNER-LOCKED PUBLICATION TRIGGER: every merged main revision must start publication.
+  # Never add paths, QA-result, homepage-manager, director, or release-classification gates here.
   push:
     branches: [main]
-    paths:
-      - "web-games/**"
-      - "game-catalog.json"
-      - "homepage-platform-exposure.json"
-      - "tools/github-pages-landing.mjs"
-      - "index.html"
-      - "company-status.json"
-      - "homepage-portfolio-status.json"
-      - "manifest.webmanifest"
-      - "sw.js"
-      - "install.html"
-      - "command.html"
-      - "offline.html"
-      - "asset-library.html"
-      - "company-learning/platform-release-roadmap.json"
-      - ".github/workflows/vibe2-candidate-release.yml"
-      - "assets/**"
-      - "!assets/external/**"
-      - "!assets/roblox/**"
-      - "!assets/native-authoring/**"
-      - ".github/workflows/magic-forest-pages.yml"
   workflow_dispatch:
   pull_request:
     branches: [main]
@@ -296,6 +277,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
+      issues: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -304,11 +286,16 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+      # Director checks public games only AFTER publication; not a release gate.
       - name: Verify live GitHub Pages source and game routes
+        id: director_live_qa
         if: github.event_name != 'pull_request'
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
+          director_report="$RUNNER_TEMP/pages-director-game-failures.txt"
+          : > "$director_report"
           base="${{ steps.deployment.outputs.page_url }}"
           test -n "$base" || { echo 'WEB_PAGES_DEPLOY_URL_MISSING' >&2; exit 1; }
           base="${base%/}/"
@@ -325,9 +312,12 @@ jobs:
           if [ "$verified" != true ]; then echo "WEB_PAGES_LIVE_SOURCE_NOT_VERIFIED" >&2; exit 1; fi
           curl -fsSL --max-time 15 "$manifest_url" -o /tmp/web-pages-published.json
           node -e "const m=require('/tmp/web-pages-published.json');for(const p of m.routes){if(!/^web-games\/[a-z0-9-]+\/$/.test(p))process.exit(1);const id=p.split('/')[1];if(!/^[a-f0-9]{40}$/.test(m.sourceTreeShas?.[id]||''))process.exit(1)}"
-          node -p "require('/tmp/web-pages-published.json').routes.join('\n')" | while IFS= read -r route; do
-            curl -fsSL --max-time 15 -o /dev/null "$base$route" || { echo "WEB_PAGES_ROUTE_NOT_LIVE=$route" >&2; exit 1; }
-          done
+          # Continue to test other published games after one failed route.
+          while IFS= read -r route; do
+            if ! curl -fsSL --max-time 15 -o /dev/null "$base$route"; then
+              echo "WEB_PAGES_ROUTE_NOT_LIVE=$route" | tee -a "$director_report" >&2
+            fi
+          done < <(node -p "require('/tmp/web-pages-published.json').routes.join('\\n')")
           node -p "require('/tmp/web-pages-published.json').sharedAssets.join('\n')" | while IFS= read -r asset; do
             [ -n "$asset" ] || continue
             curl -fsSL --max-time 15 -o /dev/null "$base$asset" || { echo "WEB_PAGES_ASSET_NOT_LIVE=$asset" >&2; exit 1; }
@@ -350,4 +340,47 @@ jobs:
           echo "WEB_PAGES_LIVE_SOURCE_SHA=$GITHUB_SHA"
           echo "WEB_PAGES_ROUTES_HTTP_200=PASS"
           echo "MAGIC_FOREST_PLAY_URL=${base}web-games/fantasy-survival/"
+          if test -s "$director_report"; then
+            echo "::error::DIRECTOR_POST_DEPLOY_GAME_ROUTE_FAILURE - publication already happened; register an issue."
+            exit 1
+          fi
+          echo "DIRECTOR_POST_DEPLOY_GAME_TEST=PASS"
           echo "OFFICIAL_HOMEPAGE_URL=https://hans1177.github.io/jaewoon-games/"
+
+
+      # Report post-publication defects using the existing public-release workflow.
+      - name: Director register issues after live game testing
+        if: ${{ github.event_name != 'pull_request' && steps.director_live_qa.outcome == 'failure' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          title="[총괄 사후검증] GitHub Pages 게임 배포 오류 ${GITHUB_SHA:0:12}"
+          # One issue per exact published SHA, including dispatch retries.
+          if gh issue list --repo "$GITHUB_REPOSITORY" --state all --limit 200 --json title --jq '.[].title' | grep -Fxq "$title"; then
+            echo "DIRECTOR_POST_DEPLOY_ISSUE=ALREADY_REGISTERED"
+            exit 0
+          fi
+          report="$RUNNER_TEMP/pages-director-game-failures.txt"
+          body="$RUNNER_TEMP/pages-director-issue.md"
+          {
+            echo '## 배포 후 게임 검증 문제 (총괄)'
+            echo
+            echo "- 소스 커밋: \`$GITHUB_SHA\`"
+            echo "- 배포된 홈페이지: https://hans1177.github.io/jaewoon-games/"
+            echo "- 검증 실행: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "- 시점: GitHub Pages 배포 이후 (배포 차단 조건 아님)"
+            echo
+            echo '### 확인된 오류'
+            if test -s "$report"; then
+              sed 's/^/- \`/;s/$/\`/' "$report"
+            else
+              echo '- 배포 후 매니페스트/게임/공유 자산/홈페이지 검사 실패. 상세 원인은 위 실행 로그 확인.'
+            fi
+            echo
+            echo '### 후속 처리'
+            echo '바이브의 기존 책임 게임 소스와 배포 상태를 확인하고, 해당 실패만 재현·수정·재검증. 원본/세이브/플랫폼 릴리즈 권한 보존.'
+          } > "$body"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$body"
+          echo 'DIRECTOR_POST_DEPLOY_ISSUE=CREATED'
