@@ -5,6 +5,7 @@ on:
   workflow_run:
     workflows:
       - Company Status Sync
+      - Magic Forest Static Play
       - Unity Web Development Floor
       - Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment
       - Company DEVELOPMENT_CONFIRMED Roblox F9 Final Review
@@ -224,9 +225,14 @@ jobs:
             if ! git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/homepage-runtime/game-seed-state.json 2>/dev/null; then
               printf '%s\n' '{"seeds":[]}' > /tmp/homepage-runtime/game-seed-state.json
             fi
+            # 이미 공개된 원본 게임 경로만 승인한다. 확인 불가 시 파일 변경 전에 실패로 재시도한다.
+            curl --fail --silent --show-error --location --retry 2 --max-time 20 \
+              https://hans1177.github.io/jaewoon-games/web-games/publish-manifest.json \
+              -o /tmp/homepage-runtime/published-web-manifest.json
             COMPANY_VERIFIED_POLICY_PATH=company-learning/platform-release-roadmap.json node --input-type=module <<'NODE'
             import fs from 'node:fs';
-            import { applyHomepageRuntimeInfo, mergeRuntimeCatalogMissingGames, syncProductionClasses } from './tools/company-status-sync.mjs';
+            import { execFileSync } from 'node:child_process';
+            import { applyHomepageRuntimeInfo, mergeRuntimeCatalogMissingGames, syncProductionClasses, syncPublishedWebRoutes } from './tools/company-status-sync.mjs';
             import { ingestOwnerWebGameIds, validateNormalizedCatalog } from './tools/game-catalog-normalization.mjs';
             const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
             const runtimeCatalog=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/runtime-game-catalog.json','utf8'));
@@ -236,6 +242,10 @@ jobs:
             const artbooks=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
             mergeRuntimeCatalogMissingGames({catalog,runtimeCatalog,developmentQueue});
             ingestOwnerWebGameIds(catalog,[],{filesystem:fs});
+            const publishedManifest=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/published-web-manifest.json','utf8'));
+            const publication=syncPublishedWebRoutes({catalog,manifest:publishedManifest,sourceTreeShaOf:root=>
+              execFileSync('git',['rev-parse','HEAD:'+root],{encoding:'utf8'}).trim()});
+            console.log('HOMEPAGE_PUBLISHED_WEB_ROUTES='+publication.confirmed+'/'+publication.published);
             syncProductionClasses({portfolio,catalog,artbooks,developmentQueue,seedState,filesystem:fs});
             applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
             const validation=validateNormalizedCatalog(catalog);
