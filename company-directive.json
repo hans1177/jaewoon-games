@@ -1388,12 +1388,28 @@
     "completedMigrationArtifactRetentionRequired": false
   },
   "gameVisualQuality": {
-    "minimumFinalGameplayDimension": "2.5D",
+    "minimumFinalGameplayDimension": "3D",
     "preferredDimension": "3D",
     "flat2DFinalGameplayForbidden": true,
     "ui2DOverlayAllowed": true,
     "existing2DRepairRequired": true,
-    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation"
+    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation",
+    "twoPointFiveDGameplayWorldForbidden": true,
+    "twoPointFiveDUiOverlayAllowed": true,
+    "twoPointFiveDUiOverlayPresentationOnly": true,
+    "real3DMeshCameraDepthCollisionRuntimeProofRequired": true,
+    "allSpatialGameAssetLibraries3dOnly": true,
+    "exampleAllowedOverlaySurfaces": [
+      "HUD",
+      "HEALTH_BAR",
+      "DAMAGE_NUMBER",
+      "INVENTORY",
+      "TOOLTIP",
+      "QUEST",
+      "MINIMAP",
+      "NOTIFICATION"
+    ],
+    "exampleAllowedOverlaySurfacesNote": "VISUAL_UI_ONLY_NOT_WORLD_GEOMETRY_OR_GAMEPLAY_AUTHORITY"
   },
   "webGameStartability": {
     "allExposedGamesMustActuallyStart": true,

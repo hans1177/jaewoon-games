@@ -1,37 +1,48 @@
-// Vibe2 Web 2.5D mandatory implementation policy
-// Every Web game must ship as a projected 2.5D world, not a flat top-down scene.
-export const VIBE_WEB_25D_POLICY=Object.freeze({
-  version:1,
+// Legacy filename retained for existing imports. Authoritative final gameplay is REAL 3D.
+// 2.5D is permitted ONLY in presentation-only UI overlays (HUD, health, damage, inventory).
+// Existing approved 2D gameplay is preserved until a working 3D replacement is verified.
+export const VIBE_WEB_3D_POLICY=Object.freeze({
+  version:2,
+  authority:'company-learning/platform-release-roadmap.json#ownerActiveDevelopmentScope20261009',
   mandatory:true,
-  projection:'dimetric/isometric',
-  worldCoordinates:'x,y,z',
-  required:Object.freeze([
-    'world-to-screen projection',
-    'screen-to-world inverse mapping for pointer/touch when needed',
-    'depth sort by projected foot position / x+y',
-    'elevation or z offset',
-    'ground/contact shadows for actors and tall props',
-    'bottom-center sprite anchoring',
-    'camera follow in projected space',
-    'viewport culling',
-    'mobile touch controls',
-    'real coherent image assets'
+  minimumFinalGameplayDimension:'3D',
+  gameplayWorld:'NATIVE_DEPTH_TESTED_3D',
+  projection:'PERSPECTIVE_OR_NATIVE_ORTHOGRAPHIC_3D_CAMERA',
+  actualTriangleMeshesRequired:true,
+  nativeDepthTestRequired:true,
+  real3DCameraRequired:true,
+  xyzMovementAndCollisionRequired:true,
+  spatialGameplayAssets3dOnly:true,
+  forbiddenFinalGameplay:Object.freeze([
+    'flat-2d-world',
+    'projected-2.5d-world',
+    'isometric-sprite-world',
+    'dom-or-canvas-world-depth-simulation',
+    'css-perspective-world-substitute',
+    'flat-plane-only-3d-claim',
+    'fake-3d-source-markers'
   ]),
-  forbidden:Object.freeze([
-    'flat top-down release rendering',
-    'DOM z-index used as world-depth substitute',
-    'geometric placeholder characters/enemies/props',
-    'emoji used as gameplay art'
-  ]),
-  referenceMath:Object.freeze({
-    screenX:'(worldX-worldY)*tileWidth/2',
-    screenY:'(worldX+worldY)*tileHeight/2-worldZ*heightScale',
-    depth:'worldX+worldY'
+  overlays:Object.freeze({
+    twoPointFiveDAllowed:true,
+    presentationOnly:true,
+    worldOrPlayerOrEnemyReplacementForbidden:true,
+    authoritativeGameplayMutationForbidden:true,
+    surfaces:Object.freeze(['HUD','HEALTH_BAR','DAMAGE_NUMBER','INVENTORY',
+      'TOOLTIP','QUEST','MAP','MINIMAP','NOTIFICATION','DIALOGUE','SHOP',
+      'EQUIPMENT','CRAFT','PARTY','SETTINGS','STATUS_EFFECT'])
   }),
-  releaseGate:'assertVibeWebRelease'
+  runtimeEvidenceRequired:true,
+  releaseGate:'assertVibeWebRelease',
+  preserveLegacyUntilActual3dPass:true
 });
-export function requireVibeWeb25D(target='web'){
-  if(String(target).toLowerCase()==='web') return VIBE_WEB_25D_POLICY;
-  return null;
+// Backwards compatibility is intentionally an alias to 3D requirements,
+// NEVER an authorization to ship a projected 2.5D gameplay world.
+export const VIBE_WEB_25D_POLICY=VIBE_WEB_3D_POLICY;
+export function requireVibeWeb3D(target='web'){
+  return String(target).toLowerCase()==='web'?VIBE_WEB_3D_POLICY:null;
 }
-if(typeof window!=='undefined')window.VIBE_WEB_25D_POLICY=VIBE_WEB_25D_POLICY;
+export const requireVibeWeb25D=requireVibeWeb3D;
+if(typeof window!=='undefined'){
+  window.VIBE_WEB_3D_POLICY=VIBE_WEB_3D_POLICY;
+  window.VIBE_WEB_25D_POLICY=VIBE_WEB_3D_POLICY;
+}
