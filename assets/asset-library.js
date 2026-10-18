@@ -184,7 +184,12 @@ function renderSourceCollections(data){
    const source=sources[index],card=document.createElement('div');card.className='sourcePack sourcePackArchive';
    const label=document.createElement('span');label.className='sourcePackCategory';label.textContent='별도 원본 카탈로그';
    const title=document.createElement('strong');title.textContent=source.label;
-   const detail=document.createElement('small');detail.textContent=result.value[source.key].length+'개 목록 · 실물·라이선스·실행 검증은 항목별 확인';
+   const detail=document.createElement('small');
+   const count=result.value[source.key].length;
+   const acquired=Number(result.value?.sourceModelCount),converted=Number(result.value?.adaptedGlbCount);
+   const conversionGap=source.key==='models'&&Number.isInteger(acquired)&&Number.isInteger(converted)&&acquired>=converted
+    ?' · 원본 '+acquired+'종 / 변환 GLB '+converted+'종 / 추가 변환 필요 '+(acquired-converted)+'종':'';
+   detail.textContent=count+'개 목록'+conversionGap+' · 실물·라이선스·실행 검증은 항목별 확인';
    card.append(label,title,detail);list.append(card);inspected++;
   });
   $('sourcePackStatus').textContent=inspected
