@@ -131,6 +131,7 @@ test('both native platform adapters expose concrete event-safe visual abilities'
   assert.match(worker,/createWebPresentationController/);
   assert.match(worker,/visualCraftWorkerGuidance\(order,context\)/);
   assert.match(worker,/planVibePresentationAutopilot\(/);
+  assert.match(worker,/sourceGroundedPatterns:craft\.adaptiveProfiles/,'source worker must consume per-game pattern selection');
 });
 
 test('source-derived visual patterns differ by real gameplay system, not genre name or commented hints',()=>{
@@ -198,4 +199,23 @@ test('adaptive visual craft honors reduced motion and device budget without supp
   assert.ok(plan.adaptiveProfiles[0].selected.some(x=>x.pattern==='DAMAGE_POPUP_POOL'));
   assert.ok(!plan.adaptiveProfiles[1].selected.some(x=>x.pattern==='CRAFT_PROGRESS'));
   assert.equal(plan.craftPlans.length,plan.adaptiveProfiles.length);
+});
+
+test('existing mobile touch controls remain pinned; impossible safe-area positions fail closed',()=>{
+  const fixed={id:'attack-control',touchControl:true,zone:'BOTTOM',priority:100,
+    width:72,height:72,preferredRect:{x:290,y:710,width:72,height:72}};
+  const normal={id:'quest-chip',zone:'TOP',width:100,height:38,priority:10};
+  const valid=optimizeVibeScreenLayout({
+    viewport:{width:393,height:852},safeInsets:{bottom:22,left:8,right:8,top:20},
+    components:[fixed,normal],focalRegion:{x:75,y:190,width:220,height:420}
+  });
+  assert.equal(valid.pass,true);
+  assert.deepEqual(valid.placements.find(x=>x.id==='attack-control').x,290);
+  assert.deepEqual(valid.placements.find(x=>x.id==='attack-control').y,710);
+  const broken=optimizeVibeScreenLayout({
+    viewport:{width:393,height:852},safeInsets:{bottom:60,right:12},
+    components:[fixed,normal]
+  });
+  assert.equal(broken.pass,false,'unsafe bottom control cannot silently move under player finger');
+  assert.ok(broken.unresolved.includes('attack-control'));
 });
