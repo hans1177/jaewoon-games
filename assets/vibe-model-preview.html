@@ -1,9 +1,9 @@
-<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>3D 에셋 미리보기</title><style>html,body{margin:0;height:100%;background:#182238;color:#fff;font:14px system-ui}#message{position:absolute;left:12px;top:8px;z-index:2}canvas{display:block;width:100%;height:100%}</style><div id="message">모델 로딩 중</div><script type="module">
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>3D 에셋 미리보기</title><style>html,body{margin:0;height:100%;background:#182238;color:#fff;font:14px system-ui}#message{position:absolute;left:12px;top:8px;z-index:2}canvas{display:block;width:100%;height:100%}</style><div id="message">모델 로딩 중</div><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script><script type="module">
 import {connectVibeCharacter} from './vibe-character-adapter.mjs';
 import {createVibeBrowserPresentation} from './vibe-browser-presentation.mjs';
 import {connectMotionPresentation} from './vibe-presentation-engine.mjs';
-import * as THREE from './roblox/world-ghosts/native/mesh/three/three.module.js';
-import {GLTFLoader} from './roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const status=document.getElementById('message'),asset=new URLSearchParams(location.search).get('asset')||'';
 if(!/^assets\/[a-zA-Z0-9._/-]+\.(?:glb|gltf)$/i.test(asset)||asset.includes('..')){status.textContent='잘못된 모델 경로';throw Error('invalid model')}
 const base=new URL('../',location.href),url=new URL(asset,base);
