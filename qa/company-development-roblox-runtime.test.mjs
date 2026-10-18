@@ -215,6 +215,23 @@ test('Roblox source generation carries approved style and concept through the bu
   assert.notEqual(compiled.learning.semanticMappingFingerprint,changed.learning.semanticMappingFingerprint);
 });
 
+test('new Roblox games bind verified replicated health feedback and actual action-button motion',()=>{
+  const compiled=compileRobloxSource({gameId:'visual-feedback-integration',baseline,
+    playbooks:verifiedRobloxPlaybooks()});
+  assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
+  const client=compiled.result.clientCode;
+  assert.match(client,/CreateVisualFeedbackController/);
+  assert.match(client,/player:GetAttributeChangedSignal\("Health"\)/);
+  assert.match(client,/if typeof\(confirmedHealth\) ~= "number"/);
+  assert.match(client,/confirmed=true/);
+  assert.match(client,/worldPosition=anchorPart.Position/);
+  assert.match(client,/visualFeedback\.AnimateIcon\(button,"ACTIVATE"\)/);
+  assert.match(client,/visualFeedback\.Notify/);
+  assert.match(client,/gui\.Destroying:Connect/);
+  assert.match(client,/remote:FireServer\(action\.Id\)/);
+  assert.doesNotMatch(compiled.result.serverCode,/CreateVisualFeedbackController/);
+});
+
 test('Roblox bootstrap static gate accepts profile-bound server-authoritative mobile source with save',()=>{
   const verdict=validateRobloxBootstrap({sharedConfig:shared,serverCode:server,clientCode:client,baseline});
   assert.equal(verdict.pass,true,verdict.blockers.join(','));
