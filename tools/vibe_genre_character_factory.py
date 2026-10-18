@@ -88,24 +88,40 @@ def finger_skin(name,position,scale,material,arm,first,second,third):
  })
  return obj
 def make_facial_keys(face):
- basis=face.shape_key_add(name='Basis')
+ face.shape_key_add(name='Basis')
  points=[v.co.copy() for v in face.data.vertices]
- rules={
-  'jawOpen':lambda v:(0,0,-.09) if v.z<-.06 and v.y<-.02 else (0,0,0),
-  'mouthSmileLeft':lambda v:(-.025,0,.035) if v.x<0 and v.z<-.09 else (0,0,0),
-  'mouthSmileRight':lambda v:(.025,0,.035) if v.x>0 and v.z<-.09 else (0,0,0),
-  'browInnerUp':lambda v:(0,0,.04) if abs(v.x)<.15 and v.z>.14 else (0,0,0),
-  'eyeBlinkLeft':lambda v:(0,0,-.025) if v.x<0 and .04<v.z<.18 else (0,0,0),
-  'eyeBlinkRight':lambda v:(0,0,-.025) if v.x>0 and .04<v.z<.18 else (0,0,0),
-  'cheekPuff':lambda v:(.025 if v.x>0 else -.025,0,0) if abs(v.x)>.16 and v.z<0 else (0,0,0),
-  'mouthPucker':lambda v:(-.035 if v.x>0 else .035,-.03,0) if abs(v.x)<.15 and v.z<-.07 else (0,0,0),
-  'browDownLeft':lambda v:(0,0,-.035) if v.x<0 and v.z>.15 else (0,0,0),
-  'browDownRight':lambda v:(0,0,-.035) if v.x>0 and v.z>.15 else (0,0,0)
- }
- for name,rule in rules.items():
+ # Face local coordinates: front points toward negative Y.
+ def mask(v,cx=0,cz=0,rx=.18,rz=.12):
+  dx=(v.x-cx)/rx;dz=(v.z-cz)/rz
+  return max(0.,1.-dx*dx-dz*dz)**2 * smoothstep(-.08,-.19,v.y)
+ def deform(name,fn):
   key=face.shape_key_add(name=name)
-  for idx,point in enumerate(points):
-   delta=rule(point);key.data[idx].co=point+Vector(delta)
+  for i,p in enumerate(points):
+   dx,dy,dz=fn(p)
+   key.data[i].co=p+Vector((dx,dy,dz))
+ def lip(v):return mask(v,0,-.14,.2,.105)
+ def eye(v,sgn):return mask(v,sgn*.12,.07,.115,.095)
+ def brow(v,sgn):return mask(v,sgn*.12,.18,.14,.085)
+ deform('jawOpen',lambda v:(0,0,-.12*lip(v)))
+ deform('mouthClose',lambda v:(0,0,.025*lip(v)))
+ deform('mouthSmileLeft',lambda v:(-.04*lip(v) if v.x<0 else 0,0,.05*lip(v) if v.x<0 else 0))
+ deform('mouthSmileRight',lambda v:(.04*lip(v) if v.x>0 else 0,0,.05*lip(v) if v.x>0 else 0))
+ deform('mouthFrownLeft',lambda v:(0,0,-.04*lip(v) if v.x<0 else 0))
+ deform('mouthFrownRight',lambda v:(0,0,-.04*lip(v) if v.x>0 else 0))
+ deform('mouthPucker',lambda v:(-.04*lip(v) if v.x>0 else .04*lip(v),-.045*lip(v),0))
+ deform('mouthFunnel',lambda v:(-.02*lip(v) if v.x>0 else .02*lip(v),-.06*lip(v),-.02*lip(v)))
+ deform('browInnerUp',lambda v:(0,0,.05*mask(v,0,.18,.19,.09)))
+ for side,sgn in [('Left',-1),('Right',1)]:
+  deform('eyeBlink'+side,lambda v,s=sgn:(0,0,-.055*eye(v,s)))
+  deform('eyeWide'+side,lambda v,s=sgn:(0,0,.045*eye(v,s)))
+  deform('browDown'+side,lambda v,s=sgn:(0,0,-.05*brow(v,s)))
+  deform('browOuterUp'+side,lambda v,s=sgn:(0,0,.05*brow(v,s)*smoothstep(.05,.25,abs(v.x))))
+  deform('cheekSquint'+side,lambda v,s=sgn:(0,-.015*mask(v,s*.18,-.04,.13,.11),.025*mask(v,s*.18,-.04,.13,.11)))
+  deform('noseSneer'+side,lambda v,s=sgn:(0,-.018*mask(v,s*.055,.01,.08,.09),.02*mask(v,s*.055,.01,.08,.09)))
+ deform('cheekPuff',lambda v:((.035 if v.x>0 else -.035)*mask(v,v.x and (.18 if v.x>0 else -.18),-.06,.14,.13),0,0))
+ deform('jawLeft',lambda v:(-.04*lip(v),0,0))
+ deform('jawRight',lambda v:(.04*lip(v),0,0))
+ deform('chinRaise',lambda v:(0,0,.035*mask(v,0,-.23,.18,.11)))
 def animate(arm):
  bpy.context.view_layer.objects.active=arm;arm.select_set(True)
  if not arm.animation_data:arm.animation_data_create()
