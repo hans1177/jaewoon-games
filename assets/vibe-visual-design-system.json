@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "description": "Genre-based visual design tokens and UI/character/housing recipes; integration is opt-in and requires gameplay QA.",
   "genres": {
     "fantasy": {
@@ -111,24 +111,58 @@
   "systems": {
     "characterCustomization": {
       "slots": [
-        "hair",
-        "face",
+        "body",
         "skin",
+        "face",
+        "eyes",
+        "hair",
+        "headwear",
         "upper",
         "lower",
         "boots",
+        "gloves",
+        "back",
+        "weapon",
         "accessory"
       ],
       "preview": "isolated-3d",
-      "saveScope": "per-game"
+      "saveScope": "per-game",
+      "dyeChannels": [
+        "primary",
+        "secondary",
+        "trim"
+      ],
+      "cameraPresets": [
+        "fullBody",
+        "portrait",
+        "detail"
+      ],
+      "animationPreview": [
+        "idle",
+        "walk",
+        "attack",
+        "emote"
+      ],
+      "constraints": [
+        "skeleton-compatibility",
+        "slot-exclusivity",
+        "clipping-review",
+        "license-validation"
+      ],
+      "undoRedo": true
     },
     "housingCustomization": {
       "categories": [
+        "foundation",
         "walls",
         "floors",
+        "roof",
+        "doors",
+        "windows",
         "furniture",
         "lighting",
-        "decor"
+        "decor",
+        "garden"
       ],
       "placement": "grid-snap",
       "validation": [
@@ -136,22 +170,150 @@
         "bounds",
         "ownership"
       ],
-      "saveScope": "per-game"
+      "saveScope": "per-game",
+      "tools": [
+        "place",
+        "move",
+        "rotate",
+        "duplicate",
+        "delete",
+        "eyedropper",
+        "undo",
+        "redo"
+      ],
+      "grid": {
+        "cellMeters": 0.5,
+        "rotationSnapDegrees": 15,
+        "freePlacementOption": true
+      },
+      "feedback": [
+        "valid-placement-ghost",
+        "invalid-placement-reason",
+        "surface-snap",
+        "collision-highlight"
+      ],
+      "camera": [
+        "orbit",
+        "pan",
+        "zoom"
+      ],
+      "constraints": [
+        "collision",
+        "bounds",
+        "ownership",
+        "budget",
+        "path-access"
+      ],
+      "save": {
+        "schemaVersion": 1,
+        "autosaveSeconds": 30,
+        "manualSave": true,
+        "rollbackSnapshots": 3
+      }
     },
     "menus": {
       "screens": [
+        "splash",
         "main",
+        "character-select",
         "settings",
         "inventory",
+        "equipment",
         "character",
+        "crafting",
         "housing",
-        "pause"
+        "map",
+        "quests",
+        "skills",
+        "social",
+        "pause",
+        "accessibility"
       ],
       "requirements": [
         "keyboard-navigation",
+        "gamepad-navigation",
+        "touch-navigation",
         "mobile-safe-area",
         "contrast",
-        "reduced-motion"
+        "reduced-motion",
+        "screen-reader-labels",
+        "focus-return",
+        "text-scaling"
+      ],
+      "patterns": [
+        "tabbed-navigation",
+        "breadcrumbs",
+        "tooltip",
+        "comparison-panel",
+        "modal-confirmation",
+        "toast",
+        "skeleton-loading",
+        "empty-state",
+        "error-retry",
+        "virtualized-list"
+      ]
+    },
+    "inventory": {
+      "gridColumns": {
+        "mobile": 4,
+        "desktop": 8
+      },
+      "features": [
+        "drag-drop",
+        "gamepad-move",
+        "sort",
+        "filter",
+        "search",
+        "stack",
+        "split",
+        "equip-preview",
+        "rarity-color-and-label",
+        "compare",
+        "favorite",
+        "locked-item-confirmation"
+      ],
+      "rarities": [
+        "common",
+        "uncommon",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "maxVisibleItems": 80
+    },
+    "combatFeedback": {
+      "features": [
+        "hit-flash",
+        "damage-number",
+        "telegraph",
+        "impact-sound",
+        "camera-shake-toggle",
+        "screen-edge-warning",
+        "cooldown-indicator"
+      ],
+      "accessibility": [
+        "disable-flashes",
+        "disable-shake",
+        "color-independent-threat-cues"
+      ]
+    },
+    "worldPresentation": {
+      "features": [
+        "weather-presets",
+        "day-night-cycle",
+        "distance-fog",
+        "ambient-audio-zones",
+        "landmark-signposting",
+        "biome-palette",
+        "particle-budget"
+      ],
+      "biomeTypes": [
+        "forest",
+        "desert",
+        "snow",
+        "volcanic",
+        "cave",
+        "town"
       ]
     }
   },
@@ -161,6 +323,174 @@
     "mobile-frame-budget",
     "save-migration",
     "input-regression",
-    "visual-screenshot-review"
-  ]
+    "visual-screenshot-review",
+    "gamepad-and-touch-navigation",
+    "ui-state-snapshot-tests",
+    "colorblind-legibility",
+    "contrast-wcag-aa",
+    "housing-collision-validation",
+    "character-clipping-review",
+    "pbr-map-channel-validation",
+    "copyright-and-licensing",
+    "fallback-render-test"
+  ],
+  "designPrinciples": {
+    "references": [
+      "AAA-style clear visual hierarchy",
+      "console-quality controller focus states",
+      "responsive live-service inventory",
+      "cozy builder grid placement",
+      "PBR material consistency"
+    ],
+    "originality": "Use genre conventions, not copyrighted game artwork, logos, or cloned UI.",
+    "artDirection": [
+      "recognizable silhouettes",
+      "three-value readability",
+      "consistent material language",
+      "controlled VFX density",
+      "legible typography"
+    ]
+  },
+  "tokens": {
+    "spacing": {
+      "unit": 4,
+      "steps": [
+        4,
+        8,
+        12,
+        16,
+        24,
+        32,
+        48,
+        64
+      ]
+    },
+    "typography": {
+      "scale": [
+        12,
+        14,
+        16,
+        20,
+        24,
+        32,
+        40
+      ],
+      "minBodyPx": 14,
+      "lineHeight": 1.5,
+      "maxLineLength": 75
+    },
+    "elevation": {
+      "levels": [
+        0,
+        2,
+        8,
+        16,
+        32
+      ],
+      "modalBackdropOpacity": 0.7
+    },
+    "animation": {
+      "fastMs": 120,
+      "normalMs": 200,
+      "slowMs": 350,
+      "reducedMotionMs": 0
+    },
+    "hitTargets": {
+      "minimumPx": 44,
+      "controllerFocusOutlinePx": 3
+    },
+    "breakpoints": {
+      "mobile": 480,
+      "tablet": 900,
+      "desktop": 1440
+    }
+  },
+  "rendering": {
+    "colorSpace": "srgb",
+    "toneMapping": "aces-filmic",
+    "materials": {
+      "workflow": "metallic-roughness",
+      "maps": [
+        "baseColor",
+        "normal",
+        "roughness",
+        "metalness",
+        "ao",
+        "emissive"
+      ],
+      "textureCompression": [
+        "ktx2",
+        "basis"
+      ],
+      "lodLevels": 3
+    },
+    "lighting": {
+      "keyFillRim": true,
+      "shadowCascades": 2,
+      "shadowQuality": [
+        "off",
+        "low",
+        "medium",
+        "high"
+      ],
+      "reflectionFallback": "probe-or-environment"
+    },
+    "camera": {
+      "modes": [
+        "third-person",
+        "isometric",
+        "top-down",
+        "side-scroll",
+        "first-person"
+      ],
+      "collisionAvoidance": true,
+      "motionSicknessReduction": true
+    },
+    "performance": {
+      "mobile": {
+        "targetFps": 30,
+        "textureMax": 1024,
+        "shadow": "low",
+        "maxVisibleParticles": 150
+      },
+      "desktop": {
+        "targetFps": 60,
+        "textureMax": 2048,
+        "shadow": "high",
+        "maxVisibleParticles": 1000
+      },
+      "adaptiveQuality": {
+        "sampleWindowSeconds": 10,
+        "reduceBelowFps": 27,
+        "restoreAboveFps": 55
+      }
+    }
+  },
+  "productionPipeline": {
+    "stages": [
+      "asset-ingest",
+      "license-check",
+      "metadata-and-tags",
+      "semantic-match",
+      "style-recipe",
+      "render-preview",
+      "performance-profile",
+      "screenshot-diff",
+      "gameplay-regression",
+      "release-gate"
+    ],
+    "approvalRequired": [
+      "copyright-clearance",
+      "skeleton-rig-check",
+      "gameplay-impact",
+      "mobile-performance",
+      "visual-qa"
+    ],
+    "fallbacks": [
+      "missing-texture-neutral-material",
+      "unsupported-model-static-preview",
+      "low-fps-reduced-quality",
+      "broken-asset-hide-and-report"
+    ]
+  }
 }
