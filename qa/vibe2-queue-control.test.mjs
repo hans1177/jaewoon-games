@@ -1549,6 +1549,10 @@ test('Gemini quota wait releases worker capacity while preserving source lock', 
   assert.equal(batch.freeSlots,2);
   assert.equal(batch.selected.some(task=>task.id==='same-root'),false);
   assert.equal(batch.selected.some(task=>task.id==='independent'),true);
+  const taskWithAwaitingQa = { id: 'test-awaiting', status: 'running', blocker: 'candidate-awaiting-qa-and-deployment' };
+  const qWithAwaiting = createVibeContinuousQueue({ maxConcurrentTasks: 2, tasks: [taskWithAwaitingQa] });
+  const releaseResult = releaseVibeTaskExecutionSlot(qWithAwaiting, { taskId: 'test-awaiting' });
+  assert.equal(releaseResult.released, true, 'candidate-awaiting-qa-and-deployment must release worker slot for fan-in');
   const summary=createVibeContinuousQueue(batch.selected.length?queue:queue);
   assert.equal(summary.tasks.length,3);
 });

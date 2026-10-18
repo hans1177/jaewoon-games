@@ -1,0 +1,36 @@
+{
+  "summary": "Fix candidate-awaiting-qa-and-deployment recovery bottleneck by recognizing awaiting-qa blockers as valid releaseable execution slots, and add regression test coverage.",
+  "expectedEffect": "Tasks marked with 'candidate-awaiting-qa-and-deployment' or other awaiting blockers can properly release their execution slot without being falsely rejected as already released, freeing concurrency while retaining responsible locks.",
+  "edits": [
+    {
+      "path": "tools/vibe2-queue-control.mjs",
+      "find": "  if (/candidate-awaiting-runtime-evidence|awaiting.*qa|qa.*awaiting/i.test(currentBlocker) || /slot-released.*fan-in/i.test(currentBlocker)) {\n    return { released:false, updated:false, reason:'ALREADY_RELEASED', queue };\n  }",
+      "replace": "  if (/candidate-awaiting-runtime-evidence/i.test(currentBlocker) || /slot-released.*fan-in/i.test(currentBlocker)) {\n    return { released:false, updated:false, reason:'ALREADY_RELEASED', queue };\n  }"
+    },
+    {
+      "path": "qa/vibe2-queue-control.test.mjs",
+      "find": "  assert.equal(batch.selected.some(task=>task.id==='independent'),true);",
+      "replace": "  assert.equal(batch.selected.some(task=>task.id==='independent'),true);\n  const taskWithAwaitingQa = { id: 'test-awaiting', status: 'running', blocker: 'candidate-awaiting-qa-and-deployment' };\n  const qWithAwaiting = createVibeContinuousQueue({ maxConcurrentTasks: 2, tasks: [taskWithAwaitingQa] });\n  const releaseResult = releaseVibeTaskExecutionSlot(qWithAwaiting, { taskId: 'test-awaiting' });\n  assert.equal(releaseResult.released, true, 'candidate-awaiting-qa-and-deployment must release worker slot for fan-in');"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "qa/vibe2-queue-control.test.mjs",
+    "system-architecture-contract",
+    "same-failure-recheck",
+    "related-regression",
+    "full-regression",
+    "security-verification",
+    "before-after-metric-comparison",
+    "authority-and-gate-invariance"
+  ],
+  "graphicsReplacementReport": {
+    "actualCount": 0,
+    "changedSurfaces": [],
+    "reuseModesUsed": [],
+    "replacementEvidence": [],
+    "before": "N/A - system architecture upgrade",
+    "after": "N/A - system architecture upgrade"
+  }
+}
