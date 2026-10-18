@@ -11,6 +11,20 @@ const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf
 const official='https://hans1177.github.io/jaewoon-games/';
 const pagesRoot='/jaewoon-games/';
 
+test('game source and homepage media changes trigger the existing automatic main Pages deployment',()=>{
+  const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+  const push=workflow.split('  push:')[1]?.split('  workflow_dispatch:')[0]||'';
+  assert.match(push,/branches:\s*\[main\]/);
+  assert.match(push,/- "web-games\/\*\*"/);
+  assert.match(push,/- "game-catalog\.json"/);
+  assert.match(push,/- "assets\/\*\*"/);
+  assert.doesNotMatch(push,/- "!assets\/homepage-(?:media|covers)\/\*\*"/);
+  // Original work automatically republishes without an extra homepage-only deployment approval.
+  assert.match(workflow,/name: Publish gh-pages without force or deleting earlier games/);
+  assert.match(workflow,/name: Verify every published game route and the canonical official homepage/);
+  assert.match(workflow,/name: Publish GitHub Pages|name: Deploy to GitHub Pages|uses: actions\/deploy-pages@v4/);
+});
+
 test('GitHub Pages publishes the exact existing homepage markup, not a Cloudflare redirect',()=>{
   const index=fs.readFileSync('_site/index.html','utf8');
   const source=fs.readFileSync('index.html','utf8');
