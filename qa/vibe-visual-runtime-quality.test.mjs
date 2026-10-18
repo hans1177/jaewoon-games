@@ -18,6 +18,7 @@ import {
   auditVibeRuntimeBeforeAfterComparison,
   auditVibeArtDirectionReview,
   auditVibeRuntimeVisualEvidence,
+  auditVibeWeb25D,
   assertVibeRuntimeVisualQuality,
   GOLDEN_SCENE_ROLES,
   HIGH_END_GOLDEN_SCENE_ROLES,
@@ -368,4 +369,30 @@ test('graphics root returns exact visual-repair instructions without a second pr
   assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets.length,1);
   assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets[0].property,'treeSpacingAndScale');
   assert.equal(production.runtimeRepairLoop.gameplaySaveBalanceMutationForbidden,true);
+});
+
+
+test('universal 3D policy forbids 2D/2.5D source, fake 3D tags and source-only approval',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+  assert.equal(policy.gameVisualQuality.minimumFinalGameplayDimension,'3D');
+  assert.equal(policy.gameVisualQuality.twoPointFiveDFinalGameplayForbidden,true);
+  const legacy=fs.readFileSync('assets/vibe-web-25d-policy.js','utf8');
+  assert.match(legacy,/minimumFinalGameplayDimension:'3D'/);
+  assert.match(legacy,/gameplayMustBeNative3d:true/);
+  const flat={files:[{path:'web-games/sample/index.html',
+    text:'<body data-spatial-dimension="3d"><canvas></canvas><style>canvas{perspective:900px}</style></body>'}]};
+  assert.equal(auditVibeWeb25D(flat).pass,false);
+  assert.ok(auditVibeWeb25D(flat).reasons.includes('REAL_WEBGL_RENDERER_SOURCE_REQUIRED'));
+  const real={files:[{path:'web-games/sample/index.html',
+    text:'const renderer=new THREE.WebGLRenderer();const camera=new THREE.PerspectiveCamera();const mesh=new THREE.Mesh(new THREE.BoxGeometry());'}],sourceRevision:'a'.repeat(40)};
+  assert.equal(auditVibeWeb25D(real).pass,false,'source syntax is never a runtime PASS');
+  assert.ok(auditVibeWeb25D(real).reasons.includes('EXACT_REVISION_DEPTH_TESTED_NATIVE_3D_RUNTIME_QA_REQUIRED'));
+  const sameRevision={...real,runtime3d:{
+    sourceRevision:real.sourceRevision,detected3D:true,
+    webglDraw:{triangleDrawCalls:7,depthTriangleDrawCalls:6},
+    xyzMoved:true,cameraObserved:true,collisionObserved:true,independentQaPassed:true
+  }};
+  assert.equal(auditVibeWeb25D(sameRevision).pass,true);
+  assert.equal(auditVibeWeb25D({...sameRevision,sourceRevision:'b'.repeat(40)}).pass,false);
+  assert.equal(auditVibeWeb25D({...sameRevision,runtime3d:{...sameRevision.runtime3d,webglDraw:{triangleDrawCalls:7,depthTriangleDrawCalls:0}}}).pass,false);
 });
