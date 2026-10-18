@@ -1046,6 +1046,54 @@ local function bindCuratedEquipment(player)
   visual.Parent = character
   container:Destroy()
 end
+-- Curated avatar armor and body presentation; no gameplay stat changes.
+local function bindCuratedAvatar(player)
+  local character = player.Character
+  if not character or not registered then return end
+  local visuals = character:FindFirstChild("CuratedAvatarVisuals")
+  if visuals then visuals:Destroy() end
+  visuals = Instance.new("Folder")
+  visuals.Name = "CuratedAvatarVisuals"
+  visuals.Parent = character
+  local avatarCatalog = registered.Avatar or registered.Character or {}
+  local armorCatalog = registered.Armor or {}
+  local selections = {
+    {key = "Body", id = avatarCatalog.Body or avatarCatalog.Default, bone = "UpperTorso", fallback = "Torso"},
+    {key = "Head", id = avatarCatalog.Head, bone = "Head"},
+    {key = "Helmet", id = armorCatalog.Helmet, bone = "Head"},
+    {key = "Chest", id = armorCatalog.Chest, bone = "UpperTorso", fallback = "Torso"},
+    {key = "Legs", id = armorCatalog.Legs, bone = "RightUpperLeg", fallback = "Right Leg"},
+  }
+  for _, entry in ipairs(selections) do
+    local id = tonumber(entry.id)
+    local bone = character:FindFirstChild(entry.bone) or (entry.fallback and character:FindFirstChild(entry.fallback))
+    if id and id > 0 and id % 1 == 0 and bone and bone:IsA("BasePart") then
+      local ok, loaded = pcall(function() return InsertService:LoadAsset(id) end)
+      if ok and loaded then
+        local mesh = loaded:FindFirstChildWhichIsA("MeshPart", true)
+        if mesh then
+          local part = mesh:Clone()
+          part.Name = "Curated" .. entry.key
+          part.Anchored = false
+          part.CanCollide = false
+          part.CanTouch = false
+          part.CanQuery = false
+          part.Massless = true
+          part.CFrame = bone.CFrame
+          part:SetAttribute("VerifiedRobloxAssetId", id)
+          part.Parent = visuals
+          local joint = Instance.new("WeldConstraint")
+          joint.Part0 = bone
+          joint.Part1 = part
+          joint.Parent = part
+        end
+        loaded:Destroy()
+      else
+        warn("SIMPLE_RPG_AVATAR_ASSET_UNAVAILABLE", entry.key, id)
+      end
+    end
+  end
+end
 local civWeaponIds = {StoneSpear=1, BronzeSword=2, IronGreatsword=3}
 local function civEquip(player, weaponKey)
   if typeof(weaponKey) ~= "string" or #weaponKey > 32 or not civRace(player) then return end
@@ -2224,6 +2272,8 @@ Players.PlayerAdded:Connect(function(player)
   -- 저장 건축물 복원까지 완료한 뒤 조작을 허용해 로비 이동과 복원 작업의 충돌을 방지한다.
   civApplyCharacterPassive(player)
   civApplySkinTone(player)
+  bindCuratedAvatar(player)
+  bindCuratedEquipment(player)
   civRestoreBuildings(player)
   if civDataLoadValid[player] == true and typeof(saved) == "table" then
     civRestoreHousing(player,saved.CivHousingPieces)
@@ -2263,6 +2313,7 @@ Players.PlayerAdded:Connect(function(player)
     task.wait(0.1)
     civApplyCharacterPassive(player)
     civApplySkinTone(player)
+    bindCuratedAvatar(player)
     bindCuratedEquipment(player)
   end)
 end)
