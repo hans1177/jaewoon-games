@@ -2,6 +2,7 @@
 import {connectVibeCharacter} from './vibe-character-adapter.mjs';
 import {createVibeBrowserPresentation} from './vibe-browser-presentation.mjs';
 import {connectMotionPresentation} from './vibe-presentation-engine.mjs';
+import {VibeCinematicDirector,createCharacterPerformance} from './vibe-cinematic-director.mjs';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const status=document.getElementById('message'),asset=new URLSearchParams(location.search).get('asset')||'';
@@ -10,6 +11,9 @@ const base=new URL('../',location.href),url=new URL(asset,base);
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x182238);
 const camera=new THREE.PerspectiveCamera(45,1,0.01,1000);
 const presentation=createVibeBrowserPresentation({camera});
+const cinematic=new VibeCinematicDirector({adapter:{applyCamera:(name,pose)=>{if(name==='showcase'){camera.position.set(pose.position.x,pose.position.y,pose.position.z);camera.lookAt(pose.lookAt.x,pose.lookAt.y,pose.lookAt.z);camera.fov=pose.fov;camera.updateProjectionMatrix()}}}});
+const performance=createCharacterPerformance();
+let showcaseActive=false;
 scene.add(new THREE.HemisphereLight(0xffffff,0x445577,1.5));
 const fill=new THREE.DirectionalLight(0x78b9ff,0.9);fill.position.set(-4,2,-5);scene.add(fill);
 const rim=new THREE.DirectionalLight(0xffd49a,1.1);rim.position.set(0,5,-6);scene.add(rim);
@@ -24,6 +28,7 @@ function restyle(){const [metal,rough,exposure]=styles[picker.value];renderer.to
 picker.addEventListener('change',restyle);
 const resize=()=>{const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)};addEventListener('resize',resize);resize();
 let mixer=null, characterMotion=null;
+const showcaseButton=document.createElement('button');showcaseButton.textContent='부드러운 카메라 연출';showcaseButton.style.cssText='position:absolute;top:218px;left:12px;z-index:3;padding:8px;background:#294b72;color:white;border:1px solid #89b7f5;border-radius:8px';document.body.append(showcaseButton);showcaseButton.addEventListener('click',()=>{const p=camera.position.clone();cinematic.addTrack('showcase',[{at:0,position:p,lookAt:{x:0,y:0,z:0},fov:camera.fov},{at:1.6,position:{x:p.z*.8,y:p.y*1.15,z:-p.x*.8},lookAt:{x:0,y:0,z:0},fov:38},{at:3.2,position:p,lookAt:{x:0,y:0,z:0},fov:45}],{onComplete:()=>{showcaseActive=false}});showcaseActive=true});
 const impactButton=document.createElement('button');impactButton.textContent='타격 연출 테스트';impactButton.style.cssText='position:absolute;top:128px;left:12px;z-index:3;padding:8px;background:#294b72;color:white;border:1px solid #89b7f5;border-radius:8px';document.body.append(impactButton);
 impactButton.addEventListener('click',()=>presentation.cue('impact',{shake:.3,hitStop:.045,flash:.12,sound:'impact',label:'타격'}));
 const motionToggle=document.createElement('label');motionToggle.style.cssText='position:absolute;top:174px;left:12px;z-index:3;background:#101b2e;padding:6px';motionToggle.innerHTML='<input type="checkbox"> 움직임 감소';document.body.append(motionToggle);motionToggle.querySelector('input').addEventListener('change',e=>presentation.engine.setAccessibility({reducedMotion:e.target.checked}));const clipNames=[];
@@ -40,5 +45,5 @@ if(gltf.animations?.length){
  connectVibeCharacter({character:model,clips:gltf.animations,genre:picker.value,THREE}).then(adapter=>{characterMotion=adapter;connectMotionPresentation(adapter.engine,presentation.engine,{map:{'state-change':{sound:'state',cooldown:.12}}});picker.addEventListener('change',()=>adapter.engine.setGenre(picker.value));adapter.action('idle')}).catch(()=>{});
 }status.textContent='원본 3D · '+(gltf.animations?.length||0)+'개 애니메이션';
 },undefined,()=>{status.textContent='모델 로딩 실패 (파일 형식 또는 의존성 확인 필요)'});
-const clock=new THREE.Clock();let last=0;function draw(now){requestAnimationFrame(draw);if(document.hidden||now-last<33)return;last=now;const delta=Math.min(clock.getDelta(),.1);if(characterMotion)characterMotion.update(delta);else mixer?.update(delta);presentation.update(delta);renderer.render(scene,camera)}requestAnimationFrame(draw);
+const clock=new THREE.Clock();let last=0;function draw(now){requestAnimationFrame(draw);if(document.hidden||now-last<33)return;last=now;const delta=Math.min(clock.getDelta(),.1);if(characterMotion)characterMotion.update(delta);else mixer?.update(delta);if(showcaseActive)cinematic.update(delta);if(activeModel){const acting=performance.update(delta);activeModel.rotation.z=acting.secondarySway*.12;}presentation.update(delta);renderer.render(scene,camera)}requestAnimationFrame(draw);
 </script></html>
