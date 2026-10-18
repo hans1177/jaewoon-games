@@ -11,7 +11,7 @@ const KEY_TO_DIR = {
 
 let currentGame = null;
 let sharedController=null;
-fetch('../../assets/vibe-visual-design-system.json').then(r=>{if(!r.ok)throw Error('design unavailable');return r.json()}).then(design=>{
+fetch(new URL('../../assets/vibe-visual-design-system.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('design unavailable');return r.json()}).then(design=>{
  const sharedMotion=new VibeMotionEngine(design);
  sharedController=new VibeGameplayController({motion:sharedMotion,config:{walkSpeed:185,sprintSpeed:185,acceleration:1400,deceleration:1800,gravity:0},physics:{resolve:(previous,next)=>({position:{...next,y:0},grounded:true})}});
 }).catch(()=>{});
