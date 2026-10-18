@@ -1,0 +1,60 @@
+{
+  "summary": "오랑미냑(orang-minyak) 슬림 체형의 walk 동작에 맞춰 체중 이동에 따른 토르소 회전, 접지 측의 완만한 리프트 아크, 상하체 간 위상 차를 반영한 오버랩 보정을 적용했습니다.",
+  "expectedEffect": "다리 스윙과 수직 기동 간의 아크가 부드러워지고, 토르소의 비대칭 흔들림과 팔의 미세한 지연 모션으로 가독성이 개선됩니다.",
+  "edits": [
+    {
+      "path": "init.luau",
+      "find": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)\n  elseif form==\"ARACHNID\"then\n   for i=1,4 do for _,side in ipairs({\"Left\",\"Right\"})do\n    local sign=side==\"Left\" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))\n    pose(\"Spider\"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)\n    pose(\"Spider\"..side..i..\"Knee\",0,0,0,0,0,sign*math.max(0,cycle)*.25)\n   end end\n  elseif form==\"WHEEL\"then pose(\"Torso\",0,0,0,0,0,-(time*2.8)%(math.pi*2))\n  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)\n  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.16,0,0,0,wave*.03)end\n end",
+      "replace": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n local gaitLift=math.max(0,wave)^2\n pose(\"Torso\",0.04*math.cos(phase*.5),floating and math.sin(time*2.4)*.13 or .03*breathe+0.04*gaitLift,0,0,moving and wave*.035 or breathe*.015,-0.03*math.sin(phase*.5))\n pose(\"Head\",0,0,0,breathe*.035+0.02*gaitLift,math.sin(time*.9)*.07,-0.02*wave)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)\n  elseif form==\"ARACHNID\"then\n   for i=1,4 do for _,side in ipairs({\"Left\",\"Right\"})do\n    local sign=side==\"Left\" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))\n    pose(\"Spider\"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)\n    pose(\"Spider\"..side..i..\"Knee\",0,0,0,0,0,sign*math.max(0,cycle)*.25)\n   end end\n  elseif form==\"WHEEL\"then pose(\"Torso\",0,0,0,0,0,-(time*2.8)%(math.pi*2))\n  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,math.max(0,wave)*.12,0,wave*.45,0,-0.02)\n   pose(\"RightLeg\",0,math.max(0,-wave)*.12,0,-wave*.45,0,0.02)\n   pose(\"LeftArm\",0,0,-0.05,-wave*.35+0.05*math.sin(time*2),0.08,-0.12)\n   pose(\"RightArm\",0,0,-0.05,wave*.35-0.05*math.sin(time*2),-0.08,0.12)\n  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.16,0,0,0,wave*.03)end\n end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "동일 시간 값을 역순으로 샘플링했을 때 동일한 결과 포즈를 반환하는지 순수 함수성 검증",
+    "모바일 카메라 거리에서 오랑미냑 캐릭터 실루엣 및 지지선 균형 가독성 검수"
+  ],
+  "graphicsReplacementReport": null,
+  "motionRepairReport": {
+    "objectId": "roblox-world-ghost-orang-minyak",
+    "clipId": "walk",
+    "depthEvidence": [
+      {
+        "axis": "POSE_AND_STAGING",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": "pose(\"Torso\",0.04*math.cos(phase*.5),floating and math.sin(time*2.4)*.13 or .03*breathe+0.04*gaitLift,0,0,moving and wave*.035 or breathe*.015,-0.03*math.sin(phase*.5))\n pose(\"Head\",0,0,0,breathe*.035+0.02*gaitLift,math.sin(time*.9)*.07,-0.02*wave)"
+      },
+      {
+        "axis": "WEIGHT_AND_BALANCE",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)",
+        "after": "pose(\"Torso\",0.04*math.cos(phase*.5),floating and math.sin(time*2.4)*.13 or .03*breathe+0.04*gaitLift,0,0,moving and wave*.035 or breathe*.015,-0.03*math.sin(phase*.5))"
+      },
+      {
+        "axis": "JOINT_ARCS_AND_SPACING",
+        "status": "CHANGED",
+        "before": "pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+        "after": "pose(\"LeftLeg\",0,math.max(0,wave)*.12,0,wave*.45,0,-0.02)\n   pose(\"RightLeg\",0,math.max(0,-wave)*.12,0,-wave*.45,0,0.02)\n   pose(\"LeftArm\",0,0,-0.05,-wave*.35+0.05*math.sin(time*2),0.08,-0.12)\n   pose(\"RightArm\",0,0,-0.05,wave*.35-0.05*math.sin(time*2),-0.08,0.12)"
+      },
+      {
+        "axis": "CONTACT_AND_CONSTRAINTS",
+        "status": "CHANGED",
+        "before": "pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)",
+        "after": "pose(\"LeftLeg\",0,math.max(0,wave)*.12,0,wave*.45,0,-0.02)\n   pose(\"RightLeg\",0,math.max(0,-wave)*.12,0,-wave*.45,0,0.02)"
+      },
+      {
+        "axis": "OVERLAP_AND_SETTLE",
+        "status": "CHANGED",
+        "before": "pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+        "after": "pose(\"LeftArm\",0,0,-0.05,-wave*.35+0.05*math.sin(time*2),0.08,-0.12)\n   pose(\"RightArm\",0,0,-0.05,wave*.35-0.05*math.sin(time*2),-0.08,0.12)"
+      },
+      {
+        "axis": "LOOP_AND_TRANSITION",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n local gaitLift=math.max(0,wave)^2"
+      }
+    ]
+  }
+}

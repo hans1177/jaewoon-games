@@ -14,8 +14,9 @@ function Motion.walk(form,bones,time)
  local speed=state=="chase" and 10 or moving and 6 or 2
  local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)
  local floating=form=="SHROUD" or form=="FLOATING_HEAD" or form=="OBJECT_SWARM" or form=="RIBBON" or form=="LANTERN"
- pose("Torso",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)
- pose("Head",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)
+ local gaitLift=math.max(0,wave)^2
+ pose("Torso",0.04*math.cos(phase*.5),floating and math.sin(time*2.4)*.13 or .03*breathe+0.04*gaitLift,0,0,moving and wave*.035 or breathe*.015,-0.03*math.sin(phase*.5))
+ pose("Head",0,0,0,breathe*.035+0.02*gaitLift,math.sin(time*.9)*.07,-0.02*wave)
  if moving then
   if form=="BEAST" or form=="CENTAUR"then
    pose("FrontLeftLeg",0,0,0,wave*.48);pose("BackRightLeg",0,0,0,wave*.48)
@@ -28,8 +29,10 @@ function Motion.walk(form,bones,time)
    end end
   elseif form=="WHEEL"then pose("Torso",0,0,0,0,0,-(time*2.8)%(math.pi*2))
   elseif not floating and form~="SERPENT" and form~="WALL" and form~="BOUND"then
-   pose("LeftLeg",0,0,0,wave*.4);pose("RightLeg",0,0,0,-wave*.4)
-   pose("LeftArm",0,0,0,-wave*.3);pose("RightArm",0,0,0,wave*.3)
+   pose("LeftLeg",0,math.max(0,wave)*.12,0,wave*.45,0,-0.02)
+   pose("RightLeg",0,math.max(0,-wave)*.12,0,-wave*.45,0,0.02)
+   pose("LeftArm",0,0,-0.05,-wave*.35+0.05*math.sin(time*2),0.08,-0.12)
+   pose("RightArm",0,0,-0.05,wave*.35-0.05*math.sin(time*2),-0.08,0.12)
   elseif form=="BOUND"then pose("Torso",0,math.abs(wave)*.16,0,0,0,wave*.03)end
  end
  for name in pairs(bones)do
