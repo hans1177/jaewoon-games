@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-125ywnl",
+      "worker": "vibe2",
+      "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-roblox-stability-v1",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "files": [
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau",
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau"
+      ],
+      "baseSha": "ab3fc828a846f3d1404c93db1d300bbb87735d09",
+      "runId": "39162427711",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-18T20:39:00.317Z",
+      "expiresAt": "2026-10-18T21:24:00.317Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-idle-growth-rpg-crystal-bloom-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
