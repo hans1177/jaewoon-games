@@ -403,7 +403,7 @@ test('featured hero is explicit and ChatGPT launcher opens internal PWA chat',()
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
   assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
   assert.match(runtime,/const direct=links\.web\|\|links\.roblox\|\|links\.unity\|\|links\.webSource\|\|''/);
-  assert.match(runtime,/const actionLabel=links\.web\?'일반 웹게임 플레이':links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':'게임 보기'/);
+  assert.match(runtime,/const actionLabel=links\.web\?'일반 웹게임 플레이':links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':links\.webSource\?'원본 게임 링크 열기':'게임 보기'/);
   assert.doesNotMatch(index,/package=com\.openai\.chatgpt|intent:\/\/chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
