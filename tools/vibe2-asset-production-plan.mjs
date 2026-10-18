@@ -1434,12 +1434,12 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   // The role gate above rejects incompatible candidates; among eligible assets,
   // a higher audited quality score must win regardless of matched-role count.
   // 다운로드한 실제 원본(라이선스·출처·원본 해시) 우선. 분류별 수량 제한 없이 전체 탐색한다.
+  const acquired=row=>Boolean(row?.downloaded!==false&&row?.sourceFilesPresent!==false
+    &&/^https:\/\/[^/]+\//i.test(clean(row?.sourceUrl))
+    &&/^[a-f0-9]{64}$/i.test(clean(row?.originalSourceHash||row?.originalSha256))
+    &&/^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(clean(row?.license))
+    &&clean(row?.path||row?.masterGlb||row?.meshArtifact));
   const compareReusable=(a,b)=>{
-    const acquired=row=>Boolean(row?.downloaded!==false&&row?.sourceFilesPresent!==false
-      &&/^https:\/\/[^/]+\//i.test(clean(row?.sourceUrl))
-      &&/^[a-f0-9]{64}$/i.test(clean(row?.originalSourceHash||row?.originalSha256))
-      &&/^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(clean(row?.license))
-      &&clean(row?.path||row?.masterGlb||row?.meshArtifact));
     return Number(acquired(b))-Number(acquired(a))
       ||Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
       ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
@@ -1565,7 +1565,10 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     if(!id)return false;
     const externalCandidates=externalSourceCandidatesFor(family,roles);
     if(!externalCandidates.length)return false;
-    if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length)return false;
+    // 정확히 같은 세부 역할이 없으면 같은 에셋 family 안의 소스팩을 조사 후보로 둔다.
+    // 해당 게임에 실제 설치하는 건 원본 메시의 세부 역할 검증 후에만 허용한다.
+    if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length
+      &&externalCandidates[0]?.family!==family)return false;
         const selected=externalCandidates[0];
         const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
         pushAction({
@@ -1695,18 +1698,24 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       family,sourceRoles,asset?'REUSABLE_LIBRARY_VS_DOWNLOADED_ORIGINAL':'ORIGINAL_SOURCE_FIRST_ON_DEMAND',
       asset?.id||''
     );
-    if(asset){
+    if(asset&&acquired(asset)){
       const mode=internalAssetPlatformApplicationMode(asset,target);
       const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
       pushAction({
         action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
-        assetId:clean(asset.id)||null,
-        family,
-        reason:pendingImport?'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
+        assetId:clean(asset.id),family,
+        reason:pendingImport?'DOWNLOADED_ORIGINAL_NATIVE_IMPORT_REQUIRED':'DOWNLOADED_ORIGINAL_LIBRARY_DEFAULT',
+        downloadedOriginalDefault:true,
         applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
       });
-    }else if(!originalRequested){
-      pushAction({action:'HOLD',assetId:null,family,reason:(unresolvedFamilies.has(family)||sourceRoles.length===0)?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
+    }else{
+      // 신규 바인딩에는 내부 자체제작 기본 모형을 사용하지 않는다.
+      // 원본 파일이 아직 없으면 다운로드 요청을 유지하며 게임 화면 성공으로 표시하지 않는다.
+      pushAction({action:'HOLD',assetId:null,family,
+        reason:originalRequested?'DOWNLOADED_ORIGINAL_ACQUISITION_PENDING':'NO_DOWNLOADED_ORIGINAL_AVAILABLE',
+        selfAuthoredVisualBindingForbidden:true,
+        onDemandOriginalAcquisitionRequired:true,
+        roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
