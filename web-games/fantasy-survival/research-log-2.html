@@ -145,7 +145,7 @@ return '';}
 function frame(now){requestAnimationFrame(frame);if(!playing)return;
 if(!last)last=now;const dt=Math.min(.09,(now-last)/1000);last=now;if(document.hidden)return;t+=Math.max(0,dt);
 const scene=t<15?0:t<26?1:2,aspect=resize(),eyeX=scene===0?0:scene===1?0:Math.sin(t*.11)*.08;
-let eyeY=scene===1?1.5:1.54,eyeZ=scene===0?mix(3,-5,phase(t,7,14.4)):scene===1?2.45:mix(3.4,1.8,phase(t,26,31));
+let eyeY=scene===1?1.5:1.54,eyeZ=scene===0?mix(3,-5,phase(t,7,14.4)):scene===1?2.45:mix(3.4,1.8,phase(t,26,31))-3.0*phase(t,49.2,53.2);
 const bob=Math.sin(t*6.5)*.025*(scene===0?1:scene===2?.7:.2),gunOn=scene===2&&t>=26,shots=[...shots1,...shots2];
 const shot=shots.some(s=>t>=s&&t<s+.14),reloading=phase(t,34.45,35.4)*(1-phase(t,37.2,38.10)),hurt=shots.filter(s=>s<=t).length;
 if(scene===2){eyeY+=shot*Math.sin((t%0.14)*40)*.015;eyeZ-=shot*.035;}
