@@ -5379,6 +5379,8 @@ export function buildVibeAssetProductionPlan({
     interfaceMissing:freezeList(runtimeVisualAudit.interfaceCoverage?.missing||[]),
     sceneObjectsMissing:freezeList(runtimeVisualAudit.sceneObjectCoverage?.missing||[]),
     beforeAfter:runtimeBeforeAfterAudit,
+    artDirectionReview:runtimeVisualAudit.artDirectionReview||null,
+    concreteArtRepairTargets:freezeList((runtimeVisualAudit.repairTargets||[]).filter(row=>row.surface==='ART_DIRECTION'&&row.sourcePath&&row.targetId&&row.property)),
     preserve:freezeList(['GAMEPLAY_VALUES','SAVE_MEANING','MULTIPLAYER_AUTHORITY','HIT_TIMING','QUEST_AND_PROGRESS_RULES','UNRELATED_VISUAL_SYSTEMS']),
     repairMode:'AFFECTED_VISUAL_RESPONSIBILITY_ONLY',
     sameCaptureConditionsRequired:true,

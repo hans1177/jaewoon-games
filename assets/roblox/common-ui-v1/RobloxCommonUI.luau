@@ -109,6 +109,21 @@ function RobloxCommonUI.CreatePanel(options)
   stroke(frame, theme.Border, 1.5, 0.08)
   gradient(frame, theme.PanelRaised, theme.Panel, 90)
 
+  -- Optional licensed, already-bound texture. Never invent a Roblox asset ID.
+  if typeof(options.surfaceTexture) == "string" and options.surfaceTexture ~= "" then
+    local surface = Instance.new("ImageLabel")
+    surface.Name = "VerifiedSurfaceSkin"
+    surface.BackgroundTransparency = 1
+    surface.Size = UDim2.fromScale(1, 1)
+    surface.Image = options.surfaceTexture
+    surface.ScaleType = typeof(options.sliceCenter) == "Rect" and Enum.ScaleType.Slice or Enum.ScaleType.Stretch
+    if typeof(options.sliceCenter) == "Rect" then surface.SliceCenter = options.sliceCenter end
+    surface.ImageTransparency = math.clamp(tonumber(options.surfaceOpacity) or 0, 0, 1)
+    surface.ZIndex = frame.ZIndex
+    surface.Parent = frame
+    surface:SetAttribute("PresentationOnlySkin", true)
+  end
+
   local shadow = Instance.new("Frame")
   shadow.Name = "DepthShadow"
   shadow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -126,7 +141,7 @@ function RobloxCommonUI.CreatePanel(options)
   inner.Position = UDim2.fromOffset(7, 7)
   inner.Size = UDim2.new(1, -14, 1, -14)
   inner.BackgroundColor3 = theme.PanelInset
-  inner.BackgroundTransparency = 0.54
+  inner.BackgroundTransparency = options.surfaceTexture and 0.90 or 0.54
   inner.BorderSizePixel = 0
   inner.ZIndex = frame.ZIndex + 1
   inner.Parent = frame
@@ -4365,15 +4380,63 @@ function RobloxCommonUI.CreateRouteRiskPreview(options)
 end
 
 function RobloxCommonUI.CreateThreatEdgeIndicator(options)
+  options = options or {}
   local root,parts=deepSystemPanel(options,"THREAT_EDGE_INDICATOR","THREAT_EDGE_INDICATOR","위협 방향",{"좌/우/후방","위협 등급","거리","시야 밖 상태"})
+  local theme = cloneTheme(options.theme)
+  local direction = commonText(parts.inner,"ThreatDirection","",UDim2.new(0,14,1,-64),UDim2.new(1,-28,0,50),theme.Danger,28,true)
+  direction.TextXAlignment = Enum.TextXAlignment.Center
+  local symbol = {LEFT="←",RIGHT="→",FRONT="↑",BACK="↓",NORTH="↑",SOUTH="↓",WEST="←",EAST="→"}
+  local function sync(state)
+    state = type(state) == "table" and state or {}
+    local facing = string.upper(tostring(state.direction or "UNKNOWN"))
+    direction.Text = (symbol[facing] or "•") .. "  " .. tostring(state.label or facing)
+    parts.labels[1].Text = "위협 · " .. tostring(state.label or facing)
+    parts.labels[2].Text = "단계 · " .. tostring(state.severity or "미확인")
+    parts.labels[3].Text = "거리 · " .. tostring(state.distance or "미확인")
+    parts.labels[4].Text = state.offscreen == true and "시야 밖" or "화면 안"
+  end
+  sync(options.threat)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,Direction=direction}
 end
 
 function RobloxCommonUI.CreateBossPhaseStrip(options)
-  local root,parts=deepSystemPanel(options,"BOSS_PHASE_STRIP","BOSS_PHASE_STRIP","보스 페이즈",{"현재 페이즈","다음 변화","위험 패턴","진행도"})
+  options = options or {}
+  local root,parts=deepSystemPanel(options,"BOSS_PHASE_STRIP","BOSS_PHASE_STRIP",options.title or "보스 페이즈",{"현재 페이즈","다음 변화","위험 패턴","진행도"})
+  local theme = cloneTheme(options.theme)
+  local track = Instance.new("Frame")
+  track.Name = "ConfirmedBossHealth"
+  track.Size = UDim2.new(1,-28,0,22)
+  track.Position = UDim2.new(0,14,1,-64)
+  track.BackgroundColor3 = theme.HealthTrack
+  track.BorderSizePixel = 0
+  track.Parent = parts.inner
+  corner(track,7)
+  local fill = Instance.new("Frame")
+  fill.Name = "VisualHealthFill"
+  fill.Size = UDim2.fromScale(1,1)
+  fill.BackgroundColor3 = theme.Danger
+  fill.BorderSizePixel = 0
+  fill.Parent = track
+  corner(fill,7)
+  local value = commonText(parts.inner,"ConfirmedValue","",UDim2.new(0,14,1,-37),UDim2.new(1,-28,0,24),theme.Text,12,true)
+  value.TextXAlignment = Enum.TextXAlignment.Right
+  local function sync(state)
+    state = type(state) == "table" and state or {}
+    local hp = math.max(0,tonumber(state.hp) or 0)
+    local maxHp = math.max(0,tonumber(state.maxHp) or 0)
+    local ratio = maxHp > 0 and math.clamp(hp/maxHp,0,1) or 0
+    fill.Size = UDim2.fromScale(ratio,1)
+    parts.labels[1].Text = "현재 페이즈 · " .. tostring(state.phase or "미확인")
+    parts.labels[2].Text = "다음 변화 · " .. tostring(state.nextPhase or "미확인")
+    parts.labels[3].Text = "위험 패턴 · " .. tostring(state.warning or "미확인")
+    parts.labels[4].Text = "진행도 · " .. tostring(math.floor(ratio*100)) .. "%"
+    value.Text = tostring(math.floor(hp)) .. " / " .. tostring(math.floor(maxHp))
+  end
+  sync(options.bossState)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  root:SetAttribute("OwnsDamageAuthority",false)
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,HealthFill=fill}
 end
 
 -- 디펜스: 웨이브/정예/준비시간은 실제 전투 디렉터가 준 현재 상태만 표시한다.
@@ -4412,9 +4475,38 @@ function RobloxCommonUI.CreateWaveForecastRibbon(options)
 end
 
 function RobloxCommonUI.CreateStatusEffectTimeline(options)
+  options = options or {}
   local root,parts=deepSystemPanel(options,"STATUS_EFFECT_TIMELINE","STATUS_EFFECT_TIMELINE","상태효과 타임라인",{"현재 효과","남은 시간","중첩","해제 가능"})
+  local theme = cloneTheme(options.theme)
+  local track = Instance.new("Frame")
+  track.Name = "RemainingStatusDuration"
+  track.Position = UDim2.new(0,14,1,-55)
+  track.Size = UDim2.new(1,-28,0,12)
+  track.BackgroundColor3 = theme.HealthTrack
+  track.BorderSizePixel = 0
+  track.Parent = parts.inner
+  corner(track,5)
+  local fill = Instance.new("Frame")
+  fill.Name = "DurationFill"
+  fill.Size = UDim2.fromScale(0,1)
+  fill.BackgroundColor3 = theme.Accent
+  fill.BorderSizePixel = 0
+  fill.Parent = track
+  corner(fill,5)
+  local function sync(status)
+    status = type(status) == "table" and status or {}
+    local remaining = math.max(0,tonumber(status.remaining) or 0)
+    local total = math.max(0,tonumber(status.total) or 0)
+    local ratio = total > 0 and math.clamp(remaining/total,0,1) or 0
+    fill.Size = UDim2.fromScale(ratio,1)
+    parts.labels[1].Text = "현재 효과 · " .. tostring(status.name or "없음")
+    parts.labels[2].Text = "남은 시간 · " .. tostring(math.floor(remaining*10)/10)
+    parts.labels[3].Text = "중첩 · " .. tostring(math.max(0,math.floor(tonumber(status.stacks) or 0)))
+    parts.labels[4].Text = status.dispellable == true and "해제 가능" or "해제 여부 미확인"
+  end
+  sync(options.status)
   root:SetAttribute("OwnsSystemAuthority",false)
-  return root,parts
+  return root,{inner=parts.inner,list=parts.list,labels=parts.labels,Sync=sync,DurationFill=fill}
 end
 
 function RobloxCommonUI.CreateHousingStructuralSupportOverlay(options)
@@ -4457,6 +4549,264 @@ function RobloxCommonUI.CreateFailureRecoveryCheckpoint(options)
   local root,parts=deepSystemPanel(options,"FAILURE_RECOVERY_CHECKPOINT","FAILURE_RECOVERY_CHECKPOINT","복구 지점",{"마지막 정상 상태","복구 가능 항목","유실 없음 표시","다시 시작"})
   root:SetAttribute("OwnsSystemAuthority",false)
   return root,parts
+end
+
+
+-- Presentation-only native controller, shared by Roblox games via the existing common UI.
+-- Confirmed combat/status events are supplied by each game's authoritative source.
+
+-- Native 3D item viewer for a real game-bound model; never constructs placeholder geometry.
+function RobloxCommonUI.CreateItemModelPreview(options)
+  options = options or {}
+  local source = options.model
+  assert(source and (source:IsA("Model") or source:IsA("BasePart")), "verified game item model required")
+  local theme = cloneTheme(options.theme)
+  local viewer = Instance.new("ViewportFrame")
+  viewer.Name = options.name or "BoundItemPreview"
+  viewer.Size = options.size or UDim2.fromOffset(240, 240)
+  viewer.BackgroundColor3 = theme.PanelInset
+  viewer.BorderSizePixel = 0
+  viewer.Ambient = Color3.fromRGB(135, 140, 150)
+  viewer.LightColor = Color3.fromRGB(250, 246, 234)
+  viewer.LightDirection = Vector3.new(-1, -1, -0.5)
+  tag(viewer, "VERIFIED_ITEM_MODEL_PREVIEW")
+  viewer:SetAttribute("OwnsGameplayAction", false)
+  corner(viewer, 10)
+  stroke(viewer, theme.Border, 1, 0.08)
+  local world = Instance.new("WorldModel")
+  world.Parent = viewer
+  local clone = source:Clone()
+  -- An imported model may include scripts. A visual-only copy never executes gameplay.
+  for _, descendant in ipairs(clone:GetDescendants()) do
+    if descendant:IsA("BaseScript") or descendant:IsA("ModuleScript") then
+      descendant:Destroy()
+    end
+  end
+  clone.Parent = world
+  local model = clone
+  if clone:IsA("BasePart") then
+    model = Instance.new("Model")
+    model.Name = "VisualPreviewRoot"
+    clone.Parent = model
+    model.Parent = world
+  end
+  for _, part in ipairs(model:GetDescendants()) do
+    if part:IsA("BasePart") then
+      part.Anchored = true
+      part.CanCollide = false
+      part.CanTouch = false
+      part.CanQuery = false
+    end
+  end
+  local origin, bounds = model:GetBoundingBox()
+  local diameter = math.max(bounds.X, bounds.Y, bounds.Z, 0.5)
+  local camera = Instance.new("Camera")
+  camera.FieldOfView = 35
+  camera.CFrame = CFrame.lookAt(origin.Position + Vector3.new(diameter,diameter*0.7,diameter*2.6),origin.Position)
+  camera.Parent = viewer
+  viewer.CurrentCamera = camera
+  return viewer,{model=model,camera=camera,bounds=bounds,ownsGameplayAuthority=false}
+end
+
+function RobloxCommonUI.CreateVisualFeedbackController(options)
+  options = options or {}
+  local parent = options.parent
+  assert(parent and (parent:IsA("GuiObject") or parent:IsA("LayerCollector")), "visual feedback requires an existing GUI container")
+  local TweenService = game:GetService("TweenService")
+  local theme = cloneTheme(options.theme)
+  local reducedMotion = options.reducedMotion == true
+  local maxDamage = math.clamp(math.floor(tonumber(options.maxDamage) or 28), 1, 60)
+  local maxNotices = math.clamp(math.floor(tonumber(options.maxNotices) or 3), 1, 5)
+  local overlay = Instance.new("Frame")
+  overlay.Name = "CommonVisualFeedback"
+  overlay.BackgroundTransparency = 1
+  overlay.Size = UDim2.fromScale(1, 1)
+  overlay.ClipsDescendants = true
+  overlay.ZIndex = 80
+  overlay.Parent = parent
+  tag(overlay, "PRESENTATION_FEEDBACK")
+  overlay:SetAttribute("GameplayAuthority", false)
+
+  local pool, active, seen, notices = {}, {}, {}, {}
+  local destroyed = false
+  local iconTweens = setmetatable({}, {__mode = "k"})
+  local function newPopup()
+    local label = Instance.new("TextLabel")
+    label.Name = "ConfirmedDamageNumber"
+    label.BackgroundTransparency = 1
+    label.AnchorPoint = Vector2.new(0.5, 0.5)
+    label.Size = UDim2.fromOffset(122, 44)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 21
+    label.TextStrokeColor3 = Color3.fromRGB(15, 16, 24)
+    label.TextStrokeTransparency = 0.2
+    label.TextXAlignment = Enum.TextXAlignment.Center
+    label.Visible = false
+    label.ZIndex = 82
+    label.Parent = overlay
+    tag(label, "DAMAGE_POPUP")
+    return label
+  end
+  for i = 1, maxDamage do pool[i] = {label = newPopup(), busy = false, generation = 0} end
+  local function popupColor(kind)
+    if kind == "CRITICAL" then return Color3.fromRGB(255, 224, 137) end
+    if kind == "HEAL" then return Color3.fromRGB(132, 249, 180) end
+    if kind == "SHIELD" then return Color3.fromRGB(136, 209, 255) end
+    if kind == "DOT" then return Color3.fromRGB(212, 170, 244) end
+    return theme.Text
+  end
+  local controller = {}
+  function controller.ShowDamage(event)
+    if destroyed or type(event) ~= "table" or event.confirmed ~= true then return false end
+    local id = tostring(event.eventId or "")
+    local amount = tonumber(event.amount)
+    if id == "" or not amount or amount ~= amount or seen[id] then return false end
+    local xy = event.viewportPosition
+    if typeof(xy) ~= "Vector2" and typeof(event.worldPosition) == "Vector3" then
+      local camera = options.camera or workspace.CurrentCamera
+      if camera then
+        local screen, visible = camera:WorldToViewportPoint(event.worldPosition)
+        if not visible then return false end
+        xy = Vector2.new(screen.X, screen.Y)
+        local origin = overlay.AbsolutePosition
+        xy = xy - origin
+      end
+    end
+    if typeof(xy) ~= "Vector2" or xy.X < 0 or xy.Y < 0
+      or xy.X > overlay.AbsoluteSize.X or xy.Y > overlay.AbsoluteSize.Y then return false end
+    local entry
+    for _, candidate in ipairs(pool) do
+      if not candidate.busy then entry = candidate break end
+    end
+    if not entry then return false end
+    seen[id] = true
+    task.delay(5, function() seen[id] = nil end)
+    entry.busy = true
+    entry.generation += 1
+    local generation = entry.generation
+    local index = 0
+    for _, item in ipairs(pool) do if item.busy then index += 1 end end
+    local jitter = ((index % 5) - 2) * 14
+    local safeX = math.clamp(xy.X + jitter, math.min(61,overlay.AbsoluteSize.X*0.5), math.max(overlay.AbsoluteSize.X*0.5,overlay.AbsoluteSize.X-61))
+    local safeY = math.clamp(xy.Y, math.min(26,overlay.AbsoluteSize.Y*0.5), math.max(overlay.AbsoluteSize.Y*0.5,overlay.AbsoluteSize.Y-26))
+    local kind = string.upper(tostring(event.kind or "DAMAGE"))
+    local label = entry.label
+    label.Text = (kind == "MISS" and "MISS" or (kind == "HEAL" and "+" or "") .. tostring(math.floor(amount + 0.5)))
+    label.TextColor3 = popupColor(kind)
+    label.TextSize = kind == "CRITICAL" and 28 or 21
+    label.TextTransparency = 0
+    label.TextStrokeTransparency = 0.2
+    label.Position = UDim2.fromOffset(safeX, safeY)
+    label.Visible = true
+    local duration = reducedMotion and 0.18 or (kind == "CRITICAL" and 0.92 or 0.72)
+    local target = {Position = UDim2.fromOffset(math.min(overlay.AbsoluteSize.X - 61,safeX + 8), math.max(24,safeY - (reducedMotion and 10 or 64))), TextTransparency = 1, TextStrokeTransparency = 1}
+    local tween = TweenService:Create(label, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), target)
+    active[entry] = tween
+    tween:Play()
+    task.delay(duration + 0.08, function()
+      if entry.generation ~= generation then return end
+      entry.busy = false
+      active[entry] = nil
+      if label.Parent then label.Visible = false end
+    end)
+    return true
+  end
+  function controller.PositionTooltip(tooltip, anchor)
+    if destroyed or not tooltip or not tooltip:IsA("GuiObject") or typeof(anchor) ~= "Vector2" then return false end
+    local size = overlay.AbsoluteSize
+    local width = math.min(tooltip.AbsoluteSize.X, math.max(1, size.X - 16))
+    local height = math.min(tooltip.AbsoluteSize.Y, math.max(1, size.Y - 16))
+    local x = math.clamp(anchor.X - width * 0.5, 8, math.max(8, size.X - width - 8))
+    local y = anchor.Y + 14
+    if y + height > size.Y - 8 then y = anchor.Y - height - 14 end
+    tooltip.AnchorPoint = Vector2.new(0, 0)
+    tooltip.Position = UDim2.fromOffset(x, math.clamp(y, 8, math.max(8, size.Y - height - 8)))
+    return true
+  end
+  function controller.AnimateIcon(icon, state)
+    if destroyed or not icon or not icon:IsA("GuiObject") then return false end
+    local old = iconTweens[icon]
+    if old then old:Cancel() end
+    local scale = icon:FindFirstChild("VibeVisualScale")
+    if not scale then
+      scale = Instance.new("UIScale")
+      scale.Name = "VibeVisualScale"
+      scale.Parent = icon
+    end
+    local mode = string.upper(tostring(state or "READY"))
+    local target = mode == "ACTIVATE" and 1.14 or mode == "COOLDOWN" and 0.94 or 1
+    local duration = reducedMotion and 0.01 or 0.18
+    local tween = TweenService:Create(scale, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Scale = target})
+    iconTweens[icon] = tween
+    tween:Play()
+    if mode == "ACTIVATE" then
+      task.delay(duration, function()
+        if destroyed or not icon.Parent or iconTweens[icon] ~= tween then return end
+        local settle = TweenService:Create(scale, TweenInfo.new(reducedMotion and 0.01 or 0.16), {Scale = 1})
+        iconTweens[icon] = settle
+        settle:Play()
+      end)
+    end
+    return true
+  end
+  function controller.UpdateStatusIcon(icon, status)
+    if destroyed or not icon or not icon:IsA("GuiObject") then return false end
+    status = status or {}
+    local meter = icon:FindFirstChild("VisualDurationMeter")
+    if not meter then
+      meter = Instance.new("Frame")
+      meter.Name = "VisualDurationMeter"
+      meter.AnchorPoint = Vector2.new(0, 1)
+      meter.Position = UDim2.fromScale(0, 1)
+      meter.Size = UDim2.new(1, 0, 0, 3)
+      meter.BackgroundColor3 = theme.Accent
+      meter.BorderSizePixel = 0
+      meter.ZIndex = icon.ZIndex + 1
+      meter.Parent = icon
+    end
+    local total = math.max(0, tonumber(status.total) or 0)
+    local remaining = math.max(0, tonumber(status.remaining) or 0)
+    local ratio = total > 0 and math.clamp(remaining / total, 0, 1) or 0
+    meter.Size = UDim2.new(ratio, 0, 0, 3)
+    icon:SetAttribute("PresentationEffectStacks", math.max(0, math.floor(tonumber(status.stacks) or 0)))
+    return true
+  end
+  function controller.Notify(event)
+    if destroyed or type(event) ~= "table" then return false end
+    local id = tostring(event.id or "")
+    if id == "" then return false end
+    for _, notice in ipairs(notices) do if notice.id == id then return false end end
+    local toast = RobloxCommonUI.CreateNotificationToast({title = event.title, text = event.text, kind = event.kind, theme = theme})
+    toast.AnchorPoint = Vector2.new(1, 0)
+    toast.Parent = overlay
+    table.insert(notices, {id = id, frame = toast})
+    while #notices > maxNotices do
+      local oldest = table.remove(notices, 1)
+      oldest.frame:Destroy()
+    end
+    for index, item in ipairs(notices) do item.frame.Position = UDim2.new(1, -8, 0, 8 + (index - 1) * 78) end
+    task.delay(math.clamp(tonumber(event.duration) or 2.4, 0.3, 8), function()
+      for index, item in ipairs(notices) do
+        if item.id == id then
+          table.remove(notices, index)
+          if item.frame.Parent then item.frame:Destroy() end
+          break
+        end
+      end
+      for index, item in ipairs(notices) do item.frame.Position = UDim2.new(1, -8, 0, 8 + (index - 1) * 78) end
+    end)
+    return true
+  end
+  function controller.Destroy()
+    if destroyed then return end
+    destroyed = true
+    for _, tween in pairs(active) do tween:Cancel() end
+    for _, tween in pairs(iconTweens) do tween:Cancel() end
+    table.clear(seen)
+    overlay:Destroy()
+  end
+  controller.Root = overlay
+  return controller
 end
 
 function RobloxCommonUI.Create(atomId, options)
