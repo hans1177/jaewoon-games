@@ -42,3 +42,10 @@ test('actual game is wired to the director and keeps original save key',()=>{
  assert.match(html,/vibeMonsterRemodel\?\.hit/);
  assert.match(html,/prefers-reduced-motion/);
 });
+
+test('JRPG scenes and customization are connected without replacing existing save schema',()=>{
+ const html=readFileSync(new URL('../web-games/monster-adventure/index.html',import.meta.url),'utf8');
+ for(const marker of ['jrpgEditor','jrpgScene','jrpgSaveProfile','triggerStory(\'prologue\')','triggerStory(\'thirdWin\')','triggerStory(\'field\')','save.profile','save.storySeen'])assert.ok(html.includes(marker),marker);
+ assert.match(html,/localStorage\.getItem\(key\)/);
+ assert.match(html,/localStorage\.setItem\(key/);
+});
