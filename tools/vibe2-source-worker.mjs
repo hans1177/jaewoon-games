@@ -3905,7 +3905,10 @@ function visualCraftWorkerGuidance(order={},context={}){
     ?sourceSurfaces.filter(row=>row&&typeof row==='object'&&typeof row.surface==='string').slice(0,18):[];
   const craft=planVibePresentationAutopilot({
     files:(Array.isArray(context?.files)?context.files:[]).map(row=>({path:row.path,source:row.content})),
-    request:intent,game,world,uiSurfaces
+    request:intent,game,world,uiSurfaces,
+    assets:Array.isArray(order?.assetProduction?.verifiedVisualBindings)?order.assetProduction.verifiedVisualBindings:[],
+    reducedMotion:order?.presentationQuality?.reducedMotion===true,
+    performanceTier:clean(order?.presentationQuality?.performanceTier||'MID')
   });
   return [
     '[VIBE GAME VISUAL CRAFT BEGIN]',
@@ -3913,8 +3916,16 @@ function visualCraftWorkerGuidance(order={},context={}){
     'Actual renderable composition recipes, not visual approval:',
     JSON.stringify({materialRecipes:craft.craftPlans.map(row=>row.materialRecipe),
       surfaceLayouts:craft.craftPlans.map(row=>({surface:row.surface,grammar:row.grammar,
-        layout:row.layout,focus:row.focus})),supportedEffects:craft.craftPlans[0]?.requiredPatterns||[]}),
+        layout:row.layout,focus:row.focus})),
+      sourceGroundedPatterns:craft.adaptiveProfiles.map(profile=>({surface:profile.surface,
+        inspected:profile.source.sourceInspected,systems:profile.source.systems,
+        evidence:profile.source.evidence,selected:profile.selected.map(row=>({pattern:row.pattern,proofRequired:row.proofRequired})),
+        deferredForAssetProof:profile.deferredForAssetProof.map(row=>row.pattern),
+        eligibleAssetIds:profile.eligibleAssetIds,motion:profile.motion,
+        runtimeVerified:profile.runtimeVerified}))}),
     'For each actual UI surface present in the allowed source, implement the relevant visual behavior in that game client owner: frames/icons/fonts/spacing, damage numbers, tooltip placement, notice stacking, stateful icons, boss/status displays, and native 3D item preview when a verified model is actually available.',
+    'The sourceGroundedPatterns are dynamic per-surface candidates inferred from existing executable game files, not proof of linked events: inspect each cited symbol and connect only to an existing confirmed gameplay signal. Ignore missing-system patterns, defer texture/atlas/3D previews until the selected company asset is license/platform/source/provenance verified. Genre and art identity affect presentation and material adaptation, NEVER whether a non-existent gameplay feature is invented.',
+    'For game-specific craft, choose a distinct material/shape language from the existing Style Lock and source-verified assets; compose HUD around camera focal area, protect mobile touch controls and boss telegraphs, vary emphasis by actual exploration/combat/craft/quest state, cancel stale tweens, deduplicate network event IDs, cap concurrent particles/popups and respect reduced-motion. Prefer verified existing algorithms and engine APIs over one fixed prefab; preserve source ownership and prove real UI updates on portrait and landscape.',
     'Use existing engine-native UI module and graphics runtime functions ONLY if actually imported/bound in the selected game source. Never treat a common library name as proof that the running game uses it; add the normal existing library binding within the authorized responsibility where necessary.',
     'Avoid fixed default themes, fabricated asset IDs, synthetic gameplay events, new parallel render loops, semantic HP changes, save changes, server-authority shifts or broad unrelated rewrites.',
     'Source owner edits must actually change rendered nodes or camera/model binding, not merely append descriptions or contract flags. Re-check portrait/landscape, touch input, popups on boundaries, duplicate event handling, reduced motion and runtime revision evidence.',
