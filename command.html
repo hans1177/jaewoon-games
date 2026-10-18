@@ -123,13 +123,13 @@ async function readGenreLibrary(force=false){
  if(genreLoadPromise&&!force)return genreLoadPromise;
  genreLoadPromise=(async()=>{
   try{
-   const [module,response]=await Promise.all([import('./assets/game-presets.js'),fetch('./company-asset-library.json',{cache:'no-cache'})]);
+   const [module,response]=await Promise.all([import('/assets/game-presets.js'),fetch('./company-asset-library.json',{cache:'no-cache'})]);
    if(!response.ok)throw Error('회사 에셋 등록부 연결 실패');
    const data=await response.json();
    if(!Array.isArray(data.assets))throw Error('에셋 목록 형식 오류');
    genrePresets=module;genreRegistry=data.assets;genreLoadError='';
   }catch(error){genreLoadError=String(error?.message||error);genreRegistry=null;
-   if(!genrePresets){try{genrePresets=await import('./assets/game-presets.js');}catch{}}
+   if(!genrePresets){try{genrePresets=await import('/assets/game-presets.js');}catch{}}
   }finally{renderGenrePreview();}
  })();
  return genreLoadPromise;
