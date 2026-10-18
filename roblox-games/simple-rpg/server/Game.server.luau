@@ -1002,6 +1002,50 @@ local function civToggleHousingDoor(player,piece)
     end
   end
 end
+-- Attach only publisher-verified equipment meshes to the live avatar.
+-- These are visual-only; damage, ownership and persistence stay authoritative.
+local function bindCuratedEquipment(player)
+  local character = player.Character
+  if not character then return end
+  local previous = character:FindFirstChild("CuratedEquippedWeapon")
+  if previous then previous:Destroy() end
+  local keyById = {[1] = "StoneSpear", [2] = "BronzeSword", [3] = "IronGreatsword"}
+  local key = keyById[tonumber(player:GetAttribute("CivEquippedWeapon")) or 0]
+  if not key or not registered or type(registered.Equipment) ~= "table" then return end
+  local assetId = tonumber(registered.Equipment[key])
+  if not assetId or assetId <= 0 or assetId % 1 ~= 0 then return end
+  local hand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm")
+  if not hand or not hand:IsA("BasePart") then return end
+  local ok, container = pcall(function() return InsertService:LoadAsset(assetId) end)
+  if not ok or not container then
+    warn("SIMPLE_RPG_EQUIPMENT_ASSET_UNAVAILABLE", key, assetId)
+    return
+  end
+  local mesh = container:FindFirstChildWhichIsA("MeshPart", true)
+  if not mesh then
+    container:Destroy()
+    warn("SIMPLE_RPG_EQUIPMENT_MESH_MISSING", key, assetId)
+    return
+  end
+  local visual = Instance.new("Model")
+  visual.Name = "CuratedEquippedWeapon"
+  visual:SetAttribute("CuratedExternalAsset", true)
+  visual:SetAttribute("VerifiedRobloxAssetId", assetId)
+  local part = mesh:Clone()
+  part.Anchored = false
+  part.CanCollide = false
+  part.CanTouch = false
+  part.CanQuery = false
+  part.Massless = true
+  part.CFrame = hand.CFrame * CFrame.new(0, -0.7, -0.3) * CFrame.Angles(math.rad(90), 0, 0)
+  part.Parent = visual
+  local weld = Instance.new("WeldConstraint")
+  weld.Part0 = hand
+  weld.Part1 = part
+  weld.Parent = part
+  visual.Parent = character
+  container:Destroy()
+end
 local civWeaponIds = {StoneSpear=1, BronzeSword=2, IronGreatsword=3}
 local function civEquip(player, weaponKey)
   if typeof(weaponKey) ~= "string" or #weaponKey > 32 or not civRace(player) then return end
@@ -1009,6 +1053,7 @@ local function civEquip(player, weaponKey)
   if not weapon or readNumber(player, "Civ" .. weaponKey, 0) < 1 then return end
   if not civNowReady(player, "Equip", 0.25) then return end
   setNumber(player, "CivEquippedWeapon", weapon)
+  bindCuratedEquipment(player)
   civMessage(player, weaponKey .. " 장착")
 end
 local function civTravel(player, raceID)
@@ -2218,6 +2263,7 @@ Players.PlayerAdded:Connect(function(player)
     task.wait(0.1)
     civApplyCharacterPassive(player)
     civApplySkinTone(player)
+    bindCuratedEquipment(player)
   end)
 end)
 for _, player in ipairs(Players:GetPlayers()) do
