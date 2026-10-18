@@ -1,3 +1,4 @@
+import {moveFor,resolveOrder,calculateMoveDamage,enemyMoveChoice,typeMultiplier} from './vibe-monster-turn-system.js';
 // Monster Adventure Vibe studio integration. Existing save schema and battle rewards remain authoritative.
 import {chooseTacticalAction,makeCombatMemory,makeStaggerMeter} from './vibe-studio-combat.js';
 import {makeDamageFeedback,makeAccessibilitySettings} from './vibe-studio-gameplay.js';
@@ -76,6 +77,7 @@ if(typeof document!=='undefined'){
     consumeGuard(){return director.consumeGuard();},
     hit:effects.hit,
     status:effects.status,
+    turnRules:{moveFor,resolveOrder,calculateMoveDamage,enemyMoveChoice,typeMultiplier},
     snapshot(){return director.snapshot();}
   };
 }
