@@ -163,14 +163,22 @@ jobs:
             'assets/homepage-enhancements.js','assets/asset-library.css',
             'assets/asset-library.js','assets/asset-library-viewer.js'
           ])if(trackedAssets.has(asset))refs.add(asset);
-          for(const asset of [...refs].sort()){
+          // Hydrate selected tracked assets in one Git checkout instead of spawning git show per asset.
+          // The checkout is restricted to validated paths; all existing size/LFS checks remain.
+          const selectedAssets=[...refs].sort();
+          if(selectedAssets.length){
+            cp.execFileSync('git',['restore','--source=HEAD','--worktree','--',...selectedAssets],{
+              maxBuffer:16*1024*1024
+            });
+          }
+          for(const asset of selectedAssets){
             const target=path.join(site,asset);
-            fs.mkdirSync(path.dirname(target),{recursive:true});
-            const source=cp.execFileSync('git',['show','HEAD:'+asset],{maxBuffer:105*1024*1024});
+            const source=fs.readFileSync(asset);
             if(source.length>100*1024*1024)throw Error('GITHUB_PAGES_ASSET_TOO_LARGE:'+asset);
             if(source.subarray(0,100).toString('utf8').includes('version https://git-lfs.github.com/spec/v1')){
               throw Error('GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE:'+asset);
             }
+            fs.mkdirSync(path.dirname(target),{recursive:true});
             fs.writeFileSync(target,source);
           }
           // 원본 렌더러는 그대로 두고 Pages 사본의 절대 경로만 프로젝트 prefix로 보정한다.
