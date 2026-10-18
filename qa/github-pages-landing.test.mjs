@@ -48,6 +48,11 @@ test('homepage uses canonical runtime data and links without separate availabili
   assert.ok(script.includes("getJson('"+pagesRoot+"company-status.json')"));
   assert.ok(script.includes("getJson('"+pagesRoot+"homepage-platform-exposure.json')"));
   assert.ok(script.includes('function sourceWebHref(row)'));
+  // 페이지 prefix 변환은 /web-games/ URL만 바꾸고 카탈로그 경로 정규화는 보존해야 한다.
+  assert.ok(script.includes(".split('/').filter(Boolean).join('/')"));
+  assert.ok(!script.includes(".split('/jaewoon-games/')"));
+  assert.ok(script.includes("(index+1)+'/'+total"));
+  assert.ok(script.includes("(target+1)+'/'+total"));
   assert.ok(script.includes('links.web||links.webSource'));
   assert.ok(script.includes(official));
   const pwa=JSON.parse(fs.readFileSync('_site/manifest.webmanifest','utf8'));

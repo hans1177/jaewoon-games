@@ -144,7 +144,13 @@ jobs:
           for(const file of pathAdaptFiles){
             const pathname=path.join(site,file);
             const original=fs.readFileSync(pathname,'utf8');
-            fs.writeFileSync(pathname,original.replace(/(["'\x60])\/(?!\/)/g,'$1/jaewoon-games/'));
+            // JS의 split('/')·join('/')·비율 표시는 경로가 아니므로 보존한다.
+            const adapted=file==='manifest.webmanifest'
+              ?original.replace(/(["'\x60])\/(?!\/)/g,'$1/jaewoon-games/')
+              :original.replace(/(["'\x60])\/(?!["'\x60\/])/g,'$1/jaewoon-games/');
+            fs.writeFileSync(pathname,/\.html$/.test(file)
+              ?adapted.replace(/(\b(?:href|src|action)=["'])\/(?=["'])/g,'$1/jaewoon-games/')
+              :adapted);
           }
           const trackedAssets=new Set(cp.execFileSync('git',['ls-tree','-r','--name-only','HEAD','--','assets'],{encoding:'utf8'}).trim().split('\n'));
           const refs=new Set();
@@ -188,7 +194,7 @@ jobs:
             const pathname=path.join(site,file);
             if(!fs.existsSync(pathname))continue;
             const original=fs.readFileSync(pathname,'utf8');
-            fs.writeFileSync(pathname,original.replace(/(["'\x60])\/(?!\/)/g,'$1/jaewoon-games/'));
+            fs.writeFileSync(pathname,original.replace(/(["'\x60])\/(?!["'\x60\/])/g,'$1/jaewoon-games/'));
           }
           fs.writeFileSync(path.join(site,'.nojekyll'),'');
           fs.writeFileSync(path.join(site,'web-games/publish-manifest.json'),JSON.stringify({
