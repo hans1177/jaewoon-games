@@ -445,3 +445,23 @@ test('visual coding worker follows 3D-only gameplay world rule for Web and Roblo
   assert.match(worker,/ALL game worlds, characters, creatures, weapons, buildings, combat, collision and spatial interactions MUST be native real 3D/);
   assert.match(worker,/2\.5D is allowed ONLY for presentation-only UI overlays/);
 });
+
+
+test('3D world policy is mirrored into every active platform without a 2.5D repair downgrade',()=>{
+  const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const mirror=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+  const policy=central.livingMotionVisualQualityContract.minimumSpatialPresentation;
+  assert.equal(policy.minimumFinalGameplayDimension,'3D');
+  assert.equal(policy.accepted2_5DTechniquesAreNotFinalPass,true);
+  assert.deepEqual(central.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','WEB']);
+  assert.equal(mirror.gameVisualQuality.minimumFinalGameplayDimension,'3D');
+  assert.equal(mirror.gameVisualQuality.allSpatialGameAssetLibraries3dOnly,true);
+  assert.equal(mirror.gameVisualQuality.ui2DOverlayAllowed,true);
+  const planner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
+  assert.match(planner,/최종 게임 월드는 2D·2\.5D 금지/);
+  assert.doesNotMatch(planner,/최소 2\.5D로 재구성한다/);
+  const web=fs.readFileSync('web-games/README.md','utf8');
+  const roblox=fs.readFileSync('roblox-games/README.md','utf8');
+  assert.match(web,/실제 삼각형 메시/);
+  assert.match(roblox,/네이티브 3D 필수/);
+});
