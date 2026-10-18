@@ -38904,7 +38904,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-13T07:37:21.773Z",
-      "updatedAt": "2026-10-18T11:22:01.390Z",
+      "updatedAt": "2026-10-18T11:34:18.151Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -38924,16 +38924,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "a1f8c006689c4b5cb2ad73682b8d6b15be0e524a",
       "robloxBuildArtifactIdentity": "sha256:e237c492b257d43c7187f38e5454e376899687687c46c6626a964c0c2825f42c",
-      "robloxBuildPassedAt": "2026-10-18T11:22:01.390Z",
+      "robloxBuildPassedAt": "2026-10-18T11:34:18.151Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-18T11:22:01.390Z",
+      "robloxBuildPreflightFailedAt": "2026-10-18T11:34:18.151Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "wild-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-18T11:16:37.822Z",
+        "checkedAt": "2026-10-18T11:29:49.631Z",
         "sourceRevision": "a1f8c006689c4b5cb2ad73682b8d6b15be0e524a",
         "artifactIdentity": "sha256:e237c492b257d43c7187f38e5454e376899687687c46c6626a964c0c2825f42c",
         "secondaryOwnerFocus": false,
@@ -38976,7 +38976,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in BUILD_EVIDENCE, preventing the immutable package from starting runtime testing."
+            "note": "All content and native validation checks must pass before runtime testing can start."
           }
         ],
         "blockers": [
@@ -39538,7 +39538,7 @@
       "robloxExactRevisionPassed": false
     }
   ],
-  "updatedAt": "2026-10-18T11:34:11.847Z",
+  "updatedAt": "2026-10-18T11:34:18.151Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
