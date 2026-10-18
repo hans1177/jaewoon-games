@@ -50,6 +50,22 @@ test('visual craft returns real pixel placements and source-safe material slots'
   assert.equal(plan.craftPlans[0].grammar,'RECIPE_GRAPH');
   assert.equal(plan.craftPlans[0].materialRecipe.materialCues[0].construction,'CARVED_JOINERY');
 });
+test('layout optimizer can pack 12 distinct badges without HUD overlaps',()=>{
+  const components=Array.from({length:12},(_,i)=>({
+    id:'visible-badge-'+i,width:98,height:42,priority:1,zone:'EDGE'
+  }));
+  const result=optimizeVibeScreenLayout({viewport:{width:480,height:320},components});
+  assert.equal(result.pass,true);
+  assert.equal(result.placements.length,12);
+  for(let i=0;i<result.placements.length;i++){
+    for(let j=i+1;j<result.placements.length;j++){
+      const a=result.placements[i],b=result.placements[j];
+      const intersectionWidth=Math.max(0,Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x));
+      const intersectionHeight=Math.max(0,Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y));
+      assert.equal(intersectionWidth*intersectionHeight,0,'visual layers must not collide');
+    }
+  }
+});
 test('visual optimizer fails closed on overlap, focal obstruction and invalid viewport',()=>{
   assert.equal(optimizeVibeScreenLayout({viewport:{width:0,height:50}}).pass,false);
   const r=optimizeVibeScreenLayout({viewport:{width:80,height:80},
