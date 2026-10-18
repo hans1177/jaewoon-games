@@ -37,7 +37,7 @@ export function buildPagesLanding({catalog,manifest,exposure}){
      ||!original.includes('assets/homepage-enhancements.js')){
     throw new Error('PAGES_HOME_CANONICAL_SOURCE_INVALID');
   }
-  const html=original.replace(/(["'])\/(?!\/)/g,'$1'+PAGES_ROOT);
+  const html=original.replace(/(["'\x60])\/(?!\/)/g,'$1'+PAGES_ROOT);
   if(html.includes('data-jaewoon-pages-redirect')||html.includes('http-equiv="refresh"')){
     throw new Error('PAGES_HOME_REDIRECT_FORBIDDEN');
   }
