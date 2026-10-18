@@ -40,6 +40,9 @@ jobs:
             homepage-platform-exposure.json
             tools/github-pages-landing.mjs
             qa/github-pages-landing.test.mjs
+            qa/vibe-motion-engine.test.mjs
+            assets/vibe-motion-engine.mjs
+            assets/vibe-visual-design-system.json
             .github/workflows/magic-forest-pages.yml
             index.html
 
@@ -243,7 +246,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test qa/github-pages-landing.test.mjs
+          node --test qa/github-pages-landing.test.mjs qa/vibe-motion-engine.test.mjs
           test -s _site/index.html
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' _site/index.html
           grep -q '/jaewoon-games/assets/homepage-enhancements.js' _site/index.html
