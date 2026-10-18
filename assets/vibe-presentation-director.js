@@ -89,14 +89,21 @@ export function createVibeVisualMaterialRecipe({game={},world={},surface='HUD'}=
 }
 function visualCandidateAnchors(rect,bounds,zone,desired){
   const h=desired.height,w=desired.width;
-  const xMid=rect.x+(rect.width-w)/2,yMid=rect.y+(rect.height-h)/2;
-  const grid=[
-    [rect.x,rect.y],[rect.x+rect.width-w,rect.y],[rect.x,rect.y+rect.height-h],
-    [rect.x+rect.width-w,rect.y+rect.height-h],[xMid,yMid],
-    [xMid,rect.y],[xMid,rect.y+rect.height-h],[rect.x,yMid],[rect.x+rect.width-w,yMid]
-  ];
-  return grid.map(([x,y])=>({x:between(x,bounds.x,bounds.x+bounds.width-w),
-    y:between(y,bounds.y,bounds.y+bounds.height-h),width:w,height:h}));
+  const maxX=Math.max(0,rect.width-w),maxY=Math.max(0,rect.height-h);
+  const anchors=[[0,0],[maxX,0],[0,maxY],[maxX,maxY],[maxX/2,maxY/2],
+    [maxX/2,0],[maxX/2,maxY],[0,maxY/2],[maxX,maxY/2]];
+  // Pack narrow cards and HUD labels beyond nine generic presets.
+  // Bound the search work so production planning stays mobile-friendly.
+  const stepX=Math.max(1,w+8),stepY=Math.max(1,h+6);
+  for(let y=0;y<=maxY&&anchors.length<160;y+=stepY){
+    for(let x=0;x<=maxX&&anchors.length<160;x+=stepX)anchors.push([x,y]);
+    anchors.push([maxX,y]);
+  }
+  const seen=new Set();
+  return anchors.map(([rx,ry])=>({
+    x:between(rect.x+rx,bounds.x,bounds.x+bounds.width-w),
+    y:between(rect.y+ry,bounds.y,bounds.y+bounds.height-h),width:w,height:h
+  })).filter(v=>{const k=v.x.toFixed(2)+':'+v.y.toFixed(2);if(seen.has(k))return false;seen.add(k);return true;});
 }
 // Use a deterministic constrained placement instead of static genre templates.
 export function optimizeVibeScreenLayout({
