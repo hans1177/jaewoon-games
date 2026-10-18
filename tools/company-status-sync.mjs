@@ -455,6 +455,44 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
   return {portfolio,catalog,state:portfolio.productionClassState};
 }
 
+// 원본 게임 카탈로그와 실제 GitHub Pages 매니페스트를 같은 출처로 맞춘다.
+// 이 기록은 정적 배포 경로 증거일 뿐, 3D 플레이/QA/정식 출시 PASS가 아니다.
+export function syncPublishedWebRoutes({catalog={},manifest={},sourceTreeShaOf}={}){
+  const routes=manifest?.routes;
+  if(!Array.isArray(catalog?.games)||!Array.isArray(routes)||routes.length===0
+    ||manifest.gameCount!==routes.length||!/^[a-f0-9]{40}$/.test(String(manifest.sourceSha||''))
+    ||!manifest.sourceTreeShas||typeof manifest.sourceTreeShas!=='object'
+    ||typeof sourceTreeShaOf!=='function')throw Error('HOMEPAGE_WEB_PUBLICATION_MANIFEST_INVALID');
+  const published=new Map();
+  for(const route of routes){
+    const m=/^web-games\/([a-z0-9][a-z0-9-]*)\/$/.exec(route);
+    if(!m||published.has(m[1])||!/^[a-f0-9]{40}$/.test(String(manifest.sourceTreeShas[m[1]]||''))){
+      throw Error('HOMEPAGE_WEB_PUBLICATION_ROUTE_INVALID:'+route);
+    }
+    published.set(m[1],{route,treeSha:manifest.sourceTreeShas[m[1]]});
+  }
+  let confirmed=0,notCurrent=0;
+  for(const game of catalog.games){
+    const id=clean(game?.id||game?.gameId);
+    const root='web-games/'+id;
+    const source=clean(game?.webPath||game?.canonical?.sources?.web?.path).replace(/^\/+|\/+$/g,'');
+    const record=published.get(id);
+    const eligible=/^[a-z0-9][a-z0-9-]*$/.test(id)
+      &&(source===root||source===root+'/unity')&&record;
+    let currentSha='';
+    if(eligible){
+      try{currentSha=String(sourceTreeShaOf(root)||'').trim();}catch{}
+    }
+    const exact=Boolean(eligible&&record.treeSha===currentSha);
+    game.webPublishedRoute=exact?record.route:'';
+    game.webPublishedSourceTreeSha=exact?record.treeSha:'';
+    game.webPublishedSourceSha=exact?manifest.sourceSha:'';
+    if(exact)confirmed++;
+    else if(record)notCurrent++;
+  }
+  return{confirmed,notCurrent,published:published.size,sourceSha:manifest.sourceSha};
+}
+
 export function mergeRuntimeCatalogMissingGames({catalog={},runtimeCatalog={},developmentQueue={}}={}){
   if(!Array.isArray(catalog.games))return[];
   const liveQueueIds=new Set((Array.isArray(developmentQueue.items)?developmentQueue.items:[])
