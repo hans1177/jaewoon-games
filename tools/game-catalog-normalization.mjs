@@ -457,6 +457,10 @@ export function canonicalizeGameRecord(game={}){
       }
     },
     publication:{
+      web:{
+        route:clean(game.webPublishedRoute),
+        sourceTreeSha:clean(game.webPublishedSourceTreeSha)
+      },
       roblox:{
         universeId:clean(robloxTarget.universeId),
         placeId:clean(robloxTarget.placeId),

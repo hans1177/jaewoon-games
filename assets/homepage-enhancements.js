@@ -147,6 +147,9 @@ function playableWebHref(row){
   if(['NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','WITHDRAWN_SIMPLE_PROTOTYPE'].includes(state)||source.archive===false)return '';
   const root=String(source.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
   if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return '';
+  const published=publicationOf(row).web||{};
+  if(published.route!==`web-games/${id}/`
+    ||!/^[a-f0-9]{40}$/.test(String(published.sourceTreeSha||'')))return '';
   return `https://hans1177.github.io/jaewoon-games/${root}/`;
 }
 function verifiedRobloxDeploymentRows(catalog){

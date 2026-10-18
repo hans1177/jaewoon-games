@@ -228,7 +228,9 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue,ca
     const source=canonicalById.get(runtime.id);
     if(!source)return {...runtime,homepageWebPlayable:false,hasWebArchive:false,canonical:{...runtime.canonical,sources:{...runtime.canonical?.sources,web:{...runtime.canonical?.sources?.web,playable:false,archive:false}}}};
     return {...runtime,name:source.name,webPath:source.webPath,hasWebArchive:source.hasWebArchive,homepageWebPlayable:source.homepageWebPlayable,ownerWebSourceState:source.ownerWebSourceState,
-      canonical:{...runtime.canonical,identity:source.canonical?.identity||runtime.canonical?.identity,marketing:source.canonical?.marketing||runtime.canonical?.marketing,sources:{...runtime.canonical?.sources,web:source.canonical?.sources?.web||{path:source.webPath,playable:source.homepageWebPlayable,archive:source.hasWebArchive,state:source.ownerWebSourceState}}}};
+      canonical:{...runtime.canonical,identity:source.canonical?.identity||runtime.canonical?.identity,marketing:source.canonical?.marketing||runtime.canonical?.marketing,sources:{...runtime.canonical?.sources,web:source.canonical?.sources?.web||{path:source.webPath,playable:source.homepageWebPlayable,archive:source.hasWebArchive,state:source.ownerWebSourceState}},
+      // 웹 게시 경로 증거만 canonical main에서 투영한다. Roblox/Unity 런타임 권한은 회사 런타임에 남긴다.
+      publication:{...runtime.canonical?.publication,web:source.canonical?.publication?.web||{}}}};
   });
   const baseGames=allBaseGames.filter(game=>['ACTIVE','REBUILD'].includes(String(game?.lifecycleState||'ACTIVE').toUpperCase()));
   const projects=Array.isArray(portfolio?.projects)?portfolio.projects:[];

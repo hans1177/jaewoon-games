@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {validatedHomepageMedia,webTreeFingerprint} from '../tools/game-catalog-normalization.mjs';
 import vm from 'node:vm';
-import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
+import {mergeRuntimeCatalogMissingGames,syncPublishedWebRoutes} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
 test('paused Unity Web never generates build probes or launch links',()=>{
@@ -34,15 +34,73 @@ test('internal web game links use the registered source path without a score gat
     identity:{gameId:id,name:id},
     lifecycle:{state:'ACTIVE'},
     production:{class:'DEVELOPMENT_CONFIRMED'},
-    sources:{web:{path:'web-games/'+id,archive,state}}
+    sources:{web:{path:'web-games/'+id,archive,state}},
+    publication:{web:{route:'web-games/'+id+'/',sourceTreeSha:'a'.repeat(40)}}
   }});
   const eligible=row('fantasy-survival','UNITY_WEB_VERIFICATION_REQUIRED');
   assert.equal(api.playableWebHref(eligible),'https://hans1177.github.io/jaewoon-games/web-games/fantasy-survival/');
+  assert.equal(api.playableWebHref({...eligible,canonical:{...eligible.canonical,publication:{web:{}}}}),'','no publication evidence means no play button');
   assert.equal(api.platformLinks(eligible).web,api.playableWebHref(eligible));
   assert.match(api.buildCard(eligible),/일반 웹게임 · 플레이/);
   assert.doesNotMatch(api.buildCard(eligible),/href="[^"]+roblox\.com/);
   assert.equal(api.playableWebHref(row('retired-prototype','WITHDRAWN_SIMPLE_PROTOTYPE',false)),'');
   assert.equal(api.playableWebHref(row('missing-entry','ENTRY_MISSING_OR_INVALID')),'');
+});
+
+test('공개 매니페스트와 정확히 같은 원본 게임만 메인 실행 링크에 동기화한다',()=>{
+  const manifest={version:1,sourceSha:'b'.repeat(40),gameCount:2,
+    routes:['web-games/demo/','web-games/stale/'],
+    sourceTreeShas:{demo:'a'.repeat(40),stale:'c'.repeat(40)}};
+  const catalog={games:[
+    {id:'demo',webPath:'/web-games/demo/',hasWebArchive:true,ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED'},
+    {id:'stale',webPath:'/web-games/stale/',hasWebArchive:true,ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED'},
+    {id:'unpublished',webPath:'/web-games/unpublished/',hasWebArchive:true,ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED'}
+  ]};
+  const result=syncPublishedWebRoutes({catalog,manifest,sourceTreeShaOf:root=>root==='web-games/demo'?'a'.repeat(40):'d'.repeat(40)});
+  assert.equal(result.confirmed,1);
+  assert.equal(result.notCurrent,1);
+  assert.equal(catalog.games[0].webPublishedRoute,'web-games/demo/');
+  assert.equal(catalog.games[1].webPublishedRoute,'');
+  assert.equal(catalog.games[2].webPublishedRoute,'');
+  assert.equal(Object.hasOwn(catalog.games[0],'webPublishedSourceSha'),false,'do not cause endless republish when manifest source commit advances');
+  assert.throws(()=>syncPublishedWebRoutes({catalog,manifest:{...manifest,routes:['web-games/../bad/','web-games/stale/']},sourceTreeShaOf:()=>''}),/ROUTE_INVALID/);
+  assert.throws(()=>syncPublishedWebRoutes({catalog,manifest:{...manifest,gameCount:3},sourceTreeShaOf:()=>''}),/MANIFEST_INVALID/);
+});
+
+test('바이브가 원본 카탈로그에 새 게임을 추가하면 다음 원본 배포 후 메인 버튼에 자동 반영된다',()=>{
+  const entry=(id)=>({id,name:id,webPath:'web-games/'+id,hasWebArchive:true,
+    ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED',lifecycleState:'ACTIVE',
+    productionClass:'DEVELOPMENT_CONFIRMED'});
+  const catalog={games:[entry('first-game')]};
+  const sha='a'.repeat(40),nextSha='b'.repeat(40);
+  const makeManifest=(routes,sourceSha)=>({sourceSha,gameCount:routes.length,routes,
+    sourceTreeShas:Object.fromEntries(routes.map(route=>[route.split('/')[1],route.includes('new-game')?nextSha:sha]))});
+  const first=makeManifest(['web-games/first-game/'],'c'.repeat(40));
+  syncPublishedWebRoutes({catalog,manifest:first,sourceTreeShaOf:()=>sha});
+  assert.equal(catalog.games[0].webPublishedRoute,'web-games/first-game/');
+  const newGame=entry('new-game');
+  catalog.games.push(newGame); // Vibe의 정식 카탈로그 등록, 단순 HTML 원본 자동 생성과 구분
+  assert.equal(newGame.webPublishedRoute,undefined,'not playable before original deployment');
+  const published=makeManifest(['web-games/first-game/','web-games/new-game/'],'d'.repeat(40));
+  const sourceTreeShaOf=root=>root.endsWith('new-game')?nextSha:sha;
+  const next=syncPublishedWebRoutes({catalog,manifest:published,sourceTreeShaOf});
+  assert.equal(next.confirmed,2);
+  assert.equal(catalog.games[1].webPublishedRoute,'web-games/new-game/');
+  assert.equal(catalog.games[1].webPublishedSourceTreeSha,nextSha);
+  const snapshot=JSON.stringify(catalog.games);
+  syncPublishedWebRoutes({catalog,manifest:published,sourceTreeShaOf});
+  assert.equal(JSON.stringify(catalog.games),snapshot,'repeated Vibe run must not create duplicate game buttons or commits');
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(renderer+';({playableWebHref})',{
+    document:{readyState:'loading',addEventListener(){}},Date,Intl});
+  const withCanonical={...catalog.games[1],canonical:{
+    identity:{gameId:'new-game'},lifecycle:{state:'ACTIVE'},
+    sources:{web:{path:'web-games/new-game',archive:true,state:'UNITY_WEB_VERIFICATION_REQUIRED'}},
+    publication:{web:{route:catalog.games[1].webPublishedRoute,sourceTreeSha:catalog.games[1].webPublishedSourceTreeSha}}
+  }};
+  assert.equal(api.playableWebHref(withCanonical),'https://hans1177.github.io/jaewoon-games/web-games/new-game/');
+  syncPublishedWebRoutes({catalog,manifest:first,sourceTreeShaOf});
+  assert.equal(catalog.games[1].webPublishedRoute,'','missing next release disables the new button, not the game card');
 });
 
 test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
@@ -560,6 +618,27 @@ test('homepage does not advertise generic app icons or shared page backgrounds a
   assert.doesNotMatch(html,/src="assets\/pwa-icon-512\.png"/);
   assert.match(source,/homeGallerySlide img\.homeOriginalTitleLogo\{object-fit:contain/);
   assert.match(source,/scroll-snap-type:x mandatory/);
+});
+
+test('Cloudflare runtime keeps canonical published web-game buttons without overriding Roblox runtime authority',()=>{
+  const edge=fs.readFileSync('_worker.js','utf8').replace(/export\s+default\s*\{/,'const workerDefault = {');
+  const merge=vm.runInNewContext(edge+';mergeRuntimeCatalog', {Date,Intl});
+  const runtime={games:[{id:'demo',name:'Demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+    canonical:{publication:{roblox:{universeId:'runtime-authoritative'}},
+      sources:{web:{path:'web-games/demo',archive:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}}]};
+  const source={games:[{id:'demo',name:'Demo',webPath:'web-games/demo',hasWebArchive:true,
+    ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED',
+    canonical:{sources:{web:{path:'web-games/demo',archive:true,state:'UNITY_WEB_VERIFICATION_REQUIRED'}},
+      publication:{web:{route:'web-games/demo/',sourceTreeSha:'a'.repeat(40)},roblox:{universeId:'untrusted-static'}}}}]};
+  const merged=merge(runtime,{projects:[]},{seeds:[]},{items:[]},source);
+  assert.equal(merged.games.length,1);
+  assert.equal(merged.games[0].canonical.publication.web.route,'web-games/demo/');
+  assert.equal(merged.games[0].canonical.publication.web.sourceTreeSha,'a'.repeat(40));
+  assert.equal(merged.games[0].canonical.publication.roblox.universeId,'runtime-authoritative');
+  assert.equal(merged.games[0].canonical.sources.web.archive,true);
+  source.games[0].canonical.publication.web={};
+  const missing=merge(runtime,{projects:[]},{seeds:[]},{items:[]},source);
+  assert.equal(Object.keys(missing.games[0].canonical.publication.web).length,0,'stale server publication must not activate play');
 });
 
 test('Cloudflare Pages keeps native runtime APIs while bypassing static assets',()=>{
