@@ -429,7 +429,7 @@ test('graphics production carries exact asset-to-native-3D render obligations wi
     }]
   });
   const graphics=createVibeGraphicsProduction({
-    gameId:'forest',target:'roblox',
+    gameId:'forest',request:'로블록스 숲 월드에서 실제 3D 나무 배치',target:'roblox',
     assetProductionPlan:{kind:'vibe2-asset-production-plan',spatial3dAssetBinding:binding}
   });
   assert.equal(graphics.assetProductionPlanBound,true);
