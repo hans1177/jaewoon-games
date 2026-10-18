@@ -61,6 +61,21 @@ test('Director reviews and publishes the exact Homepage Manager candidate in one
   assert.doesNotMatch(workflow,/\\n  publish-after-director:/);
 });
 
+test('Director-approved GITHUB_TOKEN merge explicitly wakes existing GitHub Pages without blocking runtime status sync',()=>{
+  const director=section('  director-supervision:');
+  const publisher=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+  const mergeAt=director.indexOf('gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash');
+  const pagesAt=director.indexOf('gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main');
+  const statusAt=director.indexOf('gh workflow run company-status-sync.yml --repo "$GITHUB_REPOSITORY" --ref main');
+  assert.ok(mergeAt>=0&&pagesAt>mergeAt&&statusAt>pagesAt,'Pages dispatch only after reviewed merge, before independent status sync');
+  assert.match(director,/HOMEPAGE_GITHUB_PAGES_REFRESH=DISPATCHED_AFTER_DIRECTOR_MERGE/);
+  assert.match(director,/HOMEPAGE_GITHUB_PAGES_REFRESH=DISPATCH_RETRY_REQUIRED/);
+  assert.match(director,/test "\\$pages_dispatch" = YES/);
+  assert.match(publisher,/workflow_dispatch:/);
+  assert.match(publisher,/uses: actions\\/deploy-pages@v4/);
+  assert.match(publisher,/sourceSha:process\\.env\\.GITHUB_SHA/);
+});
+
 test('homepage publication explicitly refreshes the company-runtime catalog used by the live worker',()=>{
   const director=section('  director-supervision:');
   assert.match(workflow,/actions: write/);
