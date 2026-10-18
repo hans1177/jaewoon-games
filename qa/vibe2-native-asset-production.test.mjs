@@ -124,7 +124,8 @@ test('all games require downloaded registered library defaults and route missing
     assert.equal(missing.libraryRequest.mandatory,true);
     assert.equal(missing.libraryRequest.route,'EXISTING_ASSET_DEVELOPMENT_LIBRARY_ACQUISITION');
     assert.equal(missing.libraryRequest.placeholderFallbackForbidden,true);
-    assert.equal(plan.missingLibraryRequestCount,1);
+    assert.ok(plan.missingLibraryRequestCount>=1,'all unresolved applicable families also request downloads');
+    assert.equal(plan.nextActions.filter(row=>row.family==='CREATURE'&&row.libraryRequest?.mandatory===true).length,1);
     const guidance=assetProductionGuidance({kind:'vibe2-asset-production-plan',gameId:'all-library-'+target,target,assetSupplySummary:plan});
     assert.match(guidance,/MANDATORY DOWNLOADED LIBRARY REQUEST/);
     assert.match(guidance,/MANDATORY SIMILAR LIBRARY DONOR ADAPTATION/);
