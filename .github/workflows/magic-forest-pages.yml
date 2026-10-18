@@ -110,7 +110,10 @@ jobs:
               if(entry.isDirectory()){transformRoute(file);continue;}
               if(!entry.isFile()||!/\.(?:html|css|m?js|json)$/i.test(file))continue;
               const raw=fs.readFileSync(file,'utf8');
-              const updated=raw.replace(/(["'(\s=])\/(assets|web-games|multiplayer)\//g,'$1/jaewoon-games/$2/');
+              const updated=raw
+                .replace(/(["'(\s=])\/(assets|web-games|multiplayer)\//g,'$1/jaewoon-games/$2/')
+                .replace(/(["'(\s=])\/(tier\.html|index\.html|command\.html|install\.html|backup\.html|asset-library\.html)\b/g,'$1/jaewoon-games/$2')
+                .replace(/(\b(?:href|src|action)\s*=\s*["'])\/(?=["'])/gi,'$1/jaewoon-games/');
               if(raw!==updated)fs.writeFileSync(file,updated);
             }
           };
