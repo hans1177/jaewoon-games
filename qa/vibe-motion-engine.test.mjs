@@ -21,3 +21,23 @@ test('fixed timestep clamps long frames',()=>{
  assert.equal(loop(2),5);assert.ok(engine.time>0&&engine.time<.1);
  engine.setPaused(true);const t=engine.time;loop(.1);assert.equal(engine.time,t);
 });
+
+test('buffered actions honor priority and cooldown',()=>{
+ const engine=new VibeMotionEngine(design);
+ engine.queueAction('dodge',{priority:1,cooldown:1});
+ engine.queueAction('light-attack',{priority:3});
+ assert.equal(engine.flushActions(),'light-attack');
+ assert.equal(engine.flushActions(),'dodge');
+ engine.queueAction('dodge',{priority:2});
+ assert.equal(engine.flushActions(),null);
+ engine.update(.1);
+ assert.equal(engine.flushActions(),null);
+});
+test('clip events fire once when crossing timeline markers',()=>{
+ const engine=new VibeMotionEngine(design);
+ engine.registerClipEvents('walk',[{at:.02,type:'footstep'},{at:.04,type:'footstep'}]);
+ engine.enter('walk');engine.consumeEvents();
+ engine.update(.03);engine.update(.03);
+ assert.deepEqual(engine.consumeEvents().map(e=>e.type),['footstep','footstep']);
+ engine.update(.02);assert.equal(engine.consumeEvents().length,0);
+});
