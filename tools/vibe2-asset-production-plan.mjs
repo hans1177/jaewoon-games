@@ -1848,7 +1848,7 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
           ?usageBody.replace(/<!--[\s\S]*?-->|\/\*[\s\S]*?\*\//g,' ')
             .replace(/(?:^|[;>\r\n])\s*\/\/[^\r\n]*/g,' ')
           :source;
-        for(const match of pathUsageSource.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
+        for(const match of pathUsageSource.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|web-games\/[A-Za-z0-9._-]+\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           if(webConsumer){
             const before=pathUsageSource.slice(Math.max(0,match.index-120),match.index);
             if(!/\b(?:src|href|poster|url|load|loadAsync|fetch|import|texture|textures|tex|sprite|sprites|image|images|img|icon|icons|model|models|frame|frames|asset|assets|glb|surfaceTexture|background|font|audio|sound|effect|vfx)\b/i.test(before))continue;
