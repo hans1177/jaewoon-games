@@ -1,6 +1,5 @@
 import {VibeMotionEngine} from '../../assets/vibe-motion-engine.mjs';
 import {VibeGameplayController} from '../../assets/vibe-gameplay-controller.mjs';
-import design from '../../assets/vibe-visual-design-system.json' with {type:'json'};
 import { IslandRendererV3 } from './render-v3.js';
 
 const KEY_TO_DIR = {
@@ -11,8 +10,11 @@ const KEY_TO_DIR = {
 };
 
 let currentGame = null;
-const sharedMotion = new VibeMotionEngine(design);
-const sharedController = new VibeGameplayController({motion:sharedMotion,config:{walkSpeed:185,sprintSpeed:185,acceleration:1400,deceleration:1800,gravity:0},physics:{resolve:(previous,next)=>({position:{...next,y:0},grounded:true})}});
+let sharedController=null;
+fetch('../../assets/vibe-visual-design-system.json').then(r=>{if(!r.ok)throw Error('design unavailable');return r.json()}).then(design=>{
+ const sharedMotion=new VibeMotionEngine(design);
+ sharedController=new VibeGameplayController({motion:sharedMotion,config:{walkSpeed:185,sprintSpeed:185,acceleration:1400,deceleration:1800,gravity:0},physics:{resolve:(previous,next)=>({position:{...next,y:0},grounded:true})}});
+}).catch(()=>{});
 let paused = false;
 let lastFrame = performance.now();
 const held = new Set();
@@ -208,6 +210,7 @@ function movementFrame(now) {
       dy /= mag;
       const speed = Number(player.speed) || 185;
 
+      if(!sharedController){const nextX=player.x+dx*speed*dt;if(canStandAt(nextX,player.y))player.x=nextX;const nextY=player.y+dy*speed*dt;if(canStandAt(player.x,nextY))player.y=nextY;requestAnimationFrame(movementFrame);return;}
       sharedController.config.walkSpeed=speed;
       sharedController.config.sprintSpeed=speed;
       sharedController.position.x=player.x;
@@ -223,7 +226,7 @@ function movementFrame(now) {
     }
   }
 
-  if(!held.size){sharedController.velocity.x=0;sharedController.velocity.z=0;sharedController.setInput({});}
+  if(!held.size&&sharedController){sharedController.velocity.x=0;sharedController.velocity.z=0;sharedController.setInput({});}
   requestAnimationFrame(movementFrame);
 }
 requestAnimationFrame(movementFrame);
