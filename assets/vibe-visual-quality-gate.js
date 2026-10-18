@@ -4,12 +4,12 @@ const IMAGE_EXT=/\.(png|webp|jpg|jpeg|gif|svg)$/i;
 const VISUAL_HINT=/(player|character|hero|companion|npc|enemy|boss|monster|background|terrain|tile|tree|rock|plant|resource|building|house|door|chest|weapon|armor|item|projectile|effect|vfx|icon|ui)/i;
 const PLACEHOLDER_CODE=/(ctx\.(?:arc|fillRect|strokeRect|ellipse)\s*\(|[😀-🙏🌀-🫿])/u;
 const REAL_RENDER=/(drawImage\s*\(|<img\b|background(?:-image)?\s*:\s*url\(|Sprite2D|AnimatedSprite2D|TextureRect|TextureButton|texture\s*=)/i;
-const WEB_REAL_3D_RENDERER=/(?:THREE\\.(?:WebGLRenderer|Scene|Mesh)|new\\s+THREE\\.WebGLRenderer|new\\s+pc\\.(?:Application|AppBase)|BABYLON\\.(?:Engine|Scene|Mesh)|new\\s+BABYLON\\.Engine|new\\s+WebGL2?RenderingContext|\\.getContext\\s*\\(\\s*['"]webgl2?['"]|gl\\.draw(?:Arrays|Elements)|\\.drawElements\\s*\\()/i;
-const WEB_REAL_3D_MESH=/(?:THREE\\.(?:Mesh|SkinnedMesh|BoxGeometry|BufferGeometry)|pc\\.(?:Entity|MeshInstance|Mesh)|BABYLON\\.(?:Mesh|MeshBuilder)|mesh(?:Renderer|Instance|Geometry)|gl\\.(?:drawElements|drawArrays)|\\.glb\\b|\\.gltf\\b)/i;
-const WEB_REAL_3D_CAMERA=/(?:PerspectiveCamera|OrthographicCamera|\\.camera\\b|\\.fov\\b|\\.activeCamera|camera\\.projection|mat4\\.perspective|camera\\.setPosition)/i;
-const WEB_REAL_3D_DEPTH=/(?:depthTest|depthBuffer|DEPTH_TEST|depthWrite|depthFunc|autoClearDepth|depth\\s*:\\s*true|WebGLRenderer)/i;
-const ROBLOX_REAL_3D_WORLD=/(?:Instance\\.new\\s*\\(\\s*['"](?:MeshPart|Part|Terrain|WedgePart|UnionOperation)['"]|\\bMeshPart\\b|\\bworkspace\\.Terrain\\b|\\bWorldModel\\b)/i;
-const UNITY_REAL_3D_WORLD=/(?:MeshFilter|MeshRenderer|SkinnedMeshRenderer|TerrainData|CharacterController|Rigidbody\\b|Physics\\.Raycast)/i;
+const WEB_REAL_3D_RENDERER=/(?:THREE\.(?:WebGLRenderer|Scene|Mesh)|new\s+THREE\.WebGLRenderer|new\s+pc\.(?:Application|AppBase)|BABYLON\.(?:Engine|Scene|Mesh)|new\s+BABYLON\.Engine|new\s+WebGL2?RenderingContext|\.getContext\s*\(\s*['"]webgl2?['"]|gl\.draw(?:Arrays|Elements)|\.drawElements\s*\()/i;
+const WEB_REAL_3D_MESH=/(?:THREE\.(?:Mesh|SkinnedMesh|BoxGeometry|BufferGeometry)|pc\.(?:Entity|MeshInstance|Mesh)|BABYLON\.(?:Mesh|MeshBuilder)|mesh(?:Renderer|Instance|Geometry)|gl\.(?:drawElements|drawArrays)|\.glb\b|\.gltf\b)/i;
+const WEB_REAL_3D_CAMERA=/(?:PerspectiveCamera|OrthographicCamera|\.camera\b|\.fov\b|\.activeCamera|camera\.projection|mat4\.perspective|camera\.setPosition)/i;
+const WEB_REAL_3D_DEPTH=/(?:depthTest|depthBuffer|DEPTH_TEST|depthWrite|depthFunc|autoClearDepth|depth\s*:\s*true|WebGLRenderer)/i;
+const ROBLOX_REAL_3D_WORLD=/(?:Instance\.new\s*\(\s*['"](?:MeshPart|Part|Terrain|WedgePart|UnionOperation)['"]|\bMeshPart\b|\bworkspace\.Terrain\b|\bWorldModel\b)/i;
+const UNITY_REAL_3D_WORLD=/(?:MeshFilter|MeshRenderer|SkinnedMeshRenderer|TerrainData|CharacterController|Rigidbody\b|Physics\.Raycast)/i;
 export const REQUIRED_VISUAL_TYPES=['character','enemy','boss','background','item','prop','effect','ui','animation'];
 export const GOLDEN_SCENE_ROLES=Object.freeze([
   'PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP',
@@ -494,10 +494,10 @@ export function auditVibeVisualAssets(summary={}){
 export function auditVibeNative3D(summary={}){
   const target=String(summary.target||'web').toLowerCase();
   const files=Array.isArray(summary.files)?summary.files:[];
-  const extensions=target==='roblox'?/\\.(?:luau|lua)$/i
-    :target.startsWith('unity')?/\\.cs$/i:/\\.(?:js|mjs|html|ts)$/i;
+  const extensions=target==='roblox'?/\.(?:luau|lua)$/i
+    :target.startsWith('unity')?/\.cs$/i:/\.(?:js|mjs|html|ts)$/i;
   const joined=files.filter(f=>extensions.test(f.path||'')&&typeof f.text==='string')
-    .map(f=>f.text).join('\\n');
+    .map(f=>f.text).join('\n');
   const engine=target==='roblox'?'ROBLOX_NATIVE_3D':target.startsWith('unity')?'UNITY_NATIVE_3D':'WEB_NATIVE_3D';
   const renderer=target==='roblox'?ROBLOX_REAL_3D_WORLD.test(joined)
     :target.startsWith('unity')?UNITY_REAL_3D_WORLD.test(joined)
@@ -505,8 +505,8 @@ export function auditVibeNative3D(summary={}){
   const mesh=target==='roblox'?ROBLOX_REAL_3D_WORLD.test(joined)
     :target.startsWith('unity')?UNITY_REAL_3D_WORLD.test(joined)
     :WEB_REAL_3D_MESH.test(joined);
-  const camera=target==='roblox'?/(?:CurrentCamera|CameraType|CameraSubject|ViewportFrame|CFrame\\.lookAt)/i.test(joined)
-    :target.startsWith('unity')?/(?:Camera\\.main|Camera\\b|CameraType)/i.test(joined)
+  const camera=target==='roblox'?/(?:CurrentCamera|CameraType|CameraSubject|ViewportFrame|CFrame\.lookAt)/i.test(joined)
+    :target.startsWith('unity')?/(?:Camera\.main|Camera\b|CameraType)/i.test(joined)
     :WEB_REAL_3D_CAMERA.test(joined);
   const depth=target==='roblox'||target.startsWith('unity')
     ?mesh&&camera:WEB_REAL_3D_DEPTH.test(joined);
