@@ -213,7 +213,7 @@ test('existing mobile touch controls remain pinned; impossible safe-area positio
   assert.deepEqual(valid.placements.find(x=>x.id==='attack-control').x,290);
   assert.deepEqual(valid.placements.find(x=>x.id==='attack-control').y,710);
   const broken=optimizeVibeScreenLayout({
-    viewport:{width:393,height:852},safeInsets:{bottom:60,right:12},
+    viewport:{width:393,height:852},safeInsets:{bottom:80,right:12},
     components:[fixed,normal]
   });
   assert.equal(broken.pass,false,'unsafe bottom control cannot silently move under player finger');
