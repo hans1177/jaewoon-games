@@ -440,8 +440,8 @@ jobs:
           node --check tools/game-catalog-normalization.mjs
           node --check tools/company-status-sync.mjs
           COMPANY_VERIFIED_POLICY_PATH=company-learning/platform-release-roadmap.json node qa/game-catalog-normalization.test.mjs
-          node --test qa/homepage-manager-publication-order.test.mjs
-          node --test qa/company-homepage-runtime-propagation.test.mjs
+          # Preserve both QA suites; run their independent test files concurrently.
+          node --test --test-concurrency=2 qa/homepage-manager-publication-order.test.mjs qa/company-homepage-runtime-propagation.test.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' index.html
           grep -Fq 'data-homepage-build="2026-09-21-sample-exact"' index.html
