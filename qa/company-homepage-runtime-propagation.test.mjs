@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {validatedHomepageMedia,webTreeFingerprint} from '../tools/game-catalog-normalization.mjs';
 import vm from 'node:vm';
-import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
+import {mergeRuntimeCatalogMissingGames,syncPublishedWebRoutes} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
 test('paused Unity Web never generates build probes or launch links',()=>{
@@ -34,15 +34,36 @@ test('internal web game links use the registered source path without a score gat
     identity:{gameId:id,name:id},
     lifecycle:{state:'ACTIVE'},
     production:{class:'DEVELOPMENT_CONFIRMED'},
-    sources:{web:{path:'web-games/'+id,archive,state}}
+    sources:{web:{path:'web-games/'+id,archive,state}},
+    publication:{web:{route:'web-games/'+id+'/',sourceTreeSha:'a'.repeat(40),sourceCommit:'b'.repeat(40)}}
   }});
   const eligible=row('fantasy-survival','UNITY_WEB_VERIFICATION_REQUIRED');
   assert.equal(api.playableWebHref(eligible),'https://hans1177.github.io/jaewoon-games/web-games/fantasy-survival/');
+  assert.equal(api.playableWebHref({...eligible,canonical:{...eligible.canonical,publication:{web:{}}}}),'','no publication evidence means no play button');
   assert.equal(api.platformLinks(eligible).web,api.playableWebHref(eligible));
   assert.match(api.buildCard(eligible),/일반 웹게임 · 플레이/);
   assert.doesNotMatch(api.buildCard(eligible),/href="[^"]+roblox\.com/);
   assert.equal(api.playableWebHref(row('retired-prototype','WITHDRAWN_SIMPLE_PROTOTYPE',false)),'');
   assert.equal(api.playableWebHref(row('missing-entry','ENTRY_MISSING_OR_INVALID')),'');
+});
+
+test('공개 매니페스트와 정확히 같은 원본 게임만 메인 실행 링크에 동기화한다',()=>{
+  const manifest={version:1,sourceSha:'b'.repeat(40),gameCount:2,
+    routes:['web-games/demo/','web-games/stale/'],
+    sourceTreeShas:{demo:'a'.repeat(40),stale:'c'.repeat(40)}};
+  const catalog={games:[
+    {id:'demo',webPath:'/web-games/demo/',hasWebArchive:true,ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED'},
+    {id:'stale',webPath:'/web-games/stale/',hasWebArchive:true,ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED'},
+    {id:'unpublished',webPath:'/web-games/unpublished/',hasWebArchive:true,ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED'}
+  ]};
+  const result=syncPublishedWebRoutes({catalog,manifest,sourceTreeShaOf:root=>root==='web-games/demo'?'a'.repeat(40):'d'.repeat(40)});
+  assert.equal(result.confirmed,1);
+  assert.equal(result.notCurrent,1);
+  assert.equal(catalog.games[0].webPublishedRoute,'web-games/demo/');
+  assert.equal(catalog.games[1].webPublishedRoute,'');
+  assert.equal(catalog.games[2].webPublishedRoute,'');
+  assert.throws(()=>syncPublishedWebRoutes({catalog,manifest:{...manifest,routes:['web-games/../bad/','web-games/stale/']},sourceTreeShaOf:()=>''}),/ROUTE_INVALID/);
+  assert.throws(()=>syncPublishedWebRoutes({catalog,manifest:{...manifest,gameCount:3},sourceTreeShaOf:()=>''}),/MANIFEST_INVALID/);
 });
 
 test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
