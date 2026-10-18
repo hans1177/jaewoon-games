@@ -73,7 +73,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03090c;col
 const el=id=>document.getElementById(id);
 const cv=el('scene'),gl=cv.getContext('webgl',{alpha:false,depth:true,antialias:false});
 if(!gl){el('start').querySelector('p').textContent='이 기기에서는 3D 기록을 재생할 수 없어.';el('play').disabled=true;return;}
-const vertex='attribute vec3 p;attribute vec3 c;uniform vec3 eye;uniform vec3 rot;uniform float aspect;uniform vec3 fog;varying vec3 tint;void main(){vec3 a=p-eye;float k=cos(rot.x),s=sin(rot.x);vec3 b=vec3(k*a.x-s*a.z,a.y,s*a.x+k*a.z);float q=cos(rot.y),r=sin(rot.y);vec3 d=vec3(b.x,q*b.y-r*b.z,r*b.y+q*b.z);float v=cos(rot.z),w=sin(rot.z);vec2 tilt=vec2(d.x*v-d.y*w,d.x*w+d.y*v);float z=-d.z;gl_Position=vec4(tilt.x*1.57/aspect,tilt.y*1.57,z*1.015-.19,z);tint=mix(c,fog,clamp((length(a)-5.)/28.,0.,.78));}';
+const vertex='attribute vec3 p;attribute vec3 c;uniform vec3 eye;uniform vec3 rot;uniform float aspect;uniform vec3 fog;varying vec3 tint;void main(){vec3 a=p-eye;float k=cos(rot.x),s=sin(rot.x);vec3 b=vec3(k*a.x-s*a.z,a.y,s*a.x+k*a.z);float q=cos(rot.y),r=sin(rot.y);vec3 d=vec3(b.x,q*b.y-r*b.z,r*b.y+q*b.z);float v=cos(rot.z),w=sin(rot.z);vec2 tilt=vec2(d.x*v-d.y*w,d.x*w+d.y*v);float z=-d.z;gl_Position=vec4(tilt.x*1.28/aspect,tilt.y*1.28,z*1.015-.19,z);tint=mix(c,fog,clamp((length(a)-5.)/28.,0.,.78));}';
 const fragment='precision mediump float;varying vec3 tint;void main(){gl_FragColor=vec4(tint,1.0);}';
 function compile(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
 let program;
@@ -124,7 +124,6 @@ function taper(a,b,r1,r2,co,N=9){
  if(s<.15){ux=1;uy=0;uz=0;}else{ux/=s;uz/=s;}
  let vx=dy*uz-dz*uy,vy=dz*ux-dx*uz,vz=dx*uy-dy*ux;const vl=Math.hypot(vx,vy,vz)||1;vx/=vl;vy/=vl;vz/=vl;
  for(let j=0;j<N;j++){let p=j*2*Math.PI/N,q=(j+1)*2*Math.PI/N;
- const at=(r,n)=>[n[0]+r*(ux*Math.cos(atAngle)+vx*Math.sin(atAngle)),n[1]+r*(uy*Math.cos(atAngle)+vy*Math.sin(atAngle)),n[2]+r*(uz*Math.cos(atAngle)+vz*Math.sin(atAngle))];
  const point=(n,r,k)=>[n[0]+r*(ux*Math.cos(k)+vx*Math.sin(k)),n[1]+r*(uy*Math.cos(k)+vy*Math.sin(k)),n[2]+r*(uz*Math.cos(k)+vz*Math.sin(k))];
  quad(point(a,r1,p),point(a,r1,q),point(b,r2,q),point(b,r2,p),co);
  }}
@@ -421,7 +420,7 @@ function project(p,eye,rot,aspect){
  const k=Math.cos(rot[0]),s=Math.sin(rot[0]),bx=k*ax-s*az,bz=s*ax+k*az;
  const q=Math.cos(rot[1]),r=Math.sin(rot[1]),by=q*ay-r*bz,dz=r*ay+q*bz;
  if(dz>=-.3)return null;
- let X=bx*1.57/aspect/(-dz),Y=by*1.57/(-dz);
+ let X=bx*1.28/aspect/(-dz),Y=by*1.28/(-dz);
  if(Math.abs(X)>1.2||Math.abs(Y)>1.15)return null;
  return [(X*.5+.5)*100,(-Y*.5+.5)*100];
 }
@@ -474,6 +473,7 @@ function sound(f,d=.15,type='sawtooth',amp=.03){
 function playEffects(t){
  const ev=[...shots,38.4,48.7,53.1,67,71,78.4,92.9,94.2,98.4,101,105.4,109.1,116.2,120.8,126,150.9];
  for(const s of ev){if(t>=s&&!state.events.has(s)){state.events.add(s);
+ if(t-s>.20)continue;
  if(shots.includes(s)){sound(78,.19,'sawtooth',.075);sound(157,.1,'square',.02);}
  else if(s===67){sound(710,.65,'triangle',.045);sound(360,.3,'sine',.03);}
  else if(s===71||s===120.8){sound(49,.95,'sawtooth',.08);}
@@ -483,22 +483,23 @@ function playEffects(t){
 function displayMarkers(stage,t,eye,rot,aspect){
  const list=[];
  const add=(label,p,color)=>list.push({label,p,color});
- if(stage===1){add('연구원 02',[-2,2.62,-5.3],'ally2');add('연구원 03',[2.2,2.62,-5.4],'ally3');add('4번 연구원 추모함',[0,3,-18.5],'neutral');}
+ if(stage===1){add('연구원 02',[-1.65,1.85,-5.3],'ally2');add('연구원 03',[1.65,1.85,-5.4],'ally3');add('4번 연구원 추모함',[0,2.0,-12.5],'neutral');}
  if(stage===2){
   if(t<83){add(t>=72?'화염 골렘 · 핵 노출':'화염 골렘',[0,5.8,-12.6],'enemy');add(t>=72?'냉각된 핵 · 공격!':'뜨거운 핵',[0,3.42,-10.95],'weak');}
-  if(t<44)add('연구원 03',[3.35,2.6,-7.5],'ally3');
-  if(t>=49&&t<83)add('생존자',[t<60?4.1:3.5,2.6,-8.7],'survivor');
-  if(t>=59&&t<83)add('연구원 02',[-3.3,2.7,-8],'ally2');
+  if(t<44)add('연구원 03',[2.4,1.85,-8],'ally3');
+  if(t>=44&&t<53)add('연구원 03 · 포획됨',[2.12,2.6,-11.55],'ally3');
+  if(t>=49&&t<83)add('생존자',[t<60?2.95:2.7,1.86,-8.7],'survivor');
+  if(t>=59&&t<83)add('연구원 02',[-2.25,1.85,-8.6],'ally2');
  }
  if(stage===3){
-   if(t<102){add('연구원 02',[-3.4,2.6,-7.9],'ally2');add('연구원 03',[-.2,2.6,-9.4],'ally3');add('생존자',[3.1,2.6,-8.6],'survivor');}
+   if(t<102){add('연구원 02',[-2.35,1.85,-7.9],'ally2');add('연구원 03',[-.2,1.85,-9.4],'ally3');add('생존자',[2.4,1.85,-8.6],'survivor');}
    if(t>=105)add('초거대 벌레',[0,5.9,-10.3],'enemy');
  }
  if(stage===4){
    add('초거대 벌레',[0,4.7,-15.0],'enemy');
-   add('연구원 02',[-3.0,2.65,-6.8],'ally2');
-   add('연구원 03',[.5,2.65,-7.6],'ally3');
-   add('생존자',[3.4,2.65,-6.8],'survivor');
+   add('연구원 02',[-2.3,1.85,-7.7],'ally2');
+   add('연구원 03',[.5,1.85,-7.6],'ally3');
+   add('생존자',[2.35,1.85,-7.9],'survivor');
  }
  const root=el('markers');
  let html='';
@@ -535,8 +536,8 @@ function drawStage(stage,t,cam){
  const bob=Math.sin(t*4.4)*.06;
  verts=[];
  if(stage===1){
-   researcher(-2,-5.3,2,t);
-   researcher(2.2,-5.4,3,t);
+   researcher(-1.65,-5.3,2,t);
+   researcher(1.65,-5.4,3,t);
    // A dedicated three-dimensional memorial pedestal and softly lit archive plaque.
    box(0,-.5,-12.5,2.8,.95,1.35,[.22,.26,.29]);
    box(0,.42,-12.5,1.8,1.1,.43,[.42,.46,.45]);
@@ -547,27 +548,27 @@ function drawStage(stage,t,cam){
    if(t>23){box(2.9,-.54,-4.4,1.7,.5,.9,C.metal);}
  }
  if(stage===2){
-   if(t>=28&&t<37){researcher(-2.0,-6.1,2,t);researcher(1.7,-6.9,3,t);}
+   if(t>=28&&t<37){researcher(-1.8,-7.0,2,t);researcher(1.8,-7.6,3,t);}
    else {
-     if(t<44)researcher(3.35,-7.5,3,t);
-     if(t>=59){researcher(-3.3,-8.0,2,t,{weapon:true});
-       if(t<67)researcher(3.1,-8.0,3,t);
-       else researcher(3.1,-7.8,3,t,{weapon:true});
+     if(t<44)researcher(2.4,-8.0,3,t);
+     if(t>=59){researcher(-2.25,-8.6,2,t,{weapon:true});
+       if(t<67)researcher(2.25,-8.3,3,t);
+       else researcher(2.25,-8.2,3,t,{weapon:true});
      }
-     if(t>=52)survivor(4.1-(t>=61?.6:0),-8.7,t,{tool:t<60?'pick':'jaw'});
+     if(t>=52)survivor(2.95-(t>=61?.25:0),-8.7,t,{tool:t<60?'pick':'jaw'});
      golem(t);
    }
  }
  if(stage===3){
    const d2=phase(t,94.3,99),d3=phase(t,96.1,101),ds=phase(t,99.2,104);
-   if(t<105){researcher(-3.4,-7.9,2,t,{down:d2});researcher(-.2,-9.4,3,t,{down:d3});survivor(3.1,-8.6,t,{down:ds,tool:'jaw'});}
+   if(t<105){researcher(-2.35,-7.9,2,t,{down:d2});researcher(-.2,-9.4,3,t,{down:d3});survivor(2.4,-8.6,t,{down:ds,tool:'jaw'});}
    worm(t,false);
  }
  if(stage===4){
    const stumble=phase(t,121,125)*(1-phase(t,125.4,127));
-   researcher(-3.0,-6.8,2,t,{down:stumble*.28,weapon:true});
+   researcher(-2.3,-7.7,2,t,{down:stumble*.28,weapon:true});
    researcher(.5,-7.6,3,t,{down:stumble*.35,weapon:true});
-   survivor(3.4,-6.8,t,{down:stumble*.16,tool:'jaw'});
+   survivor(2.35,-7.9,t,{down:stumble*.16,tool:'jaw'});
    const dead=phase(t,150.4,154);
    if(dead<.94)worm(t,true);
    else{
@@ -590,7 +591,7 @@ function drawStage(stage,t,cam){
    }
  }
  if(stage===2&&t>=64&&t<70){
-   const bx=3.1;
+   const bx=2.25;
    box(bx+.6,.10,-6.2,.43,.50,.50,[.30,.48,.56]); // visible water bucket
    rod([bx+.39,.39,-6.2],[bx+.81,.39,-6.2],.06,[.73,.81,.81]);
  }
@@ -612,6 +613,7 @@ function cameraFor(stage,t){
  if(stage===2){x=Math.sin(t*.19)*.09;z=mix(4.3,.35,phase(t,28,40));y=1.58;}
  if(stage===3){x=Math.sin(t*.15)*.12;z=3.0;y=1.61;}
  if(stage===4){x=.05+Math.sin(t*.22)*.12;z=1.5;y=1.57;}
+ z+=Math.max(0,1.05-innerWidth/Math.max(1,innerHeight))*3.7;
  const walking=stage===2&&t<38||stage===3&&t<90;
  const bob=walking?Math.sin(t*7.2)*.030:Math.sin(t*2.5)*.010;
  const seismic=stage===3&&t>=106||stage===4&&t<125;
