@@ -320,16 +320,22 @@ jobs:
           if [ "$verified" != true ]; then echo "WEB_PAGES_LIVE_SOURCE_NOT_VERIFIED" >&2; exit 1; fi
           curl -fsSL --max-time 15 "$manifest_url" -o /tmp/web-pages-published.json
           node -e "const m=require('/tmp/web-pages-published.json');for(const p of m.routes){if(!/^web-games\/[a-z0-9-]+\/$/.test(p))process.exit(1);const id=p.split('/')[1];if(!/^[a-f0-9]{40}$/.test(m.sourceTreeShas?.[id]||''))process.exit(1)}"
-          # Continue to test other published games after one failed route.
-          while IFS= read -r route; do
-            if ! curl -fsSL --max-time 15 -o /dev/null "$base$route"; then
-              echo "WEB_PAGES_ROUTE_NOT_LIVE=$route" | tee -a "$director_report" >&2
-            fi
-          done < <(node -p "require('/tmp/web-pages-published.json').routes.join('\\n')")
-          node -p "require('/tmp/web-pages-published.json').sharedAssets.join('\n')" | while IFS= read -r asset; do
-            [ -n "$asset" ] || continue
-            curl -fsSL --max-time 15 -o /dev/null "$base$asset" || { echo "WEB_PAGES_ASSET_NOT_LIVE=$asset" >&2; exit 1; }
-          done
+          # Verify independent published URLs concurrently, preserving every route and asset check.
+          # xargs exits nonzero if any worker fails; diagnostics are written per URL.
+          export PAGES_BASE="$base"
+          node -e "const m=require('/tmp/web-pages-published.json');for(const route of m.routes)console.log('route '+route);for(const asset of m.sharedAssets)if(asset)console.log('asset '+asset)" \
+            | xargs -r -P 8 -n 2 bash -c '
+                kind="$0"
+                path="$1"
+                if ! curl -fsSL --max-time 15 -o /dev/null "$PAGES_BASE$path"; then
+                  if [ "$kind" = route ]; then
+                    echo "WEB_PAGES_ROUTE_NOT_LIVE=$path" >&2
+                  else
+                    echo "WEB_PAGES_ASSET_NOT_LIVE=$path" >&2
+                  fi
+                  exit 1
+                fi
+              ' || { echo 'WEB_PAGES_PARALLEL_HTTP_QA_FAILED' >&2; exit 1; }
           # A 200 on the old forest root did not make a game directory visible.
           curl -fsSL --max-time 15 "$base" -o /tmp/jaewoon-pages-home-live.html
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' /tmp/jaewoon-pages-home-live.html || {
