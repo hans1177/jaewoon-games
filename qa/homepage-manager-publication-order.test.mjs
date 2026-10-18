@@ -126,7 +126,7 @@ test('homepage fallback stays neutral until current runtime data renders',()=>{
   assert.match(homepage,/document\.getElementById\(id\)\?\.remove\(\)/);
 });
 
-test('homepage lists native Roblox and Unity app actions without Unity Web requests',()=>{
+test('homepage links ordinary web games, verified Roblox and optional Unity apps without Unity Web requests',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
@@ -136,10 +136,12 @@ test('homepage lists native Roblox and Unity app actions without Unity Web reque
   assert.match(homepage,/function internalReleaseLinks\(game\)/);
   assert.match(homepage,/buildShelf\(hub,'homePlatformAvailableGameCenter','출시 게임'/);
   assert.match(homepage,/robloxAction/);
+  assert.match(homepage,/webAction/);
+  assert.match(homepage,/일반 웹게임 · 플레이/);
   assert.match(homepage,/unityAction/);
   assert.doesNotMatch(homepage,/unityWebAction|bindAvailableUnityWebSurfaces|unityWebTestUrl/);
   assert.doesNotMatch(homepage,/아트북 보기|foldGameArtbookBtn|homepageArtbookPath/);
-  assert.doesNotMatch(homepage,/button\(links\.web,'웹 플레이'/);
+  assert.match(homepage,/button\(links\.web,'일반 웹게임 · 플레이'/);
   assert.match(homepage,/function playableWebHref\(row\)/);
   assert.doesNotMatch(homepage,/Fortnite 개발중|fortniteAction/);
   assert.match(homepage,/dataset\.homePlatformAvailableCount/);
@@ -174,7 +176,7 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.match(homepage,/publicRelease===true\?rp\.publicUrl:rp\.internalUrl/);
   assert.match(homepage,/publicRelease===true\?up\.publicUrl:up\.internalUrl/);
   assert.doesNotMatch(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
-  assert.match(homepage,/const direct=links\.roblox\|\|links\.unity\|\|''/);
+  assert.match(homepage,/const direct=links\.web\|\|links\.roblox\|\|links\.unity\|\|''/);
   assert.match(homepage,/exposureAuthority/);
   assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)!==JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
   assert.match(homepage,/function bindDirectGameLaunch\(\)/);
@@ -389,24 +391,25 @@ test('featured hero is explicit and ChatGPT launcher opens internal PWA chat',()
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
   assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
-  assert.match(runtime,/const direct=links\.roblox\|\|links\.unity\|\|''/);
-  assert.match(runtime,/const actionLabel=links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':'게임 보기'/);
+  assert.match(runtime,/const direct=links\.web\|\|links\.roblox\|\|links\.unity\|\|''/);
+  assert.match(runtime,/const actionLabel=links\.web\?'일반 웹게임 플레이':links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':'게임 보기'/);
   assert.doesNotMatch(index,/package=com\.openai\.chatgpt|intent:\/\/chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
 });
 
-test('game cards expose Roblox and Unity app only',()=>{
+test('game cards expose ordinary web and published Roblox links while preserving optional Unity apps',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const index=fs.readFileSync('index.html','utf8');
   assert.match(runtime,/function platformLinks\(game\)/);
   assert.match(runtime,/robloxAction/);
   assert.match(runtime,/unityAction/);
+  assert.match(runtime,/webAction/);
   assert.doesNotMatch(runtime,/unityWebAction/);
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
   assert.doesNotMatch(runtime,/Unity Web · 개발중/);
-  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.match(runtime,/button\(links\.web,'일반 웹게임 · 플레이'/);
   assert.doesNotMatch(runtime,/button\(links\.unityWeb/);
   assert.doesNotMatch(runtime,/button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
@@ -430,7 +433,7 @@ test('platform availability uses current release evidence or verified historical
   assert.doesNotMatch(runtime,/internalReleaseReady===true\|\|(?:roblox|unity)\.publicRelease===true/);
   assert.match(runtime,/exposureAuthority/);
   assert.match(runtime,/supportedPlatforms/);
-  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.match(runtime,/button\(links\.web,'일반 웹게임 · 플레이'/);
   assert.doesNotMatch(runtime,/fortniteAction/);
 });
 
