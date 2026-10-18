@@ -2542,7 +2542,7 @@ test('higher-value owner signal outranks automatic presentation issue',()=>{
   assert.equal(next.ownerDirective,true);
 });
 
-test('flat or unstartable Web games enter 2.5D repair after canonical existing-Web assessment',()=>{
+test('flat or unstartable Web games enter mandatory real 3D conversion after canonical assessment',()=>{
   const root=tempRepo();
   const gameId='flat-start-game';
   const dir=path.join(root,'web-games',gameId);
@@ -2571,9 +2571,42 @@ test('flat or unstartable Web games enter 2.5D repair after canonical existing-W
   assert.equal(task.supervisionContract?.required,true);
   assert.ok(task.evidence.includes('owner-directive:all-web-games-must-start'));
   assert.ok(task.evidence.includes('owner-directive:real-3d-final-gameplay'));
-  assert.ok(task.evidence.some(value=>value.includes('MINIMUM_2_5D_PRESENTATION_REQUIRED')));
+  assert.ok(task.evidence.some(value=>value.includes('GENERAL_WEB_REAL_3D_SOURCE_REQUIRED')));
+  assert.match(task.goal,/2\.5D는 최종 통과 금지/);
   assert.match(task.goal,/실제 WebGL 렌더/);
   assert.equal(task.maxRetries,null);
+});
+
+
+test('fake 3D flags, CSS perspective and WebGL declarations do not suppress canonical 3D conversion',()=>{
+  const root=tempRepo();
+  const gameId='fake-web-3d';
+  const dir=path.join(root,'web-games',gameId);
+  fs.mkdirSync(dir,{recursive:true});
+  // Old planner accepted data-spatial-dimension=3d and CSS parallax as final 3D.
+  const fake='<html><body data-spatial-dimension="3d" style="perspective:500px;transform-style:preserve-3d"><canvas></canvas><button id="go">게임 시작</button><script>'+
+    'document.getElementById("go").onclick=()=>{document.body.dataset.state="playing"};'+
+    'const WebGLRenderingContext="WebGLRenderingContext";const camera="PerspectiveCamera";'+
+    'requestAnimationFrame(function render(){});'.repeat(16)+'</script></body></html>';
+  fs.writeFileSync(path.join(dir,'index.html'),fake,'utf8');
+  const assessment={
+    id:gameId+'-existing-web-assessment-v1',gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/'+gameId,responsibleFiles:['web-games/'+gameId+'/index.html'],
+    goal:'source assessed',releaseState:'development-confirmed',status:'verified',evidence:['existing-web-assessment-required']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog:{games:[{
+      id:gameId,name:'Fake 3D',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
+      homepageWebPlayable:false,hasWebArchive:true,webPath:'/web-games/'+gameId+'/'
+    }]},
+    developmentQueue:{items:[]},queue:{maxConcurrentTasks:4,tasks:[assessment]},repoRoot:root,maxConcurrentTasks:4
+  });
+  const repair=result.tasks.find(row=>row.gameId===gameId&&/web-startup-spatial-repair-v1$/.test(row.id));
+  assert.ok(repair,'fake 3D must schedule in-place Web game conversion');
+  assert.equal(repair.supervisionContract?.required,true);
+  assert.ok(repair.evidence.some(row=>row.includes('GENERAL_WEB_REAL_3D_SOURCE_REQUIRED')));
+  assert.match(repair.goal,/실제 3D 월드 메시/);
+  assert.ok(!repair.goal.includes('최소 2.5D'));
 });
 
 
