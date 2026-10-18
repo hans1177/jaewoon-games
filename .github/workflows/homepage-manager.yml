@@ -650,6 +650,10 @@ jobs:
             gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash
             git push origin --delete "$branch" >/dev/null 2>&1 || true
             echo 'HOMEPAGE_PUBLICATION=PR_VALIDATED_AND_MERGED_AFTER_DIRECTOR'
+            # GITHUB_TOKEN PR merges do not emit a new workflow-triggering push.
+            # Never require another homepage release verdict to start the already-merged Pages publication.
+            gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'HOMEPAGE_PAGES_POST_MERGE_DISPATCHED=YES'
             gh workflow run company-status-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo 'HOMEPAGE_RUNTIME_STATUS_SYNC=DISPATCHED'
           else
