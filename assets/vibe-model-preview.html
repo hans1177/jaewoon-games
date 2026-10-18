@@ -11,9 +11,16 @@ const fill=new THREE.DirectionalLight(0x78b9ff,0.9);fill.position.set(-4,2,-5);s
 const rim=new THREE.DirectionalLight(0xffd49a,1.1);rim.position.set(0,5,-6);scene.add(rim);
 const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(4,8,5);scene.add(light);
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));document.body.append(renderer.domElement);
+const styles={realistic:[.25,.48,1],fantasy:[.12,.68,1.05],scifi:[.68,.28,1.2],horror:[.06,.82,.75],cartoon:[0,.9,1.15]};
+const picker=document.createElement('select');picker.setAttribute('aria-label','장르별 재질 스타일');picker.style.cssText='position:absolute;top:40px;left:12px;z-index:3;padding:8px;border-radius:8px;background:#101b2e;color:white';
+for(const [key,label] of [['realistic','실사'],['fantasy','판타지'],['scifi','SF'],['horror','호러'],['cartoon','카툰']]){const opt=document.createElement('option');opt.value=key;opt.textContent=label;picker.append(opt)}
+document.body.append(picker);
+let activeModel=null;const originals=new WeakMap();
+function restyle(){const [metal,rough,exposure]=styles[picker.value];renderer.toneMappingExposure=exposure;if(!activeModel)return;activeModel.traverse(obj=>{if(!obj.isMesh)return;for(const material of (Array.isArray(obj.material)?obj.material:[obj.material])){if(!material||typeof material.roughness!=='number')continue;if(!originals.has(material))originals.set(material,[material.metalness,material.roughness]);const [m,r]=originals.get(material);material.metalness=Math.min(1,m*.5+metal*.5);material.roughness=Math.min(1,Math.max(.05,r*.5+rough*.5));material.needsUpdate=true}})}
+picker.addEventListener('change',restyle);
 const resize=()=>{const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)};addEventListener('resize',resize);resize();
 let mixer=null;const ground=new THREE.GridHelper(20,20,0x486a91,0x273a54);ground.position.y=-1;scene.add(ground);new GLTFLoader().load(url.href,gltf=>{
-const model=gltf.scene;scene.add(model);const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
+const model=gltf.scene;scene.add(model);activeModel=model;restyle();const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
 const radius=Math.max(size.x,size.y,size.z,0.1);ground.scale.setScalar(Math.max(radius/5,.05));ground.position.y=-size.y/2;camera.position.set(radius*1.5,radius*.9,radius*2.2);camera.lookAt(0,0,0);
 if(gltf.animations?.length){mixer=new THREE.AnimationMixer(model);mixer.clipAction(gltf.animations[0]).play()}status.textContent='원본 3D · '+(gltf.animations?.length||0)+'개 애니메이션';
 },undefined,()=>{status.textContent='모델 로딩 실패 (파일 형식 또는 의존성 확인 필요)'});
