@@ -164,7 +164,7 @@ function pillar(x,z,height){
   mesh(cube,materials.stone,group,0,height/2+.5,0,.85,height,.85);
   mesh(cube,materials.stone2,group,0,height+.65,0,1.28,.35,1.28);
   const torch=mesh(cone,materials.crystal,group,0,height+1.05,0,.3,.7,.3);
-  ruins.push({x,z,r:1.1,torch,phase:x+z});
+  ruins.push({x,z,r:1.1,torch,torchBase:height+1.05,phase:x+z});
 }
 for(let i=0;i<12;i++){
   const a=i*Math.PI/6;const r=i%3===0?19:16.5;
@@ -213,7 +213,7 @@ halo.visible=false;
 const portal=new THREE.Group();
 scene.add(portal);
 portal.position.set(0,0,-5);
-const frame=mesh(new THREE.TorusGeometry(1.85,.28,8,24),materials.stone,portal,0,2.15,0);
+const portalFrame=mesh(new THREE.TorusGeometry(1.85,.28,8,24),materials.stone,portal,0,2.15,0);
 mesh(new THREE.TorusGeometry(1.5,.08,6,32),materials.gold,portal,0,2.15,0);
 const portalLight=mesh(new THREE.CircleGeometry(1.46,32),new THREE.MeshBasicMaterial({color:0x829cff,side:THREE.DoubleSide,transparent:true,opacity:.56}),portal,0,2.15,0);
 portal.visible=false;
@@ -481,7 +481,7 @@ function update(dt){
     v.obj.position.y+=dt;
     if(v.life<=0){scene.remove(v.obj);v.obj.material.dispose();state.effects.splice(i,1);}
   }
-  for(const r of ruins){r.torch.rotation.y+=dt;r.torch.position.y=(r.torch.parent.children[1]?.position.y||2)+Math.sin(state.time*2+r.phase)*.04;}
+  for(const r of ruins){r.torch.rotation.y+=dt;r.torch.position.y=r.torchBase+Math.sin(state.time*2+r.phase)*.04;}
   updateHud();
 }
 function render(dt){
