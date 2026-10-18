@@ -1205,7 +1205,7 @@ function webRepairImplementationHints(evidence=[]){
   add(/LOCAL_RUNTIME_DEPENDENCY_MISSING/,'누락된 로컬 script/asset 의존을 실제 파일과 경로에 맞게 복구한다.');
   add(/VALIDATION_PROXY_NOT_REAL_GAMEPLAY/,'검증 단계·scope 버튼을 실제 gameplay UI로 사용하지 말고 진짜 게임 시작/입력/상태 진행 화면으로 교체한다.');
   add(/START_CONTROL_NOT_WIRED/,'시작 버튼을 실제 게임 초기화·입력 활성화·게임 상태 전환 함수에 직접 연결한다.');
-  add(/MINIMUM_2_5D_PRESENTATION_REQUIRED/,'평면 2D 최종 표현을 최소 2.5D로 재구성한다. 등각/원근 카메라·깊이 정렬·전경/중경/후경 parallax·높이/접지 그림자·깊이 대응 VFX 중 실제 공간 단서를 결합하고 UI만 2D overlay로 남긴다.');
+  add(/MINIMUM_2_5D_PRESENTATION_REQUIRED|GENERAL_WEB_REAL_3D_RUNTIME_REQUIRED|GENERAL_WEB_DEPTH_TESTED_3D_DRAW_REQUIRED/,'최종 게임 월드는 2D·2.5D 금지. 기존 원본 게임의 규칙·저장·밸런스를 보존하면서 실제 3D 삼각형 메시, 깊이 테스트, 3D 카메라, xyz 이동·충돌·입력 결과를 기존 WebGL/PlayCanvas/Babylon/Three 책임 코드에 구현한다. 등각 스프라이트·CSS 원근·DOM·2D 캔버스는 월드 대체 불가하며 HUD/인벤토리/데미지 표시 등 UI 오버레이에만 2D를 허용한다. 실제 모바일 브라우저 런타임 증거 전 최종 통과 금지.');
   add(/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/,'카운터나 가짜 상태 대신 실제 엔티티 x/y 위치와 공간 상태를 런타임 게임 루프에 연결한다.');
   add(/APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED/,'실제 런타임 엔티티가 이동·타게팅·충돌·공격 등 승인된 상호작용을 수행하게 연결한다.');
   add(/REAL_GAME_MECHANIC_COUNT_TOO_LOW/,'누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.');
