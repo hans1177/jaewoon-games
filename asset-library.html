@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="17">
+<html lang="ko" data-asset-library-version="18">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -12,15 +12,26 @@
 <main class="shell">
 <header class="top"><a class="brand" href="/jaewoon-games/">JAEWOON <span>GAMES</span></a><a class="back" href="/jaewoon-games/">홈으로</a></header>
 <section class="hero">
- <div><p class="eyebrow">ASSET LIBRARY</p><h1>움직임부터, 세계까지.</h1><p>몬스터의 기본 모션과 액션, 게임을 채우는 배경을 둘러봐.<br>새로 배포된 자산은 여기에 자동으로 반영돼.</p></div>
+ <div><p class="eyebrow">ASSET LIBRARY</p><h1>실제 원본, 확실한 검증.</h1><p>3D 모델과 제작 소스·공용 재질·모션을 구분해 살펴봐.<br>등록·원본 보유·실제 실행 검증은 서로 다른 상태야.</p></div>
  <div class="count"><b id="assetCount">—</b><span>총 등록 자산</span><span class="countDetail">등록 원본 경로 <strong id="sourcePathCount">—</strong>개</span><span class="countDetail">제작 검증 표시 <strong id="productionMarkCount">—</strong>개</span></div>
+</section>
+<section class="inventorySummary" aria-label="라이브러리 전체 현황">
+ <div><span>3D 원본 미리보기</span><strong id="nativeCount">—</strong><small>등록된 GLB 경로 · 중복 제외 · OBJ/FBX는 원본 카탈로그에서 별도 확인</small></div>
+ <div><span>제작 재질 원자</span><strong id="materialCount">—</strong><small>완성된 3D 모델과 별도</small></div>
+ <div><span>외부 원본 출처</span><strong id="sourceReferenceCount">—</strong><small>후보·확보 상태 구분</small></div>
+ <div><span>공용 제작 카탈로그</span><strong id="catalogPackCount">—</strong><small id="catalogEntryCount">카탈로그 세부 항목</small></div>
+</section>
+<section class="sourceCollections" aria-labelledby="sourceCollectionsTitle">
+ <div class="collectionHeader"><div><p class="eyebrow">SOURCE INVENTORY</p><h2 id="sourceCollectionsTitle">소스팩과 제작 원본</h2></div><p>압축 원본·모델 목록·제작 레시피까지 확인해. 아직 게임에 적용됐다는 뜻은 아니야.</p></div>
+ <div id="sourcePackList" class="sourcePackList" aria-label="회사 제작 원본 카탈로그"></div>
+ <p class="muted" id="sourcePackStatus" role="status">중앙 등록부의 소스팩을 확인하는 중…</p>
 </section>
 <section class="featuredMotions" aria-label="이번 작업 대표 모션과 액션">
  <div class="featureIntro"><p class="eyebrow">NEW MOTION · ACTION</p><strong>이미지가 아니라 실제 동작으로 확인</strong><span>현재 소스에서 뽑은 3D 샘플을 아래 뷰어에서 바로 재생해.</span></div>
  <button id="featuredWalk" type="button" disabled><span>대표 모션</span><strong>굴 · 걷기</strong><small>새 걷기 동작 재생</small></button>
  <button id="featuredAttack" type="button" disabled><span>대표 액션</span><strong>이프리트 · 공격</strong><small>새 공격 동작 재생</small></button>
 </section>
-<div class="sectionHead"><nav class="tabs" aria-label="자산 분류"><button type="button" id="allTab" aria-pressed="false">전체 <span id="allCount">—</span></button><button type="button" id="monsterTab" aria-pressed="true">몬스터 <span id="monsterCount">—</span></button><button type="button" id="commonTab" aria-pressed="false">공용 캐릭터 <span id="commonCount">—</span></button><button type="button" id="environmentTab" aria-pressed="false">배경 <span id="environmentCount">—</span></button></nav><button type="button" id="refreshAssets">새로고침</button></div>
+<div class="sectionHead"><nav class="tabs" aria-label="자산 분류"><button type="button" id="nativeTab" aria-pressed="false">실제 3D <span id="nativeTabCount">—</span></button><button type="button" id="allTab" aria-pressed="false">전체 <span id="allCount">—</span></button><button type="button" id="monsterTab" aria-pressed="true">몬스터 <span id="monsterCount">—</span></button><button type="button" id="commonTab" aria-pressed="false">공용 캐릭터 <span id="commonCount">—</span></button><button type="button" id="environmentTab" aria-pressed="false">배경 <span id="environmentCount">—</span></button></nav><button type="button" id="refreshAssets">새로고침</button></div>
 <section class="gallery" id="new-motions" aria-label="종류별 자산 미리보기">
  <aside class="picker">
   <label for="assetSearch">이름·경로·게임 검색</label><input id="assetSearch" type="search" placeholder="자산 이름·경로·게임 검색" autocomplete="off">
@@ -39,6 +50,7 @@
  <div class="viewer">
   <div class="viewerHead"><div><p class="eyebrow" id="assetType">MONSTER STUDIO</p><h2 id="selectedTitle">자산을 불러오는 중</h2><p id="selectedInfo" class="muted"></p></div><span class="badge" id="previewBadge">미리보기 준비 중</span></div>
   <div id="assetCanvas" role="img" aria-label="선택한 자산의 3차원 미리보기"></div>
+  <div class="inspectionMetrics" id="inspectionMetrics" hidden><span>메시 <strong id="meshCount">—</strong></span><span>삼각형 <strong id="triangleCount">—</strong></span><span>재질 <strong id="meshMaterialCount">—</strong></span><span>모션 <strong id="meshClipCount">—</strong></span></div>
   <img id="assetImage" alt="" hidden>
   <p id="previewStatus" class="previewStatus" role="status">모델을 준비하고 있어.</p>
   <div id="motionControls" class="motionControls">
@@ -58,7 +70,7 @@
  <div id="externalSourceList" class="externalSourceList" aria-label="로블록스 외부 자산 출처"></div>
 </section>
 <p class="syncStatus" id="syncStatus" role="status">자산 정보를 연결하는 중…</p>
-<footer>전체 등록 자산과 몬스터 동작, 회사 공용 R15 캐릭터 동작, 배경을 한 곳에서 확인해 봐. 새로 배포된 결과는 30초마다 확인해.</footer>
+<footer>회사 중앙 등록부·공용 소스·원본 에셋 카탈로그를 함께 표시해. 실제 게임 적용과 플랫폼별 상용화 품질 판정은 별도 검증이야.</footer>
 </main>
 <script type="module" src="/jaewoon-games/assets/asset-library.js"></script>
 </body>
