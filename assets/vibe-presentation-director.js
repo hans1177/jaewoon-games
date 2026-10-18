@@ -72,6 +72,128 @@ function presentationRect(row){
   const x=finite(row.x,NaN),y=finite(row.y,NaN),width=finite(row.width,NaN),height=finite(row.height,NaN);
   return [x,y,width,height].every(Number.isFinite)&&width>0&&height>0?{x,y,width,height}:null;
 }
+// The existing worker discovers capabilities from actual game source, not from a
+// genre label, prompt, catalog name or an unverified asset-library entry.
+const VIBE_GAME_VISUAL_SIGNALS=Object.freeze({
+  COMBAT:/\b(?:hitbox|hitstun|damage|attack|combat|weapon|dealDamage|onHit)\b|(?:공격|전투|피해량)/i,
+  BOSS:/\b(?:bossPhase|bossHealth|bossHp|bossBar|bossFight|bossEncounter|boss_state)\b|(?:보스전|보스체력)/i,
+  QUEST:/\b(?:quest|objective|mission|questLog)\b|(?:퀘스트|임무)/i,
+  CRAFT:/\b(?:craft|recipe|smelt|forge|crafting)\b|(?:제작대|제작법|조합)/i,
+  INVENTORY:/\b(?:inventory|backpack|itemSlot|lootTable)\b|(?:인벤토리|아이템창)/i,
+  EQUIPMENT:/\b(?:equipment|equipItem|equipSlot|gearSlot|armorSlot)\b|(?:장비창|착용장비)/i,
+  SHOP:/\b(?:shop|vendor|buyItem|sellItem|checkout)\b|(?:상점|구매)/i,
+  STATUS:/\b(?:buff|debuff|statusEffect|effectDuration|poisonTimer)\b|(?:상태효과|버프|디버프)/i,
+  SKILL:/\b(?:cooldown|skillSlot|ability|castSkill|spell)\b|(?:스킬|재사용대기)/i,
+  MAP:/\b(?:minimap|worldMap|mapMarker|waypoint)\b|(?:미니맵|지도)/i,
+  PARTY:/\b(?:partyMember|multiplayer|teammate|squad|pingMarker)\b|(?:파티원|멀티플레이)/i,
+  BUILD:/\b(?:buildMode|placementGhost|structurePreview|buildPiece|construction)\b|(?:건축모드|설치미리보기)/i,
+  DIALOGUE:/\b(?:dialogue|dialogChoice|conversation|npcDialogue)\b|(?:대화창|대화선택)/i,
+  RESOURCE:/\b(?:harvest|gather|gathering|resourceCount|mineOre)\b|(?:채집|광석채굴)/i,
+  PREVIEW:/\b(?:ViewportFrame|PreviewCamera|modelPreview|renderTarget|itemPreview)\b/i,
+  DANGER:/\b(?:telegraph|threatDirection|warningIndicator|dangerZone|incomingAttack)\b|(?:위협방향|위험예고)/i,
+  UI:/\b(?:ScreenGui|ImageLabel|ImageButton|GuiObject|CanvasRenderingContext2D|createElement|addEventListener|hud|tooltip)\b|(?:도움창|메뉴화면)/i
+});
+const SOURCE_VISUAL_PATTERN_RULES=Object.freeze([
+  ['SAFE_AREA_LAYOUT',[],['*'],'STATIC_LAYOUT'],
+  ['FOCAL_REGION_OCCLUSION',[],['HUD','COMBAT','BOSS','BUILD'],'STATIC_LAYOUT'],
+  ['DAMAGE_POPUP_POOL',['COMBAT'],['HUD','COMBAT','BOSS'],'CONFIRMED_COMBAT_EVENT'],
+  ['FLOATING_HEAL',['COMBAT','STATUS'],['HUD','COMBAT','BOSS'],'CONFIRMED_HEAL_EVENT'],
+  ['WORLD_SPACE_LABEL',['RESOURCE','COMBAT'],['HUD','COMBAT'],'CONFIRMED_WORLD_POSITION'],
+  ['OFFSCREEN_INDICATOR',['DANGER','COMBAT'],['HUD','COMBAT','BOSS'],'CONFIRMED_THREAT_POSITION'],
+  ['TOOLTIP_PLACEMENT',['UI','INVENTORY','EQUIPMENT','CRAFT','SHOP'],['*'],'EXISTING_ANCHOR'],
+  ['CONTEXTUAL_HUD',['COMBAT','QUEST','CRAFT','MAP'],['HUD','COMBAT','BOSS'],'GAME_PHASE_READ_ONLY'],
+  ['ICON_STATE_MOTION',['SKILL','EQUIPMENT','INVENTORY'],['*'],'READ_ONLY_ICON_STATE'],
+  ['ICON_ATLAS_ANIMATION',['SKILL','INVENTORY'],['*'],'VERIFIED_ATLAS_FRAME'],
+  ['NOTIFICATION_STACK',['QUEST','RESOURCE','CRAFT','COMBAT','SHOP'],['HUD','COMBAT','CRAFT','QUEST','SHOP','NOTIFICATION'],'CONFIRMED_GAME_EVENT'],
+  ['STATUS_DURATION_TRACK',['STATUS'],['HUD','COMBAT','BOSS'],'AUTHORITATIVE_DURATION'],
+  ['ITEM_RARITY_FRAME',['INVENTORY','EQUIPMENT'],['INVENTORY','EQUIPMENT','SHOP'],'EXISTING_ITEM_RARITY'],
+  ['EQUIPMENT_COMPARE_DELTA',['EQUIPMENT'],['EQUIPMENT','SHOP','INVENTORY'],'EXISTING_ITEM_STAT'],
+  ['CRAFT_PROGRESS',['CRAFT'],['CRAFT','HUD'],'AUTHORITATIVE_CRAFT_PROGRESS'],
+  ['QUEST_PROGRESS',['QUEST'],['QUEST','HUD'],'AUTHORITATIVE_QUEST_PROGRESS'],
+  ['BOSS_PHASE_TRANSITION',['BOSS'],['BOSS','COMBAT','HUD'],'AUTHORITATIVE_BOSS_PHASE'],
+  ['TELEGRAPH_PRIORITY',['DANGER','BOSS'],['BOSS','COMBAT','HUD'],'CONFIRMED_TELEGRAPH'],
+  ['3D_ITEM_PREVIEW',['EQUIPMENT','INVENTORY'],['EQUIPMENT','INVENTORY','SHOP'],'VERIFIED_NATIVE_MODEL'],
+  ['NINE_SLICE_SURFACE',[],['*'],'VERIFIED_9_SLICE_TEXTURE'],
+  ['MATERIAL_HARMONIZATION',[],['*'],'VERIFIED_MATERIAL_SOURCE'],
+  ['UI_TRANSITION_STATE',['UI'],['*'],'EXISTING_UI_STATE'],
+  ['VISUAL_EFFECT_BUDGET',['COMBAT','SKILL','STATUS'],['HUD','BOSS','COMBAT'],'BOUNDED_RENDERING'],
+  ['MULTIPLAYER_PING',['PARTY'],['HUD','PARTY','MAP'],'AUTHORITATIVE_PARTY_TARGET']
+]);
+function visualSourceLines(files=[]){
+  return (Array.isArray(files)?files:[])
+    .filter(row=>row&&/\.(?:html?|jsx?|tsx?|mjs|lua|luau|cs)$/i.test(clean(row.path||'')))
+    .map(row=>{
+      const content=String(row.source??row.content??row.current??'');
+      const executable=content.replace(/<!--[\s\S]*?-->|\/\*[\s\S]*?\*\//g,'')
+        .split('\n').filter(line=>!/^\s*(?:\/\/|--|#)\s/.test(line)).join('\n');
+      return {path:clean(row.path),executable};
+    }).filter(row=>row.executable.trim());
+}
+export function deriveVibeSourceVisualSystems(files=[]){
+  const rows=visualSourceLines(files),evidence={};
+  for(const [name,pattern] of Object.entries(VIBE_GAME_VISUAL_SIGNALS)){
+    const paths=rows.filter(row=>pattern.test(row.executable)).map(row=>row.path);
+    if(paths.length)evidence[name]=Object.freeze(uniq(paths).sort());
+  }
+  return Object.freeze({systems:Object.freeze(Object.keys(evidence).sort()),
+    evidence:Object.freeze(evidence),sourceInspected:rows.length>0,
+    sourceFilesInspected:rows.length,gameplayStateVerified:false,
+    authority:'SOURCE_CAPABILITY_EVIDENCE_NOT_RUNTIME_PROOF'});
+}
+function verifiedVisualBinding(asset={},kind=''){
+  if(!asset||asset.verified!==true||asset.licenseVerified!==true
+    ||asset.platformCompatible!==true||asset.sourceBound!==true)return false;
+  const path=clean(asset.path),id=clean(asset.assetId||asset.id);
+  if(!id||!path||path.includes('..')||!/\.(?:png|webp|jpe?g|svg|glb|fbx|obj|rbxm|rbxmx)$/i.test(path))return false;
+  if(kind==='MODEL')return /\.(?:glb|fbx|obj|rbxm|rbxmx)$/i.test(path);
+  if(kind==='NINE_SLICE')return /\.(?:png|webp)$/i.test(path)&&asset.nineSliceVerified===true;
+  if(kind==='ATLAS')return /\.(?:png|webp)$/i.test(path)&&asset.atlasFramesVerified===true;
+  return true;
+}
+export function selectVibeSourceVisualPatterns({
+  files=[],surface='HUD',assets=[],viewport={width:393,height:852},
+  reducedMotion=false,performanceTier='MID',game={}
+}={}){
+  const observed=deriveVibeSourceVisualSystems(files);
+  const systemSet=new Set(observed.systems);
+  const target=clean(surface).toUpperCase()||'HUD';
+  const vetted=(Array.isArray(assets)?assets:[]).filter(a=>verifiedVisualBinding(a));
+  const hasAsset=kind=>vetted.some(asset=>verifiedVisualBinding(asset,kind));
+  const selected=[],deferred=[];
+  for(const [id,signals,surfaces,proof] of SOURCE_VISUAL_PATTERN_RULES){
+    if(!surfaces.includes('*')&&!surfaces.includes(target))continue;
+    if(signals.length&&!signals.some(system=>systemSet.has(system)))continue;
+    const verifiedAsset=id==='3D_ITEM_PREVIEW'?hasAsset('MODEL')
+      :id==='NINE_SLICE_SURFACE'?hasAsset('NINE_SLICE')
+      :id==='ICON_ATLAS_ANIMATION'?hasAsset('ATLAS')
+      :id==='MATERIAL_HARMONIZATION'?vetted.some(a=>a.materialVerified===true):true;
+    const row=Object.freeze({pattern:id,proofRequired:proof,
+      evidence:Object.freeze(signals.flatMap(k=>observed.evidence[k]||[]).filter((v,i,a)=>a.indexOf(v)===i).sort()),
+      gameStateVerified:false,sourceImplementationVerified:false,runtimeVerified:false});
+    (verifiedAsset?selected:deferred).push(row);
+  }
+  const mobile=Number(viewport?.width)>0&&Number(viewport.width)<600;
+  const low=clean(performanceTier).toUpperCase()==='LOW';
+  const motion=Object.freeze({
+    mode:reducedMotion?'REDUCED':low?'ECONOMY':mobile?'MOBILE_BALANCED':'FULL',
+    animationScale:reducedMotion?0:low?.55:mobile?.8:1,
+    maxConcurrentDecorativeEffects:reducedMotion?0:low?4:mobile?8:16,
+    maxConcurrentCriticalFeedback:mobile?12:24,
+    preserveTelegraph:true,preserveGameplayInputs:true,
+    independentGameplayEventsForbidden:true
+  });
+  const identity=clean(game.visualIdentity||game.name||game.genre||'');
+  return Object.freeze({
+    version:1,surface:target,identity:identity||null,
+    source:observed,
+    selected:Object.freeze(selected),deferredForAssetProof:Object.freeze(deferred),
+    eligibleAssetIds:Object.freeze(vetted.map(a=>clean(a.assetId||a.id)).sort()),
+    styleFromGameNotGlobalTemplate:true,contentFromActualGameSourceOnly:true,
+    motion,sourceBindingsVerified:false,runtimeVerified:false,
+    protected:Object.freeze(['gameplay-state','damage','cooldown','rewards','save','network-authority'])
+  });
+}
+
 export function createVibeVisualMaterialRecipe({game={},world={},surface='HUD'}={}){
   const materials=uniq([...(world.materials||[]),...(game.materials||[])].map(x=>clean(x).toLowerCase())).slice(0,6);
   const cues=materials.map(key=>({material:key,construction:VISUAL_MATERIAL_CUES[key]||'SOURCE_TEXTURE_INSPECTION_REQUIRED'}));
@@ -262,10 +384,11 @@ export function createVibeHighEndPresentationStack({request=''}={}){return Objec
   rules:Object.freeze(['presentation-follows-authoritative-gameplay-events','signature-events-use-dedicated-presentation','scene-intent-precedes-decoration','character-and-creature-acting-is-part-of-visual-quality','primary-secondary-procedural-motion-layers-compose-together','game-specific-vfx-language-and-intensity-hierarchy','lighting-supports-region-risk-and-event-readability','camera-never-hides-required-telegraph','audio-vfx-camera-lighting-share-one-art-direction','audio-selection-follows-game-concept-and-runtime-state','mobile-readability-and-reduced-motion-preserved','presentation-checkpoint-never-means-terminal-completion']),
   protected:Object.freeze(['damage','cooldown','reward','spawn-rule','save','progression','economy','hit-semantics'])
 })}
-export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null,game={},world={},viewport={width:393,height:852},uiSurfaces=[]}={}){
+export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null,game={},world={},viewport={width:393,height:852},uiSurfaces=[],assets=[],reducedMotion=false,performanceTier='MID'}={}){
   const audit=auditVibePresentation(files);
   const designSystem=createVibeDesignSystem(files);
   const craftPlans=Object.freeze((Array.isArray(uiSurfaces)&&uiSurfaces.length?uiSurfaces:[{surface:'HUD',components:[]}]).map(row=>buildVibePresentationCraft({game,world,viewport,surface:row.surface,components:row.components||[],safeInsets:row.safeInsets||{},focalRegion:row.focalRegion||null})));
+  const adaptiveProfiles=Object.freeze(craftPlans.map(row=>selectVibeSourceVisualPatterns({files,surface:row.surface,assets,viewport,reducedMotion,performanceTier,game})));
   const timeline=buildVibePresentationTimeline(events);
   const highEnd=createVibeHighEndPresentationStack({request});
   const cinematicDirection=highEnd.cinematicDirection;
@@ -277,7 +400,7 @@ export function planVibePresentationAutopilot({files=[],events=[],request='',cha
     version:3,
     request:String(request),
     qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
-    audit,designSystem,craftPlans,timeline,highEnd,cinematicDirection,
+    audit,designSystem,craftPlans,adaptiveProfiles,timeline,highEnd,cinematicDirection,
     changeRequest:changeRequest||null,
     tasks:Object.freeze(tasks.slice(0,10)),
     policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true})
