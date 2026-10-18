@@ -16,7 +16,7 @@ test('GitHub Pages publishes the exact existing homepage markup, not a Cloudflar
   const source=fs.readFileSync('index.html','utf8');
   const {html,webRoutes,robloxLinks}=buildPagesLanding({catalog,manifest,exposure});
   assert.equal(index,html);
-  assert.equal(html,source.replace(/(["'])\/(?!\/)/g,'$1'+pagesRoot));
+  assert.equal(html,source.replace(/(["'\x60])\/(?!\/)/g,'$1'+pagesRoot));
   assert.match(html,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
   assert.match(html,/id="gameHub"/);
   assert.match(html,/class="mobileDock"/);
