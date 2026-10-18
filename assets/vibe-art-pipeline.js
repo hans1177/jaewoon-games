@@ -595,6 +595,8 @@ export function createVibeGraphicsProduction({
   const characterIdentity=planVibeCharacterIdentityAutopilot({characters,eventMap:characterEvents||{}});
   const mapDetail=mapDetailInput&&typeof mapDetailInput==='object'?createVibeMapDetailReconstruction(mapDetailInput):null;
   const assetPlanBound=assetProductionPlan?.kind==='vibe2-asset-production-plan';
+  const spatial3dAssetBinding=assetPlanBound&&assetProductionPlan?.spatial3dAssetBinding?.authorized===true
+    ?assetProductionPlan.spatial3dAssetBinding:null;
   const referenceImageStudies=Object.freeze((referenceImages||[]).map((row,index)=>{
     const request=createVibeReferenceImageStudyRequest({
       sourceId:row?.sourceId||row?.id||`reference-${index+1}`,
@@ -667,6 +669,15 @@ export function createVibeGraphicsProduction({
     stages:GRAPHICS_PRODUCTION_STAGES,
     assetProductionPlanBound:assetPlanBound,
     assetProductionPlan:assetPlanBound?assetProductionPlan:null,
+    spatial3dAssetBinding,
+    spatial3dRenderRequirements:Object.freeze((spatial3dAssetBinding?.items||[])
+      .filter(row=>row.spatial3dRequired)
+      .map(row=>Object.freeze({
+        assetId:row.assetId,role:row.role,family:row.family,
+        action:row.action,sourceFiles:row.sourceFiles,
+        requiredNativeEvidence:row.requiredNativeEvidence,
+        runtimeVerified:false,gameplayAuthority:false
+      }))),
     studioQuality120:assetPlanBound?assetProductionPlan?.studioQuality120||null:null,
     artSpec,
     visualDirection,

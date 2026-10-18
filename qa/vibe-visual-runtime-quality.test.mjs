@@ -13,6 +13,7 @@ import {
   VIBE_ASSET_ACQUISITION_ORDER,
   VIBE_GOLDEN_SCENE_ROLES,
 } from '../assets/vibe-art-pipeline.js';
+import {createVibeSpatial3dAssetBindingContract} from '../assets/asset-selector.js';
 import {
   auditVibeGoldenSceneEvidence,
   auditVibeRuntimeBeforeAfterComparison,
@@ -368,4 +369,72 @@ test('graphics root returns exact visual-repair instructions without a second pr
   assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets.length,1);
   assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets[0].property,'treeSpacingAndScale');
   assert.equal(production.runtimeRepairLoop.gameplaySaveBalanceMutationForbidden,true);
+});
+
+
+test('Web and Roblox asset selection distinguishes real 3D source from 2D world stand-ins',()=>{
+  const verified={
+    requirementId:'forest-snake',assetId:'worldtree-serpent',family:'CREATURE',
+    role:'enemy',sourceFiles:['assets/shared/creatures/serpent.glb'],
+    sourceContentFingerprint:'a'.repeat(64),
+    nativeSelectionReady:true,sourceBound:false,status:'NATIVE_SOURCE_BINDING_REQUIRED'
+  };
+  for(const target of ['web','roblox']){
+    const plan=createVibeSpatial3dAssetBindingContract({
+      gameId:'fantasy-survival',target,sourceRevision:'b'.repeat(40),
+      bindings:[verified,{assetId:'hud-overlay',family:'UI',sourceFiles:['assets/icons/hud.png'],
+        status:'NATIVE_SOURCE_BINDING_REQUIRED'}]
+    });
+    assert.equal(plan.authorized,true);
+    assert.equal(plan.requiredSpatial3dCount,1);
+    assert.equal(plan.unresolvedSpatial3dCount,0);
+    assert.equal(plan.items[0].action,'IMPLEMENT_3D_NATIVE_MODEL_BINDING');
+    assert.equal(plan.items[0].gameSourceEdited,false);
+    assert.equal(plan.items[0].runtime3dVerified,false);
+    assert.equal(plan.items[1].action,'NON_SPATIAL_SUPPORT_ASSET');
+    assert.equal(plan.uiHud2dOverlayAllowed,true);
+  }
+  const flat=createVibeSpatial3dAssetBindingContract({
+    gameId:'fantasy-survival',target:'web',
+    bindings:[{...verified,sourceBound:true,sourceFiles:['assets/forest/snake.png']}]
+  });
+  assert.equal(flat.unresolvedSpatial3dCount,1);
+  assert.equal(flat.items[0].action,'REAL_3D_SOURCE_OR_NATIVE_MESH_REQUIRED');
+  assert.equal(flat.runtime3dVerified,false);
+  const scriptOnly=createVibeSpatial3dAssetBindingContract({
+    gameId:'fantasy-survival',target:'web',
+    bindings:[{...verified,sourceFiles:['web-games/fantasy-survival/index.html']}]
+  });
+  assert.equal(scriptOnly.unresolvedSpatial3dCount,1);
+  assert.equal(scriptOnly.items[0].action,'NATIVE_3D_MESH_SOURCE_EVIDENCE_REQUIRED');
+  const scriptProven=createVibeSpatial3dAssetBindingContract({
+    gameId:'fantasy-survival',target:'web',
+    bindings:[{...verified,sourceFiles:['web-games/fantasy-survival/scene.js'],
+      native3dMeshSourceVerified:true}]
+  });
+  assert.equal(scriptProven.items[0].action,'IMPLEMENT_3D_NATIVE_MODEL_BINDING');
+  const held=createVibeSpatial3dAssetBindingContract({
+    gameId:'fantasy-survival',target:'unity',bindings:[verified]
+  });
+  assert.equal(held.authorized,false);
+  assert.equal(held.items[0].action,'OWNER_HELD_OR_GAME_ID_INVALID');
+});
+
+test('graphics production carries exact asset-to-native-3D render obligations without claiming runtime',()=>{
+  const binding=createVibeSpatial3dAssetBindingContract({
+    gameId:'forest',target:'roblox',bindings:[{
+      requirementId:'tree-world',assetId:'verified-tree-model',family:'ENVIRONMENT',
+      sourceFiles:['assets/shared/world/tree.glb'],sourceHash:'d'.repeat(64),
+      nativeSelectionReady:true,sourceBound:true,status:'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
+    }]
+  });
+  const graphics=createVibeGraphicsProduction({
+    gameId:'forest',request:'로블록스 숲 월드에서 실제 3D 나무 배치',target:'roblox',
+    assetProductionPlan:{kind:'vibe2-asset-production-plan',spatial3dAssetBinding:binding}
+  });
+  assert.equal(graphics.assetProductionPlanBound,true);
+  assert.equal(graphics.spatial3dRenderRequirements.length,1);
+  assert.equal(graphics.spatial3dRenderRequirements[0].assetId,'verified-tree-model');
+  assert.equal(graphics.spatial3dRenderRequirements[0].runtimeVerified,false);
+  assert.equal(graphics.spatial3dRenderRequirements[0].action,'3D_NATIVE_RUNTIME_RENDER_AND_INTERACTION_QA_REQUIRED');
 });

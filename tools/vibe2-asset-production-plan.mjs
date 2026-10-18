@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
-import { planAssetApplication, planVibeExternalCustomization } from '../assets/asset-selector.js';
+import { planAssetApplication, planVibeExternalCustomization, createVibeSpatial3dAssetBindingContract } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,resolveCommonMotionGenre,COMMON_CAREER_MOTION_HIERARCHY,COMMON_MONSTER_ACTION_SPECIES,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction,createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
@@ -5232,6 +5232,11 @@ export function buildVibeAssetProductionPlan({
     preserveGameRulesSaveAndNetwork:true,sourceOnlyCannotProveRuntime:true,
     verifiedRuntimeEvidenceRequiredBeforePositiveLearning:true
   });
+  const spatial3dAssetBinding=createVibeSpatial3dAssetBindingContract({
+    gameId:currentGameId,target:resolvedTarget,
+    sourceRevision:task?.source?.sourceRevision||task?.sourceRevision||'',
+    bindings:automaticAssetBindingWork.targets
+  });
   const robloxAssetSelectionProfile=resolvedTarget==='roblox'
     ?robloxCurrentAssetSelectionProfile({repoRoot,gameId:task.gameId})
     :Object.freeze({genre:'',subgenre:''});
@@ -5811,6 +5816,7 @@ export function buildVibeAssetProductionPlan({
     assetSupplySummary,
     detailedAssetCandidateReview,
     automaticAssetBindingWork,
+    spatial3dAssetBinding,
     externalCustomization,
     genreMenuRecommendations,
     registrySync:freeze({
@@ -6390,6 +6396,21 @@ export function assetProductionGuidance(plan={}){
             sourceCandidates:row.sourceCandidates,nextAction:row.nextAction
           }))})+
         '. 최신 승인된 게임 설계와 공용 자산 원장을 기반으로, 기존 GRAPHICS_PRODUCTION·ASSET_DEVELOPMENT·BUILD_UP 책임 코드에만 원본 보존형 파생/재질/지형/배치/경로/최적화 후보를 연결한다. FastNoiseLite/WFC/A*는 외부 알고리즘의 참고 문헌이며 검증된 실제 코드·라이선스 없이 실행된 것으로 처리하지 않는다. Blender/Material Maker/glTF Transform은 설치·실행·출력물 해시·라이선스·실제 플랫폼 바인딩을 각각 확인하기 전에는 후보일 뿐이다. 먼저 현재 게임에 맞는 라이브러리 자산을 재사용하고 중복 원본 제작을 막는다. 실제 원본 파일과 승인된 3D 설계, 라이선스, 동일 게임의 styleBible, 게임 엔진 성능 조건을 만족해야 한다. 개발은 로블록스와 일반 웹만 허용하며 유니티 웹·안드로이드는 개발 대상으로 잡지 않는다. 검증 실패 시 기존 체크포인트 복구만 사용한다. 그래픽 품질/게임 실행/CI/학습 PASS를 추정하거나 우회하지 않으며 게임 규칙·밸런스·저장·서버 권한을 변경하지 않는다.'
+      : '',
+    plan.spatial3dAssetBinding?.authorized
+      ?'[SOURCE-BOUND NATIVE 3D ASSET VISUAL BINDING] '+
+        JSON.stringify({
+          gameId:plan.spatial3dAssetBinding.gameId,target:plan.spatial3dAssetBinding.target,
+          sourceRoot:plan.spatial3dAssetBinding.sourceRoot,
+          unresolvedSpatial3dCount:plan.spatial3dAssetBinding.unresolvedSpatial3dCount,
+          items:plan.spatial3dAssetBinding.items.filter(row=>row.spatial3dRequired).map(row=>({
+            assetId:row.assetId,requirementId:row.requirementId,family:row.family,role:row.role,
+            sourceFiles:row.sourceFiles,modelFiles:row.modelFiles,
+            sourceIntegrityDeclared:row.sourceIntegrityDeclared,sourceBound:row.sourceBound,
+            status:row.status,action:row.action,requiredNativeEvidence:row.requiredNativeEvidence
+          }))
+        })+
+        '. 실제 허가된 외부/공용 3D 원본의 파일·SHA256·라이선스·역할을 확인한 다음 기존 게임의 진짜 MeshPart/Model/ViewportFrame 또는 WebGL 메시·카메라 코드에 직접 연결한다. 값이 UNKNOWN인 3D 후보를 완성으로 승격하지 않는다. 크기·회전·색·재질·부착점은 원본을 보존하는 게임별 작은 수정만 허용한다. 실제 사용 중인 월드 오브젝트와 충돌·카메라·모바일 조작·동작·저장 재접속·소스 개정 기반 런타임 캡처를 F0~F9 검증한다. 2D/UI 이미지·스프라이트는 UI와 텍스처에만 허용하고 3D 공간 오브젝트 대체 금지. 에셋 적용 실패 시 그 책임 함수와 연결을 수정하고 실게임을 재검증한다. 네이티브 런타임 검증 전에는 자산 연동 성공·품질 개선·긍정 학습으로 기록하지 않는다.'
       : '',
     plan.automaticAssetBindingWork?.enabled
       ?'[VIBE AUTOMATIC GAME ASSET BINDING] '+JSON.stringify(plan.automaticAssetBindingWork)+
