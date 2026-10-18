@@ -1557,7 +1557,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     if(!id)return false;
     const externalCandidates=externalSourceCandidatesFor(family,roles);
     if(!externalCandidates.length)return false;
-    if(roles.length&&!externalCandidates[0].matchedRoles.length)return false;
+    if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length)return false;
         const selected=externalCandidates[0];
         const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
         pushAction({
