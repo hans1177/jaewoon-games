@@ -5330,9 +5330,9 @@ test('Blender humanoid DCC recipe declares every rendered preview for exact roll
   assert.ok(recipe,'registered authored humanoid recipe required');
   assert.equal(recipe.script,'assets/roblox/world-ghosts/refine-humanoid-motion.py');
   const script=fs.readFileSync(recipe.script,'utf8');
-  const times=script.match(/preview_times=\\{([\\s\\S]*?)\\n    \\}/)?.[1];
+  const times=script.match(/preview_times=\{([\s\S]*?)\n    \}/)?.[1];
   assert.ok(times,'Blender preview names must remain discoverable from the executable recipe');
-  const names=[...times.matchAll(/'(hero_[a-z0-9_]+)'\\s*:\\s*\\d/g)].map(match=>match[1]);
+  const names=[...times.matchAll(/'(hero_[a-z0-9_]+)'\s*:\s*\d/g)].map(match=>match[1]);
   assert.equal(names.length,17);
   const prefix='assets/roblox/world-ghosts/native/mesh/bride-motion-v3/previews/';
   const required=[prefix+'source-bind-reference.png',...names.map(name=>prefix+name+'.png')];
