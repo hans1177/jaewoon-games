@@ -344,9 +344,16 @@ jobs:
           grep -q '/jaewoon-games/assets/homepage-enhancements.js' /tmp/jaewoon-pages-home-live.html || {
             echo 'WEB_PAGES_HOME_RENDERER_PATH_MISMATCH' >&2; exit 1;
           }
-          for file in game-catalog.json company-status.json homepage-platform-exposure.json manifest.webmanifest sw.js multiplayer/multiplayer-client.js; do
-            curl -fsSL --max-time 15 -o /dev/null "$base$file" || { echo "WEB_PAGES_HOME_DEPENDENCY_NOT_LIVE=$file" >&2; exit 1; }
-          done
+          # Independent homepage dependencies: bounded concurrent HTTP checks.
+          export PAGES_BASE="$base"
+          printf '%s\n' game-catalog.json company-status.json homepage-platform-exposure.json manifest.webmanifest sw.js multiplayer/multiplayer-client.js \
+            | xargs -r -P 6 -n 1 bash -c '
+                file="$0"
+                curl -fsSL --max-time 15 -o /dev/null "$PAGES_BASE$file" || {
+                  echo "WEB_PAGES_HOME_DEPENDENCY_NOT_LIVE=$file" >&2
+                  exit 1
+                }
+              ' || { echo 'WEB_PAGES_HOME_DEPENDENCIES_FAILED' >&2; exit 1; }
           # 모든 등록 게임의 정적 원본 실행 경로는 위에서 HTTP로 개별 검증한다.
           echo "WEB_PAGES_PUBLISHED_GAME_ROUTES=$(node -p "require('/tmp/web-pages-published.json').routes.length")"
           curl -fsSL --max-time 15 -o /dev/null "$base""tier.html" || { echo 'MAGIC_FOREST_TIER_NOT_LIVE' >&2; exit 1; }
