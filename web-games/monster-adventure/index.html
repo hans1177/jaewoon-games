@@ -44,8 +44,45 @@ $('#plainsBtn').onclick=()=>startBattle('plains');$('#fieldMapBtn').onclick=()=>
 function startBattle(zoneId){const z=zones[zoneId];if(!z||zoneId==='field'&&!save.fieldUnlocked)return;save.party.forEach(m=>syncMon(m,true));const team=[];team.push(save.activeIndex);save.party.forEach((_,i)=>{if(i!==save.activeIndex&&team.length<4)team.push(i)});const id=z.pool[Math.floor(Math.random()*z.pool.length)],lv=z.min+Math.floor(Math.random()*(z.max-z.min+1));battle={zoneId,enemy:makeMon(id,lv),team};window.vibeMonsterRemodel?.begin();locked=false;$('#worldView').classList.add('hidden');$('#dexView').classList.add('hidden');$('#battleView').classList.remove('hidden');$('#bottomNav').classList.add('hidden');$('#battleText').textContent=`${z.label}에서 야생 ${species[id].name}이 나타났다!`;renderBattle();renderBattleParty()}
 function renderBattle(){if(!battle)return;const e=battle.enemy,m=activeMon(),es=species[e.id],ms=species[m.id];$('#enemyName').textContent=es.name;$('#enemyLv').textContent=`Lv.${e.lv}`;$('#enemyImg').src=es.img;$('#enemyHpBar').style.width=`${Math.max(0,e.hp/e.maxHp*100)}%`;$('#enemyHpText').textContent=`${Math.max(0,e.hp)} / ${e.maxHp}`;$('#myName').textContent=ms.name;$('#myLv').textContent=`Lv.${m.lv}`;$('#myImg').src=ms.img;$('#myHpBar').style.width=`${Math.max(0,m.hp/m.maxHp*100)}%`;$('#myHpText').textContent=`${Math.max(0,m.hp)} / ${m.maxHp}`;$('#orbCount').textContent=`포획볼 ${save.balls}`;$('#captureBtn').textContent=`포획볼 ×${save.balls}`;$('#healBtn').textContent=`회복약 ×${save.potions}`;$('#captureBtn').disabled=save.balls<=0||save.party.length>=6;$('#healBtn').disabled=save.potions<=0||m.hp>=m.maxHp;renderBattleParty()}
 function damageFor(m,special=false){const st=statsFor(m.id,m.lv);return Math.max(4,Math.floor(st.atk+(special?8:0)+Math.random()*5))}
-async function playerAttack(special){if(locked||!battle)return;locked=true;const m=activeMon(),e=battle.enemy,guarded=window.vibeMonsterRemodel?.consumeGuard()||false,dmg=Math.max(1,Math.floor(damageFor(m,special)*(guarded?.55:1)));e.hp-=dmg;window.vibeMonsterRemodel?.playerHit({damage:dmg,special,enemyHp:e.hp,enemyMaxHp:e.maxHp});window.vibeMonsterRemodel?.hit('player',dmg,{special,guarded});$('#battleText').textContent=`${species[m.id].name}의 ${special?species[m.id].skill:'공격'}! ${dmg} 피해!`;renderBattle();await wait(500);if(e.hp<=0){winBattle();return}enemyTurn()}
-function enemyTurn(){if(!battle)return;const e=battle.enemy,m=activeMon();const plan=window.vibeMonsterRemodel?.decide({enemyHp:e.hp,enemyMaxHp:e.maxHp,playerHp:m.hp,playerMaxHp:m.maxHp});if(plan?.action==='GUARD'){$('#battleText').textContent='야생 '+species[e.id].name+'이(가) 방어 태세를 취했다!';renderBattle();setTimeout(()=>{locked=false},550);return;}const special=plan?.special??Math.random()<.25,dmg=damageFor(e,special);m.hp-=dmg;window.vibeMonsterRemodel?.hit('enemy',dmg,{special});$('#battleText').textContent=`야생 ${species[e.id].name}의 ${special?'강력한 기술':'반격'}! ${dmg} 피해!`;renderBattle();setTimeout(()=>{if(m.hp<=0)handleFaint();else locked=false},550)}
+async function playerAttack(special){
+ if(locked||!battle)return;
+ locked=true;
+ const rules=window.vibeMonsterRemodel?.turnRules;
+ if(!rules){const m=activeMon(),e=battle.enemy,dmg=damageFor(m,special);e.hp-=dmg;renderBattle();if(e.hp<=0){winBattle();return;}await wait(500);enemyTurn();return;}
+ const m=activeMon(),e=battle.enemy;
+ const pMove=rules.moveFor(m,species,special),eMove=rules.enemyMoveChoice(e,m,species);
+ const order=rules.resolveOrder(m,e,pMove,eMove);
+ $('#battleText').textContent='행동 순서: '+order.map(x=>x==='player'?species[m.id].name:species[e.id].name).join(' → ');
+ await wait(280);
+ for(const side of order){
+  if(!battle||e.hp<=0||activeMon().hp<=0)break;
+  const attacker=side==='player'?m:e,target=side==='player'?e:m,move=side==='player'?pMove:eMove;
+  const attackerName=species[attacker.id].name;
+  const result=rules.calculateMoveDamage(attacker,target,species,species,move);
+  let damage=result.damage,guarded=false;
+  if(side==='player'){guarded=window.vibeMonsterRemodel?.consumeGuard()||false;if(guarded)damage=Math.max(1,Math.floor(damage*.55));}
+  target.hp=Math.max(0,target.hp-damage);
+  if(side==='player')window.vibeMonsterRemodel?.playerHit({damage,special,enemyHp:e.hp,enemyMaxHp:e.maxHp});
+  window.vibeMonsterRemodel?.hit(side,damage,{special:move.name!=='기본 공격',guarded});
+  const effect=result.effectiveness>1?' 효과가 뛰어나다!':result.effectiveness<1?' 효과가 약하다.':'';
+  $('#battleText').textContent=attackerName+'의 '+move.name+'! '+(result.miss?'공격이 빗나갔다!':damage+' 피해!'+effect+(result.critical?' 치명타!':''));
+  renderBattle();
+  await wait(600);
+ }
+ if(e.hp<=0){winBattle();return;}
+ if(m.hp<=0){handleFaint();return;}
+ locked=false;
+}
+function enemyTurn(){
+ if(!battle)return;
+ const e=battle.enemy,m=activeMon(),rules=window.vibeMonsterRemodel?.turnRules;
+ const move=rules?rules.enemyMoveChoice(e,m,species):null;
+ const result=move?rules.calculateMoveDamage(e,m,species,species,move):{damage:damageFor(e,Math.random()<.25),miss:false,effectiveness:1,critical:false};
+ m.hp=Math.max(0,m.hp-result.damage);
+ window.vibeMonsterRemodel?.hit('enemy',result.damage,{special:move?.name!=='기본 공격'});
+ $('#battleText').textContent='야생 '+species[e.id].name+'의 '+(move?.name||'반격')+'! '+(result.miss?'빗나갔다!':result.damage+' 피해!');
+ renderBattle();setTimeout(()=>{if(m.hp<=0)handleFaint();else locked=false},550);
+}
 function handleFaint(){const options=battle.team.filter(i=>i!==save.activeIndex&&save.party[i]&&save.party[i].hp>0);if(!options.length){loseBattle();return}locked=true;showSwitchChoice(options)}
 function showSwitchChoice(options){$('#resultTitle').textContent='몬스터 선택';$('#resultText').textContent='전투에 출전할 몬스터를 골라!';$('#resultActions').className='resultActions';$('#resultActions').innerHTML=options.map(i=>{const m=save.party[i],s=species[m.id];return `<button class="switchBtn" data-switch="${i}"><b>${s.name}</b><br>Lv.${m.lv} · HP ${m.hp}/${m.maxHp}</button>`}).join('');$('#result').classList.remove('hidden');$('#resultActions').querySelectorAll('[data-switch]').forEach(b=>b.onclick=()=>chooseReplacement(Number(b.dataset.switch)))}
 function chooseReplacement(index){if(!battle||!battle.team.includes(index)||!save.party[index]||save.party[index].hp<=0)return;save.activeIndex=index;persist();closeResult();$('#battleText').textContent=`${species[save.party[index].id].name}이(가) 출전했다!`;renderBattle();locked=false}
