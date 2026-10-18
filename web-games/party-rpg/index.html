@@ -507,7 +507,7 @@ try {
   enemies.forEach((e,i)=>{if(!e.dead)visible.push(['enemy',e,'enemy'+i]);});
   const used=new Set();
   for(const [kind,obj,key] of visible){const id=role(kind,obj);if(!models[id])continue;used.add(key);
-   let entry=actors.get(key);if(!entry||entry.id!==id){if(entry)scene.remove(entry.group);const group=models[id].clone(true);const box=new THREE.Box3().setFromObject(group),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?Math.max(26,(obj.r||16)*2.5):43;const scale=height/Math.max(.001,size.y);group.scale.setScalar(scale);group.position.set(-center.x*scale,-box.min.y*scale,0);const root=new THREE.Group();root.add(group);scene.add(root);entry={id,group:root};actors.set(key,entry);}
+   let entry=actors.get(key);if(!entry||entry.id!==id){if(entry)scene.remove(entry.group);const group=models[id].clone(true);const box=new THREE.Box3().setFromObject(group),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?Math.max(26,(obj.r||16)*2.5):43;const scale=height/Math.max(.001,size.y);group.scale.setScalar(scale);group.position.set(-center.x*scale,-center.y*scale,0);const root=new THREE.Group();root.add(group);scene.add(root);entry={id,group:root};actors.set(key,entry);}
    entry.group.position.set(obj.x-camera.x-w/2,h/2-(obj.y-camera.y),0);
   }
   for(const [key,entry] of actors)if(!used.has(key)){scene.remove(entry.group);actors.delete(key);}
