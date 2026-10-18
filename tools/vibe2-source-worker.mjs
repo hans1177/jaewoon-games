@@ -3902,7 +3902,7 @@ function visualCraftWorkerGuidance(order={},context={}){
   const uiSurfaces=Array.isArray(sourceSurfaces)
     ?sourceSurfaces.filter(row=>row&&typeof row==='object'&&typeof row.surface==='string').slice(0,18):[];
   const craft=planVibePresentationAutopilot({
-    files:(context?.files||[]).map(row=>({path:row.path,source:row.content})),
+    files:(Array.isArray(context?.files)?context.files:[]).map(row=>({path:row.path,source:row.content})),
     request:intent,game,world,uiSurfaces
   });
   return [
