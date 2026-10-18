@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-14f1uts",
+      "worker": "vibe2",
+      "taskId": "internal-motion-mongdal-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/mongdal/init.luau"
+      ],
+      "baseSha": "d5f7a114434923b548e7a9594e339c0bc1f577e0",
+      "runId": "39133444475",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-18T14:28:44.819Z",
+      "expiresAt": "2026-10-18T15:13:44.819Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-mongdal-walk-v1"
+      ]
+    }
+  ]
 }
