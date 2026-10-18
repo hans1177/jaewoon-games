@@ -486,7 +486,6 @@ export function syncPublishedWebRoutes({catalog={},manifest={},sourceTreeShaOf}=
     const exact=Boolean(eligible&&record.treeSha===currentSha);
     game.webPublishedRoute=exact?record.route:'';
     game.webPublishedSourceTreeSha=exact?record.treeSha:'';
-    game.webPublishedSourceSha=exact?manifest.sourceSha:'';
     if(exact)confirmed++;
     else if(record)notCurrent++;
   }
