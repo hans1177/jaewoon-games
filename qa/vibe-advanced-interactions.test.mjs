@@ -1,0 +1,6 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {createVibeDiplomacy,createVibeAttackTimeline,resolveVibeClimbContact} from '../assets/vibe-advanced-interactions.mjs';
+test('nations exchange treasury only on accepted proposals',()=>{const game=createVibeDiplomacy([{id:'a',gold:100},{id:'b',gold:50}]);const result=game.negotiate({from:'a',to:'b',type:'gift',offer:20});assert.equal(result.accepted,true);assert.equal(game.snapshot().nations[0].gold,80);assert.equal(game.snapshot().nations[1].gold,70)});
+test('alliances need positive relations',()=>{const game=createVibeDiplomacy([{id:'a',gold:100},{id:'b',gold:100}]);assert.equal(game.negotiate({from:'a',to:'b',type:'alliance'}).accepted,false)});
+test('parry uses animation impact timeline',()=>{const timeline=createVibeAttackTimeline({duration:1,impactAt:.6});timeline.advance(.56);assert.equal(timeline.parry(),'perfect');assert.equal(timeline.advance(.05).impact,true);assert.equal(timeline.advance(.1).impact,false)});
+test('climb requires reachable ledge and clear landing',()=>{const character={x:0,y:0,z:0},ledge={x:1,y:1.5,z:0};assert.equal(resolveVibeClimbContact({character,ledge}).canGrab,true);assert.equal(resolveVibeClimbContact({character,ledge,obstacles:[{min:{x:.5,y:1,z:-1},max:{x:2,y:2,z:1}}]}).reason,'blocked')});

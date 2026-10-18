@@ -42,8 +42,58 @@ jobs:
             qa/github-pages-landing.test.mjs
             qa/vibe-motion-engine.test.mjs
             qa/vibe-character-integration.test.mjs
+            qa/vibe-gameplay-controller.test.mjs
+            qa/vibe-game-input-physics.test.mjs
+            qa/vibe-presentation-engine.test.mjs
+            qa/vibe-browser-smoke.mjs
+            qa/vibe-cinematic-director.test.mjs
+            qa/vibe-premium-character-pipeline.test.mjs
+            qa/vibe-cinematic-polish.test.mjs
+            qa/vibe-premium-gameplay-fx.test.mjs
+            qa/vibe-storybook-cinematics.test.mjs
+            qa/vibe-genre-director.test.mjs
+            qa/vibe-genre-character-music.test.mjs
+            qa/vibe-genre-character-factory.test.mjs
+            qa/vibe-genre-game-ui.test.mjs
+            qa/vibe-genre-gameplay.test.mjs
+            qa/vibe-genre-system-planner.test.mjs
+            qa/vibe-advanced-genre-systems.test.mjs
+            qa/vibe-advanced-interactions.test.mjs
+            qa/vibe-advanced-3d-interactions.test.mjs
+            qa/vibe-climb-motion.test.mjs
+            qa/vibe-combat-climb-ik.test.mjs
+            qa/vibe-adaptive-climb-ik.test.mjs
+            qa/vibe-fighting-engine.test.mjs
+            qa/vibe-presentation-engine.test.mjs
             assets/vibe-motion-engine.mjs
             assets/vibe-character-adapter.mjs
+            assets/vibe-gameplay-controller.mjs
+            assets/vibe-game-input-physics.mjs
+            assets/vibe-presentation-engine.mjs
+            assets/vibe-browser-presentation.mjs
+            assets/vibe-cinematic-director.mjs
+            assets/vibe-character-studio.mjs
+            assets/vibe-premium-character-pipeline.mjs
+            assets/vibe-cinematic-polish.mjs
+            assets/vibe-premium-gameplay-fx.mjs
+            assets/vibe-storybook-cinematics.mjs
+            assets/vibe-genre-director.mjs
+            assets/vibe-genre-character-music.mjs
+            assets/vibe-genre-game-ui.mjs
+            assets/vibe-genre-game-ui-browser.mjs
+            assets/vibe-genre-gameplay.mjs
+            assets/vibe-game-world-runtime.mjs
+            assets/vibe-genre-system-planner.mjs
+            assets/vibe-advanced-genre-blueprints.mjs
+            assets/vibe-advanced-genre-systems.mjs
+            assets/vibe-advanced-interactions.mjs
+            assets/vibe-survival-hud.mjs
+            assets/vibe-advanced-3d-interactions.mjs
+            assets/vibe-enemy-training-dummy.mjs
+            assets/vibe-climb-motion.mjs
+            assets/vibe-combat-climb-ik.mjs
+            assets/vibe-adaptive-climb-ik.mjs
+            assets/vibe-fighting-engine.mjs
             assets/vibe-visual-design-system.json
             .github/workflows/magic-forest-pages.yml
             index.html
@@ -217,6 +267,13 @@ jobs:
           if(!trackedAssets.has(previewSource))throw Error('VIBE_MODEL_PREVIEW_SOURCE_MISSING');
           if(!fs.existsSync(previewSource))cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',previewSource]);
           fs.copyFileSync(previewSource,path.join(site,previewSource));
+          // Publish every relative ES module dependency used by the preview and integrated game.
+          for(const shared of ['vibe-motion-engine.mjs','vibe-character-adapter.mjs','vibe-gameplay-controller.mjs','vibe-game-input-physics.mjs','vibe-presentation-engine.mjs','vibe-browser-presentation.mjs','vibe-cinematic-director.mjs','vibe-character-studio.mjs','vibe-premium-character-pipeline.mjs','vibe-cinematic-polish.mjs','vibe-premium-gameplay-fx.mjs','vibe-storybook-cinematics.mjs','vibe-genre-director.mjs','vibe-genre-character-music.mjs','vibe-genre-game-ui.mjs','vibe-genre-game-ui-browser.mjs','vibe-genre-gameplay.mjs','vibe-game-world-runtime.mjs','vibe-genre-system-planner.mjs','vibe-advanced-genre-blueprints.mjs','vibe-advanced-genre-systems.mjs','vibe-advanced-interactions.mjs','vibe-survival-hud.mjs','vibe-advanced-3d-interactions.mjs','vibe-enemy-training-dummy.mjs','vibe-climb-motion.mjs','vibe-visual-design-system.json']){
+            const source=path.join('assets',shared);
+            if(!fs.existsSync(source))throw Error('VIBE_RUNTIME_SOURCE_MISSING:'+source);
+            fs.mkdirSync(path.join(site,'assets'),{recursive:true});
+            fs.copyFileSync(source,path.join(site,source));
+          }
           // 원본 렌더러는 그대로 두고 Pages 사본의 절대 경로만 프로젝트 prefix로 보정한다.
           for(const file of ['assets/homepage-enhancements.js','assets/asset-library.js','assets/asset-library-viewer.js']){
             const pathname=path.join(site,file);
@@ -258,12 +315,21 @@ jobs:
           node tools/github-pages-landing.mjs
           test -s _site/index.html
 
+      - name: Headless Chromium Vibe presentation smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node qa/vibe-browser-smoke.mjs
+
       - name: Verify every published game route and the canonical official homepage
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
-          node --test qa/github-pages-landing.test.mjs qa/vibe-motion-engine.test.mjs qa/vibe-character-integration.test.mjs
+          node --test qa/vibe-fighting-engine.test.mjs
+          node --test qa/github-pages-landing.test.mjs qa/vibe-motion-engine.test.mjs qa/vibe-character-integration.test.mjs qa/vibe-gameplay-controller.test.mjs qa/vibe-game-input-physics.test.mjs
           test -s _site/index.html
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' _site/index.html
           grep -q '/jaewoon-games/assets/homepage-enhancements.js' _site/index.html

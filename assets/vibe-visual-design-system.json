@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "description": "Genre-based visual design tokens and UI/character/housing recipes; integration is opt-in and requires gameplay QA.",
   "genres": {
     "fantasy": {
@@ -802,5 +802,149 @@
       "mobile-30fps",
       "accessibility-reduced-motion"
     ]
+  },
+  "presentationSystem": {
+    "version": 1,
+    "designPrinciples": [
+      "readable-combat",
+      "responsive-input",
+      "diegetic-feedback",
+      "genre-cohesion",
+      "accessibility-first"
+    ],
+    "camera": {
+      "shake": {
+        "maxAmplitude": 0.5,
+        "falloffSeconds": 0.28,
+        "frequencyHz": 9
+      },
+      "hitStop": {
+        "maxSeconds": 0.09
+      },
+      "smoothing": {
+        "positionSeconds": 0.12,
+        "rotationSeconds": 0.18
+      },
+      "accessibility": {
+        "reducedMotionDisablesShake": true,
+        "reducedMotionDisablesHitStop": true
+      }
+    },
+    "audio": {
+      "categories": [
+        "combat",
+        "movement",
+        "ambient",
+        "ui",
+        "dialogue"
+      ],
+      "spatial": true,
+      "ducking": {
+        "dialogueOverMusicDb": -9,
+        "impactOverAmbientDb": -4
+      },
+      "maxSimultaneousVoices": 24
+    },
+    "feedback": {
+      "combat": [
+        "impact-sound",
+        "weapon-trail",
+        "hit-stop",
+        "damage-indicator",
+        "directional-vfx"
+      ],
+      "movement": [
+        "footstep-material",
+        "landing-dust",
+        "surface-splash"
+      ],
+      "world": [
+        "weather-transition",
+        "ambient-zone",
+        "discovery-stinger"
+      ],
+      "ui": [
+        "focus-sound",
+        "selection-response",
+        "subtitle"
+      ]
+    },
+    "genreProfiles": {
+      "fantasy": {
+        "cameraShake": 0.65,
+        "hitStop": 0.045,
+        "flash": 0.08
+      },
+      "scifi": {
+        "cameraShake": 0.45,
+        "hitStop": 0.025,
+        "flash": 0.14
+      },
+      "horror": {
+        "cameraShake": 0.35,
+        "hitStop": 0.06,
+        "flash": 0.02
+      },
+      "cartoon": {
+        "cameraShake": 0.7,
+        "hitStop": 0.07,
+        "flash": 0.12
+      },
+      "realistic": {
+        "cameraShake": 0.4,
+        "hitStop": 0.035,
+        "flash": 0.04
+      }
+    },
+    "accessibility": {
+      "reducedMotion": true,
+      "flashIntensityLimit": 0.35,
+      "subtitles": true,
+      "independentAudioChannels": true,
+      "highContrastIndicators": true
+    },
+    "qualityGates": [
+      "no-flash-seizure-risk",
+      "no-permanent-camera-offset",
+      "feedback-event-dedup",
+      "low-end-frame-budget",
+      "subtitles-readable",
+      "reduced-motion-test"
+    ],
+    "cinematicDirection": {
+      "cameraTimelines": {
+        "easing": [
+          "smooth",
+          "quint",
+          "anticipate",
+          "overshoot",
+          "inOutCubic"
+        ],
+        "lookAtTracking": true,
+        "fieldOfViewAnimation": true,
+        "shotTypes": [
+          "establishing",
+          "tracking",
+          "over-shoulder",
+          "closeup",
+          "reaction",
+          "reveal"
+        ]
+      },
+      "acting": {
+        "breathing": true,
+        "blink": true,
+        "gazeTracking": true,
+        "emotionBlend": true,
+        "secondarySway": true,
+        "anticipationAndFollowThrough": true
+      },
+      "polish": {
+        "keyframeContinuity": true,
+        "deterministicEvents": true,
+        "reducedMotionCameraLock": true
+      },
+      "targetQuality": "feature-animation-inspired; quality depends on character assets, authored animation and shot direction"
+    }
   }
 }
