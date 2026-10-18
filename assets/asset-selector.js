@@ -526,7 +526,7 @@ export function createVibeSpatial3dAssetBindingContract({
         ?'REAL_3D_MODEL_SOURCE_REQUIRED'
       :!sourceIntegrityDeclared?'SOURCE_INTEGRITY_EVIDENCE_REQUIRED'
       :!modelFiles.length&&!nativeSources.length?'REAL_3D_SOURCE_OR_NATIVE_MESH_REQUIRED'
-      :!nativeSelectionReady&&status!=='SOURCE_BOUND_RUNTIME_QA_REQUIRED'
+      :status==='SOURCE_BINDING_PROVENANCE_REQUIRED'||!nativeSelectionReady
         ?'3D_PLATFORM_RIGHTS_OR_COMPATIBILITY_REVIEW_REQUIRED'
       :sourceBound?'3D_NATIVE_RUNTIME_RENDER_AND_INTERACTION_QA_REQUIRED'
       :'IMPLEMENT_3D_NATIVE_MODEL_BINDING';
@@ -560,7 +560,8 @@ export function createVibeSpatial3dAssetBindingContract({
     items:Object.freeze(rows),
     boundRuntime3dCount:0,
     bindingPlanOnly:true,gameSourceModified:false,runtime3dVerified:false,
-    status:!enabled?'OWNER_HELD_OR_GAME_ID_INVALID':blocked.length?'SPATIAL_3D_SOURCE_GAPS':
+    status:!enabled?'OWNER_HELD_OR_GAME_ID_INVALID':!spatial.length?'NO_SPATIAL_3D_ASSETS_REQUESTED':
+      blocked.length?'SPATIAL_3D_SOURCE_GAPS':
       spatial.some(row=>!row.sourceBound)?'SOURCE_BINDING_REQUIRED':'NATIVE_RUNTIME_3D_QA_REQUIRED',
     flat2dWorldForbidden:true,uiHud2dOverlayAllowed:true,
     runtimePassRequiresIndependentEvidence:true,
