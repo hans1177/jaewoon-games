@@ -144,6 +144,22 @@ export function deriveVibeSourceVisualSystems(files=[]){
     sourceFilesInspected:rows.length,gameplayStateVerified:false,
     authority:'SOURCE_CAPABILITY_EVIDENCE_NOT_RUNTIME_PROOF'});
 }
+// Infer existing player-facing surfaces only when the interface blueprint did
+// not supply them. The source evidence never creates gameplay systems.
+export function deriveVibeActiveVisualSurfaces(files=[]){
+  const observed=deriveVibeSourceVisualSystems(files),signals=new Set(observed.systems);
+  const surfaces=['HUD'];
+  const systemSurface=[
+    ['BOSS','BOSS'],['COMBAT','COMBAT'],['EQUIPMENT','EQUIPMENT'],
+    ['INVENTORY','INVENTORY'],['CRAFT','CRAFT'],['QUEST','QUEST'],
+    ['SHOP','SHOP'],['BUILD','BUILD'],['MAP','MAP'],
+    ['PARTY','PARTY'],['DIALOGUE','DIALOGUE']
+  ];
+  for(const [system,surface] of systemSurface)if(signals.has(system))surfaces.push(surface);
+  return Object.freeze({surfaces:Object.freeze(surfaces),source:observed,
+    inferredNotVerified:true,extraGameplayCreationAllowed:false});
+}
+
 function verifiedVisualBinding(asset={},kind=''){
   if(!asset||asset.verified!==true||asset.licenseVerified!==true
     ||asset.platformCompatible!==true||asset.sourceBound!==true)return false;
@@ -456,7 +472,10 @@ export function createVibeHighEndPresentationStack({request=''}={}){return Objec
 export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null,game={},world={},viewport={width:393,height:852},uiSurfaces=[],assets=[],reducedMotion=false,performanceTier='MID'}={}){
   const audit=auditVibePresentation(files);
   const designSystem=createVibeDesignSystem(files);
-  const craftPlans=Object.freeze((Array.isArray(uiSurfaces)&&uiSurfaces.length?uiSurfaces:[{surface:'HUD',components:[]}]).map(row=>buildVibePresentationCraft({game,world,viewport,surface:row.surface,components:row.components||[],safeInsets:row.safeInsets||{},focalRegion:row.focalRegion||null})));
+  const discoveredSurfaces=deriveVibeActiveVisualSurfaces(files);
+  const ownedSurfaces=Array.isArray(uiSurfaces)&&uiSurfaces.length?uiSurfaces
+    :discoveredSurfaces.surfaces.map(surface=>({surface,components:[]}));
+  const craftPlans=Object.freeze(ownedSurfaces.map(row=>buildVibePresentationCraft({game,world,viewport,surface:row.surface,components:row.components||[],safeInsets:row.safeInsets||{},focalRegion:row.focalRegion||null})));
   const adaptiveProfiles=Object.freeze(craftPlans.map(row=>selectVibeSourceVisualPatterns({files,surface:row.surface,assets,viewport,reducedMotion,performanceTier,game,world})));
   const timeline=buildVibePresentationTimeline(events);
   const highEnd=createVibeHighEndPresentationStack({request});
@@ -469,7 +488,7 @@ export function planVibePresentationAutopilot({files=[],events=[],request='',cha
     version:3,
     request:String(request),
     qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
-    audit,designSystem,craftPlans,adaptiveProfiles,timeline,highEnd,cinematicDirection,
+    audit,designSystem,craftPlans,discoveredSurfaces,adaptiveProfiles,timeline,highEnd,cinematicDirection,
     changeRequest:changeRequest||null,
     tasks:Object.freeze(tasks.slice(0,10)),
     policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true})
