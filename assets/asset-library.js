@@ -150,6 +150,50 @@ function showClips(sample){
  }
  if(!sample.clips.includes(selectedClip))selectedClip=sample.clips[0];applyClip(selectedClip);
 }
+// [원본 카탈로그] 실제 등록 원본·제작 레시피·출처 후보를 구분해 표시한다.
+// 세부 소스 확인은 조회만 수행하며 중앙 등록부나 기존 게임 소스를 수정하지 않는다.
+function renderSourceCollections(data){
+ const packs=(data.assets||[]).filter(asset=>Number.isInteger(asset.catalogRowCount)&&asset.catalogRowCount>0)
+  .sort((a,b)=>String(a.category||'').localeCompare(String(b.category||''),'ko')||String(a.title||a.id).localeCompare(String(b.title||b.id),'ko'));
+ $('catalogPackCount').textContent=packs.length.toLocaleString('ko-KR');
+ $('catalogEntryCount').textContent=packs.reduce((sum,row)=>sum+row.catalogRowCount,0).toLocaleString('ko-KR')+'개 카탈로그 항목 · 실물 파일과 별도';
+ const list=$('sourcePackList');list.replaceChildren();
+ for(const pack of packs){
+  const card=document.createElement('div');card.className='sourcePack';
+  const label=document.createElement('span');label.className='sourcePackCategory';label.textContent=categoryLabels[pack.category||pack.family]||pack.category||'공용';
+  const title=document.createElement('strong');title.textContent=pack.title||pack.id;
+  const detail=document.createElement('small');detail.textContent=pack.catalogRowCount+'개 항목 · '+(pack.productionVerified===true?'등록부 검증 표시 있음':'원본·실행 검증 별도');
+  card.append(label,title,detail);list.append(card);
+ }
+ $('sourcePackStatus').textContent='중앙 등록부 공용 카탈로그 · 정확한 파일 보유와 사용 여부는 출처별로 검사해.';
+ // 등록부 버전 변화에서만 별도 카탈로그 원본을 재조회한다. 실패 시 성공으로 표기하지 않는다.
+ if(String(data.version)===sourceInventoryVersion)return;
+ sourceInventoryVersion=String(data.version);
+ if((data.assets||[]).length<40)return;
+ const sources=[
+  {file:'/assets/roblox/actors/manifest.json',label:'3D 캐릭터 원본',key:'models'},
+  {file:'/assets/roblox/midnight-manor/asset-manifest.json',label:'공포 배경·소품 원본 목록',key:'models'},
+  {file:'/assets/external/simple-rpg/priority-v1/manifest.json',label:'RPG 소스 팩',key:'packs'},
+  {file:'/assets/roblox/common-materials-v1/manifest.json',label:'PBR 재질 원본',key:'materials'}
+ ];
+ Promise.allSettled(sources.map(row=>request(row.file).then(response=>response.json()))).then(results=>{
+  if(data!==registry)return;
+  let inspected=0;
+  results.forEach((result,index)=>{
+   if(result.status!=='fulfilled'||!Array.isArray(result.value?.[sources[index].key]))return;
+   const source=sources[index],card=document.createElement('div');card.className='sourcePack sourcePackArchive';
+   const label=document.createElement('span');label.className='sourcePackCategory';label.textContent='별도 원본 카탈로그';
+   const title=document.createElement('strong');title.textContent=source.label;
+   const detail=document.createElement('small');detail.textContent=result.value[source.key].length+'개 목록 · 실물·라이선스·실행 검증은 항목별 확인';
+   card.append(label,title,detail);list.append(card);inspected++;
+  });
+  $('sourcePackStatus').textContent=inspected
+   ?'별도 소스 카탈로그 '+inspected+'종 조회 · 중앙 등록부와 중복되는 항목은 합산하지 않아.'
+   :'현재 배포본에서는 별도 원본 목록 조회 불가 · 중앙 등록부 목록만 표시해.';
+ }).catch(()=>{
+  if(data===registry)$('sourcePackStatus').textContent='별도 원본 목록을 확인하지 못했어. 중앙 등록부 목록은 유지해.';
+ });
+}
 function syncFeaturedButtons(){
  const available=new Set(publicAssets(registry.assets).map(row=>row.id));
  const monsters=new Map(manifest.monsters.map(row=>['roblox-world-ghost-'+row.id,row]));
