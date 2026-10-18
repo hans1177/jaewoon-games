@@ -438,6 +438,27 @@ test('platform availability uses current release evidence or verified historical
 });
 
 
+test('homepage manager self-QA recognizes validated GitHub Pages as first game launch path',()=>{
+  const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
+  const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const start=manager.indexOf('  cleanRunnableShelfPresentation:');
+  const end=manager.indexOf('  developmentNativeTestButtonsOnly:',start);
+  const check=manager.slice(start,end);
+  assert.ok(start>0&&end>start);
+  assert.ok(check.includes("const direct=links.web||links.roblox||links.unity||''"),
+    'homepage self-QA must recognize actual web-first focus action');
+  assert.ok(!check.includes("const direct=links.roblox||links.unity||''"),
+    'obsolete native-only focus action must not decide self-QA');
+  assert.ok(check.includes('function playableWebHref(row)'),
+    'home page web link validation remains required');
+  assert.ok(check.includes('if(root!=='),
+    'homepage cannot use arbitrary noncanonical game paths');
+  assert.ok(runtime.includes("const direct=links.web||links.roblox||links.unity||''"));
+  assert.ok(runtime.includes("if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return ''"));
+  assert.ok(runtime.includes("['NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','WITHDRAWN_SIMPLE_PROTOTYPE']"),
+    'withdrawn and non-game web sources are not promoted');
+});
+
 test('Homepage Manager binds the central homepage policy fingerprint from self-QA through Director publication',()=>{
   const manage=section('  manage-and-self-qa:','  director-supervision:');
   const director=section('  director-supervision:');
