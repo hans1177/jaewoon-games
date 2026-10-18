@@ -201,7 +201,7 @@ jobs:
             const html=fs.readFileSync(entry,'utf8');
             const tag='<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script>';
             if(!html.includes('vibe-runtime-panel.js')){
-              const updated=/<\\/body>/i.test(html)?html.replace(/<\\/body>/i,tag+'</body>'):html+'\\n'+tag;
+              const updated=/<\/body>/i.test(html)?html.replace(/<\/body>/i,tag+'</body>'):html+'\n'+tag;
               fs.writeFileSync(entry,updated);
             }
           }
