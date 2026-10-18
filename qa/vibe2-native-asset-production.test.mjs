@@ -146,6 +146,23 @@ test('unacquired or unsafe library candidates never masquerade as game assets',(
   assert.equal(result.productionVerificationGranted,false);
   assert.equal(result.runtimeVerificationGranted,false);
 });
+test('every mandatory library request survives advisory action limits without a new queue',()=>{
+  const gameId='library-gap-beyond-quality-cap';
+  const qualityActions=Array.from({length:120},(_,i)=>({
+    assetId:'quality-asset-'+i,family:'PROP',sourceFiles:['assets/quality-'+i+'.glb'],
+    consumerGameIds:[gameId]
+  }));
+  const result=buildAssetSupplyDecisionSummary({
+    gameId,target:'web',request:'wolf enemy',
+    requirements:[{family:'CREATURE',role:'wolf'}],
+    registry:{assets:[],externalSources:[]},
+    executionPlan:{nextQualityActions:qualityActions}
+  });
+  assert.ok(result.nextActions.length>40);
+  assert.ok(result.nextActions.some(row=>row.family==='CREATURE'&&row.libraryRequest?.mandatory===true));
+  assert.ok(result.missingLibraryRequestCount>=1);
+});
+
 test('legacy preset-first asset selector policy is replaced by compulsory downloaded library and real 3D Web',()=>{
   const plan=planAssetApplication({prompt:'3D fantasy castle library'});
   assert.equal(plan.policy.downloadedRegisteredLibraryFirstMandatory,true);
