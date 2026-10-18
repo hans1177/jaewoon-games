@@ -1,0 +1,194 @@
+<!doctype html>
+<!-- 파일명: web-games/fantasy-survival/research-log-2.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>마력숲 연구 일지 · 2화</title>
+<style>
+/* 화면 */
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#020805;color:#e4f5e8;font-family:system-ui,-apple-system,sans-serif}
+#scene{display:block;width:100vw;height:100dvh;touch-action:none}
+#shade,#flash,#fade,#ending{position:fixed;inset:0;pointer-events:none}
+#shade{background:radial-gradient(ellipse at 50% 43%,transparent 29%,#05140a99 100%)}
+#flash{opacity:0;background:radial-gradient(ellipse at 63% 60%,#fff7a7 0%,#ffbb4544 18%,transparent 55%)}
+#fade{opacity:0;background:#000}
+#ending{display:none;align-items:center;justify-content:center;padding:28px;background:#000;color:#69b8ff;text-align:center;z-index:6}
+#ending p{max-width:660px;font-size:clamp(20px,5.3vw,37px);font-weight:800;line-height:1.9;letter-spacing:.015em;opacity:0;transform:translateY(9px);transition:opacity 1.5s,transform 1.5s;text-shadow:0 0 25px #2161a755}
+#ending p.show{opacity:1;transform:translateY(0)}
+#hud{position:fixed;top:max(14px,env(safe-area-inset-top));left:14px;right:14px;display:flex;justify-content:space-between;gap:12px;text-shadow:0 2px 5px #000;font-size:11px;letter-spacing:.08em;pointer-events:none}
+#hud b{color:#ff5d5d}#ammo{color:#f7eaba;font-variant-numeric:tabular-nums}
+#subtitle{position:fixed;bottom:calc(30px + env(safe-area-inset-bottom));left:20px;right:20px;min-height:31px;text-align:center;color:#f4f9ed;font-size:clamp(12px,3.6vw,17px);font-weight:700;text-shadow:0 2px 4px #001807,0 0 13px #000;pointer-events:none}
+#reticle{position:fixed;left:50%;top:49%;transform:translate(-50%,-50%);width:16px;height:16px;pointer-events:none;opacity:0}
+#reticle:before,#reticle:after{content:"";position:absolute;background:#ffffffbb}#reticle:before{left:7px;width:2px;height:16px}#reticle:after{top:7px;height:2px;width:16px}
+#start,#end{position:fixed;inset:0;display:grid;place-items:center;padding:18px;z-index:12;background:radial-gradient(circle at 50% 35%,#244b33,#06100a 72%);text-align:center}
+#end{display:none;background:radial-gradient(circle,#09233b,#020608 77%)}
+.panel{width:min(100%,440px);border:1px solid #7cae8766;padding:25px 20px;border-radius:16px;background:#081b11ea;box-shadow:0 12px 40px #0008}
+.panel small{color:#a6cabb;letter-spacing:.19em}.panel h1{font-size:25px;margin:12px 0}.panel p{font-size:13px;line-height:1.9;color:#c0d9c9}
+button{display:block;width:100%;min-height:48px;border:0;border-radius:10px;background:#367b50;color:white;font:inherit;font-weight:800;cursor:pointer}
+.links{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-top:18px}
+.links a{color:#a8dfc1;text-decoration:none;font-size:13px}
+#end .panel{background:#061524}
+</style>
+</head>
+<body>
+<canvas id="scene" aria-label="1인칭 3차원 연구 기록"></canvas>
+<div id="shade"></div><div id="flash"></div><div id="fade"></div>
+<div id="hud"><div><b>●</b> 연구원 02 · <span id="area">세계수 내부</span> · <span id="time">00:00</span></div><span id="ammo"></span></div>
+<div id="reticle"></div><div id="subtitle" aria-live="polite"></div>
+<div id="ending"><p id="quote">저희는 마력숲이 위험한 대신<br>귀여운 생물과 아름다운 자연도<br>있다는것을 알았습니다.</p></div>
+<div id="start"><div class="panel"><small>연구 기록 02</small><h1>마력숲 연구 일지 · 2화</h1><p>세계수 뱀에게 쓰러진 연구원을 구조하고 연구소로 돌아간다.<br>이후 총을 챙겨 세계수 주변을 다시 조사하는<br>1인칭 3D 연구 기록.</p><button id="play">2화 재생</button><nav class="links"><a href="./research-log.html">1화 보기</a><a href="./">마력숲 본편</a></nav></div></div>
+<div id="end"><div class="panel"><small>연구 기록 02 · 종료</small><h1>두려움과 아름다움</h1><p>연구원 구조, 세계수 곰 교전, 세계수 꿩과의 만남을 기록했어.</p><button id="again">다시 보기</button><nav class="links"><a href="./research-log.html">1화 보기</a><a href="./">마력숲 본편</a></nav></div></div>
+<script>
+/* 메인 · 외부 라이브러리 없이 기존 1화와 동일한 WebGL 기록 방식 */
+(()=>{
+'use strict';
+const el=id=>document.getElementById(id);
+const cv=el('scene'),gl=cv.getContext('webgl',{alpha:false,depth:true,antialias:false});
+if(!gl){el('start').querySelector('p').textContent='이 기기에서는 3D 기록을 재생할 수 없어.';el('play').disabled=true;return;}
+const vertex='attribute vec3 p;attribute vec3 c;uniform vec3 eye;uniform vec3 rot;uniform float aspect;uniform vec3 fog;varying vec3 tint;void main(){vec3 a=p-eye;float k=cos(rot.x),s=sin(rot.x);vec3 b=vec3(k*a.x-s*a.z,a.y,s*a.x+k*a.z);float q=cos(rot.y),r=sin(rot.y);vec3 d=vec3(b.x,q*b.y-r*b.z,r*b.y+q*b.z);float v=cos(rot.z),w=sin(rot.z);vec2 tilt=vec2(d.x*v-d.y*w,d.x*w+d.y*v);float z=-d.z;gl_Position=vec4(tilt.x*1.57/aspect,tilt.y*1.57,z*1.015-.19,z);tint=mix(c,fog,clamp((length(a)-5.)/28.,0.,.78));}';
+const fragment='precision mediump float;varying vec3 tint;void main(){gl_FragColor=vec4(tint,1.0);}';
+function compile(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
+let program;
+try{program=gl.createProgram();gl.attachShader(program,compile(gl.VERTEX_SHADER,vertex));gl.attachShader(program,compile(gl.FRAGMENT_SHADER,fragment));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(program));}catch(e){el('play').disabled=true;el('start').querySelector('p').textContent='3D 화면 초기화에 실패했어.';return;}
+gl.useProgram(program);gl.enable(gl.DEPTH_TEST);gl.disable(gl.CULL_FACE);
+const uniform=n=>gl.getUniformLocation(program,n);
+const U={eye:uniform('eye'),rot:uniform('rot'),aspect:uniform('aspect'),fog:uniform('fog')};
+const pos=gl.getAttribLocation(program,'p'),color=gl.getAttribLocation(program,'c'),buffer=gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+gl.enableVertexAttribArray(pos);gl.enableVertexAttribArray(color);
+gl.vertexAttribPointer(pos,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(color,3,gl.FLOAT,false,24,12);
+let verts=[],seed=481;
+const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
+const clamp=v=>Math.max(0,Math.min(1,v)),ease=v=>{v=clamp(v);return v*v*(3-2*v);},phase=(t,a,b)=>ease((t-a)/(b-a)),mix=(a,b,v)=>a+(b-a)*v;
+function tri(a,b,c,co){for(const p of [a,b,c])verts.push(...p,...co);}
+function quad(a,b,c,d,co){tri(a,b,c,co);tri(a,c,d,co);}
+function box(x,y,z,sx,sy,sz,co){const a=x-sx/2,b=x+sx/2,d=y-sy/2,e=y+sy/2,f=z-sz/2,g=z+sz/2;
+quad([a,d,f],[b,d,f],[b,e,f],[a,e,f],co);quad([b,d,g],[a,d,g],[a,e,g],[b,e,g],co);
+quad([a,d,g],[a,d,f],[a,e,f],[a,e,g],co);quad([b,d,f],[b,d,g],[b,e,g],[b,e,f],co);
+quad([a,e,f],[b,e,f],[b,e,g],[a,e,g],co);quad([a,d,g],[b,d,g],[b,d,f],[a,d,f],co.map(v=>v*.81));}
+function rod(a,b,r,co){let dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],ll=Math.hypot(dx,dy,dz)||1;const up=Math.abs(dy/ll)>.91?[1,0,0]:[0,1,0];
+let ux=up[1]*dz-up[2]*dy,uy=up[2]*dx-up[0]*dz,uz=up[0]*dy-up[1]*dx,un=Math.hypot(ux,uy,uz)||1;ux/=un;uy/=un;uz/=un;
+let vx=dy*uz-dz*uy,vy=dz*ux-dx*uz,vz=dx*uy-dy*ux;vx/=ll;vy/=ll;vz/=ll;
+for(let i=0;i<7;i++){let h=i*Math.PI*2/7,j=(i+1)*Math.PI*2/7;const p=(c,ang)=>[c[0]+r*(ux*Math.cos(ang)+vx*Math.sin(ang)),c[1]+r*(uy*Math.cos(ang)+vy*Math.sin(ang)),c[2]+r*(uz*Math.cos(ang)+vz*Math.sin(ang))];quad(p(a,h),p(a,j),p(b,j),p(b,h),co);}}
+function orb(x,y,z,r,co){const N=8,M=5;for(let j=0;j<M;j++){let a=-Math.PI/2+j*Math.PI/M,b=-Math.PI/2+(j+1)*Math.PI/M;for(let i=0;i<N;i++){let h=i*Math.PI*2/N,g=(i+1)*Math.PI*2/N;let p=(e,f)=>[x+r*Math.cos(e)*Math.cos(f),y+r*Math.sin(e),z+r*Math.cos(e)*Math.sin(f)];quad(p(a,h),p(a,g),p(b,g),p(b,h),co.map(v=>v*(.82+.18*Math.cos(h+.9))));}}}
+function floor(x0,x1,z0,z1,co){for(let x=x0;x<x1;x+=1.8)for(let z=z0;z<z1;z+=1.8)box(x+.9,-.83,z+.9,1.8,.18,1.8,co.map(v=>v*(.85+rand()*.25)));}
+function tree(x,z,h,wide=false){const bark=wide?[.26,.19,.12]:[.28,.24,.15];
+rod([x,-.7,z],[x+.2,h,z-.3],wide?1.6:.28,bark);
+for(let i=0;i<3;i++){const ang=i*2.39;rod([x,h*.64,z],[x+Math.cos(ang)*(wide?3.5:1.4),h+(.6+i*.25),z+Math.sin(ang)*(wide?2.7:1.2)],wide?.3:.1,bark);}
+if(!wide){for(let i=0;i<3;i++)orb(x+(i-1)*.65,h-.2+i*.18,z-.1,.8,[.11+i*.008,.3+i*.02,.15]);}
+else for(let i=0;i<9;i++){const a=i*2.4;orb(x+Math.sin(a)*3.1,h+Math.cos(a)*.8,z+Math.cos(a)*2.4,1.8,[.13,.35+rand()*.08,.22]);}}
+function flower(x,z){rod([x,-.73,z],[x,.03,z],.022,[.20,.42,.22]);orb(x,.05,z,.095,[.47,.75,.9]);}
+function caveWorld(){floor(-7,7,-25,8,[.07,.15,.09]);
+for(let i=0;i<24;i++){const z=-22+i*1.32;for(const s of [-1,1]){const x=s*(3.1+(i%4)*.19);rod([x,-.73,z],[x*.91,4.4,z-.9],.48,[.25,.22,.14]);rod([x,2,z],[s*.8,4.8,z-1.7],.22,[.28,.25,.17]);}}
+for(let i=0;i<25;i++){const x=(rand()-.5)*5,z=-20+rand()*27;if(Math.abs(x)>1.3)orb(x,-.33,z,.16,[.19,.41,.24]);}
+for(let i=0;i<6;i++)rod([i-3.2,4,-9],[i-2.1,.6,-13],.08,[.21,.43,.24]);}
+function labWorld(){box(0,-.88,-2,10,.3,12,[.23,.27,.23]);box(-4.9,1.8,-2,.24,5.3,12,[.28,.33,.30]);box(4.9,1.8,-2,.24,5.3,12,[.28,.33,.30]);box(0,1.8,-7.8,10,5.3,.3,[.28,.35,.34]);box(0,1.8,3.9,10,5.3,.28,[.23,.29,.25]);box(0,4.36,-2,10,.2,12,[.32,.34,.28]);
+box(0,3.8,-5.3,3,.16,.25,[.60,.78,.65]);box(0,3.78,-5.3,1.2,.1,.25,[.9,.92,.61]);
+box(-1.7,.20,-3.9,2.3,.22,3.3,[.59,.64,.64]);for(const x of [-2.6,-.8])for(const z of [-5.1,-2.8])rod([x,.1,z],[x,-.62,z],.075,[.29,.36,.34]);
+box(1.6,.08,-3.9,2.6,.17,1.6,[.48,.39,.25]);for(const x of [.52,2.65])for(const z of [-4.6,-3.1])rod([x,-.05,z],[x,-.72,z],.08,[.31,.29,.23]);
+for(let i=0;i<4;i++){const x=3.5,z=-5.9+i*1.35;box(x,1.2,z,1.0,2.6,.65,[.37,.45,.40]);box(x,1.23,z-.35,.7,.8,.06,[.34,.62,.52]);}
+box(-2.8,2.75,-7.6,2.2,1.1,.07,[.23,.47,.53]);}
+function forestWorld(){floor(-10,10,-32,10,[.17,.30,.15]);
+for(let i=0;i<48;i++){let x=(rand()-.5)*18,z=-30+rand()*39;if(Math.abs(x)<2.65&&z>-15)continue;if(Math.hypot(x,z+21)<4)continue;tree(x,z,3.9+rand()*2.5);}
+tree(0,-22,9.8,true);
+for(let i=0;i<90;i++){let x=(rand()-.5)*18,z=-30+rand()*39;if(Math.abs(x)<.9&&z>-12)continue;if(i%3===0)flower(x,z);else orb(x,-.63,z,.13,[.22,.43+rand()*.12,.16]);}
+for(let i=0;i<11;i++){const a=i*Math.PI*2/11;rod([Math.cos(a)*2.1,-.7,-22+Math.sin(a)*2],[Math.cos(a)*4.4,-.12,-22+Math.sin(a)*4.4],.21,[.30,.23,.16]);}}
+const sceneData=[];
+for(const make of [caveWorld,labWorld,forestWorld]){verts=[];make();sceneData.push(new Float32Array(verts));}
+function human(x,z,falling=false){const skin=[.75,.60,.44],uniform=[.39,.53,.45];
+if(falling){rod([x,-.2,z],[x+.18,.24,z-.55],.27,uniform);orb(x+.28,.27,z-.73,.27,skin);rod([x,.1,z-.10],[x-.52,-.30,z+.28],.12,uniform);rod([x,-.22,z],[x+.55,-.55,z+.18],.12,[.23,.29,.29]);rod([x,-.22,z],[x-.4,-.55,z-.35],.12,[.23,.29,.29]);}
+else{box(x,.55,z,.65,1.13,.38,uniform);orb(x,1.40,z,.31,skin);rod([x-.24,.78,z],[x-.57,.15,z+.18],.15,uniform);rod([x+.24,.82,z],[x+.50,.2,z+.36],.15,uniform);rod([x-.19,.1,z],[x-.2,-.73,z],.17,[.24,.29,.26]);rod([x+.19,.1,z],[x+.23,-.73,z],.17,[.24,.29,.26]);}}
+function patient(){box(-1.7,.38,-3.94,1.6,.18,2.9,[.55,.66,.61]);orb(-1.7,.7,-5.03,.3,[.76,.60,.44]);rod([-1.7,.56,-4.8],[-1.7,.51,-3.55],.34,[.37,.48,.43]);rod([-1.7,.5,-3.45],[-1.92,.40,-2.73],.18,[.23,.32,.28]);rod([-1.7,.5,-3.45],[-1.48,.40,-2.73],.18,[.23,.32,.28]);}
+function rifle(x,z,reload=0,fire=false,placed=false){let y=placed?.35:.5-reload*.32;const steel=[.17,.23,.21],stock=[.36,.25,.14];
+rod([x+.18,y+.12,z+.38],[x-.13,y+.29,z-1.5],.115,steel);
+rod([x-.13,y+.30,z-1.4],[x-.17,y+.31,z-2.22],.072,[.26,.27,.26]);
+box(x+.28,y+.10,z+.38,.4,.25,.69,stock);
+box(x+.12,y-.19-reload*.35,z-.43,.25,.50,.26,[.22,.26,.24]);
+rod([x+.27,y-.05,z-.11],[x+.44,y-.56,z+.13],.13,stock);
+if(fire){orb(x-.17,y+.31,z-2.27,.27,[1,.74,.23]);orb(x-.17,y+.32,z-2.41,.16,[1,.95,.64]);}}
+function bear(x,z,t,dead=0,impact=false){const sway=Math.sin(t*5)*.14*(1-dead),ground=-.67,down=dead*.94,brown=[.34,.225,.135],fur=[.40,.27,.16];
+orb(x,ground+1.32-down,z+.10,1.15,fur);orb(x,ground+1.91-down,z+.75,.79,brown);
+for(const side of [-1,1]){orb(x+side*.51,ground+2.38-down,z+.84,.28,[.26,.17,.10]);orb(x+side*.28,ground+2.06-down,z+1.32,.095,[.9,.76,.42]);orb(x+side*.28,ground+2.08-down,z+1.41,.044,[.025,.03,.02]);}
+orb(x,ground+1.67-down,z+1.47,.44,[.62,.45,.29]);orb(x,ground+1.72-down,z+1.82,.17,[.16,.11,.09]);
+for(const side of [-1,1])for(const zz of [-.6,.58])rod([x+side*.64,ground+1.1-down,z+zz],[x+side*(.72+sway),ground+.12+dead*.15,z+zz+.05],.26,brown);
+if(impact){orb(x,ground+1.9-down,z+1.22,.24,[1,.67,.25]);}}
+function pheasant(x,z,t,pet){const bob=Math.sin(t*4)*.08*(1-pet),y=-.22+bob;
+orb(x,y,z,.44,[.56,.35,.17]);orb(x,y+.14,z-.07,.35,[.43,.27,.18]);rod([x,y+.14,z+.08],[x,y+.74,z+.30],.15,[.61,.39,.22]);orb(x,y+.76,z+.32,.24,[.48,.45,.32]);orb(x-.13,y+.82,z+.48,.045,[.06,.10,.06]);orb(x+.13,y+.82,z+.48,.045,[.06,.10,.06]);
+tri([x-.10,y+.67,z+.55],[x+.10,y+.67,z+.55],[x,y+.57,z+.85],[.89,.69,.24]);
+for(let i=-2;i<=2;i++)rod([x+i*.06,y+.10,z-.3],[x+i*.22,y+.22,z-1.25-Math.abs(i)*.10],.065,[.32,.55,.43]);
+for(const sign of [-1,1])rod([x+sign*.17,y-.23,z],[x+sign*.20,-.73,z+.12],.038,[.61,.44,.20]);
+orb(x,y+.17,z-.36,.24,[.27,.53,.43]);}
+function handReach(x,z,strength){if(strength<=0)return;let f=ease(strength);rod([x+.84,-.40,z+.08],[mix(x+.82,x+.10,f),mix(.14,.57,f),z-1.7],.15,[.64,.48,.34]);orb(mix(x+.82,x+.10,f),mix(.14,.57,f),z-1.78,.15,[.75,.57,.41]);}
+function render(a){if(!a.length)return;gl.bufferData(gl.ARRAY_BUFFER,a,gl.DYNAMIC_DRAW);gl.drawArrays(gl.TRIANGLES,0,a.length/6);}
+function put(c){verts=[];c();render(new Float32Array(verts));}
+function blackCut(t,a,b,c,d){return Math.max(phase(t,a,b)*(1-phase(t,c,d)),0);}
+const shots1=[30.05,30.70,31.35,32,32.65,33.30],shots2=[38.70,39.35,40,40.65,41.3,42,42.75,43.4,44.05];
+let t=0,last=0,playing=false,ended=false,audio,triggered=new Set();
+function sound(f,d=.15,mode='square',vol=.025){if(!audio)return;const o=audio.createOscillator(),g=audio.createGain();o.type=mode;o.frequency.setValueAtTime(f,audio.currentTime);g.gain.setValueAtTime(vol,audio.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+d);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+d);}
+function event(key,fn){if(t>=key&&!triggered.has(key)){triggered.add(key);fn();}}
+function resize(){let ratio=Math.min(devicePixelRatio||1,1.35),w=innerWidth*ratio,h=innerHeight*ratio,scale=Math.min(1,Math.sqrt(1450000/(w*h)));w=Math.max(1,Math.floor(w*scale));h=Math.max(1,Math.floor(h*scale));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h);}return w/h;}
+function note(t){if(t<4)return '지원 연구원이 세계수 안쪽에 진입했다.';
+if(t<8)return '연구원 01 발견. 의식은 있지만 움직일 수 없다.';
+if(t<14.8)return '동료를 부축해 연구소로 돌아가는 중…';
+if(t<20)return '연구소 도착. 부상자를 안전한 곳에 눕혔다.';
+if(t<25.8)return '탄약과 소총 확보. 세계수 주변 재탐색 준비.';
+if(t<29)return '세계수 근처에서 거대한 발자국을 발견했다.';
+if(t<30)return '세계수 곰 출현! 접근 중!';
+if(t<34.1)return '곰을 향해 사격 중!';
+if(t<37.95)return '탄약이 떨어졌다! 탄창 교체!';
+if(t<45)return '재장전 완료. 계속 사격!';
+if(t<48.5)return '세계수 곰을 쓰러뜨렸다.';
+if(t<52)return '풀숲에서 세계수 꿩 한 마리가 나타났다.';
+if(t<57.7)return '조심스럽게 손을 뻗어 세계수 꿩을 쓰다듬었다.';
+return '';}
+function frame(now){requestAnimationFrame(frame);if(!playing)return;
+if(!last)last=now;const dt=Math.min(.09,(now-last)/1000);last=now;if(document.hidden)return;t+=Math.max(0,dt);
+const scene=t<15?0:t<26?1:2,aspect=resize(),eyeX=scene===0?0:scene===1?0:Math.sin(t*.11)*.08;
+let eyeY=scene===1?1.5:1.54,eyeZ=scene===0?mix(3,-5,phase(t,7,14.4)):scene===1?2.45:mix(3.4,1.8,phase(t,26,31))-3.0*phase(t,49.2,53.2);
+const bob=Math.sin(t*6.5)*.025*(scene===0?1:scene===2?.7:.2),gunOn=scene===2&&t>=26,shots=[...shots1,...shots2];
+const shot=shots.some(s=>t>=s&&t<s+.14),reloading=phase(t,34.45,35.4)*(1-phase(t,37.2,38.10)),hurt=shots.filter(s=>s<=t).length;
+if(scene===2){eyeY+=shot*Math.sin((t%0.14)*40)*.015;eyeZ-=shot*.035;}
+gl.uniform3f(U.eye,eyeX,eyeY+bob,eyeZ);
+gl.uniform3f(U.rot,scene===1?.05:Math.sin(t*.24)*.035,scene===1?-.05:Math.sin(t*.3)*.017+shot*.06,shot*.037);
+gl.uniform1f(U.aspect,aspect);
+const fog=scene===0?[.025,.09,.055]:scene===1?[.18,.21,.19]:[.14,.27,.19];
+gl.uniform3f(U.fog,...fog);gl.clearColor(...fog,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+render(sceneData[scene]);
+put(()=>{
+if(scene===0){if(t<6)human(.60,-2.65,true);
+else{human(eyeX-.90,eyeZ-1.45);rod([eyeX-.67,.93,eyeZ-1.42],[eyeX-.03,.54,eyeZ-.75],.12,[.39,.53,.45]);rod([eyeX-.08,.27,eyeZ-.55],[eyeX-.72,.88,eyeZ-1.4],.15,[.70,.53,.38]);}
+}
+if(scene===1){patient();if(t<22)rifle(1.42,-3.40,0,false,true);else rifle(.6,eyeZ-1.10,phase(t,21.8,24.7)*.12,false,false);}
+if(scene===2){
+const approach=phase(t,27.1,43.5),collapse=phase(t,44.3,46.9);
+const x=.18+Math.sin(t*2.6)*.18*(1-collapse),z=mix(-13.5,-3.65,approach);
+if(t<48)bear(x,z,t,collapse,shot&&t<46);
+if(t>=48.4){const bx=.35+Math.sin(t*.4)*.08,bz=mix(-6.5,-3.0,phase(t,49,52.2));const pet=phase(t,52,53.6)*(1-phase(t,56.5,57.2));
+pheasant(bx,bz,t,pet);handReach(eyeX,eyeZ,pet);}
+if(gunOn&&t<49)rifle(eyeX+.45,eyeZ-.65,reloading,shot,false);
+}});
+let flash=shot?.8:0;el('flash').style.opacity=flash;
+let fade=Math.max(blackCut(t,14.1,15,15.8,16.7),blackCut(t,24.5,26,26,27),phase(t,58.7,60.4));
+el('fade').style.opacity=fade;
+el('area').textContent=scene===0?'세계수 내부':scene===1?'연구소':'세계수 주변';
+el('time').textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(Math.floor(t%60)).padStart(2,'0');
+el('subtitle').textContent=t<59?note(t):'';
+el('reticle').style.opacity=gunOn&&t<47?0.8:0;
+let rounds=t<34.2?Math.max(0,6-shots1.filter(s=>t>=s).length):t<38.25?0:Math.max(0,9-shots2.filter(s=>t>=s).length);
+el('ammo').textContent=gunOn&&t<48?'탄약 '+String(rounds).padStart(2,'0')+' / '+(t<38.25?'06':'09')+(t>=34.35&&t<38.25?' · 재장전':''):'';
+for(const sec of shots)event(sec,()=>{sound(70,.22,'sawtooth',.08);sound(165,.095,'square',.032);});
+event(33.85,()=>sound(340,.17,'square',.018));
+event(35.2,()=>sound(640,.12,'triangle',.015));event(37.65,()=>sound(770,.12,'triangle',.019));
+event(27.8,()=>sound(90,.67,'sawtooth',.05));event(46.2,()=>sound(78,.6,'sawtooth',.04));
+for(const s of [50.4,51.8,54.5])event(s,()=>{sound(760,.12,'sine',.019);sound(1030,.18,'sine',.012);});
+if(t>=60.45){el('ending').style.display='flex';el('quote').classList.toggle('show',t>=61.2);}
+if(t>=68&&!ended){playing=false;ended=true;el('end').style.display='grid';el('ending').style.display='none';}
+}
+function begin(){t=0;last=0;ended=false;triggered.clear();playing=true;el('start').style.display='none';el('end').style.display='none';el('ending').style.display='none';el('quote').classList.remove('show');el('fade').style.opacity=0;el('subtitle').textContent='';try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();audio.resume();}catch{}}
+el('play').addEventListener('click',begin);el('again').addEventListener('click',begin);
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
