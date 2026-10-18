@@ -36,3 +36,17 @@ test('verified Web and Roblox aesthetic repairs distill concrete source-bound pa
     assert.ok(rows.some(row=>row.system==='DAMAGE_POPUP_POOL'));
   }
 });
+
+test('Roblox-native visual patterns require verified runtime in canonical training evidence',()=>{
+  const base={
+    taskType:'roblox',gameId:'rpg1',sourceRevision:'c'.repeat(40),
+    independentQa:'PASS',browserQa:'NOT_APPLICABLE',
+    instruction:'Roblox 보스 체력바와 데미지 숫자 표시',
+    verification:{fullRegression:'PASS'}
+  };
+  assert.deepEqual(deriveVerifiedCodePatterns(base,'roblox.json'),[]);
+  const verified=deriveVerifiedCodePatterns({...base,verification:{...base.verification,runtime:'PASS'}},'roblox.json');
+  assert.ok(verified.some(x=>x.system==='BOSS_PHASE_PRESENTATION'));
+  assert.ok(verified.some(x=>x.system==='DAMAGE_POPUP_POOL'));
+  assert.ok(verified.every(x=>x.engine==='roblox'&&x.rawCodeStored===false));
+});

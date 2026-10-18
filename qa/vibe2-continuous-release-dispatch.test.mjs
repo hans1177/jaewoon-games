@@ -518,9 +518,12 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.doesNotMatch(publisher,/git push origin HEAD:gh-pages --force/);
   assert.match(publisher,/if: github\.event_name != 'pull_request'/);
   assert.match(publisher,/WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS/);
-  // 단일 공식 홈페이지 리다이렉트가 실제 배포에서 확인되어야 한다.
-  assert.match(publisher,/WEB_PAGES_OFFICIAL_HOME_REDIRECT_NOT_LIVE/);
-  assert.match(publisher,/WEB_PAGES_OFFICIAL_HOME_REDIRECT_TARGET_MISMATCH/);
+  // GitHub Pages는 Cloudflare 리다이렉트가 아니라 실제 공식 홈과 의존 자산을 배포한다.
+  assert.match(publisher,/PAGES_OFFICIAL_HOME_RENDER_QA=PASS/);
+  assert.match(publisher,/WEB_PAGES_CANONICAL_HOMEPAGE_NOT_LIVE/);
+  assert.match(publisher,/WEB_PAGES_HOME_RENDERER_PATH_MISMATCH/);
+  assert.match(publisher,/WEB_PAGES_HOME_DEPENDENCY_NOT_LIVE/);
+  assert.match(publisher,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
   assert.match(publisher,/WEB_PAGES_ROUTE_NOT_LIVE=/);
   assert.match(publisher,/WEB_PAGES_SOURCE_SHA=/);
   assert.match(publisher,/WEB_PAGES_LIVE_SOURCE_SHA=/);

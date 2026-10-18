@@ -4361,6 +4361,44 @@ export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=
     ?{...motionTeaching,example:{contract:'Use the source-hash-bound example in INTERNAL MOTION COACHING; adapt its principles to the target rig, never its identity or duration.',reference:boundMotionReference}}
     :motionTeaching;
   const craftGoal=[order.goal,order.selectedTask?.goal,order.selectedTask?.focus].filter(Boolean).join(' ');
+  // 검증된 시각 코딩 패턴: 기존 canonical ingest 결과만 사용한다.
+  // 원본 코드 저장·새 학습 체인·미검증 패턴의 성공 승격은 금지한다.
+  const visualSignals=[
+    ['DAMAGE_POPUP_POOL',/데미지|피해.?숫자|damage.?popup|floating.?text|pool/i],
+    ['TOOLTIP_PLACEMENT',/도움창|툴팁|tooltip/i],
+    ['ICON_STATE_MOTION',/아이콘.?애니|icon.?animat/i],
+    ['CONTEXTUAL_HUD',/상황별.?hud|전투.?hud|boss.?hud|전투.?화면/i],
+    ['NINE_SLICE_SURFACE',/9.?slice|nine.?slice|프레임.?분할/i],
+    ['MATERIAL_HARMONIZATION',/재질.?조화|재질.?통일|material.?harmoni/i],
+    ['SCREEN_LAYOUT_OPTIMIZER',/화면.?배치|ui.?배치|layout.?optim/i],
+    ['NOTIFICATION_STACK',/알림|notification|toast/i],
+    ['STATUS_DURATION_TRACK',/상태효과|버프.?시간|status.?duration/i],
+    ['ITEM_VISUAL_PREVIEW',/장비.?미리보기|3d.?item.?preview/i],
+    ['BOSS_PHASE_PRESENTATION',/보스.?체력|boss.?phase|위협.?방향/i],
+    ['VISUAL_EFFECT_BUDGET',/이펙트.?제한|팝업.?수|effect.?budget|ui.?performance/i]
+  ];
+  const requestedVisualSystems=new Set(visualSignals.filter(([,matcher])=>matcher.test(craftGoal)).map(([key])=>key));
+  const verifiedVisualPatterns=(()=>{ 
+    if(!requestedVisualSystems.size||!['web','roblox'].includes(clean(order.target).toLowerCase()))return[];
+    let library;
+    try{library=readJson(path.join(process.cwd(),'.vibe2/code-pattern-library.json'),{});}catch{return[];}
+    return (Array.isArray(library?.patterns)?library.patterns:[])
+      .filter(row=>row?.verified===true&&row?.rawCodeStored===false&&clean(row?.independentQa)==='PASS'
+        &&clean(row?.sourceRevision)&&clean(row?.engine).toLowerCase()===clean(order.target).toLowerCase()
+        &&requestedVisualSystems.has(clean(row?.system)))
+      .sort((a,b)=>String(a.system).localeCompare(String(b.system))||String(a.id).localeCompare(String(b.id)))
+      .slice(0,5);
+  })();
+  const visualCodePatternBlock=verifiedVisualPatterns.length?[
+    '[VERIFIED VISUAL CODE PATTERNS]',
+    ...verifiedVisualPatterns.map(row=>JSON.stringify({
+      system:row.system,id:row.id,sourceRevision:row.sourceRevision,
+      recipe:row.implementationRecipe?.source||'',proof:row.implementationRecipe?.proof||[]
+    })),
+    'Read-only engineering guidance; reimplement in the existing responsible source functions. Source revision QA does not transfer to this game or platform. Preserve server authority, save and gameplay semantics. Re-run native runtime and mobile regression before claiming success.',
+    '[END VERIFIED VISUAL CODE PATTERNS]'
+  ].join('\n'):'';
+
   // Unity WebGL·Android는 동일 Unity 프로젝트를 사용하고 Roblox는 독립 소스로 구현한다.
   // 최적화 요청에만 적용해 일반 게임 소스 생성의 프롬프트 용량을 늘리지 않는다.
   const performanceTarget=clean(order.target).toLowerCase();
@@ -4667,6 +4705,7 @@ allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw V
 productionRequestBlock,
 `Department: ${order.department||'development'}`,
 learningContract.block,
+visualCodePatternBlock,
 robloxSourceCoaching?.block||'',
 ordinaryWeb3dEngineGuidance(order,context),
 unityWeb3dCodingBlock,

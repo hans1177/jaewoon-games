@@ -53,6 +53,7 @@ const VISUAL_CODING_RECIPES=Object.freeze({
 });
 
 function engineOf(sample={}){
+  if(clean(sample?.taskType)==='roblox')return'roblox';
   const source=clean(sample?.input||'')+' '+clean(sample?.instruction||'');
   if(/roblox-games\//i.test(source)||/roblox|luau|studio/i.test(source))return'roblox';
   if(/unity-games\//i.test(source)||/unity|c#/i.test(source))return'unity';
@@ -60,7 +61,9 @@ function engineOf(sample={}){
 }
 
 function sampleVerified(sample={}){
-  if(!['coding','bugfix','unity'].includes(clean(sample.taskType)))return false;
+  if(!['coding','bugfix','unity','roblox'].includes(clean(sample.taskType)))return false;
+  // Roblox 고유 작업은 Web QA로 대체하지 않고 실제 네이티브 런타임 근거를 요구한다.
+  if(clean(sample.taskType)==='roblox'&&upper(sample.runtime||sample.verification?.runtime||sample.qa?.runtime)!=='PASS')return false;
   if(upper(sample.independentQa)!=='PASS')return false;
   const browser=upper(sample.browserQa);
   if(browser&& !['PASS','NOT_APPLICABLE'].includes(browser))return false;
