@@ -15,6 +15,8 @@ import {
 } from '../assets/vibe-art-pipeline.js';
 import {
   auditVibeGoldenSceneEvidence,
+  auditVibeNative3D,
+  assertVibeNative3D,
   auditVibeRuntimeBeforeAfterComparison,
   auditVibeArtDirectionReview,
   auditVibeRuntimeVisualEvidence,
@@ -368,4 +370,56 @@ test('graphics root returns exact visual-repair instructions without a second pr
   assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets.length,1);
   assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets[0].property,'treeSpacingAndScale');
   assert.equal(production.runtimeRepairLoop.gameplaySaveBalanceMutationForbidden,true);
+});
+
+
+test('3D-only policy rejects flat sprite worlds, 2.5D CSS and declarative 3D fakes on every platform',()=>{
+  const badSources=[
+    {target:'web',path:'web-games/demo/index.html',text:'<body data-spatial-dimension="3d" style="perspective:900px"><canvas id="world"></canvas><script>canvas.getContext("2d");</script></body>'},
+    {target:'roblox',path:'roblox-games/demo/client/Game.client.luau',text:'local screen=Instance.new("ScreenGui") local sprite=Instance.new("ImageLabel") sprite.Parent=screen'},
+    {target:'unity',path:'unity-games/demo/Assets/Scripts/Game.cs',text:'public SpriteRenderer hero; public Canvas hud;'}
+  ];
+  for(const row of badSources){
+    const audit=auditVibeNative3D({target:row.target,files:[row],sourceRevision:'a'.repeat(40)});
+    assert.equal(audit.pass,false,row.target);
+    assert.equal(audit.sourceReady,false,row.target);
+    assert.equal(audit.minimumFinalGameplayDimension,'3D');
+    assert.equal(audit.ui2DOverlayAllowed,true);
+    assert.ok(audit.reasons.some(x=>x.includes('native-3d-renderer')||x.includes('real-three-dimensional-mesh')));
+  }
+});
+test('real 3D source still needs revision-bound actual runtime mesh, depth, camera and interaction proof',()=>{
+  const revision='c'.repeat(40);
+  const sample={
+    target:'web',sourceRevision:revision,
+    files:[{path:'web-games/demo/game.js',
+      text:'const renderer=new THREE.WebGLRenderer(); const mesh=new THREE.Mesh(new THREE.BoxGeometry()); const camera=new THREE.PerspectiveCamera(); renderer.depthTest=true;'}]
+  };
+  const staticOnly=auditVibeNative3D(sample);
+  assert.equal(staticOnly.sourceReady,true);
+  assert.equal(staticOnly.pass,false);
+  const capture={source:'REAL_WEBGL_RUNTIME_CAPTURE',sourceRevision:revision,
+    actualEngineRuntime:true,observed:true,reviewed:true,observedMeshCount:14,
+    depthTestPassed:true,camera3dObserved:true,spatialInteractionObserved:true,
+    captureArtifactId:'actual-three-dimensional-run',captureSha256:'a'.repeat(64)};
+  const approved=auditVibeNative3D({...sample,runtimeEvidence:capture});
+  assert.equal(approved.pass,true);
+  assert.equal(assertVibeNative3D({...sample,runtimeEvidence:capture}).pass,true);
+  assert.equal(auditVibeNative3D({...sample,runtimeEvidence:{...capture,depthTestPassed:false}}).pass,false);
+  assert.equal(auditVibeNative3D({...sample,runtimeEvidence:{...capture,sourceRevision:'b'.repeat(40)}}).pass,false);
+  assert.equal(auditVibeNative3D({...sample,runtimeEvidence:{...capture,markerOnly:true}}).pass,false);
+});
+test('Roblox and Unity 3D markers cannot be promoted without their actual native runtime captures',()=>{
+  for(const [target,path,source,proof] of [
+    ['roblox','roblox-games/test/client/Game.client.luau','local actor=Instance.new("MeshPart") actor.Parent=workspace; local cam=workspace.CurrentCamera','REAL_ROBLOX_RUNTIME_CAPTURE'],
+    ['unity','unity-games/test/Assets/Scripts/Game.cs','MeshFilter mesh; MeshRenderer renderer; Camera mainCamera;','REAL_UNITY_RUNTIME_CAPTURE']
+  ]){
+    const sourceRevision='d'.repeat(40);
+    const evidence={source:proof,sourceRevision,actualEngineRuntime:true,observed:true,reviewed:true,
+      observedMeshCount:7,depthTestPassed:true,camera3dObserved:true,spatialInteractionObserved:true,
+      captureArtifactId:'native-3d-capture',captureSha256:'b'.repeat(64)};
+    const result=auditVibeNative3D({target,files:[{path,text:source}],sourceRevision,runtimeEvidence:evidence});
+    assert.equal(result.pass,true,target);
+    assert.equal(result.minimumFinalGameplayDimension,'3D');
+  }
 });
