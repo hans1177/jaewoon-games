@@ -113,7 +113,7 @@ jobs:
           ];
           // Hydrate the fixed, trusted homepage source list in one Git operation.
           // Preserve the original per-file 24MB size gate and output paths.
-          cp.execFileSync('git',['restore','--source=HEAD','--worktree','--',...staticFiles],{
+          cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',...staticFiles],{
             maxBuffer:16*1024*1024
           });
           for(const file of staticFiles){
