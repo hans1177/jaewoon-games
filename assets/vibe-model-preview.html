@@ -1,0 +1,19 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>3D 에셋 미리보기</title><style>html,body{margin:0;height:100%;background:#182238;color:#fff;font:14px system-ui}#message{position:absolute;left:12px;top:8px;z-index:2}canvas{display:block;width:100%;height:100%}</style><div id="message">모델 로딩 중</div><script type="module">
+import * as THREE from './roblox/world-ghosts/native/mesh/three/three.module.js';
+import {GLTFLoader} from './roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
+const status=document.getElementById('message'),asset=new URLSearchParams(location.search).get('asset')||'';
+if(!/^assets\/[a-zA-Z0-9._/-]+\.(?:glb|gltf)$/i.test(asset)||asset.includes('..')){status.textContent='잘못된 모델 경로';throw Error('invalid model')}
+const base=new URL('../',location.href),url=new URL(asset,base);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x182238);
+const camera=new THREE.PerspectiveCamera(45,1,0.01,1000);
+scene.add(new THREE.HemisphereLight(0xffffff,0x445577,2));
+const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(4,8,5);scene.add(light);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));document.body.append(renderer.domElement);
+const resize=()=>{const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)};addEventListener('resize',resize);resize();
+let mixer=null;new GLTFLoader().load(url.href,gltf=>{
+const model=gltf.scene;scene.add(model);const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
+const radius=Math.max(size.x,size.y,size.z,0.1);camera.position.set(radius*1.5,radius*.9,radius*2.2);camera.lookAt(0,0,0);
+if(gltf.animations?.length){mixer=new THREE.AnimationMixer(model);mixer.clipAction(gltf.animations[0]).play()}status.textContent='원본 3D · '+(gltf.animations?.length||0)+'개 애니메이션';
+},undefined,()=>{status.textContent='모델 로딩 실패 (파일 형식 또는 의존성 확인 필요)'});
+const clock=new THREE.Clock();let last=0;function draw(now){requestAnimationFrame(draw);if(document.hidden||now-last<33)return;last=now;mixer?.update(Math.min(clock.getDelta(),.1));renderer.render(scene,camera)}requestAnimationFrame(draw);
+</script></html>
