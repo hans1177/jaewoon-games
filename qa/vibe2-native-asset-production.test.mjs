@@ -307,6 +307,39 @@ test('downloaded original first: compare an existing authored tree against a lic
     externalSources:[{...original,name:'Desert Cat',capabilities:['desert_cat']}]}});
   assert.equal(mismatch.nextActions.some(row=>row.reason==='CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL'),false);
 });
+
+test('actual acquired CC0 mesh outranks unverified authored mesh for same game role',()=>{
+ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+ const realRegistry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+ const original=realRegistry.assets.find(row=>row.id==='external-actor-skeleton-warrior');
+ assert.ok(original,'downloaded original must be in canonical company registry');
+ assert.ok(fs.statSync(path.join(root,original.path)).size>256,'the native GLB must actually exist');
+ const internal={id:'authored-skeleton-warrior',family:'CREATURE',role:'skeleton_warrior',
+   subfamily:'skeleton_warrior',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',
+   path:'assets/shared/humanoid-traveler.glb',internalAuditScore:995};
+ const base={gameId:'original-first-audit',target:'roblox',request:'skeleton warrior',
+   requirements:[{family:'CREATURE',role:'skeleton_warrior'}],repoRoot:root,
+   registry:{assets:[internal,original],externalSources:[]}};
+ const first=buildAssetSupplyDecisionSummary(base);
+ const action=first.nextActions.find(row=>row.assetId===original.id);
+ assert.ok(action,'downloaded original must rank before the authored library score');
+ assert.equal(action.action,'ADAPT','runtime import still required; no fabricated completion');
+ assert.equal(first.runtimeVerificationGranted,false);
+ assert.equal(first.productionVerificationGranted,false);
+ const unavailable=buildAssetSupplyDecisionSummary({...base,registry:{assets:[internal,
+   {...original,path:'assets/roblox/actors/native/not-found-model.glb'}],externalSources:[]}});
+ assert.ok(unavailable.nextActions.some(row=>row.assetId===internal.id),
+   'catalog metadata with missing file cannot supersede existing art');
+ const existing=buildAssetSupplyDecisionSummary({...base,gameId:'original-existing',
+   registry:{assets:[{...internal,consumerGameIds:['original-existing']},original],externalSources:[]}});
+ const upgrade=existing.nextActions.find(row=>row.reason==='DOWNLOADED_ORIGINAL_VISUAL_UPGRADE_CANDIDATE');
+ assert.ok(upgrade,'currently bound authored model needs a source-comparison replacement task');
+ assert.equal(upgrade.assetId,original.id);
+ assert.equal(upgrade.replacesCandidateAssetId,internal.id);
+ assert.equal(upgrade.automaticReplacementAuthorized,false,'only verified native QA can switch live mesh');
+ assert.ok(existing.nextActions.some(row=>row.assetId===internal.id),
+   'current gameplay visual binding stays usable until actual native QA');
+});
 test('existing Vibe source worker passes on-demand library selection to native game build with no false completion',()=>{
   const order={target:'unity',gameId:'fantasy-survival',goal:'기존 3D 자산으로 환경 재질 보강',assetProduction:{
     assetSupplySummary:{nextActions:[{
