@@ -328,6 +328,7 @@ jobs:
           verified=false
           for attempt in 1 2 3 4 5 6; do
             if curl -fsSL --max-time 15 "$manifest_url" \
+              | tee /tmp/web-pages-published.json \
               | GITHUB_SHA="$GITHUB_SHA" node -e "let x='';process.stdin.on('data',d=>x+=d);process.stdin.on('end',()=>{let m;try{m=JSON.parse(x)}catch{process.exit(1)}if(m.sourceSha!==process.env.GITHUB_SHA||!Array.isArray(m.routes)||!m.routes.length)process.exit(1)})"; then
               verified=true
               break
@@ -335,7 +336,7 @@ jobs:
             if [ "$attempt" -lt 6 ]; then sleep 10; fi
           done
           if [ "$verified" != true ]; then echo "WEB_PAGES_LIVE_SOURCE_NOT_VERIFIED" >&2; exit 1; fi
-          curl -fsSL --max-time 15 "$manifest_url" -o /tmp/web-pages-published.json
+          test -s /tmp/web-pages-published.json || { echo 'WEB_PAGES_VERIFIED_MANIFEST_MISSING' >&2; exit 1; }
           node -e "const m=require('/tmp/web-pages-published.json');for(const p of m.routes){if(!/^web-games\/[a-z0-9-]+\/$/.test(p))process.exit(1);const id=p.split('/')[1];if(!/^[a-f0-9]{40}$/.test(m.sourceTreeShas?.[id]||''))process.exit(1)}"
           # Verify independent published URLs concurrently, preserving every route and asset check.
           # xargs exits nonzero if any worker fails; diagnostics are written per URL.
