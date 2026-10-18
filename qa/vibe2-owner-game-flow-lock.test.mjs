@@ -136,7 +136,7 @@ test('lock Roblox and general Web as concurrent Vibe source-development platform
   ]);
   contains(release,[
     'WEB_F9_VERIFIED=YES',
-    'Cloudflare Pages main deployment check',
+    'VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=SUCCESS',
     'VIBE2_WEB_AUTO_DEPLOY=PASS',
     'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED_AFTER_WEB_DEPLOY',
     'ROBLOX_PRE_F9_CANONICAL_PUBLISH=FORBIDDEN',
@@ -160,9 +160,13 @@ test('lock F0 to F9 real verification and pre-F9 publication restrictions',()=>{
   assert.equal(f.canonicalServerPublicationEligibility,'EXACT_F9_AND_CURRENT_CANDIDATE_QA');
   assert.equal(policy.fixedAutonomousDevelopmentOperatingContract.serverDeployment.numericalScoreBlocksVerifiedDeployment,false);
   assert.equal(policy.roblox.deploymentControl.verifiedCyclePublication.publicationDispatchRequirementScope,'ALL_GAMES_AFTER_VERIFIED_F9');
+  assert.equal(policy.changeRecord.ownerEveryGameF9Publish20261018.publicationClassificationGate,false);
+  assert.ok(policy.roblox.deploymentControl.verifiedCyclePublication.sequence.includes('DISPATCH_EXACT_F9_ARTIFACT_REGARDLESS_OF_RELEASE_CLASSIFICATION'));
+  assert.ok(!policy.roblox.deploymentControl.verifiedCyclePublication.sequence.includes('DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH'));
+  assert.equal(policy.developmentSpeedExecution.candidateReleasePromotionChecks.webRequiredDeploymentCheck,'GitHub Pages');
   assert.deepEqual(f.sequence,[
     'GAME_SOURCE_MUTATION','F0','F1','F2','F3','F4','F5','F6','F7','F8','F9',
-    'RELEASE_CLASSIFICATION','PUBLISH_ONLY_IF_RELEASED','IMMEDIATE_NEXT_EVOLUTION_CYCLE'
+    'PUBLISH_EVERY_F9_VERIFIED_GAME','IMMEDIATE_NEXT_EVOLUTION_CYCLE'
   ]);
   assert.equal(f.platformBindings.ROBLOX.f9Authority,'.github/workflows/company-development-roblox-final-review-revalidation.yml');
   const roblox=workflow('company-development-roblox-runtime.yml');

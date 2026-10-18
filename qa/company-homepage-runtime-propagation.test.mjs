@@ -22,6 +22,29 @@ test('paused Unity Web never generates build probes or launch links',()=>{
   assert.doesNotMatch(api.buildCard(game),/Unity Web|unityWebAction|\/web-games\/demo\/unity\//);
 });
 
+// 내부 홈페이지 정책: 웹게임 배포/실행 품질 점수를 URL 허용 조건으로 삼지 않는다.
+// 실제 GitHub Pages 게시 검증은 기존 Web Release 파이프라인 책임이다.
+test('internal web game links use the registered source path without a score gate',()=>{
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},platformLinks,buildCard,playableWebHref})',{
+    document:{readyState:'loading',addEventListener(){}},Date,Intl
+  });
+  api.setExposure({games:[]});
+  const row=(id,state,archive=true)=>({id,canonical:{
+    identity:{gameId:id,name:id},
+    lifecycle:{state:'ACTIVE'},
+    production:{class:'DEVELOPMENT_CONFIRMED'},
+    sources:{web:{path:'web-games/'+id,archive,state}}
+  }});
+  const eligible=row('fantasy-survival','UNITY_WEB_VERIFICATION_REQUIRED');
+  assert.equal(api.playableWebHref(eligible),'https://hans1177.github.io/jaewoon-games/web-games/fantasy-survival/');
+  assert.equal(api.platformLinks(eligible).web,api.playableWebHref(eligible));
+  assert.match(api.buildCard(eligible),/일반 웹게임 · 플레이/);
+  assert.doesNotMatch(api.buildCard(eligible),/href="[^"]+roblox\.com/);
+  assert.equal(api.playableWebHref(row('retired-prototype','WITHDRAWN_SIMPLE_PROTOTYPE',false)),'');
+  assert.equal(api.playableWebHref(row('missing-entry','ENTRY_MISSING_OR_INVALID')),'');
+});
+
 test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,internalReleaseRows,hasRunnableHomepageTarget,buildCard})',{
@@ -43,7 +66,7 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
   assert.equal(api.internalReleaseRows({games:[dev]},{}).length,0,'development must not be falsely promoted');
   const card=api.buildCard(dev);
   assert.match(card,/Roblox · 개발 중/);
-  assert.match(card,/Unity 앱 · 개발 중/);
+  assert.match(card,/일반 웹게임 · 게시 준비 중/);
   assert.doesNotMatch(card,/Unity Web/);
   assert.doesNotMatch(api.buildCard({...dev,unityWebAvailable:false}),/Unity Web/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*robloxAction"/);
