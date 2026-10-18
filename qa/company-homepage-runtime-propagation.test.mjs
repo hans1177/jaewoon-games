@@ -67,6 +67,42 @@ test('공개 매니페스트와 정확히 같은 원본 게임만 메인 실행 
   assert.throws(()=>syncPublishedWebRoutes({catalog,manifest:{...manifest,gameCount:3},sourceTreeShaOf:()=>''}),/MANIFEST_INVALID/);
 });
 
+test('바이브가 원본 카탈로그에 새 게임을 추가하면 다음 원본 배포 후 메인 버튼에 자동 반영된다',()=>{
+  const entry=(id)=>({id,name:id,webPath:'web-games/'+id,hasWebArchive:true,
+    ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED',lifecycleState:'ACTIVE',
+    productionClass:'DEVELOPMENT_CONFIRMED'});
+  const catalog={games:[entry('first-game')]};
+  const sha='a'.repeat(40),nextSha='b'.repeat(40);
+  const makeManifest=(routes,sourceSha)=>({sourceSha,gameCount:routes.length,routes,
+    sourceTreeShas:Object.fromEntries(routes.map(route=>[route.split('/')[1],route.includes('new-game')?nextSha:sha]))});
+  const first=makeManifest(['web-games/first-game/'],'c'.repeat(40));
+  syncPublishedWebRoutes({catalog,manifest:first,sourceTreeShaOf:()=>sha});
+  assert.equal(catalog.games[0].webPublishedRoute,'web-games/first-game/');
+  const newGame=entry('new-game');
+  catalog.games.push(newGame); // Vibe의 정식 카탈로그 등록, 단순 HTML 원본 자동 생성과 구분
+  assert.equal(newGame.webPublishedRoute,undefined,'not playable before original deployment');
+  const published=makeManifest(['web-games/first-game/','web-games/new-game/'],'d'.repeat(40));
+  const sourceTreeShaOf=root=>root.endsWith('new-game')?nextSha:sha;
+  const next=syncPublishedWebRoutes({catalog,manifest:published,sourceTreeShaOf});
+  assert.equal(next.confirmed,2);
+  assert.equal(catalog.games[1].webPublishedRoute,'web-games/new-game/');
+  assert.equal(catalog.games[1].webPublishedSourceTreeSha,nextSha);
+  const snapshot=JSON.stringify(catalog.games);
+  syncPublishedWebRoutes({catalog,manifest:published,sourceTreeShaOf});
+  assert.equal(JSON.stringify(catalog.games),snapshot,'repeated Vibe run must not create duplicate game buttons or commits');
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(renderer+';({playableWebHref})',{
+    document:{readyState:'loading',addEventListener(){}},Date,Intl});
+  const withCanonical={...catalog.games[1],canonical:{
+    identity:{gameId:'new-game'},lifecycle:{state:'ACTIVE'},
+    sources:{web:{path:'web-games/new-game',archive:true,state:'UNITY_WEB_VERIFICATION_REQUIRED'}},
+    publication:{web:{route:catalog.games[1].webPublishedRoute,sourceTreeSha:catalog.games[1].webPublishedSourceTreeSha}}
+  }};
+  assert.equal(api.playableWebHref(withCanonical),'https://hans1177.github.io/jaewoon-games/web-games/new-game/');
+  syncPublishedWebRoutes({catalog,manifest:first,sourceTreeShaOf});
+  assert.equal(catalog.games[1].webPublishedRoute,'','missing next release disables the new button, not the game card');
+});
+
 test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,internalReleaseRows,hasRunnableHomepageTarget,buildCard})',{
