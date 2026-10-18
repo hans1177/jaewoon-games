@@ -19,6 +19,8 @@ test('game source and homepage media changes trigger the existing automatic main
   assert.match(push,/- "game-catalog\.json"/);
   assert.match(push,/- "assets\/\*\*"/);
   assert.doesNotMatch(push,/- "!assets\/homepage-(?:media|covers)\/\*\*"/);
+  assert.match(workflow,/group: magic-forest-pages-\$\{\{ github\.event_name == 'pull_request'/);
+  assert.match(workflow,/cancel-in-progress: false/);
   // Original work automatically republishes without an extra homepage-only deployment approval.
   assert.match(workflow,/name: Publish gh-pages without force or deleting earlier games/);
   assert.match(workflow,/name: Verify every published game route and the canonical official homepage/);
