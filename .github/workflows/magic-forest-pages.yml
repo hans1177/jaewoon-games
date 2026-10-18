@@ -274,6 +274,14 @@ jobs:
           node tools/github-pages-landing.mjs
           test -s _site/index.html
 
+      - name: Headless Chromium Vibe presentation smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node qa/vibe-browser-smoke.mjs
+
       - name: Verify every published game route and the canonical official homepage
         if: github.event_name == 'pull_request'
         shell: bash
