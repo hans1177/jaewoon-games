@@ -223,7 +223,7 @@ jobs:
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
           const profiles=buildGameAssetProfiles({routes:manifest.routes,assets:manifest.sharedAssets,catalog});
           if(Object.keys(profiles).length!==manifest.routes.length)throw Error('VIBE_GAME_PROFILE_COUNT_MISMATCH');
-          fs.writeFileSync('_site/web-games/vibe-asset-profiles.json',JSON.stringify({sourceSha:manifest.sourceSha,profiles},null,2)+'\\n');
+          fs.writeFileSync('_site/web-games/vibe-asset-profiles.json',JSON.stringify({sourceSha:manifest.sourceSha,profiles},null,2)+'\n');
           console.log('VIBE_GAME_ASSET_PROFILES='+Object.keys(profiles).length);
           NODE
 
