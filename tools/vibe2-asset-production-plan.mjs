@@ -1706,21 +1706,25 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       family,sourceRoles,asset?'REUSABLE_LIBRARY_VS_DOWNLOADED_ORIGINAL':'ORIGINAL_SOURCE_FIRST_ON_DEMAND',
       asset?.id||''
     );
-    if(asset&&acquired(asset)){
+    if(asset){
+      // 기존 역할 매칭/소스 비교 결과는 보존한다. 실제 신규 바인딩 권한은 원본 여부로 별도 판정한다.
       const mode=internalAssetPlatformApplicationMode(asset,target);
       const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
       pushAction({
         action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
         assetId:clean(asset.id),family,
-        reason:pendingImport?'DOWNLOADED_ORIGINAL_NATIVE_IMPORT_REQUIRED':'DOWNLOADED_ORIGINAL_LIBRARY_DEFAULT',
-        downloadedOriginalDefault:true,
+        reason:pendingImport?'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
+        downloadedOriginalDefault:acquired(asset),
+        newGameDefaultBindingAuthorized:acquired(asset),
+        selfAuthoredVisualBindingForbidden:!acquired(asset),
+        candidateIsAdvisoryOnly:!acquired(asset),
+        onDemandOriginalAcquisitionRequired:!acquired(asset),
+        sourceRequestOwner:!acquired(asset)?'EXISTING_ASSET_DEVELOPMENT_GRAPHICS_PRODUCTION':null,
         applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
       });
     }else{
-      // 신규 바인딩에는 내부 자체제작 기본 모형을 사용하지 않는다.
-      // 원본 파일이 아직 없으면 다운로드 요청을 유지하며 게임 화면 성공으로 표시하지 않는다.
       pushAction({action:'HOLD',assetId:null,family,
-        reason:originalRequested?'DOWNLOADED_ORIGINAL_ACQUISITION_PENDING':'NO_DOWNLOADED_ORIGINAL_AVAILABLE',
+        reason:originalRequested?'DOWNLOADED_ORIGINAL_ACQUISITION_PENDING':sourceRoles.length?'NO_VERIFIED_EXISTING_ASSET_TO_APPLY':'ROLE_REQUIREMENT_UNRESOLVED',
         selfAuthoredVisualBindingForbidden:true,
         onDemandOriginalAcquisitionRequired:true,
         sourceCatalogSearchRequired:!originalRequested,
