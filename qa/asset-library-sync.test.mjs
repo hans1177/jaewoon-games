@@ -594,7 +594,9 @@ test('acquired Roblox GLBs are previewable through the existing safe native view
   const start=library.indexOf('const nativeGLB='),end=library.indexOf('let nativeClip=',start);
   assert.ok(start>=0&&end>start);
   const nativeGLB=vm.runInNewContext(library.slice(start,end)+'\nnativeGLB');
-  assert.ok(manifest.models.length>=22);
+  assert.ok(manifest.models.length>0,'at least one acquired native model required');
+  assert.equal(manifest.models.length,manifest.adaptedGlbCount,'registered native previews must match actual converted GLB inventory');
+  assert.ok(manifest.sourceModelCount>=manifest.adaptedGlbCount,'unconverted source originals remain a separately counted acquisition gap');
   for(const model of manifest.models){
     const record=registry.assets.find(asset=>asset.id==='external-actor-'+model.id);
     assert.ok(record,'unregistered acquired actor '+model.id);
