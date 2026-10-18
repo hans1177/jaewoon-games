@@ -106,8 +106,8 @@ jobs:
             }
           };
           for(const route of routes)transformRoute(path.join(site,route));
-          // Only direct files referenced by published games are hydrated from the canonical Git tree.
-          // The original assets library stays untouched in GitHub and is never copied wholesale.
+          // Publish the complete tracked asset library so all registered game routes can resolve
+          // canonical asset URLs. Runtime adoption remains game-specific and is validated separately.
           // 기존 홈페이지와 바이브 관리자/PWA 원본 파일을 동일 Git SHA에서 확보한다.
           // Cloudflare Workers 및 서버 상태는 복사하거나 재배포하지 않는다.
           const staticFiles=[
@@ -149,7 +149,7 @@ jobs:
               :adapted);
           }
           const trackedAssets=new Set(cp.execFileSync('git',['ls-tree','-r','--name-only','HEAD','--','assets'],{encoding:'utf8'}).trim().split('\n'));
-          const refs=new Set();
+          const refs=new Set(trackedAssets);
           const collect=root=>{
             if(!fs.existsSync(root))return;
             for(const entry of fs.readdirSync(root,{withFileTypes:true})){
