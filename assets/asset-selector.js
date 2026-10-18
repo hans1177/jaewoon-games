@@ -116,6 +116,7 @@ function findCandidates(type, candidates) {
     license:text(asset.license),
     source:text(asset.source),
     downloaded:asset?.downloaded !== false,
+    explicitlyDownloaded:asset?.downloaded === true,
     animated:ACTOR_TYPES.includes(type) ? Boolean(actorMotionMode(asset, candidates)) : Boolean(asset?.verifiedAnimation),
     motionMode:ACTOR_TYPES.includes(type) ? actorMotionMode(asset, candidates) : null,
     sourceUrl:text(asset.sourceUrl),
@@ -505,7 +506,10 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const production = buildProductionPlan(request, prototypePreset);
   const preferredIds = presetPreferredIds(prototypePreset);
   const matched = types.flatMap((type) => findCandidates(type, candidates))
-    .sort((a, b) => Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id))
+    // Legacy genre presets are layout/style hints; real downloaded, registered assets
+    // always win the default selection over a preset or generated placeholder.
+    .sort((a, b) => Number(b.explicitlyDownloaded === true) - Number(a.explicitlyDownloaded === true)
+      || Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id))
       || Number(b.studioMotionCandidate === true) - Number(a.studioMotionCandidate === true));
   const missingTypes = types.filter((type) => !matched.some((item) => item.type === type));
   const binding = types.map((type) => Object.freeze({
@@ -546,12 +550,19 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     }),
     policy:Object.freeze({
       existingAssetsFirst:true,
-      prototypePresetFirst:true,
+      downloadedRegisteredLibraryFirstMandatory:true,
+      allGamesAndExistingGameSystems:true,
+      exactNameMatchNotRequiredForTransformableSameFamilyDonors:true,
+      unresolvedRoleRequiresExistingLibraryAcquisitionRequest:true,
+      noPrimitiveOrSpriteOnlyWorldCompletion:true,
+      prototypePresetFirst:false,
+      prototypePresetIsStyleHintOnly:true,
       mobileFirst:true,
       activeNativeTargets:[...ACTIVE_NATIVE_TARGETS],
       pausedNativeTargets:[...PAUSED_NATIVE_TARGETS],
       defaultNativeTarget:'roblox',
-      webValidationSurfaceOnly:true,
+      webValidationSurfaceOnly:false,
+      generalWebTrue3dDevelopmentEnabled:true,
       generatedAssetSourceRecipeRequired:true,
       generatedAssetReviewEvidenceRequired:true,
       generatedAssetNativeRuntimeVerificationRequired:true,
@@ -583,20 +594,21 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       externalToolApprovalRequired:true,
     }),
     steps:Object.freeze([
-      '장르에 맞는 모바일 prototype-asset-presets 프리셋 자동 선택',
+      '다운로드·등록된 회사 자산 전체를 먼저 확인하고 역할·스타일이 유사한 원본까지 파생 적용 대상으로 선택; 안전·권리·원본 해시 검사 필수',
+      '장르 프리셋은 스타일 참고용으로만 사용하며 라이브러리 후보보다 먼저 사용하지 않는다',
       '중앙정책의 활성 native 타깃을 우선하고 플랫폼 미지정 시 Roblox를 기본 native 제작 타깃으로 선택',
-      'Web은 native 대체 타깃이 아니라 필요한 경우 검증/동반 표면으로만 분리',
+      '모든 기존·신규 일반 Web게임은 실제 WebGL 3D 게임 개발 대상이며 UI/텍스처 외 공간 오브젝트는 다운로드 라이브러리의 실제 3D 모델을 사용한다',
       'Roblox/Unity용 생성 자산은 원본 제작 레시피·미리보기·evidence·런타임 검증을 분리해 기록',
       '외부 무료 제작툴은 후보만 제시하고 라이선스/버전 승인 전 자동 설치 금지',
       '기존 저장소 에셋 확인 후 KEEP/ENHANCE/COMBINE/REPLACE 분류',
       '캐릭터/적/보스는 실제 프레임 애니메이션, 검증 모션 소스가 연결된 리타겟 가능 리그, 또는 Motion Engine 실행 증거를 확인',
       '휴머노이드 리그와 외부/회사 모션을 조합할 때는 리타겟·발접지·루트/골반·손/무기 접촉·전환 클린업을 거쳐 플랫폼 네이티브 런타임으로 검증',
       '정지 원본은 Motion Engine 프로필·런타임 증거·모바일 성능 통과 없이는 배우 후보에서 제외',
-      '프리셋의 검증 배우 에셋을 우선 적용하고 미다운로드 에셋은 최초 사용 시 확보·캐시',
+      '다운로드·등록된 호환 배우·모션·세계 자산을 우선 적용하고 부족한 자산은 기존 ASSET_DEVELOPMENT 수급 요청으로 확보·등록한 후 실제 게임에 적용한다',
       '플레이어/일반 NPC/동료/아군/상인·퀘스트 NPC/펫·탈것·소환수/적·엘리트/보스와 배경·지형·사물·자원·건물·UI·VFX 목록 작성',
       '누락 에셋은 승인 소스에서 상업/수정 라이선스 확인 후 확보',
       'LICENSES/에셋 장부에 출처·제작자·라이선스·수정 여부 기록',
-      '모든 월드 객체를 실제 이미지/스프라이트/타일 에셋에 연결',
+      '게임 세계·캐릭터·몬스터·지형·건축물·무기·소품은 실제 3D 모델/월드 사용으로 검증하고 2D 리소스는 UI·텍스처·오디오에만 사용한다',
       '프레임 에셋은 animation-state, 정지/보조 모션은 Jaewoon Motion Engine에 연결',
       '도형/이모지/단색 임시 그래픽 잔존 여부 검사',
       '에셋/모션과 authoritative 게임 로직 분리 확인',

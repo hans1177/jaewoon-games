@@ -12,6 +12,7 @@ import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,dete
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
+import {planAssetApplication} from '../assets/asset-selector.js';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
 
 // 중앙 정책: 외부 원본은 게임에서 필요한 경우만 선택하며 재질 수정·등록·런타임 승격은 별도 검증한다.
@@ -80,7 +81,113 @@ test('acquired Roblox CC0-1.0 GLB is selected as pending native-import reuse, ne
   assert.equal(selected.selectedOnDemandExternalGapCount,0);
   const wrongRole=buildAssetSupplyDecisionSummary({...params,request:'ghost',
     requirements:[{family:'CREATURE',role:'ghost'}],registry:{assets:[actor],externalSources:[]}});
-  assert.notEqual(wrongRole.nextActions.find(row=>row.family==='CREATURE').assetId,actor.id);
+  const donor=wrongRole.nextActions.find(row=>row.family==='CREATURE'&&row.assetId===actor.id);
+  assert.equal(donor?.action,'ADAPT','same-family downloaded 3D donor must enter role transformation, not act as a ghost');
+  assert.equal(donor?.sourceRoleAdaptationRequired,true);
+  assert.equal(donor?.actualNativeDerivedSourceRequired,true);
+  assert.equal(donor?.roleEvidence.verifiedRoleMatch,false);
+});
+
+
+
+test('Vibe native source prompts mandate registered downloaded assets and no primitive fallback for every game',()=>{
+  for(const target of ['web','unity','roblox']){
+    const file=target==='unity'?'Assets/Scripts/Game.cs':target==='roblox'?'client/Game.client.luau':'index.html';
+    const prompt=buildPrompt({target,gameId:'library-required-'+target,goal:'플레이어와 나무 렌더링',department:'development'},
+      {files:[{path:file,content:target==='web'?'<html><canvas></canvas></html>':'-- source',editable:true}]},[file]);
+    assert.match(prompt,/OWNER MANDATORY DOWNLOADED LIBRARY DEFAULT 2026-10-18/);
+    assert.match(prompt,/EXISTING ASSET_DEVELOPMENT_LIBRARY_ACQUISITION/);
+    assert.match(prompt,/Never substitute a primitive or fake library marker/);
+  }
+});
+
+test('all games require downloaded registered library defaults and route missing roles to asset-library requests',()=>{
+  const registered={
+    id:'cc0-village-house',family:'BUILDING',role:'house',subfamily:'house',platform:'SHARED_MASTER',
+    path:'assets/shared/house.glb',downloaded:true,license:'CC0-1.0',status:'REPO_ASSET',
+    sourceHash:'abc123'
+  };
+  for(const target of ['web','roblox','unity']){
+    const plan=buildAssetSupplyDecisionSummary({
+      gameId:'all-library-'+target,target,request:'village castle',
+      requirements:[{family:'BUILDING',role:'castle'},{family:'CREATURE',role:'wolf'}],
+      registry:{assets:[registered],externalSources:[]}
+    });
+    assert.equal(plan.mandatoryDownloadedLibraryDefault,true);
+    const donor=plan.nextActions.find(row=>row.family==='BUILDING'&&row.assetId===registered.id);
+    assert.ok(donor,'similar downloaded 3D building is mandatory adaptation donor in '+target);
+    assert.equal(donor.action,'ADAPT');
+    assert.equal(donor.sourceRoleAdaptationRequired,true);
+    assert.equal(donor.actualNativeDerivedSourceRequired,true);
+    assert.equal(donor.roleEvidence.verifiedRoleMatch,false);
+    const missing=plan.nextActions.find(row=>row.family==='CREATURE');
+    assert.equal(missing.action,'HOLD');
+    assert.equal(missing.libraryRequest.mandatory,true);
+    assert.equal(missing.libraryRequest.route,'EXISTING_ASSET_DEVELOPMENT_LIBRARY_ACQUISITION');
+    assert.equal(missing.libraryRequest.placeholderFallbackForbidden,true);
+    assert.ok(plan.missingLibraryRequestCount>=1,'all unresolved applicable families also request downloads');
+    assert.equal(plan.nextActions.filter(row=>row.family==='CREATURE'&&row.libraryRequest?.mandatory===true).length,1);
+    const guidance=assetProductionGuidance({kind:'vibe2-asset-production-plan',gameId:'all-library-'+target,target,assetSupplySummary:plan});
+    assert.match(guidance,/MANDATORY DOWNLOADED LIBRARY REQUEST/);
+    assert.match(guidance,/MANDATORY SIMILAR LIBRARY DONOR ADAPTATION/);
+  }
+});
+test('unacquired or unsafe library candidates never masquerade as game assets',()=>{
+  const registry={assets:[
+    {id:'not-downloaded',family:'WEAPON',role:'sword',downloaded:false,path:'assets/shared/sword.glb',license:'CC0-1.0'},
+    {id:'unsafe',family:'WEAPON',role:'sword',downloaded:true,path:'assets/shared/sword.glb',license:'CC-BY-NC'},
+    {id:'bare-dummy',family:'WEAPON',role:'sword',downloaded:true,path:'assets/shared/sword.png',license:'CC0-1.0'}
+  ],externalSources:[]};
+  const result=buildAssetSupplyDecisionSummary({gameId:'verified-required',target:'web',request:'sword weapon',
+    requirements:[{family:'WEAPON',role:'sword'}],registry});
+  const selected=result.nextActions.find(row=>row.family==='WEAPON');
+  assert.equal(selected.action,'HOLD');
+  assert.equal(selected.libraryRequest.mandatory,true);
+  assert.equal(result.productionVerificationGranted,false);
+  assert.equal(result.runtimeVerificationGranted,false);
+});
+test('every mandatory library request survives advisory action limits without a new queue',()=>{
+  const gameId='library-gap-beyond-quality-cap';
+  const qualityActions=Array.from({length:120},(_,i)=>({
+    assetId:'quality-asset-'+i,family:'PROP',sourceFiles:['assets/quality-'+i+'.glb'],
+    consumerGameIds:[gameId]
+  }));
+  const result=buildAssetSupplyDecisionSummary({
+    gameId,target:'web',request:'wolf enemy',
+    requirements:[{family:'CREATURE',role:'wolf'}],
+    registry:{assets:[],externalSources:[]},
+    executionPlan:{nextQualityActions:qualityActions}
+  });
+  assert.ok(result.nextActions.length>40);
+  assert.ok(result.nextActions.some(row=>row.family==='CREATURE'&&row.libraryRequest?.mandatory===true));
+  assert.ok(result.missingLibraryRequestCount>=1);
+});
+
+test('legacy preset-first asset selector policy is replaced by compulsory downloaded library and real 3D Web',()=>{
+  const plan=planAssetApplication({prompt:'3D fantasy castle library'});
+  assert.equal(plan.policy.downloadedRegisteredLibraryFirstMandatory,true);
+  assert.equal(plan.policy.allGamesAndExistingGameSystems,true);
+  assert.equal(plan.policy.prototypePresetFirst,false);
+  assert.equal(plan.policy.webValidationSurfaceOnly,false);
+  assert.equal(plan.policy.generalWebTrue3dDevelopmentEnabled,true);
+  assert.equal(plan.policy.noPrimitiveOrSpriteOnlyWorldCompletion,true);
+  assert.ok(plan.steps.some(step=>step.includes('기존 ASSET_DEVELOPMENT 수급 요청')));
+  assert.ok(plan.steps.some(step=>step.includes('실제 3D 모델/월드')));
+});
+
+test('existing central library policy already mandates asset-first binding for every game and platform',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const binding=policy.livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract;
+  assert.equal(binding.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(binding.scope,'ALL_GAME_DEVELOPMENT_AND_BUILD_UP_WORK');
+  assert.equal(binding.selection.fullInternalRegistryScanRequired,true);
+  assert.equal(binding.selection.allTwelveFamiliesEvaluated,true);
+  assert.equal(binding.selection.noArtificialAssetCountCap,true);
+  assert.equal(binding.selection.gameplaySourceWhitelist,'COMPANY_ASSET_LIBRARY_REGISTERED_FILES_ONLY');
+  assert.equal(binding.application.existingSystemRequiresAppliedBinding,true);
+  assert.equal(binding.application.primitivePlainDefaultUiOrDefaultMaterialSubstitutionCannotPass,true);
+  assert.equal(binding.application.reuseAndCompositionBeforeNewAuthoring,true);
+  assert.equal(binding.existingGameConversion.existingAndFutureGamesCovered,true);
 });
 
 // [재사용 → 소폭 재질 보정 → 자산화] 회사 원본을 별도 파생으로 연결하되 실물·엔진 증거는 엄격히 분리한다.
