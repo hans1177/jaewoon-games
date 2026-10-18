@@ -1,0 +1,1090 @@
+// 파일명: assets/vibe-continuous-queue.js
+// 역할: Vibe2 작업을 DAG 의존성 + shard + 책임 파일 충돌 기반 계층형 병렬 큐로 관리한다.
+// 원칙: 사용자 지시 우선, 출시확정 > 개발확정, 같은 게임도 비충돌 책임 파일은 최대 병렬, 동일 책임 파일 동시 쓰기만 직렬화, source-root/game-wide 락 금지, 유료 자원 금지.
+
+const clean = (value) => String(value ?? '').trim();
+const freeze = (value) => Object.freeze(value);
+const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
+const freezeList = (values = []) => freeze(unique(values));
+const CANONICAL_POLICY_EVIDENCE='central-policy:company-learning/platform-release-roadmap.json';
+const LEGACY_POLICY_EVIDENCE='central-policy:COMPANY_FLOW.md';
+function normalizeEvidence(values=[]){
+  const rows=unique(values);
+  const hadLegacy=rows.includes(LEGACY_POLICY_EVIDENCE);
+  const filtered=rows.filter(value=>value!==LEGACY_POLICY_EVIDENCE);
+  if(hadLegacy&&!filtered.includes(CANONICAL_POLICY_EVIDENCE))filtered.unshift(CANONICAL_POLICY_EVIDENCE);
+  // 반복된 비권위 진단만 최초·최신으로 축약한다. 검증·학습·배포 증거는 보존한다.
+  const shadowPrefixes=['neural-work-graph-shadow:','neural-event-shadow:','neural-shadow-feedback:'];
+  const first=new Map(),last=new Map();
+  const keys=filtered.map((value,index)=>{
+    let key=shadowPrefixes.find(item=>value.startsWith(item))||null;
+    const prefix=['neural-root-cause:','neural-atomic-transaction:'].find(item=>value.startsWith(item));
+    if(prefix){
+      try{
+        const payload=JSON.parse(decodeURIComponent(value.slice(prefix.length)));
+        const unresolved=prefix==='neural-root-cause:'
+          ?payload.version===2&&payload.state==='UNRESOLVED'
+            &&['causalRepairVerified','independentConfirmation','responsibleSystemVerified','rootCauseVerified','learningEligible','actionFiringAllowed','phase2AuthorityEligible'].every(field=>payload[field]===false)
+          :payload.version===1&&payload.feedback==='UNKNOWN'&&payload.critic==='UNRESOLVED'&&payload.rootCause==='UNRESOLVED'&&payload.route==='REQUEST_EVIDENCE';
+        if(unresolved&&typeof payload.sampleId==='string'&&payload.sampleId){
+          const {sampleId,...diagnosis}=payload;
+          key=prefix+JSON.stringify(diagnosis);
+        }
+      }catch{/* 알 수 없거나 손상된 증거는 축약하지 않는다. */}
+    }
+    if(key){if(!first.has(key))first.set(key,index);last.set(key,index);}
+    return key;
+  });
+  return filtered.filter((value,index)=>!keys[index]||index===first.get(keys[index])||index===last.get(keys[index]));
+}
+const clampInt = (value, min = 0, max = Number.MAX_SAFE_INTEGER) => Math.max(min, Math.min(max, Math.floor(Number(value) || 0)));
+const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
+
+export const VIBE_QUEUE_STATUSES = freezeList(['queued', 'running', 'blocked', 'verified', 'failed', 'cancelled']);
+export const VIBE_QUEUE_PRIORITIES = freezeList(['owner-immediate', 'critical', 'high', 'normal', 'low']);
+export const VIBE_RELEASE_STATES = freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']);
+export const DEFAULT_MAX_CONCURRENT_TASKS = Number.MAX_SAFE_INTEGER;
+export const EXTERNAL_MATRIX_BATCH_MAX = 256;
+
+const PRIORITY_SCORE = freeze({ 'owner-immediate': 100, critical: 80, high: 60, normal: 40, low: 20 });
+const RELEASE_STATE_SCORE = freeze({ 'release-confirmed': 400, 'development-confirmed': 300, reviewing: 200, other: 100 });
+const BASE_SHARD_SLOTS = freeze({ unity: 5, web: 11, verification: 7, support: 7 });
+function normalizeConcurrencyLimit(value, fallback = DEFAULT_MAX_CONCURRENT_TASKS) {
+  const raw = Number(value);
+  if (!Number.isFinite(raw) || raw <= 0) return fallback;
+  return Math.max(1, Math.floor(raw));
+}
+
+const UNLIMITED_RETRY_POLICY='UNLIMITED_CAUSAL_REPAIR';
+function unlimitedRetryEligible(input = {}) {
+  const explicit=clean(input.retryPolicy).toUpperCase();
+  if(explicit===UNLIMITED_RETRY_POLICY)return true;
+  if(explicit==='BOUNDED')return false;
+  const department=clean(input.department).toLowerCase();
+  const type=clean(input.type||'implementation').toLowerCase();
+  return department==='development'
+    &&type==='implementation'
+    &&input.requiresOwnerDecision!==true
+    &&input.protectedChange!==true
+    &&input.paidResourceRequired!==true;
+}
+function retryLimitAllows(task={},nextRetries=0){
+  if(clean(task.retryPolicy).toUpperCase()===UNLIMITED_RETRY_POLICY)return true;
+  const limit=Number(task.maxRetries);
+  return Number.isFinite(limit)&&nextRetries<=limit;
+}
+
+const VIBE_EXECUTION_LANES = Object.freeze(['GAME_PRIMARY','ASSET_DEVELOPMENT','RECOVERY_FAST','CONTROL_FAST','LEARNING_IDLE','RELEASE_WAIT']);
+function inferExecutionLane(input = {}) {
+  const status=clean(input.status).toLowerCase();
+  const blocker=clean(input.blocker);
+  const department=clean(input.department).toLowerCase();
+  const type=clean(input.type||'implementation').toLowerCase();
+  const evidence=(input.evidence||[]).map(clean);
+  if(status==='running'&&/candidate-awaiting-runtime-evidence|candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(blocker))return 'RELEASE_WAIT';
+  if(evidence.includes('learning-practice-only')||department==='learning'||(department==='development'&&type==='research'))return 'LEARNING_IDLE';
+  if(input.assetProductionLane===true||evidence.includes('asset-production-parallel:v1'))return 'ASSET_DEVELOPMENT';
+  if(department==='development'&&type==='implementation')return 'GAME_PRIMARY';
+  if(input.systemSteward===true||clean(input.executionLane).toUpperCase()==='RECOVERY_FAST'||evidence.some(value=>/^recovery-fast:|^recovery:|^repair-retry:/.test(value)))return 'RECOVERY_FAST';
+  if(department==='system-supervision'||department==='system-ai'||['inspect','research','qa'].includes(type))return 'CONTROL_FAST';
+  const explicit=clean(input.executionLane).toUpperCase();
+  return VIBE_EXECUTION_LANES.includes(explicit)?explicit:'CONTROL_FAST';
+}
+function normalizeReleaseState(value) {
+  const state = clean(value).toLowerCase();
+  return VIBE_RELEASE_STATES.includes(state) ? state : 'other';
+}
+function inferShard(input = {}) {
+  const explicit = clean(input.shard).toLowerCase();
+  if (explicit) return explicit;
+  const type = clean(input.type).toLowerCase();
+  const department = clean(input.department).toLowerCase();
+  const target = clean(input.target).toLowerCase();
+  if (['inspect', 'research', 'qa'].includes(type) || department === 'qa') return 'verification';
+  if (target === 'unity') return 'unity';
+  if (target === 'web') return 'web';
+  return 'support';
+}
+function inferSourceRoot(input = {}) {
+  const explicit = posix(input.sourceRoot);
+  const gameId = clean(input.gameId);
+  const target = clean(input.target).toLowerCase();
+  // Migrate legacy Roblox queue roots so full repository paths use the same file lock.
+  if (target === 'roblox' && gameId && explicit === `roblox:${gameId}`) return `roblox-games/${gameId}`;
+  if (explicit) return explicit;
+  if (!gameId || !target) return null;
+  if (target === 'roblox') return `roblox-games/${gameId}`;
+  if (target === 'web') return `web-games/${gameId}`;
+  if (target === 'unity') return `unity-games/${gameId}`;
+  if (target === 'unreal') return `unreal-games/${gameId}`;
+  if (target === 'godot') return `godot-games/${gameId}`;
+  return `${target}:${gameId}`;
+}
+function normalizeStudioQualityEvolution(input=null){
+  if(!input||typeof input!=='object')return null;
+  const sourceConnected=input.requiredConnectedImprovements&&typeof input.requiredConnectedImprovements==='object'
+    ?input.requiredConnectedImprovements:{};
+  const rawMin=Number(sourceConnected.min);
+  const rawMax=sourceConnected.max;
+  const rawStrictScore=input.strictDesignScore;
+  const connected=freeze({
+    min:Number.isFinite(rawMin)?Math.max(0,Math.floor(rawMin)):0,
+    max:rawMax===null||rawMax===undefined||clean(rawMax)===''?null:(Number.isFinite(Number(rawMax))?Math.max(0,Math.floor(Number(rawMax))):null)
+  });
+  const approved=input.approvedDesignElements&&typeof input.approvedDesignElements==='object'&&!Array.isArray(input.approvedDesignElements)
+    ?freeze({
+      ...input.approvedDesignElements,
+      coreLoop:freezeList(input.approvedDesignElements.coreLoop||[]),
+      signatureSystems:freeze((Array.isArray(input.approvedDesignElements.signatureSystems)?input.approvedDesignElements.signatureSystems:[]).map(row=>freeze({...row})))
+    })
+    :null;
+  return freeze({
+    version:clampInt(input.version||1,1,1000),
+    cycle:clampInt(input.cycle||1,1,1000000),
+    phase:clean(input.phase).toUpperCase()||'BUILD_UP',
+    focusPillar:clean(input.focusPillar).toUpperCase()||'STABILITY',
+    baselineId:clean(input.baselineId)||null,
+    baselineSource:clean(input.baselineSource).toUpperCase()||null,
+    explicitGap:clean(input.explicitGap)||null,
+    designSource:posix(input.designSource)||null,
+    designGrounded:input.designGrounded===true,
+    designVerified:input.designVerified===true,
+    designContextAvailable:input.designContextAvailable===true,
+    strictDesignScore:rawStrictScore===null||rawStrictScore===undefined||clean(rawStrictScore)===''?null:(Number.isFinite(Number(rawStrictScore))?Number(rawStrictScore):null),
+    approvedDesignElements:approved,
+    designIsImplementationCeiling:input.designIsImplementationCeiling===true,
+    requiredConnectedImprovements:connected,
+    realSourceDeltaRequired:input.realSourceDeltaRequired!==false,
+    gameplaySourceDeltaRequired:input.gameplaySourceDeltaRequired===true,
+    visibleRenderDeltaRequired:input.visibleRenderDeltaRequired===true,
+    protectedRegressionForbidden:input.protectedRegressionForbidden!==false,
+    nextCycleRequired:input.nextCycleRequired!==false
+  });
+}
+function normalizePackageContext(input = {}) {
+  const source=input&&typeof input==='object'?input:{};
+  if(!clean(source.explorationMode)&&!clean(source.sourceRoot)&&!(source.responsibleFiles||[]).length)return null;
+  return freeze({
+    explorationMode:clean(source.explorationMode)||'dedicated-exploration-worker-handoff',
+    explorationRequired:source.explorationRequired!==false,
+    sharedPreparation:source.sharedPreparation!==false,
+    sourceRoot:posix(source.sourceRoot)||null,
+    responsibleFiles:freezeList(source.responsibleFiles||[]),
+    diagnosticEvidence:freezeList(source.diagnosticEvidence||[]),
+    roles:freeze({...((source.roles&&typeof source.roles==='object')?source.roles:{})}),
+    studioQualityEvolution:normalizeStudioQualityEvolution(source.studioQualityEvolution)
+  });
+}
+function normalizeCompanyContext(input = {}) {
+  const source = input && typeof input === 'object' ? input : {};
+  const hasContext = Boolean(
+    clean(source.stageId) || clean(source.role) || clean(source.artbookRef) || clean(source.assignmentAuthority) ||
+    source.artbookLocked === true || source.reviewRequired === true || source.artbookPostprocessComplete === true || Number(source.artbookCutCount) > 0
+  );
+  if (!hasContext) return null;
+  return freeze({
+    stageId: clean(source.stageId) || null,
+    role: clean(source.role) || null,
+    assignmentAuthority: clean(source.assignmentAuthority) || null,
+    sourceRef: clean(source.sourceRef) || null,
+    artbookLocked: Boolean(source.artbookLocked),
+    artbookRef: clean(source.artbookRef) || null,
+    artbookStatus: clean(source.artbookStatus) || null,
+    artbookCutCount: clampInt(source.artbookCutCount),
+    artbookPostprocessComplete: Boolean(source.artbookPostprocessComplete),
+    reviewRequired: source.reviewRequired !== false
+  });
+}
+function supervisionEvidenceRequired(input={}){
+  return (input?.evidence||[]).map(clean).includes('supervised-web-build:required');
+}
+function defaultSupervisionContract(){
+  return freeze({
+    version:1,
+    mode:'ASSISTANT_SUPERVISED_VIBE_COAUTHORING',
+    required:true,
+    status:'REVIEW_REQUIRED',
+    candidateGenerationAllowed:true,
+    automaticPromotionAllowed:false,
+    approvalField:'supervisionApproved',
+    stages:freezeList(['SOURCE_AND_DESIGN_READ','GAMEPLAY_LOOP_DECOMPOSITION','SAVE_INPUT_CORE_LOOP_INVARIANT_LOCK','VIBE_IMPLEMENTATION_CANDIDATE','SUPERVISOR_DIFF_AND_PLAYABILITY_REVIEW','MOBILE_AND_RUNTIME_QA','SUPERVISED_PROMOTION']),
+    protectedSemantics:freezeList(['GAME_IDENTITY','SAVE_KEY_AND_SAVE_MEANING','CORE_LOOP','PROGRESSION','MOBILE_INPUT','EXISTING_VALID_FEATURES']),
+    hardReject:freezeList(['PLACEHOLDER_SOURCE','FAKE_GAMEPLAY','VALIDATION_ONLY_PATCH','UNRELATED_FULL_REWRITE','SAVE_RESET_WITHOUT_MIGRATION','BUTTON_OR_LABEL_ONLY_PASS_CHEAT','BROKEN_MOBILE_INPUT'])
+  });
+}
+function normalizeSupervisionContract(input=null){
+  if(!input||typeof input!=='object')return null;
+  return freeze({
+    version:clampInt(input.version||1,1,1000),
+    mode:clean(input.mode)||'ASSISTANT_SUPERVISED_VIBE_COAUTHORING',
+    required:input.required===true,
+    status:clean(input.status)||'REVIEW_REQUIRED',
+    candidateGenerationAllowed:input.candidateGenerationAllowed!==false,
+    automaticPromotionAllowed:input.automaticPromotionAllowed===true,
+    approvalField:clean(input.approvalField)||'supervisionApproved',
+    stages:freezeList(input.stages||[]),
+    protectedSemantics:freezeList(input.protectedSemantics||[]),
+    hardReject:freezeList(input.hardReject||[])
+  });
+}
+function normalizeSupervisionReview(input=null){
+  if(!input||typeof input!=='object')return null;
+  return freeze({
+    verified:input.verified===true,
+    decision:clean(input.decision).toUpperCase()||null,
+    rationale:clean(input.rationale||input.reason)||null,
+    problem:clean(input.problem)||null,
+    evidence:freezeList(input.evidence||[]),
+    reusablePatterns:freezeList(input.reusablePatterns||[]),
+    avoidPatterns:freezeList(input.avoidPatterns||[]),
+    qa:freezeList(input.qa||[]),
+    build:clean(input.build)||null,
+    candidateBranch:clean(input.candidateBranch)||null
+  });
+}
+function normalizeNeuronResults(input = []) {
+  const rows = Array.isArray(input) ? input : [];
+  return freeze(rows.slice(0, 5).map((row) => {
+    try { return freeze(JSON.parse(JSON.stringify(row && typeof row === 'object' ? row : {}))); }
+    catch { return freeze({}); }
+  }));
+}
+function normalizeBuildUpDirective(input=null){
+  if(!input||typeof input!=='object'||Array.isArray(input))return null;
+  if(!clean(input.directiveId)||!clean(input.gameId))return null;
+  try{return freeze(JSON.parse(JSON.stringify(input)));}
+  catch{return null;}
+}
+function normalizeAssetRequirements(input=[]){
+  if(!Array.isArray(input))return freeze([]);
+  const rows=[];
+  for(const row of input){
+    if(!row||typeof row!=='object'||Array.isArray(row))continue;
+    const family=clean(row.family).toUpperCase();
+    if(!family)continue;
+    rows.push(freeze({
+      family,
+      subfamily:clean(row.subfamily).toUpperCase(),
+      required:row.required!==false,
+      priority:clean(row.priority).toUpperCase()||null,
+      flowRoles:freezeList(row.flowRoles||[]),
+      systemRoles:freezeList(row.systemRoles||[]),
+      phases:freezeList(row.phases||[]),
+      reason:clean(row.reason).toUpperCase()||null,
+      resolution:clean(row.resolution)||'LATEST_COMPATIBLE_INTERNAL_ASSET_AT_EXECUTION_TIME',
+      libraryEligibility:clean(row.libraryEligibility)||'CROSS_GENRE_COMPATIBLE_ASSETS',
+      genreRestriction:row.genreRestriction===true,
+      crossGenreReuseAllowed:row.crossGenreReuseAllowed!==false,
+      genreUse:clean(row.genreUse)||'PREFERENCE_ONLY_NOT_ELIGIBILITY_GATE',
+      allowedReuseModes:freezeList(row.allowedReuseModes||[]),
+      assetIdPinned:row.assetIdPinned===true,
+      gameplayAuthority:row.gameplayAuthority===true,
+      balanceAuthority:row.balanceAuthority===true,
+      progressionAuthority:row.progressionAuthority===true,
+      saveAuthority:row.saveAuthority===true,
+      networkingAuthority:row.networkingAuthority===true
+    }));
+  }
+  return freeze(rows);
+}
+function normalizeSourceContract(input=null){
+  if(!input||typeof input!=='object'||Array.isArray(input))return null;
+  try{return freeze(JSON.parse(JSON.stringify(input)));}
+  catch{return null;}
+}
+function normalizeTask(input = {}, index = 0) {
+  const rawStatus=clean(input.status).toLowerCase();
+  const status = rawStatus==='done' ? 'verified' : VIBE_QUEUE_STATUSES.includes(rawStatus) ? rawStatus : 'queued';
+  const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
+  const supervisionContract = normalizeSupervisionContract(input.supervisionContract) || (supervisionEvidenceRequired(input)?defaultSupervisionContract():null);
+  const supervised = supervisionContract?.required===true;
+  const unlimitedRetry=unlimitedRetryEligible(input);
+  const retryPolicy=unlimitedRetry?UNLIMITED_RETRY_POLICY:(clean(input.retryPolicy).toUpperCase()||'BOUNDED');
+  const inputEvidence=normalizeEvidence(input.evidence||[]);
+  const atomicPresentation=Boolean(input.motionRepairWorkUnit)||/\[PRESENTATION_PASS:[A-Z_]+\]|\[WEATHER_PRESENTATION\]/i.test(clean(input.goal))
+    ||inputEvidence.some(value=>/^presentation-pass:|^weather-presentation:v1$|^asset-production-parallel:v1$/i.test(clean(value)));
+  const normalizedEvidence=atomicPresentation
+    ?[...inputEvidence,...(input.motionRepairWorkUnit?['single-object-motion-repair:v1','asset-production-parallel:v1']:[]),'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required']
+    :inputEvidence;
+  // 검증 전용 후보 식별자는 큐 재정규화 뒤에도 보존한다. 구형 저장 누락은 대기 증거로만 복구한다.
+  let runtimeCandidate=input.runtimeEvidenceCandidate;
+  if(!runtimeCandidate&&clean(input.target).toLowerCase()==='roblox'
+    &&clean(input.blocker)==='candidate-awaiting-runtime-evidence'
+    &&clean(input.lastOutcome)==='FAN_IN_RUNTIME_EVIDENCE_REQUIRED'
+    &&inputEvidence.includes('fan-in-runtime-evidence-only:REQUIRED')){
+    const branchIndex=inputEvidence.findLastIndex(value=>/^vibe2\/candidate\//.test(value));
+    const sha=branchIndex>=0?inputEvidence.slice(branchIndex+1).find(value=>/^candidate-sha:[0-9a-f]{40}$/.test(value)):null;
+    if(sha)runtimeCandidate={taskId:input.id,gameId:input.gameId,target:'roblox',candidateBranch:inputEvidence[branchIndex],candidateSha:sha.slice(14),evidenceOnly:true};
+  }
+  const runtimeEvidenceCandidate=runtimeCandidate?.evidenceOnly===true
+    &&clean(runtimeCandidate.taskId)===clean(input.id)&&clean(runtimeCandidate.gameId)===clean(input.gameId)
+    &&clean(input.target).toLowerCase()==='roblox'&&clean(runtimeCandidate.target)==='roblox'
+    &&/^vibe2\/candidate\/[A-Za-z0-9._/-]+$/.test(clean(runtimeCandidate.candidateBranch))
+    &&/^[0-9a-f]{40}$/.test(clean(runtimeCandidate.candidateSha))
+    ?freeze({taskId:clean(input.id),gameId:clean(input.gameId),target:'roblox',
+      candidateBranch:clean(runtimeCandidate.candidateBranch),candidateSha:clean(runtimeCandidate.candidateSha),evidenceOnly:true,
+      ...(runtimeCandidate.runId?{runId:clean(runtimeCandidate.runId),
+        // 정적 검수 결과를 보존하되 실제 실행 성공으로 승격하지 않는다.
+        verified:runtimeCandidate.validationMode!=='STATIC'&&runtimeCandidate.verified===true,
+        ...(runtimeCandidate.validationMode==='STATIC'?{validationMode:'STATIC',staticVerified:runtimeCandidate.staticVerified===true}:{}),
+        reviewStillRequired:true,blockedReasons:freezeList(runtimeCandidate.blockedReasons||[])}:{})})
+    :null;
+  const task = {
+    id: clean(input.id) || `task-${index + 1}`,
+    gameId: clean(input.gameId) || null,
+    target: clean(input.target) || 'auto',
+    unityWebDevelopment: input.unityWebDevelopment === true || normalizedEvidence.includes('unity-web-first-stage'),
+    department: clean(input.department) || null,
+    type: clean(input.type) || 'implementation',
+    // 설계 변경 의도/범위는 기존 큐 정규화와 예약을 지나도 보존해야 원래 디자이너로 자동 인계된다.
+    // 디자인 범위만 전달하며 승인·실제 설계 작성·게임 소스 변경 권한을 부여하지 않는다.
+    designChange: input.designChange===true,
+    designScope: clean(input.designScope) || null,
+    proposedDesignChanges: freezeList(Array.isArray(input.proposedDesignChanges)
+      ? input.proposedDesignChanges.map(value=>typeof value==='string'?clean(value):clean(value?.path||value?.field||value?.scope)).filter(Boolean)
+      : []),
+    designFields: freezeList(Array.isArray(input.designFields)
+      ? input.designFields.map(value=>typeof value==='string'?clean(value):clean(value?.path||value?.field||value?.scope)).filter(Boolean)
+      : []),
+    assetProductionLane: input.assetProductionLane===true || normalizedEvidence.includes('asset-production-parallel:v1'),
+    presentationPass: clean(input.presentationPass).toUpperCase() || null,
+    graphicsReplacementContract: normalizeSourceContract(input.graphicsReplacementContract),
+    motionRepairWorkUnit: normalizeSourceContract(input.motionRepairWorkUnit),
+    executionLane: inferExecutionLane({...input,evidence:normalizedEvidence}),
+    goal: clean(input.goal),
+    responsibleFiles: freezeList(input.responsibleFiles || []),
+    retainedResponsibleFileLocks: freezeList(input.retainedResponsibleFileLocks || []),
+    dependencies: freezeList(input.dependencies || []),
+    priority,
+    portfolioValueScore: clampInt(input.portfolioValueScore || 0, 0, 100),
+    ownerDevelopmentHold: input.ownerDevelopmentHold === true,
+    releaseState: normalizeReleaseState(input.releaseState || input.homepageCategory),
+    status,
+    retries: clampInt(input.retries),
+    retryPolicy,
+    maxRetries: unlimitedRetry ? null : Math.max(0, clampInt(input.maxRetries ?? 2)),
+    ownerDirective: Boolean(input.ownerDirective),
+    requiresOwnerDecision: Boolean(input.requiresOwnerDecision),
+    protectedChange: Boolean(input.protectedChange),
+    paidResourceRequired: Boolean(input.paidResourceRequired),
+    productionMode: supervised ? 'SUPERVISED_VIBE_COAUTHORING' : (clean(input.productionMode) || 'AUTONOMOUS_VIBE'),
+    supervisionApproved: supervised && input.supervisionApproved === true,
+    supervisionContract,
+    supervisionReview: normalizeSupervisionReview(input.supervisionReview),
+    blocker: clean(input.blocker) || null,
+    evidence: freezeList(normalizedEvidence),
+    lastOutcome: clean(input.lastOutcome) || null,
+    reservationId: clean(input.reservationId) || null,
+    reservationRunId: clean(input.reservationRunId) || null,
+    reservationRunAttempt: clampInt(input.reservationRunAttempt || 0, 0, 1000000),
+    reservedAt: clean(input.reservedAt) || null,
+    neuronExpectedVariants: clampInt(input.neuronExpectedVariants || 0, 0, 5),
+    neuronResults: normalizeNeuronResults(input.neuronResults),
+    runtimeEvidenceCandidate,
+    buildUpDirective: normalizeBuildUpDirective(input.buildUpDirective),
+    assetRequirements: normalizeAssetRequirements(input.assetRequirements),
+    buildUpDirectiveId: clean(input.buildUpDirectiveId||input.buildUpDirective?.directiveId) || null,
+    buildUpGeneration: clampInt(input.buildUpGeneration??input.buildUpDirective?.generation??0,0,1000000),
+    buildUpGoal: clean(input.buildUpGoal||input.buildUpDirective?.thisLoopPrimaryGoal) || null,
+    buildUpSourceTree: clean(input.buildUpSourceTree||input.buildUpDirective?.sourceTreeFingerprint) || null,
+    buildUpStatus: clean(input.buildUpStatus) || (clean(input.buildUpDirective?.directiveId)?'DIRECTIVE_BOUND':null),
+    previousGoal: clean(input.previousGoal||input.buildUpDirective?.previousVersionDelta?.previousGoal) || null,
+    lastAchievedGoal: clean(input.lastAchievedGoal) || null,
+    developmentDepth: clampInt(input.developmentDepth??input.buildUpDirective?.developmentDepth??0,0,1000000),
+    escalationStage: clean(input.escalationStage||input.buildUpDirective?.escalationStage) || null,
+    buildUpNextAction: clean(input.buildUpNextAction||input.buildUpDirective?.nextActionDecision?.action) || null,
+    buildUpNextActionReason: clean(input.buildUpNextActionReason||input.buildUpDirective?.nextActionDecision?.reason) || null,
+    nextEscalationRequired: input.nextEscalationRequired === true,
+    companyContext: normalizeCompanyContext(input.companyContext),
+    sourceRoot: inferSourceRoot(input),
+    speculativeEligible: atomicPresentation || input.speculativeEligible === true,
+    estimatedRisk: atomicPresentation ? 'high' : (['low','medium','high'].includes(clean(input.estimatedRisk).toLowerCase()) ? clean(input.estimatedRisk).toLowerCase() : 'low'),
+    atomicNeuronMode: atomicPresentation ? 'PER_TASK_MICRO_FANIN' : (clean(input.atomicNeuronMode)||null),
+    atomicCompletionRequired: atomicPresentation || input.atomicCompletionRequired === true,
+    taskWorkUnits: clampInt(input.taskWorkUnits || input.workUnits || 0, 0, 8),
+    packageId: clean(input.packageId) || null,
+    packageGoal: clean(input.packageGoal) || null,
+    packageRole: clean(input.packageRole) || null,
+    packageOwner: clean(input.packageOwner) || null,
+    packageWorkUnits: clampInt(input.packageWorkUnits || 0, 0, 40),
+    packageSize: clampInt(input.packageSize || 0, 0, 8),
+    packageMinWorkUnits: clampInt(input.packageMinWorkUnits || 0, 0, 12),
+    packageLongWorkProtected: input.packageLongWorkProtected === true,
+    focusedCaretaker: input.focusedCaretaker === true,
+    caretakerStickyOwnership: input.caretakerStickyOwnership === true,
+    focusCompletionContract: normalizeSourceContract(input.focusCompletionContract),
+    postReleaseFocused: input.postReleaseFocused === true,
+    historicalDeploymentRecovery: input.historicalDeploymentRecovery === true,
+    focusCycle: clampInt(input.focusCycle || 0, 0, 1000000),
+    focusPolicyRef: clean(input.focusPolicyRef) || null,
+    recoveryGeneration: clampInt(input.recoveryGeneration || 0, 0, 1000000),
+    systemSteward: input.systemSteward === true,
+    ownerFocusedCaretaker: input.ownerFocusedCaretaker === true,
+    packageContext: normalizePackageContext(input.packageContext),
+    studioQualityEvolution:normalizeStudioQualityEvolution(input.studioQualityEvolution||input.packageContext?.studioQualityEvolution),
+    completionCriteria: freezeList(input.completionCriteria || [])
+  };
+  task.shard = inferShard(task);
+  return freeze(task);
+}
+
+export function createVibeContinuousQueue(seed = {}) {
+  if (seed?.queueStorage) throw new Error('VIBE2_QUEUE_STORAGE_RESTORE_REQUIRED');
+  const source = Array.isArray(seed) ? seed : Array.isArray(seed?.tasks) ? seed.tasks : [];
+  const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : normalizeConcurrencyLimit(seed?.maxConcurrentTasks, DEFAULT_MAX_CONCURRENT_TASKS);
+  const tasks = source.map(normalizeTask);
+  return freeze({
+    version: 5,
+    mode: 'hierarchical-dag-sharded-work-stealing-queue',
+    maxConcurrentTasks: configuredMax,
+    ownerDirectivePreemptsAutonomy: true,
+    releaseStatePriority: freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']),
+    scheduling: freeze({
+      dagDependencies: true,
+      hierarchicalParallelism: true,
+      shardAware: true,
+      workStealing: true,
+      sourceRootExclusive: false,
+      gameWideLockForbidden: true,
+      sameGameNonOverlappingPackagesParallel: true,
+      responsibleFileExclusive: true,
+      unityReleaseFocusSlots: null,
+      postReleaseFocusedSlots: null,
+      postReleaseFocusedSlotsScaleWithEligibleGames: true,
+      postReleaseCaretakerMode: 'per-game-persistent',
+      systemStewardProtectedSlots: 1,
+      systemStewardSlotBorrowableWhenIdle: true,
+      longWorkProtectedSlots: 1,
+      roleSeparation: true,
+      baseShardSlots: BASE_SHARD_SLOTS,
+      dynamicBackpressure: true,
+      atomicNeuronCompletion: true,
+      speculativeParallelism: 'high-risk-opt-in-only',
+      workPackageAware: true,
+      longWorkPackagePriority: true,
+      minimumWorkloadGate: true
+    }),
+    defaultMaxRetries: null,
+    defaultRetryPolicy: UNLIMITED_RETRY_POLICY,
+    tasks: freeze(tasks)
+  });
+}
+
+function completedIds(queue) {
+  return new Set(queue.tasks.filter((task) => task.status === 'verified').map((task) => task.id));
+}
+function taskBlockedReasons(task, completed) {
+  const reasons = [];
+  if (!task.goal) reasons.push('goal-required');
+  if (task.ownerDevelopmentHold) reasons.push('owner-development-hold');
+  if (task.requiresOwnerDecision) reasons.push('owner-decision-required');
+  if (task.protectedChange) reasons.push('protected-change-requires-authorization');
+  if (task.paidResourceRequired) reasons.push('paid-resource-forbidden');
+  if (task.blocker && task.status !== 'running') reasons.push(`explicit-blocker:${task.blocker}`);
+  if (clean(task.retryPolicy).toUpperCase()!==UNLIMITED_RETRY_POLICY && Number.isFinite(Number(task.maxRetries)) && task.retries > Number(task.maxRetries)) reasons.push('retry-limit-exceeded');
+  for (const dependency of task.dependencies) if (!completed.has(dependency)) reasons.push(`dependency-not-complete:${dependency}`);
+  return freezeList(reasons);
+}
+function isGamePrimaryTask(task={}) {
+  return clean(task.executionLane).toUpperCase()==='GAME_PRIMARY'||(clean(task.department).toLowerCase()==='development'&&clean(task.type).toLowerCase()==='implementation'&&clean(task.executionLane)==='');
+}
+function scoreTask(task, index) {
+  const department=clean(task.department).toLowerCase();
+  const type=clean(task.type).toLowerCase();
+  const developmentImplementation=department==='development'&&!['inspect','research','qa'].includes(type);
+  const nonBlockingSupervisionResearch=department==='system-supervision'&&['inspect','research','qa'].includes(type);
+  return (task.ownerDirective ? 10000 : 0)
+    + (task.systemSteward ? 8000 : 0)
+    + (developmentImplementation ? 2000 : 0)
+    + (isPostReleaseFocused(task) ? 1200 : 0)
+    + (task.ownerFocusedCaretaker ? 900 : 0)
+    + (RELEASE_STATE_SCORE[task.releaseState] || 0)
+    + (PRIORITY_SCORE[task.priority] || 0)
+    + (clean(task.target).toLowerCase()==='roblox' ? Number(task.portfolioValueScore || 0) : 0)
+    + Math.min(6, Number(task.packageWorkUnits || task.taskWorkUnits || 0))
+    + (task.packageLongWorkProtected ? 3 : 0)
+    - (nonBlockingSupervisionResearch ? 1000 : 0)
+    - index / 1000;
+}
+function releasesResponsibleFileLocksForCausalRepair(task={}) {
+  return clean(task.status).toLowerCase()==='running'
+    &&/candidate-awaiting-runtime-evidence/i.test(clean(task.blocker))
+    &&clean(task.buildUpNextAction).toUpperCase()==='CAUSAL_REPAIR';
+}
+function releasesResponsibleFileLocksAfterWorkerSlot(task={}) {
+  return clean(task.status).toLowerCase()==='running'
+    &&/slot-released.*fan-in/i.test(clean(task.blocker));
+}
+function fileLocks(task) {
+  const root = posix(task.sourceRoot);
+  const current=(task.responsibleFiles || []).map(posix).filter(Boolean).map((file) => root && !file.startsWith(`${root}/`) ? `${root}/${file}` : file);
+  const retained=(task.retainedResponsibleFileLocks || []).map(posix).filter(Boolean);
+  if(releasesResponsibleFileLocksForCausalRepair(task))return new Set(retained);
+  if(releasesResponsibleFileLocksAfterWorkerSlot(task)){
+    const evidence=new Set((task.evidence||[]).map(clean).filter(Boolean));
+    const explicitRetained=evidence.has('worker-slot-explicit-retained-locks:v1');
+    const currentSet=new Set(current);
+    const legacyAutomaticRetained=!explicitRetained
+      &&retained.length>0
+      &&retained.length===currentSet.size
+      &&retained.every(file=>currentSet.has(file));
+    return new Set(legacyAutomaticRetained?[]:retained);
+  }
+  return new Set([...current,...retained]);
+}
+function lockConflict(a, b) {
+  const aFiles = fileLocks(a), bFiles = fileLocks(b);
+  if (!aFiles.size || !bFiles.size) return null;
+  for (const file of aFiles) if (bFiles.has(file)) return 'responsible-file-conflict';
+  return null;
+}
+function conflictDetails(task, active) {
+  for (const other of active) {
+    const reason = lockConflict(task, other);
+    if (reason) return {
+      reason,
+      taskId: clean(other?.id) || null,
+      executionLane: clean(other?.executionLane) || null,
+      blocker: clean(other?.blocker) || null
+    };
+  }
+  return null;
+}
+function conflictsWith(task, active) {
+  return conflictDetails(task, active)?.reason || null;
+}
+function isAwaitingQaTask(task) {
+  return task?.status === 'running' && /candidate-awaiting-runtime-evidence|awaiting.*qa|qa.*awaiting|candidate-awaiting-supervised-review|awaiting.*supervised-review/i.test(clean(task?.blocker));
+}
+function isReleasedWorkerSlotTask(task) {
+  return task?.status === 'running' && /slot-released.*fan-in/i.test(clean(task?.blocker));
+}
+function isExternalQuotaWaitingTask(task) {
+  return task?.status === 'running' && /WAITING_FOR_GEMINI_QUOTA|gemini.*quota|external.*model.*quota/i.test(clean(task?.blocker));
+}
+function isExternalRuntimeWaitingTask(task) {
+  return task?.status === 'running' && /roblox.*(?:runner|studio).*(?:offline|deferred|wait)|WAITING_FOR_(?:ROBLOX_)?RUNTIME|external.*runner.*wait/i.test(clean(task?.blocker));
+}
+function releasesWorkerCapacity(task) {
+  return isAwaitingQaTask(task) || isReleasedWorkerSlotTask(task) || isExternalQuotaWaitingTask(task) || isExternalRuntimeWaitingTask(task);
+}
+function isProtectedLongOwner(task) {
+  return task?.packageLongWorkProtected === true && clean(task?.packageRole) === 'implementation-owner';
+}
+function isHistoricalPostReleaseMaintenance(task) {
+  return task?.historicalDeploymentRecovery === true
+    && clean(task?.releaseState).toLowerCase() === 'development-confirmed'
+    && task?.packageLongWorkProtected === true
+    && clean(task?.packageRole) === 'implementation-owner';
+}
+function isPostReleaseFocused(task) {
+  const releaseState=clean(task?.releaseState).toLowerCase();
+  return task?.postReleaseFocused === true
+    && clean(task?.target).toLowerCase() === 'roblox'
+    && (releaseState === 'release-confirmed' || isHistoricalPostReleaseMaintenance(task))
+    && !['inspect','research','qa'].includes(clean(task?.type).toLowerCase());
+}
+function dynamicConcurrency(queue, requested = null) {
+  const persistentMax = normalizeConcurrencyLimit(queue?.maxConcurrentTasks, DEFAULT_MAX_CONCURRENT_TASKS);
+  const requestedMax = requested === null || requested === undefined || clean(requested) === ''
+    ? persistentMax
+    : normalizeConcurrencyLimit(requested, persistentMax);
+  const hardMax = Math.min(persistentMax, requestedMax);
+  const running = queue.tasks.filter((task) => task.status === 'running');
+  const awaitingQa = running.filter(isAwaitingQaTask).length;
+  const retryPressure = queue.tasks.filter((task) =>
+    task.status === 'queued' &&
+    task.lastOutcome === 'FAIL' &&
+    task.retries > 0 &&
+    retryLimitAllows(task,task.retries)
+  ).length;
+  // Queue-local pressure is observed but must not collapse unrelated lanes.
+  // Persistent adaptive control reacts to verified runner/system pressure; waiting QA/quota/runtime work already releases capacity.
+  const limit = hardMax;
+  return freeze({
+    persistentMaxConcurrentTasks: persistentMax,
+    requestedMaxConcurrentTasks: requestedMax,
+    effectiveMaxConcurrentTasks: Math.max(1, limit),
+    awaitingQaCount: awaitingQa,
+    retryPressureCount: retryPressure
+  });
+}
+
+function normalizedExecutionLane(value='all'){
+  const lane=clean(value).toLowerCase().replaceAll('_','-');
+  return ['game-primary','asset-development','recovery-fast','control-fast','learning-idle','release-wait'].includes(lane)?lane:'all';
+}
+function taskMatchesExecutionLane(task={},lane='all'){
+  const requested=normalizedExecutionLane(lane);
+  if(requested==='all')return true;
+  return clean(task.executionLane).toLowerCase().replaceAll('_','-')===requested;
+}
+export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, lane = 'all', internalAssetOnly = false, assetDemandFirst = false, webGameFlowTarget = 0 } = {}) {
+  const queue = createVibeContinuousQueue(queueInput);
+  const laneMode=normalizedExecutionLane(lane);
+  const running = queue.tasks.filter((task) => task.status === 'running');
+  const capacityRunning = running.filter((task) => !releasesWorkerCapacity(task) && taskMatchesExecutionLane(task,laneMode));
+  // 학습은 게임 작업 유무와 관계없이 한 슬롯만 예약한다.
+  const concurrency = dynamicConcurrency(queue, laneMode === 'learning-idle' ? 1 : maxConcurrentTasks);
+  const effectiveMax = concurrency.effectiveMaxConcurrentTasks;
+  const freeSlots = Math.max(0, effectiveMax - capacityRunning.length);
+  const completed = completedIds(queue);
+  const blocked = [];
+  const laneDeferred = [];
+  const candidates = [];
+  queue.tasks.forEach((task, index) => {
+    if (task.status !== 'queued') return;
+    if(!taskMatchesExecutionLane(task,laneMode)||(laneMode==='asset-development'&&internalAssetOnly&&task.motionRepairWorkUnit?.scope!=='INTERNAL_ASSET_LIBRARY')){laneDeferred.push(task);return;}
+    const reasons = taskBlockedReasons(task, completed);
+    if (reasons.length) blocked.push(freeze({ task, reasons }));
+    else candidates.push(freeze({ task, score: scoreTask(task, index) }));
+  });
+  candidates.sort((a, b) => b.score - a.score || a.task.id.localeCompare(b.task.id));
+  const priorityLane=['game-primary','asset-development'].includes(laneMode);
+  // 자산 배정: 현재 게임 소스에 연결된 로블록스 출시·출시 준비 작업부터 처리한다.
+  const demandFirst=laneMode==='asset-development'&&assetDemandFirst;
+  const assetDemandRank=(task)=>{
+    if(!demandFirst)return 0;
+    const target=clean(task.target).toLowerCase(),gameId=clean(task.gameId);
+    const gameRoot=target+'-games/'+gameId;
+    const bound=Boolean(gameId)&&(clean(task.sourceRoot)===gameRoot
+      ||(task.responsibleFiles||[]).some(file=>clean(file).startsWith(gameRoot+'/'))
+      ||(task.evidence||[]).includes('asset-current-consumer:'+gameId));
+    if(!bound)return 0;
+    if(target==='roblox'&&task.releaseState==='release-confirmed')return 3;
+    if(target==='roblox'&&task.releaseState==='development-confirmed')return 2;
+    return 1;
+  };
+  // 대형 큐에서도 게임별 플랫폼과 실행 건수를 한 번만 계산한다.
+  const platformCache=new Map();
+  const platform=(task)=>{
+    if(platformCache.has(task))return platformCache.get(task);
+    const target=clean(task.target).toLowerCase();
+    const evidence=task.evidence||[];
+    const resolved=target==='unity'&&(task.unityWebDevelopment===true
+      ||evidence.includes('unity-web-first-stage')
+      ||evidence.includes('studio-quality-platform-lane:unity-web'))?'unity-web':target;
+    platformCache.set(task,resolved);
+    return resolved;
+  };
+  // Roblox:Unity:Web 비율과 Unity Web의 독립 플랫폼 몫을 그대로 유지한다.
+  const hasUnityWeb=[...capacityRunning,...candidates.map(row=>row.task)].some(task=>platform(task)==='unity-web');
+  const weights=hasUnityWeb?{roblox:6,'unity-web':6,unity:0,web:1}:{roblox:6,unity:2,web:1};
+  const service=Object.fromEntries(Object.keys(weights).map(name=>[name,0]));
+  for(const task of running){
+    if(!taskMatchesExecutionLane(task,laneMode))continue;
+    const name=platform(task);
+    if(Object.hasOwn(service,name))service[name]++;
+  }
+  const platformRows=Object.fromEntries(Object.keys(weights).map((name)=>[
+    name,candidates.filter((row)=>platform(row.task)===name)
+  ]));
+  const strictOwnerRank=(task)=>task.ownerDirective===true?1:0;
+  const strictReleaseRank=(task)=>RELEASE_STATE_SCORE[task.releaseState]||0;
+  const strictlyHigherPlatformPriority=(left,right)=>{
+    const demandDelta=assetDemandRank(left)-assetDemandRank(right);
+    if(demandDelta!==0)return demandDelta>0;
+    const ownerDelta=strictOwnerRank(left)-strictOwnerRank(right);
+    if(ownerDelta!==0)return ownerDelta>0;
+    return strictReleaseRank(left)>strictReleaseRank(right);
+  };
+  const weightedPlatformOrder=(rows,alreadySelected=[])=>{
+    // 기존 우선순위(자산 수요→소유자→출시 상태)와 비율·동점 규칙을 유지하면서
+    // 매 작업마다 전체 후보를 다시 정렬하던 제곱 시간 복잡도를 제거한다.
+    const tierBuckets=new Map();
+    for(const row of rows){
+      const demand=assetDemandRank(row.task);
+      const owner=strictOwnerRank(row.task);
+      const release=strictReleaseRank(row.task);
+      const key=demand+':'+owner+':'+release;
+      let tier=tierBuckets.get(key);
+      if(!tier){
+        tier={demand,owner,release,platforms:new Map()};
+        tierBuckets.set(key,tier);
+      }
+      const name=platform(row.task);
+      if(!tier.platforms.has(name))tier.platforms.set(name,[]);
+      tier.platforms.get(name).push(row);
+    }
+    const ordered=[];
+    const virtualService={...service};
+    for(const task of alreadySelected){
+      const name=platform(task);
+      if(weights[name])virtualService[name]=(virtualService[name]||0)+1;
+    }
+    const tiers=[...tierBuckets.values()].sort((a,b)=>
+      b.demand-a.demand||b.owner-a.owner||b.release-a.release);
+    for(const tier of tiers){
+      const groups=[...tier.platforms].map(([name,items])=>({
+        name,
+        rows:items.sort((a,b)=>b.score-a.score||a.task.id.localeCompare(b.task.id)),
+        cursor:0
+      }));
+      let left=groups.reduce((sum,group)=>sum+group.rows.length,0);
+      while(left>0){
+        let winner=null;
+        for(const group of groups){
+          const row=group.rows[group.cursor];
+          if(!row)continue;
+          const share=weights[group.name]?(virtualService[group.name]+1)/weights[group.name]:2;
+          if(!winner||share<winner.share
+            ||(share===winner.share&&(row.score>winner.row.score
+              ||(row.score===winner.row.score&&row.task.id.localeCompare(winner.row.task.id)<0)))){
+            winner={group,row,share};
+          }
+        }
+        if(!winner)break;
+        ordered.push(winner.row);
+        winner.group.cursor++;
+        left--;
+        if(weights[winner.group.name])
+          virtualService[winner.group.name]=(virtualService[winner.group.name]||0)+1;
+      }
+    }
+    return ordered;
+  };
+  const schedulingCandidates=priorityLane&&freeSlots>0?weightedPlatformOrder(candidates):candidates;
+  const robloxCandidateAvailable=priorityLane&&platformRows.roblox.length>0;
+  const robloxFirstDeferred=[];
+  const selected = [];
+  const deferredConflicts = [];
+  const active = [...running];
+  // 웹 상시 배정은 작업 수가 아니라 서로 다른 실제 게임 수를 센다.
+  // 실행 중인 작업을 취소하거나 같은 게임의 독립 파일 작업을 직렬화하지 않는다.
+  const webTarget=laneMode==='game-primary'?Math.max(0,Math.floor(Number(webGameFlowTarget)||0)):0;
+  const webGameId=task=>clean(task.gameId)||clean(task.sourceRoot)||clean(task.id);
+  const webPlatform=hasUnityWeb?'unity-web':'web';
+   const webGames=()=>new Set([...capacityRunning,...selected].filter(task=>platform(task)===webPlatform).map(webGameId));
+  // 같은 파일의 자산 작업이 이미 대기 중이면 일반 GAME_PRIMARY가 매 사이클 먼저 선점해서
+  // ASSET_DEVELOPMENT가 굶지 않게 한다. 실행 중 충돌 보호는 그대로 유지하고,
+  // owner/release-confirmed/post-release 긴급 작업은 기존 우선권을 보존한다.
+  const queuedAssetReservationClaims=laneMode==='game-primary'
+    ?queue.tasks.filter((task)=>
+      task.status==='queued'
+      &&taskMatchesExecutionLane(task,'asset-development')
+      &&(!internalAssetOnly||task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')
+      &&taskBlockedReasons(task,completed).length===0
+    )
+    :[];
+  const reservationConflictFor=(task)=>{
+    const activeConflict=conflictDetails(task,active);
+    if(activeConflict)return activeConflict;
+    if(webTarget&&webPlatform==='web'&&platform(task)==='web'&&!webGames().has(webGameId(task))&&webGames().size>=webTarget){
+      return {reason:'web-game-flow-target-full',taskId:null,executionLane:'GAME_PRIMARY',blocker:null};
+    }
+    if(laneMode!=='game-primary'
+      ||task.ownerDirective===true
+      ||clean(task.releaseState).toLowerCase()==='release-confirmed'
+      ||isPostReleaseFocused(task))return null;
+    for(const assetTask of queuedAssetReservationClaims){
+      if(!lockConflict(task,assetTask))continue;
+      return{
+        reason:'queued-asset-reservation-priority',
+        taskId:assetTask.id,
+        executionLane:'ASSET_DEVELOPMENT',
+        blocker:clean(assetTask.blocker)||null
+      };
+    }
+    return null;
+  };
+  const shardUse = Object.create(null);
+  for (const task of capacityRunning) shardUse[task.shard] = (shardUse[task.shard] || 0) + 1;
+
+  const focusedGameId=(task)=>clean(task?.gameId)||clean(task?.sourceRoot)||clean(task?.id);
+  const focusedRunning=capacityRunning.filter(isPostReleaseFocused);
+  const focusedCandidates=demandFirst?[]:schedulingCandidates.filter((row)=>isPostReleaseFocused(row.task));
+  const focusedGameIds=new Set(focusedRunning.map(focusedGameId).filter(Boolean));
+  const eligibleFocusedGameIds=new Set([...focusedGameIds,...focusedCandidates.map((row)=>focusedGameId(row.task)).filter(Boolean)]);
+  const postReleaseFocusedSlotLimit=effectiveMax;
+  const postReleaseFocusedTaskIds=[];
+  const focusedSlotAvailable=(_task)=>true;
+  const noteFocusedSelection=(task)=>{
+    if(!isPostReleaseFocused(task))return;
+    const gameId=focusedGameId(task);
+    if(gameId)focusedGameIds.add(gameId);
+    postReleaseFocusedTaskIds.push(task.id);
+  };
+
+  if(webTarget&&freeSlots>0){
+    for(const row of schedulingCandidates.filter(row=>platform(row.task)===webPlatform)){
+      if(selected.length>=freeSlots||webGames().size>=webTarget)break;
+      if(webGames().has(webGameId(row.task)))continue;
+      const conflict=reservationConflictFor(row.task);
+      if(conflict){deferredConflicts.push(freeze({task:row.task,reason:conflict.reason,conflictTaskId:conflict.taskId}));continue;}
+      selected.push(row.task);active.push(row.task);
+      shardUse[row.task.shard]=(shardUse[row.task.shard]||0)+1;
+      noteFocusedSelection(row.task);
+    }
+  }
+
+  if (freeSlots > 0) {
+    for (const focusedRow of focusedCandidates) {
+      if(selected.some(task=>task.id===focusedRow.task.id))continue;
+      if(priorityLane && selected.length>=Math.max(0,freeSlots-(platformRows.unity.length?1:0)-(platformRows.web.length?1:0)))break;
+      if(selected.length>=freeSlots||!focusedSlotAvailable(focusedRow.task))continue;
+      const conflict = reservationConflictFor(focusedRow.task);
+      if (conflict) {
+        if (!deferredConflicts.some((item) => item.task.id === focusedRow.task.id)) deferredConflicts.push(freeze({ task: focusedRow.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker }));
+        continue;
+      }
+      selected.push(focusedRow.task);
+      active.push(focusedRow.task);
+      shardUse[focusedRow.task.shard] = (shardUse[focusedRow.task.shard] || 0) + 1;
+      noteFocusedSelection(focusedRow.task);
+    }
+  }
+
+  const postReleaseFocusedSlotUsed=postReleaseFocusedTaskIds.length>0;
+  const postReleaseFocusedTaskId=postReleaseFocusedTaskIds[0]||null;
+
+  // Unity/Web 최소 슬롯은 보장하되 더 높은 owner/release 단계 작업을 밀어내지는 않는다.
+  if(priorityLane && !demandFirst && freeSlots>=3){
+    const selectedIds=()=>new Set(selected.map((task)=>task.id));
+    const floorCanUseSlot=(row)=>{
+      const used=selectedIds();
+      const higherPending=schedulingCandidates.filter((candidate)=>
+        !used.has(candidate.task.id)
+        &&candidate.task.id!==row.task.id
+        &&strictlyHigherPlatformPriority(candidate.task,row.task)
+      ).length;
+      return selected.length+higherPending<freeSlots;
+    };
+    for(const name of (hasUnityWeb?['unity-web']:['unity','web'])){
+      if(name===webPlatform&&webTarget)continue;
+      if(!platformRows[name].length || selected.some((task)=>platform(task)===name))continue;
+      for(const row of schedulingCandidates.filter((candidate)=>platform(candidate.task)===name)){
+        if(selected.length>=freeSlots)break;
+        if(!floorCanUseSlot(row))continue;
+        const conflict=reservationConflictFor(row.task);
+        if(conflict)continue;
+        selected.push(row.task);active.push(row.task);
+        shardUse[row.task.shard]=(shardUse[row.task.shard]||0)+1;
+        noteFocusedSelection(row.task);
+        break;
+      }
+    }
+  }
+
+  let longWorkProtectedSlotUsed = false;
+  let longWorkOwnerTaskId = null;
+  if (freeSlots > 0 && !demandFirst && !capacityRunning.some(isProtectedLongOwner)) {
+    for (const protectedRow of schedulingCandidates.filter((row) => isProtectedLongOwner(row.task))) {
+      if(selected.length>=freeSlots)break;
+      if(isPostReleaseFocused(protectedRow.task)&&!focusedSlotAvailable(protectedRow.task))continue;
+      const conflict = reservationConflictFor(protectedRow.task);
+      if (conflict) {
+        if (!deferredConflicts.some((item) => item.task.id === protectedRow.task.id)) deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker }));
+        continue;
+      }
+      selected.push(protectedRow.task);
+      active.push(protectedRow.task);
+      shardUse[protectedRow.task.shard] = (shardUse[protectedRow.task.shard] || 0) + 1;
+      noteFocusedSelection(protectedRow.task);
+      longWorkProtectedSlotUsed = true;
+      longWorkOwnerTaskId = protectedRow.task.id;
+      break;
+    }
+  }
+
+  const remainingCandidates=webTarget&&selected.length<freeSlots
+    ?weightedPlatformOrder(schedulingCandidates.filter(row=>!selected.some(task=>task.id===row.task.id)),selected)
+    :schedulingCandidates;
+  for (const row of remainingCandidates) {
+    if (selected.length >= freeSlots) break;
+    if (selected.some((task) => task.id === row.task.id)) continue;
+    if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
+    const baseSlots = BASE_SHARD_SLOTS[row.task.shard] || 1;
+    if (!demandFirst && (shardUse[row.task.shard] || 0) >= baseSlots) continue;
+    const conflict = reservationConflictFor(row.task);
+    if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker })); continue; }
+    selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
+  }
+  for (const row of remainingCandidates) {
+    if (selected.length >= freeSlots) break;
+    if (selected.some((task) => task.id === row.task.id)) continue;
+    if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
+    const conflict = reservationConflictFor(row.task);
+    if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker })); continue; }
+    selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
+  }
+
+  const queuedEligible = schedulingCandidates.length;
+  return freeze({
+    selected: freeze([...selected].sort((a,b)=>assetDemandRank(b)-assetDemandRank(a)||scoreTask(b,0)-scoreTask(a,0)||a.id.localeCompare(b.id))),
+    lane: laneMode,
+    laneDeferred: freeze([...laneDeferred,...robloxFirstDeferred]),
+    robloxFirstMode: robloxCandidateAvailable,
+    robloxFirstDeferred: freeze(robloxFirstDeferred),
+    webGameFlow:freeze({target:webTarget,activeGameIds:freeze([...webGames()]),shortfall:Math.max(0,webTarget-webGames().size),countsTasksAsGames:false}),
+    running: freeze(running),
+    capacityRunning: freeze(capacityRunning),
+    awaitingQa: freeze(running.filter(isAwaitingQaTask)),
+    quotaWaiting: freeze(running.filter(isExternalQuotaWaitingTask)),
+    externalRuntimeWaiting: freeze(running.filter(isExternalRuntimeWaitingTask)),
+    releasedWorkerSlots: freeze(running.filter(isReleasedWorkerSlotTask)),
+    hasEligibleWork: selected.length > 0,
+    blocked: freeze(blocked),
+    deferredConflicts: freeze(deferredConflicts),
+    continueRequired: selected.length > 0,
+    brainLive: true,
+    causalReplanRequired: selected.length===0&&freeSlots>0,
+    persistentMaxConcurrentTasks: concurrency.persistentMaxConcurrentTasks,
+    requestedMaxConcurrentTasks: concurrency.requestedMaxConcurrentTasks,
+    effectiveMaxConcurrentTasks: effectiveMax,
+    backpressure: freeze({
+      awaitingQaCount: concurrency.awaitingQaCount,
+      retryPressureCount: concurrency.retryPressureCount
+    }),
+    freeSlots,
+    postReleaseFocusedSlotUsed,
+    postReleaseFocusedTaskId,
+    postReleaseFocusedTaskIds: freeze([...postReleaseFocusedTaskIds]),
+    postReleaseFocusedSlotLimit,
+    longWorkProtectedSlotUsed,
+    longWorkOwnerTaskId,
+    workStealingUsed: selected.some((task) => (shardUse[task.shard] || 0) > (BASE_SHARD_SLOTS[task.shard] || 1)),
+    shardUse: freeze({ ...shardUse }),
+    stopReason: selected.length ? null : freeSlots === 0 ? 'PARALLEL_CAPACITY_FULL' : queuedEligible ? 'ONLY_CONFLICTING_WORK_AVAILABLE' : blocked.length ? 'NO_ELIGIBLE_UNBLOCKED_TASK' : 'AWAITING_CAUSAL_REPLAN_OR_EVENT'
+  });
+}
+
+export function selectNextVibeQueueTask(queueInput) {
+  const queue = createVibeContinuousQueue(queueInput);
+  const batch = selectVibeQueueBatch(queue, { maxConcurrentTasks: 1 });
+  const running = queue.tasks.filter((task) => task.status === 'running');
+  return freeze({
+    selected: batch.selected[0] || null,
+    runningTask: running[0] || null,
+    hasEligibleWork: Boolean(batch.selected[0]),
+    blocked: batch.blocked,
+    continueRequired: Boolean(batch.selected[0]),
+    brainLive: true,
+    causalReplanRequired: batch.causalReplanRequired===true,
+    stopReason: batch.stopReason,
+    runningCount: running.length,
+    capacityRunningCount: batch.capacityRunning.length,
+    awaitingQaCount: batch.awaitingQa.length
+  });
+}
+
+function reservationFields(reservation = {}) {
+  return {
+    reservationId: clean(reservation?.id || reservation?.reservationId) || null,
+    reservationRunId: clean(reservation?.runId || reservation?.reservationRunId) || null,
+    reservationRunAttempt: clampInt(reservation?.runAttempt || reservation?.reservationRunAttempt || 0, 0, 1000000),
+    reservedAt: clean(reservation?.reservedAt) || null
+  };
+}
+
+const CLEARED_RESERVATION = Object.freeze({
+  reservationId: null,
+  reservationRunId: null,
+  reservationRunAttempt: 0,
+  reservedAt: null
+});
+
+export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = null, reservation = {}, lane = 'all', internalAssetOnly = false, assetDemandFirst = false, webGameFlowTarget = 0 } = {}) {
+  const queue = createVibeContinuousQueue(queueInput);
+  const id = clean(taskId);
+  const existing = queue.tasks.find((task) => task.id === id);
+  if (existing?.status === 'running') return freeze({ started: true, task: existing, queue, resumed: true });
+  const batch = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
+  if (!batch.selected.some((task) => task.id === id)) return freeze({ started: false, reason: 'task-not-currently-eligible-or-conflicts', queue, selection: batch });
+  const reservationMeta = reservationFields(reservation);
+  const tasks = queue.tasks.map((task) => task.id === id ? freeze({ ...task, ...reservationMeta, status: 'running', blocker: null }) : task);
+  const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
+  return freeze({ started: true, task: nextQueue.tasks.find((task) => task.id === id), queue: nextQueue, resumed: false });
+}
+
+export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'all', internalAssetOnly = false, assetDemandFirst = false, webGameFlowTarget = 0 } = {}) {
+  const queue = createVibeContinuousQueue(queueInput);
+  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
+  if (!selection.selected.length) return freeze({ started: false, tasks: freeze([]), queue, selection });
+  const selectedOrder = selection.selected.map((task) => task.id);
+  const ids = new Set(selectedOrder);
+  const reservationMeta = reservationFields(reservation);
+  const tasks = queue.tasks.map((task) => ids.has(task.id) ? freeze({ ...task, ...reservationMeta, status: 'running', blocker: null }) : task);
+  const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
+  const nextById = new Map(nextQueue.tasks.map((task) => [task.id, task]));
+  const selectedTasks = selectedOrder.map((id) => nextById.get(id)).filter(Boolean);
+  return freeze({ started: true, tasks: freeze(selectedTasks), queue: nextQueue, selection });
+}
+
+export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS', evidence = [], blocker = '', retryable = true } = {}) {
+  const queue = createVibeContinuousQueue(queueInput);
+  const id = clean(taskId);
+  const normalizedOutcome = ['PASS', 'FAIL', 'BLOCKED', 'CANCELLED'].includes(clean(outcome).toUpperCase()) ? clean(outcome).toUpperCase() : 'FAIL';
+  let found = false;
+  const tasks = queue.tasks.map((task) => {
+    if (task.id !== id) return task;
+    found = true;
+    const mergedEvidence = freezeList([...(task.evidence || []), ...(evidence || [])]);
+    if (normalizedOutcome === 'PASS') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'verified', evidence: freezeList([...mergedEvidence,'signal-state:VERIFIED_CHECKPOINT','signal-continuity:NEXT_CAUSAL_INPUT']), lastOutcome: 'PASS', blocker: null });
+    if (normalizedOutcome === 'BLOCKED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'blocked', evidence: mergedEvidence, lastOutcome: 'BLOCKED', blocker: clean(blocker) || 'blocked' });
+    if (normalizedOutcome === 'CANCELLED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'cancelled', evidence: mergedEvidence, lastOutcome: 'CANCELLED', blocker: clean(blocker) || null });
+    const nextRetries = task.retries + 1;
+    const canRetry = Boolean(retryable && retryLimitAllows(task,nextRetries));
+    const failureSignature=clean(blocker)||'retryable-failure';
+    const failureEvidence=freezeList([...mergedEvidence,`retry-failure-signature:${failureSignature}`,canRetry?'retry-policy:UNLIMITED_OR_WITHIN_BOUND':'retry-policy:TERMINAL']);
+    return freeze({ ...task, ...CLEARED_RESERVATION, status: canRetry ? 'queued' : 'failed', retries: nextRetries, evidence: failureEvidence, lastOutcome: 'FAIL', blocker: canRetry ? null : (clean(blocker) || 'retry-limit-exceeded') });
+  });
+  const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
+  const completedIds=new Set(nextQueue.tasks.filter(task=>task.status==='verified').map(task=>task.id));
+  const dependencyReadyTaskIds=normalizedOutcome==='PASS'
+    ? freezeList(nextQueue.tasks
+      .filter(task=>task.status==='queued'&&(task.dependencies||[]).includes(id)&&(task.dependencies||[]).every(dep=>completedIds.has(dep)))
+      .map(task=>task.id))
+    : freeze([]);
+  const next = selectVibeQueueBatch(nextQueue);
+  return freeze({
+    updated: found,
+    outcome: normalizedOutcome,
+    queue: nextQueue,
+    next,
+    dependencyReadyTaskIds,
+    dependencyEventRequired:Boolean(found&&normalizedOutcome==='PASS'&&dependencyReadyTaskIds.length),
+    dispatchNext: next.continueRequired,
+    longRunningProcessRequired: false
+  });
+}
+
+export function summarizeVibeContinuousQueue(queueInput, { maxConcurrentTasks = null, lane = 'all', internalAssetOnly = false, assetDemandFirst = false, webGameFlowTarget = 0 } = {}) {
+  const queue = createVibeContinuousQueue(queueInput);
+  const counts = Object.fromEntries(VIBE_QUEUE_STATUSES.map((status) => [status, queue.tasks.filter((task) => task.status === status).length]));
+  const next = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
+  return freeze({
+    version: 5,
+    counts: freeze(counts),
+    nextTaskId: next.selected[0]?.id || null,
+    nextTaskIds: freezeList(next.selected.map((task) => task.id)),
+    runningTaskId: next.running[0]?.id || null,
+    runningTaskIds: freezeList(next.running.map((task) => task.id)),
+    capacityRunningTaskIds: freezeList(next.capacityRunning.map((task) => task.id)),
+    awaitingQaTaskIds: freezeList(next.awaitingQa.map((task) => task.id)),
+    quotaWaitingTaskIds: freezeList(next.quotaWaiting.map((task) => task.id)),
+    releasedWorkerSlotTaskIds: freezeList(next.releasedWorkerSlots.map((task) => task.id)),
+    nextReleaseState: next.selected[0]?.releaseState || null,
+    continueRequired: next.continueRequired,
+    brainLive: true,
+    causalReplanRequired: next.causalReplanRequired===true,
+    stopReason: next.stopReason,
+    executionLaneCounts: freeze(Object.fromEntries(VIBE_EXECUTION_LANES.map((lane)=>[lane,queue.tasks.filter((task)=>task.executionLane===lane&&['queued','running','blocked'].includes(task.status)).length]))),
+    ownerDirectiveWaiting: queue.tasks.some((task) => task.ownerDirective && ['queued', 'running', 'blocked'].includes(task.status)),
+    maxConcurrentTasks: queue.maxConcurrentTasks,
+    persistentMaxConcurrentTasks: next.persistentMaxConcurrentTasks,
+    requestedMaxConcurrentTasks: next.requestedMaxConcurrentTasks,
+    effectiveMaxConcurrentTasks: next.effectiveMaxConcurrentTasks,
+    backpressure: next.backpressure,
+    freeSlots: next.freeSlots,
+    postReleaseFocusedSlotUsed: next.postReleaseFocusedSlotUsed,
+    postReleaseFocusedTaskId: next.postReleaseFocusedTaskId,
+    longWorkProtectedSlotUsed: next.longWorkProtectedSlotUsed,
+    longWorkOwnerTaskId: next.longWorkOwnerTaskId,
+    shardUse: next.shardUse,
+    workStealingUsed: next.workStealingUsed
+  });
+}
+
+if (typeof window !== 'undefined') {
+  window.JaewoonVibeContinuousQueue = freeze({ createVibeContinuousQueue, selectNextVibeQueueTask, selectVibeQueueBatch, beginVibeQueueTask, beginVibeQueueBatch, finishVibeQueueTask, summarizeVibeContinuousQueue });
+}

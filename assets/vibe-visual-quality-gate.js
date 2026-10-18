@@ -1,0 +1,500 @@
+// Vibe2 mandatory visual quality + Web 2.5D gate
+// Web games are 2.5D by default: projected world coordinates, depth sorting, elevation/shadows and real coherent assets.
+const IMAGE_EXT=/\.(png|webp|jpg|jpeg|gif|svg)$/i;
+const VISUAL_HINT=/(player|character|hero|companion|npc|enemy|boss|monster|background|terrain|tile|tree|rock|plant|resource|building|house|door|chest|weapon|armor|item|projectile|effect|vfx|icon|ui)/i;
+const PLACEHOLDER_CODE=/(ctx\.(?:arc|fillRect|strokeRect|ellipse)\s*\(|[😀-🙏🌀-🫿])/u;
+const REAL_RENDER=/(drawImage\s*\(|<img\b|background(?:-image)?\s*:\s*url\(|Sprite2D|AnimatedSprite2D|TextureRect|TextureButton|texture\s*=)/i;
+const WEB_25D_PROJECTION=/(iso(?:metric)?|dimetric|project(?:World|Iso|25D|3D)|worldToScreen|tileToScreen|screenToWorld|perspective\s*\(|rotateX\s*\(|matrix3d\s*\()/i;
+const WEB_25D_DEPTH=/(depthSort|depth\s*[=:]|sort\s*\(\s*\([^)]*\)\s*=>[^\n]*(?:x\s*\+\s*y|screenY|depth|zIndex)|z-index|zIndex)/i;
+const WEB_25D_HEIGHT=/(elevation|heightScale|worldZ|\bz\s*[=:]|shadow(?:Offset|Scale)?|groundShadow|castShadow)/i;
+export const REQUIRED_VISUAL_TYPES=['character','enemy','boss','background','item','prop','effect','ui','animation'];
+export const GOLDEN_SCENE_ROLES=Object.freeze([
+  'PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP',
+  'PRIMARY_ENEMY_OR_CREATURE_CLOSEUP',
+  'CORE_GAMEPLAY_ACTION',
+  'WORLD_OR_REGION_WIDE',
+  'MOBILE_GAMEPLAY_HUD',
+]);
+export const HIGH_END_GOLDEN_SCENE_ROLES=Object.freeze([
+  ...GOLDEN_SCENE_ROLES,
+  'KEY_LANDMARK_OR_HUB',
+  'BOSS_OR_SIGNATURE_ENCOUNTER',
+]);
+const RUNTIME_CAPTURE_SOURCES=new Set(['runtime-capture','roblox-runtime-capture','internal-playtest-capture','golden-scene-capture']);
+const PRIMITIVE_PRESENTATIONS=new Set(['primitive','primitive-placeholder','part-placeholder','block-placeholder','ball-placeholder','cylinder-placeholder']);
+
+export function auditVibeGoldenSceneEvidence(evidence={}){
+  const captures=Array.isArray(evidence.captures)?evidence.captures:[];
+  const candidateRevision=String(evidence.candidateRevision||'').trim();
+  const byRole=new Map(captures.map(c=>[String(c?.role||'').trim().toUpperCase(),c]));
+  const missing=[],invalid=[];
+  for(const role of GOLDEN_SCENE_ROLES){
+    const capture=byRole.get(role);
+    if(!capture){missing.push(role);continue;}
+    const source=String(capture.source||'').trim().toLowerCase();
+    const artifact=String(capture.artifactId||capture.captureId||capture.path||'').trim();
+    const revision=String(capture.candidateRevision||'').trim();
+    const observed=capture.observed===true;
+    const reviewed=capture.reviewed===true;
+    const comparisonPass=capture.comparison?.pass===true;
+    if(!RUNTIME_CAPTURE_SOURCES.has(source)||!artifact||!revision||revision!==candidateRevision||!observed||!reviewed||!comparisonPass)invalid.push(role);
+  }
+  const markerOnly=captures.some(c=>c?.markerOnly===true||String(c?.source||'').toLowerCase()==='source-marker');
+  return Object.freeze({
+    version:1,
+    pass:missing.length===0&&invalid.length===0&&!markerOnly,
+    requiredRoles:GOLDEN_SCENE_ROLES,
+    captureCount:captures.length,
+    missing:Object.freeze(missing),
+    invalid:Object.freeze(invalid),
+    markerOnly,
+    candidateRevision:candidateRevision||null,
+    authority:'runtime-visual-evidence-audit'
+  });
+}
+
+
+export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
+  const before=evidence?.before&&typeof evidence.before==='object'?evidence.before:{};
+  const after=evidence?.after&&typeof evidence.after==='object'?evidence.after:{};
+  const comparison=evidence?.comparison&&typeof evidence.comparison==='object'?evidence.comparison:{};
+  const baselineRevision=String(evidence.baselineRevision||before.candidateRevision||before.revision||'').trim();
+  const candidateRevision=String(evidence.candidateRevision||after.candidateRevision||after.revision||'').trim();
+  const artifactOf=capture=>String(capture?.artifactId||capture?.captureId||capture?.path||'').trim();
+  const revisionOf=capture=>String(capture?.candidateRevision||capture?.revision||'').trim();
+  const sourceOf=capture=>String(capture?.source||'').trim().toLowerCase();
+  const markerOnly=evidence.markerOnly===true||before.markerOnly===true||after.markerOnly===true
+    ||sourceOf(before)==='source-marker'||sourceOf(after)==='source-marker';
+  const reasons=[];
+  const beforeArtifact=artifactOf(before),afterArtifact=artifactOf(after);
+  const validCapture=(capture,expectedRevision)=>{
+    const source=sourceOf(capture);
+    const revision=revisionOf(capture);
+    return RUNTIME_CAPTURE_SOURCES.has(source)
+      &&Boolean(artifactOf(capture))
+      &&Boolean(revision)
+      &&revision===expectedRevision
+      &&capture.observed===true
+      &&capture.reviewed===true
+      &&capture.markerOnly!==true;
+  };
+  if(!baselineRevision)reasons.push('baseline-runtime-revision-missing');
+  if(!candidateRevision)reasons.push('candidate-runtime-revision-missing');
+  if(baselineRevision&&candidateRevision&&baselineRevision===candidateRevision)reasons.push('before-after-runtime-revision-not-distinct');
+  if(!validCapture(before,baselineRevision))reasons.push('before-runtime-capture-invalid');
+  if(!validCapture(after,candidateRevision))reasons.push('after-runtime-capture-invalid');
+  if(beforeArtifact&&afterArtifact&&beforeArtifact===afterArtifact)reasons.push('before-after-runtime-artifact-not-distinct');
+  if(comparison.observed!==true||comparison.reviewed!==true)reasons.push('before-after-runtime-comparison-not-reviewed');
+  if(comparison.beforeStable!==true||comparison.afterStable!==true)reasons.push('runtime-capture-not-deterministic');
+  if(!String(comparison.method||'').trim())reasons.push('before-after-runtime-comparison-method-missing');
+  if(comparison.pass!==true||comparison.visibleRenderDelta!==true)reasons.push('before-after-visible-render-delta-missing-or-failed');
+  if(markerOnly)reasons.push('marker-only-runtime-comparison-forbidden');
+  return Object.freeze({
+    version:1,
+    pass:reasons.length===0,
+    baselineRevision:baselineRevision||null,
+    candidateRevision:candidateRevision||null,
+    beforeArtifact:beforeArtifact||null,
+    afterArtifact:afterArtifact||null,
+    beforeSource:sourceOf(before)||null,
+    afterSource:sourceOf(after)||null,
+    comparisonMethod:String(comparison.method||'').trim()||null,
+    beforeStable:comparison.beforeStable===true,
+    afterStable:comparison.afterStable===true,
+    visibleRenderDelta:comparison.visibleRenderDelta===true,
+    markerOnly,
+    reasons:Object.freeze(reasons),
+    authority:'runtime-before-after-visual-comparison-audit'
+  });
+}
+
+
+
+// Aesthetic quality is evaluated from observed pixels and source-bound repairs, never from
+// render-delta presence, style labels, asset counts or an unreviewed model score alone.
+export const VIBE_ART_DIRECTION_AXES=Object.freeze([
+  'COMPOSITION_AND_FOCAL_HIERARCHY','SPATIAL_DEPTH_AND_SCALE','LIGHT_AND_VALUE_STRUCTURE',
+  'MATERIAL_AND_SURFACE_COHESION','SILHOUETTE_AND_ASSET_FIT',
+  'UI_TYPOGRAPHY_AND_SPACING','COLOR_AND_STYLE_IDENTITY','MOTION_AND_EFFECT_READABILITY'
+]);
+function validArtDirectionCapture(capture={},revision=''){
+  return ['runtime-capture','roblox-runtime-capture','internal-playtest-capture','golden-scene-capture']
+    .includes(String(capture.source||'').toLowerCase())
+    &&capture.runtimeScreenshot===true&&capture.observed===true&&capture.reviewed===true
+    &&capture.markerOnly!==true&&String(capture.revision||capture.candidateRevision||'')===revision
+    &&Boolean(String(capture.artifactId||''))&&/^[0-9a-f]{64}$/i.test(String(capture.imageSha256||''));
+}
+function validArtDirectionRegion(region){
+  return region&&['x','y','width','height'].every(key=>Number.isFinite(region[key]))
+    &&region.x>=0&&region.y>=0&&region.width>0&&region.height>0
+    &&region.x+region.width<=1.000001&&region.y+region.height<=1.000001;
+}
+export function auditVibeArtDirectionReview(review={}){
+  if(review.required!==true)return Object.freeze({required:false,pass:true,reason:'NOT_REQUESTED',repairTargets:Object.freeze([])});
+  const baselineRevision=String(review.baselineRevision||'').trim();
+  const candidateRevision=String(review.candidateRevision||'').trim();
+  const baseline=review.baselineCapture||{},selected=review.selectedCapture||{};
+  const reasons=[];
+  if(!baselineRevision||!candidateRevision||baselineRevision===candidateRevision)reasons.push('art-direction-distinct-revisions-required');
+  if(!validArtDirectionCapture(baseline,baselineRevision)||!validArtDirectionCapture(selected,candidateRevision)
+    ||baseline.imageSha256===selected.imageSha256)reasons.push('art-direction-actual-distinct-runtime-images-required');
+  if(review.sameCameraStateLighting!==true||review.comparisonObserved!==true||review.comparisonReviewed!==true
+    ||!String(review.comparisonMethod||'').trim())reasons.push('art-direction-equivalent-scene-review-required');
+  const findings=Array.isArray(review.findings)?review.findings:[];
+  if(!findings.length)reasons.push('art-direction-specific-findings-required');
+  const ids=new Set(),repairTargets=[];
+  let improved=0,regressed=0;
+  for(const row of findings){
+    const id=String(row?.id||'').trim(),axis=String(row?.axis||'').toUpperCase();
+    const before=row?.before||{},after=row?.after||{},fix=row?.repair||{};
+    const sourcePath=String(fix.sourcePath||'').replaceAll('\\','/').trim();
+    const validPath=/^(?:roblox-games|web-games|unity-games|assets)\//.test(sourcePath)
+      &&!sourcePath.startsWith('/')&&!sourcePath.split('/').includes('..');
+    const grounded=Boolean(id&&!ids.has(id)&&VIBE_ART_DIRECTION_AXES.includes(axis)
+      &&String(row?.observation||'').trim()&&validArtDirectionRegion(row?.region)
+      &&before.imageSha256===baseline.imageSha256&&after.imageSha256===selected.imageSha256
+      &&before.observed===true&&before.reviewed===true&&after.observed===true&&after.reviewed===true
+      &&Number.isInteger(before.severity)&&before.severity>=0&&before.severity<=3
+      &&Number.isInteger(after.severity)&&after.severity>=0&&after.severity<=3
+      &&validPath&&String(fix.targetId||'').trim()&&String(fix.property||'').trim()
+      &&String(fix.expectedEffect||'').trim());
+    if(id)ids.add(id);
+    if(!grounded)reasons.push('art-direction-finding-unverified:'+(id||'UNKNOWN'));
+    if(grounded&&after.severity<before.severity)improved++;
+    if(grounded&&after.severity>before.severity)regressed++;
+    if(!grounded||after.severity>1){
+      repairTargets.push(Object.freeze({
+        surface:'ART_DIRECTION',id:id||'UNKNOWN',axis,sourcePath:validPath?sourcePath:null,
+        targetId:String(fix.targetId||'').trim()||null,property:String(fix.property||'').trim()||null,
+        action:String(fix.action||'').trim()||null,expectedEffect:String(fix.expectedEffect||'').trim()||null,
+        region:validArtDirectionRegion(row?.region)?Object.freeze({...row.region}):null,
+        issue:String(row?.observation||'').trim(),beforeSeverity:before.severity??null,
+        afterSeverity:after.severity??null,scope:'VISUAL_PRESENTATION_ONLY',
+        evidenceRequired:'SAME_SCENE_SOURCE_REVISION_BOUND_PIXEL_REVIEW',
+        preserveGameplayAndSave:true
+      }));
+    }
+  }
+  if(improved===0)reasons.push('art-direction-observed-quality-improvement-required');
+  if(regressed>0)reasons.push('art-direction-visual-regression-detected');
+  if(repairTargets.length)reasons.push('art-direction-defects-remain');
+  const candidates=Array.isArray(review.candidates)?review.candidates:[];
+  if(review.competitionRequired===true&&candidates.length<3)reasons.push('art-direction-three-independent-candidates-required');
+  if(candidates.length){
+    const hashes=new Set(),revisions=new Set(),ids=new Set();
+    for(const candidate of candidates){
+      const id=String(candidate?.id||'').trim(),revision=String(candidate?.revision||'').trim(),capture=candidate?.capture||{};
+      if(!id||ids.has(id)||!revision||revisions.has(revision)
+        ||!validArtDirectionCapture(capture,revision)||hashes.has(capture.imageSha256)
+        ||candidate.reviewed!==true||!Number.isFinite(candidate.score)||candidate.score<0||candidate.score>100)
+        reasons.push('art-direction-candidate-not-independently-reviewed:'+(id||'UNKNOWN'));
+      ids.add(id);revisions.add(revision);hashes.add(capture.imageSha256);
+    }
+    const winner=candidates.find(row=>String(row?.id||'')===String(review.selectedCandidateId||''));
+    if(!winner||winner.revision!==candidateRevision||winner.capture?.imageSha256!==selected.imageSha256
+      ||candidates.some(row=>row.score>winner.score))reasons.push('art-direction-selection-not-best-observed-candidate');
+  }
+  return Object.freeze({
+    required:true,pass:reasons.length===0,baselineRevision,candidateRevision,
+    reviewedAxes:Object.freeze([...new Set(findings.map(row=>String(row?.axis||'').toUpperCase()))]),
+    observedImprovements:improved,observedRegressions:regressed,candidateCount:candidates.length,
+    repairTargets:Object.freeze(repairTargets),reasons:Object.freeze([...new Set(reasons)]),
+    outcome:'PIXEL_AND_SOURCE_BOUND_AESTHETIC_REVIEW_NOT_AUTOMATIC_ARTISTIC_JUDGMENT',
+    gameplayMutationAllowed:false,authority:'GRAPHICS_PRODUCTION_INTERNAL_VISUAL_REVIEW'
+  });
+}
+
+
+export function auditVibeHighEndTargetFrameEvidence(evidence={}){
+  const captures=Array.isArray(evidence.captures)?evidence.captures:[];
+  const candidateRevision=String(evidence.candidateRevision||'').trim();
+  const byRole=new Map(captures.map(c=>[String(c?.role||'').trim().toUpperCase(),c]));
+  const missing=[],invalid=[];
+  for(const role of HIGH_END_GOLDEN_SCENE_ROLES){
+    const capture=byRole.get(role);
+    if(!capture){missing.push(role);continue;}
+    const source=String(capture.source||'').trim().toLowerCase();
+    const artifact=String(capture.artifactId||capture.captureId||capture.path||'').trim();
+    const revision=String(capture.candidateRevision||'').trim();
+    if(!RUNTIME_CAPTURE_SOURCES.has(source)||!artifact||!revision||revision!==candidateRevision||capture.observed!==true||capture.reviewed!==true||capture.comparison?.pass!==true)invalid.push(role);
+  }
+  const markerOnly=captures.some(c=>c?.markerOnly===true||String(c?.source||'').toLowerCase()==='source-marker');
+  return Object.freeze({
+    version:1,
+    pass:missing.length===0&&invalid.length===0&&!markerOnly,
+    requiredRoles:HIGH_END_GOLDEN_SCENE_ROLES,
+    captureCount:captures.length,
+    missing:Object.freeze(missing),
+    invalid:Object.freeze(invalid),
+    markerOnly,
+    candidateRevision:candidateRevision||null,
+    authority:'high-end-target-frame-runtime-evidence-audit'
+  });
+}
+
+export function auditVibeRuntimeVisualEvidence(evidence={}){
+  const stage=String(evidence.stage||'INTERNAL_PLAYTEST').trim().toUpperCase();
+  const golden=auditVibeGoldenSceneEvidence(evidence);
+  const highEndRequired=evidence.highEndVisualRequired===true||String(evidence.qualityProfile||'').trim().toUpperCase()==='HIGH_END_COMMERCIAL_NATIVE_PRESENTATION';
+  const highEndFrames=highEndRequired?auditVibeHighEndTargetFrameEvidence(evidence):null;
+  const universalAssetFirstRequired=evidence.universalAssetFirstRequired===true;
+  const universalAssetFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const assetFamilyCoverage=evidence.assetFamilyCoverage&&typeof evidence.assetFamilyCoverage==='object'?evidence.assetFamilyCoverage:{};
+  const missingAssetFamilyAccounting=universalAssetFirstRequired?universalAssetFamilies.filter(family=>!['APPLIED','NOT_APPLICABLE'].includes(String(assetFamilyCoverage?.[family]?.status||assetFamilyCoverage?.[family]||'').toUpperCase())):[];
+  const invalidNotApplicable=universalAssetFirstRequired?universalAssetFamilies.filter(family=>{
+    const row=assetFamilyCoverage?.[family];
+    const status=String(row?.status||row||'').toUpperCase();
+    return status==='NOT_APPLICABLE'&&row&&typeof row==='object'&&row.systemPresent===true;
+  }):[];
+
+  const primaryActors=Array.isArray(evidence.primaryActors)?evidence.primaryActors:[];
+  const heroAssets=Array.isArray(evidence.heroAssets)?evidence.heroAssets:[];
+  const visualDebt=Array.isArray(evidence.visualDebt)?evidence.visualDebt:[];
+  const strictStage=stage==='INTERNAL_PLAYTEST'||stage==='FINAL'||stage==='PUBLIC_RELEASE';
+  const finalStage=stage==='FINAL'||stage==='PUBLIC_RELEASE';
+  const primitiveViolations=primaryActors.filter(actor=>{
+    const presentation=String(actor?.presentation||actor?.assetClass||'').trim().toLowerCase();
+    const primitive=PRIMITIVE_PRESENTATIONS.has(presentation)||actor?.placeholder===true;
+    return strictStage&&primitive&&actor?.explicitStylizedApproval!==true;
+  }).map(actor=>String(actor?.id||actor?.role||'UNKNOWN_PRIMARY_ACTOR'));
+  // Native actor IDs are not evidence that a better model rendered successfully.
+  // Only explicitly reported binding states are assessed; unknown actors require runtime observation.
+  const actorBindingFailures=primaryActors.filter(actor=>{
+    const binding=String(actor?.nativeActorBindingState||actor?.bindingState||'').trim().toUpperCase();
+    return actor?.nativeActorMissing===true||actor?.nativeActorFailureStage||
+      ['BOUND_UNVERIFIED','FAILED','MISSING','LOAD_FAILED','FALLBACK_ONLY'].includes(binding);
+  }).map(actor=>String(actor?.id||actor?.role||'UNKNOWN_PRIMARY_ACTOR'));
+  const openCriticalDebt=visualDebt.filter(debt=>String(debt?.status||'OPEN').toUpperCase()!=='RESOLVED'&&['critical','high'].includes(String(debt?.severity||'high').toLowerCase()));
+  const reasons=[];
+  const heroPrimitiveViolations=heroAssets.filter(asset=>{
+    const presentation=String(asset?.presentation||asset?.assetClass||'').trim().toLowerCase();
+    return PRIMITIVE_PRESENTATIONS.has(presentation)||asset?.placeholder===true||asset?.sampleAssetUnmodified===true;
+  }).map(asset=>String(asset?.id||asset?.role||'UNKNOWN_HERO_ASSET'));
+  const environment=evidence.environment||{};
+  const missingEnvironment=highEndRequired?[
+    ['backgroundAssetBound',environment.backgroundAssetBound===true],
+    ['foregroundMidgroundBackground',environment.foregroundMidgroundBackground===true],
+    ['landmark',environment.landmark===true],
+    ['setDressing',environment.setDressing===true],
+    ['environmentalStorytelling',environment.environmentalStorytelling===true],
+    ['regionDifferentiation',environment.regionDifferentiation===true],
+    ['navigationReadability',environment.navigationReadability===true],
+  ].filter(([,ok])=>!ok).map(([key])=>key):[];
+  const cohesion=evidence.cohesion||{};
+  const missingCohesion=highEndRequired?[
+    ['artBible',cohesion.artBible===true],
+    ['materialLanguage',cohesion.materialLanguage===true],
+    ['silhouetteLanguage',cohesion.silhouetteLanguage===true],
+    ['lightingLanguage',cohesion.lightingLanguage===true],
+    ['uiVfxLanguage',cohesion.uiVfxLanguage===true],
+    ['antiKitbash',cohesion.antiKitbash===true],
+  ].filter(([,ok])=>!ok).map(([key])=>key):[];
+  const presentation=evidence.presentation||{};
+  const interfaceCoverage=evidence.interfaceCoverage&&typeof evidence.interfaceCoverage==='object'?evidence.interfaceCoverage:{};
+  const declaredInterfaceSurfaces=[...new Set((Array.isArray(evidence.requiredInterfaceSurfaces)?evidence.requiredInterfaceSurfaces:Object.entries(interfaceCoverage).filter(([,row])=>row&&typeof row==='object'&&row.required===true).map(([key])=>key)).map(value=>String(value||'').trim().toUpperCase()).filter(Boolean))];
+  // 인터페이스 검증: 썸네일/불리언 통과 대신 같은 소스의 실제 캡처와 측정된 터치 영역을 확인한다.
+  const interfaceFailures={};
+  const missingInterfaceSurfaces=declaredInterfaceSurfaces.filter(surface=>{
+    const row=interfaceCoverage?.[surface]??interfaceCoverage?.[surface.toLowerCase()];
+    const failures=[];
+    if(!(row&&row.pass===true&&row.observed===true&&row.reviewed===true))failures.push('review-missing-or-failed');
+    const captures=Array.isArray(row?.captures)?row.captures:[];
+    for(const orientation of ['PORTRAIT','LANDSCAPE']){
+      const capture=captures.find(item=>item?.orientation===orientation);
+      const viewport=capture?.viewport||{};
+      const width=viewport.width,height=viewport.height;
+      const validSize=Number.isFinite(width)&&Number.isFinite(height)&&width>0&&height>0;
+      if(!capture||!validSize||(orientation==='PORTRAIT'?height<width:width<=height)){
+        failures.push(orientation+':viewport-missing-or-invalid');continue;
+      }
+      const revision=String(capture.candidateRevision||'').trim();
+      if(!RUNTIME_CAPTURE_SOURCES.has(String(capture.source||'').toLowerCase())
+        ||capture.runtimeScreenshot!==true||capture.markerOnly===true
+        ||!revision||revision!==String(evidence.candidateRevision||'').trim()
+        ||!String(capture.artifactId||'').trim()||!/^[a-f0-9]{64}$/i.test(String(capture.imageSha256||''))
+        ||capture.reviewed!==true||capture.pixelReview?.pass!==true
+        ||capture.pixelReview?.imageSha256!==capture.imageSha256
+        ||capture.touchInputObserved!==true){
+        failures.push(orientation+':exact-runtime-image-or-touch-unverified');
+      }
+      const insets=capture.safeInsets||{};
+      const insetKeys=['left','right','top','bottom'];
+      const validInsets=insetKeys.every(key=>Number.isFinite(insets[key])&&insets[key]>=0)
+        &&insets.left+insets.right<width&&insets.top+insets.bottom<height;
+      if(!validInsets)failures.push(orientation+':safe-area-unmeasured');
+      const elements=(Array.isArray(capture.elements)?capture.elements:[]).filter(item=>item&&item.visible!==false);
+      if(!elements.length)failures.push(orientation+':visible-elements-unmeasured');
+      const parents=new Map(elements.map(item=>[String(item.id||''),String(item.parentId||'')]));
+      const ancestor=(parent,child)=>{
+        const visited=new Set();let current=parents.get(String(child));
+        while(current&&!visited.has(current)){
+          if(current===String(parent))return true;
+          visited.add(current);current=parents.get(current);
+        }
+        return false;
+      };
+      const boxes=[];
+      for(const item of elements){
+        const r=item.rect||{};
+        const id=String(item.id||'unknown');
+        if(!['x','y','width','height'].every(key=>Number.isFinite(r[key]))||r.width<=0||r.height<=0){
+          failures.push(orientation+':'+id+':bounds-invalid');continue;
+        }
+        if(validInsets&&(r.x<insets.left||r.y<insets.top||r.x+r.width>width-insets.right||r.y+r.height>height-insets.bottom))failures.push(orientation+':'+id+':clipped');
+        if(item.interactive===true&&(r.width<44||r.height<44||item.hitTestPassed!==true))failures.push(orientation+':'+id+':touch-target-invalid');
+        if(item.textPresent===true&&(item.textFits!==true||item.textReadable!==true))failures.push(orientation+':'+id+':text-unreadable');
+        // 포함 관계는 부모/자식 ID가 명시된 경우에만 허용한다.
+        for(const other of boxes){
+          const q=other.rect;
+          const related=ancestor(other.id,id)||ancestor(id,other.id);
+          if(!related&&Math.min(r.x+r.width,q.x+q.width)>Math.max(r.x,q.x)&&Math.min(r.y+r.height,q.y+q.height)>Math.max(r.y,q.y)){
+            failures.push(orientation+':'+other.id+'+'+id+':overlap');
+          }
+        }
+        boxes.push({...item,id,rect:r});
+      }
+    }
+    if(failures.length)interfaceFailures[surface]=Object.freeze([...new Set(failures)]);
+    return failures.length>0;
+  });
+  const sceneObjectCoverage=evidence.sceneObjectCoverage&&typeof evidence.sceneObjectCoverage==='object'?evidence.sceneObjectCoverage:{};
+  const sceneRequirements=(Array.isArray(sceneObjectCoverage.requirements)?sceneObjectCoverage.requirements:[]).map(row=>typeof row==='string'?{id:row,required:true}:row).filter(row=>row&&String(row.id||'').trim()&&row.required!==false);
+  const sceneObservations=new Map((Array.isArray(sceneObjectCoverage.observations)?sceneObjectCoverage.observations:[]).filter(Boolean).map(row=>[String(row.id||'').trim(),row]));
+  const missingSceneObjects=sceneRequirements.filter(requirement=>{
+    const id=String(requirement.id||'').trim(),row=sceneObservations.get(id);
+    return !(row&&row.observed===true&&row.reviewed===true&&row.bound===true&&row.pass===true);
+  }).map(row=>String(row.id||'').trim());
+  const artDirectionReview=evidence.artDirectionReview?.required===true?auditVibeArtDirectionReview(evidence.artDirectionReview):null;
+  const artDirectionRevisionMismatch=Boolean(artDirectionReview&&artDirectionReview.candidateRevision!==String(evidence.candidateRevision||'').trim());
+  const visualRegressionEvidence=evidence.visualRegression&&typeof evidence.visualRegression==='object'?evidence.visualRegression:{};
+  const detailedVisualRegression=Boolean(visualRegressionEvidence.before||visualRegressionEvidence.after||visualRegressionEvidence.comparison||visualRegressionEvidence.baselineRevision||visualRegressionEvidence.candidateRevision);
+  const visualRegressionAudit=highEndRequired&&detailedVisualRegression?auditVibeRuntimeBeforeAfterComparison(visualRegressionEvidence):null;
+  const visualRegressionPassed=highEndRequired
+    ?(visualRegressionAudit?visualRegressionAudit.pass===true:visualRegressionEvidence.pass===true)
+    :visualRegressionEvidence.pass===true;
+  const missingPresentation=highEndRequired?[
+    ['animation',presentation.animation===true],
+    ['vfx',presentation.vfx===true],
+    ['audio',presentation.audio===true],
+    ['camera',presentation.camera===true],
+    ['lighting',presentation.lighting===true],
+  ].filter(([,ok])=>!ok).map(([key])=>key):[];
+  if(universalAssetFirstRequired&&missingAssetFamilyAccounting.length)reasons.push('universal-asset-family-accounting-incomplete');
+  if(universalAssetFirstRequired&&invalidNotApplicable.length)reasons.push('asset-family-not-applicable-invalid');
+  if(universalAssetFirstRequired&&assetFamilyCoverage?.ENVIRONMENT?.status!=='APPLIED')reasons.push('environment-asset-binding-required');
+  if(universalAssetFirstRequired&&assetFamilyCoverage?.PROP?.status!=='APPLIED')reasons.push('prop-asset-binding-required');
+  if(!golden.pass)reasons.push('golden-scene-runtime-evidence-incomplete');
+  if(highEndRequired&&!highEndFrames?.pass)reasons.push('high-end-target-frame-runtime-evidence-incomplete');
+  if(highEndRequired&&evidence.artBibleBound!==true)reasons.push('art-bible-not-bound');
+  if(highEndRequired&&evidence.visualTargetFramesBound!==true)reasons.push('visual-target-frames-not-bound');
+  if(highEndRequired&&!heroAssets.length)reasons.push('hero-quality-assets-missing');
+  if(highEndRequired&&heroPrimitiveViolations.length)reasons.push('hero-asset-placeholder-or-unmodified-sample');
+  if(highEndRequired&&missingEnvironment.length)reasons.push('high-end-environment-incomplete');
+  if(highEndRequired&&missingCohesion.length)reasons.push('art-cohesion-incomplete');
+  if(highEndRequired&&missingPresentation.length)reasons.push('presentation-stack-incomplete');
+  if(declaredInterfaceSurfaces.length&&missingInterfaceSurfaces.length)reasons.push('declared-interface-runtime-evidence-incomplete');
+  if(sceneRequirements.length&&missingSceneObjects.length)reasons.push('declared-scene-object-runtime-evidence-incomplete');
+  if(highEndRequired&&!visualRegressionPassed)reasons.push('before-after-visual-regression-missing-or-failed');
+  if(artDirectionReview&&(!artDirectionReview.pass||artDirectionRevisionMismatch))reasons.push('art-direction-visible-quality-unverified');
+  if(highEndRequired&&evidence.performance?.pass!==true)reasons.push('platform-performance-evidence-missing-or-failed');
+  if(primitiveViolations.length)reasons.push('primary-actor-primitive-placeholder');
+  if(actorBindingFailures.length)reasons.push('primary-actor-native-binding-not-verified');
+  if(finalStage&&openCriticalDebt.length)reasons.push('unresolved-critical-visual-debt');
+  if(evidence.markerOnlyPass===true)reasons.push('marker-only-presentation-pass-forbidden');
+  const repairTargets=[];
+  if(artDirectionReview)repairTargets.push(...artDirectionReview.repairTargets);
+  for(const id of actorBindingFailures)repairTargets.push(Object.freeze({surface:'CHARACTER_NPC_CREATURE',id,scope:'VISUAL_AND_MOTION_ONLY',evidenceRequired:'EXACT_RUNTIME_ACTOR_VISIBLE_AND_MOTION_REVIEW',preserveGameplayAndSave:true}));
+  for(const id of missingEnvironment)repairTargets.push(Object.freeze({surface:'ENVIRONMENT',id,scope:'PRESENTATION_ONLY',evidenceRequired:'SAME_ROLE_RUNTIME_RECAPTURE'}));
+  for(const id of missingCohesion)repairTargets.push(Object.freeze({surface:'COHESION',id,scope:'ART_STYLE_ONLY',evidenceRequired:'SAME_CAMERA_LIGHTING_COMPARISON'}));
+  for(const id of missingPresentation)repairTargets.push(Object.freeze({surface:'PRESENTATION',id,scope:'PRESENTATION_ONLY',evidenceRequired:'RUNTIME_EVENT_CAPTURE'}));
+  for(const id of missingInterfaceSurfaces)repairTargets.push(Object.freeze({surface:'INTERFACE',id,scope:'HUD_MENU_MINIMAP_INTERACTION_PRESENTATION',evidenceRequired:'EXACT_SOURCE_PORTRAIT_LANDSCAPE_IMAGE_AND_TOUCH_BOUNDS',findings:interfaceFailures[id]}));
+  for(const id of missingSceneObjects)repairTargets.push(Object.freeze({surface:'SCENE_OBJECT',id,scope:'DECLARED_VISUAL_OBJECT_BINDING',evidenceRequired:'RUNTIME_VISIBLE_AND_BOUND_CAPTURE'}));
+  if(highEndRequired&&!visualRegressionPassed)repairTargets.push(Object.freeze({surface:'VISUAL_REGRESSION',id:'BEFORE_AFTER',scope:'CHANGED_VISUAL_RESPONSIBILITY_ONLY',evidenceRequired:detailedVisualRegression?'DISTINCT_STABLE_RUNTIME_BEFORE_AFTER_CAPTURE':'EXISTING_VISUAL_REGRESSION_EVIDENCE'}));
+  return Object.freeze({
+    version:1,
+    pass:reasons.length===0,
+    graphicsCheckpoint:true,
+    graphicsPassMeaning:'VERIFIED_CHECKPOINT_NOT_TERMINAL_COMPLETION',
+    presentationCompletionIsTerminal:false,
+    continuesAfterPass:true,
+    releaseAuthority:false,
+    standaloneReleaseBlocker:false,
+    stage,
+    golden,
+    primaryActorCount:primaryActors.length,
+    primitiveViolations:Object.freeze(primitiveViolations),
+    actorBindingFailures:Object.freeze(actorBindingFailures),
+    openCriticalVisualDebt:Object.freeze(openCriticalDebt.map(row=>String(row?.id||row?.role||'visual-debt'))),
+    interfaceCoverage:Object.freeze({
+      required:Object.freeze(declaredInterfaceSurfaces),
+      missing:Object.freeze(missingInterfaceSurfaces),
+      findings:Object.freeze(interfaceFailures),
+      complete:missingInterfaceSurfaces.length===0
+    }),
+    sceneObjectCoverage:Object.freeze({
+      required:Object.freeze(sceneRequirements.map(row=>String(row.id||'').trim())),
+      missing:Object.freeze(missingSceneObjects),
+      complete:missingSceneObjects.length===0
+    }),
+    visualRegression:visualRegressionAudit,
+    artDirectionReview,
+    repairTargets:Object.freeze(repairTargets),
+    universalAssetFirst:Object.freeze({
+      required:universalAssetFirstRequired,
+      allFamilies:Object.freeze(universalAssetFamilies),
+      missingAccounting:Object.freeze(missingAssetFamilyAccounting),
+      invalidNotApplicable:Object.freeze(invalidNotApplicable),
+      environmentApplied:assetFamilyCoverage?.ENVIRONMENT?.status==='APPLIED',
+      propApplied:assetFamilyCoverage?.PROP?.status==='APPLIED'
+    }),
+    highEnd:Object.freeze({
+      required:highEndRequired,
+      targetFrames:highEndFrames,
+      heroAssetCount:heroAssets.length,
+      heroPrimitiveViolations:Object.freeze(heroPrimitiveViolations),
+      missingEnvironment:Object.freeze(missingEnvironment),
+      missingCohesion:Object.freeze(missingCohesion),
+      missingPresentation:Object.freeze(missingPresentation),
+      visualRegressionPassed,
+      performancePassed:evidence.performance?.pass===true,
+      evolutionDebt:Object.freeze([...reasons]),
+      completionIsTerminal:false,
+      releaseAuthority:false
+    }),
+    reasons:Object.freeze(reasons),
+    authority:'runtime-visual-quality-gate'
+  });
+}
+
+export function assertVibeRuntimeVisualQuality(evidence={}){
+  const audit=auditVibeRuntimeVisualEvidence(evidence);
+  if(!audit.pass)throw new Error(`Vibe2 런타임 그래픽 품질 게이트 차단 · ${audit.reasons.join(' · ')}`);
+  return audit;
+}
+
+export function auditVibeVisualAssets(summary={}){
+  const files=Array.isArray(summary.files)?summary.files:[];
+  const assets=files.filter(f=>IMAGE_EXT.test(f.path||''));
+  const gameplay=files.filter(f=>/\.(?:js|mjs|html|css|gd|tscn)$/i.test(f.path||'')&&typeof f.text==='string');
+  const joined=gameplay.map(f=>f.text).join('\n');
+  const namedAssets=assets.filter(f=>VISUAL_HINT.test(f.path||''));
+  const usesRealAssets=REAL_RENDER.test(joined);
+  const placeholderHits=gameplay.filter(f=>PLACEHOLDER_CODE.test(f.text||'')).map(f=>f.path);
+  const categories={};
+  for(const type of REQUIRED_VISUAL_TYPES) categories[type]=assets.some(f=>new RegExp(type==='prop'?'prop|tree|rock|plant|resource|building|house':type,'i').test(f.path||''));
+  const missing=Object.entries(categories).filter(([,ok])=>!ok).map(([k])=>k);
+  const coherentAssetSet=namedAssets.length>=6;
+  const pass=assets.length>0&&usesRealAssets&&missing.length===0&&placeholderHits.length===0&&coherentAssetSet;
+  return {pass,assets:assets.length,namedAssets:namedAssets.length,usesRealAssets,coherentAssetSet,missing,placeholderHits,reasons:[...(assets.length?[]:['실제 이미지/스프라이트 에셋 없음']),...(usesRealAssets?[]:['실제 에셋 렌더링 연결 없음']),...(missing.length?[`필수 에셋 분류 누락: ${missing.join(', ')}`]:[]),...(placeholderHits.length?[`도형/이모지 placeholder 잔존: ${placeholderHits.join(', ')}`]:[]),...(coherentAssetSet?[]:['통일된 실제 에셋 세트가 부족함'])]};
+}
+export function auditVibeWeb25D(summary={}){
+  const files=Array.isArray(summary.files)?summary.files:[];
+  const web=files.filter(f=>/\.(?:js|mjs|html|css)$/i.test(f.path||'')&&typeof f.text==='string');
+  const joined=web.map(f=>f.text).join('\n');
+  const projection=WEB_25D_PROJECTION.test(joined),depthSorting=WEB_25D_DEPTH.test(joined),heightOrShadow=WEB_25D_HEIGHT.test(joined);
+  const pass=projection&&depthSorting&&heightOrShadow;
+  return {pass,projection,depthSorting,heightOrShadow,reasons:[...(projection?[]:['2.5D 투영/카메라 변환 없음']),...(depthSorting?[]:['2.5D 깊이 정렬 없음']),...(heightOrShadow?[]:['높이/그림자 표현 없음'])]};
+}
+export function assertVibeVisualQuality(summary={}){const audit=auditVibeVisualAssets(summary);if(!audit.pass)throw new Error(`Vibe2 그래픽 품질 게이트 차단 · ${audit.reasons.join(' · ')}`);return audit;}
+export function assertVibeWeb25D(summary={}){const audit=auditVibeWeb25D(summary);if(!audit.pass)throw new Error(`Vibe2 Web 2.5D 게이트 차단 · ${audit.reasons.join(' · ')}`);return audit;}
+export function assertVibeWebRelease(summary={}){return {visual:assertVibeVisualQuality(summary),web25d:assertVibeWeb25D(summary)};}

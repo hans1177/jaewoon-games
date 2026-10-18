@@ -1,0 +1,175 @@
+{
+  "version": 3,
+  "packId": "roblox-survival-core-world-v1",
+  "gameId": "survival",
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "max": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "checks": {
+      "exactCurrentStudioAssetAtoms": 15,
+      "actual3DSourceFiles": 15,
+      "modularSemanticGroups": 10,
+      "multipleMaterialRegions": 10,
+      "survivalSilhouetteReadability": 10,
+      "mobileGeometryBudget": 10,
+      "projectOriginalLicenseAndProvenance": 10,
+      "automaticBindingHints": 10,
+      "gameplayAuthorityIsolation": 10
+    }
+  },
+  "quality120": {
+    "target": 100,
+    "claimedRuntimeScore": null,
+    "note": "100 is the source-authoring target. Native Roblox runtime visual, mobile and production verification remain unverified."
+  },
+  "sourceAssetCount": 11,
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+  "gameplayAuthority": false,
+  "externalAssetDependency": false,
+  "sourceAudit": {
+    "type": "PACK_LEVEL_STATIC_3D_SOURCE_AUTHORING_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "scopeFamilies": [
+      "ENVIRONMENT",
+      "BUILDING",
+      "PROP"
+    ],
+    "scoreIsPackBaselineNotPerAssetRuntimeProof": true,
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "axes": {
+      "IDENTITY_SILHOUETTE": 86,
+      "FORM_STRUCTURE": 88,
+      "MATERIAL_SURFACE": 83,
+      "COLOR_LIGHTING": 82,
+      "STYLE_COHERENCE": 87,
+      "DETAIL_FINISH": 84,
+      "READABILITY_SCALE": 89,
+      "MODULAR_REUSE": 91,
+      "VARIATION_BREADTH": 76,
+      "PERFORMANCE_LOD": 90,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 90
+    },
+    "expectedScore": 869.1,
+    "expectedGrade": "HIGH_QUALITY",
+    "auditPass": false,
+    "hardGateFailures": [],
+    "evidenceBasis": {
+      "sourceAssetCount": 11,
+      "objSourceCount": 11,
+      "totalPackBytes": 161587,
+      "materialFile": "survival-core-world.mtl",
+      "modular": true,
+      "gameplayAuthority": false,
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/catalog.json",
+        "assets/roblox/survival-core-world-v1/quality-evidence.json",
+        "assets/roblox/survival-core-world-v1/preview.svg"
+      ]
+    },
+    "limitations": [
+      "PACK_LEVEL_SCORE_BELOW_880_PASS_FLOOR",
+      "ACTUAL_ROBLOX_BINDING_UNVERIFIED",
+      "COLLISION_NAV_AND_INTERACTION_RUNTIME_UNVERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "lowScoreDoesNotBlockInternalUse": true,
+    "newAuthoringMayFillVerifiedGaps": true,
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  },
+  "qualityImprovementPlan": {
+    "version": 1,
+    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
+    "currentScore": 869.1,
+    "currentGrade": "HIGH_QUALITY",
+    "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+    "stages": [
+      {
+        "id": "COMMERCIAL_READY_880",
+        "targetScore": 880,
+        "projectedSourceAuditScore": 890.4,
+        "requiredAxisFloor": {
+          "MATERIAL_SURFACE": 86,
+          "COLOR_LIGHTING": 86,
+          "DETAIL_FINISH": 88,
+          "VARIATION_BREADTH": 86,
+          "IDENTITY_SILHOUETTE": 88,
+          "STYLE_COHERENCE": 90
+        },
+        "requiredEvidence": [
+          "MATERIAL_REGION_AND_WEATHERING_VARIANTS",
+          "NON_COLOR_ONLY_WORLD_VARIANTS",
+          "EDGE_AND_CONSTRUCTION_DETAIL",
+          "BIOME_OR_REGION_STYLE_ADAPTATION",
+          "GAME_CAMERA_SILHOUETTE_READABILITY"
+        ]
+      },
+      {
+        "id": "HERO_920",
+        "targetScore": 920,
+        "projectedSourceAuditScore": 930.4,
+        "requiredAxisFloor": {
+          "IDENTITY_SILHOUETTE": 92,
+          "FORM_STRUCTURE": 92,
+          "MATERIAL_SURFACE": 92,
+          "COLOR_LIGHTING": 90,
+          "STYLE_COHERENCE": 94,
+          "DETAIL_FINISH": 92,
+          "READABILITY_SCALE": 92,
+          "MODULAR_REUSE": 95,
+          "VARIATION_BREADTH": 92,
+          "PERFORMANCE_LOD": 94,
+          "INTEGRATION_READINESS": 94
+        },
+        "requiredEvidence": [
+          "REGION_SPECIFIC_WORLD_KIT_VARIANTS",
+          "STRUCTURAL_CONNECTION_DETAIL",
+          "MATERIAL_AND_DAMAGE_STATES",
+          "LANDMARK_AND_ROUTE_READABILITY",
+          "MOBILE_LOD_DETAIL_TIERS"
+        ]
+      }
+    ],
+    "repairOrder": [
+      "VARIATION_BREADTH",
+      "MATERIAL_SURFACE",
+      "DETAIL_FINISH",
+      "STYLE_COHERENCE",
+      "MOBILE_LOD"
+    ],
+    "newVolumeAuthoring": {
+      "allowed": true,
+      "globallyBlocked": false,
+      "mayRunInParallelWithQualityRepair": true,
+      "allowWhen": [
+        "INTERIOR_OR_EXTERIOR_ROLE_GAP_REMAINS",
+        "DISTINCT_REGION_OR_LANDMARK_GAP_REMAINS",
+        "EXISTING_MODULE_COMPOSITION_CANNOT_REACH_REQUIRED_READABILITY"
+      ],
+      "exactDuplicateModuleSpamForbidden": true,
+      "colorOnlyVolumeDoesNotCount": true
+    },
+    "safeguards": {
+      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
+      "productionVerifiedMayNotBeInferredFromPlan": true,
+      "runtimeVerificationStillRequiredForProductionPromotion": true,
+      "collisionNavigationResourceSaveNetworkAuthorityUnchanged": true
+    }
+  }
+}

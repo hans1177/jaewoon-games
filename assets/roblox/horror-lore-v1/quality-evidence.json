@@ -1,0 +1,174 @@
+{
+  "version": 3,
+  "packId": "roblox-horror-lore-v1",
+  "gameId": "horror-escape-room",
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "max": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "checks": {
+      "exactCurrentLoreRosterMatch": 15,
+      "actual3DSourceFiles": 15,
+      "distinctSilhouettesPerLoreRole": 15,
+      "multipleMaterialRegionsWhereApplicable": 10,
+      "namedSemanticGroups": 10,
+      "mobileGeometryBudget": 10,
+      "mapContextIdentity": 10,
+      "projectOriginalLicenseAndProvenance": 10,
+      "gameplayAuthorityIsolation": 5
+    }
+  },
+  "quality120": {
+    "target": 100,
+    "claimedRuntimeScore": null,
+    "note": "100 is the source-authoring target. Native runtime binding, camera readability and production verification remain unverified."
+  },
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "artReviewState": "STATIC_SOURCE_AUTHORED_RUNTIME_REVIEW_REQUIRED",
+  "gameplayAuthority": false,
+  "originalAssetsImmutable": true,
+  "externalAssetDependency": false,
+  "sourceAssetCount": 10,
+  "sourceAudit": {
+    "type": "PACK_LEVEL_STATIC_3D_SOURCE_AUTHORING_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "scopeFamilies": [
+      "PROP"
+    ],
+    "scoreIsPackBaselineNotPerAssetRuntimeProof": true,
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "axes": {
+      "IDENTITY_SILHOUETTE": 88,
+      "FORM_STRUCTURE": 86,
+      "MATERIAL_SURFACE": 87,
+      "COLOR_LIGHTING": 85,
+      "STYLE_COHERENCE": 92,
+      "DETAIL_FINISH": 88,
+      "READABILITY_SCALE": 89,
+      "MODULAR_REUSE": 76,
+      "VARIATION_BREADTH": 88,
+      "PERFORMANCE_LOD": 91,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 86
+    },
+    "expectedScore": 875.9,
+    "expectedGrade": "HIGH_QUALITY",
+    "auditPass": false,
+    "hardGateFailures": [
+      "MODULAR_REUSE:76<84_PROP"
+    ],
+    "evidenceBasis": {
+      "sourceAssetCount": 10,
+      "objSourceCount": 10,
+      "totalPackBytes": 123688,
+      "mapContexts": [
+        "SCHOOL",
+        "HOSPITAL",
+        "THEME_PARK"
+      ],
+      "gameplayAuthority": false,
+      "sourceFiles": [
+        "assets/roblox/horror-lore-v1/catalog.json",
+        "assets/roblox/horror-lore-v1/quality-evidence.json",
+        "assets/roblox/horror-lore-v1/preview.svg"
+      ]
+    },
+    "limitations": [
+      "PACK_IS_GAME_SPECIFIC_LORE_NOT_GENERAL_MODULAR_PROP_BASE",
+      "ACTUAL_MAP_CAMERA_READABILITY_UNVERIFIED",
+      "INTERACTION_BINDING_UNVERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "lowScoreDoesNotBlockInternalUse": true,
+    "newAuthoringMayFillVerifiedGaps": true,
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  },
+  "qualityImprovementPlan": {
+    "version": 1,
+    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
+    "currentScore": 875.9,
+    "currentGrade": "HIGH_QUALITY",
+    "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+    "stages": [
+      {
+        "id": "COMMERCIAL_READY_880",
+        "targetScore": 880,
+        "projectedSourceAuditScore": 888.5,
+        "requiredAxisFloor": {
+          "MODULAR_REUSE": 84,
+          "INTEGRATION_READINESS": 90,
+          "DETAIL_FINISH": 90
+        },
+        "requiredEvidence": [
+          "REUSABLE_LORE_PROP_SOCKET_AND_SCALE_METADATA",
+          "MAP_CONTEXT_BINDING_HINTS_WITHOUT_GAMEPLAY_AUTHORITY",
+          "DETAIL_FINISH_FOR_CLOSE_AND_GAME_CAMERA"
+        ]
+      },
+      {
+        "id": "HERO_920",
+        "targetScore": 920,
+        "projectedSourceAuditScore": 925.9,
+        "requiredAxisFloor": {
+          "IDENTITY_SILHOUETTE": 92,
+          "FORM_STRUCTURE": 90,
+          "MATERIAL_SURFACE": 92,
+          "COLOR_LIGHTING": 90,
+          "STYLE_COHERENCE": 94,
+          "DETAIL_FINISH": 94,
+          "READABILITY_SCALE": 92,
+          "MODULAR_REUSE": 90,
+          "VARIATION_BREADTH": 92,
+          "PERFORMANCE_LOD": 94,
+          "INTEGRATION_READINESS": 94
+        },
+        "requiredEvidence": [
+          "DISTINCT_LORE_SILHOUETTES_BY_LOCATION_ROLE",
+          "MATERIAL_AND_AGE_VARIANTS",
+          "REUSABLE_LORE_DISPLAY_AND_INTERACTION_PRESENTATION",
+          "MOBILE_DISTANCE_READABILITY",
+          "LOD_OR_DETAIL_TIER_METADATA"
+        ]
+      }
+    ],
+    "repairOrder": [
+      "MODULAR_REUSE",
+      "INTEGRATION_READINESS",
+      "DETAIL_FINISH",
+      "MATERIAL_VARIATION",
+      "LOD"
+    ],
+    "newVolumeAuthoring": {
+      "allowed": true,
+      "globallyBlocked": false,
+      "mayRunInParallelWithQualityRepair": true,
+      "allowWhen": [
+        "NEW_LORE_ROLE_OR_LOCATION_GAP_REMAINS",
+        "EXISTING_PROP_CANNOT_PRESERVE_NARRATIVE_IDENTITY",
+        "DISTINCT_SILHOUETTE_IS_REQUIRED"
+      ],
+      "exactDuplicateLoreSpamForbidden": true,
+      "recolorOnlyLoreVolumeDoesNotCount": true
+    },
+    "safeguards": {
+      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
+      "productionVerifiedMayNotBeInferredFromPlan": true,
+      "runtimeVerificationStillRequiredForProductionPromotion": true,
+      "questRewardDoorSaveNetworkAuthorityUnchanged": true
+    }
+  }
+}

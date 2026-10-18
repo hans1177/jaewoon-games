@@ -1,0 +1,130 @@
+{
+  "version": 3,
+  "packId": "roblox-common-skill-v1",
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "max": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "checks": {
+      "commonVfxDependencyReuse": 15,
+      "castOriginNativeAttachment": 10,
+      "telegraphMobileSegmentCap": 10,
+      "gameStyleColorScaleAdaptation": 10,
+      "projectOriginalLicenseAndProvenance": 10,
+      "automaticCrossGameReuseMetadata": 10,
+      "dependencyGraphExplicit": 10,
+      "gameplayAuthorityIsolation": 10,
+      "twentyReusableCurrentAtoms": 20,
+      "fullPresentationRoleCoverage": true,
+      "audioPlaybackAuthorityFalse": true,
+      "cameraAuthorityFalse": true,
+      "mobileDensityVariant": true
+    }
+  },
+  "quality120": {
+    "target": 100,
+    "claimedRuntimeScore": null,
+    "note": "Common source-authoring target only. Cast alignment, telegraph readability, impact timing, mobile performance and production verification remain runtime-unverified."
+  },
+  "companyCommonBase": true,
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "gameplayAuthority": false,
+  "sourceAssetCount": 20,
+  "volumeUp": {
+    "phase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "priorCount": 3,
+    "currentCount": 20,
+    "presentationRoles": [
+      "CAST",
+      "TELEGRAPH",
+      "PROJECTILE",
+      "TRAIL",
+      "IMPACT",
+      "AREA",
+      "CHANNEL",
+      "BEAM",
+      "SUMMON",
+      "DASH",
+      "SHIELD",
+      "HEAL",
+      "AURA",
+      "STATUS_APPLY",
+      "STATUS_CLEANSE",
+      "INTERRUPT",
+      "ICON",
+      "AUDIO_ROLE",
+      "CAMERA_ROLE",
+      "MOBILE_DENSITY"
+    ],
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
+  },
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "FEEDBACK_STATES",
+      "READABILITY_SCALE",
+      "STYLE_COHERENCE",
+      "PERFORMANCE_LOD"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 88,
+      "MATERIAL_SURFACE": 86,
+      "COLOR_LIGHTING": 92,
+      "STYLE_COHERENCE": 90,
+      "DETAIL_FINISH": 88,
+      "READABILITY_SCALE": 92,
+      "MOTION_RIG": 88,
+      "FEEDBACK_STATES": 94,
+      "UI_UX_SYSTEM": 86,
+      "MODULAR_REUSE": 96,
+      "VARIATION_BREADTH": 95,
+      "PERFORMANCE_LOD": 90,
+      "ACCESSIBILITY_INPUT": 86,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 95
+    },
+    "expectedScore": 908.1,
+    "expectedGrade": "COMMERCIAL_READY",
+    "evidenceBasis": {
+      "sourceFiles": [
+        "assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau",
+        "assets/roblox/common-skill-v1/catalog.json",
+        "assets/roblox/common-skill-v1/quality-evidence.json"
+      ],
+      "sourceAssetCount": 20,
+      "sourceLineCount": 548,
+      "sourceFunctionCount": 30,
+      "nativeInstanceConstructionCount": 17,
+      "tweenUsageCount": 6,
+      "attachmentReferenceCount": 8,
+      "trailReferenceCount": 8,
+      "fullPresentationRoleCoverage": true,
+      "mobileDensityVariant": true,
+      "gameplayAuthority": false
+    },
+    "limitations": [
+      "ACTUAL_CAST_ALIGNMENT_UNVERIFIED",
+      "ACTUAL_TELEGRAPH_CAMERA_READABILITY_UNVERIFIED",
+      "ACTUAL_MOBILE_FRAME_COST_UNVERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
+}

@@ -1,0 +1,268 @@
+{
+  "version": 1,
+  "assetId": "quaternius-skeleton",
+  "profile": "prop",
+  "subject": "generic",
+  "styleFamily": "STYLIZED_FANTASY",
+  "styleExpression": {
+    "sourceStyleFamily": "STYLIZED_FANTASY",
+    "axes": {
+      "DAMAGE_WEAR": "LIGHT_WORN"
+    }
+  },
+  "genre": "",
+  "boundsSizeMeters": [
+    4.60457706451416,
+    5.089597225189209,
+    1.329164981842041
+  ],
+  "geometrySurface": {
+    "areaSquareMeters": 22.302683342295957,
+    "centroidMeters": [
+      0.0058887899846298275,
+      3.095888155096883,
+      0.05596801238008886
+    ],
+    "nonAuthoritative": true
+  },
+  "triangleCount": 1810,
+  "uvLayersVerified": true,
+  "materialApplicationFile": "application.json",
+  "family": "PROP",
+  "generator": "assets/native-authoring/build-game-visual.py",
+  "sourceHash": "60d3876a55cbab03be18d305132047a2aa1c66a982de749d9c359b61fa83cba1",
+  "artifactHash": "497a736cf80fdaabd2c8804d3f44d08e25d3cb207820eee3155293b682b55e86",
+  "previewHash": "b43fbfeb967797a183363350bc4a08cfbb9267810c708e2b7f098304386929c5",
+  "license": "cc0",
+  "imageToMesh": null,
+  "openSourceModule": {
+    "kind": "animation",
+    "source": {
+      "source": "https://github.com/blender/blender",
+      "engine": "BlenderKeyframesAndNLA",
+      "license": "GPL-2.0-or-later"
+    },
+    "method": "BLENDER_KEYFRAMED_NATIVE_GLTF_PLUS_FFMPEG_MP4_PREVIEW",
+    "generatedGeometry": false,
+    "clipNames": [
+      "SOURCE_MOCAP"
+    ],
+    "videoEncoding": null,
+    "runtimeVerified": false
+  },
+  "sourceMesh": {
+    "sourcePath": "assets/roblox/actors/sources/quaternius-monsters/FBX/Skeleton.fbx",
+    "sourceSha256": "be0a5992b677e563c6c9601e76fdcb9d50e91c195aebb1eb70604fbfe8fb26d5",
+    "libraryParentAssetId": null,
+    "license": "cc0",
+    "attribution": "https://opengameart.org/content/lowpoly-animated-monsters",
+    "sourceFormat": ".fbx",
+    "transformHistory": [
+      {
+        "kind": "PBR_BASE_COLOR_STYLE_REAUTHOR",
+        "material": "Skeleton",
+        "channel": "ALPHA",
+        "from": 0.0,
+        "to": 1.0,
+        "reason": "EXPLICIT_REVIEWED_OPAQUE_SOURCE"
+      }
+    ],
+    "sourceFileImmutable": true,
+    "sanitizedAsserted": false
+  },
+  "internalAsset": {
+    "library": "VIBE_STUDIO_ASSET_UNIVERSE",
+    "assetId": "quaternius-skeleton",
+    "state": "PREPARED_NATIVE_QA_PENDING",
+    "providerPartitioned": false,
+    "reauthoringAxes": [
+      "MESH",
+      "PBR_MATERIAL",
+      "RIG",
+      "MOTION",
+      "LOD"
+    ],
+    "actualMaterialTransforms": 1,
+    "sourceProvenancePreserved": true,
+    "originalImmutable": true,
+    "nativeRuntimePromotionRequired": true
+  },
+  "pbrMeshQa": {
+    "method": "EXPORTED_GLTF_GEOMETRY_AND_PBR_CHANNEL_INSPECTION",
+    "meshCount": 1,
+    "primitiveCount": 1,
+    "normalAndUvPresent": true,
+    "materialIndexValid": true,
+    "materialFactorsFinite": true,
+    "textureIndicesValid": true,
+    "sourceUvPreserved": true,
+    "uvModes": {
+      "Cylinder.001": "GENERATED_SMART_UV"
+    },
+    "sourceOriginalPreserved": true,
+    "runtimeVerified": false,
+    "visibleMaterialPresent": true,
+    "pass": true
+  },
+  "researchApplication": {
+    "rigMo": {
+      "reference": "https://openaccess.thecvf.com/content/CVPR2026/html/Zhang_RigMo_Unifying_Rig_and_Motion_Learning_for_Generative_Animation_CVPR_2026_paper.html",
+      "usedFor": "SKINNED_GLTF_HIERARCHY_REVIEW",
+      "modelRan": false
+    },
+    "physSkin": {
+      "reference": "https://openaccess.thecvf.com/content/CVPR2026/html/Lei_PhysSkin_Real-Time_and_Generalizable_Physics-Based_Animation_via_Self-Supervised_Neural_Skinning_CVPR_2026_paper.html",
+      "usedFor": "RIG_AND_WEIGHT_VALIDATION",
+      "modelRan": false
+    },
+    "motionMaster": {
+      "reference": "https://openaccess.thecvf.com/content/CVPR2026/html/Jiang_MotionMaster_Generalizable_Text-Driven_Motion_Generation_and_Editing_CVPR_2026_paper.html",
+      "usedFor": "NATIVE_CLIP_INVENTORY_AND_ACTION_SEQUENCE",
+      "modelRan": false
+    },
+    "phyMotion": {
+      "reference": "https://arxiv.org/abs/2605.14269",
+      "usedFor": "SURFACE_PHYSICS_AND_CONTACT_REVIEW",
+      "modelRan": false
+    },
+    "hunyuan3d21": {
+      "reference": "https://arxiv.org/abs/2506.15442",
+      "usedFor": "GLTF_PBR_MATERIAL_REVIEW_ONLY",
+      "modelRan": false,
+      "modelLicenseRegionBlocked": "SOUTH_KOREA"
+    },
+    "trellis2": {
+      "reference": "https://arxiv.org/abs/2512.14692",
+      "usedFor": "STRUCTURED_GEOMETRY_PBR_REFERENCE_ONLY",
+      "modelRan": false
+    },
+    "kaininja": {
+      "reference": "https://arxiv.org/abs/2609.15659",
+      "usedFor": "MESH_PART_AND_RIG_PREPARATION_REFERENCE_ONLY",
+      "modelRan": false
+    },
+    "morph": {
+      "reference": "https://openaccess.thecvf.com/content/ICCV2025/html/Li_Morph_A_Motion-free_Physics_Optimization_Framework_for_Human_Motion_Generation_ICCV_2025_paper.html",
+      "usedFor": "PHYSICS_CONTACT_QA_REFERENCE_ONLY",
+      "modelRan": false
+    }
+  },
+  "multiViewPreview": [
+    "preview-angle-000.png",
+    "preview-angle-090.png",
+    "preview-angle-180.png",
+    "preview-angle-270.png"
+  ],
+  "videoExport": {
+    "source": "https://ffmpeg.org",
+    "license": "LGPL-2.1-or-later-or-GPL-depending-on-build",
+    "path": "preview-motion.mp4",
+    "sha256": "207e4d4fc741e08c8e1d856d1af6103bcc935b0020d1e6cfde1e6155090bcf9a",
+    "frames": 24,
+    "fps": 12,
+    "resolution": [
+      320,
+      320
+    ],
+    "cinematicStyle": "studio",
+    "cinematicQuality": "preview",
+    "shotPlan": [
+      {
+        "name": "ESTABLISHING",
+        "frameStart": 0,
+        "frameEnd": 7,
+        "focalLengthMm": 38
+      },
+      {
+        "name": "ACTION_REVEAL",
+        "frameStart": 8,
+        "frameEnd": 15,
+        "focalLengthMm": 56
+      },
+      {
+        "name": "SIGNATURE_CLOSEUP",
+        "frameStart": 16,
+        "frameEnd": 23,
+        "focalLengthMm": 76
+      }
+    ],
+    "format": "MP4",
+    "codec": "MPEG4",
+    "sourceGlbSha256": "497a736cf80fdaabd2c8804d3f44d08e25d3cb207820eee3155293b682b55e86",
+    "motionClips": [
+      "SOURCE_MOCAP"
+    ],
+    "actualFramesRendered": true,
+    "runtimeVerified": false
+  },
+  "motionClips": [
+    "SOURCE_MOCAP"
+  ],
+  "targetPlatforms": [
+    "ROBLOX"
+  ],
+  "runtimeVerificationState": "STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING",
+  "productionVerified": false,
+  "companyPromotionEligible": false,
+  "meshObjectCount": 1,
+  "surfaceDistribution": {
+    "version": 1,
+    "status": "MEASURED_GEOMETRY",
+    "method": "EXACT_TRIANGLE_AREA_MOMENTS",
+    "coordinateSystem": "GLTF_RIGHT_HANDED_Y_UP_METERS",
+    "massModel": "UNIFORM_SURFACE_SHELL_ONLY",
+    "surfaceAreaM2": 22.302683342295957,
+    "centroidMeters": [
+      0.0058887899846298275,
+      3.095888155096883,
+      0.05596801238008886
+    ],
+    "covarianceM2": [
+      0.42166488490703813,
+      -0.0004819975091097106,
+      4.0126384125649395e-05,
+      -0.0004819975091097106,
+      1.3820497043121662,
+      0.034171567520715485,
+      4.0126384125649395e-05,
+      0.034171567520715485,
+      0.08036153452923778
+    ],
+    "inertiaPerUnitMassM2": [
+      1.462411238841404,
+      0.0004819975091097106,
+      -4.0126384125649395e-05,
+      0.0004819975091097106,
+      0.5020264194362758,
+      -0.034171567520715485,
+      -4.0126384125649395e-05,
+      -0.034171567520715485,
+      1.8037145892192044
+    ],
+    "normalAxisSecondMoment": [
+      0.3116178492743752,
+      0.33206895055915225,
+      0.3563132001664732
+    ],
+    "triangleCount": 1810,
+    "degenerateCount": 0,
+    "physicalDensityKgM3": null,
+    "friction": null,
+    "restitution": null,
+    "dynamicStabilityVerified": false
+  },
+  "outputs": [
+    "asset.glb",
+    "master.glb",
+    "preview.png",
+    "preview-master.png",
+    "preview-silhouette.png",
+    "application.json",
+    "evidence.json",
+    "preview-angle-000.png",
+    "preview-angle-090.png",
+    "preview-angle-180.png",
+    "preview-angle-270.png",
+    "preview-motion.mp4"
+  ]
+}

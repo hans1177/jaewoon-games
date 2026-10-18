@@ -1,0 +1,133 @@
+{
+  "version": 4,
+  "packId": "roblox-common-vfx-v1",
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "max": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "checks": {
+      "noExternalTextureDependency": 10,
+      "nativeRobloxPartTrailTween": 15,
+      "colorScaleDurationAdaptation": 10,
+      "mobileBurstCap": 10,
+      "pooledShortLifetimeCleanup": 10,
+      "projectOriginalLicenseAndProvenance": 10,
+      "automaticCrossGameReuseMetadata": 10,
+      "gameplayAuthorityIsolation": 10,
+      "blockParryGuardBreakTelegraphCounterFeedback": true,
+      "gameplayTimingDamageStunAuthorityFalse": true,
+      "twentySevenReusableCurrentAtoms": 20,
+      "crossGenreSeedCompositionRoles": true,
+      "mobileDensityVariantAvailable": true
+    }
+  },
+  "quality120": {
+    "target": 100,
+    "claimedRuntimeScore": null,
+    "note": "Common source-authoring target only. Actual game-camera readability, mobile frame cost, event timing and production verification remain unverified."
+  },
+  "companyCommonBase": true,
+  "productionVerified": false,
+  "verifiedCompanyReusable": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "gameplayAuthority": false,
+  "sourceAssetCount": 27,
+  "parryFeedback": {
+    "atomCount": 5,
+    "reducedMotionVariantRequired": true,
+    "gameplayTimingAuthority": false,
+    "damageAuthority": false,
+    "stunAuthority": false
+  },
+  "volumeUp": {
+    "phase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
+    "priorCount": 8,
+    "currentCount": 27,
+    "requiredSystemRolesCovered": [
+      "CRITICAL",
+      "DODGE",
+      "HEAL",
+      "BUFF",
+      "DEBUFF",
+      "STATUS",
+      "LOOT_COMMON",
+      "LOOT_RARE",
+      "LOOT_LEGENDARY",
+      "UPGRADE",
+      "CRAFT",
+      "DISMANTLE",
+      "QUEST_UPDATE",
+      "INTERACTION",
+      "ENVIRONMENT",
+      "WEATHER",
+      "DESTRUCTION",
+      "BOSS",
+      "MOBILE_DENSITY"
+    ],
+    "productionVerified": false,
+    "runtimeVerificationRequired": true
+  },
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "FEEDBACK_STATES",
+      "READABILITY_SCALE",
+      "STYLE_COHERENCE",
+      "PERFORMANCE_LOD"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 88,
+      "MATERIAL_SURFACE": 84,
+      "COLOR_LIGHTING": 93,
+      "STYLE_COHERENCE": 90,
+      "DETAIL_FINISH": 89,
+      "READABILITY_SCALE": 92,
+      "MOTION_RIG": 90,
+      "FEEDBACK_STATES": 95,
+      "MODULAR_REUSE": 96,
+      "VARIATION_BREADTH": 94,
+      "PERFORMANCE_LOD": 91,
+      "ACCESSIBILITY_INPUT": 86,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 95
+    },
+    "expectedScore": 913.1,
+    "expectedGrade": "COMMERCIAL_READY",
+    "evidenceBasis": {
+      "sourceFiles": [
+        "assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "assets/roblox/common-vfx-v1/catalog.json",
+        "assets/roblox/common-vfx-v1/quality-evidence.json"
+      ],
+      "sourceAssetCount": 27,
+      "sourceLineCount": 531,
+      "sourceFunctionCount": 35,
+      "tweenUsageCount": 16,
+      "trailReferenceCount": 10,
+      "parryFeedbackAtomCount": 5,
+      "mobileDensityVariant": true,
+      "gameplayAuthority": false
+    },
+    "limitations": [
+      "ACTUAL_GAME_CAMERA_READABILITY_UNVERIFIED",
+      "ACTUAL_EVENT_TIMING_FIT_UNVERIFIED",
+      "ACTUAL_MOBILE_FRAME_COST_UNVERIFIED",
+      "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  }
+}

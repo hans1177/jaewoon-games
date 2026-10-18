@@ -1,0 +1,314 @@
+{
+  "version": 4,
+  "packId": "roblox-common-creature-parts-v1",
+  "recordedAt": "2026-10-05",
+  "productionVerified": false,
+  "runtimeVerificationState": "PENDING_STUDIO",
+  "rigBindingState": "AUTHORING_REQUIRED",
+  "staticAuthoringChecklist": {
+    "score": 100,
+    "scoreType": "STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY",
+    "checks": {
+      "eightReusableCreatureModules": true,
+      "existingCommonCreatureModulesNotDuplicated": true,
+      "companyCommonBase": true,
+      "currentRobloxGameNeedsMapped": true,
+      "bodyPlanCompatibilityRequired": true,
+      "creatureVisualAnchorProvided": true,
+      "paletteAdaptation": true,
+      "farMidNearDetailLevels": true,
+      "worldAndViewportSharedSource": true,
+      "gameplayAuthorityFalse": true,
+      "aiHealthDamageMovementHitboxDropSaveNetworkUntouched": true,
+      "nativeRigRuntimeVerificationRequired": true,
+      "runtimeVerificationNotClaimed": true,
+      "validRobloxMaterialEnums": true
+    }
+  },
+  "runtimeQuality": {
+    "claimedScore": null,
+    "requiredBeforeProductionVerified": true,
+    "requiredSurface": "ROBLOX_STUDIO_OR_NATIVE_RUNTIME",
+    "note": "실제 소비 게임에서 native rig/Animator 바인딩과 런타임 확인 전에는 productionVerified를 true로 바꾸지 않는다."
+  },
+  "sourceAudit": {
+    "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
+    "studioRequired": false,
+    "nativeRuntimeRequired": false,
+    "productionPromotionIndependent": true,
+    "maxScore": 1000,
+    "passScore": 880,
+    "targetGrade": "ELITE",
+    "targetScore": 950,
+    "continualImprovementTargets": [
+      920,
+      950,
+      980,
+      1000
+    ],
+    "hardGateRule": "SCORE_ALONE_CANNOT_PASS_IF_CRITICAL_AXIS_FAILS",
+    "hardGateFamilies": [
+      "IDENTITY_SILHOUETTE",
+      "FORM_STRUCTURE",
+      "DETAIL_FINISH",
+      "MOTION_RIG",
+      "STYLE_COHERENCE"
+    ],
+    "axes": {
+      "IDENTITY_SILHOUETTE": 88,
+      "FORM_STRUCTURE": 86,
+      "MATERIAL_SURFACE": 82,
+      "COLOR_LIGHTING": 84,
+      "STYLE_COHERENCE": 86,
+      "DETAIL_FINISH": 80,
+      "READABILITY_SCALE": 86,
+      "MOTION_RIG": 58,
+      "FEEDBACK_STATES": 72,
+      "MODULAR_REUSE": 96,
+      "VARIATION_BREADTH": 88,
+      "PERFORMANCE_LOD": 82,
+      "PROVENANCE_MAINTAINABILITY": 98,
+      "INTEGRATION_READINESS": 84
+    },
+    "expectedScore": 837.8,
+    "expectedGrade": "DEVELOPMENT_READY",
+    "auditPass": false,
+    "hardGateFailures": [
+      "IDENTITY_SILHOUETTE:88<90",
+      "DETAIL_FINISH:80<82",
+      "MOTION_RIG:58<84"
+    ],
+    "evidenceBasis": {
+      "sourceAssetCount": 24,
+      "sourceLineCount": 405,
+      "sourceFunctionCount": 22,
+      "nativeInstanceConstructionCount": 8,
+      "bodyPlanCompatibilityRequired": true,
+      "rigBindingState": "AUTHORING_REQUIRED",
+      "missingSystemComponents": [
+        "AMORPHOUS",
+        "TORSO_VARIANT",
+        "SURFACE_VARIANT",
+        "BOSS_SIGNATURE",
+        "RIG_PROFILE",
+        "LOCOMOTION_SET",
+        "ATTACK_SET",
+        "HIT_DEATH_SET",
+        "LOD"
+      ],
+      "sourceFiles": [
+        "assets/roblox/common-creature-parts-v1/RobloxCommonCreatureParts.luau",
+        "assets/roblox/common-creature-parts-v1/catalog.json",
+        "assets/roblox/common-creature-parts-v1/quality-evidence.json"
+      ]
+    },
+    "limitations": [
+      "NATIVE_RIG_BINDING_AUTHORING_REQUIRED",
+      "LOCOMOTION_ATTACK_HIT_DEATH_SETS_MISSING",
+      "BOSS_SIGNATURE_AND_SURFACE_VARIANT_GAPS_REMAIN",
+      "NATIVE_RUNTIME_VERIFICATION_PENDING"
+    ],
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+  },
+  "qualityDebtPlan": {
+    "version": 1,
+    "status": "ACTIVE_SOURCE_QUALITY_REPAIR_TARGETS",
+    "currentScore": 837.8,
+    "currentGrade": "DEVELOPMENT_READY",
+    "nextTargets": [
+      880,
+      920,
+      950,
+      980,
+      1000
+    ],
+    "scoreInflationForbidden": true,
+    "planDoesNotChangeCurrentAuditScore": true,
+    "weakestAxes": [
+      {
+        "axis": "MOTION_RIG",
+        "score": 58,
+        "targetMinimum": 84,
+        "priority": 1
+      },
+      {
+        "axis": "FEEDBACK_STATES",
+        "score": 72,
+        "targetMinimum": 82,
+        "priority": 2
+      },
+      {
+        "axis": "DETAIL_FINISH",
+        "score": 80,
+        "targetMinimum": 82,
+        "priority": 3
+      },
+      {
+        "axis": "MATERIAL_SURFACE",
+        "score": 82,
+        "targetMinimum": 84,
+        "priority": 4
+      },
+      {
+        "axis": "PERFORMANCE_LOD",
+        "score": 82,
+        "targetMinimum": 84,
+        "priority": 5
+      }
+    ],
+    "hardGateRepairTargets": [
+      "IDENTITY_SILHOUETTE_90_PLUS",
+      "DETAIL_FINISH_82_PLUS",
+      "MOTION_RIG_84_PLUS"
+    ],
+    "authoringTargets": [
+      "RIG_PROFILE_AUTHORING",
+      "LOCOMOTION_SET_AUTHORING",
+      "ATTACK_SET_AUTHORING",
+      "HIT_DEATH_SET_AUTHORING",
+      "BOSS_SIGNATURE_AUTHORING",
+      "SURFACE_VARIANT_AUTHORING",
+      "LOD_AUTHORING",
+      "AMORPHOUS_BODY_PLAN_AUTHORING",
+      "TORSO_VARIANT_AUTHORING"
+    ],
+    "verificationRequiredAfterAuthoring": [
+      "RECALCULATE_SOURCE_AUDIT",
+      "VERIFY_RIG_AND_CLIP_STRUCTURE",
+      "VERIFY_GAME_CAMERA_SILHOUETTE",
+      "VERIFY_MOBILE_LOD_BUDGET",
+      "KEEP_RUNTIME_VERIFICATION_SEPARATE"
+    ],
+    "productionPassCannotBeClaimedFromPlan": true
+  },
+  "volumeExpansionPlan": {
+    "version": 1,
+    "status": "GAP_DRIVEN_VOLUME_EXPANSION_OPEN",
+    "currentAssetCount": 24,
+    "recommendedTargetMin": 180,
+    "noHardVolumeCap": true,
+    "newAuthoringAllowed": true,
+    "qualityDebtDoesNotBlockVolumeExpansion": true,
+    "qualityRepairAndVolumeExpansionMayRunInParallel": true,
+    "reuseFirstButNotExclusive": true,
+    "resolutionOrder": [
+      "REUSE_EXISTING",
+      "DERIVE_VARIANT",
+      "RECOMBINE_EXISTING",
+      "LICENSE_VERIFIED_FREE_SOURCE_ADAPT",
+      "NEW_AUTHORING"
+    ],
+    "newAuthoringTriggers": [
+      "MISSING_BODY_PLAN_OR_ROLE",
+      "MISSING_RIG_PROFILE",
+      "MISSING_MOTION_SET",
+      "MISSING_BOSS_SIGNATURE",
+      "MISSING_SURFACE_VARIANT",
+      "MISSING_LOD_VARIANT",
+      "EXISTING_ASSET_CANNOT_MEET_REQUIRED_IDENTITY_OR_ROLE_AFTER_SAFE_ADAPTATION"
+    ],
+    "exactDuplicateAuthoringSuppressed": true,
+    "roleAndFamilyDiversityPreferred": true,
+    "existingAssetLineagePreserved": true,
+    "sourceRightsAndPlatformCompatibilityRequired": true,
+    "productionPromotionStillRequiresRuntimeVerification": true,
+    "gameplayAuthority": false,
+    "aiAuthority": false,
+    "healthDamageAuthority": false,
+    "spawnAuthority": false,
+    "lootAuthority": false,
+    "saveAuthority": false,
+    "networkAuthority": false,
+    "createsNewPipelineWorkflowQueueOrScheduler": false
+  },
+  "qualityImprovementPlan": {
+    "version": 1,
+    "source": "CURRENT_SOURCE_AUDIT_AND_EXISTING_ASSET_GAPS_ONLY",
+    "currentScore": 837.8,
+    "currentGrade": "DEVELOPMENT_READY",
+    "scoreProjectionIsPlanningOnlyNotVerifiedEvidence": true,
+    "stages": [
+      {
+        "id": "COMMERCIAL_READY_880",
+        "targetScore": 880,
+        "projectedSourceAuditScore": 885.2,
+        "requiredAxisFloor": {
+          "IDENTITY_SILHOUETTE": 92,
+          "DETAIL_FINISH": 86,
+          "MOTION_RIG": 86,
+          "FEEDBACK_STATES": 84,
+          "MATERIAL_SURFACE": 88,
+          "PERFORMANCE_LOD": 88,
+          "INTEGRATION_READINESS": 90
+        },
+        "requiredEvidence": [
+          "RIG_PROFILE",
+          "LOCOMOTION_SET",
+          "ATTACK_SET",
+          "HIT_DEATH_SET",
+          "SURFACE_VARIANT",
+          "BOSS_SIGNATURE",
+          "LOD"
+        ]
+      },
+      {
+        "id": "HERO_920",
+        "targetScore": 920,
+        "projectedSourceAuditScore": 925.4,
+        "requiredAxisFloor": {
+          "IDENTITY_SILHOUETTE": 94,
+          "FORM_STRUCTURE": 92,
+          "MATERIAL_SURFACE": 92,
+          "COLOR_LIGHTING": 90,
+          "STYLE_COHERENCE": 94,
+          "DETAIL_FINISH": 92,
+          "MOTION_RIG": 92,
+          "FEEDBACK_STATES": 88,
+          "VARIATION_BREADTH": 94,
+          "PERFORMANCE_LOD": 92,
+          "INTEGRATION_READINESS": 94
+        },
+        "requiredEvidence": [
+          "BODY_PLAN_SPECIFIC_MOTION_IDENTITY",
+          "BOSS_AND_ELITE_SILHOUETTE_DIVERGENCE",
+          "SURFACE_AND_MATERIAL_VARIATION",
+          "ATTACK_CONTACT_AND_REACTION_READABILITY",
+          "MOBILE_LOD_AND_CAMERA_READABILITY"
+        ]
+      }
+    ],
+    "repairOrder": [
+      "MOTION_RIG",
+      "IDENTITY_SILHOUETTE",
+      "DETAIL_FINISH",
+      "SURFACE_VARIATION",
+      "FEEDBACK",
+      "LOD"
+    ],
+    "parallelVolumeRoles": [
+      "AMORPHOUS",
+      "BOSS_SIGNATURE",
+      "SURFACE_VARIANT",
+      "TORSO_VARIANT"
+    ],
+    "newVolumeAuthoring": {
+      "allowed": true,
+      "globallyBlocked": false,
+      "mayRunInParallelWithQualityRepair": true,
+      "allowWhen": [
+        "BODY_PLAN_GAP_REMAINS",
+        "ROLE_GAP_REMAINS",
+        "BOSS_OR_ELITE_SIGNATURE_GAP_REMAINS",
+        "RECOMBINATION_CANNOT_PRESERVE_READABILITY_OR_QUALITY"
+      ],
+      "exactDuplicatePartSpamForbidden": true,
+      "colorOnlyPartVolumeDoesNotCount": true
+    },
+    "safeguards": {
+      "sourceAuditScoreMayNotIncreaseUntilRequiredEvidenceExists": true,
+      "productionVerifiedMayNotBeInferredFromPlan": true,
+      "runtimeVerificationStillRequiredForProductionPromotion": true,
+      "aiHealthDamageMovementHitboxDropSaveNetworkAuthorityUnchanged": true
+    }
+  }
+}
