@@ -482,9 +482,11 @@ test('Web F9 release admission rejects a branch whose current source differs fro
 test('existing GitHub Pages publisher preserves root paths, existing gh-pages history, games and necessary assets',()=>{
   const publisher=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
   assert.match(publisher,/name: Magic Forest Static Play/);
-  // Central release-policy changes must republish the exact main manifest through this same existing workflow.
-  assert.match(publisher,/company-learning\/platform-release-roadmap\.json/);
-  assert.match(publisher,/\.github\/workflows\/vibe2-candidate-release\.yml/);
+  // Every merged main commit publishes, including policy, catalog, Vibe, media and arbitrary source changes.
+  const mainPush=publisher.split('  push:')[1]?.split('  workflow_dispatch:')[0]||'';
+  assert.match(mainPush,/branches:\s*\[main\]/);
+  assert.doesNotMatch(mainPush,/^\s*(?:paths|paths-ignore|if):/m,'no post-merge trigger exclusions');
+  assert.match(publisher,/OWNER-LOCKED PUBLICATION TRIGGER/);
   assert.match(publisher,/workflow_dispatch:/);
   assert.equal((publisher.match(/^  workflow_dispatch:$/gm)||[]).length,1,'Pages publisher must declare manual workflow dispatch only once');
   assert.match(publisher,/web-games\/publish-manifest\.json/);
