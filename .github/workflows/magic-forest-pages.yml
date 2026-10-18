@@ -37,7 +37,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: magic-forest-pages
+  # PR preview validation must not occupy the live main deployment queue.
+  group: magic-forest-pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'main' }}
   cancel-in-progress: false
 
 jobs:
