@@ -616,7 +616,14 @@ template:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearnin
   template.Parent = folder
 end
 
+-- Rebind the already curated artwork when the publishing pipeline inserts it
+-- after this LocalScript starts. Never substitute unverified asset IDs.
 attachDownloadedArtwork()
+Shared.ChildAdded:Connect(function(child)
+  if child.Name == "CuratedAssets" and child:IsA("ModuleScript") then
+    task.defer(attachDownloadedArtwork)
+  end
+end)
 player:GetAttributeChangedSignal("CivReady"):Connect(function()
   if player:GetAttribute("CivReady") == true and (tonumber(player:GetAttribute("CivRaceID")) or 0) == 0 then
     local raceList = findUi("Races")
