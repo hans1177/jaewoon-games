@@ -303,7 +303,7 @@
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 44,
+        "developmentConfirmed": 45,
         "designOnly": 0
       },
       "releaseConfirmedGameIds": [],
@@ -348,6 +348,7 @@
         "RUNTIME-seed-single-defense-strat-celestial-bastion",
         "RUNTIME-seed-story-complete-rpg-chronicles-of-eldoria",
         "RUNTIME-star-frontier",
+        "RUNTIME-tekken",
         "RUNTIME-tower-choice-rpg",
         "RUNTIME-village-dungeons",
         "RUNTIME-wild-survival",
@@ -399,7 +400,8 @@
           "RUNTIME-star-frontier",
           "RUNTIME-tower-choice-rpg",
           "RUNTIME-ant-simulator",
-          "RUNTIME-wild-survival"
+          "RUNTIME-wild-survival",
+          "RUNTIME-tekken"
         ],
         "paused": [],
         "rebuild": [],
@@ -408,11 +410,11 @@
       },
       "pipeline": {
         "target": 60,
-        "count": 44,
+        "count": 45,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 16
+        "deficit": 15
       },
       "ranking": [
         {
@@ -1018,6 +1020,21 @@
         {
           "rank": 41,
           "rawEvidenceRank": 41,
+          "gameId": "RUNTIME-tekken",
+          "slug": "tekken",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "UNCLASSIFIED",
+          "evidenceScore": 6,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": true,
+          "sourceReady": true
+        },
+        {
+          "rank": 42,
+          "rawEvidenceRank": 42,
           "gameId": "RUNTIME-tower-choice-rpg",
           "slug": "tower-choice-rpg",
           "lifecycleState": "ACTIVE",
@@ -1031,8 +1048,8 @@
           "sourceReady": true
         },
         {
-          "rank": 42,
-          "rawEvidenceRank": 42,
+          "rank": 43,
+          "rawEvidenceRank": 43,
           "gameId": "RUNTIME-village-dungeons",
           "slug": "village-dungeons",
           "lifecycleState": "ACTIVE",
@@ -1046,8 +1063,8 @@
           "sourceReady": true
         },
         {
-          "rank": 43,
-          "rawEvidenceRank": 43,
+          "rank": 44,
+          "rawEvidenceRank": 44,
           "gameId": "RUNTIME-wild-survival",
           "slug": "wild-survival",
           "lifecycleState": "ACTIVE",
@@ -1061,8 +1078,8 @@
           "sourceReady": true
         },
         {
-          "rank": 44,
-          "rawEvidenceRank": 44,
+          "rank": 45,
+          "rawEvidenceRank": 45,
           "gameId": "RUNTIME-zombie-survival",
           "slug": "zombie-survival",
           "lifecycleState": "ACTIVE",
