@@ -10385,7 +10385,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-18T10:08:17.669Z",
+      "updatedAt": "2026-10-18T10:17:32.288Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -10912,13 +10912,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-18T10:08:17.669Z",
+      "robloxBuildPreflightFailedAt": "2026-10-18T10:17:32.288Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-puzzle-chromatic-cascade",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-18T10:04:38.933Z",
+        "checkedAt": "2026-10-18T10:10:24.154Z",
         "sourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
         "artifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
         "secondaryOwnerFocus": false,
@@ -10961,7 +10961,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed in the build evidence."
+            "note": "Package cannot start runtime testing because required validation checks (web, music, nativeWeb, nativeMusic) have failed."
           }
         ],
         "blockers": [
@@ -11000,7 +11000,7 @@
       "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
       "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
       "robloxBuildArtifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
-      "robloxBuildPassedAt": "2026-10-18T10:08:17.669Z",
+      "robloxBuildPassedAt": "2026-10-18T10:17:32.288Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -39596,7 +39596,7 @@
       "robloxExactRevisionPassed": false
     }
   ],
-  "updatedAt": "2026-10-18T10:17:11.782Z",
+  "updatedAt": "2026-10-18T10:17:32.288Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
