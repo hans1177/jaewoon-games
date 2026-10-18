@@ -123,6 +123,7 @@ def finger_segment(name,base,tip,radius,bone_name,parent_name=None):
   else:current.add([vertex.index],1,'REPLACE')
  modifier=obj.modifiers.new('SkinFinger','ARMATURE');modifier.object=arm
  obj.parent=arm
+ obj.matrix_parent_inverse=arm.matrix_world.inverted()
  return obj
 
 for side,sign in [('Left',-1),('Right',1)]:
@@ -167,7 +168,7 @@ for obj_name,bone_name in bindings.items():
 # Authored keyframes are editable in Dope Sheet and Graph Editor.
 def make_action(name,frames):
  if arm.animation_data is None:arm.animation_data_create()
- action=bpy.data.actions.new(name)
+ arm.animation_data.action=None
  for frame,values in frames:
   for bone_name,angle in values.items():
    pose_bone=arm.pose.bones.get(bone_name)
