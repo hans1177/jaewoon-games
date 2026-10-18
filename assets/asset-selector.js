@@ -116,6 +116,7 @@ function findCandidates(type, candidates) {
     license:text(asset.license),
     source:text(asset.source),
     downloaded:asset?.downloaded !== false,
+    explicitlyDownloaded:asset?.downloaded === true,
     animated:ACTOR_TYPES.includes(type) ? Boolean(actorMotionMode(asset, candidates)) : Boolean(asset?.verifiedAnimation),
     motionMode:ACTOR_TYPES.includes(type) ? actorMotionMode(asset, candidates) : null,
     sourceUrl:text(asset.sourceUrl),
@@ -507,7 +508,7 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
   const matched = types.flatMap((type) => findCandidates(type, candidates))
     // Legacy genre presets are layout/style hints; real downloaded, registered assets
     // always win the default selection over a preset or generated placeholder.
-    .sort((a, b) => Number(b.downloaded === true) - Number(a.downloaded === true)
+    .sort((a, b) => Number(b.explicitlyDownloaded === true) - Number(a.explicitlyDownloaded === true)
       || Number(preferredIds.has(b.id)) - Number(preferredIds.has(a.id))
       || Number(b.studioMotionCandidate === true) - Number(a.studioMotionCandidate === true));
   const missingTypes = types.filter((type) => !matched.some((item) => item.type === type));
