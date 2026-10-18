@@ -18334,7 +18334,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-18T08:38:04.516Z",
+      "updatedAt": "2026-10-18T08:41:43.564Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -18350,16 +18350,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "90de3041eda929a7d2a66e28811680d2b7d8eae1",
       "robloxBuildArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
-      "robloxBuildPassedAt": "2026-10-18T08:38:04.516Z",
+      "robloxBuildPassedAt": "2026-10-18T08:41:43.564Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-18T08:38:04.516Z",
+      "robloxBuildPreflightFailedAt": "2026-10-18T08:41:43.564Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "dice-battle-board",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-18T08:25:24.781Z",
+        "checkedAt": "2026-10-18T08:36:18.099Z",
         "sourceRevision": "90de3041eda929a7d2a66e28811680d2b7d8eae1",
         "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
         "secondaryOwnerFocus": false,
@@ -18398,15 +18398,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web and music validation checks (including native variants) have not passed according to BUILD_EVIDENCE."
+            "note": "Package cannot start runtime testing because web validation and music validation have not passed."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -39480,7 +39478,7 @@
       "robloxExactRevisionPassed": false
     }
   ],
-  "updatedAt": "2026-10-18T08:41:36.769Z",
+  "updatedAt": "2026-10-18T08:41:43.564Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
