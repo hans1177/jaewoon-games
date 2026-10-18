@@ -24,8 +24,6 @@ on:
       - "!assets/external/**"
       - "!assets/roblox/**"
       - "!assets/native-authoring/**"
-      - "!assets/homepage-media/**"
-      - "!assets/homepage-covers/**"
       - ".github/workflows/magic-forest-pages.yml"
   workflow_dispatch:
   pull_request:
@@ -39,7 +37,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: magic-forest-pages
+  # PR preview validation must not occupy the live main deployment queue.
+  group: magic-forest-pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'main' }}
   cancel-in-progress: false
 
 jobs:
@@ -59,6 +58,7 @@ jobs:
             homepage-platform-exposure.json
             tools/github-pages-landing.mjs
             qa/github-pages-landing.test.mjs
+            .github/workflows/magic-forest-pages.yml
             index.html
 
       - name: Prepare all registered game routes and necessary shared assets
