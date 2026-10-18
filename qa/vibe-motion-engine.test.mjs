@@ -41,3 +41,17 @@ test('clip events fire once when crossing timeline markers',()=>{
  assert.deepEqual(engine.consumeEvents().map(e=>e.type),['footstep','footstep']);
  engine.update(.02);assert.equal(engine.consumeEvents().length,0);
 });
+
+test('action cancellation window prevents early queued dodge and recovers to idle',()=>{
+ const engine=new VibeMotionEngine(design);
+ engine.registerActionRule('light-attack',{duration:.4,cancelFrom:.2,cancelTo:.35});
+ engine.enter('light-attack');
+ engine.queueAction('dodge',{priority:5});
+ engine.update(.1);assert.equal(engine.state,'light-attack');
+ engine.update(.1);assert.equal(engine.state,'dodge');
+ const recovery=new VibeMotionEngine(design);
+ recovery.registerActionRule('light-attack',{duration:.2});
+ recovery.enter('light-attack');recovery.update(.1);recovery.update(.1);
+ assert.equal(recovery.state,'idle');
+ assert.throws(()=>engine.registerActionRule('dodge',{duration:-1}));
+});
