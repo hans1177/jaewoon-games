@@ -3076,7 +3076,12 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
   // Keep unverified suggestions visible, but never let them displace a verified option.
   const verifiedRows=rows.filter(row=>row.reuse.qualityEvidenceGrounded
     && usageByAsset[text(row.asset?.id)]?.runtimePass===true);
-  const best=locked||(currentAsset?verifiedRows[0]||rows[0]:rows[0])||null;
+  // [전 게임 기본 정책] 다운로드 원본이 역할·플랫폼에 맞으면 먼저 제안한다.
+  // 기존 실행 게임은 원본의 네이티브 QA 전까지 자동 바인딩하지 않는다.
+  // 검증된 자체 제작품이 명백히 우월하면 위 정렬 정책의 예외를 유지한다.
+  const originalPreferred=rows[0]?.downloadedOriginal===true
+    &&rows[0].reuse.roleCompatible&&rows[0].reuse.platformCompatible;
+  const best=locked||(originalPreferred?rows[0]:(currentAsset?verifiedRows[0]||rows[0]:rows[0]))||null;
   const current=currentAsset?evaluateInternalAssetReuse({
     asset:currentAsset,gameDna,requirement,usage:usageByAsset[text(currentAsset?.id)]||{}
   }):null;
@@ -3094,11 +3099,17 @@ export function chooseInternalAssetReplacement({currentAsset=null,candidates=[],
   // the binding of an already-used asset across the portfolio.
   const automaticBindingAssetId=currentAsset
     ? (replacementRecommended?text(best?.asset?.id):text(currentAsset?.id))
-    : (replacementQualityVerified?text(best?.asset?.id):null);
+    : (replacementQualityVerified&&best?.downloadedOriginal?text(best?.asset?.id):null);
   const automaticBindingAllowed=Boolean(automaticBindingAssetId
     && (!currentAsset || replacementRecommended));
   return Object.freeze({
     selectedAssetId:text(best?.asset?.id)||null,
+    downloadedOriginalDefault:true,
+    newGameBindingRequiresDownloadedOriginal:true,
+    internalCandidatesAdvisoryOnlyUntilSuperiorNativeQa:true,
+    selectedDownloadedOriginal:best?.downloadedOriginal===true,
+    missingOriginalRequiresOnDemandAcquisition:!rows.some(row=>row.downloadedOriginal&&row.reuse.roleCompatible&&row.reuse.platformCompatible),
+    allCompatibleCandidatesEvaluated:true,
     automaticBindingAssetId,
     automaticBindingAllowed,
     selectedMode:best?.reuse?.mode||null,

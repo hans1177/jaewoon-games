@@ -1433,10 +1433,18 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   let intendedOnlyCount=0;
   // The role gate above rejects incompatible candidates; among eligible assets,
   // a higher audited quality score must win regardless of matched-role count.
-  const compareReusable=(a,b)=>
-    Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
-    ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
-    ||clean(a?.id).localeCompare(clean(b?.id));
+  // 다운로드한 실제 원본(라이선스·출처·원본 해시) 우선. 분류별 수량 제한 없이 전체 탐색한다.
+  const acquired=row=>Boolean(row?.downloaded!==false&&row?.sourceFilesPresent!==false
+    &&/^https:\/\/[^/]+\//i.test(clean(row?.sourceUrl))
+    &&/^[a-f0-9]{64}$/i.test(clean(row?.originalSourceHash||row?.originalSha256))
+    &&/^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(clean(row?.license))
+    &&clean(row?.path||row?.masterGlb||row?.meshArtifact));
+  const compareReusable=(a,b)=>{
+    return Number(acquired(b))-Number(acquired(a))
+      ||Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+      ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
+      ||clean(a?.id).localeCompare(clean(b?.id));
+  };
   const betterReusable=(candidate,current)=>!current||compareReusable(candidate,current)<0;
   for(const asset of assets){
     const assetId=clean(asset?.id);
@@ -1557,7 +1565,10 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     if(!id)return false;
     const externalCandidates=externalSourceCandidatesFor(family,roles);
     if(!externalCandidates.length)return false;
-    if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length)return false;
+    // 정확히 같은 세부 역할이 없으면 같은 에셋 family 안의 소스팩을 조사 후보로 둔다.
+    // 해당 게임에 실제 설치하는 건 원본 메시의 세부 역할 검증 후에만 허용한다.
+    if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length
+      &&externalCandidates[0]?.family!==family)return false;
         const selected=externalCandidates[0];
         const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
         pushAction({
@@ -1619,11 +1630,24 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
       // 실제 게임 소스 적용 및 독립 런타임 QA 없이 완료로 승격하지 않는다.
       const currentAsset=currentPrimaryByFamily.get(family);
-      const currentIsDownloadedOriginal=Boolean(clean(currentAsset?.sourceUrl)&&/^[0-9a-f]{64}$/i.test(clean(currentAsset?.originalSourceHash||currentAsset?.originalSha256)));
+      const currentIsDownloadedOriginal=Boolean(
+        currentAsset?.downloaded!==false&&currentAsset?.sourceFilesPresent!==false
+        &&/^https:\/\/[^/]+\//i.test(clean(currentAsset?.sourceUrl))
+        &&/^[0-9a-f]{64}$/i.test(clean(currentAsset?.originalSourceHash||currentAsset?.originalSha256))
+        &&/^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(clean(currentAsset?.license))
+      );
       const sourceRoles=unique([...(requestedRolesByFamily.get(family)||[]),currentAsset?.role,currentAsset?.subfamily])
         .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value&&value!==family.toLowerCase());
       if(!currentIsDownloadedOriginal){
-        planOriginalAcquisition(family,sourceRoles,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL',currentAsset?.id);
+        const requested=planOriginalAcquisition(family,sourceRoles,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL',currentAsset?.id);
+        if(!requested)pushAction({
+          action:'HOLD',assetId:null,family,reason:'DOWNLOADED_ORIGINAL_SOURCE_REQUEST_REQUIRED',
+          replacesCandidateAssetId:clean(currentAsset?.id)||null,
+          sourceCatalogSearchRequired:true,
+          sourceRequestOwner:'EXISTING_ASSET_DEVELOPMENT_GRAPHICS_PRODUCTION',
+          roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false},
+          existingNativeBindingsPreservedUntilDownloadAndQa:true
+        });
       }
       // [교체 역할 보존] 같은 계열이라는 이유만으로 조명·문서, 패널·인트로를 서로 교체하지 않는다.
       // 일반 요청은 신규 사용 후보를 허용하지만 기존 역할 교체는 등록된 역할 근거가 필요하다.
@@ -1683,17 +1707,29 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       asset?.id||''
     );
     if(asset){
+      // 기존 역할 매칭/소스 비교 결과는 보존한다. 실제 신규 바인딩 권한은 원본 여부로 별도 판정한다.
       const mode=internalAssetPlatformApplicationMode(asset,target);
       const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
       pushAction({
         action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
-        assetId:clean(asset.id)||null,
-        family,
+        assetId:clean(asset.id),family,
         reason:pendingImport?'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
+        downloadedOriginalDefault:acquired(asset),
+        newGameDefaultBindingAuthorized:acquired(asset),
+        selfAuthoredVisualBindingForbidden:!acquired(asset),
+        candidateIsAdvisoryOnly:!acquired(asset),
+        onDemandOriginalAcquisitionRequired:!acquired(asset),
+        sourceRequestOwner:!acquired(asset)?'EXISTING_ASSET_DEVELOPMENT_GRAPHICS_PRODUCTION':null,
         applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
       });
-    }else if(!originalRequested){
-      pushAction({action:'HOLD',assetId:null,family,reason:(unresolvedFamilies.has(family)||sourceRoles.length===0)?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
+    }else{
+      pushAction({action:'HOLD',assetId:null,family,
+        reason:originalRequested?'DOWNLOADED_ORIGINAL_ACQUISITION_PENDING':sourceRoles.length?'NO_VERIFIED_EXISTING_ASSET_TO_APPLY':'ROLE_REQUIREMENT_UNRESOLVED',
+        selfAuthoredVisualBindingForbidden:true,
+        onDemandOriginalAcquisitionRequired:true,
+        sourceCatalogSearchRequired:!originalRequested,
+        sourceRequestOwner:'EXISTING_ASSET_DEVELOPMENT_GRAPHICS_PRODUCTION',
+        roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
@@ -1724,6 +1760,12 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
     selectedOnDemandExternalGapCount:actions.filter(row=>row.action==='ACQUIRE_ADAPT').length,
+    allGamesDownloadedOriginalDefault:true,
+    allTwelveRegisteredAssetFamiliesEligible:true,
+    allMatchingDownloadedOriginalsEvaluated:true,
+    selfAuthoredDefaultAllowed:false,
+    missingOriginalHandling:'ACQUIRE_ON_DEMAND_PRESERVE_CURRENT_UNTIL_NATIVE_RUNTIME_QA',
+    externalAcquisitionStillRequiresExactRoleLicenseFileHashAndPlatformQa:true,
     externalSourcesDoNotBecomeRegisteredAssetsBySelection:true,
     decisionVocabulary:ASSET_SUPPLY_DECISIONS,
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
@@ -3662,6 +3704,11 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
       const variants=asset?.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{};
       const nativeVariant=Object.entries(variants).find(([platform])=>clean(platform).toLowerCase()===resolved)?.[1]||{};
       const masterSourcePath=clean(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath);
+      const downloadedOriginalDefault=Boolean(asset?.downloaded!==false&&asset?.sourceFilesPresent!==false
+        &&/^https:\/\/[^/]+\//i.test(clean(asset?.sourceUrl))
+        &&/^[a-f0-9]{64}$/i.test(clean(asset?.originalSourceHash||asset?.originalSha256))
+        &&/^(?:CC0(?:-1\.0)?|PUBLIC.DOMAIN|CC-BY(?:-4\.0)?)$/i.test(clean(asset?.license))
+        &&clean(asset?.path||masterSourcePath));
       const row=freeze({
         assetId:clean(asset?.id),
         family,
@@ -3682,6 +3729,10 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
         fileRoles:freeze(Object.fromEntries(Object.entries(asset?.fileRoles||{}).map(([role,files])=>[role,freezeList(files)]))),
         companyCommonBase:asset?.companyCommonBase===true,
         verifiedCompanyReusable:asset?.verifiedCompanyReusable===true,
+        downloadedOriginalDefault,
+        defaultVisualBindingAllowed:downloadedOriginalDefault,
+        missingOriginalMustRequestCanonicalDownload:!downloadedOriginalDefault,
+        sourceInspectionRequiredBeforeRuntimeBinding:true,
         roleCompatibility:'EVALUATE_AGAINST_EXISTING_GAME_SYSTEM',
         gameplayAuthority:false
       });
@@ -3717,6 +3768,10 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
     libraryOrder:freezeList(UNIVERSAL_ASSET_FAMILIES),
     librarySortKeys:freezeList(['FAMILY_ORDER','SUBFAMILY','TITLE_KO','ASSET_ID']),
     allCompatibleGamesEligible:true,
+    downloadedLibraryOnlyDefaultForAllGames:true,
+    internalModelsRemainForAuditNotDefaultNewBindings:true,
+    primitiveVisualFallbackForbidden:true,
+    allTwelveFamiliesRequireDownloadedOriginalSource:true,
     sourcePackIdIsLineageOnly:true,
     intendedConsumerIdsDoNotRestrictEligibility:true,
     platformOrder:freezeList(['ROBLOX','UNITY','WEB']),

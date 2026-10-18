@@ -67,3 +67,24 @@ test('2분류 Web은 최종 제품이 아니라 Unity Android 본개발 전 테�
   assert.doesNotMatch(graphics,/하루 총 1개 통합 아트북/);
   assert.match(cycle,/\.github\/agents\/\$\{ROLE_AGENT\[role\]\}\.agent\.md/);
 });
+
+test('전 게임 신규 에셋은 다운로드 원본만 기본으로 선택하고 같은 역할군은 유사 매칭한다',()=>{
+  const acquired={id:'downloaded-interface',family:'UI',name:'판타지 인터페이스',
+    license:'CC0-1.0',sourceUrl:'https://example.org/ui-pack',
+    originalSourceHash:'a'.repeat(64),downloaded:true,
+    path:'assets/external/ui-pack.png'};
+  const internal={id:'homemade-ui',family:'UI',name:'인터페이스',
+    license:'project-original',path:'assets/roblox/common-ui.png'};
+  const plan=planAssetApplication({
+    prompt:'UI 아이콘을 가진 모바일 RPG',
+    manifest:{assets:[internal,acquired]},presetCatalog
+  });
+  assert.equal(plan.matched.some(row=>row.id===internal.id),false);
+  assert.ok(plan.matched.some(row=>row.id===acquired.id&&row.type==='ui'));
+  assert.equal(plan.policy.onlyAcquiredLicensedOriginalsInNewBinding,true);
+  assert.equal(plan.policy.selfAuthoredPrimitiveDefaultForbidden,true);
+  assert.equal(plan.appliedToGame,false,'선택 자체는 실제 게임 실행/적용 증거가 아니다');
+  const blocked=planAssetApplication({prompt:'UI 아이콘',manifest:{assets:[internal]},presetCatalog});
+  assert.equal(blocked.matched.some(row=>row.id===internal.id),false);
+  assert.ok(blocked.missingTypes.includes('ui'));
+});
