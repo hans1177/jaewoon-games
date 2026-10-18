@@ -9,10 +9,13 @@ try{
  browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1100,height:720}});
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
- const url='http://127.0.0.1:'+port+'/assets/vibe-model-preview.html?asset=assets/nonexistent.glb';
+ const url='http://127.0.0.1:'+port+'/assets/vibe-model-preview.html';
  let loaded=false;
  for(let i=0;i<30;i++){try{const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:2000});loaded=!!response;break}catch{await new Promise(r=>setTimeout(r,250))}}
  assert.ok(loaded,'Preview page did not load');
+ await page.getByRole('button',{name:'walk',exact:true}).click();
+ await page.getByRole('combobox',{name:'표정'}).selectOption('joy');
+ await page.getByRole('button',{name:'장면 실행'}).click();
  await page.getByRole('button',{name:'타격 연출 테스트'}).click();
  await page.waitForTimeout(180);
  assert.equal(await page.getByRole('status').last().textContent(),'타격');
