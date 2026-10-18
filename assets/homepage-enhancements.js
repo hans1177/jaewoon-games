@@ -71,7 +71,7 @@ const activeLifecycle=row=>{
   const sources=sourcesOf(row),web=sources.web||{};
   const state=String(web.state||row?.ownerWebSourceState||'').toUpperCase();
   if(state==='NON_GAME_SURFACE')return false;
-  const root=String(web.path||row?.webPath||'').trim().split('/jaewoon-games/').filter(Boolean).join('/jaewoon-games/');
+  const root=String(web.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
   const registered=root===`web-games/${id}`||root===`web-games/${id}/unity`;
   const nativeDeployed=hasRunnableHomepageTarget(row)||hasInternalRelease(row);
   // 파일이나 원본 프로젝트가 있다는 이유로 버튼형 시제품을 게임으로 홍보하지 않는다.
@@ -143,7 +143,7 @@ function sourceWebHref(row){
   const id=gameIdOf(row);
   if(!/^[a-z0-9][a-z0-9-]*$/.test(id))return '';
   const source=sourcesOf(row).web||{};
-  const root=String(source.path||row?.webPath||'').trim().split('/jaewoon-games/').filter(Boolean).join('/jaewoon-games/');
+  const root=String(source.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
   if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return '';
   return `https://hans1177.github.io/jaewoon-games/${root}/`;
 }
@@ -154,7 +154,7 @@ function playableWebHref(row){
   const source=sourcesOf(row).web||{};
   const state=String(source.state||row?.ownerWebSourceState||'').toUpperCase();
   if(['NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','WITHDRAWN_SIMPLE_PROTOTYPE'].includes(state)||source.archive===false)return '';
-  const root=String(source.path||row?.webPath||'').trim().split('/jaewoon-games/').filter(Boolean).join('/jaewoon-games/');
+  const root=String(source.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
   if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return '';
   const published=publicationOf(row).web||{};
   if(published.route!==`web-games/${id}/`
@@ -433,7 +433,7 @@ function bindDirectGameLaunch(){
     const total=track.querySelectorAll('.homeGallerySlide').length;
     const index=Math.max(0,Math.min(total-1,Math.round(track.scrollLeft/Math.max(1,track.clientWidth))));
     const counter=track.parentElement?.querySelector('[data-gallery-count]');
-    if(counter)counter.textContent=(index+1)+'/jaewoon-games/'+total;
+    if(counter)counter.textContent=(index+1)+'/'+total;
   },true);
   document.addEventListener('click',event=>{
     const control=event.target.closest('button[data-gallery-step]');
@@ -445,7 +445,7 @@ function bindDirectGameLaunch(){
         const target=Math.max(0,Math.min(total-1,index+Number(control.dataset.galleryStep||0)));
         track.scrollTo({left:target*width,behavior:'smooth'});
         const count=gallery.querySelector('[data-gallery-count]');
-        if(count)count.textContent=(target+1)+'/jaewoon-games/'+total;
+        if(count)count.textContent=(target+1)+'/'+total;
       }
       return;
     }

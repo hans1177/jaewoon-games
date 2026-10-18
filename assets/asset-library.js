@@ -16,11 +16,11 @@ const featuredTargets=[['featuredWalk','roblox-world-ghost-ghoul','walk'],['feat
 let manifest=null,registry=null,registryEtag=null,registryViewSignature='',rows=[],kind='monster',selectedId='',selectionToken=0,currentKey='',currentRow=null;
 let viewer=null,viewerPromise=null,refreshing=false,paused=matchMedia('(prefers-reduced-motion:reduce)').matches,selectedClip='idle';
 const cache=new Map();
-const localImage=value=>typeof value==='string'&&/^\/(assets|web-games)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|svg|avif)$/i.test(value)&&!value.split('/jaewoon-games/').includes('..')?value:'';
+const localImage=value=>typeof value==='string'&&/^\/(assets|web-games)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|svg|avif)$/i.test(value)&&!value.split('/').includes('..')?value:'';
 const validSamplePath=value=>typeof value==='string'&&/^\/assets\/roblox\/world-ghosts\/native\/gallery\/(monster|environment)-[a-z0-9-]+\.json$/.test(value);
 const nativeGLB=value=>{
  if(typeof value!=='string')return '';
- const uri='/jaewoon-games/'+value.replace(/^\/+/, '');
+ const uri='/'+value.replace(/^\/+/, '');
  return /^\/assets\/(?:shared\/[a-z0-9-]+|roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?)\.glb$/i.test(uri)?uri:'';
 };
 let nativeClip='';
@@ -80,8 +80,8 @@ function updateFilters(){
   const raw=String(row.asset?.sourcePath||row.asset?.path||'').trim();
   if(!raw)continue;
   if(/^https?:\/\//i.test(raw)){folderPaths.add('외부 경로');continue;}
-  const parts=raw.replace(/^\//,'').split('/jaewoon-games/').filter(Boolean);
-  folderPaths.add(parts.length>3?parts.slice(0,3).join('/jaewoon-games/'):parts.length>1?parts.slice(0,-1).join('/jaewoon-games/'):'최상위');
+  const parts=raw.replace(/^\//,'').split('/').filter(Boolean);
+  folderPaths.add(parts.length>3?parts.slice(0,3).join('/'):parts.length>1?parts.slice(0,-1).join('/'):'최상위');
  }
  for(const folder of [...folderPaths].sort((a,b)=>a.localeCompare(b,'ko')))folderFilter.add(new Option(folder,folder));
  folderFilter.value=[...folderFilter.options].some(option=>option.value===oldFolder)?oldFolder:'';
@@ -101,8 +101,8 @@ function showList(){
  }
  const filtered=rows.filter(row=>{
   const asset=row.asset||{},source=String(asset.sourcePath||asset.path||'').trim();
-  const parts=source.replace(/^\//,'').split('/jaewoon-games/').filter(Boolean);
-  const folder=!source?'':/^https?:\/\//i.test(source)?'외부 경로':parts.length>3?parts.slice(0,3).join('/jaewoon-games/'):parts.length>1?parts.slice(0,-1).join('/jaewoon-games/'):'최상위';
+  const parts=source.replace(/^\//,'').split('/').filter(Boolean);
+  const folder=!source?'':/^https?:\/\//i.test(source)?'외부 경로':parts.length>3?parts.slice(0,3).join('/'):parts.length>1?parts.slice(0,-1).join('/'):'최상위';
   const platform=String(asset.platform||'').trim(),sameSource=sourceCounts.get(source)||0;
   const verified=asset.productionVerified===true?'verified':asset.productionVerified===false?'unverified':'unknown';
   const text=[row.title,row.id,categoryLabels[row.category]||row.category,forms[row.form]||row.form,row.role,

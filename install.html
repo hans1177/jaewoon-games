@@ -82,7 +82,7 @@ const params=new URLSearchParams(location.search);
 async function registerPwa(){
   if(!('serviceWorker' in navigator))return;
   try{
-    const registration=await navigator.serviceWorker.register('/jaewoon-games/sw.js',{scope:'/jaewoon-games/'});
+    const registration=await navigator.serviceWorker.register('/jaewoon-games/sw.js',{scope:'/'});
     registration.update().catch(()=>{});
   }catch(error){
     console.warn('PWA service worker registration failed',error);
