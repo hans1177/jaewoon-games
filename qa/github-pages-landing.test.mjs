@@ -24,6 +24,13 @@ test('OWNER LOCK: every main merge triggers the existing Pages publisher without
   assert.doesNotMatch(publishHeader,/needs: \[|success\(\)|result ==|approval|qa_pass/i);
   assert.match(workflow,/group: magic-forest-pages-\$\{\{ github\.event_name == 'pull_request'/);
   assert.match(workflow,/cancel-in-progress: false/);
+  const assemble=workflow.indexOf('      - name: Assemble existing canonical homepage for automatic static publication');
+  const prCheck=workflow.indexOf('      - name: Verify every published game route and the canonical official homepage');
+  const publication=workflow.indexOf('      - name: Publish gh-pages without force or deleting earlier games');
+  assert.ok(assemble>0&&prCheck>assemble&&publication>prCheck);
+  assert.match(workflow.slice(assemble,prCheck),/node tools\/github-pages-landing\.mjs/);
+  assert.doesNotMatch(workflow.slice(assemble,prCheck),/node --test/,'post-merge assembly is not an extra QA gate');
+  assert.match(workflow.slice(prCheck,publication),/if: github\.event_name == 'pull_request'/);
   assert.match(workflow,/name: Publish gh-pages without force or deleting earlier games/);
   assert.match(workflow,/uses: actions\/deploy-pages@v4/);
 });
