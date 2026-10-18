@@ -1090,10 +1090,10 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const weatherPresentationQa=runWeatherPresentationStaticQa({root,data,changed});
   const robloxStudioAssetBindingQa=runRobloxStudioAssetBindingQa({root,data,changed});
   const specializedVerificationQa=runSpecializedFocusedQa({root,data,changed});
-  const result = { outcome:'PASS', cached:false, spatialBlueprintQa,interfaceBlueprintQa,native3dUiQa, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, native3dUiQa, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const result = { outcome:'PASS', cached:false, spatialBlueprintQa,interfaceBlueprintQa,native3dUiQa, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.entries=cache.entries||{};
-    cache.version=13; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, savedAt:new Date().toISOString() };
+    cache.version=13; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, native3dUiQa, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);
