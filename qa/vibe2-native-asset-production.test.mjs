@@ -5206,3 +5206,47 @@ test('all game-required library families include audio music UI images VFX and m
     assert.match(worker,/BLOCKED_INVALID_SOURCE/);
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
+
+test('web UI source consumers register actual company assets and invalidate removed bindings',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'web-ui-company-assets-'));
+  try{
+    const web=path.join(root,'web-games','ui-demo');
+    const assets=path.join(root,'assets');
+    fs.mkdirSync(web,{recursive:true});
+    fs.mkdirSync(assets,{recursive:true});
+    for(const file of ['nine-frame.png','damage-icon.png','unused-icon.png'])
+      fs.writeFileSync(path.join(assets,file),'owned-fixture');
+    const registry={version:1,assets:[
+      ...['nine-frame.png','damage-icon.png','unused-icon.png'].map(file=>({
+        id:file,family:'UI',license:'project-original',platform:'WEB',
+        path:'assets/'+file,sourceFiles:['assets/'+file]
+      }))
+    ]};
+    const catalog={games:[{
+      id:'ui-demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      webPath:'web-games/ui-demo'
+    }]};
+    const html=path.join(web,'index.html');
+    fs.writeFileSync(html,`<!doctype html><style>
+      .panel{border-image-source:url("/assets/nine-frame.png")}
+      </style><img alt="damage" src="/assets/damage-icon.png">
+      <!-- <img src="/assets/unused-icon.png"> -->
+      <script>// const icon="/assets/unused-icon.png";
+      </script>`);
+    const first=synchronizeSourceBoundAssetConsumers({repoRoot:root,registry,gameCatalog:catalog});
+    for(const id of ['nine-frame.png','damage-icon.png']){
+      assert.deepEqual(first.registry.assets.find(row=>row.id===id).sourceBoundConsumerGameIds,['ui-demo']);
+      const row=first.bindings.find(row=>row.assetId===id);
+      assert.equal(row.mode,'PROJECT_ASSET_PATH');
+      assert.equal(row.runtimeVerified,false,'static asset linkage is not a runtime PASS');
+      assert.ok(row.evidenceFiles.includes('web-games/ui-demo/index.html'));
+    }
+    assert.equal(first.registry.assets.find(row=>row.id==='unused-icon.png').sourceBoundConsumerGameIds,undefined);
+    fs.writeFileSync(html,`<!doctype html><style>/* url('/assets/nine-frame.png') */</style>
+      <!-- <img src="/assets/damage-icon.png"> --><script>// icon='/assets/damage-icon.png';</script>`);
+    const stale=synchronizeSourceBoundAssetConsumers({repoRoot:root,registry:first.registry,gameCatalog:catalog});
+    assert.equal(stale.registry.assets.find(row=>row.id==='nine-frame.png').sourceBoundConsumerGameIds,undefined);
+    assert.equal(stale.registry.assets.find(row=>row.id==='damage-icon.png').sourceBoundConsumerGameIds,undefined);
+    assert.ok(stale.relations.some(row=>row.assetId==='nine-frame.png'&&row.classification==='STALE_SOURCE_BINDING'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
