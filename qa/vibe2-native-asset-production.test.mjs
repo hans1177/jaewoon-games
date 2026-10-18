@@ -144,15 +144,19 @@ test('unacquired or unsafe library candidates never masquerade as game assets',(
   assert.equal(result.productionVerificationGranted,false);
   assert.equal(result.runtimeVerificationGranted,false);
 });
-test('machine policy requires downloaded library for every game, not an optional visual preference',()=>{
+test('existing central library policy already mandates asset-first binding for every game and platform',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const binding=policy.livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract;
-  assert.equal(binding.mandatoryDownloadedLibraryDefault.status,'ACTIVE_EXECUTABLE_CONTRACT');
-  assert.equal(binding.mandatoryDownloadedLibraryDefault.allRegisteredDownloadedLibraryAssetsScanned,true);
-  assert.equal(binding.mandatoryDownloadedLibraryDefault.missingOriginalAssetOrRoleMustRequestThroughExistingAssetDevelopmentAcquisition,true);
-  assert.equal(binding.mandatoryDownloadedLibraryDefault.primitiveOnlyOrUntexturedDummyOrFlatSpriteWorldCannotCountAsFinalAssetUse,true);
-  assert.equal(binding.selection.downloadedRegisteredAssetDefaultMandatory,true);
-  assert.equal(binding.application.missingApplicableLibraryRequestMandatory,true);
+  assert.equal(binding.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(binding.scope,'ALL_GAME_DEVELOPMENT_AND_BUILD_UP_WORK');
+  assert.equal(binding.selection.fullInternalRegistryScanRequired,true);
+  assert.equal(binding.selection.allTwelveFamiliesEvaluated,true);
+  assert.equal(binding.selection.noArtificialAssetCountCap,true);
+  assert.equal(binding.selection.gameplaySourceWhitelist,'COMPANY_ASSET_LIBRARY_REGISTERED_FILES_ONLY');
+  assert.equal(binding.application.existingSystemRequiresAppliedBinding,true);
+  assert.equal(binding.application.primitivePlainDefaultUiOrDefaultMaterialSubstitutionCannotPass,true);
+  assert.equal(binding.application.reuseAndCompositionBeforeNewAuthoring,true);
+  assert.equal(binding.existingGameConversion.existingAndFutureGamesCovered,true);
 });
 
 // [재사용 → 소폭 재질 보정 → 자산화] 회사 원본을 별도 파생으로 연결하되 실물·엔진 증거는 엄격히 분리한다.
