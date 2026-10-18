@@ -499,6 +499,7 @@ try {
  const camera3=new THREE.OrthographicCamera(-400,400,300,-300,.1,4000);camera3.position.set(0,0,1000);camera3.lookAt(0,0,0);
  const loader=new GLTFLoader(),models={},actors=new Map();
  await Promise.all(Object.entries(files).map(async ([id,url])=>{try{const gltf=await loader.loadAsync(url);models[id]=gltf.scene;}catch(e){console.warn('Vibe model load:',id,e);}}));
+ const loaded=Object.keys(models);window.vibe3dDiagnostics={loaded,missing:Object.keys(files).filter(k=>!models[k])};console.info('Vibe assets:',window.vibe3dDiagnostics);
  function role(kind,obj){if(kind==='player')return 'traveler';if(kind==='ai')return obj.party?'guardian':['samurai','archer','mage','rogue','blacksmith'][Math.abs(Math.floor(obj.x))%5];const name=String(obj.name||'');if(/늑대|wolf/i.test(name))return 'wolf';if(/거미|spider/i.test(name))return 'spider';if(/골렘|golem/i.test(name))return 'golem';if(/뱀|serpent/i.test(name))return 'serpent';return 'beetle';}
  window.vibe3dCanRender=(kind,obj)=>!!models[role(kind,obj)];
  window.vibe3dFrame=()=>{
