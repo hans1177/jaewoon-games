@@ -1,4 +1,5 @@
 <!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>3D 에셋 미리보기</title><style>html,body{margin:0;height:100%;background:#182238;color:#fff;font:14px system-ui}#message{position:absolute;left:12px;top:8px;z-index:2}canvas{display:block;width:100%;height:100%}</style><div id="message">모델 로딩 중</div><script type="module">
+import {VibeMotionEngine, createFixedStepMotionLoop} from './vibe-motion-engine.mjs';
 import * as THREE from './roblox/world-ghosts/native/mesh/three/three.module.js';
 import {GLTFLoader} from './roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
 const status=document.getElementById('message'),asset=new URLSearchParams(location.search).get('asset')||'';
@@ -19,10 +20,19 @@ let activeModel=null;const originals=new WeakMap();
 function restyle(){const [metal,rough,exposure]=styles[picker.value];renderer.toneMappingExposure=exposure;if(!activeModel)return;activeModel.traverse(obj=>{if(!obj.isMesh)return;for(const material of (Array.isArray(obj.material)?obj.material:[obj.material])){if(!material||typeof material.roughness!=='number')continue;if(!originals.has(material))originals.set(material,[material.metalness,material.roughness]);const [m,r]=originals.get(material);material.metalness=Math.min(1,m*.5+metal*.5);material.roughness=Math.min(1,Math.max(.05,r*.5+rough*.5));material.needsUpdate=true}})}
 picker.addEventListener('change',restyle);
 const resize=()=>{const w=innerWidth,h=innerHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)};addEventListener('resize',resize);resize();
-let mixer=null;const ground=new THREE.GridHelper(20,20,0x486a91,0x273a54);ground.position.y=-1;scene.add(ground);new GLTFLoader().load(url.href,gltf=>{
+let mixer=null, motion=null, advanceMotion=null;const clipNames=[];
+const animationPicker=document.createElement('select');animationPicker.setAttribute('aria-label','애니메이션 동작');animationPicker.style.cssText='position:absolute;top:84px;left:12px;z-index:3;padding:8px;border-radius:8px;background:#101b2e;color:white';document.body.append(animationPicker);
+const designPromise=fetch('./vibe-visual-design-system.json').then(r=>{if(!r.ok)throw Error('design unavailable');return r.json()});
+const ground=new THREE.GridHelper(20,20,0x486a91,0x273a54);ground.position.y=-1;scene.add(ground);new GLTFLoader().load(url.href,gltf=>{
 const model=gltf.scene;scene.add(model);activeModel=model;restyle();const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());model.position.sub(center);
 const radius=Math.max(size.x,size.y,size.z,0.1);ground.scale.setScalar(Math.max(radius/5,.05));ground.position.y=-size.y/2;camera.position.set(radius*1.5,radius*.9,radius*2.2);camera.lookAt(0,0,0);
-if(gltf.animations?.length){mixer=new THREE.AnimationMixer(model);mixer.clipAction(gltf.animations[0]).play()}status.textContent='원본 3D · '+(gltf.animations?.length||0)+'개 애니메이션';
+if(gltf.animations?.length){
+ mixer=new THREE.AnimationMixer(model);
+ for(const clip of gltf.animations){clipNames.push(clip.name);const opt=document.createElement('option');opt.value=clip.name;opt.textContent=clip.name||'동작 '+clipNames.length;animationPicker.append(opt)}
+ const activate=name=>{mixer.stopAllAction();const clip=gltf.animations.find(c=>c.name===name)||gltf.animations[0];mixer.clipAction(clip).reset().fadeIn(.15).play()};
+ animationPicker.addEventListener('change',()=>activate(animationPicker.value));activate(gltf.animations[0].name);
+ designPromise.then(design=>{motion=new VibeMotionEngine(design,{play:state=>{const matching=gltf.animations.find(c=>c.name.toLowerCase().includes(state.replaceAll('-',''))||c.name.toLowerCase().includes(state));if(matching){animationPicker.value=matching.name;activate(matching.name)}}});motion.setGenre(picker.value);advanceMotion=createFixedStepMotionLoop(motion,{hz:60});picker.addEventListener('change',()=>{motion.setGenre(picker.value)});motion.enter('idle')}).catch(()=>{});
+}status.textContent='원본 3D · '+(gltf.animations?.length||0)+'개 애니메이션';
 },undefined,()=>{status.textContent='모델 로딩 실패 (파일 형식 또는 의존성 확인 필요)'});
-const clock=new THREE.Clock();let last=0;function draw(now){requestAnimationFrame(draw);if(document.hidden||now-last<33)return;last=now;mixer?.update(Math.min(clock.getDelta(),.1));renderer.render(scene,camera)}requestAnimationFrame(draw);
+const clock=new THREE.Clock();let last=0;function draw(now){requestAnimationFrame(draw);if(document.hidden||now-last<33)return;last=now;const delta=Math.min(clock.getDelta(),.1);advanceMotion?.(delta);mixer?.update(delta);renderer.render(scene,camera)}requestAnimationFrame(draw);
 </script></html>
