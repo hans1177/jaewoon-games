@@ -35,7 +35,7 @@ test('internal web game links use the registered source path without a score gat
     lifecycle:{state:'ACTIVE'},
     production:{class:'DEVELOPMENT_CONFIRMED'},
     sources:{web:{path:'web-games/'+id,archive,state}},
-    publication:{web:{route:'web-games/'+id+'/',sourceTreeSha:'a'.repeat(40),sourceCommit:'b'.repeat(40)}}
+    publication:{web:{route:'web-games/'+id+'/',sourceTreeSha:'a'.repeat(40)}}
   }});
   const eligible=row('fantasy-survival','UNITY_WEB_VERIFICATION_REQUIRED');
   assert.equal(api.playableWebHref(eligible),'https://hans1177.github.io/jaewoon-games/web-games/fantasy-survival/');
@@ -62,6 +62,7 @@ test('공개 매니페스트와 정확히 같은 원본 게임만 메인 실행 
   assert.equal(catalog.games[0].webPublishedRoute,'web-games/demo/');
   assert.equal(catalog.games[1].webPublishedRoute,'');
   assert.equal(catalog.games[2].webPublishedRoute,'');
+  assert.equal(Object.hasOwn(catalog.games[0],'webPublishedSourceSha'),false,'do not cause endless republish when manifest source commit advances');
   assert.throws(()=>syncPublishedWebRoutes({catalog,manifest:{...manifest,routes:['web-games/../bad/','web-games/stale/']},sourceTreeShaOf:()=>''}),/ROUTE_INVALID/);
   assert.throws(()=>syncPublishedWebRoutes({catalog,manifest:{...manifest,gameCount:3},sourceTreeShaOf:()=>''}),/MANIFEST_INVALID/);
 });
