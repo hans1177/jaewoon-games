@@ -66417,11 +66417,137 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_08a297c1d498c5da07bbc3ae",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8529",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "5d775752468906d0a7911cc4a9ff85806a4657d3",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8529,
+        "baseBranch": "main",
+        "headBranch": "focus/owner-three-games-mixed-platform-20261019",
+        "baseSha": "5d775752468906d0a7911cc4a9ff85806a4657d3",
+        "headSha": "ce10e31c684510d7c88624e302379a56ab18d1a4",
+        "mergeCommitSha": "fb286181dd53894bb8847a7095617ed7f12cb823",
+        "mergedAt": "2026-10-19T03:54:33Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a91c0a2424d7666a703919e4a9a297063d6bb8a91b195c2179942ed3983a83ac",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "focus/owner-three-games-mixed-platform-20261019",
+        "candidateSha": "ce10e31c684510d7c88624e302379a56ab18d1a4"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 193,
+        "deletedLineCount": 26,
+        "changedFiles": [
+          ".github/workflows/company-security-immune.yml",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-status-sync-direct-native.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "tools/company-status-sync.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-security-immune.yml",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-status-sync-direct-native.test.mjs",
+          "qa/vibe2-auto-planner.test.mjs",
+          "tools/company-status-sync.mjs",
+          "tools/vibe2-auto-planner.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8529",
+        "merge-commit:fb286181dd53894bb8847a7095617ed7f12cb823",
+        "base-main:5d775752468906d0a7911cc4a9ff85806a4657d3"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 533
+    "total": 534
   }
 }
