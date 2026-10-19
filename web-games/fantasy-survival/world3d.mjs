@@ -204,6 +204,7 @@ export async function createWorld3d(canvas){
   const undeadActors=new Map();
   const nativeCreatureActors=new Map();
   const missingVisibleMonsterIds=new Set();
+  let fallbackReason='';
   let qualityFactor=1,framesInWindow=0,fpsWindowStart=0;
   let undeadModelHeight=1;
   if(undeadSource){
@@ -269,12 +270,18 @@ export async function createWorld3d(canvas){
   function synchronizeNativeCreatures(state,px,py,stamp){
     const near=mobileBudget?720:1000;
     missingVisibleMonsterIds.clear();
-    let displayed=0;
+    let displayed=0,unsafeUnmappedEncounter=false;
     for(const e of state.enemies||[]){
       if(!e||e.hp<=0||e.area!==state.area||Math.hypot(e.x-px,e.y-py)>near*qualityFactor)continue;
       const kind=NATIVE_CREATURE_BY_ID.get(e.type?.id);
       if(!kind||!nativeCreatureSources.has(kind)){
-        if(e.type?.id!=='wastelandMummy')missingVisibleMonsterIds.add(e.type?.id||'unknown');
+        if(e.type?.id!=='wastelandMummy'||!undeadSource){
+          missingVisibleMonsterIds.add(e.type?.id||'unknown');
+          // Never let an invisible, original monster attack the player.
+          // The unmodified 2D renderer keeps that encounter playable until
+          // an exact-species native mesh is licensed, mapped and verified.
+          if(Math.hypot(e.x-px,e.y-py)<430)unsafeUnmappedEncounter=true;
+        }
         continue;
       }
       if(++displayed>(mobileBudget?12:22))break;
@@ -319,6 +326,7 @@ export async function createWorld3d(canvas){
       actor.mixer?.stopAllAction();
       scene.remove(actor.anchor);nativeCreatureActors.delete(key);
     }
+    return unsafeUnmappedEncounter;
   }
   if(hero)scene.add(hero.avatar);
   let playerToolName=null,playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'NONE'});
@@ -373,7 +381,7 @@ export async function createWorld3d(canvas){
       }
       framesInWindow=0;fpsWindowStart=sampleNow;
     }
-    if(state.area!=='surface'||!state.player){canvas.hidden=true;active=false;return}
+    if(state.area!=='surface'||!state.player){canvas.hidden=true;active=false;fallbackReason='region-3d-not-yet-mapped';return}
     const p=state.player,px=Number(p.x)||0,py=Number(p.y)||0,centerX=px*SCALE,centerY=py*SCALE;
     const w=window.innerWidth,h=window.innerHeight;
     if(w!==lastW||h!==lastH){
@@ -435,7 +443,7 @@ export async function createWorld3d(canvas){
       if(heroMixer){heroMixer.update(Math.min(.05,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
     }
     synchronizeUndead(state,px,py,seen);
-    synchronizeNativeCreatures(state,px,py,seen);
+    const unsafeUnmappedEncounter=synchronizeNativeCreatures(state,px,py,seen);
     resources(state.trees,'tree',px,py,seen,1.28);
     resources(state.swampTrees,'tree_large',px,py,seen,1.65);
     resources(state.rocks,'cobblestones',px,py,seen,1.05);
@@ -459,8 +467,13 @@ export async function createWorld3d(canvas){
     }
     // Reuse existing world entities. No synthetic monsters or substitute species.
     for(const [key,row] of entities)if(row.seen!==seen){scene.remove(row.model);entities.delete(key)}
+    if(unsafeUnmappedEncounter||!hero){
+      canvas.hidden=true;active=false;
+      fallbackReason=unsafeUnmappedEncounter?'unmapped-threat':'player-model-unavailable';
+      return;
+    }
     renderer.render(scene,camera);
-    active=true;canvas.hidden=false;
+    active=true;canvas.hidden=false;fallbackReason='';
   }
   function pick(clientX,clientY){
     if(!active||canvas.hidden||disposed)return null;
@@ -504,6 +517,7 @@ export async function createWorld3d(canvas){
     getWeatherEffects:()=>weatherVisualEffects,getAvatarRecipe:()=>avatarRecipe,
     getMissingAssetTypes:()=>assetReadiness.missingTypes,
     getUnmappedVisibleMonsterIds:()=>[...missingVisibleMonsterIds],
-    getAdaptiveQuality:()=>qualityFactor,productionReady:false
+    getAdaptiveQuality:()=>qualityFactor,getFallbackReason:()=>fallbackReason,
+    productionReady:false
   };
 }
