@@ -38,16 +38,19 @@ test('native preview binds actual downloaded CC0 OBJ sources with matching SHA25
   assert.match(moduleSource,new RegExp("'"+name+"'"));
  }
 });
-test('native scene is an opt-in internal render path, not a false production 3D declaration',()=>{
+test('native scene drives the default surface display but is not falsely production-certified',()=>{
  assert.match(moduleSource,/WebGLRenderer/);
  assert.match(moduleSource,/Float32BufferAttribute/);
  assert.match(moduleSource,/computeVertexNormals/);
  assert.match(moduleSource,/raycaster\.intersectObjects/);
  assert.match(moduleSource,/function frame\(state,regionAt\)/);
  assert.match(moduleSource,/if\(state\.area!=='surface'/);
- assert.match(index,/data-spatial-dimension="2d"/);
+ assert.match(index,/data-spatial-dimension="3d-loading"/);
  assert.match(index,/id="world3d"/);
- assert.match(index,/get\('preview3d'\)==='1'/);
+ assert.doesNotMatch(index,/loadForest3DCandidate|id="nativeForest3d"/);
+ assert.match(index,/if\(world3d\?\.isActive\(\)\)\{drawMiniMap\(now\);return\}/);
+ assert.match(index,/data-gameplay-3d-surface="native-world"/);
+ assert.doesNotMatch(index,/get\('preview3d'\)==='1'/);
  assert.match(index,/world3d\.frame\(state,regionAt\)/);
  assert.match(index,/world3d\?\.pick\(e\.clientX,e\.clientY\)/);
  assert.match(index,/world3d\)world3d\.dispose\(\)/);
@@ -114,8 +117,28 @@ test('downloaded KayKit mage is ledgered as preview only and source-bound to exi
  assert.match(moduleSource,/getAvatarRecipe:\(\)=>avatarRecipe/);
  assert.match(index,/type="importmap"/);
  assert.match(index,/"three":"\.\.\/\.\.\/assets\/roblox\/world-ghosts\/native\/mesh\/three\/three\.module\.js"/);
- assert.match(index,/get\('preview3d'\)==='1'/);
- assert.match(index,/data-spatial-dimension="2d"/);
+ assert.doesNotMatch(index,/get\('preview3d'\)==='1'/);
+ assert.match(index,/data-spatial-dimension="3d-loading"/);
+});
+
+test('native 3D binds exact existing monster types and adapts GPU load without changing their combat',()=>{
+ assert.match(moduleSource,/NATIVE_CREATURE_MODELS=Object\.freeze/);
+ for(const kind of ['wolf','golem','spider','serpent']){
+  assert.match(moduleSource,new RegExp("^  "+kind+":\\[",'m'));
+  assert.ok(fs.existsSync('assets/shared/creature-'+kind+'-actions.glb'));
+ }
+ for(const id of ['shadowwolf','golem','giantspider','worldtreesnake']){
+  assert.match(moduleSource,new RegExp("'"+id+"'"));
+  assert.match(index,new RegExp(id+":\\{id:'"+id+"'"));
+ }
+ assert.match(moduleSource,/synchronizeNativeCreatures\(state,px,py,seen\)/);
+ assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
+ assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+ assert.match(moduleSource,/getUnmappedVisibleMonsterIds:/);
+ assert.match(moduleSource,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,1\.5\)\*qualityFactor\)/);
+ assert.match(index,/MAGIC_FOREST_NATIVE_3D_FRAME_FAILED/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+ assert.match(moduleSource,/productionReady:false/);
 });
 
 test('Vibe asset-selector recognizes downloaded similar assets but cannot fake unverified actor/monster readiness',()=>{
