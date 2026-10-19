@@ -36,7 +36,7 @@ test('3D scene consumes live authoritative survival entities and native asset',(
   assert.match(runtime,/S\.weather/);
   assert.match(runtime,/S\.time/);
   assert.match(runtime,/GLTFLoader/);
-  assert.match(runtime,/humanoid-traveler\.glb/);
+  assert.match(runtime,/humanoid-traveler-actions\.glb/);
 });
 test('survival rules and save semantics remain in the original game',()=>{
   assert.match(page,/const SAVE_KEY='jg-wild-survival-v1'/);
@@ -51,4 +51,29 @@ test('survival rules and save semantics remain in the original game',()=>{
   assert.doesNotMatch(page,/function drawAnimal\s*\(/);
   assert.doesNotMatch(page,/\bctx\./i);
   assert.match(page,/if\(!wild3d\)return/);
+});
+
+test('wild forest uses archived original geometry exclusively for currently bound 3D entities',()=>{
+  assert.match(runtime,/OBJLoader/);
+  assert.match(runtime,/MTLLoader/);
+  assert.match(runtime,/ORIGINAL_ASSETS=Object\.freeze/);
+  assert.match(runtime,/shared\/homely-house\/tree_large\.obj/);
+  assert.match(runtime,/shared\/homely-house\/foliage_A\.obj/);
+  assert.match(runtime,/survival-core-world-v1\/rock_medium\.obj/);
+  assert.match(runtime,/monster-adventure-v1\/boar\.obj/);
+  assert.match(runtime,/shared\/humanoid-traveler-actions\.glb/);
+  assert.match(runtime,/loadOriginalSet\(\)/);
+  assert.match(runtime,/materials=mtl\.loadAsync/);
+  assert.match(runtime,/loader\.setMaterials\(palette\)/);
+  assert.match(runtime,/scene=await loader\.loadAsync/);
+  assert.doesNotMatch(runtime,/function makeTree\s*\(/);
+  assert.doesNotMatch(runtime,/function makeAnimal\s*\(/);
+  assert.doesNotMatch(runtime,/function makeHuman\s*\(/);
+  assert.doesNotMatch(runtime,/new THREE\.(?:ConeGeometry|SphereGeometry|DodecahedronGeometry|IcosahedronGeometry)/);
+});
+test('missing exact-source animal species stay explicit and cannot be passed off as completed',()=>{
+  assert.match(runtime,/MISSING_SPECIES_ORIGINALS=Object\.freeze\(\['rabbit','deer'\]\)/);
+  assert.match(runtime,/document\.body\.dataset\.missingOriginalSpecies/);
+  assert.doesNotMatch(runtime,/(?:models\.get|ORIGINAL_ASSETS\.)\(['"]wolf['"]\)/);
+  assert.match(runtime,/model=a\.type==='boar'\?models\.get\('boar'\):null/);
 });
