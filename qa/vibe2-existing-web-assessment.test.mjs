@@ -94,6 +94,28 @@ test('stale high validation does not hide current approved scope gaps',()=>{
 });
 
 
+// 메인: 정상 모듈 문법과 두 배포 경로에서 실존하는 원본 모델을 직접 재검증한다.
+test('existing module and shared model URLs parse and resolve on root and project paths',()=>{
+  const moon=fs.readFileSync('web-games/moon-ruins/index.html','utf8');
+  const moduleBody=moon.match(/<script\\b[^>]*type=["']module["'][^>]*>([\\s\\S]*?)<\\/script>/i)?.[1];
+  assert.ok(moduleBody?.includes('await import'),'moon-ruins real module startup missing');
+  const valid=spawnSync(process.execPath,['--check','--input-type=module'],{input:moduleBody,encoding:'utf8'});
+  assert.equal(valid.status,0,`moon-ruins module startup syntax: ${valid.stderr||''}`);
+  const invalid=spawnSync(process.execPath,['--check','--input-type=module'],{input:'await import(;',encoding:'utf8'});
+  assert.notEqual(invalid.status,0,'malformed module syntax must still fail');
+
+  const party=fs.readFileSync('web-games/party-rpg/index.html','utf8');
+  const modelPaths=[...party.matchAll(/['"](\\.\\.\\/\\.\\.\\/assets\\/shared\\/[^'"]+\\.glb)['"]/g)].map(row=>row[1]);
+  assert.equal(modelPaths.length,12,'party-rpg must bind all 12 existing shared models');
+  for(const base of [
+    'https://jaewoon-games.pages.dev/web-games/party-rpg/index.html',
+    'https://hans1177.github.io/jaewoon-games/web-games/party-rpg/index.html'
+  ])for(const url of modelPaths){
+    const actualPath=new URL(url,base).pathname.replace(/^\\/jaewoon-games\\//,'/').replace(/^\\//,'');
+    assert.ok(fs.statSync(actualPath).isFile(),`party-rpg missing model ${base} -> ${actualPath}`);
+  }
+});
+
 test('active or publicly playable development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
