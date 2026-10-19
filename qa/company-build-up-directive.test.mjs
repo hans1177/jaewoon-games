@@ -1884,6 +1884,58 @@ test('all-game F0 composition discovers real biome housing customization motion 
   }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
 });
 
+// 메인 · 수많은 공통 모듈이 있어도 실제 게임 소스에 없는 시스템을 생성 완료로 기록하지 않는다.
+test('F0 game modules expose diverse existing cross-system owners and exact QA gaps without runtime PASS',()=>{
+  const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-f0-cross-system-'));
+  try{
+    const sourceRoot='web-games/vibe-modules';
+    fs.mkdirSync(path.join(repoRoot,sourceRoot,'systems'),{recursive:true});
+    const files={
+      'world.js':'const region = "region"; const biome = "biome"; const weather = "weather";',
+      'house.js':'const housing = "housing"; const inventory = "inventory"; const datastore = "DataStoreService";',
+      'avatar.js':'const customization = "customization"; const equipped = "equipped";',
+      'npc.js':'const npc = "npc"; const questLog = "questLog";',
+      'combat.js':'const attack = "attack"; const Animator = "Animator";',
+      'economy.js':'const crafting = "crafting"; const economy = "economy";',
+      'farming.js':'const crop = "crop"; const season = "season";',
+      'effects.js':'const projectile = "projectile"; const sound = "sound";',
+      'network.js':'const serverRpc = "serverRpc"; const collisionShape = "collisionShape";'
+    };
+    for(const [file,content] of Object.entries(files))
+      fs.writeFileSync(path.join(repoRoot,sourceRoot,'systems',file),content);
+    const observed=inspectGameSources({repoRoot,sourceRoots:[sourceRoot]});
+    const plan=buildGameInternalAutoCompositionPlan({
+      gameId:'vibe-modules',platform:'WEB',repoRoot,sourceRoot,sourceObservation:observed,
+      design:{identity:'Modules',spatialLayout:{biome:'forest'},coreLoop:['집짓기','퀘스트','제작']}
+    });
+    for(const name of [
+      'BIOME','HOUSING','CUSTOMIZATION','MOTION','ACTION','NPC_AI','QUEST_DIALOGUE',
+      'CRAFTING','ECONOMY','FARMING','WEATHER','PHYSICS','AUDIO','SKILL_VFX','NETWORK'
+    ]){
+      const row=plan.components.find(x=>x.id===name);
+      assert.ok(row,name);
+      assert.equal(row.state,'EXISTING_SOURCE_CONNECTION_CANDIDATE',name);
+      assert.equal(row.runtimeVerified,false,name);
+    }
+    const connections=plan.moduleConnections;
+    assert.ok(connections.length>=6);
+    for(const id of [
+      'WORLD_BIOME_WEATHER','HOUSING_INVENTORY_SAVE','CUSTOMIZATION_EQUIPMENT_SAVE',
+      'NPC_AI_QUEST','ACTION_MOTION_COMBAT','CRAFT_ECONOMY_INVENTORY',
+      'FARMING_WORLD_WEATHER','SKILL_VFX_AUDIO'
+    ]){
+      const row=connections.find(x=>x.id===id);
+      assert.ok(row,id);
+      assert.equal(row.state,'EXISTING_SOURCE_CONNECTION_CANDIDATE',id);
+      assert.equal(row.passed,false,id);
+      assert.equal(row.runtimeVerified,false,id);
+      assert.ok(row.responsibleFiles.every(file=>file.startsWith(sourceRoot+'/')));
+    }
+    assert.equal(plan.implementationProven,false);
+    assert.equal(plan.runtimeVerified,false);
+  }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
+});
+
 test('auto composition refuses phantom UI and cross-game source while preserving source-only quality state',()=>{
   const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-compose-isolation-'));
   try{
