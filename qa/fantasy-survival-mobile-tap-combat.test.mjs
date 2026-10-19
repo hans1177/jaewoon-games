@@ -1,0 +1,45 @@
+// Regression: the real Magic Forest source receives one-tap combat without changing combat authority.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+
+const source=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
+
+test('mobile tap combat preserves parseable game script and native button input',()=>{
+  const mark="<script>\n(()=>{'use strict';";
+  const start=source.indexOf(mark),end=source.indexOf('</script>',start);
+  assert.ok(start>=0&&end>start);
+  assert.doesNotThrow(()=>new vm.Script(source.slice(start+8,end)));
+  assert.match(source,/getElementById\('attack'\)\.addEventListener\('pointerdown'/);
+  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+  assert.match(source,/function tapArrowAimTarget\(target,now\)/);
+  assert.match(source,/const target=tappedInRange\?tapped:nearestSporeTarget\(p,w\)/);
+  assert.match(source,/body:has\(#sheet\.open\) \.actions/);
+});
+
+test('tapping a visible enemy fires only when target is attackable and within weapon range',()=>{
+  const start=source.indexOf('let closest=null,cd=70;');
+  const end=source.indexOf("\n if(state.area==='surface'){",start);
+  assert.ok(start>=0&&end>start,'live handleWorldTap enemy branch must exist');
+  const tap=new Function('visible','dist','wx','wy','now','state','doubleTapTarget',
+   'unlockBestiary','tapArrowAimTarget','currentWeapon','showNotice','attack',source.slice(start,end));
+  const cases=[
+    {name:'in range',x:40,range:120,attacks:1,aim:1},
+    {name:'out of range',x:200,range:80,attacks:0,aim:0},
+    {name:'unarmed',x:40,range:null,attacks:0,aim:0},
+    {name:'harmless',x:40,range:120,mood:'harmless',attacks:0,aim:0},
+    {name:'burrowed',x:40,range:120,burrowed:true,attacks:0,aim:0},
+  ];
+  for(const c of cases){
+    const enemy={x:c.x,y:0,type:{id:'test',name:'시험 몬스터',r:20,
+      mood:c.mood||'hostile',burrower:!!c.burrowed},netId:'enemy-test',hp:100,area:'surface',emerged:!c.burrowed};
+    const state={player:{x:0,y:0,faceX:0,faceY:0}};
+    let attacks=0,aim=0;
+    tap([enemy],(x,y,xx,yy)=>Math.hypot(x-xx,y-yy),c.x,0,1000,state,
+      ()=>false,()=>{},()=>{aim++},()=>c.range===null?null:{range:c.range},
+      ()=>{},target=>{assert.equal(target,enemy);attacks++});
+    assert.equal(attacks,c.attacks,c.name);
+    assert.equal(aim,c.aim,c.name+' should preserve ranged tap-aim bounds');
+  }
+});
