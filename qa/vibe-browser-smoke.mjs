@@ -64,11 +64,15 @@ try{
       width:canvas?.width||0,height:canvas?.height||0,
       webgl:gl?String(gl.getParameter(gl.VERSION)):'',
       mode:data.spatialDimension,coverage:data.nativeMonsterCoverage||'',
+      drawCalls:Number(data.nativeDrawCalls||0),
+      triangles:Number(data.nativeTriangles||0),
       playerX:Number(data.playerX),playerY:Number(data.playerY)};
     });
     assert.ok(metrics.visible&&metrics.width>150&&metrics.height>150,
      viewport.name+': WebGL canvas never became a real visible game frame');
     assert.match(metrics.webgl,/WebGL 2/i,viewport.name+': live game is not WebGL2');
+    assert.ok(metrics.drawCalls>4&&metrics.triangles>400,
+     viewport.name+': WebGL2 exists but real game geometry was not rendered');
     assert.equal(metrics.coverage,'currently-mapped',
      viewport.name+': an invisible original enemy may be present');
     assert.deepEqual(gameErrors,[],viewport.name+': uncaught browser errors before movement');
@@ -98,4 +102,4 @@ try{
   }
  }
  console.log('VIBE_BROWSER_SMOKE_PASS');
-}finally{await browser?.close();server.kill()}
+}finally{await browser?.close();server?.kill()}
