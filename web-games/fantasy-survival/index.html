@@ -3927,7 +3927,7 @@ function updateTempleEnemySpecial(e,p,now,playerD){
 
 function worldPointerCoords(e){return world3d?.pick(e.clientX,e.clientY)||{x:e.clientX+state.camera.x,y:e.clientY+state.camera.y}}
 function handleWorldTap(e){
- const worldPoint=worldPointerCoords(e),wx=worldPoint.x,wy=worldPoint.y,now=performance.now();
+ const legacyX=e.clientX+state.camera.x,legacyY=e.clientY+state.camera.y,worldPoint=world3d?.pick(e.clientX,e.clientY),wx=worldPoint?.x??legacyX,wy=worldPoint?.y??legacyY,now=performance.now();
  if(state.blueprint){moveBlueprint(wx,wy);return}
  if(isCreative()&&state.creativePlacing){state.creativePlacing=false;if(state.area!=='surface'){showNotice('스폰 블록은 지상에 설치해');return}const block={id:'spawn-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),x:clamp(wx,45,WORLD.w-45),y:clamp(wy,45,WORLD.h-45)};state.creativeSpawners.push(block);state.dirty=true;saveGame(false);showNotice('스폰 블록 설치 완료 · 두 번 눌러 소환 설정');return}
  if(isCreative()){
