@@ -1610,6 +1610,18 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
     HOUSING:/\b(?:housing|buildMode|housePlacement|structurePlacement|buildingPlacement|furniture|placeStructure|placeBuilding|placeFurniture|constructBuilding)\b|하우징|건축모드|가구배치/i,
     MOTION:/\b(?:Animator|AnimationTrack|AnimationMixer|LoadAnimation|motionState|motionBlend|locomotion|TweenService|SkinnedMeshRenderer)\b|모션|애니메이션/i,
     ACTION:/\b(?:attack|combat|gather|harvest|useTool|castSkill|dodge|jump|playerAction|actionState|interact)\b|공격|채집|전투|행동/i,
+    NPC_AI:/\b(?:npc|companion|squad|pathfinding|behaviorTree|decisionTree|enemyAI|aiParty|agentState)\b|NPC|주민|동료|인공지능/i,
+    QUEST_DIALOGUE:/\b(?:quest|dialogue|dialog|conversation|questLog|storyState)\b|퀘스트|대화|임무/i,
+    CRAFTING:/\b(?:crafting|craftRecipe|craftItem|recipeBook|workbench|craftingStation)\b|제작법|제작대|아이템제작/i,
+    ECONOMY:/\b(?:economy|merchant|currency|tradeOffer|marketplace|shopInventory|purchaseItem)\b|경제|거래|화폐|상점/i,
+    PROGRESSION:/\b(?:experiencePoints|levelUp|progression|skillTree|techTree|unlockAbility)\b|레벨업|스킬트리|성장시스템/i,
+    FARMING:/\b(?:farming|crop|harvestCrop|plantSeed|cultivation|growPlant)\b|농사|농장|작물|씨앗/i,
+    WEATHER:/\b(?:weather|dayNight|timeOfDay|seasonCycle|rainfall|snowfall)\b|날씨|계절|기후/i,
+    PHYSICS:/\b(?:physics|rigidbody|collisionShape|raycast|collisionResponse|constraint)\b|물리|충돌체|충돌판정/i,
+    CAMERA:/\b(?:camera|cinematic|cutscene|followCamera|cameraShake)\b|카메라|시네마틱|컷신/i,
+    AUDIO:/\b(?:audio|sound|music|sfx|bgm|soundscape|AudioSource|SoundService)\b|오디오|효과음|배경음악/i,
+    SKILL_VFX:/\b(?:skillEffect|projectile|particleEmitter|visualEffect|spellCast|vfx)\b|스킬이펙트|마법효과|파티클/i,
+    NETWORK:/\b(?:RemoteEvent|RemoteFunction|multiplayer|replication|networkSync|serverRpc|clientRpc)\b|멀티플레이|동기화|서버권한/i,
     INTERACTION:/proximityprompt|clickdetector|interact|pickup|collect|open.?chest/i,
     REWARD:/\bdrop\b|reward|loot|pickup|collect|grant.?item/i,
     SAVE:/datastore|GetAsync|UpdateAsync|SetAsync|SaveAsync|load.?data|save.?data|persist/i,
@@ -1648,9 +1660,26 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
     BIOME:/biome|region|terrain|world.?map|바이옴|지형|지역/i.test(designText),
     HOUSING:/housing|base.?building|player.?home|buildable|하우징|건축|집.?꾸미기/i.test(designText),
     MOTION:/animat|locomotion|motion|모션|애니메이션/i.test(designText),
-    ACTION:/attack|combat|gather|harvest|player.?action|공격|채집|전투|액션/i.test(designText)
+    ACTION:/attack|combat|gather|harvest|player.?action|공격|채집|전투|액션/i.test(designText),
+    NPC_AI:/npc|companion|enemy.?ai|주민|동료|인공지능/i.test(designText),
+    QUEST_DIALOGUE:/quest|dialog|conversation|퀘스트|대화|임무/i.test(designText),
+    CRAFTING:/craft|recipe|workbench|제작법|제작대|조합/i.test(designText),
+    ECONOMY:/economy|merchant|currency|trade|경제|상점|거래/i.test(designText),
+    PROGRESSION:/progression|level.?up|skill.?tree|성장|레벨업/i.test(designText),
+    FARMING:/farm|crop|harvest|농장|농사|작물/i.test(designText),
+    WEATHER:/weather|season|day.?night|날씨|계절/i.test(designText),
+    PHYSICS:/physics|collision|rigidbody|물리|충돌/i.test(designText),
+    CAMERA:/camera|cinematic|cutscene|카메라|컷신/i.test(designText),
+    AUDIO:/audio|sound|music|sfx|오디오|효과음|음악/i.test(designText),
+    SKILL_VFX:/spell|skill.?effect|projectile|particle|마법|이펙트/i.test(designText),
+    NETWORK:/multiplayer|replication|network|멀티플레이|동기화/i.test(designText)
   };
-  const componentIds=['LOBBY','CUSTOMIZATION','MATERIAL','INVENTORY','EQUIPMENT','UI','WORLD','BIOME','HOUSING','MOTION','ACTION','INTERACTION','SHOP'];
+  const componentIds=[
+    'LOBBY','CUSTOMIZATION','MATERIAL','INVENTORY','EQUIPMENT','UI','WORLD','BIOME',
+    'HOUSING','MOTION','ACTION','INTERACTION','SHOP','NPC_AI','QUEST_DIALOGUE',
+    'CRAFTING','ECONOMY','PROGRESSION','FARMING','WEATHER','PHYSICS','CAMERA','AUDIO',
+    'SKILL_VFX','NETWORK'
+  ];
   const components=componentIds.map(key=>Object.freeze({
     id:key,
     state:found(key)?'EXISTING_SOURCE_CONNECTION_CANDIDATE':designDemand[key]?'REVIEW_REQUIRED_NO_SOURCE':'NOT_APPLICABLE_WITHOUT_SOURCE',
@@ -1658,6 +1687,27 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
     useExistingGameStateOnly:true,createPlaceholderUi:false,
     implementationProven:false,runtimeVerified:false
   }));
+  // 실제 역할 소스와 승인된 설계가 있는 교차 시스템만 F0 연결 후보로 발행한다.
+  // 역할 이름과 소스 시그니처는 동작·저장·멀티플레이 검증이 아니다.
+  const connectionSpecs=[
+    ['WORLD_BIOME_WEATHER',['WORLD','BIOME','WEATHER'],['NATIVE_TERRAIN_AND_REGION_GRAPH','APPROVED_WEATHER_STATE','MOBILE_STREAMING']],
+    ['HOUSING_INVENTORY_SAVE',['HOUSING','INVENTORY','SAVE'],['ACTUAL_PLACEMENT_COLLISION','AUTHORITATIVE_COST_AND_OWNERSHIP','PERSIST_AND_REJOIN']],
+    ['CUSTOMIZATION_EQUIPMENT_SAVE',['CUSTOMIZATION','EQUIPMENT','SAVE'],['REAL_RIG_AND_OUTFIT_BINDING','SAVED_AVATAR_AND_EQUIPMENT','RECONNECT_RESTORE']],
+    ['NPC_AI_QUEST',['NPC_AI','QUEST_DIALOGUE'],['NPC_DECISION_TO_DIALOGUE_EVENT','QUEST_STATE_AND_SERVER_AUTHORITY']],
+    ['ACTION_MOTION_COMBAT',['ACTION','MOTION','COMBAT'],['INPUT_TO_AUTHORITATIVE_HIT','EXACT_EXISTING_HIT_TIMING','RIG_PLAYBACK_AND_REACTION']],
+    ['CRAFT_ECONOMY_INVENTORY',['CRAFTING','ECONOMY','INVENTORY'],['RECIPE_RESOURCE_CONSUMPTION','AUTHORITATIVE_CURRENCY_AND_ITEM_STATE','SAVE_AND_REJOIN']],
+    ['FARMING_WORLD_WEATHER',['FARMING','WORLD','WEATHER'],['APPROVED_CROP_REGION_AND_SEASON','HARVEST_STATE_AND_STORAGE']],
+    ['SKILL_VFX_AUDIO',['SKILL_VFX','ACTION','AUDIO'],['SKILL_ACTUAL_EVENT_TO_EFFECT','AUDIO_STATE_AND_CLEANUP','MOBILE_EFFECT_BUDGET']]
+  ];
+  const moduleConnections=Object.freeze(connectionSpecs.filter(([,roles])=>roles.some(key=>found(key)||designDemand[key]))
+    .map(([id,roles,checks])=>Object.freeze({
+      id,roles:Object.freeze(roles),
+      state:roles.every(found)?'EXISTING_SOURCE_CONNECTION_CANDIDATE':'MISSING_REQUIRED_SOURCE_REVIEW',
+      missingRoles:Object.freeze(roles.filter(key=>!found(key))),
+      responsibleFiles:Object.freeze(uniq(roles.flatMap(key=>targets[key]||[])).slice(0,8)),
+      checks:Object.freeze(checks),
+      gameSourceMutationPerformed:false,passed:false,runtimeVerified:false
+    })));
   const contextualUi=Object.freeze({
     combat:found('UI')&&found('COMBAT')?Object.freeze(['HEALTH_STATUS','SKILL_AND_DODGE_FROM_EXISTING_BINDINGS','DANGER_FEEDBACK']):Object.freeze([]),
     lobby:found('UI')&&found('LOBBY')?Object.freeze(['EXISTING_GAME_ENTRY','PARTY_SHOP_PORTAL_ONLY_WHEN_IMPLEMENTED']):Object.freeze([]),
@@ -1710,7 +1760,7 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
     sourceTreeFingerprint:clean(sourceObservation?.sourceTreeFingerprint)||null,
     sourceOnlyEvidence:true,applicableGameFeaturesOnly:true,
     components:Object.freeze(components),sourceFilesByRole:Object.freeze(targets),
-    uiModeSelection:contextualUi,worldGraph,stateChain,
+    uiModeSelection:contextualUi,worldGraph,stateChain,moduleConnections,
     sharedAssetSelection:Object.freeze({
       registry:'company-asset-library.json',archives:'assets/asset-manifest.json#sharedOriginalArchives',
       ui:'assets/roblox/common-ui-v1/catalog.json',
@@ -2333,7 +2383,7 @@ export function directivePrompt(d={}){
     'VISUAL:',
     visual,
     'GAME_INTERNAL_AUTO_COMPOSITION: '+JSON.stringify(d.gameInternalAutoComposition||{}),
-    'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI/world/biome/housing/motion/action responsibilities when the game source and approved design contain them. Biomes must map approved regions to real native terrain/navigation/streaming; housing must preserve placement/cost/ownership/save/rejoin; customization must use actual character model and saved identity; motion must drive the existing action and its approved hit event without changing timing. Dynamic mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with actual authoritative state; a source signature alone never passes QA. No new asset generation or shadow system.',
+    'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI/world/biome/housing/motion/action and source-grounded NPC AI/quest/dialogue/crafting/economy/progression/farming/weather/physics/camera/audio/skill effects/network only when game source and approved design contain them. Biomes must map approved regions to real native terrain/navigation/streaming; housing must preserve placement/cost/ownership/save/rejoin; customization must use actual character model and saved identity; motion must drive existing actions and approved hit events; NPC decisions must not grant economy/save/combat authority; crafting and shopping use actual items/currency/state. Use applicable moduleConnections as source-only QA work units, never completed features. Mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with authoritative state; source signatures never pass QA. No new asset generation or shadow system.',
     'PLAYER_FACING_INSPECTION_CONTRACT:',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
     `EXPERIENCE_BUILD_UP: ${JSON.stringify(d.experienceBuildUpContract||{})}`,
