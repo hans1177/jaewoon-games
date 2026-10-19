@@ -5,7 +5,7 @@ import fs from 'node:fs';
 
 test('central v499 preserves every result artifact while coalescing callback workflows under pressure',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.equal(policy.version,499);
+  assert.ok(policy.version>=499,'current policy must retain the v499 pressure-coalescing contract');
   const gate=policy.developmentSpeedExecution?.controlPlaneQueueBacklogMitigation||{};
   assert.equal(gate.status,'ENABLED_PRESSURE_COHORT_FANIN');
   assert.equal(gate.neuronCompletionCallback?.resultBearing,true);
