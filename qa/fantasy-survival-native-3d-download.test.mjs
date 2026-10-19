@@ -7,6 +7,7 @@ import {createHash} from 'node:crypto';
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../assets/vibe-environment-director.js';
 import {createVibeCharacterCustomizationRecipe} from '../assets/vibe-character-identity-director.js';
 import {createSurvivalPlayerMotionProfile} from '../assets/vibe-motion-director.js';
+import {planAssetApplication} from '../assets/asset-selector.js';
 
 
 const home='assets/shared/homely-house/';
@@ -115,4 +116,27 @@ test('downloaded KayKit mage is ledgered as preview only and source-bound to exi
  assert.match(index,/"three":"\.\.\/\.\.\/assets\/roblox\/world-ghosts\/native\/mesh\/three\/three\.module\.js"/);
  assert.match(index,/get\('preview3d'\)==='1'/);
  assert.match(index,/data-spatial-dimension="2d"/);
+});
+
+test('Vibe asset-selector recognizes downloaded similar assets but cannot fake unverified actor/monster readiness',()=>{
+ const plan=planAssetApplication({
+  prompt:'마력숲 캐릭터 몬스터 숲 나무',
+  manifest:{assets:[
+   {id:'external-tinytreats-tree-v1',types:['prop','background'],
+    path:'assets/shared/homely-house/tree.obj',license:'CC0',downloaded:true},
+   {id:'external-actor-mage',types:['character'],
+    path:'assets/roblox/actors/native/mage.glb',license:'CC0-1.0',
+    downloaded:true,verifiedAnimation:false}
+  ]}
+ });
+ assert.ok(plan.matched.some(x=>x.id==='external-tinytreats-tree-v1'));
+ assert.ok(plan.missingTypes.includes('character'),'an unverified actor must not be promoted');
+ assert.ok(plan.missingTypes.includes('enemy'),'similar-species monster downloads are still required');
+ assert.equal(plan.sourceBindingVerified,false);
+ assert.equal(plan.nativeRuntimeVerified,false);
+ assert.equal(plan.appliedToGame,false);
+ assert.equal(plan.ready,false);
+ assert.match(moduleSource,/planAssetApplication\(/);
+ assert.match(moduleSource,/getMissingAssetTypes:\(\)=>assetReadiness\.missingTypes/);
+ assert.match(moduleSource,/productionReady:false/);
 });
