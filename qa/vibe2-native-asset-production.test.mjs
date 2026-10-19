@@ -83,6 +83,45 @@ test('acquired Roblox CC0-1.0 GLB is selected as pending native-import reuse, ne
   assert.notEqual(wrongRole.nextActions.find(row=>row.family==='CREATURE').assetId,actor.id);
 });
 
+// 메인 · 특정 게임에 묶이지 않은 F0 공통 생물 외형 대체 회귀.
+test('all-game F0 asset supply reuses same-species 3D creature without accepting unrelated forms',()=>{
+  const actor={id:'licensed-shared-wolf',family:'CREATURE',role:'wolf',
+    platform:'SHARED_NATIVE_SOURCE',companyCommonBase:true,
+    path:'assets/shared/wolf.glb',sourceSha256:'a'.repeat(64),
+    license:'CC0-1.0',status:'REPO_ASSET',productionVerified:false};
+  const registry={assets:[actor],externalSources:[]};
+  for(const role of ['shadowwolf','crystal_wolf','polarwolf']){
+    const result=buildAssetSupplyDecisionSummary({
+      gameId:'different-existing-game',target:'web',
+      request:'licensed wolf model reuse',
+      requirements:[{family:'CREATURE',role}],registry
+    });
+    const action=result.nextActions.find(row=>row.family==='CREATURE');
+    assert.equal(action.assetId,actor.id,role);
+    assert.ok(action.roleEvidence.matchedRoles.includes(role),role);
+    assert.equal(action.roleEvidence.visualSpeciesSubstitute,true,role);
+    assert.equal(action.roleEvidence.visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa,true,role);
+    assert.equal(action.roleEvidence.originalMonsterIdentityAndGameplayPreserved,true,role);
+    assert.equal(result.productionVerificationGranted,false,'same species does not constitute runtime approval');
+  }
+  for(const role of ['werewolf','ghost','boar']){
+    const result=buildAssetSupplyDecisionSummary({
+      gameId:'different-existing-game',target:'web',
+      request:'creature visual replacement',
+      requirements:[{family:'CREATURE',role}],registry
+    });
+    const action=result.nextActions.find(row=>row.family==='CREATURE');
+    assert.notEqual(action?.assetId,actor.id,'unrelated or humanoid species must not be silently substituted: '+role);
+  }
+  const weapon=buildAssetSupplyDecisionSummary({
+    gameId:'different-existing-game',target:'web',
+    request:'weapon asset selection',requirements:[{family:'WEAPON',role:'shadowwolf'}],
+    registry:{assets:[{...actor,id:'not-a-creature',family:'WEAPON'}],externalSources:[]}
+  });
+  assert.notEqual(weapon.nextActions.find(row=>row.family==='WEAPON')?.assetId,'not-a-creature',
+    'species substitution is presentation-only for creatures');
+});
+
 // [재사용 → 소폭 재질 보정 → 자산화] 회사 원본을 별도 파생으로 연결하되 실물·엔진 증거는 엄격히 분리한다.
 test('eligible internal 3d asset auto-fill exposes exact native material derivative and unverified assetization',()=>{
   const original={
