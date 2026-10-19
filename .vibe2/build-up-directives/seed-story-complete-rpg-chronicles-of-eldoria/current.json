@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g30-513265daad05",
-  "directiveFingerprint": "513265daad05471412b2b52d83e8811264723919ca902e5582465615e49e0e3f",
-  "previousDirectiveFingerprint": "50bb7e819987970391e3f9c8da0434a029ef868bf46c1c60ff31b2e65e97e243",
-  "forbiddenRepeatFingerprint": "50bb7e819987970391e3f9c8da0434a029ef868bf46c1c60ff31b2e65e97e243",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g31-657e0d96d102",
+  "directiveFingerprint": "657e0d96d1026765a72c793914a3718590f1fe1a18342d8ae197a907d4cc628d",
+  "previousDirectiveFingerprint": "513265daad05471412b2b52d83e8811264723919ca902e5582465615e49e0e3f",
+  "forbiddenRepeatFingerprint": "513265daad05471412b2b52d83e8811264723919ca902e5582465615e49e0e3f",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
-  "generation": 30,
+  "generation": 31,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-  "sourceTreeFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
+  "sourceTreeFingerprint": "bca8f8724688b51ee0ec1126402da5c8e878d40b40cdb0c95a67bcd3aae445b5",
   "designFingerprint": "fc43ddb89b5e8dce68d47fb0a41fd37311880ddd79f8176510677f595d82d45d",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -294,7 +294,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
+        "sourceTreeFingerprint": "bca8f8724688b51ee0ec1126402da5c8e878d40b40cdb0c95a67bcd3aae445b5",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -342,7 +342,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "fc43ddb89b5e8dce68d47fb0a41fd37311880ddd79f8176510677f595d82d45d",
-    "sourceTreeFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
+    "sourceTreeFingerprint": "bca8f8724688b51ee0ec1126402da5c8e878d40b40cdb0c95a67bcd3aae445b5",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -889,7 +889,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
+    "sourceTreeFingerprint": "bca8f8724688b51ee0ec1126402da5c8e878d40b40cdb0c95a67bcd3aae445b5",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4492,23 +4492,23 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 145,
+      "combat": 170,
       "progression": 469,
-      "ai": 45,
+      "ai": 47,
       "save": 85,
       "multiplayer": 26,
       "animation": 37,
-      "motionStates": 620,
-      "gameFeel": 35,
+      "motionStates": 635,
+      "gameFeel": 46,
       "vfx": 43,
       "camera": 33,
       "audio": 4,
-      "audioDynamics": 15,
+      "audioDynamics": 13,
       "ui": 869,
       "uiFlow": 1122,
       "entryFlow": 12,
       "loadingFlow": 0,
-      "input": 121,
+      "input": 119,
       "map": 196,
       "landmark": 36,
       "interaction": 257,
@@ -4533,7 +4533,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau",
-        "score": 280
+        "score": 304
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
@@ -4541,7 +4541,7 @@
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "score": 145
+        "score": 146
       },
       {
         "file": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/RobloxCommonMaterials.luau",
@@ -4946,19 +4946,19 @@
   "previousVersionDelta": {
     "previousGoal": "엘도리아 연대기. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 엘도리아 연대기에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 29,
-    "previousSourceTreeFingerprint": "dd88b4776c9144c50e0d37c8b59087fb36a790abb8abc4db4263a5d6deff59b9",
-    "currentSourceTreeFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
+    "previousGeneration": 30,
+    "previousSourceTreeFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
+    "currentSourceTreeFingerprint": "bca8f8724688b51ee0ec1126402da5c8e878d40b40cdb0c95a67bcd3aae445b5",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "roblox-package-asset-binding-failed",
+    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
     "blockers": [
-      "roblox-source-promotion-pending"
+      "roblox-build-preflight-blocked"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6105,7 +6105,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 355165,
+        "sourceBytes": 384474,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6138,13 +6138,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 3,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=3.",
+    "themeDepth": 4,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 3,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 4,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -6153,7 +6153,6 @@
       },
       "sequence": [
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -6163,6 +6162,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY"
@@ -6194,7 +6194,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 150,
+        "score": 132,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -6308,11 +6308,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 30,
-    "previousGeneration": 29,
+    "generation": 31,
+    "previousGeneration": 30,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
-    "priorSourceFingerprint": "dd88b4776c9144c50e0d37c8b59087fb36a790abb8abc4db4263a5d6deff59b9",
+    "sourceFingerprint": "bca8f8724688b51ee0ec1126402da5c8e878d40b40cdb0c95a67bcd3aae445b5",
+    "priorSourceFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6331,7 +6331,7 @@
     "version": 1,
     "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
+    "sourceTreeFingerprint": "bca8f8724688b51ee0ec1126402da5c8e878d40b40cdb0c95a67bcd3aae445b5",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6709,7 +6709,7 @@
     "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
+    "sourceTreeFingerprint": "bca8f8724688b51ee0ec1126402da5c8e878d40b40cdb0c95a67bcd3aae445b5",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7543,11 +7543,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5a5df006f73a17aba3af6eada412ab945d012926d999f998cfc8b9eb42cd79c6",
+      "sourceTreeFingerprint": "bca8f8724688b51ee0ec1126402da5c8e878d40b40cdb0c95a67bcd3aae445b5",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "roblox-package-asset-binding-failed"
+      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -7602,7 +7602,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 31,
+    "nextGeneration": 32,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7664,5 +7664,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-17T13:06:35.746Z"
+  "generatedAt": "2026-10-19T05:25:09.063Z"
 }

@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g49-9d3cc54f6604",
-  "directiveFingerprint": "9d3cc54f66041e8335ee83c73f3e3263d2c1a2a8c9e759d85b7d9383d2d2ac9e",
-  "previousDirectiveFingerprint": "3cc3aefc669fa8c09c5aceb28571e52addea44d3f7736e4d12e87ec8eaf65a02",
-  "forbiddenRepeatFingerprint": "3cc3aefc669fa8c09c5aceb28571e52addea44d3f7736e4d12e87ec8eaf65a02",
+  "directiveId": "daechung-rpg-build-up-g50-233183e8e9ed",
+  "directiveFingerprint": "233183e8e9edf75b43df8b92011693b4745dcf6c16e766bce0e69f8b2e4d3143",
+  "previousDirectiveFingerprint": "9d3cc54f66041e8335ee83c73f3e3263d2c1a2a8c9e759d85b7d9383d2d2ac9e",
+  "forbiddenRepeatFingerprint": "9d3cc54f66041e8335ee83c73f3e3263d2c1a2a8c9e759d85b7d9383d2d2ac9e",
   "gameId": "daechung-rpg",
   "gameName": "5포탈 RPG: 던전 파티",
-  "generation": 49,
+  "generation": 50,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
-  "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+  "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
   "designFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -294,7 +294,7 @@
           "전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+        "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -444,7 +444,7 @@
       "nextAction": "OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL"
     },
     "designFingerprint": "5f4d3323871061ae658fc39249d44e8874ecde963a17490eb33eb1c78aeb7169",
-    "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -999,7 +999,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4609,8 +4609,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 912,
-      "progression": 1085,
+      "combat": 914,
+      "progression": 1077,
       "ai": 185,
       "save": 261,
       "multiplayer": 27,
@@ -4622,12 +4622,12 @@
       "audio": 44,
       "audioDynamics": 35,
       "ui": 1131,
-      "uiFlow": 1535,
+      "uiFlow": 1537,
       "entryFlow": 39,
       "loadingFlow": 0,
       "input": 219,
       "map": 898,
-      "landmark": 110,
+      "landmark": 114,
       "interaction": 436,
       "inventory": 322,
       "equipment": 269,
@@ -4654,11 +4654,11 @@
       },
       {
         "file": "roblox-games/daechung-rpg/client/Game.client.luau",
-        "score": 518
+        "score": 517
       },
       {
         "file": "roblox-games/daechung-rpg/shared/GameConfig.luau",
-        "score": 370
+        "score": 348
       },
       {
         "file": "roblox-games/daechung-rpg/shared/RPGMenu.luau",
@@ -5083,9 +5083,9 @@
   "previousVersionDelta": {
     "previousGoal": "5포탈 RPG: 던전 파티. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 5포탈 RPG: 던전 파티에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.의 5포탈 RPG: 던전 파티와 퀘스트와 인물 관계 × 서사시의 추방과 귀환가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 48,
-    "previousSourceTreeFingerprint": "176192a85649e5cc31f12a16b47a189aa9eea572fbdb3439cf2914e8c6afd62b",
-    "currentSourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "previousGeneration": 49,
+    "previousSourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "currentSourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5093,9 +5093,9 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+    "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
     "blockers": [
-      "roblox-build-package-revalidation-pending"
+      "roblox-build-package-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6242,7 +6242,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 744094,
+        "sourceBytes": 743889,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6275,8 +6275,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "MID_LATE_ENDGAME_COMPLETION",
-    "themeDepth": 1,
-    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=2.",
+    "themeDepth": 2,
+    "selectedThemeReason": "0 explicit GAP(s) and 8 applicable domain(s); focus=PRESENTATION; previousTheme=MID_LATE_ENDGAME_COMPLETION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=1.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6285,14 +6285,13 @@
         "QUEST_STORY_PROGRESSION_CHAIN": 9,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 9,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
-        "MID_LATE_ENDGAME_COMPLETION": 1,
+        "MID_LATE_ENDGAME_COMPLETION": 2,
         "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "QUEST_STORY_PROGRESSION_CHAIN",
-        "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
@@ -6302,6 +6301,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "MID_LATE_ENDGAME_COMPLETION",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "requiredThemes": [
@@ -6327,12 +6327,7 @@
     "scoredThemes": [
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 16,
-        "gapDomains": []
-      },
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 14,
+        "score": 158,
         "gapDomains": []
       },
       {
@@ -6359,6 +6354,11 @@
       },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": -146,
+        "gapDomains": []
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": -146,
         "gapDomains": []
       },
@@ -6441,11 +6441,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 49,
-    "previousGeneration": 48,
+    "generation": 50,
+    "previousGeneration": 49,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
-    "priorSourceFingerprint": "176192a85649e5cc31f12a16b47a189aa9eea572fbdb3439cf2914e8c6afd62b",
+    "sourceFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
+    "priorSourceFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6464,7 +6464,7 @@
     "version": 1,
     "gameId": "daechung-rpg",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6906,7 +6906,7 @@
     "gameId": "daechung-rpg",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+    "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7760,11 +7760,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ee3cb0ffdfeb43f79a7f35b2b36140ecd8327802e44092e722bfe2d3555f3c23",
+      "sourceTreeFingerprint": "cd942653958b4bd281f342c1d1e1040bbf9e313159056e60e75693bafda2193e",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING"
+      "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -7819,7 +7819,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 50,
+    "nextGeneration": 51,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7881,5 +7881,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-17T05:45:21.082Z"
+  "generatedAt": "2026-10-19T05:25:08.223Z"
 }

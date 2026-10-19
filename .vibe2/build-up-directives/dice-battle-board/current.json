@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "dice-battle-board-build-up-g3-02e6ed165110",
-  "directiveFingerprint": "02e6ed1651101bd31fd825ec6d870856618988e629e73035562d19e98a741814",
-  "previousDirectiveFingerprint": "cbacfa4e27f51da9c12547193116c83fd6750ab995e989ffe7c5d279b1f72954",
-  "forbiddenRepeatFingerprint": "cbacfa4e27f51da9c12547193116c83fd6750ab995e989ffe7c5d279b1f72954",
+  "directiveId": "dice-battle-board-build-up-g4-943986748514",
+  "directiveFingerprint": "943986748514fdc3d2d1df8d8a97afe9e6acec41900bc8dd28fce5291782249a",
+  "previousDirectiveFingerprint": "02e6ed1651101bd31fd825ec6d870856618988e629e73035562d19e98a741814",
+  "forbiddenRepeatFingerprint": "02e6ed1651101bd31fd825ec6d870856618988e629e73035562d19e98a741814",
   "gameId": "dice-battle-board",
   "gameName": "주사위 전투 보드",
-  "generation": 3,
+  "generation": 4,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/dice-battle-board",
-  "sourceTreeFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
+  "sourceTreeFingerprint": "9551a82ed892f5d67f04f2f38670e1ff2a59e33fef58f5511b2aa322e1a3b052",
   "designFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -294,7 +294,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
+        "sourceTreeFingerprint": "9551a82ed892f5d67f04f2f38670e1ff2a59e33fef58f5511b2aa322e1a3b052",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -342,7 +342,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "bb3e8ac47c893337d167db19323149457892f87de6fb46244a15469a495c3e39",
-    "sourceTreeFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
+    "sourceTreeFingerprint": "9551a82ed892f5d67f04f2f38670e1ff2a59e33fef58f5511b2aa322e1a3b052",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -889,7 +889,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
+    "sourceTreeFingerprint": "9551a82ed892f5d67f04f2f38670e1ff2a59e33fef58f5511b2aa322e1a3b052",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4476,7 +4476,7 @@
     ],
     "signals": {
       "combat": 154,
-      "progression": 525,
+      "progression": 521,
       "ai": 62,
       "save": 117,
       "multiplayer": 43,
@@ -4486,22 +4486,22 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 30,
+      "audioDynamics": 28,
       "ui": 898,
       "uiFlow": 1149,
-      "entryFlow": 18,
+      "entryFlow": 16,
       "loadingFlow": 0,
       "input": 155,
-      "map": 290,
+      "map": 292,
       "landmark": 36,
       "interaction": 286,
       "inventory": 245,
       "equipment": 65,
       "settings": 25,
       "feedback": 170,
-      "session": 29,
-      "content": 502,
-      "choice": 1656,
+      "session": 31,
+      "content": 504,
+      "choice": 1658,
       "connection": 9,
       "performance": 34,
       "lighting": 64,
@@ -4929,19 +4929,19 @@
   "previousVersionDelta": {
     "previousGoal": "주사위 전투 보드. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 주사위 전투 보드에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "1fbca7c6a413e323362aa7e53522fd1553b911846e6953cfd01bc763e621d0ed",
-    "currentSourceTreeFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
+    "previousGeneration": 3,
+    "previousSourceTreeFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
+    "currentSourceTreeFingerprint": "9551a82ed892f5d67f04f2f38670e1ff2a59e33fef58f5511b2aa322e1a3b052",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "roblox-package-asset-binding-failed",
+    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
     "blockers": [
-      "roblox-build-package:roblox-package-asset-binding-failed"
+      "roblox-build-preflight-blocked"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6088,7 +6088,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 401043,
+        "sourceBytes": 430424,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6121,8 +6121,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6132,9 +6132,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 3
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -6172,7 +6173,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 192,
+        "score": 174,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6286,11 +6287,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 3,
-    "previousGeneration": 2,
+    "generation": 4,
+    "previousGeneration": 3,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
-    "priorSourceFingerprint": "1fbca7c6a413e323362aa7e53522fd1553b911846e6953cfd01bc763e621d0ed",
+    "sourceFingerprint": "9551a82ed892f5d67f04f2f38670e1ff2a59e33fef58f5511b2aa322e1a3b052",
+    "priorSourceFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6309,7 +6310,7 @@
     "version": 1,
     "gameId": "dice-battle-board",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
+    "sourceTreeFingerprint": "9551a82ed892f5d67f04f2f38670e1ff2a59e33fef58f5511b2aa322e1a3b052",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6698,7 +6699,7 @@
     "gameId": "dice-battle-board",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
+    "sourceTreeFingerprint": "9551a82ed892f5d67f04f2f38670e1ff2a59e33fef58f5511b2aa322e1a3b052",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6887,10 +6888,10 @@
       }
     ],
     "responsibleSourceCandidates": [
-      "roblox-games/dice-battle-board/client/Game.client.luau",
       "roblox-games/dice-battle-board/server/Game.server.luau",
-      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/shared/GameConfig.luau",
+      "roblox-games/dice-battle-board/client/Game.client.luau",
+      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
       "roblox-games/dice-battle-board/default.project.json",
       "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau"
@@ -7102,10 +7103,10 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/dice-battle-board/client/Game.client.luau",
       "roblox-games/dice-battle-board/server/Game.server.luau",
-      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/shared/GameConfig.luau",
+      "roblox-games/dice-battle-board/client/Game.client.luau",
+      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
       "roblox-games/dice-battle-board/default.project.json",
       "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau"
@@ -7305,10 +7306,10 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/dice-battle-board/client/Game.client.luau",
       "roblox-games/dice-battle-board/server/Game.server.luau",
-      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/shared/GameConfig.luau",
+      "roblox-games/dice-battle-board/client/Game.client.luau",
+      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
       "roblox-games/dice-battle-board/default.project.json",
       "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau"
@@ -7452,10 +7453,10 @@
     "gameId": "dice-battle-board",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/dice-battle-board/client/Game.client.luau",
       "roblox-games/dice-battle-board/server/Game.server.luau",
-      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/shared/GameConfig.luau",
+      "roblox-games/dice-battle-board/client/Game.client.luau",
+      "roblox-games/dice-battle-board/shared/RobloxCommonUI.luau",
       "roblox-games/dice-battle-board/shared/RobloxCommonMaterials.luau",
       "roblox-games/dice-battle-board/default.project.json",
       "roblox-games/dice-battle-board/client/MaterialPresentation.client.luau"
@@ -7532,11 +7533,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "7cfd25a5de7ec7466a59452f6fe8c3c2c40c7a50b6baf2491d6c7cbaad8c50eb",
+      "sourceTreeFingerprint": "9551a82ed892f5d67f04f2f38670e1ff2a59e33fef58f5511b2aa322e1a3b052",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "roblox-package-asset-binding-failed"
+      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -7591,7 +7592,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 5,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7653,5 +7654,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-17T13:04:18.038Z"
+  "generatedAt": "2026-10-19T05:25:11.422Z"
 }

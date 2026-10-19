@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g33-8228223301ad",
-  "directiveFingerprint": "8228223301adb2009c8caa73e3e153a1ffbe29fe29812c676a2357822a13017a",
-  "previousDirectiveFingerprint": "e7a354d73bdb6bdeec48199232c04e72d5c0e3ed25eaad4942f4f3543d2e35dd",
-  "forbiddenRepeatFingerprint": "e7a354d73bdb6bdeec48199232c04e72d5c0e3ed25eaad4942f4f3543d2e35dd",
+  "directiveId": "seed-single-defense-strat-celestial-bastion-build-up-g34-562bf5ab4401",
+  "directiveFingerprint": "562bf5ab4401d49fbf403d5831b182cb71af2c98eb4e37dce7a01a7d1a52689a",
+  "previousDirectiveFingerprint": "8228223301adb2009c8caa73e3e153a1ffbe29fe29812c676a2357822a13017a",
+  "forbiddenRepeatFingerprint": "8228223301adb2009c8caa73e3e153a1ffbe29fe29812c676a2357822a13017a",
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "gameName": "천상의 보루",
-  "generation": 33,
+  "generation": 34,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
-  "sourceTreeFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
+  "sourceTreeFingerprint": "767a94b5ea815b1b51423cd6ba9e15cdd779e5cd6a77f4cb323b4e59b1c6f72b",
   "designFingerprint": "a1bc5913d05e9591926b9ee23dbaeb79fd9df2fb8cf1e691a34d10de0f3ee342",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -265,6 +265,7 @@
             "gameplayEffect": "큰 성공이 다음 위험의 재료가 되고 실패가 새로운 기회의 자원이 된다. 그 결과 사건의 비용과 다음 선택이 달라진다."
           }
         ],
+        "dCreations": [],
         "cPrimarySecondaryGenres": [
           {
             "role": "PRIMARY",
@@ -280,6 +281,7 @@
         "cGenreInterlock": "전략 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.",
         "cCausalWorldEffect": "역사적 세력 균형에 의해 바뀐 인물·지역의 상태는 왕조의 정통성과 민심의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다. 서사시의 맹세와 계약와 비극과 희극의 운명 반전가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다. 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다. 그 결과 적 패턴과 자원 대응의 가능 행동과 위험이 바뀌며, 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다. 다시 방어 시설 배치의 조건을 바꾼다.",
         "atUnboundedGrowthRule": "금기와 기회의 교차 이후 새로운 발견은 A와 B, C 장르 반응의 서로 다른 조건을 실험해 새 길·정보·관계·숙련을 열고 제한 없이 깊어진다.",
+        "standardGrammarVersion": null,
         "delveAtEvidence": [
           "금기와 기회의 교차: 한 세력의 완전한 승리가 오히려 더 큰 불균형과 반발을 만든다. 상황을 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다. 방식으로 해석한다.",
           "되돌아온 선택: 통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다. 결과가 과거 선택의 의미를 바꿀 수 있음을 발견한다.",
@@ -292,7 +294,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
+        "sourceTreeFingerprint": "767a94b5ea815b1b51423cd6ba9e15cdd779e5cd6a77f4cb323b4e59b1c6f72b",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -340,17 +342,17 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "a1bc5913d05e9591926b9ee23dbaeb79fd9df2fb8cf1e691a34d10de0f3ee342",
-    "sourceTreeFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
+    "sourceTreeFingerprint": "767a94b5ea815b1b51423cd6ba9e15cdd779e5cd6a77f4cb323b4e59b1c6f72b",
     "multiplayerMode": "COOP",
-    "multiplayerRequired": true,
-    "minimumParticipants": 2,
+    "multiplayerRequired": false,
+    "minimumParticipants": 1,
     "platformCodingPlans": [
       {
         "platform": "ROBLOX",
         "canonicalGameSourceRoot": "roblox-games/seed-single-defense-strat-celestial-bastion",
         "sharedUnitySource": false,
         "gameCodePlatformProfile": "ROBLOX",
-        "requiresSameServerTwoClientPlay": true,
+        "requiresSameServerTwoClientPlay": false,
         "requiresNativeRuntimeResult": true,
         "minimumRenderedDimension": "3D",
         "inspectedInThisDirective": true
@@ -360,7 +362,7 @@
         "canonicalGameSourceRoot": "unity-games/seed-single-defense-strat-celestial-bastion",
         "sharedUnitySource": true,
         "gameCodePlatformProfile": "UNITY",
-        "requiresSameServerTwoClientPlay": true,
+        "requiresSameServerTwoClientPlay": false,
         "requiresNativeRuntimeResult": true,
         "minimumRenderedDimension": "3D",
         "spatialDesignReady": false,
@@ -371,7 +373,7 @@
         "canonicalGameSourceRoot": "unity-games/seed-single-defense-strat-celestial-bastion",
         "sharedUnitySource": true,
         "gameCodePlatformProfile": "UNITY",
-        "requiresSameServerTwoClientPlay": true,
+        "requiresSameServerTwoClientPlay": false,
         "requiresNativeRuntimeResult": true,
         "minimumRenderedDimension": "3D",
         "inspectedInThisDirective": false
@@ -821,6 +823,34 @@
       ],
       "genreInterlock": "전략 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.",
       "abGameplayEffect": "역사적 세력 균형에 의해 바뀐 인물·지역의 상태는 왕조의 정통성과 민심의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다. 서사시의 맹세와 계약와 비극과 희극의 운명 반전가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다. 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다. 그 결과 적 패턴과 자원 대응의 가능 행동과 위험이 바뀌며, 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다. 다시 방어 시설 배치의 조건을 바꾼다.",
+      "standardVersion": null,
+      "dCreations": [],
+      "delveDLinks": [
+        {
+          "sourceDId": "",
+          "discovery": "금기와 기회의 교차: 한 세력의 완전한 승리가 오히려 더 큰 불균형과 반발을 만든다. 상황을 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다. 방식으로 해석한다.",
+          "experiment": "",
+          "nextQuestion": ""
+        },
+        {
+          "sourceDId": "",
+          "discovery": "되돌아온 선택: 통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다. 결과가 과거 선택의 의미를 바꿀 수 있음을 발견한다.",
+          "experiment": "",
+          "nextQuestion": ""
+        },
+        {
+          "sourceDId": "",
+          "discovery": "두 소재의 숨은 규칙: 맹세와 계약은 권리와 동시에 구속을 만든다. 원리와 최고점과 최저점이 서로의 원인이 되어 운명이 반전된다. 원리가 동시에 작동함을 파악한다.",
+          "experiment": "",
+          "nextQuestion": ""
+        },
+        {
+          "sourceDId": "",
+          "discovery": "역전된 종착점: 한쪽의 불리한 결과가 다른 쪽의 고급 활용 조건이 되는 인과 반전을 학습한다.",
+          "experiment": "",
+          "nextQuestion": ""
+        }
+      ],
       "designAuthored": true,
       "runtimeVerified": false
     },
@@ -859,7 +889,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
+    "sourceTreeFingerprint": "767a94b5ea815b1b51423cd6ba9e15cdd779e5cd6a77f4cb323b4e59b1c6f72b",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4377,8 +4407,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 250,
-      "progression": 528,
+      "combat": 252,
+      "progression": 541,
       "ai": 66,
       "save": 102,
       "multiplayer": 39,
@@ -4390,12 +4420,12 @@
       "audio": 4,
       "audioDynamics": 16,
       "ui": 869,
-      "uiFlow": 1123,
+      "uiFlow": 1125,
       "entryFlow": 16,
       "loadingFlow": 0,
       "input": 121,
       "map": 266,
-      "landmark": 109,
+      "landmark": 113,
       "interaction": 257,
       "inventory": 241,
       "equipment": 65,
@@ -4422,7 +4452,7 @@
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-        "score": 284
+        "score": 282
       },
       {
         "file": "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
@@ -4831,9 +4861,9 @@
   "previousVersionDelta": {
     "previousGoal": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 32,
-    "previousSourceTreeFingerprint": "992b2c87685469bb02accf7c1fe97750c53ba209546cf9222d6f88dfabee5b18",
-    "currentSourceTreeFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
+    "previousGeneration": 33,
+    "previousSourceTreeFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
+    "currentSourceTreeFingerprint": "767a94b5ea815b1b51423cd6ba9e15cdd779e5cd6a77f4cb323b4e59b1c6f72b",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -4841,9 +4871,9 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+    "failureSignature": "roblox-package-asset-binding-failed",
     "blockers": [
-      "roblox-build-package-revalidation-pending"
+      "roblox-build-package:roblox-package-asset-binding-failed"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -4851,13 +4881,13 @@
     "regressionPassed": false
   },
   "multiplayerImplementation": {
-    "required": true,
-    "policyVersion": 2,
+    "required": false,
+    "policyVersion": 0,
     "developmentAdmissionGate": false,
     "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
     "otherGamesAndIndependentWorkContinue": true,
     "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
+    "completionEvidence": null
   },
   "qualityGapMap": [
     {
@@ -5990,7 +6020,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 405261,
+        "sourceBytes": 405174,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6023,13 +6053,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 9,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=8; uncoveredBefore=3.",
+    "themeDepth": 10,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=9; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 9,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -6041,7 +6071,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -6079,7 +6109,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 42,
+        "score": 24,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -6193,11 +6223,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 33,
-    "previousGeneration": 32,
+    "generation": 34,
+    "previousGeneration": 33,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
-    "priorSourceFingerprint": "992b2c87685469bb02accf7c1fe97750c53ba209546cf9222d6f88dfabee5b18",
+    "sourceFingerprint": "767a94b5ea815b1b51423cd6ba9e15cdd779e5cd6a77f4cb323b4e59b1c6f72b",
+    "priorSourceFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6211,6 +6241,342 @@
     "returnToNextBuildUpAfterF9": true,
     "generationLimit": null,
     "shadowPipelineForbidden": true
+  },
+  "gameInternalAutoComposition": {
+    "version": 1,
+    "gameId": "seed-single-defense-strat-celestial-bastion",
+    "platform": "ROBLOX",
+    "sourceTreeFingerprint": "767a94b5ea815b1b51423cd6ba9e15cdd779e5cd6a77f4cb323b4e59b1c6f72b",
+    "sourceOnlyEvidence": true,
+    "applicableGameFeaturesOnly": true,
+    "components": [
+      {
+        "id": "LOBBY",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CUSTOMIZATION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "MATERIAL",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "INVENTORY",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "EQUIPMENT",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "UI",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "WORLD",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "INTERACTION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SHOP",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      }
+    ],
+    "sourceFilesByRole": {
+      "LOBBY": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
+      ],
+      "CUSTOMIZATION": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau"
+      ],
+      "MATERIAL": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau"
+      ],
+      "INVENTORY": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "EQUIPMENT": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau"
+      ],
+      "UI": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau"
+      ],
+      "WORLD": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "INTERACTION": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "REWARD": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "SAVE": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "COMBAT": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau"
+      ],
+      "SHOP": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau"
+      ]
+    },
+    "uiModeSelection": {
+      "combat": [
+        "HEALTH_STATUS",
+        "SKILL_AND_DODGE_FROM_EXISTING_BINDINGS",
+        "DANGER_FEEDBACK"
+      ],
+      "lobby": [
+        "EXISTING_GAME_ENTRY",
+        "PARTY_SHOP_PORTAL_ONLY_WHEN_IMPLEMENTED"
+      ],
+      "inventory": [
+        "OWNED_ITEM_LIST",
+        "COMPARE_EQUIP_ONLY_WHEN_IMPLEMENTED",
+        "SCROLL_CLOSE_REOPEN"
+      ],
+      "mobile": [
+        "SAFE_AREA",
+        "TOUCH_TARGET_CLEARANCE",
+        "NO_OVERLAPPING_ACTIONS",
+        "MODAL_INPUT_CONSUMED",
+        "LANDSCAPE_PORTRAIT_REVIEW"
+      ],
+      "noDeadButtons": true,
+      "noSyntheticGameplayActions": true,
+      "resizeValidationState": "RUNTIME_VIEWPORT_QA_PENDING"
+    },
+    "worldGraph": {
+      "enabled": true,
+      "nodesDiscoveredFromExactRuntime": false,
+      "sourceFiles": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "entryFiles": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
+      ],
+      "interactionFiles": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "edges": [
+        {
+          "from": "EXISTING_ENTRY",
+          "to": "EXISTING_WORLD_DESTINATION",
+          "sourceEvidence": "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+          "state": "SOURCE_ROUTE_CANDIDATE_NOT_WALKABILITY_PROOF"
+        }
+      ],
+      "requiredChecks": [
+        "SPAWN_TO_EXISTING_DESTINATIONS",
+        "PORTAL_OR_DOOR_SERVER_AUTHORITY",
+        "RETURN_PATH",
+        "BLOCKED_PATH",
+        "RESPAWN_ROUTE"
+      ],
+      "inaccessibleAreasNotInvented": true,
+      "runtimeTraversalVerified": false
+    },
+    "stateChain": {
+      "applicable": true,
+      "checks": [
+        {
+          "id": "ACQUIRE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+            "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+          ],
+          "passed": false
+        },
+        {
+          "id": "STORE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+          ],
+          "passed": false
+        },
+        {
+          "id": "EQUIP",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau"
+          ],
+          "passed": false
+        },
+        {
+          "id": "STAT_AND_APPEARANCE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau"
+          ],
+          "passed": false
+        },
+        {
+          "id": "SAVE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+            "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+          ],
+          "passed": false
+        },
+        {
+          "id": "RECONNECT_RESTORE",
+          "state": "SOURCE_SIGNATURE_FOUND_QA_PENDING",
+          "responsibleFiles": [
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
+            "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+            "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+          ],
+          "passed": false
+        }
+      ],
+      "needsAuthoritativeInventoryState": true,
+      "preserveSaveSchema": true,
+      "preserveEconomyAndCombatRules": true,
+      "runtimeVerified": false,
+      "qaPassed": false
+    },
+    "sharedAssetSelection": {
+      "registry": "company-asset-library.json",
+      "archives": "assets/asset-manifest.json#sharedOriginalArchives",
+      "ui": "assets/roblox/common-ui-v1/catalog.json",
+      "materials": "assets/roblox/common-materials-v1/catalog.json",
+      "equipment": "assets/roblox/common-character-gear-v1/catalog.json",
+      "originalAssetsOnly": true,
+      "sourceHashAndLicenseRequired": true,
+      "noNewAssetGeneration": true,
+      "roleAndTargetCompatibilityRequired": true,
+      "gameBindingAndNativeRuntimeQaRequired": true
+    },
+    "editRule": "EDIT_EXISTING_RESPONSIBLE_GAME_FILES_ONLY",
+    "requiredProof": [
+      "SOURCE_ANCHOR",
+      "EXISTING_GAME_STATE",
+      "REAL_EVENT_HANDLER",
+      "SERVER_AUTHORITY_WHERE_APPLICABLE",
+      "NATIVE_PLATFORM_AND_MOBILE_QA"
+    ],
+    "implementationProven": false,
+    "runtimeVerified": false,
+    "passed": false
   },
   "visualBuildUpDirective": {
     "artDirection": {
@@ -6267,7 +6633,7 @@
     "gameId": "seed-single-defense-strat-celestial-bastion",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
+    "sourceTreeFingerprint": "767a94b5ea815b1b51423cd6ba9e15cdd779e5cd6a77f4cb323b4e59b1c6f72b",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -6658,14 +7024,14 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN/A/B/C/@의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 집중 대상은 Roblox다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "FORTNITE_UEFN": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "UNREAL": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UEFN": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+    "WEB": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
+    "ROBLOX": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN = A + B + C + D + @의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN = A + B + C + D + @·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 메인·보조 장르의 인과이며 D는 출처를 가진 구체 창작, @는 D와 연결된 연구·실험·다음 선택이다. 이전 C 소재 2개는 구형 설계 호환에서만 검증하며 소문자 c도 기존 원본에 있을 때만 보존한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 대상은 Roblox와 일반 WEB이며 Roblox 원본 언어는 Luau다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "FORTNITE_UEFN": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"의 기본 설계 문법은 MAIN = A + B + C + D + @다. A/B 시스템과 C 주·보조 장르, D 구체 창작물, @의 D 기반 조사·선택을 공통 승인 설계의 상태·규칙·진행과 함께 연결한다. 일반 웹게임은 기존 web-games/<gameId> 책임 소스에서 실제 메시·삼각형·깊이 테스트·카메라가 있는 네이티브 3D 월드를 구현한다. 2D·2.5D·DOM 카드·평면 캔버스·표시 문자열은 최종 3D 통과로 인정하지 않는다. 신규 웹 원본은 PlayCanvas와 WebGL2 모바일 호환을 우선 검토하되 이미 실제로 동작하는 Three.js·Babylon.js·WebGL 엔진은 기존 코드·에셋·저장 보존을 위해 재사용하고 중복 렌더 파이프라인을 만들지 않는다. 기존 등록 GLB/glTF 3D 에셋과 라이선스를 재사용하고 터치·카메라 조작·리사이즈·프레임·발열·배터리·메모리·재시작·저장 복원과 실제 WebGL 드로우를 동일 버전의 모바일 브라우저에서 검증한다. 원래 규칙·전투 수치·드랍·재화·멀티 서버 권한·저장 키를 임의로 변경하지 않는다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 승인된 공통 원본 개정으로만 반영한다. Unity Web/Android는 별도 OWNER_HOLD를 유지하며 일반 WEB 허용을 Unity 권한으로 확장하지 않는다. 새 큐·파이프라인은 생성하지 않고 기존 BUILD_UP과 F0~F9 및 독립 브라우저 QA로만 진행한다. 런타임 증거가 없으면 미검증으로 남기고 기존 2D 게임은 검증된 3D 교체 전까지 보존한다.",
+    "UNITY_APP": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 공통 원본의 규칙과 상태를 보존하며 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNREAL": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: MAIN = A + B + C + D + @ 동일 공통 목표 \"천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
   "robloxNativeExecution": {
     "version": 1,
@@ -6828,207 +7194,45 @@
     "implementationRule": "read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally",
     "actualPlayRule": "after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair"
   },
-  "productionPlan": {
-    "version": 3,
-    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
-    "platform": "ROBLOX",
-    "executionSurface": "ROBLOX",
-    "mode": "EXISTING_SOURCE_REPAIR",
-    "gameId": "seed-single-defense-strat-celestial-bastion",
-    "genreProfile": "STRATEGY",
-    "conceptIdentity": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
-    "coreAction": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-    "ownerFeatureChanges": [],
-    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
-    "approvedCoreLoop": [
-      "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-      "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-      "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다."
+  "productionPlan": null,
+  "robloxProductionPlan": null,
+  "internalAlgorithmUse": {
+    "mode": "MAXIMIZE_TASK_RELEVANT_VERIFIED_INTERNAL_ALGORITHMS",
+    "priority": [
+      "SAME_GAME_SAME_FAILURE_VERIFIED_CAUSAL_AND_CODE_PATTERN",
+      "SAME_GAME_VERIFIED_IMPLEMENTATION_AND_RESPONSIBILITY",
+      "EXISTING_VIBE2_VIBE3_ANALYSIS_STRATEGY_RECOMBINATION_AND_GAMEPLAY_TOOLS",
+      "EXISTING_VERIFIED_GAME_MECHANICS_ASSETS_AND_SOURCE_COMPOSITION",
+      "AUTHORIZED_AI_COLLABORATION_ON_DISJOINT_RESPONSIBILITY_WITH_CANDIDATE_BRANCH_QA"
     ],
-    "signatureSystems": [
-      "천상의 보루",
-      "방어 시설 배치 × 역사적 세력 균형",
-      "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-      "금기와 기회의 교차"
-    ],
-    "progressionDirection": "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 방어 시설 배치의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다.",
-    "depthAndReward": null,
-    "ideas": [
-      {
-        "id": "STRATEGY:SOURCE_REPAIR",
-        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
-        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
-      }
-    ],
-    "selectedIdea": {
-      "id": "STRATEGY:SOURCE_REPAIR",
-      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
-      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
-    },
-    "ideaHistory": [
-      "STRATEGY:SOURCE_REPAIR"
-    ],
-    "implementationPackages": [
-      {
-        "role": "SERVER_AUTHORITY",
-        "files": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
-        ],
-        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
-      },
-      {
-        "role": "CLIENT_PRESENTATION",
-        "files": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau"
-        ],
-        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
-      },
-      {
-        "role": "SHARED_DEFINITION",
-        "files": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau"
-        ],
-        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
-      }
-    ],
-    "sourceTreeFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
-    "spatialBlueprintContract": null,
-    "interfaceBlueprintContract": null,
-    "libraryReuseContract": null,
-    "detailedDesignContract": null,
-    "qualityContract": {
-      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
-      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
-      "required": [
-        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
-        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
-        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
-        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
-        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
+    "relevantAlgorithmsOnly": true,
+    "aiCollaboration": {
+      "authority": "company-learning/platform-release-roadmap.json#externalAiVibeFullProcessCollaboration",
+      "vibePrimaryIntegrationAndLearning": true,
+      "approvedExternalAiMayImplementOnIsolatedCandidateBranch": true,
+      "existingAuthorizedAiRoles": [
+        "PLANNING",
+        "DESIGN",
+        "IMPLEMENTATION",
+        "REPAIR",
+        "QA",
+        "ASSETS",
+        "PLATFORM_ADAPTATION"
       ],
-      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
-      "markerOnlyCompletionAllowed": false,
-      "runtimeVerified": false
+      "sameResponsibleFileConflictSerialized": true,
+      "disjointResponsibleFilesMayRunParallel": true,
+      "externalAiUseRequiresExistingOptInAndAuthorization": true,
+      "deterministicallyVerifiedOutcomesFeedExistingLearningMotor": true,
+      "externalAiCannotWriteMainOrCentralPolicyOrApproveOwnWork": true
     },
-    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
-    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
-    "preservation": [
-      "APPROVED_CONCEPT",
-      "APPROVED_GENRE",
-      "STYLE_LOCK",
-      "SAVE_IDENTITY",
-      "BALANCE_AND_ECONOMY_MEANING",
-      "SERVER_AUTHORITY"
-    ],
-    "newWorkflow": false,
-    "newQaStage": false,
-    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
-  },
-  "robloxProductionPlan": {
-    "version": 3,
-    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
-    "platform": "ROBLOX",
-    "executionSurface": "ROBLOX",
-    "mode": "EXISTING_SOURCE_REPAIR",
-    "gameId": "seed-single-defense-strat-celestial-bastion",
-    "genreProfile": "STRATEGY",
-    "conceptIdentity": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
-    "coreAction": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-    "ownerFeatureChanges": [],
-    "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
-    "approvedCoreLoop": [
-      "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-      "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-      "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다."
-    ],
-    "signatureSystems": [
-      "천상의 보루",
-      "방어 시설 배치 × 역사적 세력 균형",
-      "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-      "금기와 기회의 교차"
-    ],
-    "progressionDirection": "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 방어 시설 배치의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다.",
-    "depthAndReward": null,
-    "ideas": [
-      {
-        "id": "STRATEGY:SOURCE_REPAIR",
-        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
-        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
-      }
-    ],
-    "selectedIdea": {
-      "id": "STRATEGY:SOURCE_REPAIR",
-      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
-      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
-    },
-    "ideaHistory": [
-      "STRATEGY:SOURCE_REPAIR"
-    ],
-    "implementationPackages": [
-      {
-        "role": "SERVER_AUTHORITY",
-        "files": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau"
-        ],
-        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
-      },
-      {
-        "role": "CLIENT_PRESENTATION",
-        "files": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/client/MaterialPresentation.client.luau"
-        ],
-        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
-      },
-      {
-        "role": "SHARED_DEFINITION",
-        "files": [
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonUI.luau",
-          "roblox-games/seed-single-defense-strat-celestial-bastion/shared/RobloxCommonMaterials.luau"
-        ],
-        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
-      }
-    ],
-    "sourceTreeFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
-    "spatialBlueprintContract": null,
-    "interfaceBlueprintContract": null,
-    "libraryReuseContract": null,
-    "detailedDesignContract": null,
-    "qualityContract": {
-      "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
-      "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
-      "required": [
-        "CONNECTED_PLAYER_ACTION_STATE_FEEDBACK_AND_NEXT_GOAL",
-        "COMPATIBLE_INTERNAL_ASSETS_ACTUALLY_BOUND",
-        "MOTION_AUDIO_VFX_LINKED_TO_EXISTING_GAME_STATE_WHEN_APPLICABLE",
-        "MOBILE_TOUCH_AND_SCREEN_READABILITY",
-        "EXACT_CHANGED_BUILD_RUNTIME_AND_SAVE_REGRESSION"
-      ],
-      "runtimeSurface": "ROBLOX_OPEN_CLOUD_EXACT_CANDIDATE",
-      "markerOnlyCompletionAllowed": false,
-      "runtimeVerified": false
-    },
-    "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
-    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
-    "preservation": [
-      "APPROVED_CONCEPT",
-      "APPROVED_GENRE",
-      "STYLE_LOCK",
-      "SAVE_IDENTITY",
-      "BALANCE_AND_ECONOMY_MEANING",
-      "SERVER_AUTHORITY"
-    ],
-    "newWorkflow": false,
-    "newQaStage": false,
-    "implementationStatus": "PLANNED_NOT_IMPLEMENTED"
+    "noDuplicateSubsystemsOrNewPipeline": true,
+    "noUnverifiedCapabilityClaims": true,
+    "preserveApprovedGameplaySaveEconomyAndServerAuthority": true,
+    "qaReleaseSecurityGatesUnchanged": true,
+    "rule": "AI_COLLABORATION_VIBE_PRIMARY_INTEGRATION_AND_LEARNING; MAXIMIZE_RELEVANT_VERIFIED_INTERNAL_ALGORITHMS_AND_SAME_GAME_SAME_FAILURE_PATTERNS; AUTHORIZED_EXTERNAL_AI_MAY_DEVELOP_AND_REPAIR_ON_ISOLATED_CANDIDATE_BRANCHES_WITH_RESPONSIBLE_FILE_SCOPE_WHEN_ENABLED; PARALLEL_DISJOINT_FILES_SERIALIZE_CONFLICTS; DETERMINISTIC_QA_SECURITY_AND_CANONICAL_RELEASE_REQUIRED; FEED_VERIFIED_RESULTS_TO_EXISTING_LEARNING_MOTOR; NEVER_CREATE_SHADOW_PIPELINE_OR_FABRICATE_PASS"
   },
   "preserveConstraints": [
+    "게임 제작은 Vibe와 승인된 AI 협업으로 진행한다. 검증된 내부 분석·게임 로직·전략선택·재조합·에셋 재사용 알고리즘을 과제 관련 범위에서 최대 활용한다. 외부 AI는 기존 승인·활성화 조건 아래 격리 후보 브랜치의 독립 책임 파일에 직접 구현·수리 가능하며 Vibe가 통합·학습한다. 중앙정책·QA·보안·배포 게이트를 유지하고 중복 파이프라인·미검증 주장은 금지한다.",
     "기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다.",
     "승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지.",
     "멀티플레이 권한과 authoritative state를 프레젠테이션 이유로 클라이언트로 이동하지 않는다.",
@@ -7258,16 +7462,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "천상의 보루. 역사적 세력 균형·왕조의 정통성과 민심 전략. 천상의 보루에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "92df5e2383233d41207b9ace39f8770c0ed0742ce203841bb5355f0cf3478a9e",
+      "sourceTreeFingerprint": "767a94b5ea815b1b51423cd6ba9e15cdd779e5cd6a77f4cb323b4e59b1c6f72b",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING"
+      "failureSignature": "roblox-package-asset-binding-failed"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -7278,8 +7482,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7322,7 +7526,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 34,
+    "nextGeneration": 35,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7384,5 +7588,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-13T08:29:18.079Z"
+  "generatedAt": "2026-10-19T05:25:08.906Z"
 }

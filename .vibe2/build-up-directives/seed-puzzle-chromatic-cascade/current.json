@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g35-4a93108c8583",
-  "directiveFingerprint": "4a93108c8583c23a3062922cdeb5592e65aaf8deef4228014394d20dfbd81af0",
-  "previousDirectiveFingerprint": "d8cd400313096790da2346e5ca7413d5ba9a5305fbf50978bff6ded14f19d9ec",
-  "forbiddenRepeatFingerprint": "d8cd400313096790da2346e5ca7413d5ba9a5305fbf50978bff6ded14f19d9ec",
+  "directiveId": "seed-puzzle-chromatic-cascade-build-up-g36-2a5aff97e7af",
+  "directiveFingerprint": "2a5aff97e7af46eb6e9a45430f50c0080314863ef18f9f23213ef7cad9a70516",
+  "previousDirectiveFingerprint": "4a93108c8583c23a3062922cdeb5592e65aaf8deef4228014394d20dfbd81af0",
+  "forbiddenRepeatFingerprint": "4a93108c8583c23a3062922cdeb5592e65aaf8deef4228014394d20dfbd81af0",
   "gameId": "seed-puzzle-chromatic-cascade",
   "gameName": "색채의 연쇄",
-  "generation": 35,
+  "generation": 36,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-puzzle-chromatic-cascade",
-  "sourceTreeFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
+  "sourceTreeFingerprint": "7c6fb808ace6167ed30d97a8b74667e222a2bca6d1d82964fdba255e9500eb53",
   "designFingerprint": "3f94f3f51281b663771d606e88d32e3d118f2138dc80b52e7f483a2d3df73160",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -294,7 +294,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
+        "sourceTreeFingerprint": "7c6fb808ace6167ed30d97a8b74667e222a2bca6d1d82964fdba255e9500eb53",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -342,7 +342,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "3f94f3f51281b663771d606e88d32e3d118f2138dc80b52e7f483a2d3df73160",
-    "sourceTreeFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
+    "sourceTreeFingerprint": "7c6fb808ace6167ed30d97a8b74667e222a2bca6d1d82964fdba255e9500eb53",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -889,7 +889,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
+    "sourceTreeFingerprint": "7c6fb808ace6167ed30d97a8b74667e222a2bca6d1d82964fdba255e9500eb53",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4408,7 +4408,7 @@
     ],
     "signals": {
       "combat": 125,
-      "progression": 463,
+      "progression": 488,
       "ai": 45,
       "save": 85,
       "multiplayer": 26,
@@ -4418,22 +4418,22 @@
       "vfx": 43,
       "camera": 33,
       "audio": 4,
-      "audioDynamics": 13,
+      "audioDynamics": 15,
       "ui": 869,
       "uiFlow": 1122,
-      "entryFlow": 10,
+      "entryFlow": 12,
       "loadingFlow": 0,
       "input": 121,
-      "map": 198,
+      "map": 196,
       "landmark": 36,
       "interaction": 257,
       "inventory": 241,
       "equipment": 65,
       "settings": 25,
       "feedback": 103,
-      "session": 26,
-      "content": 471,
-      "choice": 1642,
+      "session": 24,
+      "content": 469,
+      "choice": 1640,
       "connection": 8,
       "performance": 26,
       "lighting": 63,
@@ -4448,7 +4448,7 @@
       },
       {
         "file": "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
-        "score": 279
+        "score": 299
       },
       {
         "file": "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
@@ -4456,7 +4456,7 @@
       },
       {
         "file": "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
-        "score": 148
+        "score": 149
       },
       {
         "file": "roblox-games/seed-puzzle-chromatic-cascade/shared/RobloxCommonMaterials.luau",
@@ -4861,19 +4861,19 @@
   "previousVersionDelta": {
     "previousGoal": "색채의 연쇄. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 색채의 연쇄에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 34,
-    "previousSourceTreeFingerprint": "723cb36bbac476861fd927cba6db028b7d3eea6d1a96c757caa793b22f498091",
-    "currentSourceTreeFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
+    "previousGeneration": 35,
+    "previousSourceTreeFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
+    "currentSourceTreeFingerprint": "7c6fb808ace6167ed30d97a8b74667e222a2bca6d1d82964fdba255e9500eb53",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "roblox-package-asset-binding-failed",
+    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
     "blockers": [
-      "roblox-build-package:roblox-package-asset-binding-failed"
+      "roblox-build-preflight-blocked"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6020,7 +6020,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 354337,
+        "sourceBytes": 383785,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6053,13 +6053,13 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-    "themeDepth": 6,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=3.",
+    "themeDepth": 7,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=ENEMY_BOSS_COMBAT_ECOLOGY; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 0,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 6,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 7,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 7,
@@ -6074,7 +6074,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -6109,7 +6109,7 @@
     "scoredThemes": [
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 96,
+        "score": 78,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
@@ -6223,11 +6223,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 35,
-    "previousGeneration": 34,
+    "generation": 36,
+    "previousGeneration": 35,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
-    "priorSourceFingerprint": "723cb36bbac476861fd927cba6db028b7d3eea6d1a96c757caa793b22f498091",
+    "sourceFingerprint": "7c6fb808ace6167ed30d97a8b74667e222a2bca6d1d82964fdba255e9500eb53",
+    "priorSourceFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6246,7 +6246,7 @@
     "version": 1,
     "gameId": "seed-puzzle-chromatic-cascade",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
+    "sourceTreeFingerprint": "7c6fb808ace6167ed30d97a8b74667e222a2bca6d1d82964fdba255e9500eb53",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6624,7 +6624,7 @@
     "gameId": "seed-puzzle-chromatic-cascade",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
+    "sourceTreeFingerprint": "7c6fb808ace6167ed30d97a8b74667e222a2bca6d1d82964fdba255e9500eb53",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7458,11 +7458,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a4fc935be149437ccf596bacb71a120bf8f474ceead1ebd54102e6e181b5c5f2",
+      "sourceTreeFingerprint": "7c6fb808ace6167ed30d97a8b74667e222a2bca6d1d82964fdba255e9500eb53",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "roblox-package-asset-binding-failed"
+      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -7517,7 +7517,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 36,
+    "nextGeneration": 37,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -7579,5 +7579,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-17T13:04:17.375Z"
+  "generatedAt": "2026-10-19T05:25:08.749Z"
 }
