@@ -54,6 +54,75 @@
         "nativeRuntimeVerification": "PENDING",
         "publicReleaseClaimed": false
       }
+    },
+    {
+      "id": "kaykit-adventurers-cc0-v1",
+      "source": "KayKit Adventurers Character Pack (1.0)",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "creator": "Kay Lousberg",
+      "license": "CC0-1.0",
+      "commercialUse": true,
+      "modificationUse": true,
+      "attribution": "Optional: www.kaylousberg.com",
+      "verifiedAt": "2026-10-20",
+      "targetGame": "fantasy-survival",
+      "purpose": "Opt-in native 3D preview of existing downloaded mage character; no production release claim",
+      "modified": false,
+      "evidence": {
+        "licenseUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/blob/a26e8ef28eac51bd3510ad677429ff4fc268d2da/LICENSE.txt",
+        "licenseSourceCommit": "a26e8ef28eac51bd3510ad677429ff4fc268d2da",
+        "nativeModelPath": "assets/roblox/actors/native/mage.glb",
+        "nativeModelSha256Registry": "company-asset-library.json:external-actor-mage.sourceHash",
+        "nativeRuntimeVerification": "PENDING",
+        "publicReleaseClaimed": false
+      }
+    },
+    {
+      "id": "kaykit-skeletons-cc0-v1",
+      "source": "KayKit Character Pack: Skeletons (1.0)",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+      "creator": "Kay Lousberg",
+      "license": "CC0-1.0",
+      "commercialUse": true,
+      "modificationUse": true,
+      "attribution": "Optional: www.kaylousberg.com",
+      "verifiedAt": "2026-10-20",
+      "targetGame": "fantasy-survival",
+      "purpose": "Opt-in native 3D undead-humanoid visual proxy for the original wastelandMummy monster; never changes enemy stats, behavior, AI, loot or gameplay. Real gameplay/animation/mobile QA remains pending.",
+      "modified": false,
+      "evidence": {
+        "licenseUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0/blob/15b62b9bad122f72926c10fb14d622c73819fa54/LICENSE.txt",
+        "licenseSourceCommit": "15b62b9bad122f72926c10fb14d622c73819fa54",
+        "nativeModelPath": "assets/roblox/actors/native/skeleton-warrior.glb",
+        "nativeModelSha256Registry": "company-asset-library.json:external-actor-skeleton-warrior.sourceHash",
+        "replacementMapping": "wastelandMummy => undead skeleton (visual-only approximate species)",
+        "nativeRuntimeVerification": "PENDING",
+        "publicReleaseClaimed": false
+      }
+    },
+    {
+      "id": "kaykit-adventurers-cc0-magic-forest-v1",
+      "source": "KayKit Adventurers Character Pack (1.0)",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/tree/672074b73ba276876a19e8816ecdc5241817ab47",
+      "creator": "Kay Lousberg",
+      "license": "CC0-1.0",
+      "commercialUse": true,
+      "modificationUse": true,
+      "attribution": "Optional: www.kaylousberg.com",
+      "verifiedAt": "2026-10-20",
+      "targetGame": "fantasy-survival",
+      "purpose": "3D player Mage GLB reference; requires GLB binary and real browser frame verification before public release",
+      "modified": false,
+      "evidence": {
+        "licenseUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/blob/672074b73ba276876a19e8816ecdc5241817ab47/LICENSE.txt",
+        "sourceCommit": "672074b73ba276876a19e8816ecdc5241817ab47",
+        "registeredFile": "assets/roblox/actors/native/mage.glb",
+        "registeredSourceSha256": "0deafa1e31",
+        "registeredSourceHashAuthority": "company-asset-library.json",
+        "binaryIntegrityReverified": false,
+        "nativeRuntimeVerification": "PENDING",
+        "publicReleaseClaimed": false
+      }
     }
   ]
 }
