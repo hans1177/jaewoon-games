@@ -1835,7 +1835,7 @@ test('all-game F0 composition discovers real biome housing customization motion 
     fs.mkdirSync(path.join(repoRoot,otherRoot),{recursive:true});
     for(let i=0;i<25;i++){
       fs.writeFileSync(path.join(repoRoot,sourceRoot,'systems','combat-'+String(i).padStart(2,'0')+'.js'),
-        Array(8).fill('function attack() { return combat; }').join('\n'));
+        Array(8).fill('function damage() { return health + enemy + player + item; }').join('\n'));
     }
     const modules={
       'region.js':'const approvedBiome = "biome"; const terrain = "terrain";',
@@ -1850,7 +1850,7 @@ test('all-game F0 composition discovers real biome housing customization motion 
       'const privateBiome="biome"; const privateHousing="housing";');
     const observed=inspectGameSources({repoRoot,sourceRoots:[sourceRoot]});
     assert.ok(observed.topFiles.length<=20);
-    assert.equal(observed.topFiles.some(row=>/\\b(?:region|home|avatar|motion|actions)\\.js$/.test(row.file)),false,
+    assert.equal(observed.topFiles.some(row=>/(?:region|home|avatar|motion|actions)\.js$/.test(row.file)),false,
       'fixture modules are below ranking cutoff and must still be inspected');
     const plan=buildGameInternalAutoCompositionPlan({
       gameId:'f0-demo',platform:'WEB',repoRoot,sourceRoot,sourceObservation:observed,
