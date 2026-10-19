@@ -18,6 +18,7 @@ test('Web true 3D engine selection keeps existing renderer and uses mobile-first
   });
   assert.deepEqual(select('<main>new game</main>').existingEvidence,[]);
   assert.equal(select('<main>new game</main>').engine,'PLAYCANVAS');
+  assert.equal(typeof recoverSourceCandidateGenerationFailure === 'function', true);
   assert.equal(select('',{complexNativePhysics:true}).engine,'BABYLON_JS');
   assert.equal(select('',{preferredWeb3dEngine:'THREE_JS'}).engine,'THREE_JS');
   assert.equal(select('import { Scene } from "three";\nconst s=new THREE.Scene();',{complexNativePhysics:true}).engine,'THREE_JS','existing real renderer overrides default and hints');

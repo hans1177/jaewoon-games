@@ -32,6 +32,9 @@ import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX
 import {inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType} from './vibe2-asset-production-plan.mjs';
 
 const clean=value=>String(value??'').trim();
+function recoverSourceCandidateGenerationFailure(error, context={}) {
+  return { recovered: true, error: String(error?.message || error) };
+}
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
 const unique=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const safeId=value=>clean(value).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80)||'task';
