@@ -258,6 +258,11 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   assert.match(reconcileStep,/COMPANY_VERIFIED_POLICY_PATH:\s*company-learning\/platform-release-roadmap\.json/);
   assert.match(reconcileStep,/COMPANY_VERIFIED_DESIGN_POLICY_PATH:\s*company-learning\/platform-release-roadmap\.json/);
   assert.match(reconcileStep,/git checkout origin\/main --[^\n]*company-learning\/platform-release-roadmap\.json/);
+  assert.match(reconcileStep,/git restore --source=origin\/main --worktree -- roblox-games/);
+  assert.match(reconcileStep,/DEVELOPMENT_QUEUE_OWNER_REMOVAL_POLICY_SYNC=UPDATED/);
+  assert.match(reconcileStep,/OWNER_EXACT_ROBLOX_REACTIVATION_POLICY_NOT_VERIFIED/);
+  assert.match(reconcileStep,/UNAUTHORIZED_PERMANENT_REMOVAL_REVERSAL/);
+  assert.match(reconcileStep,/DEVELOPMENT_QUEUE_OWNER_REACTIVATED_SIMPLE_RPG=AUTHORIZED_ROBLOX_SOURCE_ONLY/);
   assert.match(workflow,/git checkout origin\/main --[^\n]*tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(workflow,/git reset --[^\n]*tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(source,/game-seed-state\.json/);
