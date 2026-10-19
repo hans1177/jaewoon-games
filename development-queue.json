@@ -22810,7 +22810,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-19T09:55:43.546Z",
+      "updatedAt": "2026-10-19T10:14:31.331Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -22826,16 +22826,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
       "robloxBuildArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-      "robloxBuildPassedAt": "2026-10-19T09:55:43.546Z",
+      "robloxBuildPassedAt": "2026-10-19T10:14:31.331Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-19T09:55:43.546Z",
+      "robloxBuildPreflightFailedAt": "2026-10-19T10:14:31.331Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "defense",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-19T09:31:37.970Z",
+        "checkedAt": "2026-10-19T09:47:39.809Z",
         "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
         "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
         "secondaryOwnerFocus": false,
@@ -22878,7 +22878,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in BUILD_EVIDENCE."
+            "note": "Package cannot start runtime testing because multiple validation checks failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -38100,7 +38100,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-19T10:14:18.808Z",
+  "updatedAt": "2026-10-19T10:14:31.331Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
