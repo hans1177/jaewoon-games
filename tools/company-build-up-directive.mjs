@@ -1592,7 +1592,12 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
       if(fs.statSync(actual).isDirectory()&&(actual.startsWith(original+path.sep)))validRoots.push(actual);
     }catch{}
   }
-  const topFiles=(sourceObservation?.topFiles||[]).slice(0,24);
+  // 메인 · 기존 source inspection 상위 20개 파일 이외의 모듈도 F0 연결 후보에서 누락하지 않는다.
+  // 공통 walkSource가 수집한 실제 동일 게임 파일만 대상으로 하며, 임의 외부/교차 게임 소스는 차단한다.
+  const topFiles=uniq([
+    ...(sourceObservation?.topFiles||[]).map(row=>posix(row?.file)),
+    ...validRoots.flatMap(root=>walkSource(root).map(file=>posix(path.relative(repo,file))))
+  ]).filter(Boolean).map(file=>({file}));
   const roles=Object.freeze({
     LOBBY:/\b(lobby|hub|main.?menu|start.?game|start.?screen)\b/i,
     CUSTOMIZATION:/customiz|avatar|appearance|skintone|cosmetic|outfit|race.?select|character.?select|wardrobe/i,
@@ -1601,6 +1606,10 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
     EQUIPMENT:/\bequip(?:ped|ment)?\b|unequip|gear.?slot|armor.?slot/i,
     UI:/screengui|screenui|canvas|hud\b|ui.?layout|button|menu.?panel|\.Activated\b/i,
     WORLD:/teleport|portal|region|zone|checkpoint|waypoint|spawnpoint|destination/i,
+    BIOME:/\b(?:biome|terrain|heightmap|worldGeneration|regionGeneration|generateBiome|biomeGenerator)\b|바이옴|지형생성|지역생성/i,
+    HOUSING:/\b(?:housing|buildMode|housePlacement|structurePlacement|buildingPlacement|furniture|placeStructure|placeBuilding|placeFurniture|constructBuilding)\b|하우징|건축모드|가구배치/i,
+    MOTION:/\b(?:Animator|AnimationTrack|AnimationMixer|LoadAnimation|motionState|motionBlend|locomotion|TweenService|SkinnedMeshRenderer)\b|모션|애니메이션/i,
+    ACTION:/\b(?:attack|combat|gather|harvest|useTool|castSkill|dodge|jump|playerAction|actionState|interact)\b|공격|채집|전투|행동/i,
     INTERACTION:/proximityprompt|clickdetector|interact|pickup|collect|open.?chest/i,
     REWARD:/\bdrop\b|reward|loot|pickup|collect|grant.?item/i,
     SAVE:/datastore|GetAsync|UpdateAsync|SetAsync|SaveAsync|load.?data|save.?data|persist/i,
@@ -1627,15 +1636,21 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
   const targets=Object.fromEntries(Object.entries(evidence).map(([key,files])=>[key,Object.freeze(uniq(files).slice(0,6))]));
   const designText=JSON.stringify({
     identity:design?.identity,genre:design?.genre,coreLoop:design?.coreLoop,
-    signatureSystems:design?.signatureSystems,interfacePlan:design?.interfacePlan
+    signatureSystems:design?.signatureSystems,interfacePlan:design?.interfacePlan,
+    spatialLayout:design?.spatialLayout,contentExpansionPlan:design?.contentExpansionPlan,
+    mobileUx:design?.mobileUx,presentationPlan:design?.presentationPlan
   }).slice(0,8000);
   const designDemand={
     LOBBY:/lobby|hub|로비|허브/i.test(designText),
     CUSTOMIZATION:/customiz|avatar|커스터마이징|외형/i.test(designText),
     INVENTORY:/inventory|인벤토리|장비창/i.test(designText),
-    UI:/hud|interface|menu|메뉴|화면/i.test(designText)
+    UI:/hud|interface|menu|메뉴|화면/i.test(designText),
+    BIOME:/biome|region|terrain|world.?map|바이옴|지형|지역/i.test(designText),
+    HOUSING:/housing|base.?building|player.?home|buildable|하우징|건축|집.?꾸미기/i.test(designText),
+    MOTION:/animat|locomotion|motion|모션|애니메이션/i.test(designText),
+    ACTION:/attack|combat|gather|harvest|player.?action|공격|채집|전투|액션/i.test(designText)
   };
-  const componentIds=['LOBBY','CUSTOMIZATION','MATERIAL','INVENTORY','EQUIPMENT','UI','WORLD','INTERACTION','SHOP'];
+  const componentIds=['LOBBY','CUSTOMIZATION','MATERIAL','INVENTORY','EQUIPMENT','UI','WORLD','BIOME','HOUSING','MOTION','ACTION','INTERACTION','SHOP'];
   const components=componentIds.map(key=>Object.freeze({
     id:key,
     state:found(key)?'EXISTING_SOURCE_CONNECTION_CANDIDATE':designDemand[key]?'REVIEW_REQUIRED_NO_SOURCE':'NOT_APPLICABLE_WITHOUT_SOURCE',
@@ -1652,16 +1667,24 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
     resizeValidationState:'RUNTIME_VIEWPORT_QA_PENDING'
   });
   const worldGraph=Object.freeze({
-    enabled:found('WORLD'),
+    enabled:found('WORLD')||found('BIOME'),
     nodesDiscoveredFromExactRuntime:false,
     sourceFiles:targets.WORLD,
+    biomeSourceFiles:targets.BIOME,
+    housingSourceFiles:targets.HOUSING,
+    biomeNativeSceneBindingVerified:false,
+    housingPlacementPersistenceVerified:false,
     entryFiles:targets.LOBBY,
     interactionFiles:targets.INTERACTION,
     edges:found('WORLD')&&found('LOBBY')?[Object.freeze({
       from:'EXISTING_ENTRY',to:'EXISTING_WORLD_DESTINATION',
       sourceEvidence:targets.WORLD[0],state:'SOURCE_ROUTE_CANDIDATE_NOT_WALKABILITY_PROOF'
     })]:[],
-    requiredChecks:['SPAWN_TO_EXISTING_DESTINATIONS','PORTAL_OR_DOOR_SERVER_AUTHORITY','RETURN_PATH','BLOCKED_PATH','RESPAWN_ROUTE'],
+    requiredChecks:[
+      'SPAWN_TO_EXISTING_DESTINATIONS','PORTAL_OR_DOOR_SERVER_AUTHORITY','RETURN_PATH','BLOCKED_PATH','RESPAWN_ROUTE',
+      ...(found('BIOME')?['APPROVED_BIOME_TO_NATIVE_TERRAIN','REGION_NAVIGATION_AND_COLLISION','MOBILE_WORLD_STREAMING']:[]),
+      ...(found('HOUSING')?['BUILD_PLACEMENT_COLLISION','OWNER_COST_INVENTORY_AUTHORITY','HOUSING_SAVE_REJOIN']:[])
+    ],
     inaccessibleAreasNotInvented:true,runtimeTraversalVerified:false
   });
   const steps=[
@@ -1698,7 +1721,11 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
       gameBindingAndNativeRuntimeQaRequired:true
     }),
     editRule:'EDIT_EXISTING_RESPONSIBLE_GAME_FILES_ONLY',
-    requiredProof:['SOURCE_ANCHOR','EXISTING_GAME_STATE','REAL_EVENT_HANDLER','SERVER_AUTHORITY_WHERE_APPLICABLE','NATIVE_PLATFORM_AND_MOBILE_QA'],
+    requiredProof:[
+      'SOURCE_ANCHOR','EXISTING_GAME_STATE','REAL_EVENT_HANDLER','SERVER_AUTHORITY_WHERE_APPLICABLE','NATIVE_PLATFORM_AND_MOBILE_QA',
+      ...(found('MOTION')||found('ACTION')?['MOTION_ACTION_SAME_APPROVED_HIT_EVENT']:[]),
+      ...(found('CUSTOMIZATION')?['ACTUAL_CHARACTER_MODEL_AND_SAVE_RESTORE']:[])
+    ],
     implementationProven:false,runtimeVerified:false,passed:false
   });
 }
@@ -2306,7 +2333,7 @@ export function directivePrompt(d={}){
     'VISUAL:',
     visual,
     'GAME_INTERNAL_AUTO_COMPOSITION: '+JSON.stringify(d.gameInternalAutoComposition||{}),
-    'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI and world routes. Dynamic mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with actual authoritative state; a source signature alone never passes QA. No new asset generation or shadow system.',
+    'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI/world/biome/housing/motion/action responsibilities when the game source and approved design contain them. Biomes must map approved regions to real native terrain/navigation/streaming; housing must preserve placement/cost/ownership/save/rejoin; customization must use actual character model and saved identity; motion must drive the existing action and its approved hit event without changing timing. Dynamic mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with actual authoritative state; a source signature alone never passes QA. No new asset generation or shadow system.',
     'PLAYER_FACING_INSPECTION_CONTRACT:',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
     `EXPERIENCE_BUILD_UP: ${JSON.stringify(d.experienceBuildUpContract||{})}`,
