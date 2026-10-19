@@ -4,6 +4,7 @@
 // Geometry comes from the downloaded, CC0-ledgered Tiny Treats Homely House OBJ pack.
 import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
 import {GLTFLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
+import {clone as cloneAnimatedRig} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js';
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../../assets/vibe-environment-director.js';
 import {createVibeCharacterCustomizationRecipe} from '../../assets/vibe-character-identity-director.js';
 import {createSurvivalPlayerMotionProfile} from '../../assets/vibe-motion-director.js';
@@ -12,6 +13,7 @@ import {planAssetApplication} from '../../assets/asset-selector.js';
 const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
 const SCALE = 1 / 48;
 const HERO_URL = new URL('../../assets/roblox/actors/native/mage.glb',import.meta.url);
+const UNDEAD_URL = new URL('../../assets/roblox/actors/native/skeleton-warrior.glb',import.meta.url);
 const assetReadiness=planAssetApplication({
  prompt:'마력숲 생존 캐릭터 몬스터 나무 숲 UI 전투 애니메이션',
  manifest:{assets:[
@@ -114,6 +116,17 @@ export async function createWorld3d(canvas){
   }catch(error){
     console.warn('CC0 KayKit mage not available in 3D preview; player asset remains unverified',error);
   }
+  // A native CC0 humanoid undead is a visual proxy only for the existing
+  // wastelandMummy type. Its AI, hitbox, spawn, skills, loot and ID stay authoritative.
+  // More distant species remain missing; do not render arbitrary substitutes.
+  let undeadSource=null,undeadClips=[];
+  try{
+    const gltf=await new GLTFLoader().loadAsync(UNDEAD_URL.href);
+    undeadSource=gltf.scene;
+    undeadClips=gltf.animations||[];
+  }catch(error){
+    console.warn('Downloaded undead GLB unavailable; 3D monster preview remains incomplete',error);
+  }
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'default'});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -159,6 +172,59 @@ export async function createWorld3d(canvas){
   const groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
   const entities=new Map();
   const interactables=[];
+  const undeadActors=new Map();
+  let undeadModelHeight=1;
+  if(undeadSource){
+    const dimensions=new THREE.Box3().setFromObject(undeadSource);
+    undeadModelHeight=Math.max(.1,dimensions.max.y-dimensions.min.y);
+  }
+  function synchronizeUndead(state,px,py,stamp){
+    if(!undeadSource)return;
+    const candidates=(state.enemies||[]).filter(e=>e?.type?.id==='wastelandMummy'&&e.hp>0&&e.area===state.area
+      &&Math.hypot(e.x-px,e.y-py)<940).sort((a,b)=>
+      Math.hypot(a.x-px,a.y-py)-Math.hypot(b.x-px,b.y-py)).slice(0,mobileBudget?6:12);
+    for(const e of candidates){
+      const id=String(e.netId||e.id||'');
+      if(!id)continue;
+      let actor=undeadActors.get(id);
+      if(!actor){
+        const model=cloneAnimatedRig(undeadSource);
+        const heightScale=2.35/undeadModelHeight;
+        model.scale.setScalar(heightScale);
+        const actorBox=new THREE.Box3().setFromObject(model);
+        model.position.y=-actorBox.min.y;
+        const anchor=new THREE.Group();
+        anchor.add(model);
+        scene.add(anchor);
+        const mixer=undeadClips.length?new THREE.AnimationMixer(model):null;
+        actor={anchor,model,mixer,clipName:'',action:null,lastFrame:performance.now(),seen:0};
+        undeadActors.set(id,actor);
+      }
+      actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
+      actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      actor.anchor.userData.worldPoint={x:e.x,y:e.y};
+      const moving=Math.hypot(Number(e.vx)||0,Number(e.vy)||0)>.05;
+      const attacking=performance.now()-(Number(e.attackAt)||0)<400;
+      const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
+      const clip=undeadClips.find(c=>intents.some(word=>c.name.toLowerCase().includes(word)))
+        ||undeadClips.find(c=>/idle|walk/i.test(c.name))||null;
+      if(actor.mixer&&clip&&clip.name!==actor.clipName){
+        if(actor.action)actor.action.fadeOut(.12);
+        actor.action=actor.mixer.clipAction(clip).reset().fadeIn(.12).play();
+        actor.clipName=clip.name;
+      }
+      const now=performance.now();
+      actor.mixer?.update(Math.min(.05,Math.max(0,(now-actor.lastFrame)/1000)));
+      actor.lastFrame=now;
+      actor.seen=stamp;
+    }
+    for(const [key,actor] of undeadActors){
+      if(actor.seen===stamp)continue;
+      actor.mixer?.stopAllAction();
+      scene.remove(actor.anchor);
+      undeadActors.delete(key);
+    }
+  }
   if(hero)scene.add(hero.avatar);
   let playerToolName=null,playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'NONE'});
   let observedWeather='';
@@ -258,6 +324,7 @@ export async function createWorld3d(canvas){
       }
       if(heroMixer){heroMixer.update(Math.min(.05,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
     }
+    synchronizeUndead(state,px,py,seen);
     resources(state.trees,'tree',px,py,seen,1.28);
     resources(state.swampTrees,'tree_large',px,py,seen,1.65);
     resources(state.rocks,'cobblestones',px,py,seen,1.05);
@@ -298,6 +365,11 @@ export async function createWorld3d(canvas){
     disposed=true;active=false;canvas.hidden=true;
     if(hero){heroMixer?.stopAllAction();scene.remove(hero.avatar);
       hero.model.traverse(object=>{if(object.isMesh){object.geometry?.dispose();const mats=Array.isArray(object.material)?object.material:[object.material];for(const mat of mats)mat?.dispose()}})}
+    for(const actor of undeadActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
+    undeadActors.clear();
+    if(undeadSource){undeadSource.traverse(o=>{if(!o.isMesh)return;
+      o.geometry?.dispose();const materials=Array.isArray(o.material)?o.material:[o.material];
+      for(const m of materials)m?.dispose()})}
     renderer.dispose();
     for(const row of entities.values())scene.remove(row.model);
     entities.clear();
@@ -308,6 +380,7 @@ export async function createWorld3d(canvas){
   return {
     frame,pick,dispose,kind:'NATIVE_WEBGL_CC0_ASSET_PREVIEW',
     modelCount:models.size,playerAssetLoaded:!!hero,playerMotionClipCount:heroClips.length,
+    undeadProxySourceLoaded:!!undeadSource,undeadProxyMotionClipCount:undeadClips.length,
     getBiome:()=>currentBiome,getWorldProfile:()=>gameStyleRegion,
     getWeatherEffects:()=>weatherVisualEffects,getAvatarRecipe:()=>avatarRecipe,
     getMissingAssetTypes:()=>assetReadiness.missingTypes,productionReady:false
