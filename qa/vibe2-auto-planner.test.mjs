@@ -76,7 +76,10 @@ test('exact focus lanes remain visible when generic backlog is full without bypa
       type:'implementation',status:'queued',sourceRoot:'web-games/other-'+i,
       responsibleFiles:['web-games/other-'+i+'/index.html'],goal:'preserve independent work'
     }));
-    const result=planVibe2AutonomousTasks({status:{projects:[]},catalog:{games},
+    const otherGames=Array.from({length:60},(_,i)=>({
+      id:'other-'+i,name:'Other '+i,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'
+    }));
+    const result=planVibe2AutonomousTasks({status:{projects:[]},catalog:{games:[...games,...otherGames]},
       queue:{maxConcurrentTasks:64,tasks:existing},repoRoot:root,
       maxConcurrentTasks:4,queueMaxConcurrentTasks:64,planningBacklogTarget:60});
     assert.equal(result.planningBacklog.normalCapacity,0);
