@@ -1,366 +1,305 @@
-// Wild Forest: true WebGL three-dimensional scene driven by the existing survival state.
-// Gameplay, save, combat, animal AI, crafting, and world coordinates remain authoritative in index.html.
+// Original-source-only Wild Forest renderer.
+// Uses ONLY repository GLB/FBX/OBJ original geometry; no synthetic character, tree, animal, or terrain meshes.
+// The existing index.html simulation still owns animal AI, saves, crafting, gathering, combat, and collisions.
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { attachWildNativeScenery } from './wild-native-scenery.mjs';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
+import {MTLLoader} from 'three/addons/loaders/MTLLoader.js';
+import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
+import {clone as cloneRig} from 'three/addons/utils/SkeletonUtils.js';
 
-const SCALE=72;
-const WHITE='#f0ead6';
-const COL={
-  ground:'#5c7952',wood:'#77533a',foliage:'#3c7346',foliage2:'#4e9153',
-  rock:'#829087',grass:'#b2b877',berry:'#aa3642',water:'#4b829c',
-  sand:'#b3a680',skin:'#c69b76',shirt:'#435c46',pants:'#383f39',
-  deer:'#aa7953',rabbit:'#b6ad9b',boar:'#564339',flame:'#ffa53b'
-};
-const material=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.84,...extra});
-const mat={};
-for(const [key,color] of Object.entries(COL))mat[key]=material(color);
-mat.water=material(COL.water,{roughness:.22,metalness:.04,transparent:true,opacity:.87});
-mat.eye=material('#171915',{roughness:.45});
-mat.tusk=material('#eddfc0');
-mat.fire=material(COL.flame,{emissive:'#ee711c',emissiveIntensity:2});
-const geom={
-  box:new THREE.BoxGeometry(1,1,1),
-  ball:new THREE.SphereGeometry(1,10,7),
-  cylinder:new THREE.CylinderGeometry(1,1,1,8),
-  cone:new THREE.ConeGeometry(1,1,7),
-  rock:new THREE.DodecahedronGeometry(1,0),
-  plane:new THREE.PlaneGeometry(1,1)
-};
-function mesh(parent,geometry,m,x,y,z,sx=1,sy=1,sz=1){
-  const shape=new THREE.Mesh(geometry,m);
-  shape.position.set(x,y,z);
-  shape.scale.set(sx,sy,sz);
-  parent.add(shape);return shape;
+const ASSETS=new URL('../../assets/',import.meta.url);
+const SRC=Object.freeze({
+  floor:'shared/homely-house/floor_base',
+  tree:'shared/homely-house/tree',
+  bigTree:'shared/homely-house/tree_large',
+  fiber:'shared/homely-house/foliage_A',
+  berry:'shared/homely-house/foliage_B',
+  house:'shared/homely-house/house',
+  bench:'shared/homely-house/bench_A',
+  rock:'roblox/survival-core-world-v1/rock_medium',
+  boar:'roblox/monster-adventure-v1/boar',
+  lamp:'roblox/survival-core-world-v1/lamp'
+});
+const MTL=Object.freeze({
+  boar:'roblox/monster-adventure-v1/monster-adventure.mtl',
+  rock:'roblox/survival-core-world-v1/survival-core-world.mtl',
+  lamp:'roblox/survival-core-world-v1/survival-core-world.mtl'
+});
+const MODEL_TO_KIND=Object.freeze({tree:'tree',stone:'rock',fiber:'fiber',berry:'berry'});
+function fail(message){throw new Error('WILD_FOREST_ORIGINAL_ASSET_REQUIRED: '+message);}
+async function fetchText(path){
+  const response=await fetch(new URL(path,ASSETS),{cache:'force-cache'});
+  if(!response.ok)fail(path+' HTTP '+response.status);
+  return response.text();
 }
-function groupAt(parent,x=0,y=0,z=0){
-  const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);return g;
+async function loadObj(name){
+  const path=SRC[name],mtlPath=MTL[name]||path+'.mtl';
+  const [objText,mtlText]=await Promise.all([fetchText(path+'.obj'),fetchText(mtlPath)]);
+  const parsedMaterials=new MTLLoader().parse(mtlText,new URL(mtlPath,ASSETS).href);
+  parsedMaterials.preload();
+  const loader=new OBJLoader();
+  loader.setMaterials(parsedMaterials);
+  const object=loader.parse(objText);
+  let hasGeometry=false;
+  object.traverse(item=>{if(item.isMesh){
+    hasGeometry=hasGeometry||!!item.geometry?.attributes?.position?.count;
+    item.castShadow=true;item.receiveShadow=true;
+    // Preserve the source MTL; do not invent replacement materials.
+    if(Array.isArray(item.material))for(const mat of item.material)mat.side=THREE.DoubleSide;
+    else if(item.material)item.material.side=THREE.DoubleSide;
+  }});
+  if(!hasGeometry)fail('Original '+path+'.obj has no mesh');
+  return object;
 }
-function makeTree(parent,seed){
-  const tree=groupAt(parent),variety=.82+(seed%5)*.082;
-  mesh(tree,geom.cylinder,mat.wood,0,1.35,0,.25,2.7,.25);
-  mesh(tree,geom.cone,mat.foliage,0,3.2,0,1.48,3.5,1.48);
-  mesh(tree,geom.cone,mat.foliage2,0,4.30,0,1.01,2.55,1.01);
-  mesh(tree,geom.ball,mat.foliage,0,2.86,0,1.1,.75,1.1);
-  tree.scale.setScalar(variety);
-  return tree;
+function placeAsset(parent,original,worldX,worldZ,height,rotation=0){
+  const object=original.clone(true);
+  const bounds=new THREE.Box3().setFromObject(object),size=bounds.getSize(new THREE.Vector3());
+  if(!(size.y>0))fail('Original model has no height');
+  const factor=height/size.y;
+  object.scale.multiplyScalar(factor);
+  object.position.set(worldX-(bounds.min.x+bounds.max.x)*.5*factor,-bounds.min.y*factor,
+    worldZ-(bounds.min.z+bounds.max.z)*.5*factor);
+  object.rotation.y=rotation;
+  parent.add(object);
+  return object;
 }
-function makeStone(parent,seed){
-  const root=groupAt(parent);
-  const stone=mesh(root,geom.rock,mat.rock,0,.42,0,.75,.44,.59);
-  stone.rotation.set(.1,(seed*2.3)%6,.23);return root;
+function seededRandom(seed){let s=seed|0;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return (s>>>0)/4294967296};}
+function animateIfAvailable(model,clips) {
+  if(!clips?.length)return null;
+  const mixer=new THREE.AnimationMixer(model);
+  const clip=clips.find(c=>/idle|walk|run/i.test(c.name))||clips[0];
+  if(clip)mixer.clipAction(clip).play();
+  return mixer;
 }
-function makeFiber(parent,seed){
-  const root=groupAt(parent);
-  for(let i=0;i<5;i++){
-    const a=i*2.4+seed;
-    const blade=mesh(root,geom.cone,mat.grass,Math.cos(a)*.27,.39,Math.sin(a)*.27,.15,.82,.15);
-    blade.rotation.z=Math.sin(a)*.28;
+async function loadOriginalBunny() {
+  // This checked-in CC0 Kenney ZIP contains the exact 'animal-bunny' original species.
+  const path='external/simple-rpg/wildlife/cube-pets.zip';
+  const mod=await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm');
+  const JSZip=mod.default||mod;
+  const response=await fetch(new URL(path,ASSETS),{cache:'force-cache'});
+  if(!response.ok)fail(path+' HTTP '+response.status);
+  const zip=await JSZip.loadAsync(await response.arrayBuffer());
+  const files=Object.entries(zip.files).filter(([name,v])=>!v.dir&&/(?:^|\/)animal-bunny\.(?:glb|gltf|obj|fbx)$/i.test(name));
+  files.sort((a,b)=>{const rank=n=>/\.(glb)$/i.test(n)?0:/\.(obj)$/i.test(n)?1:/\.(fbx)$/i.test(n)?2:3;return rank(a[0])-rank(b[0])});
+  if(!files.length)fail('Kenney cube-pets archive lacks animal-bunny original model');
+  const [name,file]=files[0];
+  if(/\.glb$/i.test(name)){
+    const data=await file.async('arraybuffer');
+    return {scene:(await new GLTFLoader().parseAsync(data,'')).scene,clips:[]};
   }
-  return root;
+  if(/\.obj$/i.test(name)){
+    const group=new OBJLoader().parse(await file.async('string'));
+    let count=0;
+    group.traverse(o=>{if(o.isMesh){count++;o.castShadow=true;o.receiveShadow=true}});
+    if(!count)fail('Kenney animal-bunny OBJ geometry missing');
+    // File is the original archive asset; no new geometry is constructed.
+    return {scene:group,clips:[]};
+  }
+  if(/\.fbx$/i.test(name)){
+    const model=new FBXLoader().parse(await file.async('arraybuffer'),'');
+    return {scene:model,clips:model.animations||[]};
+  }
+  fail('Kenney bunny archive has unsupported source model: '+name);
 }
-function makeBerry(parent){
-  const root=groupAt(parent);
-  mesh(root,geom.ball,mat.foliage,0,.73,0,.75,.75,.65);
-  for(let i=0;i<7;i++){
-    const a=i*2.4,rr=.54;
-    mesh(root,geom.ball,mat.berry,Math.cos(a)*rr,.70+Math.sin(i*1.7)*.25,Math.sin(a)*rr,.14,.14,.14);
-  }
-  return root;
+async function loadAnimals(){
+  const deerUrl=new URL('roblox/actors/sources/quaternius-cute/FBX/Deer.fbx',ASSETS);
+  const heroUrl=new URL('shared/humanoid-traveler.glb',ASSETS);
+  const [deer,hero,bunny]=await Promise.all([
+    new FBXLoader().loadAsync(deerUrl.href),
+    new GLTFLoader().loadAsync(heroUrl.href),
+    loadOriginalBunny()
+  ]);
+  if(!deer||!hero.scene||!bunny.scene)fail('Native deer, rabbit or player source could not be loaded');
+  return {
+    rabbit:{original:bunny.scene,clips:bunny.clips||[]},
+    deer:{original:deer,clips:deer.animations||[]},
+    // The existing, exact-named boar OBJ loads through the same licensed source loader.
+    player:{original:hero.scene,clips:hero.animations||[]}
+  };
 }
-function makeHuman(parent){
-  const root=groupAt(parent);
-  const legs=[];
-  for(const x of [-.27,.27]){
-    const leg=groupAt(root,x,1.18,0);
-    mesh(leg,geom.cylinder,mat.pants,0,-.46,0,.21,.88,.23);
-    mesh(leg,geom.box,mat.pants,0,-.91,.12,.4,.2,.6);
-    legs.push(leg);
+function validateOriginalSource(assets){
+  for(const id of ['floor','tree','bigTree','fiber','berry','rock','house','bench','boar','lamp']){
+    if(!assets[id])fail('Missing required original OBJ: '+id);
   }
-  mesh(root,geom.box,mat.shirt,0,1.95,0,1.05,1.2,.63);
-  mesh(root,geom.ball,mat.skin,0,2.79,0,.45,.49,.4);
-  for(const x of [-.7,.7])mesh(root,geom.cylinder,mat.shirt,x,1.92,0,.17,1,.2);
-  // Eyes are visible from the forward (-Z) side of the actual 3D model.
-  for(const x of [-.15,.15])mesh(root,geom.ball,mat.eye,x,2.86,-.375,.054,.055,.045);
-  const weapon=groupAt(root,.78,1.65,-.24);
-  mesh(weapon,geom.cylinder,mat.wood,0,-.32,0,.09,.9,.09);
-  mesh(weapon,geom.cone,mat.tusk,0,-.87,0,.18,.48,.18);
-  weapon.rotation.x=-.30;
-  return {root,legs,weapon};
 }
-function makeAnimal(parent,type){
-  const root=groupAt(parent),m=mat[type]||mat.boar;
-  const body=groupAt(root);
-  const bodyLength=type==='rabbit'?.62:1.1;
-  mesh(body,geom.ball,m,0,.77,0,.57,.53,bodyLength);
-  mesh(body,geom.ball,m,0,.88,-.79,.42,.40,.48);
-  for(const x of [-.36,.36])for(const z of [-.63,.56]){
-    mesh(body,geom.cylinder,m,x,.32,z,.12,.54,.12);
+export async function createWild3D({canvas,WORLD,resources,animals}){
+  if(!canvas||!window.WebGL2RenderingContext)fail('WebGL2 device unavailable, no 2D fallback');
+  const err=document.getElementById('renderStatus');
+  document.body.dataset.nativeForestAssets='loading';
+  if(err){err.hidden=false;err.textContent='기존 3D 원본 에셋 불러오는 중…';}
+  // Fail closed before any frame or misleading 3D "PASS".
+  const names=Object.keys(SRC);
+  const pairs=await Promise.all(names.map(async n=>[n,await loadObj(n)]));
+  const assets=Object.fromEntries(pairs);
+  validateOriginalSource(assets);
+  const animalsLoaded=await loadAnimals();
+  const SCALE=72;
+  const scene=new THREE.Scene();
+  scene.background=new THREE.Color('#89acbb');
+  scene.fog=new THREE.FogExp2('#89acbb',.013);
+  const hemisphere=new THREE.HemisphereLight('#e0f0ff','#657a56',1.8);
+  scene.add(hemisphere);
+  const sunlight=new THREE.DirectionalLight('#ffdfaa',2.45);
+  sunlight.position.set(-17,28,-9);sunlight.castShadow=true;
+  sunlight.shadow.mapSize.set(matchMedia('(pointer:coarse)').matches?1024:2048,matchMedia('(pointer:coarse)').matches?1024:2048);
+  sunlight.shadow.camera.left=-23;sunlight.shadow.camera.right=23;
+  sunlight.shadow.camera.top=23;sunlight.shadow.camera.bottom=-23;
+  sunlight.shadow.camera.near=1;sunlight.shadow.camera.far=75;
+  sunlight.shadow.bias=-.00035;sunlight.shadow.normalBias=.04;
+  scene.add(sunlight,sunlight.target);
+  const world=new THREE.Group();scene.add(world);
+  const groundModel=assets.floor;
+  // Landscape tiles are instances of ORIGINAL CC0 floor_base.obj, not PlaneGeometry or procedural meshes.
+  const groundTiles=[];
+  const floorBounds=new THREE.Box3().setFromObject(groundModel);
+  const nativeFloorSize=floorBounds.getSize(new THREE.Vector3());
+  if(nativeFloorSize.x<.01||nativeFloorSize.z<.01)fail('CC0 floor_base native geometry has invalid horizontal dimensions');
+  const tiling=5.2,cols=13,rows=13;
+  for(let rz=0;rz<rows;rz++)for(let rx=0;rx<cols;rx++){
+    const cell=placeAsset(world,groundModel,0,0,.48);
+    cell.userData.grid={rx,rz};
+    groundTiles.push(cell);
   }
-  for(const x of [-.19,.19]){
-    mesh(body,geom.ball,mat.eye,x,1.01,-1.1,.07,.07,.07);
+  const originalNodes=resources.map((r,i)=>{
+    const kind=MODEL_TO_KIND[r.type];
+    const original=assets[kind];
+    if(!original)fail('Missing exact original resource: '+r.type);
+    const h=r.type==='tree'?(i%3===0?5.8:4.9):r.type==='stone'?.95:1.25;
+    const choice=r.type==='tree'&&i%3===0?assets.bigTree:original;
+    const group=placeAsset(world,choice,r.x/SCALE,r.y/SCALE,h,i*2.399963);
+    return group;
+  });
+  const rabbitSource=animalsLoaded.rabbit, deerSource=animalsLoaded.deer,boarSource={original:assets.boar,clips:[]};
+  const types={rabbit:rabbitSource,deer:deerSource,boar:boarSource};
+  const creatures=animals.map(a=>{
+    const source=types[a.type];if(!source)fail('No original model for existing animal '+a.type);
+    const asset=cloneRig(source.original);
+    const bounds=new THREE.Box3().setFromObject(asset);
+    const size=bounds.getSize(new THREE.Vector3());
+    const height=a.type==='rabbit'?1.05:a.type==='deer'?2.25:1.7;
+    if(!(size.y>.0001))fail('Invalid original animal source '+a.type);
+    const factor=height/size.y;
+    asset.scale.multiplyScalar(factor);
+    asset.userData.originalOffset=new THREE.Vector3(-(bounds.min.x+bounds.max.x)*.5*factor,-bounds.min.y*factor,-(bounds.min.z+bounds.max.z)*.5*factor);
+    asset.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
+    world.add(asset);
+    return {asset,mixer:animateIfAvailable(asset,source.clips),source};
+  });
+  const avatar=cloneRig(animalsLoaded.player.original);
+  const avatarBounds=new THREE.Box3().setFromObject(avatar);
+  const aHeight=avatarBounds.max.y-avatarBounds.min.y;
+  if(aHeight<=.0001)fail('Original traveler GLB contains no usable model');
+  const avatarScale=2.65/aHeight;
+  avatar.scale.setScalar(avatarScale);
+  avatar.userData.originalOffset=new THREE.Vector3(-(avatarBounds.min.x+avatarBounds.max.x)*.5*avatarScale,-avatarBounds.min.y*avatarScale,-(avatarBounds.min.z+avatarBounds.max.z)*.5*avatarScale);
+  avatar.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
+  world.add(avatar);
+  const avatarMixer=animateIfAvailable(avatar,animalsLoaded.player.clips);
+  const shelter=placeAsset(world,assets.house,-1000,-1000,4.3);
+  const campBench=placeAsset(world,assets.bench,-1000,-1000,1.12);
+  const campLamp=placeAsset(world,assets.lamp,-1000,-1000,1.15);
+  const campGlow=new THREE.PointLight('#eaa34a',6.5,12,2);
+  world.add(campGlow);
+  const rng=seededRandom(20261020),decor=[];
+  // Decorative repetition uses ORIGINAL tree/foliage geometry, not newly authored shapes.
+  for(let i=0;i<235;i++){
+    const x=110+rng()*(WORLD.w-220),z=100+rng()*(WORLD.h-200);
+    if(Math.abs(z-(WORLD.riverY+WORLD.riverH*.5))<WORLD.riverH*.5+55)continue;
+    if(Math.hypot(x-480,z-560)<145)continue;
+    const original=i%4===0?assets.tree:i%7===0?assets.bigTree:assets.fiber;
+    const height=i%4===0?3.4:i%7===0?5.9:1.05;
+    decor.push(placeAsset(world,original,x/SCALE,z/SCALE,height,rng()*Math.PI*2));
   }
-  if(type==='rabbit'){
-    root.scale.setScalar(.58);
-    for(const x of [-.25,.25])mesh(body,geom.cone,m,x,1.55,-.76,.19,.98,.16);
-  }else if(type==='deer'){
-    const antler=material('#b89c76');
-    for(const x of [-.25,.25]){
-      const horn=mesh(body,geom.cylinder,antler,x,1.6,-.78,.05,1.3,.05);
-      horn.rotation.z=x>0?-.27:.27;
-      const prong=mesh(body,geom.cylinder,antler,x*1.8,1.7,-.74,.04,.59,.04);
-      prong.rotation.z=x>0?-.8:.8;
-    }
-    root.scale.setScalar(1.08);
-  }else{
-    for(const x of [-.37,.37]){
-      const tusk=mesh(body,geom.cone,mat.tusk,x,.57,-1.21,.16,.41,.15);
-      tusk.rotation.z=x>0?-.35:.35;
-    }
-    root.scale.setScalar(1.22);
-  }
-  return {root,body};
-}
-function makeTent(parent){
-  const root=groupAt(parent);
-  for(const x of [-1.35,1.35])for(const z of [-1,1])
-    mesh(root,geom.cylinder,mat.wood,x,1.12,z,.095,2.2,.095);
-  const roof=mesh(root,new THREE.ConeGeometry(2.55,1.65,4),mat.wood,0,2.7,0,1,1,.95);
-  roof.rotation.y=Math.PI/4;
-  mesh(root,geom.box,mat.sand,0,.09,0,2.8,.17,2.2);
-  return root;
-}
-function makeFire(parent){
-  const root=groupAt(parent);
-  for(let i=0;i<6;i++){
-    const a=i*Math.PI/3;
-    mesh(root,geom.rock,mat.rock,Math.cos(a)*.48,.19,Math.sin(a)*.48,.27,.22,.25);
-  }
-  const flames=groupAt(root);
-  for(let i=0;i<4;i++){
-    const a=i*Math.PI/2;
-    const flame=mesh(flames,geom.cone,mat.fire,Math.cos(a)*.17,.82,Math.sin(a)*.17,.18,.92,.18);
-    flame.rotation.z=Math.cos(a)*.17;
-  }
-  const light=new THREE.PointLight('#ffa851',11,10,2);
-  light.position.set(0,1.3,0);root.add(light);
-  return{root,flames,light};
-}
-export function createWild3D({canvas,WORLD,resources,animals}){
-  if(!canvas||!window.WebGL2RenderingContext)throw new Error('WebGL2 지원 브라우저와 GPU가 필요해.');
+  const camera=new THREE.PerspectiveCamera(57,innerWidth/Math.max(1,innerHeight),.1,170);
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,matchMedia('(pointer:coarse)').matches?1.15:1.55));
+  renderer.setSize(innerWidth,innerHeight,false);
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.3;
-  renderer.setPixelRatio(Math.min(devicePixelRatio||1,matchMedia('(pointer:coarse)').matches?1.15:1.6));
-  renderer.shadowMap.enabled=true;
-  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  renderer.setSize(innerWidth,innerHeight,false);
-  const scene=new THREE.Scene();
-  scene.background=new THREE.Color('#8daec1');
-  scene.fog=new THREE.FogExp2('#8daec1',.015);
-  const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.1,150);
-  const hemi=new THREE.HemisphereLight('#e3f1ff','#63714a',2);
-  scene.add(hemi);
-  const sun=new THREE.DirectionalLight('#ffe0b0',2.4);
-  sun.position.set(-15,29,-10);
-  sun.castShadow=true;
-  const shadowSize=matchMedia('(pointer:coarse)').matches?1024:2048;
-  sun.shadow.mapSize.set(shadowSize,shadowSize);
-  sun.shadow.camera.left=-23;sun.shadow.camera.right=23;
-  sun.shadow.camera.top=23;sun.shadow.camera.bottom=-23;
-  sun.shadow.camera.near=1;sun.shadow.camera.far=65;
-  sun.shadow.bias=-0.00032;
-  sun.shadow.normalBias=.045;
-  scene.add(sun,sun.target);
-  const world=groupAt(scene);
-  // Vertex-tinted genuine 3D terrain; this is not a flat 2D scene.
-  const ground=mesh(world,new THREE.PlaneGeometry(WORLD.w/SCALE,WORLD.h/SCALE,48,38),mat.ground,
-    WORLD.w/(2*SCALE),-.06,WORLD.h/(2*SCALE));
-  ground.rotation.x=-Math.PI/2;
-  const groundPos=ground.geometry.attributes.position,groundColors=[];
-  const earthy=new THREE.Color('#67855c'),mossy=new THREE.Color('#406a46');
-  for(let i=0;i<groundPos.count;i++){
-    const x=groundPos.getX(i),y=groundPos.getY(i);
-    const patch=(Math.sin(x*1.3+Math.cos(y*.74))*Math.cos(y*1.74+x*.37)+1)*.5;
-    const c=mossy.clone().lerp(earthy,.24+patch*.48);
-    groundColors.push(c.r,c.g,c.b);
-  }
-  ground.geometry.setAttribute('color',new THREE.Float32BufferAttribute(groundColors,3));
-  ground.material=material('#ffffff',{vertexColors:true});
-  ground.receiveShadow=true;
-  const river=mesh(world,new THREE.PlaneGeometry(WORLD.w/SCALE,WORLD.riverH/SCALE),mat.water,
-    WORLD.w/(2*SCALE),.022,(WORLD.riverY+WORLD.riverH/2)/SCALE);
-  river.rotation.x=-Math.PI/2;
-  for(const y of [WORLD.riverY-8,WORLD.riverY+WORLD.riverH+8]){
-    mesh(world,geom.box,mat.sand,WORLD.w/(2*SCALE),.04,y/SCALE,WORLD.w/SCALE,.12,.30);
-  }
-  // 3D rocky hill from the original 2D region (2850,420).
-  const hill=groupAt(world,2850/SCALE,-.02,420/SCALE);
-  for(let i=0;i<11;i++){
-    const a=i*2.4,rad=i%3;
-    const rock=mesh(hill,geom.rock,mat.rock,Math.cos(a)*rad*1.65,1.0,Math.sin(a)*rad*1.4,2.3,.98,1.7);
-    rock.rotation.y=a;
-  }
-  const props=resources.map((r,index)=>{
-    const root=groupAt(world,r.x/SCALE,0,r.y/SCALE);
-    if(r.type==='tree')makeTree(root,index);
-    else if(r.type==='stone')makeStone(root,index);
-    else if(r.type==='fiber')makeFiber(root,index);
-    else makeBerry(root);
-    return root;
-  });
-  const wildlife=animals.map(a=>{
-    const result=makeAnimal(world,a.type);
-    result.root.position.set(a.x/SCALE,0,a.y/SCALE);
-    return result;
-  });
-  const human=makeHuman(world);
-  const tent=makeTent(world);
-  const fire=makeFire(world);
-  // Checked-in licensed 3D assets replace toy geometry when source files resolve.
-  let nativeForest=null;
-  document.body.dataset.nativeForestAssets='loading';
-  attachWildNativeScenery({THREE,world,WORLD,SCALE,resources,props,tent})
-    .then(value=>{nativeForest=value;})
-    .catch(error=>{
-      document.body.dataset.nativeForestAssets='unavailable';
-      console.error('Original CC0 forest asset loading failed',error);
-    });
-  human.root.traverse(object=>{if(object.isMesh)object.castShadow=true;});
-  for(const item of wildlife)item.root.traverse(object=>{if(object.isMesh)object.castShadow=true;});
-  const strike=groupAt(human.root);
-  const weaponGlow=mesh(strike,geom.cone,material('#f7eac0',{emissive:'#f5cc6b',emissiveIntensity:.4}),
-    -.78,1.54,-.75,.06,1.15,.06);
-  weaponGlow.rotation.x=Math.PI/2;
-  strike.visible=false;
-  const rain=groupAt(scene);
-  const drops=[];
-  const rainMat=new THREE.MeshBasicMaterial({color:'#b3d7e7',transparent:true,opacity:.53,depthWrite:false});
-  const rainGeo=new THREE.CylinderGeometry(.009,.009,.64,3);
-  for(let i=0;i<95;i++)drops.push(mesh(rain,rainGeo,rainMat,0,0,0));
-  const skyDay=new THREE.Color('#9fbfc7'),skyNight=new THREE.Color('#17283f');
-  function pyLight(){return 25;}
-  let width=innerWidth,height=innerHeight,frames=0,previous=performance.now();
-  let glLost=false;
-  canvas.addEventListener('webglcontextlost',e=>{
-    e.preventDefault();
-    glLost=true;
-    document.body.dataset.spatialDimension='3d-error';
-    const label=document.getElementById('renderStatus');
-    if(label){label.hidden=false;label.textContent='3D 그래픽 연결이 끊어졌어. 새로고침해 줘.';}
-  });
-  // Optional shared GLB for the same player, with visible 3D geometry if loading fails.
-  document.body.dataset.nativeHumanModel='loading';
-  try{
-    const loader=new GLTFLoader();
-    loader.load(new URL('../../assets/shared/humanoid-traveler.glb',import.meta.url).href,
-      gltf=>{
-        const model=gltf.scene;
-        if(!model)return;
-        const bounds=new THREE.Box3().setFromObject(model);
-        const dimensions=bounds.getSize(new THREE.Vector3());
-        if(!Number.isFinite(dimensions.y)||dimensions.y<=.0001)return;
-        const scale=2.9/dimensions.y,root=groupAt(human.root);
-        model.scale.setScalar(scale);
-        model.position.set(-(bounds.min.x+bounds.max.x)*.5*scale,-bounds.min.y*scale,
-          -(bounds.min.z+bounds.max.z)*.5*scale);
-        root.add(model);
-        root.traverse(part=>{if(part.isMesh)part.castShadow=true;});
-        for(const part of human.root.children)if(part!==root)part.visible=false;
-        document.body.dataset.nativeHumanModel='loaded';
-      },undefined,err=>{
-        document.body.dataset.nativeHumanModel='unavailable';
-        console.warn('Native player GLB unavailable; keeping procedural 3D character.',err);
-      }
-    );
-  }catch(e){document.body.dataset.nativeHumanModel='unavailable';}
-  function resize(){
-    if(innerWidth===width&&innerHeight===height)return;
-    width=innerWidth;height=innerHeight;
-    renderer.setSize(width,height,false);
-    camera.aspect=width/Math.max(1,height);
-    camera.updateProjectionMatrix();
-  }
+  renderer.toneMappingExposure=1.28;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  // Animation clips are sourced from original GLB and FBX assets.
+  const skyDay=new THREE.Color('#8cb7c9'),skyNight=new THREE.Color('#19283c');
+  let frames=0,prevX=NaN,prevY=NaN,glLost=false,width=innerWidth,height=innerHeight;
+  const moveEye=new THREE.Vector3(),target=new THREE.Vector3();
+  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();glLost=true;document.body.dataset.spatialDimension='3d-error';if(err){err.hidden=false;err.textContent='원본 3D 렌더링 연결이 끊어졌어. 새로고침해 줘.';}});
   function render(S,now){
     if(glLost)return;
-    resize();
     const p=S.player;
-    // Read-only position proof for post-deployment keyboard/mobile movement smoke tests.
-    document.body.dataset.playerWorldX=Number(p.x).toFixed(2);
-    document.body.dataset.playerWorldY=Number(p.y).toFixed(2);
-    props.forEach((g,i)=>g.visible=resources[i].amount>0);
-    wildlife.forEach((it,i)=>{
-      const animal=animals[i],dead=animal.dead>0;
-      it.root.visible=!dead;
-      it.root.position.set(animal.x/SCALE,0,animal.y/SCALE);
-      const vx=Number(animal.vx)||0,vy=Number(animal.vy)||0;
-      if(Math.abs(vx)+Math.abs(vy)>.05)it.root.rotation.y=Math.atan2(-vx,-vy);
-      if(!dead)it.body.position.y=Math.sin(now*.005+i)*.04;
-    });
-    human.root.position.set(p.x/SCALE,0,p.y/SCALE);
-    human.root.rotation.y=Math.atan2(-p.faceX,-p.faceY);
-    const moving=S.started&&!S.dead&&
-      (Math.abs(keysInput())>.01);
-    for(let i=0;i<human.legs.length;i++)human.legs[i].rotation.x=moving?
-      Math.sin(now*.009+i*Math.PI)*.35:0;
-    human.weapon.visible=S.gear.spear||S.gear.axe||S.gear.knife;
-    strike.visible=now-p.attackAt<160;
-    tent.position.set(S.camp.x/SCALE,0,S.camp.y/SCALE);
-    tent.visible=S.camp.shelter>0;
-    if(nativeForest)nativeForest.update(S.camp);
-    tent.scale.setScalar(S.camp.shelter>=2?1.28:1);
-    fire.root.position.set(S.camp.x/SCALE,0,S.camp.y/SCALE);
-    fire.root.visible=!!S.camp.fire;
-    fire.flames.scale.y=1+Math.sin(now*.015)*.20;
-    fire.light.intensity=S.camp.fire?9+Math.sin(now*.02)*2:0;
-    // Perspective camera follows the authoritative player location.
-    const px=p.x/SCALE,pz=p.y/SCALE;
-    // Third-person cinematic view: more visible depth, less distant top-down toy feel.
-    camera.position.lerp(new THREE.Vector3(px+4.2,8.3,pz+12.7),frames<2?1:.10);
-    camera.lookAt(px,1.85,pz-4.25);
-    sun.position.set(px-15,pyLight(),pz-10);
-    sun.target.position.set(px,0,pz);
-    sun.target.updateMatrixWorld();
-    const hour=S.time/60;
-    const sunlight=Math.max(.07,Math.sin((hour-5)/24*Math.PI*2));
-    hemi.intensity=.35+sunlight*1.85;
-    sun.intensity=.15+sunlight*2.35;
-    sun.color.set(S.weather==='storm'?'#c2cbe1':hour<7||hour>17?'#ffba7a':'#ffe5c3');
-    const skyMix=Math.min(1,Math.max(0,sunlight));
-    scene.background.copy(skyNight).lerp(skyDay,skyMix);
-    scene.fog.color.copy(scene.background);
-    scene.fog.density=S.weather==='storm'?.036:S.weather==='rain'?.024:.015;
-    const wet=S.weather==='rain'||S.weather==='storm';
-    rain.visible=wet;
-    if(wet){
-      const count=S.weather==='storm'?95:48;
-      const elapsed=now*.013;
-      for(let i=0;i<drops.length;i++){
-        const d=drops[i];
-        d.visible=i<count;
-        if(!d.visible)continue;
-        const ax=(i*3.73%24)-12,az=(i*5.41%30)-15;
-        d.position.set(px+ax,(i*1.77-elapsed)%12+12,pz+az);
-        d.rotation.z=.16;
-      }
+    if(innerWidth!==width||innerHeight!==height){
+      width=innerWidth;height=innerHeight;camera.aspect=width/Math.max(1,height);
+      camera.updateProjectionMatrix();renderer.setSize(width,height,false);
     }
+    // Update native CC0 terrain tiles from the original floor model, including the river.
+    const x=Math.floor(p.x/SCALE/tiling),z=Math.floor(p.y/SCALE/tiling);
+    if(prevX!==x||prevY!==z){
+      prevX=x;prevY=z;
+      groundTiles.forEach(o=>{
+        const {rx,rz}=o.userData.grid;
+        const px=(x+rx-Math.floor(cols/2))*tiling;
+        const pz=(z+rz-Math.floor(rows/2))*tiling;
+        const wy=pz*SCALE;
+        const river=wy>=WORLD.riverY&&wy<=WORLD.riverY+WORLD.riverH;
+        const originalY=river?-.16:-.10;
+        const floorSize=nativeFloorSize;
+        const fx=tiling/(floorSize.x||1),fz=tiling/(floorSize.z||1);
+        o.scale.set(fx,.12,fz);
+        o.position.set(px,originalY,pz);
+        o.visible=true;
+        // Material tint is cosmetic only; mesh vertices remain the downloaded original.
+        o.userData.river=river;
+      });
+    }
+    originalNodes.forEach((obj,i)=>{obj.visible=resources[i].amount>0;});
+    creatures.forEach((entry,i)=>{
+      const animal=animals[i],obj=entry.asset;
+      obj.visible=animal.dead<=0;
+      const base=obj.userData.originalOffset;
+      obj.position.set(animal.x/SCALE+base.x,base.y,animal.y/SCALE+base.z);
+      if(Math.abs(animal.vx)+Math.abs(animal.vy)>.05)obj.rotation.y=Math.atan2(-animal.vx,-animal.vy);
+      if(obj.visible&&entry.mixer)entry.mixer.update(.016);
+    });
+    avatar.position.set(p.x/SCALE+avatar.userData.originalOffset.x,avatar.userData.originalOffset.y,p.y/SCALE+avatar.userData.originalOffset.z);
+    avatar.rotation.y=Math.atan2(-p.faceX,-p.faceY);
+    if(avatarMixer)avatarMixer.update(.016);
+    const campReady=!!S.camp?.shelter;
+    shelter.visible=campReady&&S.camp.shelter>=2;
+    campBench.visible=campReady;
+    if(shelter.visible)shelter.position.set(S.camp.x/SCALE,0,S.camp.y/SCALE);
+    if(campBench.visible)campBench.position.set(S.camp.x/SCALE+2.5,0,S.camp.y/SCALE);
+    campLamp.visible=!!S.camp.fire;
+    if(campLamp.visible)campLamp.position.set(S.camp.x/SCALE,0,S.camp.y/SCALE);
+    campGlow.visible=campLamp.visible;
+    campGlow.position.set(S.camp.x/SCALE,1.4,S.camp.y/SCALE);
+    const px=p.x/SCALE,pz=p.y/SCALE;
+    moveEye.set(px+4.0,8.4,pz+13.2);
+    camera.position.lerp(moveEye,frames? .1:1);
+    target.set(px,1.85,pz-3.7);
+    camera.lookAt(target);
+    sunlight.position.set(px-15,26,pz-12);
+    sunlight.target.position.set(px,0,pz);
+    sunlight.target.updateMatrixWorld();
+    const hour=S.time/60;
+    const dayLevel=Math.max(.07,Math.sin((hour-5)/24*Math.PI*2));
+    hemisphere.intensity=.35+dayLevel*1.5;
+    sunlight.intensity=.2+dayLevel*2.35;
+    sunlight.color.set(S.weather==='storm'?'#cbd2dd':hour<7||hour>17?'#ffb67c':'#ffdfb5');
+    scene.background.copy(skyNight).lerp(skyDay,Math.min(1,dayLevel));
+    scene.fog.color.copy(scene.background);
+    scene.fog.density=S.weather==='storm'?.03:S.weather==='rain'?.021:.012;
     renderer.render(scene,camera);
     if(++frames===1){
       document.body.dataset.spatialDimension='3d';
       document.body.dataset.renderer='three-webgl';
+      document.body.dataset.nativeForestAssets='loaded';
+      document.body.dataset.nativeOriginalAnimalSpecies='rabbit,deer,boar';
       canvas.dataset.renderedFrame='true';
-      const label=document.getElementById('renderStatus');
-      if(label)label.hidden=true;
+      if(err)err.hidden=true;
     }
     if(frames%60===0)document.body.dataset.webglFrames=String(frames);
-    previous=now;
+    document.body.dataset.playerWorldX=Number(p.x).toFixed(2);
+    document.body.dataset.playerWorldY=Number(p.y).toFixed(2);
   }
-  // Movement flags are deliberately read-only: simulation still runs in the original game.
-  let keysInput=()=>0;
-  return{
-    render,
-    bindMovement(fn){if(typeof fn==='function')keysInput=fn;},
-    get frameCount(){return frames;}
-  };
+  return{render,bindMovement(){},get frameCount(){return frames}};
 }
