@@ -38,6 +38,34 @@ test('native preview binds actual downloaded CC0 OBJ sources with matching SHA25
   assert.match(moduleSource,new RegExp("'"+name+"'"));
  }
 });
+test('original source materials and Diablo-II-style native camera are bound to game state',()=>{
+ const source=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+ for(const name of ['tree','tree_large','foliage_A','foliage_B','bench_A','bench_B','fence_straight','house','gate_single','package']){
+  const objPath=home+name+'.obj',mtlPath=home+name+'.mtl';
+  assert.ok(fs.statSync(objPath).size>100,'missing CC0 geometry '+name);
+  const mtl=fs.readFileSync(mtlPath,'utf8');
+  assert.match(mtl,/^Kd\s+\d/m,'missing original diffuse '+name);
+ }
+ assert.match(source,/new THREE\.OrthographicCamera/);
+ assert.match(source,/camera\.position\.set\(centerX\+10\.5,17,centerY\+13\)/);
+ assert.match(source,/name\+'\.obj'/);
+ assert.match(source,/name\+'\.mtl'/);
+ assert.match(source,/materialText\.match/);
+ assert.match(source,/\['ironBench',state\.ironBench,'bench_B'\]/);
+ assert.match(source,/\['goldBench',state\.goldBench,'bench_B'\]/);
+ assert.match(source,/\['jungleBench',state\.jungleBench,'bench_A'\]/);
+ // Existing saves and combat authority must not be reimplemented for camera/art.
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+ assert.match(source,/productionReady:false/);
+});
+
+test('public Magic Forest never receives developer asset inspector button',()=>{
+ const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+ const panel=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
+ assert.match(workflow,/if\(route==='web-games\/fantasy-survival\/'\)continue/);
+ assert.match(panel,/gameId==='fantasy-survival'/);
+});
+
 test('native scene drives the default surface display but is not falsely production-certified',()=>{
  assert.match(moduleSource,/WebGLRenderer/);
  assert.match(moduleSource,/Float32BufferAttribute/);
