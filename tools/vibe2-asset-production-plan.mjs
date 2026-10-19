@@ -4541,6 +4541,42 @@ function buildReferenceDrivenAssetIdeaWorklist({studies=[],request='',characterC
     .slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.taskReferenceOverlayWorklistLimit));
 }
 
+// Downloaded visual assets need actual original, license and native bytes, not a catalogue label.
+export function inspectDownloadedAssetSource({asset={},repoRoot=process.cwd()}={}){
+  const fail=reason=>freeze({pass:false,reason});
+  const read=relative=>{
+    const value=clean(relative).replaceAll('\\','/');
+    if(!value.startsWith('assets/')||value.split('/').includes('..'))return null;
+    try{const full=fs.realpathSync(path.join(repoRoot,value)),root=fs.realpathSync(repoRoot);
+      if(!full.startsWith(root+path.sep)||!fs.statSync(full).isFile())return null;
+      return fs.readFileSync(full);
+    }catch{return null;}
+  };
+  if(!/^https:\/\/[^/]+\//i.test(clean(asset.sourceUrl)))return fail('EXTERNAL_SOURCE_URL_REQUIRED');
+  const license=clean(asset.license).toUpperCase();
+  if(!['CC0','CC0-1.0','PUBLIC-DOMAIN','CC-BY','CC-BY-4.0'].includes(license))return fail('VERIFIED_COMMERCIAL_LICENSE_REQUIRED');
+  if(license.startsWith('CC-BY')&&!clean(asset.sourceCredit||asset.credit))return fail('ATTRIBUTION_REQUIRED');
+  const nativePath=clean(asset.path||asset.masterGlb),nativeHash=clean(asset.masterGlbHash||asset.sourceHash||asset.sourceSha256).toLowerCase();
+  const native=read(nativePath);
+  if(!native||!/^[a-f0-9]{64}$/.test(nativeHash)||crypto.createHash('sha256').update(native).digest('hex')!==nativeHash)return fail('NATIVE_SOURCE_BYTES_HASH_REQUIRED');
+  let originalPath=clean(asset.originalSourcePath),originalHash=clean(asset.originalSourceHash||asset.originalSha256).toLowerCase(),licenseFile=clean(asset.licenseFile||asset.licenseEvidenceFile);
+  for(const file of asset.sourceFiles||[]){
+    if(!clean(file).endsWith('.json'))continue;
+    const bytes=read(file);if(!bytes)continue;
+    let manifest;try{manifest=JSON.parse(bytes.toString('utf8'));}catch{continue;}
+    const model=(manifest.models||[]).find(row=>row.path===nativePath&&clean(row.sha256).toLowerCase()===nativeHash);
+    if(!model)continue;
+    const pack=(manifest.sources||[]).find(row=>row.id===model.sourcePack&&row.sourceUrl===asset.sourceUrl&&clean(row.license).toUpperCase()===license);
+    if(!pack)continue;
+    originalPath=clean(model.sourceFile);originalHash=clean(model.sourceSha256).toLowerCase();licenseFile=clean(pack.licenseFile);
+    break;
+  }
+  const original=read(originalPath),rights=read(licenseFile);
+  if(!original||!/^[a-f0-9]{64}$/.test(originalHash)||crypto.createHash('sha256').update(original).digest('hex')!==originalHash)return fail('DOWNLOADED_ORIGINAL_BYTES_HASH_REQUIRED');
+  if(!rights||!/(?:CC0|Creative Commons Zero|creativecommons\.org\/(?:publicdomain\/zero|licenses\/by)|public domain)/i.test(rights.toString('utf8')))return fail('LICENSE_EVIDENCE_FILE_REQUIRED');
+  return freeze({pass:true,sourceUrl:asset.sourceUrl,originalPath,originalHash,nativePath,nativeHash,licenseFile});
+}
+
 export function buildVibeAssetProductionPlan({
   task={},
   target='',
@@ -4555,7 +4591,7 @@ export function buildVibeAssetProductionPlan({
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const currentDemandFamilies=requiredAssetFamilies({request,requirements:flowAssetRequirements});
-  const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
+  let manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   // [공용 에셋 자동 성장] 기존 원본 매니페스트에 새 검증 원본이 추가되면
   // Vibe의 다음 기존 ASSET_DEVELOPMENT 회차에서 자동 발견한다. 별도 큐/새 파이프라인은 만들지 않는다.
   const sharedOriginalArchives=[];
@@ -4596,7 +4632,15 @@ export function buildVibeAssetProductionPlan({
   });
   const companyRegistry=librarySync.registry;
   // 선택 identity는 실제 저장된 snapshot만 사용한다. dry-run 동기화 결과가 canonical version/hash를 선행하지 못한다.
-  const selectionRegistry=librarySync.changed&&!librarySync.persisted?persistedCompanyRegistry:companyRegistry;
+  let selectionRegistry=librarySync.changed&&!librarySync.persisted?persistedCompanyRegistry:companyRegistry;
+  const downloadedAssetPolicy=readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),{})
+    ?.livingMotionVisualQualityContract?.allGameDynamicInternalAssetBindingContract?.selection?.downloadedAssetSourcePolicy||{};
+  if(downloadedAssetPolicy.required===true){
+    const eligibility=new Map();
+    const allowed=asset=>{const key=JSON.stringify(asset);if(!eligibility.has(key))eligibility.set(key,inspectDownloadedAssetSource({asset,repoRoot}).pass);return eligibility.get(key);};
+    selectionRegistry={...selectionRegistry,assets:(selectionRegistry.assets||[]).filter(allowed)};
+    manifestBase={...manifestBase,assets:(manifestBase.assets||[]).filter(allowed)};
+  }
   const libraryAutomation=companyRegistry?.internalAssetLibraryAutomation||{};
   const executionLibraryPlan=librarySync.executionAutomationPlan||librarySync.automationPlan;
   const persistedWorklistFresh=
@@ -4714,7 +4758,7 @@ export function buildVibeAssetProductionPlan({
     if(requestedSharedDocument&&!sharedCustomizationDocument)task={...task,assetCustomization:{...task.assetCustomization,sharedDocument:undefined}};
   }
   const sameGameRobloxAssets=resolvedTarget==='roblox'?discoverExistingRobloxGameAssets({repoRoot,gameId:task.gameId}):[];
-  const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
+  const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets].filter(asset=>downloadedAssetPolicy.required!==true||inspectDownloadedAssetSource({asset,repoRoot}).pass)};
   const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,selectionRegistry);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const characterCustomizationRequested=Boolean(task.characterCustomization||task.npcCustomization)||/(?:CHARACTER|NPC|AVATAR|CUSTOMI[ZS]|캐릭터|케릭터|커마|커스터마이징|NPC|주민|시민|동료)/i.test(request);
@@ -5038,7 +5082,7 @@ export function buildVibeAssetProductionPlan({
     target:resolvedTarget,
     request,
     requirements:flowAssetRequirements,
-    registry:librarySync.sourceConsumerRegistry||companyRegistry,
+    registry:downloadedAssetPolicy.required===true?selectionRegistry:(librarySync.sourceConsumerRegistry||companyRegistry),
     sharedOriginalArchives,
     repoRoot,
     executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
@@ -5083,6 +5127,7 @@ export function buildVibeAssetProductionPlan({
     manifest:manifestInput,
     registry:selectionRegistry,
     assetSupplySummary,
+    downloadedAssetPolicy:freeze({...downloadedAssetPolicy}),
     repoRoot,
     explicitRequestedTypes:selector.explicitRequestedTypes||[]
   });
@@ -6446,6 +6491,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.downloadedAssetPolicy?.required===true?'[OWNER DOWNLOAD-ONLY ALL GAMES] '+JSON.stringify(plan.downloadedAssetPolicy)+'. Only verified downloaded original visual assets and their native imports may replace game visuals. Do not generate substitute meshes, images, textures or motion clips. Prefer exact compatible downloaded assets, then nearest role-compatible downloaded assets; only if neither exists request an additional licensed download as ASSET_ACQUISITION_REQUIRED in the existing acquisition flow. Engine/UI/lighting logic reuse remains allowed. Runtime/mobile and exact F0-F9 verification remain required.':'',
     plan.gameConceptStyle?'[GAME CONCEPT STYLE] '+JSON.stringify(plan.gameConceptStyle)+'. 공용 나무·몬스터·건물·재질은 원본을 보존하고 이 게임의 컨셉·세계·스타일에 맞는 네이티브 파생으로 선택·변형·조합한다. 재질 분류 수와 색·표면 변형 수는 유행 스타일 종류 수가 아니다. 색만 바꾸지 말고 승인된 실루엣·비율·재질 반응·표면 디테일·조명·모션·UI 표현을 적용한다. 다른 게임이나 오래된 공유 스타일로 덮지 않는다. 스타일 명세가 없으면 누락으로 남기고 일반 프리셋으로 최종 스타일 일치를 주장하지 않는다. 원본 해시·게임별 파생·설계 식별·같은 빌드의 중립 비교와 실게임 카메라 증거를 연결하며 판정·충돌·저장·서버 권한은 보존한다.': '',
     plan.externalCustomization?.contentComposition?.authorized
       ?'[ALL-GENRE EXISTING F0-F9 CONTENT COMPOSITION] '+

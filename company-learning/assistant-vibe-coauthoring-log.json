@@ -2,7 +2,7 @@
   "version": 6,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
-  "recordedAt": "2026-10-12",
+  "recordedAt": "2026-10-20",
   "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
   "policy": {
     "everyAssistantCoauthoringActionMustBeRecorded": true,
@@ -1118,6 +1118,90 @@
           "source:github-merge-f83da5f45a55d01deae21626a47094ec6c9bc1d9"
         ]
       }
+    },
+    {
+      "id": "assistant_web_asset_browser_substitution_20261020",
+      "date": "2026-10-20",
+      "gameId": "MULTI_GAME_WEB",
+      "engine": "WEB",
+      "domains": [
+        "ASSET_BINDING",
+        "PRESENTATION",
+        "PUBLICATION",
+        "QA"
+      ],
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The existing Pages publisher injected a shared asset catalogue button into every Web game. Asset candidates and preview controls are not actual game renderer consumption. Incremental presentation QA could accept unrelated image and drawing keywords.",
+      "decision": "Remove only publication-time asset browser injection; retain library and preview sources. Require renderer consumption in existing incremental QA and reject catalogue substitutes in existing source-worker binding checks. Preserve every game source, save key, progression and balance.",
+      "change": "Updated existing magic-forest-pages workflow, source worker and incremental QA with targeted regression cases. No new pipeline or game created. Fixed the existing preview smoke-route rejection and renamed character acting state to preserve window.performance; no smoke assertions were removed.",
+      "evidence": [
+        "Base main 08ab0b46c42182239417fd33e801d2fcf80613a7 and all four central documents read; constitution prewrite check passed.",
+        "Local node --test qa/vibe2-incremental-qa.test.mjs: 42 passed, 0 failed.",
+        "Local source-worker targeted Web engine prompt and Unity/Web dynamic asset-binding tests: 3 passed, 0 failed.",
+        "git diff --check passed. No individual game source changed; native 3D model integration and mobile runtime remain unverified.",
+        "Preview path security regression and character integration: 3 passed. Existing desktop browser smoke passed using exact three@0.160.1 bytes served from the npm package because the local environment could not reach the CDN directly. External CDN and Cloudflare deployment remain unverified.",
+        "390x844 touch-device preview smoke passed with exact three@0.160.1 npm bytes. This verifies the preview only, not any game model integration or production deployment."
+      ],
+      "learningState": "TRACE_ONLY_UNTIL_VERIFIED_RUNTIME",
+      "runtimeVerified": false,
+      "productionReady": false
+    },
+    {
+      "id": "assistant_queue_heredoc_repair_20261020",
+      "date": "2026-10-20",
+      "gameId": "COMPANY_RUNTIME",
+      "engine": "PIPELINE",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Reconcile workflow first Node heredoc ended with shell indentation, swallowing following shell commands and failing before runtime persistence.",
+      "decision": "Repair only the existing heredoc terminator; preserve owner-only reactivation checks, serialized writes and F0-F9 sequence.",
+      "change": "Corrected workflow delimiter and added shell plus embedded Node parser regression to existing queue tests.",
+      "evidence": [
+        "Latest main remains 08ab0b46c42182239417fd33e801d2fcf80613a7; company-runtime remains c1fb486d46a2aff60ada1830bb94ec2d743ef311.",
+        "Reconcile unit and actual embedded workflow syntax tests: 20 passed. No postmerge runtime reconcile success claimed."
+      ],
+      "learningState": "TRACE_ONLY_UNTIL_POSTMERGE_RUNTIME",
+      "runtimeVerified": false,
+      "productionReady": false
+    },
+    {
+      "id": "assistant_party_native_assets_ui_20261020",
+      "date": "2026-10-20",
+      "gameId": "party-rpg",
+      "engine": "WEB",
+      "actionType": "SOURCE_CHANGE",
+      "problem": "Existing actor consumer discarded native clips, changed AI model by moving x-coordinate, used an unrelated beetle for unknown species and depended on a remote Three CDN. Existing UI needed a coherent start, HUD and equipment presentation.",
+      "decision": "Use existing actor renderer, game state and modal. Bind registered KayKit CC0 knight/mage/rogue plus existing species action GLBs, vendored Three, Vibe UI preferences, lighting and presentation modules. Preserve game save key, rewards, shop prices and progression. Do not mount preview gameplay or a separate asset menu.",
+      "change": "Stable actor identities, skeleton-safe clones, state-driven clips, live equipment mesh visibility, scene lifecycle and resize handling; redesigned existing start/HUD/inventory; added real settings through existing modal and Vibe settings serialization. Existing world renderer remains legacy and is not claimed as fully 3D.",
+      "evidence": [
+        "KayKit source CC0 license and native actor manifest inspected; all four central documents read.",
+        "Local 1100x720 desktop and 390x844 touch browser: seven models loaded with no missing assets, actual geometry rendered, movement and attack clips observed, shop purchase reached the 1H_Sword mesh, UI settings and save/reload passed with zero uncaught errors.",
+        "Existing browser startup QA now asserts native model loading, geometry draws, actual player movement, animation and shop-to-mesh binding for party-rpg.",
+        "Party contracts, preview integration, incremental QA and reconcile regression: 67 passed before final browser assertion addition.",
+        "Main promotion, GitHub CI for this revision, full 3D environment, other Web games, 128-slot/F0-F9 runtime and production deployment are not verified by this local result."
+      ],
+      "learningState": "TRACE_ONLY_LOCAL_RUNTIME_PENDING_CANONICAL_REVIEW",
+      "runtimeVerified": false,
+      "localRuntimeVerified": true,
+      "productionReady": false
+    },
+    {
+      "id": "assistant_download_only_similar_then_acquire_20261020",
+      "date": "2026-10-20",
+      "gameId": "ALL_GAMES",
+      "engine": "ALL",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Owner rejects all self-authored visual assets and requires verified downloaded originals; exact role gaps should try a compatible similar downloaded asset before requesting more downloads.",
+      "decision": "Canonical source policy now requires external source URL, commercial-use license document, original byte SHA256 and native byte SHA256. Existing planner filters actual candidates, manifests and same-game candidates through this verification. Priority is exact downloaded match, nearest compatible downloaded match, then acquisition in the existing graphics flow. Engine, UI logic and lighting modules remain reusable.",
+      "change": "Updated existing roadmap, asset production plan, worker guidance and provenance regression; removed previously selected authored creature GLBs and generated promotional image references from Party RPG candidate. No blanket asset deletion, new scheduler, new queue or gameplay rewrite.",
+      "evidence": [
+        "Downloaded-source tests reject catalogue-only rows, project-original assets, modified originals, modified native artifacts and missing license evidence.",
+        "Actual knight, mage and rogue registry entries passed original/native hash and CC0 license-file verification. Existing shared wolf failed external-origin verification.",
+        "Party RPG canonical browser smoke passed with only three downloaded character models, no missing model requests, actual geometry draws, walking animation and shop-to-sword mesh application.",
+        "Local affected regression: base 67 tests, targeted worker 3 tests, provenance and on-demand supply 2 tests passed. Main/runtime rollout, full 3D environment and other-game completion remain unverified."
+      ],
+      "learningState": "TRACE_ONLY_PENDING_MAIN_AND_POSTMERGE",
+      "runtimeVerified": false,
+      "productionReady": false
     }
   ]
 }

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 // 기존 조정기는 모듈 로드 시 검증된 정책 경로를 고정하므로 실제 정책 파일을 명시한다.
 process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
 const {reconcileDevelopmentQueue}=await import('../tools/company-development-queue-reconcile.mjs');
@@ -807,4 +808,22 @@ test('source intake registers unfinished Rojo once without inventing design or r
     write(root,'game-seed-state.json',{seeds:[{id:'owner-game',gameId:'owner-game',status:'PAUSED',productionClass:'DEVELOPMENT_CONFIRMED'}]});
     assert.ok(reconcileDevelopmentQueue({root}).removed.includes('owner-game'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('actual reconcile workflow shell and embedded Node scripts parse independently',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-queue-reconcile.yml','utf8');
+  const scripts=[...workflow.matchAll(/        run: \|\n((?:(?:          .*|)\n)+)/g)].map(match=>match[1].split('\n').map(line=>line.slice(10)).join('\n'));
+  assert.ok(scripts.length>=4,'all executable workflow blocks must be checked');
+  let embedded=0;
+  for(const script of scripts){
+    const shell=spawnSync('bash',['-n'],{input:script,encoding:'utf8'});
+    assert.equal(shell.status,0,shell.stderr);
+    for(const match of script.matchAll(/node --input-type=module <<'NODE'\n([\s\S]*?)^NODE$/gm)){
+      embedded++;
+      const node=spawnSync(process.execPath,['--check','--input-type=module'],{input:match[1],encoding:'utf8'});
+      assert.equal(node.status,0,node.stderr);
+    }
+  }
+  assert.equal(embedded,2,'both heredocs must terminate at shell column zero');
 });

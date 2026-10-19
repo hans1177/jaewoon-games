@@ -1185,6 +1185,20 @@ test('Web dynamic asset binding requires actual DOM Canvas or WebAudio family co
   assert.equal(pass.pass,true,pass.blockers.join(','));
   assert.equal(pass.appliedCount,1);
 
+  // 실제 UI 소비 코드가 섞여 있어도 제작용 목록을 게임 적용으로 인정하지 않는다.
+  for(const browser of [
+    '<script defer src="/assets/vibe-runtime-panel.js"></script>',
+    '<button id="vibe-assets-launcher">에셋</button>',
+    '<iframe src="/assets/vibe-model-preview.html"></iframe>'
+  ]){
+    const result=evaluateAllGameDynamicAssetBindingCandidate({sourceRoot:root,target:'web',bindingPlan,
+      candidate:{replaceFiles:[{path:'index.html',content:applied.replace('</body>',browser+'</body>')}]}});
+    assert.equal(result.pass,false,'asset catalogue must not stand in for gameplay asset binding');
+    assert.ok(result.blockers.includes('WEB_ASSET_BROWSER_IS_NOT_GAME_BINDING'));
+  }
+  assert.equal(pass.changedAppliedFamilyCount,1);
+  assert.equal(pass.familyResults.find(row=>row.family==='UI').actualBinding,true);
+
   for(const unused of [
     applied.replace('menu.classList.add(atoms[0]);','console.log(atoms[0]);'),
     applied.replace('menu.classList.add(atoms[0]);','if(atoms.length) menu.classList.add("marker-only");'),

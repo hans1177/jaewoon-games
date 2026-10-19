@@ -1,5 +1,5 @@
 {
-  "version": 582,
+  "version": 583,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -921,7 +921,33 @@
         "crossGameCrossGenreReuseRequiredWhenConceptCompatible": true,
         "crossPlatform3dModelDonationAllowedWithNativeReauthoring": true,
         "identicalAssetIdentityIsNotMandatoryAcrossGames": true,
-        "visualIdentityVariationRequiredAtRuntime": true
+        "visualIdentityVariationRequiredAtRuntime": true,
+        "downloadedAssetSourcePolicy": {
+          "authority": "OWNER_DIRECTIVE_2026-10-20_DOWNLOAD_ONLY_ALL_GAMES",
+          "required": true,
+          "scope": "ALL_GAMES_ALL_VISUAL_ASSET_REPLACEMENTS",
+          "verifiedExternalOriginalOnly": true,
+          "sourceUrlRequired": true,
+          "commercialUseLicenseEvidenceFileRequired": true,
+          "originalSourceBytesAndSha256Required": true,
+          "nativeArtifactBytesAndSha256Required": true,
+          "selfAuthoredOrGeneratedReplacementAllowed": false,
+          "scoreMayOverrideSourceRestriction": false,
+          "existingSelfAuthoredAssetsAreReplacementDebt": true,
+          "missingCompatibleSourceState": "ASSET_ACQUISITION_REQUIRED",
+          "acquisitionOwner": "EXISTING_ASSET_DEVELOPMENT_GRAPHICS_PRODUCTION",
+          "engineUiLightingLogicReuseAllowed": true,
+          "preservePlayableBaselineUntilVerifiedReplacement": true,
+          "runtimeAndMobileQaRequired": true,
+          "fallbackOrder": [
+            "EXACT_COMPATIBLE_VERIFIED_DOWNLOADED_ASSET",
+            "NEAREST_ROLE_COMPATIBLE_VERIFIED_DOWNLOADED_ASSET",
+            "REQUEST_ADDITIONAL_LICENSED_DOWNLOAD_IN_EXISTING_FLOW"
+          ],
+          "similarDownloadedSubstituteAllowed": true,
+          "similarityMustPreserveGameplayRoleAndIdentity": true,
+          "exactMatchAbsenceAloneMayNotBlockCompatibleSimilarDownloadedAsset": true
+        }
       },
       "application": {
         "existingSystemRequiresAppliedBinding": true,
@@ -6632,7 +6658,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-12",
+  "updatedAt": "2026-10-20",
   "priorityTiers": [
     {
       "tier": 1,

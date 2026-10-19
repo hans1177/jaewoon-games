@@ -315,6 +315,46 @@ try{
     })()`);
     await delay(start?.clicked?800:300);
 
+    let nativeAssetEvidence=null;
+    if(gameId==='party-rpg'){
+      currentPhase='NATIVE_ASSET_RENDER';
+      const deadline=Date.now()+20000;
+      while(Date.now()<deadline){
+        nativeAssetEvidence=await cdp.evaluate(`(()=>({diagnostics:window.vibe3dDiagnostics||null,x:window.partyRpgVibeState?.().p.x}))()`);
+        if(nativeAssetEvidence?.diagnostics?.actors?.some(actor=>actor.kind==='player'))break;
+        await delay(250);
+      }
+      const before=nativeAssetEvidence;
+      assert.deepEqual(before?.diagnostics?.missing,[],gameId+': native asset requests must succeed');
+      assert.equal(before?.diagnostics?.actors?.find(actor=>actor.kind==='player')?.id,'knight',gameId+': player must consume the registered character');
+      assert.ok(before.diagnostics.drawCalls>0&&before.diagnostics.triangles>0,gameId+': WebGL must draw model geometry');
+      await cdp.send('Input.dispatchKeyEvent',{type:'keyDown',key:'d',code:'KeyD',windowsVirtualKeyCode:68});
+      try{
+        await delay(350);
+        nativeAssetEvidence=await cdp.evaluate(`(()=>({diagnostics:window.vibe3dDiagnostics,x:window.partyRpgVibeState().p.x}))()`);
+        assert.ok(nativeAssetEvidence.x>before.x,gameId+': player movement must still work');
+        assert.match(nativeAssetEvidence.diagnostics.actors.find(actor=>actor.kind==='player').clip,/Walking|WALK/,gameId+': movement must drive the model animation');
+      }finally{
+        await cdp.send('Input.dispatchKeyEvent',{type:'keyUp',key:'d',code:'KeyD',windowsVirtualKeyCode:68});
+      }
+      const inventory=await cdp.evaluate(`(()=>{
+        const player=window.partyRpgVibeState().state.player;
+        const before={gold:player.gold,owned:player.ownedWeapons.includes('wood')};
+        document.getElementById('bagBtn').click();
+        const title=document.getElementById('modalTitle').textContent;
+        document.querySelector('[data-shop="weapon"]').click();
+        document.querySelector('[data-buy="wood"]').click();
+        document.getElementById('modalClose').click();
+        return {title,before,gold:player.gold,weapon:player.weapon,saved:JSON.parse(localStorage.getItem('party-rpg-v1')).player.weapon};
+      })()`);
+      assert.match(inventory.title,/인벤토리/);
+      assert.equal(inventory.weapon,'wood');assert.equal(inventory.saved,'wood');
+      assert.equal(inventory.gold,inventory.before.gold-(inventory.before.owned?0:40),gameId+': original shop economy must remain intact');
+      await delay(100);
+      const equipment=await cdp.evaluate(`window.vibe3dDiagnostics.actors.find(actor=>actor.kind==='player').equipment`);
+      assert.deepEqual(equipment,['1H_Sword'],gameId+': purchased equipment must reach the actor mesh');
+    }
+
     currentPhase='STATE_SNAPSHOT';
     const state=await cdp.evaluate(`(()=>({
       title:document.title,
@@ -341,7 +381,8 @@ try{
       gameId,
       clickedStart:Boolean(start?.clicked),
       startTarget:start?.target||'',
-      canvasCount:Number(state?.canvasCount||0)
+      canvasCount:Number(state?.canvasCount||0),
+      nativeAssetEvidence
     });
   }
 

@@ -1457,6 +1457,10 @@ export function evaluateAllGameDynamicAssetBindingCandidate({candidate={},source
     ...(candidate?.replaceFiles||[]).map(row=>posix(row.path))
   ]);
   const rows=[],blockers=[];
+  // 목록 버튼과 갤러리의 DOM 소비는 실제 게임 에셋 연결을 대체하지 못한다.
+  if(resolved==='web'&&/(?:vibe-runtime-panel\.js|vibe-assets-(?:launcher|panel)|<iframe\b[^>]*vibe-model-preview)/i.test(semanticSource)){
+    blockers.push('WEB_ASSET_BROWSER_IS_NOT_GAME_BINDING');
+  }
   let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0;
   for(const family of ROBLOX_INTERNAL_ASSET_FAMILIES){
     const systemPresent=ALL_GAME_INTERNAL_ASSET_SYSTEM_PATTERNS[family]?.test(semanticSource)===true
@@ -3736,6 +3740,7 @@ function internalAssetSourceUsageGuidance(order={}){
   const fileRows=[...roleFiles].sort(([a],[b])=>a.localeCompare(b)).map(([role,files])=>role+'='+[...files].sort().join('|')).join('; ');
   return [
     '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
+    'Bind selected assets directly into this game\'s existing character/enemy/world/material/motion/audio/HUD consumers. Do not implement asset application as an asset-browser button, catalogue, gallery, iframe preview or asset-selection screen. Do not create a different game to demonstrate the assets. The source binding and current-game runtime must both be verified before claiming application.',
     'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; selectionFingerprint='+(contract.selectionFingerprint||'NONE')+'; syncMode='+contract.synchronization.mode,
     'Exact selected family IDs only: '+(exactRows||'NONE'),
     'Exact flow selections: '+(flowRows||'NONE'),
@@ -3746,9 +3751,9 @@ function internalAssetSourceUsageGuidance(order={}){
     'Source consumption sequence: '+contract.sourceConsumptionSequence.join(' -> ')+'.',
     'Do not invent an asset ID, pack, factory, source file, or role that is absent from the supplied selection/context. Do not copy the full company library into game source or prompt context.',
     'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
-    'NEW OWNER PRIORITY FOR VISUAL REPLACEMENTS: compare exact existing game render/mesh/material/animation/source usage against original files acquired from free commercial-use licensed packs first. Prefer hash-checked downloaded original source assets over self-made common meshes, primitive models and generated background stand-ins when exact role, native platform, visual identity and mobile performance match. This is a ranking preference, NOT a bypass of existing safety, manual identity locks, game ownership or native runtime proof.',
+    'OWNER DOWNLOAD-ONLY VISUAL ASSET RULE, ALL GAMES: select only actually acquired external original assets with verified source, commercial-use license evidence, original byte hash and current native file hash. Existing self-authored common meshes, generated images/backgrounds, primitive stand-ins and generated motion clips are rejected as replacement candidates regardless of score. Preserve game identity, gameplay, save and native runtime proof. Vibe engine/UI/lighting code may still be reused; it is not visual asset provenance.',
     'Use the existing ASSET_DEVELOPMENT/GRAPHICS_PRODUCTION on-demand acquisition pathway when the better original is not yet downloaded; verify license evidence, original bytes and hash. Do NOT fetch random internet content inside game-source workers or mark metadata-only candidate as acquired. Never confuse 360 semantic material atoms, gallery recipes or source catalog listings with finished native files.',
-    'Self-authored common library assets can replace a valid downloaded original only with independently measured substantially superior visual quality, compatible role/style and target-game runtime/mobile PASS. Until this proof, retain the currently playable visual while staging original-file import and validation; do not automatically rewrite all games with unverified assets.',
+    'No self-authored visual fallback is authorized. Apply exact matching verified downloaded assets first; if unavailable use the nearest role-compatible verified downloaded asset without changing gameplay meaning. Only when neither is available, request additional licensed download through the existing licensed acquisition/import path and ASSET_ACQUISITION_REQUIRED state, not new generated geometry or fake completion. Keep the playable baseline only until its verified downloaded replacement is ready; all owner-rejected existing authored assets remain replacement debt.',
     'For every existing applicable source responsibility, report CURRENT_GAME_SOURCE vs DOWNLOADED_ORIGINAL vs SELF_AUTHORED_LIBRARY with concrete path, sha256, license, mesh/material/animation details when available, binding target and replacement QA evidence. Replace the existing responsible render/asset function directly only when the improved native asset actually loads. Preserve gameplay balance, save and network authority.',
 
     'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',

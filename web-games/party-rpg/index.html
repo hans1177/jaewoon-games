@@ -56,15 +56,31 @@ button{font:inherit}
 #startCard{background:radial-gradient(ellipse at 50% 0%,#365c64,#11232c 75%);border:3px solid #b79559}
 #hpFill{background:linear-gradient(90deg,#8e222f,#ff6d65)}#xpFill{background:linear-gradient(90deg,#226ab6,#75dcff)}
 /* Vibe company library asset binding */
-#startCard{background:linear-gradient(180deg,#081b27bb,#0a1724ed),url('/assets/fantasy-rpg-v2.webp') center/cover no-repeat;border:3px solid #b79559}
+#startCard{background:linear-gradient(180deg,#081b27bb,#0a1724ed);border:3px solid #b79559}
 #startCard h1{font-size:clamp(28px,6vw,42px);text-shadow:0 3px 8px #000,0 0 20px #ffda7840}
 #startCard p,#startCard .note{background:#08151ec9;border-radius:8px;padding:8px}
-#modal .card{background:linear-gradient(145deg,#0b1823f2,#152d35ed),url('/assets/card-rpg-v2.webp') center/cover no-repeat}
-#zone{background:linear-gradient(120deg,#0a1921ed,#142b37e0),url('/assets/fantasy-rpg-v2.webp') center/cover}
+#modal .card{background:linear-gradient(145deg,#0b1823f2,#152d35ed)}
+#zone{background:linear-gradient(120deg,#0a1921ed,#142b37e0)}
+
+/* Game-owned screens: one modal, shared Vibe preferences, original save and economy. */
+:root{--gold:#e9c47c;--edge:#766448;--ink:#10191e}
+button{cursor:pointer;transition:transform .15s,filter .15s}button:hover{filter:brightness(1.13)}button:active{transform:translateY(2px)}button:focus-visible{outline:3px solid #f4d79b;outline-offset:3px}
+.panel,.card{border:1px solid #bda16e70;background:linear-gradient(145deg,#15252ef2,#09131bed);box-shadow:inset 0 1px #ffffff12,0 14px 38px #0007}
+#hud{gap:10px;left:16px;right:16px;top:max(16px,env(safe-area-inset-top))}#stats{flex:0 1 470px;padding:12px 14px}#statsTop{font-size:12px;gap:6px}.pill{border:0;border-radius:4px;background:#ffffff09;padding:3px 5px}.bar{height:5px;margin-top:8px}#zone{margin-left:auto;min-width:136px;padding:12px}#zone b{font-size:15px}#zone span{font-size:11px}
+#objective{top:112px;left:16px;font-size:12px;padding:10px 12px;border-left:2px solid var(--gold);max-width:310px}#prompt{font-size:13px;padding:12px 18px}
+#settingsBtn{position:fixed;right:16px;top:100px;z-index:30;width:44px;height:44px;border:1px solid #bda16e70;border-radius:10px;background:#101d28e8;color:#f3e1bd;font-size:23px}
+.act{font-size:12px;min-height:58px;border-radius:13px;letter-spacing:.03em}#actions{grid-template-columns:84px 84px;gap:10px;right:18px;bottom:22px}.act.primary{background:linear-gradient(#bb6550,#693529)}
+#joystick{opacity:.85;box-shadow:inset 0 0 25px #0005,0 5px 22px #0005}#knob{background:radial-gradient(circle at 30% 25%,#c6d4d6,#547080)}
+.overlay{background:#040a10ba;backdrop-filter:blur(12px)}.card{border-radius:20px;width:min(94vw,680px)}.head{padding:20px 24px;background:#0e1c28f5}.head h2{font-size:21px}.close{width:44px;height:44px}.body{padding:18px 24px 24px;font-size:14px}.row{padding:14px;gap:14px;border-radius:12px;margin:9px 0;background:#ffffff04}.row small{font-size:12px;line-height:1.6}.row button,.menuBtn{min-height:44px;flex-shrink:0;padding:0 16px;font-size:13px}.tag{font-size:11px}.note{font-size:12px;line-height:1.7;padding:12px}
+#start{background:linear-gradient(90deg,#050c14f5,#071422b5 65%,#07142288)}#startCard{width:min(94vw,720px);padding:44px 38px;text-align:left;background:linear-gradient(110deg,#0a1726f2,#102431e6);border:1px solid #c3a97780;border-radius:22px}#startCard .eyebrow{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#d9bd83}#startCard h1{font-size:clamp(38px,8vw,64px);margin:12px 0 18px;letter-spacing:-.05em;color:#f3e5c7}#startCard p{font-size:14px;background:none;padding:0;max-width:460px;line-height:1.8;color:#bbcbd5}#startBtn{width:auto;min-width:220px;min-height:56px;margin:22px 0 16px;padding:0 30px;background:linear-gradient(135deg,#dfc18b,#9f7844);color:#17222c;border:1px solid #f9ddb0;text-shadow:none;box-shadow:0 8px 25px #0005;font-size:16px}#startCard .note{background:none;padding:14px 0 0;border-top:1px solid #ffffff1c;border-radius:0;color:#9cafbe}
+.inventory-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}.equipment-slot{min-height:124px;padding:18px;border:1px solid #bda16e55;border-radius:14px;background:radial-gradient(ellipse at top,#32536350,#101d2c)}.equipment-slot small{display:block;color:#c5ad7a;margin-bottom:14px;font-size:11px;letter-spacing:.12em}.equipment-slot strong{display:block;font-size:17px;color:#f4e9d2}.equipment-slot span{font-size:12px;color:#9db5c5}.section-title{margin:20px 0 9px;font-size:12px;color:#c5ad7a;letter-spacing:.1em}
+#modal .card{background:linear-gradient(145deg,#0c1824f7,#162b35f5)}.settings-row{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:14px 0;border-bottom:1px solid #ffffff10}.settings-row input{min-width:24px;min-height:24px;accent-color:#d9b879}.settings-row input[type=range]{width:130px}.ui-high-contrast .panel,.ui-high-contrast .card{background:#071018;border-color:#ead29e}.ui-reduced-motion *{transition:none!important;animation:none!important}
+@media(max-width:600px){#hud{left:10px;right:10px;gap:6px;top:max(10px,env(safe-area-inset-top))}#stats{padding:9px;flex:1}#statsTop{font-size:10px;gap:3px}.pill{padding:2px 3px}#zone{min-width:88px;padding:10px 7px}#zone b{font-size:12px}#zone span{font-size:10px}#objective{left:10px;top:108px;max-width:245px;font-size:11px}#settingsBtn{right:10px;top:108px}#actions{grid-template-columns:70px 70px;gap:8px;right:12px;bottom:18px}.act{min-height:54px;font-size:11px}#startCard{padding:30px 24px}#startCard p{font-size:13px}#startBtn{width:100%;min-width:0}#joystick{width:108px;height:108px}#knob{left:29px;top:29px;width:48px;height:48px}.body{padding:14px 16px 20px}.head{padding:14px 16px}.inventory-summary{gap:8px}.equipment-slot{padding:14px}.equipment-slot strong{font-size:15px}}
 </style>
 </head>
 <body>
-<canvas id="game"></canvas>
+<canvas id="game" aria-label="파티 RPG 플레이 화면"></canvas>
+<button id="settingsBtn" aria-label="게임 설정">☰</button>
 <div id="hud">
   <div id="stats" class="panel">
     <div id="statsTop">
@@ -91,14 +107,15 @@ button{font:inherit}
 </div>
 <div id="toast"></div>
 <div id="modal" class="overlay" hidden>
-  <div class="card">
-    <div class="head"><h2 id="modalTitle">메뉴</h2><button class="close" id="modalClose">×</button></div>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="head"><h2 id="modalTitle">메뉴</h2><button class="close" id="modalClose" aria-label="메뉴 닫기">×</button></div>
     <div class="body" id="modalBody"></div>
   </div>
 </div>
 <div id="start" class="overlay">
   <div class="card" id="startCard">
-    <h1>파티 RPG</h1>
+    <div class="eyebrow">PARTY RPG · ADVENTURE</div>
+    <h1>함께 떠나는 모험</h1>
     <p>AI 유저 10명이 너와 함께 사냥하고 장비를 사며 성장해.</p>
     <p>사냥터 6개 · 무기 5개 · 방어구 4개 · 파티 던전 3개</p>
     <p>AI는 네가 게임을 켜 둔 동안에만 성장해.</p>
@@ -106,10 +123,19 @@ button{font:inherit}
     <div class="note">모바일: 왼쪽 조이스틱 이동 · 오른쪽 버튼 전투/상호작용<br>PC: WASD 이동 · J 공격 · E 상호작용 · M 지역</div>
   </div>
 </div>
-<script>
+<script type="module">
+import {createVibeGameUi} from '../../assets/vibe-genre-game-ui.mjs';
+import {VibePresentationEngine} from '../../assets/vibe-presentation-engine.mjs';
 (function(){
 "use strict";
 var SAVE_KEY="party-rpg-v1";
+var gameUi=createVibeGameUi({genre:'fantasy'});
+try{gameUi.restore(localStorage.getItem('party-rpg-ui-v1')||'');}catch(e){}
+var presentation=new VibePresentationEngine({settings:{reducedMotion:gameUi.settings.reducedMotion},adapter:{flash:function(intensity){if(!gameUi.settings.reducedMotion)document.getElementById('game').animate([{filter:'brightness('+(1+intensity)+')'},{filter:'none'}],{duration:160});}}});
+function applyUiSettings(){var options=gameUi.settings;document.documentElement.classList.toggle('ui-high-contrast',options.highContrast);document.documentElement.classList.toggle('ui-reduced-motion',options.reducedMotion);document.getElementById('modalBody').style.fontSize=(14*options.textScale)+'px';presentation.setAccessibility({reducedMotion:options.reducedMotion});try{localStorage.setItem('party-rpg-ui-v1',gameUi.serialize());}catch(e){}}
+applyUiSettings();
+function settingsMenu(){gameUi.open('settings');openModal('게임 설정','<label class="settings-row">글자 크기<input aria-label="글자 크기" data-setting="textScale" type="range" min="0.8" max="1.6" step="0.1" value="'+gameUi.settings.textScale+'"></label>'+[['reducedMotion','화면 움직임 줄이기'],['highContrast','고대비']].map(function(row){return '<label class="settings-row">'+row[1]+'<input type="checkbox" data-setting="'+row[0]+'" '+(gameUi.settings[row[0]]?'checked':'')+'></label>';}).join('')+'<div class="note">설정은 이 기기에 저장돼. 성장과 장비 저장은 기존 기록을 그대로 사용해.</div>');modalBody.querySelectorAll('[data-setting]').forEach(function(input){input.oninput=function(){var patch={};patch[input.dataset.setting]=input.type==='checkbox'?input.checked:Number(input.value);gameUi.setSettings(patch);applyUiSettings();};});}
+
 var MAX_PARTY_SIZE=4;
 var ZONES=[
  {name:"마을",sub:"휴식과 준비",color:"#5f8f58",lv:1,mons:[]},
@@ -233,7 +259,7 @@ function updateHud(){
  else{var z=ZONES[state.zone];zoneName.textContent=z.name;zoneSub.textContent=z.sub;objective.textContent=state.zone===0?"AI 유저를 3번 클릭하면 파티 초대/해체. 던전은 최소 2명이 필요해.":"엘리트 몬스터는 더 강하지만 경험치와 골드를 더 많이 줘.";}
 }
 function openModal(title,html){modalTitle.textContent=title;modalBody.innerHTML=html;modal.hidden=false;modalOpen=true;}
-function closeModal(){modal.hidden=true;modalOpen=false;}
+function closeModal(){modal.hidden=true;modalOpen=false;gameUi.close();}
 document.getElementById("modalClose").onclick=closeModal;
 
 function travelMenu(){
@@ -267,15 +293,16 @@ function sellMenu(){
  var b=document.getElementById("sellAllBtn");if(b)b.onclick=function(){var earned=sellMaterials(state.player);save();toast(earned>0?earned+"G 판매 완료":"팔 전리품이 없어.");sellMenu();};
 }
 function bagMenu(){
+ gameUi.open('inventory');
  var normalWeapon=(WEAPONS.find(function(x){return x.id===state.player.weapon;})||{name:"맨손"}).name;
  var normalArmor=(ARMORS.find(function(x){return x.id===state.player.armor;})||{name:"없음"}).name;
- var html="<b>상점 장비</b>";
+ var html='<div class="inventory-summary"><div class="equipment-slot"><small>WEAPON · 무기</small><strong>'+(state.player.specialWeapon?DROPS[state.player.specialWeapon].name:normalWeapon)+'</strong><span>현재 공격력 '+playerAtk()+'</span></div><div class="equipment-slot"><small>ARMOR · 방어구</small><strong>'+(state.player.specialArmor?DROPS[state.player.specialArmor].name:normalArmor)+'</strong><span>현재 방어력 '+playerArmorDef()+'</span></div></div><div class="section-title">장비 관리 · '+state.player.gold+'G</div>';
  html+='<div class="row"><div><b>무기</b><small>'+(state.player.specialWeapon?DROPS[state.player.specialWeapon].name:normalWeapon)+'</small></div><button data-shop="weapon">무기상점</button></div>';
  html+='<div class="row"><div><b>방어구</b><small>'+(state.player.specialArmor?DROPS[state.player.specialArmor].name:normalArmor)+'</small></div><button data-shop="armor">방어구상점</button></div>';
  html+="<hr style='border-color:#ffffff20;margin:13px 0'><b>던전 전용 전리품</b>";
  if(!state.player.drops.length)html+="<div class='note'>아직 없음. 던전 몬스터/보스가 낮은 확률로 드롭해.</div>";
  state.player.drops.forEach(function(id){var d=DROPS[id],eq=d.kind==="weapon"?state.player.specialWeapon===id:state.player.specialArmor===id;html+='<div class="row"><div><b>'+d.name+(eq?' <span class="tag good">장착</span>':'')+'</b><small>'+d.from+' · '+(d.kind==="weapon"?"공격 +"+d.power:"방어 +"+d.def)+'</small></div><button data-drop="'+id+'">장착</button></div>';});
- openModal("장비",html);
+ openModal("인벤토리 · 장비",html);
  modalBody.querySelectorAll("[data-shop]").forEach(function(b){b.onclick=function(){shopMenu(b.dataset.shop);};});
  modalBody.querySelectorAll("[data-drop]").forEach(function(b){b.onclick=function(){equipDrop(b.dataset.drop);bagMenu();};});
 }
@@ -319,7 +346,7 @@ function rollDungeonDrop(enemy,killer){
  if(enemy.boss){var entries=Object.keys(dungeon.contrib),sum=entries.reduce(function(s,k){return s+Math.max(1,dungeon.contrib[k]);},0),r=Math.random()*sum,acc=0;for(var i=0;i<entries.length;i++){acc+=Math.max(1,dungeon.contrib[entries[i]]);if(r<=acc){owner=entries[i];break;}}}
  dungeon.pendingDrops.push({item:item,owner:owner});
 }
-function damageEnemy(e,amount,source){if(!e||e.dead)return;var dealt=Math.min(e.hp,Math.max(1,Math.round(amount)));e.hp-=dealt;e.lastHit=source;if(dungeon&&e.boss)dungeon.contrib[source]=(dungeon.contrib[source]||0)+dealt;if(e.hp<=0)killEnemy(e,source);}
+function damageEnemy(e,amount,source){if(!e||e.dead)return;var dealt=Math.min(e.hp,Math.max(1,Math.round(amount)));e.hp-=dealt;e.lastHit=source;presentation.cue('confirmed-hit',{intensity:.25,flash:source==='player'?.12:0,cooldown:.08});if(dungeon&&e.boss)dungeon.contrib[source]=(dungeon.contrib[source]||0)+dealt;if(e.hp<=0)killEnemy(e,source);}
 function killEnemy(e,killer){
  e.dead=true;
  if(dungeon){dungeon.contrib[killer]=(dungeon.contrib[killer]||0)+(e.boss?25:10);rollDungeonDrop(e,killer);if(e.boss)completeDungeon();else if(aliveEnemies()===0){dungeon.door=true;toast("방 클리어! 다음 문이 열렸어.");}}
@@ -454,10 +481,11 @@ function drawDungeon(){ctx.fillStyle="#252932";ctx.fillRect(40,90,worldW-80,worl
 function drawHero(x,y,r,body,weapon,armor,step){ctx.save();ctx.translate(x,y);var s=r/18;ctx.scale(s,s);oval(0,16,21,7,"#0005");var walking=Math.sin((performance.now()/170)+step)*2;ctx.strokeStyle="#2d303e";ctx.lineWidth=7;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(-7,8);ctx.lineTo(-8+walking,18);ctx.moveTo(7,8);ctx.lineTo(8-walking,18);ctx.stroke();poly([[-14,-6],[-12,12],[12,12],[14,-6],[0,-15]],armor?"#a5b5bf":body,"#263847",2);if(armor){poly([[-10,-4],[0,-9],[10,-4],[8,7],[-8,7]],"#c7d1d7","#637787");ctx.fillStyle="#d3ac5c";ctx.fillRect(-3,-4,6,13);}oval(0,-15,11,12,"#f4c7a3");poly([[-12,-16],[-11,-24],[-5,-29],[6,-28],[12,-22],[11,-16],[5,-21],[-6,-20]],body,"#28343a",2);oval(-4,-15,1.6,2,"#253340");oval(4,-15,1.6,2,"#253340");ctx.strokeStyle=armor?"#a9bdca":"#e9bd9c";ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-12,-3);ctx.lineTo(-18,8);ctx.moveTo(12,-3);ctx.lineTo(18,7);ctx.stroke();if(weapon){ctx.save();ctx.translate(18,4);ctx.rotate(-.45);ctx.fillStyle="#7a4a29";ctx.fillRect(-2,-3,4,22);ctx.fillStyle=weapon==="wood"?"#b18b57":weapon==="dragon"?"#eb758b":"#d8e8f4";poly([[-6,-3],[0,-32],[6,-3]],ctx.fillStyle,"#536474");ctx.fillStyle="#eacb7d";ctx.fillRect(-9,-3,18,4);ctx.restore();}ctx.restore();}
 function drawMonster(e){if(window.vibe3dCanRender&&window.vibe3dCanRender('enemy',e))return;var x=e.x,y=e.y,r=e.r,n=e.name;if(vibePortrait(/거미|전갈/.test(n)?'spider':e.boss?'boss':'hero',x,y,r)){return;}oval(x,y+r*.8,r*1.2,r*.35,"#0005");ctx.save();ctx.translate(x,y);var slime=/슬라임/.test(n),wolf=/늑대|마수/.test(n),bug=/거미|전갈/.test(n),bat=/박쥐/.test(n),golem=/골렘|수호자/.test(n),humanoid=/기사|고블린|근위병|마왕|망령/.test(n);var c=e.boss?"#a6384d":e.elite?"#8850b4":slime?"#75cfa3":wolf?"#66798c":bug?"#ab6a4f":golem?"#7d8894":"#a46e84";if(golem){poly([[-r,-r*.45],[-r*.65,-r],[r*.55,-r*.9],[r,r*.3],[r*.4,r],[-r*.8,r]],c,"#3a4052",4);poly([[-r*.6,-r*.4],[0,-r*.75],[r*.5,-r*.2]],"#c1d1d7");}else if(slime){oval(0,2,r,r*.77,c);poly([[-r*.8,0],[0,-r*1.1],[r*.7,0]],c);}else if(wolf){oval(0,2,r*1.05,r*.75,c);poly([[-r*.8,-r*.4],[-r*.9,-r*1.25],[-r*.2,-r*.75]],c);poly([[r*.2,-r*.75],[r*.9,-r*1.25],[r*.8,-r*.4]],c);}else if(bug){for(var i=0;i<4;i++){ctx.strokeStyle="#513c41";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-r*.4,i*5-10);ctx.lineTo(-r*1.3,i*8-20);ctx.moveTo(r*.4,i*5-10);ctx.lineTo(r*1.3,i*8-20);ctx.stroke();}oval(0,0,r*.85,r*.85,c);}else if(bat){poly([[-r*1.5,-r*.2],[-r*.7,-r],[0,-r*.3],[r*.7,-r],[r*1.5,-r*.2],[r*.8,r*.5],[0,r*.3],[-r*.8,r*.5]],c,"#4b4059");}else if(humanoid){poly([[-r*.8,r],[r*.8,r],[r*.7,-r*.6],[-r*.7,-r*.6]],c,"#422f40");oval(0,-r*.6,r*.62,r*.6,c);}else{oval(0,0,r,r*.85,c);poly([[-r*.8,-r*.5],[-r,-r*1.2],[0,-r*.7]],c);poly([[0,-r*.7],[r,-r*1.2],[r*.8,-r*.5]],c);}oval(-r*.33,-r*.12,Math.max(2,r*.12),3,"#fff1a3");oval(r*.33,-r*.12,Math.max(2,r*.12),3,"#fff1a3");ctx.restore();}
 function drawPlayer(){if(window.vibe3dCanRender&&window.vibe3dCanRender('player',p)){label(p.x,p.y-37,'나 Lv.'+state.player.level,'#cceaff');return;}if(vibeReady('hero')){vibePortrait('hero',p.x,p.y,p.r+3);label(p.x,p.y-37,'나 Lv.'+state.player.level,'#cceaff');return;}drawHero(p.x,p.y,p.r,p.hitFlash>0?"#ed7a7a":"#376fbb",state.player.weapon||state.player.specialWeapon,!!(state.player.armor||state.player.specialArmor),0);label(p.x,p.y-37,"나 Lv."+state.player.level,"#cceaff");}
-function drawAI(){state.ai.forEach(function(a,i){if(window.vibe3dCanRender&&window.vibe3dCanRender('ai',a)){label(a.x,a.y-36,a.name+' Lv.'+a.level+(a.party?' ★':''),a.party?'#ffe48c':'#d7ffdd');return;}if(dungeon&&!a.party)return;if(!dungeon&&a.zone!==state.zone&&!a.party)return;if(vibeReady('hero')){vibePortrait('hero',a.x,a.y,18);label(a.x,a.y-36,a.name+' Lv.'+a.level+(a.party?' ★':''),a.party?'#ffe48c':'#d7ffdd');return;}drawHero(a.x,a.y,16,a.party?"#b88c35":i%2?"#4c9b7e":"#8c70b1",a.weapon||a.specialWeapon,!!(a.armor||a.specialArmor),i);label(a.x,a.y-36,a.name+" Lv."+a.level+(a.party?" ★":""),a.party?"#ffe48c":"#d7ffdd");});}
+function drawAI(){state.ai.forEach(function(a,i){if(dungeon&&!a.party)return;if(!dungeon&&a.zone!==state.zone&&!a.party)return;if(window.vibe3dCanRender&&window.vibe3dCanRender('ai',a)){label(a.x,a.y-36,a.name+' Lv.'+a.level+(a.party?' ★':''),a.party?'#ffe48c':'#d7ffdd');return;}if(dungeon&&!a.party)return;if(!dungeon&&a.zone!==state.zone&&!a.party)return;if(vibeReady('hero')){vibePortrait('hero',a.x,a.y,18);label(a.x,a.y-36,a.name+' Lv.'+a.level+(a.party?' ★':''),a.party?'#ffe48c':'#d7ffdd');return;}drawHero(a.x,a.y,16,a.party?"#b88c35":i%2?"#4c9b7e":"#8c70b1",a.weapon||a.specialWeapon,!!(a.armor||a.specialArmor),i);label(a.x,a.y-36,a.name+" Lv."+a.level+(a.party?" ★":""),a.party?"#ffe48c":"#d7ffdd");});}
 function drawEnemies(){enemies.forEach(function(e){if(e.dead)return;drawMonster(e);label(e.x,e.y-e.r-12,(e.boss?"보스 ":e.elite?"엘리트 ":"")+e.name,e.boss?"#ffadba":e.elite?"#e5bdff":"#fff");var bw=e.boss?90:62;ctx.fillStyle="#201b23";ctx.fillRect(e.x-bw/2,e.y+e.r+9,bw,8);ctx.fillStyle=e.boss?"#e6a15d":"#ec686a";ctx.fillRect(e.x-bw/2,e.y+e.r+9,bw*Math.max(0,e.hp/e.maxHp),8);});}
-function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;if(gameStarted&&!modalOpen){updatePlayer(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}updateHud();draw();requestAnimationFrame(loop);}
+function loop(now){var dt=Math.min(.04,(now-last)/1000);last=now;presentation.update(dt);if(gameStarted&&!modalOpen){updatePlayer(dt);updateAIRoutines(dt);updateTownAI(dt);updatePartyAI(dt);updateFreeAIVisible(dt);updateEnemies(dt);simulateFreeAI(dt);updateInteractions();if(!dungeon&&state.zone>0){fieldSpawnTimer-=dt;if(fieldSpawnTimer<=0){fieldSpawnTimer=2;enemies=enemies.filter(function(e){return !e.dead;});spawnFieldBatch();}}saveTick+=dt;if(saveTick>=5){saveTick=0;save();}}updateHud();draw();requestAnimationFrame(loop);}
 
+document.getElementById("settingsBtn").onclick=settingsMenu;
 document.getElementById("attackBtn").onclick=attackPlayer;
 document.getElementById("interactBtn").onclick=interact;
 document.getElementById("mapBtn").onclick=travelMenu;
@@ -472,50 +500,82 @@ joyBase.addEventListener("pointerdown",function(e){joyId=e.pointerId;joyBase.set
 joyBase.addEventListener("pointermove",function(e){if(e.pointerId===joyId)joyMove(e);});
 function joyEnd(e){if(e.pointerId!==joyId)return;joyId=null;joy.x=0;joy.y=0;knob.style.transform="translate(0,0)";}
 joyBase.addEventListener("pointerup",joyEnd);joyBase.addEventListener("pointercancel",joyEnd);
-window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
+window.partyRpgVibeState=()=>({p,state,enemies,dungeon,camera,uiSettings:gameUi.settings});state.ai.forEach(function(a){if(!a.party&&a.routine==="hunt"&&a.zone===0)a.zone=bestZoneForAI(a);});goZone(0);updateHud();requestAnimationFrame(loop);
 })();
 </script>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"}}</script>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 <script type="module">
-/* Native 3D GLB assets from the verified Vibe company registry. No screenshots, cropping or primitive characters. */
+/* Existing actor renderer: registry GLBs, including KayKit CC0 adventurers. */
 try {
- const THREE=await import('https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js');
- const {GLTFLoader}=await import('https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/loaders/GLTFLoader.js');
+ const THREE=await import('three');
+ const {GLTFLoader}=await import('../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js');
+ const {createVibeLightingDirector}=await import('../../assets/vibe-cinematic-polish.mjs');
+ const {clone}=await import('../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js');
  const files={
- traveler:'../../assets/shared/humanoid-traveler.glb',guardian:'../../assets/shared/humanoid-guardian.glb',
- samurai:'../../assets/shared/humanoid-samurai.glb',archer:'../../assets/shared/humanoid-archer.glb',
- mage:'../../assets/shared/humanoid-mage.glb',rogue:'../../assets/shared/humanoid-rogue.glb',
- wolf:'../../assets/shared/creature-wolf.glb',spider:'../../assets/shared/creature-spider.glb',
- beetle:'../../assets/shared/creature-beetle.glb',golem:'../../assets/shared/creature-golem.glb',
- serpent:'../../assets/shared/creature-serpent.glb',
- blacksmith:'../../assets/shared/humanoid-blacksmith.glb'
+ knight:'../../assets/roblox/actors/native/knight.glb',
+ mage:'../../assets/roblox/actors/native/mage.glb',rogue:'../../assets/roblox/actors/native/rogue.glb'
  };
  const canvas=document.getElementById('game');
  const overlay=document.createElement('canvas');overlay.id='vibe3d';overlay.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2';canvas.after(overlay);
  const renderer=new THREE.WebGLRenderer({canvas:overlay,alpha:true,antialias:true});
- renderer.setPixelRatio(1);renderer.setClearColor(0,0);
- const scene=new THREE.Scene();scene.add(new THREE.HemisphereLight(0xffffff,0x647386,2.5));
- const lamp=new THREE.DirectionalLight(0xffffff,2);lamp.position.set(-200,400,600);scene.add(lamp);
+ renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setClearColor(0,0);
+ const scene=new THREE.Scene();
+ const lighting=createVibeLightingDirector(THREE,scene,{preset:'forest',shadows:false});
+ scene.fog=null; // Actor overlay uses screen pixels, not the director's world-unit fog.
+ scene.traverse(object=>{if(object.isDirectionalLight)object.position.multiplyScalar(80);});
  const camera3=new THREE.OrthographicCamera(-400,400,300,-300,.1,4000);camera3.position.set(0,0,1000);camera3.lookAt(0,0,0);
  const loader=new GLTFLoader(),models={},actors=new Map();
- await Promise.all(Object.entries(files).map(async ([id,url])=>{try{const gltf=await loader.loadAsync(url);models[id]=gltf.scene;}catch(e){console.warn('Vibe model load:',id,e);}}));
- const loaded=Object.keys(models);window.vibe3dDiagnostics={loaded,missing:Object.keys(files).filter(k=>!models[k])};console.info('Vibe assets:',window.vibe3dDiagnostics);
- function role(kind,obj){if(kind==='player')return 'traveler';if(kind==='ai')return obj.party?'guardian':['samurai','archer','mage','rogue','blacksmith'][Math.abs(Math.floor(obj.x))%5];const name=String(obj.name||'');if(/늑대|wolf/i.test(name))return 'wolf';if(/거미|spider/i.test(name))return 'spider';if(/골렘|golem/i.test(name))return 'golem';if(/뱀|serpent/i.test(name))return 'serpent';return 'beetle';}
+ const diagnostics=window.vibe3dDiagnostics={loaded:[],missing:[],actors:[],drawCalls:0,triangles:0};
+ await Promise.all(Object.entries(files).map(async ([id,url])=>{try{models[id]=await loader.loadAsync(url);}catch(e){console.warn('Party RPG model load:',id,e);}}));
+ diagnostics.loaded=Object.keys(models);diagnostics.missing=Object.keys(files).filter(k=>!models[k]);
+ function role(kind,obj){
+  if(kind==='player')return 'knight';
+  if(kind==='ai'){const n=Number(String(obj.id).replace(/\D/g,''))||0;return ['knight','mage','rogue'][n%3];}
+  return null; // Matching downloaded creature assets must be acquired before replacement.
+ }
  window.vibe3dCanRender=(kind,obj)=>!!models[role(kind,obj)];
+ let lastFrame=performance.now(),lastWidth=0,lastHeight=0;
  window.vibe3dFrame=()=>{
-  const w=canvas.width,h=canvas.height;renderer.setSize(w,h,false);camera3.left=-w/2;camera3.right=w/2;camera3.top=h/2;camera3.bottom=-h/2;camera3.updateProjectionMatrix();
-  const live=window.partyRpgVibeState?.();if(!live)return;const {p,state,enemies,dungeon,camera}=live;const visible=[['player',p,'player']];
-  if(Array.isArray(state.ai))state.ai.forEach((a,i)=>{if((!dungeon&&(a.zone===state.zone||a.party))||(dungeon&&a.party))visible.push(['ai',a,'ai'+i]);});
-  enemies.forEach((e,i)=>{if(!e.dead)visible.push(['enemy',e,'enemy'+i]);});
-  const used=new Set();
-  for(const [kind,obj,key] of visible){const id=role(kind,obj);if(!models[id])continue;used.add(key);
-   let entry=actors.get(key);if(!entry||entry.id!==id){if(entry)scene.remove(entry.group);const group=models[id].clone(true);const box=new THREE.Box3().setFromObject(group),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const height=kind==='enemy'?Math.max(26,(obj.r||16)*2.5):43;const scale=height/Math.max(.001,size.y);group.scale.setScalar(scale);group.position.set(-center.x*scale,-center.y*scale,0);const root=new THREE.Group();root.add(group);scene.add(root);entry={id,group:root};actors.set(key,entry);}
-   entry.group.position.set(obj.x-camera.x-w/2,h/2-(obj.y-camera.y),0);
+  const now=performance.now(),dt=Math.min(.05,(now-lastFrame)/1000);lastFrame=now;
+  const w=canvas.width,h=canvas.height;
+  if(w!==lastWidth||h!==lastHeight){renderer.setSize(w,h,false);camera3.left=-w/2;camera3.right=w/2;camera3.top=h/2;camera3.bottom=-h/2;camera3.updateProjectionMatrix();lastWidth=w;lastHeight=h;}
+  const live=window.partyRpgVibeState?.();if(!live)return;const {p,state,enemies,dungeon,camera,uiSettings}=live;
+  const visible=[['player',p]];
+  if(Array.isArray(state.ai))state.ai.forEach(a=>{if((!dungeon&&(a.zone===state.zone||a.party))||(dungeon&&a.party))visible.push(['ai',a]);});
+  enemies.forEach(e=>{if(!e.dead)visible.push(['enemy',e]);});
+  const used=new Set(),drawn=[];
+  for(const [kind,obj] of visible){const id=role(kind,obj),model=models[id];if(!model)continue;used.add(obj);
+   let entry=actors.get(obj);
+   if(!entry){
+    const modelRoot=clone(model.scene),box=new THREE.Box3().setFromObject(modelRoot),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
+    const height=kind==='enemy'?Math.max(26,(obj.r||16)*2.5):48,scale=height/Math.max(.001,size.y);
+    // Keep animation translations inside the scaled model, so clips cannot undo normalization.
+    const normalized=new THREE.Group();normalized.scale.setScalar(scale);normalized.position.set(-center.x*scale,-center.y*scale,0);normalized.add(modelRoot);
+    const root=new THREE.Group();root.add(normalized);scene.add(root);
+    const mixer=new THREE.AnimationMixer(modelRoot),actions={};
+    for(const clip of model.animations)actions[clip.name]=mixer.clipAction(clip);
+    const equipment=[];modelRoot.traverse(node=>{if(/^(?:1H_Sword(?:_Offhand)?|2H_Sword|(?:Badge|Rectangle|Round|Spike)_Shield)$/.test(node.name))equipment.push(node);});
+    entry={id,root,mixer,actions,equipment,action:null,x:obj.x,y:obj.y,cooldown:0};actors.set(obj,entry);
+   }
+   const equipped=kind==='player'?state.player:obj;
+   for(const part of entry.equipment)part.visible=part.name==='1H_Sword'?!!(equipped.weapon||equipped.specialWeapon):part.name==='Round_Shield'?!!(equipped.armor||equipped.specialArmor):false;
+   const dx=obj.x-entry.x,dy=obj.y-entry.y,moving=Math.hypot(dx,dy)>.08;
+   const cooldown=Number(kind==='ai'?obj.sim:obj.attackCd)||0;
+   if(cooldown>entry.cooldown+.1&&(kind!=='ai'||enemies.some(e=>!e.dead&&Math.hypot(e.x-obj.x,e.y-obj.y)<105)))entry.attackUntil=now+350;
+   const requested=obj.hitFlash>0?'hit':now<(entry.attackUntil||0)?'attack':moving?'walk':'idle';
+   const patterns={idle:/^(Idle|IDLE_BREATH)$/i,walk:/^(Walking_A|WALK)$/i,attack:/^(1H_Melee_Attack_Slice_Horizontal|ATTACK_A)$/i,hit:/^(Hit_A|HIT_FRONT)$/i};
+   const clip=Object.keys(entry.actions).find(name=>patterns[requested].test(name))||Object.keys(entry.actions).find(name=>patterns.idle.test(name));
+   if(clip&&entry.action!==clip){if(entry.action)entry.actions[entry.action].fadeOut(.12);entry.actions[clip].reset().fadeIn(.12).play();entry.action=clip;}
+   entry.mixer.update(uiSettings.reducedMotion?0:dt);entry.root.position.set(obj.x-camera.x-w/2,h/2-(obj.y-camera.y),0);
+   if(moving&&Math.abs(dx)>.08)entry.root.rotation.y=dx>0?.45:-.45;
+   entry.x=obj.x;entry.y=obj.y;entry.cooldown=cooldown;
+   drawn.push({kind,id,actorId:obj.id||kind,clip:entry.action,equipment:entry.equipment.filter(part=>part.visible).map(part=>part.name),x:obj.x,y:obj.y});
   }
-  for(const [key,entry] of actors)if(!used.has(key)){scene.remove(entry.group);actors.delete(key);}
-  renderer.render(scene,camera3);
+  for(const [obj,entry] of actors)if(!used.has(obj)){entry.mixer.stopAllAction();entry.mixer.uncacheRoot(entry.mixer.getRoot());scene.remove(entry.root);actors.delete(obj);}
+  lighting.update(dt);renderer.render(scene,camera3);
+  diagnostics.actors=drawn;diagnostics.drawCalls=renderer.info.render.calls;diagnostics.triangles=renderer.info.render.triangles;
  };
-} catch(error){console.error('Vibe native 3D initialization failed',error);}
+} catch(error){console.error('Party RPG native 3D initialization failed',error);}
 </script>
 </body>
 </html>

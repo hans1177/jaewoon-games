@@ -546,6 +546,8 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     require('STYLE_SURFACE',/(?:fillStyle|strokeStyle|classList|style\.|--[\w-]+\s*:|background|linear-gradient|radial-gradient|material|texture|sprite)/i.test(text));
     require('RENDER_OR_VISUAL_OWNER',/(?:canvas|getContext\(|render|draw|sprite|mesh|visual|style)/i.test(text));
     if(target==='web'){
+      // 제작용 목록·갤러리는 캐릭터/월드/HUD의 에셋 적용 증거가 아니다.
+      require('WEB_NO_ASSET_BROWSER_SUBSTITUTE',!/(?:vibe-runtime-panel\.js|vibe-assets-(?:launcher|panel)|<iframe\b[^>]*vibe-model-preview)/i.test(text));
       const web3dActorRequired=data?.assetProduction?.nativeAuthoringExecution?.dcc?.web3dActorMasterAuthoringRequired===true;
       if(web3dActorRequired){
         const glbRuntimeBinding=/(?:GLTFLoader|loadAsync\s*\(|\.load\s*\(|useGLTF|\.glb\b|\.gltf\b)/i.test(text);
@@ -560,14 +562,18 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         require('WEB_3D_ACTOR_STATE_MOTION_BINDING',stateMotionBinding);
         require('WEB_3D_ACTOR_CANVAS_SPRITE_NOT_FINAL',!/(?:new\s+Image\s*\(|drawImage\s*\()[\s\S]{0,600}(?:player|character|npc|enemy|monster|boss|creature)/i.test(text));
       }else{
-        const realAssetBindings=patternHits(text,[
-          /drawImage\s*\(/i,
-          /new\s+Image\s*\(/i,
-          /<img\b/i,
-          /background(?:-image)?\s*:\s*url\s*\(/i,
-          /(?:src|href)\s*=\s*["'][^"']+\.(?:png|webp|jpg|jpeg|svg)/i,
-          /\b(?:sprite|spritesheet|texture|atlas)\b/i
-        ]);
+        // 선언·단어 수 대신 같은 이미지가 로드되고 렌더러에 전달되는지 확인한다.
+        // 정적 연결 확인이며 실제 게임 화면·모바일 QA를 대신하지 않는다.
+        const source=text.replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)|\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/g,(match,literal)=>literal||' ');
+        const canvasAsset=[...source.matchAll(/\b([A-Za-z_$][\w$]*)\s*=\s*new\s+Image\s*\(/g)].some(([,name])=>
+          new RegExp('\\b'+name+'\\.src\\s*=\\s*["\'][^"\']+\\.(?:png|webp|jpe?g|svg)(?:[?#][^"\']*)?["\']','i').test(source)
+          &&new RegExp('\\bdrawImage\\s*\\(\\s*'+name+'\\s*[,)]').test(source));
+        const domAsset=/<img\b[^>]*\bsrc\s*=\s*["'][^"']+\.(?:png|webp|jpe?g|svg)(?:[?#][^"']*)?["']/i.test(source);
+        const cssAsset=/background(?:-image)?\s*:\s*url\s*\(\s*["']?[^)'"\s]+\.(?:png|webp|jpe?g|svg)(?:[?#][^)'"\s]*)?["']?\s*\)/i.test(source);
+        const modelAsset=/(?:GLTFLoader|useGLTF|SceneLoader|AssetContainer)/.test(source)
+          &&/["'][^"']+\.(?:glb|gltf)(?:[?#][^"']*)?["']/i.test(source)
+          &&/(?:\.add\s*\(\s*\w+\.scene\s*\)|addAllToScene\s*\(|<primitive\b[^>]*object\s*=)/i.test(source);
+        const assetRenderConsumer=canvasAsset||domAsset||cssAsset||modelAsset;
         const webIdentityDomains=patternHits(text,[
           /\b(?:player|character|hero|npc|enemy|monster|boss|creature|avatar)\b/i,
           /\b(?:weapon|sword|blade|spear|axe|hammer|bow|staff|shield|tool|item|equipment|armor)\b/i,
@@ -575,9 +581,9 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
           /\b(?:palette|style.?lock|outline|shadow|lighting|gradient|material|theme|visual.?language)\b/i
         ]);
         const primitiveCalls=(text.match(/ctx\.(?:arc|fillRect|strokeRect|ellipse)\s*\(/gi)||[]).length;
-        require('WEB_REAL_ASSET_BINDING',realAssetBindings>=2);
+        require('WEB_REAL_ASSET_BINDING',assetRenderConsumer);
         require('WEB_GAME_VISUAL_IDENTITY_DOMAINS',webIdentityDomains>=3);
-        require('WEB_NO_PRIMITIVE_ONLY_SCENE',primitiveCalls===0||realAssetBindings>=2);
+        require('WEB_NO_PRIMITIVE_ONLY_SCENE',primitiveCalls===0||assetRenderConsumer);
       }
     }
     if(target==='unity'||target==='roblox'){
@@ -948,7 +954,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const graphicsReplacementValidation=data?.graphicsReplacementValidation||null;
   const assetSourceUsage=data?.internalAssetSourceUsage||null;
   const assetSourceHashes=Array.isArray(assetSourceUsage?.selectedSourceHashes)?assetSourceUsage.selectedSourceHashes:[];
-  const payload = ['vibe2-incremental-qa-v18', JSON.stringify(data.spatialBlueprintContract||null),JSON.stringify(data.spatialBlueprint||null),JSON.stringify(data.interfaceBlueprintContract||null),JSON.stringify(data.interfaceBlueprint||null), namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation), JSON.stringify(assetSourceUsage)];
+  const payload = ['vibe2-incremental-qa-v19', JSON.stringify(data.spatialBlueprintContract||null),JSON.stringify(data.spatialBlueprint||null),JSON.stringify(data.interfaceBlueprintContract||null),JSON.stringify(data.interfaceBlueprint||null), namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation), JSON.stringify(assetSourceUsage)];
   // 자산 소스는 변경 파일 목록 밖에서도 바뀐다. 캐시 조회 전에 현재 내용과 비교한다.
   if(assetSourceUsage?.synchronization?.selectedSourceContentHashesRequired===true){
     const paths=assetSourceUsage.selectedSourcePaths||[];
