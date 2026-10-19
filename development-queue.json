@@ -19965,9 +19965,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-19T05:21:20.433Z",
+      "updatedAt": "2026-10-19T05:30:19.404Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -19979,7 +19979,7 @@
       "strictDesignReviewRefreshRequired": true,
       "robloxSourceCommit": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
       "robloxSourceBootstrapPassedAt": "2026-10-12T18:09:47.970Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-19T05:04:31.086Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-19T05:30:19.404Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -20568,8 +20568,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39198788320,
-        "testedAt": "2026-10-19T05:04:31.086Z"
+        "workflowRunId": 39198895705,
+        "testedAt": "2026-10-19T05:30:19.404Z"
       }
     },
     {
@@ -41564,7 +41564,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-19T05:29:02.153Z",
+  "updatedAt": "2026-10-19T05:30:19.404Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
