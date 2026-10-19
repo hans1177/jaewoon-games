@@ -39,6 +39,40 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 
 const continuousWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 
+ 
+test('free AI quota exhaustion waits for provider retry window without using game retry budget',()=>{
+  const resumeAt=new Date(Date.now()+60*60*1000).toISOString();
+  const task={
+    id:'quota-source-game',gameId:'quota-source-game',target:'roblox',department:'development',type:'implementation',
+    goal:'preserve playable game while generating source',sourceRoot:'roblox-games/quota-source-game',
+    responsibleFiles:['server/Game.server.luau'],status:'running',retries:2,maxRetries:4,
+    reservationId:'quota-lease-1',reservationRunId:'4001',reservedAt:new Date().toISOString(),evidence:[]
+  };
+  const result={
+    taskId:task.id,reservationId:task.reservationId,variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'EXTERNAL_AI_UNAVAILABLE',
+      message:'gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429:NEXT_RETRY_AT='+resumeAt}
+  };
+  const settled=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[task]}),[result]);
+  const waiting=settled.queue.tasks.find(row=>row.id===task.id);
+  assert.equal(settled.applied[0].outcome,'DEFERRED_EXTERNAL_QUOTA');
+  assert.equal(waiting.status,'blocked');
+  assert.equal(waiting.blocker,'EXTERNAL_AI_QUOTA_COOLDOWN');
+  assert.equal(waiting.retries,2,'rate limit must not consume game retry budget');
+  assert.equal(waiting.reservationId,null,'provider cooling must free the old execution lease');
+  assert.ok(waiting.evidence.includes('external-ai-quota-retry-at:'+settled.applied[0].retryAt));
+  const early=recoverStaleRunningReservations(settled.queue,{nowMs:Date.parse(resumeAt)-1000});
+  assert.equal(early.recovered,0);
+  assert.equal(early.queue.tasks[0].status,'blocked');
+  const ready=recoverStaleRunningReservations(early.queue,{nowMs:Date.parse(resumeAt)+1000});
+  assert.equal(ready.recovered,1);
+  assert.equal(ready.queue.tasks[0].status,'queued');
+  assert.equal(ready.queue.tasks[0].retries,2);
+  assert.equal(ready.queue.tasks[0].blocker,null);
+});
+
+
 // 웹 상시 두 게임: 실제 예약·완료·대기 복구를 거쳐 서로 다른 게임을 유지한다.
 test('canonical web target fills two distinct games and refills a released game without cancelling native work',()=>{
   const policy={developmentSpeedExecution:{webGameFlow:{enabled:true,targetConcurrentGames:2}}};

@@ -159,7 +159,7 @@ function fixedGamePrimaryRepeatSlots() {
 }
 function configuredLaneReservationMax(executionLane='',requested=null,queueMax=null){
   const lane=clean(executionLane||'game-primary').toLowerCase();
-  if(lane==='game-primary')return fixedGamePrimaryRepeatSlots()||64;
+  if(lane==='game-primary')return fixedGamePrimaryRepeatSlots()||128;
   if(lane==='learning-idle')return 1;
   return optionalMaxConcurrent(requested) ?? queueMax;
 }
@@ -432,6 +432,17 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
   const queue = createVibeContinuousQueue(queueInput);
   let recovered = 0;
   const tasks = queue.tasks.map((task) => {
+    // 외부 무료 API 제한은 소스 오류가 아니다. 정확한 재시도 시각까지 작업을 대기시킨다.
+    if (task.status === 'blocked' && clean(task.blocker) === 'EXTERNAL_AI_QUOTA_COOLDOWN') {
+      const evidence=Array.isArray(task.evidence)?task.evidence:[];
+      const marker=evidence.findLast(value=>clean(value).startsWith('external-ai-quota-retry-at:'));
+      const readyAt=Date.parse(clean(marker).slice('external-ai-quota-retry-at:'.length));
+      if(!Number.isFinite(readyAt)||Number(nowMs)<readyAt)return task;
+      recovered+=1;
+      return {...task,...clearedReservation(),status:'queued',blocker:null,
+        lastOutcome:'EXTERNAL_AI_QUOTA_WAIT_FINISHED',
+        evidence:[...new Set([...evidence,'external-ai-quota-wait-resumed:v1'])]};
+    }
     if (task.status !== 'running') return task;
     if (clean(task.department).toLowerCase() !== 'development' || clean(task.type).toLowerCase() !== 'implementation') return task;
     if (isWorkerCapacityReleasedBlocker(task.blocker)) return task;
@@ -1070,6 +1081,36 @@ export function applyVibeFanInResults(queueInput, results = []) {
       });
       applied.push({taskId,outcome:'REQUEUED_TRANSIENT_LOCK',reason:blockers.join('|')||'work-lock-conflict'});
       continue;
+    }
+    // 모든 독립 생성 후보가 확인된 외부 API 429에 막힌 경우만 보류한다.
+    // 기존 재시도 횟수와 학습 평가를 변경하지 않고, 정해진 시각에 기존 큐로 복귀한다.
+    const quotaFailures=passes.length===0&&variants.length>0&&variants.every(row=>
+      clean(row.outcome).toUpperCase()==='FAIL'
+      &&clean(row?.candidateFailure?.class).toUpperCase()==='EXTERNAL_AI_UNAVAILABLE'
+      &&/HTTP_429/.test(clean(row?.candidateFailure?.message))
+      &&/NEXT_RETRY_AT=/.test(clean(row?.candidateFailure?.message))
+    );
+    if(quotaFailures){
+      const retryTimes=variants.map(row=>{
+        const stamp=/NEXT_RETRY_AT=([0-9TZ:.-]+)/.exec(clean(row?.candidateFailure?.message))?.[1];
+        return Date.parse(stamp||'');
+      }).filter(Number.isFinite);
+      if(retryTimes.length===variants.length){
+        const retryAt=new Date(Math.max(Date.now()+60_000,Math.min(...retryTimes))).toISOString();
+        queue=createVibeContinuousQueue({
+          maxConcurrentTasks:queue.maxConcurrentTasks,
+          tasks:queue.tasks.map(task=>task.id===taskId?{
+            ...task,...clearedReservation(),status:'blocked',blocker:'EXTERNAL_AI_QUOTA_COOLDOWN',
+            lastOutcome:'EXTERNAL_AI_QUOTA_WAIT',
+            neuronExpectedVariants:0,neuronResults:[],
+            evidence:[...new Set([...(task.evidence||[]),
+              'external-ai-quota-infrastructure-unavailable:v1',
+              'external-ai-quota-retry-at:'+retryAt])]
+          }:task)
+        });
+        applied.push({taskId,outcome:'DEFERRED_EXTERNAL_QUOTA',retryAt});
+        continue;
+      }
     }
     const neuralTransactions=new Map(variants.map(row=>[row,buildNeuralWorkerTransaction(row)]));
     const neuralVariantFeedback=variants.map(row=>neuralTransactions.get(row).feedback);
