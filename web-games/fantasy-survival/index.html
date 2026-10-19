@@ -214,11 +214,19 @@ body:has(#multiPanel.open) .actions,body:has(#multiPanel.open) .stick{
 /* Experimental native CC0 WebGL scene is opt-in; legacy 2D remains normal. */
 #world3d{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;pointer-events:none;touch-action:none}
 #world3d[hidden]{display:none!important}
+
+
+/* Native asset test: real WebGL transparent layer above legacy game without input interception.
+   Remains opt-in on candidate branch until game-wide 3D runtime QA has passed. */
+#nativeForest3d{position:absolute;inset:0;width:100%;height:100%;z-index:1;
+  display:block;pointer-events:none;touch-action:none}
+#nativeForest3d[hidden]{display:none!important}
 </style>
 <script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 </head>
 <body data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-gameplay-system-count="9" data-spatial-dimension="2d" data-collision-enabled="true" data-camera-active="true" data-audio-state="idle" data-motion-state="idle" data-genre-ui="survival" data-ui-motion-language="touch-action">
 <canvas id="game" data-gameplay-surface="true"></canvas>
+<canvas id="nativeForest3d" aria-hidden="true" data-gameplay-3d-surface="candidate" hidden></canvas>
 <canvas id="world3d" data-native-3d-asset-preview="true" aria-hidden="true" hidden></canvas>
 <!-- 메인: 타이틀 / 모드 선택 -->
 <div id="startScreen" class="startScreen" role="dialog" aria-modal="true" aria-label="마력숲 시작 화면"><div class="startCard"><h1>마력숲 생존기</h1><p>숲을 탐험하고, 만들고, 살아남아 봐.</p><div id="startMain"><button id="startPlay" class="startAction">게임 시작</button><button id="startOptions" class="startAction secondary">옵션</button></div><div id="startModes" hidden><p>플레이할 모드를 선택해.</p><button id="startNormal" class="startAction">일반 모드<br><small>기존 마력숲 · 기존 저장 이어하기</small></button><button id="startCreative" class="startAction">크리에이티브 모드<br><small>재료 무제한 · 몬스터 소환과 대결</small></button><button id="startBack" class="startAction secondary">뒤로</button></div></div></div>
@@ -243,6 +251,7 @@ body:has(#multiPanel.open) .actions,body:has(#multiPanel.open) .stick{
  <div class="multiRow"><button id="multiCreate">방 만들기</button><button id="multiJoin">방 참가</button></div>
  <div class="multiRow"><button id="multiCopy">초대 링크 복사</button><button id="multiLeave">나가기</button></div>
 </div>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.91.1"></script>
 <script>
 (()=>{'use strict';
@@ -6513,6 +6522,19 @@ function drawRadioStoryWorld(cx,cy){
  }
  ctx.restore()
 }
+let forest3d=null;
+async function loadForest3DCandidate(){
+ // 실제 다운로드한 CC0 3D 모델을 정식 F0~F9 이전 후보에서 검증. 기존 2D 본편을 기본값으로 보존.
+ if(new URLSearchParams(location.search).get('native3d')!=='1')return;
+ const layer=document.getElementById('nativeForest3d');
+ document.body.dataset.native3d='loading';
+ try{
+  const module=await import('./native-forest-assets.js');
+  const bridge=await module.createForest3DOverlay(layer);
+  forest3d=bridge;layer.hidden=false;
+  document.body.dataset.native3d=bridge.hasTrees||bridge.hasPlayer?'candidate-ready':'candidate-empty';
+ }catch(err){layer.hidden=true;forest3d=null;document.body.dataset.native3d='fallback-2d';console.warn('MAGE_FOREST_3D_FALLBACK',String(err))}
+}
 function draw(){
  const cx=state.camera.x,cy=state.camera.y,now=performance.now();
  if(state.area==='underwater')drawUnderwater(cx,cy,innerWidth,innerHeight);
@@ -6525,11 +6547,12 @@ function draw(){
  else if(state.area.startsWith('jungletemple'))drawJungleTemple(cx,cy,innerWidth,innerHeight);
  else{
   drawBackground(cx,cy,innerWidth,innerHeight);
-  for(const n of state.trees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.swampTrees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.flowerGiantFlowers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.crystals)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);for(const n of state.poisonStones)if(!n.dead)drawNode(n,cx,cy);for(const n of state.sunstones)if(!n.dead)drawNode(n,cx,cy);
+  for(const n of state.trees)if(!n.dead&&!forest3d?.hasTrees)drawNode(n,cx,cy);for(const n of state.swampTrees)if(!n.dead)drawNode(n,cx,cy);for(const n of state.flowerGiantFlowers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.rocks)if(!n.dead)drawNode(n,cx,cy);for(const n of state.fibers)if(!n.dead)drawNode(n,cx,cy);for(const n of state.irons)if(!n.dead)drawNode(n,cx,cy);for(const n of state.golds)if(!n.dead)drawNode(n,cx,cy);for(const n of state.essences)if(!n.dead)drawNode(n,cx,cy);for(const n of state.crystals)if(!n.dead)drawNode(n,cx,cy);for(const n of state.carrots)if(!n.dead)drawNode(n,cx,cy);for(const n of state.poisonStones)if(!n.dead)drawNode(n,cx,cy);for(const n of state.sunstones)if(!n.dead)drawNode(n,cx,cy);
   drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.toxicFurnace,cx,cy,'toxicfurnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.jungleBench,cx,cy,'junglebench');drawStructure(state.sunstoneBench,cx,cy,'sunstonebench');drawStructure(state.blacksmithAnvil,cx,cy,'anvil');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');for(const b of state.chests)drawPlayerBuilding(b,cx,cy,'chest');for(const b of state.walls)drawPlayerBuilding(b,cx,cy,'wall');for(const b of state.doors)drawPlayerBuilding(b,cx,cy,'door');for(const b of state.towers)drawPlayerBuilding(b,cx,cy,'tower');for(const b of state.beds)drawPlayerBuilding(b,cx,cy,'bed');for(const b of state.gardens)drawPlayerBuilding(b,cx,cy,'garden');for(const b of state.portals)drawPlayerBuilding(b,cx,cy,'portal');for(const crop of state.crops)drawCrop(crop,cx,cy);drawSnowOutposts(cx,cy);drawSwampOutpost(cx,cy);drawGoblinOutpostEntrance(cx,cy);drawFlowerWorld(cx,cy);drawRadioStoryWorld(cx,cy);drawBlueprint(cx,cy);drawShadowEgg(cx,cy);drawCreativeSpawners(cx,cy)
  }
  for(const e of state.enemies)if(e.area===state.area){drawCreature(e,cx,cy);if(e.creativeOwned&&e.netId===state.creativeSelectedId){ctx.save();ctx.strokeStyle='#ffe46c';ctx.lineWidth=3;ctx.beginPath();ctx.arc(e.x-cx,e.y-cy,(e.type.r||20)+9,0,Math.PI*2);ctx.stroke();ctx.restore()}}
- drawDeathEffects(cx,cy,now);drawSporeClouds(cx,cy);drawProjectiles(cx,cy);drawSwampHazards(cx,cy,now);drawMummyGases(cx,cy,now);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawUnderwaterDarkness(now);drawQuestDarkness();drawMiniMap(now)
+ drawDeathEffects(cx,cy,now);drawSporeClouds(cx,cy);drawProjectiles(cx,cy);drawSwampHazards(cx,cy,now);drawMummyGases(cx,cy,now);drawPet(cx,cy);drawRemotePlayers(cx,cy);if(!forest3d?.hasPlayer||state.area!=='surface')drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawUnderwaterDarkness(now);drawQuestDarkness();drawMiniMap(now);
+ if(forest3d){try{forest3d.draw(state,innerWidth,innerHeight,Math.min(.035,(now-(state.last3dDrawAt||now))/1000));state.last3dDrawAt=now}catch(error){console.warn('FOREST_3D_RUNTIME_FALLBACK',String(error));forest3d.dispose();forest3d=null;document.getElementById('nativeForest3d').hidden=true;document.body.dataset.native3d='fallback-2d'}}
 }
 function syncRuntimeMeta(){const root=document.body,p=state.player,c=state.camera;if(!root||!p)return;root.dataset.playerX=Number(p.x||0).toFixed(2);root.dataset.playerY=Number(p.y||0).toFixed(2);root.dataset.cameraX=Number(c?.x||0).toFixed(2);root.dataset.cameraY=Number(c?.y||0).toFixed(2);root.dataset.area=String(state.area||'surface');root.dataset.motionState=(state.keys.size||Math.hypot(state.stick.x,state.stick.y)>.01)?'move':'idle';root.dataset.autoGather=state.gathering.auto?'on':'off';root.dataset.autoGatherTarget=state.gathering.target?.kind||'';root.dataset.audioState=!music.enabled?'muted':music.ctx?.state==='running'?'running':music.ctx?.state==='suspended'?'suspended':'idle'}
 function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.min(mobileCanvas?1.5:2,devicePixelRatio||1);canvas.width=Math.floor(innerWidth*d);canvas.height=Math.floor(innerHeight*d);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0)}function loop(now){const dt=Math.min(.033,(now-state.last)/1000);state.last=now;if(gameStarted){update(dt,now);syncRuntimeMeta();draw();if(world3d)world3d.frame(state,regionAt)}requestAnimationFrame(loop)}
@@ -6696,7 +6719,7 @@ document.getElementById('creativeClose').addEventListener('click',()=>{document.
 document.getElementById('creativeRemove').addEventListener('click',()=>{state.creativeSpawners=state.creativeSpawners.filter(b=>b.id!==state.creativeSpawnerId);document.getElementById('creativePanel').hidden=true;state.dirty=true;saveGame(false);showNotice('스폰 블록 회수 완료')});
 document.getElementById('optionsClose').addEventListener('click',()=>document.getElementById('optionsPanel').classList.remove('menuOptions'));
 if(new URL(location.href).searchParams.get('reset')==='1'){try{localStorage.removeItem(SAVE_KEY)}catch{}}
-initWorld();resize();updateHud();requestAnimationFrame(loop);
+initWorld();resize();updateHud();loadForest3DCandidate();requestAnimationFrame(loop);
 })();
 </script>
 </body>
