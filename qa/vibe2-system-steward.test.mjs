@@ -108,6 +108,16 @@ test('steward rejects a fresh lower adaptive step without verified pressure evid
   assert.ok(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'));
 });
 
+test('steward resumes causal repair tasks safely without duplicate signal noise',()=>{
+  const result=runSystemStewardState({
+    now:'2026-09-19T12:00:00Z',
+    queueInput:{maxConcurrentTasks:256,tasks:[{id:'t1',gameId:'g1',target:'web',status:'failed',blocker:'source-candidate-generation-failed'}]},
+    controlInput:{currentMax:256,lastUpdatedAt:'2026-09-19T11:59:00Z'}
+  });
+  assert.equal(result.action,'RESUME_CAUSAL_REPAIR');
+  assert.equal(result.queue.tasks[0].status,'queued');
+});
+
 test('steward does not consume a repair on external wait work',()=>{
   const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[{id:'wait',gameId:'r',target:'roblox',goal:'runtime',status:'running',blocker:'roblox-dedicated-runner-offline-deferred',reservedAt:'2026-09-19T09:00:00Z'}]},controlInput:{currentMax:256,lastUpdatedAt:'2026-09-19T11:50:00Z'}});
   assert.equal(result.action,'NO_RUNNABLE_WORK_FOR_PLANNER_REFILL');

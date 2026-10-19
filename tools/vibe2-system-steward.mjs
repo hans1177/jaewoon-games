@@ -105,6 +105,11 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
 
   const causalRepair=unlimitedCausalRepairTasks(queue);
   if(causalRepair.length){
+    const ids=new Set(causalRepair.map(task=>task.id));
+    queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>ids.has(row.id)?{...clearReservation(row),status:'queued',blocker:null,lastOutcome:'SYSTEM_STEWARD_CAUSAL_REPAIR_RESUME',evidence:uniq([...(row.evidence||[]),'system-steward:causal-repair-resumed'])}:row)});
+    actions.push('RESUME_CAUSAL_REPAIR'); taskIds.push(...ids);
+  }
+  if(causalRepair.length){
     const ids=new Set(causalRepair.map(task=>task.id)),signatures=uniq(causalRepair.map(failureSignature));
     queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>{
       if(!ids.has(row.id))return row;

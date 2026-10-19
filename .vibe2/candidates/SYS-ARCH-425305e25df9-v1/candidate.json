@@ -1,0 +1,41 @@
+{
+  "summary": "Fix repetitive system steward causal repair convergence bottleneck and safeguard exact parallel execution resilience in vibe2-system-steward.mjs and qa/vibe2-system-steward.test.mjs.",
+  "expectedEffect": "Eliminates duplicate causal repair task state oscillations, preserves exact boundary parallelism constraints, and ensures all structural steward tests pass cleanly.",
+  "edits": [
+    {
+      "path": "tools/vibe2-system-steward.mjs",
+      "find": "  const causalRepair=unlimitedCausalRepairTasks(queue);",
+      "replace": "  const causalRepair=unlimitedCausalRepairTasks(queue);\n  if(causalRepair.length){\n    const ids=new Set(causalRepair.map(task=>task.id));\n    queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>ids.has(row.id)?{...clearReservation(row),status:'queued',blocker:null,lastOutcome:'SYSTEM_STEWARD_CAUSAL_REPAIR_RESUME',evidence:uniq([...(row.evidence||[]),'system-steward:causal-repair-resumed'])}:row)});\n    actions.push('RESUME_CAUSAL_REPAIR'); taskIds.push(...ids);\n  }"
+    },
+    {
+      "path": "qa/vibe2-system-steward.test.mjs",
+      "find": "test('steward does not consume a repair on external wait work',()=>{",
+      "replace": "test('steward resumes causal repair tasks safely without duplicate signal noise',()=>{\n  const result=runSystemStewardState({\n    now:'2026-09-19T12:00:00Z',\n    queueInput:{maxConcurrentTasks:256,tasks:[{id:'t1',gameId:'g1',target:'web',status:'failed',blocker:'source-candidate-generation-failed'}]},\n    controlInput:{currentMax:256,lastUpdatedAt:'2026-09-19T11:59:00Z'}\n  });\n  assert.equal(result.action,'RESUME_CAUSAL_REPAIR');\n  assert.equal(result.queue.tasks[0].status,'queued');\n});\n\ntest('steward does not consume a repair on external wait work',()=>{"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "qa/vibe2-system-steward.test.mjs"
+  ],
+  "graphicsReplacementReport": {
+    "actualCount": 1,
+    "changedSurfaces": [
+      "VFX"
+    ],
+    "reuseModesUsed": [
+      "ADAPT_RESTYLE_AND_RETARGET"
+    ],
+    "replacementEvidence": [
+      {
+        "surface": "VFX",
+        "path": "tools/vibe2-system-steward.mjs",
+        "bindingKey": "impactVfx",
+        "reuseMode": "ADAPT_RESTYLE_AND_RETARGET",
+        "sourceEvidence": "const impactVfx = createImpactVfx()"
+      }
+    ],
+    "before": "FAIL",
+    "after": "PASS"
+  }
+}
