@@ -309,7 +309,7 @@ jobs:
           fi
           echo "queue_control_only=$queue_control_only" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CORE_QA_QUEUE_CONTROL_ONLY=$queue_control_only"
-          echo "VIBE2_CORE_QA_PARALLELISM_ONLY=$parallelism_only
+          echo "VIBE2_CORE_QA_PARALLELISM_ONLY=$parallelism_only"
 
   test:
     needs: scope
