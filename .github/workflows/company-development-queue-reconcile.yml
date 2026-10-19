@@ -91,6 +91,9 @@ jobs:
 
       - name: Reconcile and persist company runtime queue
         id: queue_state
+        env:
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+          COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
         shell: bash
         run: |
           set -euo pipefail
