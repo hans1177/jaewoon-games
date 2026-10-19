@@ -40,12 +40,21 @@ test('native preview binds actual downloaded CC0 OBJ sources with matching SHA25
 });
 test('original source materials and Diablo-II-style native camera are bound to game state',()=>{
  const source=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
- for(const name of ['tree','tree_large','foliage_A','foliage_B','bench_A','bench_B','fence_straight','house','gate_single','package']){
+ for(const name of ['floor_base','tree','tree_large','foliage_A','foliage_B','bench_A','bench_B','fence_straight','house','gate_single','package']){
   const objPath=home+name+'.obj',mtlPath=home+name+'.mtl';
   assert.ok(fs.statSync(objPath).size>100,'missing CC0 geometry '+name);
   const mtl=fs.readFileSync(mtlPath,'utf8');
   assert.match(mtl,/^Kd\s+\d/m,'missing original diffuse '+name);
  }
+ // No assistant-made meshes or fabricated material palette are permitted in the
+ // final visible 3D game: all floor triangles must be from original floor_base.obj.
+ assert.match(source,/models\.get\('floor_base'\)/);
+ assert.match(source,/sourceFloor\.clone\(\)/);
+ assert.match(source,/Original CC0 MTL diffuse missing/);
+ assert.doesNotMatch(source,/new THREE\.PlaneGeometry\(/);
+ assert.doesNotMatch(source,/const PALETTE\s*=/);
+ assert.doesNotMatch(source,/new THREE\.BoxGeometry\(/);
+ assert.doesNotMatch(source,/new THREE\.SphereGeometry\(/);
  assert.match(source,/new THREE\.OrthographicCamera/);
  assert.match(source,/camera\.position\.set\(centerX\+10\.5,17,centerY\+13\)/);
  assert.match(source,/name\+'\.obj'/);
