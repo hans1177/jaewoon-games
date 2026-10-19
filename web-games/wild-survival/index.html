@@ -30,6 +30,8 @@ button{font:inherit}
 #actions{position:absolute;right:14px;bottom:7px;display:grid;grid-template-columns:repeat(2,84px);gap:8px;pointer-events:auto}
 .act{min-height:56px;border:1px solid #ffffff28;border-radius:16px;background:#202a1ddb;color:#fff;font-weight:900;font-size:12px;box-shadow:0 4px 18px #0005}
 .act:active{transform:scale(.97)}
+#huntBtn{position:fixed;right:11px;top:154px;z-index:7;min-width:82px;min-height:42px;padding:7px;border:1px solid #ffffff33;border-radius:12px;background:#203923eb;color:#f2efcd;font-weight:850;font-size:12px}
+#huntBtn:active{transform:scale(.97)}
 #menuBtn{position:fixed;right:11px;top:104px;z-index:7;width:46px;height:42px;border:1px solid #ffffff22;border-radius:12px;background:#12180fe0;color:#fff;font-weight:900}
 #craft{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,480px);max-height:72vh;overflow:auto;padding:14px;z-index:12;display:none}
 #craft.open{display:block}
@@ -47,7 +49,7 @@ button{font:inherit}
 .card ul{font-size:12px;line-height:1.6;padding-left:19px;color:#e3e8df}
 .primary{width:100%;min-height:50px;border:0;border-radius:14px;background:#dfe7d7;color:#152015;font-weight:950}
 #death .primary{margin-top:12px}
-@media (max-width:380px){#bars{grid-template-columns:1fr}.stat:nth-child(n+4){display:none}#objective{top:145px}#menuBtn{top:136px}}
+@media (max-width:380px){#bars{grid-template-columns:1fr}.stat:nth-child(n+4){display:none}#objective{top:145px}#menuBtn{top:136px}#huntBtn{top:190px}}
 </style>
 </head>
 <body data-spatial-dimension="3d-pending" data-web-artifact-type="REAL_PLAYABLE_GAME" data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-gameplay-system-count="9" data-realism-lock="NO_FANTASY" data-run-result="running">
@@ -60,6 +62,7 @@ button{font:inherit}
 <div id="objective" class="panel">목표: 7일 생존하고 튼튼한 쉼터를 만들어라</div>
 <div id="notice"></div>
 <button id="menuBtn">제작</button>
+<button id="huntBtn" title="추적할 동물 변경">동물 추적</button>
 <section id="craft" class="panel">
   <h2>제작 · 야영</h2>
   <div class="sub">주변에서 얻은 실제 재료만 사용해. 마법·판타지 자원은 없어.</div>
@@ -116,13 +119,25 @@ const baseState=()=>({
   ambient:18,player:{x:480,y:560,hp:100,hunger:100,thirst:100,energy:100,temp:37,wet:0,ill:0,bleed:0,faceX:1,faceY:0,attackAt:0},
   inv:{wood:0,stone:0,fiber:0,berries:0,rawMeat:0,cookedMeat:0,dirtyWater:0,cleanWater:0},
   gear:{knife:false,axe:false,spear:false},camp:{fire:false,fireFuel:0,shelter:0,x:0,y:0},
-  score:0,survivedGoal:false,lastSave:0
+  score:0,survivedGoal:false,hunts:{},lastSave:0
 });
 let S=baseState();
 try{const old=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(old&&old.player&&old.inv)S={...baseState(),...old,player:{...baseState().player,...old.player},inv:{...baseState().inv,...old.inv},gear:{...baseState().gear,...old.gear},camp:{...baseState().camp,...old.camp},started:false,dead:false}}catch{}
 const keys={},joy={x:0,y:0,id:null};
 let last=performance.now(),noticeTimer=0;
 const resources=[],animals=[];
+const SPECIES={
+  rabbit:{name:'토끼',hp:28,speed:130,r:12,meat:1,behavior:'shy',sense:220},
+  deer:{name:'사슴',hp:90,speed:112,r:24,meat:4,behavior:'shy',sense:310},
+  boar:{name:'멧돼지',hp:115,speed:82,r:32,meat:3,behavior:'territorial',sense:150},
+  bear:{name:'곰',hp:240,speed:88,r:38,meat:7,behavior:'predator',sense:270},
+  wolf:{name:'늑대',hp:125,speed:142,r:24,meat:3,behavior:'predator',sense:355},
+  fox:{name:'여우',hp:62,speed:157,r:17,meat:2,behavior:'shy',sense:240},
+  redsquirrel:{name:'붉은다람쥐',hp:24,speed:172,r:10,meat:1,behavior:'shy',sense:190},
+  barnowl:{name:'올빼미',hp:40,speed:139,r:14,meat:1,behavior:'shy',sense:260}
+};
+const HUNT_TYPES=Object.keys(SPECIES);
+let trackedType='deer';
 
 // 월드 생성
 function addResource(type,x,y,amount=5){resources.push({type,x,y,amount,respawn:0})}
@@ -131,12 +146,20 @@ for(let i=0;i<36;i++)addResource('stone',rand(140,WORLD.w-140),rand(140,WORLD.h-
 for(let i=0;i<30;i++)addResource('fiber',rand(140,WORLD.w-140),rand(140,WORLD.h-140),rand(3,6)|0);
 for(let i=0;i<22;i++)addResource('berry',rand(140,WORLD.w-140),rand(140,WORLD.h-140),rand(2,5)|0);
 function newAnimal(type,x,y){
-  const stat={rabbit:[28,130,12],deer:[90,112,24],boar:[115,82,32]}[type];
-  animals.push({id:Math.random().toString(36).slice(2),type,x,y,hp:stat[0],maxHp:stat[0],speed:stat[1],r:stat[2],vx:rand(-1,1),vy:rand(-1,1),wander:rand(.5,3),alert:0,attackAt:0,dead:0});
+  const spec=SPECIES[type];if(!spec)return;
+  animals.push({id:Math.random().toString(36).slice(2),type,x,y,hp:spec.hp,maxHp:spec.hp,speed:spec.speed,r:spec.r,vx:rand(-1,1),vy:rand(-1,1),wander:rand(.5,3),alert:0,attackAt:0,dead:0});
 }
 for(let i=0;i<10;i++)newAnimal('rabbit',rand(300,WORLD.w-300),rand(250,WORLD.h-250));
 for(let i=0;i<8;i++)newAnimal('deer',rand(350,WORLD.w-350),rand(280,WORLD.h-280));
 for(let i=0;i<5;i++)newAnimal('boar',rand(450,WORLD.w-450),rand(350,WORLD.h-350));
+for(let i=0;i<3;i++)newAnimal('bear',rand(700,WORLD.w-350),rand(650,WORLD.h-300));
+for(let i=0;i<7;i++)newAnimal('wolf',rand(750,WORLD.w-350),rand(200,WORLD.h-250));
+for(let i=0;i<7;i++)newAnimal('fox',rand(300,WORLD.w-280),rand(250,WORLD.h-260));
+for(let i=0;i<9;i++)newAnimal('redsquirrel',rand(210,WORLD.w-240),rand(210,WORLD.h-250));
+for(let i=0;i<5;i++)newAnimal('barnowl',rand(220,WORLD.w-260),rand(240,WORLD.h-230));
+// Guarantee a discoverable first mobile hunting encounter rather than an empty starting forest.
+newAnimal('rabbit',585,640);
+newAnimal('deer',780,750);
 
 // 저장
 function save(){
@@ -164,7 +187,12 @@ function updateHud(){
   const w={clear:'맑음',cloud:'흐림',rain:'비',storm:'폭우'}[S.weather];
   document.getElementById('weatherText').textContent=`${w} · ${Math.round(S.ambient)}°C`;
   document.body.dataset.runResult=S.dead?'defeat':S.won?'victory':'running';
-  document.getElementById('objective').textContent=S.won?'7일 생존 달성 · 계속 생존할 수 있어':`목표: 7일 생존 + 쉼터 건설 (${S.camp.shelter}/2)`;
+  const huntCount=HUNT_TYPES.filter(type=>(S.hunts?.[type]||0)>0).length;
+  const nearest=animals.filter(a=>a.type===trackedType&&a.dead<=0)
+    .map(a=>Math.round(dist(a.x,a.y,p.x,p.y)/72)).sort((a,b)=>a-b)[0];
+  document.getElementById('objective').textContent=
+    `사냥 도감 ${huntCount}/8종 · ${SPECIES[trackedType].name} ${nearest===undefined?'미발견':nearest+'m'} · ${S.won?'7일 생존 달성':'7일 생존 목표'}`;
+  document.body.dataset.huntSpeciesCount=String(huntCount);
 }
 function inventoryText(){
   const i=S.inv,g=S.gear,c=S.camp;
@@ -240,18 +268,31 @@ function eat(){
 }
 function attack(){
   if(!S.started||S.dead)return;
-  const p=S.player,range=S.gear.spear?92:54,damage=S.gear.spear?34:S.gear.knife?19:9;
+  const p=S.player,range=S.gear.spear?104:S.gear.knife?64:52,damage=S.gear.spear?38:S.gear.knife?22:9;
   p.attackAt=performance.now();
   let best=null,bd=range;
-  for(const a of animals){if(a.dead>0)continue;const d=dist(p.x,p.y,a.x,a.y);if(d<bd){bd=d;best=a}}
-  if(!best){showNotice('공격 범위에 동물이 없어');return}
-  best.hp-=damage;best.alert=7;
+  // Aim cone ties hunting to the facing direction of the fixed third-person camera.
+  for(const a of animals){
+    if(a.dead>0)continue;
+    const d=dist(p.x,p.y,a.x,a.y);
+    if(d>=bd)continue;
+    const forward=((a.x-p.x)*p.faceX+(a.y-p.y)*p.faceY)/(d||1);
+    if(forward<.24)continue;
+    bd=d;best=a;
+  }
+  if(!best){showNotice('앞쪽 사냥 범위에 동물이 없어');return}
+  best.hp-=damage;best.alert=9;
   if(best.hp<=0){
-    best.dead=70;const meat=best.type==='rabbit'?1:best.type==='deer'?4:3;
-    if(S.gear.knife){S.inv.rawMeat+=meat;showNotice(`${best.type==='rabbit'?'토끼':best.type==='deer'?'사슴':'멧돼지'} 사냥 · 생고기 +${meat}`)}
-    else{S.inv.rawMeat+=Math.max(1,meat-1);showNotice('도축 도구가 없어 고기를 일부만 얻었다')}
-    S.score+=15;
-  }else showNotice('동물을 공격했다');
+    const species=SPECIES[best.type],meat=species.meat;
+    best.dead=70;
+    if(!S.hunts)S.hunts={};
+    S.hunts[best.type]=(S.hunts[best.type]||0)+1;
+    const reward=S.gear.knife?meat:Math.max(1,meat-1);
+    S.inv.rawMeat+=reward;
+    S.score+=15+Math.ceil(species.hp/12);
+    showNotice(`${species.name} 사냥 성공 · 고기 +${reward} · 도감 ${HUNT_TYPES.filter(t=>S.hunts[t]>0).length}/8종`);
+    save();
+  }else showNotice(`${SPECIES[best.type].name} 명중 · 남은 체력 ${Math.ceil(best.hp)}`);
 }
 function rest(){
   if(!S.started||S.dead)return;
@@ -307,19 +348,51 @@ function die(){
 function updateAnimals(dt){
   const p=S.player;
   for(const a of animals){
-    if(a.dead>0){a.dead-=dt;if(a.dead<=0){a.hp=a.maxHp;a.x=rand(250,WORLD.w-250);a.y=rand(220,WORLD.h-220);a.alert=0}continue}
-    const d=dist(a.x,a.y,p.x,p.y);a.wander-=dt;a.alert=Math.max(0,a.alert-dt);
-    let tx=a.vx,ty=a.vy,spd=a.speed*.42;
-    if(a.type==='rabbit'||a.type==='deer'){
-      if(d<(a.type==='rabbit'?220:300)){tx=(a.x-p.x)/(d||1);ty=(a.y-p.y)/(d||1);spd=a.speed}
-    }else if(a.type==='boar'){
-      const threatened=a.alert>0||d<85;
-      if(threatened&&d<330){tx=(p.x-a.x)/(d||1);ty=(p.y-a.y)/(d||1);spd=a.speed*1.18;
-        if(d<40&&performance.now()-a.attackAt>1200){a.attackAt=performance.now();p.hp-=14;p.bleed=clamp(p.bleed+18,0,100);showNotice('멧돼지에게 들이받혀 출혈이 생겼다')}}
-      else if(d<180){tx=(a.x-p.x)/(d||1);ty=(a.y-p.y)/(d||1);spd=a.speed*.55}
+    if(a.dead>0){
+      a.dead-=dt;
+      if(a.dead<=0){a.hp=a.maxHp;a.x=rand(200,WORLD.w-200);a.y=rand(190,WORLD.h-190);a.alert=0}
+      continue;
     }
-    if(a.wander<=0&&!(d<300)){a.wander=rand(1.5,4);const ang=rand(0,Math.PI*2);a.vx=Math.cos(ang);a.vy=Math.sin(ang)}
-    a.x=clamp(a.x+tx*spd*dt,35,WORLD.w-35);a.y=clamp(a.y+ty*spd*dt,35,WORLD.h-35);
+    const species=SPECIES[a.type];
+    if(!species)continue;
+    const d=dist(a.x,a.y,p.x,p.y),alertRadius=species.sense;
+    a.wander-=dt;a.alert=Math.max(0,a.alert-dt);
+    let tx=a.vx,ty=a.vy,spd=a.speed*.36;
+    const threatened=a.alert>0||d<alertRadius;
+    if(species.behavior==='shy'&&threatened){
+      tx=(a.x-p.x)/(d||1);ty=(a.y-p.y)/(d||1);spd=a.speed;
+    }else if(species.behavior==='predator'){
+      // Wolves pursue farther and faster; bears deal heavy but avoid persistent pursuit.
+      const chasing=a.alert>0||d<alertRadius;
+      if(chasing&&d<(a.type==='wolf'?540:380)){
+        tx=(p.x-a.x)/(d||1);ty=(p.y-a.y)/(d||1);
+        spd=a.speed*(a.alert>0?1.12:.90);
+      }
+    }else if(species.behavior==='territorial'){
+      if(threatened&&d<350){
+        tx=(p.x-a.x)/(d||1);ty=(p.y-a.y)/(d||1);spd=a.speed*1.16;
+      }else if(d<180){
+        tx=(a.x-p.x)/(d||1);ty=(a.y-p.y)/(d||1);spd=a.speed*.55;
+      }
+    }
+    const aggressive=species.behavior==='predator'||species.behavior==='territorial';
+    if(aggressive&&threatened&&d<species.r+18&&performance.now()-a.attackAt>1450){
+      a.attackAt=performance.now();
+      const damage=a.type==='bear'?29:a.type==='wolf'?16:14;
+      p.hp=clamp(p.hp-damage,0,100);
+      p.bleed=clamp(p.bleed+(a.type==='bear'?25:16),0,100);
+      showNotice(`${species.name}의 공격! 체력 -${damage}`);
+    }
+    if(a.wander<=0&&d>=alertRadius){
+      a.wander=rand(1.5,4);
+      const ang=rand(0,Math.PI*2);a.vx=Math.cos(ang);a.vy=Math.sin(ang);
+      tx=a.vx;ty=a.vy;
+    }
+    // Live model heading follows the actual AI steering direction.
+    const length=Math.hypot(tx,ty);
+    if(length>.001){a.vx=tx/length;a.vy=ty/length;}
+    a.x=clamp(a.x+tx*spd*dt,35,WORLD.w-35);
+    a.y=clamp(a.y+ty*spd*dt,35,WORLD.h-35);
   }
 }
 
@@ -330,7 +403,11 @@ function updatePlayer(dt){
   let y=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;
   const m=Math.hypot(x,y);
   if(m>.06){
-    x/=Math.max(1,m);y/=Math.max(1,m);p.faceX=x;p.faceY=y;
+    x/=Math.max(1,m);y/=Math.max(1,m);
+    // Third-person joystick is camera-relative; survival physics and saves stay unchanged.
+    if(!wild3d?.mapInput)return;
+    const direction=wild3d.mapInput(x,y);
+    x=direction.x;y=direction.y;p.faceX=x;p.faceY=y;
     const speed=(p.energy<18?92:145)*(p.wet>75?.86:1);
     p.x=clamp(p.x+x*speed*dt,22,WORLD.w-22);p.y=clamp(p.y+y*speed*dt,22,WORLD.h-22);
     p.energy=clamp(p.energy-dt*.13,0,100);
@@ -387,6 +464,11 @@ document.getElementById('interact').onclick=interact;
 document.getElementById('attack').onclick=attack;
 document.getElementById('eat').onclick=eat;
 document.getElementById('rest').onclick=rest;
+document.getElementById('huntBtn').onclick=()=>{
+  const next=(HUNT_TYPES.indexOf(trackedType)+1)%HUNT_TYPES.length;
+  trackedType=HUNT_TYPES[next];
+  showNotice('추적 대상: '+SPECIES[trackedType].name);
+};
 document.getElementById('menuBtn').onclick=()=>{document.getElementById('craft').classList.add('open');renderCraft()};
 document.getElementById('closeCraft').onclick=()=>document.getElementById('craft').classList.remove('open');
 document.getElementById('begin').onclick=()=>{S.started=true;document.getElementById('start').classList.add('hide');showNotice('물과 쉼터부터 확보해')};
