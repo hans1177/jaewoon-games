@@ -7814,8 +7814,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "신화·물류 교육×스릴러: 관개 수로: 서로 연결된 수로의 흐름이 유지됨의 성립. MAIN은 A(문제 해결과 지식 적용 × 신화)와 독립적인 B(노면과 안전 운행 계획 × 물류)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 모험 × 보조 스릴러)의 판정 차이, @(관개 수로: 서로 연결된 수로의 흐름이 유지됨의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "REGRESSION",
+      "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged",
       "runtimeObserved": false
     },
     "baseline": {
@@ -7834,8 +7834,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial STABILITY build-up has no previous generation effect to compare"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
