@@ -38,12 +38,12 @@ test('native scene is an opt-in internal render path, not a false production 3D 
  assert.match(moduleSource,/Float32BufferAttribute/);
  assert.match(moduleSource,/computeVertexNormals/);
  assert.match(moduleSource,/raycaster\.intersectObjects/);
- assert.match(moduleSource,/function frame\(state\)/);
+ assert.match(moduleSource,/function frame\(state,regionAt\)/);
  assert.match(moduleSource,/if\(state\.area!=='surface'/);
  assert.match(index,/data-spatial-dimension="2d"/);
  assert.match(index,/id="world3d"/);
  assert.match(index,/get\('preview3d'\)==='1'/);
- assert.match(index,/world3d\.frame\(state\)/);
+ assert.match(index,/world3d\.frame\(state,regionAt\)/);
  assert.match(index,/world3d\?\.pick\(e\.clientX,e\.clientY\)/);
  assert.match(index,/world3d\)world3d\.dispose\(\)/);
 });
