@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1o20ayl",
+      "worker": "vibe2",
+      "taskId": "seed-idle-growth-rpg-crystal-bloom-existing-web-assessment-v1",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "files": [
+        "web-games/seed-idle-growth-rpg-crystal-bloom/index.html"
+      ],
+      "baseSha": "a6a07ae41fa794daccf310b50e9397567b4b324a",
+      "runId": "39236536444",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-19T10:27:52.836Z",
+      "expiresAt": "2026-10-19T11:12:52.836Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-idle-growth-rpg-crystal-bloom-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
