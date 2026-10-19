@@ -31,6 +31,7 @@ button{font:inherit}
 .act{min-height:56px;border:1px solid #ffffff28;border-radius:16px;background:#202a1ddb;color:#fff;font-weight:900;font-size:12px;box-shadow:0 4px 18px #0005}
 .act:active{transform:scale(.97)}
 #menuBtn{position:fixed;right:11px;top:104px;z-index:7;width:46px;height:42px;border:1px solid #ffffff22;border-radius:12px;background:#12180fe0;color:#fff;font-weight:900}
+#cameraHint{position:fixed;right:10px;top:151px;z-index:7;max-width:115px;min-width:100px;pointer-events:none;text-align:center;padding:7px 8px;border-radius:12px;background:#101b13c9;border:1px solid #ffffff30;color:#f4fff4;font-size:10px;line-height:1.4;font-weight:850}
 #craft{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,480px);max-height:72vh;overflow:auto;padding:14px;z-index:12;display:none}
 #craft.open{display:block}
 #craft h2{margin:0 0 5px;font-size:20px}
@@ -60,6 +61,7 @@ button{font:inherit}
 <div id="objective" class="panel">목표: 7일 생존하고 튼튼한 쉼터를 만들어라</div>
 <div id="notice"></div>
 <button id="menuBtn">제작</button>
+<div id="cameraHint" aria-label="3인칭 고정 카메라">3인칭 고정<br>오른쪽 화면 드래그 · 시점</div>
 <section id="craft" class="panel">
   <h2>제작 · 야영</h2>
   <div class="sub">주변에서 얻은 실제 재료만 사용해. 마법·판타지 자원은 없어.</div>
@@ -330,7 +332,10 @@ function updatePlayer(dt){
   let y=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;
   const m=Math.hypot(x,y);
   if(m>.06){
-    x/=Math.max(1,m);y/=Math.max(1,m);p.faceX=x;p.faceY=y;
+    x/=Math.max(1,m);y/=Math.max(1,m);
+    // Movement is relative to the fixed third-person camera, not the global map axes.
+    const direction=wild3d?.movementVector(x,y)||{x,y};
+    x=direction.x;y=direction.y;p.faceX=x;p.faceY=y;
     const speed=(p.energy<18?92:145)*(p.wet>75?.86:1);
     p.x=clamp(p.x+x*speed*dt,22,WORLD.w-22);p.y=clamp(p.y+y*speed*dt,22,WORLD.h-22);
     p.energy=clamp(p.energy-dt*.13,0,100);
@@ -389,7 +394,11 @@ document.getElementById('eat').onclick=eat;
 document.getElementById('rest').onclick=rest;
 document.getElementById('menuBtn').onclick=()=>{document.getElementById('craft').classList.add('open');renderCraft()};
 document.getElementById('closeCraft').onclick=()=>document.getElementById('craft').classList.remove('open');
-document.getElementById('begin').onclick=()=>{S.started=true;document.getElementById('start').classList.add('hide');showNotice('물과 쉼터부터 확보해')};
+document.getElementById('begin').onclick=()=>{
+  S.started=true;
+  document.getElementById('start').classList.add('hide');
+  showNotice('왼쪽 조이스틱: 이동 · 오른쪽 화면: 시점 회전 · 3인칭 고정');
+};
 document.getElementById('restart').onclick=reset;
 if(S.inv.wood+S.inv.stone+S.inv.fiber+S.day>1)document.querySelector('#start p').textContent='저장된 생존 기록이 있어. 이어서 시작할 수 있어.';
 })();
