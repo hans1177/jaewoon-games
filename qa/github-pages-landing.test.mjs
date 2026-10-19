@@ -54,6 +54,17 @@ test('OWNER LOCK: Director tests published game routes and files issues without 
   assert.doesNotMatch(workflow,/gh issue create[\s\S]*uses: actions\/deploy-pages@v4/,'issue filing cannot be a precondition for publication');
 });
 
+test('published asset manifest contains actual game assets, never unservable hidden Git metadata',()=>{
+  assert.ok(Array.isArray(manifest.sharedAssets)&&manifest.sharedAssets.length>0);
+  assert.ok(manifest.sharedAssets.every(asset=>asset.startsWith('assets/')
+    &&!asset.split('/').some(segment=>segment.startsWith('.'))),
+    'Git hidden dotfiles must not be advertised as live HTTP assets');
+  for(const required of ['assets/shared/humanoid-traveler.glb','assets/vibe-model-preview.html']){
+    assert.ok(manifest.sharedAssets.includes(required),required+' must remain published');
+    assert.ok(fs.existsSync('_site/'+required),required+' must be staged');
+  }
+});
+
 test('GitHub Pages publishes the exact existing homepage markup, not a Cloudflare redirect',()=>{
   const index=fs.readFileSync('_site/index.html','utf8');
   const source=fs.readFileSync('index.html','utf8');

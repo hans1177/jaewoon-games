@@ -207,7 +207,12 @@ jobs:
               ?adapted.replace(/(\b(?:href|src|action)=["'])\/(?=["'])/g,'$1/jaewoon-games/')
               :adapted);
           }
-          const trackedAssets=new Set(cp.execFileSync('git',['ls-tree','-r','--name-only','HEAD','--','assets'],{encoding:'utf8'}).trim().split('\n'));
+          // GitHub Pages does not expose dotfiles consistently, even if preserved in gh-pages.
+          // Never advertise Git metadata (.gitignore/.gitkeep/.gitattributes) as game assets.
+          // Keep actual tracked renderers/models/scripts intact and all LFS/size checks.
+          const trackedAssets=new Set(cp.execFileSync('git',['ls-tree','-r','--name-only','HEAD','--','assets'],{encoding:'utf8'})
+            .trim().split('\n').filter(asset=>asset.startsWith('assets/')
+              &&!asset.split('/').some(segment=>segment.startsWith('.'))));
           const refs=new Set(trackedAssets);
           const collect=root=>{
             if(!fs.existsSync(root))return;
