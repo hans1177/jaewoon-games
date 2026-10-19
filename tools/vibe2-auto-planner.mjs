@@ -4055,6 +4055,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     ownerResumableMissingLaneCount:ownerResumableMissingLaneKeys.size,
     ownerResumableSeedCapacity,
     focusedMissingLaneCount:focusedMissingLaneKeys.size,
+    focusedMissingLanes:[...focusedMissingLaneKeys].sort(),
     focusedSeedCapacity,
     focusedTargetBypass:normalCapacity===0&&focusedSeedCapacity>0,
     ownerResumableTargetBypass:normalCapacity===0&&ownerResumableSeedCapacity>0,
@@ -4266,6 +4267,16 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_PLANNING_BACKLOG_CURRENT=${result.planningBacklog?.current||0}`);
   console.log(`VIBE2_PLANNING_BACKLOG_AFTER=${result.planningBacklog?.after??result.planningBacklog?.current??0}`);
   console.log(`VIBE2_PLANNING_BACKLOG_RELEASE_WAIT_EXCLUDED=${result.planningBacklog?.releaseWaitExcluded||0}`);
+  // Report exact owner-focus work that remains unscheduled; never fabricate QA success.
+  const focusMissing=result.planningBacklog?.focusedMissingLanes||[];
+  const focusDeferred=(result.deferredSmallPackages||[]).filter(row=>
+    focusMissing.some(lane=>lane.startsWith(clean(row.gameId)+'|')));
+  console.log(`VIBE2_FOCUS_MISSING_LANES=${focusMissing.join(',')||'NONE'}`);
+  console.log(`VIBE2_FOCUS_SEED_CAPACITY=${result.planningBacklog?.focusedSeedCapacity||0}`);
+  console.log(`VIBE2_FOCUS_MINIMUM_WORKLOAD_DEFERRED=${focusDeferred.length}`);
+  for(const row of focusDeferred.slice(0,3)){
+    console.log(`VIBE2_FOCUS_DEFERRED=${row.gameId}|${row.reason}|${(row.taskIds||[]).join(',')}`);
+  }
   console.log(`VIBE2_AUTO_PLAN=${result.planned?'YES':'NO'}`);
   console.log(`VIBE2_DEVELOPMENT_QUEUE_SOURCE=${clean(args['development-queue'])||'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_QUEUE_SYNC=${result.queueSynchronized?'YES':'NO'}`);
