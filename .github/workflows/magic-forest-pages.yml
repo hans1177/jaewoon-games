@@ -262,20 +262,8 @@ jobs:
             fs.mkdirSync(path.dirname(target),{recursive:true});
             fs.writeFileSync(target,source);
           }
-          // Add an optional, accessible library browser to all published HTML game routes.
-          // Existing game scripts, controls, save files, and renderers remain untouched.
-          for(const route of routes){
-            // Magic Forest is a game, not the internal asset-library inspector.
-            // Keep the runtime panel available to other registered games only.
-            if(route==='web-games/fantasy-survival/')continue;
-            const entry=path.join(site,route,'index.html');
-            const html=fs.readFileSync(entry,'utf8');
-            const tag='<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script>';
-            if(!html.includes('vibe-runtime-panel.js')){
-              const updated=/<\/body>/i.test(html)?html.replace(/<\/body>/i,tag+'</body>'):html+'\n'+tag;
-              fs.writeFileSync(entry,updated);
-            }
-          }
+          // 공개 게임 화면에는 개발용 에셋 버튼을 배포하지 않는다.
+          // 에셋 점검은 기존 asset-library.html에서 별도로 수행한다.
           // The preview is loaded in a sandboxed iframe only on user request.
           // Preserve the source module paths and publish the preview under the assets root.
           const previewSource='assets/vibe-model-preview.html';
