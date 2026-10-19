@@ -19,6 +19,33 @@ function repo(){
   return root;
 }
 
+test('Web asset adaptation requires an image loaded into the game renderer and rejects catalogue substitutes',t=>{
+  const root=repo();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({target:'web',changedFiles:['a.js'],
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION'}}));
+  const game='const player={},weapon={},terrain={},palette={};\nconst sprite=new Image();\nsprite.src="/assets/player.png";\nfunction draw(ctx){ctx.drawImage(sprite,0,0);}\n';
+  fs.writeFileSync(path.join(root,'a.js'),game);
+  const result=runIncrementalQa({root,manifest});
+  assert.equal(result.presentationQa.status,'STATIC_PASS');
+  assert.equal(result.presentationQa.runtimeStillRequired,true,'static consumption cannot claim runtime verified');
+  fs.writeFileSync(path.join(root,'a.js'),game.replace('sprite.src="/assets/player.png";',''));
+  assert.throws(()=>runIncrementalQa({root,manifest}),/WEB_REAL_ASSET_BINDING/,'image and draw tokens without a source are not asset use');
+  fs.writeFileSync(path.join(root,'a.js'),game.replace('ctx.drawImage(sprite,0,0);','ctx.fillRect(0,0,1,1);'));
+  assert.throws(()=>runIncrementalQa({root,manifest}),/WEB_REAL_ASSET_BINDING/,'loading an unused image is not asset use');
+  fs.writeFileSync(path.join(root,'a.js'),game+'const button=document.createElement("button");button.id="vibe-assets-launcher";document.body.append(button);');
+  assert.throws(()=>runIncrementalQa({root,manifest}),/WEB_NO_ASSET_BROWSER_SUBSTITUTE/);
+  fs.writeFileSync(path.join(root,'a.js'),game.replace('ctx.drawImage(sprite,0,0);','/* ctx.drawImage(sprite,0,0); */'));
+  assert.throws(()=>runIncrementalQa({root,manifest}),/WEB_REAL_ASSET_BINDING/,'commented draw call is not a consumer');
+});
+
+test('Pages publishes existing game consumers without injecting an asset catalogue button',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/magic-forest-pages.yml',import.meta.url),'utf8');
+  assert.doesNotMatch(workflow,/vibe-runtime-panel\.js/);
+  assert.match(workflow,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
+  assert.match(workflow,/assets\/vibe-model-preview\.html/,'authoring preview is retained separately');
+});
+
 test('interface QA rechecks unchanged handler bindings before accepting a cached candidate',t=>{
   const root=repo();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const source='function openMenu(){return true;}';fs.writeFileSync(path.join(root,'ui.js'),source);

@@ -1457,6 +1457,10 @@ export function evaluateAllGameDynamicAssetBindingCandidate({candidate={},source
     ...(candidate?.replaceFiles||[]).map(row=>posix(row.path))
   ]);
   const rows=[],blockers=[];
+  // 목록 버튼과 갤러리의 DOM 소비는 실제 게임 에셋 연결을 대체하지 못한다.
+  if(resolved==='web'&&/(?:vibe-runtime-panel\.js|vibe-assets-(?:launcher|panel)|<iframe\b[^>]*vibe-model-preview)/i.test(semanticSource)){
+    blockers.push('WEB_ASSET_BROWSER_IS_NOT_GAME_BINDING');
+  }
   let appliedCount=0,notApplicableCount=0,changedAppliedFamilyCount=0;
   for(const family of ROBLOX_INTERNAL_ASSET_FAMILIES){
     const systemPresent=ALL_GAME_INTERNAL_ASSET_SYSTEM_PATTERNS[family]?.test(semanticSource)===true
@@ -3736,6 +3740,7 @@ function internalAssetSourceUsageGuidance(order={}){
   const fileRows=[...roleFiles].sort(([a],[b])=>a.localeCompare(b)).map(([role,files])=>role+'='+[...files].sort().join('|')).join('; ');
   return [
     '[INTERNAL ASSET SOURCE CONSUMPTION CONTRACT]',
+    'Bind selected assets directly into this game\'s existing character/enemy/world/material/motion/audio/HUD consumers. Do not implement asset application as an asset-browser button, catalogue, gallery, iframe preview or asset-selection screen. Do not create a different game to demonstrate the assets. The source binding and current-game runtime must both be verified before claiming application.',
     'syncFingerprint='+contract.fingerprint+'; libraryVersion='+contract.libraryVersion+'; selectionFingerprint='+(contract.selectionFingerprint||'NONE')+'; syncMode='+contract.synchronization.mode,
     'Exact selected family IDs only: '+(exactRows||'NONE'),
     'Exact flow selections: '+(flowRows||'NONE'),

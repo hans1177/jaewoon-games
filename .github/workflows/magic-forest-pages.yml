@@ -250,17 +250,8 @@ jobs:
             fs.mkdirSync(path.dirname(target),{recursive:true});
             fs.writeFileSync(target,source);
           }
-          // Add an optional, accessible library browser to all published HTML game routes.
-          // Existing game scripts, controls, save files, and renderers remain untouched.
-          for(const route of routes){
-            const entry=path.join(site,route,'index.html');
-            const html=fs.readFileSync(entry,'utf8');
-            const tag='<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script>';
-            if(!html.includes('vibe-runtime-panel.js')){
-              const updated=/<\/body>/i.test(html)?html.replace(/<\/body>/i,tag+'</body>'):html+'\n'+tag;
-              fs.writeFileSync(entry,updated);
-            }
-          }
+          // 에셋은 게임 원본의 렌더러에서 소비한다. 배포가 공통 목록 UI를 주입하지 않는다.
+          // 제작용 라이브러리와 미리보기 원본은 보존한다.
           // The preview is loaded in a sandboxed iframe only on user request.
           // Preserve the source module paths and publish the preview under the assets root.
           const previewSource='assets/vibe-model-preview.html';

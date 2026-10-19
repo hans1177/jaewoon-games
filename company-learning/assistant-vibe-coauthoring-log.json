@@ -2,7 +2,7 @@
   "version": 6,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
-  "recordedAt": "2026-10-12",
+  "recordedAt": "2026-10-20",
   "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
   "policy": {
     "everyAssistantCoauthoringActionMustBeRecorded": true,
@@ -1118,6 +1118,31 @@
           "source:github-merge-f83da5f45a55d01deae21626a47094ec6c9bc1d9"
         ]
       }
+    },
+    {
+      "id": "assistant_web_asset_browser_substitution_20261020",
+      "date": "2026-10-20",
+      "gameId": "MULTI_GAME_WEB",
+      "engine": "WEB",
+      "domains": [
+        "ASSET_BINDING",
+        "PRESENTATION",
+        "PUBLICATION",
+        "QA"
+      ],
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The existing Pages publisher injected a shared asset catalogue button into every Web game. Asset candidates and preview controls are not actual game renderer consumption. Incremental presentation QA could accept unrelated image and drawing keywords.",
+      "decision": "Remove only publication-time asset browser injection; retain library and preview sources. Require renderer consumption in existing incremental QA and reject catalogue substitutes in existing source-worker binding checks. Preserve every game source, save key, progression and balance.",
+      "change": "Updated existing magic-forest-pages workflow, source worker and incremental QA with targeted regression cases. No new pipeline or game created.",
+      "evidence": [
+        "Base main 08ab0b46c42182239417fd33e801d2fcf80613a7 and all four central documents read; constitution prewrite check passed.",
+        "Local node --test qa/vibe2-incremental-qa.test.mjs: 42 passed, 0 failed.",
+        "Local source-worker targeted Web engine prompt and Unity/Web dynamic asset-binding tests: 3 passed, 0 failed.",
+        "git diff --check passed. No individual game source changed; native 3D model integration and mobile runtime remain unverified."
+      ],
+      "learningState": "TRACE_ONLY_UNTIL_VERIFIED_RUNTIME",
+      "runtimeVerified": false,
+      "productionReady": false
     }
   ]
 }
