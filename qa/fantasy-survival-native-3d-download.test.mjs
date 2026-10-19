@@ -297,3 +297,22 @@ test('3D creature meshes come from downloaded CC0 original archives, not generat
  assert.doesNotMatch(moduleSource,/new THREE\.(?:BoxGeometry|SphereGeometry)/);
  assert.match(moduleSource,/productionReady:false/);
 });
+
+test('owner and Vibe workers inherit downloaded CC0-only game screen policy',()=>{
+ const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const art=policy.livingMotionVisualQualityContract.assetAdaptation;
+ const rule=policy.ownerCanonicalRules.rule4;
+ assert.equal(art.externalAssetPolicy,'CC0_ONLY');
+ assert.equal(art.downloadedUnmodifiedOriginalSourcesRequired,true);
+ assert.equal(art.gameVisibleArtCharacterMonsterWorldEnvironmentUiAndVfxOnlyFromVerifiedCc0,true);
+ assert.equal(art.runtimeAssetInspectorButtonForbidden,true);
+ assert.equal(rule.invariants.allGameVisualMediaDownloadedCc0Only,true);
+ assert.equal(rule.invariants.studioGeneratedVisibleGameAssetsForbidden,true);
+ assert.equal(rule.invariants.publicGameAssetInspectorButtonsForbidden,true);
+ assert.equal(rule.invariants.existingGameSaveAndBalancePreservedDuringCc0Migration,true);
+ for(const code of ['GAME_VISUALS_CC0_ONLY','STUDIO_GENERATED_GAME_ART_FORBIDDEN',
+                    'PUBLIC_ASSET_INSPECTOR_BUTTON_FORBIDDEN','UNVERIFIED_CC0_NEVER_PASS',
+                    'CC0_MIGRATION_MUST_PRESERVE_GAMEPLAY']){
+   assert.ok(rule.machineEnforcement.assertions.some(x=>x.code===code));
+ }
+});
