@@ -3538,7 +3538,35 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     ['NETWORK',/multiplayer|network|replicat|remoteevent|socket|멀티|네트워크/i,/multiplayer|network|replicat|socket|remote/i],
     ['PERFORMANCE',/performance|optimi|fps|pooling|성능|최적화/i,/performance|optimi|pooling|profiler/i]
   ];
-  const sourceSignals=signalRules.filter(([,sourcePattern])=>sourcePattern.test(existingSource)||sourcePattern.test(taskRequest));
+  // 원본 게임 전체에서 검증된 동일 게임 소스만 읽기 전용 도구 선택 근거로 재사용한다.
+  // 현재 워커에 전달된 몇 개 파일에 키워드가 없어도, 깊은 하위 모듈이 빠지지 않게 한다.
+  // 설계 요구만 있는 REVIEW_REQUIRED_NO_SOURCE는 도구 자동 활성화 근거가 아니다.
+  const nativeComposition=order?.selectedTask?.buildUpDirective?.gameInternalAutoComposition
+    ||order?.buildUpDirective?.gameInternalAutoComposition||null;
+  const roleToSignals={
+    WORLD:['WORLD'],BIOME:['WORLD'],HOUSING:['HOUSING'],CUSTOMIZATION:['CUSTOMIZATION'],
+    MOTION:['MOTION'],ACTION:['ACTION'],INTERACTION:['ACTION'],NPC_AI:['NPC_AI'],
+    QUEST_DIALOGUE:['QUEST_DIALOGUE'],CRAFTING:['CRAFTING'],ECONOMY:['ECONOMY'],
+    PROGRESSION:['PROGRESSION'],FARMING:['FARMING'],WEATHER:['WEATHER'],
+    PHYSICS:['PHYSICS'],CAMERA:['CAMERA'],AUDIO:['AUDIO'],SKILL_VFX:['SKILL_VFX'],
+    NETWORK:['NETWORK'],INVENTORY:['INVENTORY'],EQUIPMENT:['INVENTORY'],
+    LOBBY:['INTERFACE'],UI:['INTERFACE'],MATERIAL:['ASSET']
+  };
+  const nativeEvidenceSignals=new Set();
+  const compositionSameGame=nativeComposition?.sourceOnlyEvidence===true
+    &&clean(nativeComposition.gameId)===clean(order?.gameId||order?.selectedTask?.gameId)
+    &&clean(nativeComposition.platform).toLowerCase()===target
+    &&Boolean(clean(nativeComposition.sourceTreeFingerprint));
+  if(compositionSameGame){
+    for(const row of nativeComposition.components||[]){
+      if(row?.state!=='EXISTING_SOURCE_CONNECTION_CANDIDATE'
+        ||!Array.isArray(row.responsibleFiles)||!row.responsibleFiles.length)continue;
+      for(const role of roleToSignals[clean(row.id).toUpperCase()]||[])
+        nativeEvidenceSignals.add(role);
+    }
+  }
+  const sourceSignals=signalRules.filter(([name,sourcePattern])=>
+    sourcePattern.test(existingSource)||sourcePattern.test(taskRequest)||nativeEvidenceSignals.has(name));
   const toolMatches=[];
   let scannedTools=0;
   for(const folder of ['assets','tools']){
