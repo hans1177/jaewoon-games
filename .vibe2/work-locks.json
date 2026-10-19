@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-mb2gsw",
+      "worker": "vibe2",
+      "taskId": "seed-single-defense-strat-celestial-bastion-existing-web-assessment-v1",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "files": [
+        "web-games/seed-single-defense-strat-celestial-bastion/index.html"
+      ],
+      "baseSha": "793d248f2e46fb45e65e5155bfef8eb57e7ed039",
+      "runId": "39330430656",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-19T22:21:21.552Z",
+      "expiresAt": "2026-10-19T23:06:21.552Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-single-defense-strat-celestial-bastion-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
