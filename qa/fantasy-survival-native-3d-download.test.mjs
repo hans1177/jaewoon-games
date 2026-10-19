@@ -163,6 +163,9 @@ test('downloaded KayKit skeleton is only a license-proven undead species proxy a
  assert.match(moduleSource,/e\?\.type\?\.id==='wastelandMummy'/);
  assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
  assert.match(moduleSource,/actor\.mixer\.clipAction\(clip\)/);
+ assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
+ assert.match(moduleSource,/child\.userData\.worldPoint=\{x:e\.x,y:e\.y\}/);
+ assert.match(moduleSource,/interactables\.push\(child\)/);
  assert.match(moduleSource,/undeadProxySourceLoaded:!!undeadSource/);
  assert.match(moduleSource,/productionReady:false/);
  assert.match(index,/wastelandMummy:\{id:'wastelandMummy',name:'황무지 미라',mood:'aggressive',hp:1800,dmg:88,speed:64,r:30/);
