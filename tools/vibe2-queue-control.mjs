@@ -348,12 +348,15 @@ export function recoverTransientWorkLockBlocks(queueInput) {
 
 export function recoverCompletedRunningReservations(queueInput, {
   completedRunIds = [],
+  noResultRunIds = [],
   recoveryOutcome = 'COMPLETED_RESERVATION_RUN_RECOVERED',
   recoveryEvidence = COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE,
   evidencePrefix = 'completed-reservation-run'
 } = {}) {
   const queue=createVibeContinuousQueue(queueInput);
   const completed=new Set((Array.isArray(completedRunIds)?completedRunIds:[]).map(clean).filter(Boolean));
+  // Empty worker artifacts are independently verified by the existing reserve GitHub API probe.
+  const noResults=new Set((Array.isArray(noResultRunIds)?noResultRunIds:[]).map(clean).filter(Boolean));
   if(!completed.size)return{recovered:0,recoveredRunIds:[],queue};
   const normalizedOutcome=clean(recoveryOutcome)||'COMPLETED_RESERVATION_RUN_RECOVERED';
   const normalizedEvidence=clean(recoveryEvidence)||COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE;
@@ -366,9 +369,14 @@ export function recoverCompletedRunningReservations(queueInput, {
     // [자산 예약 회수] 그래픽 부서의 기존 자산 개발 작업도 실제 종료된 실행에 한해 재배정한다.
     if((clean(task.department).toLowerCase()!=='development'&&clean(task.executionLane).toUpperCase()!=='ASSET_DEVELOPMENT')
       ||clean(task.type).toLowerCase()!=='implementation')return task;
-    // Completed worker artifacts are converted to slot-released fan-in waits before this recovery.
-    // Preserve those immutable results and only reclaim still-unstarted blocker-free reservations.
-    if(clean(task.blocker)||!runId||!completed.has(runId))return task;
+    // A completed run with no downloadable worker result cannot satisfy fan-in.
+    // Requeue only when the separate API probe proved the run and artifact absence;
+    // keep every review-verified or artifact-bearing fan-in reservation untouched.
+    const evidence=Array.isArray(task.evidence)?task.evidence:[];
+    const noResultFanIn=noResults.has(runId)&&/^slot-released-awaiting-fan-in$/i.test(clean(task.blocker))
+      &&!evidence.some(value=>/^role-result:|^candidate-sha:|^web-f0-f9-verified$/i.test(clean(value)))
+      &&!(Array.isArray(task.neuronResults)&&task.neuronResults.length);
+    if(!runId||!completed.has(runId)||(clean(task.blocker)&&!noResultFanIn))return task;
     recovered+=1;
     recoveredRunIds.add(runId);
     return{
@@ -376,10 +384,12 @@ export function recoverCompletedRunningReservations(queueInput, {
       ...clearedReservation(),
       status:'queued',
       blocker:null,
-      lastOutcome:normalizedOutcome,
+      lastOutcome:noResultFanIn?'FAN_IN_RESULT_ARTIFACT_MISSING_REQUEUED':normalizedOutcome,
       neuronExpectedVariants:0,
       neuronResults:[],
-      evidence:[...new Set([...(task.evidence||[]),normalizedEvidence,`${normalizedPrefix}:${runId}`])]
+      retainedResponsibleFileLocks:noResultFanIn?[]:(task.retainedResponsibleFileLocks||[]),
+      evidence:[...new Set([...(task.evidence||[]),normalizedEvidence,`${normalizedPrefix}:${runId}`,
+        ...(noResultFanIn?['recovery:verified-completed-fan-in-no-worker-artifacts']:[])])]
     };
   });
   return{
@@ -1314,6 +1324,7 @@ export function runQueueCommand(args = {}) {
     const superseded=command==='recover-reservation-runs';
     const recovered=recoverCompletedRunningReservations(queue,{
       completedRunIds,
+      noResultRunIds:superseded?[]:list(args['no-result-runs']),
       recoveryOutcome:superseded?'SUPERSEDED_QUEUED_RESERVATION_RECOVERED':'COMPLETED_RESERVATION_RUN_RECOVERED',
       recoveryEvidence:superseded?'recovery:superseded-queued-reservation-v1':COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE,
       evidencePrefix:superseded?'superseded-queued-reservation-run':'completed-reservation-run'
