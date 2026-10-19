@@ -1771,6 +1771,6 @@ test('fan-in conflict retry has enough runtime to preserve full regression and a
   assert.match(fanIn,/cancel-in-progress: false/);
   assert.match(fanIn,/git reset --hard origin\/vibe2-unreal-core/);
   assert.match(fanIn,/VIBE2_FAN_IN_OPTIMISTIC_RETRY/);
-  assert.match(fanIn,/VIBE2_FAN_IN_REVIEW/);
+  assert.match(fanIn,/node "\$contract_root\/tools\/vibe2-fan-in-review\.mjs"/);
   assert.doesNotMatch(fanIn,/git push --force/);
 });
