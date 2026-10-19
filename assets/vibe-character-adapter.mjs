@@ -1,3 +1,4 @@
+import {VibeGameplayController} from './vibe-gameplay-controller.mjs';
 // Optional game integration. Games can bind a character without modifying the shared engine.
 import {VibeMotionEngine,createFixedStepMotionLoop} from './vibe-motion-engine.mjs';
 export async function connectVibeCharacter({character,clips,genre='realistic',THREE,controls}={}){
@@ -21,6 +22,7 @@ export async function connectVibeCharacter({character,clips,genre='realistic',TH
  const step=createFixedStepMotionLoop(engine,{hz:design.motionSystem.runtime.fixedStepHz});
  const api={
   engine,mixer,play,
+  createGameplayController(options={}){return new VibeGameplayController({motion:engine,...options});},
   update(delta){if(!Number.isFinite(delta)||delta<=0)return;step(delta);mixer.update(Math.min(delta,.1));},
   move(input){engine.setMovement(input);},
   action(state,options){return options?.buffered ? engine.queueAction(state,options) : engine.enter(state,options);},
