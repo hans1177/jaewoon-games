@@ -19,7 +19,7 @@ if(!liveBase)assert.ok(fs.existsSync(path.join(root,model)),'Browser smoke must 
 const server=liveBase?null:spawn('python3',['-m','http.server',String(port),'--directory',root],{stdio:'ignore'});
 let browser;
 try{
- browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+ browser=await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']});
  const page=await browser.newPage({viewport:{width:1100,height:720}});
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
  const url=(liveBase||'http://127.0.0.1:'+port+'/')+'assets/vibe-model-preview.html?asset='+encodeURIComponent(model);
@@ -114,6 +114,62 @@ try{
      JSON.stringify({sourceSha:requiredRevision,metrics,savedPlayerX:restoredX}));
    }finally{await game.close()}
   }
+ }
+ // Owner-required: only real published, rendered WebGL 3D counts as wild-survival 3D.
+ // A live 200 for index.html or a valid model preview does NOT prove gameplay is 3D.
+ if(liveBase){
+   const moduleUrl=liveBase+'web-games/wild-survival/wild3d.mjs';
+   const moduleResponse=await page.request.get(moduleUrl,{timeout:15000});
+   assert.equal(moduleResponse.status(),200,'WILD_SURVIVAL_3D_MODULE_NOT_LIVE: '+moduleUrl);
+   const moduleText=await moduleResponse.text();
+   assert.match(moduleText,/new THREE\.WebGLRenderer\s*\(/,'WILD_SURVIVAL_RENDERER_NOT_3D');
+   assert.doesNotMatch(moduleText,/getContext\s*\(\s*['"]2d['"]/,'WILD_SURVIVAL_2D_FORBIDDEN');
+   const game=await browser.newPage({viewport:{width:1100,height:720}});
+   const gameExceptions=[];
+   game.on('pageerror',err=>gameExceptions.push(err.message));
+   const response=await game.goto(liveBase+'web-games/wild-survival/',{waitUntil:'domcontentloaded',timeout:25000});
+   assert.equal(response?.status(),200,'WILD_SURVIVAL_LIVE_PAGE_NOT_200');
+   await game.waitForFunction(()=>{
+     const canvas=document.querySelector('#game');
+     return document.body.dataset.spatialDimension==='3d'
+       && document.body.dataset.renderer==='three-webgl'
+       && canvas?.dataset.renderedFrame==='true';
+   },null,{timeout:18000});
+   const evidence=await game.evaluate(()=>{
+     const canvas=document.querySelector('#game');
+     const gl=canvas?.getContext('webgl2');
+     const fake2d=canvas?.getContext('2d');
+     return {
+       webgl2:!!gl&&gl instanceof WebGL2RenderingContext,
+       canvas2d:!!fake2d,
+       pixels:canvas?.width*canvas?.height,
+       errorVisible:!document.querySelector('#renderStatus')?.hidden,
+       x:Number(document.body.dataset.playerWorldX),
+       y:Number(document.body.dataset.playerWorldY)
+     };
+   });
+   assert.equal(evidence.webgl2,true,'WILD_SURVIVAL_ACTUAL_WEBGL2_CONTEXT_REQUIRED');
+   assert.equal(evidence.canvas2d,false,'WILD_SURVIVAL_2D_CANVAS_FORBIDDEN');
+   assert.ok(evidence.pixels>=100000,'WILD_SURVIVAL_3D_SURFACE_EMPTY');
+   assert.equal(evidence.errorVisible,false,'WILD_SURVIVAL_3D_ERROR_DISPLAYED');
+   assert.ok(Number.isFinite(evidence.x)&&Number.isFinite(evidence.y),'WILD_SURVIVAL_PLAYER_STATE_MISSING');
+   await game.locator('#begin').click();
+   assert.equal(await game.locator('#start').evaluate(el=>el.classList.contains('hide')),true,
+     'WILD_SURVIVAL_GAMEPLAY_START_FAILED');
+   await game.keyboard.down('ArrowRight');
+   await game.waitForTimeout(500);
+   await game.keyboard.up('ArrowRight');
+   const movedX=Number(await game.locator('body').getAttribute('data-player-world-x'));
+   assert.ok(Number.isFinite(movedX)&&movedX>evidence.x+10,
+     'WILD_SURVIVAL_3D_PLAYER_MOVEMENT_NOT_REFLECTED');
+   await game.locator('#interact').click();
+   await game.locator('#menuBtn').click();
+   assert.equal(await game.locator('#craft').evaluate(el=>el.classList.contains('open')),true,
+     'WILD_SURVIVAL_CRAFT_UI_BROKEN');
+   assert.equal(await game.locator('body').getAttribute('data-spatial-dimension'),'3d');
+   assert.deepEqual(gameExceptions,[],'WILD_SURVIVAL_UNCAUGHT_PAGE_ERRORS');
+   console.log('WILD_SURVIVAL_LIVE_WEBGL_3D_AND_MOVEMENT=PASS');
+   await game.close();
  }
  console.log('VIBE_BROWSER_SMOKE_PASS');
 }finally{await browser?.close();server?.kill()}
