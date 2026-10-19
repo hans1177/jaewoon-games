@@ -721,17 +721,31 @@ function focusedCaretakerPolicy(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
   if(policy.enabled===true&&policy.completionPursuit?.enabled===true
     &&(policy.targetFocusedGames!==3||policy.maxFocusedGames!==3||new Set(policy.ownerFocusedGameIds||[]).size!==3||policy.ownerFocusedGameIds.length!==3))throw new Error('FOCUSED_BUILD_COMPLETION_REQUIRES_THREE_DISTINCT_GAMES');
+  const platforms=policy.ownerFocusedGamePlatforms||{};
+  const ownerIds=new Set((Array.isArray(policy.ownerFocusedGameIds)?policy.ownerFocusedGameIds:[]).map(clean).filter(Boolean));
+  if(policy.enabled===true&&policy.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY'){
+    if(Object.keys(platforms).length!==ownerIds.size
+      ||[...ownerIds].some(id=>!['ROBLOX','WEB'].includes(clean(platforms[id]).toUpperCase())))
+      throw new Error('FOCUSED_GAME_PLATFORM_MAPPING_INCOMPLETE');
+  }
   return{
     enabled:policy.enabled===true,
-    ownerIds:new Set((Array.isArray(policy.ownerFocusedGameIds)?policy.ownerFocusedGameIds:[]).map(clean).filter(Boolean)),
+    ownerIds,
+    platformByGame:platforms,
+    exactPlatformScope:policy.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
     includeAllReleaseConfirmed:policy.includeAllReleaseConfirmed===true,
     completionPursuit:policy.completionPursuit?.enabled===true?policy.completionPursuit:null
   };
 }
-function focusedCaretakerProject(project={},repoRoot=process.cwd()){
+export function focusedCaretakerProject(project={},repoRoot=process.cwd()){
   const policy=focusedCaretakerPolicy(repoRoot);
   if(!policy.enabled)return false;
-  return policy.ownerIds.has(clean(project.gameId))||(policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed');
+  const id=clean(project.gameId),engine=clean(project.engine).toUpperCase();
+  if(policy.ownerIds.has(id)){
+    if(!policy.exactPlatformScope)return true; // Existing isolated legacy tests may omit the new platform map.
+    return policy.platformByGame[id]===engine;
+  }
+  return !policy.exactPlatformScope&&policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed';
 }
 export function projectSort(a,b){
   const focus=(b.ownerFocusedCaretaker===true?1:0)-(a.ownerFocusedCaretaker===true?1:0);if(focus)return focus;
@@ -887,7 +901,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   if(project.engine==='roblox')adaptedGoal+=DESIGN_IMPLEMENTATION_GOAL;
   const focused=project.ownerFocusedCaretaker===true,ownerResume=project.ownerResumableBuildUp===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||ownerResume||project.engine==='roblox'||project.firstStageUnityWeb===true;
   const completion=focused&&project.engine==='roblox'?project.focusCompletionContract:null;
-  if(completion)adaptedGoal+=FOCUSED_BUILD_COMPLETION_GOAL;
+  if(focused)adaptedGoal+=FOCUSED_BUILD_COMPLETION_GOAL; // Web keeps its own verified browser/runtime gates.
   const portfolioValueScore=project.engine==='roblox'
     ? Math.min(100,(project.queueRobloxQualityBuildUpRequired?35:0)
       +(project.queueRobloxInternalReleaseReady?20:0)
