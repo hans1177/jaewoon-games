@@ -6554,6 +6554,9 @@ function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.mi
     world3d.frame(state,regionAt);
     document.body.dataset.spatialDimension=world3d.isActive()?'3d':('3d-fallback-'+world3d.getFallbackReason());
     document.body.dataset.nativeMonsterCoverage=world3d.getUnmappedVisibleMonsterIds().length?'incomplete':'currently-mapped';
+    const nativeDraw=world3d.getRenderStats();
+    document.body.dataset.nativeDrawCalls=String(nativeDraw.drawCalls);
+    document.body.dataset.nativeTriangles=String(nativeDraw.triangles);
    }catch(error){
     console.error('MAGIC_FOREST_NATIVE_3D_FRAME_FAILED',error);
     world3d.dispose();world3d=null;world3dPending=false;
