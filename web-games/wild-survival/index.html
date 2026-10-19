@@ -189,7 +189,7 @@ function updateHud(){
   document.body.dataset.runResult=S.dead?'defeat':S.won?'victory':'running';
   const huntCount=HUNT_TYPES.filter(type=>(S.hunts?.[type]||0)>0).length;
   const nearest=animals.filter(a=>a.type===trackedType&&a.dead<=0)
-    .map(a=>Math.round(dist(a.x,a.y,p.x,p.y))).sort((a,b)=>a-b)[0];
+    .map(a=>Math.round(dist(a.x,a.y,p.x,p.y)/72)).sort((a,b)=>a-b)[0];
   document.getElementById('objective').textContent=
     `사냥 도감 ${huntCount}/8종 · ${SPECIES[trackedType].name} ${nearest===undefined?'미발견':nearest+'m'} · ${S.won?'7일 생존 달성':'7일 생존 목표'}`;
   document.body.dataset.huntSpeciesCount=String(huntCount);
