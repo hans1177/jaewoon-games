@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -189492,39 +189490,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_93e18c459b744376281c59c0",
-          "taskId": "amusement-tycoon-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_8dd29220b77c4ca8abc65221"
-          ],
-          "evidence": [
-            "base-main:70370a68a4d3a0b164d1485caac83946eab51739",
-            "actions-run:39046571842",
-            "reservation-id:39046571842:1",
-            "capability-application-sample:f3d63610433c8ad048be"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_14ae5bbcec38b1b1aef63a04",
           "taskId": "wild-survival-existing-web-assessment-v1",
           "workKey": null,
@@ -191595,6 +191560,39 @@
             "actions-run:39213149327",
             "reservation-id:39213149327:1",
             "capability-application-sample:b9ee226b3ecd22c9f8e1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_18b0738add4d6b6fb85794ef",
+          "taskId": "amusement-tycoon-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f62c06d7a9d2bb196bb41171",
+            "capability_ctrace_c438ccd9ed818081d8bd94fa",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:a6a07ae41fa794daccf310b50e9397567b4b324a",
+            "actions-run:39217614967",
+            "reservation-id:39217614967:1",
+            "capability-application-sample:746a388f966c8d0db952"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -196542,39 +196540,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_5021993ffff43a94ca7efb43",
-          "taskId": "amusement-tycoon-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d",
-            "capability_ctrace_7022dd1d29e03580f9fab379",
-            "capability_ctrace_0ce73fa4ec23024bd474ad30",
-            "capability_ctrace_8dd29220b77c4ca8abc65221"
-          ],
-          "evidence": [
-            "base-main:70370a68a4d3a0b164d1485caac83946eab51739",
-            "actions-run:39046571842",
-            "reservation-id:39046571842:1",
-            "capability-application-sample:f3d63610433c8ad048be"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_c5e453c58626c6c2481bce24",
           "taskId": "wild-survival-existing-web-assessment-v1",
           "workKey": null,
@@ -198645,6 +198610,39 @@
             "actions-run:39213149327",
             "reservation-id:39213149327:1",
             "capability-application-sample:b9ee226b3ecd22c9f8e1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e142d1aca6307ece93257dfa",
+          "taskId": "amusement-tycoon-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f62c06d7a9d2bb196bb41171",
+            "capability_ctrace_c438ccd9ed818081d8bd94fa",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:a6a07ae41fa794daccf310b50e9397567b4b324a",
+            "actions-run:39217614967",
+            "reservation-id:39217614967:1",
+            "capability-application-sample:746a388f966c8d0db952"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -298886,39 +298884,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_b7b42a7f7e3344ba9422af62",
-          "taskId": "amusement-tycoon-roblox-second-gate-rebuild-v1",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f62c06d7a9d2bb196bb41171",
-            "capability_ctrace_c438ccd9ed818081d8bd94fa",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:ec406433c5c2006f95b507b6e62bc5a65c1f53dc",
-            "actions-run:38629174006",
-            "reservation-id:38629174006:1",
-            "capability-application-sample:d9b5296e709f250e10ee"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_650414c7638332a709c08f4c",
           "taskId": "amusement-tycoon-roblox-second-gate-rebuild-v1",
           "workKey": null,
@@ -300989,6 +300954,39 @@
             "actions-run:39199065097",
             "reservation-id:39199065097:1",
             "capability-application-sample:21adebd5f11062b05398"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_68d8f2ca35887d05c63a47a2",
+          "taskId": "amusement-tycoon-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f62c06d7a9d2bb196bb41171",
+            "capability_ctrace_c438ccd9ed818081d8bd94fa",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:a6a07ae41fa794daccf310b50e9397567b4b324a",
+            "actions-run:39217614967",
+            "reservation-id:39217614967:1",
+            "capability-application-sample:746a388f966c8d0db952"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -325810,39 +325808,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_33ce49f318ea243465ddb99a",
-          "taskId": "amusement-tycoon-roblox-second-gate-rebuild-v1",
-          "workKey": null,
-          "gameId": "amusement-tycoon",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f62c06d7a9d2bb196bb41171",
-            "capability_ctrace_c438ccd9ed818081d8bd94fa",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:ec406433c5c2006f95b507b6e62bc5a65c1f53dc",
-            "actions-run:38629174006",
-            "reservation-id:38629174006:1",
-            "capability-application-sample:d9b5296e709f250e10ee"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_427547c37bc69afd219c1b65",
           "taskId": "amusement-tycoon-roblox-second-gate-rebuild-v1",
           "workKey": null,
@@ -327913,6 +327878,39 @@
             "actions-run:39199065097",
             "reservation-id:39199065097:1",
             "capability-application-sample:21adebd5f11062b05398"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_01b567880c568012f9bb7f2c",
+          "taskId": "amusement-tycoon-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f62c06d7a9d2bb196bb41171",
+            "capability_ctrace_c438ccd9ed818081d8bd94fa",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:a6a07ae41fa794daccf310b50e9397567b4b324a",
+            "actions-run:39217614967",
+            "reservation-id:39217614967:1",
+            "capability-application-sample:746a388f966c8d0db952"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -335360,39 +335358,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_c65b828ab8f49edbd8768209",
-          "taskId": "star-frontier-studio-evolution-roblox-usability-v3",
-          "workKey": null,
-          "gameId": "star-frontier",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:9ab16a648550d9913dadbeddfc670e1a4bff7eb3",
-            "actions-run:39199929528",
-            "reservation-id:39199929528:1",
-            "capability-application-sample:64970001cd6dc0165dd0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_1cb7dd00c897d38d3d1e2045",
           "taskId": "cat-step-studio-evolution-roblox-usability-v2",
           "workKey": null,
@@ -337463,6 +337428,39 @@
             "actions-run:39214935627",
             "reservation-id:39214935627:1",
             "capability-application-sample:dc460dade1c3b6d41ae5"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2211cfe7bad583a9639063f5",
+          "taskId": "amusement-tycoon-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9038f0e3e454437f6f76db36",
+            "capability_ctrace_f62c06d7a9d2bb196bb41171",
+            "capability_ctrace_c438ccd9ed818081d8bd94fa",
+            "capability_ctrace_2c0a700824026293385a417b",
+            "capability_ctrace_333cb035bd13d117708a9b9d"
+          ],
+          "evidence": [
+            "base-main:a6a07ae41fa794daccf310b50e9397567b4b324a",
+            "actions-run:39217614967",
+            "reservation-id:39217614967:1",
+            "capability-application-sample:746a388f966c8d0db952"
           ],
           "observedAt": null,
           "rawCodeStored": false,
