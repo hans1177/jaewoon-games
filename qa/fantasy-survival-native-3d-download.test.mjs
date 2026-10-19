@@ -135,10 +135,27 @@ test('native 3D binds exact existing monster types and adapts GPU load without c
  assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
  assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
  assert.match(moduleSource,/getUnmappedVisibleMonsterIds:/);
+ assert.match(moduleSource,/unsafeUnmappedEncounter/);
+ assert.match(moduleSource,/getRenderStats:/);
+ assert.match(moduleSource,/renderer\.info\.render\.triangles/);
+ assert.match(index,/dataset\.nativeTriangles=String\(nativeDraw\.triangles\)/);
  assert.match(moduleSource,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,1\.5\)\*qualityFactor\)/);
  assert.match(index,/MAGIC_FOREST_NATIVE_3D_FRAME_FAILED/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
  assert.match(moduleSource,/productionReady:false/);
+});
+
+test('existing Pages pipeline tests actual 3D world after deploy and records 3D failures',()=>{
+ const smoke=fs.readFileSync('qa/vibe-browser-smoke.mjs','utf8');
+ const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+ assert.match(smoke,/web-games\/fantasy-survival\//);
+ assert.match(smoke,/metrics\.drawCalls>4&&metrics\.triangles>400/);
+ assert.match(smoke,/game\.keyboard\.down\('d'\)/);
+ assert.match(smoke,/restoredX/);
+ assert.match(smoke,/server\?\.kill\(\)/);
+ assert.match(workflow,/id: forest_native_3d_live_qa/);
+ assert.match(workflow,/steps\.forest_native_3d_live_qa\.outcome == 'failure'/);
+ assert.match(workflow,/node qa\/vibe-browser-smoke\.mjs/);
 });
 
 test('Vibe asset-selector recognizes downloaded similar assets but cannot fake unverified actor/monster readiness',()=>{
