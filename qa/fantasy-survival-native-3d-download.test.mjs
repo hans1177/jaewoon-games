@@ -258,6 +258,11 @@ test('downloaded KayKit skeleton is only a license-proven undead species proxy a
 test('3D creature meshes come from downloaded CC0 original archives, not generated studio creature rigs',()=>{
  const wildlife=JSON.parse(fs.readFileSync('assets/external/simple-rpg/wildlife/manifest.json','utf8'));
  const expected=['wolf-eagle.zip','farm-animals.zip','five-animals.zip'];
+ const namesByArchive={
+   'wolf-eagle.zip':['wolf'],
+   'farm-animals.zip':['pig'],
+   'five-animals.zip':['red fox','bird','fish']
+ };
  for(const file of expected){
    const record=wildlife.packs.find(x=>x.file===file);
    assert.ok(record,'missing CC0 source license record: '+file);
@@ -266,6 +271,24 @@ test('3D creature meshes come from downloaded CC0 original archives, not generat
    const archive=fs.readFileSync('assets/external/simple-rpg/wildlife/'+file);
    assert.equal(archive.subarray(0,2).toString(),'PK');
    assert.equal(createHash('sha256').update(archive).digest('hex'),record.sha256);
+   const signature=Buffer.from([0x50,0x4b,0x05,0x06]);
+   const eocd=archive.lastIndexOf(signature);
+   assert.ok(eocd>0,'source ZIP directory missing: '+file);
+   let entryOffset=archive.readUInt32LE(eocd+16);
+   const names=[];
+   for(let i=0;i<archive.readUInt16LE(eocd+10);i++){
+     assert.equal(archive.readUInt32LE(entryOffset),0x02014b50);
+     const nameLength=archive.readUInt16LE(entryOffset+28),extra=archive.readUInt16LE(entryOffset+30);
+     const comment=archive.readUInt16LE(entryOffset+32);
+     names.push(archive.subarray(entryOffset+46,entryOffset+46+nameLength).toString('utf8').toLowerCase());
+     entryOffset+=46+nameLength+extra+comment;
+   }
+   for(const species of namesByArchive[file]){
+     for(const extension of ['obj','mtl'])
+       assert.ok(names.some(name=>name.endsWith('/obj/'+species+'.'+extension)
+         ||name===species+'.'+extension),
+       'downloaded original '+file+' missing '+species+'.'+extension);
+   }
    assert.ok(moduleSource.includes("file:'"+file+"'"));
  }
  assert.match(moduleSource,/NATIVE_CREATURE_MODELS=Object\.freeze/);
