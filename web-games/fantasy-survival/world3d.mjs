@@ -3,9 +3,27 @@
 // until native meshes, creatures, terrain interaction and mobile QA all pass.
 // Geometry comes from the downloaded, CC0-ledgered Tiny Treats Homely House OBJ pack.
 import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+import {GLTFLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
+import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../../assets/vibe-environment-director.js';
+import {createVibeCharacterCustomizationRecipe} from '../../assets/vibe-character-identity-director.js';
+import {createSurvivalPlayerMotionProfile} from '../../assets/vibe-motion-director.js';
 
 const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
 const SCALE = 1 / 48;
+const HERO_URL = new URL('../../assets/roblox/actors/native/mage.glb',import.meta.url);
+const gameStyleRegion=createVibeRegionWorldProfile(
+ {name:'마력숲',biome:'temperate-forest',resources:['tree','stone','fiber']},
+ {name:'마력숲 생존기',geography:'mixed-biome-survival-world',climate:'dynamic'}
+);
+const avatarRecipe=createVibeCharacterCustomizationRecipe(
+ {name:'마력숲 생존자',species:'humanoid',role:'magic',region:'forest'},0
+);
+const mobileBudget=typeof window!=='undefined'&&window.matchMedia('(pointer:coarse)').matches;
+const assetVariation=createVibeEnvironmentVariation({seed:20261020,count:16,mobile:mobileBudget});
+const assetAppearanceFactor=key=>{
+ const str=String(key);let code=0;for(let i=0;i<str.length;i++)code=(Math.imul(code,33)+str.charCodeAt(i))>>>0;
+ return assetVariation.items[code%assetVariation.items.length];
+};
 const MODEL_NAMES = Object.freeze(['tree','tree_large','foliage_A','cobblestones','bench_A','fence_straight','house','gate_single','package']);
 const PALETTE = Object.freeze({
   tree:0x59854b, tree_large:0x5e8750, foliage_A:0x83ab63,
@@ -62,6 +80,26 @@ async function loadSourceModels(){
 
 export async function createWorld3d(canvas){
   const models=await loadSourceModels(); // Fail closed: leave the old game active.
+  // Original CC0 KayKit mage GLB: optional visual actor only. Never invent a character mesh.
+  // The existing game owns hitboxes, attacks, inventory, motion timing and save values.
+  let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroFrame=0;
+  try{
+    const gltf=await new GLTFLoader().loadAsync(HERO_URL.href);
+    const avatar=new THREE.Group(),model=gltf.scene;
+    const box=new THREE.Box3().setFromObject(model);
+    const modelHeight=Math.max(.1,box.max.y-box.min.y);
+    const heightFactor=Math.max(.87,Math.min(1.13,(Number(avatarRecipe.body.heightCm)||170)/170));
+    const scaledHeight=1.9*heightFactor/modelHeight;
+    model.scale.setScalar(scaledHeight);
+    model.position.y=-box.min.y*scaledHeight;
+    avatar.add(model);
+    avatar.userData.source=HERO_URL.href;
+    hero={avatar,model};
+    heroClips=gltf.animations||[];
+    if(heroClips.length)heroMixer=new THREE.AnimationMixer(model);
+  }catch(error){
+    console.warn('CC0 KayKit mage not available in 3D preview; player asset remains unverified',error);
+  }
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'default'});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -107,6 +145,10 @@ export async function createWorld3d(canvas){
   const groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
   const entities=new Map();
   const interactables=[];
+  if(hero)scene.add(hero.avatar);
+  let playerToolName=null,playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'NONE'});
+  let observedWeather='';
+  let weatherVisualEffects=[];
   let active=false,lastW=0,lastH=0,disposed=false;
   canvas.hidden=true;
 
@@ -122,8 +164,9 @@ export async function createWorld3d(canvas){
     }
     const model=row.model;
     model.position.set(x*SCALE,0,y*SCALE);
-    model.scale.setScalar(scale);
-    model.rotation.y=rotationY;
+    const variation=assetAppearanceFactor(key);
+    model.scale.setScalar(scale*variation.scale);
+    model.rotation.y=rotationY+variation.rotation*Math.PI/180;
     model.userData.worldPoint={x,y};
     row.seen=seen;
     interactables.push(model);
@@ -155,6 +198,17 @@ export async function createWorld3d(canvas){
     currentBiome=BIOME_STYLE[zone]?zone:'forest';
     scene.background.set(BIOME_STYLE[currentBiome].sky);
     scene.fog.color.set(BIOME_STYLE[currentBiome].sky);
+    const weatherKind=String(state.weather?.kind||'clear');
+    if(weatherKind!==observedWeather){
+      observedWeather=weatherKind;
+      const weatherPlan=createVibeWeatherInteractionProfile({weather:weatherKind,intensity:.5,mobile:mobileBudget});
+      weatherVisualEffects=weatherPlan.effects;
+      scene.fog.far=weatherVisualEffects.includes('layered-haze')?46:
+        weatherVisualEffects.includes('wind-drift')?63:90;
+      sun.intensity=weatherVisualEffects.includes('surface-wetness')?1.55:2;
+    }
+    // Atmosphere and foliage changes are Vibe presentation only. The existing biome
+    // classifier, collision, damage, spawn and player movement remain authoritative.
     let tileIndex=0;
     const centerTileX=Math.round(centerX/10),centerTileY=Math.round(centerY/10);
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
@@ -166,6 +220,30 @@ export async function createWorld3d(canvas){
     }
     interactables.length=0;
     const seen=state.last||Date.now();
+    if(hero){
+      hero.avatar.visible=true;
+      hero.avatar.position.set(centerX,0,centerY);
+      hero.avatar.rotation.y=Math.atan2(Number(p.faceX)||0,Number(p.faceY)||1);
+      const tool=String(p.tool||p.weapon||'NONE');
+      if(tool!==playerToolName){
+        playerToolName=tool;
+        const family=/axe/i.test(tool)?'AXE':/pick/i.test(tool)?'PICKAXE':/spear/i.test(tool)?'SPEAR':'NONE';
+        playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:family});
+      }
+      const now=performance.now();
+      const moving=(state.keys?.size||0)>0||Math.hypot(Number(state.stick?.x)||0,Number(state.stick?.y)||0)>.16;
+      const pose=now-(Number(p.attackAt)||0)<330?'attack':moving?'move':'idle';
+      const motionWords=pose==='attack'?['attack','swing','cast',playerMotionProfile.primaryToolMotion.toLowerCase()]:
+        pose==='move'?['walk','run','move','locomotion']:['idle','stand','breath'];
+      const desired=heroClips.find(clip=>motionWords.some(word=>clip.name.toLowerCase().includes(word)));
+      const nextName=desired?.name||'';
+      if(heroMixer&&nextName!==heroActionName){
+        if(heroAction)heroAction.fadeOut(.15);
+        heroAction=desired?heroMixer.clipAction(desired).reset().fadeIn(.15).play():null;
+        heroActionName=nextName;
+      }
+      if(heroMixer){heroMixer.update(Math.min(.05,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
+    }
     resources(state.trees,'tree',px,py,seen,1.28);
     resources(state.swampTrees,'tree_large',px,py,seen,1.65);
     resources(state.rocks,'cobblestones',px,py,seen,1.05);
@@ -203,12 +281,20 @@ export async function createWorld3d(canvas){
     return raycaster.ray.intersectPlane(groundPlane,point)?{x:point.x/SCALE,y:point.z/SCALE}:null;
   }
   function dispose(){
-    disposed=true;active=false;canvas.hidden=true;renderer.dispose();
+    disposed=true;active=false;canvas.hidden=true;
+    if(hero){heroMixer?.stopAllAction();scene.remove(hero.avatar);
+      hero.model.traverse(object=>{if(object.isMesh){object.geometry?.dispose();const mats=Array.isArray(object.material)?object.material:[object.material];for(const mat of mats)mat?.dispose()}})}
+    renderer.dispose();
     for(const row of entities.values())scene.remove(row.model);
     entities.clear();
     for(const model of models.values()){model.geometry.dispose();model.material.dispose()}
     ground.geometry.dispose();ground.material.dispose();
     biomeTileGeometry.dispose();for(const material of biomeMaterials.values())material.dispose();
   }
-  return {frame,pick,dispose,kind:'NATIVE_WEBGL_CC0_ASSET_PREVIEW',modelCount:models.size,getBiome:()=>currentBiome};
+  return {
+    frame,pick,dispose,kind:'NATIVE_WEBGL_CC0_ASSET_PREVIEW',
+    modelCount:models.size,playerAssetLoaded:!!hero,playerMotionClipCount:heroClips.length,
+    getBiome:()=>currentBiome,getWorldProfile:()=>gameStyleRegion,
+    getWeatherEffects:()=>weatherVisualEffects,getAvatarRecipe:()=>avatarRecipe
+  };
 }
