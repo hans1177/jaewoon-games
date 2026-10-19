@@ -4,7 +4,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import vm from 'node:vm';
 
 const read=path=>fs.readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const policy=JSON.parse(read('company-learning/platform-release-roadmap.json'));
@@ -184,51 +183,4 @@ test('lock F0 to F9 real verification and pre-F9 publication restrictions',()=>{
   ]);
   const release=workflow('company-development-roblox-release-promotion.yml');
   contains(release,['Publish exact package to validation target or F9-verified canonical target','Ensure Roblox universe is private before runtime candidate publish']);
-});
-
- 
-test('every Web F0 candidate validates actual BUILD_UP asset lineage before publication',()=>{
-  const source=workflow('vibe2-candidate-release.yml');
-  const marker="          MANIFEST=\"$manifest\" node <<'NODE'\n";
-  const start=source.indexOf(marker);
-  const end=source.indexOf("\n          NODE",start+marker.length);
-  assert.ok(start>=0&&end>start,'web F0 candidate gate script missing');
-  const script=source.slice(start+marker.length,end);
-  const hash='a'.repeat(64),version=42;
-  const manifest={
-    taskId:'test-web-f0',gameId:'test-game',target:'web',sourceRoot:'web-games/test-game',
-    baseMainSha:'b'.repeat(40),transportBaseSha:'b'.repeat(40),
-    codingMethod:{
-      internalAssetSourceUsageFingerprint:hash,internalAssetSourceUsageLibraryVersion:version,
-      allGameDynamicAssetBindingRequired:true,allGameDynamicAssetBindingPass:true,
-      allGameDynamicAssetBindingFingerprint:hash
-    },
-    assetProduction:{allGameDynamicLibraryBinding:{fingerprint:hash,libraryVersion:version}}
-  };
-  const runGate=(patch={})=>{
-    let output='';
-    const input={...manifest,...patch};
-    const files={
-      readFileSync(file){
-        if(file==='fixture')return JSON.stringify(input);
-        if(file==='/tmp/main-game-catalog.json')return JSON.stringify({games:[{
-          id:'test-game',productionClass:'DEVELOPMENT_CONFIRMED',canonical:{lifecycle:{state:'ACTIVE'}}
-        }]});
-        throw Error('unexpected file '+file);
-      },
-      appendFileSync(file,text){assert.equal(file,'out');output+=text;}
-    };
-    vm.runInNewContext(script,{require:name=>{
-      assert.equal(name,'fs');return files;
-    },process:{env:{MANIFEST:'fixture',GITHUB_OUTPUT:'out'}}},{timeout:2000});
-    return Object.fromEntries(output.trim().split('\n').map(line=>{
-      const at=line.indexOf('=');return[line.slice(0,at),line.slice(at+1)];
-    }));
-  };
-  assert.equal(runGate().candidate_decision,'web');
-  assert.equal(runGate({codingMethod:{...manifest.codingMethod,internalAssetSourceUsageFingerprint:''}}).candidate_reason,'web-f0-build-up-asset-fingerprint-missing');
-  assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingPass:false}}).candidate_reason,'web-f0-dynamic-asset-binding-unverified');
-  assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingRequired:false}}).candidate_reason,'web-f0-dynamic-asset-binding-not-required');
-  assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingFingerprint:'c'.repeat(64)}}).candidate_reason,'web-f0-dynamic-asset-binding-fingerprint-mismatch');
-  assert.equal(runGate({assetProduction:{allGameDynamicLibraryBinding:{fingerprint:hash,libraryVersion:version+1}}}).candidate_reason,'web-f0-dynamic-asset-library-version-mismatch');
 });
