@@ -160,6 +160,38 @@ jobs:
           else
             echo "VIBE2_RESERVE_WAKE_FRESHNESS=BYPASS_NON_RESERVE_WAKE"
           fi
+          # 메인: 동일 최신 SHA·레인에 먼저 수신된 리필이 있으면 중복 예약만 생략한다.
+          # 이전 리필의 결과를 취소하지 않으며 API 조회 실패 시 기존 예약 경로로 진행한다.
+          if [ "$proceed" = true ] && [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' && "${VIBE2_DISPATCH_ACTION:-}" == 'vibe2-fanin-refill' ]]; then
+            refill_lane="${VIBE2_EXECUTION_LANE:-game-primary}"
+            if gh api "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-refill-admission-runs.json 2>/dev/null; then
+              older_refill="$(CURRENT_MAIN="$latest_main" CURRENT_RUN="$GITHUB_RUN_ID" REFILL_LANE="$refill_lane" node - <<'NODE'
+          const fs=require('fs');
+          const runs=JSON.parse(fs.readFileSync('/tmp/vibe2-refill-admission-runs.json','utf8')).workflow_runs||[];
+          const current=Number(process.env.CURRENT_RUN||0);
+          const title='Vibe2 Continuous Core · vibe2-fanin-refill · '+String(process.env.REFILL_LANE||'game-primary');
+          const states=new Set(['queued','pending','in_progress','requested','waiting']);
+          const older=runs.some(run=>
+            Number(run.id||0)>0 && Number(run.id)<current
+            &&String(run.event||'')==='repository_dispatch'
+            &&String(run.head_branch||'')==='main'
+            &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
+            &&String(run.display_title||'')===title
+            &&states.has(String(run.status||'').toLowerCase())
+          );
+          process.stdout.write(older?'yes':'no');
+          NODE
+              )"
+              if [ "$older_refill" = yes ]; then
+                proceed=false
+                echo "VIBE2_FANIN_WAKE_DUPLICATE_DROPPED=$refill_lane:$latest_main"
+              else
+                echo "VIBE2_FANIN_WAKE_ADMITTED=$refill_lane:$latest_main"
+              fi
+            else
+              echo 'VIBE2_FANIN_WAKE_DUPLICATE_PROBE=UNKNOWN_CONTINUE'
+            fi
+          fi
           echo "proceed=$proceed" >> "$GITHUB_OUTPUT"
 
       - name: Checkout Vibe2 control line
