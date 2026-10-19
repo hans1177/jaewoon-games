@@ -2690,7 +2690,9 @@ jobs:
     # Fan-in is control-plane work. Keep it on the currently available ubuntu-latest pool so completed
     # game results are persisted promptly instead of waiting behind the constrained ARM control queue.
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    # One full impact regression plus a conflicting shared-state push retry exceeded 8 minutes
+    # in run 39051717659. Preserve all QA and optimistic state reconciliation.
+    timeout-minutes: 15
     concurrency:
       # Fan-in jobs must not share one pending GitHub concurrency slot.
       # Every fan-in reconciles control state with optimistic fetch/reset/push retries below.
