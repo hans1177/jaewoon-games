@@ -1,0 +1,71 @@
+{
+  "summary": "orang-minyak 오랑미냑 기계실 오브젝트의 walk 동작에 대해 여섯 가지 깊이 축(자세, 체중 분배, 관절 아크, 접촉, 후행 움직임, 루프 연결)을 전면 개선하여 침착한 잠행 실루엣과 위상 기반 자연스러운 체중 이동을 구현함.",
+  "expectedEffect": "모바일 카메라 거리에서 오랑미냑의 길쭉한 실루엣, 상체 기울기, 지면 접촉 리듬, 후행 꼬리·코일 움직임이 균일한 사인파 단조로움 없이 부드럽고 그라운드에 밀착된 형태로 렌더링됨.",
+  "edits": [
+    {
+      "path": "init.luau",
+      "find": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+      "replace": " local phase=(time*speed)%(math.pi*2);local wave=math.sin(phase);local wave2=math.sin(phase*2);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0.04*math.sin(phase),floating and math.sin(time*2.4)*.13 or -.14+0.03*math.cos(phase*2),0,-0.12,0.04*wave,-0.03*wave)\n pose(\"Head\",0,0,0,0.1+breathe*0.02,math.sin(time*.9)*.06,0.02*wave)"
+    },
+    {
+      "path": "init.luau",
+      "find": "  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+      "replace": "  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   local liftL=math.max(0,math.sin(phase))^2\n   local liftR=math.max(0,math.sin(phase+math.pi))^2\n   pose(\"LeftLeg\",0,liftL*0.12,0,-0.45*wave,0,-0.02)\n   pose(\"RightLeg\",0,liftR*0.12,0,0.45*wave,0,0.02)\n   pose(\"LeftArm\",0,0,-0.06,-0.28-wave*0.25,0.06,-0.14)\n   pose(\"RightArm\",0,0,-0.04,-0.28+wave*0.25,-0.06,0.14)"
+    },
+    {
+      "path": "init.luau",
+      "find": "  if coil then pose(name,math.sin(phase-coil*.55)*.045,0,0,0,math.sin(phase-coil*.55)*.12,0)\n  elseif tail then pose(name,0,0,0,math.sin(time*2-tail*.4)*.07,math.sin(time*2-tail*.4)*.11,0)end",
+      "replace": "  if coil then pose(name,math.sin(phase-coil*.55)*.045,0,0,0,math.sin(phase-coil*.55-0.2)*.12,0)\n  elseif tail then pose(name,0,0,0,math.sin(time*2-tail*.4-0.15)*.07,math.sin(time*2-tail*.4-0.15)*.11,0)end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "Sample full walk cycle phase [0, 2*pi] and verify all bones receive bounded valid transforms without Root movement.",
+    "Reverse time sampling and assert identical pose output for any given frame.",
+    "Verify loop continuity at phase boundary 0 and 2*pi with matching position and velocity gradients."
+  ],
+  "graphicsReplacementReport": null,
+  "motionRepairReport": {
+    "objectId": "roblox-world-ghost-orang-minyak",
+    "clipId": "walk",
+    "depthEvidence": [
+      {
+        "axis": "POSE_AND_STAGING",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": "pose(\"Torso\",0.04*math.sin(phase),floating and math.sin(time*2.4)*.13 or -.14+0.03*math.cos(phase*2),0,-0.12,0.04*wave,-0.03*wave)\n pose(\"Head\",0,0,0,0.1+breathe*0.02,math.sin(time*.9)*.06,0.02*wave)"
+      },
+      {
+        "axis": "WEIGHT_AND_BALANCE",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": "local phase=(time*speed)%(math.pi*2);local wave=math.sin(phase);local wave2=math.sin(phase*2);local breathe=math.sin(time*2)"
+      },
+      {
+        "axis": "JOINT_ARCS_AND_SPACING",
+        "status": "CHANGED",
+        "before": "   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+        "after": "   local liftL=math.max(0,math.sin(phase))^2\n   local liftR=math.max(0,math.sin(phase+math.pi))^2\n   pose(\"LeftLeg\",0,liftL*0.12,0,-0.45*wave,0,-0.02)\n   pose(\"RightLeg\",0,liftR*0.12,0,0.45*wave,0,0.02)"
+      },
+      {
+        "axis": "CONTACT_AND_CONSTRAINTS",
+        "status": "CHANGED",
+        "before": "   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)",
+        "after": "   local liftL=math.max(0,math.sin(phase))^2\n   local liftR=math.max(0,math.sin(phase+math.pi))^2\n   pose(\"LeftLeg\",0,liftL*0.12,0,-0.45*wave,0,-0.02)\n   pose(\"RightLeg\",0,liftR*0.12,0,0.45*wave,0,0.02)"
+      },
+      {
+        "axis": "OVERLAP_AND_SETTLE",
+        "status": "CHANGED",
+        "before": "  if coil then pose(name,math.sin(phase-coil*.55)*.045,0,0,0,math.sin(phase-coil*.55)*.12,0)\n  elseif tail then pose(name,0,0,0,math.sin(time*2-tail*.4)*.07,math.sin(time*2-tail*.4)*.11,0)end",
+        "after": "  if coil then pose(name,math.sin(phase-coil*.55)*.045,0,0,0,math.sin(phase-coil*.55-0.2)*.12,0)\n  elseif tail then pose(name,0,0,0,math.sin(time*2-tail*.4-0.15)*.07,math.sin(time*2-tail*.4-0.15)*.11,0)end"
+      },
+      {
+        "axis": "LOOP_AND_TRANSITION",
+        "status": "CHANGED",
+        "before": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": " local phase=(time*speed)%(math.pi*2);local wave=math.sin(phase);local wave2=math.sin(phase*2);local breathe=math.sin(time*2)"
+      }
+    ]
+  }
+}
