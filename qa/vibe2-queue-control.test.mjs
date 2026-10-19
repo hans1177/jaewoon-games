@@ -1932,6 +1932,7 @@ test('continuous core rebases stale main pushes, drops duplicate refill wakes, a
   assert.match(block,/VIBE2_DISPATCH_ACTION: \$\{\{ github\.event\.action \|\| '' \}\}/);
   assert.match(block,/vibe2-fanin-refill/);
   assert.match(block,/VIBE2_FANIN_WAKE_STALE_DROPPED/);
+  assert.match(block,/VIBE2_FANIN_WAKE_DUPLICATE_DROPPED/);
   assert.match(block,/VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST/);
   assert.match(block,/VIBE2_RESERVE_WAKE_EVENT_SHA/);
   assert.match(block,/VIBE2_RESERVE_WAKE_LATEST_SHA/);
@@ -1942,7 +1943,13 @@ test('continuous core rebases stale main pushes, drops duplicate refill wakes, a
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'refill-main-drift-'));
   try{
     const gh=path.join(temp,'gh'),output=path.join(temp,'output');
-    fs.writeFileSync(gh,'#!/bin/sh\nprintf "%s\\n" "$TEST_LATEST_MAIN"\n',{mode:0o755});
+    // 유틸: main SHA 조회와 리필 실행 목록을 구분하는 기존 테스트용 GitHub 응답.
+    fs.writeFileSync(gh,`#!/bin/sh
+case "$*" in
+  *"/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100"*) printf '%s\\n' "$TEST_RUNS_JSON" ;;
+  *) printf '%s\\n' "$TEST_LATEST_MAIN" ;;
+esac
+`,{mode:0o755});
     for(const [event,action,eventSha,latestSha,expected,marker] of [
       ['repository_dispatch','vibe2-fanin-refill','old-owner-main','new-owner-main','false','VIBE2_FANIN_WAKE_STALE_DROPPED'],
       ['push','','old-owner-main','new-owner-main','true','VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST'],
@@ -1950,7 +1957,28 @@ test('continuous core rebases stale main pushes, drops duplicate refill wakes, a
       ['repository_dispatch','vibe2-neuron-complete','old-owner-main','new-owner-main','true','NEURON_CALLBACK_ALWAYS_INGEST']
     ]){
       fs.writeFileSync(output,'');
-      const log=execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',env:{...process.env,PATH:temp+path.delimiter+process.env.PATH,GITHUB_EVENT_NAME:event,GITHUB_REF_NAME:'main',VIBE2_DISPATCH_ACTION:action,GITHUB_SHA:eventSha,TEST_LATEST_MAIN:latestSha,GITHUB_REPOSITORY:'test/repo',GITHUB_OUTPUT:output}});
+      const log=execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',env:{...process.env,PATH:temp+path.delimiter+process.env.PATH,GITHUB_EVENT_NAME:event,GITHUB_REF_NAME:'main',VIBE2_DISPATCH_ACTION:action,GITHUB_SHA:eventSha,TEST_LATEST_MAIN:latestSha,GITHUB_REPOSITORY:'test/repo',GITHUB_RUN_ID:'5000',VIBE2_EXECUTION_LANE:'game-primary',TEST_RUNS_JSON:JSON.stringify({workflow_runs:[]}),GITHUB_OUTPUT:output}});
+      assert.equal(fs.readFileSync(output,'utf8').trim(),'proceed='+expected);
+      assert.ok(log.includes(marker));
+    }
+    // 메인: 먼저 도착한 같은 SHA·레인은 중복 예약을 생략하지만, 완료·다른 레인·새 요청은 보존한다.
+    const base={id:4000,status:'queued',event:'repository_dispatch',head_branch:'main',head_sha:'same-main',display_title:'Vibe2 Continuous Core · vibe2-fanin-refill · game-primary'};
+    for(const [overrides,expected,marker] of [
+      [{},'false','VIBE2_FANIN_WAKE_DUPLICATE_DROPPED'],
+      [{status:'in_progress'},'false','VIBE2_FANIN_WAKE_DUPLICATE_DROPPED'],
+      [{status:'completed'},'true','VIBE2_FANIN_WAKE_ADMITTED'],
+      [{head_sha:'old-main'},'true','VIBE2_FANIN_WAKE_ADMITTED'],
+      [{display_title:'Vibe2 Continuous Core · vibe2-fanin-refill · asset-development'},'true','VIBE2_FANIN_WAKE_ADMITTED'],
+      [{id:6000},'true','VIBE2_FANIN_WAKE_ADMITTED'],
+      [{event:'workflow_dispatch'},'true','VIBE2_FANIN_WAKE_ADMITTED']
+    ]){
+      fs.writeFileSync(output,'');
+      const log=execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',env:{
+        ...process.env,PATH:temp+path.delimiter+process.env.PATH,GITHUB_EVENT_NAME:'repository_dispatch',
+        GITHUB_REF_NAME:'main',VIBE2_DISPATCH_ACTION:'vibe2-fanin-refill',GITHUB_SHA:'same-main',
+        TEST_LATEST_MAIN:'same-main',GITHUB_REPOSITORY:'test/repo',GITHUB_RUN_ID:'5000',
+        VIBE2_EXECUTION_LANE:'game-primary',TEST_RUNS_JSON:JSON.stringify({workflow_runs:[{...base,...overrides}]}),GITHUB_OUTPUT:output
+      }});
       assert.equal(fs.readFileSync(output,'utf8').trim(),'proceed='+expected);
       assert.ok(log.includes(marker));
     }
