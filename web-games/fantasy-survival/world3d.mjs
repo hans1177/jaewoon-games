@@ -50,14 +50,20 @@ const assetAppearanceFactor=key=>{
  const str=String(key);let code=0;for(let i=0;i<str.length;i++)code=(Math.imul(code,33)+str.charCodeAt(i))>>>0;
  return assetVariation.items[code%assetVariation.items.length];
 };
-const MODEL_NAMES = Object.freeze(['tree','tree_large','foliage_A','cobblestones','bench_A','fence_straight','house','gate_single','package']);
+const MODEL_NAMES = Object.freeze(['tree','tree_large','foliage_A','foliage_B','cobblestones','bench_A','bench_B','fence_straight','house','gate_single','package']);
 const PALETTE = Object.freeze({
-  tree:0x59854b, tree_large:0x5e8750, foliage_A:0x83ab63,
-  cobblestones:0x8b8c79, bench_A:0x987955, fence_straight:0x927b57, house:0xb6aa83, gate_single:0x927b57, package:0x987955
+  tree:0x59854b, tree_large:0x5e8750, foliage_A:0x83ab63,foliage_B:0x83ab63,
+  cobblestones:0x8b8c79, bench_A:0x987955, bench_B:0x987955, fence_straight:0x927b57, house:0xb6aa83, gate_single:0x927b57, package:0x987955
 });
 
-function parseDownloadedObj(text, modelName){
-  const raw=[],pos=[],colors=[],base=new THREE.Color(PALETTE[modelName]);
+function parseDownloadedObj(text, modelName, materialText=''){
+  // The tracked Tiny Treats CC0 OBJ vertices/faces remain the geometry authority.
+  // Apply the companion per-source .mtl diffuse (Kd), not an invented material color.
+  const diffuse=materialText.match(/(?:^|\n)\s*Kd\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
+  const base=diffuse
+    ?new THREE.Color().setRGB(...diffuse.slice(1,4).map(Number))
+    :new THREE.Color(PALETTE[modelName]);
+  const raw=[],pos=[],colors=[];
   for(const rawLine of text.split(/\r?\n/)){
     const line=rawLine.trim();
     if(line.startsWith('v ')){
@@ -94,12 +100,18 @@ function parseDownloadedObj(text, modelName){
 
 async function loadSourceModels(){
   const results=await Promise.all(MODEL_NAMES.map(async name=>{
-    const url=new URL(name+'.obj',SOURCE);
-    const response=await fetch(url,{cache:'force-cache'});
-    if(!response.ok)throw new Error('Downloaded source missing: '+name+' '+response.status);
-    const text=await response.text();
-    if(!text.includes('v ')||!text.includes('f '))throw new Error('Invalid downloaded 3D model: '+name);
-    return [name,parseDownloadedObj(text,name)];
+    const geometryUrl=new URL(name+'.obj',SOURCE);
+    const materialUrl=new URL(name+'.mtl',SOURCE);
+    const [response,mtlResponse]=await Promise.all([
+      fetch(geometryUrl,{cache:'force-cache'}),
+      fetch(materialUrl,{cache:'force-cache'})
+    ]);
+    if(!response.ok)throw new Error('Original CC0 OBJ missing: '+name+' '+response.status);
+    if(!mtlResponse.ok)throw new Error('Original CC0 material missing: '+name+' '+mtlResponse.status);
+    const [text,materialText]=await Promise.all([response.text(),mtlResponse.text()]);
+    if(!text.includes('v ')||!text.includes('f '))throw new Error('Invalid original 3D OBJ model: '+name);
+    if(!materialText.includes('Kd '))throw new Error('Original 3D material diffuse missing: '+name);
+    return [name,parseDownloadedObj(text,name,materialText)];
   }));
   return new Map(results);
 }
@@ -157,6 +169,8 @@ export async function createWorld3d(canvas){
     }
   }));
   const renderer=new THREE.WebGLRenderer({canvas,antialias:!mobileBudget,alpha:false,powerPreference:'default'});
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.18;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
@@ -164,7 +178,10 @@ export async function createWorld3d(canvas){
   const scene=new THREE.Scene();
   scene.background=new THREE.Color(0x244238);
   scene.fog=new THREE.Fog(0x244238,22,90);
-  const camera=new THREE.PerspectiveCamera(58,1,.1,120);
+  // Diablo II Resurrected-inspired orthographic quarter-view:
+  // 3D models retain depth, but distance never shrinks or stretches the hero.
+  const cameraViewHeight=mobileBudget?18:24;
+  const camera=new THREE.OrthographicCamera(-12,12,12,-12,0.1,155);
   const ambient=new THREE.HemisphereLight(0xe7f5d2,0x263428,2.25);
   scene.add(ambient);
   const sun=new THREE.DirectionalLight(0xffe9b6,2.0);
@@ -390,11 +407,18 @@ export async function createWorld3d(canvas){
     const p=state.player,px=Number(p.x)||0,py=Number(p.y)||0,centerX=px*SCALE,centerY=py*SCALE;
     const w=window.innerWidth,h=window.innerHeight;
     if(w!==lastW||h!==lastH){
-      lastW=w;lastH=h;camera.aspect=w/Math.max(1,h);camera.updateProjectionMatrix();
+      lastW=w;lastH=h;
+      const aspect=w/Math.max(1,h);
+      camera.left=-cameraViewHeight*aspect/2;
+      camera.right=cameraViewHeight*aspect/2;
+      camera.top=cameraViewHeight/2;
+      camera.bottom=-cameraViewHeight/2;
+      camera.updateProjectionMatrix();
       renderer.setSize(w,h,false);
     }
-    camera.position.set(centerX+1,12,centerY+13);
-    camera.lookAt(centerX,0,centerY-2.8);
+    // Follow real saved player coordinates without rotating while the player moves.
+    camera.position.set(centerX+10.5,17,centerY+13);
+    camera.lookAt(centerX,0,centerY);
     ground.position.set(centerX,0,centerY);
     const classify=typeof regionAt==='function'?regionAt:()=> 'forest';
     const zone=String(classify(px,py)||'forest');
@@ -453,8 +477,17 @@ export async function createWorld3d(canvas){
     resources(state.swampTrees,'tree_large',px,py,seen,1.65);
     resources(state.rocks,'cobblestones',px,py,seen,1.05);
     resources(state.fibers,'foliage_A',px,py,seen,1.2);
-    if(state.bench&&Math.hypot(state.bench.x-px,state.bench.y-py)<1000)
-      addVisibleEntity('bench','bench_A',state.bench.x,state.bench.y,1.7,seen);
+    // Exact category match: original Tiny Treats benches for actual player-owned
+    // crafting workstations, positioned at their existing authoritative coordinates.
+    for(const [key,workbench,modelName] of [
+      ['bench',state.bench,'bench_A'],
+      ['ironBench',state.ironBench,'bench_B'],
+      ['goldBench',state.goldBench,'bench_B'],
+      ['jungleBench',state.jungleBench,'bench_A']
+    ]){
+      if(workbench&&Math.hypot(workbench.x-px,workbench.y-py)<1000)
+        addVisibleEntity(key,modelName,workbench.x,workbench.y,1.7,seen);
+    }
     for(const [i,wall] of (state.walls||[]).entries()){
       if(Math.hypot(wall.x-px,wall.y-py)<1000)
         addVisibleEntity('wall:'+(wall.id||i),'fence_straight',wall.x,wall.y,1.2,seen,wall.vertical?Math.PI/2:0);
