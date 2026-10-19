@@ -1421,11 +1421,27 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const required=requestedRolesByFamily.get(family)||[];
     const explicit=required.filter(role=>roles.includes(role)||namedRoles.includes(role));
     const inferred=roles.filter(role=>role.length>=3&&role!==family.toLowerCase()&&requestText.includes(role.replaceAll('_',' ')));
-    const matched=required.length?explicit:inferred;
+    // 메인 · 모든 게임의 F0부터 동일 종 3D 외형 재사용을 허용한다.
+    // 몬스터 ID/능력치는 그대로 두고 검증된 종 명칭과 제한된 외형 수식어만 비교한다.
+    const speciesModifiers=/^(?:shadow|crystal|polar|fire|frost|ice|snow|forest|dark|wild|ancient|giant|alpha)(?=[a-z]{3,}$)/;
+    const speciesBase=value=>clean(value).toLowerCase().replace(/[^a-z]/g,'').replace(speciesModifiers,'');
+    const speciesLabels=family==='CREATURE'
+      ?unique([asset.creatureFamily,asset.speciesId,asset.species,asset.role,asset.subfamily]).map(speciesBase)
+        .filter(value=>value.length>=3&&!['monster','creature','animal','enemy','boss','wildlife'].includes(value))
+      :[];
+    const sameSpecies=family==='CREATURE'&&speciesLabels.length
+      ?required.filter(role=>{
+        const wanted=speciesBase(role);
+        return wanted.length>=3&&speciesLabels.includes(wanted);
+      }):[];
+    const matched=required.length?unique([...explicit,...sameSpecies]):inferred;
+    const visualSpeciesSubstitute=sameSpecies.some(role=>!explicit.includes(role));
     const bound=currentAssetConsumerIds(asset).includes(id);
     const generalFamilyRequest=required.length===0&&genericFamilyDemand.has(family);
     const evidence={requestedRoles:required,matchedRoles:matched,currentSourceBound:bound,
-      genericFamilyRequest:generalFamilyRequest,verifiedRoleMatch:matched.length>0||bound||generalFamilyRequest};
+      genericFamilyRequest:generalFamilyRequest,verifiedRoleMatch:matched.length>0||bound||generalFamilyRequest,
+      visualSpeciesSubstitute,visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa:visualSpeciesSubstitute,
+      originalMonsterIdentityAndGameplayPreserved:true};
     roleEvidenceById.set(clean(asset.id),evidence);
     return evidence;
   };
