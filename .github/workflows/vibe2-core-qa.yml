@@ -249,6 +249,7 @@ jobs:
     timeout-minutes: 2
     outputs:
       parallelism_only: ${{ steps.scope.outputs.parallelism_only }}
+      queue_control_only: ${{ steps.scope.outputs.queue_control_only }}
       coding_benchmark: ${{ steps.scope.outputs.coding_benchmark }}
       changed_web_games: ${{ steps.scope.outputs.changed_web_games }}
     steps:
@@ -300,6 +301,14 @@ jobs:
             parallelism_only=YES
           fi
           echo "parallelism_only=$parallelism_only" >> "$GITHUB_OUTPUT"
+          # Only existing queue-control files changed: skip unrelated native binaries and browser setup.
+          # Preserve the full existing core, parallelism, security, and release checks.
+          queue_control_only=NO
+          if [ -s /tmp/vibe2-core-qa-files.txt ] && ! grep -Ev '^(tools/vibe2-queue-control\.mjs|qa/vibe2-queue-control\.test\.mjs)$' /tmp/vibe2-core-qa-files.txt | grep -q .; then
+            queue_control_only=YES
+          fi
+          echo "queue_control_only=$queue_control_only" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_CORE_QA_QUEUE_CONTROL_ONLY=$queue_control_only"
           echo "VIBE2_CORE_QA_PARALLELISM_ONLY=$parallelism_only"
 
   test:
@@ -516,7 +525,7 @@ jobs:
 
   browser-smoke:
     needs: scope
-    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' && needs.scope.outputs.queue_control_only != 'YES' }}
     name: Development Web browser startup smoke
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -538,7 +547,7 @@ jobs:
 
   practice-runtime:
     needs: scope
-    if: ${{ needs.scope.outputs.parallelism_only != 'YES' }}
+    if: ${{ needs.scope.outputs.parallelism_only != 'YES' && needs.scope.outputs.queue_control_only != 'YES' }}
     name: Practice fault cards runtime
     runs-on: ubuntu-24.04
     timeout-minutes: 40

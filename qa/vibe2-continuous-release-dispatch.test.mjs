@@ -492,7 +492,10 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
   assert.match(publisher,/web-games\/publish-manifest\.json/);
   assert.match(publisher,/sourceSha:process\.env\.GITHUB_SHA/);
   assert.ok(publisher.includes('sourceTreeShas'), 'published manifest carries per-game source identity');
-  assert.ok(publisher.includes('HEAD:${root}'), 'source identity comes from the exact main Git tree');
+  // One exact Git ls-tree read supplies all directory hashes; do not require a per-game subprocess.
+  assert.ok(publisher.includes("['ls-tree','-z','HEAD:web-games']"), 'source identity comes from the exact main Git tree');
+  assert.ok(publisher.includes('gameTreeShas.get(id)'), 'registered game routes use their exact main tree SHA');
+  assert.ok(publisher.includes("throw Error('WEB_PAGES_GAME_SOURCE_TREE_INVALID:'"), 'missing source tree hashes must fail closed');
   assert.ok(publisher.includes('m.sourceTreeShas?.[id]'), 'missing per-game tree hashes must fail live verification');
 
   assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
