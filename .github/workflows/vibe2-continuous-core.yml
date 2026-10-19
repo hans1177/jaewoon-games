@@ -70,10 +70,12 @@ permissions:
   contents: write
   actions: write
 
-# Only exact duplicate identities stay serialized. Fan-in refills coalesce by exact SHA and lane to prevent wake storms;
-# shared queue writes already use optimistic fetch/reset/replan/push retries.
+# 파일명: .github/workflows/vibe2-continuous-core.yml - 동시 실행
+# 리필은 기존 레인별 중복 디스패치 검사에서 합치고, 수신된 실행은 고유 ID로 보존한다.
+# 동일 SHA의 후속 리필이 GitHub의 단일 pending 슬롯에서 이전 리필을 취소하지 않게 한다.
+# 공유 큐 쓰기는 기존 optimistic fetch/reset/replan/push 재시도만 사용한다.
 concurrency:
-  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}-{1}', github.sha, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
