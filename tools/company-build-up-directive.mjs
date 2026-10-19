@@ -2322,6 +2322,26 @@ export function directivePrompt(d={}){
   const expansion=d.autonomousContentExpansion||{};
   const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
   const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
+  // 대형 게임 설계의 전체 소스 탐색 정보는 directive 객체에 보존하고
+  // F0 작업 프롬프트에는 현재 관련 모듈만 한 번 압축해 넣는다.
+  // 이 요약은 게임 소스 적용·실행·QA 증거가 아니다.
+  const auto=d.gameInternalAutoComposition||{};
+  const autoComponents=(auto.components||[])
+    .filter(row=>row.state!=='NOT_APPLICABLE_WITHOUT_SOURCE')
+    .map(row=>({id:row.id,state:row.state,
+      files:row.responsibleFiles,requiredByDesign:row.requiredByDesign===true}));
+  const autoConnections=(auto.moduleConnections||[])
+    .filter(row=>row.state==='EXISTING_SOURCE_CONNECTION_CANDIDATE'||row.missingRoles?.length)
+    .map(row=>({id:row.id,state:row.state,
+      missingRoles:row.missingRoles,files:row.responsibleFiles}));
+  const autoSummary={
+    gameId:auto.gameId,sourceTreeFingerprint:auto.sourceTreeFingerprint,
+    components:autoComponents,moduleConnections:autoConnections,
+    worldGraph:{enabled:auto.worldGraph?.enabled===true,
+      biomeSourceFiles:auto.worldGraph?.biomeSourceFiles||[],
+      housingSourceFiles:auto.worldGraph?.housingSourceFiles||[]},
+    sourceOnlyEvidence:true,implementationProven:false,runtimeVerified:false
+  };
   const platformGuidance=d.platformAdaptationDirectives?.[clean(d.platform).toUpperCase()]||d.platformAdaptationDirectives?.WEB||'';
   return[
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
@@ -2382,7 +2402,7 @@ export function directivePrompt(d={}){
     domainPriority,
     'VISUAL:',
     visual,
-    'GAME_INTERNAL_AUTO_COMPOSITION: '+JSON.stringify(d.gameInternalAutoComposition||{}),
+    'GAME_INTERNAL_AUTO_COMPOSITION: '+JSON.stringify(autoSummary),
     'AUTO_COMPOSITION_RULE: For every present feature, edit its real game owner only. Connect existing lobby/customization/material/inventory/equipment/UI/world/biome/housing/motion/action and source-grounded NPC AI/quest/dialogue/crafting/economy/progression/farming/weather/physics/camera/audio/skill effects/network only when game source and approved design contain them. Biomes must map approved regions to real native terrain/navigation/streaming; housing must preserve placement/cost/ownership/save/rejoin; customization must use actual character model and saved identity; motion must drive existing actions and approved hit events; NPC decisions must not grant economy/save/combat authority; crafting and shopping use actual items/currency/state. Use applicable moduleConnections as source-only QA work units, never completed features. Mobile HUD must use real input/state; no dead controls. Trace acquisition→store→equip→visual/stat→save→reconnect with authoritative state; source signatures never pass QA. No new asset generation or shadow system.',
     'PLAYER_FACING_INSPECTION_CONTRACT:',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
