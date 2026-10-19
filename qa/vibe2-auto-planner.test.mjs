@@ -22,6 +22,16 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
   assert.deepEqual(focus.ownerFocusedGamePlatforms,{
     'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'
   });
+  const liveCatalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
+  assert.equal(liveCatalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),false,
+    'later owner focus must actually remove the old permanent blocker');
+  const realProjects=collectProjects({},liveCatalog,repoRoot,{items:[]});
+  assert.ok(realProjects.some(project=>project.gameId==='simple-rpg'&&project.engine==='roblox'
+    &&focusedCaretakerProject(project,repoRoot)),
+    'the actual canonical catalog and Rojo source must activate Simple RPG, not just a test fixture');
+  for(const protectedId of ['seed-roblox-battleground-fight-welcome-to-bloxburg','seed-roblox-obby-party-minigam-tower-of-hell'])
+    assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(protectedId),
+      'other owner permanent removals must remain protected');
   const projects=collectProjects({}, {games:[
     {id:'fantasy-survival',name:'마력숲',productionClass:'DEVELOPMENT_CONFIRMED',
       lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/'},
@@ -41,6 +51,59 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
   assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,true);
   assert.equal(focus.targetFocusedGames,3);
   assert.equal(focus.maxFocusedGames,3);
+});
+
+test('exact focus lanes remain visible when generic backlog is full without bypassing work-package gates',()=>{
+  const root=tempRepo();
+  try{
+    const policyPath=path.join(root,'company-learning/platform-release-roadmap.json');
+    const initial=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+    fs.writeFileSync(policyPath,JSON.stringify({...initial,developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
+      enabled:true,targetFocusedGames:3,maxFocusedGames:3,
+      completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true},
+      focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
+      ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
+      ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'}
+    }}}));
+    const projectRoot=path.join(root,'roblox-games/simple-rpg');
+    fs.mkdirSync(path.join(projectRoot,'server'),{recursive:true});
+    fs.writeFileSync(path.join(projectRoot,'default.project.json'),JSON.stringify({
+      name:'Simple RPG',tree:{$className:'DataModel'}
+    }));
+    fs.writeFileSync(path.join(projectRoot,'server/Game.server.luau'),
+      '-- TODO: preserve existing first-play save compatibility\nlocal SaveState={}\nreturn SaveState\n');
+    for(const id of ['fantasy-survival','cozy-island']){
+      fs.mkdirSync(path.join(root,'web-games',id),{recursive:true});
+      fs.writeFileSync(path.join(root,'web-games',id,'index.html'),
+        '<!doctype html><html><head><title>'+id+'</title></head><body><button id="start">Start</button><canvas></canvas><script>document.getElementById("start").onclick=()=>{};</script></body></html>');
+    }
+    const games=['fantasy-survival','cozy-island'].map(id=>({
+      id,name:id,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
+      webPath:'/web-games/'+id+'/',hasWebArchive:true
+    }));
+    const existing=Array.from({length:60},(_,i)=>({
+      id:'independent-'+i,gameId:'other-'+i,target:'web',department:'development',
+      type:'implementation',status:'queued',sourceRoot:'web-games/other-'+i,
+      responsibleFiles:['web-games/other-'+i+'/index.html'],goal:'preserve independent work'
+    }));
+    const otherGames=Array.from({length:60},(_,i)=>({
+      id:'other-'+i,name:'Other '+i,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'
+    }));
+    const result=planVibe2AutonomousTasks({status:{projects:[]},catalog:{games:[...games,...otherGames]},
+      queue:{maxConcurrentTasks:64,tasks:existing},repoRoot:root,
+      maxConcurrentTasks:4,queueMaxConcurrentTasks:64,planningBacklogTarget:60});
+    assert.equal(result.planningBacklog.normalCapacity,0);
+    assert.deepEqual(result.planningBacklog.focusedMissingLanes,[
+      'cozy-island|web','fantasy-survival|web','simple-rpg|roblox'
+    ]);
+    assert.equal(result.planningBacklog.focusedSeedCapacity,3);
+    assert.equal(result.queue.maxConcurrentTasks,64);
+    assert.ok(result.queue.tasks.every(task=>!task.gameId?.startsWith('other-')
+      ||['queued','running'].includes(task.status)));
+    if(result.planned)assert.ok(result.tasks.every(task=>task.packageId),
+      'minimum work-package admission remains mandatory');
+    else assert.ok(['MINIMUM_WORKLOAD_GATE','AWAITING_INDEPENDENT_CAUSAL_SIGNAL','CAUSAL_REPLAN_REQUIRED'].includes(result.reason));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('exact focused-game platform mapping fails closed if an entry is missing',()=>{

@@ -44,6 +44,8 @@ const permanentlyRemoved=[
   'seed-roblox-obby-party-minigam-tower-of-hell'
 ];
 for(const id of permanentlyRemoved)assert.ok(catalog.permanentRemovalPolicy?.ids?.includes(id),`protected removal missing: ${id}`);
+assert.equal(catalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),false,
+  '2026-10-19 explicit owner Roblox focus supersedes the old Simple RPG removal only');
 assert.equal(new Set(catalog.permanentRemovalPolicy?.ids||[]).size,(catalog.permanentRemovalPolicy?.ids||[]).length,'duplicate removed game IDs');
 assert.equal(catalog.permanentRemovalPolicy?.reentryAllowed,false);
 assert.equal(catalog.permanentRemovalPolicy?.automaticRecoveryAllowed,false);

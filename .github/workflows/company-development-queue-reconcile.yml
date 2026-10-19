@@ -91,6 +91,9 @@ jobs:
 
       - name: Reconcile and persist company runtime queue
         id: queue_state
+        env:
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+          COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
         shell: bash
         run: |
           set -euo pipefail
@@ -108,6 +111,59 @@ jobs:
             git checkout origin/main -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-design-gate-scoring-v2.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json
             git reset -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-design-gate-scoring-v2.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json >/dev/null 2>&1 || true
             git restore --source=origin/main --worktree -- roblox-games
+
+            # Main is the owner-policy authority; company-runtime owns mutable
+            # catalog and queue state. Transfer only the verified removal decision.
+            # A removal may be lifted only by the explicit 2026-10-19 three-game
+            # owner directive, never by generic automatic game discovery.
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            import {execFileSync} from 'node:child_process';
+            const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+            const focus=policy.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+            const mainCatalog=JSON.parse(execFileSync('git',['show','origin/main:game-catalog.json'],{
+              encoding:'utf8',maxBuffer:16*1024*1024
+            }));
+            const ownerRemoval=mainCatalog.permanentRemovalPolicy||{};
+            const runtimeCatalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+            const priorRemoval=runtimeCatalog.permanentRemovalPolicy||{};
+            const allowedReactivation='simple-rpg';
+            if(policy.authority!=='MACHINE_EXECUTION_CONTRACT'
+              ||focus.enabled!==true
+              ||focus.focusScope!=='OWNER_EXACT_GAME_AND_PLATFORM_ONLY'
+              ||!Array.isArray(focus.ownerFocusedGameIds)
+              ||!focus.ownerFocusedGameIds.includes(allowedReactivation)
+              ||focus.ownerFocusedGamePlatforms?.[allowedReactivation]!=='ROBLOX'
+              ||ownerRemoval.authority!=='OWNER_DIRECTIVE'
+              ||ownerRemoval.reentryAllowed!==false
+              ||ownerRemoval.automaticRecoveryAllowed!==false
+              ||ownerRemoval.automaticMaintenanceAllowed!==false
+              ||priorRemoval.authority!=='OWNER_DIRECTIVE'
+              ||!Array.isArray(ownerRemoval.ids)
+              ||!Array.isArray(priorRemoval.ids)
+              ||ownerRemoval.ids.includes(allowedReactivation)
+              ||!String(ownerRemoval.reason||'').includes('SIMPLE_RPG_REACTIVATED_FOR_OWNER_EXACT_ROBLOX_FOCUS_2026-10-19')){
+              throw new Error('OWNER_EXACT_ROBLOX_REACTIVATION_POLICY_NOT_VERIFIED');
+            }
+            const removedWithoutOwnerAuthorization=priorRemoval.ids.filter(id=>
+              !ownerRemoval.ids.includes(id)&&id!==allowedReactivation);
+            if(removedWithoutOwnerAuthorization.length)throw new Error(
+              'UNAUTHORIZED_PERMANENT_REMOVAL_REVERSAL:'+removedWithoutOwnerAuthorization.join(',')
+            );
+            for(const stillRemoved of priorRemoval.ids.filter(id=>id!==allowedReactivation)){
+              if(!ownerRemoval.ids.includes(stillRemoved))throw new Error(
+                'PROTECTED_GAME_REMOVAL_CHANGED:'+stillRemoved
+              );
+            }
+            if(JSON.stringify(priorRemoval)!==JSON.stringify(ownerRemoval)){
+              runtimeCatalog.permanentRemovalPolicy=ownerRemoval;
+              fs.writeFileSync('game-catalog.json',JSON.stringify(runtimeCatalog,null,2)+'\n');
+              console.log('DEVELOPMENT_QUEUE_OWNER_REMOVAL_POLICY_SYNC=UPDATED');
+            }else{
+              console.log('DEVELOPMENT_QUEUE_OWNER_REMOVAL_POLICY_SYNC=UNCHANGED');
+            }
+            console.log('DEVELOPMENT_QUEUE_OWNER_REACTIVATED_SIMPLE_RPG=AUTHORIZED_ROBLOX_SOURCE_ONLY');
+            NODE
 
             node tools/company-development-queue-reconcile.mjs
 
