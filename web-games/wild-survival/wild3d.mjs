@@ -94,7 +94,7 @@ export function createWild3D({canvas,WORLD,resources,animals}){
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.25;
   renderer.shadowMap.enabled=false;
-  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(54,innerWidth/Math.max(innerHeight,1),.1,145);
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(63,innerWidth/Math.max(innerHeight,1),.1,145);
   const skyDay=new THREE.Color('#a2bfca'),skyNight=new THREE.Color('#1a293c');
   scene.background=skyDay.clone();scene.fog=new THREE.FogExp2(skyDay.clone(),.011);
   const hemi=new THREE.HemisphereLight(0xe2efff,0x4c6249,1.85);scene.add(hemi);
@@ -191,6 +191,23 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     });
   }
   let width=innerWidth,height=innerHeight,lastNow=0,lastLocomotion='none',viewCenter=new THREE.Vector3();
+  // Grounded-style LOCKED third-person chase: rear shoulder, one perspective, no zoom/2D modes.
+  // Yaw is eased around the player heading, not tied to fixed world north.
+  let cameraYaw=Math.atan2(-1,-0),cameraYawReady=false;
+  const cameraAim=new THREE.Vector3();
+  const CAMERA_DISTANCE=7.2,CAMERA_HEIGHT=4.0,CAMERA_SHOULDER=.56,CAMERA_LOOK_AHEAD=2.05;
+  const HALF_PI=Math.PI*.5;
+  const wrapAngle=a=>Math.atan2(Math.sin(a),Math.cos(a));
+  function mapInput(screenX,screenY) {
+    // Mobile joystick remains screen-relative while camera follows the player.
+    // Positive stick Y is down; pushing up means world forward, never backward.
+    const yaw=cameraYaw;
+    const forwardX=-Math.sin(yaw),forwardY=-Math.cos(yaw);
+    return {
+      x:screenX*(-forwardY)-screenY*forwardX,
+      y:screenX*forwardX-screenY*forwardY
+    };
+  }
   const localVelocity=()=>0;
   let motion=localVelocity;
   function selectClip(active,name){
@@ -248,9 +265,30 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     scene.background.copy(skyNight).lerp(skyDay,Math.min(1,light));
     scene.fog.color.copy(scene.background);
     scene.fog.density=S.weather==='storm'?.034:S.weather==='rain'?.020:.011;
-    const target=new THREE.Vector3(px+5.2,9.5,pz+15.8);
-    camera.position.lerp(target,frames===0?1:.16);
-    viewCenter.set(px,1.25,pz-3.1);camera.lookAt(viewCenter);
+    // Character-relative fixed chase camera: look over the same shoulder at the same height.
+    // Keep the angle stable while idle; damp turn changes to avoid phone nausea.
+    const desiredYaw=Math.atan2(-p.faceX,-p.faceY);
+    if(!cameraYawReady){cameraYaw=desiredYaw;cameraYawReady=true;}
+    const frameDt=lastNow?Math.min(.05,Math.max(0,(now-lastNow)/1000)):1/60;
+    cameraYaw+=wrapAngle(desiredYaw-cameraYaw)*(1-Math.exp(-frameDt*5.4));
+    const frontX=-Math.sin(cameraYaw),frontY=-Math.cos(cameraYaw);
+    const rightX=-frontY,rightY=frontX;
+    const behindX=-frontX*CAMERA_DISTANCE,behindY=-frontY*CAMERA_DISTANCE;
+    const target=new THREE.Vector3(
+      px+behindX+rightX*CAMERA_SHOULDER,CAMERA_HEIGHT,
+      pz+behindY+rightY*CAMERA_SHOULDER
+    );
+    // One locked view; no pinch zoom or camera mode switching.
+    camera.position.lerp(target,frames===0?1:1-Math.exp(-frameDt*10));
+    const aimed=new THREE.Vector3(
+      px+frontX*CAMERA_LOOK_AHEAD,1.56,
+      pz+frontY*CAMERA_LOOK_AHEAD
+    );
+    cameraAim.lerp(aimed,frames===0?1:1-Math.exp(-frameDt*12));
+    camera.lookAt(cameraAim);
+    document.body.dataset.cameraMode='fixed-third-person';
+    document.body.dataset.cameraView='over-shoulder';
+    document.body.dataset.cameraYaw=String(cameraYaw.toFixed(3));
     renderer.render(scene,camera);
     frames++;
     if(frames===1){document.body.dataset.spatialDimension='3d';
@@ -265,6 +303,7 @@ export function createWild3D({canvas,WORLD,resources,animals}){
   });
   return {
     render,
+    mapInput,
     bindMovement(fn){if(typeof fn==='function')motion=fn;},
     get frameCount(){return frames;},
     get ready(){return playable&&!failed;},
