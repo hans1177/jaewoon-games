@@ -3550,6 +3550,7 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     PROGRESSION:['PROGRESSION'],FARMING:['FARMING'],WEATHER:['WEATHER'],
     PHYSICS:['PHYSICS'],CAMERA:['CAMERA'],AUDIO:['AUDIO'],SKILL_VFX:['SKILL_VFX'],
     NETWORK:['NETWORK'],INVENTORY:['INVENTORY'],EQUIPMENT:['INVENTORY'],
+    SAVE:['SAVE'],COMBAT:['COMBAT','ACTION'],REWARD:['ECONOMY'],SHOP:['ECONOMY'],
     LOBBY:['INTERFACE'],UI:['INTERFACE'],MATERIAL:['ASSET']
   };
   const nativeEvidenceSignals=new Set();
