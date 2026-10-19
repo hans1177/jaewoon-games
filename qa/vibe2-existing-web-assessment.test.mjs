@@ -1,9 +1,11 @@
+// 파일명: qa/vibe2-existing-web-assessment.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import vm from 'node:vm';
+import { spawnSync } from 'node:child_process';
 import { assessExistingWebRepository, assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
 
 const baseline={content:{coreFun:'위치를 선택해 방어 유닛을 배치하고 적의 경로를 막는다',coreLoop:['위치 선택','유닛 배치','적 이동과 전투','보상으로 강화']}};
@@ -139,13 +141,25 @@ test('active or publicly playable development-confirmed Web entries have parseab
         if(/\.js$/i.test(local)){
           const localSource=fs.readFileSync(local,'utf8');
           startupSource+='\\n'+localSource;
-          if(!isModule)assert.doesNotThrow(()=>new vm.Script(localSource,{filename:local}),`${game.id}: local startup syntax ${src}`);
+          if(isModule){
+            // 모듈 스크립트의 import/export/top-level await도 실제 Node 모듈 파서로 검사한다.
+            const checked=spawnSync(process.execPath,['--check','--input-type=module'],{input:localSource,encoding:'utf8'});
+            assert.equal(checked.status,0,`${game.id}: local module startup syntax ${src}: ${checked.stderr||''}`);
+          }else{
+            assert.doesNotThrow(()=>new vm.Script(localSource,{filename:local}),`${game.id}: local startup syntax ${src}`);
+          }
         }
         continue;
       }
       if(!body.trim())continue;
       startupSource+='\\n'+body;
-      assert.doesNotThrow(()=>new vm.Script(body,{filename:index}),`${game.id}: inline startup syntax`);
+      const isModule=/\\btype\\s*=\\s*["']module["']/i.test(attrs);
+      if(isModule){
+        const checked=spawnSync(process.execPath,['--check','--input-type=module'],{input:body,encoding:'utf8'});
+        assert.equal(checked.status,0,`${game.id}: inline module startup syntax: ${checked.stderr||''}`);
+      }else{
+        assert.doesNotThrow(()=>new vm.Script(body,{filename:index}),`${game.id}: inline startup syntax`);
+      }
     }
     const createdDomIds=new Set([
       ...[...startupSource.matchAll(/\\.id\\s*=\\s*["']([^"']+)["']/g)].map(match=>match[1]),
