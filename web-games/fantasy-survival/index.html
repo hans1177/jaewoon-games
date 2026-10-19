@@ -702,7 +702,7 @@ const CREATIVE_SAVE_KEY=SAVE_KEY+'_creative';let gameStarted=false;
 state.player.rootedUntil=0;state.mode='normal';state.creativeSpawners=[];state.creativePlacing=false;state.creativeSpawnerId=null;state.creativeSelectedId=null;
 function isCreative(){return gameStarted&&state.mode==='creative'}
 function startNativePreview3d(){
- if(new URL(location.href).searchParams.get('preview3d')!=='1'||world3d||world3dPending)return;
+ if(!(new URL(location.href).searchParams.get('preview3d')==='1')||world3d||world3dPending)return;
  world3dPending=true;
  import('./world3d.mjs').then(module=>module.createWorld3d(document.getElementById('world3d')))
   .then(renderer=>{world3d=renderer;document.body.dataset.spatialDimension='3d-preview';showNotice('다운로드 CC0 3D 환경 시험 · 전체 3D 미완료')})
