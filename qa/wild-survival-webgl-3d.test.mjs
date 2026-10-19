@@ -52,3 +52,28 @@ test('survival rules and save semantics remain in the original game',()=>{
   assert.doesNotMatch(page,/\bctx\./i);
   assert.match(page,/if\(!wild3d\)return/);
 });
+
+test('Wild Forest source-only mandate rejects procedural placeholder meshes',()=>{
+  assert.match(page,/createWild3D\(\{canvas,WORLD,resources,animals\}\)\.then\(/);
+  assert.doesNotMatch(page,/\bgetContext\s*\(\s*['"]2d['"]/i);
+  assert.doesNotMatch(runtime,/\bnew\s+THREE\.(?:BoxGeometry|ConeGeometry|SphereGeometry|IcosahedronGeometry|CylinderGeometry|DodecahedronGeometry|PlaneGeometry)\b/);
+  assert.match(runtime,/OBJLoader/);
+  assert.match(runtime,/MTLLoader/);
+  assert.match(runtime,/FBXLoader/);
+  assert.match(runtime,/loadOriginalBunny/);
+  assert.match(runtime,/cube-pets\.zip/);
+  assert.match(runtime,/animal-bunny/);
+  assert.match(runtime,/Deer\.fbx/);
+  assert.match(runtime,/boar/);
+  assert.match(runtime,/humanoid-traveler\.glb/);
+  assert.match(runtime,/floor_base/);
+  assert.match(runtime,/tree_large/);
+  assert.match(runtime,/originalNodes\.forEach/);
+  assert.match(runtime,/creatures\.forEach/);
+  assert.match(runtime,/resources\[i\]\.amount/);
+  assert.match(runtime,/animals\[i\]/);
+  assert.match(runtime,/fail\('Kenney cube-pets archive lacks animal-bunny original model'\)/);
+  assert.match(runtime,/document\.body\.dataset\.nativeOriginalAnimalSpecies/);
+  assert.match(runtime,/renderer\.render\(scene,camera\)/);
+  assert.doesNotMatch(runtime,/\b(?:makeAnimal|makeTree|makeHuman|makeTent|makeFire)\s*\(/);
+});
