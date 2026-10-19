@@ -172,6 +172,45 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid #f6dfa1;outli
  .hudMenuPanel>button:hover,.hudMenuPanel .saveStack>button:hover{filter:brightness(1.08)}
 }
 
+
+
+/* 마력숲 모바일 탭 전투: 적을 탭해 공격. 액션 버튼은 보조 조작 */
+#game{touch-action:none;-webkit-user-select:none;user-select:none}
+.actions #attack{font-size:13px;touch-action:manipulation}
+@media(pointer:coarse){
+ .actions{gap:8px}
+ .actions #attack{border:2px solid rgba(250,224,175,.63);
+   box-shadow:0 6px 17px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.16)}
+ .actions #craft,.actions #inventory,.actions #map,.actions #gather{min-height:48px}
+ .stick{touch-action:none}
+ .stick .knob{pointer-events:none;left:calc(50% - 24px);top:calc(50% - 24px)}
+}
+body:has(#sheet.open) .actions,body:has(#sheet.open) .stick,
+body:has(#optionsPanel.open) .actions,body:has(#optionsPanel.open) .stick,
+body:has(#multiPanel.open) .actions,body:has(#multiPanel.open) .stick{
+ pointer-events:none;opacity:0;visibility:hidden
+}
+@media(max-width:720px){
+ .actions #craft,.actions #inventory,.actions #map,.actions #gather{min-height:48px;height:48px}
+ .actions{grid-template-rows:48px 48px 90px;height:202px}
+ .stick{width:116px;height:116px}
+ .stick .knob{left:calc(50% - 23px);top:calc(50% - 23px);width:46px;height:46px}
+}
+@media(max-width:380px){
+ .actions{right:max(7px,env(safe-area-inset-right));grid-template-columns:66px 66px;width:147px;gap:7px 8px}
+ .actions #craft,.actions #inventory,.actions #map,.actions #gather{width:66px;font-size:11px}
+ .actions #attack{width:82px;height:82px}
+ .stick{width:102px;height:102px;left:max(8px,env(safe-area-inset-left))}
+ .stick .knob{left:calc(50% - 22px);top:calc(50% - 22px);width:44px;height:44px}
+}
+@media(orientation:landscape) and (max-height:510px){
+ .hud .sub,.hud .questLine{display:none}
+ .hud .card.main{max-width:min(390px,60vw)}
+ .hudMenuPanel{max-height:calc(100dvh - 72px)}
+ .actions{bottom:max(8px,env(safe-area-inset-bottom))}
+ .stick{bottom:max(9px,env(safe-area-inset-bottom))}
+ .miniMapWrap{width:84px;height:84px;left:50%;top:max(9px,env(safe-area-inset-top));transform:translateX(-50%)}
+}
 </style>
 </head>
 <body data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-gameplay-system-count="9" data-spatial-dimension="2d" data-collision-enabled="true" data-camera-active="true" data-audio-state="idle" data-motion-state="idle" data-genre-ui="survival" data-ui-motion-language="touch-action">
@@ -3375,7 +3414,7 @@ function firePlayerArrow(now,p,w,arrow){
  if(multiplayer.connected&&!multiIsHost()&&state.area!=='storylab1'&&state.area!=='storylab2')multiSend('player-arrow',{ownerId:multiplayer.playerId,area:state.area,x:p.x,y:p.y,faceX:dirX,faceY:dirY,bowId:w.id,arrowId:arrow.id,targetId:aimed?aimTarget.netId:null});else state.projectiles.push(projectile);
  state.dirty=true;updateHud();saveGame(false)
 }
-function attack(){
+function attack(selectedTapTarget=null){
  const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
  // 공격 시 사용자 터치 중 새 전투곡을 시작하고 잠시 유지한다.
  if(state.enemies.some(e=>e.hp>0&&e.area===state.area&&e.type.mood!=='harmless'&&dist(e.x,e.y,p.x,p.y)<Math.max(580,currentRange()+120))){
@@ -3386,7 +3425,10 @@ function attack(){
  const armor=item(p.armor);
  if(armor?.guardProc&&Math.random()<armor.guardProc){p.guardUntil=now+(armor.guardDuration||10000);showNotice('늪 골렘 방어 · 10초간 받는 피해 50% 감소')}
  if(armor?.healOnAttack&&Math.random()<armor.healOnAttack){const heal=Number(armor.healAmount)||200;p.hp=Math.min(p.maxHp,p.hp+heal);showNotice('공포 곰 방어구 · 체력 '+heal+' 회복');updateHud()}
- if(w?.ranged==='spore'){const target=nearestSporeTarget(p,w);if(!target){showNotice('근처에 적이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',.35);fireSporeSeeker(now,p,w,target);return}
+ if(w?.ranged==='spore'){
+  const tapped=selectedTapTarget&&state.enemies.find(e=>e.netId===selectedTapTarget.netId&&e.hp>0&&e.area===state.area&&!(e.type.mood==='harmless'&&!e.type.huntable));
+  const tappedInRange=tapped&&Math.hypot(tapped.x-p.x,tapped.y-p.y)<=(Number(w.range)||760)+(Number(tapped.type.r)||0);
+  const target=tappedInRange?tapped:nearestSporeTarget(p,w);if(!target){showNotice('근처에 적이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',.35);fireSporeSeeker(now,p,w,target);return}
  if(w?.ranged==='bow'){const arrow=selectedArrow();if(!arrow){showNotice('화살이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',Math.max(0,Math.min(1,(Number(w.power)||0)/180)));firePlayerArrow(now,p,w,arrow);return}
  p.attackAt=now;p.attackFx=now+150;
  const web=state.area==='surface'?state.flowerWebs.find(v=>v.hits>0&&dist(p.x,p.y,v.x,v.y)<=currentRange()+v.r):null;if(web){const dx=web.x-p.x,dy=web.y-p.y,d=Math.hypot(dx,dy),dot=(dx*p.faceX+dy*p.faceY)/(d||1);if(dot>=-.18){if(multiplayer.connected&&!multiIsHost())multiSend('flower-web-hit',{id:web.id});else damageFlowerWeb(web)}}
@@ -3950,7 +3992,20 @@ function handleWorldTap(e){
  const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0);
  let closest=null,cd=70;
  for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<cd){closest=m;cd=d}}
- if(closest){if(tapArrowAimTarget(closest,now))return;doubleTapTarget('monster:'+closest.type.id,now,()=>unlockBestiary(closest.type.id));return}
+ if(closest){
+  // 터치 즉시 기존 공격 함수로 연결한다. 창/활/마법 피해와 판정 권한은 attack() 그대로 사용.
+  // 기존 활 3회 탭 조준 보너스와 몬스터 도감 두 번 탭도 보존한다.
+  const eligible=closest.type.mood!=='harmless'||!!closest.type.huntable;
+  const interactable=!(closest.type.labBoss&&now<(closest.submergedUntil||0))&&!(closest.type.burrower&&!closest.emerged);
+  if(!eligible||!interactable){doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));return}
+  doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));
+  if(tapArrowAimTarget(closest,now)){ /* 활의 누적 조준은 공격과 독립적으로 보존 */ }
+  const w=currentWeapon(),range=Number(w?.range)||0,dx=closest.x-state.player.x,dy=closest.y-state.player.y;
+  if(!w){showNotice('가방에서 무기를 장착해');return}
+  if(Math.hypot(dx,dy)>range+(Number(closest.type.r)||0)){showNotice(closest.type.name+' · 공격 사거리 밖');return}
+  const len=Math.hypot(dx,dy)||1;state.player.faceX=dx/len;state.player.faceY=dy/len;
+  attack(closest);return
+ }
  if(state.area==='surface'){
    if(dist(wx,wy,SWAMP_OUTPOST.chest.x,SWAMP_OUTPOST.chest.y)<78){if(!doubleTapTarget('swamp-outpost-chest',now,openSwampOutpostChest))showNotice(state.swampOutpostChestOpened?'빈 상자야':'늪 전초기지 상자를 한 번 더 눌러 열기');return}
    const q=state.story;
