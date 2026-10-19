@@ -9,7 +9,9 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#11170f;color:#f3f4e9;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
 button{font:inherit}
-#game{position:fixed;inset:0;width:100%;height:100%;touch-action:none;background:#536946}
+#game{position:fixed;inset:0;width:100%;height:100%;touch-action:none;background:#0b1a14;display:block}
+#renderStatus{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:24px;text-align:center;background:#101c18;color:#edf5e9;font-size:17px;font-weight:850}
+#renderStatus[hidden]{display:none}
 #hud{position:fixed;left:10px;right:10px;top:max(10px,env(safe-area-inset-top));display:grid;grid-template-columns:1fr auto;gap:8px;pointer-events:none;z-index:5}
 .panel{background:#12180fd9;border:1px solid #ffffff22;border-radius:14px;backdrop-filter:blur(5px);box-shadow:0 8px 30px #0005}
 #bars{padding:9px 10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px}
@@ -48,8 +50,9 @@ button{font:inherit}
 @media (max-width:380px){#bars{grid-template-columns:1fr}.stat:nth-child(n+4){display:none}#objective{top:145px}#menuBtn{top:136px}}
 </style>
 </head>
-<body data-web-artifact-type="REAL_PLAYABLE_GAME" data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-gameplay-system-count="9" data-realism-lock="NO_FANTASY" data-run-result="running">
-<canvas id="game" data-gameplay-surface="main"></canvas>
+<body data-spatial-dimension="3d-pending" data-web-artifact-type="REAL_PLAYABLE_GAME" data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-gameplay-system-count="9" data-realism-lock="NO_FANTASY" data-run-result="running">
+<canvas id="game" data-gameplay-surface="main" data-render-target="webgl-3d"></canvas>
+<div id="renderStatus" role="status">3D 숲을 불러오는 중…</div>
 <section id="hud">
   <div id="bars" class="panel"></div>
   <div id="meta" class="panel"><b id="dayText">1일차</b><span id="timeText">08:00</span><br><span id="weatherText">맑음 · 18°C</span></div>
@@ -94,12 +97,14 @@ button{font:inherit}
     <button id="restart" class="primary">새 게임</button>
   </div>
 </section>
-<script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import {createWild3D} from './wild3d.mjs';
 (()=>{
 'use strict';
 // 파일명: web-games/wild-survival/index.html
 // 메인 상태
-const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const canvas=document.getElementById('game');
 const bars=document.getElementById('bars'),notice=document.getElementById('notice');
 const WORLD={w:3400,h:2500,riverY:1280,riverH:260};
 const SAVE_KEY='jg-wild-survival-v1';
@@ -335,49 +340,23 @@ function respawnResources(dt){
   for(const r of resources){if(r.amount<=0&&r.respawn>0){r.respawn-=dt;if(r.respawn<=0)r.amount=r.type==='tree'?5:3}}
 }
 
-// 그래픽
-function resize(){canvas.width=Math.floor(innerWidth*devicePixelRatio);canvas.height=Math.floor(innerHeight*devicePixelRatio);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}
-addEventListener('resize',resize);resize();
-function tree(x,y){ctx.fillStyle='#33432c';ctx.fillRect(x-5,y,10,25);ctx.fillStyle='#314f2d';ctx.beginPath();ctx.arc(x,y-6,19,0,Math.PI*2);ctx.fill();ctx.fillStyle='#45643b';ctx.beginPath();ctx.arc(x-10,y-12,12,0,Math.PI*2);ctx.arc(x+11,y-11,13,0,Math.PI*2);ctx.fill()}
-function drawAnimal(a,x,y){
-  const c={rabbit:'#b9ae99',deer:'#9a6e48',boar:'#4e3d31'}[a.type];
-  ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x,y,a.r,a.r*.68,0,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(x+a.r*.7,y-4,a.r*.42,0,Math.PI*2);ctx.fill();
-  if(a.type==='deer'){ctx.strokeStyle='#d3ba88';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+a.r*.8,y-a.r*.4);ctx.lineTo(x+a.r*.9,y-a.r);ctx.moveTo(x+a.r*.9,y-a.r*.7);ctx.lineTo(x+a.r*1.2,y-a.r);ctx.stroke()}
+// 진짜 WebGL 3D 렌더링만 허용한다. Canvas2D 경로는 만들지 않는다.
+let wild3d=null;
+const renderStatus=document.getElementById('renderStatus');
+function threeFailure(err){
+  console.error('[와일드 숲 WebGL 3D]',err);
+  document.body.dataset.spatialDimension='3d-error';
+  renderStatus.hidden=false;
+  renderStatus.textContent='3D 실행 실패: '+String(err?.message||err)+' · WebGL2 지원 브라우저에서 다시 열어 줘.';
 }
+try{
+  wild3d=createWild3D({canvas,WORLD,resources,animals});
+  wild3d.bindMovement(()=>Number(!!(keys.w||keys.a||keys.s||keys.d||keys.arrowup||keys.arrowdown||keys.arrowleft||keys.arrowright))+Math.hypot(joy.x,joy.y));
+}catch(err){threeFailure(err)}
 function draw(){
-  const w=innerWidth,h=innerHeight,p=S.player,camX=clamp(p.x-w/2,0,WORLD.w-w),camY=clamp(p.y-h/2,0,WORLD.h-h);
-  ctx.clearRect(0,0,w,h);
-  ctx.fillStyle='#657c54';ctx.fillRect(0,0,w,h);
-  ctx.save();ctx.translate(-camX,-camY);
-  ctx.fillStyle='#79825e';ctx.fillRect(0,WORLD.riverY-420,WORLD.w,360);
-  ctx.fillStyle='#52718a';ctx.fillRect(0,WORLD.riverY,WORLD.w,WORLD.riverH);
-  ctx.fillStyle='#a8a17a';ctx.fillRect(0,WORLD.riverY-18,WORLD.w,18);ctx.fillRect(0,WORLD.riverY+WORLD.riverH,WORLD.w,18);
-  ctx.fillStyle='#777867';ctx.beginPath();ctx.ellipse(2850,420,470,260,0,0,Math.PI*2);ctx.fill();
-  for(const r of resources){
-    if(r.amount<=0)continue;
-    if(r.x<camX-50||r.x>camX+w+50||r.y<camY-50||r.y>camY+h+50)continue;
-    if(r.type==='tree')tree(r.x,r.y);
-    if(r.type==='stone'){ctx.fillStyle='#70756e';ctx.beginPath();ctx.ellipse(r.x,r.y,16,11,-.3,0,Math.PI*2);ctx.fill()}
-    if(r.type==='fiber'){ctx.strokeStyle='#b4b26c';ctx.lineWidth=3;for(let n=-2;n<=2;n++){ctx.beginPath();ctx.moveTo(r.x+n*3,r.y+12);ctx.lineTo(r.x+n*4,r.y-10);ctx.stroke()}}
-    if(r.type==='berry'){ctx.fillStyle='#355b36';ctx.beginPath();ctx.arc(r.x,r.y,14,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8b3040';for(let n=0;n<4;n++){ctx.beginPath();ctx.arc(r.x-7+n*5,r.y-2+(n%2)*6,2.5,0,Math.PI*2);ctx.fill()}}
-  }
-  if(S.camp.shelter>0){
-    ctx.fillStyle=S.camp.shelter===2?'#5a4936':'#6c5d43';ctx.beginPath();ctx.moveTo(S.camp.x-42,S.camp.y+26);ctx.lineTo(S.camp.x,S.camp.y-34);ctx.lineTo(S.camp.x+42,S.camp.y+26);ctx.closePath();ctx.fill();
-  }
-  if(S.camp.fire){
-    ctx.strokeStyle='#4e3c2d';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(S.camp.x-13,S.camp.y+10);ctx.lineTo(S.camp.x+13,S.camp.y-7);ctx.moveTo(S.camp.x+13,S.camp.y+10);ctx.lineTo(S.camp.x-13,S.camp.y-7);ctx.stroke();
-    ctx.fillStyle='#e7a647';ctx.beginPath();ctx.arc(S.camp.x,S.camp.y-8,10,0,Math.PI*2);ctx.fill();
-  }
-  for(const a of animals){if(a.dead>0)continue;if(a.x<camX-70||a.x>camX+w+70||a.y<camY-70||a.y>camY+h+70)continue;drawAnimal(a,a.x,a.y)}
-  ctx.fillStyle='#20271f';ctx.beginPath();ctx.arc(p.x,p.y,14,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#d3b18b';ctx.beginPath();ctx.arc(p.x,p.y-14,8,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='#eee6ce';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+p.faceX*21,p.y+p.faceY*21);ctx.stroke();
-  if(performance.now()-p.attackAt<180){ctx.strokeStyle='#e3d6b0';ctx.lineWidth=4;ctx.beginPath();ctx.arc(p.x,p.y,S.gear.spear?70:42,-.6,.6);ctx.stroke()}
-  ctx.restore();
-  const hour=S.time/60,night=hour<6?(.75-hour/8):hour>19?Math.min(.68,(hour-19)/6):0;
-  if(night>0){ctx.fillStyle=`rgba(5,12,18,${night})`;ctx.fillRect(0,0,w,h)}
-  if(S.weather==='rain'||S.weather==='storm'){ctx.strokeStyle=S.weather==='storm'?'#cbd5df88':'#cbd5df55';ctx.lineWidth=1;const count=S.weather==='storm'?90:45;for(let i=0;i<count;i++){const x=(i*71+performance.now()*.15)%w,y=(i*113+performance.now()*.34)%h;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-7,y+16);ctx.stroke()}}
+  if(!wild3d)return;
+  try{wild3d.render(S,performance.now())}
+  catch(err){wild3d=null;threeFailure(err)}
 }
 
 // 루프
