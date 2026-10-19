@@ -205,6 +205,66 @@ export function createWild3D({canvas,WORLD,resources,animals}){
   const rainGeo=new THREE.CylinderGeometry(.009,.009,.64,3);
   for(let i=0;i<95;i++)drops.push(mesh(rain,rainGeo,rainMat,0,0,0));
   const skyDay=new THREE.Color('#9fbfc7'),skyNight=new THREE.Color('#17283f');
+  // Fixed third-person, mobile-first shoulder camera. Right-screen drag orbits it.
+  let yaw=0, pitch=.29;
+  const CAMERA_DISTANCE=8.6;
+  const cameraTarget=new THREE.Vector3();
+  const cameraGoal=new THREE.Vector3();
+  const smoothTarget=new THREE.Vector3();
+  const touches=new Map();
+  const limit=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const forward=()=>({x:-Math.sin(yaw),y:-Math.cos(yaw)});
+  function movementVector(right,down){
+    const f=forward();
+    return {x:-f.y*right-f.x*down,y:f.x*right-f.y*down};
+  }
+  canvas.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    try{canvas.setPointerCapture(e.pointerId)}catch{}
+    e.preventDefault();
+  },{passive:false});
+  canvas.addEventListener('pointermove',e=>{
+    const old=touches.get(e.pointerId);
+    if(!old)return;
+    const dx=e.clientX-old.x,dy=e.clientY-old.y;
+    touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(touches.size===1){yaw-=limit(dx,-120,120)*.0042;pitch=limit(pitch-limit(dy,-120,120)*.0033,.08,.65);}
+    e.preventDefault();
+  },{passive:false});
+  const releasePointer=e=>touches.delete(e.pointerId);
+  canvas.addEventListener('pointerup',releasePointer);
+  canvas.addEventListener('pointercancel',releasePointer);
+  canvas.addEventListener('lostpointercapture',releasePointer);
+  function followThirdPerson(p){
+    const px=p.x/SCALE,pz=p.y/SCALE;
+    const f=forward(),right={x:-f.y,y:f.x};
+    cameraTarget.set(px+f.x*.7,1.7,pz+f.y*.7);
+    const horizontal=CAMERA_DISTANCE*Math.cos(pitch);
+    cameraGoal.set(px-f.x*horizontal+right.x*.85,1.7+CAMERA_DISTANCE*Math.sin(pitch),pz-f.y*horizontal+right.y*.85);
+    // Third-person follow remains in-world: avoid clipping through nearby trunks and rocks.
+    const origin=new THREE.Vector3(px,1.8,pz);
+    const delta=cameraGoal.clone().sub(origin);
+    let allowed=1;
+    const length2=delta.lengthSq();
+    for(const r of resources){
+      if(r.amount<=0||(r.type!=='tree'&&r.type!=='stone'))continue;
+      const rx=r.x/SCALE,rz=r.y/SCALE;
+      if(Math.abs(rx-px)>12||Math.abs(rz-pz)>12)continue;
+      const t=limit(((rx-origin.x)*delta.x+(rz-origin.z)*delta.z)/length2,0,1);
+      if(t<=.14||t>=allowed)continue;
+      const closest=origin.clone().addScaledVector(delta,t);
+      const radius=r.type==='tree'?.52:.4;
+      if((closest.x-rx)**2+(closest.z-rz)**2<radius**2&&closest.y<4.4)allowed=Math.min(allowed,Math.max(.2,t-.06));
+    }
+    if(allowed<1)cameraGoal.copy(origin).lerp(cameraGoal,allowed);
+    camera.position.lerp(cameraGoal,frames<2?1:.18);
+    smoothTarget.lerp(cameraTarget,frames<2?1:.24);
+    camera.lookAt(smoothTarget);
+    document.body.dataset.cameraMode='third';
+    document.body.dataset.cameraYaw=yaw.toFixed(3);
+    document.body.dataset.cameraPitch=pitch.toFixed(3);
+  }
   let width=innerWidth,height=innerHeight,frames=0,previous=performance.now();
   let glLost=false;
   canvas.addEventListener('webglcontextlost',e=>{
@@ -276,10 +336,9 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     fire.root.visible=!!S.camp.fire;
     fire.flames.scale.y=1+Math.sin(now*.015)*.20;
     fire.light.intensity=S.camp.fire?9+Math.sin(now*.02)*2:0;
-    // Perspective camera follows the authoritative player location.
+    // Fixed third-person shoulder camera follows live authoritative position.
+    followThirdPerson(p);
     const px=p.x/SCALE,pz=p.y/SCALE;
-    camera.position.lerp(new THREE.Vector3(px+5.8,10.7,pz+16.8),frames<2?1:.12);
-    camera.lookAt(px,1.3,pz-3.2);
     const hour=S.time/60;
     const sunlight=Math.max(.07,Math.sin((hour-5)/24*Math.PI*2));
     hemi.intensity=.35+sunlight*1.85;
@@ -317,6 +376,8 @@ export function createWild3D({canvas,WORLD,resources,animals}){
   let keysInput=()=>0;
   return{
     render,
+    movementVector,
+    get cameraMode(){return 'third';},
     bindMovement(fn){if(typeof fn==='function')keysInput=fn;},
     get frameCount(){return frames;}
   };
