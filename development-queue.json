@@ -37716,7 +37716,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-13T07:37:21.773Z",
-      "updatedAt": "2026-10-19T10:39:17.602Z",
+      "updatedAt": "2026-10-19T10:54:10.304Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -37736,16 +37736,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "5d8a7dde625ba52b58057f796da29f132f4cc20b",
       "robloxBuildArtifactIdentity": "sha256:b9e13f27c21e5039c647fd1af8f8f76acf186be7b25578208318197cc7291f6f",
-      "robloxBuildPassedAt": "2026-10-19T10:39:17.602Z",
+      "robloxBuildPassedAt": "2026-10-19T10:54:10.304Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-19T10:39:17.602Z",
+      "robloxBuildPreflightFailedAt": "2026-10-19T10:54:10.304Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "ant-simulator",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-19T10:16:57.332Z",
+        "checkedAt": "2026-10-19T10:33:46.463Z",
         "sourceRevision": "5d8a7dde625ba52b58057f796da29f132f4cc20b",
         "artifactIdentity": "sha256:b9e13f27c21e5039c647fd1af8f8f76acf186be7b25578208318197cc7291f6f",
         "secondaryOwnerFocus": false,
@@ -37788,7 +37788,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web, music, and native validation checks have failed."
+            "note": "Package cannot start runtime testing because required validation checks failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -41502,7 +41502,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-19T10:54:02.676Z",
+  "updatedAt": "2026-10-19T10:54:10.304Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
