@@ -1764,7 +1764,7 @@ done`;
 });
 
 test('fan-in conflict retry has enough runtime to preserve full regression and atomic queue repair',()=>{
-  const fanIn=workflow.slice(workflow.indexOf('\n  fan_in:'),workflow.indexOf('\n  fan_in:')+36000);
+  const fanIn=workflow.slice(workflow.indexOf('\n  fan_in:'));
   assert.ok(fanIn.startsWith('\n  fan_in:'),'canonical fan-in job missing');
   const minutes=Number(fanIn.match(/\n    timeout-minutes: (\d+)/)?.[1]||0);
   assert.ok(minutes>=15,'fan-in ended before an optimistic queue conflict replay could complete');
