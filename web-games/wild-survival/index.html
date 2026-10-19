@@ -349,10 +349,11 @@ function threeFailure(err){
   renderStatus.hidden=false;
   renderStatus.textContent='3D 실행 실패: '+String(err?.message||err)+' · WebGL2 지원 브라우저에서 다시 열어 줘.';
 }
-try{
-  wild3d=createWild3D({canvas,WORLD,resources,animals});
+// Native GLB/FBX/OBJ assets must load before the first real 3D frame.
+createWild3D({canvas,WORLD,resources,animals}).then(renderer3d=>{
+  wild3d=renderer3d;
   wild3d.bindMovement(()=>Number(!!(keys.w||keys.a||keys.s||keys.d||keys.arrowup||keys.arrowdown||keys.arrowleft||keys.arrowright))+Math.hypot(joy.x,joy.y));
-}catch(err){threeFailure(err)}
+}).catch(threeFailure);
 function draw(){
   if(!wild3d)return;
   try{wild3d.render(S,performance.now())}
