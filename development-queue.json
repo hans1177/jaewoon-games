@@ -30272,7 +30272,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:40:04.134Z",
-      "updatedAt": "2026-10-19T11:22:00.864Z",
+      "updatedAt": "2026-10-19T11:34:51.304Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -30290,12 +30290,66 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
       "robloxBuildArtifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
-      "robloxBuildPassedAt": "2026-10-19T11:22:00.864Z",
+      "robloxBuildPassedAt": "2026-10-19T11:34:51.304Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-19T11:22:00.864Z",
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightFailedAt": "2026-10-19T11:34:51.304Z",
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "crystal-defense",
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-19T11:32:26.303Z",
+        "sourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
+        "artifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
+            "artifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "gemini-3.5-flash-lite",
+            "decision": "BLOCK",
+            "blockers": [
+              "webValidationPassed is false",
+              "musicValidationPassed is false"
+            ],
+            "note": "The build evidence indicates that both webValidationPassed and musicValidationPassed are false, which contradicts the requirements to start runtime testing for this immutable package."
+          }
+        ],
+        "blockers": [
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
+        ],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -37461,7 +37515,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-19T11:34:25.812Z",
+  "updatedAt": "2026-10-19T11:34:51.304Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
