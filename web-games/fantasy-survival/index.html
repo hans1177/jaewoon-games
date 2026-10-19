@@ -3999,11 +3999,11 @@ function handleWorldTap(e){
   const interactable=!(closest.type.labBoss&&now<(closest.submergedUntil||0))&&!(closest.type.burrower&&!closest.emerged);
   if(!eligible||!interactable){doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));return}
   doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));
-  if(tapArrowAimTarget(closest,now)){ /* 활의 누적 조준은 공격과 독립적으로 보존 */ }
   const w=currentWeapon(),range=Number(w?.range)||0,dx=closest.x-state.player.x,dy=closest.y-state.player.y;
   if(!w){showNotice('가방에서 무기를 장착해');return}
   if(Math.hypot(dx,dy)>range+(Number(closest.type.r)||0)){showNotice(closest.type.name+' · 공격 사거리 밖');return}
   const len=Math.hypot(dx,dy)||1;state.player.faceX=dx/len;state.player.faceY=dy/len;
+  tapArrowAimTarget(closest,now); // 활의 기존 3회 조준 보너스 보존
   attack(closest);return
  }
  if(state.area==='surface'){
