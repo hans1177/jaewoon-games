@@ -49,6 +49,11 @@ button{font:inherit}
 .primary{width:100%;min-height:50px;border:0;border-radius:14px;background:#dfe7d7;color:#152015;font-weight:950}
 #death .primary{margin-top:12px}
 @media (max-width:380px){#bars{grid-template-columns:1fr}.stat:nth-child(n+4){display:none}#objective{top:145px}#menuBtn{top:136px}}
+.huntBar{position:fixed;bottom:174px;right:11px;display:flex;gap:6px;z-index:8;pointer-events:auto}
+.huntBar button{padding:9px 10px;border:1px solid #bbd5bd88;border-radius:11px;background:#172a1dec;color:#edf7e3;font-size:10px;font-weight:850;min-height:42px}
+#huntPanel{display:none;position:fixed;z-index:25;inset:7% 5% 22%;padding:16px;overflow:auto;background:#132116f2;border:1px solid #7ba17c;border-radius:15px}
+#huntPanel.open{display:block}#huntPanel h2{margin:0 0 12px}.huntRow{padding:8px;border-bottom:1px solid #fff2;font-size:12px}.huntRow span{float:right;font-size:10px;color:#ccdabe}
+@media(max-width:380px){.huntBar{bottom:167px;right:5px}.huntBar button{padding:7px 6px;font-size:9px}#huntPanel{inset:5% 4% 26%}}
 </style>
 </head>
 <body data-spatial-dimension="3d-pending" data-web-artifact-type="REAL_PLAYABLE_GAME" data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-gameplay-system-count="9" data-realism-lock="NO_FANTASY" data-run-result="running">
@@ -62,6 +67,8 @@ button{font:inherit}
 <div id="notice"></div>
 <button id="menuBtn">제작</button>
 <div id="cameraHint" aria-label="3인칭 고정 카메라">3인칭 고정<br>오른쪽 화면 드래그 · 시점</div>
+<div class="huntBar"><button id="track" type="button">흔적 추적</button><button id="shoot" type="button">활 발사 · 0</button><button id="huntBook" type="button">사냥 도감</button></div>
+<section id="huntPanel" aria-label="야생동물 사냥 도감"><h2>야생동물 사냥 도감 · 17종</h2><div id="huntList"></div><button id="closeHuntBook" class="primary">닫기</button></section>
 <section id="craft" class="panel">
   <h2>제작 · 야영</h2>
   <div class="sub">주변에서 얻은 실제 재료만 사용해. 마법·판타지 자원은 없어.</div>
@@ -83,7 +90,7 @@ button{font:inherit}
     <h1>와일드 숲</h1>
     <p>산림과 강이 있는 실제 야생에 고립됐다. 판타지 생물이나 마법은 없다. 물, 체온, 상처와 날씨를 관리하면서 살아남아야 한다.</p>
     <ul>
-      <li>사슴·토끼는 사람을 피해서 도망감</li>
+      <li>17종 야생동물 · 서식지·경계·도주·추격·돌진 행동</li><li>사슴·토끼는 사람을 피해서 도망감</li>
       <li>멧돼지는 가까이 위협하거나 공격하면 돌진함</li>
       <li>비를 맞으면 젖고 밤에는 저체온 위험이 커짐</li>
       <li>강물은 끓이지 않고 마시면 탈이 날 수 있음</li>
@@ -102,6 +109,7 @@ button{font:inherit}
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
 import {createWild3D} from './wild3d.mjs';
+import {SPECIES,SPECIES_KEYS,wildlifeSpawnPoint} from './wildlife-species.mjs';
 (()=>{
 'use strict';
 // 파일명: web-games/wild-survival/index.html
@@ -116,12 +124,12 @@ const rand=(a,b)=>a+Math.random()*(b-a);
 const baseState=()=>({
   started:false,won:false,dead:false,day:1,time:8*60,weather:'clear',weatherTimer:150,
   ambient:18,player:{x:480,y:560,hp:100,hunger:100,thirst:100,energy:100,temp:37,wet:0,ill:0,bleed:0,faceX:1,faceY:0,attackAt:0},
-  inv:{wood:0,stone:0,fiber:0,berries:0,rawMeat:0,cookedMeat:0,dirtyWater:0,cleanWater:0},
-  gear:{knife:false,axe:false,spear:false},camp:{fire:false,fireFuel:0,shelter:0,x:0,y:0},
+  inv:{wood:0,stone:0,fiber:0,berries:0,rawMeat:0,cookedMeat:0,dirtyWater:0,cleanWater:0,hide:0,bone:0,arrows:0},
+  gear:{knife:false,axe:false,spear:false,bow:false},hunting:{kills:{},shots:0,tracks:0},camp:{fire:false,fireFuel:0,shelter:0,x:0,y:0},
   score:0,survivedGoal:false,lastSave:0
 });
 let S=baseState();
-try{const old=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(old&&old.player&&old.inv)S={...baseState(),...old,player:{...baseState().player,...old.player},inv:{...baseState().inv,...old.inv},gear:{...baseState().gear,...old.gear},camp:{...baseState().camp,...old.camp},started:false,dead:false}}catch{}
+try{const old=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(old&&old.player&&old.inv)S={...baseState(),...old,player:{...baseState().player,...old.player},inv:{...baseState().inv,...old.inv},gear:{...baseState().gear,...old.gear},hunting:{...baseState().hunting,...old.hunting,kills:{...(old.hunting?.kills||{})}},camp:{...baseState().camp,...old.camp},started:false,dead:false}}catch{}
 const keys={},joy={x:0,y:0,id:null};
 let last=performance.now(),noticeTimer=0;
 const resources=[],animals=[];
@@ -133,12 +141,20 @@ for(let i=0;i<36;i++)addResource('stone',rand(140,WORLD.w-140),rand(140,WORLD.h-
 for(let i=0;i<30;i++)addResource('fiber',rand(140,WORLD.w-140),rand(140,WORLD.h-140),rand(3,6)|0);
 for(let i=0;i<22;i++)addResource('berry',rand(140,WORLD.w-140),rand(140,WORLD.h-140),rand(2,5)|0);
 function newAnimal(type,x,y){
-  const stat={rabbit:[28,130,12],deer:[90,112,24],boar:[115,82,32]}[type];
-  animals.push({id:Math.random().toString(36).slice(2),type,x,y,hp:stat[0],maxHp:stat[0],speed:stat[1],r:stat[2],vx:rand(-1,1),vy:rand(-1,1),wander:rand(.5,3),alert:0,attackAt:0,dead:0});
+  const spec=SPECIES[type];
+  if(!spec)return;
+  animals.push({id:Math.random().toString(36).slice(2),type,x,y,hp:spec.hp,maxHp:spec.hp,speed:spec.speed,r:spec.r,
+    vx:rand(-1,1),vy:rand(-1,1),wander:rand(.5,3),alert:0,attackAt:0,dead:0,trail:[],lastTrack:0});
 }
-for(let i=0;i<10;i++)newAnimal('rabbit',rand(300,WORLD.w-300),rand(250,WORLD.h-250));
-for(let i=0;i<8;i++)newAnimal('deer',rand(350,WORLD.w-350),rand(280,WORLD.h-280));
-for(let i=0;i<5;i++)newAnimal('boar',rand(450,WORLD.w-450),rand(350,WORLD.h-350));
+for(const type of SPECIES_KEYS){
+  const spec=SPECIES[type];
+  for(let i=0;i<spec.count;i++){
+    let point=wildlifeSpawnPoint(type,WORLD);
+    if(dist(point.x,point.y,480,560)<180)point=wildlifeSpawnPoint(type,WORLD);
+    newAnimal(type,point.x,point.y);
+  }
+}
+document.body.dataset.wildlifeSpecies=String(SPECIES_KEYS.length);
 
 // 저장
 function save(){
@@ -170,22 +186,24 @@ function updateHud(){
 }
 function inventoryText(){
   const i=S.inv,g=S.gear,c=S.camp;
-  return `나무 ${i.wood} · 돌 ${i.stone} · 섬유 ${i.fiber} · 열매 ${i.berries}<br>`+
+  return `나무 ${i.wood} · 돌 ${i.stone} · 섬유 ${i.fiber} · 열매 ${i.berries} · 가죽 ${i.hide||0} · 뼈 ${i.bone||0} · 화살 ${i.arrows||0}<br>`+
     `생고기 ${i.rawMeat} · 익힌고기 ${i.cookedMeat} · 강물 ${i.dirtyWater} · 식수 ${i.cleanWater}<br>`+
-    `도구: ${g.knife?'돌칼 ':''}${g.axe?'돌도끼 ':''}${g.spear?'창 ':''}${!g.knife&&!g.axe&&!g.spear?'없음':''}<br>`+
+    `도구: ${g.knife?'돌칼 ':''}${g.axe?'돌도끼 ':''}${g.spear?'창 ':''}${g.bow?'활 ':''}${!g.knife&&!g.axe&&!g.spear&&!g.bow?'없음':''}<br>`+
     `야영: 모닥불 ${c.fire?'켜짐':'없음'} · 쉼터 ${c.shelter}단계`;
 }
 const recipes=[
   {id:'knife',name:'돌칼',cost:{stone:2,fiber:1},desc:'도축과 채집 효율 증가'},
   {id:'axe',name:'돌도끼',cost:{wood:2,stone:3,fiber:1},desc:'나무 채집량 증가'},
   {id:'spear',name:'나무창',cost:{wood:3,stone:1,fiber:1},desc:'사냥 시 안전거리와 피해 증가'},
+  {id:'bow',name:'사냥 활',cost:{wood:5,fiber:8,stone:2},desc:'3인칭 카메라가 보는 방향으로 화살을 쏜다'},
+  {id:'arrows',name:'화살 ×6',cost:{wood:2,stone:1},desc:'사냥 활 탄약 · 소모품'},
   {id:'fire',name:'모닥불',cost:{wood:5,stone:3},desc:'체온 회복, 물 끓이기, 고기 굽기'},
   {id:'shelter1',name:'간이 쉼터',cost:{wood:10,fiber:8},desc:'비와 밤 추위 완화'},
   {id:'shelter2',name:'튼튼한 쉼터',cost:{wood:16,stone:6,fiber:10},desc:'폭우와 밤 추위 크게 완화'},
   {id:'boil',name:'물 끓이기',cost:{dirtyWater:1,wood:1},desc:'강물 1 → 안전한 식수 1'},
   {id:'cook',name:'고기 굽기',cost:{rawMeat:1,wood:1},desc:'생고기 1 → 익힌고기 1'}
 ];
-function costText(cost){const nm={wood:'나무',stone:'돌',fiber:'섬유',dirtyWater:'강물',rawMeat:'생고기'};return Object.entries(cost).map(([k,v])=>`${nm[k]||k} ${v}`).join(' · ')}
+function costText(cost){const nm={wood:'나무',stone:'돌',fiber:'섬유',hide:'가죽',bone:'뼈',dirtyWater:'강물',rawMeat:'생고기'};return Object.entries(cost).map(([k,v])=>`${nm[k]||k} ${v}`).join(' · ')}
 function canPay(cost){return Object.entries(cost).every(([k,v])=>(S.inv[k]||0)>=v)}
 function pay(cost){for(const [k,v] of Object.entries(cost))S.inv[k]-=v}
 function craft(id){
@@ -194,12 +212,14 @@ function craft(id){
   if(id==='shelter1'&&S.camp.shelter>=1){showNotice('간이 쉼터는 이미 있어');return}
   if(id==='shelter2'&&S.camp.shelter<1){showNotice('간이 쉼터부터 만들어');return}
   if(id==='shelter2'&&S.camp.shelter>=2){showNotice('튼튼한 쉼터가 이미 있어');return}
-  if(id==='knife'&&S.gear.knife||id==='axe'&&S.gear.axe||id==='spear'&&S.gear.spear){showNotice('이미 만든 도구야');return}
+  if(id==='knife'&&S.gear.knife||id==='axe'&&S.gear.axe||id==='spear'&&S.gear.spear||id==='bow'&&S.gear.bow){showNotice('이미 만든 도구야');return}
   if(!canPay(r.cost)){showNotice('재료가 부족해');return}
   pay(r.cost);
   if(id==='knife')S.gear.knife=true;
   if(id==='axe')S.gear.axe=true;
   if(id==='spear')S.gear.spear=true;
+  if(id==='bow')S.gear.bow=true;
+  if(id==='arrows')S.inv.arrows=(S.inv.arrows||0)+6;
   if(id==='fire'){S.camp.fire=true;S.camp.fireFuel+=8;S.camp.x=S.player.x;S.camp.y=S.player.y}
   if(id==='shelter1'){S.camp.shelter=1;S.camp.x=S.player.x;S.camp.y=S.player.y}
   if(id==='shelter2')S.camp.shelter=2;
@@ -240,20 +260,90 @@ function eat(){
   if(S.inv.rawMeat>0){S.inv.rawMeat--;S.player.hunger=clamp(S.player.hunger+18,0,100);if(Math.random()<.45){S.player.ill=clamp(S.player.ill+42,0,100);showNotice('생고기로 몸 상태가 나빠졌다')}else showNotice('생고기를 먹었다');return}
   showNotice('먹거나 마실 것이 없어');
 }
+function finishHunt(animal,damage,method){
+  const type=SPECIES[animal.type];if(!type)return;
+  animal.hp-=damage;animal.alert=8;
+  if(animal.hp>0){showNotice(type.name+'에게 명중 · 남은 체력 '+Math.ceil(animal.hp));return}
+  animal.dead=65;
+  const meat=type.meat||0,hide=type.hide||0,bone=type.bone||0;
+  const yieldMeat=S.gear.knife?meat:Math.max(0,meat-1);
+  S.inv.rawMeat+=yieldMeat;S.inv.hide=(S.inv.hide||0)+hide;S.inv.bone=(S.inv.bone||0)+bone;
+  S.hunting.kills[animal.type]=(S.hunting.kills[animal.type]||0)+1;
+  S.score+=Math.round(type.hp/4)+15;
+  showNotice(type.name+' 사냥 완료 · 고기 +'+yieldMeat+' · 가죽 +'+hide+' · 뼈 +'+bone);
+  refreshHuntButtons();
+  save();
+}
 function attack(){
   if(!S.started||S.dead)return;
   const p=S.player,range=S.gear.spear?92:54,damage=S.gear.spear?34:S.gear.knife?19:9;
   p.attackAt=performance.now();
   let best=null,bd=range;
-  for(const a of animals){if(a.dead>0)continue;const d=dist(p.x,p.y,a.x,a.y);if(d<bd){bd=d;best=a}}
-  if(!best){showNotice('공격 범위에 동물이 없어');return}
-  best.hp-=damage;best.alert=7;
-  if(best.hp<=0){
-    best.dead=70;const meat=best.type==='rabbit'?1:best.type==='deer'?4:3;
-    if(S.gear.knife){S.inv.rawMeat+=meat;showNotice(`${best.type==='rabbit'?'토끼':best.type==='deer'?'사슴':'멧돼지'} 사냥 · 생고기 +${meat}`)}
-    else{S.inv.rawMeat+=Math.max(1,meat-1);showNotice('도축 도구가 없어 고기를 일부만 얻었다')}
-    S.score+=15;
-  }else showNotice('동물을 공격했다');
+  for(const a of animals){
+    if(a.dead>0)continue;
+    const dx=a.x-p.x,dy=a.y-p.y,d=Math.hypot(dx,dy);
+    const facing=(dx*p.faceX+dy*p.faceY)/(d||1);
+    if(d<bd&&facing>-.25){bd=d;best=a}
+  }
+  if(!best){showNotice('근접 공격 범위에 동물이 없어');return}
+  finishHunt(best,damage,'melee');
+}
+function shootBow(){
+  if(!S.started||S.dead)return;
+  if(!S.gear.bow){showNotice('제작 메뉴에서 사냥 활부터 만들어');return}
+  if((S.inv.arrows||0)<=0){showNotice('화살이 없어 · 제작에서 화살 ×6');return}
+  if(!wild3d){showNotice('3D 카메라를 사용할 수 없어');return}
+  const forward=wild3d.cameraForward();
+  const p=S.player;
+  let target=null,bestScore=-Infinity;
+  // Shot is acquired inside the camera forward aim cone, never global auto-target.
+  for(const a of animals){
+    if(a.dead>0)continue;
+    const dx=a.x-p.x,dy=a.y-p.y,d=Math.hypot(dx,dy);
+    if(d>740||d<4)continue;
+    const aim=(dx*forward.x+dy*forward.y)/d;
+    if(aim<.967)continue;
+    const score=aim*1500-d;
+    if(score>bestScore){target=a;bestScore=score}
+  }
+  S.inv.arrows--;S.hunting.shots++;
+  p.attackAt=performance.now();
+  if(!target){showNotice('빗나감 · 오른쪽 화면을 드래그해 동물을 조준해');refreshHuntButtons();return}
+  const distance=dist(p.x,p.y,target.x,target.y);
+  const accuracy=Math.max(.47,.94-distance/2300-(S.weather==='storm'?.14:0));
+  if(Math.random()>accuracy){target.alert=7;showNotice(SPECIES[target.type].name+' 근처에 화살이 떨어졌어');refreshHuntButtons();return}
+  finishHunt(target,42+(S.gear.spear?3:0),'bow');
+  refreshHuntButtons();
+}
+function trackWildlife(){
+  if(!S.started||S.dead)return;
+  let nearest=null,closest=850;
+  for(const animal of animals){
+    if(animal.dead>0)continue;
+    const distance=dist(S.player.x,S.player.y,animal.x,animal.y);
+    if(distance<closest){nearest=animal;closest=distance}
+  }
+  if(!nearest){showNotice('이 근처에 최근 동물 흔적이 없어');return}
+  const type=SPECIES[nearest.type];
+  const dx=nearest.x-S.player.x,dy=nearest.y-S.player.y;
+  const heading=Math.abs(dx)>Math.abs(dy)?(dx>0?'동쪽':'서쪽'):(dy>0?'남쪽':'북쪽');
+  S.hunting.tracks++;
+  showNotice(type.name+'의 발자국 · '+heading+' '+Math.round(closest)+'m · '+type.rarity);
+  wild3d?.showTrail(nearest);
+  refreshHuntButtons();
+}
+function renderHuntingCatalog(){
+  const area=document.getElementById('huntList');
+  area.innerHTML=SPECIES_KEYS.map(id=>{
+    const spec=SPECIES[id],kills=S.hunting.kills[id]||0;
+    return '<div class="huntRow"><b>'+spec.name+'</b> · '+spec.rarity+' · '+spec.habitat+'<span>사냥 '+kills+'회 · 고기 '+spec.meat+' / 가죽 '+spec.hide+'</span></div>';
+  }).join('');
+  document.getElementById('huntPanel').classList.add('open');
+}
+function refreshHuntButtons(){
+  const button=document.getElementById('shoot');
+  if(button)button.textContent='활 발사 · '+(S.inv.arrows||0);
+  document.body.dataset.wildlifeHunts=String(Object.values(S.hunting.kills).reduce((a,b)=>a+b,0));
 }
 function rest(){
   if(!S.started||S.dead)return;
@@ -307,21 +397,50 @@ function die(){
 
 // 동물 AI
 function updateAnimals(dt){
-  const p=S.player;
+  const p=S.player,now=performance.now();
   for(const a of animals){
-    if(a.dead>0){a.dead-=dt;if(a.dead<=0){a.hp=a.maxHp;a.x=rand(250,WORLD.w-250);a.y=rand(220,WORLD.h-220);a.alert=0}continue}
-    const d=dist(a.x,a.y,p.x,p.y);a.wander-=dt;a.alert=Math.max(0,a.alert-dt);
-    let tx=a.vx,ty=a.vy,spd=a.speed*.42;
-    if(a.type==='rabbit'||a.type==='deer'){
-      if(d<(a.type==='rabbit'?220:300)){tx=(a.x-p.x)/(d||1);ty=(a.y-p.y)/(d||1);spd=a.speed}
-    }else if(a.type==='boar'){
-      const threatened=a.alert>0||d<85;
-      if(threatened&&d<330){tx=(p.x-a.x)/(d||1);ty=(p.y-a.y)/(d||1);spd=a.speed*1.18;
-        if(d<40&&performance.now()-a.attackAt>1200){a.attackAt=performance.now();p.hp-=14;p.bleed=clamp(p.bleed+18,0,100);showNotice('멧돼지에게 들이받혀 출혈이 생겼다')}}
-      else if(d<180){tx=(a.x-p.x)/(d||1);ty=(a.y-p.y)/(d||1);spd=a.speed*.55}
+    const spec=SPECIES[a.type];
+    if(a.dead>0){
+      a.dead-=dt;
+      if(a.dead<=0){
+        const point=wildlifeSpawnPoint(a.type,WORLD);
+        a.hp=a.maxHp;a.x=point.x;a.y=point.y;a.alert=0;a.trail=[];
+      }
+      continue;
     }
-    if(a.wander<=0&&!(d<300)){a.wander=rand(1.5,4);const ang=rand(0,Math.PI*2);a.vx=Math.cos(ang);a.vy=Math.sin(ang)}
-    a.x=clamp(a.x+tx*spd*dt,35,WORLD.w-35);a.y=clamp(a.y+ty*spd*dt,35,WORLD.h-35);
+    const d=dist(a.x,a.y,p.x,p.y);
+    a.wander-=dt;a.alert=Math.max(0,a.alert-dt);
+    let tx=a.vx,ty=a.vy,spd=a.speed*.35;
+    const seeing=(d<spec.alert*(S.weather==='storm'?.65:1))||a.alert>0;
+    const threat=spec.kind;
+    if(seeing){
+      if(threat==='prey'||(threat==='charge'&&a.alert<=0&&d>spec.alert*.7)){
+        tx=(a.x-p.x)/(d||1);ty=(a.y-p.y)/(d||1);spd=a.speed*(threat==='prey'?1:.82);
+      }else if(threat==='predator'||threat==='charge'){
+        tx=(p.x-a.x)/(d||1);ty=(p.y-a.y)/(d||1);
+        spd=a.speed*(threat==='charge'?1.15:1.02);
+        if(d<(a.r+19)&&now-a.attackAt>1750){
+          a.attackAt=now;p.hp=Math.max(0,p.hp-(spec.damage||8));
+          p.bleed=clamp(p.bleed+(spec.damage||8)*.7,0,100);
+          showNotice(spec.name+' 공격! · 출혈 증가');
+        }
+      }
+    }else if(a.wander<=0){
+      a.wander=rand(1.5,4.6);
+      const angle=rand(0,Math.PI*2);
+      a.vx=Math.cos(angle);a.vy=Math.sin(angle);
+      tx=a.vx;ty=a.vy;
+    }
+    const length=Math.hypot(tx,ty)||1;
+    a.vx=tx/length;a.vy=ty/length;
+    a.x=clamp(a.x+a.vx*spd*dt,35,WORLD.w-35);
+    a.y=clamp(a.y+a.vy*spd*dt,35,WORLD.h-35);
+    if(now-(a.lastTrack||0)>1700&&d<960){
+      a.lastTrack=now;
+      if(!Array.isArray(a.trail))a.trail=[];
+      a.trail.push({x:a.x,y:a.y,at:now});
+      if(a.trail.length>7)a.trail.shift();
+    }
   }
 }
 
@@ -390,6 +509,10 @@ function endJoy(e){if(e.pointerId===joy.id){joy.id=null;joy.x=joy.y=0;knob.style
 stick.addEventListener('pointerup',endJoy);stick.addEventListener('pointercancel',endJoy);
 document.getElementById('interact').onclick=interact;
 document.getElementById('attack').onclick=attack;
+document.getElementById('shoot').onclick=shootBow;
+document.getElementById('track').onclick=trackWildlife;
+document.getElementById('huntBook').onclick=renderHuntingCatalog;
+document.getElementById('closeHuntBook').onclick=()=>document.getElementById('huntPanel').classList.remove('open');
 document.getElementById('eat').onclick=eat;
 document.getElementById('rest').onclick=rest;
 document.getElementById('menuBtn').onclick=()=>{document.getElementById('craft').classList.add('open');renderCraft()};
@@ -400,6 +523,7 @@ document.getElementById('begin').onclick=()=>{
   showNotice('왼쪽 조이스틱: 이동 · 오른쪽 화면: 시점 회전 · 3인칭 고정');
 };
 document.getElementById('restart').onclick=reset;
+refreshHuntButtons();
 if(S.inv.wood+S.inv.stone+S.inv.fiber+S.day>1)document.querySelector('#start p').textContent='저장된 생존 기록이 있어. 이어서 시작할 수 있어.';
 })();
 </script>
