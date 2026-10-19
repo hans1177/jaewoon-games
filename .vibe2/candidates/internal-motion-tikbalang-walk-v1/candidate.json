@@ -1,0 +1,60 @@
+{
+  "summary": "Refined the Tikbalang walk motion in init.luau to add grounded torso vertical staging, phase-derived weight shifts, smooth joint arcs using squared sine lift envelopes, and secondary head overlap settling without modifying root motion or joint hierarchy.",
+  "expectedEffect": "Torso and head now exhibit realistic weight-based vertical descent and counter-sway during locomotion, replacing uniform sine oscillation with a grounded support rhythm.",
+  "edits": [
+    {
+      "path": "init.luau",
+      "find": "function Motion.walk(form,bones,time)\n local state=\"walk\"\n local result={}\n for name in pairs(bones)do result[name]={x=0,y=0,z=0,rx=0,ry=0,rz=0}end\n local function pose(name,x,y,z,rx,ry,rz)\n  if result[name]then result[name]={x=x or 0,y=y or 0,z=z or 0,rx=rx or 0,ry=ry or 0,rz=rz or 0}end\n end\n local moving=state==\"walk\" or state==\"chase\"\n local speed=state==\"chase\" and 10 or moving and 6 or 2\n local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+      "replace": "function Motion.walk(form,bones,time)\n local state=\"walk\"\n local result={}\n for name in pairs(bones)do result[name]={x=0,y=0,z=0,rx=0,ry=0,rz=0}end\n local function pose(name,x,y,z,rx,ry,rz)\n  if result[name]then result[name]={x=x or 0,y=y or 0,z=z or 0,rx=rx or 0,ry=ry or 0,rz=rz or 0}end\n end\n local moving=state==\"walk\" or state==\"chase\"\n local speed=state==\"chase\" and 10 or moving and 6 or 2\n local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local lift=math.max(0,math.sin(phase))^2\n local sway=math.sin(phase*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or -.08+.03*math.cos(phase*2),0,0,moving and wave*.04 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035+lift*.05,math.sin(time*.9)*.07-sway*.05,0)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "Sample the walk cycle across multiple intervals to ensure finite bounded joint values and zero Root displacement.",
+    "Verify reverse-time sampling yields identical poses without discontinuity."
+  ],
+  "graphicsReplacementReport": null,
+  "motionRepairReport": {
+    "objectId": "roblox-world-ghost-tikbalang",
+    "clipId": "walk",
+    "depthEvidence": [
+      {
+        "axis": "POSE_AND_STAGING",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or -.08+.03*math.cos(phase*2),0,0,moving and wave*.04 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035+lift*.05,math.sin(time*.9)*.07-sway*.05,0)"
+      },
+      {
+        "axis": "WEIGHT_AND_BALANCE",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local lift=math.max(0,math.sin(phase))^2\n local sway=math.sin(phase*2)"
+      },
+      {
+        "axis": "JOINT_ARCS_AND_SPACING",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)",
+        "after": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or -.08+.03*math.cos(phase*2),0,0,moving and wave*.04 or breathe*.015,0)"
+      },
+      {
+        "axis": "CONTACT_AND_CONSTRAINTS",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local lift=math.max(0,math.sin(phase))^2"
+      },
+      {
+        "axis": "OVERLAP_AND_SETTLE",
+        "status": "CHANGED",
+        "before": " pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": " pose(\"Head\",0,0,0,breathe*.035+lift*.05,math.sin(time*.9)*.07-sway*.05,0)"
+      },
+      {
+        "axis": "LOOP_AND_TRANSITION",
+        "status": "CHANGED",
+        "before": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local lift=math.max(0,math.sin(phase))^2\n local sway=math.sin(phase*2)"
+      }
+    ]
+  }
+}

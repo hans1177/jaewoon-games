@@ -13,9 +13,11 @@ function Motion.walk(form,bones,time)
  local moving=state=="walk" or state=="chase"
  local speed=state=="chase" and 10 or moving and 6 or 2
  local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)
+ local lift=math.max(0,math.sin(phase))^2
+ local sway=math.sin(phase*2)
  local floating=form=="SHROUD" or form=="FLOATING_HEAD" or form=="OBJECT_SWARM" or form=="RIBBON" or form=="LANTERN"
- pose("Torso",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)
- pose("Head",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)
+ pose("Torso",0,floating and math.sin(time*2.4)*.13 or -.08+.03*math.cos(phase*2),0,0,moving and wave*.04 or breathe*.015,0)
+ pose("Head",0,0,0,breathe*.035+lift*.05,math.sin(time*.9)*.07-sway*.05,0)
  if moving then
   if form=="BEAST" or form=="CENTAUR"then
    pose("FrontLeftLeg",0,0,0,wave*.48);pose("BackRightLeg",0,0,0,wave*.48)
