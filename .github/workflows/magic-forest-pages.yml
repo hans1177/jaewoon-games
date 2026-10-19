@@ -261,6 +261,9 @@ jobs:
           // Add an optional, accessible library browser to all published HTML game routes.
           // Existing game scripts, controls, save files, and renderers remain untouched.
           for(const route of routes){
+            // Magic Forest is a game, not the internal asset-library inspector.
+            // Keep the runtime panel available to other registered games only.
+            if(route==='web-games/fantasy-survival/')continue;
             const entry=path.join(site,route,'index.html');
             const html=fs.readFileSync(entry,'utf8');
             const tag='<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script>';
