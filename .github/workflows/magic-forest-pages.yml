@@ -13,6 +13,7 @@ on:
       - ".github/workflows/magic-forest-pages.yml"
       - "tools/github-pages-landing.mjs"
       - "qa/github-pages-landing.test.mjs"
+      - "qa/vibe-browser-smoke.mjs"
 
 permissions:
   contents: write
