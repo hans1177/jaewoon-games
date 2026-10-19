@@ -518,6 +518,7 @@ export async function createWorld3d(canvas){
     getMissingAssetTypes:()=>assetReadiness.missingTypes,
     getUnmappedVisibleMonsterIds:()=>[...missingVisibleMonsterIds],
     getAdaptiveQuality:()=>qualityFactor,getFallbackReason:()=>fallbackReason,
+    getRenderStats:()=>({drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles}),
     productionReady:false
   };
 }
