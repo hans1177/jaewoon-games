@@ -165,7 +165,7 @@ test('native 3D binds exact existing monster types and adapts GPU load without c
   assert.ok(fs.existsSync('assets/shared/creature-'+kind+'-actions.glb'));
  }
  for(const id of ['shadowwolf','golem','giantspider','worldtreesnake']){
-  assert.match(moduleSource,new RegExp("'"+id+"'"));
+  assert.ok(moduleSource.includes('"'+id+'"'),'missing visual mapping for '+id);
   assert.match(index,new RegExp(id+":\\{id:'"+id+"'"));
  }
  assert.match(moduleSource,/synchronizeNativeCreatures\(state,px,py,seen\)/);
@@ -193,6 +193,45 @@ test('existing Pages pipeline tests actual 3D world after deploy and records 3D 
  assert.match(workflow,/id: forest_native_3d_live_qa/);
  assert.match(workflow,/steps\.forest_native_3d_live_qa\.outcome == 'failure'/);
  assert.match(workflow,/node qa\/vibe-browser-smoke\.mjs/);
+});
+
+test('similar-body visual mappings bind registered GLBs without altering any of 78 original monster IDs',()=>{
+ const originalBlock=index.slice(index.indexOf('const creatures='),index.indexOf('};',index.indexOf('const creatures='))+2);
+ const originalIds=[...originalBlock.matchAll(/(?:\\n|,)\\s*\\w+\\s*:\\s*\\{\\s*id\\s*:\\s*'([^']+)'/g)].map(x=>x[1]);
+ assert.equal(originalIds.length,78,'canonical monster roster drift');
+ const match=moduleSource.match(/const NATIVE_CREATURE_MODELS=Object\\.freeze\\(\\{([\\s\\S]*?)\\n\\}\\);/);
+ assert.ok(match,'visual-only family map must be present');
+ const groups=Object.fromEntries(match[1].trim().split('\\n').map(line=>{
+  const row=line.match(/^  ([a-z]+):(\\[[^\\n]*\\]),?$/);
+  assert.ok(row,'invalid source family mapping: '+line);
+  return [row[1],JSON.parse(row[2])];
+ }));
+ const sourceMatch=moduleSource.match(/const NATIVE_CREATURE_ASSET=Object\\.freeze\\(\\{([\\s\\S]*?)\\n\\}\\);/);
+ assert.ok(sourceMatch,'each family must use existing original asset files');
+ const assets=Object.fromEntries(sourceMatch[1].trim().split('\\n').map(line=>{
+  const row=line.match(/^  ([a-z]+):("[^"]+"),?$/);
+  assert.ok(row,'invalid source asset row: '+line);
+  return [row[1],JSON.parse(row[2])];
+ }));
+ const mapped=Object.values(groups).flat();
+ assert.equal(Object.keys(groups).length,10);
+ assert.equal(mapped.length,70);
+ assert.equal(new Set(mapped).size,mapped.length,'monster ID cannot have competing visual sources');
+ for(const [kind,ids] of Object.entries(groups)){
+  assert.ok(assets[kind],'missing source asset for '+kind);
+  const file='assets/shared/'+assets[kind]+'-actions.glb';
+  assert.ok(fs.existsSync(file),'downloaded original 3D asset missing '+file);
+  assert.ok(registry.assets.some(a=>a.path?.replace(/^\\//,'')===file),
+   'visual source must already be registered: '+file);
+  for(const id of ids)assert.ok(originalIds.includes(id),'invented species: '+id);
+ }
+ const notMapped=originalIds.filter(id=>!mapped.includes(id)&&id!=='wastelandMummy');
+ assert.deepEqual(notMapped.sort(),['vampirebat','worldpheasant','lakeheron','shark','giantSquid','deepAngler','lakefish'].sort());
+ assert.match(moduleSource,/getSimilarSpeciesVisualMappings:/);
+ assert.match(moduleSource,/getNativeVisualSourceAssets:/);
+ assert.match(moduleSource,/monsterRuntimeIds=new WeakMap\\(\\)/);
+ assert.doesNotMatch(moduleSource,/e\\.type\\.id\\+':'\\+e\\.x/,'animated actor key cannot change on movement');
+ assert.match(moduleSource,/productionReady:false/);
 });
 
 test('Vibe asset-selector recognizes downloaded similar assets but cannot fake unverified actor/monster readiness',()=>{
