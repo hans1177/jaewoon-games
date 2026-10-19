@@ -1,0 +1,212 @@
+// Verify downloaded native 3D asset identity before any Magic Forest release.
+// Static/source evidence is not a substitute for WebGL and mobile gameplay QA.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createHash} from 'node:crypto';
+import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../assets/vibe-environment-director.js';
+import {createVibeCharacterCustomizationRecipe} from '../assets/vibe-character-identity-director.js';
+import {createSurvivalPlayerMotionProfile} from '../assets/vibe-motion-director.js';
+import {planAssetApplication} from '../assets/asset-selector.js';
+
+
+const home='assets/shared/homely-house/';
+const names=['tree','tree_large','foliage_A','cobblestones','bench_A','fence_straight','house','gate_single','package'];
+const index=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
+const moduleSource=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
+const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+const ledger=JSON.parse(fs.readFileSync('assets/asset-license-ledger.json','utf8'));
+
+test('native preview binds actual downloaded CC0 OBJ sources with matching SHA256',()=>{
+ const legal=ledger.entries.find(e=>e.id==='tinytreats-homely-house-cc0-v1');
+ assert.ok(legal);
+ assert.equal(legal.license,'CC0');
+ assert.equal(legal.commercialUse,true);
+ assert.equal(legal.modificationUse,true);
+ assert.equal(legal.evidence.sourceGeometryQa,'OBJ_STATIC_GEOMETRY_PASS');
+ for(const name of names){
+  const path='/'+home+name+'.obj';
+  const source=fs.readFileSync(path.slice(1));
+  const item=registry.assets.find(a=>a.path===path);
+  assert.ok(item,'registry missing: '+name);
+  assert.equal(item.license,'CC0');
+  assert.match(item.sourceUrl,/Tiny-Treats-Homely-House-1\.0/);
+  assert.equal(createHash('sha256').update(source).digest('hex'),item.sourceHash,'downloaded source SHA256 drift: '+name);
+  const text=source.toString('utf8');
+  assert.match(text,/^v -?\d/m);
+  assert.match(text,/^f \d/m);
+  assert.match(moduleSource,new RegExp("'"+name+"'"));
+ }
+});
+test('native scene drives the default surface display but is not falsely production-certified',()=>{
+ assert.match(moduleSource,/WebGLRenderer/);
+ assert.match(moduleSource,/Float32BufferAttribute/);
+ assert.match(moduleSource,/computeVertexNormals/);
+ assert.match(moduleSource,/raycaster\.intersectObjects/);
+ assert.match(moduleSource,/function frame\(state,regionAt\)/);
+ assert.match(moduleSource,/if\(state\.area!=='surface'/);
+ assert.match(index,/data-spatial-dimension="3d-loading"/);
+ assert.match(index,/id="world3d"/);
+ assert.doesNotMatch(index,/loadForest3DCandidate|id="nativeForest3d"/);
+ assert.match(index,/if\(world3d\?\.isActive\(\)\)\{drawMiniMap\(now\);return\}/);
+ assert.match(index,/data-gameplay-3d-surface="native-world"/);
+ assert.doesNotMatch(index,/get\('preview3d'\)==='1'/);
+ assert.match(index,/world3d\.frame\(state,regionAt\)/);
+ assert.match(index,/world3d\?\.pick\(e\.clientX,e\.clientY\)/);
+ assert.match(index,/world3d\)world3d\.dispose\(\)/);
+});
+
+test('3D preview reads existing biome classifier and saved construction state, never regenerates the map',()=>{
+ assert.match(index,/world3d\.frame\(state,regionAt\)/);
+ assert.match(moduleSource,/function frame\(state,regionAt\)/);
+ assert.match(moduleSource,/const classify=typeof regionAt==='function'\?regionAt:/);
+ assert.match(moduleSource,/const tileBiome=String\(classify\(gx\/SCALE,gz\/SCALE\)/);
+ assert.match(moduleSource,/for\(const \[i,door\] of \(state\.doors\|\|\[\]\)\.entries\(\)\)/);
+ assert.match(moduleSource,/for\(const \[i,chest\] of \(state\.chests\|\|\[\]\)\.entries\(\)\)/);
+ assert.match(moduleSource,/addVisibleEntity\('door:'\+/);
+ assert.match(moduleSource,/addVisibleEntity\('chest:'\+/);
+ assert.match(moduleSource,/getBiome:\(\)=>currentBiome/);
+ assert.match(index,/function regionAt\(x,y\)/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+});
+
+
+test('native preview consumes existing environment, character identity and motion directors instead of duplicating behavior',()=>{
+ const plants=createVibeEnvironmentVariation({seed:20261020,count:16,mobile:true});
+ assert.equal(plants.items.length,16);
+ assert.ok(plants.items.every(v=>v.scale>=.82&&v.scale<=1.16));
+ const world=createVibeRegionWorldProfile({name:'마력숲',biome:'temperate-forest'},
+  {name:'마력숲 생존기',geography:'mixed-biome-survival-world'});
+ assert.equal(world.name,'마력숲');
+ const weather=createVibeWeatherInteractionProfile({weather:'snow',mobile:true});
+ assert.ok(weather.effects.includes('wind-drift'));
+ const persona=createVibeCharacterCustomizationRecipe(
+  {name:'마력숲 생존자',species:'humanoid',role:'magic',region:'forest'},0);
+ assert.ok(Number(persona.body.heightCm)>0);
+ const motion=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'AXE'});
+ assert.ok(motion.primaryToolMotion.includes('AXE'));
+ assert.equal(motion.rootTranslationOwnedByGameplay,true);
+ // Source bindings must actually affect visible 3D assets, not merely report a module as installed.
+ for(const label of [
+  'createVibeEnvironmentVariation({seed:20261020',
+  'model.scale.setScalar(scale*variation.scale)',
+  'createVibeWeatherInteractionProfile({weather:weatherKind',
+  'scene.fog.far=weatherVisualEffects',
+  'createVibeCharacterCustomizationRecipe(',
+  'avatarRecipe.body.heightCm',
+  'new GLTFLoader().loadAsync(HERO_URL.href)',
+  'createSurvivalPlayerMotionProfile({platform:\'WEB\'',
+  'heroMixer.clipAction(desired)'
+ ]) assert.ok(moduleSource.includes(label),'missing actual native Vibe binding: '+label);
+});
+test('downloaded KayKit mage is ledgered as preview only and source-bound to existing game player',()=>{
+ const legal=ledger.entries.find(x=>x.id==='kaykit-adventurers-cc0-v1');
+ assert.ok(legal,'KayKit license proof required');
+ assert.equal(legal.commercialUse,true);
+ assert.equal(legal.modificationUse,true);
+ assert.equal(legal.evidence.nativeRuntimeVerification,'PENDING');
+ const actor=registry.assets.find(x=>x.id==='external-actor-mage');
+ assert.ok(actor);
+ assert.equal(actor.license,'CC0-1.0');
+ assert.match(actor.path,/mage\.glb$/);
+ assert.equal(actor.productionVerified,false);
+ assert.match(moduleSource,/HERO_URL.*mage\.glb/);
+ assert.match(moduleSource,/hero\.avatar\.position\.set\(centerX,0,centerY\)/);
+ assert.match(moduleSource,/state\.keys\?\.size/);
+ assert.match(moduleSource,/state\.weather\?\.kind/);
+ assert.match(moduleSource,/getAvatarRecipe:\(\)=>avatarRecipe/);
+ assert.match(index,/type="importmap"/);
+ assert.match(index,/"three":"\.\.\/\.\.\/assets\/roblox\/world-ghosts\/native\/mesh\/three\/three\.module\.js"/);
+ assert.doesNotMatch(index,/get\('preview3d'\)==='1'/);
+ assert.match(index,/data-spatial-dimension="3d-loading"/);
+});
+
+test('native 3D binds exact existing monster types and adapts GPU load without changing their combat',()=>{
+ assert.match(moduleSource,/NATIVE_CREATURE_MODELS=Object\.freeze/);
+ for(const kind of ['wolf','golem','spider','serpent']){
+  assert.match(moduleSource,new RegExp("^  "+kind+":\\[",'m'));
+  assert.ok(fs.existsSync('assets/shared/creature-'+kind+'-actions.glb'));
+ }
+ for(const id of ['shadowwolf','golem','giantspider','worldtreesnake']){
+  assert.match(moduleSource,new RegExp("'"+id+"'"));
+  assert.match(index,new RegExp(id+":\\{id:'"+id+"'"));
+ }
+ assert.match(moduleSource,/synchronizeNativeCreatures\(state,px,py,seen\)/);
+ assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
+ assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+ assert.match(moduleSource,/getUnmappedVisibleMonsterIds:/);
+ assert.match(moduleSource,/unsafeUnmappedEncounter/);
+ assert.match(moduleSource,/getRenderStats:/);
+ assert.match(moduleSource,/renderer\.info\.render\.triangles/);
+ assert.match(index,/dataset\.nativeTriangles=String\(nativeDraw\.triangles\)/);
+ assert.match(moduleSource,/renderer\.setPixelRatio\(Math\.min\(window\.devicePixelRatio\|\|1,1\.5\)\*qualityFactor\)/);
+ assert.match(index,/MAGIC_FOREST_NATIVE_3D_FRAME_FAILED/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+ assert.match(moduleSource,/productionReady:false/);
+});
+
+test('existing Pages pipeline tests actual 3D world after deploy and records 3D failures',()=>{
+ const smoke=fs.readFileSync('qa/vibe-browser-smoke.mjs','utf8');
+ const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+ assert.match(smoke,/web-games\/fantasy-survival\//);
+ assert.match(smoke,/metrics\.drawCalls>4&&metrics\.triangles>400/);
+ assert.match(smoke,/game\.keyboard\.down\('d'\)/);
+ assert.match(smoke,/restoredX/);
+ assert.match(smoke,/server\?\.kill\(\)/);
+ assert.match(workflow,/id: forest_native_3d_live_qa/);
+ assert.match(workflow,/steps\.forest_native_3d_live_qa\.outcome == 'failure'/);
+ assert.match(workflow,/node qa\/vibe-browser-smoke\.mjs/);
+});
+
+test('Vibe asset-selector recognizes downloaded similar assets but cannot fake unverified actor/monster readiness',()=>{
+ const plan=planAssetApplication({
+  prompt:'마력숲 캐릭터 몬스터 숲 나무',
+  manifest:{assets:[
+   {id:'external-tinytreats-tree-v1',types:['prop','background'],
+    path:'assets/shared/homely-house/tree.obj',license:'CC0',downloaded:true},
+   {id:'external-actor-mage',types:['character'],
+    path:'assets/roblox/actors/native/mage.glb',license:'CC0-1.0',
+    downloaded:true,verifiedAnimation:false}
+  ]}
+ });
+ assert.ok(plan.matched.some(x=>x.id==='external-tinytreats-tree-v1'));
+ assert.ok(plan.missingTypes.includes('character'),'an unverified actor must not be promoted');
+ assert.ok(plan.missingTypes.includes('enemy'),'similar-species monster downloads are still required');
+ assert.equal(plan.sourceBindingVerified,false);
+ assert.equal(plan.nativeRuntimeVerified,false);
+ assert.equal(plan.appliedToGame,false);
+ assert.equal(plan.ready,false);
+ assert.match(moduleSource,/planAssetApplication\(/);
+ assert.match(moduleSource,/getMissingAssetTypes:\(\)=>assetReadiness\.missingTypes/);
+ assert.match(moduleSource,/productionReady:false/);
+});
+
+
+test('downloaded KayKit skeleton is only a license-proven undead species proxy and never alters monster behavior',()=>{
+ const legal=ledger.entries.find(e=>e.id==='kaykit-skeletons-cc0-v1');
+ assert.ok(legal,'official KayKit Skeletons CC0 source evidence must be present');
+ assert.equal(legal.license,'CC0-1.0');
+ assert.equal(legal.commercialUse,true);
+ assert.equal(legal.modificationUse,true);
+ assert.equal(legal.evidence.nativeRuntimeVerification,'PENDING');
+ assert.equal(legal.evidence.publicReleaseClaimed,false);
+ assert.match(legal.evidence.licenseUrl,/KayKit-Character-Pack-Skeletons-1\.0/);
+ const actor=registry.assets.find(x=>x.id==='external-actor-skeleton-warrior');
+ assert.ok(actor);
+ assert.equal(actor.productionVerified,false);
+ assert.equal(actor.license,'CC0-1.0');
+ assert.ok(actor.sourceHash&&actor.sourceHash.length===64);
+ assert.match(actor.path,/skeleton-warrior\.glb$/);
+ assert.match(moduleSource,/UNDEAD_URL.*skeleton-warrior\.glb/);
+ assert.match(moduleSource,/cloneAnimatedRig\(undeadSource\)/);
+ assert.match(moduleSource,/synchronizeUndead\(state,px,py,seen\)/);
+ assert.match(moduleSource,/e\?\.type\?\.id==='wastelandMummy'/);
+ assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+ assert.match(moduleSource,/actor\.mixer\.clipAction\(clip\)/);
+ assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
+ assert.match(moduleSource,/child\.userData\.worldPoint=\{x:e\.x,y:e\.y\}/);
+ assert.match(moduleSource,/interactables\.push\(child\)/);
+ assert.match(moduleSource,/undeadProxySourceLoaded:!!undeadSource/);
+ assert.match(moduleSource,/productionReady:false/);
+ assert.match(index,/wastelandMummy:\{id:'wastelandMummy',name:'황무지 미라',mood:'aggressive',hp:1800,dmg:88,speed:64,r:30/);
+});
