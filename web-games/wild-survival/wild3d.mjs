@@ -41,7 +41,7 @@ function normalizedAsset(scene,height){
 }
 async function loadOriginalSet(){
   const glb=new GLTFLoader(),obj=new OBJLoader(),mtl=new MTLLoader();
-  const models=new Map(),errors=[];
+  const models=new Map(),errors=[],clips=new Map();
   const mtlCache=new Map();
   await Promise.all(Object.entries(ORIGINAL_ASSETS).map(async ([id,source])=>{
     try {
@@ -49,6 +49,7 @@ async function loadOriginalSet(){
       if(source.kind==='glb'){
         const sourceFile=await glb.loadAsync(url(source.model).href);
         scene=sourceFile.scene;
+        clips.set(id,sourceFile.animations||[]);
       }else{
         // The original OBJ vertices and every per-face .mtl material are preserved.
         let materials=mtlCache.get(source.mtl);
@@ -65,7 +66,7 @@ async function loadOriginalSet(){
       models.set(id,normalizedAsset(scene,source.height));
     }catch(error){errors.push({id,reason:String(error?.message||error)});}
   }));
-  return {models,errors};
+  return {models,errors,clips};
 }
 function originalClone(source){
   // Only static OBJ assets are duplicated; the skinned GLB is used once as the player.
@@ -139,6 +140,8 @@ export function createWild3D({canvas,WORLD,resources,animals}){
   rain.add(rainLine);rain.visible=false;
   const keyStatus=document.getElementById('renderStatus');
   let ready=false,assetErrors=[],models=new Map(),props=[],creatures=[],hero=null,camp=null,fire=null;
+  let heroMixer=null,heroAction=null,heroActionName='';
+  // Use the authoritative render timestamp for original GLB actions.
   const load=loadOriginalSet().then(result=>{
     models=result.models;assetErrors=result.errors;
     document.body.dataset.nativeAssetLoaded=String(models.size);
@@ -163,6 +166,12 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     });
     hero=models.get('player');
     hero.position.set(0,0,0);world.add(hero);
+    const playableClips=result.clips.get('player')||[];
+    if(playableClips.length){
+      heroMixer=new THREE.AnimationMixer(hero);
+      hero.userData.originalActionClips=playableClips;
+      document.body.dataset.nativeAnimationClips=String(playableClips.length);
+    }
     camp=originalCamp(world,models);
     fire=attachModel(world,models.get('lamp'),0,0);
     document.body.dataset.nativeAssetsBound=String(props.filter(Boolean).length+creatures.filter(Boolean).length+3);
@@ -173,6 +182,7 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     if(keyStatus){keyStatus.hidden=false;keyStatus.textContent='원본 3D 에셋 연결 실패: '+String(error?.message||error);}
   });
   let frames=0,w=innerWidth,h=innerHeight,glLost=false,last=performance.now();
+  let lastPlayerX=NaN,lastPlayerY=NaN;
   canvas.addEventListener('webglcontextlost',e=>{
     e.preventDefault();glLost=true;document.body.dataset.spatialDimension='3d-error';
     if(keyStatus){keyStatus.hidden=false;keyStatus.textContent='WebGL 연결이 끊어졌어. 다시 열어 줘.';}
@@ -197,6 +207,21 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     });
     hero.position.set(p.x/SCALE,0,p.y/SCALE);
     hero.rotation.y=Math.atan2(-p.faceX,-p.faceY);
+    if(heroMixer&&hero.userData.originalActionClips){
+      const moving=S.started&&!S.dead&&(Math.hypot(p.x-lastPlayerX,p.y-lastPlayerY)>.35);
+      const clips=hero.userData.originalActionClips;
+      const desired=moving?clips.find(c=>/walk|run|jog|move/i.test(c.name)):
+        clips.find(c=>/idle|breathe|stand/i.test(c.name));
+      const selected=desired||clips[0];
+      if(selected&&selected.name!==heroActionName){
+        const action=heroMixer.clipAction(selected);
+        action.reset().play();
+        if(heroAction&&heroAction!==action)heroAction.fadeOut(.18);
+        action.fadeIn(.18);heroAction=action;heroActionName=selected.name;
+      }
+      heroMixer.update(Math.min(.05,Math.max(.001,(now-last)/1000)));
+    }
+    lastPlayerX=p.x;lastPlayerY=p.y;
     if(camp){
       camp.visible=Number(S.camp.shelter)>0;
       camp.position.set(S.camp.x/SCALE,0,S.camp.y/SCALE);
