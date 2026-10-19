@@ -284,7 +284,12 @@ export async function createWorld3d(canvas){
         }
         continue;
       }
-      if(++displayed>(mobileBudget?12:22))break;
+      // Rendering limits must not create invisible, attacking monsters.
+      if(displayed>=(mobileBudget?12:22)){
+        if(Math.hypot(e.x-px,e.y-py)<430)unsafeUnmappedEncounter=true;
+        continue;
+      }
+      displayed++;
       const key=String(e.netId||e.id||e.type.id+':'+e.x+':'+e.y);
       let actor=nativeCreatureActors.get(key);
       if(!actor){
