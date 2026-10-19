@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-7r7vn2",
+      "worker": "vibe2",
+      "taskId": "wild-survival-studio-evolution-roblox-stability-v1",
+      "gameId": "wild-survival",
+      "files": [
+        "roblox-games/wild-survival/client/Game.client.luau",
+        "roblox-games/wild-survival/shared/GameConfig.luau",
+        "roblox-games/wild-survival/server/Game.server.luau"
+      ],
+      "baseSha": "5c0c08a8da6dff703ea67d0e5255097210249b0c",
+      "runId": "39257436432",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-19T13:14:43.293Z",
+      "expiresAt": "2026-10-19T13:59:43.293Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:wild-survival-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
