@@ -28,8 +28,8 @@ test('3D scene consumes live authoritative survival entities and native asset',(
   assert.match(runtime,/resources\.map\s*\(/);
   assert.match(runtime,/animals\.map\s*\(/);
   assert.match(runtime,/resources\[i\]\.amount/);
-  assert.match(runtime,/animal\.dead/);
-  assert.match(runtime,/animal\.x\/SCALE/);
+  assert.match(runtime,/a\.dead/);
+  assert.match(runtime,/a\.x\/SCALE/);
   assert.match(runtime,/p\.x\/SCALE/);
   assert.match(runtime,/S\.camp\.shelter/);
   assert.match(runtime,/S\.camp\.fire/);
