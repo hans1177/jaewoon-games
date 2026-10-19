@@ -1355,7 +1355,7 @@ test('Vibe libraries and development tools rematch updated APIs for existing sav
 
 // 내부 개발도구: 이름 목록과 실제 제작 구현 문맥을 구분한다.
 // 메인 · F0 모든 게임의 기존 제작 도구를 설계·장르 제한 없이 현재 실제 소스에서 재탐색한다.
-test('F0 rematches existing customization housing action modules without generating a new subsystem',()=>{
+test('Vibe libraries and development tools rematch F0 existing customization housing action modules without generating new subsystem',()=>{
   const cwd=tempRoot();
   write(path.join(cwd,'assets/vibe-character-identity-director.js'),
     'export function createVibeCharacterCustomization(model) { return model; }\n');
@@ -1390,7 +1390,7 @@ test('F0 rematches existing customization housing action modules without generat
 });
 
 // 메인 · 공통 게임 시스템 수 증가에 대응하여 실제 소스 근거에 맞는 API만 작업 문맥에 선정한다.
-test('F0 selects existing NPC quest crafting economy weather physics and progression APIs by source',()=>{
+test('Vibe libraries and development tools rematch F0 NPC quest crafting economy weather physics progression APIs by source',()=>{
   const cwd=tempRoot();
   const modules={
     'assets/common-ai.js':'export class JaewoonCommonAI {}',
@@ -1434,7 +1434,7 @@ test('F0 selects existing NPC quest crafting economy weather physics and progres
 });
 
 // 메인 · 전체 게임 코드에서 찾은 깊은 위치 모듈을 워커의 짧은 파일 창에도 반영한다.
-test('F0 worker uses only matching game source-backed module evidence, not design-only or foreign hints',()=>{
+test('Vibe libraries and development tools rematch F0 game-source-backed modules without foreign or design-only hints',()=>{
   const cwd=tempRoot();
   write(path.join(cwd,'assets/crafting-recipes.js'),
     'export class JaewoonCraftingRecipes {}\n');
