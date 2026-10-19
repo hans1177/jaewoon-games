@@ -1,9 +1,20 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
 import {connectVibeCharacter} from '../assets/vibe-character-adapter.mjs';
 const design=JSON.parse(readFileSync(new URL('../assets/vibe-visual-design-system.json',import.meta.url)));
 const originalFetch=globalThis.fetch;
+test('asset preview accepts its built-in smoke route but rejects unsafe external model paths',()=>{
+ const source=readFileSync(new URL('../assets/vibe-model-preview.html',import.meta.url),'utf8');
+ const validation=source.match(/^if\(asset&&.*$/m)?.[0];
+ assert.ok(validation,'empty asset means the existing built-in preview, not a path failure');
+ for(const [asset,invalid] of [['',false],['assets/hero.glb',false],['assets/../hero.glb',true],['https://other.test/hero.glb',true]]){
+  let rejected=false;try{vm.runInNewContext(validation,{asset,status:{textContent:''}})}catch{rejected=true}
+  assert.equal(rejected,invalid,asset||'built-in preview');
+ }
+ assert.doesNotMatch(source,/const performance\s*=/,'character acting cannot shadow the browser timing API');
+});
 function mockThree(log){
  class Action {
   constructor(name){this.name=name}

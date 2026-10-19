@@ -1133,12 +1133,14 @@
       "actionType": "PIPELINE_BOTTLENECK_REPAIR",
       "problem": "The existing Pages publisher injected a shared asset catalogue button into every Web game. Asset candidates and preview controls are not actual game renderer consumption. Incremental presentation QA could accept unrelated image and drawing keywords.",
       "decision": "Remove only publication-time asset browser injection; retain library and preview sources. Require renderer consumption in existing incremental QA and reject catalogue substitutes in existing source-worker binding checks. Preserve every game source, save key, progression and balance.",
-      "change": "Updated existing magic-forest-pages workflow, source worker and incremental QA with targeted regression cases. No new pipeline or game created.",
+      "change": "Updated existing magic-forest-pages workflow, source worker and incremental QA with targeted regression cases. No new pipeline or game created. Fixed the existing preview smoke-route rejection and renamed character acting state to preserve window.performance; no smoke assertions were removed.",
       "evidence": [
         "Base main 08ab0b46c42182239417fd33e801d2fcf80613a7 and all four central documents read; constitution prewrite check passed.",
         "Local node --test qa/vibe2-incremental-qa.test.mjs: 42 passed, 0 failed.",
         "Local source-worker targeted Web engine prompt and Unity/Web dynamic asset-binding tests: 3 passed, 0 failed.",
-        "git diff --check passed. No individual game source changed; native 3D model integration and mobile runtime remain unverified."
+        "git diff --check passed. No individual game source changed; native 3D model integration and mobile runtime remain unverified.",
+        "Preview path security regression and character integration: 3 passed. Existing desktop browser smoke passed using exact three@0.160.1 bytes served from the npm package because the local environment could not reach the CDN directly. External CDN and Cloudflare deployment remain unverified.",
+        "390x844 touch-device preview smoke passed with exact three@0.160.1 npm bytes. This verifies the preview only, not any game model integration or production deployment."
       ],
       "learningState": "TRACE_ONLY_UNTIL_VERIFIED_RUNTIME",
       "runtimeVerified": false,
