@@ -1,0 +1,29 @@
+{
+  "summary": "Fix Vibe2 system steward and test source files by replacing outdated test assertions with exact anchor matches and ensuring proper causal regression coverage for system architecture self-evolution.",
+  "expectedEffect": "Successfully passes the exact anchor match verification, preserves all quality/security gates, and confirms structural system steward stability under self-evolution recovery cycles.",
+  "edits": [
+    {
+      "path": "qa/vibe2-system-steward.test.mjs",
+      "find": "  assert.equal(result.queue.tasks.find(t=>t.id==='stale').status,'queued');",
+      "replace": "  assert.equal(result.queue.tasks.find(t=>t.id==='stale').status,'queued');\n  assert.equal(result.queue.tasks.find(t=>t.id==='stale').lastOutcome,'SYSTEM_STEWARD_STALE_LEASE_RECOVERED');"
+    },
+    {
+      "path": "tools/vibe2-system-steward.mjs",
+      "find": "const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null});",
+      "replace": "const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:task.lastOutcome||'SYSTEM_STEWARD_RESERVATION_CLEARED'});"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "qa/vibe2-system-steward.test.mjs"
+  ],
+  "graphicsReplacementReport": {
+    "actualCount": 0,
+    "changedSurfaces": [],
+    "reuseModesUsed": [],
+    "replacementEvidence": [],
+    "before": "N/A",
+    "after": "N/A"
+  }
+}
