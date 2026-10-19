@@ -9,12 +9,220 @@
 <title>마력숲 생존기</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1712;color:#f3fff6;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}body{position:fixed;inset:0}button{font:inherit;touch-action:manipulation}#game{position:absolute;inset:0;width:100%;height:100%;display:block;background:#1c3629;touch-action:none}.hud{position:absolute;left:max(7px,env(safe-area-inset-left));right:max(7px,env(safe-area-inset-right));top:max(7px,env(safe-area-inset-top));display:flex;gap:6px;align-items:flex-start;pointer-events:none}.card{pointer-events:auto;background:#0c1915e8;border:1px solid #d9f4e02d;border-radius:12px;padding:7px 9px;box-shadow:0 5px 16px #0006}.main{flex:1;min-width:0}.top{display:flex;align-items:center;gap:7px}.title{font-size:12px;font-weight:1000;white-space:nowrap}.hp{height:9px;flex:1;min-width:70px;max-width:200px;border-radius:999px;overflow:hidden;background:#3b2026}.foodMeter{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:9px;font-weight:900;color:#f6d88f}.foodBar{height:7px;flex:1;max-width:200px;border-radius:999px;overflow:hidden;background:#45351d}.foodBar>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#d89a3c,#f4d26c)}.questLine{margin-top:5px;padding:4px 7px;border-radius:8px;background:#4f423066;color:#ffe7a4;font-size:9px;font-weight:1000}.storyText{font-size:13px;line-height:1.55;padding:12px;border-radius:12px;background:#111b17;border:1px solid #ffffff18;margin-bottom:8px}.recorderOverlay{position:absolute;left:50%;top:18%;transform:translateX(-50%);width:min(520px,88vw);z-index:45;background:#080d10ed;border:1px solid #8ea0a866;border-radius:14px;padding:12px 14px;display:none;box-shadow:0 14px 38px #000a}.recorderOverlay.on{display:block}.recorderTitle{font-size:12px;font-weight:1000;color:#d9e5ea;margin-bottom:7px}.recorderCaption{white-space:pre-line;font-size:12px;line-height:1.55;color:#d5ddd9}.recorderState{font-size:9px;color:#8fa5ae;margin-top:8px}.storyChoices{display:grid;gap:7px}.storyChoices button{min-height:44px;border:1px solid #ffffff22;border-radius:11px;background:#314a3e;color:#fff;font-weight:1000;padding:8px}.hp>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#e95568,#f3916f)}.small{font-size:10px;font-weight:900;white-space:nowrap}.sub{display:flex;gap:7px;flex-wrap:wrap;margin-top:4px;color:#bad0c1;font-size:9px;font-weight:850}.sub b{color:#fff}.res{display:grid;grid-template-columns:auto auto;gap:3px 8px;font-size:9px;font-weight:1000;white-space:nowrap}.saveStack{display:flex;flex-direction:column;gap:4px;pointer-events:auto}.bgmVolume{pointer-events:auto;display:flex;align-items:center;gap:5px;min-height:44px;padding:0 6px;border:1px solid #ffffff2c;border-radius:10px;background:#1d352b;color:#fff;font-size:8px;font-weight:1000}.bgmVolume input{width:70px;accent-color:#bfe5c8}.save,.bestiary,.multiBtn,.home{pointer-events:auto;min-width:44px;min-height:44px;border:1px solid #ffffff2c;border-radius:10px;background:#1d352b;color:#fff;font-size:10px;font-weight:1000;text-decoration:none;display:flex;align-items:center;justify-content:center;padding:0 7px}.bestiary{border:1px solid #ffffff2c;border-radius:10px;background:#243426;color:#fff;font-size:10px;font-weight:1000;padding:0 7px}.multiBtn{background:#31445f}.multiPanel{position:absolute;right:max(8px,env(safe-area-inset-right));top:80px;width:min(310px,88vw);display:none;background:#0b151deF;border:1px solid #98b9e744;border-radius:14px;padding:10px;z-index:40;box-shadow:0 12px 30px #000a}.multiPanel.open{display:block}.multiHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}.multiHead button{width:44px;height:44px;border:0;border-radius:8px;background:#ffffff12;color:#fff}.multiStatus{font-size:10px;color:#b9cde8;margin-bottom:7px}.multiRoom{width:100%;height:44px;border:1px solid #ffffff24;border-radius:10px;background:#101b25;color:#fff;padding:0 10px;font-weight:1000;text-transform:uppercase}.multiRow{display:flex;gap:7px;margin-top:7px}.multiRow button{flex:1;min-height:44px;border:0;border-radius:10px;background:#385478;color:#fff;font-size:10px;font-weight:1000}.multiRow button:last-child{background:#4a3d52}.optionsPanel{position:absolute;right:max(8px,env(safe-area-inset-right));top:80px;width:min(320px,90vw);display:none;background:#0b151df5;border:1px solid #98b9e744;border-radius:14px;padding:10px;z-index:41;box-shadow:0 12px 30px #000a}.optionsPanel.open{display:block}.optionHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.optionHead button{width:44px;height:44px;border:0;border-radius:8px;background:#ffffff12;color:#fff}.optionRow{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:48px;padding:6px 0;border-top:1px solid #ffffff12;font-size:10px;font-weight:900}.optionRow:first-of-type{border-top:0}.optionRow button,.optionRow select{min-height:44px;border:1px solid #ffffff22;border-radius:10px;background:#1d352b;color:#fff;padding:0 10px;font-weight:1000}.optionRow button{min-width:108px}.optionRow input[type=range]{width:138px;accent-color:#bfe5c8}.difficultyInfo{margin-top:6px;padding:7px 8px;border-radius:9px;background:#ffffff0d;color:#bfd0c4;font-size:9px;line-height:1.45}.miniMapWrap{position:absolute;left:max(8px,env(safe-area-inset-left));right:auto;top:max(118px,calc(env(safe-area-inset-top) + 110px));width:132px;height:132px;padding:4px;border-radius:50%;background:#07110de8;border:2px solid #d7efe035;box-shadow:0 5px 18px #0008;z-index:18;pointer-events:none;overflow:hidden}.miniMapWrap b{position:absolute;left:50%;bottom:5px;transform:translateX(-50%);z-index:2;margin:0;padding:2px 6px;border-radius:999px;background:#07110dbb;font-size:8px;color:#d8eadf;white-space:nowrap}.miniMap{display:block;width:100%;height:100%;aspect-ratio:1/1;border-radius:50%;background:#08120d}.blueprintRotate{position:absolute;left:50%;bottom:max(145px,calc(env(safe-area-inset-bottom) + 130px));transform:translateX(-50%);display:none;min-width:88px;min-height:46px;border:1px solid #ccefff66;border-radius:13px;background:#31586be8;color:#fff;font-weight:1000;z-index:36;touch-action:manipulation}.blueprintRotate.on{display:block}.blueprintBuild{display:none;width:62px;height:48px;border:1px solid #dfffd788;border-radius:14px;background:linear-gradient(145deg,#397642,#58a35f);color:#fff;font-size:11px;font-weight:1000;touch-action:manipulation;box-shadow:0 0 0 2px #bff6c733 inset}.blueprintBuild.on{display:block}.notice{position:absolute;top:82px;left:50%;transform:translateX(-50%);max-width:min(88vw,460px);padding:8px 11px;border-radius:10px;background:#07110de9;border:1px solid #ffffff25;text-align:center;font-size:11px;font-weight:900;opacity:0;transition:.18s;pointer-events:none;z-index:30}.notice.on{opacity:1}.stick{position:absolute;left:max(15px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));width:116px;height:116px;border:2px solid #e5ffe637;border-radius:50%;background:#07110c70;touch-action:none}.knob{position:absolute;left:34px;top:34px;width:48px;height:48px;border-radius:50%;background:#effff0d9;border:2px solid #fff7}.actions{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:max(17px,env(safe-area-inset-bottom));display:flex;align-items:flex-end;gap:7px}.utilityStack,.combatStack{display:flex;flex-direction:column;align-items:center;gap:5px}.act{border:1px solid #ffffff43;color:#fff;font-size:11px;font-weight:1000;background:#254538e8;touch-action:manipulation}.act:disabled{opacity:.55}.act:active{transform:scale(.96)}.gather,.autoGather,.craft,.inventory,.map,.dismount{width:62px;height:54px;border-radius:16px}.dismount{display:none;background:linear-gradient(145deg,#5e4b70,#8b66a5)}.dismount.ready{display:block}.gather{background:linear-gradient(145deg,#5b482f,#896737)}.autoGather{height:44px;border-radius:14px;background:linear-gradient(145deg,#34483d,#486858);font-size:9px}.autoGather.on{background:linear-gradient(145deg,#326342,#4d8b5f);box-shadow:0 0 0 2px #9ee6b733 inset}.craft{background:linear-gradient(145deg,#315247,#43785f)}.inventory{background:linear-gradient(145deg,#3a465d,#586b8c)}.map{display:none;width:78px;height:44px;border-radius:14px;background:linear-gradient(145deg,#4a3e62,#755e91)}.map.ready{display:block}.mapCanvas{display:block;width:100%;height:auto;aspect-ratio:3/2;background:#050b08;border:1px solid #ffffff24;border-radius:12px;image-rendering:auto}.bookTabs{display:flex;gap:5px;overflow-x:auto;margin-bottom:8px}.bookTabs button{border:0;border-radius:9px;background:#ffffff12;color:#fff;min-height:44px;padding:0 9px;font-weight:900;white-space:nowrap}.bookTabs button.on{background:#5d704c}.bookGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.bookCard{border:1px solid #ffffff20;border-radius:12px;background:#101d18;padding:7px}.creaturePortrait{height:118px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:linear-gradient(180deg,#24372f 0%,#122019 62%,#0b130f 100%);border:1px solid #ffffff18}.creaturePortrait svg{width:100%;height:100%;display:block}.creaturePortrait .fog{opacity:.38}.tierBadge{display:inline-block;margin-left:5px;padding:1px 5px;border-radius:999px;background:#d9c26b22;border:1px solid #e7d47b55;color:#ffe98e;font-size:8px}.recordCard{padding:10px;border-radius:11px;background:#171b17;border:1px solid #ffffff18;margin-bottom:8px}.recordCard h4{margin:0 0 6px}.recordCard p{white-space:pre-line;line-height:1.55;color:#d7d5c8;font-size:10px}.blood{color:#d35b67;font-weight:900}.bookCard h4{margin:6px 0 3px;font-size:12px}.bookCard p{margin:0;color:#bdd0c4;font-size:9px;line-height:1.4}.lockedPortrait{height:105px;border-radius:10px;background:repeating-linear-gradient(135deg,#111,#111 8px,#181818 8px,#181818 16px);display:flex;align-items:center;justify-content:center;font-size:26px;color:#777}.bossBanner{position:absolute;left:50%;top:115px;transform:translateX(-50%);padding:6px 10px;border-radius:9px;background:#160b10dd;border:1px solid #ff9fbd55;font-size:11px;font-weight:1000;z-index:22;display:none}.bossBanner.on{display:block}.attack{display:none;width:78px;height:78px;border-radius:50%;background:linear-gradient(145deg,#74333a,#b64c56)}.attack.ready{display:block}.sheet{position:absolute;right:8px;top:76px;bottom:104px;width:min(390px,52vw);display:none;flex-direction:column;background:#091712f6;border:1px solid #ffffff25;border-radius:16px;overflow:hidden;box-shadow:0 10px 28px #0009;z-index:20}.sheet.open{display:flex}.sheetHead{display:flex;align-items:center;gap:7px;padding:8px;border-bottom:1px solid #ffffff1c;min-height:50px}.tabs{display:flex;gap:5px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;flex:1;scrollbar-width:thin;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}.tabs::-webkit-scrollbar{height:5px}.tabs::-webkit-scrollbar-thumb{background:#ffffff35;border-radius:999px}.tab,.close{border:0;border-radius:9px;background:#ffffff12;color:#fff;min-height:44px;padding:0 10px;font-weight:1000;white-space:nowrap}.tab.on{background:#376a53}.close{width:44px;padding:0;font-size:18px;flex:0 0 auto}.sheetBody{padding:9px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;min-height:0}.info{padding:9px;border-radius:11px;background:#173027;border:1px solid #ffffff12;margin-bottom:8px;font-size:11px;line-height:1.45}.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.recipe,.invItem{min-height:82px;text-align:left;border:1px solid #ffffff1d;border-radius:11px;background:#162a22;color:#fff;padding:8px}.recipe:disabled,.invItem:disabled{opacity:.4}.recipe b,.invItem b{display:block;font-size:12px;margin-bottom:3px}.recipe small,.invItem small{display:block;color:#b8d0c0;font-size:9px;line-height:1.4}.recipe .cost{margin-top:4px;color:#ffe09b;font-weight:900}.invSection{margin:10px 0 6px;font-size:11px;font-weight:1000;color:#d8f6df}.invMaterials{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:8px}.mat{padding:8px;border-radius:10px;background:#12251e;border:1px solid #ffffff12;font-size:10px}.mat b{float:right;color:#ffe09b}.slot{margin-top:5px;color:#98e8b8!important;font-weight:900}.smelt{position:absolute;right:max(10px,env(safe-area-inset-right));bottom:112px;width:min(290px,78vw);display:none;background:#17140ff2;border:1px solid #ffd59138;border-radius:14px;padding:10px;z-index:25;box-shadow:0 10px 28px #0009}.smelt.open{display:block}.smelt h3{font-size:13px;margin:0 0 6px}.smelt p{font-size:10px;color:#d7c7a8;margin:5px 0}.smeltRow{display:flex;gap:7px;flex-wrap:wrap}.cookPick{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}.cookPick select{width:100%;min-height:44px;border:1px solid #ffffff22;border-radius:10px;background:#14251e;color:#fff;padding:0 8px;font-weight:900}.cookBtn{width:100%;min-height:44px;border:0;border-radius:11px;background:#b96f3f;color:#fff;font-weight:1000}.cookBtn:disabled{opacity:.4}.smelt button{border:0;border-radius:10px;min-height:44px;padding:0 12px;font-weight:1000}.smeltBtn{flex:1;background:#d88143;color:#1c1108}.smeltClose{width:44px;background:#ffffff14;color:#fff}.progress{height:7px;background:#241d15;border-radius:999px;overflow:hidden;margin-top:8px}.progress i{display:block;height:100%;width:0;background:#ffb45f}.legend{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);font-size:9px;font-weight:850;color:#c7dccf;background:#07120dc4;border:1px solid #ffffff16;border-radius:9px;padding:5px 8px;pointer-events:none}.flash{position:absolute;inset:0;background:#ff4d6530;opacity:0;pointer-events:none;transition:.1s}.flash.on{opacity:1}@media(max-width:720px){.miniMapWrap{width:112px;height:112px;top:max(118px,calc(env(safe-area-inset-top) + 108px))}.optionsPanel{top:max(72px,calc(env(safe-area-inset-top) + 54px));max-height:72dvh;overflow-y:auto}.bookGrid{grid-template-columns:1fr 1fr}.sheet{left:max(7px,env(safe-area-inset-left));right:max(7px,env(safe-area-inset-right));top:auto;bottom:max(7px,env(safe-area-inset-bottom));width:auto;max-height:72dvh}.sheetBody{padding-bottom:max(10px,env(safe-area-inset-bottom))}.smelt{left:max(7px,env(safe-area-inset-left));right:max(7px,env(safe-area-inset-right));bottom:max(7px,env(safe-area-inset-bottom));width:auto;max-height:68dvh;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}.multiPanel{top:max(72px,calc(env(safe-area-inset-top) + 54px));max-height:70dvh;overflow-y:auto;overscroll-behavior:contain}.notice{top:max(72px,calc(env(safe-area-inset-top) + 54px))}.legend{display:none}.hud{gap:4px}.card{padding:6px 7px}.res{display:none}.save,.home{min-width:44px;min-height:44px;padding:0 5px}.grid{grid-template-columns:1fr 1fr}}@media(max-width:430px){.miniMapWrap{width:102px;height:102px;top:max(112px,calc(env(safe-area-inset-top) + 102px))}.bookGrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.stick{width:106px;height:106px}.knob{left:31px;top:31px;width:44px;height:44px}.actions{gap:5px}.gather,.autoGather,.craft,.inventory{width:54px;height:50px;font-size:10px}.autoGather{height:44px;font-size:9px}.map{width:68px;height:44px;font-size:10px}.attack{width:68px;height:68px}}
-.startScreen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 50% 40%,#316248 0%,#142e24 55%,#071510 100%);overflow:auto}.startScreen[hidden],.startScreen [hidden],.creativePanel[hidden]{display:none!important}.startCard{width:min(440px,95vw);max-height:94dvh;overflow:auto;text-align:center;border:1px solid #b4eac277;background:#10271fef;padding:clamp(20px,5vw,36px);border-radius:24px;box-shadow:0 20px 60px #0009}.startCard h1{font-size:clamp(30px,7vw,48px);margin:12px 0;color:#e7ffe7;text-shadow:0 0 20px #83d9a077}.startCard p{color:#c5dfcd;font-size:13px;line-height:1.6}.startAction{display:block;width:100%;min-height:50px;border:1px solid #9ce7bb77;border-radius:12px;background:#376d50;color:#fff;font-weight:900;margin:10px 0;padding:10px}.startAction.secondary{background:#293e35}.optionsPanel.menuOptions{display:block;z-index:111;top:50%;left:50%;right:auto;transform:translate(-50%,-50%);max-height:85dvh;overflow:auto}.creativePanel{position:fixed;inset:0;z-index:75;background:#000a;display:flex;align-items:center;justify-content:center;padding:12px}.creativeBox{width:min(410px,94vw);max-height:90dvh;overflow:auto;background:#122b21;color:#f3fff6;border:1px solid #a4e9b488;border-radius:18px;padding:17px;box-shadow:0 18px 50px #000a}.creativeBox h3{margin:2px 0 10px}.creativeBox label{display:block;margin:9px 0 5px;font-size:13px;font-weight:800}.creativeBox select,.creativeBox input{width:100%;min-height:44px;border:1px solid #accbb48c;border-radius:9px;background:#1d3b2c;color:white;padding:8px;font-size:15px}.creativeButtons{display:flex;gap:8px;margin-top:14px}.creativeButtons button{flex:1;min-height:46px;border:0;border-radius:10px;color:#fff;background:#397953;font-weight:800}.creativeButtons button:last-child{background:#485b52}</style>
+.startScreen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 50% 40%,#316248 0%,#142e24 55%,#071510 100%);overflow:auto}.startScreen[hidden],.startScreen [hidden],.creativePanel[hidden]{display:none!important}.startCard{width:min(440px,95vw);max-height:94dvh;overflow:auto;text-align:center;border:1px solid #b4eac277;background:#10271fef;padding:clamp(20px,5vw,36px);border-radius:24px;box-shadow:0 20px 60px #0009}.startCard h1{font-size:clamp(30px,7vw,48px);margin:12px 0;color:#e7ffe7;text-shadow:0 0 20px #83d9a077}.startCard p{color:#c5dfcd;font-size:13px;line-height:1.6}.startAction{display:block;width:100%;min-height:50px;border:1px solid #9ce7bb77;border-radius:12px;background:#376d50;color:#fff;font-weight:900;margin:10px 0;padding:10px}.startAction.secondary{background:#293e35}.optionsPanel.menuOptions{display:block;z-index:111;top:50%;left:50%;right:auto;transform:translate(-50%,-50%);max-height:85dvh;overflow:auto}.creativePanel{position:fixed;inset:0;z-index:75;background:#000a;display:flex;align-items:center;justify-content:center;padding:12px}.creativeBox{width:min(410px,94vw);max-height:90dvh;overflow:auto;background:#122b21;color:#f3fff6;border:1px solid #a4e9b488;border-radius:18px;padding:17px;box-shadow:0 18px 50px #000a}.creativeBox h3{margin:2px 0 10px}.creativeBox label{display:block;margin:9px 0 5px;font-size:13px;font-weight:800}.creativeBox select,.creativeBox input{width:100%;min-height:44px;border:1px solid #accbb48c;border-radius:9px;background:#1d3b2c;color:white;padding:8px;font-size:15px}.creativeButtons{display:flex;gap:8px;margin-top:14px}.creativeButtons button{flex:1;min-height:46px;border:0;border-radius:10px;color:#fff;background:#397953;font-weight:800}.creativeButtons button:last-child{background:#485b52}
+
+/* 마력숲 UI: 기존 게임 버튼·저장·전투 핸들러를 유지하는 화면 표현 개선 */
+:root{--mf-paper:#eef7e9;--mf-muted:#bcd1c2;--mf-gold:#e8c57d;--mf-deep:#0b1d19;--mf-panel:rgba(11,30,24,.96);--mf-edge:rgba(235,220,158,.27);--mf-glow:rgba(225,195,126,.16)}
+button{transition:background-color .16s,border-color .16s,box-shadow .16s,transform .12s;color-scheme:dark}
+button:focus-visible,[role=button]:focus-visible{outline:3px solid #f6dfa1;outline-offset:3px}
+.startScreen{background:
+  radial-gradient(ellipse 42% 31% at 72% 19%,rgba(219,173,87,.19),transparent 84%),
+  radial-gradient(ellipse 60% 66% at 20% 70%,rgba(53,116,77,.36),transparent 90%),
+  linear-gradient(155deg,rgba(6,19,16,.78),rgba(8,20,17,.9)),
+  repeating-linear-gradient(120deg,#183a2b 0 7px,#122d23 7px 14px)}
+.startScreen:before{content:"";position:fixed;inset:0;pointer-events:none;background:
+  radial-gradient(ellipse at 50% 115%,transparent 35%,rgba(2,11,8,.64) 100%),
+  linear-gradient(90deg,transparent 49.84%,rgba(243,227,178,.055) 50%,transparent 50.16%);
+  opacity:.9}
+.startCard{position:relative;width:min(490px,96vw);padding:clamp(23px,5vw,44px);
+  background:linear-gradient(156deg,rgba(31,55,41,.97),rgba(8,22,20,.98));
+  border:1px solid rgba(237,212,151,.4);border-radius:20px;
+  box-shadow:0 30px 90px rgba(0,0,0,.72),0 0 0 5px rgba(255,248,213,.035),inset 0 1px rgba(255,255,255,.09)}
+.startCard:before{content:"SURVIVAL  ·  THE MAGIC FOREST";display:block;
+  color:var(--mf-gold);font-size:10px;font-weight:850;letter-spacing:.2em;
+  padding-bottom:16px;margin-bottom:12px;border-bottom:1px solid var(--mf-edge)}
+.startCard h1{font-size:clamp(32px,8vw,51px);line-height:1.18;letter-spacing:-.055em;
+  color:#f5efd6;text-shadow:0 3px 22px rgba(216,189,111,.26);margin:4px 0 14px}
+.startCard p{color:#cbd9c8;font-size:14px;line-height:1.75;margin:0 0 22px}
+.startAction{min-height:54px;border-radius:11px;border:1px solid rgba(241,221,166,.52);
+  background:linear-gradient(150deg,#ba9456,#80602d);color:#fffaf0;
+  box-shadow:inset 0 1px rgba(255,255,255,.23),0 7px 18px rgba(0,0,0,.28);
+  font-size:15px;letter-spacing:.02em}
+.startAction:hover{border-color:#f4d892;filter:brightness(1.08)}
+.startAction:active{transform:translateY(1px) scale(.99)}
+.startAction.secondary{background:linear-gradient(150deg,#334b3d,#1a3028);
+  color:#dae9d6;border-color:rgba(209,234,194,.29);box-shadow:inset 0 1px rgba(255,255,255,.06)}
+.startAction small{font-size:11px;font-weight:550;opacity:.87;line-height:1.45}
+.hud .card{background:linear-gradient(160deg,rgba(17,35,28,.95),rgba(7,22,20,.94));
+  border:1px solid var(--mf-edge);border-radius:12px;
+  box-shadow:0 8px 23px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.065);
+  backdrop-filter:blur(12px)}
+.hud .title{color:var(--mf-gold);letter-spacing:.015em;text-shadow:0 1px 5px #0008}
+.hp,.foodBar{border:1px solid rgba(255,255,255,.12)}
+.sheet{background:linear-gradient(160deg,rgba(18,38,31,.985),rgba(7,21,19,.99));
+  border:1px solid rgba(224,205,150,.42);border-radius:16px;
+  box-shadow:0 26px 66px rgba(0,0,0,.63),inset 0 1px rgba(255,255,255,.09)}
+.sheetHead{border-bottom:1px solid var(--mf-edge);background:rgba(192,161,95,.065);padding:9px}
+.tab,.close{color:#e8efe7;background:rgba(219,235,217,.09);border:1px solid rgba(255,255,255,.095);
+  border-radius:8px;min-height:44px}
+.tab.on{background:linear-gradient(155deg,#a2844d,#6c552f);color:#fffbed;
+  border-color:rgba(245,225,166,.66);box-shadow:inset 0 1px rgba(255,255,255,.17)}
+.sheetBody{padding:12px;scrollbar-color:#6f846a #11251d}
+.info{background:linear-gradient(135deg,rgba(37,65,45,.9),rgba(17,40,32,.98));
+  border-color:rgba(220,207,161,.24);border-radius:10px;color:#e0efde;font-size:12px}
+.grid{gap:9px}
+.recipe,.invItem{position:relative;min-height:100px;padding:12px;
+  background:linear-gradient(155deg,#253f32,#152b24);border:1px solid rgba(199,215,176,.2);
+  border-radius:12px;box-shadow:inset 0 1px rgba(255,255,255,.055);
+  transition:transform .13s,border-color .13s,background-color .13s}
+.recipe:not(:disabled):active,.invItem:not(:disabled):active{transform:scale(.985)}
+.recipe:focus-visible,.invItem:focus-visible{border-color:#f6dfa1}
+.recipe b,.invItem b{color:#f3e9c7;font-size:13px;line-height:1.4}
+.recipe small,.invItem small{color:#bdcdbd;font-size:11px;line-height:1.5}
+.recipe .cost{color:#edcc82}
+.act,.blueprintBuild{border:1px solid rgba(232,217,173,.35);
+  box-shadow:0 7px 20px rgba(0,0,0,.4),inset 0 1px rgba(255,255,255,.16);
+  backdrop-filter:blur(6px)}
+.act:active,.blueprintBuild:active{box-shadow:0 2px 8px rgba(0,0,0,.35),inset 0 2px 5px rgba(0,0,0,.3)}
+.inventory{background:linear-gradient(155deg,#5a657a,#333e50)}
+.craft{background:linear-gradient(155deg,#496c54,#274735)}
+.gather{background:linear-gradient(155deg,#82603a,#533c26)}
+.stick{background:radial-gradient(circle,rgba(230,243,219,.09) 10%,rgba(12,30,26,.79) 65%);
+  border:2px solid rgba(235,222,185,.36);box-shadow:0 8px 24px #0007,inset 0 0 18px #0008}
+.knob{background:radial-gradient(circle at 35% 25%,#faf9e5,#9cba9c);
+  border:2px solid rgba(255,255,230,.75);box-shadow:0 3px 10px #0007}
+@media(max-width:720px){
+ .startCard{width:min(460px,96vw);padding:22px 20px}
+ .startCard:before{font-size:9px;letter-spacing:.14em}
+ .hud .card{backdrop-filter:none}
+ .sheet{left:max(6px,env(safe-area-inset-left));right:max(6px,env(safe-area-inset-right));
+   width:auto;top:max(74px,env(safe-area-inset-top) + 74px);
+   bottom:max(102px,env(safe-area-inset-bottom) + 102px)}
+ .sheetHead{padding:7px}
+ .sheetBody{padding:9px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .recipe,.invItem{padding:10px;min-height:98px}
+ .actions{gap:5px}
+}
+@media(max-width:380px){.recipe,.invItem{padding:8px;min-height:88px}
+ .startCard h1{font-size:33px}}
+@media(prefers-reduced-motion:reduce){button,.recipe,.invItem{transition:none}}
+
+
+
+/* 기존 실게임 액션의 터치 위치 개선: 좌측 이동, 우측 액션, 관리 기능은 상단 메뉴 */
+.hud{align-items:flex-start;gap:8px;z-index:13;right:max(8px,env(safe-area-inset-right))}
+.hud>.card.main{width:min(440px,calc(100% - 74px));flex:1;max-width:560px}
+.hud>.card.res{display:none}
+.hudMenu{position:relative;pointer-events:auto;flex:0 0 auto}
+.hudMenu>summary{display:flex;align-items:center;justify-content:center;list-style:none;cursor:pointer;
+ width:68px;min-height:46px;border-radius:12px;padding:6px 8px;
+ color:#f5eed3;font-weight:900;font-size:12px;
+ background:linear-gradient(150deg,rgba(43,70,54,.98),rgba(14,32,27,.98));
+ border:1px solid var(--mf-edge);box-shadow:0 8px 20px #0008}
+.hudMenu>summary::-webkit-details-marker{display:none}
+.hudMenu[open]>summary{border-color:var(--mf-gold)}
+.hudMenuPanel{position:absolute;right:0;top:calc(100% + 7px);width:min(245px,85vw);
+ padding:12px;border:1px solid var(--mf-edge);border-radius:15px;
+ background:linear-gradient(150deg,#203a2c,#0d211b);box-shadow:0 18px 55px #000b;
+ max-height:min(72dvh,590px);overflow-y:auto;z-index:45;display:flex;flex-direction:column;gap:9px}
+.hudMenuPanel .saveStack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.hudMenuPanel .saveStack>button,.hudMenuPanel>.home{min-width:0;width:100%;min-height:46px;
+ padding:8px;border-radius:9px;font-size:12px}
+.hudMenuPanel>#resetSave{color:#ffe8d2}
+.hudMenuPanel>#toTitle,.hudMenuPanel>a.home{display:block;text-align:center;min-height:44px;line-height:28px}
+.hudMenuPanel .saveStack>#resetSave{border-color:#ab785e}
+.actions{position:absolute;z-index:11;right:max(14px,env(safe-area-inset-right));
+ bottom:max(18px,env(safe-area-inset-bottom));width:176px;height:206px;display:grid;
+ grid-template-columns:78px 78px;grid-template-rows:48px 48px 90px;
+ gap:8px 12px;align-items:center;justify-items:center;pointer-events:none}
+.actions>button{pointer-events:auto;position:relative;min-width:0;max-width:100%;
+ font-size:12px;font-weight:900;line-height:1.1}
+.actions>#craft{grid-column:1;grid-row:1;width:78px;height:48px;border-radius:12px}
+.actions>#inventory{grid-column:2;grid-row:1;width:78px;height:48px;border-radius:12px}
+.actions>#map{grid-column:1;grid-row:2;width:78px;height:48px;border-radius:12px}
+.actions>#gather{grid-column:2;grid-row:2;width:78px;height:48px;border-radius:12px}
+.actions>#attack{grid-column:2;grid-row:3;width:86px;height:86px;font-size:15px;border-radius:50%}
+.actions>#buildBlueprint{grid-column:1;grid-row:3;width:74px;height:57px}
+.actions>#petSpecial{grid-column:1;grid-row:3;width:74px;height:57px}
+.actions>#dismount{grid-column:1;grid-row:3;width:74px;height:57px}
+.actions>#buildBlueprint:not(.on),.actions>#dismount:not(.ready),
+.actions>#petSpecial[hidden]{display:none}
+.stick{z-index:11;left:max(15px,env(safe-area-inset-left));
+ bottom:max(20px,env(safe-area-inset-bottom));width:124px;height:124px}
+.stick .knob{left:36px;top:36px}
+.miniMapWrap{pointer-events:none}
+.hudMenuPanel .saveStack button{touch-action:manipulation}
+@media(max-width:720px){
+ .hud>.card.main{max-width:calc(100vw - 99px);width:auto}
+ .hud .title{font-size:11px}
+ .hud .sub{font-size:9px}
+ .hudMenu>summary{width:64px;min-height:44px}
+ .hudMenuPanel{width:min(264px,89vw)}
+ .actions{width:156px;height:190px;grid-template-columns:68px 68px;
+  grid-template-rows:44px 44px 86px;gap:8px 10px;right:max(10px,env(safe-area-inset-right))}
+ .actions>#craft,.actions>#inventory,.actions>#map,.actions>#gather{width:68px;height:44px}
+ .actions>#attack{width:80px;height:80px}
+ .actions>#petSpecial,.actions>#dismount,.actions>#buildBlueprint{width:68px;height:56px}
+ .stick{width:112px;height:112px;left:max(13px,env(safe-area-inset-left));bottom:max(21px,env(safe-area-inset-bottom))}
+ .stick .knob{left:33px;top:33px;width:44px;height:44px}
+ .miniMapWrap{top:max(118px,calc(env(safe-area-inset-top) + 109px));right:max(8px,env(safe-area-inset-right));width:90px;height:90px}
+ .sheet{z-index:30;top:auto;bottom:max(7px,env(safe-area-inset-bottom));
+   max-height:min(78dvh,690px);height:auto}
+ .sheet.open~.actions{display:none}
+}
+@media(max-width:355px){
+ .hud .sub{display:none}
+ .actions{right:5px;width:146px;grid-template-columns:64px 64px;gap:8px 8px}
+ .actions>#craft,.actions>#inventory,.actions>#map,.actions>#gather{width:64px}
+ .stick{left:8px;width:104px;height:104px}
+ .stick .knob{left:28px;top:28px}
+}
+@media(hover:hover) and (pointer:fine){
+ .hudMenuPanel>button:hover,.hudMenuPanel .saveStack>button:hover{filter:brightness(1.08)}
+}
+
+
+
+/* 마력숲 모바일 탭 전투: 적을 탭해 공격. 액션 버튼은 보조 조작 */
+#game{touch-action:none;-webkit-user-select:none;user-select:none}
+.actions #attack{font-size:13px;touch-action:manipulation}
+@media(pointer:coarse){
+ .actions{gap:8px}
+ .actions #attack{border:2px solid rgba(250,224,175,.63);
+   box-shadow:0 6px 17px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.16)}
+ .actions #craft,.actions #inventory,.actions #map,.actions #gather{min-height:48px}
+ .stick{touch-action:none}
+ .stick .knob{pointer-events:none;left:calc(50% - 24px);top:calc(50% - 24px)}
+}
+body:has(#sheet.open) .actions,body:has(#sheet.open) .stick,
+body:has(#optionsPanel.open) .actions,body:has(#optionsPanel.open) .stick,
+body:has(#multiPanel.open) .actions,body:has(#multiPanel.open) .stick{
+ pointer-events:none;opacity:0;visibility:hidden
+}
+@media(max-width:720px){
+ .actions #craft,.actions #inventory,.actions #map,.actions #gather{min-height:48px;height:48px}
+ .actions{grid-template-rows:48px 48px 90px;height:202px}
+ .stick{width:116px;height:116px}
+ .stick .knob{left:calc(50% - 23px);top:calc(50% - 23px);width:46px;height:46px}
+}
+@media(max-width:380px){
+ .actions{right:max(7px,env(safe-area-inset-right));grid-template-columns:66px 66px;width:147px;gap:7px 8px}
+ .actions #craft,.actions #inventory,.actions #map,.actions #gather{width:66px;font-size:11px}
+ .actions #attack{width:82px;height:82px}
+ .stick{width:102px;height:102px;left:max(8px,env(safe-area-inset-left))}
+ .stick .knob{left:calc(50% - 22px);top:calc(50% - 22px);width:44px;height:44px}
+}
+@media(orientation:landscape) and (max-height:510px){
+ .hud .sub,.hud .questLine{display:none}
+ .hud .card.main{max-width:min(390px,60vw)}
+ .hudMenuPanel{max-height:calc(100dvh - 72px)}
+ .actions{bottom:max(8px,env(safe-area-inset-bottom))}
+ .stick{bottom:max(9px,env(safe-area-inset-bottom))}
+ .miniMapWrap{width:84px;height:84px;left:50%;top:max(9px,env(safe-area-inset-top));transform:translateX(-50%)}
+}
+/* Existing game state drives the primary 3D WebGL scene; HUD remains interactive above it. */
+#world3d{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1;pointer-events:none;touch-action:none}
+#world3d[hidden]{display:none!important}
+.hud,.actions,.stick{z-index:4}
+</style>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 </head>
-<body data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-gameplay-system-count="9" data-spatial-dimension="2d" data-collision-enabled="true" data-camera-active="true" data-audio-state="idle" data-motion-state="idle" data-genre-ui="survival" data-ui-motion-language="touch-action">
+<body data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE" data-gameplay-system-count="9" data-spatial-dimension="3d-loading" data-collision-enabled="true" data-camera-active="true" data-audio-state="idle" data-motion-state="idle" data-genre-ui="survival" data-ui-motion-language="touch-action">
 <canvas id="game" data-gameplay-surface="true"></canvas>
+<canvas id="world3d" data-gameplay-3d-surface="native-world" aria-hidden="true" hidden></canvas>
 <!-- 메인: 타이틀 / 모드 선택 -->
-<div id="startScreen" class="startScreen" role="dialog" aria-modal="true" aria-label="마력숲 시작 화면"><div class="startCard"><h1>마력숲 생존기</h1><p>숲을 탐험하고, 만들고, 살아남아 봐.</p><div id="startMain"><button id="startPlay" class="startAction">플레이</button><button id="startOptions" class="startAction secondary">옵션</button></div><div id="startModes" hidden><p>플레이할 모드를 선택해.</p><button id="startNormal" class="startAction">일반 모드<br><small>기존 마력숲 · 기존 저장 이어하기</small></button><button id="startCreative" class="startAction">크리에이티브 모드<br><small>재료 무제한 · 몬스터 소환과 대결</small></button><button id="startBack" class="startAction secondary">뒤로</button></div></div></div>
+<div id="startScreen" class="startScreen" role="dialog" aria-modal="true" aria-label="마력숲 시작 화면"><div class="startCard"><h1>마력숲 생존기</h1><p>숲을 탐험하고, 만들고, 살아남아 봐.</p><div id="startMain"><button id="startPlay" class="startAction">게임 시작</button><button id="startOptions" class="startAction secondary">옵션</button></div><div id="startModes" hidden><p>플레이할 모드를 선택해.</p><button id="startNormal" class="startAction">일반 모드<br><small>기존 마력숲 · 기존 저장 이어하기</small></button><button id="startCreative" class="startAction">크리에이티브 모드<br><small>재료 무제한 · 몬스터 소환과 대결</small></button><button id="startBack" class="startAction secondary">뒤로</button></div></div></div>
 <!-- 메인: 몬스터 스폰 블록 -->
 <div id="creativePanel" class="creativePanel" role="dialog" aria-modal="true" aria-label="몬스터 소환 설정" hidden><div class="creativeBox"><h3>몬스터 스폰 블록</h3><p>블록에서 몬스터를 소환해. 소환한 몬스터 두 마리를 각각 두 번 누르면 서로 싸워.</p><label for="creativeType">소환할 몬스터</label><select id="creativeType"></select><label for="creativeCount">소환 마릿수 (1~30)</label><input id="creativeCount" type="number" min="1" max="30" step="1" inputmode="numeric" value="1"><div class="creativeButtons"><button id="creativeSpawn">소환</button><button id="creativeRemove">블록 회수</button><button id="creativeClose">닫기</button></div></div></div>
 <!-- 크리에이티브: 소환한 몬스터 꾹 누르기 설정 -->
@@ -23,9 +231,9 @@
  <p>이 몬스터가 나를 공격하게 할지 정해. 기본은 공격 안 함이야.</p>
  <div class="creativeButtons"><button id="creativePassive">공격 안 함</button><button id="creativeAttackPlayer">나를 공격</button></div>
  <div class="creativeButtons"><button id="creativeAggroClose">닫기</button></div></div></div>
-<div class="hud"><div class="card main"><div class="top"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><div id="questText" class="questLine">수정 북쪽 끝으로 가세요</div><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="achievements" class="bestiary">업적</button><button id="multi" class="multiBtn" data-mechanic-id="multiplayer-room">멀티</button><button id="options" class="multiBtn" data-mechanic-id="options-open">옵션</button></div><button id="toTitle" class="home" type="button">타이틀</button><a class="home" href="/jaewoon-games/">홈</a></div>
+<div class="hud"><div class="card main"><div class="top"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><div id="questText" class="questLine">수정 북쪽 끝으로 가세요</div><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><details class="hudMenu"><summary aria-label="게임 메뉴 열기">☰ 메뉴</summary><div class="hudMenuPanel"><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="achievements" class="bestiary">업적</button><button id="multi" class="multiBtn" data-mechanic-id="multiplayer-room">멀티</button><button id="options" class="multiBtn" data-mechanic-id="options-open">옵션</button></div><button id="toTitle" class="home" type="button">타이틀</button><a class="home" href="/jaewoon-games/">홈</a></div></details></div>
 <div id="notice" class="notice"></div><div id="miniMapWrap" class="miniMapWrap"><b>미니맵</b><canvas id="miniMap" class="miniMap" width="160" height="160"></canvas></div><button id="rotateBlueprint" class="blueprintRotate" data-gameplay-action="blueprint-rotate">회전</button><div id="optionsPanel" class="optionsPanel"><div class="optionHead"><b>옵션</b><button id="optionsClose">×</button></div><div class="optionRow"><span>자동 채집</span><button id="autoGather" data-mechanic-id="auto-gather-toggle" aria-pressed="false">자동 OFF</button></div><div class="optionRow"><span>음악</span><button id="bgmToggle" data-audio-control="mute" data-mechanic-id="audio-bgm-toggle">BGM ON</button></div><div class="optionRow"><span>음악 볼륨</span><input id="bgmVolume" type="range" min="0" max="100" step="5" value="100" data-audio-control="volume" aria-label="BGM 볼륨"></div><div class="optionRow"><span>전투 음악</span><button id="battlePreview" type="button" data-audio-control="preview">새 전투곡 듣기</button></div><div id="musicInfo" class="difficultyInfo" role="status" aria-live="polite">전투곡 듣기로 바로 확인 가능</div><div class="optionRow"><span>난이도</span><select id="difficultySelect" aria-label="난이도"><option value="easy">쉬움</option><option value="normal" selected>중간</option><option value="hard">어려움</option></select></div><div id="difficultyInfo" class="difficultyInfo">중간 · 기존 몬스터 수치</div></div><div id="bossBanner" class="bossBanner"></div><div id="stick" class="stick" data-joystick="true" data-touch-control="move" data-gameplay-action="move" data-mechanic-id="movement-joystick"><div id="knob" class="knob"></div></div>
-<div class="actions"><button id="craft" class="act craft" data-gameplay-action="craft" data-mechanic-id="craft-open">제작</button><div class="utilityStack"><button id="petSpecial" class="act gather" data-gameplay-action="pet-special" aria-label="악어 특수공격" hidden>특수공격</button><button id="dismount" class="act dismount" data-gameplay-action="dismount" data-mechanic-id="pet-dismount">내리기</button><button id="buildBlueprint" class="blueprintBuild" data-gameplay-action="blueprint-build">건설</button><button id="gather" class="act gather" data-gameplay-action="gather" data-mechanic-id="gather-resource">채집</button><button id="inventory" class="act inventory" data-gameplay-action="inventory" data-mechanic-id="inventory-open">가방</button></div><div class="combatStack"><button id="map" class="act map" data-gameplay-action="map" data-mechanic-id="map-open">지도</button><button id="attack" class="act attack" data-gameplay-action="attack" data-mechanic-id="combat-primary">공격</button></div></div>
+<div class="actions" aria-label="게임 조작"><button id="craft" class="act craft" data-gameplay-action="craft" data-mechanic-id="craft-open">제작</button><button id="inventory" class="act inventory" data-gameplay-action="inventory" data-mechanic-id="inventory-open">가방</button><button id="map" class="act map" data-gameplay-action="map" data-mechanic-id="map-open">지도</button><button id="gather" class="act gather" data-gameplay-action="gather" data-mechanic-id="gather-resource">채집</button><button id="attack" class="act attack" data-gameplay-action="attack" data-mechanic-id="combat-primary">공격</button><button id="buildBlueprint" class="blueprintBuild" data-gameplay-action="blueprint-build">건설</button><button id="petSpecial" class="act gather" data-gameplay-action="pet-special" aria-label="악어 특수공격" hidden>특수공격</button><button id="dismount" class="act dismount" data-gameplay-action="dismount" data-mechanic-id="pet-dismount">내리기</button></div>
 <div id="sheet" class="sheet"><div class="sheetHead"><div class="tabs"><button id="handTab" class="tab on">맨손</button><button id="benchTab" class="tab">제작대</button><button id="ironBenchTab" class="tab">철 제작대</button><button id="goldBenchTab" class="tab">금 제작대</button><button id="jungleBenchTab" class="tab">독점석 제작대</button><button id="sunstoneBenchTab" class="tab">태양석 제작대</button><button id="mapTab" class="tab" hidden>지도</button><button id="inventoryTab" class="tab">인벤토리</button></div><button id="close" class="close">×</button></div><div id="sheetBody" class="sheetBody"></div></div>
 <div id="smeltPanel" class="smelt"><h3 id="smeltTitle">화로 · 제련/굽기</h3><p id="smeltText">재료를 선택해서 굽거나 제련할 수 있어.</p><div class="smeltRow"><button id="smeltBtn" class="smeltBtn">철 굽기</button><button id="goldSmeltBtn" class="smeltBtn">금 굽기</button><button id="deerSmeltBtn" class="smeltBtn">사슴고기 굽기</button><button id="bugSmeltBtn" class="smeltBtn">벌레고기 굽기</button><button id="fishSmeltBtn" class="smeltBtn">생선 굽기</button><button id="hareSmeltBtn" class="smeltBtn">토끼고기 굽기</button><button id="lizardSmeltBtn" class="smeltBtn">도마뱀고기 굽기</button><button id="crystalDeerSmeltBtn" class="smeltBtn">수정사슴고기 굽기</button><button id="greensSmeltBtn" class="smeltBtn">야채 굽기</button><button id="birdSmeltBtn" class="smeltBtn">꿩고기 굽기</button><button id="goatSmeltBtn" class="smeltBtn">수정염소고기 굽기</button><button id="squidSmeltBtn" class="smeltBtn">오징어고기 굽기</button><button id="sunstoneSmeltBtn" class="smeltBtn" hidden>태양석 · 20초</button><button id="monopolySmeltBtn" class="smeltBtn">독점석 제련</button><button id="smeltClose" class="smeltClose">×</button></div><div class="progress"><i id="smeltProgress"></i></div></div>
 <div class="legend">E 채집 · C 제작 · I 인벤토리 · 화로 두 번 누르기 · WASD 이동</div><div id="recorderOverlay" class="recorderOverlay"><div class="recorderTitle">연구소 녹음기</div><div id="recorderCaption" class="recorderCaption"></div><div id="recorderState" class="recorderState">재생 중</div></div><div id="flash" class="flash"></div>
@@ -36,10 +244,12 @@
  <div class="multiRow"><button id="multiCreate">방 만들기</button><button id="multiJoin">방 참가</button></div>
  <div class="multiRow"><button id="multiCopy">초대 링크 복사</button><button id="multiLeave">나가기</button></div>
 </div>
+<script type="importmap">{"imports":{"three":"../../assets/roblox/world-ghosts/native/mesh/three/three.module.js"}}</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.91.1"></script>
 <script>
 (()=>{'use strict';
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+let world3d=null,world3dPending=false;
 const ui={hpfill:document.getElementById('hpfill'),hptext:document.getElementById('hptext'),foodfill:document.getElementById('foodfill'),foodtext:document.getElementById('foodtext'),questText:document.getElementById('questText'),recorderOverlay:document.getElementById('recorderOverlay'),recorderCaption:document.getElementById('recorderCaption'),recorderState:document.getElementById('recorderState'),weapon:document.getElementById('weapon'),tool:document.getElementById('tool'),armor:document.getElementById('armor'),zone:document.getElementById('zone'),kills:document.getElementById('kills'),wood:document.getElementById('wood'),stone:document.getElementById('stone'),fiber:document.getElementById('fiber'),ironOre:document.getElementById('ironOre'),ironIngot:document.getElementById('ironIngot'),goldOre:document.getElementById('goldOre'),goldIngot:document.getElementById('goldIngot'),essence:document.getElementById('essence'),notice:document.getElementById('notice'),sheet:document.getElementById('sheet'),sheetBody:document.getElementById('sheetBody'),handTab:document.getElementById('handTab'),benchTab:document.getElementById('benchTab'),ironBenchTab:document.getElementById('ironBenchTab'),goldBenchTab:document.getElementById('goldBenchTab'),jungleBenchTab:document.getElementById('jungleBenchTab'),sunstoneBenchTab:document.getElementById('sunstoneBenchTab'),inventoryTab:document.getElementById('inventoryTab'),mapTab:document.getElementById('mapTab'),mapBtn:document.getElementById('map'),attack:document.getElementById('attack'),autoGather:document.getElementById('autoGather'),dismount:document.getElementById('dismount'),petSpecial:document.getElementById('petSpecial'),flash:document.getElementById('flash'),smeltPanel:document.getElementById('smeltPanel'),smeltText:document.getElementById('smeltText'),smeltBtn:document.getElementById('smeltBtn'),goldSmeltBtn:document.getElementById('goldSmeltBtn'),deerSmeltBtn:document.getElementById('deerSmeltBtn'),bugSmeltBtn:document.getElementById('bugSmeltBtn'),fishSmeltBtn:document.getElementById('fishSmeltBtn'),hareSmeltBtn:document.getElementById('hareSmeltBtn'),lizardSmeltBtn:document.getElementById('lizardSmeltBtn'),crystalDeerSmeltBtn:document.getElementById('crystalDeerSmeltBtn'),greensSmeltBtn:document.getElementById('greensSmeltBtn'),birdSmeltBtn:document.getElementById('birdSmeltBtn'),goatSmeltBtn:document.getElementById('goatSmeltBtn'),squidSmeltBtn:document.getElementById('squidSmeltBtn'),monopolySmeltBtn:document.getElementById('monopolySmeltBtn'),sunstoneSmeltBtn:document.getElementById('sunstoneSmeltBtn'),smeltTitle:document.getElementById('smeltTitle'),smeltStation:'furnace',smeltProgress:document.getElementById('smeltProgress'),bestiaryBtn:document.getElementById('bestiary'),bossBanner:document.getElementById('bossBanner'),multiPanel:document.getElementById('multiPanel'),multiStatus:document.getElementById('multiStatus'),multiRoom:document.getElementById('multiRoom')};
 const MULTI_SUPABASE_URL='https://njpexgqvituaxrjpnqsi.supabase.co';
 const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
@@ -494,11 +704,26 @@ const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone
 const CREATIVE_SAVE_KEY=SAVE_KEY+'_creative';let gameStarted=false;
 state.player.rootedUntil=0;state.mode='normal';state.creativeSpawners=[];state.creativePlacing=false;state.creativeSpawnerId=null;state.creativeSelectedId=null;
 function isCreative(){return gameStarted&&state.mode==='creative'}
+function startNativePreview3d(){
+ // Load the existing authoritative world's WebGL renderer on every real game start.
+ // The old 2D gameplay logic and saves remain intact; interior 3D assets still need QA.
+ if(world3d||world3dPending)return;
+ world3dPending=true;
+ document.body.dataset.spatialDimension='3d-loading';
+ import('./world3d.mjs').then(module=>module.createWorld3d(document.getElementById('world3d')))
+  .then(renderer=>{world3d=renderer;document.body.dataset.spatialDimension='3d-initialized';
+    showNotice('3D 월드 로딩 완료 · 아직 전체 지역과 몬스터 검증 중')})
+  .catch(error=>{world3dPending=false;world3d=null;
+    document.getElementById('world3d').hidden=true;
+    document.body.dataset.spatialDimension='3d-load-failed';
+    console.error('MAGIC_FOREST_NATIVE_3D_START_FAILED',error);
+    showNotice('3D 로딩 실패 · 기존 저장 데이터를 보존했어')})
+}
 function beginGame(mode){
  state.mode=mode==='creative'?'creative':'normal';gameStarted=true;loadGame();
  if(isCreative()){state.player.map=true;state.player.hp=state.player.maxHp;state.player.hunger=100;document.getElementById('multi').hidden=true;showNotice('크리에이티브 · 가방에서 몬스터 스폰 블록을 설치해')}
  else{applyOwnerInventoryGift();const roomFromUrl=new URL(location.href).searchParams.get('room');if(roomFromUrl){ui.multiRoom.value=roomFromUrl.toUpperCase();connectMultiplayer(roomFromUrl)}showNotice('일반 모드 · 기존 마력숲 이어하기')}
- document.getElementById('optionsPanel').classList.remove('menuOptions','open');document.getElementById('startScreen').hidden=true;markExplored();discoverRegion();updateHud()
+ document.getElementById('optionsPanel').classList.remove('menuOptions','open');document.getElementById('startScreen').hidden=true;markExplored();discoverRegion();updateHud();startNativePreview3d()
 }
 function drawCreativeSpawners(cx,cy){
  if(!isCreative()||state.area!=='surface')return;
@@ -3212,7 +3437,7 @@ function firePlayerArrow(now,p,w,arrow){
  if(multiplayer.connected&&!multiIsHost()&&state.area!=='storylab1'&&state.area!=='storylab2')multiSend('player-arrow',{ownerId:multiplayer.playerId,area:state.area,x:p.x,y:p.y,faceX:dirX,faceY:dirY,bowId:w.id,arrowId:arrow.id,targetId:aimed?aimTarget.netId:null});else state.projectiles.push(projectile);
  state.dirty=true;updateHud();saveGame(false)
 }
-function attack(){
+function attack(selectedTapTarget=null){
  const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
  // 공격 시 사용자 터치 중 새 전투곡을 시작하고 잠시 유지한다.
  if(state.enemies.some(e=>e.hp>0&&e.area===state.area&&e.type.mood!=='harmless'&&dist(e.x,e.y,p.x,p.y)<Math.max(580,currentRange()+120))){
@@ -3223,7 +3448,10 @@ function attack(){
  const armor=item(p.armor);
  if(armor?.guardProc&&Math.random()<armor.guardProc){p.guardUntil=now+(armor.guardDuration||10000);showNotice('늪 골렘 방어 · 10초간 받는 피해 50% 감소')}
  if(armor?.healOnAttack&&Math.random()<armor.healOnAttack){const heal=Number(armor.healAmount)||200;p.hp=Math.min(p.maxHp,p.hp+heal);showNotice('공포 곰 방어구 · 체력 '+heal+' 회복');updateHud()}
- if(w?.ranged==='spore'){const target=nearestSporeTarget(p,w);if(!target){showNotice('근처에 적이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',.35);fireSporeSeeker(now,p,w,target);return}
+ if(w?.ranged==='spore'){
+  const tapped=selectedTapTarget&&state.enemies.find(e=>e.netId===selectedTapTarget.netId&&e.hp>0&&e.area===state.area&&!(e.type.mood==='harmless'&&!e.type.huntable));
+  const tappedInRange=tapped&&Math.hypot(tapped.x-p.x,tapped.y-p.y)<=(Number(w.range)||760)+(Number(tapped.type.r)||0);
+  const target=tappedInRange?tapped:nearestSporeTarget(p,w);if(!target){showNotice('근처에 적이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',.35);fireSporeSeeker(now,p,w,target);return}
  if(w?.ranged==='bow'){const arrow=selectedArrow();if(!arrow){showNotice('화살이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',Math.max(0,Math.min(1,(Number(w.power)||0)/180)));firePlayerArrow(now,p,w,arrow);return}
  p.attackAt=now;p.attackFx=now+150;
  const web=state.area==='surface'?state.flowerWebs.find(v=>v.hits>0&&dist(p.x,p.y,v.x,v.y)<=currentRange()+v.r):null;if(web){const dx=web.x-p.x,dy=web.y-p.y,d=Math.hypot(dx,dy),dot=(dx*p.faceX+dy*p.faceY)/(d||1);if(dot>=-.18){if(multiplayer.connected&&!multiIsHost())multiSend('flower-web-hit',{id:web.id});else damageFlowerWeb(web)}}
@@ -3708,8 +3936,9 @@ function updateTempleEnemySpecial(e,p,now,playerD){
  return null
 }
 
+function worldPointerCoords(e){return world3d?.pick(e.clientX,e.clientY)||{x:e.clientX+state.camera.x,y:e.clientY+state.camera.y}}
 function handleWorldTap(e){
- const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y,now=performance.now();
+ const legacyX=e.clientX+state.camera.x,legacyY=e.clientY+state.camera.y,worldPoint=world3d?.pick(e.clientX,e.clientY),wx=worldPoint?.x??legacyX,wy=worldPoint?.y??legacyY,now=performance.now();
  if(state.blueprint){moveBlueprint(wx,wy);return}
  if(isCreative()&&state.creativePlacing){state.creativePlacing=false;if(state.area!=='surface'){showNotice('스폰 블록은 지상에 설치해');return}const block={id:'spawn-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),x:clamp(wx,45,WORLD.w-45),y:clamp(wy,45,WORLD.h-45)};state.creativeSpawners.push(block);state.dirty=true;saveGame(false);showNotice('스폰 블록 설치 완료 · 두 번 눌러 소환 설정');return}
  if(isCreative()){
@@ -3787,7 +4016,20 @@ function handleWorldTap(e){
  const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0);
  let closest=null,cd=70;
  for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<cd){closest=m;cd=d}}
- if(closest){if(tapArrowAimTarget(closest,now))return;doubleTapTarget('monster:'+closest.type.id,now,()=>unlockBestiary(closest.type.id));return}
+ if(closest){
+  // 터치 즉시 기존 공격 함수로 연결한다. 창/활/마법 피해와 판정 권한은 attack() 그대로 사용.
+  // 기존 활 3회 탭 조준 보너스와 몬스터 도감 두 번 탭도 보존한다.
+  const eligible=closest.type.mood!=='harmless'||!!closest.type.huntable;
+  const interactable=!(closest.type.labBoss&&now<(closest.submergedUntil||0))&&!(closest.type.burrower&&!closest.emerged);
+  if(!eligible||!interactable){doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));return}
+  doubleTapTarget('monster:'+closest.netId,now,()=>unlockBestiary(closest.type.id));
+  const w=currentWeapon(),range=Number(w?.range)||0,dx=closest.x-state.player.x,dy=closest.y-state.player.y;
+  if(!w){showNotice('가방에서 무기를 장착해');return}
+  if(Math.hypot(dx,dy)>range+(Number(closest.type.r)||0)){showNotice(closest.type.name+' · 공격 사거리 밖');return}
+  const len=Math.hypot(dx,dy)||1;state.player.faceX=dx/len;state.player.faceY=dy/len;
+  tapArrowAimTarget(closest,now); // 활의 기존 3회 조준 보너스 보존
+  attack(closest);return
+ }
  if(state.area==='surface'){
    if(dist(wx,wy,SWAMP_OUTPOST.chest.x,SWAMP_OUTPOST.chest.y)<78){if(!doubleTapTarget('swamp-outpost-chest',now,openSwampOutpostChest))showNotice(state.swampOutpostChestOpened?'빈 상자야':'늪 전초기지 상자를 한 번 더 눌러 열기');return}
    const q=state.story;
@@ -6283,6 +6525,10 @@ function drawRadioStoryWorld(cx,cy){
 }
 function draw(){
  const cx=state.camera.x,cy=state.camera.y,now=performance.now();
+ // Native WebGL is the actual surface game image, not a second preview over 2D.
+ // The minimap is already a separate HUD canvas, so keep it current without
+ // spending the full render budget on a hidden 2D world every frame.
+ if(world3d?.isActive()){drawMiniMap(now);return}
  if(state.area==='underwater')drawUnderwater(cx,cy,innerWidth,innerHeight);
  else if(state.area==='underground')drawCave(cx,cy,innerWidth,innerHeight);
  else if(state.area==='worldtreeinside')drawWorldTreeInterior(cx,cy,innerWidth,innerHeight);
@@ -6297,10 +6543,30 @@ function draw(){
   drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.toxicFurnace,cx,cy,'toxicfurnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.jungleBench,cx,cy,'junglebench');drawStructure(state.sunstoneBench,cx,cy,'sunstonebench');drawStructure(state.blacksmithAnvil,cx,cy,'anvil');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');for(const b of state.chests)drawPlayerBuilding(b,cx,cy,'chest');for(const b of state.walls)drawPlayerBuilding(b,cx,cy,'wall');for(const b of state.doors)drawPlayerBuilding(b,cx,cy,'door');for(const b of state.towers)drawPlayerBuilding(b,cx,cy,'tower');for(const b of state.beds)drawPlayerBuilding(b,cx,cy,'bed');for(const b of state.gardens)drawPlayerBuilding(b,cx,cy,'garden');for(const b of state.portals)drawPlayerBuilding(b,cx,cy,'portal');for(const crop of state.crops)drawCrop(crop,cx,cy);drawSnowOutposts(cx,cy);drawSwampOutpost(cx,cy);drawGoblinOutpostEntrance(cx,cy);drawFlowerWorld(cx,cy);drawRadioStoryWorld(cx,cy);drawBlueprint(cx,cy);drawShadowEgg(cx,cy);drawCreativeSpawners(cx,cy)
  }
  for(const e of state.enemies)if(e.area===state.area){drawCreature(e,cx,cy);if(e.creativeOwned&&e.netId===state.creativeSelectedId){ctx.save();ctx.strokeStyle='#ffe46c';ctx.lineWidth=3;ctx.beginPath();ctx.arc(e.x-cx,e.y-cy,(e.type.r||20)+9,0,Math.PI*2);ctx.stroke();ctx.restore()}}
- drawDeathEffects(cx,cy,now);drawSporeClouds(cx,cy);drawProjectiles(cx,cy);drawSwampHazards(cx,cy,now);drawMummyGases(cx,cy,now);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawUnderwaterDarkness(now);drawQuestDarkness();drawMiniMap(now)
+ drawDeathEffects(cx,cy,now);drawSporeClouds(cx,cy);drawProjectiles(cx,cy);drawSwampHazards(cx,cy,now);drawMummyGases(cx,cy,now);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawUnderwaterDarkness(now);drawQuestDarkness();drawMiniMap(now);
 }
 function syncRuntimeMeta(){const root=document.body,p=state.player,c=state.camera;if(!root||!p)return;root.dataset.playerX=Number(p.x||0).toFixed(2);root.dataset.playerY=Number(p.y||0).toFixed(2);root.dataset.cameraX=Number(c?.x||0).toFixed(2);root.dataset.cameraY=Number(c?.y||0).toFixed(2);root.dataset.area=String(state.area||'surface');root.dataset.motionState=(state.keys.size||Math.hypot(state.stick.x,state.stick.y)>.01)?'move':'idle';root.dataset.autoGather=state.gathering.auto?'on':'off';root.dataset.autoGatherTarget=state.gathering.target?.kind||'';root.dataset.audioState=!music.enabled?'muted':music.ctx?.state==='running'?'running':music.ctx?.state==='suspended'?'suspended':'idle'}
-function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.min(mobileCanvas?1.5:2,devicePixelRatio||1);canvas.width=Math.floor(innerWidth*d);canvas.height=Math.floor(innerHeight*d);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0)}function loop(now){const dt=Math.min(.033,(now-state.last)/1000);state.last=now;if(gameStarted){update(dt,now);syncRuntimeMeta();draw()}requestAnimationFrame(loop)}
+function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.min(mobileCanvas?1.5:2,devicePixelRatio||1);canvas.width=Math.floor(innerWidth*d);canvas.height=Math.floor(innerHeight*d);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0)}function loop(now){const dt=Math.min(.033,(now-state.last)/1000);state.last=now;
+ if(gameStarted){
+  update(dt,now);syncRuntimeMeta();draw();
+  if(world3d){
+   try{
+    world3d.frame(state,regionAt);
+    document.body.dataset.spatialDimension=world3d.isActive()?'3d':('3d-fallback-'+world3d.getFallbackReason());
+    document.body.dataset.nativeMonsterCoverage=world3d.getUnmappedVisibleMonsterIds().length?'incomplete':'currently-mapped';
+    const nativeDraw=world3d.getRenderStats();
+    document.body.dataset.nativeDrawCalls=String(nativeDraw.drawCalls);
+    document.body.dataset.nativeTriangles=String(nativeDraw.triangles);
+   }catch(error){
+    console.error('MAGIC_FOREST_NATIVE_3D_FRAME_FAILED',error);
+    world3d.dispose();world3d=null;world3dPending=false;
+    document.getElementById('world3d').hidden=true;
+    document.body.dataset.spatialDimension='3d-runtime-failed';
+   }
+  }
+ }
+ requestAnimationFrame(loop)
+}
 let resettingGameSave=false;
 function resetGameSave(){
  resettingGameSave=true;
@@ -6395,9 +6661,19 @@ function startCommunicationRepairHold(e,wx,wy){
  communicationRepairHold={pointerId,startedAt,timer};return true
 }
 let creativeMonsterPress=null;
+let pendingCombatTap=null;
+function isCombatTapGesture(press,e,at){return !!press&&!press.cancelled&&Math.hypot(e.clientX-press.x,e.clientY-press.y)<=26&&at-press.at<=600}
+function combatTapTarget(wx,wy){
+ let target=null,closest=70;
+ for(const m of state.enemies){
+  if(m.hp<=0||m.area!==state.area||(m.type.mood==='harmless'&&!m.type.huntable))continue;
+  const d=dist(wx,wy,m.x,m.y);if(d<closest){target=m;closest=d}
+ }
+ return target
+}
 canvas.addEventListener('pointerdown',e=>{if(!gameStarted)return;
  if(isCreative()&&!state.blueprint&&!state.creativePlacing){
-  const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;
+  const point=worldPointerCoords(e),wx=point.x,wy=point.y;
   let owned=null,best=Infinity;
   for(const m of state.enemies)if(m.creativeOwned&&m.hp>0&&m.area===state.area){
    const d=dist(wx,wy,m.x,m.y);if(d<Math.max(50,m.type.r+18)&&d<best){owned=m;best=d}
@@ -6408,8 +6684,21 @@ canvas.addEventListener('pointerdown',e=>{if(!gameStarted)return;
    creativeMonsterPress=hold;return
   }
  }
- if(state.blueprint||state.creativePlacing){handleWorldTap(e);return}const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;if(startCommunicationRepairHold(e,wx,wy))return;if(startCompanionSwitchHold(e,wx,wy))return;const hit=playerBuildingAt(wx,wy);if(hit&&hit.type!=='wall'&&hit.type!=='door'){demolishHold=setTimeout(()=>{demolishHold=null;demolishBuilding(hit)},3000)}handleWorldTap(e)});
+ if(state.blueprint||state.creativePlacing){handleWorldTap(e);return}const point=worldPointerCoords(e),wx=point.x,wy=point.y;if(startCommunicationRepairHold(e,wx,wy))return;if(startCompanionSwitchHold(e,wx,wy))return;
+ // 몬스터 터치는 손가락을 뗄 때 확정한다. 스와이프 중 실수 공격 방지.
+ if(!isCreative()&&combatTapTarget(wx,wy)){
+  if(pendingCombatTap)return;
+  pendingCombatTap={pointerId:e.pointerId,x:e.clientX,y:e.clientY,at:performance.now(),cancelled:false};
+  try{canvas.setPointerCapture(e.pointerId)}catch{}
+  return
+ }
+ const hit=playerBuildingAt(wx,wy);if(hit&&hit.type!=='wall'&&hit.type!=='door'){demolishHold=setTimeout(()=>{demolishHold=null;demolishBuilding(hit)},3000)}handleWorldTap(e)});
 canvas.addEventListener('pointerup',e=>{
+ if(pendingCombatTap&&pendingCombatTap.pointerId===e.pointerId){
+  const press=pendingCombatTap;pendingCombatTap=null;
+  if(isCombatTapGesture(press,e,performance.now()))handleWorldTap(e);
+  return
+ }
  if(creativeMonsterPress&&creativeMonsterPress.pointerId===e.pointerId){
   const hold=creativeMonsterPress;clearTimeout(hold.timer);creativeMonsterPress=null;
   if(!hold.fired)handleWorldTap(e);return
@@ -6417,14 +6706,15 @@ canvas.addEventListener('pointerup',e=>{
  if(companionSwitchHold&&companionSwitchHold.pointerId===e.pointerId){const hold=clearCompanionSwitchHold();if(hold&&!hold.fired)handleWorldTap(e);return}
  if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId)cancelCommunicationRepairHold(true);if(demolishHold){clearTimeout(demolishHold);demolishHold=null}
 });
-canvas.addEventListener('pointercancel',e=>{if(creativeMonsterPress&&creativeMonsterPress.pointerId===e.pointerId){clearTimeout(creativeMonsterPress.timer);creativeMonsterPress=null}if(companionSwitchHold&&companionSwitchHold.pointerId===e.pointerId)clearCompanionSwitchHold();if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId)cancelCommunicationRepairHold(false);if(demolishHold){clearTimeout(demolishHold);demolishHold=null}});
+canvas.addEventListener('pointercancel',e=>{if(pendingCombatTap?.pointerId===e.pointerId)pendingCombatTap=null;if(creativeMonsterPress&&creativeMonsterPress.pointerId===e.pointerId){clearTimeout(creativeMonsterPress.timer);creativeMonsterPress=null}if(companionSwitchHold&&companionSwitchHold.pointerId===e.pointerId)clearCompanionSwitchHold();if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId)cancelCommunicationRepairHold(false);if(demolishHold){clearTimeout(demolishHold);demolishHold=null}});
 canvas.addEventListener('pointermove',e=>{
+ if(pendingCombatTap?.pointerId===e.pointerId&&Math.hypot(e.clientX-pendingCombatTap.x,e.clientY-pendingCombatTap.y)>26)pendingCombatTap.cancelled=true;
  if(creativeMonsterPress&&creativeMonsterPress.pointerId===e.pointerId&&Math.hypot(e.clientX-creativeMonsterPress.x,e.clientY-creativeMonsterPress.y)>30){clearTimeout(creativeMonsterPress.timer);creativeMonsterPress=null}
  if(companionSwitchHold&&companionSwitchHold.pointerId===e.pointerId&&Math.hypot(e.clientX-companionSwitchHold.startX,e.clientY-companionSwitchHold.startY)>35)clearCompanionSwitchHold();
- if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId){const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;if(dist(wx,wy,COMM_DEVICE.x,COMM_DEVICE.y)>COMM_DEVICE.r+45)cancelCommunicationRepairHold(true)}
- if(!state.blueprint)return;moveBlueprint(e.clientX+state.camera.x,e.clientY+state.camera.y)
+ if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId){const point=worldPointerCoords(e),wx=point.x,wy=point.y;if(dist(wx,wy,COMM_DEVICE.x,COMM_DEVICE.y)>COMM_DEVICE.r+45)cancelCommunicationRepairHold(true)}
+ if(!state.blueprint)return;const point=worldPointerCoords(e);moveBlueprint(point.x,point.y)
 });
-const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);stick.addEventListener('lostpointercapture',endStick);window.addEventListener('pointerdown',ensureMusicStarted,{capture:true});window.addEventListener('keydown',ensureMusicStarted,{capture:true});document.addEventListener('visibilitychange',()=>{if(!music.ctx)return;if(document.hidden)music.ctx.suspend().catch(()=>{});else if(music.enabled)music.ctx.resume().catch(()=>{})});window.addEventListener('pagehide',()=>{if(!resettingGameSave&&gameStarted)saveGame(false);stopRecorderVoice();if(recorderBlobUrl)URL.revokeObjectURL(recorderBlobUrl);if(multiplayer.channel)multiplayer.channel.unsubscribe();if(music.ctx)music.ctx.close().catch(()=>{})});
+const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);stick.addEventListener('lostpointercapture',endStick);window.addEventListener('pointerdown',ensureMusicStarted,{capture:true});window.addEventListener('keydown',ensureMusicStarted,{capture:true});document.addEventListener('visibilitychange',()=>{if(!music.ctx)return;if(document.hidden)music.ctx.suspend().catch(()=>{});else if(music.enabled)music.ctx.resume().catch(()=>{})});window.addEventListener('pagehide',()=>{if(!resettingGameSave&&gameStarted)saveGame(false);stopRecorderVoice();if(recorderBlobUrl)URL.revokeObjectURL(recorderBlobUrl);if(world3d)world3d.dispose();if(multiplayer.channel)multiplayer.channel.unsubscribe();if(music.ctx)music.ctx.close().catch(()=>{})});
 // 메인: 타이틀과 모드 선택
 document.getElementById('startPlay').addEventListener('click',()=>{document.getElementById('startMain').hidden=true;document.getElementById('startModes').hidden=false});
 document.getElementById('startBack').addEventListener('click',()=>{document.getElementById('startModes').hidden=true;document.getElementById('startMain').hidden=false});

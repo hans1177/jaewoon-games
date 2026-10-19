@@ -249,6 +249,9 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     if(glLost)return;
     resize();
     const p=S.player;
+    // Read-only position proof for post-deployment keyboard/mobile movement smoke tests.
+    document.body.dataset.playerWorldX=Number(p.x).toFixed(2);
+    document.body.dataset.playerWorldY=Number(p.y).toFixed(2);
     props.forEach((g,i)=>g.visible=resources[i].amount>0);
     wildlife.forEach((it,i)=>{
       const animal=animals[i],dead=animal.dead>0;
