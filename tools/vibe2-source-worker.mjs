@@ -2711,7 +2711,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
       sharedAssetSelection:auto.sharedAssetSelection,
       runtimeVerified:false,noNewAssetGeneration:true
     }):'',
-    auto?'autoCompositionRule=Source-grounded game layout and connections only: adapt EXISTING lobby/customization/material/inventory/equipment/UI; responsive combat/hub/inventory priority without fake buttons; world spawn-to-portal/return checks; acquisition->store->equip->stat/appearance->save->reconnect verification. Bind existing source with server authority; preserve saves and balance. Never generate new assets or mark implementation verified from a code keyword. Runtime/mobile QA required.':'',
+    auto?'autoCompositionRule=Source-grounded existing game owners only: detect BIOME/HOUSING/CUSTOMIZATION/MOTION/ACTION even when outside ranked source files. Bind verified design biome to native world/navigation only in the current world owner; preserve housing placement/cost/ownership/save and mobile controls; connect customization to the actual model; couple motion to the existing action and exact approved hit event. Also preserve lobby/inventory/equipment/UI and acquire->store->equip->save->reconnect. Do not invent missing mechanics or generate assets just because a source keyword was found. No PASS until exact native runtime/mobile QA.':'',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
     `uxInput=${(d.uxInputDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     platformKey&&d?.platformAdaptationDirectives?.[platformKey]?`platform=${clean(d.platformAdaptationDirectives[platformKey])}`:'',
@@ -3518,6 +3518,9 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     ['INPUT',/joystick|touch|input|controller|gesture|pointer|조이스틱|터치|조작/i,/input|controller|touch|joystick|gesture/i],
     ['INTERFACE',/interface|menu|hud|ui|canvas|screen|layout|button|메뉴|화면|버튼|인터페이스/i,/interface|menu|hud|ui|screen|layout|workbench|presentation/i],
     ['MOTION',/motion|animat|rig|locomotion|retarget|모션|애니|움직임/i,/motion|animat|rig|retarget|skeleton|locomotion/i],
+    ['CUSTOMIZATION',/customiz|avatar|wardrobe|appearance|outfit|morph|커스터마이징|외형|의상/i,/customiz|avatar|wardrobe|appearance|outfit|morph|character.?identity/i],
+    ['HOUSING',/housing|build.?mode|place.?structure|furniture|house.?placement|하우징|건축|가구배치/i,/housing|building|placement|construction|furniture|common.?building/i],
+    ['ACTION',/gather|harvest|interact|action.?state|use.?tool|채집|상호작용|액션/i,/action|interaction|harvest|gather|gameplay|combat/i],
     ['WORLD',/world|terrain|environment|biome|scene|map|월드|맵|지형/i,/world|terrain|environment|biome|scene|map/i],
     ['AUDIO',/audio|sound|music|bgm|오디오|사운드|음악/i,/audio|sound|music|bgm/i],
     ['ASSET',/asset|mesh|material|render|visual|shader|에셋|메쉬|그래픽/i,/asset|mesh|material|render|visual|shader/i],
