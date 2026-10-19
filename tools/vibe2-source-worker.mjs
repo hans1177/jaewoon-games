@@ -2707,11 +2707,12 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
       gameId:auto.gameId,sourceTreeFingerprint:auto.sourceTreeFingerprint,
       components:relevantAutoComponents.map(row=>({id:row.id,state:row.state,files:row.responsibleFiles})),
       uiModeSelection:auto.uiModeSelection,worldGraph:auto.worldGraph,
+      moduleConnections:auto.moduleConnections||[],
       stateChain:auto.stateChain?.applicable?auto.stateChain.checks:[],
       sharedAssetSelection:auto.sharedAssetSelection,
       runtimeVerified:false,noNewAssetGeneration:true
     }):'',
-    auto?'autoCompositionRule=Source-grounded game layout and connections only: adapt EXISTING lobby/customization/material/inventory/equipment/UI; responsive combat/hub/inventory priority without fake buttons; world spawn-to-portal/return checks; acquisition->store->equip->stat/appearance->save->reconnect verification. Bind existing source with server authority; preserve saves and balance. Never generate new assets or mark implementation verified from a code keyword. Runtime/mobile QA required.':'',
+    auto?'autoCompositionRule=Source-grounded existing game owners only: detect BIOME/HOUSING/CUSTOMIZATION/MOTION/ACTION/NPC_AI/QUEST_DIALOGUE/CRAFTING/ECONOMY/PROGRESSION/FARMING/WEATHER/PHYSICS/CAMERA/AUDIO/SKILL_VFX/NETWORK even outside ranked files. Use moduleConnections to prioritize source-local repairs; missing source is not an authorization to create new mechanics. Bind approved biome to native world/navigation; preserve housing ownership/cost/save and mobile controls; bind customization to the actual model; couple motion to the exact existing action hit event. AI cannot grant gameplay authority; items/crafting/economy follow authoritative state. Preserve lobby/inventory/equipment/UI and acquire->store->equip->save->reconnect. Never infer PASS from keywords or create assets from hints; native runtime/mobile QA required.':'',
     ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
     `uxInput=${(d.uxInputDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     platformKey&&d?.platformAdaptationDirectives?.[platformKey]?`platform=${clean(d.platformAdaptationDirectives[platformKey])}`:'',
@@ -3518,13 +3519,55 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     ['INPUT',/joystick|touch|input|controller|gesture|pointer|조이스틱|터치|조작/i,/input|controller|touch|joystick|gesture/i],
     ['INTERFACE',/interface|menu|hud|ui|canvas|screen|layout|button|메뉴|화면|버튼|인터페이스/i,/interface|menu|hud|ui|screen|layout|workbench|presentation/i],
     ['MOTION',/motion|animat|rig|locomotion|retarget|모션|애니|움직임/i,/motion|animat|rig|retarget|skeleton|locomotion/i],
+    ['CUSTOMIZATION',/customiz|avatar|wardrobe|appearance|outfit|morph|커스터마이징|외형|의상/i,/customiz|avatar|wardrobe|appearance|outfit|morph|character.?identity/i],
+    ['HOUSING',/housing|build.?mode|place.?structure|furniture|house.?placement|하우징|건축|가구배치/i,/housing|building|placement|construction|furniture|common.?building/i],
+    ['ACTION',/gather|harvest|interact|action.?state|use.?tool|채집|상호작용|액션/i,/action|interaction|harvest|gather|gameplay|combat/i],
+    ['NPC_AI',/\b(?:npc|companion|behaviorTree|pathfinding|enemyAI|aiParty|agentState|squad)\b|NPC|주민|동료|인공지능/i,/(?:^|[-_.])(?:ai|npc|party)(?:[-_.]|$)|companion|squad|pathfind|behavior|enemy/i],
+    ['QUEST_DIALOGUE',/quest|dialog|conversation|questLog|퀘스트|대화|임무/i,/quest|dialog|narrative|story|cinematic/i],
+    ['CRAFTING',/craft|recipe|workbench|제작법|제작대|조합/i,/craft|recipe|workbench/i],
+    ['ECONOMY',/economy|merchant|currency|shop|trade|경제|상점|거래/i,/economy|loot|shop|merchant|trade/i],
+    ['PROGRESSION',/progression|experiencePoints|levelUp|skillTree|레벨업|성장/i,/progression|level|skill.?tree|character.?progress/i],
+    ['FARMING',/farm|crop|plantSeed|harvestCrop|농사|농장|작물/i,/farm|crop|harvest|plant/i],
+    ['WEATHER',/weather|season|dayNight|timeOfDay|날씨|계절/i,/weather|season|environment|world/i],
+    ['PHYSICS',/physics|rigidbody|collision|raycast|물리|충돌/i,/physics|collision|interaction|world/i],
+    ['CAMERA',/camera|cinematic|cutscene|카메라|시네마틱/i,/camera|cinematic|presentation|scene/i],
+    ['SKILL_VFX',/vfx|skillEffect|particle|projectile|spellCast|이펙트|스킬효과/i,/vfx|effect|skill|particle|gameplay/i],
     ['WORLD',/world|terrain|environment|biome|scene|map|월드|맵|지형/i,/world|terrain|environment|biome|scene|map/i],
     ['AUDIO',/audio|sound|music|bgm|오디오|사운드|음악/i,/audio|sound|music|bgm/i],
     ['ASSET',/asset|mesh|material|render|visual|shader|에셋|메쉬|그래픽/i,/asset|mesh|material|render|visual|shader/i],
     ['NETWORK',/multiplayer|network|replicat|remoteevent|socket|멀티|네트워크/i,/multiplayer|network|replicat|socket|remote/i],
     ['PERFORMANCE',/performance|optimi|fps|pooling|성능|최적화/i,/performance|optimi|pooling|profiler/i]
   ];
-  const sourceSignals=signalRules.filter(([,sourcePattern])=>sourcePattern.test(existingSource)||sourcePattern.test(taskRequest));
+  // 원본 게임 전체에서 검증된 동일 게임 소스만 읽기 전용 도구 선택 근거로 재사용한다.
+  // 현재 워커에 전달된 몇 개 파일에 키워드가 없어도, 깊은 하위 모듈이 빠지지 않게 한다.
+  // 설계 요구만 있는 REVIEW_REQUIRED_NO_SOURCE는 도구 자동 활성화 근거가 아니다.
+  const nativeComposition=order?.selectedTask?.buildUpDirective?.gameInternalAutoComposition
+    ||order?.buildUpDirective?.gameInternalAutoComposition||null;
+  const roleToSignals={
+    WORLD:['WORLD'],BIOME:['WORLD'],HOUSING:['HOUSING'],CUSTOMIZATION:['CUSTOMIZATION'],
+    MOTION:['MOTION'],ACTION:['ACTION'],INTERACTION:['ACTION'],NPC_AI:['NPC_AI'],
+    QUEST_DIALOGUE:['QUEST_DIALOGUE'],CRAFTING:['CRAFTING'],ECONOMY:['ECONOMY'],
+    PROGRESSION:['PROGRESSION'],FARMING:['FARMING'],WEATHER:['WEATHER'],
+    PHYSICS:['PHYSICS'],CAMERA:['CAMERA'],AUDIO:['AUDIO'],SKILL_VFX:['SKILL_VFX'],
+    NETWORK:['NETWORK'],INVENTORY:['INVENTORY'],EQUIPMENT:['INVENTORY'],
+    SAVE:['SAVE'],COMBAT:['COMBAT','ACTION'],REWARD:['ECONOMY'],SHOP:['ECONOMY'],
+    LOBBY:['INTERFACE'],UI:['INTERFACE'],MATERIAL:['ASSET']
+  };
+  const nativeEvidenceSignals=new Set();
+  const compositionSameGame=nativeComposition?.sourceOnlyEvidence===true
+    &&clean(nativeComposition.gameId)===clean(order?.gameId||order?.selectedTask?.gameId)
+    &&clean(nativeComposition.platform).toLowerCase()===target
+    &&Boolean(clean(nativeComposition.sourceTreeFingerprint));
+  if(compositionSameGame){
+    for(const row of nativeComposition.components||[]){
+      if(row?.state!=='EXISTING_SOURCE_CONNECTION_CANDIDATE'
+        ||!Array.isArray(row.responsibleFiles)||!row.responsibleFiles.length)continue;
+      for(const role of roleToSignals[clean(row.id).toUpperCase()]||[])
+        nativeEvidenceSignals.add(role);
+    }
+  }
+  const sourceSignals=signalRules.filter(([name,sourcePattern])=>
+    sourcePattern.test(existingSource)||sourcePattern.test(taskRequest)||nativeEvidenceSignals.has(name));
   const toolMatches=[];
   let scannedTools=0;
   for(const folder of ['assets','tools']){
@@ -3692,7 +3735,7 @@ function internalAssetApiIndexGuidance(context={}){
       'target='+tools.target+'; scanned='+tools.scannedTools+'; matched='+tools.matchedCount+'; fingerprint='+tools.fingerprint,
       'Source/applicable signals='+tools.sourceSignals.join('|'),
       ...tools.matches.map(row=>row.path+' ['+row.kind+'] signals='+row.signals.join('|')+' sha256='+row.sha256+' exports='+row.exports.slice(0,16).join('|')+' exportedCount='+row.exports.length),
-      'Every game source BUILD_UP must consume the existing Vibe development-tool APIs. Always evaluate the current game with the existing asset production planner, environment director Auto Biome, visual coordination and targeted QA tools; do not create a second engine or workflow. Auto Biome must respect the same game verified spatial design and return APPROVED_DESIGN_REQUIRED when there is no approved map rather than inventing one.',
+      'Every game source BUILD_UP must consume the existing Vibe development-tool APIs. Dynamically rematch real source-grounded modules including world biome, housing, customization, motion, actions, NPC/AI, quests/dialogue, crafting, economy, progression, farming, weather, physics, camera, audio, skill effects, UI, save and network. Always evaluate the current game with the existing asset production planner, environment director Auto Biome, visual coordination and targeted QA tools; do not create a second engine or workflow. Auto Biome must respect the same game verified spatial design and return APPROVED_DESIGN_REQUIRED when there is no approved map rather than inventing one.',
       'These are updated, read-only API references, not code to copy blindly. Inspect matching existing implementation and use only verified-compatible functions in the current responsible source. Development tools are NOT game runtime imports and cannot grant new source mutation, release, save, economy, combat or network authority.',
       'Apply relevant reusable implementation during this authorized coding task; retain each existing game save key, schema, migration requirement, HP, damage, hitbox, cooldown, drop, reward, AI and combat rules. Reuse safe algorithms without rewriting their gameplay meaning. No gameplay/save/combat system is invented solely because a tool matches.',
       'Teach Vibe from actual source-bound examples: identify the registered internal asset ID and source hash, locate its existing Roblox or Unity consumer API, apply only a compatible change in that responsible game source, and replay targeted QA. Registered config atoms are never proof of actual in-game use.',

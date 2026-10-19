@@ -864,7 +864,11 @@ test('shallow Roblox promotion preserves exact candidate, main drift guard and m
     fs.writeFileSync(path.join(upstream,'game/source'),'verified');git(upstream,'commit','-am','equivalent squash result');fetch(fetches[3]);
     assert.equal(git(checkout,'diff','--name-only',release,'origin/main','--','game'),'');
     assert.equal(git(checkout,'rev-parse',release+':game'),git(checkout,'rev-parse','origin/main:game'));
-  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+  }finally{
+    // Git worktree metadata can briefly outlive the final synchronous git command on CI.
+    // Retry only teardown ENOTEMPTY/EBUSY races; assertions and promotion gates stay unchanged.
+    fs.rmSync(temp,{recursive:true,force:true,maxRetries:5,retryDelay:100});
+  }
 });
 
 // F9 이후 게이트는 출시 등급·점수와 독립적이다. 등록·활성·검증된 게임만 기존 배포 경로를 사용한다.
