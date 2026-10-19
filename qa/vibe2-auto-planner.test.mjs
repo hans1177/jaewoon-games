@@ -6,12 +6,57 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, focusedCaretakerProject } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
+
+
+test('the owner three-game focus selects exactly Simple RPG Roblox and two existing Web sources',()=>{
+  const repoRoot=process.cwd();
+  const focus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
+    .developmentLifecycleMachine.focusedDevelopmentCaretakers;
+  assert.deepEqual(focus.ownerFocusedGameIds,['simple-rpg','fantasy-survival','cozy-island']);
+  assert.deepEqual(focus.ownerFocusedGamePlatforms,{
+    'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'
+  });
+  const projects=collectProjects({}, {games:[
+    {id:'fantasy-survival',name:'마력숲',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/'},
+    {id:'cozy-island',name:'포근섬',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/cozy-island/'}
+  ]},repoRoot,{items:[]});
+  const selected=projects.filter(project=>focusedCaretakerProject(project,repoRoot))
+    .map(project=>project.gameId+'|'+project.engine).sort();
+  assert.deepEqual(selected,[
+    'cozy-island|web','fantasy-survival|web','simple-rpg|roblox'
+  ]);
+  assert.ok(projects.some(project=>project.gameId==='fantasy-survival'&&project.engine==='roblox'
+    &&!focusedCaretakerProject(project,repoRoot)),
+    'the matching Roblox counterpart must keep developing but not consume a focus slot');
+  assert.ok(projects.some(project=>project.gameId==='cozy-island'&&project.engine==='roblox'
+    &&!focusedCaretakerProject(project,repoRoot)));
+  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,true);
+  assert.equal(focus.targetFocusedGames,3);
+  assert.equal(focus.maxFocusedGames,3);
+});
+
+test('exact focused-game platform mapping fails closed if an entry is missing',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-focused-mapping-'));
+  try{
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),
+      JSON.stringify({developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
+        enabled:true,focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
+        ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
+        ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB'}
+      }}}));
+    assert.throws(()=>focusedCaretakerProject({gameId:'simple-rpg',engine:'roblox'},root),
+      /FOCUSED_GAME_PLATFORM_MAPPING_INCOMPLETE/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('internal motion planning binds 100 registered parents to one current walk source each',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-plan-'));
