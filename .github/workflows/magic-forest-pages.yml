@@ -14,6 +14,8 @@ on:
       - "tools/github-pages-landing.mjs"
       - "qa/github-pages-landing.test.mjs"
       - "qa/vibe-browser-smoke.mjs"
+      - "assets/vibe-fighting-engine.mjs"
+      - "qa/vibe-fighting-engine.test.mjs"
 
 permissions:
   contents: write
