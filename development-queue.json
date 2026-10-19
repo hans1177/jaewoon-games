@@ -11567,7 +11567,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-19T05:21:20.433Z",
+      "updatedAt": "2026-10-19T05:35:53.375Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11580,13 +11580,13 @@
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": true,
+      "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": "afd6808209ac05a714b955854e733529920bcf69",
       "robloxBuildArtifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
       "robloxBuildPassedAt": "2026-10-19T04:48:21.658Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-19T04:48:21.658Z",
+      "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": null,
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
@@ -11621,10 +11621,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "roblox-build-package-failed",
       "routingBlockers": [
-        "roblox-build-preflight-blocked"
+        "roblox-build-package:roblox-build-package-failed"
       ],
       "robloxSourceCommit": "afd6808209ac05a714b955854e733529920bcf69",
       "robloxSourceBootstrapPassedAt": "2026-10-17T13:01:44.222Z",
@@ -12135,7 +12135,7 @@
       "robloxQualityBuildUpSourceRevision": null,
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpEvidence": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildFailedAt": "2026-10-19T05:35:53.375Z",
       "robloxExactRevisionPassed": false,
       "robloxHeadlessPassedAt": null,
       "robloxInternalReleasePublished": false,
@@ -41564,7 +41564,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-19T05:35:33.546Z",
+  "updatedAt": "2026-10-19T05:35:53.375Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
