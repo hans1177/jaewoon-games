@@ -31,7 +31,7 @@ export function createFightingMatch({player='jin',opponent='ara',roundSeconds=75
    if(a.attack){const hit=a.attack;a.attack.time+=dt;if(!hit.hit&&hit.time>=hit.impact){hit.hit=true;const target=actors[1-i],w=weapons[a.weapon],reach=w.reach+(hit.kind==='heavy'?.25:0),dist=Math.abs(target.x-a.x);
     if(dist<=reach&&target.invuln<=0){const raw=(hit.kind==='heavy'?19:10)*a.fighter.power*w.damage,blocked=target.guard&&(!target.crouch||hit.kind==='light'),damage=Math.max(1,Math.round(raw*(blocked?.16:1)));
      target.hp=clamp(target.hp-damage,0,100);target.stun=blocked?.09:hit.kind==='heavy'?.42:.21;target.x=clamp(target.x+a.face*(blocked?.12:.32),-7.5,7.5);
-     events.push({type:blocked?'block':'hit',index,target:1-i,damage,x:target.x,kind:hit.kind});}}
+     events.push({type:blocked?'block':'hit',index:i,target:1-i,damage,x:target.x,kind:hit.kind});}}
     if(hit.time>=hit.duration)a.attack=null}
   });
   if(inputs[0]?.light)attack(0,'light');if(inputs[0]?.heavy)attack(0,'heavy');
