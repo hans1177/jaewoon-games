@@ -6552,7 +6552,7 @@ function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.mi
   if(world3d){
    try{
     world3d.frame(state,regionAt);
-    document.body.dataset.spatialDimension=world3d.isActive()?'3d':'3d-interior-pending';
+    document.body.dataset.spatialDimension=world3d.isActive()?'3d':('3d-fallback-'+world3d.getFallbackReason());
     document.body.dataset.nativeMonsterCoverage=world3d.getUnmappedVisibleMonsterIds().length?'incomplete':'currently-mapped';
    }catch(error){
     console.error('MAGIC_FOREST_NATIVE_3D_FRAME_FAILED',error);
