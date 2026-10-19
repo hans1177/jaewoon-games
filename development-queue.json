@@ -33731,7 +33731,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-13T07:37:21.773Z",
-      "updatedAt": "2026-10-19T11:57:21.486Z",
+      "updatedAt": "2026-10-19T18:04:47.835Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -33751,16 +33751,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "5d8a7dde625ba52b58057f796da29f132f4cc20b",
       "robloxBuildArtifactIdentity": "sha256:b9e13f27c21e5039c647fd1af8f8f76acf186be7b25578208318197cc7291f6f",
-      "robloxBuildPassedAt": "2026-10-19T11:57:21.486Z",
+      "robloxBuildPassedAt": "2026-10-19T18:04:47.835Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-19T11:57:21.486Z",
+      "robloxBuildPreflightFailedAt": "2026-10-19T18:04:47.835Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "ant-simulator",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-19T11:55:12.447Z",
+        "checkedAt": "2026-10-19T17:56:33.608Z",
         "sourceRevision": "5d8a7dde625ba52b58057f796da29f132f4cc20b",
         "artifactIdentity": "sha256:b9e13f27c21e5039c647fd1af8f8f76acf186be7b25578208318197cc7291f6f",
         "secondaryOwnerFocus": false,
@@ -33799,15 +33799,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because several required validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed in the build evidence."
+            "note": "Package build evidence shows failures in web and music validations, which prevents starting runtime testing."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -37517,7 +37515,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-19T18:03:51.479Z",
+  "updatedAt": "2026-10-19T18:04:47.835Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
