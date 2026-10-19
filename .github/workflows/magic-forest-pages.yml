@@ -13,6 +13,9 @@ on:
       - ".github/workflows/magic-forest-pages.yml"
       - "tools/github-pages-landing.mjs"
       - "qa/github-pages-landing.test.mjs"
+      - "qa/vibe-browser-smoke.mjs"
+      - "assets/vibe-fighting-engine.mjs"
+      - "qa/vibe-fighting-engine.test.mjs"
 
 permissions:
   contents: write
@@ -204,7 +207,12 @@ jobs:
               ?adapted.replace(/(\b(?:href|src|action)=["'])\/(?=["'])/g,'$1/jaewoon-games/')
               :adapted);
           }
-          const trackedAssets=new Set(cp.execFileSync('git',['ls-tree','-r','--name-only','HEAD','--','assets'],{encoding:'utf8'}).trim().split('\n'));
+          // GitHub Pages does not expose dotfiles consistently, even if preserved in gh-pages.
+          // Never advertise Git metadata (.gitignore/.gitkeep/.gitattributes) as game assets.
+          // Keep actual tracked renderers/models/scripts intact and all LFS/size checks.
+          const trackedAssets=new Set(cp.execFileSync('git',['ls-tree','-r','--name-only','HEAD','--','assets'],{encoding:'utf8'})
+            .trim().split('\n').filter(asset=>asset.startsWith('assets/')
+              &&!asset.split('/').some(segment=>segment.startsWith('.'))));
           const refs=new Set(trackedAssets);
           const collect=root=>{
             if(!fs.existsSync(root))return;
@@ -314,14 +322,6 @@ jobs:
           set -euo pipefail
           node tools/github-pages-landing.mjs
           test -s _site/index.html
-
-      - name: Headless Chromium Vibe presentation smoke
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts playwright@1.56.1
-          npx playwright install --with-deps chromium
-          node qa/vibe-browser-smoke.mjs
 
       - name: Verify every published game route and the canonical official homepage
         if: github.event_name == 'pull_request'
@@ -498,9 +498,33 @@ jobs:
           echo "OFFICIAL_HOMEPAGE_URL=https://hans1177.github.io/jaewoon-games/"
 
 
+      # OWNER: Publish first. Runtime 3D smoke tests only the public, exact published URL.
+      # Never block or roll back the GitHub Pages release because a browser/CDN/mobile test fails.
+      - name: Checkout smoke script only after live publication
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            qa/vibe-browser-smoke.mjs
+      - name: Configure post-publication Chromium
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate live published 3D model and game controls
+        id: forest_native_3d_live_qa
+        continue-on-error: true
+        env:
+          VIBE_SMOKE_LIVE_BASE: ${{ steps.deployment.outputs.page_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node qa/vibe-browser-smoke.mjs
+
       # Report post-publication defects using the existing public-release workflow.
       - name: Director register issues after live game testing
-        if: ${{ github.event_name != 'pull_request' && steps.director_live_qa.outcome == 'failure' }}
+        if: ${{ github.event_name != 'pull_request' && (steps.director_live_qa.outcome == 'failure' || steps.forest_native_3d_live_qa.outcome == 'failure') }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -520,13 +544,15 @@ jobs:
             echo "- 소스 커밋: \`$GITHUB_SHA\`"
             echo "- 배포된 홈페이지: https://hans1177.github.io/jaewoon-games/"
             echo "- 검증 실행: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "- 실제 마력숲 3D 검증 결과: ${{ steps.forest_native_3d_live_qa.outcome }}"
+            echo "- 원본 페이지 경로 검증 결과: ${{ steps.director_live_qa.outcome }}"
             echo "- 시점: GitHub Pages 배포 이후 (배포 차단 조건 아님)"
             echo
             echo '### 확인된 오류'
             if test -s "$report"; then
               sed 's/^/- \`/;s/$/\`/' "$report"
             else
-              echo '- 배포 후 매니페스트/게임/공유 자산/홈페이지 검사 실패. 상세 원인은 위 실행 로그 확인.'
+              echo '- 배포 후 실제 WebGL 게임 시작·이동·저장 또는 매니페스트/경로 검증 실패. 상세 원인은 위 실행 로그 확인.'
             fi
             echo
             echo '### 후속 처리'
