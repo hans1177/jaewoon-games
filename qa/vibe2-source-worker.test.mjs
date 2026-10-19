@@ -1441,6 +1441,12 @@ test('Vibe libraries and development tools rematch F0 game-source-backed modules
     'export class JaewoonCraftingRecipes {}\n');
   write(path.join(cwd,'assets/vibe-housing-library.js'),
     'export function inspectHousingPlacement() {}\n');
+  write(path.join(cwd,'assets/vibe-save-kit.js'),
+    'export function inspectSaveSource() {}\n');
+  write(path.join(cwd,'assets/combat-actions.js'),
+    'export function inspectCombatTiming() {}\n');
+  write(path.join(cwd,'assets/economy-loot-shop.js'),
+    'export function inspectShopOwnership() {}\n');
   const source='const tickCount = 1;';
   const input={files:[{path:'web-games/a/current.js',editable:true,content:source}],bytes:source.length};
   const composition={
@@ -1451,6 +1457,12 @@ test('Vibe libraries and development tools rematch F0 game-source-backed modules
         responsibleFiles:['web-games/a/deep/crafting.js']},
       {id:'HOUSING',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
         responsibleFiles:['web-games/a/deep/housing.js']},
+      {id:'SAVE',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/save.js']},
+      {id:'COMBAT',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/combat.js']},
+      {id:'SHOP',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/shop.js']},
       {id:'QUEST_DIALOGUE',state:'REVIEW_REQUIRED_NO_SOURCE',responsibleFiles:[]}
     ]
   };
@@ -1462,9 +1474,15 @@ test('Vibe libraries and development tools rematch F0 game-source-backed modules
   const matching=run('a',composition).vibeDynamicToolMatch;
   assert.ok(matching.sourceSignals.includes('CRAFTING'));
   assert.ok(matching.sourceSignals.includes('HOUSING'));
+  assert.ok(matching.sourceSignals.includes('SAVE'));
+  assert.ok(matching.sourceSignals.includes('COMBAT'));
+  assert.ok(matching.sourceSignals.includes('ECONOMY'));
   assert.ok(!matching.sourceSignals.includes('QUEST_DIALOGUE'));
   assert.ok(matching.matches.some(row=>row.path==='assets/crafting-recipes.js'));
   assert.ok(matching.matches.some(row=>row.path==='assets/vibe-housing-library.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/vibe-save-kit.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/combat-actions.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/economy-loot-shop.js'));
   assert.equal(matching.sourceMutationPerformed,false);
   assert.equal(matching.runtimeVerified,false);
   const foreign=run('b',composition);
