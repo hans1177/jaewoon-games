@@ -21412,7 +21412,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-19T08:23:52.668Z",
+      "updatedAt": "2026-10-19T08:46:27.027Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -21422,7 +21422,7 @@
         "capturedAt": "2026-10-12T02:23:12.492Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-19T08:23:52.668Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-19T08:46:27.027Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -21471,7 +21471,7 @@
       "routingBlockers": [
         "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED"
       ],
-      "robloxSourceCommit": "c46f03824e67082809383a52fa2915039a2742d7",
+      "robloxSourceCommit": "b4697775a1e93c25c2339b1ed7035c2ca0c0f48b",
       "robloxSourceBootstrapPassedAt": "2026-10-12T18:09:47.970Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -21977,12 +21977,12 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "c46f03824e67082809383a52fa2915039a2742d7",
+      "robloxQualityBuildUpSourceRevision": "b4697775a1e93c25c2339b1ed7035c2ca0c0f48b",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "line-defense",
-        "sourceRevision": "c46f03824e67082809383a52fa2915039a2742d7",
+        "sourceRevision": "b4697775a1e93c25c2339b1ed7035c2ca0c0f48b",
         "sourceTreeSha": "c5116a7423a001c8c5e98b802c7e057e8c363f1c",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
@@ -22035,8 +22035,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39202350837,
-        "testedAt": "2026-10-19T08:23:52.668Z"
+        "workflowRunId": 39202583135,
+        "testedAt": "2026-10-19T08:46:27.027Z"
       }
     },
     {
@@ -38540,7 +38540,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-19T08:46:16.727Z",
+  "updatedAt": "2026-10-19T08:46:27.027Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
