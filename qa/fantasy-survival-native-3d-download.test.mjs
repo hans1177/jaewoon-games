@@ -74,8 +74,10 @@ test('original source materials and Diablo-II-style native camera are bound to g
 test('public Magic Forest never receives developer asset inspector button',()=>{
  const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
  const panel=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
- assert.match(workflow,/if\(route==='web-games\/fantasy-survival\/'\)continue/);
- assert.match(panel,/gameId==='fantasy-survival'/);
+ assert.doesNotMatch(workflow,/const tag=.*vibe-runtime-panel/);
+ assert.doesNotMatch(workflow,/vibe-assets-launcher/);
+ assert.doesNotMatch(panel,/createElement\('button'\)|vibe-assets-launcher|vibe-assets-panel/);
+ assert.match(panel,/asset-library\.html/);
 });
 
 test('native scene drives the default surface display but is not falsely production-certified',()=>{
