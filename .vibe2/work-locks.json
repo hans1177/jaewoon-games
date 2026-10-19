@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-ros86t",
+      "worker": "vibe2",
+      "taskId": "internal-motion-vetala-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/vetala/init.luau"
+      ],
+      "baseSha": "08ab0b46c42182239417fd33e801d2fcf80613a7",
+      "runId": "39288240988",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-19T16:58:53.690Z",
+      "expiresAt": "2026-10-19T17:43:53.690Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-vetala-walk-v1"
+      ]
+    }
+  ]
 }
