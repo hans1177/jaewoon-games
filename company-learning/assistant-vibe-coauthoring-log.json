@@ -1183,6 +1183,25 @@
       "runtimeVerified": false,
       "localRuntimeVerified": true,
       "productionReady": false
+    },
+    {
+      "id": "assistant_download_only_similar_then_acquire_20261020",
+      "date": "2026-10-20",
+      "gameId": "ALL_GAMES",
+      "engine": "ALL",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Owner rejects all self-authored visual assets and requires verified downloaded originals; exact role gaps should try a compatible similar downloaded asset before requesting more downloads.",
+      "decision": "Canonical source policy now requires external source URL, commercial-use license document, original byte SHA256 and native byte SHA256. Existing planner filters actual candidates, manifests and same-game candidates through this verification. Priority is exact downloaded match, nearest compatible downloaded match, then acquisition in the existing graphics flow. Engine, UI logic and lighting modules remain reusable.",
+      "change": "Updated existing roadmap, asset production plan, worker guidance and provenance regression; removed previously selected authored creature GLBs and generated promotional image references from Party RPG candidate. No blanket asset deletion, new scheduler, new queue or gameplay rewrite.",
+      "evidence": [
+        "Downloaded-source tests reject catalogue-only rows, project-original assets, modified originals, modified native artifacts and missing license evidence.",
+        "Actual knight, mage and rogue registry entries passed original/native hash and CC0 license-file verification. Existing shared wolf failed external-origin verification.",
+        "Party RPG canonical browser smoke passed with only three downloaded character models, no missing model requests, actual geometry draws, walking animation and shop-to-sword mesh application.",
+        "Local affected regression: base 67 tests, targeted worker 3 tests, provenance and on-demand supply 2 tests passed. Main/runtime rollout, full 3D environment and other-game completion remain unverified."
+      ],
+      "learningState": "TRACE_ONLY_PENDING_MAIN_AND_POSTMERGE",
+      "runtimeVerified": false,
+      "productionReady": false
     }
   ]
 }

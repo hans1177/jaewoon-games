@@ -7,7 +7,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeSourceBoundAssetConsumers,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
+import {inspectDownloadedAssetSource,analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeSourceBoundAssetConsumers,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings,buildInternalAssetApiIndex,attachSelectedInternalAssetApiContext} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
@@ -5321,4 +5321,23 @@ test('web UI source consumers register actual company assets and invalidate remo
     assert.equal(stale.registry.assets.find(row=>row.id==='local-frame.png').sourceBoundConsumerGameIds,undefined);
     assert.ok(stale.relations.some(row=>row.assetId==='nine-frame.png'&&row.classification==='STALE_SOURCE_BINDING'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('download-only visual asset gate requires original, license and native bytes and rejects tampering',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'download-only-'));
+ const original=Buffer.from('licensed externally acquired original model'),native=Buffer.from('native imported model');
+ const digest=value=>createHash('sha256').update(value).digest('hex');
+ const put=(file,value)=>{fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.writeFileSync(path.join(root,file),value);};
+ const asset={id:'downloaded',sourceUrl:'https://example.org/pack/model',license:'CC0-1.0',path:'assets/import/model.glb',sourceHash:digest(native),originalSourcePath:'assets/original/model.glb',originalSourceHash:digest(original),licenseFile:'assets/original/LICENSE.txt'};
+ try{
+  assert.equal(inspectDownloadedAssetSource({asset,repoRoot:root}).pass,false,'catalogue alone is not acquisition');
+  put(asset.path,native);put(asset.originalSourcePath,original);put(asset.licenseFile,'Creative Commons Zero (CC0)');
+  assert.equal(inspectDownloadedAssetSource({asset,repoRoot:root}).pass,true);
+  assert.equal(inspectDownloadedAssetSource({asset:{...asset,license:'project-original'},repoRoot:root}).pass,false);
+  put(asset.originalSourcePath,'modified original');assert.equal(inspectDownloadedAssetSource({asset,repoRoot:root}).reason,'DOWNLOADED_ORIGINAL_BYTES_HASH_REQUIRED');
+  put(asset.originalSourcePath,original);put(asset.path,'modified native');assert.equal(inspectDownloadedAssetSource({asset,repoRoot:root}).reason,'NATIVE_SOURCE_BYTES_HASH_REQUIRED');
+  put(asset.path,native);put(asset.licenseFile,'unknown license');assert.equal(inspectDownloadedAssetSource({asset,repoRoot:root}).reason,'LICENSE_EVIDENCE_FILE_REQUIRED');
+  assert.equal(inspectDownloadedAssetSource({asset:{...asset,originalSourcePath:'assets/../../outside'},repoRoot:root}).pass,false);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
