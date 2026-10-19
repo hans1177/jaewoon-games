@@ -34423,7 +34423,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-13T07:37:21.773Z",
-      "updatedAt": "2026-10-19T11:57:21.486Z",
+      "updatedAt": "2026-10-19T18:03:51.479Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -34443,16 +34443,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "a1f8c006689c4b5cb2ad73682b8d6b15be0e524a",
       "robloxBuildArtifactIdentity": "sha256:e237c492b257d43c7187f38e5454e376899687687c46c6626a964c0c2825f42c",
-      "robloxBuildPassedAt": "2026-10-19T11:57:21.486Z",
+      "robloxBuildPassedAt": "2026-10-19T18:03:51.479Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-19T11:57:21.486Z",
+      "robloxBuildPreflightFailedAt": "2026-10-19T18:03:51.479Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "wild-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-19T11:55:18.145Z",
+        "checkedAt": "2026-10-19T17:54:43.471Z",
         "sourceRevision": "a1f8c006689c4b5cb2ad73682b8d6b15be0e524a",
         "artifactIdentity": "sha256:e237c492b257d43c7187f38e5454e376899687687c46c6626a964c0c2825f42c",
         "secondaryOwnerFocus": false,
@@ -34491,15 +34491,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in BUILD_EVIDENCE, preventing the start of runtime testing."
+            "note": "Package build evidence indicates validation failures for web and music assets. Immutable package cannot start runtime testing."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -37519,7 +37517,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-19T18:03:28.890Z",
+  "updatedAt": "2026-10-19T18:03:51.479Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
