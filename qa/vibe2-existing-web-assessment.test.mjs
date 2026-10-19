@@ -105,6 +105,10 @@ test('existing module and shared model URLs parse and resolve on root and projec
   assert.notEqual(invalid.status,0,'malformed module syntax must still fail');
 
   const party=fs.readFileSync('web-games/party-rpg/index.html','utf8');
+  const partyImportMap=party.match(/<script\b[^>]*type=["']importmap["'][^>]*>([\s\S]*?)<\/script>/i)?.[1];
+  assert.ok(partyImportMap,'party-rpg module importmap must remain present');
+  assert.equal(typeof JSON.parse(partyImportMap).imports,'object');
+  assert.throws(()=>JSON.parse('{"imports":'),SyntaxError,'invalid importmap must fail');
   const modelPaths=[...party.matchAll(/['"](\.\.\/\.\.\/assets\/shared\/[^'"]+\.glb)['"]/g)].map(row=>row[1]);
   assert.equal(modelPaths.length,12,'party-rpg must bind all 12 existing shared models');
   for(const base of [
@@ -174,6 +178,14 @@ test('active or publicly playable development-confirmed Web entries have parseab
         continue;
       }
       if(!body.trim())continue;
+      // importmap은 실행 JS가 아니라 비활성 JSON이다. 문법 검사를 생략하지 않는다.
+      if(/\btype\s*=\s*["']importmap["']/i.test(attrs)){
+        let importMap;
+        assert.doesNotThrow(()=>{importMap=JSON.parse(body)},`${game.id}: inline importmap syntax`);
+        assert.ok(importMap&&typeof importMap==='object'&&!Array.isArray(importMap),
+          `${game.id}: importmap must be an object`);
+        continue;
+      }
       startupSource+='\\n'+body;
       const isModule=/\btype\s*=\s*["']module["']/i.test(attrs);
       if(isModule){
