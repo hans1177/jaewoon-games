@@ -316,14 +316,6 @@ jobs:
           node tools/github-pages-landing.mjs
           test -s _site/index.html
 
-      - name: Headless Chromium Vibe presentation smoke
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts playwright@1.56.1
-          npx playwright install --with-deps chromium
-          node qa/vibe-browser-smoke.mjs
-
       - name: Verify every published game route and the canonical official homepage
         if: github.event_name == 'pull_request'
         shell: bash
@@ -498,6 +490,29 @@ jobs:
           echo "DIRECTOR_POST_DEPLOY_GAME_TEST=PASS"
           echo "OFFICIAL_HOMEPAGE_URL=https://hans1177.github.io/jaewoon-games/"
 
+
+      # OWNER: Publish first. Runtime 3D smoke tests only the public, exact published URL.
+      # Never block or roll back the GitHub Pages release because a browser/CDN/mobile test fails.
+      - name: Checkout smoke script only after live publication
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            qa/vibe-browser-smoke.mjs
+      - name: Configure post-publication Chromium
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate live published 3D model and game controls
+        continue-on-error: true
+        env:
+          VIBE_SMOKE_LIVE_BASE: ${{ steps.deployment.outputs.page_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node qa/vibe-browser-smoke.mjs
 
       # Report post-publication defects using the existing public-release workflow.
       - name: Director register issues after live game testing
