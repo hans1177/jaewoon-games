@@ -1411,6 +1411,7 @@ test('Vibe libraries and development tools rematch F0 NPC quest crafting economy
     'const shop = economy(currency);',
     'const experience = progression(levelUp);',
     'const weatherState = weather(season);',
+    'const worldRegion = world.currentRegion;',
     'const hit = physics(collisionShape);'
   ].join('\n');
   const input={files:[{path:'client/ExistingGame.js',editable:true,content:currentSource}],
