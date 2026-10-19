@@ -1433,6 +1433,47 @@ test('F0 selects existing NPC quest crafting economy weather physics and progres
   assert.equal(input.files[0].content,currentSource);
 });
 
+// 메인 · 전체 게임 코드에서 찾은 깊은 위치 모듈을 워커의 짧은 파일 창에도 반영한다.
+test('F0 worker uses only matching game source-backed module evidence, not design-only or foreign hints',()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'assets/crafting-recipes.js'),
+    'export class JaewoonCraftingRecipes {}\n');
+  write(path.join(cwd,'assets/vibe-housing-library.js'),
+    'export function inspectHousingPlacement() {}\n');
+  const source='const tickCount = 1;';
+  const input={files:[{path:'web-games/a/current.js',editable:true,content:source}],bytes:source.length};
+  const composition={
+    sourceOnlyEvidence:true,gameId:'a',platform:'WEB',
+    sourceTreeFingerprint:'sha256-grounded-game-source',
+    components:[
+      {id:'CRAFTING',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/crafting.js']},
+      {id:'HOUSING',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/housing.js']},
+      {id:'QUEST_DIALOGUE',state:'REVIEW_REQUIRED_NO_SOURCE',responsibleFiles:[]}
+    ]
+  };
+  const run=(gameId,plan)=>attachSelectedInternalAssetApiContext(input,{
+    cwd,contract:{target:'web',selectedSourcePaths:[]},order:{
+      target:'web',gameId,goal:'keep existing tick',buildUpDirective:{gameInternalAutoComposition:plan}
+    }
+  });
+  const matching=run('a',composition).vibeDynamicToolMatch;
+  assert.ok(matching.sourceSignals.includes('CRAFTING'));
+  assert.ok(matching.sourceSignals.includes('HOUSING'));
+  assert.ok(!matching.sourceSignals.includes('QUEST_DIALOGUE'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/crafting-recipes.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/vibe-housing-library.js'));
+  assert.equal(matching.sourceMutationPerformed,false);
+  assert.equal(matching.runtimeVerified,false);
+  const foreign=run('b',composition);
+  assert.ok(!foreign.vibeDynamicToolMatch||
+    !foreign.vibeDynamicToolMatch.matches.some(row=>row.path==='assets/crafting-recipes.js'));
+  const wrongPlatform=run('a',{...composition,platform:'UNITY'});
+  assert.ok(!wrongPlatform.vibeDynamicToolMatch||
+    !wrongPlatform.vibeDynamicToolMatch.matches.some(row=>row.path==='assets/vibe-housing-library.js'));
+});
+
 test('native game BUILD_UP receives bounded current Vibe tool implementations as read-only source',()=>{
   const cwd=tempRoot();
   const paths=['assets/vibe-art-pipeline.js','assets/vibe-environment-director.js',
