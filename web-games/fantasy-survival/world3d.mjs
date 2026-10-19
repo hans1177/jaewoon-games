@@ -1,6 +1,6 @@
-// Actual optional 3D world renderer attached to the canonical Magic Forest game.
-// Preview is opt-in (?preview3d=1): it must not replace verified legacy gameplay
-// until native meshes, creatures, terrain interaction and mobile QA all pass.
+// Canonical 3D world renderer for the existing Magic Forest game.
+// Uses the game's authoritative state and preserves its original combat and saves.
+// Publication remains blocked until all biomes, monsters and mobile gameplay pass native QA.
 // Geometry comes from the downloaded, CC0-ledgered Tiny Treats Homely House OBJ pack.
 import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
 import {GLTFLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
@@ -14,6 +14,16 @@ const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
 const SCALE = 1 / 48;
 const HERO_URL = new URL('../../assets/roblox/actors/native/mage.glb',import.meta.url);
 const UNDEAD_URL = new URL('../../assets/roblox/actors/native/skeleton-warrior.glb',import.meta.url);
+// Reuse the existing 3D creature library. Each source is bound only to matching
+// game species; the renderer never creates a synthetic enemy or changes AI rules.
+const NATIVE_CREATURE_MODELS=Object.freeze({
+  wolf:['shadowwolf','shadowwolfleader','firewolf','polarwolf','thornhound','ironhidehound'],
+  golem:['golem','firegolemneutral','firegolemaggressive','crystalfiregolem','icegolem','swampgolem','worldtreegolem'],
+  spider:['giantspider','giantspiderling'],
+  serpent:['firesnake','crystalfiresnake','anaconda','worldtreesnake']
+});
+const NATIVE_CREATURE_BY_ID=new Map(Object.entries(NATIVE_CREATURE_MODELS)
+  .flatMap(([source,ids])=>ids.map(id=>[id,source])));
 const assetReadiness=planAssetApplication({
  prompt:'마력숲 생존 캐릭터 몬스터 나무 숲 UI 전투 애니메이션',
  manifest:{assets:[
@@ -127,10 +137,29 @@ export async function createWorld3d(canvas){
   }catch(error){
     console.warn('Downloaded undead GLB unavailable; 3D monster preview remains incomplete',error);
   }
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'default'});
+  // Load already-available native rigged monsters before the real game is shown.
+  // The animated GLB is preferred; a missing model is not replaced by an invented mesh.
+  const nativeCreatureSources=new Map();
+  await Promise.all(Object.keys(NATIVE_CREATURE_MODELS).map(async kind=>{
+    for(const suffix of ['-actions','']){
+      try{
+        const url=new URL('../../assets/shared/creature-'+kind+suffix+'.glb',import.meta.url);
+        const gltf=await new GLTFLoader().loadAsync(url.href);
+        if(!gltf.scene)throw new Error('Empty creature scene');
+        const box=new THREE.Box3().setFromObject(gltf.scene);
+        if(box.isEmpty())throw new Error('Missing creature mesh');
+        nativeCreatureSources.set(kind,{model:gltf.scene,clips:gltf.animations||[],
+          height:Math.max(.1,box.max.y-box.min.y),floor:box.min.y});
+        break;
+      }catch(error){
+        if(!suffix)console.warn('Native 3D monster model unavailable: '+kind,error);
+      }
+    }
+  }));
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:!mobileBudget,alpha:false,powerPreference:'default'});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
-  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.enabled=!mobileBudget;
   renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   const scene=new THREE.Scene();
   scene.background=new THREE.Color(0x244238);
@@ -140,7 +169,7 @@ export async function createWorld3d(canvas){
   scene.add(ambient);
   const sun=new THREE.DirectionalLight(0xffe9b6,2.0);
   sun.position.set(-10,22,8);
-  sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);
+  sun.castShadow=!mobileBudget;sun.shadow.mapSize.set(1024,1024);
   sun.shadow.camera.left=-25;sun.shadow.camera.right=25;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;
   scene.add(sun);
   const ground=new THREE.Mesh(
@@ -173,6 +202,9 @@ export async function createWorld3d(canvas){
   const entities=new Map();
   const interactables=[];
   const undeadActors=new Map();
+  const nativeCreatureActors=new Map();
+  const missingVisibleMonsterIds=new Set();
+  let qualityFactor=1,framesInWindow=0,fpsWindowStart=0;
   let undeadModelHeight=1;
   if(undeadSource){
     const dimensions=new THREE.Box3().setFromObject(undeadSource);
@@ -232,6 +264,62 @@ export async function createWorld3d(canvas){
       undeadActors.delete(key);
     }
   }
+  // The native rigs follow the *existing* monster coordinates, direction and actions.
+  // No new spawn/damage/loot logic is allowed in the rendering layer.
+  function synchronizeNativeCreatures(state,px,py,stamp){
+    const near=mobileBudget?720:1000;
+    missingVisibleMonsterIds.clear();
+    let displayed=0;
+    for(const e of state.enemies||[]){
+      if(!e||e.hp<=0||e.area!==state.area||Math.hypot(e.x-px,e.y-py)>near*qualityFactor)continue;
+      const kind=NATIVE_CREATURE_BY_ID.get(e.type?.id);
+      if(!kind||!nativeCreatureSources.has(kind)){
+        if(e.type?.id!=='wastelandMummy')missingVisibleMonsterIds.add(e.type?.id||'unknown');
+        continue;
+      }
+      if(++displayed>(mobileBudget?12:22))break;
+      const key=String(e.netId||e.id||e.type.id+':'+e.x+':'+e.y);
+      let actor=nativeCreatureActors.get(key);
+      if(!actor){
+        const source=nativeCreatureSources.get(kind);
+        const model=cloneAnimatedRig(source.model),scale=Math.max(.72,Math.min(3.8,
+          (Number(e.type?.r)||20)*SCALE*2.2))/source.height;
+        model.scale.setScalar(scale);
+        model.position.y=-source.floor*scale;
+        const anchor=new THREE.Group();anchor.add(model);scene.add(anchor);
+        const mixer=source.clips.length?new THREE.AnimationMixer(model):null;
+        actor={anchor,model,mixer,clips:source.clips,clipName:'',action:null,
+          lastFrame:performance.now(),seen:0};
+        nativeCreatureActors.set(key,actor);
+      }
+      actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
+      actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
+      actor.anchor.userData.worldPoint={x:e.x,y:e.y};
+      actor.model.traverse(child=>{
+        if(!child.isMesh)return;
+        child.userData.worldPoint={x:e.x,y:e.y};
+        interactables.push(child);
+      });
+      const moving=Math.hypot(Number(e.vx)||0,Number(e.vy)||0)>.05;
+      const attacking=performance.now()-(Number(e.attackAt)||0)<400;
+      const words=attacking?['attack','bite','swing']:moving?['walk','run']:['idle','stand'];
+      const clip=actor.clips.find(c=>words.some(w=>c.name.toLowerCase().includes(w)))
+        ||actor.clips.find(c=>/idle|walk/i.test(c.name));
+      if(actor.mixer&&clip&&clip.name!==actor.clipName){
+        actor.action?.fadeOut(.12);
+        actor.action=actor.mixer.clipAction(clip).reset().fadeIn(.12).play();
+        actor.clipName=clip.name;
+      }
+      const now=performance.now();
+      actor.mixer?.update(Math.min(.05,Math.max(0,(now-actor.lastFrame)/1000)));
+      actor.lastFrame=now;actor.seen=stamp;
+    }
+    for(const [key,actor] of nativeCreatureActors){
+      if(actor.seen===stamp)continue;
+      actor.mixer?.stopAllAction();
+      scene.remove(actor.anchor);nativeCreatureActors.delete(key);
+    }
+  }
   if(hero)scene.add(hero.avatar);
   let playerToolName=null,playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'NONE'});
   let observedWeather='';
@@ -263,13 +351,28 @@ export async function createWorld3d(canvas){
     let rendered=0;
     for(const item of arr){
       if(!item||item.dead)continue;
-      if(Math.hypot(item.x-px,item.y-py)>1000)continue;
+      if(Math.hypot(item.x-px,item.y-py)>1000*qualityFactor)continue;
       addVisibleEntity(kind+':'+String(item.id),kind,item.x,item.y,scale,seen);
       if(++rendered>=65)break;
     }
   }
   function frame(state,regionAt){
     if(disposed)return;
+    // Additional optimization: reduce active model range and GPU resolution only
+    // when the actual frame rate remains low. Never change simulation tick or AI.
+    const sampleNow=performance.now();
+    if(!fpsWindowStart)fpsWindowStart=sampleNow;
+    framesInWindow++;
+    if(sampleNow-fpsWindowStart>=2400){
+      const fps=framesInWindow*1000/(sampleNow-fpsWindowStart);
+      const next=fps<25?Math.max(.58,qualityFactor-.13):
+        fps>48?Math.min(1,qualityFactor+.08):qualityFactor;
+      if(Math.abs(next-qualityFactor)>.01){
+        qualityFactor=next;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5)*qualityFactor);
+      }
+      framesInWindow=0;fpsWindowStart=sampleNow;
+    }
     if(state.area!=='surface'||!state.player){canvas.hidden=true;active=false;return}
     const p=state.player,px=Number(p.x)||0,py=Number(p.y)||0,centerX=px*SCALE,centerY=py*SCALE;
     const w=window.innerWidth,h=window.innerHeight;
@@ -332,6 +435,7 @@ export async function createWorld3d(canvas){
       if(heroMixer){heroMixer.update(Math.min(.05,Math.max(0,(now-lastHeroFrame)/1000)));lastHeroFrame=now}
     }
     synchronizeUndead(state,px,py,seen);
+    synchronizeNativeCreatures(state,px,py,seen);
     resources(state.trees,'tree',px,py,seen,1.28);
     resources(state.swampTrees,'tree_large',px,py,seen,1.65);
     resources(state.rocks,'cobblestones',px,py,seen,1.05);
@@ -374,6 +478,8 @@ export async function createWorld3d(canvas){
       hero.model.traverse(object=>{if(object.isMesh){object.geometry?.dispose();const mats=Array.isArray(object.material)?object.material:[object.material];for(const mat of mats)mat?.dispose()}})}
     for(const actor of undeadActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
     undeadActors.clear();
+    for(const actor of nativeCreatureActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
+    nativeCreatureActors.clear();
     if(undeadSource){undeadSource.traverse(o=>{if(!o.isMesh)return;
       o.geometry?.dispose();const materials=Array.isArray(o.material)?o.material:[o.material];
       for(const m of materials)m?.dispose()})}
@@ -381,15 +487,23 @@ export async function createWorld3d(canvas){
     for(const row of entities.values())scene.remove(row.model);
     entities.clear();
     for(const model of models.values()){model.geometry.dispose();model.material.dispose()}
+    for(const source of nativeCreatureSources.values())source.model.traverse(o=>{
+      if(!o.isMesh)return;
+      o.geometry?.dispose();
+      for(const m of (Array.isArray(o.material)?o.material:[o.material]))m?.dispose();
+    });
     ground.geometry.dispose();ground.material.dispose();
     biomeTileGeometry.dispose();for(const material of biomeMaterials.values())material.dispose();
   }
   return {
-    frame,pick,dispose,kind:'NATIVE_WEBGL_CC0_ASSET_PREVIEW',
+    frame,pick,dispose,isActive:()=>active&&!disposed&&!canvas.hidden,
+    kind:'NATIVE_WEBGL_GAME_RENDERER',
     modelCount:models.size,playerAssetLoaded:!!hero,playerMotionClipCount:heroClips.length,
     undeadProxySourceLoaded:!!undeadSource,undeadProxyMotionClipCount:undeadClips.length,
     getBiome:()=>currentBiome,getWorldProfile:()=>gameStyleRegion,
     getWeatherEffects:()=>weatherVisualEffects,getAvatarRecipe:()=>avatarRecipe,
-    getMissingAssetTypes:()=>assetReadiness.missingTypes,productionReady:false
+    getMissingAssetTypes:()=>assetReadiness.missingTypes,
+    getUnmappedVisibleMonsterIds:()=>[...missingVisibleMonsterIds],
+    getAdaptiveQuality:()=>qualityFactor,productionReady:false
   };
 }
