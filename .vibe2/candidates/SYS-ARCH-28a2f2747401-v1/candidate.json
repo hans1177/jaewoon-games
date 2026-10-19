@@ -1,0 +1,22 @@
+{
+  "summary": "Repair queue control and regression test for Vibe2 continuous pipeline execution",
+  "expectedEffect": "Passes queue selection and fan-in verification tests correctly under strict Vibe architecture rules.",
+  "edits": [
+    {
+      "path": "qa/vibe2-queue-control.test.mjs",
+      "find": "  assert.equal(batch.selected.some(task=>task.id==='independent'),true);",
+      "replace": "  assert.equal(batch.selected.some(task=>task.id==='independent'),true);\n  assert.equal(batch.selected.length, 1);\n  assert.equal(batch.freeSlots, 2);"
+    },
+    {
+      "path": "tools/vibe2-queue-control.mjs",
+      "find": "  if (/candidate-awaiting-runtime-evidence|awaiting.*qa|qa.*awaiting/i.test(currentBlocker) || /slot-released.*fan-in/i.test(currentBlocker)) {",
+      "replace": "  if (/candidate-awaiting-runtime-evidence|awaiting.*qa|qa.*awaiting/i.test(currentBlocker) || /slot-released.*fan-in/i.test(currentBlocker) || /slot-released/i.test(currentBlocker)) {"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "qa/vibe2-queue-control.test.mjs"
+  ],
+  "graphicsReplacementReport": null
+}

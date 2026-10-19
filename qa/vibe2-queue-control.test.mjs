@@ -1583,6 +1583,8 @@ test('Gemini quota wait releases worker capacity while preserving source lock', 
   assert.equal(batch.freeSlots,2);
   assert.equal(batch.selected.some(task=>task.id==='same-root'),false);
   assert.equal(batch.selected.some(task=>task.id==='independent'),true);
+  assert.equal(batch.selected.length, 1);
+  assert.equal(batch.freeSlots, 2);
   const summary=createVibeContinuousQueue(batch.selected.length?queue:queue);
   assert.equal(summary.tasks.length,3);
 });
