@@ -203,6 +203,13 @@ export async function createWorld3d(canvas){
       actor.anchor.position.set(e.x*SCALE,0,e.y*SCALE);
       actor.anchor.rotation.y=Math.atan2(Number(e.faceX)||0,Number(e.faceY)||1);
       actor.anchor.userData.worldPoint={x:e.x,y:e.y};
+      // The game owns the tap-target/attack decision. Native skinned surfaces only
+      // provide the correct original world coordinates to its existing handler.
+      actor.model.traverse(child=>{
+        if(!child.isMesh)return;
+        child.userData.worldPoint={x:e.x,y:e.y};
+        interactables.push(child);
+      });
       const moving=Math.hypot(Number(e.vx)||0,Number(e.vy)||0)>.05;
       const attacking=performance.now()-(Number(e.attackAt)||0)<400;
       const intents=attacking?['attack','swing']:moving?['walk','run']:['idle','stand'];
