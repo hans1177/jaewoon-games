@@ -67989,11 +67989,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_9bff863f0996b12b56170263",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8566",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7d2389d477cd2cbb9577050bc23a471071286393",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8566,
+        "baseBranch": "main",
+        "headBranch": "feature/fantasy-survival-3d-ui-20261020",
+        "baseSha": "7d2389d477cd2cbb9577050bc23a471071286393",
+        "headSha": "cee7088dc8128685c36fa10e9edfdf0563bfce2f",
+        "mergeCommitSha": "52e315539dde5a312be52a3ebd6dc2e1c0f4d570",
+        "mergedAt": "2026-10-19T21:31:31Z",
+        "authorLogin": "hans1177",
+        "titleHash": "9eefdbeca52dc20c2cd7584cb917949b025ba222a44dd2102a948a7305afa77b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feature/fantasy-survival-3d-ui-20261020",
+        "candidateSha": "cee7088dc8128685c36fa10e9edfdf0563bfce2f"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 1401,
+        "deletedLineCount": 159,
+        "changedFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          "assets/asset-license-ledger.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-mobile-tap-combat.test.mjs",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          "assets/asset-license-ledger.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-mobile-tap-combat.test.mjs",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8566",
+        "merge-commit:52e315539dde5a312be52a3ebd6dc2e1c0f4d570",
+        "base-main:7d2389d477cd2cbb9577050bc23a471071286393"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 545
+    "total": 546
   }
 }
