@@ -1831,6 +1831,38 @@ test('all-game auto composition connects existing lobby, customization, material
 });
 
 // 메인 · 최초 후보의 상위 파일 밖에 있는 기존 모듈까지 F0 재사용 책임에 전달한다.
+test('F0 existing game modules never demand unapproved weather combat crafting or skill mechanics from generic world UI audio',()=>{
+  const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-f0-genre-scope-'));
+  try{
+    const sourceRoot='web-games/exploration-only';
+    fs.mkdirSync(path.join(repoRoot,sourceRoot),{recursive:true});
+    fs.writeFileSync(path.join(repoRoot,sourceRoot,'world.js'),
+      'const region = "region"; const button = "button"; const sound = "sound";\n');
+    const observed=inspectGameSources({repoRoot,sourceRoots:[sourceRoot]});
+    const createPlan=design=>buildGameInternalAutoCompositionPlan({
+      gameId:'exploration-only',platform:'WEB',repoRoot,sourceRoot,
+      sourceObservation:observed,design
+    });
+    const plan=createPlan({identity:'World only',coreLoop:['지역 탐험','목표 발견']});
+    for(const id of ['WORLD_BIOME_WEATHER','ACTION_MOTION_COMBAT',
+      'CRAFT_ECONOMY_INVENTORY','FARMING_WORLD_WEATHER','SKILL_VFX_AUDIO']){
+      assert.ok(!plan.moduleConnections.some(x=>x.id===id),id+' must not invent a missing genre mechanic');
+    }
+    assert.equal(plan.worldGraph.enabled,true);
+    assert.equal(plan.runtimeVerified,false);
+    const approved=createPlan({
+      identity:'World with approved biome and weather',
+      spatialLayout:{biome:'approved forest biome',season:'approved weather season'}
+    });
+    const missing=approved.moduleConnections.find(x=>x.id==='WORLD_BIOME_WEATHER');
+    assert.ok(missing,'approved design requests genuine source binding work');
+    assert.equal(missing.state,'MISSING_REQUIRED_SOURCE_REVIEW');
+    assert.ok(missing.missingRoles.includes('WEATHER'));
+    assert.ok(missing.missingRoles.includes('BIOME'));
+    assert.equal(missing.passed,false);
+  }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
+});
+
 test('all-game F0 composition discovers real biome housing customization motion and action owners outside ranked top files',()=>{
   const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-f0-source-coverage-'));
   try{
