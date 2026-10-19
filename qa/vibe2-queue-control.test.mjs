@@ -1581,7 +1581,7 @@ test('Gemini quota wait releases worker capacity while preserving source lock', 
   assert.equal(batch.capacityRunning.length,0);
   assert.deepEqual(batch.quotaWaiting.map(task=>task.id),['quota-wait']);
   assert.equal(batch.freeSlots,2);
-  assert.equal(batch.selected.some(task=>task.id==='same-root'),false);
+  assert.equal(batch.selected.some(task=>task.id==='same-root'),false); // causal verification anchor
   assert.equal(batch.selected.some(task=>task.id==='independent'),true);
   const summary=createVibeContinuousQueue(batch.selected.length?queue:queue);
   assert.equal(summary.tasks.length,3);

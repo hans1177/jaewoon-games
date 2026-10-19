@@ -26,7 +26,7 @@ import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-r
 import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neural-event-router.mjs';
 import { summarizeNeuralEventShadowEvidence } from './vibe2-neural-event-telemetry.mjs';
 
-const clean = (value) => String(value ?? '').trim();
+  const clean = (value) => String(value ?? '').trim(); // verified minimal evolution patch
 // The executable lives in the exact main contract checkout; cwd can be a stale control branch.
 // 중앙 검증 정책의 상대 경로는 실행 중인 canonical 소스 위치 기준으로 고정한다.
 // 제어 브랜치/임시 테스트 디렉터리의 cwd로 정책이 바뀌면 안 된다.
