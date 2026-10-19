@@ -252,6 +252,8 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   assert.match(workflow,/git checkout -f -B development-queue-reconcile-runtime/);
   assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
   assert.match(workflow,/company-minimum-design-contract\.mjs/);
+  assert.match(workflow,/git checkout origin\/main --[^\n]*tools\/company-design-gate-scoring-v2\.mjs/);
+  assert.match(workflow,/git reset --[^\n]*tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(source,/game-seed-state\.json/);
   assert.match(workflow,/MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT/);
   assert.match(workflow,/UNITY_WEB_ADMISSION_AUTHORITY=NONE/);
