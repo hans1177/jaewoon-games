@@ -506,7 +506,9 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
 
   // The GITHUB_TOKEN push saves history but cannot initiate a Pages build.
   // Official deployment uploads the retained gh-pages tree without Git metadata.
-  assert.ok(publisher.includes("rsync -a --exclude='.git/'"),'retained historical site must be staged without .git');
+  assert.ok(publisher.includes('cp -a --reflink=auto "$retained/." "$artifact/"'),'retained site must be copied from exact published tree');
+  assert.ok(publisher.includes('rm -rf "$artifact/.git"'),'Git metadata must be excluded from official Pages artifact');
+  assert.ok(publisher.includes('test -d "$retained/.git"'),'retained history must remain intact before staging');
   assert.ok(publisher.includes('WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA='));
   assert.ok(publisher.includes('WEB_PAGES_RETAINED_GAME_COUNT='));
   assert.ok(publisher.includes('uses: actions/upload-pages-artifact@v4'));
