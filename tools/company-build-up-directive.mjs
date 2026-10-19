@@ -1699,7 +1699,25 @@ export function buildGameInternalAutoCompositionPlan({gameId='',platform='ROBLOX
     ['FARMING_WORLD_WEATHER',['FARMING','WORLD','WEATHER'],['APPROVED_CROP_REGION_AND_SEASON','HARVEST_STATE_AND_STORAGE']],
     ['SKILL_VFX_AUDIO',['SKILL_VFX','ACTION','AUDIO'],['SKILL_ACTUAL_EVENT_TO_EFFECT','AUDIO_STATE_AND_CLEANUP','MOBILE_EFFECT_BUDGET']]
   ];
-  const moduleConnections=Object.freeze(connectionSpecs.filter(([,roles])=>roles.some(key=>found(key)||designDemand[key]))
+  // 교차 시스템은 해당 장르에 실제 존재하거나 승인 설계가 요구할 때만 검사한다.
+  // 모든 게임에 오디오/액션/월드가 있다는 이유만으로 날씨·전투·경제·농사 등을 발명하지 않는다.
+  const connectionApplies=Object.freeze({
+    WORLD_BIOME_WEATHER:()=> (found('BIOME')||designDemand.BIOME)
+      &&(found('WEATHER')||designDemand.WEATHER),
+    HOUSING_INVENTORY_SAVE:()=>found('HOUSING')||designDemand.HOUSING,
+    CUSTOMIZATION_EQUIPMENT_SAVE:()=>found('CUSTOMIZATION')||designDemand.CUSTOMIZATION,
+    NPC_AI_QUEST:()=>(found('NPC_AI')||designDemand.NPC_AI)
+      &&(found('QUEST_DIALOGUE')||designDemand.QUEST_DIALOGUE),
+    ACTION_MOTION_COMBAT:()=>(found('COMBAT')||/combat|attack|전투|공격/i.test(designText))
+      &&(found('MOTION')||designDemand.MOTION),
+    CRAFT_ECONOMY_INVENTORY:()=>(found('CRAFTING')||designDemand.CRAFTING)
+      &&(found('ECONOMY')||designDemand.ECONOMY),
+    FARMING_WORLD_WEATHER:()=>(found('FARMING')||designDemand.FARMING)
+      &&(found('WEATHER')||designDemand.WEATHER),
+    SKILL_VFX_AUDIO:()=>found('SKILL_VFX')||designDemand.SKILL_VFX
+  });
+  const moduleConnections=Object.freeze(connectionSpecs.filter(([id,roles])=>
+    connectionApplies[id]()&&roles.some(key=>found(key)||designDemand[key]))
     .map(([id,roles,checks])=>Object.freeze({
       id,roles:Object.freeze(roles),
       state:roles.every(found)?'EXISTING_SOURCE_CONNECTION_CANDIDATE':'MISSING_REQUIRED_SOURCE_REVIEW',
