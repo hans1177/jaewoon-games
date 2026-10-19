@@ -14,1976 +14,6 @@
   "traces": [
     {
       "version": 1,
-      "traceId": "ctrace_40f2661274d99e05aa4dd9c7",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "realistic-builder-studio-evolution-roblox-stability-v2",
-        "workKey": null,
-        "gameId": "realistic-builder",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts\n[WORLD_LOBBY_FIRST]\n게임=realistic-builder 현실 건축가 Survival \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, "
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "bindFoundationCharacter",
-          "scopeHandler1"
-        ],
-        "primarySystems": [
-          "PLACEMENT",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "AI",
-          "CORE_STATE",
-          "PROGRESSION",
-          "PRESENTATION"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|OTHER",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 97701,
-        "candidateMs": 4485,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_5b1a7f3067ee8bcbfef003d0",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "seed-casual-realm-weaver-studio-evolution-roblox-stability-v1",
-        "workKey": null,
-        "gameId": "seed-casual-realm-weaver",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=seed-casual-realm-weaver 세계의 직조자  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다."
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "bindNativeFoundationCharacter",
-          "broadcastMultiplayerSync"
-        ],
-        "primarySystems": [
-          "AI",
-          "PROGRESSION",
-          "PLACEMENT",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "CORE_STATE"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|CANDIDATE_SOURCE_DRIFT|NO_OP|OTHER|TIMEOUT",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 103343,
-        "candidateMs": 4913,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_b96229f72aca73b323f5b971",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-roblox-stability-v1",
-        "workKey": null,
-        "gameId": "seed-idle-growth-rpg-crystal-bloom",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=seed-idle-growth-rpg-crystal-bloom 수정의 개화  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 모험가 거점, 직업별 개성을 읽을 수 있는 훈련 공간, 현재 임무와 연결된 출정 입구. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "bindNativeFoundationCharacter"
-        ],
-        "primarySystems": [
-          "PLACEMENT",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "AI",
-          "CORE_STATE"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|NO_OP|OTHER|TIMEOUT",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 84211,
-        "candidateMs": 4105,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_cbfd3cab9828fae51906ce6e",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1",
-        "workKey": null,
-        "gameId": "seed-puzzle-chromatic-cascade",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=seed-puzzle-chromatic-cascade 색채의 연쇄  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 "
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "bindNativeFoundationCharacter",
-          "broadcastMultiplayerSync"
-        ],
-        "primarySystems": [
-          "AI",
-          "PROGRESSION",
-          "PLACEMENT",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "CORE_STATE"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|NO_OP|OTHER|TIMEOUT",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 116774,
-        "candidateMs": 5101,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_ec16e4dfb455388a9fe893ca",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
-        "workKey": null,
-        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=seed-story-complete-rpg-chronicles-of-eldoria 엘도리아 연대기  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 모험가 거점, 직업별 개성을 읽을 수 있는 훈련 공간, 현재 임무와 연결된 출정 입구. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 "
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "bindNativeFoundationCharacter",
-          "broadcastMultiplayerSync"
-        ],
-        "primarySystems": [
-          "AI",
-          "PROGRESSION",
-          "PLACEMENT",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "CORE_STATE"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|OTHER|ROBLOX_STRUCTURAL_CONTINUITY|TIMEOUT",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 105693,
-        "candidateMs": 4859,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_8584a1e65ea5d2275e0e167f",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "simple-rpg-studio-evolution-roblox-stability-v2",
-        "workKey": null,
-        "gameId": "simple-rpg",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source F0 design-bound gameplay gaps require source repair before real runtime testing\n[WORLD_LOBBY_FIRST]\n게임=simple-rpg 작은 모험 RPG RPG Action RPG\n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 모험가 거점, 직업별 개성을 읽을 수 있는 훈련 공간, 현재 임무와 연결된 출정 입구. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "bindFoundationCharacter",
-          "scopeHandler1"
-        ],
-        "primarySystems": [
-          "PLACEMENT",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "AI",
-          "CORE_STATE",
-          "PROGRESSION",
-          "PRESENTATION"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|OTHER",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 122392,
-        "candidateMs": 6208,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_a5a0785d81965f38480f106d",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "star-frontier-studio-evolution-roblox-usability-v2",
-        "workKey": null,
-        "gameId": "star-frontier",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts\n[WORLD_LOBBY_FIRST]\n게임=star-frontier 별길 개척자 Puzzle \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "layoutControls",
-          "fireLaser",
-          "bindHold",
-          "loadPlayerState"
-        ],
-        "primarySystems": [
-          "INPUT",
-          "CORE_STATE",
-          "AI",
-          "ECONOMY",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "SAVE",
-          "WORLD",
-          "COMBAT",
-          "PROGRESSION"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "PLACEMENT",
-          "AI",
-          "PROGRESSION",
-          "ECONOMY",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|OTHER",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 112398,
-        "candidateMs": 6171,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_b6a6e8acabac7bcb2f4a84ed",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "survival-studio-evolution-roblox-stability-v1",
-        "workKey": null,
-        "gameId": "survival",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=survival 나의 생존기  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비→선택→플레이 상태"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "attackEnemy",
-          "exploreGatherAndCraft",
-          "buildSurvivalWorld",
-          "interactWithResource"
-        ],
-        "primarySystems": [
-          "PLACEMENT",
-          "WORLD",
-          "PRESENTATION",
-          "COMBAT",
-          "AI",
-          "ECONOMY",
-          "INTERACTION",
-          "CORE_STATE",
-          "GOAL_STATE",
-          "PROGRESSION"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|NO_OP|OTHER|TIMEOUT",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 114640,
-        "candidateMs": 5670,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_fb29730fcceec14a43920e6d",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "survival2-studio-evolution-roblox-stability-v1",
-        "workKey": null,
-        "gameId": "survival2",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=survival2 숲의 생존자들 Survival \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "bindFoundationCharacter",
-          "scopeHandler1"
-        ],
-        "primarySystems": [
-          "PLACEMENT",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "AI",
-          "CORE_STATE",
-          "PROGRESSION",
-          "PRESENTATION"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|OTHER",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 120966,
-        "candidateMs": 6638,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_a8b5838024c684ff3af967c0",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "territory-war-studio-evolution-roblox-stability-v1",
-        "workKey": null,
-        "gameId": "territory-war",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts\n[WORLD_LOBBY_FIRST]\n게임=territory-war 영토전쟁 Strategy Tower Defense\n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 작전 거점, 진행 중인 위협을 보여주는 월드 장치, 실제 전장 진입 동선. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "broadcastMultiplayerSync",
-          "stateSnapshot",
-          "layoutOrders",
-          "bindVerifiedLearningControl",
-          "loadPlayer",
-          "playVerifiedLearningActionFeedback"
-        ],
-        "primarySystems": [
-          "INPUT",
-          "PRESENTATION",
-          "CORE_STATE",
-          "AI",
-          "ECONOMY",
-          "PROGRESSION",
-          "SAVE"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "PLACEMENT",
-          "PROGRESSION",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|OTHER",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 123520,
-        "candidateMs": 4763,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_30e1e002bc7681b663a28e63",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
-        "workKey": null,
-        "gameId": "village-dungeons",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[WORLD_LOBBY_FIRST]\n게임=village-dungeons 마을 던전 RPG RPG \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 모험가 거점, 직업별 개성을 읽을 수 있는 훈련 공간, 현재 임무와 연결된 출정 입구. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비→선택→플레이 상태와 연결한다. 직업 선택은 서버 확정 후 닫고, 이미 선택한 캐릭터는 매번 다시 묻지 않는다. 기존 저장 키·진행·전투 규칙을 보존하고 오래된 이벤트 연결과 겹친 화면을 정리한다.\n저사양 기준으로 로비 생성은 한 번, 이벤트"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "attackMonster",
-          "addItemToInventory",
-          "buildWorld"
-        ],
-        "primarySystems": [
-          "PLACEMENT",
-          "WORLD",
-          "PRESENTATION",
-          "AI",
-          "PROGRESSION",
-          "CORE_STATE",
-          "COMBAT",
-          "GOAL_STATE"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|MALFORMED_OUTPUT|NO_OP|OTHER|ROBLOX_INTERNAL_ASSET_APPLICATION|ROBLOX_STRUCTURAL_CONTINUITY|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 110646,
-        "candidateMs": 5620,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38532737921",
-        "reservation-id:38532737921:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_d0f5ac9ca85144b82b452b1f",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "amusement-tycoon-studio-evolution-roblox-stability-v1",
-        "workKey": null,
-        "gameId": "amusement-tycoon",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=amusement-tycoon 놀이공원 타이쿤  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "bindNativeFoundationCharacter",
-          "foundationCheckpoint"
-        ],
-        "primarySystems": [
-          "SAVE",
-          "PLACEMENT",
-          "AI",
-          "PRESENTATION",
-          "CORE_STATE",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|NO_OP|OTHER|TIMEOUT",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 111174,
-        "candidateMs": 5559,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38534340763",
-        "reservation-id:38534340763:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_b73c7b11c60e15db0a6e9d44",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "bug-defense-roblox-second-gate-rebuild-v1",
-        "workKey": null,
-        "gameId": "bug-defense",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[WORLD_LOBBY_FIRST]\n게임=bug-defense 곤충 디펜스 Strategy \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 작전 거점, 진행 중인 위협을 보여주는 월드 장치, 실제 전장 진입 동선. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비→선택→플레이 상태와 연결한다. 직업 선택은 서버 확정 후 닫고, 이미 선택한 캐릭터는 매번 다시 묻지 않는다. 기존 저장 키·진행·전투 규칙을 보존하고 오래된 이벤트 연결과 겹친 화면을 정리한다.\n저사양 기준으로 로비 생성은 한 번, 이벤트 연결은 중복 없이"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
-        "responsibilityConfidence": "HIGH",
-        "primaryTargets": [
-          "runEnemyAI",
-          "analyzeWaveStrategy",
-          "createPredatorTower",
-          "buildWorld",
-          "playVerifiedLearningActionFeedback"
-        ],
-        "primarySystems": [
-          "INPUT",
-          "PRESENTATION",
-          "CORE_STATE",
-          "PLACEMENT",
-          "WORLD",
-          "COMBAT",
-          "AI",
-          "INTERACTION",
-          "GOAL_STATE",
-          "PROGRESSION"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "PLACEMENT",
-          "AI",
-          "PROGRESSION",
-          "ECONOMY",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|MALFORMED_OUTPUT|NO_OP|OTHER|ROBLOX_INTERNAL_ASSET_APPLICATION|ROBLOX_STRUCTURAL_CONTINUITY|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 87640,
-        "candidateMs": 5067,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38534340763",
-        "reservation-id:38534340763:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_e1a6c9f55637cfb0e43e9cae",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "cat-step-studio-evolution-roblox-usability-v2",
-        "workKey": null,
-        "gameId": "cat-step",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts\n[WORLD_LOBBY_FIRST]\n게임=cat-step 캣 스텝 Puzzle \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제"
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "attemptJump",
-          "buildStaircase",
-          "layoutTouchControls",
-          "failedJump"
-        ],
-        "primarySystems": [
-          "PLACEMENT",
-          "AI",
-          "PRESENTATION",
-          "INPUT",
-          "CORE_STATE",
-          "INTERACTION"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "PLACEMENT",
-          "ECONOMY",
-          "PROGRESSION"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|OTHER",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 134569,
-        "candidateMs": 5345,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38534340763",
-        "reservation-id:38534340763:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
-      "traceId": "ctrace_1a59495ac03e258bb21191d0",
-      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
-      "source": "VIBE2_WORKER_RESULT",
-      "teacherClass": "VIBE_GENERATED_CODING",
-      "task": {
-        "taskId": "chess-battle-studio-evolution-roblox-usability-v2",
-        "workKey": null,
-        "gameId": "chess-battle",
-        "target": "roblox",
-        "roadmapVersion": null,
-        "baseMainSha": "86e03aac5c1313bfe51bb8f776412719a814ea3d",
-        "variant": "primary",
-        "goal": "[WORLD_LOBBY_FIRST]\n게임=chess-battle 체스 배틀 Strategy Board & Card Games\n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 작전 거점, 진행 중인 위협을 보여주는 월드 장치, 실제 전장 진입 동선. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비→선택→플레이 상태와 연결한다. 직업 선택은 서버 확정 후 닫고, 이미 선택한 캐릭터는 매번 다시 묻지 않는다. 기존 저장 키·진행·전투 규칙을 보존하고 오래된 이벤트 연결과 겹친 화면을 정리한다.\n저사양 기준으로 로비 생성은 "
-      },
-      "decision": {
-        "engineRevision": null,
-        "sourceAnalysisVersion": null,
-        "blueprint": {
-          "interfaceStatus": "NOT_REQUIRED",
-          "spatialStatus": "NOT_REQUIRED",
-          "interfaceHash": null,
-          "spatialHash": null,
-          "tasks": [],
-          "runtimeVerified": false,
-          "playerBenefitMeasured": false
-        },
-        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
-        "responsibilityConfidence": "MEDIUM",
-        "primaryTargets": [
-          "bindFoundationCharacter",
-          "scopeHandler1"
-        ],
-        "primarySystems": [
-          "PLACEMENT",
-          "WORLD",
-          "INTERACTION",
-          "COMBAT",
-          "AI",
-          "CORE_STATE",
-          "PROGRESSION",
-          "PRESENTATION"
-        ],
-        "dependentSystems": [
-          "INPUT",
-          "GOAL_STATE",
-          "PRESENTATION",
-          "PLAYER",
-          "AI",
-          "INTERACTION",
-          "PLACEMENT",
-          "PROGRESSION",
-          "ECONOMY",
-          "COMBAT",
-          "WORLD",
-          "NARRATIVE"
-        ],
-        "contextMode": null,
-        "contextBytes": 0,
-        "failureFingerprint": "roblox|OTHER",
-        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
-        "architectureDriftStatus": "NOT_AVAILABLE",
-        "architectureDriftRisk": "LOW"
-      },
-      "execution": {
-        "generationAttempts": 1,
-        "generationAttemptBudget": 0,
-        "recoveryUsed": false,
-        "partialTimeoutRecovery": false,
-        "partialMalformedRecovery": false,
-        "focusedFinalRetry": false,
-        "candidateProducedFirstAttempt": false,
-        "candidateBranch": null,
-        "candidateSha": null
-      },
-      "changeStats": {
-        "changedFileCount": 0,
-        "addedLineCount": 0,
-        "deletedLineCount": 0,
-        "rawPatchStored": false,
-        "rawCodeStored": false
-      },
-      "verification": {
-        "workerOutcome": "FAIL",
-        "blocker": "source-candidate-generation-failed",
-        "candidateFailureClass": "OTHER",
-        "roleResults": {
-          "exploration": "PASS",
-          "implementation": "FAIL",
-          "test": "FAIL",
-          "performance": "FAIL",
-          "regression": "WAITING_FAN_IN",
-          "review": "WAITING_FAN_IN"
-        },
-        "incrementalQaPass": false,
-        "performancePass": false,
-        "fullRegressionPass": false,
-        "reviewPass": false,
-        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
-        "causalReplayExecuted": false,
-        "causalReplayPrepatchReproduced": false
-      },
-      "metrics": {
-        "workerTotalMs": 101402,
-        "candidateMs": 5437,
-        "qaMs": 0
-      },
-      "evidenceRefs": [
-        "actions-run:38534340763",
-        "reservation-id:38534340763:1",
-        "source-generation-failure:OTHER"
-      ],
-      "capabilityDomains": [
-        "TOOL_ORCHESTRATION",
-        "RESPONSIBILITY_LOCALIZATION",
-        "ROOT_CAUSE_DEBUGGING",
-        "RESOURCE_EFFICIENCY",
-        "PROBLEM_DECOMPOSITION"
-      ],
-      "safety": {
-        "hiddenChainOfThoughtStored": false,
-        "rawModelOutputStored": false,
-        "rawCodeStored": false,
-        "secretsOrCredentialsStored": false,
-        "reusableBeforeVerification": false,
-        "directProductionAuthority": false,
-        "directMainWriteAuthority": false,
-        "authorityExpanded": false
-      }
-    },
-    {
-      "version": 1,
       "traceId": "ctrace_03b8910e629f36d775e29d05",
       "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
       "source": "VIBE2_WORKER_RESULT",
@@ -642277,10 +640307,1958 @@
         "directMainWriteAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_4725e0fc30d8d3f3db8c8fce",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "ant-simulator-studio-evolution-roblox-stability-v1",
+        "workKey": null,
+        "gameId": "ant-simulator",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[WORLD_LOBBY_FIRST]\n게임=ant-simulator 개미 시뮬레이터 Strategy \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 작전 거점, 진행 중인 위협을 보여주는 월드 장치, 실제 전장 진입 동선. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비→선택→플레이 상태와 연결한다. 직업 선택은 서버 확정 후 닫고, 이미 선택한 캐릭터는 매번 다시 묻지 않는다. 기존 저장 키·진행·전투 규칙을 보존하고 오래된 이벤트 연결과 겹친 화면을 정리한다.\n저사양 기준으로 로비 생성은 한 번, 이벤트 연결은 중"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "scopeHandler1",
+          "bindFoundationCharacter"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "CORE_STATE",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE",
+        "patchRecipeMode": "REQUIREMENT_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_REQUIRED",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 88964,
+        "candidateMs": 6344,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_de569afde5e91415c8409b9f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "cat-step-studio-evolution-roblox-usability-v2",
+        "workKey": null,
+        "gameId": "cat-step",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts\n[WORLD_LOBBY_FIRST]\n게임=cat-step 캣 스텝 Puzzle \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "attemptJump",
+          "buildStaircase",
+          "layoutTouchControls",
+          "failedJump"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "AI",
+          "PRESENTATION",
+          "INPUT",
+          "CORE_STATE",
+          "INTERACTION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "ECONOMY",
+          "PROGRESSION"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 81976,
+        "candidateMs": 6249,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_0e7222ab8b5039b25d17094b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "defense-studio-evolution-roblox-stability-v2",
+        "workKey": null,
+        "gameId": "defense",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source package asset binding failure requires game-side source repair; internal assets must remain unchanged\n[WORLD_LOBBY_FIRST]\n게임=defense 숲길 디펜스 Strategy Tower Defense\n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 작전 거점, 진행 중인 위협을 보여주는 월드 장치, 실제 전장 진입 동선. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "scopeHandler1",
+          "bindFoundationCharacter"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "CORE_STATE",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 85652,
+        "candidateMs": 7084,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_7efb2805460aba828690e95b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "dice-battle-board-studio-evolution-roblox-stability-v2",
+        "workKey": null,
+        "gameId": "dice-battle-board",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source package asset binding failure requires game-side source repair; internal assets must remain unchanged\n[WORLD_LOBBY_FIRST]\n게임=dice-battle-board 주사위 전투 보드 Strategy Board & Card Games\n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 작전 거점, 진행 중인 위협을 보여주는 월드 장치, 실제 전장 진입 동선. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 "
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "scopeHandler1",
+          "bindFoundationCharacter"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "CORE_STATE",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 89323,
+        "candidateMs": 6689,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_1969f635529f570f8fd07688",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "exorcist-office-studio-evolution-roblox-stability-v2",
+        "workKey": null,
+        "gameId": "exorcist-office",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts\n[WORLD_LOBBY_FIRST]\n게임=exorcist-office 퇴마 사무소 Strategy Board & Card Games\n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 작전 거점, 진행 중인 위협을 보여주는 월드 장치, 실제 전장 진입 동선. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "scopeHandler1",
+          "bindFoundationCharacter"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "CORE_STATE",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 90840,
+        "candidateMs": 8023,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_535ee89fde0e6c8568d86dad",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "kingshot-ad-studio-evolution-roblox-usability-v3",
+        "workKey": null,
+        "gameId": "kingshot-ad",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts\n[WORLD_LOBBY_FIRST]\n게임=kingshot-ad 킹샷 광고풍 Strategy Tower Defense\n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 작전 거점, 진행 중인 위협을 보여주는 월드 장치, 실제 전장 진입 동선. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "scopeHandler1",
+          "bindFoundationCharacter"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "CORE_STATE",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 110151,
+        "candidateMs": 6285,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_e069247f9d0f6f455e2792c4",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "line-defense-studio-evolution-roblox-stability-v1",
+        "workKey": null,
+        "gameId": "line-defense",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=line-defense 골목 군단 대전  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 작전 거점, 진행 중인 위협을 보여주는 월드 장치, 실제 전장 진입 동선. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비→선택→플레이 상태와 연결한다."
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "BOUNDED_OUTPUT_COMMIT_FIRST",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "attackEnemy",
+          "buildWorld",
+          "runEnemyAI"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "PRESENTATION",
+          "COMBAT",
+          "AI",
+          "INTERACTION",
+          "PROGRESSION",
+          "GOAL_STATE",
+          "CORE_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 88922,
+        "candidateMs": 7631,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_dee36be1efc6131c89c96555",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
+        "workKey": null,
+        "gameId": "monster-adventure",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=monster-adventure 몬스터 어드벤처  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "broadcastMultiplayerSync",
+          "bindNativeFoundationCharacter",
+          "verifiedLearningBindMotionActor"
+        ],
+        "primarySystems": [
+          "WORLD",
+          "COMBAT",
+          "AI",
+          "CORE_STATE",
+          "PROGRESSION",
+          "PLACEMENT",
+          "INTERACTION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 90609,
+        "candidateMs": 6895,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_13d896a6f255d7614a222565",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "moon-ruins-studio-evolution-roblox-stability-v2",
+        "workKey": null,
+        "gameId": "moon-ruins",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source package asset binding failure requires game-side source repair; internal assets must remain unchanged\n[WORLD_LOBBY_FIRST]\n게임=moon-ruins 달빛 유적: 수호자의 밤 Survival \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "scopeHandler1",
+          "bindFoundationCharacter"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "CORE_STATE",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|NO_OP|MOBILE_INPUT|SAVE_RESTORE|COMBAT|PLACEMENT|STATE_FLOW|RUNTIME|RELEASE|AI|ANIMATION_FEEL|ASSET_ADAPTATION|ASSET_PRODUCTION|AUDIO_FEEL|CAMERA_LANGUAGE|CHARACTER_ARC|CHARACTER_PERSONA|CHARACTER_RELATIONSHIP_MEMORY|CHARACTER_VOICE|COMBAT|CONCEPT_DIRECTION|CORE_LOOP|DIALOGUE|ECONOMY|FORESHADOWING_PAYOFF|LEVEL_DESIGN|LIVING_MOTION|MOBILE_INPUT|NARRATIVE_STRUCTURE|NAVIGATION|PERFORMANCE|PROGRESSION|QUEST_DESIGN|RELATIONSHIP_MEMORY|ROBLOX_CHARACTER_STATE|ROBLOX_DATASTORE|ROBLOX_MULTIPLAYER|ROBLOX_REMOTE_SECURITY|ROBLOX_REPLICATION|ROBLOX_STUDIO|ROBLOX_TOUCH_INPUT|ROBLOX_UI_STATE|ROUTE_DESIGN|SAVE|SECURITY|STATE_MACHINE|STORYTELLING|STREAMING|UI_STATE|UNITY_RUNTIME|VFX|VISUAL_IDENTITY|WEB_RUNTIME|WORLD_NARRATIVE|WORLD_NARRATIVE_BINDING",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 89743,
+        "candidateMs": 7267,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_66ca9927d0d8954f14c5ae5a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "realistic-builder-studio-evolution-roblox-stability-v2",
+        "workKey": null,
+        "gameId": "realistic-builder",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts\n[WORLD_LOBBY_FIRST]\n게임=realistic-builder 현실 건축가 Survival \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, "
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "scopeHandler1",
+          "bindFoundationCharacter"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "CORE_STATE",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 93838,
+        "candidateMs": 7028,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_7c319a505e29ced5421fbed3",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-casual-realm-weaver-studio-evolution-roblox-stability-v1",
+        "workKey": null,
+        "gameId": "seed-casual-realm-weaver",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=seed-casual-realm-weaver 세계의 직조자  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다."
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "broadcastMultiplayerSync",
+          "bindNativeFoundationCharacter"
+        ],
+        "primarySystems": [
+          "AI",
+          "PROGRESSION",
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "CORE_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|CANDIDATE_SOURCE_DRIFT|EXTERNAL_AI_UNAVAILABLE|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 69033,
+        "candidateMs": 5272,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_517aeb2c1c43b9916d259c30",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-roblox-stability-v1",
+        "workKey": null,
+        "gameId": "seed-idle-growth-rpg-crystal-bloom",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=seed-idle-growth-rpg-crystal-bloom 수정의 개화  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 모험가 거점, 직업별 개성을 읽을 수 있는 훈련 공간, 현재 임무와 연결된 출정 입구. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "bindNativeFoundationCharacter"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "CORE_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 85142,
+        "candidateMs": 5979,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_beff9129ca10e147b5518b9a",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1",
+        "workKey": null,
+        "gameId": "seed-puzzle-chromatic-cascade",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current source Studio product-quality failure requires source repair before another observation\n[WORLD_LOBBY_FIRST]\n게임=seed-puzzle-chromatic-cascade 색채의 연쇄  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 "
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "CAUSAL_EVIDENCE_REFRESH_REQUIRED",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "broadcastMultiplayerSync",
+          "bindNativeFoundationCharacter"
+        ],
+        "primarySystems": [
+          "AI",
+          "PROGRESSION",
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "CORE_STATE"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|NO_OP|OTHER|TIMEOUT",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 104036,
+        "candidateMs": 6394,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_17f4b19acb36560c4622db41",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "star-frontier-studio-evolution-roblox-usability-v2",
+        "workKey": null,
+        "gameId": "star-frontier",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR] current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts\n[WORLD_LOBBY_FIRST]\n게임=star-frontier 별길 개척자 Puzzle \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "fireLaser",
+          "layoutControls",
+          "bindHold",
+          "loadPlayerState"
+        ],
+        "primarySystems": [
+          "INPUT",
+          "CORE_STATE",
+          "AI",
+          "ECONOMY",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "SAVE",
+          "WORLD",
+          "COMBAT",
+          "PROGRESSION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "PLACEMENT",
+          "AI",
+          "PROGRESSION",
+          "ECONOMY",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE|OTHER",
+        "patchRecipeMode": "DETERMINISTIC_CAUSAL_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NO_VERIFIED_PREPATCH_REPRODUCTION",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 93807,
+        "candidateMs": 6329,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
+    },
+    {
+      "version": 1,
+      "traceId": "ctrace_b6434a2770902b2656bf304f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "VIBE2_WORKER_RESULT",
+      "teacherClass": "VIBE_GENERATED_CODING",
+      "task": {
+        "taskId": "wild-survival-studio-evolution-roblox-stability-v1",
+        "workKey": null,
+        "gameId": "wild-survival",
+        "target": "roblox",
+        "roadmapVersion": null,
+        "baseMainSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+        "variant": "primary",
+        "goal": "[WORLD_LOBBY_FIRST]\n게임=wild-survival 야생 생존 Survival \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비→선택→플레이 상태와 연결한다. 직업 선택은 서버 확정 후 닫고, 이미 선택한 캐릭터는 매번 다시 묻지 않는다. 기존 저장 키·진행·전투 규칙을 보존하고 오래된 이벤트 연결과 겹친 화면을 정리한다.\n저사양 기준으로 로비 생성은 한 번,"
+      },
+      "decision": {
+        "engineRevision": null,
+        "sourceAnalysisVersion": null,
+        "blueprint": {
+          "interfaceStatus": "NOT_REQUIRED",
+          "spatialStatus": "NOT_REQUIRED",
+          "interfaceHash": null,
+          "spatialHash": null,
+          "tasks": [],
+          "runtimeVerified": false,
+          "playerBenefitMeasured": false
+        },
+        "strategy": "PRIMARY_RESPONSIBILITY_MINIMAL",
+        "responsibilityConfidence": "MEDIUM",
+        "primaryTargets": [
+          "scopeHandler1",
+          "bindFoundationCharacter"
+        ],
+        "primarySystems": [
+          "PLACEMENT",
+          "WORLD",
+          "INTERACTION",
+          "COMBAT",
+          "AI",
+          "CORE_STATE",
+          "PROGRESSION",
+          "PRESENTATION"
+        ],
+        "dependentSystems": [
+          "INPUT",
+          "GOAL_STATE",
+          "PRESENTATION",
+          "PLAYER",
+          "AI",
+          "INTERACTION",
+          "PLACEMENT",
+          "PROGRESSION",
+          "ECONOMY",
+          "COMBAT",
+          "WORLD",
+          "NARRATIVE"
+        ],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": "roblox|EXTERNAL_AI_UNAVAILABLE",
+        "patchRecipeMode": "REQUIREMENT_RECIPE",
+        "architectureDriftStatus": "NOT_AVAILABLE",
+        "architectureDriftRisk": "LOW"
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "partialTimeoutRecovery": false,
+        "partialMalformedRecovery": false,
+        "focusedFinalRetry": false,
+        "candidateProducedFirstAttempt": false,
+        "candidateBranch": null,
+        "candidateSha": null
+      },
+      "changeStats": {
+        "changedFileCount": 0,
+        "addedLineCount": 0,
+        "deletedLineCount": 0,
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "FAIL",
+        "blocker": "source-candidate-generation-failed",
+        "candidateFailureClass": "EXTERNAL_AI_UNAVAILABLE",
+        "roleResults": {
+          "exploration": "PASS",
+          "implementation": "FAIL",
+          "test": "FAIL",
+          "performance": "FAIL",
+          "regression": "WAITING_FAN_IN",
+          "review": "WAITING_FAN_IN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_REQUIRED",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false
+      },
+      "metrics": {
+        "workerTotalMs": 99720,
+        "candidateMs": 9065,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "actions-run:39198282480",
+        "reservation-id:39198282480:1",
+        "source-generation-failure:EXTERNAL_AI_UNAVAILABLE"
+      ],
+      "capabilityDomains": [
+        "TOOL_ORCHESTRATION",
+        "RESPONSIBILITY_LOCALIZATION",
+        "ROOT_CAUSE_DEBUGGING",
+        "PROBLEM_DECOMPOSITION"
+      ],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawCodeStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
-    "added": 24,
+    "added": 15,
     "refreshed": 0,
     "total": 5000,
     "verified": 0,
