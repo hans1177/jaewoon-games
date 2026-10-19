@@ -1826,6 +1826,64 @@ test('all-game auto composition connects existing lobby, customization, material
   }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
 });
 
+// 메인 · 최초 후보의 상위 파일 밖에 있는 기존 모듈까지 F0 재사용 책임에 전달한다.
+test('all-game F0 composition discovers real biome housing customization motion and action owners outside ranked top files',()=>{
+  const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-f0-source-coverage-'));
+  try{
+    const sourceRoot='web-games/f0-demo',otherRoot='web-games/unrelated';
+    fs.mkdirSync(path.join(repoRoot,sourceRoot,'systems'),{recursive:true});
+    fs.mkdirSync(path.join(repoRoot,otherRoot),{recursive:true});
+    for(let i=0;i<25;i++){
+      fs.writeFileSync(path.join(repoRoot,sourceRoot,'systems','combat-'+String(i).padStart(2,'0')+'.js'),
+        Array(8).fill('function attack() { return combat; }').join('\n'));
+    }
+    const modules={
+      'region.js':'const approvedBiome = "biome"; const terrain = "terrain";',
+      'home.js':'const buildMode = "housing"; const placeStructure = "placeStructure";',
+      'avatar.js':'const avatar = "customization";',
+      'motion.js':'const animator = "Animator"; const clips = "AnimationTrack";',
+      'actions.js':'const harvest = "harvest"; const gather = "gather";'
+    };
+    for(const [file,source] of Object.entries(modules))fs.writeFileSync(
+      path.join(repoRoot,sourceRoot,'systems',file),source);
+    fs.writeFileSync(path.join(repoRoot,otherRoot,'secret.js'),
+      'const privateBiome="biome"; const privateHousing="housing";');
+    const observed=inspectGameSources({repoRoot,sourceRoots:[sourceRoot]});
+    assert.ok(observed.topFiles.length<=20);
+    assert.equal(observed.topFiles.some(row=>/\\b(?:region|home|avatar|motion|actions)\\.js$/.test(row.file)),false,
+      'fixture modules are below ranking cutoff and must still be inspected');
+    const plan=buildGameInternalAutoCompositionPlan({
+      gameId:'f0-demo',platform:'WEB',repoRoot,sourceRoot,sourceObservation:observed,
+      design:{identity:'F0 Demo',spatialLayout:{biome:'forest'},coreLoop:['채집','집짓기'] }
+    });
+    for(const [component,file] of Object.entries({
+      BIOME:'region.js',HOUSING:'home.js',CUSTOMIZATION:'avatar.js',MOTION:'motion.js',ACTION:'actions.js'
+    })){
+      const row=plan.components.find(item=>item.id===component);
+      assert.equal(row.state,'EXISTING_SOURCE_CONNECTION_CANDIDATE',component);
+      assert.ok(row.responsibleFiles.some(name=>name.endsWith('/'+file)),component);
+      assert.equal(row.runtimeVerified,false,component);
+      assert.equal(row.implementationProven,false,component);
+    }
+    assert.equal(plan.worldGraph.enabled,true);
+    assert.equal(plan.worldGraph.biomeNativeSceneBindingVerified,false);
+    assert.equal(plan.worldGraph.housingPlacementPersistenceVerified,false);
+    assert.ok(plan.worldGraph.requiredChecks.includes('APPROVED_BIOME_TO_NATIVE_TERRAIN'));
+    assert.ok(plan.worldGraph.requiredChecks.includes('HOUSING_SAVE_REJOIN'));
+    assert.ok(plan.requiredProof.includes('MOTION_ACTION_SAME_APPROVED_HIT_EVENT'));
+    assert.ok(plan.requiredProof.includes('ACTUAL_CHARACTER_MODEL_AND_SAVE_RESTORE'));
+    assert.ok(Object.values(plan.sourceFilesByRole).flat().every(file=>file.startsWith(sourceRoot+'/')));
+    assert.equal(plan.implementationProven,false);
+    assert.equal(plan.runtimeVerified,false);
+    const directive=buildGameSpecificBuildUpDirective({
+      gameId:'f0-demo',gameName:'F0 Demo',platform:'WEB',repoRoot,sourceRoot,
+      sourceObservation:observed,designRecord:{identity:'F0 Demo',spatialLayout:{biome:'forest'}}
+    });
+    assert.match(directivePrompt(directive),/Biomes must map approved regions/);
+    assert.ok(directive.gameInternalAutoComposition.components.some(row=>row.id==='HOUSING'));
+  }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
+});
+
 test('auto composition refuses phantom UI and cross-game source while preserving source-only quality state',()=>{
   const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-compose-isolation-'));
   try{
