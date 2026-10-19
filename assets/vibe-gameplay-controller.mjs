@@ -26,9 +26,11 @@ export class VibeGameplayController {
   const c=this.config;
   this.coyote=this.grounded?c.coyoteSeconds:Math.max(0,this.coyote-dt);
   this.jumpBuffer=Math.max(0,this.jumpBuffer-dt);
+  let launchedThisFrame=false;
   if(this.jumpBuffer>0&&this.coyote>0){
    this.velocity.y=c.jumpSpeed;this.grounded=false;this.coyote=0;this.jumpBuffer=0;
    this.motion.enter('jump-start');
+   launchedThisFrame=true;
   }
   const canSprint=this.input.sprint&&this.stamina>0&&!this.input.crouch;
   const speed=canSprint?c.sprintSpeed:c.walkSpeed;
@@ -45,7 +47,9 @@ export class VibeGameplayController {
   if(this.grounded&&this.velocity.y<0)this.velocity.y=0;
   const horizontal=Math.hypot(this.velocity.x,this.velocity.z);
   const normalized=clamp(horizontal/c.sprintSpeed,0,1);
-  this.motion.setMovement({speed:normalized,direction:Math.atan2(this.velocity.x,this.velocity.z),grounded:this.grounded,crouching:this.input.crouch});
+  // setMovement() would immediately replace the new jump-start with fall in this same tick.
+  // Preserve the actual take-off state for this frame; normal airborne blending resumes next tick.
+  if(!launchedThisFrame)this.motion.setMovement({speed:normalized,direction:Math.atan2(this.velocity.x,this.velocity.z),grounded:this.grounded,crouching:this.input.crouch});
   this.stamina=clamp(this.stamina+(canSprint&&horizontal>.1?-c.sprintCost:c.staminaRegen)*dt,0,c.staminaMax);
   this.physics.onMove?.(this.position,this.velocity);
  }
