@@ -173,7 +173,7 @@ test('catalog-only DEVELOPMENT_CONFIRMED game keeps canonical direct-native home
 });
 
 // Exercise the actual homepage projection, including catalog-only focus games.
-test('central completion focus keeps all three canonical Roblox game IDs in homepage status',()=>{
+test('owner focus tracks exactly one Roblox game and two Web games in homepage status',()=>{
   const writes=new Map();
   const filesystem={...fs,writeFileSync:(file,value)=>writes.set(file,value)};
   const {company}=runCompanyStatusSync({filesystem});
@@ -183,7 +183,15 @@ test('central completion focus keeps all three canonical Roblox game IDs in home
   assert.equal(company.operations.autonomousFocus.filledSlots,3);
   assert.deepEqual(company.operations.autonomousFocus.focusedGameIds,focus.ownerFocusedGameIds);
   assert.deepEqual(company.operations.autonomousFocus.games.map(game=>game.gameId),focus.ownerFocusedGameIds);
-  assert.ok(company.operations.autonomousFocus.games.every(game=>game.selectedPlatform==='ROBLOX'));
+  const expected=focus.ownerFocusedGameIds.map(gameId=>[gameId,focus.ownerFocusedGamePlatforms[gameId]]);
+  assert.deepEqual(company.operations.autonomousFocus.games.map(game=>[game.gameId,game.selectedPlatform]),expected);
+  assert.deepEqual(expected,[
+    ['simple-rpg','ROBLOX'],['fantasy-survival','WEB'],['cozy-island','WEB']
+  ]);
+  for(const game of company.operations.autonomousFocus.games.filter(game=>game.selectedPlatform==='WEB')){
+    assert.ok(fs.existsSync(`web-games/${game.slug}/index.html`),`missing Web source: ${game.slug}`);
+    assert.equal(game.targetPlatformReady,true,`Web source readiness missing: ${game.slug}`);
+  }
   assert.ok(company.operations.autonomousFocus.source.includes('company-learning/platform-release-roadmap.json'));
   assert.ok(writes.has('company-status.json'));
 });
