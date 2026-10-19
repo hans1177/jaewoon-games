@@ -13,6 +13,11 @@ const files={
   traveler:{file:'../../assets/shared/humanoid-traveler-actions.glb',height:2.95},
   rabbit:{file:'./assets/rabbit.glb',height:.64},
   deer:{file:'./assets/deer.glb',height:1.8},
+  bear:{file:'./assets/bear.glb',height:2.15},
+  wolf:{file:'./assets/wolf.glb',height:1.17},
+  fox:{file:'./assets/fox.glb',height:.95},
+  redsquirrel:{file:'./assets/redsquirrel.glb',height:.48},
+  barnowl:{file:'./assets/barnowl.glb',height:.52},
   tree_oak:{file:'./assets/tree_oak.glb',height:5.7},
   tree_detailed:{file:'./assets/tree_detailed.glb',height:6.4},
   tree_fat:{file:'./assets/tree_fat.glb',height:4.8},
@@ -38,7 +43,7 @@ const objFiles={
   lamp:{model:'../../assets/roblox/survival-core-world-v1/lamp.obj',
     material:'../../assets/roblox/survival-core-world-v1/survival-core-world.mtl',height:1.0}
 };
-const REQUIRED=['traveler','rabbit','deer','boar','tree_oak','tree_detailed','tree_fat',
+const REQUIRED=['traveler','rabbit','deer','boar','bear','wolf','fox','redsquirrel','barnowl','tree_oak','tree_detailed','tree_fat',
   'tree_pineDefaultA','plant_bush','grass','plant_flatTall','rock_smallA',
   'rock_largeA','stone_tallA','flower_redA','mushroom_red','foundation','wall','roof','lamp'];
 
@@ -175,6 +180,7 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     playable=true;
     document.body.dataset.original3dAssets='loaded';
     document.body.dataset.assetModelCount=String(REQUIRED.length);
+    document.body.dataset.huntSpecies='rabbit,deer,boar,bear,wolf,fox,redsquirrel,barnowl';
     document.body.dataset.playerAsset='humanoid-traveler-actions.glb';
     document.body.dataset.mobile3dMode=coarse?'mobile':'desktop';
     if(readiness)readiness.hidden=true;
@@ -252,7 +258,8 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     for(const {item,animal} of animalHolders){
       item.visible=animal.dead<=0&&Math.abs(animal.x-p.x)<2700&&Math.abs(animal.y-p.y)<2700;
       if(!item.visible)continue;
-      item.position.set(animal.x/SCALE,Math.sin(now*.003+animal.x)*.022,animal.y/SCALE);
+      const animalHeight=animal.type==='barnowl'?.95:0;
+      item.position.set(animal.x/SCALE,animalHeight+Math.sin(now*.003+animal.x)*.022,animal.y/SCALE);
       if(Math.abs(animal.vx||0)+Math.abs(animal.vy||0)>.04)
         item.rotation.y=Math.atan2(-animal.vx,-animal.vy);
     }
