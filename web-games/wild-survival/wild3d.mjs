@@ -14,7 +14,7 @@ const files={
   rabbit:{file:'./assets/rabbit.glb',height:.64},
   deer:{file:'./assets/deer.glb',height:1.8},
   bear:{file:'./assets/bear.glb',height:2.15},
-  wolf:{file:'./assets/wolf.glb',height:1.17},
+  wolf:{file:'../../assets/shared/creature-wolf-actions.glb',height:1.17},
   fox:{file:'./assets/fox.glb',height:.95},
   redsquirrel:{file:'./assets/redsquirrel.glb',height:.48},
   barnowl:{file:'./assets/barnowl.glb',height:.52},
@@ -143,7 +143,11 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     }
     for(let i=0;i<animals.length;i++){
       const a=animals[i],obj=spawn(a.type,a.x,a.y,0);
-      if(obj)animalHolders.push({item:obj,animal:a});
+      if(obj){
+        const clips=registry.get(a.type)?.clips||[];
+        animalHolders.push({item:obj,animal:a,clips,
+          mixer:clips.length?new THREE.AnimationMixer(obj):null,activeClip:null});
+      }
     }
   };
   const camp=new THREE.Group();scene.add(camp);
@@ -255,13 +259,29 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     for(const {item,resource} of holders){
       item.visible=resource.amount>0&&Math.abs(resource.x-p.x)<2700&&Math.abs(resource.y-p.y)<2700;
     }
-    for(const {item,animal} of animalHolders){
+    const animationDt=lastNow?Math.min(.05,Math.max(0,(now-lastNow)/1000)):0;
+    for(const entity of animalHolders){
+      const {item,animal}=entity;
       item.visible=animal.dead<=0&&Math.abs(animal.x-p.x)<2700&&Math.abs(animal.y-p.y)<2700;
       if(!item.visible)continue;
       const animalHeight=animal.type==='barnowl'?.95:0;
       item.position.set(animal.x/SCALE,animalHeight+Math.sin(now*.003+animal.x)*.022,animal.y/SCALE);
       if(Math.abs(animal.vx||0)+Math.abs(animal.vy||0)>.04)
         item.rotation.y=Math.atan2(-animal.vx,-animal.vy);
+      // Play the original GLB rig clips; do not synthesize placeholder animal motion.
+      if(entity.mixer&&entity.clips.length){
+        const distance=Math.hypot(animal.x-p.x,animal.y-p.y);
+        const preferred=animal.alert>0||distance<80?'run':'walk';
+        const chosen=entity.clips.find(c=>c.name.toLowerCase()===preferred)||
+          entity.clips.find(c=>c.name.toLowerCase().includes(preferred))||
+          entity.clips.find(c=>c.name.toLowerCase().includes('idle'));
+        if(chosen&&entity.activeClip!==chosen){
+          if(entity.activeClip)entity.mixer.clipAction(entity.activeClip).fadeOut(.20);
+          entity.mixer.clipAction(chosen).reset().fadeIn(.20).play();
+          entity.activeClip=chosen;
+        }
+        entity.mixer.update(animationDt);
+      }
     }
     camp.position.set(S.camp.x/SCALE,0,S.camp.y/SCALE);
     base.visible=walls.visible=roof.visible=S.camp.shelter>0;
