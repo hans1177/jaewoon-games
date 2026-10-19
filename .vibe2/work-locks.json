@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-wu72ce",
+      "worker": "vibe2",
+      "taskId": "bug-defense-existing-web-assessment-v1",
+      "gameId": "bug-defense",
+      "files": [
+        "web-games/bug-defense/index.html"
+      ],
+      "baseSha": "ec729b9318375c75af8f2cd61d557d0a8350c21e",
+      "runId": "39335607918",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-19T22:56:32.398Z",
+      "expiresAt": "2026-10-19T23:41:32.398Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:bug-defense-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
