@@ -56,7 +56,10 @@ test('original source materials and Diablo-II-style native camera are bound to g
  assert.doesNotMatch(source,/new THREE\.BoxGeometry\(/);
  assert.doesNotMatch(source,/new THREE\.SphereGeometry\(/);
  assert.match(source,/new THREE\.OrthographicCamera/);
- assert.match(source,/camera\.position\.set\(centerX\+10\.5,17,centerY\+13\)/);
+ assert.match(source,/camera\.position\.set\(focusX\+13\.5,19\.5,focusZ\+13\.5\)/);
+ assert.match(source,/camera\.lookAt\(focusX,0,focusZ\)/);
+ assert.match(source,/const focusX=centerX-1\.25,focusZ=centerY-1\.25/);
+ assert.match(source,/const cameraViewHeight=mobileBudget\?16\.8:20/);
  assert.match(source,/name\+'\.obj'/);
  assert.match(source,/name\+'\.mtl'/);
  assert.match(source,/materialText\.match/);
@@ -97,7 +100,7 @@ test('3D preview reads existing biome classifier and saved construction state, n
  assert.match(index,/world3d\.frame\(state,regionAt\)/);
  assert.match(moduleSource,/function frame\(state,regionAt\)/);
  assert.match(moduleSource,/const classify=typeof regionAt==='function'\?regionAt:/);
- assert.match(moduleSource,/const tileBiome=String\(classify\(gx\/SCALE,gz\/SCALE\)/);
+ assert.match(moduleSource,/const zone=String\(classify\(px,py\)/);
  assert.match(moduleSource,/for\(const \[i,door\] of \(state\.doors\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/for\(const \[i,chest\] of \(state\.chests\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/addVisibleEntity\('door:'\+/);
@@ -160,14 +163,18 @@ test('downloaded KayKit mage is ledgered as preview only and source-bound to exi
 
 test('native 3D binds exact existing monster types and adapts GPU load without changing their combat',()=>{
  assert.match(moduleSource,/NATIVE_CREATURE_MODELS=Object\.freeze/);
- for(const kind of ['wolf','golem','spider','serpent']){
+ for(const kind of ['wolf','pig','fox','bird','fish']){
   assert.match(moduleSource,new RegExp("^  "+kind+":\\[",'m'));
-  assert.ok(fs.existsSync('assets/shared/creature-'+kind+'-actions.glb'));
  }
- for(const id of ['shadowwolf','golem','giantspider','worldtreesnake']){
+ for(const id of ['shadowwolf','mossboar','polarfox','worldpheasant','lakefish']){
   assert.match(moduleSource,new RegExp("'"+id+"'"));
   assert.match(index,new RegExp(id+":\\{id:'"+id+"'"));
  }
+ assert.doesNotMatch(moduleSource,/assets\\/shared\\/creature-|creature-'\+kind\+suffix/);
+ assert.match(moduleSource,/new DecompressionStream\('deflate-raw'\)/);
+ assert.match(moduleSource,/parseDownloadedObj\(obj,kind,mtl\)/);
+ assert.match(moduleSource,/source\.model\.clone\(\)/);
+ assert.match(moduleSource,/faceColor=sourceColors\.get/);
  assert.match(moduleSource,/synchronizeNativeCreatures\(state,px,py,seen\)/);
  assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
  assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
@@ -246,4 +253,22 @@ test('downloaded KayKit skeleton is only a license-proven undead species proxy a
  assert.match(moduleSource,/undeadProxySourceLoaded:!!undeadSource/);
  assert.match(moduleSource,/productionReady:false/);
  assert.match(index,/wastelandMummy:\{id:'wastelandMummy',name:'황무지 미라',mood:'aggressive',hp:1800,dmg:88,speed:64,r:30/);
+});
+
+test('3D creature meshes come from downloaded CC0 original archives, not generated studio creature rigs',()=>{
+ const wildlife=JSON.parse(fs.readFileSync('assets/external/simple-rpg/wildlife/manifest.json','utf8'));
+ const expected=['wolf-eagle.zip','farm-animals.zip','five-animals.zip'];
+ for(const file of expected){
+   const record=wildlife.packs.find(x=>x.file===file);
+   assert.ok(record,'missing CC0 source license record: '+file);
+   assert.equal(record.license,'CC0-1.0');
+   assert.equal(record.sourceOnly,true,'original must remain unchanged');
+   const archive=fs.readFileSync('assets/external/simple-rpg/wildlife/'+file);
+   assert.equal(archive.subarray(0,2).toString(),'PK');
+   assert.equal(createHash('sha256').update(archive).digest('hex'),record.sha256);
+   assert.ok(moduleSource.includes("file:'"+file+"'"));
+ }
+ assert.match(moduleSource,/NATIVE_CREATURE_MODELS=Object\.freeze/);
+ assert.doesNotMatch(moduleSource,/new THREE\.(?:BoxGeometry|SphereGeometry)/);
+ assert.match(moduleSource,/productionReady:false/);
 });
