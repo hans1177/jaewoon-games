@@ -16,6 +16,18 @@ test('jump buffer and coyote time initiate jump',()=>{
  controller.setInput({jump:true});controller.update(1/60);
  assert.equal(motion.state,'jump-start');assert.ok(controller.velocity.y>0);
 });
+test('jump take-off has one observable start state and does not instantly emit fall',()=>{
+ const {controller,motion}=setup();
+ controller.setInput({jump:true});
+ controller.update(1/60);
+ const eventStates=motion.consumeEvents().filter(e=>e.type==='state-change').map(e=>e.to);
+ assert.deepEqual(eventStates,['jump-start'],'fall must not erase jump-start in the same tick');
+ assert.equal(motion.state,'jump-start');
+ assert.ok(controller.velocity.y>0);
+ controller.update(1/60);
+ assert.equal(motion.state,'fall','airborne locomotion must resume on the next tick');
+});
+
 test('stamina gates dodge and physics adapter receives movement',()=>{
  const {motion}=setup();let called=0;
  const controller=new VibeGameplayController({motion,physics:{resolve:(old,next)=>({position:next,grounded:true}),onMove:()=>called++}});
