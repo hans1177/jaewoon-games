@@ -1389,6 +1389,50 @@ test('F0 rematches existing customization housing action modules without generat
   assert.equal(input.files[0].content,source);
 });
 
+// 메인 · 공통 게임 시스템 수 증가에 대응하여 실제 소스 근거에 맞는 API만 작업 문맥에 선정한다.
+test('F0 selects existing NPC quest crafting economy weather physics and progression APIs by source',()=>{
+  const cwd=tempRoot();
+  const modules={
+    'assets/common-ai.js':'export class JaewoonCommonAI {}',
+    'assets/quest-dialogue.js':'export class JaewoonQuestDialogue {}',
+    'assets/crafting-recipes.js':'export class JaewoonCraftingRecipes {}',
+    'assets/economy-loot-shop.js':'export class JaewoonEconomyLootShop {}',
+    'assets/character-progression.js':'export class JaewoonCharacterProgression {}',
+    'assets/vibe-studio-world.js':'export function makeFrameBudget() {}',
+    'assets/vibe-environment-director.js':'export function createVibeProceduralWorldLayout() {}',
+    'assets/vibe-game-input-physics.mjs':'export function createVibeWorldPhysics() {}'
+  };
+  for(const [file,source] of Object.entries(modules))
+    write(path.join(cwd,file),source+'\n');
+  const currentSource=[
+    'const npc = decideCompanion(behaviorTree);',
+    'const quest = dialogue(questLog);',
+    'const item = crafting(recipeBook);',
+    'const shop = economy(currency);',
+    'const experience = progression(levelUp);',
+    'const weatherState = weather(season);',
+    'const hit = physics(collisionShape);'
+  ].join('\n');
+  const input={files:[{path:'client/ExistingGame.js',editable:true,content:currentSource}],
+    bytes:Buffer.byteLength(currentSource)};
+  const result=attachSelectedInternalAssetApiContext(input,{
+    cwd,contract:{target:'web',selectedSourcePaths:[]},
+    order:{target:'web',gameId:'old-world',goal:'기존 게임의 NPC 퀘스트 제작 경제 물리 날씨 성장 확인'}
+  });
+  const matched=result.vibeDynamicToolMatch;
+  for(const name of ['NPC_AI','QUEST_DIALOGUE','CRAFTING','ECONOMY','PROGRESSION','WEATHER','PHYSICS'])
+    assert.ok(matched.sourceSignals.includes(name),name);
+  for(const file of Object.keys(modules)){
+    const row=matched.matches.find(x=>x.path===file);
+    assert.ok(row,file);
+    assert.match(row.sha256,/^[a-f0-9]{64}$/);
+    assert.equal(row.kind,'LIBRARY_REFERENCE_READ_ONLY');
+  }
+  assert.equal(matched.newGameplaySystemsAuthorized,false);
+  assert.equal(matched.runtimeVerified,false);
+  assert.equal(input.files[0].content,currentSource);
+});
+
 test('native game BUILD_UP receives bounded current Vibe tool implementations as read-only source',()=>{
   const cwd=tempRoot();
   const paths=['assets/vibe-art-pipeline.js','assets/vibe-environment-director.js',
