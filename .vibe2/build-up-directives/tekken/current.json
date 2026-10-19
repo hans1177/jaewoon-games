@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "tekken-build-up-g1-e85d8b30c08a",
-  "directiveFingerprint": "e85d8b30c08a55c808fb8c0ef65a31d60864e9c6836682a3612e4dada7cfa52c",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "tekken-build-up-g2-09a8cf4a9b05",
+  "directiveFingerprint": "09a8cf4a9b053ff0e6f64cc83061d4439807a2a18c9d58c67dfa55ad07c2139f",
+  "previousDirectiveFingerprint": "e85d8b30c08a55c808fb8c0ef65a31d60864e9c6836682a3612e4dada7cfa52c",
+  "forbiddenRepeatFingerprint": "e85d8b30c08a55c808fb8c0ef65a31d60864e9c6836682a3612e4dada7cfa52c",
   "gameId": "tekken",
   "gameName": "철권",
-  "generation": 1,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "DEEPER_CAUSAL_REPAIR",
+  "previousDirectiveOutcome": "repair_required",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/tekken",
-  "sourceTreeFingerprint": "bc13aa01b4d02868efb17c13e758a795af43410b80b17193a3294b3ea36b47fa",
+  "sourceTreeFingerprint": "22741391835427b3cbc8eea0d33f7bd182f197e425b045cd847ccb71a257d7d8",
   "designFingerprint": "becdedbfe655eedee5933d47c5e8dc0ea01e03e76154295f7eba64e66f260d36",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -348,7 +348,7 @@
           "차량 정비와 전략의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "bc13aa01b4d02868efb17c13e758a795af43410b80b17193a3294b3ea36b47fa",
+        "sourceTreeFingerprint": "22741391835427b3cbc8eea0d33f7bd182f197e425b045cd847ccb71a257d7d8",
         "rule": "MAIN_A_PRIMARY_B_SUPPORTING; C_IS_PRIMARY_SECONDARY_STORY_GENRES; D_IS_SPECIFIC_CREATIONS; AT_RESEARCH_LINKS_TO_D; ROBLOX_LUAU_CANONICAL",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -396,7 +396,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "becdedbfe655eedee5933d47c5e8dc0ea01e03e76154295f7eba64e66f260d36",
-    "sourceTreeFingerprint": "bc13aa01b4d02868efb17c13e758a795af43410b80b17193a3294b3ea36b47fa",
+    "sourceTreeFingerprint": "22741391835427b3cbc8eea0d33f7bd182f197e425b045cd847ccb71a257d7d8",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -971,7 +971,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "bc13aa01b4d02868efb17c13e758a795af43410b80b17193a3294b3ea36b47fa",
+    "sourceTreeFingerprint": "22741391835427b3cbc8eea0d33f7bd182f197e425b045cd847ccb71a257d7d8",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4736,39 +4736,39 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 156,
-      "progression": 462,
-      "ai": 52,
-      "save": 87,
-      "multiplayer": 41,
-      "animation": 64,
-      "motionStates": 654,
-      "gameFeel": 35,
+      "combat": 167,
+      "progression": 519,
+      "ai": 66,
+      "save": 115,
+      "multiplayer": 43,
+      "animation": 70,
+      "motionStates": 715,
+      "gameFeel": 36,
       "vfx": 45,
-      "camera": 50,
+      "camera": 61,
       "audio": 4,
-      "audioDynamics": 18,
-      "ui": 922,
-      "uiFlow": 1139,
-      "entryFlow": 12,
+      "audioDynamics": 31,
+      "ui": 947,
+      "uiFlow": 1161,
+      "entryFlow": 18,
       "loadingFlow": 0,
-      "input": 122,
-      "map": 224,
+      "input": 156,
+      "map": 308,
       "landmark": 36,
-      "interaction": 264,
-      "inventory": 246,
+      "interaction": 289,
+      "inventory": 248,
       "equipment": 65,
       "settings": 26,
-      "feedback": 126,
-      "session": 24,
-      "content": 495,
-      "choice": 1685,
+      "feedback": 188,
+      "session": 28,
+      "content": 532,
+      "choice": 1694,
       "connection": 8,
-      "performance": 37,
-      "lighting": 64,
+      "performance": 43,
+      "lighting": 65,
       "primitive": 12,
       "todo": 0,
-      "errorRecovery": 25
+      "errorRecovery": 27
     },
     "topFiles": [
       {
@@ -4777,7 +4777,7 @@
       },
       {
         "file": "roblox-games/tekken/shared/GameConfig.luau",
-        "score": 288
+        "score": 483
       },
       {
         "file": "roblox-games/tekken/server/Game.server.luau",
@@ -4785,7 +4785,7 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "score": 141
+        "score": 163
       },
       {
         "file": "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
@@ -4851,7 +4851,7 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 14,
+        "line": 65,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -4859,7 +4859,7 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 167,
+        "line": 198,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -5075,7 +5075,7 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 268,
+        "line": 299,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
@@ -5091,7 +5091,7 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 345,
+        "line": 376,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -5099,7 +5099,7 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 245,
+        "line": 276,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -5131,18 +5131,18 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 39,
+        "line": 26,
         "kind": "FUNCTION",
-        "symbol": "hasStudioAtom",
-        "context": "local function hasStudioAtom(familyOrAtom, atom)",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
         "score": 34
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 53,
+        "line": 113,
         "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
+        "symbol": "hasStudioAtom",
+        "context": "local function hasStudioAtom(familyOrAtom, atom)",
         "score": 34
       },
       {
@@ -5155,7 +5155,7 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 35,
+        "line": 22,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -5163,7 +5163,7 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 49,
+        "line": 109,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -5188,14 +5188,24 @@
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
+    "previousFocus": "USABILITY",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "bc13aa01b4d02868efb17c13e758a795af43410b80b17193a3294b3ea36b47fa",
+    "currentSourceTreeFingerprint": "22741391835427b3cbc8eea0d33f7bd182f197e425b045cd847ccb71a257d7d8",
+    "sourceChanged": true,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "roblox-package-asset-binding-failed",
+    "blockers": [
+      "roblox-build-package:roblox-package-asset-binding-failed",
+      "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL",
+      "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MOTION"
+    ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -6284,9 +6294,9 @@
   ],
   "primaryFocus": "USABILITY",
   "thisLoopPrimaryGoal": "신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립\", 현재 책임 소스는 roblox-games/tekken/client/Game.client.luau::reportNativeFoundationReady, roblox-games/tekken/client/Game.client.luau::render, roblox-games/tekken/server/Game.server.luau::scopeHandler1, roblox-games/tekken/server/Game.server.luau::scopeHandler2, roblox-games/tekken/server/Game.server.luau::scopeHandler3, roblox-games/tekken/server/Game.server.luau::scopeHandler4, roblox-games/tekken/server/Game.server.luau::scopeHandler5, roblox-games/tekken/server/Game.server.luau::scopeHandler6이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립\", 현재 책임 소스는 roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/client/Game.client.luau::reportNativeFoundationReady, roblox-games/tekken/client/Game.client.luau::render이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/tekken/client/Game.client.luau::reportNativeFoundationReady, roblox-games/tekken/client/Game.client.luau::render, roblox-games/tekken/server/Game.server.luau::scopeHandler1, roblox-games/tekken/server/Game.server.luau::scopeHandler2, roblox-games/tekken/server/Game.server.luau::scopeHandler3, roblox-games/tekken/server/Game.server.luau::scopeHandler4, roblox-games/tekken/server/Game.server.luau::scopeHandler5, roblox-games/tekken/server/Game.server.luau::scopeHandler6에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/shared/RobloxCommonUI.luau::sync, roblox-games/tekken/client/Game.client.luau::reportNativeFoundationReady, roblox-games/tekken/client/Game.client.luau::render에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "일상 활동과 시간 배분 × 신화가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"A 시작: RouteState·RiskState를 확인한 뒤 일과 중 방문할 장소와 상호작용 대상을 선택한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -6327,7 +6337,7 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
     "contentExpansionDeferredUntilRuntimeRepairPass": false,
     "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
@@ -6341,7 +6351,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 384348,
+        "sourceBytes": 415186,
         "largestFileBytes": 249932,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6374,8 +6384,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=REGRESSION; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6385,9 +6395,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -6423,7 +6434,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 76,
+        "score": 218,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6537,12 +6548,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 1,
-    "previousGeneration": 0,
+    "generation": 2,
+    "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "bc13aa01b4d02868efb17c13e758a795af43410b80b17193a3294b3ea36b47fa",
-    "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
+    "sourceFingerprint": "22741391835427b3cbc8eea0d33f7bd182f197e425b045cd847ccb71a257d7d8",
+    "priorSourceFingerprint": "bc13aa01b4d02868efb17c13e758a795af43410b80b17193a3294b3ea36b47fa",
+    "previousRuntimeEffect": "REGRESSION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6560,7 +6571,7 @@
     "version": 1,
     "gameId": "tekken",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "bc13aa01b4d02868efb17c13e758a795af43410b80b17193a3294b3ea36b47fa",
+    "sourceTreeFingerprint": "22741391835427b3cbc8eea0d33f7bd182f197e425b045cd847ccb71a257d7d8",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -6659,6 +6670,56 @@
         "runtimeVerified": false
       },
       {
+        "id": "BIOME",
+        "state": "REVIEW_REQUIRED_NO_SOURCE",
+        "responsibleFiles": [],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "HOUSING",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "MOTION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/client/Game.client.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ACTION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau",
+          "roblox-games/tekken/client/Game.client.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
         "id": "INTERACTION",
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
@@ -6677,6 +6738,209 @@
         "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
         "responsibleFiles": [
           "roblox-games/tekken/shared/RobloxCommonUI.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SAVE",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "COMBAT",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau",
+          "roblox-games/tekken/client/Game.client.luau",
+          "roblox-games/tekken/shared/RobloxCommonMaterials.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "REWARD",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NPC_AI",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "QUEST_DIALOGUE",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CRAFTING",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ECONOMY",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "PROGRESSION",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "FARMING",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "WEATHER",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "PHYSICS",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau",
+          "roblox-games/tekken/shared/RobloxCommonMaterials.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CAMERA",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau",
+          "roblox-games/tekken/client/Game.client.luau"
+        ],
+        "requiredByDesign": true,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "AUDIO",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/client/Game.client.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/client/Game.client.luau"
+        ],
+        "requiredByDesign": false,
+        "useExistingGameStateOnly": true,
+        "createPlaceholderUi": false,
+        "implementationProven": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NETWORK",
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau",
+          "roblox-games/tekken/client/Game.client.luau"
         ],
         "requiredByDesign": false,
         "useExistingGameStateOnly": true,
@@ -6716,6 +6980,72 @@
         "roblox-games/tekken/shared/RobloxCommonUI.luau",
         "roblox-games/tekken/shared/GameConfig.luau",
         "roblox-games/tekken/server/Game.server.luau"
+      ],
+      "BIOME": [],
+      "HOUSING": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau"
+      ],
+      "MOTION": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "roblox-games/tekken/client/Game.client.luau"
+      ],
+      "ACTION": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "roblox-games/tekken/shared/GameConfig.luau",
+        "roblox-games/tekken/server/Game.server.luau",
+        "roblox-games/tekken/client/Game.client.luau"
+      ],
+      "NPC_AI": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "roblox-games/tekken/shared/GameConfig.luau"
+      ],
+      "QUEST_DIALOGUE": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "roblox-games/tekken/shared/GameConfig.luau"
+      ],
+      "CRAFTING": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "roblox-games/tekken/shared/GameConfig.luau"
+      ],
+      "ECONOMY": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "roblox-games/tekken/shared/GameConfig.luau"
+      ],
+      "PROGRESSION": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "roblox-games/tekken/shared/GameConfig.luau",
+        "roblox-games/tekken/server/Game.server.luau"
+      ],
+      "FARMING": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau"
+      ],
+      "WEATHER": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau"
+      ],
+      "PHYSICS": [
+        "roblox-games/tekken/shared/GameConfig.luau",
+        "roblox-games/tekken/server/Game.server.luau",
+        "roblox-games/tekken/shared/RobloxCommonMaterials.luau"
+      ],
+      "CAMERA": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "roblox-games/tekken/shared/GameConfig.luau",
+        "roblox-games/tekken/server/Game.server.luau",
+        "roblox-games/tekken/client/Game.client.luau"
+      ],
+      "AUDIO": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "roblox-games/tekken/shared/GameConfig.luau",
+        "roblox-games/tekken/client/Game.client.luau"
+      ],
+      "SKILL_VFX": [
+        "roblox-games/tekken/shared/GameConfig.luau",
+        "roblox-games/tekken/client/Game.client.luau"
+      ],
+      "NETWORK": [
+        "roblox-games/tekken/shared/GameConfig.luau",
+        "roblox-games/tekken/server/Game.server.luau",
+        "roblox-games/tekken/client/Game.client.luau"
       ],
       "INTERACTION": [
         "roblox-games/tekken/shared/RobloxCommonUI.luau",
@@ -6776,6 +7106,12 @@
         "roblox-games/tekken/shared/GameConfig.luau",
         "roblox-games/tekken/server/Game.server.luau"
       ],
+      "biomeSourceFiles": [],
+      "housingSourceFiles": [
+        "roblox-games/tekken/shared/RobloxCommonUI.luau"
+      ],
+      "biomeNativeSceneBindingVerified": false,
+      "housingPlacementPersistenceVerified": false,
       "entryFiles": [
         "roblox-games/tekken/shared/RobloxCommonUI.luau"
       ],
@@ -6797,7 +7133,10 @@
         "PORTAL_OR_DOOR_SERVER_AUTHORITY",
         "RETURN_PATH",
         "BLOCKED_PATH",
-        "RESPAWN_ROUTE"
+        "RESPAWN_ROUTE",
+        "BUILD_PLACEMENT_COLLISION",
+        "OWNER_COST_INVENTORY_AUTHORITY",
+        "HOUSING_SAVE_REJOIN"
       ],
       "inaccessibleAreasNotInvented": true,
       "runtimeTraversalVerified": false
@@ -6870,6 +7209,194 @@
       "runtimeVerified": false,
       "qaPassed": false
     },
+    "moduleConnections": [
+      {
+        "id": "WORLD_BIOME_WEATHER",
+        "roles": [
+          "WORLD",
+          "BIOME",
+          "WEATHER"
+        ],
+        "state": "MISSING_REQUIRED_SOURCE_REVIEW",
+        "missingRoles": [
+          "BIOME"
+        ],
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau"
+        ],
+        "checks": [
+          "NATIVE_TERRAIN_AND_REGION_GRAPH",
+          "APPROVED_WEATHER_STATE",
+          "MOBILE_STREAMING"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "HOUSING_INVENTORY_SAVE",
+        "roles": [
+          "HOUSING",
+          "INVENTORY",
+          "SAVE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau"
+        ],
+        "checks": [
+          "ACTUAL_PLACEMENT_COLLISION",
+          "AUTHORITATIVE_COST_AND_OWNERSHIP",
+          "PERSIST_AND_REJOIN"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CUSTOMIZATION_EQUIPMENT_SAVE",
+        "roles": [
+          "CUSTOMIZATION",
+          "EQUIPMENT",
+          "SAVE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/server/Game.server.luau"
+        ],
+        "checks": [
+          "REAL_RIG_AND_OUTFIT_BINDING",
+          "SAVED_AVATAR_AND_EQUIPMENT",
+          "RECONNECT_RESTORE"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "NPC_AI_QUEST",
+        "roles": [
+          "NPC_AI",
+          "QUEST_DIALOGUE"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau"
+        ],
+        "checks": [
+          "NPC_DECISION_TO_DIALOGUE_EVENT",
+          "QUEST_STATE_AND_SERVER_AUTHORITY"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "ACTION_MOTION_COMBAT",
+        "roles": [
+          "ACTION",
+          "MOTION",
+          "COMBAT"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau",
+          "roblox-games/tekken/client/Game.client.luau",
+          "roblox-games/tekken/shared/RobloxCommonMaterials.luau"
+        ],
+        "checks": [
+          "INPUT_TO_AUTHORITATIVE_HIT",
+          "EXACT_EXISTING_HIT_TIMING",
+          "RIG_PLAYBACK_AND_REACTION"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "CRAFT_ECONOMY_INVENTORY",
+        "roles": [
+          "CRAFTING",
+          "ECONOMY",
+          "INVENTORY"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau"
+        ],
+        "checks": [
+          "RECIPE_RESOURCE_CONSUMPTION",
+          "AUTHORITATIVE_CURRENCY_AND_ITEM_STATE",
+          "SAVE_AND_REJOIN"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "FARMING_WORLD_WEATHER",
+        "roles": [
+          "FARMING",
+          "WORLD",
+          "WEATHER"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/server/Game.server.luau"
+        ],
+        "checks": [
+          "APPROVED_CROP_REGION_AND_SEASON",
+          "HARVEST_STATE_AND_STORAGE"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      },
+      {
+        "id": "SKILL_VFX_AUDIO",
+        "roles": [
+          "SKILL_VFX",
+          "ACTION",
+          "AUDIO"
+        ],
+        "state": "EXISTING_SOURCE_CONNECTION_CANDIDATE",
+        "missingRoles": [],
+        "responsibleFiles": [
+          "roblox-games/tekken/shared/GameConfig.luau",
+          "roblox-games/tekken/client/Game.client.luau",
+          "roblox-games/tekken/shared/RobloxCommonUI.luau",
+          "roblox-games/tekken/server/Game.server.luau"
+        ],
+        "checks": [
+          "SKILL_ACTUAL_EVENT_TO_EFFECT",
+          "AUDIO_STATE_AND_CLEANUP",
+          "MOBILE_EFFECT_BUDGET"
+        ],
+        "gameSourceMutationPerformed": false,
+        "passed": false,
+        "runtimeVerified": false
+      }
+    ],
     "sharedAssetSelection": {
       "registry": "company-asset-library.json",
       "archives": "assets/asset-manifest.json#sharedOriginalArchives",
@@ -6888,7 +7415,9 @@
       "EXISTING_GAME_STATE",
       "REAL_EVENT_HANDLER",
       "SERVER_AUTHORITY_WHERE_APPLICABLE",
-      "NATIVE_PLATFORM_AND_MOBILE_QA"
+      "NATIVE_PLATFORM_AND_MOBILE_QA",
+      "MOTION_ACTION_SAME_APPROVED_HIT_EVENT",
+      "ACTUAL_CHARACTER_MODEL_AND_SAVE_RESTORE"
     ],
     "implementationProven": false,
     "runtimeVerified": false,
@@ -6949,7 +7478,7 @@
     "gameId": "tekken",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "bc13aa01b4d02868efb17c13e758a795af43410b80b17193a3294b3ea36b47fa",
+    "sourceTreeFingerprint": "22741391835427b3cbc8eea0d33f7bd182f197e425b045cd847ccb71a257d7d8",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -7141,9 +7670,9 @@
       "roblox-games/tekken/client/Game.client.luau",
       "roblox-games/tekken/client/MaterialPresentation.client.luau",
       "roblox-games/tekken/server/Game.server.luau",
+      "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
       "roblox-games/tekken/shared/RobloxCommonUI.luau",
       "roblox-games/tekken/shared/GameConfig.luau",
-      "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
       "roblox-games/tekken/default.project.json"
     ],
     "requiredEvidenceFields": [
@@ -7356,15 +7885,69 @@
       "roblox-games/tekken/client/Game.client.luau",
       "roblox-games/tekken/client/MaterialPresentation.client.luau",
       "roblox-games/tekken/server/Game.server.luau",
+      "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
       "roblox-games/tekken/shared/RobloxCommonUI.luau",
       "roblox-games/tekken/shared/GameConfig.luau",
-      "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
       "roblox-games/tekken/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 3936,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 3975,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 3991,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 3952,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 4008,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 4026,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 14,
+        "line": 65,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -7373,69 +7956,51 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 167,
+        "line": 198,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
         "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/tekken/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 153,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 176,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 199,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 222,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 245,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 268,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "currentBehavior": "local function scopeHandler6(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "symbol": "sync",
+        "role": "SHARED_MODULE_OR_STATE",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
         "symbol": "reportNativeFoundationReady",
@@ -7446,42 +8011,6 @@
         "file": "roblox-games/tekken/client/Game.client.luau",
         "symbol": "render",
         "role": "CLIENT_INPUT_OR_PRESENTATION",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "symbol": "scopeHandler1",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "symbol": "scopeHandler2",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "symbol": "scopeHandler3",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "symbol": "scopeHandler4",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "symbol": "scopeHandler5",
-        "role": "SERVER_AUTHORITY",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "symbol": "scopeHandler6",
-        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
@@ -7559,15 +8088,87 @@
       "roblox-games/tekken/client/Game.client.luau",
       "roblox-games/tekken/client/MaterialPresentation.client.luau",
       "roblox-games/tekken/server/Game.server.luau",
+      "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
       "roblox-games/tekken/shared/RobloxCommonUI.luau",
       "roblox-games/tekken/shared/GameConfig.luau",
-      "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
       "roblox-games/tekken/default.project.json"
     ],
     "sourceAnchors": [
       {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 3936,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/tekken/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 3975,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/tekken/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 3991,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/tekken/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 3952,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 130,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/tekken/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 4008,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 122,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/tekken/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/tekken/shared/RobloxCommonUI.luau",
+        "line": 4026,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 114,
+        "currentBehavior": "local function sync(state)",
+        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 sync의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/tekken/shared/RobloxCommonUI.luau::sync이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/tekken/shared/RobloxCommonUI.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 14,
+        "line": 65,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -7579,7 +8180,7 @@
       },
       {
         "file": "roblox-games/tekken/client/Game.client.luau",
-        "line": 167,
+        "line": 198,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -7588,78 +8189,6 @@
         "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/tekken/client/Game.client.luau::render이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/tekken/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 153,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler1",
-        "context": "local function scopeHandler1(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/tekken/server/Game.server.luau::scopeHandler1이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 176,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler2",
-        "context": "local function scopeHandler2(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/tekken/server/Game.server.luau::scopeHandler2이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 199,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler3",
-        "context": "local function scopeHandler3(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/tekken/server/Game.server.luau::scopeHandler3이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 222,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler4",
-        "context": "local function scopeHandler4(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/tekken/server/Game.server.luau::scopeHandler4이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 245,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler5",
-        "context": "local function scopeHandler5(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/tekken/server/Game.server.luau::scopeHandler5이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/tekken/server/Game.server.luau",
-        "line": 268,
-        "kind": "FUNCTION",
-        "symbol": "scopeHandler6",
-        "context": "local function scopeHandler6(player)",
-        "score": 98,
-        "currentBehavior": "local function scopeHandler6(player)",
-        "intendedBehavior": "USABILITY primary goal \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/tekken/server/Game.server.luau::scopeHandler6이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/tekken/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -7706,9 +8235,9 @@
       "roblox-games/tekken/client/Game.client.luau",
       "roblox-games/tekken/client/MaterialPresentation.client.luau",
       "roblox-games/tekken/server/Game.server.luau",
+      "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
       "roblox-games/tekken/shared/RobloxCommonUI.luau",
       "roblox-games/tekken/shared/GameConfig.luau",
-      "roblox-games/tekken/shared/RobloxCommonMaterials.luau",
       "roblox-games/tekken/default.project.json"
     ],
     "impact": {
@@ -7778,16 +8307,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "신화·한국사 생활 시뮬레이션×로맨스: 식충식물: 유인과 포획 조건이 맞음의 성립. MAIN은 A(일상 활동과 시간 배분 × 신화)와 독립적인 B(차량 정비와 전략 × 한국사)의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 비극 × 보조 로맨스)의 판정 차이, @(식충식물: 유인과 포획 조건이 맞음의 성립)가 여는 새 WorldAccessState를 합성한 결과다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "REGRESSION",
+      "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "bc13aa01b4d02868efb17c13e758a795af43410b80b17193a3294b3ea36b47fa",
+      "sourceTreeFingerprint": "22741391835427b3cbc8eea0d33f7bd182f197e425b045cd847ccb71a257d7d8",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "roblox-package-asset-binding-failed"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -7798,8 +8327,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial USABILITY build-up has no previous generation effect to compare"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7842,12 +8371,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-    "sourceChangedSincePrevious": false,
+    "escalationMode": "DEEPER_CAUSAL_REPAIR",
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7904,5 +8433,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-18T13:22:58.109Z"
+  "generatedAt": "2026-10-19T21:05:57.094Z"
 }
