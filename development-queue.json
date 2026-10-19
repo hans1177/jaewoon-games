@@ -12213,7 +12213,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-19T04:59:30.426Z",
+      "updatedAt": "2026-10-19T05:02:02.431Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -12229,11 +12229,67 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
       "robloxBuildArtifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
-      "robloxBuildPassedAt": "2026-10-19T04:47:00.775Z",
+      "robloxBuildPassedAt": "2026-10-19T05:02:02.431Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-19T04:47:00.775Z",
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightFailedAt": "2026-10-19T05:02:02.431Z",
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "monster-adventure",
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-19T04:39:55.474Z",
+        "sourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
+        "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "59a5f687c13db0b59b124db232f86b4c7d4bda63",
+            "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "openai/gpt-oss-20b",
+            "decision": "BLOCK",
+            "blockers": [
+              "webValidationPassed is false",
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
+            ],
+            "note": "Runtime testing requires all validation checks (web, music, native web, native music) to pass. The BUILD_EVIDENCE indicates all four validations failed, which contradicts the preflight requirement for starting runtime testing."
+          }
+        ],
+        "blockers": [
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+        ],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -41556,7 +41612,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-19T05:01:55.665Z",
+  "updatedAt": "2026-10-19T05:02:02.431Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
