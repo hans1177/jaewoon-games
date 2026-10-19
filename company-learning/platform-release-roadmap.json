@@ -167,7 +167,12 @@
         "REALISTIC_LATER"
       ],
       "existingRepositoryAssetsPreferred": true,
-      "externalAssetPolicy": "CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED",
+      "externalAssetPolicy": "CC0_ONLY",
+      "downloadedUnmodifiedOriginalSourcesRequired": true,
+      "gameVisibleArtCharacterMonsterWorldEnvironmentUiAndVfxOnlyFromVerifiedCc0": true,
+      "licenseProofRequiredBeforeGamePresentation": true,
+      "existingNonCc0OrStudioGeneratedArtMustBeReplacedWithoutDeletingGameplay": true,
+      "runtimeAssetInspectorButtonForbidden": true,
       "unclearLicenseForbidden": true,
       "nonCommercialLicenseForbidden": true,
       "licenseEvidenceRequired": true
@@ -21977,7 +21982,12 @@
         "verifiedLearningDeletionForbidden": true,
         "existingResponsibleSystemDirectModificationPreferred": true,
         "wrapperOrShadowDuplicateSystemForbidden": true,
-        "existingGameRulesProgressionSaveAndBalanceMustRemainProtected": true
+        "existingGameRulesProgressionSaveAndBalanceMustRemainProtected": true,
+        "allGameVisualMediaDownloadedCc0Only": true,
+        "studioGeneratedVisibleGameAssetsForbidden": true,
+        "publicGameAssetInspectorButtonsForbidden": true,
+        "unverifiedOrMissingCc0AssetsMayNotPass": true,
+        "existingGameSaveAndBalancePreservedDuringCc0Migration": true
       },
       "adoptionRequires": [
         "VERIFIED_CAUSAL_IMPROVEMENT",
@@ -22062,6 +22072,42 @@
             "operator": "EQ",
             "path": "neuralExpansion.ungatedAutomaticActivationForbidden",
             "expected": true
+          },
+          {
+            "code": "GAME_VISUALS_CC0_ONLY",
+            "operator": "EQ",
+            "path": "invariants.allGameVisualMediaDownloadedCc0Only",
+            "expected": true
+          },
+          {
+            "code": "STUDIO_GENERATED_GAME_ART_FORBIDDEN",
+            "operator": "EQ",
+            "path": "invariants.studioGeneratedVisibleGameAssetsForbidden",
+            "expected": true
+          },
+          {
+            "code": "PUBLIC_ASSET_INSPECTOR_BUTTON_FORBIDDEN",
+            "operator": "EQ",
+            "path": "invariants.publicGameAssetInspectorButtonsForbidden",
+            "expected": true
+          },
+          {
+            "code": "UNVERIFIED_CC0_NEVER_PASS",
+            "operator": "EQ",
+            "path": "invariants.unverifiedOrMissingCc0AssetsMayNotPass",
+            "expected": true
+          },
+          {
+            "code": "CC0_MIGRATION_MUST_PRESERVE_GAMEPLAY",
+            "operator": "EQ",
+            "path": "invariants.existingGameSaveAndBalancePreservedDuringCc0Migration",
+            "expected": true
+          },
+          {
+            "code": "NO_PUBLIC_GAME_ASSET_INSPECTOR_SCRIPT",
+            "operator": "FILE_REGEX",
+            "file": "assets/vibe-runtime-panel.js",
+            "expected": "^(?![\\s\\S]*(?:createElement\\('button'\\)|vibe-assets-launcher))[\\s\\S]*$"
           }
         ]
       }

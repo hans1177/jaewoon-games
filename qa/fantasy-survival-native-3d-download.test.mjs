@@ -56,7 +56,10 @@ test('original source materials and Diablo-II-style native camera are bound to g
  assert.doesNotMatch(source,/new THREE\.BoxGeometry\(/);
  assert.doesNotMatch(source,/new THREE\.SphereGeometry\(/);
  assert.match(source,/new THREE\.OrthographicCamera/);
- assert.match(source,/camera\.position\.set\(centerX\+10\.5,17,centerY\+13\)/);
+ assert.match(source,/camera\.position\.set\(focusX\+13\.5,19\.5,focusZ\+13\.5\)/);
+ assert.match(source,/camera\.lookAt\(focusX,0,focusZ\)/);
+ assert.match(source,/const focusX=centerX-1\.25,focusZ=centerY-1\.25/);
+ assert.match(source,/const cameraViewHeight=mobileBudget\?16\.8:20/);
  assert.match(source,/name\+'\.obj'/);
  assert.match(source,/name\+'\.mtl'/);
  assert.match(source,/materialText\.match/);
@@ -71,8 +74,10 @@ test('original source materials and Diablo-II-style native camera are bound to g
 test('public Magic Forest never receives developer asset inspector button',()=>{
  const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
  const panel=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
- assert.match(workflow,/if\(route==='web-games\/fantasy-survival\/'\)continue/);
- assert.match(panel,/gameId==='fantasy-survival'/);
+ assert.doesNotMatch(workflow,/const tag=.*vibe-runtime-panel/);
+ assert.doesNotMatch(workflow,/vibe-assets-launcher/);
+ assert.doesNotMatch(panel,/createElement\('button'\)|vibe-assets-launcher|vibe-assets-panel/);
+ assert.match(panel,/asset-library\.html/);
 });
 
 test('native scene drives the default surface display but is not falsely production-certified',()=>{
@@ -97,7 +102,7 @@ test('3D preview reads existing biome classifier and saved construction state, n
  assert.match(index,/world3d\.frame\(state,regionAt\)/);
  assert.match(moduleSource,/function frame\(state,regionAt\)/);
  assert.match(moduleSource,/const classify=typeof regionAt==='function'\?regionAt:/);
- assert.match(moduleSource,/const tileBiome=String\(classify\(gx\/SCALE,gz\/SCALE\)/);
+ assert.match(moduleSource,/const zone=String\(classify\(px,py\)/);
  assert.match(moduleSource,/for\(const \[i,door\] of \(state\.doors\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/for\(const \[i,chest\] of \(state\.chests\|\|\[\]\)\.entries\(\)\)/);
  assert.match(moduleSource,/addVisibleEntity\('door:'\+/);
@@ -160,14 +165,18 @@ test('downloaded KayKit mage is ledgered as preview only and source-bound to exi
 
 test('native 3D binds exact existing monster types and adapts GPU load without changing their combat',()=>{
  assert.match(moduleSource,/NATIVE_CREATURE_MODELS=Object\.freeze/);
- for(const kind of ['wolf','golem','spider','serpent']){
+ for(const kind of ['wolf','pig','fox','bird','fish']){
   assert.match(moduleSource,new RegExp("^  "+kind+":\\[",'m'));
-  assert.ok(fs.existsSync('assets/shared/creature-'+kind+'-actions.glb'));
  }
- for(const id of ['shadowwolf','golem','giantspider','worldtreesnake']){
+ for(const id of ['shadowwolf','mossboar','polarfox','worldpheasant','lakefish']){
   assert.match(moduleSource,new RegExp("'"+id+"'"));
   assert.match(index,new RegExp(id+":\\{id:'"+id+"'"));
  }
+ assert.doesNotMatch(moduleSource,/assets\\/shared\\/creature-|creature-'\+kind\+suffix/);
+ assert.match(moduleSource,/new DecompressionStream\('deflate-raw'\)/);
+ assert.match(moduleSource,/parseDownloadedObj\(obj,kind,mtl\)/);
+ assert.match(moduleSource,/source\.model\.clone\(\)/);
+ assert.match(moduleSource,/faceColor=sourceColors\.get/);
  assert.match(moduleSource,/synchronizeNativeCreatures\(state,px,py,seen\)/);
  assert.match(moduleSource,/actor\.model\.traverse\(child=>\{/);
  assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
@@ -246,4 +255,64 @@ test('downloaded KayKit skeleton is only a license-proven undead species proxy a
  assert.match(moduleSource,/undeadProxySourceLoaded:!!undeadSource/);
  assert.match(moduleSource,/productionReady:false/);
  assert.match(index,/wastelandMummy:\{id:'wastelandMummy',name:'황무지 미라',mood:'aggressive',hp:1800,dmg:88,speed:64,r:30/);
+});
+
+test('3D creature meshes come from downloaded CC0 original archives, not generated studio creature rigs',()=>{
+ const wildlife=JSON.parse(fs.readFileSync('assets/external/simple-rpg/wildlife/manifest.json','utf8'));
+ const expected=['wolf-eagle.zip','farm-animals.zip','five-animals.zip'];
+ const namesByArchive={
+   'wolf-eagle.zip':['wolf'],
+   'farm-animals.zip':['pig'],
+   'five-animals.zip':['red fox','bird','fish']
+ };
+ for(const file of expected){
+   const record=wildlife.packs.find(x=>x.file===file);
+   assert.ok(record,'missing CC0 source license record: '+file);
+   assert.equal(record.license,'CC0-1.0');
+   assert.equal(record.sourceOnly,true,'original must remain unchanged');
+   const archive=fs.readFileSync('assets/external/simple-rpg/wildlife/'+file);
+   assert.equal(archive.subarray(0,2).toString(),'PK');
+   assert.equal(createHash('sha256').update(archive).digest('hex'),record.sha256);
+   const signature=Buffer.from([0x50,0x4b,0x05,0x06]);
+   const eocd=archive.lastIndexOf(signature);
+   assert.ok(eocd>0,'source ZIP directory missing: '+file);
+   let entryOffset=archive.readUInt32LE(eocd+16);
+   const names=[];
+   for(let i=0;i<archive.readUInt16LE(eocd+10);i++){
+     assert.equal(archive.readUInt32LE(entryOffset),0x02014b50);
+     const nameLength=archive.readUInt16LE(entryOffset+28),extra=archive.readUInt16LE(entryOffset+30);
+     const comment=archive.readUInt16LE(entryOffset+32);
+     names.push(archive.subarray(entryOffset+46,entryOffset+46+nameLength).toString('utf8').toLowerCase());
+     entryOffset+=46+nameLength+extra+comment;
+   }
+   for(const species of namesByArchive[file]){
+     for(const extension of ['obj','mtl'])
+       assert.ok(names.some(name=>name.endsWith('/obj/'+species+'.'+extension)
+         ||name===species+'.'+extension),
+       'downloaded original '+file+' missing '+species+'.'+extension);
+   }
+   assert.ok(moduleSource.includes("file:'"+file+"'"));
+ }
+ assert.match(moduleSource,/NATIVE_CREATURE_MODELS=Object\.freeze/);
+ assert.doesNotMatch(moduleSource,/new THREE\.(?:BoxGeometry|SphereGeometry)/);
+ assert.match(moduleSource,/productionReady:false/);
+});
+
+test('owner and Vibe workers inherit downloaded CC0-only game screen policy',()=>{
+ const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const art=policy.livingMotionVisualQualityContract.assetAdaptation;
+ const rule=policy.ownerCanonicalRules.rule4;
+ assert.equal(art.externalAssetPolicy,'CC0_ONLY');
+ assert.equal(art.downloadedUnmodifiedOriginalSourcesRequired,true);
+ assert.equal(art.gameVisibleArtCharacterMonsterWorldEnvironmentUiAndVfxOnlyFromVerifiedCc0,true);
+ assert.equal(art.runtimeAssetInspectorButtonForbidden,true);
+ assert.equal(rule.invariants.allGameVisualMediaDownloadedCc0Only,true);
+ assert.equal(rule.invariants.studioGeneratedVisibleGameAssetsForbidden,true);
+ assert.equal(rule.invariants.publicGameAssetInspectorButtonsForbidden,true);
+ assert.equal(rule.invariants.existingGameSaveAndBalancePreservedDuringCc0Migration,true);
+ for(const code of ['GAME_VISUALS_CC0_ONLY','STUDIO_GENERATED_GAME_ART_FORBIDDEN',
+                    'PUBLIC_ASSET_INSPECTOR_BUTTON_FORBIDDEN','UNVERIFIED_CC0_NEVER_PASS',
+                    'CC0_MIGRATION_MUST_PRESERVE_GAMEPLAY']){
+   assert.ok(rule.machineEnforcement.assertions.some(x=>x.code===code));
+ }
 });

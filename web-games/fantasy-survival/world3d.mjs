@@ -14,13 +14,14 @@ const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
 const SCALE = 1 / 48;
 const HERO_URL = new URL('../../assets/roblox/actors/native/mage.glb',import.meta.url);
 const UNDEAD_URL = new URL('../../assets/roblox/actors/native/skeleton-warrior.glb',import.meta.url);
-// Reuse the existing 3D creature library. Each source is bound only to matching
-// game species; the renderer never creates a synthetic enemy or changes AI rules.
+// Monster meshes use only the downloaded unmodified CC0 source archives.
+// The previously studio-generated creature GLBs are explicitly excluded.
 const NATIVE_CREATURE_MODELS=Object.freeze({
   wolf:['shadowwolf','shadowwolfleader','firewolf','polarwolf','thornhound','ironhidehound'],
-  golem:['golem','firegolemneutral','firegolemaggressive','crystalfiregolem','icegolem','swampgolem','worldtreegolem'],
-  spider:['giantspider','giantspiderling'],
-  serpent:['firesnake','crystalfiresnake','anaconda','worldtreesnake']
+  pig:['mossboar','crystalboar','crystalboarjunior'],
+  fox:['polarfox'],
+  bird:['worldpheasant'],
+  fish:['lakefish']
 });
 const NATIVE_CREATURE_BY_ID=new Map(Object.entries(NATIVE_CREATURE_MODELS)
   .flatMap(([source,ids])=>ids.map(id=>[id,source])));
@@ -59,12 +60,26 @@ function parseDownloadedObj(text, modelName, materialText=''){
   const diffuse=materialText.match(/(?:^|\n)\s*Kd\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
   if(!diffuse)throw new Error('Original CC0 MTL diffuse missing: '+modelName);
   const base=new THREE.Color().setRGB(...diffuse.slice(1,4).map(Number));
+  // Resolve the downloaded source's material names and Kd values per face.
+  const sourceColors=new Map();let activeMaterial='';
+  for(const line of materialText.split(/\r?\n/)){
+    const item=line.trim();
+    if(item.startsWith('newmtl '))activeMaterial=item.slice(7).trim();
+    else if(item.startsWith('Kd ')&&activeMaterial){
+      const rgb=item.slice(3).trim().split(/\s+/).map(Number);
+      if(rgb.length>=3&&rgb.slice(0,3).every(Number.isFinite))
+        sourceColors.set(activeMaterial,new THREE.Color().setRGB(...rgb.slice(0,3)));
+    }
+  }
+  let faceColor=base;
   const raw=[],pos=[],colors=[];
   for(const rawLine of text.split(/\r?\n/)){
     const line=rawLine.trim();
     if(line.startsWith('v ')){
       const v=line.slice(2).trim().split(/\s+/).map(Number);
       if(v.length>=3&&v.slice(0,3).every(Number.isFinite))raw.push(v.slice(0,3));
+    }else if(line.startsWith('usemtl ')){
+      faceColor=sourceColors.get(line.slice(7).trim())||base;
     }else if(line.startsWith('f ')){
       const indices=line.slice(2).trim().split(/\s+/).map(item=>Number(item.split('/')[0]));
       if(indices.length<3||indices.length>12)continue;
@@ -74,7 +89,7 @@ function parseDownloadedObj(text, modelName, materialText=''){
         // Triangle subdivision of ORIGINAL OBJ polygon faces; all coordinates and
         // MTL Kd colors come from the licensed source, not custom-made scenery.
         const face=[verts[0],verts[i],verts[i+1]];
-        for(const v of face){pos.push(v[0],v[1],v[2]);colors.push(base.r,base.g,base.b)}
+        for(const v of face){pos.push(v[0],v[1],v[2]);colors.push(faceColor.r,faceColor.g,faceColor.b)}
       }
     }
   }
@@ -141,23 +156,71 @@ export async function createWorld3d(canvas){
   }catch(error){
     console.warn('Downloaded undead GLB unavailable; 3D monster preview remains incomplete',error);
   }
-  // Load already-available native rigged monsters before the real game is shown.
-  // The animated GLB is preferred; a missing model is not replaced by an invented mesh.
+  // Use archived CC0 source geometry and accompanying original MTL materials.
+  // Decode only required OBJ/MTL entries. Never synthesize, reauthor or relabel species.
   const nativeCreatureSources=new Map();
-  await Promise.all(Object.keys(NATIVE_CREATURE_MODELS).map(async kind=>{
-    for(const suffix of ['-actions','']){
-      try{
-        const url=new URL('../../assets/shared/creature-'+kind+suffix+'.glb',import.meta.url);
-        const gltf=await new GLTFLoader().loadAsync(url.href);
-        if(!gltf.scene)throw new Error('Empty creature scene');
-        const box=new THREE.Box3().setFromObject(gltf.scene);
-        if(box.isEmpty())throw new Error('Missing creature mesh');
-        nativeCreatureSources.set(kind,{model:gltf.scene,clips:gltf.animations||[],
-          height:Math.max(.1,box.max.y-box.min.y),floor:box.min.y});
-        break;
-      }catch(error){
-        if(!suffix)console.warn('Native 3D monster model unavailable: '+kind,error);
+  const originalArchives=[
+    {file:'wolf-eagle.zip',root:'assets/external/simple-rpg/wildlife/',species:{wolf:'wolf'}},
+    {file:'farm-animals.zip',root:'assets/external/simple-rpg/wildlife/',species:{pig:'pig'}},
+    {file:'five-animals.zip',root:'assets/external/simple-rpg/wildlife/',species:{fox:'red fox',bird:'bird',fish:'fish'}}
+  ];
+  await Promise.all(originalArchives.map(async archive=>{
+    try{
+      const url=new URL('../../'+archive.root+archive.file,import.meta.url);
+      const response=await fetch(url,{cache:'force-cache'});
+      if(!response.ok)throw Error('CC0 source archive missing: '+response.status);
+      const buffer=await response.arrayBuffer(),view=new DataView(buffer);
+      if(buffer.byteLength>16_000_000)throw Error('CC0 source archive too large');
+      const header=offset=>offset>=0&&offset+4<=view.byteLength?view.getUint32(offset,true):0;
+      let end=-1;
+      for(let offset=view.byteLength-22;offset>=Math.max(0,view.byteLength-65557);offset--){
+        if(header(offset)===0x06054b50){end=offset;break}
       }
+      if(end<0)throw Error('CC0 ZIP directory unavailable');
+      let entryOffset=view.getUint32(end+16,true);
+      const entryCount=view.getUint16(end+10,true),entries=new Map(),decoder=new TextDecoder();
+      if(entryCount>1500)throw Error('CC0 ZIP entry limit');
+      for(let i=0;i<entryCount;i++){
+        if(header(entryOffset)!==0x02014b50)throw Error('CC0 ZIP central record invalid');
+        const method=view.getUint16(entryOffset+10,true);
+        const size=view.getUint32(entryOffset+20,true);
+        const nameLength=view.getUint16(entryOffset+28,true);
+        const extra=view.getUint16(entryOffset+30,true),comment=view.getUint16(entryOffset+32,true);
+        const local=view.getUint32(entryOffset+42,true);
+        const name=decoder.decode(new Uint8Array(buffer,entryOffset+46,nameLength));
+        if(/\.(?:obj|mtl)$/i.test(name)&&!name.includes('..')&&size<4_000_000)
+          entries.set(name.toLowerCase(),{local,size,method,name});
+        entryOffset+=46+nameLength+extra+comment;
+      }
+      async function entryText(entry){
+        if(!entry||header(entry.local)!==0x04034b50)throw Error('CC0 ZIP local record missing');
+        const length=view.getUint16(entry.local+26,true),extra=view.getUint16(entry.local+28,true);
+        const offset=entry.local+30+length+extra,stop=offset+entry.size;
+        if(stop>buffer.byteLength)throw Error('CC0 ZIP entry extends past archive');
+        const bytes=new Uint8Array(buffer,offset,entry.size);
+        if(entry.method===0)return decoder.decode(bytes);
+        if(entry.method!==8||typeof DecompressionStream==='undefined')
+          throw Error('CC0 archive decompression unavailable');
+        return await new Response(new Blob([bytes]).stream().pipeThrough(
+          new DecompressionStream('deflate-raw'))).text();
+      }
+      for(const [kind,name] of Object.entries(archive.species)){
+        const names=[...entries.keys()];
+        const objectPath=names.find(path=>path.endsWith('/obj/'+name+'.obj')||path===name+'.obj');
+        if(!objectPath)continue;
+        const materialPath=objectPath.slice(0,-4)+'.mtl';
+        const obj=await entryText(entries.get(objectPath));
+        const materialEntry=entries.get(materialPath);
+        if(!materialEntry)continue;
+        const mtl=await entryText(materialEntry);
+        const mesh=parseDownloadedObj(obj,kind,mtl);
+        const box=new THREE.Box3().setFromObject(mesh);
+        if(box.isEmpty())throw Error('Downloaded original '+kind+' has no geometry');
+        nativeCreatureSources.set(kind,{model:mesh,clips:[],
+          height:Math.max(.1,box.max.y-box.min.y),floor:box.min.y});
+      }
+    }catch(error){
+      console.warn('CC0 monster archive unavailable; original encounter keeps safe fallback: '+archive.file,error);
     }
   }));
   const renderer=new THREE.WebGLRenderer({canvas,antialias:!mobileBudget,alpha:false,powerPreference:'default'});
@@ -170,9 +233,9 @@ export async function createWorld3d(canvas){
   const scene=new THREE.Scene();
   scene.background=new THREE.Color(0x244238);
   scene.fog=new THREE.Fog(0x244238,22,90);
-  // Diablo II Resurrected-inspired orthographic quarter-view:
-  // 3D models retain depth, but distance never shrinks or stretches the hero.
-  const cameraViewHeight=mobileBudget?18:24;
+  // Fixed Diablo-style isometric quarter view: consistent model scale and depth.
+  // The camera looks beyond the hero so threats are visible ahead on a small screen.
+  const cameraViewHeight=mobileBudget?16.8:20;
   const camera=new THREE.OrthographicCamera(-12,12,12,-12,0.1,155);
   const ambient=new THREE.HemisphereLight(0xe7f5d2,0x263428,2.25);
   scene.add(ambient);
@@ -300,7 +363,7 @@ export async function createWorld3d(canvas){
       let actor=nativeCreatureActors.get(key);
       if(!actor){
         const source=nativeCreatureSources.get(kind);
-        const model=cloneAnimatedRig(source.model),scale=Math.max(.72,Math.min(3.8,
+        const model=source.model.clone(),scale=Math.max(.72,Math.min(3.8,
           (Number(e.type?.r)||20)*SCALE*2.2))/source.height;
         model.scale.setScalar(scale);
         model.position.y=-source.floor*scale;
@@ -406,8 +469,11 @@ export async function createWorld3d(canvas){
       renderer.setSize(w,h,false);
     }
     // Follow real saved player coordinates without rotating while the player moves.
-    camera.position.set(centerX+10.5,17,centerY+13);
-    camera.lookAt(centerX,0,centerY);
+    // Fixed 45-degree azimuth and ~46-degree elevation; no camera rotation by input.
+    // The slight forward offset places the hero below screen center, Diablo-style.
+    const focusX=centerX-1.25,focusZ=centerY-1.25;
+    camera.position.set(focusX+13.5,19.5,focusZ+13.5);
+    camera.lookAt(focusX,0,focusZ);
      const classify=typeof regionAt==='function'?regionAt:()=> 'forest';
     const zone=String(classify(px,py)||'forest');
     currentBiome=BIOME_STYLE[zone]?zone:'forest';
