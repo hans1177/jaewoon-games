@@ -252,6 +252,12 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   assert.match(workflow,/git checkout -f -B development-queue-reconcile-runtime/);
   assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
   assert.match(workflow,/company-minimum-design-contract\.mjs/);
+  const reconcileStep=workflow.split('      - name: Reconcile and persist company runtime queue\\n')[1]
+    ?.split('      - name: Sync status after queue mutation\\n')[0];
+  assert.ok(reconcileStep,'canonical reconciliation step must be present');
+  assert.match(reconcileStep,/COMPANY_VERIFIED_POLICY_PATH:\\s*company-learning\\/platform-release-roadmap\\.json/);
+  assert.match(reconcileStep,/COMPANY_VERIFIED_DESIGN_POLICY_PATH:\\s*company-learning\\/platform-release-roadmap\\.json/);
+  assert.match(reconcileStep,/git checkout origin\\/main --[^\\n]*company-learning\\/platform-release-roadmap\\.json/);
   assert.match(workflow,/git checkout origin\/main --[^\n]*tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(workflow,/git reset --[^\n]*tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(source,/game-seed-state\.json/);
