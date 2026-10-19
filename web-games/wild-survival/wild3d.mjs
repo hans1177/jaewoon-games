@@ -2,6 +2,7 @@
 // Gameplay, save, combat, animal AI, crafting, and world coordinates remain authoritative in index.html.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { attachWildNativeScenery } from './wild-native-scenery.mjs';
 
 const SCALE=72;
 const WHITE='#f0ead6';
@@ -151,7 +152,9 @@ export function createWild3D({canvas,WORLD,resources,animals}){
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.3;
-  renderer.setPixelRatio(Math.min(devicePixelRatio||1,matchMedia('(pointer:coarse)').matches?1.3:1.75));
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,matchMedia('(pointer:coarse)').matches?1.15:1.6));
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   renderer.setSize(innerWidth,innerHeight,false);
   const scene=new THREE.Scene();
   scene.background=new THREE.Color('#8daec1');
@@ -160,11 +163,32 @@ export function createWild3D({canvas,WORLD,resources,animals}){
   const hemi=new THREE.HemisphereLight('#e3f1ff','#63714a',2);
   scene.add(hemi);
   const sun=new THREE.DirectionalLight('#ffe0b0',2.4);
-  sun.position.set(-15,29,-10);scene.add(sun);
+  sun.position.set(-15,29,-10);
+  sun.castShadow=true;
+  const shadowSize=matchMedia('(pointer:coarse)').matches?1024:2048;
+  sun.shadow.mapSize.set(shadowSize,shadowSize);
+  sun.shadow.camera.left=-23;sun.shadow.camera.right=23;
+  sun.shadow.camera.top=23;sun.shadow.camera.bottom=-23;
+  sun.shadow.camera.near=1;sun.shadow.camera.far=65;
+  sun.shadow.bias=-0.00032;
+  sun.shadow.normalBias=.045;
+  scene.add(sun,sun.target);
   const world=groupAt(scene);
-  const ground=mesh(world,new THREE.PlaneGeometry(WORLD.w/SCALE,WORLD.h/SCALE),mat.ground,
+  // Vertex-tinted genuine 3D terrain; this is not a flat 2D scene.
+  const ground=mesh(world,new THREE.PlaneGeometry(WORLD.w/SCALE,WORLD.h/SCALE,48,38),mat.ground,
     WORLD.w/(2*SCALE),-.06,WORLD.h/(2*SCALE));
   ground.rotation.x=-Math.PI/2;
+  const groundPos=ground.geometry.attributes.position,groundColors=[];
+  const earthy=new THREE.Color('#67855c'),mossy=new THREE.Color('#406a46');
+  for(let i=0;i<groundPos.count;i++){
+    const x=groundPos.getX(i),y=groundPos.getY(i);
+    const patch=(Math.sin(x*1.3+Math.cos(y*.74))*Math.cos(y*1.74+x*.37)+1)*.5;
+    const c=mossy.clone().lerp(earthy,.24+patch*.48);
+    groundColors.push(c.r,c.g,c.b);
+  }
+  ground.geometry.setAttribute('color',new THREE.Float32BufferAttribute(groundColors,3));
+  ground.material=material('#ffffff',{vertexColors:true});
+  ground.receiveShadow=true;
   const river=mesh(world,new THREE.PlaneGeometry(WORLD.w/SCALE,WORLD.riverH/SCALE),mat.water,
     WORLD.w/(2*SCALE),.022,(WORLD.riverY+WORLD.riverH/2)/SCALE);
   river.rotation.x=-Math.PI/2;
@@ -194,6 +218,17 @@ export function createWild3D({canvas,WORLD,resources,animals}){
   const human=makeHuman(world);
   const tent=makeTent(world);
   const fire=makeFire(world);
+  // Checked-in licensed 3D assets replace toy geometry when source files resolve.
+  let nativeForest=null;
+  document.body.dataset.nativeForestAssets='loading';
+  attachWildNativeScenery({THREE,world,WORLD,SCALE,resources,props,tent})
+    .then(value=>{nativeForest=value;})
+    .catch(error=>{
+      document.body.dataset.nativeForestAssets='unavailable';
+      console.error('Original CC0 forest asset loading failed',error);
+    });
+  human.root.traverse(object=>{if(object.isMesh)object.castShadow=true;});
+  for(const item of wildlife)item.root.traverse(object=>{if(object.isMesh)object.castShadow=true;});
   const strike=groupAt(human.root);
   const weaponGlow=mesh(strike,geom.cone,material('#f7eac0',{emissive:'#f5cc6b',emissiveIntensity:.4}),
     -.78,1.54,-.75,.06,1.15,.06);
@@ -205,6 +240,7 @@ export function createWild3D({canvas,WORLD,resources,animals}){
   const rainGeo=new THREE.CylinderGeometry(.009,.009,.64,3);
   for(let i=0;i<95;i++)drops.push(mesh(rain,rainGeo,rainMat,0,0,0));
   const skyDay=new THREE.Color('#9fbfc7'),skyNight=new THREE.Color('#17283f');
+  function pyLight(){return 25;}
   let width=innerWidth,height=innerHeight,frames=0,previous=performance.now();
   let glLost=false;
   canvas.addEventListener('webglcontextlost',e=>{
@@ -230,6 +266,7 @@ export function createWild3D({canvas,WORLD,resources,animals}){
         model.position.set(-(bounds.min.x+bounds.max.x)*.5*scale,-bounds.min.y*scale,
           -(bounds.min.z+bounds.max.z)*.5*scale);
         root.add(model);
+        root.traverse(part=>{if(part.isMesh)part.castShadow=true;});
         for(const part of human.root.children)if(part!==root)part.visible=false;
         document.body.dataset.nativeHumanModel='loaded';
       },undefined,err=>{
@@ -271,6 +308,7 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     strike.visible=now-p.attackAt<160;
     tent.position.set(S.camp.x/SCALE,0,S.camp.y/SCALE);
     tent.visible=S.camp.shelter>0;
+    if(nativeForest)nativeForest.update(S.camp);
     tent.scale.setScalar(S.camp.shelter>=2?1.28:1);
     fire.root.position.set(S.camp.x/SCALE,0,S.camp.y/SCALE);
     fire.root.visible=!!S.camp.fire;
@@ -278,12 +316,17 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     fire.light.intensity=S.camp.fire?9+Math.sin(now*.02)*2:0;
     // Perspective camera follows the authoritative player location.
     const px=p.x/SCALE,pz=p.y/SCALE;
-    camera.position.lerp(new THREE.Vector3(px+5.8,10.7,pz+16.8),frames<2?1:.12);
-    camera.lookAt(px,1.3,pz-3.2);
+    // Third-person cinematic view: more visible depth, less distant top-down toy feel.
+    camera.position.lerp(new THREE.Vector3(px+4.2,8.3,pz+12.7),frames<2?1:.10);
+    camera.lookAt(px,1.85,pz-4.25);
+    sun.position.set(px-15,pyLight(),pz-10);
+    sun.target.position.set(px,0,pz);
+    sun.target.updateMatrixWorld();
     const hour=S.time/60;
     const sunlight=Math.max(.07,Math.sin((hour-5)/24*Math.PI*2));
     hemi.intensity=.35+sunlight*1.85;
-    sun.intensity=.08+sunlight*2.35;
+    sun.intensity=.15+sunlight*2.35;
+    sun.color.set(S.weather==='storm'?'#c2cbe1':hour<7||hour>17?'#ffba7a':'#ffe5c3');
     const skyMix=Math.min(1,Math.max(0,sunlight));
     scene.background.copy(skyNight).lerp(skyDay,skyMix);
     scene.fog.color.copy(scene.background);
