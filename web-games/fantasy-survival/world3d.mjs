@@ -50,19 +50,15 @@ const assetAppearanceFactor=key=>{
  const str=String(key);let code=0;for(let i=0;i<str.length;i++)code=(Math.imul(code,33)+str.charCodeAt(i))>>>0;
  return assetVariation.items[code%assetVariation.items.length];
 };
-const MODEL_NAMES = Object.freeze(['tree','tree_large','foliage_A','foliage_B','cobblestones','bench_A','bench_B','fence_straight','house','gate_single','package']);
-const PALETTE = Object.freeze({
-  tree:0x59854b, tree_large:0x5e8750, foliage_A:0x83ab63,foliage_B:0x83ab63,
-  cobblestones:0x8b8c79, bench_A:0x987955, bench_B:0x987955, fence_straight:0x927b57, house:0xb6aa83, gate_single:0x927b57, package:0x987955
-});
+// Original, unchanged Tiny Treats mesh filenames; never fabricate an absent asset.
+const MODEL_NAMES = Object.freeze(['floor_base','tree','tree_large','foliage_A','foliage_B','cobblestones','bench_A','bench_B','fence_straight','house','gate_single','package']);
 
 function parseDownloadedObj(text, modelName, materialText=''){
   // The tracked Tiny Treats CC0 OBJ vertices/faces remain the geometry authority.
   // Apply the companion per-source .mtl diffuse (Kd), not an invented material color.
   const diffuse=materialText.match(/(?:^|\n)\s*Kd\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
-  const base=diffuse
-    ?new THREE.Color().setRGB(...diffuse.slice(1,4).map(Number))
-    :new THREE.Color(PALETTE[modelName]);
+  if(!diffuse)throw new Error('Original CC0 MTL diffuse missing: '+modelName);
+  const base=new THREE.Color().setRGB(...diffuse.slice(1,4).map(Number));
   const raw=[],pos=[],colors=[];
   for(const rawLine of text.split(/\r?\n/)){
     const line=rawLine.trim();
@@ -75,14 +71,10 @@ function parseDownloadedObj(text, modelName, materialText=''){
       const verts=indices.map(n=>raw[n>0?n-1:raw.length+n]);
       if(verts.some(v=>!v))throw new Error('OBJ missing geometry: '+modelName);
       for(let i=1;i<verts.length-1;i++){
-        const face=[verts[0],verts[i],verts[i+1]],avgY=face.reduce((n,v)=>n+v[1],0)/3;
-        const tone=base.clone();
-        // Material customization, not replacement geometry. Keep downloaded mesh surfaces.
-        if(modelName==='tree'||modelName==='tree_large'){
-          if(avgY<.7)tone.set(0x76573a);
-          else tone.multiplyScalar(1+Math.min(.18,Math.max(0,avgY-1.2)*.04));
-        }else if(modelName==='house'&&avgY>2.6)tone.set(0x69594c);
-        for(const v of face){pos.push(v[0],v[1],v[2]);colors.push(tone.r,tone.g,tone.b)}
+        // Triangle subdivision of ORIGINAL OBJ polygon faces; all coordinates and
+        // MTL Kd colors come from the licensed source, not custom-made scenery.
+        const face=[verts[0],verts[i],verts[i+1]];
+        for(const v of face){pos.push(v[0],v[1],v[2]);colors.push(base.r,base.g,base.b)}
       }
     }
   }
@@ -189,11 +181,11 @@ export async function createWorld3d(canvas){
   sun.castShadow=!mobileBudget;sun.shadow.mapSize.set(1024,1024);
   sun.shadow.camera.left=-25;sun.shadow.camera.right=25;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;
   scene.add(sun);
-  const ground=new THREE.Mesh(
-    new THREE.PlaneGeometry(220,220),
-    new THREE.MeshStandardMaterial({color:0x365a3a,roughness:1})
-  );
-  ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+  // No generated floor mesh. Every visible ground tile is a clone of the
+  // downloaded Tiny Treats CC0 floor_base.obj (including source silhouette).
+  const sourceFloor=models.get('floor_base');
+  if(!sourceFloor||!sourceFloor.geometry?.attributes?.position)
+    throw new Error('Licensed original floor_base OBJ unavailable');
   // The existing game regionAt() is the single source of truth for biome decisions.
   // Native renderer samples *existing* 2D world positions, never re-rolls a separate biome map.
   const BIOME_STYLE=Object.freeze({
@@ -204,13 +196,10 @@ export async function createWorld3d(canvas){
     worldtree:{floor:0x335039,sky:0x203e2d},flowerfield:{floor:0x668551,sky:0x586b50},
     giantgarden:{floor:0x625071,sky:0x4a3d55},desert:{floor:0xb38c55,sky:0xa38259}
   });
-  const biomeMaterials=new Map(Object.entries(BIOME_STYLE).map(([key,style])=>[
-    key,new THREE.MeshStandardMaterial({color:style.floor,roughness:1})
-  ]));
-  const biomeTileGeometry=new THREE.PlaneGeometry(10.1,10.1);
   const biomeTiles=Array.from({length:49},()=>{
-    const mesh=new THREE.Mesh(biomeTileGeometry,biomeMaterials.get('forest'));
-    mesh.rotation.x=-Math.PI/2;mesh.position.y=.015;mesh.receiveShadow=true;
+    // Source geometry and original source MTL material are shared by all tiles.
+    const mesh=sourceFloor.clone();
+    mesh.receiveShadow=true;
     scene.add(mesh);return mesh;
   });
   let currentBiome='forest';
@@ -419,8 +408,7 @@ export async function createWorld3d(canvas){
     // Follow real saved player coordinates without rotating while the player moves.
     camera.position.set(centerX+10.5,17,centerY+13);
     camera.lookAt(centerX,0,centerY);
-    ground.position.set(centerX,0,centerY);
-    const classify=typeof regionAt==='function'?regionAt:()=> 'forest';
+     const classify=typeof regionAt==='function'?regionAt:()=> 'forest';
     const zone=String(classify(px,py)||'forest');
     currentBiome=BIOME_STYLE[zone]?zone:'forest';
     scene.background.set(BIOME_STYLE[currentBiome].sky);
@@ -441,8 +429,9 @@ export async function createWorld3d(canvas){
     for(let tz=-3;tz<=3;tz++)for(let tx=-3;tx<=3;tx++){
       const tile=biomeTiles[tileIndex++];
       const gx=(centerTileX+tx)*10,gz=(centerTileY+tz)*10;
-      const tileBiome=String(classify(gx/SCALE,gz/SCALE)||'forest');
-      tile.material=biomeMaterials.get(tileBiome)||biomeMaterials.get('forest');
+      // The original floor_base geometry is in world XZ and already has depth.
+      // Biome conditions are expressed through existing game light/fog; do not
+      // generate palette-filled 2D floor planes or replacement materials.
       tile.position.set(gx,.015,gz);
     }
     interactables.length=0;
@@ -543,8 +532,8 @@ export async function createWorld3d(canvas){
       o.geometry?.dispose();
       for(const m of (Array.isArray(o.material)?o.material:[o.material]))m?.dispose();
     });
-    ground.geometry.dispose();ground.material.dispose();
-    biomeTileGeometry.dispose();for(const material of biomeMaterials.values())material.dispose();
+    for(const tile of biomeTiles)scene.remove(tile);
+    // Source floor geometry/material are disposed once by the source model pool.
   }
   return {
     frame,pick,dispose,isActive:()=>active&&!disposed&&!canvas.hidden,
