@@ -152,6 +152,13 @@ export function createWild3D({canvas,WORLD,resources,animals}){
       if(keyStatus){keyStatus.hidden=false;keyStatus.textContent='원본 3D 에셋 로드 실패: '+assetErrors.map(e=>e.id).join(', ');}
       return;
     }
+    // Restore the existing canyon-like rock landmark using original source rocks only.
+    for(let i=0;i<19;i++){
+      const angle=i*2.399963229728653,rad=Math.sqrt(i)*54;
+      const x=2850+Math.cos(angle)*rad,z=420+Math.sin(angle)*rad;
+      const b=attachModel(world,models.get('rock'),x,z);
+      if(b){b.scale.multiplyScalar(1.5+(i%4)*.30);b.rotation.y=angle;}
+    }
     props=resources.map((r,i)=>{
       const type=r.type==='tree'?(i%3?'tree':'treeLarge'):
         r.type==='stone'?'rock':r.type==='fiber'?'fiber':'berry';
@@ -176,6 +183,7 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     fire=attachModel(world,models.get('lamp'),0,0);
     document.body.dataset.nativeAssetsBound=String(props.filter(Boolean).length+creatures.filter(Boolean).length+3);
     document.body.dataset.missingOriginalSpecies=MISSING_SPECIES_ORIGINALS.join(',');
+    document.body.dataset.originalAssetStatus=MISSING_SPECIES_ORIGINALS.length?'PARTIAL_SPECIES_UNBOUND':'COMPLETE';
     ready=true;
   }).catch(error=>{
     document.body.dataset.spatialDimension='3d-error';
