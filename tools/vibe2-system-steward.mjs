@@ -30,7 +30,7 @@ const rawMachineStateHealthy=({queueInput={},controlInput={}}={})=>
   Number(queueInput?.maxConcurrentTasks)===EXTERNAL_MATRIX_BATCH_MAX&&
   Number(controlInput?.version)===4&&
   adaptiveControlStepHealthy(controlInput);
-const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null});
+const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,staleRecoveryValidated:true});
 
 function staleRunningIds(queue,{nowMs=Date.now(),staleMs=45*60*1000}={}){
   return new Set(queue.tasks.filter(task=>{
