@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 
 const home='assets/shared/homely-house/';
-const names=['tree','tree_large','foliage_A','cobblestones','bench_A','fence_straight','house'];
+const names=['tree','tree_large','foliage_A','cobblestones','bench_A','fence_straight','house','gate_single','package'];
 const index=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
 const moduleSource=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf8');
 const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
@@ -46,4 +46,18 @@ test('native scene is an opt-in internal render path, not a false production 3D 
  assert.match(index,/world3d\.frame\(state\)/);
  assert.match(index,/world3d\?\.pick\(e\.clientX,e\.clientY\)/);
  assert.match(index,/world3d\)world3d\.dispose\(\)/);
+});
+
+test('3D preview reads existing biome classifier and saved construction state, never regenerates the map',()=>{
+ assert.match(index,/world3d\.frame\(state,regionAt\)/);
+ assert.match(moduleSource,/function frame\(state,regionAt\)/);
+ assert.match(moduleSource,/const classify=typeof regionAt==='function'\?regionAt:/);
+ assert.match(moduleSource,/const tileBiome=String\(classify\(gx\/SCALE,gz\/SCALE\)/);
+ assert.match(moduleSource,/for\(const \[i,door\] of \(state\.doors\|\|\[\]\)\.entries\(\)\)/);
+ assert.match(moduleSource,/for\(const \[i,chest\] of \(state\.chests\|\|\[\]\)\.entries\(\)\)/);
+ assert.match(moduleSource,/addVisibleEntity\('door:'\+/);
+ assert.match(moduleSource,/addVisibleEntity\('chest:'\+/);
+ assert.match(moduleSource,/getBiome:\(\)=>currentBiome/);
+ assert.match(index,/function regionAt\(x,y\)/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
 });
