@@ -474,9 +474,59 @@ jobs:
           ]);
           const webFlow=/^(?:[^.]+\.)*webGameFlow\.(?:enabled|scope|legacyDirectWebGameNotTarget|disabledReason)$/;
           const ownerScope=/^(?:[^.]+\.)*ownerActiveDevelopmentScope20261009\.(?:version|authority|activeTargets|generalWeb3dOnlyRequired|existingWeb2dFinalPassForbidden|legacyWebPreservedUntil3dRuntimeVerified)$/;
-          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key));
-          if(!changes.length||changes.length>70||bad.length)throw new Error('SECURITY_AUTO_POLICY_UNAPPROVED_SCOPE:'+bad.join(','));
+          // 2026-10-19 owner's exact three-game focus: an explicit, one-time,
+          // structural policy migration. This is not a generic policy override.
           const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+          const focusPrefix='developmentLifecycleMachine.focusedDevelopmentCaretakers.';
+          const focusKeys=new Set([
+            'version','ownerFocusedGameIds','ownerFocusedGamePlatforms','focusScope',
+            'ownerFocusedWebSourcePaths','completionPursuit.authority','completionPursuit.targetPlatform',
+            'completionPursuit.targetPlatformsByGame','completionPursuit.retainUntil',
+            'completionPursuit.retainUntilByPlatform','completionPursuit.webFocusRequirements'
+          ].map(key=>focusPrefix+key));
+          const focusChanged=changes.some(key=>focusKeys.has(key));
+          if(focusChanged){
+            const prior=base.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+            const current=head.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+            const ids=['simple-rpg','fantasy-survival','cozy-island'];
+            const platforms={'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'};
+            if(!prior||!current||!same(prior.ownerFocusedGameIds,['fantasy-survival','daechung-rpg','gem-survivor'])
+              ||prior.version!==2||head.version!==base.version+1
+              ||changes.some(key=>key!=='version'&&!focusKeys.has(key)))
+              throw new Error('SECURITY_OWNER_EXACT_FOCUS_MIGRATION_SCOPE_INVALID');
+            const expected=structuredClone(prior);
+            expected.version=3;
+            expected.ownerFocusedGameIds=ids;
+            expected.ownerFocusedGamePlatforms=platforms;
+            expected.focusScope='OWNER_EXACT_GAME_AND_PLATFORM_ONLY';
+            expected.ownerFocusedWebSourcePaths={
+              'fantasy-survival':'web-games/fantasy-survival',
+              'cozy-island':'web-games/cozy-island'
+            };
+            expected.completionPursuit.authority='OWNER_DIRECTIVE_2026-10-19';
+            expected.completionPursuit.targetPlatform='PER_GAME_OWNER_FOCUS';
+            expected.completionPursuit.targetPlatformsByGame=platforms;
+            expected.completionPursuit.retainUntil='SAME_TARGET_PLATFORM_VERIFIED_FIRST_PLAY_SESSION_RETRY_AND_SAVE_WHEN_REQUIRED';
+            expected.completionPursuit.retainUntilByPlatform={
+              ROBLOX:'EXACT_BUILD_F0_TO_F9_AND_FIRST_PLAY_RETRY_SAVE_WHEN_REQUIRED_VERIFIED',
+              WEB:'REAL_WEB_BROWSER_RUNTIME_MOBILE_GAMEPLAY_REGRESSION_AND_SAVE_RETRY_WHEN_REQUIRED_VERIFIED'
+            };
+            expected.completionPursuit.webFocusRequirements=[
+              'PRESERVE_EXISTING_WEB_GAME_AND_SAVE_IDENTITY',
+              'SOURCE_BOUND_MOBILE_BROWSER_FIRST_PLAY',
+              'CORE_GAMEPLAY_AND_SESSION_RETRY',
+              'NO_FAKE_RUNTIME_OR_QA_PASS',
+              'WEB_STRICT_AND_REGRESSION_GATES_UNCHANGED'
+            ];
+            if(!same(current,expected)
+              ||head.fixedAutonomousDevelopmentOperatingContract?.repeatDevelopmentConcurrency?.fixedSlots!==128
+              ||!same(base.fixedAutonomousDevelopmentOperatingContract,head.fixedAutonomousDevelopmentOperatingContract)
+              ||!same(base.developmentLifecycleMachine?.verifiedF0F9PublicationLoop,head.developmentLifecycleMachine?.verifiedF0F9PublicationLoop))
+              throw new Error('SECURITY_OWNER_EXACT_FOCUS_MIGRATION_INVARIANTS_FAIL');
+            console.log('SECURITY_OWNER_EXACT_THREE_GAME_PLATFORM_FOCUS=PASS');
+          }
+          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key)));
+          if(!changes.length||changes.length>70||bad.length)throw new Error('SECURITY_AUTO_POLICY_UNAPPROVED_SCOPE:'+bad.join(','));
           const scope=head.ownerActiveDevelopmentScope20261009;
           const webFlowRows=[];
           const scanFlows=(obj)=>{

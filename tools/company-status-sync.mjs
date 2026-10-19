@@ -204,6 +204,11 @@ const targetSourcePath=(project,game,platform,filesystem=fs)=>{
 };
 const targetPlatformReady=(project,game,platform,filesystem=fs)=>{
   if(!platform)return false;
+  if(platform==='WEB'){
+    const id=clean(project.slug||project.gameId||game.id);
+    // A real index.html is source readiness only, never browser or QA success.
+    return /^[a-z0-9][a-z0-9-]*$/.test(id)&&filesystem.existsSync(`web-games/${id}/index.html`);
+  }
   if(platform==='UNITY'&&project?.unityProjectReady===true)return true;
   return Boolean(targetSourcePath(project,game,platform,filesystem));
 };
@@ -604,8 +609,11 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   const focusedGames=focusedGameIds.map((id,index)=>{
     const project=projectById.get(id)||(buildCompletionFocus?{id,slug:id}:null);if(!project)return null;
     const publicGame=catalogBySlug.get(project.slug)||{};
-    const platform=buildCompletionFocus?'ROBLOX':selectedPlatformOf(project,publicGame);
-    const ready=targetPlatformReady(project,publicGame,platform,filesystem);
+    const mappedPlatform=clean(completionFocus?.ownerFocusedGamePlatforms?.[id]).toUpperCase();
+    const platform=buildCompletionFocus?(mappedPlatform||'ROBLOX'):selectedPlatformOf(project,publicGame);
+    if(buildCompletionFocus&&completionFocus?.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY'
+      &&!['ROBLOX','WEB'].includes(mappedPlatform))throw new Error('FOCUSED_GAME_PLATFORM_MAPPING_INCOMPLETE:'+id);
+    const ready=targetPlatformReady({...project,gameId:id},publicGame,platform,filesystem);
     return {slot:index+1,gameId:buildCompletionFocus?id:project.id,slug:project.slug,name:project.name||publicGame.name||project.slug,score:focusScore(project),slotRole:buildCompletionFocus?'owner-build-completion':'auto-ranked',lane:'selected-platform',selectedPlatform:platform||null,targetPlatformReady:ready,homepageCategory:publicGame.homepageCategory||null,webPath:publicGame.webPath||null};
   }).filter(Boolean);
   const targetSlots=Math.max(0,Number(buildCompletionFocus?completionFocus.targetFocusedGames:focusPolicy?.targetFocusedGames??focusPolicy?.maxFocusedGames??focusedGames.length)||0);

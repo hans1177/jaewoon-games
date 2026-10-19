@@ -1,5 +1,5 @@
 {
-  "version": 581,
+  "version": 582,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -5145,12 +5145,12 @@
       }
     },
     "focusedDevelopmentCaretakers": {
-      "version": 2,
+      "version": 3,
       "enabled": true,
       "ownerFocusedGameIds": [
+        "simple-rpg",
         "fantasy-survival",
-        "daechung-rpg",
-        "gem-survivor"
+        "cozy-island"
       ],
       "includeAllReleaseConfirmed": false,
       "includeAllInternalPlatformRelease": false,
@@ -5181,8 +5181,8 @@
       "maxFocusedGames": 3,
       "completionPursuit": {
         "enabled": true,
-        "authority": "OWNER_DIRECTIVE_2026-10-11",
-        "targetPlatform": "ROBLOX",
+        "authority": "OWNER_DIRECTIVE_2026-10-19",
+        "targetPlatform": "PER_GAME_OWNER_FOCUS",
         "selectionCriteria": [
           "OWNER_EXISTING_FOCUS_CONTINUITY",
           "MINIMUM_MAIN_A_B_C_AT_DESIGN_READY",
@@ -5190,7 +5190,7 @@
           "FEWEST_CAUSAL_BLOCKERS_TO_FIRST_VERIFIED_PLAY",
           "GAME_SPECIFIC_IDENTITY_AND_CONTENT_COMPLETENESS"
         ],
-        "retainUntil": "EXACT_BUILD_F0_TO_F9_AND_FIRST_PLAY_RETRY_SAVE_WHEN_REQUIRED_VERIFIED",
+        "retainUntil": "SAME_TARGET_PLATFORM_VERIFIED_FIRST_PLAY_SESSION_RETRY_AND_SAVE_WHEN_REQUIRED",
         "rotationRequires": "COMPLETION_OR_DOCUMENTED_UNRESOLVABLE_EXTERNAL_DEPENDENCY_AND_REPLACEMENT_DESIGN_READY",
         "ordinaryRepairMustNotRotateGame": true,
         "knownCausalBlockersRepairFirst": true,
@@ -5221,7 +5221,33 @@
         ],
         "sourceOnlyCannotCloseRuntimeGap": true,
         "verifiedLearningReuseRequiresFreshSameBuildValidation": true,
-        "implementationOrderAuthority": "robloxStudioProductionFlowContract.designImplementationFlow"
+        "implementationOrderAuthority": "robloxStudioProductionFlowContract.designImplementationFlow",
+        "targetPlatformsByGame": {
+          "simple-rpg": "ROBLOX",
+          "fantasy-survival": "WEB",
+          "cozy-island": "WEB"
+        },
+        "retainUntilByPlatform": {
+          "ROBLOX": "EXACT_BUILD_F0_TO_F9_AND_FIRST_PLAY_RETRY_SAVE_WHEN_REQUIRED_VERIFIED",
+          "WEB": "REAL_WEB_BROWSER_RUNTIME_MOBILE_GAMEPLAY_REGRESSION_AND_SAVE_RETRY_WHEN_REQUIRED_VERIFIED"
+        },
+        "webFocusRequirements": [
+          "PRESERVE_EXISTING_WEB_GAME_AND_SAVE_IDENTITY",
+          "SOURCE_BOUND_MOBILE_BROWSER_FIRST_PLAY",
+          "CORE_GAMEPLAY_AND_SESSION_RETRY",
+          "NO_FAKE_RUNTIME_OR_QA_PASS",
+          "WEB_STRICT_AND_REGRESSION_GATES_UNCHANGED"
+        ]
+      },
+      "ownerFocusedGamePlatforms": {
+        "simple-rpg": "ROBLOX",
+        "fantasy-survival": "WEB",
+        "cozy-island": "WEB"
+      },
+      "focusScope": "OWNER_EXACT_GAME_AND_PLATFORM_ONLY",
+      "ownerFocusedWebSourcePaths": {
+        "fantasy-survival": "web-games/fantasy-survival",
+        "cozy-island": "web-games/cozy-island"
       }
     },
     "directNativeDualPlatformDevelopment": {

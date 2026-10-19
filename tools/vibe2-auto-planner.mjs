@@ -721,17 +721,31 @@ function focusedCaretakerPolicy(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
   if(policy.enabled===true&&policy.completionPursuit?.enabled===true
     &&(policy.targetFocusedGames!==3||policy.maxFocusedGames!==3||new Set(policy.ownerFocusedGameIds||[]).size!==3||policy.ownerFocusedGameIds.length!==3))throw new Error('FOCUSED_BUILD_COMPLETION_REQUIRES_THREE_DISTINCT_GAMES');
+  const platforms=policy.ownerFocusedGamePlatforms||{};
+  const ownerIds=new Set((Array.isArray(policy.ownerFocusedGameIds)?policy.ownerFocusedGameIds:[]).map(clean).filter(Boolean));
+  if(policy.enabled===true&&policy.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY'){
+    if(Object.keys(platforms).length!==ownerIds.size
+      ||[...ownerIds].some(id=>!['ROBLOX','WEB'].includes(clean(platforms[id]).toUpperCase())))
+      throw new Error('FOCUSED_GAME_PLATFORM_MAPPING_INCOMPLETE');
+  }
   return{
     enabled:policy.enabled===true,
-    ownerIds:new Set((Array.isArray(policy.ownerFocusedGameIds)?policy.ownerFocusedGameIds:[]).map(clean).filter(Boolean)),
+    ownerIds,
+    platformByGame:platforms,
+    exactPlatformScope:policy.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
     includeAllReleaseConfirmed:policy.includeAllReleaseConfirmed===true,
     completionPursuit:policy.completionPursuit?.enabled===true?policy.completionPursuit:null
   };
 }
-function focusedCaretakerProject(project={},repoRoot=process.cwd()){
+export function focusedCaretakerProject(project={},repoRoot=process.cwd()){
   const policy=focusedCaretakerPolicy(repoRoot);
   if(!policy.enabled)return false;
-  return policy.ownerIds.has(clean(project.gameId))||(policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed');
+  const id=clean(project.gameId),engine=clean(project.engine).toUpperCase();
+  if(policy.ownerIds.has(id)){
+    if(!policy.exactPlatformScope)return true; // Existing isolated legacy tests may omit the new platform map.
+    return policy.platformByGame[id]===engine;
+  }
+  return !policy.exactPlatformScope&&policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed';
 }
 export function projectSort(a,b){
   const focus=(b.ownerFocusedCaretaker===true?1:0)-(a.ownerFocusedCaretaker===true?1:0);if(focus)return focus;
@@ -887,7 +901,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   if(project.engine==='roblox')adaptedGoal+=DESIGN_IMPLEMENTATION_GOAL;
   const focused=project.ownerFocusedCaretaker===true,ownerResume=project.ownerResumableBuildUp===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||ownerResume||project.engine==='roblox'||project.firstStageUnityWeb===true;
   const completion=focused&&project.engine==='roblox'?project.focusCompletionContract:null;
-  if(completion)adaptedGoal+=FOCUSED_BUILD_COMPLETION_GOAL;
+  if(focused)adaptedGoal+=FOCUSED_BUILD_COMPLETION_GOAL; // Web keeps its own verified browser/runtime gates.
   const portfolioValueScore=project.engine==='roblox'
     ? Math.min(100,(project.queueRobloxQualityBuildUpRequired?35:0)
       +(project.queueRobloxInternalReleaseReady?20:0)
@@ -3988,6 +4002,16 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const normalCapacity=Math.max(0,backlogTarget-developmentPool.length);
   const persistentCapacity=Math.max(0,persistentQueueMax-developmentPool.length);
   const ownerResumableSeedCapacity=Math.min(ownerResumableMissingLaneKeys.size,persistentCapacity);
+  // The owner-selected three exact platform lanes must have an entry even when
+  // generic backlog and wide Web/distinct-game quotas are already full.
+  // Never interrupt independent active work or exceed persistent queue capacity.
+  const focusedProjects=allProjects
+    .filter(project=>project.ownerFocusedCaretaker===true&&isAutonomousProductionTarget(project,repoRoot))
+    .sort(projectSort);
+  const focusedMissingLaneKeys=new Set(focusedProjects
+    .map(project=>clean(project.gameId)+'|'+studioQualityLane(project))
+    .filter(key=>!activeOwnerResumableLaneKeys.has(key)));
+  const focusedSeedCapacity=Math.min(focusedMissingLaneKeys.size,persistentCapacity);
   // 예약 단계에 넘길 서로 다른 웹 게임 후보를 기존 기획기에서 먼저 채운다.
   // 일반 대기 목표가 차도 총 큐 용량·소유자 보류·실제 소스 충돌은 그대로 지킨다.
   const flowOwnerPolicy=centralPresentationPolicy(repoRoot)||{};
@@ -4016,7 +4040,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const internalMotionActive=queue.tasks.filter(row=>row.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&['queued','running'].includes(row.status)).length;
   const assetLaneMax=Number(centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
   const internalMotionCapacity=internalAssetFocus?.enabled===true?Math.max(0,assetLaneMax-internalMotionActive):0;
-  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity,internalMotionCapacity,webSeedCapacity,distinctSeedCapacity);
+  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity,focusedSeedCapacity,internalMotionCapacity,webSeedCapacity,distinctSeedCapacity);
   const planningBacklog={
     target:backlogTarget,
     supersededLegacyMicroTasks:microSupersede.count,
@@ -4030,6 +4054,9 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     persistentCapacity,
     ownerResumableMissingLaneCount:ownerResumableMissingLaneKeys.size,
     ownerResumableSeedCapacity,
+    focusedMissingLaneCount:focusedMissingLaneKeys.size,
+    focusedSeedCapacity,
+    focusedTargetBypass:normalCapacity===0&&focusedSeedCapacity>0,
     ownerResumableTargetBypass:normalCapacity===0&&ownerResumableSeedCapacity>0,
     webGameFlow:{target:webFlowTarget,gameIds:[...webFlowGames],shortfall:Math.max(0,webFlowTarget-webFlowGames.size),seedCapacity:webSeedCapacity,normalBacklogBypass:normalCapacity===0&&webSeedCapacity>0},
     distinctGameFlow:{target:distinctTarget,gameIds:[...activeGameIds],shortfall:Math.max(0,distinctTarget-activeGameIds.size),seedCapacity:distinctSeedCapacity},
@@ -4045,18 +4072,20 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const assetRegistryCache=new Map();
   let sequence=0;
   const planningProjects=[
-    ...(webSeedCapacity?projects.filter(project=>(webFlowUnityOnly?(project.engine==='unity'&&project.firstStageUnityWeb===true):project.engine==='web')&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true,distinctSeed:false})):[]),
-    ...(distinctSeedCapacity?projects.filter(project=>eligibleMissingGameIds.has(project.gameId)).map(project=>({project,webSeed:false,distinctSeed:true})):[]),
-    ...projects.map(project=>({project,webSeed:false,distinctSeed:false}))
+    ...focusedProjects.filter(project=>focusedMissingLaneKeys.has(clean(project.gameId)+'|'+studioQualityLane(project)))
+      .map(project=>({project,webSeed:false,distinctSeed:false,focusedSeed:true})),
+    ...(webSeedCapacity?projects.filter(project=>(webFlowUnityOnly?(project.engine==='unity'&&project.firstStageUnityWeb===true):project.engine==='web')&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true,distinctSeed:false,focusedSeed:false})):[]),
+    ...(distinctSeedCapacity?projects.filter(project=>eligibleMissingGameIds.has(project.gameId)).map(project=>({project,webSeed:false,distinctSeed:true,focusedSeed:false})):[]),
+    ...projects.map(project=>({project,webSeed:false,distinctSeed:false,focusedSeed:false}))
   ];
-  for(const {project,webSeed,distinctSeed} of planningProjects){
+  for(const {project,webSeed,distinctSeed,focusedSeed} of planningProjects){
     if(planned.length>=capacity)break;
     if(webSeed&&(webFlowGames.size>=webFlowTarget||webFlowGames.has(project.gameId)))continue;
     if(distinctSeed&&(activeGameIds.size>=distinctTarget||activeGameIds.has(project.gameId)))continue;
-    if(!webSeed&&!distinctSeed&&normalCapacity===0&&ownerResumableSeedCapacity===0&&internalMotionCapacity===0)continue;
+    if(!webSeed&&!distinctSeed&&!focusedSeed&&normalCapacity===0&&ownerResumableSeedCapacity===0&&internalMotionCapacity===0)continue;
     const ownerResumableLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
     const ownerResumableSeedRequired=ownerResumableMissingLaneKeys.has(ownerResumableLaneKey);
-    const remaining=webSeed||distinctSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
+    const remaining=webSeed||distinctSeed||focusedSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
     const candidates=findSafeTasks(project,repoRoot,queue,assetRegistryCache).filter(candidate=>!webSeed||(webFlowMatches(candidate)&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
     let packageTasks=selectPackageCandidates(candidates.map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
     if(!packageTasks.length)continue;
@@ -4095,6 +4124,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     planningBacklog.webGameFlow.gameIds=[...webFlowGames];
     planningBacklog.webGameFlow.shortfall=Math.max(0,webFlowTarget-webFlowGames.size);
     if(ownerResumableSeedRequired)ownerResumableMissingLaneKeys.delete(ownerResumableLaneKey);
+    if(focusedSeed)focusedMissingLaneKeys.delete(ownerResumableLaneKey);
   }
   const workloadTelemetry=computeWorkloadTelemetry(queue,packages);
   const quantityTargetMet=workloadTelemetry.plannedFeaturePackageCount>=policy.targetFeaturePackagesPerCycle||workloadTelemetry.plannedRelatedImprovementCount>=policy.minRelatedImprovementsPerPackage;
