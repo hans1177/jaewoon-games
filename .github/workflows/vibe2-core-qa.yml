@@ -443,6 +443,8 @@ jobs:
       - name: Vibe2 core tests
         run: |
           set -euo pipefail
+          # Verify real WebGL 3D binding and fail closed when legacy Canvas2D returns.
+          node --test qa/wild-survival-webgl-3d.test.mjs
           # 기존 전체 회귀검사 보존: 가벼운 중앙정책·예약·학습 계약을 먼저 확인한다.
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-adaptive-backpressure.test.mjs

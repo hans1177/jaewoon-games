@@ -244,10 +244,13 @@ class CdpClient{
 const chrome=findChrome();
 const profile=fs.mkdtempSync('/tmp/vibe2-web-smoke-');
 const debugPort=await allocateLocalPort();
+// Existing browser QA now verifies a real GPU/software-WebGL2 frame for the modified Wild Forest.
+// Keep the established Chrome options unchanged for unrelated games.
+const wild3dOnly=gameIds.length===1&&gameIds[0]==='wild-survival';
 const chromeProc=spawn(chrome,[
   '--headless=new',
   '--no-sandbox',
-  '--disable-gpu',
+  ...(wild3dOnly?['--enable-webgl','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']:['--disable-gpu']),
   '--disable-dev-shm-usage',
   '--disable-background-networking',
   '--no-first-run',
@@ -336,6 +339,36 @@ try{
     assert.ok(state?.title,`${gameId}: document title missing after browser boot`);
     assert.ok(Number(state?.bodyChildren||0)>0,`${gameId}: empty body after browser boot`);
     assert.equal(state?.loadingFailure,false,`${gameId}: browser boot rendered a loading failure`);
+
+    // Static HTML metadata or an asset list cannot prove the game actually rendered 3D.
+    // Only accept a completed Three.js frame AND a live WebGL2 drawing buffer.
+    if(wild3dOnly){
+      currentPhase='TRUE_WEBGL_3D_FRAME';
+      assert.equal(start?.clicked,true,'wild-survival: survival start action was not triggered');
+      let proof=null;
+      for(let attempt=0;attempt<65;attempt++){
+        proof=await cdp.evaluate(`(()=>{
+          const canvas=document.querySelector('#game');
+          const gl=canvas?.getContext('webgl2');
+          return {
+            dimension:document.body.dataset.spatialDimension||'',
+            renderer:document.body.dataset.renderer||'',
+            rendered:canvas?.dataset.renderedFrame==='true',
+            webgl2:gl instanceof WebGL2RenderingContext && gl.drawingBufferWidth>0 && gl.drawingBufferHeight>0,
+            loadingVisible:!document.querySelector('#renderStatus')?.hidden,
+            errorText:(document.querySelector('#renderStatus')?.textContent||'').slice(0,260)
+          };
+        })()`);
+        if(proof?.rendered&&proof?.webgl2&&proof?.dimension==='3d')break;
+        await delay(250);
+      }
+      console.log('WILD_SURVIVAL_TRUE_3D_BROWSER_EVIDENCE='+JSON.stringify(proof));
+      assert.equal(proof?.dimension,'3d','wild-survival: 3D scene did not initialize');
+      assert.equal(proof?.renderer,'three-webgl','wild-survival: 3D renderer is not authoritative');
+      assert.equal(proof?.rendered,true,'wild-survival: no actual Three.js frame was produced');
+      assert.equal(proof?.webgl2,true,'wild-survival: no live WebGL2 drawing buffer');
+      assert.equal(proof?.loadingVisible,false,'wild-survival: 3D loading/error status remains visible');
+    }
 
     results.push({
       gameId,
