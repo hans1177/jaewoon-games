@@ -1354,6 +1354,41 @@ test('Vibe libraries and development tools rematch updated APIs for existing sav
 });
 
 // 내부 개발도구: 이름 목록과 실제 제작 구현 문맥을 구분한다.
+// 메인 · F0 모든 게임의 기존 제작 도구를 설계·장르 제한 없이 현재 실제 소스에서 재탐색한다.
+test('F0 rematches existing customization housing action modules without generating a new subsystem',()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'assets/vibe-character-identity-director.js'),
+    'export function createVibeCharacterCustomization(model) { return model; }\n');
+  write(path.join(cwd,'assets/vibe-housing-library.js'),
+    'export function inspectHousingPlacement(world) { return world; }\n');
+  write(path.join(cwd,'tools/vibe-action-graph.mjs'),
+    'export function inspectHarvestAction(owner) { return owner; }\n');
+  const source=[
+    'const avatar = customizeAppearance(player);',
+    'const housing = placeStructure(buildMode);',
+    'const action = gather(resource);'
+  ].join('\n');
+  const input={files:[{path:'client/Game.client.luau',editable:true,content:source}],bytes:Buffer.byteLength(source)};
+  const args={cwd,contract:{target:'roblox',selectedSourcePaths:[]},
+    order:{target:'roblox',gameId:'older-game',goal:'기존 게임 외형, 하우징, 채집 행동 연결'}};
+  const result=attachSelectedInternalAssetApiContext(input,args);
+  for(const signal of ['CUSTOMIZATION','HOUSING','ACTION'])
+    assert.ok(result.vibeDynamicToolMatch.sourceSignals.includes(signal),signal);
+  for(const path of [
+    'assets/vibe-character-identity-director.js',
+    'assets/vibe-housing-library.js',
+    'tools/vibe-action-graph.mjs'
+  ]){
+    const found=result.vibeDynamicToolMatch.matches.find(row=>row.path===path);
+    assert.ok(found,path);
+    assert.equal(found.kind,path.startsWith('tools/')?'DEVELOPMENT_TOOL_READ_ONLY':'LIBRARY_REFERENCE_READ_ONLY');
+  }
+  assert.ok(result.files.filter(row=>row.developmentToolContext).every(row=>row.editable===false));
+  assert.equal(result.vibeDynamicToolMatch.runtimeVerified,false);
+  assert.equal(result.vibeDynamicToolMatch.sourceMutationPerformed,false);
+  assert.equal(input.files[0].content,source);
+});
+
 test('native game BUILD_UP receives bounded current Vibe tool implementations as read-only source',()=>{
   const cwd=tempRoot();
   const paths=['assets/vibe-art-pipeline.js','assets/vibe-environment-director.js',
