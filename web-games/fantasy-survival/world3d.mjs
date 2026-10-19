@@ -7,10 +7,24 @@ import {GLTFLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/exa
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../../assets/vibe-environment-director.js';
 import {createVibeCharacterCustomizationRecipe} from '../../assets/vibe-character-identity-director.js';
 import {createSurvivalPlayerMotionProfile} from '../../assets/vibe-motion-director.js';
+import {planAssetApplication} from '../../assets/asset-selector.js';
 
 const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
 const SCALE = 1 / 48;
 const HERO_URL = new URL('../../assets/roblox/actors/native/mage.glb',import.meta.url);
+const assetReadiness=planAssetApplication({
+ prompt:'마력숲 생존 캐릭터 몬스터 나무 숲 UI 전투 애니메이션',
+ manifest:{assets:[
+  {id:'external-tinytreats-tree-v1',path:'assets/shared/homely-house/tree.obj',
+   types:['prop','background'],license:'CC0',downloaded:true,
+   sourceUrl:'https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0'},
+  // Loaded only in explicitly selected preview. Runtime animation QA remains pending.
+  {id:'external-actor-mage',path:'assets/roblox/actors/native/mage.glb',
+   types:['character'],license:'CC0-1.0',downloaded:true,verifiedAnimation:false,
+   sourceUrl:'https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0'}
+ ]}
+});
+
 const gameStyleRegion=createVibeRegionWorldProfile(
  {name:'마력숲',biome:'temperate-forest',resources:['tree','stone','fiber']},
  {name:'마력숲 생존기',geography:'mixed-biome-survival-world',climate:'dynamic'}
@@ -295,6 +309,7 @@ export async function createWorld3d(canvas){
     frame,pick,dispose,kind:'NATIVE_WEBGL_CC0_ASSET_PREVIEW',
     modelCount:models.size,playerAssetLoaded:!!hero,playerMotionClipCount:heroClips.length,
     getBiome:()=>currentBiome,getWorldProfile:()=>gameStyleRegion,
-    getWeatherEffects:()=>weatherVisualEffects,getAvatarRecipe:()=>avatarRecipe
+    getWeatherEffects:()=>weatherVisualEffects,getAvatarRecipe:()=>avatarRecipe,
+    getMissingAssetTypes:()=>assetReadiness.missingTypes,productionReady:false
   };
 }
