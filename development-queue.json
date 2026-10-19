@@ -8054,7 +8054,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-19T08:22:54.278Z",
+      "updatedAt": "2026-10-19T09:16:11.998Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8574,11 +8574,11 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-build-package:roblox-package-asset-binding-failed"
       ],
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
-      "robloxBuildFailedAt": null,
+      "robloxBuildSourceRevision": "afd808bfa2e030855148869cd8b0d4683509c82f",
+      "robloxBuildFailedAt": "2026-10-19T09:16:11.998Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
@@ -8611,7 +8611,7 @@
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
       "robloxMultiplayerQaPassed": false,
@@ -8621,16 +8621,16 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "462a94e60bf4e07d7424ddd1ef32be4e06335989",
+      "robloxQualityBuildUpSourceRevision": "afd808bfa2e030855148869cd8b0d4683509c82f",
       "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-single-defense-strat-celestial-bastion",
-        "sourceRevision": "462a94e60bf4e07d7424ddd1ef32be4e06335989",
+        "sourceRevision": "afd808bfa2e030855148869cd8b0d4683509c82f",
         "artifactIdentity": null,
         "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39033969315,
-        "testedAt": "2026-10-17T12:53:15.636Z",
+        "workflowRunId": 39204461979,
+        "testedAt": "2026-10-19T09:16:11.998Z",
         "qualityFailureKinds": [
           "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:BUILDING"
         ],
@@ -9186,10 +9186,10 @@
           "systemDetectionAuthority": "company-development-roblox-bootstrap-dynamic-source-sync",
           "authority": "roblox-package-universal-asset-threshold"
         },
-        "sourceTreeSha": "1d66e9ccdfb3fd1cf1435a94e24b9e6b11adbfcf",
+        "sourceTreeSha": "113ce612b1fe37f4f69ebb3d1f8b194923481c37",
         "assetRepairContext": {
           "libraryFingerprint": "04118a83119f8731f784b72d4af59b672cfca774d1d9111b258fd573585a7737",
-          "baselineFingerprint": "4e5f9e4af4e1eb17b0db96cec9b56951785b1da54c314ed5cc1118d0c31490e5",
+          "baselineFingerprint": "14168aaa1db072f783534e185136fba231b904d82ea93839e7cda0462c32f657",
           "validatorFingerprint": "06134a4ef66eb10539fb4fa9f6b1e2dea93399ba50be92781ca71c92a78201c9"
         },
         "repairSurfaces": [
@@ -38646,7 +38646,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-19T09:15:50.666Z",
+  "updatedAt": "2026-10-19T09:16:11.998Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
