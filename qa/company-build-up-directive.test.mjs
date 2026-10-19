@@ -1808,6 +1808,10 @@ test('all-game auto composition connects existing lobby, customization, material
     assert.equal(plan.components.find(c=>c.id==='LOBBY').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
     assert.equal(plan.components.find(c=>c.id==='CUSTOMIZATION').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
     assert.equal(plan.components.find(c=>c.id==='MATERIAL').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='SAVE').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='COMBAT').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='REWARD').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='SHOP').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
     assert.equal(plan.components.find(c=>c.id==='INVENTORY').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
     assert.ok(plan.components.find(c=>c.id==='UI').responsibleFiles.includes(client));
     assert.equal(plan.worldGraph.enabled,true);
