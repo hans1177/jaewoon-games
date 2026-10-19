@@ -22,6 +22,16 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
   assert.deepEqual(focus.ownerFocusedGamePlatforms,{
     'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'
   });
+  const liveCatalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
+  assert.equal(liveCatalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),false,
+    'later owner focus must actually remove the old permanent blocker');
+  const realProjects=collectProjects({},liveCatalog,repoRoot,{items:[]});
+  assert.ok(realProjects.some(project=>project.gameId==='simple-rpg'&&project.engine==='roblox'
+    &&focusedCaretakerProject(project,repoRoot)),
+    'the actual canonical catalog and Rojo source must activate Simple RPG, not just a test fixture');
+  for(const protectedId of ['seed-roblox-battleground-fight-welcome-to-bloxburg','seed-roblox-obby-party-minigam-tower-of-hell'])
+    assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(protectedId),
+      'other owner permanent removals must remain protected');
   const projects=collectProjects({}, {games:[
     {id:'fantasy-survival',name:'마력숲',productionClass:'DEVELOPMENT_CONFIRMED',
       lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/'},
