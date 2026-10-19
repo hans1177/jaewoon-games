@@ -23,11 +23,6 @@ const NATIVE_CREATURE_MODELS=Object.freeze({
   bird:['worldpheasant'],
   fish:['lakefish']
 });
-const CC0_CREATURE_ARCHIVES=Object.freeze([
-  {file:'wolf-eagle.zip',species:{wolf:'wolf'}},
-  {file:'farm-animals.zip',species:{pig:'pig'}},
-  {file:'five-animals.zip',species:{fox:'red fox',bird:'bird',fish:'fish'}}
-]);
 const NATIVE_CREATURE_BY_ID=new Map(Object.entries(NATIVE_CREATURE_MODELS)
   .flatMap(([source,ids])=>ids.map(id=>[id,source])));
 const assetReadiness=planAssetApplication({
@@ -65,12 +60,26 @@ function parseDownloadedObj(text, modelName, materialText=''){
   const diffuse=materialText.match(/(?:^|\n)\s*Kd\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/);
   if(!diffuse)throw new Error('Original CC0 MTL diffuse missing: '+modelName);
   const base=new THREE.Color().setRGB(...diffuse.slice(1,4).map(Number));
+  // Resolve the downloaded source's material names and Kd values per face.
+  const sourceColors=new Map();let activeMaterial='';
+  for(const line of materialText.split(/\r?\n/)){
+    const item=line.trim();
+    if(item.startsWith('newmtl '))activeMaterial=item.slice(7).trim();
+    else if(item.startsWith('Kd ')&&activeMaterial){
+      const rgb=item.slice(3).trim().split(/\s+/).map(Number);
+      if(rgb.length>=3&&rgb.slice(0,3).every(Number.isFinite))
+        sourceColors.set(activeMaterial,new THREE.Color().setRGB(...rgb.slice(0,3)));
+    }
+  }
+  let faceColor=base;
   const raw=[],pos=[],colors=[];
   for(const rawLine of text.split(/\r?\n/)){
     const line=rawLine.trim();
     if(line.startsWith('v ')){
       const v=line.slice(2).trim().split(/\s+/).map(Number);
       if(v.length>=3&&v.slice(0,3).every(Number.isFinite))raw.push(v.slice(0,3));
+    }else if(line.startsWith('usemtl ')){
+      faceColor=sourceColors.get(line.slice(7).trim())||base;
     }else if(line.startsWith('f ')){
       const indices=line.slice(2).trim().split(/\s+/).map(item=>Number(item.split('/')[0]));
       if(indices.length<3||indices.length>12)continue;
@@ -80,7 +89,7 @@ function parseDownloadedObj(text, modelName, materialText=''){
         // Triangle subdivision of ORIGINAL OBJ polygon faces; all coordinates and
         // MTL Kd colors come from the licensed source, not custom-made scenery.
         const face=[verts[0],verts[i],verts[i+1]];
-        for(const v of face){pos.push(v[0],v[1],v[2]);colors.push(base.r,base.g,base.b)}
+        for(const v of face){pos.push(v[0],v[1],v[2]);colors.push(faceColor.r,faceColor.g,faceColor.b)}
       }
     }
   }
