@@ -3918,8 +3918,9 @@ function updateTempleEnemySpecial(e,p,now,playerD){
  return null
 }
 
+function worldPointerCoords(e){return world3d?.pick(e.clientX,e.clientY)||{x:e.clientX+state.camera.x,y:e.clientY+state.camera.y}}
 function handleWorldTap(e){
- const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y,now=performance.now();
+ const worldPoint=worldPointerCoords(e),wx=worldPoint.x,wy=worldPoint.y,now=performance.now();
  if(state.blueprint){moveBlueprint(wx,wy);return}
  if(isCreative()&&state.creativePlacing){state.creativePlacing=false;if(state.area!=='surface'){showNotice('스폰 블록은 지상에 설치해');return}const block={id:'spawn-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),x:clamp(wx,45,WORLD.w-45),y:clamp(wy,45,WORLD.h-45)};state.creativeSpawners.push(block);state.dirty=true;saveGame(false);showNotice('스폰 블록 설치 완료 · 두 번 눌러 소환 설정');return}
  if(isCreative()){
@@ -6630,7 +6631,7 @@ function combatTapTarget(wx,wy){
 }
 canvas.addEventListener('pointerdown',e=>{if(!gameStarted)return;
  if(isCreative()&&!state.blueprint&&!state.creativePlacing){
-  const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;
+  const point=worldPointerCoords(e),wx=point.x,wy=point.y;
   let owned=null,best=Infinity;
   for(const m of state.enemies)if(m.creativeOwned&&m.hp>0&&m.area===state.area){
    const d=dist(wx,wy,m.x,m.y);if(d<Math.max(50,m.type.r+18)&&d<best){owned=m;best=d}
@@ -6641,7 +6642,7 @@ canvas.addEventListener('pointerdown',e=>{if(!gameStarted)return;
    creativeMonsterPress=hold;return
   }
  }
- if(state.blueprint||state.creativePlacing){handleWorldTap(e);return}const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;if(startCommunicationRepairHold(e,wx,wy))return;if(startCompanionSwitchHold(e,wx,wy))return;
+ if(state.blueprint||state.creativePlacing){handleWorldTap(e);return}const point=worldPointerCoords(e),wx=point.x,wy=point.y;if(startCommunicationRepairHold(e,wx,wy))return;if(startCompanionSwitchHold(e,wx,wy))return;
  // 몬스터 터치는 손가락을 뗄 때 확정한다. 스와이프 중 실수 공격 방지.
  if(!isCreative()&&combatTapTarget(wx,wy)){
   if(pendingCombatTap)return;
@@ -6668,8 +6669,8 @@ canvas.addEventListener('pointermove',e=>{
  if(pendingCombatTap?.pointerId===e.pointerId&&Math.hypot(e.clientX-pendingCombatTap.x,e.clientY-pendingCombatTap.y)>26)pendingCombatTap.cancelled=true;
  if(creativeMonsterPress&&creativeMonsterPress.pointerId===e.pointerId&&Math.hypot(e.clientX-creativeMonsterPress.x,e.clientY-creativeMonsterPress.y)>30){clearTimeout(creativeMonsterPress.timer);creativeMonsterPress=null}
  if(companionSwitchHold&&companionSwitchHold.pointerId===e.pointerId&&Math.hypot(e.clientX-companionSwitchHold.startX,e.clientY-companionSwitchHold.startY)>35)clearCompanionSwitchHold();
- if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId){const wx=e.clientX+state.camera.x,wy=e.clientY+state.camera.y;if(dist(wx,wy,COMM_DEVICE.x,COMM_DEVICE.y)>COMM_DEVICE.r+45)cancelCommunicationRepairHold(true)}
- if(!state.blueprint)return;moveBlueprint(e.clientX+state.camera.x,e.clientY+state.camera.y)
+ if(communicationRepairHold&&communicationRepairHold.pointerId===e.pointerId){const point=worldPointerCoords(e),wx=point.x,wy=point.y;if(dist(wx,wy,COMM_DEVICE.x,COMM_DEVICE.y)>COMM_DEVICE.r+45)cancelCommunicationRepairHold(true)}
+ if(!state.blueprint)return;const point=worldPointerCoords(e);moveBlueprint(point.x,point.y)
 });
 const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);stick.addEventListener('lostpointercapture',endStick);window.addEventListener('pointerdown',ensureMusicStarted,{capture:true});window.addEventListener('keydown',ensureMusicStarted,{capture:true});document.addEventListener('visibilitychange',()=>{if(!music.ctx)return;if(document.hidden)music.ctx.suspend().catch(()=>{});else if(music.enabled)music.ctx.resume().catch(()=>{})});window.addEventListener('pagehide',()=>{if(!resettingGameSave&&gameStarted)saveGame(false);stopRecorderVoice();if(recorderBlobUrl)URL.revokeObjectURL(recorderBlobUrl);if(multiplayer.channel)multiplayer.channel.unsubscribe();if(music.ctx)music.ctx.close().catch(()=>{})});
 // 메인: 타이틀과 모드 선택
