@@ -140,3 +140,30 @@ test('Vibe asset-selector recognizes downloaded similar assets but cannot fake u
  assert.match(moduleSource,/getMissingAssetTypes:\(\)=>assetReadiness\.missingTypes/);
  assert.match(moduleSource,/productionReady:false/);
 });
+
+
+test('downloaded KayKit skeleton is only a license-proven undead species proxy and never alters monster behavior',()=>{
+ const legal=ledger.entries.find(e=>e.id==='kaykit-skeletons-cc0-v1');
+ assert.ok(legal,'official KayKit Skeletons CC0 source evidence must be present');
+ assert.equal(legal.license,'CC0-1.0');
+ assert.equal(legal.commercialUse,true);
+ assert.equal(legal.modificationUse,true);
+ assert.equal(legal.evidence.nativeRuntimeVerification,'PENDING');
+ assert.equal(legal.evidence.publicReleaseClaimed,false);
+ assert.match(legal.evidence.licenseUrl,/KayKit-Character-Pack-Skeletons-1\.0/);
+ const actor=registry.assets.find(x=>x.id==='external-actor-skeleton-warrior');
+ assert.ok(actor);
+ assert.equal(actor.productionVerified,false);
+ assert.equal(actor.license,'CC0-1.0');
+ assert.ok(actor.sourceHash&&actor.sourceHash.length===64);
+ assert.match(actor.path,/skeleton-warrior\.glb$/);
+ assert.match(moduleSource,/UNDEAD_URL.*skeleton-warrior\.glb/);
+ assert.match(moduleSource,/cloneAnimatedRig\(undeadSource\)/);
+ assert.match(moduleSource,/synchronizeUndead\(state,px,py,seen\)/);
+ assert.match(moduleSource,/e\?\.type\?\.id==='wastelandMummy'/);
+ assert.match(moduleSource,/actor\.anchor\.position\.set\(e\.x\*SCALE,0,e\.y\*SCALE\)/);
+ assert.match(moduleSource,/actor\.mixer\.clipAction\(clip\)/);
+ assert.match(moduleSource,/undeadProxySourceLoaded:!!undeadSource/);
+ assert.match(moduleSource,/productionReady:false/);
+ assert.match(index,/wastelandMummy:\{id:'wastelandMummy',name:'황무지 미라',mood:'aggressive',hp:1800,dmg:88,speed:64,r:30/);
+});
