@@ -16,11 +16,33 @@ const HERO_URL = new URL('../../assets/roblox/actors/native/mage.glb',import.met
 const UNDEAD_URL = new URL('../../assets/roblox/actors/native/skeleton-warrior.glb',import.meta.url);
 // Reuse the existing 3D creature library. Each source is bound only to matching
 // game species; the renderer never creates a synthetic enemy or changes AI rules.
+// Existing, registry-listed 3D models only. Visual family substitution changes
+// appearance only: authoritative monster ID/AI/HP/hitbox/skills/loot are untouched.
+// For mammals without a matching GLB the nearest quadruped wolf rig is a visual
+// approximation, not a claim of species accuracy. Missing birds/fish/bat stay unmapped.
 const NATIVE_CREATURE_MODELS=Object.freeze({
-  wolf:['shadowwolf','shadowwolfleader','firewolf','polarwolf','thornhound','ironhidehound'],
-  golem:['golem','firegolemneutral','firegolemaggressive','crystalfiregolem','icegolem','swampgolem','worldtreegolem'],
-  spider:['giantspider','giantspiderling'],
-  serpent:['firesnake','crystalfiresnake','anaconda','worldtreesnake']
+  wolf:["shadowwolf","shadowwolfleader","firewolf","polarwolf","thornhound","ironhidehound","polarfox","froststalker","jungletiger","jungletigerleader","foreststag","sapdeer","crystaldeer","ironibex","crystalibex","crystalgoat","crystalboar","crystalboarjunior","lakebuffalo","worldtreebear","crystalbear","polarbear","fearbear","foresthare","yeticub"],
+  golem:["golem","ironspirit","sporegiant","rootsovereign","firegolemneutral","firegolemaggressive","crystalguardian","crystalironspirit","crystalfiregolem","icegolem","swampgolem","worldtreegolem","toxicmycelium","sandSpirit"],
+  spider:["giantspider","giantspiderling","thornmantis"],
+  serpent:["firesnake","crystalfiresnake","anaconda","worldtreesnake","lakecroc","giantleech"],
+  beetle:["giantburrower","sandwalker","giantbee","giantVenomScorpion","toxicsporeorb"],
+  rogue:["goblin","crystalgoblin","flowergoblin","goblinHeavy","mudwalker"],
+  archer:["goblinCrossbow","primitiveArcher","swampPrimitiveArcher","swampArrowTower"],
+  guardian:["goblinGeneral","jungleGuardian","swampPrimitiveGuard","gorilla","yetileader"],
+  lancer:["primitiveSpearman","swampPrimitiveSpearman"],
+  mage:["fairy"],
+});
+const NATIVE_CREATURE_ASSET=Object.freeze({
+  wolf:"creature-wolf",
+  golem:"creature-golem",
+  spider:"creature-spider",
+  serpent:"creature-serpent",
+  beetle:"creature-beetle",
+  rogue:"humanoid-rogue",
+  archer:"humanoid-archer",
+  guardian:"humanoid-guardian",
+  lancer:"humanoid-lancer",
+  mage:"humanoid-mage",
 });
 const NATIVE_CREATURE_BY_ID=new Map(Object.entries(NATIVE_CREATURE_MODELS)
   .flatMap(([source,ids])=>ids.map(id=>[id,source])));
@@ -147,7 +169,9 @@ export async function createWorld3d(canvas){
   await Promise.all(Object.keys(NATIVE_CREATURE_MODELS).map(async kind=>{
     for(const suffix of ['-actions','']){
       try{
-        const url=new URL('../../assets/shared/creature-'+kind+suffix+'.glb',import.meta.url);
+        const baseAsset=NATIVE_CREATURE_ASSET[kind];
+        if(!baseAsset)throw new Error('Unregistered 3D asset family: '+kind);
+        const url=new URL('../../assets/shared/'+baseAsset+suffix+'.glb',import.meta.url);
         const gltf=await new GLTFLoader().loadAsync(url.href);
         if(!gltf.scene)throw new Error('Empty creature scene');
         const box=new THREE.Box3().setFromObject(gltf.scene);
@@ -209,6 +233,9 @@ export async function createWorld3d(canvas){
   const interactables=[];
   const undeadActors=new Map();
   const nativeCreatureActors=new Map();
+  // WeakMap survives coordinate updates but does not keep despawned game actors alive.
+  const monsterRuntimeIds=new WeakMap();
+  let nextMonsterRuntimeId=0;
   const missingVisibleMonsterIds=new Set();
   let fallbackReason='';
   let qualityFactor=1,framesInWindow=0,fpsWindowStart=0;
@@ -296,7 +323,9 @@ export async function createWorld3d(canvas){
         continue;
       }
       displayed++;
-      const key=String(e.netId||e.id||e.type.id+':'+e.x+':'+e.y);
+      // Never key by position: that would reset a moving monster's native rig.
+      let key=monsterRuntimeIds.get(e);
+      if(!key){key=String(++nextMonsterRuntimeId);monsterRuntimeIds.set(e,key)}
       let actor=nativeCreatureActors.get(key);
       if(!actor){
         const source=nativeCreatureSources.get(kind);
@@ -544,6 +573,8 @@ export async function createWorld3d(canvas){
     getWeatherEffects:()=>weatherVisualEffects,getAvatarRecipe:()=>avatarRecipe,
     getMissingAssetTypes:()=>assetReadiness.missingTypes,
     getUnmappedVisibleMonsterIds:()=>[...missingVisibleMonsterIds],
+    getSimilarSpeciesVisualMappings:()=>Object.fromEntries(NATIVE_CREATURE_BY_ID),
+    getNativeVisualSourceAssets:()=>({...NATIVE_CREATURE_ASSET}),
     getAdaptiveQuality:()=>qualityFactor,getFallbackReason:()=>fallbackReason,
     getRenderStats:()=>({drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles}),
     productionReady:false
