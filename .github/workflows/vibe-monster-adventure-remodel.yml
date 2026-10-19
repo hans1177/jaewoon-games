@@ -1,0 +1,26 @@
+name: Vibe Monster Adventure Remodel QA
+on:
+  pull_request:
+    paths:
+      - 'web-games/monster-adventure/index.html'
+      - 'assets/vibe-monster-adventure-remodel.js'
+      - 'assets/vibe-monster-turn-system.js'
+      - 'assets/vibe-studio-combat.js'
+      - 'assets/vibe-studio-gameplay.js'
+      - 'qa/vibe-monster-adventure-remodel.test.mjs'
+      - 'qa/vibe-monster-turn-system.test.mjs'
+      - '.github/workflows/vibe-monster-adventure-remodel.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  remodel-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify Vibe game integration and combat AI
+        run: node --experimental-default-type=module --test qa/vibe-monster-adventure-remodel.test.mjs qa/vibe-monster-turn-system.test.mjs
