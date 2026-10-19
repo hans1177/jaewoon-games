@@ -43,3 +43,20 @@ test('tapping a visible enemy fires only when target is attackable and within we
     assert.equal(aim,c.aim,c.name+' should preserve ranged tap-aim bounds');
   }
 });
+
+test('tap combat waits for touch release and rejects swipes or holds',()=>{
+ const a=source.indexOf('function isCombatTapGesture(');
+ const b=source.indexOf('\nfunction combatTapTarget(',a);
+ assert.ok(a>=0&&b>a);
+ const gesture=source.slice(a,b);
+ const fn=new Function('return ('+gesture.replace(/^function isCombatTapGesture/, 'function')+')')();
+ const p={x:100,y:200,at:1000,cancelled:false};
+ assert.equal(fn(p,{clientX:100,clientY:200},1100),true);
+ assert.equal(fn(p,{clientX:124,clientY:200},1100),true);
+ assert.equal(fn(p,{clientX:128,clientY:200},1100),false);
+ assert.equal(fn(p,{clientX:100,clientY:200},1701),false);
+ assert.equal(fn({...p,cancelled:true},{clientX:100,clientY:200},1100),false);
+ assert.match(source,/pendingCombatTap=\{pointerId:e\.pointerId,x:e\.clientX,y:e\.clientY/);
+ assert.match(source,/if\(isCombatTapGesture\(press,e,performance\.now\(\)\)\)handleWorldTap\(e\)/);
+ assert.match(source,/canvas\.setPointerCapture\(e\.pointerId\)/);
+});
