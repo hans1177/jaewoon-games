@@ -1354,6 +1354,145 @@ test('Vibe libraries and development tools rematch updated APIs for existing sav
 });
 
 // 내부 개발도구: 이름 목록과 실제 제작 구현 문맥을 구분한다.
+// 메인 · F0 모든 게임의 기존 제작 도구를 설계·장르 제한 없이 현재 실제 소스에서 재탐색한다.
+test('Vibe libraries and development tools rematch F0 existing customization housing action modules without generating new subsystem',()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'assets/vibe-character-identity-director.js'),
+    'export function createVibeCharacterCustomization(model) { return model; }\n');
+  write(path.join(cwd,'assets/vibe-housing-library.js'),
+    'export function inspectHousingPlacement(world) { return world; }\n');
+  write(path.join(cwd,'tools/vibe-action-graph.mjs'),
+    'export function inspectHarvestAction(owner) { return owner; }\n');
+  const source=[
+    'const avatar = customizeAppearance(player);',
+    'const housing = placeStructure(buildMode);',
+    'const action = gather(resource);'
+  ].join('\n');
+  const input={files:[{path:'client/Game.client.luau',editable:true,content:source}],bytes:Buffer.byteLength(source)};
+  const args={cwd,contract:{target:'roblox',selectedSourcePaths:[]},
+    order:{target:'roblox',gameId:'older-game',goal:'기존 게임 외형, 하우징, 채집 행동 연결'}};
+  const result=attachSelectedInternalAssetApiContext(input,args);
+  for(const signal of ['CUSTOMIZATION','HOUSING','ACTION'])
+    assert.ok(result.vibeDynamicToolMatch.sourceSignals.includes(signal),signal);
+  for(const path of [
+    'assets/vibe-character-identity-director.js',
+    'assets/vibe-housing-library.js',
+    'tools/vibe-action-graph.mjs'
+  ]){
+    const found=result.vibeDynamicToolMatch.matches.find(row=>row.path===path);
+    assert.ok(found,path);
+    assert.equal(found.kind,path.startsWith('tools/')?'DEVELOPMENT_TOOL_READ_ONLY':'LIBRARY_REFERENCE_READ_ONLY');
+  }
+  assert.ok(result.files.filter(row=>row.developmentToolContext).every(row=>row.editable===false));
+  assert.equal(result.vibeDynamicToolMatch.runtimeVerified,false);
+  assert.equal(result.vibeDynamicToolMatch.sourceMutationPerformed,false);
+  assert.equal(input.files[0].content,source);
+});
+
+// 메인 · 공통 게임 시스템 수 증가에 대응하여 실제 소스 근거에 맞는 API만 작업 문맥에 선정한다.
+test('Vibe libraries and development tools rematch F0 NPC quest crafting economy weather physics progression APIs by source',()=>{
+  const cwd=tempRoot();
+  const modules={
+    'assets/common-ai.js':'export class JaewoonCommonAI {}',
+    'assets/quest-dialogue.js':'export class JaewoonQuestDialogue {}',
+    'assets/crafting-recipes.js':'export class JaewoonCraftingRecipes {}',
+    'assets/economy-loot-shop.js':'export class JaewoonEconomyLootShop {}',
+    'assets/character-progression.js':'export class JaewoonCharacterProgression {}',
+    'assets/vibe-studio-world.js':'export function makeFrameBudget() {}',
+    'assets/vibe-environment-director.js':'export function createVibeProceduralWorldLayout() {}',
+    'assets/vibe-game-input-physics.mjs':'export function createVibeWorldPhysics() {}'
+  };
+  for(const [file,source] of Object.entries(modules))
+    write(path.join(cwd,file),source+'\n');
+  const currentSource=[
+    'const npc = decideCompanion(behaviorTree);',
+    'const quest = dialogue(questLog);',
+    'const item = crafting(recipeBook);',
+    'const shop = economy(currency);',
+    'const experience = progression(levelUp);',
+    'const weatherState = weather(season);',
+    'const worldRegion = world.currentRegion;',
+    'const hit = physics(collisionShape);'
+  ].join('\n');
+  const input={files:[{path:'client/ExistingGame.js',editable:true,content:currentSource}],
+    bytes:Buffer.byteLength(currentSource)};
+  const result=attachSelectedInternalAssetApiContext(input,{
+    cwd,contract:{target:'web',selectedSourcePaths:[]},
+    order:{target:'web',gameId:'old-world',goal:'기존 게임의 NPC 퀘스트 제작 경제 물리 날씨 성장 확인'}
+  });
+  const matched=result.vibeDynamicToolMatch;
+  for(const name of ['NPC_AI','QUEST_DIALOGUE','CRAFTING','ECONOMY','PROGRESSION','WEATHER','PHYSICS'])
+    assert.ok(matched.sourceSignals.includes(name),name);
+  for(const file of Object.keys(modules)){
+    const row=matched.matches.find(x=>x.path===file);
+    assert.ok(row,file);
+    assert.match(row.sha256,/^[a-f0-9]{64}$/);
+    assert.equal(row.kind,'LIBRARY_REFERENCE_READ_ONLY');
+  }
+  assert.equal(matched.newGameplaySystemsAuthorized,false);
+  assert.equal(matched.runtimeVerified,false);
+  assert.equal(input.files[0].content,currentSource);
+});
+
+// 메인 · 전체 게임 코드에서 찾은 깊은 위치 모듈을 워커의 짧은 파일 창에도 반영한다.
+test('Vibe libraries and development tools rematch F0 game-source-backed modules without foreign or design-only hints',()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'assets/crafting-recipes.js'),
+    'export class JaewoonCraftingRecipes {}\n');
+  write(path.join(cwd,'assets/vibe-housing-library.js'),
+    'export function inspectHousingPlacement() {}\n');
+  write(path.join(cwd,'assets/vibe-save-kit.js'),
+    'export function inspectSaveSource() {}\n');
+  write(path.join(cwd,'assets/combat-actions.js'),
+    'export function inspectCombatTiming() {}\n');
+  write(path.join(cwd,'assets/economy-loot-shop.js'),
+    'export function inspectShopOwnership() {}\n');
+  const source='const tickCount = 1;';
+  const input={files:[{path:'web-games/a/current.js',editable:true,content:source}],bytes:source.length};
+  const composition={
+    sourceOnlyEvidence:true,gameId:'a',platform:'WEB',
+    sourceTreeFingerprint:'sha256-grounded-game-source',
+    components:[
+      {id:'CRAFTING',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/crafting.js']},
+      {id:'HOUSING',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/housing.js']},
+      {id:'SAVE',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/save.js']},
+      {id:'COMBAT',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/combat.js']},
+      {id:'SHOP',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/shop.js']},
+      {id:'QUEST_DIALOGUE',state:'REVIEW_REQUIRED_NO_SOURCE',responsibleFiles:[]}
+    ]
+  };
+  const run=(gameId,plan)=>attachSelectedInternalAssetApiContext(input,{
+    cwd,contract:{target:'web',selectedSourcePaths:[]},order:{
+      target:'web',gameId,goal:'keep existing tick',buildUpDirective:{gameInternalAutoComposition:plan}
+    }
+  });
+  const matching=run('a',composition).vibeDynamicToolMatch;
+  assert.ok(matching.sourceSignals.includes('CRAFTING'));
+  assert.ok(matching.sourceSignals.includes('HOUSING'));
+  assert.ok(matching.sourceSignals.includes('SAVE'));
+  assert.ok(matching.sourceSignals.includes('COMBAT'));
+  assert.ok(matching.sourceSignals.includes('ECONOMY'));
+  assert.ok(!matching.sourceSignals.includes('QUEST_DIALOGUE'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/crafting-recipes.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/vibe-housing-library.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/vibe-save-kit.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/combat-actions.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/economy-loot-shop.js'));
+  assert.equal(matching.sourceMutationPerformed,false);
+  assert.equal(matching.runtimeVerified,false);
+  const foreign=run('b',composition);
+  assert.ok(!foreign.vibeDynamicToolMatch||
+    !foreign.vibeDynamicToolMatch.matches.some(row=>row.path==='assets/crafting-recipes.js'));
+  const wrongPlatform=run('a',{...composition,platform:'UNITY'});
+  assert.ok(!wrongPlatform.vibeDynamicToolMatch||
+    !wrongPlatform.vibeDynamicToolMatch.matches.some(row=>row.path==='assets/vibe-housing-library.js'));
+});
+
 test('native game BUILD_UP receives bounded current Vibe tool implementations as read-only source',()=>{
   const cwd=tempRoot();
   const paths=['assets/vibe-art-pipeline.js','assets/vibe-environment-director.js',

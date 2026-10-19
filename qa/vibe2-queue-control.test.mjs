@@ -3072,3 +3072,38 @@ test('canonical owner-exclusive scope policy retains assistant-only coding while
   assert.equal(policy.ownerCanonicalRules.rule1.terminalDoneStateForbidden,true);
   assert.deepEqual(owner.gameIds,[],'owner scope never activates globally by this policy change');
 });
+
+test('completed fan-in without worker artifacts requeues only exact unreviewed reservations',()=>{
+  const base={gameId:'forest',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/forest',goal:'preserve gameplay and continue development',
+    status:'running',blocker:'slot-released-awaiting-fan-in',
+    reservationId:'100:1',reservationRunId:'100',reservationRunAttempt:1,reservedAt:'2026-10-17T17:03:29Z',
+    retries:1,retainedResponsibleFileLocks:['index.html']};
+  const queue=createVibeContinuousQueue({tasks:[
+    {...base,id:'orphan-no-result'},
+    {...base,id:'reviewed',evidence:['role-result:review:PASS']},
+    {...base,id:'preserved-result',neuronResults:[{variant:'primary'}]},
+    {...base,id:'different-run',reservationRunId:'101',reservationId:'101:1'},
+    {...base,id:'qa',blocker:'candidate-awaiting-qa-and-deployment'}
+  ]});
+  const notVerified=recoverCompletedRunningReservations(queue,{completedRunIds:['100']});
+  assert.equal(notVerified.recovered,0,'normal completed-run probe must retain artifact awaits');
+  const notCompleted=recoverCompletedRunningReservations(queue,{completedRunIds:[],noResultRunIds:['100']});
+  assert.equal(notCompleted.recovered,0,'artifact probe alone is not completed-run evidence');
+  const recovered=recoverCompletedRunningReservations(queue,{completedRunIds:['100'],noResultRunIds:['100']});
+  assert.equal(recovered.recovered,1);
+  const orphan=recovered.queue.tasks.find(row=>row.id==='orphan-no-result');
+  assert.equal(orphan.status,'queued');
+  assert.equal(orphan.blocker,null);
+  assert.equal(orphan.reservationRunId,null);
+  assert.equal(orphan.retries,1);
+  assert.deepEqual(orphan.retainedResponsibleFileLocks,[]);
+  assert.equal(orphan.lastOutcome,'FAN_IN_RESULT_ARTIFACT_MISSING_REQUEUED');
+  assert.ok(orphan.evidence.includes('recovery:verified-completed-fan-in-no-worker-artifacts'));
+  for(const id of ['reviewed','preserved-result','different-run','qa']){
+    assert.equal(recovered.queue.tasks.find(row=>row.id===id).status,'running',id);
+  }
+  assert.match(continuousWorkflow,/VIBE2_FAN_IN_NO_RESULT_PROBE=VERIFIED_EMPTY/);
+  assert.match(continuousWorkflow,/--no-result-runs="\$no_result_fanin_runs"/);
+  assert.match(continuousWorkflow,/\[ "\$\(cat "\$status_file"\)" = 'completed' \] \|\| continue/);
+});

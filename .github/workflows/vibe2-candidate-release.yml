@@ -117,6 +117,12 @@ jobs:
           const origin=String(m.origin||'VIBE2_NATIVE').trim().toUpperCase();
           const assetSourceUsageFingerprint=String(m?.codingMethod?.internalAssetSourceUsageFingerprint||'').trim();
           const assetSourceUsageLibraryVersion=Math.max(0,Math.floor(Number(m?.codingMethod?.internalAssetSourceUsageLibraryVersion)||0));
+          // Web F0 also binds the exact BUILD_UP library selection to the submitted candidate.
+          // This is source-integrity evidence, never a substitute for browser/runtime QA.
+          const webBindingPlan=m?.assetProduction?.allGameDynamicLibraryBinding||{};
+          const webBindingFingerprint=String(m?.codingMethod?.allGameDynamicAssetBindingFingerprint||'').trim();
+          const webBindingLibraryFingerprint=String(webBindingPlan.fingerprint||'').trim();
+          const webBindingLibraryVersion=Math.max(0,Math.floor(Number(webBindingPlan.libraryVersion)||0));
           const assetSelectionFingerprint=String(m?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'').trim();
           const assetSelectionLibraryVersion=Math.max(0,Math.floor(Number(m?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion)||0));
           const row=(catalog.games||[]).find(g=>String(g.id||'')===game);
@@ -133,6 +139,14 @@ jobs:
           else if(target==='roblox' && !/^[0-9a-f]{64}$/i.test(assetSelectionFingerprint)) reason='roblox-build-up-selection-fingerprint-missing';
           else if(target==='roblox' && assetSelectionLibraryVersion<=0) reason='roblox-build-up-selection-library-version-missing';
           else if(target==='web' && root!==`web-games/${game}`) reason='web-source-root-mismatch';
+          else if(target==='web' && !/^[0-9a-f]{64}$/i.test(assetSourceUsageFingerprint)) reason='web-f0-build-up-asset-fingerprint-missing';
+          else if(target==='web' && assetSourceUsageLibraryVersion<=0) reason='web-f0-build-up-asset-library-version-missing';
+          else if(target==='web' && m?.codingMethod?.allGameDynamicAssetBindingRequired!==true) reason='web-f0-dynamic-asset-binding-not-required';
+          else if(target==='web' && m?.codingMethod?.allGameDynamicAssetBindingPass!==true) reason='web-f0-dynamic-asset-binding-unverified';
+          else if(target==='web' && (!/^[0-9a-f]{64}$/i.test(webBindingFingerprint)
+            ||webBindingFingerprint!==webBindingLibraryFingerprint)) reason='web-f0-dynamic-asset-binding-fingerprint-mismatch';
+          else if(target==='web' && (webBindingLibraryVersion<=0
+            ||webBindingLibraryVersion!==assetSourceUsageLibraryVersion)) reason='web-f0-dynamic-asset-library-version-mismatch';
           else if(target==='unity' && root!==`unity-games/${game}`) reason='unity-source-root-mismatch';
           else if(!row) reason='game-not-in-canonical-catalog';
           else if(!['ACTIVE','REBUILD'].includes(String(row?.canonical?.lifecycle?.state||row?.lifecycleState||'ACTIVE').toUpperCase())) reason='game-not-active';

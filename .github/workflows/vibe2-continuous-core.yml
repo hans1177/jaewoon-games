@@ -851,10 +851,52 @@ jobs:
           echo "VIBE2_COMPLETED_RESERVATION_RUN_CANDIDATES=${candidate_reservation_runs:-NONE}"
           echo "VIBE2_COMPLETED_RESERVATION_RUN_MATCHES=${completed_reservation_runs:-NONE}"
           echo "VIBE2_SUPERSEDED_QUEUED_RESERVATION_RUNS=${superseded_queued_reservation_runs:-NONE}"
+          # Completed fan-in jobs may leave slot-released work stranded when no worker
+          # result artifact was ever uploaded. Probe both run status and artifact list;
+          # API failures or any recoverable result always preserve the existing wait.
+          mapfile -t orphan_fanin_runs < <(node - "$control_root/.vibe2/queue.json" <<'NODE'
+          const fs=require('fs');
+          const tasks=JSON.parse(fs.readFileSync(process.argv[2],'utf8')).tasks||[];
+          const seen=new Set();
+          for(const task of tasks){
+            if(task.status!=='running'||String(task.blocker||'')!=='slot-released-awaiting-fan-in')continue;
+            if((task.evidence||[]).some(value=>/^role-result:|^candidate-sha:|^web-f0-f9-verified$/i.test(String(value))))continue;
+            const id=String(task.reservationRunId||'');
+            if(!/^\d+$/.test(id)||seen.has(id))continue;
+            seen.add(id);process.stdout.write(id+'\n');
+            if(seen.size>=16)break;
+          }
+          NODE
+          )
+          no_result_fanin_runs=''
+          for orphan_run_id in "${orphan_fanin_runs[@]}"; do
+            status_file="/tmp/vibe2-no-result-fanin-${orphan_run_id}.status"
+            names_file="/tmp/vibe2-no-result-fanin-${orphan_run_id}.names"
+            if ! gh api "repos/$GITHUB_REPOSITORY/actions/runs/$orphan_run_id" --jq '.status' > "$status_file" 2>/dev/null; then
+              echo "VIBE2_FAN_IN_NO_RESULT_PROBE=UNKNOWN_RUN:$orphan_run_id"
+              continue
+            fi
+            [ "$(cat "$status_file")" = 'completed' ] || continue
+            if ! gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$orphan_run_id/artifacts?per_page=100" \
+              --jq '.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-"))) | .name' > "$names_file" 2>/dev/null; then
+              echo "VIBE2_FAN_IN_NO_RESULT_PROBE=UNKNOWN_ARTIFACTS:$orphan_run_id"
+              continue
+            fi
+            if [ -s "$names_file" ]; then
+              echo "VIBE2_FAN_IN_NO_RESULT_PROBE=PRESERVE_RESULT:$orphan_run_id"
+              continue
+            fi
+            no_result_fanin_runs="${no_result_fanin_runs:+$no_result_fanin_runs,}$orphan_run_id"
+            echo "VIBE2_FAN_IN_NO_RESULT_PROBE=VERIFIED_EMPTY:$orphan_run_id"
+          done
+          if [ -n "$no_result_fanin_runs" ]; then
+            completed_reservation_runs="${completed_reservation_runs:+$completed_reservation_runs,}$no_result_fanin_runs"
+          fi
           if [ -n "$completed_reservation_runs" ]; then
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-completed-reservations \
               --queue="$control_root/.vibe2/queue.json" \
-              --completed-runs="$completed_reservation_runs" | tee /tmp/vibe2-completed-reservation-recovery.log
+              --completed-runs="$completed_reservation_runs" \
+              --no-result-runs="$no_result_fanin_runs" | tee /tmp/vibe2-completed-reservation-recovery.log
           fi
           if [ -n "$superseded_queued_reservation_runs" ]; then
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-reservation-runs \
@@ -2690,7 +2732,9 @@ jobs:
     # Fan-in is control-plane work. Keep it on the currently available ubuntu-latest pool so completed
     # game results are persisted promptly instead of waiting behind the constrained ARM control queue.
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    # One full impact regression plus a conflicting shared-state push retry exceeded 8 minutes
+    # in run 39051717659. Preserve all QA and optimistic state reconciliation.
+    timeout-minutes: 15
     concurrency:
       # Fan-in jobs must not share one pending GitHub concurrency slot.
       # Every fan-in reconciles control state with optimistic fetch/reset/push retries below.

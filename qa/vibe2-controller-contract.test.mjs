@@ -1763,3 +1763,14 @@ done`;
   }
 });
 
+test('fan-in conflict retry has enough runtime to preserve full regression and atomic queue repair',()=>{
+  const fanIn=workflow.slice(workflow.indexOf('\n  fan_in:'));
+  assert.ok(fanIn.startsWith('\n  fan_in:'),'canonical fan-in job missing');
+  const minutes=Number(fanIn.match(/\n    timeout-minutes: (\d+)/)?.[1]||0);
+  assert.ok(minutes>=15,'fan-in ended before an optimistic queue conflict replay could complete');
+  assert.match(fanIn,/cancel-in-progress: false/);
+  assert.match(fanIn,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(fanIn,/VIBE2_FAN_IN_OPTIMISTIC_RETRY/);
+  assert.match(fanIn,/node "\$contract_root\/tools\/vibe2-fan-in-review\.mjs"/);
+  assert.doesNotMatch(fanIn,/git push --force/);
+});

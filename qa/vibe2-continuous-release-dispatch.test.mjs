@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -864,7 +865,11 @@ test('shallow Roblox promotion preserves exact candidate, main drift guard and m
     fs.writeFileSync(path.join(upstream,'game/source'),'verified');git(upstream,'commit','-am','equivalent squash result');fetch(fetches[3]);
     assert.equal(git(checkout,'diff','--name-only',release,'origin/main','--','game'),'');
     assert.equal(git(checkout,'rev-parse',release+':game'),git(checkout,'rev-parse','origin/main:game'));
-  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+  }finally{
+    // Git worktree metadata can briefly outlive the final synchronous git command on CI.
+    // Retry only teardown ENOTEMPTY/EBUSY races; assertions and promotion gates stay unchanged.
+    fs.rmSync(temp,{recursive:true,force:true,maxRetries:5,retryDelay:100});
+  }
 });
 
 // F9 이후 게이트는 출시 등급·점수와 독립적이다. 등록·활성·검증된 게임만 기존 배포 경로를 사용한다.
@@ -885,4 +890,51 @@ test('exact F9 publication excludes release classification and catalog scoring f
   assert.match(inspect,/game-not-active/);
   assert.doesNotMatch(inspect,/current-production-class-not-auto-deployable/);
   assert.match(releaseWorkflow,/WEB_DEPLOYMENT_ELIGIBILITY=PLAYABLE_F0_F9_PLUS_STATIC_SAVE_QA/);
+});
+
+
+test('every Web F0 candidate validates actual BUILD_UP asset lineage before publication',()=>{
+  const source=releaseWorkflow;
+  const marker="          MANIFEST=\"$manifest\" node <<'NODE'\n";
+  const start=source.indexOf(marker);
+  const end=source.indexOf("\n          NODE",start+marker.length);
+  assert.ok(start>=0&&end>start,'web F0 candidate gate script missing');
+  const script=source.slice(start+marker.length,end);
+  const hash='a'.repeat(64),version=42;
+  const manifest={
+    taskId:'test-web-f0',gameId:'test-game',target:'web',sourceRoot:'web-games/test-game',
+    baseMainSha:'b'.repeat(40),transportBaseSha:'b'.repeat(40),
+    codingMethod:{
+      internalAssetSourceUsageFingerprint:hash,internalAssetSourceUsageLibraryVersion:version,
+      allGameDynamicAssetBindingRequired:true,allGameDynamicAssetBindingPass:true,
+      allGameDynamicAssetBindingFingerprint:hash
+    },
+    assetProduction:{allGameDynamicLibraryBinding:{fingerprint:hash,libraryVersion:version}}
+  };
+  const runGate=(patch={})=>{
+    let output='';
+    const input={...manifest,...patch};
+    const files={
+      readFileSync(file){
+        if(file==='fixture')return JSON.stringify(input);
+        if(file==='/tmp/main-game-catalog.json')return JSON.stringify({games:[{
+          id:'test-game',productionClass:'DEVELOPMENT_CONFIRMED',canonical:{lifecycle:{state:'ACTIVE'}}
+        }]});
+        throw Error('unexpected file '+file);
+      },
+      appendFileSync(file,text){assert.equal(file,'out');output+=text;}
+    };
+    vm.runInNewContext(script,{require:name=>{
+      assert.equal(name,'fs');return files;
+    },process:{env:{MANIFEST:'fixture',GITHUB_OUTPUT:'out'}}},{timeout:2000});
+    return Object.fromEntries(output.trim().split('\n').map(line=>{
+      const at=line.indexOf('=');return[line.slice(0,at),line.slice(at+1)];
+    }));
+  };
+  assert.equal(runGate().candidate_decision,'web');
+  assert.equal(runGate({codingMethod:{...manifest.codingMethod,internalAssetSourceUsageFingerprint:''}}).candidate_reason,'web-f0-build-up-asset-fingerprint-missing');
+  assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingPass:false}}).candidate_reason,'web-f0-dynamic-asset-binding-unverified');
+  assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingRequired:false}}).candidate_reason,'web-f0-dynamic-asset-binding-not-required');
+  assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingFingerprint:'c'.repeat(64)}}).candidate_reason,'web-f0-dynamic-asset-binding-fingerprint-mismatch');
+  assert.equal(runGate({assetProduction:{allGameDynamicLibraryBinding:{fingerprint:hash,libraryVersion:version+1}}}).candidate_reason,'web-f0-dynamic-asset-library-version-mismatch');
 });
