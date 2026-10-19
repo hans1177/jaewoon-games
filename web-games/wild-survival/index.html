@@ -330,7 +330,11 @@ function updatePlayer(dt){
   let y=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;
   const m=Math.hypot(x,y);
   if(m>.06){
-    x/=Math.max(1,m);y/=Math.max(1,m);p.faceX=x;p.faceY=y;
+    x/=Math.max(1,m);y/=Math.max(1,m);
+    // Third-person joystick is camera-relative; survival physics and saves stay unchanged.
+    if(!wild3d?.mapInput)return;
+    const direction=wild3d.mapInput(x,y);
+    x=direction.x;y=direction.y;p.faceX=x;p.faceY=y;
     const speed=(p.energy<18?92:145)*(p.wet>75?.86:1);
     p.x=clamp(p.x+x*speed*dt,22,WORLD.w-22);p.y=clamp(p.y+y*speed*dt,22,WORLD.h-22);
     p.energy=clamp(p.energy-dt*.13,0,100);
