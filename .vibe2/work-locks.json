@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-ecwnyt",
+      "worker": "vibe2",
+      "taskId": "ant-simulator-studio-evolution-roblox-stability-v1",
+      "gameId": "ant-simulator",
+      "files": [
+        "roblox-games/ant-simulator/client/Game.client.luau",
+        "roblox-games/ant-simulator/shared/GameConfig.luau",
+        "roblox-games/ant-simulator/server/Game.server.luau"
+      ],
+      "baseSha": "47d5a24511d059a51d46d1f9c456b20ad2eff531",
+      "runId": "39198282480",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-19T04:43:11.362Z",
+      "expiresAt": "2026-10-19T05:28:11.362Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:ant-simulator-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
