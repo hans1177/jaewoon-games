@@ -1178,18 +1178,18 @@ test('Roblox runtime self-redispatch dedupes queued or running work for the same
   assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.match(workflow,/ROBLOX_F0_SOURCE_REPAIR_DISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=DEDUPED_EXISTING_RUN:/);
-  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n/);
+  assert.match(workflow.slice(0,workflow.indexOf('\\njobs:\\n')),/\\nconcurrency:\\n  group: roblox-runtime-ingress-\\$\\{\\{ inputs\\.game_id \\|\\| 'batch' \\}\\}\\n  queue: single\\n  cancel-in-progress: false/);
 });
 
 
-test('Roblox runtime collapses duplicate exact-game and batch planners without whole-game workflow locking',()=>{
+test('Roblox runtime collapses duplicate exact-game and batch ingress before runner allocation while preserving active runs',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/run-name: Roblox runtime · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/const winner=candidates\[0\];/);
-  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n/);
+  assert.match(workflow.slice(0,workflow.indexOf('\\njobs:\\n')),/\\nconcurrency:\\n  group: roblox-runtime-ingress-\\$\\{\\{ inputs\\.game_id \\|\\| 'batch' \\}\\}\\n  queue: single\\n  cancel-in-progress: false/);
 });
 
 
