@@ -1207,26 +1207,22 @@ export function createCommonCareerMotionLoadout({
     });
   }));
   const masterFamily=[...ancestors].reverse().map(name=>COMMON_CAREER_VISUAL_MASTERS[name]).find(Boolean)||'traveler';
+  // [CC0 교체] 자체 제작 공유 리그 대신 확보된 CC0 원본을 게임별로 수정한다.
+  const cc0Model={traveler:'rogue',guardian:'knight',samurai:'knight',archer:'rogue',mage:'mage',rogue:'rogue-hooded',lancer:'knight',blacksmith:'barbarian'}[masterFamily];
   const master=Object.freeze({
-    assetId:'shared-humanoid-'+masterFamily,
-    path:'assets/shared/humanoid-'+masterFamily+'.glb',
-    rig:'SHARED_HUMANOID_SKINNED_19',
-    sourceRoleActionClip:COMMON_CAREER_NATIVE_SOURCE_ACTION[masterFamily]||null,
-    sourceHasActualSkinnedMesh:true,
+    assetId:'external-actor-'+cc0Model,
+    path:'assets/roblox/actors/native/'+cc0Model+'.glb',
+    license:'CC0-1.0',rig:'KAYKIT_HUMANOID',
+    sourceRoleActionClip:null,sourceHasActualSkinnedMesh:true,
     gameSpecificRigAndStyleAdaptationRequired:true,
     sourceStructureIsNotNativeRuntimeVerification:true,
     runtimeVerified:false,productionVerified:false
   });
-  // 실제로 굽힌 공용 관절 GLB를 상속 직업이 같이 사용한다. 엔진 네이티브 PASS는 별도다.
   const actionSource=Object.freeze({
-    assetId:'shared-humanoid-'+masterFamily+'-actions',
-    path:'assets/shared/humanoid-'+masterFamily+'-actions.glb',
-    sourceMasterPath:master.path,
-    authoringSource:'assets/native-authoring/build-shared-humanoid.mjs',
-    clipCount:['traveler','guardian'].includes(masterFamily)?23:24,
-    additionalAuthoredClipCount:8,
+    assetId:master.assetId,path:master.path,sourceMasterPath:master.path,
+    authoringSource:null,clipCount:76,additionalAuthoredClipCount:0,
     hasSkinnedJointChannels:true,platformNativeAdaptationRequired:true,
-    sourceState:'BAKED_GLTF_RUNTIME_UNVERIFIED',
+    sourceState:'CC0_ORIGINAL_ROLE_MAPPING_REQUIRED',
     productionVerified:false,runtimeVerified:false,gameplayAuthority:false
   });
   return Object.freeze({
@@ -1342,27 +1338,9 @@ function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter){
     rigJointBindingRequired:true,semanticChannelsOnly:true
   });
 }
-// 공용 스킨 3D 몬스터 원본. 나머지 종족은 의미 준비 단계로만 유지한다.
-export const COMMON_MONSTER_SKINNED_MASTERS=Object.freeze(Object.fromEntries([
-  ['WOLF','QUADRUPED_CANINE',17,'WOLF_PACK_HOWL'],
-  ['SPIDER','ARACHNID',29,'SPIDER_WEB_THREAT'],
-  ['BEETLE','HEXAPOD_INSECT',23,'BEETLE_HORN_CHARGE'],
-  ['GOLEM','HEAVY_GOLEM_OR_BOSS',15,'GOLEM_CORE_PULSE'],
-  ['SERPENT','REPTILE_OR_SERPENT',17,'SERPENT_COIL_STRIKE']
-].map(([id,bodyPlan,jointCount,signatureClip])=>[id,Object.freeze({
-  id:'shared-creature-'+id.toLowerCase(),
-  path:'assets/shared/creature-'+id.toLowerCase()+'.glb',
-  bodyPlan,rigProfile:'SHARED_CREATURE_'+id+'_SKINNED',
-  rigJointCount:jointCount,sourceAnimationCount:11,
-  sourceAnimationClips:freezeList([
-    'IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B',
-    'SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',signatureClip
-  ]),
-  signatureClip,sourceHasActualSkinnedMesh:true,
-  crossPlatformMasterSource:true,platformNativeAdaptationRequired:true,
-  gameSpecificStyleAndRigRetargetRequired:true,
-  gameplayAuthority:false,productionVerified:false,runtimeVerified:false
-})])));
+// 자체 제작 공유 몬스터는 영구 제거했다. 검증된 CC0 원본 연결 전까지 공백을 유지한다.
+export const COMMON_MONSTER_SKINNED_MASTERS=Object.freeze({});
+// 대응 CC0 모델은 기존 원장에서 취득·수정·리타게팅한 뒤에만 등록한다.
 
 // 체형 기본형→종족 특수동작→일반/정예/보스 연출 계층. 전투 수치와 접촉 시각은 변경하지 않는다.
 export const COMMON_MONSTER_MOTION_TIERS=Object.freeze({
@@ -1401,16 +1379,8 @@ export function createCommonMonsterActionLoadout({
   const detail=resolveMonsterBodyPlanMotionDetail(species.bodyPlan);
   if(!detail)throw Error('COMMON_MONSTER_BODY_PLAN_MISSING:'+species.bodyPlan);
   const master=COMMON_MONSTER_SKINNED_MASTERS[id]||null;
-  const actionSource=master?Object.freeze({
-    assetId:'shared-creature-'+id.toLowerCase()+'-actions',
-    path:'assets/shared/creature-'+id.toLowerCase()+'-actions.glb',
-    sourceMasterPath:master.path,
-    authoringSource:'assets/native-authoring/build-shared-creature.mjs',
-    clipCount:19,additionalAuthoredClipCount:8,
-    hasSkinnedJointChannels:true,platformNativeAdaptationRequired:true,
-    sourceState:'BAKED_GLTF_RUNTIME_UNVERIFIED',
-    productionVerified:false,runtimeVerified:false,gameplayAuthority:false
-  }):null;
+  // [CC0 취득 대기] 삭제된 자체 제작 클립을 다시 원본으로 제시하지 않는다.
+  const actionSource=null;
   if(master&&master.bodyPlan!==species.bodyPlan)throw Error('COMMON_MONSTER_MASTER_BODY_PLAN_MISMATCH:'+id);
   const tierActing=tierProfile.acting.map(role=>id+'_'+role);
   const tierSignature=tierProfile.signature.map(role=>id+'_'+role);

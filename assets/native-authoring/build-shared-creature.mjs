@@ -3,6 +3,7 @@
 // 메인: 실제 다관절 스킨 3D 모델과 종족별 이동·공격·스킬 키프레임 제작.
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import {fileURLToPath} from 'node:url';
 
 export const SHARED_CREATURE_SPECIES=Object.freeze({
@@ -316,8 +317,9 @@ export function buildSharedCreature(species='wolf',{extended=false}={}){
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const arg=process.argv.find(x=>x.startsWith('--species='));
   const wanted=arg?arg.slice(10).split(',').map(x=>x.trim()).filter(Boolean):Object.keys(SHARED_CREATURE_SPECIES);
-  const targetArg=process.argv.slice(2).find(x=>!x.startsWith('--'));
-  const targetDir=path.resolve(targetArg||'assets/shared');
+  // [연습 전용] 요청 출력 경로를 게임/공유 자산 저장에 사용하지 않는다.
+  const targetDir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-practice-'));
+  try {
   const extended=process.argv.includes('--extended-actions');
   if(!wanted.length)throw Error('NO_CREATURE_SPECIES_REQUESTED');
   fs.mkdirSync(targetDir,{recursive:true});
@@ -326,4 +328,5 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
     fs.writeFileSync(file,actor.bytes);
     console.log(JSON.stringify({file,bodyPlan:actor.bodyPlan,triangles:actor.triangles,skinnedJoints:actor.jointCount,clips:actor.clipNames,nativeRuntimeVerified:false}));
   }
+  } finally { fs.rmSync(targetDir,{recursive:true,force:true}); }
 }
