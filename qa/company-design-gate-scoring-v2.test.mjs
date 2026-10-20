@@ -475,7 +475,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       {materialId:'MAT-002',causalDNA:sourceIds.slice(2,5)}
     ]};
     // 자유주제는 기존 개발의 CASUAL 명칭과 독립적으로 MAIN/A/B/C/@를 새로 작성한다.
-    if(category==='CASUAL'){target.designTopicMode='VIBE_FREE_TOPIC';target.topicRevision='FREE-NATIVE-QUALITY-1';}
+    if(category==='CASUAL'){target.requestId='native-qa';target.designTopicMode='VIBE_FREE_TOPIC';target.topicRevision='FREE-NATIVE-QUALITY-1';}
     const proposal=computeVibeSeedProposal(target);
     if(category==='KINGDOM')proposal.gameplaySketch.novelGameGrammar.delveLayer.elements.push(
       {name:'주민의 이중 약속',discoveryCondition:'수확을 기다리는 주민에게 경비와 생산을 번갈아 맡겨 관계 변화를 비교한다.',masteryOrInsight:'같은 주민의 과거 역할이 새 거점의 협상 조건을 바꾸는 원리를 배운다.',gameplayEffect:'정복 대신 생산 협약으로 거점 접근권을 얻는 선택이 열린다.',connectsTo:['MAIN','C']},
