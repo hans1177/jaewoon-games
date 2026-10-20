@@ -16386,7 +16386,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T13:23:08.896Z",
+      "updatedAt": "2026-10-20T13:26:27.086Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -16402,16 +16402,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
       "robloxBuildArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
-      "robloxBuildPassedAt": "2026-10-20T13:23:08.896Z",
+      "robloxBuildPassedAt": "2026-10-20T13:26:27.086Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T13:23:08.896Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T13:26:27.086Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "dice-battle-board",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T12:45:17.197Z",
+        "checkedAt": "2026-10-20T13:02:29.136Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
         "secondaryOwnerFocus": false,
@@ -16454,7 +16454,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in the build evidence, preventing runtime testing from starting."
+            "note": "Required validation checks failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -33532,7 +33532,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T13:25:51.781Z",
+  "updatedAt": "2026-10-20T13:26:27.086Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
