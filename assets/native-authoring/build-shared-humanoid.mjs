@@ -3,6 +3,7 @@
 // 메인: 원본 리그/메시/모션 제작만 담당. 게임 이동·판정·저장 로직은 변경하지 않는다.
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 
 // 직업을 늘리지 않고 같은 스킨 리그의 동작을 생활/전투/스킬/제작 장르가 공유한다.
 export const SHARED_HUMANOID_ACTION_LIBRARY=Object.freeze({
@@ -281,7 +282,9 @@ export function buildSharedHumanoid(kind='traveler',{extended=false}={}){
  return {bytes:out,vertexCount:groups.reduce((v,g)=>v+g.p.length/3,0),triangleCount:groups.reduce((v,g)=>v+g.ind.length/3,0),jointCount:joints.length,clipNames:defs.map(x=>x[0]),gltf};
 }
 
-const outputDir=path.resolve(process.argv[2]||'assets/shared');
+// [연습 전용] 공용 라이브러리에 파일을 쓰지 않는다.
+const outputDir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-practice-'));
+try {
 const extended=process.argv.includes('--extended-actions');
 fs.mkdirSync(outputDir,{recursive:true});
 const defaultRoles=['traveler','guardian'];
@@ -295,3 +298,5 @@ for(const role of [...new Set(requestedRoles)]){
   fs.writeFileSync(destination,asset.bytes);
   console.log(JSON.stringify({path:destination,vertices:asset.vertexCount,triangles:asset.triangleCount,joints:asset.jointCount,animations:asset.clipNames,nativeRuntimeVerified:false}));
 }
+
+} finally { fs.rmSync(outputDir,{recursive:true,force:true}); }

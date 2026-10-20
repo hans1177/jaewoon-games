@@ -97,8 +97,8 @@ test('CLI policy QA reads canonical roadmap by default and rejects an explicit n
 // 개발하지 않는 게임 보호도 CC0 강제와 같은 헌법 수준으로 검증한다.
 test('CC0 constitution rejects weakening inactive-game protection or permanent deletion',()=>{
   const rule=policy.ownerCanonicalRules.rule5;
-  assert.equal(rule.replacementScope,'CURRENTLY_AUTHORIZED_ACTIVE_GAME_DEVELOPMENT_ONLY');
-  for(const field of ['cc0OriginalRequired','inactiveGamesMustRemainUnchanged','inactiveGameAssetsMustNotBeDeleted','sharedAssetDeletionRequiresNoInactiveConsumer','selfAuthoredLowQualityAssetsMustBePermanentlyDeleted']){
+  assert.equal(rule.replacementScope,'ALL_SELF_AUTHORED_ASSET_LIBRARIES_AND_THEIR_EXISTING_CONSUMERS');
+  for(const field of ['cc0OriginalRequired','inactiveGamesMustRemainUnchanged','inactiveGameAssetsMustNotBeDeleted','sharedSelfAuthoredAssetsMustBePermanentlyDeleted','selfAuthoredLowQualityAssetsMustBePermanentlyDeleted']){
     const changed=clone(policy);changed.ownerCanonicalRules.rule5[field]=false;
     assert.equal(run(changed).pass,false,field);
   }

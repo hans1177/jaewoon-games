@@ -22414,7 +22414,7 @@
       "enabled": true,
       "authority": "OWNER_DIRECTIVE_2026-10-20",
       "automaticContractBinding": true,
-      "objective": "GAME_DEVELOPMENT_USES_MODIFIED_VERIFIED_CC0_ORIGINALS_ONLY; PERMANENTLY_DELETE_REPLACED_LOW_QUALITY_SELF_AUTHORED_ASSETS_WITHOUT_CHANGING_INACTIVE_GAMES",
+      "objective": "GAME_ASSETS_USE_MODIFIED_VERIFIED_CC0_ORIGINALS_ONLY; REMOVE_ALL_VIBE_SELF_AUTHORED_LIBRARY_ARTIFACTS_INCLUDING_SHARED; PRACTICE_OUTPUTS_ARE_DELETED_AFTER_EXERCISE",
       "appliesTo": [
         "CHATGPT",
         "VIBE",
@@ -22432,12 +22432,12 @@
       "selfAuthoredLowQualityAssetsMustBePermanentlyDeleted": true,
       "excludedOnlyOrQuarantineIsNotDeletion": true,
       "regenerationOrReintroductionForbidden": true,
-      "replacementScope": "CURRENTLY_AUTHORIZED_ACTIVE_GAME_DEVELOPMENT_ONLY",
+      "replacementScope": "ALL_SELF_AUTHORED_ASSET_LIBRARIES_AND_THEIR_EXISTING_CONSUMERS",
       "inactiveGamesMustRemainUnchanged": true,
       "inactiveGameAssetsMustNotBeDeleted": true,
       "explicitOwnerPermanentGameRemovalOverridesInactivePreservation": true,
-      "sharedAssetDeletionRequiresNoInactiveConsumer": true,
-      "sharedAssetWithInactiveConsumersAction": "REMOVE_ACTIVE_GAME_BINDING_AND_REPLACE_ACTIVE_COPY_KEEP_INACTIVE_CONSUMER_BYTES",
+      "sharedAssetDeletionRequiresNoInactiveConsumer": false,
+      "sharedAssetWithInactiveConsumersAction": "REPLACE_EXISTING_BINDINGS_WITH_VERIFIED_MODIFIED_CC0_THEN_DELETE_ALL_SELF_AUTHORED_SHARED_FILES",
       "deletionOrder": [
         "VERIFY_CC0_ORIGINAL_SOURCE_LICENSE_AND_HASH",
         "MODIFY_FOR_ACTIVE_GAME_STYLE_AND_PLATFORM",
@@ -22501,7 +22501,7 @@
             "code": "SHAREDASSETDELETIONREQUIRESNOINACTIVECONSUMER",
             "operator": "EQ",
             "path": "sharedAssetDeletionRequiresNoInactiveConsumer",
-            "expected": true
+            "expected": false
           },
           {
             "code": "REGENERATIONORREINTRODUCTIONFORBIDDEN",
@@ -22522,10 +22522,10 @@
             "expected": true
           },
           {
-            "code": "ACTIVE_SCOPE_ONLY",
+            "code": "ALL_SELF_AUTHORED_LIBRARY_SCOPE",
             "operator": "EQ",
             "path": "replacementScope",
-            "expected": "CURRENTLY_AUTHORIZED_ACTIVE_GAME_DEVELOPMENT_ONLY"
+            "expected": "ALL_SELF_AUTHORED_ASSET_LIBRARIES_AND_THEIR_EXISTING_CONSUMERS"
           },
           {
             "code": "NO_SELF_AUTHORED_FALLBACK",
@@ -22568,6 +22568,12 @@
             "operator": "EQ",
             "path": "practiceArtifactDeleteAfterExercise",
             "expected": true
+          },
+          {
+            "code": "ALL_SHARED_SELF_AUTHORED_DELETION_REQUIRED",
+            "operator": "EQ",
+            "path": "sharedSelfAuthoredAssetsMustBePermanentlyDeleted",
+            "expected": true
           }
         ]
       },
@@ -22577,7 +22583,68 @@
       "practiceArtifactDeleteAfterExercise": true,
       "practiceArtifactRetention": "DELETE_FILES_PREVIEWS_AND_LIBRARY_ENTRIES_AFTER_EXERCISE_KEEP_NON_ASSET_LEARNING_EVIDENCE_ONLY",
       "practiceCleanupOwner": "EXISTING_GRAPHICS_PRODUCTION_AND_ASSET_DEVELOPMENT",
-      "practiceCleanupMustPreserveExistingGameConsumers": true
+      "practiceCleanupMustPreserveExistingGameConsumers": true,
+      "selfAuthoredLibraryRemovalScope": "ALL_VIBE_SELF_AUTHORED_ASSET_LIBRARIES_INCLUDING_SHARED",
+      "sharedSelfAuthoredAssetsMustBePermanentlyDeleted": true,
+      "sharedSelfAuthoredInactiveConsumerAction": "REPLACE_ALL_CONSUMERS_WITH_VERIFIED_MODIFIED_CC0_THEN_DELETE_SOURCE_AND_REGISTRY",
+      "permanentlyRemovedSharedAssetIds": [
+        "shared-creature-beetle",
+        "shared-creature-beetle-actions",
+        "shared-creature-golem",
+        "shared-creature-golem-actions",
+        "shared-creature-serpent",
+        "shared-creature-serpent-actions",
+        "shared-creature-spider",
+        "shared-creature-spider-actions",
+        "shared-creature-wolf",
+        "shared-creature-wolf-actions",
+        "shared-humanoid-archer",
+        "shared-humanoid-archer-actions",
+        "shared-humanoid-blacksmith",
+        "shared-humanoid-blacksmith-actions",
+        "shared-humanoid-guardian",
+        "shared-humanoid-guardian-actions",
+        "shared-humanoid-lancer",
+        "shared-humanoid-lancer-actions",
+        "shared-humanoid-mage",
+        "shared-humanoid-mage-actions",
+        "shared-humanoid-motion-suite",
+        "shared-humanoid-rogue",
+        "shared-humanoid-rogue-actions",
+        "shared-humanoid-samurai",
+        "shared-humanoid-samurai-actions",
+        "shared-humanoid-traveler",
+        "shared-humanoid-traveler-actions"
+      ],
+      "permanentlyRemovedSharedAssetFiles": [
+        "assets/shared/creature-beetle-actions.glb",
+        "assets/shared/creature-beetle.glb",
+        "assets/shared/creature-golem-actions.glb",
+        "assets/shared/creature-golem.glb",
+        "assets/shared/creature-serpent-actions.glb",
+        "assets/shared/creature-serpent.glb",
+        "assets/shared/creature-spider-actions.glb",
+        "assets/shared/creature-spider.glb",
+        "assets/shared/creature-wolf-actions.glb",
+        "assets/shared/creature-wolf.glb",
+        "assets/shared/humanoid-archer-actions.glb",
+        "assets/shared/humanoid-archer.glb",
+        "assets/shared/humanoid-blacksmith-actions.glb",
+        "assets/shared/humanoid-blacksmith.glb",
+        "assets/shared/humanoid-guardian-actions.glb",
+        "assets/shared/humanoid-guardian.glb",
+        "assets/shared/humanoid-lancer-actions.glb",
+        "assets/shared/humanoid-lancer.glb",
+        "assets/shared/humanoid-mage-actions.glb",
+        "assets/shared/humanoid-mage.glb",
+        "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+        "assets/shared/humanoid-rogue-actions.glb",
+        "assets/shared/humanoid-rogue.glb",
+        "assets/shared/humanoid-samurai-actions.glb",
+        "assets/shared/humanoid-samurai.glb",
+        "assets/shared/humanoid-traveler-actions.glb",
+        "assets/shared/humanoid-traveler.glb"
+      ]
     },
     "implementationOrder": [
       "RULE_1",
