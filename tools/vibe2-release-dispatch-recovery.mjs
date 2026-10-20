@@ -17,7 +17,10 @@ export function selectReviewedWinnerRecoveries(queueInput={}, {nowMs=Date.now(),
     // regression; skip exact duplicate Cloudflare publication retries until
     // quota reset is independently verified. GitHub Pages deploy is independent.
     const quota=classifyCloudflareQuota(evidence.join(' '));
-    if(task.target==='web'&&(quota.quotaExceeded||!shouldRetryCloudflarePublication(task))
+    if(task.target==='web'&&!shouldRetryCloudflarePublication(task)
+      &&evidence.includes('cloudflare-publication-target'))continue;
+    if(task.target==='web'&&quota.quotaExceeded
+      &&!evidence.includes('cloudflare-quota-cleared-verified')
       &&evidence.includes('cloudflare-publication-target'))continue;
     const webPublicationPending=task.target==='web'&&task.status==='verified'
       &&evidence.includes('web-f0-f9-verified')&&evidence.includes('web-f9-verified')
