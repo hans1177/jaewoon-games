@@ -81,6 +81,28 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   });
 }
 
+// Free-provider fallback may return one complete Markdown JSON fence even with
+// responseMimeType=application/json. Never extract partial or explanatory text.
+export function parseRobloxBuildPreflightReview(raw){
+  const value=clean(raw);
+  if(value.length<2||value.length>4096)throw new Error('ROBLOX_PREFLIGHT_EXTERNAL_AI_INVALID_REVIEW');
+  const fence=value.match(/^```(?:json)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i);
+  if(value.startsWith('```')&&!fence)throw new Error('ROBLOX_PREFLIGHT_EXTERNAL_AI_INVALID_REVIEW');
+  let parsed;
+  try{parsed=JSON.parse(fence?fence[1].trim():value);}
+  catch{throw new Error('ROBLOX_PREFLIGHT_EXTERNAL_AI_INVALID_REVIEW');}
+  if(!parsed||Array.isArray(parsed)||typeof parsed!=='object'
+    ||Object.keys(parsed).sort().join(',')!=='blockers,decision,note'
+    ||!['PASS','BLOCK'].includes(parsed.decision)
+    ||!Array.isArray(parsed.blockers)||parsed.blockers.length>6
+    ||parsed.blockers.some(x=>typeof x!=='string'||x.length>120||!clean(x))
+    ||typeof parsed.note!=='string'||parsed.note.length>240
+    ||(parsed.decision==='PASS'&&parsed.blockers.length>0)
+    ||(parsed.decision==='BLOCK'&&parsed.blockers.length===0))
+    throw new Error('ROBLOX_PREFLIGHT_EXTERNAL_AI_INVALID_REVIEW');
+  return {decision:parsed.decision,blockers:parsed.blockers.map(clean),note:clean(parsed.note)};
+}
+
 async function callLead(model,role,facts,{fetchImpl=globalThis.fetch}={}){
   const schema={
     type:'object',
@@ -103,9 +125,7 @@ async function callLead(model,role,facts,{fetchImpl=globalThis.fetch}={}){
     ].join('\n')}]}],
     maxOutputTokens:512,temperature:0,timeoutMs:90000,responseMimeType:'application/json',fetchImpl
   });
-  const parsed=JSON.parse(clean(response.text));
-  if(!['PASS','BLOCK'].includes(parsed.decision)||!Array.isArray(parsed.blockers)||typeof parsed.note!=='string')
-    throw new Error('ROBLOX_PREFLIGHT_EXTERNAL_AI_INVALID_REVIEW');
+  const parsed=parseRobloxBuildPreflightReview(response.text);
   return {role,model:response.model,decision:parsed.decision,blockers:parsed.blockers.map(clean).filter(Boolean),note:clean(parsed.note)};
 
 }

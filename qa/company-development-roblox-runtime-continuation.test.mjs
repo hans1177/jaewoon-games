@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {runInNewContext} from 'node:vm';
-import {inspectRobloxBuildPreflight,evaluateRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
+import {inspectRobloxBuildPreflight,evaluateRobloxBuildPreflight,parseRobloxBuildPreflightReview} from '../tools/company-development-roblox-build-preflight.mjs';
 
 const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
 const headless=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
@@ -79,6 +79,25 @@ test('exact game build evidence checks configured shared reviewer and still bloc
   assert.ok(failed.blockers.includes('build-package-not-passed'));
 });
 
+test('strict preflight accepts a fully fenced JSON review but rejects narrative or unverified claims',()=>{
+  const nl=String.fromCharCode(10);
+  const pass={decision:'PASS',blockers:[],note:'Exact immutable package is consistent.'};
+  const body=JSON.stringify(pass);
+  assert.deepEqual(parseRobloxBuildPreflightReview(body),pass);
+  assert.deepEqual(parseRobloxBuildPreflightReview('```json'+nl+body+nl+'```'),pass);
+  const block={decision:'BLOCK',blockers:['source mismatch'],note:'Source differs from package.'};
+  assert.deepEqual(parseRobloxBuildPreflightReview('```JSON'+nl+JSON.stringify(block)+nl+'```'),block);
+  for(const invalid of [
+    'Here is JSON:'+nl+body,
+    '```json'+nl+body+nl+'```'+nl+'extra',
+    '```json'+nl+body+nl,
+    JSON.stringify({...pass,extra:'unverified'}),
+    JSON.stringify({...pass,blockers:['mismatch']}),
+    JSON.stringify({...block,blockers:[]}),
+    JSON.stringify({...pass,note:'x'.repeat(241)}),
+    JSON.stringify({decision:'PASS',note:'no blockers field'})
+  ])assert.throws(()=>parseRobloxBuildPreflightReview(invalid),/ROBLOX_PREFLIGHT_EXTERNAL_AI_INVALID_REVIEW/);
+});
 test('shared preflight admits canonical Roblox Unity concurrent lane without changing selected platform',()=>{
   const item={
     gameId:'dual',productionClass:'DEVELOPMENT_CONFIRMED',
