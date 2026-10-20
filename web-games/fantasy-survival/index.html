@@ -119,6 +119,9 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid #f6dfa1;outli
 .heroPortrait{flex:0 0 48px;width:48px;height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border:2px ridge #c5a069;border-radius:11px;background:radial-gradient(circle at 45% 30%,#596444,#1a2723 74%);color:#f5d79a;box-shadow:inset 0 0 10px #040b08,0 3px 10px #0008;font-size:21px;font-weight:900}
 .heroPortrait small{font-size:9px;line-height:1;color:#e8e7d8}
 .heroPortrait:active{transform:scale(.96)}
+.heroPortrait[data-avatar-model="mage"]{background:radial-gradient(circle at 35% 25%,#466a8d,#1c253b 77%)}
+.heroPortrait[data-avatar-model="barbarian"]{background:radial-gradient(circle at 35% 25%,#996744,#312019 77%)}
+.heroPortrait[data-avatar-model^="rogue"]{background:radial-gradient(circle at 35% 25%,#497968,#1a3026 77%)}
 .hud .statusBars{min-width:0;flex:1;display:flex;flex-direction:column;gap:5px}
 .hud .title{font-size:12px;line-height:1.2;font-weight:950;color:var(--arpg-ivory);white-space:nowrap;text-shadow:0 1px 6px #000}
 .hud .hp{height:13px;min-width:0;width:100%;max-width:none;border:1px solid #d4a29f7d;border-radius:4px;background:#310f15;box-shadow:inset 0 2px 4px #0009}
@@ -129,6 +132,12 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid #f6dfa1;outli
 .hud .foodBar>i{background:linear-gradient(180deg,#f7d27a,#a97920)}
 .hud .questLine{max-width:100%;margin-top:8px;padding:7px 9px;border:1px solid #b7944a77;border-left:3px solid var(--arpg-gold);border-radius:7px;background:linear-gradient(90deg,#1b211bee,#162921dd);font-size:11px;line-height:1.4;color:#f4dfad;white-space:normal}
 .hud .questLine:before{content:'임무  ';color:#deb976;font-size:9px;letter-spacing:.03em}
+.questToggle{display:block;position:relative;width:100%;min-height:40px;margin:0;padding:0 21px 0 0;border:0;background:none;color:inherit;text-align:left;cursor:pointer;pointer-events:auto;touch-action:manipulation}
+.questToggle .questLine{display:block;margin-top:6px;width:100%}
+.questToggle:after{content:'⌄';position:absolute;right:4px;top:11px;font-size:15px;color:var(--arpg-gold)}
+body[data-quest-mode="compact"] .questToggle .questLine{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body[data-quest-mode="compact"] .questToggle:after{content:'⌃'}
+.questToggle:focus-visible{outline:2px solid #f7df9d;outline-offset:2px}
 .hud .sub{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:7px;color:#c6d7c9;font-size:10px}
 .hud .sub b{color:#f6e8c5}
 .hudMenu{position:relative;flex:0 0 auto;margin-left:auto;pointer-events:auto}
@@ -144,23 +153,47 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid #f6dfa1;outli
 .hudMenuPanel .saveStack button:active{background:#685334}
 .miniMapWrap{position:absolute;top:max(69px,calc(env(safe-area-inset-top) + 69px));right:max(10px,env(safe-area-inset-right));left:auto;transform:none;width:114px;height:114px;padding:5px;border:2px solid #c7ac76a8;border-radius:50%;background:#101a15de;box-shadow:0 5px 22px #000b,inset 0 0 9px #030c08;z-index:14;pointer-events:none}
 .miniMapWrap b{color:#e5d8b3;background:#0b110acb;bottom:2px}
+.miniMapWrap{pointer-events:auto;cursor:pointer;touch-action:manipulation}
+.miniMapWrap:focus-visible{outline:3px solid #f9e09d;outline-offset:3px}
 .miniMap{border-radius:50%}
 .stick{position:absolute;z-index:16;left:max(20px,env(safe-area-inset-left));bottom:max(23px,calc(env(safe-area-inset-bottom) + 18px));width:136px;height:136px;border:2px solid #c2a57298;border-radius:50%;background:radial-gradient(circle,#52604b33 5%,#152b2888 52%,#080f12dd 78%);box-shadow:0 7px 24px #000b,inset 0 0 20px #050b0c;touch-action:none}
 .stick:after{content:'';position:absolute;inset:15px;border:1px dashed #ddc99652;border-radius:50%;pointer-events:none}
 .stick .knob{width:52px;height:52px;left:calc(50% - 26px);top:calc(50% - 26px);border:2px solid #f3dea6;border-radius:50%;background:radial-gradient(circle at 36% 25%,#d7d8bc,#637e6c);box-shadow:0 3px 9px #0009;pointer-events:none}
-.actions{position:absolute;z-index:16;right:max(16px,env(safe-area-inset-right));bottom:max(24px,calc(env(safe-area-inset-bottom) + 17px));width:222px;height:203px;display:grid;grid-template-columns:58px 58px 86px;grid-template-rows:55px 55px 77px;gap:8px 10px;align-items:center;justify-items:center;pointer-events:none}
-.actions>button{pointer-events:auto;position:relative;min-width:0;max-width:100%;min-height:49px;line-height:1.12;text-align:center;white-space:normal;overflow:hidden;color:#f8e7c7;font-size:11px;font-weight:900;border:2px solid #bd9d60b9;border-radius:50%;background:radial-gradient(circle at 36% 25%,#68533c,#202c28 72%);box-shadow:0 4px 16px #000b,inset 0 2px 3px #fff4;touch-action:manipulation}
+/* 전투/상호작용은 엄지 영역, 제작·가방·지도는 별도 우측 바로가기. */
+.quickMenu{position:absolute;z-index:17;top:max(191px,calc(env(safe-area-inset-top) + 182px));right:max(12px,env(safe-area-inset-right));display:grid;grid-template-columns:52px;gap:8px;pointer-events:auto}
+.quickMenu>.act{width:52px;height:52px;min-width:52px;min-height:52px;padding:3px;color:#f6ecd2;font-size:11px;line-height:1.18;font-weight:950;border:2px solid #b99c68;border-radius:11px;background:linear-gradient(145deg,#5c5342,#263930 62%,#151d1a);box-shadow:0 5px 13px #000a,inset 0 1px #ffe7aa3e;touch-action:manipulation}
+.quickMenu>.act:active{transform:scale(.94);filter:brightness(1.2)}
+.quickMenu>#inventory{background:linear-gradient(145deg,#55546a,#292d42)}
+.quickMenu>#craft{background:linear-gradient(145deg,#557052,#253e2b)}
+.quickMenu>#map{background:linear-gradient(145deg,#5e5742,#292d24)}
+.quickMenu>#map:not(.ready){opacity:.62}
+.actions{position:absolute;z-index:16;right:max(16px,env(safe-area-inset-right));bottom:max(24px,calc(env(safe-area-inset-bottom) + 17px));width:172px;height:169px;display:grid;grid-template-columns:68px 88px;grid-template-rows:69px 88px;gap:12px 12px;align-items:center;justify-items:center;pointer-events:none;transform:scale(var(--ui-control-scale,1));transform-origin:bottom right}
+.actions>button{pointer-events:auto;position:relative;min-width:0;max-width:100%;min-height:52px;line-height:1.12;text-align:center;white-space:normal;overflow:hidden;color:#f8e7c7;font-size:12px;font-weight:900;border:2px solid #bd9d60b9;border-radius:50%;background:radial-gradient(circle at 36% 25%,#68533c,#202c28 72%);box-shadow:0 4px 16px #000b,inset 0 2px 3px #fff4;touch-action:manipulation}
 .actions>button:active{transform:scale(.95);filter:brightness(1.17)}
-.actions>#craft{grid-column:1;grid-row:1;width:58px;height:55px}
-.actions>#inventory{grid-column:2;grid-row:1;width:58px;height:55px}
-.actions>#map{grid-column:3;grid-row:1;width:58px;height:55px;justify-self:start}
-.actions>#gather{grid-column:1;grid-row:2;width:58px;height:55px;background:radial-gradient(circle at 36% 25%,#7e6341,#354031)}
-.actions>#attack{grid-column:3;grid-row:2/span 2;width:86px;height:86px;align-self:center;font-size:15px;color:#fff4d8;border:3px solid #e6b676;background:radial-gradient(circle at 31% 23%,#d3584a,#821e27 65%,#390e1c);box-shadow:0 0 0 3px #392417,0 6px 22px #000d,inset 0 1px 9px #efa89b}
+.actions>#gather{grid-column:1;grid-row:1;width:68px;height:68px;background:radial-gradient(circle at 36% 25%,#7e6341,#354031)}
+.actions>#attack{grid-column:2;grid-row:2;width:88px;height:88px;font-size:16px;color:#fff4d8;border:3px solid #e6b676;background:radial-gradient(circle at 31% 23%,#d3584a,#821e27 65%,#390e1c);box-shadow:0 0 0 3px #392417,0 6px 22px #000d,inset 0 1px 9px #efa89b}
 .actions>#attack:before{content:'';display:block;width:21px;height:21px;margin:0 auto 4px;border:2px solid #f6e5ce;border-radius:2px 12px 2px 12px;transform:rotate(-35deg);background:linear-gradient(145deg,#f5d39b,#958b76);box-shadow:0 0 6px #1b0708}
-.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{grid-column:2;grid-row:2;width:58px;height:55px;align-self:center;font-size:10px;background:radial-gradient(circle at 35% 20%,#697a61,#263930)}
+.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{grid-column:1;grid-row:2;width:68px;height:68px;font-size:10px;background:radial-gradient(circle at 35% 20%,#697a61,#263930)}
 .actions>#buildBlueprint:not(.on),.actions>#dismount:not(.ready),.actions>#petSpecial[hidden]{display:none}
+.stick{transform:scale(var(--ui-control-scale,1));transform-origin:bottom left}
+body[data-hud-size="108"]{--ui-control-scale:1.08}
+body[data-hud-hand="left"] .actions{left:max(16px,env(safe-area-inset-left));right:auto;transform-origin:bottom left}
+body[data-hud-hand="left"] .stick{left:auto;right:max(20px,env(safe-area-inset-right));transform-origin:bottom right}
+
 #rotateBlueprint{z-index:16}
 .legend{display:none}
+.hudGuide[hidden]{display:none!important}
+.hudGuide{position:fixed;inset:0;z-index:125;display:flex;align-items:center;justify-content:center;padding:14px;background:#070c0bde;overscroll-behavior:contain}
+.hudGuideBox{width:min(410px,96vw);max-height:88dvh;overflow-y:auto;border:2px solid #bea06b;border-radius:16px;padding:21px 18px;background:linear-gradient(150deg,#35382d,#131f1a);color:#ede8d6;box-shadow:0 18px 65px #000d}
+.hudGuideBox h3{font-size:19px;color:#f8df9f;margin:0 0 16px}
+.hudGuideBox p{margin:11px 0;font-size:13px;line-height:1.65}
+.hudGuideBox strong{color:#f3d69a}
+.hudGuideBox button{width:100%;min-height:48px;margin-top:12px;border:1px solid #dbb77d;border-radius:10px;background:linear-gradient(150deg,#866b3f,#364e37);color:#fff8dd;font-weight:900}
+.optionRow label{color:#e9e5d4}
+.optionRow select{max-width:68%;font-size:12px}
+#hudQuestMode{white-space:nowrap}
+.quickMenu .act:focus-visible,.actions .act:focus-visible{outline:3px solid #fff5b7;outline-offset:3px}
+
 .sheet{position:absolute;z-index:40;left:auto;right:max(12px,env(safe-area-inset-right));top:max(68px,env(safe-area-inset-top));bottom:max(24px,env(safe-area-inset-bottom));width:min(610px,82vw);max-height:none;background:linear-gradient(156deg,#2a2a23f9,#101d19fa);border:2px solid #9a8058;border-radius:14px;box-shadow:0 20px 65px #000c,inset 0 1px #ffe5a526}
 .sheet.open{display:flex}
 .sheetHead{flex:0 0 auto;gap:10px;padding:12px 13px;background:linear-gradient(135deg,#50412a,#1a2720);border-bottom:1px solid #a78c5f}
@@ -187,11 +220,12 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid #f6dfa1;outli
 .startCard{border:2px solid #a88b5e;background:linear-gradient(140deg,#34362beF,#0e1d19fb);box-shadow:0 25px 80px #000d,inset 0 0 0 4px #d8bd7d0a}
 .startCard h1{color:#f7e9c6}
 .startAction{min-height:55px}
-body:has(#sheet.open) .actions,body:has(#sheet.open) .stick,
-body:has(#optionsPanel.open) .actions,body:has(#optionsPanel.open) .stick,
-body:has(#multiPanel.open) .actions,body:has(#multiPanel.open) .stick,
-body:has(#smeltPanel.open) .actions,body:has(#smeltPanel.open) .stick,
-body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden])) .stick{pointer-events:none;opacity:0;visibility:hidden}
+body:has(#sheet.open) .actions,body:has(#sheet.open) .stick,body:has(#sheet.open) .quickMenu,
+body:has(#optionsPanel.open) .actions,body:has(#optionsPanel.open) .stick,body:has(#optionsPanel.open) .quickMenu,
+body:has(#multiPanel.open) .actions,body:has(#multiPanel.open) .stick,body:has(#multiPanel.open) .quickMenu,
+body:has(#smeltPanel.open) .actions,body:has(#smeltPanel.open) .stick,body:has(#smeltPanel.open) .quickMenu,
+body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden])) .stick,body:has(#avatarPanel:not([hidden])) .quickMenu,
+body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .stick,body:has(#hudGuide:not([hidden])) .quickMenu{pointer-events:none;opacity:0;visibility:hidden}
 @media(max-width:720px){
  .hud{top:max(6px,env(safe-area-inset-top));left:max(7px,env(safe-area-inset-left));right:max(7px,env(safe-area-inset-right));gap:5px}
  .hud>.card.main{max-width:calc(100vw - 134px);padding:6px 7px}
@@ -208,9 +242,12 @@ body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden]
  .miniMapWrap{top:max(66px,calc(env(safe-area-inset-top) + 59px));right:max(7px,env(safe-area-inset-right));width:92px;height:92px}
  .stick{width:116px;height:116px;left:max(11px,env(safe-area-inset-left));bottom:max(20px,calc(env(safe-area-inset-bottom) + 17px))}
  .stick .knob{width:46px;height:46px;left:calc(50% - 23px);top:calc(50% - 23px)}
- .actions{right:max(9px,env(safe-area-inset-right));bottom:max(18px,calc(env(safe-area-inset-bottom) + 17px));width:186px;height:183px;grid-template-columns:48px 48px 74px;grid-template-rows:47px 47px 73px;gap:7px 7px}
- .actions>#craft,.actions>#inventory,.actions>#map,.actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{width:48px;height:48px;min-height:48px;font-size:10px}
- .actions>#attack{width:74px;height:74px;font-size:13px}
+ .actions{right:max(11px,env(safe-area-inset-right));bottom:max(18px,calc(env(safe-area-inset-bottom) + 17px));width:152px;height:155px;grid-template-columns:58px 78px;grid-template-rows:58px 78px;gap:10px 14px}
+ .actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{width:58px;height:58px;min-height:52px;font-size:11px}
+ .quickMenu{top:max(172px,calc(env(safe-area-inset-top) + 165px));right:max(8px,env(safe-area-inset-right));grid-template-columns:48px;gap:7px}
+ .quickMenu>.act{width:48px;height:48px;min-height:48px;min-width:48px;font-size:10px}
+ body[data-hud-hand="left"] .actions{left:max(11px,env(safe-area-inset-left));right:auto}
+ .actions>#attack{width:78px;height:78px;font-size:13px}
  .sheet{left:max(6px,env(safe-area-inset-left));right:max(6px,env(safe-area-inset-right));top:auto;bottom:max(7px,env(safe-area-inset-bottom));width:auto;max-height:min(76dvh,670px);height:auto;border-radius:14px}
  .sheetHead{padding:8px 9px;gap:6px}
  .sheetHead:before{display:none}
@@ -225,9 +262,11 @@ body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden]
  .hud .sub{font-size:8px}
  .miniMapWrap{width:82px;height:82px}
  .stick{width:103px;height:103px;left:max(7px,env(safe-area-inset-left))}
- .actions{right:max(6px,env(safe-area-inset-right));width:173px;grid-template-columns:45px 45px 71px;gap:6px 6px}
- .actions>#craft,.actions>#inventory,.actions>#map,.actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{width:45px;height:47px;min-height:47px}
- .actions>#attack{width:71px;height:71px}
+ .actions{right:max(6px,env(safe-area-inset-right));width:138px;grid-template-columns:54px 72px;grid-template-rows:54px 72px;gap:7px 12px}
+ .actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{width:54px;height:54px;min-height:52px}
+ .quickMenu{grid-template-columns:46px}
+ .quickMenu>.act{width:46px;height:46px;min-width:46px;min-height:46px}
+ .actions>#attack{width:72px;height:72px}
 }
 @media(orientation:landscape) and (max-height:520px){
  .hud .sub{display:none}
@@ -236,11 +275,14 @@ body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden]
  .miniMapWrap{top:max(57px,calc(env(safe-area-inset-top) + 54px));width:80px;height:80px}
  .stick{width:99px;height:99px;bottom:max(7px,env(safe-area-inset-bottom))}
  .stick .knob{width:40px;height:40px;left:calc(50% - 20px);top:calc(50% - 20px)}
- .actions{height:135px;bottom:max(6px,env(safe-area-inset-bottom));grid-template-rows:40px 40px 51px;gap:2px 6px}
- .actions>#craft,.actions>#inventory,.actions>#map,.actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{min-height:42px;height:42px}
- .actions>#attack{width:69px;height:69px}
+ .actions{width:141px;height:126px;bottom:max(6px,env(safe-area-inset-bottom));grid-template-columns:56px 76px;grid-template-rows:48px 74px;gap:4px 9px}
+ .quickMenu{top:max(7px,env(safe-area-inset-top));right:max(101px,env(safe-area-inset-right));display:flex;grid-template-columns:none;flex-direction:row;gap:5px}
+ .quickMenu>.act{width:45px;height:45px;min-width:45px;min-height:45px;font-size:10px}
+ .actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{width:53px;min-height:48px;height:53px}
+ .actions>#attack{width:74px;height:74px}
  .sheet{left:20%;right:8px;top:max(8px,env(safe-area-inset-top));bottom:max(8px,env(safe-area-inset-bottom));width:auto;max-height:none;height:auto}
  .hudMenuPanel{max-height:calc(100dvh - 65px)}
+ body[data-hud-hand="left"] .actions{left:max(8px,env(safe-area-inset-left));right:auto}
 }
 @media(prefers-reduced-motion:reduce){.actions>button,.heroPortrait{transition:none}}
 </style>
@@ -267,9 +309,21 @@ body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden]
  <p>이 몬스터가 나를 공격하게 할지 정해. 기본은 공격 안 함이야.</p>
  <div class="creativeButtons"><button id="creativePassive">공격 안 함</button><button id="creativeAttackPlayer">나를 공격</button></div>
  <div class="creativeButtons"><button id="creativeAggroClose">닫기</button></div></div></div>
-<div class="hud" data-mobile-layout="dark-fantasy-action-rpg"><div class="card main"><div class="top"><button id="heroPortrait" class="heroPortrait" type="button" aria-label="3D 캐릭터 꾸미기">◇<small>캐릭터</small></button><div class="statusBars"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><div id="questText" class="questLine">수정 북쪽 끝으로 가세요</div><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><details class="hudMenu"><summary aria-label="게임 메뉴 열기">☰ 메뉴</summary><div class="hudMenuPanel"><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="achievements" class="bestiary">업적</button><button id="multi" class="multiBtn" data-mechanic-id="multiplayer-room">멀티</button><button id="options" class="multiBtn" data-mechanic-id="options-open">옵션</button><button id="avatarOpen" class="multiBtn" type="button">캐릭터 꾸미기</button></div><button id="toTitle" class="home" type="button">타이틀</button><a class="home" href="/">홈</a></div></details></div>
-<div id="notice" class="notice"></div><div id="miniMapWrap" class="miniMapWrap"><b>미니맵</b><canvas id="miniMap" class="miniMap" width="160" height="160"></canvas></div><button id="rotateBlueprint" class="blueprintRotate" data-gameplay-action="blueprint-rotate">회전</button><div id="optionsPanel" class="optionsPanel"><div class="optionHead"><b>옵션</b><button id="optionsClose">×</button></div><div class="optionRow"><span>자동 채집</span><button id="autoGather" data-mechanic-id="auto-gather-toggle" aria-pressed="false">자동 OFF</button></div><div class="optionRow"><span>음악</span><button id="bgmToggle" data-audio-control="mute" data-mechanic-id="audio-bgm-toggle">BGM ON</button></div><div class="optionRow"><span>음악 볼륨</span><input id="bgmVolume" type="range" min="0" max="100" step="5" value="100" data-audio-control="volume" aria-label="BGM 볼륨"></div><div class="optionRow"><span>전투 음악</span><button id="battlePreview" type="button" data-audio-control="preview">새 전투곡 듣기</button></div><div id="musicInfo" class="difficultyInfo" role="status" aria-live="polite">전투곡 듣기로 바로 확인 가능</div><div class="optionRow"><span>난이도</span><select id="difficultySelect" aria-label="난이도"><option value="easy">쉬움</option><option value="normal" selected>중간</option><option value="hard">어려움</option></select></div><div id="difficultyInfo" class="difficultyInfo">중간 · 기존 몬스터 수치</div></div><div id="bossBanner" class="bossBanner"></div><div id="stick" class="stick" data-joystick="true" data-touch-control="move" data-gameplay-action="move" data-mechanic-id="movement-joystick"><div id="knob" class="knob"></div></div>
-<div class="actions" aria-label="게임 조작"><button id="craft" class="act craft" data-gameplay-action="craft" data-mechanic-id="craft-open">제작</button><button id="inventory" class="act inventory" data-gameplay-action="inventory" data-mechanic-id="inventory-open">가방</button><button id="map" class="act map" data-gameplay-action="map" data-mechanic-id="map-open">지도</button><button id="gather" class="act gather" data-gameplay-action="gather" data-mechanic-id="gather-resource">채집</button><button id="attack" class="act attack" data-gameplay-action="attack" data-mechanic-id="combat-primary">공격</button><button id="buildBlueprint" class="blueprintBuild" data-gameplay-action="blueprint-build">건설</button><button id="petSpecial" class="act gather" data-gameplay-action="pet-special" aria-label="악어 특수공격" hidden>특수공격</button><button id="dismount" class="act dismount" data-gameplay-action="dismount" data-mechanic-id="pet-dismount">내리기</button></div>
+<div class="hud" data-mobile-layout="dark-fantasy-action-rpg"><div class="card main"><div class="top"><button id="heroPortrait" class="heroPortrait" type="button" aria-label="3D 캐릭터 꾸미기">◇<small>캐릭터</small></button><div class="statusBars"><span class="title">마력숲 생존기</span><div class="hp"><i id="hpfill"></i></div><span id="hptext" class="small">100/100</span></div></div><div class="foodMeter"><span>밥</span><div class="foodBar"><i id="foodfill"></i></div><span id="foodtext">100/100</span></div><button id="questToggle" class="questToggle" type="button" aria-expanded="false" aria-label="현재 임무 펼치기"><span id="questText" class="questLine">수정 북쪽 끝으로 가세요</span></button><div class="sub"><span>무기 <b id="weapon">맨손</b></span><span>도구 <b id="tool">없음</b></span><span>방어 <b id="armor">없음</b></span><span>지역 <b id="zone">마력숲</b></span><span>처치 <b id="kills">0</b></span></div></div><div class="card res"><span>나무 <b id="wood">0</b></span><span>돌 <b id="stone">0</b></span><span>섬유 <b id="fiber">0</b></span><span>철광석 <b id="ironOre">0</b></span><span>구운철 <b id="ironIngot">0</b></span><span>화산 금 <b id="goldOre">0</b></span><span>구운금 <b id="goldIngot">0</b></span><span>정수 <b id="essence">0</b></span></div><details class="hudMenu"><summary aria-label="게임 메뉴 열기">☰ 메뉴</summary><div class="hudMenuPanel"><div class="saveStack"><button id="save" class="save">저장</button><button id="resetSave" class="save">처음부터</button><button id="bestiary" class="bestiary">도감</button><button id="achievements" class="bestiary">업적</button><button id="multi" class="multiBtn" data-mechanic-id="multiplayer-room">멀티</button><button id="options" class="multiBtn" data-mechanic-id="options-open">옵션</button><button id="avatarOpen" class="multiBtn" type="button">캐릭터 꾸미기</button><button id="hudGuideOpen" class="multiBtn" type="button">조작 안내</button></div><button id="toTitle" class="home" type="button">타이틀</button><a class="home" href="../../">홈</a></div></details></div>
+<div id="notice" class="notice"></div><div id="miniMapWrap" class="miniMapWrap" role="button" tabindex="0" aria-label="지도를 열기" title="눌러서 지도 열기"><b>미니맵</b><canvas id="miniMap" class="miniMap" width="160" height="160"></canvas></div><button id="rotateBlueprint" class="blueprintRotate" data-gameplay-action="blueprint-rotate">회전</button><div id="optionsPanel" class="optionsPanel"><div class="optionHead"><b>옵션</b><button id="optionsClose">×</button></div><div class="optionRow"><span>자동 채집</span><button id="autoGather" data-mechanic-id="auto-gather-toggle" aria-pressed="false">자동 OFF</button></div><div class="optionRow"><span>음악</span><button id="bgmToggle" data-audio-control="mute" data-mechanic-id="audio-bgm-toggle">BGM ON</button></div><div class="optionRow"><span>음악 볼륨</span><input id="bgmVolume" type="range" min="0" max="100" step="5" value="100" data-audio-control="volume" aria-label="BGM 볼륨"></div><div class="optionRow"><span>전투 음악</span><button id="battlePreview" type="button" data-audio-control="preview">새 전투곡 듣기</button></div><div id="musicInfo" class="difficultyInfo" role="status" aria-live="polite">전투곡 듣기로 바로 확인 가능</div><div class="optionRow"><span>난이도</span><select id="difficultySelect" aria-label="난이도"><option value="easy">쉬움</option><option value="normal" selected>중간</option><option value="hard">어려움</option></select></div><div id="difficultyInfo" class="difficultyInfo">중간 · 기존 몬스터 수치</div>
+<div class="optionRow"><label for="hudHandedness">조작 손</label><select id="hudHandedness" aria-label="조작 손"><option value="right">왼쪽 이동 · 오른쪽 공격</option><option value="left">오른쪽 이동 · 왼쪽 공격</option></select></div>
+<div class="optionRow"><label for="hudSize">전투 버튼 크기</label><select id="hudSize" aria-label="전투 버튼 크기"><option value="100">기본</option><option value="108">크게</option></select></div>
+<div class="optionRow"><span>임무 표시</span><button id="hudQuestMode" type="button" aria-pressed="false">요약 보기</button></div>
+</div><div id="hudGuide" class="hudGuide" role="dialog" aria-modal="true" aria-label="마력숲 모바일 조작 안내" hidden>
+ <div class="hudGuideBox"><h3>모험 조작 안내</h3>
+ <p><strong>왼쪽 원형</strong> 이동 · <strong>오른쪽 붉은 버튼</strong> 공격</p>
+ <p><strong>채집</strong> 주변 자원 수집 · <strong>가방·제작·지도</strong> 오른쪽 빠른 메뉴</p>
+ <p><strong>미니맵 터치</strong> 전체 지도 · <strong>상단 임무 터치</strong> 펼치기·접기</p>
+ <p>설정에서 조작 방향과 버튼 크기를 바꿀 수 있어. 기존 전투·제작·저장은 그대로야.</p>
+ <button id="hudGuideClose" type="button">모험으로 돌아가기</button></div>
+</div>
+<div id="bossBanner" class="bossBanner"></div><div id="stick" class="stick" data-joystick="true" data-touch-control="move" data-gameplay-action="move" data-mechanic-id="movement-joystick"><div id="knob" class="knob"></div></div>
+<nav class="quickMenu" aria-label="빠른 메뉴"><button id="inventory" class="act inventory" data-gameplay-action="inventory" data-mechanic-id="inventory-open">가방</button><button id="craft" class="act craft" data-gameplay-action="craft" data-mechanic-id="craft-open">제작</button><button id="map" class="act map" data-gameplay-action="map" data-mechanic-id="map-open">지도</button></nav><div class="actions" aria-label="전투 조작"><button id="gather" class="act gather" data-gameplay-action="gather" data-mechanic-id="gather-resource">채집</button><button id="attack" class="act attack" data-gameplay-action="attack" data-mechanic-id="combat-primary">공격</button><button id="buildBlueprint" class="blueprintBuild" data-gameplay-action="blueprint-build">건설</button><button id="petSpecial" class="act gather" data-gameplay-action="pet-special" aria-label="악어 특수공격" hidden>특수공격</button><button id="dismount" class="act dismount" data-gameplay-action="dismount" data-mechanic-id="pet-dismount">내리기</button></div>
 <div id="sheet" class="sheet"><div class="sheetHead"><div class="tabs"><button id="handTab" class="tab on">맨손</button><button id="benchTab" class="tab">제작대</button><button id="ironBenchTab" class="tab">철 제작대</button><button id="goldBenchTab" class="tab">금 제작대</button><button id="jungleBenchTab" class="tab">독점석 제작대</button><button id="sunstoneBenchTab" class="tab">태양석 제작대</button><button id="mapTab" class="tab" hidden>지도</button><button id="inventoryTab" class="tab">인벤토리</button></div><button id="close" class="close">×</button></div><div id="sheetBody" class="sheetBody"></div></div>
 <div id="smeltPanel" class="smelt"><h3 id="smeltTitle">화로 · 제련/굽기</h3><p id="smeltText">재료를 선택해서 굽거나 제련할 수 있어.</p><div class="smeltRow"><button id="smeltBtn" class="smeltBtn">철 굽기</button><button id="goldSmeltBtn" class="smeltBtn">금 굽기</button><button id="deerSmeltBtn" class="smeltBtn">사슴고기 굽기</button><button id="bugSmeltBtn" class="smeltBtn">벌레고기 굽기</button><button id="fishSmeltBtn" class="smeltBtn">생선 굽기</button><button id="hareSmeltBtn" class="smeltBtn">토끼고기 굽기</button><button id="lizardSmeltBtn" class="smeltBtn">도마뱀고기 굽기</button><button id="crystalDeerSmeltBtn" class="smeltBtn">수정사슴고기 굽기</button><button id="greensSmeltBtn" class="smeltBtn">야채 굽기</button><button id="birdSmeltBtn" class="smeltBtn">꿩고기 굽기</button><button id="goatSmeltBtn" class="smeltBtn">수정염소고기 굽기</button><button id="squidSmeltBtn" class="smeltBtn">오징어고기 굽기</button><button id="sunstoneSmeltBtn" class="smeltBtn" hidden>태양석 · 20초</button><button id="monopolySmeltBtn" class="smeltBtn">독점석 제련</button><button id="smeltClose" class="smeltClose">×</button></div><div class="progress"><i id="smeltProgress"></i></div></div>
 <div class="legend">E 채집 · C 제작 · I 인벤토리 · 화로 두 번 누르기 · WASD 이동</div><div id="recorderOverlay" class="recorderOverlay"><div class="recorderTitle">연구소 녹음기</div><div id="recorderCaption" class="recorderCaption"></div><div id="recorderState" class="recorderState">재생 중</div></div><div id="flash" class="flash"></div>
@@ -299,6 +353,41 @@ function readAvatarAppearance(){
  catch{return validAvatarAppearance(null)}
 }
 let avatarAppearance=readAvatarAppearance();
+// UI: 개인별 화면 설정. 기존 게임 플레이·세이브·밸런스 저장과 별도.
+const HUD_UI_SAVE_KEY='magic-forest-ui-v1';
+function readHudUiSettings(){
+ let saved=null;
+ try{saved=JSON.parse(localStorage.getItem(HUD_UI_SAVE_KEY)||'null')}catch{}
+ return {
+  hand:saved?.hand==='left'?'left':'right',
+  size:saved?.size===108?108:100,
+  quest:saved?.quest==='expanded'?'expanded':'compact'
+ };
+}
+let hudUi=readHudUiSettings();
+function syncHudUi(){
+ document.body.dataset.hudHand=hudUi.hand;
+ document.body.dataset.hudSize=String(hudUi.size);
+ document.body.dataset.questMode=hudUi.quest;
+ document.getElementById('hudHandedness').value=hudUi.hand;
+ document.getElementById('hudSize').value=String(hudUi.size);
+ const expanded=hudUi.quest==='expanded';
+ document.getElementById('questToggle').setAttribute('aria-expanded',String(expanded));
+ document.getElementById('questToggle').setAttribute('aria-label',expanded?'현재 임무 접기':'현재 임무 펼치기');
+ document.getElementById('hudQuestMode').textContent=expanded?'임무 자세히':'임무 요약';
+ document.getElementById('hudQuestMode').setAttribute('aria-pressed',String(expanded));
+ const portrait=document.getElementById('heroPortrait');
+ portrait.dataset.avatarModel=avatarAppearance.model;
+ portrait.querySelector('small').textContent=({knight:'기사',mage:'마법사',
+  barbarian:'전사',rogue:'도적','rogue-hooded':'후드 도적'})[avatarAppearance.model]||'캐릭터';
+}
+function changeHudUi(kind,value){
+ if(kind==='hand')hudUi.hand=value==='left'?'left':'right';
+ if(kind==='size')hudUi.size=Number(value)===108?108:100;
+ if(kind==='quest')hudUi.quest=value==='expanded'?'expanded':'compact';
+ syncHudUi();
+ try{localStorage.setItem(HUD_UI_SAVE_KEY,JSON.stringify(hudUi))}catch{}
+}
 const ui={hpfill:document.getElementById('hpfill'),hptext:document.getElementById('hptext'),foodfill:document.getElementById('foodfill'),foodtext:document.getElementById('foodtext'),questText:document.getElementById('questText'),recorderOverlay:document.getElementById('recorderOverlay'),recorderCaption:document.getElementById('recorderCaption'),recorderState:document.getElementById('recorderState'),weapon:document.getElementById('weapon'),tool:document.getElementById('tool'),armor:document.getElementById('armor'),zone:document.getElementById('zone'),kills:document.getElementById('kills'),wood:document.getElementById('wood'),stone:document.getElementById('stone'),fiber:document.getElementById('fiber'),ironOre:document.getElementById('ironOre'),ironIngot:document.getElementById('ironIngot'),goldOre:document.getElementById('goldOre'),goldIngot:document.getElementById('goldIngot'),essence:document.getElementById('essence'),notice:document.getElementById('notice'),sheet:document.getElementById('sheet'),sheetBody:document.getElementById('sheetBody'),handTab:document.getElementById('handTab'),benchTab:document.getElementById('benchTab'),ironBenchTab:document.getElementById('ironBenchTab'),goldBenchTab:document.getElementById('goldBenchTab'),jungleBenchTab:document.getElementById('jungleBenchTab'),sunstoneBenchTab:document.getElementById('sunstoneBenchTab'),inventoryTab:document.getElementById('inventoryTab'),mapTab:document.getElementById('mapTab'),mapBtn:document.getElementById('map'),attack:document.getElementById('attack'),autoGather:document.getElementById('autoGather'),dismount:document.getElementById('dismount'),petSpecial:document.getElementById('petSpecial'),flash:document.getElementById('flash'),smeltPanel:document.getElementById('smeltPanel'),smeltText:document.getElementById('smeltText'),smeltBtn:document.getElementById('smeltBtn'),goldSmeltBtn:document.getElementById('goldSmeltBtn'),deerSmeltBtn:document.getElementById('deerSmeltBtn'),bugSmeltBtn:document.getElementById('bugSmeltBtn'),fishSmeltBtn:document.getElementById('fishSmeltBtn'),hareSmeltBtn:document.getElementById('hareSmeltBtn'),lizardSmeltBtn:document.getElementById('lizardSmeltBtn'),crystalDeerSmeltBtn:document.getElementById('crystalDeerSmeltBtn'),greensSmeltBtn:document.getElementById('greensSmeltBtn'),birdSmeltBtn:document.getElementById('birdSmeltBtn'),goatSmeltBtn:document.getElementById('goatSmeltBtn'),squidSmeltBtn:document.getElementById('squidSmeltBtn'),monopolySmeltBtn:document.getElementById('monopolySmeltBtn'),sunstoneSmeltBtn:document.getElementById('sunstoneSmeltBtn'),smeltTitle:document.getElementById('smeltTitle'),smeltStation:'furnace',smeltProgress:document.getElementById('smeltProgress'),bestiaryBtn:document.getElementById('bestiary'),bossBanner:document.getElementById('bossBanner'),multiPanel:document.getElementById('multiPanel'),multiStatus:document.getElementById('multiStatus'),multiRoom:document.getElementById('multiRoom')};
 const MULTI_SUPABASE_URL='https://njpexgqvituaxrjpnqsi.supabase.co';
 const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
@@ -6783,6 +6872,30 @@ function openAvatarCustomizer(){
 document.getElementById('startAvatar').addEventListener('click',openAvatarCustomizer);
 document.getElementById('avatarOpen').addEventListener('click',openAvatarCustomizer);
 document.getElementById('heroPortrait').addEventListener('click',openAvatarCustomizer);
+// 모바일 UI: 기존 동작 버튼 그대로 재사용하고 화면 편의 설정만 연결한다.
+syncHudUi();
+document.getElementById('hudHandedness').addEventListener('change',e=>changeHudUi('hand',e.target.value));
+document.getElementById('hudSize').addEventListener('change',e=>changeHudUi('size',e.target.value));
+document.getElementById('hudQuestMode').addEventListener('click',()=>changeHudUi('quest',hudUi.quest==='expanded'?'compact':'expanded'));
+document.getElementById('questToggle').addEventListener('click',()=>changeHudUi('quest',hudUi.quest==='expanded'?'compact':'expanded'));
+document.getElementById('miniMapWrap').addEventListener('click',()=>ui.mapBtn.click());
+document.getElementById('miniMapWrap').addEventListener('keydown',event=>{
+ if(event.key==='Enter'||event.key===' '){event.preventDefault();ui.mapBtn.click()}
+});
+document.querySelector('.hudMenuPanel').addEventListener('click',event=>{
+ if(event.target.closest('button,a'))document.querySelector('.hudMenu').open=false;
+});
+document.getElementById('hudGuideOpen').addEventListener('click',()=>{
+ document.getElementById('hudGuide').hidden=false;
+ document.getElementById('hudGuideClose').focus();
+});
+document.getElementById('hudGuideClose').addEventListener('click',()=>{
+ document.getElementById('hudGuide').hidden=true;
+ document.querySelector('.hudMenu>summary').focus();
+});
+document.getElementById('hudGuide').addEventListener('click',event=>{
+ if(event.target===event.currentTarget)document.getElementById('hudGuideClose').click();
+});
 document.getElementById('avatarClose').addEventListener('click',()=>{document.getElementById('avatarPanel').hidden=true});
 document.getElementById('avatarApply').addEventListener('click',async()=>{
  const next=validAvatarAppearance({
@@ -6798,6 +6911,7 @@ document.getElementById('avatarApply').addEventListener('click',async()=>{
   avatarAppearance=next;
   try{localStorage.setItem(AVATAR_SAVE_KEY,JSON.stringify(next))}
   catch{showNotice('외형 저장 실패 · 현재 화면에서만 적용');return}
+  syncHudUi();
   document.getElementById('avatarPanel').hidden=true;
   showNotice('CC0 3D 캐릭터 외형 저장 완료');
  }finally{applyButton.disabled=false}
