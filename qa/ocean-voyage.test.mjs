@@ -151,6 +151,7 @@ test('CC0-only external asset references and functional UK-era voyage UI',()=>{
  assert.match(html,/opengameart\.org\/sites\/default\/files\/pirate_ship_in_game\.ogg/);
  assert.match(main,/recruitCompanion/);
  assert.match(main,/music\.play\(\)/);
+ assert.match(main,/crowded_pub_2025\.ogg/);
  assert.match(main,/joystick\.setPointerCapture/);
  assert.match(html,/opengameart\.org\/sites\/default\/files\/rpgportraits\.png/);
 });
