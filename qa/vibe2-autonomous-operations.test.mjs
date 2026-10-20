@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { ownerFirstRunnerAllocation } from '../tools/vibe2-adaptive-backpressure.mjs';
 import { selectReviewedWinnerRecoveries } from '../tools/vibe2-release-dispatch-recovery.mjs';
+import {createVibeContinuousQueue,finishVibeQueueTask} from '../assets/vibe-continuous-queue.js';
 import {
   observedHostedRunnerJobs, repairStaleAutonomousQueue, rerouteRepeatingAutoFailures,
-  checkAutonomousCandidate, classifyCloudflareQuota,
+  requeueCooledDownAutoFailures, checkAutonomousCandidate, classifyCloudflareQuota,
   shouldRetryCloudflarePublication, automaticImpactedChecks, verifiedMaintenanceMode
 } from '../tools/vibe2-autonomous-operations.mjs';
 
@@ -51,16 +52,57 @@ test('stale autonomous tasks require exact opted-in main revision and are never 
  assert.equal(out.queue.tasks[4].status,'queued');
 });
 
-test('repeated same-failure autonomous retries demand a different causal strategy once, preserving owner work',()=>{
- const old=task('repeat',{retries:3,evidence:['failure-cause:UNCAUGHT_RENDER_ERROR']});
- const owner=task('owner',{...old,id:'owner',ownerDirective:true});
- const one=rerouteRepeatingAutoFailures({tasks:[old,owner]});
- assert.deepEqual(one.rerouted,['repeat']);
- assert.match(one.queue.tasks[0].goal,/ALTERNATE_CAUSAL_REPAIR/);
- assert.equal(one.queue.tasks[1].goal,owner.goal);
- assert.deepEqual(rerouteRepeatingAutoFailures(one.queue).rerouted,[]);
+test('actual canonical FAIL evidence rotates causal strategy after three identical consecutive errors',()=>{
+ let q=createVibeContinuousQueue({tasks:[task('repeat',{status:'running'}),
+   task('owner',{status:'running',ownerDirective:true})]});
+ for(let count=1;count<=3;count++){
+   q=finishVibeQueueTask(q,{taskId:'repeat',outcome:'FAIL',blocker:'UNCAUGHT_RENDER_ERROR'}).queue;
+   const row=q.tasks.find(x=>x.id==='repeat');
+   assert.equal(row.retries,count);
+   assert.ok(row.evidence.includes('retry-cause-streak:UNCAUGHT_RENDER_ERROR:'+count));
+ }
+ const transformed=rerouteRepeatingAutoFailures(q,{now:Date.parse('2026-10-20T00:00:00Z')});
+ assert.deepEqual(transformed.rerouted,['repeat']);
+ assert.match(transformed.queue.tasks[0].goal,/AUTONOMOUS_ALTERNATE_CAUSAL_REPAIR/);
+ assert.equal(transformed.queue.tasks[1].goal,'fix gameplay');
+ assert.deepEqual(rerouteRepeatingAutoFailures(transformed.queue).rerouted,[]);
 });
 
+test('six identical automatic failures trigger a bounded cooldown and resume automatically',()=>{
+ const start=Date.parse('2026-10-20T00:00:00Z');
+ let queue=createVibeContinuousQueue({tasks:[task('loop',{status:'running'}),task('owner',{
+   ownerDirective:true,status:'running'})]});
+ for(let i=1;i<=6;i++){
+   queue=finishVibeQueueTask(queue,{taskId:'loop',outcome:'FAIL',blocker:'SOURCE_VALIDATION_FAILED'}).queue;
+   if(i===3)queue=createVibeContinuousQueue(rerouteRepeatingAutoFailures(queue,{now:start}).queue);
+ }
+ const result=rerouteRepeatingAutoFailures(queue,{now:start});
+ assert.deepEqual(result.cooled,['loop']);
+ assert.equal(result.queue.tasks[0].status,'blocked');
+ assert.equal(result.queue.tasks[0].blocker,'AUTONOMOUS_SAME_CAUSE_COOLDOWN');
+ assert.equal(result.queue.tasks[1].status,'running');
+ const early=requeueCooledDownAutoFailures(result.queue,{now:start+19*60_000});
+ assert.deepEqual(early.resumed,[]);
+ const late=requeueCooledDownAutoFailures(result.queue,{now:start+21*60_000});
+ assert.deepEqual(late.resumed,['loop']);
+ assert.equal(late.queue.tasks[0].status,'queued');
+ assert.equal(late.queue.tasks[0].blocker,null);
+ assert.ok(!late.queue.tasks[0].evidence.some(x=>x.startsWith('retry-cause-streak:')));
+ assert.deepEqual(rerouteRepeatingAutoFailures(late.queue,{now:start+21*60_000}).cooled,[]);
+});
+
+test('changing the actual failure cause resets identical-error streak and never cools owner directives',()=>{
+ let q=createVibeContinuousQueue({tasks:[task('a'),task('owner',{ownerDirective:true})]});
+ for(let i=0;i<5;i++)q=finishVibeQueueTask(q,{taskId:'a',outcome:'FAIL',blocker:'OLD_CAUSE'}).queue;
+ q=finishVibeQueueTask(q,{taskId:'a',outcome:'FAIL',blocker:'NEW_CAUSE'}).queue;
+ const evidence=q.tasks[0].evidence;
+ assert.ok(evidence.includes('retry-cause-streak:NEW_CAUSE:1'));
+ assert.ok(!evidence.some(x=>x.startsWith('retry-cause-streak:OLD_CAUSE:')));
+ assert.deepEqual(rerouteRepeatingAutoFailures(q,{now:0}).cooled,[]);
+ for(let i=0;i<7;i++)q=finishVibeQueueTask(q,{taskId:'owner',outcome:'FAIL',blocker:'SAME_OWNER_CAUSE'}).queue;
+ assert.equal(q.tasks[1].retries,7);
+ assert.deepEqual(rerouteRepeatingAutoFailures(q,{now:0}).cooled,[]);
+});
 test('a claimed code PASS with no changed files cannot reach fan-in; measured FPS or memory regressions fail',()=>{
  const row=task('edit',{status:'running'});
  assert.equal(checkAutonomousCandidate(row,{outcome:'PASS',metrics:{changedFileCount:0}}).reason,'AUTONOMOUS_NO_SOURCE_CHANGE');

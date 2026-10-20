@@ -20,7 +20,7 @@ import {
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure, ownerFirstRunnerAllocation, DEFAULT_ADAPTIVE_TARGET, DEFAULT_ADAPTIVE_MIN } from './vibe2-adaptive-backpressure.mjs';
-import { repairStaleAutonomousQueue, rerouteRepeatingAutoFailures, checkAutonomousCandidate } from './vibe2-autonomous-operations.mjs';
+import { repairStaleAutonomousQueue, rerouteRepeatingAutoFailures, requeueCooledDownAutoFailures, checkAutonomousCandidate } from './vibe2-autonomous-operations.mjs';
 import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
 import { critiqueNeuralShadow, neuralCriticEvidence } from './vibe2-neural-critic.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
@@ -1320,12 +1320,14 @@ export function runQueueCommand(args = {}) {
   const webGameFlowTarget=reservationPolicy?.developmentSpeedExecution?.webGameFlow?.enabled===true?reservationPolicy.developmentSpeedExecution.webGameFlow.targetConcurrentGames:0;
   const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
   queue=transientLockRecovery.queue;
-  let automaticMaintenance={cancelled:[],rerouted:[]};
+  let automaticMaintenance={cancelled:[],rerouted:[],cooled:[],resumed:[]};
   if(['reserve','reserve-batch'].includes(command)&&process.env.VIBE2_AUTONOMOUS_OWNER_RUNNER_PRIORITY==='1'){
     const cleaned=repairStaleAutonomousQueue(queue,clean(process.env.VIBE2_PREFLIGHT_CONTRACT_SHA));
-    const rerouted=rerouteRepeatingAutoFailures(cleaned.queue);
-    automaticMaintenance={cancelled:cleaned.cancelled,rerouted:rerouted.rerouted};
-    if(cleaned.cancelled.length||rerouted.rerouted.length){
+    const resumed=requeueCooledDownAutoFailures(cleaned.queue);
+    const rerouted=rerouteRepeatingAutoFailures(resumed.queue);
+    automaticMaintenance={cancelled:cleaned.cancelled,rerouted:rerouted.rerouted,
+      cooled:rerouted.cooled,resumed:resumed.resumed};
+    if(cleaned.cancelled.length||resumed.resumed.length||rerouted.rerouted.length||rerouted.cooled.length){
       queue=createVibeContinuousQueue(rerouted.queue);
       writeJson(file,queue);
     }

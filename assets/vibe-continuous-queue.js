@@ -1029,7 +1029,20 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
     const nextRetries = task.retries + 1;
     const canRetry = Boolean(retryable && retryLimitAllows(task,nextRetries));
     const failureSignature=clean(blocker)||'retryable-failure';
-    const failureEvidence=freezeList([...mergedEvidence,`retry-failure-signature:${failureSignature}`,canRetry?'retry-policy:UNLIMITED_OR_WITHIN_BOUND':'retry-policy:TERMINAL']);
+    // Exact consecutive failure count is necessary for autonomous causal repair.
+    // Queue evidence is de-duplicated, so counting matching string occurrences
+    // (the old approach) can NEVER detect repeated identical failures.
+    const previousStreak=(task.evidence||[]).findLast(row=>/^retry-cause-streak:[^:]*:[0-9]+$/.test(row));
+    const previousMatch=/^retry-cause-streak:([^:]*):([0-9]+)$/.exec(previousStreak||'');
+    const encodedCause=encodeURIComponent(failureSignature.slice(0,180));
+    const prior=previousMatch?.[1]===encodedCause?Number(previousMatch[2]):0;
+    const nextStreak=Math.min(100000,Math.max(0,prior)+1);
+    const failureEvidence=freezeList([
+      ...mergedEvidence.filter(row=>!/^retry-cause-streak:[^:]*:[0-9]+$/.test(row)),
+      `retry-failure-signature:${failureSignature}`,
+      `retry-cause-streak:${encodedCause}:${nextStreak}`,
+      canRetry?'retry-policy:UNLIMITED_OR_WITHIN_BOUND':'retry-policy:TERMINAL'
+    ]);
     return freeze({ ...task, ...CLEARED_RESERVATION, status: canRetry ? 'queued' : 'failed', retries: nextRetries, evidence: failureEvidence, lastOutcome: 'FAIL', blocker: canRetry ? null : (clean(blocker) || 'retry-limit-exceeded') });
   });
   const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });

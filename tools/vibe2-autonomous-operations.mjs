@@ -61,24 +61,69 @@ export function repairStaleAutonomousQueue(queueInput={},currentMainSha=''){
   return {queue:{...queueInput,tasks},cancelled};
 }
 
-export function rerouteRepeatingAutoFailures(queueInput={}){
-  const tasks=Array.isArray(queueInput.tasks)?queueInput.tasks:[];
-  const rerouted=[];
+// Retry streaks are persisted by finishVibeQueueTask. Avoid counting repeated
+// evidence entries: the canonical queue de-duplicates those by design.
+export function rerouteRepeatingAutoFailures(queueInput={}, {now=Date.now()}={}){
+  const tasks=Array.isArray(queueInput?.tasks)?queueInput.tasks:[];
+  const rerouted=[],cooled=[];
   const next=tasks.map(task=>{
-    if(!automatic(task)||lower(task.status)!=='queued'||Number(task.retries||0)<3)return task;
+    if(!automatic(task)||lower(task.status)!=='queued'
+      ||lower(task.department)!=='development'
+      ||lower(task.type)!=='implementation')return task;
     const evidence=(task.evidence||[]).map(clean);
-    if(evidence.includes('auto-repair:ALTERNATE_CAUSAL_STRATEGY_REQUIRED'))return task;
-    const failed=evidence.filter(item=>item.startsWith('failure-cause:')).map(item=>item.slice(14)).filter(Boolean);
-    if(!failed.length||new Set(failed).size!==1)return task;
+    const marker=evidence.findLast(row=>/^retry-cause-streak:[^:]*:[0-9]+$/.test(row))||'';
+    const found=/^retry-cause-streak:([^:]*):([0-9]+)$/.exec(marker);
+    const count=found?Number(found[2]):0;
+    let cause='';
+    try{cause=found?decodeURIComponent(found[1]):''}catch{}
+    const hadAlternate=evidence.includes('auto-repair:ALTERNATE_CAUSAL_STRATEGY_REQUIRED');
+    if(count>=6&&hadAlternate){
+      const past=/^auto-repair:cooldown-count:([0-9]+)$/.exec(
+        evidence.findLast(x=>x.startsWith('auto-repair:cooldown-count:'))||'');
+      const nth=Math.min(5,Math.max(0,Number(past?.[1]||0))+1);
+      const durationMinutes=Math.min(120,20*Math.pow(2,nth-1));
+      const until=new Date(Number(now)+durationMinutes*60_000).toISOString();
+      cooled.push(clean(task.id));
+      return {...task,status:'blocked',blocker:'AUTONOMOUS_SAME_CAUSE_COOLDOWN',
+        reservationId:null,reservationRunId:null,reservedAt:null,
+        evidence:unique([
+          ...evidence.filter(row=>!/^auto-repair:cooldown-(?:count:|until:)/.test(row)),
+          'auto-repair:cooldown-count:'+nth,'auto-repair:cooldown-until:'+until,
+          'auto-repair:repeated-exact-failure:'+encodeURIComponent(cause.slice(0,120))
+        ])};
+    }
+    if(count<3||hadAlternate||!cause)return task;
     rerouted.push(clean(task.id));
     return {...task,priority:'high',
-      goal:clean(task.goal)+'\n[AUTONOMOUS_ALTERNATE_CAUSAL_REPAIR] The same failure repeated 3+ times: '
-        +failed[0]+'. Identify a different verified hypothesis, inspect prior attempts, '
-        +'change only responsible source files, and repeat the same failing QA plus impact-scoped regression. '
-        +'Do not repeat an identical patch or claim PASS without runtime evidence.',
+      goal:clean(task.goal)+'\n[AUTONOMOUS_ALTERNATE_CAUSAL_REPAIR] '+count+
+        ' consecutive attempts failed for the same exact cause: '+cause+
+        '. Inspect actual prior attempts and select a different falsifiable patch. '+
+        'Change only responsible source files and repeat failing QA. '+
+        'Never claim PASS without independent validation.',
       evidence:unique([...evidence,'auto-repair:ALTERNATE_CAUSAL_STRATEGY_REQUIRED'])};
   });
-  return {queue:{...queueInput,tasks:next},rerouted};
+  return {queue:{...queueInput,tasks:next},rerouted,cooled};
+}
+
+export function requeueCooledDownAutoFailures(queueInput={}, {now=Date.now()}={}){
+  const tasks=Array.isArray(queueInput?.tasks)?queueInput.tasks:[];
+  const resumed=[];
+  const next=tasks.map(task=>{
+    if(!automatic(task)||lower(task.status)!=='blocked'
+      ||clean(task.blocker)!=='AUTONOMOUS_SAME_CAUSE_COOLDOWN')return task;
+    const evidence=(task.evidence||[]).map(clean);
+    const until=evidence.findLast(x=>x.startsWith('auto-repair:cooldown-until:'));
+    const time=until?Date.parse(until.slice('auto-repair:cooldown-until:'.length)):NaN;
+    if(!Number.isFinite(time)||Number(now)<time)return task;
+    resumed.push(clean(task.id));
+    // A new bounded retry window starts; the previous failure identity is
+    // retained while the consecutive streak resets, avoiding instant re-block.
+    const cleanEvidence=evidence.filter(x=>!x.startsWith('retry-cause-streak:')
+      &&!x.startsWith('auto-repair:cooldown-until:'));
+    return {...task,status:'queued',blocker:null,lastOutcome:'FAIL',
+      evidence:unique([...cleanEvidence,'auto-repair:cooldown-expired:'+new Date(Number(now)).toISOString()])};
+  });
+  return {queue:{...queueInput,tasks:next},resumed};
 }
 
 export function checkAutonomousCandidate(task={},result={}){
