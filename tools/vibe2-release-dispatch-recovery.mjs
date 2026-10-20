@@ -1,6 +1,7 @@
 // 파일명: tools/vibe2-release-dispatch-recovery.mjs
 // 역할: 검증된 후보의 기존 배포 진입만 복구하며 검증 상태를 새로 만들지 않는다.
 import fs from 'node:fs';
+import { classifyCloudflareQuota, shouldRetryCloudflarePublication } from './vibe2-autonomous-operations.mjs';
 import {createVibeContinuousQueue} from '../assets/vibe-continuous-queue.js';
 import { pathToFileURL } from 'node:url';
 
@@ -12,6 +13,15 @@ export function selectReviewedWinnerRecoveries(queueInput={}, {nowMs=Date.now(),
   const selected=[];
   for(const task of createVibeContinuousQueue(queueInput).tasks) {
     const evidence=list(task?.evidence);
+    // Known free-tier exhaustion is an external deployment state, not a code
+    // regression; skip exact duplicate Cloudflare publication retries until
+    // quota reset is independently verified. GitHub Pages deploy is independent.
+    const quota=classifyCloudflareQuota(evidence.join(' '));
+    if(task.target==='web'&&!shouldRetryCloudflarePublication(task)
+      &&evidence.includes('cloudflare-publication-target'))continue;
+    if(task.target==='web'&&quota.quotaExceeded
+      &&!evidence.includes('cloudflare-quota-cleared-verified')
+      &&evidence.includes('cloudflare-publication-target'))continue;
     const webPublicationPending=task.target==='web'&&task.status==='verified'
       &&evidence.includes('web-f0-f9-verified')&&evidence.includes('web-f9-verified')
       &&evidence.includes('web-publish-after-f9-required')

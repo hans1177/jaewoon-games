@@ -20,6 +20,7 @@ import {
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure, ownerFirstRunnerAllocation, DEFAULT_ADAPTIVE_TARGET, DEFAULT_ADAPTIVE_MIN } from './vibe2-adaptive-backpressure.mjs';
+import { repairStaleAutonomousQueue, rerouteRepeatingAutoFailures, checkAutonomousCandidate } from './vibe2-autonomous-operations.mjs';
 import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
 import { critiqueNeuralShadow, neuralCriticEvidence } from './vibe2-neural-critic.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
@@ -733,7 +734,9 @@ export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, res
   const focus=policy?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
   const internalAssetOnly=focus?.enabled===true&&focus?.exclusive!==false;
   const assetDemandFirst=policy?.assetProductionParallelContract?.parallelism?.qualityFirstDevelopment?.qualityBeforeVolume===true;
-  if(clean(lane).toLowerCase()==='asset-development')maxConcurrentTasks=Number(policy?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
+  if(clean(lane).toLowerCase()==='asset-development')
+    maxConcurrentTasks=Math.min(Number(policy?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63,
+      Math.max(1,Number(maxConcurrentTasks)||63));
   const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
   const selected = selection.selected[0];
   if (!selected) return { reserved: false, queue, selection, recovered: recovered.recovered };
@@ -749,7 +752,9 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
   const focus=policy?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
   const internalAssetOnly=focus?.enabled===true&&focus?.exclusive!==false;
   const assetDemandFirst=policy?.assetProductionParallelContract?.parallelism?.qualityFirstDevelopment?.qualityBeforeVolume===true;
-  if(clean(lane).toLowerCase()==='asset-development')maxConcurrentTasks=Number(policy?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
+  if(clean(lane).toLowerCase()==='asset-development')
+    maxConcurrentTasks=Math.min(Number(policy?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63,
+      Math.max(1,Number(maxConcurrentTasks)||63));
   const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane:laneMode, internalAssetOnly, assetDemandFirst, webGameFlowTarget });
   let tasks = started.tasks || [];
   const reservedTaskOrder = tasks.map((task) => task.id);
@@ -1057,8 +1062,15 @@ export function applyVibeFanInResults(queueInput, results = []) {
   for (const raw of results || []) {
     const id = clean(raw?.taskId);
     if (!id) continue;
+    const current=queue.tasks.find(item=>item.id===id);
+    const verdict=checkAutonomousCandidate(current,raw);
+    const checked=verdict.accepted?raw:{
+      ...raw,outcome:'FAIL',blocker:verdict.reason,
+      evidence:[...(raw?.evidence||[]),'autonomous-safeguard:'+verdict.category,
+        'autonomous-safeguard-requires-causal-repair']
+    };
     if (!grouped.has(id)) grouped.set(id, []);
-    grouped.get(id).push(raw);
+    grouped.get(id).push(checked);
   }
   // [메인] 정규화 전후에 보존되는 작업 순서로 한 번만 위치를 색인한다.
   // 그룹마다 전체 대기열을 재검색하지 않으면서 예약·중복 결과 검사는 기존 흐름을 유지한다.
@@ -1308,6 +1320,16 @@ export function runQueueCommand(args = {}) {
   const webGameFlowTarget=reservationPolicy?.developmentSpeedExecution?.webGameFlow?.enabled===true?reservationPolicy.developmentSpeedExecution.webGameFlow.targetConcurrentGames:0;
   const transientLockRecovery=['reserve','reserve-batch','neuron-complete'].includes(command)?recoverTransientWorkLockBlocks(queue):{recovered:0,queue};
   queue=transientLockRecovery.queue;
+  let automaticMaintenance={cancelled:[],rerouted:[]};
+  if(['reserve','reserve-batch'].includes(command)&&process.env.VIBE2_AUTONOMOUS_OWNER_RUNNER_PRIORITY==='1'){
+    const cleaned=repairStaleAutonomousQueue(queue,clean(process.env.VIBE2_PREFLIGHT_CONTRACT_SHA));
+    const rerouted=rerouteRepeatingAutoFailures(cleaned.queue);
+    automaticMaintenance={cancelled:cleaned.cancelled,rerouted:rerouted.rerouted};
+    if(cleaned.cancelled.length||rerouted.rerouted.length){
+      queue=createVibeContinuousQueue(rerouted.queue);
+      writeJson(file,queue);
+    }
+  }
   let result;
   if (command === 'verify-worker-sync') {
     const sync=verifyVibeWorkerSynchronization(queue,{
@@ -1375,10 +1397,13 @@ export function runQueueCommand(args = {}) {
       ?ownerFirstRunnerAllocation(queue,{
         lane:executionLane,requestedMax:configuredMaxConcurrentTasks,
         totalSlots:Number(process.env.VIBE2_HOSTED_RUNNER_LIMIT||20),
-        ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8)
+        ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8),
+        observedActiveHostedJobs:process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS
       }):null;
     const reservationMaxConcurrentTasks=ownerFirst?.concurrentCeiling??configuredMaxConcurrentTasks;
-    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
+    const reserved = ownerFirst?.admissionClosed
+      ? {reserved:false,recovered:0,task:null,queue,selection:{stopReason:'OBSERVED_HOSTED_RUNNERS_FULL',selected:[],lane:executionLane}}
+      : reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
     if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget }) };
   } else if (command === 'reserve-batch') {
@@ -1391,19 +1416,25 @@ export function runQueueCommand(args = {}) {
       ?ownerFirstRunnerAllocation(queue,{
         lane:executionLane,requestedMax:configuredMaxConcurrentTasks,
         totalSlots:Number(process.env.VIBE2_HOSTED_RUNNER_LIMIT||20),
-        ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8)
+        ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8),
+        observedActiveHostedJobs:process.env.VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS
       }):null;
     const reservationMaxConcurrentTasks=ownerFirst?.concurrentCeiling??configuredMaxConcurrentTasks;
     const speculativeExpansion=executionLane==='game-primary'
       ?speculativeExpansionPolicy(adaptiveControl)
       :Object.freeze({allowed:true,reason:'AUXILIARY_LANE_UNCHANGED',primaryCoveragePreserved:true});
-    const reserved = reserveVibeTaskBatch(queue, {
-      maxConcurrentTasks: reservationMaxConcurrentTasks,
-      reservation: reservationFromArgs(args),
-      lane:executionLane,
-      speculativeExpansionAllowed:speculativeExpansion.allowed,
-      speculativeExpansionReason:speculativeExpansion.reason
-    });
+    const reserved = ownerFirst?.admissionClosed
+      ? {reserved:false,recovered:0,queue,tasks:[],matrix:[],workerCount:0,primaryTaskCount:0,
+         speculativeExpansionAllowed:false,speculativeExpansionReason:'OBSERVED_HOSTED_RUNNERS_FULL',
+         selection:{stopReason:'OBSERVED_HOSTED_RUNNERS_FULL',selected:[],lane:executionLane,freeSlots:0,
+           capacityRunning:[],effectiveMaxConcurrentTasks:reservationMaxConcurrentTasks}}
+      : reserveVibeTaskBatch(queue, {
+        maxConcurrentTasks: reservationMaxConcurrentTasks,
+        reservation: reservationFromArgs(args),
+        lane:executionLane,
+        speculativeExpansionAllowed:speculativeExpansion.allowed,
+        speculativeExpansionReason:speculativeExpansion.reason
+      });
     if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     if (clean(args.output)) {
       const createdAt=new Date().toISOString();
@@ -1545,7 +1576,7 @@ export function runQueueCommand(args = {}) {
       result = { command, queue, summary: summarizeVibeContinuousQueue(queue), selection: selectVibeQueueBatch(queue) };
     }
   } else throw new Error(`unknown queue command: ${command}`);
-  return {...result,queueStateRecovered};
+  return {...result,queueStateRecovered,automaticMaintenance};
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

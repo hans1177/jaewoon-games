@@ -454,6 +454,7 @@ jobs:
         if: steps.main_wake.outputs.proceed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          VIBE2_PREFLIGHT_CONTRACT_SHA: ${{ steps.contract.outputs.sha }}
           VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '128'
           # The owner's direct game tasks borrow all 20 logical slots; unattended
           # automatic batches retain eight slots of headroom for owner/QA/release.
@@ -467,6 +468,46 @@ jobs:
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
             echo "VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS=$VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS"
           fi
+          # Count real in-progress JOBS, not workflow runs. Scope is current repository.
+          # Any unavailable/incomplete API page falls back to the conservative 12-slot ceiling.
+          if gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=in_progress&per_page=100" > /tmp/vibe2-live-runs.json 2>/dev/null; then
+            mkdir -p /tmp/vibe2-live-run-jobs
+            live_ids="$(node - <<'NODE'
+          const p=require('/tmp/vibe2-live-runs.json');
+          const rows=p.workflow_runs||[];
+          if(rows.length>=100){process.stdout.write('UNKNOWN');process.exit(0)}
+          process.stdout.write(rows.filter(r=>r.status==='in_progress').map(r=>r.id).join(' '));
+          NODE
+            )"
+            live_probe_ok=1
+            if [ "$live_ids" != UNKNOWN ]; then
+              for run_id in $live_ids; do
+                if ! gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/jobs?per_page=100" > "/tmp/vibe2-live-run-jobs/$run_id.json" 2>/dev/null; then
+                  live_probe_ok=0; break
+                fi
+              done
+              if [ "$live_probe_ok" = 1 ]; then
+                live_job_count="$(node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import {observedHostedRunnerJobs} from '/tmp/vibe2-main/tools/vibe2-autonomous-operations.mjs';
+          const runs=JSON.parse(fs.readFileSync('/tmp/vibe2-live-runs.json','utf8')).workflow_runs||[];
+          const groups=runs.map(run=>{
+            const file='/tmp/vibe2-live-run-jobs/'+run.id+'.json';
+            const data=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):null;
+            return {status:run.status,jobs:data&&data.total_count<=100?data.jobs:null};
+          });
+          const snapshot=observedHostedRunnerJobs({runs:groups});
+          process.stdout.write(snapshot.known?String(snapshot.observedJobs):'UNKNOWN');
+          NODE
+                )"
+                if [[ "$live_job_count" =~ ^[0-9]+$ ]]; then
+                  export VIBE2_OBSERVED_ACTIVE_HOSTED_JOBS="$live_job_count"
+                  echo "VIBE2_OBSERVED_HOSTED_JOBS_CURRENT_REPO=$live_job_count"
+                fi
+              fi
+            fi
+          fi
+          echo "VIBE2_RUNNER_PROBE_SCOPE=CURRENT_REPOSITORY_ONLY"
           control_root="$GITHUB_WORKSPACE"
           test -d "$control_root/.git"
           # Verify exact main snapshot; do not leak the production policy env into standalone QA fixtures.

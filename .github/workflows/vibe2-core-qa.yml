@@ -26,6 +26,7 @@ on:
       - 'assets/vibe-visual-quality-gate.js'
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
+      - 'tools/vibe2-autonomous-operations.mjs'
       - 'tools/company-build-up-directive.mjs'
       - 'tools/company-roblox-production-plan.mjs'
       - 'qa/company-roblox-production-plan.test.mjs'
@@ -114,6 +115,7 @@ on:
       - 'qa/vibe2-incremental-qa.test.mjs'
       - 'qa/vibe2-parallelism-telemetry.test.mjs'
       - 'qa/vibe2-adaptive-backpressure.test.mjs'
+      - 'qa/vibe2-autonomous-operations.test.mjs'
       - 'qa/vibe2-controller-contract.test.mjs'
       - 'qa/vibe2-system-evolution-verify.test.mjs'
       - 'qa/vibe2-system-architecture-execution.test.mjs'
@@ -429,6 +431,7 @@ jobs:
           node --check qa/vibe2-incremental-qa.test.mjs
           node --check qa/vibe2-parallelism-telemetry.test.mjs
           node --check qa/vibe2-adaptive-backpressure.test.mjs
+          node --check qa/vibe2-autonomous-operations.test.mjs
           node --check qa/vibe2-controller-contract.test.mjs
           node --check qa/vibe2-candidate-reconcile.test.mjs
           node --check qa/vibe2-experience-control.test.mjs
@@ -450,6 +453,7 @@ jobs:
           # 기존 전체 회귀검사 보존: 가벼운 중앙정책·예약·학습 계약을 먼저 확인한다.
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-adaptive-backpressure.test.mjs
+          node --test qa/vibe2-autonomous-operations.test.mjs
           node --test qa/vibe2-controller-contract.test.mjs
           node --test qa/vibe2-handoff.test.mjs
           node --test qa/vibe2-continuous-release-dispatch.test.mjs
