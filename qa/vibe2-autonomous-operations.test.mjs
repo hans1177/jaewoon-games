@@ -42,7 +42,7 @@ test('stale autonomous tasks require exact opted-in main revision and are never 
    task('owner',{ownerDirective:true,evidence:['autonomous-pinned-main-sha:'+sha]}),
    task('running',{status:'running',evidence:['autonomous-pinned-main-sha:'+sha]}),
    task('not-pinned',{evidence:['source-revision:'+sha]})
- ];
+ ].map(row=>({...row,responsibleFiles:[row.id+'.js']})); // 정확한 SHA 취소만 검증하고 기존 중복 소스 취소와 분리
  const out=repairStaleAutonomousQueue({tasks:rows},newer);
  assert.deepEqual(out.cancelled,['old']);
  assert.equal(out.queue.tasks[0].status,'cancelled');
