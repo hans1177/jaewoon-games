@@ -73,6 +73,7 @@ test('owner game ideas rank existing gameplay modules and preserve explicit exac
   assert.match(manual.text,/renderMenu/);
   const fallback=selectRelevantExcerpt(source,'','완전히 무관한 요청');
   assert.equal(fallback.strategy,'SOURCE_START');
+  assert.equal(selectRelevantExcerpt(source,'','게임 아이디어 적용').strategy,'SOURCE_START');
 });
 
 test('only bounded relevant source excerpts are offered to a small local model',()=>{
