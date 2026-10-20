@@ -1,5 +1,5 @@
 {
-  "version": 582,
+  "version": 583,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -167,10 +167,15 @@
         "REALISTIC_LATER"
       ],
       "existingRepositoryAssetsPreferred": true,
-      "externalAssetPolicy": "CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED",
+      "externalAssetPolicy": "CC0_ONLY",
       "unclearLicenseForbidden": true,
       "nonCommercialLicenseForbidden": true,
-      "licenseEvidenceRequired": true
+      "licenseEvidenceRequired": true,
+      "downloadedOriginalGraphicsRequired": true,
+      "generatedReplacementGraphicsForbidden": true,
+      "softwareLibraryLicensesPreserved": true,
+      "appliesToExistingAndNewGames": true,
+      "mandatoryWeb3dConversionIssue": "https://github.com/hans1177/jaewoon-games/issues/8611"
     },
     "styleLock": {
       "requiredPerGame": true,
@@ -7510,6 +7515,7 @@
     }
   },
   "changeRecord": {
+    "ownerCc0OriginalGraphics20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","scope":"ALL_EXISTING_AND_NEW_GAME_GRAPHICS_AND_VIBE_ASSET_SELECTION","policy":"CC0_DOWNLOADED_ORIGINAL_GRAPHICS_ONLY","existingGameLogicSaveAndSoftwareLibrariesPreserved":true,"runtimeQaNotImpliedByLicense":true},
     "ownerEveryGameF9Publish20261018": {
       "authority": "OWNER_DIRECT",
       "status": "ACTIVE",
