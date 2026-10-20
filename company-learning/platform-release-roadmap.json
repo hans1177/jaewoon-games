@@ -1,5 +1,5 @@
 {
-  "version": 584,
+  "version": 585,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -29144,6 +29144,39 @@
     "finalDevelopmentLockV2Unchanged": true,
     "canonicalSequenceUnchanged": true,
     "newPipelineCreated": false
+  },
+  "localVibeWebDevelopment": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-10-20",
+    "enabled": true,
+    "platform": "WEB",
+    "model": "qwen2.5-coder:3b",
+    "entrypoint": "tools/vibe2-local-web-develop.mjs",
+    "sourceScope": "SELECTED_CATALOG_WEB_GAME_INDEX_HTML_ONLY",
+    "ownerApplyRequired": true,
+    "ownerPrPublishRequired": true,
+    "ownerMergeRequired": true,
+    "modelCommandExecutionForbidden": true,
+    "cleanWorkingTreeRequired": true,
+    "existingVibe2QaRequired": true,
+    "existingSecurityGateRequired": true,
+    "existingF0F9AndReleaseGatesUnchanged": true,
+    "releaseOnlyViaExistingMainPipeline": true,
+    "newPipelineCreated": false,
+    "advisoryChatContractUnchanged": true,
+    "releaseAuthority": "EXISTING_VIBE2_MAIN_PIPELINE_ONLY",
+    "permittedLocalChanges": "ONE_EXACT_BOUNDED_OWNER_SELECTED_WEB_INDEX_HTML_EDIT_ON_A_NEW_LOCAL_BRANCH",
+    "immutableBoundaries": [
+      "CURRENT_LOCAL_CHAT_READ_ONLY_CONTRACT",
+      "CENTRAL_POLICY",
+      "CREDENTIALS",
+      "SAVE_COMPATIBILITY",
+      "NETWORK_AUTHORITY",
+      "F0_F9_RELEASE_SEQUENCE"
+    ],
+    "localQaOnly": "SCOPED_STATIC_AND_CONTRACT_TESTS_NOT_F0_F9_OR_DEPLOY_VERIFICATION",
+    "noModelCommandExecution": true,
+    "modelReviewVerdictIsNotEvidence": true
   },
   "localVibeWebChat": {
     "version": 1,
