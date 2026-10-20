@@ -6462,6 +6462,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    '[CC0 ORIGINAL / ACTIVE GAME ONLY] 게임 에셋은 출처·라이선스·원본 해시가 확인된 CC0 원본을 이 게임에 맞게 수정해서 사용한다. 자체 제작 저품질 에셋은 단순 제외하지 말고 CC0 파생으로 실제 교체·실행 검증한 뒤 영구 삭제한다. 현재 승인된 개발 게임과 책임 파일만 처리하고 개발하지 않는 게임·보류 게임은 교체하지 않는다. 공용 파일을 삭제하기 전 모든 소비처를 확인하며 개발하지 않는 게임이 사용 중이면 그 파일과 등록은 보존하고 개발 중 게임의 연결만 교체한다. CC0 원본·수정 이력·삭제 경로·게임 연결 변경과 실제 런타임 증거 없이 완료를 주장하지 않는다. 자체 제작 fallback·옛 에셋 재생성·새 우회 파이프라인 금지. 게임 판정·저장·밸런스·기존 F0~F9 순서를 보존한다.',
     plan.gameConceptStyle?'[GAME CONCEPT STYLE] '+JSON.stringify(plan.gameConceptStyle)+'. 공용 나무·몬스터·건물·재질은 원본을 보존하고 이 게임의 컨셉·세계·스타일에 맞는 네이티브 파생으로 선택·변형·조합한다. 재질 분류 수와 색·표면 변형 수는 유행 스타일 종류 수가 아니다. 색만 바꾸지 말고 승인된 실루엣·비율·재질 반응·표면 디테일·조명·모션·UI 표현을 적용한다. 다른 게임이나 오래된 공유 스타일로 덮지 않는다. 스타일 명세가 없으면 누락으로 남기고 일반 프리셋으로 최종 스타일 일치를 주장하지 않는다. 원본 해시·게임별 파생·설계 식별·같은 빌드의 중립 비교와 실게임 카메라 증거를 연결하며 판정·충돌·저장·서버 권한은 보존한다.': '',
     plan.externalCustomization?.contentComposition?.authorized
       ?'[ALL-GENRE EXISTING F0-F9 CONTENT COMPOSITION] '+

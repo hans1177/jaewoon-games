@@ -52,9 +52,7 @@ export const VIBE_ASSET_ACQUISITION_ORDER = Object.freeze([
   'VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY',
   'LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET',
   'LICENSE_VERIFIED_EXTERNAL_ASSET',
-  'RECONSTRUCT_OR_DERIVE_WHEN_RIGHTS_ALLOW',
-  'CREATE_NEW_ASSET',
-  'PROTOTYPE_PRIMITIVE_FALLBACK_ONLY',
+  'MODIFY_VERIFIED_CC0_ORIGINAL',
 ]);
 export const VIBE_GOLDEN_SCENE_ROLES = Object.freeze([
   'PLAYER_OR_PRIMARY_CHARACTER_CLOSEUP',
@@ -141,17 +139,21 @@ export function createVibeAssetAcquisitionPlan({ companyAssets = [], repositoryA
     { source: VIBE_ASSET_ACQUISITION_ORDER[0], assets: companyAssets },
     { source: VIBE_ASSET_ACQUISITION_ORDER[1], assets: repositoryAssets },
     { source: VIBE_ASSET_ACQUISITION_ORDER[2], assets: externalAssets },
-  ].map((row) => ({ ...row, assets: Array.isArray(row.assets) ? row.assets.filter(Boolean) : [] }));
+  ].map((row) => ({ ...row, assets: Array.isArray(row.assets) ? row.assets.filter(asset => /^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(clean(asset?.license)) && asset?.securityBlocked !== true && asset?.quarantined !== true) : [] }));
   const selected = rows.find((row) => row.assets.length) || null;
-  const primitiveFallbackAllowed = normalizedStage === 'PROTOTYPE';
+  const primitiveFallbackAllowed = false;
   return Object.freeze({
     version: 1,
     stage: normalizedStage,
     order: VIBE_ASSET_ACQUISITION_ORDER,
-    selectedSource: selected?.source || 'CREATE_NEW_ASSET',
+    selectedSource: selected?.source || 'VERIFIED_CC0_SOURCE_REQUIRED',
     candidates: Object.freeze(selected ? selected.assets.slice() : []),
     rightsVerificationRequired: selected?.source === 'LICENSE_VERIFIED_EXTERNAL_ASSET' || selected?.source === 'LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET',
-    createNewAssetWhenNoVerifiedCandidate: true,
+    createNewAssetWhenNoVerifiedCandidate: false,
+    cc0OriginalModificationRequired: true,
+    originalSourceAndLicenseEvidenceRequired: true,
+    sourceHashAndModificationLineageRequired: true,
+    inactiveGamesMustRemainUnchanged: true,
     primitiveFallbackAllowed,
     primitiveFallbackCreatesVisualDebt: true,
     primaryActorPrimitiveFallbackAllowed: primitiveFallbackAllowed,
@@ -367,7 +369,7 @@ export function createVibeArtPipeline({ request = '', target = 'auto', style = n
     target: godot ? 'godot' : web ? 'web' : target,
     quality: Object.freeze({ art: artLevel, animation: animationLevel, vfx: vfxLevel, audio: audioLevel }),
     style: style || '프로젝트 기존 스타일 분석 후 일관된 스타일로 확정',
-    assetAcquisition: Object.freeze({ order: VIBE_ASSET_ACQUISITION_ORDER, preferVerifiedCompanyAssets:true, companyLibraryLookupRequiredForNative:true, existingRepositoryBeforeExternal:true, externalGapFillBeforeNewAuthoring:true, rightsVerifiedRepositoryOrExternalBeforeUse:true, externalMotionIsInputMaterialUntilRuntimeVerified:true, reconstructWhenRightsAllow:true, createWhenNoVerifiedCandidate:true, primitiveFallbackPrototypeOnly:true, fallbackCreatesVisualDebt:true }),
+    assetAcquisition: Object.freeze({ order: VIBE_ASSET_ACQUISITION_ORDER, preferVerifiedCompanyAssets:true, companyLibraryLookupRequiredForNative:true, existingRepositoryBeforeExternal:true, externalGapFillBeforeNewAuthoring:true, rightsVerifiedRepositoryOrExternalBeforeUse:true, externalMotionIsInputMaterialUntilRuntimeVerified:true, reconstructWhenRightsAllow:true, createWhenNoVerifiedCandidate:false, cc0Only:true, cc0OriginalModificationRequired:true, inactiveGamesMustRemainUnchanged:true, primitiveFallbackAllowed:false, fallbackCreatesVisualDebt:true }),
     minimumSpatialPresentation: Object.freeze({ required:needsArt, minimumFinalGameplayDimension:'3D', preferred:'REAL_3D_REQUIRED', flat2DFinalGameplayForbidden:true, twoPointFiveDFinalPassForbidden:true, allSpatialGameplayLibraryAssets3dOnly:true, realNativeMeshRuntimeProofRequired:true, ui2DOverlayAllowed:true, acceptedTechniques:Object.freeze(['ISOMETRIC_OR_OBLIQUE_PROJECTION','PERSPECTIVE_OR_ORTHOGRAPHIC_DEPTH_CAMERA','FOREGROUND_MIDGROUND_BACKGROUND_PARALLAX','DEPTH_SORTED_WORLD_ENTITIES','HEIGHT_OR_VERTICALITY','DIRECTIONAL_LIGHT_AND_CONTACT_SHADOWS','DEPTH_AWARE_VFX','CAMERA_PAN_ZOOM_ORBIT_WITH_WORLD_DEPTH']), actualRuntimeEvidenceRequired:true, markerOnlyPassForbidden:true, techniquesAloneCannotPassWithoutReal3dMesh:true, existing2DAction:'MANDATORY_IN_PLACE_NATIVE_3D_REDEVELOPMENT' }),
     runtimeVisualAcceptance: Object.freeze({ required:needsArt, goldenSceneRoles:VIBE_GOLDEN_SCENE_ROLES, highEndTargetFrameRoles:VIBE_HIGH_END_TARGET_FRAME_ROLES, actualRuntimeCaptureRequired:needsArt, mobileInterfaceEvidence:Object.freeze({orientations:Object.freeze(['PORTRAIT','LANDSCAPE']),exactSourceAndImageHashRequired:true,pixelReviewRequired:true,touchInputRequired:true,minimumTouchTargetPixels:44,safeAreaAndOverlapMeasurementsRequired:true,thumbnailCannotProveGameplayUi:true}), compareAgainstLastPassingPresentation:true, beforeAfterVisualRegressionRequired:true, markerOnlyPassForbidden:true, primaryActorPrimitivePlaceholderForbiddenAfterPrototype:true, environmentCoverageRequired:true, platformPerformanceEvidenceRequired:true, graphicsCheckpointOnly:true, graphicsPassIsTerminal:false, releaseAuthority:false }),
     highEndVisual: Object.freeze({
