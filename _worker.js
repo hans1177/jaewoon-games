@@ -225,15 +225,18 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue,ca
   const runtimeGames=Array.isArray(baseCatalog?.games)?baseCatalog.games:[];
   const canonicalGames=Array.isArray(canonicalCatalog?.games)?canonicalCatalog.games:[];
   const canonicalById=new Map(canonicalGames.map(game=>[game.id,game]));
-  const allBaseGames=[...runtimeGames,...canonicalGames.filter(game=>!runtimeGames.some(row=>row.id===game.id))].map(runtime=>{
-    const source=canonicalById.get(runtime.id);
-    if(!source)return {...runtime,homepageWebPlayable:false,hasWebArchive:false,canonical:{...runtime.canonical,sources:{...runtime.canonical?.sources,web:{...runtime.canonical?.sources?.web,playable:false,archive:false}}}};
+  // 영구 삭제되거나 main 정식 목록에서 사라진 런타임 잔존 게임은 홈페이지에 복원하지 않는다.
+  const runtimeById=new Map(runtimeGames.map(game=>[game.id,game]));
+  const allBaseGames=canonicalGames.map(source=>{
+    const runtime=runtimeById.get(source.id)||source;
     return {...runtime,name:source.name,webPath:source.webPath,hasWebArchive:source.hasWebArchive,homepageWebPlayable:source.homepageWebPlayable,ownerWebSourceState:source.ownerWebSourceState,
       canonical:{...runtime.canonical,identity:source.canonical?.identity||runtime.canonical?.identity,marketing:source.canonical?.marketing||runtime.canonical?.marketing,sources:{...runtime.canonical?.sources,web:source.canonical?.sources?.web||{path:source.webPath,playable:source.homepageWebPlayable,archive:source.hasWebArchive,state:source.ownerWebSourceState}},
       // 웹 게시 경로 증거만 canonical main에서 투영한다. Roblox/Unity 런타임 권한은 회사 런타임에 남긴다.
       publication:{...runtime.canonical?.publication,web:source.canonical?.publication?.web||{}}}};
   });
-  const baseGames=allBaseGames.filter(game=>!removed.has(game.id)&&['ACTIVE','REBUILD'].includes(String(game?.lifecycleState||'ACTIVE').toUpperCase()));
+  const baseGames=allBaseGames.filter(game=>!removed.has(game.id)
+    &&['ACTIVE','REBUILD'].includes(String(canonicalById.get(game.id)?.canonical?.lifecycle?.state||canonicalById.get(game.id)?.lifecycleState||'').toUpperCase())
+    &&['ACTIVE','REBUILD'].includes(String(game?.lifecycleState||'ACTIVE').toUpperCase()));
   const projects=Array.isArray(portfolio?.projects)?portfolio.projects:[];
   const activeSeeds=(Array.isArray(seedState?.seeds)?seedState.seeds:[]).filter(seed=>String(seed?.status||'').toUpperCase()==='ACTIVE');
   const queueItems=Array.isArray(developmentQueue?.items)?developmentQueue.items:[];
@@ -455,6 +458,10 @@ export default{
       const catalogResponse=await env.ASSETS.fetch(new Request(new URL('/game-catalog.json',request.url)));
       if(catalogResponse.ok){
         const catalog=await catalogResponse.json();
+        // 게시 파일이 남아 있어도 영구 삭제 게임은 다시 실행하지 못한다.
+        if((catalog.permanentRemovalPolicy?.ids||[]).includes(webEntry[1])){
+          return new Response(request.method==='HEAD'?null:'영구 삭제된 게임입니다.',{status:410,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
+        }
         const policy=catalog.webExposurePolicy||{};
         const html=await response.clone().text();
         const title=html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
