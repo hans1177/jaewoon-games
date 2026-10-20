@@ -103,3 +103,42 @@ test('owner comment rejects forged identities, edits, malformed commands and pla
   assert.throws(()=>validateLocalWebOwnerEvent(event,{...context,actor:'attacker'}));
   assert.throws(()=>validateLocalWebOwnerEvent(event,{...context,repository:'other/repo'}));
 });
+
+
+test('direct owner game work preserves parallel pool and upgrades legacy one-slot PWA queues',()=>{
+  const f=fixture();
+  const task={id:UUID,game_id:'insect-survival',body:'몬스터 행동을 개선해',kind:'directive',priority:'urgent'};
+  const prior={id:'existing-worker',gameId:'insect-survival',status:'running'};
+  const queue={version:5,mode:'hierarchical-dag-sharded-work-stealing-queue',maxConcurrentTasks:128,tasks:[prior]};
+  const result=ingestPwaTask({task,queue,catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.equal(result.maxConcurrentTasks,128,'do not replace existing parallel capacity with one slot');
+  assert.equal(result.mode,queue.mode);
+  assert.equal(result.ownerDirectivePreemptsAutonomy,true);
+  assert.equal(result.tasks.length,2);
+  assert.deepEqual(result.tasks[0],prior,'do not discard an existing reservation');
+  assert.equal(result.tasks[1].priority,'owner-immediate');
+  const old=ingestPwaTask({task,queue:{...queue,mode:'single-worker-priority-serial-queue',maxConcurrentTasks:1},
+    catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.equal(old.maxConcurrentTasks,256,'recover legacy PWA serialization without capping the existing worker pool');
+  assert.equal(old.mode,'hierarchical-dag-sharded-work-stealing-queue');
+  assert.deepEqual(old.tasks[0],prior);
+});
+
+test('owner ingress uses direct Vibe2 execution and published WEB QA runs only after deployment',()=>{
+  const bridge=fs.readFileSync('.github/workflows/pwa-command-bridge.yml','utf8');
+  const cloud=bridge.slice(bridge.indexOf('  bridge:'));
+  assert.doesNotMatch(cloud,/needs: local-advisory|needs\.local-advisory/);
+  assert.match(cloud,/github\.event\.comment\.author_association == 'OWNER'/);
+  assert.match(cloud,/validateLocalWebOwnerEvent/);
+  assert.match(cloud,/gh workflow run vibe2-continuous-core\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f execution_lane=game-primary/);
+  assert.doesNotMatch(cloud,/gh workflow run vibe2-24h-runner\.yml/);
+  const pages=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+  const published=pages.indexOf('uses: actions/deploy-pages@v4');
+  const live=pages.indexOf('id: director_live_qa');
+  const browser=pages.indexOf('id: forest_native_3d_live_qa');
+  const issues=pages.indexOf('name: Director register issues after live game testing');
+  assert.ok(published>0&&live>published&&browser>live&&issues>browser,
+    'production publication precedes live HTTP, browser, and defect reporting');
+  assert.match(pages.slice(browser,issues),/VIBE_SMOKE_LIVE_BASE:/);
+  assert.match(pages.slice(live,issues),/steps\.deployment\.outputs\.page_url/);
+});

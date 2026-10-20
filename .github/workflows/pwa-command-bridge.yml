@@ -64,10 +64,17 @@ jobs:
           if errorlevel 1 exit /b 1
 
   bridge:
-    needs: local-advisory
+    # Owner instructions enter the cloud worker immediately; offline local advisory is independent.
+    # Keep the existing owner identity checks even when the local PC is unavailable.
     if: >-
-      always() && !cancelled() &&
-      (github.event_name != 'issue_comment' || needs.local-advisory.result == 'success')
+      github.event_name != 'issue_comment' ||
+      (github.repository == 'hans1177/jaewoon-games' &&
+       github.actor == 'hans1177' &&
+       github.event.sender.login == 'hans1177' &&
+       github.event.comment.user.login == 'hans1177' &&
+       github.event.comment.user.type == 'User' &&
+       github.event.comment.author_association == 'OWNER' &&
+       startsWith(github.event.comment.body, '/vibe-local-web '))
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -212,11 +219,14 @@ jobs:
           echo 'queued=true' >> "$GITHUB_OUTPUT"
           echo 'PWA_VIBE_QUEUE_WRITE=PASS'
 
-      - name: Start existing Vibe2 worker immediately
+      - name: Start owner development directly in existing Vibe2 worker
         if: steps.ingest.outputs.queued == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'PWA_VIBE2_DISPATCH=PASS'
+          # Owner ingress bypasses the periodic auto-planner, not source/security/release guards.
+          # The existing main deployment publishes first and validates the public route afterwards.
+          gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref main -f execution_lane=game-primary
+          echo 'PWA_OWNER_GAME_DIRECT_DISPATCH=PASS'
+          echo 'PWA_OWNER_POST_PUBLISH_QA=EXISTING_MAIN_RELEASE_PIPELINE'
