@@ -109,6 +109,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # 수동 실행·복구로 들어온 오래된 요청도 중앙정책의 영구 삭제를 우선한다.
+          if [ -n "$REQUESTED_GAME_ID" ]; then
+            permanently_removed="$(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node --input-type=module -e "import fs from 'node:fs'; const p=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')); if(!Array.isArray(p.permanentProjectRemoval?.ids))throw Error('OWNER_PERMANENT_REMOVAL_POLICY_REQUIRED'); process.stdout.write(p.permanentProjectRemoval.ids.includes(process.env.REQUESTED_GAME_ID)?'YES':'NO');")"
+            if [ "$permanently_removed" = 'YES' ]; then
+              echo 'run=false' >> "$GITHUB_OUTPUT"
+              echo "ROBLOX_PERMANENTLY_REMOVED_GAME_SKIP=$REQUESTED_GAME_ID"
+              exit 0
+            fi
+          fi
           active_payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100")"
           winner="$(printf '%s' "$active_payload" | REQUESTED_GAME_ID="$REQUESTED_GAME_ID" CURRENT_RUN_ID="$GITHUB_RUN_ID" CURRENT_SHA="$GITHUB_SHA" node -e "
             let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
@@ -329,6 +338,8 @@ jobs:
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          if(!Array.isArray(roadmap?.permanentProjectRemoval?.ids))throw Error('OWNER_PERMANENT_REMOVAL_POLICY_REQUIRED');
+          const permanentlyRemovedGameIds=new Set(roadmap.permanentProjectRemoval.ids);
           const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
           const reconciliation=JSON.parse(fs.readFileSync('/tmp/roblox-source-reconciliation.json','utf8'));
           const reconciliationById=new Map((reconciliation||[]).map(row=>[row.gameId,row]));
@@ -340,6 +351,10 @@ jobs:
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
           for(const item of candidates){
             if(rows.length>=EXECUTION_BATCH_MAX)break;
+            if(permanentlyRemovedGameIds.has(item.gameId)){
+              console.log('ROBLOX_PERMANENTLY_REMOVED_GAME_SKIP='+item.gameId);
+              continue;
+            }
             if(item.gameId==='daechung-rpg')continue; // owner-direct publish only
             if(requested&&item.gameId!==requested)continue;
             if(!windowIds.has(item.gameId))continue;

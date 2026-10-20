@@ -161,10 +161,14 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
           const ownerExcludedGameIds=new Set(roadmap?.developmentSpeedExecution?.perGameFailureIsolation?.ownerExcludedGameIds||[]);
+          // 영구 중단한 게임은 오래된 개발 큐에서도 다시 등록하지 않는다.
+          if(!Array.isArray(roadmap?.permanentProjectRemoval?.ids))throw Error('OWNER_PERMANENT_REMOVAL_POLICY_REQUIRED');
+          const permanentlyRemovedGameIds=new Set(roadmap.permanentProjectRemoval.ids);
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=(q.items||[]).filter(item=>
             !ownerExcludedGameIds.has(item.gameId)&&
+            !permanentlyRemovedGameIds.has(item.gameId)&&
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&
@@ -214,6 +218,7 @@ jobs:
             if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);
           }
           console.log('DEVELOPMENT_OWNER_EXCLUDED_GAME_IDS='+(Array.from(ownerExcludedGameIds).join(',')||'NONE'));
+          console.log('DEVELOPMENT_PERMANENT_REMOVED_GAME_IDS='+(Array.from(permanentlyRemovedGameIds).join(',')||'NONE'));
           console.log('UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_count='+nativeIds.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_ids='+nativeIds.join(',')+'\n');
@@ -251,10 +256,30 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # 병렬 코디네이터의 오래된 계획만으로 같은 게임을 여러 번 발행하지 않는다.
+          # 12게임마다 실제 활성 실행을 재조회하며 모든 게임별 런타임·검증은 병렬로 남긴다.
+          dispatch_index=0
           while IFS= read -r game_id; do
             [[ -n "$game_id" ]] || continue
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
-            echo "ROBLOX_INDEPENDENT_GAME_DISPATCH=$game_id"
+            if (( dispatch_index % 12 == 0 )); then
+              current_main="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+              [[ "$current_main" =~ ^[0-9a-f]{40}$ ]] || { echo 'ROBLOX_DISPATCH_MAIN_SHA_INVALID' >&2; exit 15; }
+              for page in 1 2 3; do
+                gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?head_sha=$current_main&per_page=100&page=$page" > "/tmp/roblox-dispatch-active-$page.json"
+              done
+              jq -s '[.[].workflow_runs[]?]' /tmp/roblox-dispatch-active-{1,2,3}.json > /tmp/roblox-dispatch-active.json
+              echo "ROBLOX_DISPATCH_JIT_ACTIVE_ROWS=$(jq 'length' /tmp/roblox-dispatch-active.json):$current_main"
+            fi
+            active_count="$(jq --arg game "$game_id" --arg sha "$current_main" '[.[] | select(.display_title == ("Roblox runtime · " + $game) and .head_sha == $sha and (.status == "queued" or .status == "pending" or .status == "in_progress" or .status == "requested"))] | length' /tmp/roblox-dispatch-active.json)"
+            if (( active_count > 0 )); then
+              echo "ROBLOX_INDEPENDENT_GAME_JIT_DEDUPED=$game_id:$current_main"
+            else
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
+              jq --arg game "$game_id" --arg sha "$current_main" '. + [{display_title:("Roblox runtime · " + $game),head_sha:$sha,status:"requested"}]' /tmp/roblox-dispatch-active.json > /tmp/roblox-dispatch-active-next.json
+              mv /tmp/roblox-dispatch-active-next.json /tmp/roblox-dispatch-active.json
+              echo "ROBLOX_INDEPENDENT_GAME_DISPATCH=$game_id"
+            fi
+            dispatch_index=$((dispatch_index+1))
           done < <(jq -r '.[]' <<< "$ROBLOX_GAME_IDS")
           echo 'ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'
 

@@ -102,3 +102,28 @@ test('director preserves independent Roblox runtime before cancellation',()=>{
   assert.ok(drain.includes('DIRECTOR_RUNNER_DRAIN_UNVERIFIED_PATH_PRESERVED='));
   assert.ok(marker<drain.indexOf('pre_cancel_state='));
 });
+
+test('Roblox coordinator and source planner exclude permanently removed games',()=>{
+  const coordinator=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.ok(policy.permanentProjectRemoval.ids.includes('ant-simulator'));
+  assert.ok(policy.permanentProjectRemoval.ids.includes('crystal-defense'));
+  assert.match(coordinator,/!permanentlyRemovedGameIds\.has\(item\.gameId\)/);
+  assert.match(coordinator,/DEVELOPMENT_PERMANENT_REMOVED_GAME_IDS=/);
+  assert.match(runtime,/ROBLOX_PERMANENTLY_REMOVED_GAME_SKIP=/);
+  assert.match(runtime,/permanentlyRemovedGameIds\.has\(item\.gameId\)/);
+  assert.ok(runtime.indexOf('ROBLOX_PERMANENTLY_REMOVED_GAME_SKIP=$REQUESTED_GAME_ID')<runtime.indexOf('active_payload="$(gh api'));
+});
+
+test('independent Roblox dispatcher rechecks active exact revision before submitting',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  const block=workflow.slice(workflow.indexOf('  dispatch-roblox:'),workflow.indexOf('  dispatch-unity:'));
+  assert.match(block,/ROBLOX_INDEPENDENT_GAME_JIT_DEDUPED=/);
+  assert.match(block,/head_sha=\$current_main/);
+  assert.match(block,/dispatch_index % 12/);
+  assert.match(block,/\.status == "in_progress"/);
+  assert.ok(block.indexOf('active_count="$(jq')<block.indexOf('gh workflow run company-development-roblox-runtime.yml'));
+  assert.match(block,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
+  assert.doesNotMatch(block,/cancel-in-progress: true/);
+});
