@@ -74013,11 +74013,167 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_e80014e948d0a5c66afe2568",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8734",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c8aabe05c528f9a45f736bf2099b604e47d1be3f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8734,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe2-rule5-asset-qa-20261021",
+        "baseSha": "c8aabe05c528f9a45f736bf2099b604e47d1be3f",
+        "headSha": "3480c8ea196e6259c517e5c52f8801ff5df8b77e",
+        "mergeCommitSha": "c039ff6ea11ba84fabb7c30daa359515470a70d0",
+        "mergedAt": "2026-10-20T20:21:03Z",
+        "authorLogin": "hans1177",
+        "titleHash": "621fac8dc183c547f6a86805de86cef6ab252a7b09ba51e694e099362c39dd21",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe2-rule5-asset-qa-20261021",
+        "candidateSha": "3480c8ea196e6259c517e5c52f8801ff5df8b77e"
+      },
+      "changeStats": {
+        "changedFileCount": 21,
+        "codingRelevantFileCount": 21,
+        "addedLineCount": 545,
+        "deletedLineCount": 1466,
+        "changedFiles": [
+          ".github/workflows/homepage-manager.yml",
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/company-design-pre-gate-resume.test.mjs",
+          "qa/company-development-web-runtime.test.mjs",
+          "qa/company-homepage-runtime-propagation.test.mjs",
+          "qa/company-unity-web-first-stage.test.mjs",
+          "qa/game-catalog-normalization.test.mjs",
+          "qa/vibe-motion-director.test.mjs",
+          "qa/vibe-studio-asset-universe.test.mjs",
+          "qa/vibe2-autonomous-operations.test.mjs",
+          "qa/vibe2-continuous-release-dispatch.test.mjs",
+          "qa/vibe2-existing-web-assessment.test.mjs",
+          "qa/vibe2-native-asset-production.test.mjs",
+          "qa/vibe2-owner-rule4-self-architecture.test.mjs",
+          "qa/vibe2-public-game-ui-provenance.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "roblox-games/line-defense/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-autonomous-operations.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/homepage-manager.yml",
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "qa/company-design-pre-gate-resume.test.mjs",
+          "qa/company-development-web-runtime.test.mjs",
+          "qa/company-homepage-runtime-propagation.test.mjs",
+          "qa/company-unity-web-first-stage.test.mjs",
+          "qa/game-catalog-normalization.test.mjs",
+          "qa/vibe-motion-director.test.mjs",
+          "qa/vibe-studio-asset-universe.test.mjs",
+          "qa/vibe2-autonomous-operations.test.mjs",
+          "qa/vibe2-continuous-release-dispatch.test.mjs",
+          "qa/vibe2-existing-web-assessment.test.mjs",
+          "qa/vibe2-native-asset-production.test.mjs",
+          "qa/vibe2-owner-rule4-self-architecture.test.mjs",
+          "qa/vibe2-public-game-ui-provenance.test.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "roblox-games/line-defense/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-autonomous-operations.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8734",
+        "merge-commit:c039ff6ea11ba84fabb7c30daa359515470a70d0",
+        "base-main:c8aabe05c528f9a45f736bf2099b604e47d1be3f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 587
+    "total": 588
   }
 }
