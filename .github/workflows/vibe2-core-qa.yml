@@ -27,6 +27,7 @@ on:
       - 'tools/autonomous-safe-edit.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-autonomous-operations.mjs'
+      - 'tools/vibe2-public-game-ui-provenance.mjs'
       - 'tools/company-build-up-directive.mjs'
       - 'tools/company-roblox-production-plan.mjs'
       - 'qa/company-roblox-production-plan.test.mjs'
@@ -116,6 +117,7 @@ on:
       - 'qa/vibe2-parallelism-telemetry.test.mjs'
       - 'qa/vibe2-adaptive-backpressure.test.mjs'
       - 'qa/vibe2-autonomous-operations.test.mjs'
+      - 'qa/vibe2-public-game-ui-provenance.test.mjs'
       - 'qa/vibe2-autonomous-admission.test.mjs'
       - 'qa/vibe2-controller-contract.test.mjs'
       - 'qa/vibe2-system-evolution-verify.test.mjs'
@@ -433,6 +435,8 @@ jobs:
           node --check qa/vibe2-parallelism-telemetry.test.mjs
           node --check qa/vibe2-adaptive-backpressure.test.mjs
           node --check qa/vibe2-autonomous-operations.test.mjs
+          node --check qa/vibe2-public-game-ui-provenance.test.mjs
+          node --check tools/vibe2-public-game-ui-provenance.mjs
           node --check qa/vibe2-autonomous-admission.test.mjs
           node --check qa/vibe2-controller-contract.test.mjs
           node --check qa/vibe2-candidate-reconcile.test.mjs
@@ -456,6 +460,7 @@ jobs:
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-adaptive-backpressure.test.mjs
           node --test qa/vibe2-autonomous-operations.test.mjs
+          node --test qa/vibe2-public-game-ui-provenance.test.mjs
           node --test qa/vibe2-autonomous-admission.test.mjs
           node --test qa/vibe2-controller-contract.test.mjs
           node --test qa/vibe2-handoff.test.mjs
