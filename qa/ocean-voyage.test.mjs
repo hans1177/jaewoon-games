@@ -195,22 +195,22 @@ test('locally hosted Kenney CC0 navigation controls, vintage windows and sea BGM
 });
 
 
-test('public 푸른항로 and every other game never inherit the developer-only asset button',()=>{
+test('푸른항로 has no inherited asset launcher; game-authored scripts can be deployed unchanged',()=>{
  const ocean=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
- const staticBuilder=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
- const fastPublisher=fs.readFileSync('.github/workflows/owner-fast-pages-publish.yml','utf8');
- const assetInspector=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
+ const builder=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+ const owner=fs.readFileSync('.github/workflows/owner-fast-pages-publish.yml','utf8');
+ const inspector=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
+ // Original game HTML does not request the developer inspector.
  assert.doesNotMatch(ocean,/vibe-runtime-panel\.js/);
- assert.doesNotMatch(staticBuilder,/const tag='<script defer src="\/jaewoon-games\/assets\/vibe-runtime-panel\.js"/);
- assert.doesNotMatch(staticBuilder,/PUBLIC_GAME_DEV_INSPECTOR_INJECTION_FORBIDDEN/);
- assert.doesNotMatch(fastPublisher,/PUBLIC_ASSET_INSPECTOR_STILL_PRESENT/);
- assert.match(fastPublisher,/OWNER_OCEAN_DEV_ASSET_INSPECTOR_GATE=DISABLED/);
- assert.doesNotMatch(fastPublisher,/OWNER_OCEAN_DEV_ASSET_INSPECTOR_UNEXPECTED=FAIL/);
- assert.match(assetInspector,/script\?\.dataset\?\.vibeOwnerInspector!=='enabled'/);
- // The actual ship/dock/pirate models remain bound to the 3D canvas,
- // never to the HTML inspector button.
- const game=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
- assert.match(game,/loader\.load\(ROOT\+MODELS\[name\]/);
- assert.match(game,/boatsGroup\.add\(ship\)/);
- assert.match(game,/portsGroup,boatsGroup/);
+ // No build-time injection or silent removal of game-authored functionality.
+ assert.doesNotMatch(builder,/const tag='<script defer src="\/jaewoon-games\/assets\/vibe-runtime-panel\.js"/);
+ assert.doesNotMatch(builder,/withoutInspector=html\.replace/);
+ assert.doesNotMatch(owner,/const clean=html\.replace|PUBLIC_ASSET_INSPECTOR_STILL_PRESENT/);
+ assert.match(owner,/OWNER_PAGES_GAME_OWNED_HTML=UNCHANGED/);
+ assert.doesNotMatch(inspector,/vibeOwnerInspector!=='enabled'/);
+ // Ship, port, and pirate assets are real GLB models bound to a 3D scene.
+ const scene=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
+ assert.match(scene,/loader\.load\(ROOT\+MODELS\[name\]/);
+ assert.match(scene,/boatsGroup\.add\(ship\)/);
+ assert.match(scene,/portsGroup,boatsGroup/);
 });
