@@ -45,6 +45,9 @@ test('24h scheduler stops only new fanout; recovery, owner-direct and finished Q
   assert.match(main,/needs\.plan\.outputs\.autonomy_admitted == 'true' && needs\.plan\.outputs\.game_refill_ready/);
   assert.match(main,/needs\.plan\.outputs\.autonomy_admitted == 'true' && needs\.plan\.outputs\.asset_development_refill_ready/);
   assert.match(main,/VIBE2_24H_REFILL=DEFERRED_OWNER_OR_QUEUE_PRESSURE/);
+  assert.match(main,/VIBE2_AUTOPLAN_ADMISSION=DEFERRED_OWNER_OR_WORKFLOW_BACKLOG/);
+  assert.match(main,/VIBE2_RELEASE_BASELINE_GAP_PLAN=NO/);
+  assert.match(main,/VIBE2_AUTONOMY_ADMITTED: \\$\\{\\{ steps\\.auto_admission\\.outputs\\.admitted \\$\\}\\}/);
   assert.match(main,/recovery_fast:\s*\n\s*needs: plan\s*\n\s*if:/);
   assert.match(main,/VIBE2_RELEASE_RECOVERY_COUNT=/);
 });
