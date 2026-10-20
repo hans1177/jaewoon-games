@@ -19,7 +19,7 @@ import {
   EXTERNAL_MATRIX_BATCH_MAX
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
-import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure, DEFAULT_ADAPTIVE_TARGET, DEFAULT_ADAPTIVE_MIN } from './vibe2-adaptive-backpressure.mjs';
+import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure, ownerFirstRunnerAllocation, DEFAULT_ADAPTIVE_TARGET, DEFAULT_ADAPTIVE_MIN } from './vibe2-adaptive-backpressure.mjs';
 import { evaluateNeuralDiagnosisFeedback, neuralFeedbackEvidence, summarizeNeuralFeedbackEvidence } from './vibe2-neural-feedback.mjs';
 import { critiqueNeuralShadow, neuralCriticEvidence } from './vibe2-neural-critic.mjs';
 import { verifyNeuralRootCause, neuralRootCauseEvidence } from './vibe2-neural-root-cause.mjs';
@@ -1357,7 +1357,13 @@ export function runQueueCommand(args = {}) {
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
+    const ownerFirst=process.env.VIBE2_AUTONOMOUS_OWNER_RUNNER_PRIORITY==='1'
+      ?ownerFirstRunnerAllocation(queue,{
+        lane:executionLane,requestedMax:configuredMaxConcurrentTasks,
+        totalSlots:Number(process.env.VIBE2_HOSTED_RUNNER_LIMIT||20),
+        ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8)
+      }):null;
+    const reservationMaxConcurrentTasks=ownerFirst?.concurrentCeiling??configuredMaxConcurrentTasks;
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
     if (reserved.reserved || reserved.recovered || transientLockRecovery.recovered || atomicSchemaMigrationNeeded) writeJson(file, reserved.queue);
     result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, schemaMigrated:atomicSchemaMigrationNeeded, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane, webGameFlowTarget }) };
@@ -1367,7 +1373,13 @@ export function runQueueCommand(args = {}) {
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
+    const ownerFirst=process.env.VIBE2_AUTONOMOUS_OWNER_RUNNER_PRIORITY==='1'
+      ?ownerFirstRunnerAllocation(queue,{
+        lane:executionLane,requestedMax:configuredMaxConcurrentTasks,
+        totalSlots:Number(process.env.VIBE2_HOSTED_RUNNER_LIMIT||20),
+        ownerReservedSlots:Number(process.env.VIBE2_OWNER_RESERVED_SLOTS||8)
+      }):null;
+    const reservationMaxConcurrentTasks=ownerFirst?.concurrentCeiling??configuredMaxConcurrentTasks;
     const speculativeExpansion=executionLane==='game-primary'
       ?speculativeExpansionPolicy(adaptiveControl)
       :Object.freeze({allowed:true,reason:'AUXILIARY_LANE_UNCHANGED',primaryCoveragePreserved:true});
