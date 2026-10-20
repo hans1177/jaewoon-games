@@ -200,19 +200,21 @@ const baseState={
   day:1,time:0,hp:100,baseMaxHp:100,defense:0,baseAttack:10,
   branch:0,pebble:0,fiber:0,spiderPart:0,beetleShell:0,antHead:0,miteTooth:0,
   crafted:{},weapon:'none',armor:'none',workbench:false,
-  dead:false,kills:0
+  dead:false,kills:0,level:1,xp:0,skillPoints:0,skills:{ferocity:0,vitality:0,survival:0},stamina:100,discoveredAntHill:false
 };
 let state=structuredClone(baseState);
 const player={x:CAMP.x+120,y:CAMP.y,r:17,dirX:1,dirY:0,hit:0,lastAttack:0};
 let nodes=[],bugs=[];
+const cooldown={heavy:0,whirl:0,dodge:0};
+const skillStats=[{id:'ferocity',name:'송곳니 단련',desc:'일반 공격과 스킬 공격력 +2',max:5},{id:'vitality',name:'나뭇잎 수호',desc:'최대 체력 +8',max:5},{id:'survival',name:'풀숲 호흡',desc:'기력 회복 +2/초',max:5}];
 
 // ===== 유틸 =====
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
 function rnd(a,b){return a+Math.random()*(b-a)}
-function maxHp(){return state.baseMaxHp+(ARMORS[state.armor]||ARMORS.none).hp}
+function maxHp(){return state.baseMaxHp+(ARMORS[state.armor]||ARMORS.none).hp+8*(state.skills?.vitality||0)}
 function defense(){return (ARMORS[state.armor]||ARMORS.none).def}
-function attackPower(){return state.baseAttack+(WEAPONS[state.weapon]||WEAPONS.none).attack}
+function attackPower(){return state.baseAttack+(WEAPONS[state.weapon]||WEAPONS.none).attack+2*(state.skills?.ferocity||0)}
 function attackRange(){return (WEAPONS[state.weapon]||WEAPONS.none).range}
 function resize(){
   const dpr=Math.min(2,devicePixelRatio||1);
@@ -286,6 +288,8 @@ function load(){
     if(!d||!d.state)return;
     state=Object.assign(structuredClone(baseState),d.state);
     state.crafted=Object.assign({},d.state.crafted||{});
+    state.skills=Object.assign({},baseState.skills,d.state.skills||{});
+    state.level=Math.max(1,Math.floor(Number(state.level)||1));state.xp=Math.max(0,Math.floor(Number(state.xp)||0));state.skillPoints=Math.max(0,Math.floor(Number(state.skillPoints)||0));state.stamina=clamp(Number(state.stamina??100),0,100);
     if(d.player){player.x=Number(d.player.x)||player.x;player.y=Number(d.player.y)||player.y}
     if(state.dead||state.hp<=0){state.dead=false;state.hp=maxHp();player.x=CAMP.x+120;player.y=CAMP.y}
     if(!WEAPONS[state.weapon])state.weapon='none';
@@ -305,6 +309,10 @@ function updateHud(){
   $('branch').textContent=state.branch;
   $('pebble').textContent=state.pebble;
   $('fiber').textContent=state.fiber;
+  $('levelText').textContent=state.level;$('xpText').textContent=state.xp+'/'+(40+state.level*22);
+  $('staminaText').textContent=Math.ceil(state.stamina);$('staminaBar').style.width=state.stamina+'%';
+  for(const id of ['heavy','whirl','dodge'])$(id+'Btn').classList.toggle('cooling',cooldown[id]>0);
+  $('objective').textContent=objectiveText();
 }
 function openInventory(){
   const rows=[];
@@ -365,6 +373,54 @@ function equip(id){
   save(false);updateHud();openInventory();
 }
 
+
+function objectiveText(){
+ if(!state.crafted.spear)return '1장 · 작은 자의 생존 — 돌창을 제작해';
+ if(!state.workbench)return '1장 · 보급 야영지 — 제작대를 설치해';
+ if(!state.discoveredAntHill)return '2장 · 개미왕국의 경계 — 동쪽 개미굴로 향해';
+ if(state.kills<5)return '2장 · 거대한 적 — 곤충을 5마리 처치해';
+ return '3장 · 밤의 풀숲 — 장비를 강화하고 살아남아';
+}
+function gainXp(amount){
+ state.xp+=amount;
+ let threshold=40+state.level*22;
+ while(state.xp>=threshold){
+  state.xp-=threshold;state.level++;state.skillPoints++;threshold=40+state.level*22;
+  toast('레벨 '+state.level+' 달성! 특성 포인트 +1',2.6);
+ }
+}
+function openSkills(){
+ $('skillsList').innerHTML='<div class="item"><strong>레벨 '+state.level+'</strong><small>남은 특성 포인트 '+state.skillPoints+' · 다음 레벨까지 '+(40+state.level*22-state.xp)+' XP</small></div>'+
+ skillStats.map(item=>'<div class="item"><div class="itemTop"><b>'+item.name+'</b><span class="eq">'+(state.skills[item.id]||0)+'/'+item.max+'</span></div><small>'+item.desc+'</small><button data-learn="'+item.id+'" '+(state.skillPoints<1||(state.skills[item.id]||0)>=item.max?'disabled':'')+'>특성 강화</button></div>').join('')+
+ '<div class="item"><b>조작</b><small>Q: 전방 찌르기 · E: 주변 회전 베기 · Shift: 회피 구르기<br>생존과 전투를 반복하며 캐릭터를 강화해.</small></div>';
+ $('skillsList').querySelectorAll('[data-learn]').forEach(b=>b.addEventListener('click',()=>{
+  const stat=skillStats.find(x=>x.id===b.dataset.learn);
+  if(!stat||state.skillPoints<1||(state.skills[stat.id]||0)>=stat.max)return;
+  state.skillPoints--;state.skills[stat.id]=(state.skills[stat.id]||0)+1;save(false);updateHud();openSkills();
+ }));
+ $('skillsModal').classList.add('show');
+}
+function dodge(){
+ if(state.dead||cooldown.dodge>0||state.stamina<28)return;
+ state.stamina-=28;cooldown.dodge=3.1;player.rollTimer=.38;
+ player.x=clamp(player.x+player.dirX*65,50,WORLD_W-50);
+ player.y=clamp(player.y+player.dirY*65,60,WORLD_H-60);
+ toast('회피!',.45);
+}
+function skillAttack(type){
+ const heavy=type==='heavy';
+ if(state.dead||cooldown[type]>0||state.stamina<(heavy?25:36))return;
+ state.stamina-=heavy?25:36;cooldown[type]=heavy?5.8:9;player.swingTimer=.36;
+ const radius=heavy?146:118;
+ const enemies=bugs.filter(b=>!b.dead&&dist(player,b)<radius).filter(b=>{
+  if(!heavy)return true;
+  const d=dist(player,b),dot=((b.x-player.x)*player.dirX+(b.y-player.y)*player.dirY)/Math.max(1,d);
+  return dot>.20;
+ });
+ for(const b of enemies){b.hp-=Math.ceil(attackPower()*(heavy?2.25:1.45));b.aggro=true;b.hit=.2;if(b.hp<=0)killBug(b)}
+ toast(heavy?'송곳니 찌르기 · '+enemies.length+'타':'풀숲 회전 베기 · '+enemies.length+'타',.9);
+}
+
 // ===== 채집 =====
 function interact(){
   if(state.dead)return;
@@ -392,6 +448,7 @@ function interact(){
 
 // ===== 전투 =====
 function attack(){
+  player.swingTimer=.24;
   const now=performance.now()/1000;
   if(state.dead||now-player.lastAttack<.38)return;
   player.lastAttack=now;
@@ -412,11 +469,13 @@ function killBug(b){
   const sp=SPECIES[b.type];
   state[sp.drop]=(state[sp.drop]||0)+1;
   state.kills++;
+  gainXp({spider:32,beetle:25,ant:15,soldierAnt:37,mite:12}[b.type]||15);
   toast(sp.name+' 처치 · 전리품을 얻었어');
   updateHud();save(false);
 }
 function damagePlayer(raw){
   const taken=Math.max(1,raw-defense());
+  if(player.rollTimer>0)return;
   state.hp-=taken;player.hit=.18;
   toast('피해 '+taken,1);
   if(state.hp<=0){
@@ -435,6 +494,11 @@ function respawnPlayer(){
 function update(dt){
   if(state.dead)return;
   state.time+=dt;
+  state.stamina=Math.min(100,state.stamina+(9+2*(state.skills.survival||0))*dt);
+  for(const id of Object.keys(cooldown))cooldown[id]=Math.max(0,cooldown[id]-dt);
+  player.rollTimer=Math.max(0,(player.rollTimer||0)-dt);
+  player.swingTimer=Math.max(0,(player.swingTimer||0)-dt);
+  if(!state.discoveredAntHill&&Math.hypot(player.x-ANT_HILL.x,player.y-ANT_HILL.y)<250){state.discoveredAntHill=true;toast('새 지역 발견: 개미왕국의 경계',2.6);save(false);}
   if(state.time>=DAY_SEC){
     state.time-=DAY_SEC;state.day++;
     state.hp=Math.min(maxHp(),state.hp+18);
@@ -507,6 +571,9 @@ function update(dt){
 
   camera.x=clamp(player.x-innerWidth*.46,0,Math.max(0,WORLD_W-innerWidth));
   camera.y=clamp(player.y-innerHeight*.48,0,Math.max(0,WORLD_H-innerHeight));
+  const target=bugs.filter(b=>!b.dead).sort((a,b)=>dist(a,player)-dist(b,player))[0];
+  document.body.classList.toggle('combat',!!target&&dist(player,target)<260);
+  if(target){$('targetName').textContent=SPECIES[target.type].name;$('targetHp').style.width=clamp(target.hp/target.maxHp*100,0,100)+'%';}
 
   if(noticeTimer>0){
     noticeTimer-=dt;
@@ -628,6 +695,7 @@ function drawPlayer(){
   ctx.restore();
 }
 function draw(){
+  if(window.insectScene3DReady)return;
   const w=innerWidth,h=innerHeight;
   ctx.clearRect(0,0,w,h);
   const night=state.time/DAY_SEC>.68;
@@ -681,17 +749,27 @@ $('joy').addEventListener('pointerdown',e=>{joy.active=true;joy.pid=e.pointerId;
 $('joy').addEventListener('pointermove',e=>{if(joy.active&&e.pointerId===joy.pid)joyMove(e)});
 function joyEnd(e){if(e.pointerId!==joy.pid)return;joy.active=false;joy.x=0;joy.y=0;$('stick').style.transform='translate(0,0)'}
 $('joy').addEventListener('pointerup',joyEnd);$('joy').addEventListener('pointercancel',joyEnd);
-addEventListener('keydown',e=>{keys[e.key]=true;if(e.code==='Space'){e.preventDefault();attack()}});
+addEventListener('keydown',e=>{keys[e.key]=true;if(e.code==='Space'){e.preventDefault();attack()}if(e.code==='KeyQ')skillAttack('heavy');if(e.code==='KeyE')skillAttack('whirl');if(e.code==='ShiftLeft'||e.code==='ShiftRight')dodge()});
 addEventListener('keyup',e=>keys[e.key]=false);
 
 $('attackBtn').addEventListener('pointerdown',attack);
 $('interactBtn').addEventListener('pointerdown',interact);
+$('heavyBtn').addEventListener('pointerdown',()=>skillAttack('heavy'));
+$('whirlBtn').addEventListener('pointerdown',()=>skillAttack('whirl'));
+$('dodgeBtn').addEventListener('pointerdown',dodge);
+$('skillsBtn').addEventListener('click',openSkills);
 $('inventoryBtn').addEventListener('click',openInventory);
 $('craftBtn').addEventListener('click',openCraft);
 $('saveBtn').addEventListener('click',()=>save(true));
 $('respawnBtn').addEventListener('click',respawnPlayer);
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('.modalWrap').classList.remove('show')));
 
+// 3D 렌더러는 기존 게임의 상태만 읽는다. 전투/제작/저장은 이 파일이 계속 담당한다.
+window.insectWorldSnapshot=()=>({
+ player:{...player},bugs:bugs.map(b=>({...b})),nodes:nodes.filter(n=>n.alive).map(n=>({...n})),
+ state:{day:state.day,time:state.time,hp:state.hp,weapon:state.weapon,armor:state.armor,workbench:state.workbench,stamina:state.stamina,dead:state.dead},
+ camp:{...CAMP},hill:{...ANT_HILL},gravel:{...GRAVEL_ZONE},world:{w:WORLD_W,h:WORLD_H},species:SPECIES
+});
 // ===== 시작 =====
 load();
 buildWorld();
@@ -702,5 +780,6 @@ function loop(t){const dt=Math.min(.04,(t-last)/1000);last=t;update(dt);draw();r
 requestAnimationFrame(loop);
 })();
 </script>
+<script type="module" src="./world3d.mjs"></script>
 </body>
 </html>
