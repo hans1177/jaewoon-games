@@ -16534,9 +16534,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_ROBLOX_SOURCE_BIND",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:37:22.817Z",
-      "updatedAt": "2026-10-20T21:30:13.051Z",
+      "updatedAt": "2026-10-20T21:32:49.321Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -16546,7 +16546,7 @@
         "capturedAt": "2026-10-12T02:39:01.675Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-20T21:26:24.460Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-20T21:32:49.321Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -16591,11 +16591,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-verified-external-learning-required",
+      "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
       ],
-      "robloxSourceCommit": "8351f19ce3be44cbc594f38b9721e1d82508a148",
+      "robloxSourceCommit": "119a05efefa25bfe9af975c8ceda3e97125ab9ac",
       "robloxSourceBootstrapPassedAt": "2026-10-12T18:26:01.953Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
@@ -17101,13 +17101,13 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
+      "robloxQualityBuildUpSourceRevision": "119a05efefa25bfe9af975c8ceda3e97125ab9ac",
       "robloxQualityFailureClass": "SOURCE_CONTRACT",
       "robloxQualityBuildUpEvidence": {
         "version": 1,
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-        "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
-        "sourceTreeSha": "4d36f45a3202a500c2e079de0e320c480fedc610",
+        "sourceRevision": "119a05efefa25bfe9af975c8ceda3e97125ab9ac",
+        "sourceTreeSha": "22143260536c54458aff8e4c210365a0fdce2121",
         "artifactIdentity": null,
         "authority": "roblox-source-static-contract-failure",
         "staticContract": {
@@ -17121,7 +17121,7 @@
           ]
         },
         "assetRepairContext": {
-          "libraryFingerprint": "d2250ae52d9f7091cc59d2f0336364759c90cd57c410984c959884009a705456",
+          "libraryFingerprint": "cf08f122f734bf8f9d20ae761f19eeb2820ee6c93dd43210a567b4e4c8473416",
           "baselineFingerprint": "73d96ee60d589118acc6de08f2dc7262b09ecf5c8da6260dd172f60ec286a89b",
           "validatorFingerprint": "06134a4ef66eb10539fb4fa9f6b1e2dea93399ba50be92781ca71c92a78201c9"
         },
@@ -17167,8 +17167,8 @@
             "hint": "Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized."
           }
         ],
-        "workflowRunId": 39366362606,
-        "testedAt": "2026-10-20T04:50:18.921Z"
+        "workflowRunId": 39497605417,
+        "testedAt": "2026-10-20T21:32:49.321Z"
       },
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
@@ -28276,7 +28276,7 @@
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-10-20T21:32:26.215Z",
+  "updatedAt": "2026-10-20T21:32:49.321Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
