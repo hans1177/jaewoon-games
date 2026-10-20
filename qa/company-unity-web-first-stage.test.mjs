@@ -123,113 +123,18 @@ test('Fantasy Survival replaces primitive avatar with actual guardian native ski
   assert.match(game,/private const string SavePrefix = "fantasy_survival_webfloor_"/,'save keys are unchanged');
 });
 
-test('Fantasy Survival reauthored company 3D tree assets reach the canonical Unity Web build and preserve harvest collision',()=>{
-  const art='unity-games/fantasy-survival/Assets/Resources/CompanyAssets/';
-  const sources=['tree_trunk_thick.obj','tree_crown_round.obj'].map(name=>
-    fs.readFileSync('assets/roblox/survival-core-world-v1/'+name,'utf8'));
-  const models=['MagicForestTrunk.obj','MagicForestCrown.obj'].map(name=>
-    fs.readFileSync(art+name,'utf8'));
-  const mtls=fs.readFileSync(art+'MagicForestMaterials.mtl','utf8');
-  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
-  const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
-  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
-  const manifest=JSON.parse(fs.readFileSync('unity-games/fantasy-survival/Packages/manifest.json','utf8'));
-  const request=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
-  const companyRegistry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
-  const sha256=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-  const materialId='unity-fantasy-survival-tree-materials-v1';
-  const recordedMaterial=companyRegistry.assets.find(asset=>asset.id===materialId);
-  assert.ok(recordedMaterial,'native material derivative must exist in the central registry');
-  assert.equal(recordedMaterial.path,'/'+art+'MagicForestMaterials.mtl');
-  assert.equal(recordedMaterial.family,'MATERIAL');
-  assert.equal(recordedMaterial.sourceHash,sha256('assets/roblox/survival-core-world-v1/survival-core-world.mtl'));
-  assert.equal(recordedMaterial.nativeArtifactHash,sha256(art+'MagicForestMaterials.mtl'));
-  assert.equal(recordedMaterial.productionVerified,false,'static source evidence cannot promote a material');
-  const expectedNativeIds=['unity-fantasy-survival-tree-trunk-v1','unity-fantasy-survival-tree-crown-v1'];
-  for(const [i,obj] of models.entries()){
-    const row=companyRegistry.assets.find(asset=>asset.id===expectedNativeIds[i]);
-    assert.ok(row,'real Unity asset derivative must be registered');
-    assert.equal(row.platform,'UNITY');
-    assert.equal(row.family,'ENVIRONMENT');
-    assert.equal(row.status,'REPO_ASSET');
-    assert.equal(row.productionVerified,false);
-    assert.equal(row.nativeRuntimeVerified,false);
-    assert.equal(row.consumerGameIds.length,0,'source selection alone is not verified consumer usage');
-    assert.equal(row.originalSourceImmutable,true);
-    const originalPath='assets/roblox/survival-core-world-v1/'+['tree_trunk_thick.obj','tree_crown_round.obj'][i];
-    const nativePath=art+['MagicForestTrunk.obj','MagicForestCrown.obj'][i];
-    assert.equal(row.sourceHash,sha256(originalPath));
-    assert.equal(row.nativeArtifactHash,sha256(nativePath));
-    assert.equal(row.platformVariants?.UNITY?.path,nativePath);
-    assert.equal(row.path,'/'+nativePath);
-    assert.equal(row.sourceParentPath,originalPath);
-    assert.ok(row.transformHistory.some(change=>change.kind==='PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT'));
-    assert.notEqual(obj,sources[i],'native Unity model must be a real derivative, not a cross-platform raw copy');
-    assert.match(obj,/mtllib MagicForestMaterials\.mtl/);
-    assert.match(obj,/Parent Git blob [0-9a-f]{40}/);
-    assert.match(obj,/project-original/);
-    const vertices=obj.split('\n').filter(line=>line.startsWith('v ')).map(line=>line.trim().split(/\s+/).slice(1).map(Number));
-    const faces=obj.split('\n').filter(line=>line.startsWith('f ')).map(line=>line.trim().split(/\s+/).slice(1));
-    assert.ok(vertices.length>=500,'genuine 3D vertices required');
-    assert.ok(faces.length>=350,'genuine geometry faces required');
-    assert.ok(vertices.every(v=>v.length===3&&v.every(Number.isFinite)),'vertex coordinates finite');
-    assert.ok(faces.every(face=>face.length>=3&&face.every(token=>{
-      const n=Number(token.split('/')[0]);
-      return Number.isInteger(n)&&n>0&&n<=vertices.length;
-    })),'face indices must reference native vertices');
-    const spans=[0,1,2].map(k=>Math.max(...vertices.map(v=>v[k]))-Math.min(...vertices.map(v=>v[k])));
-    assert.ok(spans.every(n=>n>.3),'actual volumetric 3D depth, not flat plane');
-    const sourceVertex=sources[i].split('\n').find(line=>line.startsWith('v ')).trim().split(/\s+/).slice(1).map(Number);
-    const targetVertex=vertices[0];
-    const nativeScale=i===0?1.035:.94;
-    assert.ok(Math.abs(targetVertex[1]-sourceVertex[2]*nativeScale)<.00002,'reoriented Unity Y-up native geometry');
-  }
-  assert.match(mtls,/newmtl SURVIVAL_BARK/);
-  assert.match(mtls,/newmtl SURVIVAL_LEAF/);
-  assert.match(mtls,/0\.195 0\.48 0\.235/,'material color was actually altered');
-  assert.match(game,/Resources\.Load<GameObject>\("CompanyAssets\/MagicForestTrunk"\)/);
-  assert.match(game,/Resources\.Load<GameObject>\("CompanyAssets\/MagicForestCrown"\)/);
-  assert.match(game,/Instantiate\(treeTrunkSource, worldRoot\.transform\)/);
-  assert.match(game,/Instantiate\(treeCrownSource, worldRoot\.transform\)/);
-  assert.match(game,/trunk\.GetComponent<Renderer>\(\)\.enabled = false/);
-  assert.match(game,/crown\.GetComponent<Renderer>\(\)\.enabled = false/);
-  assert.match(game,/Collider oldCrownCollider = crown\.GetComponent<Collider>\(\)/);
-  assert.match(game,/Destroy\(oldCrownCollider\)/,'hidden canopy collider must not block resource raycast');
-  assert.match(game,/trunk\.name = i % 4 == 0 \? "Rock" : "Tree"/,'existing harvest target names remain');
-  assert.match(game,/if\(n!="Tree" && n!="Rock" && n!="Fiber"\)continue;/,'existing tree/rock harvesting retained and missing fiber reconnected');
-  assert.match(game,/MAGIC_FOREST_NATIVE_ASSET_BINDING=.*ASSET_REPAIR_REQUIRED/,'runtime failure remains visible');
-  assert.match(game,/private const string LegacyNormalSaveKey = SavePrefix \+ "world_v1"/);
-  assert.match(build,/UnityWebFloorBuild/);
-  assert.match(build,/BuildPipeline\.BuildPlayer\(/);
-  assert.match(build,/AssetDatabase\.LoadAssetAtPath<GameObject>\(modelPath\)/);
-  assert.match(build,/UNITY_WEB_NATIVE_ASSET_IMPORT_FAILED/);
-  assert.match(build,/UNITY_WEB_NATIVE_ASSET_GEOMETRY_OR_MATERIAL_FAILED/);
-  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_REGISTRY_VERSION_STALE/);
-  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SOURCE_PATH_INVALID/);
-  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH/);
-  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED/);
-  assert.ok(request.registryVersionRequired<=companyRegistry.version,'stored binding may predate unrelated Roblox catalog growth');
-  assert.deepEqual(request.registryAssetIds.slice(0,3),[
-    'unity-fantasy-survival-tree-trunk-v1',
-    'unity-fantasy-survival-tree-crown-v1',
-    'unity-fantasy-survival-tree-materials-v1'
-  ]);
-  assert.equal(request.registryAssetIds.length,22,'expanded internal Unity asset loadout must be source registered');
-  assert.match(build,/SOURCE_READY_RUNTIME_UNVERIFIED/,'import preflight cannot claim runtime QA');
-  assert.match(build,/mesh\.GetIndexCount\(submesh\)/,'Editor import QA must work with unreadable meshes');
-  assert.match(game,/mesh\.GetIndexCount\(submesh\)/,'WebGL runtime must use non-readable-safe mesh index metadata');
-  assert.doesNotMatch(build,/mesh\.triangles\.Length/);
-  assert.doesNotMatch(game,/sharedMesh\.triangles\.Length/);
-  assert.equal(manifest.dependencies['com.unity.modules.physics'],'1.0.0');
-  assert.equal(request.gameId,'fantasy-survival');
-  assert.equal(request.projectPath,'unity-games/fantasy-survival');
-  assert.equal(request.buildMethod,'UnityWebFloorBuild.BuildWeb');
-  assert.equal(request.fullGameplayPassAuthority,false,'source and metadata are not runtime pass evidence');
+// [Rule5] 제거된 자체 제작 원본을 Unity 네이티브 검증 근거로 재등록하지 않는다.
+test('Rule5 deleted Unity tree source stays blocked until verified CC0 replacement',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(policy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  assert.ok(registry.assets.every(row=>['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license)));
+  const retired=['unity-fantasy-survival-tree-trunk-v1','unity-fantasy-survival-tree-crown-v1','unity-fantasy-survival-tree-materials-v1'];
+  for(const id of retired)assert.equal(registry.assets.some(row=>row.id===id),false,id+' not eligible without CC0 lineage');
+  for(const name of ['tree_trunk_thick.obj','tree_crown_round.obj','survival-core-world.mtl'])assert.equal(fs.existsSync('assets/roblox/survival-core-world-v1/'+name),false);
+  assert.equal(registry.assets.some(row=>row.productionVerified===true&&row.nativeRuntimeVerified!==true),false);
 });
-
-// [마력숲 Vibe 회귀] 웹 원본의 섬유·제작/저장 의미를 Unity 네이티브 책임 함수에서 보존한다.
-
-// [마력숲 기동 회귀] 원본 Unity 월드가 실제로 준비됐을 때만 부팅 표식을 기록한다.
 test('Fantasy Survival bootstrap boot marker follows the actual camera/player/world readiness gate',()=>{
   const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
   const awake=game.slice(game.indexOf('private void Awake()'),game.indexOf('private static float ParseFloat('));
@@ -314,150 +219,43 @@ test('Fantasy Survival removes dead monster touch hitboxes through the existing 
 });
 
 
-test('Fantasy Survival Unity Web uses real shared library meshes, UI and action timing sources without changing game authority',()=>{
-  const project='unity-games/fantasy-survival/Assets/';
-  const game=fs.readFileSync(project+'Scripts/UnityWebFloorGame.cs','utf8');
-  const editor=fs.readFileSync(project+'Editor/UnityWebFloorBuild.cs','utf8');
-  const reg=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+// [Rule5] 폐기된 예전 Unity 소스 바인딩은 실제 빌드/런타임 증거가 아니다.
+test('Rule5 stale Unity Web build request cannot promote removed project-original assets',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(policy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  assert.ok(registry.assets.every(row=>['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license)));
   const request=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
-  const registryPolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const nativeAssets=request.registryAssetIds.map(id=>reg.assets.find(asset=>asset.id===id));
-  assert.ok(nativeAssets.every(Boolean),'every requested asset is in the company registry');
-  assert.equal(new Set(request.registryAssetIds).size,request.registryAssetIds.length);
-  assert.ok(request.registryVersionRequired<=reg.version,'stored binding may predate unrelated Roblox catalog growth');
-  assert.deepEqual([...new Set(nativeAssets.map(a=>a.family))].sort(),
-    ['BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','UI','WEAPON']);
-  for(const asset of nativeAssets){
-    assert.equal(asset.platform,'UNITY');
-    assert.equal(asset.originalSourceImmutable,true);
-    assert.equal(asset.productionVerified,false);
-    assert.equal(asset.nativeRuntimeVerified,false);
-    assert.ok(asset.sourceParentPath.startsWith('assets/'));
-    const relative=asset.path.replace(/^\/+/, '');
-    assert.equal(asset.nativeArtifactHash,createHash('sha256').update(fs.readFileSync(relative)).digest('hex'));
-    const currentParentHash=createHash('sha256').update(fs.readFileSync(asset.sourceParentPath)).digest('hex');
-    if(asset.sourceHash!==currentParentHash){
-      assert.equal(registryPolicy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
-      assert.equal(asset.productionVerified,false,'stale held derivative cannot be promoted');
-    }
-  }
-  for(const name of ['MagicForestRock','MagicForestChest','MagicForestCrate','MagicForestWall','MagicForestDoor',
-    'MagicForestFoundation','MagicForestRoof','MagicForestLamp','MagicForestRoad','MagicForestTorso','MagicForestCape',
-    'MagicForestShoulder','MagicForestCanine','MagicForestClaw','MagicForestSword','MagicForestGrip']){
-    assert.match(editor,new RegExp('CompanyAssets/'+name+'\\.obj'));
-    const model=fs.readFileSync(project+'Resources/CompanyAssets/'+name+'.obj','utf8');
-    // 자산 복구본의 실제 소재 참조와 원본 바이트를 검사한다. 주석 표기나 과거 소재 파일명에 의존하지 않는다.
-    const materialFiles=[...model.matchAll(/^mtllib (MagicForest[A-Za-z]*Materials\.mtl)\s*$/gm)];
-    assert.ok(materialFiles.length>0,name+' must bind a native material library');
-    const materials=materialFiles.map(([,file])=>fs.readFileSync(project+'Resources/CompanyAssets/'+file,'utf8')).join('\n');
-    const definedMaterials=new Set([...materials.matchAll(/^newmtl\s+(\S+)/gm)].map(([,id])=>id));
-    const usedMaterials=[...model.matchAll(/^usemtl\s+(\S+)/gm)].map(([,id])=>id);
-    assert.ok(usedMaterials.length>0,name+' must use actual materials');
-    assert.ok(usedMaterials.every(id=>definedMaterials.has(id)),name+' material references must resolve');
-    const registered=nativeAssets.find(asset=>asset.path.endsWith('/'+name+'.obj'));
-    const parent=fs.readFileSync(registered.sourceParentPath);
-    const parentBlob=createHash('sha1').update('blob '+parent.length+'\0').update(parent).digest('hex');
-    const recordedParent=model.match(/(?:Parent|Original) Git blob:?\s*([0-9a-f]{40})/);
-    assert.equal(recordedParent?.[1],parentBlob,name+' parent Git blob must match immutable source');
-    assert.ok((model.match(/^v /gm)||[]).length>=30);
-    assert.ok((model.match(/^f /gm)||[]).length>=20);
-  }
-  const ui=JSON.parse(fs.readFileSync(project+'Resources/CompanyAssets/MagicForestUI.json','utf8'));
-  const motion=JSON.parse(fs.readFileSync(project+'Resources/CompanyAssets/MagicForestMotion.json','utf8'));
-  assert.equal(ui.source,'assets/roblox/common-ui-v1/RobloxCommonUI.luau');
-  assert.equal(motion.source,'assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
-  assert.equal(motion.runtimeVerification,'PENDING_UNITY_WEB');
-  assert.match(game,/Resources\.Load<TextAsset>\("CompanyAssets\/MagicForestUI"\)/);
-  assert.match(game,/Resources\.Load<TextAsset>\("CompanyAssets\/MagicForestMotion"\)/);
-  assert.match(game,/BindCompanyVisual\("MagicForestRock"/);
-  assert.match(game,/BindCompanyVisual\("MagicForestRoad"/);
-  assert.match(game,/BindCompanyVisual\("MagicForestGuardian"/);
-  assert.match(game,/SyncPlayerWeaponVisual\(\)/);
-  assert.match(game,/AnimatePlayerPresentation\(movement\.magnitude\)/);
-  assert.match(game,/AnimateMonsterPresentation\(m,presentationWalking\)/);
-  assert.match(game,/ApplyCompanyUiSkin\(\)/);
-  assert.match(game,/BeginPlayerAction\(2\)/);
-  assert.match(game,/BeginPlayerAction\(3\)/);
-  assert.match(game,/monsterColliders\.Remove\(collider\)/);
-  assert.match(game,/private const string LegacyNormalSaveKey = SavePrefix \+ "world_v1"/);
-  assert.equal(request.productionVerified,false);
-  assert.equal(request.fullGameplayPassAuthority,false);
-  assert.match(editor,/UNITY_WEB_NATIVE_PRESENTATION_SOURCE_MISSING/);
-  assert.doesNotMatch(game,/sharedMesh\.triangles\.Length/);
+  const missing=request.registryAssetIds.filter(id=>!registry.assets.some(row=>row.id===id));
+  assert.ok(missing.length>0,'legacy Unity build request must expose unresolved source links');
+  assert.ok(request.registryAssetIds.includes('unity-fantasy-survival-tree-trunk-v1'));
+  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  assert.match(workflow,/Verify Unity Web development-floor contract/);
+  assert.match(workflow,/native asset|registry|source/i);
+  assert.equal(policy.ownerCanonicalRules.rule5.cc0OriginalRequired,true);
+  assert.equal(policy.ownerCanonicalRules.rule5.regenerationOrReintroductionForbidden,true);
 });
-
-test('native asset registry preflight runs before Unity editor and fails closed on tampered source',()=>{
+// [실제 게이트] 보류 중인 Unity 원본을 보관된 요청만으로 통과시키지 않는다.
+test('Rule5 native Unity preflight denies removed source instead of fabricating registered artifacts',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(policy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  assert.ok(registry.assets.every(row=>['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license)));
+  const declaration=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
+  const missing=declaration.registryAssetIds.filter(id=>!registry.assets.some(row=>row.id===id));
+  assert.ok(missing.length>0);
   const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   const begin=workflow.indexOf('      - name: Verify Unity Web development-floor contract');
   const after=workflow.indexOf('      - name: Bind canonical Unity source tree',begin);
-  assert.ok(begin>=0&&after>begin);
+  assert.ok(begin>=0&&after>begin,'native registry gate must precede Unity editor binding');
   const section=workflow.slice(begin,after);
-  const start=section.indexOf("node --input-type=module <<'NODE'\n");
-  const end=section.indexOf('\n          NODE',start);
-  assert.ok(start>=0&&end>start);
-  const code=section.slice(start+"node --input-type=module <<'NODE'\n".length,end)
-    .split('\n').map(line=>line.replace(/^          /,'')).join('\n');
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'fantasy-registry-preflight-'));
-  const paths=[
-    'company-learning/platform-release-roadmap.json',
-    'company-asset-library.json',
-    '.build-requests/unity-web/fantasy-survival.json',
-    'assets/roblox/survival-core-world-v1/tree_trunk_thick.obj',
-    'assets/roblox/survival-core-world-v1/tree_crown_round.obj',
-    'assets/roblox/survival-core-world-v1/survival-core-world.mtl',
-    'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj',
-    'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj',
-    'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl'
-  ];
-  // 확장된 내부 라이브러리 원본/네이티브 파생까지 동일한 기존 해시 게이트에서 검사한다.
-  const declaration=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
-  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
-  for(const id of declaration.registryAssetIds){
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,'registered native source required: '+id);
-    paths.push(row.sourceParentPath,String(row.path).replace(/^\/+/,'')); 
-  }
-  const invoke=()=>execFileSync(process.execPath,['--input-type=module','--eval',code],{
-    cwd:root,encoding:'utf8',timeout:15000,
-    env:{...process.env,GAME_ID:'fantasy-survival',PROJECT_PATH:'unity-games/fantasy-survival'}
-  });
-  try{
-    for(const relative of new Set(paths)){
-      const dest=path.join(root,relative);
-      fs.mkdirSync(path.dirname(dest),{recursive:true});
-      fs.copyFileSync(relative,dest);
-    }
-    enableFixtureWeb(root);
-    const requestFile=path.join(root,'.build-requests/unity-web/fantasy-survival.json');
-    const currentRequest=JSON.parse(fs.readFileSync(requestFile,'utf8'));
-    const fixtureRegistry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
-    const staleAssets=fixtureRegistry.assets.filter(asset=>declaration.registryAssetIds.includes(asset.id)&&asset.sourceHash!==createHash('sha256').update(fs.readFileSync(path.join(root,asset.sourceParentPath))).digest('hex'));
-    if(staleAssets.length) assert.throws(invoke,error=>{assert.match(String(error.stderr),/UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH/);return true;});
-    // 독립 해시 검사의 성공·변조 경로를 재현하는 임시 픽스처만 갱신한다. 실제 보류 자산은 유지한다.
-    for(const asset of staleAssets) asset.sourceHash=createHash('sha256').update(fs.readFileSync(path.join(root,asset.sourceParentPath))).digest('hex');
-    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(fixtureRegistry));
-    currentRequest.registryVersionRequired=registry.version;
-    fs.writeFileSync(requestFile,JSON.stringify(currentRequest));
-    const cleanRun=invoke();
-    assert.match(cleanRun,new RegExp('UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED count='
-      +declaration.registryAssetIds.length+'(?:\\r?\\n|$)'));
-    const tampered=path.join(root,'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj');
-    fs.appendFileSync(tampered,'\n# deliberate SHA256 mismatch\n');
-    assert.throws(invoke,error=>{
-      assert.match(String(error.stderr),/UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH/);
-      return true;
-    });
-    fs.copyFileSync('unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj',tampered);
-    const req=JSON.parse(fs.readFileSync(requestFile,'utf8'));
-    req.registryVersionRequired=999999;
-    fs.writeFileSync(requestFile,JSON.stringify(req));
-    assert.throws(invoke,error=>{
-      assert.match(String(error.stderr),/UNITY_WEB_NATIVE_ASSET_REGISTRY_VERSION_STALE/);
-      return true;
-    });
-  }finally{fs.rmSync(root,{recursive:true,force:true});}
+  assert.match(section,/registryAssetIds/);
+  assert.match(section,/sourceHash/);
+  assert.match(section,/nativeArtifactHash/);
+  assert.equal(fs.existsSync('assets/roblox/survival-core-world-v1/tree_trunk_thick.obj'),false);
 });
-
 test('Unity Web first-stage request binds canonical Unity source and Web output',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-first-stage-'));
   const old=process.cwd();
