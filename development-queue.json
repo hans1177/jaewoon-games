@@ -9884,7 +9884,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-20T21:53:21.476Z",
+      "updatedAt": "2026-10-20T21:56:34.172Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -9902,17 +9902,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "6da1b5a0d23a500d752312b0d1a659c4612ac63d",
       "robloxBuildArtifactIdentity": "sha256:1628d3246c8dc88c9d6a547fcc00b7576222b9b43421810cc8ab8fda33719af5",
-      "robloxBuildPassedAt": "2026-10-20T21:32:17.324Z",
+      "robloxBuildPassedAt": "2026-10-20T21:56:34.172Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T21:32:17.324Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T21:56:34.172Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T21:25:33.782Z",
+        "checkedAt": "2026-10-20T21:46:47.798Z",
         "sourceRevision": "6da1b5a0d23a500d752312b0d1a659c4612ac63d",
         "artifactIdentity": "sha256:1628d3246c8dc88c9d6a547fcc00b7576222b9b43421810cc8ab8fda33719af5",
         "secondaryOwnerFocus": false,
@@ -9947,7 +9947,7 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "gemini-3.5-flash-lite",
+            "model": "openai/gpt-oss-20b",
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
@@ -9955,7 +9955,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "All validation checks for web, music, native web, and native music must pass before runtime testing can start."
+            "note": "Runtime testing requires all validation checks (web, music, native web, native music) to pass. The BUILD_EVIDENCE indicates these validations failed, preventing the package from starting runtime testing."
           }
         ],
         "blockers": [
@@ -28324,7 +28324,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-20T21:55:27.962Z",
+  "updatedAt": "2026-10-20T21:56:34.172Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -28391,5 +28391,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
