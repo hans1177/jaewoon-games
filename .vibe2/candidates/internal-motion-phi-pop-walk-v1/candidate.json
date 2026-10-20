@@ -1,0 +1,61 @@
+{
+  "summary": "Refined phi-pop walk motion to introduce hunched stalking staging, squared sine swing lifts for smooth foot/limb liftoff, weight-derived torso sway, and readable head/arm overlap without altering root motion or clip duration.",
+  "expectedEffect": "Brings character silhouette and weight distribution closer to stylized fantasy guidelines, reducing linear snapping and improving leg/support readability at game camera distance.",
+  "edits": [
+    {
+      "path": "init.luau",
+      "find": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)\n pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)\n  elseif form==\"ARACHNID\"then\n   for i=1,4 do for _,side in ipairs({\"Left\",\"Right\"})do\n    local sign=side==\"Left\" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))\n    pose(\"Spider\"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)\n    pose(\"Spider\"..side..i..\"Knee\",0,0,0,0,0,sign*math.max(0,cycle)*.25)\n   end end\n  elseif form==\"WHEEL\"then pose(\"Torso\",0,0,0,0,0,-(time*2.8)%(math.pi*2))\n  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)\n  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.16,0,0,0,wave*.03)end\n end",
+      "replace": " local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n local swingLift=math.max(0,math.sin(phase))^2\n local torsoSway=math.sin(phase*2)\n pose(\"Torso\",.04*torsoSway,floating and math.sin(time*2.4)*.13 or -.08+.035*math.cos(phase*2),-.05,-.14,.04*torsoSway,-.03*torsoSway)\n pose(\"Head\",0,.01,.02,.11,-.06*torsoSway,.015*torsoSway)\n if moving then\n  if form==\"BEAST\" or form==\"CENTAUR\"then\n   pose(\"FrontLeftLeg\",0,swingLift*.12,0,wave*.48,0,-.015)\n   pose(\"BackRightLeg\",0,swingLift*.12,0,wave*.48,0,.015)\n   pose(\"FrontRightLeg\",0,(1-swingLift)*.12,0,-wave*.48,0,-.015)\n   pose(\"BackLeftLeg\",0,(1-swingLift)*.12,0,-wave*.48,0,.015)\n  elseif form==\"ARACHNID\"then\n   for i=1,4 do for _,side in ipairs({\"Left\",\"Right\"})do\n    local sign=side==\"Left\" and -1 or 1;local cycle=math.sin(phase+(i%2)*math.pi+(sign<0 and 0 or math.pi))\n    pose(\"Spider\"..side..i,0,0,0,0,cycle*.2,sign*math.max(0,cycle)*.12)\n    pose(\"Spider\"..side..i..\"Knee\",0,0,0,0,0,sign*math.max(0,cycle)*.25)\n   end end\n  elseif form==\"WHEEL\"then pose(\"Torso\",0,0,0,0,0,-(time*2.8)%(math.pi*2))\n  elseif not floating and form~=\"SERPENT\" and form~=\"WALL\" and form~=\"BOUND\"then\n   pose(\"LeftLeg\",0,swingLift*.14,0,wave*.42,0,-.02)\n   pose(\"RightLeg\",0,(1-swingLift)*.14,0,-wave*.42,0,.02)\n   pose(\"LeftArm\",0,0,-.05,-.28-wave*.25,.06,-.1)\n   pose(\"RightArm\",0,0,-.03,-.28+wave*.25,-.06,.1)\n  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.18,0,0,0,wave*.035)end\n end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "Verify pose dictionary keys match bone hierarchy without mutating input tables.",
+    "Ensure reverse-time sampling yields identical predictable poses.",
+    "Confirm root motion and gameplay event timestamps remain strictly unchanged."
+  ],
+  "graphicsReplacementReport": null,
+  "motionRepairReport": {
+    "objectId": "roblox-world-ghost-phi-pop",
+    "clipId": "walk",
+    "depthEvidence": [
+      {
+        "axis": "POSE_AND_STAGING",
+        "status": "CHANGED",
+        "before": "pose(\"Torso\",0,floating and math.sin(time*2.4)*.13 or .03*breathe,0,0,moving and wave*.025 or breathe*.015,0)",
+        "after": "pose(\"Torso\",.04*torsoSway,floating and math.sin(time*2.4)*.13 or -.08+.035*math.cos(phase*2),-.05,-.14,.04*torsoSway,-.03*torsoSway)"
+      },
+      {
+        "axis": "WEIGHT_AND_BALANCE",
+        "status": "CHANGED",
+        "before": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)",
+        "after": "local phase=time*speed;local wave=math.sin(phase);local breathe=math.sin(time*2)\n local floating=form==\"SHROUD\" or form==\"FLOATING_HEAD\" or form==\"OBJECT_SWARM\" or form==\"RIBBON\" or form==\"LANTERN\"\n local swingLift=math.max(0,math.sin(phase))^2\n local torsoSway=math.sin(phase*2)"
+      },
+      {
+        "axis": "JOINT_ARCS_AND_SPACING",
+        "status": "CHANGED",
+        "before": "   pose(\"LeftLeg\",0,0,0,wave*.4);pose(\"RightLeg\",0,0,0,-wave*.4)\n   pose(\"LeftArm\",0,0,0,-wave*.3);pose(\"RightArm\",0,0,0,wave*.3)",
+        "after": "   pose(\"LeftLeg\",0,swingLift*.14,0,wave*.42,0,-.02)\n   pose(\"RightLeg\",0,(1-swingLift)*.14,0,-wave*.42,0,.02)\n   pose(\"LeftArm\",0,0,-.05,-.28-wave*.25,.06,-.1)\n   pose(\"RightArm\",0,0,-.03,-.28+wave*.25,-.06,.1)"
+      },
+      {
+        "axis": "CONTACT_AND_CONSTRAINTS",
+        "status": "CHANGED",
+        "before": "   pose(\"FrontLeftLeg\",0,0,0,wave*.48);pose(\"BackRightLeg\",0,0,0,wave*.48)\n   pose(\"FrontRightLeg\",0,0,0,-wave*.48);pose(\"BackLeftLeg\",0,0,0,-wave*.48)",
+        "after": "   pose(\"FrontLeftLeg\",0,swingLift*.12,0,wave*.48,0,-.015)\n   pose(\"BackRightLeg\",0,swingLift*.12,0,wave*.48,0,.015)\n   pose(\"FrontRightLeg\",0,(1-swingLift)*.12,0,-wave*.48,0,-.015)\n   pose(\"BackLeftLeg\",0,(1-swingLift)*.12,0,-wave*.48,0,.015)"
+      },
+      {
+        "axis": "OVERLAP_AND_SETTLE",
+        "status": "CHANGED",
+        "before": " pose(\"Head\",0,0,0,breathe*.035,math.sin(time*.9)*.07,0)",
+        "after": " pose(\"Head\",0,.01,.02,.11,-.06*torsoSway,.015*torsoSway)"
+      },
+      {
+        "axis": "LOOP_AND_TRANSITION",
+        "status": "CHANGED",
+        "before": "  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.16,0,0,0,wave*.03)end",
+        "after": "  elseif form==\"BOUND\"then pose(\"Torso\",0,math.abs(wave)*.18,0,0,0,wave*.035)end"
+      }
+    ]
+  }
+}
