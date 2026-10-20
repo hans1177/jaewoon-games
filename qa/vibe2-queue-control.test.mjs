@@ -2120,7 +2120,7 @@ test('24H preplan coalesces pending exact-main wakes and only running active res
   assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=COALESCED_QUEUED_EXACT_MAIN/);
   assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(workflow,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
-  assert.match(workflow,/actions\\/runs\\/\\$\\{wake_id\\}\\/jobs\\?per_page=100/);
+  assert.match(workflow,/actions\/runs\/\$\{wake_id\}\/jobs\?per_page=100/);
   assert.match(workflow,/reserve_status.*'queued'.*reserve_status.*'in_progress'/);
   assert.match(workflow,/queued_asset_wake=''/);
   assert.match(workflow,/queued_exact_wake=''/);
