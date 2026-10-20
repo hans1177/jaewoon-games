@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-10-20T20:48:59.035Z",
+  "generatedAt": "2026-10-20T20:51:17.811Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -83,7 +83,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -127,7 +127,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "bug-defense",
@@ -199,7 +199,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -243,7 +243,125 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
+    },
+    {
+      "gameId": "card-grid-duel",
+      "gameName": "card-grid-duel",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "cat-step",
@@ -315,7 +433,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -359,7 +477,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "chess-battle",
@@ -431,7 +549,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -475,7 +593,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "core-clash-4v4",
@@ -547,7 +665,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -591,7 +709,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "cozy-island",
@@ -662,7 +780,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -706,7 +824,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "crystal-defense",
@@ -778,7 +896,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -822,7 +940,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -893,7 +1011,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -937,7 +1055,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "defense",
@@ -1009,7 +1127,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -1053,7 +1171,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "dice-battle-board",
@@ -1125,7 +1243,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -1169,7 +1287,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "egg-heist",
@@ -1241,7 +1359,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -1285,7 +1403,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "exorcist-office",
@@ -1357,7 +1475,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -1401,7 +1519,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -1474,7 +1592,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -1519,7 +1637,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "fifty-days",
@@ -1591,7 +1709,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -1635,7 +1753,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "gem-survivor",
@@ -1707,7 +1825,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -1751,7 +1869,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -1817,7 +1935,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -1861,7 +1979,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "human-go",
@@ -1933,7 +2051,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -1977,7 +2095,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "human-go-temp",
@@ -2049,7 +2167,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -2093,7 +2211,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "insect-survival",
@@ -2165,7 +2283,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -2209,7 +2327,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "island-village",
@@ -2281,7 +2399,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -2325,7 +2443,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "kingshot-ad",
@@ -2397,7 +2515,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -2441,7 +2559,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "line-defense",
@@ -2513,7 +2631,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -2557,7 +2675,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "monster-adventure",
@@ -2629,7 +2747,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -2673,7 +2791,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "moon-ruins",
@@ -2981,7 +3099,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -3025,7 +3143,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "realistic-builder",
@@ -3097,7 +3215,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -3141,7 +3259,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -3213,7 +3331,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -3257,7 +3375,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -3329,7 +3447,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -3373,7 +3491,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -3445,7 +3563,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -3489,7 +3607,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -3561,7 +3679,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -3605,7 +3723,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -3677,7 +3795,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -3721,7 +3839,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
@@ -3793,7 +3911,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -3837,7 +3955,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -3909,7 +4027,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -3953,7 +4071,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "seed-roblox-survival-horror-es-doors",
@@ -4025,7 +4143,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -4069,7 +4187,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -4141,7 +4259,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -4185,7 +4303,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -4257,7 +4375,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -4301,7 +4419,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "simple-rpg",
@@ -4373,7 +4491,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -4417,7 +4535,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "star-frontier",
@@ -4489,7 +4607,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -4533,7 +4651,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "survival",
@@ -4605,7 +4723,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -4649,7 +4767,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "survival2",
@@ -4721,7 +4839,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -4765,7 +4883,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "tekken",
@@ -4955,7 +5073,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -4999,7 +5117,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "tower-choice-rpg",
@@ -5071,7 +5189,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -5115,7 +5233,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "village-dungeons",
@@ -5187,7 +5305,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -5231,7 +5349,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     },
     {
       "gameId": "wild-survival",
@@ -5421,7 +5539,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -5465,7 +5583,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-20T20:48:35.952Z"
+      "updatedAt": "2026-10-20T20:51:13.747Z"
     }
   ]
 }
