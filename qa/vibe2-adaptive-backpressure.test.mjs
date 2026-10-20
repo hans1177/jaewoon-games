@@ -224,6 +224,18 @@ test('20-hosted-runner owner-first budget preserves eight slots for direct devel
     {lane:'game-primary',requestedMax:3,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,3);
   assert.equal(ownerFirstRunnerAllocation({tasks:[]},
     {lane:'asset-development',requestedMax:9,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,9);
+  assert.equal(ownerFirstRunnerAllocation({tasks:[{
+    id:'running-asset',status:'running',executionLane:'ASSET_DEVELOPMENT'
+  }]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,11,
+    'running assets consume the shared autonomous logical budget');
+  const withOwner=ownerFirstRunnerAllocation({tasks:[
+    {id:'running-asset',status:'running',executionLane:'ASSET_DEVELOPMENT'},
+    {id:'owner',status:'queued',executionLane:'GAME_PRIMARY',ownerDirective:true}
+  ]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8});
+  assert.equal(withOwner.concurrentCeiling,19);
+  assert.equal(ownerFirstRunnerAllocation({tasks:[
+    {id:'running-game',status:'running',executionLane:'GAME_PRIMARY'}
+  ]},{lane:'asset-development',requestedMax:128,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,11);
 });
 
 test('canonical Vibe reserve activates owner-first budget but does not weaken QA, release or security checks',()=>{
