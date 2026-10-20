@@ -195,6 +195,59 @@ try{
    }finally{await game.close()}
   }
  }
+ // Post-publication first-play, touch controls, and save/reload for owner-focused Cozy Island.
+ // Browser checks run only against the exact published Pages revision verified above.
+ if(liveBase){
+  assert.ok(manifest.routes.includes('web-games/cozy-island/'),'COZY_ISLAND_PUBLISHED_ROUTE_MISSING');
+  for(const view of [{name:'desktop',width:1100,height:720,mobile:false},
+                     {name:'mobile',width:390,height:844,mobile:true}]){
+   const cozy=await browser.newPage({viewport:{width:view.width,height:view.height},
+    isMobile:view.mobile,hasTouch:view.mobile});
+   const errors=[];
+   cozy.on('pageerror',err=>errors.push(err.message));
+   try{
+    const response=await cozy.goto(liveBase+'web-games/cozy-island/',
+      {waitUntil:'domcontentloaded',timeout:30000});
+    assert.ok(response?.ok(),view.name+': COZY_ISLAND_ROUTE_NOT_LIVE');
+    await cozy.waitForFunction(()=>{
+     const canvas=document.querySelector('#game');
+     return canvas&&canvas.width>250&&canvas.height>250;
+    },null,{timeout:20000});
+    assert.equal(await cozy.locator('#game').evaluate(c=>!!c.getContext('2d')),true,
+     view.name+': COZY_ISLAND_RENDERER_NOT_READY');
+    await cozy.locator('#inventoryButton').click();
+    assert.equal(await cozy.locator('#panel').evaluate(p=>p.open),true,
+     view.name+': COZY_ISLAND_INVENTORY_FAILED');
+    await cozy.locator('#panelClose').click();
+    const tool=await cozy.locator('#toolButton').textContent();
+    await cozy.locator('#toolButton').click();
+    assert.notEqual(await cozy.locator('#toolButton').textContent(),tool,
+     view.name+': COZY_ISLAND_ACTION_FAILED');
+    await cozy.keyboard.down('d');
+    await cozy.waitForTimeout(750);
+    await cozy.keyboard.up('d');
+    await cozy.waitForFunction(()=>{
+     try{return Number(JSON.parse(localStorage.getItem('jaewoon-games:cozy-island')||'null')?.progress?.player?.x)>760}
+     catch{return false}
+    },null,{timeout:10000});
+    const savedX=await cozy.evaluate(()=>JSON.parse(localStorage.getItem('jaewoon-games:cozy-island')).progress.player.x);
+    await cozy.reload({waitUntil:'domcontentloaded',timeout:30000});
+    await cozy.waitForFunction(()=>{
+     const canvas=document.querySelector('#game');
+     return canvas&&canvas.width>250&&canvas.height>250;
+    },null,{timeout:20000});
+    await cozy.waitForTimeout(1400);
+    const restoredX=await cozy.evaluate(()=>Number(
+     JSON.parse(localStorage.getItem('jaewoon-games:cozy-island')||'null')?.progress?.player?.x));
+    assert.ok(Number.isFinite(restoredX)&&restoredX>=savedX-10,
+     view.name+': COZY_ISLAND_SAVE_RELOAD_FAILED');
+    assert.deepEqual(errors,[],view.name+': COZY_ISLAND_UNCAUGHT_PAGE_ERRORS');
+    console.log('COZY_ISLAND_POST_DEPLOY_PLAY_SAVE=PASS '+view.name+' '+JSON.stringify({
+     sourceSha:requiredRevision,savedX,restoredX
+    }));
+   }finally{await cozy.close()}
+  }
+ }
  // Owner-required: only real published, rendered WebGL 3D counts as wild-survival 3D.
  // A live 200 for index.html or a valid model preview does NOT prove gameplay is 3D.
  if(liveBase){
