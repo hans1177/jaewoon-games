@@ -2,14 +2,14 @@
 // 메인: 항해·교역·해전·발견·저장. 렌더러와 DOM에 의존하지 않는다.
 export const SAVE_KEY='jg-ocean-voyage-v1';
 export const PORTS=Object.freeze([
-  {id:'dawn',name:'새벽항',x:0,z:0,region:'푸른해',faction:'자유항로',rates:{grain:.78,wood:.9,spice:1.55,silk:1.35,ore:1.12,tea:1.3}},
-  {id:'coral',name:'산호만',x:74,z:-45,region:'산호해',faction:'자유항로',rates:{grain:1.3,wood:1.15,spice:.75,silk:1.42,ore:1.2,tea:1.15}},
-  {id:'north',name:'북풍성',x:-80,z:-76,region:'북풍해',faction:'북방연합',rates:{grain:1.5,wood:.7,spice:1.7,silk:1.8,ore:.85,tea:1.5}},
-  {id:'gold',name:'황금곶',x:138,z:50,region:'남해',faction:'황금상단',rates:{grain:.95,wood:1.5,spice:1.1,silk:1.12,ore:.78,tea:1.2}},
-  {id:'jade',name:'비취항',x:-136,z:52,region:'서해',faction:'황금상단',rates:{grain:1.2,wood:1.24,spice:1.35,silk:.69,ore:1.3,tea:.75}},
-  {id:'storm',name:'폭풍피항지',x:32,z:142,region:'폭풍해',faction:'북방연합',rates:{grain:1.65,wood:1.2,spice:.82,silk:1.35,ore:1.65,tea:.8}},
-  {id:'amber',name:'호박도',x:-118,z:147,region:'서해',faction:'자유항로',rates:{grain:.92,wood:1.32,spice:1.72,silk:1.08,ore:1.2,tea:.76}},
-  {id:'sun',name:'태양항',x:162,z:-137,region:'남해',faction:'황금상단',rates:{grain:1.35,wood:1.3,spice:.65,silk:.9,ore:1.45,tea:1.5}}
+  {id:'dawn',name:'런던',x:0,z:0,region:'잉글랜드',faction:'영국 왕실166,rates:{grain:.78,wood:.9,spice:1.55,silk:1.35,ore:1.12,tea:1.3}},
+  {id:'coral',name:'플리머스',x:74,z:-45,region:'잉글랜드 남서부',faction:'영국 왕실295,rates:{grain:1.3,wood:1.15,spice:.75,silk:1.42,ore:1.2,tea:1.15}},
+  {id:'north',name:'에든버러',x:-80,z:-76,region:'북해',faction:'영국 왕실435,rates:{grain:1.5,wood:.7,spice:1.7,silk:1.8,ore:.85,tea:1.5}},
+  {id:'gold',name:'리스본',x:138,z:50,region:'이베리아',faction:'포르투갈 상단566,rates:{grain:.95,wood:1.5,spice:1.1,silk:1.12,ore:.78,tea:1.2}},
+  {id:'jade',name:'암스테르담',x:-136,z:52,region:'저지대',faction:'북해 상인연맹700,rates:{grain:1.2,wood:1.24,spice:1.35,silk:.69,ore:1.3,tea:.75}},
+  {id:'storm',name:'브레스트',x:32,z:142,region:'브르타뉴',faction:'프랑스 항구동맹837,rates:{grain:1.65,wood:1.2,spice:.82,silk:1.35,ore:1.65,tea:.8}},
+  {id:'amber',name:'함부르크',x:-118,z:147,region:'북독일',faction:'북해 상인연맹975,rates:{grain:.92,wood:1.32,spice:1.72,silk:1.08,ore:1.2,tea:.76}},
+  {id:'sun',name:'세비야',x:162,z:-137,region:'안달루시아',faction:'이베리아 왕실1114,rates:{grain:1.35,wood:1.3,spice:.65,silk:.9,ore:1.45,tea:1.5}}
 ]);
 export const GOODS=Object.freeze([
   {id:'grain',name:'곡물',base:75,weight:1},
@@ -19,6 +19,30 @@ export const GOODS=Object.freeze([
   {id:'ore',name:'철광석',base:160,weight:2},
   {id:'tea',name:'차',base:180,weight:1}
 ]);
+
+export const CREW=Object.freeze([
+ {id:'eleanor',name:'엘리너 그레이',nation:'영국',role:'선장',port:'dawn',portrait:1,story:'런던 해군사관학교 출신. 잃어버린 항로를 되찾으려 한다.'},
+ {id:'thomas',name:'토머스 리드',nation:'영국',role:'항해사',port:'dawn',portrait:5,story:'북해를 항해한 풍향 전문가.'},
+ {id:'isabel',name:'이사벨 두아르테',nation:'포르투갈',role:'교역사',port:'gold',portrait:11,story:'리스본의 향신료 교역과 계약에 정통한 상인.'},
+ {id:'willem',name:'빌럼 판다이크',nation:'네덜란드',role:'포술장',port:'jade',portrait:14,story:'북해의 함포를 다뤄온 항해자.'},
+ {id:'freya',name:'프레야 린드',nation:'북유럽',role:'측량사',port:'north',portrait:19,story:'해도와 별자리를 읽는 탐험가.'},
+ {id:'diego',name:'디에고 알바레스',nation:'스페인',role:'조선사',port:'sun',portrait:22,story:'세비야에서 대형 범선을 수리하던 선박 기술자.'}
+]);
+export const EQUIPMENT=Object.freeze([
+ {id:'telescope',name:'황동 망원경',group:'항해 장비',description:'먼 항해의 길잡이'},
+ {id:'rapier',name:'세이버',group:'호신 장비',description:'선장의 휴대 검'},
+ {id:'medicine',name:'약품',group:'소모품',description:'장거리 항해 응급 물자'},
+ {id:'chart',name:'영국 해도',group:'발견물',description:'왕립 해군이 보관하던 항로도'},
+ {id:'compass',name:'나침반',group:'항해 장비',description:'항해 중 방향을 측정하는 도구'}
+]);
+export function recruitCompanion(state,id){
+ const c=CREW.find(c=>c.id===id),port=canDock(state);
+ if(!c||!port||port.id!==c.port)return {state,ok:false,message:'동료는 지정된 항구의 여관에서 만나야 해.'};
+ if(state.crewRoster.includes(id))return {state,ok:false,message:'이미 함대에 있는 동료야.'};
+ if(state.crewRoster.length>=6)return {state,ok:false,message:'동료는 최대 6명이야.'};
+ const s=copy(state);s.crewRoster.push(id);note(s,c.name+' 동료 합류');return {state:s,ok:true,message:c.name+'이(가) 함대에 합류했어.'};
+}
+
 export const PORT_RADIUS=11;
 export const WORLD_LIMIT=210;
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -27,14 +51,14 @@ const rand=(seed)=>{let n=(seed>>>0)||1;return ()=>{n^=n<<13;n^=n>>>17;n^=n<<5;r
 const copy=s=>structuredClone(s);
 export function newGame(){
  return {
-  version:1,day:1,elapsed:0,coins:3400,discovered:['dawn'],visits:{dawn:1},
+  version:1,day:1,elapsed:0,coins:3400,discovered:['dawn'],visits:{dawn:1},homePort:'dawn',captain:'엘리너 그레이',crewRoster:['eleanor','thomas'],equipment:{telescope:1,rapier:1,medicine:2,chart:1},storyStage:0,
   ship:{x:0,z:10,heading:0,hull:100,maxHull:100,sail:1,cannons:4,crew:34,maxCrew:55,provisions:80,cargoLimit:42,cooldown:0,repairLevel:0},
-  fleet:1,cargo:{},reputation:{'자유항로':0,'북방연합':0,'황금상단':0},
+  fleet:1,cargo:{},reputation:{'영국 왕실':0,'포르투갈 상단':0,'북해 상인연맹':0,'프랑스 항구동맹':0,'이베리아 왕실':0},
   route:[],destination:null,pirates:[
    {id:1,x:63,z:4,heading:1.7,hull:62,maxHull:62,cooldown:4},
    {id:2,x:-78,z:75,heading:1.4,hull:76,maxHull:76,cooldown:7},
    {id:3,x:110,z:-115,heading:1.3,hull:94,maxHull:94,cooldown:10}],
-  quests:[],victories:0,treasures:[],log:['새벽항에서 첫 항해를 시작했어.'],weather:0,score:0
+  quests:[],victories:0,treasures:[],log:['런던 왕립항에서 첫 항해를 시작했어. 플리머스로 항로를 개척하자.'],weather:0,score:0
  };
 }
 export const loadGame=(storage)=>{try{return restoreGame(storage.getItem(SAVE_KEY));}catch{return newGame();}};
@@ -47,7 +71,7 @@ export function restoreGame(raw){
   const s={...base,...obj,ship:{...base.ship,...obj.ship},cargo:{...base.cargo,...obj.cargo},visits:{...base.visits,...obj.visits},reputation:{...base.reputation,...obj.reputation}};
   s.coins=clamp(s.coins,0,1e12);s.day=clamp(s.day,1,1e7);
   s.ship.x=clamp(s.ship.x,-WORLD_LIMIT,WORLD_LIMIT);s.ship.z=clamp(s.ship.z,-WORLD_LIMIT,WORLD_LIMIT);
-  s.ship.hull=clamp(s.ship.hull,0,s.ship.maxHull||100);
+  s.ship.hull=clamp(s.ship.hull,0,s.ship.maxHull||100);s.ship.velocity=clamp(Number(s.ship.velocity)||0,-4,13);s.ship.rudder=clamp(Number(s.ship.rudder)||0,-1,1);s.crewRoster=Array.isArray(s.crewRoster)?[...new Set(s.crewRoster.filter(v=>CREW.some(c=>c.id===v)))].slice(0,6):['eleanor','thomas'];s.equipment=s.equipment&&typeof s.equipment==='object'?{...base.equipment,...s.equipment}:{...base.equipment};
   s.discovered=[...new Set(s.discovered.filter(id=>PORTS.some(p=>p.id===id)))];
   s.route=Array.isArray(s.route)?s.route.filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.z)).slice(0,200):[];
   s.pirates=Array.isArray(s.pirates)?s.pirates.filter(e=>Number.isFinite(e.x)&&Number.isFinite(e.z)&&e.hull>0).slice(0,24):[];
@@ -193,10 +217,10 @@ export function stepSea(state,input={},seconds=.05){
    throttle=1;
   }
  }
- ship.heading=wrap(ship.heading+turn*dt*(.8+ship.sail*.06));
+ ship.rudder=clamp((Number(ship.rudder)||0)+(turn-(Number(ship.rudder)||0))*Math.min(1,dt*4),-1,1);ship.heading=wrap(ship.heading+ship.rudder*dt*(.8+ship.sail*.06));
  const laden=1-cargoWeight(s)/Math.max(1,ship.cargoLimit*s.fleet)*.18;
  const speed=(2.1+ship.sail*1.15)*(1+wind*.24)*laden*(ship.hull/ship.maxHull*.6+.4);
- const dx=Math.sin(ship.heading)*speed*throttle*dt,dz=Math.cos(ship.heading)*speed*throttle*dt;
+ const targetSpeed=speed*throttle;ship.velocity=(Number(ship.velocity)||0)+(targetSpeed-(Number(ship.velocity)||0))*Math.min(1,dt*(throttle?1.5:.45));const dx=Math.sin(ship.heading)*ship.velocity*dt,dz=Math.cos(ship.heading)*ship.velocity*dt;
  ship.x=clamp(ship.x+dx,-WORLD_LIMIT,WORLD_LIMIT);
  ship.z=clamp(ship.z+dz,-WORLD_LIMIT,WORLD_LIMIT);
  ship.cooldown=Math.max(0,ship.cooldown-dt);
