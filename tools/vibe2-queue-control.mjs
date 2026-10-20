@@ -744,8 +744,7 @@ export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(C
       ...task,
       // Preserve existing owner holds and scheduler locks. Never dispatch
       // retired Web routes (which do not exist in the source checkout).
-      ownerDevelopmentHold:ownerDevelopmentHeld(policy,task.gameId,task.target,task)||sourceRetired,
-      ...(sourceRetired?{webSourceUnavailableHold:true}:task.webSourceUnavailableHold?{webSourceUnavailableHold:false}:{})
+      ownerDevelopmentHold:ownerDevelopmentHeld(policy,task.gameId,task.target,task)||sourceRetired
     };
   })});
 }
