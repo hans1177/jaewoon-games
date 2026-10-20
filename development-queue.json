@@ -14881,7 +14881,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T05:59:07.719Z",
+      "updatedAt": "2026-10-20T06:26:58.400Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -14891,8 +14891,8 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "0e79ffd238897dd3007168179a54ac33453d0e43",
-      "robloxSourceBootstrapPassedAt": "2026-10-20T04:14:33.815Z",
+      "robloxSourceCommit": "804be18f8b6fb71f030466efbce7dead1c4bbd11",
+      "robloxSourceBootstrapPassedAt": "2026-10-20T06:26:58.400Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -15336,7 +15336,7 @@
         },
         "recipeId": "NORMAL_VARIANT",
         "motionQuality": {
-          "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+          "contract": "tools/company-development-roblox-bootstrap.mjs#motionQuality",
           "motionAtoms": [
             "IDLE_RELAXED",
             "WALK",
@@ -15401,7 +15401,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-package:roblox-package-asset-binding-failed"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": "0e79ffd238897dd3007168179a54ac33453d0e43",
@@ -37288,7 +37288,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T06:26:34.672Z",
+  "updatedAt": "2026-10-20T06:26:58.400Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
