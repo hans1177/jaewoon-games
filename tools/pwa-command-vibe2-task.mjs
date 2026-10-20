@@ -22,10 +22,31 @@ function executionReleaseState(game={}){const actual=actualReleaseState(game);re
 function resolveProject(task,{catalog={},status={},repoRoot=process.cwd(),filesystem=fs}={}){
   const gameId=clean(task?.game_id||task?.gameId),game=(catalog.games||[]).find(row=>clean(row.id)===gameId);
   if(!game)throw new Error(`게임 카탈로그에서 찾을 수 없음: ${gameId||'EMPTY'}`);
+  const requestedPlatform=clean(task?.platform||task?.requestedPlatform).toLowerCase();
+  if(requestedPlatform&&requestedPlatform!=='web')throw new Error('명시적 플랫폼 요청은 웹만 지원');
+  if(requestedPlatform==='web'){
+    const onlyWeb=webRoot(game);
+    if(!onlyWeb||!filesystem.existsSync(path.join(repoRoot,onlyWeb)))throw new Error('웹게임 소스가 없어 작업을 접수할 수 없음: '+gameId);
+    return {game,target:'web',sourceRoot:onlyWeb,actualReleaseState:actualReleaseState(game)};
+  }
   const project=(status.projects||[]).find(row=>clean(row.gameId)===gameId),unityRoot=posix(project?.projectPath||game.unityProjectPath);
   if(unityRoot&&unityRoot.startsWith('unity-games/')&&filesystem.existsSync(path.join(repoRoot,unityRoot)))return {game,target:'unity',sourceRoot:unityRoot,actualReleaseState:actualReleaseState(game)};
   const web=webRoot(game);if(web&&filesystem.existsSync(path.join(repoRoot,web)))return {game,target:'web',sourceRoot:web,actualReleaseState:actualReleaseState(game)};
   throw new Error(`실제 수정 가능한 게임 소스가 없음: ${gameId}`);
+}
+// The existing owner queue bridge may receive an authenticated local web directive.
+// Repository dispatch identity is independently verified by GitHub Actions, never by the AI model.
+export function validateLocalWebOwnerEvent(event,{actor='',repository=''}={}){
+  if(clean(actor)!=='hans1177'||clean(repository)!=='hans1177/jaewoon-games'||
+     clean(event?.action)!=='vibe-local-web-owner-directive')throw new Error('LOCAL_OWNER_EVENT_NOT_AUTHORIZED');
+  const p=event?.client_payload||{};
+  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(clean(p.id))||
+     !/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(clean(p.game_id))||
+     clean(p.platform)!=='web'||
+     clean(p.kind)!=='directive'||
+     p.autoDeployAfterVerifiedQa!==true||
+     !clean(p.body)||clean(p.body).length>2000)throw new Error('LOCAL_OWNER_EVENT_INVALID');
+  return {id:clean(p.id),game_id:clean(p.game_id),platform:'web',kind:'directive',priority:'urgent',body:clean(p.body)};
 }
 function ownerContext(task){const rows=Array.isArray(task?.ownerMessages)?task.ownerMessages:[],messages=rows.map(row=>clean(row?.body)).filter(Boolean);return messages.length?`\n\n추가 지시:\n${messages.map(text=>`- ${text}`).join('\n')}`:'';}
 export function buildPwaVibeTask(task,context={}){
