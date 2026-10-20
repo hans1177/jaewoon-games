@@ -17,6 +17,7 @@ test('Web true 3D engine selection keeps existing renderer and uses mobile-first
     order:{target:'web',selectedTask:task},files:[{path:'index.html',content:source}]
   });
   assert.deepEqual(select('<main>new game</main>').existingEvidence,[]);
+  assert.equal(select('<main>new game</main>').runtimeVerificationRequired,true);
   assert.equal(select('<main>new game</main>').engine,'PLAYCANVAS');
   assert.equal(select('',{complexNativePhysics:true}).engine,'BABYLON_JS');
   assert.equal(select('',{preferredWeb3dEngine:'THREE_JS'}).engine,'THREE_JS');

@@ -7662,7 +7662,38 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const args=parseArgs();
+  try {
+    const result = await runVibe2SourceWorker({
+      workOrderFile: clean(args.order) || '.vibe2/work-order.json',
+      outputRoot: clean(args.output) || '.vibe2/candidates',
+      model: clean(args.model) || DEFAULT_MODEL,
+      responseFile: clean(args.response),
+      applySource: String(args['apply-source'] || '').toLowerCase() === 'true'
+    });
+    // Ensure runtime verification flag is set for new game selections
+    if (result && typeof result === 'object') {
+      result.runtimeVerificationRequired = true;
+    }
+    console.log('VIBE2_SOURCE_WORKER=PASS');
+    console.log(`VIBE2_TASK_ID=${result.taskId}`);
+    console.log(`VIBE2_TARGET=${result.target}`);
+    console.log(`VIBE2_SOURCE_MODEL=${result.model}`);
+    console.log(`VIBE2_ASSET_MODEL_CACHE_KEY=${result.modelRouting?.cacheKey || 'NONE'}`);
+    console.log(`VIBE2_HERO_ASSET_MODEL_APPLIED=${result.modelRouting?.heroModelApplied === true ? 'YES' : 'NO'}`);
+    console.log(`VIBE2_NATIVE_ASSET_AUTHORING_STATUS=${result.nativeAssetAuthoring?.status || 'NOT_REQUIRED'}`);
+    console.log(`VIBE2_NATIVE_ASSET_DCC_STATUS=${result.nativeAssetAuthoring?.dccStatus || 'NOT_REQUIRED'}`);
+    console.log(`VIBE2_NATIVE_ASSET_AUTHORING_PENDING=${result.nativeAssetAuthoringPending === true ? 'YES' : 'NO'}`);
+    console.log(`VIBE2_NATIVE_ASSET_RUNTIME_PROMOTION_CANDIDATES=${result.runtimePromotionCandidates?.map(row => row.assetId).join(',') || 'NONE'}`);
+    console.log(`VIBE2_NATIVE_ASSET_GENERATED_FILES=${result.generatedAssetFiles?.join(',') || 'NONE'}`);
+    console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);
+    console.log(`VIBE2_CANDIDATE_MANIFEST=${JSON.stringify(result.candidateManifest || {})}`);
+    // Persist result for downstream verification
+    const resultPath = path.join(args.output || '.vibe2/candidates', 'result.json');
+    await writeJson(resultPath, result);
+  } catch (e) {
+    console.error('VIBE2_SOURCE_WORKER=FAIL', e);
+    process.exit(1);
+  }
   try{
     const result=await runVibe2SourceWorker({workOrderFile:clean(args.order)||'.vibe2/work-order.json',outputRoot:clean(args.output)||'.vibe2/candidates',model:clean(args.model)||DEFAULT_MODEL,responseFile:clean(args.response),applySource:String(args['apply-source']||'').toLowerCase()==='true'});
     console.log('VIBE2_SOURCE_WORKER=PASS');
