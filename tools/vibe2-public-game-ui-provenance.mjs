@@ -6,6 +6,8 @@ import path from 'node:path';
 
 const inlineScripts = html => [...String(html).matchAll(/<script\b[^>]*>/gi)].map(m=>m[0]);
 const buttons = html => [...String(html).matchAll(/<button\b[^>]*>/gi)].length;
+const buttonTags = html => [...String(html).matchAll(/<button\b[^>]*>/gi)]
+  .map(m=>m[0].replace(/\/jaewoon-games(?=\/)/gi,''));
 const scriptSource = tag => {
   const match=/\bsrc\s*=\s*(['"])(.*?)\1/i.exec(tag);
   if(!match)return '';
@@ -33,6 +35,8 @@ export function inspectPublicGameUi({sourceHtml='',publishedHtml='',gameId=''}={
   if(injected.length)errorCodes.push('UNAPPROVED_GAME_SCRIPT_DEPENDENCY');
   const addedButtons=buttons(published)-buttons(original);
   if(addedButtons>0)errorCodes.push('UNAUTHORIZED_PUBLIC_GAME_BUTTON_GENERATION');
+  if(addedButtons===0&&JSON.stringify(buttonTags(published))!==JSON.stringify(buttonTags(original)))
+    errorCodes.push('UNAUTHORIZED_PUBLIC_GAME_BUTTON_REPLACEMENT');
   return {
     gameId:String(gameId),
     passed:errorCodes.length===0,
