@@ -110,14 +110,30 @@ test('existing module and shared model URLs parse and resolve on root and projec
   assert.equal(typeof JSON.parse(partyImportMap).imports,'object');
   assert.throws(()=>JSON.parse('{"imports":'),SyntaxError,'invalid importmap must fail');
   const modelPaths=[...party.matchAll(/['"](\.\.\/\.\.\/assets\/shared\/[^'"]+\.glb)['"]/g)].map(row=>row[1]);
-  assert.equal(modelPaths.length,12,'party-rpg must bind all 12 existing shared models');
+  assert.equal(modelPaths.length,12,'party-rpg keeps all declared 3D roles without inventing replacement binaries');
+  // Rule5 removed these self-authored GLBs. Verify missing models are reported
+  // and the existing 2D gameplay renderer stays active until licensed 3D binding.
+  for(const required of [
+    "window.vibe3dDiagnostics={loaded,missing:Object.keys(files).filter(k=>!models[k])}",
+    "catch(e){console.warn('Vibe model load:',id,e);}",
+    'window.vibe3dCanRender=(kind,obj)=>!!models[role(kind,obj)]',
+    'if(!models[id])continue'
+  ])assert.ok(party.includes(required),'missing native-model fallback: '+required);
+  for(const kind of ['enemy','player','ai']){
+    assert.ok(party.includes("window.vibe3dCanRender('"+kind+"',"),'2D fallback must remain active for '+kind);
+  }
+  const missingModels=new Set();
   for(const base of [
     'https://jaewoon-games.pages.dev/web-games/party-rpg/index.html',
     'https://hans1177.github.io/jaewoon-games/web-games/party-rpg/index.html'
   ])for(const url of modelPaths){
     const actualPath=new URL(url,base).pathname.replace(/^\/jaewoon-games\//,'/').replace(/^\//,'');
-    assert.ok(fs.statSync(actualPath).isFile(),`party-rpg missing model ${base} -> ${actualPath}`);
+    assert.match(actualPath,/^assets\/shared\/(?:humanoid|creature)-[a-z-]+\.glb$/,'model path must remain in its declared asset root');
+    if(!fs.existsSync(actualPath)){missingModels.add(actualPath);continue;}
+    assert.ok(fs.statSync(actualPath).isFile(),`party-rpg non-file model ${base} -> ${actualPath}`);
   }
+  // The removed models are visual debt, not verified 3D production artifacts.
+  if(missingModels.size)assert.ok(party.includes('if(!models[id])continue'),'missing GLBs must not be rendered as loaded');
 });
 
 test('active or publicly playable development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
