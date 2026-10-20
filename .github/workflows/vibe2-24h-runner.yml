@@ -852,6 +852,7 @@ jobs:
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
             else
               echo 'VIBE2_AUTOPLAN_ADMISSION=DEFERRED_OWNER_OR_WORKFLOW_BACKLOG'
+              echo 'VIBE2_RELEASE_BASELINE_GAP_PLAN=NO' | tee /tmp/vibe2-release-baseline-plan.log
               echo 'VIBE2_AUTOPLAN_QUEUED=0' | tee /tmp/vibe2-autoplan.log
             fi
 
