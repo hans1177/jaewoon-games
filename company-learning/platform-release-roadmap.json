@@ -1,5 +1,5 @@
 {
-  "version": 585,
+  "version": 586,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -7510,6 +7510,7 @@
     }
   },
   "changeRecord": {
+    "ownerCC0ActiveGameReplacement20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20", "requestKo": "게임 제작은 검증된 CC0 원본을 수정해 사용. 개발 중 게임의 자체 제작 저품질 에셋은 대체 검증 후 영구 삭제. 개발하지 않는 게임 및 해당 게임이 사용하는 공유 파일은 교체·삭제하지 않는다.", "rule": "ownerCanonicalRules.rule5", "lockedSequenceChanged": false, "assetMigrationStatus": "PENDING_EXACT_ACTIVE_GAME_REPLACEMENT_AND_RUNTIME_EVIDENCE"},
     "ownerWebDeployThenValidate20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","requestKo":"중앙 정책: 무조건 배포 후 검증","scope":"EXISTING_ORDINARY_WEB_STATIC_MAIN_PUBLICATION","sameRevisionPublicVerificationRequired":true,"existingF0F9InternalOrderChanged":false,"productionReadinessClaimUnchanged":true},
     "ownerReferenceGameAndExistingSystems20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","A":"NAMED_REPRESENTATIVE_SIMILAR_GAME_SYSTEM","B":"EXISTING_GAME_SYSTEM_BASELINE","CDDelvePreserved":true,"lockedSequenceChanged":false},
     "ownerEveryGameF9Publish20261018": {
@@ -15789,16 +15790,14 @@
       "webDoesNotNeedToImitateHighEndNative3D": true
     },
     "assetAcquisitionAndReuse": {
-      "version": 2,
-      "authority": "OWNER_DIRECTIVE_2026-09-24",
+      "version": 3,
+      "authority": "OWNER_DIRECTIVE_2026-10-20",
       "implementationState": "ACTIVE_EXECUTABLE_CONTRACT",
       "order": [
         "VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY",
         "LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET",
         "LICENSE_VERIFIED_EXTERNAL_ASSET",
-        "RECONSTRUCT_OR_DERIVE_WHEN_RIGHTS_ALLOW",
-        "CREATE_NEW_ASSET",
-        "PROTOTYPE_PRIMITIVE_FALLBACK_ONLY"
+        "MODIFY_VERIFIED_CC0_ORIGINAL"
       ],
       "gameSpecificGeneratorByDefaultForbidden": true,
       "reusableAssetAndRigCapabilityPreferred": true,
@@ -15831,10 +15830,21 @@
         "licenseAndSourceSnapshotRequired": true,
         "transformAndParentProvenanceRequired": true,
         "redistributionRestrictionsMustBeTracked": true,
-        "unknownOrNonCommercialForbidden": true
+        "unknownOrNonCommercialForbidden": true,
+        "allowedLicenses": [
+          "CC0",
+          "CC0-1.0",
+          "CC0 1.0 Universal"
+        ],
+        "originalSourceHashRequired": true
       },
       "externalCandidateStatusBeforeRuntimeVerification": "RESEARCH_OR_PREPARED_ONLY",
-      "rawThirdPartyAssetMayNotBePromotedAsVerifiedCompanyAssetWithoutRuntimeConsumer": true
+      "rawThirdPartyAssetMayNotBePromotedAsVerifiedCompanyAssetWithoutRuntimeConsumer": true,
+      "cc0Only": true,
+      "newSelfAuthoredFallbackAllowed": false,
+      "mandatorySourceModification": true,
+      "replacementScope": "CURRENTLY_AUTHORIZED_ACTIVE_GAME_DEVELOPMENT_ONLY",
+      "inactiveGamesMustRemainUnchanged": true
     },
     "graphicsDepartmentOperatingModel": {
       "version": 1,
@@ -22349,11 +22359,151 @@
         ]
       }
     },
+    "rule5": {
+      "id": "RULE_5_CC0_SOURCE_DERIVATION_AND_ACTIVE_GAME_REPLACEMENT",
+      "label": "제5규칙 CC0 원본 수정 사용",
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-10-20",
+      "automaticContractBinding": true,
+      "objective": "GAME_DEVELOPMENT_USES_MODIFIED_VERIFIED_CC0_ORIGINALS_ONLY; PERMANENTLY_DELETE_REPLACED_LOW_QUALITY_SELF_AUTHORED_ASSETS_WITHOUT_CHANGING_INACTIVE_GAMES",
+      "appliesTo": [
+        "CHATGPT",
+        "VIBE",
+        "ALL_CURRENT_AND_FUTURE_GAME_DEVELOPMENT_WORKERS"
+      ],
+      "allowedAssetLicenses": [
+        "CC0",
+        "CC0-1.0",
+        "CC0 1.0 Universal"
+      ],
+      "cc0OriginalRequired": true,
+      "sourceAndLicenseEvidenceRequired": true,
+      "sourceHashAndModificationLineageRequired": true,
+      "gameSpecificModificationRequired": true,
+      "selfAuthoredLowQualityAssetsMustBePermanentlyDeleted": true,
+      "excludedOnlyOrQuarantineIsNotDeletion": true,
+      "regenerationOrReintroductionForbidden": true,
+      "replacementScope": "CURRENTLY_AUTHORIZED_ACTIVE_GAME_DEVELOPMENT_ONLY",
+      "inactiveGamesMustRemainUnchanged": true,
+      "inactiveGameAssetsMustNotBeDeleted": true,
+      "sharedAssetDeletionRequiresNoInactiveConsumer": true,
+      "sharedAssetWithInactiveConsumersAction": "REMOVE_ACTIVE_GAME_BINDING_AND_REPLACE_ACTIVE_COPY_KEEP_INACTIVE_CONSUMER_BYTES",
+      "deletionOrder": [
+        "VERIFY_CC0_ORIGINAL_SOURCE_LICENSE_AND_HASH",
+        "MODIFY_FOR_ACTIVE_GAME_STYLE_AND_PLATFORM",
+        "REPLACE_EXISTING_RESPONSIBLE_BINDING",
+        "VERIFY_ACTIVE_GAME_RUNTIME_MOBILE_SAVE_AND_REGRESSION",
+        "CHECK_ALL_REMAINING_CONSUMERS",
+        "DELETE_REPLACED_LOW_QUALITY_SOURCE_AND_LIBRARY_ENTRY_ONLY_WHEN_NO_INACTIVE_CONSUMER"
+      ],
+      "missingCC0Action": "ACQUIRE_VERIFIED_CC0_SOURCE_OR_REPORT_EXACT_GAP_WITHOUT_SELF_AUTHORED_FALLBACK",
+      "noRepositoryWideGameRewrite": true,
+      "existingPipelineOnly": true,
+      "existingGameRulesSaveBalanceAndLockedF0F9SequencePreserved": true,
+      "newSessionReadAuthority": "centralDocumentation.rules.newChatAndWorkerSessionMustLoadLatestMainCanonicalSet",
+      "migrationCompletionRequires": "EXACT_DELETED_PATHS_CC0_PARENT_AND_DERIVED_HASHES_ACTIVE_GAME_BINDING_DIFF_RUNTIME_AND_INACTIVE_CONSUMER_PROTECTION_EVIDENCE",
+      "machineEnforcement": {
+        "schemaVersion": 1,
+        "assertions": [
+          {
+            "code": "CC0ORIGINALREQUIRED",
+            "operator": "EQ",
+            "path": "cc0OriginalRequired",
+            "expected": true
+          },
+          {
+            "code": "SOURCEANDLICENSEEVIDENCEREQUIRED",
+            "operator": "EQ",
+            "path": "sourceAndLicenseEvidenceRequired",
+            "expected": true
+          },
+          {
+            "code": "SOURCEHASHANDMODIFICATIONLINEAGEREQUIRED",
+            "operator": "EQ",
+            "path": "sourceHashAndModificationLineageRequired",
+            "expected": true
+          },
+          {
+            "code": "GAMESPECIFICMODIFICATIONREQUIRED",
+            "operator": "EQ",
+            "path": "gameSpecificModificationRequired",
+            "expected": true
+          },
+          {
+            "code": "SELFAUTHOREDLOWQUALITYASSETSMUSTBEPERMANENTLYDELETED",
+            "operator": "EQ",
+            "path": "selfAuthoredLowQualityAssetsMustBePermanentlyDeleted",
+            "expected": true
+          },
+          {
+            "code": "INACTIVEGAMESMUSTREMAINUNCHANGED",
+            "operator": "EQ",
+            "path": "inactiveGamesMustRemainUnchanged",
+            "expected": true
+          },
+          {
+            "code": "INACTIVEGAMEASSETSMUSTNOTBEDELETED",
+            "operator": "EQ",
+            "path": "inactiveGameAssetsMustNotBeDeleted",
+            "expected": true
+          },
+          {
+            "code": "SHAREDASSETDELETIONREQUIRESNOINACTIVECONSUMER",
+            "operator": "EQ",
+            "path": "sharedAssetDeletionRequiresNoInactiveConsumer",
+            "expected": true
+          },
+          {
+            "code": "REGENERATIONORREINTRODUCTIONFORBIDDEN",
+            "operator": "EQ",
+            "path": "regenerationOrReintroductionForbidden",
+            "expected": true
+          },
+          {
+            "code": "EXISTINGPIPELINEONLY",
+            "operator": "EQ",
+            "path": "existingPipelineOnly",
+            "expected": true
+          },
+          {
+            "code": "NOREPOSITORYWIDEGAMEREWRITE",
+            "operator": "EQ",
+            "path": "noRepositoryWideGameRewrite",
+            "expected": true
+          },
+          {
+            "code": "ACTIVE_SCOPE_ONLY",
+            "operator": "EQ",
+            "path": "replacementScope",
+            "expected": "CURRENTLY_AUTHORIZED_ACTIVE_GAME_DEVELOPMENT_ONLY"
+          },
+          {
+            "code": "NO_SELF_AUTHORED_FALLBACK",
+            "operator": "FILE_CONTAINS",
+            "file": "assets/vibe-art-pipeline.js",
+            "expected": "createNewAssetWhenNoVerifiedCandidate: false"
+          },
+          {
+            "code": "NO_WORKER_CREATE_FALLBACK",
+            "operator": "FILE_CONTAINS",
+            "file": "assets/vibe-art-pipeline.js",
+            "expected": "createWhenNoVerifiedCandidate:false, cc0Only:true"
+          },
+          {
+            "code": "ACTIVE_CONSUMER_PROTECTION_GUIDANCE",
+            "operator": "FILE_CONTAINS",
+            "file": "tools/vibe2-asset-production-plan.mjs",
+            "expected": "[CC0 ORIGINAL / ACTIVE GAME ONLY]"
+          }
+        ]
+      }
+    },
     "implementationOrder": [
       "RULE_1",
       "RULE_2",
       "RULE_3",
-      "RULE_4"
+      "RULE_4",
+      "RULE_5"
     ],
     "orderedImplementationRequired": true,
     "constitutionalAuthority": "HIGHEST_VIBE_INTERNAL_WORKER_CONTRACT_AUTHORITY",

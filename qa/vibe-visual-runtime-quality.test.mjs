@@ -47,10 +47,10 @@ function interfaceEvidence(revision){
  }))};
 }
 
-test('art pipeline uses verified asset acquisition before primitive fallback and requires golden scenes',()=>{
+test('art pipeline requires CC0 acquisition and golden scenes without primitive fallback',()=>{
   const plan=createVibeArtPipeline({request:'로블록스 카툰 캐릭터 그래픽 고퀄 개선',target:'roblox',quality:2});
   assert.deepEqual([...plan.assetAcquisition.order],[...VIBE_ASSET_ACQUISITION_ORDER]);
-  assert.equal(plan.assetAcquisition.primitiveFallbackPrototypeOnly,true);
+  assert.equal(plan.assetAcquisition.primitiveFallbackAllowed,false);
   assert.equal(plan.runtimeVisualAcceptance.actualRuntimeCaptureRequired,true);
   assert.deepEqual([...plan.runtimeVisualAcceptance.goldenSceneRoles],[...VIBE_GOLDEN_SCENE_ROLES]);
   assert.equal(plan.policy.goldenSceneRuntimeEvidenceRequired,true);
@@ -72,8 +72,8 @@ test('existing games and shared spatial assets require actual native 3D rather t
   }
 });
 
-test('asset acquisition prefers existing verified company assets and keeps primitive fallback prototype-only',()=>{
-  const company=[{id:'verified-cartoon-rig'}];
+test('asset acquisition prefers CC0 company assets without self-authored fallback',()=>{
+  const company=[{id:'verified-cartoon-rig',license:'CC0-1.0'}];
   const plan=createVibeAssetAcquisitionPlan({companyAssets:company,repositoryAssets:[{id:'repo'}],stage:'INTERNAL_PLAYTEST'});
   assert.equal(plan.selectedSource,'VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY');
   assert.equal(plan.candidates[0].id,'verified-cartoon-rig');
@@ -368,4 +368,34 @@ test('graphics root returns exact visual-repair instructions without a second pr
   assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets.length,1);
   assert.equal(production.runtimeRepairLoop.preciseArtDirectionRepairTargets[0].property,'treeSpacingAndScale');
   assert.equal(production.runtimeRepairLoop.gameplaySaveBalanceMutationForbidden,true);
+});
+
+// CC0 원본이 없을 때 자체 제작으로 돌아가거나 보류 게임을 수정하지 않는다.
+test('non-CC0 candidates cannot bypass CC0 selection through the company tier',()=>{
+  const plan=createVibeAssetAcquisitionPlan({
+    companyAssets:[{id:'old-self-authored',license:'project-original'},{id:'other-license',license:'CC-BY'}],
+    repositoryAssets:[{id:'cc0-source',license:'CC0'}],stage:'PROTOTYPE'
+  });
+  assert.equal(plan.selectedSource,'LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET');
+  assert.deepEqual(plan.candidates.map(row=>row.id),['cc0-source']);
+  assert.equal(plan.primitiveFallbackAllowed,false);
+  assert.equal(plan.cc0OriginalModificationRequired,true);
+  assert.equal(plan.inactiveGamesMustRemainUnchanged,true);
+});
+test('missing or quarantined CC0 source leaves an acquisition gap instead of generating art',()=>{
+  const assets=[{id:'missing-license'},{id:'blocked',license:'CC0',quarantined:true}];
+  const snapshot=JSON.stringify(assets);
+  const plan=createVibeAssetAcquisitionPlan({companyAssets:assets,stage:'PROTOTYPE'});
+  assert.equal(plan.selectedSource,'VERIFIED_CC0_SOURCE_REQUIRED');
+  assert.equal(plan.createNewAssetWhenNoVerifiedCandidate,false);
+  assert.equal(plan.candidates.length,0);
+  assert.equal(JSON.stringify(assets),snapshot);
+});
+
+test('game worker acquisition instructions cannot retain create-new fallback',()=>{
+  const plan=createVibeArtPipeline({request:'게임 캐릭터 그래픽 개선',target:'web'});
+  assert.equal(plan.assetAcquisition.cc0Only,true);
+  assert.equal(plan.assetAcquisition.createWhenNoVerifiedCandidate,false);
+  assert.equal(plan.assetAcquisition.inactiveGamesMustRemainUnchanged,true);
+  assert.ok(!plan.assetAcquisition.order.includes('CREATE_NEW_ASSET'));
 });
