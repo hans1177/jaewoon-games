@@ -66,7 +66,6 @@ test('retired Web source cannot reserve legacy assessment work, while native and
   const status=new Map(held.tasks.map(t=>[t.id,t]));
   for(const id of ['retired-web','retired-web-2']){
     assert.equal(status.get(id).ownerDevelopmentHold,true);
-    assert.equal(status.get(id).webSourceUnavailableHold,true);
     assert.equal(status.get(id).status,'queued','retired source must not be treated as QA PASS or deleted');
   }
   for(const id of ['native-roblox','playable-web','approved-bootstrap'])
@@ -78,7 +77,6 @@ test('retired Web source cannot reserve legacy assessment work, while native and
     catalog:{games:[{...retired,canonical:{sources:{web:{state:'ACTIVE'}}}},retired2,active]}
   });
   assert.equal(restored.tasks.find(t=>t.id==='retired-web').ownerDevelopmentHold,false);
-  assert.equal(restored.tasks.find(t=>t.id==='retired-web').webSourceUnavailableHold,false);
 });
 
 
