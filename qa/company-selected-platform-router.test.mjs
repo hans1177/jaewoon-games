@@ -186,3 +186,14 @@ test('released native platforms re-enter only for real next-cycle work and never
   assert.equal(platformDevelopmentEligible({...unity,canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'},'UNITY'),false);
   assert.equal(platformDevelopmentEligible({...unity,nextEscalationRequired:true,buildUpDirectiveId:'released-unity:g3'},'FORTNITE_UEFN'),false);
 });
+
+test('owner three-game focus applies at native admission without removing queued games',()=>{
+  const roadmap={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{enabled:true,
+    ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
+    ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'},
+    completionPursuit:{nonFocusedDevelopmentContinues:false}}}};
+  const rows=['simple-rpg','fantasy-survival','cozy-island','other-game'].map(id=>nativeItem(id,'ROBLOX'));
+  assert.deepEqual(selectTargetPlatformDevelopmentWindow(rows,Infinity,roadmap).map(row=>row.gameId),['simple-rpg']);
+  assert.equal(rows.length,4);
+  assert.equal(selectTargetPlatformDevelopmentWindow(rows).length,4);
+});

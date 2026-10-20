@@ -119,6 +119,11 @@ jobs:
           const cancel=new Map();
           const add=(run,reason)=>{
             if(!run||!active.has(String(run.status||'').toLowerCase()))return;
+            // 이미 취소 금지인 독립 작업은 후보 단계에서 제외해 개별 API 조회를 피한다.
+            // 아래 실행 직전 경로·상태 재검증은 그대로 유지한다.
+            if(String(run.path||'')==='.github/workflows/company-development-roblox-runtime.yml'
+              ||String(run.path||'')==='.github/workflows/company-development-roblox-runtime-continuation.yml'
+              ||/^CENTRAL_(DEVELOPMENT_|MANUAL_BATCH_)/.test(String(reason||'')))return;
             cancel.set(Number(run.id),reason);
           };
 

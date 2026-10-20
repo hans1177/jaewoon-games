@@ -333,7 +333,7 @@ jobs:
           const reconciliation=JSON.parse(fs.readFileSync('/tmp/roblox-source-reconciliation.json','utf8'));
           const reconciliationById=new Map((reconciliation||[]).map(row=>[row.gameId,row]));
           const reconciledPass=new Set((reconciliation||[]).filter(row=>row?.pass===true).map(row=>row.gameId));
-          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
+          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[],DEVELOPMENT_GAME_WIP_MAX,roadmap);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const EXECUTION_BATCH_MAX=256;
           const rows=[];
@@ -1116,7 +1116,7 @@ jobs:
               return hasCurrentRobloxPackageAssetRepair({item,assetLibrary,baseline});
             }catch{return false;}
           };
-          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
+          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[],DEVELOPMENT_GAME_WIP_MAX,roadmap);
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=[];
           const isOrchestrationMissing=item=>String(item.robloxFailureSignature||'')==='roblox-package-result-missing';

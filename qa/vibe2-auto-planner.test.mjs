@@ -48,7 +48,7 @@ test('the owner three-game focus selects exactly Simple RPG Roblox and two exist
     'the matching Roblox counterpart must keep developing but not consume a focus slot');
   assert.ok(projects.some(project=>project.gameId==='cozy-island'&&project.engine==='roblox'
     &&!focusedCaretakerProject(project,repoRoot)));
-  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,true);
+  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,false);
   assert.equal(focus.targetFocusedGames,3);
   assert.equal(focus.maxFocusedGames,3);
 });
@@ -4816,7 +4816,7 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
   assert.ok(graphicsBuildUp.responsibleFiles.some(file=>/\.(?:html?|css|js|mjs)$/i.test(file)));
 });
 
-test('owner-direct unfinished games bypass a full normal backlog and keep generating BUILD_UP generations',()=>{
+test('owner-direct games preserve BUILD_UP generations while three-game focus defers new admission',()=>{
   // Bind real current policy for the implementation evaluator; do not bypass its fail-closed guard.
   const priorPolicy=process.env.COMPANY_VERIFIED_POLICY_PATH;
   process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
@@ -4923,13 +4923,10 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
       targetWorkUnitsPerCycle:1
     }
   });
-  assert.equal(result.planned,true);
-  assert.equal(result.planningBacklog.ownerResumableTargetBypass,true);
-  const resumed=result.tasks.find(task=>task.gameId==='horror-escape-room');
-  assert.ok(resumed);
-  assert.equal(resumed.maxRetries,null);
-  assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
-  assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
+  assert.ok(result.tasks.every(task=>task.gameId!=='horror-escape-room'),
+    'three-game focus defers new nonfocused BUILD_UP while preserving its generation capability');
+  assert.ok(result.queue.tasks.some(task=>task.id===occupied.id),
+    'nonfocused backlog is retained, not deleted');
   }finally{
     if(priorPolicy===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
     else process.env.COMPANY_VERIFIED_POLICY_PATH=priorPolicy;

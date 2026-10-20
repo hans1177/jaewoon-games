@@ -164,8 +164,8 @@ test('game-primary keeps adaptive telemetry while reserving to fixed repeat-deve
   const files=tempFiles();
   try{
     const tasks=Array.from({length:40},(_,i)=>({
-      id:`adaptive-task-${i}`,gameId:`g-${i}`,target:'roblox',department:'development',type:'implementation',
-      goal:'adaptive reservation',status:'queued',sourceRoot:`roblox-games/g-${i}`,responsibleFiles:['server/Game.server.luau'],evidence:[]
+      id:`adaptive-task-${i}`,gameId:'simple-rpg',target:'roblox',department:'development',type:'implementation',
+      goal:'adaptive reservation',status:'queued',sourceRoot:'roblox-games/simple-rpg',responsibleFiles:[`server/Adaptive-${i}.server.luau`],evidence:[]
     }));
     fs.writeFileSync(files.queue,JSON.stringify({maxConcurrentTasks:256,tasks}), 'utf8');
     fs.writeFileSync(files.control,JSON.stringify({version:4,currentMax:20,lastReason:'EXTERNAL_CAPACITY_OBSERVED_19'}),'utf8');

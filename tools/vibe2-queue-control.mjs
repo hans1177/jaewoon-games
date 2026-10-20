@@ -707,8 +707,13 @@ export function completeOwnerExclusiveGameScope({
 
 export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(CANONICAL_RESERVATION_POLICY)) {
   const queue=createVibeContinuousQueue(queueInput);
+  const focus=policy.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+  const focusOnly=focus?.enabled===true&&focus.completionPursuit?.nonFocusedDevelopmentContinues===false;
+  const ids=new Set(focus?.ownerFocusedGameIds||[]);
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>({
     ...task,ownerDevelopmentHold:ownerDevelopmentHeld(policy,task.gameId,task.target,task)
+      ||(focusOnly&&task.status==='queued'&&task.executionLane==='GAME_PRIMARY'
+        &&(!ids.has(task.gameId)||clean(focus.ownerFocusedGamePlatforms?.[task.gameId]).toLowerCase()!==clean(task.target).toLowerCase()))
   }))});
 }
 
