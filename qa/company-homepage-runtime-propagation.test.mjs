@@ -620,7 +620,7 @@ test('Cloudflare runtime keeps canonical published web-game buttons without over
   const runtime={games:[{id:'demo',name:'Demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
     canonical:{publication:{roblox:{universeId:'runtime-authoritative'}},
       sources:{web:{path:'web-games/demo',archive:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}}]};
-  const source={games:[{id:'demo',name:'Demo',webPath:'web-games/demo',hasWebArchive:true,
+  const source={games:[{id:'demo',name:'Demo',lifecycleState:'ACTIVE',webPath:'web-games/demo',hasWebArchive:true,
     ownerWebSourceState:'UNITY_WEB_VERIFICATION_REQUIRED',
     canonical:{sources:{web:{path:'web-games/demo',archive:true,state:'UNITY_WEB_VERIFICATION_REQUIRED'}},
       publication:{web:{route:'web-games/demo/',sourceTreeSha:'a'.repeat(40)},roblox:{universeId:'untrusted-static'}}}}]};
