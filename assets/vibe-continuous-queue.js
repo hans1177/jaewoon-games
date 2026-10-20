@@ -498,6 +498,10 @@ function scoreTask(task, index) {
     + (developmentImplementation ? 2000 : 0)
     + (isPostReleaseFocused(task) ? 1200 : 0)
     + (task.ownerFocusedCaretaker ? 900 : 0)
+    // Finish a documented exact blocker before reopening speculative polish.
+    // No source-only progress estimate is treated as a completed QA stage.
+    + (task.ownerFocusedCaretaker && clean(task.buildUpNextAction).toUpperCase()==='CAUSAL_REPAIR' ? 500 : 0)
+    + (task.lastOutcome==='FAIL' && Number(task.retries)>0 ? 260 : 0)
     + (RELEASE_STATE_SCORE[task.releaseState] || 0)
     + (PRIORITY_SCORE[task.priority] || 0)
     + (clean(task.target).toLowerCase()==='roblox' ? Number(task.portfolioValueScore || 0) : 0)
