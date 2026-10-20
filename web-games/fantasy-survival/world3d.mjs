@@ -607,7 +607,7 @@ export async function createWorld3d(canvas, initialAppearance={model:'knight',si
   return {
     frame,pick,dispose,setAvatarAppearance,getAvatarAppearance:()=>({...selectedAppearance}),isActive:()=>active&&!disposed&&!canvas.hidden,
     kind:'NATIVE_WEBGL_GAME_RENDERER',
-    get playerSource(){return hero?.avatar.userData.source||HERO_URL.href},creatureSources:[...nativeCreatureSources.keys()],
+    get playerSource(){return hero?.avatar.userData.source||''},creatureSources:[...nativeCreatureSources.keys()],
     modelCount:models.size,get playerAssetLoaded(){return !!hero},get playerMotionClipCount(){return heroClips.length},
     undeadProxySourceLoaded:!!undeadSource,undeadProxyMotionClipCount:undeadClips.length,
     getBiome:()=>currentBiome,getWorldProfile:()=>gameStyleRegion,
