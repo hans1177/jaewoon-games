@@ -14,6 +14,31 @@ import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-archit
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
 
 
+test('planner never re-queues a deleted web route from a stale catalog or development queue path',()=>{
+  const root=process.cwd();
+  const games=[
+    {id:'bug-defense',name:'곤충 디펜스',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/bug-defense/',
+      canonical:{sources:{web:{state:'PERMANENTLY_REMOVED_REJECTED_TEST'},roblox:{projectPath:'roblox-games/bug-defense'}}}},
+    {id:'seed-single-defense-strat-celestial-bastion',name:'천상의 보루',
+      productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',hasWebArchive:true,
+      webPath:'/web-games/seed-single-defense-strat-celestial-bastion/',
+      canonical:{sources:{web:{state:'PERMANENTLY_REMOVED_REJECTED_TEST'}}}},
+    {id:'fantasy-survival',name:'마력숲',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/',
+      canonical:{sources:{web:{state:'ACTIVE'}}}}
+  ];
+  const projects=collectProjects({}, {games},root,{
+    items:games.map(game=>({gameId:game.id,gameName:game.name,status:'ACTIVE',
+      selectedPlatform:'WEB',webSourcePath:'web-games/'+game.id}))
+  });
+  assert.equal(projects.some(p=>p.gameId==='bug-defense'&&p.engine==='web'),false);
+  assert.equal(projects.some(p=>p.gameId==='seed-single-defense-strat-celestial-bastion'&&p.engine==='web'),false);
+  assert.ok(projects.some(p=>p.gameId==='fantasy-survival'&&p.engine==='web'));
+  // Rejecting a retired Web companion cannot delete the game's native project.
+  assert.ok(projects.some(p=>p.gameId==='bug-defense'&&p.engine==='roblox'));
+});
+
 test('the owner three-game focus selects exactly Simple RPG Roblox and two existing Web sources',()=>{
   const repoRoot=process.cwd();
   const focus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
