@@ -6363,7 +6363,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T14:54:43.805Z",
+      "updatedAt": "2026-10-20T14:55:00.174Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -6381,17 +6381,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "ebdea1fe7f3b1786a0bf7bda3d09ad4cb613dd13",
       "robloxBuildArtifactIdentity": "sha256:5b4d751288503767f13095776e08ab8ac0f84935bf773a392d5e280d4788ce52",
-      "robloxBuildPassedAt": "2026-10-20T14:54:43.805Z",
+      "robloxBuildPassedAt": "2026-10-20T14:55:00.174Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T14:54:43.805Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T14:55:00.174Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "chess-battle",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T14:11:41.853Z",
+        "checkedAt": "2026-10-20T14:19:30.011Z",
         "sourceRevision": "ebdea1fe7f3b1786a0bf7bda3d09ad4cb613dd13",
         "artifactIdentity": "sha256:5b4d751288503767f13095776e08ab8ac0f84935bf773a392d5e280d4788ce52",
         "secondaryOwnerFocus": false,
@@ -6434,7 +6434,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because several required validation checks failed in BUILD_EVIDENCE."
+            "note": "Package cannot start runtime testing because several required validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) are marked as false in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -33418,7 +33418,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T14:54:43.805Z",
+  "updatedAt": "2026-10-20T14:55:00.174Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
