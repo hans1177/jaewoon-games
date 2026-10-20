@@ -616,7 +616,69 @@ jobs:
               throw new Error('SECURITY_OWNER_LOCAL_WEB_CHAT_CANONICAL_GATES_REQUIRED');
             console.log('SECURITY_OWNER_LOCAL_WEB_CHAT_READ_ONLY_AND_VERIFIED_QA=PASS');
           }
-          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key))&&!designKeys.has(key)&&!(publicationChanged&&publicationKeys.has(key))&&!(localWebChatAdded&&(key==='localVibeWebChat'||key==='localVibeWebChat.existingPwaOwnerCommentReceiver')));
+          // Exact owner-approved, separate local WEB edit tool. This is NOT model source,
+          // GitHub, QA, deployment, or central-policy authority for advisory chat.
+          const localWebDevelopmentAdded=changes.includes('localVibeWebDevelopment');
+          if(localWebDevelopmentAdded){
+            const expectedLocalWebDevelopment={
+              version:1,authority:'OWNER_DIRECTIVE_2026-10-20',enabled:true,
+              platform:'WEB',model:'qwen2.5-coder:3b',
+              entrypoint:'tools/vibe2-local-web-develop.mjs',
+              sourceScope:'SELECTED_CATALOG_WEB_GAME_INDEX_HTML_ONLY',
+              ownerApplyRequired:true,ownerPrPublishRequired:true,ownerMergeRequired:true,
+              modelCommandExecutionForbidden:true,cleanWorkingTreeRequired:true,
+              existingVibe2QaRequired:true,existingSecurityGateRequired:true,
+              existingF0F9AndReleaseGatesUnchanged:true,
+              releaseOnlyViaExistingMainPipeline:true,newPipelineCreated:false,
+              advisoryChatContractUnchanged:true,
+              releaseAuthority:'EXISTING_VIBE2_MAIN_PIPELINE_ONLY',
+              permittedLocalChanges:'ONE_EXACT_BOUNDED_OWNER_SELECTED_WEB_INDEX_HTML_EDIT_ON_A_NEW_LOCAL_BRANCH',
+              immutableBoundaries:[
+                'CURRENT_LOCAL_CHAT_READ_ONLY_CONTRACT','CENTRAL_POLICY','CREDENTIALS',
+                'SAVE_COMPATIBILITY','NETWORK_AUTHORITY','F0_F9_RELEASE_SEQUENCE'
+              ],
+              localQaOnly:'SCOPED_STATIC_AND_CONTRACT_TESTS_NOT_F0_F9_OR_DEPLOY_VERIFICATION',
+              noModelCommandExecution:true,modelReviewVerdictIsNotEvidence:true
+            };
+            const expectedFiles=new Set([
+              policyPath,
+              '.github/workflows/company-security-immune.yml',
+              'tools/vibe2-local-web-develop.mjs',
+              'qa/vibe2-local-web-develop.test.mjs'
+            ]);
+            if(base.localVibeWebDevelopment!==undefined||
+              !same(head.localVibeWebDevelopment,expectedLocalWebDevelopment)||
+              head.version!==base.version+1||
+              changes.length!==2||!changes.includes('version')||
+              changedPaths.length!==expectedFiles.size||
+              changedPaths.some(p=>!expectedFiles.has(p))||
+              !same(base.localVibeWebChat,head.localVibeWebChat)||
+              !same(base.finalDevelopmentLock,head.finalDevelopmentLock)||
+              !same(base.ownerCanonicalRules,head.ownerCanonicalRules)||
+              !same(base.developmentLifecycleMachine,head.developmentLifecycleMachine)||
+              head.localVibeWebChat?.sourceWriteAllowed!==false||
+              head.localVibeWebChat?.githubWriteAllowed!==false||
+              head.localVibeWebChat?.qaVerdictAllowed!==false||
+              head.localVibeWebChat?.centralPolicyOverrideAllowed!==false||
+              head.ownerCanonicalRules?.constitutionalBinding?.enforcerRequiredBeforeWorkerSourceWrite!==true||
+              head.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.publishBeforeF9Forbidden!==true||
+              head.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.exactVerifiedVersionRequiredForPublishAttempt!==true
+            )throw new Error('SECURITY_OWNER_LOCAL_WEB_DEVELOPMENT_EXACT_CONTRACT_REQUIRED');
+            const developer=fs.readFileSync('tools/vibe2-local-web-develop.mjs','utf8');
+            const unit=fs.readFileSync('qa/vibe2-local-web-develop.test.mjs','utf8');
+            const requiredCode=[
+              'readLocalChatPolicy','readApprovedWebGame',
+              'MODEL_PATCH_NOT_UNIQUE_OR_TOO_LARGE','MODEL_PATCH_UNSAFE_CONTENT',
+              'LOCAL_DEV_DIRTY_WORKTREE_STOP','--apply','--pr','--merge-pr',
+              'LOCAL_DEV_UNEXPECTED_STAGED_FILE','existingSecurityGateRequired'
+            ];
+            if(requiredCode.some(marker=>!developer.includes(marker))||
+              !unit.includes('requiredReviewPass')||
+              !unit.includes('LOCAL_DEVELOP_POLICY_NOT_AUTHORIZED'))
+              throw new Error('SECURITY_OWNER_LOCAL_WEB_DEVELOPMENT_SOURCE_PROOF_MISSING');
+            console.log('SECURITY_OWNER_LOCAL_WEB_DEVELOPMENT_EXACT_SCOPE=PASS');
+          }
+          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key))&&!designKeys.has(key)&&!(publicationChanged&&publicationKeys.has(key))&&!(localWebChatAdded&&(key==='localVibeWebChat'||key==='localVibeWebChat.existingPwaOwnerCommentReceiver'))&&!(localWebDevelopmentAdded&&key==='localVibeWebDevelopment'));
           if(!changes.length||changes.length>70||bad.length)throw new Error('SECURITY_AUTO_POLICY_UNAPPROVED_SCOPE:'+bad.join(','));
           const scope=head.ownerActiveDevelopmentScope20261009;
           const webFlowRows=[];
