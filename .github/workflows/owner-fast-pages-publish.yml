@@ -69,6 +69,24 @@ jobs:
           rsync -a --exclude='.git' --exclude='.github' ./ "$RUNNER_TEMP/owner-pages-site/"
           test -s "$RUNNER_TEMP/owner-pages-site/web-games/ocean-voyage/index.html"
           test -s "$RUNNER_TEMP/owner-pages-site/index.html"
+          # Republish the full existing site, excluding obsolete developer UI
+          # injected by the legacy Magic Forest build step. No gameplay/assets
+          # or progress data is modified.
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const root=path.join(process.env.RUNNER_TEMP,'owner-pages-site');
+          const manifest=JSON.parse(fs.readFileSync(path.join(root,'web-games/publish-manifest.json'),'utf8'));
+          let scrubbed=0;
+          for(const route of manifest.routes){
+            const file=path.join(root,route,'index.html');
+            const html=fs.readFileSync(file,'utf8');
+            const clean=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vibe-runtime-panel\.js["'][^>]*><\/script>\s*/gi,'');
+            if(clean!==html){fs.writeFileSync(file,clean);scrubbed++}
+            if(clean.includes('vibe-runtime-panel.js'))throw Error('PUBLIC_ASSET_INSPECTOR_STILL_PRESENT:'+route);
+          }
+          console.log('OWNER_PAGES_LEGACY_ASSET_INSPECTORS_REMOVED='+scrubbed);
+          console.log('OWNER_PAGES_GAMEPLAY_FILES_PRESERVED='+manifest.routes.length);
+          NODE
 
       - uses: actions/configure-pages@v5
 
@@ -93,6 +111,11 @@ jobs:
           curl -fsSL --retry 5 --retry-delay 5 --max-time 30 "$game" -o /tmp/ocean-voyage-live.html
           grep -q '푸른 항로' /tmp/ocean-voyage-live.html
           grep -q 'main.mjs' /tmp/ocean-voyage-live.html
+          if grep -q 'vibe-runtime-panel.js' /tmp/ocean-voyage-live.html; then
+            echo 'OWNER_OCEAN_DEV_ASSET_INSPECTOR_UNEXPECTED=FAIL' >&2
+            exit 1
+          fi
+          echo 'OWNER_OCEAN_DEV_ASSET_INSPECTOR_REMOVED=PASS'
           curl -fsSL --retry 5 --retry-delay 5 --max-time 30 "${game}main.mjs" -o /tmp/ocean-voyage-main-live.mjs
           grep -q 'createOcean3D' /tmp/ocean-voyage-main-live.mjs
           curl -fsSL --retry 5 --retry-delay 5 --max-time 30 "${game}assets/ship-medium.glb" -o /tmp/ocean-voyage-ship-live.glb

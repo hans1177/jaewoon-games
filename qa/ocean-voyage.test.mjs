@@ -155,3 +155,23 @@ test('CC0-only external asset references and functional UK-era voyage UI',()=>{
  assert.match(main,/joystick\.setPointerCapture/);
  assert.match(html,/opengameart\.org\/sites\/default\/files\/rpgportraits\.png/);
 });
+
+
+test('public 푸른항로 and every other game never inherit the developer-only asset button',()=>{
+ const ocean=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
+ const staticBuilder=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+ const fastPublisher=fs.readFileSync('.github/workflows/owner-fast-pages-publish.yml','utf8');
+ const assetInspector=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
+ assert.doesNotMatch(ocean,/vibe-runtime-panel\.js/);
+ assert.doesNotMatch(staticBuilder,/const tag='<script defer src="\/jaewoon-games\/assets\/vibe-runtime-panel\.js"/);
+ assert.match(staticBuilder,/PUBLIC_GAME_DEV_INSPECTOR_INJECTION_FORBIDDEN/);
+ assert.match(fastPublisher,/PUBLIC_ASSET_INSPECTOR_STILL_PRESENT/);
+ assert.match(fastPublisher,/OWNER_OCEAN_DEV_ASSET_INSPECTOR_REMOVED=PASS/);
+ assert.match(assetInspector,/script\?\.dataset\?\.vibeOwnerInspector!=='enabled'/);
+ // The actual ship/dock/pirate models remain bound to the 3D canvas,
+ // never to the HTML inspector button.
+ const game=fs.readFileSync('web-games/ocean-voyage/ocean3d.mjs','utf8');
+ assert.match(game,/loader\.load\(ROOT\+MODELS\[name\]/);
+ assert.match(game,/boatsGroup\.add\(ship\)/);
+ assert.match(game,/portsGroup,boatsGroup/);
+});

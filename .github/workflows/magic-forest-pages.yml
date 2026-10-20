@@ -258,19 +258,18 @@ jobs:
             fs.mkdirSync(path.dirname(target),{recursive:true});
             fs.writeFileSync(target,source);
           }
-          // Add an optional, accessible library browser to all published HTML game routes.
-          // Existing game scripts, controls, save files, and renderers remain untouched.
+          // The asset browser is an internal development inspector, not gameplay.
+          // Never auto-inject it into public games. Also strip stale launch tags from
+          // previously published HTML to protect all existing game routes on republish.
           for(const route of routes){
-            // Magic Forest is a game, not the internal asset-library inspector.
-            // Keep the runtime panel available to other registered games only.
-            if(route==='web-games/fantasy-survival/')continue;
             const entry=path.join(site,route,'index.html');
             const html=fs.readFileSync(entry,'utf8');
-            const tag='<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script>';
-            if(!html.includes('vibe-runtime-panel.js')){
-              const updated=/<\/body>/i.test(html)?html.replace(/<\/body>/i,tag+'</body>'):html+'\n'+tag;
-              fs.writeFileSync(entry,updated);
-            }
+            const withoutInspector=html.replace(
+              /<script\b[^>]*\bsrc=["'][^"']*vibe-runtime-panel\.js["'][^>]*><\/script>\s*/gi,''
+            );
+            if(withoutInspector!==html)fs.writeFileSync(entry,withoutInspector);
+            if(/vibe-runtime-panel\.js/i.test(withoutInspector))
+              throw Error('PUBLIC_GAME_DEV_INSPECTOR_INJECTION_FORBIDDEN:'+route);
           }
           // The preview is loaded in a sandboxed iframe only on user request.
           // Preserve the source module paths and publish the preview under the assets root.

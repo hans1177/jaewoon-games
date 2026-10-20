@@ -123,11 +123,15 @@ test('original source materials and Diablo-II-style native camera are bound to g
  assert.match(source,/productionReady:false/);
 });
 
-test('public Magic Forest never receives developer asset inspector button',()=>{
+test('no public game receives automatically injected developer asset inspector button',()=>{
  const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
  const panel=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
- assert.match(workflow,/if\(route==='web-games\/fantasy-survival\/'\)continue/);
- assert.match(panel,/gameId==='fantasy-survival'/);
+ const ocean=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
+ assert.doesNotMatch(workflow,/const tag='<script defer src="\/jaewoon-games\/assets\/vibe-runtime-panel\.js"/);
+ assert.match(workflow,/PUBLIC_GAME_DEV_INSPECTOR_INJECTION_FORBIDDEN/);
+ assert.match(workflow,/html\.replace\(/);
+ assert.match(panel,/script\?\.dataset\?\.vibeOwnerInspector!=='enabled'/);
+ assert.doesNotMatch(ocean,/vibe-runtime-panel\.js/);
 });
 
 test('native scene drives the default surface display but is not falsely production-certified',()=>{
