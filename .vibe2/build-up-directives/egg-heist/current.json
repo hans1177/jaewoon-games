@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "egg-heist-build-up-g2-12cba78ef33c",
-  "directiveFingerprint": "12cba78ef33ca8f00fc26ef5e46ded93dcb36e3a1f5721e9759b0fe5c2727547",
+  "directiveId": "egg-heist-build-up-g2-f4548c02c6fc",
+  "directiveFingerprint": "f4548c02c6fc74228670e3ff4ce3eb1e0e58935d3284b6f85eb0f41ad6a7ab69",
   "previousDirectiveFingerprint": "cba4fdf6846b0aefb16aaaad809ac789f8cf17aece44cb57849ce199c8c42341",
   "forbiddenRepeatFingerprint": "cba4fdf6846b0aefb16aaaad809ac789f8cf17aece44cb57849ce199c8c42341",
   "gameId": "egg-heist",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/egg-heist",
-  "sourceTreeFingerprint": "ecbe4a04b03927424894f5ff1779b22caaa37fb441bebd70904b93ff9bc11a32",
+  "sourceTreeFingerprint": "310a00c4237fd4809c1d6118df1dcb773f0570978053a2b5f43330d48a0e9a03",
   "designFingerprint": "b11b4e12eada31ffc33079c6917cb51568952de85f1b67261a4692b046ceb778",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -294,7 +294,7 @@
           "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "ecbe4a04b03927424894f5ff1779b22caaa37fb441bebd70904b93ff9bc11a32",
+        "sourceTreeFingerprint": "310a00c4237fd4809c1d6118df1dcb773f0570978053a2b5f43330d48a0e9a03",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -342,7 +342,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "b11b4e12eada31ffc33079c6917cb51568952de85f1b67261a4692b046ceb778",
-    "sourceTreeFingerprint": "ecbe4a04b03927424894f5ff1779b22caaa37fb441bebd70904b93ff9bc11a32",
+    "sourceTreeFingerprint": "310a00c4237fd4809c1d6118df1dcb773f0570978053a2b5f43330d48a0e9a03",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -889,7 +889,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "ecbe4a04b03927424894f5ff1779b22caaa37fb441bebd70904b93ff9bc11a32",
+    "sourceTreeFingerprint": "310a00c4237fd4809c1d6118df1dcb773f0570978053a2b5f43330d48a0e9a03",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4466,7 +4466,7 @@
     ],
     "signals": {
       "combat": 154,
-      "progression": 545,
+      "progression": 566,
       "ai": 62,
       "save": 119,
       "multiplayer": 42,
@@ -4476,7 +4476,7 @@
       "vfx": 44,
       "camera": 46,
       "audio": 4,
-      "audioDynamics": 41,
+      "audioDynamics": 30,
       "ui": 897,
       "uiFlow": 1149,
       "entryFlow": 18,
@@ -4506,7 +4506,7 @@
       },
       {
         "file": "roblox-games/egg-heist/shared/GameConfig.luau",
-        "score": 509
+        "score": 531
       },
       {
         "file": "roblox-games/egg-heist/server/Game.server.luau",
@@ -4514,7 +4514,7 @@
       },
       {
         "file": "roblox-games/egg-heist/client/Game.client.luau",
-        "score": 163
+        "score": 164
       },
       {
         "file": "roblox-games/egg-heist/shared/RobloxCommonMaterials.luau",
@@ -4921,7 +4921,7 @@
     "previousFocus": "USABILITY",
     "previousGeneration": 1,
     "previousSourceTreeFingerprint": "3113390ba0f9b1f8c283809396504d828cdb2a9f781c434e08fb3021af798300",
-    "currentSourceTreeFingerprint": "ecbe4a04b03927424894f5ff1779b22caaa37fb441bebd70904b93ff9bc11a32",
+    "currentSourceTreeFingerprint": "310a00c4237fd4809c1d6118df1dcb773f0570978053a2b5f43330d48a0e9a03",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -6078,7 +6078,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 428529,
+        "sourceBytes": 428561,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6278,7 +6278,7 @@
     "generation": 2,
     "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ecbe4a04b03927424894f5ff1779b22caaa37fb441bebd70904b93ff9bc11a32",
+    "sourceFingerprint": "310a00c4237fd4809c1d6118df1dcb773f0570978053a2b5f43330d48a0e9a03",
     "priorSourceFingerprint": "3113390ba0f9b1f8c283809396504d828cdb2a9f781c434e08fb3021af798300",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -6298,7 +6298,7 @@
     "version": 1,
     "gameId": "egg-heist",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "ecbe4a04b03927424894f5ff1779b22caaa37fb441bebd70904b93ff9bc11a32",
+    "sourceTreeFingerprint": "310a00c4237fd4809c1d6118df1dcb773f0570978053a2b5f43330d48a0e9a03",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7203,7 +7203,7 @@
     "gameId": "egg-heist",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "ecbe4a04b03927424894f5ff1779b22caaa37fb441bebd70904b93ff9bc11a32",
+    "sourceTreeFingerprint": "310a00c4237fd4809c1d6118df1dcb773f0570978053a2b5f43330d48a0e9a03",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8037,7 +8037,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ecbe4a04b03927424894f5ff1779b22caaa37fb441bebd70904b93ff9bc11a32",
+      "sourceTreeFingerprint": "310a00c4237fd4809c1d6118df1dcb773f0570978053a2b5f43330d48a0e9a03",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
@@ -8158,5 +8158,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-20T22:53:05.556Z"
+  "generatedAt": "2026-10-20T23:15:05.083Z"
 }
