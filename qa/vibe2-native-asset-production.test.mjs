@@ -828,20 +828,11 @@ test('OBJ static validation reads actual polygons and material references withou
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('repository authored OBJ geometry is a static source, not native runtime approval',()=>{
-  for(const path of [
-    'assets/roblox/survival-core-world-v1/chest.obj',
-    'assets/roblox/survival-combat-parts-v1/blade_long.obj',
-    'assets/roblox/monster-adventure-v1/bat.obj'
-  ]){
-    const inspected=inspectVibeSourceObj({repoRoot:process.cwd(),source:{path}});
-    assert.equal(inspected.status,'OBJ_STATIC_GEOMETRY_PASS',path+': '+JSON.stringify(inspected.issues));
-    assert.ok(inspected.nondegenerateTriangleCount>0);
-    assert.equal(inspected.runtimeVerified,false);
+test('deleted self authored OBJ sources cannot be inspected as usable geometry',()=>{
+  for(const file of ['assets/roblox/survival-core-world-v1/chest.obj','assets/roblox/survival-combat-parts-v1/blade_long.obj','assets/roblox/monster-adventure-v1/bat.obj']){
+    assert.equal(fs.existsSync(file),false);
+    assert.notEqual(inspectVibeSourceObj({repoRoot:process.cwd(),source:{path:file}}).status,'OBJ_STATIC_GEOMETRY_PASS');
   }
-  const source=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
-  assert.match(source,/sourceObjReady=!asset\.sourceObjQa\|\|asset\.sourceObjQa\.status==='OBJ_STATIC_GEOMETRY_PASS'/);
-  assert.match(source,/ready:Boolean\(masterGlbReady&&sourceObjReady&&hasNativeReference/);
 });
 
 test('asset registry change detection skips untouched top-level serialization and tracks catalog asset mutations',()=>{
