@@ -704,13 +704,17 @@ test('one complete playthrough preserves state continuity and needs duration evi
 
 test('role-grounded asset selection beats an unrelated higher score without granting runtime verification',()=>{
   const registry={assets:[
-    {id:'bed',family:'MOTION',role:'BED_LIE_DOWN',platform:'ROBLOX',license:'project-original',internalAuditScore:999},
-    {id:'walk',family:'MOTION',role:'WALK',platform:'ROBLOX',license:'project-original',internalAuditScore:10}
+    {id:'bed',family:'MOTION',role:'BED_LIE_DOWN',platform:'ROBLOX',license:'CC0-1.0',internalAuditScore:999},
+    {id:'walk',family:'MOTION',role:'WALK',platform:'ROBLOX',license:'CC0-1.0',internalAuditScore:10}
   ]};
   const explicit=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION',role:'WALK'}],registry});
   assert.equal(explicit.nextActions[0].assetId,'walk');
   assert.deepEqual([...explicit.nextActions[0].roleEvidence.matchedRoles],['walk']);
   assert.equal(explicit.runtimeVerificationGranted,false);
+  const nonCc0=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',
+    requirements:[{family:'MOTION',role:'WALK'}],
+    registry:{assets:registry.assets.map(asset=>({...asset,license:'project-original'}))}});
+  assert.equal(nonCc0.nextActions[0].assetId,null,'non-CC0 project original cannot pass source selection');
   const unknown=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION'}],registry});
   assert.equal(unknown.nextActions[0].action,'HOLD');
   assert.equal(unknown.nextActions[0].reason,'ROLE_REQUIREMENT_UNRESOLVED');
