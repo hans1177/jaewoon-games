@@ -37,7 +37,7 @@ function blockedLicense(license='') {
 // restriction applies to every game-visible art asset, not engine source licenses.
 function isDownloadedCc0Art(asset={}) {
   const license=text(asset.license||asset.licenseDeclared||asset.policy);
-  return /^CC0(?:-1\\.0)?$/i.test(license)
+  return /^CC0(?:-1\.0)?$/i.test(license)
     && asset.downloaded===true
     && Boolean(text(asset.sourceUrl))
     && asset.securityBlocked!==true
