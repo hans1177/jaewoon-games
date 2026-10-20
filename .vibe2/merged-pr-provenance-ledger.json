@@ -74169,11 +74169,144 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_8d55bb55bd8b29edc85b79f9",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8741",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "57640f86d06a012c70b90c4f091dbe11bc9260b5",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8741,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe2-postmerge-runtime-qa-pages-20261021",
+        "baseSha": "57640f86d06a012c70b90c4f091dbe11bc9260b5",
+        "headSha": "c10184d78c060510ac5d433e3d419832ebdd3409",
+        "mergeCommitSha": "28e32f95ea9ed399f343f98b5800192b7e5c4514",
+        "mergedAt": "2026-10-20T20:40:39Z",
+        "authorLogin": "hans1177",
+        "titleHash": "c9c560354faa48df08e70590c9de4ce539fa5dcdf186427cf6bca132ffeac522",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe2-postmerge-runtime-qa-pages-20261021",
+        "candidateSha": "c10184d78c060510ac5d433e3d419832ebdd3409"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 184,
+        "deletedLineCount": 149,
+        "changedFiles": [
+          ".gitattributes",
+          "qa/github-pages-landing.test.mjs",
+          "qa/ocean-voyage.test.mjs",
+          "roblox-games/dice-battle-board/client/Game.client.luau",
+          "roblox-games/dice-battle-board/roblox-source-bootstrap.json",
+          "roblox-games/dice-battle-board/shared/GameConfig.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/roblox-source-bootstrap.json",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+          "tools/github-pages-landing.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/github-pages-landing.test.mjs",
+          "qa/ocean-voyage.test.mjs",
+          "roblox-games/dice-battle-board/client/Game.client.luau",
+          "roblox-games/dice-battle-board/roblox-source-bootstrap.json",
+          "roblox-games/dice-battle-board/shared/GameConfig.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/roblox-source-bootstrap.json",
+          "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+          "tools/github-pages-landing.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8741",
+        "merge-commit:28e32f95ea9ed399f343f98b5800192b7e5c4514",
+        "base-main:57640f86d06a012c70b90c4f091dbe11bc9260b5"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 588
+    "total": 589
   }
 }
