@@ -13582,7 +13582,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T14:56:54.618Z",
+      "updatedAt": "2026-10-20T15:07:46.895Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -14109,13 +14109,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T14:54:43.805Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T15:07:46.895Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "core-clash-4v4",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T14:19:17.610Z",
+        "checkedAt": "2026-10-20T14:08:04.244Z",
         "sourceRevision": "804be18f8b6fb71f030466efbce7dead1c4bbd11",
         "artifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
         "secondaryOwnerFocus": false,
@@ -14158,7 +14158,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package build evidence contains failed validation checks for web, music, nativeWeb, and nativeMusic."
+            "note": "All validation flags except source and build/package must be true to start runtime testing."
           }
         ],
         "blockers": [
@@ -14201,7 +14201,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpEvidence": null,
       "robloxBuildArtifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
-      "robloxBuildPassedAt": "2026-10-20T14:54:43.805Z",
+      "robloxBuildPassedAt": "2026-10-20T15:07:46.895Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -33480,7 +33480,7 @@
       "updatedAt": "2026-10-20T14:56:54.618Z"
     }
   ],
-  "updatedAt": "2026-10-20T15:06:19.971Z",
+  "updatedAt": "2026-10-20T15:07:46.895Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
