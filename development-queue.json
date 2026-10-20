@@ -4969,7 +4969,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T12:00:55.115Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4985,16 +4985,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
       "robloxBuildArtifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
-      "robloxBuildPassedAt": "2026-10-20T12:00:55.115Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T12:00:55.115Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "island-village",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:13:04.158Z",
+        "checkedAt": "2026-10-20T11:28:37.981Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
         "secondaryOwnerFocus": false,
@@ -5033,13 +5033,15 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false"
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web validation and music validation have both failed in the build evidence."
+            "note": "The build evidence shows that web and music validation checks (both standard and native) have failed, which contradicts the requirements to start runtime testing."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -5669,7 +5671,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T11:42:41.501Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -5687,17 +5689,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0e6e05560dca4da3d1d1b7abfac03392efa9bd05",
       "robloxBuildArtifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
-      "robloxBuildPassedAt": "2026-10-20T11:42:41.501Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:42:41.501Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "egg-heist",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:13:24.456Z",
+        "checkedAt": "2026-10-20T11:36:14.317Z",
         "sourceRevision": "0e6e05560dca4da3d1d1b7abfac03392efa9bd05",
         "artifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
         "secondaryOwnerFocus": false,
@@ -6359,7 +6361,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T11:39:29.230Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -6377,17 +6379,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "ebdea1fe7f3b1786a0bf7bda3d09ad4cb613dd13",
       "robloxBuildArtifactIdentity": "sha256:5b4d751288503767f13095776e08ab8ac0f84935bf773a392d5e280d4788ce52",
-      "robloxBuildPassedAt": "2026-10-20T11:39:29.230Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:39:29.230Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "chess-battle",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:12:15.335Z",
+        "checkedAt": "2026-10-20T11:27:20.629Z",
         "sourceRevision": "ebdea1fe7f3b1786a0bf7bda3d09ad4cb613dd13",
         "artifactIdentity": "sha256:5b4d751288503767f13095776e08ab8ac0f84935bf773a392d5e280d4788ce52",
         "secondaryOwnerFocus": false,
@@ -6430,7 +6432,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web and music validations (both standard and native) failed in BUILD_EVIDENCE."
+            "note": "Package runtime testing cannot start because multiple validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed in the build evidence."
           }
         ],
         "blockers": [
@@ -7051,7 +7053,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T12:00:29.313Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -7067,16 +7069,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
       "robloxBuildArtifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
-      "robloxBuildPassedAt": "2026-10-20T12:00:29.313Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T12:00:29.313Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "survival2",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:24:22.268Z",
+        "checkedAt": "2026-10-20T11:33:40.897Z",
         "sourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
         "artifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
         "secondaryOwnerFocus": false,
@@ -7119,7 +7121,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in BUILD_EVIDENCE."
+            "note": "Required validation checks failed in BUILD_EVIDENCE, preventing the immutable package from starting runtime testing."
           }
         ],
         "blockers": [
@@ -9371,7 +9373,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T11:35:04.933Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -9898,13 +9900,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:35:04.933Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-puzzle-chromatic-cascade",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:07:51.173Z",
+        "checkedAt": "2026-10-20T11:33:44.109Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
         "secondaryOwnerFocus": false,
@@ -9947,7 +9949,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "The package cannot start runtime testing because multiple validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) are explicitly false in BUILD_EVIDENCE."
+            "note": "Package cannot start runtime testing because required validation checks (web, music, nativeWeb, nativeMusic) have failed in the BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -9986,7 +9988,7 @@
       "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
       "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
       "robloxBuildArtifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
-      "robloxBuildPassedAt": "2026-10-20T11:35:04.933Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -10073,7 +10075,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T12:01:38.391Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -10089,16 +10091,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
       "robloxBuildArtifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
-      "robloxBuildPassedAt": "2026-10-20T12:01:38.391Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T12:01:38.391Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-casual-realm-weaver",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:23:07.917Z",
+        "checkedAt": "2026-10-20T11:31:49.083Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "secondaryOwnerFocus": false,
@@ -10137,15 +10139,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web and music validation checks failed."
+            "note": "Package cannot start runtime testing because web validation and music validation have not passed."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -10775,7 +10775,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T12:02:04.115Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -10791,16 +10791,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
       "robloxBuildArtifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
-      "robloxBuildPassedAt": "2026-10-20T12:02:04.115Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T12:02:04.115Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:19:07.153Z",
+        "checkedAt": "2026-10-20T11:32:56.552Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
         "secondaryOwnerFocus": false,
@@ -10843,7 +10843,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in BUILD_EVIDENCE."
+            "note": "Required validation checks failed in the build evidence."
           }
         ],
         "blockers": [
@@ -11477,7 +11477,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T11:26:01.138Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11493,16 +11493,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0e79ffd238897dd3007168179a54ac33453d0e43",
       "robloxBuildArtifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
-      "robloxBuildPassedAt": "2026-10-20T11:26:01.138Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:26:01.138Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "monster-adventure",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T10:58:29.087Z",
+        "checkedAt": "2026-10-20T11:35:42.585Z",
         "sourceRevision": "0e79ffd238897dd3007168179a54ac33453d0e43",
         "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
         "secondaryOwnerFocus": false,
@@ -11541,13 +11541,15 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false"
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web and music validations have not passed."
+            "note": "Package cannot start runtime testing because required validation checks (web, music, nativeWeb, nativeMusic) have failed in the build evidence."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -12177,7 +12179,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T11:59:34.569Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -12704,13 +12706,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:59:34.569Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "zombie-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:22:15.059Z",
+        "checkedAt": "2026-10-20T11:34:41.902Z",
         "sourceRevision": "2b68d61ba8ddcaa7632ec8a78c92ca73f8972c31",
         "artifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
         "secondaryOwnerFocus": false,
@@ -12749,15 +12751,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks (web, music, nativeWeb, nativeMusic) have failed in BUILD_EVIDENCE."
+            "note": "Package preflight checks failed because webValidationPassed and musicValidationPassed are both false in the BUILD_EVIDENCE."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -12796,7 +12796,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpEvidence": null,
       "robloxBuildArtifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
-      "robloxBuildPassedAt": "2026-10-20T11:59:34.569Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -13580,7 +13580,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T11:37:55.099Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -14107,13 +14107,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:37:55.099Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "core-clash-4v4",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:11:00.013Z",
+        "checkedAt": "2026-10-20T11:35:39.657Z",
         "sourceRevision": "804be18f8b6fb71f030466efbce7dead1c4bbd11",
         "artifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
         "secondaryOwnerFocus": false,
@@ -14156,7 +14156,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks failed in BUILD_EVIDENCE."
+            "note": "Package build evidence contains failed validation flags for web, music, nativeWeb, and nativeMusic."
           }
         ],
         "blockers": [
@@ -14199,7 +14199,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpEvidence": null,
       "robloxBuildArtifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
-      "robloxBuildPassedAt": "2026-10-20T11:37:55.099Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -16382,7 +16382,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T11:48:46.793Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -16398,16 +16398,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
       "robloxBuildArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
-      "robloxBuildPassedAt": "2026-10-20T11:48:46.793Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:48:46.793Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "dice-battle-board",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:17:00.408Z",
+        "checkedAt": "2026-10-20T11:35:21.641Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
         "secondaryOwnerFocus": false,
@@ -16446,15 +16446,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks failed in BUILD_EVIDENCE."
+            "note": "Package cannot start runtime testing because web and music validation checks failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -17074,7 +17072,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T11:35:19.488Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -17092,17 +17090,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "7a4dd0c195359a08b200f99e8518821397608576",
       "robloxBuildArtifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
-      "robloxBuildPassedAt": "2026-10-20T11:35:19.488Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:35:19.488Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "gem-survivor",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:08:37.715Z",
+        "checkedAt": "2026-10-20T11:29:37.962Z",
         "sourceRevision": "7a4dd0c195359a08b200f99e8518821397608576",
         "artifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
         "secondaryOwnerFocus": false,
@@ -17145,7 +17143,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "The package cannot start runtime testing because web and music validations (both standard and native) failed in the build evidence."
+            "note": "Package cannot start runtime testing because required validation checks (web, music, nativeWeb, nativeMusic) have failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -19118,7 +19116,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T12:01:57.050Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -19645,13 +19643,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T12:01:57.050Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "tower-choice-rpg",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:17:19.560Z",
+        "checkedAt": "2026-10-20T11:26:03.209Z",
         "sourceRevision": "befd1e6f9b413b7c97afd75ea9aa55d4784a81f7",
         "artifactIdentity": "sha256:0f633a031203fb070d6e0b2d633f1dea0226cb23ec24ac06fdd6d270ab2497d5",
         "secondaryOwnerFocus": false,
@@ -19694,7 +19692,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Runtime testing cannot start because multiple required validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed in the build evidence."
+            "note": "Required validation checks failed in BUILD_EVIDENCE, preventing the immutable package from starting runtime testing."
           }
         ],
         "blockers": [
@@ -19737,7 +19735,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpEvidence": null,
       "robloxBuildArtifactIdentity": "sha256:0f633a031203fb070d6e0b2d633f1dea0226cb23ec24ac06fdd6d270ab2497d5",
-      "robloxBuildPassedAt": "2026-10-20T12:01:57.050Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -22570,10 +22568,10 @@
         "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-20T12:02:12.444Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -22589,16 +22587,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
       "robloxBuildArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-      "robloxBuildPassedAt": "2026-10-20T12:02:12.444Z",
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-20T12:02:12.444Z",
-      "robloxBuildPreflightFailedAt": null,
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "defense",
-        "pass": true,
-        "state": "PASS",
-        "checkedAt": "2026-10-20T11:26:48.888Z",
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-20T11:31:48.103Z",
         "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
         "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
         "secondaryOwnerFocus": false,
@@ -22633,643 +22631,28 @@
         "leadReviews": [
           {
             "role": "shared-review",
-            "model": "gemini-3.8-flash",
-            "decision": "PASS",
-            "blockers": [],
-            "note": "Package build and source validation have passed under exact-immutable-roblox-package authority, and deterministic package identity checks have completed. Runtime testing may start."
+            "model": "gemini-3.5-flash-lite",
+            "decision": "BLOCK",
+            "blockers": [
+              "webValidationPassed is false",
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
+            ],
+            "note": "Required validation checks failed in BUILD_EVIDENCE, preventing the package from starting runtime testing."
           }
         ],
-        "blockers": [],
+        "blockers": [
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+        ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
       },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
-      "robloxFoundationF0Evidence": {
-        "version": 5,
-        "gameId": "defense",
-        "platform": "ROBLOX",
-        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-20T11:26:49.658Z",
-        "sourcePath": "roblox-games/defense",
-        "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
-        "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-        "rebuiltArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-        "artifactRunId": 39407845663,
-        "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
-        "assetSelectionFingerprint": "624f0ba45d6b403e9533fab501677a59df5a5d11e2c18b029da070ebf7ef2158",
-        "observedAssetSelectionFingerprint": "624f0ba45d6b403e9533fab501677a59df5a5d11e2c18b029da070ebf7ef2158",
-        "assetLibraryVersion": 139,
-        "observedAssetLibraryVersion": 139,
-        "nativeLanguageCompilePassed": true,
-        "nativeCompilerVersion": "0.739",
-        "playMode": "COOP",
-        "saveExists": true,
-        "multiplayerApplicable": true,
-        "sourcePreflightPassed": false,
-        "f0SourceIntegrityPassed": true,
-        "sourceStartupMarkersPassed": true,
-        "gameStartPassed": false,
-        "serverBootPassed": false,
-        "worldFoundationPassed": false,
-        "characterFoundationPassed": false,
-        "physicsAndMovementPassed": false,
-        "runtimeFoundationPassed": false,
-        "actualRuntimeEvidence": false,
-        "internalReleaseReady": false,
-        "serverClientBoundaryPreflightPassed": true,
-        "remoteSecurityPreflightPassed": true,
-        "mobileControlUiPreflightPassed": true,
-        "coreProgressionMarkersPassed": true,
-        "combatOrRoundMarkersPassed": true,
-        "datastoreContractPassed": true,
-        "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
-        "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
-        "gameplayProductReadiness": {
-          "version": 1,
-          "gameId": "defense",
-          "pass": false,
-          "blockers": [
-            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-            "GENERIC_SCOPE_HANDLER_SKELETON"
-          ],
-          "requiredCapabilities": [
-            "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "WAVE",
-            "PROGRESSION",
-            "TYCOON",
-            "DEFENSE",
-            "SAVE",
-            "MOBILE_UI",
-            "MULTIPLAYER"
-          ],
-          "implementedCapabilities": {
-            "CORE_GAMEPLAY_STATE": false,
-            "SESSION_FLOW": false,
-            "WORLD": false,
-            "CONTENT_ENTITY": false,
-            "COMBAT": false,
-            "ENEMY_AI": true,
-            "WAVE": false,
-            "PROGRESSION": false,
-            "TYCOON": false,
-            "DEFENSE": true,
-            "SAVE": true,
-            "MOBILE_UI": true,
-            "MULTIPLAYER": true
-          },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "TYCOON"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-              "capabilities": [
-                "TYCOON"
-              ],
-              "pass": false
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "숲길 디펜스",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "TYCOON",
-                "DEFENSE"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "name": "방어 시설 배치 × 역사적 세력 균형",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "TYCOON"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 3,
-              "name": "금기와 기회의 교차",
-              "capabilities": [
-                "WORLD"
-              ],
-              "pass": false
-            }
-          ],
-          "placeholderDebt": {
-            "primitiveConstructionCount": 0,
-            "meshConstructionCount": 0,
-            "likelyPrimitiveHeavy": false,
-            "genericScopeHandlerCount": 5,
-            "meaningfulGameplayFunctionCount": 0
-          },
-          "studioQualitySheet": {
-            "Core": "ROUGH",
-            "Content": "ROUGH",
-            "World": "MISSING",
-            "Combat": "MISSING",
-            "AI": "PLAYABLE",
-            "Progression": "MISSING",
-            "UI": "POLISHED",
-            "Graphics": "ROUGH",
-            "Motion": "POLISHED",
-            "Audio": "MISSING",
-            "Mobile": "POLISHED",
-            "Performance": "MISSING",
-            "Runtime": "N/A"
-          },
-          "studioReadiness": {
-            "ai": {
-              "applicable": true,
-              "signalCount": 1,
-              "pass": false
-            },
-            "combatFeel": {
-              "applicable": true,
-              "signalCount": 2,
-              "pass": false
-            },
-            "worldTopology": {
-              "applicable": true,
-              "signalCount": 3,
-              "pass": true
-            },
-            "firstTenMinutes": {
-              "signalCount": 4,
-              "pass": true
-            },
-            "midLateGame": {
-              "applicable": true,
-              "signalCount": 2,
-              "pass": false
-            },
-            "systemConnections": {
-              "rows": [
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": false
-                }
-              ],
-              "pass": false
-            },
-            "placeholder": {
-              "pass": true,
-              "primitiveConstructionCount": 0,
-              "meshConstructionCount": 0,
-              "likelyPrimitiveHeavy": false,
-              "genericScopeHandlerCount": 5,
-              "meaningfulGameplayFunctionCount": 0
-            },
-            "criticalGaps": [
-              "AI_STATE_DEPTH",
-              "COMBAT_FEEL_CHAIN",
-              "MID_LATE_GAME_DEPTH",
-              "SYSTEM_CONNECTION_CHAIN"
-            ],
-            "f9SourceQualityReady": false
-          },
-          "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
-            "serverBootRequired": true,
-            "simulationRequired": true,
-            "actualPlayRequired": true
-          },
-          "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-          "antiSkeletonPassed": false,
-          "designGenre": "Strategy",
-          "sourceGenre": "Strategy",
-          "designPlayMode": "COOP",
-          "sourcePlayMode": "COOP"
-        },
-        "studioQualitySheet": {
-          "Core": "ROUGH",
-          "Content": "ROUGH",
-          "World": "MISSING",
-          "Combat": "MISSING",
-          "AI": "PLAYABLE",
-          "Progression": "MISSING",
-          "UI": "POLISHED",
-          "Graphics": "ROUGH",
-          "Motion": "POLISHED",
-          "Audio": "MISSING",
-          "Mobile": "POLISHED",
-          "Performance": "MISSING",
-          "Runtime": "N/A"
-        },
-        "checks": {
-          "exactSourceRevision": true,
-          "nativeLanguageCompilePassed": true,
-          "exactArtifact": true,
-          "buildUpAssetSourceUsageFingerprint": true,
-          "assetSelectionFingerprint": true,
-          "assetLibraryVersion": true,
-          "projectContract": true,
-          "robloxPolicy": true,
-          "duplicateDeclarationGuard": true,
-          "sourceStartupMarkers": true,
-          "foundationSentinelContract": true,
-          "characterPhysicsGuard": true,
-          "groundContactNotSynthetic": true,
-          "mobileFirst": true,
-          "serverClientBoundary": true,
-          "remoteSecurity": true,
-          "coreProgression": true,
-          "combatOrRound": true,
-          "saveRejoin": true,
-          "multiplayerSync": true,
-          "sessionEndRestart": true,
-          "errorGuards": true,
-          "gameplayProductReadiness": false,
-          "f0SourceIntegrity": true
-        },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
-        "authority": "roblox-headless-source-preflight-f0"
-      },
+      "robloxFoundationF0Evidence": null,
       "robloxHeadlessFastMvpPassed": false,
-      "robloxHeadlessFastMvpEvidence": {
-        "version": 5,
-        "gameId": "defense",
-        "platform": "ROBLOX",
-        "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-20T11:26:49.658Z",
-        "sourcePath": "roblox-games/defense",
-        "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
-        "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-        "rebuiltArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-        "artifactRunId": 39407845663,
-        "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
-        "assetSelectionFingerprint": "624f0ba45d6b403e9533fab501677a59df5a5d11e2c18b029da070ebf7ef2158",
-        "observedAssetSelectionFingerprint": "624f0ba45d6b403e9533fab501677a59df5a5d11e2c18b029da070ebf7ef2158",
-        "assetLibraryVersion": 139,
-        "observedAssetLibraryVersion": 139,
-        "nativeLanguageCompilePassed": true,
-        "nativeCompilerVersion": "0.739",
-        "playMode": "COOP",
-        "saveExists": true,
-        "multiplayerApplicable": true,
-        "sourcePreflightPassed": false,
-        "f0SourceIntegrityPassed": true,
-        "sourceStartupMarkersPassed": true,
-        "gameStartPassed": false,
-        "serverBootPassed": false,
-        "worldFoundationPassed": false,
-        "characterFoundationPassed": false,
-        "physicsAndMovementPassed": false,
-        "runtimeFoundationPassed": false,
-        "actualRuntimeEvidence": false,
-        "internalReleaseReady": false,
-        "serverClientBoundaryPreflightPassed": true,
-        "remoteSecurityPreflightPassed": true,
-        "mobileControlUiPreflightPassed": true,
-        "coreProgressionMarkersPassed": true,
-        "combatOrRoundMarkersPassed": true,
-        "datastoreContractPassed": true,
-        "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
-        "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
-        "gameplayProductReadiness": {
-          "version": 1,
-          "gameId": "defense",
-          "pass": false,
-          "blockers": [
-            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-            "GENERIC_SCOPE_HANDLER_SKELETON"
-          ],
-          "requiredCapabilities": [
-            "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "WAVE",
-            "PROGRESSION",
-            "TYCOON",
-            "DEFENSE",
-            "SAVE",
-            "MOBILE_UI",
-            "MULTIPLAYER"
-          ],
-          "implementedCapabilities": {
-            "CORE_GAMEPLAY_STATE": false,
-            "SESSION_FLOW": false,
-            "WORLD": false,
-            "CONTENT_ENTITY": false,
-            "COMBAT": false,
-            "ENEMY_AI": true,
-            "WAVE": false,
-            "PROGRESSION": false,
-            "TYCOON": false,
-            "DEFENSE": true,
-            "SAVE": true,
-            "MOBILE_UI": true,
-            "MULTIPLAYER": true
-          },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "TYCOON"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-              "capabilities": [
-                "TYCOON"
-              ],
-              "pass": false
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "숲길 디펜스",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "TYCOON",
-                "DEFENSE"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "name": "방어 시설 배치 × 역사적 세력 균형",
-              "capabilities": [
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "TYCOON"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 3,
-              "name": "금기와 기회의 교차",
-              "capabilities": [
-                "WORLD"
-              ],
-              "pass": false
-            }
-          ],
-          "placeholderDebt": {
-            "primitiveConstructionCount": 0,
-            "meshConstructionCount": 0,
-            "likelyPrimitiveHeavy": false,
-            "genericScopeHandlerCount": 5,
-            "meaningfulGameplayFunctionCount": 0
-          },
-          "studioQualitySheet": {
-            "Core": "ROUGH",
-            "Content": "ROUGH",
-            "World": "MISSING",
-            "Combat": "MISSING",
-            "AI": "PLAYABLE",
-            "Progression": "MISSING",
-            "UI": "POLISHED",
-            "Graphics": "ROUGH",
-            "Motion": "POLISHED",
-            "Audio": "MISSING",
-            "Mobile": "POLISHED",
-            "Performance": "MISSING",
-            "Runtime": "N/A"
-          },
-          "studioReadiness": {
-            "ai": {
-              "applicable": true,
-              "signalCount": 1,
-              "pass": false
-            },
-            "combatFeel": {
-              "applicable": true,
-              "signalCount": 2,
-              "pass": false
-            },
-            "worldTopology": {
-              "applicable": true,
-              "signalCount": 3,
-              "pass": true
-            },
-            "firstTenMinutes": {
-              "signalCount": 4,
-              "pass": true
-            },
-            "midLateGame": {
-              "applicable": true,
-              "signalCount": 2,
-              "pass": false
-            },
-            "systemConnections": {
-              "rows": [
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": false
-                }
-              ],
-              "pass": false
-            },
-            "placeholder": {
-              "pass": true,
-              "primitiveConstructionCount": 0,
-              "meshConstructionCount": 0,
-              "likelyPrimitiveHeavy": false,
-              "genericScopeHandlerCount": 5,
-              "meaningfulGameplayFunctionCount": 0
-            },
-            "criticalGaps": [
-              "AI_STATE_DEPTH",
-              "COMBAT_FEEL_CHAIN",
-              "MID_LATE_GAME_DEPTH",
-              "SYSTEM_CONNECTION_CHAIN"
-            ],
-            "f9SourceQualityReady": false
-          },
-          "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
-            "objectiveRequired": true,
-            "serverBootRequired": true,
-            "simulationRequired": true,
-            "actualPlayRequired": true
-          },
-          "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-          "antiSkeletonPassed": false,
-          "designGenre": "Strategy",
-          "sourceGenre": "Strategy",
-          "designPlayMode": "COOP",
-          "sourcePlayMode": "COOP"
-        },
-        "studioQualitySheet": {
-          "Core": "ROUGH",
-          "Content": "ROUGH",
-          "World": "MISSING",
-          "Combat": "MISSING",
-          "AI": "PLAYABLE",
-          "Progression": "MISSING",
-          "UI": "POLISHED",
-          "Graphics": "ROUGH",
-          "Motion": "POLISHED",
-          "Audio": "MISSING",
-          "Mobile": "POLISHED",
-          "Performance": "MISSING",
-          "Runtime": "N/A"
-        },
-        "checks": {
-          "exactSourceRevision": true,
-          "nativeLanguageCompilePassed": true,
-          "exactArtifact": true,
-          "buildUpAssetSourceUsageFingerprint": true,
-          "assetSelectionFingerprint": true,
-          "assetLibraryVersion": true,
-          "projectContract": true,
-          "robloxPolicy": true,
-          "duplicateDeclarationGuard": true,
-          "sourceStartupMarkers": true,
-          "foundationSentinelContract": true,
-          "characterPhysicsGuard": true,
-          "groundContactNotSynthetic": true,
-          "mobileFirst": true,
-          "serverClientBoundary": true,
-          "remoteSecurity": true,
-          "coreProgression": true,
-          "combatOrRound": true,
-          "saveRejoin": true,
-          "multiplayerSync": true,
-          "sessionEndRestart": true,
-          "errorGuards": true,
-          "gameplayProductReadiness": false,
-          "f0SourceIntegrity": true
-        },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
-        "authority": "roblox-headless-source-preflight-f0"
-      },
+      "robloxHeadlessFastMvpEvidence": null,
       "robloxHeadlessFinalReviewPassed": false,
       "robloxRuntimeCandidateEvidence": null,
       "robloxRuntimeFoundationPassed": false,
@@ -23298,10 +22681,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
       "routingBlockers": [
-        "roblox-f0-gameplay-product-readiness-failed"
+        "roblox-build-preflight-blocked"
       ],
       "robloxSourceCommit": "0a0165fd98163e9516400daaa97d3b71575fb90e",
       "robloxSourceBootstrapPassedAt": "2026-10-20T04:14:33.815Z",
@@ -23810,3693 +23193,11 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxBuildFailedAt": null,
       "robloxRuntimeRetryCount": 0,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
-      "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
-      "robloxQualityBuildUpEvidence": {
-        "version": 1,
-        "gameId": "defense",
-        "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
-        "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-        "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 39407845663,
-        "testedAt": "2026-10-20T12:02:12.444Z",
-        "qualityFailureKinds": [
-          "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-          "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-          "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-          "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-          "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-          "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-          "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-          "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-          "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-          "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-          "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-          "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-          "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-          "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-          "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-          "GENERIC_SCOPE_HANDLER_SKELETON"
-        ],
-        "repairSurfaces": [
-          "CORE_GAMEPLAY",
-          "WORLD_MAP",
-          "COMBAT_FEEL",
-          "PROGRESSION_CONTENT"
-        ],
-        "qualityFailureDetails": [
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P0",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          },
-          {
-            "id": "GENERIC_SCOPE_HANDLER_SKELETON",
-            "repairSurface": "GAMEPLAY_PRODUCT_READINESS",
-            "priority": "P1",
-            "hint": "Implement the missing design-bound gameplay system in the existing Roblox responsible source; do not repair with markers or generic scope handlers.",
-            "observed": {
-              "version": 1,
-              "gameId": "defense",
-              "pass": false,
-              "blockers": [
-                "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-                "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-                "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-                "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-                "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-                "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-                "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-                "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-                "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-                "SIGNATURE_SYSTEM_UNIMPLEMENTED:3",
-                "GENERIC_SCOPE_HANDLER_SKELETON"
-              ],
-              "requiredCapabilities": [
-                "CORE_GAMEPLAY_STATE",
-                "SESSION_FLOW",
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "TYCOON",
-                "DEFENSE",
-                "SAVE",
-                "MOBILE_UI",
-                "MULTIPLAYER"
-              ],
-              "implementedCapabilities": {
-                "CORE_GAMEPLAY_STATE": false,
-                "SESSION_FLOW": false,
-                "WORLD": false,
-                "CONTENT_ENTITY": false,
-                "COMBAT": false,
-                "ENEMY_AI": true,
-                "WAVE": false,
-                "PROGRESSION": false,
-                "TYCOON": false,
-                "DEFENSE": true,
-                "SAVE": true,
-                "MOBILE_UI": true,
-                "MULTIPLAYER": true
-              },
-              "coreLoopTrace": [
-                {
-                  "index": 0,
-                  "step": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "step": "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "step": "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.",
-                  "capabilities": [
-                    "TYCOON"
-                  ],
-                  "pass": false
-                }
-              ],
-              "signatureSystemTrace": [
-                {
-                  "index": 0,
-                  "name": "숲길 디펜스",
-                  "capabilities": [
-                    "WORLD",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON",
-                    "DEFENSE"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 1,
-                  "name": "방어 시설 배치 × 역사적 세력 균형",
-                  "capabilities": [
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "TYCOON"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 2,
-                  "name": "적 패턴과 자원 대응 × 왕조의 정통성과 민심",
-                  "capabilities": [
-                    "SESSION_FLOW",
-                    "CONTENT_ENTITY",
-                    "COMBAT",
-                    "ENEMY_AI",
-                    "WAVE",
-                    "PROGRESSION"
-                  ],
-                  "pass": false
-                },
-                {
-                  "index": 3,
-                  "name": "금기와 기회의 교차",
-                  "capabilities": [
-                    "WORLD"
-                  ],
-                  "pass": false
-                }
-              ],
-              "placeholderDebt": {
-                "primitiveConstructionCount": 0,
-                "meshConstructionCount": 0,
-                "likelyPrimitiveHeavy": false,
-                "genericScopeHandlerCount": 5,
-                "meaningfulGameplayFunctionCount": 0
-              },
-              "studioQualitySheet": {
-                "Core": "ROUGH",
-                "Content": "ROUGH",
-                "World": "MISSING",
-                "Combat": "MISSING",
-                "AI": "PLAYABLE",
-                "Progression": "MISSING",
-                "UI": "POLISHED",
-                "Graphics": "ROUGH",
-                "Motion": "POLISHED",
-                "Audio": "MISSING",
-                "Mobile": "POLISHED",
-                "Performance": "MISSING",
-                "Runtime": "N/A"
-              },
-              "studioReadiness": {
-                "ai": {
-                  "applicable": true,
-                  "signalCount": 1,
-                  "pass": false
-                },
-                "combatFeel": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "worldTopology": {
-                  "applicable": true,
-                  "signalCount": 3,
-                  "pass": true
-                },
-                "firstTenMinutes": {
-                  "signalCount": 4,
-                  "pass": true
-                },
-                "midLateGame": {
-                  "applicable": true,
-                  "signalCount": 2,
-                  "pass": false
-                },
-                "systemConnections": {
-                  "rows": [
-                    {
-                      "id": "WORLD_TO_CONTENT",
-                      "pass": false
-                    }
-                  ],
-                  "pass": false
-                },
-                "placeholder": {
-                  "pass": true,
-                  "primitiveConstructionCount": 0,
-                  "meshConstructionCount": 0,
-                  "likelyPrimitiveHeavy": false,
-                  "genericScopeHandlerCount": 5,
-                  "meaningfulGameplayFunctionCount": 0
-                },
-                "criticalGaps": [
-                  "AI_STATE_DEPTH",
-                  "COMBAT_FEEL_CHAIN",
-                  "MID_LATE_GAME_DEPTH",
-                  "SYSTEM_CONNECTION_CHAIN"
-                ],
-                "f9SourceQualityReady": false
-              },
-              "runtimeRequirements": {
-                "worldRequired": true,
-                "minimumBasePartCount": 5,
-                "spawnRequired": true,
-                "landmarkRequired": true,
-                "objectiveRequired": true,
-                "serverBootRequired": true,
-                "simulationRequired": true,
-                "actualPlayRequired": true
-              },
-              "designFingerprint": "a37d040e07ebca5299d4bb1a6734006aedec86471893f0a9a918a56229057005",
-              "antiSkeletonPassed": false,
-              "designGenre": "Strategy",
-              "sourceGenre": "Strategy",
-              "designPlayMode": "COOP",
-              "sourcePlayMode": "COOP"
-            }
-          }
-        ]
-      },
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxQualityBuildUpRequired": false,
+      "robloxQualityBuildUpSourceRevision": null,
+      "robloxQualityFailureClass": null,
+      "robloxQualityBuildUpEvidence": null,
       "robloxBuildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
       "robloxBuildUpAssetSourceUsageLibraryVersion": 139,
       "robloxBuildAssetSelectionFingerprint": "624f0ba45d6b403e9533fab501677a59df5a5d11e2c18b029da070ebf7ef2158",
@@ -30936,7 +26637,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:32:36.568Z",
-      "updatedAt": "2026-10-20T11:37:40.143Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -30954,17 +26655,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "b34fd1ba5240b8036d62a65e53d39698e7243bac",
       "robloxBuildArtifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
-      "robloxBuildPassedAt": "2026-10-20T11:37:40.143Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:37:40.143Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fifty-days",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:10:06.192Z",
+        "checkedAt": "2026-10-20T11:32:05.099Z",
         "sourceRevision": "b34fd1ba5240b8036d62a65e53d39698e7243bac",
         "artifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
         "secondaryOwnerFocus": false,
@@ -31007,7 +26708,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web and music validation checks have not passed."
+            "note": "Preflight checks failed because web and music validations (both standard and native) did not pass in the build evidence."
           }
         ],
         "blockers": [
@@ -31628,7 +27329,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:35:08.290Z",
-      "updatedAt": "2026-10-20T11:30:35.267Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -31646,17 +27347,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "ca05eb2c5fe69bdb616c3730580e78a3578212d1",
       "robloxBuildArtifactIdentity": "sha256:632e4fc51617a0e8e3e1f4e99d71eabe55ececf0c704a8943e4861167dbc94b4",
-      "robloxBuildPassedAt": "2026-10-20T11:30:35.267Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:30:35.267Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "insect-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:05:30.252Z",
+        "checkedAt": "2026-10-20T11:31:50.609Z",
         "sourceRevision": "ca05eb2c5fe69bdb616c3730580e78a3578212d1",
         "artifactIdentity": "sha256:632e4fc51617a0e8e3e1f4e99d71eabe55ececf0c704a8943e4861167dbc94b4",
         "secondaryOwnerFocus": false,
@@ -31695,13 +27396,15 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false"
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
             ],
-            "note": "Preflight checks failed because webValidationPassed and musicValidationPassed are false in the build evidence."
+            "note": "Runtime testing cannot start because multiple validation checks failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -34424,7 +30127,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:40:04.134Z",
-      "updatedAt": "2026-10-20T11:40:48.911Z",
+      "updatedAt": "2026-10-20T12:03:35.369Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -34442,17 +30145,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
       "robloxBuildArtifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
-      "robloxBuildPassedAt": "2026-10-20T11:40:48.911Z",
+      "robloxBuildPassedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T11:40:48.911Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:03:35.369Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "crystal-defense",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:12:35.164Z",
+        "checkedAt": "2026-10-20T11:31:55.040Z",
         "sourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
         "artifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
         "secondaryOwnerFocus": false,
@@ -34493,7 +30196,7 @@
               "webValidationPassed is false",
               "musicValidationPassed is false"
             ],
-            "note": "Package build evidence shows web and music validation checks failed, which contradicts the requirements to start runtime testing."
+            "note": "Package build evidence shows web and music validation checks failed, which contradicts the requirements for starting runtime testing."
           }
         ],
         "blockers": [
@@ -37823,7 +33526,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T12:02:12.444Z",
+  "updatedAt": "2026-10-20T12:03:35.369Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
