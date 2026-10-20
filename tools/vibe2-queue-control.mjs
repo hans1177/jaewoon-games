@@ -35,6 +35,19 @@ const configuredPolicyPath = String(process.env.COMPANY_VERIFIED_POLICY_PATH||''
 const CANONICAL_RESERVATION_POLICY = configuredPolicyPath
   ? path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..',configuredPolicyPath)
   : '';
+const CANONICAL_CATALOG_PATH=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','game-catalog.json');
+const RETIRED_WEB_SOURCE_STATES=new Set([
+  'PERMANENTLY_REMOVED_REJECTED_TEST','WITHDRAWN_SIMPLE_PROTOTYPE',
+  'ENTRY_MISSING_OR_INVALID','NON_GAME_SURFACE'
+]);
+// Only canonical catalog source states can retire a Web lane. A missing
+// current Web source is NOT a retirement: approved first-build work can
+// bootstrap that source through its existing evidence-gated route.
+export function webSourceRetiredInCatalog(game={}){
+  const state=clean(game?.canonical?.sources?.web?.state||game?.ownerWebSourceState).toUpperCase();
+  return RETIRED_WEB_SOURCE_STATES.has(state);
+}
+
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
 const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-generation-context-v3';
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
@@ -720,11 +733,21 @@ export function completeOwnerExclusiveGameScope({
   });
 }
 
-export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(CANONICAL_RESERVATION_POLICY)) {
+export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(CANONICAL_RESERVATION_POLICY),
+  {catalog = readJson(CANONICAL_CATALOG_PATH,{games:[]})} = {}) {
   const queue=createVibeContinuousQueue(queueInput);
-  return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>({
-    ...task,ownerDevelopmentHold:ownerDevelopmentHeld(policy,task.gameId,task.target,task)
-  }))});
+  const games=new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[clean(game?.id),game]));
+  return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>{
+    const sourceRetired=clean(task.target).toLowerCase()==='web'
+      &&webSourceRetiredInCatalog(games.get(clean(task.gameId)));
+    return {
+      ...task,
+      // Preserve existing owner holds and scheduler locks. Never dispatch
+      // retired Web routes (which do not exist in the source checkout).
+      ownerDevelopmentHold:ownerDevelopmentHeld(policy,task.gameId,task.target,task)||sourceRetired,
+      ...(sourceRetired?{webSourceUnavailableHold:true}:task.webSourceUnavailableHold?{webSourceUnavailableHold:false}:{})
+    };
+  })});
 }
 
 export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', policy = readJson(CANONICAL_RESERVATION_POLICY) } = {}) {
