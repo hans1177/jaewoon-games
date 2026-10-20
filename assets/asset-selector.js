@@ -1,6 +1,6 @@
 // 파일명: assets/asset-selector.js
 // 역할: 자연어 요구에서 필요한 에셋 종류를 판별하고 실제 게임 객체에 적용할 매핑 계획을 생성
-// 규칙: 기존 저장소 우선, 라이선스 불명/NC 차단, 캐릭터/적/보스는 검증 애니메이션 또는 Motion Engine 증거 필수
+// 규칙: 모든 게임의 기존 제작 라이브러리를 먼저 탐색·재사용한다. 화면 표시 아트는 다운로드된 CC0 원본 후보만 허용하고 최종 공개 전 출처/장부/해시와 런타임을 별도 검증한다.
 
 const TYPES = Object.freeze({
   character: ['주인공', '캐릭터', '영웅', '플레이어', '기사', '궁수', '사마귀'],
@@ -32,6 +32,16 @@ function blockedLicense(license='') {
     if (token === 'nc') return /(?:^|[^a-z0-9])nc(?:[^a-z0-9]|$)/i.test(value);
     return lower.includes(token);
   });
+}
+// Technical code libraries remain reusable under their own licenses. The CC0-only
+// restriction applies to every game-visible art asset, not engine source licenses.
+function isDownloadedCc0Art(asset={}) {
+  const license=text(asset.license||asset.licenseDeclared||asset.policy);
+  return /^CC0(?:-1\\.0)?$/i.test(license)
+    && asset.downloaded===true
+    && Boolean(text(asset.sourceUrl))
+    && asset.securityBlocked!==true
+    && asset.internalUseForbidden!==true;
 }
 const BLOCKED_ACTOR_VISUAL_WORDS = Object.freeze(['circle', 'sphere', 'orb', 'ball', '원형', '구체', 'placeholder', 'dummy', 'primitive']);
 const ACTIVE_NATIVE_TARGETS = Object.freeze(['roblox', 'unity']);
@@ -361,7 +371,7 @@ function vibeSourceProvenance(asset={}){
   const id=text(asset.id),sourceHash=text(asset.sourceHash||asset.sha256||asset.contentHash);
   const license=text(asset.license||asset.licenseDeclared||asset.policy).toUpperCase();
   const source=Boolean(asset.path||asset.masterGlb||asset.sourceFiles?.length||asset.nativeArtifacts?.length);
-  return Boolean(id&&source&&/^[0-9a-f]{64}$/i.test(sourceHash)&&license&&!blockedLicense(license)
+  return Boolean(id&&source&&/^[0-9a-f]{64}$/i.test(sourceHash)&&isDownloadedCc0Art(asset)
     &&asset.securityBlocked!==true&&asset.internalUseForbidden!==true);
 }
 function vibeMatchingFamilies(asset={},families=[]){
@@ -475,9 +485,10 @@ export function planVibeExternalCustomization({
     references:Object.freeze(actions),existingVerifiedSourceCount:validAssets.filter(asset=>
       asset.verifiedCompanyReusable===true||asset.runtimeVerificationState==='VERIFIED_RUNTIME').length,
     sourceRevision:sourceId||null,designFingerprint:styleFingerprint||null,
-    applicationOrder:Object.freeze(['REUSE_VERIFIED_LIBRARY','DERIVE_APPROVED_NATIVE_VARIANT',
+    applicationOrder:Object.freeze(['REUSE_VERIFIED_LIBRARY','VERIFY_DOWNLOADED_CC0_ORIGINAL_AND_LEDGER','DERIVE_APPROVED_NATIVE_VARIANT',
       'RECOMBINE_SOURCE_COMPATIBLE_PARTS','REVIEW_LICENSED_EXTERNAL_ALGORITHM_OR_TOOL','NATIVE_BINDING','EXACT_RUNTIME_QA']),
-    sourceHashesRequired:true,externalInstallRequiresExplicitAuthorization:true,
+    sourceHashesRequired:true,cc0OnlyGameVisuals:true,technicalCodeLibraryLicensesRemainIndependent:true,
+    missingCc0ArtBlocksPresentationPromotion:true,externalInstallRequiresExplicitAuthorization:true,
     requireExactRuntimeVisualAndInputEvidence:true,sourceMutationPerformed:false,
     nativeRuntimeVerified:false,appliedToGame:false,qaPassed:false,
     rollbackContract:'EXISTING_WORKSPACE_CHECKPOINT_RESTORE_ON_FAILURE',
@@ -498,7 +509,7 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       ...(Array.isArray(asset?.nativeArtifacts) ? asset.nativeArtifacts : [])];
     const hasSource = sources.some((value) => Boolean(text(value)))
       || Boolean(asset?.platformVariants && Object.keys(asset.platformVariants).length);
-    return Boolean(text(asset?.id)) && asset?.downloaded !== false
+    return Boolean(text(asset?.id)) && isDownloadedCc0Art(asset)
       && hasSource && !blockedLicense(license);
   });
   const prototypePreset = choosePrototypePreset(request, presetCatalog);
@@ -546,6 +557,11 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
     }),
     policy:Object.freeze({
       existingAssetsFirst:true,
+      inspectAllExistingCompatibleGameLibrariesFirst:true,
+      downloadedCc0GameArtOnly:true,
+      gameVisualCategories:['character','npc','companion','creature','enemy','boss','background','item','prop','effect','ui','animation'],
+      licenseLedgerAndSourceHashProofRequiredBeforePublicPresentation:true,
+      missingOrUnverifiedCc0MustNotBeReplacedWithGeneratedPlaceholder:true,
       prototypePresetFirst:true,
       mobileFirst:true,
       activeNativeTargets:[...ACTIVE_NATIVE_TARGETS],
@@ -588,6 +604,9 @@ export function planAssetApplication({ prompt = '', manifest = null, presetCatal
       'Web은 native 대체 타깃이 아니라 필요한 경우 검증/동반 표면으로만 분리',
       'Roblox/Unity용 생성 자산은 원본 제작 레시피·미리보기·evidence·런타임 검증을 분리해 기록',
       '외부 무료 제작툴은 후보만 제시하고 라이선스/버전 승인 전 자동 설치 금지',
+      '기존 모든 게임제작 코드/엔진/AI/물리/입력/모션/맵/프리셋/에셋 라이브러리를 확인하고 기능 호환 시 기존 책임 시스템에서 재사용',
+      '화면에 보이는 캐릭터·몬스터·환경·아이템·UI 아트·VFX·애니메이션 원본은 다운로드된 CC0/CC0-1.0만 사용',
+      '에셋 장부·출처 URL·원본 파일 해시·실제 바인딩 검증 전에는 공개 사용 PASS 금지; 부족하면 정직하게 누락 보고',
       '기존 저장소 에셋 확인 후 KEEP/ENHANCE/COMBINE/REPLACE 분류',
       '캐릭터/적/보스는 실제 프레임 애니메이션, 검증 모션 소스가 연결된 리타겟 가능 리그, 또는 Motion Engine 실행 증거를 확인',
       '휴머노이드 리그와 외부/회사 모션을 조합할 때는 리타겟·발접지·루트/골반·손/무기 접촉·전환 클린업을 거쳐 플랫폼 네이티브 런타임으로 검증',
