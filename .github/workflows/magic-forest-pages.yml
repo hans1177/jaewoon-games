@@ -444,10 +444,16 @@ jobs:
           artifact="$RUNNER_TEMP/jaewoon-pages-artifact"
           test -d "$retained/.git"
           mkdir -p "$artifact"
-          # Copy retained history-preserving output without rescanning Git internals.
-          # Reflinks avoid physical duplicate writes when the runner filesystem supports them.
-          cp -a --reflink=auto "$retained/." "$artifact/"
-          rm -rf "$artifact/.git"
+          # Select top-level entries before copying so Git objects are never traversed.
+          # Preserve hidden published files and reflinks where supported.
+          shopt -s dotglob nullglob
+          published_entries=()
+          for entry in "$retained"/*; do
+            [[ "${entry##*/}" == .git ]] || published_entries+=("$entry")
+          done
+          test "${#published_entries[@]}" -gt 0
+          cp -a --reflink=auto -- "${published_entries[@]}" "$artifact/"
+          test ! -e "$artifact/.git"
           test -s "$artifact/index.html"
           grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' "$artifact/index.html"
           test -f "$artifact/tier.html"
