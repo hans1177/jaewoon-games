@@ -15,7 +15,18 @@ import {planAssetApplication} from '../../assets/asset-selector.js';
 
 const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
 const SCALE = 1 / 48;
+// 플레이어 꾸미기: 이미 확보된 CC0 KayKit 원본 3D 캐릭터만 선택한다.
 const HERO_URL = new URL('../../assets/roblox/actors/native/knight.glb',import.meta.url);
+const HERO_MODEL_FILES=Object.freeze({
+  knight:'knight.glb',mage:'mage.glb',barbarian:'barbarian.glb',
+  rogue:'rogue.glb','rogue-hooded':'rogue-hooded.glb'
+});
+const HERO_SIZES=Object.freeze([90,100,110]);
+function normalizeHeroAppearance(selection){
+  const model=Object.hasOwn(HERO_MODEL_FILES,selection?.model)?selection.model:'knight';
+  const size=Number(selection?.size);
+  return {model,size:HERO_SIZES.includes(size)?size:100};
+}
 const UNDEAD_URL = new URL('../../assets/roblox/actors/native/skeleton-warrior.glb',import.meta.url);
 // Reuse the existing 3D creature library. Each source is bound only to matching
 // game species; the renderer never creates a synthetic enemy or changes AI rules.
@@ -133,28 +144,53 @@ async function loadSourceModels(){
   return new Map(results);
 }
 
-export async function createWorld3d(canvas){
+export async function createWorld3d(canvas, initialAppearance={model:'knight',size:100}){
   const models=await loadSourceModels(); // Fail closed: leave the old game active.
-  // Original CC0 KayKit knight GLB: optional visual actor only. Never invent a character mesh.
-  // The existing game owns hitboxes, attacks, inventory, motion timing and save values.
+  // 메인: 실제 CC0 리그 교체는 시각 효과 전용이며 저장·전투 권한과 독립적이다.
   let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroFrame=0;
-  try{
-    const gltf=await new GLTFLoader().loadAsync(HERO_URL.href);
-    const avatar=new THREE.Group(),model=gltf.scene;
-    const box=new THREE.Box3().setFromObject(model);
-    const modelHeight=Math.max(.1,box.max.y-box.min.y);
-    const heightFactor=Math.max(.87,Math.min(1.13,(Number(avatarRecipe.body.heightCm)||170)/170));
-    const scaledHeight=1.9*heightFactor/modelHeight;
-    model.scale.setScalar(scaledHeight);
-    model.position.y=-box.min.y*scaledHeight;
-    avatar.add(model);
-    avatar.userData.source=HERO_URL.href;
-    hero={avatar,model};
-    heroClips=gltf.animations||[];
-    if(heroClips.length)heroMixer=new THREE.AnimationMixer(model);
-  }catch(error){
-    console.warn('CC0 KayKit knight not available in 3D preview; player asset remains unverified',error);
+  let scene=null,disposed=false,heroLoadVersion=0;
+  let selectedAppearance=null;
+  async function setAvatarAppearance(requested){
+    const choice=normalizeHeroAppearance(requested);
+    if(hero&&selectedAppearance?.model===choice.model&&selectedAppearance?.size===choice.size)return true;
+    const version=++heroLoadVersion;
+    const source=new URL('../../assets/roblox/actors/native/'+HERO_MODEL_FILES[choice.model],import.meta.url);
+    try{
+      const gltf=await new GLTFLoader().loadAsync(source.href);
+      if(disposed||version!==heroLoadVersion)return false;
+      const avatar=new THREE.Group(),model=gltf.scene;
+      const box=new THREE.Box3().setFromObject(model);
+      const modelHeight=Math.max(.1,box.max.y-box.min.y);
+      const heightFactor=Math.max(.87,Math.min(1.13,(Number(avatarRecipe.body.heightCm)||170)/170));
+      const scaledHeight=1.9*heightFactor*(choice.size/100)/modelHeight;
+      model.scale.setScalar(scaledHeight);
+      model.position.y=-box.min.y*scaledHeight;
+      avatar.add(model);
+      avatar.userData.source=source.href;
+      const previous=hero,previousMixer=heroMixer;
+      if(scene)scene.add(avatar);
+      hero={avatar,model};
+      heroClips=gltf.animations||[];
+      heroMixer=heroClips.length?new THREE.AnimationMixer(model):null;
+      heroAction=null;heroActionName='';lastHeroFrame=0;
+      selectedAppearance=choice;
+      if(previous){
+        previousMixer?.stopAllAction();
+        if(scene)scene.remove(previous.avatar);
+        previous.model.traverse(object=>{
+          if(!object.isMesh)return;
+          object.geometry?.dispose();
+          const materials=Array.isArray(object.material)?object.material:[object.material];
+          for(const material of materials)material?.dispose();
+        });
+      }
+      return true;
+    }catch(error){
+      console.warn('CC0 player appearance model unavailable; existing player preserved',error);
+      return false;
+    }
   }
+  await setAvatarAppearance(initialAppearance);
   // A native CC0 humanoid undead is a visual proxy only for the existing
   // wastelandMummy type. Its AI, hitbox, spawn, skills, loot and ID stay authoritative.
   // More distant species remain missing; do not render arbitrary substitutes.
@@ -200,7 +236,7 @@ export async function createWorld3d(canvas){
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.shadowMap.enabled=!mobileBudget;
   renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  const scene=new THREE.Scene();
+  scene=new THREE.Scene();
   scene.background=new THREE.Color(0x244238);
   scene.fog=new THREE.Fog(0x244238,22,90);
   // Diablo II Resurrected-inspired orthographic quarter-view:
@@ -376,7 +412,7 @@ export async function createWorld3d(canvas){
   let playerToolName=null,playerMotionProfile=createSurvivalPlayerMotionProfile({platform:'WEB',tool:'NONE'});
   let observedWeather='';
   let weatherVisualEffects=[];
-  let active=false,lastW=0,lastH=0,disposed=false;
+  let active=false,lastW=0,lastH=0;
   canvas.hidden=true;
 
   function addVisibleEntity(key,kind,x,y,scale,seen,rotationY=0){
@@ -546,7 +582,7 @@ export async function createWorld3d(canvas){
     return raycaster.ray.intersectPlane(groundPlane,point)?{x:point.x/SCALE,y:point.z/SCALE}:null;
   }
   function dispose(){
-    disposed=true;active=false;canvas.hidden=true;
+    disposed=true;heroLoadVersion++;active=false;canvas.hidden=true;
     if(hero){heroMixer?.stopAllAction();scene.remove(hero.avatar);
       hero.model.traverse(object=>{if(object.isMesh){object.geometry?.dispose();const mats=Array.isArray(object.material)?object.material:[object.material];for(const mat of mats)mat?.dispose()}})}
     for(const actor of undeadActors.values()){actor.mixer?.stopAllAction();scene.remove(actor.anchor)}
@@ -569,10 +605,10 @@ export async function createWorld3d(canvas){
     // Source floor geometry/material are disposed once by the source model pool.
   }
   return {
-    frame,pick,dispose,isActive:()=>active&&!disposed&&!canvas.hidden,
+    frame,pick,dispose,setAvatarAppearance,getAvatarAppearance:()=>({...selectedAppearance}),isActive:()=>active&&!disposed&&!canvas.hidden,
     kind:'NATIVE_WEBGL_GAME_RENDERER',
-    playerSource:HERO_URL.href,creatureSources:[...nativeCreatureSources.keys()],
-    modelCount:models.size,playerAssetLoaded:!!hero,playerMotionClipCount:heroClips.length,
+    get playerSource(){return hero?.avatar.userData.source||''},creatureSources:[...nativeCreatureSources.keys()],
+    modelCount:models.size,get playerAssetLoaded(){return !!hero},get playerMotionClipCount(){return heroClips.length},
     undeadProxySourceLoaded:!!undeadSource,undeadProxyMotionClipCount:undeadClips.length,
     getBiome:()=>currentBiome,getWorldProfile:()=>gameStyleRegion,
     getWeatherEffects:()=>weatherVisualEffects,getAvatarRecipe:()=>avatarRecipe,
