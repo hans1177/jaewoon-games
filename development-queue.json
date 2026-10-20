@@ -6361,7 +6361,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T12:41:24.343Z",
+      "updatedAt": "2026-10-20T12:48:39.022Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -6379,17 +6379,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "ebdea1fe7f3b1786a0bf7bda3d09ad4cb613dd13",
       "robloxBuildArtifactIdentity": "sha256:5b4d751288503767f13095776e08ab8ac0f84935bf773a392d5e280d4788ce52",
-      "robloxBuildPassedAt": "2026-10-20T12:41:24.343Z",
+      "robloxBuildPassedAt": "2026-10-20T12:48:39.022Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T12:41:24.343Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T12:48:39.022Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "chess-battle",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T11:59:18.096Z",
+        "checkedAt": "2026-10-20T12:17:28.824Z",
         "sourceRevision": "ebdea1fe7f3b1786a0bf7bda3d09ad4cb613dd13",
         "artifactIdentity": "sha256:5b4d751288503767f13095776e08ab8ac0f84935bf773a392d5e280d4788ce52",
         "secondaryOwnerFocus": false,
@@ -6432,7 +6432,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because multiple validation checks failed in BUILD_EVIDENCE."
+            "note": "Package cannot start runtime testing because web and music validations (both managed and native) have failed according to BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -33530,7 +33530,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T12:48:28.638Z",
+  "updatedAt": "2026-10-20T12:48:39.022Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
