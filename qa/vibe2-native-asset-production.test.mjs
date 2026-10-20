@@ -835,7 +835,7 @@ test('deleted self authored OBJ sources cannot be inspected as usable geometry',
   }
 });
 
-test('asset registry change detection skips untouched top-level serialization and tracks catalog asset mutations',()=>{
+test('CC0 registry change detection preserves untouched top-level data and tracks catalog mutations',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-change-detection-'));
   try{
     fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[]}));
@@ -854,7 +854,7 @@ test('asset registry change detection skips untouched top-level serialization an
       version:1,
       assets:[{
         id:'roblox-common-items-v1',packId:'roblox-common-items-v1',family:'PROP',platform:'ROBLOX',
-        license:'project-original',companyCommonBase:true,productionVerified:false,verifiedCompanyReusable:false,
+        license:'cc0',companyCommonBase:true,productionVerified:false,verifiedCompanyReusable:false,
         runtimeVerificationState:'PENDING_STUDIO'
       }],
       externalSources:[],
@@ -881,7 +881,8 @@ test('registry sync change detection is limited to sections it can mutate',()=>{
   for(const section of ['assets','internalAssetStandard','internalAssetCompositionContract','companyCommonSeedAssetIdeation','commonLibrarySystemDepthAudit','internalAssetLibraryAutomation','characterNpcCustomization','npcRoleProduction']){
     assert.match(syncSource,new RegExp("'"+section+"'"));
   }
-  assert.match(syncSource,/catalogAssetsChanged=organizationAssetsChanged\|\|syncRows\.some\(row=>row\.changed===true\)/);
+  assert.match(syncSource,/catalogAssetsChanged=beforePracticeRemoval!==next\.assets\.length\|\|organizationAssetsChanged\|\|syncRows\.some\(row=>row\.changed===true\)/);
+  assert.match(syncSource,/asset\?\.license!=='project-original'/);
   assert.doesNotMatch(syncSource,/Object\.keys\(original\)/);
   assert.doesNotMatch(syncSource,/Object\.keys\(next\)/);
 });
