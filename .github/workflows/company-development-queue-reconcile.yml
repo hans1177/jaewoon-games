@@ -181,7 +181,7 @@ jobs:
             const ids=(queue.items||[]).map(item=>String(item.gameId||'').trim()).filter(Boolean);
             if(new Set(ids).size!==ids.length)throw new Error('duplicate development queue gameId');
             if(queue.routerPolicy!=='company-learning/platform-release-roadmap.json')throw new Error('machine router policy required');
-            if(queue.nativeDevelopmentPolicy!=='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT')throw new Error('direct-native queue policy required');
+            if(queue.nativeDevelopmentPolicy!=='MINIMUM_DESIGN_READY_THEN_ROBLOX_ONLY')throw new Error('direct-native queue policy required');
             if(queue.developmentGameWipMax!==null)throw new Error('internal game WIP cap forbidden');
             for(const item of queue.items||[]){
               if(item.sourceContinuationPendingAdmission===true){
@@ -193,10 +193,10 @@ jobs:
               }
               if(item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`non-development item remains: ${item.gameId}`);
               if(item.minimumDesignContract?.pass!==true)throw new Error(`minimum design missing: ${item.gameId}`);
-              if(item.platformExecutionMode!=='ROBLOX_UNITY_CONCURRENT_SAME_GAME')throw new Error(`dual-native execution missing: ${item.gameId}`);
+              if(item.platformExecutionMode!=='ROBLOX_ONLY_OWNER_ACTIVE'||item.selectedPlatform!=='ROBLOX')throw new Error(`owner-held Unity execution detected: ${item.gameId}`);
               const targets=new Set(item.concurrentTargetPlatforms||[]);
-              if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error(`dual-native targets missing: ${item.gameId}`);
-              if(!item.platformDesignProfiles?.ROBLOX?.source||!item.platformDesignProfiles?.UNITY?.source)throw new Error(`platform design profiles missing: ${item.gameId}`);
+              if(targets.size!==1||!targets.has('ROBLOX'))throw new Error(`Roblox-only execution targets required: ${item.gameId}`);
+              if(!item.platformDesignProfiles?.ROBLOX?.source||item.platformDesignProfiles.ROBLOX.source!==item.minimumDesignContract.source||item.platformDesignProfiles.ROBLOX.jsonPointer!=='/content/platformProfiles/ROBLOX')throw new Error(`verified Roblox design profile missing: ${item.gameId}`);
               for(const legacy of ['webValidationRequired','musicValidationRequired','webSourcePath','webPurpose','webFirstGatePassed']){
                 if(Object.hasOwn(item,legacy))throw new Error(`legacy Web admission field remains: ${item.gameId}:${legacy}`);
               }

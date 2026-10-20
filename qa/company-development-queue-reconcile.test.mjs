@@ -45,18 +45,19 @@ const writeDesign=(root,id,date='2026-09-23')=>{
 };
 const writePolicy=root=>write(root,'company-learning/platform-release-roadmap.json',{
   authority:'MACHINE_EXECUTION_CONTRACT',
+  developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY_WEB:'OWNER_HOLD',UNITY:'OWNER_HOLD'},
   directNativeDualPlatformDevelopment:{
     status:'OWNER_DIRECT_LOCKED',mode:'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR',
     canonicalDevelopmentAdmissionAuthority:true,minimumDesignRequired:true,
     strictDesignScoreRequiredForDevelopmentAdmission:false,legacyWebFirstFallbackForbidden:true,
-    webDevelopmentStageRemoved:false,unityWebEnabled:true,unityWebRequired:true,unityWebGateRequired:false,
-    ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','UNITY_WEB']},
+    webDevelopmentStageRemoved:false,unityWebEnabled:false,unityWebRequired:false,unityWebGateRequired:false,
+    ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY_WEB','UNITY_ANDROID']},
     unityWebMode:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
     upperPlatformAdmission:'MINIMUM_DESIGN_READY',
     supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
     automaticPairing:{
-      ROBLOX:['ROBLOX','UNITY_WEB_FLOOR'],
-      UNITY:['UNITY_WEB_FLOOR']
+      ROBLOX:['ROBLOX'],
+      UNITY:[]
     },
     development:{
       unityWebDevelopmentFloorRequiredBeforeUpperPlatformStart:false,
@@ -72,7 +73,7 @@ const writePolicy=root=>write(root,'company-learning/platform-release-roadmap.js
   }}
 });
 
-test('queue reconciler accepts the canonical Unity Web floor contract and rejects the removed-stage drift',()=>{
+test('queue reconciler respects owner-held Unity and rejects unapproved development policy drift',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-policy-drift-'));
   try{
     writePolicy(root);
@@ -113,7 +114,7 @@ test('keeps only active confirmed seeds with valid minimum design and preserves 
       items:[
       {
         gameId:'progressed',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
-        selectedPlatform:'UNITY',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',
+        selectedPlatform:'ROBLOX',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',
         canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',customEvidence:'KEEP',
         concurrentTargetPlatforms:['ROBLOX','UNITY'],platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
         minimumDesignContract:{pass:true,source:progressedDesign},
@@ -144,17 +145,19 @@ test('keeps only active confirmed seeds with valid minimum design and preserves 
 
     const created=queue.items.find(x=>x.gameId==='new-native');
     assert.equal(created.currentStep,'TARGET_PLATFORM_SOURCE_BIND');
-    assert.equal(created.canonicalState,'PENDING_DUAL_NATIVE_SOURCE_BIND');
+    assert.equal(created.canonicalState,'PENDING_ROBLOX_SOURCE_BIND');
     assert.equal(created.minimumDesignContract.source,newDesign);
-    assert.deepEqual(created.concurrentTargetPlatforms,['ROBLOX','UNITY']);
-    assert.equal(created.platformExecutionMode,'ROBLOX_UNITY_CONCURRENT_SAME_GAME');
+    assert.deepEqual(created.concurrentTargetPlatforms,['ROBLOX']);
+    assert.equal(created.platformExecutionMode,'ROBLOX_ONLY_OWNER_ACTIVE');
     assert.equal(created.targetSourcePaths.ROBLOX,'roblox-games/new-native');
-    assert.equal(created.targetSourcePaths.UNITY,'unity-games/new-native');
+    assert.equal(Object.hasOwn(created.targetSourcePaths,'UNITY'),false);
 
     for(const item of queue.items){
       assert.equal(item.minimumDesignContract.pass,true);
       assert.equal(item.platformDesignProfiles.ROBLOX.source,item.minimumDesignContract.source);
-      assert.equal(item.platformDesignProfiles.UNITY.source,item.minimumDesignContract.source);
+      assert.equal(Object.hasOwn(item.platformDesignProfiles,'UNITY'),false);
+      assert.deepEqual(item.concurrentTargetPlatforms,['ROBLOX']);
+      assert.equal(item.selectedPlatform,'ROBLOX');
       assert.equal(Object.hasOwn(item,'webValidationRequired'),false);
       assert.equal(Object.hasOwn(item,'musicValidationRequired'),false);
       assert.equal(Object.hasOwn(item,'webSourcePath'),false);
@@ -163,7 +166,7 @@ test('keeps only active confirmed seeds with valid minimum design and preserves 
       assert.equal(item.saveMeaningPreservationRequired,true);
     }
     assert.equal(queue.routerPolicy,'company-learning/platform-release-roadmap.json');
-    assert.equal(queue.nativeDevelopmentPolicy,'MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT');
+    assert.equal(queue.nativeDevelopmentPolicy,'MINIMUM_DESIGN_READY_THEN_ROBLOX_ONLY');
     assert.equal(queue.developmentGameWipMax,null);
     assert.equal(queue.reconciliationPolicy,'ACTIVE_SEED_PLUS_MINIMUM_DESIGN_DIRECT_NATIVE');
     assert.equal(queue.internalConcurrencyCap,null);
@@ -270,7 +273,8 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   assert.match(workflow,/git checkout origin\/main --[^\n]*tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(workflow,/git reset --[^\n]*tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(source,/game-seed-state\.json/);
-  assert.match(workflow,/MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT/);
+  assert.match(workflow,/MINIMUM_DESIGN_READY_THEN_ROBLOX_ONLY/);
+  assert.match(workflow,/Roblox-only execution targets required/);
   assert.match(workflow,/UNITY_WEB_ADMISSION_AUTHORITY=NONE/);
   assert.doesNotMatch(workflow,/COMPANY_FLOW\.md/);
   assert.doesNotMatch(workflow,/webValidationRequired!==true/);

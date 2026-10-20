@@ -1,5 +1,6 @@
 // Canonical DEVELOPMENT_CONFIRMED direct-native queue reconciliation.
-// Authority: machine roadmap + active GAME_SEED + minimum dual-platform design.
+// Authority: verified machine roadmap + active GAME_SEED + authored minimum design.
+// Unity/Android is owner-held; never reintroduce a second execution target.
 // This reconciler never creates Web-first admission state.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -10,7 +11,7 @@ import {resolveSelectedPlatform} from './company-selected-platform-router.mjs';
 const MACHINE_POLICY_SOURCE=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
 const ACTIVE_LIFECYCLE=new Set(['ACTIVE','REBUILD']);
 const ACTIVE_SEED_STATUS=new Set(['ACTIVE']);
-const DIRECT_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
+const DIRECT_PLATFORMS=Object.freeze(['ROBLOX']);
 const DEDICATED_TARGET_REGISTRY='roblox-dedicated-targets.json';
 const LEGACY_WEB_ADMISSION_KEYS=Object.freeze([
   'webPurpose','webCompanionRequired','webValidationRequired','webGameplayValidationRequired','musicValidationRequired',
@@ -31,7 +32,7 @@ const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true})
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-const directPaths=gameId=>({ROBLOX:`roblox-games/${gameId}`,UNITY:`unity-games/${gameId}`});
+const directPaths=gameId=>({ROBLOX:`roblox-games/${gameId}`});
 const removeLegacy=item=>{for(const key of LEGACY_WEB_ADMISSION_KEYS)delete item[key];return item;};
 function clearLegacyQueueCaps(queue={}){
   let changed=false;
@@ -61,6 +62,10 @@ function assertDirectNativePolicy(roadmap={}){
   const nativeActive=active.includes('UNITY_ANDROID');
   const pair=webActive?['ROBLOX','UNITY_WEB_FLOOR']:nativeActive?['ROBLOX','UNITY']:['ROBLOX'];
   const ok=roadmap?.authority==='MACHINE_EXECUTION_CONTRACT'
+    &&roadmap?.developmentAccess?.ROBLOX==='ALWAYS_ALLOWED'
+    &&roadmap?.developmentAccess?.UNITY==='OWNER_HOLD'
+    &&roadmap?.developmentAccess?.UNITY_WEB==='OWNER_HOLD'
+    &&!webActive&&!nativeActive
     &&d.status==='OWNER_DIRECT_LOCKED'
     &&d.mode==='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR'
     &&active.includes('ROBLOX')
@@ -280,7 +285,7 @@ function progressMatchesDesign(item,design){
     &&clean(item?.minimumDesignContract?.source)===clean(design?.file)
     &&Array.isArray(item?.concurrentTargetPlatforms)
     &&item.concurrentTargetPlatforms.includes('ROBLOX')
-    &&item.concurrentTargetPlatforms.includes('UNITY')
+    &&upper(item.selectedPlatform||'ROBLOX')==='ROBLOX'
     &&clean(item?.currentStep)
     &&!/^WEB_|^WAITING_WEB|FULL_APPROVED_SCOPE_WEB/.test(upper(item?.currentStep));
 }
@@ -293,7 +298,7 @@ function bindSaveContract(item,roadmap={}){
 }
 function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp}){
   const gameId=clean(game.id);
-  const selected=resolveSelectedPlatform(seed,game,oldItem)||'ROBLOX';
+  const selected='ROBLOX'; // owner-locked active execution target; preserve source evidence only
   const paths=directPaths(gameId);
   const preserve=progressMatchesDesign(oldItem,design);
   const recoveredProgress=recoverExactPrivateRuntimeCheckpoint(oldItem,design);
@@ -304,18 +309,17 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
     seedId:item.seedId||seed?.seedId||null,
     gameName:item.gameName||seed?.gameName||game?.name||gameId,
     productionClass:'DEVELOPMENT_CONFIRMED',
-    productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+    productionClassSource:'MINIMUM_ROBLOX_DESIGN_READY',
     lifecycleState:upper(game?.lifecycleState||'ACTIVE'),
     status:['ACTIVE','PENDING'].includes(upper(item.status))?upper(item.status):'ACTIVE',
     selectedPlatform:selected,
     targetPlatform:selected,
     concurrentTargetPlatforms:[...DIRECT_PLATFORMS],
-    platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
-    bidirectionalAutoPair:true,
-    requestEitherStartsBoth:true,
+    platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE',
+    bidirectionalAutoPair:false,
+    requestEitherStartsBoth:false,
     targetSourcePaths:paths,
     robloxProjectPath:paths.ROBLOX,
-    unityProjectPath:paths.UNITY,
     targetSourcePath:paths[selected]||paths.ROBLOX,
     sourcePath:paths[selected]||paths.ROBLOX,
     designBaselineSource:design.file,
@@ -326,19 +330,17 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
       commonCoreReady:true,platformProfiles:{ROBLOX:true,UNITY:true,distinct:true}
     },
     platformDesignProfiles:{
-      ROBLOX:{source:design.file,jsonPointer:'/content/platformProfiles/ROBLOX'},
-      UNITY:{source:design.file,jsonPointer:'/content/platformProfiles/UNITY'}
+      ROBLOX:{source:design.file,jsonPointer:'/content/platformProfiles/ROBLOX'}
     },
     artbookTiming:'PARALLEL_NATIVE_PRESENTATION_SUPPORT',
-    internalReleaseTarget:{
-      ROBLOX:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE',
-      UNITY:'INTERNAL_OR_CLOSED_APP_TEST_BUILD'
-    },
+    internalReleaseTarget:{ROBLOX:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE'},
     externalReleasePolicy:'PLATFORM_INDEPENDENT_AFTER_OWN_QA',
     currentStep:recoveredProgress?.currentStep||(preserve?item.currentStep:'TARGET_PLATFORM_SOURCE_BIND'),
-    canonicalState:recoveredProgress?.canonicalState||(preserve?(item.canonicalState||'TARGET_PLATFORM_REPAIR_REQUIRED'):'PENDING_DUAL_NATIVE_SOURCE_BIND'),
+    canonicalState:recoveredProgress?.canonicalState||(preserve&&upper(item.canonicalState)!=='PENDING_DUAL_NATIVE_SOURCE_BIND'?(item.canonicalState||'TARGET_PLATFORM_REPAIR_REQUIRED'):'PENDING_ROBLOX_SOURCE_BIND'),
     enqueuedAt:item.enqueuedAt||stamp
   });
+  // Historical Unity source paths are retained only in Git history, never an active queue target.
+  delete item.unityProjectPath;
   if(recoveredProgress?.robloxFailureStage){
     item.robloxFailureStage=recoveredProgress.robloxFailureStage;
     item.robloxFailureSignature=recoveredProgress.robloxFailureSignature;
@@ -362,6 +364,7 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
   }
   const stalePreReleaseCanonicalState=[
     'PENDING_DUAL_NATIVE_SOURCE_BIND',
+    'PENDING_ROBLOX_SOURCE_BIND',
     'F0_SOURCE_PREFLIGHT_PASSED',
     'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED',
     'ROBLOX_RUNTIME_ACCEPTANCE_PASSED',
@@ -500,7 +503,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   const legacyQueueMetadataRemoved=clearLegacyQueueCaps(queue);
   const metadataChanged=
     clean(queue.routerPolicy)!==MACHINE_POLICY_SOURCE||
-    queue.nativeDevelopmentPolicy!=='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT'||
+    queue.nativeDevelopmentPolicy!=='MINIMUM_DESIGN_READY_THEN_ROBLOX_ONLY'||
     queue.developmentGameWipMax!==null||
     queue.reconciliationPolicy!=='ACTIVE_SEED_PLUS_MINIMUM_DESIGN_DIRECT_NATIVE';
 
@@ -508,7 +511,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   if(changed){
     queue.items=next;
     queue.routerPolicy=MACHINE_POLICY_SOURCE;
-    queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT';
+    queue.nativeDevelopmentPolicy='MINIMUM_DESIGN_READY_THEN_ROBLOX_ONLY';
     queue.developmentGameWipMax=null;
     queue.reconciliationPolicy='ACTIVE_SEED_PLUS_MINIMUM_DESIGN_DIRECT_NATIVE';
     queue.internalConcurrencyCap=null;
@@ -521,7 +524,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   return {
     changed:changed||intake.admitted.length>0,admittedSourceGames:intake.admitted,created,removed,rebound,preserved,duplicateRemoved,ownerDirectSeedRepairs,
     queueCount:next.length,routerPolicy:MACHINE_POLICY_SOURCE,
-    nativeDevelopmentPolicy:'MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT',
+    nativeDevelopmentPolicy:'MINIMUM_DESIGN_READY_THEN_ROBLOX_ONLY',
     developmentGameWipMax:null,
     internalConcurrencyCap:null,
     externalCapacityOnlyBoundary:true,
