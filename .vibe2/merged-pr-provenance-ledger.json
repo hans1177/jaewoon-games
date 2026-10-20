@@ -73879,11 +73879,145 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_8616d8d64a8e9f142dbb0f69",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8729",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c4afb318a910432a4898fa0fee54bf3a71ad374f",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8729,
+        "baseBranch": "main",
+        "headBranch": "perf/github-pages-asset-single-pass",
+        "baseSha": "c4afb318a910432a4898fa0fee54bf3a71ad374f",
+        "headSha": "1a7db7ae8775ebec416be413b6e8f24e42a4a956",
+        "mergeCommitSha": "5d7be060bcf2dddd27e9ed2aa75f13b7671a3170",
+        "mergedAt": "2026-10-20T15:58:40Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1dcb44574e1ba57efc2b5ef93e2423c2e24be85712cce0c60fe5abdd9fea9fce",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "perf/github-pages-asset-single-pass",
+        "candidateSha": "1a7db7ae8775ebec416be413b6e8f24e42a4a956"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 7746,
+        "deletedLineCount": 18,
+        "changedFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          "qa/github-pages-asset-staging.test.mjs",
+          "roblox-games/crystal-defense/client/Game.client.luau",
+          "roblox-games/crystal-defense/client/MaterialPresentation.client.luau",
+          "roblox-games/crystal-defense/default.project.json",
+          "roblox-games/crystal-defense/roblox-source-bootstrap.json",
+          "roblox-games/crystal-defense/server/Game.server.luau",
+          "roblox-games/crystal-defense/shared/GameConfig.luau",
+          "roblox-games/crystal-defense/shared/RobloxCommonMaterials.luau",
+          "roblox-games/crystal-defense/shared/RobloxCommonUI.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          "qa/github-pages-asset-staging.test.mjs",
+          "roblox-games/crystal-defense/client/Game.client.luau",
+          "roblox-games/crystal-defense/client/MaterialPresentation.client.luau",
+          "roblox-games/crystal-defense/default.project.json",
+          "roblox-games/crystal-defense/roblox-source-bootstrap.json",
+          "roblox-games/crystal-defense/server/Game.server.luau",
+          "roblox-games/crystal-defense/shared/GameConfig.luau",
+          "roblox-games/crystal-defense/shared/RobloxCommonMaterials.luau",
+          "roblox-games/crystal-defense/shared/RobloxCommonUI.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8729",
+        "merge-commit:5d7be060bcf2dddd27e9ed2aa75f13b7671a3170",
+        "base-main:c4afb318a910432a4898fa0fee54bf3a71ad374f"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 586
+    "total": 587
   }
 }
