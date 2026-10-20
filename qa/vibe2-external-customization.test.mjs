@@ -17,7 +17,8 @@ const scope={
 const approved='sha256:'+'a'.repeat(64);
 const validSource={
   id:'verified-stone',family:'TERRAIN',path:'assets/terrain.glb',
-  sourceHash:'b'.repeat(64),license:'CC0-1.0',verifiedCompanyReusable:true
+  sourceHash:'b'.repeat(64),license:'CC0-1.0',downloaded:true,
+   sourceUrl:'https://example.org/cc0-original-terrain',verifiedCompanyReusable:true
 };
 const input={
   gameId:'canyon-survival',request:'바위협곡 지형 동굴 몬스터와 마을 건물, 금속 재질',
@@ -69,7 +70,7 @@ test('native Roblox uses approved design and verified library assets before any 
   assert.equal(plan.appliedToGame,false);
   assert.equal(plan.qaPassed,false);
   assert.deepEqual(plan.applicationOrder.slice(0,2),[
-    'REUSE_VERIFIED_LIBRARY','DERIVE_APPROVED_NATIVE_VARIANT'
+    'REUSE_VERIFIED_LIBRARY','VERIFY_DOWNLOADED_CC0_ORIGINAL_AND_LEDGER'
   ]);
 });
 
