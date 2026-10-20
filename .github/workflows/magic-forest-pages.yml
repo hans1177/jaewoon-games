@@ -289,6 +289,24 @@ jobs:
           const ioBuffer=Buffer.allocUnsafe(1024*1024);
           const checkedAssets=new Set();
           let verifiedBytes=0;
+          const lfsEvidence=new Map();
+          // Git attributes smudge LFS pointer blobs into actual binary bytes during restore.
+          // The pointer's Git SHA-1 cannot equal the binary file SHA-1. Verify the signed-in
+          // Git pointer *and* its canonical content SHA-256 and declared size instead.
+          const getLfsEvidence=(asset,expected)=>{
+            if(lfsEvidence.has(expected))return lfsEvidence.get(expected);
+            let evidence=null;
+            if(/\.(?:fbx|blend|psd|tga|exr|hdr|wav|mp3|ogg|mp4|mov|unitypackage)$/i.test(asset)){
+              const gitSize=Number(cp.execFileSync('git',['cat-file','-s',expected],{encoding:'utf8'}).trim());
+              if(gitSize>0&&gitSize<256){
+                const pointer=cp.execFileSync('git',['cat-file','blob',expected],{encoding:'utf8',maxBuffer:1024});
+                const match=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([a-f0-9]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(pointer);
+                if(match)evidence={sha256:match[1],size:Number(match[2])};
+              }
+            }
+            lfsEvidence.set(expected,evidence);
+            return evidence;
+          };
           const verifyGitBlob=asset=>{
             const expected=assetBlobs.get(asset);
             if(!expected)throw Error('GITHUB_PAGES_UNTRACKED_ASSET:'+asset);
@@ -296,7 +314,9 @@ jobs:
             const stat=fs.lstatSync(asset);
             if(!stat.isFile())return false; // symlinks, folders, etc. are never publishable
             if(stat.size>100*1024*1024)throw Error('GITHUB_PAGES_ASSET_TOO_LARGE:'+asset);
-            const hash=crypto.createHash('sha1').update(Buffer.from('blob '+stat.size+'\0'));
+            const lfs=getLfsEvidence(asset,expected);
+            if(lfs&&lfs.size!==stat.size)return false;
+            const hash=lfs?crypto.createHash('sha256'):crypto.createHash('sha1').update(Buffer.from('blob '+stat.size+'\0'));
             const fd=fs.openSync(asset,fs.constants.O_RDONLY|(fs.constants.O_NOFOLLOW||0));
             let firstChunk=true;
             try{
@@ -311,7 +331,7 @@ jobs:
                 hash.update(ioBuffer.subarray(0,read));
               }
             }finally{fs.closeSync(fd)}
-            const matches=hash.digest('hex')===expected;
+            const matches=hash.digest('hex')===(lfs?lfs.sha256:expected);
             if(matches){checkedAssets.add(asset);verifiedBytes+=stat.size}
             return matches;
           };
@@ -327,6 +347,7 @@ jobs:
           console.log('PAGES_ASSET_REUSED='+String(selectedAssets.length-missingAssets.length));
           console.log('PAGES_ASSET_RESTORED='+String(missingAssets.length));
           console.log('PAGES_ASSET_VERIFIED_BYTES='+verifiedBytes);
+          console.log('PAGES_LFS_CONTENT_VERIFIED='+[...lfsEvidence.values()].filter(Boolean).length);
           // copyFileSync with COPYFILE_FICLONE uses copy-on-write when supported, and
           // automatically falls back to a normal copy. Never hardlink: Pages path
           // rewrites must not mutate verified source/cache bytes.
