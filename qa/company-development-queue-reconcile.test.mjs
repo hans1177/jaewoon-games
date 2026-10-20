@@ -808,3 +808,17 @@ test('source intake registers unfinished Rojo once without inventing design or r
     assert.ok(reconcileDevelopmentQueue({root}).removed.includes('owner-game'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('owner permanent-removal verification heredoc closes before queue reconciliation runs',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-queue-reconcile.yml','utf8');
+  const step=workflow.split('      - name: Reconcile and persist company runtime queue')[1]
+    ?.split('      - name: Sync status after queue mutation')[0];
+  assert.ok(step);
+  const opens=(step.match(/^ {12}node --input-type=module <<'NODE'$/gm)||[]).length;
+  const closes=(step.match(/^ {10}NODE$/gm)||[]).length;
+  assert.equal(opens,2);
+  assert.equal(closes,opens,'all YAML-stripped Bash heredoc terminators must start at column zero');
+  assert.doesNotMatch(step,/^ {12}NODE$/m);
+  assert.ok(step.indexOf('DEVELOPMENT_QUEUE_OWNER_REACTIVATED_SIMPLE_RPG=AUTHORIZED_ROBLOX_SOURCE_ONLY')
+    <step.indexOf('node tools/company-development-queue-reconcile.mjs'));
+});
