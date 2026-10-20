@@ -1,5 +1,5 @@
 {
-  "version": 583,
+  "version": 584,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -7510,6 +7510,7 @@
     }
   },
   "changeRecord": {
+    "ownerWebDeployThenValidate20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","requestKo":"중앙 정책: 무조건 배포 후 검증","scope":"EXISTING_ORDINARY_WEB_STATIC_MAIN_PUBLICATION","sameRevisionPublicVerificationRequired":true,"existingF0F9InternalOrderChanged":false,"productionReadinessClaimUnchanged":true},
     "ownerReferenceGameAndExistingSystems20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","A":"NAMED_REPRESENTATIVE_SIMILAR_GAME_SYSTEM","B":"EXISTING_GAME_SYSTEM_BASELINE","CDDelvePreserved":true,"lockedSequenceChanged":false},
     "ownerEveryGameF9Publish20261018": {
       "authority": "OWNER_DIRECT",
@@ -26075,6 +26076,7 @@
     "unityWebRole": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR"
   },
   "webRuntimeStartabilityContract": {
+    "publicationOrder": {"version":1,"authority":"OWNER_DIRECTIVE_2026-10-20","scope":"ALL_MAIN_MERGED_ORDINARY_WEB_GAMES_AND_CENTRAL_POLICY_CHANGES","sequence":["MERGE_AUTHORIZED_SOURCE_TO_MAIN","PUBLISH_EXACT_MAIN_VIA_EXISTING_GITHUB_PAGES","VERIFY_PUBLIC_DEPLOYED_SAME_REVISION","RECORD_FAILURE_AND_REPAIR_REDEPLOY"],"existingWorkflow":".github/workflows/magic-forest-pages.yml","trigger":"EVERY_MAIN_PUSH_WITHOUT_PATH_FILTER","publicationMustBeAttempted":true,"qaScoreOrF0F9MayBlockStaticPublication":false,"directorOrHomepageApprovalMayBlockPublication":false,"postDeploymentVerificationRequired":true,"verificationMustMatchPublishedSourceShaAndGameTree":true,"failedOrUnverifiedRuntimeMayBeReportedPass":false,"deploymentImpliesProductionReady":false,"existingF0F9DefinitionsAndInternalOrderPreserved":true,"failureAction":"EXISTING_DIRECTOR_ISSUE_AND_CAUSAL_REPAIR_REDEPLOY","rawFailedStepMustRemainVisible":true,"newOrShadowDeploymentPipelineForbidden":true,"scopeExcludesNativePlatformCanonicalPublication":true},
     "version": 2,
     "finalGameplayDimension": "3D",
     "preferredOrdinaryWeb3dEngine": "PLAYCANVAS",
