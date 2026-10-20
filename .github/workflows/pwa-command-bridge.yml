@@ -14,6 +14,8 @@ on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
+  repository_dispatch:
+    types: [vibe-local-web-owner-directive]
 
 permissions:
   contents: write
@@ -51,6 +53,7 @@ jobs:
           node --test qa/pwa-command-vibe2-task.test.mjs
 
       - name: Get short-lived GitHub OIDC token
+        if: github.event_name != 'repository_dispatch'
         shell: bash
         run: |
           set -euo pipefail
@@ -62,6 +65,7 @@ jobs:
           echo "COMPANY_OIDC_TOKEN=$token" >> "$GITHUB_ENV"
 
       - name: Sync existing Vibe2 task states to PWA chat
+        if: github.event_name != 'repository_dispatch'
         shell: bash
         run: |
           set -euo pipefail
@@ -75,6 +79,7 @@ jobs:
           cat /tmp/pwa-sync-result.json
 
       - name: Claim next PWA owner instruction
+        if: github.event_name != 'repository_dispatch'
         id: next
         shell: bash
         run: |
@@ -94,11 +99,29 @@ jobs:
           console.log(`PWA_COMMAND=${data.task?'CLAIMED':'IDLE'}`);
           NODE
 
+      - name: Receive GitHub-authenticated local web owner directive
+        if: github.event_name == 'repository_dispatch'
+        id: local
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {validateLocalWebOwnerEvent} from './tools/pwa-command-vibe2-task.mjs';
+          const event=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));
+          const task=validateLocalWebOwnerEvent(event,{
+            actor:process.env.GITHUB_ACTOR,repository:process.env.GITHUB_REPOSITORY
+          });
+          fs.writeFileSync('/tmp/pwa-next.json',JSON.stringify({task})+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'has_work=true\n'+'task_id='+task.id+'\n');
+          console.log('LOCAL_WEB_OWNER_DIRECTIVE=AUTHORIZED');
+          NODE
+
       - name: Add owner instruction to Vibe2 control queue
-        if: steps.next.outputs.has_work == 'true'
+        if: steps.next.outputs.has_work == 'true' || steps.local.outputs.has_work == 'true'
         id: ingest
         env:
-          TASK_ID: ${{ steps.next.outputs.task_id }}
+          TASK_ID: ${{ steps.next.outputs.task_id || steps.local.outputs.task_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -139,6 +162,10 @@ jobs:
             sleep $((attempt * 2))
           done
           if [ "$success" != 1 ]; then
+            if [ "$GITHUB_EVENT_NAME" = 'repository_dispatch' ]; then
+              echo 'LOCAL_WEB_OWNER_DIRECTIVE_QUEUE_INGEST=FAIL' >&2
+              exit 1
+            fi
             printf '{"action":"sync","updates":[{"taskId":"%s","status":"needs_input","blocker":"Vibe2 큐 연결 실패. 다음 브리지 실행에서 다시 확인 필요."}]}\n' "$TASK_ID" > /tmp/pwa-ingest-fail.json
             curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
               -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
