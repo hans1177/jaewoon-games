@@ -198,6 +198,12 @@ try{
  // Post-publication first-play, touch controls, and save/reload for owner-focused Cozy Island.
  // Browser checks run only against the exact published Pages revision verified above.
  if(liveBase){
+  const requiredRevision=String(process.env.GITHUB_SHA||'').trim();
+  assert.match(requiredRevision,/^[0-9a-f]{40}$/i,'COZY_ISLAND_DEPLOY_REVISION_REQUIRED');
+  const liveManifest=await page.request.get(liveBase+'web-games/publish-manifest.json');
+  assert.ok(liveManifest.ok(),'COZY_ISLAND_MANIFEST_NOT_LIVE');
+  const manifest=await liveManifest.json();
+  assert.equal(manifest.sourceSha,requiredRevision,'COZY_ISLAND_DEPLOY_SOURCE_MISMATCH');
   assert.ok(manifest.routes.includes('web-games/cozy-island/'),'COZY_ISLAND_PUBLISHED_ROUTE_MISSING');
   for(const view of [{name:'desktop',width:1100,height:720,mobile:false},
                      {name:'mobile',width:390,height:844,mobile:true}]){
