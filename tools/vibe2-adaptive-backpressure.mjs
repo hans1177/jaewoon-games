@@ -235,3 +235,34 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     }
   });
 }
+
+// User-confirmed 20 hosted runners: production keeps eight potential slots outside
+// autonomous GAME_PRIMARY. This is a logical reservation ceiling, not a claim
+// that GitHub has actually allocated those hosted runners.
+export function ownerFirstRunnerAllocation(queue={},{
+  lane='game-primary',requestedMax=128,totalSlots=20,ownerReservedSlots=8
+}={}){
+  const requested=Math.max(1,Math.floor(num(requestedMax)||1));
+  const tasks=Array.isArray(queue?.tasks)?queue.tasks:[];
+  const ownerReady=tasks.some(t=>t?.ownerDirective===true&&clean(t.status).toLowerCase()==='queued'
+    &&(clean(t.executionLane).toLowerCase().replaceAll('_','-')==='game-primary'
+      ||(!clean(t.executionLane)&&clean(t.department).toLowerCase()==='development')));
+  const total=clamp(Math.floor(num(totalSlots)||20),1,20);
+  const reserved=clamp(Math.floor(num(ownerReservedSlots)||0),0,total-1);
+  const automatedLanes=new Set(['game-primary','asset-development','learning-idle']);
+  const automatic=automatedLanes.has(lane)&&!(lane==='game-primary'&&ownerReady);
+  // Shared queue contains running work from ALL Vibe lanes. Prevent independent
+  // auto game and asset batches from each claiming the same 12 physical slots.
+  const otherLanesActive=tasks.filter(t=>{
+    if(clean(t.status).toLowerCase()!=='running')return false;
+    if(/candidate-awaiting|awaiting.*qa|slot-released|quota|external.*wait/i.test(clean(t.blocker)))return false;
+    return clean(t.executionLane).toLowerCase().replaceAll('_','-')!==lane;
+  }).length;
+  const laneCeiling=(automatic?total-reserved:total)-otherLanesActive;
+  const ceiling=Math.max(1,laneCeiling);
+  return Object.freeze({
+    ownerReady,automatic,totalSlots:total,ownerReservedSlots:reserved,
+    otherLanesActive,concurrentCeiling:Math.min(requested,ceiling),
+    reason:automatic?'AUTOMATIC_KEEP_OWNER_RUNNER_HEADROOM':'OWNER_DIRECT_OR_NON_PRIMARY_PRIORITY'
+  });
+}

@@ -10,6 +10,7 @@ import {
   adaptiveRequestedMax,
   createParallelismControl,
   decideAdaptiveBackpressure,
+  ownerFirstRunnerAllocation,
   DEFAULT_ADAPTIVE_MIN,
   DEFAULT_ADAPTIVE_TARGET
 } from '../tools/vibe2-adaptive-backpressure.mjs';
@@ -205,4 +206,45 @@ test('auxiliary reserve-batch is not capped by game-primary adaptive control',()
     assert.equal(result.reservationMaxConcurrentTasks,64);
     assert.equal(result.tasks.length,24);
   }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
+});
+
+
+test('20-hosted-runner owner-first budget preserves eight slots for direct development, QA and release',()=>{
+  const automatic=ownerFirstRunnerAllocation({tasks:[{
+    id:'auto',status:'queued',executionLane:'GAME_PRIMARY',ownerDirective:false
+  }]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8});
+  assert.equal(automatic.concurrentCeiling,12);
+  assert.equal(automatic.reason,'AUTOMATIC_KEEP_OWNER_RUNNER_HEADROOM');
+  const owner=ownerFirstRunnerAllocation({tasks:[{
+    id:'direct',status:'queued',executionLane:'GAME_PRIMARY',ownerDirective:true
+  }]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8});
+  assert.equal(owner.concurrentCeiling,20);
+  assert.equal(owner.ownerReady,true);
+  assert.equal(ownerFirstRunnerAllocation({tasks:[]},
+    {lane:'game-primary',requestedMax:3,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,3);
+  assert.equal(ownerFirstRunnerAllocation({tasks:[]},
+    {lane:'asset-development',requestedMax:9,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,9);
+  assert.equal(ownerFirstRunnerAllocation({tasks:[{
+    id:'running-asset',status:'running',executionLane:'ASSET_DEVELOPMENT'
+  }]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,11,
+    'running assets consume the shared autonomous logical budget');
+  const withOwner=ownerFirstRunnerAllocation({tasks:[
+    {id:'running-asset',status:'running',executionLane:'ASSET_DEVELOPMENT'},
+    {id:'owner',status:'queued',executionLane:'GAME_PRIMARY',ownerDirective:true}
+  ]},{requestedMax:128,totalSlots:20,ownerReservedSlots:8});
+  assert.equal(withOwner.concurrentCeiling,19);
+  assert.equal(ownerFirstRunnerAllocation({tasks:[
+    {id:'running-game',status:'running',executionLane:'GAME_PRIMARY'}
+  ]},{lane:'asset-development',requestedMax:128,totalSlots:20,ownerReservedSlots:8}).concurrentCeiling,11);
+});
+
+test('canonical Vibe reserve activates owner-first budget but does not weaken QA, release or security checks',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const controller=fs.readFileSync('tools/vibe2-queue-control.mjs','utf8');
+  assert.match(workflow,/VIBE2_AUTONOMOUS_OWNER_RUNNER_PRIORITY: '1'/);
+  assert.match(workflow,/VIBE2_HOSTED_RUNNER_LIMIT: '20'/);
+  assert.match(workflow,/VIBE2_OWNER_RESERVED_SLOTS: '8'/);
+  assert.match(controller,/ownerFirstRunnerAllocation\(queue/);
+  assert.match(workflow,/node --test --test-concurrency=4/);
+  assert.match(workflow,/candidate-awaiting-qa-and-deployment|verified_learning_memory_sha/);
 });

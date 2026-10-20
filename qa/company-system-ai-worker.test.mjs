@@ -9,7 +9,7 @@ import path from 'node:path';
 import { runSystemAiWorker } from '../tools/company-system-ai-worker.mjs';
 import { normalizeSystemAiQueue,reserveSystemAiBatch,reserveSystemAiTargets,reclaimStaleSystemAiReservations,applySystemAiResults,requeueSystemAiTask,acceptSystemAiTask,systemAiImpactProfile } from '../tools/company-system-ai-queue.mjs';
 import { planMarketing } from '../tools/company-growth-marketing-planner.mjs';
-import { analyzeSystemAiBottlenecks } from '../tools/company-system-ai-bottleneck-sensor.mjs';
+import { analyzeSystemAiBottlenecks, summarizeVerifiedGameProduction } from '../tools/company-system-ai-bottleneck-sensor.mjs';
 
 function root(){return fs.mkdtempSync(path.join(os.tmpdir(),'company-system-ai-'));}
 function write(file,text){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text,'utf8');}
@@ -537,4 +537,28 @@ test('external Gemini system worker never falls back to local Ollama',()=>{
   assert.match(workflow,/SYSTEM_AI_LOCAL_AI_ENABLED: 'false'/);
   assert.match(workflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_REQUESTED_MAX_BATCH=1/);
+});
+
+
+test('Vibe production outcomes count actual verified tasks and never infer deployed games from estimates',()=>{
+ const queue={tasks:[
+  {id:'focus-queued',gameId:'fantasy-survival',target:'web',status:'queued',ownerFocusedCaretaker:true,
+   lastOutcome:'FAIL',retries:2,goal:'fix runtime',responsibleFiles:['web-games/fantasy-survival/index.html']},
+  {id:'focus-duplicate',gameId:'fantasy-survival',target:'web',status:'queued',ownerFocusedCaretaker:true,
+   lastOutcome:'FAIL',retries:2,goal:'fix runtime',responsibleFiles:['web-games/fantasy-survival/index.html']},
+  {id:'focus-pass',gameId:'fantasy-survival',target:'web',status:'verified',ownerFocusedCaretaker:true},
+  {id:'other-pass',gameId:'other',target:'web',status:'verified',evidence:['source-only-progress:100']}
+ ]};
+ const snapshot=summarizeVerifiedGameProduction(queue);
+ assert.equal(snapshot.verifiedPackageCount,2);
+ assert.equal(snapshot.focusedGameCount,1);
+ assert.equal(snapshot.duplicateActiveGroups.length,1);
+ assert.equal(snapshot.games.find(g=>g.gameId==='fantasy-survival').causalRepairPending,2);
+ assert.equal(snapshot.games.find(g=>g.gameId==='other').gameCompletionVerified,false);
+ assert.equal(snapshot.games.find(g=>g.gameId==='other').deploymentVerified,false);
+ assert.equal(snapshot.publicationProof,'NOT_IN_GAME_TASK_QUEUE');
+ const sensor=analyzeSystemAiBottlenecks({gameQueue:queue,systemAiQueue:{tasks:[]},at:Date.parse('2026-10-20T00:00:00Z')});
+ assert.ok(sensor.actions.includes('COLLAPSE_EXACT_DUPLICATE_GAME_WORK'));
+ assert.ok(sensor.actions.includes('REPAIR_EXACT_FAILED_GAME_GATE_BEFORE_NEW_POLISH'));
+ assert.ok(sensor.actions.includes('FINISH_OWNER_FOCUSED_GAME_WITH_VERIFIED_RUNTIME_EVIDENCE'));
 });
