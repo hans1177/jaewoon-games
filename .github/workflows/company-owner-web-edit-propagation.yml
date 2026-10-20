@@ -46,6 +46,8 @@ jobs:
             --queue=/tmp/development-queue.json \
             --roadmap=company-learning/platform-release-roadmap.json \
             --output=/tmp/owner-web-edit-propagation.json
+          # Persist exact verified main policy before the later company-runtime checkout.
+          cp company-learning/platform-release-roadmap.json /tmp/owner-web-edit-main-policy.json
       - name: Persist propagation request
         run: |
           set -euo pipefail
@@ -77,7 +79,7 @@ jobs:
             node <<'NODE' > /tmp/owner-web-edit-roblox-game-ids.txt
           const fs=require('fs');
           const request=JSON.parse(fs.readFileSync('/tmp/owner-web-edit-propagation.json','utf8'));
-          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const policy=JSON.parse(fs.readFileSync('/tmp/owner-web-edit-main-policy.json','utf8'));
           if(!Array.isArray(policy.permanentProjectRemoval?.ids))throw Error('OWNER_PERMANENT_REMOVAL_POLICY_REQUIRED');
           const removed=new Set(policy.permanentProjectRemoval.ids);
           const gameIds=new Set();

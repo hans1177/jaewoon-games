@@ -157,3 +157,11 @@ test('owner Web edit wakes only affected Roblox game ids, not unrelated global b
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"'));
   assert.ok(!workflow.includes('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main\n'));
 });
+
+test('owner web intent uses the immutable main policy after runtime branch checkout',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-owner-web-edit-propagation.yml','utf8');
+  const save=workflow.indexOf('cp company-learning/platform-release-roadmap.json /tmp/owner-web-edit-main-policy.json');
+  const branch=workflow.indexOf('git checkout -B owner-web-edit-runtime');
+  const read=workflow.indexOf("fs.readFileSync('/tmp/owner-web-edit-main-policy.json','utf8')");
+  assert.ok(save>=0&&branch>save&&read>branch);
+});
