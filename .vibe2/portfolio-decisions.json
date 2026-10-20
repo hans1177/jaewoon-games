@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-10-20T14:36:24.416Z",
+  "generatedAt": "2026-10-20T20:25:40.023Z",
   "decisions": [
     {
       "gameId": "amusement-tycoon",
@@ -34,36 +34,6 @@
       "ownerApprovalGate": false
     },
     {
-      "gameId": "ant-simulator",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": true,
-          "joint": "AWAITING_VIBE"
-        },
-        "development": {
-          "activeTasks": 3,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 2026
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
       "gameId": "bug-defense",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
@@ -76,36 +46,6 @@
         },
         "development": {
           "activeTasks": 6,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 2026
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "crystal-defense",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 2,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -285,7 +225,7 @@
           "state": "UNVERIFIED_NOT_NEGATIVE"
         },
         "development": {
-          "activeTasks": 5,
+          "activeTasks": 6,
           "doneTasks": 0,
           "failedTasks": 0,
           "repeatedFailureSignal": 2026
@@ -1174,6 +1114,36 @@
       "ownerApprovalGate": false
     },
     {
+      "gameId": "simple-rpg",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 0,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 162
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
       "gameId": "star-frontier",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
@@ -1402,6 +1372,66 @@
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": false
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "crystal-defense",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 0,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 2026
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "card-grid-duel",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 1,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 53
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
         },
         "balance": {
           "structuralCoreFailure": false
