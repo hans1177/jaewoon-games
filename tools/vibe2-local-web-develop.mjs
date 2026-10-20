@@ -84,7 +84,7 @@ export function requiredReviewPass(workflows,checkRuns,sha){
   const checks=Array.isArray(checkRuns)?checkRuns:[];
   if(!checks.some(r=>r.name==='enforce'&&r.status==='completed'&&r.conclusion==='success'))
     blockers.push('SECURITY_FINAL_ENFORCE');
-  if(checks.some(r=>r.app?.slug==='cloudflare-workers-and-pages'&&r.conclusion==='failure'))
+  if(checks.some(r=>r.name==='Cloudflare Pages'&&r.app?.slug==='cloudflare-workers-and-pages'&&r.conclusion==='failure'))
     blockers.push('EXTERNAL_DEPLOYMENT_CHECK_FAILED');
   return {pass:blockers.length===0,blockers};
 }
