@@ -11479,7 +11479,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T10:30:10.618Z",
+      "updatedAt": "2026-10-20T10:30:40.982Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11495,16 +11495,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0e79ffd238897dd3007168179a54ac33453d0e43",
       "robloxBuildArtifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
-      "robloxBuildPassedAt": "2026-10-20T10:27:41.403Z",
+      "robloxBuildPassedAt": "2026-10-20T10:30:40.982Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T10:27:41.403Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T10:30:40.982Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "monster-adventure",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T09:44:15.451Z",
+        "checkedAt": "2026-10-20T10:00:38.076Z",
         "sourceRevision": "0e79ffd238897dd3007168179a54ac33453d0e43",
         "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
         "secondaryOwnerFocus": false,
@@ -11547,7 +11547,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks failed in BUILD_EVIDENCE."
+            "note": "Preflight validation checks for web and music validation must pass before starting runtime testing."
           }
         ],
         "blockers": [
@@ -33528,7 +33528,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T10:30:10.618Z",
+  "updatedAt": "2026-10-20T10:30:40.982Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -33594,5 +33594,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
