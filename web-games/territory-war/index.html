@@ -134,5 +134,5 @@ document.addEventListener('keydown',e=>{if(!$('overlay').hidden){if(e.key==='Esc
 window.addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden){save();if(frame)cancelAnimationFrame(frame);frame=0;}});
 new ResizeObserver(resize).observe(canvas);state=makeState('normal',20261005);reveal(46,2);saved=readSave();render();showMenu();
 </script>
-<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script></body>
+</body>
 </html>

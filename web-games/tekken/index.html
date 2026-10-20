@@ -53,4 +53,4 @@ const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);cons
  flash=Math.max(0,flash-dt);if(!flash&&!next.finished&&next.time<74)$('message').textContent='';
  }
  camera.aspect=innerWidth/innerHeight;renderer.render(scene,camera)}frame();window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
-</script><script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script></body></html>
+</script></body></html>
