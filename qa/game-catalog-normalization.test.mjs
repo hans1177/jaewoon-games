@@ -53,6 +53,11 @@ for(const id of ['ant-simulator','crystal-defense']){
 assert.match(homepage,/const activeLifecycle=row=>/);
 assert.match(homepage,/\['ACTIVE','REBUILD'\]\.includes\(String\(lifecycleOf\(row\)\.state/);
 assert.match(sync,/export function lifecycleAllowsDevelopment\(game=\{\}\)/);
+const syncWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
+assert.match(syncWorkflow,/inactive game escaped the development stop/);
+assert.match(syncWorkflow,/g\.productionTarget!=='lifecycle-inactive'/);
+assert.match(syncWorkflow,/development homepage direct-native state mismatch/);
+assert.match(syncWorkflow,/g\.productionTarget!=='ROBLOX_UNITY'/);
 
 const permanentlyRemoved=[
   'seed-roblox-battleground-fight-welcome-to-bloxburg',
