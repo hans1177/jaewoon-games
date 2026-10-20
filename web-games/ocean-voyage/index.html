@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#071d2b">
-<title>푸른 항로 · 대양의 제국</title>
+<title>푸른 항로 · 영국 항해기</title>
 <style>
 /* 파일명: web-games/ocean-voyage/index.html | 디자인: 모바일 3D 항해 게임 인터페이스 */
 :root{color-scheme:dark;--navy:#0b2636;--panel:rgba(7,24,37,.92);--line:rgba(204,230,230,.21);--gold:#f4c774;--white:#f2f4ee;--sub:#adc3ca;--teal:#72c5ce}
@@ -68,15 +68,73 @@ button:disabled{opacity:.35;cursor:not-allowed}
 @media(max-width:375px){.pad{min-width:42px}.pad.fire{min-width:59px}}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-</head>
+
+<style id="british-voyage-ui">
+/* Recolored and resized Kenney CC0 original UI & cartography sprites. */
+:root{--gold:#e6c185;--white:#f5e7ca;--sub:#d1b995;--teal:#b1dfdf;--line:#b28c5a99;--panel:#3f2c21eF}
+html,body{font-family:Georgia,"Times New Roman","Malgun Gothic",serif!important;background:#0d334a}
+#top{background:linear-gradient(180deg,#2a2018fa,#453425dd);border-bottom:3px double #c6a46f;padding-bottom:11px}
+#brand strong{color:#fae6b6;text-shadow:1px 2px #1a130f;font-variant:small-caps;letter-spacing:1.5px}
+#brand small{color:#d4ac6b}
+#details{background:linear-gradient(125deg,#e0c69aeb,#b99c74f0);color:#291c13;border:9px solid transparent;border-image:url("https://raw.githubusercontent.com/shorepine/kenney/3694c6879e487c108f55677be7dd2ca75b07cc3b/ui/UI%20Pack%20-%20Adventure/panel_border_brown_detail.png") 10 fill / 9px / 0 stretch;box-shadow:0 16px 55px #040c12db}
+#panelHead{background:#3b2b1d;color:#f3d7a6;border-color:#9a7449}
+#panelHead h2{color:#f2d3a0}
+#content{color:#3b281a}
+#content .info,#content .row small{color:#63472b}
+#content .row{border-bottom:1px solid #916b46aa}
+#content h3{color:#61391f;border-bottom:1px solid #a58054}
+#content .kpi div{color:#4b321e;background:#e8cda53d;border-color:#906d4c}
+#content .kpi b{color:#613b1c}
+#content .action,.action{background:#725037 url("https://raw.githubusercontent.com/shorepine/kenney/3694c6879e487c108f55677be7dd2ca75b07cc3b/ui/UI%20Pack%20-%20Adventure/button_brown.png") center/100% 100%;border-color:#a77f4e;color:#fff1d4;text-shadow:0 1px #3e281a}
+#content .action.sub{background:#30445b;border-color:#7893a2}
+.nav{border:2px solid #a68a5d;background:linear-gradient(100deg,#4b3325ee,#2b2926e9);color:#f3deba;border-radius:3px;font-family:Georgia,serif}
+.nav.active{color:#fff0c7;background:#846342}
+#compass{color:#f6dfa7;background:#3e2b22e8;border:2px solid #bca078;padding:7px 14px}
+#message{color:#f4dfae;background:#30261de8;border:2px solid #b59360}
+#joystick{width:126px;display:grid;place-items:center;touch-action:none;user-select:none;-webkit-user-select:none}
+#joystickRim{position:relative;width:122px;height:122px;border-radius:50%;border:5px double #ceb27d;background:radial-gradient(circle,#6f665baa,#273e4fcc 67%,#6a523dcc);box-shadow:inset 0 0 10px #0e1c29,0 5px 14px #101e25c9;touch-action:none}
+#joystickHandle{position:absolute;left:50%;top:50%;width:51px;height:51px;border:4px solid #e2bf8e;background:radial-gradient(circle at 35% 25%,#af9672,#4d392b);box-shadow:0 2px 9px #0008;border-radius:50%;transform:translate(-50%,-50%)}
+#joystickLabel{font-family:Georgia,serif;color:#ead3ab;text-shadow:0 2px #101b24;font-size:12px}
+#legacy-controls{display:none!important}
+#controls{align-items:flex-end}
+.pad{background:#46372adf;border:2px solid #bf9b65;border-radius:6px;color:#f8dfa8;font-family:Georgia,serif}
+.pad.fire{border-color:#efb67b;background:#8d3f35}
+.pad.music{min-width:53px}
+#loading{background:radial-gradient(ellipse at 40% 20%,#4b604e,#162d39 70%,#0f1b24);color:#f6e4ba}
+#loading h1{font-size:35px;color:#f8d393}
+#loading .action{padding:15px 26px;font-size:17px}
+#mapCanvas{border:4px solid #705032;background:#c1b390 url("https://raw.githubusercontent.com/shorepine/kenney/3694c6879e487c108f55677be7dd2ca75b07cc3b/2d/Cartography%20Pack/textureWater.png") repeat}
+.cc0-portrait{width:72px;height:72px;display:block;flex-shrink:0;border:5px double #96734a;background-color:#a88a67;background-image:url("https://opengameart.org/sites/default/files/rpgportraits.png");background-size:288px 96px;image-rendering:pixelated;background-repeat:no-repeat}
+.crew-card{display:flex;gap:12px;align-items:center;padding:11px 3px;border-bottom:1px solid #836b4c}
+.crew-name{font-size:16px;font-weight:bold}.crew-detail{color:#755333;font-size:12px;margin-top:4px}
+.crew-lore{font-size:12px;line-height:1.55;margin-top:7px}
+.scene-card{padding:15px;background:#e6cda753;border:2px solid #a48761;margin:9px 0}
+.scene-card h3{margin-top:5px}
+.port-scene{display:flex;gap:12px;align-items:center}
+.port-scene img{width:74px;height:74px;object-fit:contain;image-rendering:pixelated}
+.cargo-badge{padding:3px 7px;border:1px solid #a48761;background:#e6d1ae99;border-radius:3px;font-size:11px}
+@media(max-width:740px){
+#top{padding-top:calc(7px + env(safe-area-inset-top))}#brand strong{font-size:16px}
+#nav{top:calc(73px + env(safe-area-inset-top));width:51px}
+#details{top:calc(77px + env(safe-area-inset-top));left:65px;right:5px;bottom:calc(118px + env(safe-area-inset-bottom))}
+#joystick{width:108px}#joystickRim{width:102px;height:102px}#joystickHandle{width:44px;height:44px}
+#joystickLabel{font-size:10px}#controls{bottom:calc(5px + env(safe-area-inset-bottom))}
+.pad{min-width:43px;padding:3px;font-size:10px;height:53px}.pad.music{min-width:42px}
+#compass{top:calc(75px + env(safe-area-inset-top))}
+}
+@media(max-width:380px){#joystick{width:94px}#joystickRim{height:86px;width:86px}.pad{min-width:39px}.pad.fire{min-width:55px}}
+</style></head>
 <body>
 <canvas id="sea" aria-label="3D 바다와 항구, 이동하는 함선"></canvas><div id="veil"></div>
 <header id="top">
- <div id="brand"><small>OCEAN VOYAGE · 4TH AGE</small><strong>푸른 항로</strong></div>
+ <div id="brand"><small>THE BRITISH VOYAGE · 1590</small><strong>푸른 항로</strong></div>
  <div id="status"><span class="stat"><small>항해일</small><b id="day">1일</b></span><span class="stat"><small>금화</small><b id="gold">3,400 G</b></span><span class="stat"><small>선체</small><b id="hull">100%</b></span><span class="stat extra"><small>식량 / 선원</small><b id="supplies">80 / 34</b></span></div>
 </header>
-<div id="compass">🌬 순풍 · 푸른해</div>
+<div id="compass">⚜ 영국 왕실 · 런던</div>
 <nav id="nav" aria-label="게임 메뉴">
+ <button class="nav" data-panel="port"><span>♜</span> 항구와 도시</button>
+ <button class="nav" data-panel="crew"><span>♙</span> 선장 · 동료</button>
+ <button class="nav" data-panel="inventory"><span>◈</span> 가방 · 화물</button>
  <button class="nav" data-panel="chart"><span>⌖</span> 해도 · 자동항해</button>
  <button class="nav" data-panel="market"><span>⚖</span> 교역소</button>
  <button class="nav" data-panel="fleet"><span>⚓</span> 함대 · 조선소</button>
@@ -87,18 +145,20 @@ button:disabled{opacity:.35;cursor:not-allowed}
 <div id="message" role="status" aria-live="polite">좌우로 방향을 바꾸고 전진해서 바다를 탐험해.</div>
 <div id="hint">W / S 돛 · A / D 선회 · 스페이스 포격 · M 지도</div>
 <div id="controls">
- <div class="group">
+ <div class="group" id="joystickGroup"><div id="joystick" role="group" aria-label="범선 조종 스틱"><div id="joystickRim"><div id="joystickHandle"></div></div><span id="joystickLabel">조타 스틱</span></div><div id="legacy-controls" hidden>
   <button class="pad" data-hold="left" aria-label="좌현 선회"><b>↶</b>좌현</button>
   <button class="pad" data-hold="right" aria-label="우현 선회"><b>↷</b>우현</button>
   <button class="pad" data-hold="ahead" aria-label="전진"><b>↑</b>전진</button>
   <button class="pad" data-hold="astern" aria-label="후진"><b>↓</b>후진</button>
- </div>
+ </div></div>
  <div class="group">
   <button id="dock" class="pad dock"><b>⚓</b>입항</button>
   <button id="fire" class="pad fire"><b>✹</b>포격</button>
+  <button id="music-toggle" class="pad music" aria-label="음악 재생 또는 중지"><b>♫</b>음악</button>
  </div>
 </div>
-<section id="loading"><div><h1>푸른 항로</h1><p>검증된 외부 범선·항구 3D 모델을 불러오고 있어.<br>바람과 교역의 시대가 시작돼.</p><button id="start" class="action" style="margin-top:18px">항해 시작</button></div></section>
+<section id="loading"><div><h1>푸른 항로 · 영국편</h1><p>1590년, 런던 왕립항. 바다의 길을 열어라.<br>범선과 항구의 CC0 3D 모델을 불러오고 있어.</p><button id="start" class="action" style="margin-top:18px">항해 시작</button></div></section>
+<audio id="sea-music" loop preload="none" src="https://opengameart.org/sites/default/files/pirate_ship_in_game.ogg"></audio>
 <script type="module" src="./main.mjs"></script>
 </body>
 </html>
