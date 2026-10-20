@@ -940,3 +940,35 @@ test('every Web F0 candidate validates actual BUILD_UP asset lineage before publ
   assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingFingerprint:'c'.repeat(64)}}).candidate_reason,'web-f0-dynamic-asset-binding-fingerprint-mismatch');
   assert.equal(runGate({assetProduction:{allGameDynamicLibraryBinding:{fingerprint:hash,libraryVersion:version+1}}}).candidate_reason,'web-f0-dynamic-asset-library-version-mismatch');
 });
+
+test('24H asset QA reuse requires successful full Core test job at the identical main SHA',()=>{
+  const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const match=runner.match(/core_qa_run_id="\\$\\(MAIN_SHA="\\$main_sha" node <<'NODE'\\n([\\s\\S]*?)\\n\\s+NODE/);
+  assert.ok(match,'24H must select an exact-SHA Core QA run before attempting reuse');
+  const candidateSha='b'.repeat(40);
+  const selectedRun=workflowRuns=>{
+    let observed='';
+    vm.runInNewContext(match[1],{
+      require(name){
+        assert.equal(name,'fs');
+        return {readFileSync(){return JSON.stringify({workflow_runs:workflowRuns})}};
+      },
+      process:{env:{MAIN_SHA:candidateSha},stdout:{write(value){observed=String(value)}}}
+    });
+    return observed;
+  };
+  const valid={name:'Vibe2 Core QA',head_sha:candidateSha,head_branch:'main',
+    event:'push',status:'completed',conclusion:'success',id:123};
+  assert.equal(selectedRun([valid]),'123');
+  for(const overrides of [
+    {head_sha:'a'.repeat(40)},{head_branch:'other'},{event:'pull_request'},
+    {status:'in_progress'},{conclusion:'failure'}
+  ])assert.equal(selectedRun([{...valid,...overrides}]),'0',JSON.stringify(overrides));
+  assert.ok(runner.includes('actions/runs/${core_qa_run_id}/jobs?per_page=100'),
+    'selected workflow must inspect its actual jobs before reusing asset regression');
+  assert.ok(runner.includes('select(.name=="test")'),
+    'skipped impact-scoped Core workflow cannot be treated as full suite PASS');
+  assert.ok(runner.includes('if [ "$core_qa_test_conclusion" = success ]; then core_qa_reuse=1; fi'));
+  assert.ok(runner.includes('VIBE2_24H_ASSET_QA=RUN_REQUIRED:'),
+    'missing or skipped Core test must still run original 24H asset regression');
+});
