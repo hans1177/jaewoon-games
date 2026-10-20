@@ -27,16 +27,30 @@ export function observedHostedRunnerJobs(payload={}){
 
 export function repairStaleAutonomousQueue(queueInput={},currentMainSha=''){
   const old=Array.isArray(queueInput.tasks)?queueInput.tasks:[];
-  if(!sha40(currentMainSha))return{queue:queueInput,cancelled:[]};
   const cancelled=[];
+  const activeFingerprints=new Set();
   const tasks=old.map(task=>{
+    // Also collapse exact legacy auto duplicates already in the persisted queue.
+    // No owner, dependency-bearing, or active running work is deleted.
+    const files=[...new Set((task.responsibleFiles||[]).map(clean).filter(Boolean))].sort();
+    const fingerprint=files.length&&automatic(task)&&active(task)
+      ?JSON.stringify([clean(task.gameId),clean(task.target),clean(task.sourceRoot),
+        clean(task.department),clean(task.type),clean(task.goal),files]):'';
+    if(fingerprint&&lower(task.status)==='queued'&&!(task.dependencies||[]).length
+      &&activeFingerprints.has(fingerprint)){
+      cancelled.push(clean(task.id));
+      return {...task,status:'cancelled',blocker:'DUPLICATE_AUTONOMOUS_WORK',
+        lastOutcome:'DUPLICATE_AUTONOMOUS_WORK_CANCELLED',
+        evidence:unique([...(task.evidence||[]),'auto-cleanup:duplicate-existing-file-goal'])};
+    }
+    if(fingerprint)activeFingerprints.add(fingerprint);
     // A task must explicitly opt into revision-pinned work to be auto-superseded.
     // Running jobs, owner tasks and tasks without exact revision proof are preserved.
     const mark=(task.evidence||[]).map(clean)
       .find(value=>value.startsWith('autonomous-pinned-main-sha:'));
     const base=mark?.slice('autonomous-pinned-main-sha:'.length);
-    if(!automatic(task)||lower(task.status)!=='queued'||!sha40(base)
-      ||base.toLowerCase()===currentMainSha.toLowerCase())return task;
+    if(!automatic(task)||lower(task.status)!=='queued'||!sha40(currentMainSha)
+      ||!sha40(base)||base.toLowerCase()===currentMainSha.toLowerCase())return task;
     cancelled.push(clean(task.id));
     return {...task,status:'cancelled',blocker:'SUPERSEDED_BY_MAIN_REVISION',
       lastOutcome:'STALE_AUTONOMOUS_REVISION_CANCELLED',reservationId:null,
