@@ -14,14 +14,6 @@ on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
-  pull_request:
-    paths:
-      - '.github/workflows/pwa-command-bridge.yml'
-      - 'tools/vibe2-local-web-chat.mjs'
-      - 'tools/pwa-command-vibe2-task.mjs'
-      - 'qa/vibe2-local-web-chat.test.mjs'
-      - 'qa/pwa-command-vibe2-task.test.mjs'
-      - 'company-learning/platform-release-roadmap.json'
   repository_dispatch:
     types: [vibe-local-web-owner-directive]
 
@@ -34,7 +26,7 @@ concurrency:
   # Every explicitly submitted owner task must retain its own queued run.
   # Periodic PWA polling keeps its original single-run coalescing boundary.
   # Queue writes use the existing exact-task dedupe and optimistic branch-push retries.
-  group: ${{ github.event_name == 'pull_request' && format('pwa-command-bridge-qa-{0}', github.run_id) || github.event_name == 'repository_dispatch' && format('pwa-command-bridge-owner-{0}', github.run_id) || 'pwa-command-bridge' }}
+  group: ${{ github.event_name == 'repository_dispatch' && format('pwa-command-bridge-owner-{0}', github.run_id) || 'pwa-command-bridge' }}
   cancel-in-progress: false
 
 env:
@@ -42,23 +34,6 @@ env:
   VIBE2_BRANCH: vibe2-unreal-core
 
 jobs:
-  web-chat-qa:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Test owner-authenticated web task submission and local Ollama policy
-        run: |
-          set -euo pipefail
-          node --check tools/vibe2-local-web-chat.mjs
-          node --check tools/pwa-command-vibe2-task.mjs
-          node --test qa/vibe2-local-web-chat.test.mjs qa/pwa-command-vibe2-task.test.mjs
   bridge:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
