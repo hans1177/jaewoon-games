@@ -23,7 +23,10 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pwa-command-bridge
+  # Every explicitly submitted owner task must retain its own queued run.
+  # Periodic PWA polling keeps its original single-run coalescing boundary.
+  # Queue writes use the existing exact-task dedupe and optimistic branch-push retries.
+  group: ${{ github.event_name == 'repository_dispatch' && format('pwa-command-bridge-owner-{0}', github.run_id) || 'pwa-command-bridge' }}
   cancel-in-progress: false
 
 env:
