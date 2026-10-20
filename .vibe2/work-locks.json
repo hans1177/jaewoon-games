@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1nlnapk",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "roblox-games/village-dungeons/client/Game.client.luau",
+        "roblox-games/village-dungeons/shared/GameConfig.luau",
+        "roblox-games/village-dungeons/server/Game.server.luau"
+      ],
+      "baseSha": "e15c153c43cd423bc36759ab08307cdd71c4473d",
+      "runId": "39364678795",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-20T04:04:47.074Z",
+      "expiresAt": "2026-10-20T04:49:47.074Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-roblox-second-gate-rebuild-v1"
+      ]
+    }
+  ]
 }
