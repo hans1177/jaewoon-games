@@ -5671,7 +5671,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T13:39:01.695Z",
+      "updatedAt": "2026-10-20T13:44:34.910Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -5689,17 +5689,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0e6e05560dca4da3d1d1b7abfac03392efa9bd05",
       "robloxBuildArtifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
-      "robloxBuildPassedAt": "2026-10-20T13:39:01.695Z",
+      "robloxBuildPassedAt": "2026-10-20T13:44:34.910Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T13:39:01.695Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T13:44:34.910Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "egg-heist",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T13:13:22.468Z",
+        "checkedAt": "2026-10-20T13:20:47.778Z",
         "sourceRevision": "0e6e05560dca4da3d1d1b7abfac03392efa9bd05",
         "artifactIdentity": "sha256:95122ed5013cb26c2a6f2b51f9912640240339b7c72c507950ac8ffc9a08a717",
         "secondaryOwnerFocus": false,
@@ -5738,13 +5738,15 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false"
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web validation and music validation have not passed."
+            "note": "Required validation checks failed in BUILD_EVIDENCE, preventing the package from starting runtime testing."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -33532,7 +33534,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T13:43:39.629Z",
+  "updatedAt": "2026-10-20T13:44:34.910Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
