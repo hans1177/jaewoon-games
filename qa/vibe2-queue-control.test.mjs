@@ -2667,7 +2667,9 @@ test('quality-first asset lane fixes 63 slots and prioritizes current Roblox con
   assert.ok(batch.tasks.every(task=>task.id.startsWith('live-')));
   assert.equal(reserveVibeTaskBatch(batch.queue,{lane:'asset-development',maxConcurrentTasks:999,policy}).tasks.length,0);
   const drained={...batch.queue,tasks:batch.queue.tasks.map((task,i)=>task.id===batch.tasks[0].id?{...task,status:'verified'}:task)};
-  const refill=reserveVibeTaskBatch(drained,{lane:'asset-development',maxConcurrentTasks:1,policy});
+  const throttled=reserveVibeTaskBatch(drained,{lane:'asset-development',maxConcurrentTasks:1,policy});
+  assert.equal(throttled.tasks.length,0,'explicit one-slot throttle must not overbook 62 running workers');
+  const refill=reserveVibeTaskBatch(drained,{lane:'asset-development',maxConcurrentTasks:63,policy});
   assert.equal(refill.tasks.length,1);assert.ok(refill.tasks[0].id.startsWith('live-'));
   const overfull={...batch.queue,tasks:[...batch.queue.tasks,{...tasks[0],id:'legacy-running',status:'running'}]};
   const held=reserveVibeTaskBatch(overfull,{lane:'asset-development',policy});
