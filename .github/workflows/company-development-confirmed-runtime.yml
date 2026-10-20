@@ -111,12 +111,25 @@ jobs:
           pids=()
           labels=()
           for page in 1 2 3; do
-            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100&page=$page" > "/tmp/active-roblox-native-runs-$page.json" &
-            pids+=("$!")
-            labels+=("ROBLOX:$page")
             gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-unity-runtime.yml/runs?per_page=100&page=$page" > "/tmp/active-unity-native-runs-$page.json" &
             pids+=("$!")
             labels+=("UNITY:$page")
+          done
+          # Query unfinished Roblox runs by status, not just the most recent 300 mixed
+          # successful/cancelled runs. Preserve old-head owners until their own freshness check.
+          for active_status in queued pending in_progress requested; do
+            page=1
+            while :; do
+              scan_file="/tmp/active-roblox-native-runs-${active_status}-${page}.json"
+              gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?status=$active_status&per_page=100&page=$page" > "$scan_file"
+              found="$(jq '.workflow_runs|length' "$scan_file")"
+              if (( found < 100 )); then break; fi
+              page=$((page+1))
+              if (( page > 25 )); then
+                echo 'NATIVE_ROBLOX_ACTIVE_SCAN_EXHAUSTED_FAIL_CLOSED' >&2
+                exit 16
+              fi
+            done
           done
           queue_fetch_status=0
           wait "$queue_fetch_pid" || queue_fetch_status=$?
@@ -137,11 +150,12 @@ jobs:
             echo 'NATIVE_ACTIVE_RUN_SCAN=FAIL' >&2
             exit 14
           fi
-          jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-roblox-native-runs-{1,2,3}.json > /tmp/active-roblox-native-runs.json
+          jq -s '{workflow_runs:([.[].workflow_runs[]?]|unique_by(.id))}' /tmp/active-roblox-native-runs-{queued,pending,in_progress,requested}-*.json > /tmp/active-roblox-native-runs.json
           jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-unity-native-runs-{1,2,3}.json > /tmp/active-unity-native-runs.json
           echo "NATIVE_ACTIVE_RUN_SCAN_ROBLOX_ROWS=$(jq '.workflow_runs|length' /tmp/active-roblox-native-runs.json)"
           echo "NATIVE_ACTIVE_RUN_SCAN_UNITY_ROWS=$(jq '.workflow_runs|length' /tmp/active-unity-native-runs.json)"
           echo 'NATIVE_ACTIVE_RUN_SCAN_PAGES=3'
+          echo 'NATIVE_ROBLOX_ACTIVE_RUN_SCAN_MODE=ALL_UNFINISHED_ANY_HEAD'
           echo 'NATIVE_ACTIVE_RUN_SCAN=PASS'
 
       - name: Resolve native upper-platform eligibility
@@ -196,7 +210,10 @@ jobs:
           };
           const currentControlSha=String(process.env.CURRENT_CONTROL_SHA||'').trim();
           if(!/^[a-f0-9]{40}$/i.test(currentControlSha))throw new Error('ROBLOX_CURRENT_CONTROL_SHA_REQUIRED');
-          const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ',currentControlSha);
+          // Old-head active runs already own a game slot; their source-plan checks current main
+          // and redispatches only on a real contract change. Main-only metadata pushes must not
+          // enqueue another complete game wave while the prior wave waits on Actions capacity.
+          const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ');
           const activeUnity=activeIds('/tmp/active-unity-native-runs.json','Unity runtime · ');
           const nativeIds=[],robloxIds=[],unityIds=[],blockedIds=[],grandfatheredIds=[];
           for(const item of rows){
@@ -243,6 +260,11 @@ jobs:
     name: Dispatch independent Roblox game development
     needs: native-plan
     if: needs.native-plan.result == 'success' && needs.native-plan.outputs.roblox_count != '0'
+    # Serialize only the brief shared dispatch critical section; never serialize game work.
+    concurrency:
+      group: native-roblox-ready-ingress-${{ inputs.game_id || 'batch' }}
+      queue: single
+      cancel-in-progress: false
     runs-on: ubuntu-slim
     timeout-minutes: 8
     permissions:
@@ -264,13 +286,27 @@ jobs:
             if (( dispatch_index % 12 == 0 )); then
               current_main="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
               [[ "$current_main" =~ ^[0-9a-f]{40}$ ]] || { echo 'ROBLOX_DISPATCH_MAIN_SHA_INVALID' >&2; exit 15; }
-              for page in 1 2 3; do
-                gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?head_sha=$current_main&per_page=100&page=$page" > "/tmp/roblox-dispatch-active-$page.json"
+              # Filter by execution status before fetching: high-volume cancelled runs
+              # may displace older pending game workers from an unfiltered 300-run window.
+              rm -f /tmp/roblox-dispatch-active-status-*.json
+              for active_status in queued pending in_progress requested; do
+                page=1
+                while :; do
+                  status_file="/tmp/roblox-dispatch-active-status-${active_status}-${page}.json"
+                  gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?status=$active_status&per_page=100&page=$page" > "$status_file"
+                  found="$(jq '.workflow_runs|length' "$status_file")"
+                  if (( found < 100 )); then break; fi
+                  page=$((page+1))
+                  if (( page > 25 )); then
+                    echo 'ROBLOX_DISPATCH_ACTIVE_SCAN_EXHAUSTED_FAIL_CLOSED' >&2
+                    exit 16
+                  fi
+                done
               done
-              jq -s '[.[].workflow_runs[]?]' /tmp/roblox-dispatch-active-{1,2,3}.json > /tmp/roblox-dispatch-active.json
+              jq -s '[.[].workflow_runs[]?]|unique_by(.id)' /tmp/roblox-dispatch-active-status-*.json > /tmp/roblox-dispatch-active.json
               echo "ROBLOX_DISPATCH_JIT_ACTIVE_ROWS=$(jq 'length' /tmp/roblox-dispatch-active.json):$current_main"
             fi
-            active_count="$(jq --arg game "$game_id" --arg sha "$current_main" '[.[] | select(.display_title == ("Roblox runtime · " + $game) and .head_sha == $sha and (.status == "queued" or .status == "pending" or .status == "in_progress" or .status == "requested"))] | length' /tmp/roblox-dispatch-active.json)"
+            active_count="$(jq --arg game "$game_id" '[.[] | select(.display_title == ("Roblox runtime · " + $game) and (.status == "queued" or .status == "pending" or .status == "in_progress" or .status == "requested"))] | length' /tmp/roblox-dispatch-active.json)"
             if (( active_count > 0 )); then
               echo "ROBLOX_INDEPENDENT_GAME_JIT_DEDUPED=$game_id:$current_main"
             else

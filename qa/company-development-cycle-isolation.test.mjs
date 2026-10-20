@@ -46,7 +46,7 @@ test('director is independent from native game scheduler',()=>{
   assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml/);
 });
 
-test('Roblox active runs dedupe exact game and main revision without serializing sibling games',()=>{
+test('Roblox active source-plan owners suppress duplicate game dispatch across main revisions',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const start=workflow.indexOf("          const activeStates=new Set(['queued','pending','in_progress','requested']);");
   const end=workflow.indexOf('          const currentControlSha=',start);
@@ -76,6 +76,12 @@ test('Roblox active runs dedupe exact game and main revision without serializing
   assert.deepEqual(Array.from(ids),[
     'bug-defense','fantasy-survival','seed-puzzle-chromatic-cascade','survival'
   ]);
+  const unscoped=vm.runInNewContext(scan+"\n[...activeIds('fixture','Roblox runtime · ')].sort()",context);
+  assert.deepEqual(Array.from(unscoped),[
+    'bug-defense','fantasy-survival','seed-puzzle-chromatic-cascade','survival','survival2'
+  ]);
+  assert.match(workflow,/const activeRoblox=activeIds\('/);
+  assert.doesNotMatch(workflow,/const activeRoblox=activeIds\([^\n]*currentControlSha\)/);
   assert.ok(workflow.includes('if(activeRoblox.has(item.gameId))'));
   assert.ok(workflow.includes('ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN='));
   assert.ok(workflow.includes('ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'));
@@ -120,10 +126,24 @@ test('independent Roblox dispatcher rechecks active exact revision before submit
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const block=workflow.slice(workflow.indexOf('  dispatch-roblox:'),workflow.indexOf('  dispatch-unity:'));
   assert.match(block,/ROBLOX_INDEPENDENT_GAME_JIT_DEDUPED=/);
-  assert.match(block,/head_sha=\$current_main/);
+  assert.match(block,/status=\$active_status/);
+  assert.match(block,/ROBLOX_DISPATCH_ACTIVE_SCAN_EXHAUSTED_FAIL_CLOSED/);
+  assert.doesNotMatch(block,/head_sha=\$current_main/);
+  assert.match(block,/group: native-roblox-ready-ingress-/);
   assert.match(block,/dispatch_index % 12/);
   assert.match(block,/\.status == "in_progress"/);
   assert.ok(block.indexOf('active_count="$(jq')<block.indexOf('gh workflow run company-development-roblox-runtime.yml'));
   assert.match(block,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
   assert.doesNotMatch(block,/cancel-in-progress: true/);
+});
+
+test('source-plan dedupe favors a waiting owner instead of indefinitely cancelling old plans',()=>{
+  const director=fs.readFileSync('.github/workflows/director-supervisor.yml','utf8');
+  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-roblox-runtime\.yml',false\)/);
+  assert.match(director,/Never cancel active same-title work|Never cancel an active job/);
+  const development=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  assert.match(development,/NATIVE_ROBLOX_ACTIVE_RUN_SCAN_MODE=ALL_UNFINISHED_ANY_HEAD/);
+  assert.match(development,/NATIVE_ROBLOX_ACTIVE_SCAN_EXHAUSTED_FAIL_CLOSED/);
+  assert.match(development,/queue: single/);
+  assert.match(development,/cancel-in-progress: false/);
 });

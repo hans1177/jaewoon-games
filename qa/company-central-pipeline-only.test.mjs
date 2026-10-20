@@ -597,6 +597,7 @@ test('central development planner removes duplicate runtime contract QA from the
   assert.match(development,/jq -s '\{workflow_runs:\(map\(\.workflow_runs \/\/ \[\]\)\|add\)\}'/);
   assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_PAGES=3/);
   assert.match(development,/NATIVE_ACTIVE_RUN_SCAN=PASS/);
+  assert.match(development,/NATIVE_ROBLOX_ACTIVE_RUN_SCAN_MODE=ALL_UNFINISHED_ANY_HEAD/);
 });
 
 
