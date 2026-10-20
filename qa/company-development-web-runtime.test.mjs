@@ -139,7 +139,8 @@ test('scope classifier remains available for design inspection',()=>{
 
 test('Pocket Foundry deterministic template fails closed when semantic spatial scope is missing',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001',content:{identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',coreLoop:['collect ore and turn it into production resources','spend earnings on upgrades and automation','unlock a new area and repeat with larger goals'],mobileUx:'touch controls'}};
-  assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',baseline}),/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/);
+  // [영구 제거 원본] 게임 소스가 삭제된 경우에도 임시 템플릿을 만들어 통과시키지 않는다.
+  assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',baseline}),/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED|CANONICAL_REAL_GAME_TEMPLATE_MISSING/);
 });
 
 test('battleground genre has no deleted-project template fallback and stays Vibe-owned',()=>{
@@ -149,10 +150,8 @@ test('battleground genre has no deleted-project template fallback and stays Vibe
 
 test('Celestial Bastion shallow tower button is rejected and returns to Vibe instead of being preserved',async()=>{
   const baseline={gameSeedId:'SEED-SINGLE_DEFENSE_STRATEGY-001',content:{identity:'Celestial Bastion',coreFun:'defend the celestial core with tower placement and wave adaptation',coreLoop:['place towers against the threatened route','earn resources and upgrade the defense','adapt to enemy waves and clear the final threat'],mobileUx:'touch-first tower defense controls'}};
-  const current=fs.readFileSync('web-games/seed-single-defense-strat-celestial-bastion/index.html','utf8');
-  assert.match(current,/S\.towers\+\+/);
-  assert.match(current,/j===2&&r<S\.towers/);
-  assert.doesNotMatch(current,/data-(?:placement-position|build-slot|tower-slot|grid-x|grid-y)/i);
+  // [삭제된 웹 원본] 얕은 버튼 게임은 삭제 상태로 유지하고 기존 Vibe 개발 입구만 검증한다.
+  assert.equal(fs.existsSync('web-games/seed-single-defense-strat-celestial-bastion/index.html'),false);
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-celestial-repair-')),candidate=path.join(temp,'candidate');
   try{
     await assert.rejects(()=>buildFirstPlayable({gameId:'seed-single-defense-strat-celestial-bastion',gameName:'Celestial Bastion',baseline,sourcePath:'web-games/seed-single-defense-strat-celestial-bastion',candidatePath:candidate,candidateId:'repair-test',sourceCommit:'test',model:'none'}),/VIBE_WEB_IMPLEMENTATION_REQUIRED/);

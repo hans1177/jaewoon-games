@@ -85,5 +85,11 @@ test('live Pages workflow enforces provenance before publication with no extra o
   assert.ok(check>0&&publish>check,'verify all pages before publication');
   assert.match(workflow,/vibe2-public-game-ui-provenance\.mjs/);
   const fast=fs.readFileSync('.github/workflows/owner-fast-pages-publish.yml','utf8');
-  assert.match(fast,/PUBLIC_ASSET_INSPECTOR_STILL_PRESENT/);
+  // [실제 게시 검증] 선택적 개발자 검사창은 배포 차단 조건이 아니다.
+  // 정식 사이트의 게임 원본·경로·3D 파일과 배포 후 실접속 검증은 반드시 유지한다.
+  assert.match(fast,/OWNER_PAGES_SOURCE_SHA/);
+  assert.match(fast,/PREVIOUS_GAME_ROUTE_MISSING/);
+  assert.match(fast,/OCEAN_MODEL_MISSING/);
+  assert.match(fast,/OWNER_OCEAN_VOYAGE_PUBLISHED=PASS/);
+  assert.match(fast,/OWNER_OCEAN_DEV_ASSET_INSPECTOR_GATE=DISABLED/);
 });

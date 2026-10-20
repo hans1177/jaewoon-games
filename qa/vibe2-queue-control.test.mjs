@@ -2625,7 +2625,8 @@ test('quality-first asset lane fixes 63 slots and prioritizes current Roblox con
   assert.ok(batch.tasks.every(task=>task.id.startsWith('live-')));
   assert.equal(reserveVibeTaskBatch(batch.queue,{lane:'asset-development',maxConcurrentTasks:999,policy}).tasks.length,0);
   const drained={...batch.queue,tasks:batch.queue.tasks.map((task,i)=>task.id===batch.tasks[0].id?{...task,status:'verified'}:task)};
-  const refill=reserveVibeTaskBatch(drained,{lane:'asset-development',maxConcurrentTasks:1,policy});
+  // 62개가 실행 중이므로 슬롯 상한 63개 내에서 한 자리만 다시 예약한다.
+  const refill=reserveVibeTaskBatch(drained,{lane:'asset-development',maxConcurrentTasks:63,policy});
   assert.equal(refill.tasks.length,1);assert.ok(refill.tasks[0].id.startsWith('live-'));
   const overfull={...batch.queue,tasks:[...batch.queue.tasks,{...tasks[0],id:'legacy-running',status:'running'}]};
   const held=reserveVibeTaskBatch(overfull,{lane:'asset-development',policy});

@@ -507,8 +507,10 @@ test('existing GitHub Pages publisher preserves root paths, existing gh-pages hi
 
   // The GITHUB_TOKEN push saves history but cannot initiate a Pages build.
   // Official deployment uploads the retained gh-pages tree without Git metadata.
-  assert.ok(publisher.includes('cp -a --reflink=auto "$retained/." "$artifact/"'),'retained site must be copied from exact published tree');
-  assert.ok(publisher.includes('rm -rf "$artifact/.git"'),'Git metadata must be excluded from official Pages artifact');
+  assert.ok(publisher.includes('shopt -s dotglob nullglob'),'include hidden published entries in the official Pages artifact');
+  assert.ok(publisher.includes('[[ "${entry##*/}" == .git ]] || published_entries+=("$entry")'),'exclude only Git metadata from retained tree');
+  assert.ok(publisher.includes('cp -a --reflink=auto -- "${published_entries[@]}" "$artifact/"'),'copy exact published entries into the Pages artifact');
+  assert.ok(publisher.includes('test ! -e "$artifact/.git"'),'Git metadata must be excluded from official Pages artifact');
   assert.ok(publisher.includes('test -d "$retained/.git"'),'retained history must remain intact before staging');
   assert.ok(publisher.includes('WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA='));
   assert.ok(publisher.includes('WEB_PAGES_RETAINED_GAME_COUNT='));
@@ -937,4 +939,39 @@ test('every Web F0 candidate validates actual BUILD_UP asset lineage before publ
   assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingRequired:false}}).candidate_reason,'web-f0-dynamic-asset-binding-not-required');
   assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingFingerprint:'c'.repeat(64)}}).candidate_reason,'web-f0-dynamic-asset-binding-fingerprint-mismatch');
   assert.equal(runGate({assetProduction:{allGameDynamicLibraryBinding:{fingerprint:hash,libraryVersion:version+1}}}).candidate_reason,'web-f0-dynamic-asset-library-version-mismatch');
+});
+
+test('24H asset QA reuse requires successful full Core test job at the identical main SHA',()=>{
+  const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const marker="core_qa_run_id=\"$(MAIN_SHA=\"$main_sha\" node <<'NODE'\n";
+  const start=runner.indexOf(marker);
+  const end=start<0?-1:runner.indexOf('\n          NODE',start+marker.length);
+  assert.ok(start>=0&&end>start,'24H must select an exact-SHA Core QA run before attempting reuse');
+  const script=runner.slice(start+marker.length,end);
+  const candidateSha='b'.repeat(40);
+  const selectedRun=workflowRuns=>{
+    let observed='';
+    vm.runInNewContext(script,{
+      require(name){
+        assert.equal(name,'fs');
+        return {readFileSync(){return JSON.stringify({workflow_runs:workflowRuns})}};
+      },
+      process:{env:{MAIN_SHA:candidateSha},stdout:{write(value){observed=String(value)}}}
+    });
+    return observed;
+  };
+  const valid={name:'Vibe2 Core QA',head_sha:candidateSha,head_branch:'main',
+    event:'push',status:'completed',conclusion:'success',id:123};
+  assert.equal(selectedRun([valid]),'123');
+  for(const overrides of [
+    {head_sha:'a'.repeat(40)},{head_branch:'other'},{event:'pull_request'},
+    {status:'in_progress'},{conclusion:'failure'}
+  ])assert.equal(selectedRun([{...valid,...overrides}]),'0',JSON.stringify(overrides));
+  assert.ok(runner.includes('actions/runs/${core_qa_run_id}/jobs?per_page=100'),
+    'selected workflow must inspect its actual jobs before reusing asset regression');
+  assert.ok(runner.includes('select(.name=="test")'),
+    'skipped impact-scoped Core workflow cannot be treated as full suite PASS');
+  assert.ok(runner.includes('if [ "$core_qa_test_conclusion" = success ]; then core_qa_reuse=1; fi'));
+  assert.ok(runner.includes('VIBE2_24H_ASSET_QA=RUN_REQUIRED:'),
+    'missing or skipped Core test must still run original 24H asset regression');
 });

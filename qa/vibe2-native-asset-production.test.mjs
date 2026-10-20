@@ -126,7 +126,7 @@ test('all-game F0 asset supply reuses same-species 3D creature without accepting
 test('eligible internal 3d asset auto-fill exposes exact native material derivative and unverified assetization',()=>{
   const original={
     id:'shared-forest-tree',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',
-    path:'/assets/shared/forest-tree.glb',license:'project-original',
+    path:'/assets/shared/forest-tree.glb',license:'CC0',
     status:'REPO_ASSET',sourceSha256:'example-source-expected-hash'
   };
   const registry={assets:[original],externalSources:[],
@@ -177,7 +177,7 @@ test('existing native DCC automatically derives only role-matched internal sourc
     const sha=createHash('sha256').update(original).digest('hex');
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,
       assets:[{id:'shared-tree',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',
-        path:'assets/shared/tree.obj',license:'project-original',status:'REPO_ASSET',
+        path:'assets/shared/tree.obj',license:'CC0',status:'REPO_ASSET',
         sourceSha256:sha,sourceFiles:['assets/shared/tree.obj']}]
     }));
     const task={gameId:'forest-game',goal:'environment background asset visuals',
@@ -191,7 +191,7 @@ test('existing native DCC automatically derives only role-matched internal sourc
     assert.ok(derived);
     assert.equal(derived.librarySourceAssetId,'shared-tree');
     assert.equal(derived.librarySourceSha256,sha);
-    assert.equal(derived.sourceLicense,'project-original');
+    assert.equal(derived.sourceLicense,'cc0');
     assert.equal(derived.args[derived.args.indexOf('--library-parent-id')+1],'shared-tree');
     assert.equal(derived.args[derived.args.indexOf('--library-source-sha256')+1],sha);
     assert.ok(derived.args.includes('--source-model'));
@@ -307,7 +307,7 @@ test('2D references never count as ready spatial assets, while current real 3D r
     status:'REPO_ASSET',path:'/assets/village.webp',consumerGameIds:['village-game']};
   const fallback=buildAssetSupplyDecisionSummary({...params,registry:{assets:[ref2d],externalSources:[external]}});
   assert.equal(fallback.nextActions.find(row=>row.family==='BUILDING').action,'ACQUIRE_ADAPT');
-  const actual3d={...ref2d,id:'reusable-model',path:'assets/shared/village.glb',platform:'SHARED_MASTER'};
+  const actual3d={...ref2d,id:'reusable-model',license:'CC0',path:'assets/shared/village.glb',platform:'SHARED_MASTER'};
   const preferred=buildAssetSupplyDecisionSummary({...params,registry:{assets:[actual3d],externalSources:[external]}});
   assert.equal(preferred.selectedOnDemandExternalGapCount,0);
   assert.equal(preferred.nextActions.find(row=>row.family==='BUILDING').assetId,'reusable-model');
@@ -330,15 +330,15 @@ test('downloaded original first: compare an existing authored tree against a lic
   const actions=comparison.nextActions.filter(row=>row.family==='ENVIRONMENT');
   const acquisition=actions.find(row=>row.action==='ACQUIRE_ADAPT');
   assert.ok(acquisition,'compare original source before retaining the authored stand-in indefinitely');
-  assert.equal(acquisition.reason,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL');
-  assert.equal(acquisition.replacesCandidateAssetId,authored.id);
+  assert.equal(acquisition.reason,'ORIGINAL_SOURCE_FIRST_ON_DEMAND');
+  assert.notEqual(acquisition.replacesCandidateAssetId,authored.id,'deleted original cannot be a replacement baseline');
   assert.equal(acquisition.externalAcquisition.sourceId,original.id);
   assert.equal(acquisition.externalAcquisition.onDemandOnly,true);
   assert.equal(acquisition.externalAcquisition.downloaded,false);
   assert.equal(acquisition.automaticReplacementAuthorized,false);
   assert.equal(acquisition.assetization.runtimeVerified,false);
   assert.equal(acquisition.assetization.productionVerified,false);
-  assert.ok(actions.some(row=>row.assetId===authored.id),'keep original game binding until actual runtime pass');
+  assert.equal(actions.some(row=>row.assetId===authored.id&&['USE','ADAPT','IMPROVE'].includes(row.action)),false,'Rule5 prevents using revoked original');
   const existingAcquired={...authored,sourceUrl:original.sourceUrl,originalSourceHash:'a'.repeat(64)};
   const retained=buildAssetSupplyDecisionSummary({...args,registry:{assets:[existingAcquired],externalSources:[original]}});
   assert.equal(retained.nextActions.some(row=>row.reason==='CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL'),false);
@@ -367,17 +367,21 @@ test('actual acquired CC0 mesh outranks unverified authored mesh for same game r
  assert.equal(first.productionVerificationGranted,false);
  const unavailable=buildAssetSupplyDecisionSummary({...base,registry:{assets:[internal,
    {...original,path:'assets/roblox/actors/native/not-found-model.glb'}],externalSources:[]}});
- assert.ok(unavailable.nextActions.some(row=>row.assetId===internal.id),
-   'catalog metadata with missing file cannot supersede existing art');
+ const pendingSource=unavailable.nextActions.find(row=>row.assetId===original.id);
+ assert.ok(pendingSource,'catalog candidate remains visible for exact source hydration');
+ assert.equal(pendingSource.action,'ADAPT','missing bytes cannot be claimed as native USE');
+ assert.equal(pendingSource.libraryReuse.sourceFileAndSha256InspectionRequired,true);
+ assert.equal(unavailable.nextActions.some(row=>row.assetId===internal.id&&['USE','ADAPT','IMPROVE'].includes(row.action)),false);
+ assert.equal(unavailable.productionVerificationGranted,false);
+ assert.equal(unavailable.runtimeVerificationGranted,false);
  const existing=buildAssetSupplyDecisionSummary({...base,gameId:'original-existing',
    registry:{assets:[{...internal,consumerGameIds:['original-existing']},original],externalSources:[]}});
- const upgrade=existing.nextActions.find(row=>row.reason==='DOWNLOADED_ORIGINAL_VISUAL_UPGRADE_CANDIDATE');
- assert.ok(upgrade,'currently bound authored model needs a source-comparison replacement task');
- assert.equal(upgrade.assetId,original.id);
- assert.equal(upgrade.replacesCandidateAssetId,internal.id);
- assert.equal(upgrade.automaticReplacementAuthorized,false,'only verified native QA can switch live mesh');
- assert.ok(existing.nextActions.some(row=>row.assetId===internal.id),
-   'current gameplay visual binding stays usable until actual native QA');
+ assert.equal(existing.nextActions.some(row=>row.assetId===internal.id&&['USE','ADAPT','IMPROVE'].includes(row.action)),false,
+   'deleted internal actor is not an authorized current visual');
+ assert.equal(existing.nextActions.some(row=>row.assetId===original.id&&row.action==='ADAPT'),true,
+   'registered CC0 original remains a native-import candidate');
+ assert.equal(existing.productionVerificationGranted,false);
+ assert.equal(existing.runtimeVerificationGranted,false);
 });
 test('existing Vibe source worker passes on-demand library selection to native game build with no false completion',()=>{
   const order={target:'unity',gameId:'fantasy-survival',goal:'기존 3D 자산으로 환경 재질 보강',assetProduction:{
@@ -401,85 +405,16 @@ test('existing Vibe source worker passes on-demand library selection to native g
   assert.match(prompt,/"productionVerified":false/);
 });
 
-test('five common monster body plans bake reproducible skinned GLBs and actual attack skill joints',()=>{
-  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-  const script=path.join(root,'assets','native-authoring','build-shared-creature.mjs');
-  const lib=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
-  const profiles={
-    wolf:{body:'QUADRUPED_CANINE',joints:17,signature:'WOLF_PACK_HOWL'},
-    spider:{body:'ARACHNID',joints:29,signature:'SPIDER_WEB_THREAT'},
-    beetle:{body:'HEXAPOD_INSECT',joints:23,signature:'BEETLE_HORN_CHARGE'},
-    golem:{body:'HEAVY_GOLEM_OR_BOSS',joints:15,signature:'GOLEM_CORE_PULSE'},
-    serpent:{body:'REPTILE_OR_SERPENT',joints:17,signature:'SERPENT_COIL_STRIKE'}
-  };
-  const folder=fs.mkdtempSync(path.join(os.tmpdir(),'shared-creature-'));
-  try{
-    execFileSync(process.execPath,[script,folder],{encoding:'utf8',timeout:120000});
-    const visualSignatures=new Set();
-    for(const [species,expected] of Object.entries(profiles)){
-      const asset=lib.assets.find(a=>a.id==='shared-creature-'+species);
-      assert.ok(asset,species+' registered');
-      assert.equal(asset.bodyPlan,expected.body);
-      assert.equal(asset.platform,'SHARED_MASTER');
-      assert.equal(asset.productionVerified,false);
-      assert.equal(asset.masterGlbStaticQaPass,false);
-      assert.equal(asset.nativeRuntimeVerified,false);
-      assert.equal(asset.sourceGenerator,'assets/native-authoring/build-shared-creature.mjs');
-      assert.deepEqual(asset.sourceGeneratorArgs,['assets/shared','--species='+species]);
-      assert.equal(asset.authoringRecipes,undefined,'Node source cannot be scheduled as a Blender DCC recipe');
-      assert.equal(asset.existingNativeDccExecutorUnchanged,true);
-      const original=fs.readFileSync(path.join(root,asset.masterGlb));
-      const generated=fs.readFileSync(path.join(folder,'creature-'+species+'.glb'));
-      assert.ok(original.equals(generated),species+' source must reproduce exact committed master');
-      assert.ok(original.length>120000&&original.length<8*1024*1024,species+' mobile asset bound');
-      assert.equal(original.toString('ascii',0,4),'glTF');
-      assert.equal(original.readUInt32LE(4),2);
-      assert.equal(original.readUInt32LE(8),original.length);
-      const jsonLen=original.readUInt32LE(12);
-      const doc=JSON.parse(original.subarray(20,20+jsonLen).toString('utf8').trim());
-      assert.ok(doc.meshes.length>0&&doc.materials.length>=3);
-      assert.equal(doc.skins.length,1);
-      assert.equal(doc.skins[0].joints.length,expected.joints);
-      assert.ok(doc.nodes.some(n=>n.mesh===0&&n.skin===0));
-      assert.equal(doc.animations.length,11);
-      assert.ok(doc.animations.some(a=>a.name===expected.signature));
-      const ids=new Set(doc.skins[0].joints),primitives=doc.meshes.flatMap(m=>m.primitives);
-      assert.ok(primitives.every(p=>p.attributes.JOINTS_0!==undefined&&p.attributes.WEIGHTS_0!==undefined),'actual per-vertex skinned weights');
-      assert.ok(primitives.every(p=>doc.accessors[p.attributes.POSITION].min?.length===3&&doc.accessors[p.attributes.POSITION].max?.length===3),'glTF 2.0 POSITION bounds');
-      const rotations=doc.animations.flatMap(a=>a.channels).filter(ch=>ch.target.path==='rotation');
-      assert.ok(rotations.length>=expected.joints*9,'joint animation channels');
-      assert.ok(rotations.every(ch=>ids.has(ch.target.node)&&ch.target.node!==0),'no root-only motion authority');
-      for(const name of ['WALK','RUN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',expected.signature]){
-        const clip=doc.animations.find(a=>a.name===name);
-        assert.ok(clip,species+':'+name);
-        const movingJoint=clip.channels.find(ch=>ch.target.node===1&&ch.target.path==='rotation');
-        assert.ok(movingJoint,'body rotation is required');
-        const access=doc.accessors[clip.samplers[movingJoint.sampler].output];
-        const view=doc.bufferViews[access.bufferView];
-        const start=20+jsonLen+8+(view.byteOffset||0)+(access.byteOffset||0);
-        const frames=Array.from({length:access.count},(_,i)=>original.readFloatLE(start+i*16));
-        assert.ok(Math.max(...frames)-Math.min(...frames)>.001,species+':'+name+' must articulate body');
-      }
-      const actionVariants=['ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE',expected.signature];
-      const distinctMotionTracks=new Set(actionVariants.map(name=>{
-        const clip=doc.animations.find(a=>a.name===name),hash=createHash('sha256');
-        for(const joint of [1,2,3]){
-          const channel=clip.channels.find(ch=>ch.target.node===joint&&ch.target.path==='rotation');
-          assert.ok(channel,species+':'+name+' missing articulated joint '+joint);
-          const accessor=doc.accessors[clip.samplers[channel.sampler].output];
-          const view=doc.bufferViews[accessor.bufferView];
-          const byteStart=20+jsonLen+8+(view.byteOffset||0)+(accessor.byteOffset||0);
-          hash.update(original.subarray(byteStart,byteStart+accessor.count*4*4));
-        }
-        return hash.digest('hex');
-      }));
-      assert.equal(distinctMotionTracks.size,5,species+' must have five genuinely different attack/skill animations');
-      visualSignatures.add(JSON.stringify({joints:expected.joints,materials:doc.materials.map(m=>m.pbrMetallicRoughness.baseColorFactor),primitiveCount:primitives.length}));
-    }
-    assert.equal(visualSignatures.size,5,'different body plans need distinct rigs and appearance');
-  }finally{fs.rmSync(folder,{recursive:true,force:true});}
+test('Rule5 deleted handcrafted creature GLBs cannot claim a built or verified master',()=>{
+ const lib=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ for(const species of ['wolf','spider','beetle','golem','serpent']){
+   const id='shared-creature-'+species;
+   assert.equal(lib.assets.some(row=>row.id===id),false,'retired creature master: '+id);
+   assert.equal(fs.existsSync('assets/shared/creature-'+species+'-actions.glb'),false,'removed authored joint clips must stay removed');
+ }
+ assert.ok(lib.assets.some(row=>String(row.license).toUpperCase().startsWith('CC0')),'licensed originals remain available for request-bound sourcing');
+ assert.equal(lib.productionPassAuthority,false);
 });
-
 test('Unity and shared gameplay libraries mandate real native 3D while keeping UI/audio as support resources',()=>{
   const guidance=assetProductionGuidance({kind:'vibe2-asset-production-plan'});
   assert.match(guidance,/OWNER 3D SPATIAL ASSET CONTRACT/);
@@ -961,43 +896,18 @@ test('midnight hundred source entries stay shared for every game without bypassi
   assert.deepEqual(standard.sortKeys,['FAMILY_ORDER','SUBFAMILY','TITLE_KO','ASSET_ID']);
   assert.equal(standard.gameExclusivePacks,false);
   assert.equal(standard.originalGameNamedPacksAreSourceLineageOnly,true);
+  // [Rule5] 삭제된 자작 귀신 100종을 여전히 등록된 공용 원본으로 계산하지 않는다.
   const monsters=library.assets.filter(row=>row.packId==='roblox-world-ghost-skins-v1'&&row.skinId);
-  assert.equal(monsters.length,100);
-  assert.equal(new Set(monsters.map(row=>row.skinId)).size,100);
-  assert.ok(monsters.every(row=>row.companyCommonBase===true&&row.gameExclusive===false&&row.reuseScope==='COMPANY_COMMON_BASE'));
-  assert.ok(monsters.every(row=>row.productionVerified!==true),'roster registration is not runtime verification');
-  const ids=new Set(monsters.map(row=>row.id));
+  assert.equal(monsters.length,0);
   for(const target of ['roblox','unity','web']){
-    const planA=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'horror-escape-room'});
-    const planB=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'survival'});
-    assert.deepEqual(planA.libraryOrder,families);
-    assert.deepEqual(planA.librarySortKeys,standard.sortKeys);
-    assert.equal(planA.allCompatibleGamesEligible,true);
-    assert.equal(planA.sourcePackIdIsLineageOnly,true);
-    assert.equal(planA.evaluatedAssetCount,library.assets.length);
-    const seenA=planA.evaluatedAssets.filter(row=>ids.has(row.assetId));
-    const seenB=planB.evaluatedAssets.filter(row=>ids.has(row.assetId));
-    assert.equal(seenA.length,100,target+': all 100 source entries remain discoverable');
-    assert.deepEqual(seenA,seenB,target+': pack name must not restrict discovery by game');
-    assert.ok(seenA.every(row=>row.hardBlockReason===null||row.hardBlockReason==='SPATIAL_3D_SOURCE_REQUIRED'));
-    assert.ok(seenA.every(row=>row.eligibleForRoleEvaluation===!Boolean(row.hardBlockReason)));
-  }
-  // 실제 존재하는 원본 GLB를 제공한 경우에만 게임 선택 후보로 진입한다. 이것은 런타임 PASS가 아니다.
-  const bride=monsters.find(row=>row.skinId==='gwisin-bride');
-  assert.ok(bride);
-  assert.ok(fs.existsSync('assets/roblox/world-ghosts/native/mesh/bride.glb'));
-  const with3d={...bride,nativeArtifacts:['assets/roblox/world-ghosts/native/mesh/bride.glb']};
-  for(const target of ['roblox','unity','web']){
-    const registry={version:library.version,assets:[with3d]};
-    const a=buildAllGameDynamicLibraryBindingPlan({companyRegistry:registry,target,gameId:'horror-escape-room'});
-    const b=buildAllGameDynamicLibraryBindingPlan({companyRegistry:registry,target,gameId:'survival'});
-    assert.equal(a.familyCandidates.CREATURE.length,1);
-    assert.deepEqual(a.familyCandidates.CREATURE,b.familyCandidates.CREATURE);
-    assert.equal(a.familyCandidates.CREATURE[0].sourcePackId,'roblox-world-ghost-skins-v1');
-    assert.equal(a.familyCandidates.CREATURE[0].verifiedCompanyReusable,false);
-    // Verified 3D source may be style-adapted across engines, but is never runtime-verified by registration.
-    assert.equal(a.familyCandidates.CREATURE[0].applicationMode,target==='roblox'?'USE_AS_IS':'STYLE_ADAPT');
-    assert.equal(a.familyCandidates.CREATURE[0].verifiedCompanyReusable,false);
+    const a=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'horror-escape-room'});
+    const b=buildAllGameDynamicLibraryBindingPlan({companyRegistry:library,target,gameId:'survival'});
+    assert.deepEqual(a.libraryOrder,families);
+    assert.deepEqual(a.librarySortKeys,standard.sortKeys);
+    assert.equal(a.sourcePackIdIsLineageOnly,true);
+    assert.equal(a.evaluatedAssetCount,library.assets.length);
+    assert.equal(a.evaluatedAssets.some(row=>String(row.assetId||'').startsWith('roblox-world-ghost-')),false);
+    assert.equal(b.evaluatedAssets.some(row=>String(row.assetId||'').startsWith('roblox-world-ghost-')),false);
   }
   const fixture={version:1,assets:[
     {id:'z',family:'CREATURE',subfamily:'B',title:'가',license:'CC0',platform:'ROBLOX',path:'z.glb'},
@@ -1561,40 +1471,18 @@ function anonymizeAnimationNamesInGlb(sourceFile,targetFile){
 }
 
 // 공용 인물·몬스터 검사: 이름/클립 수가 남아도 모든 관절이 굳으면 제작 수리로 돌린다.
-test('master GLB measures real articulation and rejects frozen or root-only named motions',()=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-articulation-'));
-  try{
-    for(const source of ['assets/shared/humanoid-guardian-actions.glb','assets/shared/creature-wolf-actions.glb']){
-      const original=fs.readFileSync(source),jsonLength=original.readUInt32LE(12);
-      const doc=JSON.parse(original.subarray(20,20+jsonLength).toString('utf8'));
-      const baseline=inspectVibeSourceGlb({repoRoot:process.cwd(),source:{path:source}});
-      assert.ok(baseline.inventory.articulatedMovingJointCount>2,source);
-      const parents=new Map(doc.nodes.flatMap((node,i)=>(node.children||[]).map(child=>[child,i])));
-      const jointIds=new Set(doc.skins.flatMap(skin=>skin.joints));
-      for(const mode of ['frozen','opposite-quaternion-sign','root-only','nonfinite']){
-        const bytes=Buffer.from(original),binaryOffset=28+jsonLength;
-        for(const animation of doc.animations)for(const channel of animation.channels){
-          const sampler=animation.samplers[channel.sampler],a=doc.accessors[sampler.output],v=doc.bufferViews[a.bufferView];
-          const size=a.type==='VEC4'?4:3,stride=v.byteStride||size*4;
-          const begin=binaryOffset+(v.byteOffset||0)+(a.byteOffset||0);
-          if(mode==='root-only'&&jointIds.has(channel.target.node)&&!jointIds.has(parents.get(channel.target.node)))continue;
-          for(let frame=1;frame<a.count;frame++)for(let c=0;c<size;c++){
-            let value=bytes.readFloatLE(begin+c*4);
-            if(mode==='opposite-quaternion-sign'&&channel.target.path==='rotation'&&frame%2)value=-value;
-            if(mode==='nonfinite')value=NaN;
-            bytes.writeFloatLE(value,begin+frame*stride+c*4);
-          }
-        }
-        const filename=mode+'.glb';fs.writeFileSync(path.join(root,filename),bytes);
-        const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,source:{path:filename},family:'CHARACTER'});
-        assert.equal(result.pass,false,source+':'+mode);
-        if(mode==='nonfinite')assert.ok(result.blockers.includes('GLB_ANIMATION_SAMPLER_BINDING_INVALID'));
-        else assert.ok(result.blockers.includes('MASTER_GLB_ARTICULATED_JOINT_MOTION_REQUIRED'),JSON.stringify(result.blockers));
-      }
-    }
-  }finally{fs.rmSync(root,{recursive:true,force:true});}
+test('Rule5 deleted joint-action GLBs cannot impersonate native articulated source evidence',()=>{
+ for(const source of ['assets/shared/humanoid-guardian-actions.glb','assets/shared/creature-wolf-actions.glb']){
+   assert.equal(fs.existsSync(source),false,'deleted self-authored GLB must not return: '+source);
+ }
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'source-motion-gap-'));
+ try{
+   writeInspectionTriangle(root);
+   const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,source:{path:'triangle.glb'},family:'CHARACTER'});
+   assert.equal(result.pass,false,'static geometry cannot be presented as an articulated motion master');
+   assert.ok(result.blockers.length>0,'native motion source lacks real animation proof');
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
-
 test('master GLB rejects broken accessor skin node and animation sampler lineage',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'broken-master-glb-'));
   try{
@@ -2085,83 +1973,22 @@ function tempRoot(opts={}){
   return root;
 }
 
-test('common career motion authoring resolves one existing registered source per game genre, without fake verified clips',()=>{
-  const root=tempRoot();
-  try{
-    const company=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
-    const registered=company.assets.find(row=>row.id==='shared-humanoid-motion-v1');
-    assert.ok(registered?.availableCareerMotionRecipes?.length>=14,'common career recipes registered in the canonical library');
-    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
-      version:company.version,assets:[registered],externalSources:[]
-    }));
-    const base={
-      target:'unity',repoRoot:root,
-      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
-    };
-    const task={gameId:'common-career-demo',genre:'ACTION_RPG',goal:'사무라이 검술 공용 모션 제작',
-      commonCareerId:'SAMURAI',commonMotionClip:'common_samurai_iai_draw_hq'};
-    const plan=buildVibeAssetProductionPlan({...base,task});
-    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,task.commonMotionClip);
-    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.selectedCareer,'SAMURAI');
-    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.oneObjectOneClipWorkUnit,true);
-    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.unverifiedUntilNativeRuntime,true);
-    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes.length,1);
-    const selected=plan.nativeAuthoringExecution.dcc.executionRecipes[0];
-    assert.equal(selected.script,'assets/shared/humanoid-motion-v1/author-motion.py');
-    assert.ok(selected.args.includes(task.commonMotionClip));
-    assert.equal(selected.runMode,'VERIFY_ONLY');
-    assert.equal(selected.companyPromotionAllowed,false);
-    const combat=plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits;
-    assert.equal(combat.career.id,'SAMURAI');
-    assert.equal(combat.career.productionVerified,false);
-    assert.equal(combat.newPipelineCreated,false);
-    const sim=buildVibeAssetProductionPlan({...base,task:{
-      gameId:'common-farm-demo',genre:'TYCOON',goal:'공용 농장 작업 모션',
-      commonCareerId:'FARMER',commonMotionClip:'common_farmer_harvest_hq'
-    }});
-    assert.equal(sim.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,'common_farmer_harvest_hq');
-    assert.equal(sim.nativeAuthoringExecution.dcc.executionRecipes.length,1);
-    assert.equal(sim.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.career.genre,'TYCOON');
-    const inherited=buildVibeAssetProductionPlan({...base,task:{
-      gameId:'common-kensei-demo',genre:'ACTION_RPG',goal:'검성 계층 상속된 공용 모션',
-      commonCareerId:'KENSEI'
-    }});
-    assert.equal(inherited.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,'common_samurai_iai_draw_hq');
-    assert.throws(()=>buildVibeAssetProductionPlan({...base,task:{
-      gameId:'wrong-career-demo',genre:'ACTION_RPG',goal:'없는 직업 클립 요청',
-      commonCareerId:'SAMURAI',commonMotionClip:'common_wizard_unknown_hq'
-    }}),/COMMON_CAREER_MOTION_CLIP_NOT_REGISTERED/);
-    const normal=buildVibeAssetProductionPlan({...base,task:{gameId:'normal-game',genre:'SURVIVAL',goal:'기존 동작 유지'}});
-    assert.equal(normal.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,null);
-    const crossGenre=buildVibeAssetProductionPlan({...base,task:{
-      gameId:'multi-genre-shared-assets',genre:'FARMING',goal:'장르 공통 직업과 몬스터 모션 선택',
-      commonCareerIds:['BUILDER','MERCHANT'],npcRoles:['FARMER','BLACKSMITH'],
-      commonMonsterSpeciesIds:['WOLF','SPIDER'],
-      assetRequirements:[{family:'CHARACTER',careerId:'CHEF'},
-        {family:'CREATURE',speciesId:'GOLEM'}]
-    }});
-    const shared=crossGenre.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits;
-    assert.equal(shared.genre,'FARMING');
-    assert.deepEqual(shared.careers.map(row=>row.id),['BUILDER','MERCHANT','FARMER','BLACKSMITH','CHEF']);
-    assert.deepEqual(shared.monsters.map(row=>row.id),['WOLF','SPIDER','GOLEM']);
-    assert.equal(shared.career.id,'BUILDER');
-    assert.equal(shared.monster.id,'WOLF');
-    assert.equal(shared.state,'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED');
-    assert.ok(shared.careers.every(row=>row.productionVerified===false));
-    assert.ok(shared.monsters.every(row=>row.productionVerified===false));
-    assert.ok(shared.monsters.every(row=>row.expressiveChoreography.length>0));
-    const missing=buildVibeAssetProductionPlan({...base,task:{
-      gameId:'missing-shared-roles',genre:'FARMING',goal:'미등록 역할은 자산 검증 보류',
-      commonCareerIds:['NOT_A_CAREER'],commonMonsterSpeciesIds:['NOT_A_MONSTER']
-    }}).companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits;
-    assert.equal(missing.state,'ARCHETYPE_SOURCE_GAP');
-    assert.deepEqual(missing.unresolvedCareers,['NOT_A_CAREER']);
-    assert.deepEqual(missing.unresolvedSpecies,['NOT_A_MONSTER']);
-    assert.equal(missing.career,null);
-    assert.equal(missing.monster,null);
-  }finally{fs.rmSync(root,{recursive:true,force:true});}
+test('Rule5 old career motion source cannot auto-author; CC0 actor remains unverified',()=>{
+ const root=tempRoot();
+ try{
+   const company=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+   assert.equal(company.assets.some(row=>row.id==='shared-humanoid-motion-v1'),false);
+   const actor=company.assets.find(row=>row.id==='external-actor-knight');
+   assert.ok(actor,'registered CC0 source actor must remain available');
+   assert.equal(actor.license,'CC0-1.0');
+   fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:company.version,assets:[actor],externalSources:[]}));
+   const task={gameId:'common-career-demo',genre:'ACTION_RPG',goal:'samurai visual native-source validation',commonCareerId:'SAMURAI'};
+   const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'unity',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+   assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.script==='assets/shared/humanoid-motion-v1/author-motion.py'),false);
+   assert.equal(plan.nativeAuthoringExecution.completion.authoringRequestIsNotCompletion,true);
+   assert.equal(plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.career.productionVerified,false);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
-
 test('verified commercial black-box distillation is mandatory input for internal asset evolution',()=>{
   const verifiedLearning={
     exactKnowledgeIds:['PLAYBOOK_REUSE:external-black-box-commercial-ui','PLAYBOOK_REUSE:external-black-box-commercial-motion'],
@@ -2259,8 +2086,8 @@ test('hero asset planning upgrades only hero requests to the stronger local mode
   assert.ok(hero.nativeAuthoringExecution.dcc.requiredTypes.length>0);
   assert.equal(hero.nativeAuthoringExecution.dcc.executionRequired,true);
   assert.equal(hero.nativeAuthoringExecution.dcc.nativeSourceMayNotMaskDccRequirement,true);
-  assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'EXISTING_AUTHORING_RECIPE_AVAILABLE');
-  assert.ok(hero.nativeAuthoringExecution.dcc.availableExistingRecipeCount>0);
+  assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
+  assert.equal(hero.nativeAuthoringExecution.dcc.availableExistingRecipeCount,0,'retired authored source is not a ready recipe');
   assert.equal(hero.nativeAuthoringExecution.completion.authoringRequestIsNotCompletion,true);
   const guidance=assetProductionGuidance(hero);
   assert.match(guidance,/ASSET MODEL ROUTING/);
@@ -2379,7 +2206,7 @@ test('licensed single image enters existing Blender TripoSR DCC recipe with genu
     gameId:'image-mesh-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 게임 환경 배경 소품 3D',
     imageToAsset:true,referenceImages:[{
       sourceId:'owned-prop-ref',sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
-      path:'assets/roblox/world-ghosts/dokkaebi.png',license:'project-original'
+      path:'assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png',license:'CC0'
     }]
   };
   for(const target of ['roblox','unity']){
@@ -2388,8 +2215,8 @@ test('licensed single image enters existing Blender TripoSR DCC recipe with genu
     assert.ok(recipes.length>0,target);
     for(const recipe of recipes){
       assert.equal(recipe.imageToMesh,true);
-      assert.equal(recipe.sourceImage,'assets/roblox/world-ghosts/dokkaebi.png');
-      assert.equal(recipe.sourceLicense,'project-original');
+      assert.equal(recipe.sourceImage,'assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png');
+      assert.equal(recipe.sourceLicense.toLowerCase(),'cc0');
       assert.equal(recipe.runMode,'VERIFY_ONLY');
       assert.equal(recipe.runtimeVerificationRequired,true);
       assert.equal(recipe.companyPromotionAllowed,false);
@@ -2403,15 +2230,18 @@ test('licensed single image enters existing Blender TripoSR DCC recipe with genu
     }
   }
   const ccby={...task,referenceImages:[{
-    path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC-BY',credit:'Creator, source, CC-BY'
+    path:'assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png',license:'CC-BY',credit:'Creator, source, CC-BY'
   }]};
   const byPlan=buildVibeAssetProductionPlan({target:'roblox',task:ccby,manifest:{assets:[]},presetCatalog:{presets:[]}});
-  assert.ok(byPlan.nativeAuthoringExecution.dcc.executionRecipes.every(recipe=>recipe.license==='CC-BY'));
-  const invalid={...task,referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png'}]};
+  const licensedImageRecipes=byPlan.nativeAuthoringExecution.dcc.executionRecipes.filter(recipe=>recipe.imageToMesh===true);
+  assert.ok(licensedImageRecipes.length>0);
+  assert.ok(licensedImageRecipes.every(recipe=>String(recipe.sourceLicense).toUpperCase()==='CC-BY'));
+  assert.ok(licensedImageRecipes.every(recipe=>recipe.companyPromotionAllowed===false&&recipe.runtimeVerificationRequired===true));
+  const invalid={...task,referenceImages:[{path:'assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png'}]};
   assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:invalid,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LICENSE_REQUIRED/);
   const traversal={...task,referenceImages:[{path:'../private.png',license:'project-original'}]};
   assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:traversal,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LOCAL_REPOSITORY_IMAGE_REQUIRED/);
-  const noCredit={...task,referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC-BY'}]};
+  const noCredit={...task,referenceImages:[{path:'assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png',license:'CC-BY'}]};
   assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:noCredit,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_ATTRIBUTION_REQUIRED/);
 });
 
@@ -4403,48 +4233,26 @@ test('selected source content changes invalidate binding without a library versi
 
 
 // 공용 분류와 모델 파일 동기화 회귀 검증.
-test('shared asset organization preserves lineage, blocked sources and runtime truth across repeated sync',()=>{
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'shared-asset-organization-'));
-  try{
-    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[]}));
-    const asset={
-      id:'legacy-game-spider',packId:'legacy-game-pack',category:'CREATURE',platform:'SHARED_NATIVE_SOURCE',
-      license:'project-original',path:'/assets/shared/spider.png',
-      sourceFiles:['assets/shared/build-spider.py','assets/shared/view.html'],
-      nativeArtifacts:['assets/shared/spider.glb','assets/shared/evidence.json'],
-      authoringRecipes:[{script:'assets/shared/build-spider.py',preview:'assets/shared/spider.png',outputs:['assets/shared/spider.glb'],evidenceJson:'assets/shared/evidence.json'}],
-      intendedConsumerGameIds:['old-game'],consumerGameIds:[],
-      productionVerified:false,runtimeVerificationState:'PENDING_NATIVE_IMPORT'
-    };
-    const blocked={id:'missing-reference',category:'ENVIRONMENT',platform:'WEB_REFERENCE',license:'CC0',path:'/assets/missing.png',corruptSource:true,catalogActive:false};
-    const original={version:1,assets:[asset,blocked],externalSources:[]};
-    const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:original,persist:false});
-    const shared=first.registry.assets.find(row=>row.id===asset.id);
-    assert.equal(shared.companyCommonBase,true);
-    assert.equal(shared.reuseScope,'COMPANY_COMMON_BASE');
-    assert.equal(shared.gameExclusive,false);
-    assert.equal(shared.family,'CREATURE');
-    assert.equal(shared.packId,asset.packId);
-    assert.equal(shared.path,asset.path);
-    assert.deepEqual(shared.sourceFiles,asset.sourceFiles);
-    assert.deepEqual(shared.nativeArtifacts,asset.nativeArtifacts);
-    assert.deepEqual(shared.intendedConsumerGameIds,['old-game']);
-    assert.deepEqual(shared.fileRoles.authoring,['assets/shared/build-spider.py']);
-    assert.deepEqual(shared.fileRoles.models,['assets/shared/spider.glb']);
-    assert.deepEqual(shared.fileRoles.previews,['assets/shared/spider.png']);
-    assert.ok(shared.fileRoles.support.includes('assets/shared/evidence.json'));
-    assert.equal(shared.fileRoles.evidence,undefined);
-    assert.equal(shared.productionVerified,false);
-    assert.equal(shared.runtimeVerificationState,'PENDING_NATIVE_IMPORT');
-    assert.equal(first.registry.assets.find(row=>row.id===blocked.id).corruptSource,true);
-    assert.equal(first.registry.assets.find(row=>row.id===blocked.id).catalogActive,false);
-    assert.equal(original.assets[0].fileRoles,undefined,'input registry must stay untouched');
-    const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
-    assert.equal(second.changed,false,JSON.stringify(second.changedSections));
-    assert.equal(second.registry.version,first.registry.version);
-  }finally{fs.rmSync(root,{recursive:true,force:true});}
+test('Rule5 registry organization removes authored lineage and keeps blocked sources without promotion',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'shared-asset-organization-'));
+ try{
+   fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[]}));
+   const removed={id:'legacy-game-spider',packId:'legacy-game-pack',category:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'project-original',path:'/assets/shared/spider.png',productionVerified:false};
+   const blocked={id:'missing-reference',category:'ENVIRONMENT',platform:'WEB_REFERENCE',license:'CC0',path:'/assets/missing.png',corruptSource:true,catalogActive:false};
+   const original={version:1,assets:[removed,blocked],externalSources:[]};
+   const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:original,persist:false});
+   assert.equal(first.registry.assets.some(row=>row.id===removed.id),false);
+   const preserved=first.registry.assets.find(row=>row.id===blocked.id);
+   assert.ok(preserved,'blocked metadata should remain auditable');
+   assert.equal(preserved.corruptSource,true);
+   assert.equal(preserved.catalogActive,false);
+   assert.equal(first.registry.assets.some(row=>row.productionVerified===true),false);
+   assert.equal(original.assets[0].license,'project-original','caller input remains unchanged');
+   const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
+   assert.equal(second.registry.assets.some(row=>row.id===removed.id),false);
+   assert.equal(second.registry.assets.some(row=>row.productionVerified===true),false);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
-
 test('native artifact and role-only model changes invalidate existing source synchronization',()=>{
   const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'shared-model-sync-'));
   try{
@@ -4526,7 +4334,7 @@ test('company registry sync automatically ingests verified-byte PBR derivatives 
     fs.writeFileSync(path.join(outDir,'preview.png'),preview);
     const parent={id:'shared-source',title:'Source',family:'PROP',role:'environment-prop',
       path:'assets/shared/source.glb',sourceFiles:['assets/shared/source.glb'],
-      sourceSha256:sourceHash,license:'project-original',status:'REPO_ASSET'};
+      sourceSha256:sourceHash,license:'CC0',status:'REPO_ASSET'};
     // 동일 GLB를 환경 팩/소품 팩/개별 소품이 공유해도 올바른 계열과 원본 계보를 선택해야 한다.
     const environmentPack={...parent,id:'environment-pack',family:'ENVIRONMENT',role:'',sourceFiles:['assets/shared/source.glb']};
     const genericPropPack={...parent,id:'generic-prop-pack',role:'',sourceFiles:['assets/shared/source.glb','assets/shared/unused.glb']};
@@ -4534,11 +4342,11 @@ test('company registry sync automatically ingests verified-byte PBR derivatives 
     const registry={version:1,assets:[environmentPack,genericPropPack,staleProp,parent],externalSources:[]};
     const provenance={sourcePath:'assets/shared/source.glb',sourceSha256:sourceHash,
       libraryParentAssetId:'shared-source',
-      sourceFileImmutable:true,license:'project-original',
+      sourceFileImmutable:true,license:'CC0',
       transformHistory:[{kind:'PBR_ROUGHNESS_STYLE_REAUTHOR',material:'Surface',from:.8,to:.72}]};
     const evidence={version:1,assetId:'demo-prop',family:'PROP',
       generator:'assets/native-authoring/build-game-visual.py',
-      sourceMesh:provenance,license:'project-original',artifactHash,
+      sourceMesh:provenance,license:'CC0',artifactHash,
       previewHash:createHash('sha256').update(preview).digest('hex'),
       pbrMeshQa:{pass:true},internalAsset:{library:'VIBE_STUDIO_ASSET_UNIVERSE',
         state:'PREPARED_NATIVE_QA_PENDING'},
@@ -5045,15 +4853,15 @@ test('canonical source worker carries authorized shared GLB replacement identiti
 
 test('shared asset with just one higher quality point is immediately queued for canonical replacement',()=>{
  const registry={assets:[
-  {id:'old-prop',family:'PROP',role:'ITEM',consumerGameIds:['demo'],qualityScore:42,license:'project-original',masterGlb:'assets/native/old-prop.glb'},
-  {id:'new-prop',family:'PROP',role:'ITEM',qualityScore:43,license:'project-original',masterGlb:'assets/native/new-prop.glb'}
+  {id:'old-prop',family:'PROP',role:'ITEM',consumerGameIds:['demo'],qualityScore:42,license:'CC0',masterGlb:'assets/native/old-prop.glb'},
+  {id:'new-prop',family:'PROP',role:'ITEM',qualityScore:43,license:'CC0',masterGlb:'assets/native/new-prop.glb'}
  ]};
  const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item',registry});
  const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
  assert.equal(upgrade?.assetId,'new-prop');
  assert.equal(upgrade?.replacesCandidateAssetId,'old-prop');
  assert.equal(upgrade?.registeredSourceModel,'assets/native/new-prop.glb');
- assert.equal(upgrade?.registeredSourceLicense,'project-original');
+ assert.equal(upgrade?.registeredSourceLicense,'CC0');
  assert.equal(upgrade?.automaticReplacementAuthorized,true);
  assert.equal(upgrade?.replacementExecution,'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE');
  assert.equal(upgrade?.sourceCompatibilityAndRightsRequired,true);
@@ -5064,9 +4872,9 @@ test('shared asset with just one higher quality point is immediately queued for 
 
 test('shared replacement preserves the current role despite a higher unrelated family score',()=>{
  const registry={assets:[
-  {id:'lamp',family:'PROP',role:'LANTERN',subfamily:'LAMP',consumerGameIds:['demo'],qualityScore:42,license:'project-original',masterGlb:'assets/native/lamp.glb'},
-  {id:'record',family:'PROP',role:'LORE_RECORD',subfamily:'DOCUMENT',qualityScore:99,license:'project-original',masterGlb:'assets/native/record.glb'},
-  {id:'better-lamp',family:'PROP',role:'LANTERN',subfamily:'LAMP',qualityScore:43,license:'project-original',masterGlb:'assets/native/better-lamp.glb'}
+  {id:'lamp',family:'PROP',role:'LANTERN',subfamily:'LAMP',consumerGameIds:['demo'],qualityScore:42,license:'CC0',masterGlb:'assets/native/lamp.glb'},
+  {id:'record',family:'PROP',role:'LORE_RECORD',subfamily:'DOCUMENT',qualityScore:99,license:'CC0',masterGlb:'assets/native/record.glb'},
+  {id:'better-lamp',family:'PROP',role:'LANTERN',subfamily:'LAMP',qualityScore:43,license:'CC0',masterGlb:'assets/native/better-lamp.glb'}
  ]};
  const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item',registry});
  const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');
@@ -5086,9 +4894,9 @@ test('shared replacement cannot exchange a UI panel for a higher scored intro',(
 
 test('higher quality eligible shared asset beats lower quality with more role matches',()=>{
  const registry={assets:[
-  {id:'current-prop',family:'PROP',role:'item',consumerGameIds:['demo'],qualityScore:42,license:'project-original',masterGlb:'assets/native/current-prop.glb'},
-  {id:'two-role-prop',family:'PROP',role:'item',tags:['loot'],qualityScore:43,license:'project-original',masterGlb:'assets/native/two-role-prop.glb'},
-  {id:'high-quality-prop',family:'PROP',role:'item',qualityScore:44,license:'project-original',masterGlb:'assets/native/high-quality-prop.glb'}
+  {id:'current-prop',family:'PROP',role:'item',consumerGameIds:['demo'],qualityScore:42,license:'CC0',masterGlb:'assets/native/current-prop.glb'},
+  {id:'two-role-prop',family:'PROP',role:'item',tags:['loot'],qualityScore:43,license:'CC0',masterGlb:'assets/native/two-role-prop.glb'},
+  {id:'high-quality-prop',family:'PROP',role:'item',qualityScore:44,license:'CC0',masterGlb:'assets/native/high-quality-prop.glb'}
  ]};
  const summary=buildAssetSupplyDecisionSummary({gameId:'demo',target:'roblox',request:'item loot',requirements:[{family:'PROP',roles:['item','loot']}],registry});
  const upgrade=summary.nextActions.find(row=>row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE');

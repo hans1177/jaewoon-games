@@ -702,11 +702,15 @@ test('one complete playthrough preserves state continuity and needs duration evi
   assert.ok(validateDesignAuthoringContent({design:{selectedDesignPlan:broken}}).some(row=>row.code==='DESIGN_PLAYTHROUGH_MISSING'));
 });
 
-test('role-grounded asset selection beats an unrelated higher score without granting runtime verification',()=>{
+test('CC0 role-grounded selection rejects unrelated score and unlicensed originals',()=>{
   const registry={assets:[
-    {id:'bed',family:'MOTION',role:'BED_LIE_DOWN',platform:'ROBLOX',license:'project-original',internalAuditScore:999},
-    {id:'walk',family:'MOTION',role:'WALK',platform:'ROBLOX',license:'project-original',internalAuditScore:10}
+    {id:'bed',family:'MOTION',role:'BED_LIE_DOWN',platform:'ROBLOX',license:'CC0',status:'REPO_ASSET',sourceUrl:'https://example.org/cc0/motion',licenseEvidenceUrl:'https://example.org/cc0/license',sourceHash:'a'.repeat(64),productionVerified:false,internalAuditScore:999},
+    {id:'walk',family:'MOTION',role:'WALK',platform:'ROBLOX',license:'CC0',status:'REPO_ASSET',sourceUrl:'https://example.org/cc0/motion',licenseEvidenceUrl:'https://example.org/cc0/license',sourceHash:'a'.repeat(64),productionVerified:false,internalAuditScore:10}
   ]};
+  // [Rule 5] 원본 제작 자료는 점수나 역할이 정확해도 자동 재사용 불가.
+  const rejected=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION',role:'WALK'}],registry:{assets:registry.assets.map(row=>({...row,license:'project-original'}))}});
+  assert.equal(rejected.nextActions.some(row=>row.assetId==='walk'&&['USE','ADAPT'].includes(row.action)),false);
+  assert.equal(rejected.runtimeVerificationGranted,false);
   const explicit=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION',role:'WALK'}],registry});
   assert.equal(explicit.nextActions[0].assetId,'walk');
   assert.deepEqual([...explicit.nextActions[0].roleEvidence.matchedRoles],['walk']);

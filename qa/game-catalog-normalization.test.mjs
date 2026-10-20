@@ -251,7 +251,8 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
   const source=fs.readFileSync('_worker.js','utf8');
   const edge=await import('data:text/javascript;base64,'+Buffer.from(source+'\nexport {mergeRuntimeCatalog};').toString('base64'));
   const runtime={games:[{id:'old',productionClass:'DEVELOPMENT_CONFIRMED',homepageWebPlayable:true,hasWebArchive:true,canonical:{sources:{web:{playable:true,archive:true}}}}]};
-  const deployed={webExposurePolicy:catalog.webExposurePolicy,games:[{id:'old',homepageWebPlayable:false,hasWebArchive:false,ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE',canonical:{sources:{web:{playable:false,archive:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}},{id:'new-owner',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/new-owner/'}]};
+  // [정식 카탈로그] edge 필터는 활성 게임만 채택한다. 테스트 fixture도 현재 lifecycle 계약을 명시한다.
+  const deployed={webExposurePolicy:catalog.webExposurePolicy,games:[{id:'old',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:false,ownerWebSourceState:'WITHDRAWN_SIMPLE_PROTOTYPE',canonical:{lifecycle:{state:'ACTIVE'},sources:{web:{playable:false,archive:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}},{id:'new-owner',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/new-owner/'}]};
   const merged=edge.mergeRuntimeCatalog(runtime,{}, {},{},deployed);
   assert.equal(merged.games.length,2);
   assert.equal(merged.games.find(x=>x.id==='old').homepageWebPlayable,false);

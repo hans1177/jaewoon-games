@@ -418,19 +418,30 @@ jobs:
               --header 'X-GitHub-Api-Version: 2022-11-28' \
               "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${main_sha}&per_page=100" \
               --output /tmp/vibe2-24h-core-qa-runs.json; then
-              core_qa_reuse="$(MAIN_SHA="$main_sha" node <<'NODE'
+              # A successful workflow with its scoped test job SKIPPED is not
+              # a full regression PASS. Reuse only an actual successful main test job.
+              core_qa_run_id="$(MAIN_SHA="$main_sha" node <<'NODE'
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-24h-core-qa-runs.json','utf8'));
           const sha=String(process.env.MAIN_SHA||'');
-          const pass=(payload.workflow_runs||[]).some(row=>
+          const pass=(payload.workflow_runs||[]).find(row=>
             String(row.name||'')==='Vibe2 Core QA' &&
+            String(row.head_branch||'')==='main' &&
+            ['push','workflow_dispatch'].includes(String(row.event||'')) &&
             String(row.head_sha||'')===sha &&
             String(row.status||'')==='completed' &&
             String(row.conclusion||'')==='success'
           );
-          process.stdout.write(pass?'1':'0');
+          process.stdout.write(String(pass?.id||0));
           NODE
               )"
+              if [[ "$core_qa_run_id" =~ ^[1-9][0-9]*$ ]]; then
+                core_qa_test_conclusion="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${core_qa_run_id}/jobs?per_page=100" \
+                  --jq '[.jobs[] | select(.name=="test")] | if length == 1 then .[0].conclusion else "missing" end' 2>/dev/null || true)"
+                if [ "$core_qa_test_conclusion" = success ]; then core_qa_reuse=1; fi
+              fi
+              echo "VIBE2_24H_CORE_QA_SOURCE_RUN=$core_qa_run_id"
+              echo "VIBE2_24H_CORE_QA_TEST_JOB=${core_qa_test_conclusion:-MISSING_OR_UNVERIFIED}"
               echo "VIBE2_24H_CORE_QA_REUSE_OBSERVATION=PASS:$core_qa_reuse:$main_sha"
             else
               core_qa_reuse=0
@@ -493,7 +504,16 @@ jobs:
               if [ "${VIBE2_24H_SAME_MAIN_QA_REUSE:-0}" = '1' ]; then
                 echo "VIBE2_24H_PLANNER_DEPENDENCY_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:$main_sha"
               else
-                node --test qa/vibe-studio-asset-universe.test.mjs
+                # 동일 main SHA의 Core QA가 전체 자산 검증에 성공한 경우에만 재검사 비용을 생략한다.
+              # Core QA와 24H의 소스 SHA가 다르거나 실패했다면 반드시 원본 QA를 다시 수행한다.
+              if [ "${VIBE2_24H_CORE_QA_REUSE:-0}" = '1' ]; then
+                echo "VIBE2_24H_ASSET_QA=REUSED_VERIFIED_EXACT_SHA_CORE_QA:$main_sha"
+              elif [ "${VIBE2_24H_SAME_MAIN_QA_REUSE:-0}" = '1' ]; then
+                echo "VIBE2_24H_ASSET_QA=REUSED_VERIFIED_THIS_RUN_EXACT_SHA:$main_sha"
+              else
+                echo "VIBE2_24H_ASSET_QA=RUN_REQUIRED:$main_sha"
+                node --test qa/vibe-studio-asset-universe.test.mjs 2>&1 | tee /tmp/vibe2-asset-library-qa.log
+              fi
                 node --test qa/vibe3-roblox-distillation.test.mjs
                 node --test qa/company-development-web-runtime.test.mjs
               fi
@@ -1424,6 +1444,7 @@ jobs:
             /tmp/vibe2-recovery-learning-motor.log
             /tmp/vibe2-post-release-focus.log
             /tmp/vibe2-plan-summary.log
+            /tmp/vibe2-asset-library-qa.log
           if-no-files-found: warn
           retention-days: 7
 

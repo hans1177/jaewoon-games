@@ -230,6 +230,7 @@ on:
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/vibe2-learning-motor.json'
       - 'company-learning/external-ai-distillation-policy.json'
+      - 'qa/vibe-studio-asset-universe.test.mjs'
       - 'qa/vibe2-*.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-merged-pr-provenance.yml'
@@ -480,6 +481,16 @@ jobs:
           node --test qa/vibe-visual-runtime-quality.test.mjs
           node --test qa/vibe-crossplatform-visual-components.test.mjs
           node --test qa/vibe2-native-asset-production.test.mjs
+          # [Rule5] Real approved seed artbooks live only on company-runtime, not main.
+          # Reuse the identical read-only source hydration already verified by Vibe QA;
+          # do not fake fixtures, skip tests, or promote missing artbook evidence.
+          git fetch --no-tags --depth=1 origin '+refs/heads/company-runtime:refs/remotes/origin/company-runtime'
+          runtime_design_sha="$(git rev-parse origin/company-runtime)"
+          test "$(git ls-tree -d --name-only "$runtime_design_sha" -- artbook-submissions)" = 'artbook-submissions'
+          git restore --source="$runtime_design_sha" --worktree -- artbook-submissions
+          echo "VIBE2_CORE_QA_SEED_ARTBOOK_SOURCE=company-runtime:$runtime_design_sha"
+          # [Rule5] 삭제 자산 재등록, CC0 출처와 허위 검증 차단: 전체 자산 회귀는 이 코어 QA가 판정한다.
+          node --test qa/vibe-studio-asset-universe.test.mjs
           node --test qa/vibe2-external-customization.test.mjs
           node --test qa/vibe2-neural-diagnosis.test.mjs
           node --test qa/vibe2-neural-feedback.test.mjs

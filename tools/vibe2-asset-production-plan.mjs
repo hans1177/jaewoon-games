@@ -1507,7 +1507,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       }
       continue;
     }
-    if((asset?.intendedConsumerGameIds||[]).map(clean).includes(id))intendedOnlyCount+=1;
+    // [Rule5] 권리·출처 검사에 실패한 삭제 원본은 예정 소비자 수에도 포함하지 않는다.
+    if(assetSupplyCandidateAllowed(asset,target)&&(asset?.intendedConsumerGameIds||[]).map(clean).includes(id))intendedOnlyCount+=1;
     if(family&&requiredFamilySet.has(family)&&assetSupplyCandidateAllowed(asset,target)){
       if(!roleFit.verifiedRoleMatch){if(!roleFit.requestedRoles.length||!clean(asset.role||asset.subfamily))unresolvedFamilies.add(family);continue;}
       // 역할별 후보를 같은 원장 순회에서 색인한다. 기존 점수·출처 검증은 유지한다.
@@ -1525,10 +1526,12 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       if(betterReusable(asset,currentBest))bestReusableByFamily.set(family,asset);
     }
   }
-  const qualityActions=(executionPlan?.nextQualityActions||[]).filter(action=>
-    (action.consumerGameIds||[]).map(clean).includes(id)
-    ||currentAssetIds.has(clean(action.assetId))
-  );
+  // [Rule5] 관측된 품질 결함이어도 권리 차단 자산을 작업 대상으로 되살리지 않는다.
+  const qualityActions=(executionPlan?.nextQualityActions||[]).filter(action=>{
+    const asset=assetById.get(clean(action.assetId));
+    return asset&&assetSupplyCandidateAllowed(asset,target)
+      &&((action.consumerGameIds||[]).map(clean).includes(id)||currentAssetIds.has(clean(action.assetId)));
+  });
   const repairsByFamily=new Map();
   for(const action of qualityActions){
     const family=clean(action.family||assetById.get(clean(action.assetId))?.family).toUpperCase();
@@ -1554,8 +1557,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         /^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(value)&&!value.split('/').includes('..'))||null:null;
       const license=clean(base?.license).toLowerCase();
       const credit=clean(base?.sourceCredit||base?.attribution||base?.credit)||null;
-      const rightsValid=['project-original','cc0','cc0-1.0','cc-by'].includes(license)
-        &&(license!=='cc-by'||Boolean(credit));
+      const rightsValid=['cc0','cc0-1.0','cc0 1.0 universal'].includes(license);
       const modelReady=Boolean(sourceModel&&rightsValid);
       const pbr=spatial||family==='MATERIAL';
       adaptation={
@@ -3115,9 +3117,14 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
   const sourceModel=clean(task.assetAuthoring?.sourceModel||linkedSourceModel).replaceAll('\\','/');
   if(exportedMotionProvider&&!/\.(?:fbx|glb)$/i.test(sourceModel))
     throw new Error('EXTERNAL_MOTION_FBX_OR_GLB_REQUIRED:'+exportedMotionProvider);
-  const sourceLicense=clean(task.assetAuthoring?.sourceLicense||librarySource?.sourceLicense
-    ||task.assetAuthoring?.imageLicense||imageRow?.license);
-  const sourceCredit=clean(task.assetAuthoring?.sourceCredit||librarySource?.sourceCredit||imageRow?.attribution||imageRow?.credit);
+  // Image input owns its own rights/attribution. A coincidentally selected library
+  // model must never replace the supplied image's license or credit.
+  const sourceLicense=clean(task.assetAuthoring?.sourceLicense||(imageRequested
+    ?task.assetAuthoring?.imageLicense||imageRow?.license
+    :librarySource?.sourceLicense||task.assetAuthoring?.imageLicense||imageRow?.license));
+  const sourceCredit=clean(task.assetAuthoring?.sourceCredit||(imageRequested
+    ?imageRow?.attribution||imageRow?.credit
+    :librarySource?.sourceCredit||imageRow?.attribution||imageRow?.credit));
   const checkSourceLicense=()=>{
     if(!['project-original','cc0','cc-by'].includes(sourceLicense.toLowerCase()))
       throw new Error('IMAGE_TO_MESH_LICENSE_REQUIRED');

@@ -1594,11 +1594,10 @@ test('asset production selection hydrates referenced audit evidence before quali
   });
   const selection=plan.companyGraphicsLibrary.studioAssetUniverse.loadout.selections.find(row=>row.requirementId==='ui-pack');
   assert.ok(selection);
-  assert.equal(selection.assetId,'roblox-common-ui-v1');
-  assert.equal(selection.internalAuditScore,956.4);
-  assert.equal(selection.internalAuditPass,true);
-  assert.ok(selection.sourceFiles.includes('assets/roblox/common-ui-v1/quality-evidence.json'));
-  assert.match(selection.sourceContentFingerprint,/^[a-f0-9]{64}$/);
+  assert.notEqual(selection.assetId,'roblox-common-ui-v1');
+  assert.equal(selection.sourceFiles?.includes('assets/roblox/common-ui-v1/quality-evidence.json')||false,false);
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.assets.some(row=>row.id==='roblox-common-ui-v1'),false);
 });
 
 test('asset production planner consumes the studio universe contract',async()=>{
@@ -1935,151 +1934,52 @@ test('removed self authored pack stays absent: monster-adventure-v1',()=>{
   assert.equal(registry.assets.some(asset=>asset.id==='roblox-monster-adventure-v1'||asset.packId==='roblox-monster-adventure-v1'),false);
 });
 
-test('monster adventure pack is registered as repo assets without false production verification',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-monster-adventure-v1');
-  assert.ok(pack);
-  assert.equal(pack.status,'REPO_ASSET');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.verifiedCompanyReusable,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.qualityTarget,100);
-  assert.equal(pack.authoringChecklistScore,100);
-  assert.deepEqual(pack.heroAssetIds,['flamefox','leafturtle','waterotter']);
-  for(const id of ['flamefox','leafturtle','waterotter','boar','bat','bird','hornbull','rockgator','stormeagle']){
-    const row=registry.assets.find(asset=>asset.id==='roblox-monster-adventure-'+id);
-    assert.ok(row,id);
-    assert.equal(row.status,'REPO_ASSET');
-    assert.equal(row.productionVerified,false);
-    assert.equal(row.gameplayAuthority,false);
-    assert.equal(row.qualityScoreBlocksBinding,false);
-    assert.equal(row.path,'/assets/roblox/monster-adventure-v1/'+id+'.obj');
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - monster adventure pack is registered',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-monster-adventure-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
-
 test('removed self authored pack stays absent: horror-lore-v1',()=>{
   assert.equal(fs.existsSync('assets/roblox/horror-lore-v1'),false);
   const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   assert.equal(registry.assets.some(asset=>asset.id==='roblox-horror-lore-v1'||asset.packId==='roblox-horror-lore-v1'),false);
 });
 
-test('horror lore pack is registered for automatic game binding without false verification',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-horror-lore-v1');
-  assert.ok(pack);
-  assert.equal(pack.status,'REPO_ASSET');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.qualityTarget,100);
-  assert.equal(pack.authoringChecklistScore,100);
-  const expected=[
-    ['SCHOOL_01','school_01'],['SCHOOL_02','school_02'],['SCHOOL_03','school_03'],['SCHOOL_04','school_04'],
-    ['HOSPITAL_01','hospital_01'],['HOSPITAL_02','hospital_02'],['HOSPITAL_03','hospital_03'],
-    ['PARK_01','park_01'],['PARK_02','park_02'],['PARK_03','park_03']
-  ];
-  for(const [loreId,fileId] of expected){
-    const row=registry.assets.find(asset=>asset.id==='roblox-horror-lore-'+fileId);
-    assert.ok(row,loreId);
-    assert.equal(row.status,'REPO_ASSET');
-    assert.equal(row.productionVerified,false);
-    assert.equal(row.gameplayAuthority,false);
-    assert.equal(row.qualityScoreBlocksBinding,false);
-    assert.equal(row.bindingHint.gameId,'horror-escape-room');
-    assert.equal(row.bindingHint.configCollection,'Lore');
-    assert.equal(row.bindingHint.configId,loreId);
-    assert.equal(row.bindingHint.preservePromptRewardSaveAuthority,true);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - horror lore pack is registered',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-horror-lore-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
-
 test('removed self authored pack stays absent: survival-core-world-v1',()=>{
   assert.equal(fs.existsSync('assets/roblox/survival-core-world-v1'),false);
   const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   assert.equal(registry.assets.some(asset=>asset.id==='roblox-survival-core-world-v1'||asset.packId==='roblox-survival-core-world-v1'),false);
 });
 
-test('survival core world pack is registered for automatic atom binding without false verification',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-survival-core-world-v1');
-  assert.ok(pack);
-  assert.equal(pack.status,'REPO_ASSET');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.qualityTarget,100);
-  assert.equal(pack.authoringChecklistScore,100);
-  const expected=[
-    ['ENVIRONMENT','TREE_TRUNK_THICK','tree_trunk_thick'],
-    ['ENVIRONMENT','TREE_CROWN_ROUND','tree_crown_round'],
-    ['ENVIRONMENT','ROCK_MEDIUM','rock_medium'],
-    ['ENVIRONMENT','ROAD_DIRT','road_dirt'],
-    ['BUILDING','FOUNDATION_RECT','foundation_rect'],
-    ['BUILDING','WALL_SOLID','wall_solid'],
-    ['BUILDING','DOOR_SINGLE','door_single'],
-    ['BUILDING','ROOF_GABLE','roof_gable'],
-    ['PROP','CHEST','chest'],['PROP','CRATE','crate'],['PROP','LAMP','lamp']
-  ];
-  for(const [family,atomId,fileId] of expected){
-    const row=registry.assets.find(asset=>asset.id==='roblox-survival-'+fileId);
-    assert.ok(row,atomId);
-    assert.equal(row.status,'REPO_ASSET');
-    assert.equal(row.productionVerified,false);
-    assert.equal(row.gameplayAuthority,false);
-    assert.equal(row.qualityScoreBlocksBinding,false);
-    assert.equal(row.bindingHint.gameId,'survival');
-    assert.equal(row.bindingHint.family,family);
-    assert.equal(row.bindingHint.atomId,atomId);
-    assert.equal(row.bindingHint.preserveGameplayBalanceSaveAndNetworkAuthority,true);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - survival core world pack is registered',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-survival-core-world-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
-
 test('removed self authored pack stays absent: survival-combat-parts-v1',()=>{
   assert.equal(fs.existsSync('assets/roblox/survival-combat-parts-v1'),false);
   const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   assert.equal(registry.assets.some(asset=>asset.id==='roblox-survival-combat-parts-v1'||asset.packId==='roblox-survival-combat-parts-v1'),false);
 });
 
-test('survival combat parts are registered for module-level automatic replacement without false verification',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-survival-combat-parts-v1');
-  assert.ok(pack);
-  assert.equal(pack.status,'REPO_ASSET');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.qualityTarget,100);
-  assert.equal(pack.modularReplacement,true);
-  const expected=[
-    ['WEAPON','BLADE_LONG','blade_long'],
-    ['WEAPON','GUARD_CROSS','guard_cross'],
-    ['WEAPON','GRIP_LONG','grip_long'],
-    ['CHARACTER','TORSO_CLOTH','torso_cloth'],
-    ['CHARACTER','SHOULDER_LIGHT','shoulder_light'],
-    ['CHARACTER','BACK_CAPE','back_cape'],
-    ['CREATURE','HEAD_CANINE','head_canine'],
-    ['CREATURE','JAW_LONG','jaw_long'],
-    ['CREATURE','CLAW','claw']
-  ];
-  for(const [family,atomId,fileId] of expected){
-    const row=registry.assets.find(asset=>asset.id==='roblox-survival-'+fileId);
-    assert.ok(row,atomId);
-    assert.equal(row.status,'REPO_ASSET');
-    assert.equal(row.productionVerified,false);
-    assert.equal(row.gameplayAuthority,false);
-    assert.equal(row.modularReplacement,true);
-    assert.equal(row.bindingHint.gameId,'survival');
-    assert.equal(row.bindingHint.family,family);
-    assert.equal(row.bindingHint.atomId,atomId);
-    assert.equal(row.bindingHint.replaceOnlyMatchingModule,true);
-    assert.equal(row.bindingHint.preserveGameplayDamageMovementSaveAndNetworkAuthority,true);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - survival combat parts are registered',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-survival-combat-parts-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
-
 test('company-common Roblox UI base is theme-adaptable and authority-free',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -2144,28 +2044,13 @@ test('self authored packs are not company common reusable assets',()=>{
   assert.equal(registry.assets.some(asset=>asset.license==='project-original'),false);
 });
 
-test('common UI registry stays unverified until real consumer runtime evidence exists',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-ui-v1');
-  assert.ok(pack);
-  assert.equal(pack.status,'REPO_ASSET');
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.verifiedCompanyReusable,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-
-  for(const atom of ['frame-panel','button-primary','bar-health']){
-    const row=registry.assets.find(asset=>asset.id==='roblox-common-ui-'+atom);
-    assert.ok(row,atom);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.productionVerified,false);
-    assert.equal(row.gameplayAuthority,false);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - common UI registry stays',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-ui-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
-
 test('company-common item pack shares one source across world drop and viewport',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -2200,51 +2085,13 @@ test('company-common item pack shares one source across world drop and viewport'
   }
 });
 
-test('company-common item registry exposes cross-game reusable item and resource roles',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-items-v1');
-  assert.ok(pack);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.reuseScope,'COMPANY_COMMON_BASE');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.assetCount,40);
-  assert.ok(pack.inventoryCategories.includes('THROWABLE'));
-  assert.ok(pack.inventoryCategories.includes('LORE'));
-
-  const expected=[
-    ['HEALING_POTION','ITEM','CONSUMABLE'],
-    ['MANA_CRYSTAL','RESOURCE','RESOURCE'],
-    ['IRON_INGOT','RESOURCE','RESOURCE'],
-    ['GOLD_INGOT','RESOURCE','RESOURCE'],
-    ['WOOD_BUNDLE','RESOURCE','RESOURCE'],
-    ['STONE_CHUNK','RESOURCE','RESOURCE'],
-    ['RELIC_KEY','ITEM','KEY_ITEM'],
-    ['LANTERN','ITEM','UTILITY'],
-    ['MANA_POTION','ITEM','CONSUMABLE'],
-    ['UPGRADE_SHARD','UPGRADE_MATERIAL','UPGRADE_MATERIAL'],
-    ['COOKED_MEAT','FOOD','FOOD'],
-    ['QUEST_SCROLL','QUEST_ITEM','QUEST_ITEM'],
-    ['LORE_BOOK','LORE','LORE'],
-    ['ARROW_BUNDLE','AMMUNITION','AMMUNITION'],
-    ['THROWING_BOMB','THROWABLE','THROWABLE'],
-  ];
-  for(const [assetId,subfamily,itemRole] of expected){
-    const id='roblox-common-item-'+assetId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,assetId);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.subfamily,subfamily);
-    assert.equal(row.itemRole,itemRole);
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
-    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
-    assert.equal(row.bindingHint.preserveGameplayStatsEconomyCraftingSaveAndNetworkAuthority,true);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common item registry exposes',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-items-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
 test('generic item requirement can choose company-common item base',()=>{
   const registryAsset={
     id:'common-healing-potion',
@@ -2305,37 +2152,13 @@ test('company-common VFX pack is reusable and gameplay-authority free',()=>{
   assert.equal(/TakeDamage\(/.test(source),false);
 });
 
-test('company-common VFX registry exposes cross-game automatic candidates',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-vfx-v1');
-  assert.ok(pack);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-
-  const expected=[
-    ['IMPACT_FLASH','CreateImpactFlash'],
-    ['TRAIL_SHORT','AttachShortTrail'],
-    ['SHAPE_BURST','CreateShapeBurst']
-  ];
-  for(const [atomId,factory] of expected){
-    const id='roblox-common-vfx-'+atomId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,atomId);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.family,'VFX');
-    assert.equal(row.subfamily,atomId);
-    assert.equal(row.factory,factory);
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
-    assert.equal(row.bindingHint.deriveGameColorScaleDurationInsteadOfDuplicatingBase,true);
-    assert.equal(row.bindingHint.preserveGameplayDamageHitboxCooldownMovementAndNetworkAuthority,true);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common VFX registry exposes',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-vfx-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
-
 test('company-common skill presentation reuses common VFX without owning gameplay authority',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -2371,38 +2194,13 @@ test('company-common skill presentation reuses common VFX without owning gamepla
   assert.equal(/TakeDamage\(/.test(source),false);
 });
 
-test('company-common skill registry exposes explicit VFX dependency and cross-game candidates',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-skill-v1');
-  assert.ok(pack);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.productionVerified,false);
-  assert.deepEqual(pack.dependencyPackIds,['roblox-common-vfx-v1']);
-
-  const expected=[
-    ['CAST_HAND','AttachCastHand',null],
-    ['TELEGRAPH_CIRCLE','CreateTelegraphCircle',null],
-    ['IMPACT_SMALL','CreateImpactSmall','roblox-common-vfx-impact-flash']
-  ];
-  for(const [atomId,factory,reuses] of expected){
-    const id='roblox-common-skill-'+atomId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,atomId);
-    assert.equal(row.family,'SKILL');
-    assert.equal(row.subfamily,atomId);
-    assert.equal(row.factory,factory);
-    assert.equal(row.reusesAssetId,reuses);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
-    assert.equal(row.bindingHint.preserveGameplayDamageRangeCooldownComboMovementAndNetworkAuthority,true);
-  }
-
-  assert.ok(registry.assets.some(row=>row.id==='roblox-common-vfx-impact-flash'));
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common skill registry exposes',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-skill-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
-
 test('company-common materials preserve physical semantics by default',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -2435,36 +2233,13 @@ test('company-common materials preserve physical semantics by default',()=>{
   assert.equal(/FireServer\(/.test(source),false);
 });
 
-test('company-common material registry exposes reusable physics-preserving atoms',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-materials-v1');
-  assert.ok(pack);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.physicalPropertiesPreservedByDefault,true);
-  assert.equal(pack.collisionMutationAllowed,false);
-  assert.equal(pack.productionVerified,false);
-
-  const expected=[
-    ['WOOD',['NATURAL','DARK','WEATHERED','PALE']],
-    ['STONE',['NATURAL','DARK','PALE','WEATHERED']],
-    ['METAL',['BRUSHED','DARK','LIGHT','INDUSTRIAL']]
-  ];
-  for(const [atomId,variants] of expected){
-    const row=registry.assets.find(asset=>asset.id==='roblox-common-material-'+atomId.toLowerCase());
-    assert.ok(row,atomId);
-    assert.equal(row.family,'MATERIAL');
-    assert.equal(row.subfamily,atomId);
-    assert.deepEqual(row.variants,variants);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
-    assert.equal(row.bindingHint.preservePhysicalProperties,true);
-    assert.equal(row.bindingHint.preserveCollisionTouchQueryAndGameplayAuthority,true);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common material registry exposes',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-materials-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
-
 test('company-common R15 motion pack covers sixty-one reusable motion atoms',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -2510,29 +2285,13 @@ test('company-common R15 motion pack covers sixty-one reusable motion atoms',()=
   }
 });
 
-test('company-common motion registry mirrors all sixty-one reusable motion atoms',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const root=path.resolve(here,'..');
-  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
-  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-motion-v1','catalog.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-motion-v1');
-  assert.ok(pack);
-  assert.equal(pack.motionCount,61);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.compatibleRig,'R15');
-  assert.equal(pack.productionVerified,false);
-  for(const atom of catalog.atoms){
-    const id='roblox-common-motion-'+atom.atomId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,atom.atomId);
-    assert.equal(row.atomId,atom.atomId);
-    assert.equal(row.family,'MOTION');
-    assert.equal(row.bindingHint.compatibleRig,'R15');
-    assert.equal(row.bindingHint.preserveGameplayMovementDamageSaveAndNetworkAuthority,true);
-    assert.equal(row.productionVerified,false);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common motion registry mirrors',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-motion-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
 test('company-common world prop pack provides thirty-eight reusable housing settlement props',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -2561,58 +2320,20 @@ test('company-common world prop pack provides thirty-eight reusable housing sett
   }
 });
 
-test('company-common world prop registry mirrors thirty-eight prop interaction and sound roles',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const root=path.resolve(here,'..');
-  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
-  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-world-props-v1','catalog.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-world-props-v1');
-  assert.ok(pack);
-  assert.equal(pack.itemCount,38);
-  assert.equal(pack.gameplayAuthority,false);
-  assert.equal(pack.audioPlaybackAuthority,false);
-  for(const item of catalog.items){
-    const id='roblox-common-world-prop-'+item.assetId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,item.assetId);
-    assert.equal(row.subfamily,item.subfamily);
-    assert.equal(row.worldRole,item.worldRole);
-    assert.equal(row.interactionRole,item.interactionRole);
-    assert.equal(row.interactionSoundRole,item.interactionSoundRole);
-    assert.equal(row.audioPlaybackAuthority,false);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common world prop registry mirrors',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-world-props-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
-
-test('expanded common item tool creature and VFX registry mirrors current catalogs',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const root=path.resolve(here,'..');
-  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
-  const checks=[
-    ['assets/roblox/common-items-v1/catalog.json','roblox-common-items-v1','items','roblox-common-item-',40],
-    ['assets/roblox/common-tools-v1/catalog.json','roblox-common-tools-v1','items','roblox-common-tool-',20],
-    ['assets/roblox/common-character-gear-v1/catalog.json','roblox-common-character-gear-v1','items','roblox-common-character-gear-',18],
-    ['assets/roblox/common-foliage-v1/catalog.json','roblox-common-foliage-v1','items','roblox-common-foliage-',18],
-    ['assets/roblox/common-creature-parts-v1/catalog.json','roblox-common-creature-parts-v1','items','roblox-common-creature-part-',24],
-    ['assets/roblox/common-skill-v1/catalog.json','roblox-common-skill-v1','atoms','roblox-common-skill-',20],
-    ['assets/roblox/common-vfx-v1/catalog.json','roblox-common-vfx-v1','atoms','roblox-common-vfx-',27],
-    ['assets/roblox/common-materials-v1/catalog.json','roblox-common-materials-v1','atoms','roblox-common-material-',25],
-  ];
-  for(const [relative,packId,key,prefix,count] of checks){
-    const catalog=JSON.parse(fs.readFileSync(path.join(root,relative),'utf8'));
-    const rows=catalog[key];
-    assert.equal(rows.length,count,relative);
-    for(const row of rows){
-      const atom=row.assetId||row.atomId;
-      const id=prefix+atom.toLowerCase().replaceAll('_','-');
-      assert.ok(registry.assets.some(asset=>asset.id===id),id);
-    }
-    const pack=registry.assets.find(asset=>asset.id===packId);
-    assert.ok(pack,packId);
-    assert.equal(pack.productionVerified,false,packId);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - expanded common item tool creature and VFX registry mirrors',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-items-v1","roblox-common-tools-v1","roblox-common-creature-parts-v1","roblox-common-vfx-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
 test('generic world prop requirement can choose company-common base',()=>{
   const registryAsset={
     id:'common-signpost',
@@ -2674,45 +2395,13 @@ test('company-common foliage pack provides eighteen reusable environment assets'
   }
 });
 
-test('company-common foliage registry preserves harvesting save collision and network authority',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-foliage-v1');
-  assert.ok(pack);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.family,'ENVIRONMENT');
-  assert.equal(pack.reuseScope,'COMPANY_COMMON_BASE');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.gameplayAuthority,false);
-
-  const expected=[
-    ['GRASS_TUFT','GRASS','GROUND_COVER'],
-    ['BUSH_ROUND','BUSH','MIDGROUND_FOLIAGE'],
-    ['FERN_CLUSTER','FERN','UNDERSTORY'],
-    ['WILDFLOWER_PATCH','FLOWER','GROUND_ACCENT'],
-    ['TREE_STUMP','STUMP','NATURAL_PROP'],
-    ['FALLEN_LOG','FALLEN_LOG','NATURAL_PROP'],
-    ['PINE_TREE','PINE_TREE','CANOPY_TREE'],
-    ['DEAD_TREE','DEAD_TREE','SILHOUETTE_TREE']
-  ];
-  for(const [assetId,subfamily,environmentRole] of expected){
-    const id='roblox-common-foliage-'+assetId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,assetId);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.family,'ENVIRONMENT');
-    assert.equal(row.subfamily,subfamily);
-    assert.equal(row.environmentRole,environmentRole);
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
-    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
-    assert.equal(row.bindingHint.preserveGameplayStatsHarvestingDropsCollisionSaveAndNetworkAuthority,true);
-    assert.equal(row.productionVerified,false);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common foliage registry preserves',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-foliage-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
 test('generic foliage requirement can choose company-common base',()=>{
   const registryAsset={
     id:'common-foliage-grass',
@@ -2776,45 +2465,13 @@ test('company-common building pack provides twenty housing snap modules without 
   }
 });
 
-test('company-common building registry preserves collision construction save and network authority',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-building-v1');
-  assert.ok(pack);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.family,'BUILDING');
-  assert.equal(pack.reuseScope,'COMPANY_COMMON_BASE');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.gameplayAuthority,false);
-
-  const expected=[
-    ['FLOOR_TILE','FLOOR_TILE','FLOOR'],
-    ['WALL_WINDOW','WALL_WINDOW','WALL_OPENING'],
-    ['WALL_CORNER','WALL_CORNER','WALL_CORNER'],
-    ['PILLAR_STONE','PILLAR','STRUCTURAL_VISUAL'],
-    ['STAIRS_STRAIGHT','STAIRS','VERTICAL_LINK_VISUAL'],
-    ['ARCHWAY','ARCHWAY','PASSAGE_VISUAL'],
-    ['ROOF_FLAT','ROOF_FLAT','ROOF'],
-    ['RAILING','RAILING','EDGE_VISUAL']
-  ];
-  for(const [assetId,subfamily,buildingRole] of expected){
-    const id='roblox-common-building-'+assetId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,assetId);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.family,'BUILDING');
-    assert.equal(row.subfamily,subfamily);
-    assert.equal(row.buildingRole,buildingRole);
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
-    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
-    assert.equal(row.bindingHint.preserveCollisionBuildCostDurabilityCraftingSaveAndNetworkAuthority,true);
-    assert.equal(row.productionVerified,false);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common building registry preserves',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-building-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
 test('generic building requirement can choose company-common base',()=>{
   const registryAsset={
     id:'common-wall-window',
@@ -2875,46 +2532,13 @@ test('company-common tool pack provides twenty reusable weapon and tool visuals'
   }
 });
 
-test('company-common tool registry preserves combat gathering equipment save and network authority',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-tools-v1');
-  assert.ok(pack);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.family,'WEAPON');
-  assert.equal(pack.reuseScope,'COMPANY_COMMON_BASE');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.gameplayAuthority,false);
-
-  const expected=[
-    ['SWORD','SWORD','MELEE'],
-    ['SPEAR','SPEAR','POLEARM'],
-    ['AXE','AXE','MELEE_TOOL'],
-    ['HAMMER','HAMMER','HEAVY_TOOL'],
-    ['PICKAXE','PICKAXE','GATHERING_TOOL'],
-    ['BOW','BOW','RANGED'],
-    ['STAFF','STAFF','MAGIC_FOCUS'],
-    ['SHIELD','SHIELD','DEFENSIVE_VISUAL']
-  ];
-  for(const [assetId,subfamily,toolRole] of expected){
-    const id='roblox-common-tool-'+assetId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,assetId);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.family,'WEAPON');
-    assert.equal(row.subfamily,subfamily);
-    assert.equal(row.toolRole,toolRole);
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
-    assert.equal(row.bindingHint.visualGripAttachment,'VisualGrip');
-    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
-    assert.equal(row.bindingHint.preserveDamageAttackSpeedHarvestDurabilityEquipSaveAndNetworkAuthority,true);
-    assert.equal(row.productionVerified,false);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common tool registry preserves',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-tools-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
 test('generic weapon requirement can choose company-common tool base',()=>{
   const registryAsset={
     id:'common-sword',
@@ -2981,49 +2605,13 @@ test('company-common character gear pack provides eighteen reusable visual equip
   }
 });
 
-test('company-common character gear registry preserves equipment gameplay save and network authority',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-character-gear-v1');
-  assert.ok(pack);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.family,'CHARACTER');
-  assert.equal(pack.reuseScope,'COMPANY_COMMON_BASE');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.gameplayAuthority,false);
-  assert.equal(pack.bodyPlanCompatibilityRequired,true);
-  assert.equal(pack.itemCount,18);
-
-  const expected=[
-    ['CLOTH_TUNIC','TORSO_GEAR','LIGHT_TORSO'],
-    ['LEATHER_VEST','TORSO_GEAR','MEDIUM_TORSO'],
-    ['IRON_CHESTPLATE','TORSO_GEAR','HEAVY_TORSO'],
-    ['CLOTH_HOOD','HEAD_GEAR','LIGHT_HEAD'],
-    ['IRON_HELMET','HEAD_GEAR','HEAVY_HEAD'],
-    ['LEATHER_GLOVES','HAND_GEAR','HAND'],
-    ['LEATHER_BOOTS','FOOT_GEAR','FOOT'],
-    ['TRAVEL_CLOAK','BACK_GEAR','BACK']
-  ];
-  for(const [assetId,subfamily,gearRole] of expected){
-    const id='roblox-common-character-gear-'+assetId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,assetId);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.family,'CHARACTER');
-    assert.equal(row.subfamily,subfamily);
-    assert.equal(row.gearRole,gearRole);
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
-    assert.equal(row.bindingHint.gameScope,'ALL_ROBLOX_GAMES');
-    assert.equal(row.bindingHint.bodyPlanCompatibilityRequired,true);
-    assert.equal(row.bindingHint.visualAnchor,'VisualAnchor');
-    assert.equal(row.bindingHint.deriveGamePaletteInsteadOfDuplicatingBase,true);
-    assert.equal(row.bindingHint.preserveArmorHealthMovementEquipInventorySaveAndNetworkAuthority,true);
-    assert.equal(row.productionVerified,false);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common character gear registry preserves',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-character-gear-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
 test('generic character gear requirement can choose company-common base',()=>{
   const registryAsset={
     id:'common-character-helmet',family:'CHARACTER',subfamily:'HEAD_GEAR',platform:'ROBLOX',status:'REPO_ASSET',
@@ -3066,27 +2654,13 @@ test('company-common UI current catalog preserves prior atoms and expands reusab
   }
 });
 
-test('company-common UI registry exposes all current reusable atoms without production promotion',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const root=path.resolve(here,'..');
-  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
-  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets','roblox','common-ui-v1','catalog.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-ui-v1');
-  assert.ok(pack);
-  assert.equal(pack.assetCount,catalog.atoms.length);
-  assert.equal(pack.componentCount,catalog.atoms.length);
-  assert.equal(pack.productionVerified,false);
-  for(const atom of catalog.atoms){
-    const id='roblox-common-ui-'+atom.atomId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,atom.atomId);
-    assert.equal(row.atomId,atom.atomId);
-    assert.equal(row.family,'UI');
-    assert.equal(row.productionVerified,false);
-    assert.equal(row.runtimeVerificationState,'PENDING_STUDIO');
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common UI registry exposes',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-ui-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
 test('generic inventory UI requirement can choose company-common base',()=>{
   const registryAsset={id:'common-inventory-slot',family:'UI',subfamily:'INVENTORY_SLOT',platform:'ROBLOX',status:'REPO_ASSET',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['INVENTORY_SLOT']};
   const gameOnly={id:'game-only-inventory-slot',family:'UI',subfamily:'INVENTORY_SLOT',platform:'ROBLOX',status:'REPO_ASSET',tags:['INVENTORY_SLOT']};
@@ -3139,45 +2713,13 @@ test('company-common creature parts pack provides twenty-four reusable visual mo
   }
 });
 
-test('company-common creature registry preserves gameplay and rig verification authority',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-creature-parts-v1');
-  assert.ok(pack);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.family,'CREATURE');
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(pack.rigBindingState,'AUTHORING_REQUIRED');
-  assert.equal(pack.bodyPlanCompatibilityRequired,true);
-
-  const expected=[
-    ['BIPED_TORSO','TORSO_BIPED','BODY_CORE'],
-    ['QUADRUPED_TORSO','TORSO_QUADRUPED','BODY_CORE'],
-    ['INSECT_THORAX','THORAX_INSECT','BODY_CORE'],
-    ['WING_PAIR','WING_PAIR','APPENDAGE'],
-    ['TAIL_LONG','TAIL_LONG','APPENDAGE'],
-    ['HORN_PAIR','HORN_PAIR','HEAD_APPENDAGE'],
-    ['SHELL_BACK','SHELL_BACK','BACK_ARMOR_VISUAL'],
-    ['TENTACLE_CLUSTER','TENTACLE_CLUSTER','APPENDAGE']
-  ];
-  for(const [assetId,subfamily,creatureRole] of expected){
-    const id='roblox-common-creature-part-'+assetId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,assetId);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.family,'CREATURE');
-    assert.equal(row.subfamily,subfamily);
-    assert.equal(row.creatureRole,creatureRole);
-    assert.equal(row.bodyPlanCompatibilityRequired,true);
-    assert.equal(row.rigBindingState,'AUTHORING_REQUIRED');
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
-    assert.equal(row.bindingHint.preserveAiHealthDamageMovementHitboxDropSaveAndNetworkAuthority,true);
-    assert.equal(row.productionVerified,false);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common creature registry preserves',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-creature-parts-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
 test('generic creature torso requirement can choose company-common base',()=>{
   const registryAsset={id:'common-biped-torso',family:'CREATURE',subfamily:'TORSO_BIPED',platform:'ROBLOX',status:'REPO_ASSET',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['BODY_CORE']};
   const gameOnly={id:'game-only-biped-torso',family:'CREATURE',subfamily:'TORSO_BIPED',platform:'ROBLOX',status:'REPO_ASSET',tags:['BODY_CORE']};
@@ -3219,31 +2761,13 @@ test('company-common materials v5 preserves old atoms and expands to twenty-five
   assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
 });
 
-test('company-common material v5 registry exposes twenty-five unverified reusable atoms',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const pack=registry.assets.find(row=>row.id==='roblox-common-materials-v1');
-  assert.ok(pack);
-  assert.equal(pack.assetCount,25);
-  assert.equal(pack.companyCommonBase,true);
-  assert.equal(pack.productionVerified,false);
-  assert.equal(pack.runtimeVerificationState,'PENDING_STUDIO');
-
-  const added=['GLASS','FABRIC','LEATHER_LIKE','GROUND','MAGIC_CRYSTAL','BRICK','ICE','ASPHALT','SKIN','BONE','WATER','MUD','SAND','SNOW','MOSS','EMISSIVE','CORROSION','DIRT','WET_DRY','DAMAGE','WEATHERING','STYLE_VARIANT'];
-  for(const atomId of added){
-    const id='roblox-common-material-'+atomId.toLowerCase().replaceAll('_','-');
-    const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,atomId);
-    assert.equal(row.companyCommonBase,true);
-    assert.equal(row.family,'MATERIAL');
-    assert.equal(row.automaticCrossGameReuseAllowed,true);
-    assert.equal(row.crossGameReuseRequiresCompatibilityPass,true);
-    assert.equal(row.productionVerified,false);
-    assert.equal(row.runtimeVerificationState,'PENDING_STUDIO');
-    assert.equal(row.bindingHint.preservePhysicalCollisionTouchQueryGameplaySaveAndNetworkAuthority,true);
-  }
+// [Rule5] 삭제된 자체 제작 자산은 다시 등록하거나 검증되었다고 주장하지 않는다.
+test('Rule5 removed original stays absent - company-common material v5 registry exposes',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  for(const id of ["roblox-common-materials-v1"]) assert.equal(registry.assets.some(row=>row.id===id||row.packId===id),false,id+' removed');
 });
-
 test('generic material requirement can choose company-common base',()=>{
   const registryAsset={id:'common-glass',family:'MATERIAL',subfamily:'GLASS',platform:'ROBLOX',status:'REPO_ASSET',companyCommonBase:true,reuseScope:'COMPANY_ROBLOX_COMMON_BASE',tags:['GLASS']};
   const gameOnly={id:'game-only-glass',family:'MATERIAL',subfamily:'GLASS',platform:'ROBLOX',status:'REPO_ASSET',tags:['GLASS']};
@@ -3567,31 +3091,15 @@ test('common UI current catalog preserves deep item inventory equipment crafting
   assert.equal(catalog.deepSystemContract.networkAuthority,false);
 });
 
-test('company library system depth audit covers every common asset domain without becoming a usage gate',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const audit=registry.commonLibrarySystemDepthAudit;
-  assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
-  assertCurrentCommonCatalogCoverage(registry);
-  assert.equal(audit.status,'EXPANDED');
-  assert.equal(audit.scoreIsUsageGate,false);
-  assert.equal(audit.existingAssetsRemainUsable,true);
-  assert.equal(audit.rows.length,15);
-  for(const domain of ['UI','ITEM','WEAPON','CHARACTER_GEAR','SKILL','VFX','MOTION','MATERIAL','ENVIRONMENT','BUILDING','WORLD_PROP','CREATURE','FOLIAGE','PRESENTATION','AUDIO']){
-    assert.ok(audit.rows.some(row=>row.domain===domain),domain);
-  }
-  const uiCatalog=JSON.parse(fs.readFileSync(path.resolve(here,'..','assets','roblox','common-ui-v1','catalog.json'),'utf8'));
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-ui-v1').componentCount,uiCatalog.atoms.length);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-motion-v1').motionCount,61);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-items-v1').assetCount,40);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-building-v1').itemCount,20);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-world-props-v1').itemCount,38);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-environment-v1').environmentStateCount,14);
-  assert.equal(registry.ambientSoundscapeContract.actualAudioAssetCountFromThisContract,0);
-  assert.equal(registry.ambientSoundscapeContract.productionVerified,false);
-  assert.equal(registry.seedDerivedInternalAssetIdeas.sourceSeedId,'seed-action-survival-rogu-echoes-of-the-lost-star');
+test('Rule5 asset depth gaps stay visible after self-authored deletion',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
+  assert.equal(report.scoreIsUsageGate,false);
+  assert.ok(report.rows.some(row=>row.missing.length>0));
+  assert.equal(registry.assets.some(row=>String(row.id||'').startsWith('roblox-common-')),false);
 });
-
 test('all existing common pack catalogs expose system depth contracts for gap-directed iteration',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -3667,7 +3175,8 @@ test('company library registers housing building and settlement assets as reusab
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
-  assertCurrentCommonCatalogCoverage(registry);
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
@@ -3678,9 +3187,7 @@ test('company library registers housing building and settlement assets as reusab
     'roblox-common-ui-build-catalog-panel','roblox-common-ui-placement-ghost-state','roblox-common-ui-settlement-overview'
   ]){
     const row=registry.assets.find(asset=>asset.id===id);
-    assert.ok(row,id);
-    assert.equal(row.companyCommonBase,true,id);
-    assert.equal(row.gameplayAuthority,false,id);
+    assert.equal(row,undefined,'retired original cannot be re-registered: '+id);
   }
 });
 
@@ -3706,19 +3213,10 @@ test('cross-pack common library audit resolves existing shared coverage before d
   assert.ok(ui);
   assert.ok(audio);
 
-  assert.ok(building.covered.includes('FOUNDATION'));
-  assert.ok(building.covered.includes('DOOR'));
-  assert.ok(building.covered.includes('ROOF'));
-  assert.ok(worldProp.covered.includes('CHEST'));
-  assert.ok(worldProp.covered.includes('CRATE'));
-  assert.ok(worldProp.covered.includes('LORE_COLLECTIBLE'));
-  assert.ok(item.covered.includes('QUEST_ITEM'));
-  assert.ok(item.covered.includes('THROWABLE'));
-  assert.ok(ui.covered.includes('STASH'));
-  assert.ok(ui.covered.includes('RADIAL_MENU'));
+  for(const row of [building,worldProp,item,ui]) assert.ok(row.missing.length>0,'removed origin cannot claim coverage');
+  assert.equal(building.covered.includes('FOUNDATION'),false);
   assert.ok(audio.missing.includes('UI_CONFIRM'));
 });
-
 test('expanded genre matrix covers action adventure puzzle tycoon defense horror coop and narrative',()=>{
   for(const genre of ['ACTION','ADVENTURE','PUZZLE','TYCOON','DEFENSE','HORROR','COOP_MULTIPLAYER','NARRATIVE']){
     assert.ok(COMMON_GENRE_SYSTEM_EXPECTATIONS[genre],genre);
@@ -3853,7 +3351,8 @@ test('company asset library exposes all-stage composition as an asset contract o
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const contract=registry.internalAssetCompositionContract;
   assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
-  assertCurrentCommonCatalogCoverage(registry);
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
   assert.equal(contract.scope,'ALL_INTERNAL_ASSETS');
   assert.equal(contract.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
   assert.equal(contract.allInternalAssetsComposableAcrossExistingStages,true);
@@ -3870,8 +3369,8 @@ test('company asset library exposes all-stage composition as an asset contract o
   const uiCatalog=JSON.parse(fs.readFileSync(path.resolve(here,'..','assets','roblox','common-ui-v1','catalog.json'),'utf8'));
   assert.equal(contract.uiComponentCount,uiCatalog.atoms.length);
   assert.equal(contract.uiRegistryAtomCount,uiCatalog.atoms.length);
-  assert.equal(contract.vfxAtomCount,registry.assets.find(row=>row.id==='roblox-common-vfx-v1').assetCount);
-  assert.equal(contract.materialAtomCount,registry.assets.find(row=>row.id==='roblox-common-materials-v1').assetCount);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-vfx-v1'),undefined);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-materials-v1'),undefined);
   assert.equal(registry.internalAssetStandard.allInternalAssetsComposableAcrossExistingStages,true);
   assert.equal(registry.internalAssetRoutineReview.allInternalAssetsComposableAcrossExistingStages,true);
 });
@@ -4014,16 +3513,14 @@ test('company-common VFX v4 expands reusable cross-genre feedback roles to twent
   assert.equal(catalog.version,4);
   assert.equal(catalog.atoms.length,27);
   assert.equal(quality.sourceAssetCount,27);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-vfx-v1').assetCount,27);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-vfx-v1'),undefined);
   for(const role of ['CRITICAL','DODGE','HEAL','BUFF','DEBUFF','STATUS','LOOT_COMMON','LOOT_RARE','LOOT_LEGENDARY','UPGRADE','CRAFT','DISMANTLE','QUEST_UPDATE','INTERACTION','ENVIRONMENT','WEATHER','DESTRUCTION','BOSS','MOBILE_DENSITY']){
     const atom=catalog.atoms.find(row=>row.role===role);
     assert.ok(atom,role);
     assert.ok(source.includes(atom.atomId),atom.atomId);
     const id='roblox-common-vfx-'+atom.atomId.toLowerCase().replaceAll('_','-');
     const registered=registry.assets.find(row=>row.id===id);
-    assert.ok(registered,id);
-    assert.equal(registered.role,role,id);
-    assert.equal(registered.productionVerified,false,id);
+    assert.equal(registered,undefined,'self-authored atom must remain removed: '+id);
   }
   assert.equal(catalog.systemDepthContract.missingComponentCandidates.length,0);
   assert.equal(quality.productionVerified,false);
@@ -4033,24 +3530,13 @@ test('company-common VFX v4 expands reusable cross-genre feedback roles to twent
   }
 });
 
-test('material and VFX system depth become complete without claiming runtime production verification',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
+test('Rule5 missing VFX and material source cannot claim completeness',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
   const report=auditCommonLibrarySystemDepth({assets:registry.assets});
-  const vfx=report.rows.find(row=>row.domain==='VFX');
-  const material=report.rows.find(row=>row.domain==='MATERIAL');
-  assert.ok(vfx);
-  assert.ok(material);
-  assert.equal(vfx.missing.length,0);
-  assert.equal(material.missing.length,0);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-vfx-v1').productionVerified,false);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-materials-v1').productionVerified,false);
-  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.vfxCount,27);
-  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.materialCount,25);
-  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.volumeBeforeQuality,false);
+  for(const domain of ['VFX','MATERIAL']){const row=report.rows.find(row=>row.domain===domain);assert.ok(row);assert.ok(row.missing.length>0);}
+  assert.equal(report.scoreIsUsageGate,false);
+  assert.equal(registry.productionPassAuthority,false);
 });
-
-
 test('company-common skill v3 expands reusable presentation roles to twenty',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -4063,16 +3549,14 @@ test('company-common skill v3 expands reusable presentation roles to twenty',()=
   assert.equal(catalog.version,3);
   assert.equal(catalog.atoms.length,20);
   assert.equal(quality.sourceAssetCount,20);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-skill-v1').assetCount,20);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-skill-v1'),undefined);
   for(const role of ['PROJECTILE','TRAIL','AREA','CHANNEL','BEAM','SUMMON','DASH','SHIELD','HEAL','AURA','STATUS_APPLY','STATUS_CLEANSE','INTERRUPT','ICON','AUDIO_ROLE','CAMERA_ROLE','MOBILE_DENSITY']){
     const atom=catalog.atoms.find(row=>row.role===role);
     assert.ok(atom,role);
     assert.ok(source.includes(atom.atomId),atom.atomId);
     const id='roblox-common-skill-'+atom.atomId.toLowerCase().replaceAll('_','-');
     const registered=registry.assets.find(row=>row.id===id);
-    assert.ok(registered,id);
-    assert.equal(registered.role,role,id);
-    assert.equal(registered.productionVerified,false,id);
+    assert.equal(registered,undefined,'self-authored atom must remain removed: '+id);
   }
   assert.equal(catalog.systemDepthContract.missingComponentCandidates.length,0);
   assert.equal(catalog.seedCompositionContract.audioPlaybackAuthority,false);
@@ -4084,18 +3568,13 @@ test('company-common skill v3 expands reusable presentation roles to twenty',()=
   }
 });
 
-test('skill system depth is complete after company-seed volume-up without gameplay authority',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const report=auditCommonLibrarySystemDepth({assets:registry.assets});
-  const skill=report.rows.find(row=>row.domain==='SKILL');
-  assert.ok(skill);
-  assert.equal(skill.missing.length,0);
-  assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.skillCount,20);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-skill-v1').productionVerified,false);
+test('Rule5 skill source gaps cannot be certified as covered',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  const skill=auditCommonLibrarySystemDepth({assets:registry.assets}).rows.find(row=>row.domain==='SKILL');
+  assert.ok(skill&&skill.missing.length>0);
+  assert.equal(registry.assets.some(row=>row.id==='roblox-common-skill-v1'),false);
+  assert.equal(registry.productionPassAuthority,false);
 });
-
-
 test('character gear system depth is complete after company-seed volume-up',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
@@ -4105,16 +3584,16 @@ test('character gear system depth is complete after company-seed volume-up',()=>
   const report=auditCommonLibrarySystemDepth({assets:registry.assets});
   const gear=report.rows.find(row=>row.domain==='CHARACTER_GEAR');
   assert.ok(gear);
-  assert.equal(gear.missing.length,0);
+  assert.ok(gear.missing.length>0,'retired roles remain missing');
   assert.equal(catalog.version,3);
   assert.equal(catalog.items.length,18);
   assert.equal(quality.sourceAssetCount,18);
   for(const role of ['LEGS','SHOULDER','BELT','RING','AMULET','ACCESSORY','COSMETIC_OVERLAY','SET_IDENTITY','SOCKET_POINT','UPGRADE_STAGE_VISUAL','DAMAGE_WEAR_VARIANT','TRANSMOG_BASE']){
     const found=registry.assets.some(row=>row.packId==='roblox-common-character-gear-v1'&&((row.systemRoles||[]).includes(role)||row.gearRole===role||row.subfamily===role));
-    assert.equal(found,true,role);
+    assert.equal(found,false,'retired source does not cover role: '+role);
   }
   assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.characterGearCount,18);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-character-gear-v1').productionVerified,false);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-character-gear-v1'),undefined);
 });
 
 
@@ -4127,16 +3606,16 @@ test('foliage system depth is complete after company-seed volume-up',()=>{
   const report=auditCommonLibrarySystemDepth({assets:registry.assets});
   const foliage=report.rows.find(row=>row.domain==='FOLIAGE');
   assert.ok(foliage);
-  assert.equal(foliage.missing.length,0);
+  assert.ok(foliage.missing.length>0,'retired roles remain missing');
   assert.equal(catalog.version,3);
   assert.equal(catalog.items.length,18);
   assert.equal(quality.sourceAssetCount,18);
   for(const role of ['BROADLEAF_TREE','VINE','REED','MOSS','MUSHROOM','ROOT','BIOME_VARIANT','SEASON_VARIANT','WIND_VARIANT','LOD']){
     const found=registry.assets.some(row=>row.packId==='roblox-common-foliage-v1'&&((row.systemRoles||[]).includes(role)||row.subfamily===role||row.environmentRole===role));
-    assert.equal(found,true,role);
+    assert.equal(found,false,'retired source does not cover role: '+role);
   }
   assert.equal(registry.commonLibrarySystemDepthAudit.latestVolumeUp.foliageCount,18);
-  assert.equal(registry.assets.find(row=>row.id==='roblox-common-foliage-v1').productionVerified,false);
+  assert.equal(registry.assets.find(row=>row.id==='roblox-common-foliage-v1'),undefined);
 });
 
 
@@ -4348,14 +3827,13 @@ test('catalog row pack migration keeps the shared indexes coherent and idempoten
     ],externalSources:[]};
     const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false});
     const apple=first.registry.assets.find(row=>row.id==='roblox-common-items-apple');
-    assert.equal(apple.packId,'roblox-common-items-v1');
-    assert.equal(first.registry.assets.filter(row=>row.id==='roblox-common-items-apple').length,1);
-    assert.equal(first.changed,true);
-    assert.ok(first.changedSections.includes('assets'));
+    assert.equal(apple,undefined,'retired original cannot be reintroduced');
+    assert.equal(first.registry.assets.some(row=>row.license==='project-original'),false);
+    assert.equal(first.registry.assets.some(row=>row.id==='roblox-common-items-v1'),false);
 
     const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:first.registry,persist:false});
     assert.equal(second.changed,false,JSON.stringify(second.changedSections));
-    assert.equal(second.registry.assets.filter(row=>row.id==='roblox-common-items-apple').length,1);
+    assert.equal(second.registry.assets.some(row=>row.id==='roblox-common-items-apple'),false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -4425,8 +3903,7 @@ test('representative videos preserve exact source lineage without promoting qual
   assert.equal(digest(fs.readFileSync(path.join(root,previews.sourceRender))),previews.sourceRenderSha256);
   assert.equal(previews.nativeRuntimeProof,false);
   assert.equal(previews.scorePromotionAllowed,false);
-  assert.notEqual(asset.productionVerified,true);
-  assert.deepEqual(asset.previewClips,previews.clips);
+  assert.equal(asset,undefined,'retired ghost asset must not gain runtime claims');
   for(const clip of Object.values(previews.clips)){
     const bytes=fs.readFileSync(path.join(root,clip.path.replace(/^\//,'')));
     assert.equal(bytes.length,clip.bytes);
@@ -4762,10 +4239,10 @@ test('internal asset library automation uses loose bands and concrete UI subsyst
   });
   const foliage=dedupPlan.domains.find(row=>row.domain==='FOLIAGE');
   assert.ok(foliage);
-  assert.ok(foliage.suggestedIdeas.some(row=>row.source==='LOOSE_VOLUME_TARGET'));
+  assert.equal(foliage.suggestedIdeas.some(row=>row.source==='LOOSE_VOLUME_TARGET'),false,'forbidden self-authoring cannot refill');
   for(const ideaId of foliagePool)assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId===ideaId),false,ideaId);
   assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId==='FOLIAGE_DISTINCT_VARIATION_01'),false);
-  assert.ok(foliage.suggestedIdeas.some(row=>row.ideaId==='FOLIAGE_DISTINCT_VARIATION_02'));
+  assert.equal(foliage.suggestedIdeas.some(row=>row.ideaId==='FOLIAGE_DISTINCT_VARIATION_02'),false);
 });
 
 test('internal asset breadth profiles support simple-to-deep progression and quality-before-volume',()=>{
@@ -5008,11 +4485,7 @@ test('current-consumer RPG menu preserves reusable APIs and game-specific race a
   assert.match(model,/function Model\.partySummary\(attributes, config\)/);
   const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
   const asset=registry.assets.find(row=>row.id==='roblox-rpg-system-menu-v1');
-  assert.ok(asset);
-  assert.deepEqual(asset.consumerGameIds,['daechung-rpg']);
-  assert.equal(asset.productionVerified,false);
-  assert.equal(asset.verifiedCompanyReusable,false);
-  assert.equal(asset.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(asset,undefined,'legacy RPG menu cannot be registered as a CC0 replacement');
   const quality=JSON.parse(fs.readFileSync(path.join(assetRoot,'quality-evidence.json'),'utf8'));
   assert.equal(quality.productionVerified,false);
   assert.equal(quality.runtimeVerificationState,'PENDING_STUDIO');
@@ -5047,34 +4520,15 @@ test('game-scoped asset planning limits source-consumer scan without shrinking f
 
     const scoped=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false,consumerGameIds:['game-a']});
     assert.equal(scoped.sourceConsumerSync.scanScope,'REQUESTED_GAME_IDS');
-    assert.deepEqual(scoped.sourceConsumerSync.requestedGameIds,['game-a']);
     assert.equal(scoped.sourceConsumerSync.scannedGameCount,1);
-    assert.deepEqual(scoped.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,['game-a']);
-    assert.equal(scoped.sourceConsumerRegistry.assets.find(row=>row.id==='shared-b').sourceBoundConsumerGameIds,undefined);
-    assert.equal(scoped.registry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,undefined);
-
+    assert.equal(scoped.registry.assets.some(row=>row.license==='project-original'),false);
+    assert.equal(scoped.sourceConsumerRegistry.assets.some(row=>row.license==='project-original'),false);
     const full=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry,persist:false});
     assert.equal(full.sourceConsumerSync.scanScope,'ALL_ELIGIBLE_GAMES');
     assert.equal(full.sourceConsumerSync.scannedGameCount,2);
-    assert.deepEqual(full.sourceConsumerRegistry.assets.find(row=>row.id==='shared-b').sourceBoundConsumerGameIds,['game-b']);
-
-    const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{gameId:'game-a',goal:'게임 A 자산 동기화'}});
-    assert.equal(plan.registrySync.sourceConsumerScanScope,'REQUESTED_GAME_IDS');
-    assert.deepEqual(plan.registrySync.sourceConsumerRequestedGameIds,['game-a']);
-    assert.equal(plan.registrySync.sourceConsumerScannedGameCount,1);
-    assert.equal(plan.allGameDynamicLibraryBinding.registryAssetCount,2);
-    assert.equal(plan.allGameDynamicLibraryBinding.evaluatedAssetCount,2);
-    assert.equal(plan.allGameDynamicLibraryBinding.allRegistryAssetsScanned,true);
-    assert.equal(plan.allGameDynamicLibraryBinding.allTwelveFamiliesEvaluated,true);
-
-    const here=path.dirname(fileURLToPath(import.meta.url));
-    const plannerSource=fs.readFileSync(path.resolve(here,'../tools/vibe2-asset-production-plan.mjs'),'utf8');
-    const cli=plannerSource.slice(plannerSource.indexOf('if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)'));
-    assert.equal((cli.match(/synchronizeCompanyCommonAssetRegistry\s*\(/g)||[]).length,0);
-    assert.match(cli,/registrySync:result\.registrySync/);
+    assert.equal(full.registry.assets.some(row=>row.license==='project-original'),false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
-
 test('source-bound consumer sync maps project paths exact asset ids and managed StudioAssets without runtime promotion',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-sync-'));
   try{
@@ -5146,37 +4600,14 @@ test('dynamic source consumers stay outside registry identity and refresh on the
       {id:'shared-b',family:'PROP',platform:'ROBLOX',path:'assets/shared-b.luau',sourceFiles:['assets/shared-b.luau'],license:'project-original',internalAuditScore:700}
     ]};
     const baseline=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:baseRegistry,persist:false});
-    fs.writeFileSync(path.join(root,'roblox-games','demo','default.project.json'),JSON.stringify({
-      tree:{ReplicatedStorage:{Shared:{$path:'../../assets/shared-a.luau'}}}
-    }));
+    assert.equal(baseline.registry.assets.some(row=>row.license==='project-original'),false);
+    fs.writeFileSync(path.join(root,'roblox-games','demo','default.project.json'),JSON.stringify({tree:{ReplicatedStorage:{Shared:{$path:'../../assets/shared-a.luau'}}}}));
     const first=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:baseline.registry,persist:false});
-    assert.equal(first.changed,false,JSON.stringify(first.changedSections));
-    assert.equal(first.registry.version,baseline.registry.version);
-    assert.equal(first.registry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,undefined);
-    assert.deepEqual(first.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,['demo']);
-    const staticAction=first.automationPlan.nextQualityActions.find(row=>row.assetId==='shared-a');
-    const dynamicAction=first.executionAutomationPlan.nextQualityActions.find(row=>row.assetId==='shared-a');
-    assert.equal(first.executionAutomationPlan.executionOverlayReusedBasePlan,true);
-    assert.equal(staticAction.consumerPriority,0);
-    assert.equal(dynamicAction.consumerPriority,2);
-
-    fs.writeFileSync(path.join(root,'roblox-games','demo','default.project.json'),JSON.stringify({
-      tree:{ReplicatedStorage:{Shared:{$path:'../../assets/shared-b.luau'}}}
-    }));
-    const stale=synchronizeSourceBoundAssetConsumers({
-      repoRoot:root,
-      registry:first.sourceConsumerRegistry,
-      gameCatalog:{games:[{id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',robloxProjectPath:'roblox-games/demo'}]}
-    });
-    assert.equal(stale.registry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,undefined);
-    assert.ok(stale.relations.some(row=>row.assetId==='shared-a'&&row.gameId==='demo'&&row.classification==='STALE_SOURCE_BINDING'));
-    const second=synchronizeCompanyCommonAssetRegistry({repoRoot:root,registry:baseline.registry,persist:false});
-    assert.equal(second.changed,false,JSON.stringify(second.changedSections));
-    assert.equal(second.sourceConsumerRegistry.assets.find(row=>row.id==='shared-a').sourceBoundConsumerGameIds,undefined);
-    assert.deepEqual(second.sourceConsumerRegistry.assets.find(row=>row.id==='shared-b').sourceBoundConsumerGameIds,['demo']);
+    assert.equal(first.registry.assets.some(row=>row.id==='shared-a'),false);
+    assert.equal(first.sourceConsumerRegistry.assets.some(row=>row.id==='shared-a'),false);
+    assert.equal(first.registry.assets.some(row=>row.productionVerified===true),false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
-
 test('consumer overlay reuse matches a full execution recompute while preserving structural planning',()=>{
   const propAxes=scoreInternalAssetAudit1000({asset:{family:'PROP'}}).applicableAxes;
   const evidence=value=>Object.fromEntries(propAxes.map(axis=>[axis,value]));
@@ -5243,40 +4674,12 @@ test('real horror-escape-room source fixture resolves project pack identity and 
     }]}
   });
   const byId=new Map(result.registry.assets.map(row=>[row.id,row]));
-  const yurei=byId.get('roblox-world-ghost-yurei');
-  const start=byId.get('roblox-common-motion-start');
-  assert.equal(byId.get('roblox-common-motion-walk').sourceBoundConsumerGameIds,undefined,'declared but unconsumed WALK must stay unbound');
-  assert.ok(yurei);
-  assert.ok(start);
-  assert.deepEqual(yurei.sourceBoundConsumerGameIds,['horror-escape-room']);
-  assert.deepEqual(start.sourceBoundConsumerGameIds,['horror-escape-room']);
-  assert.ok(result.bindings.some(row=>
-    row.assetId==='roblox-world-ghost-yurei'
-    &&row.gameId==='horror-escape-room'
-    &&row.classification==='ACTUAL_SOURCE_BOUND'
-    &&row.bindingMode==='PACK_PATH_AND_IDENTITY'
-    &&row.evidenceFiles.some(file=>file==='roblox-games/horror-escape-room/default.project.json')
-    &&row.evidenceFiles.some(file=>file==='roblox-games/horror-escape-room/client/Game.client.luau')
-  ));
-  assert.ok(result.bindings.some(row=>
-    row.assetId==='roblox-common-motion-start'
-    &&row.gameId==='horror-escape-room'
-    &&row.classification==='ACTUAL_SOURCE_BOUND'
-    &&row.bindingMode==='MANAGED_LIBRARY_IDENTITY'
-  ));
-  assert.equal(yurei.productionVerified,false);
-  assert.equal(yurei.verifiedCompanyReusable,false);
-  assert.equal(yurei.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(start.productionVerified,false);
-  assert.equal(start.verifiedCompanyReusable,false);
-  assert.equal(start.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(result.summary.sourceOnlyDoesNotGrantRuntimeVerification,true);
+  assert.equal(byId.has('roblox-world-ghost-yurei'),false);
+  assert.equal(byId.has('roblox-common-motion-start'),false);
+  assert.equal(result.registry.assets.some(row=>row.license==='project-original'),false);
   assert.equal(result.summary.productionVerificationUnchanged,true);
   assert.equal(result.summary.runtimeVerificationUnchanged,true);
-  assert.equal(result.summary.gameSummaries[0].gameId,'horror-escape-room');
-  assert.ok(result.summary.gameSummaries[0].currentConsumers>=2);
 });
-
 test('source consumer summary accumulates current intended and family counts without rescanning all assets per game',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-consumer-summary-index-'));
   try{
@@ -5333,28 +4736,12 @@ test('demand-bound asset supply uses six decisions and holds quantity-only libra
     }
   });
   assert.deepEqual([...summary.decisionVocabulary],['USE','ADAPT','IMPROVE','ACQUIRE_ADAPT','AUTHOR','HOLD']);
-  assert.equal(summary.currentConsumers,1);
-  assert.equal(summary.intendedOnly,1);
-  assert.ok(summary.requiredFamilies.includes('CREATURE'));
-  assert.ok(summary.requiredFamilies.includes('MOTION'));
-  assert.ok(summary.nextActions.some(row=>row.action==='IMPROVE'&&row.assetId==='used-creature'));
-  assert.ok(summary.nextActions.some(row=>row.action==='ADAPT'&&row.assetId==='common-motion'));
-  // [소스 보호] 검증된 공급 원본이 없으면 제작 완료를 가정하지 않고 작업을 보류한다.
-  for(const family of ['VFX','AUDIO']){
-    const action=summary.nextActions.find(row=>row.family===family);
-    assert.ok(action);
-    assert.equal(action.action,'HOLD');
-    assert.equal(action.reason,'NO_VERIFIED_EXISTING_ASSET_TO_APPLY');
-  }
-  assert.equal(summary.heldVolumeActionCount,1);
-  assert.equal(summary.heldActions[0].action,'HOLD');
-  assert.equal(summary.heldActions[0].reason,'REFERENCE_VOLUME_ONLY_NO_CURRENT_GAME_DEMAND');
-  assert.equal(summary.volumeTargetsAdvisoryOnly,true);
-  assert.equal(summary.safeWorkShortageMayLeaveSlotsIdle,true);
+  assert.equal(summary.currentConsumers,0);
+  assert.equal(summary.intendedOnly,0);
+  assert.equal(summary.nextActions.some(row=>['used-creature','common-motion','intended-only-creature'].includes(row.assetId)&&['USE','ADAPT','IMPROVE'].includes(row.action)),false);
   assert.equal(summary.productionVerificationGranted,false);
   assert.equal(summary.runtimeVerificationGranted,false);
 });
-
 test('asset supply summary preserves selection semantics with one-pass registry indexes',()=>{
   const registry={assets:[
     {id:'z-current-creature',sourceFiles:['assets/z-current-creature.glb'],family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
@@ -5376,15 +4763,12 @@ test('asset supply summary preserves selection semantics with one-pass registry 
       nextVolumeActions:[]
     }
   });
-  assert.equal(summary.currentConsumers,3);
-  assert.equal(summary.intendedOnly,1);
-  assert.equal(summary.families.CREATURE.used,2);
-  assert.equal(summary.families.MATERIAL.repair,1);
-  assert.ok(summary.nextActions.some(row=>row.family==='CREATURE'&&row.assetId==='a-current-creature'&&['USE','ADAPT'].includes(row.action)));
-  assert.ok(summary.nextActions.some(row=>row.family==='WEAPON'&&row.assetId==='a-weapon'&&['USE','ADAPT'].includes(row.action)));
-  assert.ok(summary.nextActions.some(row=>row.family===null&&row.assetId==='material-current'&&row.action==='IMPROVE'));
+  assert.equal(summary.currentConsumers,0);
+  assert.equal(summary.intendedOnly,0);
+  assert.equal(summary.nextActions.some(row=>['z-current-creature','a-current-creature','material-current','a-weapon','z-weapon','low-weapon'].includes(row.assetId)&&['USE','ADAPT','IMPROVE'].includes(row.action)),false);
+  assert.equal(summary.productionVerificationGranted,false);
+  assert.equal(summary.runtimeVerificationGranted,false);
 });
-
 test('character action skill and motion requests reuse registered cross-game assets before external sources',()=>{
   const registry={assets:[
     {id:'shared-hero',family:'CHARACTER',role:'HUMANOID',license:'project-original',status:'REPO_ASSET',platform:'SHARED_3D_SOURCE',path:'/assets/shared/humanoid-traveler.glb'},
@@ -5394,17 +4778,11 @@ test('character action skill and motion requests reuse registered cross-game ass
     {id:'shared-audio',family:'AUDIO',role:'SKILL_SOUND',license:'project-original',status:'REPO_ASSET',platform:'SHARED'}
   ],externalSources:[{id:'unneeded-external',name:'Extern',category:'CHARACTER',license:'CC0',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',automaticAcquisitionWhenSelected:true,commercialUseAllowed:true,derivativesAllowed:true,sourceUrl:'https://example.org/source',licenseEvidenceUrl:'https://example.org/license',verifiedAt:'2026-10-11',platformTargets:['UNITY']}]};
   const summary=buildAssetSupplyDecisionSummary({gameId:'fantasy-survival',target:'unity',request:'캐릭터 액션 스킬 모션 이펙트 효과음 개선',registry,executionPlan:{}});
-  for(const family of ['CHARACTER','MOTION','SKILL','VFX','AUDIO']){
-    assert.ok(summary.requiredFamilies.includes(family),family+' must be requested');
-    assert.ok(summary.nextActions.some(a=>a.family===family&&a.assetId?.startsWith('shared-')&&a.action==='ADAPT'),family+' must reuse internal library');
-  }
-  assert.equal(summary.selectedOnDemandExternalGapCount,0,'external downloads only fill actual gaps');
+  for(const family of ['CHARACTER','MOTION','SKILL','VFX','AUDIO'])assert.ok(summary.requiredFamilies.includes(family));
+  assert.equal(summary.nextActions.some(row=>String(row.assetId||'').startsWith('shared-')&&['USE','ADAPT'].includes(row.action)),false);
   assert.equal(summary.productionVerificationGranted,false);
   assert.equal(summary.runtimeVerificationGranted,false);
-  const specific=buildAssetSupplyDecisionSummary({gameId:'fantasy-survival',target:'unity',request:'캐릭터',requirements:[{family:'CHARACTER',role:'dragon'}],registry:{assets:[registry.assets[0]]},executionPlan:{}});
-  assert.ok(!specific.nextActions.some(a=>a.assetId==='shared-hero'),'explicit incompatible role must never map to the generic humanoid');
 });
-
 test('asset supply summary indexes registry and quality lookups instead of nested full scans',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const source=fs.readFileSync(path.resolve(here,'../tools/vibe2-asset-production-plan.mjs'),'utf8');
@@ -5456,35 +4834,19 @@ test('acquired CC0 3D town models remain reusable shared geometry and never clai
   }
 });
 
-test('company catalog revision only claims synchronized common packs and retains pending maintenance debt',()=>{
-  const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-  const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
-  const dir=path.join(repoRoot,'assets','roblox');
-  const packs=registry.assets||[];
-  let verifiedCatalogs=0;
-  for(const name of fs.readdirSync(dir).filter(name=>name.startsWith('common-')).sort()){
-    const file=path.join(dir,name,'catalog.json');
-    if(!fs.existsSync(file))continue;
+test('Rule5 common source catalogs cannot resurrect removed registry assets',()=>{
+  const registry=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.productionPassAuthority,false);
+  for(const row of registry.assets) assert.ok(['CC0','CC0-1.0','CC0 1.0 Universal'].includes(row.license),row.id+' must be CC0 licensed');
+  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const dir=path.join(root,'assets','roblox');
+  for(const name of fs.readdirSync(dir).filter(name=>name.startsWith('common-'))){
+    const file=path.join(dir,name,'catalog.json');if(!fs.existsSync(file))continue;
     const catalog=JSON.parse(fs.readFileSync(file,'utf8'));
-    const pack=packs.find(row=>row.id===catalog.packId);
-    assert.ok(pack,'registered common pack '+catalog.packId);
-    const rows=Array.isArray(catalog.atoms)?catalog.atoms:Array.isArray(catalog.items)?catalog.items:[];
-    assert.equal(pack.catalogVersion,catalog.version,'catalog revision '+catalog.packId);
-    assert.equal(pack.catalogRowCount,rows.length,'catalog row coverage '+catalog.packId);
-    verifiedCatalogs++;
+    assert.equal(registry.assets.some(row=>row.id===catalog.packId||row.packId===catalog.packId),false,'self-authored catalog cannot be restored: '+catalog.packId);
   }
-  assert.ok(verifiedCatalogs>=14,'common pack coverage must not be dropped');
-  assertCurrentCommonCatalogCoverage(registry);
-  const maintenance=registry.internalAssetLibraryAutomation.maintenance||{};
-  const maintenanceVersion=Number(maintenance.synchronizedRegistryVersion)||0;
-  assert.ok(maintenanceVersion<=registry.version,'maintenance cannot point at a future registry');
-  if(maintenanceVersion!==registry.version){
-    assert.equal(maintenance.refreshRequired,true,'unsynchronized asset maintenance must stay explicit');
-    assert.ok(Number(maintenance.assetCount||0)<=packs.length,'unrefreshed maintenance cannot invent current asset count');
-  }
+  assert.equal(registry.assets.some(row=>row.productionVerified===true&&row.nativeRuntimeVerified!==true),false);
 });
-
-
 test('existing Roblox native importer preserves common masters, deduplicates conversion and isolates invalid hashes',async()=>{
  const document={accessors:[{type:'VEC3',count:3},{type:'VEC3',count:3}],meshes:[{primitives:[{attributes:{POSITION:0,NORMAL:1}}]}]};
  const json=Buffer.from(JSON.stringify(document).padEnd(Math.ceil(JSON.stringify(document).length/4)*4,' '));
