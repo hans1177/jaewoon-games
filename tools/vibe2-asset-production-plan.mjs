@@ -2432,6 +2432,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     }
   };
 
+  // [전체 제작물 제거] 카탈로그 동기화가 삭제된 자체 제작물·연습물을 다시 등록하지 않는다.
+  const beforePracticeRemoval=next.assets.length;
+  next.assets=next.assets.filter(asset=>asset?.license!=='project-original'
+    &&asset?.practiceOnly!==true&&asset?.practiceArtifact!==true&&asset?.authority!=='PRACTICE_ONLY');
   const consumerSync=synchronizeSourceBoundAssetConsumers({repoRoot,registry:next,gameCatalog:consumerScanCatalog});
   const sourceConsumerSync=Object.freeze({
     ...consumerSync.summary,
@@ -2718,7 +2722,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     'internalAssetStandard',
     'npcRoleProduction'
   ];
-  const catalogAssetsChanged=organizationAssetsChanged||syncRows.some(row=>row.changed===true);
+  const catalogAssetsChanged=beforePracticeRemoval!==next.assets.length||organizationAssetsChanged||syncRows.some(row=>row.changed===true);
   const changedSections=mutableSections.filter(key=>
     key==='assets'
       ?catalogAssetsChanged

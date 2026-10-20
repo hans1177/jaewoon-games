@@ -5374,3 +5374,15 @@ test('practice artifacts cannot become game acquisition candidates or be promote
   assert.match(guidance,/연습 종료 후/);
   assert.match(guidance,/라이브러리 승격·재사용 금지/);
 });
+
+// [등록 재생 방지] 기존 원장 동기화는 자체 제작물·연습물을 게임 공급 원장에 남기지 않는다.
+test('common library synchronization removes self authored and practice records while retaining CC0 originals',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'library-removal-'));
+ try{
+  const result=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:false,registry:{version:1,
+   assets:[{id:'self',license:'project-original'},{id:'practice',license:'CC0',practiceOnly:true},
+    {id:'external',license:'CC0',sourceUrl:'https://example.org/original'}],externalSources:[]}});
+  assert.deepEqual(result.registry.assets.map(asset=>asset.id),['external']);
+  assert.deepEqual(result.sourceConsumerRegistry.assets.map(asset=>asset.id),['external']);
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
