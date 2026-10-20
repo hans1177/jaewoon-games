@@ -3117,9 +3117,14 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
   const sourceModel=clean(task.assetAuthoring?.sourceModel||linkedSourceModel).replaceAll('\\','/');
   if(exportedMotionProvider&&!/\.(?:fbx|glb)$/i.test(sourceModel))
     throw new Error('EXTERNAL_MOTION_FBX_OR_GLB_REQUIRED:'+exportedMotionProvider);
-  const sourceLicense=clean(task.assetAuthoring?.sourceLicense||librarySource?.sourceLicense
-    ||task.assetAuthoring?.imageLicense||imageRow?.license);
-  const sourceCredit=clean(task.assetAuthoring?.sourceCredit||librarySource?.sourceCredit||imageRow?.attribution||imageRow?.credit);
+  // Image input owns its own rights/attribution. A coincidentally selected library
+  // model must never replace the supplied image's license or credit.
+  const sourceLicense=clean(task.assetAuthoring?.sourceLicense||(imageRequested
+    ?task.assetAuthoring?.imageLicense||imageRow?.license
+    :librarySource?.sourceLicense||task.assetAuthoring?.imageLicense||imageRow?.license));
+  const sourceCredit=clean(task.assetAuthoring?.sourceCredit||(imageRequested
+    ?imageRow?.attribution||imageRow?.credit
+    :librarySource?.sourceCredit||imageRow?.attribution||imageRow?.credit));
   const checkSourceLicense=()=>{
     if(!['project-original','cc0','cc-by'].includes(sourceLicense.toLowerCase()))
       throw new Error('IMAGE_TO_MESH_LICENSE_REQUIRED');
