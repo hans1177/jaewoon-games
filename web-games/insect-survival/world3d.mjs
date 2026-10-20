@@ -6,7 +6,7 @@ import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 const asset=new URL('../../assets/',import.meta.url);
 const BASE=Object.freeze({
- hero:{src:'roblox/actors/native/knight.glb',format:'glb',height:1.32,color:'#cfcc9e'},
+ hero:{src:'roblox/actors/native/rogue.glb',format:'glb',height:1.32,color:'#9fc89c'},
  crawler:{src:'shared/forest/caterpillar.glb',format:'glb',height:.62,color:'#c8df94'},
  spider:{src:'shared/forest/monster-53.obj',format:'obj',height:.86,color:'#d5a1a5'},
  tree:{src:'shared/forest/tree.fbx',format:'fbx',height:9,color:'#76bb72'},
