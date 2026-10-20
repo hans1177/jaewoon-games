@@ -9825,7 +9825,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:10:39.607Z",
-      "updatedAt": "2026-10-20T23:03:26.068Z",
+      "updatedAt": "2026-10-20T23:04:50.975Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -9843,17 +9843,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "6da1b5a0d23a500d752312b0d1a659c4612ac63d",
       "robloxBuildArtifactIdentity": "sha256:1628d3246c8dc88c9d6a547fcc00b7576222b9b43421810cc8ab8fda33719af5",
-      "robloxBuildPassedAt": "2026-10-20T22:26:28.873Z",
+      "robloxBuildPassedAt": "2026-10-20T23:04:50.975Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T22:26:28.873Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T23:04:50.975Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T22:15:31.202Z",
+        "checkedAt": "2026-10-20T22:53:36.455Z",
         "sourceRevision": "6da1b5a0d23a500d752312b0d1a659c4612ac63d",
         "artifactIdentity": "sha256:1628d3246c8dc88c9d6a547fcc00b7576222b9b43421810cc8ab8fda33719af5",
         "secondaryOwnerFocus": false,
@@ -9896,7 +9896,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "All required validation checks for runtime testing have failed, preventing the package from starting runtime testing."
+            "note": "Runtime testing requires all validation checks (web, music, native web, native music) to pass. The BUILD_EVIDENCE indicates these validations failed, preventing the package from starting runtime testing."
           }
         ],
         "blockers": [
@@ -28206,7 +28206,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-20T23:04:42.994Z",
+  "updatedAt": "2026-10-20T23:04:50.975Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -28273,5 +28273,6 @@
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
   "executionContractVersion": 1,
-  "robloxSourceParallelism": null
+  "robloxSourceParallelism": null,
+  "robloxTechnicalParallelism": null
 }
