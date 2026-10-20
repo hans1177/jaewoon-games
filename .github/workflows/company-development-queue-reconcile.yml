@@ -125,6 +125,8 @@ jobs:
               encoding:'utf8',maxBuffer:16*1024*1024
             }));
             const ownerRemoval=mainCatalog.permanentRemovalPolicy||{};
+            const approvedFocusedGame=(mainCatalog.games||[]).find(row=>row.id==='simple-rpg');
+            const machineRemoved=policy.permanentProjectRemoval?.ids;
             const runtimeCatalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
             const priorRemoval=runtimeCatalog.permanentRemovalPolicy||{};
             const allowedReactivation='simple-rpg';
@@ -135,6 +137,12 @@ jobs:
               ||!focus.ownerFocusedGameIds.includes(allowedReactivation)
               ||focus.ownerFocusedGamePlatforms?.[allowedReactivation]!=='ROBLOX'
               ||ownerRemoval.authority!=='OWNER_DIRECTIVE'
+              ||!Array.isArray(machineRemoved)
+              ||machineRemoved.length!==ownerRemoval.ids?.length
+              ||machineRemoved.some(id=>!ownerRemoval.ids.includes(id))
+              ||!approvedFocusedGame
+              ||!['ACTIVE','REBUILD'].includes(approvedFocusedGame.lifecycleState)
+              ||approvedFocusedGame.productionClass!=='DEVELOPMENT_CONFIRMED'
               ||ownerRemoval.reentryAllowed!==false
               ||ownerRemoval.automaticRecoveryAllowed!==false
               ||ownerRemoval.automaticMaintenanceAllowed!==false
@@ -142,7 +150,7 @@ jobs:
               ||!Array.isArray(ownerRemoval.ids)
               ||!Array.isArray(priorRemoval.ids)
               ||ownerRemoval.ids.includes(allowedReactivation)
-              ||!String(ownerRemoval.reason||'').includes('SIMPLE_RPG_REACTIVATED_FOR_OWNER_EXACT_ROBLOX_FOCUS_2026-10-19')){
+              ||machineRemoved.includes(allowedReactivation)){
               throw new Error('OWNER_EXACT_ROBLOX_REACTIVATION_POLICY_NOT_VERIFIED');
             }
             const removedWithoutOwnerAuthorization=priorRemoval.ids.filter(id=>
