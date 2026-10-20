@@ -1929,50 +1929,10 @@ test('item family requires world drop and inventory presentation when item-like'
 });
 
 
-test('monster adventure internal creature pack matches the current nine-species roster',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const root=path.resolve(here,'..');
-  const packDir=path.join(root,'assets','roblox','monster-adventure-v1');
-  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
-  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
-  const web=fs.readFileSync(path.join(root,'web-games','monster-adventure','index.html'),'utf8');
-  const expected=[
-    ['flamefox','불꽃여우',900,850],
-    ['leafturtle','새싹거북',900,850],
-    ['waterotter','물방울수달',1000,900],
-    ['boar','풀숲멧돼지',850,800],
-    ['bat','밤날개',450,400],
-    ['bird','바람새',550,500],
-    ['hornbull','뿔바위소',950,900],
-    ['rockgator','철갑악어',950,900],
-    ['stormeagle','폭풍독수리',650,650],
-  ];
-  assert.equal(catalog.assets.length,9);
-  assert.equal(catalog.productionVerified,false);
-  assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(catalog.authoringQualityTarget,100);
-  assert.equal(quality.staticAuthoringChecklist.score,100);
-  assert.equal(quality.staticAuthoringChecklist.scoreType,'STATIC_AUTHORING_CHECKLIST_NOT_RUNTIME_QUALITY');
-  assert.equal(quality.quality120.claimedRuntimeScore,null);
-  assert.equal(quality.productionVerified,false);
-  assert.equal(quality.gameplayAuthority,false);
-  for(const [id,name,minVertices,minFaces] of expected){
-    const objPath=path.join(packDir,id+'.obj');
-    assert.equal(fs.existsSync(objPath),true,id);
-    const source=fs.readFileSync(objPath,'utf8');
-    const vertices=source.split(/\r?\n/).filter(line=>line.startsWith('v ')).length;
-    const faces=source.split(/\r?\n/).filter(line=>line.startsWith('f ')).length;
-    assert.ok(vertices>=minVertices,id+':vertices='+vertices);
-    assert.ok(faces>=minFaces,id+':faces='+faces);
-    assert.ok(source.includes('mtllib monster-adventure.mtl'),id);
-    assert.ok(source.includes('usemtl '),id);
-    assert.ok(web.includes(id),id+':web-id');
-    assert.ok(web.includes(name),id+':web-name');
-    const row=catalog.assets.find(asset=>asset.id===id);
-    assert.ok(row,id+':catalog');
-    assert.equal(row.vertices,vertices,id+':catalog-vertices');
-    assert.equal(row.faces,faces,id+':catalog-faces');
-  }
+test('removed self authored pack stays absent: monster-adventure-v1',()=>{
+  assert.equal(fs.existsSync('assets/roblox/monster-adventure-v1'),false);
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.equal(registry.assets.some(asset=>asset.id==='roblox-monster-adventure-v1'||asset.packId==='roblox-monster-adventure-v1'),false);
 });
 
 test('monster adventure pack is registered as repo assets without false production verification',()=>{
@@ -1999,52 +1959,10 @@ test('monster adventure pack is registered as repo assets without false producti
 });
 
 
-test('horror lore prop pack matches the current ten-item Lore roster',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const root=path.resolve(here,'..');
-  const packDir=path.join(root,'assets','roblox','horror-lore-v1');
-  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
-  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
-  const config=fs.readFileSync(path.join(root,'roblox-games','horror-escape-room','shared','GameConfig.luau'),'utf8');
-  const mtl=fs.readFileSync(path.join(packDir,'horror-lore.mtl'),'utf8');
-  const materials=new Set(mtl.split(/\r?\n/).filter(line=>line.startsWith('newmtl ')).map(line=>line.slice(7).trim()));
-  const expected=[
-    ['SCHOOL_01','school_01','빈 교실 출석부',100,70],
-    ['SCHOOL_02','school_02','사물함 낙서',100,70],
-    ['SCHOOL_03','school_03','체육관 호루라기',300,200],
-    ['SCHOOL_04','school_04','급식표 뒷면',100,80],
-    ['HOSPITAL_01','hospital_01','퇴원 기록',80,60],
-    ['HOSPITAL_02','hospital_02','수술실 메모',220,160],
-    ['HOSPITAL_03','hospital_03','영안실 번호표',300,200],
-    ['PARK_01','park_01','찢어진 입장권',350,280],
-    ['PARK_02','park_02','회전목마 사진',700,550],
-    ['PARK_03','park_03','광대 분실물',350,300],
-  ];
-  assert.equal(catalog.assets.length,10);
-  assert.equal(catalog.productionVerified,false);
-  assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(catalog.authoringQualityTarget,100);
-  assert.equal(quality.staticAuthoringChecklist.score,100);
-  assert.equal(quality.quality120.claimedRuntimeScore,null);
-  assert.equal(quality.productionVerified,false);
-  for(const [loreId,fileId,name,minVertices,minFaces] of expected){
-    assert.ok(config.includes('Id="'+loreId+'"'),loreId+':config-id');
-    assert.ok(config.includes('Name="'+name+'"'),loreId+':config-name');
-    const source=fs.readFileSync(path.join(packDir,fileId+'.obj'),'utf8');
-    const lines=source.split(/\r?\n/);
-    const vertices=lines.filter(line=>line.startsWith('v ')).length;
-    const faces=lines.filter(line=>line.startsWith('f ')).length;
-    const used=[...new Set(lines.filter(line=>line.startsWith('usemtl ')).map(line=>line.slice(7).trim()))];
-    assert.ok(vertices>=minVertices,fileId+':vertices='+vertices);
-    assert.ok(faces>=minFaces,fileId+':faces='+faces);
-    assert.ok(lines.filter(line=>line.startsWith('g ')).length>=8,fileId+':semantic-groups');
-    assert.equal(used.filter(mat=>!materials.has(mat)).length,0,fileId+':materials');
-    const row=catalog.assets.find(asset=>asset.id===loreId);
-    assert.ok(row,loreId+':catalog');
-    assert.equal(row.file,fileId+'.obj',loreId+':catalog-file');
-    assert.equal(row.vertices,vertices,loreId+':catalog-vertices');
-    assert.equal(row.faces,faces,loreId+':catalog-faces');
-  }
+test('removed self authored pack stays absent: horror-lore-v1',()=>{
+  assert.equal(fs.existsSync('assets/roblox/horror-lore-v1'),false);
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.equal(registry.assets.some(asset=>asset.id==='roblox-horror-lore-v1'||asset.packId==='roblox-horror-lore-v1'),false);
 });
 
 test('horror lore pack is registered for automatic game binding without false verification',()=>{
@@ -2077,54 +1995,10 @@ test('horror lore pack is registered for automatic game binding without false ve
 });
 
 
-test('survival core world pack matches current StudioAssets atoms',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const root=path.resolve(here,'..');
-  const packDir=path.join(root,'assets','roblox','survival-core-world-v1');
-  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
-  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
-  const config=fs.readFileSync(path.join(root,'roblox-games','survival','shared','GameConfig.luau'),'utf8');
-  const mtl=fs.readFileSync(path.join(packDir,'survival-core-world.mtl'),'utf8');
-  const materials=new Set(mtl.split(/\r?\n/).filter(line=>line.startsWith('newmtl ')).map(line=>line.slice(7).trim()));
-  const expected=[
-    ['ENVIRONMENT','TREE_TRUNK_THICK','tree_trunk_thick',500,300],
-    ['ENVIRONMENT','TREE_CROWN_ROUND','tree_crown_round',800,650],
-    ['ENVIRONMENT','ROCK_MEDIUM','rock_medium',250,200],
-    ['ENVIRONMENT','ROAD_DIRT','road_dirt',800,600],
-    ['BUILDING','FOUNDATION_RECT','foundation_rect',90,70],
-    ['BUILDING','WALL_SOLID','wall_solid',100,70],
-    ['BUILDING','DOOR_SINGLE','door_single',180,130],
-    ['BUILDING','ROOF_GABLE','roof_gable',160,90],
-    ['PROP','CHEST','chest',180,140],
-    ['PROP','CRATE','crate',100,70],
-    ['PROP','LAMP','lamp',550,400]
-  ];
-  assert.equal(catalog.assets.length,11);
-  assert.equal(catalog.productionVerified,false);
-  assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(catalog.authoringQualityTarget,100);
-  assert.equal(quality.staticAuthoringChecklist.score,100);
-  assert.equal(quality.quality120.claimedRuntimeScore,null);
-  assert.equal(quality.productionVerified,false);
-  for(const [family,atomId,fileId,minVertices,minFaces] of expected){
-    assert.ok(config.includes(atomId),atomId+':config');
-    const source=fs.readFileSync(path.join(packDir,fileId+'.obj'),'utf8');
-    const lines=source.split(/\r?\n/);
-    const vertices=lines.filter(line=>line.startsWith('v ')).length;
-    const faces=lines.filter(line=>line.startsWith('f ')).length;
-    const groups=lines.filter(line=>line.startsWith('g ')).length;
-    const used=[...new Set(lines.filter(line=>line.startsWith('usemtl ')).map(line=>line.slice(7).trim()))];
-    assert.ok(vertices>=minVertices,fileId+':vertices='+vertices);
-    assert.ok(faces>=minFaces,fileId+':faces='+faces);
-    assert.ok(groups>=5,fileId+':semantic-groups');
-    assert.equal(used.filter(mat=>!materials.has(mat)).length,0,fileId+':materials');
-    const row=catalog.assets.find(asset=>asset.atomId===atomId);
-    assert.ok(row,atomId+':catalog');
-    assert.equal(row.family,family,atomId+':family');
-    assert.equal(row.source,fileId+'.obj',atomId+':source');
-    assert.equal(row.vertices,vertices,atomId+':catalog-vertices');
-    assert.equal(row.faces,faces,atomId+':catalog-faces');
-  }
+test('removed self authored pack stays absent: survival-core-world-v1',()=>{
+  assert.equal(fs.existsSync('assets/roblox/survival-core-world-v1'),false);
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.equal(registry.assets.some(asset=>asset.id==='roblox-survival-core-world-v1'||asset.packId==='roblox-survival-core-world-v1'),false);
 });
 
 test('survival core world pack is registered for automatic atom binding without false verification',()=>{
@@ -2163,52 +2037,10 @@ test('survival core world pack is registered for automatic atom binding without 
 });
 
 
-test('survival combat parts pack matches current modular StudioAssets atoms',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const root=path.resolve(here,'..');
-  const packDir=path.join(root,'assets','roblox','survival-combat-parts-v1');
-  const catalog=JSON.parse(fs.readFileSync(path.join(packDir,'catalog.json'),'utf8'));
-  const quality=JSON.parse(fs.readFileSync(path.join(packDir,'quality-evidence.json'),'utf8'));
-  const config=fs.readFileSync(path.join(root,'roblox-games','survival','shared','GameConfig.luau'),'utf8');
-  const mtl=fs.readFileSync(path.join(packDir,'survival-combat-parts.mtl'),'utf8');
-  const materials=new Set(mtl.split(/\r?\n/).filter(line=>line.startsWith('newmtl ')).map(line=>line.slice(7).trim()));
-  const expected=[
-    ['WEAPON','BLADE_LONG','blade_long',40,30],
-    ['WEAPON','GUARD_CROSS','guard_cross',180,120],
-    ['WEAPON','GRIP_LONG','grip_long',300,200],
-    ['CHARACTER','TORSO_CLOTH','torso_cloth',220,180],
-    ['CHARACTER','SHOULDER_LIGHT','shoulder_light',240,190],
-    ['CHARACTER','BACK_CAPE','back_cape',200,140],
-    ['CREATURE','HEAD_CANINE','head_canine',700,600],
-    ['CREATURE','JAW_LONG','jaw_long',500,380],
-    ['CREATURE','CLAW','claw',500,380],
-  ];
-  assert.equal(catalog.assets.length,9);
-  assert.equal(catalog.productionVerified,false);
-  assert.equal(catalog.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(catalog.authoringQualityTarget,100);
-  assert.equal(quality.staticAuthoringChecklist.score,100);
-  assert.equal(quality.quality120.claimedRuntimeScore,null);
-  assert.equal(quality.productionVerified,false);
-  for(const [family,atomId,fileId,minVertices,minFaces] of expected){
-    assert.ok(config.includes(atomId),atomId+':config');
-    const source=fs.readFileSync(path.join(packDir,fileId+'.obj'),'utf8');
-    const lines=source.split(/\r?\n/);
-    const vertices=lines.filter(line=>line.startsWith('v ')).length;
-    const faces=lines.filter(line=>line.startsWith('f ')).length;
-    const groups=lines.filter(line=>line.startsWith('g ')).length;
-    const used=[...new Set(lines.filter(line=>line.startsWith('usemtl ')).map(line=>line.slice(7).trim()))];
-    assert.ok(vertices>=minVertices,fileId+':vertices='+vertices);
-    assert.ok(faces>=minFaces,fileId+':faces='+faces);
-    assert.ok(groups>=5,fileId+':semantic-groups');
-    assert.equal(used.filter(mat=>!materials.has(mat)).length,0,fileId+':materials');
-    const row=catalog.assets.find(asset=>asset.atomId===atomId);
-    assert.ok(row,atomId+':catalog');
-    assert.equal(row.family,family,atomId+':family');
-    assert.equal(row.source,fileId+'.obj',atomId+':source');
-    assert.equal(row.vertices,vertices,atomId+':catalog-vertices');
-    assert.equal(row.faces,faces,atomId+':catalog-faces');
-  }
+test('removed self authored pack stays absent: survival-combat-parts-v1',()=>{
+  assert.equal(fs.existsSync('assets/roblox/survival-combat-parts-v1'),false);
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.equal(registry.assets.some(asset=>asset.id==='roblox-survival-combat-parts-v1'||asset.packId==='roblox-survival-combat-parts-v1'),false);
 });
 
 test('survival combat parts are registered for module-level automatic replacement without false verification',()=>{
@@ -2307,22 +2139,9 @@ test('equivalent compatible loadout prefers company-common base over game-dedica
   assert.equal(scoreStudioAssetCandidate({asset:common,gameDna:{targetPlatform:'ROBLOX'}}).commonBasePreferenceApplied,true);
 });
 
-test('generic survival-origin world and combat assets are classified as company-common bases',()=>{
-  const here=path.dirname(fileURLToPath(import.meta.url));
-  const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
-  const packs=['roblox-survival-core-world-v1','roblox-survival-combat-parts-v1'];
-  for(const packId of packs){
-    const members=registry.assets.filter(row=>row.id===packId||row.packId===packId);
-    assert.ok(members.length>1,packId);
-    for(const row of members){
-      assert.equal(row.companyCommonBase,true,row.id);
-      assert.equal(row.reuseScope,'COMPANY_COMMON_BASE',row.id);
-      assert.equal(row.automaticCrossGameReuseAllowed,true,row.id);
-      assert.equal(row.crossGameReuseRequiresCompatibilityPass,true,row.id);
-      assert.equal(row.styleAdaptationRequiredPerGame,true,row.id);
-      assert.ok((row.tags||[]).includes('COMPANY_COMMON_BASE'),row.id);
-    }
-  }
+test('self authored packs are not company common reusable assets',()=>{
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.equal(registry.assets.some(asset=>asset.license==='project-original'),false);
 });
 
 test('common UI registry stays unverified until real consumer runtime evidence exists',()=>{
