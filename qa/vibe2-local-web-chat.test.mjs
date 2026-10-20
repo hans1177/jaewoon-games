@@ -213,6 +213,8 @@ test('local receiver bypasses hosted runner admission while preserving owner-onl
   assert.match(local,/runs-on: \[self-hosted, Windows, X64, jaewoon-unity\]/);
   assert.match(local,/contents: read/);assert.match(local,/persist-credentials: false/);
   assert.match(local,/--receive-owner-comment/);
+  assert.match(local,/shell: cmd/);assert.match(local,/if errorlevel 1 exit \/b 1/);
+  assert.doesNotMatch(local,/ExecutionPolicy|Set-ExecutionPolicy|shell: powershell/);
   const expression=/if: >-\n([\s\S]+?)\n    runs-on:/.exec(local)[1].trim();
   const admits=new Function('github','startsWith','return ('+expression+');');
   const github={event_name:'issue_comment',repository:'hans1177/jaewoon-games',actor:'hans1177',

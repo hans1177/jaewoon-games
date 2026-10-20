@@ -58,10 +58,10 @@ jobs:
         with:
           node-version: '22'
       - name: Receive owner instruction in the existing local Vibe
-        shell: powershell
+        shell: cmd
         run: |
           node tools/vibe2-local-web-chat.mjs --receive-owner-comment
-          if ($LASTEXITCODE -ne 0) { throw 'Local Vibe did not return a verified transport response.' }
+          if errorlevel 1 exit /b 1
 
   bridge:
     needs: local-advisory
