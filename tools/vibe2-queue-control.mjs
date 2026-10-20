@@ -536,6 +536,19 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
   if (!goal) throw new Error('task goal required');
   if (queue.tasks.some((task) => task.id === id)) throw new Error(`duplicate task id: ${id}`);
   const ownerDirective = Boolean(taskInput.ownerDirective);
+  // Exact autonomous retries/dispatches for an already active file+goal do not
+  // consume another worker. Owner directives are never coalesced or discarded.
+  const files=Array.isArray(taskInput.responsibleFiles)
+    ?[...new Set(taskInput.responsibleFiles.map(clean).filter(Boolean))].sort():[];
+  if(!ownerDirective&&files.length&&queue.tasks.some(task=>{
+    const active=['queued','running'].includes(clean(task.status).toLowerCase());
+    const existing=[...new Set((task.responsibleFiles||[]).map(clean).filter(Boolean))].sort();
+    return active&&task.ownerDirective!==true&&clean(task.gameId)===clean(taskInput.gameId)
+      &&clean(task.target).toLowerCase()===clean(taskInput.target).toLowerCase()
+      &&clean(task.department).toLowerCase()===clean(taskInput.department||'development').toLowerCase()
+      &&clean(task.type).toLowerCase()===clean(taskInput.type||'implementation').toLowerCase()
+      &&clean(task.goal)===goal&&JSON.stringify(files)===JSON.stringify(existing);
+  }))return queue;
   return createVibeContinuousQueue({
     maxConcurrentTasks: queue.maxConcurrentTasks,
     tasks: [...queue.tasks, {
