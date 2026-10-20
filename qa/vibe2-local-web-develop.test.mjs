@@ -58,6 +58,23 @@ test('ambiguous or HTML-breaking model patches fail closed',()=>{
     JSON.stringify({oldText:'<html><body>hello world</body></html>',newText:'oops'})),
     /MODEL_PATCH_STRUCTURE_OR_SIZE_INVALID/);
 });
+test('owner game ideas rank existing gameplay modules and preserve explicit exact match',()=>{
+  const header='<html>'+('header context '.repeat(1700));
+  const menu='function renderMenu(){ return "menu"; }';
+  const mid='middle context '.repeat(1700);
+  const enemies='function spawnMonster(){ return monsterSpawn + enemyHealth + bossDamage; }';
+  const source=header+menu+mid+enemies+'</html>';
+  const idea=selectRelevantExcerpt(source,'','몬스터와 보스 출현 아이디어');
+  assert.equal(idea.strategy,'IDEA_MATCHED_EXISTING_MODULE');
+  assert.ok(idea.signals.includes('monster'));
+  assert.match(idea.text,/spawnMonster/);
+  const manual=selectRelevantExcerpt(source,'renderMenu','몬스터와 보스 출현 아이디어');
+  assert.equal(manual.strategy,'OWNER_EXACT_MATCH');
+  assert.match(manual.text,/renderMenu/);
+  const fallback=selectRelevantExcerpt(source,'','완전히 무관한 요청');
+  assert.equal(fallback.strategy,'SOURCE_START');
+});
+
 test('only bounded relevant source excerpts are offered to a small local model',()=>{
   const source='a'.repeat(24000)+'PLACE_HERE'+'b'.repeat(2000);
   const found=selectRelevantExcerpt(source,'PLACE_HERE');
@@ -66,7 +83,7 @@ test('only bounded relevant source excerpts are offered to a small local model',
   assert.match(found.text,/PLACE_HERE/);
   assert.throws(()=>selectRelevantExcerpt(source,'UNKNOWN_NEEDLE'),/EXCERPT_MATCH_NOT_FOUND/);
 });
-test('manual merge requires impact-scoped current-head QA, security enforce, and no failed deploy',()=>{
+test('manual merge requires head QA and security; Cloudflare is separately not a deploy PASS',()=>{
   const sha='a'.repeat(40);
   const names=['Vibe2 Parallelism Contract QA','Company Evolution QA','Vibe3 Engine Contract',
     'Company Records Governance','Homepage Manager','All Games Development Sync',
@@ -81,5 +98,7 @@ test('manual merge requires impact-scoped current-head QA, security enforce, and
   assert.equal(requiredReviewPass(runs,checks.concat({name:'Workers Builds: jaewoon-multiplayer',
     status:'completed',conclusion:'failure',app:{slug:'cloudflare-workers-and-pages'}}),sha).pass,true);
   assert.equal(requiredReviewPass(runs,checks.concat({name:'Cloudflare Pages',
-    status:'completed',conclusion:'failure',app:{slug:'cloudflare-workers-and-pages'}}),sha).pass,false);
+    status:'completed',conclusion:'failure',app:{slug:'cloudflare-workers-and-pages'}}),sha).pass,true);
+  assert.equal(requiredReviewPass(runs.map(r=>r.name==='Company Security Immune System'
+    ?{...r,conclusion:'failure'}:r),checks,sha).pass,false);
 });
