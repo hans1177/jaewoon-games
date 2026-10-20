@@ -204,6 +204,49 @@ function developmentFloorSnapshot(developmentQueue={}) {
   };
 }
 
+
+export function summarizeVerifiedGameProduction(gameQueue={tasks:[]}){
+  const tasks=Array.isArray(gameQueue?.tasks)?gameQueue.tasks:[];
+  const games=new Map();
+  const activeExact=new Map();
+  const duplicateActiveGroups=[];
+  for(const t of tasks){
+    const id=clean(t.gameId),status=clean(t.status).toLowerCase();
+    if(!id)continue;
+    if(!games.has(id))games.set(id,{gameId:id,focused:false,ownerDirectTasks:0,
+      queued:0,running:0,verifiedPackages:0,failed:0,causalRepairPending:0,
+      deploymentVerified:false,gameCompletionVerified:false});
+    const g=games.get(id);
+    if(t.ownerFocusedCaretaker===true||t.focusedCaretaker===true)g.focused=true;
+    if(t.ownerDirective===true)g.ownerDirectTasks++;
+    if(status==='queued')g.queued++;
+    if(status==='running')g.running++;
+    // Only the canonical verified terminal task counts, not model prose or elapsed time.
+    if(status==='verified')g.verifiedPackages++;
+    if(status==='failed')g.failed++;
+    if(status==='queued'&&clean(t.lastOutcome)==='FAIL'&&Number(t.retries)>0)g.causalRepairPending++;
+    if(!t.ownerDirective&&['queued','running'].includes(status)){
+      const paths=[...new Set((t.responsibleFiles||[]).map(clean).filter(Boolean))].sort();
+      if(!paths.length)continue;
+      const key=JSON.stringify([id,clean(t.target),clean(t.department),clean(t.type),clean(t.goal),paths]);
+      const cohort=activeExact.get(key)||[];
+      cohort.push(clean(t.id));
+      activeExact.set(key,cohort);
+    }
+  }
+  for(const ids of activeExact.values())if(ids.length>1)duplicateActiveGroups.push(ids);
+  const byGame=[...games.values()].sort((a,b)=>Number(b.focused)-Number(a.focused)
+    ||b.causalRepairPending-a.causalRepairPending||b.verifiedPackages-a.verifiedPackages
+    ||a.gameId.localeCompare(b.gameId));
+  return {gameCount:byGame.length,focusedGameCount:byGame.filter(g=>g.focused).length,
+    verifiedPackageCount:byGame.reduce((n,g)=>n+g.verifiedPackages,0),
+    failedPackageCount:byGame.reduce((n,g)=>n+g.failed,0),
+    duplicateActiveGroups:duplicateActiveGroups.slice(0,40),
+    games:byGame,
+    publicationProof:'NOT_IN_GAME_TASK_QUEUE',
+    releaseAndRuntimeVerificationAuthority:'EXISTING_EXACT_BUILD_DEPLOYMENT_AND_POST_PUBLISH_GATES'};
+}
+
 export function analyzeSystemAiBottlenecks({
   systemAiQueue={tasks:[]},
   gameQueue={tasks:[]},
@@ -215,6 +258,7 @@ export function analyzeSystemAiBottlenecks({
 }={}){
   const tasks=Array.isArray(systemAiQueue?.tasks)?systemAiQueue.tasks:[];
   const gameTasks=Array.isArray(gameQueue?.tasks)?gameQueue.tasks:[];
+  const productionOutcome=summarizeVerifiedGameProduction(gameQueue);
   const queued=tasks.filter(t=>clean(t.status).toLowerCase()==='queued');
   const running=tasks.filter(t=>clean(t.status).toLowerCase()==='running');
   const awaiting=tasks.filter(t=>clean(t.status).toLowerCase()==='awaiting-supervisor');
@@ -382,6 +426,11 @@ export function analyzeSystemAiBottlenecks({
   if(caretakerHotspots.length)actions.push('PRIORITIZE_PER_GAME_CARETAKER_BACKLOG');
   if(pendingRuns>0)actions.push('REDUCE_SCHEDULER_PENDING_RUN_WAIT');
   if(duplicateWorkflowRuns>0)actions.push('COLLAPSE_EXACT_DUPLICATE_INGRESS');
+  if(productionOutcome.duplicateActiveGroups.length)actions.push('COLLAPSE_EXACT_DUPLICATE_GAME_WORK');
+  if(productionOutcome.games.some(g=>g.causalRepairPending>0))
+    actions.push('REPAIR_EXACT_FAILED_GAME_GATE_BEFORE_NEW_POLISH');
+  if(productionOutcome.games.some(g=>g.focused&&(g.queued>0||g.running>0)))
+    actions.push('FINISH_OWNER_FOCUSED_GAME_WITH_VERIFIED_RUNTIME_EVIDENCE');
   if(stalePrimaryRuns>0)actions.push('CANCEL_STALE_PRIMARY_REVISION_INGRESS');
   if(joblessOrphanQueuedRuns>0)actions.push('EXCLUDE_JOBLESS_ORPHAN_FROM_RUNNER_PRESSURE');
   if(runnerPressure)actions.push('PRESERVE_PRIMARY_GAME_RUNNER_CAPACITY');
@@ -401,6 +450,7 @@ export function analyzeSystemAiBottlenecks({
     disjointQueuedTaskIds:disjointQueued.map(t=>clean(t.id)).filter(Boolean),
     caretakerHotspots,
     development,
+    productionOutcome,
     externalLearningApplications,
     workflow:{pendingRuns,reservationWaitMs,fanInWaitMs,supervisorReviewWaitMs,observedRunnerQueuedRuns,runnerQueuedRuns,runnerInProgressRuns,observedPrimaryGameQueuedRuns,primaryGameQueuedRuns,joblessOrphanQueuedRuns,joblessOrphanPrimaryRuns,duplicateWorkflowRuns,stalePrimaryRuns,runnerPressure},
     configuredBatch:configured,
