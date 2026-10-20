@@ -20,7 +20,8 @@ export function inspectPublicGameUi({sourceHtml='',publishedHtml='',gameId=''}={
   const original=String(sourceHtml),published=String(publishedHtml);
   const errorCodes=[];
   if(!original.trim()||!published.trim())errorCodes.push('MISSING_CANONICAL_OR_PUBLISHED_HTML');
-  if(suspicious.test(published))errorCodes.push('UNAUTHORIZED_DEV_INSPECTOR_ON_PUBLIC_GAME');
+  if(suspicious.test(published)&&!suspicious.test(original))
+    errorCodes.push('UNAUTHORIZED_DEV_INSPECTOR_ON_PUBLIC_GAME');
   const oldTags=inlineScripts(original),newTags=inlineScripts(published);
   if(newTags.length>oldTags.length)errorCodes.push('UNAUTHORIZED_SCRIPT_TAG_IN_PUBLISHED_GAME');
   const approved=oldTags.map(scriptSource).sort(),generated=newTags.map(scriptSource).sort();
