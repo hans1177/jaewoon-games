@@ -142,7 +142,7 @@ test('CC0 five-choice 3D player customizer is source-bound and does not rewrite 
  const models=['knight','mage','barbarian','rogue','rogue-hooded'];
  const source=ledger.entries.find(x=>x.id==='kaykit-adventurers-cc0-v1');
  assert.ok(source&&source.license==='CC0-1.0'&&source.commercialUse===true);
- assert.match(source.evidence.licenseUrl,/KayKit-Character-Pack-Adventures-1\\.0/);
+ assert.match(source.evidence.licenseUrl,/KayKit-Character-Pack-Adventures-1\.0/);
  for(const name of models){
   const path='assets/roblox/actors/native/'+name+'.glb';
   const registered=registry.assets.find(x=>x.path===path);
@@ -159,9 +159,9 @@ test('CC0 five-choice 3D player customizer is source-bound and does not rewrite 
  assert.match(index,/id="avatarPanel"/);
  assert.match(index,/AVATAR_SAVE_KEY='jaewoon_fantasy_survival_avatar_v1'/);
  assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
- assert.match(index,/module\\.createWorld3d\\(document\\.getElementById\\('world3d'\\),avatarAppearance\\)/);
- assert.match(moduleSource,/async function setAvatarAppearance\\(requested\\)/);
- assert.match(moduleSource,/getAvatarAppearance:\(\)=>\(\{\\.\\.\\.selectedAppearance\}\)/);
+ assert.match(index,/module\.createWorld3d\(document\.getElementById\('world3d'\),avatarAppearance\)/);
+ assert.match(moduleSource,/async function setAvatarAppearance\(requested\)/);
+ assert.match(moduleSource,/getAvatarAppearance:\(\)=>\(\{\.\.\.selectedAppearance\}\)/);
  assert.match(moduleSource,/productionReady:false/);
 });
 
