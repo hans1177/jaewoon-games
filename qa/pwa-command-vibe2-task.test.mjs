@@ -85,3 +85,21 @@ test('explicit web directive is restricted to WEB even when Unity project exists
   assert.equal(result.tasks[0].target,'web');
   assert.ok(result.tasks[0].evidence.includes('source-root:web-games/daechung-rpg'));
 });
+
+test('owner comment rejects forged identities, edits, malformed commands and platform expansion',()=>{
+  const payload={id:UUID,game_id:'insect-survival',platform:'web',kind:'directive',body:'기존 저장 보존',autoDeployAfterVerifiedQa:true};
+  const event={action:'created',repository:{full_name:'hans1177/jaewoon-games'},sender:{login:'hans1177'},issue:{number:8664},
+    comment:{id:123,author_association:'OWNER',user:{login:'hans1177',type:'User'},body:'/vibe-local-web '+JSON.stringify(payload)}};
+  const context={actor:'hans1177',repository:'hans1177/jaewoon-games'};
+  assert.equal(validateLocalWebOwnerEvent(event,context).body,payload.body);
+  for(const edit of [
+    e=>e.comment.user.login='attacker',e=>e.sender.login='attacker',e=>e.comment.user.type='Bot',
+    e=>e.comment.author_association='COLLABORATOR',e=>e.repository.full_name='other/repo',
+    e=>e.action='edited',e=>e.comment.body='/vibe-local-web {',
+    e=>e.comment.body='/vibe-local-web '+JSON.stringify({...payload,platform:'unity'}),
+    e=>e.comment.body='/vibe-local-web '+JSON.stringify({...payload,body:'x'.repeat(2001)}),
+    e=>e.comment.body='/vibe-local-web '+JSON.stringify({...payload,body:'x\u0000y'})
+  ]){const invalid=structuredClone(event);edit(invalid);assert.throws(()=>validateLocalWebOwnerEvent(invalid,context));}
+  assert.throws(()=>validateLocalWebOwnerEvent(event,{...context,actor:'attacker'}));
+  assert.throws(()=>validateLocalWebOwnerEvent(event,{...context,repository:'other/repo'}));
+});
