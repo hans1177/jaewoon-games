@@ -71,7 +71,13 @@ export function buildPwaVibeTask(task,context={}){
 export function ingestPwaTask({task,queue={},catalog={},status={},repoRoot=process.cwd(),filesystem=fs}={}){
   const next=buildPwaVibeTask(task,{catalog,status,repoRoot,filesystem}),tasks=Array.isArray(queue.tasks)?queue.tasks:[];
   if(tasks.some(row=>row.id===next.id))return {...queue,tasks,ingest:{added:false,taskId:next.id,reason:'ALREADY_QUEUED'}};
-  return {...queue,version:Number(queue.version)||3,mode:queue.mode||'single-worker-priority-serial-queue',maxConcurrentTasks:1,ownerDirectivePreemptsAutonomy:true,tasks:[...tasks,next],ingest:{added:true,taskId:next.id,gameId:next.gameId,target:next.target,reason:'OWNER_IMMEDIATE_PWA'}};
+  // Owner-submitted source edits share the existing DAG worker pool, not a new one-slot queue.
+  // Preserve a real capacity limit. Recover old PWA-only serialized queues without touching tasks.
+  const priorMax=Number(queue.maxConcurrentTasks);
+  const maxConcurrentTasks=Number.isSafeInteger(priorMax)&&priorMax>1?priorMax:256;
+  const mode=queue.mode&&queue.mode!=='single-worker-priority-serial-queue'
+    ?queue.mode:'hierarchical-dag-sharded-work-stealing-queue';
+  return {...queue,version:Number(queue.version)||3,mode,maxConcurrentTasks,ownerDirectivePreemptsAutonomy:true,tasks:[...tasks,next],ingest:{added:true,taskId:next.id,gameId:next.gameId,target:next.target,reason:'OWNER_IMMEDIATE_PWA'}};
 }
 function pwaTaskId(row={}){const match=clean(row.id).match(/^pwa-([0-9a-f-]{36})$/i);return match?match[1]:null;}
 function mapStatus(row={}){const status=clean(row.status).toLowerCase(),blocker=clean(row.blocker).toLowerCase();if(status==='queued')return'working';if(status==='running')return blocker.includes('candidate-awaiting-qa-and-deployment')?'testing':'working';if(status==='blocked')return'needs_input';if(status==='done')return'done';if(status==='failed')return'failed';if(status==='cancelled')return'cancelled';return null;}
