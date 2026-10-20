@@ -80,6 +80,7 @@ test('model receives bounded local-only advisory messages, never tool privileges
       callCount++;
       assert.equal(url, 'http://127.0.0.1:11434/api/chat');
       assert.equal(options.method, 'POST');
+      assert.equal(options.redirect, 'error');
       const request = JSON.parse(options.body);
       assert.equal(request.model, 'qwen2.5-coder:3b');
       assert.equal(request.stream, false);
