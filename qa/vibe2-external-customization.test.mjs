@@ -18,7 +18,7 @@ const approved='sha256:'+'a'.repeat(64);
 const validSource={
   id:'verified-stone',family:'TERRAIN',path:'assets/terrain.glb',
   sourceHash:'b'.repeat(64),license:'CC0-1.0',downloaded:true,
-   sourceUrl:'https://example.org/cc0-original-terrain',verifiedCompanyReusable:true
+   sourceUrl:'https://example.org/cc0-original-terrain',modified:false,verifiedCompanyReusable:true
 };
 const input={
   gameId:'canyon-survival',request:'바위협곡 지형 동굴 몬스터와 마을 건물, 금속 재질',
@@ -49,7 +49,7 @@ test('native Roblox uses approved design and verified library assets before any 
   const plan=planVibeExternalCustomization({...input,target:'roblox'});
   assert.equal(plan.target,'ROBLOX');
   assert.equal(plan.authorized,true);
-  assert.equal(plan.status,'EXISTING_ASSET_PRODUCTION_HANDOFF_REQUIRED');
+  assert.equal(plan.status,'EXISTING_CC0_LIBRARY_BINDING_REQUIRED');
   assert.equal(plan.designFingerprint,approved);
   assert.equal(plan.existingVerifiedSourceCount,1);
   const noise=plan.references.find(row=>row.id==='FASTNOISELITE');
@@ -60,7 +60,8 @@ test('native Roblox uses approved design and verified library assets before any 
   assert.equal(derived.sourceAssetId,'verified-stone');
   assert.equal(derived.designFingerprint,approved);
   assert.equal(derived.approvedStyleProfile,'STYLIZED_FANTASY');
-  assert.equal(derived.status,'NATIVE_AUTHORING_SOURCE_REVIEW_REQUIRED');
+  assert.equal(derived.status,'EXISTING_CC0_ORIGINAL_BINDING_ONLY');
+  assert.equal(derived.newArtifactCreationForbidden,true);
   assert.equal(derived.createdArtifact,false);
   assert.equal(derived.gameplayAuthority,false);
   assert.ok(derived.visualAxes.includes('MATERIAL_RESPONSE'));
@@ -69,8 +70,11 @@ test('native Roblox uses approved design and verified library assets before any 
   assert.equal(plan.sourceMutationPerformed,false);
   assert.equal(plan.appliedToGame,false);
   assert.equal(plan.qaPassed,false);
+  assert.equal(plan.newLibraryAuthoringForbidden,true);
+  assert.equal(plan.newAssetAuthoringForbidden,true);
+  assert.equal(plan.derivedOrRecoloredArtForbidden,true);
   assert.deepEqual(plan.applicationOrder.slice(0,2),[
-    'REUSE_VERIFIED_LIBRARY','VERIFY_DOWNLOADED_CC0_ORIGINAL_AND_LEDGER'
+    'REUSE_EXISTING_COMPATIBLE_LIBRARIES','DOWNLOAD_MISSING_ORIGINAL_CC0_LIBRARY'
   ]);
 });
 
