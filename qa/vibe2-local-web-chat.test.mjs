@@ -227,10 +227,10 @@ test('local receiver authenticates owner while direct cloud game work never wait
     const rejected=structuredClone(github);change(rejected);assert.equal(check(rejected),false);
   }
   const bridge=workflow.slice(workflow.indexOf('  bridge:'));
-  assert.doesNotMatch(bridge,/needs: local-advisory|needs\\.local-advisory/);
+  assert.doesNotMatch(bridge,/needs: local-advisory|needs\.local-advisory/);
   assert.match(bridge,/github.event_name != 'issue_comment'/);
   assert.match(bridge,/github.event.comment.author_association == 'OWNER'/);
   assert.match(bridge,/github.event.comment.user.type == 'User'/);
   assert.match(bridge,/validateLocalWebOwnerEvent/);
-  assert.match(bridge,/gh workflow run vibe2-continuous-core\\.yml/);
+  assert.match(bridge,/gh workflow run vibe2-continuous-core\.yml/);
 });
