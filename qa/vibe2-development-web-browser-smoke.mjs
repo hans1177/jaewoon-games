@@ -356,7 +356,11 @@ try{
             rendered:canvas?.dataset.renderedFrame==='true',
             webgl2:gl instanceof WebGL2RenderingContext && gl.drawingBufferWidth>0 && gl.drawingBufferHeight>0,
             loadingVisible:!document.querySelector('#renderStatus')?.hidden,
-            errorText:(document.querySelector('#renderStatus')?.textContent||'').slice(0,260)
+            errorText:(document.querySelector('#renderStatus')?.textContent||'').slice(0,260),
+            nativeAssetStatus:document.body.dataset.originalAssetStatus||'',
+            missingSpecies:document.body.dataset.missingOriginalSpecies||'',
+            nativeAssetFailures:Number(document.body.dataset.nativeAssetFailed||'-1'),
+            boundSpecies:document.body.dataset.nativeSpeciesBound||''
           };
         })()`);
         if(proof?.rendered&&proof?.webgl2&&proof?.dimension==='3d')break;
@@ -368,6 +372,13 @@ try{
       assert.equal(proof?.rendered,true,'wild-survival: no actual Three.js frame was produced');
       assert.equal(proof?.webgl2,true,'wild-survival: no live WebGL2 drawing buffer');
       assert.equal(proof?.loadingVisible,false,'wild-survival: 3D loading/error status remains visible');
+      assert.equal(proof?.nativeAssetStatus,'COMPLETE','wild-survival: missing exact-species originals');
+      assert.equal(proof?.missingSpecies,'','wild-survival: missing species remains in renderer');
+      assert.equal(proof?.nativeAssetFailures,0,'wild-survival: one or more original assets failed to load');
+      const species=JSON.parse(proof?.boundSpecies||'{}');
+      assert.equal(species.rabbit,10,'wild-survival: the ten rabbits lack original 3D meshes');
+      assert.equal(species.deer,8,'wild-survival: the eight deer lack original 3D meshes');
+      assert.equal(species.boar,5,'wild-survival: existing five boars lost native model binding');
     }
 
     results.push({

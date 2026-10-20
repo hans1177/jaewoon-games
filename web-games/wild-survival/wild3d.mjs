@@ -196,6 +196,8 @@ export function createWild3D({canvas,WORLD,resources,animals}){
     camp=originalCamp(world,models);
     fire=attachModel(world,models.get('lamp'),0,0);
     document.body.dataset.nativeAssetsBound=String(props.filter(Boolean).length+creatures.filter(Boolean).length+3);
+    document.body.dataset.nativeSpeciesBound=JSON.stringify(Object.fromEntries(
+      ['rabbit','deer','boar'].map(type=>[type,creatures.filter((o,i)=>o&&animals[i].type===type).length])));
     document.body.dataset.missingOriginalSpecies=MISSING_SPECIES_ORIGINALS.join(',');
     document.body.dataset.originalAssetStatus=MISSING_SPECIES_ORIGINALS.length?'PARTIAL_SPECIES_UNBOUND':'COMPLETE';
     ready=true;
