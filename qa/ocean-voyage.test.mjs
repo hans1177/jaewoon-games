@@ -214,3 +214,9 @@ test('푸른항로 has no inherited asset launcher; game-authored scripts can be
  assert.match(scene,/boatsGroup\.add\(ship\)/);
  assert.match(scene,/portsGroup,boatsGroup/);
 });
+
+test('CC0 sea music checkout retains the actual Git binary without LFS pointer conversion',()=>{
+ const attrs=fs.readFileSync('.gitattributes','utf8');
+ assert.match(attrs,/^\\*\\.ogg filter=lfs diff=lfs merge=lfs -text$/m);
+ assert.match(attrs,/^web-games\\/ocean-voyage\\/assets\\/cc0\\/music\\/pirate_ship_in_game\\.ogg -filter -diff -merge -text$/m);
+});
