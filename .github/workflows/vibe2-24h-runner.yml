@@ -380,6 +380,7 @@ jobs:
       - name: Plan from latest main and persist control queue
         env:
           GH_TOKEN: ${{ github.token }}
+          VIBE2_AUTONOMY_ADMITTED: ${{ steps.auto_admission.outputs.admitted }}
         shell: bash
         run: |
           set -euo pipefail
@@ -828,7 +829,8 @@ jobs:
               --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
               --output=/tmp/vibe2-handoff-before-attempt.json >/tmp/vibe2-handoff-before-attempt.log
 
-            node /tmp/vibe2-main/tools/vibe2-release-baseline-queue.mjs \
+            if [ "${VIBE2_AUTONOMY_ADMITTED:-false}" = 'true' ]; then
+              node /tmp/vibe2-main/tools/vibe2-release-baseline-queue.mjs \
               --catalog=/tmp/vibe2-main/game-catalog.json \
               --development-queue=/tmp/vibe2-company-runtime-queue.json \
               --queue="$control_root/.vibe2/queue.json" \
@@ -848,6 +850,10 @@ jobs:
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
+            else
+              echo 'VIBE2_AUTOPLAN_ADMISSION=DEFERRED_OWNER_OR_WORKFLOW_BACKLOG'
+              echo 'VIBE2_AUTOPLAN_QUEUED=0' | tee /tmp/vibe2-autoplan.log
+            fi
 
             node --check /tmp/vibe2-main/tools/company-department-portfolio-control.mjs
             (
