@@ -96,12 +96,11 @@ function journal(){
  '<h3>외부 에셋 출처</h3><p class="info">Kenney Pirate Kit (CC0) · Three.js (MIT). 게임 캐릭터·스토리·지명은 독자 콘텐츠야.</p>';
 }
 
-const kennyMap='./assets/cc0/map/';
+const kennyMap='https://raw.githubusercontent.com/shorepine/kenney/3694c6879e487c108f55677be7dd2ca75b07cc3b/2d/Cartography%20Pack/';
 const portrait=c=>{
  const index=Math.max(0,Math.min(26,Number(c.portrait)||0));
- // Buch source atlas: 328x112, nine 32px faces per row with 4px gutters, enlarged 2×.
- const x=(index%9)*72+8,y=Math.floor(index/9)*72+8;
- return '<span class="cc0-portrait" aria-label="'+escapeHtml(c.name)+'의 CC0 초상화" role="img" style="background-size:656px 224px;background-position:-'+x+'px -'+y+'px"></span>';
+ const x=(index%9)*64,y=Math.floor(index/9)*64;
+ return '<span class="cc0-portrait" aria-label="'+escapeHtml(c.name)+'의 CC0 초상화" role="img" style="background-size:576px 192px;background-position:-'+x+'px -'+y+'px"></span>';
 };
 function portScene(){
  const p=canDock(state),near=nearestPort(state);
@@ -195,7 +194,7 @@ joystick.addEventListener('pointermove',e=>{if(pointer===e.pointerId){e.preventD
 for(const k of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(k,()=>{pointer=null;resetStick();});
 const music=$('sea-music'),musicToggle=$('music-toggle');
 music.volume=.27;
-const cc0Tracks={sea:'./assets/cc0/music/pirate_ship_in_game.ogg',harbor:'https://opengameart.org/sites/default/files/crowded_pub_2025.ogg'};
+const cc0Tracks={sea:'https://opengameart.org/sites/default/files/pirate_ship_in_game.ogg',harbor:'https://opengameart.org/sites/default/files/crowded_pub_2025.ogg'};
 let currentMusicScene='sea';
 function switchMusicScene(scene){
  if(!cc0Tracks[scene]||currentMusicScene===scene)return;
