@@ -144,7 +144,11 @@ function validateGameplaySketch(sketch,errors){
             const creations=Array.isArray(grammar.dCreations)?grammar.dCreations:[];
             if(!creations.length||creations.some(row=>!isNonEmptyString(row?.id)||!Array.isArray(row?.materialPath)||row.materialPath.length!==3||row.materialPath.some(part=>!isNonEmptyString(part))))errors.push('GAMEPLAY_SKETCH standard grammar D source path missing');
             if((grammar.delveLayer?.elements||[]).some(row=>!creations.some(source=>source.id===row.sourceDId)))errors.push('GAMEPLAY_SKETCH standard grammar @ must derive from D');
-            if(grammar.existingGameSystemRole&&grammar.existingGameSystemRole!=='B_SUPPORTING_REFERENCE')errors.push('GAMEPLAY_SKETCH existing game system must only be a supporting reference inside B');
+            if(Number(grammar.standardVersion)>=2){
+              const named=grammar.representativeGameReference,baseline=grammar.existingSystemReference;
+              if(!named||!['name','systemFamily','playerChoice','source'].every(key=>isNonEmptyString(named[key]))||axes.find(row=>row.key==='A')?.systemFamily!==named.systemFamily)errors.push('GAMEPLAY_SKETCH A requires a named representative game and its system evidence');
+              if(!baseline||!['B_EXISTING_GAME_SYSTEMS','B_NEW_GAME_INITIAL_SYSTEMS'].includes(baseline.scope)||grammar.existingGameSystemRole!==baseline.scope||!['systemFamily','playerChoice','source'].every(key=>isNonEmptyString(baseline[key]))||axes.find(row=>row.key==='B')?.systemFamily!==baseline.systemFamily)errors.push('GAMEPLAY_SKETCH B must preserve the actual existing system baseline or explicitly name a new-game baseline');
+            }else if(grammar.existingGameSystemRole&&grammar.existingGameSystemRole!=='B_SUPPORTING_REFERENCE')errors.push('GAMEPLAY_SKETCH legacy B supporting reference role mismatch');
           }
           for(const row of axes){
             for(const field of ['systemFamily','sourceMaterial','sourceDomain','materialRule']){
