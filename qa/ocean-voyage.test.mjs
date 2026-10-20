@@ -152,5 +152,5 @@ test('CC0-only external asset references and functional UK-era voyage UI',()=>{
  assert.match(main,/recruitCompanion/);
  assert.match(main,/music\.play\(\)/);
  assert.match(main,/joystick\.setPointerCapture/);
- assert.match(main,/opengameart\.org\/sites\/default\/files\/rpgportraits\.png/);
+ assert.match(html,/opengameart\.org\/sites\/default\/files\/rpgportraits\.png/);
 });
