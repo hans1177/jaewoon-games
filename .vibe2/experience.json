@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -127041,39 +127039,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_b63e1cf58dd920ebb11bab89",
-          "taskId": "line-defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "base-main:5c0c08a8da6dff703ea67d0e5255097210249b0c",
-            "actions-run:39243540039",
-            "reservation-id:39243540039:1",
-            "capability-application-sample:9065b45c596ce7505f85"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_4ffc67c2152eb524cf9c1145",
           "taskId": "line-defense-existing-web-assessment-v1",
           "workKey": null,
@@ -129143,6 +129108,39 @@
             "actions-run:39491239404",
             "reservation-id:39491239404:1",
             "capability-application-sample:50cb9a8b4372c1b39f05"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c35316540f794a964a551a1c",
+          "taskId": "line-defense-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_061bbbee164f6b943e5d7293",
+            "capability_ctrace_20d2fced3f152813ab7e4829",
+            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
+          ],
+          "evidence": [
+            "base-main:e60694189d2c72d65d0334e197dcccf4eb33586c",
+            "actions-run:39498870606",
+            "reservation-id:39498870606:1",
+            "capability-application-sample:aef3ca5ef69d1ae08a28"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -155162,39 +155160,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_75dc7fc57a6615622e9b8ae0",
-          "taskId": "line-defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "base-main:5c0c08a8da6dff703ea67d0e5255097210249b0c",
-            "actions-run:39243540039",
-            "reservation-id:39243540039:1",
-            "capability-application-sample:9065b45c596ce7505f85"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_739f57852dbfd0a51dbf61bc",
           "taskId": "line-defense-existing-web-assessment-v1",
           "workKey": null,
@@ -157264,6 +157229,39 @@
             "actions-run:39491239404",
             "reservation-id:39491239404:1",
             "capability-application-sample:50cb9a8b4372c1b39f05"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_af294990d2da81e14c319583",
+          "taskId": "line-defense-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_061bbbee164f6b943e5d7293",
+            "capability_ctrace_20d2fced3f152813ab7e4829",
+            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
+          ],
+          "evidence": [
+            "base-main:e60694189d2c72d65d0334e197dcccf4eb33586c",
+            "actions-run:39498870606",
+            "reservation-id:39498870606:1",
+            "capability-application-sample:aef3ca5ef69d1ae08a28"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -165931,72 +165929,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_41ba1c23e09830113f1769db",
-          "taskId": "line-defense-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_7e8205ce09f2f476e5aedafa",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_d6cd06eb09f0b689d894ce60",
-            "capability_ctrace_0be1b657978bacf1ebbc24ea"
-          ],
-          "evidence": [
-            "base-main:b34fd1ba5240b8036d62a65e53d39698e7243bac",
-            "actions-run:39379726158",
-            "reservation-id:39379726158:1",
-            "capability-application-sample:48aa1fbf4dae84ab766f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_89e455bf5ffdde7fd79a5f87",
-          "taskId": "seed-casual-realm-weaver-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "seed-casual-realm-weaver",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_5f5381fd1b0cebfd4892a757",
-            "capability_ctrace_8efc3866c60f6b877c9edce4",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:b34fd1ba5240b8036d62a65e53d39698e7243bac",
-            "actions-run:39379726158",
-            "reservation-id:39379726158:1",
-            "capability-application-sample:e10dcd142253d873cbae"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_8b64e27ea4821c2207d523f5",
           "taskId": "line-defense-roblox-second-gate-rebuild-v1",
           "workKey": null,
@@ -168027,6 +167959,72 @@
             "actions-run:39491239404",
             "reservation-id:39491239404:1",
             "capability-application-sample:50cb9a8b4372c1b39f05"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2b39f43251042cd089c65ff0",
+          "taskId": "horror-escape-room-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_8aef9f9d73b93a89b8777139",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:e60694189d2c72d65d0334e197dcccf4eb33586c",
+            "actions-run:39498870606",
+            "reservation-id:39498870606:1",
+            "capability-application-sample:421bfb2c7c311f865610"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_cf8ae40c5ce781d27c85f4df",
+          "taskId": "line-defense-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_061bbbee164f6b943e5d7293",
+            "capability_ctrace_20d2fced3f152813ab7e4829",
+            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
+          ],
+          "evidence": [
+            "base-main:e60694189d2c72d65d0334e197dcccf4eb33586c",
+            "actions-run:39498870606",
+            "reservation-id:39498870606:1",
+            "capability-application-sample:aef3ca5ef69d1ae08a28"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -172955,39 +172953,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_ecc5c7cad5a6bb0d68e60ff0",
-          "taskId": "wild-survival-studio-evolution-usability-v1",
-          "workKey": null,
-          "gameId": "wild-survival",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_2c0a700824026293385a417b",
-            "capability_ctrace_333cb035bd13d117708a9b9d"
-          ],
-          "evidence": [
-            "base-main:704a5906d52bfc2d3925c117ecc4096153912fce",
-            "actions-run:39355545102",
-            "reservation-id:39355545102:1",
-            "capability-application-sample:7f25318eb017cff1d392"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_2fa9f7e414c4ee7e19109532",
           "taskId": "wild-survival-studio-evolution-usability-v2",
           "workKey": null,
@@ -175054,6 +175019,39 @@
             "actions-run:39491239404",
             "reservation-id:39491239404:1",
             "capability-application-sample:4dd68a9ed5c72ae4aad0"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fc3c4e03cc0b34b85fa23b85",
+          "taskId": "horror-escape-room-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_8aef9f9d73b93a89b8777139",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:e60694189d2c72d65d0334e197dcccf4eb33586c",
+            "actions-run:39498870606",
+            "reservation-id:39498870606:1",
+            "capability-application-sample:421bfb2c7c311f865610"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -191732,39 +191730,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_dd4755bfba327f96e92ee593",
-          "taskId": "line-defense-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_7e8205ce09f2f476e5aedafa",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_d6cd06eb09f0b689d894ce60",
-            "capability_ctrace_0be1b657978bacf1ebbc24ea"
-          ],
-          "evidence": [
-            "base-main:8401f72dc763ed1a103850eb57d57bdbe3cae958",
-            "actions-run:39310309773",
-            "reservation-id:39310309773:1",
-            "capability-application-sample:492a5a88c89752699ee5"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_d0bf7f6b39c763d3bdb21102",
           "taskId": "line-defense-existing-web-assessment-v1",
           "workKey": null,
@@ -193833,6 +193798,39 @@
             "actions-run:39491239404",
             "reservation-id:39491239404:1",
             "capability-application-sample:50cb9a8b4372c1b39f05"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_42ef7eb4c44b173343e4b4a1",
+          "taskId": "line-defense-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_061bbbee164f6b943e5d7293",
+            "capability_ctrace_20d2fced3f152813ab7e4829",
+            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
+          ],
+          "evidence": [
+            "base-main:e60694189d2c72d65d0334e197dcccf4eb33586c",
+            "actions-run:39498870606",
+            "reservation-id:39498870606:1",
+            "capability-application-sample:aef3ca5ef69d1ae08a28"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -210965,39 +210963,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_73967e8df06da1ae7cac0f96",
-          "taskId": "line-defense-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "base-main:5c0c08a8da6dff703ea67d0e5255097210249b0c",
-            "actions-run:39243540039",
-            "reservation-id:39243540039:1",
-            "capability-application-sample:9065b45c596ce7505f85"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_292ae00e5adae5a372242619",
           "taskId": "line-defense-existing-web-assessment-v1",
           "workKey": null,
@@ -213067,6 +213032,39 @@
             "actions-run:39491239404",
             "reservation-id:39491239404:1",
             "capability-application-sample:50cb9a8b4372c1b39f05"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_32e5f32d7e0621173f2530ef",
+          "taskId": "line-defense-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_061bbbee164f6b943e5d7293",
+            "capability_ctrace_20d2fced3f152813ab7e4829",
+            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
+          ],
+          "evidence": [
+            "base-main:e60694189d2c72d65d0334e197dcccf4eb33586c",
+            "actions-run:39498870606",
+            "reservation-id:39498870606:1",
+            "capability-application-sample:aef3ca5ef69d1ae08a28"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -253610,39 +253608,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_c8f4df67bd322909e6acabef",
-          "taskId": "horror-escape-room-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:4fbcd92b588bd344575adb12ef275db3406c4da4",
-            "actions-run:39321484484",
-            "reservation-id:39321484484:1",
-            "capability-application-sample:e2fed22ca1f039063076"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_1372cfad185ec446f2c2766e",
           "taskId": "internal-motion-aswang-walk-v1",
           "workKey": null,
@@ -255714,6 +255679,39 @@
             "actions-run:39491239404",
             "reservation-id:39491239404:1",
             "capability-application-sample:4dd68a9ed5c72ae4aad0"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_27c0a62ffce6dffdb94abd70",
+          "taskId": "horror-escape-room-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_8aef9f9d73b93a89b8777139",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:e60694189d2c72d65d0334e197dcccf4eb33586c",
+            "actions-run:39498870606",
+            "reservation-id:39498870606:1",
+            "capability-application-sample:421bfb2c7c311f865610"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -434773,39 +434771,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_bb8739970c4fbf219ad87d4c",
-          "taskId": "horror-escape-room-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:4fbcd92b588bd344575adb12ef275db3406c4da4",
-            "actions-run:39321484484",
-            "reservation-id:39321484484:1",
-            "capability-application-sample:e2fed22ca1f039063076"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_90b365ddd9102ed377e55b59",
           "taskId": "internal-motion-aswang-walk-v1",
           "workKey": null,
@@ -436877,6 +436842,39 @@
             "actions-run:39491239404",
             "reservation-id:39491239404:1",
             "capability-application-sample:4dd68a9ed5c72ae4aad0"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_27a103d781ec90430d34c459",
+          "taskId": "horror-escape-room-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_8aef9f9d73b93a89b8777139",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:e60694189d2c72d65d0334e197dcccf4eb33586c",
+            "actions-run:39498870606",
+            "reservation-id:39498870606:1",
+            "capability-application-sample:421bfb2c7c311f865610"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -439227,39 +439225,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4a350ec8429f723f964b630b",
-          "taskId": "horror-escape-room-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:5c0c08a8da6dff703ea67d0e5255097210249b0c",
-            "actions-run:39245655191",
-            "reservation-id:39245655191:1",
-            "capability-application-sample:48eb1d496b0f3d576be7"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_b52cabbc1d98d254d83edfdc",
           "taskId": "horror-escape-room-existing-web-assessment-v1",
           "workKey": null,
@@ -441329,6 +441294,39 @@
             "actions-run:39491239404",
             "reservation-id:39491239404:1",
             "capability-application-sample:4dd68a9ed5c72ae4aad0"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f2de6bf9ac66d5a8c0e5bff6",
+          "taskId": "horror-escape-room-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_8aef9f9d73b93a89b8777139",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:e60694189d2c72d65d0334e197dcccf4eb33586c",
+            "actions-run:39498870606",
+            "reservation-id:39498870606:1",
+            "capability-application-sample:421bfb2c7c311f865610"
           ],
           "observedAt": null,
           "rawCodeStored": false,
