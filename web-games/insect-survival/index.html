@@ -92,6 +92,35 @@ body.combat #combatBar{display:block}
 @media(max-width:370px){.actions{grid-template-columns:repeat(3,43px);grid-auto-rows:43px}.act{width:43px;height:43px}.joy{width:89px;height:89px}.stick{left:25px;top:25px;width:33px;height:33px}.pouchSlot{min-width:42px}.side{bottom:calc(142px + env(safe-area-inset-bottom))}}
 @media(prefers-reduced-motion:reduce){.track i,.notice{transition:none}}
 
+
+/* 이전 카드식 가방 제거: 손바닥 크기 생존용 배낭 그리드 / 장비 스테이션 */
+#inventoryList{grid-template-columns:minmax(0,1.25fr) minmax(0,.8fr);gap:12px;align-items:stretch}
+#inventoryList>.item:first-child{grid-column:auto}
+.bagPane,.equipmentPane{min-width:0;padding:12px;border:2px solid #bea477a3;border-radius:7px;background:linear-gradient(152deg,#273e2cee,#142b22c9)}
+.paneHeading{display:flex;justify-content:space-between;gap:9px;align-items:baseline;margin-bottom:7px}
+.paneHeading strong{font-size:16px;color:#f3d69b}
+.paneHeading small{font-size:11px;color:#d6c497}
+.paneDescription{font-size:10px;line-height:1.5;color:#c2c7ac}
+.bagGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(68px,auto);gap:6px;margin-top:12px}
+.bagSlot{min-width:0;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:7px 6px;border:2px solid #bca77789;border-radius:4px;background:linear-gradient(130deg,#3b4e38,#233d2b)}
+.bagSlot b{font-size:11px;line-height:1.25;word-break:keep-all;overflow-wrap:anywhere}
+.bagSlot span{align-self:flex-end;font-size:10px;color:#f0d393;font-weight:900}
+.bagSlot.empty{border:1px dashed #e2d8b940;background:#14271ed1}
+.bagSlot.special{background:linear-gradient(120deg,#56583b,#324531);border-color:#e8c57b}
+.equipmentPane h3{margin:17px 0 9px;color:#f0ce8a;font-size:14px;border-bottom:1px solid #bba1776b;padding-bottom:8px}
+.equipPreview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:11px}
+.equipStat{padding:10px 9px;background:#10261b99;border:1px solid #b8a06b7d;border-radius:4px}
+.equipStat span,.equipStat b{display:block;overflow-wrap:anywhere}
+.equipStat span{font-size:10px;color:#d6c49d}
+.equipStat b{font-size:13px;color:#f4e0bb;margin-top:5px}
+.gearList{display:grid;gap:6px}
+.gearEntry{display:flex;gap:7px;align-items:center;justify-content:space-between;background:#2b4031;padding:8px;border:1px solid #a7a17f7d;border-radius:4px}
+.gearEntry b,.gearEntry small{display:block}
+.gearEntry b{font-size:12px}.gearEntry small{font-size:10px;color:#e0cfaa;margin-top:4px}
+.gearEntry button{flex:0 0 auto;border-radius:3px;border:1px solid #e0be83;background:#d7b571;color:#382c1c;padding:7px 8px;font-size:11px;font-weight:800}
+.gearEntry button:disabled{opacity:.6}
+@media(max-width:650px){#inventoryList{grid-template-columns:1fr}.bagPane,.equipmentPane{padding:9px}.bagGrid{grid-auto-rows:minmax(60px,auto)}.bagSlot{padding:6px 4px}.bagSlot b{font-size:10px}}
+
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
@@ -349,24 +378,35 @@ function updateHud(){
   $('zoneLabel').textContent=Math.hypot(player.x-ANT_HILL.x,player.y-ANT_HILL.y)<260?'개미왕국':Math.hypot(player.x-GRAVEL_ZONE.x,player.y-GRAVEL_ZONE.y)<GRAVEL_ZONE.rx?'자갈 협곡':Math.hypot(player.x-CAMP.x,player.y-CAMP.y)<160?'시작 야영지':'이끼 초원';
 }
 function openInventory(){
-  const rows=[];
-  rows.push('<div class="item"><b>현재 장비</b><small>무기: '+WEAPONS[state.weapon].name+' · 방어구: '+ARMORS[state.armor].name+'</small></div>');
-  Object.keys(state.crafted).filter(k=>state.crafted[k]).forEach(id=>{
-    const isWeapon=!!WEAPONS[id],isArmor=!!ARMORS[id];
-    if(!isWeapon&&!isArmor)return;
-    const data=isWeapon?WEAPONS[id]:ARMORS[id];
-    const equipped=isWeapon?state.weapon===id:state.armor===id;
-    const desc=isWeapon?'공격력 +'+data.attack+' · 사거리 '+data.range:'최대체력 +'+data.hp+' · 방어력 +'+data.def;
-    rows.push('<div class="item"><div class="itemTop"><b>'+data.name+'</b>'+(equipped?'<span class="eq">장착 중</span>':'')+'</div><small>'+desc+'</small><button data-equip="'+id+'" '+(equipped?'disabled':'')+'>'+(equipped?'장착됨':'장착')+'</button></div>');
-  });
-  const loots=[['spiderPart','거미 전리품'],['beetleShell','딱정벌레 전리품'],['antHead','개미 전리품'],['miteTooth','진드기 전리품']].filter(([k])=>state[k]>0);
-  if(loots.length){
-    rows.push('<div class="item"><b>획득한 곤충 전리품</b><small>'+loots.map(([k,n])=>n+' '+state[k]).join(' · ')+'</small></div>');
-  }
-  if(rows.length===1)rows.push('<div class="item"><small>아직 제작한 장비가 없어.</small></div>');
-  $('inventoryList').innerHTML=rows.join('');
-  $('inventoryList').querySelectorAll('[data-equip]').forEach(b=>b.addEventListener('click',()=>equip(b.dataset.equip)));
-  $('inventoryModal').classList.add('show');
+ // 기존 카드 목록은 폐기하고 야영지 장비 스테이션 + 배낭 칸으로 전면 재구성.
+ const cargo=[['branch','나뭇가지'],['pebble','조약돌'],['fiber','섬유'],
+  ['spiderPart','거미 전리품'],['beetleShell','갑각 조각'],['antHead','개미 전리품'],['miteTooth','진드기 이빨']];
+ const carried=cargo.filter(([id])=>state[id]>0).map(([id,label])=>
+  '<div class="bagSlot"><b>'+label+'</b><span>×'+state[id]+'</span></div>');
+ const crafted=Object.keys(state.crafted).filter(key=>state.crafted[key]&&(WEAPONS[key]||ARMORS[key]));
+ const gear=crafted.map(id=>{
+  const item=WEAPONS[id]||ARMORS[id];
+  const equipped=WEAPONS[id]?state.weapon===id:state.armor===id;
+  const details=WEAPONS[id]?'공격력 +'+item.attack+' · 사거리 '+item.range:'체력 +'+item.hp+' · 방어 '+item.def;
+  return '<div class="gearEntry"><div><b>'+item.name+'</b><small>'+details+'</small></div>'+
+   '<button type="button" data-equip="'+id+'" '+(equipped?'disabled':'')+'>'+(equipped?'장착 중':'장착')+'</button></div>';
+ }).join('');
+ const spaces=Array.from({length:Math.max(0,16-carried.length-crafted.length)},
+  ()=>'<div class="bagSlot empty" aria-hidden="true"></div>').join('');
+ const craftedSlots=crafted.map(id=>{
+  const item=WEAPONS[id]||ARMORS[id];
+  return '<div class="bagSlot special"><b>'+item.name+'</b><span>장비</span></div>';
+ }).join('');
+ $('inventoryList').innerHTML='<section class="bagPane"><div class="paneHeading"><strong>탐험 배낭</strong><small>'+ (carried.length+crafted.length)+'/16 칸</small></div>'+
+  '<p class="paneDescription">풀숲에서 수집한 재료와 직접 제작한 장비</p><div class="bagGrid">'+craftedSlots+carried.join('')+spaces+'</div></section>'+
+  '<section class="equipmentPane"><div class="paneHeading"><strong>생존자 장비</strong><small>Lv.'+state.level+'</small></div>'+
+  '<div class="equipPreview"><div class="equipStat"><span>사용 무기</span><b>'+WEAPONS[state.weapon].name+'</b></div>'+
+  '<div class="equipStat"><span>착용 갑옷</span><b>'+ARMORS[state.armor].name+'</b></div>'+
+  '<div class="equipStat"><span>최대 체력</span><b>'+maxHp()+'</b></div>'+
+  '<div class="equipStat"><span>공격 / 방어</span><b>'+attackPower()+' / '+defense()+'</b></div></div>'+
+  '<h3>장비 교체</h3><div class="gearList">'+(gear||'<p class="paneDescription">제작한 장비가 없어. 제작대로 도구부터 만들어 봐.</p>')+'</div></section>';
+ $('inventoryList').querySelectorAll('[data-equip]').forEach(b=>b.addEventListener('click',()=>equip(b.dataset.equip)));
+ $('inventoryModal').classList.add('show');
 }
 function nearWorkbench(){
   return state.workbench&&Math.hypot(player.x-(CAMP.x+40),player.y-(CAMP.y-55))<145;
