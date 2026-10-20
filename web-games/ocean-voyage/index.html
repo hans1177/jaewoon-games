@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#071d2b">
+<title>푸른 항로 · 대양의 제국</title>
+<style>
+/* 파일명: web-games/ocean-voyage/index.html | 디자인: 모바일 3D 항해 게임 인터페이스 */
+:root{color-scheme:dark;--navy:#0b2636;--panel:rgba(7,24,37,.92);--line:rgba(204,230,230,.21);--gold:#f4c774;--white:#f2f4ee;--sub:#adc3ca;--teal:#72c5ce}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#082534;color:var(--white);font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif}
+button{font:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+button:disabled{opacity:.35;cursor:not-allowed}
+#sea{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#veil{position:fixed;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(5,20,34,.36),transparent 40%,rgba(5,20,34,.22)),linear-gradient(180deg,rgba(5,20,34,.45),transparent 23%,transparent 65%,rgba(5,20,34,.55))}
+#top{position:fixed;top:0;left:0;right:0;z-index:6;display:flex;gap:18px;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 12px) 17px 13px;background:linear-gradient(180deg,rgba(5,24,39,.96),rgba(5,24,39,.73));border-bottom:1px solid var(--line)}
+#brand{display:flex;flex-direction:column;flex-shrink:0}#brand small{font-size:10px;letter-spacing:2.3px;color:var(--gold);font-weight:800}#brand strong{font-family:Georgia,serif;font-size:23px;letter-spacing:-.7px;color:#fff5df}
+#status{display:flex;gap:16px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.stat{display:flex;gap:6px;flex-direction:column;align-items:flex-end}.stat small{color:var(--sub);font-size:10px;letter-spacing:.5px}.stat b{font-size:14px;white-space:nowrap}
+#nav{position:fixed;left:17px;top:calc(env(safe-area-inset-top) + 94px);width:166px;display:grid;gap:7px;z-index:7}
+.nav{width:100%;display:flex;gap:12px;align-items:center;padding:12px 13px;border:1px solid var(--line);border-radius:9px;background:rgba(6,28,43,.82);color:#e7f1f3;backdrop-filter:blur(10px);text-align:left;font-size:13px;font-weight:700}
+.nav:active,.nav.active{color:var(--gold);border-color:rgba(244,199,116,.55);background:rgba(35,44,47,.92)}
+.nav span{font-size:17px;width:22px;text-align:center}
+#details{position:fixed;right:16px;top:calc(env(safe-area-inset-top) + 92px);width:min(360px,calc(100vw - 32px));bottom:135px;min-height:220px;z-index:8;display:none;flex-direction:column;border:1px solid var(--line);border-radius:13px;background:var(--panel);box-shadow:0 12px 50px #00131b90;overflow:hidden;backdrop-filter:blur(18px)}
+#details.open{display:flex}
+#panelHead{padding:17px 16px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+#panelHead h2{margin:0;font-family:Georgia,serif;font-size:20px;color:var(--gold)}
+.icon{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:7px;color:var(--white);padding:6px 10px}
+#content{overflow:auto;overscroll-behavior:contain;padding:14px 15px 20px;flex:1}
+.info{color:var(--sub);font-size:12px;line-height:1.5}
+#content h3{font-size:14px;color:var(--gold);margin:18px 0 10px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:10px 0}
+.row strong{font-size:13px}.row small{font-size:11px;color:var(--sub)}
+.row .desc{display:flex;flex-direction:column;gap:4px;min-width:0}
+.stack{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.action{border:1px solid #8c7650;background:linear-gradient(180deg,#8b6942,#624c35);border-radius:7px;padding:7px 10px;color:#fff5e8;font-size:11px;font-weight:700}
+.action.sub{border-color:#427a89;background:linear-gradient(180deg,#285667,#173b4b)}
+.action:disabled{opacity:.4}
+#message{position:fixed;left:50%;bottom:calc(142px + env(safe-area-inset-bottom));transform:translateX(-50%);max-width:min(530px,90vw);padding:9px 15px;border:1px solid rgba(244,199,116,.35);border-radius:8px;color:#ffefce;background:rgba(12,31,42,.9);text-align:center;font-size:12px;z-index:10;pointer-events:none}
+#compass{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 84px);transform:translateX(-50%);border:1px solid var(--line);border-radius:30px;padding:7px 17px;color:#e4eff0;background:rgba(6,28,43,.75);font-size:12px;font-weight:750;z-index:5;white-space:nowrap}
+#controls{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));left:14px;right:14px;display:flex;align-items:flex-end;justify-content:space-between;z-index:7;pointer-events:none;gap:8px}
+.group{display:flex;gap:8px;align-items:flex-end;pointer-events:auto}
+.pad{border:1px solid #76a5b0aa;box-shadow:0 3px 16px #06202aaa;background:rgba(9,34,51,.84);color:#fff;border-radius:13px;min-width:61px;height:60px;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;user-select:none;-webkit-user-select:none;touch-action:none}
+.pad b{font-size:22px}.pad:active,.pad.pressed{background:rgba(91,139,146,.8)}
+.pad.fire{height:76px;min-width:77px;border-radius:50%;border-color:#f0ae71;background:linear-gradient(135deg,#bc7146,#672b2e)}
+.pad.dock{border-color:#d1bc86}
+#loading{position:fixed;inset:0;background:#061d2c;z-index:18;display:grid;place-items:center;text-align:center;padding:24px}
+#loading h1{font-family:Georgia,serif;color:var(--gold);font-size:28px}#loading p{color:var(--sub);font-size:13px;line-height:1.6}
+#loading.hide{display:none}
+#mapCanvas{display:block;width:100%;aspect-ratio:1.3;background:radial-gradient(circle at 30% 24%,#204f63,#092536);border-radius:10px;border:1px solid var(--line)}
+.mapDot{cursor:pointer}.mapDot circle{stroke:#0d2432;stroke-width:1.6}.mapDot text{font-size:7px;fill:#f9e5ba;font-weight:700;paint-order:stroke;stroke:#0d2432;stroke-width:1.6}
+#hint{position:fixed;right:15px;bottom:calc(106px + env(safe-area-inset-bottom));font-size:11px;color:#d3e8ec;opacity:.86;z-index:4;text-shadow:0 2px 6px #091c28}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:7px}.kpi div{padding:10px;border-radius:8px;background:#ffffff0a;border:1px solid var(--line)}.kpi b{display:block;color:var(--gold);margin-top:4px;font-size:17px}
+@media(max-width:740px){
+#top{gap:4px;padding-left:12px;padding-right:12px}
+#brand strong{font-size:16px}#brand small{font-size:8px}
+#status{gap:8px}.stat{gap:2px}.stat b{font-size:11px}.stat small{font-size:9px}
+#status .extra{display:none}
+#nav{left:7px;top:calc(env(safe-area-inset-top) + 75px);width:53px;gap:6px}
+.nav{justify-content:center;padding:9px 7px;font-size:0}.nav span{font-size:18px;width:auto}
+#details{left:67px;right:7px;top:calc(env(safe-area-inset-top) + 78px);bottom:calc(119px + env(safe-area-inset-bottom));width:auto}
+#compass{top:calc(env(safe-area-inset-top) + 78px);left:auto;right:8px;transform:none;font-size:10px;padding:6px}
+#controls{left:7px;right:7px;bottom:calc(7px + env(safe-area-inset-bottom));gap:4px}
+.group{gap:5px}.pad{min-width:49px;height:53px;border-radius:10px;font-size:10px}.pad b{font-size:19px}.pad.fire{min-width:65px;height:65px}
+#hint{display:none}#message{bottom:calc(98px + env(safe-area-inset-bottom));font-size:11px}
+}
+@media(max-width:375px){.pad{min-width:42px}.pad.fire{min-width:59px}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<canvas id="sea" aria-label="3D 바다와 항구, 이동하는 함선"></canvas><div id="veil"></div>
+<header id="top">
+ <div id="brand"><small>OCEAN VOYAGE · 4TH AGE</small><strong>푸른 항로</strong></div>
+ <div id="status"><span class="stat"><small>항해일</small><b id="day">1일</b></span><span class="stat"><small>금화</small><b id="gold">3,400 G</b></span><span class="stat"><small>선체</small><b id="hull">100%</b></span><span class="stat extra"><small>식량 / 선원</small><b id="supplies">80 / 34</b></span></div>
+</header>
+<div id="compass">🌬 순풍 · 푸른해</div>
+<nav id="nav" aria-label="게임 메뉴">
+ <button class="nav" data-panel="chart"><span>⌖</span> 해도 · 자동항해</button>
+ <button class="nav" data-panel="market"><span>⚖</span> 교역소</button>
+ <button class="nav" data-panel="fleet"><span>⚓</span> 함대 · 조선소</button>
+ <button class="nav" data-panel="quests"><span>✦</span> 의뢰 · 탐험</button>
+ <button class="nav" data-panel="journal"><span>☷</span> 항해 일지</button>
+</nav>
+<aside id="details" aria-label="게임 정보 창"><div id="panelHead"><h2 id="panelTitle">해도</h2><button id="close" class="icon" aria-label="닫기">✕</button></div><div id="content"></div></aside>
+<div id="message" role="status" aria-live="polite">좌우로 방향을 바꾸고 전진해서 바다를 탐험해.</div>
+<div id="hint">W / S 돛 · A / D 선회 · 스페이스 포격 · M 지도</div>
+<div id="controls">
+ <div class="group">
+  <button class="pad" data-hold="left" aria-label="좌현 선회"><b>↶</b>좌현</button>
+  <button class="pad" data-hold="right" aria-label="우현 선회"><b>↷</b>우현</button>
+  <button class="pad" data-hold="ahead" aria-label="전진"><b>↑</b>전진</button>
+  <button class="pad" data-hold="astern" aria-label="후진"><b>↓</b>후진</button>
+ </div>
+ <div class="group">
+  <button id="dock" class="pad dock"><b>⚓</b>입항</button>
+  <button id="fire" class="pad fire"><b>✹</b>포격</button>
+ </div>
+</div>
+<section id="loading"><div><h1>푸른 항로</h1><p>검증된 외부 범선·항구 3D 모델을 불러오고 있어.<br>바람과 교역의 시대가 시작돼.</p><button id="start" class="action" style="margin-top:18px">항해 시작</button></div></section>
+<script type="module" src="./main.mjs"></script>
+</body>
+</html>
