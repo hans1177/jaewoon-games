@@ -29144,5 +29144,31 @@
     "finalDevelopmentLockV2Unchanged": true,
     "canonicalSequenceUnchanged": true,
     "newPipelineCreated": false
+  },
+  "localVibeWebChat": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-10-20",
+    "enabled": true,
+    "platform": "WEB",
+    "model": "qwen2.5-coder:3b",
+    "executionScope": "LOCAL_ADVISORY_CONVERSATION_ONLY",
+    "executable": "tools/vibe2-local-web-chat.mjs",
+    "localhostOnly": true,
+    "runtimeEndpoint": "http://127.0.0.1:11434/api/chat",
+    "machineStateRead": "EXISTING_VIBE2_HANDOFF_CONSISTENCY_REQUIRED",
+    "gameSourceRead": "EXPLICIT_WEB_GAME_ID_INDEX_HTML_EXCERPT_ONLY",
+    "sourceWriteAllowed": false,
+    "githubWriteAllowed": false,
+    "workflowDispatchAllowed": false,
+    "deploymentAllowed": false,
+    "qaVerdictAllowed": false,
+    "canonicalPipelineUnchanged": true,
+    "centralPolicyOverrideAllowed": false,
+    "remoteGeminiWorkerProviderUnchanged": true,
+    "machineStateMutationAllowed": false,
+    "modelSelfReportedPassIsEvidence": false,
+    "externalNetworkCallsAllowed": false,
+    "existingSecurityRuntimeAndF0F9GatesUnchanged": true,
+    "scopeNote": "Local conversational companion only. Not a planner, source worker, new pipeline, QA gate, or release actor. Separate explicit authorization and independent QA required before any action integration."
   }
 }
