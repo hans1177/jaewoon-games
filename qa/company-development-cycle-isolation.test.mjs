@@ -147,3 +147,13 @@ test('source-plan dedupe favors a waiting owner instead of indefinitely cancelli
   assert.match(development,/queue: single/);
   assert.match(development,/cancel-in-progress: false/);
 });
+
+test('owner Web edit wakes only affected Roblox game ids, not unrelated global batch',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-owner-web-edit-propagation.yml','utf8');
+  assert.ok(workflow.includes('policy.permanentProjectRemoval?.ids'));
+  assert.ok(workflow.includes('entry.platformTargets.includes(\'ROBLOX\')'));
+  assert.ok(workflow.includes('!removed.has(id)'));
+  assert.ok(workflow.includes('for game_id in "${roblox_game_ids[@]}"'));
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"'));
+  assert.ok(!workflow.includes('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main\n'));
+});

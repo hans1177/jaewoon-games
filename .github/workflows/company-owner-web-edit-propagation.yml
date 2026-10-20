@@ -72,8 +72,29 @@ jobs:
             echo 'OWNER_WEB_EDIT_UNITY_DISPATCH=YES'
           fi
           if [[ ",$targets," == *",ROBLOX,"* ]]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'OWNER_WEB_EDIT_ROBLOX_DISPATCH=YES'
+            # Preserve game-specific owner intent: a Web edit is not a global Roblox
+            # development trigger. Respect the canonical permanent-removal lock.
+            node <<'NODE' > /tmp/owner-web-edit-roblox-game-ids.txt
+          const fs=require('fs');
+          const request=JSON.parse(fs.readFileSync('/tmp/owner-web-edit-propagation.json','utf8'));
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          if(!Array.isArray(policy.permanentProjectRemoval?.ids))throw Error('OWNER_PERMANENT_REMOVAL_POLICY_REQUIRED');
+          const removed=new Set(policy.permanentProjectRemoval.ids);
+          const gameIds=new Set();
+          for(const entry of request.manifests||[]){
+            if(!Array.isArray(entry.platformTargets)||!entry.platformTargets.includes('ROBLOX'))continue;
+            const id=String(entry.gameId||'');
+            if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(id))throw Error('OWNER_WEB_EDIT_GAME_ID_INVALID:'+id);
+            if(!removed.has(id))gameIds.add(id);
+          }
+          for(const id of gameIds)console.log(id);
+          NODE
+            mapfile -t roblox_game_ids < /tmp/owner-web-edit-roblox-game-ids.txt
+            for game_id in "${roblox_game_ids[@]}"; do
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
+              echo "OWNER_WEB_EDIT_ROBLOX_DISPATCH=EXACT:$game_id"
+            done
+            echo "OWNER_WEB_EDIT_ROBLOX_DISPATCH_COUNT=${#roblox_game_ids[@]}"
           fi
           echo 'OWNER_WEB_EDIT_LITERAL_CODE_COPY=FORBIDDEN'
           echo 'OWNER_WEB_EDIT_PROPAGATION=SEMANTIC_INTENT'
