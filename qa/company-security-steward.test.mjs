@@ -545,3 +545,21 @@ test('security workflow scans changed candidates without scheduled duplicate rep
   assert.doesNotMatch(securityWorkflow,/cron: '13 3 \* \* \*'/);
   assert.doesNotMatch(securityWorkflow,/name: Verify immune-system contracts\n\s+run:/);
 });
+
+// Owner approval is pinned to the exact A/B migration and cannot authorize a policy override.
+test('owner A-reference B-existing approval rejects changed content and unrelated authority',async()=>{
+  const begin=securityWorkflow.indexOf('// OWNER_APPROVED_AB_DESIGN_BEGIN');
+  const end=securityWorkflow.indexOf('// OWNER_APPROVED_AB_DESIGN_END',begin);
+  const code=securityWorkflow.slice(begin,end).replace("const {createHash}=await import('node:crypto');",'');
+  const {createHash}=await import('node:crypto');
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json'));
+  const prefix='continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod';
+  const execute=(base,head,changes)=>runInNewContext(code+';designKeys.size',{base,head,changes,createHash,console:{log(){}},same:(a,b)=>JSON.stringify(a)===JSON.stringify(b)});
+  assert.equal(execute(policy,policy,[]),0);
+  // Wrong baseline or extra scope must never gain approval, even with an owner marker.
+  assert.throws(()=>execute(policy,policy,[prefix+'.version']),/SECURITY_OWNER_EXACT_AB_DESIGN_SCOPE_INVALID/);
+  const changed=structuredClone(policy);changed.developmentAccess.WEB='DISABLED';
+  assert.throws(()=>execute(policy,changed,[prefix+'.version','developmentAccess.WEB']),/SECURITY_OWNER_EXACT_AB_DESIGN_SCOPE_INVALID/);
+  const altered=structuredClone(policy);altered.continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod.roles.B.meaningKo='replace original';
+  assert.throws(()=>execute(policy,altered,[prefix+'.roles.B.meaningKo']),/SECURITY_OWNER_EXACT_AB_DESIGN_SCOPE_INVALID/);
+});

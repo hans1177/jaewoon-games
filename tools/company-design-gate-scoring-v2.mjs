@@ -142,8 +142,8 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(typeof value!=='string')return;
     const text=clean(value);
     // 유틸: 문법의 정확한 참조 역할은 설명문이 아니다. 실제 시스템·선택·출처는 아래 표준 검수로 확인한다.
-    if(path==='creativeGrammar.b.existingSystemReference.scope'&&text==='B_SUPPORTING_REFERENCE_ONLY')return;
-    if(path==='creativeGrammar.existingGameSystemRole'&&text==='B_SUPPORTING_REFERENCE')return;
+    if(path==='creativeGrammar.b.existingSystemReference.scope'&&['B_SUPPORTING_REFERENCE_ONLY','B_EXISTING_GAME_SYSTEMS','B_NEW_GAME_INITIAL_SYSTEMS'].includes(text))return;
+    if(path==='creativeGrammar.existingGameSystemRole'&&['B_SUPPORTING_REFERENCE','B_EXISTING_GAME_SYSTEMS','B_NEW_GAME_INITIAL_SYSTEMS'].includes(text))return;
     // 기존 표현 개선 계약이 생성하는 추적 ID는 설명용 임시 표식이 아니다.
     if(/^implementationTraceability\[\d+\]\.designElement$/.test(path)&&['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'].includes(text))return;
     if((!identifier&&/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text))||/\b(?:TODO|TBD|PLACEHOLDER)\b|작성 예정|추후 작성|^미정$/i.test(text)){
@@ -172,12 +172,30 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       const materialRows=basicDesignMethod.materialClassification;
       const a=grammar?.a||{},b=grammar?.b||{};
       const reference=b.existingSystemReference;
-      if(a.existingSystemReference||grammar.existingGameSystemRole&&grammar.existingGameSystemRole!=='B_SUPPORTING_REFERENCE'
+      if(Number(basicDesignMethod.version)>=2){
+        const named=a.referenceGame;
+        if(!named||!['name','systemFamily','playerChoice','source'].every(key=>textReady(named[key],2))
+          ||clean(a.system)!==clean(named.systemFamily)){
+          reject('DESIGN_A_NAMED_REFERENCE_GAME_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},
+            'A에 대표 참고 게임 이름(예: 디아블로), 실제 참고 시스템·선택·출처를 명시하고 채택할 시스템과 연결한다.');
+        }
+        const role=grammar.existingGameSystemRole;
+        const existing=['B_EXISTING_GAME_SYSTEMS','B_NEW_GAME_INITIAL_SYSTEMS'].includes(reference?.scope);
+        const expected=seed.B_SYSTEM_REFERENCE||seed.A_SYSTEM_REFERENCE;
+        if(!existing||role!==reference.scope||a.existingSystemReference
+          ||!['systemFamily','playerChoice','source'].every(key=>textReady(reference[key],2))
+          ||clean(b.system)!==clean(reference.systemFamily)
+          ||expected&&['systemFamily','playerChoice','source'].some(key=>clean(reference[key])!==clean(expected[key]))
+          ||reference.scope==='B_NEW_GAME_INITIAL_SYSTEMS'&&(expected||seed.originalDesignContext?.source)){
+          reject('DESIGN_B_EXISTING_SYSTEM_BASELINE_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},
+            'B는 원본의 실제 시스템 자체다. 원본 출처·플레이어 선택·규칙을 유지하고 임의의 새 B로 바꾸지 않는다. 신규 게임은 기존 원본이 없음을 명시한다.');
+        }
+      }else if(a.existingSystemReference||grammar.existingGameSystemRole&&grammar.existingGameSystemRole!=='B_SUPPORTING_REFERENCE'
         ||reference&&(reference.scope!=='B_SUPPORTING_REFERENCE_ONLY'||grammar.existingGameSystemRole!=='B_SUPPORTING_REFERENCE'
           ||!textReady(reference.systemFamily,1)||!textReady(reference.playerChoice,1)||!textReady(reference.source,1))
         ||grammar.existingGameSystemRole&&!reference){
         reject('DESIGN_STANDARD_CLASSIFICATION_INVALID','CATEGORY_IDENTITY',['creativeGrammar'],{},
-          '기존 게임 시스템은 새 B 중심 시스템을 대체하지 않고 B 안의 보조 참조로만 기록한다. 원본 시스템·선택·출처를 적고 A·C·D·@의 생성 근거로 사용하지 않는다.');
+          '기존 버전의 B 보조 참조는 원본 시스템·선택·출처를 포함해야 한다. 새 설계는 최신 A 참고게임·B 기존 시스템 문법으로 다시 작성한다.');
       }
       const aGenre=gameRows.find(row=>row.representative===a.gameGenre);
       const bGenre=gameRows.find(row=>row.representative===b.gameGenreRepresentative);
@@ -188,7 +206,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
         ||bPath.length!==2||!bMaterial?.middle.includes(bPath[1])||b.material!==bPath[1]
         ||!textReady(b.supportingReason,20)){
         reject('DESIGN_STANDARD_CLASSIFICATION_INVALID','CATEGORY_IDENTITY',['creativeGrammar'],{},
-          '표준표의 A 대표·중심 장르와 대분류 소재, B 보조 세부 장르와 정확한 중분류 경로·보조 이유를 작성한다.');
+          'A 참고게임과 B 기존 시스템의 장르·소재 분류 경로 및 두 시스템을 연결하는 이유를 작성한다.');
       }
       const fiction=list(grammar?.cGenres);
       if(fiction.some(row=>gameRows.some(game=>game.representative===row.name||game.detailed.includes(row.name)))){
@@ -404,6 +422,17 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   const expectedFrame=['CORE_IDENTITY','CORE_FUN_AND_REPRESENTATIVE_LOOP','WORLD_AND_PROGRESSION_DIRECTION','SAVE_PERSISTENCE_MEANING','MULTIPLAYER_INTENT'];
   if(shared&&expectedFrame.some(item=>!shared.includes(item)))reject('DESIGN_SHARED_FRAME_INCOMPLETE','PLATFORM_FIT_DESIGN',['platformExpansionPolicy'],{shared},'공통 정체성·핵심 루프·세계/성장·저장 의미·멀티 의도를 각각 보존한다. 같은 항목을 반복하지 않는다.');
   const alternatives=list(design.designAlternatives);
+  if(selected.has('designAlternatives')&&Number(design.creativeGrammar?.standardVersion)>=2){
+    const named=design.creativeGrammar?.a?.referenceGame,baseline=design.creativeGrammar?.b?.existingSystemReference;
+    const required=['referenceGame','adoptedFromA','preservedFromB','baselineSource','newInteraction','changedChoice','successCheck','failureRecovery','verificationScene'];
+    if(alternatives.length<2||alternatives.some(plan=>{
+      const idea=plan.abIntegration;
+      return !idea||required.some(key=>!textReady(idea[key],2))
+        ||clean(idea.referenceGame)!==clean(named?.name)||clean(idea.adoptedFromA)!==clean(named?.systemFamily)
+        ||clean(idea.preservedFromB)!==clean(baseline?.systemFamily)||clean(idea.baselineSource)!==clean(baseline?.source)
+        ||clean(idea.newInteraction)===clean(idea.changedChoice)||clean(idea.successCheck)===clean(idea.failureRecovery);
+    }))reject('DESIGN_AB_IDEA_INTEGRATION_REQUIRED','IDEA_AND_DISTINCTNESS',['designAlternatives'],{},'서로 다른 두 대안에 A 채택·B 보존·출처·새 상호작용·달라진 선택·성공 판정·실패 복구·검증 장면을 각각 적는다.');
+  }
   const strategicKeys=['coreLoopShift','mapTopologyRegionRoles','enemyEcosystemCounterplay','progressionEconomy'];
   const normalize=value=>clean(value).toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
   for(let i=0;i<alternatives.length;i++)for(let j=i+1;j<alternatives.length;j++){

@@ -525,7 +525,27 @@ jobs:
               throw new Error('SECURITY_OWNER_EXACT_FOCUS_MIGRATION_INVARIANTS_FAIL');
             console.log('SECURITY_OWNER_EXACT_THREE_GAME_PLATFORM_FOCUS=PASS');
           }
-          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key)));
+          // OWNER_APPROVED_AB_DESIGN_BEGIN: 2026-10-20 explicit owner approval.
+          // Exact old/new design content only; other authority changes remain REVIEW.
+          const designPrefix='continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod';
+          const designRecord='changeRecord.ownerReferenceGameAndExistingSystems20261020';
+          const designKeys=new Set(changes.filter(key=>key===designRecord||key===designPrefix||key.startsWith(designPrefix+'.')));
+          if(designKeys.size){
+            const {createHash}=await import('node:crypto');
+            const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
+            const method=policy=>policy.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod;
+            if(hash(method(base))!=='4616d9f9d9cb429995a14e5f677c97912a937e4aadd5b33a723cbeefd6e9a461'
+              ||hash(method(head))!=='05b66c786b40fb65c27021b28fb24ad2f03c17e27a7c4ca7d1d8fb880000a43c'
+              ||head.version!==base.version+1
+              ||changes.some(key=>key!=='version'&&!designKeys.has(key))
+              ||!same(head.changeRecord?.ownerReferenceGameAndExistingSystems20261020,{
+                authority:'OWNER_DIRECTIVE_2026-10-20',A:'NAMED_REPRESENTATIVE_SIMILAR_GAME_SYSTEM',
+                B:'EXISTING_GAME_SYSTEM_BASELINE',CDDelvePreserved:true,lockedSequenceChanged:false
+              }))throw new Error('SECURITY_OWNER_EXACT_AB_DESIGN_SCOPE_INVALID');
+            console.log('SECURITY_OWNER_EXACT_AB_DESIGN_APPROVAL=PASS');
+          }
+          // OWNER_APPROVED_AB_DESIGN_END
+          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key))&&!designKeys.has(key));
           if(!changes.length||changes.length>70||bad.length)throw new Error('SECURITY_AUTO_POLICY_UNAPPROVED_SCOPE:'+bad.join(','));
           const scope=head.ownerActiveDevelopmentScope20261009;
           const webFlowRows=[];

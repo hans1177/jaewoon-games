@@ -533,7 +533,7 @@ function normalizeNovelGameGrammar(target,rawGrammar,coreLoop,identityCore){
   const newPrimaryVerb=clean(raw.newPrimaryVerb)||`${primary}의 결과를 이용해 다음 세계 규칙을 설계한다`;
   const emergentName=clean(emergentRaw.name)||`${newPrimaryVerb} 복합장르`;
   return {
-    ...(raw.standardVersion?{standardVersion:raw.standardVersion,standardFormula:raw.standardFormula,existingGameSystemRole:raw.existingGameSystemRole||null,dCreations:structuredClone(raw.dCreations||[])}:{}),
+    ...(raw.standardVersion?{standardVersion:raw.standardVersion,standardFormula:raw.standardFormula,representativeGameReference:raw.representativeGameReference?structuredClone(raw.representativeGameReference):null,existingSystemReference:raw.existingSystemReference?structuredClone(raw.existingSystemReference):null,existingGameSystemRole:raw.existingGameSystemRole||null,dCreations:structuredClone(raw.dCreations||[])}:{}),
     toneBlend,
     familiarAnchor:clean(raw.familiarAnchor)||'상실·욕망·경쟁·소속·가족·명예·생존·인정처럼 바로 이해되는 인간 갈등을 감정적 발판으로 사용한다.',
     causalDNAs:normalized.slice(0,4),
@@ -710,7 +710,7 @@ export function computeVibeSeedProposal(target){
   // 오너의 게임 정체성과 기존 플레이 루프를 우선 읽고, 장르 이름만으로 MAIN을 덮어쓰지 않는다.
   // 메인: 새 문법의 기존 게임은 B 시스템만 참고한다. 과거 A 참고도 새 문법에서는 B로 승계한다.
   const bReference=target.basicDesignMethod
-    ?(['B_SYSTEM_ONLY','B_SUPPORTING_REFERENCE_ONLY'].includes(target.bSystemReference?.scope)?target.bSystemReference:
+    ?(['B_SYSTEM_ONLY','B_SUPPORTING_REFERENCE_ONLY','B_EXISTING_GAME_SYSTEMS'].includes(target.bSystemReference?.scope)?target.bSystemReference:
       target.aSystemReference?.scope==='A_SYSTEM_ONLY'?target.aSystemReference:null)
     :null;
   const freeTopicMode=target.designTopicMode==='VIBE_FREE_TOPIC'||Boolean(bReference);
@@ -839,7 +839,8 @@ export function computeVibeSeedProposal(target){
   const freeFingerprint=[...`${target.requestId}|${target.topicRevision||''}|${target.variant||0}`]
     .reduce((hash,ch)=>Math.imul(hash^ch.codePointAt(0),16777619)>>>0,2166136261);
   // 자유주제는 과거 장르의 A/B 한 벌을 그대로 고르는 대신 서로 다른 행동 계열을 인과적으로 결합한다.
-  const baseProfile=freeTopicMode?freeProfiles[freeFingerprint%freeProfiles.length]:
+  const referenceBaseline=Number(target.basicDesignMethod?.version)>=2;
+  const baseProfile=referenceBaseline&&bReference&&profiles[category]?profiles[category]:freeTopicMode?freeProfiles[freeFingerprint%freeProfiles.length]:
     (explicitObby?obbyProfile:null)||schoolProfile||topicMatch?.[1]||profiles[category]||
     topicalProfiles.find(([pattern])=>pattern.test(context))?.[1]||
     {genre:'모험',a:'경로 탐색과 목표 선택',b:'환경과 상대의 상태 대응',choiceA:'목표를 향할 경로와 상호작용 순서를 결정',choiceB:'경로 결과로 바뀐 세계와 상대의 상태에 대응',playerRole:'플레이어'};
@@ -852,7 +853,31 @@ export function computeVibeSeedProposal(target){
   const partner=freePartners.length?freePartners[(freeFingerprint>>>9)%freePartners.length]:baseProfile;
   const profile=freeTopicMode?{...baseProfile,
     a:aSystem||baseProfile.a,choiceA:aChoice||baseProfile.choiceA,
-    b:partner.b,choiceB:partner.choiceB}:baseProfile;
+    b:partner.b,choiceB:partner.choiceB}: {...baseProfile};
+  // 메인: 새 문법의 A는 이름 있는 참고게임, B는 원본 시스템 자체다.
+  // 소재·세계관의 자유 창작과 기존 시스템의 임의 대체를 혼동하지 않는다.
+  let representativeGame=null;
+  if(referenceBaseline){
+    const examples=target.basicDesignMethod.representativeGameExamples||[];
+    const requested=target.representativeGameReference;
+    const name=clean(typeof requested==='string'?requested:requested?.name);
+    representativeGame=typeof requested==='object'&&requested?.name?requested:
+      name?examples.find(row=>row.name===name):null;
+    if(name&&!representativeGame)throw new Error('A_REFERENCE_GAME_SYSTEM_EVIDENCE_REQUIRED:'+name);
+    if(!representativeGame){
+      const genre=target.basicDesignMethod.gameGenreClassification.find(row=>row.detailed.includes(baseProfile.genre))?.representative;
+      representativeGame=examples.find(row=>row.gameGenre===genre)
+        ||examples.find(row=>row.gameGenre===(/RPG|SURVIVAL/.test(category)?'역할수행':/DEFENSE|STRATEGY/.test(category)?'전략':'액션'));
+    }
+    if(!representativeGame||!['name','systemFamily','playerChoice','source'].every(key=>clean(representativeGame[key])))
+      throw new Error('A_REFERENCE_GAME_SYSTEM_EVIDENCE_REQUIRED');
+    profile.a=clean(representativeGame.systemFamily);profile.choiceA=clean(representativeGame.playerChoice);
+    profile.genre=clean(representativeGame.gameGenre)||baseProfile.genre;
+    if(bReference){
+      if(!['systemFamily','playerChoice','source'].every(key=>clean(bReference[key])))throw new Error('B_EXISTING_GAME_SYSTEM_EVIDENCE_REQUIRED');
+      profile.b=clean(bReference.systemFamily);profile.choiceB=clean(bReference.playerChoice);
+    }
+  }
   const materialNames={
     KARMA_RETURN:'업보와 인과응보',MANDATE_LEGITIMACY:'왕조의 정통성과 민심',RITUAL_RECIPROCITY:'의례와 호혜 관계',ANCESTOR_MEMORY:'조상 기억과 계승',
     PROPHECY_SELF_FULFILLMENT:'그리스 비극의 자기실현 예언',HUBRIS_NEMESIS:'오만과 응보',OATH_CONTRACT:'서사시의 맹세와 계약',
@@ -1109,7 +1134,7 @@ export function computeVibeSeedProposal(target){
     ?`${gameName}. MAIN은 A(${profile.a} × ${aMaterial})의 대규모 창작 규칙과 독립적인 B(${profile.b} × ${bMaterial})의 세부 사건 규칙, C(메인 ${standard?primaryGenre:profile.genre} × 보조 ${secondaryGenre}; ${cMaterial1}·${cMaterial2} 반작용), @(${discoveredCore.name}: ${discoveredCore.effect})를 연결한 결과로 결정된다. A→B→A의 입력·행동·상태 변화가 실제 목표를 만든다.`.slice(0,680)
     :`${gameName}에서 ${profile.playerRole}가 ${profile.a}와 ${profile.b}의 선택을 통해 ${aMaterial}·${bMaterial}의 인과법칙을 바꾸는 ${profile.genre} 복합 게임`;
   const grammar={
-    ...(standard?{standardVersion:standard.version,standardFormula:standard.formula,existingGameSystemRole:bReference?'B_SUPPORTING_REFERENCE':null,dCreations:standardDSources}:{}),
+    ...(standard?{standardVersion:standard.version,standardFormula:standard.formula,representativeGameReference:representativeGame?{...representativeGame}:null,...(referenceBaseline?{existingSystemReference:{scope:bReference?'B_EXISTING_GAME_SYSTEMS':'B_NEW_GAME_INITIAL_SYSTEMS',systemFamily:clean(bReference?.systemFamily||profile.b),playerChoice:clean(bReference?.playerChoice||profile.choiceB),source:clean(bReference?.source)||'신규 기본설계:'+clean(target.requestId)}}:{}),existingGameSystemRole:referenceBaseline?(bReference?'B_EXISTING_GAME_SYSTEMS':'B_NEW_GAME_INITIAL_SYSTEMS'):bReference?'B_SUPPORTING_REFERENCE':null,dCreations:standardDSources}:{}),
     toneBlend:standard?[primaryGenre,secondaryGenre]:[profile.genre,secondaryGenre],
     familiarAnchor:`플레이어는 ${profile.a}에서 얻은 이익과 ${profile.b}의 책임 사이에서 선택의 대가를 직접 감당한다.`,
     causalDNAs:chosen.slice(0,4).map((row,index)=>({id:row.id,source:row.source,principle:row.principle,gameplayConversion:row.gameGrammar,fusionRole:index%2===0?`${profile.a}의 선택 조건을 바꾼다.`:`${profile.b}의 대응 결과를 바꾼다.` })),
@@ -1147,13 +1172,13 @@ export function computeVibeSeedProposal(target){
   return {
     basicDesignSelection:standard?{
       standardVersion:standard.version,
-      a:{gameGenre:aClassification.representative,gameRole:'PRIMARY',material:first.source},
+      a:{gameGenre:aClassification.representative,gameRole:'PRIMARY',material:first.source,...(referenceBaseline?{referenceGame:{...representativeGame}}:{})},
       b:{gameGenreRepresentative:bClassification.representative,gameGenre:bClassification.detailed.find(name=>name.split(' ').some(word=>word.length>1&&profile.b.includes(word)))||bClassification.detailed[0],gameRole:'SUPPORTING',material:second.middle,materialPath:[second.source,second.middle],supportingReason:`${profile.b}는 ${profile.a}의 결과를 읽는 보조 판단이다. 결과가 중심 ${profile.a}의 다음 경로와 위험으로 돌아온다.`},
-      ...(bReference?{existingSystemReference:{scope:'B_SUPPORTING_REFERENCE_ONLY',systemFamily:clean(bReference.systemFamily),playerChoice:clean(bReference.playerChoice),source:clean(bReference.source)}}:{}),
+      ...(referenceBaseline||bReference?{existingSystemReference:{scope:referenceBaseline?(bReference?'B_EXISTING_GAME_SYSTEMS':'B_NEW_GAME_INITIAL_SYSTEMS'):'B_SUPPORTING_REFERENCE_ONLY',systemFamily:clean(bReference?.systemFamily||profile.b),playerChoice:clean(bReference?.playerChoice||profile.choiceB),source:clean(bReference?.source)||'신규 기본설계:'+clean(target.requestId)}}:{}),
       materialHierarchyVersion:standard.materialHierarchyVersion,
       dSources:standardDSources
     }:null,
-    requestId:target.requestId,category,gameName,referenceGames:[],coreFunToLearn:[bridge,genreInterlock],
+    requestId:target.requestId,category,gameName,referenceGames:representativeGame?[representativeGame.name]:[],coreFunToLearn:[bridge,genreInterlock],
     coreLoop,distinctIdentity:identity,targetAudience:`${profile.genre} 장르에서 실제 선택과 세계 반응을 탐색하는 모바일 플레이어`,
     initialTargetPlatform:target.platform,initialPlayMode:'PROJECT_DEFINED',multiplayerDesignMode:['COOP','COMPETITIVE','HYBRID'].includes(clean(target?.portfolioRequest?.multiplayerDesignMode).toUpperCase())?clean(target.portfolioRequest.multiplayerDesignMode).toUpperCase():(/BATTLEGROUND|PVP|RACING|PARTY/.test(category)?'COMPETITIVE':'COOP'),
     crossPlatformExpansionValue:'동일 인과문법을 보존한 플랫폼별 네이티브 구현에 적용 가능하다.',
