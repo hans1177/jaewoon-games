@@ -181,3 +181,20 @@ test('current machine authority permits Roblox and general Web but holds Unity a
   for(const platform of ['UNITY','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'])
     assert.equal(roadmap.developmentAccess[platform],'OWNER_HOLD',platform);
 });
+
+test('central ordinary Web policy publishes each main revision before public verification on the existing route',()=>{
+  const order=roadmap.webRuntimeStartabilityContract.publicationOrder;
+  assert.deepEqual(order.sequence,['MERGE_AUTHORIZED_SOURCE_TO_MAIN','PUBLISH_EXACT_MAIN_VIA_EXISTING_GITHUB_PAGES','VERIFY_PUBLIC_DEPLOYED_SAME_REVISION','RECORD_FAILURE_AND_REPAIR_REDEPLOY']);
+  assert.equal(order.qaScoreOrF0F9MayBlockStaticPublication,false);
+  assert.equal(order.postDeploymentVerificationRequired,true);
+  assert.equal(order.verificationMustMatchPublishedSourceShaAndGameTree,true);
+  assert.equal(order.failedOrUnverifiedRuntimeMayBeReportedPass,false);
+  assert.equal(order.deploymentImpliesProductionReady,false);
+  assert.equal(order.existingF0F9DefinitionsAndInternalOrderPreserved,true);
+  const workflow=fs.readFileSync(order.existingWorkflow,'utf8');
+  const push=workflow.split('  push:')[1].split('  workflow_dispatch:')[0];
+  assert.match(push,/branches:\s*\[main\]/);assert.doesNotMatch(push,/paths|paths-ignore|if:/);
+  assert.ok(workflow.indexOf('uses: actions/deploy-pages@v4')<workflow.indexOf('      - name: Verify live GitHub Pages source and game routes'));
+  const header=workflow.split('  publish-pages:')[1].split('    steps:')[0];
+  assert.match(header,/needs: deploy/);assert.doesNotMatch(header,/needs: \[|qa_pass|approval|result ==/);
+});

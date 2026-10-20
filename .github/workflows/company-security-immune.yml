@@ -545,7 +545,25 @@ jobs:
             console.log('SECURITY_OWNER_EXACT_AB_DESIGN_APPROVAL=PASS');
           }
           // OWNER_APPROVED_AB_DESIGN_END
-          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key))&&!designKeys.has(key));
+          // OWNER_APPROVED_WEB_DEPLOY_FIRST_BEGIN: exact 2026-10-20 publication instruction.
+          const publicationKeys=new Set(['webRuntimeStartabilityContract.publicationOrder','changeRecord.ownerWebDeployThenValidate20261020']);
+          const publicationChanged=changes.some(key=>publicationKeys.has(key));
+          if(publicationChanged){
+            const {createHash}=await import('node:crypto');
+            const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
+            if(base.webRuntimeStartabilityContract?.publicationOrder!==undefined
+              ||hash(head.webRuntimeStartabilityContract?.publicationOrder)!=='a2494db50b1ef1bbdace0cd3e0bad306f34ee77a477b437a10cf3e5757b7b487'
+              ||head.version!==base.version+1
+              ||changes.some(key=>key!=='version'&&!publicationKeys.has(key))
+              ||!same(head.changeRecord?.ownerWebDeployThenValidate20261020,{
+                authority:'OWNER_DIRECTIVE_2026-10-20',requestKo:'중앙 정책: 무조건 배포 후 검증',
+                scope:'EXISTING_ORDINARY_WEB_STATIC_MAIN_PUBLICATION',sameRevisionPublicVerificationRequired:true,
+                existingF0F9InternalOrderChanged:false,productionReadinessClaimUnchanged:true
+              }))throw new Error('SECURITY_OWNER_WEB_DEPLOY_FIRST_SCOPE_INVALID');
+            console.log('SECURITY_OWNER_WEB_DEPLOY_FIRST_APPROVAL=PASS');
+          }
+          // OWNER_APPROVED_WEB_DEPLOY_FIRST_END
+          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key))&&!designKeys.has(key)&&!(publicationChanged&&publicationKeys.has(key)));
           if(!changes.length||changes.length>70||bad.length)throw new Error('SECURITY_AUTO_POLICY_UNAPPROVED_SCOPE:'+bad.join(','));
           const scope=head.ownerActiveDevelopmentScope20261009;
           const webFlowRows=[];
