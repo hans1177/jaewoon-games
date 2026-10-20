@@ -17074,7 +17074,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T10:44:16.164Z",
+      "updatedAt": "2026-10-20T10:47:13.958Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -17092,17 +17092,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "7a4dd0c195359a08b200f99e8518821397608576",
       "robloxBuildArtifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
-      "robloxBuildPassedAt": "2026-10-20T10:27:41.403Z",
+      "robloxBuildPassedAt": "2026-10-20T10:47:13.958Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T10:27:41.403Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T10:47:13.958Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "gem-survivor",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T09:53:37.661Z",
+        "checkedAt": "2026-10-20T10:29:45.513Z",
         "sourceRevision": "7a4dd0c195359a08b200f99e8518821397608576",
         "artifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
         "secondaryOwnerFocus": false,
@@ -17141,13 +17141,15 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false"
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required web and music validations have not passed."
+            "note": "Package cannot start runtime testing because multiple required validation checks failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -33526,7 +33528,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T10:46:56.940Z",
+  "updatedAt": "2026-10-20T10:47:13.958Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
