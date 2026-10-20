@@ -18,9 +18,9 @@ const failure=id=>({
   retryPolicy:'UNLIMITED_CAUSAL_REPAIR'
 });
 
-test('owner rules are canonically ordered one through four and neural expansion remains final-stage only',()=>{
+test('owner rules preserve ordered Rules 1–5 and neural expansion remains final-stage only',()=>{
   const rules=roadmap.ownerCanonicalRules;
-  assert.deepEqual(rules.implementationOrder,['RULE_1','RULE_2','RULE_3','RULE_4']);
+  assert.deepEqual(rules.implementationOrder,['RULE_1','RULE_2','RULE_3','RULE_4','RULE_5']);
   assert.equal(rules.orderedImplementationRequired,true);
   const rule=rules.rule4;
   assert.equal(rule.id,'RULE_4_SELF_ARCHITECTURE_EVOLUTION_AND_FINAL_NEURAL_EXPANSION');
