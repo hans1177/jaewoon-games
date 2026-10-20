@@ -66,7 +66,7 @@ test('only bounded relevant source excerpts are offered to a small local model',
   assert.match(found.text,/PLACE_HERE/);
   assert.throws(()=>selectRelevantExcerpt(source,'UNKNOWN_NEEDLE'),/EXCERPT_MATCH_NOT_FOUND/);
 });
-test('manual merge requires current-head 12 QA workflows, security enforce, and no failed deploy',()=>{
+test('manual merge requires impact-scoped current-head QA, security enforce, and no failed deploy',()=>{
   const sha='a'.repeat(40);
   const names=['Vibe2 Parallelism Contract QA','Company Evolution QA','Vibe3 Engine Contract',
     'Company Records Governance','Homepage Manager','All Games Development Sync',
@@ -77,7 +77,7 @@ test('manual merge requires current-head 12 QA workflows, security enforce, and 
   assert.deepEqual(requiredReviewPass(runs,checks,sha),{pass:true,blockers:[]});
   assert.equal(requiredReviewPass(runs,checks,'b'.repeat(40)).pass,false);
   assert.equal(requiredReviewPass(runs,[],sha).pass,false);
-  assert.equal(requiredReviewPass(runs.slice(1),checks,sha).pass,false);
+  assert.equal(requiredReviewPass(runs.filter(r=>r.name!=='Vibe2 Core QA'),checks,sha).pass,false);
   assert.equal(requiredReviewPass(runs,checks.concat({name:'Cloudflare Pages',
     status:'completed',conclusion:'failure',app:{slug:'cloudflare-workers-and-pages'}}),sha).pass,false);
 });
