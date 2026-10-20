@@ -277,36 +277,57 @@ jobs:
             'assets/homepage-enhancements.js','assets/asset-library.css',
             'assets/asset-library.js','assets/asset-library-viewer.js'
           ])if(trackedAssets.has(asset))refs.add(asset);
-          // 현재 Git blob과 같은 캐시만 재사용한다. 캐시 누락/오염은 기존 Git 복원으로 회복한다.
+          // 한 파일당 Git blob SHA-1을 한 번만 확인한다. 전체 파일을 Buffer로 적재하지 않아서
+          // 큰 CC0 모델/아카이브에도 고정 메모리(1 MiB)를 유지한다. 캐시 오염은 복원 후 재검증.
           const selectedAssets=[...refs].sort();
-          const missingAssets=[];
-          for(const asset of selectedAssets){
-            let matches=false;
-            if(fs.existsSync(asset)&&fs.lstatSync(asset).isFile()){
-              const bytes=fs.readFileSync(asset);
-              const hash=crypto.createHash('sha1').update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
-              matches=hash===assetBlobs.get(asset);
-            }
-            if(!matches)missingAssets.push(asset);
-          }
+          const ioBuffer=Buffer.allocUnsafe(1024*1024);
+          const checkedAssets=new Set();
+          let verifiedBytes=0;
+          const verifyGitBlob=asset=>{
+            const expected=assetBlobs.get(asset);
+            if(!expected)throw Error('GITHUB_PAGES_UNTRACKED_ASSET:'+asset);
+            if(!fs.existsSync(asset))return false;
+            const stat=fs.lstatSync(asset);
+            if(!stat.isFile())return false; // symlinks, folders, etc. are never publishable
+            if(stat.size>100*1024*1024)throw Error('GITHUB_PAGES_ASSET_TOO_LARGE:'+asset);
+            const hash=crypto.createHash('sha1').update(Buffer.from('blob '+stat.size+'\\0'));
+            const fd=fs.openSync(asset,fs.constants.O_RDONLY|(fs.constants.O_NOFOLLOW||0));
+            let firstChunk=true;
+            try{
+              for(;;){
+                const read=fs.readSync(fd,ioBuffer,0,ioBuffer.length,null);
+                if(read===0)break;
+                if(firstChunk){
+                  firstChunk=false;
+                  if(ioBuffer.subarray(0,Math.min(read,100)).toString('utf8').includes('version https://git-lfs.github.com/spec/v1'))
+                    throw Error('GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE:'+asset);
+                }
+                hash.update(ioBuffer.subarray(0,read));
+              }
+            }finally{fs.closeSync(fd)}
+            const matches=hash.digest('hex')===expected;
+            if(matches){checkedAssets.add(asset);verifiedBytes+=stat.size}
+            return matches;
+          };
+          const missingAssets=selectedAssets.filter(asset=>!verifyGitBlob(asset));
           if(missingAssets.length){
             cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',...missingAssets],{
               maxBuffer:16*1024*1024
             });
+            for(const asset of missingAssets)
+              if(!verifyGitBlob(asset))throw Error('GITHUB_PAGES_ASSET_SOURCE_MISMATCH:'+asset);
           }
+          if(checkedAssets.size!==selectedAssets.length)throw Error('GITHUB_PAGES_ASSET_VERIFICATION_INCOMPLETE');
           console.log('PAGES_ASSET_REUSED='+String(selectedAssets.length-missingAssets.length));
           console.log('PAGES_ASSET_RESTORED='+String(missingAssets.length));
+          console.log('PAGES_ASSET_VERIFIED_BYTES='+verifiedBytes);
+          // copyFileSync with COPYFILE_FICLONE uses copy-on-write when supported, and
+          // automatically falls back to a normal copy. Never hardlink: Pages path
+          // rewrites must not mutate verified source/cache bytes.
           for(const asset of selectedAssets){
             const target=path.join(site,asset);
-            const source=fs.readFileSync(asset);
-            const hash=crypto.createHash('sha1').update(Buffer.from('blob '+source.length+'\0')).update(source).digest('hex');
-            if(hash!==assetBlobs.get(asset))throw Error('GITHUB_PAGES_ASSET_SOURCE_MISMATCH:'+asset);
-            if(source.length>100*1024*1024)throw Error('GITHUB_PAGES_ASSET_TOO_LARGE:'+asset);
-            if(source.subarray(0,100).toString('utf8').includes('version https://git-lfs.github.com/spec/v1')){
-              throw Error('GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE:'+asset);
-            }
             fs.mkdirSync(path.dirname(target),{recursive:true});
-            fs.writeFileSync(target,source);
+            fs.copyFileSync(asset,target,fs.constants.COPYFILE_FICLONE);
           }
           // Build only the game-authored HTML. Never insert OR strip developer
           // scripts or UI: automatic game development owns its own runtime.
