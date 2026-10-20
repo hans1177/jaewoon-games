@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-10-20T11:46:07.235Z",
+  "generatedAt": "2026-10-20T12:11:20.130Z",
   "decisions": [
     {
       "gameId": "amusement-tycoon",
@@ -814,36 +814,6 @@
       "ownerApprovalGate": false
     },
     {
-      "gameId": "ocean-voyage",
-      "decision": "CONTINUE",
-      "reason": "NORMAL_ACTIVE_DEVELOPMENT",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": false,
-          "state": "UNVERIFIED_NOT_NEGATIVE"
-        },
-        "development": {
-          "activeTasks": 0,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 0
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": false
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
       "gameId": "party-rpg",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
@@ -1368,7 +1338,7 @@
           "activeTasks": 4,
           "doneTasks": 0,
           "failedTasks": 0,
-          "repeatedFailureSignal": 22
+          "repeatedFailureSignal": 2026
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
@@ -1402,6 +1372,36 @@
         },
         "qa": {
           "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "ocean-voyage",
+      "decision": "CONTINUE",
+      "reason": "NORMAL_ACTIVE_DEVELOPMENT",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": false,
+          "state": "UNVERIFIED_NOT_NEGATIVE"
+        },
+        "development": {
+          "activeTasks": 0,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 0
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": false
         },
         "balance": {
           "structuralCoreFailure": false
