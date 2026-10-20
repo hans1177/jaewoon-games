@@ -69244,11 +69244,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ac18dc17e2c78a1032de9e6e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8625",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "a5f6255cdbb17d39601499ece6667c168fe17743",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8625,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe-preplan-active-dedupe-20261020",
+        "baseSha": "a5f6255cdbb17d39601499ece6667c168fe17743",
+        "headSha": "9ed886e5ad893145de70d2db95e2030ff62a05d1",
+        "mergeCommitSha": "39a03477fbf71acca1e386fed1d41d7082a8d110",
+        "mergedAt": "2026-10-20T03:51:48Z",
+        "authorLogin": "hans1177",
+        "titleHash": "60c66a897c7d089fd5be1fd3560315f63f808439d1b01fe0e2115b8be493ec60",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe-preplan-active-dedupe-20261020",
+        "candidateSha": "9ed886e5ad893145de70d2db95e2030ff62a05d1"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 451,
+        "deletedLineCount": 328,
+        "changedFiles": [
+          ".github/workflows/vibe2-24h-runner.yml",
+          "company-status.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe2-24h-runner.yml",
+          "company-status.json",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/vibe-browser-smoke.mjs",
+          "qa/vibe2-queue-control.test.mjs",
+          "web-games/fantasy-survival/index.html",
+          "web-games/fantasy-survival/world3d.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8625",
+        "merge-commit:39a03477fbf71acca1e386fed1d41d7082a8d110",
+        "base-main:a5f6255cdbb17d39601499ece6667c168fe17743"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 553
+    "total": 554
   }
 }
