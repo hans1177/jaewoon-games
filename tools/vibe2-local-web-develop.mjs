@@ -9,12 +9,8 @@ import {readLocalChatPolicy,readApprovedWebGame} from './vibe2-local-web-chat.mj
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const REPO='hans1177/jaewoon-games';
 const MODEL_ENDPOINT='http://127.0.0.1:11434/api/chat';
-const REQUIRED_RUNS=Object.freeze([
-  'Vibe2 Parallelism Contract QA','Company Evolution QA','Vibe3 Engine Contract',
-  'Company Records Governance','Homepage Manager','All Games Development Sync',
-  'Main Write Guard','Vibe2 Learning Pipeline Contract','Company Central Policy Contract QA',
-  'Vibe2 Core QA','Vibe QA','Company Security Immune System'
-]);
+// Impact-scoped checks: require core+security; check every actually scheduled PR workflow.
+const REQUIRED_RUNS=Object.freeze(['Vibe2 Core QA','Company Security Immune System']);
 const clean=value=>String(value??'').trim();
 const fail=message=>{throw new Error(message);};
 
@@ -81,6 +77,10 @@ export function requiredReviewPass(workflows,checkRuns,sha){
     .filter(r=>r.head_sha===sha&&r.event==='pull_request');
   const blockers=REQUIRED_RUNS.filter(name=>!runs.some(r=>r.name===name&&
     r.status==='completed'&&r.conclusion==='success'));
+  for(const run of runs){
+    if(run.status!=='completed'||!['success','skipped'].includes(run.conclusion))
+      blockers.push('PR_WORKFLOW_NOT_PASS:'+run.name);
+  }
   const checks=Array.isArray(checkRuns)?checkRuns:[];
   if(!checks.some(r=>r.name==='enforce'&&r.status==='completed'&&r.conclusion==='success'))
     blockers.push('SECURITY_FINAL_ENFORCE');
