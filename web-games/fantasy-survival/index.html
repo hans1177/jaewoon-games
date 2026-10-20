@@ -129,6 +129,12 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid #f6dfa1;outli
 .hud .foodBar>i{background:linear-gradient(180deg,#f7d27a,#a97920)}
 .hud .questLine{max-width:100%;margin-top:8px;padding:7px 9px;border:1px solid #b7944a77;border-left:3px solid var(--arpg-gold);border-radius:7px;background:linear-gradient(90deg,#1b211bee,#162921dd);font-size:11px;line-height:1.4;color:#f4dfad;white-space:normal}
 .hud .questLine:before{content:'임무  ';color:#deb976;font-size:9px;letter-spacing:.03em}
+.questToggle{display:block;position:relative;width:100%;min-height:40px;margin:0;padding:0 21px 0 0;border:0;background:none;color:inherit;text-align:left;cursor:pointer;pointer-events:auto;touch-action:manipulation}
+.questToggle .questLine{display:block;margin-top:6px;width:100%}
+.questToggle:after{content:'⌄';position:absolute;right:4px;top:11px;font-size:15px;color:var(--arpg-gold)}
+body[data-quest-mode="compact"] .questToggle .questLine{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body[data-quest-mode="compact"] .questToggle:after{content:'⌃'}
+.questToggle:focus-visible{outline:2px solid #f7df9d;outline-offset:2px}
 .hud .sub{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:7px;color:#c6d7c9;font-size:10px}
 .hud .sub b{color:#f6e8c5}
 .hudMenu{position:relative;flex:0 0 auto;margin-left:auto;pointer-events:auto}
@@ -144,23 +150,47 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid #f6dfa1;outli
 .hudMenuPanel .saveStack button:active{background:#685334}
 .miniMapWrap{position:absolute;top:max(69px,calc(env(safe-area-inset-top) + 69px));right:max(10px,env(safe-area-inset-right));left:auto;transform:none;width:114px;height:114px;padding:5px;border:2px solid #c7ac76a8;border-radius:50%;background:#101a15de;box-shadow:0 5px 22px #000b,inset 0 0 9px #030c08;z-index:14;pointer-events:none}
 .miniMapWrap b{color:#e5d8b3;background:#0b110acb;bottom:2px}
+.miniMapWrap{pointer-events:auto;cursor:pointer;touch-action:manipulation}
+.miniMapWrap:focus-visible{outline:3px solid #f9e09d;outline-offset:3px}
 .miniMap{border-radius:50%}
 .stick{position:absolute;z-index:16;left:max(20px,env(safe-area-inset-left));bottom:max(23px,calc(env(safe-area-inset-bottom) + 18px));width:136px;height:136px;border:2px solid #c2a57298;border-radius:50%;background:radial-gradient(circle,#52604b33 5%,#152b2888 52%,#080f12dd 78%);box-shadow:0 7px 24px #000b,inset 0 0 20px #050b0c;touch-action:none}
 .stick:after{content:'';position:absolute;inset:15px;border:1px dashed #ddc99652;border-radius:50%;pointer-events:none}
 .stick .knob{width:52px;height:52px;left:calc(50% - 26px);top:calc(50% - 26px);border:2px solid #f3dea6;border-radius:50%;background:radial-gradient(circle at 36% 25%,#d7d8bc,#637e6c);box-shadow:0 3px 9px #0009;pointer-events:none}
-.actions{position:absolute;z-index:16;right:max(16px,env(safe-area-inset-right));bottom:max(24px,calc(env(safe-area-inset-bottom) + 17px));width:222px;height:203px;display:grid;grid-template-columns:58px 58px 86px;grid-template-rows:55px 55px 77px;gap:8px 10px;align-items:center;justify-items:center;pointer-events:none}
-.actions>button{pointer-events:auto;position:relative;min-width:0;max-width:100%;min-height:49px;line-height:1.12;text-align:center;white-space:normal;overflow:hidden;color:#f8e7c7;font-size:11px;font-weight:900;border:2px solid #bd9d60b9;border-radius:50%;background:radial-gradient(circle at 36% 25%,#68533c,#202c28 72%);box-shadow:0 4px 16px #000b,inset 0 2px 3px #fff4;touch-action:manipulation}
+/* 전투/상호작용은 엄지 영역, 제작·가방·지도는 별도 우측 바로가기. */
+.quickMenu{position:absolute;z-index:17;top:max(191px,calc(env(safe-area-inset-top) + 182px));right:max(12px,env(safe-area-inset-right));display:grid;grid-template-columns:52px;gap:8px;pointer-events:auto}
+.quickMenu>.act{width:52px;height:52px;min-width:52px;min-height:52px;padding:3px;color:#f6ecd2;font-size:11px;line-height:1.18;font-weight:950;border:2px solid #b99c68;border-radius:11px;background:linear-gradient(145deg,#5c5342,#263930 62%,#151d1a);box-shadow:0 5px 13px #000a,inset 0 1px #ffe7aa3e;touch-action:manipulation}
+.quickMenu>.act:active{transform:scale(.94);filter:brightness(1.2)}
+.quickMenu>#inventory{background:linear-gradient(145deg,#55546a,#292d42)}
+.quickMenu>#craft{background:linear-gradient(145deg,#557052,#253e2b)}
+.quickMenu>#map{background:linear-gradient(145deg,#5e5742,#292d24)}
+.quickMenu>#map:not(.ready){opacity:.62}
+.actions{position:absolute;z-index:16;right:max(16px,env(safe-area-inset-right));bottom:max(24px,calc(env(safe-area-inset-bottom) + 17px));width:172px;height:169px;display:grid;grid-template-columns:68px 88px;grid-template-rows:69px 88px;gap:12px 12px;align-items:center;justify-items:center;pointer-events:none;transform:scale(var(--ui-control-scale,1));transform-origin:bottom right}
+.actions>button{pointer-events:auto;position:relative;min-width:0;max-width:100%;min-height:52px;line-height:1.12;text-align:center;white-space:normal;overflow:hidden;color:#f8e7c7;font-size:12px;font-weight:900;border:2px solid #bd9d60b9;border-radius:50%;background:radial-gradient(circle at 36% 25%,#68533c,#202c28 72%);box-shadow:0 4px 16px #000b,inset 0 2px 3px #fff4;touch-action:manipulation}
 .actions>button:active{transform:scale(.95);filter:brightness(1.17)}
-.actions>#craft{grid-column:1;grid-row:1;width:58px;height:55px}
-.actions>#inventory{grid-column:2;grid-row:1;width:58px;height:55px}
-.actions>#map{grid-column:3;grid-row:1;width:58px;height:55px;justify-self:start}
-.actions>#gather{grid-column:1;grid-row:2;width:58px;height:55px;background:radial-gradient(circle at 36% 25%,#7e6341,#354031)}
-.actions>#attack{grid-column:3;grid-row:2/span 2;width:86px;height:86px;align-self:center;font-size:15px;color:#fff4d8;border:3px solid #e6b676;background:radial-gradient(circle at 31% 23%,#d3584a,#821e27 65%,#390e1c);box-shadow:0 0 0 3px #392417,0 6px 22px #000d,inset 0 1px 9px #efa89b}
+.actions>#gather{grid-column:1;grid-row:1;width:68px;height:68px;background:radial-gradient(circle at 36% 25%,#7e6341,#354031)}
+.actions>#attack{grid-column:2;grid-row:2;width:88px;height:88px;font-size:16px;color:#fff4d8;border:3px solid #e6b676;background:radial-gradient(circle at 31% 23%,#d3584a,#821e27 65%,#390e1c);box-shadow:0 0 0 3px #392417,0 6px 22px #000d,inset 0 1px 9px #efa89b}
 .actions>#attack:before{content:'';display:block;width:21px;height:21px;margin:0 auto 4px;border:2px solid #f6e5ce;border-radius:2px 12px 2px 12px;transform:rotate(-35deg);background:linear-gradient(145deg,#f5d39b,#958b76);box-shadow:0 0 6px #1b0708}
-.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{grid-column:2;grid-row:2;width:58px;height:55px;align-self:center;font-size:10px;background:radial-gradient(circle at 35% 20%,#697a61,#263930)}
+.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{grid-column:1;grid-row:2;width:68px;height:68px;font-size:10px;background:radial-gradient(circle at 35% 20%,#697a61,#263930)}
 .actions>#buildBlueprint:not(.on),.actions>#dismount:not(.ready),.actions>#petSpecial[hidden]{display:none}
+.stick{transform:scale(var(--ui-control-scale,1));transform-origin:bottom left}
+body[data-hud-size="108"]{--ui-control-scale:1.08}
+body[data-hud-hand="left"] .actions{left:max(16px,env(safe-area-inset-left));right:auto;transform-origin:bottom left}
+body[data-hud-hand="left"] .stick{left:auto;right:max(20px,env(safe-area-inset-right));transform-origin:bottom right}
+
 #rotateBlueprint{z-index:16}
 .legend{display:none}
+.hudGuide[hidden]{display:none!important}
+.hudGuide{position:fixed;inset:0;z-index:125;display:flex;align-items:center;justify-content:center;padding:14px;background:#070c0bde;overscroll-behavior:contain}
+.hudGuideBox{width:min(410px,96vw);max-height:88dvh;overflow-y:auto;border:2px solid #bea06b;border-radius:16px;padding:21px 18px;background:linear-gradient(150deg,#35382d,#131f1a);color:#ede8d6;box-shadow:0 18px 65px #000d}
+.hudGuideBox h3{font-size:19px;color:#f8df9f;margin:0 0 16px}
+.hudGuideBox p{margin:11px 0;font-size:13px;line-height:1.65}
+.hudGuideBox strong{color:#f3d69a}
+.hudGuideBox button{width:100%;min-height:48px;margin-top:12px;border:1px solid #dbb77d;border-radius:10px;background:linear-gradient(150deg,#866b3f,#364e37);color:#fff8dd;font-weight:900}
+.optionRow label{color:#e9e5d4}
+.optionRow select{max-width:68%;font-size:12px}
+#hudQuestMode{white-space:nowrap}
+.quickMenu .act:focus-visible,.actions .act:focus-visible{outline:3px solid #fff5b7;outline-offset:3px}
+
 .sheet{position:absolute;z-index:40;left:auto;right:max(12px,env(safe-area-inset-right));top:max(68px,env(safe-area-inset-top));bottom:max(24px,env(safe-area-inset-bottom));width:min(610px,82vw);max-height:none;background:linear-gradient(156deg,#2a2a23f9,#101d19fa);border:2px solid #9a8058;border-radius:14px;box-shadow:0 20px 65px #000c,inset 0 1px #ffe5a526}
 .sheet.open{display:flex}
 .sheetHead{flex:0 0 auto;gap:10px;padding:12px 13px;background:linear-gradient(135deg,#50412a,#1a2720);border-bottom:1px solid #a78c5f}
@@ -187,11 +217,12 @@ button:focus-visible,[role=button]:focus-visible{outline:3px solid #f6dfa1;outli
 .startCard{border:2px solid #a88b5e;background:linear-gradient(140deg,#34362beF,#0e1d19fb);box-shadow:0 25px 80px #000d,inset 0 0 0 4px #d8bd7d0a}
 .startCard h1{color:#f7e9c6}
 .startAction{min-height:55px}
-body:has(#sheet.open) .actions,body:has(#sheet.open) .stick,
-body:has(#optionsPanel.open) .actions,body:has(#optionsPanel.open) .stick,
-body:has(#multiPanel.open) .actions,body:has(#multiPanel.open) .stick,
-body:has(#smeltPanel.open) .actions,body:has(#smeltPanel.open) .stick,
-body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden])) .stick{pointer-events:none;opacity:0;visibility:hidden}
+body:has(#sheet.open) .actions,body:has(#sheet.open) .stick,body:has(#sheet.open) .quickMenu,
+body:has(#optionsPanel.open) .actions,body:has(#optionsPanel.open) .stick,body:has(#optionsPanel.open) .quickMenu,
+body:has(#multiPanel.open) .actions,body:has(#multiPanel.open) .stick,body:has(#multiPanel.open) .quickMenu,
+body:has(#smeltPanel.open) .actions,body:has(#smeltPanel.open) .stick,body:has(#smeltPanel.open) .quickMenu,
+body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden])) .stick,body:has(#avatarPanel:not([hidden])) .quickMenu,
+body:has(#hudGuide:not([hidden])) .actions,body:has(#hudGuide:not([hidden])) .stick,body:has(#hudGuide:not([hidden])) .quickMenu{pointer-events:none;opacity:0;visibility:hidden}
 @media(max-width:720px){
  .hud{top:max(6px,env(safe-area-inset-top));left:max(7px,env(safe-area-inset-left));right:max(7px,env(safe-area-inset-right));gap:5px}
  .hud>.card.main{max-width:calc(100vw - 134px);padding:6px 7px}
@@ -208,9 +239,12 @@ body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden]
  .miniMapWrap{top:max(66px,calc(env(safe-area-inset-top) + 59px));right:max(7px,env(safe-area-inset-right));width:92px;height:92px}
  .stick{width:116px;height:116px;left:max(11px,env(safe-area-inset-left));bottom:max(20px,calc(env(safe-area-inset-bottom) + 17px))}
  .stick .knob{width:46px;height:46px;left:calc(50% - 23px);top:calc(50% - 23px)}
- .actions{right:max(9px,env(safe-area-inset-right));bottom:max(18px,calc(env(safe-area-inset-bottom) + 17px));width:186px;height:183px;grid-template-columns:48px 48px 74px;grid-template-rows:47px 47px 73px;gap:7px 7px}
- .actions>#craft,.actions>#inventory,.actions>#map,.actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{width:48px;height:48px;min-height:48px;font-size:10px}
- .actions>#attack{width:74px;height:74px;font-size:13px}
+ .actions{right:max(11px,env(safe-area-inset-right));bottom:max(18px,calc(env(safe-area-inset-bottom) + 17px));width:152px;height:155px;grid-template-columns:58px 78px;grid-template-rows:58px 78px;gap:10px 14px}
+ .actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{width:58px;height:58px;min-height:52px;font-size:11px}
+ .quickMenu{top:max(172px,calc(env(safe-area-inset-top) + 165px));right:max(8px,env(safe-area-inset-right));grid-template-columns:48px;gap:7px}
+ .quickMenu>.act{width:48px;height:48px;min-height:48px;min-width:48px;font-size:10px}
+ body[data-hud-hand="left"] .actions{left:max(11px,env(safe-area-inset-left));right:auto}
+ .actions>#attack{width:78px;height:78px;font-size:13px}
  .sheet{left:max(6px,env(safe-area-inset-left));right:max(6px,env(safe-area-inset-right));top:auto;bottom:max(7px,env(safe-area-inset-bottom));width:auto;max-height:min(76dvh,670px);height:auto;border-radius:14px}
  .sheetHead{padding:8px 9px;gap:6px}
  .sheetHead:before{display:none}
@@ -225,9 +259,11 @@ body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden]
  .hud .sub{font-size:8px}
  .miniMapWrap{width:82px;height:82px}
  .stick{width:103px;height:103px;left:max(7px,env(safe-area-inset-left))}
- .actions{right:max(6px,env(safe-area-inset-right));width:173px;grid-template-columns:45px 45px 71px;gap:6px 6px}
- .actions>#craft,.actions>#inventory,.actions>#map,.actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{width:45px;height:47px;min-height:47px}
- .actions>#attack{width:71px;height:71px}
+ .actions{right:max(6px,env(safe-area-inset-right));width:138px;grid-template-columns:54px 72px;grid-template-rows:54px 72px;gap:7px 12px}
+ .actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{width:54px;height:54px;min-height:52px}
+ .quickMenu{grid-template-columns:46px}
+ .quickMenu>.act{width:46px;height:46px;min-width:46px;min-height:46px}
+ .actions>#attack{width:72px;height:72px}
 }
 @media(orientation:landscape) and (max-height:520px){
  .hud .sub{display:none}
@@ -236,11 +272,14 @@ body:has(#avatarPanel:not([hidden])) .actions,body:has(#avatarPanel:not([hidden]
  .miniMapWrap{top:max(57px,calc(env(safe-area-inset-top) + 54px));width:80px;height:80px}
  .stick{width:99px;height:99px;bottom:max(7px,env(safe-area-inset-bottom))}
  .stick .knob{width:40px;height:40px;left:calc(50% - 20px);top:calc(50% - 20px)}
- .actions{height:135px;bottom:max(6px,env(safe-area-inset-bottom));grid-template-rows:40px 40px 51px;gap:2px 6px}
- .actions>#craft,.actions>#inventory,.actions>#map,.actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{min-height:42px;height:42px}
- .actions>#attack{width:69px;height:69px}
+ .actions{width:141px;height:126px;bottom:max(6px,env(safe-area-inset-bottom));grid-template-columns:56px 76px;grid-template-rows:48px 74px;gap:4px 9px}
+ .quickMenu{top:max(7px,env(safe-area-inset-top));right:max(101px,env(safe-area-inset-right));display:flex;grid-template-columns:none;flex-direction:row;gap:5px}
+ .quickMenu>.act{width:43px;height:43px;min-width:43px;min-height:43px;font-size:10px}
+ .actions>#gather,.actions>#buildBlueprint,.actions>#petSpecial,.actions>#dismount{width:53px;min-height:48px;height:53px}
+ .actions>#attack{width:74px;height:74px}
  .sheet{left:20%;right:8px;top:max(8px,env(safe-area-inset-top));bottom:max(8px,env(safe-area-inset-bottom));width:auto;max-height:none;height:auto}
  .hudMenuPanel{max-height:calc(100dvh - 65px)}
+ body[data-hud-hand="left"] .actions{left:max(8px,env(safe-area-inset-left));right:auto}
 }
 @media(prefers-reduced-motion:reduce){.actions>button,.heroPortrait{transition:none}}
 </style>
