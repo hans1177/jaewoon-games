@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 6,
   "gameId": "crystal-defense",
   "gameName": "수정 디펜스",
   "platform": "ROBLOX",
@@ -7,94 +7,27 @@
   "stage": "TARGET_PLATFORM_SOURCE_BIND",
   "sourcePath": "roblox-games/crystal-defense",
   "sourceValidationPassed": true,
+  "sourceValidationBlockers": [],
   "runtimePassed": false,
   "independentQaPassed": false,
   "regressionPassed": false,
   "releaseClaim": false,
-  "saveRequired": true,
-  "approvedScopeCount": 6,
-  "robloxBuildProfile": {
-    "version": 1,
-    "targetPlatform": "ROBLOX",
-    "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-    "declaredGameCategory": "SINGLE_DEFENSE_STRATEGY",
-    "genre": "Strategy",
-    "subgenre": "Tower Defense",
-    "playMode": "COOP",
-    "multiplayerRequired": true,
-    "coopImplementationRequired": true,
-    "competitiveImplementationRequired": false,
-    "networkingRequired": true,
-    "multiplayerQaRequired": true,
-    "minimumParticipantsForRequiredQa": 2,
-    "displayLabelKo": "전략 · 타워 디펜스 · 멀티·협동",
-    "designAxes": {
-      "genre": {
-        "id": "Strategy",
-        "subgenre": "Tower Defense",
-        "rules": [
-          "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
-          "적 패턴과 자원 대응: 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
-          "방어 시설 배치로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다."
-        ]
-      },
-      "style": {
-        "id": "",
-        "visual": [],
-        "motion": []
-      },
-      "concept": {
-        "id": "",
-        "world": [],
-        "mood": []
-      },
-      "sourceRevision": null
-    },
-    "styleLock": null
-  },
-  "robloxPlatformProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-    "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 짧은 웨이브와 조합 실험을 선호하는 전략 플레이어.",
-    "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
-    "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
-    "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
-    "saveAndNetwork": "Luau 서버가 판정·보상·진행·저장을 소유하고 RemoteEvent 입력을 검증한다. 기존 DataStore 키와 저장 구조 및 멀티 권한을 보존한다.",
-    "platformContentAdaptation": "게임 원본은 roblox-games/crystal-defense/의 Luau다. 설계 문법의 상태 입출력·시스템 연결·콘텐츠를 기존 서버·공유·클라이언트 함수에 직접 구현한다. C# 변환 결과를 원본으로 사용하지 않는다.",
-    "internalReleaseTarget": "Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "validationEvidence": "설계 문법별 책임 함수·실제 상태 변경·콘텐츠 소스 차이를 연결해 기존 F0~F9 및 Roblox 클라우드 API 런타임에서 검증한다. 정적 검사와 실제 실행 증거를 구분한다."
-  },
-  "minimumDesignContractRequired": true,
-  "genreImplementationRequired": true,
-  "multiplayerImplementationRequired": true,
+  "existingSourcePreserved": true,
+  "gameplayAuthorityChanged": false,
+  "serverSourceChanged": false,
+  "foundationRepairApplied": false,
+  "studioMaterialRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "shared/RobloxCommonUI.luau",
-    "shared/RobloxCommonMaterials.luau",
-    "server/Game.server.luau",
-    "client/Game.client.luau",
-    "client/MaterialPresentation.client.luau",
-    "default.project.json"
+    "client/Game.client.luau"
   ],
-  "generationMode": "DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT",
-  "model": "none",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
   "vibe3LearningApplied": true,
-  "robloxPlaybookChecklist": [
-    "bind-roblox-source-and-place",
-    "separate-server-client-authority",
-    "validate-remotes-and-datastore-boundaries",
-    "run-real-roblox-runtime-and-independent-qa",
-    "verify-save-rejoin-and-mobile-ui-when-applicable",
-    "publish-only-after-exact-revision-pass",
-    "rank-responsible-source-before-edit",
-    "generate-3-to-5-independent-candidates",
-    "prefer-smallest-behavior-preserving-diff",
-    "run-syntax-tests-runtime-regression"
-  ],
   "recombinationRecipeId": "recombine_39c2078c443dbefb",
+  "verifiedExternalLearningAppliedToExistingSource": true,
   "verifiedExternalLearningFirst": true,
   "verifiedExternalLearningCoveragePct": 100,
   "verifiedExternalLearningRetrievedCount": 7,
@@ -123,30 +56,6 @@
     "MOTION_AND_TRANSITIONS",
     "CONTEXTUAL_ONBOARDING"
   ],
-  "recombinationOperator": "adapt-spatial-presentation",
-  "recombinationSourceProjects": [
-    "block-blast",
-    "cavern-cravers"
-  ],
-  "learningFeatureBlend": [
-    "board-grid-placement",
-    "input-drag-touch",
-    "progression-difficulty"
-  ],
-  "platformDesignProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-    "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 짧은 웨이브와 조합 실험을 선호하는 전략 플레이어.",
-    "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
-    "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
-    "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
-    "saveAndNetwork": "Luau 서버가 판정·보상·진행·저장을 소유하고 RemoteEvent 입력을 검증한다. 기존 DataStore 키와 저장 구조 및 멀티 권한을 보존한다.",
-    "platformContentAdaptation": "게임 원본은 roblox-games/crystal-defense/의 Luau다. 설계 문법의 상태 입출력·시스템 연결·콘텐츠를 기존 서버·공유·클라이언트 함수에 직접 구현한다. C# 변환 결과를 원본으로 사용하지 않는다.",
-    "internalReleaseTarget": "Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "validationEvidence": "설계 문법별 책임 함수·실제 상태 변경·콘텐츠 소스 차이를 연결해 기존 F0~F9 및 Roblox 클라우드 API 런타임에서 검증한다. 정적 검사와 실제 실행 증거를 구분한다."
-  },
-  "webPlatformHandoffLegacy": null,
-  "webPlatformHandoffRequired": false,
   "studioAssetBinding": {
     "version": 3,
     "bindingVersion": 2,
@@ -654,34 +563,19 @@
     "ENVIRONMENT": "NOT_APPLICABLE",
     "WEAPON": "NOT_APPLICABLE",
     "SKILL": "NOT_APPLICABLE",
-    "MATERIAL": "NOT_APPLICABLE",
+    "MATERIAL": "APPLIED",
     "AUDIO": "NOT_APPLICABLE",
     "VFX": "NOT_APPLICABLE",
     "UI": "APPLIED",
-    "MOTION": "NOT_APPLICABLE",
+    "MOTION": "APPLIED",
     "PROP": "NOT_APPLICABLE"
   },
   "studioAssetBindingApplied": true,
   "studioAssetRuntimeVerified": false,
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
-    "approved scope count=6",
-    "roblox genre=Strategy/Tower Defense",
-    "play mode=COOP",
-    "multiplayer required=yes",
-    "genre core action is compiled from the approved Roblox build profile",
-    "minimum dual-platform design contract carried forward",
-    "Roblox platform session: Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 짧은 웨이브와 조합 실험을 선호하는 전략 플레이어.",
-    "Roblox internal release target: Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "server-authoritative actions broadcast synchronized participant state to all clients",
-    "co-op source maintains SharedObjective across current participants",
-    "mobile-first ScreenGui exposes approved gameplay actions",
-    "Studio base material binding applied: 360 semantic atoms; runtime verification still required",
-    "Vibe3 Roblox playbook applied: bind-roblox-source-and-place, separate-server-client-authority, validate-remotes-and-datastore-boundaries, run-real-roblox-runtime-and-independent-qa, verify-save-rejoin-and-mobile-ui-when-applicable, publish-only-after-exact-revision-pass, rank-responsible-source-before-edit, generate-3-to-5-independent-candidates, prefer-smallest-behavior-preserving-diff, run-syntax-tests-runtime-regression",
-    "verified APK principles are always adapted into Roblox environment/background, character animation/motion, skill VFX, camera feedback, UI/touch controls, gameplay state, and runtime QA",
-    "transformative recipe=recombine_39c2078c443dbefb; operator=adapt-spatial-presentation; features=board-grid-placement, input-drag-touch, progression-difficulty",
-    "persistent player state uses DataStoreService with safe fallback",
-    "shared BUILD_UP directive pending implementation: 수정 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 수정 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
+    "existing Roblox gameplay source preserved",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "buildUpDirectiveId": "crystal-defense-build-up-g2-e631a35d53e5",
@@ -690,6 +584,6 @@
   "buildUpDirectiveFingerprint": "e631a35d53e5fe68b313ba804b608d5e4b360128e7826518ef645485e806c173",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
-  "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-20T15:55:44.561Z"
+  "nextRequiredStage": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+  "createdAt": "2026-10-20T15:58:44.123Z"
 }
