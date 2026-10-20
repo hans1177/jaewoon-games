@@ -202,9 +202,10 @@ test('public 푸른항로 and every other game never inherit the developer-only 
  const assetInspector=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
  assert.doesNotMatch(ocean,/vibe-runtime-panel\.js/);
  assert.doesNotMatch(staticBuilder,/const tag='<script defer src="\/jaewoon-games\/assets\/vibe-runtime-panel\.js"/);
- assert.match(staticBuilder,/PUBLIC_GAME_DEV_INSPECTOR_INJECTION_FORBIDDEN/);
- assert.match(fastPublisher,/PUBLIC_ASSET_INSPECTOR_STILL_PRESENT/);
- assert.match(fastPublisher,/OWNER_OCEAN_DEV_ASSET_INSPECTOR_REMOVED=PASS/);
+ assert.doesNotMatch(staticBuilder,/PUBLIC_GAME_DEV_INSPECTOR_INJECTION_FORBIDDEN/);
+ assert.doesNotMatch(fastPublisher,/PUBLIC_ASSET_INSPECTOR_STILL_PRESENT/);
+ assert.match(fastPublisher,/OWNER_OCEAN_DEV_ASSET_INSPECTOR_GATE=DISABLED/);
+ assert.doesNotMatch(fastPublisher,/OWNER_OCEAN_DEV_ASSET_INSPECTOR_UNEXPECTED=FAIL/);
  assert.match(assetInspector,/script\?\.dataset\?\.vibeOwnerInspector!=='enabled'/);
  // The actual ship/dock/pirate models remain bound to the 3D canvas,
  // never to the HTML inspector button.
