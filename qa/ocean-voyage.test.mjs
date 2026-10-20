@@ -216,7 +216,7 @@ test('푸른항로 has no inherited asset launcher; game-authored scripts can be
 });
 
 test('CC0 sea music checkout retains the actual Git binary without LFS pointer conversion',()=>{
- const attrs=fs.readFileSync('.gitattributes','utf8');
- assert.match(attrs,/^\\*\\.ogg filter=lfs diff=lfs merge=lfs -text$/m);
- assert.match(attrs,/^web-games\\/ocean-voyage\\/assets\\/cc0\\/music\\/pirate_ship_in_game\\.ogg -filter -diff -merge -text$/m);
+ const rules=fs.readFileSync('.gitattributes','utf8').split(/\r?\n/);
+ assert.ok(rules.includes('*.ogg filter=lfs diff=lfs merge=lfs -text'),'generic audio LFS policy remains');
+ assert.ok(rules.includes('web-games/ocean-voyage/assets/cc0/music/pirate_ship_in_game.ogg -filter -diff -merge -text'),'original Git OGG remains exempt from LFS');
 });
