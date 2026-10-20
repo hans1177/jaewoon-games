@@ -307,6 +307,26 @@ test('director coalesces queued Recovery Fast wakes while preserving active reco
   assert.doesNotMatch(director,/recoveryFastQueued[\s\S]{0,400}?in_progress/);
 });
 
+// 메인: 취소 금지 작업은 원격 조회 전에 제외하고 제어 작업 정리는 유지한다.
+test('director excludes independent backlog before per-run GitHub API calls',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const start=director.indexOf('          const add=(run,reason)=>{');
+  const end=director.indexOf('\n          };',start);
+  assert.ok(start>=0&&end>start);
+  const candidates=new Map();
+  const add=runInNewContext(director.slice(start,end+'\n          };'.length)+'\nadd;',{
+    active:new Set(['queued','pending','requested','in_progress']),cancel:candidates
+  });
+  for(let id=1;id<=600;id++)add({id,status:'pending',path:'.github/workflows/company-development-roblox-runtime.yml'},'DUPLICATE_TITLE_STALE_QUEUED');
+  add({id:601,status:'queued',path:'.github/workflows/company-development-roblox-runtime-continuation.yml'},'ROBLOX_STALE_LEGACY_OR_BATCH');
+  add({id:602,status:'queued',path:'.github/workflows/company-development-confirmed-runtime.yml'},'CENTRAL_DEVELOPMENT_BATCH_DUPLICATE_SAME_HEAD');
+  add({id:603,status:'pending',path:'.github/workflows/company-development-confirmed-runtime.yml'},'CENTRAL_MANUAL_BATCH_SUPERSEDED_BY_ACTIVE_BATCH');
+  add({id:604,status:'queued',path:'.github/workflows/company-central-policy-contract-qa.yml'},'CONTROL_PLANE_SUPERSEDED');
+  add({id:605,status:'queued',path:'.github/workflows/vibe2-continuous-core.yml'},'VIBE2_STALE_UNSTARTED_FANIN_REFILL');
+  add({id:606,status:'completed',path:'.github/workflows/company-central-policy-contract-qa.yml'},'CONTROL_PLANE_SUPERSEDED');
+  assert.deepEqual([...candidates.entries()],[[604,'CONTROL_PLANE_SUPERSEDED'],[605,'VIBE2_STALE_UNSTARTED_FANIN_REFILL']]);
+});
+
 test('runner drain workflow shell parses as Bash',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   const step='      - name: Cancel superseded control-plane and duplicate Roblox queue runs\n';

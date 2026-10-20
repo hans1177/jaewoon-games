@@ -155,7 +155,7 @@ jobs:
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          import {platformDevelopmentEligible,selectTargetPlatformDevelopmentWindow} from './tools/company-selected-platform-router.mjs';
           import {classifyUpperPlatformAdmission} from './tools/company-upper-platform-admission.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -163,7 +163,9 @@ jobs:
           const ownerExcludedGameIds=new Set(roadmap?.developmentSpeedExecution?.perGameFailureIsolation?.ownerExcludedGameIds||[]);
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
+          const focusedWindowIds=new Set(selectTargetPlatformDevelopmentWindow(q.items||[],Infinity,roadmap).map(item=>item.gameId));
           const rows=(q.items||[]).filter(item=>
+            focusedWindowIds.has(item.gameId)&&
             !ownerExcludedGameIds.has(item.gameId)&&
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&

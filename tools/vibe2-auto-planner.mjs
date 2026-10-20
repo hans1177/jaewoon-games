@@ -3959,7 +3959,12 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const microSupersede=supersedeLegacyMicroTasksForStudioQuality(queue);
   queue=microSupersede.queue;
   const focusCompletionContract=focusedCaretakerPolicy(repoRoot).completionPursuit;
-  const allProjects=collectProjects(status,catalog,repoRoot,developmentQueue).map(project=>({...project,ownerFocusedCaretaker:focusedCaretakerProject(project,repoRoot),focusCompletionContract}));
+  // 오너 집중 모드에서는 새 기획도 같은 세 게임·플랫폼으로 제한한다. 기존 큐는 보존한다.
+  const focusOnly=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers?.enabled===true
+    &&focusCompletionContract?.nonFocusedDevelopmentContinues===false;
+  const allProjects=collectProjects(status,catalog,repoRoot,developmentQueue)
+    .map(project=>({...project,ownerFocusedCaretaker:focusedCaretakerProject(project,repoRoot),focusCompletionContract}))
+    .filter(project=>!focusOnly||project.ownerFocusedCaretaker);
   const holisticPriorityDeferral=deprioritizeQueuedGenericPolishForHolisticBackfill(queue,allProjects,repoRoot);
   queue=holisticPriorityDeferral.queue;
   const buildUpDirectiveBackfill=synchronizeQueuedBuildUpDirectives(queue,allProjects,repoRoot);

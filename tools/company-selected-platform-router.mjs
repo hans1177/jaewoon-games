@@ -207,10 +207,14 @@ export function ownerFocusedSecondaryPlatformEligible(item={},roadmap={},platfor
   return targetPlatformDevelopmentEligible({...item,selectedPlatform:requested,targetPlatform:requested});
 }
 
-export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_GAME_WIP_MAX){
+export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_GAME_WIP_MAX,roadmap={}){
   const requested=Number(max);
   const limit=Number.isFinite(requested)&&requested>=0?requested:Number.POSITIVE_INFINITY;
+  const focus=roadmap.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+  const focusOnly=focus?.enabled===true&&focus.completionPursuit?.nonFocusedDevelopmentContinues===false;
   return Object.freeze(items
+    .filter(item=>!focusOnly||((focus.ownerFocusedGameIds||[]).includes(clean(item.gameId))
+      &&DEFAULT_CONCURRENT_PLATFORMS.includes(focus.ownerFocusedGamePlatforms?.[clean(item.gameId)])))
     .filter(item=>DEFAULT_CONCURRENT_PLATFORMS.some(platform=>platformDevelopmentEligible(item,platform)))
     .map(item=>({...item,concurrentTargetPlatforms:[...concurrentTargetPlatforms(item)],platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE'}))
     .sort((a,b)=>{

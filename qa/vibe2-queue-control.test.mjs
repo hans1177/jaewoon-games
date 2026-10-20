@@ -2663,6 +2663,8 @@ test('Unity Web receives sixteen distinct-game priority slots without a seventee
 
 test('owner scope resumes general Web and Roblox while keeping Unity held',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  // 플랫폼 보류 검증은 집중 접수 제한과 분리해서 확인한다.
+  policy.developmentLifecycleMachine.focusedDevelopmentCaretakers.completionPursuit.nonFocusedDevelopmentContinues=true;
   const scope=policy.ownerActiveDevelopmentScope20261009;
   assert.deepEqual(scope.activeTargets,['ROBLOX','WEB']);
   assert.equal(scope.unityAndroidDevelopmentAllowed,false);
@@ -2716,6 +2718,8 @@ test('owner scope resumes general Web and Roblox while keeping Unity held',()=>{
 
 test('owner active scope allows general Web but holds Unity Web and Android',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  // 플랫폼 보류 검증은 집중 접수 제한과 분리해서 확인한다.
+  policy.developmentLifecycleMachine.focusedDevelopmentCaretakers.completionPursuit.nonFocusedDevelopmentContinues=true;
   assert.equal(policy.ownerActiveDevelopmentScope20261009.status,'ACTIVE');
   const make=(gameId,target,evidence=[])=>({
     id:gameId,gameId,target,goal:'verified source development',type:'implementation',
@@ -3113,4 +3117,30 @@ test('completed fan-in without worker artifacts requeues only exact unreviewed r
   assert.match(continuousWorkflow,/VIBE2_FAN_IN_NO_RESULT_PROBE=VERIFIED_EMPTY/);
   assert.match(continuousWorkflow,/--no-result-runs="\$no_result_fanin_runs"/);
   assert.match(continuousWorkflow,/\[ "\$\(cat "\$status_file"\)" = 'completed' \] \|\| continue/);
+});
+
+// 메인: 집중 개발 수는 새 예약만 제한하고 진행 중·QA·학습·라이브러리는 보존한다.
+test('three-game focus defers new unrelated source work and releases it when focus ends',()=>{
+  const policy={developmentLifecycleMachine:{focusedDevelopmentCaretakers:{enabled:true,
+    ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
+    ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'},
+    completionPursuit:{nonFocusedDevelopmentContinues:false}}}};
+  const make=(id,gameId,target='web',extra={})=>({id,gameId,target,department:'development',type:'implementation',status:'queued',...extra});
+  const tasks=[make('focus','fantasy-survival'),make('other','other-game'),
+    make('wrong-platform','fantasy-survival','roblox'),make('running','other-game','web',{status:'running'}),
+    make('qa','other-game','web',{status:'running',blocker:'candidate-awaiting-qa-and-deployment'}),
+    make('library','asset-library','roblox',{assetProductionLane:true}),
+    make('learning','other-game','web',{department:'learning',type:'research'})];
+  const before=JSON.stringify(tasks);
+  const queue=synchronizeOwnerDevelopmentHolds({tasks},policy);
+  const byId=new Map(queue.tasks.map(task=>[task.id,task]));
+  assert.equal(byId.get('focus').ownerDevelopmentHold,false);
+  assert.equal(byId.get('other').ownerDevelopmentHold,true);
+  assert.equal(byId.get('wrong-platform').ownerDevelopmentHold,true);
+  for(const id of ['running','qa','library','learning'])assert.equal(byId.get(id).ownerDevelopmentHold,false,id);
+  assert.equal(queue.tasks.length,tasks.length);
+  assert.equal(JSON.stringify(tasks),before);
+  policy.developmentLifecycleMachine.focusedDevelopmentCaretakers.completionPursuit.nonFocusedDevelopmentContinues=true;
+  const resumed=synchronizeOwnerDevelopmentHolds(queue,policy);
+  assert.equal(resumed.tasks.find(task=>task.id==='other').ownerDevelopmentHold,false);
 });

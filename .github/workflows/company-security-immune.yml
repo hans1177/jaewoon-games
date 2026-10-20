@@ -484,6 +484,24 @@ jobs:
             'completionPursuit.targetPlatformsByGame','completionPursuit.retainUntil',
             'completionPursuit.retainUntilByPlatform','completionPursuit.webFocusRequirements'
           ].map(key=>focusPrefix+key));
+          // 오너 2026-10-20: 기존 세 게임 집중 설정의 신규 접수만 제한한다.
+          const focusAdmissionKey=focusPrefix+'completionPursuit.nonFocusedDevelopmentContinues';
+          const focusAdmissionChanged=changes.includes(focusAdmissionKey);
+          if(focusAdmissionChanged){
+            const prior=base.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+            const current=head.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+            const expected=JSON.parse(JSON.stringify(prior||{}));
+            if(expected.completionPursuit)expected.completionPursuit.nonFocusedDevelopmentContinues=false;
+            if(prior?.enabled!==true||prior.completionPursuit?.nonFocusedDevelopmentContinues!==true
+              ||prior.targetFocusedGames!==3||prior.maxFocusedGames!==3
+              ||!same(prior.ownerFocusedGameIds,['simple-rpg','fantasy-survival','cozy-island'])
+              ||!same(prior.ownerFocusedGamePlatforms,{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'})
+              ||head.version!==base.version+1||!same(current,expected)
+              ||changes.some(key=>key!=='version'&&key!==focusAdmissionKey))
+              throw new Error('SECURITY_OWNER_THREE_GAME_ADMISSION_SCOPE_INVALID');
+            approved.add(focusAdmissionKey);
+            console.log('SECURITY_OWNER_THREE_GAME_ADMISSION_ONLY=PASS');
+          }
           const focusChanged=changes.some(key=>focusKeys.has(key));
           if(focusChanged){
             const prior=base.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
