@@ -6,36 +6,123 @@
 <meta name="theme-color" content="#102517">
 <title>곤충 생존기</title>
 <style>
+
+/* 곤충생존기 · 풀숲 아래 장비/생존 HUD / 이전 원형 액션 대시보드 스타일 제거 */
+:root{--moss:#213f31;--moss-dark:#0b1c17;--bronze:#cdb07b;--amber:#f6d99a;--line:#afa47b}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1b10;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
-button{font:inherit}
-#game{position:relative;width:100%;height:100%;touch-action:none;background:#1d3a21}
-canvas{display:block;width:100%;height:100%;touch-action:none}
-.hud{position:absolute;left:0;right:0;top:0;padding:calc(7px + env(safe-area-inset-top)) 9px 8px;pointer-events:none;z-index:5}
-.hudRow{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
-.pill{padding:6px 8px;border:1px solid #ffffff2b;border-radius:11px;background:#0b1711d9;backdrop-filter:blur(8px);font-size:11px;font-weight:750}
-.pill b{font-size:13px}
-.hpPill{min-width:132px}.track{height:6px;margin-top:4px;border-radius:6px;overflow:hidden;background:#452c2c}.track i{display:block;height:100%;background:#68d06f}
-.notice{margin-top:6px;max-width:min(94vw,560px);padding:7px 9px;border-radius:11px;border:1px solid #ffffff24;background:#0b1711df;font-size:12px;line-height:1.3;opacity:0;transition:opacity .15s}.notice.show{opacity:1}
-.side{position:absolute;right:8px;top:96px;z-index:6;display:flex;flex-direction:column;gap:7px}
-.uiBtn{border:1px solid #ffffff2b;background:#14311eea;color:#fff;border-radius:12px;padding:10px 11px;font-size:12px;font-weight:850;box-shadow:0 4px 14px #0005}
-.bottom{position:absolute;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:flex-end;justify-content:space-between;padding:8px 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
-.joy{position:relative;width:122px;height:122px;border:2px solid #ffffff3c;border-radius:50%;background:#06100977;pointer-events:auto;touch-action:none}
-.stick{position:absolute;left:34px;top:34px;width:50px;height:50px;border-radius:50%;background:#e7f3e7aa;border:2px solid #fff8;transform:translate(0,0)}
-.actions{display:grid;grid-template-columns:74px 74px;gap:9px;pointer-events:auto}
-.act{width:74px;height:74px;border:2px solid #ffffff55;border-radius:50%;color:#fff;font-size:12px;font-weight:900;background:#6b3030dd}
-.act.alt{background:#315e76dd}
-.modalWrap{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:14px;background:#030805bf}.modalWrap.show{display:flex}
-.modal{width:min(94vw,470px);max-height:84vh;overflow:auto;padding:15px;border:1px solid #ffffff2c;border-radius:20px;background:#11251a;box-shadow:0 20px 50px #000a}
-.modal h2{margin:0 0 8px}.sub{font-size:11px;color:#bad0bf;line-height:1.45;margin-bottom:10px}
-.list{display:grid;gap:7px}.item{padding:10px;border-radius:12px;background:#09160f;border:1px solid #ffffff17}
-.itemTop{display:flex;justify-content:space-between;gap:10px;align-items:center}.item b{font-size:13px}.item small{display:block;margin-top:4px;color:#b7c9bb;font-size:10px;line-height:1.4}
-.item button{margin-top:8px;width:100%;border:0;border-radius:9px;padding:9px;background:#dcebdc;color:#102016;font-weight:900;font-size:11px}.item button:disabled{opacity:.38}
-.eq{color:#8de58e;font-weight:900;font-size:10px}.locked{opacity:.62}
-.close{width:100%;margin-top:11px;border:0;border-radius:11px;padding:11px;background:#e5f1e7;color:#102016;font-weight:900}
-.death{text-align:center}.death h1{margin:0 0 8px;font-size:30px}
-@media(min-width:760px){.joy{width:132px;height:132px}.stick{left:39px;top:39px}.actions{grid-template-columns:82px 82px}.act{width:82px;height:82px}}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1a17;color:#f7eed2;font-family:system-ui,-apple-system,'Noto Sans KR',sans-serif}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible{outline:2px solid #ffe0a7;outline-offset:2px}
+#game{position:relative;width:100%;height:100%;overflow:hidden;touch-action:none;background:#1e3327}
+#cv{display:block;width:100%;height:100%;touch-action:none}
+.hud{position:absolute;top:0;left:0;right:0;z-index:5;padding:calc(9px + env(safe-area-inset-top)) 10px 6px;pointer-events:none}
+.hudRow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;max-width:min(88vw,680px)}
+.pill{border:1px solid #c3b88d99;border-radius:6px;background:linear-gradient(148deg,#18392bdc,#0d251ed8);box-shadow:inset 0 0 0 1px #071a14aa,0 4px 17px #020a0a73;padding:5px 8px;font-size:11px;font-weight:780;color:#f2e8ca;backdrop-filter:blur(5px)}
+.pill b{font-size:12px;color:#fff2cf}
+.hpPill{min-width:110px}
+.track{height:7px;margin-top:4px;border-radius:4px;background:#190e11;overflow:hidden}
+.track i{display:block;width:100%;height:100%;background:linear-gradient(90deg,#a83d38,#ed8574);transition:width .1s}
+.track.energy i{background:linear-gradient(90deg,#518e76,#c2dda0)}
+.notice{margin-top:6px;max-width:min(94vw,610px);padding:7px 9px;border:1px solid #dbbc807d;border-radius:5px;background:#102b1fdc;color:#ffe5bb;box-shadow:0 4px 16px #0a110f8c;font-size:12px;opacity:0;transition:opacity .18s}
+.notice.show{opacity:1}
+#chapterPanel{position:absolute;z-index:4;left:11px;top:calc(118px + env(safe-area-inset-top));width:min(300px,50vw);padding:11px 12px;background:linear-gradient(145deg,#193f2ccc,#2c4a35b7);border:2px solid #afa476bc;border-left:5px solid #e0b66c;border-radius:5px;box-shadow:0 7px 20px #0006;pointer-events:none}
+.fieldHeading{margin-bottom:7px;color:#f1c97a;font-size:11px;letter-spacing:.7px;font-weight:900}
+#zoneLabel{color:#fff2cc}
+#objective{font-size:12px;line-height:1.5;color:#f6eed6;font-weight:750}
+#combatBar{position:absolute;z-index:6;left:50%;top:calc(18px + env(safe-area-inset-top));width:min(34vw,350px);transform:translateX(-50%);text-align:center;pointer-events:none;display:none}
+body.combat #combatBar{display:block}
+#combatBar b{font-size:13px;color:#ffe3a5;text-shadow:0 2px 3px #000}
+#combatBar .track{height:8px;border:1px solid #dbba80}
+#targetHp{background:linear-gradient(90deg,#ad322e,#fb9f78)}
+#topRightHint{position:absolute;right:12px;top:calc(15px + env(safe-area-inset-top));z-index:5;pointer-events:none;color:#f2debdb0;font-size:10px}
+.side{position:absolute;top:auto;right:11px;bottom:calc(186px + env(safe-area-inset-bottom));z-index:7;display:flex;flex-direction:column;gap:6px}
+.uiBtn{min-width:72px;padding:9px 8px;border:2px solid #b7a5759a;border-radius:6px;background:linear-gradient(145deg,#31513fef,#162b22ec);box-shadow:0 5px 16px #0008;color:#f9e4ad;font-size:11px;font-weight:900}
+.uiBtn:active,.act:active,.pouchSlot:active{filter:brightness(1.4)}
+.bottom{position:absolute;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:flex-end;justify-content:space-between;padding:8px 12px calc(9px + env(safe-area-inset-bottom));pointer-events:none}
+.joy{position:relative;width:118px;height:118px;border-radius:50%;border:3px solid #a4b79a87;background:radial-gradient(circle,#395e48a2,#0b2019d8);box-shadow:inset 0 0 28px #081910,0 5px 15px #0005;pointer-events:auto;touch-action:none}
+.stick{position:absolute;left:32px;top:32px;width:48px;height:48px;border-radius:50%;border:2px solid #e4edbaca;background:radial-gradient(circle,#bfdaa9c4,#54876cc7);transform:translate(0,0)}
+.actions{display:grid;grid-template-columns:repeat(3,60px);grid-auto-rows:60px;gap:6px;pointer-events:auto}
+.act{width:60px;height:60px;padding:4px;border:2px solid #d0af72b3;border-radius:10px;background:linear-gradient(145deg,#714b33ee,#a65434ee);box-shadow:0 4px 13px #000b;color:#fff1d2;font-size:12px;font-weight:900;text-shadow:0 1px 2px #000}
+.act.alt{background:linear-gradient(145deg,#274b38,#508264)}
+.act.skill{background:linear-gradient(145deg,#38465c,#6a6485)}
+.act.skill strong{display:block;font-size:17px;color:#ece3ff}
+.act.skill small{display:block;margin-top:2px;font-size:9px}
+.act.dodge{background:linear-gradient(145deg,#5c572f,#9a8040)}
+.act.cooling{opacity:.5;filter:grayscale(.7)}
+#survivalDisk{position:absolute;left:15px;bottom:calc(142px + env(safe-area-inset-bottom));z-index:6;width:88px;height:88px;pointer-events:none;filter:drop-shadow(0 4px 10px #0009)}
+.survivalOuter{width:100%;height:100%;padding:5px;border-radius:50%;border:3px solid #c8b584;background:conic-gradient(#dabb73 0 32%,#48795f 32% 66%,#a74338 66% 100%)}
+.survivalInner{display:flex;width:100%;height:100%;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;border:5px solid #233e30;background:#122c22ef;color:#f9e0a5}
+.survivalInner strong{font-size:13px}.survivalInner small{font-size:9px}
+#quickPouch{position:absolute;z-index:7;left:50%;bottom:calc(19px + env(safe-area-inset-bottom));display:flex;gap:6px;transform:translateX(-50%);pointer-events:auto}
+.pouchSlot{min-width:58px;min-height:51px;border:2px solid #cab384ab;border-radius:7px;background:linear-gradient(140deg,#3a503eea,#1a3024ee);box-shadow:inset 0 0 0 1px #163324,0 4px 16px #020a0ad1;color:#ffedc0;font-size:12px;font-weight:900}
+.pouchSlot small{display:block;margin-top:2px;font-size:9px;color:#e1d2ad;white-space:nowrap}
+.pouchSlot.chosen{border-color:#ffe1a3;background:linear-gradient(145deg,#645536,#3b523e);box-shadow:0 0 0 1px #f7d69379,0 4px 16px #0009}
+.modalWrap{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:14px;background:#08160fdb;backdrop-filter:blur(8px)}
+.modalWrap.show{display:flex}
+.modal{width:min(96vw,820px);max-height:calc(100dvh - 38px);overflow:auto;padding:clamp(12px,2.5vw,24px);border:4px solid #b7a071;border-radius:9px;background:linear-gradient(145deg,#314632,#183326 45%,#13231c);box-shadow:inset 0 0 0 2px #182d21,0 24px 70px #000b;color:#fff0d0}
+.modal h2{margin:0 0 12px;padding-bottom:10px;border-bottom:2px solid #b9a67e;color:#f1ce87;font-size:24px}
+.sub{font-size:12px;color:#e1d3b6;line-height:1.5;margin-bottom:12px}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.item{padding:12px;border:2px solid #927d57b3;border-radius:5px;background:linear-gradient(145deg,#2f4532,#16291f);color:#f8eed6}
+.itemTop{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.item b{font-size:14px}.item small{display:block;margin-top:6px;color:#d0c7ae;font-size:11px;line-height:1.4}
+.item button,.close{width:100%;margin-top:9px;padding:10px;border:1px solid #d5ac6a;border-radius:4px;background:#d8b679;color:#2e281e;font-size:12px;font-weight:900}
+.item button:disabled{opacity:.45}.eq{color:#f3d186;font-size:11px;font-weight:900}
+.locked{opacity:.64}.close{margin-top:14px}.death{text-align:center}.death h1{font-size:30px;margin:5px 0 9px}
+#inventoryList>.item:first-child,#skillsList>.item:first-child{grid-column:span 2;border-color:#e4c183}
+@media(max-width:760px){
+ .hudRow{max-width:calc(100vw - 70px)}.pill{padding:4px 6px;font-size:9px}.pill b{font-size:11px}
+ #chapterPanel{left:7px;top:calc(114px + env(safe-area-inset-top));max-width:160px;padding:7px 8px}
+ .fieldHeading{font-size:10px}#objective{font-size:10px}
+ #combatBar{width:39vw;top:calc(72px + env(safe-area-inset-top))}
+ #topRightHint{display:none}
+ .side{right:7px;bottom:calc(158px + env(safe-area-inset-bottom));gap:4px}
+ .uiBtn{min-width:57px;padding:7px 5px;font-size:10px}
+ .bottom{padding-left:6px;padding-right:7px}
+ .joy{width:98px;height:98px}.stick{left:27px;top:27px;width:40px;height:40px}
+ .actions{grid-template-columns:repeat(3,50px);grid-auto-rows:50px;gap:4px}
+ .act{width:50px;height:50px;font-size:10px}.act.skill strong{font-size:13px}.act.skill small{font-size:8px}
+ #survivalDisk{left:7px;bottom:calc(116px + env(safe-area-inset-bottom));width:70px;height:70px}
+ .survivalInner strong{font-size:10px}.survivalInner small{font-size:8px}
+ #quickPouch{bottom:calc(118px + env(safe-area-inset-bottom));gap:3px}
+ .pouchSlot{min-width:46px;min-height:37px;font-size:10px}.pouchSlot small{font-size:8px}
+ .list{grid-template-columns:1fr}.item{padding:10px}#inventoryList>.item:first-child,#skillsList>.item:first-child{grid-column:auto}
+ .modal{padding:13px;border-width:3px}
+}
+@media(max-width:370px){.actions{grid-template-columns:repeat(3,43px);grid-auto-rows:43px}.act{width:43px;height:43px}.joy{width:89px;height:89px}.stick{left:25px;top:25px;width:33px;height:33px}.pouchSlot{min-width:42px}.side{bottom:calc(142px + env(safe-area-inset-bottom))}}
+@media(prefers-reduced-motion:reduce){.track i,.notice{transition:none}}
+
+
+/* 이전 카드식 가방 제거: 손바닥 크기 생존용 배낭 그리드 / 장비 스테이션 */
+#inventoryList{grid-template-columns:minmax(0,1.25fr) minmax(0,.8fr);gap:12px;align-items:stretch}
+#inventoryList>.item:first-child{grid-column:auto}
+.bagPane,.equipmentPane{min-width:0;padding:12px;border:2px solid #bea477a3;border-radius:7px;background:linear-gradient(152deg,#273e2cee,#142b22c9)}
+.paneHeading{display:flex;justify-content:space-between;gap:9px;align-items:baseline;margin-bottom:7px}
+.paneHeading strong{font-size:16px;color:#f3d69b}
+.paneHeading small{font-size:11px;color:#d6c497}
+.paneDescription{font-size:10px;line-height:1.5;color:#c2c7ac}
+.bagGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(68px,auto);gap:6px;margin-top:12px}
+.bagSlot{min-width:0;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;padding:7px 6px;border:2px solid #bca77789;border-radius:4px;background:linear-gradient(130deg,#3b4e38,#233d2b)}
+.bagSlot b{font-size:11px;line-height:1.25;word-break:keep-all;overflow-wrap:anywhere}
+.bagSlot span{align-self:flex-end;font-size:10px;color:#f0d393;font-weight:900}
+.bagSlot.empty{border:1px dashed #e2d8b940;background:#14271ed1}
+.bagSlot.special{background:linear-gradient(120deg,#56583b,#324531);border-color:#e8c57b}
+.equipmentPane h3{margin:17px 0 9px;color:#f0ce8a;font-size:14px;border-bottom:1px solid #bba1776b;padding-bottom:8px}
+.equipPreview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:11px}
+.equipStat{padding:10px 9px;background:#10261b99;border:1px solid #b8a06b7d;border-radius:4px}
+.equipStat span,.equipStat b{display:block;overflow-wrap:anywhere}
+.equipStat span{font-size:10px;color:#d6c49d}
+.equipStat b{font-size:13px;color:#f4e0bb;margin-top:5px}
+.gearList{display:grid;gap:6px}
+.gearEntry{display:flex;gap:7px;align-items:center;justify-content:space-between;background:#2b4031;padding:8px;border:1px solid #a7a17f7d;border-radius:4px}
+.gearEntry b,.gearEntry small{display:block}
+.gearEntry b{font-size:12px}.gearEntry small{font-size:10px;color:#e0cfaa;margin-top:4px}
+.gearEntry button{flex:0 0 auto;border-radius:3px;border:1px solid #e0be83;background:#d7b571;color:#382c1c;padding:7px 8px;font-size:11px;font-weight:800}
+.gearEntry button:disabled{opacity:.6}
+@media(max-width:650px){#inventoryList{grid-template-columns:1fr}.bagPane,.equipmentPane{padding:9px}.bagGrid{grid-auto-rows:minmax(60px,auto)}.bagSlot{padding:6px 4px}.bagSlot b{font-size:10px}}
+
 </style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
 <div id="game">
@@ -46,7 +133,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
     <div class="pill"><b id="day">1일</b> <span id="phase">낮</span></div>
     <div class="pill hpPill">HP <b id="hpText">100/100</b><div class="track"><i id="hpBar" style="width:100%"></i></div></div>
     <div class="pill">방어 <b id="defText">0</b></div>
-    <div class="pill">공격 <b id="atkText">10</b></div>
+    <div class="pill">공격 <b id="atkText">10</b></div><div class="pill">Lv.<b id="levelText">1</b> · XP <b id="xpText">0</b></div><div class="pill">기력 <b id="staminaText">100</b><div class="track energy"><i id="staminaBar" style="width:100%"></i></div></div>
   </div>
   <div class="hudRow" style="margin-top:5px">
     <div class="pill">나뭇가지 <b id="branch">0</b></div>
@@ -56,9 +143,15 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
   <div id="notice" class="notice"></div>
 </div>
 
+<div id="chapterPanel"><div class="fieldHeading">탐험 일지 <span id="zoneLabel">이끼 언덕</span></div><div id="objective">작은 자의 생존 · 자원을 모으자.</div></div><div id="combatBar"><b id="targetName">곤충</b><div class="track"><i id="targetHp"></i></div></div><div id="topRightHint">WASD 이동 · Q 찌르기 · E 회전 · Shift 회피</div><div id="survivalDisk" aria-hidden="true"><div class="survivalOuter"><div class="survivalInner"><strong id="survivalHp">100 HP</strong><small id="survivalDay">낮 · 1일</small></div></div></div>
+<div id="quickPouch" aria-label="빠른 장비">
+<button id="slotWeapon" class="pouchSlot chosen" type="button">⚔<small id="quickWeapon">맨손</small></button>
+<button id="slotArmor" class="pouchSlot" type="button">⬡<small id="quickArmor">방어구</small></button>
+<button id="slotCraft" class="pouchSlot" type="button">✤<small>제작</small></button>
+</div>
 <div class="side">
   <button id="inventoryBtn" class="uiBtn">가방</button>
-  <button id="craftBtn" class="uiBtn">제작</button>
+  <button id="craftBtn" class="uiBtn">제작</button><button id="skillsBtn" class="uiBtn">스킬</button>
   <button id="saveBtn" class="uiBtn">저장</button>
 </div>
 
@@ -66,10 +159,11 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
   <div id="joy" class="joy"><div id="stick" class="stick"></div></div>
   <div class="actions">
     <button id="attackBtn" class="act">공격</button>
-    <button id="interactBtn" class="act alt">채집</button>
+    <button id="interactBtn" class="act alt">채집</button><button id="heavyBtn" class="act skill" title="Q"><strong>Q</strong><small>찌르기</small></button><button id="whirlBtn" class="act skill" title="E"><strong>E</strong><small>회전</small></button><button id="dodgeBtn" class="act dodge" title="Shift">회피</button>
   </div>
 </div>
 
+<div id="skillsModal" class="modalWrap"><div class="modal"><h2>탐험가 특성</h2><div class="sub">곤충을 처치해 경험치를 모으면 새로운 특성 포인트가 열려.</div><div id="skillsList" class="list"></div><button class="close" data-close>닫기</button></div></div>
 <div id="inventoryModal" class="modalWrap">
   <div class="modal">
     <h2>가방</h2>
@@ -164,19 +258,21 @@ const baseState={
   day:1,time:0,hp:100,baseMaxHp:100,defense:0,baseAttack:10,
   branch:0,pebble:0,fiber:0,spiderPart:0,beetleShell:0,antHead:0,miteTooth:0,
   crafted:{},weapon:'none',armor:'none',workbench:false,
-  dead:false,kills:0
+  dead:false,kills:0,level:1,xp:0,skillPoints:0,skills:{ferocity:0,vitality:0,survival:0},stamina:100,discoveredAntHill:false
 };
 let state=structuredClone(baseState);
 const player={x:CAMP.x+120,y:CAMP.y,r:17,dirX:1,dirY:0,hit:0,lastAttack:0};
 let nodes=[],bugs=[];
+const cooldown={heavy:0,whirl:0,dodge:0};
+const skillStats=[{id:'ferocity',name:'송곳니 단련',desc:'일반 공격과 스킬 공격력 +2',max:5},{id:'vitality',name:'나뭇잎 수호',desc:'최대 체력 +8',max:5},{id:'survival',name:'풀숲 호흡',desc:'기력 회복 +2/초',max:5}];
 
 // ===== 유틸 =====
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
 function rnd(a,b){return a+Math.random()*(b-a)}
-function maxHp(){return state.baseMaxHp+(ARMORS[state.armor]||ARMORS.none).hp}
+function maxHp(){return state.baseMaxHp+(ARMORS[state.armor]||ARMORS.none).hp+8*(state.skills?.vitality||0)}
 function defense(){return (ARMORS[state.armor]||ARMORS.none).def}
-function attackPower(){return state.baseAttack+(WEAPONS[state.weapon]||WEAPONS.none).attack}
+function attackPower(){return state.baseAttack+(WEAPONS[state.weapon]||WEAPONS.none).attack+2*(state.skills?.ferocity||0)}
 function attackRange(){return (WEAPONS[state.weapon]||WEAPONS.none).range}
 function resize(){
   const dpr=Math.min(2,devicePixelRatio||1);
@@ -250,6 +346,8 @@ function load(){
     if(!d||!d.state)return;
     state=Object.assign(structuredClone(baseState),d.state);
     state.crafted=Object.assign({},d.state.crafted||{});
+    state.skills=Object.assign({},baseState.skills,d.state.skills||{});
+    state.level=Math.max(1,Math.floor(Number(state.level)||1));state.xp=Math.max(0,Math.floor(Number(state.xp)||0));state.skillPoints=Math.max(0,Math.floor(Number(state.skillPoints)||0));state.stamina=clamp(Number(state.stamina??100),0,100);
     if(d.player){player.x=Number(d.player.x)||player.x;player.y=Number(d.player.y)||player.y}
     if(state.dead||state.hp<=0){state.dead=false;state.hp=maxHp();player.x=CAMP.x+120;player.y=CAMP.y}
     if(!WEAPONS[state.weapon])state.weapon='none';
@@ -269,26 +367,46 @@ function updateHud(){
   $('branch').textContent=state.branch;
   $('pebble').textContent=state.pebble;
   $('fiber').textContent=state.fiber;
+  $('levelText').textContent=state.level;$('xpText').textContent=state.xp+'/'+(40+state.level*22);
+  $('staminaText').textContent=Math.ceil(state.stamina);$('staminaBar').style.width=state.stamina+'%';
+  for(const id of ['heavy','whirl','dodge'])$(id+'Btn').classList.toggle('cooling',cooldown[id]>0);
+  $('objective').textContent=objectiveText();
+  $('survivalHp').textContent=Math.ceil(state.hp)+' HP';
+  $('survivalDay').textContent=(state.time/DAY_SEC>.68?'밤':'낮')+' · '+state.day+'일';
+  $('quickWeapon').textContent=WEAPONS[state.weapon].name;
+  $('quickArmor').textContent=state.armor==='none'?'방어구':ARMORS[state.armor].name;
+  $('zoneLabel').textContent=Math.hypot(player.x-ANT_HILL.x,player.y-ANT_HILL.y)<260?'개미왕국':Math.hypot(player.x-GRAVEL_ZONE.x,player.y-GRAVEL_ZONE.y)<GRAVEL_ZONE.rx?'자갈 협곡':Math.hypot(player.x-CAMP.x,player.y-CAMP.y)<160?'시작 야영지':'이끼 초원';
 }
 function openInventory(){
-  const rows=[];
-  rows.push('<div class="item"><b>현재 장비</b><small>무기: '+WEAPONS[state.weapon].name+' · 방어구: '+ARMORS[state.armor].name+'</small></div>');
-  Object.keys(state.crafted).filter(k=>state.crafted[k]).forEach(id=>{
-    const isWeapon=!!WEAPONS[id],isArmor=!!ARMORS[id];
-    if(!isWeapon&&!isArmor)return;
-    const data=isWeapon?WEAPONS[id]:ARMORS[id];
-    const equipped=isWeapon?state.weapon===id:state.armor===id;
-    const desc=isWeapon?'공격력 +'+data.attack+' · 사거리 '+data.range:'최대체력 +'+data.hp+' · 방어력 +'+data.def;
-    rows.push('<div class="item"><div class="itemTop"><b>'+data.name+'</b>'+(equipped?'<span class="eq">장착 중</span>':'')+'</div><small>'+desc+'</small><button data-equip="'+id+'" '+(equipped?'disabled':'')+'>'+(equipped?'장착됨':'장착')+'</button></div>');
-  });
-  const loots=[['spiderPart','거미 전리품'],['beetleShell','딱정벌레 전리품'],['antHead','개미 전리품'],['miteTooth','진드기 전리품']].filter(([k])=>state[k]>0);
-  if(loots.length){
-    rows.push('<div class="item"><b>획득한 곤충 전리품</b><small>'+loots.map(([k,n])=>n+' '+state[k]).join(' · ')+'</small></div>');
-  }
-  if(rows.length===1)rows.push('<div class="item"><small>아직 제작한 장비가 없어.</small></div>');
-  $('inventoryList').innerHTML=rows.join('');
-  $('inventoryList').querySelectorAll('[data-equip]').forEach(b=>b.addEventListener('click',()=>equip(b.dataset.equip)));
-  $('inventoryModal').classList.add('show');
+ // 기존 카드 목록은 폐기하고 야영지 장비 스테이션 + 배낭 칸으로 전면 재구성.
+ const cargo=[['branch','나뭇가지'],['pebble','조약돌'],['fiber','섬유'],
+  ['spiderPart','거미 전리품'],['beetleShell','갑각 조각'],['antHead','개미 전리품'],['miteTooth','진드기 이빨']];
+ const carried=cargo.filter(([id])=>state[id]>0).map(([id,label])=>
+  '<div class="bagSlot"><b>'+label+'</b><span>×'+state[id]+'</span></div>');
+ const crafted=Object.keys(state.crafted).filter(key=>state.crafted[key]&&(WEAPONS[key]||ARMORS[key]));
+ const gear=crafted.map(id=>{
+  const item=WEAPONS[id]||ARMORS[id];
+  const equipped=WEAPONS[id]?state.weapon===id:state.armor===id;
+  const details=WEAPONS[id]?'공격력 +'+item.attack+' · 사거리 '+item.range:'체력 +'+item.hp+' · 방어 '+item.def;
+  return '<div class="gearEntry"><div><b>'+item.name+'</b><small>'+details+'</small></div>'+
+   '<button type="button" data-equip="'+id+'" '+(equipped?'disabled':'')+'>'+(equipped?'장착 중':'장착')+'</button></div>';
+ }).join('');
+ const spaces=Array.from({length:Math.max(0,16-carried.length-crafted.length)},
+  ()=>'<div class="bagSlot empty" aria-hidden="true"></div>').join('');
+ const craftedSlots=crafted.map(id=>{
+  const item=WEAPONS[id]||ARMORS[id];
+  return '<div class="bagSlot special"><b>'+item.name+'</b><span>장비</span></div>';
+ }).join('');
+ $('inventoryList').innerHTML='<section class="bagPane"><div class="paneHeading"><strong>탐험 배낭</strong><small>'+ (carried.length+crafted.length)+'/16 칸</small></div>'+
+  '<p class="paneDescription">풀숲에서 수집한 재료와 직접 제작한 장비</p><div class="bagGrid">'+craftedSlots+carried.join('')+spaces+'</div></section>'+
+  '<section class="equipmentPane"><div class="paneHeading"><strong>생존자 장비</strong><small>Lv.'+state.level+'</small></div>'+
+  '<div class="equipPreview"><div class="equipStat"><span>사용 무기</span><b>'+WEAPONS[state.weapon].name+'</b></div>'+
+  '<div class="equipStat"><span>착용 갑옷</span><b>'+ARMORS[state.armor].name+'</b></div>'+
+  '<div class="equipStat"><span>최대 체력</span><b>'+maxHp()+'</b></div>'+
+  '<div class="equipStat"><span>공격 / 방어</span><b>'+attackPower()+' / '+defense()+'</b></div></div>'+
+  '<h3>장비 교체</h3><div class="gearList">'+(gear||'<p class="paneDescription">제작한 장비가 없어. 제작대로 도구부터 만들어 봐.</p>')+'</div></section>';
+ $('inventoryList').querySelectorAll('[data-equip]').forEach(b=>b.addEventListener('click',()=>equip(b.dataset.equip)));
+ $('inventoryModal').classList.add('show');
 }
 function nearWorkbench(){
   return state.workbench&&Math.hypot(player.x-(CAMP.x+40),player.y-(CAMP.y-55))<145;
@@ -329,6 +447,54 @@ function equip(id){
   save(false);updateHud();openInventory();
 }
 
+
+function objectiveText(){
+ if(!state.crafted.spear)return '1장 · 작은 자의 생존 — 돌창을 제작해';
+ if(!state.workbench)return '1장 · 보급 야영지 — 제작대를 설치해';
+ if(!state.discoveredAntHill)return '2장 · 개미왕국의 경계 — 동쪽 개미굴로 향해';
+ if(state.kills<5)return '2장 · 거대한 적 — 곤충을 5마리 처치해';
+ return '3장 · 밤의 풀숲 — 장비를 강화하고 살아남아';
+}
+function gainXp(amount){
+ state.xp+=amount;
+ let threshold=40+state.level*22;
+ while(state.xp>=threshold){
+  state.xp-=threshold;state.level++;state.skillPoints++;threshold=40+state.level*22;
+  toast('레벨 '+state.level+' 달성! 특성 포인트 +1',2.6);
+ }
+}
+function openSkills(){
+ $('skillsList').innerHTML='<div class="item"><strong>레벨 '+state.level+'</strong><small>남은 특성 포인트 '+state.skillPoints+' · 다음 레벨까지 '+(40+state.level*22-state.xp)+' XP</small></div>'+
+ skillStats.map(item=>'<div class="item"><div class="itemTop"><b>'+item.name+'</b><span class="eq">'+(state.skills[item.id]||0)+'/'+item.max+'</span></div><small>'+item.desc+'</small><button data-learn="'+item.id+'" '+(state.skillPoints<1||(state.skills[item.id]||0)>=item.max?'disabled':'')+'>특성 강화</button></div>').join('')+
+ '<div class="item"><b>조작</b><small>Q: 전방 찌르기 · E: 주변 회전 베기 · Shift: 회피 구르기<br>생존과 전투를 반복하며 캐릭터를 강화해.</small></div>';
+ $('skillsList').querySelectorAll('[data-learn]').forEach(b=>b.addEventListener('click',()=>{
+  const stat=skillStats.find(x=>x.id===b.dataset.learn);
+  if(!stat||state.skillPoints<1||(state.skills[stat.id]||0)>=stat.max)return;
+  state.skillPoints--;state.skills[stat.id]=(state.skills[stat.id]||0)+1;save(false);updateHud();openSkills();
+ }));
+ $('skillsModal').classList.add('show');
+}
+function dodge(){
+ if(state.dead||cooldown.dodge>0||state.stamina<28)return;
+ state.stamina-=28;cooldown.dodge=3.1;player.rollTimer=.38;
+ player.x=clamp(player.x+player.dirX*65,50,WORLD_W-50);
+ player.y=clamp(player.y+player.dirY*65,60,WORLD_H-60);
+ toast('회피!',.45);
+}
+function skillAttack(type){
+ const heavy=type==='heavy';
+ if(state.dead||cooldown[type]>0||state.stamina<(heavy?25:36))return;
+ state.stamina-=heavy?25:36;cooldown[type]=heavy?5.8:9;player.swingTimer=.36;
+ const radius=heavy?146:118;
+ const enemies=bugs.filter(b=>!b.dead&&dist(player,b)<radius).filter(b=>{
+  if(!heavy)return true;
+  const d=dist(player,b),dot=((b.x-player.x)*player.dirX+(b.y-player.y)*player.dirY)/Math.max(1,d);
+  return dot>.20;
+ });
+ for(const b of enemies){b.hp-=Math.ceil(attackPower()*(heavy?2.25:1.45));b.aggro=true;b.hit=.2;if(b.hp<=0)killBug(b)}
+ toast(heavy?'송곳니 찌르기 · '+enemies.length+'타':'풀숲 회전 베기 · '+enemies.length+'타',.9);
+}
+
 // ===== 채집 =====
 function interact(){
   if(state.dead)return;
@@ -356,6 +522,7 @@ function interact(){
 
 // ===== 전투 =====
 function attack(){
+  player.swingTimer=.24;
   const now=performance.now()/1000;
   if(state.dead||now-player.lastAttack<.38)return;
   player.lastAttack=now;
@@ -376,11 +543,13 @@ function killBug(b){
   const sp=SPECIES[b.type];
   state[sp.drop]=(state[sp.drop]||0)+1;
   state.kills++;
+  gainXp({spider:32,beetle:25,ant:15,soldierAnt:37,mite:12}[b.type]||15);
   toast(sp.name+' 처치 · 전리품을 얻었어');
   updateHud();save(false);
 }
 function damagePlayer(raw){
   const taken=Math.max(1,raw-defense());
+  if(player.rollTimer>0)return;
   state.hp-=taken;player.hit=.18;
   toast('피해 '+taken,1);
   if(state.hp<=0){
@@ -399,6 +568,11 @@ function respawnPlayer(){
 function update(dt){
   if(state.dead)return;
   state.time+=dt;
+  state.stamina=Math.min(100,state.stamina+(9+2*(state.skills.survival||0))*dt);
+  for(const id of Object.keys(cooldown))cooldown[id]=Math.max(0,cooldown[id]-dt);
+  player.rollTimer=Math.max(0,(player.rollTimer||0)-dt);
+  player.swingTimer=Math.max(0,(player.swingTimer||0)-dt);
+  if(!state.discoveredAntHill&&Math.hypot(player.x-ANT_HILL.x,player.y-ANT_HILL.y)<250){state.discoveredAntHill=true;toast('새 지역 발견: 개미왕국의 경계',2.6);save(false);}
   if(state.time>=DAY_SEC){
     state.time-=DAY_SEC;state.day++;
     state.hp=Math.min(maxHp(),state.hp+18);
@@ -471,6 +645,9 @@ function update(dt){
 
   camera.x=clamp(player.x-innerWidth*.46,0,Math.max(0,WORLD_W-innerWidth));
   camera.y=clamp(player.y-innerHeight*.48,0,Math.max(0,WORLD_H-innerHeight));
+  const target=bugs.filter(b=>!b.dead).sort((a,b)=>dist(a,player)-dist(b,player))[0];
+  document.body.classList.toggle('combat',!!target&&dist(player,target)<260);
+  if(target){$('targetName').textContent=SPECIES[target.type].name;$('targetHp').style.width=clamp(target.hp/target.maxHp*100,0,100)+'%';}
 
   if(noticeTimer>0){
     noticeTimer-=dt;
@@ -592,6 +769,7 @@ function drawPlayer(){
   ctx.restore();
 }
 function draw(){
+  if(window.insectScene3DReady)return;
   const w=innerWidth,h=innerHeight;
   ctx.clearRect(0,0,w,h);
   const night=state.time/DAY_SEC>.68;
@@ -645,17 +823,30 @@ $('joy').addEventListener('pointerdown',e=>{joy.active=true;joy.pid=e.pointerId;
 $('joy').addEventListener('pointermove',e=>{if(joy.active&&e.pointerId===joy.pid)joyMove(e)});
 function joyEnd(e){if(e.pointerId!==joy.pid)return;joy.active=false;joy.x=0;joy.y=0;$('stick').style.transform='translate(0,0)'}
 $('joy').addEventListener('pointerup',joyEnd);$('joy').addEventListener('pointercancel',joyEnd);
-addEventListener('keydown',e=>{keys[e.key]=true;if(e.code==='Space'){e.preventDefault();attack()}});
+addEventListener('keydown',e=>{keys[e.key]=true;if(e.code==='Space'){e.preventDefault();attack()}if(e.code==='KeyQ')skillAttack('heavy');if(e.code==='KeyE')skillAttack('whirl');if(e.code==='ShiftLeft'||e.code==='ShiftRight')dodge()});
 addEventListener('keyup',e=>keys[e.key]=false);
 
 $('attackBtn').addEventListener('pointerdown',attack);
 $('interactBtn').addEventListener('pointerdown',interact);
+$('heavyBtn').addEventListener('pointerdown',()=>skillAttack('heavy'));
+$('whirlBtn').addEventListener('pointerdown',()=>skillAttack('whirl'));
+$('dodgeBtn').addEventListener('pointerdown',dodge);
+$('skillsBtn').addEventListener('click',openSkills);
+$('slotWeapon').addEventListener('click',openInventory);
+$('slotArmor').addEventListener('click',openInventory);
+$('slotCraft').addEventListener('click',openCraft);
 $('inventoryBtn').addEventListener('click',openInventory);
 $('craftBtn').addEventListener('click',openCraft);
 $('saveBtn').addEventListener('click',()=>save(true));
 $('respawnBtn').addEventListener('click',respawnPlayer);
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('.modalWrap').classList.remove('show')));
 
+// 3D 렌더러는 기존 게임의 상태만 읽는다. 전투/제작/저장은 이 파일이 계속 담당한다.
+window.insectWorldSnapshot=()=>({
+ player:{...player},bugs:bugs.map(b=>({...b})),nodes:nodes.filter(n=>n.alive).map(n=>({...n})),
+ state:{day:state.day,time:state.time,hp:state.hp,weapon:state.weapon,armor:state.armor,workbench:state.workbench,stamina:state.stamina,dead:state.dead},
+ camp:{...CAMP},hill:{...ANT_HILL},gravel:{...GRAVEL_ZONE},world:{w:WORLD_W,h:WORLD_H},species:SPECIES
+});
 // ===== 시작 =====
 load();
 buildWorld();
@@ -666,5 +857,6 @@ function loop(t){const dt=Math.min(.04,(t-last)/1000);last=t;update(dt);draw();r
 requestAnimationFrame(loop);
 })();
 </script>
+<script type="module" src="./world3d.mjs"></script>
 </body>
 </html>
