@@ -1178,7 +1178,7 @@ test('Roblox runtime self-redispatch dedupes queued or running work for the same
   assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.match(workflow,/ROBLOX_F0_SOURCE_REPAIR_DISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=DEDUPED_EXISTING_RUN:/);
-  assert.match(workflow.slice(0,workflow.indexOf('\\njobs:\\n')),/\\nconcurrency:\\n  group: roblox-runtime-ingress-\\$\\{\\{ inputs\\.game_id \\|\\| 'batch' \\}\\}\\n  queue: single\\n  cancel-in-progress: false/);
+  assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n  group: roblox-runtime-ingress-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n  queue: single\n  cancel-in-progress: false/);
 });
 
 
@@ -1189,7 +1189,7 @@ test('Roblox runtime collapses duplicate exact-game and batch ingress before run
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/const winner=candidates\[0\];/);
-  assert.match(workflow.slice(0,workflow.indexOf('\\njobs:\\n')),/\\nconcurrency:\\n  group: roblox-runtime-ingress-\\$\\{\\{ inputs\\.game_id \\|\\| 'batch' \\}\\}\\n  queue: single\\n  cancel-in-progress: false/);
+  assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n  group: roblox-runtime-ingress-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n  queue: single\n  cancel-in-progress: false/);
 });
 
 
