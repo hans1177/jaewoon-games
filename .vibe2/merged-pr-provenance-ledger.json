@@ -72033,11 +72033,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_508d80b2fb2d612ac378bbd3",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8708",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c9625110a51a7a7ccdced01faff44f5e2ebcb540",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8708,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe-preserve-game-owned-assets-20261020",
+        "baseSha": "c9625110a51a7a7ccdced01faff44f5e2ebcb540",
+        "headSha": "648fc3646af0e92126a44f117f9b882b4f8215bb",
+        "mergeCommitSha": "19a0a8605c6239d8c5eb42b0c5c5321a3493ac1a",
+        "mergedAt": "2026-10-20T14:02:13Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8db4b75a930137fbe9639ef837fcc5de06f34e440b9ab621b84a546d98a5fafd",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe-preserve-game-owned-assets-20261020",
+        "candidateSha": "648fc3646af0e92126a44f117f9b882b4f8215bb"
+      },
+      "changeStats": {
+        "changedFileCount": 5,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 35,
+        "deletedLineCount": 61,
+        "changedFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          ".github/workflows/owner-fast-pages-publish.yml",
+          "assets/vibe-runtime-panel.js",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/ocean-voyage.test.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          ".github/workflows/owner-fast-pages-publish.yml",
+          "assets/vibe-runtime-panel.js",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/ocean-voyage.test.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8708",
+        "merge-commit:19a0a8605c6239d8c5eb42b0c5c5321a3493ac1a",
+        "base-main:c9625110a51a7a7ccdced01faff44f5e2ebcb540"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 574
+    "total": 575
   }
 }
