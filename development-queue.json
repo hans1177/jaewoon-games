@@ -12177,7 +12177,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T14:01:02.816Z",
+      "updatedAt": "2026-10-20T14:15:26.651Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -12704,13 +12704,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T14:01:02.816Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T14:15:26.651Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "zombie-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T13:37:29.300Z",
+        "checkedAt": "2026-10-20T13:39:32.968Z",
         "sourceRevision": "2b68d61ba8ddcaa7632ec8a78c92ca73f8972c31",
         "artifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
         "secondaryOwnerFocus": false,
@@ -12753,7 +12753,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed in the build evidence."
+            "note": "Package cannot start runtime testing because web, music, and native validation checks have not passed according to BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -12796,7 +12796,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpEvidence": null,
       "robloxBuildArtifactIdentity": "sha256:db208beec79f586d840d55620b45d90b00738d6e78b1ea233da7a57f13a41d68",
-      "robloxBuildPassedAt": "2026-10-20T14:01:02.816Z",
+      "robloxBuildPassedAt": "2026-10-20T14:15:26.651Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -33526,7 +33526,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T14:13:46.628Z",
+  "updatedAt": "2026-10-20T14:15:26.651Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
