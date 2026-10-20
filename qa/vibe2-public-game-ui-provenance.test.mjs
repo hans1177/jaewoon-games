@@ -37,6 +37,9 @@ test('independent unexpected third party script, added button and inline script 
   const button=inspectPublicGameUi({sourceHtml:ownerGame,
     publishedHtml:ownerGame.replace('</body>','<button>에셋</button></body>')});
   assert.ok(button.errorCodes.includes('UNAUTHORIZED_PUBLIC_GAME_BUTTON_GENERATION'));
+  const renamed=inspectPublicGameUi({sourceHtml:ownerGame,
+    publishedHtml:ownerGame.replace('id="start"','id="assets"' )});
+  assert.ok(renamed.errorCodes.includes('UNAUTHORIZED_PUBLIC_GAME_BUTTON_REPLACEMENT'));
   const inline=inspectPublicGameUi({sourceHtml:ownerGame,
     publishedHtml:ownerGame.replace('</body>','<script>createDebugUi()</script></body>')});
   assert.ok(inline.errorCodes.includes('UNAUTHORIZED_SCRIPT_TAG_IN_PUBLISHED_GAME'));
