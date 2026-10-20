@@ -8,7 +8,8 @@
 2. **Kenney — Cartography Pack** (CC0): 항구 건물·등대·선박·고전 해도 지도 아이콘을 재배치·색 보정. 원본 파일: https://github.com/shorepine/kenney/tree/3694c6879e487c108f55677be7dd2ca75b07cc3b/2d/Cartography%20Pack
 3. **Buch — RPG portraits** (CC0): https://opengameart.org/content/rpg-portraits (9×3 32픽셀 픽셀 초상화). 영국·포르투갈·네덜란드·북유럽·스페인 승무원을 다른 원본 칸으로 분리하고 화면에서 확대/액자 적용.
 4. **beardalaxy — Pirate Ship Theme Loop** (CC0): https://opengameart.org/content/pirate-ship-theme-loop — `pirate_ship_in_game.ogg`; 사용자가 음악 버튼을 눌렀을 때 재생.
-5. **Kenney — Pirate Kit** (CC0): 기존 `web-games/ocean-voyage/assets/*.glb` 선박·항구·조형물 11개를 그대로 사용.
+5. **Bobjt — Crowded Pub** (CC0): https://opengameart.org/content/crowded-pub — `crowded_pub_2025.ogg`; 항구·선술집 장면에서 재생.
+6. **Kenney — Pirate Kit** (CC0): 기존 `web-games/ocean-voyage/assets/*.glb` 선박·항구·조형물 11개를 그대로 사용.
 
 ## 다운로드 · 편집 상태
 
