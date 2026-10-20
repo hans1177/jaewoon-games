@@ -3114,3 +3114,32 @@ test('completed fan-in without worker artifacts requeues only exact unreviewed r
   assert.match(continuousWorkflow,/--no-result-runs="\$no_result_fanin_runs"/);
   assert.match(continuousWorkflow,/\[ "\$\(cat "\$status_file"\)" = 'completed' \] \|\| continue/);
 });
+
+
+test('Vibe ignores exact duplicate autonomous game work but never discards owner directives',()=>{
+ const base={gameId:'cozy-island',target:'web',department:'development',
+  type:'implementation',goal:'fix exact mobile save regression',
+  sourceRoot:'web-games/cozy-island',responsibleFiles:['index.html']};
+ const one=enqueueVibeTask({tasks:[]},{...base,id:'auto-1'});
+ const duplicate=enqueueVibeTask(one,{...base,id:'auto-2'});
+ assert.equal(duplicate.tasks.length,1,'exact same active file+goal should not reserve a second runner');
+ const independent=enqueueVibeTask(duplicate,{...base,id:'auto-3',responsibleFiles:['game-v3.js']});
+ assert.equal(independent.tasks.length,2,'different responsible file can run independently');
+ const owner=enqueueVibeTask(independent,{...base,id:'owner-4',ownerDirective:true});
+ assert.equal(owner.tasks.length,3,'owner instructions must not be collapsed into automatic work');
+ assert.equal(owner.tasks[2].priority,'owner-immediate');
+});
+
+test('focused causal repair outranks unrelated polish without treating source-only evidence as QA pass',()=>{
+ const mk=(id,extra={})=>({id,gameId:id,target:'roblox',department:'development',
+  type:'implementation',goal:'finish game',sourceRoot:'roblox-games/'+id,
+  responsibleFiles:['server/'+id+'.luau'],status:'queued',releaseState:'development-confirmed',...extra});
+ const queue=createVibeContinuousQueue({tasks:[
+  mk('polish',{priority:'critical'}),
+  mk('final-repair',{ownerFocusedCaretaker:true,buildUpNextAction:'CAUSAL_REPAIR'}),
+  mk('failed-gate',{lastOutcome:'FAIL',retries:2,priority:'high'})
+ ],maxConcurrentTasks:1});
+ const selection=selectVibeQueueBatch(queue,{maxConcurrentTasks:1,lane:'game-primary'});
+ assert.deepEqual(selection.selected.map(x=>x.id),['final-repair']);
+ assert.equal(queue.tasks.find(x=>x.id==='final-repair').status,'queued');
+});
