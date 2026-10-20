@@ -290,7 +290,7 @@ jobs:
             const stat=fs.lstatSync(asset);
             if(!stat.isFile())return false; // symlinks, folders, etc. are never publishable
             if(stat.size>100*1024*1024)throw Error('GITHUB_PAGES_ASSET_TOO_LARGE:'+asset);
-            const hash=crypto.createHash('sha1').update(Buffer.from('blob '+stat.size+'\\0'));
+            const hash=crypto.createHash('sha1').update(Buffer.from('blob '+stat.size+'\0'));
             const fd=fs.openSync(asset,fs.constants.O_RDONLY|(fs.constants.O_NOFOLLOW||0));
             let firstChunk=true;
             try{
