@@ -139,7 +139,7 @@ export function createVibeAssetAcquisitionPlan({ companyAssets = [], repositoryA
     { source: VIBE_ASSET_ACQUISITION_ORDER[0], assets: companyAssets },
     { source: VIBE_ASSET_ACQUISITION_ORDER[1], assets: repositoryAssets },
     { source: VIBE_ASSET_ACQUISITION_ORDER[2], assets: externalAssets },
-  ].map((row) => ({ ...row, assets: Array.isArray(row.assets) ? row.assets.filter(asset => /^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(clean(asset?.license)) && asset?.securityBlocked !== true && asset?.quarantined !== true) : [] }));
+  ].map((row) => ({ ...row, assets: Array.isArray(row.assets) ? row.assets.filter(asset => asset?.practiceOnly !== true && asset?.practiceArtifact !== true && asset?.authority !== 'PRACTICE_ONLY' && /^(?:CC0(?:-1\.0)?|CC0 1\.0 Universal)$/i.test(clean(asset?.license)) && asset?.securityBlocked !== true && asset?.quarantined !== true) : [] }));
   const selected = rows.find((row) => row.assets.length) || null;
   const primitiveFallbackAllowed = false;
   return Object.freeze({
