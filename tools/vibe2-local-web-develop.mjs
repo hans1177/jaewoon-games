@@ -14,7 +14,7 @@ const REQUIRED_RUNS=Object.freeze(['Vibe2 Core QA','Company Security Immune Syst
 // Find the relevant existing game module for an owner-provided idea without granting model tool control.
 const IDEA_MODULES=Object.freeze([
   [/공격|전투|무기|총|탄환|사격|타격/u,['attack','combat','weapon','shoot','bullet','damage']],
-  [/적|몬스터|보스|동물|야생/u,['enemy','monster','boss','creature','spawn']],
+  [/적군|적대|적들|몬스터|보스|동물|야생/u,['enemy','monster','boss','creature','spawn']],
   [/이동|조이스틱|점프|달리기|걷기/u,['move','joystick','jump','velocity','player']],
   [/모바일|터치|화면|버튼|조작/u,['mobile','touch','pointer','button','joystick']],
   [/제작|조합|재료|건축/u,['craft','recipe','material','build','inventory']],
@@ -177,9 +177,10 @@ async function suggestSourceEdit({gameId,goal,match}){
   });
   if(!response.ok)fail('LOCAL_DEV_OLLAMA_HTTP_'+response.status);
   const payload=await response.json();
+  const patch=proposeBoundedReplacement(full,payload?.message?.content||'');
+  if(!excerpt.text.includes(patch.oldText))fail('MODEL_PATCH_OUTSIDE_SELECTED_MODULE');
   return {file:selected.file,partial:excerpt.isPartial,
-    moduleStrategy:excerpt.strategy,moduleSignals:excerpt.signals,
-    ...proposeBoundedReplacement(full,payload?.message?.content||'')};
+    moduleStrategy:excerpt.strategy,moduleSignals:excerpt.signals,...patch};
 }
 function scopedQa(sourceFile){
   git(['add','--',sourceFile]);
