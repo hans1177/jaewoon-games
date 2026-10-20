@@ -71643,11 +71643,157 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_9c46ec1b6e53a2f89d4978ba",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-8703",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "f6341236f31bab4c91cc575e33719146e644c9c2",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 8703,
+        "baseBranch": "main",
+        "headBranch": "owner/ocean-voyage-vintage-cc0-local-pack-20261020",
+        "baseSha": "f6341236f31bab4c91cc575e33719146e644c9c2",
+        "headSha": "6ac471a666dfbc78fdcda75c42118dcca1640a85",
+        "mergeCommitSha": "4044a07a5f87dbbd771e57a3b924ba388e2d1e55",
+        "mergedAt": "2026-10-20T13:26:31Z",
+        "authorLogin": "hans1177",
+        "titleHash": "02e45e766208a7192b3f9f8c13cc757a019733ee8a7e74707d1fd16ee0f0e2d7",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "owner/ocean-voyage-vintage-cc0-local-pack-20261020",
+        "candidateSha": "6ac471a666dfbc78fdcda75c42118dcca1640a85"
+      },
+      "changeStats": {
+        "changedFileCount": 24,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 256,
+        "deletedLineCount": 36,
+        "changedFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          ".github/workflows/owner-fast-pages-publish.yml",
+          "assets/vibe-runtime-panel.js",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/ocean-voyage.test.mjs",
+          "web-games/ocean-voyage/CC0-ASSETS.md",
+          "web-games/ocean-voyage/assets/cc0/controls/joystick_circle_nub_a.png",
+          "web-games/ocean-voyage/assets/cc0/controls/joystick_circle_pad_a.png",
+          "web-games/ocean-voyage/assets/cc0/manifest.json",
+          "web-games/ocean-voyage/assets/cc0/map/castle.png",
+          "web-games/ocean-voyage/assets/cc0/map/compass.png",
+          "web-games/ocean-voyage/assets/cc0/map/dock.png",
+          "web-games/ocean-voyage/assets/cc0/map/lighthouse.png",
+          "web-games/ocean-voyage/assets/cc0/map/ship.png",
+          "web-games/ocean-voyage/assets/cc0/map/textureWater.png",
+          "web-games/ocean-voyage/assets/cc0/music/pirate_ship_in_game.ogg",
+          "web-games/ocean-voyage/assets/cc0/portraits/rpgportraits.png",
+          "web-games/ocean-voyage/assets/cc0/ui/banner_classic_curtain.png",
+          "web-games/ocean-voyage/assets/cc0/ui/button_brown.png",
+          "web-games/ocean-voyage/assets/cc0/ui/minimap_ring_brown_detail.png",
+          "web-games/ocean-voyage/assets/cc0/ui/panel_border_brown_detail.png",
+          "web-games/ocean-voyage/assets/cc0/ui/panel_brown.png",
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/magic-forest-pages.yml",
+          ".github/workflows/owner-fast-pages-publish.yml",
+          "assets/vibe-runtime-panel.js",
+          "qa/fantasy-survival-native-3d-download.test.mjs",
+          "qa/ocean-voyage.test.mjs",
+          "web-games/ocean-voyage/assets/cc0/manifest.json",
+          "web-games/ocean-voyage/index.html",
+          "web-games/ocean-voyage/main.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:8703",
+        "merge-commit:4044a07a5f87dbbd771e57a3b924ba388e2d1e55",
+        "base-main:f6341236f31bab4c91cc575e33719146e644c9c2"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 571
+    "total": 572
   }
 }
