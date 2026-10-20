@@ -69,25 +69,9 @@ jobs:
           rsync -a --exclude='.git' --exclude='.github' ./ "$RUNNER_TEMP/owner-pages-site/"
           test -s "$RUNNER_TEMP/owner-pages-site/web-games/ocean-voyage/index.html"
           test -s "$RUNNER_TEMP/owner-pages-site/index.html"
-          # Republish the full existing site, excluding obsolete developer UI
-          # injected by the legacy Magic Forest build step. No gameplay/assets
-          # or progress data is modified.
-          node <<'NODE'
-          const fs=require('fs'),path=require('path');
-          const root=path.join(process.env.RUNNER_TEMP,'owner-pages-site');
-          const manifest=JSON.parse(fs.readFileSync(path.join(root,'web-games/publish-manifest.json'),'utf8'));
-          let scrubbed=0;
-          for(const route of manifest.routes){
-            const file=path.join(root,route,'index.html');
-            const html=fs.readFileSync(file,'utf8');
-            const clean=html.replace(/<script\b[^>]*\bsrc=["'][^"']*vibe-runtime-panel\.js["'][^>]*><\/script>\s*/gi,'');
-            if(clean!==html){fs.writeFileSync(file,clean);scrubbed++}
-            // Never gate publication on an optional developer asset inspector.
-            // Keep the game sources and other assets untouched.
-          }
-          console.log('OWNER_PAGES_LEGACY_ASSET_INSPECTORS_REMOVED='+scrubbed);
-          console.log('OWNER_PAGES_GAMEPLAY_FILES_PRESERVED='+manifest.routes.length);
-          NODE
+          # Publish exactly the selected site's game-owned source. No runtime
+          # asset scripts are auto-added, auto-deleted, or used to reject builds.
+          echo 'OWNER_PAGES_GAME_OWNED_HTML=UNCHANGED'
 
       - uses: actions/configure-pages@v5
 

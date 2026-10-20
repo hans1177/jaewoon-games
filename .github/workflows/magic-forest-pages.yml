@@ -259,22 +259,10 @@ jobs:
             fs.mkdirSync(path.dirname(target),{recursive:true});
             fs.writeFileSync(target,source);
           }
-          // The asset browser is an internal development inspector, not gameplay.
-          // Never auto-inject it into public games. Also strip stale launch tags from
-          // previously published HTML to protect all existing game routes on republish.
-          for(const route of routes){
-            const entry=path.join(site,route,'index.html');
-            const html=fs.readFileSync(entry,'utf8');
-            const withoutInspector=html.replace(
-              /<script\b[^>]*\bsrc=["'][^"']*vibe-runtime-panel\.js["'][^>]*><\/script>\s*/gi,''
-            );
-            if(withoutInspector!==html){
-              fs.writeFileSync(entry,withoutInspector);
-              console.log('VIBE_OPTIONAL_DEV_INSPECTOR_CLEANED='+route);
-            }
-            // Advisory only. A developer inspection tag is never a reason to
-            // block automatic game development, QA, or publication.
-          }
+          // Build only the game-authored HTML. Never insert OR strip developer
+          // scripts or UI: automatic game development owns its own runtime.
+          // The old unconditional inspector insertion was the root cause
+          // of the unwanted blue-voyage "에셋" button.
           // The preview is loaded in a sandboxed iframe only on user request.
           // Preserve the source module paths and publish the preview under the assets root.
           const previewSource='assets/vibe-model-preview.html';
