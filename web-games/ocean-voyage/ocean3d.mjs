@@ -59,7 +59,7 @@ export function createOcean3D(canvas,{onReady=()=>{},onError=()=>{}}={}){
  }
  let ship=null,escort=null,frigate=null,playerModel=null,pirateModel=null,smallPirateModel=null;
  const lineMat=new THREE.LineDashedMaterial({color:0xffd998,transparent:true,opacity:.85,dashSize:2,gapSize:1});
- let course=null,disposed=false,ready=false,latest=null,quality='balanced';
+ let course=null,lastCourseAt=0,courseTarget='',disposed=false,ready=false,latest=null,quality='balanced';
  const load=async()=>{
   try{
    const models=await Promise.all(['ship','escort','frigate','pirate','smallPirate','dock','building','palm','sand','cannon','chest'].map(getModel));
@@ -94,11 +94,16 @@ export function createOcean3D(canvas,{onReady=()=>{},onError=()=>{}}={}){
    object.visible=true;object.position.set(p.x,0,p.z);object.rotation.y=p.heading;seen.add(p.id);
   }
   for(const [id,obj] of enemies)if(!seen.has(id))obj.visible=false;
-  if(course){scene.remove(course);course.geometry.dispose();course=null;}
-  if(s.route?.length){
-   const points=[new THREE.Vector3(pos.x,.36,pos.z),...s.route.map(p=>new THREE.Vector3(p.x,.36,p.z))];
-   course=new THREE.Line(new THREE.BufferGeometry().setFromPoints(points),lineMat);
-   course.computeLineDistances();scene.add(course);
+  // Rebuild guide geometry only on route change or at 3Hz, not every rendered frame.
+  const courseKey=s.route?.length?JSON.stringify([s.destination,s.route.length,s.route[0],s.route.at(-1)]):'';
+  if(courseKey!==courseTarget||performance.now()-lastCourseAt>330){
+   courseTarget=courseKey;lastCourseAt=performance.now();
+   if(course){scene.remove(course);course.geometry.dispose();course=null;}
+   if(s.route?.length){
+    const points=[new THREE.Vector3(pos.x,.36,pos.z),...s.route.map(p=>new THREE.Vector3(p.x,.36,p.z))];
+    course=new THREE.Line(new THREE.BufferGeometry().setFromPoints(points),lineMat);
+    course.computeLineDistances();scene.add(course);
+   }
   }
   for(const p of PORTS)portMap.get(p.id).visible=true;
  }
