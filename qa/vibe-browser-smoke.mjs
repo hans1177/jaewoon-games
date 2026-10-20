@@ -68,6 +68,51 @@ try{
      viewport.name+': actual WebGL game surface is missing');
     await game.locator('#startPlay').click();
     await game.locator('#startNormal').click();
+    // 실제 공개 모바일 화면: 기존 게임 조작·상단 UI와 별도 저장 설정을 검사한다.
+    const hudMeasure=async()=>game.evaluate(()=>{
+      const box=sel=>{const el=document.querySelector(sel);if(!el)return null;
+       const r=el.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height}};
+      return {vw:innerWidth,vh:innerHeight,stick:box('#stick'),combat:box('.actions'),
+       attack:box('#attack'),quick:box('.quickMenu'),map:box('#miniMapWrap'),hud:box('.hud>.card.main'),
+       guide:!!document.getElementById('hudGuideOpen'),quickIds:[...document.querySelectorAll('.quickMenu>button')].map(x=>x.id)};
+    });
+    const hud=await hudMeasure();
+    assert.deepEqual(hud.quickIds,['inventory','craft','map'],viewport.name+': utility shortcuts must remain separate from combat');
+    assert.ok(hud.guide,viewport.name+': accessible control guide missing');
+    const intersects=(a,b)=>a&&b&&a.x<b.right&&a.right>b.x&&a.y<b.bottom&&a.bottom>b.y;
+    assert.ok(!intersects(hud.attack,hud.stick),viewport.name+': attack overlaps movement joystick');
+    assert.ok(!intersects(hud.quick,hud.combat),viewport.name+': utility menu overlaps combat controls');
+    assert.ok(hud.attack?.x>=-1&&hud.attack?.right<=hud.vw+1,
+      viewport.name+': attack control clipped off screen');
+    if(viewport.mobile){
+      await game.locator('#questToggle').click();
+      assert.equal(await game.locator('#questToggle').getAttribute('aria-expanded'),'true',
+       'mobile quest must expand with a tap');
+      await game.locator('#questToggle').click();
+      await game.locator('.hudMenu>summary').click();
+      await game.locator('#options').click();
+      await game.locator('#hudHandedness').selectOption('left');
+      await game.locator('#hudSize').selectOption('108');
+      const prefs=await game.evaluate(()=>({
+       hand:document.body.dataset.hudHand,size:document.body.dataset.hudSize,
+       stored:JSON.parse(localStorage.getItem('magic-forest-ui-v1')||'null')
+      }));
+      assert.equal(prefs.hand,'left');
+      assert.equal(prefs.size,'108');
+      assert.equal(prefs.stored?.hand,'left');
+      assert.equal(prefs.stored?.size,108);
+      await game.locator('#optionsClose').click();
+      const swapped=await hudMeasure();
+      assert.ok(swapped.attack.x<swapped.stick.x,
+        'mobile left-hand mode must put combat on the left and movement on the right');
+      assert.ok(!intersects(swapped.attack,swapped.stick),'mirrored controls overlap');
+      await game.locator('.hudMenu>summary').click();
+      await game.locator('#hudGuideOpen').click();
+      assert.equal(await game.locator('#hudGuide').isVisible(),true,'touch guide must be visible');
+      await game.locator('#hudGuideClose').click();
+      assert.equal(await game.locator('#hudGuide').isHidden(),true,'touch guide must close');
+    }
+    console.log('MAGIC_FOREST_HUD_LAYOUT_LIVE_PASS '+viewport.name+' '+JSON.stringify(hud));
     try{
       await game.waitForFunction(()=>document.body.dataset.spatialDimension==='3d',
        null,{timeout:60000});
