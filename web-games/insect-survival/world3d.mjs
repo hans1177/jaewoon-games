@@ -66,12 +66,12 @@ function environment(frame){
  if(fieldBuilt)return;fieldBuilt=true;
  const floor=derived('floor',.18,'#adc291');
  // Grounded-like miniature yard: original CC0 ground panel tiled under the grass canopy.
- for(let x=0;x<56;x+=5)for(let z=0;z<42;z+=4){
-  const panel=floor.clone(true);panel.position.set(x,0,z);panel.scale.x*=4.8;panel.scale.z*=4.8;
+ for(let x=0;x<56;x+=14)for(let z=0;z<42;z+=14){
+  const panel=floor.clone(true);panel.position.set(x+7,0,z+7);panel.scale.x*=13.8;panel.scale.z*=13.8;
   world.add(panel);
  }
  const rand=i=>{const t=Math.sin(i*102.64+18.82)*43758.5453;return t-Math.floor(t)};
- const count=mobile?47:79;
+ const count=mobile?32:56;
  for(let i=0;i<count;i++){
   const x=rand(i+21)*54,z=rand(i+991)*39;
   if(Math.hypot(x-frame.camp.x*ratio,z-frame.camp.y*ratio)<3.1||Math.hypot(x-frame.hill.x*ratio,z-frame.hill.y*ratio)<2.6)continue;
@@ -80,8 +80,8 @@ function environment(frame){
   model.position.set(x,0,z);model.rotation.y=rand(i+345)*Math.PI*2;
   decor.add(model);
  }
- for(let i=0;i<30;i++){
-  const angle=i*2.399,mag=Math.sqrt((i+1)/30);
+ for(let i=0;i<20;i++){
+  const angle=i*2.399,mag=Math.sqrt((i+1)/20);
   const p=derived('stone',.3,'#d4c6a0');
   p.position.set((frame.gravel.x+Math.cos(angle)*frame.gravel.rx*mag)*ratio,0,(frame.gravel.y+Math.sin(angle)*frame.gravel.ry*mag)*ratio);
   decor.add(p);
@@ -110,7 +110,7 @@ function follow(frame,dt){
  const hero=avatar.children[0];
  const swing=(p.swingTimer||0)>0,roll=(p.rollTimer||0)>0;
  hero.rotation.z=roll?Math.sin((.39-p.rollTimer)*18)*1.2:swing?Math.sin((.38-p.swingTimer)*10)*.36:0;
- hero.position.y+=Math.sin(time*7)*.004;
+ hero.position.y=Math.sin(time*7)*.012;
  const night=frame.state.time/95>.68;
  sun.intensity=night?.25:2.7;moon.intensity=night?1.7:.0;
  scene.background.set(night?'#263c3f':'#a2b998');
