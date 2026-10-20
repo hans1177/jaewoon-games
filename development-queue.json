@@ -26641,7 +26641,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:32:36.568Z",
-      "updatedAt": "2026-10-20T13:39:01.695Z",
+      "updatedAt": "2026-10-20T13:50:09.702Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -26659,17 +26659,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "b34fd1ba5240b8036d62a65e53d39698e7243bac",
       "robloxBuildArtifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
-      "robloxBuildPassedAt": "2026-10-20T13:39:01.695Z",
+      "robloxBuildPassedAt": "2026-10-20T13:50:09.702Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T13:39:01.695Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T13:50:09.702Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fifty-days",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T13:06:40.181Z",
+        "checkedAt": "2026-10-20T13:21:34.973Z",
         "sourceRevision": "b34fd1ba5240b8036d62a65e53d39698e7243bac",
         "artifactIdentity": "sha256:535677a251a332634f07fd9669ba1c384ba7fdb8f662572298e1ea2e7c86e5b5",
         "secondaryOwnerFocus": false,
@@ -26712,7 +26712,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks failed in the build evidence."
+            "note": "Package cannot start runtime testing because required validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed or returned false in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -33532,7 +33532,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T13:49:56.354Z",
+  "updatedAt": "2026-10-20T13:50:09.702Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
