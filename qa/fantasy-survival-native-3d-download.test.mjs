@@ -17,6 +17,31 @@ const moduleSource=fs.readFileSync('web-games/fantasy-survival/world3d.mjs','utf
 const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
 const ledger=JSON.parse(fs.readFileSync('assets/asset-license-ledger.json','utf8'));
 
+// 화면 QA: 기존 게임 핸들러를 재사용하는 모바일 다크 판타지 구성.
+test('mobile ARPG HUD preserves existing survival mechanics and only uses CSS artwork',()=>{
+ const hud=index.match(/<div class="hud" data-mobile-layout="dark-fantasy-action-rpg">[\s\S]*?<\/details><\/div>/)?.[0]||'';
+ assert.ok(hud,'mobile ARPG HUD missing');
+ for(const id of ['heroPortrait','hpfill','hptext','foodfill','foodtext','questText','weapon','tool','armor','zone','kills','save','resetSave','bestiary','achievements','multi','options','avatarOpen','toTitle']){
+  assert.ok(hud.includes('id="'+id+'"'),'original survival HUD control missing: '+id);
+ }
+ for(const id of ['stick','knob','craft','inventory','map','gather','attack','petSpecial','dismount','buildBlueprint','sheet','sheetBody','smeltPanel','multiPanel','optionsPanel','avatarPanel']){
+  assert.equal((index.match(new RegExp('id="'+id+'"','g'))||[]).length,1,'duplicate or missing control: '+id);
+ }
+ assert.match(index,/id="heroPortrait"[\s\S]*?aria-label="3D 캐릭터 꾸미기"/);
+ assert.match(index,/document\.getElementById\('heroPortrait'\)\.addEventListener\('click',openAvatarCustomizer\)/);
+ const ui=index.split('/* 마력숲 모바일 액션 RPG:')[1]?.split('</style>')[0]||'';
+ assert.match(ui,/\.actions>#attack/);
+ assert.match(ui,/\.sheetHead/);
+ assert.match(ui,/\.hudMenuPanel/);
+ assert.match(ui,/@media\(max-width:720px\)/);
+ assert.match(ui,/@media\(orientation:landscape\)/);
+ assert.doesNotMatch(ui,/(?:https?:\/\/|url\(|\.png\b|\.svg\b|\.jpe?g\b|\.webp\b)/i,
+   'new UI artwork must be CSS only unless a license-verified CC0 source is registered');
+ assert.match(index,/AVATAR_SAVE_KEY='jaewoon_fantasy_survival_avatar_v1'/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+ assert.match(moduleSource,/productionReady:false/);
+});
+
 test('native preview binds actual downloaded CC0 OBJ sources with matching SHA256',()=>{
  const legal=ledger.entries.find(e=>e.id==='tinytreats-homely-house-cc0-v1');
  assert.ok(legal);
