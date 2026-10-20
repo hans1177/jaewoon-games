@@ -1,8 +1,11 @@
+// 파일명: web-games/fantasy-survival/world3d.mjs
 // Canonical 3D world renderer for the existing Magic Forest game.
 // Uses the game's authoritative state and preserves its original combat and saves.
-// Publication remains blocked until all biomes, monsters and mobile gameplay pass native QA.
+// Production readiness remains false until regions, monsters and mobile gameplay are verified.
 // Geometry comes from the downloaded, CC0-ledgered Tiny Treats Homely House OBJ pack.
 import * as THREE from '../../assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+import {FBXLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/FBXLoader.js';
+import {OBJLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/OBJLoader.js';
 import {GLTFLoader} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
 import {clone as cloneAnimatedRig} from '../../assets/roblox/world-ghosts/native/mesh/three/examples/jsm/utils/SkeletonUtils.js';
 import {createVibeEnvironmentVariation,createVibeWeatherInteractionProfile,createVibeRegionWorldProfile} from '../../assets/vibe-environment-director.js';
@@ -12,18 +15,40 @@ import {planAssetApplication} from '../../assets/asset-selector.js';
 
 const SOURCE = new URL('../../assets/shared/homely-house/', import.meta.url);
 const SCALE = 1 / 48;
-const HERO_URL = new URL('../../assets/roblox/actors/native/mage.glb',import.meta.url);
+const HERO_URL = new URL('../../assets/roblox/actors/native/knight.glb',import.meta.url);
 const UNDEAD_URL = new URL('../../assets/roblox/actors/native/skeleton-warrior.glb',import.meta.url);
 // Reuse the existing 3D creature library. Each source is bound only to matching
 // game species; the renderer never creates a synthetic enemy or changes AI rules.
+// 파일 원본은 assets/asset-license-ledger.json의 archive/sourceEntry/SHA256으로 대조한다.
+// 종·외형이 가까운 CC0 원본만 시각적으로 연결하며 게임 ID/전투/드롭은 바꾸지 않는다.
 const NATIVE_CREATURE_MODELS=Object.freeze({
-  wolf:['shadowwolf','shadowwolfleader','firewolf','polarwolf','thornhound','ironhidehound'],
-  golem:['golem','firegolemneutral','firegolemaggressive','crystalfiregolem','icegolem','swampgolem','worldtreegolem'],
-  spider:['giantspider','giantspiderling'],
-  serpent:['firesnake','crystalfiresnake','anaconda','worldtreesnake']
+  'wolf.fbx':['shadowwolf','shadowwolfleader','firewolf','polarwolf','thornhound','ironhidehound'],
+  'monster-41.obj':['golem','firegolemneutral','firegolemaggressive','crystalfiregolem','icegolem','swampgolem','crystalguardian'],
+  'tree.fbx':['worldtreegolem'],
+  'greendemon.fbx':['goblin','goblinCrossbow','goblinHeavy','goblinGeneral','crystalgoblin','flowergoblin'],
+  'hog.glb':['mossboar','crystalboar','crystalboarjunior'],
+  'deer.fbx':['foreststag','sapdeer','crystaldeer'],
+  'monster-18.obj':['ironibex','crystalibex','crystalgoat'],
+  'panda.fbx':['worldtreebear','crystalbear','polarbear','fearbear'],
+  'bunny.glb':['foresthare'], 'chick.glb':['worldpheasant'],
+  'monster-7.obj':['fairy'],
+  'monster-56.obj':['ironspirit','crystalironspirit','sandSpirit'],
+  'mushroom.fbx':['sporegiant','toxicmycelium','toxicsporeorb'],
+  'monster-35.obj':['rootsovereign'],
+  'caterpillar.glb':['giantburrower'], 'monster-31.obj':['sandwalker'],
+  'monster-26.obj':['firesnake','crystalfiresnake','anaconda','worldtreesnake'],
+  'bat.fbx':['vampirebat'], 'cow.glb':['lakebuffalo'],
+  'monster-49.obj':['lakeheron'], 'fish.glb':['lakefish'],
+  'monster-47.obj':['giantSquid'], 'monster-21.obj':['giantleech'],
+  'monster-17.obj':['deepAngler'], 'monkey.glb':['gorilla'],
+  'tiger.glb':['jungletiger','jungletigerleader'],
+  'yeti.fbx':['yetileader','yeticub','froststalker'], 'cat.glb':['polarfox'],
+  'bee.fbx':['giantbee'], 'monster-15.obj':['thornmantis'],
+  'monster-53.obj':['giantspider','giantspiderling']
 });
 const NATIVE_CREATURE_BY_ID=new Map(Object.entries(NATIVE_CREATURE_MODELS)
   .flatMap(([source,ids])=>ids.map(id=>[id,source])));
+const CREATURE_SOURCE=new URL('../../assets/shared/forest/',import.meta.url);
 const assetReadiness=planAssetApplication({
  prompt:'마력숲 생존 캐릭터 몬스터 나무 숲 UI 전투 애니메이션',
  manifest:{assets:[
@@ -31,7 +56,7 @@ const assetReadiness=planAssetApplication({
    types:['prop','background'],license:'CC0',downloaded:true,
    sourceUrl:'https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0'},
   // Loaded only in explicitly selected preview. Runtime animation QA remains pending.
-  {id:'external-actor-mage',path:'assets/roblox/actors/native/mage.glb',
+  {id:'external-actor-knight',path:'assets/roblox/actors/native/knight.glb',
    types:['character'],license:'CC0-1.0',downloaded:true,verifiedAnimation:false,
    sourceUrl:'https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0'}
  ]}
@@ -110,7 +135,7 @@ async function loadSourceModels(){
 
 export async function createWorld3d(canvas){
   const models=await loadSourceModels(); // Fail closed: leave the old game active.
-  // Original CC0 KayKit mage GLB: optional visual actor only. Never invent a character mesh.
+  // Original CC0 KayKit knight GLB: optional visual actor only. Never invent a character mesh.
   // The existing game owns hitboxes, attacks, inventory, motion timing and save values.
   let hero=null,heroMixer=null,heroClips=[],heroAction=null,heroActionName='',lastHeroFrame=0;
   try{
@@ -128,7 +153,7 @@ export async function createWorld3d(canvas){
     heroClips=gltf.animations||[];
     if(heroClips.length)heroMixer=new THREE.AnimationMixer(model);
   }catch(error){
-    console.warn('CC0 KayKit mage not available in 3D preview; player asset remains unverified',error);
+    console.warn('CC0 KayKit knight not available in 3D preview; player asset remains unverified',error);
   }
   // A native CC0 humanoid undead is a visual proxy only for the existing
   // wastelandMummy type. Its AI, hitbox, spawn, skills, loot and ID stay authoritative.
@@ -141,24 +166,32 @@ export async function createWorld3d(canvas){
   }catch(error){
     console.warn('Downloaded undead GLB unavailable; 3D monster preview remains incomplete',error);
   }
-  // Load already-available native rigged monsters before the real game is shown.
-  // The animated GLB is preferred; a missing model is not replaced by an invented mesh.
+  // 메인: 생성 모델 대신 내려받은 CC0 원본 FBX/GLB/OBJ를 읽는다.
+  // 원본 리그/클립/UV/팔레트를 유지한다. 정적 OBJ에는 애니메이션 PASS를 만들지 않는다.
   const nativeCreatureSources=new Map();
-  await Promise.all(Object.keys(NATIVE_CREATURE_MODELS).map(async kind=>{
-    for(const suffix of ['-actions','']){
-      try{
-        const url=new URL('../../assets/shared/creature-'+kind+suffix+'.glb',import.meta.url);
+  await Promise.all(Object.keys(NATIVE_CREATURE_MODELS).map(async file=>{
+    try{
+      const url=new URL(file,CREATURE_SOURCE);
+      let model,clips=[];
+      if(file.endsWith('.fbx')){
+        model=await new FBXLoader().setResourcePath(CREATURE_SOURCE.href).loadAsync(url.href);
+        clips=model.animations||[];
+      }else if(file.endsWith('.glb')){
         const gltf=await new GLTFLoader().loadAsync(url.href);
-        if(!gltf.scene)throw new Error('Empty creature scene');
-        const box=new THREE.Box3().setFromObject(gltf.scene);
-        if(box.isEmpty())throw new Error('Missing creature mesh');
-        nativeCreatureSources.set(kind,{model:gltf.scene,clips:gltf.animations||[],
-          height:Math.max(.1,box.max.y-box.min.y),floor:box.min.y});
-        break;
-      }catch(error){
-        if(!suffix)console.warn('Native 3D monster model unavailable: '+kind,error);
+        model=gltf.scene;clips=gltf.animations||[];
+      }else{
+        const texture=await new THREE.TextureLoader().loadAsync(new URL(file.replace('.obj','.png'),CREATURE_SOURCE).href);
+        texture.colorSpace=THREE.SRGBColorSpace;
+        texture.magFilter=THREE.NearestFilter;
+        model=await new OBJLoader().loadAsync(url.href);
+        const material=new THREE.MeshStandardMaterial({map:texture,roughness:.94});
+        model.traverse(child=>{if(child.isMesh)child.material=material});
       }
-    }
+      const box=new THREE.Box3().setFromObject(model);
+      if(box.isEmpty())throw new Error('Missing downloaded creature mesh');
+      model.traverse(child=>{if(child.isMesh){child.castShadow=true;child.receiveShadow=true}});
+      nativeCreatureSources.set(file,{model,clips,height:Math.max(.1,box.max.y-box.min.y),floor:box.min.y});
+    }catch(error){console.warn('CC0 original 3D monster unavailable: '+file,error)}
   }));
   const renderer=new THREE.WebGLRenderer({canvas,antialias:!mobileBudget,alpha:false,powerPreference:'default'});
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
@@ -278,7 +311,7 @@ export async function createWorld3d(canvas){
     missingVisibleMonsterIds.clear();
     let displayed=0,unsafeUnmappedEncounter=false;
     for(const e of state.enemies||[]){
-      if(!e||e.hp<=0||e.area!==state.area||Math.hypot(e.x-px,e.y-py)>near*qualityFactor)continue;
+      if(!e||e.hp<=0||e.area!==state.area||Math.hypot(e.x-px,e.y-py)>Math.max(430,near*qualityFactor))continue;
       const kind=NATIVE_CREATURE_BY_ID.get(e.type?.id);
       if(!kind||!nativeCreatureSources.has(kind)){
         if(e.type?.id!=='wastelandMummy'||!undeadSource){
@@ -538,6 +571,7 @@ export async function createWorld3d(canvas){
   return {
     frame,pick,dispose,isActive:()=>active&&!disposed&&!canvas.hidden,
     kind:'NATIVE_WEBGL_GAME_RENDERER',
+    playerSource:HERO_URL.href,creatureSources:[...nativeCreatureSources.keys()],
     modelCount:models.size,playerAssetLoaded:!!hero,playerMotionClipCount:heroClips.length,
     undeadProxySourceLoaded:!!undeadSource,undeadProxyMotionClipCount:undeadClips.length,
     getBiome:()=>currentBiome,getWorldProfile:()=>gameStyleRegion,
