@@ -73,15 +73,15 @@ test('wild forest uses archived original geometry exclusively for currently boun
   assert.doesNotMatch(runtime,/new THREE\.(?:ConeGeometry|SphereGeometry|DodecahedronGeometry|IcosahedronGeometry)/);
 });
 test('species-correct Kenney 3D originals bind to the authoritative animals without changing AI',()=>{
-  assert.match(runtime,/MISSING_SPECIES_ORIGINALS=Object\\.freeze\\(\\[\\]\\)/);
-  assert.match(runtime,/animal-bunny\\.glb/);
-  assert.match(runtime,/animal-deer\\.glb/);
-  assert.match(runtime,/models\\.get\\(a\\.type\\)/);
-  assert.match(runtime,/cloneSkeleton\\(source\\)/);
-  assert.match(runtime,/new THREE\\.AnimationMixer\\(instance\\)/);
-  assert.match(runtime,/document\\.body\\.dataset\\.missingOriginalSpecies/);
-  assert.doesNotMatch(runtime,/(?:models\\.get|ORIGINAL_ASSETS\\.)\\(['"]wolf['"]\\)/);
-  assert.match(page,/function updateAnimals\\s*\\(/);
+  assert.match(runtime,/MISSING_SPECIES_ORIGINALS=Object\.freeze\(\[\]\)/);
+  assert.match(runtime,/animal-bunny\.glb/);
+  assert.match(runtime,/animal-deer\.glb/);
+  assert.match(runtime,/models\.get\(a\.type\)/);
+  assert.match(runtime,/cloneSkeleton\(source\)/);
+  assert.match(runtime,/new THREE\.AnimationMixer\(instance\)/);
+  assert.match(runtime,/document\.body\.dataset\.missingOriginalSpecies/);
+  assert.doesNotMatch(runtime,/(?:models\.get|ORIGINAL_ASSETS\.)\(['"]wolf['"]\)/);
+  assert.match(page,/function updateAnimals\s*\(/);
   assert.match(page,/const SAVE_KEY='jg-wild-survival-v1'/);
 });
 test('rabbit and deer contain genuine rigged glTF models, original textures, and provenance',()=>{
@@ -101,11 +101,11 @@ test('rabbit and deer contain genuine rigged glTF models, original textures, and
     assert.ok(metadata.animations?.some(action=>/idle/i.test(action.name)),species+' idle animation');
     assert.ok(metadata.animations?.some(action=>/walk|run/i.test(action.name)),species+' movement animation');
     assert.equal(metadata.images?.[0]?.uri,'Textures/colormap.png');
-    assert.equal(createHash('sha1').update('blob '+bytes.length+'\\0').update(bytes).digest('hex'),hash);
+    assert.equal(createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex'),hash);
     assert.equal(entry.evidence.sourceBlobSha[species],hash);
   }
   const texture=fs.readFileSync(path.join(base,'Textures/colormap.png'));
   assert.equal(texture.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
-  assert.equal(createHash('sha1').update('blob '+texture.length+'\\0').update(texture).digest('hex'),'cb9f831ac40f47e1474b09d5f202de422dc6ccbf');
+  assert.equal(createHash('sha1').update('blob '+texture.length+'\0').update(texture).digest('hex'),'cb9f831ac40f47e1474b09d5f202de422dc6ccbf');
 });
 
