@@ -50,6 +50,17 @@ test('stale autonomous tasks require exact opted-in main revision and are never 
  assert.equal(out.queue.tasks[2].status,'queued');
  assert.equal(out.queue.tasks[3].status,'running');
  assert.equal(out.queue.tasks[4].status,'queued');
+ // [실제 병목 회귀] 구버전 작업 취소 후에도 같은 파일·목표의 최신 SHA 작업은 계속 실행 가능해야 한다.
+ const sameFile=repairStaleAutonomousQueue({tasks:[
+   task('outdated',{evidence:['autonomous-pinned-main-sha:'+sha]}),
+   task('latest',{evidence:['autonomous-pinned-main-sha:'+newer]})
+ ]},newer);
+ assert.deepEqual(sameFile.cancelled,['outdated']);
+ assert.equal(sameFile.queue.tasks[0].blocker,'SUPERSEDED_BY_MAIN_REVISION');
+ assert.equal(sameFile.queue.tasks[1].status,'queued');
+ const duplicate=repairStaleAutonomousQueue({tasks:[task('first'),task('second')]},newer);
+ assert.deepEqual(duplicate.cancelled,['second']);
+ assert.equal(duplicate.queue.tasks[1].blocker,'DUPLICATE_AUTONOMOUS_WORK');
 });
 
 test('actual canonical FAIL evidence rotates causal strategy after three identical consecutive errors',()=>{
