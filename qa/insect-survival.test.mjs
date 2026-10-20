@@ -37,6 +37,11 @@ test('former rounded UI is removed; original game loops and storage key remain',
  assert.doesNotMatch(html,/border-radius:20px;background:#11251a/);
  assert.match(html,/#survivalDisk/);
  assert.match(html,/#quickPouch/);
+ assert.match(html,/#inventoryList\{grid-template-columns:/);
+ assert.match(html,/class="bagGrid"/);
+ assert.match(html,/class="equipmentPane"/);
+ assert.match(html,/function openInventory\(\)/);
+ assert.doesNotMatch(html,/rows\.push\('<div class="item"><b>현재 장비/);
  assert.match(html,/#inventoryList/);
  assert.match(html,/id="combatBar"/);
  assert.match(html,/id="zoneLabel"/);
@@ -54,6 +59,8 @@ test('3D renderer uses only existing documented CC0 original sources and old 2D 
   assert.ok(lineage.includes(path),'lineage record missing: '+path);
  }
  assert.match(world,/function derived\(key,height,tint\)/);
+ assert.match(world,/import \{clone as cloneSkinned\} from 'three\/addons\/utils\/SkeletonUtils\.js'/);
+ for(const clip of ['Idle','Running_A','1H_Melee_Attack_Stab','2H_Melee_Attack_Spin','Dodge_Forward','Hit_A'])assert.ok(world.includes(clip),'missing actual CC0 rig motion: '+clip);
  assert.match(world,/clone\(true\)/);
  assert.match(world,/window\.insectScene3DReady=true/);
  assert.match(world,/legacy\.style\.visibility='hidden'/);
