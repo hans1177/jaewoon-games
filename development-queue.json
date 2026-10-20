@@ -27273,7 +27273,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:35:08.290Z",
-      "updatedAt": "2026-10-20T14:01:02.816Z",
+      "updatedAt": "2026-10-20T14:02:46.705Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -27291,17 +27291,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "ca05eb2c5fe69bdb616c3730580e78a3578212d1",
       "robloxBuildArtifactIdentity": "sha256:632e4fc51617a0e8e3e1f4e99d71eabe55ececf0c704a8943e4861167dbc94b4",
-      "robloxBuildPassedAt": "2026-10-20T14:01:02.816Z",
+      "robloxBuildPassedAt": "2026-10-20T14:02:46.705Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T14:01:02.816Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T14:02:46.705Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "insect-survival",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T13:34:08.906Z",
+        "checkedAt": "2026-10-20T13:41:24.928Z",
         "sourceRevision": "ca05eb2c5fe69bdb616c3730580e78a3578212d1",
         "artifactIdentity": "sha256:632e4fc51617a0e8e3e1f4e99d71eabe55ececf0c704a8943e4861167dbc94b4",
         "secondaryOwnerFocus": false,
@@ -27344,7 +27344,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Runtime testing cannot start because multiple validation checks (web, music, nativeWeb, nativeMusic) failed in BUILD_EVIDENCE."
+            "note": "Runtime testing cannot start because multiple validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed in the build evidence."
           }
         ],
         "blockers": [
@@ -33472,7 +33472,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T14:02:26.585Z",
+  "updatedAt": "2026-10-20T14:02:46.705Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
