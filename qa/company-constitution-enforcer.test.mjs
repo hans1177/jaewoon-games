@@ -128,7 +128,7 @@ test('CC0 owner rule reaches fresh GPT/Vibe sessions, all department agents and 
   }
   assert.match(license,/## 게임 에셋 기본 강제 원칙 — CC0 원본 수정 사용/);
   assert.doesNotMatch(license,/^- 에셋: CC0 우선$/m);
-  assert.match(license,/게임별로 수정/);
+  assert.match(license,/해당 게임에 맞게 수정/);
   assert.match(homepage,/class="cc0PublicNotice"/);
   assert.match(homepage,/중앙헌법 제5규칙 확인/);
   assert.match(homepage,/검증된 CC0 원본을 게임별로 수정 사용/);
