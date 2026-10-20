@@ -563,3 +563,19 @@ test('owner A-reference B-existing approval rejects changed content and unrelate
   const altered=structuredClone(policy);altered.continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod.roles.B.meaningKo='replace original';
   assert.throws(()=>execute(policy,altered,[prefix+'.roles.B.meaningKo']),/SECURITY_OWNER_EXACT_AB_DESIGN_SCOPE_INVALID/);
 });
+
+test('owner web deploy-first approval accepts only exact publication policy and keeps verification and locks',async()=>{
+  const begin=securityWorkflow.indexOf('// OWNER_APPROVED_WEB_DEPLOY_FIRST_BEGIN');
+  const end=securityWorkflow.indexOf('// OWNER_APPROVED_WEB_DEPLOY_FIRST_END',begin);
+  const code=securityWorkflow.slice(begin,end).replace("const {createHash}=await import('node:crypto');",'');
+  const {createHash}=await import('node:crypto');
+  const head=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json'));
+  const base=structuredClone(head);base.version--;delete base.webRuntimeStartabilityContract.publicationOrder;delete base.changeRecord.ownerWebDeployThenValidate20261020;
+  const changes=['version','webRuntimeStartabilityContract.publicationOrder','changeRecord.ownerWebDeployThenValidate20261020'];
+  const execute=(current,keys=changes)=>runInNewContext(code,{base,head:current,changes:keys,createHash,console:{log(){}},same:(a,b)=>JSON.stringify(a)===JSON.stringify(b)});
+  assert.doesNotThrow(()=>execute(head));
+  const unsafe=structuredClone(head);unsafe.webRuntimeStartabilityContract.publicationOrder.postDeploymentVerificationRequired=false;
+  assert.throws(()=>execute(unsafe),/SECURITY_OWNER_WEB_DEPLOY_FIRST_SCOPE_INVALID/);
+  assert.throws(()=>execute(head,[...changes,'finalDevelopmentLock.sequenceLock.status']),/SECURITY_OWNER_WEB_DEPLOY_FIRST_SCOPE_INVALID/);
+  assert.throws(()=>execute(head,[...changes,'developmentAccess.ROBLOX']),/SECURITY_OWNER_WEB_DEPLOY_FIRST_SCOPE_INVALID/);
+});
