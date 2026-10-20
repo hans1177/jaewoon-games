@@ -1,12 +1,12 @@
 // 파일명: web-games/ocean-voyage/main.mjs
 // 임포트: 기존 게임과 분리된 항해 규칙 및 Three.js 장면
-import {PORTS,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons} from './engine.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,loadGame,serializeGame,cargoWeight,canDock,nearestPort,priceAt,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,setDestination,cancelDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion} from './engine.mjs';
 import {createOcean3D} from './ocean3d.mjs';
 // 메인: 조작, 교역, 함대, 항구, 해도, 게임 저장
 const $=id=>document.getElementById(id),fmt=n=>Math.round(n).toLocaleString('ko-KR');
 const view={head:$('panelTitle'),body:$('content'),details:$('details'),message:$('message'),loading:$('loading')};
 let state=loadGame(localStorage),active='',last=performance.now(),tick=0,panelTick=0,ready=false;
-let buttons={left:false,right:false,ahead:false,astern:false},keys=new Set();
+let buttons={left:false,right:false,ahead:false,astern:false},keys=new Set(),stick={x:0,y:0};
 const escapeHtml=s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const port=id=>PORTS.find(p=>p.id===id);
 const good=id=>GOODS.find(g=>g.id===id);
@@ -20,7 +20,7 @@ function save(){
  catch{note('저장 공간을 사용할 수 없어. 브라우저 설정을 확인해.');return false;}
 }
 const scene=createOcean3D($('sea'),{
- onReady(){ready=true;view.loading.classList.add('hide');scene.setState(state);note('3D 범선 로딩 완료. 새벽항에서 교역을 시작해.');},
+ onReady(){ready=true;view.loading.classList.add('hide');scene.setState(state);note('범선 준비 완료. 런던 항구에서 동료를 만나고 플리머스로 항해하자.');},
  onError(msg){view.loading.querySelector('p').textContent=msg;note(msg);}
 });
 $('start').addEventListener('click',()=>{if(ready)view.loading.classList.add('hide');else note('실제 범선 모델 로딩 중이야.');});
@@ -94,11 +94,45 @@ function journal(){
  '<button class="action sub" data-action="save">지금 저장</button> <button class="action" data-action="reset">새 항해 시작</button>'+
  '<h3>외부 에셋 출처</h3><p class="info">Kenney Pirate Kit (CC0) · Three.js (MIT). 게임 캐릭터·스토리·지명은 독자 콘텐츠야.</p>';
 }
+
+const kennyMap='https://raw.githubusercontent.com/shorepine/kenney/3694c6879e487c108f55677be7dd2ca75b07cc3b/2d/Cartography%20Pack/';
+const portrait=c=>{
+ const index=Math.max(0,Math.min(26,Number(c.portrait)||0));
+ const x=(index%9)*64,y=Math.floor(index/9)*64;
+ return '<span class="cc0-portrait" aria-label="'+escapeHtml(c.name)+'의 CC0 초상화" role="img" style="background-size:576px 192px;background-position:-'+x+'px -'+y+'px"></span>';
+};
+function portScene(){
+ const p=canDock(state),near=nearestPort(state);
+ if(!p)return '<div class="scene-card"><h3>해안까지 항해하기</h3><p>가장 가까운 항구는 '+escapeHtml(near.port.name)+'이야. 해도에서 항로를 설정하고 조이스틱으로 접근해.</p><button class="action sub" data-route="'+near.port.id+'">항구로 자동항해</button></div>';
+ const src=kennyMap+(p.id==='dawn'||p.id==='north'?'castle.png':p.id==='storm'?'lighthouse.png':'dock.png');
+ return '<div class="scene-card port-scene"><img alt="Kenney CC0 항구 아이콘" src="'+src+'"><div><h3>'+escapeHtml(p.name)+'</h3><small>'+escapeHtml(p.region)+' · '+escapeHtml(p.faction)+'</small><p>1590년 · 이 항구의 사람들과 이야기하고 교역을 시작해.</p></div></div>'+
+ '<div class="row"><div class="desc"><strong>교역소</strong><small>향신료와 곡물, 철광석 시세</small></div><button class="action" data-panel-open="market">교역</button></div>'+
+ '<div class="row"><div class="desc"><strong>선술집 · 여관</strong><small>항구별 고유한 항해사 영입</small></div><button class="action" data-panel-open="crew">대화</button></div>'+
+ '<div class="row"><div class="desc"><strong>조선소</strong><small>범선 수리 · 개조 · 호위함</small></div><button class="action" data-panel-open="fleet">이용</button></div>'+
+ '<div class="row"><div class="desc"><strong>왕립 항해 의뢰</strong><small>운송 계약과 항해 보상</small></div><button class="action" data-panel-open="quests">계약</button></div>'+
+ (p.id==='dawn'?'<div class="scene-card"><h3>제1장 · 여왕의 해도</h3><p>엘리너 그레이 선장은 런던 왕립항에서 출항 허가를 받았다. 첫 번째 목표는 플리머스의 교역망을 확보하는 것이다.</p><button class="action sub" data-route="coral">플리머스 항로 설정</button></div>':'');
+}
+function companions(){
+ const home=canDock(state);
+ return '<p class="info">각 지역의 항해사는 동일한 CC0 초상화 세트에서 지역별 색채와 얼굴이 다르게 표현돼.</p>'+
+ CREW.filter(c=>state.crewRoster.includes(c.id)).map(c=>'<div class="crew-card">'+portrait(c)+'<div><div class="crew-name">'+escapeHtml(c.name)+' <span class="cargo-badge">'+escapeHtml(c.role)+'</span></div><div class="crew-detail">'+escapeHtml(c.nation)+' · 승선 중</div><p class="crew-lore">'+escapeHtml(c.story)+'</p></div></div>').join('')+
+ '<h3>이 항구에서 만날 수 있는 인물</h3>'+
+ (home?CREW.filter(c=>c.port===home.id&&!state.crewRoster.includes(c.id)).map(c=>'<div class="crew-card">'+portrait(c)+'<div><div class="crew-name">'+escapeHtml(c.name)+'</div><div class="crew-detail">'+escapeHtml(c.nation)+' · '+escapeHtml(c.role)+'</div><p class="crew-lore">'+escapeHtml(c.story)+'</p><button class="action" data-recruit="'+c.id+'">함대 영입</button></div></div>').join('')||'<p class="info">이곳에서 새로 영입할 동료는 없어.</p>':'<p class="info">항구에 정박하면 여관에서 항해사를 만날 수 있어.</p>');
+}
+function inventory(){
+ return '<div class="kpi"><div>화물 적재<b>'+cargoWeight(state)+' / '+(state.ship.cargoLimit*state.fleet)+'</b></div><div>보유 금화<b>'+fmt(state.coins)+' G</b></div></div>'+
+ '<h3>개인 장비 · 발견물</h3>'+
+ EQUIPMENT.map(item=>'<div class="row"><div class="desc"><strong>'+escapeHtml(item.name)+'</strong><small>'+escapeHtml(item.group)+' · '+escapeHtml(item.description)+'</small></div><strong class="cargo-badge">×'+Math.max(0,Number(state.equipment?.[item.id])||0)+'</strong></div>').join('')+
+ '<h3>선박 화물창</h3>'+
+ GOODS.map(item=>'<div class="row"><div class="desc"><strong>'+escapeHtml(item.name)+'</strong><small>단위 중량 '+item.weight+' · 항구에서 사고팔 수 있음</small></div><strong class="cargo-badge">×'+(state.cargo[item.id]||0)+'</strong></div>').join('')+
+ '<h3>항해 보급품</h3><div class="row"><strong>식량</strong><b>'+state.ship.provisions+'</b></div><div class="row"><strong>선원</strong><b>'+state.ship.crew+'</b></div>';
+}
+
 function renderPanel(){
  if(!active)return;
- const titles={chart:'세계 해도',market:'항구 교역소',fleet:'함대와 조선소',quests:'계약과 탐험',journal:'항해 기록'};
+ const titles={port:'항구 · 선술집 · 조선소',crew:'선장과 항해사',inventory:'항해 가방과 화물',chart:'세계 해도',market:'항구 교역소',fleet:'함대와 조선소',quests:'계약과 탐험',journal:'항해 기록'};
  view.head.textContent=titles[active];
- view.body.innerHTML=({chart,market,fleet,quests,journal}[active]||chart)();
+ view.body.innerHTML=({port:portScene,crew:companions,inventory,chart,market,fleet,quests,journal}[active]||chart)();
 }
 function apply(result){
  if(result.ok){state=result.state;save();scene.setState(state);renderPanel();summary();}
@@ -106,11 +140,13 @@ function apply(result){
 }
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>gotoPanel(b.dataset.panel)));
 $('close').addEventListener('click',()=>gotoPanel(active));
-$('dock').addEventListener('click',()=>{if(canDock(state)){active='market';view.details.classList.add('open');renderPanel();note(canDock(state).name+'에 정박했어.');}});
+$('dock').addEventListener('click',()=>{if(canDock(state)){active='port';view.details.classList.add('open');renderPanel();note(canDock(state).name+'에 입항했어.');}});
 $('fire').addEventListener('click',()=>apply(fireCannons(state)));
 view.body.addEventListener('click',e=>{
- const b=e.target.closest('[data-route],[data-trade],[data-upgrade],[data-action]');
+ const b=e.target.closest('[data-route],[data-trade],[data-upgrade],[data-action],[data-recruit],[data-panel-open]');
  if(!b)return;
+ if(b.dataset.panelOpen){active=b.dataset.panelOpen;view.details.classList.add('open');renderPanel();return;}
+ if(b.dataset.recruit){apply(recruitCompanion(state,b.dataset.recruit));return;}
  if(b.dataset.route){state=setDestination(state,b.dataset.route);save();scene.setState(state);summary();gotoPanel(active);note(port(b.dataset.route).name+'까지 자동항해 시작');return;}
  if(b.dataset.trade){apply(trade(state,canDock(state)?.id,b.dataset.good,Number(b.dataset.count),b.dataset.trade));return;}
  if(b.dataset.upgrade){apply(buyUpgrade(state,b.dataset.upgrade));return;}
@@ -135,12 +171,33 @@ document.addEventListener('keydown',e=>{
  if(['w','a','s','d','arrowleft','arrowright','arrowup','arrowdown',' '].includes(k)){keys.add(k);e.preventDefault();}
  if(k===' '){apply(fireCannons(state));}
  if(k==='m'){gotoPanel('chart');}
- if(k==='e'&&canDock(state)){active='market';view.details.classList.add('open');renderPanel();}
+ if(k==='e'&&canDock(state)){active='port';view.details.classList.add('open');renderPanel();}
 });
 document.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));
-window.addEventListener('blur',()=>{keys.clear();buttons={left:false,right:false,ahead:false,astern:false};});
+window.addEventListener('blur',()=>{keys.clear();buttons={left:false,right:false,ahead:false,astern:false};stick={x:0,y:0};});
 document.addEventListener('pagehide',save);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')save();});
+
+const joystick=$('joystickRim'),knob=$('joystickHandle');
+let pointer=null;
+const resetStick=()=>{stick={x:0,y:0};knob.style.transform='translate(-50%,-50%)';};
+function updateStick(e){
+ const r=joystick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+ const radius=Math.max(1,(Math.min(r.width,r.height)-51)/2),dx=e.clientX-cx,dy=e.clientY-cy,length=Math.hypot(dx,dy);
+ const scale=Math.min(1,length/radius)/(length||1),x=dx*scale,y=dy*scale;
+ stick.x=Math.max(-1,Math.min(1,x/radius));stick.y=Math.max(-1,Math.min(1,-y/radius));
+ knob.style.transform='translate(calc(-50% + '+(stick.x*radius)+'px),calc(-50% - '+(stick.y*radius)+'px))';
+}
+joystick.addEventListener('pointerdown',e=>{e.preventDefault();pointer=e.pointerId;joystick.setPointerCapture(e.pointerId);updateStick(e);});
+joystick.addEventListener('pointermove',e=>{if(pointer===e.pointerId){e.preventDefault();updateStick(e);}});
+for(const k of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(k,()=>{pointer=null;resetStick();});
+const music=$('sea-music'),musicToggle=$('music-toggle');
+music.volume=.27;
+musicToggle.addEventListener('click',async()=>{
+ if(music.paused){try{await music.play();musicToggle.innerHTML='<b>♫</b>켜짐';}catch{note('CC0 항해 음악을 불러올 수 없어. 네트워크를 확인해.');}}
+ else{music.pause();musicToggle.innerHTML='<b>♫</b>음악';}
+});
+
 function run(now){
  requestAnimationFrame(run);
  const dt=Math.min(.06,Math.max(0,(now-last)/1000));last=now;
@@ -150,9 +207,11 @@ function run(now){
  const right=buttons.right||keys.has('d')||keys.has('arrowright');
  const ahead=buttons.ahead||keys.has('w')||keys.has('arrowup');
  const astern=buttons.astern||keys.has('s')||keys.has('arrowdown');
- const manual=left||right||ahead||astern;
+ const turn=Math.max(-1,Math.min(1,Number(right)-Number(left)+stick.x));
+ const throttle=Math.max(-1,Math.min(1,Number(ahead)-Number(astern)+stick.y));
+ const manual=left||right||ahead||astern||Math.abs(stick.x)>.08||Math.abs(stick.y)>.08;
  if(manual&&state.destination){state=cancelDestination(state);}
- state=stepSea(state,{turn:Number(right)-Number(left),throttle:Number(ahead)-Number(astern),manual},dt);
+ state=stepSea(state,{turn,throttle,manual},dt);
  scene.setState(state);
  tick+=dt;panelTick+=dt;
  if(tick>1){tick=0;summary();}
