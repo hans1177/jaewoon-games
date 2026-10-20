@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
+import {clone as cloneSkinned} from 'three/addons/utils/SkeletonUtils.js';
 const asset=new URL('../../assets/',import.meta.url);
 const BASE=Object.freeze({
  hero:{src:'roblox/actors/native/rogue.glb',format:'glb',height:1.32,color:'#9fc89c'},
@@ -34,11 +35,12 @@ async function original(key){
  const {src,format}=BASE[key];
  const value=await loaderFor(format).loadAsync(new URL(src,asset).href);
  const model=format==='glb'?value.scene:value;
+ if(key==='hero'&&format==='glb')originalClips=value.animations||[];
  if(!model||new THREE.Box3().setFromObject(model).isEmpty())throw Error('CC0 원본 비어 있음 '+src);
  return model;
 }
 function derived(key,height,tint){
- const model=originals[key].clone(true),bounds=new THREE.Box3().setFromObject(model),dim=bounds.getSize(new THREE.Vector3());
+ const model=(key==='hero'?cloneSkinned(originals[key]):originals[key].clone(true)),bounds=new THREE.Box3().setFromObject(model),dim=bounds.getSize(new THREE.Vector3());
  const ratio=height/Math.max(.0001,dim.y);
  model.scale.multiplyScalar(ratio);model.position.y=-bounds.min.y*ratio;
  const color=new THREE.Color(tint||BASE[key].color);
@@ -56,6 +58,7 @@ function derived(key,height,tint){
  return model;
 }
 const originals={},enemies=[],resources=[];
+let originalClips=[],heroMixer=null,playingAction='',heroActions={};
 let avatar=null,worldReady=false,time=0,fieldBuilt=false;
 const world=new THREE.Group(),actors=new THREE.Group(),decor=new THREE.Group();scene.add(world,actors,decor);
 const announce=document.createElement('div');announce.textContent='CC0 3D 숲과 캐릭터 불러오는 중…';
@@ -93,7 +96,18 @@ function environment(frame){
  }
 }
 function actorsFromFrame(frame){
- avatar=new THREE.Group();avatar.add(derived('hero',1.56,'#d1cbb1'));actors.add(avatar);
+ avatar=new THREE.Group();
+ const model=derived('hero',1.56,'#d1cbb1');avatar.add(model);actors.add(avatar);
+ // 원본 KayKit CC0 GLB 내 실제 76개 리그 모션을 사용한다. 자체 제작 임시 모션 대신
+ // Idle/Running/Attack/Stab/Spin/Dodge/Hit의 원본 애니메이션 클립을 교차 페이드한다.
+ heroMixer=new THREE.AnimationMixer(model);
+ const sourceNames={idle:'Idle',run:'Running_A',stab:'1H_Melee_Attack_Stab',
+  spin:'2H_Melee_Attack_Spin',dodge:'Dodge_Forward',hit:'Hit_A'};
+ for(const [key,name] of Object.entries(sourceNames)){
+  const clip=originalClips.find(row=>row.name===name);
+  if(clip)heroActions[key]=heroMixer.clipAction(clip);
+ }
+ if(heroActions.idle){heroActions.idle.play();playingAction='idle'}
  for(const b of frame.bugs){
   const kind=b.type==='spider'?'spider':'crawler';
   const height={spider:.92,beetle:.7,soldierAnt:.62,ant:.45,mite:.36}[b.type]||.48;
@@ -103,14 +117,21 @@ function actorsFromFrame(frame){
  const nodeOrigin={branch:'foliage',fiber:'foliage',pebble:'stone'};
  for(const n of frame.nodes){const group=new THREE.Group();group.add(derived(nodeOrigin[n.type]||'stone',n.type==='pebble'?.33:.5,n.type==='fiber'?'#c2dca0':'#bda782'));actors.add(group);resources.push(group)}
 }
+function setHeroMotion(motion){
+ const next=heroActions[motion]||heroActions.idle;
+ if(!next||playingAction===motion)return;
+ const prev=heroActions[playingAction];if(prev&&prev!==next)prev.fadeOut(.13);
+ next.reset().fadeIn(.13).play();playingAction=motion;
+}
 function follow(frame,dt){
  const p=frame.player,pos=to3(p);
+ const travel=Math.hypot(pos.x-(avatar.userData.lastX??pos.x),pos.z-(avatar.userData.lastZ??pos.z));
+ avatar.userData.lastX=pos.x;avatar.userData.lastZ=pos.z;
  avatar.position.copy(pos);
  avatar.rotation.y=Math.atan2(p.dirX,p.dirY);
- const hero=avatar.children[0];
  const swing=(p.swingTimer||0)>0,roll=(p.rollTimer||0)>0;
- hero.rotation.z=roll?Math.sin((.39-p.rollTimer)*18)*1.2:swing?Math.sin((.38-p.swingTimer)*10)*.36:0;
- hero.position.y=Math.sin(time*7)*.012;
+ setHeroMotion(roll?'dodge':swing?'stab':p.hit>0?'hit':travel>.004?'run':'idle');
+ if(heroMixer)heroMixer.update(dt);
  const night=frame.state.time/95>.68;
  sun.intensity=night?.25:2.7;moon.intensity=night?1.7:.0;
  scene.background.set(night?'#263c3f':'#a2b998');
