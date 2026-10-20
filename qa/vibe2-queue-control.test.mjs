@@ -2075,8 +2075,8 @@ test('candidate result workflows use direct repository-dispatch refill instead o
 });
 
 
-// 메인 · 같은 리비전의 아직 시작하지 않은 게임 호출만 기존 큐에 유지한다.
-test('24H preplan deduplicates queued same-main production wakes without cross-lane cancellation',()=>{
+// 동일 main·레인의 대기 또는 실행 중 예약은 재사용한다. 완료된 결과·다른 SHA·다른 레인은 합치지 않는다.
+test('24H preplan deduplicates active or queued same-main wakes without cross-lane cancellation',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   for(const lane of ['game-primary','asset-development']){
   const variable=lane==='game-primary'?'queued_exact_wake':'queued_asset_wake';
@@ -2107,13 +2107,15 @@ test('24H preplan deduplicates queued same-main production wakes without cross-l
   assert.equal(evaluate([wake],main),'751');
   assert.equal(evaluate([{...wake,status:'pending'}],main),'751');
   assert.equal(evaluate([{...wake,status:'requested'}],main),'751');
-  assert.equal(evaluate([{...wake,status:'in_progress'}],main),'');
+  assert.equal(evaluate([{...wake,status:'in_progress'}],main),'751');
   assert.equal(evaluate([{...wake,status:'completed'}],main),'');
   assert.equal(evaluate([{...wake,head_sha:previous}],main),'');
   assert.equal(evaluate([{...wake,event:'push'}],main),'');
   assert.equal(evaluate([{...wake,path:'.github/workflows/vibe2-recovery-fast.yml'}],main),'');
   assert.equal(evaluate([{...wake,display_title:'Vibe2 Continuous Core · workflow_dispatch · '+(lane==='game-primary'?'asset-development':'game-primary')}],main),'');
   assert.equal(evaluate([{...wake,head_sha:previous},wake],main),'751');
+  assert.equal(evaluate([{...wake,head_sha:previous,status:'in_progress'}],main),'');
+  assert.equal(evaluate([{...wake,status:'in_progress',display_title:'Vibe2 Continuous Core · workflow_dispatch · '+(lane==='game-primary'?'asset-development':'game-primary')}],main),'');
   assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=COALESCED_QUEUED_EXACT_MAIN/);
   assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(workflow,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
