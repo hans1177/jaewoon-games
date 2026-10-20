@@ -120,10 +120,17 @@ test('homepage uses canonical runtime data and links without separate availabili
   assert.ok(client.includes('new WebSocket(url)'));
 });
 
-test('game home button points back to project homepage instead of github.io host root',()=>{
+test('game home button resolves to official homepage on both GitHub Pages and Cloudflare',()=>{
   const forest=fs.readFileSync('_site/web-games/fantasy-survival/index.html','utf8');
-  assert.match(forest,/class="home"\s+href="\/jaewoon-games\/"/);
-  assert.doesNotMatch(forest,/class="home"\s+href="\/"/);
+  const homeLink=forest.match(/<a\s+class="home"\s+href="([^"]+)"/);
+  assert.ok(homeLink,'game home link is required');
+  const href=homeLink[1];
+  const gitHubGame='https://hans1177.github.io/jaewoon-games/web-games/fantasy-survival/';
+  const cloudflareGame='https://jaewoon-games.pages.dev/web-games/fantasy-survival/';
+  assert.equal(new URL(href,gitHubGame).href,'https://hans1177.github.io/jaewoon-games/',
+    'game home must keep GitHub Pages project root');
+  assert.equal(new URL(href,cloudflareGame).href,'https://jaewoon-games.pages.dev/',
+    'game home must keep Cloudflare Pages site root');
   assert.ok(fs.existsSync('_site/tier.html'));
 });
 
