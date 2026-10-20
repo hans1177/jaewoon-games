@@ -607,35 +607,38 @@ test('shared classes form an inherited motion hierarchy rather than a genre-lock
 });
 
 
-test('fifty-one career hierarchies inherit valid source 3D skinned masters without automatic native promotion',()=>{
+test('Rule5 career hierarchy maps to registered CC0 actors without claiming runtime verification',()=>{
   const registered=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
-  const keys=new Set(registered.assets.map(row=>row.id));
+  const byId=new Map(registered.assets.map(row=>[row.id,row]));
   assert.ok(Object.keys(COMMON_CAREER_VISUAL_MASTERS).length>=35);
   for(const careerId of Object.keys(COMMON_CAREER_MOTION_HIERARCHY)){
     const loadout=createCommonCareerMotionLoadout({careerId,genre:'RPG',platform:'UNITY'});
     const master=loadout.master;
-    assert.ok(keys.has(master.assetId),careerId+': missing registered 3D master');
-    assert.ok(master.path.startsWith('assets/shared/humanoid-')&&master.path.endsWith('.glb'),careerId);
-    assert.equal(master.rig,'SHARED_HUMANOID_SKINNED_19',careerId);
+    const asset=byId.get(master.assetId);
+    assert.ok(asset,'missing CC0 source actor: '+careerId);
+    assert.equal(asset.license,'CC0-1.0',careerId);
+    assert.equal(master.license,'CC0-1.0',careerId);
+    assert.equal(master.path,asset.path.replace(/^\//,''),careerId);
+    assert.equal(master.rig,'KAYKIT_HUMANOID',careerId);
+    assert.equal(master.sourceRoleActionClip,null,careerId);
     assert.equal(master.runtimeVerified,false,careerId);
     assert.equal(master.productionVerified,false,careerId);
     assert.equal(master.gameSpecificRigAndStyleAdaptationRequired,true,careerId);
     assert.equal(loadout.gameplayAuthority,false,careerId);
+    assert.equal(loadout.actionSource.productionVerified,false,careerId);
   }
   const samurai=createCommonCareerMotionLoadout({careerId:'SAMURAI'});
   const kensei=createCommonCareerMotionLoadout({careerId:'KENSEI'});
   const ronin=createCommonCareerMotionLoadout({careerId:'RONIN'});
-  assert.equal(samurai.master.assetId,'shared-humanoid-samurai');
+  assert.equal(samurai.master.assetId,'external-actor-knight');
   assert.equal(kensei.master.assetId,samurai.master.assetId);
   assert.equal(ronin.master.assetId,samurai.master.assetId);
-  assert.equal(samurai.master.sourceRoleActionClip,'SAMURAI_IAI_DRAW');
-  assert.equal(createCommonCareerMotionLoadout({careerId:'ARCHER'}).master.assetId,'shared-humanoid-archer');
-  assert.equal(createCommonCareerMotionLoadout({careerId:'ELEMENTALIST'}).master.assetId,'shared-humanoid-mage');
-  assert.equal(createCommonCareerMotionLoadout({careerId:'ASSASSIN'}).master.assetId,'shared-humanoid-rogue');
-  assert.equal(createCommonCareerMotionLoadout({careerId:'DRAGOON'}).master.assetId,'shared-humanoid-lancer');
-  assert.equal(createCommonCareerMotionLoadout({careerId:'BLACKSMITH'}).master.assetId,'shared-humanoid-blacksmith');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'ARCHER'}).master.assetId,'external-actor-rogue');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'ELEMENTALIST'}).master.assetId,'external-actor-mage');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'ASSASSIN'}).master.assetId,'external-actor-rogue-hooded');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'DRAGOON'}).master.assetId,'external-actor-knight');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'BLACKSMITH'}).master.assetId,'external-actor-barbarian');
 });
-
 test('multiple native genre labels reuse the same class and creature motion rather than creating a shadow system',()=>{
   assert.equal(resolveCommonMotionGenre('RPG'),'ACTION_RPG');
   assert.equal(resolveCommonMotionGenre('Action RPG'),'ACTION_RPG');
@@ -791,37 +794,25 @@ test('twenty monster body plans use distinct 3D joint curves, not speed-scaled h
   assert.ok(slime.some(action=>action.jointTracks.some(row=>row.part==='LOBES')));
 });
 
-test('five actual cross-genre creature masters bind 3D skinned action clips while others stay semantic',()=>{
-  const ready={
-    WOLF:['QUADRUPED_CANINE',17],SPIDER:['ARACHNID',29],BEETLE:['HEXAPOD_INSECT',23],
-    GOLEM:['HEAVY_GOLEM_OR_BOSS',15],SERPENT:['REPTILE_OR_SERPENT',17]
-  };
-  assert.equal(Object.keys(COMMON_MONSTER_SKINNED_MASTERS).length,5);
-  for(const [species,[bodyPlan,joints]] of Object.entries(ready)){
-    const loadout=createCommonMonsterActionLoadout({speciesId:species,platform:'UNITY',genre:'SURVIVAL'});
-    assert.ok(loadout.master,species);
-    assert.equal(loadout.master.bodyPlan,bodyPlan);
-    assert.equal(loadout.master.rigJointCount,joints);
-    assert.equal(loadout.master.id,'shared-creature-'+species.toLowerCase());
-    assert.equal(loadout.master.path,'assets/shared/creature-'+species.toLowerCase()+'.glb');
-    assert.equal(loadout.master.sourceAnimationClips.length,11);
-    assert.equal(loadout.rigProfile,loadout.master.rigProfile);
-    assert.ok(loadout.master.sourceAnimationClips.includes('SKILL_PREPARE'));
-    assert.ok(loadout.master.sourceAnimationClips.includes('ATTACK_A'));
-    assert.equal(loadout.master.sourceHasActualSkinnedMesh,true);
-    assert.equal(loadout.master.runtimeVerified,false);
-    assert.equal(loadout.productionVerified,false);
-    assert.equal(loadout.gameplayAuthority,false);
-    const web=createCommonMonsterActionLoadout({speciesId:species,platform:'WEB',genre:'HORROR'});
-    assert.equal(web.master.path,loadout.master.path,'same master provenance, distinct platform adaptation');
-    assert.equal(web.platformNativeAdaptationRequired,true);
+test('Rule5 missing creature CC0 masters preserve semantic preparation without false skinned meshes',()=>{
+  assert.equal(Object.keys(COMMON_MONSTER_SKINNED_MASTERS).length,0);
+  for(const speciesId of ['WOLF','SPIDER','BEETLE','GOLEM','SERPENT']){
+    const loadout=createCommonMonsterActionLoadout({speciesId,platform:'UNITY',genre:'SURVIVAL'});
+    assert.equal(loadout.master,null,speciesId);
+    assert.equal(loadout.actionSource,null,speciesId);
+    assert.equal(loadout.masterActuallyExistsInSharedRepository,false,speciesId);
+    assert.ok(loadout.choreography.length>0,speciesId+' must keep semantic move design');
+    assert.equal(loadout.productionVerified,false,speciesId);
+    assert.equal(loadout.gameplayAuthority,false,speciesId);
+    const web=createCommonMonsterActionLoadout({speciesId,platform:'WEB',genre:'HORROR'});
+    assert.equal(web.master,null);
+    assert.equal(web.productionVerified,false);
   }
   const ghost=createCommonMonsterActionLoadout({speciesId:'GHOST'});
   assert.equal(ghost.master,null);
   assert.equal(ghost.masterActuallyExistsInSharedRepository,false);
   assert.equal(ghost.productionVerified,false);
 });
-
 test('canonical motion director directly exposes shared class and creature motion authoring requests',()=>{
   const classPlan=createMotionDirectorPlan({
     platform:'UNITY',bodyPlan:'HUMANOID',rigProfile:'HUMANOID',
@@ -1709,7 +1700,9 @@ test('creature body-plan, species and tier motion layers preserve combat authori
     &&row.sourceHierarchyLevel==='PRESENTATION_TIER'));
   assert.ok(!boss.roleRequests.some(row=>row.group==='locomotion'));
   assert.ok(boss.roleRequests.some(row=>row.id==='WOLF_BOSS_SIGNATURE_TELL'));
-  assert.equal(boss.master.id,base.master.id);
+  assert.equal(base.master,null,'deleted original master must not reappear');
+  assert.equal(elite.master,null);
+  assert.equal(boss.master,null);
   assert.equal(boss.runtimeVerified,false);
   assert.equal(boss.productionVerified,false);
   assert.equal(boss.gameplayAuthority,false);
