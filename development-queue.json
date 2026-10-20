@@ -6832,7 +6832,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T07:01:07.684Z",
+      "updatedAt": "2026-10-20T07:14:19.845Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -6842,8 +6842,8 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "8351f19ce3be44cbc594f38b9721e1d82508a148",
-      "robloxSourceBootstrapPassedAt": "2026-10-20T04:50:18.921Z",
+      "robloxSourceCommit": "ebdea1fe7f3b1786a0bf7bda3d09ad4cb613dd13",
+      "robloxSourceBootstrapPassedAt": "2026-10-20T07:14:19.845Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -6896,7 +6896,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureSignature": "roblox-package-asset-binding-failed",
       "routingBlockers": [
-        "roblox-build-package:roblox-package-asset-binding-failed"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
@@ -7928,7 +7928,7 @@
         },
         "recipeId": "NORMAL_VARIANT",
         "motionQuality": {
-          "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+          "contract": "tools/company-development-roblox-bootstrap.mjs#motionQuality",
           "motionAtoms": [
             "IDLE_RELAXED",
             "WALK",
@@ -12897,7 +12897,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T07:01:07.684Z",
+      "updatedAt": "2026-10-20T07:14:19.845Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -12907,8 +12907,8 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "8351f19ce3be44cbc594f38b9721e1d82508a148",
-      "robloxSourceBootstrapPassedAt": "2026-10-20T04:50:18.921Z",
+      "robloxSourceCommit": "2b68d61ba8ddcaa7632ec8a78c92ca73f8972c31",
+      "robloxSourceBootstrapPassedAt": "2026-10-20T07:14:19.845Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -13352,7 +13352,7 @@
         },
         "recipeId": "NORMAL_VARIANT",
         "motionQuality": {
-          "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+          "contract": "tools/company-development-roblox-bootstrap.mjs#motionQuality",
           "motionAtoms": [
             "IDLE_RELAXED",
             "WALK",
@@ -13417,7 +13417,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-package:roblox-package-asset-binding-failed"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxBuildOrPackagePassed": false,
       "robloxBuildSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
@@ -37232,7 +37232,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T07:14:12.836Z",
+  "updatedAt": "2026-10-20T07:14:19.845Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
