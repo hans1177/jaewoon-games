@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "insect-survival-build-up-g4-d5d90899f019",
-  "directiveFingerprint": "d5d90899f0194f4b7ac5bb6783fa5cdf01c64748bb68ed30b743f73020bb9e52",
-  "previousDirectiveFingerprint": "4288b56b52b6be29234ef830ab7589f4b1ec91b274ee0b9413a1ae5540cd85da",
-  "forbiddenRepeatFingerprint": "4288b56b52b6be29234ef830ab7589f4b1ec91b274ee0b9413a1ae5540cd85da",
+  "directiveId": "insect-survival-build-up-g5-a670a90144b2",
+  "directiveFingerprint": "a670a90144b2399819c21b1979ceb345c07c383a7622208dea7e6f3771f14620",
+  "previousDirectiveFingerprint": "d5d90899f0194f4b7ac5bb6783fa5cdf01c64748bb68ed30b743f73020bb9e52",
+  "forbiddenRepeatFingerprint": "d5d90899f0194f4b7ac5bb6783fa5cdf01c64748bb68ed30b743f73020bb9e52",
   "gameId": "insect-survival",
   "gameName": "곤충 생존기",
-  "generation": 4,
+  "generation": 5,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/insect-survival",
-  "sourceTreeFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
+  "sourceTreeFingerprint": "50d99c8d8cb3ff84aa5ab45e526e26df7db3e6bc35befe69ae5e3de621e3808d",
   "designFingerprint": "54196d6b4b560b3b3d7da35e259468b81aa4cb89633b5507253f769915454e4d",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -294,7 +294,7 @@
           "제작과 방어 거점 관리의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
+        "sourceTreeFingerprint": "50d99c8d8cb3ff84aa5ab45e526e26df7db3e6bc35befe69ae5e3de621e3808d",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -342,7 +342,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "54196d6b4b560b3b3d7da35e259468b81aa4cb89633b5507253f769915454e4d",
-    "sourceTreeFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
+    "sourceTreeFingerprint": "50d99c8d8cb3ff84aa5ab45e526e26df7db3e6bc35befe69ae5e3de621e3808d",
     "multiplayerMode": "COOP",
     "multiplayerRequired": false,
     "minimumParticipants": 1,
@@ -889,7 +889,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
+    "sourceTreeFingerprint": "50d99c8d8cb3ff84aa5ab45e526e26df7db3e6bc35befe69ae5e3de621e3808d",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4498,18 +4498,18 @@
       "save": 119,
       "multiplayer": 43,
       "animation": 45,
-      "motionStates": 691,
+      "motionStates": 692,
       "gameFeel": 36,
       "vfx": 44,
       "camera": 46,
       "audio": 4,
       "audioDynamics": 27,
       "ui": 898,
-      "uiFlow": 1145,
+      "uiFlow": 1149,
       "entryFlow": 18,
       "loadingFlow": 0,
       "input": 151,
-      "map": 291,
+      "map": 290,
       "landmark": 36,
       "interaction": 287,
       "inventory": 245,
@@ -4533,7 +4533,7 @@
       },
       {
         "file": "roblox-games/insect-survival/shared/GameConfig.luau",
-        "score": 495
+        "score": 493
       },
       {
         "file": "roblox-games/insect-survival/server/Game.server.luau",
@@ -4854,6 +4854,14 @@
         "score": 50
       },
       {
+        "file": "roblox-games/insect-survival/server/Game.server.luau",
+        "line": 363,
+        "kind": "FUNCTION",
+        "symbol": "studioAssetFamily",
+        "context": "local function studioAssetFamily(family)",
+        "score": 50
+      },
+      {
         "file": "roblox-games/insect-survival/client/Game.client.luau",
         "line": 275,
         "kind": "FUNCTION",
@@ -4932,33 +4940,25 @@
         "symbol": "flush",
         "context": "local function flush()",
         "score": 26
-      },
-      {
-        "file": "roblox-games/insect-survival/client/MaterialPresentation.client.luau",
-        "line": 20,
-        "kind": "FUNCTION",
-        "symbol": "enqueue",
-        "context": "local function enqueue(instance)",
-        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "곤충 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 곤충 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 3,
-    "previousSourceTreeFingerprint": "9c1ec967882632ce8273e9c79c0bb9070d6b8885b5505965390554d6860fd1ff",
-    "currentSourceTreeFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
+    "previousGeneration": 4,
+    "previousSourceTreeFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
+    "currentSourceTreeFingerprint": "50d99c8d8cb3ff84aa5ab45e526e26df7db3e6bc35befe69ae5e3de621e3808d",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "existing-source-static-revalidation-failed",
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "roblox-package-asset-binding-failed",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED"
+      "roblox-build-package:roblox-package-asset-binding-failed"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -6105,7 +6105,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 430141,
+        "sourceBytes": 401593,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6138,8 +6138,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 4,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
+    "themeDepth": 5,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -6149,9 +6149,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 4
+        "PRESENTATION_WORLD_COHESION": 5
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -6190,7 +6191,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 182,
+        "score": 164,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6304,11 +6305,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 4,
-    "previousGeneration": 3,
+    "generation": 5,
+    "previousGeneration": 4,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
-    "priorSourceFingerprint": "9c1ec967882632ce8273e9c79c0bb9070d6b8885b5505965390554d6860fd1ff",
+    "sourceFingerprint": "50d99c8d8cb3ff84aa5ab45e526e26df7db3e6bc35befe69ae5e3de621e3808d",
+    "priorSourceFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6327,7 +6328,7 @@
     "version": 1,
     "gameId": "insect-survival",
     "platform": "ROBLOX",
-    "sourceTreeFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
+    "sourceTreeFingerprint": "50d99c8d8cb3ff84aa5ab45e526e26df7db3e6bc35befe69ae5e3de621e3808d",
     "sourceOnlyEvidence": true,
     "applicableGameFeaturesOnly": true,
     "components": [
@@ -7232,7 +7233,7 @@
     "gameId": "insect-survival",
     "requiredEveryBuildUpCycle": true,
     "executionBoundary": "EXISTING_BUILD_UP_AND_F0_F9_ONLY",
-    "sourceTreeFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
+    "sourceTreeFingerprint": "50d99c8d8cb3ff84aa5ab45e526e26df7db3e6bc35befe69ae5e3de621e3808d",
     "checklistIsNotExecutedEvidence": true,
     "evidenceState": "UNVERIFIED",
     "technicalPassIsNotVisualQualityPass": true,
@@ -8066,11 +8067,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "83bdac04022effb70aafcc088a88863dad8466b2f1bf30af99af1a4bbc81ea6c",
+      "sourceTreeFingerprint": "50d99c8d8cb3ff84aa5ab45e526e26df7db3e6bc35befe69ae5e3de621e3808d",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "existing-source-static-revalidation-failed"
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "roblox-package-asset-binding-failed"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8125,7 +8126,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 5,
+    "nextGeneration": 6,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8187,5 +8188,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-20T03:28:20.851Z"
+  "generatedAt": "2026-10-20T06:35:47.658Z"
 }

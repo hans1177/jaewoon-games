@@ -8061,8 +8061,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "좀비 생존기. 서사시의 추방과 귀환·민속 금기와 전염 생존. 좀비 생존기에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환과 제작과 방어 거점 관리 × 민속 금기와 전염이 서로 결과를 되돌려 바꾸며 생존·호러의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
+      "classification": "REGRESSION",
+      "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged",
       "runtimeObserved": false
     },
     "baseline": {
@@ -8081,8 +8081,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",

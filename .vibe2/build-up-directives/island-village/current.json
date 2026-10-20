@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "island-village-build-up-g3-c74179c5e088",
-  "directiveFingerprint": "c74179c5e0889223a70a1efee38122735e54915a249660573c1eec81a1124ad0",
+  "directiveId": "island-village-build-up-g3-05898f2bc244",
+  "directiveFingerprint": "05898f2bc244d35092dd05893804dea4aaf27f7cdf2bc461b146cacf48e44ade",
   "previousDirectiveFingerprint": "1381a60993bf3d4a28fb92447f8f2d858677d5ff25ede9cd9a875fd0a1167bd1",
   "forbiddenRepeatFingerprint": "1381a60993bf3d4a28fb92447f8f2d858677d5ff25ede9cd9a875fd0a1167bd1",
   "gameId": "island-village",
@@ -4945,10 +4945,10 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+    "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+    "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
     "blockers": [
-      "roblox-build-package-pending"
+      "roblox-build-preflight-blocked"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -8058,8 +8058,8 @@
       "sourceTreeFingerprint": "aa384d4a67f779b7171c3911927bd7ea9916b444c0907743a3f14ca676a2dfff",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING"
+      "failureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "failureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8176,5 +8176,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-20T05:33:50.241Z"
+  "generatedAt": "2026-10-20T06:35:47.916Z"
 }

@@ -12823,8 +12823,8 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "체스 배틀. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 체스 배틀에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "REGRESSION",
+      "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged",
       "runtimeObserved": false
     },
     "baseline": {
@@ -12843,8 +12843,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial USABILITY build-up has no previous generation effect to compare"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source package asset binding failure requires game-side source repair; internal assets must remain unchanged"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
