@@ -544,6 +544,7 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
     const active=['queued','running'].includes(clean(task.status).toLowerCase());
     const existing=[...new Set((task.responsibleFiles||[]).map(clean).filter(Boolean))].sort();
     return active&&task.ownerDirective!==true&&clean(task.gameId)===clean(taskInput.gameId)
+      &&clean(task.sourceRoot)===clean(taskInput.sourceRoot)
       &&clean(task.target).toLowerCase()===clean(taskInput.target).toLowerCase()
       &&clean(task.department).toLowerCase()===clean(taskInput.department||'development').toLowerCase()
       &&clean(task.type).toLowerCase()===clean(taskInput.type||'implementation').toLowerCase()
