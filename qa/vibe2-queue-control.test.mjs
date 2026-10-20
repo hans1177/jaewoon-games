@@ -10,6 +10,7 @@ import {execFileSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {
   synchronizeOwnerDevelopmentHolds,
+  webSourceRetiredInCatalog,
   completeOwnerExclusiveGameScope,
   enqueueVibeTask,
   reserveNextVibeTask,
@@ -38,6 +39,49 @@ import {
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 
 const continuousWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+
+test('retired Web source cannot reserve legacy assessment work, while native and approved Web lanes remain open',()=>{
+  const retired={id:'bug-defense',canonical:{sources:{web:{state:'PERMANENTLY_REMOVED_REJECTED_TEST'}}}};
+  const retired2={id:'seed-single-defense-strat-celestial-bastion',canonical:{sources:{web:{state:'PERMANENTLY_REMOVED_REJECTED_TEST'}}}};
+  const active={id:'fantasy-survival',canonical:{sources:{web:{state:'ACTIVE'}}}};
+  assert.equal(webSourceRetiredInCatalog(retired),true);
+  assert.equal(webSourceRetiredInCatalog(retired2),true);
+  assert.equal(webSourceRetiredInCatalog(active),false);
+  assert.equal(webSourceRetiredInCatalog(undefined),false);
+  const make=(id,gameId,target,root)=>({
+    id,gameId,target,sourceRoot:root,status:'queued',department:'development',
+    type:'implementation',priority:'high',goal:'continue actual game work',
+    responsibleFiles:[root+'/index.html'],evidence:[]
+  });
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    make('retired-web','bug-defense','web','web-games/bug-defense'),
+    make('retired-web-2','seed-single-defense-strat-celestial-bastion','web','web-games/seed-single-defense-strat-celestial-bastion'),
+    make('native-roblox','bug-defense','roblox','roblox-games/bug-defense'),
+    make('playable-web','fantasy-survival','web','web-games/fantasy-survival'),
+    make('approved-bootstrap','new-web-game','web','web-games/new-web-game')
+  ]});
+  const held=synchronizeOwnerDevelopmentHolds(queue,{},{
+    catalog:{games:[retired,retired2,active,{id:'new-web-game',canonical:{sources:{web:{state:'NEEDS_BOOTSTRAP'}}}}]}
+  });
+  const status=new Map(held.tasks.map(t=>[t.id,t]));
+  for(const id of ['retired-web','retired-web-2']){
+    assert.equal(status.get(id).ownerDevelopmentHold,true);
+    assert.equal(status.get(id).webSourceUnavailableHold,true);
+    assert.equal(status.get(id).status,'queued','retired source must not be treated as QA PASS or deleted');
+  }
+  for(const id of ['native-roblox','playable-web','approved-bootstrap'])
+    assert.equal(status.get(id).ownerDevelopmentHold,false,id+' must remain schedulable');
+  const selected=selectVibeQueueBatch(held,{maxConcurrentTasks:4});
+  assert.ok(selected.selected.every(t=>!['retired-web','retired-web-2'].includes(t.id)));
+  // Canonical state restoration reverses only the source retirement hold.
+  const restored=synchronizeOwnerDevelopmentHolds(held,{},{
+    catalog:{games:[{...retired,canonical:{sources:{web:{state:'ACTIVE'}}}},retired2,active]}
+  });
+  assert.equal(restored.tasks.find(t=>t.id==='retired-web').ownerDevelopmentHold,false);
+  assert.equal(restored.tasks.find(t=>t.id==='retired-web').webSourceUnavailableHold,false);
+});
+
+
 
  
 test('free AI quota exhaustion waits for provider retry window without using game retry budget',()=>{
