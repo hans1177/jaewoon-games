@@ -249,11 +249,20 @@ export function ownerFirstRunnerAllocation(queue={},{
       ||(!clean(t.executionLane)&&clean(t.department).toLowerCase()==='development')));
   const total=clamp(Math.floor(num(totalSlots)||20),1,20);
   const reserved=clamp(Math.floor(num(ownerReservedSlots)||0),0,total-1);
-  const automatic=lane==='game-primary'&&!ownerReady;
-  const ceiling=automatic?total-reserved:total;
+  const automatedLanes=new Set(['game-primary','asset-development','learning-idle']);
+  const automatic=automatedLanes.has(lane)&&!(lane==='game-primary'&&ownerReady);
+  // Shared queue contains running work from ALL Vibe lanes. Prevent independent
+  // auto game and asset batches from each claiming the same 12 physical slots.
+  const otherLanesActive=tasks.filter(t=>{
+    if(clean(t.status).toLowerCase()!=='running')return false;
+    if(/candidate-awaiting|awaiting.*qa|slot-released|quota|external.*wait/i.test(clean(t.blocker)))return false;
+    return clean(t.executionLane).toLowerCase().replaceAll('_','-')!==lane;
+  }).length;
+  const laneCeiling=(automatic?total-reserved:total)-otherLanesActive;
+  const ceiling=Math.max(1,laneCeiling);
   return Object.freeze({
     ownerReady,automatic,totalSlots:total,ownerReservedSlots:reserved,
-    concurrentCeiling:Math.min(requested,ceiling),
+    otherLanesActive,concurrentCeiling:Math.min(requested,ceiling),
     reason:automatic?'AUTOMATIC_KEEP_OWNER_RUNNER_HEADROOM':'OWNER_DIRECT_OR_NON_PRIMARY_PRIORITY'
   });
 }
