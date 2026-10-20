@@ -17,7 +17,7 @@ const stage=new Function('fs','path','crypto','cp','assetBlobs','refs','site','B
 const gitHash=bytes=>crypto.createHash('sha1')
   .update(Buffer.from('blob '+bytes.length+'\0')).update(bytes).digest('hex');
 
-function fixture({originals,cache={},oversized=null}){
+function fixture({originals,cache={},oversized=null,lfs=[]}){
  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-pages-assets-'));
  const base=process.cwd(),calls=[];
  try{
@@ -28,9 +28,24 @@ function fixture({originals,cache={},oversized=null}){
    fs.writeFileSync(file,'');fs.truncateSync(file,101*1024*1024);
   }
   const refs=new Set(Object.keys(originals).map(name=>'assets/'+name));
-  const blobs=new Map(Object.entries(originals).map(([name,bytes])=>['assets/'+name,gitHash(bytes)]));
+  const blobContents=new Map();
+  const blobs=new Map(Object.entries(originals).map(([name,bytes])=>{
+   const gitData=lfs.includes(name)
+    ?Buffer.from('version https://git-lfs.github.com/spec/v1\noid sha256:'
+      +crypto.createHash('sha256').update(bytes).digest('hex')+'\nsize '+bytes.length+'\n')
+    :bytes;
+   const id=gitHash(gitData);
+   blobContents.set(id,gitData);
+   return ['assets/'+name,id];
+  }));
   const cp={execFileSync(command,args){
    assert.equal(command,'git');
+   if(args[0]==='cat-file'){
+    const bytes=blobContents.get(args[2]);assert.ok(bytes,'Git pointer blob must exist');
+    if(args[1]==='-s')return String(bytes.length)+'\n';
+    if(args[1]==='blob')return bytes.toString('utf8');
+    throw Error('UNEXPECTED_CAT_FILE:'+args[1]);
+   }
    assert.equal(args[0],'restore');
    assert.ok(args.includes('--ignore-skip-worktree-bits'));
    calls.push(args.slice(args.indexOf('--')+1));
@@ -66,6 +81,21 @@ test('corrupt and missing cached files are rehydrated and verified against exact
  assert.deepEqual(f.published['assets/corrupt.obj'],good);
  assert.deepEqual(f.published['assets/missing.fbx'],good);
 });
+test('real Git LFS binary is verified using pointer SHA-256 and size without needless re-download',()=>{
+ const b=Buffer.concat([Buffer.from('BLENDER original 3D source'),Buffer.alloc(1024*1024,23)]);
+ const f=fixture({originals:{'bee-rigged.blend':b},cache:{'bee-rigged.blend':b},lfs:['bee-rigged.blend']});
+ assert.deepEqual(f.result.missingAssets,[]);
+ assert.equal(f.calls.length,0);
+ assert.deepEqual(f.published['assets/bee-rigged.blend'],b);
+});
+test('cached Git LFS pointer or corrupted binary gets restored to real bytes before publication',()=>{
+ const real=Buffer.from('downloaded verified actual audio');
+ const ptr=Buffer.from('version https://git-lfs.github.com/spec/v1\noid sha256:'
+    +crypto.createHash('sha256').update(real).digest('hex')+'\nsize '+real.length+'\n');
+ const f=fixture({originals:{'impact.ogg':real},cache:{'impact.ogg':ptr},lfs:['impact.ogg']});
+ assert.deepEqual(f.result.missingAssets,['assets/impact.ogg']);
+ assert.deepEqual(f.published['assets/impact.ogg'],real);
+});
 test('Git LFS pointers and oversized files still fail closed',()=>{
  const pointer=Buffer.from('version https://git-lfs.github.com/spec/v1\noid sha256:deadbeef\n');
  assert.throws(()=>fixture({originals:{'not-real.glb':pointer},cache:{'not-real.glb':pointer}}),
@@ -76,6 +106,9 @@ test('Git LFS pointers and oversized files still fail closed',()=>{
 test('duplicate full-memory reads and duplicate SHA passes cannot return',()=>{
  assert.match(source,/Buffer\.allocUnsafe\(1024\*1024\)/);
  assert.match(source,/fs\.readSync\(fd,ioBuffer/);
+ assert.match(source,/getLfsEvidence/);
+ assert.match(source,/createHash\('sha256'\)/);
+ assert.match(source,/GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
  assert.match(source,/fs\.copyFileSync\(asset,target,fs\.constants\.COPYFILE_FICLONE\)/);
  assert.doesNotMatch(source,/fs\.readFileSync\(asset\)/);
  assert.doesNotMatch(source,/fs\.writeFileSync\(target,source\)/);
