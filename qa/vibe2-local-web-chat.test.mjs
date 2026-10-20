@@ -206,7 +206,7 @@ test('remote owner receipt calls only local Ollama, preserves original instructi
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('local receiver bypasses hosted runner admission while preserving owner-only routing and existing bridge gating',()=>{
+test('local receiver authenticates owner while direct cloud game work never waits for advisory',()=>{
   const workflow=fs.readFileSync(path.join(ROOT,'.github/workflows/pwa-command-bridge.yml'),'utf8');
   const local=workflow.slice(workflow.indexOf('  local-advisory:'),workflow.indexOf('  bridge:'));
   assert.doesNotMatch(local,/needs:|runs-on: ubuntu/);
@@ -227,7 +227,10 @@ test('local receiver bypasses hosted runner admission while preserving owner-onl
     const rejected=structuredClone(github);change(rejected);assert.equal(check(rejected),false);
   }
   const bridge=workflow.slice(workflow.indexOf('  bridge:'));
-  assert.match(bridge,/needs: local-advisory/);
-  assert.match(bridge,/github.event_name != 'issue_comment' \|\| needs.local-advisory.result == 'success'/);
-  assert.match(bridge,/always\(\) && !cancelled\(\)/);
+  assert.doesNotMatch(bridge,/needs: local-advisory|needs\\.local-advisory/);
+  assert.match(bridge,/github.event_name != 'issue_comment'/);
+  assert.match(bridge,/github.event.comment.author_association == 'OWNER'/);
+  assert.match(bridge,/github.event.comment.user.type == 'User'/);
+  assert.match(bridge,/validateLocalWebOwnerEvent/);
+  assert.match(bridge,/gh workflow run vibe2-continuous-core\\.yml/);
 });
