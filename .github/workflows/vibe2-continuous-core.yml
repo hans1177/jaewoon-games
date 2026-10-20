@@ -455,6 +455,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '128'
+          # The owner's direct game tasks borrow all 20 logical slots; unattended
+          # automatic batches retain eight slots of headroom for owner/QA/release.
+          # The final actual hosted capacity is still enforced by GitHub Actions.
+          VIBE2_AUTONOMOUS_OWNER_RUNNER_PRIORITY: '1'
+          VIBE2_HOSTED_RUNNER_LIMIT: '20'
+          VIBE2_OWNER_RESERVED_SLOTS: '8'
         shell: bash
         run: |
           set -euo pipefail
