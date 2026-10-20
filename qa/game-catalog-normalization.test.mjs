@@ -39,6 +39,21 @@ for(const [index,game] of catalog.games.entries()){
   assert.equal(c.homepage.category,game.homepageCategory);
 }
 
+// 오너 지시: 두 게임의 개발은 중지하고 홈페이지 카드는 내리되 원본과 저장은 보존한다.
+for(const id of ['ant-simulator','crystal-defense']){
+  const game=catalog.games.find(row=>row.id===id);
+  assert.ok(game,'원본 게임 등록은 유지: '+id);
+  assert.equal(game.lifecycleState,'PAUSED');
+  assert.equal(game.canonical.lifecycle.state,'PAUSED');
+  assert.equal(game.featured,false);
+  assert.equal(game.canonical.homepage.featured,false);
+  assert.equal(game.canonical.sources.web.archive,true);
+  assert.equal(game.canonical.lifecycle.reason,'OWNER_DIRECT_DEVELOPMENT_STOP_2026-10-20');
+}
+assert.match(homepage,/const activeLifecycle=row=>/);
+assert.match(homepage,/\['ACTIVE','REBUILD'\]\.includes\(String\(lifecycleOf\(row\)\.state/);
+assert.match(sync,/export function lifecycleAllowsDevelopment\(game=\{\}\)/);
+
 const permanentlyRemoved=[
   'seed-roblox-battleground-fight-welcome-to-bloxburg',
   'seed-roblox-obby-party-minigam-tower-of-hell'
