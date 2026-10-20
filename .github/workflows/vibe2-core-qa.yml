@@ -328,6 +328,8 @@ jobs:
           set -euo pipefail
           node qa/external-mobile-free-game-playtest-workflow.test.mjs
           node --test qa/jaewoon-motion-engine.test.cjs
+          # New independent ocean game: real CC0 GLB, game logic, saves, mobile entry contract
+          node --test qa/ocean-voyage.test.mjs
           node --check assets/vibe-engine-adapter.js
           node --check assets/vibe-workbench.js
           node --check assets/vibe-core-runtime.js

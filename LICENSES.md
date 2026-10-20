@@ -280,3 +280,20 @@
 - Source: https://github.com/mrdoob/three
 - Included modules and license: `assets/roblox/world-ghosts/native/mesh/three/`.
 - The bride mesh, skin weights, animations and silk texture are original project artwork; no external character models are included.
+
+### Kenney Pirate Kit — Ocean Voyage (CC0)
+
+이름: Kenney Pirate Kit (converted GLB, embedded textures)
+종류: 3D 선박 / 항구 / 환경 / 대포
+제작자: Kenney; GLB 변환: Hidencod/Tiny Game Engine
+출처 사이트: Kenney, GitHub
+원본 페이지: https://kenney.nl/assets/pirate-kit
+재배포 저장소: https://github.com/Hidencod/tge-assets/tree/main/packs/pirate-kit
+라이선스 원문: https://github.com/Hidencod/tge-assets/blob/main/LICENSE
+라이선스: CC0-1.0
+상업적 사용: 가능
+저작자 표시: 불필요 (제작자 존중 표기)
+수정 여부: 원본 GLB를 수정 없이 보존
+다운로드/라이선스 확인 날짜: 2026-10-20
+사용 위치 또는 게임: web-games/ocean-voyage/assets (11개 모델)
+비고: 선박·항구·대포 모델은 원본 Kenney 3D 모델로, GLB 텍스처 내장판을 사용. 웹 렌더링·모바일·배포 검증은 별도 증거 필요.
