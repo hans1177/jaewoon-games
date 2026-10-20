@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 import {MTLLoader} from 'three/addons/loaders/MTLLoader.js';
+import {clone as cloneSkeleton} from 'three/addons/utils/SkeletonUtils.js';
 
 const SCALE=72;
 const ORIGINAL_ASSETS=Object.freeze({
@@ -14,14 +15,16 @@ const ORIGINAL_ASSETS=Object.freeze({
   berry:{model:'../../assets/shared/homely-house/foliage_B.obj',mtl:'../../assets/shared/homely-house/foliage_B.mtl',height:1.18},
   rock:{model:'../../assets/roblox/survival-core-world-v1/rock_medium.obj',mtl:'../../assets/roblox/survival-core-world-v1/survival-core-world.mtl',height:1.06},
   boar:{model:'../../assets/roblox/monster-adventure-v1/boar.obj',mtl:'../../assets/roblox/monster-adventure-v1/monster-adventure.mtl',height:1.7},
+  rabbit:{model:'../../assets/shared/wild-forest/animal-bunny.glb',kind:'glb',height:0.8},
+  deer:{model:'../../assets/shared/wild-forest/animal-deer.glb',kind:'glb',height:1.9},
   roof:{model:'../../assets/roblox/survival-core-world-v1/roof_gable.obj',mtl:'../../assets/roblox/survival-core-world-v1/survival-core-world.mtl',height:1.4},
   wall:{model:'../../assets/roblox/survival-core-world-v1/wall_solid.obj',mtl:'../../assets/roblox/survival-core-world-v1/survival-core-world.mtl',height:2.2},
   foundation:{model:'../../assets/roblox/survival-core-world-v1/foundation_rect.obj',mtl:'../../assets/roblox/survival-core-world-v1/survival-core-world.mtl',height:.38},
   lamp:{model:'../../assets/roblox/survival-core-world-v1/lamp.obj',mtl:'../../assets/roblox/survival-core-world-v1/survival-core-world.mtl',height:1.3}
 });
-// Not present in the canonical company asset library: do not invent a quadruped or
-// disguise another species as rabbit or deer. This remains a release blocker.
-export const MISSING_SPECIES_ORIGINALS=Object.freeze(['rabbit','deer']);
+// Archived, species-correct Kenney Cube Pets 2.0 GLB sources; verified source SHA in asset-license-ledger.
+// Static QA alone is not runtime certification; the loader fails closed on missing originals.
+export const MISSING_SPECIES_ORIGINALS=Object.freeze([]);
 
 function url(relative){return new URL(relative,import.meta.url);}
 function normalizedAsset(scene,height){
@@ -63,14 +66,17 @@ async function loadOriginalSet(){
         loader.setMaterials(palette);
         scene=await loader.loadAsync(url(source.model).href);
       }
-      models.set(id,normalizedAsset(scene,source.height));
+      const nativeModel=normalizedAsset(scene,source.height);
+      if(source.kind==='glb')nativeModel.userData.nativeSkinned=true;
+      models.set(id,nativeModel);
     }catch(error){errors.push({id,reason:String(error?.message||error)});}
   }));
   return {models,errors,clips};
 }
 function originalClone(source){
-  // Only static OBJ assets are duplicated; the skinned GLB is used once as the player.
-  return source?.clone(true)||null;
+  // FBX/GLB creature rigs require bone remapping; ordinary clone breaks skinned motion.
+  if(!source)return null;
+  return source.userData.nativeSkinned?cloneSkeleton(source):source.clone(true);
 }
 function attachModel(parent,model,x,z){
   const instance=originalClone(model);
@@ -167,9 +173,17 @@ export function createWild3D({canvas,WORLD,resources,animals}){
       return instance;
     });
     creatures=animals.map(a=>{
-      // The exact authored boar model is available; rabbit/deer remain unbound.
-      const model=a.type==='boar'?models.get('boar'):null;
-      return model?attachModel(world,model,a.x,a.y):null;
+      // Bind a model of the animal's actual species; all gameplay state remains in animals[].
+      const model=models.get(a.type);
+      const instance=model?attachModel(world,model,a.x,a.y):null;
+      const actions=result.clips.get(a.type)||[];
+      if(instance&&actions.length){
+        instance.userData.motionClips=actions;
+        instance.userData.motionMixer=new THREE.AnimationMixer(instance);
+        instance.userData.motionName='';
+        instance.userData.motionAction=null;
+      }
+      return instance;
     });
     hero=models.get('player');
     hero.position.set(0,0,0);world.add(hero);
@@ -212,6 +226,22 @@ export function createWild3D({canvas,WORLD,resources,animals}){
       o.position.set(a.x/SCALE,0,a.y/SCALE);
       if(Math.hypot(a.vx||0,a.vy||0)>.05)o.rotation.y=Math.atan2(-(a.vx||0),-(a.vy||0));
       o.position.y=o.visible?Math.sin(now*.005+i)*.025:0;
+      if(o.visible&&o.userData.motionMixer){
+        const clips=o.userData.motionClips;
+        const moving=S.started&&Math.hypot(a.vx||0,a.vy||0)>.05;
+        const next=(moving?clips.find(c=>/walk|run/i.test(c.name)):
+          clips.find(c=>/idle/i.test(c.name)))||clips[0];
+        if(next&&next.name!==o.userData.motionName){
+          const action=o.userData.motionMixer.clipAction(next);
+          action.reset().play();
+          if(o.userData.motionAction&&o.userData.motionAction!==action)
+            o.userData.motionAction.fadeOut(.18);
+          action.fadeIn(.18);
+          o.userData.motionAction=action;
+          o.userData.motionName=next.name;
+        }
+        o.userData.motionMixer.update(Math.min(.05,Math.max(.001,(now-last)/1000)));
+      }
     });
     hero.position.set(p.x/SCALE,0,p.y/SCALE);
     hero.rotation.y=Math.atan2(-p.faceX,-p.faceY);

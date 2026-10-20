@@ -123,6 +123,42 @@
         "nativeRuntimeVerification": "PENDING",
         "publicReleaseClaimed": false
       }
+    },
+    {
+      "id": "kenney-cube-pets-2-wild-forest",
+      "source": "Kenney Cube Pets (2.0)",
+      "sourceUrl": "https://kenney.nl/assets/cube-pets",
+      "creator": "Kenney",
+      "license": "CC0-1.0",
+      "commercialUse": true,
+      "modificationUse": true,
+      "attribution": "Optional: www.kenney.nl",
+      "verifiedAt": "2026-10-20",
+      "targetGame": "wild-survival",
+      "purpose": "Exact species rabbit and deer animated original 3D GLB and bundled colormap for Wild Forest",
+      "modified": false,
+      "evidence": {
+        "licenseUrl": "https://kenney.nl/assets/cube-pets",
+        "archivedLicenseUrl": "https://github.com/SixOfFive/DesktopPet/blob/4eeb333e1866f52163af1ea2f9c02d499141ddce/kenney_cube-pets_1.0/License.txt",
+        "copySourceRepo": "SixOfFive/DesktopPet",
+        "sourceCommit": "4eeb333e1866f52163af1ea2f9c02d499141ddce",
+        "copySourceBase": "kenney_cube-pets_1.0/Models/GLB format",
+        "sourceBlobSha": {
+          "rabbit": "e0cc86cb2963b08ddaa7eca094d1ad2b17a670ef",
+          "deer": "e06485dc52a7fc0aff532d0c9066cd13c36ecf9b",
+          "colormap": "cb9f831ac40f47e1474b09d5f202de422dc6ccbf"
+        },
+        "storedPaths": [
+          "assets/shared/wild-forest/animal-bunny.glb",
+          "assets/shared/wild-forest/animal-deer.glb",
+          "assets/shared/wild-forest/Textures/colormap.png"
+        ],
+        "integrity": "BYTE_FOR_BYTE_GIT_BLOB_SHA1_MATCH_TO_PINNED_SOURCE",
+        "externalMirrorOrigin": "Pinned CC0 archive mirror of Kenney release; separate from existing older cube-pets.zip",
+        "upstreamArchiveByteEquality": "UNVERIFIED",
+        "nativeRuntimeVerification": "PENDING",
+        "publicReleaseClaimed": false
+      }
     }
   ]
 }
