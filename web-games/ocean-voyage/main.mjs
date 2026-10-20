@@ -36,6 +36,7 @@ function summary(){
 }
 function gotoPanel(name){
  active=active===name?'':name;
+ if(typeof switchMusicScene==='function')switchMusicScene(['port','market','crew','fleet','quests'].includes(active)?'harbor':'sea');
  view.details.classList.toggle('open',!!active);
  document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.panel===active));
  if(active)renderPanel();
@@ -140,7 +141,7 @@ function apply(result){
 }
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>gotoPanel(b.dataset.panel)));
 $('close').addEventListener('click',()=>gotoPanel(active));
-$('dock').addEventListener('click',()=>{if(canDock(state)){active='port';view.details.classList.add('open');renderPanel();note(canDock(state).name+'에 입항했어.');}});
+$('dock').addEventListener('click',()=>{if(canDock(state)){active='port';view.details.classList.add('open');renderPanel();switchMusicScene('harbor');note(canDock(state).name+'에 입항했어.');}});
 $('fire').addEventListener('click',()=>apply(fireCannons(state)));
 view.body.addEventListener('click',e=>{
  const b=e.target.closest('[data-route],[data-trade],[data-upgrade],[data-action],[data-recruit],[data-panel-open]');
@@ -193,6 +194,14 @@ joystick.addEventListener('pointermove',e=>{if(pointer===e.pointerId){e.preventD
 for(const k of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(k,()=>{pointer=null;resetStick();});
 const music=$('sea-music'),musicToggle=$('music-toggle');
 music.volume=.27;
+const cc0Tracks={sea:'https://opengameart.org/sites/default/files/pirate_ship_in_game.ogg',harbor:'https://opengameart.org/sites/default/files/crowded_pub_2025.ogg'};
+let currentMusicScene='sea';
+function switchMusicScene(scene){
+ if(!cc0Tracks[scene]||currentMusicScene===scene)return;
+ const wasPlaying=!music.paused;
+ currentMusicScene=scene;music.src=cc0Tracks[scene];music.load();
+ if(wasPlaying)music.play().catch(()=>note('CC0 배경음악 로딩 실패'));
+}
 musicToggle.addEventListener('click',async()=>{
  if(music.paused){try{await music.play();musicToggle.innerHTML='<b>♫</b>켜짐';}catch{note('CC0 항해 음악을 불러올 수 없어. 네트워크를 확인해.');}}
  else{music.pause();musicToggle.innerHTML='<b>♫</b>음악';}
