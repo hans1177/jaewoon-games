@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-4ptllp",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-existing-web-assessment-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "web-games/monster-adventure/index.html"
+      ],
+      "baseSha": "b34fd1ba5240b8036d62a65e53d39698e7243bac",
+      "runId": "39379726158",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-20T06:57:39.295Z",
+      "expiresAt": "2026-10-20T07:42:39.295Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
