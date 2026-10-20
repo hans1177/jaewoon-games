@@ -78,6 +78,8 @@ test('manual merge requires impact-scoped current-head QA, security enforce, and
   assert.equal(requiredReviewPass(runs,checks,'b'.repeat(40)).pass,false);
   assert.equal(requiredReviewPass(runs,[],sha).pass,false);
   assert.equal(requiredReviewPass(runs.filter(r=>r.name!=='Vibe2 Core QA'),checks,sha).pass,false);
+  assert.equal(requiredReviewPass(runs,checks.concat({name:'Workers Builds: jaewoon-multiplayer',
+    status:'completed',conclusion:'failure',app:{slug:'cloudflare-workers-and-pages'}}),sha).pass,true);
   assert.equal(requiredReviewPass(runs,checks.concat({name:'Cloudflare Pages',
     status:'completed',conclusion:'failure',app:{slug:'cloudflare-workers-and-pages'}}),sha).pass,false);
 });
