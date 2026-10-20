@@ -42,7 +42,7 @@ function openScreen(name){
  document.body.classList.toggle('screen-open',opened);
  document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.panel===active));
  if(opened)renderPanel();
- switchMusicScene(opened&&canDock(state)&&['port','market','palace','crew','fleet','quests'].includes(active)?'harbor':'sea');
+ switchMusicScene(opened&&canDock(state)?'harbor':'sea');
 }
 function gotoPanel(name){openScreen(active===name?'':name);}
 function backScreen(){openScreen(active==='port'?'':canDock(state)?'port':'');}
