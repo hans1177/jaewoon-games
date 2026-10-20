@@ -83,5 +83,5 @@ test('explicit web directive is restricted to WEB even when Unity project exists
     queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root
   });
   assert.equal(result.tasks[0].target,'web');
-  assert.equal(result.tasks[0].sourceRoot,'web-games/daechung-rpg');
+  assert.ok(result.tasks[0].evidence.includes('source-root:web-games/daechung-rpg'));
 });
