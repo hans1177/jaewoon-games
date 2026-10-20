@@ -59,7 +59,7 @@ local Config = {
       MOTION = { "IDLE_RELAXED", "WALK", "JOG", "RUN", "START", "STOP", "TURN_90", "JUMP_START", "LAND", "HIT_FRONT", "DEATH_FRONT", "STRAFE_L", "STRAFE_R", "BACKSTEP", "TURN_45", "TURN_180", "JUMP_AIR", "DODGE_L", "DODGE_R", "ATTACK_LIGHT_1", "ATTACK_LIGHT_2", "ATTACK_LIGHT_3", "ATTACK_HEAVY", "BLOCK", "PARRY", "HIT_BACK", "HIT_LEFT", "HIT_RIGHT", "KNOCKDOWN", "GETUP", "DEATH_SIDE", "DEATH_BACK", "CAST_PREPARE", "CAST_RELEASE", "RECOVERY", "TAUNT", "LOOK_AROUND", "IDLE_ALERT", "SPRINT" },
     },
     MotionQuality = {
-      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+      Contract = "tools/company-development-roblox-bootstrap.mjs#motionQuality",
       LibraryFirst = true,
       ArticulatedRigRequired = true,
       AnimatorRequired = true,
