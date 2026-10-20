@@ -117,9 +117,9 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
       subgenre:platform==='ROBLOX'?robloxSubgenre:'',
       playMode,
       playModeLabel:playModeLabel(playMode),
-      latestWork:homepageLatestWork(game,queue),
+      latestWork:lifecycleAllowsDevelopment(game)?homepageLatestWork(game,queue):'개발 중지 · 오너 지시',
       updatedAt:queue?.updatedAt||queue?.webValidationLastAttemptAt||seed?.ROBLOX_GENRE_REVIEWED_AT||seed?.updatedAt||catalog.updatedAt||null,
-      status:clean(queue?.canonicalState||queue?.status||seed?.status||game?.lifecycleState)||'ACTIVE',
+      status:lifecycleAllowsDevelopment(game)?clean(queue?.canonicalState||queue?.status||seed?.status||game?.lifecycleState)||'ACTIVE':gameLifecycleState(game),
       productionClass:clean(game?.productionClass||'DESIGN_ONLY').toUpperCase()
     };
   }
