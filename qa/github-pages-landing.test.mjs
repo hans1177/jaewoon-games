@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {buildPagesLanding} from '../tools/github-pages-landing.mjs';
+import {buildPagesLanding,isSafePagesRemovalAsset} from '../tools/github-pages-landing.mjs';
 
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
 const manifest=JSON.parse(fs.readFileSync('_site/web-games/publish-manifest.json','utf8'));
@@ -54,15 +54,34 @@ test('OWNER LOCK: Director tests published game routes and files issues without 
   assert.doesNotMatch(workflow,/gh issue create[\s\S]*uses: actions\/deploy-pages@v4/,'issue filing cannot be a precondition for publication');
 });
 
-test('published asset manifest contains actual game assets, never unservable hidden Git metadata',()=>{
+test('published asset manifest excludes owner-retired assets while retaining live source files',()=>{
   assert.ok(Array.isArray(manifest.sharedAssets)&&manifest.sharedAssets.length>0);
   assert.ok(manifest.sharedAssets.every(asset=>asset.startsWith('assets/')
     &&!asset.split('/').some(segment=>segment.startsWith('.'))),
     'Git hidden dotfiles must not be advertised as live HTTP assets');
-  for(const required of ['assets/shared/humanoid-traveler.glb','assets/vibe-model-preview.html']){
-    assert.ok(manifest.sharedAssets.includes(required),required+' must remain published');
-    assert.ok(fs.existsSync('_site/'+required),required+' must be staged');
+  const retired=catalog.permanentRemovalPolicy?.removedAssetFiles||[];
+  for(const asset of retired){
+    assert.ok(isSafePagesRemovalAsset(asset),'owner-retired path must remain safely bounded: '+asset);
+    assert.ok(!manifest.sharedAssets.includes(asset),'removed asset must not be advertised as live: '+asset);
+    assert.ok(!fs.existsSync('_site/'+asset),'removed asset must not remain staged: '+asset);
   }
+  const required='assets/homepage-enhancements.js';
+  assert.ok(manifest.sharedAssets.includes(required),'retained homepage runtime must be advertised');
+  assert.ok(fs.existsSync('_site/'+required),'retained homepage runtime must be staged');
+});
+
+test('asset removal path guard permits exact owner nested paths, never traversal or executable paths',()=>{
+  for(const valid of [
+    'assets/homepage-covers/ant-simulator.webp',
+    'assets/roblox/horror-lore-v1/README.md',
+    'assets/roblox/monster-adventure-v1/hornbull.obj',
+    'assets/shared/humanoid-traveler.glb'
+  ])assert.equal(isSafePagesRemovalAsset(valid),true,valid);
+  for(const invalid of [
+    '../assets/shared/creature-wolf.glb','assets/../company-status.json',
+    'assets/roblox/../../index.html','assets/.git/config','assets//shared/model.glb',
+    'assets/shared/evil.sh','web-games/survival/index.html','assets/shared/forest/../../foo.glb'
+  ])assert.equal(isSafePagesRemovalAsset(invalid),false,invalid);
 });
 
 test('GitHub Pages publishes the exact existing homepage markup, not a Cloudflare redirect',()=>{

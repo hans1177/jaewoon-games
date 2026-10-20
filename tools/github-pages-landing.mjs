@@ -7,6 +7,12 @@ import {pathToFileURL} from 'node:url';
 const OFFICIAL_HOME='https://hans1177.github.io/jaewoon-games/';
 const PAGES_ROOT='/jaewoon-games/';
 const validId=id=>/^[a-z0-9][a-z0-9-]*$/.test(String(id||''));
+//
+// The owner removal manifest contains retired nested Roblox source libraries and
+// shared GLBs, not just homepage covers. Accept only file names below assets/
+// with explicit extensions, and never allow dot-segments or path traversal.
+export const isSafePagesRemovalAsset=relative=>
+  /^assets\/(?:[a-z0-9][a-z0-9-]*\/)*[A-Za-z0-9_-]+\.(?:webp|png|svg|json|md|obj|mtl|glb)$/.test(String(relative||''));
 
 // canonical 게임 경로 검증은 유지하고, 하나의 기존 메인 HTML을 그대로 게시한다.
 export function buildPagesLanding({catalog,manifest,exposure}){
@@ -63,7 +69,7 @@ export function writePagesLanding({site='_site',catalogPath='game-catalog.json',
     fs.rmSync(path.join(site,relative),{recursive:true,force:true});
   }
   for(const relative of removedFiles){
-    if(!/^assets\/(?:homepage-covers\/)?[a-z0-9_-]+\.(?:webp|png|svg)$/.test(relative))throw Error('PAGES_REMOVAL_ASSET_PATH_INVALID');
+    if(!isSafePagesRemovalAsset(relative))throw Error('PAGES_REMOVAL_ASSET_PATH_INVALID');
     if(fs.existsSync(path.join(site,relative)))deletedPaths.push(relative);
     fs.rmSync(path.join(site,relative),{force:true});
   }
