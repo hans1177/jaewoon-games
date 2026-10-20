@@ -269,6 +269,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          # Exact validated release handoff resumes only its own game, never a 64-game batch.
+          [[ "$GAME_ID" =~ ^[a-z0-9][a-z0-9-]{1,80}$ ]] || { echo 'ROBLOX_HANDOFF_GAME_ID_INVALID' >&2; exit 14; }
+          gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
           echo "ROBLOX_CANONICAL_RUNTIME_DISPATCHED_GAME_ID=$GAME_ID"
           echo 'ROBLOX_CANONICAL_PACKAGE_QA_FINAL_REVIEW_RELEASE_CHAIN=DISPATCHED'

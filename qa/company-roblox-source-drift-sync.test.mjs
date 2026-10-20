@@ -441,3 +441,15 @@ test('Roblox source sync preserves both triggers without pending cross-cancellat
   assert.ok(workflow.includes('group: roblox-source-drift-runtime-writer-v2\n  queue: max\n  cancel-in-progress: false'));
   assert.ok(workflow.includes('cancel-in-progress: false'));
 });
+
+test('multi-game source drift dispatches only exact changed games and excludes permanently removed ids',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  const step=workflow.slice(workflow.indexOf('      - name: Dispatch canonical Roblox runtime for fresh build'));
+  assert.ok(step.includes('policy.permanentProjectRemoval?.ids'));
+  assert.ok(step.includes('!removed.has(id)'));
+  assert.ok(step.includes('for(const id of eligible)console.log(id)'));
+  assert.ok(step.includes('for game_id in "${passed_ids[@]}"'));
+  assert.ok(step.includes('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"'));
+  assert.ok(!step.includes('ROBLOX_CANONICAL_RUNTIME_REDISPATCH=BATCH'));
+  assert.ok(step.includes('ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT_COUNT:'));
+});

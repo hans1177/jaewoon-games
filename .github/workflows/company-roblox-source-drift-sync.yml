@@ -274,15 +274,32 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t passed_ids < <(node -e "const r=require('/tmp/roblox-source-drift-results.json');for(const x of r.filter(x=>x.pass===true))console.log(x.gameId)")
+          # A change to 2+ games must not launch an unrelated all-games source batch.
+          # Apply the owner removal policy before any workflow request is submitted.
+          node <<'NODE' > /tmp/roblox-drift-eligible-game-ids.txt
+          const fs=require('fs');
+          const results=JSON.parse(fs.readFileSync('/tmp/roblox-source-drift-results.json','utf8'));
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          if(!Array.isArray(policy.permanentProjectRemoval?.ids))throw Error('OWNER_PERMANENT_REMOVAL_POLICY_REQUIRED');
+          const removed=new Set(policy.permanentProjectRemoval.ids);
+          const eligible=new Set();
+          for(const result of results){
+            if(result?.pass!==true)continue;
+            const id=String(result.gameId||'');
+            if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(id))throw Error('ROBLOX_CHANGED_GAME_ID_INVALID:'+id);
+            if(!removed.has(id))eligible.add(id);
+          }
+          for(const id of eligible)console.log(id);
+          NODE
+          mapfile -t passed_ids < /tmp/roblox-drift-eligible-game-ids.txt
           passed="${#passed_ids[@]}"
           echo "ROBLOX_CHANGED_SOURCE_REVALIDATED=$passed"
-          if [[ "$passed" == '1' ]]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="${passed_ids[0]}"
-            echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT:${passed_ids[0]}"
-          elif [[ "$passed" =~ ^[2-9][0-9]*$ || "$passed" =~ ^[1-9][0-9]+$ ]]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'ROBLOX_CANONICAL_RUNTIME_REDISPATCH=BATCH'
-          else
+          if (( passed == 0 )); then
             echo 'ROBLOX_CANONICAL_RUNTIME_REDISPATCH=NO'
+          else
+            for game_id in "${passed_ids[@]}"; do
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
+              echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT:$game_id"
+            done
+            echo "ROBLOX_CANONICAL_RUNTIME_REDISPATCH=EXACT_COUNT:$passed"
           fi

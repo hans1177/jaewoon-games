@@ -99,6 +99,10 @@ test('release handoff skips obsolete intent before historical fetch and preserve
   const source=workflow.split('      - name: Verify exact R5 source and candidate identity')[1].split('      - name: ')[0];
   assert.match(source,/--unshallow/);
   assert.match(source,/git merge-base --is-ancestor/);
+  const runtimeDispatch=workflow.split('      - name: Dispatch existing canonical Roblox runtime and release chain')[1];
+  const exactCommand='gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"';
+  const commands=runtimeDispatch.split(String.fromCharCode(10)).map(line=>line.trim()).filter(line=>line.startsWith('gh workflow run company-development-roblox-runtime.yml'));
+  assert.deepEqual(commands,[exactCommand]);
 });
 const baseline={content:{identity:'Pocket Foundry',coreFun:'collect resources, upgrade production, earn income, unlock areas',coreLoop:['collect resources','upgrade production','unlock the next area'],mobileUx:'touch controls',progressionDirection:'Persistent progression system',platformProfiles:{ROBLOX:{platform:'ROBLOX',inputModel:'Roblox touch input and gamepad fallback',sessionModel:'Roblox private server session lifecycle',multiplayerRuntime:'Roblox server authoritative RemoteEvent synchronization',performanceBudget:'Mobile Roblox performance budget for frame memory network instances',uiUx:'Roblox ScreenGui touch-first interaction layout',saveAndNetwork:'DataStore and validated remote network boundaries',platformContentAdaptation:'Roblox native avatar camera scene and UI adaptation',internalReleaseTarget:'Private restricted Roblox owner playtest experience',validationEvidence:'Exact Roblox runtime independent QA regression evidence'}}}};
 const companyAssetLibrary=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
