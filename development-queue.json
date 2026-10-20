@@ -4969,7 +4969,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T08:25:23.737Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4985,16 +4985,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
       "robloxBuildArtifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
-      "robloxBuildPassedAt": "2026-10-20T08:22:39.597Z",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:22:39.597Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "island-village",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:46:08.866Z",
+        "checkedAt": "2026-10-20T07:56:19.630Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:a0024a59fcbb7e9ecc68fdb39094be7426d42ea9677556448c72e0da7c1fa44a",
         "secondaryOwnerFocus": false,
@@ -5033,15 +5033,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "All validation checks (web, music, nativeWeb, nativeMusic) must be passed before runtime testing can start."
+            "note": "Package preflight checks failed because web and music validations did not pass in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -8105,7 +8103,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T08:26:07.504Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8121,16 +8119,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
       "robloxBuildArtifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
-      "robloxBuildPassedAt": "2026-10-20T08:26:07.504Z",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:26:07.504Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "survival2",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:45:14.263Z",
+        "checkedAt": "2026-10-20T07:58:41.310Z",
         "sourceRevision": "4b0b3185cad6dc89c4f3bf6db727b1423b2d3a16",
         "artifactIdentity": "sha256:43212afb819d0ae70f31682ceba8a889a43b0017730a261d210bde772ce09987",
         "secondaryOwnerFocus": false,
@@ -8169,15 +8167,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in BUILD_EVIDENCE."
+            "note": "Preflight checks failed because web validation and music validation did not pass in the build evidence."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -10425,7 +10421,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T08:25:23.737Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -10952,13 +10948,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:14:22.032Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-puzzle-chromatic-cascade",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:39:40.910Z",
+        "checkedAt": "2026-10-20T07:56:07.659Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
         "secondaryOwnerFocus": false,
@@ -11001,7 +10997,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because multiple validation checks failed in BUILD_EVIDENCE."
+            "note": "The package cannot start runtime testing because multiple validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) are explicitly false in the BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -11040,7 +11036,7 @@
       "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
       "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
       "robloxBuildArtifactIdentity": "sha256:5cac6ee6839199fd85c5a00b9cbea0b22806d46ec458e82b34f8d69b307e3597",
-      "robloxBuildPassedAt": "2026-10-20T08:14:22.032Z",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -11127,7 +11123,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T08:29:42.025Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11143,16 +11139,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
       "robloxBuildArtifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
-      "robloxBuildPassedAt": "2026-10-20T08:29:42.025Z",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:29:42.025Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-casual-realm-weaver",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:45:32.473Z",
+        "checkedAt": "2026-10-20T07:57:32.247Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:04710ec89e0563042db82e4b40f76a629f3b53cd537c1b44db64f662bf92da02",
         "secondaryOwnerFocus": false,
@@ -11195,7 +11191,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web and music validation checks failed."
+            "note": "Package cannot start runtime testing because web and music validation checks have not passed according to BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -11829,7 +11825,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T08:29:17.473Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -11845,16 +11841,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
       "robloxBuildArtifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
-      "robloxBuildPassedAt": "2026-10-20T08:29:17.473Z",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:29:17.473Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:47:03.147Z",
+        "checkedAt": "2026-10-20T07:59:52.830Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:c35c81043f0bc60e9d18d56520fd7e989fe94a4ed6dc6d849f17a071858494d7",
         "secondaryOwnerFocus": false,
@@ -11893,15 +11889,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in BUILD_EVIDENCE."
+            "note": "Runtime testing cannot start because web validation and music validation have not passed."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -12531,7 +12525,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T08:30:52.387Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -12547,16 +12541,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0e79ffd238897dd3007168179a54ac33453d0e43",
       "robloxBuildArtifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
-      "robloxBuildPassedAt": "2026-10-20T08:30:52.387Z",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:30:52.387Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "monster-adventure",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:48:02.932Z",
+        "checkedAt": "2026-10-20T08:00:44.230Z",
         "sourceRevision": "0e79ffd238897dd3007168179a54ac33453d0e43",
         "artifactIdentity": "sha256:2e878da45f460b9e6ecbd483f0985c8ae9864a279e5f161d2ab8af2e285719f2",
         "secondaryOwnerFocus": false,
@@ -12599,7 +12593,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because required validation checks failed in BUILD_EVIDENCE."
+            "note": "Preflight checks for web and music validations have failed in the build evidence."
           }
         ],
         "blockers": [
@@ -15161,7 +15155,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T08:25:23.737Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -15688,13 +15682,13 @@
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:14:22.032Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "core-clash-4v4",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:37:01.409Z",
+        "checkedAt": "2026-10-20T08:00:18.031Z",
         "sourceRevision": "804be18f8b6fb71f030466efbce7dead1c4bbd11",
         "artifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
         "secondaryOwnerFocus": false,
@@ -15737,7 +15731,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because multiple validation checks failed in BUILD_EVIDENCE."
+            "note": "Package cannot start runtime testing because required validation checks (web, music, nativeWeb, nativeMusic) have failed in BUILD_EVIDENCE."
           }
         ],
         "blockers": [
@@ -15780,7 +15774,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpEvidence": null,
       "robloxBuildArtifactIdentity": "sha256:dbd74bc33430d81b8b536e43f5cedeac22b8492521a7c34907ecd318bdd862bd",
-      "robloxBuildPassedAt": "2026-10-20T08:14:22.032Z",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -17963,7 +17957,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T08:28:27.516Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -17979,16 +17973,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
       "robloxBuildArtifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
-      "robloxBuildPassedAt": "2026-10-20T08:28:27.516Z",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:28:27.516Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "dice-battle-board",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:55:28.008Z",
+        "checkedAt": "2026-10-20T07:56:50.309Z",
         "sourceRevision": "8351f19ce3be44cbc594f38b9721e1d82508a148",
         "artifactIdentity": "sha256:8a7404d7908888620b3ec904093e55c2815abd783598f194ae01a3a991b127ec",
         "secondaryOwnerFocus": false,
@@ -18031,7 +18025,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Required validation checks failed in the build evidence, preventing runtime testing from starting."
+            "note": "Required validation checks failed in BUILD_EVIDENCE, preventing the immutable package from starting runtime testing."
           }
         ],
         "blockers": [
@@ -18655,7 +18649,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-20T08:25:23.737Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -18670,15 +18664,71 @@
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": "0e79ffd238897dd3007168179a54ac33453d0e43",
-      "robloxBuildArtifactIdentity": null,
-      "robloxBuildPassedAt": null,
-      "robloxBuildFailedAt": "2026-10-20T05:58:56.849Z",
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildSourceRevision": "7a4dd0c195359a08b200f99e8518821397608576",
+      "robloxBuildArtifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
+      "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
+      "robloxBuildPreflightEvidence": {
+        "version": 2,
+        "gameId": "gem-survivor",
+        "pass": false,
+        "state": "BLOCKED",
+        "checkedAt": "2026-10-20T07:59:52.782Z",
+        "sourceRevision": "7a4dd0c195359a08b200f99e8518821397608576",
+        "artifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
+        "secondaryOwnerFocus": false,
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "gemini-3.8-flash",
+            "graphics": "gemini-3.8-flash",
+            "development": "gemini-3.8-flash",
+            "qa": "gemini-3.8-flash",
+            "balance": "gemini-3.8-flash"
+          },
+          "sharedModel": "gemini-3.8-flash",
+          "distinctLeadCount": 1,
+          "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": true,
+          "concurrentRoblox": false,
+          "build": {
+            "sourceRevision": "7a4dd0c195359a08b200f99e8518821397608576",
+            "artifactIdentity": "sha256:c867a562dc4305e178d03413f464387f48e628ccdc9cdad321a209604f16b589",
+            "webValidationPassed": false,
+            "musicValidationPassed": false,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "exact-immutable-roblox-package",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "gemini-3.5-flash-lite",
+            "decision": "BLOCK",
+            "blockers": [
+              "webValidationPassed is false",
+              "musicValidationPassed is false",
+              "nativeWebValidationPassed is false",
+              "nativeMusicValidationPassed is false"
+            ],
+            "note": "Package validation checks for web, music, nativeWeb, and nativeMusic failed in the build evidence, preventing the start of runtime testing."
+          }
+        ],
+        "blockers": [
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+        ],
+        "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
+        "authority": "roblox-exact-package-build-preflight"
+      },
       "robloxFoundationF0Passed": false,
       "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": null,
@@ -18715,602 +18765,16 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-package-asset-binding-failed",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-blocked"
       ],
-      "robloxQualityBuildUpRequired": true,
-      "robloxQualityBuildUpSourceRevision": "0e79ffd238897dd3007168179a54ac33453d0e43",
-      "robloxQualityFailureClass": "INTERNAL_ASSET_SOURCE_BINDING",
-      "robloxQualityBuildUpEvidence": {
-        "version": 1,
-        "gameId": "gem-survivor",
-        "sourceRevision": "0e79ffd238897dd3007168179a54ac33453d0e43",
-        "artifactIdentity": null,
-        "authority": "roblox-package-asset-binding-failure",
-        "workflowRunId": 39363927327,
-        "testedAt": "2026-10-20T05:58:56.849Z",
-        "qualityFailureKinds": [
-          "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
-        ],
-        "assetThreshold": {
-          "pass": false,
-          "blockers": [
-            "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL"
-          ],
-          "requiredFamilies": [
-            "CHARACTER",
-            "CREATURE",
-            "BUILDING",
-            "ENVIRONMENT",
-            "WEAPON",
-            "SKILL",
-            "MATERIAL",
-            "AUDIO",
-            "VFX",
-            "UI",
-            "MOTION",
-            "PROP"
-          ],
-          "familyCoverageCount": 12,
-          "requiredFamilyCount": 12,
-          "selectedAtomCount": 360,
-          "libraryVersion": 139,
-          "selectionFingerprint": "7d3888b72db64e3b84b34e09ff539d7ddfa7c945e515bb21f4a2d77ad5dbe515",
-          "buildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
-          "buildUpAssetSourceUsageLibraryVersion": 139,
-          "selectedSourceContentHashes": [
-            {
-              "source": "company-asset-library.json#baseMaterialLibrary",
-              "sha256": "89d1a975e5b1b6fc99d34ad033502980e7f63692739de3d6f649f3be03181f8c"
-            }
-          ],
-          "allFamiliesAutoSelected": true,
-          "primitiveOnlyOrColorOnlyForbidden": true,
-          "visibleAssetBindingPass": true,
-          "sourceBindingTracePass": true,
-          "familyBindingPassCount": 1,
-          "appliedFamilyCount": 2,
-          "notApplicableFamilyCount": 10,
-          "resolvedFamilyCount": 11,
-          "allFamiliesResolved": false,
-          "familyResults": [
-            {
-              "family": "CHARACTER",
-              "status": "NOT_APPLICABLE",
-              "systemPresent": false,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": []
-            },
-            {
-              "family": "CREATURE",
-              "status": "NOT_APPLICABLE",
-              "systemPresent": false,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": []
-            },
-            {
-              "family": "BUILDING",
-              "status": "NOT_APPLICABLE",
-              "systemPresent": false,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": []
-            },
-            {
-              "family": "ENVIRONMENT",
-              "status": "NOT_APPLICABLE",
-              "systemPresent": false,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": []
-            },
-            {
-              "family": "WEAPON",
-              "status": "NOT_APPLICABLE",
-              "systemPresent": false,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": []
-            },
-            {
-              "family": "SKILL",
-              "status": "NOT_APPLICABLE",
-              "systemPresent": false,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": []
-            },
-            {
-              "family": "MATERIAL",
-              "status": "APPLIED",
-              "systemPresent": true,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": [
-                "shared/RobloxCommonMaterials.luau"
-              ]
-            },
-            {
-              "family": "AUDIO",
-              "status": "NOT_APPLICABLE",
-              "systemPresent": false,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": []
-            },
-            {
-              "family": "VFX",
-              "status": "NOT_APPLICABLE",
-              "systemPresent": false,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": []
-            },
-            {
-              "family": "UI",
-              "status": "APPLIED",
-              "systemPresent": true,
-              "actualBinding": true,
-              "boundFiles": [
-                "client/Game.client.luau"
-              ],
-              "responsibleFiles": [
-                "client/Game.client.luau",
-                "shared/RobloxCommonUI.luau"
-              ]
-            },
-            {
-              "family": "MOTION",
-              "status": "NOT_APPLICABLE",
-              "systemPresent": false,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": []
-            },
-            {
-              "family": "PROP",
-              "status": "NOT_APPLICABLE",
-              "systemPresent": false,
-              "actualBinding": false,
-              "boundFiles": [],
-              "responsibleFiles": []
-            }
-          ],
-          "selectedFamilies": {
-            "CHARACTER": [
-              "TORSO_CLOTH",
-              "SHOULDER_LIGHT",
-              "BACK_CAPE",
-              "BODY_STANDARD",
-              "BODY_SMALL",
-              "BODY_HEAVY",
-              "BODY_SLENDER",
-              "HEAD_ROUND",
-              "HEAD_ANGULAR",
-              "HEAD_BROAD",
-              "HEAD_LONG",
-              "FACE_NEUTRAL",
-              "FACE_HEROIC",
-              "FACE_ROUGH",
-              "FACE_CUTE",
-              "HAIR_SHORT",
-              "HAIR_LONG",
-              "HAIR_TIED",
-              "HAIR_SPIKED",
-              "HAND_BARE",
-              "HAND_GLOVE",
-              "FOOT_BOOT",
-              "FOOT_SHOE",
-              "TORSO_LEATHER",
-              "TORSO_PLATE",
-              "TORSO_ROBE",
-              "SHOULDER_HEAVY",
-              "BACK_PACK",
-              "ACCESSORY_POUCH",
-              "ACCESSORY_CHARM"
-            ],
-            "CREATURE": [
-              "HEAD_CANINE",
-              "JAW_LONG",
-              "CLAW",
-              "EAR_POINTED",
-              "EAR_ROUND",
-              "EYE_PAIR",
-              "EYE_CLUSTER",
-              "WING_FEATHER",
-              "WING_LEATHER",
-              "WING_INSECT",
-              "TAIL_SHORT",
-              "TAIL_LONG",
-              "TAIL_BLADE",
-              "TAIL_STINGER",
-              "PAW",
-              "HOOF",
-              "TALON",
-              "CARAPACE",
-              "FUR_PATCH",
-              "SCALE_PLATE",
-              "FIN",
-              "TENTACLE",
-              "ROOT_LIMB",
-              "CRYSTAL_CORE",
-              "MECH_PLATE",
-              "HEAD_FELINE",
-              "HEAD_REPTILE",
-              "HEAD_INSECT",
-              "HEAD_SKULL",
-              "HEAD_DEMON",
-              "HEAD_GOLEM",
-              "JAW_SHORT",
-              "MANDIBLE",
-              "BEAK",
-              "HORN_SHORT",
-              "HORN_LONG",
-              "HORN_CURVED",
-              "ANTLER",
-              "ANTENNA"
-            ],
-            "BUILDING": [
-              "FOUNDATION_RECT",
-              "WALL_SOLID",
-              "DOOR_SINGLE",
-              "ROOF_GABLE",
-              "ROOF_FLAT",
-              "ROOF_HIP",
-              "ROOF_DOME",
-              "STAIR_STRAIGHT",
-              "STAIR_CORNER",
-              "STAIR_SPIRAL",
-              "BALCONY",
-              "PILLAR",
-              "FENCE",
-              "SIGN",
-              "FLOOR_TILE",
-              "CEILING",
-              "INTERIOR_WALL",
-              "SOCKET_WALL",
-              "SOCKET_FLOOR",
-              "SOCKET_CEILING",
-              "FOUNDATION_SQUARE",
-              "FOUNDATION_ROUND",
-              "WALL_WINDOW",
-              "WALL_ARCH",
-              "CORNER_INNER",
-              "CORNER_OUTER",
-              "DOOR_DOUBLE",
-              "DOOR_GATE",
-              "WINDOW_SMALL",
-              "WINDOW_LARGE"
-            ],
-            "ENVIRONMENT": [
-              "TREE_TRUNK_THICK",
-              "TREE_CROWN_ROUND",
-              "ROCK_MEDIUM",
-              "ROAD_DIRT",
-              "WATER_DEEP",
-              "RUIN_WALL",
-              "RUIN_PILLAR",
-              "LANDMARK_TOWER",
-              "LANDMARK_SHRINE",
-              "LANDMARK_TREE",
-              "FOG_LAYER",
-              "SKY_LAYER",
-              "TERRAIN_FLAT",
-              "TERRAIN_SLOPE",
-              "TERRAIN_RIDGE",
-              "TERRAIN_VALLEY",
-              "CLIFF_LOW",
-              "CLIFF_HIGH",
-              "ROCK_SMALL",
-              "ROCK_LARGE",
-              "TREE_TRUNK_THIN",
-              "TREE_CROWN_TALL",
-              "TREE_CROWN_SPARSE",
-              "GRASS_PATCH",
-              "BUSH",
-              "FLOWER_PATCH",
-              "MUSHROOM_PATCH",
-              "DEAD_BRANCH",
-              "LOG",
-              "STUMP",
-              "ROAD_STONE",
-              "ROAD_SNOW",
-              "PATH_NARROW",
-              "BRIDGE_WOOD",
-              "BRIDGE_STONE",
-              "WATER_SHALLOW"
-            ],
-            "WEAPON": [
-              "BLADE_LONG",
-              "GUARD_CROSS",
-              "GRIP_LONG",
-              "SHIELD_TOWER",
-              "THROWN_BLADE",
-              "THROWN_ORB",
-              "BLADE_SHORT",
-              "BLADE_CURVED",
-              "BLADE_HEAVY",
-              "BLADE_DOUBLE",
-              "GUARD_ROUND",
-              "GUARD_WIDE",
-              "GRIP_SHORT",
-              "POMMEL_SIMPLE",
-              "POMMEL_ORNATE",
-              "SPEAR_HEAD",
-              "AXE_HEAD",
-              "HAMMER_HEAD",
-              "MACE_HEAD",
-              "BOW_LIMB",
-              "BOW_GRIP",
-              "CROSSBOW_BODY",
-              "FIREARM_RECEIVER",
-              "FIREARM_BARREL",
-              "FIREARM_STOCK",
-              "STAFF_SHAFT",
-              "WAND_SHAFT",
-              "MAGIC_CORE",
-              "SHIELD_ROUND",
-              "SHIELD_KITE"
-            ],
-            "SKILL": [
-              "CAST_HAND",
-              "TELEGRAPH_CIRCLE",
-              "IMPACT_SMALL",
-              "PROJECTILE_BOLT",
-              "PROJECTILE_WAVE",
-              "PROJECTILE_ARC",
-              "IMPACT_HEAVY",
-              "IMPACT_AOE",
-              "AURA_BODY",
-              "AURA_WEAPON",
-              "STATUS_RING",
-              "STATUS_MARK",
-              "REACTION_LIGHT",
-              "REACTION_HEAVY",
-              "CAMERA_KICK",
-              "CAMERA_SHAKE",
-              "CAST_WEAPON",
-              "CAST_GROUND",
-              "CAST_CHANNEL",
-              "TELEGRAPH_CONE",
-              "TELEGRAPH_LINE",
-              "PROJECTILE_ORB"
-            ],
-            "MATERIAL": [
-              "WOOD",
-              "STONE",
-              "METAL",
-              "CLOTH",
-              "MOD_GLOWING",
-              "MOD_POISONED",
-              "LEATHER",
-              "SKIN",
-              "FUR",
-              "SCALE",
-              "ICE",
-              "LAVA",
-              "CRYSTAL",
-              "SLIME",
-              "BONE",
-              "MOD_CLEAN",
-              "MOD_WORN",
-              "MOD_DIRTY",
-              "MOD_WET",
-              "MOD_BURNT",
-              "MOD_FROSTED",
-              "MOD_RUSTED",
-              "MOD_CRACKED"
-            ],
-            "AUDIO": [
-              "ENV_WIND",
-              "ENV_WATER",
-              "UI_CONFIRM",
-              "ATTACK_SWING_LIGHT",
-              "WEAPON_METAL",
-              "WEAPON_WOOD",
-              "ENV_FOREST",
-              "ENV_CAVE",
-              "UI_CANCEL",
-              "UI_WARNING",
-              "MAGIC_CAST",
-              "MAGIC_IMPACT",
-              "BOSS_STINGER",
-              "BUILDING_DOOR",
-              "BUILDING_BREAK",
-              "WEATHER_RAIN",
-              "WEATHER_SNOW",
-              "WEATHER_STORM",
-              "FOOTSTEP_SOFT",
-              "FOOTSTEP_HARD",
-              "FOOTSTEP_WET",
-              "CREATURE_SMALL",
-              "CREATURE_HEAVY",
-              "CREATURE_HISS",
-              "CREATURE_ROAR",
-              "ATTACK_SWING_HEAVY",
-              "HIT_FLESH",
-              "HIT_ARMOR",
-              "HIT_STONE"
-            ],
-            "VFX": [
-              "IMPACT_FLASH",
-              "TRAIL_SHORT",
-              "SHAPE_BURST",
-              "DESTRUCTION_WOOD",
-              "DESTRUCTION_STONE",
-              "DESTRUCTION_METAL",
-              "SHAPE_ORB",
-              "SHAPE_RING",
-              "SHAPE_CONE",
-              "SHAPE_LINE",
-              "SHAPE_SHOCKWAVE",
-              "TRAIL_LONG",
-              "ELEMENT_FIRE",
-              "ELEMENT_ICE",
-              "ELEMENT_ELECTRIC",
-              "ELEMENT_POISON",
-              "ELEMENT_MAGIC",
-              "ELEMENT_DUST",
-              "ELEMENT_WATER",
-              "IMPACT_SPARK",
-              "IMPACT_DEBRIS",
-              "STATUS_GLOW",
-              "STATUS_SMOKE",
-              "WEATHER_RAIN",
-              "WEATHER_SNOW",
-              "WEATHER_FOG"
-            ],
-            "UI": [
-              "FRAME_PANEL",
-              "BUTTON_PRIMARY",
-              "BAR_HEALTH",
-              "TOUCH_DODGE",
-              "FRAME_MODAL",
-              "FRAME_TOOLTIP",
-              "BUTTON_SECONDARY",
-              "BUTTON_ICON",
-              "ICON_ITEM",
-              "ICON_SKILL",
-              "ICON_STATUS",
-              "BAR_MANA",
-              "BAR_PROGRESS",
-              "SLOT_INVENTORY",
-              "SLOT_EQUIPMENT",
-              "SLOT_SKILL",
-              "HUD_OBJECTIVE",
-              "HUD_CURRENCY",
-              "HUD_WAVE",
-              "MAP_FRAME",
-              "MINIMAP_FRAME",
-              "MARKER_PLAYER",
-              "MARKER_ENEMY",
-              "MARKER_QUEST",
-              "TOUCH_JOYSTICK",
-              "TOUCH_ACTION"
-            ],
-            "MOTION": [
-              "IDLE_RELAXED",
-              "WALK",
-              "JOG",
-              "RUN",
-              "START",
-              "STOP",
-              "TURN_90",
-              "JUMP_START",
-              "LAND",
-              "HIT_FRONT",
-              "DEATH_FRONT",
-              "CAST_PREPARE",
-              "CAST_RELEASE",
-              "RECOVERY",
-              "TAUNT",
-              "LOOK_AROUND",
-              "IDLE_ALERT",
-              "SPRINT",
-              "STRAFE_L",
-              "STRAFE_R",
-              "BACKSTEP",
-              "TURN_45",
-              "TURN_180",
-              "JUMP_AIR",
-              "DODGE_L",
-              "DODGE_R",
-              "ATTACK_LIGHT_1",
-              "ATTACK_LIGHT_2",
-              "ATTACK_LIGHT_3",
-              "ATTACK_HEAVY",
-              "BLOCK",
-              "PARRY",
-              "HIT_BACK",
-              "HIT_LEFT",
-              "HIT_RIGHT",
-              "KNOCKDOWN",
-              "GETUP",
-              "DEATH_SIDE",
-              "DEATH_BACK"
-            ],
-            "PROP": [
-              "CHEST",
-              "CRATE",
-              "LAMP",
-              "WORKBENCH",
-              "SIGNPOST",
-              "TORCH",
-              "ROPE",
-              "CHAIN",
-              "BANNER",
-              "RUG",
-              "BOTTLE",
-              "BOOK",
-              "WEAPON_RACK",
-              "ARMOR_STAND",
-              "CHAIR",
-              "TABLE",
-              "BED",
-              "SHELF",
-              "BENCH",
-              "LANTERN",
-              "BARREL",
-              "SACK",
-              "CART",
-              "ANVIL",
-              "FURNACE",
-              "COOKING_POT",
-              "RESOURCE_WOOD",
-              "RESOURCE_STONE",
-              "RESOURCE_ORE",
-              "RESOURCE_HERB"
-            ]
-          },
-          "runtimeVerified": false,
-          "productionVerified": false,
-          "systemDetectionAuthority": "company-development-roblox-bootstrap-dynamic-source-sync",
-          "authority": "roblox-package-universal-asset-threshold"
-        },
-        "sourceTreeSha": "e09728bfc54ac71d8c9f4f4cd3a4797525af203b",
-        "assetRepairContext": {
-          "libraryFingerprint": "d2250ae52d9f7091cc59d2f0336364759c90cd57c410984c959884009a705456",
-          "baselineFingerprint": "b3aec6add730bdeb0628a1806ed5178f60cb230e99f6ddb83056db246e84a1bc",
-          "validatorFingerprint": "06134a4ef66eb10539fb4fa9f6b1e2dea93399ba50be92781ca71c92a78201c9"
-        },
-        "repairSurfaces": [
-          "INTERNAL_ASSET_SOURCE_BINDING"
-        ],
-        "assetRepairPolicy": {
-          "mode": "GAME_SOURCE_BINDINGS_ONLY",
-          "preserveInternalAssetLibrary": true,
-          "preserveAssetFiles": true,
-          "allowAssetLibraryWrites": false,
-          "requireActualNativeConsumption": true
-        },
-        "qualityFailureDetails": [
-          {
-            "id": "ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL",
-            "repairSurface": "INTERNAL_ASSET_SOURCE_BINDING",
-            "priority": "P0",
-            "hint": "Repair game-side source bindings and validation traces only. Preserve the internal asset library and every asset file; do not replace, modify or delete internal assets. Bind existing references to actual native consumers. Mark NOT_APPLICABLE only with system-absence evidence; never add marker-only PASS, weaken validation or invent unrelated systems.",
-            "observed": {
-              "libraryVersion": 139,
-              "selectionFingerprint": "7d3888b72db64e3b84b34e09ff539d7ddfa7c945e515bb21f4a2d77ad5dbe515",
-              "familyResult": {
-                "family": "MATERIAL",
-                "status": "APPLIED",
-                "systemPresent": true,
-                "actualBinding": false,
-                "boundFiles": [],
-                "responsibleFiles": [
-                  "shared/RobloxCommonMaterials.luau"
-                ]
-              }
-            }
-          }
-        ]
-      },
+      "robloxQualityBuildUpRequired": false,
+      "robloxQualityBuildUpSourceRevision": null,
+      "robloxQualityFailureClass": null,
+      "robloxQualityBuildUpEvidence": null,
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -19811,7 +19275,12 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "robloxBuildUpAssetSourceUsageFingerprint": "c485f0aa2e56f10f927a362e667dac9b4721fe957c82451fbad30ee8e9c59797",
+      "robloxBuildUpAssetSourceUsageLibraryVersion": 139,
+      "robloxBuildAssetSelectionFingerprint": "7d3888b72db64e3b84b34e09ff539d7ddfa7c945e515bb21f4a2d77ad5dbe515",
+      "robloxBuildAssetLibraryVersion": 139,
+      "robloxExactRevisionPassed": false
     },
     {
       "gameId": "kingshot-ad",
@@ -25204,7 +24673,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-20T08:25:23.737Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -25220,16 +24689,16 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
       "robloxBuildArtifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
-      "robloxBuildPassedAt": "2026-10-20T08:14:22.032Z",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:14:22.032Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "defense",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:37:08.627Z",
+        "checkedAt": "2026-10-20T07:59:51.783Z",
         "sourceRevision": "0a0165fd98163e9516400daaa97d3b71575fb90e",
         "artifactIdentity": "sha256:883d2af46570fe1b7dfc1fc624a37346dd3e7be93503a9d82f3ef7c0e91d4b42",
         "secondaryOwnerFocus": false,
@@ -25272,7 +24741,7 @@
               "nativeWebValidationPassed is false",
               "nativeMusicValidationPassed is false"
             ],
-            "note": "Required validation checks (web, music, nativeWeb, nativeMusic) failed in BUILD_EVIDENCE."
+            "note": "Package cannot start runtime testing because multiple required validation checks (webValidationPassed, musicValidationPassed, nativeWebValidationPassed, nativeMusicValidationPassed) failed in the build evidence."
           }
         ],
         "blockers": [
@@ -33810,7 +33279,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:40:04.134Z",
-      "updatedAt": "2026-10-20T08:25:23.737Z",
+      "updatedAt": "2026-10-20T08:32:27.499Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -33828,17 +33297,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
       "robloxBuildArtifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
-      "robloxBuildPassedAt": "2026-10-20T08:14:22.032Z",
+      "robloxBuildPassedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T08:14:22.032Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T08:32:27.499Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "crystal-defense",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-20T07:36:59.747Z",
+        "checkedAt": "2026-10-20T07:56:28.209Z",
         "sourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
         "artifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
         "secondaryOwnerFocus": false,
@@ -33877,15 +33346,13 @@
             "decision": "BLOCK",
             "blockers": [
               "webValidationPassed is false",
-              "musicValidationPassed is false",
-              "nativeWebValidationPassed is false",
-              "nativeMusicValidationPassed is false"
+              "musicValidationPassed is false"
             ],
-            "note": "The build evidence indicates that web and music validation checks (both standard and native) have failed, which contradicts the requirements for starting runtime testing."
+            "note": "The build evidence contains contradictions where webValidationPassed and musicValidationPassed are false, preventing the package from starting runtime testing."
           }
         ],
         "blockers": [
-          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false|nativeWebValidationPassed is false|nativeMusicValidationPassed is false"
+          "lead-block:shared-review:webValidationPassed is false|musicValidationPassed is false"
         ],
         "reviewMode": "EXTERNAL_GEMINI_FREE_PAIR_REVIEW",
         "authority": "roblox-exact-package-build-preflight"
@@ -37211,7 +36678,7 @@
       "ownerWebEditPropagationUpdatedAt": "2026-10-17T18:33:05.247Z"
     }
   ],
-  "updatedAt": "2026-10-20T08:30:52.387Z",
+  "updatedAt": "2026-10-20T08:32:27.499Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
