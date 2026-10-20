@@ -64,8 +64,9 @@ test('verified Unity Web policy and Vibe3 QA bottleneck teaches a reusable cause
   });
   assert.ok(next.exactKnowledgeIds.includes('EXPERIENCE:'+lesson.id));
   assert.ok(next.exactKnowledgeIds.includes('CODE_PATTERN:'+first.library.patterns[0].id));
-  assert.match(next.guidance,/STALE_QA_TRIANGULATION/);
-  assert.match(next.guidance,/Vibe3 실행 계약/);
+  assert.match(next.guidance,/RECHECK_CURRENT_MAIN_POLICY_AND_EXACT_FAILED_STAGE_BEFORE_REPEATING_UNITY_WEB_PHASE_OLD_CONTRACT/);
+  assert.match(next.guidance,/VERIFIED_VIBE3_ENGINE_CONTRACT_UNITY_WEB_PHASE_OLD_CONTRACT_CAUSE_SCOPED_REPAIR/);
+  assert.equal(next.bottleneckPlaybook.applied,false,'removed policy cannot authorize new playbook');
   assert.equal(next.rawModelOutputIncluded,false);
   assert.equal(next.authorityExpanded,false);
   const again=promoteVerifiedSystemAiLearning({
@@ -297,55 +298,34 @@ test('primary domain outranks secondary domain even when secondary has similar k
   assert.ok(ui<0||save<ui);
 });
 
-test('bottleneck System AI receives policy-grounded advanced causal optimization playbook',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+test('bottleneck System AI cannot claim game policy authority for advanced playbook',()=>{
+  const owner=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+  assert.equal(owner.policyDocument,'company-learning/platform-release-roadmap.json');
+  assert.equal(fs.existsSync(owner.policyDocument),true);
   const context=buildSystemAiLearningContext({
     task:{
       id:'sys-bottleneck-runner-queue-v1',
       taskType:'bottleneck-repair',
-      goal:'remove runner queue serialization and fan-in wait without weakening exact duplicate protection',
+      goal:'remove runner queue serialization without weakening exact duplicate protection',
       blocker:'runner-capacity-or-startup-serialization',
       failureStage:'WORKFLOW_RESERVATION',
       failureSignature:'RUNNER_QUEUE_SERIALIZATION',
       responsibleFiles:['tools/vibe2-queue-control.mjs']
     },
-    experienceInput:{records:[]},
-    codePatternsInput:{patterns:[]},
-    masteryInput:{},
-    policyInput:policy
+    experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{},policyInput:owner
   });
-  assert.equal(context.bottleneckPlaybook.applied,true);
-  assert.equal(context.bottleneckPlaybook.verifiedPolicyBound,true);
-  assert.equal(context.bottleneckPlaybook.authority,'company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution');
-  const ids=context.bottleneckPlaybook.methods.map(row=>row.id);
-  for(const required of [
-    'CAUSAL_WAIT_GRAPH','LOGICAL_PHYSICAL_CAPACITY_SPLIT','MINIMUM_LOCK_SCOPE','STAGE_SCOPED_EXACT_DEDUPE',
-    'CONTROL_PLANE_ISOLATION','EVENT_DRIVEN_REFILL','CHECKPOINT_PRESERVING_HANDOFF','REPRESENTATIVE_CANARY_COHORT',
-    'STALE_QA_TRIANGULATION','MULTI_HYPOTHESIS_CAUSAL_REPAIR','WORK_CONSERVING_DISJOINT_PARALLELISM',
-    'SPARE_CAPACITY_HEDGING','CAUSE_SCOPED_BACKPRESSURE','OBSERVABILITY_TO_VERIFIED_LEARNING',
-    'ASSET_CONSUMER_CAUSAL_TRIANGULATION','EXPLICIT_NATIVE_AUTHORING_REPAIR',
-    'RUNTIME_BOOT_CAUSE_BEFORE_WAIT','EXACT_FAILURE_AND_WAKE_IDENTITY','HOMEPAGE_DEPLOYMENT_VISIBILITY'
-  ])assert.ok(ids.includes(required),required);
-  assert.match(context.guidance,/POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK/);
-  assert.match(context.guidance,/STALE_QA_TRIANGULATION/);
-  assert.match(context.guidance,/Vibe3 실행 계약 투영값/);
-  assert.match(context.guidance,/Unity Web 실제 3D/);
-  assert.match(context.guidance,/MULTI_HYPOTHESIS_CAUSAL_REPAIR/);
-  assert.match(context.guidance,/Factory\.Create/);
-  assert.match(context.guidance,/applyFirst/);
-  assert.match(context.guidance,/Resources\.Load<AnimationClip>/);
-  assert.match(context.guidance,/Animation\.AddClip/);
-  assert.match(context.guidance,/BLOCKED\/CLOCK/);
-  assert.match(context.guidance,/동일 최신 main SHA/);
-  assert.match(context.guidance,/독립 QA·회귀·배포·다음 BUILD_UP/);
-  assert.deepEqual(context.exactKnowledgeIds,[],'repair guidance must not manufacture verified learning records');
+  assert.equal(context.bottleneckPlaybook.applied,false);
+  assert.deepEqual(context.bottleneckPlaybook.methods,[]);
+  assert.equal(context.floorRecovery,null);
+  assert.deepEqual(context.exactKnowledgeIds,[]);
   assert.equal(context.rawModelOutputIncluded,false);
   assert.equal(context.advisoryOnly,true);
   assert.equal(context.authorityExpanded,false);
 });
 
+
 test('ordinary non-bottleneck System AI task does not receive bottleneck playbook',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const policy=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
   const context=buildSystemAiLearningContext({
     task:{id:'ordinary-copy',goal:'update one ordinary content string',responsibleFiles:['web-games/demo/index.html']},
     experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{},policyInput:policy
@@ -483,36 +463,31 @@ test('System AI workflow binds canonical distilled advisory knowledge into every
 });
 
 /* ── 기존 14개 방법 재사용 및 검증된 F0~F9 수리 지식만 학습 ── */
-test('System AI learns two hypotheses for exact Roblox failures without inventing a passed floor',()=>{
-  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  for(const [signature,stage] of [
-    ['ROBLOX_BUILD_PREFLIGHT_BLOCKED','VIBE_SHARED_MODEL_BUILD_PREFLIGHT'],
-    ['ROBLOX_F0_SOURCE_PREFLIGHT_FAILED','F0_SOURCE_PREFLIGHT'],
-    ['ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING','PRIVATE_RUNTIME_CANDIDATE_DEPLOY'],
-    ['ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
-    ['ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
-    ['ROBLOX_FIRST_FRAME_GROUNDING_FAILED','TARGET_PLATFORM_RUNTIME_FOUNDATION'],
-    ['roblox-package-asset-binding-failed','TARGET_PLATFORM_BUILD_OR_PACKAGE']
+test('system AI cannot silently grant Roblox recovery authority or passed floors',()=>{
+  const owner=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+  assert.equal(owner.policyDocument,'company-learning/platform-release-roadmap.json');
+  assert.equal(fs.existsSync(owner.policyDocument),true);
+  for(const signature of [
+    'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
+    'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED',
+    'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING',
+    'ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE',
+    'ROBLOX_FIRST_FRAME_GROUNDING_EVIDENCE_REQUIRED',
+    'ROBLOX_FIRST_FRAME_GROUNDING_FAILED',
+    'roblox-package-asset-binding-failed'
   ]){
     const context=buildSystemAiLearningContext({
       task:{id:'floor-'+signature,taskType:'bottleneck-repair',gameId:'demo',target:'roblox',
         goal:'repair exact game F0-F9 stage',failureSignature:signature,responsibleFiles:['tools/company-development-roblox-build-preflight.mjs']},
-      policyInput:policy,experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{}
+      policyInput:owner,experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{}
     });
-    assert.equal(context.bottleneckPlaybook.methods.length,19);
-    assert.equal(context.floorRecovery.stage,stage);
-    assert.equal(context.floorRecovery.hypotheses.length,2);
-    assert.equal(context.floorRecovery.independentVerificationRequired,true);
-    assert.equal(context.floorRecovery.verifiedSuccessPromotionOnly,true);
-    if(signature.startsWith('ROBLOX_FIRST_FRAME_')){
-      assert.equal(context.floorRecovery.sourceRepairRequiresVerifiedCause,true);
-      assert.match(context.floorRecovery.next,/exact|Exact|EXACT/);
-      assert.match(context.floorRecovery.preserve,/not a runtime PASS|must invalidate/);
-    }
+    assert.equal(context.bottleneckPlaybook.applied,false,'removed policy must not authorize playbook');
+    assert.equal(context.floorRecovery,null,'removed policy must not invent floor recovery authority');
     assert.equal(context.authorityExpanded,false);
-    assert.match(context.guidance,/EXACT F0-F9 RECOVERY/);
+    assert.equal(context.rawModelOutputIncluded,false);
   }
 });
+
 
 test('System AI promotes failure-specific successful repair only after independently accepted evidence',()=>{
   const task={
@@ -630,11 +605,11 @@ test('Core QA coalesces obsolete revisions of the same PR and preserves manual a
   const expression=workflow.match(/cancel-in-progress:\s*\$\{\{([^\n]+?)\}\}/)[1].trim();
   for(const [event_name,ref,expected]of [
     ['pull_request','refs/pull/7663/merge',true],
-    ['push','refs/heads/main',true],
+    ['push','refs/heads/main',false],
     ['push','refs/heads/review-branch',false],
     ['workflow_dispatch','refs/heads/main',false]
   ])assert.equal(runInNewContext(expression,{github:{event_name,ref}}),expected,event_name+':'+ref);
-  const group=workflow.match(/group: (vibe2-core-qa-[^\n]+)/)[1];
-  const resolve=ref=>group.replace('${{ github.ref }}',ref);
+  const group=workflow.match(/group: vibe2-core-qa-\$\{\{([^\n]+?)\}\}/)[1];
+  const resolve=ref=>runInNewContext(group,{github:{event_name:'pull_request',ref,sha:'same-sha'}});
   assert.notEqual(resolve('refs/pull/7663/merge'),resolve('refs/pull/7665/merge'));
 });

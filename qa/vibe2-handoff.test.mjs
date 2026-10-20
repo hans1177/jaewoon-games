@@ -202,7 +202,12 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   assert.equal(before.workState.queuedCount, 31);
 
   const reserved = runQueueCommand({ command:'reserve-batch', queue:queueFile, control:controlFile, max:'32', output:batchFile });
-  assert.equal(reserved.selection?.webGameFlow?.target, 0);
+  // 실사용 중앙정책을 로드한 실행에서는 Web 목표도 그 정책에 맞아야 한다.
+  const verifiedPolicy=process.env.COMPANY_VERIFIED_POLICY_PATH
+    ?JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'))
+    :null;
+  const flow=verifiedPolicy?.developmentSpeedExecution?.webGameFlow;
+  assert.equal(reserved.selection?.webGameFlow?.target,flow?.enabled===true?Number(flow.targetConcurrentGames||0):0);
   assert.equal(reserved.tasks.length, 30);
   assert.equal(reserved.tasks.some(task=>task.id==='e2e-01'),false);
   assert.equal(reserved.selection?.lane,'game-primary');

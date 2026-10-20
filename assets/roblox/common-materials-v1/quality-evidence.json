@@ -118,6 +118,26 @@
       "MOBILE_RUNTIME_COST_UNVERIFIED",
       "PRODUCTION_RUNTIME_VERIFICATION_PENDING"
     ],
-    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS"
+    "claim": "SOURCE_AUTHORING_INTERNAL_AUDIT_ONLY_NOT_RUNTIME_OR_PRODUCTION_PASS",
+    "visualQualityDisposition": "REVIEW_REQUIRED_NOT_APPROVED_FOR_AUTOMATIC_REPLACEMENT",
+    "inspectionPriorities": [
+      {
+        "axis": "DETAIL_FINISH",
+        "reason": "Static authoring axis 87; confirm surface wear, edges and camera-distance appearance with rendered material examples."
+      },
+      {
+        "axis": "READABILITY_SCALE",
+        "reason": "Static authoring axis 86; verify mobile view and multiple camera distances."
+      },
+      {
+        "axis": "COLOR_LIGHTING",
+        "reason": "Static authoring axis 90, but real-game lighting response unverified."
+      },
+      {
+        "axis": "PERFORMANCE_LOD",
+        "reason": "Static authoring axis 88; mobile runtime cost unverified."
+      }
+    ],
+    "expectedGradeScope": "STATIC_AUTHORING_ONLY_NOT_VISUAL_PRODUCTION_APPROVAL"
   }
 }

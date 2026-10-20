@@ -43,7 +43,11 @@ self.addEventListener('fetch',event=>{
   const request=event.request;if(request.method!=='GET')return;
   const url=new URL(request.url);if(url.origin!==self.location.origin)return;
   if(url.pathname==='/command.html'&&(request.mode==='navigate'||request.destination==='document')){event.respondWith(serveCommand(request));return;}
-  if(NETWORK_ONLY.test(url.pathname+url.search)){event.respondWith(fetch(request,{cache:'no-store'}));return;}
+  if(NETWORK_ONLY.test(url.pathname+url.search)){
+    // 런타임 JSON은 서버가 선언한 짧은 HTTP 캐시만 사용한다. 오프라인 앱 저장소로 대체하지 않는다.
+    const runtimeMetadata=/^\/(game-catalog|company-status|homepage-platform-exposure|homepage-portfolio-status)\.json$/.test(url.pathname);
+    event.respondWith(fetch(request,{cache:runtimeMetadata?'default':'no-store'}));return;
+  }
   if(url.pathname.startsWith('/web-games/daechung-rpg/')){event.respondWith(fetch(request,{cache:'no-store'}).catch(async()=>await caches.match(request)||Response.error()));return;}
   if(request.mode==='navigate'){
     const isWebGame=url.pathname.startsWith('/web-games/');

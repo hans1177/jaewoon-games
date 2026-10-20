@@ -1,8 +1,44 @@
 import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {runInNewContext} from 'node:vm';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+
+test('all-game multiplayer policy overrides legacy SINGLE design before static source validation',()=>{
+  assert.match(workflow,/multiplayerPolicy\.required===true&&multiplayerPolicy\.scope==='ALL_ACTIVE_AND_NEW_GAMES'/);
+  assert.match(workflow,/return\{known:true,required:true,mode:'POLICY_REQUIRED_STATIC_CODE'\}/);
+  assert.match(workflow,/const staticMultiplayerCodePass=multiplayer\.required===true&&multiplayerSourceContract\.passed===true/);
+});
+
+test('private-published exact unfinished QA consumes observations despite internal-release-ready state',()=>{
+  const marker="const candidate=candidateForItem(item);\n            if(isSharedCandidate(candidate)";
+  const at=workflow.indexOf(marker);
+  assert.ok(at>0);
+  const start=workflow.lastIndexOf('const candidates=(q.items||[]).filter(item=>{',at);
+  const end=workflow.indexOf('const f9Ids=[];',at);
+  const selector=workflow.slice(start,end)+'\n candidates.map(item=>item.gameId)';
+  const source='b'.repeat(40),artifact='sha256:'+ 'e'.repeat(64);
+  const item={gameId:'daechung-rpg',productionClass:'DEVELOPMENT_CONFIRMED',robloxSourceCommit:source,robloxBuildSourceRevision:source,robloxBuildArtifactIdentity:artifact,
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:{pass:true,sourceRevision:source,artifactIdentity:artifact},
+    robloxInternalReleaseReady:true,robloxFailureStage:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxRuntimeCandidateEvidence:{published:true,sourceRevision:source,artifactIdentity:artifact,versionNumber:38,universeId:'123',placeId:'456'}};
+  const select=(rows,requested='daechung-rpg')=>Array.from(runInNewContext(selector,{q:{items:rows},requested,transientRetryIds:new Set(),candidateForItem:i=>i.robloxRuntimeCandidateEvidence||{},isSharedCandidate:()=>false,console:{log(){}}}));
+  assert.deepEqual(select([item]),['daechung-rpg']);
+  const cases=[
+    {robloxFoundationF0Evidence:{...item.robloxFoundationF0Evidence,pass:false}},
+    {robloxFoundationF0Evidence:{...item.robloxFoundationF0Evidence,sourceRevision:'c'.repeat(40)}},
+    {robloxRuntimeCandidateEvidence:{...item.robloxRuntimeCandidateEvidence,artifactIdentity:'sha256:'+ 'd'.repeat(64)}},
+    {robloxRuntimeCandidateEvidence:{...item.robloxRuntimeCandidateEvidence,published:false}},
+    {robloxBuildPreflightPassed:false},{robloxBuildSourceRevision:'c'.repeat(40)},
+    {robloxPublicRelease:true},{productionClass:'DESIGN_ONLY'},
+    {robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:source},
+    {robloxRuntimeFoundationPassed:true,robloxRuntimePassed:true,robloxIndependentQaPassed:true,robloxRegressionPassed:true}
+  ];
+  for(const change of cases)assert.deepEqual(select([{...item,...change}]),[],JSON.stringify(change));
+  const other={...item,gameId:'other'};
+  assert.deepEqual(select([other,item]),['daechung-rpg']);
+  assert.deepEqual(select([other,item],''),['other','daechung-rpg']);
+});
 
 test('Roblox runtime foundation lane remains Open Cloud only while post-release actual play is a separate Studio MCP lane',()=>{
   const foundation=workflow.split('\n  studio-local-plan:')[0];

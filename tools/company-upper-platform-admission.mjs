@@ -661,14 +661,26 @@ export function classifyUpperPlatformAdmission(item,{repoRoot='.',grandfatherGam
   const gameId=clean(item?.gameId);
   if(!gameId)throw new Error('UPPER_PLATFORM_GAME_ID_REQUIRED');
   if(item.minimumDesignContract?.pass!==true)return{gameId,state:'BLOCKED',reason:'MINIMUM_DESIGN_CONTRACT_REQUIRED'};
+  // 메인: 승인된 중앙정책에서 현재 개발 활성화된 네이티브 플랫폼만 선별한다.
+  // 보류된 Unity 프로필을 Roblox 진입의 필수 조건으로 삼지 않는다.
+  const verifiedPolicyPath=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+  if(!verifiedPolicyPath)throw new Error('UPPER_PLATFORM_VERIFIED_POLICY_REQUIRED');
+  const policyFile=path.resolve(repoRoot,verifiedPolicyPath);
+  if(!fs.existsSync(policyFile))throw new Error('UPPER_PLATFORM_VERIFIED_POLICY_NOT_FOUND');
+  const policy=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+  const ownerActiveTargets=policy.ownerActiveDevelopmentScope20261009?.activeTargets;
+  const activeNativePlatforms=['ROBLOX','UNITY'].filter(platform=>
+    policy.developmentAccess?.[platform]==='ALWAYS_ALLOWED'
+    &&(!Array.isArray(ownerActiveTargets)||ownerActiveTargets.includes(platform)));
+  if(!activeNativePlatforms.length)return{gameId,state:'BLOCKED',reason:'ACTIVE_NATIVE_PLATFORM_NOT_AUTHORIZED'};
   const profiles=item.platformDesignProfiles||{};
-  if(!profiles.ROBLOX?.source||!profiles.UNITY?.source)return{gameId,state:'BLOCKED',reason:'DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED'};
+  if(activeNativePlatforms.some(platform=>!clean(profiles[platform]?.source)))
+    return{gameId,state:'BLOCKED',reason:'ACTIVE_PLATFORM_DESIGN_PROFILE_REQUIRED'};
   const targets=new Set(item.concurrentTargetPlatforms||[]);
-  if(!targets.has('ROBLOX')||!targets.has('UNITY'))return{gameId,state:'BLOCKED',reason:'DUAL_NATIVE_TARGETS_REQUIRED'};
+  if(activeNativePlatforms.some(platform=>!targets.has(platform)))
+    return{gameId,state:'BLOCKED',reason:'ACTIVE_NATIVE_TARGETS_REQUIRED'};
   const nativeStarted=nativeUpperPlatformAlreadyStarted(item);
   const grandfathered=new Set((Array.isArray(grandfatherGameIds)?grandfatherGameIds:[]).map(clean));
-  const policyFile=path.join(repoRoot,'company-learning/platform-release-roadmap.json');
-  const policy=fs.existsSync(policyFile)?JSON.parse(fs.readFileSync(policyFile,'utf8')):{};
   if(policy.developmentAccess?.UNITY_WEB==='OWNER_HOLD'||policy.unityWebFirstStage?.enabled===false){
     return{gameId,state:'UPPER_PLATFORM',reason:'MINIMUM_DESIGN_READY',grandfathered:nativeStarted,
       grandfatherSource:nativeStarted?'DURABLE_NATIVE_PROGRESS_EVIDENCE':null,

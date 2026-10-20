@@ -5,6 +5,12 @@ import os from 'node:os';
 import path from 'node:path';
 import {evaluateMinimumDesignContract,materializeVibeMinimumDesign} from '../tools/company-minimum-design-contract.mjs';
 
+// Exercise the actual current verified-policy contract; never substitute a stub.
+const previousVerifiedPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+test.before(()=>{process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');});
+test.after(()=>{if(previousVerifiedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicyPath;});
+
 const base=()=>({
   content:{
     identity:'A distinct survival RPG with a persistent village and dangerous expeditions.',
@@ -29,22 +35,36 @@ const base=()=>({
   }
 });
 
-test('minimum design requires common core and both distinct platform profiles',()=>{
+test('all-game policy rejects SINGLE even when minimum design fields are otherwise complete',()=>{
+  const record=base();
+  record.content.multiplayerMode='SINGLE';
+  const verdict=evaluateMinimumDesignContract(record);
+  assert.equal(verdict.pass,false);
+  assert.ok(verdict.blockers.includes('MINIMUM_MULTIPLAYER_DESIGN_EXTENSION_REQUIRED'));
+  const coop=evaluateMinimumDesignContract(base());
+  assert.equal(coop.blockers.includes('MINIMUM_MULTIPLAYER_DESIGN_EXTENSION_REQUIRED'),false);
+});
+
+
+test('minimum design requires common core and Roblox when Unity is owner held',()=>{
   const gate=evaluateMinimumDesignContract(base());
   assert.equal(gate.pass,true);
   assert.equal(gate.platformProfiles.ROBLOX,true);
   assert.equal(gate.platformProfiles.UNITY,true);
   assert.equal(gate.platformProfiles.distinct,true);
+  assert.equal(gate.platformProfiles.unityRequired,false);
 });
 
-test('single copied or missing platform design cannot start native development',()=>{
+test('owner-held Unity is optional but Roblox profile is mandatory',()=>{
   const missing=base();delete missing.content.platformProfiles.UNITY;
-  assert.equal(evaluateMinimumDesignContract(missing).pass,false);
+  assert.equal(evaluateMinimumDesignContract(missing).pass,true);
+  const noRoblox=base();delete noRoblox.content.platformProfiles.ROBLOX;
+  assert.equal(evaluateMinimumDesignContract(noRoblox).pass,false);
   const copied=base();copied.content.platformProfiles.UNITY={...copied.content.platformProfiles.ROBLOX};
   copied.content.platformProfiles.UNITY.platform='UNITY';
   assert.equal(evaluateMinimumDesignContract(copied).pass,true);
   copied.content.platformProfiles.UNITY={...copied.content.platformProfiles.ROBLOX};
-  assert.equal(evaluateMinimumDesignContract(copied).pass,false);
+  assert.equal(evaluateMinimumDesignContract(copied).pass,true);
 });
 
 
@@ -73,7 +93,7 @@ test('Vibe minimum design materializes one truthful development input without in
     DISTINCT_IDENTITY:'곤충 종류와 배치 전략이 매 웨이브마다 변하는 30웨이브 수비 게임',
     CORE_LOOP:['다가오는 곤충 웨이브를 확인한다','제한된 자원을 사용해 방어 유닛을 배치한다','웨이브를 방어하고 다음 선택을 준비한다'],
     CORE_FUN_TO_LEARN:['웨이브별 곤충 상성','방어 유닛 배치 선택'],
-    MULTIPLAYER_DESIGN_MODE:'SINGLE',SAVE_POLICY:'KEEP_EXISTING_SAVE_KEYS',
+    MULTIPLAYER_DESIGN_MODE:'COOP',SAVE_POLICY:'KEEP_EXISTING_SAVE_KEYS',
     TARGET_SESSION_MINUTES:30,
     GAMEPLAY_SKETCH:{
       flowArchitecture:{systemBlueprint:{requiredSystems:[
@@ -93,7 +113,7 @@ test('Vibe minimum design materializes one truthful development input without in
     assert.equal(record.runtimePass,false);
     assert.equal(record.independentQaPass,false);
     assert.equal(record.releasePass,false);
-    assert.equal(record.content.multiplayerMode,'SINGLE');
+    assert.equal(record.content.multiplayerMode,'COOP');
     assert.deepEqual(record.content.coreLoop,seed.CORE_LOOP);
     assert.equal(record.content.coreNumbersAndBalance.inventedNumericValues,false);
     assert.equal(record.content.saveMeaning,'KEEP_EXISTING_SAVE_KEYS');

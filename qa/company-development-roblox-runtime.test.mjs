@@ -9,6 +9,12 @@ import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-cont
 import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
 import {buildTransformativeRecombination,recombinationDesignAxes,transformativeRecipeCompatibility} from '../tools/vibe3-transformative-recombination.mjs';
 
+// Keep native config source bound to the actual canonical policy during isolated QA.
+const previousVerifiedPolicySource=process.env.COMPANY_VERIFIED_POLICY_PATH;
+test.before(()=>{process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';});
+test.after(()=>{if(previousVerifiedPolicySource===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicySource;});
+
 const VERIFIED_ROBLOX_LEARNING_REUSE=Object.freeze({
   id:'external-black-box-runtime-test',
   project:'verified-runtime-reference',
@@ -214,6 +220,23 @@ test('Roblox bootstrap static gate accepts profile-bound server-authoritative mo
   assert.equal(verdict.pass,true,verdict.blockers.join(','));
   assert.equal(verdict.saveRequired,true);
   assert.equal(verdict.profile.genre,'Simulation');
+});
+
+test('Roblox static multiplayer profile accepts formatting only and rejects incorrect values',()=>{
+  const profile=robloxBuildProfileFromBaseline(baseline);
+  const original=validateRobloxBootstrap({sharedConfig:shared,serverCode:server,clientCode:client,baseline});
+  assert.equal(original.pass,true,original.blockers.join(','));
+  const compact=shared
+    .replace(/\bGenre\s*=\s*/, 'Genre=')
+    .replace(/\bPlayMode\s*=\s*/, 'PlayMode=')
+    .replace(/\bMultiplayerRequired\s*=\s*/, 'MultiplayerRequired=');
+  const valid=validateRobloxBootstrap({sharedConfig:compact,serverCode:server,clientCode:client,baseline});
+  assert.equal(valid.pass,true,valid.blockers.join(','));
+  const invalid=compact.replace(/\bMultiplayerRequired\s*=\s*(true|false)/,
+    'MultiplayerRequired='+(profile.multiplayerRequired?'false':'true'));
+  const denied=validateRobloxBootstrap({sharedConfig:invalid,serverCode:server,clientCode:client,baseline});
+  assert.equal(denied.pass,false);
+  assert.ok(denied.blockers.includes('CONFIG_MULTIPLAYER_PROFILE_REQUIRED'));
 });
 
 test('Roblox bootstrap static gate rejects placeholders and missing server boundary',()=>{
@@ -613,14 +636,15 @@ test('Roblox compiler is admitted by native platform design and does not consume
   assert.ok(compiled.result.sharedConfig.includes('AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY"'));
 });
 
-test('central development orchestrator gates new native lanes on Unity Web readiness',()=>{
+test('central development orchestrator independently dispatches Roblox while preserving native admission',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
   const admission=fs.readFileSync(new URL('../tools/company-upper-platform-admission.mjs',import.meta.url),'utf8');
-  assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo/);
+  assert.match(workflow,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
   assert.match(workflow,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.doesNotMatch(workflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.doesNotMatch(workflow,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-  assert.doesNotMatch(workflow,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
+  assert.doesNotMatch(workflow,/gh workflow run (?:company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.match(workflow,/grandfatherGameIds/);
@@ -1051,7 +1075,8 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND=/);
   assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_OWNS_VERIFIED_LEARNING_REBIND=/);
   assert.match(workflow,/if\(existingSourceLearningRebind\)\{[\s\S]*?continue;/);
-  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind;/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\|\|materialRepairPending;/);
+  assert.match(workflow,/const materialRepairPending=reconciliationRow\?\.sourceRepairPending===true/);
   assert.match(workflow,/const repairSupersedesCandidate=existingSourceMaintenanceRebind\|\|knownSourceRepairDebt/);
   assert.match(workflow,/if\(candidateReady&&!repairSupersedesCandidate\)continue/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR=/);
@@ -1163,7 +1188,7 @@ test('Roblox runtime collapses duplicate exact-game and batch planners without w
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(workflow,/const winner=candidates\.find\(r=>String\(r\.status\|\|''\)\.toLowerCase\(\)==='in_progress'\)\|\|candidates\[candidates\.length-1\]/);
+  assert.match(workflow,/const winner=candidates\[0\];/);
   assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n/);
 });
 
@@ -1175,7 +1200,7 @@ test('source-plan dedupe keeps active same-game ingress on the fixed control run
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
   assert.match(block,/runs-on:\s*ubuntu-24\.04/);
-  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      cancel-in-progress: false/);
+  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      queue: max\n      cancel-in-progress: false/);
   assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
 });
 
@@ -1202,8 +1227,8 @@ test('Roblox source-plan winner preserves running work and filters exact game an
     return result;
   };
   assert.equal(winner([run(10,'in_progress'),run(11,'queued')]),'10');
-  assert.equal(winner([run(10,'queued'),run(11,'in_progress')]),'11');
-  assert.equal(winner([run(10,'queued'),run(11,'queued')]),'11');
+  assert.equal(winner([run(10,'queued'),run(11,'in_progress')]),'10');
+  assert.equal(winner([run(10,'queued'),run(11,'queued')]),'10');
   assert.equal(winner([run(10,'completed'),run(11,'queued')]),'11');
   assert.equal(winner([run(10,'in_progress','different'),run(11,'queued','cozy-island','b'.repeat(40)),run(12,'queued')]),'12');
   assert.equal(winner([run(10,'in_progress','different')]),'');
@@ -1268,10 +1293,10 @@ test('build revalidation pending waiting state remains eligible for exact Roblox
 });
 
 
-test('exact-game dedupe prefers in-progress work and compares only the same source revision',()=>{
+test('exact-game dedupe keeps oldest active work and compares only the same source revision',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/\.sort\(\(a,b\)=>Number\(a\.id\)-Number\(b\.id\)\)/);
-  assert.match(workflow,/const winner=candidates\.find\(r=>String\(r\.status\|\|''\)\.toLowerCase\(\)==='in_progress'\)\|\|candidates\[candidates\.length-1\]/);
+  assert.match(workflow,/const winner=candidates\[0\];/);
   assert.doesNotMatch(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
 });
 
@@ -1391,7 +1416,7 @@ test('verified learning refresh debt coalesces to one exact current-main batch s
 test('existing asset rebind migrates removed studioUi consumers and remains idempotent',()=>{
   const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   const start=source.indexOf('function studioAssetDynamicBindingBlock');
-  const end=source.indexOf('\nexport function foundationCharacterSource',start);
+  const end=source.indexOf('\nexport function bindExistingServerStudioMaterial',start);
   assert.ok(start>=0&&end>start);
   const familyPrelude='const ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES='+JSON.stringify(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'])+';\n';
   const bind=runInNewContext(familyPrelude+source.slice(start,end)+'\nbindExistingClientStudioAssets');
@@ -1433,4 +1458,51 @@ test('director drains stale queued Roblox native work when a current-main batch 
   assert.match(director,/ROBLOX_STALE_UNSTARTED_NATIVE_WORK_REPLACED_BY_CURRENT_BATCH/);
   assert.match(director,/queued\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_ACTIVE_PRESERVED=/);
+});
+
+test('Vibe source repair logs exact current blockers without bypassing material or static contract ownership',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('const materialRepairPending=');
+  const end=workflow.indexOf('const existingSourceAssetRebind=',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/reconciliationRow\.blockers\.length===1/);
+  assert.match(block,/ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL/);
+  assert.match(block,/ROBLOX_SOURCE_REPAIR_DEBT_DETAILS=/);
+  assert.match(block,/sourceContractRepairRequired:reconciliationRow\?\.sourceContractRepairRequired===true/);
+  assert.match(block,/blockers:Array\.isArray\(reconciliationRow\?\.blockers\)/);
+  assert.match(block,/ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE=/);
+  assert.match(block,/continue;/);
+});
+
+test('Roblox exact-SHA scheduler keeps oldest active run even when GitHub reports queued during downstream work',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const step=workflow.slice(workflow.indexOf('      - name: Reject superseded batch scheduler'),workflow.indexOf('      - name: Bind Roblox source-plan contract fingerprint'));
+  const start=step.indexOf("const states=new Set(['queued','pending','in_progress','requested']);");
+  const end=step.indexOf("\n            });",start);
+  assert.ok(start>=0&&end>start,'original canonical planner decision must be present');
+  const decide=step.slice(start,end);
+  assert.match(decide,/sort\(\(a,b\)=>Number\(a\.id\)-Number\(b\.id\)\)/);
+  assert.match(decide,/const winner=candidates\[0\];/);
+  const sha='a'.repeat(40),older=39034932991,newer=39035066181;
+  const decideOwner=(status1,status2,{title='Roblox runtime · batch',currentGame='',differentSha=false}={})=>{
+    let selection=null;
+    const j={workflow_runs:[
+      {id:newer,status:status2,display_title:title,head_sha:sha},
+      {id:older,status:status1,display_title:title,head_sha:differentSha?'b'.repeat(40):sha},
+      {id:older-1,status:'completed',display_title:title,head_sha:sha},
+      {id:older-2,status:'queued',display_title:'Roblox runtime · other-game',head_sha:sha},
+    ]};
+    runInNewContext(decide,{j,process:{
+      env:{REQUESTED_GAME_ID:currentGame,CURRENT_SHA:sha},
+      stdout:{write(value){selection=String(value)}}
+    }});
+    return selection;
+  };
+  assert.equal(decideOwner('queued','queued'),String(older));
+  assert.equal(decideOwner('queued','in_progress'),String(older),'the newer job cannot preempt an older queued workflow with live child jobs');
+  assert.equal(decideOwner('in_progress','queued'),String(older));
+  assert.equal(decideOwner('completed','queued'),String(newer));
+  assert.equal(decideOwner('queued','queued',{differentSha:true}),String(newer));
+  assert.equal(decideOwner('queued','queued',{title:'Roblox runtime · island-village',currentGame:'island-village'}),String(older));
 });

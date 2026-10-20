@@ -63,9 +63,12 @@ test('batch F0 private validation dispatch dedupes only current-main exact-game 
   assert.doesNotMatch(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_WAIT_MS=/);
 });
 
-test('merged Roblox source stays in the Roblox lane while the central orchestrator reuses both native lanes behind readiness',()=>{
-  assert.ok(parentWorkflow.includes('uses: ./.github/workflows/company-development-roblox-runtime.yml'));
+test('current orchestrator dispatches independent Roblox games and keeps Unity Android owner-held',()=>{
+  assert.ok(parentWorkflow.includes('gh workflow run company-development-roblox-runtime.yml'));
   assert.ok(parentWorkflow.includes('uses: ./.github/workflows/company-development-unity-runtime.yml'));
+  assert.ok(parentWorkflow.includes('UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09'));
+  assert.ok(parentWorkflow.includes("if: needs.native-plan.result == 'success' && needs.native-plan.outputs.roblox_count != '0'"));
+  assert.ok(parentWorkflow.includes("if: needs.native-plan.result == 'success' && needs.native-plan.outputs.unity_count != '0'"));
   assert.ok(parentWorkflow.includes('UPPER_PLATFORM_ELIGIBLE_COUNT='));
   assert.ok(parentWorkflow.includes('UPPER_PLATFORM_GRANDFATHERED_IDS='));
   assert.ok(!parentWorkflow.includes('uses: ./.github/workflows/unity-web-first-stage-build.yml'));
@@ -74,4 +77,5 @@ test('merged Roblox source stays in the Roblox lane while the central orchestrat
   assert.ok(workflow.includes('persist Roblox source-bind results'));
   assert.ok(workflow.includes('technical-plan:'));
   assert.ok(workflow.includes('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'));
+  assert.ok(workflow.includes("'qa/company-development-roblox-independent-promotion.test.mjs'"));
 });

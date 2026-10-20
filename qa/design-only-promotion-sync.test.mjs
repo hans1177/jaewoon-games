@@ -7,6 +7,14 @@ import {promoteReadyDesignSeeds} from '../tools/design-only-promotion-sync.mjs';
 import {evaluateMinimumDesignContract,latestMinimumDesign,materializeVibeMinimumDesign} from '../tools/company-minimum-design-contract.mjs';
 import {migrateDirectNativeRuntime} from '../tools/company-direct-native-design-migration.mjs';
 
+// Each isolated promotion fixture must bind the exact policy file it authored.
+// Real production resolves the independently checked out main policy in the workflow.
+const previousVerifiedPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+test.after(()=>{
+  if(previousVerifiedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicyPath;
+});
+
 const write=(root,file,value)=>{
   const out=path.join(root,file);
   fs.mkdirSync(path.dirname(out),{recursive:true});
@@ -17,18 +25,18 @@ const read=(root,file)=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'))
 function centralPolicy(root){
   write(root,'company-learning/platform-release-roadmap.json',{
     authority:'MACHINE_EXECUTION_CONTRACT',
-    developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',UNITY_WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD'},
+    developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY_WEB:'OWNER_HOLD',UNITY:'OWNER_HOLD'},
     directNativeDualPlatformDevelopment:{
       status:'OWNER_DIRECT_LOCKED',
       mode:'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR',
-      ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','UNITY_WEB']},
+      ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY_WEB','UNITY_ANDROID']},
       canonicalDevelopmentAdmissionAuthority:true,
       minimumDesignRequired:true,
       strictDesignScoreRequiredForDevelopmentAdmission:false,
       legacyWebFirstFallbackForbidden:true,
       webDevelopmentStageRemoved:false,
-      unityWebEnabled:true,
-      unityWebRequired:true,
+      unityWebEnabled:false,
+      unityWebRequired:false,
       unityWebGateRequired:false,
       unityWebMode:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
       upperPlatformAdmission:'MINIMUM_DESIGN_READY',
@@ -42,10 +50,11 @@ function centralPolicy(root){
         targets:['ROBLOX','UNITY']
       },
       supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
-      automaticPairing:{ROBLOX:['ROBLOX','UNITY_WEB_FLOOR'],UNITY:['UNITY_WEB_FLOOR']},
+      automaticPairing:{ROBLOX:['ROBLOX'],UNITY:[]},
       unityWebValidationSurface:{requiredForDevelopmentAdmission:false}
     }
   });
+  process.env.COMPANY_VERIFIED_POLICY_PATH=path.join(root,'company-learning/platform-release-roadmap.json');
 }
 function designContent(){
   return {
@@ -114,16 +123,17 @@ test('minimum dual-platform design promotes immediately while strict review stay
   assert.deepEqual(result.promoted,['g1']);
   const seed=read(root,'game-seed-state.json').seeds[0];
   assert.equal(seed.productionClass,'DEVELOPMENT_CONFIRMED');
-  assert.equal(seed.promotion.reason,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+  assert.equal(seed.promotion.reason,'MINIMUM_ROBLOX_DESIGN_READY');
+  assert.equal(Object.hasOwn(seed.platformDesignProfiles,'UNITY'),false);
   assert.equal(seed.promotion.strictDesignReviewRequiredForAdmission,false);
   assert.equal(seed.promotion.strictDesignReviewContinuesInParallel,true);
 
   const item=read(root,'development-queue.json').items[0];
-  assert.deepEqual(item.concurrentTargetPlatforms,['ROBLOX','UNITY']);
-  assert.equal(item.platformExecutionMode,'OWNER_ACTIVE_PLATFORMS_SAME_GAME');
+  assert.deepEqual(item.concurrentTargetPlatforms,['ROBLOX']);
+  assert.equal(item.platformExecutionMode,'ROBLOX_ONLY_OWNER_ACTIVE');
   assert.equal(item.requestEitherStartsBoth,false);
   assert.equal(item.currentStep,'TARGET_PLATFORM_SOURCE_BIND');
-  assert.equal(item.canonicalState,'PENDING_DUAL_NATIVE_SOURCE_BIND');
+  assert.equal(item.canonicalState,'PENDING_ROBLOX_SOURCE_BIND');
   assert.equal(item.minimumDesignContract.pass,true);
   for(const key of ['webValidationRequired','musicValidationRequired','webSourcePath','webFirstGatePassed','webSecondGateRequired','webPlatformHandoff','postWebArtbookRequired'])assert.equal(Object.hasOwn(item,key),false,key);
   assert.equal(item.artbookTiming,'PARALLEL_NATIVE_PRESENTATION_SUPPORT');
@@ -182,7 +192,7 @@ test('intentional PAUSED state is preserved even when canonical catalog lifecycl
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('legacy Android preference maps to Unity but still starts both native lanes',()=>{
+test('historical Android preference is owner-held and promotes Roblox only',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-native-platform-'));
   base(root);
   write(root,'game-seed-state.json',{version:1,seeds:[{
@@ -193,11 +203,11 @@ test('legacy Android preference maps to Unity but still starts both native lanes
   promoteReadyDesignSeeds({root});
   const seed=read(root,'game-seed-state.json').seeds[0];
   const item=read(root,'development-queue.json').items[0];
-  assert.equal(seed.selectedPlatform,'UNITY');
-  assert.equal(item.targetPlatform,'UNITY');
-  assert.deepEqual(item.concurrentTargetPlatforms,['ROBLOX','UNITY']);
+  assert.equal(seed.selectedPlatform,'ROBLOX');
+  assert.equal(item.targetPlatform,'ROBLOX');
+  assert.deepEqual(item.concurrentTargetPlatforms,['ROBLOX']);
   assert.equal(item.targetSourcePaths.ROBLOX,'roblox-games/g2');
-  assert.equal(item.targetSourcePaths.UNITY,'unity-games/g2');
+  assert.equal(item.targetSourcePaths.UNITY,undefined);
 });
 
 test('incomplete minimum design remains transient DESIGN_ONLY with no development queue row',()=>{
@@ -259,7 +269,7 @@ test('reconciliation preserves current direct-native progress when the minimum d
   write(root,'development-queue.json',{version:1,items:[{
     gameId:'g6',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
     platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
-    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    concurrentTargetPlatforms:['ROBLOX'],
     minimumDesignContract:{pass:true,source},
     currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',
     canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'
@@ -343,7 +353,7 @@ test('promotion sync preserves verified advanced progress while normalizing exec
     write(root,'development-queue.json',{version:1,items:[{
       gameId:'progress-game',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
       platformExecutionMode:'OWNER_ACTIVE_PLATFORMS_SAME_GAME',
-      concurrentTargetPlatforms:['ROBLOX','UNITY'],
+      concurrentTargetPlatforms:['ROBLOX'],
       minimumDesignContract:{pass:true,source},
       currentStep:'POST_F9_CONTINUOUS_EVOLUTION',
       canonicalState:'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION',
@@ -358,7 +368,7 @@ test('promotion sync preserves verified advanced progress while normalizing exec
     assert.equal(item.robloxFoundationF0Passed,true);
     assert.equal(item.robloxFinalReviewPassed,true);
     assert.equal(item.robloxF9ReleaseRegressionPassed,true);
-    assert.equal(item.platformExecutionMode,'OWNER_ACTIVE_PLATFORMS_SAME_GAME');
+    assert.equal(item.platformExecutionMode,'ROBLOX_ONLY_OWNER_ACTIVE');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -373,10 +383,10 @@ test('promotion sync recovers exact private Roblox runtime candidate instead of 
   write(root,'development-queue.json',{version:1,items:[{
     gameId:'g7',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
     platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
-    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    concurrentTargetPlatforms:['ROBLOX'],
     minimumDesignContract:{pass:true,source},
     currentStep:'TARGET_PLATFORM_SOURCE_BIND',
-    canonicalState:'PENDING_DUAL_NATIVE_SOURCE_BIND',
+    canonicalState:'PENDING_ROBLOX_SOURCE_BIND',
     robloxSourceCommit:revision,
     robloxBuildArtifactIdentity:artifact,
     robloxRuntimeCandidateEvidence:{
@@ -444,7 +454,7 @@ test('repeated seed migration preserves source-ready package and repair checkpoi
     const items=cases.map(({id,...stage})=>{
       const source=writeMinimumDesign(root,id);
       return{gameId:id,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',selectedPlatform:'ROBLOX',
-        designBaselineSource:source,minimumDesignContract:{pass:true,source},concurrentTargetPlatforms:['ROBLOX','UNITY'],
+        designBaselineSource:source,minimumDesignContract:{pass:true,source},concurrentTargetPlatforms:['ROBLOX'],
         robloxSourceCommit:sourceRevision,robloxSourceBootstrapPassedAt:passedAt,robloxSourceBootstrapFailedAt:null,
         robloxBuildOrPackagePassed:false,robloxRuntimePassed:false,robloxFinalReviewPassed:false,robloxReleaseClaim:false,...stage};
     });
@@ -457,6 +467,8 @@ test('repeated seed migration preserves source-ready package and repair checkpoi
         for(const key of ['currentStep','canonicalState','robloxSourceCommit','robloxSourceBootstrapPassedAt','robloxFailureStage','robloxFailureSignature',
           'robloxQualityBuildUpRequired','robloxQualityBuildUpEvidence','robloxBuildOrPackagePassed','robloxRuntimePassed','robloxFinalReviewPassed',
           'robloxF9ReleaseRegressionPassed','robloxF9ReleaseRegressionEvidence','robloxReleaseClaim','unitySourceCommit','unitySourceBootstrapPassedAt']){
+          if(expected.gameId==='unity-technical'&&key==='currentStep'){assert.equal(item[key],'TARGET_PLATFORM_SOURCE_BIND');continue;}
+          if(expected.gameId==='unity-technical'&&key==='canonicalState'){assert.equal(item[key],'PENDING_ROBLOX_SOURCE_BIND');continue;}
           assert.deepEqual(item[key],expected[key],expected.gameId+':'+key);
         }
       }
@@ -484,7 +496,7 @@ test('seed migration starts new designs and unverified or failed sources at sour
     migrateDirectNativeRuntime(root);
     for(const item of read(root,'development-queue.json').items){
       assert.equal(item.currentStep,'TARGET_PLATFORM_SOURCE_BIND',item.gameId);
-      assert.equal(item.canonicalState,'PENDING_DUAL_NATIVE_SOURCE_BIND',item.gameId);
+      assert.equal(item.canonicalState,'PENDING_ROBLOX_SOURCE_BIND',item.gameId);
       assert.equal(item.robloxBuildOrPackagePassed,false);
       assert.equal(item.robloxRuntimePassed,false);
       assert.equal(item.robloxFinalReviewPassed,false);
@@ -501,7 +513,7 @@ test('canonical promotion feeds exactly one grounded Vibe starter into native co
     const seed=id=>({
       seedId:'OWNER-'+id.toUpperCase(),gameId:id,gameName:id,
       status:'ACTIVE',productionClass:'DESIGN_ONLY',GAME_CATEGORY:'SINGLE_DEFENSE_STRATEGY',
-      INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:'SINGLE',
+      INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:'COOP',
       DISTINCT_IDENTITY:'웨이브별 곤충 종류와 서식 환경의 상성을 활용하는 수비 전략 게임',
       CORE_LOOP:['다가오는 웨이브의 위험을 분석한다','제한된 자원으로 수비 유닛을 배치한다','웨이브를 견디고 다음 수비를 준비한다'],
       CORE_FUN_TO_LEARN:['배치의 선택','적의 종류에 따른 전략 조합'],
@@ -524,7 +536,7 @@ test('canonical promotion feeds exactly one grounded Vibe starter into native co
     assert.equal(firstRecord.strictDesignPass,false);
     assert.equal(firstRecord.runtimePass,false);
     assert.equal(firstRecord.releasePass,false);
-    assert.equal(firstRecord.content.multiplayerMode,'SINGLE');
+    assert.equal(firstRecord.content.multiplayerMode,'COOP');
     assert.equal(firstRecord.content.coreNumbersAndBalance.catalogScope,'30웨이브 곤충 디펜스');
     assert.deepEqual(read(root,'development-queue.json').items.map(item=>item.gameId),['one-defense']);
     const second=promoteReadyDesignSeeds({root});
@@ -594,7 +606,16 @@ test('V5 code-admission grammar gate rejects a fake MAIN/A/B/C/@ label without s
     cGenres:[{role:'PRIMARY',name:'생존',gameplayEffect:'생존 위험을 다룬다'},{role:'SECONDARY',name:'탐험',gameplayEffect:'탐험을 하게 만든다'}],
     delveDiscoveries:[{clue:'나무',discovery:'껍질',newChoice:'더 모은다'}]
   }};
-  const gate=evaluateMinimumDesignContract({content:fake},{seed});
+  // This standalone grammar case has no temp-root policy; bind the current
+  // canonical main policy, not the already-deleted preceding fixture path.
+  const savedPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+  let gate;
+  try{gate=evaluateMinimumDesignContract({content:fake},{seed});}
+  finally{
+    if(savedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=savedPolicyPath;
+  }
   assert.equal(gate.pass,false);
   assert.equal(gate.creativeGrammarReady,false);
   assert.ok(gate.blockers.includes('DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE')||gate.blockers.includes('DESIGN_MAIN_A_B_DELVE_REQUIRED'));

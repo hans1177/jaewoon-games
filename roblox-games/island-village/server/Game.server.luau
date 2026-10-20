@@ -321,3 +321,20 @@ Players.PlayerRemoving:Connect(function(player)
   lastAction[player] = nil
 end)
 game:BindToClose(function() end)
+
+-- STUDIO_ASSET_NATIVE_MATERIAL_REPAIR_BEGIN
+local function studioAssetFamily(family)
+  return (Config.StudioAssets and Config.StudioAssets.Families or {})[family] or {}
+end
+if foundationSpawn and foundationSpawn:IsA("BasePart") and foundationSpawn.Transparency < 1 then
+  if table.find(studioAssetFamily("MATERIAL"), "METAL") then
+    foundationSpawn.Material = Enum.Material.Metal
+  elseif table.find(studioAssetFamily("MATERIAL"), "STONE") then
+    foundationSpawn.Material = Enum.Material.Slate
+  elseif table.find(studioAssetFamily("MATERIAL"), "WOOD") then
+    foundationSpawn.Material = Enum.Material.WoodPlanks
+  elseif table.find(studioAssetFamily("MATERIAL"), "CLOTH") then
+    foundationSpawn.Material = Enum.Material.Fabric
+  end
+end
+-- STUDIO_ASSET_NATIVE_MATERIAL_REPAIR_END

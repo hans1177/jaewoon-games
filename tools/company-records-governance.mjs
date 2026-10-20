@@ -147,35 +147,39 @@ export function changedGovernedFiles(base='HEAD^',head='HEAD'){
 }
 
 
-const CENTRAL_POLICY_REL='company-learning/platform-release-roadmap.json';
+const CENTRAL_POLICY_REL=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+const CENTRAL_DIRECTIVE_REL='company-directive.json';
 const CENTRAL_ARCHITECTURE_REL='company-learning/company-architecture-map.json';
 const CENTRAL_LOG_MAP_REL='company-learning/company-log-map.json';
 const CENTRAL_SECURITY_REL='company-learning/security-immune-system.json';
 const CENTRAL_SCAN_ROOTS=Object.freeze(['qa','tools','.github','assets']);
+// The owner-retained four JSON documents are frozen minimal schemas.
 const CENTRAL_COMPANION_DOCUMENTS=Object.freeze({
   architecture:Object.freeze({
     sourcePath:CENTRAL_ARCHITECTURE_REL,
     aliases:Object.freeze(['architecture','architectureMap']),
-    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','logMap','securityPolicy','purpose','requiredForAllWorkers','branches','authorityOrder','sharedContextLoadOrder','workerSynchronization','centralArchitectureProjection'])
+    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','status',
+      'branches','constitutionalEnforcement','release','notes'])
   }),
   logMap:Object.freeze({
     sourcePath:CENTRAL_LOG_MAP_REL,
     aliases:Object.freeze(['logMap']),
-    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','centralPolicy','architectureMap','securityPolicy','purpose','requiredForAllWorkers','canonicalCorrelationKeys','logChannels','requiredMarkers','workerContextLogContract','orchestrationLogContract'])
+    pinnedCorePaths:Object.freeze(['version','authority','sourceOfTruth','status',
+      'requiredForAllWorkers','retained','notes'])
   })
 });
 const CENTRAL_TEXT_EXTENSIONS=new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md']);
 const CENTRAL_DOCUMENT_BUDGETS=Object.freeze({
-  policy:Object.freeze({sourcePath:CENTRAL_POLICY_REL,hardMaxUtf8Bytes:null,maxGrowthUtf8Bytes:12000}),
-  architecture:Object.freeze({sourcePath:CENTRAL_ARCHITECTURE_REL,hardMaxUtf8Bytes:320000,maxGrowthUtf8Bytes:8000}),
-  logMap:Object.freeze({sourcePath:CENTRAL_LOG_MAP_REL,hardMaxUtf8Bytes:140000,maxGrowthUtf8Bytes:4000}),
-  security:Object.freeze({sourcePath:CENTRAL_SECURITY_REL,hardMaxUtf8Bytes:70000,maxGrowthUtf8Bytes:4000})
+  policy:Object.freeze({sourcePath:CENTRAL_DIRECTIVE_REL,hardMaxUtf8Bytes:80000,maxGrowthUtf8Bytes:0}),
+  architecture:Object.freeze({sourcePath:CENTRAL_ARCHITECTURE_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0}),
+  logMap:Object.freeze({sourcePath:CENTRAL_LOG_MAP_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0}),
+  security:Object.freeze({sourcePath:CENTRAL_SECURITY_REL,hardMaxUtf8Bytes:999,maxGrowthUtf8Bytes:0})
 });
 const cloneJson=value=>JSON.parse(JSON.stringify(value));
 const utf8Bytes=value=>Buffer.byteLength(typeof value==='string'?value:JSON.stringify(value,null,2)+'\n','utf8');
 const readTextRel=rel=>fs.readFileSync(path.join(ROOT,rel),'utf8');
 const readJsonRel=rel=>JSON.parse(readTextRel(rel));
-const readCentralRoadmap=()=>readJsonRel(CENTRAL_POLICY_REL);
+const readCentralRoadmap=()=>{if(!CENTRAL_POLICY_REL)throw new Error('CENTRAL_RECORDS_VERIFIED_POLICY_PATH_REQUIRED');return readJsonRel(CENTRAL_POLICY_REL);};
 const escapeRegExp=value=>String(value??'').replace(/[|\\{}()[\]^$+*?.-]/g,'\\$&');
 
 // Formatting never removes policy data, including security rules consumed as whole documents.
@@ -190,16 +194,21 @@ export function planCentralDocumentFormatting(text,{hardMaxUtf8Bytes}={}){
   throw new Error('central document remains above hard limit; policy review required');
 }
 export function formatCentralDocuments(){
-  // Prepare every result before writing: an oversized document leaves all four untouched.
-  const plans=Object.entries(CENTRAL_DOCUMENT_BUDGETS).map(([key,budget])=>{
-    const text=readTextRel(budget.sourcePath);
-    const hardMaxUtf8Bytes=key==='policy'
-      ?Number(JSON.parse(text).centralDocumentRetention?.maxUtf8Bytes||1120000)
-      :budget.hardMaxUtf8Bytes;
-    return {...planCentralDocumentFormatting(text,{hardMaxUtf8Bytes}),sourcePath:budget.sourcePath};
-  });
-  for(const plan of plans)if(plan.changed)fs.writeFileSync(path.join(ROOT,plan.sourcePath),plan.text);
-  return plans.filter(plan=>plan.changed).map(plan=>plan.sourcePath);
+  // Locked minimal documents must never be auto-reformatted or archived.
+  for(const budget of Object.values(CENTRAL_DOCUMENT_BUDGETS)){
+    const contents=readTextRel(budget.sourcePath);
+    const parsed=JSON.parse(contents);
+    const fullDirective=budget.sourcePath===CENTRAL_DIRECTIVE_REL
+      && parsed.authority==='MACHINE_EXECUTION_CONTRACT'
+      && parsed.policyDocument==='company-learning/platform-release-roadmap.json'
+      && parsed.documentationSynchronization?.centralPolicyPath===parsed.policyDocument;
+    if(!Number.isInteger(parsed.version) ||
+      (!fullDirective && (!String(parsed.status||'').startsWith('MINIMAL_') || [...contents].length>=1000)) ||
+      utf8Bytes(contents)>budget.hardMaxUtf8Bytes) {
+      throw new Error('RETAINED_DOCUMENT_LOCK_VIOLATION:'+budget.sourcePath);
+    }
+  }
+  return [];
 }
 
 function pathValue(root,dotted=''){
@@ -442,9 +451,7 @@ export function inspectCentralDocumentBudgets({baseRevision=''}={}){
   for(const [documentKey,budget] of Object.entries(CENTRAL_DOCUMENT_BUDGETS)){
     const currentText=readTextRel(budget.sourcePath);
     const currentJson=JSON.parse(currentText);
-    const hardMax=documentKey==='policy'
-      ?Number(currentJson?.centralDocumentRetention?.maxUtf8Bytes||1120000)
-      :Number(budget.hardMaxUtf8Bytes||0);
+    const hardMax=Number(budget.hardMaxUtf8Bytes||0);
     let baseBytes=null;
     if(base&& !/^0+$/.test(base)){
       if(base==='HEAD'){
@@ -754,38 +761,15 @@ function companionArchiveRecord({plans,sourceRevision,createdAt,recordId}){
   };
 }
 
-export function archiveCentralCompanionCurrentUse({createdAt=new Date().toISOString(),sourceRevision=currentGitRevision()}={}){
-  const refs=findCurrentCompanionDocumentReferences();
-  const plans={};
-  for(const [documentKey,config] of Object.entries(CENTRAL_COMPANION_DOCUMENTS)){
-    const current=readJsonRel(config.sourcePath);
-    const plan=planCompanionCurrentUsePrune({
-      document:current,
-      currentReferences:refs[documentKey]||{},
-      pinnedCorePaths:config.pinnedCorePaths
-    });
-    if(plan.archivedPaths.length)plans[documentKey]={sourcePath:config.sourcePath,plan};
+export function archiveCentralCompanionCurrentUse(){
+  for(const config of Object.values(CENTRAL_COMPANION_DOCUMENTS)){
+    const doc=readJsonRel(config.sourcePath);
+    if(!String(doc.status||'').startsWith('MINIMAL_')) {
+      throw new Error('RETAINED_COMPANION_DOCUMENT_CONTRACT_INVALID:'+config.sourcePath);
+    }
   }
-  if(!Object.keys(plans).length)return Object.freeze({changed:false,plans,archiveRecord:null,archivePath:null});
-  const date=createdAt.slice(0,10),compact=date.replaceAll('-','');
-  const fingerprint=crypto.createHash('sha256').update(JSON.stringify(Object.fromEntries(
-    Object.entries(plans).map(([key,row])=>[key,row.plan.archivedPaths])
-  ))).digest('hex').slice(0,12);
-  const revision=(sourceRevision||'no-revision').slice(0,8).toLowerCase().replace(/[^a-z0-9]/g,'');
-  const recordId='central-companion-current-use-'+compact+'-'+revision+'-'+fingerprint;
-  const archiveRel='company-records/operations/'+date.slice(0,4)+'/'+date+'/company/central-document-archive--'+recordId+'.json';
-  if(existsRel(archiveRel))throw new Error('companion current-use archive record already exists: '+archiveRel);
-  const archive=companionArchiveRecord({plans,sourceRevision,createdAt,recordId});
-  const archiveAbs=path.join(ROOT,archiveRel);
-  fs.mkdirSync(path.dirname(archiveAbs),{recursive:true});
-  fs.writeFileSync(archiveAbs,JSON.stringify(archive,null,2)+'\n');
-  const validation=validateCompanyRecord(archiveRel);
-  if(validation.errors.length){
-    fs.rmSync(archiveAbs,{force:true});
-    throw new Error('companion current-use archive record validation failed: '+validation.errors.join(','));
-  }
-  for(const row of Object.values(plans))fs.writeFileSync(path.join(ROOT,row.sourcePath),JSON.stringify(row.plan.document,null,2)+'\n');
-  return Object.freeze({changed:true,plans,archiveRecord:archive,archivePath:archiveRel});
+  return Object.freeze({changed:false,plans:{},archiveRecord:null,archivePath:null,
+    reason:'RETAINED_MINIMAL_DOCUMENTS_LOCKED'});
 }
 
 function currentGitRevision(){

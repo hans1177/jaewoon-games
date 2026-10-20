@@ -681,8 +681,9 @@ export function acceptSystemAiTask(queueInput,{id,evidence=[]}={}){
 export function runSystemAiQueue(args={}){
   const file=clean(args.queue)||'.vibe2/system-ai-queue.json',command=clean(args.command).toLowerCase();
   let queue=normalizeSystemAiQueue(readJson(file,{tasks:[]}));
-  const roadmapFile=clean(args.roadmap)||'company-learning/platform-release-roadmap.json';
-  const excludedGameIds=ownerExclusiveSystemAiGameIds(readJson(roadmapFile,{}));
+  const roadmapFile=clean(args.roadmap)||clean(process.env.COMPANY_VERIFIED_POLICY_PATH);
+  // Never implicitly load an owner-retired policy. Preserve existing empty-policy behavior when no verified source is supplied.
+  const excludedGameIds=ownerExclusiveSystemAiGameIds(roadmapFile?readJson(roadmapFile,{}):{});
   if(command==='assign-security-recovery'){
     const recoveryFile=clean(args.recovery);
     if(!recoveryFile)throw new Error('SYSTEM_AI_SECURITY_RECOVERY_FILE_REQUIRED');

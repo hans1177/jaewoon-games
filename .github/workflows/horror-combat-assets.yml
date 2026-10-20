@@ -5,6 +5,9 @@ on:
     paths:
       - '.github/workflows/horror-combat-assets.yml'
       - 'tools/horror-combat-assets.mjs'
+      - 'company-asset-library.json'
+      - 'assets/roblox/actors/native/**'
+      - 'assets/shared/*.glb'
       - 'assets/roblox/world-ghosts/native/mesh/bride.glb'
       - 'assets/roblox/common-materials-v1/manifest.json'
       - 'assets/roblox/common-materials-v1/sources/**'
@@ -16,12 +19,12 @@ permissions:
 
 concurrency:
   group: horror-authored-combat-assets-v2
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   import:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,15 +38,19 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
-        run: node tools/horror-combat-assets.mjs --include-shared-materials
+        run: node tools/horror-combat-assets.mjs --include-shared-materials --include-shared-models
       - name: Preserve native import receipts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: native-material-import-receipts
-          path: assets/roblox/common-materials-v1/native-bindings.json
+          path: |
+            assets/roblox/common-materials-v1/native-bindings.json
+            assets/roblox/world-ghosts/native/combat-roblox-assets.json
+            company-asset-library.json
           if-no-files-found: ignore
       - name: Open exact combat asset binding PR
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -51,7 +58,9 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-horror-combat-assets'
           git config user.email 'actions@users.noreply.github.com'
-          git add roblox-games/horror-escape-room/shared/CombatAssets.luau assets/roblox/world-ghosts/native/combat-roblox-assets.json assets/roblox/common-materials-v1/native-bindings.json roblox-games/horror-escape-room/default.project.json roblox-games/cozy-island/default.project.json roblox-games/daechung-rpg/default.project.json
+          for binding_path in company-asset-library.json roblox-games/horror-escape-room/shared/CombatAssets.luau assets/roblox/world-ghosts/native/combat-roblox-assets.json assets/roblox/common-materials-v1/native-bindings.json roblox-games/horror-escape-room/default.project.json roblox-games/cozy-island/default.project.json roblox-games/daechung-rpg/default.project.json; do
+            if test -f "$binding_path"; then git add -- "$binding_path"; fi
+          done
           if git diff --cached --quiet; then
             echo 'COMBAT_ASSET_BINDING_ALREADY_CURRENT=YES'
             exit 0
@@ -59,5 +68,5 @@ jobs:
           git commit -m 'assets: bind native combat model and shared PBR textures'
           branch="automation/horror-combat-asset-${GITHUB_RUN_ID}"
           git push origin "HEAD:refs/heads/$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title '심야·대충알피지·포근섬 네이티브 PBR 재질 바인딩' --body '해시를 확인한 CC0 재질 채널을 기존 네이티브 자산 등록 경로로 업로드하고, 세 게임의 MaterialVariant에 실제 자산 ID를 연결한다. API 등록 성공은 화면 검증 완료를 뜻하지 않으며 productionVerified는 false로 유지한다. 동일 소스의 모바일 런타임·이미지 검증이 필요하다.')"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title '기존 공용 모델 자동 변환과 네이티브 PBR 바인딩' --body '기존 권리·해시 확인 공용 GLB와 CC0 재질을 같은 네이티브 자산 등록 경로로 자동 변환·업로드한다. 범용 원본은 보존하고 플랫폼 파생 ID를 기존 자산 원장에 별도로 기록한다. 성공한 부분만 보존하며 실패 자산은 미완료로 남긴다. API 등록 성공은 화면 검증 완료를 뜻하지 않으며 productionVerified는 false로 유지한다. 동일 소스의 모바일 런타임·이미지 검증이 필요하다.')"
           echo "COMBAT_ASSET_BINDING_PR=$pr_url"

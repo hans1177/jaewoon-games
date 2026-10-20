@@ -57,6 +57,19 @@ test('missing combos and weapon styles remain real production demand, not invent
   assert.ok(!catalog.atoms.some(row=>row.atomId==='LIGHT_ATTACK_2'));
 });
 
+test('procedural poses detach stale actions before dependency updates and bind only for key insertion',()=>{
+  const reset=native.slice(native.indexOf('def reset_pose():'),native.indexOf('\ndef rot('));
+  assert.ok(reset.indexOf('RIG.animation_data.action = None')>=0);
+  assert.ok(reset.indexOf('RIG.animation_data.action = None')<reset.indexOf('for pose_bone in RIG.pose.bones:'));
+  const bake=native.slice(native.indexOf('for clip_name, duration in CLIPS.items():'),native.indexOf('# 실제 관절 샘플 기반 QA'));
+  const pose=bake.indexOf('animate(clip_name, frame / max(1, frame_count))');
+  const attach=bake.indexOf('RIG.animation_data.action = action');
+  assert.ok(pose>=0&&attach>pose&&attach<bake.indexOf("pose_bone.keyframe_insert('rotation_euler'"));
+  assert.match(native,/'loopRotationMaxRad': 0\.015/);
+  assert.match(native,/'loopLocationMax': 0\.004/);
+  assert.match(native,/assert not qa_failures, 'MOTION_STATIC_QA_FAILED:/);
+});
+
 test('native Blender source parses under Python without falsely claiming Blender QA',()=>{
   const py='import ast,sys; ast.parse(open(sys.argv[1],encoding="utf-8").read()); print("MOTION_PYTHON_SYNTAX=PASS")';
   const r=spawnSync('python3',['-c',py,fileURLToPath(motionPath)],{encoding:'utf8',timeout:15000});
@@ -64,3 +77,12 @@ test('native Blender source parses under Python without falsely claiming Blender
   assert.equal(r.status,0,r.stderr||r.stdout);
   assert.match(r.stdout,/MOTION_PYTHON_SYNTAX=PASS/);
 });
+
+test('draft asset verification keeps generated outputs out of the source PR',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/roblox-world-ghost-assets.yml',import.meta.url),'utf8');
+  const commitStep=workflow.slice(workflow.indexOf('- name: Commit verified native packages and authored assets to PR branch'));
+  assert.match(commitStep,/if: github\.event_name == 'pull_request' && github\.event\.pull_request\.draft == false/);
+  assert.match(workflow,/blender --background --python-exit-code 1 --python qa\/shared-character-motion-action-isolation\.py/);
+  assert.match(workflow,/blender --background --python-exit-code 1 --python assets\/roblox\/world-ghosts\/refine-humanoid-motion\.py/);
+});
+

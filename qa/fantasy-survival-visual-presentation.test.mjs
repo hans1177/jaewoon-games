@@ -39,7 +39,8 @@ test('player presentation uses the forest mage asset without changing equipment 
   assert.match(player,/ctx\.drawImage\(playerImage/);
   assert.match(player,/p\.torchEquipped/);
   assert.match(player,/p\.weapon/);
-  assert.match(player,/currentRange\(\)/);
+  assert.match(player,/drawPlayerCombatVfx\(p,x,y,now,angle,attackPose,attackActive\)/);
+  assert.match(functionBody('drawPlayerCombatVfx'),/currentRange\(\)/);
 });
 
 test('protected save key and representative balance values remain present',()=>{
@@ -108,9 +109,9 @@ test('player living motion keeps authoritative movement, weapon direction and at
   assert.match(player,/fantasyLivingMotion\(p,now,angle,moveInput\)/);
   assert.match(player,/motion\.moveBlend/);
   assert.match(player,/motion\.breath/);
-  assert.match(player,/p\.faceX\*27/);
-  assert.match(player,/p\.faceY\*27/);
-  assert.match(player,/currentRange\(\)\*\.72/);
+  assert.match(player,/angle=Math\.atan2\(p\.faceY\|\|0,p\.faceX\|\|1\)/);
+  assert.match(player,/ctx\.lineTo\(x\+Math\.cos\(weaponAngle\)\*weaponLen,y\+Math\.sin\(weaponAngle\)\*weaponLen\)/);
+  assert.match(functionBody('drawPlayerCombatVfx'),/currentRange\(\)/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
 
@@ -146,7 +147,8 @@ test('player attack feel stays inside the existing attack presentation window an
   const player=functionBody('drawPlayer');
   assert.match(player,/fantasyPlayerAttackPose\(p,now,attackActive\)/);
   assert.match(player,/weaponOffset/);
-  assert.match(player,/currentRange\(\)\*\.72/);
+  assert.match(player,/drawPlayerCombatVfx\(p,x,y,now,angle,attackPose,attackActive\)/);
+  assert.match(functionBody('drawPlayerCombatVfx'),/currentRange\(\)/);
   assert.doesNotMatch(player,/p\.(?:x|y|faceX|faceY|attackAt|attackFx)\s*=/);
 });
 
@@ -324,7 +326,7 @@ test('final presentation gate keeps all synchronized feel layers on the same pre
 });
 
 test('nearby auto gather keeps the existing manual gather path and mobile toggle reachable',()=>{
-  assert.match(source,/id="autoGather"[^>]*data-gameplay-action="auto-gather-toggle"[^>]*aria-pressed="false">자동 OFF<\/button>/);
+  assert.match(source,/id="autoGather"[^>]*data-mechanic-id="auto-gather-toggle"[^>]*aria-pressed="false">자동 OFF<\/button>/);
   assert.match(source,/\.autoGather\{height:44px/);
   assert.match(source,/@media\(max-width:430px\)[\s\S]*?\.autoGather\{height:44px;font-size:9px\}/);
   assert.match(source,/gather\(state\.gathering\.manualTarget,false\)/);
@@ -332,11 +334,12 @@ test('nearby auto gather keeps the existing manual gather path and mobile toggle
 
 test('auto gather reuses authoritative resource balance and tool gates instead of duplicating rewards',()=>{
   const gather=functionBody('gather');
-  assert.match(gather,/let amount=1;if\(tool\?\.target===best\.kind\)amount=tool\.mult;if\(best\.kind==='iron'\|\|best\.kind==='poisonstone'\)amount=1/);
+  assert.match(gather,/let amount=1;if\(tool\?\.target===best\.kind\)amount=tool\.mult;if\(best\.kind==='iron'\|\|best\.kind==='poisonstone'\|\|best\.kind==='sunstone'\)amount=1/);
   assert.match(gather,/best\.kind==='iron'.*stone-pick.*iron-pick.*gold-pick/);
   assert.match(gather,/best\.kind==='gold'.*p\.tool!=='iron-pick'/);
   assert.match(gather,/best\.kind==='poisonstone'.*p\.tool!=='gold-pick'/);
-  assert.match(gather,/best\.kind==='essence'.*iron-axe.*gold-axe/);
+  assert.match(gather,/best\.kind==='essence'&&!axeId/);
+  assert.match(functionBody('equippedAxeId'),/iron-axe.*gold-axe/);
   const auto=functionBody('updateAutoGather');
   assert.match(auto,/nearestGatherResource\(\)/);
   assert.match(auto,/gather\(target,true\)/);
@@ -344,14 +347,17 @@ test('auto gather reuses authoritative resource balance and tool gates instead o
 });
 
 test('auto gather is nearest-only local runtime state and does not alter save or multiplayer semantics',()=>{
-  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=38/);
+  assert.match(source,/SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=(?:[7-9]\d|[1-9]\d{2,})/);
   assert.match(source,/gathering:\{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0\}/);
   const nearest=functionBody('nearestGatherResource');
   assert.match(nearest,/for\(const n of resourceNodes\(\)\)/);
   assert.match(nearest,/if\(d<bestD\)\{best=n;bestD=d\}/);
   const save=functionBody('saveGame');
-  assert.doesNotMatch(save,/gathering|autoGather/);
-  assert.doesNotMatch(functionBody('gather'),/multiSend|multiBroadcast|channel/);
+  assert.match(save,/settings:\{difficulty:.*autoGather/);
+  assert.doesNotMatch(save,/gathering:\{/);
+  const gather=functionBody('gather');
+  assert.match(gather,/multiplayer\.connected&&!multiIsHost\(\)/);
+  assert.match(gather,/multiSend\('resource-gather'/);
   assert.doesNotMatch(functionBody('updateAutoGather'),/multiSend|multiBroadcast|channel/);
 });
 
@@ -379,3 +385,165 @@ test('manual world targeting stays separate from automatic nearest selection',()
   assert.doesNotMatch(auto,/manualTarget/);
 });
 
+
+test('world tree inner room is reachable from original world tree without resizing the exterior region',()=>{
+  assert.match(source,/WORLD_TREE_POLY=\[\{x:6180,y:9150\},\{x:11820,y:9150\},\{x:11820,y:10000\},\{x:6180,y:10000\}\]/);
+  assert.match(source,/WORLD_TREE_INTERIOR=\{w:3200,h:2300/);
+  assert.match(functionBody('enterWorldTreeInterior'),/state\.area='worldtreeinside'/);
+  assert.match(functionBody('leaveWorldTreeInterior'),/state\.area='surface'/);
+  assert.match(functionBody('handleWorldTap'),/worldtree-inner-door/);
+  assert.match(functionBody('handleWorldTap'),/worldtree-inner-exit/);
+  assert.match(functionBody('drawWorldTreeInterior'),/Living|나이테|발광/);
+  assert.match(functionBody('draw'),/drawWorldTreeInterior/);
+  assert.match(functionBody('update'),/WORLD_TREE_INTERIOR\.w-85/);
+  assert.match(source,/s\.area==='worldtreeinside'\?'worldtreeinside'/);
+  assert.match(source,/jaewoon_fantasy_survival_v1/);
+  assert.match(functionBody('summonBoss'),/rootsovereign/);
+});
+
+test('world tree interior has bear golem and snake, and the neutral tier-three golem keeps exact owner numbers',()=>{
+  assert.match(source,/worldtreegolem:\{id:'worldtreegolem',name:'세계수 골렘',mood:'neutral',hp:586,dmg:48/);
+  assert.match(source,/worldtreesnake:\{id:'worldtreesnake',name:'세계수 뱀'/);
+  assert.match(source,/worldtreegolem:3,worldtreesnake:3/);
+  const init=functionBody('initWorld');
+  assert.match(init,/\['worldtreebear',800,1130\]/);
+  assert.match(init,/\['worldtreegolem',1610,950\]/);
+  assert.match(init,/\['worldtreesnake',970,1580\]/);
+  assert.match(init,/e\.area='worldtreeinside'/);
+  assert.match(source,/worldtreebear:\{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30/);
+});
+
+test('golem launches four roots every two seconds with 50 percent roll and no hit damage or attack lock',()=>{
+  const launch=functionBody('throwWorldTreeRoots'),update=functionBody('update');
+  assert.match(launch,/e\.nextWorldTreeRootsAt=now\+2000/);
+  assert.match(launch,/Math\.random\(\)>=\.5/);
+  assert.match(launch,/i<4/);
+  assert.match(launch,/kind:'worldtreeRoot'/);
+  assert.match(launch,/damage:0/);
+  const projectile=functionBody('updateProjectiles');
+  const rootEffect=projectile.slice(projectile.indexOf("if(q.kind==='worldtreeRoot'){"));
+  assert.match(rootEffect,/rootedUntil=Math\.max\(p\.rootedUntil\|\|0,now\+3000\)/);
+  assert.doesNotMatch(rootEffect.slice(0,rootEffect.indexOf("if(q.kind==='toxicGasShot')")) ,/damagePlayer\(/);
+  assert.match(update,/now>=\(p\.rootedUntil\|\|0\)/);
+  assert.doesNotMatch(functionBody('attack'),/rootedUntil/);
+  assert.match(functionBody('applyRemoteEnemyEffect'),/kind==='rootbind'/);
+  assert.match(functionBody('drawProjectiles'),/kind==='worldtreeRoot'/);
+});
+
+test('world tree chamber art and cellar entrance are bound to the existing tap and floor renderer',()=>{
+  assert.match(source,/WORLD_TREE_INTERIOR=\{w:3200,h:2300,[^;]*basement:\{x:1600,y:335\}/);
+  const tap=functionBody('handleWorldTap'),inside=functionBody('drawWorldTreeInterior');
+  assert.match(tap,/worldtree-basement-entrance/);
+  assert.match(tap,/WORLD_TREE_INTERIOR\.basement\.x/);
+  assert.match(inside,/뿌리 회랑/);
+  assert.match(inside,/고목 심장/);
+  assert.match(inside,/floor\.addColorStop\(0,'#617756'\)/);
+  assert.match(inside,/수액 정원/);
+  assert.match(inside,/세계수 지하 · 두 번 눌러 내려가기/);
+  assert.match(functionBody('draw'),/drawWorldTreeInterior\(cx,cy/);
+});
+
+test('underground entrance and exit round-trip preserve the previous outdoor passage and saved world tree destination',()=>{
+  const enter=functionBody('enterCave'),leave=functionBody('leaveCave'),save=functionBody('saveGame'),load=functionBody('loadGame');
+  assert.match(enter,/state\.area==='worldtreeinside'/);
+  assert.match(enter,/if\(!fromInterior\)state\.surfacePos=/);
+  assert.match(enter,/state\.caveReturnArea=fromInterior\?'worldtreeinside':'surface'/);
+  assert.match(leave,/const toInterior=state\.caveReturnArea==='worldtreeinside'/);
+  assert.match(leave,/state\.area=toInterior\?'worldtreeinside':'surface'/);
+  assert.match(leave,/state\.caveReturnArea='surface'/);
+  assert.match(save,/caveReturnArea:state\.caveReturnArea/);
+  assert.match(load,/s\.caveReturnArea==='worldtreeinside'\?'worldtreeinside':'surface'/);
+  assert.match(enter,/CAVE_ENTRY/);
+  assert.match(leave,/TREE_HOLE/);
+});
+
+test('world tree basement is bright without a torch while quest cave darkness remains unchanged',()=>{
+  const underground=functionBody('drawCave'),dark=functionBody('drawQuestDarkness');
+  assert.match(underground,/stoneFloor\.addColorStop\(0,'#928797'\)/);
+  assert.match(underground,/세계수 지하 · 봉인의 뿌리/);
+  assert.match(underground,/BOSS_ALTAR/);
+  assert.match(dark,/const basement=state\.area==='underground'/);
+  assert.match(dark,/basement\?'rgba\(12,12,19,\.06\)':'rgba\(0,0,0,\.91\)'/);
+  assert.match(dark,/light\.lit\?430:78/);
+  assert.match(functionBody('summonBoss'),/state\.bossSummoned=true/);
+  assert.match(source,/worldtreegolem:\{id:'worldtreegolem',name:'세계수 골렘',mood:'neutral',hp:586,dmg:48/);
+});
+
+
+test('snake spell morphs actual roots to real hostile combat enemies and restores originals after death or 10s',()=>{
+ const spell=functionBody('updateWorldTreeRootSnakes'),draw=functionBody('drawWorldTreeInterior');
+ assert.match(source,/WORLD_TREE_ROOT_SNAKES=Object\.freeze\(\{intervalMs:3000,probability:\.67,durationMs:10000,maxRoots:5,range:400\}\)/);
+ assert.match(spell,/multiplayer\.connected&&!multiIsHost\(\)/);
+ assert.match(spell,/caster\.type\?\.id!=='worldtreesnake'/);
+ assert.match(spell,/Number\.isInteger\(caster\.rootMorphIndex\)/);
+ assert.match(spell,/Math\.random\(\)>=WORLD_TREE_ROOT_SNAKES\.probability/);
+ assert.match(spell,/now>=\(snake\.rootMorphUntil\|\|0\)/);
+ assert.match(spell,/snake\.hp=0/);
+ assert.match(spell,/spawnAt\(creatures\.worldtreesnake,anchor\.x,anchor\.y,null\)/);
+ assert.match(spell,/snake\.rootMorphIndex=index/);
+ assert.match(spell,/snake\.rootMorphUntil=now\+WORLD_TREE_ROOT_SNAKES\.durationMs/);
+ assert.match(spell,/snake\.noRespawn=true/);
+ assert.match(spell,/state\.enemies\.push\(snake\)/);
+ assert.match(draw,/transformedRoots\.has\(i\)/);
+ assert.match(draw,/worldTreeRootPosition\(i\)/);
+ assert.match(functionBody('update'),/updateWorldTreeRootSnakes\(now\)/);
+ assert.match(functionBody('serializeWorld'),/rootMorphIndex:Number\.isInteger\(e\.rootMorphIndex\)/);
+ assert.match(functionBody('applyWorldSnapshot'),/rootMorphIndex:Number\.isInteger\(n\.rootMorphIndex\)/);
+ assert.doesNotMatch(source,/worldTreeSnakeIllusion|updateWorldTreeSnakeIllusion|IllusorySnake/);
+ assert.match(source,/worldtreesnake:\{id:'worldtreesnake',name:'세계수 뱀',mood:'aggressive',hp:250,dmg:39/);
+});
+
+
+test('goblin outpost entrance is on the western world tree field and marked on maps',()=>{
+ const match=source.match(/const GOBLIN_OUTPOST_ENTRANCE=\{x:(\d+),y:(\d+),r:92\}/);
+ assert.ok(match,'전초기지 입구 좌표가 있어야 함');
+ const x=Number(match[1]),y=Number(match[2]);
+ assert.ok(x>=6180&&x<9000&&y>=9150&&y<=10000,'세계수 서쪽 지상에 있어야 함');
+ assert.match(functionBody('draw'),/drawGoblinOutpostEntrance\(cx,cy\)/);
+ assert.match(functionBody('drawGoblinOutpostEntrance'),/fillText\('고블린 전초기지'/);
+ assert.match(functionBody('drawMap'),/GOBLIN_OUTPOST_ENTRANCE\.x\*sx/);
+ assert.match(functionBody('drawMiniMap'),/landmark\(GOBLIN_OUTPOST_ENTRANCE\.x,GOBLIN_OUTPOST_ENTRANCE\.y/);
+});
+
+test('goblin crossbow arrow velocity is 0.4x baseline without damage or lifetime changes',()=>{
+ const fire=functionBody('fireGoblinCrossbow');
+ assert.match(fire,/speed=\(Number\(p\.speed\)\|\|state\.player\.speed\)\*2/);
+ assert.doesNotMatch(fire,/\*5/);
+ assert.match(fire,/kind:'goblinCrossbowArrow'/);
+ assert.match(fire,/life:2600/);
+ assert.match(fire,/damage:23/);
+ assert.match(source,/쇠뇌병\. 2\.8초마다 플레이어 2배 속도의 비유도 화살을 발사한다\./);
+ const state={projectiles:[],player:{speed:185}};
+ const fireArrow=new Function('state','multiplayer',`return (${fire})`)(state,{playerId:'local-player'});
+ fireArrow({x:0,y:0,netId:'goblin-test',area:'goblinoutpost-1'}, {x:100,y:0,speed:185},1000);
+ assert.equal(state.projectiles.length,1);
+ const arrow=state.projectiles[0];
+ assert.equal(arrow.speed,370);
+ assert.equal(arrow.vx,370);
+ assert.equal(arrow.vy,0);
+ assert.equal(arrow.life,2600);
+ assert.equal(arrow.damage,23);
+});
+
+test('stone fiber and tree density is exactly fourfold only in ordinary forest and existing other biome nodes remain unchanged',()=>{
+ const generate=functionBody('spawnForestResourceNodes'),node=functionBody('makeNode');
+ assert.match(node,/forestOnly=false/);
+ assert.match(node,/forestOnly&&regionAt\(x,y\)!=='forest'/);
+ assert.match(generate,/forestCount\*3/);
+ assert.match(functionBody('initWorld'),/state\.trees=spawnForestResourceNodes\('tree',840\)/);
+ assert.match(functionBody('initWorld'),/state\.rocks=spawnForestResourceNodes\('rock',680\)/);
+ assert.match(functionBody('initWorld'),/state\.fibers=spawnForestResourceNodes\('fiber',880\)/);
+ const makeNode=(kind,i,forestOnly=false)=>({id:kind+i,kind,x:forestOnly?0:i%2,y:0});
+ const regionAt=(x,y)=>x===0?'forest':'snow';
+ const create=new Function('makeNode','regionAt',`return (${generate})`)(makeNode,regionAt);
+ for(const kind of ['tree','rock','fiber']){
+  const all=create(kind,6);
+  const original=all.slice(0,6);
+  assert.equal(original.filter(n=>regionAt(n.x,n.y)==='forest').length,3);
+  assert.equal(all.filter(n=>regionAt(n.x,n.y)==='forest').length,12);
+  assert.equal(all.filter(n=>regionAt(n.x,n.y)==='snow').length,3);
+  assert.equal(new Set(all.map(n=>n.id)).size,all.length);
+ }
+ assert.match(source,/RESOURCE_RESPAWN_MS=300000/);
+ assert.match(source,/jaewoon_fantasy_survival_v1/);
+});

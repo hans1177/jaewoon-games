@@ -100,7 +100,7 @@ function runGameRepairQa({root,data={},causalReplay={}}={}){
     ?runRepairNodeTargets({root,data,targets:contract.saveMigration.testTargets,category:'SAVE_MIGRATION'}):[];
   const saveMigration=saveRequired?(saveResults.length?'PASS':'PENDING_RUNTIME_EVIDENCE'):'NOT_APPLICABLE';
   const multiplayerRequired=contract?.multiplayerLifecycle?.required===true;
-  const multiplayerPolicy=readJson(path.join(root,'company-learning/platform-release-roadmap.json'),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
+  const multiplayerPolicy=readJson(path.join(root,String(process.env.COMPANY_VERIFIED_POLICY_PATH||'__policy_not_configured__')),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
   const staticMultiplayer=multiplayerRequired&&(multiplayerPolicy.verificationScope==='STATIC_CODE_CONTRACT'||contract?.multiplayerLifecycle?.verificationScope==='STATIC_CODE_CONTRACT');
   let multiplayerSourceContract=null;
   if(staticMultiplayer){
@@ -977,7 +977,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const blueprintSources=new Map();
   for(const blueprint of [data.spatialBlueprint,data.interfaceBlueprint]){
     const array=value=>Array.isArray(value)?value:[];
-    const rows=[...array(blueprint?.objects),...array(blueprint?.connections),...array(blueprint?.screens).flatMap(row=>array(row?.controls))];
+    const rows=[...array(blueprint?.objects),...array(blueprint?.connections),...array(blueprint?.screens).flatMap(row=>array(row?.controls)),...array(blueprint?.experienceScenarios)];
     for(const row of rows){const relative=posix(row?.binding?.path);if(!relative)continue;const scoped=resolveManifestRelative(root,data,relative),file=assertInside(root,scoped);if(fs.existsSync(file)){if(!fs.realpathSync(file).startsWith(fs.realpathSync(root)+path.sep))throw new Error('BLUEPRINT_SOURCE_OUTSIDE_ROOT');const text=fs.readFileSync(file,'utf8');blueprintSources.set(relative,text);payload.push('BLUEPRINT_SOURCE:'+scoped,text);}}
   }
   const spatialBlueprintQa=validateSpatialBlueprint({contract:data.spatialBlueprintContract,blueprint:data.spatialBlueprint,sourceFiles:blueprintSources,changedFiles:changed.flatMap(file=>[file,posix(file).replace(posix(data.sourceRoot)+'/','')])});
@@ -1111,4 +1111,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     process.exitCode=1;
   }
 }
+
 

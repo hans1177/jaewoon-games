@@ -1,3 +1,4 @@
+// 파일명: multiplayer/worker.js
 const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8' };
 
 function json(data, status = 200, extra = {}) {
@@ -7,11 +8,14 @@ function json(data, status = 200, extra = {}) {
   });
 }
 
+// 역할: 기존 무료 Workers 멀티플레이 접속 출처 확인 (웹게임은 GitHub Pages에서 제공).
 function allowedOrigin(request, env) {
   const origin = request.headers.get('Origin') || '';
-  const allowed = env.ALLOWED_ORIGIN || 'https://jaewoon-games.pages.dev';
-  if (origin === allowed || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return origin;
-  return allowed;
+  const configured = String(env.ALLOWED_ORIGIN || 'https://jaewoon-games.pages.dev').trim();
+  // 프로젝트 Pages는 저장소 경로를 포함하더라도 브라우저 Origin은 도메인까지만 전송한다.
+  const permitted = new Set([configured, 'https://hans1177.github.io']);
+  if (permitted.has(origin) || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return origin;
+  return configured;
 }
 
 function cors(request, env) {

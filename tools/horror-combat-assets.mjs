@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
+import {evaluateCrossPlatform3dMasterGlb} from './vibe2-asset-production-plan.mjs';
 
 const source='assets/roblox/world-ghosts/native/mesh/bride.glb';
 const evidencePath='assets/roblox/world-ghosts/native/combat-roblox-assets.json';
@@ -51,48 +52,96 @@ if(!creator){
  if(unique.length!==1)throw Error('COMBAT_ASSET_CREATOR_NOT_RESOLVED');
  creator=unique[0];
 }
-let evidence=fs.existsSync(evidencePath)?JSON.parse(fs.readFileSync(evidencePath,'utf8')):{};
-if(evidence.sha256!==hash||!(Number(evidence.humanoidModelId)>0)){
- const form=new FormData();
- form.append('request',JSON.stringify({
-  assetType:'Model',
-  displayName:'Midnight Authored Combat Ghost',
-  description:'Original skinned ghost mesh for Midnight Escape combat presentation. '+hash.slice(0,12),
-  creationContext:{creator}
- }));
- form.append('fileContent',new Blob([file],{type:'model/gltf-binary'}),'midnight-authored-combat-ghost.glb');
- let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
- const opPath=op.path;
- if(!/^operations\/[a-zA-Z0-9-]+$/.test(opPath||''))throw Error('INVALID_COMBAT_ASSET_OPERATION');
- const deadline=Date.now()+240000;
- while(!op.done&&Date.now()<deadline){
-  await new Promise(r=>setTimeout(r,4000));
-  op=await request('https://apis.roblox.com/assets/v1/'+opPath,{headers:{'x-api-key':key}});
+// 공용 원본도 이 기존 네이티브 등록 경로를 사용한다. 원본 파일은 수정하지 않는다.
+const registryPath='company-asset-library.json';
+const registry=process.argv.includes('--include-shared-models')?JSON.parse(fs.readFileSync(registryPath,'utf8')):null;
+const candidates=[{id:'midnight-combat-ghost',path:source,sha256:hash,combat:true}];
+const failures=[];
+for(const asset of registry?.assets||[]){
+ if(asset.companyCommonBase!==true||!['CC0-1.0','project-original'].includes(asset.license))continue;
+ const modelPath=String(asset.masterGlb||asset.path||'').replace(/^\//,'');
+ const expected=String(asset.masterGlbHash||asset.sourceHash||'');
+ if(!/^assets\/[a-zA-Z0-9_./-]+\.glb$/.test(modelPath)||modelPath.split('/').includes('..'))continue;
+ try{
+  // Missing registry metadata must not silently discard an existing good common master.
+  // Inspect preserved bytes/rig/motion; an existing declared hash still has to match.
+  const inspected=evaluateCrossPlatform3dMasterGlb({repoRoot:process.cwd(),source:{...asset,path:modelPath},family:asset.family||asset.category});
+  if(inspected.pass!==true||!/^([a-f0-9]{64})$/.test(String(inspected.sourceHash||'')))throw Error('SHARED_MASTER_STATIC_QA_FAILED');
+  if(expected&&expected!==inspected.sourceHash)throw Error('NATIVE_SOURCE_HASH_MISMATCH');
+  candidates.push({id:asset.id,path:modelPath,sha256:inspected.sourceHash,asset});
+ }catch(error){
+  failures.push(asset.id);
+  console.error('NATIVE_SOURCE_IMPORT_FAILED='+asset.id+':'+String(error.message));
  }
- const assetId=op.response?.assetId;
- if(!op.done||op.error||!(Number(assetId)>0)){
-  console.error('COMBAT_ASSET_IMPORT_OPERATION='+JSON.stringify({done:op.done===true,error:op.error||null,response:op.response||null,path:op.path||null}));
-  throw Error('COMBAT_ASSET_IMPORT_FAILED');
+}
+const importedByHash=new Map();
+for(const candidate of candidates){
+ try{
+  const bytes=fs.readFileSync(candidate.path);
+  if(crypto.createHash('sha256').update(bytes).digest('hex')!==candidate.sha256)throw Error('NATIVE_SOURCE_HASH_MISMATCH');
+  if(bytes.length<20||bytes.toString('utf8',0,4)!=='glTF'||bytes.readUInt32LE(4)!==2||bytes.readUInt32LE(8)!==bytes.length)throw Error('NATIVE_GLB_INVALID');
+  const jsonBytes=bytes.readUInt32LE(12);
+  if(bytes.readUInt32LE(16)!==0x4e4f534a||20+jsonBytes>bytes.length)throw Error('NATIVE_GLB_JSON_INVALID');
+  const document=JSON.parse(bytes.toString('utf8',20,20+jsonBytes));
+  const primitives=(document.meshes||[]).flatMap(mesh=>mesh.primitives||[]);
+  if(!primitives.length||primitives.some(p=>p.attributes?.POSITION===undefined||p.attributes?.NORMAL===undefined))throw Error('NATIVE_MESH_GEOMETRY_REQUIRED');
+  for(const primitive of primitives){
+   const position=document.accessors?.[primitive.attributes.POSITION],normal=document.accessors?.[primitive.attributes.NORMAL];
+   if(position?.type!=='VEC3'||normal?.type!=='VEC3'||position.count<3||position.count!==normal.count)throw Error('NATIVE_VERTEX_ACCESSOR_INVALID');
+  }
+  if((document.buffers||[]).some(buffer=>buffer.uri&&!String(buffer.uri).startsWith('data:')))throw Error('NATIVE_EXTERNAL_BUFFER_FORBIDDEN');
+  let binding=candidate.combat?(fs.existsSync(evidencePath)?JSON.parse(fs.readFileSync(evidencePath,'utf8')):{}):candidate.asset.platformVariants?.ROBLOX||{};
+  let assetId=candidate.combat?binding.humanoidModelId:binding.assetId;
+  if(binding.sha256!==candidate.sha256||!(Number(assetId)>0)){
+   assetId=importedByHash.get(candidate.sha256);
+   if(!assetId){
+    const form=new FormData();
+    form.append('request',JSON.stringify({assetType:'Model',displayName:candidate.combat?'Midnight Authored Combat Ghost':String(candidate.id).slice(0,50),description:'Preserved repository source '+candidate.sha256,creationContext:{creator}}));
+    form.append('fileContent',new Blob([bytes],{type:'model/gltf-binary'}),'source.glb');
+    let op=await request('https://apis.roblox.com/assets/v1/assets',{method:'POST',headers:{'x-api-key':key},body:form});
+    const opPath=op.path;
+    if(!/^operations\/[a-zA-Z0-9-]+$/.test(opPath||''))throw Error('NATIVE_ASSET_OPERATION_INVALID');
+    const deadline=Date.now()+240000;
+    while(!op.done&&Date.now()<deadline){
+     await new Promise(resolve=>setTimeout(resolve,4000));
+     op=await request('https://apis.roblox.com/assets/v1/'+opPath,{headers:{'x-api-key':key}});
+    }
+    assetId=op.response?.assetId;
+    if(!op.done||op.error||!(Number(assetId)>0))throw Error('NATIVE_ASSET_IMPORT_FAILED');
+   }
+   binding={assetId:String(assetId),sha256:candidate.sha256,creator,sourcePath:candidate.path,sourceRevision:process.env.GITHUB_SHA,importedAt:new Date().toISOString(),productionVerified:false,runtimeVerificationState:'NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING'};
+  }
+  importedByHash.set(candidate.sha256,String(assetId));
+  if(candidate.combat){
+   const grants=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},body:JSON.stringify({subjectType:'Universe',subjectId:universeId,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})});
+   if(grants.errors?.length)throw Error('COMBAT_ASSET_PERMISSION_FAILED');
+   fs.writeFileSync(evidencePath,JSON.stringify({...binding,version:1,humanoidModelId:String(assetId)},null,2)+'\n');
+   fs.writeFileSync(output,`-- 파일명: shared/CombatAssets.luau\n-- 저장소 원본 스킨드 GLB ${hash}\nreturn {\n HumanoidModelId=${Number(assetId)},\n HumanoidSourceSha256=${JSON.stringify(hash)},\n AssetSource=${JSON.stringify(source)},\n}\n`);
+  }else{
+   // Persist only observed source metadata after a successful native registration.
+   candidate.asset.masterGlbHash=candidate.sha256;
+   candidate.asset.sourceHash=candidate.sha256;
+   candidate.asset.platformVariants={...(candidate.asset.platformVariants||{}),ROBLOX:binding};
+   candidate.asset.robloxAssetId=String(assetId);
+   candidate.asset.nativeBindingRequired=true;
+   candidate.asset.productionVerified=false;candidate.asset.verifiedCompanyReusable=false;
+   candidate.asset.runtimeVerificationState='NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING';
+   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+   for(const target of ['10767445796','10767445741','10767445769']){
+    const grant=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{method:'PATCH',headers:{'x-api-key':key,'content-type':'application/json'},body:JSON.stringify({subjectType:'Universe',subjectId:target,action:'Use',requests:[{assetId:Number(assetId),grantToDependencies:true}]})});
+    if(grant.errors?.length)throw Error('SHARED_MODEL_PERMISSION_FAILED:'+target);
+   }
+  }
+  console.log('NATIVE_SOURCE_IMPORTED='+candidate.id+':'+assetId);
+ }catch(error){
+  failures.push(candidate.id);
+  console.error('NATIVE_SOURCE_IMPORT_FAILED='+candidate.id+':'+String(error.message));
+  if(candidate.combat)throw error;
  }
- evidence={version:1,humanoidModelId:String(assetId),sha256:hash,creator,sourceRevision:process.env.GITHUB_SHA,importedAt:new Date().toISOString()};
- fs.writeFileSync(evidencePath,JSON.stringify(evidence,null,2)+'\n');
 }
-const grants=await request('https://apis.roblox.com/asset-permissions-api/v1/assets/permissions',{
- method:'PATCH',
- headers:{'x-api-key':key,'content-type':'application/json'},
- body:JSON.stringify({subjectType:'Universe',subjectId:universeId,action:'Use',requests:[{assetId:Number(evidence.humanoidModelId),grantToDependencies:true}]})
-});
-if(grants.errors?.length)throw Error('COMBAT_ASSET_PERMISSION_FAILED:'+grants.errors.map(e=>e.code).join(','));
-fs.writeFileSync(output,`-- 파일명: shared/CombatAssets.luau
--- 저장소 원본 스킨드 GLB ${hash}
-return {
- HumanoidModelId=${Number(evidence.humanoidModelId)},
- HumanoidSourceSha256=${JSON.stringify(hash)},
- AssetSource=${JSON.stringify(source)},
-}
-`);
-console.log('COMBAT_AUTHORED_MODEL_ID='+evidence.humanoidModelId);
-console.log('COMBAT_AUTHORED_GLB_SHA256='+hash);
+if(failures.length)process.exitCode=1;
+console.log('SHARED_NATIVE_IMPORT_CANDIDATES='+String(candidates.length-1));
+console.log('SHARED_NATIVE_IMPORT_FAILED='+String(failures.length));
 
 // Extend this existing native import job with the owner-requested shared library.
 // Import success records IDs and hashes only; runtime/image QA retains promotion authority.

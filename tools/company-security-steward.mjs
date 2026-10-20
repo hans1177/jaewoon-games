@@ -74,7 +74,35 @@ function domainFromUrl(text=''){
   const m=String(text).match(/https?:\/\/([^\s/'"<>]+)/i);
   return m?m[1].toLowerCase():null;
 }
-function scanLine(row){
+// Owner-approved, single-purpose GitHub Pages OIDC grant. This only changes a
+// specific finding to REVIEW after verifying the entire workflow and original
+// repository baseline. Every other workflow permission escalation stays QUARANTINE.
+export function isApprovedPagesOidcGrant(before='',after=''){
+  const baseline=String(before),source=String(after);
+  if(!baseline.includes('name: Magic Forest Static Play')||!source.includes('name: Magic Forest Static Play'))return false;
+  if(/id-token\s*:\s*write/i.test(baseline))return false;
+  const grants=[...source.matchAll(/^      id-token: write\s*$/gm)];
+  if(grants.length!==1)return false;
+  if((source.match(/^  workflow_dispatch:$/gm)||[]).length!==1)return false;
+  const jobRegion=source.split('\njobs:\n');
+  if(jobRegion.length!==2)return false;
+  const jobs=[...jobRegion[1].matchAll(/^  ([a-z][a-z-]*):\s*$/gm)].map(m=>m[1]);
+  if(JSON.stringify(jobs)!==JSON.stringify(['deploy','publish-pages']))return false;
+  const start=source.indexOf('  publish-pages:\n');
+  if(start<0)return false;
+  const job=source.slice(start);
+  if(grants[0].index<start)return false;
+  if(!/^    needs: deploy$/m.test(job)||!/^    if: github\.event_name != 'pull_request'$/m.test(job))return false;
+  if(!/^    permissions:\n      contents: read\n      pages: write\n      id-token: write\n/m.test(job))return false;
+  if(!/^    environment:\n      name: github-pages\n/m.test(job))return false;
+  if((job.match(/^        uses: actions\/deploy-pages@v4\s*$/gm)||[]).length!==1)return false;
+  if((source.match(/^        uses: actions\/upload-pages-artifact@v4\s*$/gm)||[]).length!==1)return false;
+  if(!source.includes('WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA=')||!source.includes('WEB_PAGES_LIVE_SOURCE_SHA='))return false;
+  if(!source.includes('git -C "$site" push origin HEAD:gh-pages'))return false;
+  return true;
+}
+
+function scanLine(row,{approvedPagesOidc=false}={}){
   const out=[];const {file,line,text}=row;const t=String(text);
   for(const [rule,re] of SECRET_RULES){
     if(re.test(t)&&!SAFE_SECRET_REFERENCES.test(t))out.push(finding({rule,severity:'CRITICAL',file,line,text:t,category:'secret'}));
@@ -100,7 +128,9 @@ function scanLine(row){
     }
   }
   if(/\.github\/workflows\//.test(file)&&/id-token\s*:\s*write/i.test(t)){
-    out.push(finding({rule:'OIDC_WRITE_PERMISSION_ADDED',severity:'HIGH',file,line,text:t,category:'privilege'}));
+    const approved=approvedPagesOidc&&file==='.github/workflows/magic-forest-pages.yml'&&/^      id-token: write\s*$/.test(t);
+    out.push(finding({rule:'OIDC_WRITE_PERMISSION_ADDED',severity:'HIGH',file,line,text:t,category:'privilege',
+      disposition:approved?'REVIEW':'QUARANTINE'}));
   }
   if(/company-learning\/(?:platform-release-roadmap|company-log-map|company-architecture-map)\.json/.test(file)&&/(authority|sourceOfTruth|forbidden|gameSourceWriteAllowed|centralPolicyWrite|workerSelfAcceptance)/i.test(t)){
     out.push(finding({rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',severity:'HIGH',file,line,text:t,category:'policy-integrity',disposition:'REVIEW'}));
@@ -146,13 +176,16 @@ function classifyCentralSnapshots(snapshots={}){
   }
   return result;
 }
-export function scanSecurityPatch({patch='',changedFiles=[],centralPolicySnapshots={}}={}){
+export function scanSecurityPatch({patch='',changedFiles=[],centralPolicySnapshots={},workflowSnapshots={}}={}){
   const rows=parseAddedLines(patch);const findings=[];
   const central=classifyCentralSnapshots(centralPolicySnapshots);
   for(const file of changedFiles){
     if(SUSPICIOUS_BIN.test(file))findings.push(finding({rule:'EXECUTABLE_OR_BINARY_ARTIFACT_ADDED',severity:'HIGH',file,line:0,text:file,category:'malware'}));
   }
-  for(const row of rows)findings.push(...scanLine(row).filter(item=>item.rule!=='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW'||central.get(row.file)?.designOnly!==true));
+  const pagesSnapshot=workflowSnapshots['.github/workflows/magic-forest-pages.yml']||{};
+  const approvedPagesOidc=isApprovedPagesOidcGrant(pagesSnapshot.before,pagesSnapshot.after);
+  for(const row of rows)findings.push(...scanLine(row,{approvedPagesOidc}).filter(item=>
+    item.rule!=='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW'||central.get(row.file)?.designOnly!==true));
   // 권한 키 변경과 삭제로 제한을 없애는 변경도 추가 줄 검사와 같은 검토를 받는다.
   for(const [file,entry] of central)if(!entry.designOnly){
     for(const change of entry.changes){
@@ -221,9 +254,23 @@ function centralSnapshots(files,base='',head=''){
   }
   return snapshots;
 }
+function pagesWorkflowSnapshots(files,base='',head=''){
+  const file='.github/workflows/magic-forest-pages.yml',result={};
+  if(!files.includes(file))return result;
+  let beforeRef=base||'HEAD';
+  if(base&&head){try{beforeRef=execFileSync('git',['merge-base',base,head],{encoding:'utf8'}).trim();}catch{}}
+  try{
+    result[file]={
+      before:execFileSync('git',['show',beforeRef+':'+file],{encoding:'utf8'}),
+      after:head?execFileSync('git',['show',head+':'+file],{encoding:'utf8'}):fs.readFileSync(file,'utf8')
+    };
+  }catch{/* Missing exact baseline must not allow OIDC. */}
+  return result;
+}
 export function scanWorkingTreeSecurity(){
   const changedFiles=gitChangedFiles();
-  return scanSecurityPatch({patch:gitPatch(),changedFiles,centralPolicySnapshots:centralSnapshots(changedFiles)});
+  return scanSecurityPatch({patch:gitPatch(),changedFiles,centralPolicySnapshots:centralSnapshots(changedFiles),
+    workflowSnapshots:pagesWorkflowSnapshots(changedFiles)});
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs();
@@ -231,7 +278,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const patch=patchFile?fs.readFileSync(patchFile,'utf8'):gitPatch(clean(args.base),clean(args.head));
   const changedFiles=filesFile?fs.readFileSync(filesFile,'utf8').split('\n').map(clean).filter(Boolean):gitChangedFiles(clean(args.base),clean(args.head));
   const snapshots=!patchFile||(args.base&&args.head)?centralSnapshots(changedFiles,clean(args.base),clean(args.head)):{};
-  const report=scanSecurityPatch({patch,changedFiles,centralPolicySnapshots:snapshots});
+  const report=scanSecurityPatch({patch,changedFiles,centralPolicySnapshots:snapshots,
+    workflowSnapshots:pagesWorkflowSnapshots(changedFiles,clean(args.base),clean(args.head))});
   if(clean(args.output))fs.writeFileSync(args.output,JSON.stringify(report,null,2)+'\n','utf8');
   console.log('VIBE_SECURITY_VERDICT='+report.verdict);
   console.log('VIBE_SECURITY_HIGHEST='+report.highestSeverity);

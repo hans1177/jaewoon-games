@@ -6,10 +6,16 @@ local DSS=game:GetService("DataStoreService")
 local RunService=game:GetService("RunService")
 local Lighting=game:GetService("Lighting")
 local AssetService=game:GetService("AssetService")
+local InsertService=game:GetService("InsertService")
 local TweenService=game:GetService("TweenService")
+local TeleportService=game:GetService("TeleportService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
+local RaceData=require(Shared:WaitForChild("RaceData"))
+local TechTreeData=require(Shared:WaitForChild("TechTreeData"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
+local CommonCharacterGear=require(Shared:WaitForChild("RobloxCommonCharacterGear"))
+local CommonCreatureParts=require(Shared:WaitForChild("RobloxCommonCreatureParts"))
 
 -- 네트워크 Remote는 로컬 exact Studio에서도 먼저 준비해서 클라이언트 부팅을 막지 않는다.
 local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent")
@@ -51,12 +57,15 @@ local parties={}
 local clickTimes={}
 local lastRequest={}
 local lastBlockRequest={}
+local comboState={}
 local lastCombat={}
 local movementProbeStart={}
 local foundationSeen={}
 local foundationSequence=0
 local foundationLast={}
 local assetCache={}
+local biomeRunState={}
+local biomeRunCounter=0
 local meadowRunCounter=0
 local meadowRunState={seed=0,hiddenBossId="",generated=false}
 local generateMeadowRun
@@ -142,7 +151,16 @@ local function attach(rootPart,name,size,offset,color,material,shape,rotation)
  local rot=rotation or Vector3.zero
  x.CFrame=rootPart.CFrame*CFrame.new(offset)*CFrame.Angles(math.rad(rot.X),math.rad(rot.Y),math.rad(rot.Z))
  if shape then x.Shape=shape end;x.Parent=rootPart
- local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x
+ -- 실제 애니메이션 가능한 팔다리/날개: 정적 용접 대신 Motor6D를 구성한다.
+ local animated=name:find("Arm",1,true) or name:find("Leg",1,true) or name:find("Wing",1,true) or name:find("Tail",1,true) or name:find("Paw",1,true)
+ if animated then
+  local motor=Instance.new("Motor6D");motor.Name="ActorLimbMotor"
+  motor:SetAttribute("LimbRole",name)
+  motor.Part0=rootPart;motor.Part1=x;motor.C0=CFrame.new(offset)*CFrame.Angles(math.rad(rot.X),math.rad(rot.Y),math.rad(rot.Z))
+  motor.C1=CFrame.identity;motor.Parent=x
+ else
+  local w=Instance.new("WeldConstraint");w.Part0=rootPart;w.Part1=x;w.Parent=x
+ end
  return x
 end
 local function stripAsset(root)
@@ -152,10 +170,24 @@ local function stripAsset(root)
  end
  return root
 end
+-- 로그: 같은 자산 로딩 실패는 한 번만 기록한다.
+local assetLoadFailures={}
 local function loadAsset(id)
  if assetCache[id]then return assetCache[id]end
  local ok,result=pcall(AssetService.LoadAssetAsync,AssetService,id)
- if not ok or not result then return nil end
+ if not ok or not result then
+  -- 오너가 업로드한 모델은 InsertService 소유자 경로로 한 번 더 시도한다.
+  local ownedOk,owned=pcall(InsertService.LoadAsset,InsertService,id)
+  if ownedOk and owned then ok,result=true,owned end
+ end
+ if not ok or not result then
+  local signature=ok and "EMPTY_ASSET" or "ASSET_ACCESS_OR_LOAD_ERROR"
+  if not assetLoadFailures[id]then
+   assetLoadFailures[id]=signature
+   warn("NPC_ASSET_LOAD_FAILURE assetId="..tostring(id).." FAILURE_STAGE=ROBLOX_NATIVE_ASSET_LOAD FAILURE_SIGNATURE="..signature)
+  end
+  return nil,signature
+ end
  stripAsset(result);result.Parent=nil;assetCache[id]=result;return result
 end
 local function chooseMesh(assetId,keywords,seed)
@@ -167,40 +199,161 @@ local function chooseMesh(assetId,keywords,seed)
    for _,k in ipairs(keywords)do if string.find(low,string.lower(k),1,true)then table.insert(preferred,d);break end end
   end
  end
- local pool=#preferred>0 and preferred or all;if #pool==0 then return nil end
+ local pool=#keywords>0 and preferred or all;if #pool==0 then return nil end
  return pool[((seed or 1)-1)%#pool+1]
 end
 local function assetProp(parent,assetId,keywords,pos,scale,seed,collide)
- local t=chooseMesh(assetId,keywords,seed);if not t then return nil end
- local x=t:Clone();x.Name="AssetProp_"..t.Name;x.Anchored=true;x.CanCollide=collide==true;x.CanTouch=false;x.Size=x.Size*(scale or 1)
- x.CFrame=CFrame.new(pos)*CFrame.Angles(0,math.rad(((seed or 1)*41)%360),0);x.Parent=parent;return x
+ local t=chooseMesh(assetId,keywords,seed)
+ if not t then parent:SetAttribute("NativePropMissing_"..tostring(assetId),true);return nil end
+ local x=t:Clone();x.Name="AssetProp_"..t.Name;x.Anchored=true;x.CanCollide=collide==true;x.CanTouch=false;x.CanQuery=collide==true;x.Size=x.Size*(scale or 1)
+ x.CFrame=CFrame.new(pos+Vector3.new(0,x.Size.Y/2,0))*CFrame.Angles(0,math.rad(((seed or 1)*41)%360),0)
+ x:SetAttribute("SourceAssetId",tostring(assetId));x:SetAttribute("RuntimeVisualReview","PENDING")
+ x.Parent=parent;return x
 end
-local function wholeAsset(parent,assetId,pos,scale,name,yaw)
- local t=loadAsset(assetId);if not t then return nil end
- local x=t:Clone();x.Name=name or("AssetModel_"..assetId);stripAsset(x);x.Parent=parent
- pcall(function()x:ScaleTo(scale or 1)end);pcall(function()x:PivotTo(CFrame.new(pos)*CFrame.Angles(0,math.rad(yaw or 0),0))end);return x
+-- 원본 보존: 네이티브 복제본만 회전·축척·접지하고 불완전한 배치는 실패로 남긴다.
+local function wholeAsset(parent,assetId,pos,scale,name,yaw,targetWidth)
+ local t=loadAsset(assetId);if not t then parent:SetAttribute("NativeAssetMissing_"..tostring(assetId),true);return nil end
+ local x=t:Clone();x.Name=name or("AssetModel_"..assetId);stripAsset(x)
+ local ok=pcall(function()
+  local _,originalSize=x:GetBoundingBox()
+  if originalSize.X<=0 or originalSize.Y<=0 or originalSize.Z<=0 then error("EMPTY_NATIVE_MODEL")end
+  local factor=scale or 1
+  if targetWidth then factor=targetWidth/math.max(originalSize.X,originalSize.Z)end
+  x:ScaleTo(x:GetScale()*factor)
+  x:PivotTo(CFrame.new(pos)*CFrame.Angles(0,math.rad(yaw or 0),0))
+  local bounds,size=x:GetBoundingBox()
+  if math.max(size.X,size.Y,size.Z)>300 then error("NATIVE_MODEL_SCALE_OUT_OF_BUDGET")end
+  -- 원본 피벗이 중앙/바닥 중 어디든 바운딩 박스 바닥을 승인된 표면 높이에 맞춘다.
+  local offset=Vector3.new(pos.X-bounds.Position.X,pos.Y-(bounds.Position.Y-size.Y/2),pos.Z-bounds.Position.Z)
+  x:PivotTo(x:GetPivot()+offset)
+  for _,part in ipairs(x:GetDescendants())do
+   if part:IsA("BasePart")then part.CanCollide=false;part.CanTouch=false;part.CanQuery=false end
+  end
+ end)
+ if not ok then x:Destroy();parent:SetAttribute("NativeAssetMissing_"..tostring(assetId),true);return nil end
+ x:SetAttribute("SourceAssetId",tostring(assetId));x:SetAttribute("RuntimeVisualReview","PENDING")
+ x.Parent=parent;return x
 end
 local function decorateVillageAssets(parent)
  task.spawn(function()
   for i=1,24 do
    local a=i/24*math.pi*2;local r=94+(i%3)*18
-   assetProp(parent,ASSETS.Nature,{"tree","bush","flower","rock","log"},Vector3.new(math.cos(a)*r,2,math.sin(a)*r),.65+(i%4)*.08,i,false)
+   assetProp(parent,ASSETS.Nature,i%3==0 and {"bush","flower"}or{"tree"},Vector3.new(math.cos(a)*r,1,math.sin(a)*r),.65+(i%4)*.08,i,false)
   end
   for i=1,12 do
    local a=i/12*math.pi*2
-   assetProp(parent,ASSETS.City,{"bench","lamp","fence","trash","sign","table"},Vector3.new(math.cos(a)*58,2,math.sin(a)*58),.65,i,false)
+   assetProp(parent,ASSETS.City,{"bench"},Vector3.new(i%2==0 and -52 or 52,1.65,-42+math.floor((i-1)/2)*14),.65,i,false)
   end
  end)
 end
-local function decorateZoneAssets(parent,z)
+local function decorateZoneAssets(parent,z,requestedSeed)
+ local previous=biomeRunState[z.Id]
+ local seed=math.floor(tonumber(requestedSeed)or(previous and previous.seed)or(100000+game.PlaceVersion*31+z.Id*197))
+ local generation=(previous and previous.generation or 0)+1
+ biomeRunState[z.Id]={seed=seed,generation=generation}
+ parent:SetAttribute("BiomeGenerationSeed",seed)
  task.spawn(function()
-  local pack=(z.Theme=="MEADOW"or z.Theme=="SNOW")and ASSETS.Nature or ASSETS.Dungeon
-  local keys=(pack==ASSETS.Nature)and{"tree","bush","rock","log","plant"}or{"rock","rune","pillar","wall","bridge","crate","barrel"}
+  local biome=Style.Biomes and Style.Biomes[z.Theme]
+  if not biome then parent:SetAttribute("NativeBiomeBindingMissing",true);return end
+  local scenery=Instance.new("Folder");scenery.Name="NativeBiomeScenery"
+  local rng=Random.new(seed)
+  local phase=rng:NextNumber(0,math.pi*2)
   for i=1,34 do
-   local a=i/34*math.pi*2;local r=72+(i%7)*20
-   assetProp(parent,pack,keys,z.Center+Vector3.new(math.cos(a)*r,2,math.sin(a)*r),.7+(i%5)*.07,i,false)
+   local a=i/34*math.pi*2+phase+rng:NextNumber(-.05,.05);local r=rng:NextNumber(126,190)
+   local dx,dz=math.cos(a)*r,math.sin(a)*r
+   -- 기존 포탈/귀환·주 동선·보스 경기장에는 시야를 가리는 장식도 두지 않는다.
+   if math.abs(dx)<30 then dx=dx<0 and -38 or 38 end
+   if math.abs(dx)<66 and dz< -38 and dz> -140 then dx=dx<0 and -78 or 78 end
+   local nature=i%3~=0
+   local pack=nature and ASSETS.Nature or ASSETS.Dungeon
+   local keys=nature and biome.Nature or biome.Structure
+   local decoration=assetProp(scenery,pack,keys,z.Center+Vector3.new(dx,1, dz),rng:NextNumber(.62,1),rng:NextInteger(1,10000),false)
+   if decoration then
+    local maxSize=math.max(decoration.Size.X,decoration.Size.Y,decoration.Size.Z)
+    if maxSize>24 then
+     decoration.Size*=24/maxSize
+     decoration.Position=z.Center+Vector3.new(dx,1+decoration.Size.Y/2,dz)
+    end
+    decoration:SetAttribute("BiomeTheme",z.Theme)
+   end
   end
+  -- 자동 바이옴 지형: 기존 포탈 길과 전투장 중앙을 피해서 암벽·둔덕·식생 군락을 생성한다.
+  local terrainColors={
+   MEADOW=Color3.fromRGB(98,143,88),CANYON=Color3.fromRGB(159,109,78),
+   RUINS=Color3.fromRGB(113,110,125),SNOW=Color3.fromRGB(195,210,219),ABYSS=Color3.fromRGB(88,75,105)
+  }
+  local groundColor=terrainColors[z.Theme] or Color3.fromRGB(115,120,112)
+  for i=1,18 do
+   local theta=(i/18)*math.pi*2+phase
+   local radius=rng:NextNumber(210,265)
+   local point=z.Center+Vector3.new(math.cos(theta)*radius,0,math.sin(theta)*radius)
+   local height=rng:NextNumber(8,20)
+   local mound=Instance.new("Part")
+   mound.Name="BiomeRidge";mound.Anchored=true;mound.CanCollide=true
+   mound.Material=z.Theme=="SNOW" and Enum.Material.Snow or z.Theme=="MEADOW" and Enum.Material.Grass or Enum.Material.Slate
+   mound.Color=groundColor;mound.Size=Vector3.new(rng:NextNumber(14,27),height,rng:NextNumber(16,30))
+   mound.CFrame=CFrame.new(point+Vector3.new(0,height/2-.4,0))*CFrame.Angles(0,theta,math.rad(rng:NextNumber(-7,7)))
+   mound:SetAttribute("BiomeTheme",z.Theme);mound.Parent=scenery
+  end
+  -- Loading can yield. A newer empty-zone run owns the scene; never append a stale generation.
+  if not parent.Parent or biomeRunState[z.Id].generation~=generation then scenery:Destroy();return end
+  local old=parent:FindFirstChild("NativeBiomeScenery");if old then old:Destroy()end
+  scenery:SetAttribute("BiomeGenerationSeed",seed);scenery:SetAttribute("BiomeTheme",z.Theme);scenery.Parent=parent
+  parent:SetAttribute("NativeBiomeVisualReview","PENDING")
  end)
+end
+
+local function bindNativeNpcVisual(rootPart,assetId,fallbackAssetId)
+ if not assetId or not rootPart.Parent then return end
+ local sourceModel,loadFailure=loadAsset(assetId)
+ if not sourceModel or not rootPart.Parent then
+  rootPart:SetAttribute("NativeActorMissing",true)
+  rootPart:SetAttribute("NativeActorFailureStage","ROBLOX_NATIVE_ASSET_LOAD")
+  rootPart:SetAttribute("NativeActorFailureSignature",loadFailure or "ACTOR_ROOT_REMOVED")
+  if fallbackAssetId and fallbackAssetId~=assetId and rootPart.Parent then return bindNativeNpcVisual(rootPart,fallbackAssetId)end
+  return
+ end
+ local native=sourceModel:Clone();native.Name="NativeLibraryActor"
+ local originalParts={}
+ for _,child in ipairs(rootPart:GetChildren())do if child:IsA("BasePart")then table.insert(originalParts,child)end end
+ local ok=pcall(function()
+  local _,size=native:GetBoundingBox()
+  if size.Y<=0 then error("EMPTY_NATIVE_ACTOR")end
+  native:ScaleTo(native:GetScale()*rootPart.Size.Y/size.Y)
+  native:PivotTo(rootPart.CFrame)
+  local bounds,scaled=native:GetBoundingBox()
+  native:PivotTo(native:GetPivot()+Vector3.new(rootPart.Position.X-bounds.Position.X,rootPart.Position.Y-rootPart.Size.Y/2-(bounds.Position.Y-scaled.Y/2),rootPart.Position.Z-bounds.Position.Z))
+  -- Static library GLB: articulated visual pivot for idle/chase/attack presentation.
+  local pivot=Instance.new("Part");pivot.Name="NativeMotionPivot";pivot.Size=Vector3.new(.2,.2,.2)
+  pivot.Transparency=1;pivot.Anchored=false;pivot.CanCollide=false;pivot.CanTouch=false;pivot.CanQuery=false;pivot.Massless=true
+  pivot.CFrame=rootPart.CFrame;pivot.Parent=rootPart
+  local pose=Instance.new("Motor6D");pose.Name="NativePoseMotor";pose.Part0=rootPart;pose.Part1=pivot
+  pose.C0=CFrame.identity;pose.C1=CFrame.identity;pose.Parent=pivot
+  local count=0
+  for _,part in ipairs(native:GetDescendants())do
+   if part:IsA("BasePart")then
+    count+=1;if count>128 then error("NATIVE_ACTOR_PART_BUDGET")end
+    part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
+    local joint=Instance.new("WeldConstraint");joint.Part0=pivot;joint.Part1=part;joint.Parent=part
+   end
+  end
+  if count==0 then error("NATIVE_ACTOR_GEOMETRY_MISSING")end
+ end)
+ if not ok or not rootPart.Parent then
+  native:Destroy();rootPart:SetAttribute("NativeActorMissing",true)
+  rootPart:SetAttribute("NativeActorFailureStage","ROBLOX_NATIVE_ACTOR_BIND")
+  rootPart:SetAttribute("NativeActorFailureSignature",rootPart.Parent and "INVALID_OR_OVER_BUDGET_GEOMETRY" or "ACTOR_ROOT_REMOVED")
+  if fallbackAssetId and fallbackAssetId~=assetId and rootPart.Parent then return bindNativeNpcVisual(rootPart,fallbackAssetId)end
+  return
+ end
+ native:SetAttribute("SourceAssetId",tostring(assetId));native:SetAttribute("RuntimeVisualReview","PENDING")
+ native:SetAttribute("MotionRetargetReview","PENDING")
+ native.Parent=rootPart
+ for _,part in ipairs(originalParts)do part.Transparency=1 end
+ rootPart:SetAttribute("NativeActorMissing",false)
+ rootPart:SetAttribute("NativeActorFailureStage",nil)
+ rootPart:SetAttribute("NativeActorFailureSignature",nil)
+ rootPart:SetAttribute("NativeActorBindingState","BOUND_UNVERIFIED")
 end
 
 local function label(target,text,color,maxDistance)
@@ -260,6 +413,13 @@ local function humanoidFigure(parent,name,pos,color,accent,scale)
  elseif string.find(name,"Resident",1,true)or string.find(name,"AI_",1,true)then
   add("AdventurerMantle",Vector3.new(3.1,.85,2),Vector3.new(0,1.15,.2),accent,Enum.Material.Fabric,Enum.PartType.Ball)
  end
+ local nativeId=Style.NpcModels and Style.NpcModels[name]
+ local sharedId=Style.SharedNpcModels and Style.SharedNpcModels[name]
+ local residentIndex=tonumber(string.match(name,"^Resident(%d+)$"))
+ if residentIndex and Style.ResidentModels then nativeId=Style.ResidentModels[(residentIndex-1)%#Style.ResidentModels+1]end
+ if residentIndex and Style.SharedResidentModels and #Style.SharedResidentModels>0 then sharedId=Style.SharedResidentModels[(residentIndex-1)%#Style.SharedResidentModels+1]end
+ if sharedId then task.spawn(bindNativeNpcVisual,r,sharedId,nativeId)
+ elseif nativeId then task.spawn(bindNativeNpcVisual,r,nativeId)end
  return r
 end
 local function gearPart(folder,body,name,size,offset,color,material,shape,rotation)
@@ -271,9 +431,21 @@ local function gearPart(folder,body,name,size,offset,color,material,shape,rotati
  local w=Instance.new("WeldConstraint");w.Part0=body;w.Part1=x;w.Parent=x
  return x
 end
-local function wearMedievalChest(model,folder,variant)
+local function wearMedievalChest(model,folder,variant,color)
  local torso=model:FindFirstChild("UpperTorso");if not torso then return false end
- local t=chooseMesh(ASSETS.MedievalArmor,{"armor","chest","torso","plate","knight"},variant or 1);if not t then return false end
+ local t=chooseMesh(ASSETS.MedievalArmor,{"armor","chest","torso","plate","knight"},variant or 1)
+ if not t then
+  local families=C.StudioAssets and C.StudioAssets.Families or{}
+  if not table.find(families.CHARACTER or{},"TORSO_PLATE") then return false end
+  local visual=CommonCharacterGear.Create("IRON_CHESTPLATE",{quality="near",anchored=false,scale=math.clamp(torso.Size.Y/2.45,.6,1.4),palette={accent=color or Color3.fromRGB(155,118,56)}})
+  visual.Name="CompanyChestArmor";visual:PivotTo(torso.CFrame*CFrame.new(0,0,-.08));visual.Parent=folder
+  for _,part in ipairs(visual:GetDescendants())do
+   if part:IsA("BasePart")then part.Anchored=false;part.Massless=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false end
+  end
+  local joint=Instance.new("WeldConstraint");joint.Part0=torso;joint.Part1=visual.PrimaryPart;joint.Parent=visual.PrimaryPart
+  visual:SetAttribute("RigBindingState","WELD_BOUND_RUNTIME_REVIEW_PENDING")
+  return true
+ end
  local x=t:Clone();x.Name="MedievalAssetArmor";x.Anchored=false;x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x.Massless=true
  local maxAxis=math.max(x.Size.X,x.Size.Y,x.Size.Z);if maxAxis<=0 then x:Destroy();return false end
  x.Size=x.Size*(3.65/maxAxis);x.CFrame=torso.CFrame*CFrame.Angles(0,math.rad(180),0);x.Parent=folder
@@ -295,7 +467,7 @@ local function decorateCharacterModel(model,classId,variant,advancementId)
  local gear=Instance.new("Folder");gear.Name="DaechungClassGear";gear.Parent=model
  local torso=model:FindFirstChild("UpperTorso");local head=model:FindFirstChild("Head")
  local right=model:FindFirstChild("RightHand")or model:FindFirstChild("RightLowerArm");local left=model:FindFirstChild("LeftHand")or model:FindFirstChild("LeftLowerArm")
- local usedAsset=wearMedievalChest(model,gear,variant)
+ local usedAsset=wearMedievalChest(model,gear,variant,color)
  if not usedAsset and torso then gearPart(gear,torso,"ClassChest",Vector3.new(2.25,2.2,1.25),Vector3.new(0,0,-.08),color,Enum.Material.Metal)end
  if torso then
   gearPart(gear,torso,"ClassShoulderL",Vector3.new(.78,.48,1.05),Vector3.new(-1.25,.65,0),color,Enum.Material.Metal,Enum.PartType.Ball)
@@ -356,22 +528,34 @@ local function classGuardReduction(p)
 end
 local function classParryWindow(p)
  local classId=tostring(p:GetAttribute("ClassId")or"")
- if classId=="SHADOW"then return C.ParryWindow+.06 end
- if classId=="RUNE"then return C.ParryWindow+.02 end
- if classId=="SOUL"then return C.ParryWindow+.03 end
- return C.ParryWindow
+ local race=RaceData.GetRace(n(p,"RaceID",0))
+ local offset=race and race.Bonuses.ParryWindow or 0
+ if classId=="SHADOW"then return C.ParryWindow+.06+offset end
+ if classId=="RUNE"then return C.ParryWindow+.02+offset end
+ if classId=="SOUL"then return C.ParryWindow+.03+offset end
+ return C.ParryWindow+offset
 end
 local function staggerEnemy(e,amount,now)
  if not e or e.hp<=0 then return end
  e.stagger=math.max(0,(e.stagger or e.staggerMax or 40)-(amount or 20));e.part:SetAttribute("Stagger",e.stagger)
  if e.stagger<=0 then
   e.stunnedUntil=now+(e.boss and 2.1 or 1.45);e.attackPending=false;e.attackToken=(e.attackToken or 0)+1;e.stagger=e.staggerMax or 40;e.part:SetAttribute("Stagger",e.stagger);e.part:SetAttribute("Staggered",true)
-  task.delay(e.boss and 2.1 or 1.45,function()if e.part and e.part.Parent then e.part:SetAttribute("Staggered",false)end end)
+  task.delay(e.boss and 2.1 or 1.45,function()if e.part and e.part.Parent and os.clock()>=(e.stunnedUntil or 0)then e.part:SetAttribute("Staggered",false)end end)
  end
 end
+local killEnemy
 local function resolveIncomingAttack(p,e,attack)
  local h=hum(p);local pr=root(p);if not h or not pr or h.Health<=0 or not e.part or not e.part.Parent then return end
  local now=os.clock()
+ if p:GetAttribute("AutoCombat")~=false and n(p,"CurrentZone",0)>0 then
+  if now>=n(p,"AutoDodgeReady",0) and math.random()<.18 then
+   p:SetAttribute("AutoDodgeReady",now+4.5);p:SetAttribute("EvasionUntil",now+.28);feedback(p,"AUTO_DODGE")
+  elseif attack.Parryable~=false and now>=n(p,"AutoParryReady",0) and n(p,"Guard",C.GuardMax)>16 and math.random()<.26 then
+   p:SetAttribute("AutoParryReady",now+3.2);p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1);p:SetAttribute("CivParries",n(p,"CivParries",0)+1)
+   p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+8))
+   staggerEnemy(e,(attack.GuardDamage or 20)*1.2,now);feedback(p,"PARRY");return
+  end
+ end
  if n(p,"EvasionUntil",0)>now then feedback(p,"DODGE");msg(p,"회피 성공");return end
  local damage=(e.damage or 8)*(attack.DamageMult or 1)
  if e.enragedUntil and e.enragedUntil>now then damage*=1.22 end
@@ -380,9 +564,21 @@ local function resolveIncomingAttack(p,e,attack)
  if blocking and attack.Parryable~=false then
   local started=n(p,"BlockStartedAt",0)
   if started>0 and now-started<=classParryWindow(p)then
-   p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1);p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+12))
+   p:SetAttribute("ParryCount",n(p,"ParryCount",0)+1);p:SetAttribute("CivParries",n(p,"CivParries",0)+1);p:SetAttribute("Guard",math.min(C.GuardMax,n(p,"Guard",C.GuardMax)+12))
    feedback(p,"PARRY");msg(p,"완벽 패링 · "..tostring(attack.Name or"공격"))
    staggerEnemy(e,(attack.GuardDamage or 20)*1.55,now)
+   -- 패링 성공 시 공격을 취소하고 최소 2초 동안 적을 기절시킨다.
+   e.stunnedUntil=math.max(e.stunnedUntil or 0,now+2)
+   e.attackPending=false;e.attackToken=(e.attackToken or 0)+1
+   e.part:SetAttribute("Staggered",true)
+   task.delay(2,function()
+    if e.part and e.part.Parent and (e.stunnedUntil or 0)<=os.clock() then e.part:SetAttribute("Staggered",false)end
+   end)
+   -- 서버 확정 패링만 적의 실제 공격 피해 100% 반사.
+   local reflect=math.max(0,(e.damage or 8)*(attack.DamageMult or 1)*(e.enragedUntil and e.enragedUntil>now and 1.22 or 1))
+   e.hp=math.max(0,e.hp-reflect);e.part:SetAttribute("HP",e.hp)
+   combatFlash(e.part.Position+Vector3.new(0,2,0),Color3.fromRGB(255,226,145),2.2)
+   if e.hp<=0 then killEnemy(p,e,3)end
    local classId=tostring(p:GetAttribute("ClassId")or"");local adv=tostring(p:GetAttribute("AdvancementId")or"")
    if classId=="BREAKER"then p:SetAttribute("GuardUntil",now+1.2)end
    if classId=="SHADOW"then p:SetAttribute("BackstabUntil",now+2.4)end
@@ -392,7 +588,8 @@ local function resolveIncomingAttack(p,e,attack)
   end
  end
  if blocking and attack.Unblockable~=true then
-  local guard=math.max(0,n(p,"Guard",C.GuardMax)-(attack.GuardDamage or 20));p:SetAttribute("Guard",guard)
+  local race=RaceData.GetRace(n(p,"RaceID",0));local resist=race and race.Bonuses.GuardBreakResist or 0
+   local guard=math.max(0,n(p,"Guard",C.GuardMax)-(attack.GuardDamage or 20)*(1-resist));p:SetAttribute("Guard",guard)
   damage*=1-classGuardReduction(p);feedback(p,"BLOCK");msg(p,"막기 · "..math.floor(guard).."/"..C.GuardMax)
   if guard<=0 then
    p:SetAttribute("Blocking",false);p:SetAttribute("GuardBrokenUntil",now+C.GuardBreakSeconds);feedback(p,"GUARD_BREAK");msg(p,"가드 브레이크")
@@ -403,6 +600,7 @@ local function resolveIncomingAttack(p,e,attack)
  elseif skillGuard and attack.Unblockable~=true then
   damage*=.45;feedback(p,"GUARD");msg(p,"스킬 가드")
  end
+ local race=RaceData.GetRace(n(p,"RaceID",0));if race and race.Bonuses.Defense then damage*=1-race.Bonuses.Defense end
  if damage>0 then h:TakeDamage(damage)end
  lastCombat[p]=now;p:SetAttribute("InCombat",true)
  local special=tostring(attack.Special or"")
@@ -464,10 +662,214 @@ local function beginEnemyAttack(e,target,now)
  end)
 end
 
+-- Native library character binding. Preserve R15 animation when separate limb meshes exist.
+-- If the GLB is a single combined mesh, display the source as a fitted full-body cosmetic instead.
+local function bindSharedPlayerVisual(character,classId)
+ local assetId=Style.SharedPlayerModels and (Style.SharedPlayerModels[classId] or Style.SharedPlayerModels.NONE)
+ local rootPart=character:FindFirstChild("HumanoidRootPart")
+ if not assetId or not rootPart or not character.Parent then return end
+ character:SetAttribute("SharedPlayerVisualRequestedId",tostring(assetId))
+ character:SetAttribute("SharedPlayerVisualState","LOADING")
+ local source,failure=loadAsset(assetId)
+ if not character.Parent or character:GetAttribute("SharedPlayerVisualRequestedId")~=tostring(assetId)then return end
+ if not source then
+  character:SetAttribute("SharedPlayerVisualState","LOAD_FAILED")
+  character:SetAttribute("SharedPlayerVisualFailure",failure or "ASSET_UNAVAILABLE")
+  return
+ end
+ local parts={}
+ local matched={}
+ for _,mesh in ipairs(source:GetDescendants())do
+  if mesh:IsA("MeshPart") then
+   table.insert(parts,mesh)
+   local limb=character:FindFirstChild(mesh.Name)
+   if limb and limb:IsA("BasePart")then matched[mesh.Name]=mesh end
+  end
+ end
+ if #parts==0 then character:SetAttribute("SharedPlayerVisualState","NO_MESH");return end
+ local old=character:FindFirstChild("SharedPlayerVisual");if old then old:Destroy()end
+ local folder=Instance.new("Folder");folder.Name="SharedPlayerVisual";folder.Parent=character
+ local rigParts=0
+ for _,name in ipairs({"Head","UpperTorso","LowerTorso","LeftUpperArm","RightUpperArm","LeftUpperLeg","RightUpperLeg"})do
+  if matched[name]then rigParts+=1 end
+ end
+ if rigParts>=7 then
+  for name,mesh in pairs(matched)do
+   local limb=character:FindFirstChild(name)
+   if limb and limb:IsA("BasePart")then
+    local visual=mesh:Clone();visual.Name="Library_"..name
+    visual.Anchored=false;visual.CanCollide=false;visual.CanTouch=false;visual.CanQuery=false;visual.Massless=true
+    visual.CFrame=limb.CFrame;visual.Parent=folder
+    local weld=Instance.new("WeldConstraint");weld.Part0=limb;weld.Part1=visual;weld.Parent=visual
+   end
+  end
+  character:SetAttribute("SharedPlayerVisualState","R15_LIMB_BOUND")
+ else
+  local native=Instance.new("Model");native.Name="LibraryFullBody";native.Parent=folder
+  for _,mesh in ipairs(parts)do
+   local cloned=mesh:Clone();cloned.Anchored=true;cloned.CanCollide=false;cloned.CanTouch=false;cloned.CanQuery=false;cloned.Parent=native
+  end
+  -- Source model may have an unusual object hierarchy or absolute import scale.
+  local ok,reason=pcall(function()
+   local _,bounds=native:GetBoundingBox()
+   if bounds.Y<.001 then error("EMPTY_BOUNDS")end
+   native:ScaleTo(math.clamp(5.3/bounds.Y,.025,50))
+   local _,scaled=native:GetBoundingBox()
+   local target=rootPart.Position+Vector3.new(0,.5,0)
+   local cf=native:GetPivot()
+   native:PivotTo(cf+target-scaled.Position)
+   local visualRoot=Instance.new("Part")
+   visualRoot.Name="LibraryVisualRoot";visualRoot.Size=Vector3.new(.2,.2,.2);visualRoot.Transparency=1
+   visualRoot.Anchored=false;visualRoot.Massless=true;visualRoot.CanCollide=false;visualRoot.CanTouch=false;visualRoot.CanQuery=false
+   visualRoot.CFrame=rootPart.CFrame;visualRoot.Parent=folder
+   local animatedPivot=Instance.new("Motor6D");animatedPivot.Name="NativePoseMotor"
+   animatedPivot.Part0=rootPart;animatedPivot.Part1=visualRoot
+   animatedPivot.C0=CFrame.identity;animatedPivot.C1=CFrame.identity
+   animatedPivot.Parent=visualRoot
+   for _,visual in ipairs(native:GetDescendants())do
+    if visual:IsA("BasePart")then
+     visual.Anchored=false;visual.Massless=true
+     local join=Instance.new("WeldConstraint");join.Part0=visualRoot;join.Part1=visual;join.Parent=visual
+    end
+   end
+  end)
+  if not ok then
+   folder:Destroy()
+   character:SetAttribute("SharedPlayerVisualState","BIND_FAILED")
+   character:SetAttribute("SharedPlayerVisualFailure",tostring(reason):sub(1,140))
+   return
+  end
+  character:SetAttribute("SharedPlayerVisualState","FULL_MESH_BOUND")
+ end
+ for _,part in ipairs(character:GetChildren())do
+  if part:IsA("BasePart") and part.Name~="HumanoidRootPart" then
+   part.Transparency=1
+   for _,decal in ipairs(part:GetChildren())do
+    if decal:IsA("Decal")then decal.Transparency=1 end
+   end
+  end
+ end
+ character:SetAttribute("SharedPlayerVisualAssetId",tostring(assetId))
+ character:SetAttribute("SharedPlayerVisualFailure",nil)
+end
+
 local function applyPlayerAppearance(p)
  local c=p.Character;if not c then return end
  decorateCharacterModel(c,tostring(p:GetAttribute("ClassId")or"NONE"),(p.UserId%7)+1,tostring(p:GetAttribute("AdvancementId")or""))
+ local colors={
+  Color3.fromRGB(225,190,155),Color3.fromRGB(175,120,85),
+  Color3.fromRGB(116,81,61),Color3.fromRGB(245,212,175),
+  Color3.fromRGB(188,146,103),Color3.fromRGB(120,92,76)
+ }
+ local choice=math.clamp(math.floor(n(p,"AvatarStyle",1)),1,#colors)
+ local body=c:FindFirstChildOfClass("BodyColors") or Instance.new("BodyColors")
+ body.Name="CustomAvatarColors";body.HeadColor3=colors[choice]
+ body.LeftArmColor3=colors[choice];body.RightArmColor3=colors[choice]
+ body.LeftLegColor3=colors[choice];body.RightLegColor3=colors[choice]
+ body.TorsoColor3=colors[choice];body.Parent=c
+ local archetype=math.clamp(math.floor(n(p,"AvatarArchetype",1)),1,3)
+ local armor=math.clamp(math.floor(n(p,"AvatarArmor",0)),0,2)
+ local decoration=math.clamp(math.floor(n(p,"AvatarDecoration",0)),0,2)
+ local oldOutfit=c:FindFirstChild("AvatarLibraryOutfit");if oldOutfit then oldOutfit:Destroy()end
+ local outfit=Instance.new("Folder");outfit.Name="AvatarLibraryOutfit";outfit.Parent=c
+ local colors3={Color3.fromRGB(145,56,50),Color3.fromRGB(51,148,132),Color3.fromRGB(194,203,214)}
+ local tint=colors3[archetype]
+ local torso=c:FindFirstChild("UpperTorso")or c:FindFirstChild("Torso")
+ local head=c:FindFirstChild("Head")
+ local function fit(body,name,size,offset,color,material)
+  if not body then return end
+  local part=Instance.new("Part");part.Name=name;part.Size=size;part.Color=color
+  part.Material=material or Enum.Material.Metal;part.Anchored=false;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
+  part.CFrame=body.CFrame*offset;part.Parent=outfit
+  local weld=Instance.new("WeldConstraint");weld.Part0=body;weld.Part1=part;weld.Parent=part
+  return part
+ end
+ if armor>=1 then
+  fit(torso,"ArmorChest",Vector3.new(2.15,1.5,.3),CFrame.new(0,0,-.62),tint)
+  fit(c:FindFirstChild("LeftUpperArm")or c:FindFirstChild("Left Arm"),"ArmorLeft",Vector3.new(.75,.6,.8),CFrame.new(0,.25,0),tint)
+  fit(c:FindFirstChild("RightUpperArm")or c:FindFirstChild("Right Arm"),"ArmorRight",Vector3.new(.75,.6,.8),CFrame.new(0,.25,0),tint)
+ end
+ if armor>=2 then fit(head,"ArmorHelmet",Vector3.new(1.85,.62,1.8),CFrame.new(0,.54,0),tint)end
+ if decoration>=1 then fit(head,"HatCrest",Vector3.new(.2,.76,.48),CFrame.new(0,1.02,-.15),Color3.fromRGB(238,183,75),Enum.Material.Neon)end
+ if decoration>=2 then fit(torso,"ClothCape",Vector3.new(1.9,2.4,.18),CFrame.new(0,-.55,.73),tint,Enum.Material.Fabric)end
+ -- Guaranteed visible silhouette per library archetype, including when an imported GLB is restricted.
+ -- These local cosmetic pieces use the same 3-archetype vocabulary as the supplied previews.
+ if archetype==1 then
+  fit(torso,"SamuraiRedLamellar",Vector3.new(2.28,1.75,.38),CFrame.new(0,-.1,-.69),Color3.fromRGB(148,47,45))
+  fit(torso,"SamuraiObi",Vector3.new(2.38,.32,1.55),CFrame.new(0,-.9,0),Color3.fromRGB(220,183,120),Enum.Material.Fabric)
+  fit(head,"SamuraiHelmBand",Vector3.new(1.87,.42,1.88),CFrame.new(0,.51,0),Color3.fromRGB(58,60,69))
+  fit(head,"SamuraiCrestLeft",Vector3.new(.16,.72,.22),CFrame.new(-.48,1,.0)*CFrame.Angles(0,0,math.rad(-28)),Color3.fromRGB(224,179,86))
+  fit(head,"SamuraiCrestRight",Vector3.new(.16,.72,.22),CFrame.new(.48,1,.0)*CFrame.Angles(0,0,math.rad(28)),Color3.fromRGB(224,179,86))
+ elseif archetype==2 then
+  fit(torso,"WuxiaTurquoiseOuter",Vector3.new(2.25,2.22,.22),CFrame.new(0,-.42,-.62),Color3.fromRGB(44,170,150),Enum.Material.Fabric)
+  fit(torso,"WuxiaCrossSash",Vector3.new(.38,2.25,.15),CFrame.new(0,.0,-.77)*CFrame.Angles(0,0,math.rad(32)),Color3.fromRGB(232,213,160),Enum.Material.Fabric)
+  fit(head,"WuxiaStrawHatBrim",Vector3.new(.24,2.86,2.86),CFrame.new(0,.86,0)*CFrame.Angles(0,0,math.rad(90)),Color3.fromRGB(218,195,139),Enum.Material.Fabric)
+  fit(head,"WuxiaHatCrown",Vector3.new(.38,1.15,1.15),CFrame.new(0,1.04,0)*CFrame.Angles(0,0,math.rad(90)),Color3.fromRGB(205,177,126),Enum.Material.Fabric)
+ else
+  fit(torso,"KnightIvoryBreastplate",Vector3.new(2.32,2.12,.35),CFrame.new(0,-.22,-.73),Color3.fromRGB(202,211,224))
+  fit(head,"KnightIvoryHelm",Vector3.new(1.98,1.42,1.9),CFrame.new(0,.49,0),Color3.fromRGB(188,198,214))
+  fit(head,"KnightVisorTrim",Vector3.new(1.65,.25,.22),CFrame.new(0,.26,-1.02),Color3.fromRGB(79,89,109))
+  fit(c:FindFirstChild("LeftHand")or c:FindFirstChild("Left Arm"),"KnightShield",Vector3.new(.35,2.2,1.45),CFrame.new(-.35,-.25,-.38),Color3.fromRGB(157,171,194))
+ end
+ -- 라이브러리의 3개 외형군이 방어구 단계와 무관하게 즉시 구별되도록 기본 실루엣 제공.
+ if archetype==1 then
+  fit(torso,"SamuraiKimono",Vector3.new(2.25,1.95,.34),CFrame.new(0,-.15,-.54),Color3.fromRGB(37,74,116),Enum.Material.Fabric)
+  fit(torso,"SamuraiLacquerBelt",Vector3.new(2.35,.34,.48),CFrame.new(0,-.93,-.52),Color3.fromRGB(173,61,54))
+  fit(head,"SamuraiTopKnot",Vector3.new(.64,.54,.63),CFrame.new(0,.84,0),Color3.fromRGB(89,54,42),Enum.Material.Fabric)
+  if armor>=1 then
+   fit(head,"SamuraiKabuto",Vector3.new(1.75,.42,1.88),CFrame.new(0,.53,0),Color3.fromRGB(73,71,77))
+  end
+ elseif archetype==2 then
+  fit(torso,"WuxiaRobe",Vector3.new(2.25,2.55,.33),CFrame.new(0,-.48,-.56),Color3.fromRGB(37,167,155),Enum.Material.Fabric)
+  fit(torso,"WuxiaSash",Vector3.new(2.33,.24,.45),CFrame.new(0,-.82,-.57),Color3.fromRGB(230,218,157),Enum.Material.Fabric)
+  if decoration>=1 then
+   fit(head,"WuxiaStrawHat",Vector3.new(3,.2,3),CFrame.new(0,.77,0),Color3.fromRGB(215,188,132),Enum.Material.Wood)
+  end
+ else
+  fit(torso,"KnightTabard",Vector3.new(2.18,2.05,.3),CFrame.new(0,-.22,-.54),Color3.fromRGB(231,226,207),Enum.Material.Fabric)
+  fit(torso,"KnightBlueCrest",Vector3.new(.54,.73,.1),CFrame.new(0,.05,-.76),Color3.fromRGB(51,93,160),Enum.Material.SmoothPlastic)
+  if armor>=1 then fit(head,"KnightVisor",Vector3.new(1.65,.33,.65),CFrame.new(0,.15,-.54),Color3.fromRGB(194,209,219))end
+ end
+ c:SetAttribute("OutfitRevision","MODULAR_ARCHETYPE_V3")
+
+  c:SetAttribute("AvatarStyle",choice)
+ local head=c:FindFirstChild("Head")
+ if head then
+  local old=head:FindFirstChild("AvatarStyleMark");if old then old:Destroy()end
+  local band=Instance.new("Part");band.Name="AvatarStyleMark";band.Anchored=false;band.CanCollide=false;band.Massless=true
+  band.Size=Vector3.new(1.05,.28,1.08);band.Material=Enum.Material.Fabric
+  local palettes={Color3.fromRGB(53,39,32),Color3.fromRGB(204,160,72),Color3.fromRGB(67,82,120),Color3.fromRGB(153,54,51),Color3.fromRGB(61,123,83),Color3.fromRGB(127,88,148)}
+  band.Color=palettes[choice];band.CFrame=head.CFrame*CFrame.new(0,.47,0);band.Parent=head
+  local weld=Instance.new("WeldConstraint");weld.Part0=head;weld.Part1=band;weld.Parent=band
+ end
+ local archetypes={"BREAKER","SHADOW","SOUL"}
+ task.spawn(bindSharedPlayerVisual,c,archetypes[math.clamp(math.floor(n(p,"AvatarArchetype",1)),1,3)])
  local weaponTier=n(p,"WeaponTier",1);local armorTier=n(p,"ArmorTier",1);local gear=c:FindFirstChild("DaechungClassGear")
+ -- 코난풍 무기 단계별 외형: 기본 검→도끼→창→망치→강철 대검.
+ -- 게임플레이 공격 판정·피해량은 기존 WeaponTier 로직에 남긴다.
+ local right=c:FindFirstChild("RightHand") or c:FindFirstChild("Right Arm")
+ if right and gear then
+  local shapes={
+   {name="IronSword",blade=Vector3.new(.27,3.7,.5),edge=Color3.fromRGB(164,171,180)},
+   {name="WarAxe",blade=Vector3.new(1.6,1.5,.42),edge=Color3.fromRGB(133,143,153)},
+   {name="HuntingSpear",blade=Vector3.new(.38,5.8,.38),edge=Color3.fromRGB(175,165,130)},
+   {name="StoneHammer",blade=Vector3.new(1.75,1.15,.95),edge=Color3.fromRGB(104,111,119)},
+   {name="Greatsword",blade=Vector3.new(.48,6,.95),edge=Color3.fromRGB(205,207,215)}
+  }
+  local weapon=shapes[math.clamp(math.floor(weaponTier),1,#shapes)]
+  local previous=gear:FindFirstChild("ConanWeaponVisual");if previous then previous:Destroy()end
+  local holder=Instance.new("Folder");holder.Name="ConanWeaponVisual";holder.Parent=gear
+  local handle=gearPart(holder,right,"WeaponHandle",Vector3.new(.25,2.4,.25),Vector3.new(0,-.65,-.25),Color3.fromRGB(103,73,53),Enum.Material.Wood)
+  if handle then
+   local blade=gearPart(holder,handle,weapon.name,weapon.blade,Vector3.new(0,1.5,0),weapon.edge,Enum.Material.Metal)
+   if blade then addWeaponTrail(blade,weapon.edge)end
+  end
+  for _,old in ipairs(gear:GetDescendants())do
+   if old:IsA("BasePart") and old.Name:find("ClassWeapon",1,true) then old.Transparency=1 end
+  end
+  c:SetAttribute("EquippedWeaponVisual",weapon.name)
+ end
+
  if gear then
   for _,d in ipairs(gear:GetDescendants())do
    if d:IsA("BasePart")and string.find(d.Name,"ClassWeapon",1,true)then
@@ -502,10 +904,11 @@ local function setStats(p,heal)
  local secondId=(level>=(C.SecondAdvancementLevel or 40)and ad and ad.SecondId)or""
  p:SetAttribute("SecondAdvancementId",secondId)
  local hpMult=cd and cd.HPMult or 1;local attackMult=cd and cd.AttackMult or 1
+ local race=RaceData.GetRace(n(p,"RaceID",0));hpMult*=1+(race and race.Bonuses.MaxHealth or 0)
  local maxHP=math.floor((C.BaseMaxHP+(level-1)*C.LevelHPGain+(C.ArmorBonus[at]or 0))*hpMult+.5)
  local attack=math.floor((C.BaseAttack+(level-1)*C.LevelAttackGain+(C.WeaponBonus[wt]or 0))*attackMult+.5)
  p:SetAttribute("MaxHP",maxHP);p:SetAttribute("AttackPower",attack);p:SetAttribute("ClassName",classDisplay(classId,advId,secondId))
- local h=hum(p);if h then h.MaxHealth=maxHP;if heal then h.Health=maxHP else h.Health=math.min(h.Health,maxHP)end end
+ local h=hum(p);if h then h.MaxHealth=maxHP;if race and race.Bonuses.MoveSpeed then h.WalkSpeed=16*(1+race.Bonuses.MoveSpeed)end;if heal then h.Health=maxHP else h.Health=math.min(h.Health,maxHP)end end
 end
 local function addMasteryXP(p,amount)
  local xp=n(p,"MasteryXP",0)+(amount or 0);local mastery=n(p,"MasteryLevel",0);local gained=false
@@ -529,10 +932,11 @@ local function grantXP(p,amount)
  end
 end
 -- Save schema v3 preserves every earlier key and adds level-cap, relic and boss-companion progression.
-local SAVE_SCHEMA_VERSION=3
+local SAVE_SCHEMA_VERSION=4
 local SAVE_MAX_ATTEMPTS=3
-local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount"}
+local SAVE={"Gold","XP","Level","WeaponTier","ArmorTier","RelicId","QuestPortal","QuestKills","QuestNeed","RoomCode","ClassId","AdvancementId","SecondAdvancementId","MasteryXP","MasteryLevel","UnlockedCompanions","CompanionUnlockCount","HouseLevel","HouseFurniture","HouseModules","AvatarStyle","AvatarArchetype","AvatarArmor","AvatarDecoration","RaceID","CivTechCount","CivKills","CivParries","CivBossKills","CivMyth","CivStone","CivBronze","CivIron","CivHero"}
 local saveReady={}
+local privateRealmCodes={} -- 예약 서버 코드는 클라이언트에 복제하지 않고 서버 저장소에 보관한다.
 local saveSurface=RS:FindFirstChild("SavePersistence")
 if not saveSurface then
  saveSurface=Instance.new("Folder")
@@ -550,11 +954,13 @@ end
 local function init(p)
  p:SetAttribute("Gold",100);p:SetAttribute("XP",0);p:SetAttribute("Level",1);p:SetAttribute("WeaponTier",1);p:SetAttribute("ArmorTier",1);p:SetAttribute("RelicId",C.RelicDefault or"NONE")
  p:SetAttribute("ClassId","NONE");p:SetAttribute("AdvancementId","");p:SetAttribute("SecondAdvancementId","");p:SetAttribute("ClassName","직업 미선택")
- p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0)
+ p:SetAttribute("MasteryXP",0);p:SetAttribute("MasteryLevel",0);p:SetAttribute("UnlockedCompanions","");p:SetAttribute("CompanionUnlockCount",0);p:SetAttribute("HouseLevel",0);p:SetAttribute("HouseFurniture",0);p:SetAttribute("HouseModules",0);p:SetAttribute("AvatarStyle",1);p:SetAttribute("AvatarArchetype",1);p:SetAttribute("AvatarArmor",0);p:SetAttribute("AvatarDecoration",0)
+ p:SetAttribute("RaceID",0);p:SetAttribute("CivTechCount",0);p:SetAttribute("CivKills",0);p:SetAttribute("CivParries",0);p:SetAttribute("CivBossKills",0)
+ for _,resource in ipairs(TechTreeData.EraResources)do p:SetAttribute(resource,0)end
  p:SetAttribute("AdvancementTrialActive",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("RespecReady",false)
  p:SetAttribute("RuneElement",1);p:SetAttribute("SoulCharge",0);p:SetAttribute("BackstabUntil",0);p:SetAttribute("EvasionUntil",0);p:SetAttribute("GuardUntil",0);p:SetAttribute("OverloadCount",0)
- p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
- p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
+ p:SetAttribute("Guard",C.GuardMax);p:SetAttribute("DodgeCooldownUntil",0);p:SetAttribute("Blocking",false);p:SetAttribute("BlockStartedAt",0);p:SetAttribute("ParryRearmUntil",0);p:SetAttribute("GuardBrokenUntil",0);p:SetAttribute("ParryCount",0);p:SetAttribute("CurrentRunSeed",0)
+ p:SetAttribute("AutoCombat",true);p:SetAttribute("CurrentZone",0);p:SetAttribute("InCombat",false);p:SetAttribute("QuestPortal",0);p:SetAttribute("QuestKills",0);p:SetAttribute("QuestNeed",0)
  p:SetAttribute("PartyCount",0);p:SetAttribute("PartyKills",0);p:SetAttribute("Contribution",0);p:SetAttribute("PartyHuntActive",false);p:SetAttribute("RoomCode",1)
  msg(p,"직업을 고르고 보스를 격파해 AI 동료를 해금해.")
  parties[p]={};clickTimes[p]={};setStats(p,true)
@@ -562,8 +968,8 @@ end
 local function load(p)
  init(p)
  saveReady[p]=false
- if C.SaveEnabled~=true then setSaveState(p,"DISABLED");setStats(p,true);return end
- if not store then setSaveState(p,"STORE_UNAVAILABLE");setStats(p,true);return end
+ if C.SaveEnabled~=true then saveReady[p]=true;setSaveState(p,"SESSION_ONLY");setStats(p,true);return end
+ if not store then saveReady[p]=true;setSaveState(p,"SESSION_ONLY");setStats(p,true);return end
  setSaveState(p,"LOADING")
  local data=nil
  local readOk=false
@@ -575,12 +981,13 @@ local function load(p)
   if attempt<SAVE_MAX_ATTEMPTS then task.wait(.2*attempt)end
  end
  if not readOk then
-  setSaveState(p,"LOAD_FAILED")
-  warn("Player save load failed",p.UserId,lastError)
+  saveReady[p]=true;setSaveState(p,"SESSION_ONLY")
+  warn("Player save load failed; using session-only customization",p.UserId,lastError)
   setStats(p,true)
   return
  end
  if typeof(data)=="table"then
+  if typeof(data.CivPrivateRealmCode)=="string" and #data.CivPrivateRealmCode<512 then privateRealmCodes[p]=data.CivPrivateRealmCode end
   for _,k in ipairs(SAVE)do if data[k]~=nil then p:SetAttribute(k,data[k])end end
  end
  saveReady[p]=true
@@ -588,13 +995,18 @@ local function load(p)
  setStats(p,true)
 end
 local function save(p)
- if C.SaveEnabled~=true or not store or saveReady[p]~=true then return false end
+ if C.SaveEnabled~=true or not store or saveReady[p]~=true or p:GetAttribute("SaveState")=="SESSION_ONLY" then return false end
  local data={};for _,k in ipairs(SAVE)do data[k]=p:GetAttribute(k)end
+ if privateRealmCodes[p]then data.CivPrivateRealmCode=privateRealmCodes[p]end
  setSaveState(p,"SAVING")
  local lastError=nil
  for attempt=1,SAVE_MAX_ATTEMPTS do
   local ok,err=pcall(function()
-   store:UpdateAsync("p:"..p.UserId,function()return data end)
+   store:UpdateAsync("p:"..p.UserId,function(existing)
+     local current=typeof(existing)=="table" and existing or {}
+     for key,value in pairs(data)do current[key]=value end
+     return current
+    end)
   end)
   if ok then
    setSaveState(p,"SAVED")
@@ -674,14 +1086,30 @@ end
 
 local function fantasyHouse(parent,index,pos,yaw)
  local assetId=index%2==0 and ASSETS.MedievalHouseA or ASSETS.MedievalHouseB
- local model=wholeAsset(parent,assetId,pos,.42,"MedievalVillageHouse"..index,yaw)
- if model then return model end
- local body=ppart(parent,"VillageHouse",Vector3.new(20,11,17),pos+Vector3.new(0,5,0),Color3.fromRGB(145,108,76),Enum.Material.WoodPlanks)
- ppart(parent,"VillageRoof",Vector3.new(23,2,20),body.Position+Vector3.new(0,6.5,0),index%3==0 and Color3.fromRGB(103,62,55)or Color3.fromRGB(78,68,73),Enum.Material.Slate)
- ppart(parent,"HouseDoor",Vector3.new(4,7,.6),body.Position+Vector3.new(0,-1,-8.7),Color3.fromRGB(83,59,44),Enum.Material.Wood)
- local window=ppart(parent,"HouseWindow",Vector3.new(4,3,.35),body.Position+Vector3.new(6,1,-8.9),Color3.fromRGB(128,191,209),Enum.Material.Glass);window.Transparency=.22
- ppart(parent,"HouseChimney",Vector3.new(2.2,5,2.2),body.Position+Vector3.new(-6,8,3),Color3.fromRGB(91,78,72),Enum.Material.Brick)
- return body
+ local native=wholeAsset(parent,assetId,pos,1,"MedievalVillageHouse"..index,yaw,26)
+ if native then return native end
+ -- 메인: 외부 건물 에셋 로딩 실패 시 기존 마을이 빈 터로 남지 않게 보존형 기본 건물을 구성한다.
+ local house=Instance.new("Model");house.Name="MedievalVillageHouse"..index;house.Parent=parent
+ local angle=CFrame.new(pos)*CFrame.Angles(0,math.rad(yaw or 0),0)
+ local function part(name,size,offset,color,material)
+  local item=Instance.new("Part");item.Name=name;item.Anchored=true;item.Size=size
+  item.CFrame=angle*CFrame.new(offset);item.Color=color;item.Material=material
+  item.TopSurface=Enum.SurfaceType.Smooth;item.BottomSurface=Enum.SurfaceType.Smooth;item.Parent=house
+  return item
+ end
+ local wall=Color3.fromRGB(186,160,122)
+ local wood=Color3.fromRGB(93,65,45)
+ part("Foundation",Vector3.new(22,1,18),Vector3.new(0,.5,0),Color3.fromRGB(106,100,91),Enum.Material.Cobblestone)
+ part("HouseWalls",Vector3.new(20,12,16),Vector3.new(0,7,0),wall,Enum.Material.Plaster)
+ part("Roof",Vector3.new(24,3,21),Vector3.new(0,14.5,0),Color3.fromRGB(106,62,51),Enum.Material.Slate)
+ part("RoofRidge",Vector3.new(3,3,21),Vector3.new(0,16.5,0),Color3.fromRGB(123,72,55),Enum.Material.Slate)
+ part("Entrance",Vector3.new(5,8,.55),Vector3.new(0,4.5,-8.35),wood,Enum.Material.WoodPlanks)
+ for _,x in ipairs({-6,6})do
+  part("Window",Vector3.new(3.2,3.2,.6),Vector3.new(x,8,-8.4),Color3.fromRGB(119,186,205),Enum.Material.Glass)
+  part("WindowFrame",Vector3.new(3.8,.5,.8),Vector3.new(x,10,-8.5),wood,Enum.Material.Wood)
+ end
+ house:SetAttribute("NativeAssetFallback",true)
+ return house
 end
 local function trialInstruction(classId)
  if classId=="BREAKER"then return"파쇄기사 시험 · 스킬 공격 5회 적중"
@@ -750,16 +1178,120 @@ local function purchaseMerchantEquipment(p,kind)
  return true
 end
 
+-- AI 문명: 24개 문명이 서버에서 자원을 모으고 연구하며 시대를 발전시킨다.
+local civRivals={}
+local function createCivRivalCamps(folder)
+ table.clear(civRivals)
+ local camps=Instance.new("Folder");camps.Name="AutonomousCivilizations";camps.Parent=folder
+ for id=1,24 do
+  local race=RaceData.GetRace(id)
+  if race then
+   local angle=(id-1)/24*math.pi*2
+   local pos=Vector3.new(math.cos(angle)*133,2.5,math.sin(angle)*133)
+   local base=ppart(camps,"CivCamp_"..id,Vector3.new(8,1,8),pos,Color3.fromRGB(111,85,60),Enum.Material.WoodPlanks)
+   base.CanCollide=false
+   local banner=ppart(camps,race.Name.."_Banner",Vector3.new(3,9,1),pos+Vector3.new(0,5,0),Color3.fromRGB(65+id*5,98+id*3,118),Enum.Material.Slate)
+   banner.CanCollide=false;banner.CanTouch=false
+   banner:SetAttribute("IsCivAI",true);banner:SetAttribute("RaceID",id)
+   banner:SetAttribute("TechProgress",0);banner:SetAttribute("CivResources",0)
+   banner:SetAttribute("CurrentEra",1)
+   local sign=label(banner,race.Name.." · 신화 시대",Color3.fromRGB(243,214,163),70)
+   table.insert(civRivals,{banner=banner,label=sign:FindFirstChildOfClass("TextLabel"),race=race})
+  end
+ end
+end
+task.spawn(function()
+ while task.wait(5) do
+  if world and world.Parent then
+   for _,entry in ipairs(civRivals)do
+    local actor=entry.banner
+    if actor and actor.Parent then
+     local progress=math.clamp(math.floor(actor:GetAttribute("TechProgress")or 0),0,TechTreeData.Count)
+     if progress<TechTreeData.Count then
+      local nextTech=TechTreeData.Next(progress)
+      if nextTech then
+       local bonus=entry.race.Bonuses.FoodProduction or entry.race.Bonuses.MiningYield or 0
+       local resources=(actor:GetAttribute("CivResources")or 0)+2+bonus*5
+       local cost=4+nextTech.Era*3
+       if resources>=cost then
+        resources-=cost;progress+=1
+        actor:SetAttribute("TechProgress",progress)
+        actor:SetAttribute("CurrentEra",nextTech.Era)
+        if entry.label then entry.label.Text=entry.race.Name.." · "..TechTreeData.EraNames[nextTech.Era].." "..progress.."/72"end
+       end
+       actor:SetAttribute("CivResources",math.floor(resources*100)/100)
+      end
+     end
+    end
+   end
+  end
+ end
+end)
+
+-- 전용 영지: 기존 저장 게임 PlaceId의 예약 서버를 소유주만 이용한다.
+local realmEntryBusy={}
+local function enterPrivateRealm(player)
+ if realmEntryBusy[player] then return end
+ if not player.Parent or not saveReady[player] or player:GetAttribute("SaveState")=="SESSION_ONLY"then msg(player,"영지 서버는 저장 연결이 필요해.");return end
+ if RunService:IsStudio()or game.PlaceId<=0 then msg(player,"예약 서버는 로블록스 게시 게임에서 이용할 수 있어.");return end
+ if n(player,"CurrentZone",0)~=0 or player:GetAttribute("InCombat")==true then msg(player,"마을에서 전투를 끝내고 이용해.");return end
+ realmEntryBusy[player]=true
+ task.spawn(function()
+  local code=privateRealmCodes[player]
+  if not code then
+   local ok,result=pcall(function()return TeleportService:ReserveServerAsync(game.PlaceId)end)
+   if not ok or type(result)~="string"then
+    realmEntryBusy[player]=nil;msg(player,"개인 영지 예약 실패");warn("Civ realm reservation",result);return
+   end
+   code=result;privateRealmCodes[player]=code
+   if not save(player) then
+    privateRealmCodes[player]=nil;realmEntryBusy[player]=nil;msg(player,"영지 정보 저장에 실패했어.");return
+   end
+  end
+  local options=Instance.new("TeleportOptions")
+  options.ReservedServerAccessCode=code
+  options:SetTeleportData({CivRealm="ESTATE",OwnerUserId=player.UserId})
+  local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,{player},options)end)
+  realmEntryBusy[player]=nil;options:Destroy()
+  if not ok then msg(player,"개인 영지 이동 실패");warn("Civ realm teleport",err)end
+ end)
+end
+
 local function makeVillage()
  table.clear(livingResidents)
  local f=Instance.new("Folder");f.Name="Village";f.Parent=world
  foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="VillageSpawn";foundationSpawn.Size=Vector3.new(12,1,12);foundationSpawn.Position=C.VillageCenter+Vector3.new(0,2,0);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=true;foundationSpawn.Parent=f
  ppart(f,"VillageGround",Vector3.new(300,2,300),Vector3.new(0,0,0),Color3.fromRGB(93,141,85),Enum.Material.Grass)
  ppart(f,"VillagePlaza",Vector3.new(96,2.3,96),Vector3.new(0,1.2,0),Color3.fromRGB(128,122,111),Enum.Material.Cobblestone)
+ -- 메인: 처음 입장한 플레이어가 즉시 마을임을 알아보도록 광장과 입구를 명확히 표시한다.
+ local pathColor=Color3.fromRGB(176,147,107)
+ for _,z in ipairs({-46,-30,-14,14,30,46})do
+  local pavement=ppart(f,"VillageCentralWalk",Vector3.new(13,.35,15),Vector3.new(0,2.53,z),pathColor,Enum.Material.Cobblestone)
+  pavement.CanCollide=false
+ end
+ local gateLeft=ppart(f,"VillageEntrancePillarLeft",Vector3.new(4,15,4),Vector3.new(-13,8,47),Color3.fromRGB(95,71,54),Enum.Material.Wood)
+ local gateRight=ppart(f,"VillageEntrancePillarRight",Vector3.new(4,15,4),Vector3.new(13,8,47),Color3.fromRGB(95,71,54),Enum.Material.Wood)
+ ppart(f,"VillageEntranceBeam",Vector3.new(30,4,5),Vector3.new(0,16,47),Color3.fromRGB(101,69,44),Enum.Material.WoodPlanks)
+ local welcome=ppart(f,"VillageWelcomeSign",Vector3.new(24,5,1),Vector3.new(0,15,43.9),Color3.fromRGB(75,52,37),Enum.Material.WoodPlanks)
+ welcome.CanCollide=false
+ label(welcome,"대충 RPG · 모험가 마을",Color3.fromRGB(255,229,169),44)
+ local landmarkBase=ppart(f,"VillageLandmarkBase",Vector3.new(14,2,14),Vector3.new(0,3,-18),Color3.fromRGB(95,100,106),Enum.Material.Slate)
+ local landmark=ppart(f,"VillageLandmark",Vector3.new(4,13,4),Vector3.new(0,10,-18),Color3.fromRGB(153,129,92),Enum.Material.Marble)
+ landmark.CanCollide=false
+ local landmarkSign=ppart(f,"VillageLandmarkSign",Vector3.new(11,3,1),Vector3.new(0,10,-15.6),Color3.fromRGB(72,57,42),Enum.Material.WoodPlanks)
+ landmarkSign.CanCollide=false
+ label(landmarkSign,"모험가 광장",Color3.fromRGB(255,230,164),46)
+ for _,location in ipairs({Vector3.new(-43,3,43),Vector3.new(43,3,43),Vector3.new(-43,3,-43),Vector3.new(43,3,-43)})do
+  local garden=ppart(f,"VillageGarden",Vector3.new(12,1,12),location,Color3.fromRGB(66,111,59),Enum.Material.Grass)
+  garden.CanCollide=false
+  local flowers=ppart(f,"VillageFlowers",Vector3.new(8,.3,8),location+Vector3.new(0,.7,0),Color3.fromRGB(213,162,104),Enum.Material.SmoothPlastic)
+  flowers.CanCollide=false
+ end
  for _,z in ipairs({-112,-84,-56,56,84,112})do ppart(f,"MainRoad",Vector3.new(16,1,36),Vector3.new(0,1.15,z),Color3.fromRGB(119,105,88),Enum.Material.Cobblestone)end
- for i=1,12 do local a=i/12*math.pi*2;tree(f,Vector3.new(math.cos(a)*126,1,math.sin(a)*126),.9+(i%3)*.08)end
+ -- 로비 중심·포탈 진입로는 비우고 기존 네이티브 식생 원본을 외곽에 배치한다.
  for i=1,10 do
-  local a=i/10*math.pi*2;local pos=Vector3.new(math.cos(a)*82,1,math.sin(a)*82);fantasyHouse(f,i,pos,math.deg(-a)+90)
+  local side=i<=5 and -1 or 1;local row=(i-1)%5
+  fantasyHouse(f,i,Vector3.new(side*82,1,-56+row*28),side<0 and -90 or 90)
  end
  -- Functional buildings read clearly from the plaza instead of looking like ten identical houses.
  for _,entry in ipairs({
@@ -775,12 +1307,44 @@ local function makeVillage()
   local light=ppart(f,"VillageLampGlow",Vector3.new(2,2,2),pole.Position+Vector3.new(0,4,0),Color3.fromRGB(245,202,116),Enum.Material.Neon);light.CanCollide=false
   local pl=Instance.new("PointLight");pl.Color=light.Color;pl.Range=20;pl.Brightness=.75;pl.Parent=light
  end
- for i=1,4 do
-  local stall=ppart(f,"MarketStall",Vector3.new(12,5,7),Vector3.new(-30+i*20,3.5,38),Color3.fromRGB(126,88,61),Enum.Material.WoodPlanks)
-  ppart(f,"MarketAwning",Vector3.new(14,.6,9),stall.Position+Vector3.new(0,3.2,0),i%2==0 and Color3.fromRGB(164,74,67)or Color3.fromRGB(197,157,82),Enum.Material.Fabric)
+ createCivRivalCamps(f)
+ -- 멀티버스 개인 영지 포털과 공용 무역 광장. 중앙 스폰은 비워 둔다.
+ local estateGate=ppart(f,"PrivateRealmPortal",Vector3.new(5,10,3),Vector3.new(-14,7,-35),Color3.fromRGB(118,85,178),Enum.Material.Slate)
+ estateGate.CanCollide=false;label(estateGate,"개인 영지 · 예약 서버",Color3.fromRGB(234,205,255),65)
+ prompt(estateGate,"멀티버스 영지","내 영지로 이동","CIV_ESTATE","CivilizationEstate").Triggered:Connect(enterPrivateRealm)
+ local tradeGate=ppart(f,"MultiverseTradePortal",Vector3.new(5,10,3),Vector3.new(14,7,-35),Color3.fromRGB(194,148,77),Enum.Material.Slate)
+ tradeGate.CanCollide=false;label(tradeGate,"멀티버스 무역 광장",Color3.fromRGB(255,229,163),65)
+ prompt(tradeGate,"무역 광장","이동하기","CIV_TRADE","MultiverseTrade").Triggered:Connect(function(player)
+  if n(player,"CurrentZone",0)==0 then teleportPlayer(player,Vector3.new(0,2,-94));msg(player,"공용 무역 광장에 도착했어.");feedback(player,"CIV_TRADE")end
+ end)
+ local tradeFloor=ppart(f,"MultiverseTradeSquare",Vector3.new(51,1,30),Vector3.new(0,1.9,-94),Color3.fromRGB(165,140,104),Enum.Material.Cobblestone)
+ tradeFloor.CanCollide=true
+ for index=1,4 do
+  local x=(index-2.5)*12
+  local stand=ppart(f,"CivTradeStand"..index,Vector3.new(9,3,4),Vector3.new(x,4,-104),Color3.fromRGB(134,93,58),Enum.Material.WoodPlanks)
+  stand.CanCollide=false
+  local tradeResources={"CivStone","CivBronze","CivIron","CivHero"}
+  local names={"석재","청동","철","영웅 인장"}
+  local prices={20,45,85,160}
+  local item=tradeResources[index];local cost=prices[index]
+  label(stand,names[index].." · "..cost.."G",Color3.fromRGB(255,226,169),42)
+  prompt(stand,names[index].." 교역","1개 구입","CIV_TRADE_BUY","CivilizationTrade"..index).Triggered:Connect(function(player)
+   if n(player,"CurrentZone",0)~=0 or n(player,"RaceID",0)<=0 or saveReady[player]~=true or player:GetAttribute("SaveState")=="SESSION_ONLY"then
+    msg(player,"문명을 선택하고 저장에 연결한 뒤 거래해.");return
+   end
+   if n(player,"Gold",0)<cost then msg(player,names[index].." 구매 골드 부족");return end
+   player:SetAttribute("Gold",n(player,"Gold",0)-cost)
+   player:SetAttribute(item,n(player,item,0)+1)
+   msg(player,names[index].." 1개 구매 · "..cost.."골드");feedback(player,"CIV_TRADE")
+  end)
  end
+ -- 상자형 시장·중앙 분수 대신 기존 자산의 실제 소품을 광장 가장자리에 배치한다.
  decorateVillageAssets(f)
- local fountain=ppart(f,"Fountain",Vector3.new(14,3,14),Vector3.new(0,3,0),Color3.fromRGB(90,112,124),Enum.Material.Slate);label(fountain,"마을 광장",Color3.fromRGB(255,232,168),28)
+ for i=1,4 do
+  assetProp(f,ASSETS.City,{"market","stall","cart"},Vector3.new(-30+i*20,2.35,38),.65,i,false)
+ end
+ f:SetAttribute("LobbyVisualRevision","VILLAGE_ENTRANCE_PLAZA_V2")
+ f:SetAttribute("LobbyRuntimeVisualReview","PENDING")
 
  local chief=humanoidFigure(f,"VillageChief",Vector3.new(-18,6,10),Color3.fromRGB(142,98,68),Color3.fromRGB(80,67,54),1);label(chief,"이장",Color3.fromRGB(255,221,145),28)
  prompt(chief,"마을 이장","퀘스트 받기","QUEST_NPC","VillageChief").Triggered:Connect(function(p)
@@ -840,9 +1404,16 @@ local function makeVillage()
   local portalPrompt=prompt(pad,z.Name,"포탈 입장","ENTRY_PORTAL","Portal"..z.Id)
   portalPrompt:SetAttribute("DestinationZone",z.Id)
   portalPrompt.Triggered:Connect(function(p)
+   local occupants=0;for _,player in ipairs(Players:GetPlayers())do if n(player,"CurrentZone",0)==z.Id then occupants+=1 end end
    if z.Id==1 and meadowPlayersInside()==0 and generateMeadowRun then
     local seed=(os.time()%1000000)*100+n(p,"RoomCode",1)+meadowRunCounter*13;generateMeadowRun(seed)
+    local zone=world and world:FindFirstChild("Zone"..z.Id);if zone then decorateZoneAssets(zone,z,seed)end
+   elseif z.Id~=1 and occupants==0 then
+    biomeRunCounter+=1
+    local seed=(os.time()%1000000)*100+n(p,"RoomCode",1)+biomeRunCounter*13+z.Id*197
+    local zone=world and world:FindFirstChild("Zone"..z.Id);if zone then decorateZoneAssets(zone,z,seed)end
    end
+   local biomeState=biomeRunState[z.Id];p:SetAttribute("BiomeGenerationSeed",biomeState and biomeState.seed or 0)
    p:SetAttribute("CurrentZone",z.Id);p:SetAttribute("InCombat",false);p:SetAttribute("Blocking",false);lastCombat[p]=0
    if z.Id==1 then p:SetAttribute("CurrentRunSeed",meadowRunState.seed)else p:SetAttribute("CurrentRunSeed",0)end
    teleportPlayer(p,z.Center+Vector3.new(0,0,170));msg(p,z.Name.." 입장"..(z.Id==1 and(" · RUN "..tostring(meadowRunState.seed))or""))
@@ -888,7 +1459,7 @@ local function makeZone(z)
   local a=i/8*math.pi*2;local lamp=ppart(f,"Guide"..i,Vector3.new(1.2,8,1.2),z.Center+Vector3.new(math.cos(a)*86,5,math.sin(a)*86),Color3.fromRGB(75,73,76),Enum.Material.Metal)
   local glow=ppart(f,"GuideGlow"..i,Vector3.new(2.2,2.2,2.2),lamp.Position+Vector3.new(0,5,0),z.Color,Enum.Material.Neon);glow.CanCollide=false
  end
- if z.Theme~="MEADOW"then decorateZoneAssets(f,z)end
+ decorateZoneAssets(f,z)
  local ret=ppart(f,"ReturnPortal",Vector3.new(26,2,18),z.Center+Vector3.new(0,2,190),Color3.fromRGB(112,180,205),Enum.Material.Neon);label(ret,"마을 귀환",Color3.fromRGB(180,235,255),36)
  local returnPrompt=prompt(ret,"마을","귀환","RETURN_PORTAL","ReturnPortal"..z.Id)
  returnPrompt:SetAttribute("DestinationZone",0)
@@ -1002,13 +1573,24 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
   add("SnowBeastTail",Vector3.new(3.4,.72,.72),Vector3.new(0,-1,3.55),fur,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,25,35))
  elseif z.Theme=="RUINS"then
   local rock=Color3.fromRGB(79,76,88);local edge=Color3.fromRGB(99,95,108)
-  add("GolemBody",Vector3.new(4.3,4.7,3.6),Vector3.new(0,-1.4,0),rock,Enum.Material.Rock,Enum.PartType.Ball)
+  local families=C.StudioAssets and C.StudioAssets.Families or{}
+  if table.find(families.CREATURE or{},"CRYSTAL_CORE")then
+   local visual=CommonCreatureParts.Create("GOLEM_CORE",{quality="near",anchored=false,scale=1.5,palette={body=rock,light=edge,accent=z.Color}})
+   visual.Name="CompanyGolemBody";visual:PivotTo(rootPart.CFrame*CFrame.new(0,-1.4,0));visual.Parent=rootPart
+   for _,part in ipairs(visual:GetDescendants())do
+    if part:IsA("BasePart")then part.Anchored=false;part.Massless=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false end
+   end
+   local joint=Instance.new("WeldConstraint");joint.Part0=rootPart;joint.Part1=visual.PrimaryPart;joint.Parent=visual.PrimaryPart
+   visual:SetAttribute("RigBindingState","WELD_BOUND_RUNTIME_REVIEW_PENDING")
+  else
+   add("GolemBody",Vector3.new(4.3,4.7,3.6),Vector3.new(0,-1.4,0),rock,Enum.Material.Rock,Enum.PartType.Ball)
+   add("GolemShoulderL",Vector3.new(2.1,2.1,2.1),Vector3.new(-2.65,-.4,0),edge,Enum.Material.Rock,Enum.PartType.Ball)
+   add("GolemShoulderR",Vector3.new(2.1,2.1,2.1),Vector3.new(2.65,-.4,0),edge,Enum.Material.Rock,Enum.PartType.Ball)
+   add("GolemCore",Vector3.new(1.05,1.05,.36),Vector3.new(0,-.6,-1.85),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
+  end
   add("GolemHead",Vector3.new(2.7,2.4,2.5),Vector3.new(0,1.55,-.3),edge,Enum.Material.Rock,Enum.PartType.Ball)
-  add("GolemShoulderL",Vector3.new(2.1,2.1,2.1),Vector3.new(-2.65,-.4,0),edge,Enum.Material.Rock,Enum.PartType.Ball)
-  add("GolemShoulderR",Vector3.new(2.1,2.1,2.1),Vector3.new(2.65,-.4,0),edge,Enum.Material.Rock,Enum.PartType.Ball)
   add("GolemArmL",Vector3.new(3.2,1.05,1.05),Vector3.new(-3.15,-2,0),rock,Enum.Material.Rock,Enum.PartType.Cylinder,Vector3.new(0,0,85))
   add("GolemArmR",Vector3.new(3.2,1.05,1.05),Vector3.new(3.15,-2,0),rock,Enum.Material.Rock,Enum.PartType.Cylinder,Vector3.new(0,0,95))
-  add("GolemCore",Vector3.new(1.05,1.05,.36),Vector3.new(0,-.6,-1.85),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
    add("GolemRuneL",Vector3.new(.4,1.4,.4),Vector3.new(-2.7,1.6,.2),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
    add("GolemRuneR",Vector3.new(.4,1.4,.4),Vector3.new(2.7,1.6,.2),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
  elseif z.Theme=="CANYON"then
@@ -1032,6 +1614,15 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
    add("KnightShield",Vector3.new(.5,3.3,2.6),Vector3.new(-2.7,-1.2,0),Color3.fromRGB(67,60,83),Enum.Material.Metal)
  end
  label(rootPart,boss and("BOSS · "..displayName)or displayName,boss and Color3.fromRGB(255,198,105)or Color3.new(1,1,1),boss and 58 or 32)
+ -- Reuse existing native-imported creature GLBs; preserve scripted root, combat and geometry fallback.
+ local sharedEnemyId=not boss and Style.SharedEnemyModels and Style.SharedEnemyModels[z.Theme]
+ local variants=not boss and Style.SharedEnemyVariants and Style.SharedEnemyVariants[z.Theme]
+ if variants and #variants>0 then
+  -- Stable spawn choice: avoids visual changes when the monster respawns.
+  local key=math.abs(math.floor(rootPart.Position.X*17+rootPart.Position.Z*11+rootPart.Position.Y*3))+1
+  sharedEnemyId=variants[(math.abs(math.floor(key))-1)%#variants+1]
+ end
+ if sharedEnemyId then task.spawn(bindNativeNpcVisual,rootPart,sharedEnemyId)end
  return rootPart
 end
 local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)
@@ -1252,7 +1843,7 @@ local function partyKill(p,contribution)
  end
  broadcastMultiplayerSync(p)
 end
-local function killEnemy(p,e,contribution)
+killEnemy=function(p,e,contribution)
  if e.hp>0 then return end
  local z=portalDef(e.zone);local display=e.def and e.def.Name or(e.boss and z.Boss and z.Boss.Name or z.Enemy)
  if e.part.Parent then e.part:Destroy()end
@@ -1261,7 +1852,11 @@ local function killEnemy(p,e,contribution)
   p:SetAttribute("SoulCharge",math.min(5,n(p,"SoulCharge",0)+1))
   if p:GetAttribute("AdvancementTrialActive")==true then advanceTrial(p,1)end
  end
- p:SetAttribute("Gold",n(p,"Gold",0)+e.gold);grantXP(p,e.xp);completeQuestIfNeeded(p,e.zone);partyKill(p,contribution or 2);unlockBossCompanion(p,e)
+ p:SetAttribute("CivKills",n(p,"CivKills",0)+1)
+  if e.boss or e.runBoss or e.hiddenBoss then p:SetAttribute("CivBossKills",n(p,"CivBossKills",0)+1)end
+  local resource=TechTreeData.EraResources[TechTreeData.EraForUnlocked(n(p,"CivTechCount",0))]
+  if resource then p:SetAttribute(resource,n(p,resource,0)+(e.boss and 4 or 1))end
+  p:SetAttribute("Gold",n(p,"Gold",0)+e.gold);grantXP(p,e.xp);completeQuestIfNeeded(p,e.zone);partyKill(p,contribution or 2);unlockBossCompanion(p,e)
  if e.hiddenBoss then
   workspace:SetAttribute("MeadowHiddenBossDefeated",true);msg(p,"히든 보스 격파 · "..display);feedback(p,"HIDDEN_BOSS_KILL")
  elseif e.runBoss then
@@ -1291,6 +1886,15 @@ local function playerAttack(p,skill)
  local range=skill and(classId=="RUNE"and 28 or classId=="SOUL"and 26 or 20)or 15
  local e=nearestEnemy(r.Position,zone,range);if not e then msg(p,"사거리 안에 몬스터가 없어");feedback(p,"ATTACK_NO_TARGET")return end
  local now=os.clock();local adv=tostring(p:GetAttribute("AdvancementId")or"");local damage=n(p,"AttackPower",10)*(skill and cd.SkillMult or 1)
+ -- 자동 공격과 스킬은 기존 공격력/드랍 규칙 유지. 수동 기본 공격만 콤보를 연결한다.
+ local combo=comboState[p]or{step=0,at=0}
+ if not skill and (n(p,"ManualAttackUntil",0)>=now or p:GetAttribute("AutoCombat")==false) then
+  combo.step=(now-combo.at<=1.0)and(combo.step%3+1)or 1
+  combo.at=now;p:SetAttribute("CombatCombo",combo.step)
+ else
+  combo.step=0;p:SetAttribute("CombatCombo",0)
+ end
+ comboState[p]=combo
  local backstab=classId=="SHADOW"and n(p,"BackstabUntil",0)>now
  if classId=="BREAKER"then
   if adv=="RAGE_BREAKER"then local h=hum(p);if h and h.Health/h.MaxHealth<=.5 then damage*=1.28 end end
@@ -1323,6 +1927,11 @@ local function playerAttack(p,skill)
   end
  end
  e.hp-=damage;e.part:SetAttribute("HP",math.max(0,e.hp));staggerEnemy(e,skill and 18 or 8,now);lastCombat[p]=now;p:SetAttribute("InCombat",true)
+ if not skill and combo.step==3 and e.hp>0 and e.part and e.part.Parent then
+  local away=Vector3.new(e.part.Position.X-r.Position.X,0,e.part.Position.Z-r.Position.Z)
+  local zoneDef=portalDef(zone)
+  if away.Magnitude>.01 and zoneDef and (e.part.Position+away.Unit*4-zoneDef.Center).Magnitude<230 then e.part.CFrame=e.part.CFrame+away.Unit*4 end
+ end
  pulseWeaponTrail(p.Character);combatFlash(e.part.Position,cd.Color,skill and 1.7 or 1.15);feedback(p,skill and"SKILL"or"ATTACK")
  if e.hp<=0 then killEnemy(p,e,skill and 3 or 2)end
  local stamp=lastCombat[p];task.delay(C.CombatLockSeconds,function()if p.Parent and lastCombat[p]==stamp then p:SetAttribute("InCombat",false)end end)
@@ -1472,6 +2081,134 @@ local function chooseAdvancement(p,key)
  p:SetAttribute("AdvancementId",choice.Id);p:SetAttribute("AdvancementTrialPassed",false);p:SetAttribute("AdvancementTrialProgress",0);p:SetAttribute("RespecReady",false)
  setStats(p,true);applyPlayerAppearance(p);msg(p,"1차 전직 · "..choice.Name.." · "..choice.Role);feedback(p,"ADVANCEMENT_COMPLETE");return true
 end
+-- 개인 주택: 기존 월드/저장 데이터와 분리된 시각 구성, 소유자는 서버만 결정한다.
+local houses=Instance.new("Folder");houses.Name="PlayerHousing";houses.Parent=world
+local function housePosition(p)
+ local slots=math.max(1,tonumber(C.Housing and C.Housing.Slots)or 100000)
+ local index=p.UserId%slots
+ return Vector3.new(410+(index%100)*48,2,math.floor(index/100)*52)
+end
+local function refreshHouse(p)
+ local key="House_"..p.UserId
+ local prior=houses:FindFirstChild(key);if prior then prior:Destroy()end
+ local level=math.clamp(math.floor(n(p,"HouseLevel",0)),0,3)
+ if level==0 then return end
+ local furniture=math.clamp(math.floor(n(p,"HouseFurniture",0)),0,8)
+ local modules=math.clamp(math.floor(n(p,"HouseModules",0)),0,12)
+ local base=housePosition(p)
+ local home=Instance.new("Model");home.Name=key;home:SetAttribute("OwnerUserId",p.UserId);home:SetAttribute("HouseLevel",level);home.Parent=houses
+ local width=18+level*6
+ local plot=ppart(home,"PrivatePlot",Vector3.new(width+12,2,width+12),base+Vector3.new(0,-2,0),Color3.fromRGB(91,136,95),Enum.Material.Grass);plot.CanCollide=true
+ local function piece(name,size,offset,color,material)
+  local x=ppart(home,name,size,base+offset,color,material or Enum.Material.WoodPlanks);x.CanCollide=true;return x
+ end
+ piece("Floor",Vector3.new(width,1,width),Vector3.new(0,-.25,0),Color3.fromRGB(142,111,78))
+ for _,side in ipairs({-1,1})do
+  piece("Wall",Vector3.new(1,10,width),Vector3.new(side*width/2,5,0),Color3.fromRGB(205,184,148))
+ end
+ piece("BackWall",Vector3.new(width,10,1),Vector3.new(0,5,width/2),Color3.fromRGB(205,184,148))
+ for _,side in ipairs({-1,1})do
+  piece("EntryWall",Vector3.new(width*.36,10,1),Vector3.new(side*width*.32,5,-width/2),Color3.fromRGB(205,184,148))
+ end
+ -- 코난풍 건축 단계 표현: 기초, 보강기둥, 방어용 울타리와 지붕을 레벨에 따라 조립한다.
+ local frameColor=level==1 and Color3.fromRGB(112,81,57) or level==2 and Color3.fromRGB(116,113,105) or Color3.fromRGB(80,87,96)
+ local frameMaterial=level==1 and Enum.Material.WoodPlanks or Enum.Material.Rock
+ for _,x in ipairs({-1,1})do for _,z in ipairs({-1,1})do
+  piece("SupportColumn",Vector3.new(1.5,11,1.5),Vector3.new(x*width/2,5,z*width/2),frameColor,frameMaterial)
+ end end
+ if level>=2 then
+  for _,x in ipairs({-1,1})do
+   piece("ReinforcedWall",Vector3.new(1,4,width-3),Vector3.new(x*(width/2-1),3,0),frameColor,Enum.Material.Rock)
+  end
+ end
+ if level>=3 then
+  for _,x in ipairs({-1,1})do for _,z in ipairs({-1,1})do
+   piece("WatchPost",Vector3.new(3,15,3),Vector3.new(x*(width/2+3),6,z*(width/2+3)),frameColor,Enum.Material.Rock)
+  end end
+ end
+  piece("Roof",Vector3.new(width+2,1.8,width+2),Vector3.new(0,10.5,0),Color3.fromRGB(104,73,65))
+ local sign=piece("HouseSign",Vector3.new(10,2,.6),Vector3.new(0,8,-width/2-.5),Color3.fromRGB(86,62,47))
+ label(sign,p.DisplayName.."의 집",Color3.fromRGB(255,227,174),65)
+ for i=1,furniture do
+  local col=(i-1)%4;local row=math.floor((i-1)/4)
+  local pos=Vector3.new(-width/2+4+col*4,1.4,-2+row*5)
+  piece("Furniture_"..i,Vector3.new(3,2,2.5),pos,i%2==0 and Color3.fromRGB(107,147,119)or Color3.fromRGB(158,113,76))
+ end
+ -- 플레이어가 구매한 모듈을 고정 슬롯에 개별 배치해 재접속 후에도 복원한다.
+ for i=1,modules do
+  local side=i%4
+  local tier=math.ceil(i/4)
+  local offset=width/2+3+tier*4
+  local positions={
+   Vector3.new(offset,0,(i%3-1)*5),
+   Vector3.new(-offset,0,(i%3-1)*5),
+   Vector3.new((i%3-1)*5,0,offset),
+   Vector3.new((i%3-1)*5,0,-offset)
+  }
+  local at=positions[side+1]
+  piece("BuildFoundation_"..i,Vector3.new(5,1,5),at+Vector3.new(0,-.4,0),frameColor,frameMaterial)
+  piece("BuildWall_"..i,Vector3.new(5,5,1),at+Vector3.new(0,2,0),frameColor,frameMaterial)
+  piece("BuildRoof_"..i,Vector3.new(5.5,.8,5.5),at+Vector3.new(0,5,0),Color3.fromRGB(105,78,68))
+ end
+ home:SetAttribute("ModuleCount",modules)
+ home:SetAttribute("BuildingStyle",level==1 and "TIMBER" or level==2 and "STONE" or "FORTIFIED")
+  home:SetAttribute("FurnitureCount",furniture)
+end
+local function houseAction(p,action)
+ if p:GetAttribute("SaveState")=="LOADING"or saveReady[p]~=true then msg(p,"저장 데이터 준비 후 이용해.");return false end
+ if n(p,"CurrentZone",0)~=0 or p:GetAttribute("InCombat")==true or os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds then msg(p,"마을에서 전투가 끝난 뒤 이용해.");return false end
+ local h=C.Housing;local level=math.floor(n(p,"HouseLevel",0));local furniture=math.floor(n(p,"HouseFurniture",0));local modules=math.floor(n(p,"HouseModules",0))
+ if action==C.Actions.HOUSING_VISIT then
+  if level==0 then msg(p,"먼저 집을 건설해.");return false end
+  teleportPlayer(p,housePosition(p)+Vector3.new(0,5,-12));msg(p,"내 집 방문");return true
+ end
+ local cost,newLevel,newFurniture,newModules=0,level,furniture,modules
+ if action==C.Actions.HOUSING_BUILD then
+  if level>0 then msg(p,"이미 집을 소유하고 있어.");return false end
+  cost=h.BuildCost;newLevel=1
+ elseif action==C.Actions.HOUSING_UPGRADE then
+  if level==0 or level>=h.MaxLevel then msg(p,"집을 건설했거나 최대 확장 단계인지 확인해.");return false end
+  cost=h.UpgradeBaseCost*level;newLevel=level+1
+ elseif action==C.Actions.HOUSING_MODULE then
+  if level==0 or modules>=h.MaxModules then msg(p,"집을 건설하거나 건축 모듈 한도를 확인해.");return false end
+  cost=h.ModuleCost;newModules=modules+1
+ elseif action==C.Actions.HOUSING_FURNISH then
+  if level==0 or furniture>=h.MaxFurniture then msg(p,"집 또는 가구 배치 한도를 확인해.");return false end
+  cost=h.FurnitureCost;newFurniture=furniture+1
+ else return false end
+ if n(p,"Gold",0)<cost then msg(p,"집 꾸미기에 필요한 골드가 부족해. "..cost.."G 필요");return false end
+ p:SetAttribute("Gold",n(p,"Gold",0)-cost)
+ p:SetAttribute("HouseLevel",newLevel);p:SetAttribute("HouseFurniture",newFurniture);p:SetAttribute("HouseModules",newModules)
+ refreshHouse(p);teleportPlayer(p,housePosition(p)+Vector3.new(0,5,-12));msg(p,"건축 변경 적용 · 내 집에서 확인해 ("..cost.."G)");feedback(p,"BUILD");return true
+end
+
+-- 문명·연구: 서버 검증으로만 상태와 자원을 변경한다.
+local function civilizationAction(p,a)
+ if saveReady[p]~=true or p:GetAttribute("SaveState")=="SESSION_ONLY" then msg(p,"저장 연결 후 이용해.");return false end
+ if n(p,"CurrentZone",0)~=0 or p:GetAttribute("InCombat")==true or os.clock()-(lastCombat[p]or 0)<C.CombatLockSeconds then msg(p,"전투가 끝난 마을에서만 가능해.");return false end
+ local raceId=tonumber(a:match("^CIV_SELECT:(%d+)$"))
+ if raceId then
+  local race=RaceData.GetRace(raceId)
+  if not race or n(p,"RaceID",0)~=0 then return false end
+  p:SetAttribute("RaceID",raceId);setStats(p,true)
+  msg(p,"문명 선택 · "..race.Name);feedback(p,"CIVILIZATION");return true
+ end
+ local techId=tonumber(a:match("^CIV_RESEARCH:(%d+)$"))
+ if not techId or n(p,"RaceID",0)==0 then return false end
+ local done=math.clamp(math.floor(n(p,"CivTechCount",0)),0,TechTreeData.Count)
+ if techId~=done+1 then return false end
+ local tech=TechTreeData.GetTech(techId);if not tech then return false end
+ local race=RaceData.GetRace(n(p,"RaceID",0))
+ local discount=race and ((tech.Era==1 and race.Bonuses.MythResearchDiscount)or(tech.Era==3 and race.Bonuses.BronzeDiscount))or 0
+ local eureka=n(p,tech.EurekaMetric,0)>=tech.EurekaTarget
+ local resource,cost=next(tech.RequiredResources)
+ local required=math.max(1,math.ceil(cost*(eureka and .5 or 1)*(1-discount)))
+ if n(p,resource,0)<required then msg(p,"연구 자원 부족 · "..required.."개 필요");return false end
+ p:SetAttribute(resource,n(p,resource,0)-required);p:SetAttribute("CivTechCount",done+1)
+ msg(p,(eureka and "유레카 · "or"연구 완료 · ")..tech.Name);feedback(p,"CIV_RESEARCH")
+ return true
+end
+
 remote.OnServerEvent:Connect(function(p,a)
  if typeof(a)~="string"then return end
  local now=os.clock();local isBlock=a==C.Actions.BLOCK_START or a==C.Actions.BLOCK_END
@@ -1481,26 +2218,46 @@ remote.OnServerEvent:Connect(function(p,a)
   if now-(lastRequest[p]or 0)<C.RemoteMinInterval then return end;lastRequest[p]=now
  end
  local accepted=false
- if a==C.Actions.BUY_WEAPON then accepted=purchaseMerchantEquipment(p,"WEAPON")
+ if a:sub(1,4)=="CIV_" then accepted=civilizationAction(p,a)
+ elseif a==C.Actions.CUSTOMIZE_NEXT then
+  if n(p,"CurrentZone",0)==0 and p:GetAttribute("InCombat")~=true and saveReady[p]==true then
+   p:SetAttribute("AvatarStyle",n(p,"AvatarStyle",1)%6+1);applyPlayerAppearance(p)
+   msg(p,"외형 스타일 "..n(p,"AvatarStyle",1).."/6");accepted=true
+  end
+ elseif a=="CUSTOMIZE_ARCHETYPE" or a=="CUSTOMIZE_ARMOR" or a=="CUSTOMIZE_DECORATION" then
+  if n(p,"CurrentZone",0)==0 and p:GetAttribute("InCombat")~=true and saveReady[p]==true then
+   local key,maxVal,minimum
+   if a=="CUSTOMIZE_ARCHETYPE" then key="AvatarArchetype";maxVal=3;minimum=1
+   elseif a=="CUSTOMIZE_ARMOR" then key="AvatarArmor";maxVal=2;minimum=0
+   else key="AvatarDecoration";maxVal=2;minimum=0 end
+   p:SetAttribute(key,((math.floor(n(p,key,minimum))-minimum+1)%(maxVal-minimum+1))+minimum)
+   applyPlayerAppearance(p);msg(p,"캐릭터 외형 변경 완료");accepted=true;feedback(p,"CUSTOMIZE")
+  end
+ elseif a==C.Actions.HOUSING_BUILD or a==C.Actions.HOUSING_UPGRADE or a==C.Actions.HOUSING_FURNISH or a==C.Actions.HOUSING_MODULE or a==C.Actions.HOUSING_VISIT then accepted=houseAction(p,a)
+ elseif a==C.Actions.BUY_WEAPON then accepted=purchaseMerchantEquipment(p,"WEAPON")
  elseif a==C.Actions.BUY_ARMOR then accepted=purchaseMerchantEquipment(p,"ARMOR")
  elseif CLASS_ACTIONS[a]then accepted=selectClass(p,CLASS_ACTIONS[a])
  elseif a==C.Actions.ADVANCE_A then accepted=chooseAdvancement(p,"A")
  elseif a==C.Actions.ADVANCE_B then accepted=chooseAdvancement(p,"B")
  elseif a==C.Actions.START_ADVANCEMENT_TRIAL then startAdvancementTrial(p);accepted=true
  elseif a==C.Actions.BLOCK_START then
-  if n(p,"GuardBrokenUntil",0)<=now and n(p,"Guard",C.GuardMax)>0 then
-   p:SetAttribute("Blocking",true)
+  if n(p,"GuardBrokenUntil",0)<=now and n(p,"Guard",C.GuardMax)>14 then
+   p:SetAttribute("Guard",n(p,"Guard",C.GuardMax)-14);p:SetAttribute("Blocking",true)
    if now>=n(p,"ParryRearmUntil",0)then p:SetAttribute("BlockStartedAt",now);p:SetAttribute("ParryRearmUntil",now+C.ParryRearmSeconds);feedback(p,"BLOCK_READY")
    else p:SetAttribute("BlockStartedAt",0)end
    accepted=true
   end
  elseif a==C.Actions.BLOCK_END then p:SetAttribute("Blocking",false);accepted=true
- elseif a==C.Actions.ATTACK then p:SetAttribute("Blocking",false);playerAttack(p,false);accepted=true
+ elseif a==C.Actions.ATTACK then p:SetAttribute("Blocking",false);p:SetAttribute("ManualAttackUntil",now+.1);playerAttack(p,false);accepted=true
  elseif a==C.Actions.SKILL then p:SetAttribute("Blocking",false);playerAttack(p,true);accepted=true
  elseif a==C.Actions.DODGE then
+  if n(p,"DodgeCooldownUntil",0)>now then return end
   p:SetAttribute("Blocking",false);local r=root(p);if r then
    local classId=tostring(p:GetAttribute("ClassId")or"NONE");local adv=tostring(p:GetAttribute("AdvancementId")or"")
-   local evade=adv=="MIRAGE_TRACKER"and .75 or .45;p:SetAttribute("EvasionUntil",now+evade)
+   local stamina=n(p,"Guard",C.GuardMax)
+    if stamina<24 then msg(p,"회피 스태미나 부족");return end
+    p:SetAttribute("Guard",stamina-24);p:SetAttribute("DodgeCooldownUntil",now+.8)
+    local evade=adv=="MIRAGE_TRACKER"and .75 or .30;p:SetAttribute("EvasionUntil",now+evade)
    if classId=="SHADOW"then p:SetAttribute("BackstabUntil",now+2.2)end
    r.AssemblyLinearVelocity=r.CFrame.LookVector*52+Vector3.new(0,r.AssemblyLinearVelocity.Y,0);accepted=true;feedback(p,"DODGE")
   end
@@ -1535,21 +2292,45 @@ local function validateCharacterFoundation(p,c)
  end)
 end
 
+workspace:SetAttribute("DaechungRuntimeRevision","20261014-FIX6")
 buildWorld()
 
 local function bindPlayer(p)
  load(p)
+ refreshHouse(p)
+ local joinData=p:GetJoinData()
+ local arrival=typeof(joinData)=="table" and joinData.TeleportData
+ local isEstate=game.PrivateServerId~="" and typeof(arrival)=="table" and arrival.CivRealm=="ESTATE" and arrival.OwnerUserId==p.UserId
+ if isEstate then
+  p:SetAttribute("CivPrivateEstate",true)
+  if n(p,"HouseLevel",0)<1 then
+   local pos=housePosition(p)
+   local ground=ppart(houses,"EmptyEstatePlot_"..p.UserId,Vector3.new(44,2,44),pos+Vector3.new(0,-2,0),Color3.fromRGB(91,135,86),Enum.Material.Grass)
+   ground.CanCollide=true
+  end
+ end
+ local function spawnDestination()
+  return isEstate and (housePosition(p)+Vector3.new(0,6,-10)) or C.VillageCenter
+ end
  local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end
  p:GetAttributeChangedSignal("ClassId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("AdvancementId"):Connect(refreshAppearance);p:GetAttributeChangedSignal("WeaponTier"):Connect(refreshAppearance);p:GetAttributeChangedSignal("ArmorTier"):Connect(refreshAppearance)
  p.CharacterAdded:Connect(function(c)
-  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);p:SetAttribute("Blocking",false);p:SetAttribute("Guard",C.GuardMax);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,c)
+  task.wait(.35);setStats(p,true);p:SetAttribute("CurrentZone",0);p:SetAttribute("Blocking",false);p:SetAttribute("Guard",C.GuardMax);teleportPlayer(p,spawnDestination());applyPlayerAppearance(p);validateCharacterFoundation(p,c)
  end)
- if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,C.VillageCenter);applyPlayerAppearance(p);validateCharacterFoundation(p,p.Character)end)end
+ if p.Character then task.defer(function()task.wait(.35);setStats(p,true);teleportPlayer(p,spawnDestination());applyPlayerAppearance(p);validateCharacterFoundation(p,p.Character)end)end
 end
 Players.PlayerAdded:Connect(bindPlayer)
 for _,p in ipairs(Players:GetPlayers())do bindPlayer(p)end
-Players.PlayerRemoving:Connect(function(p)save(p);saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
+Players.PlayerRemoving:Connect(function(p)comboState[p]=nil;save(p);privateRealmCodes[p]=nil;realmEntryBusy[p]=nil;local oldHouse=houses:FindFirstChild("House_"..p.UserId);if oldHouse then oldHouse:Destroy()end;saveReady[p]=nil;clearPlayerCompanions(p);parties[p]=nil;clickTimes[p]=nil;lastRequest[p]=nil;lastBlockRequest[p]=nil;lastCombat[p]=nil;qaCaptureLast[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;nextNpcGreeting[p]=nil;bossSceneSeen[p]=nil end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
+-- 기존 저장소·저장 키 그대로 60초 자동 저장. 다른 임시 저장 파이프라인을 만들지 않는다.
+task.spawn(function()
+ while task.wait(60)do
+  for _,p in ipairs(Players:GetPlayers())do
+   if saveReady[p]==true and p:GetAttribute("SaveState")~="SESSION_ONLY"then task.spawn(save,p)end
+  end
+ end
+end)
 
 foundationRemote.OnServerEvent:Connect(function(p,name)
  if typeof(name)~="string"then return end
@@ -1579,11 +2360,11 @@ RunService.Heartbeat:Connect(function(dt)
    local offset=Vector3.new(target.X-part.Position.X,0,target.Z-part.Position.Z)
    if offset.Magnitude<.5 then
     resident.nextAnchor=resident.nextAnchor%#resident.route+1
-    resident.restUntil=now+2.5
+    resident.restUntil=now+2.5;part:SetAttribute("MotionState","IDLE")
    else
     local direction=offset.Unit
     local nextPos=part.Position+direction*math.min(offset.Magnitude,resident.speed*math.min(.08,dt))
-    part.CFrame=CFrame.lookAt(nextPos,nextPos+direction)
+    part.CFrame=CFrame.lookAt(nextPos,nextPos+direction);part:SetAttribute("MotionState","WALK")
    end
   end
  end
@@ -1631,13 +2412,14 @@ RunService.Heartbeat:Connect(function(dt)
   if e.hp>0 and e.part.Parent then
    local z=portalDef(e.zone)
    if e.dormant==true then
-    e.part.AssemblyLinearVelocity=Vector3.zero
+    e.part.AssemblyLinearVelocity=Vector3.zero;e.part:SetAttribute("MotionState","IDLE")
    else
    local target,bd=nil,z.Aggro
    for _,p in ipairs(Players:GetPlayers())do
     if n(p,"CurrentZone",0)==e.zone then local r=root(p);local h=hum(p);if r and h and h.Health>0 then local d=(r.Position-e.part.Position).Magnitude;if d<bd then target=p;bd=d end end end
    end
    if target then
+    e.part:SetAttribute("MotionState",e.attackPending and "ATTACK" or now<(e.stunnedUntil or 0) and "HIT" or "CHASE")
     e.lastPlayerObservedAt=now
     e.roamTarget=nil
     -- 보스의 실제 첫 조우 사건만 대사/컷신 후보로 전달한다. 공격·보상·페이즈는 기존 전투 시스템 담당.
@@ -1663,9 +2445,13 @@ RunService.Heartbeat:Connect(function(dt)
     end
     local tr=root(target);local d=tr and Vector3.new(tr.Position.X-e.part.Position.X,0,tr.Position.Z-e.part.Position.Z)
     local attackDef=e.def and e.def.Attack;local engage=(attackDef and attackDef.Range)or(e.def and e.def.Attacks and 18)or 5.5
-    if d and d.Magnitude>math.max(4,engage*.78)and now>=(e.stunnedUntil or 0)and not e.attackPending then e.part.CFrame=e.part.CFrame+d.Unit*math.min(d.Magnitude,(e.speed or 7)*dt)end
+    if d and d.Magnitude>math.max(4,engage*.78)and now>=(e.stunnedUntil or 0)and not e.attackPending then
+     local nextPos=e.part.Position+d.Unit*math.min(d.Magnitude,(e.speed or 7)*dt)
+     e.part.CFrame=CFrame.lookAt(nextPos,nextPos+d.Unit)
+    end
     if tr and(tr.Position-e.part.Position).Magnitude<=engage and now>=(e.nextAttackAt or 0)and now>=(e.stunnedUntil or 0)then beginEnemyAttack(e,target,now)end
    else
+    e.part:SetAttribute("MotionState",e.attackPending and "ATTACK" or "ROAM")
     local back=Vector3.new(e.spawn.X-e.part.Position.X,0,e.spawn.Z-e.part.Position.Z)
     -- 기존 전투 추적·귀환은 그대로 두고, 비전투 일반 몬스터만 자기 서식지에서 관찰·이동한다.
     if e.boss or e.runBoss or e.hiddenBoss or now-(e.lastPlayerObservedAt or -1000000)<4 or back.Magnitude>18 then
@@ -1712,6 +2498,23 @@ RunService.Heartbeat:Connect(function(dt)
 
  for _,p in ipairs(Players:GetPlayers())do
   local zone=n(p,"CurrentZone",0)
+  local h=hum(p);local r=root(p)
+  if zone>0 and h and h.Health>0 and r and p:GetAttribute("AutoCombat")~=false and now>=n(p,"NextAutoAttack",0) then
+   local enemy=nearestEnemy(r.Position,zone,21)
+   if enemy then
+    local skillReady=now>=n(p,"NextAutoSkill",0) and (enemy.part.Position-r.Position).Magnitude<=20
+    if skillReady then
+     p:SetAttribute("NextAutoSkill",now+5.5)
+     p:SetAttribute("NextAutoAttack",now+1.2)
+     playerAttack(p,true)
+    elseif (enemy.part.Position-r.Position).Magnitude<=15 then
+     p:SetAttribute("NextAutoAttack",now+1.05)
+     playerAttack(p,false)
+    else
+     p:SetAttribute("NextAutoAttack",now+.23)
+    end
+   end
+  end
   if zone==0 then local h=hum(p);if h and h.Health<h.MaxHealth then h.Health=math.min(h.MaxHealth,h.Health+25*dt)end end
   if p:GetAttribute("Blocking")~=true and now>=n(p,"GuardBrokenUntil",0)then
    local guard=n(p,"Guard",C.GuardMax);if guard<C.GuardMax then p:SetAttribute("Guard",math.min(C.GuardMax,guard+C.GuardRegenPerSecond*dt))end

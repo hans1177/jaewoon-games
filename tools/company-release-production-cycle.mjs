@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {requestGeminiFreePair,GEMINI_FREE_MODELS} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
@@ -42,9 +43,9 @@ function reviewModelsFor(role){
 }
 const reviewModels=Object.fromEntries(ROLES.map(role=>[role,reviewModelsFor(role)]));
 
-const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
-const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
-if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
+const gameId=clean(process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
+const date=clean(process.env.DESIGN_DATE||kstDate());
+if(!gameId)throw new Error('GAME_ID is required');
 
 const catalog=readJson('game-catalog.json',{games:[]});
 const game=(catalog.games||[]).find(x=>x.id===gameId);
@@ -67,35 +68,22 @@ const RISK={type:'object',required:['blockers','warnings','evidence'],properties
   warnings:{type:'array',items:{type:'string'}},
   evidence:{type:'array',items:{type:'string'}}
 },additionalProperties:false};
-const ARTBOOK={type:'object',required:['identity','playerFantasy','coreLoop','signatureSystems','progressionDirection','visualDirection'],properties:{
-  identity:{type:'string'},playerFantasy:{type:'string'},coreLoop:{type:'array',items:{type:'string'}},
-  signatureSystems:{type:'array',items:{type:'string'}},progressionDirection:{type:'string'},visualDirection:{type:'string'}
-},additionalProperties:false};
-const VERIFY={type:'object',required:['supported','unsupportedClaims'],properties:{
-  supported:{type:'boolean'},unsupportedClaims:{type:'array',items:{type:'string'}}
-},additionalProperties:false};
-
 async function callModel(model,system,user,schema,{predict=700,temperature=0.15}={}){
-  let lastError=null;
-  for(let attempt=1;attempt<=2;attempt++){
-    try{
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{
-        method:'POST',
-        headers:{'content-type':'application/json'},
-        body:JSON.stringify({
-          model,stream:false,format:schema,
-          messages:[{role:'system',content:system},{role:'user',content:user}],
-          options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:predict}
-        })
-      });
-      if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-      const body=await response.json();
-      const text=clean(body?.message?.content);
-      if(!text)throw new Error('empty model response');
-      return JSON.parse(text);
-    }catch(error){lastError=error;}
-  }
-  throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
+  // Do not count historical local department labels as distinct external AI models.
+  if(reviewModelCount>GEMINI_FREE_MODELS.length||distinctLeadModels.length>GEMINI_FREE_MODELS.length)
+    throw new Error('RELEASE_EXTERNAL_FREE_MODEL_INDEPENDENCE_NOT_VERIFIED');
+  const response=await requestGeminiFreePair({
+    apiKey:process.env.GEMINI_API_KEY,
+    contents:[{role:'user',parts:[{text:'SYSTEM: '+system+'\\nUSER: '+user+'\\nOUTPUT_JSON_SCHEMA='+JSON.stringify(schema)}]}],
+    responseMimeType:'application/json',temperature,maxOutputTokens:predict,timeoutMs:120000
+  });
+  const raw=clean(response.text);
+  if(!raw)throw new Error('EXTERNAL_RELEASE_MODEL_EMPTY_RESPONSE');
+  const parsed=JSON.parse(raw);
+  if(!Array.isArray(parsed?.blockers)||!Array.isArray(parsed?.warnings)||!Array.isArray(parsed?.evidence))
+    throw new Error('EXTERNAL_RELEASE_REVIEW_SCHEMA_MISMATCH');
+  console.log('RELEASE_EXTERNAL_AI_PROVIDER='+response.model);
+  return parsed;
 }
 
 function latestFile(fileName){
@@ -151,11 +139,11 @@ function hasCoreLockViolation(...records){
   return records.some(record=>record?.data?.coreDesignLockViolation===true||record?.data?.core_design_lock_violation===true);
 }
 
-function writeState(state,{baseline=null,implementation=null,build=null,runtime=null,qa=null,riskWatch=null,blockers=[],nextAction=null,releaseBaseline=null,artbook=null}={}){
+function writeState(state,{baseline=null,implementation=null,build=null,runtime=null,qa=null,riskWatch=null,blockers=[],nextAction=null,releaseBaseline=null}={}){
   const implementationTree=implementationSourceTreeSha(implementation?.data);
   const buildTree=buildSourceTreeSha(build?.data);
   const status={
-    version:3,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'company-learning/platform-release-roadmap.json',
+    version:3,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:null,
     flow:'RELEASE_CONFIRMED_GATED_DIRECT_RELEASE_PRODUCTION',executionMode:'GATED_DIRECT_RELEASE_PRODUCTION',
     status:state==='RELEASE_READY'?'COMPLETE':state==='RELEASE_BLOCKED'?'BLOCKED':state==='BUILDING'?'BUILDING':'WAITING',
     state,vibe2PrimaryDeveloper:true,coreDesignLock:true,
@@ -179,20 +167,20 @@ function writeState(state,{baseline=null,implementation=null,build=null,runtime=
       leadModelsDistinct:distinctLeadModels.length===ROLES.length,reviewModelCount,
       riskWatchPath:riskWatch.path,phase:riskWatch.phase,releaseBlockerCount:riskWatch.releaseBlockerCount
     }:null,
-    blockers,nextAction,releaseBaseline:releaseBaseline?.path||null,artbook:artbook?.path||null,
+    blockers,nextAction,releaseBaseline:releaseBaseline?.path||null,
     contracts:{
       gatedDirect:true,resumeFromLatestEvidence:true,vibe2PrimaryDeveloper:true,coreDesignLock:true,
       aiMayInventBuildPass:false,aiMayInventDeviceValidationPass:false,aiMayInventIndependentQaPass:false,
       currentSourceTreeBindingRequired:true,currentBuildEvidenceBindingRequired:true,sourceChangeInvalidatesOldBuildValidation:true,
       finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true,
-      finalArtbookOnlyAfterReleaseReady:true,numericTierIsCompatibilityAliasOnly:true
+      numericTierIsCompatibilityAliasOnly:true
     },
     updatedAt:new Date().toISOString()
   };
   writeJson(path.join(base,'release-production-status.json'),status);
   writeJson(path.join(base,'cycle-status.json'),status);
   writeJson(path.join(base,'release-production-request.json'),{
-    version:3,gameId,date,state,nextAction,blockers,policyDocument:'company-learning/platform-release-roadmap.json',
+    version:3,gameId,date,state,nextAction,blockers,policyDocument:null,
     vibe2PrimaryDeveloper:true,coreDesignLock:true,unityProjectPath:unityProjectPath||null,currentSourceTreeSha
   });
   console.log(`RELEASE_DIRECT_STATE=${state}`);
@@ -281,7 +269,7 @@ if(!unityProjectPath||!fs.existsSync(unityProjectPath)||!currentSourceTreeSha){
     version:3,gameId,date,productionClass,owner:'VIBE2',role:'PRIMARY_DEVELOPMENT_ENGINE',state:'BUILDING',
     developmentBaseline:baseline.path,unityProjectPath:unityProjectPath||null,coreDesignLock:true,
     instruction:'Development Baseline을 따라 Unity Android 프로젝트/본개발을 준비하고 현재 Unity source tree SHA를 기록할 수 있는 상태로 만든다.',
-    policyDocument:'company-learning/platform-release-roadmap.json'
+    policyDocument:null
   });
   writeState('BUILDING',{
     baseline,blockers:['unity-project-or-source-tree-required'],
@@ -312,7 +300,7 @@ if(explicitState(implementation.data)!=='PASS'||!implementationTree||implementat
     version:3,gameId,date,productionClass,owner:'VIBE2',role:'PRIMARY_DEVELOPMENT_ENGINE',state:'BUILDING',
     developmentBaseline:baseline.path,unityProjectPath,currentSourceTreeSha,coreDesignLock:true,
     instruction:'Development Baseline을 따라 Unity Android 본개발/통합을 수행한다. 새 핵심 기능을 임의 추가하지 말고 구현 완료 근거에 현재 sourceTreeSha를 정확히 기록한다.',
-    policyDocument:'company-learning/platform-release-roadmap.json'
+    policyDocument:null
   });
   writeState('BUILDING',{
     baseline,implementation,blockers:['current-source-vibe2-implementation-evidence-required'],
@@ -421,38 +409,12 @@ writeJson(releaseBaselinePath,{
   androidRuntimeValidation:runtime.path,independentQa:qa.path,
   departmentRiskWatch:finalRiskWatch.path,departmentPreflightRiskWatch:preflightRiskWatch.path,
   finalDepartmentReviewEvidenceBound:true,coreDesignLockPreserved:true,
-  policyDocument:'company-learning/platform-release-roadmap.json',createdAt:new Date().toISOString()
-});
-
-const editorModel=pool[hash(`${gameId}:release-artbook-editor`)%pool.length];
-const verifierModel=pool[(hash(`${gameId}:release-artbook-verifier`)+1)%pool.length];
-const artbook=await callModel(
-  editorModel,
-  '너는 단일 Artbook Editor AI다. RELEASE_READY가 된 게임의 최종 핵심 전략만 압축한다. 새 설정·수치·규칙을 만들지 않고 Development Baseline에 있는 핵심 중 실제 출시 검증을 살아남은 내용만 유지한다.',
-  `최종 Release Baseline 아트북 revision을 작성하라. 긴 QA/기기 로그는 복제하지 않는다.\nDEVELOPMENT_BASELINE=${clip(baseline.content,13000)}\nRELEASE_BASELINE=${clip(readJson(releaseBaselinePath,{}),6000)}`,
-  ARTBOOK,{predict:750}
-);
-const verification=await callModel(
-  verifierModel,
-  '너는 Vibe2 검증 역할이다. 아트북 작성자가 아니다. 최종 아트북이 Development Baseline에 없는 새 주장을 만들지 않았는지 확인한다.',
-  `DEVELOPMENT_BASELINE=${clip(baseline.content,12000)}\nFINAL_ARTBOOK=${clip(artbook,7000)}`,
-  VERIFY,{predict:320,temperature:0}
-);
-if(!verification.supported)throw new Error(`RELEASE_ARTBOOK_PROVENANCE_GATE: ${verification.unsupportedClaims.join(' | ')}`);
-
-const artbookPath=path.join(base,'core-artbook.json');
-writeJson(artbookPath,{
-  version:7,gameId,date,productionClass,tierAlias,tier:tierAlias,
-  editorRole:'ARTBOOK_EDITOR_AI',editorModel,singleEditor:true,releaseBaseline:true,
-  releaseBaselineSource:releaseBaselinePath.replaceAll('\\','/'),
-  sourceDesign:baseline.path,sourceTreeSha:currentSourceTreeSha,
-  departmentPageAuthorship:false,newClaimsAdded:false,verification,content:artbook
+  policyDocument:null,createdAt:new Date().toISOString()
 });
 
 writeState('RELEASE_READY',{
   baseline,implementation,build,runtime,qa,riskWatch:finalRiskWatch,
-  releaseBaseline:{path:releaseBaselinePath.replaceAll('\\','/')},
-  artbook:{path:artbookPath.replaceAll('\\','/')}
+  releaseBaseline:{path:releaseBaselinePath.replaceAll('\\','/')}
 });
 console.log('RELEASE_GATE=READY');
 console.log(`CURRENT_SOURCE_TREE_SHA=${currentSourceTreeSha}`);
@@ -461,5 +423,4 @@ console.log(`DISTINCT_DEPARTMENT_LEADS=${distinctLeadModels.length}`);
 console.log('SOURCE_TO_BUILD_BINDING=PASS');
 console.log('FINAL_DEPARTMENT_REVIEW_BUILD_RUNTIME_QA_BINDING=PASS');
 console.log('INDEPENDENT_QA=CURRENT_BUILD_PASS');
-console.log('FINAL_ARTBOOK_REVISION=CREATED_AFTER_RELEASE_READY');
 console.log('PAID_API=NO');

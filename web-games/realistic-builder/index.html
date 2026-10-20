@@ -132,7 +132,11 @@ function load(){
 load();
 
 var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('game'),antialias:false,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));
+// 렌더링: 모바일 픽셀 과부하만 줄인다. 월드·터치·이동·저장 시간은 그대로 둔다.
+var mobileRender=window.matchMedia('(pointer: coarse)').matches;
+var maxRenderRatio=Math.min(window.devicePixelRatio||1,mobileRender?1:1.35);
+var renderRatio=maxRenderRatio,renderWindowStart=0,renderFrameCount=0;
+renderer.setPixelRatio(renderRatio);
 renderer.setSize(innerWidth,innerHeight,false);renderer.outputColorSpace=THREE.SRGBColorSpace;
 var scene=new THREE.Scene();scene.background=new THREE.Color(0xb9caaa);scene.fog=new THREE.Fog(0xb9caaa,30,58);
 var camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,100);camera.position.set(10,14,12);
@@ -171,15 +175,24 @@ function addNode(type,x,z){
 }
 addNode('soil',-7,-4);addNode('soil',7,5);addNode('wood',-6,6);addNode('wood',6,7);addNode('stone',7,-6);addNode('stone',-7,2);addNode('water',0,-8);addNode('fiber',-8,7);addNode('fiber',8,-1);
 
-function addRepoSprite(path,x,z,w,h){
-  new THREE.TextureLoader().load(path,function(tex){
-    tex.colorSpace=THREE.SRGBColorSpace;
-    var s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,alphaTest:.15}));s.position.set(x,h*.45,z);s.scale.set(w,h,1);world.add(s);
-  },undefined,function(){});
+// 배경 장식: 기존 WebGL 3D 메시 재사용. 채집 자원 및 충돌 규칙은 변경하지 않는다.
+function addScenery(type,x,z){
+  var g=new THREE.Group();g.position.set(x,0,z);
+  if(type==='tree'){
+    var trunk=cyl(.24,.33,2.7,0x795a37,9);g.add(trunk);
+    for(var i=0;i<3;i++){
+      var crown=new THREE.Mesh(new THREE.ConeGeometry(1.25-i*.16,1.75,9),mat(i===1?0x496d40:0x547a45));
+      crown.position.y=2.5+i*.7;g.add(crown);
+    }
+  }else if(type==='rock'){
+    var stone=new THREE.Mesh(new THREE.DodecahedronGeometry(1.05,0),mat(0x767b76));
+    stone.scale.set(1.16,.78,.92);stone.position.y=.78;g.add(stone);
+  }
+  world.add(g);
 }
-addRepoSprite('/web-games/survival2/assets/tree.png',-10,9,3.3,4.6);
-addRepoSprite('/web-games/survival2/assets/tree.png',10,9,3.3,4.6);
-addRepoSprite('/web-games/survival2/assets/rock.png',10,-9,2.4,2.0);
+addScenery('tree',-10,9);
+addScenery('tree',10,9);
+addScenery('rock',10,-9);
 
 var dryVisuals={};
 function syncDryVisuals(){
@@ -302,7 +315,22 @@ function animate(now){
   state.player.x=player.position.x;state.player.z=player.position.z;
   var cx=player.position.x+10,cz=player.position.z+12;camera.position.x+=(cx-camera.position.x)*.055;camera.position.z+=(cz-camera.position.z)*.055;camera.lookAt(player.position.x,0,player.position.z);
   var dryState=state.drying.map(function(d){return d.id+':' +(Date.now()-d.startedAt>=DRY_MS?'1':'0');}).join('|');if(dryState!==lastDryState){lastDryState=dryState;syncDryVisuals();}
-  renderDryList();updateStatus();renderer.render(scene,camera);
+  renderDryList();updateStatus();
+  // 게임 로직은 매 프레임 갱신하고, 화면에 보일 때만 GPU에 그린다.
+  if(!document.hidden){
+    if(mobileRender){
+      renderFrameCount++;
+      if(!renderWindowStart)renderWindowStart=now;
+      var renderElapsed=now-renderWindowStart;
+      if(renderElapsed>=4500){
+        var measuredFps=renderFrameCount*1000/renderElapsed;
+        var nextRatio=measuredFps<42?Math.max(.75,renderRatio-.15):measuredFps>56?Math.min(maxRenderRatio,renderRatio+.1):renderRatio;
+        if(Math.abs(nextRatio-renderRatio)>.01){renderRatio=nextRatio;renderer.setPixelRatio(renderRatio);}
+        renderWindowStart=now;renderFrameCount=0;
+      }
+    }
+    renderer.render(scene,camera);
+  }else{renderWindowStart=0;renderFrameCount=0;}
 }
 requestAnimationFrame(animate);
 setInterval(save,5000);

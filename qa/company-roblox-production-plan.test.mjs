@@ -3,12 +3,88 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_PROFILES,buildSpatialBlueprintContract,validateSpatialBlueprint,buildInterfaceBlueprintContract,validateInterfaceBlueprint,productionBlueprintContractsForFiles} from '../tools/company-roblox-production-plan.mjs';
-import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
+import {buildVibeAssetProductionPlan,assetProductionGuidance} from '../tools/vibe2-asset-production-plan.mjs';
 import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/company-build-up-directive.mjs';
+import {extractDesignContext} from '../tools/company-build-up-directive.mjs';
 
 const central=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const policy=central.robloxStudioProductionFlowContract;
+
+test('common material variants follow each game concept and stale shared style cannot replace approved style',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-game-style-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+  fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(central));
+  const registry={version:1,assets:[],baseMaterialLibrary:{customization:{documents:[{gameId:'bright-game',styleBible:{profileKey:'DARK_FANTASY'}}]}}};
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(registry));
+  for(const [gameId,styleFamily,visualDirection] of [['bright-game','CARTOON','밝은 둥근 원본 형태'],['dark-game','DARK_FANTASY','낡은 날카로운 원본 형태']]){
+    const task={gameId,goal:'공용 나무와 몬스터의 게임별 표현',styleFamily:'STYLIZED_FANTASY',
+      buildUpDirective:{designContextMode:'APPROVED_OR_MINIMUM_DESIGN',designFingerprint:gameId+'-design',
+        gameIdentityAndNonNegotiables:{identity:gameId},designImplementationContext:{visualDirection,presentationPlan:{styleFamily},artAudioDirection:{},creativeGrammar:{a:{system:gameId},b:{system:'보조'}}}}};
+    const plan=buildVibeAssetProductionPlan({task,target:'roblox',repoRoot:root,manifest:{assets:[]}});
+    assert.equal(plan.gameConceptStyle.gameId,gameId);assert.equal(plan.gameConceptStyle.styleFamily,styleFamily);
+    assert.equal(plan.gameConceptStyle.visualDirection,visualDirection);
+    assert.equal(plan.gameConceptStyle.materialVariantCountIsNotStyleCount,true);
+    assert.equal(plan.gameConceptStyle.runtimeVerified,false);
+    assert.equal(plan.styleBible.profileKey,styleFamily);
+    assert.match(assetProductionGuidance(plan),/공용 나무·몬스터·건물·재질/);
+  }
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8')),registry);
+});
+
+test('game-authored detailed design survives handoff without a genre prefab or invented completion',()=>{
+  const raw={genre:'SURVIVAL STRATEGY',identity:'서로 다른 게임의 고유 규칙',
+    creativeGrammar:{a:{system:'빛 경로 탐색'},b:{system:'증언 순서',existingGameReference:'B 보조 참고'}},
+    coreLoop:['빛을 읽는다','증언을 배열한다'],signatureSystems:[{name:'빛 경로'},{name:'증언 순서'}],
+    detailedDesign:{tutorial:{hintCondition:'첫 실패 후 빛의 방향만 안내'},world:{biome:'원본 지역'}},
+    tutorialPlan:{entryCondition:'첫 접속',successCondition:'첫 경로 발견'},
+    presentationPlan:{camera:'원본 시점',interruptAndSkip:'취소 후 입력 복구'},
+    interfacePlan:{screens:['원본 화면']},verificationPlan:{expectedState:'경로 상태 전이'},
+    contentExpansionPlan:[{milestone:'첫 발견',trigger:'원본 조건',ruleIds:['a'],newGameplay:'기존 다음 선택'}]};
+  const design=extractDesignContext({content:raw});
+  for(const key of ['detailedDesign','tutorialPlan','presentationPlan','interfacePlan','verificationPlan'])assert.deepEqual(design[key],raw[key]);
+  assert.equal(design.contentExpansionPlan[0].trigger,'원본 조건');
+  const plan=buildRobloxProductionPlan({gameId:'demo',platform:'ROBLOX',policy,design,
+    responsibleFiles:['roblox-games/demo/client/Menu.client.luau'],focus:'USABILITY'});
+  assert.equal(plan.detailedDesignContract.runtimeVerified,false);
+  assert.deepEqual(plan.detailedDesignContract.basicGrammar,raw.creativeGrammar);
+  assert.deepEqual(plan.detailedDesignContract.genreReviewContexts,['SURVIVAL','STRATEGY']);
+  assert.equal(plan.detailedDesignContract.sections.find(row=>row.id==='FIRST_PLAY_AND_TUTORIAL').authored.entryCondition,'첫 접속');
+  assert.ok(plan.detailedDesignContract.sections.every(row=>row.runtimeVerified===false));
+  const connected=buildRobloxProductionPlan({gameId:'demo',platform:'ROBLOX',policy,design,
+    responsibleFiles:['roblox-games/demo/server/Game.server.luau'],focus:'CORE_FUN'});
+  assert.ok(connected.selectedIdea.id.endsWith(':AUTHORED_SYSTEM_CONNECTION'));
+  assert.equal(connected.coreAction,'빛을 읽는다');
+  assert.doesNotMatch(connected.selectedIdea.implementation,/거점|방어 배치|자원 수급/);
+  const repaired=buildRobloxProductionPlan({gameId:'demo',platform:'ROBLOX',policy,design,
+    responsibleFiles:['roblox-games/demo/server/Game.server.luau'],focus:'STABILITY'});
+  assert.equal(repaired.detailedDesignContract,null);
+  const inherited=buildRobloxProductionPlan({gameId:'demo',platform:'ROBLOX',policy,
+    design:extractDesignContext({genre:'PUZZLE',detailedDesign:raw.detailedDesign}),
+    responsibleFiles:['roblox-games/demo/client/Menu.client.luau'],focus:'USABILITY'});
+  assert.equal(inherited.detailedDesignContract.sections[0].authored.hintCondition,'첫 실패 후 빛의 방향만 안내');
+});
+
+test('tutorial presentation and UI plans require current executable bindings and cannot claim runtime PASS',()=>{
+  const f=interfaceFixture();
+  f.contract.experienceScenarioContract={required:true,designRefs:['FIRST_PLAY_AND_TUTORIAL','MOTION_AND_PRESENTATION','INTERFACE']};
+  const scenario={id:'first-choice',designRef:'FIRST_PLAY_AND_TUTORIAL',kind:'TUTORIAL',screenId:'play',controlId:'open',
+    entryCondition:'new player',inputs:['tap open'],expectedState:'existing gear panel opens',expectedFeedback:'selected equipment visible',
+    failureRecovery:'keep original gear and retry',skipPolicy:'skip preserves objective',interruptionRecovery:'close restores input',
+    binding:{path:'ui.js',symbol:'openMenu',sourceEvidence:f.sourceFiles['ui.js']},runtimeVerified:false};
+  f.blueprint.experienceScenarios=[scenario];
+  const passed=validateInterfaceBlueprint(f);assert.equal(passed.pass,true,JSON.stringify(passed.issues));
+  assert.equal(passed.runtimeVerified,false);assert.equal(passed.experienceRequests[0].verificationStatus,'EXACT_BUILD_RUNTIME_EVIDENCE_REQUIRED');
+  for(const mutation of [s=>delete s.interruptionRecovery,s=>s.runtimeVerified=true,s=>s.controlId='missing',s=>s.binding.path='sibling.js',s=>s.designRef='unknown',s=>s.actualEvidence='invented']){
+    const broken=structuredClone(f);mutation(broken.blueprint.experienceScenarios[0]);assert.equal(validateInterfaceBlueprint(broken).pass,false);
+  }
+  const missing=structuredClone(f);delete missing.blueprint.experienceScenarios;
+  assert.ok(validateInterfaceBlueprint(missing).issues.includes('EXPERIENCE_SCENARIOS_MISSING'));
+  const stale=structuredClone(f);stale.sourceFiles['ui.js']='// '+stale.sourceFiles['ui.js'];
+  assert.equal(validateInterfaceBlueprint(stale).pass,false);
+});
 
 function spatialFixture(dimension='2D'){
   const source='const world = {scale: 1};';
@@ -184,13 +260,15 @@ test('Unity and Web production plans preserve genre, owner intent and native sou
   }
 });
 
-test('Unity Web directive uses the real canonical C# project instead of browser source instructions',()=>{
+test('owner-held Unity Web retains C# source trace without unauthorized production plans',()=>{
   const root='unity-games/garden',own=[root+'/Assets/Scripts/GameCore.cs',root+'/Assets/Scripts/RuntimeBootstrap.cs'];
   const d=buildGameSpecificBuildUpDirective({gameId:'garden',platform:'WEB',sourceRoot:root,designRecord:{content:design},sourceObservation:{...source,topFiles:own.map(file=>({file,score:10}))},responsibleFiles:own});
-  assert.equal(d.productionPlan.platform,'UNITY');assert.equal(d.productionPlan.executionSurface,'UNITY_WEB');
+  assert.equal(d.productionPlan,null,'Unity Web owner hold blocks automatic implementation planning');
   assert.equal(d.robloxProductionPlan,null);
-  assert.match(directivePrompt(d),/UNITY_PRODUCTION_QUALITY=.*EXISTING_CSHARP/);
-  assert.doesNotMatch(directivePrompt(d),/WEB_PRODUCTION_FILES=/);
+  assert.equal(d.designToPlatformCodingTrace.activePlatform,'UNITY_WEB');
+  assert.equal(d.designToPlatformCodingTrace.originalSourceLanguage,'LUAU');
+  assert.equal(d.designToPlatformCodingTrace.sourceImplementationPassed,false);
+  assert.doesNotMatch(directivePrompt(d),/UNITY_PRODUCTION_QUALITY=|WEB_PRODUCTION_FILES=/);
 });
 
 test('approved genre produces distinct implementation choices instead of a shared combat template',()=>{
@@ -410,4 +488,86 @@ test('asset worker keeps the same authored auto-biome as the spatial design and 
   const unspecified=build(undefined);
   assert.equal(unspecified.proceduralWorldLayout.status,'APPROVED_DESIGN_REQUIRED');
   assert.equal(unspecified.autoBiomeEvaluation.missingDesignMustRouteToExistingDesignPipeline,true);
+});
+
+
+test('lobby customization material inventory and HUD use only observed native source and shared assets',()=>{
+  const ui='roblox-games/demo/client/Game.client.luau',server='roblox-games/demo/server/Game.server.luau';
+  const authored={identity:'맞춤 로비',coreLoop:['로비 입장','장비 선택','게임 시작'],ownerFeatureChanges:[]};
+  const observed={sourceAnchors:[
+    {file:ui,symbol:'OpenLobby',context:'function OpenLobby() end'},
+    {file:ui,symbol:'CustomizeAvatar',context:'function CustomizeAvatar() end'},
+    {file:ui,symbol:'PreviewMaterial',context:'function PreviewMaterial() end'},
+    {file:ui,symbol:'OpenInventory',context:'function OpenInventory() end'},
+    {file:ui,symbol:'UpdateHUD',context:'function UpdateHUD() end'},
+    {file:server,symbol:'OpenInventory',context:'server inventory authority'}
+  ]};
+  const opts={enabled:true,focus:'USABILITY',mode:'EXISTING_PLAY_PRESENTATION',platform:'ROBLOX',
+    design:authored,source:observed,files:[ui,server]};
+  const contract=buildInterfaceBlueprintContract(opts);
+  assert.deepEqual(contract.autoCompositionTargets.map(row=>row.id),['LOBBY','CUSTOMIZATION','MATERIAL','INVENTORY','GAME_UI']);
+  for(const target of contract.autoCompositionTargets){
+    assert.equal(target.status,'SOURCE_MATCH_REQUIRES_NATIVE_IMPLEMENTATION_AND_QA');
+    assert.deepEqual(target.sourceFiles,[ui]);
+    assert.equal(target.assetRegistry,'company-asset-library.json');
+    assert.equal(target.licenseLedger,'assets/asset-license-ledger.json');
+    assert.equal(target.reuseExistingAssetsOnly,true);
+    assert.equal(target.newAssetGeneration,false);
+    assert.equal(target.automaticImport,false);
+    assert.equal(target.saveSchemaUnchanged,true);
+    assert.equal(target.layout.minTouchTarget,44);
+    assert.equal(target.runtimeVerified,false);
+    assert.ok(target.qa.includes('EXACT_NATIVE_RUNTIME'));
+  }
+  const onlyDesign=buildInterfaceBlueprintContract({...opts,source:{sourceAnchors:[]}});
+  assert.ok(onlyDesign.autoCompositionTargets.some(row=>row.id==='LOBBY'&&row.status==='DESIGN_HINT_NOT_APPLIED'));
+  assert.ok(onlyDesign.autoCompositionTargets.every(row=>!row.sourceFiles.length));
+  const removed=buildInterfaceBlueprintContract({...opts,design:{...authored,ownerFeatureChanges:[
+    {featureId:'material-picker',requestId:'owner-removal',action:'REMOVE',requirement:'재질 선택 제거'}]}});
+  assert.ok(!removed.autoCompositionTargets.some(row=>row.id==='MATERIAL'));
+  const planned={interfaceBlueprintContract:contract,implementationPackages:[
+    {role:'CLIENT_PRESENTATION',files:[ui]},{role:'SERVER_AUTHORITY',files:[server]}
+  ]};
+  assert.deepEqual(productionBlueprintContractsForFiles(planned,{responsibleFiles:[server]}).interface.autoCompositionTargets,[]);
+  assert.equal(productionBlueprintContractsForFiles(planned,{responsibleFiles:[ui]}).interface.autoCompositionTargets.length,5);
+  const prompt=robloxProductionPromptLines({...planned,platform:'ROBLOX',qualityContract:{runtimeVerified:false}},{responsibleFiles:[ui]}).join('\n');
+  assert.match(prompt,/autoCompositionTargets/);
+  assert.match(prompt,/never generate or download new assets/);
+  assert.match(prompt,/EXACT_NATIVE_RUNTIME/);
+});
+
+
+test('approved socket WFC and canyon remain Roblox/Web spatial-owner inputs until native source and runtime QA',()=>{
+  const baseWorld={approvedDesign:true,seed:'owned-spatial-wfc',width:12,height:12,dimension:'3D',
+    terrainMorphology:{approved:true,kind:'CANYON',depth:.15,halfWidth:.12,meander:.05},
+    roomConstraints:{approved:true,width:3,height:3,closedBoundary:false,
+      start:{x:0,z:0},exit:{x:2,z:2},tiles:[{id:'open',open:['N','E','S','W']}]}};
+  const design={identity:'approved rooms in canyon',spatialLayout:{dimension:'3D',proceduralWorld:baseWorld}};
+  for(const platform of ['ROBLOX','WEB']){
+    const files=[platform==='WEB'?'web-games/approved/index.js':'roblox-games/approved/server/World.server.luau'];
+    const plan=buildSpatialBlueprintContract({
+      enabled:true,mode:'CONNECTED_CONTENT_IMPLEMENTATION',platform,design,files
+    });
+    const study=plan.macroSketch.proceduralWorldStudy;
+    assert.equal(study.roomComposition.status,'ROOM_LAYOUT_STATIC_PROPOSAL');
+    assert.equal(study.roomComposition.route.length,5);
+    assert.equal(study.roomComposition.gameplayAuthority,false);
+    assert.equal(study.roomComposition.runtimeVerified,false);
+    assert.equal(study.terrainMorphology.kind,'CANYON');
+    assert.equal(study.terrainMorphology.appliedToNativeGame,false);
+    assert.equal(study.fullTerrainOrNativeMeshDelivered,false);
+    assert.equal(plan.runtimeVerified,false);
+    const unspecified=buildSpatialBlueprintContract({...{
+      enabled:true,mode:'CONNECTED_CONTENT_IMPLEMENTATION',platform,files,
+      design:{...design,spatialLayout:{dimension:'3D',proceduralWorld:{...baseWorld,roomConstraints:undefined,terrainMorphology:undefined}}}
+    }});
+    assert.equal(unspecified.macroSketch.proceduralWorldStudy.roomComposition,undefined);
+    assert.equal(unspecified.macroSketch.proceduralWorldStudy.terrainMorphology,undefined);
+  }
+  const held=buildSpatialBlueprintContract({
+    enabled:true,mode:'CONNECTED_CONTENT_IMPLEMENTATION',platform:'UNITY_WEB',
+    design,files:['unity-games/approved/Assets/Scripts/World.cs']
+  });
+  assert.equal(held.macroSketch.proceduralWorldStudy.roomComposition,undefined);
+  assert.equal(held.macroSketch.proceduralWorldStudy.terrainMorphology,undefined);
 });

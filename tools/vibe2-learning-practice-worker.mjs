@@ -3,8 +3,8 @@
 // 안전: 게임 소스 write 0, production PASS 0, 배포/승격 증거로 사용할 수 없다.
 
 import fs from 'node:fs';
+import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import crypto from 'node:crypto';
-import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -12,7 +12,7 @@ import { pathToFileURL } from 'node:url';
 import { learningGuidance } from './vibe2-learning-motor.mjs';
 
 const clean=v=>String(v??'').trim();
-const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+const DEFAULT_MODEL=process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash';
 const DEFAULT_TIMEOUT=Math.max(10000,Math.min(300000,Number(process.env.VIBE2_MODEL_TIMEOUT_MS||240000)));
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const writeJson=(file,value)=>{fs.mkdirSync(new URL('.', 'file://'+file).pathname,{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
@@ -70,29 +70,25 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
 }
 
 export function practiceInferenceOptions(model=DEFAULT_MODEL,attempt=0,thinkRequested=false){
-  // This is the installed hybrid model, not a claim that every model supports think.
-  // Qwen's model card recommends these sampling settings in the respective modes.
-  const hybrid=clean(model).toLowerCase()==='qwen3:1.7b';
-  const think=hybrid&&thinkRequested;
-  return {think,temperature:hybrid?(think ? .6 : .7):.12,...(hybrid?{top_p:think ? .95 : .8,top_k:20,min_p:0}:{}),seed:20261008+attempt};
+  // External Gemini-only route: no local hybrid model sampling or hidden think mode.
+  return {think:false,temperature:.12,seed:20261008+attempt};
 }
 
-export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200,format='json',messages=null,think=false,attempt=0,inference=practiceInferenceOptions(model,attempt,think)}={}){
-  const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
-  if(fake)return fs.readFileSync(fake,'utf8');
-  const conversation=Array.isArray(messages)&&messages.length>0;
-  const {think:enabledThinking,...sampling}=inference;
-  // Coding reasoning is internal; only the final response enters repair history.
-  const body=JSON.stringify({model,...(conversation?{messages}:{prompt}),stream:false,think:enabledThinking===true,format,options:{num_ctx:enabledThinking?12288:8192,num_predict:maxPredict,...sampling}});
-  return await new Promise((resolve,reject)=>{
-    const req=http.request({hostname:'127.0.0.1',port:11434,path:conversation?'/api/chat':'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
-      let data='';res.setEncoding('utf8');res.on('data',x=>data+=x);res.on('end',()=>{
-        try{const row=JSON.parse(data);if(res.statusCode!==200||row?.error)throw new Error(row.error||'practice model HTTP '+res.statusCode);if(row.done_reason==='length')throw new Error('practice model output truncated');resolve(String(conversation?row?.message?.content||'':row?.response||''));}catch(e){reject(e);}
-      });res.on('error',reject);
-    });
-    req.setTimeout(timeoutMs,()=>req.destroy(new Error('practice model timeout')));
-    req.on('error',reject);req.end(body);
+export async function requestPracticeModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200,messages=null,attempt=0,inference={}}={}){
+  const fixture=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
+  if(fixture)return fs.readFileSync(fixture,'utf8');
+  if(clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase()!=='GEMINI_API')
+    throw new Error('PRACTICE_EXTERNAL_AI_PROVIDER_REQUIRED_NO_LOCAL_FALLBACK');
+  const key=clean(process.env.GEMINI_API_KEY);
+  if(!key)throw new Error('PRACTICE_GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK');
+  const contents=Array.isArray(messages)&&messages.length>0
+    ?messages.map(message=>({role:message.role==='assistant'?'model':'user',parts:[{text:String(message.content||'')}]}))
+    :[{role:'user',parts:[{text:String(prompt)}]}];
+  const {text}=await requestGeminiFreePair({
+    apiKey:key,contents,timeoutMs,maxOutputTokens:maxPredict,
+    temperature:Number(inference?.temperature)||.12,responseMimeType:'application/json'
   });
+  return text;
 }
 
 // Only bounded candidate diagnostics are exposed to public-example repair. Never copy
@@ -144,7 +140,7 @@ export function evaluatePracticeAnswer(value={}, {drill=null,luauBinary=process.
           fs.writeFileSync(path.join(dir,'Program.cs'),(drill.supportCode||'public class PracticeState { public bool Active,InputEnabled,Paused; public int Subscriptions,LiveObjects,Score,SavedScore; }')+' public class Program { static int currentCase,check; static void Check(bool ok,[System.Runtime.CompilerServices.CallerArgumentExpression("ok")] string expression=null){check++;if(!ok)throw new System.Exception("PRACTICE_CASE_"+currentCase+"_CHECK_"+check+": "+expression);} static void Main(){'+drill.tests.map((body,index)=>'{currentCase='+(index+1)+';check=0;'+body+'}').join('')+'System.Console.WriteLine("'+proof+'");}}');
           const container='vibe-practice-'+crypto.randomBytes(8).toString('hex');
           try{
-            const output=execFileSync('docker',['run','--rm','--name',container,'--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','128','--memory','768m','--cpus','1','--user','65534:65534','--tmpfs','/tmp:rw,exec,size=384m,mode=1777','-e','DOTNET_CLI_HOME=/tmp','-e','DOTNET_CLI_TELEMETRY_OPTOUT=1','-e','DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1','--mount','type=bind,src='+dir+',dst=/input,readonly','mcr.microsoft.com/dotnet/sdk:8.0','sh','-c','cp /input/* /tmp/; cd /tmp; dotnet run --project Practice.csproj --verbosity quiet'],{timeout:45000,maxBuffer:131072,encoding:'utf8',stdio:['ignore','pipe','pipe']});
+            const output=execFileSync('docker',['run','--rm','--name',container,'--network','none','--read-only','--cap-drop','ALL','--security-opt','no-new-privileges','--pids-limit','128','--memory','768m','--cpus','1','--user','65534:65534','--tmpfs','/tmp:rw,exec,size=384m,mode=1777','-e','HOME=/tmp','-e','NUGET_PACKAGES=/tmp/nuget','-e','DOTNET_CLI_HOME=/tmp','-e','DOTNET_CLI_TELEMETRY_OPTOUT=1','-e','DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1','--mount','type=bind,src='+dir+',dst=/input,readonly','mcr.microsoft.com/dotnet/sdk:8.0','sh','-c','cp /input/* /tmp/; cd /tmp; dotnet run --project Practice.csproj --verbosity quiet'],{timeout:45000,maxBuffer:131072,encoding:'utf8',stdio:['ignore','pipe','pipe']});
             outcomes[kind]=output.trim().split(/\r?\n/).includes(proof);
           }catch(error){outcomes[kind]=false;if(kind==='candidate')codeVerification.diagnostics=candidateDiagnostics(error,'csharp');}
           finally{try{execFileSync('docker',['rm','-f',container],{timeout:5000,stdio:'ignore'});}catch{}}
@@ -360,7 +356,7 @@ export async function runPracticeRepairSession({order={},drill=null,model=DEFAUL
   const finalHidden=selectedAttempt===1?firstHidden:await evaluateAttempt(parsed,{drill,fixtureCache,evaluationMode:'hidden'});
   evaluation={...finalHidden,pass:finalHidden?.pass===true&&evaluation.pass===true};
   return {parsed,raw,evaluation,...(captureCandidates?{candidateHistory}:{}),repairEvidence:{version:1,engineRevision:'VIBE2_CODING_PRACTICE_2.5',modelWeightsChanged:false,
-    execution:responseFile?'FIXTURE_REPLAY':request===requestPracticeModel?'LOCAL_OLLAMA':'INJECTED_TEST_PROVIDER',
+    execution:responseFile?'FIXTURE_REPLAY':request===requestPracticeModel?'GEMINI_API':'INJECTED_TEST_PROVIDER',
     maxAttempts:limit,modelCalls:attempts.length,selectedAttempt,specificationReviewRequested,firstAttemptPass:firstHidden?.pass===true,finalPass:evaluation.pass===true,
     generationFailures:attempts.filter(row=>row.generationError).length,generationBudgetFallbackUsed:attempts.some(row=>row.generationBudgetFallback===true),
     recovered:firstHidden?.pass!==true&&evaluation.pass===true,regressed:firstHidden?.pass===true&&evaluation.pass!==true,

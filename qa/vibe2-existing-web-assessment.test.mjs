@@ -1,9 +1,12 @@
+// 파일명: qa/vibe2-existing-web-assessment.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import vm from 'node:vm';
-import { assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
+import { spawnSync } from 'node:child_process';
+import { assessExistingWebRepository, assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
 
 const baseline={content:{coreFun:'위치를 선택해 방어 유닛을 배치하고 적의 경로를 막는다',coreLoop:['위치 선택','유닛 배치','적 이동과 전투','보상으로 강화']}};
 
@@ -91,10 +94,53 @@ test('stale high validation does not hide current approved scope gaps',()=>{
 });
 
 
+// 메인: 정상 모듈 문법과 두 배포 경로에서 실존하는 원본 모델을 직접 재검증한다.
+test('existing module and shared model URLs parse and resolve on root and project paths',()=>{
+  const moon=fs.readFileSync('web-games/moon-ruins/index.html','utf8');
+  const moduleBody=moon.match(/<script\b[^>]*type=["']module["'][^>]*>([\s\S]*?)<\/script>/i)?.[1];
+  assert.ok(moduleBody?.includes('await import'),'moon-ruins real module startup missing');
+  const valid=spawnSync(process.execPath,['--check','--input-type=module'],{input:moduleBody,encoding:'utf8'});
+  assert.equal(valid.status,0,`moon-ruins module startup syntax: ${valid.stderr||''}`);
+  const invalid=spawnSync(process.execPath,['--check','--input-type=module'],{input:'await import(;',encoding:'utf8'});
+  assert.notEqual(invalid.status,0,'malformed module syntax must still fail');
+
+  const party=fs.readFileSync('web-games/party-rpg/index.html','utf8');
+  const partyImportMap=party.match(/<script\b[^>]*type=["']importmap["'][^>]*>([\s\S]*?)<\/script>/i)?.[1];
+  assert.ok(partyImportMap,'party-rpg module importmap must remain present');
+  assert.equal(typeof JSON.parse(partyImportMap).imports,'object');
+  assert.throws(()=>JSON.parse('{"imports":'),SyntaxError,'invalid importmap must fail');
+  const modelPaths=[...party.matchAll(/['"](\.\.\/\.\.\/assets\/shared\/[^'"]+\.glb)['"]/g)].map(row=>row[1]);
+  assert.equal(modelPaths.length,12,'party-rpg must bind all 12 existing shared models');
+  for(const base of [
+    'https://jaewoon-games.pages.dev/web-games/party-rpg/index.html',
+    'https://hans1177.github.io/jaewoon-games/web-games/party-rpg/index.html'
+  ])for(const url of modelPaths){
+    const actualPath=new URL(url,base).pathname.replace(/^\/jaewoon-games\//,'/').replace(/^\//,'');
+    assert.ok(fs.statSync(actualPath).isFile(),`party-rpg missing model ${base} -> ${actualPath}`);
+  }
+});
+
 test('active or publicly playable development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  const developmentGames=selectDevelopmentWebValidationGames({catalog,policy});
+  const allDevelopmentGames=selectDevelopmentWebValidationGames({catalog,policy,
+    webSourceExists:game=>{
+      const id=String(game.id||'').trim();
+      return /^[a-z0-9][a-z0-9-]*$/.test(id)
+        &&fs.existsSync(path.join('web-games',id,'index.html'));
+    }
+  });
+  // PR은 변경된 Web 게임의 진짜 시작 코드만 검사한다. main/push는 기존 전수 검사를 유지한다.
+  const scope=String(process.env.VIBE2_BROWSER_CHANGED_GAMES||'ALL').trim();
+  const scopedIds=scope==='ALL'?null:scope==='NONE'?[]:scope.split(',').map(id=>id.trim()).filter(Boolean);
+  if(scopedIds){
+    assert.ok(scopedIds.every(id=>/^[a-z0-9][a-z0-9-]*$/.test(id)),'WEB_STARTUP_SCOPE_INVALID');
+    assert.deepEqual(scopedIds.filter(id=>!allDevelopmentGames.some(game=>game.id===id)),[],
+      'WEB_STARTUP_SCOPE_UNCLAIMED');
+  }
+  const developmentGames=scopedIds
+    ?allDevelopmentGames.filter(game=>scopedIds.includes(game.id))
+    :allDevelopmentGames;
   const checked=[];
   for(const game of developmentGames){
     const root=path.join('web-games',String(game.id||''));
@@ -121,13 +167,33 @@ test('active or publicly playable development-confirmed Web entries have parseab
         if(/\.js$/i.test(local)){
           const localSource=fs.readFileSync(local,'utf8');
           startupSource+='\\n'+localSource;
-          if(!isModule)assert.doesNotThrow(()=>new vm.Script(localSource,{filename:local}),`${game.id}: local startup syntax ${src}`);
+          if(isModule){
+            // 모듈 스크립트의 import/export/top-level await도 실제 Node 모듈 파서로 검사한다.
+            const checked=spawnSync(process.execPath,['--check','--input-type=module'],{input:localSource,encoding:'utf8'});
+            assert.equal(checked.status,0,`${game.id}: local module startup syntax ${src}: ${checked.stderr||''}`);
+          }else{
+            assert.doesNotThrow(()=>new vm.Script(localSource,{filename:local}),`${game.id}: local startup syntax ${src}`);
+          }
         }
         continue;
       }
       if(!body.trim())continue;
+      // importmap은 실행 JS가 아니라 비활성 JSON이다. 문법 검사를 생략하지 않는다.
+      if(/\btype\s*=\s*["']importmap["']/i.test(attrs)){
+        let importMap;
+        assert.doesNotThrow(()=>{importMap=JSON.parse(body)},`${game.id}: inline importmap syntax`);
+        assert.ok(importMap&&typeof importMap==='object'&&!Array.isArray(importMap),
+          `${game.id}: importmap must be an object`);
+        continue;
+      }
       startupSource+='\\n'+body;
-      assert.doesNotThrow(()=>new vm.Script(body,{filename:index}),`${game.id}: inline startup syntax`);
+      const isModule=/\btype\s*=\s*["']module["']/i.test(attrs);
+      if(isModule){
+        const checked=spawnSync(process.execPath,['--check','--input-type=module'],{input:body,encoding:'utf8'});
+        assert.equal(checked.status,0,`${game.id}: inline module startup syntax: ${checked.stderr||''}`);
+      }else{
+        assert.doesNotThrow(()=>new vm.Script(body,{filename:index}),`${game.id}: inline startup syntax`);
+      }
     }
     const createdDomIds=new Set([
       ...[...startupSource.matchAll(/\\.id\\s*=\\s*["']([^"']+)["']/g)].map(match=>match[1]),
@@ -154,7 +220,106 @@ test('native-only development hold excludes withdrawn Web prototypes but keeps a
   const catalog={games:[game('native'),game('withdrawn',{canonical:{sources:{web:{playable:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}}),game('public',{homepageWebPlayable:true}),game('canonical-public',{canonical:{sources:{web:{playable:true}}}})]};
   const policy={directNativeDualPlatformDevelopment:{ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX']}}};
   assert.deepEqual(selectDevelopmentWebValidationGames({catalog,policy}).map(game=>game.id),['public','canonical-public']);
+  // 선택 플랫폼이 Roblox이고 웹 엔트리 없음이 명시된 게임은 거짓으로 웹 테스트를 요구하지 않는다.
+  const verifiedOnly=selectDevelopmentWebValidationGames({catalog,policy:{},
+    webSourceExists:row=>row.id==='native'});
+  assert.deepEqual(verifiedOnly.map(row=>row.id),['native','public','canonical-public']);
+  assert.deepEqual(selectDevelopmentWebValidationGames({catalog:{games:[
+    game('web-target',{selectedPlatform:'WEB'}),
+    game('roblox-only',{selectedPlatform:'ROBLOX',homepageWebPlayable:false}),
+    game('claimed-web',{homepageWebPlayable:true})
+  ]},policy:{},webSourceExists:()=>false}).map(row=>row.id),['web-target','claimed-web']);
   assert.equal(selectDevelopmentWebValidationGames({catalog,policy:{}}).length,4);
   policy.directNativeDualPlatformDevelopment.ownerActiveDevelopmentScope20261009.activeTargets.push('UNITY_WEB');
   assert.equal(selectDevelopmentWebValidationGames({catalog,policy}).length,4);
+});
+
+// 원본 자산/저장키가 없는 임시 부트스트랩으로 회귀하면 전체 검증을 실패시킨다.
+// Web 3D 출시는 승인하지 않으며 기존 보관 소스의 온전함만 확인한다.
+test('island-village legacy source retains save and playable startup without missing scripts',()=>{
+  const file='web-games/island-village/index.html';
+  const html=fs.readFileSync(file,'utf8');
+  assert.match(html,/SAVE_KEY\s*=\s*['"]jaewoon-island-v2['"]/);
+  assert.match(html,/function\s+load\s*\(/);
+  assert.match(html,/function\s+save\s*\(/);
+  assert.match(html,/requestAnimationFrame\(frame\)/);
+  assert.match(html,/<canvas\b[^>]*id=["']game["']/i);
+  assert.doesNotMatch(html,/Approved Web Bootstrap|\/path\/to\/source\.js/i);
+  const scripts=[...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+  assert.ok(scripts.length>0,'existing source must have a startup script');
+  for(const script of scripts)assert.doesNotThrow(()=>new vm.Script(script[1],{filename:file}));
+});
+
+test('large Web HTML is read completely from checkout and is never mistaken for missing source',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-large-web-'));
+  const dir=path.join(cwd,'web-games','large-game');
+  try{
+    fs.mkdirSync(dir,{recursive:true});
+    const html='<!doctype html><html><body><canvas></canvas><script>let hp=10,wave=1,score=0;'
+      +'addEventListener("pointerdown",()=>{score+=1});'
+      +'function update(){requestAnimationFrame(update)}update();'
+      +'const victory="victory",restart="restart";localStorage.setItem("save","1");'
+      +'/*'+'x'.repeat(1100000)+'*/'
+      +'</script></body></html>';
+    const file=path.join(dir,'index.html');
+    fs.writeFileSync(file,html,'utf8');
+    assert.ok(fs.statSync(file).size>1024*1024);
+    const a=assessExistingWebRepository({cwd,gameId:'large-game',sourceRoot:'web-games/large-game'});
+    const b=assessExistingWebSource({html,sourceExists:true});
+    assert.equal(a.evidence.sourceBytes,fs.statSync(file).size);
+    assert.equal(a.evidence.sourceSha256,b.evidence.sourceSha256);
+    assert.ok(a.evidence.gameplaySignalCount>=4);
+    assert.notEqual(a.strategy,'FULL_REBUILD');
+    assert.equal(a.fullRewriteAllowed,false);
+    assert.equal(fs.statSync(file).size,Buffer.byteLength(html,'utf8'),'source is never rewritten or truncated');
+  }finally{
+    fs.rmSync(cwd,{recursive:true,force:true});
+  }
+});
+
+test('star-frontier asteroid source replay terminates and preserves original sector counts and safe positions',()=>{
+  const html=fs.readFileSync(path.join('web-games','star-frontier','index.html'),'utf8');
+  const seeded=html.match(/function seeded\(n\)\{[^\n]*\}/)?.[0];
+  const start=html.indexOf('function spawnSector(){');
+  const end=html.indexOf('function spawnEnemy(index=0){',start);
+  assert.ok(seeded&&start>=0&&end>start,'current source functions must be found');
+  const actualSpawn=html.slice(start,end);
+  const replay=`
+    const TAU=Math.PI*2;
+    const WORLD={w:4200,h:3000};
+    const state={sector:0,asteroidSeq:1,enemies:[],asteroids:[],bullets:[],particles:[],
+      player:{x:0,y:0,vx:0,vy:0},station:{x:2100,y:1500},gate:{x:3900,y:1500}};
+    const dist=(x,y,a,b)=>Math.hypot(x-a,y-b);
+    const rand=(a,b)=>(a+b)/2;
+    const currentSector=()=>({oreMul:1});
+    const updateHud=()=>{};
+    const spawnEnemy=()=>{};
+    ${seeded}
+    ${actualSpawn}
+    const observed=[];
+    for(let sector=0;sector<3;sector++){
+      state.sector=sector;spawnSector();
+      observed.push({sector,count:state.asteroids.length,
+        unsafe:state.asteroids.filter(a=>dist(a.x,a.y,2100,1500)<380||dist(a.x,a.y,3900,1500)<220).length});
+    }
+    observed;
+  `;
+  const observed=vm.runInNewContext(replay,{Math},{timeout:1200});
+  assert.deepEqual(JSON.parse(JSON.stringify(observed)),[
+    {sector:0,count:38,unsafe:0},
+    {sector:1,count:48,unsafe:0},
+    {sector:2,count:58,unsafe:0}
+  ]);
+});
+
+test('survival2 historical playable source recovery keeps saved progress and original atlas',()=>{
+  const root=path.join('web-games','survival2');
+  const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+  assert.match(html,/jaewoon-survival2-v3/);
+  assert.match(html,/requestAnimationFrame\(loop\)/);
+  assert.match(html,/getContext\('2d'\)/);
+  assert.doesNotMatch(html,/Approved Web Bootstrap|Simulated game logic/);
+  assert.ok(fs.statSync(path.join(root,'assets','survival-atlas.svg')).size>100);
+  for(const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi))
+    if(match[1].trim())assert.doesNotThrow(()=>new vm.Script(match[1]));
 });

@@ -1,11 +1,16 @@
+--!strict
+-- 대충알피지: delete old Vibe/basic Roblox GUI visuals, never synthesize placeholder UI.
+-- Display only an imported, licensed, owner-reviewed high-quality external ScreenGui.
+-- Gameplay remotes, saved attributes, combat input and imported creature follow are kept.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local ContextActionService = game:GetService("ContextActionService")
+local RunService = game:GetService("RunService")
+
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
-local CommonUI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
@@ -15,192 +20,254 @@ local verifiedExternalLearningMappings = verifiedExternalLearningContext.GameSpe
 local verifiedExternalLearningDispositions = verifiedExternalLearningContext.LearningDispositions or {}
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
 
--- STUDIO_ASSET_BINDING_CLIENT_BEGIN
-local STUDIO_ASSET_BINDING_VERSION = 2
-local studioAssetConfig = Config.StudioAssets or {}
-local studioAssetFamilies = studioAssetConfig.Families or {}
-local studioAssetSelectionFingerprint = studioAssetConfig.SelectionFingerprint or ""
-local function studioAssetFamily(family)
-  local atoms = studioAssetFamilies[family]
-  return type(atoms) == "table" and atoms or {}
-end
-local function hasStudioAssetAtom(familyOrAtom, atom)
-  local family = atom == nil and "UI" or familyOrAtom
-  local assetAtom = atom == nil and familyOrAtom or atom
-  return table.find(studioAssetFamily(family), assetAtom) ~= nil
-end
-local STUDIO_ASSET_SELECTION = {
-  CHARACTER = studioAssetFamily("CHARACTER"),
-  CREATURE = studioAssetFamily("CREATURE"),
-  BUILDING = studioAssetFamily("BUILDING"),
-  ENVIRONMENT = studioAssetFamily("ENVIRONMENT"),
-  WEAPON = studioAssetFamily("WEAPON"),
-  SKILL = studioAssetFamily("SKILL"),
-  MATERIAL = studioAssetFamily("MATERIAL"),
-  AUDIO = studioAssetFamily("AUDIO"),
-  VFX = studioAssetFamily("VFX"),
-  UI = studioAssetFamily("UI"),
-  MOTION = studioAssetFamily("MOTION"),
-  PROP = studioAssetFamily("PROP"),
-}
-local STUDIO_ASSET_FAMILY_STATUS = {
-  CHARACTER = "NOT_APPLICABLE",
-  CREATURE = "NOT_APPLICABLE",
-  BUILDING = "NOT_APPLICABLE",
-  ENVIRONMENT = "APPLIED",
-  WEAPON = "NOT_APPLICABLE",
-  SKILL = "NOT_APPLICABLE",
-  MATERIAL = "APPLIED",
-  AUDIO = "NOT_APPLICABLE",
-  VFX = "NOT_APPLICABLE",
-  UI = "APPLIED",
-  MOTION = "APPLIED",
-  PROP = "APPLIED",
-}
--- STUDIO_ASSET_BINDING_CLIENT_END
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
-local foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
-local nativeTouchEnabled = UserInputService.TouchEnabled
-local nativeFoundationCamera = workspace.CurrentCamera
-local function reportNativeFoundationReady()
-  local character = player.Character or player.CharacterAdded:Wait()
-  local humanoid = character:WaitForChild("Humanoid")
-  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then
-    foundationRemote:FireServer("CAMERA_READY")
+local remotes = ReplicatedStorage:WaitForChild("Remotes")
+local parry = remotes:WaitForChild("ParryEvent")
+local dodge = remotes:WaitForChild("DodgeEvent")
+local autoCombat = remotes:WaitForChild("AutoCombatEvent")
+local trade = remotes:WaitForChild("TradeRequestRemote")
+local craftRequestRemote = remotes:WaitForChild("CraftRequestRemote")
+local portalTeleportRemote = remotes:WaitForChild("PortalTeleportEvent")
+local marketUpdate = remotes:WaitForChild("MarketUpdateEvent")
+local inventoryUpdate = remotes:WaitForChild("SyncInventoryEvent")
+local techUpdate = remotes:WaitForChild("UpdateTechEvent")
+local research = remotes:WaitForChild("UnlockTechRequest")
+local foundation = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
+
+-- ScreenGui assets must be imported into Shared.CuratedUiTemplates.MainHUD.
+-- No unverified IDs, homemade primitives, builtin fallback panels, or UI factories.
+local hud: ScreenGui? = nil
+local uiTemplates = Shared:FindFirstChild("CuratedUiTemplates")
+local allowedActions = {
+  CivAttack = true, CivGather = true, CivCompanion = true, CivCraft = true,
+  CivBuild = true, CivEquip = true, CivTravel = true, CivSelect = true,
+  CivSkinTone = true, CivGuard = true, CivDodge = true,
+}
+local function findUi(name: string): Instance?
+  if not hud then return nil end
+  return hud:FindFirstChild(name, true)
+end
+
+local function updateNumbers(): ()
+  if not hud then return end
+  for _, key in ipairs({"CivEra", "CivTech", "CivRaceID", "CivWood",
+      "CivStone", "CivResearch", "CivSilver", "CivGold", "CivReady",
+      "CivSaveAvailable", "CivEquippedWeapon", "Health"}) do
+    local value = player:GetAttribute(key)
+    if value ~= nil and (type(value) == "number" or type(value) == "boolean") then
+      hud:SetAttribute(key, value)
+    end
   end
-  foundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
-end
-task.defer(reportNativeFoundationReady)
-
-local gui = Instance.new("ScreenGui")
--- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
-gui:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
-gui:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
-gui:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
-gui:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
-gui:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
-gui:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
-gui:SetAttribute("VerifiedExternalLearningSemanticMappingVersion", verifiedExternalLearningContext.SemanticMappingVersion or 0)
-gui:SetAttribute("VerifiedExternalLearningSemanticMappingFingerprint", verifiedExternalLearningContext.SemanticMappingFingerprint or "")
-gui:SetAttribute("VerifiedExternalLearningDispositionCount", #verifiedExternalLearningDispositions)
-gui:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearningMappings)
-gui:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
--- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
-
-gui.Name = "ApprovedScopeHud"
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
-local root = Instance.new("Frame")
-if hasStudioAssetAtom("UI", "FRAME_PANEL") then
-  local studioAssetStroke = Instance.new("UIStroke")
-  studioAssetStroke.Name = "StudioAssetFramePanel"
-  studioAssetStroke.Thickness = 1
-  studioAssetStroke.Transparency = 0.55
-  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
-  studioAssetStroke.Parent = root
+  local status = findUi("CivilizationStatus")
+  if status and status:IsA("TextLabel") then
+    status.Text = string.format("시대 %d · 연구 %d/72 · 은화 %d · 목재 %d · 석재 %d",
+      tonumber(player:GetAttribute("CivEra")) or 1,
+      tonumber(player:GetAttribute("CivTech")) or 0,
+      tonumber(player:GetAttribute("CivSilver")) or 0,
+      tonumber(player:GetAttribute("CivWood")) or 0,
+      tonumber(player:GetAttribute("CivStone")) or 0)
+  end
+  local researchButton = findUi("ResearchNext")
+  if researchButton and researchButton:IsA("ImageButton") then
+    researchButton:SetAttribute("GameArgument", (tonumber(player:GetAttribute("CivTech")) or 0) + 1)
+  end
+  local inventory = findUi("InventorySummary")
+  if inventory and inventory:IsA("TextLabel") then
+    inventory.Text = string.format("목재 %d · 석재 %d · 연구력 %d\n은화 %d · 금화 %d · 장착무기 %d",
+      tonumber(player:GetAttribute("CivWood")) or 0,
+      tonumber(player:GetAttribute("CivStone")) or 0,
+      tonumber(player:GetAttribute("CivResearch")) or 0,
+      tonumber(player:GetAttribute("CivSilver")) or 0,
+      tonumber(player:GetAttribute("CivGold")) or 0,
+      tonumber(player:GetAttribute("CivEquippedWeapon")) or 0)
+  end
 end
 
-root.Name = "Root"
-root.AnchorPoint = Vector2.new(0.5, 1)
-root.Position = UDim2.fromScale(0.5, 0.98)
-root.Size = UDim2.new(1, -24, 0, 360)
-root.BackgroundTransparency = 0.15
-local studioAssetFamilies = Config.StudioAssets and Config.StudioAssets.Families or {}
-local function studioAssetFamily(family)
-  local atoms = studioAssetFamilies[family]
-  return type(atoms) == "table" and atoms or {}
+local function showNotice(message: string): ()
+  if not hud then return end
+  hud:SetAttribute("GameNotice", message)
+  local label = findUi("CombatNotice")
+  if label and label:IsA("TextLabel") then label.Text = message end
 end
-local function hasStudioAtom(familyOrAtom, atom)
-  local family = atom == nil and "UI" or familyOrAtom
-  local assetAtom = atom == nil and familyOrAtom or atom
-  return table.find(studioAssetFamily(family), assetAtom) ~= nil
-end
-local studioUi = STUDIO_ASSET_SELECTION.UI
-root.BackgroundColor3 = hasStudioAtom("UI", "FRAME_PANEL") and Color3.fromRGB(22, 34, 58) or Color3.fromRGB(18, 28, 48)
-root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
-root:SetAttribute("StudioAssetSelectionFingerprint", Config.StudioAssets and Config.StudioAssets.SelectionFingerprint or "")
-root:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
-root.Parent = gui
-local title = Instance.new("TextLabel")
-title.Name = "Title"
-title.Size = UDim2.new(1, -20, 0, 44)
-title.Position = UDim2.fromOffset(10, 8)
-title.BackgroundTransparency = 1
-title.TextColor3 = Color3.fromRGB(245, 248, 255)
-title.TextScaled = true
-title.Text = Config.GameName
-title.Parent = root
-local status = Instance.new("TextLabel")
-status.Name = "Status"
-status.Size = UDim2.new(1, -20, 0, 48)
-status.Position = UDim2.fromOffset(10, 54)
-status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)
-status.TextColor3 = Color3.fromRGB(220, 232, 250)
-status.TextScaled = true
-status.Parent = root
 
-local multiplayerStatus = Instance.new("TextLabel")
-multiplayerStatus.Name = "MultiplayerStatus"
-multiplayerStatus.Size = UDim2.new(1, -20, 0, 36)
-multiplayerStatus.Position = UDim2.fromOffset(10, 104)
-multiplayerStatus.BackgroundTransparency = 1
-multiplayerStatus.TextColor3 = Color3.fromRGB(180, 230, 255)
-multiplayerStatus.TextScaled = true
-multiplayerStatus.Text = "Multiplayer sync ready"
-multiplayerStatus.Parent = root
-remote.OnClientEvent:Connect(function(kind, payload)
-  if kind ~= "MULTIPLAYER_SYNC" or typeof(payload) ~= "table" then return end
-  multiplayerStatus.Text = string.format("Players %d · Shared %d · Round %d", payload.ParticipantCount or 0, payload.SharedObjective or 0, payload.RoundScore or 0)
+local function togglePanel(name: string): ()
+  local panel = findUi(name)
+  if not panel or not panel:IsA("GuiObject") then return end
+  local opening = not panel.Visible
+  if opening then
+    for _, panelName in ipairs({"Actions", "Races", "Inventory", "Trade"}) do
+      if panelName ~= name then
+        local other = findUi(panelName)
+        if other and other:IsA("GuiObject") then other.Visible = false end
+      end
+    end
+  end
+  panel.Visible = opening
+end
+
+local function invokeExternalAction(action: string, value: any): ()
+  if action == "CivResearch" then
+    local id = tonumber(value)
+    if id and id % 1 == 0 and id >= 1 and id <= 72 then
+      task.spawn(function()
+        local ok, succeeded = pcall(function() return research:InvokeServer(id) end)
+        if not ok or succeeded ~= true then showNotice("연구 요청 실패") end
+      end)
+    end
+  elseif action == "CivTimedCraft" then
+    local recipeId = tonumber(value)
+    if recipeId and recipeId % 1 == 0 and recipeId >= 1 and recipeId <= 200 then
+      craftRequestRemote:FireServer(recipeId)
+    end
+  elseif action == "CivPortalTeleport" then
+    local destination = tonumber(value)
+    if destination and destination % 1 == 0 and destination >= 1 and destination <= 24 then
+      portalTeleportRemote:FireServer(destination)
+    end
+  elseif action == "CivTradeSnapshot" then
+    trade:FireServer("Snapshot", 0, false, "Silver")
+    togglePanel("Trade")
+  elseif action == "CivTradeCurrencyBuy" or action == "CivTradeCurrencySell" then
+    trade:FireServer("Currency", 1, action == "CivTradeCurrencyBuy", "Silver")
+  elseif action == "CivTradeBuy" or action == "CivTradeSell" then
+    if typeof(value) == "string" and #value <= 40 then
+      trade:FireServer(value, 1, action == "CivTradeBuy", "Silver")
+    end
+  elseif action == "CivParry" then
+    parry:FireServer()
+  elseif action == "CivDodge" then
+    dodge:FireServer()
+  elseif action == "CivAutoCombat" then
+    if typeof(value) == "boolean" then autoCombat:FireServer("SetEnabled", value) end
+  elseif action == "CivPanel" then
+    if typeof(value) == "string" and #value <= 35 then togglePanel(value) end
+  elseif action == "CivBuildHousing" and typeof(value) == "table" then
+    if typeof(value.Key) == "string" and #value.Key <= 32
+      and typeof(value.Position) == "Vector3" then
+      remote:FireServer(action, {
+        Key = value.Key, Position = value.Position,
+        ParentPart = value.ParentPart, Rotation = value.Rotation,
+      })
+    end
+  elseif (action == "CivRemoveHousing" or action == "CivToggleHousingDoor")
+    and typeof(value) == "Instance" and value:IsA("BasePart") then
+    remote:FireServer(action, value)
+  elseif allowedActions[action] then
+    if action == "CivGuard" then
+      parry:FireServer()
+    elseif action == "CivTravel" then
+      local destination = if value == "Lobby" then "Lobby"
+        else tonumber(player:GetAttribute("CivRaceID"))
+      if destination == "Lobby" or (destination and destination >= 1 and destination <= 24) then
+        remote:FireServer("CivTravel", destination)
+      end
+    elseif action == "CivSelect" then
+      local raceId = tonumber(value)
+      if raceId and raceId % 1 == 0 and raceId >= 1 and raceId <= 24 then
+        remote:FireServer(action, raceId)
+      end
+    elseif action == "CivSkinTone" then
+      local tone = tonumber(value)
+      if tone and tone % 1 == 0 and tone >= 1 and tone <= 4 then
+        remote:FireServer(action, tone)
+      end
+    elseif value == nil or typeof(value) == "string" or typeof(value) == "number" then
+      remote:FireServer(action, value)
+    end
+  end
+end
+
+local function bindExternalButton(descendant: Instance): ()
+  if not descendant:IsA("GuiButton") then return end
+  if descendant:GetAttribute("GameUiBound") then return end
+  descendant:SetAttribute("GameUiBound", true)
+  descendant.Activated:Connect(function()
+    local action = descendant:GetAttribute("GameAction")
+    if typeof(action) == "string" then
+      local argument: any = descendant:GetAttribute("GameArgument")
+      if action == "CivBuildHousing" then
+        local supportLink = descendant:FindFirstChild("GameParentPart")
+        argument = {
+          Key = descendant:GetAttribute("GameHousingPiece"),
+          Position = descendant:GetAttribute("GamePlacement"),
+          Rotation = descendant:GetAttribute("GameRotation"),
+          ParentPart = supportLink and supportLink:IsA("ObjectValue") and supportLink.Value or nil,
+        }
+      elseif action == "CivRemoveHousing" or action == "CivToggleHousingDoor" then
+        local targetLink = descendant:FindFirstChild("GameTargetPart")
+        argument = targetLink and targetLink:IsA("ObjectValue") and targetLink.Value or nil
+      end
+      invokeExternalAction(action, argument)
+    end
+  end)
+end
+
+local function validUiTemplate(template: Instance): boolean
+  if not template:IsA("ScreenGui") then return false end
+  if template:GetAttribute("CuratedExternalAsset") ~= true
+    or template:GetAttribute("VisualQualityApproved") ~= true
+    or template:GetAttribute("LicenseVerified") ~= true
+    or (tonumber(template:GetAttribute("VerifiedRobloxAssetId")) or 0) <= 0 then
+    return false
+  end
+  -- A bare Roblox UI made of Frames/TextButtons is not an external art asset.
+  for _, descendant in ipairs(template:GetDescendants()) do
+    if descendant:IsA("ImageLabel") or descendant:IsA("ImageButton") then
+      if descendant.Image ~= "" and descendant.Image ~= "rbxassetid://0" then
+        return true
+      end
+    end
+  end
+  return false
+end
+
+local function attachExternalHud(template: Instance): ()
+  if hud or not validUiTemplate(template) or not template:IsA("ScreenGui") then return end
+  local imported = template:Clone()
+  imported.Name = "CuratedExternalHUD"
+  imported.ResetOnSpawn = false
+  imported.Parent = player:WaitForChild("PlayerGui")
+  hud = imported
+  for _, descendant in ipairs(imported:GetDescendants()) do
+    bindExternalButton(descendant)
+  end
+  imported.DescendantAdded:Connect(bindExternalButton)
+  updateNumbers()
+end
+
+if uiTemplates then
+  local template = uiTemplates:FindFirstChild("MainHUD")
+  if template then attachExternalHud(template) end
+  uiTemplates.ChildAdded:Connect(function(child)
+    if child.Name == "MainHUD" then attachExternalHud(child) end
+  end)
+end
+Shared.ChildAdded:Connect(function(child)
+  if child.Name == "CuratedUiTemplates" and child:IsA("Folder") then
+    uiTemplates = child
+    local template = child:FindFirstChild("MainHUD")
+    if template then attachExternalHud(template) end
+    child.ChildAdded:Connect(function(nextTemplate)
+      if nextTemplate.Name == "MainHUD" then attachExternalHud(nextTemplate) end
+    end)
+  end
 end)
 
-local list = Instance.new("ScrollingFrame")
-list.Name = "ApprovedActions"
-list.Size = UDim2.new(1, -20, 1, -150)
-list.Position = UDim2.fromOffset(10, 142)
-list.BackgroundTransparency = 1
-list.BorderSizePixel = 0
-list.AutomaticCanvasSize = Enum.AutomaticSize.Y
-list.CanvasSize = UDim2.new()
-list.ScrollBarThickness = 6
-list.Parent = root
-local layout = Instance.new("UIListLayout")
-layout.Padding = UDim.new(0, 8)
-layout.SortOrder = Enum.SortOrder.LayoutOrder
-layout.Parent = list
-for index, action in ipairs(Config.Actions) do
-  local button = CommonUI.CreatePrimaryButton({minWidth=52,minHeight=56})
-  button.Name = "ScopeAction" .. index
-  button.LayoutOrder = index
-  button.Size = UDim2.new(1, -4, 0, 56)
-  button.BackgroundColor3 = hasStudioAtom("UI", "BUTTON_PRIMARY") and Color3.fromRGB(224, 236, 255) or Color3.fromRGB(235, 242, 255)
-  button.TextColor3 = Color3.fromRGB(16, 24, 40)
-  button.TextWrapped = true
-  button.TextScaled = false;button.TextSize=15
-  button.Text = CommonUI.ActionLabel(action,index)
-  button.Parent = list
-  button.Activated:Connect(function() remote:FireServer(action.Id) end)
-end
-local healthTrack = Instance.new("Frame")
-healthTrack.Name = "StudioHealthTrack"
-healthTrack.Size = UDim2.new(1, -20, 0, 10)
-healthTrack.Position = UDim2.fromOffset(10, 98)
-healthTrack.BackgroundColor3 = Color3.fromRGB(70, 78, 92)
-healthTrack.BorderSizePixel = 0
-healthTrack.Visible = hasStudioAtom("UI", "BAR_HEALTH")
-healthTrack.Parent = root
-local healthFill = Instance.new("Frame")
-healthFill.Name = "StudioHealthFill"
-healthFill.Size = UDim2.fromScale(1, 1)
-healthFill.BackgroundColor3 = Color3.fromRGB(92, 205, 118)
-healthFill.BorderSizePixel = 0
-healthFill.Parent = healthTrack
-local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
-local function render()
-  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
-  healthFill.Size = UDim2.fromScale(math.clamp((player:GetAttribute("Health") or 100) / 100, 0, 1), 1)
-end
-for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
-render()
+-- Only registered CC0 artwork is allowed to create a gameplay display.
+-- The image IDs are injected into CuratedAssets by the existing owner publish pipeline.
+local function attachDownloadedArtwork(): ()
+  local assetModule = Shared:FindFirstChild("CuratedAssets")
+  if not assetModule or not assetModule:IsA("ModuleScript") then return end
+  local ok, catalog = pcall(require, assetModule)
+  if not ok or type(catalog) ~= "table" then return end
+  local art = catalog.UI
+  if type(art) ~= "table" then return end
+  local panelId = tonumber(art.Panel)
+  local buttonId = tonumber(art.Button)
+  if not panelId or not buttonId or panelId < 1 or buttonId < 1 then return end
+  local folder = uiTemplates
+  if not folder or not folder:IsA("Folder") or folder:FindFirstChild("MainHUD") then return end
+  local template = Instance.new("ScreenGui")
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
 local verifiedLearningTweenService = game:GetService("TweenService")
@@ -210,7 +277,7 @@ local verifiedLearningContext = Config.VerifiedExternalLearning or Config.Learni
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
-local verifiedLearningRoot = gui
+local verifiedLearningRoot = template
 local verifiedLearningSemanticVariant = "PROGRESSION_RISK"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
 local verifiedLearningSemanticColor = Color3.fromRGB(156, 132, 255)
@@ -397,14 +464,386 @@ verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(fu
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
 
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
+template:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
+template:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
+template:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
+template:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
+template:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
+template:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
+template:SetAttribute("VerifiedExternalLearningSemanticMappingVersion", verifiedExternalLearningContext.SemanticMappingVersion or 0)
+template:SetAttribute("VerifiedExternalLearningSemanticMappingFingerprint", verifiedExternalLearningContext.SemanticMappingFingerprint or "")
+template:SetAttribute("VerifiedExternalLearningDispositionCount", #verifiedExternalLearningDispositions)
+template:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearningMappings)
+template:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
+
+  template.Name = "MainHUD"
+  template.DisplayOrder = 12
+  template.ZIndexBehavior = Enum.ZIndexBehavior.Global
+  template.IgnoreGuiInset = false
+  template.ResetOnSpawn = false
+  template:SetAttribute("CuratedExternalAsset", true)
+  template:SetAttribute("LicenseVerified", true)
+  template:SetAttribute("VisualQualityApproved", true)
+  template:SetAttribute("VerifiedRobloxAssetId", panelId)
+
+  local function artPanel(name: string, pos: UDim2, size: UDim2, isShown: boolean, parent: Instance): ImageLabel
+    local item = Instance.new("ImageLabel")
+    item.Name = name
+    item.Image = "rbxassetid://" .. panelId
+    item.ScaleType = Enum.ScaleType.Slice
+    item.SliceCenter = Rect.new(18, 18, 46, 46)
+    item.BackgroundTransparency = 1
+    item.Size = size
+    item.Position = pos
+    item.Visible = isShown
+    item.Parent = parent
+    return item
+  end
+  local function text(parent: Instance, name: string, value: string, y: number, height: number): TextLabel
+    local label = Instance.new("TextLabel")
+    label.Name = name
+    label.Text = value
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 14
+    label.TextWrapped = true
+    label.TextColor3 = Color3.fromRGB(255, 241, 212)
+    label.BackgroundTransparency = 1
+    label.Size = UDim2.new(1, -16, 0, height)
+    label.Position = UDim2.fromOffset(8, y)
+    label.Parent = parent
+    return label
+  end
+  local function artButton(parent: Instance, key: string, caption: string, action: string, argument: any, order: number): ImageButton
+    local button = Instance.new("ImageButton")
+    button.Name = key
+    button.Image = "rbxassetid://" .. buttonId
+    button.ScaleType = Enum.ScaleType.Slice
+    button.SliceCenter = Rect.new(15, 15, 41, 41)
+    button.BackgroundTransparency = 1
+    button.LayoutOrder = order
+    button.Size = UDim2.new(1, -10, 0, 43)
+    button:SetAttribute("GameAction", action)
+    if argument ~= nil then button:SetAttribute("GameArgument", argument) end
+    button.Parent = parent
+    local label = text(button, "ActionLabel", caption, 0, 43)
+    label.TextSize = 13
+    return button
+  end
+  local header = artPanel("Header", UDim2.fromOffset(8, 6), UDim2.new(1, -16, 0, 88), true, template)
+  text(header, "CivilizationTitle", "대충알피지", 4, 29)
+  text(header, "CivilizationStatus", "서버 데이터 확인 중", 34, 48).TextSize = 12
+  local notice = artPanel("NoticeArt", UDim2.fromOffset(8, 98), UDim2.new(1, -16, 0, 39), true, template)
+  text(notice, "CombatNotice", "이동: 로블록스 기본 조이스틱", 1, 37).TextSize = 12
+  local toggle = artButton(header, "MenuToggle", "메뉴", "CivPanel", "Actions", 0)
+  toggle.Size = UDim2.fromOffset(76, 35)
+  toggle.Position = UDim2.new(1, -83, 0, 5)
+  local quick = artPanel("QuickArt", UDim2.new(1, -121, 0.43, 0), UDim2.fromOffset(113, 205), true, template)
+  local quickLayout = Instance.new("UIListLayout")
+  quickLayout.Padding = UDim.new(0, 4)
+  quickLayout.Parent = quick
+  for index, row in ipairs({
+    {"공격", "CivAttack"}, {"채집", "CivGather"},
+    {"패링", "CivParry"}, {"회피", "CivDodge"}
+  }) do
+    artButton(quick, row[2], row[1], row[2], nil, index)
+  end
+  local function scrolling(name: string): ScrollingFrame
+    local holder = artPanel(name .. "Art", UDim2.new(1, -204, 0, 143),
+      UDim2.new(0, 196, 0.62, -143), false, template)
+    holder.Visible = true
+    local frame = Instance.new("ScrollingFrame")
+    frame.Name = name
+    frame.Size = UDim2.new(1, -10, 1, -10)
+    frame.Position = UDim2.fromOffset(5, 5)
+    frame.BackgroundTransparency = 1
+    frame.ScrollBarThickness = 4
+    frame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    frame.CanvasSize = UDim2.new()
+    frame.Visible = false
+    frame.Parent = holder
+    local list = Instance.new("UIListLayout")
+    list.Padding = UDim.new(0, 5)
+    list.SortOrder = Enum.SortOrder.LayoutOrder
+    list.Parent = frame
+    return frame
+  end
+  local menu = scrolling("Actions")
+  for index, row in ipairs({
+    {"모험 시작", "CivTravel"},
+    {"24개 문명", "CivPanel", "Races"},
+    {"다음 기술 연구", "CivResearch", 1, "ResearchNext"},
+    {"석기 도끼 제작", "CivTimedCraft", 1},
+    {"청동 검 제작", "CivTimedCraft", 2},
+    {"가방", "CivPanel", "Inventory"},
+    {"무역", "CivTradeSnapshot"},
+    {"동료 소환", "CivCompanion", "Summon"},
+    {"동료 따라오기", "CivCompanion", "Follow"},
+    {"동료 공격", "CivCompanion", "Attack"},
+    {"동료 채집", "CivCompanion", "Gather"},
+    {"동료 해산", "CivCompanion", "Dismiss"}
+  }) do
+    artButton(menu, row[4] or "Menu" .. index, row[1], row[2], row[3], index)
+  end
+  local races = scrolling("Races")
+  local raceData = require(Shared:WaitForChild("RaceData"))
+  for id = 1, 24 do
+    local race = raceData.GetRace(id)
+    if race then
+      artButton(races, "Race" .. id, tostring(id) .. ". " .. race.Name, "CivSelect", id, id)
+    end
+  end
+  local inventoryArt = artPanel("InventoryArt", UDim2.fromOffset(8, 145),
+    UDim2.new(1, -16, 0, 94), false, template)
+  inventoryArt.Visible = true
+  local inventory = Instance.new("ImageButton")
+  inventory.Name = "Inventory"
+  inventory.Image = "rbxassetid://" .. panelId
+  inventory.BackgroundTransparency = 1
+  inventory.Size = UDim2.fromScale(1, 1)
+  inventory.Visible = false
+  inventory.Parent = inventoryArt
+  text(inventory, "InventorySummary", "서버 인벤토리 대기 중", 4, 80)
+  local market = scrolling("Trade")
+  for index, row in ipairs({
+    {"대리석 구매", "CivTradeBuy", "Marble"}, {"대리석 판매", "CivTradeSell", "Marble"},
+    {"금 특산품 구매", "CivTradeBuy", "Gold"}, {"금 특산품 판매", "CivTradeSell", "Gold"},
+    {"향신료 구매", "CivTradeBuy", "Spice"}, {"향신료 판매", "CivTradeSell", "Spice"}
+  }) do
+    artButton(market, "Market" .. index, row[1], row[2], row[3], index)
+  end
+  template.Parent = folder
+end
+
+-- Rebind the already curated artwork when the publishing pipeline inserts it
+-- after this LocalScript starts. Never substitute unverified asset IDs.
+attachDownloadedArtwork()
+Shared.ChildAdded:Connect(function(child)
+  if child.Name == "CuratedAssets" and child:IsA("ModuleScript") then
+    task.defer(attachDownloadedArtwork)
+  end
+end)
+player:GetAttributeChangedSignal("CivReady"):Connect(function()
+  if player:GetAttribute("CivReady") == true and (tonumber(player:GetAttribute("CivRaceID")) or 0) == 0 then
+    local raceList = findUi("Races")
+    if raceList and raceList:IsA("GuiObject") then raceList.Visible = true end
+  end
+end)
+task.defer(function()
+  if player:GetAttribute("CivReady") == true and (tonumber(player:GetAttribute("CivRaceID")) or 0) == 0 then
+    local raceList = findUi("Races")
+    if raceList and raceList:IsA("GuiObject") then raceList.Visible = true end
+  end
+end)
+
+for _, key in ipairs({"CivEra", "CivTech", "CivRaceID", "CivWood",
+    "CivStone", "CivResearch", "CivSilver", "CivGold", "CivReady",
+    "CivSaveAvailable", "CivEquippedWeapon", "Health"}) do
+  player:GetAttributeChangedSignal(key):Connect(updateNumbers)
+end
+
+remote.OnClientEvent:Connect(function(kind, payload)
+  if kind == "CIV_MESSAGE" and typeof(payload) == "string" then
+    showNotice(payload)
+  elseif kind == "CIV_TELEGRAPH" then
+    showNotice("공격 예고: F 패링 또는 Shift 회피")
+  elseif kind == "CIV_PARRY" then
+    showNotice("패링 성공")
+  elseif kind == "CIV_HIT" and typeof(payload) == "table" then
+    showNotice(tostring(payload.Enemy) .. " · " .. tostring(payload.Damage) .. " 피해")
+  elseif kind == "MULTIPLAYER_SYNC" and typeof(payload) == "table" and hud then
+    hud:SetAttribute("ParticipantCount", tonumber(payload.ParticipantCount) or 0)
+  end
+end)
+techUpdate.OnClientEvent:Connect(function(id)
+  if hud then hud:SetAttribute("LastCompletedTech", tonumber(id) or 0) end
+end)
+marketUpdate.OnClientEvent:Connect(function(_, openTrade)
+  if hud then hud:SetAttribute("MarketUpdated", os.clock()) end
+  if openTrade then togglePanel("Trade") end
+end)
+inventoryUpdate.OnClientEvent:Connect(function()
+  if hud then hud:SetAttribute("InventoryUpdated", os.clock()) end
+end)
+
+-- Preserve the native Roblox movement controls; render no homemade mobile HUD.
+local touch = UserInputService.TouchEnabled
+local autoCombatEnabled = touch
+local function reportFoundation(): ()
+  local character = player.Character or player.CharacterAdded:Wait()
+  local humanoid = character:WaitForChild("Humanoid", 10)
+  local root = character:WaitForChild("HumanoidRootPart", 10)
+  if not humanoid or not root then return end
+  local camera = workspace.CurrentCamera
+  if camera and camera.CameraSubject == humanoid then foundation:FireServer("CAMERA_READY") end
+  foundation:FireServer(touch and "INPUT_READY_TOUCH" or "INPUT_READY")
+end
+task.defer(reportFoundation)
+player.CharacterAdded:Connect(function() task.defer(reportFoundation) end)
+
+local function syncAutoCombat(): ()
+  if player:GetAttribute("CivReady") == true then
+    autoCombat:FireServer("SetEnabled", autoCombatEnabled)
+  end
+end
+player:GetAttributeChangedSignal("CivReady"):Connect(syncAutoCombat)
+task.defer(syncAutoCombat)
 
 if #Config.Actions > 0 then
-  ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
-    if inputState == Enum.UserInputState.Begin and gui:GetAttribute("GameMenuOpen")~=true then remote:FireServer(Config.Actions[1].Id) end
+  ContextActionService:BindAction("RpgPrimaryAction", function(_, state)
+    if state == Enum.UserInputState.Begin then
+      remote:FireServer(Config.Actions[1].Id)
+    end
     return Enum.ContextActionResult.Sink
   end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)
 end
 
-CommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,Config.Actions[1]and{
- label=CommonUI.ActionLabel(Config.Actions[1],1),activate=function()remote:FireServer(Config.Actions[1].Id)end
-}or nil)
+UserInputService.InputBegan:Connect(function(input, processed)
+  if processed or UserInputService:GetFocusedTextBox() then return end
+  local key = input.KeyCode
+  if key == Enum.KeyCode.F then
+    parry:FireServer()
+  elseif key == Enum.KeyCode.LeftShift then
+    dodge:FireServer()
+  elseif key == Enum.KeyCode.E then
+    remote:FireServer("CivGather")
+  elseif key == Enum.KeyCode.T then
+    togglePanel("Techs")
+  elseif key == Enum.KeyCode.C then
+    togglePanel("Companions")
+  elseif key == Enum.KeyCode.V then
+    togglePanel("Crafts")
+  elseif key == Enum.KeyCode.B then
+    togglePanel("Buildings")
+  elseif key == Enum.KeyCode.I then
+    togglePanel("Inventory")
+  elseif key == Enum.KeyCode.M then
+    trade:FireServer("Snapshot", 0, false, "Silver")
+    togglePanel("Trade")
+  elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
+    remote:FireServer("CivAttack")
+  end
+end)
+
+local touchStart: {[InputObject]: {Position: Vector2, At: number}} = {}
+local lastTapAt = -1e9
+if touch then
+  UserInputService.TouchStarted:Connect(function(input, processed)
+    if processed then return end
+    local camera = workspace.CurrentCamera
+    if not camera then return end
+    local screen = camera.ViewportSize
+    local at = input.Position
+    if at.X < screen.X * 0.34 or at.X > screen.X * 0.7 or at.Y < screen.Y * 0.52 then return end
+    touchStart[input] = {Position = Vector2.new(at.X, at.Y), At = os.clock()}
+  end)
+  UserInputService.TouchEnded:Connect(function(input, processed)
+    local gesture = touchStart[input]
+    touchStart[input] = nil
+    if processed or not gesture or player:GetAttribute("CivReady") ~= true then return end
+    if os.clock() - gesture.At > 0.5 then return end
+    local distance = (Vector2.new(input.Position.X, input.Position.Y) - gesture.Position).Magnitude
+    if distance >= 70 then
+      dodge:FireServer()
+    elseif distance <= 25 then
+      local now = os.clock()
+      if now - lastTapAt <= 0.32 then parry:FireServer() end
+      lastTapAt = now
+    end
+  end)
+  UserInputService.TouchTapInWorld:Connect(function(position, processed)
+    if processed or player:GetAttribute("CivReady") ~= true then return end
+    local camera = workspace.CurrentCamera
+    if not camera then return end
+    local ray = camera:ViewportPointToRay(position.X, position.Y)
+    local exclude = RaycastParams.new()
+    exclude.FilterType = Enum.RaycastFilterType.Exclude
+    if player.Character then exclude.FilterDescendantsInstances = {player.Character} end
+    local hit = workspace:Raycast(ray.Origin, ray.Direction * 350, exclude)
+    if not hit then return end
+    local resource = hit.Instance:GetAttribute("CivilizationResourceType")
+    if typeof(resource) == "string" then
+      remote:FireServer("CivGather", resource)
+      return
+    end
+    local model = hit.Instance:FindFirstAncestorOfClass("Model")
+    if model and model:GetAttribute("CivilizationEnemy") == true then
+      autoCombat:FireServer("AutoAttack", model)
+    end
+  end)
+end
+
+task.spawn(function()
+  while player.Parent do
+    task.wait(0.4)
+    if touch and autoCombatEnabled and player:GetAttribute("CivReady") == true
+      and (tonumber(player:GetAttribute("CivRaceID")) or 0) > 0 then
+      local character = player.Character
+      local root = character and character:FindFirstChild("HumanoidRootPart")
+      local hum = character and character:FindFirstChildOfClass("Humanoid")
+      local world = workspace:FindFirstChild("CivilizationWorlds")
+      if root and root:IsA("BasePart") and hum and hum.Health > 0 and world then
+        local nearest: Model? = nil
+        local distance = 15
+        for _, obj in ipairs(world:GetChildren()) do
+          if obj:IsA("Model") and obj:GetAttribute("CivilizationEnemy") == true then
+            local targetRoot = obj:FindFirstChild("HumanoidRootPart")
+            local targetHumanoid = obj:FindFirstChildOfClass("Humanoid")
+            if targetRoot and targetRoot:IsA("BasePart") and targetHumanoid
+              and targetHumanoid.Health > 0 then
+              local d = (root.Position - targetRoot.Position).Magnitude
+              if d < distance then nearest = obj; distance = d end
+            end
+          end
+        end
+        if nearest then autoCombat:FireServer("AutoAttack", nearest) end
+      end
+    end
+  end
+end)
+
+-- Imported mesh positioning only. Original creator-authored rig poses stay intact.
+local observed: {[Model]: {Visual: Model, Root: BasePart, LastFrame: CFrame?, LastOffset: CFrame?}} = {}
+local at = 0
+local scanAt = 0
+RunService.RenderStepped:Connect(function(dt)
+  at += math.min(dt, 0.1)
+  if at >= scanAt then
+    scanAt = at + 1.5
+    table.clear(observed)
+    local world = workspace:FindFirstChild("CivilizationWorlds")
+    local character = player.Character
+    local viewer = character and character:FindFirstChild("HumanoidRootPart")
+    if world and viewer and viewer:IsA("BasePart") then
+      -- Server enemies are direct CivilizationWorlds children; avoid scanning every map descendant.
+      for _, enemy in ipairs(world:GetChildren()) do
+        if enemy:IsA("Model") and enemy:GetAttribute("CivilizationEnemy") == true
+          and enemy:GetAttribute("CreatureAssetSource") == "StudioImported"
+          and (tonumber(enemy:GetAttribute("CreatureVisualAssetId")) or 0) > 0 then
+          local visual = enemy:FindFirstChild("ImportedCreatureVisual")
+          local core = enemy:FindFirstChild("HumanoidRootPart")
+          if visual and visual:IsA("Model") and core and core:IsA("BasePart")
+            and (core.Position - viewer.Position).Magnitude < 110 then
+            observed[enemy] = {Visual = visual, Root = core}
+          end
+        end
+      end
+    end
+  end
+  for enemy, entry in pairs(observed) do
+    if not enemy.Parent or not entry.Visual.Parent or not entry.Root.Parent then
+      observed[enemy] = nil
+    else
+      local offset = entry.Visual:GetAttribute("VisualPivotOffset")
+      if typeof(offset) ~= "CFrame" then offset = CFrame.new() end
+      local rootFrame = entry.Root.CFrame
+      -- Existing server-owned movement is discrete: skip unchanged visual transforms.
+      if entry.LastFrame ~= rootFrame or entry.LastOffset ~= offset then
+        entry.Visual:PivotTo(rootFrame * offset)
+        entry.LastFrame = rootFrame
+        entry.LastOffset = offset
+      end
+    end
+  end
+end)

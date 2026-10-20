@@ -1,6 +1,7 @@
 // 파일명: tools/company-post-modification-review.mjs
 // 역할: 수정 후 기획/개발/QA/그래픽/밸런스가 독립 재평가하고 총괄은 제출된 5개 결과만 종합한다.
 import fs from 'node:fs';
+import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
 import {
   evaluateDepartmentEvidence,
@@ -20,15 +21,21 @@ if(!requestFile||!fs.existsSync(requestFile))throw new Error('REVIEW_REQUEST_FIL
 if(![...ROLES,'director'].includes(role))throw new Error('invalid REVIEW_ROLE');
 const req=readJson(requestFile,{});
 if(req.version!==1||!req.gameId||!req.requestId)throw new Error('invalid review request');
-const gameId=clean(req.gameId),requestId=clean(req.requestId),model=clean(process.env.ARTBOOK_LOCAL_MODEL||'qwen3:0.6b');
+const gameId=clean(req.gameId),requestId=clean(req.requestId),model=clean(process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash');
 const outputRoot=clean(process.env.REVIEW_OUTPUT_ROOT||'.company-revote-output');
 
 async function callModel(system,user,seed=1501){
-  const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model,stream:false,format:'json',messages:[{role:'system',content:system},{role:'user',content:user}],options:{temperature:0.1,seed,num_ctx:8192,num_predict:800}})});
-  if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-  const packet=await response.json();
-  return JSON.parse(clean(packet?.message?.content).replace(/^```json\s*/i,'').replace(/```$/,'').trim());
+  const key=clean(process.env.GEMINI_API_KEY);
+  if(!key)throw new Error('POST_MODIFICATION_GEMINI_KEY_REQUIRED_NO_LOCAL_FALLBACK');
+  const response=await requestGeminiFreePair({
+    apiKey:key,
+    contents:[{role:'user',parts:[{text:system+'\n'+user}]}],
+    temperature:.1,maxOutputTokens:1200,timeoutMs:120000,
+    responseMimeType:'application/json'
+  });
+  return JSON.parse(clean(response.text));
 }
+
 function normalizeDecision(v){const s=clean(v).toUpperCase();return ['PASS','REVISE','DROP'].includes(s)?s:'REVISE';}
 function normalizeScore(v){const n=Math.round(Number(v));return Number.isFinite(n)?Math.max(0,Math.min(100,n)):50;}
 function arr(v,max=8){return Array.isArray(v)?v.map(clean).filter(Boolean).slice(0,max):[];}
@@ -126,7 +133,7 @@ if(role!=='director'){
       departmentEvidenceGate:true,
       qaRuntimePlayEvidenceRequired:role==='qa'
     },
-    generatedBy:`local-${model}`,independent:true
+    generatedBy:`external-${model}`,independent:true
   };
   writeJson(`${outputRoot}/${role}.json`,out);
   console.log(`POST_MODIFICATION_REVIEW=${role}:${out.decision}:${out.score}`);
@@ -156,7 +163,7 @@ const out={
   departmentEvidenceGates:Object.fromEntries(reviews.map(x=>[x.role,x.evidenceGate||null])),
   blockers,modificationCommit:req.modificationCommit||'',buildRunId:req.buildRunId||null,buildConclusion:req.buildConclusion||'unknown',
   aggregationRule:'DROP if any DROP; REVISE if any REVISE or any evidence gate fails; otherwise PASS',
-  inventedDepartmentContent:false,generatedBy:`local-${model}`
+  inventedDepartmentContent:false,generatedBy:`external-${model}`
 };
 writeJson(`${outputRoot}/director.json`,out);
 console.log(`POST_MODIFICATION_DIRECTOR_VOTE=${out.decision}:${out.score}`);

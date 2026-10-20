@@ -1,0 +1,124 @@
+<!doctype html>
+<!-- 파일명: web-games/fantasy-survival/research-log.html -->
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>마력숲 연구 일지 · 1화</title><style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030a07;color:#e5f4e6;font-family:system-ui,sans-serif}canvas{width:100%;height:100%;display:block}#noise,#black,#white,#caption{position:fixed;inset:0;pointer-events:none}#noise{opacity:0;image-rendering:pixelated;mix-blend-mode:screen}#black{background:#000;opacity:0}#white{background:white;opacity:0}#caption{z-index:5;display:none;align-items:center;justify-content:center;flex-direction:column;color:#19251b;text-align:center;font-size:clamp(19px,4.5vw,34px);font-weight:800}#caption p{opacity:0;transition:opacity 1s}#rec{position:fixed;top:15px;left:14px;text-shadow:0 2px 4px #000;font-size:11px}#rec b{color:#f66}#start,#end{position:fixed;inset:0;display:grid;place-items:center;padding:20px;background:radial-gradient(circle,#19422a,#040b07);text-align:center}#end{display:none;background:#fff;color:#1a291f}.panel{max-width:430px;padding:26px;border:1px solid #719b7766;border-radius:16px;background:#08180f}.panel p{font-size:13px;line-height:1.8;color:#bed1bf}button{width:100%;height:50px;border:0;border-radius:9px;color:#fff;background:#397552;font:inherit;font-weight:800}.back{display:block;color:#b7daba;margin-top:20px;text-decoration:none}#end .panel{background:#fff}#end .panel p{color:#506252}#end .back{color:#42634b}#bite{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 47%,transparent 7%,#701c2733 43%,#8d090bdf 110%);mix-blend-mode:screen}</style></head><body>
+<canvas id="scene"></canvas><canvas id="noise"></canvas><div id="bite"></div><div id="black"></div><div id="white"></div><div id="rec"><b>●</b> 연구원 01 · 세계수 내부 · <span id="clock">00:00</span></div><div id="caption"><p id="l1">저희는 도저히 안 되겠다 싶었고</p><p id="l2">결국 지원을 보냈습니다.</p></div>
+<div id="start"><div class="panel"><small>연구 기록 01</small><h1>마력숲 연구 일지</h1><p>세계수 내부. 돌 창을 든 연구원 한 명의<br>1인칭 3D 기록.</p><button id="play">1화 재생</button><a class="back" href="./research-log-2.html">2화 보기</a><a class="back" href="./">마력숲 본편</a></div></div><div id="end"><div class="panel"><h1>연구 기록 종료</h1><p>지원 요청이 전달됐어.</p><button id="again">다시 보기</button><a class="back" href="./research-log-2.html">2화 보기</a><a class="back" href="./">마력숲 본편</a></div></div>
+<script>
+(()=>{'use strict';
+const E=id=>document.getElementById(id),gl=E('scene').getContext('webgl',{alpha:false,depth:true});if(!gl){E('start').querySelector('p').textContent='이 기기에서는 3D 영상 재생이 지원되지 않아.';E('play').disabled=true;return}
+const vertex='attribute vec3 p;attribute vec3 c;uniform vec3 eye;uniform vec3 rot;uniform float aspect;varying vec3 tint;void main(){vec3 a=p-eye;float k=cos(rot.x),s=sin(rot.x);vec3 b=vec3(k*a.x-s*a.z,a.y,s*a.x+k*a.z);float q=cos(rot.y),r=sin(rot.y);vec3 d=vec3(b.x,q*b.y-r*b.z,r*b.y+q*b.z);float roll=cos(rot.z),pitch=sin(rot.z);vec2 tilted=vec2(d.x*roll-d.y*pitch,d.x*pitch+d.y*roll);float z=-d.z;gl_Position=vec4(tilted.x*1.7/aspect,tilted.y*1.7,z*1.012-.15,z);tint=mix(c,vec3(.012,.044,.025),clamp((length(a)-3.)/26.,0.,.87));}';
+const frag='precision mediump float;varying vec3 tint;void main(){gl_FragColor=vec4(tint,1.);}';
+function shader(type,source){let x=gl.createShader(type);gl.shaderSource(x,source);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(x));return x}
+let pg=gl.createProgram();gl.attachShader(pg,shader(gl.VERTEX_SHADER,vertex));gl.attachShader(pg,shader(gl.FRAGMENT_SHADER,frag));gl.linkProgram(pg);gl.useProgram(pg);gl.enable(gl.DEPTH_TEST);
+const loc=n=>gl.getUniformLocation(pg,n),pos=gl.getAttribLocation(pg,'p'),col=gl.getAttribLocation(pg,'c'),buf=gl.createBuffer();let data=[],seed=96;const rnd=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296},smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)},phase=(t,a,b)=>smooth((t-a)/(b-a)),mix=(a,b,t)=>a+(b-a)*t;
+function tri(a,b,c,color){for(const p of [a,b,c])data.push(...p,...color)}
+function quad(a,b,c,d,color){tri(a,b,c,color);tri(a,c,d,color)}
+function rod(a,b,r,color){let dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],l=Math.hypot(dx,dy,dz)||1;let nx=dx/l,ny=dy/l,nz=dz/l,u=[-nz,0,nx],v=[-nx*ny,nx*nx+nz*nz,-ny*nz];for(let i=0;i<7;i++){let ang=i*2*Math.PI/7,bng=(i+1)*2*Math.PI/7,p=(q,f)=>q.map((x,k)=>x+r*(u[k]*Math.cos(f)+v[k]*Math.sin(f)));quad(p(a,ang),p(a,bng),p(b,bng),p(b,ang),color)}}
+function globe(x,y,z,r,color){for(let a=0;a<6;a++){let f=a*Math.PI/3,g=(a+1)*Math.PI/3;tri([x,y+r,z],[x+r*Math.cos(f),y,z+r*Math.sin(f)],[x+r*Math.cos(g),y,z+r*Math.sin(g)],color);tri([x,y-r,z],[x+r*Math.cos(g),y,z+r*Math.sin(g)],[x+r*Math.cos(f),y,z+r*Math.sin(f)],color)}}
+for(let z=-27;z<12;z+=1.3)for(let x=-6;x<6;x+=1.3)quad([x,-.65,z],[x+1.3,-.65,z],[x+1.3,-.65,z+1.3],[x,-.65,z+1.3],[.05+rnd()*.035,.12+rnd()*.05,.07]);
+for(let i=0;i<32;i++){let z=-24+i*1.4,x=(i%2?1:-1)*(4.5+rnd()*.8);rod([x,-.6,z],[x*.7,4.4,z-.8],.54,[.26,.21,.13]);rod([x,2,z],[0,4.4,z-2.0],.2,[.25,.28,.16]);globe(x,1.2,z,1.5,[.09,.18,.1]);}
+for(let i=0;i<50;i++){let x=(rnd()-.5)*9,z=rnd()*28-20;globe(x,-.2,z,.14,[.21,.49,.31]);}
+const cave=new Float32Array(data);
+
+/* 메인 · 뿌리에서 뱀으로 변하는 연속 3D 메시와 실제 물기 애니메이션 */
+function snake(x,z,size,time,{morph=1,charge=0,root=false,bite=0}={}){
+ const m=smooth(morph),strike=smooth(charge),n=18,sides=9;
+ const color=[mix(.33,.12,m),mix(.24,.54,m),mix(.15,.24,m)];
+ const eyeY=root?mix(-.30,1.37,strike):-.25;
+ const tail=root?[-1.68,-.61,-5.30]:[x-.18*size,-.38,z-2.15*size];
+ const head=[x,eyeY,z],points=[],rings=[];
+ for(let i=0;i<=n;i++){
+  const f=i/n;
+  const rootBend=Math.sin(f*5.6)*.24*(1-f*.5);
+  const snakeWave=Math.sin(f*10.3-time*4.8)*.15*size*m*(.4+.6*f);
+  const center=[
+   mix(tail[0],head[0],f)+mix(rootBend,snakeWave,m),
+   mix(tail[1],head[1],f)+Math.sin(f*Math.PI)*mix(.11,.28,m)*(root?1:.45),
+   mix(tail[2],head[2],f)+Math.sin(f*7-time*3)*.06*size*m
+  ];
+  points.push(center);
+ }
+ for(let i=0;i<=n;i++){
+  const prev=points[Math.max(0,i-1)],next=points[Math.min(n,i+1)],p=points[i];
+  const dx=next[0]-prev[0],dy=next[1]-prev[1],dz=next[2]-prev[2];
+  const horizontal=Math.hypot(dx,dz)||1,full=Math.hypot(dx,dy,dz)||1;
+  const right=[dz/horizontal,0,-dx/horizontal],up=[-dx*dy/(horizontal*full),horizontal/full,-dz*dy/(horizontal*full)];
+  const f=i/n,r=size*mix(.09+.18*(1-f),.16+.10*Math.sin(f*Math.PI),m);
+  const ring=[];
+  for(let k=0;k<sides;k++){
+   const a=k*2*Math.PI/sides;
+   ring.push([p[0]+r*(right[0]*Math.cos(a)+up[0]*Math.sin(a)),
+              p[1]+r*(right[1]*Math.cos(a)+up[1]*Math.sin(a)),
+              p[2]+r*(right[2]*Math.cos(a)+up[2]*Math.sin(a))]);
+  }
+  rings.push(ring);
+  if(i){
+   for(let k=0;k<sides;k++){
+    const shading=.76+.24*Math.sin(k*Math.PI*2/sides+.5);
+    const bands=m>.04 && i%4===0?.81:1;
+    const tone=color.map(v=>v*shading*bands);
+    quad(rings[i-1][k],rings[i-1][(k+1)%sides],ring[(k+1)%sides],ring[k],tone);
+   }
+  }
+ }
+ // 뿌리의 갈라진 가지도 실제 몸통 속으로 서서히 말려 들어간다.
+ if(root&&m<.999)for(const at of [.22,.52,.76]){
+  const base=points[Math.round(at*n)],amount=1-m;
+  const out=[base[0]-.6*amount,base[1]+(.35+.25*at)*amount,base[2]-.45*amount];
+  if(amount>.025)rod(base,out,.085*size*amount,[.29,.22,.13]);
+ }
+ const h=head,r=size,skull=color.map(v=>Math.min(.78,v*1.05));
+ // 머리가 뿌리 끝에서 자라며 눈, 주둥이, 아래턱이 연속적으로 드러난다.
+ const headScale=r*(.20+.20*m);
+ globe(h[0],h[1],h[2],headScale,skull);
+ if(m>.025){
+  const face=m*m,gape=Math.max(0,Math.min(1,bite))*m;
+  const snoutZ=h[2]+r*(.12+.30*m);
+  rod([h[0],h[1]+r*.08*m,h[2]], [h[0],h[1]+r*.035*m,snoutZ+r*.10*m],
+      r*.17*m,[.17,.49,.24]);
+  // 물기 직전 위아래 턱이 벌어지고, 41초에 닫힌다.
+  if(gape>.035){
+   globe(h[0],h[1]-r*(.12+.19*gape),snoutZ,r*(.13+.09*gape),[.37,.045,.065]);
+  }
+  rod([h[0],h[1]-r*.13*m,h[2]+r*.07*m],
+      [h[0],h[1]-r*(.16+.39*gape),snoutZ+r*.15*m],
+      r*.115*m,[.11,.35,.21]);
+  for(const sign of [-1,1]){
+   const eX=h[0]+sign*r*.24*m,eY=h[1]+r*.14*m,eZ=h[2]+r*.20*m;
+   globe(eX,eY,eZ,r*.079*m,[.92,.77,.21]);
+   globe(eX+sign*r*.005,eY,eZ+r*.042*m,r*.039*m,[.035,.06,.025]);
+   // 위턱의 흰 독니가 물어뜯는 순간 내려간다.
+   if(gape>.035){
+    const fx=h[0]+sign*r*.15*m,fy=h[1]+r*.018*m,fz=snoutZ+r*.11*m;
+    tri([fx-r*.035*m,fy,fz],[fx+r*.035*m,fy,fz],[fx,fy-r*(.20+.09*gape)*m,fz+r*.055*m],[.83,.88,.70]);
+   }
+  }
+ }
+}
+function draw(a){gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,a,gl.DYNAMIC_DRAW);gl.enableVertexAttribArray(pos);gl.enableVertexAttribArray(col);gl.vertexAttribPointer(pos,3,gl.FLOAT,false,24,0);gl.vertexAttribPointer(col,3,gl.FLOAT,false,24,12);gl.drawArrays(gl.TRIANGLES,0,a.length/6)}
+let playing=false,start=0,prev=0,t=0,ended=false,audio,events=new Set(),noiseFrame=0;
+function tone(f,d=.15){if(!audio)return;let o=audio.createOscillator(),g=audio.createGain();o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.025,audio.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+d);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+d)}
+const noise=E('noise'),nx=noise.getContext('2d');noise.width=150;noise.height=90;
+function tick(now){requestAnimationFrame(tick);if(!playing)return;if(document.hidden){start+=now-prev;prev=now;return}prev=now;t=(now-start)/1000;let d=Math.min(devicePixelRatio||1,1.4),w=Math.floor(innerWidth*d),h=Math.floor(innerHeight*d),cv=E('scene');if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h)}
+const down=phase(t,12,17)*(1-phase(t,26,29)),hit=phase(t,41.18,41.36)*(1-phase(t,41.9,42.9)),fall=phase(t,41.35,44),shake=.012*phase(t,8,20)+.036*phase(t,37,40.8)+hit*.31,z=mix(4.8,1.4,phase(t,0,18));
+gl.clearColor(.015,.07,.042,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.uniform3f(loc('eye'),0,1.5-fall*1.20+Math.sin(t*7)*.024,z);gl.uniform3f(loc('rot'),Math.sin(t*.6)*.03+(rnd()-.5)*shake,+down*.46+fall*.13+(rnd()-.5)*shake,-fall*.83+(rnd()-.5)*shake);gl.uniform1f(loc('aspect'),w/h);draw(cave);data=[];
+if(t<43.6){
+ const morph=phase(t,33,38),charge=phase(t,38.15,41.4);
+ const mouth=phase(t,39.05,40.3)*(1-phase(t,41.0,41.36));
+ snake(mix(-1.3,0,charge),mix(-3,z-.66,charge),1.48,t,{root:true,morph,charge,bite:mouth});
+}
+if(t>=13&&t<26)snake(.3,z-2.4,.9,t);
+const jab=phase(t,19,20.5);rod([.95,-1.5,z-1],[mix(.65,.1,jab),mix(-.6,.0,jab),z-mix(1.9,2.6,jab)],.07,[.43,.28,.14]);globe(mix(.65,.1,jab),mix(-.6,.0,jab),z-mix(1.9,2.6,jab),.15,[.6,.61,.57]);
+draw(new Float32Array(data));
+E('white').style.opacity=Math.max(phase(t,23,26)*(1-phase(t,26.5,29)),phase(t,45,45.7));E('black').style.opacity=phase(t,43,45)*(1-phase(t,45,45.6));E('bite').style.opacity=Math.min(1,hit*.94);
+const level=phase(t,40,44)*.85;noise.style.opacity=level;const nw=Math.max(100,Math.floor(innerWidth/5)),nh=Math.max(70,Math.floor(innerHeight/5));if(noise.width!==nw||noise.height!==nh){noise.width=nw;noise.height=nh}if(level>.01&&now-noiseFrame>85){noiseFrame=now;let im=nx.createImageData(noise.width,noise.height);for(let i=0;i<im.data.length;i+=4){let v=rnd()*255;im.data[i]=v;im.data[i+1]=v;im.data[i+2]=v;im.data[i+3]=150}nx.putImageData(im,0,0)}
+E('clock').textContent='00:'+String(Math.floor(Math.min(50,t))).padStart(2,'0');E('rec').style.opacity=t>44?0:1;
+for(const sec of [9,14,20,25,34,38,40,41.35]){if(t>=sec&&!events.has(sec)){events.add(sec);tone(sec===41.35?82:sec>=38?70:200,sec===41.35?.65:.5)}}
+if(t>45.7){E('caption').style.display='flex';E('l1').style.opacity=phase(t,46.2,47.1);E('l2').style.opacity=phase(t,47.7,48.8)}
+if(t>51&&!ended){ended=true;playing=false;E('caption').style.display='none';E('end').style.display='grid'}
+}
+function begin(){events.clear();noiseFrame=0;playing=true;ended=false;start=performance.now();prev=start;t=0;E('start').style.display='none';E('end').style.display='none';E('caption').style.display='none';E('l1').style.opacity=0;E('l2').style.opacity=0;try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();audio.resume()}catch{}}
+E('play').onclick=begin;E('again').onclick=begin;requestAnimationFrame(tick);
+})();
+</script></body></html>

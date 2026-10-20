@@ -82,8 +82,16 @@ export function robloxStudioAssetDetectionSourceFromRoot(root='',{onSource=null}
 function robloxStudioAssetSystemNearby(source='',semanticPattern,nativePattern,window=1200){
   const flags=semanticPattern.flags.includes('i')?'ig':'g';
   const matcher=new RegExp(semanticPattern.source,flags);
+  const literals=[...source.matchAll(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g)];
   for(const match of source.matchAll(matcher)){
     const index=Number(match.index||0);
+    // 재질 열거값·목록 키·설명 문자열은 월드 객체의 존재 증거가 아니다.
+    const before=source.slice(Math.max(0,index-100),index);
+    const after=source.slice(index+match[0].length,index+match[0].length+100);
+    if(/Enum\s*\.\s*Material\s*\.\s*$/.test(before))continue;
+    if(/^\s*=\s*(?:table\s*\.\s*freeze\s*\(|\{|["'])/.test(after)&&!/\blocal\s*$/.test(before))continue;
+    const literal=literals.find(row=>index>row.index&&index<row.index+row[0].length);
+    if(literal&&!/\.\s*Name\s*=\s*$/.test(source.slice(Math.max(0,literal.index-100),literal.index)))continue;
     const slice=source.slice(Math.max(0,index-window),Math.min(source.length,index+String(match[0]||'').length+window));
     if(nativePattern.test(slice))return true;
   }
@@ -105,7 +113,8 @@ export function detectRobloxStudioAssetSystems({sourceText='',clientSource='',se
     AUDIO:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.AUDIO),
     VFX:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.VFX),
     UI:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.UI),
-    MOTION:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.MOTION),
+    // 재질의 BONE 이름은 모션 객체가 아니다. 실제 생성·조회·호출·이벤트를 관측한다.
+    MOTION:has(/(?:Instance\.new\s*\(\s*["'](?:Animator|Animation|Motor6D|Bone)["']\s*\)|:\s*(?:IsA|FindFirstChildOfClass|FindFirstChildWhichIsA)\s*\(\s*["'](?:Animator|Animation|Motor6D|Bone)["']\s*\)|:\s*(?:LoadAnimation|GetPlayingAnimationTracks|AdjustSpeed)\s*\(|\b(?:TweenService|[A-Za-z_]\w*TweenService)\s*:\s*Create\s*\(|\bgame\s*:\s*GetService\s*\(\s*["']TweenService["']\s*\)|\.(?:RenderStepped|Heartbeat)\s*:\s*(?:Connect|Wait)\s*\()/i),
     PROP:near(/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.PROP),
   };
   return Object.freeze(Object.fromEntries(ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>[family,systems[family]===true])));
@@ -459,7 +468,7 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
     }),
     recipeId:'NORMAL_VARIANT',
     motionQuality:Object.freeze({
-      contract:'company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality',
+      contract:'tools/company-development-roblox-bootstrap.mjs#motionQuality',
       motionAtoms,
       libraryFirst:true,
       semanticAtomsAreNotAnimationClips:true,
@@ -914,7 +923,7 @@ function studioAssetConfigBlock(studioAssets={}){
 ${familyRows}
     },
     MotionQuality = {
-      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+      Contract = "tools/company-development-roblox-bootstrap.mjs#motionQuality",
       LibraryFirst = true,
       ArticulatedRigRequired = true,
       AnimatorRequired = true,
@@ -1016,6 +1025,40 @@ ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"
   return output;
 }
 
+// 메인 Vibe 소스 복구: 승인된 MATERIAL atom을 기존 실제 렌더링 물체의 Material 속성에 연결한다.
+// 새 파트를 만들거나 충돌/저장/밸런스/네트워크 동작을 바꾸지 않는다. F0와 실플레이 검증은 별개다.
+export function bindExistingServerStudioMaterial({source='',familyStatus={},selectedAtoms=[]}={}){
+  const current=String(source||'');
+  if(familyStatus.MATERIAL!=='APPLIED'||robloxStudioAssetFamilyBoundInText(current,'MATERIAL'))return current;
+  const target=current.match(/\blocal\s+(nativeFoundationSpawn|foundationSpawn)\s*=\s*workspace:FindFirstChild\(["']NativeFoundationSpawn["']\)/)?.[1];
+  if(!target||!/\blocal\s+Config\s*=\s*require\([^\n]*GameConfig[^\n]*\)/.test(current)
+    ||!/Instance\.new\(["']SpawnLocation["']\)/.test(current))
+    throw new Error('EXISTING_STUDIO_MATERIAL_VISIBLE_NATIVE_TARGET_REQUIRED');
+  const selected=new Set((Array.isArray(selectedAtoms)?selectedAtoms:[]).map(clean));
+  if(!['METAL','STONE','WOOD','CLOTH'].some(atom=>selected.has(atom)))
+    throw new Error('EXISTING_STUDIO_MATERIAL_SELECTED_NATIVE_ATOM_REQUIRED');
+  const block=`-- STUDIO_ASSET_NATIVE_MATERIAL_REPAIR_BEGIN
+local function studioAssetFamily(family)
+  return (Config.StudioAssets and Config.StudioAssets.Families or {})[family] or {}
+end
+if ${target} and ${target}:IsA("BasePart") and ${target}.Transparency < 1 then
+  if table.find(studioAssetFamily("MATERIAL"), "METAL") then
+    ${target}.Material = Enum.Material.Metal
+  elseif table.find(studioAssetFamily("MATERIAL"), "STONE") then
+    ${target}.Material = Enum.Material.Slate
+  elseif table.find(studioAssetFamily("MATERIAL"), "WOOD") then
+    ${target}.Material = Enum.Material.WoodPlanks
+  elseif table.find(studioAssetFamily("MATERIAL"), "CLOTH") then
+    ${target}.Material = Enum.Material.Fabric
+  end
+end
+-- STUDIO_ASSET_NATIVE_MATERIAL_REPAIR_END`;
+  const repaired=current.replace(/\s*$/,'')+'\n\n'+block+'\n';
+  if(!robloxStudioAssetFamilyBoundInText(repaired,'MATERIAL'))
+    throw new Error('EXISTING_STUDIO_MATERIAL_ACTUAL_BINDING_NOT_VERIFIED');
+  return repaired;
+}
+
 export function foundationCharacterSource(name,spawn){
   return `-- native-foundation-spawn-grounding-v3
 ${spawn}.Anchored = true
@@ -1106,7 +1149,7 @@ local function ${name}(character)
 end`;
 }
 
-export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId='',baseline={},assetLibrary={},foundationRepair=false,learning={}}={}){
+export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId='',baseline={},assetLibrary={},foundationRepair=false,studioMaterialRepair=false,learning={}}={}){
   const verifiedLearning=requireRobloxVerifiedExternalLearning(learning);
   const profile=robloxBuildProfileFromBaseline(baseline);
   const studioAssets=buildRobloxStudioAssetBootstrapPlan({gameId,profile,assetLibrary});
@@ -1116,7 +1159,7 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const serverFile=path.join(root,'server','Game.server.luau');
   const projectFile=path.join(root,'default.project.json');
   for(const file of [configFile,clientFile,projectFile])if(!fs.existsSync(file))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(file));
-  if(foundationRepair===true&&!fs.existsSync(serverFile))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(serverFile));
+  if((foundationRepair===true||studioMaterialRepair===true)&&!fs.existsSync(serverFile))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(serverFile));
   const beforeConfig=fs.readFileSync(configFile,'utf8');
   const beforeClient=fs.readFileSync(clientFile,'utf8');
   const beforeServer=fs.existsSync(serverFile)?fs.readFileSync(serverFile,'utf8'):'';
@@ -1149,7 +1192,9 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const afterProject=`${JSON.stringify(project,null,2)}\n`;
   let afterConfig=replaceOrInsertStudioAssetConfig(beforeConfig,studioAssets);
   let afterClient=bindExistingClientStudioAssets(beforeClient,studioAssetFamilyStatus);
-  let afterServer=beforeServer;
+  let afterServer=studioMaterialRepair===true
+    ?bindExistingServerStudioMaterial({source:beforeServer,familyStatus:studioAssetFamilyStatus,selectedAtoms:studioAssets.families.MATERIAL})
+    :beforeServer;
   afterConfig=replaceOrInsertVerifiedExternalLearningConfig(afterConfig,verifiedLearning);
   afterClient=bindExistingClientVerifiedExternalLearning(afterClient,verifiedLearning);
 
@@ -1276,10 +1321,10 @@ task.defer(reportNativeFoundationReady)
   fs.writeFileSync(configFile,afterConfig,'utf8');
   fs.writeFileSync(clientFile,afterClient,'utf8');
   if(afterProject!==beforeProject)fs.writeFileSync(projectFile,afterProject,'utf8');
-  if(foundationRepair===true&&afterServer!==beforeServer)fs.writeFileSync(serverFile,afterServer,'utf8');
+  if((foundationRepair===true||studioMaterialRepair===true)&&afterServer!==beforeServer)fs.writeFileSync(serverFile,afterServer,'utf8');
   const changedFiles=[configFile,clientFile];
   if(afterProject!==beforeProject)changedFiles.push(projectFile);
-  if(foundationRepair===true&&afterServer!==beforeServer)changedFiles.push(serverFile);
+  if((foundationRepair===true||studioMaterialRepair===true)&&afterServer!==beforeServer)changedFiles.push(serverFile);
   return Object.freeze({
     existingSourcePreserved:true,
     changedFiles:Object.freeze(changedFiles),
@@ -1290,7 +1335,7 @@ task.defer(reportNativeFoundationReady)
     verifiedExternalLearningIds:Object.freeze([...(verifiedLearning.verifiedExternalLearningIds||[])]),
     foundationRepairApplied:foundationRepair===true,
     gameplayAuthorityChanged:false,
-    serverSourceChanged:foundationRepair===true&&afterServer!==beforeServer,
+    serverSourceChanged:afterServer!==beforeServer,
   });
 }
 function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
@@ -1306,9 +1351,13 @@ function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
     if(!/Platform\s*=\s*["']ROBLOX["']/.test(value))blockers.push('CONFIG_ROBLOX_PLATFORM_REQUIRED');
     if(!/MobileFirst\s*=\s*true/.test(value))blockers.push('CONFIG_MOBILE_FIRST_REQUIRED');
     if(profile){
-      if(!value.includes(`Genre = ${luauString(profile.genre)}`))blockers.push('CONFIG_GENRE_PROFILE_REQUIRED');
-      if(!value.includes(`PlayMode = ${luauString(profile.playMode)}`))blockers.push('CONFIG_PLAY_MODE_PROFILE_REQUIRED');
-      if(!value.includes(`MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'}`))blockers.push('CONFIG_MULTIPLAYER_PROFILE_REQUIRED');
+      // 동일 Luau 필드 값은 공백 형식과 무관하게 통과시키고 다른 값은 차단한다.
+      const genreField=value.match(/\bGenre\s*=\s*(["'][^"'\n]*["'])\s*(?=[,}\n\r])/);
+      const modeField=value.match(/\bPlayMode\s*=\s*(["'][^"'\n]*["'])\s*(?=[,}\n\r])/);
+      const multiplayerField=value.match(/\bMultiplayerRequired\s*=\s*(true|false)\s*(?=[,}\n\r])/);
+      if(genreField?.[1]!==luauString(profile.genre))blockers.push('CONFIG_GENRE_PROFILE_REQUIRED');
+      if(modeField?.[1]!==luauString(profile.playMode))blockers.push('CONFIG_PLAY_MODE_PROFILE_REQUIRED');
+      if(multiplayerField?.[1]!==(profile.multiplayerRequired?'true':'false'))blockers.push('CONFIG_MULTIPLAYER_PROFILE_REQUIRED');
     }
   }
   if(kind==='server'){
@@ -1425,7 +1474,7 @@ function sharedConfigSource({gameId,gameName,saveRequired,actions,profile,platfo
   const validationRows=(learning.verifiedExternalValidationOnlyPrinciples||[]).map(value=>`      ${luauString(value)},`).join('\n');
   const notApplicableRows=(learning.verifiedExternalNotApplicablePrinciples||[]).map(value=>`      ${luauString(value)},`).join('\n');
   const studioFamilyRows=Object.entries(studioAssets?.families||{}).map(([family,atoms])=>`    ${family} = { ${(atoms||[]).map(value=>luauString(value)).join(', ')} },`).join('\n');
-  return `local Config = {\n  PolicySource = "company-learning/platform-release-roadmap.json",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  DesignBaseline = {\n    Required = true,\n    AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",\n    StrictScoreRequiredForAdmission = false,\n  },\n  PlatformProfile = {\n    Platform = "ROBLOX",\n    InputModel = ${luauString(platformProfile.inputModel)},\n    SessionModel = ${luauString(platformProfile.sessionModel)},\n    MultiplayerRuntime = ${luauString(platformProfile.multiplayerRuntime)},\n    PerformanceBudget = ${luauString(platformProfile.performanceBudget)},\n    UiUx = ${luauString(platformProfile.uiUx)},\n    SaveAndNetwork = ${luauString(platformProfile.saveAndNetwork)},\n    ContentAdaptation = ${luauString(platformProfile.platformContentAdaptation)},\n    InternalReleaseTarget = ${luauString(platformProfile.internalReleaseTarget)},\n    ValidationEvidence = ${luauString(platformProfile.validationEvidence)},\n  },\n  -- STUDIO_ASSET_BINDING_BEGIN\n  StudioAssets = {\n    Applied = ${studioAssets.applied?'true':'false'},\n    BindingVersion = 2,\n    LibraryVersion = ${Number(studioAssets.libraryVersion||0)},\n    SelectionFingerprint = ${luauString(studioAssets.selectionFingerprint||'')},\n    SourceUsageFingerprint = ${luauString(studioAssets.buildUpAssetSourceUsageFingerprint||'')},\n    SourceUsageLibraryVersion = ${Number(studioAssets.buildUpAssetSourceUsageLibraryVersion||studioAssets.libraryVersion||0)},\n    Source = ${luauString(studioAssets.source||'company-asset-library.json#baseMaterialLibrary')},\n    AtomState = ${luauString(studioAssets.atomState||'')},\n    RecipeId = ${luauString(studioAssets.recipeId||'NORMAL_VARIANT')},\n    ProductionVerified = false,\n    RuntimeVerificationRequired = true,\n    Families = {\n${studioFamilyRows}\n    },\n    MotionQuality = {\n      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",\n      LibraryFirst = true,\n      ArticulatedRigRequired = true,\n      AnimatorRequired = true,\n      BlendAndSpeedSyncRequired = true,\n      RuntimeVerificationRequired = true,\n      MannequinHardFailure = "CHARACTER_MOTION_MANNEQUIN",\n    },\n  },\n  -- STUDIO_ASSET_BINDING_END\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n    VerifiedExternalLearningFirst = ${learning.verifiedExternalLearningFirst?'true':'false'},\n    MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')},\n    NativeBindingVersion = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION},\n    CoveragePct = ${Number(learning.verifiedExternalLearningCoveragePct||0)},\n    ContentComplete = ${learning.verifiedExternalDistilledContentComplete?'true':'false'},\n    RetrievedCount = ${Number(learning.verifiedExternalLearningRetrievedCount||0)},\n    AppliedCount = ${Number(learning.verifiedExternalLearningAppliedCount||0)},\n    TruncationForbidden = ${learning.verifiedExternalLearningTruncationForbidden?'true':'false'},
+  return `local Config = {\n  PolicySource = ${luauString("company-learning/platform-release-roadmap.json")},\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  DesignBaseline = {\n    Required = true,\n    AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",\n    StrictScoreRequiredForAdmission = false,\n  },\n  PlatformProfile = {\n    Platform = "ROBLOX",\n    InputModel = ${luauString(platformProfile.inputModel)},\n    SessionModel = ${luauString(platformProfile.sessionModel)},\n    MultiplayerRuntime = ${luauString(platformProfile.multiplayerRuntime)},\n    PerformanceBudget = ${luauString(platformProfile.performanceBudget)},\n    UiUx = ${luauString(platformProfile.uiUx)},\n    SaveAndNetwork = ${luauString(platformProfile.saveAndNetwork)},\n    ContentAdaptation = ${luauString(platformProfile.platformContentAdaptation)},\n    InternalReleaseTarget = ${luauString(platformProfile.internalReleaseTarget)},\n    ValidationEvidence = ${luauString(platformProfile.validationEvidence)},\n  },\n  -- STUDIO_ASSET_BINDING_BEGIN\n  StudioAssets = {\n    Applied = ${studioAssets.applied?'true':'false'},\n    BindingVersion = 2,\n    LibraryVersion = ${Number(studioAssets.libraryVersion||0)},\n    SelectionFingerprint = ${luauString(studioAssets.selectionFingerprint||'')},\n    SourceUsageFingerprint = ${luauString(studioAssets.buildUpAssetSourceUsageFingerprint||'')},\n    SourceUsageLibraryVersion = ${Number(studioAssets.buildUpAssetSourceUsageLibraryVersion||studioAssets.libraryVersion||0)},\n    Source = ${luauString(studioAssets.source||'company-asset-library.json#baseMaterialLibrary')},\n    AtomState = ${luauString(studioAssets.atomState||'')},\n    RecipeId = ${luauString(studioAssets.recipeId||'NORMAL_VARIANT')},\n    ProductionVerified = false,\n    RuntimeVerificationRequired = true,\n    Families = {\n${studioFamilyRows}\n    },\n    MotionQuality = {\n      Contract = "tools/company-development-roblox-bootstrap.mjs#motionQuality",\n      LibraryFirst = true,\n      ArticulatedRigRequired = true,\n      AnimatorRequired = true,\n      BlendAndSpeedSyncRequired = true,\n      RuntimeVerificationRequired = true,\n      MannequinHardFailure = "CHARACTER_MOTION_MANNEQUIN",\n    },\n  },\n  -- STUDIO_ASSET_BINDING_END\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n    VerifiedExternalLearningFirst = ${learning.verifiedExternalLearningFirst?'true':'false'},\n    MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')},\n    NativeBindingVersion = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION},\n    CoveragePct = ${Number(learning.verifiedExternalLearningCoveragePct||0)},\n    ContentComplete = ${learning.verifiedExternalDistilledContentComplete?'true':'false'},\n    RetrievedCount = ${Number(learning.verifiedExternalLearningRetrievedCount||0)},\n    AppliedCount = ${Number(learning.verifiedExternalLearningAppliedCount||0)},\n    TruncationForbidden = ${learning.verifiedExternalLearningTruncationForbidden?'true':'false'},
     SemanticMappingVersion = ${Number(learning.semanticMappingVersion||0)},
     SemanticMappingFingerprint = ${luauString(learning.semanticMappingFingerprint||'')},
     SemanticVariant = ${luauString(learning.semanticVariant||'')},
@@ -1539,12 +1588,13 @@ export async function buildRobloxSource({gameId,gameName,baseline,artbook,playbo
   return compileRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,buildUpDirective});
 }
 function writeSourceTree(root,{sharedConfig,serverCode,clientCode},gameId){
+  // The client destination must exist before copying the pinned material presentation.
   fs.mkdirSync(path.join(root,'shared'),{recursive:true});
+  fs.mkdirSync(path.join(root,'server'),{recursive:true});
+  fs.mkdirSync(path.join(root,'client'),{recursive:true});
   fs.copyFileSync(new URL('../assets/roblox/common-ui-v1/RobloxCommonUI.luau',import.meta.url),path.join(root,'shared','RobloxCommonUI.luau'));
   fs.copyFileSync(new URL('../assets/roblox/common-materials-v1/RobloxCommonMaterials.luau',import.meta.url),path.join(root,'shared','RobloxCommonMaterials.luau'));
   fs.copyFileSync(new URL('../assets/roblox/common-materials-v1/MaterialPresentation.client.luau',import.meta.url),path.join(root,'client','MaterialPresentation.client.luau'));
-  fs.mkdirSync(path.join(root,'server'),{recursive:true});
-  fs.mkdirSync(path.join(root,'client'),{recursive:true});
   fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),sharedConfig.endsWith('\n')?sharedConfig:`${sharedConfig}\n`,'utf8');
   fs.writeFileSync(path.join(root,'server','Game.server.luau'),serverCode.endsWith('\n')?serverCode:`${serverCode}\n`,'utf8');
   fs.writeFileSync(path.join(root,'client','Game.client.luau'),clientCode.endsWith('\n')?clientCode:`${clientCode}\n`,'utf8');
@@ -1561,10 +1611,11 @@ async function main(){
   const playbooksFile=clean(arg('playbooks'));
   const recombinationFile=clean(arg('recombination'));
   const webHandoffFile=clean(arg('web-handoff'));
-  const roadmapFile=clean(arg('roadmap','company-learning/platform-release-roadmap.json'));
+  const roadmapFile=clean(arg('roadmap',process.env.COMPANY_VERIFIED_POLICY_PATH||''));
   const assetLibraryFile=clean(arg('asset-library','company-asset-library.json'));
   const model=clean(arg('model',process.env.ROBLOX_DEV_MODEL||'none'));
   const foundationRepair=clean(arg('foundation-repair','false')).toLowerCase()==='true';
+  const studioMaterialRepair=clean(arg('studio-material-repair','false')).toLowerCase()==='true';
   const buildUpDirectiveFile=clean(arg('build-up-directive'));
   if(!gameId||!baselineFile||!artbookFile||!outputRoot||!evidenceFile||!playbooksFile||!recombinationFile||!roadmapFile)throw new Error('required Roblox bootstrap argument missing');
   if(outputRoot!==`roblox-games/${gameId}`)throw new Error(`invalid Roblox output root: ${outputRoot}`);
@@ -1581,14 +1632,21 @@ async function main(){
   const existingLearning=requireRobloxVerifiedExternalLearning(createRobloxVibe3LearningContext({gameId,profile:robloxBuildProfileFromBaseline(baseline),artbook,playbooks,recombination}));
   if(buildUpDirectiveConsumed&&clean(buildUpDirective?.gameId)!==gameId)throw new Error('BUILD_UP_DIRECTIVE_GAME_ID_MISMATCH');
   if(existingSource){
-    const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair,learning:existingLearning});
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair,studioMaterialRepair,learning:existingLearning});
+    const staticContract=validateRobloxBootstrap({
+      sharedConfig:fs.readFileSync(path.join(outputRoot,'shared','GameConfig.luau'),'utf8'),
+      serverCode:fs.readFileSync(path.join(outputRoot,'server','Game.server.luau'),'utf8'),
+      clientCode:fs.readFileSync(path.join(outputRoot,'client','Game.client.luau'),'utf8'),
+      baseline,
+    });
     const evidence={
-      version:6,gameId,gameName,platform:'ROBLOX',policyDocument:'company-learning/platform-release-roadmap.json',stage:'TARGET_PLATFORM_SOURCE_BIND',
-      sourcePath:outputRoot,sourceValidationPassed:true,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
+      version:6,gameId,gameName,platform:'ROBLOX',policyDocument:roadmapFile,stage:'TARGET_PLATFORM_SOURCE_BIND',
+      sourcePath:outputRoot,sourceValidationPassed:staticContract.pass,sourceValidationBlockers:staticContract.blockers,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
       existingSourcePreserved:true,gameplayAuthorityChanged:false,serverSourceChanged:applied.serverSourceChanged===true,
       foundationRepairApplied:applied.foundationRepairApplied===true,
+      studioMaterialRepairApplied:studioMaterialRepair===true&&applied.serverSourceChanged===true,
       generatedFiles:applied.changedFiles.map(file=>posix(path.relative(outputRoot,file))),
-      generationMode:foundationRepair?'EXISTING_SOURCE_FOUNDATION_REPAIR':'EXISTING_SOURCE_STUDIO_ASSET_REBIND',modelUsed:false,modelAttempts:0,modelContractFailures:[],
+      generationMode:foundationRepair?'EXISTING_SOURCE_FOUNDATION_REPAIR':studioMaterialRepair?'EXISTING_SOURCE_STUDIO_MATERIAL_REPAIR':'EXISTING_SOURCE_STUDIO_ASSET_REBIND',modelUsed:false,modelAttempts:0,modelContractFailures:[],
       vibe3LearningApplied:true,recombinationRecipeId:existingLearning.recipeId||null,
       verifiedExternalLearningAppliedToExistingSource:applied.verifiedExternalLearningApplied===true,
       verifiedExternalLearningFirst:existingLearning.verifiedExternalLearningFirst===true,
@@ -1603,12 +1661,13 @@ async function main(){
       buildUpDirectiveId:buildUpDirectiveConsumed?buildUpDirective.directiveId:null,buildUpGeneration:buildUpDirectiveConsumed?buildUpDirective.generation:null,
       buildUpGoal:buildUpDirectiveConsumed?buildUpDirective.thisLoopPrimaryGoal:null,buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
       buildUpDirectiveConsumed,buildUpDirectiveCompletionClaim:false,
-      nextRequiredStage:'TARGET_PLATFORM_RUNTIME',createdAt:new Date().toISOString(),
+      nextRequiredStage:staticContract.pass?'TARGET_PLATFORM_TECHNICAL_VALIDATION':'TARGET_PLATFORM_SOURCE_REPAIR',createdAt:new Date().toISOString(),
     };
     fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
     fs.writeFileSync(evidenceFile,`${JSON.stringify(evidence,null,2)}\n`,'utf8');
     fs.copyFileSync(evidenceFile,path.join(outputRoot,'roblox-source-bootstrap.json'));
-    console.log('ROBLOX_SOURCE_BOOTSTRAP=PASS');
+    console.log(`ROBLOX_SOURCE_BOOTSTRAP=${staticContract.pass?'PASS':'REPAIR_REQUIRED'}`);
+    console.log('ROBLOX_SOURCE_STATIC_BLOCKERS='+JSON.stringify(staticContract.blockers));
     console.log(`ROBLOX_GAME_ID=${gameId}`);
     console.log('ROBLOX_EXISTING_SOURCE_PRESERVED=YES');
     console.log('ROBLOX_GAMEPLAY_AUTHORITY_CHANGED=NO');
@@ -1624,11 +1683,12 @@ async function main(){
     console.log('ROBLOX_RELEASE_CLAIM=NO');
     return;
   }
+  if(studioMaterialRepair)throw new Error('ROBLOX_STUDIO_MATERIAL_REPAIR_EXISTING_SOURCE_REQUIRED');
   const built=await buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model,buildUpDirective});
   if(built.learning.applied!==true)throw new Error('ROBLOX_VIBE3_LEARNING_CONTEXT_REQUIRED');
   writeSourceTree(outputRoot,built.result,gameId);
   const evidence={
-    version:4,gameId,gameName,platform:'ROBLOX',policyDocument:'company-learning/platform-release-roadmap.json',stage:'TARGET_PLATFORM_SOURCE_BIND',
+    version:4,gameId,gameName,platform:'ROBLOX',policyDocument:roadmapFile,stage:'TARGET_PLATFORM_SOURCE_BIND',
     sourcePath:outputRoot,sourceValidationPassed:true,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
     saveRequired:built.validation.saveRequired,approvedScopeCount:built.actions.length,
     robloxBuildProfile:built.profile,robloxPlatformProfile:built.platformProfile,minimumDesignContractRequired:true,genreImplementationRequired:true,multiplayerImplementationRequired:built.profile.multiplayerRequired,

@@ -69,8 +69,10 @@ export function verifySystemEvolutionCandidate({root=process.cwd(),manifest={},b
   const base=clean(baseSha||manifest.baseMainSha);
   if(base){
     try{
-      const baseRoadmap=gitShowJson(root,base,'company-learning/platform-release-roadmap.json');
-      const currentRoadmap=readJson(path.join(root,'company-learning/platform-release-roadmap.json'));
+      const verifiedPolicyPath=clean(process.env.COMPANY_VERIFIED_POLICY_PATH);
+      if(!verifiedPolicyPath)throw new Error('SYSTEM_EVOLUTION_VERIFIED_POLICY_REQUIRED');
+      const baseRoadmap=gitShowJson(root,base,verifiedPolicyPath);
+      const currentRoadmap=readJson(path.join(root,verifiedPolicyPath));
       if(!same(roadmapInvariantProjection(baseRoadmap),roadmapInvariantProjection(currentRoadmap)))errors.push('CENTRAL_AUTHORITY_OR_GATE_PROJECTION_CHANGED');
     }catch(error){errors.push('ROADMAP_INVARIANT_COMPARE_FAILED:'+clean(error?.message||error).slice(0,120));}
     try{

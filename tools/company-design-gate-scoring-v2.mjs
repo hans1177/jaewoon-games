@@ -1,5 +1,16 @@
 // 파일명: tools/company-design-gate-scoring-v2.mjs
 // 역할: 설계 점수와 실제 작성 내용의 모순·누락을 같은 검증 경로에서 판정한다.
+// 임포트: 분류의 권위는 최신 중앙 표준표다.
+import fs from 'node:fs';
+function loadBasicDesignMethod(){
+  // Keep strict classification validation, but avoid breaking unrelated imports.
+  const file=String(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH||'').trim();
+  if(!file)throw new Error('DESIGN_CLASSIFICATION_VERIFIED_POLICY_PATH_REQUIRED');
+  if(!fs.existsSync(file))throw new Error('DESIGN_CLASSIFICATION_AUTHORITY_UNAVAILABLE');
+  const method=JSON.parse(fs.readFileSync(file,'utf8'))?.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod;
+  if(!method?.gameGenreClassification||!method?.materialClassification)throw new Error('DESIGN_CLASSIFICATION_AUTHORITY_INVALID');
+  return method;
+}
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
 const list=value=>Array.isArray(value)?value:[];
 const distinct=values=>[...new Set(values.map(clean).filter(Boolean))];
@@ -130,6 +141,9 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     }
     if(typeof value!=='string')return;
     const text=clean(value);
+    // 유틸: 문법의 정확한 참조 역할은 설명문이 아니다. 실제 시스템·선택·출처는 아래 표준 검수로 확인한다.
+    if(path==='creativeGrammar.b.existingSystemReference.scope'&&['B_SUPPORTING_REFERENCE_ONLY','B_EXISTING_GAME_SYSTEMS','B_NEW_GAME_INITIAL_SYSTEMS'].includes(text))return;
+    if(path==='creativeGrammar.existingGameSystemRole'&&['B_SUPPORTING_REFERENCE','B_EXISTING_GAME_SYSTEMS','B_NEW_GAME_INITIAL_SYSTEMS'].includes(text))return;
     // 기존 표현 개선 계약이 생성하는 추적 ID는 설명용 임시 표식이 아니다.
     if(/^implementationTraceability\[\d+\]\.designElement$/.test(path)&&['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'].includes(text))return;
     if((!identifier&&/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text))||/\b(?:TODO|TBD|PLACEHOLDER)\b|작성 예정|추후 작성|^미정$/i.test(text)){
@@ -149,7 +163,80 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   // 육하원칙 기본설계는 V5 저작 결과다. 옛 접수 스케치 버전 때문에 c 축을 다시 강제하지 않는다.
   const ownerV5Grammar=Array.isArray(design.creativeGrammar?.fiveWOneH)||seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5;
   if(ownerV5Grammar||selected.has('creativeGrammar')){
-    const grammar=design.creativeGrammar,axes=[grammar?.a,grammar?.b];
+    const grammar=design.creativeGrammar||{},axes=[grammar?.a,grammar?.b];
+    const standard=Number(seed.designGrammarStandardVersion||grammar?.standardVersion||0)>=1;
+    const creations=list(grammar?.dCreations);
+    if(standard){
+      const basicDesignMethod=loadBasicDesignMethod();
+      const gameRows=basicDesignMethod.gameGenreClassification;
+      const materialRows=basicDesignMethod.materialClassification;
+      const a=grammar?.a||{},b=grammar?.b||{};
+      const reference=b.existingSystemReference;
+      if(Number(basicDesignMethod.version)>=2){
+        const named=a.referenceGame;
+        if(!named||!['name','systemFamily','playerChoice','source'].every(key=>textReady(named[key],2))
+          ||clean(a.system)!==clean(named.systemFamily)){
+          reject('DESIGN_A_NAMED_REFERENCE_GAME_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},
+            'A에 대표 참고 게임 이름(예: 디아블로), 실제 참고 시스템·선택·출처를 명시하고 채택할 시스템과 연결한다.');
+        }
+        const role=grammar.existingGameSystemRole;
+        const existing=['B_EXISTING_GAME_SYSTEMS','B_NEW_GAME_INITIAL_SYSTEMS'].includes(reference?.scope);
+        const expected=seed.B_SYSTEM_REFERENCE||seed.A_SYSTEM_REFERENCE;
+        if(!existing||role!==reference.scope||a.existingSystemReference
+          ||!['systemFamily','playerChoice','source'].every(key=>textReady(reference[key],2))
+          ||clean(b.system)!==clean(reference.systemFamily)
+          ||expected&&['systemFamily','playerChoice','source'].some(key=>clean(reference[key])!==clean(expected[key]))
+          ||reference.scope==='B_NEW_GAME_INITIAL_SYSTEMS'&&(expected||seed.originalDesignContext?.source)){
+          reject('DESIGN_B_EXISTING_SYSTEM_BASELINE_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},
+            'B는 원본의 실제 시스템 자체다. 원본 출처·플레이어 선택·규칙을 유지하고 임의의 새 B로 바꾸지 않는다. 신규 게임은 기존 원본이 없음을 명시한다.');
+        }
+      }else if(a.existingSystemReference||grammar.existingGameSystemRole&&grammar.existingGameSystemRole!=='B_SUPPORTING_REFERENCE'
+        ||reference&&(reference.scope!=='B_SUPPORTING_REFERENCE_ONLY'||grammar.existingGameSystemRole!=='B_SUPPORTING_REFERENCE'
+          ||!textReady(reference.systemFamily,1)||!textReady(reference.playerChoice,1)||!textReady(reference.source,1))
+        ||grammar.existingGameSystemRole&&!reference){
+        reject('DESIGN_STANDARD_CLASSIFICATION_INVALID','CATEGORY_IDENTITY',['creativeGrammar'],{},
+          '기존 버전의 B 보조 참조는 원본 시스템·선택·출처를 포함해야 한다. 새 설계는 최신 A 참고게임·B 기존 시스템 문법으로 다시 작성한다.');
+      }
+      const aGenre=gameRows.find(row=>row.representative===a.gameGenre);
+      const bGenre=gameRows.find(row=>row.representative===b.gameGenreRepresentative);
+      const aMaterial=materialRows.find(row=>row.broad===a.material);
+      const bPath=list(b.materialPath),bMaterial=materialRows.find(row=>row.broad===bPath[0]);
+      if(grammar?.standardVersion!==basicDesignMethod.version||grammar?.materialHierarchyVersion!==basicDesignMethod.materialHierarchyVersion||!aGenre||a.gameRole!=='PRIMARY'||!aMaterial
+        ||!bGenre?.detailed.includes(b.gameGenre)||b.gameRole!=='SUPPORTING'
+        ||bPath.length!==2||!bMaterial?.middle.includes(bPath[1])||b.material!==bPath[1]
+        ||!textReady(b.supportingReason,20)){
+        reject('DESIGN_STANDARD_CLASSIFICATION_INVALID','CATEGORY_IDENTITY',['creativeGrammar'],{},
+          'A 참고게임과 B 기존 시스템의 장르·소재 분류 경로 및 두 시스템을 연결하는 이유를 작성한다.');
+      }
+      const fiction=list(grammar?.cGenres);
+      if(fiction.some(row=>gameRows.some(game=>game.representative===row.name||game.detailed.includes(row.name)))){
+        reject('DESIGN_C_GAME_GENRE_FORBIDDEN','CATEGORY_IDENTITY',['creativeGrammar'],{},'C는 게임 장르가 아닌 소설·영화의 주 장르와 보조 장르다.');
+      }
+      if(list(grammar?.cThemes).length)reject('DESIGN_C_LEGACY_MATERIALS_FORBIDDEN','CATEGORY_IDENTITY',['creativeGrammar'],{},'C 소재 두 개 문법을 제거하고 구체 소재는 D에 배치한다.');
+      const creationIds=creations.map(row=>clean(row?.id));
+      if(!creations.length||new Set(creationIds).size!==creations.length||creations.some(row=>{
+        const path=list(row?.materialPath),material=materialRows.find(item=>item.broad===path[0]);
+        return !clean(row?.id)||path.length!==3||!material?.middle.includes(path[1])||!textReady(path[2],1)
+          ||!textReady(row.pathReason,15)||!textReady(row.creation,30)||!textReady(row.gameplayEffect,25)
+          ||!['A','B'].every(role=>list(row.linkedElements).includes(role))
+          ||!['PRIMARY','SECONDARY'].every(role=>list(row.genreRoles).includes(role));
+      }))reject('DESIGN_D_CREATION_REQUIRED','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},
+        '각 D에 고유 ID·정확한 대/중/소 소재 경로·출처 이유·C 두 장르로 만든 구체 창작과 A/B 플레이 연결을 작성한다.');
+      // 소분류의 출처와 특징을 실제 중앙 명세에 연결한다. 이름만 바꾼 공통 장치는 반려한다.
+      if(creations.some(row=>{
+        const path=list(row.materialPath);
+        const source=materialRows.find(item=>item.broad===path[0])?.specificMaterials?.find(item=>item.middle===path[1]&&item.name===path[2]);
+        return !source||clean(row.sourceFeature)!==clean(source.feature)
+          ||!['action','condition','consequence','risk'].every(field=>textReady(row[field],4))
+          ||!['action','condition','consequence'].every(field=>clean(row.gameplayEffect).includes(clean(row[field])));
+      }))reject('DESIGN_D_SOURCE_FEATURE_UNGROUNDED','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},
+        '중앙 대→중→소 경로의 실제 소재와 특징을 사용하고 행동·조건·결과·위험을 구체 창작과 플레이 효과에 연결한다. 분류 이름 뒤에 공통 장치를 붙인 문장은 인정하지 않는다.');
+      if(list(grammar?.delveDiscoveries).some(row=>!creationIds.includes(clean(row?.sourceDId))
+        ||!textReady(row?.experiment,15)||!textReady(row?.nextQuestion,10))){
+        reject('DESIGN_DELVE_D_BASIS_MISSING','CONTENT_EXPANSION_PLAN',['creativeGrammar'],{},
+          '@는 실제 D ID에 연결하고 단서·실험·발견·새 선택·다음 의문을 작성한다.');
+      }
+    }
     if(!grammar||!textReady(grammar.mainIdentity,15)||axes.some(axis=>!axis||!textReady(axis.system,2)||!textReady(axis.material,2)||!textReady(axis.materialDomain,2)||!textReady(axis.stateChange,20))||!textReady(grammar.abCausality,35)||!textReady(grammar.finalGameIdentity,18)){
       reject('DESIGN_MAIN_A_B_SOURCE_GRAMMAR_MISSING','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},'MAIN 게임 정체성 및 A/B 각각의 시스템+소재와 양방향 원인·상태 교환을 다시 설계한다.');
     }
@@ -171,7 +258,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
         'A/B의 창작 소재에 이동·자원 수집·적 행동 같은 기능명만 쓰지 않는다. 각 시스템에 역사·신화·철학·예술·과학·인물 등 구체적 출처와 플레이 변화의 인과를 창작한다.');
     }
     const c=list(grammar?.cThemes);
-    if(c.length!==2||new Set(c.map(row=>clean(row?.name).toLowerCase())).size!==2||c.some(row=>!textReady(row?.name,2)||!textReady(row?.gameplayEffect,16)||!['GENRE','MATERIAL'].includes(row?.kind)||(ownerV5Grammar&&row?.kind!=='MATERIAL'))||!textReady(grammar?.cWorldAndGameplayEffect,30)){
+    if(!standard&&(c.length!==2||new Set(c.map(row=>clean(row?.name).toLowerCase())).size!==2||c.some(row=>!textReady(row?.name,2)||!textReady(row?.gameplayEffect,16)||!['GENRE','MATERIAL'].includes(row?.kind)||(ownerV5Grammar&&row?.kind!=='MATERIAL'))||!textReady(grammar?.cWorldAndGameplayEffect,30))){
       reject('DESIGN_C_TWO_TOPICS_REQUIRED','CATEGORY_IDENTITY',['creativeGrammar'],{},'C의 두 창작 소재를 실제 세계와 A/B 선택에 인과적으로 결합해야 한다.');
     }
     const genres=list(grammar?.cGenres);
@@ -207,9 +294,9 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
         '초기 파고들기 네 사례는 서로 다른 단서·발견·새 선택을 가져야 한다. 순번·수치만 변경한 복제는 제외하고, 이후 상한 없이 깊어질 규칙을 작성한다.');
     }
     const details=list(grammar?.fiveWOneH),elements=['MAIN','A','B','C'];
-    const detailFields=['who','when','where','what','how','why','result'];
-    const detailKey=row=>row?.element==='DELVE'?`DELVE[${row.discoveryIndex}]`:row?.element;
-    const expected=[...elements,...delve.map((_,index)=>`DELVE[${index}]`)];
+    const detailFields=['who','when','where','what','how','why','result',...(standard?['failure','cancel','recovery']:[])];
+    const detailKey=row=>row?.element==='DELVE'?`DELVE[${row.discoveryIndex}]`:row?.element==='D'?`D[${row.creationId}]`:row?.element;
+    const expected=[...elements,...(standard?creations.map(row=>`D[${row.id}]`):[]),...delve.map((_,index)=>`DELVE[${index}]`)];
     const keys=details.map(detailKey);
     const missing=expected.filter(key=>!keys.includes(key));
     const malformed=details.flatMap((row,index)=>{
@@ -218,9 +305,10 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       if(!expected.includes(key)||keys.indexOf(key)!==index
         ||(row?.element==='DELVE'?!Number.isInteger(row.discoveryIndex):row?.discoveryIndex!==undefined))absent.push('element/discoveryIndex');
       for(const field of ['ruleIds','regionIds'])if(!list(row?.[field]).length||list(row?.[field]).some(id=>typeof id!=='string'||!clean(id))||new Set(row[field]).size!==row[field].length)absent.push(field);
+      if(row?.element==='D'&&(!standard||!clean(row.creationId)))absent.push('creationId');
       const links=list(row?.linkedElements);
       if(!links.length||links.some(role=>!elements.includes(role))||new Set(links).size!==links.length
-        ||(row?.element==='DELVE'?links.length<2:!links.includes(row?.element)))absent.push('linkedElements');
+        ||(row?.element==='DELVE'?links.length<2:!(row?.element==='D'?['A','B'].every(role=>links.includes(role)):links.includes(row?.element))))absent.push('linkedElements');
       return absent.length?[{path:`creativeGrammar.fiveWOneH[${index}]`,element:key,missing:absent}]:[];
     });
     if(missing.length||malformed.length||details.length!==expected.length)reject(
@@ -334,6 +422,17 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   const expectedFrame=['CORE_IDENTITY','CORE_FUN_AND_REPRESENTATIVE_LOOP','WORLD_AND_PROGRESSION_DIRECTION','SAVE_PERSISTENCE_MEANING','MULTIPLAYER_INTENT'];
   if(shared&&expectedFrame.some(item=>!shared.includes(item)))reject('DESIGN_SHARED_FRAME_INCOMPLETE','PLATFORM_FIT_DESIGN',['platformExpansionPolicy'],{shared},'공통 정체성·핵심 루프·세계/성장·저장 의미·멀티 의도를 각각 보존한다. 같은 항목을 반복하지 않는다.');
   const alternatives=list(design.designAlternatives);
+  if(selected.has('designAlternatives')&&Number(design.creativeGrammar?.standardVersion)>=2){
+    const named=design.creativeGrammar?.a?.referenceGame,baseline=design.creativeGrammar?.b?.existingSystemReference;
+    const required=['referenceGame','adoptedFromA','preservedFromB','baselineSource','newInteraction','changedChoice','successCheck','failureRecovery','verificationScene'];
+    if(alternatives.length<2||alternatives.some(plan=>{
+      const idea=plan.abIntegration;
+      return !idea||required.some(key=>!textReady(idea[key],2))
+        ||clean(idea.referenceGame)!==clean(named?.name)||clean(idea.adoptedFromA)!==clean(named?.systemFamily)
+        ||clean(idea.preservedFromB)!==clean(baseline?.systemFamily)||clean(idea.baselineSource)!==clean(baseline?.source)
+        ||clean(idea.newInteraction)===clean(idea.changedChoice)||clean(idea.successCheck)===clean(idea.failureRecovery);
+    }))reject('DESIGN_AB_IDEA_INTEGRATION_REQUIRED','IDEA_AND_DISTINCTNESS',['designAlternatives'],{},'서로 다른 두 대안에 A 채택·B 보존·출처·새 상호작용·달라진 선택·성공 판정·실패 복구·검증 장면을 각각 적는다.');
+  }
   const strategicKeys=['coreLoopShift','mapTopologyRegionRoles','enemyEcosystemCounterplay','progressionEconomy'];
   const normalize=value=>clean(value).toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
   for(let i=0;i<alternatives.length;i++)for(let j=i+1;j<alternatives.length;j++){
@@ -533,7 +632,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   // 파일명: company-design-gate-scoring-v2.mjs / 메인: 검증 전 자동접수 V5는 복사할 설계 원본이 아니다.
   const seedV5=(seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5);
   const pendingIntakeV5=seedV5
-    &&(seed?.novelGrammarBackfill?.authoringPending===true
+    &&(Number(seed.designGrammarStandardVersion||0)>=1||seed?.novelGrammarBackfill?.authoringPending===true
       ||clean(seed?.GAMEPLAY_SKETCH?.source)==='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN');
   const seedGrammar=!pendingIntakeV5&&Number(seed?.GAMEPLAY_SKETCH?.version||0)>=4
     &&seed?.GAMEPLAY_SKETCH?.novelGameGrammar&&typeof seed.GAMEPLAY_SKETCH.novelGameGrammar==='object'
@@ -565,12 +664,12 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     &&[0,1].every((index)=>{const key=index?'b':'a',axis=creative[key]||{},seedAxis=list(fusion.majorAxes)[index]||{};
       return textReady(axis.system,2)&&textReady(axis.material,2)&&textReady(axis.stateChange,20)
         &&clean(axis.material).includes(clean(seedAxis.sourceMaterial));})
-    &&list(creative.cThemes).length===2
+    &&(creative.standardVersion===1?list(creative.dCreations).length>0:list(creative.cThemes).length===2)
     &&list(creative.cGenres).length===2
     &&['PRIMARY','SECONDARY'].every(role=>list(creative.cGenres).some(row=>row?.role===role))
     &&new Set(list(creative.cGenres).map(row=>clean(row?.name).toLowerCase())).size===2
     &&textReady(creative.cGenreInterlock,30)
-    &&seedC.every(row=>list(creative.cThemes).some(c=>clean(c?.name)===clean(row?.name)&&clean(c?.kind)===clean(row?.kind)))
+    &&(creative.standardVersion===1||seedC.every(row=>list(creative.cThemes).some(c=>clean(c?.name)===clean(row?.name)&&clean(c?.kind)===clean(row?.kind))))
     &&seedGenres.every(row=>list(creative.cGenres).some(c=>clean(c?.name)===clean(row?.name)&&clean(c?.role)===clean(row?.role)))
     &&textReady(creative.abCausality,35)&&textReady(creative.cWorldAndGameplayEffect,30)
     &&['contrast','causalBridge','removalConsequence'].every(field=>textReady(creative.materialFusion?.[field],25))
@@ -699,5 +798,6 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     pendingSeedStillRequiresCreativeDesign:pendingIntakeV5,
   };
 }
+
 
 

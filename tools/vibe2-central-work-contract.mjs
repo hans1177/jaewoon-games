@@ -6,7 +6,11 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { VIBE_WORK_LOCK_STATE_BRANCH, VIBE_WORK_LOCK_STATE_PATH } from '../assets/vibe-work-lock.js';
-import { compileOwnerCanonicalConstitution, compileCentralArchitectureProjection } from './company-shared-context.mjs';
+// Canonical rules and execution topology are compiled from the real roadmap,
+// not a hardcoded synthetic PASS or permanent failure stub.
+import {compileOwnerCanonicalConstitution,compileCentralArchitectureProjection}
+  from './company-shared-context.mjs';
+import { resolveActiveOwnerPolicy } from './company-policy-steward.mjs';
 
 export const CANONICAL_VIBE_POLICY_PATH='company-learning/platform-release-roadmap.json';
 
@@ -16,6 +20,7 @@ const sha256=value=>crypto.createHash('sha256').update(String(value??''),'utf8')
 const GIT_POLICY_SNAPSHOT_MAX_BUFFER=16*1024*1024;
 
 function workerExecutionPolicyProjection(policy={}){
+  const effectiveScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
   const constitution=compileOwnerCanonicalConstitution(policy);
   const architectureProjection=compileCentralArchitectureProjection(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
@@ -28,6 +33,12 @@ function workerExecutionPolicyProjection(policy={}){
   return{
     status:clean(policy.status)||null,
     policySource:clean(policy.policySource)||null,
+    latestApprovedOwnerScope:effectiveScope?{
+      authority:effectiveScope.ownerDirective,
+      activeTargets:effectiveScope.activeTargets,
+      ownerHeldTargets:effectiveScope.ownerHeldTargets,
+      effectiveDevelopmentAccess:effectiveScope.effectiveDevelopmentAccess
+    }:null,
     ownerCanonicalConstitution:{
       version:constitution.version,
       authority:constitution.authority,
@@ -203,9 +214,9 @@ export function loadCentralPolicySnapshot({repoRoot=process.cwd(),policyPath=CAN
   const file=path.resolve(repoRoot,policyPath);
   if(!fs.existsSync(file)){
     return{
-      required:required===true,present:false,valid:required!==true,path:policyPath,
+      required:required===true,present:false,valid:false,path:policyPath,
       fingerprint:null,executionFingerprint:null,version:null,status:null,policySource:null,syncMode:null,
-      errors:required===true?['CENTRAL_POLICY_MISSING']:[],document:null
+      errors:['CENTRAL_POLICY_MISSING'],document:null
     };
   }
   let raw='',document=null;
@@ -329,8 +340,9 @@ export function compileVibeCentralWorkContract({
   mainSha='',
   livePolicyRef=''
 }={}){
-  const source=snapshot||{required:false,present:false,valid:true,path:CANONICAL_VIBE_POLICY_PATH,document:null};
+  const source=snapshot||{required:false,present:false,valid:false,path:CANONICAL_VIBE_POLICY_PATH,errors:['CENTRAL_POLICY_MISSING'],document:null};
   const policy=source.document||{};
+  const latestOwnerScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
   const constitution=compileOwnerCanonicalConstitution(policy);
   const architectureProjection=compileCentralArchitectureProjection(policy);
   const shared=policy?.developmentLifecycleMachine?.sharedWorkerContext||{};
@@ -406,6 +418,13 @@ export function compileVibeCentralWorkContract({
     version:2,
     required,
     validAtCompile:source.valid===true,
+    latestApprovedOwnerScope:latestOwnerScope?{
+      authority:latestOwnerScope.ownerDirective,
+      activeTargets:latestOwnerScope.activeTargets,
+      ownerHeldTargets:latestOwnerScope.ownerHeldTargets,
+      effectiveDevelopmentAccess:latestOwnerScope.effectiveDevelopmentAccess,
+      retiredOlderScopes:latestOwnerScope.retiredOwnerSections
+    }:null,
     constitution:{
       version:constitution.version,
       authority:constitution.authority,
@@ -559,8 +578,8 @@ export function compiledWorkContractGuidance(contract={}){
 }
 
 export function assertCompiledWorkContractFresh({cwd=process.cwd(),contract={},phase='WORK'}={}){
-  if(contract?.required!==true)return{status:'NOT_REQUIRED',phase,fresh:true};
   if(contract?.validAtCompile!==true)throw new Error(`CENTRAL_POLICY_INVALID_AT_COMPILE:${phase}`);
+  if(contract?.required!==true)return{status:'NOT_REQUIRED',phase,fresh:true};
   const policyPath=contract?.policy?.path||CANONICAL_VIBE_POLICY_PATH;
   const current=loadCentralPolicySnapshot({repoRoot:cwd,policyPath,required:true});
   if(!current.valid)throw new Error(`CENTRAL_POLICY_INVALID:${phase}:${current.errors.join('|')||'UNKNOWN'}`);

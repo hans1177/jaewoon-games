@@ -1,17 +1,17 @@
 // 파일명: tools/company-system-ai-worker.mjs
-// 역할: 무료 로컬 AI(Ollama)가 총괄이 배정한 시스템 작업만 격리 후보 브랜치에서 수행한다.
+// 역할: 외부 Gemini API가 배정된 시스템 작업을 격리 후보 브랜치에서 수행한다. 로컬 AI 대체 실행은 금지한다.
 // 안전: 게임 소스/중앙 정책 직접 수정 금지, 정확 일치 편집만 허용, 원문 모델 출력 저장 금지.
 
 import fs from 'node:fs';
+import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
-import http from 'node:http';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { buildNeuralDiagnosis } from './vibe2-neural-diagnosis.mjs';
 import { reviewSystemAiQaContract } from './company-system-ai-qa-contract-review.mjs';
 
 const clean=v=>String(v??'').trim();
-const MODEL=process.env.SYSTEM_AI_MODEL||process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+const MODEL=process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-3.8-flash';
 const TIMEOUT=Math.max(30000,Math.min(600000,Number(process.env.SYSTEM_AI_TIMEOUT_MS||360000)));
 const NUM_PREDICT=Math.max(4096,Math.min(16384,Number(process.env.SYSTEM_AI_NUM_PREDICT||8192)));
 const MAX_TOTAL_CONTEXT=420000;
@@ -35,7 +35,20 @@ function safeWritePath(file){const p=validateBasePath(file);if(GAME_SOURCE_PREFI
 export function validateSystemAiTaskPreflight(task={}){if(clean(task.status)!=='running')throw new Error('SYSTEM_AI_TASK_NOT_RESERVED');const responsibleFiles=unique(task.responsibleFiles).map(safeWritePath);if(!responsibleFiles.length)throw new Error('SYSTEM_AI_RESPONSIBLE_FILES_REQUIRED');const contextFiles=unique(task.contextFiles).map(safeReadPath);return{taskId:clean(task.id),responsibleFiles,contextFiles,infrastructureClass:'PREFLIGHT_PASS'};}
 function excerpt(file,patterns=[]){const text=fs.existsSync(file)?fs.readFileSync(file,'utf8'):'';if(text.length<=MAX_FILE_CONTEXT&&!patterns.length)return text;const lines=text.split('\n'),hits=[];for(let i=0;i<lines.length;i++)if(patterns.some(p=>lines[i].includes(p)))hits.push(i);if(!hits.length)return text.slice(0,MAX_FILE_CONTEXT);const ranges=[];for(const hit of hits.slice(0,12)){const a=Math.max(0,hit-55),b=Math.min(lines.length-1,hit+55),last=ranges.at(-1);if(last&&a<=last[1]+1)last[1]=Math.max(last[1],b);else ranges.push([a,b]);}return ranges.map(([a,b])=>`[LINES ${a+1}-${b+1}]\n${lines.slice(a,b+1).join('\n')}`).join('\n\n').slice(0,MAX_FILE_CONTEXT);}
 function parseModelJson(raw=''){const text=clean(raw).replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();const a=text.indexOf('{'),b=text.lastIndexOf('}');if(a<0||b<a)throw new Error('SYSTEM_AI_MODEL_JSON_MISSING');return JSON.parse(text.slice(a,b+1));}
-async function requestModel(prompt,{maxPredict=NUM_PREDICT}={}){const body=JSON.stringify({model:MODEL,prompt,stream:false,think:false,format:'json',options:{num_predict:maxPredict,temperature:.05}});return await new Promise((resolve,reject)=>{const req=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{let data='';res.setEncoding('utf8');res.on('data',x=>data+=x);res.on('end',()=>{try{const row=JSON.parse(data);if(row?.error)throw new Error(row.error);resolve(String(row?.response||''));}catch(e){reject(e);}});});req.setTimeout(TIMEOUT,()=>req.destroy(new Error('SYSTEM_AI_MODEL_TIMEOUT')));req.on('error',reject);req.end(body);});}
+async function requestModel(prompt,{maxPredict=NUM_PREDICT}={}){
+  const key=clean(process.env.GEMINI_API_KEY);
+  if(!key)throw new Error('SYSTEM_AI_GEMINI_KEY_MISSING_NO_LOCAL_FALLBACK');
+  const declared=clean(process.env.SYSTEM_AI_GEMINI_MODEL||'gemini-3.8-flash');
+  if(declared!=='gemini-3.8-flash')throw new Error('SYSTEM_AI_GEMINI_MODEL_INVALID');
+  const {text}=await requestGeminiFreePair({
+    apiKey:key,
+    contents:[{role:'user',parts:[{text:String(prompt)}]}],
+    temperature:.05,maxOutputTokens:Math.min(16384,Math.max(512,maxPredict)),
+    timeoutMs:TIMEOUT,responseMimeType:'application/json'
+  });
+  return text;
+}
+
 function applyExactEdit(file,find,replace){const original=fs.readFileSync(file,'utf8'),first=original.indexOf(find);if(first<0)throw new Error(`SYSTEM_AI_FIND_MISSING:${file}`);if(original.indexOf(find,first+find.length)>=0)throw new Error(`SYSTEM_AI_FIND_NOT_UNIQUE:${file}`);fs.writeFileSync(file,original.slice(0,first)+replace+original.slice(first+find.length),'utf8');}
 function strategyHash(value){return crypto.createHash('sha256').update(String(value??''),'utf8').digest('hex');}
 function failedStrategyFingerprints(task={}){
@@ -159,7 +172,7 @@ function buildPrompt(task,contexts,learningContext={}){
   const hypothesisRows=hypothesisPlan.hypotheses.map((row,index)=>`${index+1}. ${row.id} system=${row.system} confidence=${row.confidence.toFixed(2)} rejected=${row.rejected?'YES':'NO'} reason=${row.reason}`);
   return[
     'You are an external system-engineering AI worker supervised by the primary AI.',
-    'You may modify ONLY the explicitly listed responsible system files. Game source editing belongs exclusively to the canonical local Ollama Vibe2 source worker; never modify game source from this system worker.',
+    'You may modify ONLY the explicitly listed responsible system files. Game source editing belongs exclusively to the canonical external-Gemini Vibe2 source worker; never modify game source from this system worker.',
     'Never modify central policy/log/architecture/security policy files. Never weaken QA, runtime, release, security, or regression gates.',
     'If this is a verified stale-QA-contract repair, change tests only when current central policy and current responsible implementation prove the contract drift. Never turn a real implementation failure into a test-only fix, and never reduce assertion or test coverage.',
     'Solve the assigned root cause directly; do not add catch-and-ignore bypasses, fake PASS evidence, or wrapper-only patches.',
@@ -200,7 +213,9 @@ let qaContractReview={version:1,required:false,allowed:true,verifiedContractDrif
 if(qaEvolutionRequested&&changedFiles.some(file=>file.startsWith('qa/'))){
   const qaAfterByPath={};
   for(const file of changedFiles)if(file.startsWith('qa/')&&fs.existsSync(file))qaAfterByPath[file]=fs.readFileSync(file,'utf8');
-  const policy=readJson('company-learning/platform-release-roadmap.json');
+  const policyPath=clean(process.env.COMPANY_VERIFIED_POLICY_PATH);
+  if(!policyPath||!fs.existsSync(policyPath))throw new Error('SYSTEM_AI_QA_VERIFIED_POLICY_REQUIRED');
+  const policy=readJson(policyPath);
   const securityPolicy=readJson('company-learning/security-immune-system.json');
   qaContractReview=reviewSystemAiQaContract({task,beforeByPath:qaBeforeByPath,afterByPath:qaAfterByPath,policy,securityPolicy});
   if(!qaContractReview.allowed)throw new Error('SYSTEM_AI_QA_EVOLUTION_REJECTED:'+qaContractReview.reason);

@@ -135,11 +135,11 @@ test('central production runtime keeps independent Roblox and Unity Web QA witho
   assert.match(development,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
   assert.match(development,/eligible_json:/);
   assert.doesNotMatch(development,/unity_web_json:/);
-  assert.match(development,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  assert.match(development,/gh workflow run company-development-roblox-runtime\.yml/);
   assert.match(development,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-  assert.doesNotMatch(development,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
+  assert.doesNotMatch(development,/gh workflow run (?:company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.doesNotMatch(development,/company-development-web-bootstrap\.mjs/);
@@ -170,20 +170,7 @@ test('director recovery can only restart the central DEVELOPMENT_CONFIRMED runti
   assert.doesNotMatch(director,/tools\/autonomous-/);
 });
 
-test('technical release implementation remains subordinate to central evidence gates',()=>{
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const releaseCycle=read('tools/company-release-production-cycle.mjs');
-  const direct=roadmap.directNativeDualPlatformDevelopment;
-  const release=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate;
-  assert.equal(direct.minimumDesignRequired,true);
-  assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
-  assert.equal(direct.platformSpecificIndependentQaRequired,true);
-  assert.equal(direct.platformSpecificRegressionRequired,true);
-  assert.equal(direct.externalRelease.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence,true);
-  assert.equal(release.internalRelease.foundationValidationRequired,true);
-  assert.equal(release.internalRelease.actualRuntimeFoundationF1ThroughF4Required,true);
-  assert.ok(releaseCycle.includes('company-learning/platform-release-roadmap.json'));
-});
+
 test('direct horror edits re-enter the canonical development flow',()=>{
   const reconcile=read('.github/workflows/company-development-queue-reconcile.yml');
   const central=read('.github/workflows/company-development-confirmed-runtime.yml');
@@ -195,12 +182,15 @@ test('direct horror edits re-enter the canonical development flow',()=>{
   assert.doesNotMatch(central,/\['horror-escape-room'\]/);
 });
 
-test('unscoped development coordinator dedupes against active push and manual batches',()=>{
+test('development coordinator dedupes exact-revision active Roblox games without locking batches',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
-  assert.match(development,/actions\/workflows\/company-development-confirmed-runtime\.yml\/runs\?per_page=100&page=\$page/);
-  assert.doesNotMatch(development,/company-development-confirmed-runtime\.yml\/runs\?event=workflow_dispatch/);
-  assert.match(development,/DEVELOPMENT_COORDINATOR_SCAN_INCLUDES_PUSH_AND_DISPATCH=YES/);
-  assert.match(development,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
+  assert.match(development,/actions\/workflows\/company-development-roblox-runtime\.yml\/runs\?per_page=100&page=\$page/);
+  assert.doesNotMatch(development,/company-development-roblox-runtime\.yml\/runs\?event=workflow_dispatch/);
+  assert.match(development,/const activeStates=new Set\(\['queued','pending','in_progress','requested'\]\)/);
+  assert.match(development,/const activeRoblox=activeIds\([^\n]*currentControlSha\)/);
+  assert.match(development,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
+  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN=FAIL/);
+  assert.doesNotMatch(development,/^  coordinator-gate:\s*$/m);
 });
 
 test('native child workflow changes stay child-owned while source wakes preserve platform holds',()=>{
@@ -302,117 +292,9 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/NATIVE_STALE_BATCH_PUSH_REPLACED_BY_CURRENT_CENTRAL/);
 });
 
-test('descriptive central mirrors do not fan out runtime main-push wakes',()=>{
-  const pushBlock=workflow=>{
-    const start=workflow.indexOf('\n  push:\n');
-    assert.ok(start>=0);
-    const markers=['\n  pull_request:\n','\n  workflow_dispatch:\n','\n  schedule:\n','\npermissions:\n','\nconcurrency:\n','\nenv:\n','\njobs:\n'];
-    const ends=markers.map(marker=>workflow.indexOf(marker,start+1)).filter(index=>index>start);
-    const end=ends.length?Math.min(...ends):workflow.length;
-    return workflow.slice(start,end);
-  };
-  const seed=read('.github/workflows/company-seed-design-runtime.yml');
-  const homepage=read('.github/workflows/homepage-manager.yml');
-  const status=read('.github/workflows/company-status-sync.yml');
-  const dna=read('.github/workflows/company-dna-learning.yml');
-  const security=read('.github/workflows/company-security-immune.yml');
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  for(const workflow of [seed,homepage,status]){
-    const push=pushBlock(workflow);
-    assert.doesNotMatch(push,/company-learning\/company-architecture-map\.json/);
-    assert.doesNotMatch(push,/company-learning\/company-log-map\.json/);
-    assert.match(push,/company-learning\/platform-release-roadmap\.json/);
-  }
-  const dnaPush=pushBlock(dna);
-  assert.doesNotMatch(dnaPush,/company-learning\/\*\*/);
-  assert.doesNotMatch(dnaPush,/company-learning\/company-architecture-map\.json/);
-  assert.doesNotMatch(dnaPush,/company-learning\/company-log-map\.json/);
-  for(const required of [
-    'company-learning/evidence/**',
-    'company-learning/training-samples/**',
-    'company-learning/company-dna.json',
-    'company-learning/distillation-status.json',
-    'company-learning/invalidated-learning-sources.json',
-  ]) assert.ok(dnaPush.includes(required),required);
-  const securityPush=pushBlock(security);
-  assert.match(securityPush,/company-learning\/company-architecture-map\.json/);
-  assert.match(securityPush,/company-learning\/company-log-map\.json/);
-  const change=roadmap.changeRecord?.descriptiveMirrorPushWakeReduction20260928||{};
-  assert.equal(change.securityMainPushValidationPreserved,true);
-  assert.equal(change.dnaLearningEvidencePathsOnly,true);
-  assert.equal(change.centralPolicyQaPreserved,true);
-  assert.equal(architecture.descriptiveMirrorPushWakeReduction?.mirrorOnlyRuntimeWakeRemoved,true);
-  assert.equal(logMap.descriptiveMirrorPushWakeReductionEvidence?.securityMainPushValidationPreserved,true);
-});
 
-test('homepage completion does not redundantly wake the full central Director',()=>{
-  const director=read('.github/workflows/director-supervisor.yml');
-  const homepage=read('.github/workflows/homepage-manager.yml');
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  const workflowRunBlock=director.slice(director.indexOf('  workflow_run:'),director.indexOf('  push:',director.indexOf('  workflow_run:')));
 
-  assert.doesNotMatch(workflowRunBlock,/^\s*-\s+Homepage Manager\s*$/m);
-  assert.match(homepage,/\n  director-supervision:\n/);
-  assert.equal(roadmap.changeRecord?.directorHomepageWakeDecoupling20260927?.homepagePipelineOwnsDirectorSupervision,true);
-  assert.equal(roadmap.changeRecord?.directorHomepageWakeDecoupling20260927?.homepageManagerWorkflowRunWakeRemovedFromCentralDirector,true);
-  assert.equal(roadmap.changeRecord?.directorHomepageWakeDecoupling20260927?.centralDirectorManualSchedulePushAndRelevantWorkflowRunWakesPreserved,true);
-  assert.equal(architecture.directorHomepageWakeDecoupling?.homepageInternalDirectorSupervision,true);
-  assert.equal(architecture.directorHomepageWakeDecoupling?.centralDirectorWorkflowRunWakeFromHomepageManager,false);
-  assert.equal(architecture.runnerQueueDrainTopology?.homepageCompletionWakeRemoved,true);
-  assert.equal(logMap.directorHomepageWakeDecouplingEvidence?.removedWorkflowRunSource,'Homepage Manager');
-  assert.equal(logMap.directorHomepageWakeDecouplingEvidence?.homepageInternalDirectorSupervisionExpected,true);
-});
 
-test('runner drain uses separate fixed 24.04 capacity without moving gate or heavy game work',()=>{
-  const director=read('.github/workflows/director-supervisor.yml');
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  assert.match(director,/runner-drain:[\s\S]*?runs-on: ubuntu-24\.04/);
-  assert.match(director,/game-primary-gate:[\s\S]*?runs-on: ubuntu-slim/);
-  assert.match(director,/supervise:[\s\S]*?runs-on: ubuntu-slim/);
-  assert.equal(roadmap.changeRecord?.directorDrainRunnerIsolation20260927?.runnerDrainRunner,'ubuntu-24.04');
-  assert.equal(architecture.runnerQueueDrainTopology?.runner,'ubuntu-24.04');
-  assert.equal(architecture.controlPlaneOperationalRunnerIsolation?.director?.runnerDrain,'ubuntu-24.04');
-  assert.equal(logMap.controlPlaneGameRunnerEvictionEvidence?.expectedRunnerLabels?.directorDrain,'ubuntu-24.04');
-  assert.equal(logMap.gameControlRunnerPoolEvidence?.expectedRunnerLabels?.directorDrain,'ubuntu-24.04');
-  assert.equal(logMap.directorDrainRunnerIsolationEvidence?.expectedRunnerLabel,'ubuntu-24.04');
-});
-
-test('runner drain keeps active same-game work but prefers the newest queued native runtime',()=>{
-  const director=read('.github/workflows/director-supervisor.yml');
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  const policy=roadmap.changeRecord?.runnerQueueDrain20260926||{};
-  const topology=architecture.runnerQueueDrainTopology||{};
-  const evidence=logMap.runnerQueueDrainEvidence||{};
-
-  assert.match(director,/const dedupeByTitle=\(path,newestQueuedWins=false\)=>/);
-  assert.match(director,/if\(inProgress\.length\)winner=inProgress\[0\]/);
-  assert.match(director,/else if\(newestQueuedWins\)winner=\[\.\.\.group\]\.sort\(\(a,b\)=>Number\(b\.id\)-Number\(a\.id\)\)\[0\]/);
-  assert.match(director,/DUPLICATE_TITLE_STALE_QUEUED/);
-  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-roblox-runtime\.yml',true\)/);
-  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-unity-runtime\.yml',true\)/);
-  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-roblox-release-promotion\.yml',false\)/);
-
-  assert.equal(policy.sameTitleRuntimeQueuedWinner,'LATEST_WHEN_NO_IN_PROGRESS');
-  assert.equal(policy.sameTitleRuntimeInProgressWinner,'ACTIVE_RUN_PRESERVED');
-  assert.equal(policy.robloxExactGameNewestQueuedPreserved,true);
-  assert.equal(policy.unityExactGameNewestQueuedPreserved,true);
-  assert.equal(policy.activeSameGameCancellationForbidden,true);
-  assert.equal(policy.releaseAndQaFifoSemanticsUnchanged,true);
-  assert.equal(topology.sameTitleRuntimeQueuedWinner,'LATEST_WHEN_NO_IN_PROGRESS');
-  assert.equal(topology.sameTitleRuntimeInProgressWinner,'ACTIVE_RUN_PRESERVED');
-  assert.equal(topology.activeSameGameCancellationForbidden,true);
-  assert.equal(evidence.staleQueuedSameTitleReason,'DUPLICATE_TITLE_STALE_QUEUED');
-  assert.equal(evidence.newestQueuedSameTitlePreserved,true);
-  assert.equal(evidence.inProgressSameTitleCancellationForbidden,true);
-});
 
 test('director coalesces queued Recovery Fast wakes while preserving active recovery and game work',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
@@ -502,7 +384,7 @@ test('central native planner suppresses already-active per-game child dispatches
   assert.match(development,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
   assert.match(development,/roblox_count=/);
   assert.match(development,/unity_count=/);
-  assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.roblox_json\)/);
+  assert.match(development,/ROBLOX_GAME_IDS: \$\{\{ needs\.native-plan\.outputs\.roblox_json \}\}/);
   assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.unity_json\)/);
 });
 
@@ -688,36 +570,6 @@ test('director treats accepted asynchronous cancel settlement as success before 
   assert.match(director,/elif \[\[ "\$force_state" == 'queued' \|\| "\$force_state" == 'pending' \|\| "\$force_state" == 'requested' \|\| "\$force_state" == 'waiting' \]\] && gh api --method POST .*force-cancel/);
 });
 
-test('director coalesces pending pre-supervision wakes while preserving active completion',()=>{
-  const director=read('.github/workflows/director-supervisor.yml');
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  const policy=roadmap.changeRecord?.directorPreSupervisionCoalescing20260927||{};
-  const topology=architecture.directorPreSupervisionCoalescing||{};
-  const evidence=logMap.directorPreSupervisionCoalescingEvidence||{};
-  assert.match(director,/runner-drain:[\s\S]*?group: director-runner-drain-v3[\s\S]*?cancel-in-progress: false/);
-  assert.match(director,/game-primary-gate:[\s\S]*?group: director-game-primary-gate-v1[\s\S]*?cancel-in-progress: false/);
-  assert.match(director,/supervise:[\s\S]*?group: director-central-company-supervise-v3[\s\S]*?cancel-in-progress: false/);
-  assert.equal(policy.runnerDrainCancelInProgress,false);
-  assert.equal(policy.runnerDrainActiveCompletionPreserved,true);
-  assert.equal(policy.runnerDrainPendingLatestWins,true);
-  assert.equal(policy.runnerDrainConcurrencyGroup,'director-runner-drain-v3');
-  assert.equal(policy.previousRunnerDrainConcurrencyGroup,'director-runner-drain-v2');
-  assert.equal(policy.runnerDrainEpochAdvancedToBypassLegacyPendingGroup,true);
-  assert.equal(policy.gamePrimaryGateCancelInProgress,false);
-  assert.equal(topology.runnerDrain?.group,'director-runner-drain-v3');
-  assert.equal(topology.runnerDrain?.previousGroup,'director-runner-drain-v2');
-  assert.equal(topology.runnerDrain?.epochAdvancedToBypassLegacyPendingGroup,true);
-  assert.equal(evidence.runnerDrainConcurrencyGroup,'director-runner-drain-v3');
-  assert.equal(evidence.runnerDrainPreviousConcurrencyGroup,'director-runner-drain-v2');
-  assert.equal(evidence.epochAdvancedToBypassLegacyPendingGroup,true);
-  assert.equal(topology.runnerDrain?.cancelInProgress,false);
-  assert.equal(topology.gamePrimaryGate?.cancelInProgress,false);
-  assert.equal(evidence.runnerDrainCancelInProgress,false);
-  assert.equal(evidence.gamePrimaryGateCancelInProgress,false);
-});
-
 
 test('central development planner removes duplicate runtime contract QA from the game dispatch path',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
@@ -747,22 +599,6 @@ test('central development planner removes duplicate runtime contract QA from the
   assert.match(development,/NATIVE_ACTIVE_RUN_SCAN=PASS/);
 });
 
-test('central policy architecture and log maps bind the development floor parallel repair',()=>{
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  const change=roadmap.changeRecord?.developmentFloorParallelBottleneckRepair20260927;
-  assert.equal(change?.centralPlanner?.duplicateRuntimeContractAuditRemoved,true);
-  assert.equal(change?.centralPlanner?.canonicalQaAuthorityPreserved,true);
-  assert.equal(change?.centralPlanner?.activeRobloxAndUnityRunScansParallel,true);
-  assert.equal(change?.unityWebPerGameConcurrency?.independentGamesRemainParallel,true);
-  assert.equal(change?.unityWebPerGameConcurrency?.globalUnityWebSerializationForbidden,true);
-  assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
-  assert.equal(architecture.developmentFloorParallelBottleneckRepair?.centralPlanner?.blockingScope,'ADMISSION_CRITICAL_ONLY');
-  assert.equal(architecture.developmentFloorParallelBottleneckRepair?.unityWebFloor?.independentGameParallelism,true);
-  assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.duplicateRuntimeAuditPresent,false);
-  assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.independentGameParallelismRequired,true);
-});
 
 test('Unity Web floor serializes only the same game while independent games remain parallel',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
@@ -774,27 +610,6 @@ test('Unity Web floor serializes only the same game while independent games rema
 });
 
 
-test('central native active-run dedupe covers the full 256 game execution window',()=>{
-  const development=read('.github/workflows/company-development-confirmed-runtime.yml');
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  assert.equal(Number(roadmap.developmentSpeedExecution?.externalMatrixBatchMax),256);
-  assert.match(development,/for page in 1 2 3; do/);
-  assert.match(development,/per_page=100&page=\$page/);
-  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_ROBLOX_ROWS=/);
-  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_UNITY_ROWS=/);
-  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_PAGES=3/);
-  assert.match(development,/NATIVE_QUEUE_AUTHORITY_FETCH=PASS/);
-  assert.match(development,/git fetch --no-tags --depth=1 origin "\$COMPANY_RUNTIME_BRANCH" &/);
-  const record=roadmap.changeRecord?.activeNativeRunDedupeCoverage20260927;
-  assert.equal(record?.queueAuthorityFetchParallelWithRunScan,true);
-  assert.equal(record?.queueAuthorityFetchFailureBlocksDispatch,true);
-  assert.equal(architecture.activeNativeRunDedupeCoverage?.queueAuthorityFetchParallelWithRunScan,true);
-  assert.equal(logMap.activeNativeRunDedupeCoverageEvidence?.queueAuthorityFetchParallelWithRunScan,true);
-  assert.ok(logMap.activeNativeRunDedupeCoverageEvidence?.markers?.includes('NATIVE_QUEUE_AUTHORITY_FETCH=PASS'));
-});
-
 
 test('Roblox runtime planners reuse current central QA and keep responsibility-local tests only',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
@@ -803,7 +618,7 @@ test('Roblox runtime planners reuse current central QA and keep responsibility-l
   const centralQa=read('.github/workflows/company-central-policy-contract-qa.yml');
 
   for(const testFile of [
-    'qa/company-shared-context.test.mjs',
+    'qa/company-four-docs-fingerprint.test.mjs',
     'qa/company-development-roblox-runtime.test.mjs',
     'qa/company-selected-platform-router.test.mjs',
     'qa/company-development-roblox-runtime-continuation.test.mjs',
@@ -823,42 +638,6 @@ test('Roblox runtime planners reuse current central QA and keep responsibility-l
 
   assert.equal(roadmap.minimumNecessaryProcedurePolicy?.qaAndReview?.reviewMayNotBecomeRoutineSerializationPoint,true);
   assert.equal(roadmap.minimumNecessaryProcedurePolicy?.principles?.unrelatedProcedureMayNotDelayDevelopment,true);
-});
-
-test('Unity prepare delegates all contract tests to canonical QA and keeps only runtime compilation on the critical path',()=>{
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  const unity=read('.github/workflows/company-development-unity-runtime.yml');
-  const centralQa=read('.github/workflows/company-central-policy-contract-qa.yml');
-  const change=roadmap.changeRecord?.unityPlannerDuplicateContractQaRemoval20260927;
-
-  for(const testFile of [
-    'qa/company-shared-context.test.mjs',
-    'qa/company-selected-platform-router.test.mjs',
-    'qa/company-development-unity-runtime.test.mjs',
-    'qa/company-upper-platform-admission.test.mjs',
-    'qa/unity-package-fatal-logcat.test.mjs',
-  ]){
-    assert.ok(centralQa.includes(testFile),testFile+' canonical QA authority');
-  }
-  assert.doesNotMatch(unity,/node --test/);
-  assert.match(unity,/node --check tools\/company-upper-platform-admission\.mjs/);
-  assert.match(unity,/node --check tools\/company-development-unity-platform\.mjs/);
-  assert.match(unity,/UNITY_PREPARE_CONTRACT_VERIFY=PASS/);
-  assert.match(unity,/UNITY_PREPARE_INPUT_OVERLAP=PASS/);
-
-  assert.equal(change?.canonicalQaAuthority,'.github/workflows/company-central-policy-contract-qa.yml');
-  assert.equal(change?.duplicateValidationForbidden,true);
-  assert.equal(change?.gameDispatchWaitsForDuplicateQa,false);
-  assert.equal(change?.runtimePrepareContractTestsRemaining,0);
-  assert.equal(change?.canonicalQaPathTriggersIncludeMovedTests,true);
-  assert.equal(change?.canonicalUnityStageOrderUnchanged,true);
-  assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
-  assert.deepEqual(architecture.unityPlannerDuplicateContractQaRemoval?.runtimeCriticalPathContractTests,[]);
-  assert.equal(architecture.unityPlannerDuplicateContractQaRemoval?.runtimeCriticalPathWaitsForDuplicateQa,false);
-  assert.equal(logMap.unityPlannerDuplicateContractQaRemovalEvidence?.runtimeContractTestsRemaining,0);
-  assert.equal(logMap.unityPlannerDuplicateContractQaRemovalEvidence?.duplicateRuntimeTestsPresent,false);
 });
 
 
@@ -896,55 +675,19 @@ test('central planner skips retired Unity Web workflow scans',()=>{
 });
 
 
-test('shared Ollama cache serves model consumers while Unity settlement needs no model download',()=>{
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  const action=read('.github/actions/prepare-ollama/action.yml');
-  const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
-  const continuation=read('.github/workflows/company-development-roblox-runtime-continuation.yml');
-  const unity=read('.github/workflows/company-development-unity-runtime.yml');
-  const vibe=read('.github/workflows/vibe2-continuous-core.yml');
-  const centralQa=read('.github/workflows/company-central-policy-contract-qa.yml');
-  const change=roadmap.changeRecord?.sharedOllamaModelCache20260927;
-
-  assert.match(action,/cache-model:\n\s+description:[\s\S]{0,240}?default: 'false'/);
-  assert.match(action,/Resolve requested Ollama model cache key/);
-  assert.match(action,/safe_model=.*sed -E/);
-  assert.match(action,/uses: actions\/cache\/restore@v4/);
-  assert.match(action,/uses: actions\/cache\/save@v4/);
-  assert.match(action,/key: \$\{\{ steps\.model-cache-key\.outputs\.key \}\}/);
-  assert.match(action,/Save requested Ollama model cache immediately/);
-  assert.match(action,/continue-on-error: true/);
-  assert.ok(action.indexOf('Ensure requested local model')<action.indexOf('Save requested Ollama model cache immediately'));
-
-  for(const workflow of [roblox,continuation]){
-    assert.match(workflow,/cache-model: 'true'/);
+test('canonical production no longer installs local Ollama or caches downloaded models',()=>{
+  assert.equal(exists('.github/actions/prepare-ollama/action.yml'),false);
+  for(const file of [
+    '.github/workflows/vibe2-continuous-core.yml',
+    '.github/workflows/company-development-roblox-runtime.yml',
+    '.github/workflows/company-development-roblox-runtime-continuation.yml',
+    '.github/workflows/company-central-policy-contract-qa.yml'
+  ]){
+    const workflow=read(file);
+    assert.doesNotMatch(workflow,/uses:.*prepare-ollama|ollama pull|ollama serve|ollama\.com\/download/,file);
   }
-  assert.doesNotMatch(unity,/prepare-ollama|ollama pull/);
-  assert.match(vibe,/key: vibe2-ollama-v5-/);
-  assert.match(vibe,/runner\.os/);
-  assert.match(vibe,/runner\.arch/);
-  assert.match(vibe,/path: ~\/\.ollama\/models/);
-  assert.match(vibe,/jaewoon-ollama-cpu-runtime-v2-/);
-  assert.doesNotMatch(vibe,/\.cache\/vibe2-ollama\/bin/);
-  assert.doesNotMatch(vibe,/\.cache\/vibe2-ollama\/lib/);
-  assert.doesNotMatch(vibe,/cache-model: 'true'/);
-
-  assert.ok(centralQa.includes(".github/actions/prepare-ollama/action.yml"));
-  assert.ok(centralQa.includes(".github/workflows/company-development-roblox-runtime-continuation.yml"));
-  assert.equal(change?.cacheOptInDefault,false);
-  assert.equal(change?.saveTiming,'IMMEDIATELY_AFTER_REQUESTED_MODEL_IS_CONFIRMED_LOCAL');
-  assert.equal(change?.saveFailureBlocksDevelopment,false);
-  assert.equal(change?.existingVibe2DedicatedModelCacheUnchanged,true);
-  assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
-  assert.equal(architecture.sharedOllamaModelCache?.optInDefault,false);
-  assert.equal(architecture.sharedOllamaModelCache?.saveImmediatelyAfterRequestedModelReady,true);
-  assert.equal(logMap.sharedOllamaModelCacheEvidence?.cacheHitSkipsModelPull,true);
-  assert.equal(logMap.sharedOllamaModelCacheEvidence?.cacheSaveFailureMayBlockDevelopment,false);
+  assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_WORKER_PROVIDER=GEMINI_API/);
 });
-
-
 test('Unity Web actual play supplies boot proof without a duplicate browser smoke launch',()=>{
   const web=read('.github/workflows/unity-web-first-stage-build.yml');
   assert.match(web,/Prepare Unity Web browser runtime/);
@@ -962,183 +705,28 @@ test('Unity Web actual play supplies boot proof without a duplicate browser smok
 });
 
 
-test('Unity Web bottleneck optimizations are bound consistently across central policy architecture and logs',()=>{
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
 
-  const cache=roadmap.changeRecord?.unityWebLibraryCacheReuse20260927;
-  assert.equal(cache?.buildStillRequired,true);
-  assert.equal(cache?.browserPlayStillRequired,true);
-  assert.equal(cache?.independentQaStillRequired,true);
-  assert.equal(cache?.regressionStillRequired,true);
-  assert.equal(architecture.unityWebLibraryCacheReuse?.buildArtifactReuse,false);
-  assert.equal(architecture.unityWebLibraryCacheReuse?.qaEvidenceReuse,false);
-  assert.equal(logMap.unityWebLibraryCacheReuseEvidence?.cacheHitDoesNotImplyBuildPass,true);
-  assert.equal(logMap.unityWebLibraryCacheReuseEvidence?.cacheHitDoesNotImplyQaPass,true);
 
-  const dedupe=roadmap.changeRecord?.unityWebActiveRunDedupe20260927;
-  assert.equal(dedupe?.duplicateFloorDispatchSuppressed,true);
-  assert.equal(dedupe?.duplicateBootstrapDispatchSuppressed,true);
-  assert.equal(dedupe?.distinctGamesRemainParallel,true);
-  assert.equal(architecture.unityWebActiveRunDedupe?.crossGameParallelism,true);
-  assert.equal(logMap.unityWebActiveRunDedupeEvidence?.sameGameDuplicateDispatchForbidden,true);
 
-  const boot=roadmap.changeRecord?.unityWebBootProofReuse20260927;
-  assert.equal(boot?.separateBootBrowserLaunchRemoved,true);
-  assert.equal(boot?.actualPlayValidatorOwnsBootAssertion,true);
-  assert.equal(boot?.independentQaStillRequired,true);
-  assert.equal(boot?.regressionStillRequired,true);
-  assert.equal(architecture.unityWebBootProofReuse?.bootProofOwner,'ACTUAL_BROWSER_PLAY');
-  assert.equal(logMap.unityWebBootProofReuseEvidence?.separateBootBrowserLaunchExpected,false);
-  assert.equal(logMap.unityWebBootProofReuseEvidence?.bootPassMustComeFromActualPlayEvidence,true);
+
+test('director preserves admitted central development handoff even when parent is queued',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/CENTRAL_DEVELOPMENT_\*/);
+  assert.match(director,/Admit one unscoped development coordinator/);
+  assert.match(director,/DIRECTOR_CENTRAL_ADMITTED_HANDOFF_PRESERVED=/);
+  assert.match(director,/if \[ "\$admitted" != '0' \]; then/);
 });
 
 
-test('stage-scoped native dedupe closes duplicate races without whole-game serialization',()=>{
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
-  const unity=read('.github/workflows/company-development-unity-runtime.yml');
-  const central=read('.github/workflows/company-development-confirmed-runtime.yml');
-  const change=roadmap.changeRecord?.nativeExactGameWorkflowConcurrency20260927;
-
-  assert.doesNotMatch(roblox.slice(0,roblox.indexOf('\njobs:\n')),/\nconcurrency:\n/);
-  assert.doesNotMatch(unity.slice(0,unity.indexOf('\njobs:\n')),/\nconcurrency:\n/);
-  assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.doesNotMatch(central,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
-  assert.doesNotMatch(central,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
-  assert.match(central,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
-
-  assert.equal(change?.status,'SUPERSEDED_BY_STAGE_SCOPED_DEDUPE_2026_10_04');
-  assert.equal(change?.workflowLevelGameIdConcurrencyRemoved,true);
-  assert.equal(change?.exactGameOverlapForbidden,false);
-  assert.equal(change?.stageScopedExactDuplicateCoalescing,true);
-  assert.equal(change?.centralActiveRunDedupePreserved,true);
-  assert.equal(change?.centralActiveRunDedupeRaceClosedByWorkflowConcurrency,false);
-  assert.equal(change?.distinctGamesParallel,true);
-  assert.equal(change?.sameGameIndependentStagesParallelWhenSafe,true);
-  assert.equal(change?.batchRunsGloballySerialized,false);
-  assert.equal(change?.globalNativeSerializationForbidden,true);
-
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.ROBLOX?.wholeGameSerialization,false);
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.UNITY?.wholeGameSerialization,false);
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.sameGameIndependentStagesParallel,true);
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.exactDuplicateStageCoalescing,true);
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.wholeGameConcurrencyGroupForbidden,true);
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.exactGameOverlapForbidden,false);
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.exactDuplicateStageCoalescingRequired,true);
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.distinctGameParallelismRequired,true);
-});
-
-test('Roblox source-plan uses current control runners without historical repair mirrors',()=>{
-  const workflow=read('.github/workflows/company-development-roblox-runtime.yml');
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-
-  assert.match(workflow,/\n  source-plan:\n[\s\S]*?runs-on: ubuntu-24\.04/);
-  assert.equal(architecture.gameControlRunnerPools?.roblox?.sourcePlanRunner,'ubuntu-24.04');
-  assert.equal(architecture.gameControlRunnerPools?.roblox?.sourcePlanExactGameRunner,'ubuntu-24.04');
-  assert.equal(architecture.gameControlRunnerPools?.roblox?.sourcePlanBatchRunner,'ubuntu-24.04');
-  assert.equal(logMap.gameControlRunnerPoolEvidence?.expectedRunnerLabels?.robloxIngress,'ubuntu-24.04');
-  assert.equal(logMap.gameControlRunnerPoolEvidence?.expectedRunnerLabels?.robloxExactIngress,'ubuntu-24.04');
-  assert.equal(logMap.gameControlRunnerPoolEvidence?.expectedRunnerLabels?.robloxBatchIngress,'ubuntu-24.04');
-  assert.equal(Object.hasOwn(architecture,'robloxSourcePlanWakeAndRunnerIsolation'),false);
-  assert.equal(Object.hasOwn(logMap,'robloxSourcePlanWakeAndRunnerIsolationEvidence'),false);
-});
-
-test('verified external black-box learning is applied first at full retrieved coverage across development and internal assets',()=>{
-  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
-  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
-  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
-  const robloxLearning=read('tools/vibe3-roblox-learning-context.mjs');
-  const robloxBootstrap=read('tools/company-development-roblox-bootstrap.mjs');
-  const robloxReconcile=read('tools/company-development-roblox-source-reconcile.mjs');
-  const robloxNativeWorkflow=read('.github/workflows/company-development-roblox-runtime.yml');
-  const unityBootstrap=read('tools/company-unity-web-floor-bootstrap.mjs');
-  const unityWorkflow=read('.github/workflows/unity-web-floor-source-bootstrap.yml');
-  const unityNativeBootstrap=read('tools/company-development-unity-bootstrap.mjs');
-  const unityNativeWorkflow=read('.github/workflows/company-development-unity-runtime.yml');
-  const assetPlan=read('tools/vibe2-asset-production-plan.mjs');
-
-  const policy=roadmap.developmentLifecycleMachine?.machineOnlyProjectContinuation?.verifiedLearningMaxUse?.externalVerifiedBlackBoxFirstApplication||{};
-  assert.equal(policy.required,true);
-  assert.equal(policy.mandatoryApplicationCoveragePct,null);
-  assert.equal(policy.allRetrievedTaskRelevantVerifiedExternalItemsMustBeApplied,false);
-  assert.equal(policy.coveragePercentageIsCompletionEvidence,false);
-  assert.equal(policy.allRetrievedPrinciplesMustHaveExplicitDisposition,true);
-  assert.equal(policy.retrievedVerifiedExternalLearningTruncationForbidden,true);
-  assert.equal(policy.applicationBeforeInternalAuthoringRequired,true);
-  assert.equal(policy.applicationBeforeGameSourceGenerationRequired,true);
-  assert.equal(policy.internalAssetProductionMustConsumeVerifiedCommercialDistillationFirst,true);
-  assert.equal(policy.unityWebBootstrapWithoutVerifiedExternalLearningForbidden,true);
-  assert.equal(policy.unityNativeSourceGenerationWithoutVerifiedExternalLearningForbidden,true);
-  assert.equal(policy.robloxExistingSourceMaintenanceWithoutVerifiedExternalLearningForbidden,true);
-  assert.equal(policy.nativeSourceReuseMustInvalidateWhenVerifiedExternalLearningChanges,true);
-  assert.equal(policy.actualNativeDevelopmentMustExposeExactAppliedLearningIdsAndFingerprint,true);
-  assert.equal(policy.rawCommercialCodeCopyForbidden,true);
-  assert.equal(policy.rawCommercialAssetCopyForbidden,true);
-  assert.equal(policy.transformativeReauthoringOrRecompositionRequired,true);
-  assert.equal(policy.freshVerificationRequired,true);
-
-  const topology=architecture.verifiedExternalLearningFirstApplicationTopology||{};
-  assert.equal(topology.mandatoryApplicationCoveragePct,null);
-  assert.equal(topology.semanticApplicationContract?.coveragePercentageIsCompletionEvidence,false);
-  assert.equal(topology.semanticApplicationContract?.gameSpecificSemanticMappingRequired,true);
-  assert.equal(topology.retrievedSetTruncationAllowed,false);
-  assert.equal(topology.silentIgnoreAllowed,false);
-  assert.equal(topology.consumers?.robloxSourceBootstrap,'tools/company-development-roblox-bootstrap.mjs');
-  assert.equal(topology.consumers?.robloxExistingSourceReconcile,'tools/company-development-roblox-source-reconcile.mjs');
-  assert.equal(topology.consumers?.robloxNativeRuntimeWorkflow,'.github/workflows/company-development-roblox-runtime.yml');
-  assert.equal(topology.consumers?.unityNativeSourceBootstrap,'tools/company-development-unity-bootstrap.mjs');
-  assert.equal(topology.consumers?.unityNativeRuntimeWorkflow,'.github/workflows/company-development-unity-runtime.yml');
-  assert.equal(topology.consumers?.unityWebSourceBootstrap,'tools/company-unity-web-floor-bootstrap.mjs');
-  assert.equal(topology.nativeSourceReuseInvalidatesOnVerifiedLearningChange,true);
-  assert.equal(topology.existingSourceMaintenanceRebindRequiredWhenLearningChanges,true);
-  assert.equal(topology.exactAppliedIdsAndFingerprintEvidenceRequired,true);
-  assert.equal(topology.consumers?.assetProduction,'tools/vibe2-asset-production-plan.mjs');
-
-  const evidence=logMap.verifiedExternalLearningFirstApplicationEvidenceContract||{};
-  assert.equal(evidence.requiredValues?.applicationCoveragePct,null);
-  assert.equal(evidence.requiredValues?.allRetrievedTaskRelevantVerifiedExternalItemsApplied,false);
-  assert.equal(evidence.requiredValues?.allRetrievedPrinciplesHaveExplicitDisposition,true);
-  assert.equal(evidence.requiredValues?.nativeSourceReuseInvalidatesWhenVerifiedLearningChanges,true);
-  assert.equal(evidence.requiredValues?.existingSourceMaintenanceRebindsWhenLearningChanges,true);
-  assert.equal(evidence.requiredValues?.exactAppliedIdsAndFingerprintEvidence,true);
-  for(const marker of [
-    'ROBLOX_VERIFIED_EXTERNAL_LEARNING_FINGERPRINT=',
-    'ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY:',
-    'UNITY_VERIFIED_EXTERNAL_LEARNING_COVERAGE=',
-    'UNITY_VERIFIED_EXTERNAL_LEARNING_COUNT=',
-    'UNITY_VERIFIED_EXTERNAL_LEARNING_IDS=',
-    'UNITY_VERIFIED_EXTERNAL_LEARNING_FINGERPRINT='
-  ])assert.ok(evidence.requiredMarkers.includes(marker),marker);
-  assert.equal(evidence.nativeRuntimeOrReleasePassNotImplied,true);
-
-  assert.doesNotMatch(robloxLearning,/sort\(\(a,b\)=>b\.score-a\.score\|\|a\.tie\.localeCompare\(b\.tie\)\)\.slice\(0,3\)/);
-  assert.match(robloxLearning,/export function verifiedExternalBlackBoxPlaybookContract/);
-  assert.match(robloxLearning,/verifiedExternalBlackBoxAllTaskTypesRequired/);
-  assert.match(robloxLearning,/verifiedExternalBlackBoxTruncationForbidden/);
-  assert.match(robloxLearning,/const verifiedExternalLearningCoveragePct=verifiedExternalContract\.coveragePct/);
-  assert.match(robloxLearning,/verifiedExternalLearningFingerprint:verifiedExternalContract\.fingerprint/);
-  assert.match(robloxLearning,/const applied=verifiedExternalLearningIds\.length>0[\s\S]*&&verifiedExternalContentIds\.length===verifiedExternalLearningIds\.length[\s\S]*&&semantic\.mappings\.length>0[\s\S]*&&semantic\.failClosed\.length===0/);
-  assert.match(robloxBootstrap,/VerifiedExternalLearningFirst = \$\{learning\.verifiedExternalLearningFirst\?'true':'false'\}/);
-  assert.match(robloxBootstrap,/MemoryFingerprint = \$\{luauString\(learning\.verifiedExternalLearningFingerprint\|\|' '\.trim\(\)\)\}|MemoryFingerprint = \$\{luauString\(learning\.verifiedExternalLearningFingerprint\|\|''\)\}/);
-  assert.match(robloxBootstrap,/CoveragePct = \$\{Number\(learning\.verifiedExternalLearningCoveragePct\|\|0\)\}/);
-  assert.match(robloxBootstrap,/requireRobloxVerifiedExternalLearning/);
-  assert.match(robloxBootstrap,/GameSpecificSemanticMappings/);
-  assert.match(robloxBootstrap,/LearningDispositions/);
-  assert.match(robloxReconcile,/existing-source-verified-external-learning-required/);
-  assert.match(robloxNativeWorkflow,/ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY/);
-  assert.match(unityNativeBootstrap,/verifiedExternalLearningFromPlaybooks/);
-  assert.match(unityNativeBootstrap,/ApplyVerifiedExternalLearningFeedback/);
-  assert.match(unityNativeWorkflow,/UNITY_VERIFIED_EXTERNAL_LEARNING_MEMORY=READY/);
-  assert.match(unityNativeWorkflow,/UNITY_CURRENT_MAIN_SOURCE_REUSE_INVALIDATED=VERIFIED_EXTERNAL_LEARNING_OR_GENERATOR_STALE/);
-  assert.match(unityBootstrap,/UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REQUIRED/);
-  assert.match(unityBootstrap,/mandatoryApplicationCoveragePct:100/);
-  assert.match(unityWorkflow,/git fetch --no-tags --depth=1 origin vibe2-learning-runtime/);
-  assert.match(unityWorkflow,/--playbooks=\/tmp\/vibe3-task-playbooks\.json/);
-  assert.match(assetPlan,/mandatoryApplicationCoveragePct:100/);
-  assert.match(assetPlan,/TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION/);
+test('current owner development contract replaces retired September mirror assertions',()=>{
+  const policy=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  assert.equal(policy.status,'OWNER_DIRECT_LOCKED');
+  assert.deepEqual(policy.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','WEB']);
+  for(const target of ['UNITY','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'])
+    assert.equal(policy.developmentAccess[target],'OWNER_HOLD',target);
+  for(const target of ['ROBLOX','WEB'])assert.equal(policy.developmentAccess[target],'ALWAYS_ALLOWED',target);
+  const model=read('tools/vibe2-gemini-free-rotation.mjs');
+  assert.match(model,/GEMINI_FREE_MODELS/);
+  assert.doesNotMatch(model,/127\\.0\\.0\\.1:11434|ollama pull|ollama serve/);
+  assert.match(read('.github/workflows/vibe2-continuous-core.yml'),/VIBE2_LOCAL_AI_ENABLED=NO/);
 });

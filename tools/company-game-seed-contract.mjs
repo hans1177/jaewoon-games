@@ -123,7 +123,8 @@ function validateGameplaySketch(sketch,errors){
       const fusion=grammar.gameplaySystemFusion;
       if(!fusion||typeof fusion!=='object'||Array.isArray(fusion))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion is required');
       else{
-        if(fusion.formula!==(version>=5?'MAIN × A × B × C':'MAIN × A × B × c'))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula does not match its sketch version');
+        const standardGrammar=Number(grammar.standardVersion)>0;
+        if(fusion.formula!==(standardGrammar?'MAIN = A + B + C + D + @':version>=5?'MAIN × A × B × C':'MAIN × A × B × c'))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula does not match its sketch version');
         if(!fusion.main||!isNonEmptyString(fusion.main.name)||!isNonEmptyString(fusion.main.playerAction)||!isNonEmptyString(fusion.main.stateContribution))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.main is incomplete');
         const axes=Array.isArray(fusion.majorAxes)?fusion.majorAxes:[];
         const keys=axes.map(row=>String(row?.key||'').toUpperCase());
@@ -137,14 +138,26 @@ function validateGameplaySketch(sketch,errors){
         }
         if(!Array.isArray(fusion.crossSystemRules)||uniq(fusion.crossSystemRules).length<4)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.crossSystemRules requires at least 4 items');
         if(version>=5){
-          if(fusion.formula!=='MAIN × A × B × C')errors.push('GAMEPLAY_SKETCH grammar V5 requires MAIN × A × B × C');
+          if(!standardGrammar&&fusion.formula!=='MAIN × A × B × C')errors.push('GAMEPLAY_SKETCH grammar V5 requires MAIN × A × B × C');
+          if(standardGrammar){
+            if(grammar.standardFormula!=='MAIN = A + B + C + D + @')errors.push('GAMEPLAY_SKETCH standard grammar formula mismatch');
+            const creations=Array.isArray(grammar.dCreations)?grammar.dCreations:[];
+            if(!creations.length||creations.some(row=>!isNonEmptyString(row?.id)||!Array.isArray(row?.materialPath)||row.materialPath.length!==3||row.materialPath.some(part=>!isNonEmptyString(part))))errors.push('GAMEPLAY_SKETCH standard grammar D source path missing');
+            if((grammar.delveLayer?.elements||[]).some(row=>!creations.some(source=>source.id===row.sourceDId)))errors.push('GAMEPLAY_SKETCH standard grammar @ must derive from D');
+            if(Number(grammar.standardVersion)>=2){
+              const named=grammar.representativeGameReference,baseline=grammar.existingSystemReference;
+              if(!named||!['name','systemFamily','playerChoice','source'].every(key=>isNonEmptyString(named[key]))||axes.find(row=>row.key==='A')?.systemFamily!==named.systemFamily)errors.push('GAMEPLAY_SKETCH A requires a named representative game and its system evidence');
+              if(!baseline||!['B_EXISTING_GAME_SYSTEMS','B_NEW_GAME_INITIAL_SYSTEMS'].includes(baseline.scope)||grammar.existingGameSystemRole!==baseline.scope||!['systemFamily','playerChoice','source'].every(key=>isNonEmptyString(baseline[key]))||axes.find(row=>row.key==='B')?.systemFamily!==baseline.systemFamily)errors.push('GAMEPLAY_SKETCH B must preserve the actual existing system baseline or explicitly name a new-game baseline');
+            }else if(grammar.existingGameSystemRole&&grammar.existingGameSystemRole!=='B_SUPPORTING_REFERENCE')errors.push('GAMEPLAY_SKETCH legacy B supporting reference role mismatch');
+          }
           for(const row of axes){
             for(const field of ['systemFamily','sourceMaterial','sourceDomain','materialRule']){
               if(!isNonEmptyString(row?.[field]))errors.push(`GAMEPLAY_SKETCH A/B ${row?.key||'?'} missing ${field}: system plus unique creative source required`);
             }
           }
           const c=fusion.themeFusion,themes=Array.isArray(c?.themes)?c.themes:[];
-          if(themes.length!==2||new Set(themes.map(row=>String(row?.name||'').trim().toLowerCase())).size!==2||themes.some(row=>!isNonEmptyString(row?.name)||!isNonEmptyString(row?.causalEffect)||!['GENRE','MATERIAL'].includes(row?.kind)))errors.push('GAMEPLAY_SKETCH C requires two creative theme sources');
+          if(standardGrammar&&themes.length)errors.push('GAMEPLAY_SKETCH standard grammar C cannot contain legacy material slots');
+          if(!standardGrammar&&(themes.length!==2||new Set(themes.map(row=>String(row?.name||'').trim().toLowerCase())).size!==2||themes.some(row=>!isNonEmptyString(row?.name)||!isNonEmptyString(row?.causalEffect)||!['GENRE','MATERIAL'].includes(row?.kind))))errors.push('GAMEPLAY_SKETCH C requires two creative theme sources');
           const genres=Array.isArray(c?.genres)?c.genres:[];
           if(genres.length!==2||!['PRIMARY','SECONDARY'].every(role=>genres.some(row=>row?.role===role))
             ||new Set(genres.map(row=>String(row?.name||'').trim().toLowerCase())).size!==2
@@ -168,7 +181,7 @@ function validateGameplaySketch(sketch,errors){
       if(!emergent||typeof emergent!=='object'||Array.isArray(emergent))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre is required');
       else{
         for(const field of ['name','definition','whyNotSingleConventionalGenre'])if(!isNonEmptyString(emergent[field]))errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.${field} is required`);
-        if(emergent.grammarFormula!==(version>=5?'MAIN × A × B × C + @':'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @'))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.grammarFormula is invalid');
+        if(emergent.grammarFormula!==(Number(grammar.standardVersion)>0?'MAIN = A + B + C + D + @':version>=5?'MAIN × A × B × C + @':'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @'))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.grammarFormula is invalid');
         if(emergent.categoryRole!=='SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.categoryRole must mark category as hint only');
       }
       if(!Array.isArray(grammar.expansionVectors)||uniq(grammar.expansionVectors).length<4)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.expansionVectors requires at least 4 items');
@@ -288,3 +301,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`TARGET_SESSION_MINUTES=${GAME_SEED_POLICY.targetSessionMinutes}`);
   } catch (error) {console.error(String(error?.message || error));process.exit(1);}
 }
+

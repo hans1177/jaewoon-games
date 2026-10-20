@@ -7,6 +7,71 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
+import {buildInternalAssetSourceUsageContract,selectWeb3dEngine} from '../tools/vibe2-source-worker.mjs';
+import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
+import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
+import {compileVibeCentralWorkContract,loadCentralPolicySnapshot} from '../tools/vibe2-central-work-contract.mjs';
+
+test('Web true 3D engine selection keeps existing renderer and uses mobile-first PlayCanvas for new games',()=>{
+  const select=(source,task={})=>selectWeb3dEngine({
+    order:{target:'web',selectedTask:task},files:[{path:'index.html',content:source}]
+  });
+  assert.deepEqual(select('<main>new game</main>').existingEvidence,[]);
+  assert.equal(select('<main>new game</main>').engine,'PLAYCANVAS');
+  assert.equal(select('',{complexNativePhysics:true}).engine,'BABYLON_JS');
+  assert.equal(select('',{preferredWeb3dEngine:'THREE_JS'}).engine,'THREE_JS');
+  assert.equal(select('import { Scene } from "three";\nconst s=new THREE.Scene();',{complexNativePhysics:true}).engine,'THREE_JS','existing real renderer overrides default and hints');
+  assert.equal(select('const app=new pc.Application(canvas);').engine,'PLAYCANVAS');
+  assert.equal(select('const scene=new BABYLON.Scene(engine);').engine,'BABYLON_JS');
+  assert.equal(select("const gl=canvas.getContext('webgl2'); gl.drawElements(4,3,2,0);").engine,'EXISTING_WEBGL');
+  assert.equal(select('const a=new THREE.Scene(); const b=new BABYLON.Scene(e);').engine,'EXISTING_ENGINE_REVIEW_REQUIRED');
+  assert.equal(select('').runtimeVerificationRequired,true);
+  assert.equal(select('').engineChoiceVerifiedByRuntime,false);
+});
+
+test('ordinary Web source prompt wires true 3D PlayCanvas Babylon and Three.js guidance only to Web',()=>{
+  const context={files:[{path:'index.html',editable:true,content:'<main>empty entrypoint</main>'}]};
+  const order={gameId:'3d-test',target:'web',goal:'build playable mobile 3D game',selectedTask:{type:'implementation'}};
+  const prompt=buildPrompt(order,context,['index.html']);
+  assert.match(prompt,/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
+  assert.match(prompt,/engine=PLAYCANVAS; reason=MOBILE_FIRST_NEW_WEB3D/);
+  assert.match(prompt,/Babylon\.js/);
+  assert.match(prompt,/Three\.js/);
+  assert.match(prompt,/WebGL2/);
+  assert.match(prompt,/Static code evidence is not a 3D PASS/);
+  const reused=buildPrompt(order,{files:[{...context.files[0],content:'const scene=new THREE.Scene();'}]},['index.html']);
+  assert.match(reused,/engine=THREE_JS; reason=KEEP_ORIGINAL_ENGINE_SOURCE/);
+  const heldUnity=buildPrompt({...order,target:'unity'},context,['index.html']);
+  assert.doesNotMatch(heldUnity,/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
+});
+
+test('asset synchronization detects same-size byte changes even when file metadata is unchanged',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-sync-metadata-'));
+  fs.mkdirSync(path.join(cwd,'assets/shared'),{recursive:true});
+  const file=path.join(cwd,'assets/shared/model.glb');fs.writeFileSync(file,Buffer.from([1,2,3,4]));
+  const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'project-original',nativeArtifacts:['assets/shared/model.glb'],fileRoles:{models:['assets/shared/model.glb']}};
+  const dynamic=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:7,assets:[asset]},target:'web',gameId:'demo'});
+  const order={target:'web',gameId:'demo',assetProduction:{allGameDynamicLibraryBinding:dynamic}};
+  const originalStat=fs.statSync,oldStat=originalStat(file,{bigint:true});
+  try{
+    fs.statSync=function(p,options){return path.resolve(String(p))===file?oldStat:originalStat.call(fs,p,options);};
+    const first=buildInternalAssetSourceUsageContract(order,{cwd});
+    fs.writeFileSync(file,Buffer.from([1,2,3,5]));
+    const second=buildInternalAssetSourceUsageContract(order,{cwd});
+    assert.notEqual(first.fingerprint,second.fingerprint);
+    assert.equal(first.libraryVersion,second.libraryVersion);
+  }finally{fs.statSync=originalStat;fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+test('experience scenario source paths use the same owned-file normalization as interface controls',()=>{
+  const base={edits:[{path:'roblox-games/demo/client/Menu.client.luau',find:'local state = 0',replace:'local state = 1'}],
+    interfaceBlueprint:{experienceScenarios:[{id:'first',binding:{path:'roblox-games/demo/client/Menu.client.luau',symbol:'openMenu'}}]}};
+  const scope={target:'roblox',responsibleFiles:['client/Menu.client.luau'],sourceRootRelative:'roblox-games/demo'};
+  const candidate=normalizeCandidate(base,scope);
+  assert.equal(candidate.interfaceBlueprint.experienceScenarios[0].binding.path,'client/Menu.client.luau');
+  const outside=structuredClone(base);outside.interfaceBlueprint.experienceScenarios[0].binding.path='roblox-games/other/client/Menu.client.luau';
+  assert.throws(()=>normalizeCandidate(outside,scope));
+});
 import { runInNewContext } from 'node:vm';
 import { robloxProductionPromptLines } from '../tools/company-roblox-production-plan.mjs';
 import crypto from 'node:crypto';
@@ -340,7 +405,14 @@ test.afterEach(() => {
   else process.env.VIBE2_EXECUTION_LANE = inheritedExecutionLane;
 });
 
-function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
+function tempRoot() {
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-source-worker-'));
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  fs.mkdirSync(path.dirname(policyPath),{recursive:true});
+  // 격리 테스트도 최신 main의 실제 정책 바이트를 사용하며 임시 변경은 원본에 반영되지 않는다.
+  fs.copyFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),policyPath);
+  return root;
+}
 test('photo teacher reaches actual image-byte observation and keeps inferred geometry unverified',async t=>{
   const {observeAssetReferenceImages}=await import('../tools/vibe2-source-worker.mjs');
   const {createVibeReferenceImageStudyRequest}=await import('../assets/vibe-environment-director.js');
@@ -902,6 +974,14 @@ test('internal motion prompt keeps exact scope, short source anchors and complet
   assert.equal(schema.additionalProperties,false);
 });
 function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles = [], taskId = 'task-1' } = {}) {
+  // 실제 중앙 로드/컴파일러가 만든 계약을 테스트 work order에 포함한다.
+  // 계약이 누락된 운영 작업의 차단은 source worker에서 계속 강제한다.
+  const snapshot=loadCentralPolicySnapshot({repoRoot:process.cwd(),required:true});
+  assert.equal(snapshot.valid,true,snapshot.errors.join('|'));
+  const compiledWorkContract=compileVibeCentralWorkContract({
+    snapshot,task:{id:taskId,gameId:'demo',target},
+    plan:{target},responsibleFiles
+  });
   return {
     run: true,
     workMode: 'source-change-candidate',
@@ -912,7 +992,8 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
     department: 'development',
     source: { root, responsibleFiles },
     qa: ['syntax', 'regression'],
-    workerPolicy: { directMainWrite: false }
+    workerPolicy: { directMainWrite: false },
+    compiledWorkContract
   };
 }
 
@@ -1273,6 +1354,145 @@ test('Vibe libraries and development tools rematch updated APIs for existing sav
 });
 
 // 내부 개발도구: 이름 목록과 실제 제작 구현 문맥을 구분한다.
+// 메인 · F0 모든 게임의 기존 제작 도구를 설계·장르 제한 없이 현재 실제 소스에서 재탐색한다.
+test('Vibe libraries and development tools rematch F0 existing customization housing action modules without generating new subsystem',()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'assets/vibe-character-identity-director.js'),
+    'export function createVibeCharacterCustomization(model) { return model; }\n');
+  write(path.join(cwd,'assets/vibe-housing-library.js'),
+    'export function inspectHousingPlacement(world) { return world; }\n');
+  write(path.join(cwd,'tools/vibe-action-graph.mjs'),
+    'export function inspectHarvestAction(owner) { return owner; }\n');
+  const source=[
+    'const avatar = customizeAppearance(player);',
+    'const housing = placeStructure(buildMode);',
+    'const action = gather(resource);'
+  ].join('\n');
+  const input={files:[{path:'client/Game.client.luau',editable:true,content:source}],bytes:Buffer.byteLength(source)};
+  const args={cwd,contract:{target:'roblox',selectedSourcePaths:[]},
+    order:{target:'roblox',gameId:'older-game',goal:'기존 게임 외형, 하우징, 채집 행동 연결'}};
+  const result=attachSelectedInternalAssetApiContext(input,args);
+  for(const signal of ['CUSTOMIZATION','HOUSING','ACTION'])
+    assert.ok(result.vibeDynamicToolMatch.sourceSignals.includes(signal),signal);
+  for(const path of [
+    'assets/vibe-character-identity-director.js',
+    'assets/vibe-housing-library.js',
+    'tools/vibe-action-graph.mjs'
+  ]){
+    const found=result.vibeDynamicToolMatch.matches.find(row=>row.path===path);
+    assert.ok(found,path);
+    assert.equal(found.kind,path.startsWith('tools/')?'DEVELOPMENT_TOOL_READ_ONLY':'LIBRARY_REFERENCE_READ_ONLY');
+  }
+  assert.ok(result.files.filter(row=>row.developmentToolContext).every(row=>row.editable===false));
+  assert.equal(result.vibeDynamicToolMatch.runtimeVerified,false);
+  assert.equal(result.vibeDynamicToolMatch.sourceMutationPerformed,false);
+  assert.equal(input.files[0].content,source);
+});
+
+// 메인 · 공통 게임 시스템 수 증가에 대응하여 실제 소스 근거에 맞는 API만 작업 문맥에 선정한다.
+test('Vibe libraries and development tools rematch F0 NPC quest crafting economy weather physics progression APIs by source',()=>{
+  const cwd=tempRoot();
+  const modules={
+    'assets/common-ai.js':'export class JaewoonCommonAI {}',
+    'assets/quest-dialogue.js':'export class JaewoonQuestDialogue {}',
+    'assets/crafting-recipes.js':'export class JaewoonCraftingRecipes {}',
+    'assets/economy-loot-shop.js':'export class JaewoonEconomyLootShop {}',
+    'assets/character-progression.js':'export class JaewoonCharacterProgression {}',
+    'assets/vibe-studio-world.js':'export function makeFrameBudget() {}',
+    'assets/vibe-environment-director.js':'export function createVibeProceduralWorldLayout() {}',
+    'assets/vibe-game-input-physics.mjs':'export function createVibeWorldPhysics() {}'
+  };
+  for(const [file,source] of Object.entries(modules))
+    write(path.join(cwd,file),source+'\n');
+  const currentSource=[
+    'const npc = decideCompanion(behaviorTree);',
+    'const quest = dialogue(questLog);',
+    'const item = crafting(recipeBook);',
+    'const shop = economy(currency);',
+    'const experience = progression(levelUp);',
+    'const weatherState = weather(season);',
+    'const worldRegion = world.currentRegion;',
+    'const hit = physics(collisionShape);'
+  ].join('\n');
+  const input={files:[{path:'client/ExistingGame.js',editable:true,content:currentSource}],
+    bytes:Buffer.byteLength(currentSource)};
+  const result=attachSelectedInternalAssetApiContext(input,{
+    cwd,contract:{target:'web',selectedSourcePaths:[]},
+    order:{target:'web',gameId:'old-world',goal:'기존 게임의 NPC 퀘스트 제작 경제 물리 날씨 성장 확인'}
+  });
+  const matched=result.vibeDynamicToolMatch;
+  for(const name of ['NPC_AI','QUEST_DIALOGUE','CRAFTING','ECONOMY','PROGRESSION','WEATHER','PHYSICS'])
+    assert.ok(matched.sourceSignals.includes(name),name);
+  for(const file of Object.keys(modules)){
+    const row=matched.matches.find(x=>x.path===file);
+    assert.ok(row,file);
+    assert.match(row.sha256,/^[a-f0-9]{64}$/);
+    assert.equal(row.kind,'LIBRARY_REFERENCE_READ_ONLY');
+  }
+  assert.equal(matched.newGameplaySystemsAuthorized,false);
+  assert.equal(matched.runtimeVerified,false);
+  assert.equal(input.files[0].content,currentSource);
+});
+
+// 메인 · 전체 게임 코드에서 찾은 깊은 위치 모듈을 워커의 짧은 파일 창에도 반영한다.
+test('Vibe libraries and development tools rematch F0 game-source-backed modules without foreign or design-only hints',()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'assets/crafting-recipes.js'),
+    'export class JaewoonCraftingRecipes {}\n');
+  write(path.join(cwd,'assets/vibe-housing-library.js'),
+    'export function inspectHousingPlacement() {}\n');
+  write(path.join(cwd,'assets/vibe-save-kit.js'),
+    'export function inspectSaveSource() {}\n');
+  write(path.join(cwd,'assets/combat-actions.js'),
+    'export function inspectCombatTiming() {}\n');
+  write(path.join(cwd,'assets/economy-loot-shop.js'),
+    'export function inspectShopOwnership() {}\n');
+  const source='const tickCount = 1;';
+  const input={files:[{path:'web-games/a/current.js',editable:true,content:source}],bytes:source.length};
+  const composition={
+    sourceOnlyEvidence:true,gameId:'a',platform:'WEB',
+    sourceTreeFingerprint:'sha256-grounded-game-source',
+    components:[
+      {id:'CRAFTING',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/crafting.js']},
+      {id:'HOUSING',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/housing.js']},
+      {id:'SAVE',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/save.js']},
+      {id:'COMBAT',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/combat.js']},
+      {id:'SHOP',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',
+        responsibleFiles:['web-games/a/deep/shop.js']},
+      {id:'QUEST_DIALOGUE',state:'REVIEW_REQUIRED_NO_SOURCE',responsibleFiles:[]}
+    ]
+  };
+  const run=(gameId,plan)=>attachSelectedInternalAssetApiContext(input,{
+    cwd,contract:{target:'web',selectedSourcePaths:[]},order:{
+      target:'web',gameId,goal:'keep existing tick',buildUpDirective:{gameInternalAutoComposition:plan}
+    }
+  });
+  const matching=run('a',composition).vibeDynamicToolMatch;
+  assert.ok(matching.sourceSignals.includes('CRAFTING'));
+  assert.ok(matching.sourceSignals.includes('HOUSING'));
+  assert.ok(matching.sourceSignals.includes('SAVE'));
+  assert.ok(matching.sourceSignals.includes('COMBAT'));
+  assert.ok(matching.sourceSignals.includes('ECONOMY'));
+  assert.ok(!matching.sourceSignals.includes('QUEST_DIALOGUE'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/crafting-recipes.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/vibe-housing-library.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/vibe-save-kit.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/combat-actions.js'));
+  assert.ok(matching.matches.some(row=>row.path==='assets/economy-loot-shop.js'));
+  assert.equal(matching.sourceMutationPerformed,false);
+  assert.equal(matching.runtimeVerified,false);
+  const foreign=run('b',composition);
+  assert.ok(!foreign.vibeDynamicToolMatch||
+    !foreign.vibeDynamicToolMatch.matches.some(row=>row.path==='assets/crafting-recipes.js'));
+  const wrongPlatform=run('a',{...composition,platform:'UNITY'});
+  assert.ok(!wrongPlatform.vibeDynamicToolMatch||
+    !wrongPlatform.vibeDynamicToolMatch.matches.some(row=>row.path==='assets/vibe-housing-library.js'));
+});
+
 test('native game BUILD_UP receives bounded current Vibe tool implementations as read-only source',()=>{
   const cwd=tempRoot();
   const paths=['assets/vibe-art-pipeline.js','assets/vibe-environment-director.js',
@@ -8553,7 +8773,7 @@ test('package asset repair evidence survives focused and oversized worker prompt
     'const COMPACT_DIRECTIVE_LINE_BYTES=1800;\n'+workerSource.slice(boundedStart,boundedEnd)+'\n'
       +workerSource.slice(guidanceStart,guidanceEnd)
       +'\n({guidance:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',
-    {Buffer,console,robloxProductionPromptLines,clean:value=>String(value??'').trim(),posix:value=>String(value??'').replaceAll('\\','/'),
+    {Buffer,console,robloxProductionPromptLines,playerFacingInspectionPromptLines,clean:value=>String(value??'').trim(),posix:value=>String(value??'').replaceAll('\\','/'),
       unique:values=>[...new Set((values||[]).map(value=>String(value??'').trim()).filter(Boolean))]}
   );
   const source='a'.repeat(40),relative='client/Game.client.luau';
@@ -8583,6 +8803,17 @@ test('package asset repair evidence survives focused and oversized worker prompt
   };
   verify(block);
   for(const options of [{compact:true},{compact:true,focusedRobloxVisual:true},{compact:true,focusedPresentation:true}])verify(compact(block,options));
+  const contractFailure={...failure,authority:'roblox-source-static-contract-failure',assetThreshold:undefined,
+    staticContract:{pass:false,blockers:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']}};
+  const contractDirective={...directive,playtestRuntimeFindings:{studioQualityFailure:contractFailure,runtimeObserved:false,runtimePassed:false}};
+  const contractBlock=guidance({target:'roblox',selectedTask:{buildUpDirective:contractDirective}},[relative]);
+  for(const candidate of [contractBlock,compact(contractBlock,{compact:true}),compact(contractBlock,{compact:true,focusedRobloxVisual:true})]){
+    assert.match(candidate,/roblox-source-static-contract-failure/);
+    assert.match(candidate,/CONFIG_PLAY_MODE_PROFILE_REQUIRED/);
+    assert.match(candidate,/SERVER_COOP_SHARED_OBJECTIVE_REQUIRED/);
+    assert.doesNotMatch(candidate,/runtimeObserved[=:]\s*true|runtimePassed[=:]\s*true/);
+  }
+
   const cwd=tempRoot();
   try{
     const content='local panel = script.Parent\npanel.BackgroundColor3=Color3.fromRGB(20,30,40)\n';
@@ -8703,3 +8934,4 @@ test('internal library source execution honors Roblox asset focus without a game
     assert.throws(()=>assertOwnerDevelopmentAvailable({cwd:root,order:{...order,source:{root:'assets/unity/fixture'}}}),/OWNER_DIRECT_DEVELOPMENT_HELD/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+

@@ -701,11 +701,28 @@ jobs:
                 ||item.robloxRegressionPassed!==true
               );
             const externalRuntimeObservationPending=item.robloxPublicReleaseRuntimeObservationPending===true;
+            // An owner private publish is not completion of the candidate's F0-F9 QA.
+            // Consume exact probe findings even when development admission is already closed.
+            const f0=item.robloxFoundationF0Evidence||{};
+            const exactPublishedQaPending=
+              item.productionClass==='DEVELOPMENT_CONFIRMED'
+              &&item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxBuildSourceRevision===sourceRevision
+              &&item.robloxFoundationF0Passed===true
+              &&/^[a-f0-9]{40}$/i.test(sourceRevision)
+              &&/^sha256:[a-f0-9]{64}$/i.test(artifactIdentity)
+              &&f0.pass===true&&f0.sourceRevision===sourceRevision&&f0.artifactIdentity===artifactIdentity
+              &&candidate.published===true
+              &&candidate.sourceRevision===sourceRevision&&candidate.artifactIdentity===artifactIdentity
+              &&Number(candidate.versionNumber)>0&&Boolean(candidate.universeId)&&Boolean(candidate.placeId)
+              &&(item.robloxRuntimeFoundationPassed!==true||item.robloxRuntimePassed!==true
+                ||item.robloxIndependentQaPassed!==true||item.robloxRegressionPassed!==true);
             return (candidate.published===true||candidate.authority==='roblox-local-f0-pre-f9-artifact')
               &&item.robloxFoundationF0Passed===true
               &&item.robloxPublicRelease!==true
-              &&(item.robloxInternalReleaseReady!==true||externalRuntimeObservationPending)
-              &&(explicitRuntimeStage||exactStudioPlayPendingRuntime||externalRuntimeObservationPending);
+              &&(item.robloxInternalReleaseReady!==true||externalRuntimeObservationPending||exactPublishedQaPending)
+              &&(explicitRuntimeStage||exactStudioPlayPendingRuntime||externalRuntimeObservationPending||exactPublishedQaPending);
           }).sort((a,b)=>{
             if(!requested)return 0;
             return Number(b.gameId===requested)-Number(a.gameId===requested);
@@ -714,7 +731,13 @@ jobs:
           const studioFollowupIds=[];
           const localF0PrivateDeployIds=[];
           const stamp=new Date().toISOString();
+          const multiplayerPolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'))
+            ?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
           const multiplayerRequirementFor=item=>{
+            // 중앙정책의 전체 게임 멀티 정적코드 계약은 예전 SINGLE 설계보다 우선한다.
+            // 통과 여부는 현재 서버·클라이언트 소스 검증 결과로만 판정한다.
+            if(multiplayerPolicy.required===true&&multiplayerPolicy.scope==='ALL_ACTIVE_AND_NEW_GAMES')
+              return{known:true,required:true,mode:'POLICY_REQUIRED_STATIC_CODE'};
             const rel=String(item.designBaselineSource||'').trim();
             const file=rel?'../runtime/'+rel:'';
             if(!file||!fs.existsSync(file))return{known:false,required:null,mode:'UNKNOWN'};

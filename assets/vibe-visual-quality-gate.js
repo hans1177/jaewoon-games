@@ -109,6 +109,102 @@ export function auditVibeRuntimeBeforeAfterComparison(evidence={}){
 }
 
 
+
+// Aesthetic quality is evaluated from observed pixels and source-bound repairs, never from
+// render-delta presence, style labels, asset counts or an unreviewed model score alone.
+export const VIBE_ART_DIRECTION_AXES=Object.freeze([
+  'COMPOSITION_AND_FOCAL_HIERARCHY','SPATIAL_DEPTH_AND_SCALE','LIGHT_AND_VALUE_STRUCTURE',
+  'MATERIAL_AND_SURFACE_COHESION','SILHOUETTE_AND_ASSET_FIT',
+  'UI_TYPOGRAPHY_AND_SPACING','COLOR_AND_STYLE_IDENTITY','MOTION_AND_EFFECT_READABILITY'
+]);
+function validArtDirectionCapture(capture={},revision=''){
+  return ['runtime-capture','roblox-runtime-capture','internal-playtest-capture','golden-scene-capture']
+    .includes(String(capture.source||'').toLowerCase())
+    &&capture.runtimeScreenshot===true&&capture.observed===true&&capture.reviewed===true
+    &&capture.markerOnly!==true&&String(capture.revision||capture.candidateRevision||'')===revision
+    &&Boolean(String(capture.artifactId||''))&&/^[0-9a-f]{64}$/i.test(String(capture.imageSha256||''));
+}
+function validArtDirectionRegion(region){
+  return region&&['x','y','width','height'].every(key=>Number.isFinite(region[key]))
+    &&region.x>=0&&region.y>=0&&region.width>0&&region.height>0
+    &&region.x+region.width<=1.000001&&region.y+region.height<=1.000001;
+}
+export function auditVibeArtDirectionReview(review={}){
+  if(review.required!==true)return Object.freeze({required:false,pass:true,reason:'NOT_REQUESTED',repairTargets:Object.freeze([])});
+  const baselineRevision=String(review.baselineRevision||'').trim();
+  const candidateRevision=String(review.candidateRevision||'').trim();
+  const baseline=review.baselineCapture||{},selected=review.selectedCapture||{};
+  const reasons=[];
+  if(!baselineRevision||!candidateRevision||baselineRevision===candidateRevision)reasons.push('art-direction-distinct-revisions-required');
+  if(!validArtDirectionCapture(baseline,baselineRevision)||!validArtDirectionCapture(selected,candidateRevision)
+    ||baseline.imageSha256===selected.imageSha256)reasons.push('art-direction-actual-distinct-runtime-images-required');
+  if(review.sameCameraStateLighting!==true||review.comparisonObserved!==true||review.comparisonReviewed!==true
+    ||!String(review.comparisonMethod||'').trim())reasons.push('art-direction-equivalent-scene-review-required');
+  const findings=Array.isArray(review.findings)?review.findings:[];
+  if(!findings.length)reasons.push('art-direction-specific-findings-required');
+  const ids=new Set(),repairTargets=[];
+  let improved=0,regressed=0;
+  for(const row of findings){
+    const id=String(row?.id||'').trim(),axis=String(row?.axis||'').toUpperCase();
+    const before=row?.before||{},after=row?.after||{},fix=row?.repair||{};
+    const sourcePath=String(fix.sourcePath||'').replaceAll('\\','/').trim();
+    const validPath=/^(?:roblox-games|web-games|unity-games|assets)\//.test(sourcePath)
+      &&!sourcePath.startsWith('/')&&!sourcePath.split('/').includes('..');
+    const grounded=Boolean(id&&!ids.has(id)&&VIBE_ART_DIRECTION_AXES.includes(axis)
+      &&String(row?.observation||'').trim()&&validArtDirectionRegion(row?.region)
+      &&before.imageSha256===baseline.imageSha256&&after.imageSha256===selected.imageSha256
+      &&before.observed===true&&before.reviewed===true&&after.observed===true&&after.reviewed===true
+      &&Number.isInteger(before.severity)&&before.severity>=0&&before.severity<=3
+      &&Number.isInteger(after.severity)&&after.severity>=0&&after.severity<=3
+      &&validPath&&String(fix.targetId||'').trim()&&String(fix.property||'').trim()
+      &&String(fix.expectedEffect||'').trim());
+    if(id)ids.add(id);
+    if(!grounded)reasons.push('art-direction-finding-unverified:'+(id||'UNKNOWN'));
+    if(grounded&&after.severity<before.severity)improved++;
+    if(grounded&&after.severity>before.severity)regressed++;
+    if(!grounded||after.severity>1){
+      repairTargets.push(Object.freeze({
+        surface:'ART_DIRECTION',id:id||'UNKNOWN',axis,sourcePath:validPath?sourcePath:null,
+        targetId:String(fix.targetId||'').trim()||null,property:String(fix.property||'').trim()||null,
+        action:String(fix.action||'').trim()||null,expectedEffect:String(fix.expectedEffect||'').trim()||null,
+        region:validArtDirectionRegion(row?.region)?Object.freeze({...row.region}):null,
+        issue:String(row?.observation||'').trim(),beforeSeverity:before.severity??null,
+        afterSeverity:after.severity??null,scope:'VISUAL_PRESENTATION_ONLY',
+        evidenceRequired:'SAME_SCENE_SOURCE_REVISION_BOUND_PIXEL_REVIEW',
+        preserveGameplayAndSave:true
+      }));
+    }
+  }
+  if(improved===0)reasons.push('art-direction-observed-quality-improvement-required');
+  if(regressed>0)reasons.push('art-direction-visual-regression-detected');
+  if(repairTargets.length)reasons.push('art-direction-defects-remain');
+  const candidates=Array.isArray(review.candidates)?review.candidates:[];
+  if(review.competitionRequired===true&&candidates.length<3)reasons.push('art-direction-three-independent-candidates-required');
+  if(candidates.length){
+    const hashes=new Set(),revisions=new Set(),ids=new Set();
+    for(const candidate of candidates){
+      const id=String(candidate?.id||'').trim(),revision=String(candidate?.revision||'').trim(),capture=candidate?.capture||{};
+      if(!id||ids.has(id)||!revision||revisions.has(revision)
+        ||!validArtDirectionCapture(capture,revision)||hashes.has(capture.imageSha256)
+        ||candidate.reviewed!==true||!Number.isFinite(candidate.score)||candidate.score<0||candidate.score>100)
+        reasons.push('art-direction-candidate-not-independently-reviewed:'+(id||'UNKNOWN'));
+      ids.add(id);revisions.add(revision);hashes.add(capture.imageSha256);
+    }
+    const winner=candidates.find(row=>String(row?.id||'')===String(review.selectedCandidateId||''));
+    if(!winner||winner.revision!==candidateRevision||winner.capture?.imageSha256!==selected.imageSha256
+      ||candidates.some(row=>row.score>winner.score))reasons.push('art-direction-selection-not-best-observed-candidate');
+  }
+  return Object.freeze({
+    required:true,pass:reasons.length===0,baselineRevision,candidateRevision,
+    reviewedAxes:Object.freeze([...new Set(findings.map(row=>String(row?.axis||'').toUpperCase()))]),
+    observedImprovements:improved,observedRegressions:regressed,candidateCount:candidates.length,
+    repairTargets:Object.freeze(repairTargets),reasons:Object.freeze([...new Set(reasons)]),
+    outcome:'PIXEL_AND_SOURCE_BOUND_AESTHETIC_REVIEW_NOT_AUTOMATIC_ARTISTIC_JUDGMENT',
+    gameplayMutationAllowed:false,authority:'GRAPHICS_PRODUCTION_INTERNAL_VISUAL_REVIEW'
+  });
+}
+
+
 export function auditVibeHighEndTargetFrameEvidence(evidence={}){
   const captures=Array.isArray(evidence.captures)?evidence.captures:[];
   const candidateRevision=String(evidence.candidateRevision||'').trim();
@@ -160,6 +256,13 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
     const presentation=String(actor?.presentation||actor?.assetClass||'').trim().toLowerCase();
     const primitive=PRIMITIVE_PRESENTATIONS.has(presentation)||actor?.placeholder===true;
     return strictStage&&primitive&&actor?.explicitStylizedApproval!==true;
+  }).map(actor=>String(actor?.id||actor?.role||'UNKNOWN_PRIMARY_ACTOR'));
+  // Native actor IDs are not evidence that a better model rendered successfully.
+  // Only explicitly reported binding states are assessed; unknown actors require runtime observation.
+  const actorBindingFailures=primaryActors.filter(actor=>{
+    const binding=String(actor?.nativeActorBindingState||actor?.bindingState||'').trim().toUpperCase();
+    return actor?.nativeActorMissing===true||actor?.nativeActorFailureStage||
+      ['BOUND_UNVERIFIED','FAILED','MISSING','LOAD_FAILED','FALLBACK_ONLY'].includes(binding);
   }).map(actor=>String(actor?.id||actor?.role||'UNKNOWN_PRIMARY_ACTOR'));
   const openCriticalDebt=visualDebt.filter(debt=>String(debt?.status||'OPEN').toUpperCase()!=='RESOLVED'&&['critical','high'].includes(String(debt?.severity||'high').toLowerCase()));
   const reasons=[];
@@ -261,6 +364,8 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
     const id=String(requirement.id||'').trim(),row=sceneObservations.get(id);
     return !(row&&row.observed===true&&row.reviewed===true&&row.bound===true&&row.pass===true);
   }).map(row=>String(row.id||'').trim());
+  const artDirectionReview=evidence.artDirectionReview?.required===true?auditVibeArtDirectionReview(evidence.artDirectionReview):null;
+  const artDirectionRevisionMismatch=Boolean(artDirectionReview&&artDirectionReview.candidateRevision!==String(evidence.candidateRevision||'').trim());
   const visualRegressionEvidence=evidence.visualRegression&&typeof evidence.visualRegression==='object'?evidence.visualRegression:{};
   const detailedVisualRegression=Boolean(visualRegressionEvidence.before||visualRegressionEvidence.after||visualRegressionEvidence.comparison||visualRegressionEvidence.baselineRevision||visualRegressionEvidence.candidateRevision);
   const visualRegressionAudit=highEndRequired&&detailedVisualRegression?auditVibeRuntimeBeforeAfterComparison(visualRegressionEvidence):null;
@@ -290,11 +395,15 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   if(declaredInterfaceSurfaces.length&&missingInterfaceSurfaces.length)reasons.push('declared-interface-runtime-evidence-incomplete');
   if(sceneRequirements.length&&missingSceneObjects.length)reasons.push('declared-scene-object-runtime-evidence-incomplete');
   if(highEndRequired&&!visualRegressionPassed)reasons.push('before-after-visual-regression-missing-or-failed');
+  if(artDirectionReview&&(!artDirectionReview.pass||artDirectionRevisionMismatch))reasons.push('art-direction-visible-quality-unverified');
   if(highEndRequired&&evidence.performance?.pass!==true)reasons.push('platform-performance-evidence-missing-or-failed');
   if(primitiveViolations.length)reasons.push('primary-actor-primitive-placeholder');
+  if(actorBindingFailures.length)reasons.push('primary-actor-native-binding-not-verified');
   if(finalStage&&openCriticalDebt.length)reasons.push('unresolved-critical-visual-debt');
   if(evidence.markerOnlyPass===true)reasons.push('marker-only-presentation-pass-forbidden');
   const repairTargets=[];
+  if(artDirectionReview)repairTargets.push(...artDirectionReview.repairTargets);
+  for(const id of actorBindingFailures)repairTargets.push(Object.freeze({surface:'CHARACTER_NPC_CREATURE',id,scope:'VISUAL_AND_MOTION_ONLY',evidenceRequired:'EXACT_RUNTIME_ACTOR_VISIBLE_AND_MOTION_REVIEW',preserveGameplayAndSave:true}));
   for(const id of missingEnvironment)repairTargets.push(Object.freeze({surface:'ENVIRONMENT',id,scope:'PRESENTATION_ONLY',evidenceRequired:'SAME_ROLE_RUNTIME_RECAPTURE'}));
   for(const id of missingCohesion)repairTargets.push(Object.freeze({surface:'COHESION',id,scope:'ART_STYLE_ONLY',evidenceRequired:'SAME_CAMERA_LIGHTING_COMPARISON'}));
   for(const id of missingPresentation)repairTargets.push(Object.freeze({surface:'PRESENTATION',id,scope:'PRESENTATION_ONLY',evidenceRequired:'RUNTIME_EVENT_CAPTURE'}));
@@ -314,6 +423,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
     golden,
     primaryActorCount:primaryActors.length,
     primitiveViolations:Object.freeze(primitiveViolations),
+    actorBindingFailures:Object.freeze(actorBindingFailures),
     openCriticalVisualDebt:Object.freeze(openCriticalDebt.map(row=>String(row?.id||row?.role||'visual-debt'))),
     interfaceCoverage:Object.freeze({
       required:Object.freeze(declaredInterfaceSurfaces),
@@ -327,6 +437,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
       complete:missingSceneObjects.length===0
     }),
     visualRegression:visualRegressionAudit,
+    artDirectionReview,
     repairTargets:Object.freeze(repairTargets),
     universalAssetFirst:Object.freeze({
       required:universalAssetFirstRequired,

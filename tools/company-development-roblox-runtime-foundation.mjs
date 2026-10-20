@@ -351,6 +351,10 @@ export async function probeRobloxOpenCloudEngine({
     'print("JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true")',
     'print("JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS="..tostring(#Players:GetPlayers()))',
     'local RunService=game:GetService("RunService")',
+    'local ServerScriptService=game:GetService("ServerScriptService")',
+    'local deployedGameScript=ServerScriptService:FindFirstChild("Game",true)',
+    'print("JAEWOON_OPEN_CLOUD_GAME_SERVER_SCRIPT_PRESENT="..tostring(deployedGameScript~=nil and deployedGameScript:IsA("Script")))',
+    'print("JAEWOON_OPEN_CLOUD_GAME_SERVER_SCRIPT_ENABLED="..tostring(deployedGameScript~=nil and deployedGameScript:IsA("Script") and deployedGameScript.Enabled))',
     // Official Open Cloud Luau tasks are non-simulating. RunService:Run() requires Plugin security.
     // Preserve explicit diagnostics, but never attempt to start a real game simulation here.
     'local simulationRunningBefore=RunService:IsRunning()',
@@ -361,7 +365,7 @@ export async function probeRobloxOpenCloudEngine({
     'local startupWaitStarted=os.clock()',
     'local startupWaitDeadline=startupWaitStarted+8',
     'local function runtimeWorldReady() if workspace:GetAttribute("Foundation_SERVER_BOOT")==true then return true end; for _,item in ipairs(workspace:GetDescendants()) do if item:IsA("SpawnLocation") or item:GetAttribute("SpawnMarkerOnly")==true then return true end end; return false end',
-    'while not runtimeWorldReady() and os.clock()<startupWaitDeadline do task.wait(0.25) end',
+    'while simulationRunning and not runtimeWorldReady() and os.clock()<startupWaitDeadline do task.wait(0.25) end',
     'local startupWaitSeconds=os.clock()-startupWaitStarted',
     'local runtimeWorldReadyObserved=runtimeWorldReady()',
     'local foundationServerBoot=workspace:GetAttribute("Foundation_SERVER_BOOT")==true',
@@ -500,6 +504,8 @@ export async function probeRobloxOpenCloudEngine({
     &&/lacking capability Plugin/i.test(simulationStartError);
   const legacyFoundationServerBootMarkerObserved=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true');
   const serverContextExecuted=joined.includes('JAEWOON_OPEN_CLOUD_ENGINE_SERVER_CONTEXT=true');
+  const gameServerScriptPresent=joined.includes('JAEWOON_OPEN_CLOUD_GAME_SERVER_SCRIPT_PRESENT=true');
+  const gameServerScriptEnabled=joined.includes('JAEWOON_OPEN_CLOUD_GAME_SERVER_SCRIPT_ENABLED=true');
   // Open Cloud Luau Execution evaluates the exact place in server context without starting gameplay scripts.
   // Only an actually running simulation with a game-produced boot marker can prove a server-script boot.
   const exactLuauTaskObserved=serverContextExecuted&&exactPlace&&exactVersion;
@@ -512,6 +518,8 @@ export async function probeRobloxOpenCloudEngine({
     exactVersion,
     exactLuauTaskObserved,
     scriptExecuted:serverContextExecuted,
+    gameServerScriptPresent,
+    gameServerScriptEnabled,
     headlessServerExecution:true,
     livePlayerSimulationClaimed:false,
     simulationStartSupported:false,

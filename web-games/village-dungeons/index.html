@@ -201,7 +201,11 @@ function totalAttack(){return state.baseAttack+weaponPower();}
 function nextXp(){return state.level*100;}
 
 var renderer=new THREE.WebGLRenderer({canvas:document.getElementById("game"),antialias:false,alpha:false,powerPreference:"high-performance"});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
+// 렌더링: 모바일 픽셀 과부하만 줄인다. 월드·터치·이동·저장 시간은 그대로 둔다.
+var mobileRender=window.matchMedia('(pointer: coarse)').matches;
+var maxRenderRatio=Math.min(window.devicePixelRatio||1,mobileRender?1:1.5);
+var renderRatio=maxRenderRatio,renderWindowStart=0,renderFrameCount=0;
+renderer.setPixelRatio(renderRatio);
 renderer.setSize(innerWidth,innerHeight,false);
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 
@@ -861,7 +865,22 @@ function animate(now){
     attackAnim=Math.max(0,attackAnim-dt*4.5);
     sword.rotation.x=-1.4*Math.sin(attackAnim*Math.PI);
   }else sword.rotation.x=.2;
-  renderer.render(scene,camera);
+
+  // 게임 로직은 매 프레임 갱신하고, 화면에 보일 때만 GPU에 그린다.
+  if(!document.hidden){
+    if(mobileRender){
+      renderFrameCount++;
+      if(!renderWindowStart)renderWindowStart=now;
+      var renderElapsed=now-renderWindowStart;
+      if(renderElapsed>=4500){
+        var measuredFps=renderFrameCount*1000/renderElapsed;
+        var nextRatio=measuredFps<42?Math.max(.75,renderRatio-.15):measuredFps>56?Math.min(maxRenderRatio,renderRatio+.1):renderRatio;
+        if(Math.abs(nextRatio-renderRatio)>.01){renderRatio=nextRatio;renderer.setPixelRatio(renderRatio);}
+        renderWindowStart=now;renderFrameCount=0;
+      }
+    }
+    renderer.render(scene,camera);
+  }else{renderWindowStart=0;renderFrameCount=0;}
 }
 addEventListener("resize",function(){
   camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);

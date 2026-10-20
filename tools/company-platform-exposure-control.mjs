@@ -13,7 +13,26 @@ function openBlockingTickets(ticketQueue={},gameId='',platform=''){
   return (ticketQueue.tickets||[]).filter(t=>clean(t.gameId)===gameId&&['OPEN','REOPENED'].includes(upper(t.status))&&['CRITICAL','HIGH'].includes(upper(t.severity))&&(!clean(t.surface)||upper(t.surface)===platform||upper(t.surface)==='WEB'));
 }
 // 출시 판정: 과거 배포 이력과 검증된 로비를 구분하고, 사용자 확정은 별도로 기록한다.
-export function evaluateInternalRelease(item={},platform='',roadmap={}){
+export function evaluateInternalRelease(item={},platform='',roadmap={},purpose='EXPOSURE'){
+  if(platform==='ROBLOX'&&purpose==='SERVER_DEPLOYMENT'){
+    const rule=roadmap.fixedAutonomousDevelopmentOperatingContract?.serverDeployment||{};
+    const candidate=item.robloxRuntimeCandidateEvidence||{},f9=item.robloxF9ReleaseRegressionEvidence||{};
+    const f0=item.robloxFoundationF0Evidence||{};
+    const sourceRevision=clean(candidate.sourceRevision),artifactIdentity=clean(candidate.artifactIdentity);
+    const publishedCandidate=candidate.published===true&&/^[1-9][0-9]*$/.test(clean(candidate.universeId))&&/^[1-9][0-9]*$/.test(clean(candidate.placeId));
+    const localArtifact=rule.allowF9VerifiedLocalArtifact===true&&candidate.published===false&&candidate.authority==='roblox-local-f0-pre-f9-artifact'
+      &&f0.sourcePreflightPassed===true&&f0.f0SourceIntegrityPassed===true&&f0.sourceRevision===sourceRevision&&f0.artifactIdentity===artifactIdentity
+      &&Number.isInteger(Number(candidate.artifactRunId))&&Number(candidate.artifactRunId)>0&&Number(candidate.artifactRunId)===Number(f0.artifactRunId)&&Number(candidate.versionNumber)===Number(candidate.artifactRunId);
+    const checks={
+      policy:rule.enabled===true&&rule.everyVerifiedCycle===true,
+      identity:clean(item.gameId)!==''&&f9.gameId===item.gameId&&/^[a-f0-9]{40}$/i.test(sourceRevision)&&/^sha256:[a-f0-9]{64}$/i.test(artifactIdentity)&&f9.sourceRevision===sourceRevision&&f9.artifactIdentity===artifactIdentity,
+      candidate:(publishedCandidate||localArtifact)&&candidate.releaseClaim===false&&Number.isInteger(Number(candidate.versionNumber))&&Number(candidate.versionNumber)>0&&Number(f9.candidateVersionNumber)===Number(candidate.versionNumber),
+      finalReview:item.robloxFinalReviewPassed===true&&item.robloxF9ReleaseRegressionPassed===true&&f9.noCurrentCriticalOrHighTesterFailure===true,
+      qa:item.robloxRuntimePassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true
+    };
+    const ready=Object.values(checks).every(Boolean);
+    return{version:2,purpose,ready,basis:ready?'EXACT_F9_SERVER_DEPLOYMENT':'PENDING_EXACT_F9',checks,blockers:Object.entries(checks).filter(([,pass])=>!pass).map(([key])=>key),sourceRevision:sourceRevision||null,artifactIdentity:artifactIdentity||null,publicRelease:false,ownerPublicDecisionRequired:true};
+  }
   const rule=roadmap.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalRelease?.lobbyGate||{};
   const roblox=platform==='ROBLOX',lower=roblox?'roblox':'unity';
   const execution=item.unityExecutionEvidence||item.executionEvidence||{};
@@ -270,3 +289,4 @@ if(process.argv[1]===new URL(import.meta.url).pathname){
   console.log('PLATFORM_PUBLIC_RELEASE_READY='+result.state.games.flatMap(g=>g.platforms).filter(x=>x.publicReleaseReady).length);
   console.log('ROBLOX_PERPETUAL_BUILDUP_ACTIVE='+result.state.games.filter(g=>g.platforms.find(p=>p.platform==='ROBLOX')?.perpetualBuildupActive).length);
 }
+

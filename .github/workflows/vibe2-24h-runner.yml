@@ -93,8 +93,8 @@ env:
   VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '128'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
-  VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
-  VIBE2_24H_GEMINI_ALLOWED: 'false'
+  VIBE2_24H_LEARNING_PROVIDER: 'GEMINI_API'
+  VIBE2_24H_GEMINI_ALLOWED: 'true'
   VIBE2_LEARNING_ALWAYS_ON: 'true'
   VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'
   VIBE2_LEARNING_LANE_MAX: '4'
@@ -157,10 +157,10 @@ jobs:
           echo 'VIBE2_PARALLELISM_POLICY=FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_128'
           echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
           echo "VIBE2_WORK_ORDER_OUTPUT_CONTRACT=$VIBE2_WORK_ORDER_OUTPUT_CONTRACT"
-          test "$VIBE2_24H_LEARNING_PROVIDER" = "LOCAL_OLLAMA"
-          test "$VIBE2_24H_GEMINI_ALLOWED" = "false"
+          test "$VIBE2_24H_LEARNING_PROVIDER" = "GEMINI_API"
+          test "$VIBE2_24H_GEMINI_ALLOWED" = "true"
           echo "VIBE2_24H_LEARNING_PROVIDER=$VIBE2_24H_LEARNING_PROVIDER"
-          echo "VIBE2_24H_GEMINI_LEARNING=FORBIDDEN"
+          echo "VIBE2_24H_GEMINI_LEARNING=EXTERNAL_ONLY"
 
       - name: Dispatch queued GAME_PRIMARY and independent asset work before full planning
         env:
@@ -243,15 +243,27 @@ jobs:
           const fs=require('fs');
           const snapshot=JSON.parse(fs.readFileSync('/tmp/vibe2-preplan-actions-runs.json','utf8'));
           const queued=new Set(['queued','pending','requested']);
-          const wake=(snapshot.workflow_runs||[]).find(run=>
+          const matches=(snapshot.workflow_runs||[]).filter(run=>
             run.path==='.github/workflows/vibe2-continuous-core.yml'
             &&run.event==='workflow_dispatch'
             &&run.head_sha===process.env.CURRENT_MAIN_SHA
-            &&queued.has(String(run.status||'').toLowerCase())
             &&run.display_title==='Vibe2 Continuous Core · workflow_dispatch · asset-development');
-          process.stdout.write(wake?String(wake.id):'');
+          const wake=matches.find(run=>queued.has(String(run.status||'').toLowerCase()))
+            ||matches.find(run=>String(run.status||'').toLowerCase()==='in_progress');
+          process.stdout.write(wake?String(wake.id)+(wake.status==='in_progress'?':reserve-check':''):'');
           NODE
             )"
+          fi
+          # Reuse a running workflow only while its reserve job still owns the pending reservation.
+          # Once reserve finishes, free slots must be refillable by independent waves.
+          if [[ "$queued_asset_wake" =~ ^([0-9]+):reserve-check$ ]]; then
+            wake_id="${BASH_REMATCH[1]}"
+            reserve_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${wake_id}/jobs?per_page=100" --jq '.jobs[] | select(.name=="reserve") | .status' 2>/dev/null || true)"
+            if [[ "$reserve_status" == 'queued' || "$reserve_status" == 'in_progress' ]]; then
+              queued_asset_wake="$wake_id"
+            else
+              queued_asset_wake=''
+            fi
           fi
           if [[ "$queued_asset_wake" =~ ^[0-9]+$ ]]; then
             echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=COALESCED_QUEUED_EXACT_MAIN:$queued_asset_wake:$current_main_sha"
@@ -280,22 +292,35 @@ jobs:
             exit 0
           fi
 
-          # 메인 · 아직 시작하지 않은 정확히 같은 main의 GAME_PRIMARY 호출만 재사용한다.
-          # 다른 SHA·실행 중 작업·자산 작업은 유지하고, 조회 실패 때는 기존 호출을 진행한다.
+          # 메인 · 대기 중이거나 예약 단계가 실행 중인 정확히 같은 main의 GAME_PRIMARY 호출만 재사용한다.
+          # main push 예약도 기존 동일 SHA 게임 제작 wake이므로 별도 dispatch를 만들지 않는다.
+          # 다른 SHA·다른 레인은 독립 처리하고, 조회 실패 때는 기존 호출을 진행한다.
           if [[ "$preplan_pressure" =~ ^[0-9]+$ && "$current_main_sha" =~ ^[a-f0-9]{40}$ ]]; then
             queued_exact_wake="$(CURRENT_MAIN_SHA="$current_main_sha" node <<'NODE'
           const fs=require('fs');
           const snapshot=JSON.parse(fs.readFileSync('/tmp/vibe2-preplan-actions-runs.json','utf8'));
           const queued=new Set(['queued','pending','requested']);
-          const wake=(snapshot.workflow_runs||[]).find(run=>
+          const matches=(snapshot.workflow_runs||[]).filter(run=>
             run.path==='.github/workflows/vibe2-continuous-core.yml'
-            &&run.event==='workflow_dispatch'
+            &&(run.event==='workflow_dispatch'||(run.event==='push'&&run.head_branch==='main'))
             &&run.head_sha===process.env.CURRENT_MAIN_SHA
-            &&queued.has(String(run.status||'').toLowerCase())
-            &&run.display_title==='Vibe2 Continuous Core · workflow_dispatch · game-primary');
-          process.stdout.write(wake?String(wake.id):'');
+            &&(run.display_title==='Vibe2 Continuous Core · workflow_dispatch · game-primary'
+              ||run.display_title==='Vibe2 Continuous Core · push · game-primary'));
+          const wake=matches.find(run=>queued.has(String(run.status||'').toLowerCase()))
+            ||matches.find(run=>String(run.status||'').toLowerCase()==='in_progress');
+          process.stdout.write(wake?String(wake.id)+(wake.status==='in_progress'?':reserve-check':''):'');
           NODE
             )"
+            # A running worker/fan-in is not an active reservation: allow fresh free-slot refills.
+            if [[ "$queued_exact_wake" =~ ^([0-9]+):reserve-check$ ]]; then
+              wake_id="${BASH_REMATCH[1]}"
+              reserve_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${wake_id}/jobs?per_page=100" --jq '.jobs[] | select(.name=="reserve") | .status' 2>/dev/null || true)"
+              if [[ "$reserve_status" == 'queued' || "$reserve_status" == 'in_progress' ]]; then
+                queued_exact_wake="$wake_id"
+              else
+                queued_exact_wake=''
+              fi
+            fi
             if [[ "$queued_exact_wake" =~ ^[0-9]+$ ]]; then
               echo "VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=COALESCED_QUEUED_EXACT_MAIN:$queued_exact_wake:$current_main_sha"
               exit 0
@@ -326,6 +351,8 @@ jobs:
           git config user.email 'vibe2-planner@users.noreply.github.com'
 
           attempt=0
+          # 동일 main SHA에서 통과한 비변경 원본 QA는 낙관적 control push 충돌 재시도 때 재사용한다.
+          validated_main_sha=''
           echo 'VIBE2_AUTOPLAN_OPTIMISTIC_RETRY_POLICY=UNTIL_JOB_TIMEOUT'
           while true; do
             attempt=$((attempt+1))
@@ -336,6 +363,14 @@ jobs:
             rm -rf /tmp/vibe2-main
             git worktree prune
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
+            # Verify current main policy exists; do not leak the production policy env into isolated QA fixtures.
+            test -s /tmp/vibe2-main/company-learning/platform-release-roadmap.json
+            # [설계 원본] 버전 고정된 company-runtime 아트북을 기존 main 작업 공간에 읽기 전용으로 적재한다.
+            runtime_design_sha="$(git rev-parse origin/company-runtime)"
+            test "$(git -C /tmp/vibe2-main ls-tree -d --name-only "$runtime_design_sha" -- artbook-submissions)" = 'artbook-submissions'
+            git -C /tmp/vibe2-main restore --source="$runtime_design_sha" --worktree -- artbook-submissions
+            test -d /tmp/vibe2-main/artbook-submissions
+            echo "VIBE2_SEED_ARTBOOK_SOURCE=company-runtime:$runtime_design_sha"
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack
             control_root="$PWD"
             main_sha="$(git -C /tmp/vibe2-main rev-parse HEAD)"
@@ -365,13 +400,20 @@ jobs:
               echo "VIBE2_24H_CORE_QA_REUSE_OBSERVATION=FAIL_RUN_TARGETED_QA:$main_sha"
             fi
             export VIBE2_24H_CORE_QA_REUSE="$core_qa_reuse"
+            if [ -n "$validated_main_sha" ] && [ "$validated_main_sha" = "$main_sha" ]; then
+              export VIBE2_24H_SAME_MAIN_QA_REUSE=1
+              echo "VIBE2_24H_SAME_MAIN_QA_REUSE=VERIFIED_SAME_MAIN_SHA:$main_sha"
+            else
+              export VIBE2_24H_SAME_MAIN_QA_REUSE=0
+              echo "VIBE2_24H_SAME_MAIN_QA_REUSE=REVALIDATE_NEW_MAIN_SHA:$main_sha"
+            fi
 
             (
               cd /tmp/vibe2-main
-              node --check tools/company-shared-context.mjs
+              # Four minimal reference documents: integrity only, not constitution authority.
+              node --test qa/company-four-docs-fingerprint.test.mjs qa/company-shared-context-retained.test.mjs
+              node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-before-plan.json
               node --check tools/company-constitution-enforcer.mjs
-              node --test qa/company-shared-context.test.mjs
-              node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-before-plan.json | tee /tmp/vibe2-shared-context-before-plan.log
               node tools/company-constitution-enforcer.mjs --phase=24h-planner | tee /tmp/vibe2-constitution-enforcer.log
               node --check tools/vibe2-learning-motor.mjs
               node --check tools/vibe2-auto-planner.mjs
@@ -388,7 +430,10 @@ jobs:
               node --check tools/company-development-web-gameplay-validation.mjs
               node --check tools/vibe2-practice-distillation.mjs
               node --check tools/vibe2-design-intelligence.mjs
-              if [ "${VIBE2_24H_CORE_QA_REUSE:-0}" = '1' ]; then
+              node --check tools/vibe2-verified-design-handoff.mjs
+              if [ "${VIBE2_24H_SAME_MAIN_QA_REUSE:-0}" = '1' ]; then
+                echo "VIBE2_24H_DUPLICATE_CORE_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:$main_sha"
+              elif [ "${VIBE2_24H_CORE_QA_REUSE:-0}" = '1' ]; then
                 echo 'VIBE2_24H_DUPLICATE_CORE_TESTS=SKIPPED_EXACT_SHA_CORE_QA_PASS'
               else
                 node --test qa/vibe2-learning-motor.test.mjs
@@ -399,16 +444,22 @@ jobs:
                 # 계획 단계의 범위 축소는 전체 회귀 PASS를 의미하지 않는다.
                 echo 'VIBE2_24H_NATIVE_ASSET_PREFLIGHT=SCOPED_SOURCE_INTEGRITY_FULL_QA_REMAINS_IN_CORE'
                 node --test --test-name-pattern='^(?:asset registry change detection|registry sync change detection|OBJ static validation|source GLB inventory|master GLB rejects|master GLB evidence|native actor binding|licensed FBX motion|all source GLBs|GLB production inspection|GLB world bounds|GLB scene geometry identity|native authoring reviews)' qa/vibe2-native-asset-production.test.mjs
-                node --test qa/vibe2-source-worker.test.mjs
+                # [자동코딩] 실정책·수정범위·stale 차단만 예약 전 검증; 전체 모델 회귀는 독립 Core QA에서 유지.
+                node --test --test-name-pattern='^real production Roblox auto-coding preflight' qa/vibe2-central-work-contract.test.mjs
                 node --test qa/vibe2-capability-distillation.test.mjs
                 node --test qa/vibe2-incremental-qa.test.mjs
                 node --test qa/vibe2-practice-distillation.test.mjs
                 node --test qa/vibe2-design-intelligence.test.mjs
+                node --test qa/vibe2-verified-design-handoff.test.mjs
               fi
-              # 24H-only planner dependencies remain directly tested even when Core QA is reusable.
-              node --test qa/vibe-studio-asset-universe.test.mjs
-              node --test qa/vibe3-roblox-distillation.test.mjs
-              node --test qa/company-development-web-runtime.test.mjs
+              # 24H 전용 QA는 처음 실행에 반드시 통과해야 하며, 같은 main SHA 낙관적 재시도만 재사용한다.
+              if [ "${VIBE2_24H_SAME_MAIN_QA_REUSE:-0}" = '1' ]; then
+                echo "VIBE2_24H_PLANNER_DEPENDENCY_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:$main_sha"
+              else
+                node --test qa/vibe-studio-asset-universe.test.mjs
+                node --test qa/vibe3-roblox-distillation.test.mjs
+                node --test qa/company-development-web-runtime.test.mjs
+              fi
 
               # Rule 4 final-stage neural expansion readiness is derived from direct targeted QA.
               node --check tools/vibe2-neural-expansion-readiness.mjs
@@ -416,10 +467,16 @@ jobs:
                 --root=. \
                 --output=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-neural-expansion-readiness.log
             )
+            # 단일 작업의 전체 소스 QA 성공만 기록한다. control 상태/큐/인계 검증은 매 시도 새로 실행한다.
+            validated_main_sha="$main_sha"
 
             # Repair canonical queue/parallelism state before fail-closed handoff validation.
             node --check /tmp/vibe2-main/tools/vibe2-system-steward.mjs
-            node --test /tmp/vibe2-main/qa/vibe2-system-steward.test.mjs
+            if [ "${VIBE2_24H_SAME_MAIN_QA_REUSE:-0}" = '1' ]; then
+              echo "VIBE2_24H_STEWARD_UNIT_QA=REUSED_THIS_RUN_EXACT_MAIN_SHA:$main_sha"
+            else
+              node --test /tmp/vibe2-main/qa/vibe2-system-steward.test.mjs
+            fi
             node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
               --queue="$control_root/.vibe2/queue.json" \
               --control="$control_root/.vibe2/parallelism-control.json" \
@@ -465,8 +522,16 @@ jobs:
               --root=/tmp/vibe2-main \
               --output=/tmp/vibe3-roblox-distillation-ledger.json | tee /tmp/vibe3-roblox-distillation.log
 
-            git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
             git -C /tmp/vibe2-main fetch origin '+refs/heads/company-runtime:refs/remotes/origin/company-runtime' --depth=2 --no-tags --quiet
+            runtime_design_sha="$(git -C /tmp/vibe2-main rev-parse origin/company-runtime)"
+            git -C /tmp/vibe2-main show "$runtime_design_sha:development-queue.json" > /tmp/vibe2-company-runtime-queue.json
+            (
+              cd /tmp/vibe2-main
+              COMPANY_VERIFIED_POLICY_PATH="$PWD/company-learning/platform-release-roadmap.json" \
+              COMPANY_VERIFIED_DESIGN_POLICY_PATH="$PWD/company-learning/platform-release-roadmap.json" \
+                node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha"
+            ) | tee /tmp/vibe2-verified-design-handoff.log
+            grep -q '^VIBE2_VERIFIED_DESIGN_INTAKE=PASS$' /tmp/vibe2-verified-design-handoff.log
             for runtime_design_path in design game-seed-state.json; do
               if git -C /tmp/vibe2-main cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
                 git -C /tmp/vibe2-main checkout origin/company-runtime -- "$runtime_design_path"
@@ -734,7 +799,7 @@ jobs:
               --root=/tmp/vibe2-main | tee /tmp/vibe2-release-baseline-plan.log
 
             node --check /tmp/vibe2-main/tools/vibe2-auto-planner.mjs
-            node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
+            COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json COMPANY_VERIFIED_DESIGN_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
               --runtime=/tmp/vibe2-main/vibe2-runtime.json \
               --status=/tmp/vibe2-main/company-status.json \
               --catalog=/tmp/vibe2-main/game-catalog.json \

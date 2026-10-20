@@ -85,7 +85,7 @@ function reusableArtifact(cwd,order){
   const expectedRoot=posix(order?.source?.root);
   if(posix(cached.sourceRoot)!==expectedRoot)throw new Error('exploration handoff source root 불일치');
   if(cached.codingAnalysisVersion!==CODING_ANALYSIS_VERSION)return null;
-  try{const mode=readJson(path.join(cwd,'company-learning/platform-release-roadmap.json'))?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.verificationScope;if(mode&&cached?.editContract?.gameRepair?.multiplayerLifecycle?.verificationScope!==mode)return null;}catch{}
+  try{const mode=readJson(path.join(cwd,String(process.env.COMPANY_VERIFIED_POLICY_PATH||'__policy_not_configured__')))?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.verificationScope;if(mode&&cached?.editContract?.gameRepair?.multiplayerLifecycle?.verificationScope!==mode)return null;}catch{}
   const root=path.resolve(cwd,expectedRoot);
   for(const row of cached.fileDigests||[]){
     const file=path.resolve(root,row.path);
@@ -302,7 +302,7 @@ function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsib
   const saveRequired=(sourceAnalysis.storageKeys||[]).length>0||/(?:localStorage|indexedDB|PlayerPrefs|DataStoreService|save|load|persist|저장|불러오기)/i.test(sourceText);
   const multiplayerRequired=/(?:RemoteEvent|RemoteFunction|NetworkVariable|Netcode|Photon|Mirror|multiplayer|server.?authorit|client.?server|co-?op|pvp|멀티|협동|동기화)/i.test(sourceText+' '+requirementText);
   let multiplayerVerificationScope='AUTOMATED_HARNESS';
-  try{multiplayerVerificationScope=readJson(path.join(cwd,'company-learning/platform-release-roadmap.json'))?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.verificationScope||multiplayerVerificationScope;}catch{}
+  try{multiplayerVerificationScope=readJson(path.join(cwd,String(process.env.COMPANY_VERIFIED_POLICY_PATH||'__policy_not_configured__')))?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.verificationScope||multiplayerVerificationScope;}catch{}
   const classifiedTargets=unique(testTargets||[]);
   const gameRepair={
     version:1,

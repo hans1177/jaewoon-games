@@ -24,3 +24,6 @@ assets/roblox/actors/sources/quaternius-cute/FBX/*.fbx -filter -diff -merge -tex
 assets/roblox/actors/sources/quaternius-monsters/FBX/*.fbx -filter -diff -merge -text
 assets/roblox/actors/native/quaternius-skeleton/preview-motion.mp4 -filter -diff -merge -text
 
+
+# Downloaded CC0 browser models must publish as real files, not LFS pointers.
+assets/shared/forest/*.fbx -filter -diff -merge -text

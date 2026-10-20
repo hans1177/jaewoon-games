@@ -117,6 +117,12 @@ jobs:
           const origin=String(m.origin||'VIBE2_NATIVE').trim().toUpperCase();
           const assetSourceUsageFingerprint=String(m?.codingMethod?.internalAssetSourceUsageFingerprint||'').trim();
           const assetSourceUsageLibraryVersion=Math.max(0,Math.floor(Number(m?.codingMethod?.internalAssetSourceUsageLibraryVersion)||0));
+          // Web F0 also binds the exact BUILD_UP library selection to the submitted candidate.
+          // This is source-integrity evidence, never a substitute for browser/runtime QA.
+          const webBindingPlan=m?.assetProduction?.allGameDynamicLibraryBinding||{};
+          const webBindingFingerprint=String(m?.codingMethod?.allGameDynamicAssetBindingFingerprint||'').trim();
+          const webBindingLibraryFingerprint=String(webBindingPlan.fingerprint||'').trim();
+          const webBindingLibraryVersion=Math.max(0,Math.floor(Number(webBindingPlan.libraryVersion)||0));
           const assetSelectionFingerprint=String(m?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'').trim();
           const assetSelectionLibraryVersion=Math.max(0,Math.floor(Number(m?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion)||0));
           const row=(catalog.games||[]).find(g=>String(g.id||'')===game);
@@ -133,8 +139,17 @@ jobs:
           else if(target==='roblox' && !/^[0-9a-f]{64}$/i.test(assetSelectionFingerprint)) reason='roblox-build-up-selection-fingerprint-missing';
           else if(target==='roblox' && assetSelectionLibraryVersion<=0) reason='roblox-build-up-selection-library-version-missing';
           else if(target==='web' && root!==`web-games/${game}`) reason='web-source-root-mismatch';
+          else if(target==='web' && !/^[0-9a-f]{64}$/i.test(assetSourceUsageFingerprint)) reason='web-f0-build-up-asset-fingerprint-missing';
+          else if(target==='web' && assetSourceUsageLibraryVersion<=0) reason='web-f0-build-up-asset-library-version-missing';
+          else if(target==='web' && m?.codingMethod?.allGameDynamicAssetBindingRequired!==true) reason='web-f0-dynamic-asset-binding-not-required';
+          else if(target==='web' && m?.codingMethod?.allGameDynamicAssetBindingPass!==true) reason='web-f0-dynamic-asset-binding-unverified';
+          else if(target==='web' && (!/^[0-9a-f]{64}$/i.test(webBindingFingerprint)
+            ||webBindingFingerprint!==webBindingLibraryFingerprint)) reason='web-f0-dynamic-asset-binding-fingerprint-mismatch';
+          else if(target==='web' && (webBindingLibraryVersion<=0
+            ||webBindingLibraryVersion!==assetSourceUsageLibraryVersion)) reason='web-f0-dynamic-asset-library-version-mismatch';
           else if(target==='unity' && root!==`unity-games/${game}`) reason='unity-source-root-mismatch';
-          else if(!['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass)) reason='current-production-class-not-auto-deployable';
+          else if(!row) reason='game-not-in-canonical-catalog';
+          else if(!['ACTIVE','REBUILD'].includes(String(row?.canonical?.lifecycle?.state||row?.lifecycleState||'ACTIVE').toUpperCase())) reason='game-not-active';
           else {
             decision=target==='unity'&&executionSurface==='UNITY_WEB'?'unity-web':target;
             reason='candidate-authorized';
@@ -433,6 +448,7 @@ jobs:
           SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
           BASE_SHA: ${{ needs.inspect.outputs.base_sha }}
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
           CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
           GENERATED_ASSET_FILES: ${{ needs.inspect.outputs.generated_asset_files }}
           ALREADY_PROMOTED: ${{ needs.inspect.outputs.already_promoted }}
@@ -465,20 +481,21 @@ jobs:
             release_commit="$(git rev-parse HEAD)"
             git push origin "HEAD:$release_branch"
             pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$release_branch" --title "vibe2: deploy ${TASK_ID}" --body "Verified Web release candidate. Direct main write: NO. Release PASS requires this PR's CI, merge and exact main deployment.")"
-            sleep 5
-            # 미리보기 검수는 현재 후보에 묶고, 운영 배포는 병합 뒤 별도로 확인한다.
+            # 기존 홈페이지 PR Fast QA를 같은 웹게임 후보 커밋에서 확인한다.
+            preview_pass=false
             for attempt in $(seq 1 60); do
               pages_state="$(gh api -H 'Accept: application/vnd.github+json' \
                 "repos/$GITHUB_REPOSITORY/commits/$release_commit/check-runs?per_page=100" \
-                --jq '[.check_runs[] | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
+                --jq '[.check_runs[] | select(.name=="Homepage PR Fast QA")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
               echo "VIBE2_RELEASE_PAGES_CHECK=$pages_state"
               case "$pages_state" in
-                completed:success) break ;;
-                completed:*) echo "Cloudflare Pages preview check failed: $pages_state" >&2; exit 1 ;;
+                completed:success) preview_pass=true; break ;;
+                completed:*) echo "Homepage PR candidate QA failed: $pages_state" >&2; exit 1 ;;
               esac
-              if [ "$attempt" -ge 60 ]; then echo "Cloudflare Pages preview check did not complete successfully" >&2; exit 1; fi
+              if [ "$attempt" -ge 60 ]; then echo "Homepage PR candidate QA not verified" >&2; exit 1; fi
               sleep 10
             done
+            test "$preview_pass" = true
             git fetch origin main --quiet
             [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "${promotion_paths[@]}")" ] || { echo 'main source or generated asset changed before merge; replan required' >&2; exit 1; }
             gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
@@ -492,19 +509,53 @@ jobs:
           source_tree_sha="$(git rev-parse "$promotion_sha:$SOURCE_ROOT")"
           [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
 
-          # 신규 병합과 재시도 모두 같은 운영 배포 검증을 거쳐야 성공 증거를 남긴다.
+          # GITHUB_TOKEN으로 main에 PR 병합한 커밋은 push-triggered Pages 게시를 깨우지 않는다.
+          # 기존 Magic Forest Static Play를 workflow_dispatch로 명시적으로 깨우고,
+          # 같은 exact SHA 게시가 이미 대기/실행 중이면 중복으로 보내지 않는다.
+          pages_active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/magic-forest-pages.yml/runs?per_page=100" \
+            --jq "[.workflow_runs[] | select(.head_sha==\"$promotion_sha\" and (.status==\"queued\" or .status==\"pending\" or .status==\"in_progress\"))] | length")"
+          [[ "$pages_active" =~ ^[0-9]+$ ]]
+          if [ "$pages_active" -eq 0 ]; then
+            gh workflow run magic-forest-pages.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo "WEB_PAGES_NATIVE_PUBLISH_DISPATCHED=$promotion_sha"
+          else
+            echo "WEB_PAGES_NATIVE_PUBLISH_ALREADY_ACTIVE=$promotion_sha:$pages_active"
+          fi
+
+          # 승인된 main SHA와 실제 GitHub Pages 게시 매니페스트, 게임 HTTP를 함께 확인한다.
+          # 다른 main 커밋의 배포와 오래된 Pages HEAD는 성공 증거가 아니다.
+          pages_base="https://$GITHUB_REPOSITORY_OWNER.github.io/$(basename "$GITHUB_REPOSITORY")/"
+          manifest_url="$pages_base""web-games/publish-manifest.json"
+          target_route="web-games/$GAME_ID/"
+          published=false
           for attempt in $(seq 1 60); do
-            pages_state="$(gh api -H 'Accept: application/vnd.github+json' \
-              "repos/$GITHUB_REPOSITORY/commits/$promotion_sha/check-runs?per_page=100" \
-              --jq '[.check_runs[] | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
-            echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=$pages_state"
-            case "$pages_state" in
-              completed:success) break ;;
-              completed:*) echo "Cloudflare Pages main deployment check failed: $pages_state" >&2; exit 1 ;;
-            esac
-            if [ "$attempt" -ge 60 ]; then echo "Cloudflare Pages main deployment check did not complete successfully" >&2; exit 1; fi
-            sleep 10
+            if curl --fail --silent --show-error --location --max-time 15 "$manifest_url" -o /tmp/vibe2-pages-manifest.json; then
+              if node - "$source_tree_sha" "$GAME_ID" "$target_route" <<'NODE'
+          const fs=require('node:fs');
+          const [treeSha,gameId,route]=process.argv.slice(2);
+          let m;
+          try{m=JSON.parse(fs.readFileSync('/tmp/vibe2-pages-manifest.json','utf8'));}catch{process.exit(1);}
+          // A newer unrelated main commit cannot invalidate an otherwise exact F9 game artifact.
+          // The public manifest still pins the complete main SHA; this game must match its exact source tree.
+          if(!/^[a-f0-9]{40}$/.test(m.sourceSha)||
+             !Array.isArray(m.routes)||!m.routes.includes(route)||
+             m.sourceTreeShas?.[gameId]!==treeSha)process.exit(1);
+          NODE
+              then
+                if curl --fail --silent --show-error --location --max-time 15 -o /dev/null "$pages_base$target_route"; then
+                  published=true
+                  break
+                fi
+              fi
+            fi
+            echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=PENDING:$promotion_sha:$GAME_ID:$attempt"
+            if [ "$attempt" -lt 60 ]; then sleep 10; fi
           done
+          if [ "$published" != true ]; then
+            echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=FAILED:$promotion_sha:$GAME_ID" >&2
+            exit 1
+          fi
+          echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=SUCCESS:$promotion_sha:$GAME_ID"
           echo 'deployment_pass=true' >> "$GITHUB_OUTPUT"
           echo "promotion_sha=$promotion_sha" >> "$GITHUB_OUTPUT"
           echo "source_tree_sha=$source_tree_sha" >> "$GITHUB_OUTPUT"
@@ -549,6 +600,12 @@ jobs:
             elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
               echo 'AUTONOMOUS_WEB_PUBLICATION_RETRY_REQUIRED=YES'
               gh workflow run vibe2-candidate-release.yml --repo "$GITHUB_REPOSITORY" --ref main -f candidate_branch="$CANDIDATE_BRANCH" || true
+              # 게시 실패 복구와 다음 제작 주기는 독립적이다. 같은 기존 자율개발 플로우를 다시 사용한다.
+              if gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main; then
+                echo 'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED_AFTER_WEB_PUBLISH_ATTEMPT'
+              else
+                echo 'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCH_RETRY_REQUIRED'
+              fi
             else
               echo 'AUTONOMOUS_WEB_QA_REPAIR_REQUIRED=YES'
               gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main || true
@@ -559,10 +616,13 @@ jobs:
 
           if [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
             echo "WEB_PUBLICATION_RETRY_REQUIRED=${TASK_ID:-NONE}:${CANDIDATE_BRANCH:-NONE}"
-            echo 'WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=YES'
+            echo 'WEB_PUBLICATION_RETRY_TRACKED=YES'
             echo 'WEB_SAME_VERIFIED_CANDIDATE_RETRY=YES'
-            gh workflow run vibe2-candidate-release.yml --repo "$GITHUB_REPOSITORY" --ref main -f candidate_branch="$CANDIDATE_BRANCH" || true
-            exit 0
+            # 동일 후보의 무제한 자체 재호출을 피하고, 기존 24H 5분 복구의
+            # exact candidate SHA 확인 + 2분 cooldown + 큐 원자적 타임스탬프를 이용한다.
+            # F9 verified 상태는 아래 큐 settle에서 보존하므로 복구 감시가 이어진다.
+            echo 'WEB_PUBLICATION_RETRY_OWNER=VIBE2_24H_EXACT_F9_RECOVERY'
+            echo 'WEB_NEXT_EVOLUTION_DISPATCH_AFTER_PUBLICATION_ATTEMPT=YES'
           fi
 
           rm -rf /tmp/vibe2-control
@@ -583,7 +643,10 @@ jobs:
             git reset --hard origin/vibe2-unreal-core
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if [ "$result" = PASS ]; then
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-deploy-attempted,web-static-qa-pass,web-cloudflare-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-deploy-attempted,web-static-qa-pass,web-github-pages-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
+            elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
+              # F9가 검증된 동일 후보를 보존하고 기존 게시 재시도만 추적한다. 이 실패를 QA 실패로 덮어쓰지 않는다.
+              echo 'WEB_F9_VERIFIED_QUEUE_PRESERVED_FOR_SAME_CYCLE_PUBLISH_RETRY=YES'
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-release-qa-failed --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-qa-${QA_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
@@ -611,6 +674,9 @@ jobs:
           if [ "$result" = PASS ]; then
             payload_outcome=VERIFIED
             payload_reason=web-playable-deployed-next-cycle
+          elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
+            payload_outcome=QUEUE_UPDATED
+            payload_reason=web-f9-publish-attempted-retry-in-parallel-with-next-cycle
           fi
           payload="$(jq -nc \
             --arg run "${GITHUB_RUN_ID:-}" \
@@ -632,9 +698,13 @@ jobs:
           if [ "$result" = PASS ]; then
             echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=$GAME_ID"
             echo "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:$GAME_ID"
-            echo 'WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=YES_UNTIL_DEPLOYED'
+            echo 'WEB_PUBLICATION_RETRY_TRACKED=YES'
             echo 'VIBE2_WEB_AUTO_DEPLOY=PASS'
             echo "VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:${PROMOTED_SOURCE_TREE_SHA}"
+          elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then
+            echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED_AFTER_PUBLISH_ATTEMPT=$GAME_ID"
+            echo "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:$GAME_ID"
+            echo 'WEB_PUBLICATION_RETRY_TRACKED=YES'
           else
             echo 'WEB_QA_REPAIR_REQUIRED=YES'
           fi
@@ -950,19 +1020,16 @@ jobs:
           });
           fs.writeFileSync(file,JSON.stringify(q));
           NODE
-      - uses: ./.github/actions/prepare-ollama
-        with:
-          model: 'llama3.2:1b'
-          version: '0.33.3'
-          pull-model: 'true'
-          department-role: development
-          cache-model: 'true'
       - name: Verify candidate package with existing preflight and full Luau compilation
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}
         shell: bash
         run: |
           set -euo pipefail
-          model="$(node -e "const d=require('./company-directive.json');console.log(d.ai.robloxPreflightModel||d.ai.departmentLeadModels?.development||'llama3.2:1b')")"
-          ollama pull "$model"
           node tools/company-development-roblox-build-preflight.mjs --game-id="$GAME_ID" --queue=/tmp/roblox-candidate/context/development-queue.json --directive=company-directive.json --output=/tmp/roblox-candidate/package/results/preflight.json
           mkdir -p /tmp/roblox-candidate/source
           git archive "$CANDIDATE_SHA" "$SOURCE_ROOT" | tar -x -C /tmp/roblox-candidate/source

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const source=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const designSource=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
-const departmentWorkflow=fs.readFileSync('.github/workflows/artbook-free-department-bots.yml','utf8');
+const departmentWorkflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 
 test('DESIGN_ONLY pipeline is GAME_SEED-backed design -> baseline and stops before artbook',()=>{
@@ -61,6 +61,24 @@ test('canonical department contract is exactly five roles including audio',()=>{
   assert.match(designSource,/const ROLES=\['planning','graphics','development','qa','audio'\]/);
   assert.doesNotMatch(designSource,/const ROLES=\[[^\]]*'balance'/);
   assert.match(designSource,/ART_AUDIO_DIRECTION:\['graphics','audio'\]/);
-  assert.match(departmentWorkflow,/const designRoles=\['planning','graphics','development','qa','audio'\]/);
-  assert.doesNotMatch(departmentWorkflow,/\['planning','graphics','development','qa','balance','audio'\]/);
+  assert.match(departmentWorkflow,/node tools\/company-design-cycle\.mjs/,'current design workflow runs the five-role canonical design engine');
+  assert.doesNotMatch(departmentWorkflow,/node tools\/artbook-free-department-bots\.mjs/,'retired parallel design worker must stay absent');
+});
+
+test('retired standalone artbook model workers stay deleted and release has no Ollama transport',()=>{
+  const retired=[
+    'tools/artbook-department-runner.mjs','tools/artbook-department-rewrite.mjs',
+    'tools/artbook-director-review.mjs','tools/artbook-cross-review-feedback.mjs',
+    'tools/artbook-second-work-runner.mjs','tools/artbook-collaboration-runner.mjs',
+    'tools/artbook-director-presentation.mjs','tools/artbook-visual-plan-runner.mjs',
+    'tools/company-design-artbook.mjs','tools/company-development-disposition-gate.mjs'
+  ];
+  for(const file of retired)assert.equal(fs.existsSync(file),false,file+' must remain retired');
+  const release=fs.readFileSync('tools/company-release-production-cycle.mjs','utf8');
+  assert.equal(release.includes('127.0.0.1:11434'),false);
+  assert.equal(release.includes('ollama pull'),false);
+  assert.equal(release.includes('ollama serve'),false);
+  assert.match(release,/requestGeminiFreePair/);
+  assert.match(release,/RELEASE_EXTERNAL_FREE_MODEL_INDEPENDENCE_NOT_VERIFIED/);
+  assert.ok(source.includes('company-design-cycle.mjs'));
 });

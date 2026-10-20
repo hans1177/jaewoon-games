@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildGameSpecificBuildUpDirective} from '../tools/company-build-up-directive.mjs';
-import {buildPrompt,buildGenerationRetryPrompt,buildFocusedReplaceOnlyPrompt} from '../tools/vibe2-source-worker.mjs';
+import {buildPrompt,buildGenerationRetryPrompt,buildFocusedReplaceOnlyPrompt,selectWeb3dEngine} from '../tools/vibe2-source-worker.mjs';
 
 const server='roblox-games/garden/server/Game.server.luau';
 const client='roblox-games/garden/client/Game.client.luau';
@@ -35,6 +35,27 @@ test('genre production design reaches the real source worker and compact retry w
   assert.match(retry,/owner-add-2/);
 });
 
+test('ordinary Web 3D chooses engine by existing source and mobile budget without touching Roblox',()=>{
+  const web={target:'web',gameId:'garden',goal:'repair source',selectedTask:{type:'implementation'},department:'development'};
+  const existing=(content)=>[{path:'web-games/garden/index.html',editable:true,content}];
+  assert.equal(selectWeb3dEngine({order:web,files:existing('<main></main>')}).engine,'PLAYCANVAS');
+  assert.equal(selectWeb3dEngine({order:{...web,goal:'vehicle physics character controller'},files:existing('<canvas></canvas>')}).engine,'BABYLON_JS');
+  assert.equal(selectWeb3dEngine({order:web,files:existing('new THREE.WebGLRenderer(); new THREE.Scene();')}).engine,'THREE_JS');
+  assert.equal(selectWeb3dEngine({order:{...web,preferredWeb3dEngine:'PLAYCANVAS'},files:existing('new BABYLON.Engine(canvas)')}).engine,'BABYLON_JS','existing framework wins');
+  assert.equal(selectWeb3dEngine({order:web,files:existing("new THREE.Scene(); new BABYLON.Engine(canvas);")}).engine,'EXISTING_ENGINE_REVIEW_REQUIRED');
+  const files=existing('<html><canvas id="game"></canvas></html>');
+  const prompt=buildPrompt(web,{files},[files[0].path]);
+  assert.match(prompt,/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
+  assert.match(prompt,/engine=PLAYCANVAS/);
+  assert.match(prompt,/WebGL2/);
+  assert.match(prompt,/device pixel ratio <= 1.5/);
+  assert.match(prompt,/document\.visibilityState/);
+  assert.match(prompt,/orientation\/viewport changes/);
+  assert.match(prompt,/save\/load/);
+  assert.match(prompt,/No unverified FPS claims/);
+  assert.doesNotMatch(buildPrompt({...web,target:'roblox'},{files},[files[0].path]),/GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN/);
+});
+
 test('non-Roblox worker cannot consume a stale Roblox production plan',()=>{
   const {order,context}=fixture();
   const prompt=buildPrompt({...order,target:'web'},context,[client]);
@@ -43,8 +64,8 @@ test('non-Roblox worker cannot consume a stale Roblox production plan',()=>{
   assert.doesNotMatch(otherGame,/robloxProductionIDEA=/);
 });
 
-test('Unity and Web connected-quality plans survive real source prompts and focused retries',()=>{
-  for(const target of ['unity','web']){
+test('owner-held Unity cannot leak executable production hints',()=>{
+  for(const target of ['unity']){
     const root=target+'-games/garden';
     const own=root+(target==='unity'?'/Assets/Scripts/GameCore.cs':'/game.js');
     const sibling=root+(target==='unity'?'/Assets/Scripts/RuntimeBootstrap.cs':'/view.js');
@@ -53,11 +74,38 @@ test('Unity and Web connected-quality plans survive real source prompts and focu
     const directive=buildGameSpecificBuildUpDirective({gameId:'garden',platform:target.toUpperCase(),sourceRoot:root,sourceObservation:source,responsibleFiles:[own,sibling],designRecord:{content:{identity:'서식지 방어',genre:'DEFENSE',coreLoop:['관찰','배치','방어'],ownerFeatureChanges:[{requestId:'keep-removal',featureId:'shop',action:'REMOVE',requirement:'상점 복원 금지'}]}}});
     const order={gameId:'garden',target,goal:'기존 방어 흐름 완성',selectedTask:{type:'implementation',buildUpDirective:directive}};
     const prompt=buildPrompt(order,{files:[{path:own,editable:true,content:code},{path:sibling,editable:false,content:code}]},[own]);
-    const filesLine=prompt.split('\n').find(line=>line.startsWith('gameProductionFILES='));
-    assert.ok(filesLine.includes(own));assert.ok(!filesLine.includes(sibling));
+    assert.equal(directive.productionPlan,null,'no verified owner admission means no executable plan');
     for(const text of [prompt,buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:[own]}).prompt,buildGenerationRetryPrompt(prompt,{error:new Error('JSON parse error'),responsibleFiles:[own],attempt:2})]){
-      assert.match(text,/gameProductionIDEA=/);assert.match(text,/gameProductionQUALITY=/);
-      assert.match(text,/keep-removal/);assert.doesNotMatch(text,/robloxProductionIDEA=/);
+      assert.doesNotMatch(text,/gameProductionIDEA=|gameProductionQUALITY=|gameProductionFILES=|gameProductionCONNECTION=|gameProductionSCOPE=/);
+      assert.doesNotMatch(text,/robloxProductionIDEA=/);
     }
   }
+});
+
+test('Vibe candidate and retry keep evidence-based coding and real QA handoff without promoting worker authority',()=>{
+  const cases=[
+    {target:'web',path:'web-games/garden/index.html',content:'<html><canvas></canvas></html>'},
+    {target:'roblox',path:client,content:'function showGoal() return true end'},
+    {target:'unity',path:'unity-games/garden/Assets/Scripts/GameCore.cs',content:'public class GameCore {}'}
+  ];
+  for(const item of cases){
+    const order={target:item.target,gameId:'garden',goal:'기존 기능 보존하며 실제 오류 수정',selectedTask:{type:'implementation'}};
+    const ctx={files:[{path:item.path,editable:true,content:item.content}]};
+    const prompt=buildPrompt(order,ctx,[item.path]);
+    const retry=buildGenerationRetryPrompt(prompt,{error:new Error('edit does not match'),responsibleFiles:[item.path],attempt:2});
+    for(const candidate of [prompt,retry]){
+      assert.match(candidate,/CANONICAL CODING LOOP:/);
+      assert.match(candidate,/SOURCE AND LIBRARY:/);
+      assert.match(candidate,/CAUSAL REPAIR:/);
+      assert.match(candidate,/VERIFICATION HANDOFF:/);
+      assert.match(candidate,/RELEASE AUTHORITY:/);
+      assert.match(candidate,/never invent logs, run IDs, FPS or PASS/);
+      assert.match(candidate,/This source worker outputs a candidate patch only/);
+    }
+  }
+  const verifiedFixture=fixture();
+  const fixturePrompt=buildPrompt(verifiedFixture.order,verifiedFixture.context,[client]);
+  const focused=buildFocusedReplaceOnlyPrompt(fixturePrompt,{responsibleFiles:[client]}).prompt;
+  for(const clause of ['CANONICAL CODING LOOP:','SOURCE AND LIBRARY:','CAUSAL REPAIR:','VERIFICATION HANDOFF:','RELEASE AUTHORITY:'])
+    assert.ok(focused.includes(clause),'focused retry must retain '+clause);
 });

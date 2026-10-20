@@ -508,12 +508,16 @@ export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifact
       entry.f9Evidence?.sourceRevision!==sourceRevision||entry.f9Evidence?.artifactIdentity!==artifactIdentity)
       throw new Error('ROBLOX_PUBLISH_CURRENT_F9_REQUIRED');
     const f0=entry.f0Evidence||{},candidate=entry.releaseSnapshot?.robloxRuntimeCandidateEvidence||{};
+    const localArtifact=candidate.published===false&&candidate.authority==='roblox-local-f0-pre-f9-artifact'
+      &&candidate.releaseClaim===false&&Number(candidate.artifactRunId)>0
+      &&Number(candidate.artifactRunId)===Number(entry.artifactRunId)&&Number(candidate.versionNumber)===Number(candidate.artifactRunId)
+      &&Number(entry.f9Evidence?.candidateVersionNumber)===Number(candidate.artifactRunId);
     if(!COMMIT40.test(sourceRevision)||!ARTIFACT_SHA256.test(artifactIdentity)||!sourceTree||
       f0.sourcePreflightPassed!==true||f0.f0SourceIntegrityPassed!==true||
       f0.sourceRevision!==sourceRevision||f0.artifactIdentity!==artifactIdentity||
       Number(f0.artifactRunId)<=0||Number(f0.artifactRunId)!==Number(entry.artifactRunId)||
       candidate.sourceRevision!==sourceRevision||candidate.artifactIdentity!==artifactIdentity||
-      candidate.published!==true||Number(candidate.versionNumber)!==Number(entry.validationVersionNumber)||
+      (candidate.published!==true&&!localArtifact)||Number(candidate.versionNumber)!==Number(entry.validationVersionNumber)||
       String(candidate.universeId)!==String(entry.validationUniverseId)||String(candidate.placeId)!==String(entry.validationPlaceId))
       throw new Error('ROBLOX_PUBLISH_EXACT_CYCLE_EVIDENCE_REQUIRED');
     const currentCycle=item.robloxSourceCommit===sourceRevision&&item.robloxBuildArtifactIdentity===artifactIdentity;
@@ -631,4 +635,5 @@ async function main(){
 
 const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
 if(isMain){main().catch(error=>{console.error(error.message);process.exitCode=1;});}
+
 

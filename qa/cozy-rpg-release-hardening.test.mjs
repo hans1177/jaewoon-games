@@ -152,7 +152,7 @@ test('대충 RPG UI는 포탈 이동을 월드에 맡기고 전투/귀환/파티
 
 test('대충 RPG 초원은 패링 전투와 시드형 로그라이크 런을 구현한다',()=>{
  assert.match(rpgConfig,/GuardMax=100/);
- assert.match(rpgConfig,/ParryWindow=\.22/);assert.match(rpgConfig,/ParryRearmSeconds=\.34/);
+ assert.match(rpgConfig,/ParryWindow=\.25/);assert.match(rpgConfig,/ParryRearmSeconds=\.34/);
  assert.match(rpgConfig,/BLOCK_START="BLOCK_START"/);
  assert.equal((rpgConfig.match(/Id="(?:GRASS_WOLF|DIRE_WOLF|CHARGE_BOAR|THORN_WASP|FOREST_LIZARD|HORN_DEER|VINE_CRAWLER|MEADOW_BANDIT|WOLF_TAMER|MOSS_TURTLE)"/g)||[]).length,10);
  assert.match(rpgConfig,/HiddenBosses=\{[\s\S]*Id="WHITE_FANG"[\s\S]*Id="ANCIENT_HEART"/);assert.match(rpgConfig,/Id="GOLDEN_ANTLER"/);

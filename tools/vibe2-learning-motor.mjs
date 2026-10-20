@@ -2850,7 +2850,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const experienceFile=clean(a.experience)||'.vibe2/experience.json';
   const companyQueueFile=clean(a['company-queue'])||'development-queue.json';
   const queueFile=clean(a.queue);
-  const roadmapFile=clean(a.roadmap)||'company-learning/platform-release-roadmap.json';
+  const roadmapFile=clean(a.roadmap)||clean(process.env.COMPANY_VERIFIED_POLICY_PATH);
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
   const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{}),externalRuntimeSamples:readExternalGameplayPracticeSamples(clean(a['external-samples'])||new URL('../company-learning/training-samples',import.meta.url).pathname)});
   if(result.stateChanged) writeJson(stateFile,result.state);

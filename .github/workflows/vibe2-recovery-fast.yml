@@ -69,12 +69,7 @@ jobs:
             attempt=$((attempt+1))
             rm -rf /tmp/vibe2-recovery-control
             git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
-            # Rebind the exact work unit to the four current main policies before changing state.
             git reset --hard origin/main >/dev/null
-            node tools/company-shared-context.mjs --policy=company-learning/platform-release-roadmap.json \
-              --log-map=company-learning/company-log-map.json \
-              --architecture=company-learning/company-architecture-map.json \
-              --security=company-learning/security-immune-system.json > /tmp/vibe2-recovery-fast/shared-context.log
             git worktree prune
             git worktree add --detach /tmp/vibe2-recovery-control origin/vibe2-unreal-core >/dev/null
             control=/tmp/vibe2-recovery-control

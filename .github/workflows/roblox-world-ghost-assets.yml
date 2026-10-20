@@ -6,6 +6,8 @@ on:
       - 'assets/roblox/world-ghosts/**'
       - 'assets/roblox/common-environment-v1/**'
       - 'qa/roblox-world-ghost-skins.test.mjs'
+      - 'qa/shared-character-motion-production.test.mjs'
+      - 'qa/shared-character-motion-action-isolation.py'
       - 'qa/asset-library-sync.test.mjs'
       - 'assets/asset-library*.js'
       - 'asset-library.html'
@@ -15,6 +17,8 @@ on:
       - 'assets/roblox/world-ghosts/**'
       - 'assets/roblox/common-environment-v1/**'
       - 'qa/roblox-world-ghost-skins.test.mjs'
+      - 'qa/shared-character-motion-production.test.mjs'
+      - 'qa/shared-character-motion-action-isolation.py'
       - 'qa/asset-library-sync.test.mjs'
       - 'assets/asset-library*.js'
       - 'asset-library.html'
@@ -76,7 +80,7 @@ jobs:
           spider=false
           while IFS= read -r changed; do
             case "$changed" in
-              assets/roblox/world-ghosts/refine-humanoid-motion.py|assets/roblox/world-ghosts/native/mesh/bride.glb)
+              assets/roblox/world-ghosts/refine-humanoid-motion.py|assets/roblox/world-ghosts/native/mesh/bride.glb|qa/shared-character-motion-production.test.mjs|qa/shared-character-motion-action-isolation.py)
                 motion=true
                 ;;
               assets/roblox/world-ghosts/build-spider.py)
@@ -108,7 +112,7 @@ jobs:
       - name: Verify regenerated packages
         env:
           VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
-        run: node --test qa/roblox-world-ghost-skins.test.mjs qa/asset-library-sync.test.mjs
+        run: node --test qa/roblox-world-ghost-skins.test.mjs qa/asset-library-sync.test.mjs qa/shared-character-motion-production.test.mjs
       - name: Install Blender for authored assets
         if: steps.asset_scope.outputs.motion == 'true' || steps.asset_scope.outputs.spider == 'true'
         run: |
@@ -122,7 +126,8 @@ jobs:
       - name: Build high-quality humanoid foundation motion derivative
         if: steps.asset_scope.outputs.motion == 'true'
         run: |
-          blender --background --python assets/roblox/world-ghosts/refine-humanoid-motion.py -- \
+          blender --background --python-exit-code 1 --python qa/shared-character-motion-action-isolation.py
+          blender --background --python-exit-code 1 --python assets/roblox/world-ghosts/refine-humanoid-motion.py -- \
             --source assets/roblox/world-ghosts/native/mesh/bride.glb \
             --output assets/roblox/world-ghosts/native/mesh/bride-motion-v3 \
             --render-dir assets/roblox/world-ghosts/native/mesh/bride-motion-v3/previews
@@ -282,7 +287,7 @@ jobs:
           print('SPIDER_GLTF_OK', {'animations':len(names),'skins':len(doc.get('skins',[])),'bones':evidence['bones'],'vertices':evidence['vertices'],'triangles':evidence['triangles']})
           PY
       - name: Commit verified native packages and authored assets to PR branch
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         env:
           HEAD_BRANCH: ${{ github.head_ref }}
@@ -328,3 +333,4 @@ jobs:
           path: assets/roblox/world-ghosts/native/
           if-no-files-found: error
           retention-days: 14
+

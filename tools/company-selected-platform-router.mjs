@@ -6,7 +6,7 @@ const upper=value=>clean(value).toUpperCase();
 const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
 
 export const SELECTED_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
-export const DEFAULT_CONCURRENT_PLATFORMS=Object.freeze(['ROBLOX','UNITY']);
+export const DEFAULT_CONCURRENT_PLATFORMS=Object.freeze(['ROBLOX']); // owner-hold: no Unity dispatch
 export const DEVELOPMENT_GAME_WIP_MAX=Number.POSITIVE_INFINITY;
 export const SPEED_EXECUTION_STAGES=Object.freeze([
   'CHANGE_DETECTION',
@@ -176,7 +176,7 @@ export function targetPlatformDevelopmentEligible(item={}){
   if(!['TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_TECHNICAL_VALIDATION','UNITY_ANDROID_TECHNICAL_VALIDATION','TARGET_PLATFORM_REPAIR_REQUIRED'].includes(step))return false;
   const platform=resolveSelectedPlatform(item);
   const adapter=adapterForPlatform(platform);
-  if(!adapter?.existingExecutionPath||!['ROBLOX','UNITY'].includes(platform))return false;
+  if(!adapter?.existingExecutionPath||!DEFAULT_CONCURRENT_PLATFORMS.includes(platform))return false;
   const ownerDirect=item.ownerDirectDevelopment===true&&upper(item.ownerDirectDevelopmentAuthority).startsWith('OWNER_DIRECTIVE');
   const minimum=item.minimumDesignContract||{};
   if(!ownerDirect&&minimum.pass!==true)return false;
@@ -187,7 +187,7 @@ export function targetPlatformDevelopmentEligible(item={}){
     if(!profile||!clean(profile.source)||!clean(profile.jsonPointer))return false;
   }
   const targets=concurrentTargetPlatforms(item);
-  if(!targets.includes('ROBLOX')||!targets.includes('UNITY'))return false;
+  if(!targets.includes('ROBLOX')||!targets.includes(platform))return false;
   return true;
 }
 
@@ -212,7 +212,7 @@ export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_G
   const limit=Number.isFinite(requested)&&requested>=0?requested:Number.POSITIVE_INFINITY;
   return Object.freeze(items
     .filter(item=>DEFAULT_CONCURRENT_PLATFORMS.some(platform=>platformDevelopmentEligible(item,platform)))
-    .map(item=>({...item,concurrentTargetPlatforms:[...concurrentTargetPlatforms(item)],platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME'}))
+    .map(item=>({...item,concurrentTargetPlatforms:[...concurrentTargetPlatforms(item)],platformExecutionMode:'ROBLOX_ONLY_OWNER_ACTIVE'}))
     .sort((a,b)=>{
       const at=Date.parse(a.enqueuedAt||'')||0;
       const bt=Date.parse(b.enqueuedAt||'')||0;

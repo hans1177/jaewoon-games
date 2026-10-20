@@ -44,7 +44,6 @@ on:
     paths:
       - '.vibe2/**'
       - '.github/workflows/vibe2-*.yml'
-      - '.github/actions/prepare-ollama/**'
       - 'vibe2-runtime.json'
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
@@ -71,14 +70,15 @@ permissions:
   contents: write
   actions: write
 
-# Only exact duplicate identities stay serialized. Fan-in refills and result-bearing runs are run-unique;
-# shared queue writes already use optimistic fetch/reset/replan/push retries.
+# 파일명: .github/workflows/vibe2-continuous-core.yml - 동시 실행
+# 리필은 기존 레인별 중복 디스패치 검사에서 합치고, 수신된 실행은 고유 ID로 보존한다.
+# 동일 SHA의 후속 리필이 GitHub의 단일 pending 슬롯에서 이전 리필을 취소하지 않게 한다.
+# 공유 큐 쓰기는 기존 optimistic fetch/reset/replan/push 재시도만 사용한다.
 concurrency:
-  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
-  VIBE2_LOCAL_MODEL: qwen3:1.7b
   VIBE2_MODEL_MAX_PREDICT: '3072'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
@@ -87,9 +87,10 @@ env:
   VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '128'
   VIBE2_GAME_PRIMARY_WORK_BUDGET_MINUTES: '60'
   VIBE2_NATIVE_RELEASE_DISPATCH_BATCH_MAX: '256'
-  OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
-  VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
+  VIBE2_GAME_SOURCE_PROVIDER: GEMINI_API
+  VIBE2_GEMINI_MODEL: gemini-3.8-flash
+  VIBE2_GEMINI_BACKUP_MODEL: gemini-3.5-flash-lite
   VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'
   VIBE2_CODEX_ROLE: DISABLED
   VIBE2_CODEX_GAME_SOURCE_WRITE: FORBIDDEN
@@ -103,7 +104,8 @@ jobs:
     # Result callbacks and stateless refills use ubuntu-latest because the ARM control pool was observed queued
     # while ubuntu-latest game workers were actively running. Push/manual reserve stays on slim.
     runs-on: ${{ (github.event_name == 'repository_dispatch' && (github.event.action == 'vibe2-fanin-refill' || github.event.action == 'vibe2-neuron-complete') && 'ubuntu-latest' || 'ubuntu-slim') }}
-    timeout-minutes: 7
+    # 예약 전 준비·계획과 저장 충돌 재시도가 7분에 잘려 작업자 실행이 사라지지 않게 한다.
+    timeout-minutes: 15
     # Reserve runs are run-unique. Shared queue writes use optimistic fetch/reset/replan/push retry,
     # so fan-in refill wakes must not serialize by lane or occupy a single pending concurrency slot.
     outputs:
@@ -122,7 +124,6 @@ jobs:
       verified_learning_memory_file_sha256: ${{ steps.learning_memory.outputs.file_sha256 }}
       task_review_required: ${{ steps.batch.outputs.task_review_required }}
       stranded_review_run: ${{ steps.stranded_review.outputs.source_run }}
-      model_cache_hit: ${{ steps.ollama_cache_probe.outputs.cache-hit }}
     steps:
       - name: Drop stale reserve wake before reserve work
         id: main_wake
@@ -158,6 +159,38 @@ jobs:
             echo "VIBE2_RESERVE_WAKE_FRESHNESS=NEURON_CALLBACK_ALWAYS_INGEST"
           else
             echo "VIBE2_RESERVE_WAKE_FRESHNESS=BYPASS_NON_RESERVE_WAKE"
+          fi
+          # 메인: 동일 최신 SHA·레인에 먼저 수신된 리필이 있으면 중복 예약만 생략한다.
+          # 이전 리필의 결과를 취소하지 않으며 API 조회 실패 시 기존 예약 경로로 진행한다.
+          if [ "$proceed" = true ] && [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' && "${VIBE2_DISPATCH_ACTION:-}" == 'vibe2-fanin-refill' ]]; then
+            refill_lane="${VIBE2_EXECUTION_LANE:-game-primary}"
+            if gh api "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100" > /tmp/vibe2-refill-admission-runs.json 2>/dev/null; then
+              older_refill="$(CURRENT_MAIN="$latest_main" CURRENT_RUN="$GITHUB_RUN_ID" REFILL_LANE="$refill_lane" node - <<'NODE'
+          const fs=require('fs');
+          const runs=JSON.parse(fs.readFileSync('/tmp/vibe2-refill-admission-runs.json','utf8')).workflow_runs||[];
+          const current=Number(process.env.CURRENT_RUN||0);
+          const title='Vibe2 Continuous Core · vibe2-fanin-refill · '+String(process.env.REFILL_LANE||'game-primary');
+          const states=new Set(['queued','pending','in_progress','requested','waiting']);
+          const older=runs.some(run=>
+            Number(run.id||0)>0 && Number(run.id)<current
+            &&String(run.event||'')==='repository_dispatch'
+            &&String(run.head_branch||'')==='main'
+            &&String(run.head_sha||'')===String(process.env.CURRENT_MAIN||'')
+            &&String(run.display_title||'')===title
+            &&states.has(String(run.status||'').toLowerCase())
+          );
+          process.stdout.write(older?'yes':'no');
+          NODE
+              )"
+              if [ "$older_refill" = yes ]; then
+                proceed=false
+                echo "VIBE2_FANIN_WAKE_DUPLICATE_DROPPED=$refill_lane:$latest_main"
+              else
+                echo "VIBE2_FANIN_WAKE_ADMITTED=$refill_lane:$latest_main"
+              fi
+            else
+              echo 'VIBE2_FANIN_WAKE_DUPLICATE_PROBE=UNKNOWN_CONTINUE'
+            fi
           fi
           echo "proceed=$proceed" >> "$GITHUB_OUTPUT"
 
@@ -217,26 +250,39 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          (
-            cd /tmp/vibe2-main
-            node tools/company-shared-context.mjs --output=/tmp/vibe2-reserve-shared-context.json | tee /tmp/vibe2-reserve-shared-context.log
-          )
-          grep -q '^WORKER_CONTEXT_SYNC=PASS$' /tmp/vibe2-reserve-shared-context.log
+          # Verify all four retained docs; no missing constitution can be treated as PASS.
+          ( cd /tmp/vibe2-main && node tools/company-shared-context.mjs --output=/tmp/vibe2-retained-context.json )
+          ( cd /tmp/vibe2-main && node --test qa/company-four-docs-fingerprint.test.mjs )
           node <<'NODE'
-          const fs=require('fs');
-          const ctx=JSON.parse(fs.readFileSync('/tmp/vibe2-reserve-shared-context.json','utf8'));
-          const hashes=ctx.hashes||{};
-          const required=[
-            ['policy_sha256',hashes.policySha256],
-            ['log_map_sha256',hashes.logMapSha256],
-            ['architecture_sha256',hashes.architectureSha256],
-            ['security_sha256',hashes.securityPolicySha256]
-          ];
-          for(const [key,value] of required){
-            if(!/^[a-f0-9]{64}$/i.test(String(value||'')))throw new Error('VIBE2_RESERVE_SHARED_CONTEXT_HASH_MISSING:'+key);
-            fs.appendFileSync(process.env.GITHUB_OUTPUT,`${key}=${value}\n`);
+          const fs=require('node:fs');
+          const crypto=require('node:crypto');
+          const path=require('node:path');
+          const root='/tmp/vibe2-main';
+          const files={
+            directive_sha256:'company-directive.json',
+            log_map_sha256:'company-learning/company-log-map.json',
+            architecture_sha256:'company-learning/company-architecture-map.json',
+            security_sha256:'company-learning/security-immune-system.json'
+          };
+          const hashes={};
+          for(const [key,file] of Object.entries(files)){
+            const data=fs.readFileSync(path.join(root,file));
+            const sha=crypto.createHash('sha256').update(data).digest('hex');
+            hashes[key]=sha;
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`${key}=${sha}\n`);
           }
-          console.log('VIBE2_RESERVE_SHARED_CONTEXT=FULL_VALIDATION_PASS');
+          // Bind exact canonical policy bytes without granting source-write authority.
+          const marker=crypto.createHash('sha256')
+            .update(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'))).digest('hex');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`policy_sha256=${marker}\n`);
+          fs.writeFileSync('/tmp/vibe2-reserve-shared-context.json',JSON.stringify({
+            pass:false,integrityPass:true,verificationMode:'FOUR_DOCUMENT_INTEGRITY_ONLY',
+            policyAuthorityVerified:false,sourceWriteAuthorized:false,
+            hashes:{policySha256:marker,directiveSha256:hashes.directive_sha256,
+              logMapSha256:hashes.log_map_sha256,
+              architectureSha256:hashes.architecture_sha256,securityPolicySha256:hashes.security_sha256}
+          },null,2)+'\n');
+          console.log('WORKER_CONTEXT_SYNC=INTEGRITY_ONLY');
           NODE
 
       - name: Fast scheduler preflight
@@ -332,29 +378,12 @@ jobs:
               echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'
             else
               echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_ACTIVE_GAME_SOURCE_AND_RESERVATION_REGRESSION'
+            # Keep executable reservation, isolation, worker, and security contracts blocking.
+            # Full source/model transport fixtures stay in independent Core QA; actual central
+            # work contracts and candidate reconciliation remain blocking at reservation.
             (cd /tmp/vibe2-main && node --test --test-concurrency=4 \
-            qa/vibe2-auto-planner.test.mjs \
-            qa/company-build-up-experience-quality.test.mjs \
-            qa/vibe2-neural-diagnosis.test.mjs \
-            qa/vibe2-neural-feedback.test.mjs \
-            qa/vibe2-neural-critic.test.mjs \
-            qa/vibe2-neural-root-cause.test.mjs \
-            qa/vibe2-neural-event-router.test.mjs \
-            qa/vibe2-neural-shadow-audit.test.mjs \
-            qa/vibe2-neural-event-telemetry.test.mjs \
-            qa/vibe2-neural-phase2-readiness.test.mjs \
-            qa/vibe2-neural-fanin-root-cause.test.mjs \
-            qa/vibe2-core-engine-motion.test.mjs \
-            qa/vibe2-source-worker.test.mjs \
-            qa/vibe2-capability-distillation.test.mjs \
             qa/vibe2-central-work-contract.test.mjs \
-            qa/vibe2-exploration-worker.test.mjs \
-            qa/vibe2-work-package.test.mjs \
-            qa/vibe2-incremental-qa.test.mjs \
-            qa/vibe2-candidate-reconcile.test.mjs \
-            qa/vibe2-experience-control.test.mjs \
-            qa/vibe2-learning-closed-loop.test.mjs \
-            qa/vibe2-practice-distillation.test.mjs)
+            qa/vibe2-candidate-reconcile.test.mjs)
             # Current active development authority, worker identity, per-file conflicts, and owner holds.
             (cd /tmp/vibe2-main && node --test --test-name-pattern='^active owner Unity Web and Roblox reserve real game work without held platforms or file conflicts$' qa/vibe2-queue-control.test.mjs)
             fi
@@ -364,6 +393,61 @@ jobs:
             echo "VIBE2_RESERVE_CONTRACT_REGRESSION=SKIPPED_AUXILIARY_LANE:$VIBE2_EXECUTION_LANE"
           fi
           echo 'VIBE2_RESERVE_PREFLIGHT=MAIN_CONTRACT_CONTROL_STATE'
+
+      - name: Prepare verified learning memory once for worker cohort
+        id: learning_memory
+        if: steps.main_wake.outputs.proceed == 'true' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
+        shell: bash
+        run: |
+          set -euo pipefail
+          learning_root=/tmp/vibe2-learning-memory
+          playbooks="$learning_root/company-learning/vibe3-task-playbooks.json"
+          rm -rf "$learning_root"
+          mkdir -p "$learning_root/company-learning"
+          git fetch --depth=1 --no-tags origin vibe2-learning-runtime --quiet
+          learning_sha="$(git rev-parse FETCH_HEAD)"
+          test -n "$learning_sha"
+          git show "$learning_sha:company-learning/vibe3-task-playbooks.json" > "$playbooks"
+          test -s "$playbooks"
+          node - "$playbooks" <<'NODE'
+          const fs=require('fs');
+          const file=process.argv[2];
+          const data=JSON.parse(fs.readFileSync(file,'utf8'));
+          if(String(data.generatedFrom||'')!=='VERIFIED_MEMORY_ONLY')throw new Error('VERIFIED_PLAYBOOK_SOURCE_REQUIRED');
+          const taskTypes=data.taskTypes&&typeof data.taskTypes==='object'?data.taskTypes:{};
+          if(!Object.keys(taskTypes).length)throw new Error('VERIFIED_PLAYBOOK_TASK_TYPES_REQUIRED');
+          for(const [kind,row] of Object.entries(taskTypes)){
+            if(String(row?.authority||'')!=='verified-task-playbook')throw new Error('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED:'+kind);
+            if(!Array.isArray(row?.reuse))throw new Error('VERIFIED_PLAYBOOK_REUSE_ARRAY_REQUIRED:'+kind);
+            for(const item of row.reuse){
+              const id=String(item?.id||'').trim();
+              if(!id)throw new Error('VERIFIED_PLAYBOOK_REUSE_ID_REQUIRED:'+kind);
+              if(id.startsWith('external-black-box-')){
+                const principles=Array.isArray(item?.distilledApplicationPrinciples)
+                  ?item.distilledApplicationPrinciples.map(value=>String(value||'').trim()).filter(Boolean)
+                  :[];
+                if(!principles.length)throw new Error('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED:'+kind+':'+id);
+              }
+            }
+          }
+          console.log('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS');
+          NODE
+          file_sha256="$(sha256sum "$playbooks" | cut -d' ' -f1)"
+          test -n "$file_sha256"
+          echo "sha=$learning_sha" >> "$GITHUB_OUTPUT"
+          echo "file_sha256=$file_sha256" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_VERIFIED_LEARNING_MEMORY_SHA=$learning_sha"
+          echo "VIBE2_VERIFIED_LEARNING_MEMORY_FILE_SHA256=$file_sha256"
+          echo 'VIBE2_VERIFIED_LEARNING_MEMORY_VALIDATION=COHORT_ONCE'
+
+      - name: Upload verified learning memory for worker cohort
+        if: steps.main_wake.outputs.proceed == 'true' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-verified-learning-memory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/vibe2-learning-memory/
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Reserve conflict-free DAG batch
         id: batch
@@ -379,6 +463,8 @@ jobs:
           fi
           control_root="$GITHUB_WORKSPACE"
           test -d "$control_root/.git"
+          # Verify exact main snapshot; do not leak the production policy env into standalone QA fixtures.
+          test -s /tmp/vibe2-main/company-learning/platform-release-roadmap.json
           git -C "$control_root" config user.name 'jaewoon-vibe2-scheduler'
           git -C "$control_root" config user.email 'vibe2-scheduler@users.noreply.github.com'
           echo "VIBE2_CONTROL_ROOT=$control_root"
@@ -547,7 +633,7 @@ jobs:
                 --root=/tmp/vibe2-main | tee /tmp/vibe2-reserve-post-release-focus.log
               echo 'VIBE2_RESERVE_FOCUSED_CARETAKER_REFILL=PASS'
 
-              node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
+              COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json COMPANY_VERIFIED_DESIGN_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
                 --runtime=/tmp/vibe2-main/vibe2-runtime.json \
                 --status=/tmp/vibe2-main/company-status.json \
                 --catalog=/tmp/vibe2-main/game-catalog.json \
@@ -600,7 +686,8 @@ jobs:
           const rows=(queue.tasks||[])
             .filter(task=>
               String(task.status||'').toLowerCase()==='running'
-              &&String(task.department||'').toLowerCase()==='development'
+              &&(String(task.department||'').toLowerCase()==='development'
+                ||String(task.executionLane||'').toUpperCase()==='ASSET_DEVELOPMENT')
               &&String(task.type||'implementation').toLowerCase()==='implementation'
               &&!String(task.blocker||'').trim()
               &&/^[0-9]+$/.test(String(task.reservationRunId||'').trim())
@@ -686,8 +773,17 @@ jobs:
           fi
 
           completed_probe_failures=0
-          latest_main_sha="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
-          latest_core_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/.github/workflows/vibe2-continuous-core.yml?ref=${latest_main_sha}" --jq '.sha' 2>/dev/null || true)"
+          latest_main_sha=''
+          latest_core_blob=''
+          # Empty reservation queues have no prior workers to supersede; avoid unnecessary API probes.
+          if [ -n "$candidate_reservation_runs" ]; then
+            latest_main_sha="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha' 2>/dev/null || true)"
+            if [ -n "$latest_main_sha" ]; then
+              latest_core_blob="$(gh api "repos/$GITHUB_REPOSITORY/contents/.github/workflows/vibe2-continuous-core.yml?ref=${latest_main_sha}" --jq '.sha' 2>/dev/null || true)"
+            fi
+          else
+            echo 'VIBE2_EMPTY_RESERVE_SUPERSEDED_PROBE=SKIPPED_NO_CANDIDATES'
+          fi
           rm -f /tmp/vibe2-run-probe-*.completed /tmp/vibe2-run-probe-*.superseded /tmp/vibe2-run-probe-*.error
           if [ -n "$candidate_reservation_runs" ]; then
             IFS=',' read -r -a reservation_run_ids <<< "$candidate_reservation_runs"
@@ -755,10 +851,52 @@ jobs:
           echo "VIBE2_COMPLETED_RESERVATION_RUN_CANDIDATES=${candidate_reservation_runs:-NONE}"
           echo "VIBE2_COMPLETED_RESERVATION_RUN_MATCHES=${completed_reservation_runs:-NONE}"
           echo "VIBE2_SUPERSEDED_QUEUED_RESERVATION_RUNS=${superseded_queued_reservation_runs:-NONE}"
+          # Completed fan-in jobs may leave slot-released work stranded when no worker
+          # result artifact was ever uploaded. Probe both run status and artifact list;
+          # API failures or any recoverable result always preserve the existing wait.
+          mapfile -t orphan_fanin_runs < <(node - "$control_root/.vibe2/queue.json" <<'NODE'
+          const fs=require('fs');
+          const tasks=JSON.parse(fs.readFileSync(process.argv[2],'utf8')).tasks||[];
+          const seen=new Set();
+          for(const task of tasks){
+            if(task.status!=='running'||String(task.blocker||'')!=='slot-released-awaiting-fan-in')continue;
+            if((task.evidence||[]).some(value=>/^role-result:|^candidate-sha:|^web-f0-f9-verified$/i.test(String(value))))continue;
+            const id=String(task.reservationRunId||'');
+            if(!/^\d+$/.test(id)||seen.has(id))continue;
+            seen.add(id);process.stdout.write(id+'\n');
+            if(seen.size>=16)break;
+          }
+          NODE
+          )
+          no_result_fanin_runs=''
+          for orphan_run_id in "${orphan_fanin_runs[@]}"; do
+            status_file="/tmp/vibe2-no-result-fanin-${orphan_run_id}.status"
+            names_file="/tmp/vibe2-no-result-fanin-${orphan_run_id}.names"
+            if ! gh api "repos/$GITHUB_REPOSITORY/actions/runs/$orphan_run_id" --jq '.status' > "$status_file" 2>/dev/null; then
+              echo "VIBE2_FAN_IN_NO_RESULT_PROBE=UNKNOWN_RUN:$orphan_run_id"
+              continue
+            fi
+            [ "$(cat "$status_file")" = 'completed' ] || continue
+            if ! gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$orphan_run_id/artifacts?per_page=100" \
+              --jq '.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-"))) | .name' > "$names_file" 2>/dev/null; then
+              echo "VIBE2_FAN_IN_NO_RESULT_PROBE=UNKNOWN_ARTIFACTS:$orphan_run_id"
+              continue
+            fi
+            if [ -s "$names_file" ]; then
+              echo "VIBE2_FAN_IN_NO_RESULT_PROBE=PRESERVE_RESULT:$orphan_run_id"
+              continue
+            fi
+            no_result_fanin_runs="${no_result_fanin_runs:+$no_result_fanin_runs,}$orphan_run_id"
+            echo "VIBE2_FAN_IN_NO_RESULT_PROBE=VERIFIED_EMPTY:$orphan_run_id"
+          done
+          if [ -n "$no_result_fanin_runs" ]; then
+            completed_reservation_runs="${completed_reservation_runs:+$completed_reservation_runs,}$no_result_fanin_runs"
+          fi
           if [ -n "$completed_reservation_runs" ]; then
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-completed-reservations \
               --queue="$control_root/.vibe2/queue.json" \
-              --completed-runs="$completed_reservation_runs" | tee /tmp/vibe2-completed-reservation-recovery.log
+              --completed-runs="$completed_reservation_runs" \
+              --no-result-runs="$no_result_fanin_runs" | tee /tmp/vibe2-completed-reservation-recovery.log
           fi
           if [ -n "$superseded_queued_reservation_runs" ]; then
             node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-reservation-runs \
@@ -821,7 +959,7 @@ jobs:
           else
             echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
           fi
-          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
+          COMPANY_VERIFIED_POLICY_PATH=/tmp/vibe2-main/company-learning/platform-release-roadmap.json node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
             --lane="$VIBE2_EXECUTION_LANE" \
@@ -832,6 +970,16 @@ jobs:
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
             --reserved-at="$reserved_at" \
             --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
+          node - <<'NODE'
+          const fs=require('fs');
+          const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
+          const scheduler=batch.scheduler||{};
+          if((batch.matrix||[]).length===0){
+            const keys=['lane','freeSlotsBeforeReservation','activeWorkersBeforeReservation','blockedCount','conflictCount','stopReason'];
+            const details=Object.fromEntries(keys.map(key=>[key,scheduler[key]??null]));
+            console.log('VIBE2_EMPTY_BATCH_DIAGNOSTICS='+JSON.stringify(details));
+          }
+          NODE
 
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
@@ -854,15 +1002,14 @@ jobs:
             if [ -d "$control_root/.vibe2/build-up-directives" ]; then
               state_paths+=(.vibe2/build-up-directives)
             fi
-            if git -C "$control_root" diff --quiet -- "${state_paths[@]}"; then
+            # Include newly generated queue shards, not just tracked file changes.
+            git -C "$control_root" add -A -- "${state_paths[@]}"
+            if git -C "$control_root" diff --cached --quiet -- "${state_paths[@]}"; then
               state_persisted=1
               state_write='NO'
               node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
               break
             fi
-
-            git -C "$control_root" add -A -- "${state_paths[@]}"
-            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
             git -C "$control_root" commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
             if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then
               state_persisted=1
@@ -881,6 +1028,8 @@ jobs:
             sleep "$retry_sleep"
           done
           test "$state_persisted" = 1
+          # 원격 저장이 끝난 뒤 실행용 전체 큐를 복원해 저장 충돌 구간을 줄인다.
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue="$control_root/.vibe2/queue.json"
           echo "VIBE2_BATCH_RESERVATION_WRITE=$state_write"
 
           if [ "$callback_kind" = 'neuron' ]; then
@@ -970,101 +1119,6 @@ jobs:
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
 
-      - name: Prepare verified learning memory once for worker cohort
-        id: learning_memory
-        if: steps.batch.outputs.worker_count != '0' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
-        shell: bash
-        run: |
-          set -euo pipefail
-          learning_root=/tmp/vibe2-learning-memory
-          playbooks="$learning_root/company-learning/vibe3-task-playbooks.json"
-          rm -rf "$learning_root"
-          mkdir -p "$learning_root/company-learning"
-          git fetch --depth=1 --no-tags origin vibe2-learning-runtime --quiet
-          learning_sha="$(git rev-parse FETCH_HEAD)"
-          test -n "$learning_sha"
-          git show "$learning_sha:company-learning/vibe3-task-playbooks.json" > "$playbooks"
-          test -s "$playbooks"
-          node - "$playbooks" <<'NODE'
-          const fs=require('fs');
-          const file=process.argv[2];
-          const data=JSON.parse(fs.readFileSync(file,'utf8'));
-          if(String(data.generatedFrom||'')!=='VERIFIED_MEMORY_ONLY')throw new Error('VERIFIED_PLAYBOOK_SOURCE_REQUIRED');
-          const taskTypes=data.taskTypes&&typeof data.taskTypes==='object'?data.taskTypes:{};
-          if(!Object.keys(taskTypes).length)throw new Error('VERIFIED_PLAYBOOK_TASK_TYPES_REQUIRED');
-          for(const [kind,row] of Object.entries(taskTypes)){
-            if(String(row?.authority||'')!=='verified-task-playbook')throw new Error('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED:'+kind);
-            if(!Array.isArray(row?.reuse))throw new Error('VERIFIED_PLAYBOOK_REUSE_ARRAY_REQUIRED:'+kind);
-            for(const item of row.reuse){
-              const id=String(item?.id||'').trim();
-              if(!id)throw new Error('VERIFIED_PLAYBOOK_REUSE_ID_REQUIRED:'+kind);
-              if(id.startsWith('external-black-box-')){
-                const principles=Array.isArray(item?.distilledApplicationPrinciples)
-                  ?item.distilledApplicationPrinciples.map(value=>String(value||'').trim()).filter(Boolean)
-                  :[];
-                if(!principles.length)throw new Error('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED:'+kind+':'+id);
-              }
-            }
-          }
-          console.log('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS');
-          NODE
-          file_sha256="$(sha256sum "$playbooks" | cut -d' ' -f1)"
-          test -n "$file_sha256"
-          echo "sha=$learning_sha" >> "$GITHUB_OUTPUT"
-          echo "file_sha256=$file_sha256" >> "$GITHUB_OUTPUT"
-          echo "VIBE2_VERIFIED_LEARNING_MEMORY_SHA=$learning_sha"
-          echo "VIBE2_VERIFIED_LEARNING_MEMORY_FILE_SHA256=$file_sha256"
-          echo 'VIBE2_VERIFIED_LEARNING_MEMORY_VALIDATION=COHORT_ONCE'
-
-      - name: Upload verified learning memory for worker cohort
-        if: steps.batch.outputs.worker_count != '0' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
-        uses: actions/upload-artifact@v4
-        with:
-          name: vibe2-verified-learning-memory-${{ github.run_id }}-${{ github.run_attempt }}
-          path: /tmp/vibe2-learning-memory/
-          if-no-files-found: error
-          retention-days: 1
-
-      - name: Probe dedicated Vibe2 model cache
-        id: ollama_model_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.ollama/models
-          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
-          lookup-only: true
-
-      - name: Probe canonical Ollama runtime cache
-        id: ollama_runtime_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.cache/jaewoon-ollama/ollama-linux-*-cpu-0.33.3.tar.zst
-          key: jaewoon-ollama-cpu-runtime-v2-${{ runner.os }}-${{ runner.arch }}-0.33.3
-          lookup-only: true
-
-      - name: Record reserve model cache decision
-        id: ollama_cache_probe
-        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
-        env:
-          MODEL_CACHE_HIT: ${{ steps.ollama_model_cache_probe.outputs.cache-hit }}
-          RUNTIME_CACHE_HIT: ${{ steps.ollama_runtime_cache_probe.outputs.cache-hit }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          combined=false
-          if [ "$MODEL_CACHE_HIT" = 'true' ] && [ "$RUNTIME_CACHE_HIT" = 'true' ]; then combined=true; fi
-          echo "cache-hit=$combined" >> "$GITHUB_OUTPUT"
-          echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES'
-          echo "VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=$MODEL_CACHE_HIT"
-          echo "VIBE2_RUNTIME_CACHE_RESERVE_PROBE_HIT=$RUNTIME_CACHE_HIT"
-          echo "VIBE2_MODEL_RUNTIME_CACHE_COMBINED_HIT=$combined"
-          if [ "$combined" = 'true' ]; then
-            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT'
-          else
-            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=RUN_CACHE_MISS'
-          fi
-
       - name: Record asset no-model cache bypass
         if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE == 'asset-development'
         shell: bash
@@ -1127,49 +1181,11 @@ jobs:
             break
           done < /tmp/vibe2-stranded-review-runs.tsv
 
-  model_cache:
-    needs: reserve
-    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle'
-    runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
-    timeout-minutes: 12
-    continue-on-error: true
-    steps:
-      - name: Checkout pinned Ollama preparation action
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.reserve.outputs.contract_sha }}
-          path: vibe2-contract
-          fetch-depth: 1
-          sparse-checkout: |
-            .github/actions/prepare-ollama
-
-      - name: Recheck or persist dedicated Vibe2 model cache
-        id: ollama_cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.ollama/models
-          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
-
-      - name: Warm canonical Ollama runtime and local coding model once
-        uses: ./vibe2-contract/.github/actions/prepare-ollama
-        with:
-          model: ${{ env.VIBE2_LOCAL_MODEL }}
-          pull-model: 'true'
-
-      - name: Record model cache probe
-        shell: bash
-        run: |
-          echo 'VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=NO'
-          echo 'VIBE2_MODEL_CACHE_WARMUP_PERSIST_ON_MISS=YES'
-          echo "VIBE2_MODEL_CACHE_WARMUP_HIT=${{ steps.ollama_cache.outputs.cache-hit }}"
-          echo 'VIBE2_RUNTIME_CACHE_WARMUP=CANONICAL_PREPARE_OLLAMA'
-          echo 'VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS'
-
   worker:
-    needs: [reserve, model_cache]
-    if: always() && needs.reserve.outputs.worker_count != '0'
-    # Roblox asset work stays on x64 for the native Luau toolchain; Unity asset work keeps the dedicated ARM lane.
+    needs: [reserve]
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
+    if: always() && needs.reserve.result == 'success' && needs.reserve.outputs.worker_count != '0' && (!contains('game-primary,asset-development', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || needs.reserve.outputs.verified_learning_memory_sha != '')
+    # Roblox asset work stays on x64 for the native Luau toolchain; Unity asset work keeps the dedicated ARM lane.
     # game-primary BUILD_UP과 asset 품질 작업은 소스 생성·네이티브 그래픽 작성·impact-scoped QA를 끝까지 수행할 수 있게 최대 60분을 확보한다.
     # 개별 모델 호출 timeout/retry와 QA/release gate는 그대로 유지하고, 작업이 끝나면 즉시 종료한다.
     timeout-minutes: ${{ ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' || (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary') && 60 || 22 }}
@@ -1269,6 +1285,7 @@ jobs:
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
           grep -q '^export function unpackVibeQueueStorage' "$contract_root/tools/vibe2-queue-control.mjs"
           node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"
+          ( cd "$contract_root" && node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-context.json )
           policy_sha="$(sha256sum "$contract_root/company-learning/platform-release-roadmap.json" | cut -d' ' -f1)"
           log_map_sha="$(sha256sum "$contract_root/company-learning/company-log-map.json" | cut -d' ' -f1)"
           architecture_sha="$(sha256sum "$contract_root/company-learning/company-architecture-map.json" | cut -d' ' -f1)"
@@ -1277,8 +1294,8 @@ jobs:
           test "$log_map_sha" = "$WORKER_CONTEXT_EXPECTED_LOG_MAP_SHA256"
           test "$architecture_sha" = "$WORKER_CONTEXT_EXPECTED_ARCHITECTURE_SHA256"
           test "$security_sha" = "$WORKER_CONTEXT_EXPECTED_SECURITY_POLICY_SHA256"
-          echo 'WORKER_CONTEXT_MODE=PINNED_SHA_ONLY'
-          echo 'WORKER_CONTEXT_SYNC=PASS'
+          echo 'WORKER_CONTEXT_MODE=FOUR_DOCUMENT_INTEGRITY_ONLY'
+          echo 'WORKER_CONTEXT_SYNC=INTEGRITY_ONLY'
           node "$contract_root/tools/vibe2-queue-control.mjs" verify-worker-sync             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"             --id="$TASK_ID"             --reservation-id="$RESERVATION_ID"             --reservation-run="$RESERVATION_RUN_ID"             --reservation-attempt="$RESERVATION_RUN_ATTEMPT"             --reserved-at="$RESERVED_AT" | tee /tmp/vibe2-worker-sync.log
           grep -q '^VIBE2_WORKER_SYNC=PASS$' /tmp/vibe2-worker-sync.log
           echo "VIBE2_WORKER_CONTRACT_SHA=$CONTRACT_SHA"
@@ -1306,7 +1323,7 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           # 자산과 게임 소스는 고정된 main에서 읽고 큐 상태는 아래 절대 경로를 유지한다.
           cd "$contract_root"
-          node "$contract_root/tools/vibe2-continuous-runner.mjs" \
+          COMPANY_VERIFIED_POLICY_PATH="$contract_root/company-learning/platform-release-roadmap.json" COMPANY_VERIFIED_DESIGN_POLICY_PATH="$contract_root/company-learning/platform-release-roadmap.json" node "$contract_root/tools/vibe2-continuous-runner.mjs" \
             --runtime="$contract_root/vibe2-runtime.json" \
             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json" \
             --control="$GITHUB_WORKSPACE/.vibe2/parallelism-control.json" \
@@ -1320,7 +1337,7 @@ jobs:
             --task-id="$TASK_ID" \
             --variant="$VARIANT" \
             --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
-          node --input-type=module - "$contract_root/tools/vibe2-source-worker.mjs" <<'NODE'
+          COMPANY_VERIFIED_POLICY_PATH="$contract_root/company-learning/platform-release-roadmap.json" node --input-type=module - "$contract_root/tools/vibe2-source-worker.mjs" <<'NODE'
           import fs from 'node:fs';
           import {pathToFileURL} from 'node:url';
           const {robloxDeterministicPresentationEligible,assetDevelopmentTask}=await import(pathToFileURL(process.argv[2]).href);
@@ -1336,9 +1353,9 @@ jobs:
           put('route',order.executionRoute||'');
           const deterministicRoblox=robloxDeterministicPresentationEligible(order);
           put('deterministic_source',deterministicRoblox?'true':'false');
-          const selectedModel=order.assetProduction?.modelRouting?.selectedModel||process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+          const selectedModel=process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash';
           const heroModelRequested=order.assetProduction?.modelRouting?.heroRequested===true;
-          const modelCacheFamily=order.assetProduction?.modelRouting?.cacheFamily||'vibe2-ollama-v5';
+          const modelCacheFamily='EXTERNAL_GEMINI_NO_LOCAL_CACHE';
           const modelCacheKey=order.assetProduction?.modelRouting?.cacheKey||String(selectedModel).toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||'local-model';
           put('local_model',selectedModel);
           put('hero_model_requested',heroModelRequested?'true':'false');
@@ -1354,78 +1371,49 @@ jobs:
           put('variant',process.env.VARIANT||'primary');
           NODE
 
-      - name: Decide worker local model requirement
-        id: model_need
+      - name: Hand non-ABCD design request to canonical Game Designer
+        if: steps.order.outputs.reason == 'DESIGNER_HANDOFF_REQUIRED' && matrix.variant == 'primary'
         env:
-          ORDER_RUN: ${{ steps.order.outputs.run }}
-          ROUTE: ${{ steps.order.outputs.route }}
-          TARGET: ${{ steps.order.outputs.target }}
-          DETERMINISTIC_SOURCE: ${{ steps.order.outputs.deterministic_source }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          required='false'
-          reason='ROUTE_NO_LOCAL_MODEL'
-          if [ "$ORDER_RUN" != 'true' ]; then
-            reason='WORK_ORDER_NOT_RUNNABLE'
-          elif [ "$ROUTE" = 'analysis-only' ] || [ "$ROUTE" = 'learning-web-artifact' ]; then
-            required='true'
-            reason='LEARNING_ROUTE'
-          elif [ "$ROUTE" = 'text-source-worker' ] && [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
-            required='false'
-            reason='ROBLOX_DETERMINISTIC_SOURCE'
-          elif [ "$ROUTE" = 'text-source-worker' ]; then
-            required='true'
-            reason='TEXT_SOURCE_ROUTE'
-          fi
-          echo "required=$required" >> "$GITHUB_OUTPUT"
-          echo "reason=$reason" >> "$GITHUB_OUTPUT"
-          if [ "$required" = 'true' ]; then
-            echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES'
+          # 기존 디자이너 워크플로만 호출한다. 원본 설계 요청은 입력으로 그대로 전달한다.
+          game_id="$(jq -er '.designerHandoff.gameId' /tmp/vibe2-work-order.json)"
+          request_id="$(jq -er '.designerHandoff.requestId' /tmp/vibe2-work-order.json)"
+          design_request="$(jq -er '.designerHandoff.request' /tmp/vibe2-work-order.json)"
+          test "$(jq -r '.designerHandoff.ready' /tmp/vibe2-work-order.json)" = true
+          [[ "$game_id" =~ ^[a-z0-9][a-z0-9-]{0,79}$ ]]
+          [[ "$request_id" =~ ^[a-zA-Z0-9_.:-]{1,100}$ ]]
+          [ -n "$design_request" ]
+          [ "${#design_request}" -le 2000 ]
+          # company-runtime의 기존 GAME_SEED revision이 이미 같으면 실행을 중복 예약하지 않는다.
+          if seed_b64="$(gh api "repos/$GITHUB_REPOSITORY/contents/game-seed-state.json?ref=company-runtime" --jq .content)"; then
+            already="$(printf "%s" "$seed_b64" | tr -d "\n" | base64 -d | jq -r --arg game "$game_id" --arg rid "VIBE2:$request_id" --arg req "$design_request" 'any(.seeds[]?; .gameId==$game and .ownerRequestInstanceId==$rid and .OWNER_LATEST_DESIGN_REQUEST==$req)' )"
+            if [ "$already" = true ]; then
+              echo "VIBE2_DESIGNER_HANDOFF=ALREADY_PERSISTED|game=$game_id|request=$request_id"
+              exit 0
+            fi
           else
-            echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO'
+            echo "DESIGNER_CANONICAL_SEED_STATE_UNAVAILABLE" >&2
+            exit 1
           fi
-          echo "VIBE2_WORKER_MODEL_CACHE_REASON=$reason"
-          echo "VIBE2_WORKER_SELECTED_MODEL=${{ steps.order.outputs.local_model }}"
-          echo "VIBE2_WORKER_MODEL_CACHE_KEY=${{ steps.order.outputs.model_cache_family }}-${{ runner.os }}-${{ runner.arch }}-${{ steps.order.outputs.model_cache_key }}"
-          echo "VIBE2_WORKER_HERO_MODEL_REQUESTED=${{ steps.order.outputs.hero_model_requested }}"
+          gh workflow run company-seed-design-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f "game_id=$game_id" -f "design_request=$design_request" -f "request_id=$request_id"
+          echo "VIBE2_DESIGNER_HANDOFF=DISPATCHED|game=$game_id|request=$request_id"
+          echo 'VIBE2_DESIGNER_PASS=NOT_YET_VERIFIED'
 
-      - name: Restore and persist selected Vibe2 model cache
-        id: worker_ollama_cache
-        if: steps.model_need.outputs.required == 'true'
-        uses: actions/cache@v4
-        with:
-          path: ~/.ollama/models
-          key: ${{ steps.order.outputs.model_cache_family }}-${{ runner.os }}-${{ runner.arch }}-${{ steps.order.outputs.model_cache_key }}
-
-      - name: Mark worker Ollama preparation start
-        id: worker_ollama_prepare_start
-        if: steps.model_need.outputs.required == 'true'
-        shell: bash
-        run: echo "ms=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
-
-      - name: Prepare cached Ollama runtime
-        id: worker_ollama_runtime
-        if: steps.model_need.outputs.required == 'true'
-        uses: ./vibe2-contract/.github/actions/prepare-ollama
-        with:
-          model: ${{ steps.order.outputs.local_model }}
-          pull-model: 'true'
-          preload-model: ${{ steps.order.outputs.route == 'text-source-worker' && env.VIBE2_EXECUTION_LANE != 'asset-development' && 'true' || 'false' }}
-          preload-context: ${{ steps.order.outputs.route == 'text-source-worker' && env.VIBE2_EXECUTION_LANE != 'asset-development' && '12288' || '8192' }}
-
-      - name: Measure worker Ollama preparation
-        id: worker_ollama_metrics
-        if: steps.model_need.outputs.required == 'true'
-        env:
-          START_MS: ${{ steps.worker_ollama_prepare_start.outputs.ms }}
+      - name: Declare external-only model routing (no local AI startup)
+        id: model_need
         shell: bash
         run: |
           set -euo pipefail
-          finished="$(date +%s%3N)"
-          start="${START_MS:-$finished}"
-          echo "duration_ms=$((finished-start))" >> "$GITHUB_OUTPUT"
-          echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA'
+          echo 'required=false' >> "$GITHUB_OUTPUT"
+          echo 'reason=EXTERNAL_GEMINI_API_ONLY' >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO'
+          echo 'VIBE2_WORKER_MODEL_CACHE_REASON=EXTERNAL_GEMINI_API_ONLY'
+          echo 'VIBE2_LOCAL_AI_ENABLED=NO'
+          echo 'VIBE2_WORKER_PROVIDER=GEMINI_API'
 
       - name: Prepare declared native DCC authoring runtime
         timeout-minutes: 5
@@ -1473,14 +1461,21 @@ jobs:
         env:
           SAFE_TASK: ${{ matrix.safeTask }}
           VARIANT: ${{ matrix.variant }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}
         shell: bash
         run: |
           set -euo pipefail
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
-          command -v ollama >/dev/null
-          curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
-          ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"
-          echo 'VIBE2_PRACTICE_OLLAMA_RUNTIME=PREPARED_ONCE'
+          echo 'VIBE2_PRACTICE_PROVIDER=EXTERNAL_ONLY'
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "GEMINI_API"
+          if [ -z "${GEMINI_API_KEY:-}" ]; then
+            echo 'GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK' >&2
+            exit 1
+          fi
           practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
           if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.robloxPracticeDrill?0:1)"; then
             luau_dir="$RUNNER_TEMP/vibe2-luau-practice"
@@ -1587,7 +1582,7 @@ jobs:
           echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
           echo 'VIBE2_FREE_AI_SCALE=ONE_WORKER_PER_INDEPENDENT_TASK'
           test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3"
-          test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA"
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "GEMINI_API"
           test "$VIBE2_CODEX_ROLE" = "DISABLED"
           test "$VIBE2_CODEX_GAME_SOURCE_WRITE" = "FORBIDDEN"
           test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false"
@@ -1658,7 +1653,11 @@ jobs:
           VARIANT: ${{ matrix.variant }}
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
-          VIBE2_LOCAL_MODEL: ${{ steps.order.outputs.local_model }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}
           VIBE2_DCC_AUTHORING_EVIDENCE_FILE: /tmp/vibe2-dcc-authoring-evidence.json
         shell: bash
         run: |
@@ -1676,12 +1675,12 @@ jobs:
           cp /tmp/vibe2-exploration/vibe2-exploration.json "$candidate_dir/.vibe2/exploration.json"
 
           test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3" || { echo "GAME_DEVELOPMENT_OWNER_INVALID=$VIBE2_GAME_DEVELOPMENT_OWNER" >&2; exit 1; }
-          test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA" || { echo "GAME_SOURCE_PROVIDER_INVALID=$VIBE2_GAME_SOURCE_PROVIDER" >&2; exit 1; }
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "GEMINI_API" || { echo "GAME_SOURCE_PROVIDER_INVALID=$VIBE2_GAME_SOURCE_PROVIDER" >&2; exit 1; }
           test "$VIBE2_CODEX_ROLE" = "DISABLED" || { echo "CODEX_USE_FORBIDDEN=$VIBE2_CODEX_ROLE" >&2; exit 1; }
           test "$VIBE2_CODEX_GAME_SOURCE_WRITE" = "FORBIDDEN" || { echo "CODEX_GAME_SOURCE_WRITE_FORBIDDEN=$VIBE2_CODEX_GAME_SOURCE_WRITE" >&2; exit 1; }
           test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false" || { echo "OPENAI_PAID_API_GAME_SOURCE_FORBIDDEN=$VIBE2_OPENAI_PAID_API_ALLOWED" >&2; exit 1; }
           echo 'VIBE2_GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3'
-          echo 'VIBE2_GAME_SOURCE_PROVIDER=LOCAL_OLLAMA'
+          echo 'VIBE2_GAME_SOURCE_PROVIDER=GEMINI_API'
           echo 'VIBE2_CODEX_GAME_SOURCE_WRITE=FORBIDDEN'
 
           if [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
@@ -1689,13 +1688,12 @@ jobs:
             echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_LOCAL'
             echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
           else
-            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=LOCAL_OLLAMA'
-            command -v ollama >/dev/null
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null
-            ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"
-            echo "VIBE2_LOCAL_MODEL_ACTIVE=$VIBE2_LOCAL_MODEL"
-            echo "VIBE2_HERO_ASSET_MODEL_ACTIVE=${{ steps.order.outputs.hero_model_requested }}"
-            echo 'VIBE2_LOCAL_MODEL_SOURCE=PREPARED_ONCE'
+            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=GEMINI_API'
+            if [ -z "${GEMINI_API_KEY:-}" ]; then
+              echo 'GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK' >&2
+              exit 1
+            fi
+            echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
           fi
 
           if [ "$TARGET" = 'roblox' ]; then
@@ -1755,7 +1753,7 @@ jobs:
           echo "candidate_dir=$candidate_dir" >> "$GITHUB_OUTPUT"
           echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
           set +e
-          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-source-worker.mjs" --apply-source=true 2>&1 | tee "$source_worker_log"
+          COMPANY_VERIFIED_POLICY_PATH="$GITHUB_WORKSPACE/vibe2-contract/company-learning/platform-release-roadmap.json" node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-source-worker.mjs" --apply-source=true 2>&1 | tee "$source_worker_log"
           worker_rc=${PIPESTATUS[0]}
           set -e
           candidate_finished="$(date +%s%3N)"
@@ -2734,7 +2732,9 @@ jobs:
     # Fan-in is control-plane work. Keep it on the currently available ubuntu-latest pool so completed
     # game results are persisted promptly instead of waiting behind the constrained ARM control queue.
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    # One full impact regression plus a conflicting shared-state push retry exceeded 8 minutes
+    # in run 39051717659. Preserve all QA and optimistic state reconciliation.
+    timeout-minutes: 15
     concurrency:
       # Fan-in jobs must not share one pending GitHub concurrency slot.
       # Every fan-in reconciles control state with optimistic fetch/reset/push retries below.
@@ -3241,7 +3241,7 @@ jobs:
             if [ "$dispatched" != 1 ]; then
               echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH_REPAIR_REQUIRED=${target:-unknown}:${game_id:-unknown}:${task_id}" >&2
               if [ "$target" = web ]; then
-                echo "PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=YES:WEB:${task_id}"
+                echo "PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO:WEB:${task_id}"
                 echo "WEB_SAME_VERIFIED_CANDIDATE_DISPATCH_RETRY_REQUIRED=${candidate_branch}"
               else
                 echo "PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO"
@@ -3367,3 +3367,4 @@ jobs:
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
             --data "$payload"
           echo 'VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'
+

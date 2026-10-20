@@ -322,11 +322,18 @@ end
 `));
 
 
-test('three games vendor and call the existing common touch controls',()=>{
+test('shared legacy UI remains for other games; basic UI is absent in external-only simple RPG',()=>{
  for(const game of fs.readdirSync('roblox-games').filter(game=>fs.existsSync('roblox-games/'+game+'/client/Game.client.luau'))){
-  assert.equal(fs.readFileSync('roblox-games/'+game+'/shared/RobloxCommonUI.luau','utf8'),commonUI);
   const client=fs.readFileSync('roblox-games/'+game+'/client/Game.client.luau','utf8');
-  assert.match(client,/CommonUI.CreatePrimaryButton/);
+  if(game==='simple-rpg'){
+   assert.equal(fs.existsSync('roblox-games/simple-rpg/shared/RobloxCommonUI.luau'),false);
+   assert.doesNotMatch(client,/CommonUI\.|RobloxCommonUI|CommonUI.CreatePrimaryButton/);
+   assert.doesNotMatch(client,/Instance\.new\("(ScreenGui|Frame|TextButton|TextLabel|ImageLabel)"\)/);
+   assert.match(client,/CuratedUiTemplates/);
+  }else{
+   assert.equal(fs.readFileSync('roblox-games/'+game+'/shared/RobloxCommonUI.luau','utf8'),commonUI);
+   assert.match(client,/CommonUI.CreatePrimaryButton/);
+  }
  }
  assert.match(menu,/CommonUI.CreateEquipmentSlot/);
  assert.match(menu,/CommonUI.CreateInventorySlot/);

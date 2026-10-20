@@ -2,6 +2,7 @@
 // 설계 게이트 점수와 필수 문법·멀티·공간 그래픽 회귀 검증
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {fileURLToPath} from 'node:url';
 import {runInNewContext} from 'node:vm';
 import {computeVibeSeedProposal} from '../tools/company-game-seed-bootstrap.mjs';
 import {repairDesignRequiredFields} from '../tools/company-design-prepromotion-repair.mjs';
@@ -9,6 +10,9 @@ import {CAUSAL_DNA_LIBRARY} from '../tools/game-seed-state.mjs';
 import {classifyRobloxGenre} from '../tools/roblox-genre-profile.mjs';
 import {buildConceptSystemBlueprint} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {designPlayabilityRequirements,DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2,validateDesignAuthoringContent} from '../tools/company-design-gate-scoring-v2.mjs';
+
+// 검증기는 명시적으로 선택된 현재 중앙정책만 읽는다. 테스트에서도 동일 원본을 지정한다.
+process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH ||= fileURLToPath(new URL('../company-learning/platform-release-roadmap.json',import.meta.url));
 
 assert.equal(Object.keys(DESIGN_GATE_WEIGHTS).length,11);
 assert.equal(Object.values(DESIGN_GATE_WEIGHTS).reduce((a,b)=>a+b,0),100);
@@ -463,26 +467,22 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
   assert.equal(nativeSource.includes('127.0.0.1:11434'),false);
   assert.equal(nativeSource.includes('requestLocalDesignerRaw'),false);
   assert.equal(nativeSource.includes('callLocalDesignerModel'),false);
+  const basicDesignMethod=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')).continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod;
   for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE','INFECTION','KINGDOM','CASUAL']){
     const sourceIds=CAUSAL_DNA_LIBRARY.slice(0,5).map(row=>row.id);
-    const target={requestId:'native-qa-'+category,category,platform:'ROBLOX',materials:[
+    const target={basicDesignMethod,requestId:'native-qa-'+category,category,platform:'ROBLOX',materials:[
       {materialId:'MAT-001',causalDNA:sourceIds.slice(0,3)},
       {materialId:'MAT-002',causalDNA:sourceIds.slice(2,5)}
     ]};
     // 자유주제는 기존 개발의 CASUAL 명칭과 독립적으로 MAIN/A/B/C/@를 새로 작성한다.
-    if(category==='CASUAL'){
-      // 같은 게임 시드와 설계 호출은 같은 게임 ID로 조합해야 하며, 요청 개정은 그대로 유지한다.
-      target.requestId='native-qa';
-      target.designTopicMode='VIBE_FREE_TOPIC';
-      target.topicRevision='FREE-NATIVE-QUALITY-1';
-    }
+    if(category==='CASUAL'){target.requestId='native-qa';target.designTopicMode='VIBE_FREE_TOPIC';target.topicRevision='FREE-NATIVE-QUALITY-1';}
     const proposal=computeVibeSeedProposal(target);
     if(category==='KINGDOM')proposal.gameplaySketch.novelGameGrammar.delveLayer.elements.push(
       {name:'주민의 이중 약속',discoveryCondition:'수확을 기다리는 주민에게 경비와 생산을 번갈아 맡겨 관계 변화를 비교한다.',masteryOrInsight:'같은 주민의 과거 역할이 새 거점의 협상 조건을 바꾸는 원리를 배운다.',gameplayEffect:'정복 대신 생산 협약으로 거점 접근권을 얻는 선택이 열린다.',connectsTo:['MAIN','C']},
       {name:'비워 둔 귀환로',discoveryCondition:'병력을 거점에 남기지 않고 철수한 다음 주민이 만든 귀환 통로를 조사한다.',masteryOrInsight:'방어 자원을 비축하지 않은 결과가 이동 경로의 우회 조건으로 전환된다.',gameplayEffect:'병력 증원 대신 자원 수송 동선을 옮겨 안전한 귀환을 선택한다.',connectsTo:['A','B']}
     );
     const seed={
-      seedId:'SEED-VIBE-NATIVE-TEST',gameId:'native-qa',gameName:proposal.gameName,
+      designGrammarStandardVersion:1,seedId:'SEED-VIBE-NATIVE-TEST',gameId:'native-qa',gameName:proposal.gameName,
       status:'ACTIVE',generation:'MATERIAL_COMPOSED',GAME_CATEGORY:category,
       DISTINCT_IDENTITY:proposal.distinctIdentity,CORE_LOOP:proposal.coreLoop,
       CORE_FUN_TO_LEARN:proposal.coreFunToLearn,GAMEPLAY_SKETCH:proposal.gameplaySketch,
@@ -490,6 +490,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       TARGET_SESSION_MINUTES:30,TARGET_SESSION_DIRECTION:'30분 상태·위험·선택의 성장',
       INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode
     };
+    if(category==='KINGDOM')seed.designDiscoveryCount=6;
     if(category==='CASUAL'){seed.designTopicMode='VIBE_FREE_TOPIC';seed.ownerResetRevision=target.topicRevision;seed.designDiscoveryCount=10;}
     let sourceText='';
     if(category==='INFECTION'){
@@ -510,7 +511,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
     const design=runInNewContext(
       nativeSource.slice(start,end)+String.fromCharCode(10)+'computeVibeNativeDesign()',
       {
-        nativeDesignVariation:0,validateDesignAuthoringContent,
+        basicDesignMethod,nativeDesignVariation:0,validateDesignAuthoringContent,
         seed,gameId:'native-qa',game:{name:proposal.gameName},
         seedState:{seedMaterials:target.materials},
         seedGameplaySketch:proposal.gameplaySketch,
@@ -530,14 +531,17 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
     });
     assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure');
     const details=design.creativeGrammar.fiveWOneH;
-    assert.equal(details.length,4+design.creativeGrammar.delveDiscoveries.length);
+    assert.equal(details.length,4+design.creativeGrammar.dCreations.length+design.creativeGrammar.delveDiscoveries.length);
+    assert.equal(design.creativeGrammar.standardVersion,basicDesignMethod.version);
+    assert.equal(Object.hasOwn(design.creativeGrammar,'cThemes'),false);
+    assert.ok(design.creativeGrammar.delveDiscoveries.every(row=>design.creativeGrammar.dCreations.some(d=>d.id===row.sourceDId)));
     if(category==='CASUAL'){
       assert.equal(design.creativeGrammar.delveDiscoveries.length,10,'@ expansion must not stop at the original four');
       assert.equal(details.filter(row=>row.element==='DELVE').length,10,'every new @ needs its own six-question and result record');
       assert.match(design.creativeGrammar.delveGrowthRule,/상한|제한|파고들기/);
     }
     assert.equal(details.filter(row=>row.element==='C').length,1);
-    for(const row of [...design.creativeGrammar.cThemes,...design.creativeGrammar.cGenres])assert.ok(details.find(row=>row.element==='C').what.includes(row.name));
+    for(const row of design.creativeGrammar.cGenres)assert.ok(details.find(row=>row.element==='C').what.includes(row.name));
     if(category==='KINGDOM'){
       assert.equal(details.filter(row=>row.element==='DELVE').length,6,'@ remains open beyond four discoveries');
       const check=changed=>validateDesignAuthoringContent({design:changed,seed,fields:['creativeGrammar']});
@@ -546,7 +550,18 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
         assert.ok(check(changed).some(row=>row.code===code),code);
         assert.ok(scoreDesignGateV2({seed,designRecord:{content:changed},cycleStatus:{status:'IN_PROGRESS'}}).hardFailures.includes(code),'strict gate carries '+code);
       };
-      for(const field of ['who','when','where','what','how','why','result'])expectRejected(
+      expectRejected(changed=>{delete changed.creativeGrammar.a.referenceGame;},'DESIGN_A_NAMED_REFERENCE_GAME_REQUIRED');
+      expectRejected(changed=>{changed.creativeGrammar.b.system='임의로 바꾼 시스템';},'DESIGN_B_EXISTING_SYSTEM_BASELINE_REQUIRED');
+      const brokenIdea=structuredClone(design);delete brokenIdea.designAlternatives[0].abIntegration.verificationScene;
+      assert.ok(validateDesignAuthoringContent({design:brokenIdea,seed,fields:['designAlternatives']}).some(row=>row.code==='DESIGN_AB_IDEA_INTEGRATION_REQUIRED'));
+      expectRejected(changed=>{changed.creativeGrammar.dCreations=[];},'DESIGN_D_CREATION_REQUIRED');
+      expectRejected(changed=>{changed.creativeGrammar.dCreations[0].materialPath[2]='분류의 기록 장치';},'DESIGN_D_SOURCE_FEATURE_UNGROUNDED');
+      expectRejected(changed=>{changed.creativeGrammar.dCreations[0].sourceFeature='아무 조건이나 바뀐다';},'DESIGN_D_SOURCE_FEATURE_UNGROUNDED');
+      expectRejected(changed=>{changed.creativeGrammar.dCreations[0].gameplayEffect='소재의 이름만 확인하고 세계 상태를 바꾸어 다음 경로를 선택한다.';},'DESIGN_D_SOURCE_FEATURE_UNGROUNDED');
+      expectRejected(changed=>{changed.creativeGrammar.cGenres[0].name='액션';},'DESIGN_C_GAME_GENRE_FORBIDDEN');
+      expectRejected(changed=>{changed.creativeGrammar.b.materialPath=['신화','로봇공학'];},'DESIGN_STANDARD_CLASSIFICATION_INVALID');
+      expectRejected(changed=>{changed.creativeGrammar.delveDiscoveries[0].sourceDId='missing';},'DESIGN_DELVE_D_BASIS_MISSING');
+      for(const field of ['who','when','where','what','how','why','result','failure','cancel','recovery'])expectRejected(
         changed=>{delete changed.creativeGrammar.fiveWOneH[1][field];},'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE');
       expectRejected(changed=>changed.creativeGrammar.fiveWOneH.pop(),'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE');
       expectRejected(changed=>{changed.creativeGrammar.fiveWOneH[5].discoveryIndex=0;},'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE');
@@ -612,4 +627,35 @@ for(const item of [
   assert.equal(actual.genre,item.genre,item.identity+' 기본 장르 유지');
   assert.equal(actual.subgenre,item.subgenre,item.identity+' 세부 장르 유지');
   assert.equal(actual.playMode,'COOP',item.identity+' 기존 멀티 규칙 보존');
+}
+
+// 대·중·소 연결과 생성 편향 회귀: 중앙 분류 확장을 실제로 소비한다.
+{
+  const method=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')).continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod;
+  const registered=new Map();
+  for(const family of method.materialClassification){
+    for(const middle of family.middle)assert.ok(family.specificMaterials.some(row=>row.middle===middle),`${family.broad}→${middle}: source missing`);
+    for(const source of family.specificMaterials){
+      assert.ok(family.middle.includes(source.middle));
+      assert.ok(['name','feature','action','condition','consequence','risk'].every(key=>typeof source[key]==='string'&&source[key].length>=(key==='name'?1:4)));
+      const key=[family.broad,source.middle,source.name].join('→');assert.ok(!registered.has(key));registered.set(key,source);
+    }
+  }
+  const broadCoverage=new Set(),middleCoverage=new Set(),specificCoverage=new Set();
+  for(let index=0;index<1000;index++){
+    const proposal=computeVibeSeedProposal({requestId:`taxonomy-audit-${index}`,category:'ACTION_SURVIVAL_ROGUELITE',platform:'ROBLOX',materials:[],basicDesignMethod:method,designTopicMode:'VIBE_FREE_TOPIC',topicRevision:'AUDIT',variant:0});
+    const selection=proposal.basicDesignSelection;broadCoverage.add(selection.a.material);middleCoverage.add(selection.b.materialPath.join('→'));
+    for(const source of selection.dSources){const key=source.materialPath.join('→');assert.ok(registered.has(key));assert.equal(source.sourceFeature,registered.get(key).feature);assert.ok(!source.materialPath[2].endsWith('의 기록 장치'));specificCoverage.add(key);}
+  }
+  assert.equal(broadCoverage.size,method.materialClassification.length);
+  assert.equal(middleCoverage.size,method.materialClassification.reduce((total,row)=>total+row.middle.length,0));
+  assert.equal(specificCoverage.size,registered.size);
+  const target={requestId:'title-independent',category:'ACTION_SURVIVAL_ROGUELITE',platform:'ROBLOX',materials:[],basicDesignMethod:method};
+  assert.deepEqual(computeVibeSeedProposal({...target,gameName:'학교'}).basicDesignSelection,computeVibeSeedProposal({...target,gameName:'곤충'}).basicDesignSelection);
+  const expanded=structuredClone(method),source=expanded.materialClassification[0].specificMaterials[0];
+  expanded.materialClassification[0].specificMaterials.push({...source,name:'새 경계 대상',feature:'새 대상의 출입 조건'});
+  let consumed=false;
+  for(let index=0;index<300&&!consumed;index++){const p=computeVibeSeedProposal({...target,requestId:`extension-${index}`,basicDesignMethod:expanded,discoveryCount:12});consumed=p.basicDesignSelection.dSources.some(row=>row.materialPath[2]==='새 경계 대상');}
+  assert.ok(consumed,'new canonical source must be consumed without a code-list change');
+  console.log('DESIGN_MATERIAL_HIERARCHY_FEATURE_AND_COVERAGE_TEST=PASS');
 }

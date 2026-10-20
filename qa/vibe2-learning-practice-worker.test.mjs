@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {buildPracticePrompt,candidateDiagnostics,evaluatePracticeAnswer,evaluateWebPracticeArtifact,runLearningPractice,runPracticeRepairSession} from '../tools/vibe2-learning-practice-worker.mjs';
+import {buildPracticePrompt,candidateDiagnostics,evaluatePracticeAnswer,evaluateWebPracticeArtifact,runLearningPractice,runPracticeRepairSession,requestPracticeModel} from '../tools/vibe2-learning-practice-worker.mjs';
 
 test('practice accepts analysis or isolated Web artifact routes but rejects production source route',()=>{
   assert.throws(()=>buildPracticePrompt({executionRoute:'text-source-worker',goal:'[VIBE_LEARNING_PRACTICE] x'}),/analysis-only or learning-web-artifact/);
@@ -194,7 +194,7 @@ test('repair uses public execution feedback without leaking hidden checks or ref
   assert.equal(prompts.length,3);
   assert(formats.every(format=>format.required.includes('code')&&format.properties.tests.minItems===3&&format.additionalProperties===false));
   assert.match(prompts[0],/Sandbox contract: no using directives/);
-  assert(generation.every(options=>options.think===true&&options.maxPredict===6144));
+  assert(generation.every(options=>options.think===false&&options.maxPredict===3072),'external Gemini API uses the bounded JSON output budget without local-model think mode');
   assert.deepEqual(generation.map(options=>options.attempt),[0,1,2]);
   assert(prompts.every(prompt=>prompt.includes(JSON.stringify(formats[0]))));
   for(const prompt of prompts){assert(!prompt.includes('PRIVATE_REFERENCE'));assert(!prompt.includes('PRIVATE_ACCEPTANCE'));}
@@ -256,15 +256,15 @@ test('public success still receives a bounded full-contract review before final 
   assert(!JSON.stringify(prompts).includes('PRIVATE'));
 });
 
-test('public repair activates bounded hybrid inference without duplicating failed source in the task',async()=>{
+test('external free practice keeps failed source in a separate repair turn',async()=>{
   const calls=[];
   const drill={id:'state-update',platform:'unity',scenario:'Validate before committing state.',broken:'BROKEN_INPUT',reference:'PRIVATE_REFERENCE',feedbackTests:['PUBLIC_CASE'],tests:['PRIVATE_CASE']};
-  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,model:'qwen3:1.7b',captureCandidates:true,
+  const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},drill,model:'gemini-3.8-flash',captureCandidates:true,
     request:async(prompt,options)=>{calls.push({prompt,...options});return JSON.stringify({...practiceAnswer,code:calls.length===1?'FAILED_SOURCE':'REPAIRED_SOURCE'});},
     evaluate:answer=>({pass:answer.code==='REPAIRED_SOURCE',codeVerification:{reason:'REGRESSION_OR_FIXTURE_FAILED',baselineRejected:true,referencePassed:true}})});
-  assert.equal(calls[0].inference.think,true);
-  assert.equal(calls[1].inference.think,true);
-  assert.equal(calls[1].maxPredict,6144);
+  assert.equal(calls[0].inference.think,false);
+  assert.equal(calls[1].inference.think,false);
+  assert.equal(calls[1].maxPredict,3072);
   assert.notEqual(calls[0].inference.seed,calls[1].inference.seed);
   assert(!calls[1].messages[0].content.includes('FAILED_SOURCE'));
   assert(!calls[1].messages[0].content.includes('BROKEN_INPUT'));
@@ -288,15 +288,15 @@ test('generation failures retain completed attempt evidence and remain failed',a
   assert.equal(result.candidateHistory[1].generationError,'practice model output truncated');
 });
 
-test('generation timeout retries a shorter mode without exposing hidden inputs or inventing success',async()=>{
+test('external free model timeout retries bounded output without leaking hidden inputs',async()=>{
   for(const recovers of [true,false]){
     const calls=[];
     const result=await runPracticeRepairSession({order:{executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE]'},
-      drill:{platform:'unity',scenario:'PUBLIC_CONTRACT',feedbackTests:['PUBLIC_CASE'],tests:['HIDDEN_CASE'],reference:'PRIVATE_REFERENCE'},model:'qwen3:1.7b',captureCandidates:true,
+      drill:{platform:'unity',scenario:'PUBLIC_CONTRACT',feedbackTests:['PUBLIC_CASE'],tests:['HIDDEN_CASE'],reference:'PRIVATE_REFERENCE'},model:'gemini-3.8-flash',captureCandidates:true,
       request:async(prompt,options)=>{calls.push({prompt,...options});if(calls.length===1||!recovers)throw new Error('practice model timeout');return JSON.stringify({...practiceAnswer,code:'FIXED_SOURCE'});},
       evaluate:answer=>({pass:answer.code==='FIXED_SOURCE',codeVerification:{reason:'VERIFIED_LOGIC_ONLY',baselineRejected:true,referencePassed:true}})});
     assert.equal(calls.length,3);
-    assert.equal(calls[0].inference.think,true);
+    assert.equal(calls[0].inference.think,false);
     assert.equal(calls[1].inference.think,false);
     assert.equal(calls[1].maxPredict,3072);
     assert.equal(result.repairEvidence.firstAttemptPass,false);
@@ -424,7 +424,7 @@ test('live Vibe coding: first attempt versus public-feedback repair on held-out 
   assert(!process.env.VIBE2_MODEL_RESPONSE_FILE,'fixture replay cannot be a live benchmark');
   const cases=[];
   const ids=['save','unity-menu-batch-transaction','unity-reward-prerequisites'];
-  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b',sourceCommit:process.env.GITHUB_SHA||null,
+  const report={version:1,kind:'vibe2-executed-coding-repair-benchmark',model:process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash',sourceCommit:process.env.GITHUB_SHA||null,
     expectedSampleCount:ids.length,measurementComplete:false,sampleCount:0,firstAttemptPass:0,finalPass:0,recovered:0,regressed:0,modelCalls:0,
     modelWeightsChanged:false,generalizationVerified:false,productionPromotionAllowed:false,cases};
   const reportFile=path.join(process.env.RUNNER_TEMP||os.tmpdir(),'vibe2-coding-repair-benchmark.json');
@@ -439,7 +439,7 @@ test('live Vibe coding: first attempt versus public-feedback repair on held-out 
   }
   console.log('VIBE2_LIVE_CODING_BENCHMARK='+JSON.stringify({...report,cases:cases.map(({candidates,...evidence})=>evidence)}));
   assert.equal(report.measurementComplete,true);
-  assert(cases.every(row=>row.execution==='LOCAL_OLLAMA'));
+  assert(cases.every(row=>row.execution==='GEMINI_API'));
   assert.equal(report.regressed,0,'a repair must not lose an already passing implementation');
   assert(report.finalPass>0,'no generated implementation passed; do not claim coding improvement');
 });
@@ -496,5 +496,40 @@ test('coding guidance clarifies language execution hazards without injecting an 
   for(const [prompt,drill] of [[lp,luau],[cp,csharp]]){
     assert(!prompt.includes(drill.reference));
     for(const hidden of drill.tests)assert(!prompt.includes(hidden));
+  }
+});
+
+test('learning practice uses external Gemini API with no local server fallback',async()=>{
+  const oldFetch=globalThis.fetch;
+  const oldKey=process.env.GEMINI_API_KEY;
+  const oldProvider=process.env.VIBE2_GAME_SOURCE_PROVIDER;
+  const oldModel=process.env.VIBE2_GEMINI_MODEL;
+  try{
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='GEMINI_API';
+    process.env.GEMINI_API_KEY='fixture-not-real';
+    process.env.VIBE2_GEMINI_MODEL='gemini-3.8-flash';
+    let calls=0;
+    globalThis.fetch=async(url,options)=>{
+      calls++;
+      assert.match(url,/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-3\.(?:8-flash|5-flash-lite):generateContent$/);
+      assert.equal(options.headers['x-goog-api-key'],'fixture-not-real');
+      const req=JSON.parse(options.body);
+      assert.equal(req.contents[0].parts[0].text,'example practice');
+      return{ok:true,json:async()=>({candidates:[{content:{parts:[{text:'{"tests":["one","two","three"]}'}]}}]})};
+    };
+    const result=await requestPracticeModel('example practice');
+    assert.match(result,/"tests"/);
+    assert.equal(calls,1);
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='OLLAMA';
+    await assert.rejects(requestPracticeModel('example'),/PRACTICE_EXTERNAL_AI_PROVIDER_REQUIRED_NO_LOCAL_FALLBACK/);
+    process.env.VIBE2_GAME_SOURCE_PROVIDER='GEMINI_API';
+    delete process.env.GEMINI_API_KEY;
+    await assert.rejects(requestPracticeModel('example'),/PRACTICE_GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK/);
+    assert.equal(calls,1);
+  }finally{
+    globalThis.fetch=oldFetch;
+    if(oldKey===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=oldKey;
+    if(oldProvider===undefined)delete process.env.VIBE2_GAME_SOURCE_PROVIDER;else process.env.VIBE2_GAME_SOURCE_PROVIDER=oldProvider;
+    if(oldModel===undefined)delete process.env.VIBE2_GEMINI_MODEL;else process.env.VIBE2_GEMINI_MODEL=oldModel;
   }
 });

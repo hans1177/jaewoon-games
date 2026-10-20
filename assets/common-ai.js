@@ -255,7 +255,13 @@ export class JaewoonCommonAI {
     if (target) {
       if (context.canFlank && personality.caution > 0.2 && pressure < 0.25) return this.action(S.SEARCH, 'enemy_flank', target);
       if (this.canAttack(target)) return this.action(S.ATTACK, pressure > 0.25 ? 'enemy_pressure' : 'enemy_attack', target);
-      return this.action(S.SEARCH, context.territorial ? 'enemy_territory_intercept' : 'enemy_approach', target);
+      // 경로 제안은 승인된 격자/장애물 정보에만 연결한다. 실제 이동·충돌은 기존 게임 서버가 처리한다.
+      const nav=context.navigation;
+      const route=nav?.engineApproved===true&&nav?.movementAuthorized===true
+        &&Number.isInteger(target.x)&&Number.isInteger(target.z)
+        ?this.planPath({...nav,goal:{x:target.x,z:target.z}}):null;
+      const approach=route?.status==='PATH_FOUND'?{...target,routeProposal:route}:target;
+      return this.action(S.SEARCH, context.territorial ? 'enemy_territory_intercept' : 'enemy_approach', approach);
     }
     // 승인된 오토 바이옴의 생명체·보스는 경계/사냥/습격지 *이동 의도*만 제안한다.
     // 원래 서버의 공격/드랍/스폰/웨이브 권한 또는 전설 등급 진화 조건은 변경하지 않는다.
@@ -281,6 +287,70 @@ export class JaewoonCommonAI {
     if (context.investigateTarget && personality.curiosity > 0) return this.action(S.SEARCH, 'enemy_investigate', context.investigateTarget);
     if (allies.length && context.groupObjective === 'guard') return this.action(S.GUARD, 'enemy_group_guard');
     return this.action(context.patrolReady === false ? S.IDLE : S.PATROL, 'enemy_ecology_idle');
+  }
+
+  // 유틸 · gdxAI의 A* 개념을 기존 웹/Roblox 호환 JS AI 책임 함수에서 자체 구현한다.
+  // 외부 Java 코드는 실행하지 않는다. 승인된 동적 차단격자만 읽고, 이동 실행/전투 권한은 갖지 않는다.
+  planPath(navigation = {}) {
+    const denied = status => Object.freeze({
+      status, cells:Object.freeze([]), explored:0, gameplayAuthority:false, runtimeVerified:false
+    });
+    if(navigation?.engineApproved!==true || navigation?.movementAuthorized!==true)
+      return denied('ENGINE_APPROVAL_REQUIRED');
+    const width=navigation.width,height=navigation.height,start=navigation.start,goal=navigation.goal;
+    const validCell = cell=>Number.isInteger(cell?.x)&&Number.isInteger(cell?.z)
+      &&cell.x>=0&&cell.z>=0&&cell.x<width&&cell.z<height;
+    if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1
+      ||width*height>4096||!validCell(start)||!validCell(goal)
+      ||!Array.isArray(navigation.blockedCells)||navigation.blockedCells.length>4096)
+      return denied('NAVIGATION_INPUT_INVALID');
+    const limit=Number.isInteger(navigation.maxExplored)
+      ?Math.max(1,Math.min(4096,navigation.maxExplored)):256;
+    const index=(x,z)=>z*width+x,origin=index(start.x,start.z),destination=index(goal.x,goal.z);
+    const blocked=new Set();
+    for(const cell of navigation.blockedCells){
+      if(!validCell(cell))return denied('NAVIGATION_INPUT_INVALID');
+      blocked.add(index(cell.x,cell.z));
+    }
+    if(blocked.has(origin)||blocked.has(destination))return denied('START_OR_GOAL_BLOCKED');
+    const score=new Map([[origin,0]]),parent=new Map(),closed=new Set();
+    const open=[origin],openIds=new Set([origin]);
+    const distance=id=>Math.abs(id%width-goal.x)+Math.abs(Math.floor(id/width)-goal.z);
+    let explored=0;
+    while(open.length&&explored<limit){
+      // 동일 seed·장애물 → 동일 경로: 평가값과 셀 인덱스가 일치하면 낮은 인덱스 우선.
+      open.sort((a,b)=>(score.get(a)+distance(a))-(score.get(b)+distance(b))
+        ||distance(a)-distance(b)||a-b);
+      const current=open.shift();
+      openIds.delete(current);
+      if(closed.has(current))continue;
+      explored++;
+      if(current===destination){
+        const cells=[];
+        let walk=current;
+        while(walk!==undefined){
+          cells.push(Object.freeze({x:walk%width,z:Math.floor(walk/width)}));
+          walk=parent.get(walk);
+        }
+        cells.reverse();
+        return Object.freeze({status:'PATH_FOUND',cells:Object.freeze(cells),
+          explored,gameplayAuthority:false,runtimeVerified:false});
+      }
+      closed.add(current);
+      const x=current%width,z=Math.floor(current/width);
+      for(const [dx,dz] of [[0,-1],[-1,0],[1,0],[0,1]]){
+        const nx=x+dx,nz=z+dz;
+        if(nx<0||nx>=width||nz<0||nz>=height)continue;
+        const neighbor=index(nx,nz);
+        if(blocked.has(neighbor)||closed.has(neighbor))continue;
+        const candidate=score.get(current)+1;
+        if(candidate>=(score.get(neighbor)??Infinity))continue;
+        parent.set(neighbor,current);score.set(neighbor,candidate);
+        if(!openIds.has(neighbor)){open.push(neighbor);openIds.add(neighbor);}
+      }
+    }
+    return Object.freeze({status:open.length?'SEARCH_BUDGET_EXCEEDED':'NO_ROUTE',
+      cells:Object.freeze([]),explored,gameplayAuthority:false,runtimeVerified:false});
   }
 
   canAttack(target = {}) {

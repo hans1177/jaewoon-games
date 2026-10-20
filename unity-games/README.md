@@ -93,6 +93,6 @@ Unity WebGL 빌드는 네이티브 개발/출시를 막지 않는 보조 검증 
 - 로컬 임시 Build 폴더
 - APK/AAB 산출물
 
-정책 권한 원본은 `company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment`다.
+이전에 참조하던 중앙정책 문서는 삭제되었다. 현재 Unity 개발과 배포 조건은 저장소의 유효한 실행 계약 및 검증 결과에 따라 확인한다.
 
 동기화 문서는 `company-learning/DIRECT_NATIVE_DUAL_PLATFORM.md`를 따른다.

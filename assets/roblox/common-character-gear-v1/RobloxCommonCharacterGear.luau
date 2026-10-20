@@ -46,7 +46,7 @@ local Catalog = table.freeze({
 	TRAVEL_CLOAK = table.freeze({
 		id="TRAVEL_CLOAK", name="여행 망토", familyRootId="GEAR_CLOAK", family="CHARACTER", subfamily="BACK_GEAR", gearRole="BACK",
 		silhouette="SHOULDER_MANTLE_TAPERED_CAPE", palette=table.freeze({cloth=c(75,89,78), clothLight=c(109,126,104), trim=c(56,51,45), clasp=c(168,133,68)}),
-	}),,
+	}),
 	LEG_PLATES = table.freeze({
 		id="LEG_PLATES", name="다리 보호대", familyRootId="GEAR_LEGS", family="CHARACTER", subfamily="LEG_GEAR", gearRole="LEGS",
 		systemRoles=table.freeze({"LEGS"}), silhouette="PAIR_LAYERED_THIGH_GREAVE", palette=table.freeze({metal=c(103,111,117), metalLight=c(158,166,171), metalDark=c(61,66,70), strap=c(87,63,45)}),

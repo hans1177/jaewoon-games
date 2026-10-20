@@ -29,12 +29,12 @@ function strength(text=''){
 }
 function totalStrength(row={}){return Number(row.tests||0)+Number(row.asserts||0)+Number(row.throws||0)+Number(row.rejects||0)+Number(row.negative||0);}
 function centralPolicyValid(policy={}){
-  return clean(policy.policySource)==='company-learning/platform-release-roadmap.json'
+  return Boolean(clean(policy.policySource))
     &&clean(policy.authority)==='MACHINE_EXECUTION_CONTRACT'
     &&Number(policy.version||0)>0;
 }
 function securityPolicyValid(policy={}){
-  return clean(policy.sourceOfTruth)==='company-learning/platform-release-roadmap.json'
+  return Boolean(clean(policy.sourceOfTruth))
     &&clean(policy.kind)==='company-security-immune-system';
 }
 
@@ -120,7 +120,7 @@ export function reviewSystemAiQaContract({
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const at=raw.indexOf('=');if(at<0)out[raw.slice(2)]=true;else out[raw.slice(2,at)]=raw.slice(at+1);}return out;}
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const a=parseArgs(),task=readJson(clean(a.task),{}),policy=readJson(clean(a.policy)||'company-learning/platform-release-roadmap.json',{}),securityPolicy=readJson(clean(a.security)||'company-learning/security-immune-system.json',{});
+  const a=parseArgs(),task=readJson(clean(a.task),{}),policy=readJson(clean(a.policy),{}),securityPolicy=readJson(clean(a.security)||'company-learning/security-immune-system.json',{});
   const before=readJson(clean(a.before),{}),after=readJson(clean(a.after),{});
   const result=reviewSystemAiQaContract({task,beforeByPath:before,afterByPath:after,policy,securityPolicy});
   if(clean(a.output)){fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');}

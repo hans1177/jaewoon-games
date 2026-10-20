@@ -561,7 +561,8 @@ test('central runtime keeps exploration reuse long slot and six separated roles 
 test('continuous workflow executes task-local exploration before implementation and review after regression',()=>{
   assert.equal(/\n  exploration:\n/.test(workflow),false);
   assert(workflow.includes('Build task-local exploration handoff'));
-  assert(workflow.includes('needs: [reserve, model_cache]'));
+  assert(workflow.includes('needs: [reserve]'));
+  assert.equal(workflow.includes('needs: [reserve, model_cache]'),false,'external-only worker cannot depend on a retired local model cache');
   assert.equal(workflow.includes('needs: [reserve, model_cache, exploration]'),false);
   assert(workflow.includes('VIBE2_TASK_LOCAL_EXPLORATION=PASS'));
   assert(workflow.includes('VIBE2_EXPLORATION_FILE=.vibe2/exploration.json'));

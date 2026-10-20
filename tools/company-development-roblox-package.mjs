@@ -213,7 +213,10 @@ export function validateRobloxPackageAssetThreshold({root='',gameId='',baseline=
 
   const config=fs.readFileSync(configFile,'utf8');
   const sourceText=sourceRows.map(row=>row.text).join('\n');
-  const semanticSource=robloxStudioAssetDetectionSourceFromRoot(sourceRoot);
+  const responsibleSources=[];
+  const semanticSource=robloxStudioAssetDetectionSourceFromRoot(sourceRoot,{onSource:row=>{
+    responsibleSources.push({relative:row.relative,systems:detectRobloxStudioAssetSystems({sourceText:row.text})});
+  }});
   const expectedFamilies=expected?.families||{};
   const missingPlanFamilies=ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES.filter(family=>!(expectedFamilies[family]||[]).length);
   if(expected?.applied!==true||missingPlanFamilies.length)blockers.push('ROBLOX_PACKAGE_ALL_INTERNAL_LIBRARY_FAMILIES_REQUIRED');
@@ -267,7 +270,9 @@ export function validateRobloxPackageAssetThreshold({root='',gameId='',baseline=
         resolvedFamilyCount+=1;
       }
     }
-    familyResults.push(Object.freeze({family,status:status||null,systemPresent,actualBinding,boundFiles:Object.freeze(boundFiles)}));
+    const responsibleFiles=responsibleSources.filter(row=>row.systems[family]===true).map(row=>row.relative);
+    familyResults.push(Object.freeze({family,status:status||null,systemPresent,actualBinding,
+      boundFiles:Object.freeze(boundFiles),responsibleFiles:Object.freeze(responsibleFiles)}));
   }
 
   const assetDependentSource=familyBindingPassCount>0;

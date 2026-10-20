@@ -1,12 +1,13 @@
+-- 파일명: roblox-games/simple-rpg/shared/GameConfig.luau
 local Config = {
   PolicySource = "company-learning/platform-release-roadmap.json",
   Platform = "ROBLOX",
   MobileFirst = true,
   SaveEnabled = true,
   GameId = "simple-rpg",
-  GameName = "작은 모험 RPG",
-  Genre = "Strategy",
-  Subgenre = "Board & Card Games",
+  GameName = "대충알피지",
+  Genre = "RPG",
+  Subgenre = "Action RPG",
   PlayMode = "COOP",
   MultiplayerRequired = true,
   CoopRequired = true,
@@ -14,6 +15,7 @@ local Config = {
   MinimumParticipants = 2,
   RemoteName = "GameAction",
   RateLimitSeconds = 0.10,
+  Civilization = { BaseParryWindow = 0.25, DodgeIFrame = 0.30, GuardCooldown = 0.50, DodgeCooldown = 0.80, AttackCooldown = 0.55, GatherCooldown = 0.70, WorldRadius = 3200, RaceCount = 24, TechCount = 72 },
   DesignBaseline = {
     Required = true,
     AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
@@ -298,6 +300,29 @@ local Config = {
     Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,
     PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,
     SharedObjective = 0, RoundScore = 0,
+    -- 문명 저장 필드: 기존 필드를 변경하지 않고 같은 저장 레코드에 확장한다.
+    CivRaceID = 0, CivEra = 1, CivTech = 0,
+    CivSkinTone = 1, -- 외형 전용 저장값: 기존 저장에 없으면 기본 피부색 적용.
+    CivWood = 25, CivStone = 25, CivBronze = 0, CivIron = 0,
+    CivResearch = 24, CivFood = 0, CivSilver = 0,
+    -- Compatible trade goods and multicurrency: new saves default to zero.
+    CivGold = 0, CivMarble = 0, CivGoldOre = 0, CivSpice = 0,
+    CivGather = 0, CivKills = 0, CivParries = 0, CivDodges = 0,
+    -- Permanent, backward-compatible stone/bronze/iron chain item and eureka counters.
+    CivCopperOre = 0, CivTinOre = 0, CivIronOre = 0, CivCoal = 0,
+    CivHide = 0, CivCoreCrystal = 0, CivDarkIron = 0,
+    CivBronzeIngot = 0, CivIronIngot = 0,
+    CivStoneSpear = 0, CivStoneAxe = 0, CivBronzeSword = 0, CivIronGreatsword = 0,
+    CivEquippedWeapon = 0,
+    CivBoarKills = 0, CivBronzeSmelts = 0, CivIronKnightKills = 0,
+    CivStoneWall = 0, CivDangunAltar = 0, CivPyramid = 0,
+    CivColosseum = 0, CivDrakkarShipyard = 0,
+    -- V3 placed-building coordinates: zero/zero means restore the legacy default layout.
+    CivStoneWallPosX = 0, CivStoneWallPosZ = 0,
+    CivDangunAltarPosX = 0, CivDangunAltarPosZ = 0,
+    CivPyramidPosX = 0, CivPyramidPosZ = 0,
+    CivColosseumPosX = 0, CivColosseumPosZ = 0,
+    CivDrakkarShipyardPosX = 0, CivDrakkarShipyardPosZ = 0,
   },
   Actions = {
     { Id = "genre-core", Label = "Strategy / Board & Card Games core gameplay", Kind = "OBJECTIVE", Order = 1, LearningPattern = "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view." },

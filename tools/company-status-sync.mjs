@@ -162,9 +162,11 @@ export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
     :[...PLATFORM_PRIORITY];
   company.policy ||= {};
   const policy=company.policy;
-  policy.sourceOfTruth=centralPolicyPath;
+  if(machine)policy.sourceOfTruth=centralPolicyPath;
+  else delete policy.sourceOfTruth;
   policy.focusedDevelopmentCaretakers=machine?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||null;
-  policy.policyAuthority='MACHINE_EXECUTION_CONTRACT';
+  if(machine)policy.policyAuthority='MACHINE_EXECUTION_CONTRACT';
+  else delete policy.policyAuthority;
   policy.primaryPlatform='ROBLOX';
   policy.allowedTargetPlatforms=[...supported];
   policy.platformPriority=[...supported];
@@ -180,7 +182,8 @@ export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
   policy.approvedDesignScopeMustBeFullyImplemented=true;
   policy.silentScopeReductionForbidden=true;
   policy.targetPlatformMayRunImmediately=true;
-  policy.unityWebValidationPolicySource=centralPolicyPath+'#directNativeDualPlatformDevelopment.unityWebValidationSurface';
+  if(machine)policy.unityWebValidationPolicySource=centralPolicyPath+'#directNativeDualPlatformDevelopment.unityWebValidationSurface';
+  else delete policy.unityWebValidationPolicySource;
   deleteKeys(policy,LEGACY_WEB_POLICY_KEYS);
   policy.fortniteUefnAutomaticDevelopment=false;
   policy.fortniteUefnState='OWNER_HOLD';
@@ -201,6 +204,11 @@ const targetSourcePath=(project,game,platform,filesystem=fs)=>{
 };
 const targetPlatformReady=(project,game,platform,filesystem=fs)=>{
   if(!platform)return false;
+  if(platform==='WEB'){
+    const id=clean(project.slug||project.gameId||game.id);
+    // A real index.html is source readiness only, never browser or QA success.
+    return /^[a-z0-9][a-z0-9-]*$/.test(id)&&filesystem.existsSync(`web-games/${id}/index.html`);
+  }
   if(platform==='UNITY'&&project?.unityProjectReady===true)return true;
   return Boolean(targetSourcePath(project,game,platform,filesystem));
 };
@@ -452,6 +460,43 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
   return {portfolio,catalog,state:portfolio.productionClassState};
 }
 
+// 원본 게임 카탈로그와 실제 GitHub Pages 매니페스트를 같은 출처로 맞춘다.
+// 이 기록은 정적 배포 경로 증거일 뿐, 3D 플레이/QA/정식 출시 PASS가 아니다.
+export function syncPublishedWebRoutes({catalog={},manifest={},sourceTreeShaOf}={}){
+  const routes=manifest?.routes;
+  if(!Array.isArray(catalog?.games)||!Array.isArray(routes)||routes.length===0
+    ||manifest.gameCount!==routes.length||!/^[a-f0-9]{40}$/.test(String(manifest.sourceSha||''))
+    ||!manifest.sourceTreeShas||typeof manifest.sourceTreeShas!=='object'
+    ||typeof sourceTreeShaOf!=='function')throw Error('HOMEPAGE_WEB_PUBLICATION_MANIFEST_INVALID');
+  const published=new Map();
+  for(const route of routes){
+    const m=/^web-games\/([a-z0-9][a-z0-9-]*)\/$/.exec(route);
+    if(!m||published.has(m[1])||!/^[a-f0-9]{40}$/.test(String(manifest.sourceTreeShas[m[1]]||''))){
+      throw Error('HOMEPAGE_WEB_PUBLICATION_ROUTE_INVALID:'+route);
+    }
+    published.set(m[1],{route,treeSha:manifest.sourceTreeShas[m[1]]});
+  }
+  let confirmed=0,notCurrent=0;
+  for(const game of catalog.games){
+    const id=clean(game?.id||game?.gameId);
+    const root='web-games/'+id;
+    const source=clean(game?.webPath||game?.canonical?.sources?.web?.path).replace(/^\/+|\/+$/g,'');
+    const record=published.get(id);
+    const eligible=/^[a-z0-9][a-z0-9-]*$/.test(id)
+      &&(source===root||source===root+'/unity')&&record;
+    let currentSha='';
+    if(eligible){
+      try{currentSha=String(sourceTreeShaOf(root)||'').trim();}catch{}
+    }
+    const exact=Boolean(eligible&&record.treeSha===currentSha);
+    game.webPublishedRoute=exact?record.route:'';
+    game.webPublishedSourceTreeSha=exact?record.treeSha:'';
+    if(exact)confirmed++;
+    else if(record)notCurrent++;
+  }
+  return{confirmed,notCurrent,published:published.size,sourceSha:manifest.sourceSha};
+}
+
 export function mergeRuntimeCatalogMissingGames({catalog={},runtimeCatalog={},developmentQueue={}}={}){
   if(!Array.isArray(catalog.games))return[];
   const liveQueueIds=new Set((Array.isArray(developmentQueue.items)?developmentQueue.items:[])
@@ -564,15 +609,18 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   const focusedGames=focusedGameIds.map((id,index)=>{
     const project=projectById.get(id)||(buildCompletionFocus?{id,slug:id}:null);if(!project)return null;
     const publicGame=catalogBySlug.get(project.slug)||{};
-    const platform=buildCompletionFocus?'ROBLOX':selectedPlatformOf(project,publicGame);
-    const ready=targetPlatformReady(project,publicGame,platform,filesystem);
+    const mappedPlatform=clean(completionFocus?.ownerFocusedGamePlatforms?.[id]).toUpperCase();
+    const platform=buildCompletionFocus?(mappedPlatform||'ROBLOX'):selectedPlatformOf(project,publicGame);
+    if(buildCompletionFocus&&completionFocus?.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY'
+      &&!['ROBLOX','WEB'].includes(mappedPlatform))throw new Error('FOCUSED_GAME_PLATFORM_MAPPING_INCOMPLETE:'+id);
+    const ready=targetPlatformReady({...project,gameId:id},publicGame,platform,filesystem);
     return {slot:index+1,gameId:buildCompletionFocus?id:project.id,slug:project.slug,name:project.name||publicGame.name||project.slug,score:focusScore(project),slotRole:buildCompletionFocus?'owner-build-completion':'auto-ranked',lane:'selected-platform',selectedPlatform:platform||null,targetPlatformReady:ready,homepageCategory:publicGame.homepageCategory||null,webPath:publicGame.webPath||null};
   }).filter(Boolean);
   const targetSlots=Math.max(0,Number(buildCompletionFocus?completionFocus.targetFocusedGames:focusPolicy?.targetFocusedGames??focusPolicy?.maxFocusedGames??focusedGames.length)||0);
   company.operations.autonomousFocus={
     enabled:buildCompletionFocus||Boolean(focusPolicy),targetSlots,filledSlots:focusedGames.length,preferredGameIds:[],focusedGameIds,games:focusedGames,nextFocusGameIds,nextDevelopmentGameIds,
     selection:buildCompletionFocus?'THREE_OWNER_FOCUSED_BUILD_COMPLETION':focusPolicy?.selection||null,platformPriority:[...PLATFORM_PRIORITY],priorityMeaning:'DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE',activeDevelopmentRunId:supervision.activeDevelopmentRunId||null,syncIntervalMs:30000,updatedAtKst:supervision.dateKst||company.updatedAt||null,
-    source:buildCompletionFocus?[centralPolicyPath,portfolioPath,catalogPath,'tools/company-status-sync.mjs']:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs'],
+    source:buildCompletionFocus?[...(company.policy?.sourceOfTruth===centralPolicyPath?[centralPolicyPath]:[]),portfolioPath,catalogPath,'tools/company-status-sync.mjs']:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs'],
   };
   company.operations.productionClasses={...classResult.state,source:[portfolioPath,catalogPath,artbooksPath,'tools/company-status-sync.mjs']};
   delete company.operations.productionTiers;

@@ -36,18 +36,18 @@ test('partial design-runtime failure still evaluates each persisted minimum-desi
   assert.match(promotion,/workflow_run\.conclusion == 'success'/);
   assert.match(promotion,/workflow_run\.conclusion == 'failure'/);
   assert.doesNotMatch(promotion,/workflow_run\.conclusion == 'cancelled'/);
-  assert.match(promotion,/Promote minimum dual-platform design directly to native development/);
+  assert.match(promotion,/Promote verified Roblox minimum design to native development/);
   assert.match(promotion,/company-minimum-design-contract\.mjs/);
-  assert.match(promotion,/DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY/);
+  assert.match(promotion,/DEVELOPMENT_ADMISSION_GATE=MINIMUM_ROBLOX_DESIGN_READY/);
   assert.match(promotion,/STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE/);
 });
 
 test('promotion source has one direct-native admission path and no Web-first or strict-score fallback',()=>{
   assert.match(source,/assertCanonicalDirectNativePolicy/);
-  assert.match(source,/MINIMUM_DUAL_PLATFORM_DESIGN_READY/);
+  assert.match(source,/MINIMUM_ROBLOX_DESIGN_READY/);
   assert.match(source,/strictDesignReviewRequiredForAdmission:false/);
-  assert.match(source,/concurrentTargetPlatforms:\['ROBLOX','UNITY'\]/);
-  assert.match(source,/UNITY_WEB_ROLE=OWNER_POLICY_CONTROLLED_DEVELOPMENT_LANE/);
+  assert.match(source,/concurrentTargetPlatforms:\['ROBLOX'\]/);
+  assert.match(source,/UNITY_WEB_ROLE=OWNER_HOLD_NO_DEVELOPMENT/);
   assert.doesNotMatch(source,/DESIGN_PASS_THRESHOLD/);
   assert.doesNotMatch(source,/bindRequiredWebStage/);
   assert.doesNotMatch(source,/WEB_PLAYABLE_BOOTSTRAP/);
@@ -61,6 +61,12 @@ test('promotion persists only runtime state while machine policy comes from main
   assert.match(checkout,/fetch-depth: 2/);
   assert.doesNotMatch(checkout,/fetch-depth: 0/);
   assert.match(promotion,/COMPANY_RUNTIME_BRANCH: company-runtime/);
+  assert.match(promotion,/COMPANY_VERIFIED_POLICY_PATH: \$\{\{ github\.workspace \}\}\/company-learning\/platform-release-roadmap\.json/);
+  assert.match(promotion,/COMPANY_VERIFIED_DESIGN_POLICY_PATH: \$\{\{ github\.workspace \}\}\/company-learning\/platform-release-roadmap\.json/);
+  assert.ok(promotion.includes('node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json "$COMPANY_VERIFIED_POLICY_PATH"'));
+  assert.match(promotion,/test -s "\$COMPANY_VERIFIED_POLICY_PATH"/);
+  assert.match(promotion,/git checkout origin\/main -- company-directive\.json company-learning\/platform-release-roadmap\.json/);
+  assert.match(promotion,/git reset -- company-directive\.json company-learning\/platform-release-roadmap\.json/);
   assert.match(promotion,/refs\/heads\/\$COMPANY_RUNTIME_BRANCH:refs\/remotes\/origin\/\$COMPANY_RUNTIME_BRANCH/);
   assert.match(promotion,/refs\/heads\/main:refs\/remotes\/origin\/main/);
   assert.match(promotion,/for attempt in 1 2 3; do/);
@@ -94,12 +100,12 @@ test('promotion dispatches both native lanes and does not use Unity Web as a pro
   assert.match(designRuntime,/PER_GAME_PROMOTION_DISPATCH=YES/);
   assert.match(designRuntime,/PORTFOLIO_WIDE_PASS_WAIT=NO/);
   assert.match(promotion,/company-development-confirmed-runtime\.yml/);
-  assert.match(promotion,/DIRECT_NATIVE_DUAL_DISPATCH=CENTRAL_EXACT_FANOUT/);
+  assert.match(promotion,/ROBLOX_ONLY_DISPATCH=CENTRAL_EXACT_FANOUT/);
   assert.match(promotion,/DIRECT_NATIVE_BATCH_DISPATCH=FORBIDDEN/);
   assert.doesNotMatch(promotion,/gh workflow run company-development-roblox-runtime\.yml/);
   assert.doesNotMatch(promotion,/gh workflow run company-development-unity-runtime\.yml/);
   assert.match(promotion,/UNITY_WEB_PROMOTION_GATE=NO/);
-  assert.match(promotion,/ONE_PLATFORM_REQUEST_STARTS_BOTH=YES/);
+  assert.match(promotion,/OWNER_HELD_UNITY_DISPATCH=NO/);
 });
 
 
@@ -113,6 +119,20 @@ test('verified design promotion wakes the existing Vibe scheduler only after run
   assert.match(promotion,/VERIFIED_DESIGN_VIBE_REFILL_AFTER_RUNTIME_PERSIST=YES/);
 });
 
+test('the Vibe scheduler verifies exact persisted runtime design sources before planning',()=>{
+  const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const handoff=fs.readFileSync('tools/vibe2-verified-design-handoff.mjs','utf8');
+  assert.match(promotion,/Verify exact promoted runtime design handoff for Vibe/);
+  assert.ok(promotion.indexOf('Verify exact promoted runtime design handoff for Vibe')>promotion.indexOf('Persist promoted state to company runtime branch'));
+  assert.ok(promotion.indexOf('Verify exact promoted runtime design handoff for Vibe')<promotion.indexOf('Dispatch native development and immediate Vibe planner refill'));
+  assert.ok(runner.includes('node tools/vibe2-verified-design-handoff.mjs --runtime-sha="$runtime_design_sha"'));
+  assert.ok(runner.includes('VIBE2_VERIFIED_DESIGN_INTAKE=PASS'));
+  assert.ok(handoff.includes('evaluateMinimumDesignContract'));
+  assert.ok(handoff.includes("item?.minimumDesignContract?.pass!==true"));
+  assert.ok(handoff.includes('strictQaPassClaimed:false,releasePassClaimed:false'));
+  assert.ok(!handoff.includes('git push'));
+});
+
 test('central gameplay evolution policy binds verified design resume to the canonical Vibe scheduler',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const design=roadmap?.continuousGameplaySystemEvolutionContract?.designContext||{};
@@ -124,15 +144,21 @@ test('central gameplay evolution policy binds verified design resume to the cano
   assert.equal(design.resumeShadowPipelineForbidden,true);
 });
 
-test('architecture projects verified design resume without a shadow pipeline',()=>{
+test('verified design resumes the existing scheduler with fail-closed central map evidence',()=>{
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
-  const resume=architecture?.continuousGameplaySystemEvolutionTopology?.verifiedDesignResume||{};
-  assert.equal(resume.promotionRuntime,'.github/workflows/company-design-promotion-sync.yml');
-  assert.equal(resume.scheduler,'.github/workflows/vibe2-24h-runner.yml');
-  assert.equal(resume.condition,'AFTER_CANONICAL_PROMOTION_RUNTIME_PERSIST_SUCCESS');
-  assert.equal(resume.mode,'WAKE_EXISTING_CANONICAL_VIBE_SCHEDULER');
-  assert.deepEqual(resume.plannerRuntimeOverlay,['company-runtime:design','company-runtime:game-seed-state.json']);
-  assert.equal(resume.shadowPipelineCreated,false);
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  assert.equal(architecture.branches.main.directGameWorkerWrite,false);
+  const resume=roadmap.continuousGameplaySystemEvolutionContract.designContext;
+  assert.equal(resume.resumeSchedulerBinding,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(resume.resumeDispatchCondition,'AFTER_CANONICAL_PROMOTION_RUNTIME_PERSIST_SUCCESS');
+  assert.equal(resume.resumeShadowPipelineForbidden,true);
+  const persist=promotion.indexOf('- name: Persist promoted state to company runtime branch');
+  const dispatch=promotion.indexOf('- name: Dispatch native development and immediate Vibe planner refill');
+  assert.ok(persist>=0&&dispatch>persist);
+  assert.match(promotion.slice(dispatch),/gh workflow run vibe2-24h-runner\.yml/);
+  assert.match(promotion.slice(dispatch),/VERIFIED_DESIGN_VIBE_REFILL_AFTER_RUNTIME_PERSIST=YES/);
 });
 
 
@@ -142,12 +168,14 @@ test('promotion invariant accepts progressed native states and rejects Web-first
   assert.doesNotMatch(promotion,/currentStep\|\|''\)!=='TARGET_PLATFORM_SOURCE_BIND'/);
 });
 
-test('design control jobs use slim runners while per-game design cycles retain full runners',()=>{
+test('design control and per-game jobs use the available full runner pool',()=>{
   assert.doesNotMatch(designRuntime,/\n  game-primary-gate:|needs\.game-primary-gate/);
-  assert.match(designRuntime,/\n  resolve-seed-targets:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
-  assert.match(designRuntime,/\n  design-cycle:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
+  for(const job of ['resolve-seed-targets','design-cycle','sync-strict-design-scores']){
+    const block=designRuntime.split(`\n  ${job}:\n`)[1]?.split(/\n  [a-z][a-z0-9-]*:\n/)[0]||'';
+    const expectedRunner=job==='resolve-seed-targets'?'ubuntu-slim':'ubuntu-latest';
+    assert.match(block,new RegExp(`^    runs-on: ${expectedRunner}$`,'m'),`${job} must use its policy-authorized runner pool`);
+  }
   assert.doesNotMatch(designRuntime,/mark-design-engine-canary:/);
-  assert.match(designRuntime,/\n  sync-strict-design-scores:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.doesNotMatch(designRuntime,/\n  continue-seed-supply:/);
   const finish=designRuntime.slice(designRuntime.indexOf('\n  sync-strict-design-scores:'));
   assert.match(finish,/needs: \[resolve-seed-targets, design-cycle\]/);
@@ -190,3 +218,4 @@ test('promotion loads latest four central policies into the isolated runtime wor
     assert.ok(reset.split(/\s+/).includes(file),'canonical policy must not be persisted to runtime branch: '+file);
   }
 });
+

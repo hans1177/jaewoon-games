@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {reconcileDevelopmentQueue} from '../tools/company-development-queue-reconcile.mjs';
+// 기존 조정기는 모듈 로드 시 검증된 정책 경로를 고정하므로 실제 정책 파일을 명시한다.
+process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+const {reconcileDevelopmentQueue}=await import('../tools/company-development-queue-reconcile.mjs');
 
 const write=(root,file,value)=>{
   const target=path.join(root,file);
@@ -250,6 +252,19 @@ test('workflow persists only direct-native queue state and dispatches runtime on
   assert.match(workflow,/git checkout -f -B development-queue-reconcile-runtime/);
   assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
   assert.match(workflow,/company-minimum-design-contract\.mjs/);
+  const reconcileStep=workflow.split('      - name: Reconcile and persist company runtime queue\n')[1]
+    ?.split('      - name: Sync status after queue mutation\n')[0];
+  assert.ok(reconcileStep,'canonical reconciliation step must be present');
+  assert.match(reconcileStep,/COMPANY_VERIFIED_POLICY_PATH:\s*company-learning\/platform-release-roadmap\.json/);
+  assert.match(reconcileStep,/COMPANY_VERIFIED_DESIGN_POLICY_PATH:\s*company-learning\/platform-release-roadmap\.json/);
+  assert.match(reconcileStep,/git checkout origin\/main --[^\n]*company-learning\/platform-release-roadmap\.json/);
+  assert.match(reconcileStep,/git restore --source=origin\/main --worktree -- roblox-games/);
+  assert.match(reconcileStep,/DEVELOPMENT_QUEUE_OWNER_REMOVAL_POLICY_SYNC=UPDATED/);
+  assert.match(reconcileStep,/OWNER_EXACT_ROBLOX_REACTIVATION_POLICY_NOT_VERIFIED/);
+  assert.match(reconcileStep,/UNAUTHORIZED_PERMANENT_REMOVAL_REVERSAL/);
+  assert.match(reconcileStep,/DEVELOPMENT_QUEUE_OWNER_REACTIVATED_SIMPLE_RPG=AUTHORIZED_ROBLOX_SOURCE_ONLY/);
+  assert.match(workflow,/git checkout origin\/main --[^\n]*tools\/company-design-gate-scoring-v2\.mjs/);
+  assert.match(workflow,/git reset --[^\n]*tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(source,/game-seed-state\.json/);
   assert.match(workflow,/MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT/);
   assert.match(workflow,/UNITY_WEB_ADMISSION_AUTHORITY=NONE/);
@@ -290,13 +305,15 @@ test('reconcile trigger bursts serialize and status feedback is change-driven',(
   assert.equal(state?.serializeStateWrites,true);
   assert.equal(state?.cancelRunningReconcileOnNewTrigger,false);
   assert.equal(state?.repeatedWorkflowRunTriggersMayNotCausePerpetualCancellation,true);
+  // 최소 보존 문서는 과거 실행 매핑을 제공하지 않는다. 실제 직렬화와 이벤트 인계는 위의 workflow에서 검증한다.
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
-  const topology=architecture.nonblockingCoordinationTelemetryTopology?.reconcileConcurrency;
-  assert.equal(topology?.stateWritesSerialized,true);
-  assert.equal(topology?.queueMutationDispatchesStatusSync,true);
-  assert.equal(topology?.unconditionalQueueCompletionStatusSyncTrigger,false);
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.branches.main.directGameWorkerWrite,false);
+  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
   const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
-  assert.equal(logMap.reconcileCancellationChurnContract?.queueMutationStatusSyncMarker,'COMPANY_STATUS_SYNC_DISPATCHED=QUEUE_CHANGED');
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
+  assert.equal(logMap.retained.primaryLog,'GITHUB_ACTIONS_JOB_LOG');
+  assert.ok(logMap.retained.keys.includes('FAILURE_SIGNATURE'));
 });
 
 
@@ -760,10 +777,10 @@ test('queue reconcile uses fixed 24.04 control capacity without changing seriali
   assert.equal(policy.concurrencyEpochAdvancedToBypassLegacyPendingGroup,true);
   assert.equal(policy.serializeStateWrites,true);
   assert.equal(policy.stateMutationLogicChanged,false);
-  assert.equal(architecture.developmentQueueReconcileRunnerIsolation?.gamePrimaryGateRunner,'ubuntu-24.04');
-  assert.equal(architecture.developmentQueueReconcileRunnerIsolation?.reconcileRunner,'ubuntu-24.04');
-  assert.equal(logMap.developmentQueueReconcileRunnerIsolationEvidence?.expectedRunnerLabels?.gamePrimaryGate,'ubuntu-24.04');
-  assert.equal(logMap.developmentQueueReconcileRunnerIsolationEvidence?.expectedRunnerLabels?.reconcile,'ubuntu-24.04');
+  // 보조 문서의 세부 이전 기록은 폐기됐다. 런너 버전은 실제 워크플로에서 검증하고 요약 문서는 비실행임을 확인한다.
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
+  assert.equal(logMap.retained.unknownOrMissingPolicy,'FAIL_CLOSED');
 });
 
 

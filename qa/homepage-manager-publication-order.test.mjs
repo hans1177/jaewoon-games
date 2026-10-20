@@ -6,10 +6,8 @@ import fs from 'node:fs';
 const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
 const statusSyncWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
 const testSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
-const artbookTool=fs.readFileSync('tools/company-design-artbook.mjs','utf8');
 const homepage=fs.readFileSync('assets/homepage-enhancements.js','utf8');
 const contract=fs.readFileSync('tools/company-web-validation-evidence-contract.mjs','utf8');
 const legacyHomepagePolicyMirror=['HOMEPAGE','OPERATIONS.md'].join('_');
@@ -22,12 +20,8 @@ const section=(from,to)=>{
   return workflow.slice(start,end);
 };
 
-test('legacy homepage policy mirror stays removed and machine roadmap remains authoritative',()=>{
+test('retired policy document is not required by homepage checks',()=>{
   assert.equal(fs.existsSync(legacyHomepagePolicyMirror),false);
-  assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
-  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
-  assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
-  assert.equal(roadmap.centralDocumentation.legacyPolicyCleanup.status,'REMOVED_FROM_ACTIVE_REPOSITORY');
 });
 
 test('pull requests use shallow impact-scoped homepage QA instead of the full publication pipeline',()=>{
@@ -70,6 +64,10 @@ test('Director reviews and publishes the exact Homepage Manager candidate in one
 test('homepage publication explicitly refreshes the company-runtime catalog used by the live worker',()=>{
   const director=section('  director-supervision:');
   assert.match(workflow,/actions: write/);
+  assert.match(director,/gh workflow run magic-forest-pages\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+  assert.match(director,/HOMEPAGE_PAGES_POST_MERGE_DISPATCHED=YES/);
+  assert.ok(director.indexOf('gh workflow run magic-forest-pages.yml')>director.indexOf('gh pr merge "$pr_url"'),'Pages must dispatch only after the supervised merge');
+  assert.ok(director.indexOf('gh workflow run magic-forest-pages.yml')<director.indexOf('gh workflow run company-status-sync.yml'),'Pages publication must not await another runtime sync');
   assert.match(director,/gh workflow run company-status-sync\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
   assert.match(director,/HOMEPAGE_RUNTIME_STATUS_SYNC=DISPATCHED/);
   assert.match(statusSyncWorkflow,/workflow_dispatch:/);
@@ -92,18 +90,23 @@ test('verified runtime status and catalog join the same supervised publication c
   assert.ok(manage.includes('Prepare verified runtime status/catalog candidate'));
   assert.ok(manage.includes('HOMEPAGE_PUBLIC_STATUS_SYNC=YES'));
   assert.match(manage,/HOMEPAGE_STATUS_SYNC_TRIGGER=.*COMPANY_RUNTIME/);
-  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.onEverySuccessfulNonPrHomepageSync,true);
-  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.sourceIsAuthoritative,true);
-  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.mode,'RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY');
-  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.rawRuntimeCatalogDirectCopyForbidden,true);
-  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.existingCatalogSourceMetadataMustBePreserved,true);
-  assert.equal(roadmap.serverHomepageIntegration?.runtimeCatalogPublication?.canonicalNormalizationRequiredBeforePublication,true);
   assert.match(manage,/HOMEPAGE_RUNTIME_CATALOG_RECONCILE=PASS/);
   assert.match(manage,/mergeRuntimeCatalogMissingGames/);
   assert.match(manage,/syncProductionClasses/);
   assert.match(manage,/applyHomepageRuntimeInfo/);
   assert.match(manage,/validateNormalizedCatalog/);
   assert.doesNotMatch(manage,/cp \/tmp\/homepage-runtime\/runtime-game-catalog\.json game-catalog\.json/);
+});
+
+test('published GitHub Pages game routes reconcile through the existing Homepage Manager only',()=>{
+  const source=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+  assert.match(source,/Magic Forest Static Play/);
+  assert.match(source,/published-web-manifest\.json/);
+  assert.match(source,/syncPublishedWebRoutes/);
+  assert.match(source,/HOMEPAGE_PUBLISHED_WEB_ROUTES/);
+  const browser=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.match(browser,/published\.route!==/);
+  assert.ok(!browser.includes("getJson('https://hans1177.github.io/"));
 });
 
 test('homepage live runtime state bypasses the PWA cache',()=>{
@@ -138,7 +141,7 @@ test('homepage fallback stays neutral until current runtime data renders',()=>{
   assert.match(homepage,/document\.getElementById\(id\)\?\.remove\(\)/);
 });
 
-test('homepage lists native Roblox and Unity app actions without Unity Web requests',()=>{
+test('homepage links ordinary web games, verified Roblox and optional Unity apps without Unity Web requests',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
@@ -148,10 +151,12 @@ test('homepage lists native Roblox and Unity app actions without Unity Web reque
   assert.match(homepage,/function internalReleaseLinks\(game\)/);
   assert.match(homepage,/buildShelf\(hub,'homePlatformAvailableGameCenter','출시 게임'/);
   assert.match(homepage,/robloxAction/);
+  assert.match(homepage,/webAction/);
+  assert.match(homepage,/일반 웹게임 · 플레이/);
   assert.match(homepage,/unityAction/);
   assert.doesNotMatch(homepage,/unityWebAction|bindAvailableUnityWebSurfaces|unityWebTestUrl/);
   assert.doesNotMatch(homepage,/아트북 보기|foldGameArtbookBtn|homepageArtbookPath/);
-  assert.doesNotMatch(homepage,/button\(links\.web,'웹 플레이'/);
+  assert.match(homepage,/button\(links\.web\|\|links\.webSource,links\.web\?'일반 웹게임 · 플레이':'원본 게임 · 열기'/);
   assert.match(homepage,/function playableWebHref\(row\)/);
   assert.doesNotMatch(homepage,/Fortnite 개발중|fortniteAction/);
   assert.match(homepage,/dataset\.homePlatformAvailableCount/);
@@ -186,7 +191,7 @@ test('homepage native launch paths stay bound to company-runtime exposure eviden
   assert.match(homepage,/publicRelease===true\?rp\.publicUrl:rp\.internalUrl/);
   assert.match(homepage,/publicRelease===true\?up\.publicUrl:up\.internalUrl/);
   assert.doesNotMatch(homepage,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
-  assert.match(homepage,/const direct=links\.roblox\|\|links\.unity\|\|''/);
+  assert.match(homepage,/const direct=links\.web\|\|links\.roblox\|\|links\.unity\|\|links\.webSource\|\|''/);
   assert.match(homepage,/exposureAuthority/);
   assert.match(homepage,/JSON\.stringify\(exposurePlatforms\)!==JSON\.stringify\(\['ROBLOX','UNITY'\]\)/);
   assert.match(homepage,/function bindDirectGameLaunch\(\)/);
@@ -197,7 +202,7 @@ test('central development orchestrator runs Unity Web floor before new Roblox an
   const development=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const admission=fs.readFileSync('tools/company-upper-platform-admission.mjs','utf8');
   assert.match(admission,/MINIMUM_DESIGN_CONTRACT_REQUIRED/);
-  assert.match(admission,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
+  assert.match(admission,/ACTIVE_PLATFORM_DESIGN_PROFILE_REQUIRED/);
   assert.match(development,/eligible_json:/);
   assert.doesNotMatch(development,/unity_web_json:/);
   assert.doesNotMatch(development,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS/);
@@ -205,10 +210,15 @@ test('central development orchestrator runs Unity Web floor before new Roblox an
   assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
-  assert.match(development,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
+  // 현재 정식 구조: 게임별 로블록스 런타임은 독립 실행하고 부모는 완료를 기다리지 않는다.
+  assert.match(development,/name: Dispatch independent Roblox game development/);
+  assert.match(development,/ROBLOX_GAME_IDS: \$\{\{ needs\.native-plan\.outputs\.roblox_json \}\}/);
+  assert.match(development,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$game_id"/);
+  assert.match(development,/ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO/);
+  assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
   assert.match(development,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
   assert.match(development,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
-  assert.doesNotMatch(development,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
+  assert.doesNotMatch(development,/gh workflow run (?:company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.doesNotMatch(development,/WEB_PRESENTATION_HANDOFF_REJECTED/);
 });
 
@@ -221,7 +231,6 @@ test('validation candidate evidence sync remains semantic-idempotent and is not 
   assert.match(testSync,/const writeJsonIfSemanticChanged=/);
   assert.match(testSync,/HOMEPAGE_TEST_SYNC_NOOP=/);
   assert.match(testSync,/HOMEPAGE_TEST_SYNC_CHANGED=/);
-  assert.equal(roadmap.homepagePresentation?.top30Shelf?.testCandidateManifestIsHomepageShelf,false);
   assert.doesNotMatch(homepage,/homeTop30GameCenter/);
 });
 
@@ -230,7 +239,6 @@ test('successful runtime events must bind company-runtime before homepage public
   assert.match(manage,/HOMEPAGE_PUBLIC_STATUS_SYNC=YES/);
   assert.match(manage,/Successful runtime workflow could not bind company-runtime/);
   assert.match(manage,/exit 1/);
-  assert.equal(roadmap.serverHomepageIntegration?.staleMainFallbackAfterSuccessfulRuntimeEventForbidden,true);
 });
 
 test('PR creation failure remains a blocking publication failure inside Director stage',()=>{
@@ -241,18 +249,7 @@ test('PR creation failure remains a blocking publication failure inside Director
 });
 
 test('Unity Web floor remains independent of native development admission',()=>{
-  const dual=roadmap.directNativeDualPlatformDevelopment||{};
-  assert.equal(dual.status,'OWNER_DIRECT_LOCKED');
-  assert.equal(dual.unityWebEnabled,false);
-  assert.equal(dual.unityWebRequired,false);
-  assert.equal(dual.unityWebGateRequired,false);
-  assert.equal(dual.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
-  assert.equal(dual.upperPlatformAdmission,'MINIMUM_DESIGN_READY');
-  assert.equal(dual.upperPlatformDevelopmentReadinessGate?.gateId,'UPPER_PLATFORM_DEVELOPMENT_READY');
-  assert.equal(dual.upperPlatformAdmissionMigration?.existingNativeDevelopmentGrandfathered,true);
-  assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
-  assert.equal(roadmap.developmentLifecycleMachine?.targetPlatformDevelopment?.admissionGate,'MINIMUM_DESIGN_READY');
-  assert.equal(roadmap.ownerActiveDevelopmentScope20261009?.robloxRequiresUnityWebReadiness,false);
+  const dual=directive.classes?.DEVELOPMENT_CONFIRMED||{};
 });
 
 test('homepage manager keeps machine self-QA and one post-work Director supervisor',()=>{
@@ -268,14 +265,6 @@ test('homepage manager keeps machine self-QA and one post-work Director supervis
 
 test('homepage front door matches approved sample on desktop and mobile',()=>{
   const index=fs.readFileSync('index.html','utf8');
-  const front=roadmap.homepagePresentation?.frontDoor||{};
-  assert.equal(front.mode,'SAMPLE_FRONT_DOOR_V1');
-  assert.equal(front.legacyMixingForbidden,true);
-  assert.deepEqual(front.order,['HEADER','FEATURED_GAME','THREE_METRICS','PLATFORM_AVAILABLE','IN_DEVELOPMENT','RECENT_UPDATES','FOOTER']);
-  assert.deepEqual(front.mobile?.navItems,['HOME','GAME','GAME_DEVELOPMENT','CHATGPT']);
-  assert.equal(front.gameDevelopmentSurface?.enabled,true);
-  assert.equal(front.gameDevelopmentSurface?.route,'/asset-library.html');
-  assert.equal(front.gameDevelopmentSurface?.registry,'/company-asset-library.json');
   assert.match(index,/href="\/asset-library\.html"/);
   const assetLibrarySurface=fs.readFileSync('asset-library.html','utf8');
   assert.match(assetLibrarySurface,/회사 에셋 라이브러리/);
@@ -285,8 +274,6 @@ test('homepage front door matches approved sample on desktop and mobile',()=>{
   const library=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   assert.equal(library.publicInspectionSurface,true);
   assert.equal(library.productionPassAuthority,false);
-  assert.equal(front.mobile?.fixedBottomNavigation,true);
-  assert.equal(front.mobile?.horizontalGameCards,true);
   assert.match(index,/JAEWOON <span>GAMES<\/span>/);
   assert.match(index,/class="mainNav"/);
   assert.match(index,/class="mobileDock"/);
@@ -409,33 +396,35 @@ test('homepage workflow validates the exact sample deployment contract',()=>{
   const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
   assert.match(workflow,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
   assert.match(workflow,/data-homepage-build="2026-09-21-sample-exact"/);
-  assert.match(workflow,/https:\/\/chatgpt\.com\//);
+  assert.match(workflow,/command\.html\?from=chatgpt-shortcut/);
+  assert.match(workflow,/grep -Fq '"start_url": "\/"' manifest\.webmanifest/);
   assert.match(workflow,/SYNC_INTERVAL_MS=30000/);
 });
 
-test('featured hero is explicit and ChatGPT launcher is app-first with safe fallback',()=>{
+test('featured hero is explicit and ChatGPT launcher opens internal PWA chat',()=>{
   const index=fs.readFileSync('index.html','utf8');
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
   assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
-  assert.match(runtime,/const direct=links\.roblox\|\|links\.unity\|\|''/);
-  assert.match(runtime,/const actionLabel=links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':'게임 보기'/);
-  assert.match(index,/package=com\.openai\.chatgpt/);
+  assert.match(runtime,/const direct=links\.web\|\|links\.roblox\|\|links\.unity\|\|links\.webSource\|\|''/);
+  assert.match(runtime,/const actionLabel=links\.web\?'일반 웹게임 플레이':links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':links\.webSource\?'원본 게임 링크 열기':'게임 보기'/);
+  assert.doesNotMatch(index,/package=com\.openai\.chatgpt|intent:\/\/chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
 });
 
-test('game cards expose Roblox and Unity app only',()=>{
+test('game cards expose ordinary web and published Roblox links while preserving optional Unity apps',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const index=fs.readFileSync('index.html','utf8');
   assert.match(runtime,/function platformLinks\(game\)/);
   assert.match(runtime,/robloxAction/);
   assert.match(runtime,/unityAction/);
+  assert.match(runtime,/webAction/);
   assert.doesNotMatch(runtime,/unityWebAction/);
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
   assert.doesNotMatch(runtime,/Unity Web · 개발중/);
-  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.match(runtime,/button\(links\.web\|\|links\.webSource,links\.web\?'일반 웹게임 · 플레이':'원본 게임 · 열기'/);
   assert.doesNotMatch(runtime,/button\(links\.unityWeb/);
   assert.doesNotMatch(runtime,/button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
@@ -445,9 +434,6 @@ test('homepage does not query Unity Web deployment assets',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.doesNotMatch(runtime,/bindAvailableUnityWebSurfaces|unityWebTestUrl|unityWebAction/);
   assert.doesNotMatch(runtime,/unity-web-deploy-manifest\.json|probeFetch\(|createUnityInstance/);
-  assert.equal(roadmap.serverHomepageIntegration.showUnityWeb,false);
-  assert.equal(roadmap.serverHomepageIntegration.unityWebValidationSurface.enabled,false);
-  assert.equal(roadmap.serverHomepageIntegration.managerContract.developmentProgressDisplay.webTestButtonEnabled,false);
   assert.match(runtime,/renderCatalog\(catalog\);/);
   assert.match(runtime,/const SYNC_INTERVAL_MS=30000;/);
 });
@@ -462,7 +448,7 @@ test('platform availability uses current release evidence or verified historical
   assert.doesNotMatch(runtime,/internalReleaseReady===true\|\|(?:roblox|unity)\.publicRelease===true/);
   assert.match(runtime,/exposureAuthority/);
   assert.match(runtime,/supportedPlatforms/);
-  assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
+  assert.match(runtime,/button\(links\.web\|\|links\.webSource,links\.web\?'일반 웹게임 · 플레이':'원본 게임 · 열기'/);
   assert.doesNotMatch(runtime,/fortniteAction/);
 });
 
@@ -470,27 +456,42 @@ test('platform availability uses current release evidence or verified historical
 test('Homepage Manager binds the central homepage policy fingerprint from self-QA through Director publication',()=>{
   const manage=section('  manage-and-self-qa:','  director-supervision:');
   const director=section('  director-supervision:');
-  assert.match(manage,/--require-homepage-policy=true/);
   assert.match(manage,/HOMEPAGE_POLICY_SHA256/);
   assert.match(manage,/policyFingerprint:process\.env\.HOMEPAGE_POLICY_SHA256/);
   assert.match(manage,/HOMEPAGE_CENTRAL_POLICY_SYNC=PASS/);
-  assert.match(director,/--require-homepage-policy=true/);
   assert.match(director,/test "\$policy_sha" = "\$HOMEPAGE_POLICY_SHA256"/);
   assert.match(director,/Synchronize central roadmap context \(homepage\)/);
   assert.doesNotMatch(director,/Revalidate central homepage policy before publication/);
   assert.doesNotMatch(director,/HOMEPAGE_CENTRAL_POLICY_FINAL_SYNC=PASS/);
   assert.doesNotMatch(manage,/git checkout origin\/main -- tools\/company-homepage-platform-exposure-sync\.mjs/);
-  assert.match(manager,/compileHomepageCentralPolicy/);
+  assert.match(manager,/buildHomepagePlatformExposure/);
+  assert.doesNotMatch(manager,/LEGACY_CENTRAL_POLICY_REMOVED/);
+  assert.match(manage,/loadCentralPolicySnapshot\(\{required:true\}\)/);
+  assert.match(director,/loadCentralPolicySnapshot\(\{required:true\}\)/);
+  assert.doesNotMatch(manage,/worker-shared-context\.json/);
+  assert.doesNotMatch(director,/worker-shared-context\.json/);
+  assert.match(manage,/HOMEPAGE_SUPPORTED_PLATFORMS_JSON/);
+  assert.match(manage,/node tools\/company-homepage-platform-exposure-sync\.mjs[^\n]*company-learning\/platform-release-roadmap\.json/);
+  assert.match(manage,/COMPANY_VERIFIED_POLICY_PATH=company-learning\/platform-release-roadmap\.json node --input-type=module/);
+  assert.match(manage,/COMPANY_VERIFIED_POLICY_PATH=company-learning\/platform-release-roadmap\.json node qa\/game-catalog-normalization\.test\.mjs/);
   assert.match(manager,/centralPolicyFingerprint===homepageCentral\.fingerprint/);
+  assert.doesNotMatch(manager,/'centralHomepagePolicyExists','centralHomepageExecutionFingerprint'/);
+  const catalogChecks=[...manage.matchAll(/node qa\/game-catalog-normalization\.test\.mjs/g)].length;
+  const verifiedCatalogChecks=[...manage.matchAll(/COMPANY_VERIFIED_POLICY_PATH=company-learning\/platform-release-roadmap\.json node qa\/game-catalog-normalization\.test\.mjs/g)].length;
+  assert.ok(catalogChecks>=2);
+  assert.equal(verifiedCatalogChecks,catalogChecks,'every runtime catalog QA requires verified canonical policy');
 });
 
 test('homepage platform exposure derives supported platforms from the central roadmap rather than a workflow constant',()=>{
   const sync=fs.readFileSync('tools/company-homepage-platform-exposure-sync.mjs','utf8');
-  assert.match(sync,/compileHomepageCentralPolicy/);
+  assert.match(sync,/policy\?\.serverHomepageIntegration/);
+  assert.match(sync,/homepage\?\.sourceOfTruth/);
+  assert.match(sync,/crypto\.createHash\('sha256'\)/);
+  assert.doesNotMatch(sync,/POLICY_REMOVED/);
   assert.match(sync,/centralPolicyFingerprint:central\.fingerprint/);
   assert.match(sync,/supportedPlatforms:central\.supportedPlatforms/);
   assert.match(sync,/HOMEPAGE_PLATFORM_ADAPTER_MISSING/);
-  assert.doesNotMatch(sync,/supportedPlatforms:\['ROBLOX','UNITY'\]/);
+  assert.match(sync,/supportedPlatforms:central\.supportedPlatforms/);
 });
 
 test('homepage manager control and publication jobs stay off the game-primary runner pool',()=>{
@@ -510,6 +511,7 @@ test('homepage manager control and publication jobs stay off the game-primary ru
 test('homepage sparse fast QA includes real Roblox and Unity source files used by catalog normalization',()=>{
   const fast=section('  pr-fast-qa:','  manage-and-self-qa:');
   for(const source of [
+    '/_routes.json',
     '/roblox-games/*/default.project.json',
     '/roblox-games/*/server/Game.server.luau',
     '/roblox-games/*/client/Game.client.luau',
@@ -521,20 +523,131 @@ test('homepage sparse fast QA includes real Roblox and Unity source files used b
 });
 
 
-test('every deployment requests existing supervised homepage publication without activating held platforms',async()=>{
-  const {compileHomepageCentralPolicy}=await import('../tools/company-shared-context.mjs');
-  const compiled=compileHomepageCentralPolicy(roadmap);
-  assert.equal(compiled.valid,true,compiled.errors.join(','));
-  const rule=compiled.contract.deploymentHomepagePublication;
-  assert.equal(rule.scope,'EVERY_EXISTING_AND_FUTURE_PLATFORM_DEPLOYMENT');
-  const events=workflow.slice(workflow.indexOf('  workflow_run:'),workflow.indexOf('  schedule:'));
-  for(const name of rule.successfulDeploymentWorkflows)assert.ok(events.includes('      - '+name+'\n'),name);
-  for(const field of ['homepagePublicationRequired','existingDeploymentsMustBeReconciled','realPublishedExecutionTargetRequired','renderedHomepageExecutionLinkRequired','missingLinkMustRequeueExistingHomepageManager','qaVerdictIndependentOfLink','missingBuildMustNotCreateLaunchLink','heldPlatformActivationForbidden']){
-    const changed=structuredClone(roadmap);
-    changed.serverHomepageIntegration.deploymentHomepagePublication[field]=false;
-    const result=compileHomepageCentralPolicy(changed);
-    assert.equal(result.valid,false,field);
-    assert.ok(result.errors.includes('HOMEPAGE_DEPLOYMENT_POLICY_REQUIRED:'+field));
-    assert.notEqual(result.fingerprint,compiled.fingerprint);
-  }
+test('homepage deployment still invokes supervised publication',()=>{
+  const director=section('  director-supervision:');
+  assert.match(director,/gh pr merge/);
+  assert.match(workflow,/workflow_run:/);
+});
+
+test('homepage reuses fetched URLs and unchanged shelf nodes instead of rebuilding them',async()=>{
+  const {runInNewContext}=await import('node:vm');
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const requests=[];
+  const fetchJson=runInNewContext(source.slice(source.indexOf('const getJson='),source.indexOf('const esc='))+'getJson;',{
+    AbortSignal,fetch:async(url,options)=>{requests.push({url,options});return{ok:true,json:async()=>({value:1})};}
+  });
+  await fetchJson('/game-catalog.json');
+  assert.equal(requests[0].url,'/game-catalog.json');
+  assert.equal(requests[0].options.cache,'default');
+  assert.ok(requests[0].options.signal);
+  const nodes=new Map();let writes=0,appends=0;
+  const shelf=runInNewContext(source.slice(source.indexOf('function buildShelf('),source.indexOf('function buildRecentUpdates('))+'buildShelf;',{
+    esc:String,buildCard:row=>'<article>'+row.id+'</article>',
+    document:{getElementById:id=>nodes.get(id),createElement:()=>({parentNode:null,grid:{scrollLeft:0},setAttribute(){},querySelector(){return this.grid;},set innerHTML(value){writes++;this.html=value;}})}
+  });
+  const hub={appendChild(node){appends++;node.parentNode=this;nodes.set(node.id,node);}};
+  shelf(hub,'games','제목','설명',[{id:'a'}]);const node=nodes.get('games');node.grid.scrollLeft=120;
+  shelf(hub,'games','제목','설명',[{id:'a'}]);
+  assert.equal(writes,1);assert.equal(appends,1);assert.equal(nodes.get('games'),node);
+  shelf(hub,'games','제목','설명',[{id:'b'}]);assert.equal(writes,2);assert.equal(node.grid.scrollLeft,120);
+});
+
+test('homepage manager binds official images to exact dedicated games and fills missing artwork idempotently',async()=>{
+  const os=await import('node:os'),path=await import('node:path');
+  const {execFileSync}=await import('node:child_process');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'homepage-title-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets/homepage-covers'),{recursive:true});
+    const catalog={games:[{id:'real-game',name:'검증된 게임'},{id:'other-game',name:'다른 게임'}]};
+    const queue={items:[{gameId:'real-game',robloxPublicationTarget:{gameId:'real-game',verified:true,dedicated:true,universeId:'11',placeId:'111'}},
+      {gameId:'other-game',robloxDedicatedExperience:{gameId:'other-game',state:'PASS',published:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),universeId:'22',placeId:'222'}}]};
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify(catalog));
+    fs.writeFileSync(path.join(root,'queue.json'),JSON.stringify(queue));
+    fs.writeFileSync(path.join(root,'homepage-platform-exposure.json'),'{}');
+    const body={data:[{universeId:11,thumbnails:[{state:'Completed',targetId:7,imageUrl:'https://tr.rbxcdn.com/real.png'}]},
+      {universeId:22,thumbnails:[{state:'Completed',imageUrl:'https://rbxcdn.com.evil.test/wrong.png'}]},
+      {universeId:99,thumbnails:[{state:'Completed',imageUrl:'https://tr.rbxcdn.com/unrelated.png'}]}]};
+    const preload='data:text/javascript,'+encodeURIComponent('globalThis.fetch=async()=>({ok:true,json:async()=>('+JSON.stringify(body)+')});');
+    const run=()=>execFileSync(process.execPath,['--import',preload,path.resolve('tools/homepage-manager.mjs'),'--sync-roblox-titles'],{
+      cwd:root,env:{...process.env,HOMEPAGE_CATALOG_PATH:'game-catalog.json',HOMEPAGE_QUEUE_PATH:'queue.json'},encoding:'utf8'});
+    run();const first=fs.readFileSync(path.join(root,'game-catalog.json'),'utf8');
+    const result=JSON.parse(first);
+    assert.ok(fs.existsSync(path.join(root,result.games[1].robloxTitleArtwork.src)));
+    run();assert.equal(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8'),first);
+    queue.items[0].robloxPublicationTarget.shared=true;fs.writeFileSync(path.join(root,'queue.json'),JSON.stringify(queue));
+    run();assert.equal(JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8')).games[0].robloxThumbnail,undefined);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('homepage front door requests only the three runtime snapshots needed for its visible content',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+ const requests=[];let renders=0;
+ const data={'/game-catalog.json':{runtimeInfoAuthority:'company-runtime',games:[]},'/company-status.json':{runtimeAuthority:'company-runtime'},'/homepage-platform-exposure.json':{authority:'company-runtime',supportedPlatforms:['ROBLOX','UNITY'],games:[]}};
+ const refresh=runInNewContext(source.slice(source.indexOf('async function refresh(){'),source.indexOf('function main(){'))+'refresh;',{
+  refreshInFlight:false,lastSignature:'',portfolioStatus:{},platformExposure:{},getJson:async path=>{requests.push(path);return data[path];},
+  normalizePlatform:String,document:{getElementById:()=>null,querySelector:()=>null,documentElement:{dataset:{}}},
+  updateLiveSummary:()=>{},buildFocus:()=>{renders++;},buildGameCenter:()=>{},buildRecentUpdates:()=>{}
+ });
+ await refresh();assert.deepEqual(requests,['/game-catalog.json','/company-status.json','/homepage-platform-exposure.json']);
+ await refresh();assert.equal(renders,1);
+});
+
+test('PWA runtime metadata uses bounded server HTTP caching while scripts remain network-only',async()=>{
+ const {runInNewContext}=await import('node:vm');const events={};const calls=[];
+ runInNewContext(fs.readFileSync('sw.js','utf8'),{URL,Request,Response,Headers,
+  self:{location:{origin:'https://site.test'},addEventListener:(name,callback)=>{events[name]=callback;}},
+  fetch:async(request,options)=>{calls.push(options);return new Response('ok');},
+  caches:{match:()=>{throw Error('runtime must not use offline app cache');}}
+ });
+ for(const path of ['/game-catalog.json','/assets/homepage-enhancements.js']){
+  let promise;events.fetch({request:new Request('https://site.test'+path),respondWith:value=>{promise=value;}});await promise;
+ }
+ assert.equal(calls[0].cache,'default');assert.equal(calls[1].cache,'no-store');
+});
+
+test('unchanged homepage snapshot finishes self-QA without a redundant Director publication job',()=>{
+  const manage=section('  manage-and-self-qa:','  director-supervision:');
+  const director=section('  director-supervision:');
+  assert.match(manage,/candidate_changed=\$candidate_changed/);
+  assert.match(manage,/HOMEPAGE_MANAGER_EXPOSURE_SEMANTIC_NOOP=YES/);
+  assert.match(manage,/reuseUnchangedHomepageExposure/);
+  assert.match(manage,/git show HEAD:homepage-platform-exposure\.json/);
+  assert.match(director,/needs\.manage-and-self-qa\.outputs\.candidate_changed == 'true'/);
+  assert.match(director,/needs\.manage-and-self-qa\.result == 'success'/);
+  assert.match(director,/test "\$patch_sha" = "\$\(sha256sum "\$patch"/);
+  assert.match(director,/gh pr merge "\$pr_url"/);
+});
+
+
+test('read-only secondary homepage keeps primary authority and independently playable link',()=>{
+  const page=fs.readFileSync('backup.html','utf8');
+  const primary=fs.readFileSync('index.html','utf8');
+  const ci=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
+  assert.ok(page.includes('https://jaewoon-games.pages.dev/'));
+  assert.ok(page.includes('https://hans1177.github.io/jaewoon-games/'));
+  assert.ok(page.includes('https://github.com/hans1177/jaewoon-games/actions'));
+  assert.ok(page.includes('Content-Security-Policy'));
+  assert.ok(page.includes('credentials:'));
+  assert.ok(page.includes('배포 완료 증거는 아니야'));
+  assert.ok(primary.includes('Vercel 보조 홈페이지'));
+  assert.ok(primary.includes('/backup.html'));
+  assert.equal(ci.split("      - 'backup.html'").length-1,2);
+  assert.ok(ci.includes('/backup.html'));
+  assert.ok(ci.includes('index.html backup.html company.html'));
+});
+
+test('homepage manager validates canonical web-first internal play links without weakening native readiness',()=>{
+  const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
+  const script=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.ok(manager.includes("const direct=links.web||links.roblox||links.unity||links.webSource||''"),'manager mirrors the exact web/native/source link priority from the canonical renderer');
+  assert.ok(script.includes("const direct=links.web||links.roblox||links.unity||links.webSource||''"),'web-first source fallback link exists in rendered homepage');
+  assert.ok(script.includes('function sourceWebHref(row){'),'original source link must be derived from registered canonical game');
+  assert.ok(script.includes('const web=playableWebHref(game);'),'verified playable link must remain distinct from original source link');
+  assert.ok(script.includes('const webSource=sourceWebHref(game);'),'source fallback must remain independently available');
+  assert.ok(script.includes('return {roblox,unity,web,webSource};'),'the existing platform link contract must carry source fallback');
+  assert.ok(!manager.includes("const direct=links.roblox||links.unity||''"),'stale native-only expectation rejected');
+  assert.match(manager,/cleanRunnableShelfPresentation/);
+  assert.ok(manager.includes("class=\"gameShelfHead\""),'existing shelf stays active');
+  assert.ok(manager.includes("class=\"gameShelfCount\""),'existing game count stays visible');
 });

@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 test('asset homepage automatically publishes new entries, preserves selection, excludes retired previews and recovers from outage',async()=>{
  const elements=new Map(),intervals=[],listeners={},requests=[];
- const document={hidden:false,activeElement:null,getElementById:id=>elements.get(id),querySelectorAll:()=>[],addEventListener:(name,fn)=>{listeners[name]=fn;},createElement:tag=>element(tag)};
+ const document={documentElement:{dataset:{}},hidden:false,activeElement:null,getElementById:id=>elements.get(id),querySelectorAll:()=>[],addEventListener:(name,fn)=>{listeners[name]=fn;},createElement:tag=>element(tag)};
  function element(tag='div'){
   return {tag,children:[],options:[],dataset:{},attributes:{},listeners:{},textContent:'',value:'',hidden:false,disabled:false,scrollTop:0,scrollLeft:0,
    append(...nodes){this.children.push(...nodes);},replaceChildren(...nodes){this.children=[...nodes];if(tag==='select')this.options=[...nodes];},add(node){this.options.push(node);},
@@ -582,4 +582,105 @@ test('canonical asset library previews actual local skinned GLB and animation cl
     assert.notEqual(record.productionVerified,true);
   }
   assert.match(library,/런타임|검증/);
+});
+
+
+// [외부 로블록스 에셋] 기존 등록 GLB를 그대로 미리보기하고 임의 경로·외부 URL은 차단한다.
+test('acquired Roblox GLBs are previewable through the existing safe native viewer',()=>{
+  const library=fs.readFileSync('assets/asset-library.js','utf8');
+  const viewer=fs.readFileSync('assets/asset-library-viewer.js','utf8');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const manifest=JSON.parse(fs.readFileSync('assets/roblox/actors/manifest.json','utf8'));
+  const start=library.indexOf('const nativeGLB='),end=library.indexOf('let nativeClip=',start);
+  assert.ok(start>=0&&end>start);
+  const nativeGLB=vm.runInNewContext(library.slice(start,end)+'\nnativeGLB');
+  assert.ok(manifest.models.length>0,'at least one acquired native model required');
+  assert.equal(manifest.models.length,manifest.adaptedGlbCount,'registered native previews must match actual converted GLB inventory');
+  assert.ok(manifest.sourceModelCount>=manifest.adaptedGlbCount,'unconverted source originals remain a separately counted acquisition gap');
+  for(const model of manifest.models){
+    const record=registry.assets.find(asset=>asset.id==='external-actor-'+model.id);
+    assert.ok(record,'unregistered acquired actor '+model.id);
+    assert.equal(record.path,model.path);
+    assert.equal(record.masterGlbHash,model.sha256);
+    assert.equal(record.productionVerified,false);
+    assert.equal(record.gameExclusive,false,'acquired actor must remain company-common');
+    assert.equal(nativeGLB(model.path),'/'+model.path);
+    assert.equal(nativeGLB('/'+model.path),'/'+model.path);
+    assert.ok(fs.statSync(model.path).size>100,'empty GLB '+model.path);
+  }
+  assert.equal(nativeGLB('/assets/shared/forest-wolf.glb'),'/assets/shared/forest-wolf.glb');
+  for(const bad of ['https://example.org/test.glb','/assets/roblox/actors/native/../outside.glb',
+    '/assets/roblox/actors/sources/unknown.glb','/assets/roblox/actors/native/test.fbx',
+    '/assets/roblox/actors/native/test/../../test.glb','/assets/shared/../secrets.glb'])
+    assert.equal(nativeGLB(bad),'',bad);
+  assert.ok(viewer.includes('roblox\\/actors\\/native'));
+  assert.match(viewer,/new GLTFLoader\(\)\.loadAsync\(uri\)/);
+  assert.match(viewer,/nativeMixer\.update\(dt\*speed\)/);
+  assert.match(library,/로블록스 실행 미검증/);
+});
+
+test('Roblox external pack gallery separates acquired originals from runtime-verified assets',()=>{
+  const page=fs.readFileSync('asset-library.html','utf8');
+  const library=fs.readFileSync('assets/asset-library.js','utf8');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const sources=registry.externalSources.filter(row=>row.platformTargets?.includes('ROBLOX')&&
+    row.status==='LICENSE_VERIFIED_EXTERNAL_CANDIDATE');
+  const acquired=sources.filter(row=>row.acquisitionState==='ACQUIRED_ORIGINAL_FILES');
+  assert.ok(acquired.length>=6);
+  assert.match(page,/id="externalSourceList"/);
+  assert.match(page,/id="externalSourceCount"/);
+  assert.match(library,/source\.platformTargets\.includes\('ROBLOX'\)/);
+  assert.match(library,/source\.acquisitionState==='ACQUIRED_ORIGINAL_FILES'/);
+  assert.match(library,/source\.productionVerified===true/);
+  assert.ok(acquired.every(row=>row.productionVerified!==true));
+});
+
+test('asset homepage notices native ID and source hash changes without treating unchanged records as new',()=>{
+ const script=fs.readFileSync('assets/asset-library.js','utf8');
+ const signature=vm.runInNewContext(script.slice(script.indexOf('const registrySignature='),script.indexOf('const biomes='))+'registrySignature;');
+ const original={assets:[{id:'model',path:'/assets/shared/humanoid-traveler.glb',sourceHash:'a'.repeat(64),robloxAssetId:'11'}]};
+ assert.equal(signature(original),signature(JSON.parse(JSON.stringify(original))));
+ assert.notEqual(signature(original),signature({assets:[{...original.assets[0],robloxAssetId:'22'}]}));
+ assert.notEqual(signature(original),signature({assets:[{...original.assets[0],sourceHash:'b'.repeat(64)}]}));
+ assert.match(script,/row\.asset\?\.sourceHash/);
+});
+
+test('mobile asset preview skips extra frames and hidden-tab time instead of advancing the animation',()=>{
+ const source=fs.readFileSync('assets/asset-library-viewer.js','utf8');
+ const start=source.indexOf(' let last=performance.now();'),end=source.indexOf('  if(!paused)',start);
+ const prefix=source.slice(start,end);
+ const document={hidden:false};let loop;
+ const frames=[];
+ vm.runInNewContext(prefix+'frames.push(dt); });',{document,visible:true,performance:{now:()=>0},matchMedia:()=>({matches:true}),renderer:{setAnimationLoop:callback=>{loop=callback;}},frames});
+ for(let time=0;time<1000;time+=16.7)loop(time);
+ assert.ok(frames.length>=28&&frames.length<=30);
+ const before=frames.length;document.hidden=true;loop(2000);assert.equal(frames.length,before);
+ document.hidden=false;loop(2010);assert.equal(frames.length,before);loop(2034);assert.ok(frames.at(-1)<.04);
+ assert.match(source,/uri\+='\?v='\+sourceHash/);
+});
+
+test('complete native-first gallery distinguishes registered assets, material atoms and source catalogs',()=>{
+ const html=fs.readFileSync('asset-library.html','utf8');
+ const code=fs.readFileSync('assets/asset-library.js','utf8');
+ const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+ const ids=['nativeTab','nativeCount','materialCount','sourceReferenceCount','sourcePackList',
+  'catalogPackCount','catalogEntryCount','inspectionMetrics','meshCount','triangleCount','meshMaterialCount','meshClipCount'];
+ for(const id of ids)assert.match(html,new RegExp('id="'+id+'"'));
+ assert.ok(registry.assets.length>0);
+ assert.ok(registry.baseMaterialLibrary.atomCount>0);
+ assert.ok(registry.externalSources.length>0);
+ const native=registry.assets.filter(row=>/^(?:\/)?assets\/(?:shared\/[a-z0-9-]+|roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?)\.glb$/i.test(String(row.path||'')));
+ assert.ok(native.length>0,'actual registered native models exist');
+ const catalogs=registry.assets.filter(row=>Number.isInteger(row.catalogRowCount)&&row.catalogRowCount>0);
+ assert.ok(catalogs.length>=10,'common registered catalogs must remain fully enumerable');
+ assert.match(code,/kind==='native'/);
+ assert.match(code,/nativeGLB\(asset\.path\)/);
+ assert.match(code,/renderSourceCollections\(registry\)/);
+ assert.match(code,/Promise\.allSettled\(sources\.map/);
+ assert.match(code,/\$\('inspectionMetrics'\)\.hidden=false/);
+ assert.match(code,/measured\.triangles\.toLocaleString/);
+ assert.match(code,/nativeAutoSelected/);
+ assert.match(code,/제작 레시피|공용 모션 제작 레시피/);
+ assert.match(html,/실행 검증은 서로 다른 상태/);
+ assert.ok(registry.assets.some(row=>row.productionVerified===false));
 });

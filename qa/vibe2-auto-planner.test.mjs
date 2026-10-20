@@ -6,12 +6,120 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findDeclaredDccAuthoringTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, resolveBuildUpIterationExpectation, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence, projectSort, focusedCaretakerProject } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
+
+
+test('the owner three-game focus selects exactly Simple RPG Roblox and two existing Web sources',()=>{
+  const repoRoot=process.cwd();
+  const focus=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),'utf8'))
+    .developmentLifecycleMachine.focusedDevelopmentCaretakers;
+  assert.deepEqual(focus.ownerFocusedGameIds,['simple-rpg','fantasy-survival','cozy-island']);
+  assert.deepEqual(focus.ownerFocusedGamePlatforms,{
+    'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'
+  });
+  const liveCatalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
+  assert.equal(liveCatalog.permanentRemovalPolicy?.ids?.includes('simple-rpg'),false,
+    'later owner focus must actually remove the old permanent blocker');
+  const realProjects=collectProjects({},liveCatalog,repoRoot,{items:[]});
+  assert.ok(realProjects.some(project=>project.gameId==='simple-rpg'&&project.engine==='roblox'
+    &&focusedCaretakerProject(project,repoRoot)),
+    'the actual canonical catalog and Rojo source must activate Simple RPG, not just a test fixture');
+  for(const protectedId of ['seed-roblox-battleground-fight-welcome-to-bloxburg','seed-roblox-obby-party-minigam-tower-of-hell'])
+    assert.ok(liveCatalog.permanentRemovalPolicy?.ids?.includes(protectedId),
+      'other owner permanent removals must remain protected');
+  const projects=collectProjects({}, {games:[
+    {id:'fantasy-survival',name:'마력숲',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/fantasy-survival/'},
+    {id:'cozy-island',name:'포근섬',productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',hasWebArchive:true,webPath:'/web-games/cozy-island/'}
+  ]},repoRoot,{items:[]});
+  const selected=projects.filter(project=>focusedCaretakerProject(project,repoRoot))
+    .map(project=>project.gameId+'|'+project.engine).sort();
+  assert.deepEqual(selected,[
+    'cozy-island|web','fantasy-survival|web','simple-rpg|roblox'
+  ]);
+  assert.ok(projects.some(project=>project.gameId==='fantasy-survival'&&project.engine==='roblox'
+    &&!focusedCaretakerProject(project,repoRoot)),
+    'the matching Roblox counterpart must keep developing but not consume a focus slot');
+  assert.ok(projects.some(project=>project.gameId==='cozy-island'&&project.engine==='roblox'
+    &&!focusedCaretakerProject(project,repoRoot)));
+  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,true);
+  assert.equal(focus.targetFocusedGames,3);
+  assert.equal(focus.maxFocusedGames,3);
+});
+
+test('exact focus lanes remain visible when generic backlog is full without bypassing work-package gates',()=>{
+  const root=tempRepo();
+  try{
+    const policyPath=path.join(root,'company-learning/platform-release-roadmap.json');
+    const initial=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+    fs.writeFileSync(policyPath,JSON.stringify({...initial,developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
+      enabled:true,targetFocusedGames:3,maxFocusedGames:3,
+      completionPursuit:{enabled:true,nonFocusedDevelopmentContinues:true},
+      focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
+      ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
+      ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB','cozy-island':'WEB'}
+    }}}));
+    const projectRoot=path.join(root,'roblox-games/simple-rpg');
+    fs.mkdirSync(path.join(projectRoot,'server'),{recursive:true});
+    fs.writeFileSync(path.join(projectRoot,'default.project.json'),JSON.stringify({
+      name:'Simple RPG',tree:{$className:'DataModel'}
+    }));
+    fs.writeFileSync(path.join(projectRoot,'server/Game.server.luau'),
+      '-- TODO: preserve existing first-play save compatibility\nlocal SaveState={}\nreturn SaveState\n');
+    for(const id of ['fantasy-survival','cozy-island']){
+      fs.mkdirSync(path.join(root,'web-games',id),{recursive:true});
+      fs.writeFileSync(path.join(root,'web-games',id,'index.html'),
+        '<!doctype html><html><head><title>'+id+'</title></head><body><button id="start">Start</button><canvas></canvas><script>document.getElementById("start").onclick=()=>{};</script></body></html>');
+    }
+    const games=['fantasy-survival','cozy-island'].map(id=>({
+      id,name:id,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
+      webPath:'/web-games/'+id+'/',hasWebArchive:true
+    }));
+    const existing=Array.from({length:60},(_,i)=>({
+      id:'independent-'+i,gameId:'other-'+i,target:'web',department:'development',
+      type:'implementation',status:'queued',sourceRoot:'web-games/other-'+i,
+      responsibleFiles:['web-games/other-'+i+'/index.html'],goal:'preserve independent work'
+    }));
+    const otherGames=Array.from({length:60},(_,i)=>({
+      id:'other-'+i,name:'Other '+i,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'
+    }));
+    const result=planVibe2AutonomousTasks({status:{projects:[]},catalog:{games:[...games,...otherGames]},
+      queue:{maxConcurrentTasks:64,tasks:existing},repoRoot:root,
+      maxConcurrentTasks:4,queueMaxConcurrentTasks:64,planningBacklogTarget:60});
+    assert.equal(result.planningBacklog.normalCapacity,0);
+    assert.deepEqual(result.planningBacklog.focusedMissingLanes,[
+      'cozy-island|web','fantasy-survival|web','simple-rpg|roblox'
+    ]);
+    assert.equal(result.planningBacklog.focusedSeedCapacity,3);
+    assert.equal(result.queue.maxConcurrentTasks,64);
+    assert.ok(result.queue.tasks.every(task=>!task.gameId?.startsWith('other-')
+      ||['queued','running'].includes(task.status)));
+    if(result.planned)assert.ok(result.tasks.every(task=>task.packageId),
+      'minimum work-package admission remains mandatory');
+    else assert.ok(['MINIMUM_WORKLOAD_GATE','AWAITING_INDEPENDENT_CAUSAL_SIGNAL','CAUSAL_REPLAN_REQUIRED'].includes(result.reason));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('exact focused-game platform mapping fails closed if an entry is missing',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-focused-mapping-'));
+  try{
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),
+      JSON.stringify({developmentLifecycleMachine:{focusedDevelopmentCaretakers:{
+        enabled:true,focusScope:'OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
+        ownerFocusedGameIds:['simple-rpg','fantasy-survival','cozy-island'],
+        ownerFocusedGamePlatforms:{'simple-rpg':'ROBLOX','fantasy-survival':'WEB'}
+      }}}));
+    assert.throws(()=>focusedCaretakerProject({gameId:'simple-rpg',engine:'roblox'},root),
+      /FOCUSED_GAME_PLATFORM_MAPPING_INCOMPLETE/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('internal motion planning binds 100 registered parents to one current walk source each',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-plan-'));
@@ -31,6 +139,17 @@ test('internal motion planning binds 100 registered parents to one current walk 
     const project={gameId:'horror-escape-room',engine:'roblox',releaseState:'development-confirmed'};
     const tasks=findSafeTasks(project,root,{tasks:[]});
     assert.equal(tasks.length,100);
+    // 같은 바이브 planning cycle에서 3D/모션 자산 원장과 소스 바인딩은 게임별 1회만 생성한다.
+    const cycleCache=new Map();
+    const firstCycle=findSafeTasks(project,root,{tasks:[]},cycleCache);
+    const boundKey=[...cycleCache.keys()].find(key=>key.startsWith('BOUND|'));
+    const boundSnapshot=cycleCache.get(boundKey);
+    assert.equal(firstCycle.length,100);
+    assert.ok(boundSnapshot);
+    assert.equal(cycleCache.size,2,'raw registry and game-bound snapshot are the only cache entries');
+    const nextCycleSameSource=findSafeTasks(project,root,{tasks:[]},cycleCache);
+    assert.deepEqual(nextCycleSameSource.map(row=>row.id),firstCycle.map(row=>row.id));
+    assert.strictEqual(cycleCache.get(boundKey),boundSnapshot,'same cycle must reuse the exact source-bound snapshot');
     assert.equal(new Set(tasks.flatMap(task=>task.responsibleFiles)).size,100);
     for(const task of tasks){
       const unit=task.motionRepairWorkUnit;
@@ -173,6 +292,52 @@ const catalog={games:[
   {id:'third-web',name:'Third Web',webPath:'/web-games/third-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}
 ]};
 
+test('24h planner optimistic retry reuses source QA only after a verified exact-main pass',()=>{
+  const source=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  assert.match(source,/validated_main_sha=''/);
+  assert.match(source,/if \[ -n "\$validated_main_sha" \] && \[ "\$validated_main_sha" = "\$main_sha" \]; then/);
+  assert.match(source,/VIBE2_24H_SAME_MAIN_QA_REUSE=REVALIDATE_NEW_MAIN_SHA:/);
+  assert.match(source,/VIBE2_24H_DUPLICATE_CORE_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:/);
+  assert.match(source,/VIBE2_24H_PLANNER_DEPENDENCY_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:/);
+  assert.match(source,/node --test qa\/vibe2-auto-planner\.test\.mjs/);
+  assert.match(source,/node --test qa\/vibe-studio-asset-universe\.test\.mjs/);
+  const testPosition=source.indexOf('node --test qa/vibe-studio-asset-universe.test.mjs');
+  const qaAcceptedPosition=source.indexOf('validated_main_sha="$main_sha"');
+  const systemStatePosition=source.indexOf('node /tmp/vibe2-main/tools/vibe2-system-steward.mjs');
+  assert.ok(testPosition>=0&&qaAcceptedPosition>testPosition,'same-main mark must only follow successful source QA');
+  assert.ok(systemStatePosition>qaAcceptedPosition,'control queue reconciliation and handoff remain independently mandatory');
+});
+
+test('planner reads one current central policy snapshot per cycle and refreshes after each cycle',()=>{
+  const root=tempRepo();
+  const policyFile=path.resolve(root,'company-learning/platform-release-roadmap.json');
+  const initial=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+  const originalRead=fs.readFileSync;
+  let policyReads=0;
+  // [검증] 호출 횟수만 관찰하며 기획기/정책 접근 구현은 변경하지 않는다.
+  fs.readFileSync=function(file,...args){
+    if(typeof file==='string'&&path.resolve(file)===policyFile)policyReads++;
+    return originalRead.call(fs,file,...args);
+  };
+  try{
+    const args={status:{projects:[]},catalog:{games:[]},queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4};
+    fs.writeFileSync(policyFile,JSON.stringify({...initial,developmentSpeedExecution:{distinctGameDevelopmentTarget:2}}),'utf8');
+    const first=planVibe2AutonomousTasks(args);
+    assert.equal(first.planningBacklog.distinctGameFlow.target,2);
+    // 기획기 1회 + 기존 다른 책임 모듈 1회 조회는 유지하되 게임별 반복 파싱을 막는다.
+    const firstReads=policyReads;
+    assert.equal(firstReads,2,'same planning cycle must bound the planner and independent policy reads');
+    fs.writeFileSync(policyFile,JSON.stringify({...initial,developmentSpeedExecution:{distinctGameDevelopmentTarget:5}}),'utf8');
+    const second=planVibe2AutonomousTasks(args);
+    assert.equal(second.planningBacklog.distinctGameFlow.target,5,'next planning cycle must see changed policy');
+    assert.equal(policyReads-firstReads,firstReads,'next cycle must reload fresh policy without adding per-game policy reads');
+  }finally{
+    fs.readFileSync=originalRead;
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+
 
 test('build-up directive persistence keeps platform currents independent and compatibility current prefers autonomous contract',()=>{
   const legacyUnity={
@@ -261,6 +426,14 @@ test('declared DCC planner emits one existing-lane Blender task for the actual s
     };
     const planned=findDeclaredDccAuthoringTask(project,root,{tasks:[]});
     assert.ok(planned);
+    // 정상 바이브 후보 탐색에서도 같은 등록 레시피가 보존되고 자산 원장 재사용이 가능해야 한다.
+    const cycleCache=new Map();
+    const candidates=findSafeTasks(project,root,{tasks:[]},cycleCache);
+    assert.ok(candidates.some(candidate=>candidate.id===planned.id));
+    assert.equal(cycleCache.size,2);
+    const boundRegistry=cycleCache.get([...cycleCache.keys()].find(key=>key.startsWith('BOUND|')));
+    assert.ok(boundRegistry);
+    assert.equal(findDeclaredDccAuthoringTask(project,root,{tasks:[]},boundRegistry)?.id,planned.id);
     assert.equal(planned.id,'horror-demo-roblox-declared-dcc-ghost-motion-v3-v1');
     assert.equal(planned.assetProductionLane,true);
     assert.equal(planned.declaredDccAuthoring,true);
@@ -2505,9 +2678,9 @@ test('flat or unstartable Web games enter 2.5D repair after canonical existing-W
   assert.equal(task.productionMode,'SUPERVISED_VIBE_COAUTHORING');
   assert.equal(task.supervisionContract?.required,true);
   assert.ok(task.evidence.includes('owner-directive:all-web-games-must-start'));
-  assert.ok(task.evidence.includes('owner-directive:minimum-2.5d-final-gameplay'));
+  assert.ok(task.evidence.includes('owner-directive:real-3d-final-gameplay'));
   assert.ok(task.evidence.some(value=>value.includes('MINIMUM_2_5D_PRESENTATION_REQUIRED')));
-  assert.match(task.goal,/최소 2\.5D/);
+  assert.match(task.goal,/실제 WebGL 렌더/);
   assert.equal(task.maxRetries,null);
 });
 
@@ -3443,6 +3616,10 @@ test('missing design suppresses generic CORE_FUN and PROGRESSION guesses while s
 
 
 test('usable but unverified design cannot authorize CORE_FUN or PROGRESSION evolution',()=>{
+  // Bind real current policy for the implementation evaluator; do not bypass its fail-closed guard.
+  const priorPolicy=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+  try{
   const root=tempRepo();
   const gameId='unverified-design-game';
   const source=path.join(root,'roblox-games',gameId);
@@ -3461,6 +3638,10 @@ test('usable but unverified design cannot authorize CORE_FUN or PROGRESSION evol
   assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN'),null);
   assert.equal(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PROGRESSION'),null);
   assert.ok(findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION'));
+  }finally{
+    if(priorPolicy===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=priorPolicy;
+  }
 });
 
 
@@ -3767,17 +3948,25 @@ test('queued autonomous expansion v1 without breadth ledger upgrades to v2 witho
   assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
 });
 
-test('queued Unity and Web directives adopt native production plans without rewriting running work or consuming a generation',()=>{
+test('owner-held Unity and active general Web preserve queued BUILD_UP without unauthorized platform plans',()=>{
+  const previousPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+  try{
   for(const [engine,gameId,target] of [['unity','demo','unity-android'],['web','dev-web','web']]){
     const root=tempRepo();
+    const ownerPolicy={
+      robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']},
+      developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'},
+      ownerActiveDevelopmentScope20261009:{status:'ACTIVE',authority:'OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB',activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN']}
+    };
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(ownerPolicy));
     writeStudioDesign(root,gameId);
     const project={gameId,name:gameId,engine,releaseState:'development-confirmed',projectPath:`${engine}-games/${gameId}`};
     const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
     assert.ok(generated?.buildUpDirective);
-    assert.equal(generated.buildUpDirective.productionPlan,null);
+    assert.equal(generated.buildUpDirective.productionPlan?.platform||null,engine==='web'?'WEB':null);
     const running={...generated,id:gameId+'-running',status:'running',reservationRunId:'existing-run'};
     const queued={...generated,id:gameId+'-queued',status:'queued'};
-    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']}}));
     const result=planVibe2AutonomousTasks({
       status:{projects:[{gameId,ownerDecision:'PASS',target,projectPath:project.projectPath,progress:80}]},
       catalog:{games:[{id:gameId,name:gameId,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',...(engine==='web'?{webPath:`/${project.projectPath}/`,hasWebArchive:true,homepageWebPlayable:true}:{})}]},
@@ -3786,10 +3975,13 @@ test('queued Unity and Web directives adopt native production plans without rewr
     const updated=result.queue.tasks.find(row=>row.id===queued.id);
     const untouched=result.queue.tasks.find(row=>row.id===running.id);
     assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
-    assert.equal(updated.buildUpDirective.productionPlan.version,3);
-    assert.equal(updated.buildUpDirective.productionPlan.platform,engine.toUpperCase());
-    assert.equal(updated.buildUpDirective.productionPlan.qualityContract.runtimeVerified,false);
+    assert.equal(updated.buildUpDirective.productionPlan?.platform||null,engine==='web'?'WEB':null);
+    assert.equal(updated.status,'queued');
     assert.deepEqual(untouched.buildUpDirective,running.buildUpDirective);
+  }
+  }finally{
+    if(previousPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=previousPolicyPath;
   }
 });
 
@@ -4487,6 +4679,36 @@ test('web two-game planning floor fills a native backlog without duplicating gam
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('owner-active general Web 3D fills browser-native slots without starting held Unity',()=>{
+  const root=tempRepo();
+  try{
+    const policyPath=path.join(root,'company-learning/platform-release-roadmap.json');
+    const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+    policy.developmentAccess={ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'};
+    policy.ownerActiveDevelopmentScope20261009={status:'ACTIVE',authority:'OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB',activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN']};
+    policy.developmentSpeedExecution={webGameFlow:{enabled:true,targetConcurrentGames:2,scope:'GENERAL_WEB_HTML_JS_TRUE_3D'}};
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    for(const id of ['dev-web','third-web'])writeStudioDesign(root,id);
+    const native={id:'held-unity',gameId:'demo',target:'unity',department:'development',type:'implementation',goal:'preserve held work',status:'running',sourceRoot:'unity-games/demo',responsibleFiles:['unity-games/demo/Assets/Scripts/GameCore.cs']};
+    const args={repoRoot:root,status,catalog,queue:{tasks:[native]},maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0};
+    const first=planVibe2AutonomousTasks(args);
+    const webGames=[...new Set(first.tasks.filter(row=>row.target==='web').map(row=>row.gameId))].sort();
+    assert.deepEqual(webGames,['dev-web','third-web'],'ordinary Web source must satisfy the Web floor under active owner scope');
+    assert.equal(first.planningBacklog.webGameFlow.shortfall,0);
+    assert.ok(first.tasks.every(row=>!String(row.sourceRoot||'').startsWith('unity-games/')),'held Unity is not new production');
+    const again=planVibe2AutonomousTasks({...args,queue:first.queue});
+    assert.equal(again.planningBacklog.webGameFlow.shortfall,0,'already-reserved ordinary Web games count toward the floor');
+    assert.equal(again.tasks.filter(row=>row.target==='web').length,0,'do not queue the same Web games twice');
+    policy.developmentAccess.WEB='OWNER_HOLD';
+    policy.ownerActiveDevelopmentScope20261009.activeTargets=['ROBLOX'];
+    policy.ownerActiveDevelopmentScope20261009.ownerHeldTargets.push('WEB');
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    const held=planVibe2AutonomousTasks(args);
+    assert.equal(held.planningBacklog.webGameFlow.target,0,'owner-held Web must not reserve phantom slots');
+    assert.equal(held.tasks.some(row=>row.target==='web'),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('unfinished source joins planning without design PASS and owner hold does not fill the backlog',()=>{
   const root=tempRepo();
   try{
@@ -4595,6 +4817,10 @@ test('real cozy-island Web source produces both code BUILD_UP and graphics repla
 });
 
 test('owner-direct unfinished games bypass a full normal backlog and keep generating BUILD_UP generations',()=>{
+  // Bind real current policy for the implementation evaluator; do not bypass its fail-closed guard.
+  const priorPolicy=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  process.env.COMPANY_VERIFIED_POLICY_PATH=path.resolve('company-learning/platform-release-roadmap.json');
+  try{
   const repoRoot=path.resolve(process.cwd());
   const catalog=JSON.parse(fs.readFileSync(path.join(repoRoot,'game-catalog.json'),'utf8'));
   const plannerCatalog={...catalog,games:[...(catalog.games||[]),{
@@ -4704,9 +4930,13 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   assert.equal(resumed.maxRetries,null);
   assert.equal(resumed.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
+  }finally{
+    if(priorPolicy===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=priorPolicy;
+  }
 });
 
-test('actual fantasy-survival preserves Unity sources while only Roblox development is active',()=>{
+test('actual fantasy-survival resumes Web and Roblox while preserving owner-held Unity sources',()=>{
   const root=path.resolve(process.cwd());
   const oldWeb=path.join(root,'web-games','fantasy-survival','index.html');
   const unitySource=path.join(root,'unity-games','fantasy-survival','Assets','Scripts','UnityWebFloorGame.cs');
@@ -4716,7 +4946,8 @@ test('actual fantasy-survival preserves Unity sources while only Roblox developm
   const game=(catalogData.games||[]).find(row=>row.id==='fantasy-survival');
   assert.ok(game);
   const projects=collectProjects({projects:[]},{games:[game]},root,{items:[]});
-  assert.equal(projects.some(row=>row.engine==='unity'||row.engine==='web'),false);
+  assert.equal(projects.some(row=>row.engine==='unity'),false,'Unity remains owner-held');
+  assert.equal(projects.some(row=>row.engine==='web'),true,'ordinary Web resumes under the owner scope');
   assert.ok(projects.some(row=>row.gameId==='fantasy-survival'&&row.engine==='roblox'));
 });
 
@@ -5063,7 +5294,8 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   const fallback={mode:'GAME_SOURCE_BINDINGS_ONLY',preserveInternalAssetLibrary:true,preserveAssetFiles:true,allowAssetLibraryWrites:false,requireActualNativeConsumption:true};
   const evidence={
     gameId,sourceRevision:source,artifactIdentity:null,authority:'roblox-package-asset-binding-failure',
-    assetThreshold:{pass:false,blockers:['ROBLOX_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED'],runtimeVerified:false,productionVerified:false},
+    assetThreshold:{pass:false,blockers:['ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL'],runtimeVerified:false,productionVerified:false,
+      familyResults:[{family:'MATERIAL',responsibleFiles:['server/Game.server.luau','client/Game.client.luau','../other-game/server/Game.server.luau','shared/../../assets/library.luau','assets/library.luau']}]},
     sourceTreeSha,assetRepairContext,
     assetRepairPolicy:fallback,repairSurfaces:['INTERNAL_ASSET_SOURCE_BINDING'],
     qualityFailureKinds:['ROBLOX_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED'],
@@ -5113,6 +5345,21 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
   assert.ok(task.goal.includes(hint));
   assert.ok(task.goal.includes(fallback.mode));
+  assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/server/Game.server.luau`));
+  assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
+  assert.ok(task.responsibleFiles.every(file=>!file.includes('..')&&!file.includes('assets/library.luau')));
+
+  const contractEvidence={...evidence,authority:'roblox-source-static-contract-failure',assetThreshold:undefined,
+    staticContract:{pass:false,blockers:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']},
+    qualityFailureKinds:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']};
+  const contractItem={...item,robloxQualityFailureClass:'SOURCE_CONTRACT',robloxQualityBuildUpEvidence:contractEvidence};
+  const contractResult=planVibe2AutonomousTasks({status:{projects:[]},catalog,developmentQueue:{items:[contractItem]},
+    queue:{maxConcurrentTasks:20,tasks:[]},repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0});
+  const contractTask=contractResult.tasks.find(row=>row.gameId===gameId&&row.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure?.authority===contractEvidence.authority);
+  assert.ok(contractTask,'static contract failure must reach actual existing Vibe source repair');
+  assert.equal(contractTask.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
+  assert.equal(contractTask.buildUpNextAction,'CAUSAL_REPAIR');
+  for(const owner of ['server','client','shared'])assert.ok(contractTask.responsibleFiles.includes(`roblox-games/${gameId}/${owner}/${owner==='shared'?'GameConfig':'Game.'+owner}.luau`));
 
   fs.appendFileSync(path.join(gameRoot,'server','Game.server.luau'),'\n-- completed repair changed the exact game source tree\n');
   execFileSync('git',['add',`roblox-games/${gameId}/server/Game.server.luau`],{cwd:root});

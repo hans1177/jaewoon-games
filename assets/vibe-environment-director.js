@@ -328,7 +328,7 @@ function proceduralGradientNoise(seed,x,z){
   const u=fade(fx),v=fade(fz),lerp=(a,b,t)=>a+(b-a)*t;
   return lerp(lerp(dot(ix,iz,fx,fz),dot(ix+1,iz,fx-1,fz),u),lerp(dot(ix,iz+1,fx,fz-1),dot(ix+1,iz+1,fx-1,fz-1),u),v);
 }
-export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='AUTO',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[]}={}){
+export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='AUTO',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[],terrainMorphology=null,roomConstraints=null}={}){
   const noMutation={sourceMutationPerformed:false,nativeAssetInstancingPerformed:false,runtimeVerified:false,gameplayRuleMutation:false,saveMeaningMutation:false};
   if(approvedDesign!==true)return Object.freeze({status:'APPROVED_DESIGN_REQUIRED',issues:Object.freeze(['APPROVED_WORLD_DESIGN_REQUIRED']),...noMutation});
   const maximum=mobile?48:72,validNumber=n=>typeof n==='number'&&Number.isFinite(n);
@@ -362,6 +362,19 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     !Array.isArray(ecologyActors)||!Array.isArray(authoredDungeonSites)){
     return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['ERA_WATER_OR_ACTOR_INPUT_INVALID']),...noMutation});
   }
+  // 승인된 지형 제작 입력만 사용한다. 기본값 null은 기존 월드의 지형·밸런스·seed를 그대로 보존.
+  // 외부 FastNoiseLite 실행이 아니라 기존 결정론적 gradient FBM의 지형 변형 입력이다.
+  if(terrainMorphology!==null&&(
+    !terrainMorphology||typeof terrainMorphology!=='object'||Array.isArray(terrainMorphology)
+    ||terrainMorphology.approved!==true||terrainMorphology.kind!=='CANYON'
+    ||typeof terrainMorphology.depth!=='number'||!Number.isFinite(terrainMorphology.depth)
+    ||terrainMorphology.depth<0||terrainMorphology.depth>.35
+    ||typeof terrainMorphology.halfWidth!=='number'||!Number.isFinite(terrainMorphology.halfWidth)
+    ||terrainMorphology.halfWidth<.04||terrainMorphology.halfWidth>.25
+    ||typeof terrainMorphology.meander!=='number'||!Number.isFinite(terrainMorphology.meander)
+    ||terrainMorphology.meander<0||terrainMorphology.meander>.15
+  ))return Object.freeze({status:'INVALID_GENERATION_INPUT',
+    issues:Object.freeze(['UNAPPROVED_OR_INVALID_TERRAIN_MORPHOLOGY']),...noMutation});
   const w=width,h=height,hash=String(seed).split('').reduce((v,c)=>Math.imul(v^c.charCodeAt(0),16777619)>>>0,2166136261);
   const objectNamespace='WORLD_'+hash.toString(36).toUpperCase();
   // 공용 자산은 게임에 통째로 복사하지 않는다. 실제 3D 원본+권리 확인 후보만 구조물에 매핑한다.
@@ -414,7 +427,13 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   for(let z=0;z<h;z++)for(let x=0;x<w;x++){
     const nx=x/w,nz=z/h,ridge=Math.abs(octave(nx*3,nz*3,0x102a));
     const regionalBiome=String(biome).toUpperCase(),wet=/WET|SWAMP|JUNGLE|RAIN/.test(regionalBiome+' '+climate),dry=/DESERT|ARID|DRY/.test(regionalBiome+' '+climate),mountain=/MOUNTAIN|ALPINE|RIDGE/.test(regionalBiome);
-    const elevation=Math.max(.05,Math.min(.95,.48+.5*octave(nx*4,nz*4,0x22bb)+.16*ridge+(mountain?.12:0)));
+    let elevation=Math.max(.05,Math.min(.95,.48+.5*octave(nx*4,nz*4,0x22bb)+.16*ridge+(mountain?.12:0)));
+    if(terrainMorphology?.kind==='CANYON'){
+      // 샘플링 좌표는 월드 seed에서 결정한다. 기존 heightfield 최종 지형만 제안한다.
+      const bend=octave(nz*2+7,.5,0x6c8a)*terrainMorphology.meander;
+      const falloff=Math.max(0,1-Math.abs(nx-.5+bend)/terrainMorphology.halfWidth);
+      elevation=Math.max(.05,elevation-terrainMorphology.depth*falloff*falloff);
+    }
     const moisture=Math.max(0,Math.min(1,.52+.58*octave(nx*3+11,nz*3-7,0x397a)+(wet?.2:0)-(dry?.25:0)));
     let type=elevation<(dry?.25:mountain?.31:.38)?'WATER':elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
     // 해양·섬·호수는 승인된 맵에서만 생성하며, 기본 AUTO는 과거 지형을 그대로 보존한다.
@@ -1052,6 +1071,133 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     sightline={from:hub,to:landmark,fovDegrees,cameraForward,withinFov,visible:withinFov&&!seen&&!terrainObstructed,terrainObstructed,buildingObstructed:seen,exactCameraAndOcclusionRuntimeVerified:false};
     if(!sightline.visible)issues.push('LANDMARK_VISIBILITY_REQUIRES_CAMERA_REVIEW');
   }
+
+  // 제약 기반 방/문 배치(WFC). 승인 설계에서 요구할 때만 실행하며, 기존 월드 오브젝트/세이브를 수정하지 않는다.
+  // 내부의 소켓 호환성 검사, 백트래킹, 시작-출구 연결성 검사 모두 동일 책임 함수에서 실행한다.
+  let roomComposition=null;
+  if(roomConstraints!==null){
+    const cfg=roomConstraints,dirs=['N','E','S','W'],dx=[0,1,0,-1],dz=[-1,0,1,0],opposite=[2,3,0,1];
+    const rw=cfg?.width,rh=cfg?.height,rows=cfg?.tiles,start=cfg?.start,exit=cfg?.exit;
+    const inside=(x,z)=>Number.isInteger(x)&&Number.isInteger(z)&&x>=0&&z>=0&&x<rw&&z<rh;
+    const valid=cfg&&typeof cfg==='object'&&!Array.isArray(cfg)&&cfg.approved===true
+      &&Number.isInteger(rw)&&Number.isInteger(rh)&&rw>=2&&rh>=2&&rw<=12&&rh<=12
+      &&Array.isArray(rows)&&rows.length>=1&&rows.length<=16
+      &&rows.every(row=>row&&typeof row.id==='string'&&/^[a-zA-Z0-9_-]{1,40}$/.test(row.id)
+        &&Array.isArray(row.open)&&row.open.length<=4&&row.open.every(v=>dirs.includes(v))
+        &&new Set(row.open).size===row.open.length)
+      &&new Set(rows.map(row=>row.id)).size===rows.length
+      &&inside(start?.x,start?.z)&&inside(exit?.x,exit?.z)
+      &&(start.x!==exit.x||start.z!==exit.z)
+      &&Array.isArray(cfg.fixedCells||[])&&(cfg.fixedCells||[]).length<=rw*rh
+      &&(cfg.fixedCells||[]).every(row=>inside(row?.x,row?.z)
+        &&rows.some(tile=>tile.id===row.tileId))
+      &&Number.isInteger(cfg.maxStates??4096)
+      &&(cfg.maxStates??4096)>=1&&(cfg.maxStates??4096)<=16384;
+    if(!valid){
+      issues.push('ROOM_CONSTRAINT_INPUT_OR_APPROVAL_INVALID');
+      roomComposition=Object.freeze({status:'ROOM_CONSTRAINT_INPUT_OR_APPROVAL_INVALID',cells:Object.freeze([]),
+        route:Object.freeze([]),solved:false,gameplayAuthority:false,runtimeVerified:false});
+    }else{
+      const rid=(x,z)=>z*rw+x,closedBoundary=cfg.closedBoundary!==false,
+        fixed=cfg.fixedCells||[],tiles=rows.map(row=>({
+          id:row.id,mask:row.open.reduce((sum,d)=>sum|(1<<dirs.indexOf(d)),0)
+        }));
+      const sockets=(mask,d)=>(mask&(1<<d))!==0;
+      const domains=Array.from({length:rw*rh},(_,index)=>{
+        const x=index%rw,z=Math.floor(index/rw);
+        return tiles.map((_,t)=>t).filter(t=>!closedBoundary||dirs.every((_,d)=>{
+          const nx=x+dx[d],nz=z+dz[d];
+          return nx>=0&&nx<rw&&nz>=0&&nz<rh || !sockets(tiles[t].mask,d);
+        }));
+      });
+      const fixedSeen=new Set();
+      let invalidFixed=false;
+      for(const cell of fixed){
+        const id=rid(cell.x,cell.z),t=tiles.findIndex(tile=>tile.id===cell.tileId);
+        if(fixedSeen.has(id)){invalidFixed=true;break;}
+        fixedSeen.add(id);
+        domains[id]=domains[id].filter(value=>value===t);
+      }
+      const source=rid(start.x,start.z),dest=rid(exit.x,exit.z);
+      for(const id of [source,dest])
+        domains[id]=domains[id].filter(t=>tiles[t].mask!==0);
+      const tileSalt=rows.map(row=>row.id).join('|').split('').reduce((h,c)=>Math.imul(h^c.charCodeAt(0),16777619)>>>0,hash^0x734b);
+      const budget=cfg.maxStates??4096,stack=invalidFixed?[]:[domains],maxNeighbors=4;
+      let examined=0,connectedFailure=false,solution=null,solutionRoute=[];
+      while(stack.length&&examined<budget){
+        const current=stack.pop().map(values=>values.slice());
+        examined++;
+        let consistent=true,changed=true;
+        // 모든 인접 소켓은 서로 일치해야 한다. 후보가 없어지면 즉시 이 분기를 버린다.
+        while(consistent&&changed){
+          changed=false;
+          for(let id=0;id<current.length&&consistent;id++){
+            const x=id%rw,z=Math.floor(id/rw);
+            for(let d=0;d<maxNeighbors;d++){
+              const nx=x+dx[d],nz=z+dz[d];
+              if(nx<0||nx>=rw||nz<0||nz>=rh)continue;
+              const next=rid(nx,nz);
+              const allowed=current[id].filter(t=>current[next].some(other=>
+                sockets(tiles[t].mask,d)===sockets(tiles[other].mask,opposite[d])));
+              if(!allowed.length){consistent=false;break;}
+              if(allowed.length<current[id].length){current[id]=allowed;changed=true;}
+            }
+          }
+        }
+        if(!consistent||current.some(values=>!values.length))continue;
+        let chosen=-1,entropy=Infinity,tie=Infinity;
+        for(let id=0;id<current.length;id++)if(current[id].length>1){
+          const rank=proceduralCellHash(tileSalt,id,examined);
+          if(current[id].length<entropy||(current[id].length===entropy&&rank<tie)){
+            chosen=id;entropy=current[id].length;tie=rank;
+          }
+        }
+        if(chosen>=0){
+          const ordered=current[chosen].slice().sort((a,b)=>
+            proceduralCellHash(tileSalt,chosen,a)-proceduralCellHash(tileSalt,chosen,b)||a-b);
+          for(let k=ordered.length-1;k>=0;k--){
+            const branch=current.map(values=>values.slice());
+            branch[chosen]=[ordered[k]];
+            stack.push(branch);
+          }
+          continue;
+        }
+        // 완성된 방 배치라도 실제 소켓으로 시작->출구가 닿지 않으면 거부한다.
+        const q=[source],seen=new Set([source]),parents=new Map();
+        for(let i=0;i<q.length;i++){
+          const id=q[i],x=id%rw,z=Math.floor(id/rw);
+          if(id===dest)break;
+          for(let d=0;d<maxNeighbors;d++){
+            const nx=x+dx[d],nz=z+dz[d];
+            if(nx<0||nx>=rw||nz<0||nz>=rh||!sockets(tiles[current[id][0]].mask,d))continue;
+            const neighbor=rid(nx,nz);
+            if(seen.has(neighbor)||!sockets(tiles[current[neighbor][0]].mask,opposite[d]))continue;
+            seen.add(neighbor);parents.set(neighbor,id);q.push(neighbor);
+          }
+        }
+        if(!seen.has(dest)){connectedFailure=true;continue;}
+        solution=current;
+        for(let id=dest;id!==undefined;id=parents.get(id))
+          solutionRoute.push(Object.freeze({x:id%rw,z:Math.floor(id/rw)}));
+        solutionRoute.reverse();
+        break;
+      }
+      const status=solution?'ROOM_LAYOUT_STATIC_PROPOSAL':stack.length?'ROOM_SOLVER_BUDGET_EXCEEDED':
+        connectedFailure?'ROOM_ENTRY_EXIT_UNREACHABLE':'ROOM_CONSTRAINT_UNSATISFIABLE';
+      if(!solution)issues.push(status);
+      roomComposition=Object.freeze({
+        status,seed:String(seed),algorithm:'BOUNDED_SOCKET_WFC_WITH_BACKTRACK_AND_ENTRY_EXIT_BFS',
+        width:rw,height:rh,closedBoundary,statesExamined:examined,maxStates:budget,
+        cells:Object.freeze(solution?solution.map((domain,id)=>Object.freeze({
+          x:id%rw,z:Math.floor(id/rw),tileId:tiles[domain[0]].id,
+          open:Object.freeze(dirs.filter((_,d)=>sockets(tiles[domain[0]].mask,d)))
+        })):[]),
+        entry:Object.freeze({x:start.x,z:start.z}),exit:Object.freeze({x:exit.x,z:exit.z}),
+        route:Object.freeze(solutionRoute),solved:!!solution,
+        nativePlacementRequired:true,gameplayAuthority:false,runtimeVerified:false
+      });
+    }
+  }
   const result={
     version:1,status:issues.length?'LAYOUT_REVIEW_REQUIRED':'STATIC_LAYOUT_PROPOSED',issues:Object.freeze(issues),
     seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED',
@@ -1114,11 +1260,16 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       candidatesEvaluated:natureCandidates.length,selectedVegetation:vegetation.length,stableGameObjectIds:true,
       spatialDepthMetersRequired:dimension==='3D',slopeAndNavClearancePreserved:true}),
     sightline:Object.freeze(sightline),drainage:'FOUR_NEIGHBOR_DOWNHILL',noise:'SEEDED_2D_GRADIENT_FBM',snapRules:Object.freeze({moduleGrid:cellSize,entrancesFaceConnectedRoad:true,foundationsFollowTerrain:true}),
+    ...(terrainMorphology?{terrainMorphology:Object.freeze({kind:'CANYON',
+      depth:terrainMorphology.depth,halfWidth:terrainMorphology.halfWidth,meander:terrainMorphology.meander,
+      generator:'EXISTING_SEEDED_GRADIENT_FBM',externalFastNoiseLiteExecuted:false,
+      appliedToNativeGame:false,gameplayAuthority:false,runtimeVerified:false})}:{}),
     mobileBudget:Object.freeze({cellCount:terrain.length,buildingLimit:maxBuildings,vegetationLimit:maxVegetation,instanceGroupCount:instanceGroups.size+natureGroups.size,actualDrawCallsMeasured:false}),
     // 안정 식별자는 오브젝트 이름/생성 순서에 의존하지 않는다. 보상·피해·저장은 기존 게임 규칙만 따른다.
     worldObjectBinding:Object.freeze({namespace:objectNamespace,idScheme:'WORLD_SEED_KIND_GRID_CELL',status:'GAMEPLAY_BINDING_REQUIRED',runtimeInteractionVerified:false,existingSaveSchemaRequired:true,gameplayDamageAndLootContractRequired:true,serverAuthorityValidationRequired:true,duplicateRewardGuardRequired:true,mobileActionBindingRequired:true}),
     native2DWorldCoordinateMappingRequired:dimension==='2D',native2DPositionProjectionProvided:dimension==='2D',
     protected:Object.freeze(['existing-transforms','spawns','objective-rules','collision','navigation','economy','save','network-authority']),
+    ...(roomComposition?{roomComposition}:{}),
     ...noMutation
   };
   return Object.freeze(result);

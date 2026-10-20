@@ -49,76 +49,9 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
-  coordinator-gate:
-    name: Admit one unscoped development coordinator
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
-    concurrency:
-      # Coalesce only unscoped same-revision batch gate jobs. Exact-game gate jobs remain independent.
-      # This is job-scoped: native per-game execution is never serialized by a coordinator wake.
-      group: company-development-confirmed-coordinator-gate-${{ (github.event_name == 'workflow_dispatch' && !inputs.game_id && format('batch-{0}', github.sha)) || github.run_id }}
-      cancel-in-progress: false
-    outputs:
-      proceed: ${{ steps.admit.outputs.proceed }}
-    steps:
-      - name: Coalesce duplicate whole-portfolio dispatches without serializing game lanes
-        id: admit
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ -n "$REQUESTED_GAME_ID" || "$GITHUB_EVENT_NAME" == 'push' ]]; then
-            echo 'proceed=true' >> "$GITHUB_OUTPUT"
-            echo 'DEVELOPMENT_COORDINATOR_ADMISSION=EXACT_GAME_OR_SOURCE_CHANGE'
-            exit 0
-          fi
-
-          pids=()
-          for page in 1 2 3; do
-            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-confirmed-runtime.yml/runs?per_page=100&page=$page" > "/tmp/development-coordinator-runs-$page.json" &
-            pids+=("$!")
-          done
-          scan_failed=0
-          for pid in "${pids[@]}"; do
-            if ! wait "$pid"; then scan_failed=1; fi
-          done
-          if (( scan_failed != 0 )); then
-            echo 'DEVELOPMENT_COORDINATOR_ACTIVE_SCAN=FAIL' >&2
-            exit 15
-          fi
-          jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/development-coordinator-runs-{1,2,3}.json > /tmp/development-coordinator-runs.json
-          # Queued/pending workflows have no executing coordinator and must not block a running game batch.
-          oldest_active_id="$(jq -r --argjson current "$GITHUB_RUN_ID" --arg control_sha "$GITHUB_SHA" '
-            [
-              .workflow_runs[]
-              | select(.status == "in_progress")
-              | select(.head_sha == $control_sha)
-              | select(
-                  .display_title == "Company DEVELOPMENT_CONFIRMED Runtime"
-                  or (.display_title | startswith("DEVELOPMENT cycle | batch | "))
-                )
-              | .id
-            ]
-            | min // $current
-          ' /tmp/development-coordinator-runs.json)"
-          echo "DEVELOPMENT_COORDINATOR_SCAN_INCLUDES_PUSH_AND_DISPATCH=YES"
-          echo "DEVELOPMENT_COORDINATOR_EXACT_CONTROL_REVISION=$GITHUB_SHA"
-          echo "DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES"
-          echo "DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=$oldest_active_id"
-          if [[ "$oldest_active_id" != "$GITHUB_RUN_ID" ]]; then
-            echo 'proceed=false' >> "$GITHUB_OUTPUT"
-            echo 'DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH'
-            exit 0
-          fi
-          echo 'proceed=true' >> "$GITHUB_OUTPUT"
-          echo 'DEVELOPMENT_COORDINATOR_ADMISSION=OLDEST_ACTIVE_BATCH'
-
   native-plan:
+    # The scheduler reads durable queue readiness independently of director/coordinator admission.
     name: Resolve direct native development
-    needs: coordinator-gate
-    if: needs.coordinator-gate.outputs.proceed == 'true'
     runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
@@ -216,6 +149,7 @@ jobs:
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           CURRENT_CONTROL_SHA: ${{ github.sha }}
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
         shell: bash
         run: |
           set -euo pipefail
@@ -301,21 +235,28 @@ jobs:
 
 
   dispatch-roblox:
-    name: Run ready Roblox upper-platform lanes
+    name: Dispatch independent Roblox game development
     needs: native-plan
     if: needs.native-plan.result == 'success' && needs.native-plan.outputs.roblox_count != '0'
-    strategy:
-      fail-fast: false
-      matrix:
-        game_id: ${{ fromJSON(needs.native-plan.outputs.roblox_json) }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 8
     permissions:
-      contents: write
-      pull-requests: write
       actions: write
-    uses: ./.github/workflows/company-development-roblox-runtime.yml
-    with:
-      game_id: ${{ matrix.game_id }}
-    secrets: inherit
+      contents: read
+    steps:
+      - name: Submit ready games to existing independent Roblox workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ROBLOX_GAME_IDS: ${{ needs.native-plan.outputs.roblox_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r game_id; do
+            [[ -n "$game_id" ]] || continue
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"
+            echo "ROBLOX_INDEPENDENT_GAME_DISPATCH=$game_id"
+          done < <(jq -r '.[]' <<< "$ROBLOX_GAME_IDS")
+          echo 'ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'
 
   dispatch-unity:
     name: Unity Android development (owner hold)
@@ -334,22 +275,16 @@ jobs:
     secrets: inherit
 
   continue-cycle:
-    name: Continue DEVELOPMENT_CONFIRMED cycle after isolated game outcomes
+    name: Record independent development handoff
     needs: [native-plan, dispatch-roblox, dispatch-unity]
-    if: ${{ always() && needs.native-plan.result == 'success' && (needs.native-plan.outputs.roblox_count != '0' || needs.native-plan.outputs.unity_count != '0') }}
+    if: ${{ always() && needs.native-plan.result == 'success' }}
     runs-on: ubuntu-slim
     timeout-minutes: 5
     permissions:
-      actions: write
       contents: read
     steps:
-      - name: Re-open the next development wave regardless of individual game failure
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
+      - name: Record independent scheduling without immediate self-dispatch
         run: |
-          set -euo pipefail
-          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
-            -f trigger_source=CONTINUOUS_PER_GAME_ISOLATED_CYCLE
-          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=YES'
+          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_HANDOFF=INDEPENDENT_GAME_RUNS'
+          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=NO_IMMEDIATE_RECURSION'
           echo 'SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO'

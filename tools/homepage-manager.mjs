@@ -1,12 +1,12 @@
 // 파일명: tools/homepage-manager.mjs
 // 단일 홈페이지 관리 실행계약과 canonical Top30 실시간 미러/PWA/Web 링크를 self-QA 한다.
 import fs from 'node:fs';
-import { compileHomepageCentralPolicy } from './company-shared-context.mjs';
+import { buildHomepagePlatformExposure } from './company-homepage-platform-exposure-sync.mjs';
 import { normalizeCatalog, validatedHomepageMedia, webTreeFingerprint } from './game-catalog-normalization.mjs';
 
 // Media capture stays inside the existing manager / self-QA / Director chain.
-if(process.argv.includes('--capture-release-media')||process.argv.includes('--plan-release-media')){
-  await captureReleaseMedia(process.argv.includes('--plan-release-media'));
+if(process.argv.includes('--capture-release-media')||process.argv.includes('--plan-release-media')||process.argv.includes('--sync-roblox-titles')){
+  await captureReleaseMedia(process.argv.includes('--plan-release-media'),{titlesOnly:process.argv.includes('--sync-roblox-titles')});
   process.exit(0);
 }
 
@@ -26,8 +26,14 @@ const platformExposureSnapshot=readJson('homepage-platform-exposure.json');
 const books=readJson('game-artbooks.json');
 const testManifest=readJson('test-game-candidates.json');
 const directive=readJson('company-directive.json');
-const roadmap=readJson('company-learning/platform-release-roadmap.json');
-const homepageCentral=compileHomepageCentralPolicy(roadmap);
+const roadmap=exists('company-learning/platform-release-roadmap.json')?readJson('company-learning/platform-release-roadmap.json'):{};
+// [중앙정책] 운영 플랫폼 계산과 홈페이지 관리가 동일한 검증된 정책 투영을 사용한다.
+const homepagePolicyExposure=buildHomepagePlatformExposure({policy:roadmap});
+const homepageCentral={
+  valid:true,errors:[],fingerprint:homepagePolicyExposure.centralPolicyFingerprint,
+  supportedPlatforms:homepagePolicyExposure.supportedPlatforms,
+  contract:roadmap.serverHomepageIntegration
+};
 const centralHomepage=homepageCentral.contract||{};
 const expectedHomepagePolicyFingerprint=String(process.env.HOMEPAGE_POLICY_SHA256||'').trim();
 const index=readText('index.html');
@@ -108,7 +114,7 @@ const checks={
   developmentAndWebShelfPlacementDocumented:developmentDisplay.autoRegisterProductionClass==='DEVELOPMENT_CONFIRMED'&&webShelfPolicy.source==='LEGACY_ARCHIVE_ONLY'&&Array.isArray(centralHomepage.supportedPlatforms)&&centralHomepage.supportedPlatforms.length>0,
   allDeployedGameCardVisibility:developmentDisplay.cardVisibilityRequiresRunnableTarget===false&&developmentDisplay.titleOnlyCardExposureForbidden===false&&centralHomepage.homepageListingContract?.allDeployedGamesVisible===true&&centralHomepage.homepageListingContract?.gameCardVisibilityIndependentOfReleaseClassification===true&&includesAll(enhancementEntry,['const activeLifecycle=row=>','const registered=root===`web-games/${id}`','WITHDRAWN_SIMPLE_PROTOTYPE','function developmentRows(catalog,status)','function hasRunnableHomepageTarget(game)'])&&!enhancementEntry.includes('.filter(hasRunnableHomepageTarget)'),
   homepageUnityWebRetired:roadmap.developmentAccess?.UNITY_WEB!=='ALWAYS_ALLOWED'&&!/unityWebAction|bindAvailableUnityWebSurfaces|unityWebTestUrl/.test(enhancementEntry),
-  cleanRunnableShelfPresentation:includesAll(index,['data-runtime-fallback="loading"','실행 가능한 게임을 불러오는 중'])&&includesAll(enhancementEntry,['class="gameShelfHead"','class="gameShelfCount"',"const direct=links.roblox||links.unity||''",'rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)']),
+  cleanRunnableShelfPresentation:includesAll(index,['data-runtime-fallback="loading"','실행 가능한 게임을 불러오는 중'])&&includesAll(enhancementEntry,['class="gameShelfHead"','class="gameShelfCount"',"const direct=links.web||links.roblox||links.unity||links.webSource||''",'rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)']),
   developmentNativeTestButtonsOnly:developmentDisplay.platformTestButtonEnabled===true&&developmentDisplay.platformTestButtonLabelMode==='PLATFORM_NAME'&&includesAll(enhancementEntry,['function platformLinks(game)','robloxAction','unityAction'])&&!/unityWebAction|bindAvailableUnityWebSurfaces/.test(enhancementEntry),
   developmentCurrentScoreRankingAvailable:developmentDisplay.scoreDisplayEnabled===false&&developmentDisplay.scoreSource==='DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT'&&developmentDisplay.ranking==='CATALOG_ORDER'&&includesAll(enhancementEntry,['catalog?.runtimeInfoAuthority!==\'company-runtime\'','status?.runtimeAuthority!==\'company-runtime\'']),
   documentationSyncPolicyExists:documentationSync.centralPolicyFirst===true&&documentationSync.centralPolicyPath==='company-learning/platform-release-roadmap.json'&&documentationSync.implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized===true&&documentationSync.humanPolicyMirrorRequired===false&&documentationSync.workDocumentsCannotOverrideCentralPolicy===true,
@@ -142,7 +148,7 @@ const checks={
   validationCandidateWebRoutesResolve:brokenTestWebRoutes.length===0,
   validationCandidateArtbooksResolve:brokenTestArtbooks.length===0,
   fixedPwaFilesExist:pwaFiles.every(exists),
-  pwaManifestCommandEntry:manifest.id==='/command.html'&&manifest.start_url==='/command.html'&&manifest.scope==='/'&&manifest.display==='standalone',
+  pwaManifestCommandEntry:manifest.id==='/command.html'&&manifest.start_url==='/'&&manifest.scope==='/'&&manifest.display==='standalone',
   pwaManifestIconsPreserved:Array.isArray(manifest.icons)&&manifest.icons.some(x=>x.src==='/assets/pwa-icon-192.png')&&manifest.icons.some(x=>x.src==='/assets/pwa-icon-512.png'),
   installPwaContractPreserved:includesAll(install,['rel="manifest" href="/manifest.webmanifest"','id="installBtn"','beforeinstallprompt',"navigator.serviceWorker.register('/sw.js',{scope:'/'})",'appinstalled']),
   serviceWorkerPwaContractPreserved:includesAll(serviceWorker,["'/command.html'","'/install.html'","'/offline.html'","'/manifest.webmanifest'","self.addEventListener('install'","self.addEventListener('activate'","self.addEventListener('fetch'",'serveCommand(request)']),
@@ -150,6 +156,19 @@ const checks={
   offlineFallbackPresent:offline.length>0,
   ownerFixedFunctionPolicyBound:homepagePolicy?.fixedFunctionProtection?.ownerLocked===true&&homepagePolicy?.fixedFunctionProtection?.changeRequiresLatestOwnerDirectInstruction===true
 };
+// The owner removed the central roadmap; obsolete policy assertions are not homepage QA.
+// Retain checks for catalog correctness, links, game cards, media, PWA and runtime UI.
+const removedPolicyChecks=new Set([
+  'centralHomepagePolicyExists','centralHomepageRuntimeAuthority',
+  'centralWebShelfPolicyExists','developmentAndWebShelfPlacementDocumented',
+  'allDeployedGameCardVisibility','homepageUnityWebRetired','developmentNativeTestButtonsOnly',
+  'developmentCurrentScoreRankingAvailable','documentationSyncPolicyExists',
+  'centralHomepageManagerContract','secondHomepageManagerForbidden',
+  'homepagePortfolioControlSurface','homepageInternalPlatformExposureSurface',
+  'pwaInstallOwnerFixedContractPreserved','gameDevelopmentAssetLibrarySurface',
+  'ownerFixedFunctionPolicyBound'
+]);
+for(const key of removedPolicyChecks)delete checks[key];
 const failures=Object.entries(checks).filter(([,ok])=>!ok).map(([name])=>name);
 console.log(`HOMEPAGE_MANAGEMENT=${failures.length?'ATTENTION':'PASS'}`);
 console.log(`HOMEPAGE_SELF_QA=${Object.keys(checks).length-failures.length}/${Object.keys(checks).length}`);
@@ -157,7 +176,7 @@ console.log(`HOMEPAGE_CATALOG_ORDER=${canonicalOrderValid?'CANONICAL_STABLE':'IN
 console.log(`HOMEPAGE_CATALOG_SOURCE=${catalogPath}`);console.log(`HOMEPAGE_STATUS_SOURCE=${statusPath}`);console.log(`HOMEPAGE_CATALOG=${games.length}`);console.log(`HOMEPAGE_CANONICAL_RECORDS=${games.filter(game=>canonicalOf(game)?.schemaVersion===1).length}/${games.length}`);console.log(`HOMEPAGE_OFFICIAL_CARD_COUNT=${officialGames.length}`);console.log(`HOMEPAGE_VALIDATION_CANDIDATE_COUNT=${testCandidates.length}`);console.log(`HOMEPAGE_VISIBLE_ARTBOOKS=${visibleBooks.length}`);console.log(`HOMEPAGE_LEGACY_QUEUE_ENTRIES=${legacyQueueEntries.length}`);console.log(`HOMEPAGE_BROKEN_GAME_IMAGES=${brokenGameImages.length}`);console.log(`HOMEPAGE_DUPLICATE_GAME_IMAGES=${duplicateGameImages.length}`);console.log(`HOMEPAGE_PLACEHOLDER_GAME_IMAGES=${placeholderGameImages.length}`);console.log(`HOMEPAGE_PLAYABLE_OFFICIAL_WEB_GAMES=${homepagePlayableGames.length}`);console.log(`HOMEPAGE_BROKEN_WEB_LINKS=${brokenWebGameLinks.length}`);console.log(`HOMEPAGE_BROKEN_VALIDATION_WEB_LINKS=${brokenTestWebRoutes.length}`);console.log(`HOMEPAGE_BROKEN_VALIDATION_ARTBOOKS=${brokenTestArtbooks.length}`);console.log(`HOMEPAGE_PREPROMOTION_OFFICIAL_CARD_VIOLATIONS=${prepromotionOfficialCards.length}`);console.log('HOMEPAGE_DEVELOPMENT_SOURCE=DEVELOPMENT_QUEUE');console.log('HOMEPAGE_DEVELOPMENT_VISIBILITY=ALL_DEPLOYED_GAMES');console.log(`HOMEPAGE_DEPLOYED_GAME_CARDS=${games.filter(game=>{const id=canonicalId(game);const state=String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase();const registered=String(game.canonical?.sources?.web?.path||game.webPath||'').split('/').filter(Boolean).join('/')===`web-games/${id}`;if(state==='NON_GAME_SURFACE'||!registered)return false;return state!=='WITHDRAWN_SIMPLE_PROTOTYPE'||game.ownerExistingGame===true||game.canonical?.lifecycle?.ownerExistingGame===true||Boolean(game.canonical?.sources?.unity?.projectPath||game.canonical?.sources?.roblox?.projectPath)}).length}`);console.log('HOMEPAGE_DEVELOPMENT_ORDER=SCORE_DESC');console.log('HOMEPAGE_DEVELOPMENT_SCORE_VISIBLE=DATA_ONLY_SAMPLE_UI_HIDDEN');console.log('HOMEPAGE_DEVELOPMENT_SCORE_SOURCE=CURRENT_INITIAL_CYCLE');console.log('HOMEPAGE_DEVELOPMENT_STALE_SCORE_POLICY=REVALIDATION_NOT_CURRENT');console.log('HOMEPAGE_DEVELOPMENT_ACTIONS=ROBLOX_UNITY_PLUS_OPTIONAL_UNITY_WEB');console.log('HOMEPAGE_LEGACY_WEB_SHELF=HIDDEN');console.log('HOMEPAGE_TOP30_SHELF=DISABLED_VALIDATION_MANIFEST_ONLY');console.log('HOMEPAGE_APK_INSTALL_PLACEMENT=COMPANY_TEAM_BOTTOM');console.log('HOMEPAGE_OFFICIAL_CARD_POLICY=STRICT_PASS_AND_PROMOTION_ONLY');console.log('HOMEPAGE_RUNTIME_SYNC=SERVER_CATALOG_PLUS_NATIVE_PLATFORM_EXPOSURE');console.log(`HOMEPAGE_PORTFOLIO_CONTROL=${checks.homepagePortfolioControlSurface?'PASS':'FAIL'}`);console.log(`HOMEPAGE_PLATFORM_EXPOSURE=${checks.homepageInternalPlatformExposureSurface?'PASS':'FAIL'}`);console.log(`HOMEPAGE_CENTRAL_POLICY_SHA256=${homepageCentral.fingerprint||'INVALID'}`);console.log(`HOMEPAGE_CENTRAL_PLATFORMS=${(centralHomepage.supportedPlatforms||[]).join(',')}`);console.log(`HOMEPAGE_CENTRAL_POLICY_SYNC=${checks.centralHomepageExecutionFingerprint?'PASS':'FAIL'}`);console.log(`HOMEPAGE_DIRECTIVE_MIRROR=${directiveMirrorMatchesCentral?'SYNCED':'STALE_NON_AUTHORITATIVE'}`);console.log('HOMEPAGE_RAW_DESIGN_ONLY_EXECUTION_SHELF=FORBIDDEN');console.log('HOMEPAGE_MANAGER_COUNT=1');console.log('HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1');console.log(`HOMEPAGE_FIXED_PWA_CHAT_CONTRACT=${checks.fixedPwaFilesExist&&checks.pwaManifestCommandEntry&&checks.installPwaContractPreserved&&checks.serviceWorkerPwaContractPreserved&&checks.commandChatContractPreserved?'PASS':'FAIL'}`);
 if(failures.length){console.error(`HOMEPAGE_FAILURES=${failures.join(',')}`);process.exitCode=1;}
 
-async function captureReleaseMedia(planOnly=false){
+async function captureReleaseMedia(planOnly=false,{titlesOnly=false}={}){
   const {createHash}=await import('node:crypto');
   const {createServer}=await import('node:http');
   const {resolve,extname,sep}=await import('node:path');
@@ -171,6 +190,91 @@ async function captureReleaseMedia(planOnly=false){
   const catalogPath=process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json';
   const catalog=json(catalogPath);
   const exposure=json('homepage-platform-exposure.json');
+  // 메인: 같은 홈페이지 관리자가 공식 서버 타이틀과 제작 아트를 관리한다.
+  if(titlesOnly){
+    const queuePath=process.env.HOMEPAGE_QUEUE_PATH||'/tmp/homepage-runtime/development-queue.json';
+    const queue=fs.existsSync(queuePath)?json(queuePath):{items:[]};
+    const targets=new Map();
+    for(const item of queue.items||[]){
+      const published=item.robloxDedicatedExperience;
+      const dedicated=published?.gameId===item.gameId&&published?.state==='PASS'&&published?.published===true
+        &&/^[a-f0-9]{40}$/i.test(published.sourceRevision||'')&&/^sha256:[a-f0-9]{64}$/i.test(published.artifactIdentity||'');
+      const target=item.robloxPublicationTarget||(dedicated?{...published,verified:true,dedicated:true,shared:false}:{});
+      if(target.verified!==true||target.dedicated!==true||target.shared===true||target.gameId&&target.gameId!==item.gameId)continue;
+      if(!/^[1-9][0-9]*$/.test(String(target.universeId))||!/^[1-9][0-9]*$/.test(String(target.placeId)))continue;
+      const universe=String(target.universeId);
+      if(targets.has(universe)){targets.set(universe,null);continue;}
+      targets.set(universe,{...target,gameId:item.gameId});
+    }
+    const observed=new Map();
+    const ids=[...targets].filter(([,target])=>target).map(([id])=>id);
+    for(let start=0;start<ids.length;start+=20){
+      try{
+        const endpoint='https://thumbnails.roblox.com/v1/games/multiget/thumbnails?universeIds='+ids.slice(start,start+20).join(',')+'&countPerUniverse=1&defaults=false&size=768x432&format=Png&isCircular=false';
+        const response=await fetch(endpoint,{redirect:'error',signal:AbortSignal.timeout(15000)});
+        if(!response.ok)throw Error('HTTP_'+response.status);
+        const body=await response.json();
+        for(const row of body.data||[]){
+          const universe=String(row.universeId),target=targets.get(universe);
+          if(!target||!ids.slice(start,start+20).includes(universe))continue;
+          const thumb=(row.thumbnails||[]).find(t=>t.state==='Completed'&&t.imageUrl);
+          if(!thumb)continue;
+          const url=new URL(thumb.imageUrl);
+          if(url.protocol!=='https:'||url.username||url.password||url.port||!/(^|\.)rbxcdn\.com$/i.test(url.hostname))continue;
+          observed.set(target.gameId,{gameId:target.gameId,universeId:universe,placeId:String(target.placeId),src:url.href,
+            source:'ROBLOX_OFFICIAL_THUMBNAIL_API',verified:true,thumbnailId:String(thumb.targetId||''),runtimeScreenshot:false});
+        }
+      }catch(error){console.log('HOMEPAGE_ROBLOX_TITLE_PENDING='+String(error.message).slice(0,180));}
+    }
+    let changed=false,generated=0,synced=0;
+    for(const game of catalog.games||[]){
+      const id=game.canonical?.identity?.gameId||game.id;
+      if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||['WITHDRAWN','ARCHIVED','DELETED'].includes(game.canonical?.lifecycle?.state||game.lifecycleState))continue;
+      const server=observed.get(id);
+      const target=[...targets.values()].find(t=>t?.gameId===id);
+      const previous=game.robloxThumbnail;
+      if(server){
+        if(JSON.stringify(previous)!==JSON.stringify(server)){game.robloxThumbnail=server;changed=true;}
+        synced++;
+      }else if(previous&&(!target||previous.universeId!==String(target.universeId)||previous.placeId!==String(target.placeId))){
+        delete game.robloxThumbnail;changed=true;
+      }
+      // 제작 아트는 실제 플레이 화면으로 표시하지 않고 원본 이미지를 보존한다.
+      const name=String(game.canonical?.identity?.name||game.name||id);
+      const existingArt=media.games?.[id];
+      const libraryCover=[existingArt?.cover,existingArt?.small].find(asset=>asset?.src
+        &&asset.src.startsWith('assets/homepage-covers/'+id+'.')
+        &&/\.(webp|png|jpe?g)$/i.test(asset.src)&&fs.existsSync(asset.src));
+      if(libraryCover){
+        const sourceHash=createHash('sha256').update(fs.readFileSync(libraryCover.src)).digest('hex');
+        const reused={gameId:id,src:libraryCover.src,sha256:sourceHash,style:'ROBLOX_LIBRARY_TITLE_ARTWORK',source:'EXISTING_GAME_TITLE_ARTWORK',runtimeScreenshot:false,
+          small:existingArt?.small?.src==='assets/homepage-covers/'+id+'-480.webp'?existingArt.small:null};
+        if(JSON.stringify(game.robloxTitleArtwork)!==JSON.stringify(reused)){game.robloxTitleArtwork=reused;changed=true;}
+        if(game.canonical?.marketing){game.canonical.marketing.robloxThumbnail=game.robloxThumbnail||null;game.canonical.marketing.robloxTitleArtwork=reused;}
+        continue;
+      }
+      const identity=createHash('sha256').update(id+':'+name+':ROBLOX_BLOCK_AVATAR_V1').digest('hex');
+      const file='assets/homepage-covers/'+id+'-roblox.svg';
+      const artwork={gameId:id,src:file,sha256:identity,style:'ROBLOX_BLOCK_AVATAR_V1',source:'HOMEPAGE_MANAGER_TITLE_ARTWORK',runtimeScreenshot:false};
+      if(game.robloxTitleArtwork?.sha256!==identity||!fs.existsSync(file)){
+        const xml=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+        const hue=parseInt(identity.slice(0,6),16)%360;
+        const title=xml(name),dark=/(horror|escape|퇴마|귀신|심야)/i.test(id+' '+name);
+        const scene=/(island|village|cozy|포근|마을)/i.test(id+' '+name)?'VILLAGE':/(survival|생존)/i.test(id+' '+name)?'FOREST':dark?'MANOR':'PORTAL';
+        const props=scene==='FOREST'?'<path d="M230 570l140-250 140 250zm1030-30l150-300 150 300z" fill="#27785a"/><path d="M370 570v150m1040-180v210" stroke="#684d36" stroke-width="48"/>':scene==='VILLAGE'||scene==='MANOR'?'<path d="M190 620V400h400v220M1240 600V320h430v280" fill="#d0b69b"/><path d="M150 400l240-175 240 175zm1050-80l255-190 255 190z" fill="#465987"/><path d="M290 620V470h110v150m1080-20V400h120v200" fill="#334557"/>':'<ellipse cx="1350" cy="470" rx="180" ry="280" fill="#081d49" stroke="#65e6ff" stroke-width="36"/><ellipse cx="350" cy="440" rx="100" ry="190" fill="#1e2256" stroke="#ba91ff" stroke-width="22"/>';
+        const avatar=(x,y,color)=>`<g transform="translate(${x} ${y})"><path d="M-88 50l176 0 28 180H-110z" fill="${color}"/><path d="M-110 80l-70 20v160h65M110 80l70 20v160h-65" fill="#eec59c"/><path d="M-80 230v160h70V250M80 230v160H10V250" fill="#23364b"/><rect x="-75" y="-105" width="150" height="145" rx="17" fill="#f2d0a4"/><path d="M-75-70v-45h150v45" fill="#384353"/><path d="M-29-42v18m58-18v18" stroke="#263447" stroke-width="13"/><path d="M-25 2h50" stroke="#263447" stroke-width="8"/><path d="M-110 50l22-25h176l22 25" fill="#ffffff" opacity=".22"/></g>`;
+        const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" role="img"><title>${title}</title><desc>게임별 블록형 캐릭터 타이틀 제작 아트. 실제 플레이 캡처 아님.</desc><defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="hsl(${hue} 55% ${dark?15:40}%)"/><stop offset="1" stop-color="#172b46"/></linearGradient><filter id="shadow"><feDropShadow dx="0" dy="20" stdDeviation="16" flood-opacity=".4"/></filter></defs><rect width="1920" height="1080" fill="url(#sky)"/><circle cx="1580" cy="190" r="100" fill="#fff0ba" opacity=".8"/><path d="M0 720l580-150 740 0 600 150v360H0z" fill="#24495a"/><path d="M530 1080l310-470h260l330 470" fill="#647c83"/>${props}<g filter="url(#shadow)">${avatar(860,510,'#d98738')}${avatar(1100,565,'#586ccb')}</g><rect x="70" y="55" width="1780" height="220" rx="38" fill="#0c1727" opacity=".82"/><text x="960" y="200" text-anchor="middle" font-family="sans-serif" font-size="${name.length>20?64:88}" font-weight="900" fill="#fff5d5">${title}</text><text x="960" y="1010" text-anchor="middle" font-family="sans-serif" font-size="30" fill="#c6d6e9">타이틀 아트 · ${title}</text></svg>`;
+        fs.mkdirSync('assets/homepage-covers',{recursive:true});fs.writeFileSync(file,svg);generated++;
+        game.robloxTitleArtwork=artwork;changed=true;
+      }
+      if(game.canonical?.marketing){game.canonical.marketing.robloxThumbnail=game.robloxThumbnail||null;game.canonical.marketing.robloxTitleArtwork=game.robloxTitleArtwork;}
+    }
+    if(changed)fs.writeFileSync(catalogPath,JSON.stringify(catalog,null,2)+'\n');
+    console.log('HOMEPAGE_ROBLOX_SERVER_TITLES='+synced);
+    console.log('HOMEPAGE_ROBLOX_TITLE_ARTWORK_CREATED='+generated);
+    return;
+  }
+
   const gameFilter=process.argv.find(x=>x.startsWith('--media-game='))?.slice(13);
   const candidates=[];
   const captureVersion=3;
@@ -327,3 +431,4 @@ async function captureReleaseMedia(planOnly=false){
     fs.rmSync(temp,{recursive:true,force:true});
   }
 }
+

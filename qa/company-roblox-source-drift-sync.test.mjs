@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {runInNewContext} from 'node:vm';
 import {
   activeRobloxDevelopmentItem,
   reconcileChangedRobloxItems,
@@ -9,6 +10,46 @@ import {
   restoreMetadataOnlyRobloxInvalidation,
   restartRobloxFromF0
 } from '../tools/company-roblox-source-drift-sync.mjs';
+
+test('exact published F0 candidate resumes existing runtime QA without crossing game or security boundaries',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const step=workflow.split('      - name: Dispatch Roblox HEADLESS FAST_MVP continuation')[1];
+  const code=step.match(/state="\$\(node --input-type=module <<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^\s*import .*;\n/gm,'');
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const row={gameId:'daechung-rpg',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:{pass:true,sourceRevision:revision,artifactIdentity:artifact},robloxRuntimeCandidateEvidence:{published:true,sourceRevision:revision,artifactIdentity:artifact,versionNumber:38,placeId:'1',universeId:'2'},robloxRuntimePassed:false};
+  const invoke=(patch={},requested='daechung-rpg',developmentEligible=true)=>{
+    const written={};
+    runInNewContext(code,{fs:{readFileSync:file=>JSON.stringify(file.includes('dispatch-queue')?{items:[{...row,...patch},{...row,gameId:'other-game'}]}:{developmentAccess:{ROBLOX:'ALWAYS_ALLOWED'}}),writeFileSync:(file,data)=>{written[file]=data;}},process:{env:{REQUESTED_GAME_ID:requested,ROBLOX_RUNTIME_HARNESS_VERSION:'8'},stdout:{write(){}}},ownerFocusedSecondaryPlatformEligible:()=>false,platformDevelopmentEligible:()=>developmentEligible});
+    return written['/tmp/roblox-runtime-qa-ready-ids'];
+  };
+  assert.equal(invoke(),'daechung-rpg\n');
+  assert.equal(invoke({robloxInternalReleaseReady:true},'daechung-rpg',false),'daechung-rpg\n');
+  assert.equal(invoke({robloxInternalReleaseReady:true,robloxFoundationF0Passed:false},'daechung-rpg',false),'');
+  assert.equal(invoke({},''),'daechung-rpg\nother-game\n');
+  for(const patch of [{robloxFoundationF0Passed:false},{robloxFoundationF0Evidence:{...row.robloxFoundationF0Evidence,pass:false}},{robloxFoundationF0Evidence:{...row.robloxFoundationF0Evidence,sourceRevision:'c'.repeat(40)}},{robloxRuntimeCandidateEvidence:{...row.robloxRuntimeCandidateEvidence,published:false}},{robloxRuntimeCandidateEvidence:{...row.robloxRuntimeCandidateEvidence,artifactIdentity:'sha256:'+'c'.repeat(64)}},{robloxRuntimeSecurityHold:true},{robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision},{robloxRuntimePassed:true,robloxRuntimeHarnessVersion:'8'}])assert.equal(invoke(patch),'');
+  assert.match(step,/gh workflow run company-development-roblox-post-runtime-qa\.yml/);
+  assert.match(step,/ROBLOX_RUNTIME_FOUNDATION_QA_DISPATCH=DEDUPED_ACTIVE/);
+});
+
+// 무효 실행: 소스 계획이 정상 종료됐어도 후속 작업은 생성하지 않는다.
+test('superseded and duplicate source plans cannot schedule downstream package work',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/accepted: \$\{\{ steps\.freshness\.outputs\.run \|\| 'false' \}\}/);
+  const condition=job=>workflow.split('  '+job+':')[1].split('    if: ')[1].split('\n')[0];
+  const evaluate=(job,{accepted='false',count='0',reconciliation_count='0',result='success'}={})=>{
+    const code=condition(job).replaceAll('needs.source-plan','needs.sourcePlan');
+    return runInNewContext(code,{always:()=>true,needs:{sourcePlan:{result,outputs:{accepted,count,reconciliation_count}}}});
+  };
+  for(const accepted of ['false','',undefined]){
+    assert.equal(evaluate('technical-plan',{accepted,count:'1'}),false);
+    assert.equal(evaluate('source-bootstrap',{accepted,count:'1',reconciliation_count:'1'}),false);
+  }
+  assert.equal(evaluate('technical-plan',{accepted:'true'}),true);
+  assert.equal(evaluate('technical-plan',{accepted:'true',result:'failure'}),false);
+  assert.equal(evaluate('source-bootstrap',{accepted:'true'}),false);
+  assert.equal(evaluate('source-bootstrap',{accepted:'true',count:'1'}),true);
+  assert.equal(evaluate('source-bootstrap',{accepted:'true',reconciliation_count:'1'}),true);
+});
 
 function item(){
   return {
@@ -136,6 +177,7 @@ test('changed-source workflow binds homepage sync dependencies from main',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
   assert.match(workflow,/company-shared-context\.mjs/);
   assert.match(workflow,/company-learning\/platform-release-roadmap\.json/);
+  assert.equal(workflow.split('node company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json company-learning/platform-release-roadmap.json').length-1,2);
 });
 
 
@@ -149,7 +191,7 @@ test('single changed Roblox game redispatches exact runtime game id',()=>{
 
 test('source drift sync has a dedicated non-starving concurrency lane',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
-  assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-runtime-writer-v2\s*\n\s*cancel-in-progress: false/);
+  assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-runtime-writer-v2\s*\n\s*queue: max\s*\n\s*cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
   assert.match(workflow,/for i in 1 2 3 4 5; do[\s\S]*git push origin HEAD:"\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(workflow,/regenerate_runtime_state/);
@@ -365,15 +407,14 @@ test('source-sync contract edits wake runtime control while game edits use exact
 });
 
 
-test('stale exact-game cleanup never cancels in-progress Roblox work',()=>{
+test('batch cannot cancel queued exact games for unrelated commit changes',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  const start=runtime.indexOf('      - name: Cancel stale exact-game runtime runs after contract change');
-  const end=runtime.indexOf('      - name: Bind Roblox source-plan contract fingerprint',start);
-  const block=runtime.slice(start,end);
-  assert.ok(start>=0&&end>start);
-  assert.match(block,/const states=new Set\(\['queued','pending','requested'\]\)/);
-  assert.doesNotMatch(block,/const states=new Set\(\[[^\]]*in_progress/);
-  assert.match(block,/ROBLOX_STALE_EXACT_RUNTIME_CANCEL_COUNT=/);
+  const sourcePlan=runtime.slice(runtime.indexOf('\n  source-plan:\n'),runtime.indexOf('\n  source-worker:\n'));
+  assert.doesNotMatch(sourcePlan,/actions\/runs\/\$run_id\/cancel/);
+  assert.match(sourcePlan,/ROBLOX_QUEUED_EXACT_CONTRACT_SELF_VALIDATION=YES/);
+  assert.match(sourcePlan,/git diff --quiet "\$GITHUB_SHA" "\$current_main" -- "\$\{contract_paths\[@\]\}"/);
+  assert.match(sourcePlan,/ROBLOX_BATCH_UNRELATED_MAIN_ADVANCE_ACCEPTED=/);
+  assert.match(sourcePlan,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
 });
 
 test('exact Roblox runs deduplicate before work without cancelling an active build',()=>{
@@ -381,7 +422,7 @@ test('exact Roblox runs deduplicate before work without cancelling an active bui
   assert.doesNotMatch(runtime.slice(0,runtime.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   const sourcePlan=runtime.slice(runtime.indexOf('\n  source-plan:\n'),runtime.indexOf('\n  source-worker:\n'));
   assert.match(sourcePlan,/concurrency:\n\s+group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
-  const freshness=runtime.slice(runtime.indexOf('      - name: Reject superseded batch scheduler'),runtime.indexOf('      - name: Cancel stale exact-game runtime runs'));
+  const freshness=runtime.slice(runtime.indexOf('      - name: Reject superseded batch scheduler'),runtime.indexOf('      - name: Bind Roblox source-plan contract fingerprint'));
   assert.match(freshness,/String\(r\.display_title\|\|''\)===title/);
   assert.match(sourcePlan,/cancel-in-progress: false/);
   assert.doesNotMatch(sourcePlan,/cancel-in-progress: true/);
@@ -389,4 +430,14 @@ test('exact Roblox runs deduplicate before work without cancelling an active bui
   assert.match(freshness,/String\(r\.head_sha\|\|''\)===currentSha/);
   assert.match(freshness,/echo 'run=false' >> "\$GITHUB_OUTPUT"/);
   assert.match(freshness,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
+});
+
+// 병합 복구 이벤트를 보존하고 이벤트별 대기열을 분리한다.
+test('Roblox source sync preserves both triggers without pending cross-cancellation',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.ok(workflow.includes('  push:\n    branches: [main]'));
+  assert.ok(workflow.includes('  pull_request:\n    branches: [main]\n    types: [closed]'));
+  assert.ok(workflow.includes('  workflow_dispatch:'));
+  assert.ok(workflow.includes('group: roblox-source-drift-runtime-writer-v2\n  queue: max\n  cancel-in-progress: false'));
+  assert.ok(workflow.includes('cancel-in-progress: false'));
 });

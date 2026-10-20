@@ -48,15 +48,15 @@ local STUDIO_ASSET_FAMILY_STATUS = {
   CHARACTER = "NOT_APPLICABLE",
   CREATURE = "NOT_APPLICABLE",
   BUILDING = "NOT_APPLICABLE",
-  ENVIRONMENT = "APPLIED",
+  ENVIRONMENT = "NOT_APPLICABLE",
   WEAPON = "NOT_APPLICABLE",
   SKILL = "NOT_APPLICABLE",
   MATERIAL = "APPLIED",
   AUDIO = "NOT_APPLICABLE",
   VFX = "NOT_APPLICABLE",
   UI = "APPLIED",
-  MOTION = "APPLIED",
-  PROP = "APPLIED",
+  MOTION = "NOT_APPLICABLE",
+  PROP = "NOT_APPLICABLE",
 }
 -- STUDIO_ASSET_BINDING_CLIENT_END
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
@@ -345,6 +345,14 @@ local function render()
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
+
+remote.OnClientEvent:Connect(function(eventName, snapshot)
+  if eventName ~= "MULTIPLAYER_SYNC" or typeof(snapshot) ~= "table" then return end
+  if typeof(snapshot.SharedObjective) ~= "table" then return end
+  gui:SetAttribute("CoopParticipantCount", math.max(0, tonumber(snapshot.ParticipantCount) or 0))
+  gui:SetAttribute("CoopSharedProgress", math.max(0, tonumber(snapshot.SharedObjective.Progress) or 0))
+  render()
+end)
 
 if #Config.Actions > 0 then
   ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)

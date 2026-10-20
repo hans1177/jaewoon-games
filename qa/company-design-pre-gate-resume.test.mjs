@@ -715,7 +715,9 @@ test('role-grounded asset selection beats an unrelated higher score without gran
   assert.equal(unknown.nextActions[0].action,'HOLD');
   assert.equal(unknown.nextActions[0].reason,'ROLE_REQUIREMENT_UNRESOLVED');
   const missing=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION',role:'RUN'}],registry});
-  assert.equal(missing.nextActions[0].action,'AUTHOR');
+  assert.equal(missing.nextActions[0].action,'HOLD','without a verified matching existing asset, automatic authoring is forbidden');
+  assert.equal(missing.nextActions[0].reason,'NO_VERIFIED_EXISTING_ASSET_TO_APPLY');
+  assert.equal(missing.runtimeVerificationGranted,false);
   const current=buildAssetSupplyDecisionSummary({gameId:'g',target:'ROBLOX',requirements:[{family:'MOTION'}],registry:{assets:[{...registry.assets[0],consumerGameIds:['g']} ]}});
   assert.equal(current.nextActions[0].assetId,'bed','existing consumers remain reusable and quality work is not globally stopped');
 });
@@ -780,9 +782,6 @@ test('placeholder feedback keeps audit evidence while retries receive paths and 
 });
 
 test('historical three-platform checkpoint migration stays SHA-bound while only Roblox is active',()=>{
-  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX']);
-  assert.deepEqual(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
   const snippet=design.slice(design.indexOf('const checkpointThreePlatformPolicyMigrationEligible='),design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='));
   const prior='0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade',oldEngine='dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4';
   const context={contractVersion:4,gameId:'cozy-island',date:'2026-10-08',seed:{seedId:'original'},evidence:{source:'unchanged'},policyDigest:'current',engineDigest:'current'};
@@ -1072,7 +1071,7 @@ test('model-authored basic coding specification remains non-authoritative until 
 
 test('missing role IDs cannot be silently treated as validated source rules',()=>{
   const start=design.indexOf('const originalRoles=');
-  const end=design.indexOf('const rulePlan=originalRoles?',start);
+  const end=design.indexOf('const rulePlan=originalRoles',start);
   assert.ok(start>0&&end>start);
   const source=design.slice(start,end);
   assert.match(source,/row\.id&&Array\.isArray\(row\.stateInputs\)/);
@@ -1120,7 +1119,7 @@ test('authored MAIN A B C delve grammar is carried into downstream checkpoint an
   assert.ok(writer.length>1000,'canonical design authoring function must exist');
   assert.match(writer,/const priorRules=Object\.fromEntries\(\['identity','creativeGrammar','coreFun'/);
   assert.match(writer,/const dependencyHash=createHash\('sha256'\)\.update\(JSON\.stringify\(priorRules\)\)/);
-  for(const marker of ['mainIdentity:value.mainIdentity','abEvolution:value.abEvolution','cThemes:value.cThemes','cGenres:value.cGenres','cGenreInterlock:value.cGenreInterlock','delveGrowthRule:value.delveGrowthRule']){
+  for(const marker of ['mainIdentity:value.mainIdentity','abEvolution:value.abEvolution','dCreations:value.dCreations','cGenres:value.cGenres','cGenreInterlock:value.cGenreInterlock','delveGrowthRule:value.delveGrowthRule']){
     assert.ok(writer.includes(marker),'missing authored grammar handoff: '+marker);
   }
   assert.ok(writer.includes('SHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}'));
@@ -1246,7 +1245,7 @@ test('native design repairs only failing fields and requires scored improvement 
 // 회귀검증: 기본 설계 원본의 형식만 채워진 규칙을 실제 상태 그래프 없이 재사용하지 않는다.
 test('native design authoring reuses only validated original grammar and causal role graph',()=>{
   const start=design.indexOf('function computeVibeNativeDesign(){');
-  const end=design.indexOf('  const rulePlan=originalRoles?',start);
+  const end=design.indexOf('  const rulePlan=originalRoles',start);
   assert.ok(start>=0&&end>start);
   const originalChoice=design.slice(start,end);
   assert.match(originalChoice,/validateDesignAuthoringContent\(\{design:\{creativeGrammar:original\.creativeGrammar\}/);
@@ -1502,4 +1501,30 @@ test('forty-five independently authored games do not fail runtime persistence af
   assert.match(workflow,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
   assert.match(workflow,/group: company-seed-design-game-\$\{\{ matrix\.target\.game_id \}\}/);
   assert.match(workflow,/fail-fast: false/);
+});
+
+
+test('design library handoff keeps newly authored asset replacement target gated by runtime QA',()=>{
+ const source=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+ assert.match(source,/replacesCandidateAssetId,automaticReplacementAuthorized,independentNativeRuntimeQaRequired/);
+ assert.match(source,/replacesCandidateAssetId\?\{replacesCandidateAssetId,automaticReplacementAuthorized:false,independentNativeRuntimeQaRequired:true\}/);
+});
+
+// 상세 설계 후보는 기존 제작 경로에 전달하지만 실제 게임 적용·네이티브 QA를 대신하지 않는다.
+test('detailed design asset handoff reaches canonical production plan without granting application',()=>{
+  const designSource=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+  const directiveSource=fs.readFileSync('tools/company-build-up-directive.mjs','utf8');
+  const productionSource=fs.readFileSync('tools/vibe2-asset-production-plan.mjs','utf8');
+  const workerSource=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.ok(designSource.includes('const detailedAssetLibraryHandoff={'));
+  assert.ok(designSource.includes('registrySha256:designAssetLibraryContext.sha256'));
+  assert.ok(designSource.includes('  detailedAssetLibraryHandoff,'));
+  assert.ok(directiveSource.includes('detailedAssetLibraryHandoff:asObject(record?.detailedAssetLibraryHandoff'));
+  assert.ok(directiveSource.includes('detailedAssetLibraryHandoff:design.detailedAssetLibraryHandoff'));
+  assert.ok(productionSource.includes('detailedAssetHandoff=verifiedDesign?.detailedAssetLibraryHandoff'));
+  assert.ok(productionSource.includes('    detailedAssetCandidateReview,'));
+  assert.ok(workerSource.includes('detailedReview=order?.assetProduction?.detailedAssetCandidateReview'));
+  assert.ok(workerSource.includes('Source metadata alone never counts as APPLIED'));
+  assert.ok(productionSource.includes('automaticReplacementAuthorized:false'));
+  assert.ok(productionSource.includes('sourceBindingVerified:false,runtimeVerified:false'));
 });

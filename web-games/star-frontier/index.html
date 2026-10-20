@@ -245,11 +245,17 @@ function spawnSector(){
  const s=currentSector();
  const count=38+state.sector*10;
  for(let i=0;i<count;i++){
+  // 같은 난수 씨앗을 무한 반복하지 않도록 금지 영역에서만 다음 결정적 위치를 선택한다.
   let x,y;
-  do{
-   x=180+seeded(i+state.sector*300+10)*(WORLD.w-360);
-   y=180+seeded(i+state.sector*400+90)*(WORLD.h-360);
-  }while(dist(x,y,state.station.x,state.station.y)<380||dist(x,y,state.gate.x,state.gate.y)<220);
+  for(let attempt=0;attempt<64;attempt++){
+   const salt=attempt*977;
+   x=180+seeded(i+state.sector*300+10+salt)*(WORLD.w-360);
+   y=180+seeded(i+state.sector*400+90+salt)*(WORLD.h-360);
+   if(dist(x,y,state.station.x,state.station.y)>=380&&dist(x,y,state.gate.x,state.gate.y)>=220)break;
+  }
+  if(dist(x,y,state.station.x,state.station.y)<380||dist(x,y,state.gate.x,state.gate.y)<220){
+   x=180+((i*173)%(WORLD.w-360));y=180;
+  }
   const r=18+seeded(i+129)*28;
   const hp=65+r*2.2;
   state.asteroids.push({

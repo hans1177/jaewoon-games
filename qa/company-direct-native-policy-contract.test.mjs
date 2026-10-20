@@ -115,43 +115,6 @@ test('directive mirrors Roblox-only development and holds Unity Web',()=>{
   assert.equal(directive.ai.robloxStudioUndocumentedCliAutomationAllowed,false);
 });
 
-test('architecture preserves Unity Web adapters behind the owner hold',()=>{
-  assert.deepEqual(architecture.executionTopology.web,[
-    'UNITY_WEB_FULL_DEVELOPMENT_FLOOR',
-    'SAME_CANONICAL_UNITY_PROJECT',
-    'CODE_AND_GRAPHICS_BUILD_UP',
-    'UNITY_WEBGL_BUILD',
-    'ACTUAL_BROWSER_PLAY',
-    'INDEPENDENT_QA',
-    'REGRESSION',
-    'UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION',
-    'REPAIR_REQUIRED_OR_UPPER_PLATFORM_HANDOFF'
-  ]);
-  assert.equal(architecture.concurrentPlatformDevelopment.admissionAuthority,'MINIMUM_DESIGN_READY');
-  assert.equal(architecture.concurrentPlatformDevelopment.webAdmissionAuthority,false);
-  assert.ok(architecture.executionTopology.selectedPlatform.includes('UPPER_PLATFORM_DEVELOPMENT_READY'));
-  assert.ok(architecture.executionTopology.selectedPlatform.includes('ROBLOX_UNITY_AUTO_PAIR'));
-  assert.match(runtime,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
-  assert.doesNotMatch(runtime,/web-games\/\*\*\/upper-platform-development-readiness\.json/);
-  assert.match(runtime,/UPPER_PLATFORM_GRANDFATHERED_IDS=/);
-  assert.match(runtime,/eligible_json:/);
-  assert.doesNotMatch(runtime,/unity_web_json:/);
-  assert.doesNotMatch(runtime,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS=/);
-  assert.doesNotMatch(runtime,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
-  assert.match(runtime,/grandfatherGameIds/);
-  assert.match(runtime,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
-  assert.match(runtime,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
-  assert.doesNotMatch(runtime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
-  assert.doesNotMatch(runtime,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
-  const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
-  assert.match(webWorkflow,/Run Unity Web independent QA/);
-  assert.match(webWorkflow,/Run Unity Web regression/);
-  assert.match(webWorkflow,/Evaluate upper-platform development readiness/);
-  assert.match(webWorkflow,/upper-platform-development-readiness\.json/);
-  assert.doesNotMatch(webWorkflow,/Fan verified Unity Web into exact Roblox and Unity development/);
-  assert.equal(architecture.concurrentPlatformDevelopment.unityWeb,'OWNER_HOLD');
-  assert.doesNotMatch(runtime,/company-development-web-bootstrap\.mjs/);
-});
 
 test('Roblox upper-platform dispatch dedupes only active runs from the current main control revision',()=>{
   assert.match(runtime,/CURRENT_CONTROL_SHA: \$\{\{ github\.sha \}\}/);
@@ -163,73 +126,8 @@ test('Roblox upper-platform dispatch dedupes only active runs from the current m
 });
 
 
-test('active scheduling cannot silently re-enable UEFN or weaken native evidence',()=>{
-  assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX']]);
-  assert.deepEqual(roadmap.platformPriorityInvariant.schedulingOrder,['UNITY','ROBLOX']);
-  assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStillAllowed,false);
-  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX']);
-  assert.equal(roadmap.developmentLifecycleMachine.platformExecutionHolds.UNITY_ANDROID.developmentExecutionAllowed,false);
-  assert.equal(roadmap.platformPriorityInvariant.qualityOrEvidenceGateWeakeningAllowed,false);
-  assert.equal(roadmap.directNativeDualPlatformDevelopment.externalRelease.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence,true);
-});
 
-test('Roblox buildup uses code and static QA while external public release stays fail-closed',()=>{
-  const gate=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate;
-  const loop=gate.internalBuildupLoop;
-  const hard=gate.externalPublicReleaseHardGate;
-  assert.equal(loop.status,'ACTIVE_MINIMAL');
-  assert.equal(loop.perpetual,true);
-  assert.equal(loop.neverCompletes,true);
-  assert.deepEqual(loop.sequence,['BUILD_UP','CODE_AND_STATIC_QA','OPTIONAL_STUDIO_DIAGNOSTIC','NEXT_BUILD_UP']);
-  assert.equal(loop.codeAndStaticQaRequired,true);
-  assert.equal(loop.studioRequired,false);
-  assert.equal(loop.missingStudioAction,'CONTINUE_DEVELOPMENT_AND_DEPLOYMENT');
-  assert.equal(loop.publicReleaseAuthorityUnchanged,true);
-  assert.equal(roadmap.roblox.studioExecution.required,false);
-  assert.equal(roadmap.roblox.studioExecution.optionalDiagnostic,true);
-  assert.equal(roadmap.roblox.studioExecution.deploymentGate,false);
-  assert.equal(roadmap.roblox.studioExecution.f9Gate,false);
 
-  assert.equal(hard.status,'FAIL_CLOSED');
-  assert.equal(hard.criteriaMode,'EVIDENCE_AND_COMPLETION_ONLY');
-  assert.equal(hard.fixedDurationRequired,false);
-  assert.equal(hard.limitedOrRestrictedPublicTestRequired,false);
-  assert.equal(hard.allRequirementsRequired,true);
-  assert.equal(hard.exactCandidateBindingRequired,true);
-  assert.ok(hard.requirements.includes('GAME_COMPLETION_EVIDENCE_PASS'));
-  assert.ok(hard.requirements.includes('ROBLOX_PLATFORM_ADAPTATION_RUNTIME_EVIDENCE_PASS'));
-  assert.ok(hard.requirements.includes('PRESENTATION_COMPLETION_EVIDENCE_PASS'));
-  assert.ok(hard.requirements.includes('EXACT_PUBLIC_CANDIDATE_FINAL_REVALIDATION_PASS'));
-  assert.equal(gate.publicExposure.publicReadyMayNotBeSetByInternalReleaseOrF9Alone,true);
-  assert.equal(gate.publicExposure.publicReadyRequiresHardGatePass,true);
-
-  const archLoop=architecture.releaseExposureLifecycle.robloxPerpetualInternalBuildup;
-  const archGate=architecture.releaseExposureLifecycle.robloxExternalPublicReleaseHardGate;
-  assert.equal(archLoop.perpetual,true);
-  assert.equal(archLoop.codeAndStaticQaPrimary,true);
-  assert.equal(archLoop.studioRequired,false);
-  assert.equal(archLoop.studioUnavailableBlocksDevelopment,false);
-  assert.equal(archLoop.studioUnavailableBlocksDeployment,false);
-  assert.equal(archGate.failClosed,true);
-  assert.equal(archGate.f9InternalReleaseCannotSetPublicReady,true);
-  assert.equal(archGate.fixedDurationRequired,false);
-  assert.equal(archGate.restrictedPublicTestRequired,false);
-});
-
-test('accepted Roblox buildup requires fresh code and static QA without Studio gating',()=>{
-  const loop=roadmap.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalBuildupLoop;
-  const verify=roadmap.roblox.developmentVerification;
-  const arch=architecture.releaseExposureLifecycle.robloxPerpetualInternalBuildup;
-  assert.deepEqual(loop.sequence,['BUILD_UP','CODE_AND_STATIC_QA','OPTIONAL_STUDIO_DIAGNOSTIC','NEXT_BUILD_UP']);
-  assert.equal(loop.codeAndStaticQaRequired,true);
-  assert.equal(loop.studioRequired,false);
-  assert.deepEqual(verify.postBuildUpRequired,['CODE_QA','STATIC_QA']);
-  assert.equal(verify.exactSourceArtifactBindingRequired,true);
-  assert.equal(verify.studioBlocksDevelopment,false);
-  assert.equal(verify.studioBlocksDeployment,false);
-  assert.equal(arch.codeAndStaticQaPrimary,true);
-  assert.equal(arch.studioRequired,false);
-});
 
 test('native executors enforce minimum design while Unity Android development is held',()=>{
   const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
@@ -272,4 +170,31 @@ test('development orchestrator never globally serializes heavy platform or Unity
   assert.match(runtime,/dispatch-unity:/);
   assert.doesNotMatch(runtime,/dispatch-unity-web-floor:/);
   assert.doesNotMatch(runtime,/dispatch-unity-web-bootstrap:/);
+});
+
+
+test('current machine authority permits Roblox and general Web but holds Unity and UEFN',()=>{
+  assert.equal(roadmap.status,'OWNER_DIRECT_LOCKED');
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','WEB']);
+  assert.equal(roadmap.developmentAccess.ROBLOX,'ALWAYS_ALLOWED');
+  assert.equal(roadmap.developmentAccess.WEB,'ALWAYS_ALLOWED');
+  for(const platform of ['UNITY','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'])
+    assert.equal(roadmap.developmentAccess[platform],'OWNER_HOLD',platform);
+});
+
+test('central ordinary Web policy publishes each main revision before public verification on the existing route',()=>{
+  const order=roadmap.webRuntimeStartabilityContract.publicationOrder;
+  assert.deepEqual(order.sequence,['MERGE_AUTHORIZED_SOURCE_TO_MAIN','PUBLISH_EXACT_MAIN_VIA_EXISTING_GITHUB_PAGES','VERIFY_PUBLIC_DEPLOYED_SAME_REVISION','RECORD_FAILURE_AND_REPAIR_REDEPLOY']);
+  assert.equal(order.qaScoreOrF0F9MayBlockStaticPublication,false);
+  assert.equal(order.postDeploymentVerificationRequired,true);
+  assert.equal(order.verificationMustMatchPublishedSourceShaAndGameTree,true);
+  assert.equal(order.failedOrUnverifiedRuntimeMayBeReportedPass,false);
+  assert.equal(order.deploymentImpliesProductionReady,false);
+  assert.equal(order.existingF0F9DefinitionsAndInternalOrderPreserved,true);
+  const workflow=fs.readFileSync(order.existingWorkflow,'utf8');
+  const push=workflow.split('  push:')[1].split('  workflow_dispatch:')[0];
+  assert.match(push,/branches:\s*\[main\]/);assert.doesNotMatch(push,/paths|paths-ignore|if:/);
+  assert.ok(workflow.indexOf('uses: actions/deploy-pages@v4')<workflow.indexOf('      - name: Verify live GitHub Pages source and game routes'));
+  const header=workflow.split('  publish-pages:')[1].split('    steps:')[0];
+  assert.match(header,/needs: deploy/);assert.doesNotMatch(header,/needs: \[|qa_pass|approval|result ==/);
 });

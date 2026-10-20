@@ -266,7 +266,50 @@ local function attackBase(p)
  return true
 end
 
-local function spawnMob(kind,pos)
+-- 메인: 공용 GLB 몬스터 외형 10종. 기존 체력·공격·보상·저장 규칙은 그대로 사용한다.
+local SHARED_MONSTER_ASSETS={
+ {id=110808635634531,name="늑대"},
+ {id=122386724686135,name="거미"},
+ {id=98440047381376,name="딱정벌레"},
+ {id=123382901571219,name="골렘"},
+ {id=133759547998155,name="뱀"},
+ {id=79270829530403,name="해골 마법사"},
+ {id=135382255157972,name="해골 병사"},
+ {id=99895015440866,name="해골 도적"},
+ {id=104892549506438,name="해골 전사"},
+ {id=132224690298312,name="해골"}
+}
+
+-- 유틸: 공용 자산은 외형만 소유한다. 기존 뿌리 파트가 이동과 공격 판정을 계속 담당한다.
+local function bindMonsterAppearance(rootPart,assetInfo)
+ if not assetInfo or not rootPart.Parent then return end
+ local original=loadAsset(assetInfo.id)
+ if not original or not rootPart.Parent then return end
+ local visual=original:Clone()
+ local pieces={}
+ for _,descendant in ipairs(visual:GetDescendants())do
+  if descendant:IsA("BasePart")then table.insert(pieces,descendant)end
+ end
+ if #pieces==0 then visual:Destroy();return end
+ local model=Instance.new("Model");model.Name="SharedMonsterVisual";visual.Parent=model
+ local _,size=model:GetBoundingBox()
+ local maximum=math.max(size.X,size.Y,size.Z)
+ if maximum<0.01 then model:Destroy();return end
+ model:ScaleTo(math.clamp(5.8/maximum,.12,3))
+ model:PivotTo(rootPart.CFrame)
+ model.Parent=rootPart
+ for _,piece in ipairs(pieces)do
+  piece.Anchored=false;piece.CanCollide=false;piece.CanTouch=false;piece.CanQuery=false;piece.Massless=true
+  local weld=Instance.new("WeldConstraint");weld.Part0=rootPart;weld.Part1=piece;weld.Parent=piece
+ end
+ for _,child in ipairs(rootPart:GetChildren())do
+  if child~=model and child:IsA("BasePart")then child.Transparency=1 end
+ end
+ rootPart:SetAttribute("SharedMonsterAssetId",assetInfo.id)
+ rootPart:SetAttribute("SharedMonsterVisualReady",true)
+end
+
+local function spawnMob(kind,pos,visualIndex)
  local folder=world:FindFirstChild("HomeMobs")or Instance.new("Folder");folder.Name="HomeMobs";folder.Parent=world
  local isRaider=kind=="RAIDER";local hp=isRaider and C.HomeIslandMobs.RaiderHP or C.HomeIslandMobs.BoarHP
  local damage=isRaider and C.HomeIslandMobs.RaiderDamage or C.HomeIslandMobs.BoarDamage
@@ -301,7 +344,9 @@ local function spawnMob(kind,pos)
   attach(r,"TuskL",Vector3.new(.34,.34,1.15),Vector3.new(-.92,1.92,-5.8),Color3.fromRGB(235,225,195),Enum.Material.SmoothPlastic,nil,Vector3.new(-18,0,0))
   attach(r,"TuskR",Vector3.new(.34,.34,1.15),Vector3.new(.92,1.92,-5.8),Color3.fromRGB(235,225,195),Enum.Material.SmoothPlastic,nil,Vector3.new(-18,0,0))
  end
- label(r,isRaider and"섬 약탈병"or"멧돼지",isRaider and Color3.fromRGB(255,166,142)or Color3.fromRGB(240,222,180),28)
+ local selected=visualIndex and SHARED_MONSTER_ASSETS[visualIndex] or nil
+ label(r,selected and selected.name or (isRaider and"섬 약탈병"or"멧돼지"),isRaider and Color3.fromRGB(255,166,142)or Color3.fromRGB(240,222,180),28)
+ if selected then task.spawn(bindMonsterAppearance,r,selected)end
  local pr=prompt(r,isRaider and"섬 약탈병"or"멧돼지","공격")
  local e={part=r,kind=kind,hp=hp,max=hp,damage=damage,spawn=pos,lastHit=0};table.insert(mobs,e);r:SetAttribute("HP",hp)
  pr.Triggered:Connect(function(p)
@@ -309,7 +354,7 @@ local function spawnMob(kind,pos)
   if e.hp<=0 then
    if kind=="RAIDER"then s(p,"Coins",n(p,"Coins",0)+8);s(p,"Wood",n(p,"Wood",0)+2);msg(p,"약탈병 처치 · 코인+8 나무+2")
    else s(p,"Food",n(p,"Food",0)+4);msg(p,"멧돼지 처치 · 식량+4")end
-   r:Destroy();task.delay(C.HomeIslandMobs.RespawnSeconds,function()if world and world.Parent then spawnMob(kind,pos)end end)
+   r:Destroy();task.delay(C.HomeIslandMobs.RespawnSeconds,function()if world and world.Parent then spawnMob(kind,pos,visualIndex)end end)
   end
  end)
  return e
@@ -410,8 +455,11 @@ end)
    for i=1,5 do local a=i/5*math.pi*2;local vill=figure(npcs,"Villager"..i,Vector3.new(math.cos(a)*31,topY+6,27+math.sin(a)*22),Color3.fromRGB(100+i*9,120+i*5,93+i*4),Color3.fromRGB(65,70,61),.78);label(vill,"주민",Color3.fromRGB(235,238,225),18)end
 
     spawnVillageBears(world,topY)
-   for i=1,5 do spawnMob("BOAR",Vector3.new(-72+i*20,topY+4,78+(i%2)*8))end
-   for i=1,3 do spawnMob("RAIDER",Vector3.new(42+i*11,topY+5,46+(i%2)*14))end
+   for i=1,5 do spawnMob("BOAR",Vector3.new(-72+i*20,topY+4,78+(i%2)*8),i)end
+   for i=1,3 do spawnMob("RAIDER",Vector3.new(42+i*11,topY+5,46+(i%2)*14),5+i)end
+   -- 기존 여덟 몬스터는 보존하고 추가 두 종류만 외곽에서 등장한다.
+   spawnMob("RAIDER",Vector3.new(98,topY+5,88),9)
+   spawnMob("RAIDER",Vector3.new(110,topY+5,72),10)
   elseif index==2 then
    for i=1,18 do local a=i/18*math.pi*2;rock(world,r.Pos+Vector3.new(math.cos(a)*40,topY-r.Pos.Y,math.sin(a)*40),.7+(i%3)*.14,Color3.fromRGB(86,91,101))end
    for i=1,7 do part(world,"IronVein",Vector3.new(4,7,4),Vector3.new(r.Pos.X-35+i*10,topY+3,r.Pos.Z+27),Color3.fromRGB(145,158,171),Enum.Material.Metal)end

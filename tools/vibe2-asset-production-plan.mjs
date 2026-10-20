@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
-import { planAssetApplication } from '../assets/asset-selector.js';
+import { planAssetApplication, planVibeExternalCustomization } from '../assets/asset-selector.js';
 import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,resolveCommonMotionGenre,COMMON_CAREER_MOTION_HIERARCHY,COMMON_MONSTER_ACTION_SPECIES,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction,createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
@@ -14,6 +14,18 @@ import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} fr
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,VIBE_NPC_ROLE_MOTION_REQUIREMENTS,createVibeNpcRoleMotionRequirement,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {buildRobloxStudioAssetBootstrapPlan} from './company-development-roblox-bootstrap.mjs';
 
+// Multiple game decisions within one runner reuse an exact file verification.
+// Final hydration independently rehashes bytes before any source can be used.
+const SHARED_ARCHIVE_HASH_CACHE=new Map();
+function sharedArchiveSha256(full,info){
+  const identity=[info.dev,info.ino,info.size,info.mtimeMs,info.ctimeMs].join(':');
+  const cached=SHARED_ARCHIVE_HASH_CACHE.get(full);
+  if(cached?.identity===identity)return cached.sha256;
+  const sha256=crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex');
+  if(SHARED_ARCHIVE_HASH_CACHE.size>=128)SHARED_ARCHIVE_HASH_CACHE.delete(SHARED_ARCHIVE_HASH_CACHE.keys().next().value);
+  SHARED_ARCHIVE_HASH_CACHE.set(full,{identity,sha256});
+  return sha256;
+}
 const clean=value=>String(value??'').trim();
 const freeze=value=>Object.freeze(value);
 const freezeList=value=>freeze([...(value||[])]);
@@ -1210,7 +1222,13 @@ const ASSET_REQUIREMENT_FAMILY_RULES=Object.freeze([
   Object.freeze({re:/(?:village|town|마을)/i,families:Object.freeze(['BUILDING','ENVIRONMENT','PROP','MATERIAL'])}),
   Object.freeze({re:/(?:housing|house|home|하우징|주택|집짓|건축)/i,families:Object.freeze(['BUILDING','PROP','MATERIAL','UI'])}),
   Object.freeze({re:/(?:explor|adventure|탐험|탐색)/i,families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','VFX','AUDIO'])}),
-  Object.freeze({re:/(?:ui|hud|menu|interface|버튼|메뉴|인벤토리|인터페이스)/i,families:Object.freeze(['UI','AUDIO','MOTION'])})
+  Object.freeze({re:/(?:ui|hud|menu|interface|버튼|메뉴|인벤토리|인터페이스)/i,families:Object.freeze(['UI','AUDIO','MOTION'])}),
+  Object.freeze({re:/(?:lobby|hub|spawn|waiting.room|로비|대기실|시작 화면|메인 화면)/i,families:Object.freeze(['BUILDING','ENVIRONMENT','PROP','UI','AUDIO','VFX'])}),
+  Object.freeze({re:/(?:background|skybox|terrain|landscape|scenery|배경|지형|하늘|풍경|맵 꾸미기)/i,families:Object.freeze(['ENVIRONMENT','MATERIAL','PROP','VFX'])}),
+  Object.freeze({re:/(?:bgm|soundtrack|music|theme.song|배경음악|브금|음악)/i,families:Object.freeze(['AUDIO'])}),
+  Object.freeze({re:/(?:sfx|sound.effect|foley|ambien(?:t|ce).sound|효과음|환경음|발소리|타격음)/i,families:Object.freeze(['AUDIO'])}),
+  Object.freeze({re:/(?:item|loot|chest|pickup|inventory|equipment|아이템|전리품|상자|장비|소지품|수집품)/i,families:Object.freeze(['PROP','WEAPON','MATERIAL','UI'])}),
+  Object.freeze({re:/(?:particle|weather|fog|lighting|rain|snow|fire.effect|파티클|날씨|안개|조명|비 효과|눈 효과|환경 효과)/i,families:Object.freeze(['VFX','ENVIRONMENT','MATERIAL'])})
 ]);
 // 역할명이 없는 일반 요청에서도 호환되는 등록 자산을 먼저 재사용한다.
 // 요구사항에 구체적 역할이 있으면 이 일반 매칭은 사용하지 않는다.
@@ -1219,7 +1237,13 @@ const ASSET_GENERIC_DEMAND_TERMS=Object.freeze({
   MOTION:Object.freeze(['motion','animation','action','모션','애니메이션','액션']),
   SKILL:Object.freeze(['skill','spell','ability','스킬','마법','특수기']),
   VFX:Object.freeze(['vfx','effect','이펙트','효과','스킬','액션']),
-  AUDIO:Object.freeze(['audio','sound','효과음','사운드'])
+  AUDIO:Object.freeze(['audio','sound','sfx','bgm','music','효과음','배경음악','브금','사운드']),
+  BUILDING:Object.freeze(['building','lobby','structure','건물','로비']),
+  ENVIRONMENT:Object.freeze(['environment','background','skybox','배경','환경','지형']),
+  PROP:Object.freeze(['prop','item','pickup','loot','소품','아이템','전리품']),
+  UI:Object.freeze(['ui','menu','lobby','hud','메뉴','로비','인터페이스']),
+  WEAPON:Object.freeze(['weapon','equipment','무기','장비']),
+  MATERIAL:Object.freeze(['material','texture','재질','텍스처'])
 });
 function assetRuntimeConsumerVerified(asset={}){
   const state=clean(asset.runtimeVerificationState).toUpperCase();
@@ -1256,7 +1280,7 @@ function assetSupplyCandidateAllowed(asset={},target=''){
   if(internalAssetHardBlockReason(asset))return false;
   return internalAssetPlatformApplicationMode(asset,target)!=='NOT_SUPPORTED';
 }
-export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',requirements=[],registry={},executionPlan={},sourceConsumerSummary=null}={}){
+export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',requirements=[],registry={},executionPlan={},sourceConsumerSummary=null,sharedOriginalArchives=[],repoRoot=process.cwd()}={}){
   const id=clean(gameId);
   const assets=Array.isArray(registry?.assets)?registry.assets:[];
   const requiredFamilies=requiredAssetFamilies({request,requirements});
@@ -1281,6 +1305,79 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   };
   const externalSourceCandidatesFor=(family,roles=[])=>{
     const candidates=[];
+    // [공용 원본 직접 연결] 게임에서 요구한 모든 에셋 family를 공급한다.
+    // 음악·효과음·UI·이미지·VFX도 3D와 동일한 검증 원본 취득 대상이다.
+    // ZIP/BLEND 원본 확보는 게임 적용이나 네이티브 QA PASS를 뜻하지 않는다.
+    const seenSourceHashes=new Set();
+    for(const row of Array.isArray(sharedOriginalArchives)?sharedOriginalArchives:[]){
+      const relative=clean(row?.sourcePath).replaceAll('\\','/');
+      const declaredHash=clean(row?.sha256).toLowerCase();
+      const declaredBytes=Number(row?.bytes);
+      const license=clean(row?.licenseDeclared).toUpperCase();
+      if(row?.sourceOnly!==true||row?.gameApplied!==false||license!=='CC0-1.0')continue;
+      if(!/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/.test(relative)||relative.includes('..'))continue;
+      if(!/^[0-9a-f]{64}$/.test(declaredHash)||!Number.isSafeInteger(declaredBytes)||declaredBytes<512||seenSourceHashes.has(declaredHash))continue;
+      if(!publicHttps(row?.sourceUrl)||!publicHttps(row?.licenseEvidenceUrl))continue;
+      const localFile=path.resolve(repoRoot,relative);
+      const name=clean(row.file).toLowerCase(),role=clean(row.role).toLowerCase();
+      const sourceFamily=clean(row.family).toUpperCase()||(
+        /^(?:music|bgm|audio|sound|sfx)$/.test(role)||/^(?:music|bgm|sound|audio)$/.test(role.split('-')[0])||/sfx|sound|audio|music|bgm|soundtrack|ambience|\.(?:mp3|ogg|wav|flac|aac|m4a)$/.test(name)?'AUDIO':
+        /^(?:vfx|particle|particles|effect|effects)$/.test(role)||/particle|visual-effect|vfx/.test(name)?'VFX':
+        // Explicit library role wins over a generic image extension.
+        /^(?:motion|animation|animations)$/.test(role)?'MOTION':
+        /^(?:material|materials|texture|textures)$/.test(role)?'MATERIAL':
+        /^(?:skill|skills|spell|spells)$/.test(role)?'SKILL':
+        /^(?:ui|png|icon|icons|item-icons|special-icons|interface)$/.test(role)||/\bui[-_]|[-_]ui\b|icons?|sprites?|cursor|hud|\.(?:png|jpe?g|webp|svg|gif)$/.test(name)?'UI':
+        role==='03-equipment'?(/potion|item|inventory/.test(name)?'PROP':'WEAPON'):
+        role==='04-npc-buildings'?(/castle|house|village|hexagon/.test(name)?'BUILDING':'CHARACTER'):
+        role==='05-environment-sfx'?(/sfx|sound/.test(name)?'AUDIO':/fox/.test(name)?'CREATURE':'ENVIRONMENT'):
+        role==='09-buildings'?'BUILDING':role==='12-dungeon-interiors'?'ENVIRONMENT':
+        /^(?:0[1267]-|11-)/.test(role)||['monster','wildlife','aquatic','insect','prehistoric','invertebrate'].includes(role)?'CREATURE':
+        /^(?:08-|10-)/.test(role)||role.includes('npc')?'CHARACTER':
+        role==='vfx'?'VFX':role==='model'?'PROP':
+        role==='png'||role.includes('ui')||role.includes('icon')?'UI':
+        role==='audio'||role==='sfx'?'AUDIO':'PROP');
+      if(sourceFamily!==family)continue;
+      const terms=[name.replace(/\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/,''),role].join(' ').replace(/[-_]+/g,' ');
+      const matchedRoles=roles.filter(value=>terms.includes(value.replaceAll('_',' ')));
+      if(roles.length&&!roles.every(value=>value==='generic')&&!matchedRoles.length)continue;
+      // All families can hydrate exact, manifest-pinned CC0 source bytes.
+      // Damaged binaries still fail closed; only absent bytes or an exact
+      // original LFS pointer may be recovered on demand.
+      let localReady=false,needsHydration=false,corrupt=false;
+      try{
+        const info=fs.statSync(localFile);
+        if(!info.isFile()){corrupt=true;}
+        else if(info.size===declaredBytes){
+          localReady=sharedArchiveSha256(localFile,info)===declaredHash;
+          corrupt=!localReady;
+        }else if(info.size<=256){
+          // A Git LFS pointer is not corrupt only when oid and size match
+          // this canonical manifest exactly. Never repair a different binary.
+          const pointer=fs.readFileSync(localFile,'utf8');
+          const match=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(pointer);
+          needsHydration=Boolean(match&&match[1]===declaredHash&&Number(match[2])===declaredBytes);
+          corrupt=!needsHydration;
+        }else{corrupt=true;}
+      }catch(error){
+        if(error?.code==='ENOENT')needsHydration=true;
+        else corrupt=true;
+      }
+      if(corrupt||(!localReady&&!needsHydration))continue;
+      const nameFit=requestText.split(/\s+/).filter(word=>word.length>=4&&terms.includes(word)).length;
+      seenSourceHashes.add(declaredHash);
+      candidates.push(freeze({
+        sourceId:'shared-original-'+declaredHash.slice(0,16),sourceName:clean(row.file),family,
+        license,sourceUrl:clean(row.sourceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
+        licenseSnapshotDate:null,downloadUrl:null,sourcePath:relative,sourceHash:declaredHash,
+        archiveBytes:declaredBytes,downloaded:localReady,
+        acquisitionState:localReady?'ACQUIRED_ORIGINAL_FILES':'PINNED_ARCHIVE_ON_DEMAND_DOWNLOAD_REQUIRED',
+        matchedRoles:freezeList(matchedRoles),roleCompatibilityRequiresSourceInspection:true,
+        categoryMatchVerified:true,runtimeVerified:false,rawRedistributionAllowed:false,
+        sourceHashMustBeReverified:true,roleScore:100+matchedRoles.length*10+nameFit,
+        spatial3dSourceRequired:spatialFamilies.has(family)
+      }));
+    }
     for(const row of externalSources){
       if(clean(row?.status).toUpperCase()!=='LICENSE_VERIFIED_EXTERNAL_CANDIDATE')continue;
       if(row?.automaticAcquisitionWhenSelected!==true||row?.commercialUseAllowed===false||row?.derivativesAllowed===false)continue;
@@ -1315,23 +1412,80 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const roleEvidence=asset=>{
     const family=clean(asset?.family||asset?.category).toUpperCase();
     const roles=unique([asset.role,asset.subfamily,...(Array.isArray(asset.tags)?asset.tags:[])]).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'));
+    // [외부 3D 재사용] 실제 원본이 등록된 캐릭터·몬스터는 이름의 독립된 역할 단어도 비교한다.
+    // 단순 부분 문자열은 다른 종족/역할을 잘못 선택할 수 있으므로 허용하지 않는다.
+    const namedRoles=unique([asset.title,asset.id]).flatMap(value=>{
+      const normalized=value.toLowerCase().replace(/[^a-z0-9가-힣]+/g,'_').replace(/^_+|_+$/g,'');
+      return unique([normalized,...normalized.split('_').filter(part=>part.length>=4)]);
+    });
     const required=requestedRolesByFamily.get(family)||[];
-    const explicit=required.filter(role=>roles.includes(role));
+    const explicit=required.filter(role=>roles.includes(role)||namedRoles.includes(role));
     const inferred=roles.filter(role=>role.length>=3&&role!==family.toLowerCase()&&requestText.includes(role.replaceAll('_',' ')));
-    const matched=required.length?explicit:inferred;
+    // 메인 · 모든 게임의 F0부터 동일 종 3D 외형 재사용을 허용한다.
+    // 몬스터 ID/능력치는 그대로 두고 검증된 종 명칭과 제한된 외형 수식어만 비교한다.
+    const speciesModifiers=/^(?:shadow|crystal|polar|fire|frost|ice|snow|forest|dark|wild|ancient|giant|alpha)(?=[a-z]{3,}$)/;
+    const speciesBase=value=>clean(value).toLowerCase().replace(/[^a-z]/g,'').replace(speciesModifiers,'');
+    const speciesLabels=family==='CREATURE'
+      ?unique([asset.creatureFamily,asset.speciesId,asset.species,asset.role,asset.subfamily]).map(speciesBase)
+        .filter(value=>value.length>=3&&!['monster','creature','animal','enemy','boss','wildlife'].includes(value))
+      :[];
+    const sameSpecies=family==='CREATURE'&&speciesLabels.length
+      ?required.filter(role=>{
+        const wanted=speciesBase(role);
+        return wanted.length>=3&&speciesLabels.includes(wanted);
+      }):[];
+    const matched=required.length?unique([...explicit,...sameSpecies]):inferred;
+    const visualSpeciesSubstitute=sameSpecies.some(role=>!explicit.includes(role));
     const bound=currentAssetConsumerIds(asset).includes(id);
     const generalFamilyRequest=required.length===0&&genericFamilyDemand.has(family);
     const evidence={requestedRoles:required,matchedRoles:matched,currentSourceBound:bound,
-      genericFamilyRequest:generalFamilyRequest,verifiedRoleMatch:matched.length>0||bound||generalFamilyRequest};
+      genericFamilyRequest:generalFamilyRequest,verifiedRoleMatch:matched.length>0||bound||generalFamilyRequest,
+      visualSpeciesSubstitute,visualSpeciesSubstituteRequiresNativeMeshRigAndRuntimeQa:visualSpeciesSubstitute,
+      originalMonsterIdentityAndGameplayPreserved:true};
     roleEvidenceById.set(clean(asset.id),evidence);
     return evidence;
   };
-  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map();
+  const currentAssets=[],currentAssetIds=new Set(),assetById=new Map(),currentFamilyCounts=new Map(),currentPrimaryByFamily=new Map(),bestReusableByFamily=new Map(),reusableByFamilyRole=new Map();
   let intendedOnlyCount=0;
-  const compareReusable=(a,b)=>
-    (roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
-    ||Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
-    ||clean(a?.id).localeCompare(clean(b?.id));
+  // [다운로드 원본 우선] 역할·권리·플랫폼 필터를 통과한 확보 원본을 우선한다.
+  // 출처 URL과 해시 외에 실제 파일이 없는 카탈로그 메타데이터는 우선하지 않는다.
+  const originalAvailability=new Map();
+  const acquiredOriginal=asset=>{
+    const id=clean(asset?.id);
+    if(originalAvailability.has(id))return originalAvailability.get(id);
+    const originalHash=clean(asset?.originalSourceHash||asset?.originalSha256);
+    const sourceUrl=clean(asset?.sourceUrl),relative=clean(asset?.path).replace(/^\/+/, '');
+    const safeSource=/^https:\/\//i.test(sourceUrl)&&/^[a-f0-9]{64}$/i.test(originalHash)
+      &&/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|gltf|fbx|obj|png|jpe?g|webp|svg|mp3|wav|ogg)$/i.test(relative)
+      &&!relative.split('/').includes('..')&&asset?.downloaded!==false;
+    let available=false;
+    if(safeSource){
+      try{
+        const actual=path.resolve(repoRoot,relative);
+        const stat=fs.statSync(actual);
+        available=actual.startsWith(path.resolve(repoRoot)+path.sep)&&stat.isFile()&&stat.size>256;
+      }catch{}
+    }
+    originalAvailability.set(id,available);
+    return available;
+  };
+  const measuredSuperior=(internal,original)=>{
+    const current=Number(internal?.internalAuditScore??internal?.qualityScore??-1);
+    const donor=Number(original?.internalAuditScore??original?.qualityScore??-1);
+    return internal?.productionVerified===true&&assetRuntimeConsumerVerified(internal)
+      &&internal?.internalAuditEvidenceResolved===true&&Number.isFinite(current)
+      &&Number.isFinite(donor)&&current-donor>=150;
+  };
+  const compareReusable=(a,b)=>{
+    const aOriginal=acquiredOriginal(a),bOriginal=acquiredOriginal(b);
+    if(aOriginal!==bOriginal){
+      const donor=aOriginal?a:b,internal=aOriginal?b:a;
+      if(!measuredSuperior(internal,donor))return aOriginal?-1:1;
+    }
+    return Number(b?.internalAuditScore??b?.qualityScore??-1)-Number(a?.internalAuditScore??a?.qualityScore??-1)
+      ||(roleEvidenceById.get(clean(b?.id))?.matchedRoles.length||0)-(roleEvidenceById.get(clean(a?.id))?.matchedRoles.length||0)
+      ||clean(a?.id).localeCompare(clean(b?.id));
+  };
   const betterReusable=(candidate,current)=>!current||compareReusable(candidate,current)<0;
   for(const asset of assets){
     const assetId=clean(asset?.id);
@@ -1353,6 +1507,17 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     if((asset?.intendedConsumerGameIds||[]).map(clean).includes(id))intendedOnlyCount+=1;
     if(family&&requiredFamilySet.has(family)&&assetSupplyCandidateAllowed(asset,target)){
       if(!roleFit.verifiedRoleMatch){if(!roleFit.requestedRoles.length||!clean(asset.role||asset.subfamily))unresolvedFamilies.add(family);continue;}
+      // 역할별 후보를 같은 원장 순회에서 색인한다. 기존 점수·출처 검증은 유지한다.
+      const roleIndex=reusableByFamilyRole.get(family)||new Map();
+      const originalIdentity=acquiredOriginal(asset)?unique([asset.title,asset.name]
+        .map(value=>clean(value).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'_').replace(/^_+|_+$/g,''))):[];
+      for(const role of unique([asset.role,asset.subfamily,asset.atomId,asset.factory,...originalIdentity])
+        .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))){
+        const candidates=roleIndex.get(role)||[];
+        candidates.push(asset);
+        roleIndex.set(role,candidates);
+      }
+      reusableByFamilyRole.set(family,roleIndex);
       const currentBest=bestReusableByFamily.get(family);
       if(betterReusable(asset,currentBest))bestReusableByFamily.set(family,asset);
     }
@@ -1386,7 +1551,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         /^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(value)&&!value.split('/').includes('..'))||null:null;
       const license=clean(base?.license).toLowerCase();
       const credit=clean(base?.sourceCredit||base?.attribution||base?.credit)||null;
-      const rightsValid=['project-original','cc0','cc-by'].includes(license)
+      const rightsValid=['project-original','cc0','cc0-1.0','cc-by'].includes(license)
         &&(license!=='cc-by'||Boolean(credit));
       const modelReady=Boolean(sourceModel&&rightsValid);
       const pbr=spatial||family==='MATERIAL';
@@ -1394,7 +1559,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         libraryReuse:freeze({
           sourceAssetId:clean(base?.id),sourceModel,
           sourceLicense:rightsValid?license:null,sourceCredit:credit,
-          expectedSourceSha256:clean(base?.sourceSha256||base?.sha256)||null,
+          expectedSourceSha256:clean(base?.masterGlbHash||base?.sourceSha256||base?.sha256||base?.sourceHash)||null,
           sourceFileAndSha256InspectionRequired:true,
           sourceRoleEvidence:row.roleEvidence||null,
           derivativeCandidateReady:modelReady,
@@ -1436,45 +1601,32 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       responsibleFiles:Object.freeze([...(repair.sourceFiles||[])])
     });
   }
-  for(const family of requiredFamilies){
-    const usedCount=currentFamilyCounts.get(family)||0;
-    if(usedCount){
-      if(!(repairsByFamily.get(family)||[]).length){
-        const asset=currentPrimaryByFamily.get(family),mode=internalAssetPlatformApplicationMode(asset,target);
-        pushAction({
-          action:mode==='USE_AS_IS'?'USE':'ADAPT',
-          assetId:clean(asset?.id)||null,
-          family,
-          reason:mode==='USE_AS_IS'?'CURRENT_SOURCE_BOUND_READY':'CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT',
-          applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset?.id))
-        });
-      }
-      continue;
-    }
-    const asset=bestReusableByFamily.get(family);
-    if(asset){
-      const mode=internalAssetPlatformApplicationMode(asset,target);
-      pushAction({
-        action:mode==='USE_AS_IS'?'USE':'ADAPT',
-        assetId:clean(asset.id)||null,
-        family,
-        reason:mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
-        applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
-      });
-    }else{
-      const roles=requestedRolesByFamily.get(family)||[];
-      const externalCandidates=id?externalSourceCandidatesFor(family,roles):freezeList([]);
-      if(externalCandidates.length){
+
+  // [원본 우선 수급] 원본 확보·원본 해시·라이선스가 확인된 무료 소스를 역할별로 비교한다.
+  // 기존 소스 바인딩을 즉시 덮어쓰지 않고, 기존 제작 책임에서 요청형 취득/플랫폼 검증을 수행한다.
+  const planOriginalAcquisition=(family,roles,reason='',previousAssetId='')=>{
+    if(!id)return false;
+    const externalCandidates=externalSourceCandidatesFor(family,roles);
+    if(!externalCandidates.length)return false;
+    if(previousAssetId&&roles.length&&!externalCandidates[0].matchedRoles.length)return false;
         const selected=externalCandidates[0];
         const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
         pushAction({
           action:'ACQUIRE_ADAPT',assetId:null,family,
-          reason:'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
+          reason:reason||'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
+          replacesCandidateAssetId:clean(previousAssetId)||null,
+          gameSourceComparisonRequired:true,
+          downloadedOriginalPreferred:true,
+          automaticReplacementAuthorized:false,
+          replacementRequiresMeasuredSourceRoleIdentityQualityAndRuntimePass:true,
           roleEvidence:freeze({requestedRoles:freezeList(roles),matchedRoles:selected.matchedRoles,
             verifiedRoleMatch:false,requiresActualSourceInspection:true}),
           externalAcquisition:freeze({
             sourceId:selected.sourceId,sourceName:selected.sourceName,sourceUrl:selected.sourceUrl,
-            downloadUrl:selected.downloadUrl,license:selected.license,licenseEvidenceUrl:selected.licenseEvidenceUrl,
+            downloadUrl:selected.downloadUrl,localSourcePath:selected.sourcePath||null,
+            sourceHash:selected.sourceHash||null,archiveBytes:selected.archiveBytes||null,
+            downloaded:selected.downloaded===true,
+            license:selected.license,licenseEvidenceUrl:selected.licenseEvidenceUrl,
             licenseSnapshotDate:selected.licenseSnapshotDate,acquisitionState:selected.acquisitionState,
             candidateSources:externalCandidates,onDemandOnly:true,bulkPrefetchForbidden:true,
             sourceHashRequired:true,rightsRevalidationRequired:true,downloadFileIntegrityRequired:true,
@@ -1509,10 +1661,88 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
             nativeRuntimeBindingAndIndependentQaRequiredForPromotion:true,newPipelineOrQueueCreated:false
           })
         });
-      }else{
-        const unresolved=unresolvedFamilies.has(family)||roles.length===0;
-        pushAction({action:unresolved?'HOLD':'AUTHOR',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
+    return true;
+  };
+  for(const family of requiredFamilies){
+    const usedCount=currentFamilyCounts.get(family)||0;
+    if(usedCount){
+      // [공용 자산 즉시 업그레이드] 점수가 조금이라도 높고 현재 역할/플랫폼에 맞으면
+      // 별도 승인 대기 없이 기존 Vibe 소스 작업자에게 교체를 우선 배정한다.
+      // 실제 게임 소스 적용 및 독립 런타임 QA 없이 완료로 승격하지 않는다.
+      const currentAsset=currentPrimaryByFamily.get(family);
+      const currentIsDownloadedOriginal=acquiredOriginal(currentAsset);
+      const sourceRoles=unique([...(requestedRolesByFamily.get(family)||[]),currentAsset?.role,currentAsset?.subfamily])
+        .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value&&value!==family.toLowerCase());
+      if(!currentIsDownloadedOriginal){
+        planOriginalAcquisition(family,sourceRoles,'CURRENT_GAME_INTERNAL_ASSET_VS_DOWNLOADED_ORIGINAL',currentAsset?.id);
       }
+      // [교체 역할 보존] 같은 계열이라는 이유만으로 조명·문서, 패널·인트로를 서로 교체하지 않는다.
+      // 일반 요청은 신규 사용 후보를 허용하지만 기존 역할 교체는 등록된 역할 근거가 필요하다.
+      const currentRoles=unique([currentAsset?.role,currentAsset?.subfamily,currentAsset?.atomId,currentAsset?.factory])
+        .map(value=>value.toLowerCase().replace(/[\s-]+/g,'_')).filter(value=>value!==family.toLowerCase());
+      let improved=null;
+      const roleIndex=reusableByFamilyRole.get(family);
+      for(const role of currentRoles){
+        for(const asset of roleIndex?.get(role)||[]){
+          if(currentAssetIds.has(clean(asset.id))||roleEvidenceById.get(clean(asset.id))?.verifiedRoleMatch!==true)continue;
+          if(betterReusable(asset,improved))improved=asset;
+        }
+      }
+      const currentScore=Number(currentAsset?.internalAuditScore??currentAsset?.qualityScore??-1);
+      const improvedScore=Number(improved?.internalAuditScore??improved?.qualityScore??-1);
+      const originalUpgrade=Boolean(improved&&acquiredOriginal(improved)&&!currentIsDownloadedOriginal);
+      const internalUpgrade=Boolean(improved&&Number.isFinite(improvedScore)&&improvedScore>currentScore
+        &&(!currentIsDownloadedOriginal||measuredSuperior(improved,currentAsset)));
+      if(improved&&clean(improved.id)!==clean(currentAsset?.id)
+        &&(originalUpgrade||internalUpgrade)
+        &&roleEvidenceById.get(clean(improved.id))?.verifiedRoleMatch===true){
+        pushAction({action:'ADAPT',assetId:clean(improved.id),family,
+          reason:originalUpgrade?'DOWNLOADED_ORIGINAL_VISUAL_UPGRADE_CANDIDATE':'NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
+          replacesCandidateAssetId:clean(currentAsset?.id),
+          // Pass only registered model provenance; source existence/hash still
+          // require independent inspection before a native source edit.
+          registeredSourceModel:clean(improved.masterGlb||improved.masterSourcePath||improved.path)||null,
+          registeredSourceLicense:clean(improved.license)||null,
+          replacementExecution:'CANONICAL_VIBE_SOURCE_WORKER_IMMEDIATE',
+          automaticReplacementAuthorized:!originalUpgrade,independentNativeRuntimeQaRequired:true,
+          gameSourceComparisonRequired:true,downloadedOriginalPreferred:originalUpgrade,
+          sourceCompatibilityAndRightsRequired:true,
+          runtimeVerificationGranted:false,
+          roleEvidence:roleEvidenceById.get(clean(improved.id))});
+      }
+      if(!(repairsByFamily.get(family)||[]).length){
+        const asset=currentPrimaryByFamily.get(family),mode=internalAssetPlatformApplicationMode(asset,target);
+        const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
+        pushAction({
+          action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
+          assetId:clean(asset?.id)||null,
+          family,
+          reason:pendingImport?'CURRENT_SOURCE_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'CURRENT_SOURCE_BOUND_READY':'CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT',
+          applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset?.id))
+        });
+      }
+      continue;
+    }
+    const sourceRoles=requestedRolesByFamily.get(family)||[];
+    const asset=bestReusableByFamily.get(family);
+    // 포괄적 family 힌트만으로 멀쩡한 공용 소스를 버리거나 무작정 원본을 다운로드하지 않는다.
+    // 정확한 역할 수요가 있으면 다운로드 원본을 우선 제작 후보로 배정하되 내부 후보도 남긴다.
+    const originalRequested=(!asset||sourceRoles.length>0)&&planOriginalAcquisition(
+      family,sourceRoles,asset?'REUSABLE_LIBRARY_VS_DOWNLOADED_ORIGINAL':'ORIGINAL_SOURCE_FIRST_ON_DEMAND',
+      asset?.id||''
+    );
+    if(asset){
+      const mode=internalAssetPlatformApplicationMode(asset,target);
+      const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
+      pushAction({
+        action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
+        assetId:clean(asset.id)||null,
+        family,
+        reason:pendingImport?'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
+        applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
+      });
+    }else if(!originalRequested){
+      pushAction({action:'HOLD',assetId:null,family,reason:(unresolvedFamilies.has(family)||sourceRoles.length===0)?'ROLE_REQUIREMENT_UNRESOLVED':'NO_VERIFIED_EXISTING_ASSET_TO_APPLY',roleEvidence:{requestedRoles:sourceRoles,matchedRoles:[],verifiedRoleMatch:false}});
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
@@ -1563,13 +1793,14 @@ function sourceConsumerRoots({repoRoot,game}={}){
   const id=clean(game?.id||game?.gameId);
   const targets=game?.targetSourcePaths&&typeof game.targetSourcePaths==='object'?Object.values(game.targetSourcePaths):[];
   const candidates=unique([
-    game?.targetSourcePath,...targets,game?.robloxProjectPath,game?.unityProjectPath,game?.projectPath,
+    game?.targetSourcePath,...targets,game?.robloxProjectPath,game?.unityProjectPath,game?.webPath,game?.projectPath,
+    game?.canonical?.sources?.web?.projectPath,
     game?.canonical?.sources?.roblox?.projectPath,game?.canonical?.sources?.unity?.projectPath,
-    id?'roblox-games/'+id:'',id?'unity-games/'+id:''
+    id?'roblox-games/'+id:'',id?'unity-games/'+id:'',id?'web-games/'+id:''
   ].map(sourceConsumerPath).filter(Boolean));
   const out=[];
   for(const relative of candidates){
-    if(!/^(?:roblox-games|unity-games)\/[A-Za-z0-9._-]+(?:\/.*)?$/.test(relative))continue;
+    if(!/^(?:roblox-games|unity-games|web-games)\/[A-Za-z0-9._-]+(?:\/.*)?$/.test(relative))continue;
     const absolute=path.resolve(repoRoot,relative);
     const resolved=sourceConsumerPath(path.relative(repoRoot,absolute));
     if(resolved.startsWith('../'))continue;
@@ -1580,7 +1811,7 @@ function sourceConsumerRoots({repoRoot,game}={}){
 }
 function sourceConsumerAssetReference({repoRoot,file,raw}={}){
   const value=clean(raw).replaceAll('\\','/');
-  const allowed=/^(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
+  const allowed=/^(?:assets\/|web-games\/[A-Za-z0-9._-]+\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
   let absolute='';
   if(value.startsWith('/')&&allowed.test(value.slice(1)))absolute=path.resolve(repoRoot,value.slice(1));
   else if(allowed.test(value))absolute=path.resolve(repoRoot,value);
@@ -1635,7 +1866,7 @@ function sourceConsumerUsageSource(source=''){
 function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   const gameId=clean(game.id||game.gameId);
   const roots=sourceConsumerRoots({repoRoot,game});
-  const assetPaths=new Map(),tokens=new Map(),usageTokens=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
+  const assetPaths=new Map(),tokens=new Map(),usageTokens=new Map(),nativeAssetIds=new Map(),managedByFamily=new Map(),managedFiles=new Set(),fingerprintRows=[];
   let scannedFileCount=0,scannedBytes=0;
   const addToken=(target,token,file)=>{
     const normalized=clean(token).toLowerCase();
@@ -1665,7 +1896,9 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         fingerprintRows.push([relative,crypto.createHash('sha256').update(source).digest('hex')]);
         // [실사용 자산 추적] 등록용 StudioAssets 목록은 소비 근거가 아니다.
         // 현재 게임 코드의 실제 원자 사용 호출만 식별자 바인딩으로 기록한다.
-        const usageBody=usageSource.replace(/^\s*(?:--|\/\/)[^\r\n]*/gm,' ');
+        // Escaped fixture/newline records can contain a literal \\n before a comment;
+        // exclude that comment from native ID usage evidence as well.
+        const usageBody=usageSource.replace(/\\n(?=\s*(?:--|\/\/))/g,'\n').replace(/^\s*(?:--|\/\/)[^\r\n]*/gm,' ');
         for(const match of usageBody.matchAll(/\bhasStudioAssetAtom\s*\(\s*(?:['"][A-Z][A-Z0-9_]*['"]\s*,\s*)?['"]([A-Za-z][A-Za-z0-9_.:-]{1,95})['"]\s*\)/g)){
           addToken(usageTokens,match[1],relative);
         }
@@ -1685,8 +1918,23 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
             }
           }
         }
-        for(const match of source.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
+        // [웹 UI 자산 연결] 실제 렌더/로딩 문맥에 등장한 경로만 회사 자산 소비로 기록한다.
+        // 주석/등록부 선언은 증거가 아니며, 정적 소스 연결만으로 런타임 검증을 부여하지 않는다.
+        const webConsumer=root.relative.startsWith('web-games/');
+        const pathUsageSource=webConsumer
+          ?usageBody.replace(/<!--[\s\S]*?-->|\/\*[\s\S]*?\*\//g,' ')
+            .replace(/(?:^|[;>\r\n])\s*\/\/[^\r\n]*/g,' ')
+          :source;
+        for(const match of pathUsageSource.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|web-games\/[A-Za-z0-9._-]+\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
+          if(webConsumer){
+            const before=pathUsageSource.slice(Math.max(0,match.index-120),match.index);
+            if(!/\b(?:src|href|poster|url|load|loadAsync|fetch|import|texture|textures|tex|sprite|sprites|image|images|img|icon|icons|model|models|frame|frames|asset|assets|glb|surfaceTexture|background|font|audio|sound|effect|vfx)\b/i.test(before))continue;
+          }
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
+        }
+        // Count native imported IDs only at executable load sites, never mere catalog declarations.
+        if(root.relative.startsWith('roblox-games/')){
+          for(const match of usageBody.matchAll(/\b(?:LoadAssetAsync|LoadAsset)\s*\(\s*(?:(?:[A-Za-z_]\w*)\s*,\s*)?(\d{6,})\s*\)/g))addToken(nativeAssetIds,match[1],relative);
         }
         // Unity Resources.Load consumes imported assets without their extensions.
         // Resolve only exact existing native files referenced by executable game code.
@@ -1735,14 +1983,14 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   }
   fingerprintRows.sort((a,b)=>a[0].localeCompare(b[0]));
   const snapshot=Object.freeze({
-    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,usageTokens,managedByFamily,managedFiles,
+    gameId,roots:Object.freeze(roots.map(row=>row.relative)),assetPaths,tokens,usageTokens,nativeAssetIds,managedByFamily,managedFiles,
     scannedFileCount,scannedBytes,
     sourceFingerprint:crypto.createHash('sha256').update(JSON.stringify(fingerprintRows)).digest('hex')
   });
   return snapshot;
 }
 function sourceConsumerAssetPaths(asset={}){
-  const allowed=/^(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
+  const allowed=/^(?:assets\/|web-games\/[A-Za-z0-9._-]+\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
   return unique([
     ...(asset.sourceFiles||[]),clean(asset.path).replace(/^\//,''),
     ...(asset.nativeArtifacts||[]),asset.masterGlb,asset.meshArtifact,
@@ -1753,7 +2001,8 @@ function sourceConsumerAssetPaths(asset={}){
 function sourceConsumerIdentityTokens(asset={}){
   return unique([
     asset.skinId,asset.atomId,asset.assetId,
-    asset?.bindingHint?.skinId,asset?.bindingHint?.atomId,asset?.bindingHint?.assetId
+    asset?.bindingHint?.skinId,asset?.bindingHint?.atomId,asset?.bindingHint?.assetId,
+    asset.robloxAssetId,asset?.platformVariants?.ROBLOX?.assetId
   ].map(clean).filter(value=>value.length>=2));
 }
 export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),registry={},gameCatalog=null}={}){
@@ -1811,6 +2060,9 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
           ...directPaths.map(assetPath=>snapshot.assetPaths.get(assetPath)),
           ...literalIds.map(value=>snapshot.usageTokens.get(value.toLowerCase()))
         ];
+      }else if(meta.family&&clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId)&&snapshot.nativeAssetIds.has(clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId))){
+        mode='NATIVE_RUNTIME_LOAD_CALL';matchedIds=[clean(asset.robloxAssetId||asset?.platformVariants?.ROBLOX?.assetId)];
+        evidenceFiles=[snapshot.nativeAssetIds.get(matchedIds[0])];
       }else if(managed.length&&(asset.atomId||asset.assetId||asset?.bindingHint?.configCollection)){
         mode='MANAGED_LIBRARY_IDENTITY';matchedIds=managed;
         evidenceFiles=[
@@ -1994,7 +2246,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     const allowedSource=asset=>{
       const license=clean(asset?.license).toLowerCase();
       return !asset?.parentSourceId&&!asset?.derivedFromAssetId
-        &&['project-original','cc0','cc-by'].includes(license)
+        &&['project-original','cc0','cc0-1.0','cc-by'].includes(license)
         &&(license!=='cc-by'||Boolean(clean(asset?.sourceCredit||asset?.credit||asset?.attribution)))
         &&!internalAssetHardBlockReason(asset);
     };
@@ -2818,8 +3070,11 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
     throw new Error('VIBE_NATIVE_MODULE_UNKNOWN:'+selected);
   const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
     ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
-  const linkedSourceModel=clean(librarySource?.sourceModel);
-  const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel)||linkedSourceModel);
+  // Image-to-mesh takes precedence over an optional library model fallback.
+  // An explicitly supplied model together with an image is still an invalid dual source.
+  const explicitSourceModel=clean(task.assetAuthoring?.sourceModel);
+  const linkedSourceModel=imageRequested?'':clean(librarySource?.sourceModel);
+  const modelRequested=Boolean(explicitSourceModel||linkedSourceModel);
   const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai'
     :modelRequested?(/\.fbx$/i.test(clean(task.assetAuthoring?.sourceModel))?'animation':'object'):'auto';
   const meshModel=clean(task.assetAuthoring?.meshModel||'auto').toLowerCase();
@@ -4317,6 +4572,36 @@ export function buildVibeAssetProductionPlan({
   const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
   const currentDemandFamilies=requiredAssetFamilies({request,requirements:flowAssetRequirements});
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
+  // [공용 에셋 자동 성장] 기존 원본 매니페스트에 새 검증 원본이 추가되면
+  // Vibe의 다음 기존 ASSET_DEVELOPMENT 회차에서 자동 발견한다. 별도 큐/새 파이프라인은 만들지 않는다.
+  const sharedOriginalArchives=[];
+  const scannedSourceHashes=new Set();
+  for(const catalogPath of manifestBase?.sharedOriginalArchives?.canonicalArchiveManifests||[]){
+    const relativeCatalog=clean(catalogPath).replaceAll('\\','/');
+    if(!/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*manifest\.json$/.test(relativeCatalog))continue;
+    const sourceCatalog=readJson(path.join(repoRoot,relativeCatalog),null);
+    if(!sourceCatalog||!Array.isArray(sourceCatalog.packs)||sourceCatalog.sourceOnly!==true)continue;
+    const folder=relativeCatalog.slice(0,relativeCatalog.lastIndexOf('/')+1);
+    for(const pack of sourceCatalog.packs){
+      const file=clean(pack.file||pack.filename);
+      const sha256=clean(pack.sha256).toLowerCase();
+      if(!/^[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/.test(file)||file.includes('..'))continue;
+      if(!/^[0-9a-f]{64}$/.test(sha256)||scannedSourceHashes.has(sha256))continue;
+      const license=clean(pack.licenseDeclared||pack.license||sourceCatalog.license).toUpperCase();
+      if(!['CC0','CC0-1.0'].includes(license)||pack.gameApplied===true)continue;
+      const sourceUrl=clean(pack.sourceUrl||pack.originalUrl||pack.sourcePage);
+      const licenseEvidenceUrl=clean(pack.licenseSourceUrl||pack.licenseEvidence||pack.sourcePage||pack.sourceUrl);
+      if(!sourceUrl||!licenseEvidenceUrl)continue;
+      const bytes=Number(pack.bytes||pack.archiveBytes);
+      if(!Number.isSafeInteger(bytes)||bytes<512)continue;
+      scannedSourceHashes.add(sha256);
+      sharedOriginalArchives.push({
+        file,sourcePath:folder+file,sha256,bytes,sourceUrl,licenseEvidenceUrl,
+        licenseDeclared:'CC0-1.0',sourceOnly:true,gameApplied:false,
+        role:clean(pack.priority||pack.category||pack.assetKind)||'general'
+      });
+    }
+  }
   const currentGameId=clean(task.gameId);
   const persistedCompanyRegistry=readJson(path.join(repoRoot,'company-asset-library.json'),{version:0,assets:[],externalSources:[]});
   const librarySync=synchronizeCompanyCommonAssetRegistry({
@@ -4391,7 +4676,7 @@ export function buildVibeAssetProductionPlan({
     autonomousNextAction:currentExecutionPhase==='QUALITY_UP_1000'
       ?freeze({action:'IMPROVE',phase:'QUALITY_UP_1000',item:activeQualityActions[0]||null})
       :currentExecutionPhase==='VOLUME_UP'
-        ?freeze({action:'AUTHOR',phase:'VOLUME_UP',item:activeNextVolumeActions[0]||null})
+        ?freeze({action:'ADAPT',phase:'VOLUME_UP',item:activeNextVolumeActions[0]||null,existingAssetOnly:true,newAuthoringForbidden:true})
         :freeze({action:'HOLD',phase:'HOLD',reason:'NO_CURRENT_GAME_DEMAND_OR_SAFE_INDEPENDENT_WORK'}),
     autonomousContinuationRequired:true,
     ownerPresenceRequired:false,
@@ -4411,8 +4696,39 @@ export function buildVibeAssetProductionPlan({
     newShadowSystem:false
   });
   const currentCustomizationDocument=(selectionRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
-  const sharedCustomizationDocument=task.assetCustomization?.sharedDocument||(!task.assetCustomization?.recipes?.length?currentCustomizationDocument:null);
+  // 게임별 컨셉: 공용 원형과 표면 변형 수는 스타일 종류 수가 아니다. 검증된 설계가 제작 입력이다.
+  const verifiedDesign=task.buildUpDirective?.designContextMode==='APPROVED_OR_MINIMUM_DESIGN'
+    ?task.buildUpDirective?.designImplementationContext||null:null;
+  // 상세 설계 후보는 현재 원장과 다시 대조하며 자동 적용·QA 통과로 간주하지 않는다.
+  const detailedAssetHandoff=verifiedDesign?.detailedAssetLibraryHandoff||null;
+  const authoredPresentation=Object.keys(verifiedDesign?.presentationPlan||{}).length?verifiedDesign.presentationPlan:verifiedDesign?.detailedDesign?.presentation||{};
+  const approvedStyleBible=authoredPresentation.styleBible||verifiedDesign?.artAudioDirection?.styleBible||{};
+  const approvedStyleFamily=clean(approvedStyleBible.profileKey||authoredPresentation.styleFamily||verifiedDesign?.artAudioDirection?.styleFamily);
+  const approvedStyleDescription=clean(verifiedDesign?.visualDirection);
+  const gameConceptStyle=verifiedDesign?freeze({
+    version:1,gameId:currentGameId,source:'LATEST_VERIFIED_GAME_DESIGN',
+    designFingerprint:clean(task.buildUpDirective?.designFingerprint)||'sha256:'+crypto.createHash('sha256').update(JSON.stringify(verifiedDesign)).digest('hex'),
+    conceptIdentity:clean(task.buildUpDirective?.gameIdentityAndNonNegotiables?.identity),basicGrammar:verifiedDesign.creativeGrammar||{},
+    visualDirection:approvedStyleDescription,artAudioDirection:verifiedDesign.artAudioDirection||{},presentation:authoredPresentation,
+    styleFamily:approvedStyleFamily||null,styleBible:approvedStyleBible,
+    variationAxes:freezeList(['SILHOUETTE','PROPORTION','MATERIAL_RESPONSE','SURFACE_DETAIL','PALETTE','LIGHTING','MOTION_LANGUAGE','UI_LANGUAGE']),
+    sourceMasterImmutable:true,gameSpecificNativeDerivativeRequired:true,colorOnlyDoesNotProveStyleFit:true,
+    genericPresetMayNotOverrideGameConcept:true,materialVariantCountIsNotStyleCount:true,
+    status:approvedStyleFamily?'APPROVED_STYLE_NATIVE_APPLICATION_REQUIRED':approvedStyleDescription?'AUTHORED_STYLE_TRANSLATION_REQUIRED':'STYLE_DETAIL_REQUIRED',
+    sameGameSameBuildComparisonRequired:true,runtimeVerified:false
+  }):null;
+  const requestedSharedDocument=task.assetCustomization?.sharedDocument||(!task.assetCustomization?.recipes?.length?currentCustomizationDocument:null);
+  const sharedCustomizationDocument=requestedSharedDocument&&(!currentGameId||requestedSharedDocument.gameId===currentGameId)
+    &&(!approvedStyleFamily||requestedSharedDocument.styleBible?.profileKey===approvedStyleFamily)
+    &&Object.entries(approvedStyleBible).every(([key,value])=>JSON.stringify(requestedSharedDocument.styleBible?.[key])===JSON.stringify(value))?requestedSharedDocument:null;
   if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
+  if(verifiedDesign&&(approvedStyleFamily||approvedStyleDescription)){
+    const approvedConcept=inferRequestedConcept(approvedStyleFamily?{styleFamily:approvedStyleFamily}: {},approvedStyleDescription);
+    task={...task,concept:{...task.concept,...approvedConcept},styleFamily:approvedStyleFamily||approvedConcept.styles?.[0]?.family,
+      styleBible:{...approvedStyleBible,profileKey:approvedStyleFamily||approvedConcept.styles?.[0]?.family},gameConceptStyle};
+    // 오래된 다른 스타일 공유 문서는 현재 게임의 네이티브 제작 결과를 덮지 못한다.
+    if(requestedSharedDocument&&!sharedCustomizationDocument)task={...task,assetCustomization:{...task.assetCustomization,sharedDocument:undefined}};
+  }
   const sameGameRobloxAssets=resolvedTarget==='roblox'?discoverExistingRobloxGameAssets({repoRoot,gameId:task.gameId}):[];
   const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
   const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,selectionRegistry);
@@ -4659,10 +4975,12 @@ export function buildVibeAssetProductionPlan({
       })
       :[]
   );
-  const primaryVolumeAction=effectiveNextVolumeActions[0]||null;
-  const primaryVolumeDecision=primaryVolumeAction&&(Number(primaryVolumeAction.internalReuseCandidateCount||0)>0||primaryVolumeAction.freeSourceAvailable===true)
-    ?'ADAPT'
-    :'AUTHOR';
+  // [검증·적용 전용] 바이브는 기존 실물 에셋을 재사용한다. 자동 신규 모델 제작을 예약하지 않는다.
+  const applicableVolumeActions=effectiveNextVolumeActions.filter(row=>
+    Number(row.internalReuseCandidateCount||0)>0||row.freeSourceAvailable===true
+  );
+  const primaryVolumeAction=applicableVolumeActions[0]||null;
+  const primaryVolumeDecision=primaryVolumeAction?'ADAPT':'HOLD';
   const effectiveAutonomousNextAction=internalLibraryEvolution.nextQualityActions.length>0&&!taskLocalReferenceVolumeActions.length
     ?freeze({
       kind:'ASSET_SUPPLY_DECISION',
@@ -4674,7 +4992,7 @@ export function buildVibeAssetProductionPlan({
       item:internalLibraryEvolution.nextQualityActions[0]||null,
       continueWithoutHuman:true
     })
-    :effectiveNextVolumeActions.length
+    :primaryVolumeAction
       ?freeze({
         kind:'ASSET_SUPPLY_DECISION',
         action:primaryVolumeDecision,
@@ -4693,9 +5011,9 @@ export function buildVibeAssetProductionPlan({
   const effectiveInternalLibraryEvolution=freeze({
     ...internalLibraryEvolution,
     phase:effectiveAutonomousNextAction.phase,
-    nextVolumeActions:effectiveNextVolumeActions,
-    activeNextVolumeAction:effectiveNextVolumeActions[0]||null,
-    activeDetailImprovement:internalLibraryEvolution.nextQualityActions.find(row=>row.assetId===effectiveNextVolumeActions[0]?.detailImprovementAssetId)||null,
+    nextVolumeActions:freezeList(applicableVolumeActions),
+    activeNextVolumeAction:primaryVolumeAction,
+    activeDetailImprovement:internalLibraryEvolution.nextQualityActions.find(row=>row.assetId===primaryVolumeAction?.detailImprovementAssetId)||null,
     autonomousNextAction:effectiveAutonomousNextAction,
     worklistSource:taskLocalReferenceVolumeActions.length
       ?'TASK_REFERENCE_IMAGE_OVERLAY_ON_'+internalLibraryEvolution.worklistSource
@@ -4737,8 +5055,42 @@ export function buildVibeAssetProductionPlan({
     request,
     requirements:flowAssetRequirements,
     registry:librarySync.sourceConsumerRegistry||companyRegistry,
+    sharedOriginalArchives,
+    repoRoot,
     executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
     sourceConsumerSummary:librarySync.sourceConsumerSync
+  });
+  const handoffCandidates=detailedAssetHandoff?.platformSelection?.[clean(resolvedTarget).toUpperCase()]?.candidates||[];
+  const currentAssetIds=new Set((librarySync.sourceConsumerRegistry?.assets||companyRegistry.assets||[]).map(row=>clean(row?.id)));
+  const detailedAssetCandidateReview=freeze({
+    source:'DETAILED_DESIGN_REVALIDATION',
+    registrySha256:clean(detailedAssetHandoff?.registrySha256)||null,
+    candidateCount:handoffCandidates.length,
+    candidates:freezeList(handoffCandidates.map(row=>freeze({
+      assetId:clean(row?.assetId),family:clean(row?.family),roleEvidence:row?.roleEvidence||null,
+      replacesCandidateAssetId:clean(row?.replacesCandidateAssetId)||null,
+      stillInCurrentRegistry:currentAssetIds.has(clean(row?.assetId)),
+      selectionState:'GRAPHICS_PRODUCTION_REVIEW_REQUIRED',
+      automaticReplacementAuthorized:false,
+      nativeRuntimeQaRequired:true
+    }))),
+    sourceBindingVerified:false,runtimeVerified:false
+  });
+  // 외부 오픈소스 알고리즘과 DCC 도구는 현재 그래픽 제작 단계의 검증 대상 입력이다.
+  // 기존 중앙 승인 범위/상세 게임 설계/공용 에셋 원장 기반이며 실행·다운로드·게임 수정은 하지 않는다.
+  const currentRoadmap=readJson(path.join(repoRoot,'company-learning','platform-release-roadmap.json'),null);
+  const externalCustomization=planVibeExternalCustomization({
+    request,gameId:currentGameId,target:resolvedTarget,
+    requirements:flowAssetRequirements,
+    assets:selectionRegistry?.assets||[],
+    styleBible:approvedStyleBible,
+    approvedDesign:verifiedDesign,
+    approvedDesignFingerprint:verifiedDesign?clean(task.buildUpDirective?.designFingerprint):'',
+    ownerScope:currentRoadmap?.ownerActiveDevelopmentScope20261009||null,
+    sourceRevision:clean(task.sourceRevision||process.env.VIBE2_BASE_MAIN_SHA||process.env.GITHUB_SHA),
+    sourceRoot:clean(task.sourceRoot||task.ownerSourceRoot||task.projectPath),
+    executionSurface:clean(task.executionSurface||task.selectedExecutionSurface),
+    unityWebDevelopment:task.unityWebDevelopment===true
   });
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
@@ -4887,21 +5239,70 @@ export function buildVibeAssetProductionPlan({
     .filter(row=>row.required!==false)
     .map(row=>{
       const assetId=clean(row.assetId),sourceBound=Boolean(assetId&&actualGameConsumerIds.has(assetId));
+      // 이름·장부 등록만으로 연결하지 않는다. 원본 파일 증거와 native 사용 적격성을 함께 검사한다.
+      const sourceMaterialized=row.sourceFilesPresent===true&&Boolean((row.sourceFiles||[]).length)
+        &&Boolean(clean(row.sourceContentFingerprint));
+      const nativeSelectionReady=row.verified===true
+        &&(row.directBindingReady===true||row.adaptationReady===true);
       const status=!assetId||row.unresolved===true?'AUTHORING_REQUIRED'
+        :!sourceMaterialized?'SOURCE_ASSET_REQUIRED'
+        :!nativeSelectionReady?'SOURCE_BINDING_PROVENANCE_REQUIRED'
         :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
-        :row.sourceFilesPresent===false||!(row.sourceFiles||[]).length?'SOURCE_ASSET_REQUIRED'
         :'NATIVE_SOURCE_BINDING_REQUIRED';
       return freeze({
         requirementId:clean(row.requirementId)||null,assetId:assetId||null,
         family:clean(row.family),role:clean(row.role)||null,status,
         sourceBound,sourceFiles:freezeList(row.sourceFiles||[]),
         sourceHash:clean(row.sourceHash)||null,libraryVersion:Number(row.libraryVersion||0),
+        sourceFilesPresent:row.sourceFilesPresent===true,
+        sourceContentFingerprint:clean(row.sourceContentFingerprint)||null,
+        verifiedLibraryCandidate:row.verified===true,nativeSelectionReady,
         nativeRuntimeVerified:false,
         repairOwner:status==='AUTHORING_REQUIRED'||status==='SOURCE_ASSET_REQUIRED'
           ?'EXISTING_ASSET_DEVELOPMENT':'EXISTING_GAME_SOURCE_WORKER',
         protectedGameplayAuthority:true
       });
     });
+  // 상세 설계 후보는 기존 선택과 중복되지 않을 때만 기존 BUILD_UP 바인딩 대상으로 승격 검토한다.
+  // 실소스·권리·플랫폼 QA가 없는 에셋의 자동 적용은 허용하지 않는다.
+  const currentLibraryAssets=new Map((librarySync.sourceConsumerRegistry?.assets||companyRegistry.assets||[])
+    .filter(row=>clean(row?.id)).map(row=>[clean(row.id),row]));
+  const existingSelectionKeys=new Set(automaticBindingTargets.map(row=>clean(row.assetId)));
+  const detailedBindingTargets=freezeList(detailedAssetCandidateReview.candidates
+    .filter(row=>row.stillInCurrentRegistry&&row.assetId&&!existingSelectionKeys.has(row.assetId))
+    .map(row=>{
+      const asset=currentLibraryAssets.get(row.assetId);
+      const sourceFiles=(Array.isArray(asset?.sourceFiles)?asset.sourceFiles:[])
+        .map(file=>typeof file==='string'?file:file?.path).map(clean).filter(Boolean);
+      const sourceBound=actualGameConsumerIds.has(row.assetId);
+      const sourceBinding=(librarySync.sourceConsumerBindings||[]).find(binding=>
+        binding.gameId===currentGameId&&clean(binding.assetId)===row.assetId&&binding.sourceBound===true);
+      const currentMasterGlbHash=clean(asset?.masterGlbHash||asset?.masterGlbSha256||asset?.masterSourceHash)||null;
+      const consumerAppliedMasterHash=clean(sourceBinding?.appliedMasterGlbHash)||null;
+      const masterUpgradeProvenanceRequired=Boolean(sourceBound&&currentMasterGlbHash&&!consumerAppliedMasterHash);
+      const masterUpgradeReviewRequired=Boolean(sourceBound&&currentMasterGlbHash&&consumerAppliedMasterHash
+        &&consumerAppliedMasterHash!==currentMasterGlbHash);
+      const compatible=assetSupplyCandidateAllowed(asset,resolvedTarget);
+      const eligibleForNativeBinding=sourceFiles.length>0&&asset?.productionVerified===true&&asset?.rightsPass===true;
+      const status=!compatible?'ASSET_REPAIR_REQUIRED'
+        :masterUpgradeProvenanceRequired?'SOURCE_BINDING_PROVENANCE_REQUIRED'
+        :masterUpgradeReviewRequired?(eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED')
+        :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
+        :eligibleForNativeBinding?'NATIVE_SOURCE_BINDING_REQUIRED':'SOURCE_ASSET_REQUIRED';
+      return freeze({requirementId:null,assetId:row.assetId,family:row.family,
+        role:clean(asset?.role||asset?.subfamily)||null,status,sourceBound,
+        sourceFiles:freezeList(sourceFiles),sourceHash:clean(asset?.sourceHash)||null,
+        libraryVersion:Number(companyRegistry.version||0),nativeRuntimeVerified:false,
+        repairOwner:status==='NATIVE_SOURCE_BINDING_REQUIRED'||status==='SOURCE_BINDING_PROVENANCE_REQUIRED'
+          ?'EXISTING_GAME_SOURCE_WORKER':'EXISTING_ASSET_DEVELOPMENT',
+        protectedGameplayAuthority:true,detailedDesignCandidate:true,
+        roleAndPlatformRevalidationRequired:true,automaticReplacementAuthorized:false,
+        currentMasterGlbHash,consumerAppliedMasterHash,masterUpgradeReviewRequired,masterUpgradeProvenanceRequired,
+        masterUpgradePolicy:'REVALIDATE_AND_REBIND_THROUGH_EXISTING_BUILD_UP_NO_ASSUMED_RUNTIME_PASS',
+        replacesCandidateAssetId:row.replacesCandidateAssetId||null
+      });
+    }));
+  automaticBindingTargets.push(...detailedBindingTargets);
   const automaticAssetBindingWork=freeze({
     version:1,enabled:Boolean(currentGameId)&&['roblox','unity','web'].includes(resolvedTarget),
     trigger:'EVERY_EXISTING_BUILD_UP',gameId:currentGameId||null,target:resolvedTarget,
@@ -4909,8 +5310,11 @@ export function buildVibeAssetProductionPlan({
     actualSourceBoundCount:actualGameConsumerIds.size,
     selectedRequirementCount:automaticBindingTargets.length,
     pendingSourceBindingCount:automaticBindingTargets.filter(row=>row.status==='NATIVE_SOURCE_BINDING_REQUIRED').length,
+    provenanceRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BINDING_PROVENANCE_REQUIRED').length,
     authoringRequiredCount:automaticBindingTargets.filter(row=>['AUTHORING_REQUIRED','SOURCE_ASSET_REQUIRED'].includes(row.status)).length,
     runtimeQaRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BOUND_RUNTIME_QA_REQUIRED').length,
+    glbMasterUpgradeCount:automaticBindingTargets.filter(row=>row.masterUpgradeReviewRequired===true).length,
+    glbAppliedVersionProvenanceRequiredCount:automaticBindingTargets.filter(row=>row.masterUpgradeProvenanceRequired===true).length,
     targets:freezeList(automaticBindingTargets),
     selectedRequirementsOnly:true,noParallelPipeline:true,noNewQueue:true,
     existingGraphicsProductionAndBuildUp:true,
@@ -5064,6 +5468,8 @@ export function buildVibeAssetProductionPlan({
     interfaceMissing:freezeList(runtimeVisualAudit.interfaceCoverage?.missing||[]),
     sceneObjectsMissing:freezeList(runtimeVisualAudit.sceneObjectCoverage?.missing||[]),
     beforeAfter:runtimeBeforeAfterAudit,
+    artDirectionReview:runtimeVisualAudit.artDirectionReview||null,
+    concreteArtRepairTargets:freezeList((runtimeVisualAudit.repairTargets||[]).filter(row=>row.surface==='ART_DIRECTION'&&row.sourcePath&&row.targetId&&row.property)),
     preserve:freezeList(['GAMEPLAY_VALUES','SAVE_MEANING','MULTIPLAYER_AUTHORITY','HIT_TIMING','QUEST_AND_PROGRESS_RULES','UNRELATED_VISUAL_SYSTEMS']),
     repairMode:'AFFECTED_VISUAL_RESPONSIBILITY_ONLY',
     sameCaptureConditionsRequired:true,
@@ -5096,8 +5502,6 @@ export function buildVibeAssetProductionPlan({
   // [오토 바이옴 · 모든 게임] 기존 BUILD_UP은 매 회차 바이옴 제작 도구를 실행한다.
   // 검증된 게임 설계에 공간 정보가 없는 경우에도 실행 결과를 누락하지 않고
   // APPROVED_DESIGN_REQUIRED로 유지한다. 도구 사용은 맵 생성 승인이나 게임 상태 변경이 아니다.
-  const verifiedDesign=task.buildUpDirective?.designContextMode==='APPROVED_OR_MINIMUM_DESIGN'
-    ?task.buildUpDirective?.designImplementationContext||null:null;
   const designSpatial=verifiedDesign?.spatialLayout&&typeof verifiedDesign.spatialLayout==='object'
     &&!Array.isArray(verifiedDesign.spatialLayout)?verifiedDesign.spatialLayout:null;
   const authoredProceduralWorld=designSpatial?.proceduralWorld&&typeof designSpatial.proceduralWorld==='object'&&!Array.isArray(designSpatial.proceduralWorld)?designSpatial.proceduralWorld:null;
@@ -5477,6 +5881,7 @@ export function buildVibeAssetProductionPlan({
   return freeze({
     version:1,
     kind:'vibe2-asset-production-plan',
+    gameConceptStyle,
     graphicsProductionRoot:'GRAPHICS_PRODUCTION',
     externalTopLevelGraphicsWorkUnit:false,
     plannerRole:'GRAPHICS_PRODUCTION_INPUT_ONLY',
@@ -5493,7 +5898,9 @@ export function buildVibeAssetProductionPlan({
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
     flowAssetRequirements,
     assetSupplySummary,
+    detailedAssetCandidateReview,
     automaticAssetBindingWork,
+    externalCustomization,
     genreMenuRecommendations,
     registrySync:freeze({
       changed:librarySync.changed===true,
@@ -6055,6 +6462,24 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.gameConceptStyle?'[GAME CONCEPT STYLE] '+JSON.stringify(plan.gameConceptStyle)+'. 공용 나무·몬스터·건물·재질은 원본을 보존하고 이 게임의 컨셉·세계·스타일에 맞는 네이티브 파생으로 선택·변형·조합한다. 재질 분류 수와 색·표면 변형 수는 유행 스타일 종류 수가 아니다. 색만 바꾸지 말고 승인된 실루엣·비율·재질 반응·표면 디테일·조명·모션·UI 표현을 적용한다. 다른 게임이나 오래된 공유 스타일로 덮지 않는다. 스타일 명세가 없으면 누락으로 남기고 일반 프리셋으로 최종 스타일 일치를 주장하지 않는다. 원본 해시·게임별 파생·설계 식별·같은 빌드의 중립 비교와 실게임 카메라 증거를 연결하며 판정·충돌·저장·서버 권한은 보존한다.': '',
+    plan.externalCustomization?.contentComposition?.authorized
+      ?'[ALL-GENRE EXISTING F0-F9 CONTENT COMPOSITION] '+
+        JSON.stringify(plan.externalCustomization.contentComposition)+
+        '. 모든 게임 장르는 공통 책임 함수의 승인 설계를 기준으로 CONTENT CAPABILITIES를 선택한다. 플로어·방·던전·하우징·습격을 모든 게임에 강제하지 않는다. F0는 최소 실제 첫 플레이의 조작→상태 변경→관찰 가능한 결과와 기존 소스 검증이 필요하다. F0의 계획·컴파일·정적 검사만으로 런타임 PASS를 주장하지 않는다. F1~F8은 설계에 명시된 공간/층과 하우징 및 습격을 기존 BUILD_UP 해당 게임 책임 함수에 직접 구현한다. 하우징은 승인된 건설·설치·회수·비용·소유권·서버 권한·저장·재접속을 보존하고, 습격은 승인된 생성 주기·스폰·경로·공격 판정·방어·보상·종료·재접속 상태를 보존한다. 공간 생성은 시작점→종점 도달과 충돌·안전한 생성 위치를 검증하며 경주·퍼즐·경영·소셜처럼 공간 절차 제작이 불필요한 경우 억지로 추가하지 않는다. 외부 알고리즘과 DCC는 기존 제작의 시각·배치 입력이며 자체 게임 규칙 권한이 아니다. F9는 정확한 소스/아티팩트에서 실제 실행·모바일 조작·필요한 저장/재접속·회귀 증거를 요구한다. 검사 실패 시 해당 기존 책임 소스를 수정해 다시 검증하고 미검증 내용은 다음 회차 GAP로 남긴다. 중복 큐·새 파이프라인·검사 우회·임의 규칙 확장 금지.'
+      : '',
+    plan.externalCustomization?.authorized&&plan.externalCustomization?.roles?.length
+      ?'[VERIFIED EXTERNAL ALGORITHM / DCC LIBRARY HANDOFF] '+
+        JSON.stringify({gameId:plan.externalCustomization.gameId,target:plan.externalCustomization.target,
+          status:plan.externalCustomization.status,designFingerprint:plan.externalCustomization.designFingerprint,
+          applicationOrder:plan.externalCustomization.applicationOrder,
+          references:plan.externalCustomization.references.filter(row=>row.roles.length).map(row=>({
+            id:row.id,kind:row.kind,roles:row.roles,responsibleOwner:row.responsibleOwner,
+            integration:row.integration,sourceUrl:row.sourceUrl,status:row.status,
+            sourceCandidates:row.sourceCandidates,nextAction:row.nextAction
+          }))})+
+        '. 최신 승인된 게임 설계와 공용 자산 원장을 기반으로, 기존 GRAPHICS_PRODUCTION·ASSET_DEVELOPMENT·BUILD_UP 책임 코드에만 원본 보존형 파생/재질/지형/배치/경로/최적화 후보를 연결한다. FastNoiseLite/WFC/A*는 외부 알고리즘의 참고 문헌이며 검증된 실제 코드·라이선스 없이 실행된 것으로 처리하지 않는다. Blender/Material Maker/glTF Transform은 설치·실행·출력물 해시·라이선스·실제 플랫폼 바인딩을 각각 확인하기 전에는 후보일 뿐이다. 먼저 현재 게임에 맞는 라이브러리 자산을 재사용하고 중복 원본 제작을 막는다. 실제 원본 파일과 승인된 3D 설계, 라이선스, 동일 게임의 styleBible, 게임 엔진 성능 조건을 만족해야 한다. 개발은 로블록스와 일반 웹만 허용하며 유니티 웹·안드로이드는 개발 대상으로 잡지 않는다. 검증 실패 시 기존 체크포인트 복구만 사용한다. 그래픽 품질/게임 실행/CI/학습 PASS를 추정하거나 우회하지 않으며 게임 규칙·밸런스·저장·서버 권한을 변경하지 않는다.'
+      : '',
     plan.automaticAssetBindingWork?.enabled
       ?'[VIBE AUTOMATIC GAME ASSET BINDING] '+JSON.stringify(plan.automaticAssetBindingWork)+
        '. 기존 BUILD_UP에서 매 회차 실제 게임 소스 소비와 현재 내부 라이브러리 선택을 자동 대조한다. NATIVE_SOURCE_BINDING_REQUIRED는 현재 게임 책임 함수에만 역할·권리·플랫폼 호환 내부 자산을 직접 연결하고, SOURCE_BOUND_RUNTIME_QA_REQUIRED는 중복 재제작하지 않고 실제 엔진·모바일 표시 증거를 확인한다. SOURCE_ASSET_REQUIRED와 AUTHORING_REQUIRED는 기존 ASSET_DEVELOPMENT에서 원본·파생 제작으로 해결한다. 현재 적용된 게임 규칙, 저장, 멀티 권한은 유지한다. 변경 성공은 소스 해시/QA/런타임 검증까지 확인한 뒤 기존 학습 모터에만 전달하며 미확인 결과는 긍정 학습이나 완료 판정에 넣지 않는다. 기존 GRAPHICS_PRODUCTION·BUILD_UP 단계, 기존 권한 범위만 사용하고 별도 큐나 파이프라인을 만들지 않는다.'
@@ -6251,3 +6676,4 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=buildVibeAssetProductionPlan({task,target:task.target,repoRoot});
   console.log(JSON.stringify({registrySync:result.registrySync,plan:result},null,2));
 }
+

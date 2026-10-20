@@ -14,8 +14,98 @@ import {
   buildDesignToPlatformCodingTrace,
   classifyDevelopmentImpact,
   directivePrompt,
-  inspectGameSources
+  playerFacingInspectionPromptLines,
+  inspectGameSources,
+  buildGameInternalAutoCompositionPlan
 } from '../tools/company-build-up-directive.mjs';
+
+test('ordinary Web authorization stays separate from Unity Web owner hold',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-web-owner-'));
+  const prior=process.env.COMPANY_VERIFIED_POLICY_PATH;
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy={
+    robloxStudioProductionFlowContract:{status:'ACTIVE_EXECUTABLE_CONTRACT',platforms:['ROBLOX','UNITY','WEB']},
+    developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',WEB:'ALWAYS_ALLOWED',UNITY_WEB:'OWNER_HOLD',UNITY:'OWNER_HOLD'},
+    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',authority:'OWNER_DIRECTIVE_2026-10-09',activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY','UNITY_WEB']},
+    ownerCurrentScope20261017:{status:'ACTIVE',authority:'OWNER_DIRECTIVE_2026-10-17_ROBLOX_AND_GENERAL_WEB',activeTargets:['ROBLOX','WEB'],ownerHeldTargets:['UNITY','UNITY_WEB']}
+  };
+  const source=(file)=>({sourceTreeFingerprint:'web-owner-scope',sourceRoot:file.split('/').slice(0,2).join('/'),
+    topFiles:[{file,score:10}],sourceAnchors:[],observations:[],signals:{}});
+  const make=(platform,rootPath)=>{
+    const ext=rootPath.startsWith('unity-games/')?'Assets/Scripts/GameCore.cs':'game.js';
+    const file=rootPath+'/'+ext;
+    return buildGameSpecificBuildUpDirective({
+      gameId:'garden',platform,repoRoot:root,sourceRoot:rootPath,
+      sourceObservation:source(file),responsibleFiles:[file],
+      designRecord:{content:{identity:'정원 방어',genre:'DEFENSE',coreLoop:['적 분석','배치','방어']}}
+    });
+  };
+  try{
+    fs.mkdirSync(path.dirname(policyPath),{recursive:true});
+    process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    const webDirective=make('WEB','web-games/garden');
+    assert.equal(webDirective.productionPlan?.platform,'WEB');
+    assert.match(webDirective.platformAdaptationDirectives.WEB,/MAIN = A \+ B \+ C \+ D \+ @/);
+    assert.match(webDirective.platformAdaptationDirectives.WEB,/PlayCanvas/);
+    assert.match(webDirective.platformAdaptationDirectives.WEB,/2D·2\.5D·DOM/);
+    assert.match(webDirective.platformAdaptationDirectives.WEB,/기존 BUILD_UP과 F0~F9/);
+    assert.match(webDirective.platformAdaptationDirectives.ROBLOX,/Luau/);
+    assert.match(webDirective.platformAdaptationDirectives.ROBLOX,/D는 출처를 가진 구체 창작/);
+    assert.match(webDirective.platformAdaptationDirectives.UNITY,/MAIN = A \+ B \+ C \+ D \+ @/);
+    assert.match(webDirective.platformAdaptationDirectives.FORTNITE_UEFN,/MAIN = A \+ B \+ C \+ D \+ @/);
+    assert.equal(make('WEB','unity-games/garden').productionPlan,null,'Unity Web output remains held');
+    policy.developmentAccess.WEB='OWNER_HOLD';
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    assert.equal(make('WEB','web-games/garden').productionPlan?.platform,'WEB','latest approved active scope overrides stale raw access');
+    policy.ownerCurrentScope20261017.activeTargets=['ROBLOX'];
+    policy.ownerCurrentScope20261017.ownerHeldTargets.push('WEB');
+    fs.writeFileSync(policyPath,JSON.stringify(policy));
+    assert.equal(make('WEB','web-games/garden').productionPlan,null,'latest owner Web hold fails closed without changing the earlier directive');
+  }finally{
+    if(prior===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+    else process.env.COMPANY_VERIFIED_POLICY_PATH=prior;
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('every game worker receives concrete player-facing inspections without fabricated quality credit',()=>{
+  for(const gameId of ['daechung-rpg','puzzle','bug-defense']){
+    const d=buildGameSpecificBuildUpDirective({gameId,platform:'ROBLOX',designRecord:design(),responsibleFiles:[`roblox-games/${gameId}/client/Game.client.luau`]});
+    const contract=d.playerFacingInspectionContract;
+    assert.equal(contract.gameId,gameId);
+    assert.equal(contract.requiredEveryBuildUpCycle,true);
+    assert.equal(contract.executionBoundary,'EXISTING_BUILD_UP_AND_F0_F9_ONLY');
+    assert.equal(contract.evidenceState,'UNVERIFIED');
+    assert.equal(contract.technicalPassIsNotVisualQualityPass,true);
+    assert.equal(contract.thumbnailTransportIsNotRenderedQuality,true);
+    assert.equal(contract.checklistIsNotExecutedEvidence,true);
+    assert.equal(new Set(contract.cases.map(row=>row.id)).size,15);
+    assert.ok(contract.cases.every(row=>row.scene&&row.failureCriteria&&row.responsibility&&row.retest&&row.evidenceState==='UNVERIFIED'));
+    for(const id of ['UI_LAYOUT','UI_INTERACTION','CHARACTER_RENDER','MONSTER_READABILITY','MOTION_TRANSITIONS','ACTION_IMPACT','CAMERA_COMPOSITION','WORLD_BACKGROUND','GRAPHICS_INTEGRITY','NAVIGATION_BLOCKERS','PROGRESSION_BLOCKERS','RECOVERY_SAVE','MULTIPLAYER_CONSISTENCY','MOBILE_PERFORMANCE','LOBBY_SPACES']){
+      assert.ok(contract.cases.some(row=>row.id===id));
+    }
+    const prompt=directivePrompt(d);
+    assert.ok(prompt.includes('PLAYER_FACING_INSPECTION_CONTRACT:'));
+    for(const row of contract.cases)assert.ok(prompt.includes(row.id));
+    for(const line of playerFacingInspectionPromptLines(contract,{focus:d.primaryFocus,generation:d.generation}))assert.ok(prompt.includes(line));
+    assert.ok(d.acceptanceEvidence.includes('MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED'));
+  }
+});
+
+test('technical or thumbnail PASS cannot make generated inspection evidence verified',()=>{
+  const d=buildGameSpecificBuildUpDirective({gameId:'daechung-rpg',platform:'ROBLOX',designRecord:design(),runtimeEvidence:{runtimeObserved:true,runtimePassed:true,imageContentPassed:true,repeatCount:100}});
+  assert.equal(d.playerFacingInspectionContract.evidenceState,'UNVERIFIED');
+  assert.ok(d.playerFacingInspectionContract.cases.every(row=>row.evidenceState==='UNVERIFIED'));
+  assert.match(d.playerFacingInspectionContract.applicabilityRule,/NOT_APPLICABLE_REQUIRES_DESIGN_AND_SOURCE_REASON/);
+  const rules=d.playerFacingInspectionContract.evidenceRules.join('\n');
+  assert.match(rules,/반복 횟수.*합격을 증명하지 않는다/);
+  assert.match(rules,/증거 부재를 관찰된 그래픽 오류로 꾸미지 않는다/);
+  assert.match(rules,/연속 프레임/);
+  assert.match(rules,/영향.*검증 범위/);
+  assert.match(d.playerFacingInspectionContract.cases.find(row=>row.id==='LOBBY_SPACES').retest,/로비 없는 게임에 강제 추가 금지/);
+  assert.match(d.playerFacingInspectionContract.cases.find(row=>row.id==='ACTION_IMPACT').retest,/데미지·쿨다운·히트 의미 보존/);
+});
 
 
 test('web detailed original backfill preserves existing Roblox detailed platform design',()=>{
@@ -135,7 +225,7 @@ test('detailed verified design fields survive into build-up and implementation p
   assert.match(directivePrompt(directive),/GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION/);
   assert.match(directivePrompt(directive),/플랫폼별 재설계는 금지/);
   const unityDirective=buildGameSpecificBuildUpDirective({gameId:'detail-lineage',gameName:'상세 설계',platform:'UNITY',designRecord:detailed,sourceObservation,responsibleFiles:['roblox-games/detail-lineage/Game.luau']});
-  assert.match(directivePrompt(unityDirective),/동일 공통 원본의 규칙과 상태를 보존/);
+  assert.match(directivePrompt(unityDirective),/MAIN = A \+ B \+ C \+ D \+ @ 공통 원본의 규칙과 상태를 보존/);
   assert.match(directivePrompt(unityDirective),/게임 규칙 확장은 공통 원본 개정/);
 });
 
@@ -310,6 +400,80 @@ test('V5 creative C and individually sourced A/B are required for authored build
   });
   assert.deepEqual(legacyTrace.roleBindings.map(row=>row.role),['MAIN','A','B','c','@']);
   assert.ok(!legacyTrace.gapReasons.includes('DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING'));
+});
+
+test('standard A+B+C+D+@ design flows into Roblox Luau source guidance without obsolete C materials',()=>{
+  const record=design();
+  record.content.signatureSystems=['MAIN','A','B','DELVE'].map((role,index)=>({
+    id:'standard-rule-'+index,grammarRole:role,name:'연결 설계 '+role,
+    purpose:'선택의 결과가 현재 월드와 다음 상호작용 상태에 반영된다.',
+    playerChoice:'관측된 단서에 따라 다음 행동을 선택한다.',
+    stateInputs:['SharedState'],stateOutputs:['SharedState']
+  }));
+  const standard={
+    standardVersion:1,materialHierarchyVersion:2,
+    mainIdentity:'두 서사 장르에 기반한 연구와 직접 행동이 연결된 게임',
+    a:{system:'탐험 시스템',material:'신화',materialDomain:'신화',stateChange:'지역 조사가 다음 의뢰와 위험 상태를 바꾼다.'},
+    b:{system:'추리 시스템',material:'저승사자',materialDomain:'한국 신화',stateChange:'단서 해석이 탐험의 다음 경로와 보조 목표를 바꾼다.'},
+    abCausality:'탐험의 선택이 수집할 단서를 바꾸고 추리 결과가 다음 탐험 경로를 바꾼다.',
+    cGenres:[
+      {role:'PRIMARY',name:'미스터리',gameplayEffect:'단서로 사건 진실을 추적하고 선택을 바꾼다.'},
+      {role:'SECONDARY',name:'공포',gameplayEffect:'위협이 단서 탐색과 귀환 선택에 영향을 준다.'}
+    ],
+    cGenreInterlock:'공포 연출로 위험한 탐사 시간이 생기고 추리 결과는 탈출 경로를 바꾼다.',
+    cWorldAndGameplayEffect:'서사 사건과 플레이 상태가 연쇄적으로 새로운 탐험 조건을 만든다.',
+    dCreations:[{
+      id:'escort-story',materialPath:['신화','한국 신화','저승사자'],
+      creation:'망자 인도 기록을 조사하는 신화적 사건과 마을을 구체화한다.',
+      gameplayEffect:'올바른 조사 경로를 선택하면 마을의 접근 가능한 곳이 바뀐다.',
+      genreRoles:['PRIMARY','SECONDARY'],linkedElements:['A','B']
+    }],
+    delveDiscoveries:Array.from({length:4},(_,i)=>({
+      sourceDId:'escort-story',clue:'명부의 기록과 주민 증언 대조 '+i,
+      experiment:'두 기록의 차이를 조사하고 그 결과를 비교한다.',
+      discovery:'새 접근 경로의 상태 조건을 발견한다.',
+      newChoice:'연구한 조건을 이용해 새로운 우회 경로를 선택한다.',
+      nextQuestion:'변경된 접근 경로가 다른 주민에게 미치는 영향은 무엇인가?'
+    })),
+    delveGrowthRule:'연구를 반복할수록 다른 단서 연결과 새 사건 해법이 드러난다.'
+  };
+  record.content.creativeGrammar=standard;
+  const sourceObservation={sourceTreeFingerprint:'standard-luau-test',topFiles:[],sourceAnchors:[],observations:[],signals:{}};
+  const result=buildGameSpecificBuildUpDirective({
+    gameId:'standard-design-luau',platform:'ROBLOX',designRecord:record,sourceObservation
+  });
+  const map=result.identityReinforcement.causalGrammarEvidence.existingGameGrammarMap;
+  assert.equal(map.formula,'MAIN = A + B + C + D + @');
+  assert.equal(map.source,'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS');
+  assert.deepEqual(map.cGenreThemes,[],'new standard cannot require old C material themes');
+  assert.equal(map.dCreations.length,1);
+  assert.ok(result.designedGameVolume.items.some(row=>row.family==='CREATIVE_D_CREATIONS'&&row.authoredId==='escort-story'));
+  assert.equal(result.designedGameVolume.authoredCounts.CREATIVE_AT_DELVE,4);
+  const instruction=directivePrompt(result);
+  assert.match(instruction,/MAIN=A\+B\+C\+D\+@ 기준/);
+  assert.match(instruction,/Roblox Luau/);
+  const check=input=>buildDesignToPlatformCodingTrace({
+    gameId:'standard-design-luau',design:input,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  const trace=check(record.content);
+  assert.deepEqual(trace.roleBindings.map(row=>row.role),['MAIN','A','B','@']);
+  assert.equal(trace.originalSourceLanguage,'LUAU');
+  assert.equal(trace.creativeCBinding.designAuthored,true);
+  assert.equal(trace.creativeCBinding.dCreations[0].id,'escort-story');
+  assert.equal(trace.creativeCBinding.delveDLinks.length,4);
+  assert.equal(trace.gapReasons.includes('DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING'),false);
+  assert.equal(trace.gapReasons.includes('DESIGN_CREATIVE_D_CREATIONS_MISSING'),false);
+  assert.equal(trace.gapReasons.includes('DESIGN_CREATIVE_AT_D_RESEARCH_LINK_MISSING'),false);
+  assert.equal(trace.sourceImplementationPassed,false);
+  assert.equal(trace.actualTwoClientPassed,false);
+  const detached=structuredClone(record.content);
+  detached.creativeGrammar.delveDiscoveries[0].sourceDId='nonexistent';
+  const detachedTrace=check(detached);
+  assert.equal(detachedTrace.creativeCBinding.designAuthored,false);
+  assert.ok(detachedTrace.gapReasons.includes('DESIGN_CREATIVE_AT_D_RESEARCH_LINK_MISSING'));
+  const absent=structuredClone(record.content);
+  absent.creativeGrammar.dCreations=[];
+  assert.ok(check(absent).gapReasons.includes('DESIGN_CREATIVE_D_CREATIONS_MISSING'));
 });
 
 test('holistic build-up marks sparse map inventory UI session and convenience systems as explicit gaps',()=>{
@@ -1121,7 +1285,7 @@ test('Unity Web graph and source packages survive focused Vibe worker compressio
   const {guide,compact}=runInNewContext(worker.slice(start,finish)
     +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
       clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
-      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines,
       boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
       COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
       Buffer,console:{log(){}}
@@ -1290,7 +1454,7 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
   const {guide,compact}=runInNewContext(worker.slice(start,finish)
     +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
       clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\\\','/'),
-      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines,
       boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
       COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
       Buffer,console:{log(){}}
@@ -1298,6 +1462,7 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
   const owner='roblox-games/demo/server/Game.server.luau';
   const roles=['MAIN','A','B','c','@'];
   const row={directiveId:'demo',gameId:'demo',generation:1,
+    playerFacingInspectionContract:buildGameSpecificBuildUpDirective({gameId:'demo',platform:'ROBLOX',designRecord:design()}).playerFacingInspectionContract,
     gameIdentityAndNonNegotiables:{identity:'공통 원본'},
     thisLoopPrimaryGoal:'CODE_OWNER_REPAIR '.repeat(2400),
     designToPlatformCodingTrace:{
@@ -1321,6 +1486,9 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
     assert.match(variant,/designCodePlatform=ROBLOX/);
     assert.match(variant,/designCodeBinding=design:/);
     assert.match(variant,/designCodeVerification=/);
+    assert.match(variant,/inspectionContract=.*QUALITY_UNVERIFIED/);
+    for(const item of row.playerFacingInspectionContract.cases)assert.ok(variant.includes(item.id));
+    for(const line of playerFacingInspectionPromptLines(row.playerFacingInspectionContract,{generation:1}))assert.ok(variant.includes(line),'inspection replay must survive focused/oversized recovery');
   }
 });
 
@@ -1461,7 +1629,7 @@ test('focused game worker keeps one exact approved content item in compact sourc
   const {guide,compact}=runInNewContext(worker.slice(start,finish)
     +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
       clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
-      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines,
       boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
       COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
       Buffer,console:{log(){}}
@@ -1607,7 +1775,7 @@ test('preservation-only approved design keeps all volume entries but forbids new
   const {guide}=runInNewContext(worker.slice(start,finish)
     +'\n({guide:gameSpecificBuildUpDirectiveGuidance})',{
       clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
-      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines,
       boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
       COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
       Buffer,console:{log(){}}
@@ -1617,4 +1785,281 @@ test('preservation-only approved design keeps all volume entries but forbids new
   assert.match(lines,/contentVolume=authored:/);
   assert.doesNotMatch(lines,/volumeImplementation=ref:/,
     'presentation-only preservation must not be executed as a new progression mechanic');
+});
+
+
+test('all-game auto composition connects existing lobby, customization, materials, inventory, UI and world with QA gates',()=>{
+  const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-internal-auto-'));
+  try{
+    const sourceRoot='roblox-games/composer-demo';
+    const client=sourceRoot+'/client/Game.client.luau';
+    const server=sourceRoot+'/server/Game.server.luau';
+    fs.mkdirSync(path.join(repoRoot,sourceRoot,'client'),{recursive:true});
+    fs.mkdirSync(path.join(repoRoot,sourceRoot,'server'),{recursive:true});
+    fs.writeFileSync(path.join(repoRoot,client),
+      'local ScreenGui = "ScreenGui"\nlocal lobby = "Lobby"\nlocal inventory = "Inventory"\nlocal avatar = "Appearance"\nlocal material = "SurfaceAppearance"\nlocal equip = "Equip"\nlocal portal = "Portal"\nlocal battle = "Attack"\nlocal shop = "Shop"\nlocal openChest = "ProximityPrompt"\nlocal loot = "Reward"\n');
+    fs.writeFileSync(path.join(repoRoot,server),
+      'local saveService = "DataStoreService"\nlocal UpdateAsync = "UpdateAsync"\nlocal Inventory = "Inventory"\nlocal Equipped = "Equipped"\n');
+    const observed=inspectGameSources({repoRoot,sourceRoots:[sourceRoot]});
+    const plan=buildGameInternalAutoCompositionPlan({
+      gameId:'composer-demo',platform:'ROBLOX',repoRoot,sourceRoot,sourceObservation:observed,
+      design:{identity:'Demo',interfacePlan:{main:'lobby/inventory'}}
+    });
+    assert.equal(plan.components.find(c=>c.id==='LOBBY').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='CUSTOMIZATION').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='MATERIAL').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='SAVE').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='COMBAT').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='REWARD').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='SHOP').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.equal(plan.components.find(c=>c.id==='INVENTORY').state,'EXISTING_SOURCE_CONNECTION_CANDIDATE');
+    assert.ok(plan.components.find(c=>c.id==='UI').responsibleFiles.includes(client));
+    assert.equal(plan.worldGraph.enabled,true);
+    assert.equal(plan.worldGraph.runtimeTraversalVerified,false);
+    assert.equal(plan.uiModeSelection.combat.length>0,true);
+    assert.equal(plan.stateChain.applicable,true);
+    assert.deepEqual(plan.stateChain.checks.map(c=>c.id),['ACQUIRE','STORE','EQUIP','STAT_AND_APPEARANCE','SAVE','RECONNECT_RESTORE']);
+    assert.ok(plan.stateChain.checks.every(c=>c.passed===false));
+    assert.equal(plan.sharedAssetSelection.noNewAssetGeneration,true);
+    assert.equal(plan.runtimeVerified,false);
+    const directive=buildGameSpecificBuildUpDirective({gameId:'composer-demo',gameName:'Composer',
+      platform:'ROBLOX',repoRoot,sourceRoot,sourceObservation:observed,designRecord:{identity:'Demo'}});
+    assert.equal(directive.gameInternalAutoComposition.gameId,'composer-demo');
+    assert.match(directivePrompt(directive),/GAME_INTERNAL_AUTO_COMPOSITION:/);
+    assert.match(directivePrompt(directive),/AUTO_COMPOSITION_RULE:/);
+  }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
+});
+
+// 메인 · 최초 후보의 상위 파일 밖에 있는 기존 모듈까지 F0 재사용 책임에 전달한다.
+test('F0 existing game modules never demand unapproved weather combat crafting or skill mechanics from generic world UI audio',()=>{
+  const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-f0-genre-scope-'));
+  try{
+    const sourceRoot='web-games/exploration-only';
+    fs.mkdirSync(path.join(repoRoot,sourceRoot),{recursive:true});
+    fs.writeFileSync(path.join(repoRoot,sourceRoot,'world.js'),
+      'const region = "region"; const button = "button"; const sound = "sound";\n');
+    const observed=inspectGameSources({repoRoot,sourceRoots:[sourceRoot]});
+    const createPlan=design=>buildGameInternalAutoCompositionPlan({
+      gameId:'exploration-only',platform:'WEB',repoRoot,sourceRoot,
+      sourceObservation:observed,design
+    });
+    const plan=createPlan({identity:'World only',coreLoop:['지역 탐험','목표 발견']});
+    for(const id of ['WORLD_BIOME_WEATHER','ACTION_MOTION_COMBAT',
+      'CRAFT_ECONOMY_INVENTORY','FARMING_WORLD_WEATHER','SKILL_VFX_AUDIO']){
+      assert.ok(!plan.moduleConnections.some(x=>x.id===id),id+' must not invent a missing genre mechanic');
+    }
+    assert.equal(plan.worldGraph.enabled,true);
+    assert.equal(plan.runtimeVerified,false);
+    const approved=createPlan({
+      identity:'World with approved biome and weather',
+      spatialLayout:{biome:'approved forest biome',season:'approved weather season'}
+    });
+    const missing=approved.moduleConnections.find(x=>x.id==='WORLD_BIOME_WEATHER');
+    assert.ok(missing,'approved design requests genuine source binding work');
+    assert.equal(missing.state,'MISSING_REQUIRED_SOURCE_REVIEW');
+    assert.ok(missing.missingRoles.includes('WEATHER'));
+    assert.ok(missing.missingRoles.includes('BIOME'));
+    assert.equal(missing.passed,false);
+  }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
+});
+
+test('all-game F0 composition discovers real biome housing customization motion and action owners outside ranked top files',()=>{
+  const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-f0-source-coverage-'));
+  try{
+    const sourceRoot='web-games/f0-demo',otherRoot='web-games/unrelated';
+    fs.mkdirSync(path.join(repoRoot,sourceRoot,'systems'),{recursive:true});
+    fs.mkdirSync(path.join(repoRoot,otherRoot),{recursive:true});
+    for(let i=0;i<25;i++){
+      fs.writeFileSync(path.join(repoRoot,sourceRoot,'systems','combat-'+String(i).padStart(2,'0')+'.js'),
+        Array(8).fill('function damage() { return health + enemy + player + item; }').join('\n'));
+    }
+    const modules={
+      'region.js':'const approvedBiome = "biome"; const terrain = "terrain";',
+      'home.js':'const buildMode = "housing"; const placeStructure = "placeStructure";',
+      'avatar.js':'const avatar = "customization";',
+      'motion.js':'const animator = "Animator"; const clips = "AnimationTrack";',
+      'actions.js':'const harvest = "harvest"; const gather = "gather";'
+    };
+    for(const [file,source] of Object.entries(modules))fs.writeFileSync(
+      path.join(repoRoot,sourceRoot,'systems',file),source);
+    fs.writeFileSync(path.join(repoRoot,otherRoot,'secret.js'),
+      'const privateBiome="biome"; const privateHousing="housing";');
+    const observed=inspectGameSources({repoRoot,sourceRoots:[sourceRoot]});
+    assert.ok(observed.topFiles.length<=20);
+    assert.equal(observed.topFiles.some(row=>/(?:region|home|avatar|motion|actions)\.js$/.test(row.file)),false,
+      'fixture modules are below ranking cutoff and must still be inspected');
+    const plan=buildGameInternalAutoCompositionPlan({
+      gameId:'f0-demo',platform:'WEB',repoRoot,sourceRoot,sourceObservation:observed,
+      design:{identity:'F0 Demo',spatialLayout:{biome:'forest'},coreLoop:['채집','집짓기'] }
+    });
+    for(const [component,file] of Object.entries({
+      BIOME:'region.js',HOUSING:'home.js',CUSTOMIZATION:'avatar.js',MOTION:'motion.js',ACTION:'actions.js'
+    })){
+      const row=plan.components.find(item=>item.id===component);
+      assert.equal(row.state,'EXISTING_SOURCE_CONNECTION_CANDIDATE',component);
+      assert.ok(row.responsibleFiles.some(name=>name.endsWith('/'+file)),component);
+      assert.equal(row.runtimeVerified,false,component);
+      assert.equal(row.implementationProven,false,component);
+    }
+    assert.equal(plan.worldGraph.enabled,true);
+    assert.equal(plan.worldGraph.biomeNativeSceneBindingVerified,false);
+    assert.equal(plan.worldGraph.housingPlacementPersistenceVerified,false);
+    assert.ok(plan.worldGraph.requiredChecks.includes('APPROVED_BIOME_TO_NATIVE_TERRAIN'));
+    assert.ok(plan.worldGraph.requiredChecks.includes('HOUSING_SAVE_REJOIN'));
+    assert.ok(plan.requiredProof.includes('MOTION_ACTION_SAME_APPROVED_HIT_EVENT'));
+    assert.ok(plan.requiredProof.includes('ACTUAL_CHARACTER_MODEL_AND_SAVE_RESTORE'));
+    assert.ok(Object.values(plan.sourceFilesByRole).flat().every(file=>file.startsWith(sourceRoot+'/')));
+    assert.equal(plan.implementationProven,false);
+    assert.equal(plan.runtimeVerified,false);
+    const directive=buildGameSpecificBuildUpDirective({
+      gameId:'f0-demo',gameName:'F0 Demo',platform:'WEB',repoRoot,sourceRoot,
+      sourceObservation:observed,designRecord:{identity:'F0 Demo',spatialLayout:{biome:'forest'}}
+    });
+    assert.match(directivePrompt(directive),/Biomes must map approved regions/);
+    assert.ok(directive.gameInternalAutoComposition.components.some(row=>row.id==='HOUSING'));
+  }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
+});
+
+// 메인 · 수많은 공통 모듈이 있어도 실제 게임 소스에 없는 시스템을 생성 완료로 기록하지 않는다.
+test('F0 game modules expose diverse existing cross-system owners and exact QA gaps without runtime PASS',()=>{
+  const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-f0-cross-system-'));
+  try{
+    const sourceRoot='web-games/vibe-modules';
+    fs.mkdirSync(path.join(repoRoot,sourceRoot,'systems'),{recursive:true});
+    const files={
+      'world.js':'const region = "region"; const biome = "biome"; const weather = "weather";',
+      'house.js':'const housing = "housing"; const inventory = "inventory"; const datastore = "DataStoreService";',
+      'avatar.js':'const customization = "customization"; const equipped = "equipped";',
+      'npc.js':'const npc = "npc"; const questLog = "questLog";',
+      'combat.js':'const attack = "attack"; const Animator = "Animator";',
+      'economy.js':'const crafting = "crafting"; const economy = "economy";',
+      'farming.js':'const crop = "crop"; const season = "season";',
+      'effects.js':'const projectile = "projectile"; const sound = "sound";',
+      'network.js':'const serverRpc = "serverRpc"; const collisionShape = "collisionShape";'
+    };
+    for(const [file,content] of Object.entries(files))
+      fs.writeFileSync(path.join(repoRoot,sourceRoot,'systems',file),content);
+    const observed=inspectGameSources({repoRoot,sourceRoots:[sourceRoot]});
+    const plan=buildGameInternalAutoCompositionPlan({
+      gameId:'vibe-modules',platform:'WEB',repoRoot,sourceRoot,sourceObservation:observed,
+      design:{identity:'Modules',spatialLayout:{biome:'forest'},coreLoop:['집짓기','퀘스트','제작']}
+    });
+    for(const name of [
+      'BIOME','HOUSING','CUSTOMIZATION','MOTION','ACTION','NPC_AI','QUEST_DIALOGUE',
+      'CRAFTING','ECONOMY','FARMING','WEATHER','PHYSICS','AUDIO','SKILL_VFX','NETWORK'
+    ]){
+      const row=plan.components.find(x=>x.id===name);
+      assert.ok(row,name);
+      assert.equal(row.state,'EXISTING_SOURCE_CONNECTION_CANDIDATE',name);
+      assert.equal(row.runtimeVerified,false,name);
+    }
+    const connections=plan.moduleConnections;
+    assert.ok(connections.length>=6);
+    for(const id of [
+      'WORLD_BIOME_WEATHER','HOUSING_INVENTORY_SAVE','CUSTOMIZATION_EQUIPMENT_SAVE',
+      'NPC_AI_QUEST','ACTION_MOTION_COMBAT','CRAFT_ECONOMY_INVENTORY',
+      'FARMING_WORLD_WEATHER','SKILL_VFX_AUDIO'
+    ]){
+      const row=connections.find(x=>x.id===id);
+      assert.ok(row,id);
+      assert.equal(row.state,'EXISTING_SOURCE_CONNECTION_CANDIDATE',id);
+      assert.equal(row.passed,false,id);
+      assert.equal(row.runtimeVerified,false,id);
+      assert.ok(row.responsibleFiles.every(file=>file.startsWith(sourceRoot+'/')));
+    }
+    assert.equal(plan.implementationProven,false);
+    assert.equal(plan.runtimeVerified,false);
+  }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
+});
+
+test('auto composition refuses phantom UI and cross-game source while preserving source-only quality state',()=>{
+  const repoRoot=fs.mkdtempSync(path.join(os.tmpdir(),'game-compose-isolation-'));
+  try{
+    const one='roblox-games/one',two='roblox-games/two';
+    fs.mkdirSync(path.join(repoRoot,one),{recursive:true});
+    fs.mkdirSync(path.join(repoRoot,two),{recursive:true});
+    fs.writeFileSync(path.join(repoRoot,one,'Game.luau'),'local currentGame = "attack"\n');
+    fs.writeFileSync(path.join(repoRoot,two,'Game.luau'),'local ScreenGui = "ScreenGui"\nlocal inventory="inventory"\nlocal lobby="Lobby"\n');
+    const observed=inspectGameSources({repoRoot,sourceRoots:[one]});
+    const polluted={...observed,topFiles:[...observed.topFiles,{file:two+'/Game.luau',score:999}]};
+    const p=buildGameInternalAutoCompositionPlan({gameId:'one',repoRoot,sourceRoot:one,
+      sourceObservation:polluted,design:{interfacePlan:{ui:'inventory',hub:'lobby'}}});
+    assert.equal(p.components.find(c=>c.id==='UI').state,'REVIEW_REQUIRED_NO_SOURCE');
+    assert.equal(p.components.find(c=>c.id==='INVENTORY').state,'REVIEW_REQUIRED_NO_SOURCE');
+    assert.equal(p.components.find(c=>c.id==='LOBBY').state,'REVIEW_REQUIRED_NO_SOURCE');
+    assert.deepEqual(p.uiModeSelection.combat,[]);
+    assert.equal(p.worldGraph.enabled,false);
+    assert.equal(p.stateChain.applicable,false);
+    assert.equal(p.implementationProven,false);
+    assert.equal(p.passed,false);
+  }finally{fs.rmSync(repoRoot,{recursive:true,force:true});}
+});
+
+
+test('Vibe compact source-worker instructions retain internal composition across existing game owners',()=>{
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const begin=worker.indexOf('function gameSpecificBuildUpDirectiveGuidance(');
+  const end=worker.indexOf('export function buildRobloxNativeSourceInspection',begin);
+  assert.ok(begin>=0&&end>begin);
+  const {guide,compact}=runInNewContext(worker.slice(begin,end)
+    +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
+      clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines,
+      boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
+      COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+      Buffer,console:{log(){}}
+    });
+  const source='roblox-games/game-a/client/Game.client.luau';
+  const d={
+    directiveId:'game-a-1',gameId:'game-a',platform:'ROBLOX',generation:1,primaryFocus:'UI',
+    gameInternalAutoComposition:{
+      gameId:'game-a',sourceTreeFingerprint:'source-evidence',
+      components:[{id:'LOBBY',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',responsibleFiles:[source]},
+        {id:'INVENTORY',state:'EXISTING_SOURCE_CONNECTION_CANDIDATE',responsibleFiles:[source]}],
+      uiModeSelection:{combat:[],lobby:['EXISTING_GAME_ENTRY'],inventory:['OWNED_ITEM_LIST']},
+      worldGraph:{enabled:false},stateChain:{applicable:false},
+      sharedAssetSelection:{noNewAssetGeneration:true}
+    },
+    playerFacingInspectionContract:{cases:[]},
+    visualBuildUpDirective:{domains:{}},responsibleSystemsAndFiles:{sourceAnchors:[]},
+    gameplayImplementationDirectives:[],progressionContentWorldDirectives:[],preserveConstraints:[],acceptanceEvidence:[],
+    uxInputDirectives:[],nextEscalationCandidates:[]
+  };
+  const full=guide({target:'roblox',gameId:'game-a',buildUpDirective:d},[source]);
+  assert.match(full,/autoComposition=/);
+  assert.match(full,/autoCompositionRule=/);
+  const narrowed=compact(full,{compact:true,selectedPath:source,responsiblePaths:[source]});
+  assert.match(narrowed,/autoComposition=/);
+  assert.match(narrowed,/autoCompositionRule=/);
+});
+
+test('maximizes internal algorithms through authorized Vibe and AI collaboration in existing BUILD_UP',()=>{
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:'simple-rpg',
+    platform:'ROBLOX',
+    designRecord:design(),
+    responsibleFiles:['roblox-games/simple-rpg/server/Game.server.luau']
+  });
+  const contract=d.internalAlgorithmUse;
+  assert.equal(contract.mode,'MAXIMIZE_TASK_RELEVANT_VERIFIED_INTERNAL_ALGORITHMS');
+  assert.equal(contract.priority[0],'SAME_GAME_SAME_FAILURE_VERIFIED_CAUSAL_AND_CODE_PATTERN');
+  assert.equal(contract.priority.at(-1),'AUTHORIZED_AI_COLLABORATION_ON_DISJOINT_RESPONSIBILITY_WITH_CANDIDATE_BRANCH_QA');
+  assert.equal(contract.aiCollaboration.vibePrimaryIntegrationAndLearning,true);
+  assert.equal(contract.aiCollaboration.approvedExternalAiMayImplementOnIsolatedCandidateBranch,true);
+  assert.equal(contract.aiCollaboration.externalAiUseRequiresExistingOptInAndAuthorization,true);
+  assert.equal(contract.aiCollaboration.disjointResponsibleFilesMayRunParallel,true);
+  assert.equal(contract.aiCollaboration.sameResponsibleFileConflictSerialized,true);
+  assert.equal(contract.aiCollaboration.deterministicallyVerifiedOutcomesFeedExistingLearningMotor,true);
+  assert.equal(contract.aiCollaboration.externalAiCannotWriteMainOrCentralPolicyOrApproveOwnWork,true);
+  assert.equal(contract.relevantAlgorithmsOnly,true);
+  assert.equal(contract.noDuplicateSubsystemsOrNewPipeline,true);
+  assert.equal(contract.noUnverifiedCapabilityClaims,true);
+  assert.equal(contract.qaReleaseSecurityGatesUnchanged,true);
+  assert.match(d.preserveConstraints[0],/Vibe와 승인된 AI 협업/);
+  const prompt=directivePrompt(d);
+  assert.match(prompt,/AI_COLLABORATION_INTERNAL_ALGORITHM: AI_COLLABORATION_VIBE_PRIMARY_INTEGRATION_AND_LEARNING/);
+  assert.match(prompt,/AUTHORIZED_EXTERNAL_AI_MAY_DEVELOP_AND_REPAIR_ON_ISOLATED_CANDIDATE_BRANCHES/);
+  // Existing source workers propagate preserveConstraints through both full and compact prompts.
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(worker, /preserve=\$\{\(d\.preserveConstraints\|\|\[\]\)/);
 });

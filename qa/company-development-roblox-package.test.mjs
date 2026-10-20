@@ -7,7 +7,7 @@ import {execFileSync,spawnSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRobloxArtifactLightingSerialization,resolvePackageSourceValidation,ROBLOX_PACKAGE_REQUIRED_ASSET_FAMILIES,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactLightingMigrationGuard,validateRobloxArtifactScriptInventory,validateRobloxPackageAssetThreshold} from '../tools/company-development-roblox-package.mjs';
 import {hasCurrentRobloxPackageAssetRepair,robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
-import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
+import {bindExistingServerStudioMaterial,buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
 test('guarded native bindings distinguish selected atoms from list counts',()=>{
   const environment='if #studioAssetFamily("ENVIRONMENT") > 0 and camp and camp:IsA("BasePart") then\n  camp.Material = Enum.Material.Slate\nend';
@@ -283,6 +283,10 @@ ${familyRows}
     fs.writeFileSync(path.join(root,'shared','GameConfig.luau'),config);
     fs.writeFileSync(path.join(root,'client','Game.client.luau'),client);
     const pass=validateRobloxPackageAssetThreshold({root,gameId:'demo',baseline,assetLibrary});
+    for(const row of pass.familyResults){
+      assert.ok(Array.isArray(row.responsibleFiles));
+      assert.ok(row.responsibleFiles.every(file=>!file.startsWith('/')&&!file.includes('..')));
+    }
     assert.equal(pass.pass,true);
     assert.equal(pass.familyCoverageCount,12);
     assert.equal(pass.requiredFamilyCount,12);
@@ -327,6 +331,23 @@ ${familyRows}
 });
 
 test('Roblox dynamic asset family detection follows actual native systems and ignores generic scaffold words',()=>{
+  const materials=fs.readFileSync('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau','utf8');
+  assert.equal(detectRobloxStudioAssetSystems({sourceText:materials}).MOTION,false,'재질 BONE은 모션 시스템이 아니다');
+  assert.equal(detectRobloxStudioAssetSystems({sourceText:materials}).ENVIRONMENT,false,'재질 Water·Rock 목록은 환경 객체가 아니다');
+  assert.equal(detectRobloxStudioAssetSystems({sourceText:materials}).PROP,false,'재질 Rock 목록은 소품 객체가 아니다');
+  assert.equal(detectRobloxStudioAssetSystems({sourceText:'local part = Instance.new("Part")\npart.Name = "Rock"'}).PROP,true);
+  for(const sourceText of [
+    'local presets = { BONE = {}, Animation = "idle", Animator = "actor" }',
+    'local message = "Bone AnimationTrack TweenService RenderStepped Heartbeat"',
+  ])assert.equal(detectRobloxStudioAssetSystems({sourceText}).MOTION,false);
+  for(const sourceText of [
+    'local bone = Instance.new("Bone")',
+    'local animator = humanoid:FindFirstChildOfClass("Animator")',
+    'local track = animator:LoadAnimation(animation)',
+    'track:AdjustSpeed(1)',
+    'local tween = game:GetService("TweenService")',
+    'runService.Heartbeat:Connect(function() end)',
+  ])assert.equal(detectRobloxStudioAssetSystems({sourceText}).MOTION,true,sourceText);
   const generic=detectRobloxStudioAssetSystems({sourceText:[
     'local camera = workspace.CurrentCamera',
     'local itemCount = 3',
@@ -694,4 +715,67 @@ ${familyRows}
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
   }
+});
+
+test('fantasy survival binds selected MATERIAL atoms to an existing visible world part',()=>{
+  const source=fs.readFileSync('roblox-games/fantasy-survival/server/Game.server.luau','utf8');
+  assert.ok(source.includes('studioAssetFamily("MATERIAL")'));
+  assert.ok(source.includes('nativeFoundationSpawn.Material = table.find(studioMaterialAtoms, "METAL")'));
+  assert.equal(robloxStudioAssetFamilyBoundInText(source,'MATERIAL'),true);
+  assert.ok(source.includes('nativeFoundationSpawn.CanCollide = false'));
+});
+
+test('Vibe MATERIAL repair binds selected asset atom to an existing visible native object without changing gameplay systems',()=>{
+  const selectedAtoms=['METAL','WOOD','STONE','CLOTH'];
+  for(const gameId of ['island-village','monster-adventure','seed-puzzle-chromatic-cascade']){
+    const original=fs.readFileSync(`roblox-games/${gameId}/server/Game.server.luau`,'utf8');
+    const repaired=bindExistingServerStudioMaterial({source:original,familyStatus:{MATERIAL:'APPLIED'},selectedAtoms});
+    assert.ok(repaired.startsWith(original.trimEnd()),gameId+' must preserve original gameplay source');
+    assert.match(repaired,/STUDIO_ASSET_NATIVE_MATERIAL_REPAIR_BEGIN/);
+    assert.match(repaired,/table\.find\(studioAssetFamily\("MATERIAL"\), "METAL"\)/);
+    assert.match(repaired,/\.Material = Enum\.Material\.Metal/);
+    assert.equal(robloxStudioAssetFamilyBoundInText(repaired,'MATERIAL'),true,gameId);
+    assert.equal(bindExistingServerStudioMaterial({source:repaired,familyStatus:{MATERIAL:'APPLIED'},selectedAtoms}),repaired,'repair is idempotent');
+    assert.equal(bindExistingServerStudioMaterial({source:original,familyStatus:{MATERIAL:'NOT_APPLICABLE'},selectedAtoms}),original,'inapplicable family must not alter sources');
+    assert.doesNotMatch(repaired.slice(original.trimEnd().length),/CanCollide\s*=|DataStore|RemoteEvent|Coins\s*=|Health\s*=/,'source repair must not alter physics, save, balance, or network');
+  }
+  assert.throws(()=>bindExistingServerStudioMaterial({
+    source:'local Config = require(Shared:WaitForChild("GameConfig"))\\nlocal part=Instance.new("Part")',
+    familyStatus:{MATERIAL:'APPLIED'},selectedAtoms
+  }),/EXISTING_STUDIO_MATERIAL_VISIBLE_NATIVE_TARGET_REQUIRED/);
+  // This negative fixture must remain unbound even after Vibe merges the real game's repair.
+  // Reading a live game here incorrectly turns an expected failure into an idempotent no-op.
+  const unboundNativeSource=[
+    'local Config = require(Shared:WaitForChild("GameConfig"))',
+    'local nativeFoundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")',
+    'local foundationMarker = Instance.new("SpawnLocation")',
+  ].join('\n');
+  assert.equal(robloxStudioAssetFamilyBoundInText(unboundNativeSource,'MATERIAL'),false);
+  assert.throws(()=>bindExistingServerStudioMaterial({source:unboundNativeSource,familyStatus:{MATERIAL:'APPLIED'},selectedAtoms:['UNVERIFIED']}),/EXISTING_STUDIO_MATERIAL_SELECTED_NATIVE_ATOM_REQUIRED/);
+});
+
+test('Roblox source-plan routes only an exact current MATERIAL package failure back into Vibe source worker',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/const materialRepairPending=reconciliationRow\?\.sourceRepairPending===true/);
+  assert.match(workflow,/reconciliationRow\.blockers\.length===1/);
+  assert.match(workflow,/ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL/);
+  assert.match(workflow,/studioMaterialRepair:materialRepairPending/);
+  assert.match(workflow,/STUDIO_MATERIAL_REPAIR: \$\{\{ matrix\.studioMaterialRepair \|\| false \}\}/);
+  assert.match(workflow,/--studio-material-repair="\$STUDIO_MATERIAL_REPAIR"/);
+  assert.match(workflow,/--foundation-repair="\$FOUNDATION_REPAIR"/);
+});
+
+test('new Roblox source bootstraps client directory before copying pinned MATERIAL presentation',()=>{
+  const source=fs.readFileSync('tools/company-development-roblox-bootstrap.mjs','utf8');
+  const start=source.indexOf('function writeSourceTree(');
+  const end=source.indexOf('\nasync function main()',start);
+  assert.ok(start>=0&&end>start,'canonical source writer must remain present');
+  const writer=source.slice(start,end);
+  const clientDir=writer.indexOf("fs.mkdirSync(path.join(root,'client'),{recursive:true})");
+  const serverDir=writer.indexOf("fs.mkdirSync(path.join(root,'server'),{recursive:true})");
+  const materialCopy=writer.indexOf("fs.copyFileSync(new URL('../assets/roblox/common-materials-v1/MaterialPresentation.client.luau'");
+  assert.ok(clientDir>=0&&serverDir>=0&&materialCopy>clientDir&&materialCopy>serverDir,
+    'both output directories must exist before copying pinned material asset');
+  assert.ok(fs.existsSync('assets/roblox/common-materials-v1/MaterialPresentation.client.luau'));
+  assert.match(writer,/fs\.writeFileSync\(path\.join\(root,'client','Game\.client\.luau'\)/);
 });

@@ -82,7 +82,7 @@ writeJson(path.join(archiveRoot,'invalidation.json'),{
   version:1,
   gameId,
   date,
-  policyDocument:'COMPANY_FLOW.md',
+  policyDocument:null,
   reason:'release-state-no-longer-ready',
   currentState:status.state,
   currentSourceTreeSha:status.currentSourceTreeSha||null,

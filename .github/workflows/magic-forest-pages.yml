@@ -1,76 +1,565 @@
+# 파일명: .github/workflows/magic-forest-pages.yml
 name: Magic Forest Static Play
 
 on:
+  # OWNER-LOCKED PUBLICATION TRIGGER: every merged main revision must start publication.
+  # Never add paths, QA-result, homepage-manager, director, or release-classification gates here.
   push:
     branches: [main]
-    paths:
-      - "web-games/fantasy-survival/index.html"
-      - "web-games/fantasy-survival/tier.html"
-      - ".github/workflows/magic-forest-pages.yml"
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/magic-forest-pages.yml"
+      - "tools/github-pages-landing.mjs"
+      - "qa/github-pages-landing.test.mjs"
+      - "qa/vibe-browser-smoke.mjs"
+      - "assets/vibe-fighting-engine.mjs"
+      - "qa/vibe-fighting-engine.test.mjs"
 
 permissions:
   contents: write
-  pages: write
 
 concurrency:
-  group: magic-forest-pages
-  cancel-in-progress: true
+  # PR preview validation must not occupy the live main deployment queue.
+  group: magic-forest-pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'main' }}
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - name: Checkout
+      - name: Checkout exact main source without hydrating large unused assets
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 1
+          filter: blob:none
           sparse-checkout: |
-            web-games/fantasy-survival
-          sparse-checkout-cone-mode: true
+            web-games
+            tools/vibe-game-asset-profiles.mjs
+            game-catalog.json
+            homepage-platform-exposure.json
+            tools/github-pages-landing.mjs
+            qa/github-pages-landing.test.mjs
+            qa/vibe-motion-engine.test.mjs
+            qa/vibe-character-integration.test.mjs
+            qa/vibe-gameplay-controller.test.mjs
+            qa/vibe-game-input-physics.test.mjs
+            qa/vibe-presentation-engine.test.mjs
+            qa/vibe-browser-smoke.mjs
+            qa/vibe-cinematic-director.test.mjs
+            qa/vibe-premium-character-pipeline.test.mjs
+            qa/vibe-cinematic-polish.test.mjs
+            qa/vibe-premium-gameplay-fx.test.mjs
+            qa/vibe-storybook-cinematics.test.mjs
+            qa/vibe-genre-director.test.mjs
+            qa/vibe-genre-character-music.test.mjs
+            qa/vibe-genre-character-factory.test.mjs
+            qa/vibe-genre-game-ui.test.mjs
+            qa/vibe-genre-gameplay.test.mjs
+            qa/vibe-genre-system-planner.test.mjs
+            qa/vibe-advanced-genre-systems.test.mjs
+            qa/vibe-advanced-interactions.test.mjs
+            qa/vibe-advanced-3d-interactions.test.mjs
+            qa/vibe-climb-motion.test.mjs
+            qa/vibe-combat-climb-ik.test.mjs
+            qa/vibe-adaptive-climb-ik.test.mjs
+            qa/vibe-fighting-engine.test.mjs
+            qa/vibe-presentation-engine.test.mjs
+            assets/vibe-motion-engine.mjs
+            assets/vibe-character-adapter.mjs
+            assets/vibe-gameplay-controller.mjs
+            assets/vibe-game-input-physics.mjs
+            assets/vibe-presentation-engine.mjs
+            assets/vibe-browser-presentation.mjs
+            assets/vibe-cinematic-director.mjs
+            assets/vibe-character-studio.mjs
+            assets/vibe-premium-character-pipeline.mjs
+            assets/vibe-cinematic-polish.mjs
+            assets/vibe-premium-gameplay-fx.mjs
+            assets/vibe-storybook-cinematics.mjs
+            assets/vibe-genre-director.mjs
+            assets/vibe-genre-character-music.mjs
+            assets/vibe-genre-game-ui.mjs
+            assets/vibe-genre-game-ui-browser.mjs
+            assets/vibe-genre-gameplay.mjs
+            assets/vibe-game-world-runtime.mjs
+            assets/vibe-genre-system-planner.mjs
+            assets/vibe-advanced-genre-blueprints.mjs
+            assets/vibe-advanced-genre-systems.mjs
+            assets/vibe-advanced-interactions.mjs
+            assets/vibe-survival-hud.mjs
+            assets/vibe-advanced-3d-interactions.mjs
+            assets/vibe-enemy-training-dummy.mjs
+            assets/vibe-climb-motion.mjs
+            assets/vibe-combat-climb-ik.mjs
+            assets/vibe-adaptive-climb-ik.mjs
+            assets/vibe-fighting-engine.mjs
+            assets/vibe-visual-design-system.json
+            .github/workflows/magic-forest-pages.yml
+            index.html
 
-      - name: Prepare static site
+      - name: Prepare all registered game routes and necessary shared assets
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf _site
-          mkdir -p _site
-          cp web-games/fantasy-survival/index.html _site/index.html
-          cp web-games/fantasy-survival/tier.html _site/tier.html
-          touch _site/.nojekyll
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          node <<'NODE'
+          const fs=require('node:fs');
+          const path=require('node:path');
+          const cp=require('node:child_process');
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const site='_site',routes=[],sourceTreeShas={};
+          fs.rmSync(site,{recursive:true,force:true});
+          fs.mkdirSync(path.join(site,'web-games'),{recursive:true});
+          const forest='web-games/fantasy-survival';
+          for(const filename of ['index.html','tier.html']){
+            if(!fs.existsSync(path.join(forest,filename)))throw Error('MAGIC_FOREST_SOURCE_MISSING:'+filename);
+            fs.copyFileSync(path.join(forest,filename),path.join(site,filename));
+          }
+          if(fs.existsSync('web-games/_shared'))fs.cpSync('web-games/_shared',path.join(site,'web-games/_shared'),{recursive:true});
+          // Resolve every game directory tree SHA with one Git invocation.
+          const gameTreeShas=new Map();
+          for(const row of cp.execFileSync('git',['ls-tree','-z','HEAD:web-games'],{encoding:'utf8'}).split('\0')){
+            if(!row)continue;
+            const match=/^040000 tree ([a-f0-9]{40})\t(.+)$/.exec(row);
+            if(match)gameTreeShas.set(match[2],match[1]);
+          }
+          for(const game of catalog.games||[]){
+            const id=String(game?.canonical?.identity?.gameId||game?.id||'').trim();
+            if(!/^[a-z0-9][a-z0-9-]*$/.test(id))continue;
+            const lifecycle=String(game?.canonical?.lifecycle?.state||game?.lifecycleState||'ACTIVE').toUpperCase();
+            if(!['ACTIVE','REBUILD'].includes(lifecycle))continue;
+            const web=game?.canonical?.sources?.web||{};
+            const state=String(web.state||game.ownerWebSourceState||'').toUpperCase();
+            if(['NON_GAME_SURFACE','WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID'].includes(state))continue;
+            const root=String(web.path||game.webPath||'').replace(/^\/+|\/+$/g,'');
+            if(root!=='web-games/'+id)continue;
+            const entry=root+'/index.html';
+            if(!fs.existsSync(entry)){
+              console.log('WEB_GAME_SOURCE_NOT_READY='+id);
+              continue;
+            }
+            fs.cpSync(root,path.join(site,root),{recursive:true});
+            const treeSha=gameTreeShas.get(id)||'';
+            if(!/^[a-f0-9]{40}$/.test(treeSha))throw Error('WEB_PAGES_GAME_SOURCE_TREE_INVALID:'+id);
+            sourceTreeShas[id]=treeSha;
+            routes.push(root+'/');
+          }
+          if(!routes.includes('web-games/fantasy-survival/'))throw Error('MAGIC_FOREST_REGISTERED_ROUTE_MISSING');
+          // GitHub project Pages is hosted under /jaewoon-games/, not the domain root.
+          // Adapt only published copies of static game URLs; the canonical source is unchanged.
+          const transformRoute=root=>{
+            for(const entry of fs.readdirSync(root,{withFileTypes:true})){
+              const file=path.join(root,entry.name);
+              if(entry.isDirectory()){transformRoute(file);continue;}
+              if(!entry.isFile()||!/\.(?:html|css|m?js|json)$/i.test(file))continue;
+              const raw=fs.readFileSync(file,'utf8');
+              const updated=raw
+                .replace(/(["'(\s=])\/(assets|web-games|multiplayer)\//g,'$1/jaewoon-games/$2/')
+                .replace(/(["'(\s=])\/(tier\.html|index\.html|command\.html|install\.html|backup\.html|asset-library\.html)\b/g,'$1/jaewoon-games/$2')
+                .replace(/(\b(?:href|src|action)\s*=\s*["'])\/(?=["'])/gi,'$1/jaewoon-games/');
+              if(raw!==updated)fs.writeFileSync(file,updated);
+            }
+          };
+          for(const route of routes)transformRoute(path.join(site,route));
+          // Publish the complete tracked asset library so all registered game routes can resolve
+          // canonical asset URLs. Runtime adoption remains game-specific and is validated separately.
+          // 기존 홈페이지와 바이브 관리자/PWA 원본 파일을 동일 Git SHA에서 확보한다.
+          // Cloudflare Workers 및 서버 상태는 복사하거나 재배포하지 않는다.
+          const staticFiles=[
+            'index.html','game-catalog.json','company-status.json',
+            'homepage-platform-exposure.json','homepage-portfolio-status.json',
+            'manifest.webmanifest','sw.js','install.html','offline.html',
+            'command.html','emergency-ai.js','asset-library.html',
+            'company-asset-library.json','backup.html','company.html',
+            'multiplayer/multiplayer-client.js'
+          ];
+          // Hydrate the fixed, trusted homepage source list in one Git operation.
+          // Preserve the original per-file 24MB size gate and output paths.
+          cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',...staticFiles],{
+            maxBuffer:16*1024*1024
+          });
+          for(const file of staticFiles){
+            const source=fs.readFileSync(file);
+            if(source.length>24*1024*1024)throw Error('PAGES_HOME_STATIC_FILE_TOO_LARGE:'+file);
+            const destination=path.join(site,file);
+            fs.mkdirSync(path.dirname(destination),{recursive:true});
+            fs.writeFileSync(destination,source);
+          }
+          // 모든 루트 절대경로는 배포 사본에서만 변환한다. 게임/카탈로그 원본은 수정하지 않는다.
+          // JSON 중 PWA manifest 이외에는 canonical /web-games/ 경로를 보존해야 한다.
+          const pathAdaptFiles=[
+            'manifest.webmanifest','sw.js','install.html','offline.html',
+            'command.html','asset-library.html','backup.html','company.html',
+            'emergency-ai.js'
+          ];
+          for(const file of pathAdaptFiles){
+            const pathname=path.join(site,file);
+            const original=fs.readFileSync(pathname,'utf8');
+            // JS의 split('/')·join('/')·비율 표시는 경로가 아니므로 보존한다.
+            const adapted=file==='manifest.webmanifest'
+              ?original.replace(/(["'\x60])\/(?!\/)/g,'$1/jaewoon-games/')
+              :original.replace(/(["'\x60])\/(?!["'\x60\/])/g,'$1/jaewoon-games/');
+            fs.writeFileSync(pathname,/\.html$/.test(file)
+              ?adapted.replace(/(\b(?:href|src|action)=["'])\/(?=["'])/g,'$1/jaewoon-games/')
+              :adapted);
+          }
+          // GitHub Pages does not expose dotfiles consistently, even if preserved in gh-pages.
+          // Never advertise Git metadata (.gitignore/.gitkeep/.gitattributes) as game assets.
+          // Keep actual tracked renderers/models/scripts intact and all LFS/size checks.
+          const trackedAssets=new Set(cp.execFileSync('git',['ls-tree','-r','--name-only','HEAD','--','assets'],{encoding:'utf8'})
+            .trim().split('\n').filter(asset=>asset.startsWith('assets/')
+              &&!asset.split('/').some(segment=>segment.startsWith('.'))));
+          const refs=new Set(trackedAssets);
+          const collect=root=>{
+            if(!fs.existsSync(root))return;
+            for(const entry of fs.readdirSync(root,{withFileTypes:true})){
+              const file=path.join(root,entry.name);
+              if(entry.isDirectory()){collect(file);continue;}
+              if(!entry.isFile()||!/\.(?:html|css|m?js|json|gltf|svg)$/i.test(file))continue;
+              const source=fs.readFileSync(file,'utf8');
+              for(const match of source.matchAll(/(?:\/jaewoon-games)?\/assets\/([a-zA-Z0-9._/-]+)/gm)){
+                const relative=match[1].replace(/[^a-zA-Z0-9._/-].*$/,'');
+                const asset='assets/'+relative;
+                if(!asset.includes('..')&&trackedAssets.has(asset))refs.add(asset);
+              }
+            }
+          };
+          collect(site);
+          // 홈 카드 커버·프로필 이미지·PWA 아이콘은 게임별 등록 증가에 맞춰 자동 포함한다.
+          for(const asset of trackedAssets){
+            if(/^assets\/(homepage-covers\/|roblox-thumbnails\/)/.test(asset)
+              ||/^assets\/[^/]+\.(?:webp|png|jpe?g|svg)$/.test(asset)
+              ||/^assets\/homepage-media\/[^/]+\.mp4$/.test(asset))refs.add(asset);
+          }
+          for(const asset of [
+            'assets/homepage-enhancements.js','assets/asset-library.css',
+            'assets/asset-library.js','assets/asset-library-viewer.js'
+          ])if(trackedAssets.has(asset))refs.add(asset);
+          // Hydrate selected tracked assets in one Git checkout instead of spawning git show per asset.
+          // The checkout is restricted to validated paths; all existing size/LFS checks remain.
+          const selectedAssets=[...refs].sort();
+          if(selectedAssets.length){
+            // Sparse checkout excludes most assets; widen only to the selected tracked paths.
+            cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',...selectedAssets],{
+              maxBuffer:16*1024*1024
+            });
+          }
+          for(const asset of selectedAssets){
+            const target=path.join(site,asset);
+            const source=fs.readFileSync(asset);
+            if(source.length>100*1024*1024)throw Error('GITHUB_PAGES_ASSET_TOO_LARGE:'+asset);
+            if(source.subarray(0,100).toString('utf8').includes('version https://git-lfs.github.com/spec/v1')){
+              throw Error('GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE:'+asset);
+            }
+            fs.mkdirSync(path.dirname(target),{recursive:true});
+            fs.writeFileSync(target,source);
+          }
+          // Add an optional, accessible library browser to all published HTML game routes.
+          // Existing game scripts, controls, save files, and renderers remain untouched.
+          for(const route of routes){
+            // Magic Forest is a game, not the internal asset-library inspector.
+            // Keep the runtime panel available to other registered games only.
+            if(route==='web-games/fantasy-survival/')continue;
+            const entry=path.join(site,route,'index.html');
+            const html=fs.readFileSync(entry,'utf8');
+            const tag='<script defer src="/jaewoon-games/assets/vibe-runtime-panel.js"></script>';
+            if(!html.includes('vibe-runtime-panel.js')){
+              const updated=/<\/body>/i.test(html)?html.replace(/<\/body>/i,tag+'</body>'):html+'\n'+tag;
+              fs.writeFileSync(entry,updated);
+            }
+          }
+          // The preview is loaded in a sandboxed iframe only on user request.
+          // Preserve the source module paths and publish the preview under the assets root.
+          const previewSource='assets/vibe-model-preview.html';
+          if(!trackedAssets.has(previewSource))throw Error('VIBE_MODEL_PREVIEW_SOURCE_MISSING');
+          if(!fs.existsSync(previewSource))cp.execFileSync('git',['restore','--ignore-skip-worktree-bits','--source=HEAD','--worktree','--',previewSource]);
+          fs.copyFileSync(previewSource,path.join(site,previewSource));
+          // Publish every relative ES module dependency used by the preview and integrated game.
+          for(const shared of ['vibe-motion-engine.mjs','vibe-character-adapter.mjs','vibe-gameplay-controller.mjs','vibe-game-input-physics.mjs','vibe-presentation-engine.mjs','vibe-browser-presentation.mjs','vibe-cinematic-director.mjs','vibe-character-studio.mjs','vibe-premium-character-pipeline.mjs','vibe-cinematic-polish.mjs','vibe-premium-gameplay-fx.mjs','vibe-storybook-cinematics.mjs','vibe-genre-director.mjs','vibe-genre-character-music.mjs','vibe-genre-game-ui.mjs','vibe-genre-game-ui-browser.mjs','vibe-genre-gameplay.mjs','vibe-game-world-runtime.mjs','vibe-genre-system-planner.mjs','vibe-advanced-genre-blueprints.mjs','vibe-advanced-genre-systems.mjs','vibe-advanced-interactions.mjs','vibe-survival-hud.mjs','vibe-advanced-3d-interactions.mjs','vibe-enemy-training-dummy.mjs','vibe-climb-motion.mjs','vibe-visual-design-system.json']){
+            const source=path.join('assets',shared);
+            if(!fs.existsSync(source))throw Error('VIBE_RUNTIME_SOURCE_MISSING:'+source);
+            fs.mkdirSync(path.join(site,'assets'),{recursive:true});
+            fs.copyFileSync(source,path.join(site,source));
+          }
+          // 원본 렌더러는 그대로 두고 Pages 사본의 절대 경로만 프로젝트 prefix로 보정한다.
+          for(const file of ['assets/homepage-enhancements.js','assets/asset-library.js','assets/asset-library-viewer.js']){
+            const pathname=path.join(site,file);
+            if(!fs.existsSync(pathname))continue;
+            const original=fs.readFileSync(pathname,'utf8');
+            fs.writeFileSync(pathname,original.replace(/(["'\x60])\/(?!["'\x60\/])/g,'$1/jaewoon-games/'));
+          }
+          fs.writeFileSync(path.join(site,'.nojekyll'),'');
+          fs.writeFileSync(path.join(site,'web-games/publish-manifest.json'),JSON.stringify({
+            version:1,sourceSha:process.env.GITHUB_SHA,routes:routes.sort(),sharedAssets:[...refs].sort(),
+            sourceTreeShas,target:'GITHUB_PAGES_INTERNAL_STATIC',gameCount:routes.length
+          },null,2)+'\n');
+          if(!routes.length)throw Error('WEB_GAME_ROUTES_EMPTY');
+          console.log('WEB_PAGES_SOURCE_SHA='+process.env.GITHUB_SHA);
+          console.log('WEB_PAGES_PREPARED_GAMES='+routes.length);
+          console.log('WEB_PAGES_SHARED_ASSETS='+refs.size);
+          NODE
 
-      - name: Publish gh-pages branch
+      - name: Generate deterministic Vibe engine asset profiles for every published game
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {buildGameAssetProfiles} from './tools/vibe-game-asset-profiles.mjs';
+          const manifest=JSON.parse(fs.readFileSync('_site/web-games/publish-manifest.json','utf8'));
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const profiles=buildGameAssetProfiles({routes:manifest.routes,assets:manifest.sharedAssets,catalog});
+          if(Object.keys(profiles).length!==manifest.routes.length)throw Error('VIBE_GAME_PROFILE_COUNT_MISMATCH');
+          fs.writeFileSync('_site/web-games/vibe-asset-profiles.json',JSON.stringify({sourceSha:manifest.sourceSha,profiles},null,2)+'\n');
+          console.log('VIBE_GAME_ASSET_PROFILES='+Object.keys(profiles).length);
+          NODE
+
+      # Generation is necessary to materialize the homepage; product QA is not a post-merge gate.
+      - name: Assemble existing canonical homepage for automatic static publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/github-pages-landing.mjs
+          test -s _site/index.html
+
+      - name: Verify every published game route and the canonical official homepage
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test qa/vibe-fighting-engine.test.mjs
+          node --test qa/github-pages-landing.test.mjs qa/vibe-motion-engine.test.mjs qa/vibe-character-integration.test.mjs qa/vibe-gameplay-controller.test.mjs qa/vibe-game-input-physics.test.mjs
+          test -s _site/index.html
+          grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' _site/index.html
+          grep -q '/jaewoon-games/assets/homepage-enhancements.js' _site/index.html
+          test -s _site/game-catalog.json
+          test -s _site/company-status.json
+          test -s _site/homepage-platform-exposure.json
+          test -s _site/manifest.webmanifest
+          test -s _site/sw.js
+          test -s _site/multiplayer/multiplayer-client.js
+          echo "PAGES_OFFICIAL_HOME_RENDER_QA=PASS"
+
+      - name: Publish gh-pages without force or deleting earlier games
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          # Sparse checkout와 무관한 정적 결과 디렉터리에서만 배포 커밋 생성.
-          # 기존 루트의 LFS 변환 파일을 checkout하지 않아 20개 파일 오염 오류 방지.
-          cd _site
-          git init -q
-          git config user.name "jaewoon-pages"
-          git config user.email "pages@users.noreply.github.com"
-          git checkout -qb magic-forest-pages-publish
-          git add -A
-          git commit -qm "pages: publish magic forest"
-          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
           gh auth setup-git
-          git push origin HEAD:gh-pages --force
+          # Use an isolated, complete gh-pages checkout: the source checkout is sparse.
+          # Reusing its worktree could omit old game files and stage accidental deletes.
+          site="$RUNNER_TEMP/jaewoon-pages-publish"
+          git clone --quiet --depth=1 --single-branch --branch gh-pages             "https://github.com/$GITHUB_REPOSITORY.git" "$site"
+          git -C "$site" config user.name "jaewoon-pages"
+          git -C "$site" config user.email "pages@users.noreply.github.com"
+          test -s "$site/index.html"
+          test -f "$site/tier.html"
+          # Copy only; keep every previously published game without rewriting the originals.
+          rsync -a "$GITHUB_WORKSPACE/_site/" "$site/"
+          test -s "$site/index.html"
+          grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' "$site/index.html"
+          git -C "$site" add --all
+          if ! git -C "$site" diff --cached --quiet; then
+            git -C "$site" commit -m "pages: publish registered web games from main $GITHUB_SHA"
+            git -C "$site" push origin HEAD:gh-pages
+          fi
+          published="$(git ls-remote --exit-code origin refs/heads/gh-pages | cut -f1)"
+          test "$published" = "$(git -C "$site" rev-parse HEAD)"
+          echo "WEB_PAGES_PUBLISHED_COMMIT=$published"
+          echo "WEB_PAGES_SOURCE_SHA=$GITHUB_SHA"
 
-      - name: Enable branch-based GitHub Pages
+      - name: Prepare retained Pages artifact without Git history
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The gh-pages repository is still the historical copy: never prune an old game.
+          # The official Pages artifact includes the same exact published files, not .git.
+          retained="$RUNNER_TEMP/jaewoon-pages-publish"
+          artifact="$RUNNER_TEMP/jaewoon-pages-artifact"
+          test -d "$retained/.git"
+          mkdir -p "$artifact"
+          # Copy retained history-preserving output without rescanning Git internals.
+          # Reflinks avoid physical duplicate writes when the runner filesystem supports them.
+          cp -a --reflink=auto "$retained/." "$artifact/"
+          rm -rf "$artifact/.git"
+          test -s "$artifact/index.html"
+          grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' "$artifact/index.html"
+          test -f "$artifact/tier.html"
+          test -f "$artifact/web-games/publish-manifest.json"
+          GITHUB_SHA="$GITHUB_SHA" node - "$artifact/web-games/publish-manifest.json" <<'NODE'
+          const fs=require('node:fs');
+          const m=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          if(m.sourceSha!==process.env.GITHUB_SHA||!Array.isArray(m.routes)||m.routes.length<1)process.exit(1);
+          console.log('WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA='+m.sourceSha);
+          console.log('WEB_PAGES_RETAINED_GAME_COUNT='+m.routes.length);
+          NODE
+
+      - name: Upload GitHub Pages artifact using official free Action
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/jaewoon-pages-artifact
+
+  publish-pages:
+    needs: deploy
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      issues: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages explicitly instead of relying on a GITHUB_TOKEN push
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      # Director checks public games only AFTER publication; not a release gate.
+      - name: Verify live GitHub Pages source and game routes
+        id: director_live_qa
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          director_report="$RUNNER_TEMP/pages-director-game-failures.txt"
+          : > "$director_report"
+          base="${{ steps.deployment.outputs.page_url }}"
+          test -n "$base" || { echo 'WEB_PAGES_DEPLOY_URL_MISSING' >&2; exit 1; }
+          base="${base%/}/"
+          manifest_url="$base""web-games/publish-manifest.json"
+          verified=false
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fsSL --max-time 15 "$manifest_url" \
+              | tee /tmp/web-pages-published.json \
+              | GITHUB_SHA="$GITHUB_SHA" node -e "let x='';process.stdin.on('data',d=>x+=d);process.stdin.on('end',()=>{let m;try{m=JSON.parse(x)}catch{process.exit(1)}if(m.sourceSha!==process.env.GITHUB_SHA||!Array.isArray(m.routes)||!m.routes.length)process.exit(1)})"; then
+              verified=true
+              break
+            fi
+            if [ "$attempt" -lt 6 ]; then sleep 10; fi
+          done
+          if [ "$verified" != true ]; then echo "WEB_PAGES_LIVE_SOURCE_NOT_VERIFIED" >&2; exit 1; fi
+          test -s /tmp/web-pages-published.json || { echo 'WEB_PAGES_VERIFIED_MANIFEST_MISSING' >&2; exit 1; }
+          node -e "const m=require('/tmp/web-pages-published.json');for(const p of m.routes){if(!/^web-games\/[a-z0-9-]+\/$/.test(p))process.exit(1);const id=p.split('/')[1];if(!/^[a-f0-9]{40}$/.test(m.sourceTreeShas?.[id]||''))process.exit(1)}"
+          # Verify independent published URLs concurrently, preserving every route and asset check.
+          # xargs exits nonzero if any worker fails; diagnostics are written per URL.
+          export PAGES_BASE="$base"
+          node -e "const m=require('/tmp/web-pages-published.json');for(const route of m.routes)console.log('route '+route);for(const asset of m.sharedAssets)if(asset)console.log('asset '+asset)" \
+            | xargs -r -P 8 -n 2 bash -c '
+                kind="$0"
+                path="$1"
+                if ! curl -fsSL --max-time 15 -o /dev/null "$PAGES_BASE$path"; then
+                  if [ "$kind" = route ]; then
+                    echo "WEB_PAGES_ROUTE_NOT_LIVE=$path" >&2
+                  else
+                    echo "WEB_PAGES_ASSET_NOT_LIVE=$path" >&2
+                  fi
+                  exit 1
+                fi
+              ' || { echo 'WEB_PAGES_PARALLEL_HTTP_QA_FAILED' >&2; exit 1; }
+          # A 200 on the old forest root did not make a game directory visible.
+          curl -fsSL --max-time 15 "$base" -o /tmp/jaewoon-pages-home-live.html
+          grep -q 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' /tmp/jaewoon-pages-home-live.html || {
+            echo 'WEB_PAGES_CANONICAL_HOMEPAGE_NOT_LIVE' >&2; exit 1;
+          }
+          grep -q '/jaewoon-games/assets/homepage-enhancements.js' /tmp/jaewoon-pages-home-live.html || {
+            echo 'WEB_PAGES_HOME_RENDERER_PATH_MISMATCH' >&2; exit 1;
+          }
+          # Independent homepage dependencies: bounded concurrent HTTP checks.
+          export PAGES_BASE="$base"
+          printf '%s\n' game-catalog.json company-status.json homepage-platform-exposure.json manifest.webmanifest sw.js multiplayer/multiplayer-client.js \
+            | xargs -r -P 6 -n 1 bash -c '
+                file="$0"
+                curl -fsSL --max-time 15 -o /dev/null "$PAGES_BASE$file" || {
+                  echo "WEB_PAGES_HOME_DEPENDENCY_NOT_LIVE=$file" >&2
+                  exit 1
+                }
+              ' || { echo 'WEB_PAGES_HOME_DEPENDENCIES_FAILED' >&2; exit 1; }
+          # 모든 등록 게임의 정적 원본 실행 경로는 위에서 HTTP로 개별 검증한다.
+          echo "WEB_PAGES_PUBLISHED_GAME_ROUTES=$(node -p "require('/tmp/web-pages-published.json').routes.length")"
+          curl -fsSL --max-time 15 -o /dev/null "$base""tier.html" || { echo 'MAGIC_FOREST_TIER_NOT_LIVE' >&2; exit 1; }
+          echo "WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS"
+          echo "WEB_PAGES_LIVE_SOURCE_SHA=$GITHUB_SHA"
+          echo "WEB_PAGES_ROUTES_HTTP_200=PASS"
+          echo "MAGIC_FOREST_PLAY_URL=${base}web-games/fantasy-survival/"
+          if test -s "$director_report"; then
+            echo "::error::DIRECTOR_POST_DEPLOY_GAME_ROUTE_FAILURE - publication already happened; register an issue."
+            exit 1
+          fi
+          echo "DIRECTOR_POST_DEPLOY_GAME_TEST=PASS"
+          echo "OFFICIAL_HOMEPAGE_URL=https://hans1177.github.io/jaewoon-games/"
+
+
+      # OWNER: Publish first. Runtime 3D smoke tests only the public, exact published URL.
+      # Never block or roll back the GitHub Pages release because a browser/CDN/mobile test fails.
+      - name: Checkout smoke script only after live publication
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          sparse-checkout: |
+            qa/vibe-browser-smoke.mjs
+      - name: Configure post-publication Chromium
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate live published 3D model and game controls
+        id: forest_native_3d_live_qa
+        continue-on-error: true
+        env:
+          VIBE_SMOKE_LIVE_BASE: ${{ steps.deployment.outputs.page_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node qa/vibe-browser-smoke.mjs
+
+      # Report post-publication defects using the existing public-release workflow.
+      - name: Director register issues after live game testing
+        if: ${{ github.event_name != 'pull_request' && (steps.director_live_qa.outcome == 'failure' || steps.forest_native_3d_live_qa.outcome == 'failure') }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          if gh api "repos/${GITHUB_REPOSITORY}/pages" >/dev/null 2>&1; then
-            printf '%s\n' '{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}' |
-              gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" --input -
-          else
-            printf '%s\n' '{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}' |
-              gh api --method POST "repos/${GITHUB_REPOSITORY}/pages" --input -
+          title="[총괄 사후검증] GitHub Pages 게임 배포 오류 ${GITHUB_SHA:0:12}"
+          # One issue per exact published SHA, including dispatch retries.
+          if gh issue list --repo "$GITHUB_REPOSITORY" --state all --limit 200 --json title --jq '.[].title' | grep -Fxq "$title"; then
+            echo "DIRECTOR_POST_DEPLOY_ISSUE=ALREADY_REGISTERED"
+            exit 0
           fi
-
-      - name: Show play URL
-        run: echo "MAGIC_FOREST_PLAY_URL=https://${GITHUB_REPOSITORY_OWNER}.github.io/jaewoon-games/"
+          report="$RUNNER_TEMP/pages-director-game-failures.txt"
+          body="$RUNNER_TEMP/pages-director-issue.md"
+          {
+            echo '## 배포 후 게임 검증 문제 (총괄)'
+            echo
+            echo "- 소스 커밋: \`$GITHUB_SHA\`"
+            echo "- 배포된 홈페이지: https://hans1177.github.io/jaewoon-games/"
+            echo "- 검증 실행: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "- 실제 마력숲 3D 검증 결과: ${{ steps.forest_native_3d_live_qa.outcome }}"
+            echo "- 원본 페이지 경로 검증 결과: ${{ steps.director_live_qa.outcome }}"
+            echo "- 시점: GitHub Pages 배포 이후 (배포 차단 조건 아님)"
+            echo
+            echo '### 확인된 오류'
+            if test -s "$report"; then
+              sed 's/^/- \`/;s/$/\`/' "$report"
+            else
+              echo '- 배포 후 실제 WebGL 게임 시작·이동·저장 또는 매니페스트/경로 검증 실패. 상세 원인은 위 실행 로그 확인.'
+            fi
+            echo
+            echo '### 후속 처리'
+            echo '바이브의 기존 책임 게임 소스와 배포 상태를 확인하고, 해당 실패만 재현·수정·재검증. 원본/세이브/플랫폼 릴리즈 권한 보존.'
+          } > "$body"
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$body"
+          echo 'DIRECTOR_POST_DEPLOY_ISSUE=CREATED'

@@ -61,20 +61,21 @@ jobs:
           if(actions?.visibility!=='public'||actions?.visibilitySource!==d.execution.visibilitySource)throw new Error('runner evidence is not bound to verified public repository visibility');
           console.log(`LIVE_FREE_BUDGET=PASS source=${d.execution.visibilitySource}`);
           NODE
-      - name: Enforce preflight-before-Ollama contract
+      - name: Enforce canonical native-design free-budget contract
         run: |
           node <<'NODE'
           const fs=require('fs');
           const file='.github/workflows/company-game-seed-bootstrap.yml';
           const text=fs.readFileSync(file,'utf8');
-          const gate=text.indexOf('Verified free budget preflight');
-          const runtime=text.indexOf('uses: ./.github/actions/prepare-ollama');
-          if(gate<0||runtime<0||gate>runtime)throw new Error(`${file}: free budget gate must precede Ollama runtime preparation`);
+          const gate=text.indexOf('Verified native design budget preflight');
+          const runtime=text.indexOf('Compute GAME_SEED from canonical Vibe design grammar');
+          if(gate<0||runtime<0||gate>runtime)throw new Error(`${file}: free budget gate must precede native grammar computation`);
           if(!text.includes('runs-on: ubuntu-latest'))throw new Error(`${file}: standard runner contract missing`);
-          if(!text.includes('--runner-minutes=20'))throw new Error(`${file}: verified free-budget runner-minute contract missing`);
+          if(!text.includes('--runner-minutes=10'))throw new Error(`${file}: verified free-budget runner-minute contract missing`);
           if(!text.includes('--verify-public-repo=true'))throw new Error(`${file}: live repository verification missing`);
-          if(!text.includes('--model-calls=1'))throw new Error('GAME_SEED bootstrap must declare its one batch model call');
+          if(!text.includes('--model-calls=0'))throw new Error('GAME_SEED bootstrap must declare zero model calls for native computation');
           const seedTool=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
-          if(!seedTool.includes('callModelBatch(targets)'))throw new Error('GAME_SEED bootstrap must batch seed generation');
+          if(!seedTool.includes('targets.map(computeVibeSeedProposal)'))throw new Error('GAME_SEED bootstrap must use the canonical native proposal function');
           console.log('CENTRAL_FREE_BUDGET_CONTRACT=PASS');
           NODE
+

@@ -271,9 +271,9 @@ test('game-source recovery without explicit scoped files stays with Vibe',()=>{
 
 test('scoped game-source recovery requeues the original Vibe task, never System AI source writing',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
-  const original={id:'game-task',gameId:'demo',status:'failed',target:'web',
-    sourceRoot:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],
-    contextFiles:['game-catalog.json'],goal:'repair exact failure',currentStep:'WEB_RUNTIME',
+  const original={id:'game-task',gameId:'demo',status:'failed',target:'roblox',
+    sourceRoot:'roblox-games/demo',responsibleFiles:['roblox-games/demo/server/Game.server.luau'],
+    contextFiles:['game-catalog.json'],goal:'repair exact failure',currentStep:'ROBLOX_RUNTIME',
     blocker:'runtime-failure',evidence:['failure-cause:runtime-failure']};
   const recovery=escalateRecoveryCandidates({gameQueueInput:{tasks:[original]}}).queue;
   const dispatched=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[original]},systemAiQueueInput:{tasks:[]}});
@@ -290,13 +290,13 @@ test('legacy System AI game recovery migrates to Vibe root-cause mode without ch
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
   const recovery={tasks:[{
     id:'r-game-root',status:'queued',sourceQueue:'vibe2',sourceTaskId:'game-task',
-    gameId:'demo',responsibleFiles:['web-games/demo/index.html'],contextFiles:[],
-    failureStage:'WEB_RUNTIME',failureSignature:'network-sync-repeat',recoveryOwner:'SYSTEM_AI',
+    gameId:'demo',responsibleFiles:['roblox-games/demo/server/Game.server.luau'],contextFiles:[],
+    failureStage:'ROBLOX_RUNTIME',failureSignature:'network-sync-repeat',recoveryOwner:'SYSTEM_AI',
     recoveryStrategy:'ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK',
     verificationPlan:['RERUN_EXACT_FAILED_STAGE'],recurrenceCount:3,
     evidence:['failure-cause:network-sync-repeat','multiplayer-sync','save-load']
   }]};
-  const original={id:'game-task',gameId:'demo',status:'failed',responsibleFiles:['web-games/demo/index.html'],sourceRevision:'game-checkpoint'};
+  const original={id:'game-task',gameId:'demo',status:'failed',responsibleFiles:['roblox-games/demo/server/Game.server.luau'],sourceRevision:'game-checkpoint'};
   const systemPass=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[original]},route:'system-ai'});
   assert.equal(systemPass.dispatched.length,0);
   const dispatched=dispatchRecovery({recoveryInput:systemPass.recovery,gameQueueInput:{tasks:[original]},route:'vibe'});
@@ -350,8 +350,8 @@ test('legacy scoped recovery never creates unexecutable game-source System AI ta
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
   const recovery={tasks:[{
     id:'r-unlimited',status:'queued',sourceQueue:'vibe2',sourceTaskId:'missing-source-task',
-    gameId:'demo',responsibleFiles:['web-games/demo/index.html'],contextFiles:[],
-    failureStage:'WEB_RUNTIME',failureSignature:'runtime-repeat',recoveryOwner:'SYSTEM_AI',
+    gameId:'demo',responsibleFiles:['roblox-games/demo/server/Game.server.luau'],contextFiles:[],
+    failureStage:'ROBLOX_RUNTIME',failureSignature:'runtime-repeat',recoveryOwner:'SYSTEM_AI',
     recoveryStrategy:'ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK',
     verificationPlan:['RERUN_EXACT_FAILED_STAGE'],evidence:[]
   }]};
@@ -360,7 +360,7 @@ test('legacy scoped recovery never creates unexecutable game-source System AI ta
   assert.equal(missing.systemAi.tasks.length,0);
   assert.equal(missing.recovery.tasks[0].status,'queued');
   const original={id:'missing-source-task',gameId:'demo',status:'failed',
-    sourceRevision:'exact-old-revision',responsibleFiles:['web-games/demo/index.html']};
+    sourceRevision:'exact-old-revision',responsibleFiles:['roblox-games/demo/server/Game.server.luau']};
   const resumed=dispatchRecovery({recoveryInput:missing.recovery,gameQueueInput:{tasks:[original]}});
   assert.equal(resumed.dispatched.length,1);
   assert.equal(resumed.recovery.tasks[0].recoveryOwner,'VIBE2_VIBE3');
@@ -395,9 +395,9 @@ test('System-AI recovery failure requeues beyond ordinary retry limits',()=>{
 
 test('repeated game-source recovery preserves source mutation baseline before native revalidation',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
-  const original={id:'mutate-first',gameId:'demo',status:'failed',target:'web',
-    sourceRoot:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],
-    sourceRevision:'baseline-sha',currentStep:'WEB_RUNTIME',blocker:'same-signature',
+  const original={id:'mutate-first',gameId:'demo',status:'failed',target:'roblox',
+    sourceRoot:'roblox-games/demo',responsibleFiles:['roblox-games/demo/server/Game.server.luau'],
+    sourceRevision:'baseline-sha',currentStep:'ROBLOX_RUNTIME',blocker:'same-signature',
     evidence:['failure-cause:same-signature']};
   const recovery=escalateRecoveryCandidates({gameQueueInput:{tasks:[original]}}).queue;
   const rec=recovery.tasks[0];
@@ -545,26 +545,12 @@ test('canonical deployment failures are scoped to a real game source and preserv
   assert.equal(first.queue.tasks[0].maxRetries,null);
   assert.ok(first.queue.tasks[0].verificationPlan.includes('VERIFY_ACTUAL_DEPLOYMENT_RESULT'));
   const dispatched=dispatchRecovery({recoveryInput:first.queue,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
-  assert.equal(dispatched.gameQueue.tasks.length,1);
+  // Unity is owner-held: diagnose the failure but do not schedule Unity builds.
+  assert.equal(dispatched.gameQueue.tasks.length,0);
   assert.equal(dispatched.systemAi.tasks.length,0);
-  const task=dispatched.gameQueue.tasks[0];
-  assert.equal(task.status,'queued');
-  assert.equal(task.target,'unity');
-  assert.equal(task.unityWebDevelopment,true);
-  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
-  assert.equal(task.sourceMutationRequired,true);
-  assert.equal(task.gameRepairContract.impactRegressionRequired,true);
-  assert.ok(task.acceptanceCriteria.some(value=>value.includes('existing gameplay saves balance')));
-  assert.equal(first.queue.tasks[0].failureStage,'UNITY_WEB_CSHARP_COMPILE');
-  assert.equal(first.queue.tasks[0].failureSignature,'UNITY_WEB_CSHARP_COMPILE_ERROR:Assets/Scripts/UnityWebFloorGame.cs:14:CS0246');
-  const duplicate=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput:catalog,recoveryInput:dispatched.recovery});
-  assert.equal(duplicate.queue.tasks.length,1);
-  assert.deepEqual(duplicate.added,[]);
-  assert.deepEqual(duplicate.reactivated,[]);
-  const attemptTwo=escalateDeploymentFailure({event:{workflow_run:{...run,run_attempt:2}},jobsInput:jobs,catalogInput:catalog,recoveryInput:dispatched.recovery});
-  assert.equal(attemptTwo.reactivated.length,1);
-  assert.equal(attemptTwo.queue.tasks[0].status,'queued');
-  assert.equal(attemptTwo.queue.tasks[0].recurrenceCount,2);
+  assert.equal(dispatched.dispatched.length,0);
+  assert.equal(dispatched.recovery.tasks[0].status,'queued');
+
 });
 
 test('canonical deployment failure diagnosis falls back to supervised system AI when source cannot be proven',async()=>{
@@ -650,7 +636,10 @@ test('fast recovery reuses canonical policies and listens to all three deploymen
     'Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment','Magic Forest Static Play']){
     assert.ok(workflow.includes('      - '+name));
   }
-  assert.match(workflow,/node tools\/company-shared-context\.mjs/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin/);
+  assert.match(workflow,/git reset --hard origin\/main/);
+  assert.match(workflow,/node tools\/vibe2-queue-control\.mjs storage-unpack/);
+  assert.match(workflow,/node --check tools\/company-recovery-dispatch\.mjs/);
   assert.match(workflow,/--deployment-event=\$GITHUB_EVENT_PATH/);
   assert.match(workflow,/node tools\/company-recovery-dispatch\.mjs --route=all/);
   assert.match(workflow,/unity-web.*?failure|UNITY_WEB_REPAIR_FAILURE_/s);
@@ -716,4 +705,36 @@ test('Roblox F0 script failure scopes repair to existing game scripts, not unrel
     'roblox-games/fantasy-survival/client/Game.client.luau'
   ]);
   assert.equal(result.queue.tasks[0].maxRetries,null);
+});
+
+test('single historical game-source task is handed to matching existing Vibe repair only',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const source='roblox-games/example/main.server.lua';
+  const game={id:'example-roblox-repair',gameId:'example',target:'roblox',sourceRoot:'roblox-games/example',type:'implementation',status:'queued',evidence:[]};
+  const legacy={id:'game-old-example',status:'queued',responsibleFiles:[source],dependencies:[]};
+  const dependent={id:'sys-dependent',status:'queued',dependencies:[legacy.id]};
+  const first=dispatchRecovery({route:'vibe',gameQueueInput:{tasks:[game]},systemAiQueueInput:{tasks:[legacy,dependent]}});
+  assert.equal(first.systemAi.tasks[0].status,'blocked');
+  assert.equal(first.systemAi.tasks[0].blocker,'vibe-game-repair-pending:'+game.id);
+  assert.deepEqual(first.systemAi.tasks[1].dependencies,[legacy.id]);
+  assert.ok(first.gameQueue.tasks[0].evidence.includes('legacy-recovery-source:'+source));
+  assert.equal(first.gameQueue.tasks.length,1);
+  const second=dispatchRecovery({route:'vibe',gameQueueInput:first.gameQueue,systemAiQueueInput:first.systemAi});
+  assert.equal(second.gameQueue.tasks.length,1);
+  assert.equal(second.systemAi.tasks[0].status,'blocked');
+  assert.deepEqual(second.systemAi.tasks[1].dependencies,[legacy.id]);
+  assert.deepEqual(second.gameQueue,first.gameQueue);
+  assert.deepEqual(second.systemAi,first.systemAi);
+});
+
+test('Roblox-only development does not reactivate held web game recovery',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const web={id:'web-repair',gameId:'legacy-web',target:'web',sourceRoot:'web-games/legacy-web',type:'implementation',status:'queued',priority:'normal'};
+  const old={id:'game-legacy-web',status:'queued',responsibleFiles:['web-games/legacy-web/index.html']};
+  const rec={id:'recovery-web',status:'queued',recoveryOwner:'VIBE2_VIBE3',sourceTaskId:'web-repair',responsibleFiles:['web-games/legacy-web/index.html']};
+  const result=dispatchRecovery({route:'vibe',gameQueueInput:{tasks:[web]},systemAiQueueInput:{tasks:[old]},recoveryInput:{tasks:[rec]}});
+  assert.deepEqual(result.gameQueue.tasks,[web]);
+  assert.deepEqual(result.systemAi.tasks,[old]);
+  assert.equal(result.recovery.tasks[0].status,'queued');
+  assert.deepEqual(result.gameRequeuedTaskIds,[]);
 });

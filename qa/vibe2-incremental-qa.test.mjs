@@ -31,6 +31,22 @@ test('interface QA rechecks unchanged handler bindings before accepting a cached
   assert.throws(()=>runIncrementalQa({root,manifest,cacheFile}),/CONTROL_SOURCE_UNPROVEN/);
 });
 
+test('tutorial bindings outside the control handler invalidate cached interface QA when their source changes',t=>{
+  const root=repo();t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const ui='function openMenu(){return true;}',tutorial='function finishTutorial(){return 1;}';
+  fs.writeFileSync(path.join(root,'ui.js'),ui);fs.writeFileSync(path.join(root,'tutorial.js'),tutorial);
+  const blueprint={version:1,designFingerprint:'scene-plan',viewport:{width:390,height:844,safeTop:0,safeBottom:0},entryId:'play',
+    screens:[{id:'play',role:'GAMEPLAY',modal:false,scrollable:false,controls:[{id:'action',action:'learn',feedback:'show progress',enabledWhen:'first play',rect:{x:0,y:0,width:48,height:48},binding:{path:'ui.js',symbol:'openMenu',sourceEvidence:ui}}]}],transitions:[],
+    playerTasks:[{id:'first',friction:'first action unclear',patternId:'ORIGINAL',adaptation:'show existing objective',from:'play',to:'play',controlId:'action',maxNavigationSteps:0,retainedContext:['objective'],failureRecovery:'retry',runtimeCheck:'tap and observe'}],
+    experienceScenarios:[{id:'learn',designRef:'FIRST_PLAY_AND_TUTORIAL',kind:'TUTORIAL',screenId:'play',controlId:'action',entryCondition:'new save',inputs:['tap action'],expectedState:'first progress',expectedFeedback:'hint ends',failureRecovery:'retry same objective',skipPolicy:'keep objective',interruptionRecovery:'restore input',binding:{path:'tutorial.js',symbol:'finishTutorial',sourceEvidence:tutorial},runtimeVerified:false}]};
+  const manifest=path.join(root,'manifest.json'),cacheFile=path.join(root,'cache.json');
+  fs.writeFileSync(manifest,JSON.stringify({changedFiles:['a.js'],interfaceBlueprintContract:{required:true,designFingerprint:'scene-plan',sourceFiles:['ui.js','tutorial.js'],experienceScenarioContract:{required:true,designRefs:['FIRST_PLAY_AND_TUTORIAL']}},interfaceBlueprint:blueprint}));
+  const first=runIncrementalQa({root,manifest,cacheFile});assert.equal(first.interfaceBlueprintQa.experienceRequests.length,1);
+  assert.equal(runIncrementalQa({root,manifest,cacheFile}).cached,true);
+  fs.writeFileSync(path.join(root,'tutorial.js'),'function finishTutorial(){return 0;}');
+  assert.throws(()=>runIncrementalQa({root,manifest,cacheFile}),/EXPERIENCE_SOURCE_UNPROVEN/);
+});
+
 test('incremental QA validates only changed scope and caches PASS by content hash',()=>{
   const root=repo();
   const cache=path.join(root,'.cache','qa.json');
@@ -894,4 +910,5 @@ test('asset source hashes are revalidated before cached incremental QA success',
     assert.throws(()=>runIncrementalQa(args),/INTERNAL_ASSET_SOURCE_HASH_COVERAGE_MISMATCH/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
 

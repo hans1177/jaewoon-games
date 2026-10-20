@@ -18,6 +18,44 @@ function runLuau(source){
  }finally{fs.rmSync(temp,{recursive:true,force:true});}
 }
 
+test('simple-rpg publishes separate anchored ground before its spawn and preserves an existing ground',{skip:!luau},()=>{
+ const server=read('roblox-games/simple-rpg/server/Game.server.luau');
+ const source=server.slice(server.indexOf('local STUDIO_ASSET_SELECTION ='),server.indexOf('-- native-foundation-sentinel-v1'));
+ assert.ok(source.includes('SimpleRpgGround'));
+ runLuau(`
+local Config={StudioAssets={Families={ENVIRONMENT={"TERRAIN_FLAT"},MATERIAL={"STONE"}}}}
+local objects={}
+local workspace={FindFirstChild=function(_,name)return objects[name]end}
+local Enum={Material={Slate="slate"}}
+local Vector3={new=function(x,y,z)return{X=x,Y=y,Z=z}end}
+local Color3={fromRGB=function(r,g,b)return{R=r,G=g,B=b}end}
+local created=0
+local Instance={new=function(class)
+ created+=1
+ local part={ClassName=class,attributes={}}
+ function part:SetAttribute(k,v)self.attributes[k]=v end
+ return setmetatable(part,{__newindex=function(self,k,v)
+  if k=="Parent" then
+   assert(self.ClassName=="Part" and self.Anchored and self.CanCollide)
+   assert(self.attributes.WalkableGround==true)
+   assert(self.Position.Y+self.Size.Y*.5==0)
+   objects[self.Name]=self
+  end
+  rawset(self,k,v)
+ end})
+end}
+local function boot()
+${source}
+end
+boot()
+local original=objects.SimpleRpgGround
+assert(created==1 and original.Size.X==72 and original.Material=="slate")
+original.Material="authored"
+boot()
+assert(created==1 and objects.SimpleRpgGround==original and original.Material=="authored")
+`);
+});
+
 test('cozy preserves existing progress after read failures and reports failed writes',{skip:!luau},()=>{
  const source=cozy.slice(cozy.indexOf('local function init(p)'),cozy.indexOf('\nlocal H={'));
  assert.ok(source.includes('local function save(p)'));
@@ -228,5 +266,43 @@ writesFail=true
 p:SetAttribute('ResourceStone',50)
 callbacks.remove(p)
 assert(writes==3 and recorded.ResourceStone==30)
+`);
+});
+
+test('daechung reconnects chest library without changing character physics or replacing an available authored mesh',{skip:!luau},()=>{
+ const server=read('roblox-games/daechung-rpg/server/Game.server.luau');
+ const start=server.indexOf('local function wearMedievalChest(');
+ const source=server.slice(start,server.indexOf('local function addWeaponTrail(',start));
+ runLuau(`
+local frame=setmetatable({},{__mul=function(a,b)return a end})
+local CFrame={new=function()return frame end,Angles=function()return frame end}
+local Color3={fromRGB=function()return {}end}
+local size=setmetatable({X=2,Y=3,Z=1},{__mul=function(a,b)return a end})
+local torso={CFrame=frame,Size={Y=2.45},CanCollide=true,Massless=false}
+local folder={}
+local model={FindFirstChild=function(_,name)if name=="UpperTorso"then return torso end end}
+local C={StudioAssets={Families={CHARACTER={"TORSO_PLATE"}}}}
+local ASSETS={MedievalArmor=1}
+local available=false
+local authored={Clone=function()return{Size=size}end}
+local function chooseMesh()return available and authored or nil end
+local parts={{CanCollide=true,CanQuery=true,CanTouch=true,Anchored=true,Massless=false}}
+for _,p in ipairs(parts)do function p:IsA(class)return class=="BasePart"end end
+local calls=0
+local visual={PrimaryPart=parts[1],GetDescendants=function()return parts end,PivotTo=function()end,SetAttribute=function(self,k,v)self[k]=v end}
+local CommonCharacterGear={Create=function(id,options)
+ calls+=1;assert(id=="IRON_CHESTPLATE"and options.quality=="near"and options.anchored==false)
+ return visual
+end}
+local Instance={new=function(class)assert(class=="WeldConstraint");return{}end}
+${source}
+assert(wearMedievalChest(model,folder,1)==true and calls==1)
+assert(visual.Parent==folder and visual.RigBindingState=="WELD_BOUND_RUNTIME_REVIEW_PENDING")
+assert(not parts[1].Anchored and parts[1].Massless and not parts[1].CanCollide and not parts[1].CanTouch and not parts[1].CanQuery)
+assert(torso.CanCollide==true and torso.Massless==false)
+available=true
+assert(wearMedievalChest(model,folder,1)==true and calls==1)
+available=false;C.StudioAssets.Families.CHARACTER={}
+assert(wearMedievalChest(model,folder,1)==false and calls==1)
 `);
 });

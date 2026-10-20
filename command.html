@@ -23,6 +23,21 @@ body{min-height:100dvh}button,select,textarea,input{font:inherit}button{color:in
 .overlay[hidden],.sheetWrap[hidden]{display:none}.overlay{position:fixed;inset:0;z-index:70}.shade{position:absolute;inset:0;background:#0008}.drawer{position:relative;width:min(88vw,380px);height:100%;padding:max(14px,env(safe-area-inset-top)) 12px max(16px,env(safe-area-inset-bottom));background:#1f1f1f;box-shadow:14px 0 40px #0008;overflow-y:auto}.drawerTop{display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px}.drawerTitle{font-size:20px;font-weight:700}.closeBtn{width:38px;height:38px;border:0;border-radius:50%;background:#333;color:var(--text);font-size:22px}.menuLink,.menuBtn{width:100%;min-height:48px;margin:3px 0;padding:0 13px;border:0;border-radius:13px;background:transparent;color:var(--text);display:flex;align-items:center;gap:11px;text-decoration:none;text-align:left;font-size:16px}.menuLink:active,.menuBtn:active,.gameItem:active{background:#303030}.menuSep{height:1px;margin:10px 5px;background:#363636}.menuLabel{margin:13px 8px 7px;color:#92918c;font-size:12px;font-weight:700}.drawer select{width:100%;height:46px;padding:0 12px;border:1px solid #444;border-radius:13px;background:#2b2b2a;color:var(--text);font-size:15px;outline:none}.gameList{display:grid;gap:3px}.gameItem{width:100%;padding:10px 11px;border:0;border-radius:12px;background:transparent;text-align:left}.gameItem.selected{background:#30302f}.gameName{font-size:15px;font-weight:600}.gameStage{margin-top:3px;color:var(--muted);font-size:12px;line-height:1.4}.providerState{margin:6px 8px 0;color:var(--muted);font-size:12px}.providerState.ok{color:var(--ok)}
 .sheetWrap{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center}.sheet{position:relative;width:min(100%,620px);padding:18px 16px max(18px,env(safe-area-inset-bottom));border-radius:24px 24px 0 0;background:#2d2d2c;box-shadow:0 -12px 40px #0006}.sheetTop{display:flex;align-items:center;justify-content:space-between;gap:12px}.sheet h2{margin:0;font-size:20px}.sheet p{margin:10px 0 14px;color:var(--muted);font-size:15px;line-height:1.6}.attachActions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.attachAction{min-height:74px;border:0;border-radius:17px;background:#383836;color:var(--text);font-size:16px;font-weight:650}.keyInput{width:100%;height:52px;padding:0 14px;border:1px solid #555;border-radius:15px;background:#242424;color:var(--text);font-size:17px;outline:none}.keyActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.keyActions a,.keyActions button{height:48px;border:0;border-radius:14px;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:15px;font-weight:700}.keyActions a{background:#3a3a38}.keyActions button{background:#e4e3df;color:#171717}.setupState{min-height:22px;margin-top:10px;color:#bdbcb6;font-size:14px}.setupState.ok{color:var(--ok)}.setupState.bad{color:var(--danger)}.privacy{margin-top:4px!important;font-size:13px!important;color:#96958f!important}
 @media(max-width:520px){.chat{padding-left:12px;padding-right:12px}.owner{max-width:88%}.claimGrid{grid-template-columns:1fr}.composerInner,.attachTray{width:100%}.attachActions,.keyActions{grid-template-columns:1fr 1fr}}
+
+/* 게임 구성창 · 기존 개발 채팅의 읽기 전용 설계 화면 */
+.genreSheet{max-height:min(89dvh,850px);overflow-y:auto;overscroll-behavior:contain}
+.genreGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.genreField{display:grid;gap:6px;min-width:0;margin:12px 0}
+.genreField label,.genreChecks label{color:#cacac4;font-size:13px;font-weight:650}
+.genreField select,.genreField input,.genreField textarea{width:100%;min-height:46px;border:1px solid #555;border-radius:12px;background:#252524;color:var(--text);padding:10px 12px;font:inherit}
+.genreField textarea{resize:vertical;min-height:68px}
+.genreChecks{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 12px}
+.genreChecks label{display:inline-flex;gap:6px;align-items:center;min-height:40px}
+.genrePreview{padding:12px;border:1px solid #4d4d4a;border-radius:13px;background:#252524;font-size:13px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;max-height:190px;overflow-y:auto}
+.genreActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.genreActions button{min-height:48px;border:0;border-radius:13px;background:#3e3e3b;color:var(--text);font-weight:700}
+.genreActions button:last-child{background:#e4e3df;color:#171717}
+@media(max-width:400px){.genreGrid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -36,8 +51,23 @@ body{min-height:100dvh}button,select,textarea,input{font:inherit}button{color:in
 <div class="composer" id="composer"><div class="attachTray" id="attachTray"></div><div class="composerInner"><button class="plus" id="attachBtn" type="button" aria-label="첨부">＋</button><textarea id="body" maxlength="3000" rows="1" enterkeyhint="send" placeholder="메시지 보내기"></textarea><button class="send" id="sendBtn" type="button" aria-label="전송">↑</button></div><div class="uploadState" id="uploadState"></div></div>
 <input id="imageInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden>
 <input id="fileInput" type="file" accept=".pdf,.txt,.md,.json,.zip,.docx,.xlsx,application/pdf,text/plain,text/markdown,application/json,application/zip,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" multiple hidden>
-<div class="overlay" id="menuOverlay" hidden><div class="shade" id="menuShade"></div><aside class="drawer"><div class="drawerTop"><div class="drawerTitle">재운컴퍼니</div><button class="closeBtn" id="closeMenu" type="button">×</button></div><a class="menuLink" href="/">⌂ <span>게임 홈</span></a><button class="menuBtn" id="providerBtn" type="button">◇ <span>Gemini 연결</span></button><div class="providerState" id="providerState">상태 확인 중</div><div class="menuSep"></div><div class="menuLabel">우선순위</div><select id="priority"><option value="normal">일반</option><option value="priority">우선</option><option value="urgent">긴급</option></select><div class="menuLabel">게임 목록</div><button class="gameItem selected" id="autoGame" data-game=""><div class="gameName">회사 공통 / 자동 인식</div><div class="gameStage">대화에서 게임 이름을 알아서 인식</div></button><div class="gameList" id="gameList"></div></aside></div>
+<div class="overlay" id="menuOverlay" hidden><div class="shade" id="menuShade"></div><aside class="drawer"><div class="drawerTop"><div class="drawerTitle">재운컴퍼니</div><button class="closeBtn" id="closeMenu" type="button">×</button></div><a class="menuLink" href="/">⌂ <span>게임 홈</span></a><button class="menuBtn" id="genreBtn" type="button">▦ <span>장르별 게임 구성</span></button><button class="menuBtn" id="providerBtn" type="button">◇ <span>Gemini 연결</span></button><div class="providerState" id="providerState">상태 확인 중</div><div class="menuSep"></div><div class="menuLabel">우선순위</div><select id="priority"><option value="normal">일반</option><option value="priority">우선</option><option value="urgent">긴급</option></select><div class="menuLabel">게임 목록</div><button class="gameItem selected" id="autoGame" data-game=""><div class="gameName">회사 공통 / 자동 인식</div><div class="gameStage">대화에서 게임 이름을 알아서 인식</div></button><div class="gameList" id="gameList"></div></aside></div>
 <div class="sheetWrap" id="attachSheet" hidden><div class="shade" id="attachShade"></div><section class="sheet"><div class="sheetTop"><h2>첨부하기</h2><button class="closeBtn" id="closeAttach" type="button">×</button></div><p>사진이나 개발 파일을 메시지와 같이 보낼 수 있어.</p><div class="attachActions"><button class="attachAction" id="pickImage" type="button">사진</button><button class="attachAction" id="pickFile" type="button">파일</button></div><p class="privacy">파일당 최대 6MB · 비공개 저장소 사용</p></section></div>
+
+<div class="sheetWrap" id="genreSheet" hidden><div class="shade" id="genreShade"></div><section class="sheet genreSheet" role="dialog" aria-modal="true" aria-labelledby="genreTitle">
+<div class="sheetTop"><h2 id="genreTitle">장르별 게임 구성</h2><button class="closeBtn" id="closeGenre" type="button" aria-label="닫기">×</button></div>
+<p>기존 장르 프리셋과 회사 에셋 등록부를 확인해서 웹·로블록스 작업 지시안을 작성해.</p>
+<div class="genreGrid">
+<div class="genreField"><label for="genrePlatform">플랫폼</label><select id="genrePlatform"><option value="web">웹</option><option value="roblox">로블록스</option></select></div>
+<div class="genreField"><label for="genreKind">장르</label><select id="genreKind"><option value="rpg">역할수행</option><option value="survival">생존</option><option value="action">액션</option><option value="defense">디펜스</option><option value="adventure">모험</option><option value="strategy">전략</option><option value="puzzle">퍼즐</option></select></div>
+</div>
+<div class="genreField"><label for="genreGameName">게임 이름 (선택)</label><input id="genreGameName" maxlength="70" placeholder="새 게임 이름 또는 기존 게임 이름"></div>
+<div class="genreField"><label for="genreDescription">게임 설정과 핵심 진행 (선택)</label><textarea id="genreDescription" maxlength="450" placeholder="지역, 플레이 방식, 적, 보스, 제작, 목표 등"></textarea></div>
+<div class="genreChecks"><label><input id="genreMultiplayer" type="checkbox"> 멀티플레이</label><label><input id="genreAdapt" type="checkbox" checked> 호환 에셋 원본 보존 변형 허용</label></div>
+<div class="genreField"><label>장르 구성 · 에셋 확인</label><div class="genrePreview" id="genrePreview" role="status" aria-live="polite">장르 프리셋을 확인하고 있어.</div></div>
+<div class="genreActions"><button id="genreRefresh" type="button">다시 확인</button><button id="genreCompose" type="button">채팅에 구성하기</button></div>
+<p class="privacy">이 화면은 설계안 작성용이야. 에셋의 실제 연결·동작·배포 완료는 기존 개발과 검증 단계에서만 판정해.</p>
+</section></div>
 <div class="sheetWrap" id="aiSetup" hidden><div class="shade" id="setupShade"></div><section class="sheet"><div class="sheetTop"><h2>Gemini 연결</h2><button class="closeBtn" id="closeSetup" type="button">×</button></div><p>Google AI Studio API 키를 한 번만 입력하면 돼.</p><input class="keyInput" id="geminiKey" type="password" autocomplete="off" spellcheck="false" placeholder="Gemini API 키"><div class="keyActions"><a href="https://ai.google.dev/aistudio" target="_blank" rel="noopener noreferrer">AI Studio 열기</a><button id="saveGemini" type="button">연결</button></div><div class="setupState" id="setupState">상태 확인 중</div><p class="privacy">키는 브라우저에 저장하지 않고 서버 Vault에 보관해.</p></section></div>
 <script>
 const API='https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-command';
@@ -76,6 +106,97 @@ async function send(){let text=$('body').value.trim();if((!text&&!pendingAttachm
 async function claim(){const code=$('claimCode').value.trim();if(!code)return;$('claimBtn').disabled=true;try{const d=await api({action:'claim',code,label:navigator.userAgent.slice(0,60)},false);token=d.token||'';localStorage.setItem(TOKEN_KEY,token);setRegistered(true);await checkProvider();await refresh();}catch(e){$('claimState').textContent=`등록 실패: ${e.message}`;}finally{$('claimBtn').disabled=false;}}
 function newChat(){activeTaskId='';localStorage.removeItem(ACTIVE_KEY);showRuntimeError('');followLatest=true;$('body').focus();scrollBottom();}
 function registerPwa(){if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').then(r=>r.update().catch(()=>{})).catch(()=>{});}
+
+/* 게임 구성 · 기존 장르 프리셋과 등록부만 조회, 소스·저장·서버 판정 변경 없음 */
+let genrePresets=null,genreRegistry=null,genreLoadError='',genreLoadPromise=null;
+const genreLabels={rpg:'역할수행',survival:'생존',action:'액션',defense:'디펜스',adventure:'모험',strategy:'전략',puzzle:'퍼즐'};
+const genreFamilies=Object.freeze({
+ rpg:['CHARACTER','CREATURE','ENVIRONMENT','WEAPON','MATERIAL','UI','MOTION','VFX','AUDIO','PROP'],
+ survival:['CHARACTER','CREATURE','ENVIRONMENT','BUILDING','WEAPON','MATERIAL','UI','MOTION','VFX','AUDIO','PROP'],
+ action:['CHARACTER','CREATURE','ENVIRONMENT','WEAPON','SKILL','MATERIAL','UI','MOTION','VFX','AUDIO'],
+ defense:['CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','UI','VFX','AUDIO','PROP'],
+ adventure:['CHARACTER','CREATURE','ENVIRONMENT','BUILDING','MATERIAL','UI','MOTION','AUDIO','PROP'],
+ strategy:['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','MATERIAL','UI','VFX','AUDIO','PROP'],
+ puzzle:['BUILDING','ENVIRONMENT','MATERIAL','UI','AUDIO','PROP']
+});
+async function readGenreLibrary(force=false){
+ if(genreLoadPromise&&!force)return genreLoadPromise;
+ genreLoadPromise=(async()=>{
+  try{
+   const [module,response]=await Promise.all([import('/assets/game-presets.js'),fetch('./company-asset-library.json',{cache:'no-cache'})]);
+   if(!response.ok)throw Error('회사 에셋 등록부 연결 실패');
+   const data=await response.json();
+   if(!Array.isArray(data.assets))throw Error('에셋 목록 형식 오류');
+   genrePresets=module;genreRegistry=data.assets;genreLoadError='';
+  }catch(error){genreLoadError=String(error?.message||error);genreRegistry=null;
+   if(!genrePresets){try{genrePresets=await import('/assets/game-presets.js');}catch{}}
+  }finally{renderGenrePreview();}
+ })();
+ return genreLoadPromise;
+}
+function genreAssetRows(){
+ const platform=$('genrePlatform').value.toUpperCase(),families=new Set(genreFamilies[$('genreKind').value]||[]);
+ return (genreRegistry||[]).filter(a=>{
+  const family=String(a?.category||a?.family||'').toUpperCase(),native=String(a?.platform||'').toUpperCase();
+  return families.has(family)&&(!native||native==='ALL'||native==='SHARED'||native==='CROSS_PLATFORM'||native==='BOTH'||native===platform
+   ||(Array.isArray(a?.platforms)&&a.platforms.some(p=>String(p).toUpperCase()===platform)));
+ });
+}
+function renderGenrePreview(){
+ const genre=$('genreKind').value,platform=$('genrePlatform').value;
+ let preset=null;try{preset=genrePresets?.buildGamePreset({genre,multiplayer:$('genreMultiplayer').checked});}catch{}
+ const rows=genreAssetRows();
+ const verified=rows.filter(a=>a?.productionVerified===true&&a?.verifiedCompanyReusable===true);
+ const library=genreRegistry
+  ?'등록부 연관 후보 '+rows.length+'개 · 재사용 검증 표기 '+verified.length+'개 (실제 적용 전 라이선스·원본·플랫폼 재검사)'
+  :genreLoadError?'에셋 등록부 미확인: '+genreLoadError:'에셋 등록부 확인 중';
+ $('genrePreview').textContent=[
+  '플랫폼: '+(platform==='web'?'웹':'로블록스')+' / '+genreLabels[genre],
+  '필요 분류: '+(genreFamilies[genre]||[]).join(', '),
+  preset?'기존 시스템: '+preset.systems.slice(0,12).join(', '):'기존 프리셋 확인 중',
+  preset?'필요 에셋: '+preset.assets.slice(0,12).join(', '):'',
+  preset?'회귀 점검: '+preset.qa.slice(0,9).join(', '):'',
+  library,'미검증·비호환 자산은 강제 적용하지 않음'
+ ].filter(Boolean).join('\n');
+}
+function openGenre(){
+ closeMenu();$('genreSheet').hidden=false;
+ renderGenrePreview();readGenreLibrary().catch(()=>{});
+ $('genrePlatform').focus();
+}
+function closeGenre(){$('genreSheet').hidden=true;}
+function composeGenre(){
+ const genre=$('genreKind').value,platform=$('genrePlatform').value,name=$('genreGameName').value.trim();
+ if(!genrePresets){$('genrePreview').textContent='기존 프리셋을 읽지 못해. 다시 확인해줘.';return;}
+ const preset=genrePresets.buildGamePreset({genre,multiplayer:$('genreMultiplayer').checked});
+ const familyList=genreFamilies[genre]||[];
+ const rows=genreAssetRows(),verified=rows.filter(a=>a?.productionVerified===true&&a?.verifiedCompanyReusable===true);
+ const parts=[
+  '[게임 구성 설계 요청]',
+  '플랫폼: '+(platform==='web'?'웹':'로블록스')+' / 장르: '+genreLabels[genre]+'('+genre+')',
+  selectedGame?'기존 게임 ID: '+selectedGame+' (기존 설정 우선)':(name?'게임 이름: '+name:'새 게임 이름은 대화에서 결정'),
+  name&&selectedGame?'표시 이름: '+name:'',
+  $('genreDescription').value.trim()?'세계관·플레이 내용: '+$('genreDescription').value.trim():'',
+  '멀티플레이: '+($('genreMultiplayer').checked?'요청함':'별도 요청 없음'),
+  '기존 장르 프리셋 시스템 후보: '+preset.systems.slice(0,19).join(', '),
+  '기존 프리셋 에셋 후보: '+preset.assets.slice(0,15).join(', '),
+  '연관 에셋 분류: '+familyList.join(', '),
+  '회사 라이브러리: '+(genreRegistry?'관련 등록 후보 '+rows.length+'개, 재사용 검증 표기 '+verified.length+'개':'조회 미완료(작업 단계에서 재검사)'),
+  '에셋: 전체 기존 회사 라이브러리와 게임 원본을 검색하고 용도·라이선스·플랫폼·원본 경로·검증 근거가 맞는 자산만 실제 소스에 연결. 검증 전에는 설치·적용 성공이라고 말하지 말 것.',
+  $('genreAdapt').checked?'호환 자산의 소폭 스타일·크기·재질 변경은 원본 불변·별도 파생본·라이선스·검증 조건에서만 허용.':'자산 변형 금지. 이미 호환되는 원본만 사용.',
+  '연출: 장르별 HUD 우선순위, 모바일 화면 경계·이펙트 개수·중복 알림 제어. 실제 전투/상태값에만 시각효과 결합.',
+  '기존 게임 규칙·체력·공격력·저장 키·저장 구조·서버 판정·기존 기능 변경 금지. 기존 바이브 소스 워커와 검증·배포 정책 준수.',
+  '사전 점검: '+preset.qa.slice(0,12).join(', ')
+ ].filter(Boolean);
+ const body=$('body');body.value=parts.join('\n').slice(0,3000);closeGenre();resizeComposer();body.focus();
+}
+/* 게임 구성 이벤트 · 기존 전송 함수의 승인 흐름 유지 */
+$('genreBtn').addEventListener('click',openGenre);
+$('closeGenre').addEventListener('click',closeGenre);
+$('genreShade').addEventListener('click',closeGenre);
+$('genreRefresh').addEventListener('click',()=>readGenreLibrary(true).catch(()=>{}));
+$('genreCompose').addEventListener('click',composeGenre);
+for(const id of ['genrePlatform','genreKind','genreMultiplayer'])$(id).addEventListener('change',renderGenrePreview);
 $('menuBtn').addEventListener('click',openMenu);$('menuShade').addEventListener('click',closeMenu);$('closeMenu').addEventListener('click',closeMenu);$('newChatBtn').addEventListener('click',newChat);$('autoGame').addEventListener('click',()=>selectGame(''));$('providerBtn').addEventListener('click',()=>{closeMenu();openSetup();});$('attachBtn').addEventListener('click',openAttach);$('attachShade').addEventListener('click',closeAttach);$('closeAttach').addEventListener('click',closeAttach);$('pickImage').addEventListener('click',()=>$('imageInput').click());$('pickFile').addEventListener('click',()=>$('fileInput').click());$('imageInput').addEventListener('change',e=>handleFiles(e.target.files));$('fileInput').addEventListener('change',e=>handleFiles(e.target.files));$('sendBtn').addEventListener('click',send);$('claimBtn').addEventListener('click',claim);$('closeSetup').addEventListener('click',closeSetup);$('setupShade').addEventListener('click',closeSetup);$('saveGemini').addEventListener('click',saveGeminiKey);$('geminiKey').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();saveGeminiKey();}});$('body').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});$('body').addEventListener('input',resizeComposer);$('body').addEventListener('focus',()=>{if(followLatest)setTimeout(scrollBottom,100);});$('jumpBottom').addEventListener('click',scrollBottom);$('chat').addEventListener('scroll',()=>{followLatest=isNearBottom();syncJumpBottom();},{passive:true});if(window.visualViewport){window.visualViewport.addEventListener('resize',()=>{syncComposerMetrics();if(followLatest)setTimeout(scrollBottom,50);});}if('ResizeObserver'in window)new ResizeObserver(syncComposerMetrics).observe($('composer'));
 (async()=>{await loadCompanyContext();setRegistered(Boolean(token));registerPwa();resizeComposer();if(token){await checkProvider();await refresh();}else syncProviderUi();clearInterval(refreshTimer);refreshTimer=setInterval(()=>{if(!document.hidden)refresh();},7000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){registerPwa();loadCompanyContext();refresh();}});})();
 </script>

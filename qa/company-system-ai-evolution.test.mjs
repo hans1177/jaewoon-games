@@ -53,6 +53,13 @@ test('failure classifier separates infrastructure, QA drift, security, and imple
   assert.equal(credential.learningPenalty,false);
   assert.equal(credential.workerHandoffRecommended,false);
 
+  for(const signature of ['GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:gemini-3.8-flash:HTTP_429','GEMINI_AUTH_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:403','SYSTEM_AI_GEMINI_KEY_MISSING_NO_LOCAL_FALLBACK']){
+    const modelOutage=classifySystemAiFailure({task:{id:'model-outage'},result:{outcome:'FAIL',failureSignature:signature}});
+    assert.equal(modelOutage.failureClass,'EXTERNAL_SERVICE_OR_CREDENTIAL_FAILURE');
+    assert.equal(modelOutage.retryBudgetConsumed,false);
+    assert.equal(modelOutage.learningPenalty,false);
+  }
+
   const unverifiedQa=classifySystemAiFailure({task:{id:'b',failureClass:'STALE_QA_CONTRACT'},result:{outcome:'FAIL'}});
   assert.equal(unverifiedQa.failureClass,'UNKNOWN_REQUIRES_CAUSAL_DIAGNOSIS');
   assert.equal(unverifiedQa.qaContractDriftVerified,false);
@@ -480,8 +487,8 @@ test('system AI workflow wires sensing, exact reservation identity, missing-resu
   assert.match(workflow,/assignment reservation changed:/);
   assert.match(workflow,/--command=handoff-missing/);
   assert.match(workflow,/continue-on-error: true[\s\S]*pattern: company-system-ai-result-\*/);
-  assert.match(workflow,/group: \$\{\{ github\.event_name == 'push' && 'company-system-ai-push-qa-reserve' \|\| 'company-system-ai-reserve-control' \}\}/);
-  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/group: .*company-system-ai-push-qa-reserve.*company-system-ai-reserve-control/);
+  assert.match(workflow,/cancel-in-progress: .*contains\(github\.event\.head_commit\.message/);
   assert.match(workflow,/group: company-system-ai-fanin-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_FANIN_OPTIMISTIC_RETRY=/);
   assert.match(workflow,/for attempt in 1 2 3 4 5; do/);
@@ -595,21 +602,19 @@ test('external Roblox runtime failure preserves same immutable candidate without
   assert.ok(snapshot.development.rows.every(x=>x.unityF9IndependentRuntimeReviewRequired&&x.automaticPassClaim===false));
 });
 
-test('canonical reusable parent keeps final fan-in while successful games hand off without sibling completion',()=>{
+test('canonical parent preserves independent Roblox handoff, reusable Unity lane and final fan-in',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  for(const name of [
-    'company-development-roblox-runtime.yml','company-development-unity-runtime.yml'
-  ]){
-    assert.ok(workflow.includes('uses: ./.github/workflows/'+name),'missing canonical reusable workflow: '+name);
-    assert.ok(!workflow.includes('gh workflow run '+name),'duplicate API lane dispatch: '+name);
-  }
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$game_id"'));
+  assert.ok(workflow.includes('ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'));
+  assert.ok(workflow.includes('uses: ./.github/workflows/company-development-unity-runtime.yml'));
+  assert.ok(!workflow.includes('gh workflow run company-development-unity-runtime.yml'),'duplicate Unity API lane dispatch');
   assert.ok(workflow.includes('needs: [native-plan, dispatch-roblox, dispatch-unity]'));
   assert.ok(!workflow.includes('dispatch-unity-web-floor:'));
   assert.ok(!workflow.includes('dispatch-unity-web-bootstrap:'));
 
-  assert.ok(workflow.includes('--arg control_sha "$GITHUB_SHA"'));
-  assert.ok(workflow.includes('select(.head_sha == $control_sha)'));
-  assert.ok(workflow.includes('DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES'));
+  assert.ok(workflow.includes("if(exactHead&&String(run.head_sha||'')!==exactHead)continue;"),
+    'only the requested exact head revision may be considered');
+  assert.ok(workflow.includes('ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'));
   assert.ok(workflow.includes('fail-fast: false'));
   const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
   assert.ok(unity.includes('Immediately continue this successful Unity game'));

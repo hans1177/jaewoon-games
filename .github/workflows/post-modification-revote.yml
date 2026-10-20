@@ -21,8 +21,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  ARTBOOK_LOCAL_MODEL: qwen3:0.6b
-  OLLAMA_HOST: 127.0.0.1:11434
+  VIBE2_GEMINI_MODEL: gemini-3.8-flash
+  VIBE2_GEMINI_BACKUP_MODEL: gemini-3.5-flash-lite
 
 jobs:
   context:
@@ -86,22 +86,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - name: Install local Ollama
-        shell: bash
-        run: |
-          set -euo pipefail
-          curl -fsSL https://ollama.com/install.sh | sh
-          nohup ollama serve > /tmp/ollama.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
-            sleep 2
-          done
-          cat /tmp/ollama.log || true
-          exit 1
-      - name: Pull free local model
-        run: ollama pull "$ARTBOOK_LOCAL_MODEL"
       - name: Independent department reevaluation
         env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           REVIEW_ROLE: ${{ matrix.role }}
           REVIEW_REQUEST_FILE: ${{ needs.context.outputs.request_file }}
           REVIEW_OUTPUT_ROOT: .company-revote-output
@@ -132,22 +119,9 @@ jobs:
           set -euo pipefail
           for role in planning development qa graphics balance; do test -s ".company-revote-output/$role.json"; done
           echo 'DEPARTMENT_REVOTES=5/5'
-      - name: Install local Ollama
-        shell: bash
-        run: |
-          set -euo pipefail
-          curl -fsSL https://ollama.com/install.sh | sh
-          nohup ollama serve > /tmp/ollama.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && exit 0
-            sleep 2
-          done
-          cat /tmp/ollama.log || true
-          exit 1
-      - name: Pull free local model
-        run: ollama pull "$ARTBOOK_LOCAL_MODEL"
       - name: Director final revote
         env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           REVIEW_ROLE: director
           REVIEW_REQUEST_FILE: ${{ needs.context.outputs.request_file }}
           REVIEW_OUTPUT_ROOT: .company-revote-output

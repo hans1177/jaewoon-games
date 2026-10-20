@@ -81,6 +81,7 @@ jobs:
           node --check tools/company-game-seed-bootstrap.mjs
           node --check tools/company-game-seed-semantic-normalize.mjs
           node --check tools/company-strict-production-review.mjs
+          node --test qa/company-game-seed-gameplay-sketch.test.mjs
 
       - name: Decide creation mode
         id: need
@@ -160,6 +161,7 @@ jobs:
         if: steps.finalneed.outputs.model == 'true'
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
+          COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
           GAME_SEED_IDLE_TARGET_COUNT: ${{ steps.finalneed.outputs.idle_target_count }}
         run: |
           node tools/company-game-seed-bootstrap.mjs | tee /tmp/game-seed-result.txt

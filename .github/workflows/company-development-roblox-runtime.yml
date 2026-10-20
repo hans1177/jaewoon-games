@@ -22,6 +22,7 @@ on:
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-gameplay-product-readiness.mjs'
       - 'qa/company-development-roblox-gameplay-product-readiness.test.mjs'
+      - 'qa/company-development-roblox-independent-promotion.test.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/vibe3-roblox-learning-context.mjs'
       - 'tools/company-selected-platform-router.mjs'
@@ -30,6 +31,7 @@ on:
       - 'company-learning/platform-release-roadmap.json'
       - 'tools/company-development-roblox-build-preflight.mjs'
       - 'tools/company-development-roblox-runtime-smoke.luau'
+      - 'roblox-games/.company-runtime-trigger'
   workflow_call:
     inputs:
       game_id:
@@ -74,12 +76,14 @@ jobs:
     # This never serializes downstream source, runtime, QA, or release work.
     concurrency:
       group: roblox-runtime-source-plan-v2-${{ inputs.game_id || 'batch' }}
+      queue: max
       cancel-in-progress: false
     # Exact-game ingress uses the ARM game-control pool; batch push ingress stays on fixed 24.04.
     # This spreads control work without consuming heavy ubuntu-latest game capacity.
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
+      accepted: ${{ steps.freshness.outputs.run || 'false' }}
       count: ${{ steps.targets.outputs.count || '0' }}
       matrix: ${{ steps.targets.outputs.matrix || '{"include":[]}' }}
       targets_json: ${{ steps.targets.outputs.targets_json || '[]' }}
@@ -116,13 +120,19 @@ jobs:
                 .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title&&String(r.head_sha||'')===currentSha)
                 .filter(r=>Number.isFinite(Number(r.id)))
                 .sort((a,b)=>Number(a.id)-Number(b.id));
-              // An active same-revision plan owns the work. New queued ingress must not make it abandon progress.
-              const winner=candidates.find(r=>String(r.status||'').toLowerCase()==='in_progress')||candidates[candidates.length-1];
+              // One same-revision owner per exact game/batch: GitHub may label an old run
+              // 'queued' while its source, package, or F0 jobs are already running.
+              // Always keep the oldest active run, regardless of transient status;
+              // otherwise new pushes schedule duplicate source workers for the same SHA.
+              const winner=candidates[0];
               process.stdout.write(winner?String(winner.id):'');
             });
           ")"
           echo "ROBLOX_RUNTIME_ACTIVE_WINNER=${winner:-NONE}"
           echo "ROBLOX_SOURCE_PLAN_ACTIVE_WORK_PRESERVED=YES"
+          # 각 대기 실행은 아래 실제 계약 차이 검사에서 최신 실행으로 인계한다.
+          # 다른 커밋이라는 이유만으로 배치가 게임별 실행을 취소하지 않는다.
+          echo "ROBLOX_QUEUED_EXACT_CONTRACT_SELF_VALIDATION=YES"
           if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then
             echo 'run=false' >> "$GITHUB_OUTPUT"
             if [ -n "$REQUESTED_GAME_ID" ]; then
@@ -164,39 +174,6 @@ jobs:
             fi
           fi
 
-      - name: Cancel stale exact-game runtime runs after contract change
-        if: github.event_name == 'push' && steps.freshness.outputs.run == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" > /tmp/roblox-runtime-contract-runs.json
-          node <<'NODE' > /tmp/roblox-runtime-stale-run-ids
-          const fs=require('fs');
-          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-contract-runs.json','utf8'));
-          const states=new Set(['queued','pending','requested']);
-          const currentRun=Number(process.env.GITHUB_RUN_ID||0);
-          const currentSha=String(process.env.GITHUB_SHA||'');
-          for(const run of payload.workflow_runs||[]){
-            if(Number(run.id)===currentRun)continue;
-            if(!states.has(String(run.status||'').toLowerCase()))continue;
-            const title=String(run.display_title||'');
-            if(!title.startsWith('Roblox runtime · ')||title==='Roblox runtime · batch')continue;
-            if(String(run.head_sha||'')===currentSha)continue;
-            console.log(run.id);
-          }
-          NODE
-          cancelled=0
-          while read -r run_id; do
-            [ -n "$run_id" ] || continue
-            if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null 2>&1; then
-              cancelled=$((cancelled+1))
-              echo "ROBLOX_STALE_EXACT_RUNTIME_CANCELLED=$run_id"
-            fi
-          done < /tmp/roblox-runtime-stale-run-ids
-          echo "ROBLOX_STALE_EXACT_RUNTIME_CANCEL_COUNT=$cancelled"
-
       - name: Bind Roblox source-plan contract fingerprint
         id: contract
         if: steps.freshness.outputs.run == 'true'
@@ -232,6 +209,8 @@ jobs:
 
       - name: Fetch current company runtime and verified Vibe learning
         if: steps.freshness.outputs.run == 'true'
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
@@ -242,7 +221,8 @@ jobs:
           node - <<'NODE' > /tmp/roblox-bound-source-revisions
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
-          const revisions=[...new Set((q.items||[]).map(x=>String(x.robloxSourceCommit||'').trim()).filter(x=>/^[0-9a-f]{40}$/i.test(x)))];
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const revisions=[...new Set((q.items||[]).filter(x=>!requested||String(x.gameId||'').trim()===requested).map(x=>String(x.robloxSourceCommit||'').trim()).filter(x=>/^[0-9a-f]{40}$/i.test(x)))];
           for(const revision of revisions)console.log(revision);
           NODE
           while read -r revision; do
@@ -258,6 +238,7 @@ jobs:
         id: reconcile
         env:
           SOURCE_REVISION: ${{ github.sha }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -266,6 +247,7 @@ jobs:
             --runtime-ref="origin/$COMPANY_RUNTIME_BRANCH" \
             --repo-root=. \
             --source-revision="$SOURCE_REVISION" \
+            --game-id="$REQUESTED_GAME_ID" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --results=/tmp/roblox-source-reconciliation.json
 
@@ -334,6 +316,7 @@ jobs:
         id: targets
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
         shell: bash
         run: |
           set -euo pipefail
@@ -356,6 +339,7 @@ jobs:
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
           for(const item of candidates){
             if(rows.length>=EXECUTION_BATCH_MAX)break;
+            if(item.gameId==='daechung-rpg')continue; // owner-direct publish only
             if(requested&&item.gameId!==requested)continue;
             if(!windowIds.has(item.gameId))continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -371,7 +355,25 @@ jobs:
             if(state==='DEVELOPMENT_BLOCKED')continue;
             const target=`roblox-games/${item.gameId}`;
             const reconciliationRow=reconciliationById.get(item.gameId);
-            if(reconciliationRow?.sourceRepairPending===true){
+            // 메인 Vibe 복구: 현재 정확한 소스/에셋 진단에서 MATERIAL 소비만 빠졌을 때만
+            // 기존 source-worker가 실제 native 물체의 재질 바인딩을 생성하게 한다.
+            const materialRepairPending=reconciliationRow?.sourceRepairPending===true
+              &&reconciliationRow?.sourceContractRepairRequired!==true
+              &&reconciliationRow?.failure==='existing-source-package-asset-repair-required'
+              &&Array.isArray(reconciliationRow.blockers)
+              &&reconciliationRow.blockers.length===1
+              &&reconciliationRow.blockers[0]==='ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL';
+            if((reconciliationRow?.sourceRepairPending===true||reconciliationRow?.sourceContractRepairRequired===true)&&!materialRepairPending){
+              // 분류만 공개한다. Vibe 복구 소유권과 실제 F0 검증 문턱은 바꾸지 않는다.
+              console.log('ROBLOX_SOURCE_REPAIR_DEBT_DETAILS='+JSON.stringify({
+                gameId:item.gameId,
+                authority:String(reconciliationRow?.authority||''),
+                failure:String(reconciliationRow?.failure||''),
+                sourceRepairPending:reconciliationRow?.sourceRepairPending===true,
+                sourceContractRepairRequired:reconciliationRow?.sourceContractRepairRequired===true,
+                blockers:Array.isArray(reconciliationRow?.blockers)
+                  ?reconciliationRow.blockers.map(value=>String(value||'')).slice(0,20):[],
+              }));
               console.log('ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE='+item.gameId);
               continue;
             }
@@ -381,7 +383,7 @@ jobs:
               console.log('ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND='+item.gameId);
               continue;
             }
-            const existingSourceMaintenanceRebind=existingSourceAssetRebind;
+            const existingSourceMaintenanceRebind=existingSourceAssetRebind||materialRepairPending;
             const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
             const f0FoundationRepair=!secondaryOwnerFocus
               &&((item.robloxFoundationF0Passed!==true
@@ -393,7 +395,7 @@ jobs:
               &&currentReconciliationPass
               &&String(item.currentStep||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND'
               &&String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND';
-            const knownSourceRepairDebt=(Boolean(bootstrapFailed)&&!resolvedSourceBindDebt)||f0FoundationRepair;
+            const knownSourceRepairDebt=(Boolean(bootstrapFailed)&&!resolvedSourceBindDebt)||f0FoundationRepair||materialRepairPending;
             if(resolvedSourceBindDebt)console.log('ROBLOX_STALE_SOURCE_BIND_DEBT_RESOLVED_BY_EXACT_RECONCILIATION='+item.gameId);
             const candidateReady=secondaryOwnerFocus
               ?Boolean(item.ownerFocusRobloxSourceCandidateReadyAt)&&String(item.ownerFocusRobloxSourceCandidateBranch||'').trim()
@@ -415,6 +417,7 @@ jobs:
               secondaryOwnerFocus,
               existingSourceAssetRebind,
               existingSourceLearningRebind,
+              studioMaterialRepair:materialRepairPending,
               reconciliationSourceTreeSha:String(reconciliationRow?.sourceTreeSha||''),
               foundationRepair:f0FoundationRepair,
               knownSourceRepairDebt,
@@ -494,6 +497,7 @@ jobs:
           ARTBOOK_SOURCE: ${{ matrix.artbook }}
           TARGET_SOURCE: ${{ matrix.target }}
           FOUNDATION_REPAIR: ${{ matrix.foundationRepair || false }}
+          STUDIO_MATERIAL_REPAIR: ${{ matrix.studioMaterialRepair || false }}
           BUILD_UP_DIRECTIVE: /tmp/build-up-directive-${{ matrix.gameId }}.json
           RECONCILIATION_SOURCE_TREE_SHA: ${{ matrix.reconciliationSourceTreeSha || '' }}
           SOURCE_PLAN_CONTRACT_FINGERPRINT: ${{ needs.source-plan.outputs.contract_fingerprint }}
@@ -558,6 +562,7 @@ jobs:
             --roadmap=company-learning/platform-release-roadmap.json \
             --output-root="$TARGET_SOURCE" \
             --foundation-repair="$FOUNDATION_REPAIR" \
+            --studio-material-repair="$STUDIO_MATERIAL_REPAIR" \
             --evidence="$evidence" \
             "${directive_args[@]}"
           node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs
@@ -584,7 +589,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" --title "development: bootstrap Roblox ${GAME_ID}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: COMPANY_FLOW.md.")"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" --title "development: bootstrap Roblox ${GAME_ID}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: inspect roblox-source-bootstrap.json sourceValidationPassed and sourceValidationBlockers; a binding refresh alone is not PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: COMPANY_FLOW.md.")"
           echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
           attempt=0
           while true; do
@@ -677,7 +682,7 @@ jobs:
   source-bootstrap:
     name: persist Roblox source-bind results
     needs: [source-plan, source-worker]
-    if: always() && needs.source-plan.result == 'success'
+    if: always() && needs.source-plan.result == 'success' && needs.source-plan.outputs.accepted == 'true' && (needs.source-plan.outputs.count != '0' || needs.source-plan.outputs.reconciliation_count != '0')
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
@@ -846,6 +851,13 @@ jobs:
                 robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
                 robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,robloxInternalReleaseEvidence:null,robloxReleaseEvidence:null,
                 robloxPublicReleaseReady:false,robloxReleaseClaim:false,robloxReleasePublishedAt:null,
+                ...(result.sourceContractRepairRequired===true&&result.sourceContractRepairEvidence?{
+                  robloxSourceCommit:result.sourceRevision,
+                  robloxQualityBuildUpRequired:true,
+                  robloxQualityBuildUpSourceRevision:result.sourceRevision,
+                  robloxQualityFailureClass:'SOURCE_CONTRACT',
+                  robloxQualityBuildUpEvidence:{...result.sourceContractRepairEvidence,workflowRunId:Number(process.env.GITHUB_RUN_ID||0)||null,testedAt:stamp},
+                }:{}),
                 robloxFailureStage:'TARGET_PLATFORM_SOURCE_BIND',robloxFailureSignature:result.failure||'ROBLOX_SOURCE_REVALIDATION_FAILED',
                 routingBlockers:[`roblox-source-bootstrap:${result.failure||'existing-source-revalidation-failed'}${detail}`],updatedAt:stamp,
               });
@@ -1057,7 +1069,7 @@ jobs:
   technical-plan:
     name: resolve Roblox technical package work
     needs: source-plan
-    if: always() && needs.source-plan.result == 'success'
+    if: always() && needs.source-plan.result == 'success' && needs.source-plan.outputs.accepted == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
@@ -1110,6 +1122,7 @@ jobs:
           const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
           for(const item of candidates){
             if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
+            if(item.gameId==='daechung-rpg')continue; // owner-direct publish only
             if(requested&&item.gameId!==requested)continue;
             if(sourceBusyIds.has(String(item.gameId||''))){
               console.log('ROBLOX_TECHNICAL_DEFER_SOURCE_STAGE='+item.gameId);
@@ -1376,32 +1389,16 @@ jobs:
           echo "artifact_identity=$identity" >> "$GITHUB_OUTPUT"
           echo "build_evidence=$evidence" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare shared local review model in package worker
-        if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
-        uses: ./.github/actions/prepare-ollama
-        with:
-          model: 'llama3.2:1b'
-          version: '0.33.3'
-          pull-model: 'true'
-          department-role: development
-          cache-model: 'true'
-
-      - name: Ensure fused shared preflight model is local
-        if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
-        shell: bash
-        run: |
-          set -euo pipefail
-          model="$(node -e "const d=require('./company-directive.json');console.log(d.ai.robloxPreflightModel||d.ai.departmentLeadModels?.development||'llama3.2:1b')")"
-          have="$(ollama list | awk 'NR>1{print $1}')"
-          grep -Fxq "$model" <<<"$have" || ollama pull "$model"
-          echo "ROBLOX_PREFLIGHT_SHARED_MODEL=$model"
-          echo 'ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED'
-
       - name: Run fused shared-model build preflight
         id: fused_preflight
         if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
         continue-on-error: true
         env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
+          VIBE2_GROQ_FREE_PLAN_VERIFIED: ${{ vars.VIBE2_GROQ_FREE_PLAN_VERIFIED || 'YES' }}
           GAME_ID: ${{ matrix.gameId }}
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
           SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
@@ -1432,6 +1429,8 @@ jobs:
           }
           fs.writeFileSync('/tmp/roblox-technical/preflight-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE
+          echo 'ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED'
+          echo 'ROBLOX_PREFLIGHT_SHARED_MODEL=GEMINI_FREE_EXTERNAL_PAIR'
           node tools/company-development-roblox-build-preflight.mjs \
             --game-id="$GAME_ID" \
             --queue=/tmp/roblox-technical/preflight-queue.json \
@@ -2203,6 +2202,7 @@ jobs:
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -2216,13 +2216,22 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           let packagePending=0,preflightReady=0,f0Ready=0,externalBlocked=0;
+          let runtimeQaReady=0;
           const readyIds=new Set();
+          const runtimeQaIds=new Set();
           for(const item of q.items||[]){
+            if(requested&&String(item.gameId||'').trim()!==requested)continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            // 비공개 게시로 개발 레인이 닫혀도 기존 정확 후보의 실행 검수는 끝까지 이어간다.
+            const pendingRuntimeQa=roadmap.developmentAccess?.ROBLOX==='ALWAYS_ALLOWED'
+              &&item.robloxBuildOrPackagePassed===true&&item.robloxBuildPreflightPassed===true&&item.robloxFoundationF0Passed===true
+              &&item.robloxRuntimeCandidateEvidence?.published===true
+              &&(item.robloxRuntimePassed!==true||String(item.robloxRuntimeHarnessVersion||'')!==harnessVersion);
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
-            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
+            if(!concurrentDefault&&!secondaryOwnerFocus&&!pendingRuntimeQa)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
             const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
@@ -2249,6 +2258,16 @@ jobs:
               }else if(runtimePassed!==true||String(runtimeHarness||'')!==harnessVersion){
                 const securityBlocked=securityHoldFlag===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure);
                 if(securityBlocked)externalBlocked++;
+                else if(!secondaryOwnerFocus){
+                  const f0=item.robloxFoundationF0Evidence||{};
+                  const candidate=item.robloxRuntimeCandidateEvidence||{};
+                  const exactCandidate=f0Passed&&f0.pass===true&&/^[a-f0-9]{40}$/i.test(revision)&&/^sha256:[a-f0-9]{64}$/i.test(artifact)
+                    &&f0.sourceRevision===revision&&f0.artifactIdentity===artifact
+                    &&candidate.published===true&&candidate.sourceRevision===revision&&candidate.artifactIdentity===artifact
+                    &&Number(candidate.versionNumber)>0&&String(candidate.universeId||'').trim()!==''&&String(candidate.placeId||'').trim()!=='';
+                  const qualityRepair=item.robloxQualityBuildUpRequired===true&&item.robloxQualityBuildUpSourceRevision===revision;
+                  if(exactCandidate&&!qualityRepair){runtimeQaReady++;runtimeQaIds.add(item.gameId);}
+                }
               }
               continue;
             }
@@ -2261,14 +2280,16 @@ jobs:
             packagePending++;
           }
           fs.writeFileSync('/tmp/roblox-continuation-ready-ids',[...readyIds].filter(Boolean).sort().join('\n')+([...readyIds].length?'\n':''));
-          process.stdout.write(`${packagePending} ${preflightReady} ${f0Ready} ${externalBlocked}`);
+          fs.writeFileSync('/tmp/roblox-runtime-qa-ready-ids',[...runtimeQaIds].sort().join('\n')+(runtimeQaIds.size?'\n':''));
+          process.stdout.write(`${packagePending} ${preflightReady} ${f0Ready} ${externalBlocked} ${runtimeQaReady}`);
           NODE
           )"
-          read -r package_pending preflight_ready f0_ready external_blocked <<<"$state"
+          read -r package_pending preflight_ready f0_ready external_blocked runtime_qa_ready <<<"$state"
           echo "ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION=$package_pending"
           echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
           echo "ROBLOX_F0_READY_COUNT=$f0_ready"
           echo "ROBLOX_EXTERNAL_BLOCKED_COUNT=$external_blocked"
+          echo "ROBLOX_RUNTIME_FOUNDATION_QA_READY_COUNT=$runtime_qa_ready"
           echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
           echo 'ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR'
           echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
@@ -2321,3 +2342,25 @@ jobs:
           fi
           echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT=$dispatch_count"
           echo "ROBLOX_POST_PACKAGE_CONTINUATION_DEDUPED_COUNT=$deduped_count"
+
+          # 이미 배포된 정확한 F0 후보는 다시 업로드하지 않고 기존 실행 검수로 인계한다.
+          if [ "$runtime_qa_ready" -gt 0 ]; then
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100" > /tmp/roblox-runtime-qa-active-runs.json
+            node <<'NODE' > /tmp/roblox-runtime-qa-active-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-qa-active-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const prefix='Roblox runtime foundation QA · ';
+          for(const id of new Set((payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())&&String(run.display_title||'').startsWith(prefix)).map(run=>String(run.display_title).slice(prefix.length).trim()).filter(id=>/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))))console.log(id);
+          NODE
+            while read -r id; do
+              [ -n "$id" ] || continue
+              if grep -Fxq "$id" /tmp/roblox-runtime-qa-active-ids; then
+                echo "ROBLOX_RUNTIME_FOUNDATION_QA_DISPATCH=DEDUPED_ACTIVE:$id"
+                continue
+              fi
+              gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+              printf '%s\n' "$id" >> /tmp/roblox-runtime-qa-active-ids
+              echo "ROBLOX_RUNTIME_FOUNDATION_QA_DISPATCH=YES:$id"
+            done < /tmp/roblox-runtime-qa-ready-ids
+          fi

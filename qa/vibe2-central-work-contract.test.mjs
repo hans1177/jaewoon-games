@@ -14,7 +14,7 @@ import {
   compileVibeCentralWorkContract,
   assertCompiledWorkContractFresh
 } from '../tools/vibe2-central-work-contract.mjs';
-import { runVibe2SourceWorker } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, assertOwnerDevelopmentAvailable } from '../tools/vibe2-source-worker.mjs';
 
 function tempRoot(){return fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-central-contract-'));}
 function git(cwd,...args){return execFileSync('git',['-C',cwd,...args],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();}
@@ -65,7 +65,7 @@ function writePolicy(root,version=196,overrides={}){
         architectureMap:'company-learning/company-architecture-map.json',
         securityPolicy:'company-learning/security-immune-system.json',
         validator:'tools/company-shared-context.mjs',
-        qa:'qa/company-shared-context.test.mjs',
+        qa:'qa/company-four-docs-fingerprint.test.mjs',
         loadOrder:[
           CANONICAL_VIBE_POLICY_PATH,
           'company-learning/company-log-map.json',
@@ -290,14 +290,15 @@ test('Vibe candidate evidence binds all four canonical document hashes',()=>{
   assert.ok(workerSyncStart>=0&&workerSyncEnd>workerSyncStart);
   const workerSync=workflow.slice(workerSyncStart,workerSyncEnd);
   assert.match(workerSync,/sha256sum/);
-  assert.match(workerSync,/WORKER_CONTEXT_MODE=PINNED_SHA_ONLY/);
-  assert.doesNotMatch(workerSync,/company-shared-context\.mjs/);
-  assert.doesNotMatch(workerSync,/--pinned-hash-verify=true/);
-  assert.match(workflow,/WORKER_CONTEXT_EXPECTED_POLICY_SHA256/);
-  assert.deepEqual(logMap.workerContextLogContract.canonicalDocumentHashesRequired,[
-    'policySha256','logMapSha256','architectureSha256','securityPolicySha256'
-  ]);
-  assert.equal(logMap.workerContextLogContract.allCanonicalDocumentHashesMustBeBoundToExecutionEvidence,true);
+  assert.match(workerSync,/WORKER_CONTEXT_MODE=FOUR_DOCUMENT_INTEGRITY_ONLY/);
+  assert.match(workerSync,/company-shared-context\.mjs/);
+  assert.match(workerSync,/sha256sum "\$contract_root\/company-learning\/platform-release-roadmap\.json"/);
+  for(const name of ['POLICY','LOG_MAP','ARCHITECTURE','SECURITY_POLICY'])
+    assert.match(workflow,new RegExp('WORKER_CONTEXT_EXPECTED_'+name+'_SHA256'));
+  assert.match(workflow,/sourceWriteAuthorized:false/);
+  assert.match(workflow,/policyAuthorityVerified:false/);
+  assert.doesNotMatch(workflow,/OWNER_REMOVED:company-learning\/platform-release-roadmap/);
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
 });
 
 test('verified learning memory is validated once per cohort and workers reuse one immutable artifact',()=>{
@@ -605,4 +606,69 @@ test('policy metadata version bump alone does not invalidate compiled architectu
   const after=loadCentralPolicySnapshot({repoRoot:root,required:true});
   assert.equal(after.executionFingerprint,before.executionFingerprint);
   assert.equal(assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_WORK'}).status,'PASS');
+});
+
+test('real canonical compilers are imported, never hardcoded to pass or fail', () => {
+  const source=fs.readFileSync(new URL('../tools/vibe2-central-work-contract.mjs',import.meta.url),'utf8');
+  const compiler=fs.readFileSync(new URL('../tools/company-shared-context.mjs',import.meta.url),'utf8');
+  assert.match(source,/import \{compileOwnerCanonicalConstitution,compileCentralArchitectureProjection\}/);
+  assert.doesNotMatch(source,/const compileOwnerCanonicalConstitution = \(\)/);
+  assert.doesNotMatch(source,/const compileCentralArchitectureProjection = \(\)/);
+  assert.match(compiler,/export function compileOwnerCanonicalConstitution/);
+  assert.match(compiler,/export function compileCentralArchitectureProjection/);
+  assert.doesNotMatch(source,/authority:'REMOVED',constitutionalAuthority:'REMOVED'/);
+});
+
+test('optional missing canonical source cannot masquerade as valid snapshot', () => {
+  const root=tempRoot();
+  try {
+    const snapshot=loadCentralPolicySnapshot({repoRoot:root,required:false});
+    assert.equal(snapshot.present,false);
+    assert.equal(snapshot.valid,false);
+    assert.ok(snapshot.errors.includes('CENTRAL_POLICY_MISSING'));
+  } finally {
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('default work contract never invents a valid central policy snapshot', () => {
+  const source=fs.readFileSync(new URL('../tools/vibe2-central-work-contract.mjs',import.meta.url),'utf8');
+  assert.match(source,/snapshot\|\|\{required:false,present:false,valid:false/);
+  assert.doesNotMatch(source,/snapshot\|\|\{required:false,present:false,valid:true/);
+});
+
+test('invalid optional contract cannot bypass freshness validation', () => {
+  const contract=compileVibeCentralWorkContract({});
+  assert.equal(contract.validAtCompile,false);
+  assert.throws(
+    () => assertCompiledWorkContractFresh({contract,phase:'PRE_WORK'}),
+    /CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_WORK/
+  );
+});
+
+test('real production Roblox auto-coding preflight binds central policy and exact writable scope',()=>{
+  // [자동코딩] 큐의 입구에서는 실정책과 쓰기 범위만 직접 검사하고, 전체 모델 회귀는 독립 QA에서 수행한다.
+  const repoRoot=path.resolve(new URL('..',import.meta.url).pathname);
+  const snapshot=loadCentralPolicySnapshot({repoRoot,required:true});
+  assert.equal(snapshot.valid,true,snapshot.errors.join('|'));
+  const responsibleFile='roblox-games/simple-rpg/server/Game.server.luau';
+  const task={id:'owner-policy-bound-autocoding',gameId:'simple-rpg',target:'ROBLOX',department:'development'};
+  const contract=compileVibeCentralWorkContract({
+    snapshot,task,plan:{target:'ROBLOX',qa:['CODE_QA','STATIC_QA']},
+    route:{route:'text-source-worker'},responsibleFiles:[responsibleFile]
+  });
+  assert.equal(contract.required,true);
+  assert.equal(contract.validAtCompile,true);
+  assert.equal(contract.policy.executionFingerprint,snapshot.executionFingerprint);
+  assert.equal(contract.workLock.requiredBeforeSourceWrite,true);
+  assert.deepEqual(contract.workLock.files,[responsibleFile]);
+  assert.doesNotThrow(()=>assertOwnerDevelopmentAvailable({cwd:repoRoot,order:{
+    ...task,source:{root:'roblox-games/simple-rpg'}
+  }}));
+  assert.equal(assertCompiledWorkContractFresh({cwd:repoRoot,contract,phase:'PRE_SOURCE_GENERATION'}).status,'PASS');
+  assert.throws(()=>assertCompiledWorkContractFresh({cwd:repoRoot,contract:{},phase:'PRE_SOURCE_GENERATION'}),
+    /CENTRAL_POLICY_INVALID_AT_COMPILE:PRE_SOURCE_GENERATION/);
+  const stale={...contract,policy:{...contract.policy,executionFingerprint:'0'.repeat(64)}};
+  assert.throws(()=>assertCompiledWorkContractFresh({cwd:repoRoot,contract:stale,phase:'PRE_SOURCE_GENERATION'}),
+    /CENTRAL_POLICY_STALE:PRE_SOURCE_GENERATION/);
 });

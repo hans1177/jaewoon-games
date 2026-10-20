@@ -200,11 +200,12 @@ test('system AI immutable result binds owner rule 2 and terminates quarantined e
   assert.match(workflow,/candidatePublicationAllowed:!infrastructureFailure&&security\.verdict==='PASS'/);
   assert.match(workflow,/learningCandidate:!infrastructureFailure/);
   assert.match(workflow,/verifiedDefensiveAbsorptionOnly:true/);
-  assert.equal(security.ownerRule2?.automaticBindingForAllExternalAiWorkers,true);
-  assert.equal(security.ownerRule2?.quarantineOnHostileOrUnauthorizedHighRiskChange,true);
-  assert.equal(security.ownerRule2?.externalProviderAttackForbidden,true);
-  assert.equal(architecture.ownerRule2Topology?.hostileDisposition,'QUARANTINE_TERMINATE_AFFECTED_EXECUTION_BLOCK_PUBLICATION');
-  assert.equal(architecture.ownerRule2Topology?.authorityChange,'NONE');
+  assert.equal(security.status,'MINIMAL_SUMMARY_NOT_SECURITY_VERIFICATION');
+  assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
+  assert.equal(security.enforcement?.unverified,'BLOCK');
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.constitutionalEnforcement?.mode,'FAIL_CLOSED');
+  assert.equal(architecture.release,'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS');
 });
 
 test('System AI consumes only verified Vibe learning context and records exact knowledge ids',()=>{
@@ -520,4 +521,20 @@ test('critical-path score uses longest converging DAG chain and stays finite on 
   const cycle=systemAiImpactProfile(cyclic[0],{tasks:cyclic},{at});
   assert.ok(Number.isFinite(cycle.score));
   assert.ok(cycle.criticalPathDepth>=1&&cycle.criticalPathDepth<=cyclic.length);
+});
+
+test('external Gemini system worker never falls back to local Ollama',()=>{
+  const worker=fs.readFileSync('tools/company-system-ai-worker.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  assert.match(worker,/SYSTEM_AI_GEMINI_KEY_MISSING_NO_LOCAL_FALLBACK/);
+  assert.match(worker,/vibe2-gemini-free-rotation\.mjs/);
+  assert.match(worker,/requestGeminiFreePair\(/);
+  const adapter=fs.readFileSync('tools/vibe2-gemini-free-rotation.mjs','utf8');
+  assert.match(adapter,/generativelanguage\.googleapis\.com/);
+  assert.match(workflow,/SYSTEM_AI_GEMINI_MODEL: gemini-3\.8-flash/);
+  assert.match(workflow,/VIBE2_GEMINI_BACKUP_MODEL: gemini-3\.5-flash-lite/);
+  assert.doesNotMatch(worker,/:11434|127\.0\.0\.1|\/api\/generate/);
+  assert.match(workflow,/SYSTEM_AI_LOCAL_AI_ENABLED: 'false'/);
+  assert.match(workflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
+  assert.match(workflow,/COMPANY_SYSTEM_AI_REQUESTED_MAX_BATCH=1/);
 });

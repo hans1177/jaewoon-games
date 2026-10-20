@@ -50,10 +50,9 @@ test('System AI cannot self-accept and malformed JSON uses strict retry',()=>{
   assert.match(queue,/primary-ai-review:PASS/);
 });
 
-test('cached local model and security scan remain mandatory before PR publication',()=>{
-  assert.match(workflow,/uses: actions\/cache@v4/);
-  assert.match(workflow,/\.cache\/company-system-ai-ollama\/bin\/ollama/);
-  assert.match(workflow,/nohup "\$ollama_bin" serve/);
+test('external Gemini provider and security scan remain mandatory before PR publication',()=>{
+  assert.doesNotMatch(workflow,/ollama\.com\/install\.sh|nohup "\$ollama_bin" serve|\.cache\/company-system-ai-ollama\/bin\/ollama/);
+  assert.match(workflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
   assert.match(workflow,/node tools\/company-security-steward\.mjs --output=\/tmp\/system-ai-security-report\.json/);
   assert.match(workflow,/COMPANY_SYSTEM_AI_VERIFICATION=PASS/);
 });
@@ -110,15 +109,17 @@ test('workflow wait telemetry separates runnable reservation, fan-in job wait, a
   assert.match(workflow,/String\(j\.name\|\|''\)==='fan_in'/);
 });
 
-test('push-triggered System AI runs are coalesced QA-only and never reserve workers',()=>{
-  assert.match(workflow,/group: company-system-ai-\$\{\{ github\.event_name == 'push' && 'push-qa' \|\| github\.run_id \}\}/);
-  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
-  assert.match(workflow,/group: \$\{\{ github\.event_name == 'push' && 'company-system-ai-push-qa-reserve' \|\| 'company-system-ai-reserve-control' \}\}/);
+test('normal push stays QA-only but explicit external AI request may reserve only one task',()=>{
+  assert.match(workflow,/group: company-system-ai-.*contains\(github\.event\.head_commit\.message/);
+  assert.match(workflow,/cancel-in-progress: .*contains\(github\.event\.head_commit\.message/);
   const reserve=workflow.slice(workflow.indexOf('- name: Reserve disjoint supervised assignments'),workflow.indexOf('\n  worker:'));
-  assert.match(reserve,/if \[ "\$\{GITHUB_EVENT_NAME\}" = 'push' \]; then/);
+  assert.match(reserve,/explicit_external_dispatch=NO/);
+  assert.match(reserve,/COMPANY_SYSTEM_AI_EXTERNAL_REQUEST=YES/);
+  assert.match(reserve,/SYSTEM_AI_MAX_BATCH=1/);
   assert.match(reserve,/COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES/);
   assert.match(reserve,/matrix=\{"include":\[\]\}/);
   assert.match(reserve,/count=0/);
+  assert.match(reserve,/if \[ "\$\{GITHUB_EVENT_NAME\}" = 'push' \] && \[ "\$explicit_external_dispatch" != 'YES' \]; then/);
   assert.match(reserve,/\.event!="push"/);
   assert.ok(reserve.indexOf('COMPANY_SYSTEM_AI_PUSH_QA_ONLY=YES')<reserve.indexOf('git fetch origin vibe2-unreal-core'));
 });

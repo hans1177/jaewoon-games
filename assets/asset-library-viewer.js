@@ -161,9 +161,11 @@ export function createViewer(host){
  }
  // 메인: 등록부의 내부 GLB만 허용하며 실제 삼각형·스킨·클립 개수를 읽는다.
  async function setGLB(source){
-  const uri=String(source?.path||'');
-  if(!/^\/assets\/shared\/[a-z0-9-]+\.glb$/.test(uri))throw Error('내부 등록된 GLB 경로만 열 수 있어.');
+  let uri=String(source?.path||'');
+  if(!/^\/assets\/(?:shared\/[a-z0-9-]+|roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?)\.glb$/i.test(uri))throw Error('내부 등록된 GLB 경로만 열 수 있어.');
   if(software)throw Error('원본 GLB 렌더링에 WebGL이 필요해.');
+  const sourceHash=String(source?.sourceHash||source?.sha256||'');
+  if(/^[a-f0-9]{64}$/i.test(sourceHash))uri+='?v='+sourceHash;
   const requestId=++loadRevision,gltf=await new GLTFLoader().loadAsync(uri);
   if(requestId!==loadRevision){disposeNative(gltf.scene);return null;}
   let meshes=0,bones=0,skinned=0,triangles=0;const usedMaterials=new Set();
@@ -277,7 +279,10 @@ export function createViewer(host){
  new ResizeObserver(resize).observe(host);resize();
  new IntersectionObserver(([row])=>{visible=row.isIntersecting;},{threshold:.01}).observe(host);
  let last=performance.now();
+ const frameInterval=1000/(matchMedia('(max-width:700px)').matches?30:60);
  renderer.setAnimationLoop(now=>{
+  if(document.hidden||!visible){last=now;return;}
+  if(now-last<frameInterval)return;
   const dt=Math.max(0,Math.min((now-last)/1000,.1));last=now;if(document.hidden||!visible)return;
   if(!paused){elapsed+=dt*speed;if(nativeMixer)nativeMixer.update(dt*speed);}
   if(commonMotion)applyCommonMotion(commonMotion,elapsed);
@@ -318,3 +323,4 @@ export function createViewer(host){
   setPaused:value=>{paused=value;},setSpeed:value=>{speed=value;},setAngle:value=>{angle=value;},
   replay:()=>{elapsed=0;if(nativeAction){nativeAction.reset();nativeAction.play();}}};
 }
+

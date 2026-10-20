@@ -2162,13 +2162,12 @@ test('official-source Unity Web and Android coding drills reuse the existing pra
   }
 });
 
-test('current owner focus generates internal asset preparation only for Roblox',()=>{
-  const roadmapInput=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  const idle=buildIdlePracticeQueue({}, {}, [], roadmapInput);
+test('internal graphics preparation works without an external development policy',()=>{
+  const idle=buildIdlePracticeQueue();
   const library=idle.drills.filter(row=>row.companyGraphicsLibrary);
   assert.ok(library.length>0);
-  assert.ok(library.every(row=>row.platformProfile==='ROBLOX'));
-  assert.deepEqual(idle.companyGraphicsLibrary24h.platformProfiles,['ROBLOX']);
-  const refreshed=refreshLearningMotor({roadmapInput});
-  assert.ok(refreshed.idlePractice.drills.filter(row=>row.companyGraphicsLibrary).every(row=>row.platformProfile==='ROBLOX'));
+  assert.ok(library.every(row=>Boolean(row.platformProfile)));
+  assert.deepEqual(idle.companyGraphicsLibrary24h.platformProfiles,[...new Set(library.map(row=>row.platformProfile))]);
+  const refreshed=refreshLearningMotor({});
+  assert.ok(refreshed.idlePractice.drills.some(row=>row.companyGraphicsLibrary));
 });

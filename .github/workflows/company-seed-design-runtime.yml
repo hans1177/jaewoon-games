@@ -3,6 +3,19 @@ name: Company Seed DESIGN_ONLY Runtime
 
 on:
   workflow_dispatch:
+    inputs:
+      game_id:
+        description: 'Existing game ID for Vibe2 design revision handoff'
+        type: string
+        required: false
+      design_request:
+        description: 'Original designer revision request'
+        type: string
+        required: false
+      request_id:
+        description: 'Vibe2 task identity for idempotent revision intake'
+        type: string
+        required: false
   push:
     branches: [main]
     paths:
@@ -21,7 +34,7 @@ on:
       - 'tools/company-strict-production-review.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'owner-design-reset-queue.json'
-      - 'qa/company-shared-context.test.mjs'
+      - 'qa/company-four-docs-fingerprint.test.mjs'
       - 'tools/company-shared-context.mjs'
       - '.github/workflows/company-seed-design-runtime.yml'
   schedule:
@@ -45,6 +58,9 @@ jobs:
   resolve-seed-targets:
     runs-on: ubuntu-slim
     timeout-minutes: 10
+    env:
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
     outputs:
       run: ${{ steps.targets.outputs.run }}
       targets: ${{ steps.targets.outputs.targets }}
@@ -123,13 +139,14 @@ jobs:
           for(const request of activeOwnerDesignResetRequests()){
             const gameId=String(request.gameId||'').trim();
             const source=String(request.designRequest?.baselineSource||'').trim();
-            const aOnly=request.designRequest?.aSystemReference;
+            const bSupporting=request.designRequest?.bSystemReference!==undefined;
+            const aOnly=request.designRequest?.bSystemReference||request.designRequest?.aSystemReference;
             const aSource=String(aOnly?.source||'').trim();
             if(!source&&!aSource)continue;
             if(aSource&&(request.designRequest?.topicMode!=='VIBE_FREE_TOPIC'
-              ||aOnly?.scope!=='A_SYSTEM_ONLY'||Object.keys(aOnly).some(key=>!['scope','source'].includes(key))))
+              ||aOnly?.scope!==(bSupporting?'B_SUPPORTING_REFERENCE_ONLY':'A_SYSTEM_ONLY')||Object.keys(aOnly).some(key=>!['scope','source'].includes(key))))
               throw new Error('OWNER_FREE_TOPIC_A_SYSTEM_ONLY_INVALID:'+gameId);
-            for(const [selected,kind]of [[source,'BASELINE'],[aSource,'A_SYSTEM_ONLY']]){
+            for(const [selected,kind]of [[source,'BASELINE'],[aSource,bSupporting?'B_SUPPORTING_REFERENCE_ONLY':'A_SYSTEM_ONLY']]){
               if(!selected)continue;
               const match=/^design\/([a-z0-9-]+)\/\d{4}-\d{2}-\d{2}\/design-revised\.json$/.exec(selected);
               if(!match||match[1]!==gameId)throw new Error('OWNER_DESIGN_'+kind+'_PATH_INVALID:'+gameId);
@@ -175,6 +192,10 @@ jobs:
 
       - name: Auto-enroll and persist active GAME_SEED intake
         if: steps.main_snapshot.outputs.current == 'true'
+        env:
+          DESIGN_HANDOFF_GAME_ID: ${{ inputs.game_id || '' }}
+          DESIGN_HANDOFF_REQUEST: ${{ inputs.design_request || '' }}
+          DESIGN_HANDOFF_REQUEST_ID: ${{ inputs.request_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -188,6 +209,49 @@ jobs:
             cp /tmp/company-runtime-seed-state-before.json game-seed-state.json
             node --input-type=module -e "import {loadSeedState,saveSeedState} from './tools/game-seed-state.mjs'; import {materializeOwnerDesignResetSeeds} from './tools/owner-design-reset.mjs'; const state=loadSeedState(); const result=materializeOwnerDesignResetSeeds(state); if(result.changed.length)saveSeedState(state); console.log('OWNER_REQUESTS_REAPPLIED_AFTER_RUNTIME_REFRESH='+result.changed.join(','));"
             node tools/company-all-games-design-reset.mjs --auto-missing-design-intake | tee /tmp/canonical-novel-grammar-intake.txt
+          # 메인 · 외부 설계 요청은 기존 Game Seed + Game Designer AI 주기로 접수한다.
+          # 새 큐 또는 승인/설계 PASS를 만들지 않는다. 같은 request_id 재시도는 중복 갱신하지 않는다.
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {loadSeedState,saveSeedState,activeSeedForGame} from './tools/game-seed-state.mjs';
+          const gameId=String(process.env.DESIGN_HANDOFF_GAME_ID||'').trim();
+          const brief=String(process.env.DESIGN_HANDOFF_REQUEST||'').trim();
+          const requestId=String(process.env.DESIGN_HANDOFF_REQUEST_ID||'').trim();
+          if(gameId||brief||requestId){
+            if(!/^[a-z0-9][a-z0-9-]{0,79}$/.test(gameId)||!brief||brief.length>2000
+              ||!/^[a-zA-Z0-9_.:-]{1,100}$/.test(requestId))
+              throw new Error('DESIGN_HANDOFF_INPUT_INVALID');
+            const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+            const scope=policy.ownerActiveDevelopmentScope20261009;
+            if(scope?.status!=='ACTIVE'||scope.existingPipelineOnly!==true
+              ||!['ROBLOX','WEB'].every(target=>scope.activeTargets?.includes(target))
+              ||!['UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'].every(target=>scope.ownerHeldTargets?.includes(target)))
+              throw new Error('DESIGN_HANDOFF_POLICY_NOT_AUTHORIZED');
+            const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+            const game=(catalog.games||[]).find(row=>row.id===gameId);
+            if(!game||(catalog.permanentRemovalPolicy?.ids||[]).includes(gameId))
+              throw new Error('DESIGN_HANDOFF_GAME_NOT_ACTIVE');
+            const state=loadSeedState();
+            const seed=activeSeedForGame(state,gameId);
+            if(!seed||['DISCARDED','REMOVED'].includes(String(seed.status||'').toUpperCase())
+              ||!['ROBLOX','WEB'].includes(String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase()))
+              throw new Error('DESIGN_HANDOFF_ACTIVE_SEED_REQUIRED');
+            const revision='VIBE2:'+requestId;
+            if(seed.ownerRequestInstanceId===revision){
+              if(seed.OWNER_LATEST_DESIGN_REQUEST!==brief)throw new Error('DESIGN_HANDOFF_REVISION_COLLISION');
+              console.log('DESIGN_HANDOFF_INTAKE=ALREADY_PRESENT|game='+gameId);
+            }else{
+              seed.OWNER_LATEST_DESIGN_REQUEST=brief;
+              seed.ownerRequestInstanceId=revision;
+              seed.ownerRequestAt=new Date().toISOString();
+              seed.ownerDesignRevisionAt=seed.ownerRequestAt;
+              seed.designInputMode='DESIGNER_SELF_SEED';
+              seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION=true;
+              saveSeedState(state);
+              console.log('DESIGN_HANDOFF_INTAKE=PERSISTED_TO_CANONICAL_GAME_SEED|game='+gameId);
+            }
+          }
+          NODE
             if cmp -s /tmp/company-runtime-seed-state-before.json game-seed-state.json; then
               persisted=1
               echo 'CANONICAL_NOVEL_GRAMMAR_RUNTIME_PERSIST=NO_CHANGE'
@@ -215,7 +279,7 @@ jobs:
         if: steps.main_snapshot.outputs.current == 'true'
         run: |
           node --check tools/company-shared-context.mjs
-          node --test qa/company-shared-context.test.mjs
+          node --test qa/company-four-docs-fingerprint.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-design-plan.json
 
       - name: Resolve central-policy active incomplete GAME_SEED targets
@@ -490,6 +554,9 @@ jobs:
         target: ${{ fromJSON(needs.resolve-seed-targets.outputs.targets) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      COMPANY_VERIFIED_POLICY_PATH: company-learning/platform-release-roadmap.json
+      COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json
     concurrency:
       # 동일 게임만 직렬화하고 다른 게임의 바이브 설계를 병렬 진행한다.
       group: company-seed-design-game-${{ matrix.target.game_id }}
@@ -581,7 +648,7 @@ jobs:
                   if(!evidenceAt&&date<=resetDate)continue;
                 }
                 if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){
-                  // 새 요청은 같은 개정의 검증 결과만 대체할 수 있다. 이전 개정의 늦은 PASS는 무시한다.
+                  // 새 오너 설계 요청은 동일 개정의 PASS로만 대체한다. 오래된 검증의 도착 순서는 권한이 아니다.
                   if(ownerEventId){
                     const revisedPath=path.join(base,'design-revised.json');
                     if(!fs.existsSync(revisedPath))continue;
@@ -1065,7 +1132,7 @@ jobs:
   sync-strict-design-scores:
     needs: [resolve-seed-targets, design-cycle]
     if: always() && !cancelled() && needs.resolve-seed-targets.outputs.run == 'true'
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -1222,4 +1289,5 @@ jobs:
             echo 'DESIGN_GATE_REPAIR_LOOP_DISPATCH=NO_ALL_PASS'
           fi
           echo 'DESIGN_GATE_REPAIR_LIMIT=UNLIMITED'
+
 

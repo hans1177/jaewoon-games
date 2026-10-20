@@ -10,6 +10,7 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
+import {planVibeAgentHandoff,vibeAgentHandoffGuidance} from './vibe2-openai-agent-patterns.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples, retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance, responsibilityCalibrationForTask, regressionHotspotRiskForTask, codingRiskGuidance, architectureDriftRiskForTask, architectureDriftGuidance, codingConstitutionRuleForTask, codingConstitutionGuidance } from './vibe2-learning-motor.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
 import { loadCentralPolicySnapshot, compileVibeCentralWorkContract, compiledWorkContractGuidance } from './vibe2-central-work-contract.mjs';
@@ -265,7 +266,7 @@ function buildPresentationQualityContract(task = {}, target = '') {
     version:3,
     pass,
     graphicsReplacement,
-    policyRefs:freezeList(['company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract','company-learning/platform-release-roadmap.json#audioMusicQualityContract']),
+    policyRefs:freezeList(['OWNER_RETIRED_POLICY_2026_10_15#livingMotionVisualQualityContract','OWNER_RETIRED_POLICY_2026_10_15#audioMusicQualityContract']),
     preserve:freezeList(['GAMEPLAY_BALANCE','SAVE_MEANING','PROGRESSION','HIT_SEMANTICS','NETWORK_AUTHORITY']),
     staticChecks:freezeList([
       ...(checks[pass]||[]),
@@ -343,7 +344,7 @@ function buildWeatherPresentationContract(task = {}, target = '') {
   return freeze({
     required:true,
     version:1,
-    policyRef:'company-learning/platform-release-roadmap.json#weatherPresentationContract',
+    policyRef:'OWNER_RETIRED_POLICY_2026_10_15#weatherPresentationContract',
     target:clean(target).toLowerCase()||null,
     states:freezeList(['CLEAR','RAIN','FOG','SNOW','STORM']),
     regionalExtensions:freezeList(['VOLCANIC_ASH','HEAT_HAZE']),
@@ -519,10 +520,24 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   if (runtime?.continuous?.enabled === false) return freeze({ ...base, reason:'CONTINUOUS_DISABLED' });
   if (!resolved.task) return freeze({ ...base, reason:resolved.reason || 'NO_ELIGIBLE_WORK' });
   const task = resolved.task;
-  const centralPolicy = centralPolicySnapshot || loadCentralPolicySnapshot({ repoRoot:process.cwd(), required:true });
+  const centralPolicy = centralPolicySnapshot || loadCentralPolicySnapshot({ repoRoot:process.cwd(), required:false });
   if (centralPolicy.required === true && centralPolicy.valid !== true) return freeze({ ...base, reason:`CENTRAL_POLICY_INVALID:${(centralPolicy.errors || []).join('|') || 'UNKNOWN'}`, selectedTask:task, centralPolicy });
   if(clean(task.target).toLowerCase()==='system'&&task.systemSteward===true&&clean(task.department).toLowerCase()==='system-architecture'){
     return buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicyLiveRef,runtime,variant});
+  }
+  // 메인 · 코딩 타깃/실행 게이트와 무관하게 설계 소유권을 먼저 판별한다.
+  // 기존 디자이너 이관은 빌드 또는 게임 소스 쓰기 권한을 부여하지 않는다.
+  if(task.designChange===true||clean(task.type).toLowerCase()==='design'
+    ||clean(task.department).toLowerCase()==='design'){
+    const routing=buildVibeDesignIntelligence({task,plan:{target:task.target}});
+    if(routing.designerHandoff?.required){
+      return freeze({
+        ...base,reason:routing.designerHandoff.ready?'DESIGNER_HANDOFF_REQUIRED':'DESIGNER_HANDOFF_INPUT_INVALID',
+        taskId:clean(task.id||task.taskId),gameId:clean(task.gameId),
+        selectedTask:task,designerHandoff:routing.designerHandoff,
+        designIntelligence:routing
+      });
+    }
   }
   const neuralDiagnosis = task?.neuralDiagnosis || buildNeuralDiagnosis({task});
   const neuralGuidance = neuralDiagnosisGuidance(neuralDiagnosis);
@@ -624,10 +639,13 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     ...(verifiedCapabilityMemory?.records||[]).map(record=>'VERIFIED_CAPABILITY:'+clean(record?.id))
   ]);
   const assetDevelopmentLearning=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
-  const mandatoryVerifiedKnowledgeApplication=['roblox','unity','web'].includes(plan.target)||assetDevelopmentLearning;
+  // External AI/black-box learning is optional. Only selected verified source playbooks
+  // are subject to fail-closed attribution, disposition and prompt coverage.
+  const externalLearningApplicable=(taskRequiresWrite(task)&&['roblox','unity','web'].includes(plan.target))||assetDevelopmentLearning;
   const verifiedExternalPlaybookRows=freeze([...(unifiedLearning?.playbookReuse||[])
     .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))]);
   const verifiedExternalPlaybookReuse=freezeList(verifiedExternalPlaybookRows.map(row=>row.id));
+  const mandatoryVerifiedKnowledgeApplication=externalLearningApplicable&&verifiedExternalPlaybookReuse.length>0;
   const verifiedExternalDistilledContentIds=freezeList(verifiedExternalPlaybookRows
     .filter(row=>Array.isArray(row?.distilledApplicationPrinciples)&&row.distilledApplicationPrinciples.map(clean).filter(Boolean).length>0)
     .map(row=>row.id));
@@ -809,7 +827,13 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     livePolicyRef:clean(centralPolicyLiveRef)
   });
   const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  // OpenAI open-source-inspired handoffs annotate the existing game development
+  // worker. They do not add a second model call, separate pipeline, or QA bypass.
+  const agentHandoff=planVibeAgentHandoff({
+    task,route,target:plan.target,responsibleFiles,qa:plan.qa
+  });
+  const handoffGuidance=vibeAgentHandoffGuidance(agentHandoff);
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, handoffGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const taskEvidence=new Set((task.evidence||[]).map(clean));
   const webSourceRootBootstrapAllowed=plan.target==='web'
     &&taskEvidence.has('source-root-bootstrap-required')
@@ -855,6 +879,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles, tournament.candidateCount),
     supervisionContract,
     compiledWorkContract,
+    agentHandoff,
     neuralDiagnosis,
     workPackage,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
@@ -933,7 +958,7 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
   const practiceDistilled=readJson(resolvedPracticeDistilledFile,{entries:[]});
   const resolvedExternalAiDistilledFile=clean(externalAiDistilledFile)||clean(runtime?.sources?.externalAiDistilledKnowledge)||'.vibe2/external-ai-distilled-knowledge.json';
   const externalAiDistilled=readJson(resolvedExternalAiDistilledFile,{entries:[]});
-  const centralPolicySnapshot=loadCentralPolicySnapshot({repoRoot:path.dirname(path.resolve(runtimeFile)),required:true});
+  const centralPolicySnapshot=loadCentralPolicySnapshot({repoRoot:path.dirname(path.resolve(runtimeFile)),required:false});
   const resolvedCentralPolicyLiveRef=clean(centralPolicyLiveRef)||clean(process.env.VIBE2_CENTRAL_POLICY_LIVE_REF)||'origin/main';
   const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled, externalAiDistilled, centralPolicySnapshot, centralPolicyLiveRef:resolvedCentralPolicyLiveRef });
   writeJson(resolvedOutputFile, order);

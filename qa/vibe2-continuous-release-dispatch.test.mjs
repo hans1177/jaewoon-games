@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -136,8 +137,10 @@ function count(needle){
 test('work order resolves the asset library and game source from pinned main while retaining current control state',()=>{
   const start=workflow.indexOf('      - name: Build reserved task work order');
   const run=workflow.indexOf('        run: |\n',start)+'        run: |\n'.length;
-  const end=workflow.indexOf('          node --input-type=module',run);
-  assert.ok(start>0&&end>run);
+  // 실제 주문 생성 뒤에는 정책 경로를 지정한 별도 소스 검증 명령이 이어진다.
+  // 임시 폴더에서는 기존 주문 생성 단계만 격리 실행한다.
+  const end=workflow.indexOf('          COMPANY_VERIFIED_POLICY_PATH="$contract_root/company-learning/platform-release-roadmap.json" node --input-type=module',run);
+  assert.ok(start>0&&end>run,'the work-order command and separate verified source gate must both exist');
   const script=workflow.slice(run,end).replace(/^ {10}/gm,'');
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'work-order-roots-'));
   const contract=path.join(root,'vibe2-contract');
@@ -431,7 +434,7 @@ test('Web BUILD_UP closes on exact deployed Web source and never substitutes Rob
   assert.match(section,/VIBE2_WEB_MAIN_PROMOTION_SOURCE_TREE_SHA/);
   assert.match(section,/PROMOTED_SOURCE_TREE_SHA:/);
   assert.match(section,/WEB_PROMOTED_SOURCE_TREE_IDENTITY=INVALID/);
-  assert.match(section,/web-cloudflare-deployment-pass/);
+  assert.match(section,/web-github-pages-deployment-pass/);
   assert.match(section,/web-runtime-source-tree:\$\{PROMOTED_SOURCE_TREE_SHA\}/);
   assert.match(section,/VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT/);
   assert.match(section,/VIBE2_RELEASE_PAGES_CHECK=/);
@@ -477,49 +480,91 @@ test('Web F9 release admission rejects a branch whose current source differs fro
   }
 });
 
-test('Web main deployment must succeed after merge or retry before release evidence is emitted',()=>{
+test('existing GitHub Pages publisher preserves root paths, existing gh-pages history, games and necessary assets',()=>{
+  const publisher=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+  assert.match(publisher,/name: Magic Forest Static Play/);
+  // Every merged main commit publishes, including policy, catalog, Vibe, media and arbitrary source changes.
+  const mainPush=publisher.split('  push:')[1]?.split('  workflow_dispatch:')[0]||'';
+  assert.match(mainPush,/branches:\s*\[main\]/);
+  assert.doesNotMatch(mainPush,/^\s*(?:paths|paths-ignore|if):/m,'no post-merge trigger exclusions');
+  assert.match(publisher,/OWNER-LOCKED PUBLICATION TRIGGER/);
+  assert.match(publisher,/workflow_dispatch:/);
+  assert.equal((publisher.match(/^  workflow_dispatch:$/gm)||[]).length,1,'Pages publisher must declare manual workflow dispatch only once');
+  assert.match(publisher,/web-games\/publish-manifest\.json/);
+  assert.match(publisher,/sourceSha:process\.env\.GITHUB_SHA/);
+  assert.ok(publisher.includes('sourceTreeShas'), 'published manifest carries per-game source identity');
+  assert.ok(publisher.includes("cp.execFileSync('git',['ls-tree','-z','HEAD:web-games']"), 'source identity comes from the exact main Git tree in one read');
+  assert.ok(publisher.includes('gameTreeShas.get(id)'), 'per-game source SHA comes from the main Git tree index');
+  assert.ok(publisher.includes('sourceTreeShas[id]=treeSha'), 'per-game source SHA is retained in the publication manifest');
+  assert.ok(publisher.includes('m.sourceTreeShas?.[id]'), 'missing per-game tree hashes must fail live verification');
+
+  assert.match(publisher,/fs\.cpSync\(root,path\.join\(site,root\),\{recursive:true\}\)/);
+  assert.match(publisher,/git clone --quiet --depth=1 --single-branch --branch gh-pages/);
+  // 새 공식 홈 리다이렉트는 존재 여부뿐 아니라 내용이 비어 있지 않아야 한다.
+  assert.match(publisher,/test -s "\$site\/index\.html"/);
+  assert.match(publisher,/GITHUB_PAGES_LFS_POINTER_NOT_PLAYABLE/);
+  assert.match(publisher,/git -C "\$site" push origin HEAD:gh-pages/);
+
+  // The GITHUB_TOKEN push saves history but cannot initiate a Pages build.
+  // Official deployment uploads the retained gh-pages tree without Git metadata.
+  assert.ok(publisher.includes('cp -a --reflink=auto "$retained/." "$artifact/"'),'retained site must be copied from exact published tree');
+  assert.ok(publisher.includes('rm -rf "$artifact/.git"'),'Git metadata must be excluded from official Pages artifact');
+  assert.ok(publisher.includes('test -d "$retained/.git"'),'retained history must remain intact before staging');
+  assert.ok(publisher.includes('WEB_PAGES_EXACT_ARTIFACT_SOURCE_SHA='));
+  assert.ok(publisher.includes('WEB_PAGES_RETAINED_GAME_COUNT='));
+  assert.ok(publisher.includes('uses: actions/upload-pages-artifact@v4'));
+  assert.ok(publisher.includes('uses: actions/deploy-pages@v4'));
+  assert.ok(publisher.includes('pages: write'));
+  assert.ok(publisher.includes('id-token: write'));
+  assert.ok(publisher.includes('name: github-pages'));
+  const nativeDeploy=publisher.indexOf('uses: actions/deploy-pages@v4');
+  const liveVerify=publisher.indexOf('      - name: Verify live GitHub Pages source and game routes');
+  assert.ok(nativeDeploy>0&&liveVerify>nativeDeploy,'actual Pages deploy must precede public verification');
+  assert.ok(publisher.includes('steps.deployment.outputs.page_url'));
+  assert.ok(publisher.includes('WEB_PAGES_DEPLOY_URL_MISSING'));
+  assert.doesNotMatch(publisher,/git push origin HEAD:gh-pages --force/);
+  assert.match(publisher,/if: github\.event_name != 'pull_request'/);
+  assert.match(publisher,/WEB_PAGES_LIVE_ASSETS_HTTP_200=PASS/);
+  // GitHub Pages는 Cloudflare 리다이렉트가 아니라 실제 공식 홈과 의존 자산을 배포한다.
+  assert.match(publisher,/PAGES_OFFICIAL_HOME_RENDER_QA=PASS/);
+  assert.match(publisher,/WEB_PAGES_CANONICAL_HOMEPAGE_NOT_LIVE/);
+  assert.match(publisher,/WEB_PAGES_HOME_RENDERER_PATH_MISMATCH/);
+  assert.match(publisher,/WEB_PAGES_HOME_DEPENDENCY_NOT_LIVE/);
+  assert.match(publisher,/data-homepage-version="SAMPLE_FRONT_DOOR_V1"/);
+  assert.match(publisher,/WEB_PAGES_ROUTE_NOT_LIVE=/);
+  assert.match(publisher,/WEB_PAGES_SOURCE_SHA=/);
+  assert.match(publisher,/WEB_PAGES_LIVE_SOURCE_SHA=/);
+});
+
+test('Web main deployment requires exact F9 game source tree in GitHub Pages, real route and non-200 failure handling',()=>{
   const section=releaseWorkflow.slice(releaseWorkflow.indexOf('  web-release:'),releaseWorkflow.indexOf('\n  unity-web-build:'));
   const promote=section.slice(section.indexOf('      - name: Promote approved web'),section.indexOf('      - name: Settle web result'));
   assert.match(section,/ref: \$\{\{ needs\.inspect\.outputs\.candidate_sha \}\}/);
   assert.match(promote,/promotion_sha="\$\(gh pr view[^\n]*--json mergeCommit/);
-  const start=promote.indexOf('          # 신규 병합과 재시도');
-  assert.ok(start>promote.indexOf('gh pr merge'));
-  assert.doesNotMatch(promote.slice(0,start),/exit 0|deployment_pass=true/);
-  const script=promote.slice(start).replace(/^ {10}/gm,'');
-  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-main-deploy-'));
-  const bin=path.join(temp,'bin');fs.mkdirSync(bin);
-  const output=path.join(temp,'output'),calls=path.join(temp,'calls'),states=path.join(temp,'states');
-  fs.writeFileSync(path.join(bin,'sleep'),'#!/bin/sh\nexit 0\n',{mode:0o755});
-  fs.writeFileSync(path.join(bin,'gh'),`#!/bin/sh
-printf '%s\\n' "$*" >> "$WEB_CHECK_CALLS"
-head -n 1 "$WEB_CHECK_STATES"
-if [ "$(wc -l < "$WEB_CHECK_STATES")" -gt 1 ]; then
-  tail -n +2 "$WEB_CHECK_STATES" > "$WEB_CHECK_STATES.next"
-  mv "$WEB_CHECK_STATES.next" "$WEB_CHECK_STATES"
-fi
-`,{mode:0o755});
-  try{
-    for(const [sequence,pass] of [
-      [['queued:','in_progress:','completed:success'],true],
-      [['completed:failure'],false],
-      [['completed:cancelled'],false],
-      [['completed:skipped'],false],
-      [['missing:'],false]
-    ]){
-      fs.writeFileSync(output,'');fs.writeFileSync(calls,'');fs.writeFileSync(states,sequence.join('\n')+'\n');
-      const run=()=>execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',stdio:'pipe',env:{...process.env,
-        PATH:bin+path.delimiter+process.env.PATH,GITHUB_REPOSITORY:'owner/repo',GITHUB_OUTPUT:output,
-        WEB_CHECK_CALLS:calls,WEB_CHECK_STATES:states,promotion_sha:'c'.repeat(40),source_tree_sha:'d'.repeat(40)}});
-      if(pass)run();else assert.throws(run);
-      const evidence=fs.readFileSync(output,'utf8');
-      assert.equal(evidence.includes('deployment_pass=true'),pass);
-      assert.equal(evidence.includes('promotion_sha='+'c'.repeat(40)),pass);
-      const requests=fs.readFileSync(calls,'utf8').trim().split('\n');
-      assert.ok(requests.every(line=>line.includes('/commits/'+'c'.repeat(40)+'/check-runs')));
-      assert.equal(requests.length,sequence[0]==='missing:'?60:sequence.length);
-    }
-  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+  assert.match(promote,/gh pr merge "\$pr_url"/);
+  assert.ok(promote.includes('gh workflow run magic-forest-pages.yml'),'candidate promotion must explicitly dispatch the existing Pages publisher after GITHUB_TOKEN PR merge');
+  assert.ok(promote.includes('WEB_PAGES_NATIVE_PUBLISH_DISPATCHED='));
+  assert.ok(promote.includes('WEB_PAGES_NATIVE_PUBLISH_ALREADY_ACTIVE='));
+  const pagesDispatch=promote.indexOf('gh workflow run magic-forest-pages.yml');
+  assert.ok(pagesDispatch>promote.indexOf('gh pr merge "$pr_url"'),'publisher must run only after approved merge');
+  assert.ok(promote.includes('.head_sha=='),'same exact SHA must suppress duplicate queued publisher');
+  assert.match(promote,/Homepage PR Fast QA/);
+  assert.match(promote,/publish-manifest\.json/);
+  assert.ok(promote.includes('m.sourceTreeShas?.[gameId]!==treeSha'),'web must require exact F9 game tree in published manifest');
+  assert.match(promote,/m\.routes\.includes\(route\)/);
+  assert.match(promote,/curl --fail/);
+  assert.match(promote,/target_route="web-games\/\$GAME_ID\/"/);
+  assert.match(promote,/if \[ "\$published" != true \]; then/);
+  assert.match(promote,/VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=SUCCESS/);
+  assert.match(promote,/deployment_pass=true/);
+  assert.doesNotMatch(promote,/select\(\.name=="Cloudflare Pages"\)/);
+  assert.doesNotMatch(promote,/git push origin HEAD:gh-pages --force/);
+  // Both SHA and individual game path must bind to the actual published manifest.
+  const verification=promote.slice(promote.indexOf("          const fs=require('node:fs');"),promote.indexOf("          NODE",promote.indexOf("          const fs=require('node:fs');")));
+  assert.ok(verification.includes('m.sourceTreeShas?.[gameId]!==treeSha'),'verified game tree must agree with real published route');
+  assert.match(verification,/!m\.routes\.includes\(route\)/);
 });
+
 
 test('Web successful syntax and promotion cannot settle PASS without production deployment proof',()=>{
   const start=releaseWorkflow.indexOf('          if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]');
@@ -571,7 +616,7 @@ test('Web requires F0-F9 proof, mandatory deployment, then resumes perpetual BUI
     workflow.indexOf('      - name: Dispatch verified system architecture candidates')
   );
   assert.match(dispatch,/VIBE2_RELEASE_DISPATCH_RETRY=/);
-  assert.match(dispatch,/if \[ "\$target" = web \]; then[\s\S]*PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=YES:WEB:/);
+  assert.match(dispatch,/if \[ "\$target" = web \]; then[\s\S]*PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO:WEB:/);
   assert.match(dispatch,/WEB_SAME_VERIFIED_CANDIDATE_DISPATCH_RETRY_REQUIRED=/);
 
   const start=releaseWorkflow.indexOf('  web-release:');
@@ -585,9 +630,42 @@ test('Web requires F0-F9 proof, mandatory deployment, then resumes perpetual BUI
   assert.doesNotMatch(section,/evaluateInternalRelease/);
   assert.doesNotMatch(section,/DEVELOPMENT_VERIFIED/);
   assert.match(section,/result=DEPLOY_RETRY_REQUIRED/);
-  assert.match(section,/WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=YES/);
+  assert.match(section,/WEB_PUBLICATION_RETRY_TRACKED=YES/);
   assert.match(section,/WEB_SAME_VERIFIED_CANDIDATE_RETRY=YES/);
-  assert.match(section,/vibe2-queue-control\.mjs pass[\s\S]*web-cloudflare-deployment-pass/);
+  assert.match(section,/WEB_F9_VERIFIED_QUEUE_PRESERVED_FOR_SAME_CYCLE_PUBLISH_RETRY=YES/);
+  assert.match(section,/web-f9-publish-attempted-retry-in-parallel-with-next-cycle/);
+  assert.match(section,/WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED_AFTER_PUBLISH_ATTEMPT=/);
+  assert.match(section,/AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED_AFTER_WEB_PUBLISH_ATTEMPT/);
+  const retryStart=section.indexOf('echo "WEB_PUBLICATION_RETRY_REQUIRED=');
+  const retryEnd=section.indexOf('          rm -rf /tmp/vibe2-control',retryStart);
+  assert.ok(retryStart>0&&retryEnd>retryStart);
+  const retry=section.slice(retryStart,retryEnd);
+  assert.match(retry,/WEB_NEXT_EVOLUTION_DISPATCH_AFTER_PUBLICATION_ATTEMPT=YES/);
+  assert.match(retry,/WEB_PUBLICATION_RETRY_OWNER=VIBE2_24H_EXACT_F9_RECOVERY/);
+  assert.doesNotMatch(retry,/gh workflow run vibe2-candidate-release\.yml/);
+  const recovery=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const recoveryStart=recovery.indexOf('      - name: Recover reviewed winners stranded before release dispatch');
+  const recoveryEnd=recovery.indexOf('      - name: Upload generated machine handoff',recoveryStart);
+  assert.ok(recoveryStart>0&&recoveryEnd>recoveryStart);
+  const recoverySection=recovery.slice(recoveryStart,recoveryEnd);
+  assert.match(recoverySection,/vibe2-release-dispatch-recovery\.mjs/);
+  assert.match(recoverySection,/if \[ "\$remote_sha" != "\$candidate_sha" \]; then/);
+  assert.match(recoverySection,/release-dispatch-recovery-at:\$stamp/);
+  assert.match(recoverySection,/vibe2-candidate-release\.yml\/dispatches/);
+
+  assert.doesNotMatch(retry,/exit 0/);
+  // 기존 F9 상태를 보존하고 게시 실패를 QA 실패로 재분류하지 않는다.
+  const queueStart=section.indexOf('node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id=');
+  const queueEnd=section.indexOf('node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack',queueStart);
+  assert.ok(queueStart>0&&queueEnd>queueStart);
+  const queue=section.slice(queueStart,queueEnd);
+  const retryQueueStart=queue.indexOf('elif [ "$result" = DEPLOY_RETRY_REQUIRED ]; then');
+  const retryQueueEnd=queue.indexOf('else',retryQueueStart);
+  assert.ok(retryQueueStart>0&&retryQueueEnd>retryQueueStart);
+  const retryQueue=queue.slice(retryQueueStart,retryQueueEnd);
+  assert.match(retryQueue,/WEB_F9_VERIFIED_QUEUE_PRESERVED_FOR_SAME_CYCLE_PUBLISH_RETRY=YES/);
+  assert.doesNotMatch(retryQueue,/web-release-qa-failed/);
+  assert.match(section,/vibe2-queue-control\.mjs pass[\s\S]*web-github-pages-deployment-pass/);
   assert.match(section,/WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=/);
   assert.match(section,/PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:/);
   assert.match(section,/VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT/);
@@ -602,8 +680,9 @@ test('playable Web deployment policy has no native readiness gate and deployment
   const deployment=policy.changeRecord?.playableWebMandatoryDeployment20261002;
   const loop=policy.continuousGameplaySystemEvolutionContract?.webPostDeploymentPerpetualBuildUp;
   assert.equal(deployment?.nativeHomepageReadinessRequired,false);
-  assert.equal(deployment?.cloudflareMainRequiredBeforeVibePass,true);
-  assert.equal(deployment?.nextBuildUpBeforeDeploymentSuccessForbidden,true);
+  assert.equal(deployment?.cloudflareMainRequiredBeforeVibePass,false);
+  assert.equal(deployment?.githubPagesMainRequiredBeforeVibePass,true);
+  assert.equal(deployment?.nextBuildUpBeforeDeploymentSuccessForbidden,false);
   assert.equal(deployment?.postDeployment?.perpetualBuildUp,true);
   assert.equal(deployment?.postDeployment?.generationLimit,null);
   assert.equal(deployment?.postDeployment?.newIdeaRequiredEveryCycle,true);
@@ -786,5 +865,76 @@ test('shallow Roblox promotion preserves exact candidate, main drift guard and m
     fs.writeFileSync(path.join(upstream,'game/source'),'verified');git(upstream,'commit','-am','equivalent squash result');fetch(fetches[3]);
     assert.equal(git(checkout,'diff','--name-only',release,'origin/main','--','game'),'');
     assert.equal(git(checkout,'rev-parse',release+':game'),git(checkout,'rev-parse','origin/main:game'));
-  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+  }finally{
+    // Git worktree metadata can briefly outlive the final synchronous git command on CI.
+    // Retry only teardown ENOTEMPTY/EBUSY races; assertions and promotion gates stay unchanged.
+    fs.rmSync(temp,{recursive:true,force:true,maxRetries:5,retryDelay:100});
+  }
+});
+
+// F9 이후 게이트는 출시 등급·점수와 독립적이다. 등록·활성·검증된 게임만 기존 배포 경로를 사용한다.
+test('exact F9 publication excludes release classification and catalog scoring for every platform',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const loop=policy.developmentLifecycleMachine.verifiedF0F9PublicationLoop;
+  const owner=policy.changeRecord.ownerEveryGameF9Publish20261018;
+  const steps=loop.sequence;
+  assert.deepEqual(steps.slice(1,11),['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']);
+  assert.equal(steps[11],'PUBLISH_EVERY_F9_VERIFIED_GAME');
+  assert.equal(steps.includes('RELEASE_CLASSIFICATION'),false);
+  assert.equal(owner.publicationScoreGate,false);
+  assert.equal(owner.publicationClassificationGate,false);
+  assert.match(policy.roblox.deploymentControl.verifiedCyclePublication.sequence.join('|'),/DISPATCH_EXACT_F9_ARTIFACT_REGARDLESS_OF_RELEASE_CLASSIFICATION/);
+  assert.doesNotMatch(policy.roblox.deploymentControl.verifiedCyclePublication.sequence.join('|'),/ONLY_IF_RELEASED/);
+  const inspect=releaseWorkflow.slice(releaseWorkflow.indexOf('  inspect:'),releaseWorkflow.indexOf('  web-release:'));
+  assert.match(inspect,/game-not-in-canonical-catalog/);
+  assert.match(inspect,/game-not-active/);
+  assert.doesNotMatch(inspect,/current-production-class-not-auto-deployable/);
+  assert.match(releaseWorkflow,/WEB_DEPLOYMENT_ELIGIBILITY=PLAYABLE_F0_F9_PLUS_STATIC_SAVE_QA/);
+});
+
+
+test('every Web F0 candidate validates actual BUILD_UP asset lineage before publication',()=>{
+  const source=releaseWorkflow;
+  const marker="          MANIFEST=\"$manifest\" node <<'NODE'\n";
+  const start=source.indexOf(marker);
+  const end=source.indexOf("\n          NODE",start+marker.length);
+  assert.ok(start>=0&&end>start,'web F0 candidate gate script missing');
+  const script=source.slice(start+marker.length,end);
+  const hash='a'.repeat(64),version=42;
+  const manifest={
+    taskId:'test-web-f0',gameId:'test-game',target:'web',sourceRoot:'web-games/test-game',
+    baseMainSha:'b'.repeat(40),transportBaseSha:'b'.repeat(40),
+    codingMethod:{
+      internalAssetSourceUsageFingerprint:hash,internalAssetSourceUsageLibraryVersion:version,
+      allGameDynamicAssetBindingRequired:true,allGameDynamicAssetBindingPass:true,
+      allGameDynamicAssetBindingFingerprint:hash
+    },
+    assetProduction:{allGameDynamicLibraryBinding:{fingerprint:hash,libraryVersion:version}}
+  };
+  const runGate=(patch={})=>{
+    let output='';
+    const input={...manifest,...patch};
+    const files={
+      readFileSync(file){
+        if(file==='fixture')return JSON.stringify(input);
+        if(file==='/tmp/main-game-catalog.json')return JSON.stringify({games:[{
+          id:'test-game',productionClass:'DEVELOPMENT_CONFIRMED',canonical:{lifecycle:{state:'ACTIVE'}}
+        }]});
+        throw Error('unexpected file '+file);
+      },
+      appendFileSync(file,text){assert.equal(file,'out');output+=text;}
+    };
+    vm.runInNewContext(script,{require:name=>{
+      assert.equal(name,'fs');return files;
+    },process:{env:{MANIFEST:'fixture',GITHUB_OUTPUT:'out'}}},{timeout:2000});
+    return Object.fromEntries(output.trim().split('\n').map(line=>{
+      const at=line.indexOf('=');return[line.slice(0,at),line.slice(at+1)];
+    }));
+  };
+  assert.equal(runGate().candidate_decision,'web');
+  assert.equal(runGate({codingMethod:{...manifest.codingMethod,internalAssetSourceUsageFingerprint:''}}).candidate_reason,'web-f0-build-up-asset-fingerprint-missing');
+  assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingPass:false}}).candidate_reason,'web-f0-dynamic-asset-binding-unverified');
+  assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingRequired:false}}).candidate_reason,'web-f0-dynamic-asset-binding-not-required');
+  assert.equal(runGate({codingMethod:{...manifest.codingMethod,allGameDynamicAssetBindingFingerprint:'c'.repeat(64)}}).candidate_reason,'web-f0-dynamic-asset-binding-fingerprint-mismatch');
+  assert.equal(runGate({assetProduction:{allGameDynamicLibraryBinding:{fingerprint:hash,libraryVersion:version+1}}}).candidate_reason,'web-f0-dynamic-asset-library-version-mismatch');
 });

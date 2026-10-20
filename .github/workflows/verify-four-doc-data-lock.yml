@@ -1,0 +1,63 @@
+name: Verify Four Document Data Lock
+on:
+  push:
+    paths:
+      - 'company-directive.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/security-immune-system.json'
+      - 'qa/company-four-docs-fingerprint.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
+      - 'qa/company-records-governance.test.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/company-constitution-enforcer.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
+      - 'tools/vibe2-continuous-runner.mjs'
+      - '.vibe2/external-ai-distilled-knowledge.json'
+      - 'qa/vibe2-restoration-smoke.test.mjs'
+      - 'qa/vibe2-central-work-contract.test.mjs'
+      - 'tools/company-records-governance.mjs'
+      - '.github/workflows/verify-four-doc-data-lock.yml'
+  pull_request:
+    paths:
+      - 'company-directive.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/security-immune-system.json'
+      - 'qa/company-four-docs-fingerprint.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
+      - 'qa/company-records-governance.test.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/company-constitution-enforcer.mjs'
+      - 'tools/vibe2-central-work-contract.mjs'
+      - 'tools/vibe2-continuous-runner.mjs'
+      - '.vibe2/external-ai-distilled-knowledge.json'
+      - 'qa/vibe2-restoration-smoke.test.mjs'
+      - 'qa/vibe2-central-work-contract.test.mjs'
+      - 'tools/company-records-governance.mjs'
+      - '.github/workflows/verify-four-doc-data-lock.yml'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static syntax on retained context and record tools
+        run: |
+          node --check tools/company-shared-context.mjs
+          node --check tools/company-constitution-enforcer.mjs
+          node --check tools/vibe2-central-work-contract.mjs
+          node --check tools/company-records-governance.mjs
+      - name: Verify minimal JSON locks, fail-closed policy, and records limits
+        run: |
+          node --test qa/company-four-docs-fingerprint.test.mjs
+          node --test qa/company-shared-context-retained.test.mjs
+          node --test qa/company-records-governance.test.mjs
+      - name: Verify Vibe worker contract and external AI learning integration
+        run: |
+          node --test qa/vibe2-restoration-smoke.test.mjs
+          node --test qa/vibe2-central-work-contract.test.mjs

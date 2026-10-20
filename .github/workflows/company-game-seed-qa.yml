@@ -13,9 +13,7 @@ on:
       - 'tools/company-game-seed-semantic-normalize.mjs'
       - 'tools/company-game-seed-quality-gate.mjs'
       - 'tools/company-design-cycle.mjs'
-      - 'tools/company-design-artbook.mjs'
       - 'tools/company-baseline-gate.mjs'
-      - 'tools/company-development-disposition-gate.mjs'
       - 'tools/artbook-production-pipeline.mjs'
       - 'tools/autonomous-portfolio-continuation.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
@@ -27,7 +25,7 @@ on:
       - 'qa/seed-material-dynamic-composition.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
       - 'qa/artbook-production-pipeline.test.mjs'
-      - 'qa/company-central-policy-contract.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
   pull_request:
     paths:
@@ -40,9 +38,7 @@ on:
       - 'tools/company-game-seed-semantic-normalize.mjs'
       - 'tools/company-game-seed-quality-gate.mjs'
       - 'tools/company-design-cycle.mjs'
-      - 'tools/company-design-artbook.mjs'
       - 'tools/company-baseline-gate.mjs'
-      - 'tools/company-development-disposition-gate.mjs'
       - 'tools/artbook-production-pipeline.mjs'
       - 'tools/autonomous-portfolio-continuation.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
@@ -54,7 +50,7 @@ on:
       - 'qa/seed-material-dynamic-composition.test.mjs'
       - 'qa/autonomous-portfolio-continuation.test.mjs'
       - 'qa/artbook-production-pipeline.test.mjs'
-      - 'qa/company-central-policy-contract.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
   workflow_dispatch:
 
@@ -84,9 +80,7 @@ jobs:
             tools/company-game-seed-semantic-normalize.mjs \
             tools/company-game-seed-quality-gate.mjs \
             tools/company-design-cycle.mjs \
-            tools/company-design-artbook.mjs \
             tools/company-baseline-gate.mjs \
-            tools/company-development-disposition-gate.mjs \
             tools/artbook-production-pipeline.mjs \
             tools/autonomous-portfolio-continuation.mjs; do
             node --check "$file"
@@ -102,7 +96,7 @@ jobs:
           node --test qa/seed-material-dynamic-composition.test.mjs
           node --test qa/autonomous-portfolio-continuation.test.mjs
           node --test qa/artbook-production-pipeline.test.mjs
-          node --test qa/company-central-policy-contract.test.mjs
+          node --test qa/company-shared-context-retained.test.mjs
           node --test qa/company-central-pipeline-only.test.mjs
       - name: Ensure obsolete 3-class new-game entrypoints stay deleted
         shell: bash

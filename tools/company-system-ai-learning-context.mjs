@@ -49,7 +49,7 @@ function systemAiExternalDistilledInput(input={},target='system'){
   return{...input,entries};
 }
 
-const BOTTLENECK_PLAYBOOK_AUTHORITY='company-learning/platform-release-roadmap.json#aiExecutionEfficiency.systemAiEvolution';
+const BOTTLENECK_PLAYBOOK_AUTHORITY='LOCAL_ADVISORY_PLAYBOOK_NO_POLICY_AUTHORITY';
 const BOTTLENECK_METHODS=Object.freeze([
   ['CAUSAL_WAIT_GRAPH','대기열·pending workflow·reservation wait·runner startup·fan-in·release wait를 한 그래프로 묶고 가장 긴 실제 대기 경로부터 고친다. 단순 queue depth만 원인으로 취급하지 않는다.'],
   ['LOGICAL_PHYSICAL_CAPACITY_SPLIT','정책상 논리 동시성 목표와 GitHub/외부 제공자 물리 용량을 분리한다. 일시적인 runner 부족을 내부 정책 cap으로 굳히지 않는다.'],
@@ -182,7 +182,7 @@ export function buildSystemAiLearningContext({task={},experienceInput={},codePat
   const signature=failureSignature(task);
   const failedStrategies=failedStrategyFingerprints(task);
   const gameId=clean(task.gameId)||null;
-  const policy=policyInput&&typeof policyInput==='object'?policyInput:readJson('company-learning/platform-release-roadmap.json',{});
+  const policy=policyInput&&typeof policyInput==='object'?policyInput:{};
   const bottleneckPlaybook=advancedBottleneckPlaybook(task,policy);
   const floorRecovery=developmentFloorRecoveryCase(task,bottleneckPlaybook);
   const baseGuidance=learningGuidance(retrieval);
@@ -224,7 +224,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     codePatternsInput:readJson(clean(a.patterns),{patterns:[]}),
     masteryInput:readJson(clean(a.mastery),{}),
     externalAiDistilledInput:readJson(clean(a['external-ai-distilled']),{entries:[]}),
-    policyInput:readJson(clean(a.roadmap)||'company-learning/platform-release-roadmap.json',{})
+    policyInput:readJson(clean(a.roadmap),{})
   });
   writeJson(clean(a.output)||'/tmp/company-system-ai-learning-context.json',result);
   console.log('SYSTEM_AI_VERIFIED_LEARNING_CONTEXT=PASS');

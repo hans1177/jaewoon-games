@@ -405,11 +405,9 @@ test('central contract keeps Studio optional and outside build-up F9 deployment 
   assert.equal(studio.optionalDiagnostic,true);
   assert.equal(studio.deploymentGate,false);
   assert.equal(studio.f9Gate,false);
-  const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup||{};
-  assert.equal(arch.codeAndStaticQaPrimary,true);
-  assert.equal(arch.studioRequired,false);
-  assert.equal(arch.studioUnavailableBlocksDevelopment,false);
-  assert.equal(arch.studioUnavailableBlocksDeployment,false);
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  const studioPlan=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioPlan,/if: \$\{\{ false \}\} # OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
 });
 
 test('planner skips only an already verified exact Studio MCP play record',()=>{
@@ -1122,9 +1120,9 @@ test('legacy Studio MCP planner stays disabled under the cloud-only owner direct
   assert.equal(central.roblox.deploymentControl.validationProviderContract.studioMcpExecutionAllowed,false);
   assert.doesNotMatch(studioPlanBlock,/github\.event_name == 'push'/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
-  assert.equal(architecture.robloxNativeCodingQualityTopology.studioPlannerDependsOnPortfolioFoundationJob,false);
-  assert.equal(architecture.robloxNativeCodingQualityTopology.studioPlannerRunsOnHostedControlRunner,true);
-  assert.equal(architecture.robloxNativeCodingQualityTopology.studioActualPlayRunsOnAuthenticatedSelfHostedRunner,true);
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.match(studioPlanBlock,/runs-on: ubuntu-slim/);
+  assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
   assert.match(workflow,/studio-mcp-auto-play:[\s\S]*needs: studio-local-plan[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
   assert.match(workflow,/event_type = 'vibe2-fanin-refill'/);
   assert.match(workflow,/reason = 'roblox-official-studio-mcp-actual-play'/);

@@ -1,3 +1,5 @@
+// 파일명: qa/vibe2-learning-closed-loop.test.mjs
+// 메인: 실행 권한은 중앙정책·기존 학습 모터·실제 워크플로에서 검증한다.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -12,6 +14,8 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   const logMap=json('company-learning/company-log-map.json');
   assert.ok(Number.isInteger(roadmap.version)&&roadmap.version>=222);
   assert.ok(Number.isInteger(architecture.version)&&architecture.version>=64);
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
   assert.equal(motor.version,19);
   assert.equal(roadmap.learningClosedLoopContract.enabled,true);
   assert.equal(roadmap.learningClosedLoopContract.baselineAtAdoption.verifiedExperienceRecords,0);
@@ -20,8 +24,9 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(roadmap.learningClosedLoopContract.strategyPromotion.thresholdsUnchanged,true);
   assert.deepEqual(roadmap.learningClosedLoopContract.commonKnowledgeLifecycle.states,['CANDIDATE','VERIFIED','PREFERRED','DEMOTED','RETIRED']);
   assert.equal(roadmap.webValidationBottleneckAdapterContract.firstPilotGameId,'fantasy-survival');
-  assert.equal(architecture.learningClosedLoopTopology.externalAiRawOutputAuthority,'NONE');
-  assert.equal(architecture.learningClosedLoopTopology.productionPassAuthority,'CANONICAL_QA_AND_REVIEW_ONLY');
+  assert.equal(roadmap.learningClosedLoopContract.externalAiRetrieval.rawExternalOutputForbidden,true);
+  assert.equal(roadmap.learningClosedLoopContract.externalAiRetrieval.externalAiMayNotWriteSourceOrClaimPass,true);
+  assert.equal(roadmap.learningClosedLoopContract.experienceMemory.formalVerifiedProjectOutcomePromotionRequired,true);
   assert.equal(motor.closedLoop.externalAiDistilledRetrievalRequired,true);
   assert.equal(motor.closedLoop.exactInjectedKnowledgeIdTraceRequired,true);
   assert.equal(motor.closedLoop.productionConfidenceSeparateFromMastery,true);
@@ -71,10 +76,10 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(motor.worldConceptLearning?.existingGamePatternDistillation?.enabled,true);
   assert.equal(motor.worldConceptLearning?.existingGamePatternDistillation?.minimumIndependentVerifiedGamesForCrossGameReuse,2);
   assert.equal(motor.worldConceptLearning?.existingGamePatternDistillation?.directMasteryCredit,false);
-  assert.equal(architecture.assetProductionParallelism?.companyGraphicsLibrary24h?.existingGameWorldPatternDistillation?.shadowTrainerForbidden,true);
-  assert.equal(logMap.existingGameWorldPatternEvidenceContract?.singleGameCrossGamePromotionForbidden,true);
-  assert.equal(logMap.existingGameWorldPatternEvidenceContract?.positiveCrossGameReuseRequiresTwoIndependentVerifiedGames,true);
-  assert.equal(logMap.existingGameWorldPatternEvidenceContract?.exactCoordinatesTerrainMeshOrLayoutInLearningEvidenceForbidden,true);
+  assert.equal(roadmap.learningClosedLoopContract.worldAndConceptLearning.existingGamePatternDistillation.existingCanonicalLearningMotorOnly,true);
+  assert.equal(roadmap.learningClosedLoopContract.worldAndConceptLearning.existingGamePatternDistillation.crossGameReuseRequiresIndependentVerification,true);
+  assert.equal(roadmap.learningClosedLoopContract.worldAndConceptLearning.existingGamePatternDistillation.minimumIndependentVerifiedGames,2);
+  assert.equal(roadmap.learningClosedLoopContract.worldAndConceptLearning.existingGamePatternDistillation.rawCoordinatesOrExactLayoutForbidden,true);
   const ingress=roadmap.learningClosedLoopContract?.specializedGameDevelopmentMastery?.verifiedQueueEvidenceIngress;
   assert.equal(ingress?.enabled,true);
   assert.equal(ingress?.existingCanonicalLearningMotorOnly,true);
@@ -82,7 +87,8 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(ingress?.infrastructureFailureMustNotPenalizeMastery,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.enabled,true);
   assert.equal(motor.verifiedSpecializedQueueEvidenceIngress?.existingSeenExperienceDedupeRequired,true);
-  assert.equal(architecture.learningClosedLoopTopology?.specializedGameDevelopmentMastery?.verifiedQueueEvidenceIngress?.separateTrainer,false);
+  assert.equal(roadmap.learningClosedLoopContract.specializedGameDevelopmentMastery.existingCanonicalLearningMotorOnly,true);
+  assert.equal(ingress.implementation,'tools/vibe2-learning-motor.mjs');
   assert.equal(ingress?.persistAcceptedSyntheticExperienceToCanonicalExperienceMemory,true);
   assert.equal(ingress?.canonicalExperienceStore,'.vibe2/experience.json');
   assert.equal(ingress?.sameCycleRetrievalAndHandoffUseMergedExperienceMemory,true);
@@ -107,11 +113,11 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(producer?.candidateResultWorkflowMayInvokeFanInReviewButMayNotMintVerifiedMarkerItself,true);
   assert.equal(producer?.postNativeFinalReviewRequiresExistingPreNativeRegressionAndReviewPass,true);
   assert.equal(producer?.postNativeFinalReviewRequiresFocusedQaPassTraceForEachMarker,true);
-  const architectureIngress=architecture.learningClosedLoopTopology?.specializedGameDevelopmentMastery?.verifiedQueueEvidenceIngress;
-  assert.equal(architectureIngress?.nativeTwoStageFanInReview,true);
-  assert.equal(architectureIngress?.postNativeFinalReviewImplementation,'tools/vibe2-fan-in-review.mjs');
-  assert.equal(logMap.specializedVerifiedQueueEvidenceContract?.nativeTwoStageReviewRequired,true);
-  assert.equal(logMap.specializedVerifiedQueueEvidenceContract?.candidateResultWorkflowCannotMintFinalMarker,true);
+  // 최소화된 아키텍처·로그 맵의 폐기 필드는 사용하지 않고 현행 제작자 계약을 검증한다.
+  assert.equal(producer.nativeTwoStageFanInReview,true);
+  assert.equal(producer.postNativeFinalReviewImplementation,'tools/vibe2-fan-in-review.mjs');
+  assert.equal(producer.candidateResultWorkflowMayInvokeFanInReviewButMayNotMintVerifiedMarkerItself,true);
+  assert.equal(producer.finalVerifiedMarkerMayOnlyBeEmittedByFanInAfterAllRequiredEvidence,true);
   assert.equal(roadmap.roblox?.studioExecution?.enabled,true);
   assert.equal(roadmap.roblox?.studioExecution?.localPlaceFileRequired,true);
   assert.equal(roadmap.roblox?.studioExecution?.onlinePublishedPlaceDirectOpenForbidden,true);
@@ -123,17 +129,17 @@ test('central machine contracts expose the verified learning closed loop',()=>{
   assert.equal(roadmap.developmentLifecycleMachine?.modelQuotaContinuity?.learningProviderIsolation?.robloxStudioRawViewportDirectTraining,false);
   assert.equal(roadmap.developmentLifecycleMachine?.robloxStudioUsage?.learningUseForbidden,false);
   assert.ok(roadmap.developmentLifecycleMachine?.robloxStudioUsage?.forbidden?.includes('ROBLOX_PLAYER_AUTOMATION'));
-  const studioIngress=architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress||{};
-  assert.equal(studioIngress.role,'OPTIONAL_VERIFIED_DIAGNOSTIC_LEARNING');
-  assert.equal(studioIngress.producerWorkflow,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play');
-  assert.equal(studioIngress.canonicalIngress,'tools/vibe2-learning-motor.mjs#collectVerifiedRobloxStudioPlayExperience');
-  assert.equal(studioIngress.exactArtifactRequired,true);
-  assert.equal(studioIngress.officialStudioMcpOnly,true);
-  assert.equal(studioIngress.deploymentGate,false);
-  assert.equal(studioIngress.buildUpGate,false);
-  assert.equal(studioIngress.f9Gate,false);
-  assert.equal(architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.codeAndStaticQaPrimary,true);
-  assert.equal(architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.studioRequired,false);
+  const studioQa=read('.github/workflows/company-development-roblox-post-runtime-qa.yml');
+  const learningMotorSource=read('tools/vibe2-learning-motor.mjs');
+  assert.equal(roadmap.roblox.studioExecution.optionalDiagnostic,true);
+  assert.match(studioQa,/studio-mcp-auto-play/);
+  assert.match(learningMotorSource,/collectVerifiedRobloxStudioPlayExperience/);
+  assert.equal(roadmap.roblox.studioExecution.officialStudioMcpOnly,true);
+  assert.equal(roadmap.roblox.studioExecution.deploymentGate,false);
+  assert.equal(roadmap.roblox.studioExecution.requiredForInternalRelease,false);
+  assert.equal(roadmap.roblox.studioExecution.f9Gate,false);
+  assert.equal(roadmap.roblox.studioExecution.postBuildUpVerificationLevel,'CODE_AND_STATIC_QA');
+  assert.equal(roadmap.roblox.studioExecution.required,false);
 });
 
 test('continuous runner loads distilled external AI and emits exact knowledge trace',()=>{

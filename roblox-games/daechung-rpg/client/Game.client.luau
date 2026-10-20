@@ -10,6 +10,7 @@ local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local CommonUI=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
+local Style=require(RS:WaitForChild("Shared"):WaitForChild("VisualStyle"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = C.VerifiedExternalLearning or C.LearningContext or {}
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
@@ -229,7 +230,7 @@ startupOverlay.Parent=gui
 local startupCard=Instance.new("Frame")
 startupCard.AnchorPoint=Vector2.new(.5,.5)
 startupCard.Position=UDim2.fromScale(.5,.5)
-startupCard.Size=touchEnabled and UDim2.new(.9,0,0,318)or UDim2.fromOffset(480,334)
+startupCard.Size=touchEnabled and UDim2.new(.88,0,0,385)or UDim2.fromOffset(480,405)
 startupCard.BackgroundColor3=Color3.fromRGB(34,37,48)
 startupCard.BackgroundTransparency=.04
 startupCard.BorderSizePixel=0
@@ -276,7 +277,7 @@ startupGuide.Parent=startupCard
 
 local startupStatus=Instance.new("TextLabel")
 startupStatus.AnchorPoint=Vector2.new(.5,0)
-startupStatus.Position=UDim2.new(.5,0,0,216)
+startupStatus.Position=UDim2.new(.5,0,0,302)
 startupStatus.Size=UDim2.new(.84,0,0,28)
 startupStatus.BackgroundTransparency=1
 startupStatus.Text="마을과 캐릭터를 준비하는 중..."
@@ -286,10 +287,44 @@ startupStatus.Font=Enum.Font.Gotham
 startupStatus.ZIndex=102
 startupStatus.Parent=startupCard
 
+-- 로비: 첫 화면에서 서버 저장형 외형을 선택한 뒤 입장한다.
+startupTitle.Text="대충 RPG  ·  나만의 모험"
+startupSubtitle.Text="캐릭터 꾸미기  /  마을  /  주택  /  5개 바이옴"
+startupGuide.Text="라이브러리 기반 캐릭터 유형 · 방어구 · 장식 · 색상 선택"
+startupGuide.Position=UDim2.new(.5,0,0,122)
+startupGuide.Size=UDim2.new(.84,0,0,50)
+local lobbyCustomize=button(startupCard,"캐릭터 외형 변경",Color3.fromRGB(74,136,129))
+lobbyCustomize.Name="LobbyCustomize";lobbyCustomize.AnchorPoint=Vector2.new(.5,0)
+lobbyCustomize.Position=UDim2.new(.73,0,0,216);lobbyCustomize.Size=UDim2.new(.42,0,0,36)
+lobbyCustomize.ZIndex=104
+lobbyCustomize.Text="피부색 바꾸기"
+lobbyCustomize.Activated:Connect(function()remote:FireServer(C.Actions.CUSTOMIZE_NEXT)end)
+local archetypeNames={"사무라이","무협 무인","서양 기사"}
+local outfitButtons={
+ {"캐릭터 유형","CUSTOMIZE_ARCHETYPE"},
+ {"방어구","CUSTOMIZE_ARMOR"},
+ {"모자·장식","CUSTOMIZE_DECORATION"}
+}
+for i,item in ipairs(outfitButtons)do
+ local b=button(startupCard,item[1],Color3.fromRGB(64+17*i,88+10*i,111+9*i))
+ b.Name="AvatarOutfit"..i;b.AnchorPoint=Vector2.new(.5,0)
+ b.Position=UDim2.new(i%2==1 and .27 or .73,0,0,180+math.floor((i-1)/2)*36);b.Size=UDim2.new(.42,0,0,32);b.ZIndex=104
+ b.Activated:Connect(function()remote:FireServer(item[2])end)
+end
+local lobbyStyle=Instance.new("TextLabel")
+lobbyStyle.BackgroundTransparency=1;lobbyStyle.Size=UDim2.new(.84,0,0,24);lobbyStyle.TextWrapped=true
+lobbyStyle.Position=UDim2.new(.08,0,0,273);lobbyStyle.ZIndex=104
+lobbyStyle.TextColor3=Color3.fromRGB(212,230,218)
+lobbyStyle.TextSize=13;lobbyStyle.Font=Enum.Font.Gotham;lobbyStyle.Parent=startupCard
+local function showLobbyStyle()
+ lobbyStyle.Text=archetypeNames[tonumber(p:GetAttribute("AvatarArchetype"))or 1].." · 갑옷 "..tostring(p:GetAttribute("AvatarArmor")or 0).."/2 · 장식 "..tostring(p:GetAttribute("AvatarDecoration")or 0).."/2 · 색 "..tostring(p:GetAttribute("AvatarStyle")or 1)
+end
+for _,k in ipairs({"AvatarStyle","AvatarArchetype","AvatarArmor","AvatarDecoration"})do p:GetAttributeChangedSignal(k):Connect(showLobbyStyle)end
+showLobbyStyle()
 local startupPlay=button(startupCard,"게임 시작",Color3.fromRGB(86,103,163))
 startupPlay.Name="PlayButton"
 startupPlay.AnchorPoint=Vector2.new(.5,1)
-startupPlay.Position=UDim2.new(.5,0,1,-22)
+startupPlay.Position=UDim2.new(.5,0,1,-12)
 startupPlay.Size=UDim2.new(.72,0,0,50)
 startupPlay.Visible=false
 startupPlay.ZIndex=102
@@ -554,6 +589,22 @@ stats.Name="RPGTopHUD";stats.Size=touchEnabled and UDim2.fromOffset(214,82)or UD
 local studioStatsTarget = stats.Position
 stats.Position = studioStatsTarget + UDim2.fromOffset(0, -5)
 TweenService:Create(stats, TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = table.find(studioAssetFamily("MOTION"), "START") and studioStatsTarget or stats.Position}):Play()
+-- This marker confirms which client script is actually running after publishing.
+local versionMark=Instance.new("TextLabel")
+versionMark.Name="LiveBuildMarker";versionMark.BackgroundTransparency=.3
+versionMark.BackgroundColor3=Color3.fromRGB(20,35,35)
+local function refreshBuildMark()
+ local server=tostring(workspace:GetAttribute("DaechungRuntimeRevision")or"SERVER_OLD")
+ versionMark.Text="RPG FIX6 · "..server.." · v"..tostring(game.PlaceVersion)
+ versionMark.TextColor3=server=="20261014-FIX6" and Color3.fromRGB(205,245,215) or Color3.fromRGB(255,177,107)
+end
+workspace:GetAttributeChangedSignal("DaechungRuntimeRevision"):Connect(refreshBuildMark)
+refreshBuildMark()
+versionMark.TextSize=10;versionMark.TextColor3=Color3.fromRGB(205,245,215)
+versionMark.Font=Enum.Font.GothamBold
+versionMark.AnchorPoint=Vector2.new(.5,0)
+versionMark.Position=UDim2.new(.5,0,0,57)
+versionMark.Size=UDim2.fromOffset(310,17);versionMark.ZIndex=15;versionMark.Parent=gui
 local title=Instance.new("TextLabel");title.Size=UDim2.new(1,-14,0,23);title.Position=UDim2.fromOffset(7,4);title.BackgroundTransparency=1;title.Text="대충 RPG";title.TextColor3=Color3.fromRGB(255,223,157);title.TextXAlignment=Enum.TextXAlignment.Left;title.Font=Enum.Font.GothamBold;title.TextSize=16;title.Parent=stats
 local statLine=Instance.new("TextLabel");statLine.Size=UDim2.new(1,-14,0,38);statLine.Position=UDim2.fromOffset(7,27);statLine.BackgroundTransparency=1;statLine.TextColor3=Color3.fromRGB(230,234,241);statLine.TextXAlignment=Enum.TextXAlignment.Left;statLine.TextYAlignment=Enum.TextYAlignment.Top;statLine.TextWrapped=true;statLine.TextSize=12;statLine.Font=Enum.Font.Gotham;statLine.Parent=stats
 
@@ -561,41 +612,379 @@ local classBadge=Instance.new("TextLabel");classBadge.Name="ClassBadge";classBad
 
 local objective=Instance.new("TextLabel");objective.Name="QuestObjective";objective.AnchorPoint=Vector2.new(.5,0);objective.Position=touchEnabled and UDim2.new(.5,0,0,96)or UDim2.new(.5,0,0,8);objective.Size=touchEnabled and UDim2.fromOffset(276,34)or UDim2.fromOffset(330,38);objective.BackgroundColor3=Color3.fromRGB(31,34,43);objective.BackgroundTransparency=.12;objective.TextColor3=Color3.fromRGB(255,220,146);objective.TextWrapped=true;objective.TextSize=13;objective.Font=Enum.Font.GothamBold;objective.Parent=gui;corner(objective,11);stroke(objective,.52)
 
+-- 신규 레이아웃: 명확한 하단 탐험 내비게이션과 주택 관리 드로어.
+local avatarPanel -- forward reference: house button closes character panel safely
+local housingToggle=button(gui,"내 집",Color3.fromRGB(72,116,125))
+housingToggle.Name="HousingNav";housingToggle.Size=UDim2.fromOffset(80,42)
+housingToggle.AnchorPoint=Vector2.new(0,1);housingToggle.Position=UDim2.new(0,12,1,-14)
+local housingPanel=Instance.new("Frame")
+housingPanel.Name="HousingPanel";housingPanel.AnchorPoint=Vector2.new(.5,1)
+housingPanel.Size=UDim2.fromOffset(320,322);housingPanel.Position=UDim2.new(.5,0,1,-65)
+housingPanel.BackgroundColor3=Color3.fromRGB(21,35,41);housingPanel.BorderSizePixel=0
+housingPanel.Visible=false;housingPanel.ZIndex=40;housingPanel.Parent=gui;corner(housingPanel,18);stroke(housingPanel,.25)
+local housingTitle=Instance.new("TextLabel");housingTitle.Name="HousingTitle"
+housingTitle.Size=UDim2.new(1,-26,0,42);housingTitle.Position=UDim2.fromOffset(13,9)
+housingTitle.Text="나의 아지트";housingTitle.TextColor3=Color3.fromRGB(255,233,176)
+housingTitle.TextSize=21;housingTitle.Font=Enum.Font.GothamBold;housingTitle.BackgroundTransparency=1
+housingTitle.TextXAlignment=Enum.TextXAlignment.Left;housingTitle.ZIndex=41;housingTitle.Parent=housingPanel
+local housingInfo=Instance.new("TextLabel");housingInfo.Size=UDim2.new(1,-26,0,39)
+housingInfo.Position=UDim2.fromOffset(13,49);housingInfo.BackgroundTransparency=1
+housingInfo.TextColor3=Color3.fromRGB(218,235,235);housingInfo.TextSize=14
+housingInfo.Font=Enum.Font.Gotham;housingInfo.TextWrapped=true;housingInfo.ZIndex=41;housingInfo.Parent=housingPanel
+local housingActions={{"집 건설",C.Actions.HOUSING_BUILD},{"집 확장",C.Actions.HOUSING_UPGRADE},{"가구 배치",C.Actions.HOUSING_FURNISH},{"건축 모듈",C.Actions.HOUSING_MODULE},{"집 방문",C.Actions.HOUSING_VISIT}}
+for i,item in ipairs(housingActions)do
+ local b=button(housingPanel,item[1],Color3.fromRGB(47,97,106))
+ b.Name="HousingAction"..i;b.Size=UDim2.fromOffset(139,56)
+ b.Position=UDim2.fromOffset(13+((i-1)%2)*153,100+math.floor((i-1)/2)*66)
+ b.ZIndex=42
+ b.Activated:Connect(function()
+  remote:FireServer(item[2])
+  if i==5 then housingPanel.Visible=false end
+ end)
+end
+local function refreshHousing()
+ local level=tonumber(p:GetAttribute("HouseLevel"))or 0
+ local items=tonumber(p:GetAttribute("HouseFurniture"))or 0
+ local modules=tonumber(p:GetAttribute("HouseModules"))or 0
+ local cfg=C.Housing or {}
+ housingInfo.Text=level==0 and ("미보유 · 건설 "..tostring(cfg.BuildCost or 80).."G") or ("집 Lv."..level.." / "..tostring(cfg.MaxLevel or 3).." · 가구 "..items.."/"..tostring(cfg.MaxFurniture or 8).." · 건축 "..modules.."/"..tostring(cfg.MaxModules or 12))
+end
+for _,attribute in ipairs({"HouseLevel","HouseFurniture","HouseModules"})do p:GetAttributeChangedSignal(attribute):Connect(refreshHousing)end
+refreshHousing()
+housingToggle.Activated:Connect(function()
+ if startupOverlay.Parent~=nil or gui:GetAttribute("RPGMenuOpen")==true then return end
+ housingPanel.Visible=not housingPanel.Visible;if avatarPanel then avatarPanel.Visible=false end
+ refreshHousing()
+end)
+gui:GetAttributeChangedSignal("RPGMenuOpen"):Connect(function()
+ if gui:GetAttribute("RPGMenuOpen")==true then housingPanel.Visible=false end
+end)
+
+-- 현재 플레이 중에도 사용할 수 있는 장비식 외형 편집기 (마을에서 수정 가능).
+local avatarToggle=button(gui,"외형",Color3.fromRGB(73,103,147))
+avatarToggle.Name="CustomizeNav";avatarToggle.AnchorPoint=Vector2.zero;avatarToggle.Position=UDim2.fromOffset(8,212)
+avatarToggle.Size=UDim2.fromOffset(84,36)
+avatarPanel=Instance.new("Frame");avatarPanel.Name="CharacterCustomizer"
+avatarPanel.AnchorPoint=Vector2.new(.5,.5);avatarPanel.Position=UDim2.fromScale(.5,.5)
+avatarPanel.Size=UDim2.fromOffset(math.min(438,gui.AbsoluteSize.X-20),312);avatarPanel.BackgroundColor3=Color3.fromRGB(23,33,44)
+avatarPanel.ZIndex=45;avatarPanel.Visible=false;avatarPanel.Parent=gui;corner(avatarPanel,14);stroke(avatarPanel,.2)
+local avatarHeader=Instance.new("TextLabel");avatarHeader.BackgroundTransparency=1
+avatarHeader.Position=UDim2.fromOffset(12,8);avatarHeader.Size=UDim2.new(1,-68,0,29)
+avatarHeader.Text="캐릭터 커스터마이징";avatarHeader.TextColor3=Color3.fromRGB(245,223,177)
+avatarHeader.TextSize=18;avatarHeader.Font=Enum.Font.GothamBold;avatarHeader.TextXAlignment=Enum.TextXAlignment.Left
+avatarHeader.ZIndex=46;avatarHeader.Parent=avatarPanel
+local avatarClose=button(avatarPanel,"닫기",Color3.fromRGB(134,69,74))
+avatarClose.Size=UDim2.fromOffset(56,34);avatarClose.Position=UDim2.new(1,-65,0,6);avatarClose.ZIndex=47
+avatarClose.Activated:Connect(function()avatarPanel.Visible=false end)
+local avatarInfo=Instance.new("TextLabel");avatarInfo.BackgroundTransparency=1
+avatarInfo.Position=UDim2.fromOffset(155,43);avatarInfo.Size=UDim2.new(1,-168,0,73)
+avatarInfo.TextWrapped=true;avatarInfo.TextXAlignment=Enum.TextXAlignment.Left
+avatarInfo.TextColor3=Color3.fromRGB(217,231,240);avatarInfo.TextSize=12
+avatarInfo.Font=Enum.Font.Gotham;avatarInfo.ZIndex=46;avatarInfo.Parent=avatarPanel
+local avatarItems={
+ {"유형 변경","CUSTOMIZE_ARCHETYPE"},{"갑옷 변경","CUSTOMIZE_ARMOR"},
+ {"장식 변경","CUSTOMIZE_DECORATION"},{"피부색 변경",C.Actions.CUSTOMIZE_NEXT}
+}
+for i,row in ipairs(avatarItems)do
+ local b=button(avatarPanel,row[1],Color3.fromRGB(65,96,125))
+ b.Name="AvatarAction"..i;b.Size=UDim2.new(1,-168,0,42)
+ b.Position=UDim2.fromOffset(155,118+(i-1)*47)
+ b.ZIndex=47;b.Activated:Connect(function()remote:FireServer(row[2])end)
+end
+-- Live 3D preview clones the server-owned outfit without executing cloned scripts.
+local avatarPreview=Instance.new("ViewportFrame")
+avatarPreview.Name="AvatarLivePreview";avatarPreview.Position=UDim2.fromOffset(12,49)
+avatarPreview.Size=UDim2.fromOffset(131,242);avatarPreview.BorderSizePixel=0
+avatarPreview.BackgroundColor3=Color3.fromRGB(39,49,62);avatarPreview.BackgroundTransparency=.12
+avatarPreview.Ambient=Color3.fromRGB(195,205,217)
+avatarPreview.LightColor=Color3.fromRGB(255,242,213)
+avatarPreview.LightDirection=Vector3.new(-1,-1,-1);avatarPreview.ZIndex=46
+avatarPreview.Parent=avatarPanel;corner(avatarPreview,12)
+local previewWorld=Instance.new("WorldModel");previewWorld.Parent=avatarPreview
+local previewCamera=Instance.new("Camera");previewCamera.Parent=avatarPreview;avatarPreview.CurrentCamera=previewCamera
+local previewGeneration=0
+local function refreshAvatarPreview()
+ previewGeneration+=1
+ local ticket=previewGeneration
+ task.delay(.22,function()
+  if ticket~=previewGeneration or not avatarPanel.Parent or not avatarPanel.Visible then return end
+  local character=p.Character
+  if not character or not character.Parent then return end
+  local archived=character.Archivable;character.Archivable=true
+  local ok,model=pcall(function()return character:Clone()end)
+  character.Archivable=archived
+  if not ok or not model then return end
+  model.Name="PreviewCharacter"
+  for _,d in ipairs(model:GetDescendants())do
+   if d:IsA("BaseScript")then d:Destroy()
+   elseif d:IsA("BasePart")then d.Anchored=true;d.CanCollide=false;d.CanTouch=false;d.CanQuery=false end
+  end
+  if ticket~=previewGeneration then model:Destroy();return end
+  previewWorld:ClearAllChildren()
+  model.Parent=previewWorld
+  model:PivotTo(CFrame.new(0,0,0))
+  local boundsCf,boundsSize=model:GetBoundingBox()
+  local center=boundsCf.Position
+  previewCamera.FieldOfView=35
+  previewCamera.CFrame=CFrame.lookAt(center+Vector3.new(0,.2,math.max(9,boundsSize.Y*1.65)),center)
+ end)
+end
+local function refreshAvatarInfo()
+ local names={"사무라이","무협 무인","서양 기사"}
+ local index=math.clamp(math.floor(tonumber(p:GetAttribute("AvatarArchetype"))or 1),1,3)
+ local a=tonumber(p:GetAttribute("AvatarArmor"))or 0
+ local d=tonumber(p:GetAttribute("AvatarDecoration"))or 0
+ local skin=tonumber(p:GetAttribute("AvatarStyle"))or 1
+ local character=p.Character
+ local state=character and tostring(character:GetAttribute("SharedPlayerVisualState") or "대기") or "대기"
+ refreshAvatarPreview()
+ avatarInfo.Text=names[index].." · 갑옷 "..a.."/2 · 장식 "..d.."/2\n피부 "..skin.."/6 · 로딩 "..state.."\n저장: "..tostring(p:GetAttribute("SaveState")or"확인 중")
+end
+for _,key in ipairs({"AvatarArchetype","AvatarArmor","AvatarDecoration","AvatarStyle","SaveState"})do
+ p:GetAttributeChangedSignal(key):Connect(refreshAvatarInfo)
+end
+refreshAvatarInfo()
+local function watchCharacterState(character)
+ character:GetAttributeChangedSignal("SharedPlayerVisualState"):Connect(refreshAvatarInfo)
+ task.defer(refreshAvatarInfo)
+end
+if p.Character then watchCharacterState(p.Character)end
+p.CharacterAdded:Connect(watchCharacterState)
+avatarToggle.Activated:Connect(function()
+ if startupOverlay.Parent or gui:GetAttribute("RPGMenuOpen")==true then return end
+ housingPanel.Visible=false;avatarPanel.Visible=not avatarPanel.Visible
+ refreshAvatarInfo()
+end)
+gui:GetAttributeChangedSignal("RPGMenuOpen"):Connect(function()
+ if gui:GetAttribute("RPGMenuOpen")==true then avatarPanel.Visible=false end
+end)
+
 local party=Instance.new("Frame");party.Name="PartyStatus";party.AnchorPoint=Vector2.new(1,0);party.Position=UDim2.new(1,-8,0,8);party.Size=touchEnabled and UDim2.fromOffset(116,58)or UDim2.fromOffset(142,64);party.BackgroundColor3=Color3.fromRGB(29,32,40);party.BackgroundTransparency=.1;party.Parent=gui;corner(party,12);stroke(party,.5)
 local partyText=Instance.new("TextLabel");partyText.Size=UDim2.new(1,-12,1,-10);partyText.Position=UDim2.fromOffset(6,5);partyText.BackgroundTransparency=1;partyText.TextColor3=Color3.fromRGB(220,232,241);partyText.TextSize=11;partyText.TextWrapped=true;partyText.Font=Enum.Font.GothamBold;partyText.Parent=party
 
+-- Small non-interactive combat indicator replaces the old four opaque mobile buttons.
+local autoIndicator=Instance.new("TextLabel")
+autoIndicator.Name="AutoCombatStatus";autoIndicator.BackgroundTransparency=.32
+autoIndicator.BackgroundColor3=Color3.fromRGB(20,47,45);autoIndicator.BorderSizePixel=0
+autoIndicator.AnchorPoint=Vector2.new(1,0);autoIndicator.Position=UDim2.new(1,-10,0,83)
+autoIndicator.Size=UDim2.fromOffset(190,24);autoIndicator.Text="자동공격 · 자동회피 · 자동패링"
+autoIndicator.TextSize=12;autoIndicator.TextColor3=Color3.fromRGB(206,247,224)
+autoIndicator.Font=Enum.Font.GothamBold;autoIndicator.Parent=gui
 local combat=Instance.new("Frame");combat.Name="CombatDock";combat.AnchorPoint=Vector2.new(1,.5);combat.Position=UDim2.new(1,-12,.5,30);combat.Size=UDim2.fromOffset(62,232);combat.BackgroundTransparency=1;combat.Parent=gui
 local attack=button(combat,"공격",Color3.fromRGB(166,65,55));attack.Size=UDim2.fromOffset(58,50);attack.Position=UDim2.fromOffset(2,0)
 local skill=button(combat,"스킬",Color3.fromRGB(100,69,166));skill.Size=UDim2.fromOffset(58,50);skill.Position=UDim2.fromOffset(2,58)
 local block=button(combat,"막기",Color3.fromRGB(74,102,151));block.Name="BlockParry";block.Size=UDim2.fromOffset(58,50);block.Position=UDim2.fromOffset(2,116)
 local dodge=button(combat,"회피",Color3.fromRGB(54,115,139));dodge.Size=UDim2.fromOffset(58,50);dodge.Position=UDim2.fromOffset(2,174)
-local combatTracks={}
-local function playCombatAnimation(skillCast)
- local c=p.Character;local h=c and c:FindFirstChildOfClass("Humanoid");if not h then return end
- local animator=h:FindFirstChildOfClass("Animator")or Instance.new("Animator",h)
- local key=skillCast and"LUNGE"or"SLASH";local track=combatTracks[key]
- if not track or track.Parent==nil then
-  local a=Instance.new("Animation");a.AnimationId=skillCast and"rbxassetid://522638767"or"rbxassetid://522635514"
-  local ok,t=pcall(function()return animator:LoadAnimation(a)end);a:Destroy();if ok then track=t;combatTracks[key]=t end
+-- 공용 R15 61종 소스는 로드 가능하게 등록한다. 현재 키프레임은 미게시 프리뷰이므로
+-- 실제 재생 가능한 경우에만 적용하며 기존 게시 애니메이션은 폴백으로 유지한다.
+local commonMotionModule=RS:WaitForChild("Shared"):FindFirstChild("RobloxCommonMotion")
+local commonMotion=nil
+if commonMotionModule then
+ local ok,result=pcall(require,commonMotionModule)
+ if ok and result and result.Audit then
+  local good,audit=pcall(result.Audit)
+  if good and audit.atomCount==61 then commonMotion=result end
  end
+end
+-- 게시되지 않은 KeyframeSequence 미리보기 대신 실게임에서 동작하는 관절 기반 폴백.
+local jointEpoch=setmetatable({}, {__mode="k"})
+local function poseRig(rig,kind)
+ if not rig then return false end
+ local torso=rig:FindFirstChild("UpperTorso") or rig:FindFirstChild("Torso")
+ if not torso then return false end
+ local right=torso:FindFirstChild("RightShoulder") or torso:FindFirstChild("Right Shoulder")
+ local left=torso:FindFirstChild("LeftShoulder") or torso:FindFirstChild("Left Shoulder")
+ local waist=torso:FindFirstChild("Waist")
+ if not right or not left or not right:IsA("Motor6D") or not left:IsA("Motor6D") then return false end
+ local epoch=(jointEpoch[rig] or 0)+1;jointEpoch[rig]=epoch
+ local pitch=kind=="PARRY_PERFECT" and -1.25 or kind=="DODGE_LEFT" and .5 or kind=="CAST_RELEASE" and -1.65 or kind=="LIGHT_ATTACK_2" and -.75 or kind=="LIGHT_ATTACK_3" and -1.6 or -1.1
+ local twist=kind=="DODGE_LEFT" and -.5 or kind=="LIGHT_ATTACK_2" and -.55 or kind=="LIGHT_ATTACK_3" and 1.0 or kind=="HEAVY_ATTACK_1" and .55 or .28
+ local duration=kind=="DODGE_LEFT" and .42 or kind=="LIGHT_ATTACK_3" and .48 or kind=="HEAVY_ATTACK_1" and .52 or .32
+ local motors={{right,right.C0,right.C0*CFrame.Angles(pitch,0,twist)},{left,left.C0,left.C0*CFrame.Angles(-pitch*.55,0,-twist)}}
+ if waist and waist:IsA("Motor6D") then table.insert(motors,{waist,waist.C0,waist.C0*CFrame.Angles(0,twist*.6,0)})end
+ for _,m in ipairs(motors)do TweenService:Create(m[1],TweenInfo.new(kind=="PARRY_PERFECT" and .05 or .09,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{C0=m[3]}):Play()end
+ task.delay(duration,function()
+  if jointEpoch[rig]~=epoch or not rig.Parent then return end
+  for _,m in ipairs(motors)do
+   if m[1].Parent then TweenService:Create(m[1],TweenInfo.new(.17,Enum.EasingStyle.Quad),{C0=m[2]}):Play()end
+  end
+ end)
+ return true
+end
+local previewTracks={}
+-- In live Roblox sessions no ephemeral KeyframeSequence registration is trusted.
+local activePoseToken=0
+local function playCommonMotion(atomId)
+ local character=p.Character
+ local movingRoot=character and character:FindFirstChild("HumanoidRootPart")
+ if movingRoot then
+  activePoseToken+=1
+  local token=activePoseToken
+  local state=atomId=="DODGE_LEFT" and "CHASE" or atomId=="PARRY_PERFECT" and "ATTACK" or "ATTACK"
+  movingRoot:SetAttribute("MotionState",state)
+  task.delay(atomId=="HEAVY_ATTACK_1" and .62 or .4,function()
+   if token==activePoseToken and movingRoot.Parent then movingRoot:SetAttribute("MotionState","IDLE")end
+  end)
+ end
+ return poseRig(character,atomId)
+end
+-- 리그를 가진 NPC·몬스터의 실제 Animator에서 공용 모션을 재생한다.
+-- GLB 정적 메시(Animator 없음)는 관절 애니메이션 대상에서 제외한다.
+-- Imported GLB assets lacking R15 joints still have a visual pose motor.
+-- This moves only appearance; authoritative collision and combat hitboxes stay unchanged.
+local RunService=game:GetService("RunService")
+local nativePoseMotors=setmetatable({}, {__mode="k"})
+local function trackNativePose(inst)
+ if inst:IsA("Motor6D") and (inst.Name=="NativePoseMotor" or inst.Name=="ActorLimbMotor") then nativePoseMotors[inst]={base=inst.C0,role=inst:GetAttribute("LimbRole")} end
+end
+for _,desc in ipairs(workspace:GetDescendants())do trackNativePose(desc)end
+workspace.DescendantAdded:Connect(trackNativePose)
+workspace.DescendantRemoving:Connect(function(inst)nativePoseMotors[inst]=nil end)
+local lastNativePose=0
+RunService.Heartbeat:Connect(function()
+ local now=os.clock()
+ if now-lastNativePose<.07 then return end
+ lastNativePose=now
+ local c=p.Character
+ local me=c and c:FindFirstChild("HumanoidRootPart")
+ if not me then return end
+ local processed=0
+ for motor,item in pairs(nativePoseMotors)do
+  if processed>=55 then break end
+  local host=motor.Part0
+  if motor.Parent and host and host.Parent and (host.Position-me.Position).Magnitude<120 then
+   processed+=1
+   local state=tostring(host:GetAttribute("MotionState")or"IDLE")
+   local lastPos=item.lastPos or host.Position
+   local moving=(host.Position-lastPos).Magnitude>.015
+   item.lastPos=host.Position
+   if state=="IDLE" and moving then state="ROAM" end
+   local stride=state=="ATTACK" and .55 or state=="HIT" and .52 or state=="CHASE" and .35 or state=="WALK" and .34 or state=="ROAM" and .25 or .075
+   local speed=state=="ATTACK" and 13 or state=="HIT" and 10 or state=="CHASE" and 9 or state=="WALK" and 7 or state=="ROAM" and 5 or 2
+   local phase=now*speed+(host.Position.X+host.Position.Z)*.1
+   if motor.Name=="ActorLimbMotor" then
+    local role=item.role or ""
+    local side=(role:find("Left",1,true)or role:find("ArmL",1,true)or role:find("LegR",1,true)or role:find("WingL",1,true)) and -1 or 1
+    local swing=math.sin(phase)*stride*side
+    if role:find("Wing",1,true) then swing*=2.4 end
+    if role:find("Tail",1,true) then motor.C0=item.base*CFrame.Angles(0,swing*.7,0)
+    else motor.C0=item.base*CFrame.Angles(swing,0,math.cos(phase)*stride*.35*side)end
+   else
+    motor.C0=item.base*CFrame.new(0,math.sin(phase)*stride*.45,0)*CFrame.Angles(math.sin(phase)*stride*.45,0,math.cos(phase*.7)*stride*.65)
+   end
+  end
+ end
+end)
+local actorMotionTracks=setmetatable({}, {__mode="k"})
+task.spawn(function()
+ while gui.Parent do
+  if p.Character then
+   local center=p.Character:FindFirstChild("HumanoidRootPart")
+   if center then
+    local checked=0
+    for _,actor in ipairs(workspace:GetDescendants())do
+     if checked>=80 then break end
+     if actor:IsA("Humanoid") and actor.Parent~=p.Character and actor.RigType==Enum.HumanoidRigType.R15 then
+      local rig=actor.Parent;local ar=rig and rig:FindFirstChild("HumanoidRootPart")
+      if ar and (ar.Position-center.Position).Magnitude<110 then
+       checked+=1
+       local animator=actor:FindFirstChildOfClass("Animator")
+       if animator then
+        local moving=actor.MoveDirection.Magnitude>.08
+        local desired=actor.Health<=0 and "DEATH_FRONT" or moving and "WALK" or "IDLE_RELAXED"
+        local item=actorMotionTracks[actor]
+        if not item or item.name~=desired then
+         if item and item.track then pcall(function()item.track:Stop(.16);item.track:Destroy()end)end
+         local ok,track=false,nil -- Production animation upload not verified
+         actorMotionTracks[actor]={name=desired,track=ok and track or nil}
+        end
+       end
+      end
+     end
+    end
+   end
+  end
+  task.wait(1.2)
+ end
+end)
+-- 모션: 기존 게시 R15 액션 트랙과 관절 폴백을 한 함수에서 제어한다.
+local combatTracks={}
+local activeCombatTrack=nil
+local lastComboInput=0
+local localComboIndex=0
+local function stopCombatTrack(fade)
+ if activeCombatTrack and activeCombatTrack.IsPlaying then activeCombatTrack:Stop(fade or .05)end
+ activeCombatTrack=nil
+end
+local function playCombatAnimation(skillCast)
+ local character=p.Character
+ local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+ if not humanoid then return end
+ local now=os.clock()
+ if skillCast then localComboIndex=0
+ else
+  localComboIndex=(now-lastComboInput<=1)and(localComboIndex%3+1)or 1
+  lastComboInput=now
+ end
+ local atom=skillCast and "CAST_RELEASE" or localComboIndex==2 and "LIGHT_ATTACK_2" or localComboIndex==3 and "LIGHT_ATTACK_3"
+   or ((tonumber(p:GetAttribute("WeaponTier"))or 1)>=4 and "HEAVY_ATTACK_1" or "LIGHT_ATTACK_1")
+ local animator=humanoid:FindFirstChildOfClass("Animator")
+ if not animator then animator=Instance.new("Animator");animator.Parent=humanoid end
+ local key=skillCast and "LUNGE" or localComboIndex==3 and "FINISH" or "SLASH"
+ local track=combatTracks[key]
+ if not track then
+  local animation=Instance.new("Animation")
+  animation.AnimationId=skillCast and "rbxassetid://522638767" or "rbxassetid://522635514"
+  local ok,loaded=pcall(function()return animator:LoadAnimation(animation)end)
+  animation:Destroy()
+  if ok and loaded then
+   track=loaded;track.Priority=Enum.AnimationPriority.Action;combatTracks[key]=track
+   track.Stopped:Connect(function()if activeCombatTrack==track then activeCombatTrack=nil end end)
+  end
+ end
+ stopCombatTrack(.05)
  if track then
-  track.Priority=Enum.AnimationPriority.Action
-  local classId=tostring(p:GetAttribute("ClassId")or"NONE");local speed=classId=="SHADOW"and 1.45 or classId=="BREAKER"and .82 or 1
-  track:Play(.08,1,speed)
+  activeCombatTrack=track
+  local classId=tostring(p:GetAttribute("ClassId")or"NONE")
+  local speed=classId=="SHADOW"and 1.45 or classId=="BREAKER"and .82 or 1
+  track:Play(.07,1,speed)
+  track:AdjustWeight(1,.05)
+ else
+  playCommonMotion(atom)
+ end
+end
+-- 카메라 및 히트스탑은 연출 전용. 월드 시간과 서버 전투 판정은 멈추지 않는다.
+local shakeUntil=0
+local shakeIntensity=0
+RunService:BindToRenderStep("DaechungCombatShake",Enum.RenderPriority.Camera.Value+1,function()
+ local camera=workspace.CurrentCamera
+ if not camera or shakeUntil<=os.clock() then return end
+ local amplitude=shakeIntensity*math.clamp((shakeUntil-os.clock())/.15,0,1)*.08
+ camera.CFrame=camera.CFrame*CFrame.new((math.random()-.5)*amplitude,(math.random()-.5)*amplitude,0)
+end)
+local function combatShake(intensity,duration)
+ shakeIntensity=intensity;shakeUntil=os.clock()+duration
+end
+local function parryHitstop()
+ local track=activeCombatTrack
+ if track and track.IsPlaying then
+  track:AdjustSpeed(0)
+  task.delay(.05,function()if track.IsPlaying then track:AdjustSpeed(1)end end)
  end
 end
 local blockHeld=false
 local blockInput=nil
 local function setBlock(on)
  if blockHeld==on then return end;blockHeld=on
+ if on then stopCombatTrack(.05);playCommonMotion("PARRY_PERFECT")end
  remote:FireServer(on and C.Actions.BLOCK_START or C.Actions.BLOCK_END)
 end
 attack.Activated:Connect(function()setBlock(false);playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)end)
 skill.Activated:Connect(function()
  setBlock(false)
- remote:FireServer(C.Actions.SKILL)
+ playCombatAnimation(true);remote:FireServer(C.Actions.SKILL)
 end)
-dodge.Activated:Connect(function()setBlock(false);remote:FireServer(C.Actions.DODGE)end)
+dodge.Activated:Connect(function()setBlock(false);playCommonMotion("DODGE_LEFT");remote:FireServer(C.Actions.DODGE)end)
 block.InputBegan:Connect(function(input)
  if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then blockInput=input;setBlock(true)end
 end)
@@ -605,7 +994,9 @@ end)
 UserInputService.InputBegan:Connect(function(input,processed)
  if processed or gui:GetAttribute("RPGMenuOpen")==true or startupOverlay.Parent~=nil then return end
  if input.KeyCode==Enum.KeyCode.F then
-  setBlock(true)
+   setBlock(true)
+  elseif input.KeyCode==Enum.KeyCode.LeftShift then
+   setBlock(false);playCommonMotion("DODGE_LEFT");remote:FireServer(C.Actions.DODGE)
  elseif input.UserInputType==Enum.UserInputType.MouseButton1 then
   setBlock(false);playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)
  end
@@ -807,10 +1198,10 @@ end)
 -- 메인: 공용 메뉴 모델로 HUD를 배치하고 메뉴·대사·안내를 함께 조정한다.
 for _,item in ipairs({objective,hint,npcSpeech,objectContext,bossScene})do
  item.Parent=notice;item.AnchorPoint=Vector2.zero;item.Position=UDim2.fromOffset(0,0)
- item.Size=UDim2.new(1,-6,0,item==bossScene and 148 or item==objectContext and 88 or 72)
+ item.Size=UDim2.new(1,-6,0,item==bossScene and 148 or item==objectContext and 64 or item==objective and 40 or 52)
 end
-objective.AutomaticSize=Enum.AutomaticSize.Y;hint.AutomaticSize=Enum.AutomaticSize.Y
-npcSpeech.AutomaticSize=Enum.AutomaticSize.Y;npcSpeech.TextYAlignment=Enum.TextYAlignment.Top
+objective.AutomaticSize=Enum.AutomaticSize.None;hint.AutomaticSize=Enum.AutomaticSize.None
+npcSpeech.AutomaticSize=Enum.AutomaticSize.None;npcSpeech.TextYAlignment=Enum.TextYAlignment.Top
 bossText.AutomaticSize=Enum.AutomaticSize.Y;bossText.Size=UDim2.new(1,-18,0,76)
 bossText:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
  bossScene.Size=UDim2.new(1,-6,0,math.max(148,bossText.AbsoluteSize.Y+72))
@@ -827,12 +1218,31 @@ refreshHud=function()
  end
  place(stats,layout.stats);place(party,layout.party);place(notice,layout.notice)
  place(combat,layout.combat);place(returnButton,layout.village);place(classPanel,layout.class)
+ -- 화면 크기에 따라 가로형 카드/하단 내비게이션으로 다시 배치한다.
+ local compact=size.X<630
+ housingToggle.AnchorPoint=Vector2.new(0,0)
+  housingToggle.Position=UDim2.fromOffset(8,compact and 164 or 171)
+ housingToggle.Size=UDim2.fromOffset(compact and 76 or 84,compact and 36 or 38)
+ avatarToggle.Position=UDim2.fromOffset(8,compact and 206 or 214)
+ avatarToggle.Size=UDim2.fromOffset(compact and 76 or 84,compact and 36 or 38)
+ avatarPanel.Size=UDim2.fromOffset(math.min(338,size.X-20),math.min(262,size.Y-20))
+ housingPanel.Size=UDim2.fromOffset(math.min(320,size.X-22),322)
+ housingPanel.Position=UDim2.new(.5,0,1,compact and -60 or -76)
+ stats.BackgroundColor3=Color3.fromRGB(22,43,49)
+ party.BackgroundColor3=Color3.fromRGB(24,47,55)
+ title.TextColor3=Color3.fromRGB(255,222,152)
+ combat.BackgroundTransparency=1
+ combat.BackgroundColor3=Color3.fromRGB(19,38,46)
+ corner(combat,17)
+ for _,control in ipairs({attack,skill,block,dodge})do
+  control.TextSize=13
+ end
  title.Position=UDim2.fromOffset(7,2);title.Size=UDim2.new(1,-14,0,18)
  statLine.Position=UDim2.fromOffset(7,23);statLine.Size=UDim2.new(1,-14,0,32)
  classBadge.Position=UDim2.fromOffset(7,56);classBadge.TextTruncate=Enum.TextTruncate.AtEnd
  for index,control in ipairs({attack,skill,block,dodge})do
-  control.Size=UDim2.fromOffset(60,54)
-  control.Position=UDim2.fromOffset((index-1)%2*68,math.floor((index-1)/2)*62)
+  control.Size=UDim2.fromOffset(55,48)
+  control.Position=UDim2.fromOffset((index-1)%2*62,math.floor((index-1)/2)*55)
  end
  local startupOpen=startupOverlay.Parent~=nil
  local menuOpen=gui:GetAttribute("RPGMenuOpen")==true
@@ -840,9 +1250,12 @@ refreshHud=function()
  local message=RPGMenuModel.hudMessage(menuOpen,classPanel.Visible,startupOpen,bossSceneActive,npcSpeechActive,objectContextActive,tipsVisible)
  objective.Visible=message=="OBJECTIVE";npcSpeech.Visible=message=="SPEECH"
  objectContext.Visible=message=="OBJECT";bossScene.Visible=message=="BOSS";hint.Visible=message=="TIPS"
- notice.Visible=message~="NONE";combat.Visible=not blocked
+ notice.Visible=message~="NONE";combat.Visible=false -- 자동 전투: 모바일 수동 버튼을 표시하지 않는다
+ autoIndicator.Visible=not blocked and (tonumber(p:GetAttribute("CurrentZone"))or 0)>0
  returnButton.Visible=not blocked and (tonumber(p:GetAttribute("CurrentZone"))or 0)>0
  stats.Visible=not blocked;party.Visible=not blocked
+ housingToggle.Visible=not blocked;avatarToggle.Visible=not blocked
+ if blocked then housingPanel.Visible=false;avatarPanel.Visible=false end
  if rpgMenu then rpgMenu.button.Visible=not blocked end
  if notice:GetAttribute("ActiveMessage")~=message then notice.CanvasPosition=Vector2.zero;notice:SetAttribute("ActiveMessage",message)end
 end
@@ -933,10 +1346,47 @@ local function render()
  renderClassPanel()
  refreshObjectInteraction()
 end
+local function applyBiomePresentation()
+ local id=tonumber(p:GetAttribute("CurrentZone"))or 0
+ local zone=nil;for _,entry in ipairs(C.Portals)do if entry.Id==id then zone=entry;break end end
+ local biome=zone and Style.Biomes and Style.Biomes[zone.Theme]
+ local lighting=game:GetService("Lighting")
+ lighting.Ambient=biome and biome.Ambient or Style.Lighting.Ambient
+ lighting.OutdoorAmbient=biome and biome.Ambient or Style.Lighting.OutdoorAmbient
+ for _,name in ipairs({"StudioRpgAtmosphere","VerifiedLearningAtmosphere"})do
+  local atmosphere=lighting:FindFirstChild(name)
+  if atmosphere and atmosphere:IsA("Atmosphere")then
+   atmosphere.Color=biome and biome.Color or Color3.fromRGB(205,213,225)
+   atmosphere.Density=biome and biome.Density or .12
+   atmosphere.Haze=biome and biome.Haze or .65
+  end
+ end
+end
+p:GetAttributeChangedSignal("CurrentZone"):Connect(applyBiomePresentation)
+game:GetService("Lighting").ChildAdded:Connect(function(child)
+ if child.Name=="StudioRpgAtmosphere"or child.Name=="VerifiedLearningAtmosphere"then task.defer(applyBiomePresentation)end
+end)
+task.defer(applyBiomePresentation)
 for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","RelicId","MasteryLevel","SecondAdvancementId","CompanionUnlockCount","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge","Guard","Blocking","GuardBrokenUntil","ParryCount","CurrentRunSeed"})do p:GetAttributeChangedSignal(k):Connect(render)end
-local function bindChar(c)combatTracks={};local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end
+local lastAutoMotion=0
+local lastActionMotion=""
+local function syncAutoMotion()
+ local now=os.clock()
+ local action=tostring(p:GetAttribute("FeedbackEvent")or"")
+ if action~=lastActionMotion then
+  lastActionMotion=action
+  if action:find("PARRY",1,true)then
+    stopCombatTrack(.05);playCommonMotion("PARRY_PERFECT")
+    combatShake(1.2,.15);parryHitstop()
+    if studioSkillEmitter and studioSkillEmitter.Parent then studioSkillEmitter:Emit(touchEnabled and 8 or 18)end
+  elseif action:find("DODGE",1,true)then playCommonMotion("DODGE_LEFT")
+  elseif action:find("ATTACK",1,true)or action:find("SKILL",1,true)then playCombatAnimation(action:find("SKILL",1,true)~=nil) end
+ end
+end
+local function bindChar(c)combatTracks={};previewTracks={};local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end
 if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect(bindChar)
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
+ syncAutoMotion()
  local v=tostring(p:GetAttribute("FeedbackEvent")or"")
  if v:match("^SKILL:")then
   playCombatAnimation(true);skillSfx:Play()

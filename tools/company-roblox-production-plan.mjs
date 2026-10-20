@@ -135,7 +135,23 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
     totalPlannedActorCount:worldProposal.livingBiomePopulation?.plannedActorCount||0,
     nativeLifeAndWaterRuntimeVerified:false,
     landmark:worldProposal.landmark||null,sightline:worldProposal.sightline||null,
-    budget:worldProposal.mobileBudget||null,fullTerrainOrNativeMeshDelivered:false
+    budget:worldProposal.mobileBudget||null,
+    // 승인된 방·문 제약 도안은 기존 Roblox/일반 WEB 월드 소스 작업자에게만 전달한다.
+    // 네이티브 배치와 실제 런타임 검증은 원래 BUILD_UP 책임이며 여기서 PASS로 승격하지 않는다.
+    ...(['ROBLOX','WEB'].includes(platform)&&worldProposal.roomComposition?{
+      roomComposition:{
+        status:worldProposal.roomComposition.status,
+        algorithm:worldProposal.roomComposition.algorithm||null,
+        cells:worldProposal.roomComposition.cells,
+        route:worldProposal.roomComposition.route,
+        statesExamined:worldProposal.roomComposition.statesExamined||0,
+        nativePlacementRequired:true,gameplayAuthority:false,runtimeVerified:false
+      }
+    }:{}),
+    ...(['ROBLOX','WEB'].includes(platform)&&worldProposal.terrainMorphology?{
+      terrainMorphology:worldProposal.terrainMorphology
+    }:{}),
+    fullTerrainOrNativeMeshDelivered:false
   }:null;
   return {
     version:1,required:mode==='CONNECTED_CONTENT_IMPLEMENTATION',dimension,platform,scope,
@@ -193,6 +209,15 @@ export const INTERFACE_INTERNAL_TOOL_MATCHERS=Object.freeze([
   {id:'TARGETING_COMBAT',match:/target|combat|attack|tower|aim|타깃|전투|공격|조준/i,signals:['combat'],library:'assets/targeting-system.js',screens:['GAMEPLAY']},
   {id:'NPC_INTERACTION',match:/npc|villager|behavior|주민|대화|동료/i,signals:[],library:'assets/common-ai.js',screens:['GAMEPLAY','QUEST_UI']},
   {id:'COMPANION_PARTY',match:/party|companion|squad|파티|동료|분대/i,signals:[],library:'assets/ai-party.js',screens:['GAMEPLAY']}
+]);
+
+// 자동 화면 구성은 기존 화면·핸들러와 확인된 공용 에셋만 후보로 삼는다. 장르만으로 새 UI를 만들지 않는다.
+export const INTERFACE_AUTO_COMPOSITION_TARGETS=Object.freeze([
+  {id:'LOBBY',role:'LOBBY',match:/lobby|waiting.?room|main.?menu|로비|대기실|시작.?화면/i,assets:['ENVIRONMENT','PROP','UI']},
+  {id:'CUSTOMIZATION',role:'CUSTOMIZATION',match:/customiz|customis|appearance|avatar|skin|outfit|dress|꾸미기|커스터마이징|외형|의상|스킨/i,assets:['CHARACTER','EQUIPMENT','UI']},
+  {id:'MATERIAL',role:'CUSTOMIZATION',match:/material|texture|shader|surface|paint|color.?picker|재질|텍스처|색상|염색/i,assets:['MATERIAL','TEXTURE']},
+  {id:'INVENTORY',role:'INVENTORY',match:/inventory|equipment|backpack|item.?slot|인벤|장비|가방|아이템/i,assets:['ITEM','EQUIPMENT','UI']},
+  {id:'GAME_UI',role:'GAMEPLAY',match:/hud|(?:^|[^a-z])ui(?:[^a-z]|$)|interface|status.?bar|menu|button|터치|조이스틱|상태창|메뉴|버튼/i,assets:['UI','ICON']}
 ]);
 
 // 메뉴 도안: 장르별 실제 행동을 화면·버튼·복귀 관계로 연결한다. 게임 상태 변경은 기존 책임 코드가 소유한다.
@@ -277,11 +302,34 @@ export function buildInterfaceBlueprintContract({design={},source={},files=[],mo
       runtimeVerified:false
     };
   }).filter(Boolean);
-  return{version:1,required:clean(focus).toUpperCase()==='USABILITY',designFingerprint:hash(JSON.stringify(requirements)),requirements,referencePatterns,externalAlgorithms,internalToolMatches,internalLibraryMatches,firstPartyLibraryCount:runtimeLibraries.length,genreContext:clean(design.genre)||'UNSPECIFIED',screenHints:unique(internalToolMatches.flatMap(row=>row.screens)),sourceFiles:files,
+  // 소스 관측과 담당 파일이 맞는 기존 화면만 자동 연결 대상으로 선택한다.
+  // 디자인 힌트는 실제 화면이 아니라 후보이며 기존 자산·저장소·게임 규칙을 변경하지 않는다.
+  const nativePlatform=clean(platform).toUpperCase().startsWith('UNITY')?'UNITY':clean(platform).toUpperCase();
+  const presentationFiles=list(files).map(spatialPath).filter(file=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(sourceRole(file,nativePlatform)));
+  const removed=latestOwnerChanges(design.ownerFeatureChanges).filter(row=>row.action==='REMOVE');
+  const autoCompositionTargets=INTERFACE_AUTO_COMPOSITION_TARGETS.map(target=>{
+    if(removed.some(row=>target.match.test(row.featureId+' '+row.requirement)))return null;
+    const designMatch=target.match.test(systemText);
+    const matchedAnchors=list(source?.sourceAnchors).filter(row=>target.match.test(clean(row?.symbol)+' '+clean(row?.context)))
+      .map(row=>({file:spatialPath(row?.file),symbol:clean(row?.symbol)}))
+      .filter(row=>row.file&&row.symbol&&presentationFiles.some(file=>file===row.file||file.endsWith('/'+row.file)||row.file.endsWith('/'+file)));
+    const sourceFiles=unique(matchedAnchors.map(row=>row.file));
+    if(!designMatch&&!sourceFiles.length)return null;
+    return{ id:target.id,screenRole:target.role,sourceFiles,
+      sourceAnchors:matchedAnchors.slice(0,8),designMatch,
+      status:sourceFiles.length?'SOURCE_MATCH_REQUIRES_NATIVE_IMPLEMENTATION_AND_QA':'DESIGN_HINT_NOT_APPLIED',
+      assetFamilies:target.assets,assetRegistry:'company-asset-library.json',licenseLedger:'assets/asset-license-ledger.json',
+      reuseExistingAssetsOnly:true,newAssetGeneration:false,automaticImport:false,
+      sourceOwnedHandlersRequired:true,gameplayStateOwnerUnchanged:true,saveSchemaUnchanged:true,inventoryRulesUnchanged:true,
+      layout:{mobileFirst:true,minTouchTarget:44,safeAreaRequired:true,scrollAndReturnRequired:true,screenOverlapForbidden:true},
+      qa:['EXISTING_NATIVE_HANDLER_BINDING','VERIFIED_ASSET_LICENSE_AND_SOURCE','GAME_SPECIFIC_STYLE_AND_MATERIAL_PREVIEW','MOBILE_TOUCH_AND_SAFE_AREA','SCROLL_OPEN_CLOSE_RETURN','DISABLED_ACTION_AND_FAILURE_RECOVERY','SAVE_RELOAD_AND_GAMEPLAY_REGRESSION','EXACT_NATIVE_RUNTIME'],
+      runtimeVerified:false};
+  }).filter(Boolean);
+  return{version:1,required:clean(focus).toUpperCase()==='USABILITY',designFingerprint:hash(JSON.stringify(requirements)),requirements,referencePatterns,externalAlgorithms,internalToolMatches,internalLibraryMatches,autoCompositionTargets,firstPartyLibraryCount:runtimeLibraries.length,genreContext:clean(design.genre)||'UNSPECIFIED',screenHints:unique(internalToolMatches.flatMap(row=>row.screens)),sourceFiles:files,
     selectionRule:'OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.',
     scope:'TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES',
     schema:{version:1,designFingerprint:'exact contract fingerprint',viewport:{width:390,height:844,safeTop:0,safeBottom:0},entryId:'first screen',
-      screens:[{id:'existing screen id',role:'MAIN_MENU or GAMEPLAY or INVENTORY or SHOP or QUEST or SETTINGS',modal:false,scrollable:false,contentHeight:844,
+      screens:[{id:'existing screen id',role:'LOBBY or CUSTOMIZATION or MAIN_MENU or GAMEPLAY or INVENTORY or SHOP or QUEST or SETTINGS',modal:false,scrollable:false,contentHeight:844,
         controls:[{id:'existing control id',action:'existing gameplay action',feedback:'observable feedback',enabledWhen:'existing state guard',rect:{x:0,y:0,width:44,height:44},binding:{path:'source file',symbol:'event handler',sourceEvidence:'exact event/handler source'}}]}],
       transitions:[{from:'screen id',controlId:'control id',to:'screen id',kind:'OPEN or BACK or CLOSE or ACTION',preservesState:true}],
       playerTasks:[{id:'frequent player intent',friction:'observed repeated work or information gap',patternId:'matched reference or algorithm id or ORIGINAL',toolId:'optional source-matched internal tool id',adaptation:'why this game needs it',from:'screen id',to:'completion screen',controlId:'completion action',maxNavigationSteps:2,retainedContext:['selection','filter','scroll','draft'],failureRecovery:'existing safe recovery',runtimeCheck:'exact-build input sequence and observable result; compare before/after without invented measurements'}]},
@@ -342,7 +390,22 @@ export function validateInterfaceBlueprint({contract=null,blueprint=null,sourceF
     if(!Number.isInteger(task.maxNavigationSteps)||task.maxNavigationSteps<0||steps===undefined||steps>task.maxNavigationSteps)add('PLAYER_TASK_ROUTE_BUDGET_EXCEEDED',task.id);
     taskRoutes.push({id:task.id,patternId:task.patternId,navigationSteps:steps??null,measuredRuntimeInputs:null});
   }
-  return{required:true,pass:!issues.length,status:issues.length?'REPAIR_REQUIRED':'STATIC_INTERFACE_PLAN_VALIDATED',issues:unique(issues),taskRoutes,blueprintHash:hash(JSON.stringify(b)),runtimeVerified:false};
+  // 검증: 튜토리얼·연출·화면 시나리오의 원본 연결 검사. 기대 결과는 실행 증거가 아니다.
+  const experienceRequests=[],experienceIds=new Set(),experienceContract=contract.experienceScenarioContract;
+  if(experienceContract?.required===true&&!list(b.experienceScenarios).length)add('EXPERIENCE_SCENARIOS_MISSING');
+  for(const scenario of list(b.experienceScenarios)){
+    if(!scenario||!clean(scenario.id)||experienceIds.has(scenario.id)){add('EXPERIENCE_SCENARIO_ID_INVALID');continue;}
+    experienceIds.add(scenario.id);
+    if(!['TUTORIAL','PRESENTATION','INTERFACE'].includes(scenario.kind)||!list(experienceContract?.designRefs).includes(scenario.designRef))add('EXPERIENCE_DESIGN_REFERENCE_INVALID',scenario.id);
+    const screen=map.get(scenario.screenId);
+    if(!screen||!list(screen.controls).some(control=>control?.id===scenario.controlId))add('EXPERIENCE_CONTROL_UNREACHABLE',scenario.id);
+    if(!['entryCondition','expectedState','expectedFeedback','failureRecovery','skipPolicy','interruptionRecovery'].every(key=>clean(scenario[key]))||!list(scenario.inputs).length||!list(scenario.inputs).every(value=>typeof value==='string'&&clean(value)))add('EXPERIENCE_BEHAVIOR_INCOMPLETE',scenario.id);
+    const binding=scenario.binding||{},file=spatialPath(binding.path),code=spatialSourceText(binding.sourceEvidence).trim();
+    if(!file||file.split('/').includes('..')||!list(contract.sourceFiles).some(own=>own===file||own.endsWith('/'+file))||!files.has(file)||code.length<8||!clean(binding.symbol)||!code.includes(binding.symbol)||!/[(=]/.test(code)||/^["'`]/.test(code)||!spatialSourceText(files.get(file)).includes(code))add('EXPERIENCE_SOURCE_UNPROVEN',scenario.id);
+    if(scenario.runtimeVerified!==false||scenario.pass===true||scenario.actualEvidence)add('EXPERIENCE_PLAN_CANNOT_CLAIM_RUNTIME_PASS',scenario.id);
+    experienceRequests.push({...scenario,runtimeVerified:false,verificationStatus:'EXACT_BUILD_RUNTIME_EVIDENCE_REQUIRED'});
+  }
+  return{required:true,experienceRequests,pass:!issues.length,status:issues.length?'REPAIR_REQUIRED':'STATIC_INTERFACE_PLAN_VALIDATED' ,issues:unique(issues),taskRoutes,blueprintHash:hash(JSON.stringify(b)),runtimeVerified:false};
 }
 
 // 유틸: 공간 계산은 축을 명시하고 평면/입체를 섞지 않는다. 점 샘플 대신 선분 전체를 검사한다.
@@ -502,8 +565,10 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const ownerChangeFingerprint=hash(JSON.stringify(ownerFeatureChanges));
   const currentPrevious=previousPlan?.ownerChangeFingerprint===ownerChangeFingerprint
     &&(previousPlan.platform||'ROBLOX')===target&&previousPlan.gameId===id?previousPlan:null;
+  const authoredGrammar=Boolean(design.creativeGrammar?.a&&design.creativeGrammar?.b);
   const ideaRows=sourceOnly?[['SOURCE_REPAIR','현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.','새 규칙이나 콘텐츠를 추가하지 않는다.']]
     :presentationOnly?[['PLAY_READABILITY','현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.','판정·보상·저장 규칙은 유지하고 표현만 개선한다.']]
+    :authoredGrammar?[['AUTHORED_SYSTEM_CONNECTION','승인된 '+systems.join(' · ')+'의 행동·조건·공유 상태·결과·다음 선택을 기존 책임 소스에 연결한다.','기존 게임은 B 보조 참고이며 장르 기본 기능 묶음으로 승인 시스템을 대체하지 않는다.']]
     :selected?.ideas||[['APPROVED_CORE_LOOP','승인된 핵심 루프에서 끊긴 행동·결과·다음 목표를 연결한다.','장르를 추측해 전투·수집·경제를 추가하지 않는다.']];
   const ideas=ideaRows.map(([key,implementation,distinction])=>({id:genreProfile+':'+key,implementation,distinction}));
   const prior=ideas.find(row=>row.id===currentPrevious?.selectedIdea?.id);
@@ -519,7 +584,40 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const packages=allowedRoles.map(role=>({role,files:roles.filter(row=>row.role===role).map(row=>row.file),
     implementation:presentationOnly?'이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다.':role==='SERVER_AUTHORITY'||role==='GAMEPLAY_STATE'||role==='GAMEPLAY_AND_PRESENTATION'?chosen.implementation+' 기존 행동·상태·보상·후속 목표 처리에 연결한다.':role==='CLIENT_PRESENTATION'?'기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다.':'기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다.'}))
     .filter(row=>row.files.length);
+  // 상세설계는 원본 요구의 인계이며, 장르 기본 기능이나 실행 통과를 생성하지 않는다.
+  const detailPolicy=policy.detailedDesign||{};
+  const detailEnabled=detailPolicy.enabled===true&&!sourceOnly;
+  const authoredDetail=design.detailedDesign&&typeof design.detailedDesign==='object'?design.detailedDesign:{};
+  const detailSections=detailEnabled?[
+    ['FIRST_PLAY_AND_TUTORIAL',Object.keys(design.tutorialPlan||{}).length?design.tutorialPlan:authoredDetail.tutorial||{},list(design.selectedDesignPlan?.playthrough),['entryCondition','playerInput','successCondition','failureFeedback','hintCondition','skipPolicy','retryAndReconnect'],['tools/vibe2-design-intelligence.mjs'],['F5','F6','F8']],
+    ['SYSTEM_CONNECTIONS',authoredDetail.systems||{},list(design.systemInterconnections),['trigger','inputState','authoritativeOwner','outputState','feedback','nextChoice','cancelAndRetry'],['tools/company-vibe2-game-flow-architect.mjs'],['F6','F8']],
+    ['WORLD_AND_BIOME',authoredDetail.world||{},design.spatialLayout||{},['regionRole','dimensions','spawnSupport','route','landmark','population','mobileBudget'],['assets/vibe-environment-director.js'],['F2','F4','F5','F8']],
+    ['CHARACTER_AND_BEHAVIOR',authoredDetail.actors||{},list(design.signatureSystems),['role','worldAnchor','behaviorTrigger','counterplay','relationshipState','recovery'],['assets/vibe-character-identity-director.js','assets/vibe-ai-role-director.js'],['F3','F8']],
+    ['NARRATIVE_AND_DISCOVERY',authoredDetail.narrative||{},design.narrativeDialoguePlan||{},['cause','clue','choice','consequence','worldState','nextQuestion'],['tools/vibe2-artbook-story-engine.mjs'],['F6','F8']],
+    ['MOTION_AND_PRESENTATION',Object.keys(design.presentationPlan||{}).length?design.presentationPlan:authoredDetail.presentation||{},design.artAudioDirection||{},['entryTrigger','anticipation','contact','recovery','camera','audioAndVfxTiming','interruptAndSkip','inputRestoration','accessibility'],['assets/vibe-art-pipeline.js','assets/vibe-motion-director.js'],['F5','F8']],
+    ['INTERFACE',Object.keys(design.interfacePlan||{}).length?design.interfacePlan:authoredDetail.interface||{},design.uxAccessibilityPlan||{},['screen','displayedState','control','enabledCondition','loadingEmptyErrorStates','navigation','transactionResult','touchAndSafeArea'],['tools/company-roblox-production-plan.mjs#buildInterfaceBlueprintContract'],['F5','F6','F8']],
+    ['ASSET_AND_SOURCE_BINDING',authoredDetail.assets||{},list(design.implementationTraceability),['assetId','libraryVersion','selectionFingerprint','sourceHash','responsibleFile','nativeBinding'],['tools/vibe2-asset-production-plan.mjs'],['F0','F8','F9']],
+    ['VERIFICATION',Object.keys(design.verificationPlan||{}).length?design.verificationPlan:authoredDetail.verification||{},design.failureRetryRisk||{},['precondition','inputSequence','expectedState','expectedScreen','failureAndRetry','saveAndRejoin','exactBuildEvidence'],['tools/vibe2-incremental-qa.mjs','tools/vibe2-fan-in-review.mjs'],['F5','F6','F7','F8','F9']]
+  ].map(([id,authored,baseline,fieldsToSpecify,tools,floors])=>({
+    id,authored,baseline,fieldsToSpecify,tools,floors,
+    status:Object.keys(authored).length?'AUTHORED_DETAIL_REQUIRES_SOURCE_AND_RUNTIME_REVIEW':'DETAIL_TO_AUTHOR_FROM_APPROVED_DESIGN',
+    applicability:'GAME_DESIGN_AND_OWNED_SOURCE_REQUIRED_NOT_GENRE_DEFAULT',runtimeVerified:false
+  })):[];
+  const detailedDesignContract=detailEnabled?{
+    version:1,gameId:id,designFingerprint:hash(JSON.stringify(design)),
+    basicGrammar:design.creativeGrammar||{},authoredDetail,gameGenreAxes:{a:design.creativeGrammar?.a||null,b:design.creativeGrammar?.b||null,genre:design.genre,subgenre:design.subgenre},
+    genreReviewContexts:ROBLOX_PRODUCTION_PROFILES.filter(row=>row.pattern.test(explicit)).map(row=>row.id),
+    genreReviewOnly:true,genreMayNotReplaceAuthoredSystems:true,existingGameReferenceRole:'B_SUPPORTING_REFERENCE',
+    sections:detailSections,sourceFiles:files,
+    authoringRule:'For each applicable authored requirement specify entry, input, conditions, authoritative state change, feedback, next choice, failure/cancel/retry and source owner. Missing detail stays a gap; absent systems require a design/source reason, not invented genre features.',
+    verificationRule:'Expected values are plans. Bind actual state/log and screen/timing evidence to the same source/artifact. Static checks and source names cannot prove play, rendering or deployment.',
+    floorMapping:'EXISTING_F0_F9_ONLY',newStage:false,runtimeVerified:false
+  }:null;
   const interfaceContract=buildInterfaceBlueprintContract({design,source,files,mode,focus,platform:requested,enabled:policy.spatialBlueprint?.enabled===true,availableLibraryPaths});
+  if(interfaceContract&&detailedDesignContract){
+    interfaceContract.experienceScenarioContract={version:1,required:interfaceContract.required===true,designRefs:detailSections.map(row=>row.id),runtimeVerified:false};
+    interfaceContract.schema.experienceScenarios=[{id:'task-local scene',designRef:'FIRST_PLAY_AND_TUTORIAL or MOTION_AND_PRESENTATION or INTERFACE',kind:'TUTORIAL or PRESENTATION or INTERFACE',screenId:'existing screen',controlId:'existing control',entryCondition:'real precondition',inputs:['actual input sequence'],expectedState:'observable authoritative result',expectedFeedback:'screen/audio/motion result',failureRecovery:'failure and retry',skipPolicy:'designed skip behavior or reason not applicable',interruptionRecovery:'cancel/reconnect restores input and existing state',binding:{path:'owned source',symbol:'existing handler',sourceEvidence:'exact executable source'},runtimeVerified:false}];
+  }
   const libraryReuseContract=interfaceContract?{
     status:'OPTIONAL_MATCH_NOT_APPLIED',firstPartyLibraryCount:interfaceContract.firstPartyLibraryCount,
     candidates:list(interfaceContract.internalLibraryMatches).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED'),
@@ -527,9 +625,9 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   }:null;
   return {
     version:3,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
-    conceptIdentity:identity,coreAction:selected?.action||coreLoop[0]||'승인된 핵심 행동',
+    conceptIdentity:identity,coreAction:(authoredGrammar?coreLoop[0]:selected?.action)||coreLoop[0]||'승인된 핵심 행동',
     ownerFeatureChanges,ownerChangeFingerprint,
-    systemConnection:sourceOnly?'현재 실패 원인 → 기존 행동 복구':presentationOnly?'기존 행동 → 상태별 표현/입력 피드백':selected?.connection||coreLoop.join(' → '),
+    systemConnection:sourceOnly?'현재 실패 원인 → 기존 행동 복구':presentationOnly?'기존 행동 → 상태별 표현/입력 피드백':(authoredGrammar?coreLoop.join(' → '):selected?.connection)||coreLoop.join(' → '),
     approvedCoreLoop:coreLoop,signatureSystems:systems,progressionDirection:clean(design.progressionDirection),
     depthAndReward:sourceOnly||presentationOnly?null:{progression:design.progressionEconomyBalance||{},expansion:list(design.contentExpansionPlan),riskAndRecovery:design.failureRetryRisk||{},
       rewardLayers:{core:'Preserve the approved MAIN and A/B/C combination and its meaningful choices.',smallJoys:'Short discoveries, collection, decoration or small goals should leave visible progress where genre-appropriate.',deepPlay:'Optional combination research, mastery, secrets and long-term challenges lead to meaningful unlocks or completion.'},
@@ -542,7 +640,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     ideas,selectedIdea:chosen,ideaHistory:unique([...(available.length||repair?used:[]),chosen.id]),
     implementationPackages:packages,sourceTreeFingerprint:clean(source.sourceTreeFingerprint),
     spatialBlueprintContract:buildSpatialBlueprintContract({design,source,files,mode,platform:target,enabled:policy.spatialBlueprint?.enabled===true}),
-    interfaceBlueprintContract:interfaceContract,libraryReuseContract,
+    interfaceBlueprintContract:interfaceContract,libraryReuseContract,detailedDesignContract,
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
       implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
@@ -566,8 +664,9 @@ export function productionBlueprintContractsForFiles(plan,{responsibleFiles=[]}=
   const spatialOwner=files.some(file=>/(?:world|environment|terrain|level|map|spawn|scene|game|index|bootstrap|init)[^/]*\.(?:[cm]?js|tsx?|jsx|html?|luau?|cs|unity|prefab)$/i.test(file.split('/').at(-1)))||anchors.some(row=>/world|region|terrain|spawn|layout|route|map|scene|환경|배치|지형/i.test(row.symbol||''));
   const interfaceOwner=packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))||files.some(file=>/ui|hud|menu|interface/i.test(file.split('/').at(-1)));
   const scoped=(contract,owner)=>contract?{
-    ...contract,sourceFiles:files,required:contract.required===true&&owner&&files.length>0,
-    ...(!owner&&contract.externalAlgorithms?{externalAlgorithms:[],internalToolMatches:[],internalLibraryMatches:[],screenHints:[],referencePatterns:[]}:{}),
+    ...contract,sourceFiles:files,authoringScopeOwned:owner,required:contract.required===true&&owner&&files.length>0,
+    ...(!owner&&contract.externalAlgorithms?{externalAlgorithms:[],internalToolMatches:[],internalLibraryMatches:[],autoCompositionTargets:[],screenHints:[],referencePatterns:[],experienceScenarioContract:contract.experienceScenarioContract?{...contract.experienceScenarioContract,required:false}:undefined}:{}),
+    ...(owner&&contract.autoCompositionTargets?{autoCompositionTargets:list(contract.autoCompositionTargets).filter(row=>!list(row.sourceFiles).length||list(row.sourceFiles).some(owns))}:{}),
     ...(!owner&&contract.macroSketch?.proceduralWorldStudy?{macroSketch:{...contract.macroSketch,proceduralWorldStudy:undefined,authoredLayout:{...contract.macroSketch.authoredLayout,proceduralWorld:undefined}}}:{})
   }:null;
   return{spatial:scoped(plan?.spatialBlueprintContract,spatialOwner),interface:scoped(plan?.interfaceBlueprintContract,interfaceOwner)};
@@ -589,6 +688,10 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     prefix+'CONNECTION='+JSON.stringify({flow:plan.systemConnection,coreLoop:plan.approvedCoreLoop,systems:plan.signatureSystems,nextGoal:plan.progressionDirection}),
     prefix+'FILES='+JSON.stringify(packages),
     ...(plan.depthAndReward?[prefix+'DEPTH='+JSON.stringify(plan.depthAndReward)]:[]),
+    ...(plan.detailedDesignContract?[prefix+'DETAIL='+JSON.stringify({...plan.detailedDesignContract,
+      authoredDetail:{...plan.detailedDesignContract.authoredDetail,...(!blueprints.spatial?.authoringScopeOwned?{world:undefined}:{})},
+      sections:plan.detailedDesignContract.sections.filter(row=>row.id!=='WORLD_AND_BIOME'||blueprints.spatial?.authoringScopeOwned),sourceFiles:scopedFiles}),
+      prefix+'DETAIL_RULE=Use the game-authored MAIN/A/B/C/D/@, never a genre prefab. Elaborate only applicable requirements within owned files; list missing context as a gap. Use existing Vibe tools and library plans. For interface work include executable-bound experienceScenarios for tutorial, presentation and actual UI actions when applicable, with failure/cancel/skip/reconnect recovery. No plan may claim runtime PASS.']:[]),
     ...(libraryCandidates.length?[
       prefix+'LIBRARY_MATCH='+JSON.stringify({
         firstPartyLibraryCount:plan.libraryReuseContract.firstPartyLibraryCount,
@@ -599,7 +702,7 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     ]:[]),
     ...(plan.interfaceBlueprintContract?[
       prefix+'INTERFACE='+JSON.stringify(blueprints.interface),
-      prefix+'INTERFACE_RULE=Automatically match external UX algorithms and internal tool hints by real gameplay systems, observed UI code and user friction, not by genre labels alone. All matches are optional, not mandatory menus or functionality. For relevant usability edits author task-local interfaceBlueprint first and connect actual existing handlers, preserved navigation and safe failure paths. Never auto-import hinted JS modules, invent a new gameplay system or use shadow UI. For UNITY_WEB use the SAME canonical Unity C# UI source and UI runtime as UNITY_APP, never new HTML/CSS/JS gameplay UI; Roblox must use native Luau. Preserve game rules, save, economy, restrictions, touch safety and existing return flow. Static interface validation cannot claim runtime PASS.'
+      prefix+'INTERFACE_RULE=Automatically match external UX algorithms and internal tool hints by real gameplay systems, observed UI code and user friction, not by genre labels alone. All matches are optional, not mandatory menus or functionality. For relevant usability edits author task-local interfaceBlueprint first and connect actual existing handlers, preserved navigation and safe failure paths. Never auto-import hinted JS modules, invent a new gameplay system or use shadow UI. For UNITY_WEB use the SAME canonical Unity C# UI source and UI runtime as UNITY_APP, never new HTML/CSS/JS gameplay UI; Roblox must use native Luau. For LOBBY, CUSTOMIZATION, MATERIAL, INVENTORY and GAME_UI use autoCompositionTargets only when existing native source files and handler evidence are present. Design hints are not implementation. Reuse the verified company-asset-library.json originals under assets/asset-license-ledger.json; never generate or download new assets. Keep material and visual changes presentation-only, never alter inventory rules, save identity, gameplay or server authority. Bind original game actions, mobile touch safe areas, scrolling, disabled states and return navigation; require exact-build native QA and save/reload regression. Preserve game rules, save, economy, restrictions, touch safety and existing return flow. Static interface validation cannot claim runtime PASS.'
     ]:[]),
     ...(plan.spatialBlueprintContract?[
       prefix+'SPATIAL='+JSON.stringify(blueprints.spatial),
@@ -611,4 +714,5 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     prefix+'SCOPE='+plan.contentRule+'; '+plan.handoffRule+' Preserve approved concept, style, balance, save and server authority. Independent files can proceed in parallel inside the existing worker; this is no new stage.'
   ];
 }
+
 

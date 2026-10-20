@@ -336,6 +336,16 @@ function normalizeTask(input = {}, index = 0) {
     unityWebDevelopment: input.unityWebDevelopment === true || normalizedEvidence.includes('unity-web-first-stage'),
     department: clean(input.department) || null,
     type: clean(input.type) || 'implementation',
+    // 설계 변경 의도/범위는 기존 큐 정규화와 예약을 지나도 보존해야 원래 디자이너로 자동 인계된다.
+    // 디자인 범위만 전달하며 승인·실제 설계 작성·게임 소스 변경 권한을 부여하지 않는다.
+    designChange: input.designChange===true,
+    designScope: clean(input.designScope) || null,
+    proposedDesignChanges: freezeList(Array.isArray(input.proposedDesignChanges)
+      ? input.proposedDesignChanges.map(value=>typeof value==='string'?clean(value):clean(value?.path||value?.field||value?.scope)).filter(Boolean)
+      : []),
+    designFields: freezeList(Array.isArray(input.designFields)
+      ? input.designFields.map(value=>typeof value==='string'?clean(value):clean(value?.path||value?.field||value?.scope)).filter(Boolean)
+      : []),
     assetProductionLane: input.assetProductionLane===true || normalizedEvidence.includes('asset-production-parallel:v1'),
     presentationPass: clean(input.presentationPass).toUpperCase() || null,
     graphicsReplacementContract: normalizeSourceContract(input.graphicsReplacementContract),

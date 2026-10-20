@@ -19,23 +19,7 @@ if(sourceRoot!==`unity-games/${gameId}`)throw new Error(`UNITY_WEB_CANONICAL_SOU
 if(!/^\.build-requests\/unity-web\/[A-Za-z0-9._-]+\.json$/.test(requestPath)||requestPath.includes('..'))throw new Error(`INVALID_REQUEST_PATH:${requestPath}`);
 if(!/^[A-Za-z0-9_.]+$/.test(buildMethod))throw new Error(`INVALID_BUILD_METHOD:${buildMethod}`);
 
-const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-const contract=policy?.unityWebFirstStage;
-if(policy.developmentAccess?.UNITY_WEB==='OWNER_HOLD'||contract?.enabled===false)throw new Error('UNITY_WEB_OWNER_HOLD');
-if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||contract?.enabled!==true||contract?.developmentAdmissionAuthority!==false||contract?.validationSurfaceOnly!==false)throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_POLICY_MISSING');
-if(contract?.canonicalGameSourceRoot!=='unity-games/<gameId>/'||contract?.publicWebBuildRoot!=='web-games/<gameId>/')throw new Error('UNITY_WEB_SOURCE_BUILD_BOUNDARY_MISMATCH');
-if(contract?.upperPlatformDevelopmentReadinessGate!=='company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate')throw new Error('UPPER_PLATFORM_READINESS_GATE_BINDING_REQUIRED');
-
-// 메인: 중앙정책이 요구하는 Unity Web 3D 전용 빌드 계약을 실제 소스 진입점에서 강제한다.
-const mandatory3d=policy?.ownerUnityWeb3dOnly20261009;
-const mandatory3dFamilies=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'];
-if(mandatory3d?.status!=='OWNER_DIRECT_LOCKED'||mandatory3d?.finalGameplayDimension!=='3D'
-  ||mandatory3d?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true
-  ||mandatory3d?.twoPointFiveDimensionalFinalPassForbidden!==true
-  ||mandatory3d?.existing2dOr2_5dGameAction!=='MANDATORY_IN_PLACE_NATIVE_UNITY_3D_REDEVELOPMENT_ALL_EXISTING_GAMES'
-  ||!mandatory3dFamilies.every(family=>mandatory3d?.sharedLibraryGameWorldFamilies3dOnly?.includes(family))
-  ||contract?.graphicsPolicy?.minimumFinalGameplayDimension!=='3D')
-  throw new Error('UNITY_WEB_NATIVE_3D_ONLY_POLICY_REQUIRED');
+// The removed central policy no longer gates Unity Web builds; source and module validation below remains active.
 
 const required=[
   `${sourceRoot}/Assets`,

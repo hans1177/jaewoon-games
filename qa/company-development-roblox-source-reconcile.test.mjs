@@ -6,11 +6,70 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline,robloxStudioAssetDetectionSourceFromRoot,robloxStudioAssetFamilyStatusFromSource,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from '../tools/company-development-roblox-bootstrap.mjs';
-import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,robloxPackageAssetRepairContext,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
+import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,robloxPackageAssetRepairContext,hasCurrentRobloxPackageAssetRepair,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
 
 const gameId='seed-roblox-simulator-tycoon-i-adopt-me';
+
+// The production Roblox compiler embeds the verified central policy source
+// into Config.luau. Bind real current-main policy for isolated fixture compilation.
+const previousVerifiedPolicyPath=process.env.COMPANY_VERIFIED_POLICY_PATH;
+test.before(()=>{
+  assert.equal(fs.existsSync('company-learning/platform-release-roadmap.json'),true);
+  process.env.COMPANY_VERIFIED_POLICY_PATH='company-learning/platform-release-roadmap.json';
+});
+test.after(()=>{
+  if(previousVerifiedPolicyPath===undefined)delete process.env.COMPANY_VERIFIED_POLICY_PATH;
+  else process.env.COMPANY_VERIFIED_POLICY_PATH=previousVerifiedPolicyPath;
+});
+
+test('common library compile selector discovers the actual native libraries',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe3-engine-contract.yml','utf8');
+  const step=workflow.split('      - name: Compile common Roblox libraries before game binding')[1].split('      - name: ')[0];
+  const selection=step.split('\n').find(line=>line.includes('mapfile -t libraries')).trim();
+  const files=execFileSync('bash',['-c',selection+'\nprintf "%s\\n" "${libraries[@]}"'],{encoding:'utf8'}).trim().split('\n');
+  assert.ok(files.includes('assets/roblox/common-ui-v1/RobloxCommonUI.luau'));
+  assert.ok(files.includes('assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau'));
+  assert.ok(files.length>2);
+  assert.ok(files.every(file=>fs.existsSync(file)&&file.endsWith('.luau')));
+});
+
+// 검수 범위: 단일 게임은 무관한 설계·과거 소스·학습 상태를 방문하지 않는다.
+test('requested source reconciliation isolates one game while batch keeps all games',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-requested-reconcile-'));
+  try{
+    const queue={items:[{...staleItem(),gameId:'daechung-rpg'},{...staleItem(),gameId:'other-game'}]};
+    const before=JSON.stringify(queue);
+    const visited=[];
+    const run=requestedGameId=>evaluateExistingRobloxSources({queue,repoRoot:tmp,sourceRevision:'b'.repeat(40),requestedGameId,
+      loadBaseline:item=>{visited.push(item.gameId);return baseline;}});
+    const requested=run('daechung-rpg');
+    assert.deepEqual(visited,['daechung-rpg']);
+    assert.deepEqual(requested.map(row=>row.gameId),['daechung-rpg']);
+    visited.length=0;
+    assert.deepEqual(run('').map(row=>row.gameId),['daechung-rpg','other-game']);
+    assert.deepEqual(visited,['daechung-rpg','other-game']);
+    visited.length=0;
+    assert.deepEqual(run('missing-game'),[]);
+    assert.deepEqual(visited,[]);
+    assert.throws(()=>run('../other-game'),/ROBLOX_REQUESTED_GAME_ID_INVALID/);
+    assert.equal(JSON.stringify(queue),before);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('requested workflow fetches only its bound revision and forwards the same CLI scope',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const fetchStep=workflow.split('      - name: Fetch current company runtime and verified Vibe learning')[1].split('      - name: ')[0];
+  const code=fetchStep.match(/node - <<'NODE' > \/tmp\/roblox-bound-source-revisions\n([\s\S]*?)\n          NODE/)[1];
+  const items=[{gameId:'daechung-rpg',robloxSourceCommit:'a'.repeat(40)},{gameId:'other-game',robloxSourceCommit:'b'.repeat(40)}];
+  const invoke=requested=>{const revisions=[];runInNewContext(code,{require:()=>({readFileSync:()=>JSON.stringify({items})}),process:{env:{REQUESTED_GAME_ID:requested}},console:{log:value=>revisions.push(value)}});return revisions;};
+  assert.deepEqual(invoke('daechung-rpg'),['a'.repeat(40)]);
+  assert.deepEqual(invoke(''),['a'.repeat(40),'b'.repeat(40)]);
+  const reconcileStep=workflow.split('      - name: Revalidate exact-main Roblox source already merged')[1].split('      - name: ')[0];
+  assert.match(reconcileStep,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
+  assert.match(reconcileStep,/--game-id="\$REQUESTED_GAME_ID"/);
+});
 
 test('release handoff skips obsolete intent before historical fetch and preserves active evidence checks',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-roblox-release-handoff.yml','utf8');
@@ -146,7 +205,7 @@ test('minimum-design Roblox SOURCE_BIND items are eligible for source reconcilia
   assert.equal(eligibleForRobloxSourceReconciliation(staleItem()),true);
   assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION'}),false);
   assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),minimumDesignContract:{pass:false}}),false);
-  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),platformDesignProfiles:{ROBLOX:staleItem().platformDesignProfiles.ROBLOX}}),false);
+  assert.equal(eligibleForRobloxSourceReconciliation({...staleItem(),platformDesignProfiles:{ROBLOX:staleItem().platformDesignProfiles.ROBLOX}}),true,'Unity remains owner-held and cannot be required for Roblox SOURCE_BIND');
 });
 
 
@@ -788,7 +847,7 @@ test('verified APK refresh is owned by one Roblox sweep instead of duplicate per
   assert.match(workflow,/existing-source-verified-external-learning-required/);
   assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND/);
   assert.match(workflow,/if\(existingSourceLearningRebind\)\{/);
-  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind;/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\|\|materialRepairPending;/);
 });
 
 
@@ -1251,4 +1310,64 @@ test('Roblox verified learning sweep rebinds exact runtime design and config wit
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+ test('preserved-source refresh reports profile and implementation defects without claiming static PASS',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-rebind-contract-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const pass=validateExistingRobloxSourceTree({root,baseline});
+    assert.equal(pass.pass,true,pass.blockers.join(','));
+    const config=path.join(root,'shared','GameConfig.luau');
+    const before=fs.readFileSync(config,'utf8');
+    fs.writeFileSync(config,before.replace(/Genre = "[^"]*"/,'Genre = "wrong-profile"'));
+    const failed=validateExistingRobloxSourceTree({root,baseline});
+    assert.equal(failed.pass,false);
+    assert.ok(failed.blockers.includes('CONFIG_GENRE_PROFILE_REQUIRED'));
+    assert.equal(fs.readFileSync(config,'utf8'),before.replace(/Genre = "[^"]*"/,'Genre = "wrong-profile"'));
+    const server=path.join(root,'server','Game.server.luau');
+    fs.writeFileSync(server,'-- preserved custom source; not a validated contract');
+    const invalid=validateExistingRobloxSourceTree({root,baseline});
+    assert.equal(invalid.pass,false);
+    assert.ok(invalid.blockers.includes('SERVER_REMOTE_BOUNDARY_REQUIRED'));
+    const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+    assert.ok(!workflow.includes('Static source contract: PASS.'));
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+ });
+
+test('current static source failure goes to existing Vibe repair and rejects stale source, design and validator evidence',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-contract-repair-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);writeCompiledTree(root);
+    const config=path.join(root,'shared','GameConfig.luau');
+    fs.writeFileSync(config,fs.readFileSync(config,'utf8').replace(/Genre = "[^"]*"/,'Genre = "wrong-profile"'));
+    initGitRepo(tmp);
+    const git=(...args)=>execFileSync('git',args,{cwd:tmp,encoding:'utf8'}).trim();
+    const revision=git('rev-parse','HEAD'),sourceTreeSha=git('rev-parse',`HEAD:roblox-games/${gameId}`);
+    const rows=evaluateExistingRobloxSources({queue:{items:[{...staleItem(),robloxSourceCommit:revision}]},repoRoot:tmp,sourceRevision:revision,loadBaseline:()=>baseline});
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].sourceContractRepairRequired,true);
+    const failedTechnicalItem={...staleItem(),currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',robloxSourceCommit:revision,
+      robloxBuildOrPackagePassed:false,robloxFailureSignature:'existing-source-static-revalidation-failed'};
+    const sameTree=evaluateExistingRobloxSources({queue:{items:[failedTechnicalItem]},repoRoot:tmp,sourceRevision:revision,loadBaseline:()=>baseline});
+    assert.equal(sameTree[0].sourceContractRepairRequired,true,'unchanged source must not hide an unresolved failed contract');
+
+    const evidence=rows[0].sourceContractRepairEvidence;
+    assert.equal(evidence.authority,'roblox-source-static-contract-failure');
+    assert.ok(evidence.staticContract.blockers.includes('CONFIG_GENRE_PROFILE_REQUIRED'));
+    assert.equal(evidence.artifactIdentity,null);
+    const item={...staleItem(),robloxSourceCommit:revision,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision,robloxQualityBuildUpEvidence:evidence};
+    const inspect=(extra={})=>hasCurrentRobloxPackageAssetRepair({item,baseline,sourceTreeSha,...extra});
+    assert.equal(inspect(),true);
+    assert.equal(inspect({sourceTreeSha:'9'.repeat(40)}),false);
+    assert.equal(inspect({baseline:{content:{identity:'changed design'}}}),false);
+    assert.equal(inspect({item:{...item,robloxQualityBuildUpEvidence:{...evidence,assetRepairContext:{...evidence.assetRepairContext,validatorFingerprint:'old'}}}}),false);
+    const pending=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,loadBaseline:()=>baseline});
+    assert.equal(pending[0].sourceRepairPending,true);
+    assert.deepEqual(pending[0].blockers,evidence.staticContract.blockers);
+    const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+    assert.ok(workflow.includes('reconciliationRow?.sourceContractRepairRequired===true'));
+    assert.ok(workflow.includes('robloxQualityBuildUpEvidence:{...result.sourceContractRepairEvidence'));
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });

@@ -3,10 +3,13 @@
 -- Responsive RPG menu; all progression comes from replicated state or real Tools.
 local Model = require(script.Parent:WaitForChild("RPGMenuModel"))
 local CommonUI = require(script.Parent:WaitForChild("RobloxCommonUI"))
+local RaceData = require(script.Parent:WaitForChild("RaceData"))
+local TechTreeData = require(script.Parent:WaitForChild("TechTreeData"))
 local Input = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
+local TweenService = game:GetService("TweenService")
 local Menu = {}
-local colors = {base=Color3.fromRGB(19,23,29),panel=Color3.fromRGB(29,35,43),card=Color3.fromRGB(39,47,56),gold=Color3.fromRGB(232,193,120),text=Color3.fromRGB(240,237,225),muted=Color3.fromRGB(171,184,192)}
+local colors = {base=Color3.fromRGB(64,43,29),panel=Color3.fromRGB(92,68,45),card=Color3.fromRGB(112,82,52),gold=Color3.fromRGB(232,193,120),text=Color3.fromRGB(253,237,201),muted=Color3.fromRGB(199,174,138)}
 
 -- 유틸: 기존 메뉴 요소 생성.
 local function make(class,parent,name,properties)
@@ -41,6 +44,11 @@ function Menu.install(config,gui,player,options)
  local rows={}
  local itemButtons={}
  local itemRows={}
+ local quickTools={}
+ local quickButtons={}
+ local order={}
+ local dragFrom=nil
+ local dragStart=nil
  local connections={}
  local toolConnections={}
  local previousSelection=nil
@@ -50,12 +58,26 @@ function Menu.install(config,gui,player,options)
  local relayout
  local setOpen
 
- local tabNames={"배낭","장비","캐릭터","상점","퀘스트","파티","설정"}
+ local tabNames={"배낭","장비","캐릭터","상점","퀘스트","파티","문명","연구","설정"}
  local toggle=button(gui,"RPGMenuToggle","배낭 · 메뉴")
  toggle.Position=UDim2.fromOffset(12,150);toggle.Size=UDim2.fromOffset(136,52)
  local overlay=make("Frame",gui,"RPGSystemMenu",{Visible=false,Active=true,BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=.28,Size=UDim2.fromScale(1,1),ZIndex=50})
  local panel=make("Frame",overlay,"MenuPanel",{AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5),BackgroundColor3=colors.base,BorderSizePixel=0,ZIndex=51})
  round(panel,16)
+ make("UIGradient",panel,"WoodGrain",{Rotation=87,Color=ColorSequence.new(Color3.fromRGB(135,103,64),Color3.fromRGB(66,44,30))})
+ -- 등록된 소유 원목 9-Slice 이미지만 적용한다. 미등록이면 원목 그라데이션으로 표시.
+ local uiArt=config.CivilizationUIArt or {}
+ if typeof(uiArt.Wood)=="string" and uiArt.Wood~=""then
+  make("ImageLabel",panel,"WoodNineSlice",{BackgroundTransparency=1,Image=uiArt.Wood,ScaleType=Enum.ScaleType.Slice,SliceCenter=Rect.new(24,24,40,40),Size=UDim2.fromScale(1,1),ZIndex=panel.ZIndex})
+ end
+ -- Presentation only: interruptible entrance; never delays menu input or changes game state.
+ local entranceTween=nil
+ local panelTween=nil
+ local panelScale=make("UIScale",panel,"EntranceScale",{Scale=1})
+ local function stopEntrance()
+  if entranceTween then entranceTween:Cancel();entranceTween=nil end
+  if panelTween then panelTween:Cancel();panelTween=nil end
+ end
  make("UIStroke",panel,"Outline",{Color=colors.gold,Transparency=.55,Thickness=1})
  local title=label(panel,"MenuTitle","모험가의 배낭",22);title.Font=Enum.Font.GothamBold;title.Position=UDim2.fromOffset(18,8);title.Size=UDim2.new(1,-88,0,30)
  local balance=label(panel,"MenuBalance","",13);balance.TextColor3=colors.gold;balance.Position=UDim2.fromOffset(18,39);balance.Size=UDim2.new(1,-88,0,20)
@@ -86,16 +108,54 @@ function Menu.install(config,gui,player,options)
  sortButton.Activated:Connect(function()sortByName=not sortByName;refresh()end)
  local items=make("ScrollingFrame",inventory,"InventoryGrid",{Position=UDim2.fromOffset(0,162),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y})
  local grid=make("UIGridLayout",items,"ItemGridLayout",{CellPadding=UDim2.fromOffset(8,8),SortOrder=Enum.SortOrder.LayoutOrder})
- local empty=label(items,"EmptyInventory","표시할 아이템이 없어.",15);empty.Size=UDim2.fromOffset(140,110)
+ grid.FillDirectionMaxCells=4
+ local emptySlots={}
+ for index=1,32 do
+  local slot=make("TextLabel",items,"EmptySlot"..index,{LayoutOrder=10000+index,Text=tostring(index),Font=Enum.Font.Gotham,TextSize=12,TextColor3=colors.muted,BackgroundColor3=Color3.fromRGB(69,53,35),BorderSizePixel=0})
+  round(slot,6);emptySlots[index]=slot
+ end
+ local empty=label(items,"EmptyInventory","표시할 아이템이 없어.",15);empty.Size=UDim2.fromOffset(140,110);empty.LayoutOrder=20000
  local details=make("ScrollingFrame",inventory,"ItemDetails",{BackgroundColor3=colors.panel,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y});round(details)
  local detailTitle=label(details,"SelectedItemName","아이템을 선택해",19);detailTitle.Font=Enum.Font.GothamBold;detailTitle.Position=UDim2.fromOffset(14,14);detailTitle.Size=UDim2.new(1,-28,0,50)
  local detailText=label(details,"SelectedItemDescription","아이템을 눌러 장착해.",15);detailText.TextColor3=colors.muted;detailText.TextYAlignment=Enum.TextYAlignment.Top;detailText.Position=UDim2.fromOffset(14,72);detailText.Size=UDim2.new(1,-28,0,130)
  local itemAction=button(details,"ItemAction","착용 중");itemAction.Position=UDim2.fromOffset(14,218);itemAction.Size=UDim2.new(1,-28,0,52);itemAction.Visible=false
+ local quickTitle=label(details,"HotbarTitle","단축 슬롯 · 1~8",15)
+ quickTitle.Position=UDim2.fromOffset(14,282);quickTitle.Size=UDim2.new(1,-28,0,28)
+ local quickGrid=make("Frame",details,"HotbarGrid",{Position=UDim2.fromOffset(14,315),Size=UDim2.new(1,-28,0,125),BackgroundTransparency=1})
+ make("UIGridLayout",quickGrid,"HotbarLayout",{FillDirectionMaxCells=4,CellSize=UDim2.new(.25,-5,0,54),CellPadding=UDim2.fromOffset(5,5),SortOrder=Enum.SortOrder.LayoutOrder})
+ local function equipQuick(index)
+  local tool=quickTools[index]
+  if not tool or not tool:IsA("Tool")then return end
+  local character=player.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  local backpack=player:FindFirstChildOfClass("Backpack")
+  if not humanoid or humanoid.Health<=0 then return end
+  if tool.Parent==backpack then humanoid:EquipTool(tool)
+  elseif tool.Parent==character then humanoid:UnequipTools()end
+ end
+ local function refreshQuickButtons()
+  for index,b in ipairs(quickButtons)do
+   local tool=quickTools[index]
+   if tool and tool.Parent~=player.Character and tool.Parent~=player:FindFirstChildOfClass("Backpack")then quickTools[index]=nil;tool=nil end
+   b.Text=tostring(index)..(tool and (" · "..tool.Name)or " · -")
+  end
+ end
+ for index=1,8 do
+  local b=button(quickGrid,"QuickSlot"..index,tostring(index).." · -")
+  b.TextSize=12;b.TextWrapped=true;b.LayoutOrder=index
+  b.Activated:Connect(function()
+   if selectedTool and selectedTool:IsA("Tool")then
+    if quickTools[index]==selectedTool then equipQuick(index)
+    else quickTools[index]=selectedTool;refreshQuickButtons()end
+   else equipQuick(index)end
+  end)
+  quickButtons[index]=b
+ end
  local function selectItem(row)
   selectedId=row.id;selectedTool=row.tool
   detailTitle.Text=row.name..(row.tier and (" · T"..row.tier) or "")
-  detailText.Text=row.description or "배낭에 보관 중인 도구야. 장착한 뒤 월드에서 사용할 수 있어."
-  itemAction.Visible=true;itemAction.Active=row.tool~=nil;itemAction.AutoButtonColor=row.tool~=nil
+  detailText.Text=row.description or (row.tool and "배낭에서 선택한 도구야. 장착한 뒤 월드에서 사용할 수 있어." or "현재 장비 상태를 확인할 수 있어.")
+  itemAction.Visible=row.tool~=nil;itemAction.Active=row.tool~=nil;itemAction.AutoButtonColor=row.tool~=nil
   itemAction.Text=row.tool and (row.equipped and "장착 해제" or "장착") or "현재 착용 중"
   for id,b in pairs(itemButtons)do b.BackgroundColor3=id==row.id and Color3.fromRGB(73,65,48) or colors.card;b.SelectedRing.Visible=id==row.id end
  end
@@ -110,7 +170,7 @@ function Menu.install(config,gui,player,options)
  end)
 
  local content={}
- for _,name in ipairs({"장비","캐릭터","상점","퀘스트","파티","설정"})do
+ for _,name in ipairs({"장비","캐릭터","상점","퀘스트","파티","문명","연구","설정"})do
   local scroll=make("ScrollingFrame",pages[name],"Content",{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y})
   make("UIListLayout",scroll,"Rows",{Padding=UDim.new(0,12),SortOrder=Enum.SortOrder.LayoutOrder})
   content[name]=scroll
@@ -149,6 +209,31 @@ function Menu.install(config,gui,player,options)
  local room=button(content["파티"],"ChangePartyCode","멀티 코드 변경");room.Size=UDim2.new(1,-8,0,52)
  room.Activated:Connect(function()if options.changeRoom then options.changeRoom()end end)
  local companions=label(content["파티"],"CompanionRoster","",16);companions.Size=UDim2.new(1,-8,0,0);companions.AutomaticSize=Enum.AutomaticSize.Y;companions.TextYAlignment=Enum.TextYAlignment.Top
+-- 문명·연구: 기존 모바일 메뉴에 선택 카드와 파피루스 연구판 연결.
+ local civRemote=game:GetService("ReplicatedStorage"):WaitForChild(config.RemoteName)
+ local raceCards={}
+ local techCards={}
+ for id=1,24 do
+  local race=RaceData.GetRace(id)
+  local b=button(content["문명"],"Race"..id,race.Name.."\n"..race.Passive)
+  b.Size=UDim2.new(1,-8,0,78);b.TextWrapped=true;b.TextSize=14;b.LayoutOrder=id
+  b.Activated:Connect(function()
+   if player:GetAttribute("RaceID")==0 then civRemote:FireServer("CIV_SELECT:"..id)end
+  end)
+  raceCards[id]=b
+ end
+ local eraLabel=label(content["연구"],"EraSummary","",17)
+ eraLabel.Size=UDim2.new(1,-8,0,100);eraLabel.TextWrapped=true;eraLabel.LayoutOrder=0
+ local gridBox=make("ScrollingFrame",content["연구"],"TechGrid",{Size=UDim2.new(1,-8,0,340),BackgroundTransparency=1,BorderSizePixel=0,ScrollingDirection=Enum.ScrollingDirection.Y,ScrollBarThickness=4,AutomaticCanvasSize=Enum.AutomaticSize.Y,CanvasSize=UDim2.new(),LayoutOrder=1})
+ make("UIGridLayout",gridBox,"TechLayout",{CellSize=UDim2.new(.48,-4,0,94),CellPadding=UDim2.new(.02,0,0,6),SortOrder=Enum.SortOrder.LayoutOrder})
+ for id=1,TechTreeData.Count do
+  local tech=TechTreeData.GetTech(id)
+  local b=button(gridBox,"Tech"..id,tech.Name);b.TextSize=13;b.TextWrapped=true;b.LayoutOrder=id
+  b.Activated:Connect(function()
+   if (player:GetAttribute("CivTechCount")or 0)+1==id then civRemote:FireServer("CIV_RESEARCH:"..id)end
+  end)
+  techCards[id]=b
+ end
  local soundButton=button(content["설정"],"ToggleMenuSound","효과음 켜짐");soundButton.Size=UDim2.new(1,-8,0,52)
  soundButton.Activated:Connect(function()
   muted=not muted
@@ -186,6 +271,7 @@ function Menu.install(config,gui,player,options)
   end
   -- 같은 아이템 버튼은 유지해 상태 갱신 중 터치·게임패드 선택이 끊기지 않게 한다.
   local filtered=Model.filter(rows,category,search.Text,sortByName)
+  for index,slot in ipairs(emptySlots)do slot.Visible=index<=math.max(0,32-#filtered)end
   sortButton.Text=sortByName and "정렬: 이름순"or"정렬: 장착순"
   itemRows={}
   empty.Visible=#filtered==0
@@ -209,10 +295,17 @@ function Menu.install(config,gui,player,options)
      local current=itemRows[id]
      if current then selectItem(current)end
     end)
+    b.InputBegan:Connect(function(input)
+     if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+      dragFrom=id;dragStart=Vector2.new(input.Position.X,input.Position.Y)
+     end
+    end)
    end
-   b.Name="InventorySlot"..index;b.LayoutOrder=index
+   b.Name="InventorySlot"..index
+   if not order[id]then order[id]=index end
+   b.LayoutOrder=order[id]
    b.ItemIcon.Text=row.icon;b.ItemName.Text=row.name
-   b.ItemState.Text=row.equipped and "착용 중" or "도구"
+   b.ItemState.Text=row.equipped and "착용 중" or (row.category=="장비" and "장비" or "도구")
    if id==selectedId then selection=row end
   end
   for id,b in pairs(itemButtons)do
@@ -225,6 +318,7 @@ function Menu.install(config,gui,player,options)
   selection=selection or filtered[1]
   if selection then selectItem(selection)else selectedId=nil;selectedTool=nil;detailTitle.Text="아이템 없음";detailText.Text="검색어나 분류를 바꿔 봐. 없는 아이템은 표시되지 않아.";itemAction.Visible=false end
   if removedFocus then GuiService.SelectedObject=itemButtons[selectedId] or filterButtons[category]end
+  refreshQuickButtons()
   local humanoid=player.Character and player.Character:FindFirstChildOfClass("Humanoid")
   if humanoid then a.CurrentHP=humanoid.Health end
   local character=Model.character(a,config)
@@ -270,6 +364,33 @@ function Menu.install(config,gui,player,options)
    end
   end
   companions.Text=table.concat(roster,"\n\n")
+  local raceId=tonumber(a.RaceID)or 0
+  local race=RaceData.GetRace(raceId)
+  local completed=math.clamp(tonumber(a.CivTechCount)or 0,0,TechTreeData.Count)
+  local nextTech=TechTreeData.Next(completed)
+  for id,b in ipairs(raceCards)do
+   local def=RaceData.GetRace(id)
+   b.Active=raceId==0;b.AutoButtonColor=b.Active
+   b.Text=(raceId==id and "◆ " or "")..def.Name.." · "..def.Landmark.."\n"..def.Passive
+   b.BackgroundColor3=raceId==id and Color3.fromRGB(100,80,43)or colors.card
+  end
+  local summary="모든 시대 연구 완료"
+  if nextTech then
+   local resource,cost=next(nextTech.RequiredResources)
+   local eureka=(tonumber(a[nextTech.EurekaMetric])or 0)>=nextTech.EurekaTarget
+   local discount=race and ((nextTech.Era==1 and race.Bonuses.MythResearchDiscount)or(nextTech.Era==3 and race.Bonuses.BronzeDiscount))or 0
+   local due=math.max(1,math.ceil(cost*(eureka and .5 or 1)*(1-discount)))
+   summary=string.format("다음 %s · 필요 %d / 보유 %d\n유레카 %s (%s)",nextTech.Name,due,tonumber(a[resource])or 0,nextTech.EurekaCondition,eureka and "달성"or"미달성")
+  end
+  eraLabel.Text=string.format("%s · %d/72\n%s",TechTreeData.EraNames[TechTreeData.EraForUnlocked(completed)],completed,summary)
+  for id,b in ipairs(techCards)do
+   local tech=TechTreeData.GetTech(id)
+   local unlocked=id<=completed;local nextUp=id==completed+1
+   b.Text=string.format("#%02d %s\n%s",id,tech.Name,unlocked and "완료"or nextUp and (raceId>0 and "연구 가능"or"문명 선택 필요")or"잠김")
+   b.BackgroundColor3=unlocked and Color3.fromRGB(82,67,44)or nextUp and Color3.fromRGB(54,77,73)or colors.card
+   b.TextColor3=unlocked and Color3.fromRGB(255,215,0)or nextUp and colors.text or colors.muted
+   b.Active=nextUp and raceId>0;b.AutoButtonColor=b.Active
+  end
   relayout()
  end
 
@@ -290,7 +411,7 @@ function Menu.install(config,gui,player,options)
   local detailGap=8
   local listHeight=split and math.max(64,math.floor((availableHeight-listStart-detailGap)*.5)) or math.max(64,availableHeight-listStart)
   items.Size=UDim2.fromOffset(listWidth,listHeight)
-  grid.CellSize=UDim2.fromOffset(math.floor((listWidth-8*(layout.columns-1)-6)/layout.columns),106)
+  grid.CellSize=UDim2.fromOffset(math.floor((listWidth-8*3-6)/4),106)
   details.Position=split and UDim2.fromOffset(0,listStart+listHeight+detailGap) or UDim2.fromOffset(listWidth+12,listStart)
   details.Size=split and UDim2.fromOffset(availableWidth,math.max(64,availableHeight-listStart-listHeight-detailGap)) or UDim2.fromOffset(availableWidth-listWidth-12,listHeight)
  end
@@ -298,7 +419,19 @@ function Menu.install(config,gui,player,options)
  setOpen=function(value)
   if value==opened then return end
   if value and options.canOpen and not options.canOpen()then return end
+  stopEntrance()
   opened=value;overlay.Visible=value;toggle.Visible=not value;gui:SetAttribute("RPGMenuOpen",value)
+  if value then
+   overlay.BackgroundTransparency=.45
+   panelScale.Scale=.97
+   panelTween=TweenService:Create(panelScale,TweenInfo.new(.2,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Scale=1})
+   panelTween:Play()
+   entranceTween=TweenService:Create(overlay,TweenInfo.new(.18,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=.28})
+   entranceTween:Play()
+  else
+   overlay.BackgroundTransparency=.28
+   panelScale.Scale=1
+  end
   if options.onOpen then options.onOpen(value)end
   if value then previousSelection=GuiService.SelectedObject;refresh();if Input.GamepadEnabled then GuiService.SelectedObject=tabButtons[activeTab]end
   else GuiService.SelectedObject=previousSelection and previousSelection.Parent and previousSelection or nil end
@@ -308,7 +441,9 @@ function Menu.install(config,gui,player,options)
  table.insert(connections,Input.InputBegan:Connect(function(input,processed)
   if Input:GetFocusedTextBox()then return end
   if opened and (input.KeyCode==Enum.KeyCode.Escape or input.KeyCode==Enum.KeyCode.ButtonB)then setOpen(false);return end
-  if not processed and (input.KeyCode==Enum.KeyCode.B or input.KeyCode==Enum.KeyCode.ButtonY)then setOpen(not opened)end
+  if not processed and (input.KeyCode==Enum.KeyCode.B or input.KeyCode==Enum.KeyCode.ButtonY)then setOpen(not opened);return end
+  local quickKeys={[Enum.KeyCode.One]=1,[Enum.KeyCode.Two]=2,[Enum.KeyCode.Three]=3,[Enum.KeyCode.Four]=4,[Enum.KeyCode.Five]=5,[Enum.KeyCode.Six]=6,[Enum.KeyCode.Seven]=7,[Enum.KeyCode.Eight]=8}
+  if not processed and not opened and quickKeys[input.KeyCode]then equipQuick(quickKeys[input.KeyCode])end
  end))
  table.insert(connections,search:GetPropertyChangedSignal("Text"):Connect(refresh))
  table.insert(connections,gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(relayout))
@@ -317,8 +452,30 @@ function Menu.install(config,gui,player,options)
   if pending or not opened then return end
   pending=true;task.defer(function()pending=false;if gui.Parent then refresh()end end)
  end
- local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,CompanionUnlockCount=true,LastAction=true,CurrentZone=true,XP=true,AdvancementId=true,SecondAdvancementId=true}
+ local watched={Level=true,Gold=true,ClassId=true,MaxHP=true,AttackPower=true,WeaponTier=true,ArmorTier=true,RelicId=true,QuestPortal=true,QuestKills=true,QuestNeed=true,RoomCode=true,PartyCount=true,PartyKills=true,Contribution=true,UnlockedCompanions=true,CompanionUnlockCount=true,LastAction=true,CurrentZone=true,XP=true,AdvancementId=true,SecondAdvancementId=true,RaceID=true,CivTechCount=true,CivMyth=true,CivStone=true,CivBronze=true,CivIron=true,CivHero=true,CivKills=true,CivParries=true,CivBossKills=true,HouseLevel=true}
  table.insert(connections,player.AttributeChanged:Connect(function(name)if watched[name]then scheduleRefresh()end end))
+ -- 드래그 시 표시 순서만 교환. 서버 소유 도구 및 장비 능력치는 수정하지 않는다.
+ table.insert(connections,Input.InputEnded:Connect(function(input)
+  if not dragFrom or not dragStart then return end
+  if input.UserInputType~=Enum.UserInputType.MouseButton1 and input.UserInputType~=Enum.UserInputType.Touch then return end
+  local source=dragFrom;local first=dragStart
+  dragFrom=nil;dragStart=nil
+  if not opened or activeTab~="배낭"then return end
+  local cursor=Vector2.new(input.Position.X,input.Position.Y)
+  if (cursor-first).Magnitude<14 then return end
+  for target,b in pairs(itemButtons)do
+   if target~=source and b.Parent and b.Visible then
+    local at=b.AbsolutePosition;local size=b.AbsoluteSize
+    if cursor.X>=at.X and cursor.X<=at.X+size.X and cursor.Y>=at.Y and cursor.Y<=at.Y+size.Y then
+     local old=order[source]or 0
+     order[source]=order[target]or old;order[target]=old
+     if itemButtons[source]then itemButtons[source].LayoutOrder=order[source]end
+     b.LayoutOrder=order[target]
+     break
+    end
+   end
+  end
+ end))
  -- 게임에서 상인 위치를 제공할 때만 상점 탭을 저빈도로 갱신한다.
  -- 메뉴가 닫힌 동안 전체 인벤토리를 반복 갱신하지 않으며 서버 권한은 그대로다.
  if type(options.merchantAccess)=="function"then
@@ -342,6 +499,7 @@ function Menu.install(config,gui,player,options)
  table.insert(connections,player.ChildAdded:Connect(function(child)if child:IsA("Backpack")then watchTools()end end))
  table.insert(connections,player.CharacterAdded:Connect(function()setOpen(false);watchTools()end))
  table.insert(connections,gui.Destroying:Connect(function()
+  stopEntrance()
   for _,c in ipairs(connections)do c:Disconnect()end
   for _,c in ipairs(toolConnections)do c:Disconnect()end
  end))

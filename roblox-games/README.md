@@ -1,6 +1,6 @@
 # Roblox 게임 소스
 
-`company-learning/platform-release-roadmap.json#roblox`의 Roblox 정책을 실제 소스 구조로 구현하는 루트다.
+Roblox 게임의 실제 소스 구조를 관리하는 루트다. 삭제된 중앙정책 문서는 더 이상 참조하지 않으며, 현재 저장소의 실행 코드와 게임별 검증 결과를 기준으로 한다.
 
 ## 규칙
 

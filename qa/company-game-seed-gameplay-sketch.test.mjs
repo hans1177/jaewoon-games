@@ -1,10 +1,12 @@
+// 파일명: qa/company-game-seed-gameplay-sketch.test.mjs
+// 역할: 시드 문법·기존 게임 보조 참조·플로어 인계를 검증한다.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
-import {buildGameFlowArchitecture,evaluateGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
-import {computeVibeSeedProposal,normalizeGameplaySketch} from '../tools/company-game-seed-bootstrap.mjs';
+import {buildGameFlowArchitecture,evaluateGameFlowArchitecture,buildConceptSystemBlueprint} from '../tools/company-vibe2-game-flow-architect.mjs';
+import {computeVibeSeedProposal,normalizeGameplaySketch,verifiedSeedBasicDesignMethod} from '../tools/company-game-seed-bootstrap.mjs';
 import {CAUSAL_DNA_LIBRARY} from '../tools/game-seed-state.mjs';
 
 const legacySeed=()=>({
@@ -21,6 +23,18 @@ const legacySeed=()=>({
   INITIAL_PLAY_MODE:'PROJECT_DEFINED',
   MULTIPLAYER_DESIGN_MODE:'SINGLE',
   CROSS_PLATFORM_EXPANSION_VALUE:'portable tactical loop',
+});
+
+test('new seed authors must use verified MAIN = A + B + C + D + @ policy',()=>{
+  const method=verifiedSeedBasicDesignMethod('company-learning/platform-release-roadmap.json');
+  assert.equal(method.formula,'MAIN = A + B + C + D + @');
+  assert.throws(()=>verifiedSeedBasicDesignMethod(''),/GAME_SEED_VERIFIED_DESIGN_POLICY_PATH_REQUIRED/);
+  assert.throws(()=>verifiedSeedBasicDesignMethod('/tmp/absent-seed-policy.json'),/GAME_SEED_VERIFIED_DESIGN_POLICY_PATH_REQUIRED/);
+  const workflow=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
+  assert.ok(workflow.includes('COMPANY_VERIFIED_DESIGN_POLICY_PATH: company-learning/platform-release-roadmap.json'));
+  const implementation=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  assert.ok(implementation.includes('basicDesignMethod:verifiedSeedBasicDesignMethod()'));
+  assert.ok(implementation.includes('GAME_SEED_NONCANONICAL_DESIGN_GRAMMAR_REJECTED'));
 });
 
 test('GAME_SEED contract requires gameplay sketch while preserving legacy compatibility',()=>{
@@ -585,7 +599,7 @@ test('free MAIN is synthesized after independent A and B, fused C genres and exp
   const source=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
   const start=source.indexOf('export function computeVibeSeedProposal(');
   const composer=source.slice(start,source.indexOf('\nfunction buildSeed(',start));
-  const discoveryPos=composer.indexOf('const delveConditions=freeTopicMode?');
+  const discoveryPos=composer.indexOf('const delveConditions=');
   const mainPos=composer.indexOf('const gameName=requestedName||');
   const grammarPos=composer.indexOf('const grammar={');
   assert.ok(discoveryPos>0&&mainPos>discoveryPos&&grammarPos>mainPos,
@@ -612,70 +626,43 @@ test('free MAIN is synthesized after independent A and B, fused C genres and exp
   }
 });
 
-test('cozy fresh design reuses only the verified old seed A gameplay system, not genre, themes or MAIN',()=>{
-  const base={requestId:'cozy-island',category:'CASUAL',platform:'ROBLOX',
-    designTopicMode:'VIBE_FREE_TOPIC',topicRevision:'OWNER-COZY-A-SEED-AUTO-20261012-5',materials:[]};
-  // Producer is owner-design-reset: its source selection is independently tested using an actual old-seed fixture.
-  // The composer only receives the extracted gameplay system, never the source design or owner-written choice.
-  const sourceDesign={gameId:'cozy-island',content:{signatureSystems:[
-    {name:'원본 첫 핵심 게임플레이',purpose:'원본 월드에서 플레이어가 대상과 상호작용해 기본 자원을 획득한다.'},
-    {name:'예전 후속 역할',purpose:'다음 역할을 A 입력으로 사용하거나 복제하지 않는다.'}
-  ]}};
-  const aOnly={scope:'A_SYSTEM_ONLY',
-    systemFamily:sourceDesign.content.signatureSystems[0].name,
-    playerChoice:sourceDesign.content.signatureSystems[0].purpose,
-    source:'design/cozy-island/2026-09-22/design-revised.json'};
-  const without=computeVibeSeedProposal(base);
-  const fresh=computeVibeSeedProposal({...base,aSystemReference:aOnly});
-  const legacyPoison=computeVibeSeedProposal({...base,aSystemReference:aOnly,
-    gameName:'포근섬: 작은 왕국 키우기',ownerBrief:'왕조 계승과 주민 병영 5개 거점 점령',
-    coreLoop:['과거 집 꾸미기','과거 생활 공간 탐색','과거 시드 정답'],
-    materials:[{causalDNA:['DYNASTIC_INHERITANCE','PATRONAGE_NETWORK']}],
-    category:'CASUAL'});
-  assert.deepEqual(fresh,legacyPoison,'old game content must never alter the new composition');
-  const fusion=fresh.gameplaySketch.novelGameGrammar.gameplaySystemFusion;
-  const control=without.gameplaySketch.novelGameGrammar.gameplaySystemFusion;
-  assert.equal(fusion.majorAxes[0].systemFamily,aOnly.systemFamily);
-  assert.equal(fusion.majorAxes[0].playerChoice.includes(aOnly.playerChoice),true);
-  assert.notEqual(fusion.majorAxes[1].systemFamily,aOnly.systemFamily);
-  assert.deepEqual(fusion.majorAxes[1],control.majorAxes[1],
-    'B gameplay family and independently selected B creative material cannot inherit the old system');
-  assert.deepEqual(fusion.themeFusion.themes,control.themeFusion.themes,
-    'C creative source selection cannot inherit the old gameplay system');
-  assert.deepEqual(fusion.themeFusion.genres.map(row=>({role:row.role,name:row.name})),
-    control.themeFusion.genres.map(row=>({role:row.role,name:row.name})),
-    'C primary and secondary genre identities must be selected independently of the old gameplay system');
-  assert.notEqual(fusion.themeFusion.abGameplayEffect,control.themeFusion.abGameplayEffect,
-    'C must rebind its actual effects to the A/B causal chain after the A gameplay system is resolved');
-  // 검증: 인과 소재의 정체성은 보존하되, A를 참조하는 실제 효과는 새 A 시스템에 연결한다.
-  const freshDnas=fresh.gameplaySketch.novelGameGrammar.causalDNAs;
-  const controlDnas=without.gameplaySketch.novelGameGrammar.causalDNAs;
-  assert.deepEqual(freshDnas.map(({fusionRole,...identity})=>identity),
-    controlDnas.map(({fusionRole,...identity})=>identity));
-  let reboundA=0;
-  for(let index=0;index<freshDnas.length;index++){
-    const previous=controlDnas[index].fusionRole;
-    const expected=previous.replaceAll(control.majorAxes[0].systemFamily,aOnly.systemFamily);
-    assert.equal(freshDnas[index].fusionRole,expected,'only the resolved A system may change a causal role');
-    if(expected!==previous)reboundA++;
-  }
-  assert.ok(reboundA>0,'the inherited A system must have an actual causal effect');
-  assert.deepEqual(fresh.gameplaySketch.novelGameGrammar.delveLayer.elements.slice(0,3),
-    without.gameplaySketch.novelGameGrammar.delveLayer.elements.slice(0,3));
-  assert.notEqual(fresh.distinctIdentity,without.distinctIdentity);
-  assert.notEqual(fresh.gameName,without.gameName);
-  assert.match(fresh.distinctIdentity,/MAIN은 A\(/);
-  assert.match(fresh.distinctIdentity,/C\(메인/);
-  assert.match(fresh.distinctIdentity,/@\(/);
-  assert.ok(!fresh.distinctIdentity.includes('포근섬: 작은 왕국 키우기'));
-  assert.ok(!fresh.distinctIdentity.includes('왕조 계승과 주민 병영'));
-  assert.equal(fresh.gameplaySketch.novelGameGrammar.emergentGenre.grammarFormula,
-    'MAIN × A × B × C + @');
-  const sketch=normalizeGameplaySketch({...base,aSystemReference:aOnly},fresh,fresh.coreLoop,fresh.gameName);
-  const seed={...legacySeed(),GAMEPLAY_SKETCH:sketch,CORE_LOOP:fresh.coreLoop,
-    DISTINCT_IDENTITY:fresh.distinctIdentity,CORE_FUN_TO_LEARN:fresh.coreFunToLearn,
-    INITIAL_TARGET_PLATFORM:fresh.initialTargetPlatform,INITIAL_PLAY_MODE:fresh.initialPlayMode,
-    MULTIPLAYER_DESIGN_MODE:fresh.multiplayerDesignMode,
-    CROSS_PLATFORM_EXPANSION_VALUE:fresh.crossPlatformExpansionValue};
-  assert.equal(validateGameSeed(seed).pass,true,'the fresh basic design must satisfy the seed contract');
+// 메인: A 참고게임의 이름과 B 원본 시스템을 실제 생성 결과에서 대조한다.
+test('A names a representative game and B preserves the existing actual system',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const method=policy.continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod;
+  const base={requestId:'existing-reference-only',category:'CASUAL',platform:'ROBLOX',designTopicMode:'VIBE_FREE_TOPIC',basicDesignMethod:method,representativeGameReference:'디아블로'};
+  const reference={scope:'B_EXISTING_GAME_SYSTEMS',systemFamily:'기존 마을 건설과 주민 운영',playerChoice:'기존 주민에게 작업을 배정한다',source:'design/cozy-island/original.json'};
+  const result=computeVibeSeedProposal({...base,bSystemReference:reference});
+  const axes=result.gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes;
+  assert.equal(result.basicDesignSelection.a.referenceGame.name,'디아블로');
+  assert.equal(axes[0].systemFamily,result.basicDesignSelection.a.referenceGame.systemFamily);
+  assert.equal(axes[1].systemFamily,reference.systemFamily,'B must be the original system, not an unrelated generated partner');
+  assert.equal(result.basicDesignSelection.existingSystemReference.scope,'B_EXISTING_GAME_SYSTEMS');
+  assert.equal(result.basicDesignSelection.existingSystemReference.source,reference.source);
+  const sketch=normalizeGameplaySketch(base,result,result.coreLoop,result.gameName);
+  assert.equal(sketch.novelGameGrammar.existingGameSystemRole,'B_EXISTING_GAME_SYSTEMS');
+  assert.equal(sketch.novelGameGrammar.representativeGameReference.name,'디아블로');
+  const migrated=computeVibeSeedProposal({...base,aSystemReference:{...reference,scope:'A_SYSTEM_ONLY'}});
+  assert.deepEqual(migrated,result,'legacy original-system input migrates to B without replacing it');
+  const seed={...legacySeed(),GAMEPLAY_SKETCH:sketch,CORE_LOOP:result.coreLoop,DISTINCT_IDENTITY:result.distinctIdentity};
+  assert.equal(validateGameSeed(seed).pass,true,validateGameSeed(seed).errors.join('|'));
+  const broken=structuredClone(seed);broken.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements[0].sourceDId='UNKNOWN_D';
+  assert.equal(validateGameSeed(broken).pass,false,'D/Delve lineage remains mandatory');
+  assert.throws(()=>computeVibeSeedProposal({...base,representativeGameReference:'출처 없는 이름'}),/A_REFERENCE_GAME_SYSTEM_EVIDENCE_REQUIRED/);
+  const fresh=computeVibeSeedProposal(base);
+  assert.equal(fresh.basicDesignSelection.existingSystemReference.scope,'B_NEW_GAME_INITIAL_SYSTEMS','a new game must not fabricate an old baseline');
+});
+
+test('basic floor carries authored standard systems and B supporting reference without genre presets',()=>{
+  const content={creativeGrammar:{standardVersion:1,a:{system:'새 중심 시스템'},b:{system:'새 B 시스템',existingSystemReference:{scope:'B_SUPPORTING_REFERENCE_ONLY',systemFamily:'기존 게임 시스템'}}},
+    signatureSystems:[{id:'AUTHORED_A'},{id:'AUTHORED_B'}],
+    systemInterconnections:[{fromId:'AUTHORED_A',toId:'AUTHORED_B',stateKeys:['SharedState'],trigger:'입력 확정',stateChange:'상태 갱신'}]};
+  const blueprint=buildConceptSystemBlueprint({genre:'TYCOON',baseline:{content}});
+  assert.deepEqual(blueprint.requiredSystems.map(row=>row.id),['AUTHORED_A','AUTHORED_B']);
+  assert.equal(blueprint.expansionSystems.length,0,'routing genre must not inject another required gameplay bundle');
+  assert.equal(blueprint.novelGrammarContract.b.existingSystemReference.systemFamily,'기존 게임 시스템');
+  assert.equal(blueprint.expansionPolicy.cNeedsTwoCreativeThemesAndTwoDistinctGenres,false);
+  assert.equal(blueprint.expansionPolicy.dSpecificMaterialCreationsRequired,true);
+  assert.equal(blueprint.expansionPolicy.atMustDeriveFromD,true);
+  assert.match(blueprint.interconnectionChains[0],/AUTHORED_A.*AUTHORED_B.*SharedState/);
 });

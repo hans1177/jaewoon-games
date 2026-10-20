@@ -189,20 +189,26 @@ test('system steward stale lease recovery stays synchronized with central archit
   const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   const architecture=JSON.parse(fs.readFileSync(new URL('../company-learning/company-architecture-map.json',import.meta.url),'utf8'));
   const logMap=JSON.parse(fs.readFileSync(new URL('../company-learning/company-log-map.json',import.meta.url),'utf8'));
-  const recovery=architecture?.autonomousBottleneckRecovery?.staleRunningReservationRecovery;
-  const logRecovery=logMap?.orchestrationLogContract?.systemStewardRecovery;
+  // The detailed architecture/log map fields were deliberately retired.
+  // The canonical roadmap and actual steward still enforce stale lease recovery.
   assert.equal(policy?.developmentLifecycleMachine?.selfRecoveryAndBottleneckRelief?.automaticRecovery?.staleRunningReservation,'RELEASE_AND_REQUEUE_WITH_RECOVERY_EVIDENCE');
-  assert.equal(recovery?.source,'company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticRecovery.staleRunningReservation');
-  assert.equal(recovery?.implementation,'tools/vibe2-system-steward.mjs::staleRunningIds');
-  assert.equal(recovery?.staleAfterMinutes,45);
-  assert.equal(recovery?.actionMarker,'RECOVER_STALE_RUNNING_RESERVATION');
-  assert.equal(recovery?.lastOutcomeMarker,'SYSTEM_STEWARD_STALE_LEASE_RECOVERED');
-  assert.equal(recovery?.evidenceMarker,'system-steward:stale-running-reservation-recovered');
-  assert.equal(logRecovery?.staleRunningReservationAction,'RECOVER_STALE_RUNNING_RESERVATION');
-  assert.equal(logRecovery?.queueOutcomeMarker,'SYSTEM_STEWARD_STALE_LEASE_RECOVERED');
-  assert.equal(logRecovery?.queueEvidenceMarker,'system-steward:stale-running-reservation-recovered');
-  assert.ok(logRecovery?.emittedMarkers?.includes('VIBE2_SYSTEM_STEWARD_ACTIONS'));
-  assert.ok(logRecovery?.emittedMarkers?.includes('VIBE2_SYSTEM_STEWARD_QUEUE_CHANGED'));
+  assert.equal(architecture.status,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  assert.equal(architecture.branches['vibe2-unreal-core'].role,'QUEUE_STATE');
+  assert.equal(logMap.status,'MINIMAL_RETAINED_SUMMARY_NON_EXECUTABLE');
+  assert.equal(logMap.retained.proof,'STRUCTURED_EVIDENCE_REQUIRED');
+  for(const key of ['GITHUB_RUN_ID','TASK_ID','GAME_ID','SOURCE_REVISION','FAILURE_STAGE','FAILURE_SIGNATURE']){
+    assert.ok(logMap.retained.keys.includes(key),key);
+  }
+  const steward=fs.readFileSync(new URL('../tools/vibe2-system-steward.mjs',import.meta.url),'utf8');
+  assert.match(steward,/function staleRunningIds\(queue,\{nowMs=Date\.now\(\),staleMs=45\*60\*1000\}/);
+  assert.match(steward,/waitBlocker\(task\.blocker\)/);
+  assert.match(steward,/if \(\/\^\\d\+\$\/\.test\(clean\(task\.reservationRunId\)\)\) return false/);
+  assert.match(steward,/actions\.push\('RECOVER_STALE_RUNNING_RESERVATION'\)/);
+  assert.match(steward,/lastOutcome:'SYSTEM_STEWARD_STALE_LEASE_RECOVERED'/);
+  assert.match(steward,/system-steward:stale-running-reservation-recovered/);
+  assert.match(steward,/VIBE2_SYSTEM_STEWARD_ACTIONS=/);
+  assert.match(steward,/VIBE2_SYSTEM_STEWARD_QUEUE_CHANGED=/);
 });
 
 

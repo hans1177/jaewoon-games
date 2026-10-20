@@ -10,6 +10,7 @@ import {execFileSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
 import {
   synchronizeOwnerDevelopmentHolds,
+  completeOwnerExclusiveGameScope,
   enqueueVibeTask,
   reserveNextVibeTask,
   reserveVibeTaskBatch,
@@ -37,6 +38,40 @@ import {
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 
 const continuousWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+
+ 
+test('free AI quota exhaustion waits for provider retry window without using game retry budget',()=>{
+  const resumeAt=new Date(Date.now()+60*60*1000).toISOString();
+  const task={
+    id:'quota-source-game',gameId:'quota-source-game',target:'roblox',department:'development',type:'implementation',
+    goal:'preserve playable game while generating source',sourceRoot:'roblox-games/quota-source-game',
+    responsibleFiles:['server/Game.server.luau'],status:'running',retries:2,maxRetries:4,
+    reservationId:'quota-lease-1',reservationRunId:'4001',reservedAt:new Date().toISOString(),evidence:[]
+  };
+  const result={
+    taskId:task.id,reservationId:task.reservationId,variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed',
+    candidateFailure:{class:'EXTERNAL_AI_UNAVAILABLE',
+      message:'gemini-3.8-flash:HTTP_429,gemini-3.5-flash-lite:HTTP_429:NEXT_RETRY_AT='+resumeAt}
+  };
+  const settled=applyVibeFanInResults(createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[task]}),[result]);
+  const waiting=settled.queue.tasks.find(row=>row.id===task.id);
+  assert.equal(settled.applied[0].outcome,'DEFERRED_EXTERNAL_QUOTA');
+  assert.equal(waiting.status,'blocked');
+  assert.equal(waiting.blocker,'EXTERNAL_AI_QUOTA_COOLDOWN');
+  assert.equal(waiting.retries,2,'rate limit must not consume game retry budget');
+  assert.equal(waiting.reservationId,null,'provider cooling must free the old execution lease');
+  assert.ok(waiting.evidence.includes('external-ai-quota-retry-at:'+settled.applied[0].retryAt));
+  const early=recoverStaleRunningReservations(settled.queue,{nowMs:Date.parse(resumeAt)-1000});
+  assert.equal(early.recovered,0);
+  assert.equal(early.queue.tasks[0].status,'blocked');
+  const ready=recoverStaleRunningReservations(early.queue,{nowMs:Date.parse(resumeAt)+1000});
+  assert.equal(ready.recovered,1);
+  assert.equal(ready.queue.tasks[0].status,'queued');
+  assert.equal(ready.queue.tasks[0].retries,2);
+  assert.equal(ready.queue.tasks[0].blocker,null);
+});
+
 
 // 웹 상시 두 게임: 실제 예약·완료·대기 복구를 거쳐 서로 다른 게임을 유지한다.
 test('canonical web target fills two distinct games and refills a released game without cancelling native work',()=>{
@@ -260,6 +295,29 @@ test('transient work lock conflicts are requeued without consuming retry budget 
   assert.ok(task.evidence.includes('transient-work-lock-deferred:work-lock-conflict:not-acquired'));
   assert.equal(task.evidence.some(value=>value==='failure-cause:work-lock-conflict:not-acquired'),false);
   assert.equal(result.applied[0].outcome,'REQUEUED_TRANSIENT_LOCK');
+});
+
+test('fan-in index preserves each task identity after earlier groups requeue and queue normalization',()=>{
+  const tasks=['first','middle','last'].map(id=>({
+    id,gameId:id,target:'roblox',department:'development',type:'implementation',
+    goal:'verified scoped asset fix',status:'running',sourceRoot:`roblox-games/${id}`,
+    responsibleFiles:['client/Game.client.luau'],retries:1,evidence:[]
+  }));
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:8,tasks});
+  const merged=applyVibeFanInResults(queue,[
+    {taskId:'last',variant:'primary',outcome:'BLOCKED',blocker:'work-lock-conflict:last'},
+    {taskId:'unknown',variant:'primary',outcome:'PASS'},
+    {taskId:'first',variant:'primary',outcome:'BLOCKED',blocker:'work-lock-conflict:first'}
+  ]);
+  const byId=new Map(merged.queue.tasks.map(task=>[task.id,task]));
+  assert.deepEqual(merged.queue.tasks.map(task=>task.id),['first','middle','last']);
+  assert.equal(byId.get('last').status,'queued');
+  assert.equal(byId.get('first').status,'queued');
+  assert.equal(byId.get('middle').status,'running');
+  assert.equal(byId.get('middle').retries,1);
+  assert.ok(byId.get('first').evidence.includes('transient-work-lock-deferred:work-lock-conflict:first'));
+  assert.ok(byId.get('last').evidence.includes('transient-work-lock-deferred:work-lock-conflict:last'));
+  assert.deepEqual(merged.applied.map(row=>row.outcome),['REQUEUED_TRANSIENT_LOCK','STALE_RESULT_SKIPPED','REQUEUED_TRANSIENT_LOCK']);
 });
 
 test('existing blocked work-lock tasks are recovered before the next reserve cycle',()=>{
@@ -1276,6 +1334,32 @@ test('completed reservation probe prioritizes oldest running reservations and co
   assert.doesNotMatch(block,/slice\(0,64\)/);
 });
 
+test('completed graphics asset reservations recover while live and fan-in work stay protected',()=>{
+  const base={gameId:'horror-escape-room',target:'roblox',department:'graphics',type:'implementation',
+    executionLane:'ASSET_DEVELOPMENT',sourceRoot:'assets/roblox/world-ghosts/motions',goal:'motion repair',
+    status:'running',reservationRunId:'100',reservationId:'100:1',retries:1};
+  const queue=createVibeContinuousQueue({tasks:[
+    {...base,id:'ended-asset'},
+    {...base,id:'live-asset',reservationRunId:'101',reservationId:'101:1'},
+    {...base,id:'fan-in-asset',blocker:'slot-released-awaiting-fan-in'},
+    {...base,id:'unrelated-graphics',executionLane:'SUPPORT'}
+  ]});
+  const result=recoverCompletedRunningReservations(queue,{completedRunIds:['100']});
+  assert.equal(result.recovered,1);
+  const recovered=result.queue.tasks.find(row=>row.id==='ended-asset');
+  assert.equal(recovered.status,'queued');
+  assert.equal(recovered.reservationRunId,null);
+  assert.equal(recovered.retries,1);
+  for(const id of ['live-asset','fan-in-asset','unrelated-graphics']){
+    assert.equal(result.queue.tasks.find(row=>row.id===id).status,'running');
+  }
+  const start=continuousWorkflow.indexOf('candidate_reservation_runs="$(node');
+  const end=continuousWorkflow.indexOf("process.stdout.write(ids.join(','))",start);
+  const probe=continuousWorkflow.slice(start,end);
+  assert.match(probe,/String\(task\.executionLane\|\|''\)\.toUpperCase\(\)==='ASSET_DEVELOPMENT'/);
+  assert.match(probe,/!String\(task\.blocker\|\|''\)\.trim\(\)/);
+});
+
 test('completed workflow reservation is requeued immediately without waiting for stale TTL', () => {
   const queue=createVibeContinuousQueue({tasks:[
     {
@@ -1848,6 +1932,7 @@ test('continuous core rebases stale main pushes, drops duplicate refill wakes, a
   assert.match(block,/VIBE2_DISPATCH_ACTION: \$\{\{ github\.event\.action \|\| '' \}\}/);
   assert.match(block,/vibe2-fanin-refill/);
   assert.match(block,/VIBE2_FANIN_WAKE_STALE_DROPPED/);
+  assert.match(block,/VIBE2_FANIN_WAKE_DUPLICATE_DROPPED/);
   assert.match(block,/VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST/);
   assert.match(block,/VIBE2_RESERVE_WAKE_EVENT_SHA/);
   assert.match(block,/VIBE2_RESERVE_WAKE_LATEST_SHA/);
@@ -1858,7 +1943,13 @@ test('continuous core rebases stale main pushes, drops duplicate refill wakes, a
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'refill-main-drift-'));
   try{
     const gh=path.join(temp,'gh'),output=path.join(temp,'output');
-    fs.writeFileSync(gh,'#!/bin/sh\nprintf "%s\\n" "$TEST_LATEST_MAIN"\n',{mode:0o755});
+    // 유틸: main SHA 조회와 리필 실행 목록을 구분하는 기존 테스트용 GitHub 응답.
+    fs.writeFileSync(gh,`#!/bin/sh
+case "$*" in
+  *"/actions/workflows/vibe2-continuous-core.yml/runs?event=repository_dispatch&per_page=100"*) printf '%s\\n' "$TEST_RUNS_JSON" ;;
+  *) printf '%s\\n' "$TEST_LATEST_MAIN" ;;
+esac
+`,{mode:0o755});
     for(const [event,action,eventSha,latestSha,expected,marker] of [
       ['repository_dispatch','vibe2-fanin-refill','old-owner-main','new-owner-main','false','VIBE2_FANIN_WAKE_STALE_DROPPED'],
       ['push','','old-owner-main','new-owner-main','true','VIBE2_MAIN_PUSH_WAKE_REBASED_TO_LATEST'],
@@ -1866,7 +1957,28 @@ test('continuous core rebases stale main pushes, drops duplicate refill wakes, a
       ['repository_dispatch','vibe2-neuron-complete','old-owner-main','new-owner-main','true','NEURON_CALLBACK_ALWAYS_INGEST']
     ]){
       fs.writeFileSync(output,'');
-      const log=execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',env:{...process.env,PATH:temp+path.delimiter+process.env.PATH,GITHUB_EVENT_NAME:event,GITHUB_REF_NAME:'main',VIBE2_DISPATCH_ACTION:action,GITHUB_SHA:eventSha,TEST_LATEST_MAIN:latestSha,GITHUB_REPOSITORY:'test/repo',GITHUB_OUTPUT:output}});
+      const log=execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',env:{...process.env,PATH:temp+path.delimiter+process.env.PATH,GITHUB_EVENT_NAME:event,GITHUB_REF_NAME:'main',VIBE2_DISPATCH_ACTION:action,GITHUB_SHA:eventSha,TEST_LATEST_MAIN:latestSha,GITHUB_REPOSITORY:'test/repo',GITHUB_RUN_ID:'5000',VIBE2_EXECUTION_LANE:'game-primary',TEST_RUNS_JSON:JSON.stringify({workflow_runs:[]}),GITHUB_OUTPUT:output}});
+      assert.equal(fs.readFileSync(output,'utf8').trim(),'proceed='+expected);
+      assert.ok(log.includes(marker));
+    }
+    // 메인: 먼저 도착한 같은 SHA·레인은 중복 예약을 생략하지만, 완료·다른 레인·새 요청은 보존한다.
+    const base={id:4000,status:'queued',event:'repository_dispatch',head_branch:'main',head_sha:'same-main',display_title:'Vibe2 Continuous Core · vibe2-fanin-refill · game-primary'};
+    for(const [overrides,expected,marker] of [
+      [{},'false','VIBE2_FANIN_WAKE_DUPLICATE_DROPPED'],
+      [{status:'in_progress'},'false','VIBE2_FANIN_WAKE_DUPLICATE_DROPPED'],
+      [{status:'completed'},'true','VIBE2_FANIN_WAKE_ADMITTED'],
+      [{head_sha:'old-main'},'true','VIBE2_FANIN_WAKE_ADMITTED'],
+      [{display_title:'Vibe2 Continuous Core · vibe2-fanin-refill · asset-development'},'true','VIBE2_FANIN_WAKE_ADMITTED'],
+      [{id:6000},'true','VIBE2_FANIN_WAKE_ADMITTED'],
+      [{event:'workflow_dispatch'},'true','VIBE2_FANIN_WAKE_ADMITTED']
+    ]){
+      fs.writeFileSync(output,'');
+      const log=execFileSync('bash',['-euo','pipefail','-c',script],{encoding:'utf8',env:{
+        ...process.env,PATH:temp+path.delimiter+process.env.PATH,GITHUB_EVENT_NAME:'repository_dispatch',
+        GITHUB_REF_NAME:'main',VIBE2_DISPATCH_ACTION:'vibe2-fanin-refill',GITHUB_SHA:'same-main',
+        TEST_LATEST_MAIN:'same-main',GITHUB_REPOSITORY:'test/repo',GITHUB_RUN_ID:'5000',
+        VIBE2_EXECUTION_LANE:'game-primary',TEST_RUNS_JSON:JSON.stringify({workflow_runs:[{...base,...overrides}]}),GITHUB_OUTPUT:output
+      }});
       assert.equal(fs.readFileSync(output,'utf8').trim(),'proceed='+expected);
       assert.ok(log.includes(marker));
     }
@@ -1963,8 +2075,8 @@ test('candidate result workflows use direct repository-dispatch refill instead o
 });
 
 
-// 메인 · 같은 리비전의 아직 시작하지 않은 게임 호출만 기존 큐에 유지한다.
-test('24H preplan deduplicates queued same-main production wakes without cross-lane cancellation',()=>{
+// 동일 main·레인 예약 중 대기 상태와 실행 중인 예약 단계만 재사용한다. 예약이 끝나면 다음 생산 웨이브를 막지 않는다.
+test('24H preplan coalesces pending exact-main wakes and only running active reserves without starving independent refill',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   for(const lane of ['game-primary','asset-development']){
   const variable=lane==='game-primary'?'queued_exact_wake':'queued_asset_wake';
@@ -1995,16 +2107,23 @@ test('24H preplan deduplicates queued same-main production wakes without cross-l
   assert.equal(evaluate([wake],main),'751');
   assert.equal(evaluate([{...wake,status:'pending'}],main),'751');
   assert.equal(evaluate([{...wake,status:'requested'}],main),'751');
-  assert.equal(evaluate([{...wake,status:'in_progress'}],main),'');
+  assert.equal(evaluate([{...wake,status:'in_progress'}],main),'751:reserve-check');
   assert.equal(evaluate([{...wake,status:'completed'}],main),'');
   assert.equal(evaluate([{...wake,head_sha:previous}],main),'');
   assert.equal(evaluate([{...wake,event:'push'}],main),'');
   assert.equal(evaluate([{...wake,path:'.github/workflows/vibe2-recovery-fast.yml'}],main),'');
   assert.equal(evaluate([{...wake,display_title:'Vibe2 Continuous Core · workflow_dispatch · '+(lane==='game-primary'?'asset-development':'game-primary')}],main),'');
   assert.equal(evaluate([{...wake,head_sha:previous},wake],main),'751');
+  assert.equal(evaluate([{...wake,status:'in_progress'},wake],main),'751','queued reservation must beat a running candidate');
+  assert.equal(evaluate([{...wake,head_sha:previous,status:'in_progress'}],main),'');
+  assert.equal(evaluate([{...wake,status:'in_progress',display_title:'Vibe2 Continuous Core · workflow_dispatch · '+(lane==='game-primary'?'asset-development':'game-primary')}],main),'');
   assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=COALESCED_QUEUED_EXACT_MAIN/);
   assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(workflow,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
+  assert.match(workflow,/actions\/runs\/\$\{wake_id\}\/jobs\?per_page=100/);
+  assert.match(workflow,/reserve_status.*'queued'.*reserve_status.*'in_progress'/);
+  assert.match(workflow,/queued_asset_wake=''/);
+  assert.match(workflow,/queued_exact_wake=''/);
   }
   assert.match(workflow,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=COALESCED_QUEUED_EXACT_MAIN/);
   const assetStart=workflow.indexOf('          queued_asset_wake=');
@@ -2542,10 +2661,10 @@ test('Unity Web receives sixteen distinct-game priority slots without a seventee
   assert.ok(result.tasks.some(t=>t.id==='roblox-live'));
 });
 
-test('Roblox-only owner scope reserves real game work while preserving held source and file safety',()=>{
+test('owner scope resumes general Web and Roblox while keeping Unity held',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const scope=policy.ownerActiveDevelopmentScope20261009;
-  assert.deepEqual(scope.activeTargets,['ROBLOX']);
+  assert.deepEqual(scope.activeTargets,['ROBLOX','WEB']);
   assert.equal(scope.unityAndroidDevelopmentAllowed,false);
   const task=(id,target,unityWeb=false,file='Assets/Scripts/GameCore.cs')=>({
     id,gameId:id,target,goal:'repair actual gameplay source',type:'implementation',department:'development',
@@ -2564,12 +2683,15 @@ test('Roblox-only owner scope reserves real game work while preserving held sour
     lane:'game-primary',maxConcurrentTasks:8,policy,
     reservation:{id:'qa-current:1',runId:'qa-current',runAttempt:1,reservedAt:'2026-10-11T00:00:00Z'}
   });
-  assert.deepEqual(new Set(batch.tasks.map(row=>row.id)),new Set(['qa-active-roblox']));
-  for(const id of ['qa-active-unity-web','qa-held-unity-android','qa-held-legacy-web']){
+  assert.deepEqual(new Set(batch.tasks.map(row=>row.id)),new Set(['qa-active-roblox','qa-held-legacy-web']));
+  for(const id of ['qa-active-unity-web','qa-held-unity-android']){
     const row=batch.queue.tasks.find(t=>t.id===id);
     assert.equal(row.status,'queued');
     assert.equal(row.ownerDevelopmentHold,true);
   }
+  const restoredWeb=batch.queue.tasks.find(t=>t.id==='qa-held-legacy-web');
+  assert.equal(restoredWeb.status,'running');
+  assert.equal(restoredWeb.ownerDevelopmentHold,false);
   const unity=batch.queue.tasks.find(t=>t.id==='qa-active-roblox');
   assert.equal(unity.status,'running');
   assert.equal(unity.ownerDevelopmentHold,false);
@@ -2592,7 +2714,7 @@ test('Roblox-only owner scope reserves real game work while preserving held sour
   assert.equal(distinct.queue.tasks.filter(row=>row.status==='queued').length,1);
 });
 
-test('owner active scope holds Unity Web, legacy Web and Android while allowing Roblox',()=>{
+test('owner active scope allows general Web but holds Unity Web and Android',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   assert.equal(policy.ownerActiveDevelopmentScope20261009.status,'ACTIVE');
   const make=(gameId,target,evidence=[])=>({
@@ -2605,8 +2727,8 @@ test('owner active scope holds Unity Web, legacy Web and Android while allowing 
     make('native-web','unity',['unity-web-first-stage']),make('native-roblox','roblox')
   ]});
   const result=reserveVibeTaskBatch(queue,{maxConcurrentTasks:8,policy});
-  assert.deepEqual(new Set(result.tasks.map(item=>item.id)),new Set(['native-roblox']));
-  assert.equal(result.queue.tasks.find(item=>item.id==='legacy-web').ownerDevelopmentHold,true);
+  assert.deepEqual(new Set(result.tasks.map(item=>item.id)),new Set(['native-roblox','legacy-web']));
+  assert.equal(result.queue.tasks.find(item=>item.id==='legacy-web').ownerDevelopmentHold,false);
   assert.equal(result.queue.tasks.find(item=>item.id==='held-android').ownerDevelopmentHold,true);
 });
 
@@ -2624,7 +2746,9 @@ test('large mixed-platform queue reserves Unity Web without repeated full-candid
       evidence:unityWeb?['unity-web-first-stage']:[],unityWebDevelopment:unityWeb
     };
   });
-  const policy={ownerActiveDevelopmentScope20261009:{status:'ACTIVE'}};
+  // 대규모 예약 알고리즘 테스트: 허용된 Unity Web/Roblox 상태를 명시한 격리 fixture.
+  // 실제 현행 오너 보류 정책은 변경하지 않는다.
+  const policy={ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','UNITY_WEB']}};
   const first=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:256,tasks}),{
     maxConcurrentTasks:128,lane:'game-primary',policy
   });
@@ -2828,4 +2952,165 @@ test('24H lossless queue checkpoint follows accepted advisory learning and prece
   assert.match(saving,/VIBE2_QUEUE_STORAGE_EARLY_CHECKPOINT=STALE_CONTROL_REF_RETRY[\s\S]*?continue/);
   assert.match(saving,/VIBE2_QUEUE_TASKS_REMOVED=0/);
   assert.equal((workflow.match(/storage-migrate/g)||[]).length,1);
+});
+
+test('owner scoped direct coding takes precedence and resumes existing Vibe after verified F0-F9/publish handoff',()=>{
+  const policy={
+    ownerCanonicalRules:{ownerExclusiveDevelopment:{
+      status:'ACTIVE',gameIds:['owner-game','unrelated-owner'],
+      handoff:{automaticResumeAfterVerifiedOwnerWork:true,
+        resumeRoute:'.github/workflows/vibe2-24h-runner.yml'}
+    }},
+    developmentLifecycleMachine:{verifiedF0F9PublicationLoop:{developmentGamePublicationAllowed:false}},
+    ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX','WEB']}
+  };
+  const items=['owner-game','unrelated-owner','autonomous'].map(id=>({
+    id:'work-'+id,gameId:id,target:'web',goal:'continue approved source',
+    status:'queued',department:'development',type:'implementation',responsibleFiles:['web-games/'+id+'/index.html']
+  }));
+  const original=createVibeContinuousQueue({tasks:items});
+  const held=synchronizeOwnerDevelopmentHolds(original,policy);
+  assert.equal(held.tasks[0].ownerDevelopmentHold,true);
+  assert.equal(held.tasks[1].ownerDevelopmentHold,true);
+  assert.equal(held.tasks[2].ownerDevelopmentHold,false,'other games do not pause');
+  const missing=completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game'});
+  assert.equal(missing.released,false);
+  assert.equal(missing.status,'OWNER_WORK_EVIDENCE_OR_PUBLICATION_NOT_VERIFIED');
+  assert.deepEqual(missing.policy.ownerCanonicalRules.ownerExclusiveDevelopment.gameIds,
+    ['owner-game','unrelated-owner']);
+  const sha='a'.repeat(40);
+  const candidate={
+    target:'WEB',releaseState:'development-confirmed',sourceSha:sha,f9VerifiedSourceSha:sha,
+    checks:{sourceIntegrityPassed:true,f0ToF9Verified:true,policyPassed:true,securityPassed:true,
+      staticQaRunId:101,buildRunId:102,f9RuntimeRunId:103,securityRunId:104},
+    publication:{status:'DEVELOPMENT_PUBLICATION_SKIPPED'}
+  };
+  const ready=completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game',completion:candidate});
+  assert.equal(ready.released,true);
+  assert.equal(ready.status,'OWNER_VERIFIED_HANDOFF_READY');
+  assert.deepEqual(ready.policy.ownerCanonicalRules.ownerExclusiveDevelopment.gameIds,['unrelated-owner']);
+  assert.equal(ready.queue.tasks[0].ownerDevelopmentHold,false);
+  assert.equal(ready.queue.tasks[1].ownerDevelopmentHold,true);
+  assert.equal(ready.queue.tasks[2].ownerDevelopmentHold,false);
+  assert.deepEqual(ready.newlyUnheldTaskIds,['work-owner-game']);
+  assert.equal(ready.schedulerWorkflow,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(ready.handoffRequiresPersistedPolicyAndQueue,true);
+  assert.equal(ready.nextEvolutionCycleRequired,true);
+  assert.equal(ready.sourceOrSaveChanged,false);
+  assert.equal(ready.publicationClaimed,false);
+  const failed=completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game',
+    completion:{...candidate,f9VerifiedSourceSha:'b'.repeat(40)}});
+  assert.equal(failed.released,false,'F9 mismatch must not auto-release');
+  const explicit=completeOwnerExclusiveGameScope({
+    queueInput:original,policy,gameId:'owner-game',ownerExplicitRelease:true,
+    completion:{target:'WEB'}
+  });
+  assert.equal(explicit.released,true);
+  assert.equal(explicit.completionVerified,false);
+  assert.equal(explicit.checkpointAction,'RESUME_CAUSAL_REPAIR_WITH_UNVERIFIED_OWNER_WORK');
+  assert.equal(explicit.finalPublicationAndFanInStillAuthoritative,true);
+  const stale=completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'unlisted',completion:candidate});
+  assert.equal(stale.released,false);
+  assert.equal(stale.status,'GAME_NOT_IN_OWNER_EXCLUSIVE_SCOPE');
+  const ownerPublishPolicy={
+    ...policy,
+    roblox:{deploymentControl:{ownerDirectCanonicalPublishException:{
+      enabled:true,gameIds:['owner-game'],
+      trigger:'EXPLICIT_OWNER_DIRECT_PUBLISH_INSTRUCTION',
+      f9RequiredForOwnerDirectPublish:false,canonicalPrivateTargetOnly:true
+    }}},
+    ownerCanonicalRules:{ownerExclusiveDevelopment:{
+      ...policy.ownerCanonicalRules.ownerExclusiveDevelopment,
+      implementationScope:{publicationTarget:{placeId:'98222620265768'}}
+    }}
+  };
+  const directPublish={
+    target:'ROBLOX',sourceSha:sha,mainSourceSha:sha,
+    releaseState:'development-confirmed',f9VerifiedSourceSha:'',
+    checks:{
+      sourceIntegrityPassed:true,exactMainSourceRevision:true,
+      staticSourceGuardPassed:true,buildPassed:true,securityPassed:true,
+      staticQaRunId:42,buildRunId:43,securityRunId:44
+    },
+    publication:{status:'EXACT_REVISION_PUBLISHED',sourceSha:sha,
+      runId:45,targetId:'98222620265768'}
+  };
+  const privateOwner=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',completion:directPublish
+  });
+  assert.equal(privateOwner.released,true);
+  assert.equal(privateOwner.status,'OWNER_DIRECT_PUBLISH_HANDOFF_READY_F0_F9_PENDING');
+  assert.equal(privateOwner.checkpointAction,'RESUME_EXISTING_F0_F9_AFTER_OWNER_DIRECT_PUBLISH');
+  assert.equal(privateOwner.finalPublicationAndFanInStillAuthoritative,true);
+  const wrongPlace=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',
+    completion:{...directPublish,publication:{...directPublish.publication,targetId:'999'}}
+  });
+  assert.equal(wrongPlace.released,false,'private owner place identity cannot change');
+  const wrongMain=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',
+    completion:{...directPublish,mainSourceSha:'b'.repeat(40)}
+  });
+  assert.equal(wrongMain.released,false,'owner direct publish must come from exact main');
+  const leftoverTempArtifact=completeOwnerExclusiveGameScope({
+    queueInput:original,policy:ownerPublishPolicy,gameId:'owner-game',
+    completion:{...directPublish,temporaryPublishArtifactCreated:true}
+  });
+  assert.equal(leftoverTempArtifact.released,false,'temporary publish artifact must be cleaned');
+  const releaseRequired={...candidate,releaseState:'release-confirmed'};
+  assert.equal(completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game',
+    completion:releaseRequired}).released,false,'released games need exact published revision');
+  releaseRequired.publication={status:'EXACT_REVISION_PUBLISHED',sourceSha:sha,runId:105,targetId:106};
+  assert.equal(completeOwnerExclusiveGameScope({queueInput:original,policy,gameId:'owner-game',
+    completion:releaseRequired}).released,true);
+});
+
+test('canonical owner-exclusive scope policy retains assistant-only coding while enabling automatic verified return',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const owner=policy.ownerCanonicalRules.ownerExclusiveDevelopment;
+  assert.equal(owner.mode,'OWNER_EXCLUSIVE_DIRECT_DEVELOPMENT');
+  assert.equal(owner.rules.ownerExplicitInstructionRequired,true);
+  assert.equal(owner.rules.vibeGameSourceMutationForbidden,true);
+  assert.equal(owner.rules.vibeQueueDevelopmentDispatchForbidden,true);
+  assert.equal(owner.handoff.automaticResumeAfterVerifiedOwnerWork,true);
+  assert.equal(owner.handoff.exactSourceAndGateEvidenceRequiredBeforeAutoRelease,true);
+  assert.equal(owner.handoff.sourceAndSaveResetForbidden,true);
+  assert.equal(owner.handoff.resumeRoute,'.github/workflows/vibe2-24h-runner.yml');
+  assert.equal(policy.ownerCanonicalRules.rule1.terminalDoneStateForbidden,true);
+  assert.deepEqual(owner.gameIds,[],'owner scope never activates globally by this policy change');
+});
+
+test('completed fan-in without worker artifacts requeues only exact unreviewed reservations',()=>{
+  const base={gameId:'forest',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/forest',goal:'preserve gameplay and continue development',
+    status:'running',blocker:'slot-released-awaiting-fan-in',
+    reservationId:'100:1',reservationRunId:'100',reservationRunAttempt:1,reservedAt:'2026-10-17T17:03:29Z',
+    retries:1,retainedResponsibleFileLocks:['index.html']};
+  const queue=createVibeContinuousQueue({tasks:[
+    {...base,id:'orphan-no-result'},
+    {...base,id:'reviewed',evidence:['role-result:review:PASS']},
+    {...base,id:'preserved-result',neuronResults:[{variant:'primary'}]},
+    {...base,id:'different-run',reservationRunId:'101',reservationId:'101:1'},
+    {...base,id:'qa',blocker:'candidate-awaiting-qa-and-deployment'}
+  ]});
+  const notVerified=recoverCompletedRunningReservations(queue,{completedRunIds:['100']});
+  assert.equal(notVerified.recovered,0,'normal completed-run probe must retain artifact awaits');
+  const notCompleted=recoverCompletedRunningReservations(queue,{completedRunIds:[],noResultRunIds:['100']});
+  assert.equal(notCompleted.recovered,0,'artifact probe alone is not completed-run evidence');
+  const recovered=recoverCompletedRunningReservations(queue,{completedRunIds:['100'],noResultRunIds:['100']});
+  assert.equal(recovered.recovered,1);
+  const orphan=recovered.queue.tasks.find(row=>row.id==='orphan-no-result');
+  assert.equal(orphan.status,'queued');
+  assert.equal(orphan.blocker,null);
+  assert.equal(orphan.reservationRunId,null);
+  assert.equal(orphan.retries,1);
+  assert.deepEqual(orphan.retainedResponsibleFileLocks,[]);
+  assert.equal(orphan.lastOutcome,'FAN_IN_RESULT_ARTIFACT_MISSING_REQUEUED');
+  assert.ok(orphan.evidence.includes('recovery:verified-completed-fan-in-no-worker-artifacts'));
+  for(const id of ['reviewed','preserved-result','different-run','qa']){
+    assert.equal(recovered.queue.tasks.find(row=>row.id===id).status,'running',id);
+  }
+  assert.match(continuousWorkflow,/VIBE2_FAN_IN_NO_RESULT_PROBE=VERIFIED_EMPTY/);
+  assert.match(continuousWorkflow,/--no-result-runs="\$no_result_fanin_runs"/);
+  assert.match(continuousWorkflow,/\[ "\$\(cat "\$status_file"\)" = 'completed' \] \|\| continue/);
 });

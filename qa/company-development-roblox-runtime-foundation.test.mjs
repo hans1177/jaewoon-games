@@ -695,7 +695,7 @@ test('F9 canonical publish uses exact F9 released-game identity and immediately 
  assert.match(workflow,/robloxF9VerifiedPrepublishEvidence/);
  assert.match(workflow,/robloxCanonicalPublishQueue/);
  assert.match(workflow,/status:'PENDING'/);
- assert.match(workflow,/const releaseReadiness=evaluateInternalRelease\(item,'ROBLOX',roadmap\)/);
+ assert.match(workflow,/const releaseReadiness=evaluateInternalRelease\(\{\.\.\.item,robloxRuntimeCandidateEvidence:candidate\},'ROBLOX',roadmap,'SERVER_DEPLOYMENT'\)/);
  assert.match(workflow,/const serverPublishEligible=[\s\S]*?releaseReadiness\.ready===true[\s\S]*?item\.robloxFinalReviewPassed===true[\s\S]*?item\.robloxF9ReleaseRegressionPassed===true[\s\S]*?candidate\.sourceRevision===sourceRevision[\s\S]*?candidate\.artifactIdentity===artifactIdentity/);
  assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
  assert.match(workflow,/if\(serverPublishEligible&&!publishQueue/);
@@ -856,7 +856,7 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  const verify=roadmap.roblox?.developmentVerification||{};
  const studio=roadmap.roblox?.studioExecution||{};
  const stack=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack||{};
- const topology=architecture.robloxDevelopmentVerificationTopology||{};
+ const architectureSummary=architecture.status;
  assert.deepEqual(verify.postBuildUpRequired,['CODE_QA','STATIC_QA']);
  assert.equal(verify.studio,'OPTIONAL_DIAGNOSTIC');
  assert.equal(verify.studioBlocksDevelopment,false);
@@ -870,10 +870,11 @@ test('central policy keeps runtime and Studio optional while code and static QA 
  assert.equal(stack.releaseGate.runtimeFoundationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.internalRuntimeValidationRequiredForInternalRelease,false);
  assert.equal(stack.releaseGate.studioRequiredForInternalRelease,false);
- assert.equal(topology.studioRole,'OPTIONAL_DIAGNOSTIC_AND_VERIFIED_LEARNING');
- assert.equal(topology.studioBlocksDevelopment,false);
- assert.equal(topology.studioBlocksF9,false);
- assert.equal(topology.studioBlocksDeployment,false);
+ assert.equal(architectureSummary,'MINIMAL_SUMMARY_NOT_EXECUTION_POLICY');
+ const runtimeWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(runtimeWorkflow,/OWNER_DIRECTIVE_2026-10-05_CLOUD_API_ONLY/);
+ assert.match(runtimeWorkflow,/run_studio:[\s\S]*?default:\s*false/);
+ assert.match(runtimeWorkflow,/probeRobloxOpenCloudEngine/);
 });
 
 test('F9 consumes exact deferred engine evidence without requiring Studio actual play',()=>{
@@ -972,7 +973,7 @@ test('post-runtime QA keeps exact Studio MCP-passed candidates eligible after St
  assert.match(workflow,/Number\(studioPlay\.versionNumber\)===Number\(candidate\.versionNumber\)/);
  assert.match(workflow,/item\.robloxRuntimeFoundationPassed!==true/);
  assert.match(workflow,/item\.robloxRuntimePassed!==true/);
- assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\|\|externalRuntimeObservationPending\)/);
+  assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\|\|externalRuntimeObservationPending\|\|exactPublishedQaPending\)/);
 });
 
 test('post-runtime QA never waits for live multiplayer measurement',()=>{
@@ -1318,7 +1319,7 @@ test('Open Cloud engine reuses the same Luau session to capture map and world ev
   assert.equal(result.exactLuauTaskObserved,false,'test omits a server context marker');
   assert.equal(result.serverBootObserved,false,'scene inspection is not actual game boot');
   assert.match(body.script,/startupWaitDeadline=startupWaitStarted\+8/);
-  assert.match(body.script,/while not runtimeWorldReady\(\) and os\.clock\(\)<startupWaitDeadline do task\.wait\(0\.25\) end/);
+  assert.match(body.script,/while simulationRunning and not runtimeWorldReady\(\) and os\.clock\(\)<startupWaitDeadline do task\.wait\(0\.25\) end/);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_RUNTIME_READY/);
   assert.match(body.script,/JAEWOON_OPEN_CLOUD_WORLD_STARTUP_WAIT_SECONDS/);
   assert.match(body.script,/workspace:GetDescendants\(\)/);
@@ -1605,3 +1606,4 @@ test('legacy Open Cloud Plugin capability denial remains diagnostic rather than 
  const script=JSON.parse(calls[0].init.body).script;
  assert.doesNotMatch(script,/RunService:Run\(\)/);
 });
+

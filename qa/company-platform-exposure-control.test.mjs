@@ -3,11 +3,34 @@ import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {controlPlatformExposure,homepageExposureSnapshot,evaluateInternalRelease} from '../tools/company-platform-exposure-control.mjs';
+import {reuseUnchangedHomepageExposure} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
 const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const lobbyScenarios=policy.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate.runtimeScenarios.map(id=>({id,pass:true}));
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
+
+test('every exact F9 cycle is server-deployable without lobby or public approval and stale proof stays blocked',()=>{
+  const item={gameId:'new-game',robloxRuntimePassed:true,robloxIndependentQaPassed:true,robloxRegressionPassed:true,
+    robloxFinalReviewPassed:true,robloxF9ReleaseRegressionPassed:true,
+    robloxRuntimeCandidateEvidence:{published:true,releaseClaim:false,sourceRevision:source,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:7},
+    robloxF9ReleaseRegressionEvidence:{gameId:'new-game',sourceRevision:source,artifactIdentity:artifact,candidateVersionNumber:7,noCurrentCriticalOrHighTesterFailure:true}};
+  assert.equal(evaluateInternalRelease(item,'ROBLOX',policy).ready,false);
+  const verdict=evaluateInternalRelease(item,'ROBLOX',policy,'SERVER_DEPLOYMENT');
+  assert.equal(verdict.ready,true);assert.equal(verdict.publicRelease,false);assert.equal(verdict.ownerPublicDecisionRequired,true);
+  for(const mutation of [i=>i.robloxFinalReviewPassed=false,i=>i.robloxIndependentQaPassed=false,i=>i.robloxF9ReleaseRegressionEvidence.gameId='other',i=>i.robloxF9ReleaseRegressionEvidence.artifactIdentity='sha256:'+'c'.repeat(64),i=>i.robloxF9ReleaseRegressionEvidence.candidateVersionNumber=8,i=>i.robloxF9ReleaseRegressionEvidence.noCurrentCriticalOrHighTesterFailure=false,i=>i.robloxRuntimeCandidateEvidence.versionNumber=0]){
+    const broken=structuredClone(item);mutation(broken);assert.equal(evaluateInternalRelease(broken,'ROBLOX',policy,'SERVER_DEPLOYMENT').ready,false);
+  }
+  assert.equal(evaluateInternalRelease(item,'ROBLOX',{},'SERVER_DEPLOYMENT').ready,false);
+  const local=structuredClone(item);
+  local.robloxRuntimeCandidateEvidence={published:false,releaseClaim:false,authority:'roblox-local-f0-pre-f9-artifact',sourceRevision:source,artifactIdentity:artifact,artifactRunId:21,versionNumber:21};
+  local.robloxFoundationF0Evidence={sourcePreflightPassed:true,f0SourceIntegrityPassed:true,sourceRevision:source,artifactIdentity:artifact,artifactRunId:21};
+  local.robloxF9ReleaseRegressionEvidence.candidateVersionNumber=21;
+  assert.equal(evaluateInternalRelease(local,'ROBLOX',policy,'SERVER_DEPLOYMENT').ready,true);
+  assert.equal(evaluateInternalRelease(local,'ROBLOX',policy).ready,false);
+  local.robloxFoundationF0Evidence.artifactRunId=22;
+  assert.equal(evaluateInternalRelease(local,'ROBLOX',policy,'SERVER_DEPLOYMENT').ready,false);
+});
 const candidate={published:true,sourceRevision:source,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:7};
 const exact=(extra={})=>({pass:true,sourceRevision:source,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:7,...extra});
 
@@ -166,4 +189,35 @@ test('only explicitly owner-confirmed horror game remains released without fabri
   assert.equal(evaluateInternalRelease({...item,gameId:'other'},'ROBLOX',policy).ready,false);
   assert.equal(evaluateInternalRelease({...item,robloxPublicationTarget:{placeId:'999',verified:true}},'ROBLOX',policy).ready,false);
   assert.equal(evaluateInternalRelease(item,'UNITY',policy).ready,false);
+});
+
+test('platform exposure refresh only wakes homepage after a new verified runtime snapshot',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-platform-exposure-sync.yml','utf8');
+  assert.match(workflow,/name: Persist exposure snapshot to company-runtime\n\s+id: persist/);
+  assert.match(workflow,/if git -C "\$worktree" diff --cached --quiet; then pushed=1; break; fi/);
+  assert.match(workflow,/if git -C "\$worktree" push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"; then pushed=1; updated=true; break; fi/);
+  assert.match(workflow,/echo "updated=\$updated" >> "\$GITHUB_OUTPUT"/);
+  assert.match(workflow,/HOMEPAGE_EXPOSURE_SEMANTIC_NOOP=YES/);
+  assert.match(workflow,/reuseUnchangedHomepageExposure/);
+  assert.match(workflow,/name: Refresh homepage runtime mirror\n\s+if: steps\.persist\.outputs\.updated == 'true'/);
+  assert.match(workflow,/test "\$pushed" = 1/,'failed runtime persistence must still fail closed');
+});
+
+test('homepage exposure dedup ignores generation time but preserves every material state change',()=>{
+  const previous={
+    version:3,authority:'company-runtime',internalCompanySurface:true,
+    supportedPlatforms:['ROBLOX','UNITY'],
+    centralPolicyFingerprint:'verified-policy-1',
+    generatedAt:'2026-10-17T00:00:00Z',
+    games:[{gameId:'g',updatedAt:'2026-10-17T00:00:00Z',platforms:[{platform:'ROBLOX',runtimePassed:false}]}]
+  };
+  const next={...previous,generatedAt:'2026-10-17T00:10:00Z'};
+  assert.strictEqual(reuseUnchangedHomepageExposure(previous,next),previous);
+  const gameplay={...next,games:[{...next.games[0],platforms:[{platform:'ROBLOX',runtimePassed:true}]}]};
+  assert.strictEqual(reuseUnchangedHomepageExposure(previous,gameplay),gameplay);
+  const policyChange={...next,centralPolicyFingerprint:'verified-policy-2'};
+  assert.strictEqual(reuseUnchangedHomepageExposure(previous,policyChange),policyChange);
+  const updatedGame={...next,games:[{...next.games[0],updatedAt:'2026-10-17T00:09:00Z'}]};
+  assert.strictEqual(reuseUnchangedHomepageExposure(previous,updatedGame),updatedGame);
+  assert.strictEqual(reuseUnchangedHomepageExposure({...previous,authority:'UNVERIFIED'},next),next);
 });

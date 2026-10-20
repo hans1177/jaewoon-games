@@ -5,7 +5,7 @@ import fs from 'node:fs';
 
 test('central v499 preserves every result artifact while coalescing callback workflows under pressure',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.equal(policy.version,499);
+  assert.ok(policy.version>=499,'current policy must retain the v499 pressure-coalescing contract');
   const gate=policy.developmentSpeedExecution?.controlPlaneQueueBacklogMitigation||{};
   assert.equal(gate.status,'ENABLED_PRESSURE_COHORT_FANIN');
   assert.equal(gate.neuronCompletionCallback?.resultBearing,true);
@@ -44,5 +44,7 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-neuron-refill-active\.txt\)"/);
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-regression-refill-active\.txt\)"/);
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-fanin-refill-active\.txt\)"/);
+  assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.run_id,/);
+  assert.doesNotMatch(workflow,/github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-fanin-refill-\{0\}-\{1\}', github\.sha,/);
   assert.match(workflow,/cancel-in-progress: false/);
 });

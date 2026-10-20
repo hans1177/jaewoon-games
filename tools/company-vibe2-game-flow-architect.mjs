@@ -1,3 +1,6 @@
+// 파일명: tools/company-vibe2-game-flow-architect.mjs
+// 역할: 기본설계의 시스템과 인과 연결을 기존 플로어에 인계한다.
+// 임포트
 import crypto from 'node:crypto';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -178,6 +181,16 @@ function systemDescriptor(id,priority='REQUIRED'){
 }
 function novelGrammarFromBaseline(baseline={}){
   const content=baseline?.content&&typeof baseline.content==='object'?baseline.content:baseline;
+  // 메인: 기본 플로어는 디자이너가 작성한 새 문법을 그대로 인계한다. 옛 C 소재 슬롯으로 역변환하지 않는다.
+  const authored=content?.creativeGrammar;
+  if(authored?.standardVersion){
+    return Object.freeze({
+      ...structuredClone(authored),
+      rule:'MAIN = A + B + C + D + @',
+      categoryRole:'SEED_DISCOVERY_AND_ROUTING_HINT_ONLY_NOT_FINAL_GENRE',
+      atRole:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS'
+    });
+  }
   const grammar=content?.novelGameGrammar;
   if(!grammar||typeof grammar!=='object'||Array.isArray(grammar))return null;
   return Object.freeze({
@@ -195,7 +208,9 @@ function novelGrammarFromBaseline(baseline={}){
     expansionVectors:Object.freeze(uniq(grammar.expansionVectors||[]).slice(0,8)),
     irreducibilityTest:grammar.irreducibilityTest||null,
     culturalAbstractionRule:clean(grammar.culturalAbstractionRule),
-    rule:'MAIN × A × B × C + @; MAIN identity; A/B system + independent material; C two creative materials plus PRIMARY and SECONDARY genres; @ unbounded delve',
+    standardVersion:grammar.standardVersion||null,
+    standardFormula:grammar.standardFormula||null,
+    rule:grammar.standardVersion?'MAIN = A + B + C + D + @':'MAIN × A × B × C + @; MAIN identity; A/B system + independent material; C two creative materials plus PRIMARY and SECONDARY genres; @ unbounded delve',
     categoryRole:'SEED_DISCOVERY_AND_ROUTING_HINT_ONLY_NOT_FINAL_GENRE',
     atRole:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS'
   });
@@ -215,11 +230,18 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
   if(/SKILL|MAGIC|ABILITY|스킬|마법/.test(semantic))promote('SKILL_BUILD');
   if(/SHOP|ECONOM|상점|경제/.test(semantic))promote('ECONOMY_SHOP');
   const novelGrammarContract=novelGrammarFromBaseline(baseline);
+  // 메인: 새 기본설계의 시스템은 작성된 책임·연결에서만 가져온다. 접수 장르의 고정 기능 묶음으로 덮어쓰지 않는다.
+  const content=baseline?.content&&typeof baseline.content==='object'?baseline.content:baseline;
+  const standardDesign=Boolean(content?.creativeGrammar?.standardVersion);
+  if(standardDesign){
+    required.clear();recommended.clear();
+    for(const row of content.signatureSystems||[])if(clean(row?.id))required.add(clean(row.id));
+  }
   const requiredRows=[...required].map(id=>systemDescriptor(id,'REQUIRED'));
   const recommendedRows=[...recommended].filter(id=>!required.has(id)).map(id=>systemDescriptor(id,'EXPANSION'));
   const phasePlan={};
   for(const phase of ['EARLY','MID','LATE']){
-    const ids=uniq(bundle.phases?.[phase]||[]).filter(id=>required.has(id)||recommended.has(id));
+    const ids=uniq((standardDesign?content.systemPhasePlan?.[phase]:bundle.phases?.[phase])||[]).filter(id=>required.has(id)||recommended.has(id));
     phasePlan[phase]=Object.freeze(ids);
   }
   return Object.freeze({
@@ -229,7 +251,7 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
     requiredSystems:Object.freeze(requiredRows),
     expansionSystems:Object.freeze(recommendedRows),
     phasePlan:Object.freeze(phasePlan),
-    interconnectionChains:Object.freeze(uniq(bundle.chains||[])),
+    interconnectionChains:Object.freeze(standardDesign?(content.systemInterconnections||[]).map(row=>`${row.fromId} → ${row.toId}: ${(row.stateKeys||[]).join('·')}; ${row.trigger||''}; ${row.stateChange||''}`):uniq(bundle.chains||[])),
     novelGrammarContract,
     awardCaliberPrinciples:AWARD_CALIBER_SYSTEM_PRINCIPLES,
     libraryReusePolicy:Object.freeze({
@@ -250,7 +272,10 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
       expansionShouldChangeHowTheCoreRuleBehavesNotOnlyAddObjects:true,
       mainABCFormulaRequiredWhenNovelGrammarExists:true,
       aAndBEachNeedSystemAndCreativeMaterial:true,
-      cNeedsTwoCreativeThemesAndTwoDistinctGenres:true,
+      cNeedsTwoCreativeThemesAndTwoDistinctGenres:!novelGrammarContract?.standardVersion,
+      cNeedsTwoLiteraryAndCinematicGenres:Boolean(novelGrammarContract?.standardVersion),
+      dSpecificMaterialCreationsRequired:Boolean(novelGrammarContract?.standardVersion),
+      atMustDeriveFromD:Boolean(novelGrammarContract?.standardVersion),
       supportingGenreMustCausallyChangeGameplay:true,
       subElementsAreNotCThemeSlot:true,
       atDelveLayerRequiredAndNotAGeneralSystemAxis:true,
@@ -562,3 +587,4 @@ export function evaluateGameFlowArchitecture(architecture={}){
   if(quality.codingGrowthContract?.dataDrivenExtensionPreferred!==true)blockers.push('FLOW_CODING_GROWTH_CONTRACT_REQUIRED');
   return{pass:blockers.length===0,blockers,flowArchetypeCount:dna.length,phaseFlowCount:phaseFlows.length,flowAssetRequirementCount:assetRequirements.length,requiredSystemCount:(systemBlueprint.requiredSystems||[]).length,expansionSystemCount:(systemBlueprint.expansionSystems||[]).length};
 }
+

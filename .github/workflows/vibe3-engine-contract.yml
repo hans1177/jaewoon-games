@@ -19,6 +19,9 @@ on:
       - 'qa/vibe3-*.test.mjs'
       - 'qa/company-development-roblox-*.test.mjs'
       - 'roblox-games/survival/**'
+      - 'roblox-games/daechung-rpg/**'
+      - 'assets/roblox/common-*/**'
+      - 'qa/roblox-game-repair-safety.test.mjs'
       - 'tools/company-unity-web-floor-bootstrap.mjs'
       - 'qa/company-unity-web-floor-bootstrap.test.mjs'
       - 'qa/company-tester-debug-intake.test.mjs'
@@ -43,6 +46,9 @@ on:
       - 'qa/vibe3-*.test.mjs'
       - 'qa/company-development-roblox-*.test.mjs'
       - 'roblox-games/survival/**'
+      - 'roblox-games/daechung-rpg/**'
+      - 'assets/roblox/common-*/**'
+      - 'qa/roblox-game-repair-safety.test.mjs'
       - 'tools/company-unity-web-floor-bootstrap.mjs'
       - 'qa/company-unity-web-floor-bootstrap.test.mjs'
       - 'qa/company-tester-debug-intake.test.mjs'
@@ -127,11 +133,11 @@ jobs:
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           if(r.status!=='OWNER_DIRECT_LOCKED') throw new Error('platform roadmap not owner locked');
           if(JSON.stringify(r.priority)!==JSON.stringify(['ROBLOX','UNITY'])) throw new Error('platform priority mismatch');
-          if(r.currentPhase!=='ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT') throw new Error('Unity Web to upper-platform phase required');
+          if(r.currentPhase!=='ROBLOX_AND_GENERAL_WEB_3D_CONTINUOUS_DEVELOPMENT'||r.developmentAccess?.WEB!=='ALWAYS_ALLOWED'||r.developmentAccess?.UNITY_WEB!=='OWNER_HOLD'||r.developmentAccess?.UNITY_ANDROID!=='OWNER_HOLD') throw new Error('owner Web 3D development phase or Unity hold invalid');
           // 중앙정책: Roblox 활성·Unity 보류·128개 논리 슬롯과 기존 순서를 보존한다.
           const scope=r.ownerActiveDevelopmentScope20261009;
           const spatial=r.ownerUnityWeb3dOnly20261009;
-          if(scope?.status!=='ACTIVE'||JSON.stringify(scope.activeTargets)!==JSON.stringify(['ROBLOX'])||JSON.stringify(scope.ownerHeldTargets)!==JSON.stringify(['UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'])||scope.unityWebDistinctGameTarget!==0||scope.gamePrimaryLogicalWorkers!==128||scope.unityAndroidDevelopmentAllowed!==false||scope.robloxRequiresUnityWebReadiness!==false||scope.unityWeb3dOnlyRequired!==true||scope.unityWebRequiresActualBrowserIndependentQaAndRegression!==true||scope.existingPipelineOnly!==true||spatial?.status!=='OWNER_DIRECT_LOCKED'||spatial?.finalGameplayDimension!=='3D'||spatial?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true||r.finalDevelopmentLock?.sequenceLock?.status!=='LOCKED') throw new Error('owner Unity Web 3D/active targets/logical slots/locked development contract changed');
+          if(scope?.status!=='ACTIVE'||JSON.stringify(scope.activeTargets)!==JSON.stringify(['ROBLOX','WEB'])||scope.generalWeb3dOnlyRequired!==true||r.webRuntimeStartabilityContract?.finalGameplayDimension!=='3D'||r.webRuntimeStartabilityContract?.actualWebGlDrawAnd3dSpatialRuntimeEvidenceRequired!==true||JSON.stringify(scope.ownerHeldTargets)!==JSON.stringify(['UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'])||scope.unityWebDistinctGameTarget!==0||scope.gamePrimaryLogicalWorkers!==128||scope.unityAndroidDevelopmentAllowed!==false||scope.robloxRequiresUnityWebReadiness!==false||scope.unityWeb3dOnlyRequired!==true||scope.unityWebRequiresActualBrowserIndependentQaAndRegression!==true||scope.existingPipelineOnly!==true||spatial?.status!=='OWNER_DIRECT_LOCKED'||spatial?.finalGameplayDimension!=='3D'||spatial?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true||r.finalDevelopmentLock?.sequenceLock?.status!=='LOCKED') throw new Error('owner Unity Web 3D/active targets/logical slots/locked development contract changed');
           const dual=r.directNativeDualPlatformDevelopment;
           if(dual?.status!=='OWNER_DIRECT_LOCKED'||dual?.mode!=='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR'||dual?.triggerRule!=='MINIMUM_DESIGN_READY_STARTS_OWNER_ACTIVE_PLATFORMS'||dual?.upperPlatformAdmission!=='MINIMUM_DESIGN_READY') throw new Error('Unity Web upper-platform central contract missing');
           if(JSON.stringify(dual?.development?.concurrentTargets)!==JSON.stringify(['ROBLOX','UNITY'])||dual?.development?.bidirectionalAutoPair!==true||dual?.development?.noArtificialGlobalGameCountCap!==true||dual?.development?.globalGameDevelopmentWindow!==null) throw new Error('dual-native concurrency contract changed');
@@ -157,6 +163,17 @@ jobs:
           test -x /tmp/luau-bin/luau-compile || chmod +x /tmp/luau-bin/luau-compile
           test -x /tmp/luau-bin/luau-compile
 
+      - name: Compile common Roblox libraries before game binding
+        run: |
+          set -euo pipefail
+          mapfile -t libraries < <(git ls-files -- ':(glob)assets/roblox/common-*/*.luau')
+          test "${#libraries[@]}" -gt 0
+          for library in "${libraries[@]}"; do
+            /tmp/luau-bin/luau-compile "$library" >/dev/null
+          done
+          echo "ROBLOX_COMMON_LIBRARY_SYNTAX_PASS=${#libraries[@]}"
+          echo 'ROBLOX_COMMON_LIBRARY_RUNTIME_QUALITY=UNVERIFIED'
+
       - name: Compile Cozy Island Luau source with official compiler
         run: |
           set -euo pipefail
@@ -177,11 +194,11 @@ jobs:
           done
           echo "SURVIVAL_LUAU_COMPILE_PASS=${#files[@]}"
 
-      - name: Verify Survival DataStore failure recovery in Luau runtime
+      - name: Verify Survival recovery and Daechung asset binding in Luau runtime
         run: |
           set -euo pipefail
           test -x /tmp/luau-bin/luau
-          VIBE2_LUAU_BINARY=/tmp/luau-bin/luau node --test --test-name-pattern='survival' qa/roblox-game-repair-safety.test.mjs
+          VIBE2_LUAU_BINARY=/tmp/luau-bin/luau node --test --test-name-pattern='survival|daechung' qa/roblox-game-repair-safety.test.mjs
 
       - name: Check Vibe3 syntax
         run: |
@@ -217,6 +234,9 @@ jobs:
       - name: Run Roblox native foundation and tester QA contract tests
         run: |
           node --test             qa/company-development-roblox-gameplay-product-readiness.test.mjs             qa/company-development-roblox-runtime-foundation.test.mjs             qa/company-development-roblox-headless-fast-mvp.test.mjs             qa/company-development-roblox-final-review-revalidation.test.mjs             qa/company-development-roblox-release-promotion.test.mjs             qa/company-tester-debug-intake.test.mjs             qa/company-development-roblox-runtime.test.mjs
+
+      - name: Verify existing Workers multiplayer CORS and source contract
+        run: node --test qa/company-development-roblox-multiplayer-qa.test.mjs
 
       - name: Run Roblox platform-lane continuation regression
         run: node --test qa/company-development-roblox-runtime-continuation.test.mjs

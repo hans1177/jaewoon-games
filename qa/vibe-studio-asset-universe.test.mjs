@@ -726,11 +726,15 @@ test('reference image observations become task-local character customization ide
   assert.equal(plan.internalLibraryEvolution.referenceImageIdeasPersisted,false);
   assert.equal(plan.internalLibraryEvolution.rawReferenceImagePersisted,false);
   assert.equal(plan.internalLibraryEvolution.taskLocalReferenceActionCount,plan.imageAssetCreation.ideaWorklist.length);
-  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].kind,'REFERENCE_IMAGE_VOLUME');
-  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceId,sourceId);
-  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceSourceHash,sourceHash);
-  assert.equal(plan.internalLibraryEvolution.nextVolumeActions[0].referenceImageRef,imageRef);
-  assert.ok(plan.internalLibraryEvolution.nextVolumeActions[0].referenceFeatureSummary.length>0);
+  // [원본 참조] 공용 작업 우선순위와 무관하게 사진 파생안은 작업 한정 오버레이에만 남는다.
+  const referenceAction=plan.imageAssetCreation.volumeWorklistOverlay[0];
+  assert.equal(referenceAction.kind,'REFERENCE_IMAGE_VOLUME');
+  assert.equal(referenceAction.referenceSourceId,sourceId);
+  assert.equal(referenceAction.referenceSourceHash,sourceHash);
+  assert.equal(referenceAction.referenceImageRef,imageRef);
+  assert.ok(referenceAction.referenceFeatureSummary.length>0);
+  assert.equal(referenceAction.persistToCentralWorklist,false);
+  assert.ok(plan.internalLibraryEvolution.nextVolumeActions.length>0);
   assert.match(plan.internalLibraryEvolution.worklistSource,/^TASK_REFERENCE_IMAGE_OVERLAY_ON_/);
   assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.requested,true);
   assert.equal(plan.companyGraphicsLibrary.characterNpcCustomization.playerAndNpcShareAssetPool,true);
@@ -3543,7 +3547,8 @@ test('flexible internal asset reuse keeps low-score assets usable and adapts goo
     currentAsset:low,
     candidates:[low,highStyleMismatch],
     gameDna:{targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'DARK_FANTASY'})},
-    requirement:{family:'UI',subfamily:'HUD',currentAssetId:'low-ui'}
+    requirement:{family:'UI',subfamily:'HUD',currentAssetId:'low-ui'},
+    usageByAsset:{'high-ui':{runtimePass:true}}
   });
   assert.equal(choice.selectedAssetId,'high-ui');
   assert.equal(choice.replacementRecommended,true);
@@ -3569,7 +3574,7 @@ test('internal replacement respects locks and treats observed failure as priorit
   const unlocked=chooseInternalAssetReplacement({
     currentAsset:current,candidates:[current,better,failed],gameDna,
     requirement:{family:'WEAPON',subfamily:'MELEE',currentAssetId:'current'},
-    usageByAsset:{'failed-high':{runtimeFailure:true,verifiedFailureCount:2}}
+    usageByAsset:{'better':{runtimePass:true},'failed-high':{runtimeFailure:true,verifiedFailureCount:2}}
   });
   assert.equal(unlocked.selectedAssetId,'better');
   assert.equal(unlocked.replacementAction,'REPLACE_NOW');
@@ -3583,6 +3588,26 @@ test('internal replacement respects locks and treats observed failure as priorit
   assert.equal(locked.replacementRecommended,false);
 });
 
+
+test('licensed acquired original remains first unless a compatible internal has proven native superiority',()=>{
+ const gameDna={targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'STYLIZED_FANTASY'})};
+ const original={id:'acquired-knight',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',
+   status:'REPO_ASSET',license:'CC0-1.0',downloaded:true,sourceFilesPresent:true,
+   sourceUrl:'https://example.org/original/knight.glb',originalSourceHash:'a'.repeat(64),
+   path:'assets/roblox/actors/native/knight.glb'};
+ const common={id:'self-authored',family:'WEAPON',subfamily:'MELEE',platform:'ROBLOX',
+   status:'REPO_ASSET',license:'project-original',path:'assets/shared/test-weapon.glb'};
+ const opts={candidates:[common,original],gameDna,requirement:{family:'WEAPON',subfamily:'MELEE'}};
+ const proposal=chooseInternalAssetReplacement(opts);
+ assert.equal(proposal.selectedAssetId,original.id,'original licensed binary must outrank unsupported authored quality');
+ assert.equal(proposal.automaticBindingAllowed,false,'source metadata cannot skip real native QA');
+ const locked=chooseInternalAssetReplacement({...opts,requirement:{...opts.requirement,lockedAssetId:common.id}});
+ assert.equal(locked.selectedAssetId,common.id,'manual identity lock still wins');
+ const blocked=chooseInternalAssetReplacement({...opts,candidates:[common,{...original,license:'CC-BY-NC'}]});
+ assert.equal(blocked.selectedAssetId,common.id,'forbidden source cannot be chosen');
+ const unchanged=chooseInternalAssetReplacement({...opts,currentAsset:common});
+ assert.equal(unchanged.automaticBindingAllowed,false,'an unverified acquired source must never silently replace a running game');
+});
 test('only true safety legal or corrupt blockers forbid internal reuse',()=>{
   const base={id:'asset',family:'PROP',subfamily:'INTERACTIVE',platform:'ROBLOX',status:'REPO_ASSET',internalAuditScore:400,sourceFiles:['asset.luau']};
   const gameDna={targetPlatform:'ROBLOX',concept:createConceptProfile({styleFamily:'CARTOON'})};
@@ -4143,8 +4168,13 @@ test('company common seed asset ideation reads all company seed artbooks and pro
   assert.ok(contract);
   assert.equal(contract.scope,'ALL_COMPANY_COMMON_SEEDS');
   assert.equal(contract.sourcePattern,'artbook-submissions/seed-*/current.json');
-  assert.equal(contract.currentSeedCount,seeds.length);
-  assert.deepEqual([...contract.currentSeedIds].sort(),seeds.map(row=>row.gameId).sort());
+  // [원본 신선도] company-runtime 신규 설계가 정적 레지스트리보다 앞서도 누락하지 않는다.
+  // 이전 레지스트리 수치를 최신 PASS로 간주하지 않고 실행 중 실제 설계 전체를 다시 분류한다.
+  assert.equal(contract.currentSeedCount,contract.currentSeedIds.length);
+  assert.ok(contract.currentSeedCount<=seeds.length);
+  for(const recordedId of contract.currentSeedIds)assert.ok(seeds.some(row=>row.gameId===recordedId),recordedId);
+  assert.equal(plan.seedCount,seeds.length);
+  assert.deepEqual(plan.seeds.map(row=>row.gameId).sort(),seeds.map(row=>row.gameId).sort());
   assert.equal(contract.planBuilder,'assets/vibe-studio-asset-universe.js#createCompanySeedAssetIdeationPlan');
   assert.equal(contract.execution.schedulerCreated,false);
   assert.equal(contract.execution.workflowCreated,false);
@@ -5140,16 +5170,20 @@ test('quality-first repairs current released Roblox assets before unused volume 
 });
 
 
-test('current-consumer RPG menu is byte-identical with the reusable source and remains runtime-unverified',()=>{
+test('current-consumer RPG menu preserves reusable APIs and game-specific race and tech without runtime claims',()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
   const root=path.resolve(here,'..');
   const assetRoot=path.join(root,'assets','roblox','rpg-menu');
   const gameRoot=path.join(root,'roblox-games','daechung-rpg','shared');
-  for(const name of ['RPGMenu.luau','RPGMenuModel.luau']){
-    assert.equal(fs.readFileSync(path.join(assetRoot,name),'utf8'),fs.readFileSync(path.join(gameRoot,name),'utf8'),name);
-  }
   const source=fs.readFileSync(path.join(assetRoot,'RPGMenu.luau'),'utf8');
   const model=fs.readFileSync(path.join(assetRoot,'RPGMenuModel.luau'),'utf8');
+  const gameMenu=fs.readFileSync(path.join(gameRoot,'RPGMenu.luau'),'utf8');
+  const gameModel=fs.readFileSync(path.join(gameRoot,'RPGMenuModel.luau'),'utf8');
+  for(const text of [source,gameMenu])assert.match(text,/function Menu\.install\(config,gui,player,options\)/);
+  for(const text of [model,gameModel])assert.match(text,/function Model\.partySummary\(attributes, config\)/);
+  assert.match(gameMenu,/WaitForChild\("RaceData"\)/);
+  assert.match(gameMenu,/WaitForChild\("TechTreeData"\)/);
+  assert.doesNotMatch(source,/WaitForChild\("RaceData"\)|WaitForChild\("TechTreeData"\)/);
   assert.match(source,/local itemRows=\{\}/);
   assert.match(source,/GuiService\.SelectedObject=itemButtons\[selectedId\] or filterButtons\[category\]/);
   assert.match(model,/function Model\.partySummary\(attributes, config\)/);
@@ -5486,7 +5520,13 @@ test('demand-bound asset supply uses six decisions and holds quantity-only libra
   assert.ok(summary.requiredFamilies.includes('MOTION'));
   assert.ok(summary.nextActions.some(row=>row.action==='IMPROVE'&&row.assetId==='used-creature'));
   assert.ok(summary.nextActions.some(row=>row.action==='ADAPT'&&row.assetId==='common-motion'));
-  assert.ok(summary.nextActions.some(row=>row.action==='AUTHOR'&&['VFX','AUDIO'].includes(row.family)));
+  // [소스 보호] 검증된 공급 원본이 없으면 제작 완료를 가정하지 않고 작업을 보류한다.
+  for(const family of ['VFX','AUDIO']){
+    const action=summary.nextActions.find(row=>row.family===family);
+    assert.ok(action);
+    assert.equal(action.action,'HOLD');
+    assert.equal(action.reason,'NO_VERIFIED_EXISTING_ASSET_TO_APPLY');
+  }
   assert.equal(summary.heldVolumeActionCount,1);
   assert.equal(summary.heldActions[0].action,'HOLD');
   assert.equal(summary.heldActions[0].reason,'REFERENCE_VOLUME_ONLY_NO_CURRENT_GAME_DEMAND');
@@ -5623,4 +5663,39 @@ test('company catalog revision only claims synchronized common packs and retains
     assert.equal(maintenance.refreshRequired,true,'unsynchronized asset maintenance must stay explicit');
     assert.ok(Number(maintenance.assetCount||0)<=packs.length,'unrefreshed maintenance cannot invent current asset count');
   }
+});
+
+
+test('existing Roblox native importer preserves common masters, deduplicates conversion and isolates invalid hashes',async()=>{
+ const document={accessors:[{type:'VEC3',count:3},{type:'VEC3',count:3}],meshes:[{primitives:[{attributes:{POSITION:0,NORMAL:1}}]}]};
+ const json=Buffer.from(JSON.stringify(document).padEnd(Math.ceil(JSON.stringify(document).length/4)*4,' '));
+ const bytes=Buffer.alloc(20+json.length);bytes.write('glTF');bytes.writeUInt32LE(2,4);bytes.writeUInt32LE(bytes.length,8);bytes.writeUInt32LE(json.length,12);bytes.writeUInt32LE(0x4e4f534a,16);json.copy(bytes,20);
+ const hash=createHash('sha256').update(bytes).digest('hex');
+ const source='assets/roblox/world-ghosts/native/mesh/bride.glb';
+ const registryPath='company-asset-library.json';
+ const registry={assets:[
+  {id:'shared-a',companyCommonBase:true,license:'CC0-1.0',path:'assets/shared/a.glb',sourceHash:hash,productionVerified:false},
+  {id:'shared-b',companyCommonBase:true,license:'CC0-1.0',path:'assets/shared/b.glb',sourceHash:hash,productionVerified:false},
+  {id:'shared-no-metadata',companyCommonBase:true,license:'project-original',masterGlb:'assets/shared/a.glb',productionVerified:false},
+  {id:'failed-static-qa',companyCommonBase:true,license:'project-original',path:'assets/shared/rejected.glb'},
+  {id:'bad-hash',companyCommonBase:true,license:'CC0-1.0',path:'assets/shared/bad.glb',sourceHash:'0'.repeat(64)},
+  {id:'no-rights',companyCommonBase:true,license:'unknown',path:'assets/shared/no.glb',sourceHash:hash},
+ ]};
+ const files=new Map([[source,bytes],[registryPath,JSON.stringify(registry)],['assets/shared/a.glb',bytes],['assets/shared/b.glb',bytes],['assets/shared/bad.glb',bytes]]);
+ const writes=[];let uploads=0;const permissions=[];
+ const mockFs={existsSync:p=>files.has(p),readFileSync:(p,encoding)=>{assert.ok(files.has(p),p);const value=files.get(p);return encoding?String(value):value;},writeFileSync:(p,value)=>{writes.push(p);files.set(p,value);}};
+ const processMock={env:{ROBLOX_OPEN_CLOUD_API_KEY:'test-only',GITHUB_SHA:'exact-test-revision'},argv:['node','tool','--include-shared-models'],cwd:()=>process.cwd()};
+ const script=fs.readFileSync(new URL('../tools/horror-combat-assets.mjs',import.meta.url),'utf8').replace(/^import .*;\n/gm,'');
+ await vm.runInNewContext('(async()=>{'+script+'})()', {fs:mockFs,crypto:{createHash},process:processMock,Buffer,FormData,Blob,AbortSignal,setTimeout,console:{log(){},error(){}},
+  introspectRobloxApiKey:async()=>({scopes:[{name:'asset:write',operations:['write'],userIds:['1'],groupIds:[]}]}),
+  evaluateCrossPlatform3dMasterGlb:({source})=>({pass:source.path!=='assets/shared/rejected.glb',sourceHash:hash}),
+  fetch:async(url,options)=>{if(url.endsWith('/assets/v1/assets')){uploads++;return {ok:true,json:async()=>({path:'operations/test-import',done:true,response:{assetId:'12345'}})};}
+   assert.ok(url.includes('/assets/permissions'));permissions.push(JSON.parse(options.body));return {ok:true,json:async()=>({errors:[]})};}
+ });
+ const result=JSON.parse(files.get(registryPath));
+ // Identical originals share the same native registration, including the existing combat donor.
+ assert.equal(uploads,1);assert.equal(processMock.exitCode,1);
+ for(const asset of result.assets.slice(0,3)){assert.equal(asset.robloxAssetId,'12345');assert.equal(asset.masterGlbHash,hash);assert.equal(asset.sourceHash,hash);assert.equal(asset.platformVariants.ROBLOX.sha256,hash);assert.equal(asset.productionVerified,false);assert.equal(asset.runtimeVerificationState,'NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING');}
+ for(const asset of result.assets.slice(3))assert.equal(asset.robloxAssetId,undefined);
+ assert.ok(writes.every(p=>!p.endsWith('.glb')));assert.equal(permissions.length,10);
 });

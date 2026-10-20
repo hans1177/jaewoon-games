@@ -1,0 +1,643 @@
+# 대충알피지 오너 배포. simple-rpg는 기존 프로젝트 연결에만 사용하는 기술 ID
+# Download retry: hydrate Git LFS original .blend assets and validate fixed CC0 source paths.
+# Wave 2: CC0 marine arthropods, deer, birds, fantasy NPCs and blacksmith sources; original archives only.
+# Wave 3: CC0 rigged fantasy character variants, animated humanoids, boss and dungeon source ZIPs.
+# Retry one original CC0 animated humanoid archive with the upstream _0 filename verified on OGA.
+# 오너 직접배포: 기존 Roblox 전용 Place 120884036900477 재사용. 게임별 오너 지시 실행.
+name: Owner 대충알피지 Direct Publish
+run-name: Owner 대충알피지 publish · ${{ github.sha }}
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'roblox-games/simple-rpg/**'
+      - 'assets/roblox/actors/sources/**'
+      - 'assets/roblox/actors/native/**'
+      - 'tools/simple-rpg-upload-actors.mjs'
+      - 'tools/simple-rpg-priority-cc0-download.py'
+      - 'tools/simple-rpg-prepare-curated-assets.py'
+      - 'tools/simple-rpg-blender-export-house.py'
+      - '.github/workflows/owner-simple-rpg-direct-publish.yml'
+  workflow_dispatch:
+    inputs:
+      download_ui_assets:
+        description: 'CC0 외부 에셋 원본 ZIP 3종 다운로드 및 검증 보관 (게임 미적용)'
+        type: boolean
+        required: false
+        default: false
+      download_wildlife_assets:
+        description: '대충알피지 무료 야생동물 곤충 고대생물 원본 다운로드 보관'
+        type: boolean
+        required: false
+        default: false
+      download_monster_assets:
+        description: 'CC0 외부 몬스터 원본 5묶음 다운로드·검증·GitHub 보관 (게임 미적용)'
+        type: boolean
+        required: false
+        default: false
+      download_icons_vfx_npc:
+        description: 'CC0 아이템/특수 아이콘, 이펙트, 3D NPC 원본 다운로드 검증 보관'
+        type: boolean
+        required: false
+        default: false
+      download_priority_cc0_assets:
+        description: '다섯 우선순위 CC0 곤충·동물·무기·NPC·건축·환경·사운드 실제 다운로드'
+        type: boolean
+        required: false
+        default: false
+      upload_actor_assets:
+        description: '검증된 캐릭터·스켈레톤 CC0 GLB 9개만 등록 (범용 대체 모델 제외)'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-simple-rpg-direct-publish
+  cancel-in-progress: false
+
+env:
+  GAME_ID: simple-rpg
+  GAME_NAME: '대충알피지'
+
+jobs:
+  download_ui_assets:
+    if: ${{ (github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true)) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]'))) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout for external source preservation
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Download and verify all external CC0 assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/external/simple-rpg
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 150 -o assets/external/simple-rpg/kenney_fantasy-ui-borders.zip 'https://opengameart.org/sites/default/files/kenney_fantasy-ui-borders.zip'
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 150 -o assets/external/simple-rpg/UIpack_RPG.zip 'https://opengameart.org/sites/default/files/UIpack_RPG.zip'
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 150 -o assets/external/simple-rpg/kenney_fantasy-town-kit_2.0.zip 'https://opengameart.org/sites/default/files/kenney_fantasy-town-kit_2.0.zip'
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 180 -o assets/external/simple-rpg/50_monsters_pack_3d_version_1.0.zip 'https://opengameart.org/sites/default/files/50_monsters_pack_3d_version_1.0.zip'
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 180 -o assets/external/simple-rpg/55_voxel_creatures.zip 'https://opengameart.org/sites/default/files/55_voxel_creatures.zip'
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 180 -o assets/external/simple-rpg/cute_animated_monsters_-_aug_2020.zip 'https://opengameart.org/sites/default/files/cute_animated_monsters_-_aug_2020.zip'
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 180 -o assets/external/simple-rpg/animated_monster_pack.zip 'https://opengameart.org/sites/default/files/Animated%20Monster%20Pack%20by%20%40Quaternius.zip'
+          curl -fL --retry 4 --retry-all-errors --retry-delay 3 --max-time 180 -o assets/external/simple-rpg/vividcharacters.zip 'https://opengameart.org/sites/default/files/vividcharacters.zip'
+          python3 - <<'PY'
+          import hashlib, json, pathlib, zipfile
+          base=pathlib.Path('assets/external/simple-rpg')
+          packs=[
+            ('kenney_fantasy-ui-borders.zip','https://opengameart.org/content/fantasy-ui-borders','png',130),
+            ('UIpack_RPG.zip','https://opengameart.org/content/ui-pack-rpg-extension','png',87),
+            ('kenney_fantasy-town-kit_2.0.zip','https://opengameart.org/content/fantasy-town-kit','model',160),
+            ('50_monsters_pack_3d_version_1.0.zip','https://opengameart.org/content/50-monsters-pack-3d','monster',50),
+            ('55_voxel_creatures.zip','https://opengameart.org/content/55-voxel-creatures','monster',50),
+            ('cute_animated_monsters_-_aug_2020.zip','https://opengameart.org/content/textured-cute-monster-pack','monster',20),
+            ('animated_monster_pack.zip','https://opengameart.org/content/lowpoly-animated-monsters','monster',4),
+            ('vividcharacters.zip','https://opengameart.org/content/nightmare-monsters','monster',4),
+          ]
+          out={'gameId':'simple-rpg','license':'CC0-1.0','creators':['Kenney','isaiah658','kooow','Quaternius','Teh_Bucket'],'sourceOnly':True,'robloxUploaded':False,'packs':[]}
+          total=0
+          for filename,url,kind,minimum in packs:
+            file=base/filename
+            if file.stat().st_size<1000 or not zipfile.is_zipfile(file): raise RuntimeError('INVALID_ZIP: '+filename)
+            with zipfile.ZipFile(file) as z:
+              if z.testzip() is not None: raise RuntimeError('ZIP_CORRUPTION: '+filename)
+              names=[n for n in z.namelist() if not n.endswith('/')]
+              if kind=='png':
+                assets={n.lower() for n in names if n.lower().endswith('.png')}
+              else:
+                groups=[{pathlib.PurePosixPath(n).stem.lower() for n in names if n.lower().endswith('.'+ext)} for ext in ('obj','fbx','gltf','glb','blend','vox','b3d')]
+                assets=max(groups,key=len)
+              count=len(assets)
+              if count<minimum: raise RuntimeError('INSUFFICIENT_ASSETS: '+filename+':'+str(count))
+              total+=count
+              out['packs'].append({'filename':filename,'sourceUrl':url,'archiveBytes':file.stat().st_size,'sha256':hashlib.sha256(file.read_bytes()).hexdigest(),'assetCount':count,'assetKind':kind})
+              print('EXTERNAL_ASSET_VERIFIED',filename,count)
+          monster_total=sum(p['assetCount'] for p in out['packs'] if p['assetKind']=='monster')
+          if monster_total<128: raise RuntimeError('EXTERNAL_MONSTER_ASSETS_BELOW_128: '+str(monster_total))
+          if total<300: raise RuntimeError('EXTERNAL_ASSETS_TOTAL_BELOW_300: '+str(total))
+          out['verifiedMonsterModelFiles']=monster_total
+          out['minimumVerifiedDistinctAssets']=total
+          (base/'manifest.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('EXTERNAL_ASSETS_TOTAL_VERIFIED='+str(total))
+          PY
+      - name: Preserve downloaded originals as workflow artifacts without direct main writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s assets/external/simple-rpg/manifest.json
+          echo 'EXTERNAL_ASSETS_STORAGE=ARTIFACT_ONLY'
+          echo 'EXTERNAL_ASSETS_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg'
+      - name: Retain a separate verified download artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-rpg-cc0-external-sources
+          path: assets/external/simple-rpg/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Propose verified external CC0 downloads for permanent repository archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-propose-verified-downloads.mjs external
+  download_wildlife_assets:
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_wildlife_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-wildlife]')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout for wildlife asset acquisition
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Download license-verified CC0 3D creatures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,pathlib,subprocess,zipfile
+          from urllib.parse import quote
+          root=pathlib.Path('assets/external/simple-rpg/wildlife')
+          root.mkdir(parents=True,exist_ok=True)
+          # file, OpenGameArt original attachment, category, creator, license evidence slug
+          packs=[
+          ('wolf-eagle.zip','Animal Pack Vol.2 by @Quaternius.zip','wildlife','quaternius','animated-animales-low-poly'),
+          ('farm-animals.zip','Farm Animals by @Quaternius.zip','wildlife','quaternius','lowpoly-animated-farm-animal-pack'),
+          ('fish-animated.zip','Animated Fish Pack by @Quaternius.zip','aquatic','quaternius','animated-fish'),
+          ('five-animals.zip','Animals Pack by Quaternius.zip','wildlife','quaternius','5-low-poly-animals'),
+          ('cube-pets.zip','kenney_cube-pets_1.0.zip','wildlife','Kenney','cube-pets'),
+          ('armadillo.zip','Armadillo-3D-Pack-Fbx-Obj.zip','wildlife','overactiongamestudio','armadillo-foe'),
+          ('rat-pack.zip','Rat-Pack-All-Files.zip','wildlife','overactiongamestudio','rat-pack'),
+          ('rhino.zip','white_rhino.zip','wildlife','Micket','white-rhinoceros'),
+          ('animal-bestiary.blend','animaux_0.blend','wildlife','rudy85','animal-bestiary'),
+          ('butterfly.zip','Butterfly.zip','insect','CDmir','butterfly-animated'),
+          ('shellbug.zip','shellbug.zip','insect','br-n518','shell-bug'),
+          ('ant.blend','ant.blend','insect','mujtaba-io','ant-3d-model-rigging-animated-low-poly-ish'),
+          ('ankylosaurus.zip','Anklyosaurus.zip','prehistoric','Manicaeks','anklyosaurus'),
+          ('albertosaurus.zip','Albertosaurus.zip','prehistoric','Manicaeks','albertosaurus'),
+          ('pentaceratops.zip','Pentaceratops.zip','prehistoric','Manicaeks','pentaceratops'),
+          ('frilled-dinosaur.zip','frilled_dino_base.zip','prehistoric','br-n518','frilled-dino'),
+          ('triceratops.zip','low_spec_triceratops_oga.zip','prehistoric','pistachio','low-spec-triceratops'),
+          ('mammoth.7z','Mammouth.7z','prehistoric','STKRudy85','mammuth-low-poly'),
+          ('snake-cobra.zip','cobra.zip','wildlife','Micket','cobra-0'),
+          ('turtle.blend','Turtle.blend','aquatic','Heathal','turtle-0'),
+          ('snail.zip','snail_tinyworlds_0.zip','invertebrate','TinyWorlds','snail-3d-model'),
+          ('elephant.blend','elephant-lowpoly.blend','wildlife','syncopika','low-poly-elephant-model'),
+          ('lemur.zip','Lemur_Blend_Fbx_Obj.zip','wildlife','NewDLC','lemur'),
+          ('spider.blend','spider.blend','insect','br-n518','spider-2'),
+          ('trex.blend','trex.blend','prehistoric','FacadeGaikan','t-rex'),
+          ('gorilla.zip','gorilla_male.zip','wildlife','Micket','gorilla-male'),
+          ('hippo.zip','hippo.zip','wildlife','Micket','hippo'),
+          ('oryx.zip','oryx.zip','wildlife','Micket','beisa-oryx-a-type-of-antelope'),
+          ('wasp-3d.zip','wasp_0.zip','insect','MikeMoon','3d-hornetwasp'),
+          ('horseshoe-crab.blend','limule-final.blend','aquatic','CDmir','swamp-limule'),
+          ('brontosaurus.blend','brontosaurus.blend','prehistoric','WeaponGuy','brontosaurus'),
+          ('crocodile.7z','crocodile.7z','wildlife','br-n518','crocodile-0'),
+          ]
+          present=set()
+          previous=pathlib.Path('assets/external/simple-rpg/manifest.json')
+          if previous.exists():
+            for row in json.loads(previous.read_text()).get('packs',[]):
+              present.add(row['filename'].lower())
+          verified=[];failed=[]
+          for filename,remote,kind,creator,slug in packs:
+            target=root/filename
+            url='https://opengameart.org/sites/default/files/'+quote(remote)
+            # Re-fetch invalid cached originals without exposing partial downloads.
+            if target.exists() and (target.stat().st_size<512 or
+              (filename.endswith('.blend') and target.open('rb').read(7)!=b'BLENDER' and target.open('rb').read(2)!=bytes.fromhex('1f8b')) or
+              (filename.endswith('.zip') and not zipfile.is_zipfile(target)) or
+              (filename.endswith('.7z') and target.open('rb').read(6)!=bytes.fromhex('377abcaf271c'))):
+              print('WILDLIFE_CACHED_INVALID_REDOWNLOAD',filename,flush=True)
+              target.unlink()
+            if not target.exists():
+              partial=target.with_name(target.name+'.part')
+              partial.unlink(missing_ok=True)
+              run=subprocess.run(['curl','-fL','--retry','4','--retry-all-errors','--retry-delay','2','--connect-timeout','12','--max-time','160','-o',str(partial),url],stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+              if run.returncode or not partial.is_file():
+                partial.unlink(missing_ok=True)
+                failed.append({'file':filename,'reason':'HTTP_DOWNLOAD_FAILED','source':slug})
+                print('WILDLIFE_DOWNLOAD_FAILED',filename,run.returncode,flush=True)
+                continue
+              partial.replace(target)
+            try:
+              if target.stat().st_size<512:raise ValueError('TINY_FILE')
+              names=[]
+              if filename.endswith('.zip'):
+                if not zipfile.is_zipfile(target):raise ValueError('NOT_ZIP')
+                with zipfile.ZipFile(target) as z:
+                  if z.testzip() is not None:raise ValueError('ZIP_CORRUPT')
+                  names=sorted({pathlib.PurePosixPath(n).stem.lower() for n in z.namelist() if n.lower().endswith(('.fbx','.obj','.gltf','.glb','.blend','.vox','.3ds'))})
+                  if not names:raise ValueError('NO_3D_CONTENT')
+              elif filename.endswith('.blend'):
+                magic=target.open('rb').read(7)
+                if magic!=b'BLENDER':
+                  # Blender can store native .blend contents in gzip form.
+                  # Validate the real decompressed header and full gzip checksum.
+                  if magic[:2]!=bytes.fromhex('1f8b'):
+                    raise ValueError('INVALID_BLEND_MAGIC:'+magic[:4].hex())
+                  import gzip
+                  with gzip.open(target,'rb') as source:
+                    if source.read(7)!=b'BLENDER':raise ValueError('INVALID_COMPRESSED_BLEND')
+                    decoded_size=7
+                    while True:
+                      chunk=source.read(1024*1024)
+                      if not chunk:break
+                      decoded_size+=len(chunk)
+                      if decoded_size>500_000_000:raise ValueError('COMPRESSED_BLEND_LIMIT')
+                names=[pathlib.Path(filename).stem]
+              elif filename.endswith('.7z'):
+                if target.open('rb').read(6)!=bytes.fromhex('377abcaf271c'):raise ValueError('INVALID_7Z')
+                names=[pathlib.Path(filename).stem]
+              verified.append({'file':filename,'category':kind,'creator':creator,'license':'CC0-1.0','licenseEvidence':'https://opengameart.org/content/'+slug,'sourceUrl':url,'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'bytes':target.stat().st_size,'modelNameCandidates':names,'sourceOnly':True})
+              print('WILDLIFE_VERIFIED',filename,len(names))
+            except (ValueError,OSError,EOFError,zipfile.BadZipFile) as ex:
+              target.unlink(missing_ok=True)
+              failed.append({'file':filename,'reason':str(ex),'source':slug})
+          result={'version':1,'gameId':'simple-rpg','license':'CC0-1.0','sourceOnly':True,'gameApplied':False,'distinctSpeciesUnverified':True,'packs':verified,'failed':failed}
+          (root/'manifest.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+          print('WILDLIFE_VERIFIED_PACKS',len(verified),'FAILED_PACKS',len(failed))
+          if not verified:raise SystemExit('NO_VALID_WILDLIFE_ASSETS_DOWNLOADED')
+          PY
+      - name: Stage verified CC0 wildlife source artifacts without main writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s assets/external/simple-rpg/wildlife/manifest.json
+          echo 'WILDLIFE_SOURCE_STORAGE=ARTIFACT_ONLY'
+          echo 'WILDLIFE_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg/wildlife'
+      - name: Save verification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-rpg-wildlife-sources
+          path: assets/external/simple-rpg/wildlife/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Propose verified wildlife CC0 downloads for permanent repository archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-propose-verified-downloads.mjs wildlife
+  download_icons_vfx_npc:
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_icons_vfx_npc == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[download-icons-vfx-npc]')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout original-asset repository
+        uses: actions/checkout@v4
+      - name: Fetch and validate CC0 icons FX NPC sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib,hashlib,zipfile,subprocess,json
+          from urllib.parse import quote
+          root=pathlib.Path('assets/external/simple-rpg/icons-vfx-npc')
+          root.mkdir(parents=True,exist_ok=True)
+          # (local name, real attachment, role, owner, license page, min actual files)
+          packs=[
+            ('generic-items.zip','kenney_genericItems_updatedCross.zip','item-icons','Kenney','generic-items',40),
+            ('rpg-inventory.zip','rpg_inventory.zip','item-icons','Kit','2d-rpg-item-icons',5),
+            ('fantasy-rpg-icons.zip','fantasy_rpg_icons.zip','item-icons','Drummyfish','fantasy-rpg-icons-0',15),
+            ('game-icons.zip','Kenney_gameIcons.zip','special-icons','Kenney','game-icons',40),
+            ('runes.zip','kenney_runepack.zip','special-icons','Kenney','rune-pack',30),
+            ('emotes.zip','kenney_emotesPack.zip','special-icons','Kenney','emotes-pack',40),
+            ('cursors.zip','kenney_cursor-pack.zip','special-icons','Kenney','cursor-pack-1',40),
+            ('ui-pack.zip','kenney_ui-pack.zip','special-icons','Kenney','ui-pack',40),
+            ('ui-adventure.zip','kenney_ui-pack-adventure.zip','special-icons','Kenney','ui-pack-adventure',40),
+            ('particles.zip','kenney_particlePack.zip','vfx','Kenney','particle-pack-80-sprites',40),
+            ('smoke.zip','smokeParticleAssets.zip','vfx','Kenney','smoke-particle-assets',30),
+            ('kenney-npc-1.zip','kenney_animated-characters-1.zip','characters-npc','Kenney','animated-characters-1',1),
+            ('kenney-npc-2.zip','kenney_animated-characters-2.zip','characters-npc','Kenney','animated-characters-2',1),
+            ('kenney-npc-3.zip','kenney_animated-characters-3.zip','characters-npc','Kenney','animated-characters-3',1),
+            ('cc0-npc-part3.zip','bravos_game_br_part_3.zip','characters-npc','byzmod3d','3d-character-pack',1),
+            ('cc0-npc-2023.zip','bravos_game_br_2023.zip','characters-npc','byzmod3d','3d-character-pack',1),
+            ('cc0-npc-2024.zip','bravos_game_br_2024.zip','characters-npc','byzmod3d','3d-character-pack',1)
+          ]
+          valid=[];failed=[]
+          for localname,filename,kind,owner,slug,minimum in packs:
+            dest=root/localname
+            url='https://opengameart.org/sites/default/files/'+quote(filename)
+            # Re-fetch invalid cached ZIPs and retain valid source archives.
+            if dest.exists() and (dest.stat().st_size<=300 or not zipfile.is_zipfile(dest)):
+              print('PACK_CACHED_INVALID_REDOWNLOAD',localname,flush=True)
+              dest.unlink()
+            if not dest.exists():
+              partial=dest.with_name(dest.name+'.part')
+              partial.unlink(missing_ok=True)
+              result=subprocess.run(['curl','-fL','--retry','4','--retry-all-errors','--retry-delay','2','--connect-timeout','12','--max-time','180','-o',str(partial),url],stderr=subprocess.PIPE,stdout=subprocess.DEVNULL)
+              if result.returncode or not partial.is_file():
+                partial.unlink(missing_ok=True)
+                failed.append({'filename':localname,'cause':'HTTP_DOWNLOAD_FAILED','source':slug})
+                print('PACK_DOWNLOAD_FAILED',localname,flush=True)
+                continue
+              partial.replace(dest)
+            try:
+              if not 300<dest.stat().st_size<100_000_000:raise ValueError('ZIP_SIZE_INVALID')
+              if not zipfile.is_zipfile(dest):raise ValueError('NOT_ZIP')
+              with zipfile.ZipFile(dest) as z:
+                if len(z.infolist())>30000 or sum(i.file_size for i in z.infolist())>500_000_000:raise ValueError('ZIP_BOMB_GUARD')
+                if z.testzip() is not None:raise ValueError('CORRUPTED_ZIP')
+                if kind=='characters-npc':
+                  model_ext=('.fbx','.obj','.gltf','.glb','.blend','.dae','.3ds')
+                  files={pathlib.PurePosixPath(i.filename).stem.lower() for i in z.infolist() if not i.is_dir() and i.filename.lower().endswith(model_ext)}
+                  # Bounded inspection of nested licensed model ZIPs, no extraction.
+                  if len(files)<minimum:
+                    import io
+                    for member in z.infolist():
+                      if member.is_dir() or not member.filename.lower().endswith('.zip') or member.file_size>80_000_000:
+                        continue
+                      with zipfile.ZipFile(io.BytesIO(z.read(member))) as nested:
+                        inner=nested.infolist()
+                        if len(inner)>30000 or sum(x.file_size for x in inner)>500_000_000 or nested.testzip() is not None:
+                          raise ValueError('NESTED_ZIP_INVALID')
+                        files.update(pathlib.PurePosixPath(x.filename).stem.lower() for x in inner if not x.is_dir() and x.filename.lower().endswith(model_ext))
+                else:
+                  files={i.filename.lower() for i in z.infolist() if not i.is_dir() and i.filename.lower().endswith('.png')}
+                if len(files)<minimum:raise ValueError('ASSET_FILES_BELOW_MIN:'+str(len(files)))
+              valid.append({'filename':localname,'category':kind,'creator':owner,'license':'CC0-1.0','sourcePage':'https://opengameart.org/content/'+slug,'originalUrl':url,'sha256':hashlib.sha256(dest.read_bytes()).hexdigest(),'archiveBytes':dest.stat().st_size,'verifiedFileCount':len(files),'fileCountNotDistinctItems':True,'sourceOnly':True,'robloxImported':False})
+              print('PACK_VALIDATED',localname,len(files),flush=True)
+            except (ValueError,OSError,zipfile.BadZipFile) as ex:
+              dest.unlink(missing_ok=True)
+              failed.append({'filename':localname,'cause':str(ex),'source':slug})
+          kinds={x['category'] for x in valid}
+          manifest={'gameId':'simple-rpg','license':'CC0-1.0','sourceOnly':True,'robloxImported':False,'verifiedArchives':len(valid),'byCategory':{k:sum(x['verifiedFileCount'] for x in valid if x['category']==k) for k in sorted(kinds)},'packs':valid,'failed':failed}
+          (root/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('ASSET_CATEGORIES',sorted(kinds),'ARCHIVES',len(valid),'FAILED',len(failed),flush=True)
+          if not {'item-icons','special-icons','vfx','characters-npc'}.issubset(kinds):
+            raise SystemExit('REQUIRED_CATEGORY_NOT_DOWNLOADED')
+          PY
+      - name: Stage original icons effects and NPC sources without main writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s assets/external/simple-rpg/icons-vfx-npc/manifest.json
+          echo 'CC0_ORIGINALS_STORAGE=ARTIFACT_ONLY'
+          echo 'CC0_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg/icons-vfx-npc'
+      - name: Save verification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-rpg-icons-vfx-npc-sources
+          path: assets/external/simple-rpg/icons-vfx-npc/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Propose verified icons CC0 downloads for permanent repository archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-propose-verified-downloads.mjs icons
+  download_priority_cc0_assets:
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.download_priority_cc0_assets == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[priority-cc0-download]')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          lfs: true
+      - name: Download priority assets in requested order
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/simple-rpg-priority-cc0-download.py
+      - name: Stage original priority CC0 archives without main writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s assets/external/simple-rpg/priority-v1/manifest.json
+          echo 'PRIORITY_CC0_SOURCE_STORAGE=ARTIFACT_ONLY'
+          echo 'PRIORITY_CC0_EXISTING_REPOSITORY_ARCHIVE=assets/external/simple-rpg/priority-v1'
+      - name: Retain verified source inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: simple-rpg-priority-cc0-sources
+          path: assets/external/simple-rpg/priority-v1/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Propose verified priority CC0 downloads for permanent repository archive
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-propose-verified-downloads.mjs priority
+  upload_actor_assets:
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.upload_actor_assets == true) || (github.event_name == 'push' && (contains(github.event.head_commit.message, '[upload-kaykit]') || contains(join(github.event.commits.*.added, ','), 'assets/roblox/actors/') || contains(join(github.event.commits.*.modified, ','), 'assets/roblox/actors/'))) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout owner asset sources
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Register curated CC0 character assets into Roblox inventory
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_CREATOR_USER_ID: ${{ vars.ROBLOX_CREATOR_USER_ID }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        run: node tools/simple-rpg-upload-actors.mjs /tmp/simple-rpg-imported-actors.json
+      - name: Store Roblox model IDs and Studio import script
+        uses: actions/upload-artifact@v4
+        with:
+          name: daechungalpiji-verified-roblox-actor-assets
+          path: |
+            /tmp/simple-rpg-imported-actors.json
+            /tmp/simple-rpg-imported-actors-studio-import.luau
+          if-no-files-found: error
+          retention-days: 14
+  publish:
+    if: ${{ !(github.event_name == 'push' && (contains(github.event.head_commit.message, '[download-external-assets]') || contains(github.event.head_commit.message, '[download-external-monsters]') || contains(github.event.head_commit.message, '[download-wildlife]') || contains(github.event.head_commit.message, '[download-icons-vfx-npc]') || contains(github.event.head_commit.message, '[priority-cc0-download]'))) && !(github.event_name == 'workflow_dispatch' && (inputs.download_ui_assets == true || inputs.download_monster_assets == true || inputs.download_wildlife_assets == true || inputs.download_icons_vfx_npc == true || inputs.download_priority_cc0_assets == true)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: main
+          fetch-depth: 1
+
+      - name: Checkout existing publication targets
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Resolve only 대충알피지 dedicated target
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
+          const row=(q.items||[]).find(v=>v.gameId==='simple-rpg')||{};
+          const r=JSON.parse(fs.readFileSync('runtime/roblox-dedicated-targets.json','utf8'));
+          const registered=(r.targets||[]).find(v=>v.gameId==='simple-rpg')||{};
+          const valid=v=>/^[1-9][0-9]*$/.test(String(v||''));
+          const safe=v=>v?.dedicated===true&&v?.shared!==true&&valid(v?.universeId)&&valid(v?.placeId);
+          const exact={universeId:'10770997776',placeId:'120884036900477'};
+          // The owner confirmed this exact private Roblox target by successful publication
+          // run 38692370854 (version 2). Do not create another game or reuse a foreign place.
+          for(const [origin,target] of [['queue',row.robloxPublicationTarget],['registry',registered]]){
+            if(target && Object.keys(target).length > 0){
+              if(!safe(target) || String(target.universeId)!==exact.universeId || String(target.placeId)!==exact.placeId){
+                throw new Error('대충알피지_OWNER_PLACE_MISMATCH:'+origin+':refusing Roblox publish');
+              }
+            }
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'universe_id='+exact.universeId+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'place_id='+exact.placeId+'\n');
+          console.log('대충알피지_OWNER_TARGET_REUSED=YES');
+          console.log('대충알피지_OWNER_EXPECTED_PLACE_ID='+exact.placeId);
+          NODE
+
+      - name: Verify curated visual binding source before Cloud publish
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          server=Path('roblox-games/simple-rpg/server/Game.server.luau').read_text()
+          client=Path('roblox-games/simple-rpg/client/Game.client.luau').read_text()
+          required={
+            'world meshes':'importCuratedModel(worldModels, name, id)',
+            'creature meshes':'importCuratedModel(creatureModels, name, id)',
+            'avatar meshes':'bindCuratedAvatar(player)',
+            'equipped weapons':'bindCuratedEquipment(player)',
+            'licensed asset ids':'VerifiedRobloxAssetId',
+          }
+          for label, marker in required.items():
+            if marker not in server: raise SystemExit('MISSING_CURATED_BINDING: '+label)
+          if 'attachDownloadedArtwork()' not in client or 'validUiTemplate' not in client:
+            raise SystemExit('MISSING_CURATED_HUD_BINDING')
+          print('CURATED_VISUAL_BINDINGS_SOURCE_CHECK=PASS')
+          PY
+
+      # Gate production to the already-downloaded licensed source files and actual
+      # Roblox Cloud asset IDs. Do not publish a blank or restored legacy art-only place.
+      - name: Enable Blender export for archived CC0 full-house sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq blender
+          blender --background --version | head -n 2
+
+      - name: Prepare downloaded CC0 environment and UI images
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check 'trimesh>=4.5,<5' 'Pillow>=10,<13'
+          python3 tools/simple-rpg-prepare-curated-assets.py /tmp/simple-rpg-curated
+          test -s /tmp/simple-rpg-curated/world/Ground.glb
+          test -s /tmp/simple-rpg-curated/world/Building.glb
+          test -s /tmp/simple-rpg-curated/ui/Panel.png
+          test -s /tmp/simple-rpg-curated/ui/Button.png
+
+      - name: Register licensed CC0 actors world models and HUD images for this private Experience
+        working-directory: main
+        shell: bash
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_CREATOR_USER_ID: ${{ vars.ROBLOX_CREATOR_USER_ID }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        run: |
+          set -euo pipefail
+          node tools/simple-rpg-upload-actors.mjs --publish-curated-art
+          test -s /tmp/simple-rpg-curated/registered.json
+          test -s roblox-games/simple-rpg/shared/CuratedAssets.luau
+          node - <<'NODE'
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync('/tmp/simple-rpg-curated/registered.json'));
+          if(p.gameId!=='simple-rpg'||p.universeId!=='10770997776'
+            ||!(p.world.Ground>0)||!(p.world.Building>0)
+            ||!(p.ui.Panel>0)||!(p.ui.Button>0)
+            ||Object.keys(p.creatures).length<1)throw new Error('CURATED_ART_INCOMPLETE_NO_PUBLISH');
+          console.log('DOWNLOADED_ONLY_CURATED_ASSETS_REGISTERED=YES');
+          NODE
+
+      - name: Build exact 대충알피지 Roblox place with pinned Rojo
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/owner-simple-rpg /tmp/rojo-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          chmod +x /tmp/rojo-bin/rojo
+          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/owner-simple-rpg/$GAME_ID.rbxlx"
+          test -s "/tmp/owner-simple-rpg/$GAME_ID.rbxlx"
+
+      - name: Owner direct publish to private Roblox Experience
+        working-directory: main
+        env:
+          EXISTING_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
+          EXISTING_PLACE_ID: ${{ steps.target.outputs.place_id }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--game-id "$GAME_ID" --game-name "$GAME_NAME" --place-file "/tmp/owner-simple-rpg/$GAME_ID.rbxlx" --source-revision "$GITHUB_SHA" --output "/tmp/owner-simple-rpg/result.json")
+          if [[ -n "${EXISTING_UNIVERSE_ID:-}" && -n "${EXISTING_PLACE_ID:-}" ]]; then
+            args+=(--reuse-universe-id "$EXISTING_UNIVERSE_ID" --reuse-place-id "$EXISTING_PLACE_ID")
+          fi
+          node tools/company-roblox-dedicated-experience.mjs "${args[@]}"
+
+      - name: Report actual published Roblox version
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('/tmp/owner-simple-rpg/result.json','utf8'));
+          if(r.published!==true||r.private!==true||r.pass!==true||!(r.versionNumber>0))throw new Error('SIMPLE_RPG_NOT_PUBLISHED');
+          console.log('SIMPLE_RPG_PUBLISHED_VERSION='+r.versionNumber);
+          console.log('SIMPLE_RPG_PLACE_ID='+r.placeId);
+          console.log('SIMPLE_RPG_UNIVERSE_ID='+r.universeId);
+          console.log('SIMPLE_RPG_LINK=https://www.roblox.com/games/'+r.placeId);
+          NODE
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: owner-simple-rpg-direct-publication
+          path: /tmp/owner-simple-rpg/result.json
+          if-no-files-found: warn
+          retention-days: 14

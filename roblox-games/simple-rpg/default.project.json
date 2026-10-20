@@ -1,23 +1,30 @@
 {
-  "name": "simple-rpg",
+  "name": "대충알피지",
   "tree": {
     "$className": "DataModel",
     "Lighting": {
       "$properties": {
-        "Technology": "Voxel",
-        "LightingStyle": "Soft",
-        "PrioritizeLightingQuality": false
-      },
-      "CompatibilityToneMap": {
-        "$className": "ColorGradingEffect",
-        "$properties": {
-          "TonemapperPreset": "Retro"
-        }
+        "Technology": "Future",
+        "LightingStyle": "Realistic",
+        "PrioritizeLightingQuality": true,
+        "GlobalShadows": true
       }
     },
     "ReplicatedStorage": {
       "Shared": {
-        "$path": "shared"
+        "$path": "shared",
+        "CreatureModels": {
+          "$className": "Folder"
+        },
+        "CuratedWorldModels": {
+          "$className": "Folder"
+        },
+        "CuratedWeatherEffects": {
+          "$className": "Folder"
+        },
+        "CuratedUiTemplates": {
+          "$className": "Folder"
+        }
       }
     },
     "ServerScriptService": {
@@ -30,6 +37,13 @@
         "GameClient": {
           "$path": "client"
         }
+      }
+    },
+    "Workspace": {
+      "$properties": {
+        "StreamingEnabled": true,
+        "StreamingMinRadius": 64,
+        "StreamingTargetRadius": 256
       }
     }
   }

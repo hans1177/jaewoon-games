@@ -82,7 +82,7 @@ test('headless source preflight can never satisfy Roblox final release evidence'
   assert.ok(evidence.blockedReasons.includes('headless-source-preflight-cannot-satisfy-runtime-release'));
 });
 
-test('pre-F9 publish is isolated while final private publish requires exact F9 identity and released-game classification',()=>{
+test('pre-F9 publish is isolated while final private publish requires exact F9 identity and exact verified server-deployment eligibility',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(candidate,/publish_stage:/);
   assert.match(candidate,/robloxValidationTarget/);
@@ -94,8 +94,8 @@ test('pre-F9 publish is isolated while final private publish requires exact F9 i
   assert.match(candidate,/finalEntry\?\.f9Evidence\?\.sourceRevision===revision/);
   assert.match(candidate,/finalEntry\?\.f9Evidence\?\.artifactIdentity===artifact/);
   assert.match(candidate,/evaluateInternalRelease/);
-  assert.match(candidate,/ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT/);
-  assert.match(candidate,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_AND_RELEASE_CLASS/);
+  assert.match(candidate,/ROBLOX_SERVER_PUBLICATION=BLOCKED_EXACT_F9/);
+  assert.match(candidate,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SERVER_DEPLOYMENT/);
   assert.doesNotMatch(candidate,/development-game-server-publication-forbidden/);
   assert.match(candidate,/publishCycleId/);
 });
@@ -114,7 +114,7 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
 });
 
-test('F9 is nonterminal and dispatches exact artifacts only for released games',()=>{
+test('F9 is nonterminal and dispatches exact artifacts for every exact verified cycle',()=>{
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(finalReview,/Roblox F9 Final Review/);
   assert.match(finalReview,/item\.robloxFinalReviewPassed=true/);
@@ -409,7 +409,7 @@ test('publish stage selects validation target before F9 and canonical target aft
 });
 
 
-test('canonical final publish requires exact F9 and central released-game classification',()=>{
+test('canonical final publish requires exact F9 and central exact verified server-deployment eligibility',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   const targetAt=candidate.indexOf('Resolve exact canonical release target');
   const publishAt=candidate.indexOf('Publish exact package to validation target or F9-verified canonical target');
@@ -417,8 +417,12 @@ test('canonical final publish requires exact F9 and central released-game classi
   assert.match(block,/ROBLOX_FINAL_PUBLISH_EXACT_F9_IDENTITY_REQUIRED/);
   assert.match(block,/evaluateInternalRelease/);
   assert.match(block,/releaseReadiness\?\.ready!==true/);
-  assert.match(block,/ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT/);
-  assert.match(block,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_AND_RELEASE_CLASS/);
+  assert.match(block,/ROBLOX_SERVER_PUBLICATION=BLOCKED_EXACT_F9/);
+  assert.match(block,/ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SERVER_DEPLOYMENT/);
+  assert.match(block,/'SERVER_DEPLOYMENT'/);
+  const privateAt=candidate.indexOf('Ensure Roblox universe is private before runtime candidate publish');
+  const privateStep=candidate.slice(privateAt,candidate.indexOf('working-directory: main',privateAt));
+  assert.match(privateStep,/steps\.target\.outputs\.publish_stage == 'validation'/);
 });
 
 
@@ -517,6 +521,13 @@ test('final publication retains exact F9 cycle while next BUILD_UP advances and 
     robloxQualityBuildUpRequired:true,robloxFinalReviewPassed:false,robloxFoundationF0Passed:false,robloxCanonicalPublishQueue:[entry]};
   const candidate={item,sourceRevision,artifactIdentity,sourceTree:'verified-old-tree',latestSourceTree:'next-tree',publishCycleId,publishStage:'final'};
   assert.equal(assertRobloxLatestPublishCandidate(candidate),true);
+  const local=structuredClone(entry);
+  local.validationUniverseId='';local.validationPlaceId='';local.validationVersionNumber=21;
+  local.f9Evidence.candidateVersionNumber=21;
+  local.releaseSnapshot.robloxRuntimeCandidateEvidence={sourceRevision,artifactIdentity,published:false,releaseClaim:false,authority:'roblox-local-f0-pre-f9-artifact',artifactRunId:21,universeId:'',placeId:'',versionNumber:21};
+  assert.equal(assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxCanonicalPublishQueue:[local]}}),true);
+  const staleLocal=structuredClone(local);staleLocal.releaseSnapshot.robloxRuntimeCandidateEvidence.artifactRunId=99;
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxCanonicalPublishQueue:[staleLocal]}}),/EXACT_CYCLE_EVIDENCE_REQUIRED/);
   for(const change of [
     {sourceRevision:'e'.repeat(40)}, {artifactIdentity:'sha256:'+ 'f'.repeat(64)},
     {finalReviewPassed:false}, {f9ReleaseRegressionPassed:false}, {status:'REVOKED'},
@@ -560,3 +571,4 @@ test('final publication dedupe keeps distinct immutable cycles independent',()=>
   assert.match(guard,/stage==='final'\?' · '\+cycle:''/);
   assert.match(guard,/String\(r\.display_title\|\|''\)===title/);
 });
+

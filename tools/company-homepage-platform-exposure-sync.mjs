@@ -2,7 +2,7 @@
 // 역할: 운영 플랫폼 상태와 검증·배포가 끝난 고유 개발 회차를 홈페이지에 전달한다.
 // 임포트
 import fs from 'node:fs';
-import { compileHomepageCentralPolicy } from './company-shared-context.mjs';
+import crypto from 'node:crypto';
 import { evaluateInternalRelease } from './company-platform-exposure-control.mjs';
 
 const clean=v=>String(v??'').trim();
@@ -128,11 +128,48 @@ function unityState(item={},policy={}){
     publicUrl:publicRelease?clean(item.unityPublicUrl||item.unityStoreUrl)||null:null
   };
 }
+// Ignore only the volatile collection timestamp; all per-game timestamps, flags,
+// URLs, version and policy fingerprints remain exact-match publication evidence.
+export function reuseUnchangedHomepageExposure(previous,candidate){
+  const valid=row=>row&&row.version===3&&row.authority==='company-runtime'
+    &&row.internalCompanySurface===true&&Array.isArray(row.supportedPlatforms)
+    &&Array.isArray(row.games)&&Number.isFinite(Date.parse(row.generatedAt));
+  if(!valid(previous)||!valid(candidate))return candidate;
+  const stable=row=>{const copy={...row};delete copy.generatedAt;return copy;};
+  return JSON.stringify(stable(previous))===JSON.stringify(stable(candidate))?previous:candidate;
+}
+
 const PLATFORM_STATE_BUILDERS={ROBLOX:robloxState,UNITY:unityState};
 
 export function buildHomepagePlatformExposure({queue={},catalog={},policy={}}={}){
-  const central=compileHomepageCentralPolicy(policy);
-  if(!central.valid)throw new Error('HOMEPAGE_CENTRAL_POLICY_INVALID:'+central.errors.join('|'));
+  // [정책] 변경에 관련된 플랫폼 구성만 중앙 원본에서 직접 컴파일한다.
+  // 이전 고정 반환값은 새 플랫폼을 놓치고 정상 정책 지문을 기록하지 못했다.
+  const homepage=policy?.serverHomepageIntegration;
+  const supportedPlatforms=homepage?.supportedPlatforms;
+  const platformStates=homepage?.perGamePlatformStates;
+  if(homepage?.sourceOfTruth!=='company-learning/platform-release-roadmap.json'
+    ||homepage?.authority!=='MACHINE_EXECUTION_CONTRACT'
+    ||homepage?.runtimeAuthority!=='company-runtime'
+    ||homepage?.serverRuntimeBranch!=='company-runtime'
+    ||homepage?.publicSourceBranch!=='main'
+    ||!Number.isInteger(homepage?.version)||homepage.version<1
+    ||!Array.isArray(supportedPlatforms)||supportedPlatforms.length===0
+    ||!Array.isArray(platformStates)||JSON.stringify(supportedPlatforms)!==JSON.stringify(platformStates)
+    ||new Set(supportedPlatforms).size!==supportedPlatforms.length
+    ||supportedPlatforms.some(platform=>typeof platform!=='string'||!platform)){
+    throw new Error('HOMEPAGE_CENTRAL_POLICY_INVALID:PLATFORM_POLICY_SOURCE_OR_CONFIGURATION');
+  }
+  const central={
+    supportedPlatforms,
+    fingerprint:crypto.createHash('sha256').update(JSON.stringify({
+      version:homepage.version,sourceOfTruth:homepage.sourceOfTruth,
+      runtimeAuthority:homepage.runtimeAuthority,
+      serverRuntimeBranch:homepage.serverRuntimeBranch,publicSourceBranch:homepage.publicSourceBranch,
+      supportedPlatforms,perGamePlatformStates:platformStates,
+      showUnityWeb:homepage.showUnityWeb===true
+    })).digest('hex'),
+    contract:{version:homepage.version,showUnityWeb:homepage.showUnityWeb===true}
+  };
   for(const platform of central.supportedPlatforms){
     if(typeof PLATFORM_STATE_BUILDERS[platform]!=='function')throw new Error('HOMEPAGE_PLATFORM_ADAPTER_MISSING:'+platform);
   }
@@ -185,7 +222,7 @@ if(process.argv[1]&&process.argv[1].endsWith('company-homepage-platform-exposure
   const queue=read(process.argv[2]||'development-queue.json');
   const catalog=read(process.argv[3]||'game-catalog.json');
   const output=process.argv[4]||'homepage-platform-exposure.json';
-  const policy=read(process.argv[5]||'company-learning/platform-release-roadmap.json');
+  const policy=process.argv[5]&&fs.existsSync(process.argv[5])?read(process.argv[5]):{};
   const result=buildHomepagePlatformExposure({queue,catalog,policy});
   write(output,result);
   console.log('HOMEPAGE_PLATFORM_EXPOSURE_SYNC=PASS');

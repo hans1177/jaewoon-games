@@ -37,7 +37,11 @@ test('대충 RPG는 5개 대형 지역과 보스 실루엣을 재사용한 수�
  assert.match(server,/BossCompanionRoster/);
  assert.match(server,/ActiveBossCompanions/);
  assert.match(server,/VillageHouse/);
- for(const marker of ['RPG_FANTASY_PORTAL_WORLD_V5','RPG_STYLIZED_TOY_FANTASY_R15','MedievalAssetArmor','MedievalVillageHouse','ChiefCape','SwordGuard','HealerHood','MarketStall','SnowMound','SnowBeastBody','SnowBeastMuzzle','WolfBody','GolemBody','BanditTorso','KnightTorso'])assert.match(server,new RegExp(marker));
+ for(const marker of ['RPG_FANTASY_PORTAL_WORLD_V5','RPG_STYLIZED_TOY_FANTASY_R15','MedievalAssetArmor','MedievalVillageHouse','ChiefCape','SwordGuard','HealerHood','SnowMound','SnowBeastBody','SnowBeastMuzzle','WolfBody','GolemBody','BanditTorso','KnightTorso'])assert.match(server,new RegExp(marker));
+ // Native imported market props replaced the old primitive MarketStall label.
+ assert.match(server,/assetProp\(f,ASSETS\.City,\{"market","stall","cart"\}/);
+ assert.match(server,/native.Name="NativeLibraryActor"/);
+ assert.match(server,/task.spawn\(bindNativeNpcVisual,r,nativeId\)/);
  assert.doesNotMatch(server,/local r=ppart\(parent,name,Vector3\.new\(3\.1,4\.2,2\.1\)\*scale/);
  assert.match(config,/BossCompanions=\{/);
 });
@@ -74,4 +78,17 @@ test('심야 최종 아트 계약은 현실형 인간과 비정상 몬스터를 
  assert.match(server,/PRIMARY_THREE_FINAL_4V4_INFECTION_V1/);
  assert.match(server,/SchoolRoofRim/);
  assert.doesNotMatch(server,/SchoolMainRoof/);
+});
+
+test('대충 RPG 공용 GLB 캐릭터와 몬스터는 네이티브 바인딩 검증과 기본 외형 복구를 유지한다',()=>{
+ const server=read('roblox-games/daechung-rpg/server/Game.server.luau');
+ const visual=read('roblox-games/daechung-rpg/shared/VisualStyle.luau');
+ assert.match(visual,/SharedPlayerModels=\{NONE=/);
+ assert.match(visual,/SharedNpcModels=\{VillageChief=/);
+ assert.match(visual,/SharedEnemyModels=\{MEADOW=/);
+ assert.match(server,/SharedPlayerVisualState","RIG_RETARGET_REQUIRED"/);
+ assert.match(server,/RuntimeVisualReview","PENDING"/);
+ assert.match(server,/MotionRetargetReview","PENDING"/);
+ assert.match(server,/if fallbackAssetId and fallbackAssetId~=assetId/);
+ assert.match(server,/if sharedEnemyId then task.spawn\(bindNativeNpcVisual,rootPart,sharedEnemyId\)end/);
 });

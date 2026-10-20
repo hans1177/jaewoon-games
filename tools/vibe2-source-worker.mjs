@@ -3,12 +3,14 @@
 // 기존 게임 루트만 사용하며, 소유자 지시가 명시된 Web 프로토타입은 같은 index 파일 전체 교체를 허용한다.
 
 import fs from 'node:fs';
+import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import crypto from 'node:crypto';
 import { inflateSync } from 'node:zlib';
 import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from './vibe2-motion-coaching.mjs';
 import { buildRobloxSourceCoaching } from './vibe3-roblox-distillation.mjs';
 import { robloxProductionPromptLines, productionBlueprintContractsForFiles, validateSpatialBlueprint, validateInterfaceBlueprint } from './company-roblox-production-plan.mjs';
+import { playerFacingInspectionPromptLines } from './company-build-up-directive.mjs';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
@@ -19,9 +21,11 @@ import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { CODING_ANALYSIS_VERSION, inspectSourceFunctions } from './company-vibe2-expert-development.mjs';
 import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.mjs';
+import { assertVibeAgentHandoffScope } from './vibe2-openai-agent-patterns.mjs';
 import { classifyVerifiedExternalBlackBoxPrinciples, learningGuidance } from './vibe2-learning-motor.mjs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
 import {bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
+import {planVibePresentationAutopilot} from '../assets/vibe-presentation-director.js';
 import {createRobloxWalkTeachingRecipe,createStudioMotionActionProfile} from '../assets/vibe-motion-director.js';
 import {createAssetProductionTeachingRecipe} from '../assets/vibe-studio-asset-universe.js';
 import {detectRobloxStudioAssetSystems,robloxStudioAssetFamilyBoundInText,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from './company-development-roblox-bootstrap.mjs';
@@ -39,22 +43,21 @@ const MAX_FILE_BYTES=260000;
 const MIN_FULL_REWRITE_BYTES=1800;
 const FULL_WEB_GENERATION_TARGET_MIN_BYTES=12000;
 const FULL_WEB_GENERATION_TARGET_MAX_BYTES=24000;
-const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+const DEFAULT_MODEL=process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash';
 // 자산 · 동일 실행 프로세스에서 여러 게임이 참조하는 동일 원본은 재해시/전체 API 재파싱하지 않는다.
 // 크기, 생성 시각, 수정 시각, inode, device가 달라지면 다음 요청에서 다시 읽는다.
 // 원본 SHA-256 및 동일 원본 선택/권한/QA 계약은 유지한다. 파일 복제/우회 임포터는 만들지 않는다.
-const INTERNAL_ASSET_SOURCE_HASH_CACHE=new Map();
 const INTERNAL_ASSET_API_SIGNATURE_CACHE=new Map();
 const INTERNAL_ASSET_TOOL_EXPORT_CACHE=new Map();
 const INTERNAL_ASSET_CACHE_MAX_ENTRIES=2048;
 function assertGameDevelopmentAuthority(){
   const owner=clean(process.env.VIBE2_GAME_DEVELOPMENT_OWNER||'VIBE2_VIBE3').toUpperCase();
-  const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'LOCAL_OLLAMA').toUpperCase();
+  const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase();
   const codexRole=clean(process.env.VIBE2_CODEX_ROLE||'DISABLED').toUpperCase();
   const codexGameSourceWrite=clean(process.env.VIBE2_CODEX_GAME_SOURCE_WRITE||'FORBIDDEN').toUpperCase();
   const paidOpenAiAllowed=clean(process.env.VIBE2_OPENAI_PAID_API_ALLOWED||'false').toLowerCase();
   if(owner!=='VIBE2_VIBE3')throw new Error(`GAME_DEVELOPMENT_OWNER_INVALID:${owner||'EMPTY'}`);
-  if(provider!=='LOCAL_OLLAMA')throw new Error(`GAME_SOURCE_PROVIDER_INVALID:${provider||'EMPTY'}`);
+  if(provider!=='GEMINI_API')throw new Error(`GAME_SOURCE_PROVIDER_INVALID:${provider||'EMPTY'}`);
   if(codexRole!=='DISABLED')throw new Error(`CODEX_USE_FORBIDDEN:${codexRole||'EMPTY'}`);
   if(codexGameSourceWrite!=='FORBIDDEN')throw new Error(`CODEX_GAME_SOURCE_WRITE_FORBIDDEN:${codexGameSourceWrite||'EMPTY'}`);
   if(paidOpenAiAllowed!=='false')throw new Error(`OPENAI_PAID_API_GAME_SOURCE_FORBIDDEN:${paidOpenAiAllowed||'EMPTY'}`);
@@ -660,7 +663,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
             ||(provenance.engine==='microsoft/TRELLIS.2')!==(provenance.modelTier==='HIGH_FIDELITY')
             ||!/^[a-f0-9]{64}$/.test(clean(provenance.modelWeightSha256))
             ||!/^[a-f0-9]{64}$/.test(clean(provenance.engineSourceSha256))
-            ||!['project-original','cc0','cc-by'].includes(clean(provenance.sourceLicense).toLowerCase())
+            ||!['project-original','cc0','cc0-1.0','cc-by'].includes(clean(provenance.sourceLicense).toLowerCase())
             ||clean(evidence?.license).toLowerCase()!==clean(provenance.sourceLicense).toLowerCase()
             ||(clean(provenance.sourceLicense).toLowerCase()==='cc-by'&&!clean(provenance.sourceCredit))
             ||(recipe?.sourceLicense&&clean(recipe.sourceLicense).toLowerCase()!==clean(provenance.sourceLicense).toLowerCase()))
@@ -2446,6 +2449,18 @@ function presentationWorkerGuidance(order = {}) {
     '그래픽 작업의 외부 단위는 GRAPHICS_PRODUCTION 하나다. 캐릭터/환경/애니메이션/VFX/조명/UI를 별도 최상위 그래픽 작업으로 분리하지 말고 내부 단계로 처리한 뒤 같은 루트로 fan-in 한다.',
     'vibe-art-pipeline.js가 그래픽 생산 단일 코디네이터이며 asset planner/visual autopilot/presentation director/visual quality gate는 독립 승인 권한 없는 내부 모듈이다.',
     'Art Bible과 Visual Target Frame을 기준으로 Hero 대상(플레이어, 주 보스/적, 시그니처 장비, 핵심 랜드마크/시작지역)을 먼저 고품질 기준점으로 만든다.',
+
+    'UI와 게임 장면의 모든 영역을 고정 사각형 템플릿으로 만들지 않는다. 실제 게임의 승인된 세계관/Style Lock, 기능과 현재 소스에 맞춰 프레임 형상, 9-slice 검증 이미지, 재질, 외곽선, 폰트 계층, 아이콘, 여백 및 애니메이션을 조합한다. 검증되지 않은 이미지 assetId, FontFace, 모듈 경로를 추측하거나 가짜 바이트를 넣지 않는다.',
+    '로블록스: 이미 프로젝트에 실제 연결된 RobloxCommonUI.luau를 사용한다. CreateVisualFeedbackController의 ShowDamage에는 confirmed=true와 중복되지 않는 실제 전투 결과 eventId 및 viewportPosition 또는 worldPosition을 전달한다. AnimateIcon, PositionTooltip, UpdateStatusIcon, Notify를 기존 클라이언트 표시 책임 함수에서 연결한다. 공유 라이브러리에 해당 함수가 없는 게임은 기존 허용된 패키지/공용 모듈 업데이트 경로로 먼저 연결하며 존재하지 않는 API 호출을 만들지 않는다.',
+    '일반 웹: 기존 렌더 루프·DOM UI 소스 안에서만 JaewoonGraphicsEngine.createWebPresentationController({host})를 연결한다. 실제 게임에 모듈이 포함되었는지 확인하고, 실제 확정 피해 이벤트만 showDamage({confirmed:true,eventId,amount,x,y,kind})로 전달한다. showTooltip, notify, animateIcon, updateStatusIcon을 현재 상태와 연결한다. host·script 경로를 검증하지 못하면 실패 상태로 두고 가짜 적용 보고를 금지한다.',
+    '상업용 웹 HUD: 현재 게임에서 보스/퀘스트/상태효과/위협 이벤트와 그래픽 엔진의 실제 로드·연결을 확인한 경우에만 동일 presentation controller의 updateBossHud({id,name,current,max,phase,telegraph,confirmed:true}), updateObjectiveHud({id,title,detail,completed,total,confirmed:true}), updateStatusTray({effects,confirmed:true}), showDirectionWarning({eventId,angle,confirmed:true})를 해당 기존 렌더 UI 책임 코드에 연결한다. 확정되지 않은 수치/상태를 만들지 않고 해당 시스템이 없으면 빈 표시를 강제하지 않는다. 게임 규칙·서버 권한·save를 바꾸지 않는다.',
+    '상업용 화면 마감: PC/가로 모바일/세로 모바일의 실제 안전영역과 터치 컨트롤, 보스 체력·페이즈·텔레그래프·퀘스트/제작·버프 타이머·알림의 충돌 순서를 검사한다. 높은 위험 정보가 효과에 가려지지 않게 하고, 중요 알림 중복·화면 밖 위치·가짜 시각 카운트다운·과도한 흔들림·색상만 의존한 정보 전달을 실패로 취급한다. 실제 이벤트의 확정값에 종속된 애니메이션만 사용하고 reduced-motion 및 모바일 이펙트 동시 개수 상한을 지킨다.',
+    '아이템, 스킬, 도움창, 상태 효과, 보스, 퀘스트, 상점, 제작, 지도, 경영, 파티 이벤트의 시각 패턴을 실제 기능이 존재하는 화면에만 적용한다. 생성 가능한 패턴은 DAMAGE_POPUP_POOL, TOOLTIP_PLACEMENT, CONTEXTUAL_HUD, ICON_STATE_MOTION, STATUS_DURATION_TRACK, NOTIFICATION_STACK, NINE_SLICE_SURFACE, MATERIAL_HARMONIZATION, 3D_ITEM_PREVIEW, VISUAL_EFFECT_BUDGET 등이다. 단순 패턴 명칭/메타데이터 추가는 소스 구현으로 간주하지 않는다.',
+    '자원 획득/제작/피해/효과 이벤트가 실제로 없거나 미확정이면 시각 이벤트도 만들지 않는다. 이벤트 중복 제거, 팝업 수 제한, 클리핑/안전영역 검사, reduced-motion, UI 입력 보호, 기존 모바일 성능, 세이브·게임플레이·멀티 권한 보존을 직접 코드와 테스트로 증명한다.',
+    '게임별 작업은 요구한 모든 활성 UI 화면/시각 상태를 현재 코드에서 추출한 뒤 실제 렌더링 코드로 각각 보강한다. 검증된 공통 코딩 기법은 재사용하지만 게임별 화면 비율, 형태, 재질, 아이콘 언어 및 연출은 Style Lock에 맞춰 독자적으로 제작한다.',
+
+    '화면의 시각적 완성도는 스타일 이름, 색상 변경, 에셋 개수, 화면 변화량만으로 증명되지 않는다. 실제 런타임 이미지가 제공되면 시선 집중, 원근과 거리감, 명암 구조, 재질 조화, 실루엣, 글자/여백, 게임 고유 정체성, 동작 가독성의 약한 책임을 먼저 특정하고 보이는 원인만 수정한다.',
+    '동일 구도·상태·조명에서 비교하고, 문제 있는 영역의 실제 기존 책임 오브젝트만 수정한다. 외부 3D 모델은 라이선스 허용 범위의 크기/방향/색/재질 등 간단한 게임별 보정과 기존 모션 연결을 우선하며 무리한 새 모델링이나 무관한 장식을 강제하지 않는다.',
     '배경은 빈 장식면이 아니다. 전경/중경/배경, 랜드마크, set dressing, 환경 스토리텔링, 이동/전투 가독성을 같은 Style Lock으로 구성한다.',
     '권리가 확인된 기존 에셋은 원본을 보존하고 derived 변형으로 파츠 재조합, 비율/실루엣/재질, 지역형/정예형/보스형, LOD 최적화까지 확장할 수 있다.',
     '서로 다른 에셋 팩을 원형 그대로 섞은 샘플/kitbash 느낌은 실패다. 재질·실루엣·조명·UI·VFX 언어를 하나의 게임으로 통일한다.',
@@ -2490,6 +2505,13 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   const platformKey=target==='ROBLOX'?'ROBLOX':target==='UNITY'?(order?.selectedTask?.firstStageUnityWeb===true?'UNITY_WEB':'UNITY_APP'):target==='WEB'?'WEB':['FORTNITE_UEFN','FORTNITE-UEFN','UEFN','UNREAL'].includes(target)?'FORTNITE_UEFN':'';
   const plan=d.productionPlan||d.robloxProductionPlan;
   const production=plan&&plan.gameId===order.gameId&&(plan.platform||'ROBLOX')===target?robloxProductionPromptLines(plan,{prefix:target==='ROBLOX'?'robloxProduction':'gameProduction',responsibleFiles}):[];
+  const auto=d?.gameInternalAutoComposition||null;
+  const relevantAutoComponents=(auto?.components||[]).filter(row=>
+    row.state==='EXISTING_SOURCE_CONNECTION_CANDIDATE'
+    &&(!responsibleFiles.length||(row.responsibleFiles||[]).some(file=>
+      responsibleFiles.some(owned=>posix(file)===posix(owned)||posix(file).endsWith('/'+posix(owned)))
+    ))
+  );
   const visual=Object.entries(d?.visualBuildUpDirective?.domains||{})
     .map(([domain,instruction])=>`${domain}=${clean(instruction)}`)
     .filter(Boolean);
@@ -2612,15 +2634,17 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
   // The planner already binds this failure to the current source. Preserve that identity and
   // its game-source-only repair boundary through focused/oversized prompt reconstruction.
   const failure=d?.playtestRuntimeFindings?.studioQualityFailure;
-  const packageRepair=failure?.authority==='roblox-package-asset-binding-failure'
+  const sourceContractFailure=failure?.authority==='roblox-source-static-contract-failure';
+  const sourceFailureContract=sourceContractFailure?failure.staticContract:failure?.assetThreshold;
+  const packageRepair=['roblox-package-asset-binding-failure','roblox-source-static-contract-failure'].includes(failure?.authority)
     &&/^[0-9a-f]{40}$/i.test(clean(failure.sourceRevision))
     &&!clean(failure.artifactIdentity)
-    &&failure?.assetThreshold?.pass===false
-    &&Array.isArray(failure?.assetThreshold?.blockers)
-    &&failure.assetThreshold.blockers.some(value=>clean(value));
+    &&sourceFailureContract?.pass===false
+    &&Array.isArray(sourceFailureContract?.blockers)
+    &&sourceFailureContract.blockers.some(value=>clean(value));
   const sourceRepair=packageRepair?[
     'sourceRepairIdentity='+JSON.stringify({authority:failure.authority,sourceRevision:failure.sourceRevision,artifactIdentity:null}),
-    'sourceRepairBlockers='+JSON.stringify(unique(failure.assetThreshold.blockers)),
+    'sourceRepairBlockers='+JSON.stringify(unique(sourceFailureContract.blockers)),
     'sourceRepairPolicy='+JSON.stringify(failure.assetRepairPolicy||{}),
     'sourceRepairHints='+boundedPromptText(unique((failure.qualityFailureDetails||[]).map(row=>row?.hint)).join(' | '),COMPACT_DIRECTIVE_LINE_BYTES)
   ]:[];
@@ -2679,6 +2703,17 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `priorityDomains=${priorityDomains.join(' | ')}`,
     `progressionWorld=${(d.progressionContentWorldDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     `visual=${visual.join(' | ')}`,
+    auto?'autoComposition='+JSON.stringify({
+      gameId:auto.gameId,sourceTreeFingerprint:auto.sourceTreeFingerprint,
+      components:relevantAutoComponents.map(row=>({id:row.id,state:row.state,files:row.responsibleFiles})),
+      uiModeSelection:auto.uiModeSelection,worldGraph:auto.worldGraph,
+      moduleConnections:auto.moduleConnections||[],
+      stateChain:auto.stateChain?.applicable?auto.stateChain.checks:[],
+      sharedAssetSelection:auto.sharedAssetSelection,
+      runtimeVerified:false,noNewAssetGeneration:true
+    }):'',
+    auto?'autoCompositionRule=Source-grounded existing game owners only: detect BIOME/HOUSING/CUSTOMIZATION/MOTION/ACTION/NPC_AI/QUEST_DIALOGUE/CRAFTING/ECONOMY/PROGRESSION/FARMING/WEATHER/PHYSICS/CAMERA/AUDIO/SKILL_VFX/NETWORK even outside ranked files. Use moduleConnections to prioritize source-local repairs; missing source is not an authorization to create new mechanics. Bind approved biome to native world/navigation; preserve housing ownership/cost/save and mobile controls; bind customization to the actual model; couple motion to the exact existing action hit event. AI cannot grant gameplay authority; items/crafting/economy follow authoritative state. Preserve lobby/inventory/equipment/UI and acquire->store->equip->save->reconnect. Never infer PASS from keywords or create assets from hints; native runtime/mobile QA required.':'',
+    ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
     `uxInput=${(d.uxInputDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     platformKey&&d?.platformAdaptationDirectives?.[platformKey]?`platform=${clean(d.platformAdaptationDirectives[platformKey])}`:'',
     `preserve=${(d.preserveConstraints||[]).map(clean).filter(Boolean).join(' | ')}`,
@@ -2700,11 +2735,14 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(finish<0)return'';
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
+  const inspectionPrefixes=['autoComposition=','autoCompositionRule=','inspectionContract=','inspectionIndex=','inspectionEvidence=','inspectionRule=','inspectionScene=','inspectionFailure=','inspectionOwner=','inspectionRetest='];
   const keepPrefixes=focusedRobloxVisual?[
+    ...inspectionPrefixes,
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
+    ...inspectionPrefixes,
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
@@ -2752,7 +2790,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
         })];
       }catch{return[];}
     }
-    if(SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return[line];
+    if(inspectionPrefixes.some(prefix=>line.startsWith(prefix))||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return[line];
     if(Buffer.byteLength(line,'utf8')<=COMPACT_DIRECTIVE_LINE_BYTES)return[line];
     const at=line.indexOf('=');
     if(at<0)return[boundedPromptText(line,COMPACT_DIRECTIVE_LINE_BYTES)];
@@ -2763,6 +2801,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact||Buffer.byteLength(compacted,'utf8')<=6000)return compacted;
 
   const essentialPrefixes=[
+    ...inspectionPrefixes,
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
@@ -2777,7 +2816,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     const prefix=essentialPrefixes.find(value=>line.startsWith(value));
     if(!prefix)continue;
     // 모든 작성된 역할은 고유하다. 하나만 남기면 A/B/C/@의 인과·구현 연결이 사라진다.
-    if(prefix==='designCodeRole='||prefix==='volumeSpec='){
+    if(inspectionPrefixes.includes(prefix)||prefix==='designCodeRole='||prefix==='volumeSpec='){
       // KEEP EVERY AUTHORED MAIN/A/B/C/@ ROLE and optional legacy c in the concise contract.
     }else if(prefix==='unityWebSourceReference='){
       if(unityRefsWritten>=2)continue;
@@ -2794,7 +2833,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const payloadCount=Math.max(1,essential.filter(line=>line!==begin&&line!==end).length);
   const lineBudget=Math.max(256,Math.min(640,Math.floor(5400/payloadCount)));
   const bounded=essential.map(line=>{
-    if(line===begin||line===end||line.startsWith('unityWebSourceReference=')||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return line;
+    if(line===begin||line===end||inspectionPrefixes.some(prefix=>line.startsWith(prefix))||line.startsWith('unityWebSourceReference=')||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return line;
     const at=line.indexOf('=');
     if(at<0)return boundedPromptText(line,lineBudget);
     const prefix=line.slice(0,at+1);
@@ -3146,21 +3185,12 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
   const selectedSourceHashes=Object.freeze(allSelectedPaths.map(relative=>{
     const absolute=path.resolve(cwd,relative);
     if(!fs.existsSync(absolute))return Object.freeze({path:relative,sha256:null,status:'SOURCE_UNAVAILABLE'});
-    // Nanosecond timestamps prevent same-size, same-millisecond asset edits from reusing stale hashes.
+    // 동기화 검증: 파일 기록 시간의 정밀도와 무관하게 현재 실제 내용을 확인한다.
     const stat=fs.statSync(absolute,{bigint:true});
     if(!stat.isFile())return Object.freeze({path:relative,sha256:null,status:'SOURCE_UNAVAILABLE'});
     const real=fs.realpathSync(absolute);
     if(!real.startsWith(canonicalRoot))throw new Error('INTERNAL_ASSET_SOURCE_OUTSIDE_REPOSITORY:'+relative);
-    const stamp=[stat.size,stat.mtimeNs,stat.ctimeNs,stat.ino,stat.dev].join(':');
-    const cached=INTERNAL_ASSET_SOURCE_HASH_CACHE.get(real);
-    let digest;
-    if(cached&&cached.stamp===stamp)digest=cached.sha256;
-    else{
-      digest=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
-      INTERNAL_ASSET_SOURCE_HASH_CACHE.set(real,{stamp,sha256:digest});
-      if(INTERNAL_ASSET_SOURCE_HASH_CACHE.size>INTERNAL_ASSET_CACHE_MAX_ENTRIES)
-        INTERNAL_ASSET_SOURCE_HASH_CACHE.delete(INTERNAL_ASSET_SOURCE_HASH_CACHE.keys().next().value);
-    }
+    const digest=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
     return Object.freeze({path:relative,sha256:digest,status:'SOURCE_HASHED'});
   }));
   const libraryVersion=Number(dynamicLibraryBinding?.libraryVersion||loadout?.robloxSelectionLibraryVersion||loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
@@ -3489,13 +3519,55 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     ['INPUT',/joystick|touch|input|controller|gesture|pointer|조이스틱|터치|조작/i,/input|controller|touch|joystick|gesture/i],
     ['INTERFACE',/interface|menu|hud|ui|canvas|screen|layout|button|메뉴|화면|버튼|인터페이스/i,/interface|menu|hud|ui|screen|layout|workbench|presentation/i],
     ['MOTION',/motion|animat|rig|locomotion|retarget|모션|애니|움직임/i,/motion|animat|rig|retarget|skeleton|locomotion/i],
+    ['CUSTOMIZATION',/customiz|avatar|wardrobe|appearance|outfit|morph|커스터마이징|외형|의상/i,/customiz|avatar|wardrobe|appearance|outfit|morph|character.?identity/i],
+    ['HOUSING',/housing|build.?mode|place.?structure|furniture|house.?placement|하우징|건축|가구배치/i,/housing|building|placement|construction|furniture|common.?building/i],
+    ['ACTION',/gather|harvest|interact|action.?state|use.?tool|채집|상호작용|액션/i,/action|interaction|harvest|gather|gameplay|combat/i],
+    ['NPC_AI',/\b(?:npc|companion|behaviorTree|pathfinding|enemyAI|aiParty|agentState|squad)\b|NPC|주민|동료|인공지능/i,/(?:^|[-_.])(?:ai|npc|party)(?:[-_.]|$)|companion|squad|pathfind|behavior|enemy/i],
+    ['QUEST_DIALOGUE',/quest|dialog|conversation|questLog|퀘스트|대화|임무/i,/quest|dialog|narrative|story|cinematic/i],
+    ['CRAFTING',/craft|recipe|workbench|제작법|제작대|조합/i,/craft|recipe|workbench/i],
+    ['ECONOMY',/economy|merchant|currency|shop|trade|경제|상점|거래/i,/economy|loot|shop|merchant|trade/i],
+    ['PROGRESSION',/progression|experiencePoints|levelUp|skillTree|레벨업|성장/i,/progression|level|skill.?tree|character.?progress/i],
+    ['FARMING',/farm|crop|plantSeed|harvestCrop|농사|농장|작물/i,/farm|crop|harvest|plant/i],
+    ['WEATHER',/weather|season|dayNight|timeOfDay|날씨|계절/i,/weather|season|environment|world/i],
+    ['PHYSICS',/physics|rigidbody|collision|raycast|물리|충돌/i,/physics|collision|interaction|world/i],
+    ['CAMERA',/camera|cinematic|cutscene|카메라|시네마틱/i,/camera|cinematic|presentation|scene/i],
+    ['SKILL_VFX',/vfx|skillEffect|particle|projectile|spellCast|이펙트|스킬효과/i,/vfx|effect|skill|particle|gameplay/i],
     ['WORLD',/world|terrain|environment|biome|scene|map|월드|맵|지형/i,/world|terrain|environment|biome|scene|map/i],
     ['AUDIO',/audio|sound|music|bgm|오디오|사운드|음악/i,/audio|sound|music|bgm/i],
     ['ASSET',/asset|mesh|material|render|visual|shader|에셋|메쉬|그래픽/i,/asset|mesh|material|render|visual|shader/i],
     ['NETWORK',/multiplayer|network|replicat|remoteevent|socket|멀티|네트워크/i,/multiplayer|network|replicat|socket|remote/i],
     ['PERFORMANCE',/performance|optimi|fps|pooling|성능|최적화/i,/performance|optimi|pooling|profiler/i]
   ];
-  const sourceSignals=signalRules.filter(([,sourcePattern])=>sourcePattern.test(existingSource)||sourcePattern.test(taskRequest));
+  // 원본 게임 전체에서 검증된 동일 게임 소스만 읽기 전용 도구 선택 근거로 재사용한다.
+  // 현재 워커에 전달된 몇 개 파일에 키워드가 없어도, 깊은 하위 모듈이 빠지지 않게 한다.
+  // 설계 요구만 있는 REVIEW_REQUIRED_NO_SOURCE는 도구 자동 활성화 근거가 아니다.
+  const nativeComposition=order?.selectedTask?.buildUpDirective?.gameInternalAutoComposition
+    ||order?.buildUpDirective?.gameInternalAutoComposition||null;
+  const roleToSignals={
+    WORLD:['WORLD'],BIOME:['WORLD'],HOUSING:['HOUSING'],CUSTOMIZATION:['CUSTOMIZATION'],
+    MOTION:['MOTION'],ACTION:['ACTION'],INTERACTION:['ACTION'],NPC_AI:['NPC_AI'],
+    QUEST_DIALOGUE:['QUEST_DIALOGUE'],CRAFTING:['CRAFTING'],ECONOMY:['ECONOMY'],
+    PROGRESSION:['PROGRESSION'],FARMING:['FARMING'],WEATHER:['WEATHER'],
+    PHYSICS:['PHYSICS'],CAMERA:['CAMERA'],AUDIO:['AUDIO'],SKILL_VFX:['SKILL_VFX'],
+    NETWORK:['NETWORK'],INVENTORY:['INVENTORY'],EQUIPMENT:['INVENTORY'],
+    SAVE:['SAVE'],COMBAT:['COMBAT','ACTION'],REWARD:['ECONOMY'],SHOP:['ECONOMY'],
+    LOBBY:['INTERFACE'],UI:['INTERFACE'],MATERIAL:['ASSET']
+  };
+  const nativeEvidenceSignals=new Set();
+  const compositionSameGame=nativeComposition?.sourceOnlyEvidence===true
+    &&clean(nativeComposition.gameId)===clean(order?.gameId||order?.selectedTask?.gameId)
+    &&clean(nativeComposition.platform).toLowerCase()===target
+    &&Boolean(clean(nativeComposition.sourceTreeFingerprint));
+  if(compositionSameGame){
+    for(const row of nativeComposition.components||[]){
+      if(row?.state!=='EXISTING_SOURCE_CONNECTION_CANDIDATE'
+        ||!Array.isArray(row.responsibleFiles)||!row.responsibleFiles.length)continue;
+      for(const role of roleToSignals[clean(row.id).toUpperCase()]||[])
+        nativeEvidenceSignals.add(role);
+    }
+  }
+  const sourceSignals=signalRules.filter(([name,sourcePattern])=>
+    sourcePattern.test(existingSource)||sourcePattern.test(taskRequest)||nativeEvidenceSignals.has(name));
   const toolMatches=[];
   let scannedTools=0;
   for(const folder of ['assets','tools']){
@@ -3663,7 +3735,7 @@ function internalAssetApiIndexGuidance(context={}){
       'target='+tools.target+'; scanned='+tools.scannedTools+'; matched='+tools.matchedCount+'; fingerprint='+tools.fingerprint,
       'Source/applicable signals='+tools.sourceSignals.join('|'),
       ...tools.matches.map(row=>row.path+' ['+row.kind+'] signals='+row.signals.join('|')+' sha256='+row.sha256+' exports='+row.exports.slice(0,16).join('|')+' exportedCount='+row.exports.length),
-      'Every game source BUILD_UP must consume the existing Vibe development-tool APIs. Always evaluate the current game with the existing asset production planner, environment director Auto Biome, visual coordination and targeted QA tools; do not create a second engine or workflow. Auto Biome must respect the same game verified spatial design and return APPROVED_DESIGN_REQUIRED when there is no approved map rather than inventing one.',
+      'Every game source BUILD_UP must consume the existing Vibe development-tool APIs. Dynamically rematch real source-grounded modules including world biome, housing, customization, motion, actions, NPC/AI, quests/dialogue, crafting, economy, progression, farming, weather, physics, camera, audio, skill effects, UI, save and network. Always evaluate the current game with the existing asset production planner, environment director Auto Biome, visual coordination and targeted QA tools; do not create a second engine or workflow. Auto Biome must respect the same game verified spatial design and return APPROVED_DESIGN_REQUIRED when there is no approved map rather than inventing one.',
       'These are updated, read-only API references, not code to copy blindly. Inspect matching existing implementation and use only verified-compatible functions in the current responsible source. Development tools are NOT game runtime imports and cannot grant new source mutation, release, save, economy, combat or network authority.',
       'Apply relevant reusable implementation during this authorized coding task; retain each existing game save key, schema, migration requirement, HP, damage, hitbox, cooldown, drop, reward, AI and combat rules. Reuse safe algorithms without rewriting their gameplay meaning. No gameplay/save/combat system is invented solely because a tool matches.',
       'Teach Vibe from actual source-bound examples: identify the registered internal asset ID and source hash, locate its existing Roblox or Unity consumer API, apply only a compatible change in that responsible game source, and replay targeted QA. Registered config atoms are never proof of actual in-game use.',
@@ -3717,6 +3789,11 @@ function internalAssetSourceUsageGuidance(order={}){
     'Source consumption sequence: '+contract.sourceConsumptionSequence.join(' -> ')+'.',
     'Do not invent an asset ID, pack, factory, source file, or role that is absent from the supplied selection/context. Do not copy the full company library into game source or prompt context.',
     'Selection order is FIT-FIRST, QUALITY-WITHIN-FIT: safety/license/platform -> existing game state applicability -> exact family/role/body-plan -> responsible source/API compatibility -> game identity/style adaptability -> existing binding/integration cost -> effective quality after adaptation -> diversity tie-break.',
+    'NEW OWNER PRIORITY FOR VISUAL REPLACEMENTS: compare exact existing game render/mesh/material/animation/source usage against original files acquired from free commercial-use licensed packs first. Prefer hash-checked downloaded original source assets over self-made common meshes, primitive models and generated background stand-ins when exact role, native platform, visual identity and mobile performance match. This is a ranking preference, NOT a bypass of existing safety, manual identity locks, game ownership or native runtime proof.',
+    'Use the existing ASSET_DEVELOPMENT/GRAPHICS_PRODUCTION on-demand acquisition pathway when the better original is not yet downloaded; verify license evidence, original bytes and hash. Do NOT fetch random internet content inside game-source workers or mark metadata-only candidate as acquired. Never confuse 360 semantic material atoms, gallery recipes or source catalog listings with finished native files.',
+    'Self-authored common library assets can replace a valid downloaded original only with independently measured substantially superior visual quality, compatible role/style and target-game runtime/mobile PASS. Until this proof, retain the currently playable visual while staging original-file import and validation; do not automatically rewrite all games with unverified assets.',
+    'For every existing applicable source responsibility, report CURRENT_GAME_SOURCE vs DOWNLOADED_ORIGINAL vs SELF_AUTHORED_LIBRARY with concrete path, sha256, license, mesh/material/animation details when available, binding target and replacement QA evidence. Replace the existing responsible render/asset function directly only when the improved native asset actually loads. Preserve gameplay balance, save and network authority.',
+
     'Genre NEVER removes an otherwise compatible internal asset from eligibility. Genre/style may change ranking or adaptation only. A high-quality wrong-role asset must lose to a lower-scored exact-role compatible asset; adapt a compatible asset before rejecting it.',
     'Internal quality score is NOT a usage gate. If an asset is safe, licensed, platform-compatible, role-compatible and applicable to an existing game system, use it even when its current internal score is low rather than leaving a blank/default/primitive presentation. Mark the weak axes as quality debt and improve or safely replace them later; never leave an existing applicable presentation empty merely because a higher-scored candidate is not ready.',
     'Application scope has NO artificial asset-count, family-count, gameplay-signal, or combination cap. Every safe/rights/platform/role-compatible internal registry candidate remains eligible in the current BUILD_UP. Apply dynamic family registries to every applicable existing responsibility. Detailed API source batching is only synchronization optimization and MUST NOT become a usage cap.',
@@ -3746,11 +3823,13 @@ function universalAssetWorkerGuidance(order={}) {
   const selected=Object.entries(loadout?.families||{}).map(([family,atoms])=>family+'='+((atoms||[]).map(clean).filter(Boolean).join('|')||'NONE')).join('; ');
   const customization=order?.assetProduction?.assetCustomization;
   const automaticBinding=order?.assetProduction?.automaticAssetBindingWork||null;
+  const detailedReview=order?.assetProduction?.detailedAssetCandidateReview||null;
   return [
     '[UNIVERSAL ASSET-FIRST UPGRADE CONTRACT]',
+    detailedReview?.candidateCount>0?'[DETAILED DESIGN LIBRARY HANDOFF] '+JSON.stringify(detailedReview)+'. These are historical design candidates, not approved source bindings. Re-check every ID against the current library, source owner, platform, role, rig, license and style before any replacement. Do not automatically replace absent, unverified or incompatible assets; use the existing GRAPHICS_PRODUCTION and native QA path. Source metadata alone never counts as APPLIED.':'' ,
     automaticBinding?.enabled===true
       ?'[AUTOMATIC ASSET BINDING / CANONICAL VIBE] '+JSON.stringify(automaticBinding)+
-       '. Follow the existing asset selection and exact current game source consumers on EVERY BUILD_UP. Apply NATIVE_SOURCE_BINDING_REQUIRED only to compatible existing ownership in this task writable scope; reuse SOURCE_BOUND_RUNTIME_QA_REQUIRED without duplicate recreation. Route AUTHORING_REQUIRED or SOURCE_ASSET_REQUIRED to the existing asset authoring responsibility, never fabricate a native file. Preserve source hashes, saved game, combat, progression and server authority. Runtime and positive-learning PASS require exact artifact and independent engine evidence. Do not create a separate runner, queue, wrapper or shadow pipeline.'
+       '. Follow the existing asset selection and exact current game source consumers on EVERY BUILD_UP. Apply NATIVE_SOURCE_BINDING_REQUIRED only to compatible existing ownership in this task writable scope; reuse SOURCE_BOUND_RUNTIME_QA_REQUIRED without duplicate recreation. For SOURCE_BINDING_PROVENANCE_REQUIRED, inspect the current real game consumer and existing GLB master lineage and record the applied hash before scheduling replacements; missing provenance is never proof of an outdated version. Never mark a hash comparison as runtime QA or completed source replacement. Route AUTHORING_REQUIRED or SOURCE_ASSET_REQUIRED to the existing asset authoring responsibility, never fabricate a native file. Preserve source hashes, saved game, combat, progression and server authority. Runtime and positive-learning PASS require exact artifact and independent engine evidence. Do not create a separate runner, queue, wrapper or shadow pipeline.'
       :'',
     'All 12 asset families MUST be evaluated: '+families.join(','),
     'Selected loadout: '+(selected||'NONE'),
@@ -3834,6 +3913,13 @@ function preSubmitSelfReviewGuidance(order={}) {
   if(!target||target==='system')return'';
   return[
     '[PRE-SUBMIT SELF REVIEW BEGIN]',
+    // 실제 코딩 에이전트 방식은 기존 탐색·책임 그래프·후보 생성·QA·릴리스 레인을 통과한다.
+    // 이 워커는 승인·검수 권한을 갖지 않으며 원인 수정과 검증 가능한 증거만 제출한다.
+    'CANONICAL CODING LOOP: Read the exact current checkout, immutable source revision, authorized work order, central policy and latest failure evidence supplied in context. Treat missing or stale context as UNKNOWN, not as verified main. Select the existing responsible function and its direct dependencies before proposing code.',
+    'SOURCE AND LIBRARY: Inspect existing source, approved internal 3D assets and license lineage before making new geometry, downloads or files. Reuse the original renderer, gameplay systems and asset bindings; no missing external URLs, shadow pipeline, wrapper or override to conceal a failure.',
+    'CAUSAL REPAIR: State the actual failing behavior and its responsible symbol; make the minimum coherent executable edit inside allowed paths. Keep save keys/schema, game rules, economy, combat timing, multiplayer authority and progression unchanged unless explicitly authorized; check impact on neighboring responsibilities.',
+    'VERIFICATION HANDOFF: Include concrete tests that the existing QA runner can execute or verify: entry and first meaningful input, real 3D depth/draw where applicable, mobile touch and viewport, errors/missing requests, restart, save/load and changed behavior. Recheck the exact failure fingerprint and dependent regression. Distinguish static predictions from observed browser/device proof; never invent logs, run IDs, FPS or PASS.',
+    'RELEASE AUTHORITY: This source worker outputs a candidate patch only. Independent QA, PR review, merge to main, canonical deployment and post-deploy runtime verification remain separate existing gates; do not claim they happened merely because an edit was generated. If evidence is missing, say UNVERIFIED and preserve the playable legacy source.',
     'Before returning the candidate, silently re-read the exact writable source and your proposed delta once.',
     'Check: the edit hits the named responsibility; path/find are exact; the change is executable rather than comment/marker-only; protected gameplay/save/progression/economy/network meaning is unchanged unless explicitly authorized; no wrapper/shadow/override duplicate was added; unrelated working behavior remains intact.',
     'For presentation work also check that the player-visible result materially changes. If any check fails, rewrite the candidate before output.',
@@ -3846,6 +3932,42 @@ function preSubmitSelfReviewBlockFromPrompt(prompt='') {
   const start=raw.indexOf(begin);if(start<0)return'';
   const finish=raw.indexOf(end,start+begin.length);if(finish<0)return'';
   return raw.slice(start,finish+end.length);
+}
+
+
+// A concrete craft contract fed into the SAME existing source worker, not a new pipeline.
+function visualCraftWorkerGuidance(order={},context={}){
+  const target=clean(order?.target).toLowerCase();
+  if(!['web','roblox'].includes(target))return'';
+  const intent=[order?.goal,order?.selectedTask?.goal,order?.selectedTask?.focus]
+    .filter(Boolean).map(clean).join(' ');
+  const hasVisualWork=order?.presentationQuality?.required===true
+    ||order?.assetProduction?.required===true
+    ||/(?:그래픽|시각|꾸미|ui|hud|인벤|아이콘|대미지|데미지|tooltip|damage.?popup|visual|presentation|layout)/i.test(intent);
+  if(!hasVisualWork)return'';
+  const game=order?.gameDesign||order?.design||order?.selectedTask?.design||{};
+  const world=game?.world||order?.worldDesign||order?.selectedTask?.world||{};
+  const sourceSurfaces=order?.interfaceBlueprintContract?.surfaces
+    ||order?.presentationQuality?.uiSurfaces||order?.selectedTask?.uiSurfaces||[];
+  const uiSurfaces=Array.isArray(sourceSurfaces)
+    ?sourceSurfaces.filter(row=>row&&typeof row==='object'&&typeof row.surface==='string').slice(0,18):[];
+  const craft=planVibePresentationAutopilot({
+    files:(Array.isArray(context?.files)?context.files:[]).map(row=>({path:row.path,source:row.content})),
+    request:intent,game,world,uiSurfaces
+  });
+  return [
+    '[VIBE GAME VISUAL CRAFT BEGIN]',
+    'target='+target.toUpperCase()+'; gameId='+clean(order.gameId||order.selectedTask?.gameId),
+    'Actual renderable composition recipes, not visual approval:',
+    JSON.stringify({materialRecipes:craft.craftPlans.map(row=>row.materialRecipe),
+      surfaceLayouts:craft.craftPlans.map(row=>({surface:row.surface,grammar:row.grammar,
+        layout:row.layout,focus:row.focus})),supportedEffects:craft.craftPlans[0]?.requiredPatterns||[]}),
+    'For each actual UI surface present in the allowed source, implement the relevant visual behavior in that game client owner: frames/icons/fonts/spacing, damage numbers, tooltip placement, notice stacking, stateful icons, boss/status displays, and native 3D item preview when a verified model is actually available.',
+    'Use existing engine-native UI module and graphics runtime functions ONLY if actually imported/bound in the selected game source. Never treat a common library name as proof that the running game uses it; add the normal existing library binding within the authorized responsibility where necessary.',
+    'Avoid fixed default themes, fabricated asset IDs, synthetic gameplay events, new parallel render loops, semantic HP changes, save changes, server-authority shifts or broad unrelated rewrites.',
+    'Source owner edits must actually change rendered nodes or camera/model binding, not merely append descriptions or contract flags. Re-check portrait/landscape, touch input, popups on boundaries, duplicate event handling, reduced motion and runtime revision evidence.',
+    '[VIBE GAME VISUAL CRAFT END]'
+  ].join('\n');
 }
 
 function studioAssetQualityCoreGuidance(order={}) {
@@ -3923,7 +4045,7 @@ export async function observeAssetRuntimeCaptures({order={},cwd=process.cwd(),mo
   if(!model)throw new Error('RUNTIME_VISUAL_VISION_MODEL_REQUIRED:VIBE2_VISION_MODEL');
   const requestedEvidenceRoot=clean(review.evidenceRoot);
   const root=fs.realpathSync(requestedEvidenceRoot||cwd),results=[],repairs=[],findingIds=new Set();
-  const allowedCategories=new Set(['MISSING_OBJECT','WEAK_DETAIL','CLIPPING_OR_OVERLAP','READABILITY','STYLE_OR_MATERIAL','COMPOSITION']);
+  const allowedCategories=new Set(['MISSING_OBJECT','WEAK_DETAIL','CLIPPING_OR_OVERLAP','READABILITY','STYLE_OR_MATERIAL','COMPOSITION','SPATIAL_DEPTH','LIGHTING_VALUE','TYPOGRAPHY_SPACING','SILHOUETTE_IDENTITY']);
   const allowedSeverity=new Set(['BLOCKER','HIGH','MEDIUM','LOW']);
   const expectedIds=new Set((review.expectedSubjects||[]).map(subject=>clean(subject.id)).filter(Boolean));
   const editableIds=new Set([...(review.editableTargets||[]).map(clean).filter(Boolean),...expectedIds]);
@@ -3959,7 +4081,9 @@ export async function observeAssetRuntimeCaptures({order={},cwd=process.cwd(),mo
       'Return one JSON object with arrays: visibleSubjects, missingSubjects, uncertainSubjects, findings.',
       'Classify every required subject ID into exactly one of visibleSubjects, missingSubjects, uncertainSubjects. Use uncertainSubjects for occlusion, off-camera framing, blur, ambiguity, or insufficient evidence.',
       'findings entries must contain: id, severity, category, regionNormalized, targetIds, observed, requestedChange.',
-      'severity is BLOCKER/HIGH/MEDIUM/LOW. category is MISSING_OBJECT/WEAK_DETAIL/CLIPPING_OR_OVERLAP/READABILITY/STYLE_OR_MATERIAL/COMPOSITION.',
+      'Evaluate actual visual appeal as well as object presence: focal hierarchy, purposeful negative space, scale/depth layers, lighting/value contrast, coherent external model materials, readable silhouettes, typography spacing and game-specific visual identity. A complete-looking list of assets does NOT imply an attractive frame.',
+      'For a pixel-proven ugly or awkward area, return a concrete observation and smallest visible edit target: reposition/rescale an existing asset, adjust camera composition, tune existing light/material, improve UI proportions/spacing. Do not invent missing objects, source paths, unseen geometry, timing or a repair outcome from one screenshot. If a scene already looks coherent, do not invent defects.',
+      'severity is BLOCKER/HIGH/MEDIUM/LOW. category is MISSING_OBJECT/WEAK_DETAIL/CLIPPING_OR_OVERLAP/READABILITY/STYLE_OR_MATERIAL/COMPOSITION/SPATIAL_DEPTH/LIGHTING_VALUE/TYPOGRAPHY_SPACING/SILHOUETTE_IDENTITY.',
       'regionNormalized is [x,y,width,height] in 0..1 image coordinates. A fully absent object may use [0,0,1,1].',
       'MISSING_OBJECT is allowed only for a required subject classified missing in this exact view. Never invent a new gameplay object that is absent from the review contract.',
       'Other findings must target only expectedSubjects or editableTargets. Preserve gameplay rules, balance, hitboxes, damage, cooldowns, progression, economy, save meaning and network authority.',
@@ -4197,6 +4321,61 @@ export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract=
   }
   return Object.freeze({required:true,pass:true,count:actualIds.length,ids:Object.freeze([...actualIds])});
 }
+// [일반 웹 3D 엔진] 오너의 3D 지시를 기존 웹 소스 책임에 적용한다.
+// 실제 게임 코드에 이미 연결된 엔진이 있으면 이름만 바꾸기 위해 재작성하지 않는다.
+export function selectWeb3dEngine({order={},files=[]}={}){
+  const source=(Array.isArray(files)?files:[]).map(file=>String(file?.content||'')).join('\n');
+  const has=pattern=>pattern.test(source);
+  const detected=[
+    has(/(?:from\s*['"]playcanvas['"]|import\s*\(['"]playcanvas['"]\)|\bpc\.Application\b|\bpc\.Entity\b)/i)?'PLAYCANVAS':null,
+    has(/(?:from\s*['"]@babylonjs\/|\bBABYLON\.(?:Engine|Scene|MeshBuilder|ArcRotateCamera|WebGPUEngine)\b|new\s+BABYLON\.Engine\b)/i)?'BABYLON_JS':null,
+    has(/(?:from\s*['"]three['"]|from\s*['"]three\/|\bTHREE\.(?:Scene|WebGLRenderer|PerspectiveCamera|Mesh|GLTFLoader)\b)/i)?'THREE_JS':null,
+    has(/(?:\.getContext\s*\(\s*['"](?:webgl2?|experimental-webgl)['"]|\.drawElements\s*\(|\.drawArrays\s*\()/i)?'EXISTING_WEBGL':null
+  ].filter(Boolean);
+  const existing=detected.filter(engine=>engine!=='EXISTING_WEBGL');
+  const ambiguous=existing.length>1;
+  const goal=[order?.goal,order?.selectedTask?.goal,order?.selectedTask?.focus].map(value=>String(value||'')).join(' ');
+  const preferred=String(order?.selectedTask?.preferredWeb3dEngine||order?.preferredWeb3dEngine||'').trim().toUpperCase();
+  const ownerChoice=['PLAYCANVAS','BABYLON_JS','THREE_JS'].includes(preferred)?preferred:null;
+  const physicsHeavy=Boolean(order?.selectedTask?.complexNativePhysics===true
+    ||/(?:ragdoll|havok|soft.?body|vehicle physics|character controller|물리.?시뮬레이션|강체.?물리)/i.test(goal));
+  const selected=ambiguous?null:existing[0]||(detected.includes('EXISTING_WEBGL')?'EXISTING_WEBGL':ownerChoice||(physicsHeavy?'BABYLON_JS':'PLAYCANVAS'));
+  const reuseExisting=Boolean(existing.length||detected.includes('EXISTING_WEBGL'));
+  return Object.freeze({
+    engine:selected||'EXISTING_ENGINE_REVIEW_REQUIRED',
+    reason:ambiguous?'MULTIPLE_EXISTING_ENGINES_REVIEW_REQUIRED':reuseExisting?'KEEP_ORIGINAL_ENGINE_SOURCE':
+      ownerChoice?'EXPLICIT_WEB_ENGINE_PREFERENCE':physicsHeavy?'COMPLEX_3D_PHYSICS':'MOBILE_FIRST_NEW_WEB3D',
+    rewriteExistingEngine:false,
+    engineChoiceVerifiedByRuntime:false,
+    existingEvidence:Object.freeze(detected),
+    backend:'WEBGL2_COMPATIBILITY_FIRST_WEBGPU_ONLY_IF_SUPPORTED_AND_TESTED',
+    finalDimension:'REAL_3D',
+    runtimeVerificationRequired:true
+  });
+}
+function ordinaryWeb3dEngineGuidance(order={},context={}){
+  if(String(order?.target||'').toLowerCase()!=='web')return'';
+  const engine=selectWeb3dEngine({order,files:context?.files||[]});
+  const hints={
+    PLAYCANVAS:'Use the PlayCanvas open-source JavaScript runtime and existing project asset loader when available. Choose its WebGL2 backend for mobile; WebGPU only after capability detection and device tests.',
+    BABYLON_JS:'Use the existing Babylon.js engine and genuine 3D scene/mesh/camera interfaces. Integrate physics only if the matching physics package is already installed and runtime-tested.',
+    THREE_JS:'Keep Three.js scene, renderer, camera and GLTFLoader in the original project. Do not port an existing Three.js game to another engine just for naming consistency.',
+    EXISTING_WEBGL:'Keep the existing hand-authored WebGL draw path, shaders, transforms and scene state. Improve real geometry, GL buffers, rendering and camera without swapping the renderer.',
+    EXISTING_ENGINE_REVIEW_REQUIRED:'Conflicting engine imports exist. Inspect the actual entrypoint before modifying the engine; preserve current dependencies and gameplay.'
+  };
+  return [
+    '[GENERAL WEB REAL 3D ENGINE IMPLEMENTATION BEGIN]',
+    'engine='+engine.engine+'; reason='+engine.reason+'; sourceEvidence='+engine.existingEvidence.join(','),
+    hints[engine.engine],
+    'New games default to PlayCanvas; use Babylon.js only for proven complex physics/features, and retain Three.js or an existing WebGL engine when it already owns the game. Do not combine competing renderer runtimes or create an unused parallel scene.',
+    'Render genuine 3D volume meshes, depth-aware camera, world-space motion and player input. Flat 2D/canvas sprites, CSS perspective, isometric/2.5D tricks and labels are not final 3D evidence.',
+    'Keep bundled dependencies pinned to the original project and offline-capable where required. Never assume CDN reachability, auto-install missing packages or hardcode WebGPU availability; check WebGL2 compatibility and fallback without changing game semantics.',
+    'Reuse provenance-verified glTF/GLB meshes, compatible materials and motion assets. Use instancing, LOD/culling and compressed assets when supported; set device pixel ratio <= 1.5 for mobile unless measured device evidence justifies a lower limit. Resize both camera projection and renderer on orientation/viewport changes; throttle or pause simulation/rendering when document.visibilityState is hidden without altering save or reward timing.',
+    'Before claiming performance: verify real browser frame time, GPU draw counts, WebGL2 initialization, mobile touch controls, memory pressure, restart and save/load. Preserve exact game combat ticks, economy, progression, multiplayer authority and asset licensing. No unverified FPS claims.',
+    'Static code evidence is not a 3D PASS. Require mobile browser runtime checks for actual draw frames, mesh depth, camera and input changes, lifecycle/retry and save/load. Preserve old sources until the real replacement passes.',
+    '[GENERAL WEB REAL 3D ENGINE IMPLEMENTATION END]'
+  ].join('\n');
+}
 function fullWebGenerationTarget(order={}){const requirements=[...clean(order?.goal).matchAll(/REAL_GAME_FOOTPRINT_TOO_SMALL:\d+:(\d+)/gi)].map(match=>Number(match[1])).filter(Number.isFinite);const minBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MIN_BYTES,...requirements));const maxBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minBytes*2));return{minBytes,maxBytes};}
 function replaceOversizedEmbeddedLearningGuidance(goal='',replacement=''){
   const raw=String(goal??''),start=raw.indexOf(VERIFIED_LEARNING_MOTOR_BEGIN);
@@ -4218,7 +4397,7 @@ function boundedPromptText(value='',maxBytes=COMPACT_DIRECTIVE_LINE_BYTES){
   }
   return best;
 }
-export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null,motionCoaching=null,robloxSourceCoaching=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
+export function buildPrompt(order,context,responsibleFiles=[],{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null,motionCoaching=null,robloxSourceCoaching=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
   // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
   const motionUnit=order.assetProduction?.motionRepairWorkUnit;
@@ -4230,6 +4409,44 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     ?{...motionTeaching,example:{contract:'Use the source-hash-bound example in INTERNAL MOTION COACHING; adapt its principles to the target rig, never its identity or duration.',reference:boundMotionReference}}
     :motionTeaching;
   const craftGoal=[order.goal,order.selectedTask?.goal,order.selectedTask?.focus].filter(Boolean).join(' ');
+  // 검증된 시각 코딩 패턴: 기존 canonical ingest 결과만 사용한다.
+  // 원본 코드 저장·새 학습 체인·미검증 패턴의 성공 승격은 금지한다.
+  const visualSignals=[
+    ['DAMAGE_POPUP_POOL',/데미지|피해.?숫자|damage.?popup|floating.?text|pool/i],
+    ['TOOLTIP_PLACEMENT',/도움창|툴팁|tooltip/i],
+    ['ICON_STATE_MOTION',/아이콘.?애니|icon.?animat/i],
+    ['CONTEXTUAL_HUD',/상황별.?hud|전투.?hud|boss.?hud|전투.?화면/i],
+    ['NINE_SLICE_SURFACE',/9.?slice|nine.?slice|프레임.?분할/i],
+    ['MATERIAL_HARMONIZATION',/재질.?조화|재질.?통일|material.?harmoni/i],
+    ['SCREEN_LAYOUT_OPTIMIZER',/화면.?배치|ui.?배치|layout.?optim/i],
+    ['NOTIFICATION_STACK',/알림|notification|toast/i],
+    ['STATUS_DURATION_TRACK',/상태효과|버프.?시간|status.?duration/i],
+    ['ITEM_VISUAL_PREVIEW',/장비.?미리보기|3d.?item.?preview/i],
+    ['BOSS_PHASE_PRESENTATION',/보스.?체력|boss.?phase|위협.?방향/i],
+    ['VISUAL_EFFECT_BUDGET',/이펙트.?제한|팝업.?수|effect.?budget|ui.?performance/i]
+  ];
+  const requestedVisualSystems=new Set(visualSignals.filter(([,matcher])=>matcher.test(craftGoal)).map(([key])=>key));
+  const verifiedVisualPatterns=(()=>{ 
+    if(!requestedVisualSystems.size||!['web','roblox'].includes(clean(order.target).toLowerCase()))return[];
+    let library;
+    try{library=readJson(path.join(process.cwd(),'.vibe2/code-pattern-library.json'),{});}catch{return[];}
+    return (Array.isArray(library?.patterns)?library.patterns:[])
+      .filter(row=>row?.verified===true&&row?.rawCodeStored===false&&clean(row?.independentQa)==='PASS'
+        &&clean(row?.sourceRevision)&&clean(row?.engine).toLowerCase()===clean(order.target).toLowerCase()
+        &&requestedVisualSystems.has(clean(row?.system)))
+      .sort((a,b)=>String(a.system).localeCompare(String(b.system))||String(a.id).localeCompare(String(b.id)))
+      .slice(0,5);
+  })();
+  const visualCodePatternBlock=verifiedVisualPatterns.length?[
+    '[VERIFIED VISUAL CODE PATTERNS]',
+    ...verifiedVisualPatterns.map(row=>JSON.stringify({
+      system:row.system,id:row.id,sourceRevision:row.sourceRevision,
+      recipe:row.implementationRecipe?.source||'',proof:row.implementationRecipe?.proof||[]
+    })),
+    'Read-only engineering guidance; reimplement in the existing responsible source functions. Source revision QA does not transfer to this game or platform. Preserve server authority, save and gameplay semantics. Re-run native runtime and mobile regression before claiming success.',
+    '[END VERIFIED VISUAL CODE PATTERNS]'
+  ].join('\n'):'';
+
   // Unity WebGL·Android는 동일 Unity 프로젝트를 사용하고 Roblox는 독립 소스로 구현한다.
   // 최적화 요청에만 적용해 일반 게임 소스 생성의 프롬프트 용량을 늘리지 않는다.
   const performanceTarget=clean(order.target).toLowerCase();
@@ -4335,13 +4552,14 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     '[RUNTIME VISUAL REPAIR BEGIN]',
     JSON.stringify(runtimeVisualRepair),
     'Repair only defects listed in defects and only inside the current responsible visual files. INTERFACE means only declared HUD/MENU/MINIMAP/INTERACTION presentation. SCENE_OBJECT means only declared required object binding/presentation. Preserve gameplay values, save meaning, multiplayer authority, hit timing, quest/progression rules and unrelated visual systems. Re-capture the same runtime role with the same camera, lighting and state after mutation. Do not close a defect from source markers, declarations, generated files, or a model claim; runtime re-observation is required.',
+    'For ART_DIRECTION repairs, use only pixel-observed findings with baseline/selected capture hashes and an exact sourcePath, targetId, property and expectedEffect. First locate that existing source owner and change its real camera, spatial arrangement, material/light, asset fit, UI spacing or presentation property. Prioritize the largest visible defect in the observed region; do not add random props, duplicate UI factories or entire wrapper pipelines. Do not mark visual quality improved before a new same-scene runtime review. An aesthetic score or visibleRenderDelta alone is not proof.',
     '[RUNTIME VISUAL REPAIR END]'
   ].join('\n'):'';
   const applyFirst=order.assetProduction?.applyFirstSummary;
   const applyFirstBlock=applyFirst?.enabled?[
     '[APPLY USABLE ASSETS FIRST BEGIN]',
     JSON.stringify({summary:applyFirst,decisions:(order.assetProduction?.decisions||[]).map(row=>({type:row.type,applyFirst:row.applyFirst}))}),
-    'Use target-compatible assets that already have a real path, native variant, or existing same-game binding before starting new authoring. When quality is comparable, prefer the candidate with the lowest integration cost, especially an already-bound same-game asset. Apply it into the existing responsible game system first. Judge quality by explicit axes such as silhouette, proportion, anatomy/structure, face-hands-feet, material response, rig, sockets, motion, secondary motion, LOD and UI states. Keep strong axes and rebuild only failed axes. Other compatible candidates may donate parts, rig structure, material language, sockets, motion, or native variants; recombine them only when compatibility and provenance are preserved. Build detail from GAME_CAMERA to MID_RANGE to CLOSEUP to CONTACT. Random clutter, texture noise, excessive decals, or extra polygons without construction/function/contact cause do not count as detail. Preserve the original asset and gameplay semantics. A verified or production-safe asset is not automatically high visual quality. Spend detail effort first on assets with high screen-space occupancy, player dwell time, interaction frequency, hero/boss/signature role, camera proximity, repeated visibility, or gameplay readability needs. Distant or rare assets may use simpler LOD/material detail. Polygon count, texture size, or verification status alone must not decide visual quality. Full new authoring is last, only when core identity or structural quality remains blocked after targeted derivation and candidate reuse.',
+    'Use target-compatible assets that already have a real path, native variant, or existing same-game binding before starting new authoring. When quality is comparable, prefer the candidate with the lowest integration cost, especially an already-bound same-game asset. Apply it into the existing responsible game system first. Judge quality by explicit axes such as silhouette, proportion, anatomy/structure, face-hands-feet, material response, rig, sockets, motion, secondary motion, LOD and UI states. Keep strong axes and rebuild only failed axes. Other compatible candidates may donate parts, rig structure, material language, sockets, motion, or native variants; recombine them only when compatibility and provenance are preserved. Build detail from GAME_CAMERA to MID_RANGE to CLOSEUP to CONTACT. Verify GAME_CAMERA silhouette/function readability before authoring MID_RANGE assembly, CLOSEUP construction and CONTACT joints. Do not progress a stage if the previous stage has no source-bound visual evidence. Random clutter, texture noise, excessive decals, or extra polygons without construction/function/contact cause do not count as detail. Preserve the original asset and gameplay semantics. A verified or production-safe asset is not automatically high visual quality. Spend detail effort first on assets with high screen-space occupancy, player dwell time, interaction frequency, hero/boss/signature role, camera proximity, repeated visibility, or gameplay readability needs. Distant or rare assets may use simpler LOD/material detail. Polygon count, texture size, or verification status alone must not decide visual quality. Full new authoring is last, only when core identity or structural quality remains blocked after targeted derivation and candidate reuse.',
     '[APPLY USABLE ASSETS FIRST END]'
   ].join('\n'):'';
   // 기존 Vibe 소스 생성 프롬프트 안에서만 UI 추천을 실제 책임 함수에 전달한다.
@@ -4436,31 +4654,58 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
         nativeBuildRequiresRegisteredAssetAndRealSource:true,
         sourceOwnership:'EXISTING_GRAPHICS_PRODUCTION',
         selectedActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
-          .filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'
-            ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady===true)
+          .filter(row=>row.action==='ACQUIRE_ADAPT'
+            ||row.action==='ADAPT'&&(row.libraryReuse?.derivativeCandidateReady===true
+              ||row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
+                &&row.automaticReplacementAuthorized===true
+                &&row.sourceCompatibilityAndRightsRequired===true))
           .map(row=>Object.freeze({
             family:row.family,action:row.action,reason:row.reason,
+            // Carry the planner's exact upgrade IDs into the canonical worker;
+            // authorization to attempt replacement is never runtime verification.
+            assetId:row.assetId||null,
+            replacesCandidateAssetId:row.replacesCandidateAssetId||null,
+            replacementExecution:row.replacementExecution||null,
+            automaticReplacementAuthorized:row.automaticReplacementAuthorized===true,
+            sourceCompatibilityAndRightsRequired:row.sourceCompatibilityAndRightsRequired===true,
             selectedSourceId:row.externalAcquisition?.sourceId||row.libraryReuse?.sourceAssetId||null,
             sourcePage:row.externalAcquisition?.sourceUrl||null,
             directDownload:row.externalAcquisition?.downloadUrl||null,
             acquisitionState:row.externalAcquisition?.acquisitionState||null,
-            license:row.externalAcquisition?.license||row.libraryReuse?.sourceLicense||null,
+            sourceArchive:row.externalAcquisition?.localSourcePath||null,
+            sourceArchiveSha256:row.externalAcquisition?.sourceHash||null,
+            sourceArchiveAcquired:row.externalAcquisition?.downloaded===true,
+            license:row.externalAcquisition?.license||row.libraryReuse?.sourceLicense||row.registeredSourceLicense||null,
             licenseEvidenceUrl:row.externalAcquisition?.licenseEvidenceUrl||null,
             // 내부 후보는 원본·해시·권리 검증 뒤 기존 Blender 제작 책임이 파생한다.
-            sourceModel:row.libraryReuse?.sourceModel||null,
+            sourceModel:row.libraryReuse?.sourceModel||row.registeredSourceModel||null,
             sourceSha256:row.libraryReuse?.expectedSourceSha256||null,
-            sourceInspectionRequired:row.libraryReuse?.sourceFileAndSha256InspectionRequired===true,
+            sourceInspectionRequired:row.libraryReuse?.sourceFileAndSha256InspectionRequired===true
+              ||row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE',
             sourceAssetImmutable:row.libraryReuse?.originalImmutable===true,
             materialRefinement:row.materialRefinement||null,
             assetization:row.assetization||null,
             nativeDccScript:row.assetization?.nativeDccScript||null,
             sourceModelField:row.assetization?.nativeSourceModelField||null,
+            nativeBuildBlockedByUnadaptedArchive:row.action==='ACQUIRE_ADAPT'
+              &&row.externalAcquisition?.downloaded===true
+              &&Boolean(row.externalAcquisition?.localSourcePath)
+              &&!row.registeredSourceModel,
             runtimeVerified:false,productionVerified:false,
-            nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'&&!row.externalAcquisition?.downloadUrl
+            nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'
+              &&!row.externalAcquisition?.downloadUrl
+              &&!(row.externalAcquisition?.downloaded===true
+                &&row.externalAcquisition?.acquisitionState==='ACQUIRED_ORIGINAL_FILES'
+                &&row.externalAcquisition?.localSourcePath&&row.externalAcquisition?.sourceHash)
               ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady!==true
+                &&!(row.reason==='NEW_LIBRARY_ASSET_QUALITY_UPGRADE_CANDIDATE'
+                  &&row.automaticReplacementAuthorized===true
+                  &&row.sourceCompatibilityAndRightsRequired===true
+                  &&row.registeredSourceModel&&row.registeredSourceLicense)
           })))
       })
     }),
+    'Only inspect, verify and apply existing company/common or downloaded license-cleared assets. Do not invent or generate new meshes, characters, artwork, props, audio, algorithms, or asset files. Inspect the sourceArchive bytes, SHA256, contained file types, licensing and model rig/animation before extraction and platform conversion. Reuse the existing conversion responsibility and bind the verified asset into the game consumer, preserving gameplay, save and networking. If the archive has no matching safe file, leave that role pending, never substitute an invented asset. Runtime, mobile and import QA remain mandatory before marking applied.',
     'Apply in the existing consumer; actual runtime QA remains required.',
     '[ASSET IMPLEMENTATION CONTRACT END]'
   ].join('\n'):'';
@@ -4468,7 +4713,9 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
     '[PRECISION PRODUCTION CHAIN BEGIN]',
     JSON.stringify({mode:precisionProduction.mode,application:precisionProduction.application,sequence:precisionProduction.sequence,authoringOutputsRequired:precisionProduction.authoringOutputsRequired,continuation:precisionProduction.continuation,qualityDNA:precisionProduction.qualityDNA?.commonRules}),
     'Asset-library authoring owns reusable source assets. The current game source owner owns target conversion/import AND binding into the existing render/scene/material/rig/motion consumer in the same responsibility. Existing target runtime QA owns verification. Reuse compatible native variants; conversion must preserve source and artifact identity. A local GLB path is not a Roblox uploaded asset ID. Keep required permissions/import gaps explicit. Do not create a conversion queue, duplicate graphics root, wrapper, or parallel owner for the same file. Prepared/exported/registered assets are not applied assets. Missing source or tooling returns the affected scope to its existing task; do not restart unrelated production.',
-    'Continue through INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY within the current task whenever the responsible source and authoring capability are available. Inspection and repair planning are not terminal outputs. Produce or rebuild editable source plus the target-native derivative, then bind it directly into the existing responsible game system. Build detail in four readable scales: GAME_CAMERA silhouette/function, MID_RANGE structure/parts, CLOSEUP construction/material identity, CONTACT joints/grips/doors/footing/interaction. Every micro-detail needs a functional, construction, contact, weathering, damage, or cultural cause; random clutter/noise is not detail. Do not create a shadow asset path, wrapper binding, or duplicate responsibility. If the authoring tool is genuinely unavailable, leave the exact AUTHOR stage pending with required source/output contract and do not claim the asset was produced.',
+    order?.assetProduction
+      ?'For asset work use INSPECT -> VERIFY_ORIGINAL -> EXTRACT_OR_CONVERT_EXISTING -> APPLY -> RUNTIME_QA only. Never produce new source models or speculative content. Existing conversions preserve the exact original and provenance. If no safe compatible original is available, report HOLD and continue with other verifiable assets. Do not mark game application until real import, binding and runtime evidence exist.'
+      :'Continue through INSPECT -> DEFINE_REPAIR -> AUTHOR -> APPLY within the current task whenever the responsible source and authoring capability are available. Inspection and repair planning are not terminal outputs. Produce or rebuild editable source plus the target-native derivative, then bind it directly into the existing responsible game system. Build detail in four readable scales: GAME_CAMERA silhouette/function, MID_RANGE structure/parts, CLOSEUP construction/material identity, CONTACT joints/grips/doors/footing/interaction. Every micro-detail needs a functional, construction, contact, weathering, damage, or cultural cause; random clutter/noise is not detail. Do not create a shadow asset path, wrapper binding, or duplicate responsibility. If the authoring tool is genuinely unavailable, leave the exact AUTHOR stage pending with required source/output contract and do not claim the asset was produced.',
     '[PRECISION PRODUCTION CHAIN END]'
   ].join('\n'):'';
   const runtimeVisual=order.runtimeVisualObservation;
@@ -4506,10 +4753,13 @@ allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw V
 productionRequestBlock,
 `Department: ${order.department||'development'}`,
 learningContract.block,
+visualCodePatternBlock,
 robloxSourceCoaching?.block||'',
+ordinaryWeb3dEngineGuidance(order,context),
 unityWeb3dCodingBlock,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
+visualCraftWorkerGuidance(order,context),
 universalAssetWorkerGuidance(order),
 internalAssetSourceUsageGuidance(order),
 internalAssetApiIndexGuidance(context),
@@ -4884,6 +5134,7 @@ function repeatedFailureStrategyGuidance(failureClass='',repeatCount=0){
 }
 export function generationFailureClass(error){
   const message=clean(error?.message||error);
+  if(error?.vibe2InfrastructureFailure===true||/GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE|GEMINI_AUTH_OR_BILLING_BLOCKED|GEMINI_HTTP_ERROR_NO_LOCAL_FALLBACK/i.test(message))return'EXTERNAL_AI_UNAVAILABLE';
   if(/SPATIAL_BLUEPRINT_INVALID/i.test(message))return'SPATIAL_BLUEPRINT';
   if(/INTERFACE_BLUEPRINT_INVALID/i.test(message))return'INTERFACE_BLUEPRINT';
   if(/^SINGLE_MOTION_/.test(message))return'SINGLE_MOTION_SCOPE';
@@ -5052,6 +5303,7 @@ function normalizeBlueprintSourcePaths(blueprint,scope){
   return{...blueprint,
     ...(Array.isArray(blueprint.objects)?{objects:blueprint.objects.map(row)}:{}),
     ...(Array.isArray(blueprint.connections)?{connections:blueprint.connections.map(row)}:{}),
+    ...(Array.isArray(blueprint.experienceScenarios)?{experienceScenarios:blueprint.experienceScenarios.map(row)}:{}),
     ...(Array.isArray(blueprint.screens)?{screens:blueprint.screens.map(screen=>screen&&Array.isArray(screen.controls)?{...screen,controls:screen.controls.map(row)}:screen)}:{})
   };
 }
@@ -5743,7 +5995,8 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     &&(!assetDevelopmentLane||target==='web')
     &&!singleMotionWorkUnit
     &&!systemAtomicPairRequired
-    &&!dedicatedRobloxOversizePath
+    // Large Roblox rebuilds must also use the canonical bounded source prompt.
+    // The full task remains in the work order; only the model input is compacted.
     &&Buffer.byteLength(specializedInitialPrompt,'utf8')>SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES;
   const initialStudioPrompt=sourceCandidatePressureInitial
     ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,multiFilePairRequired,oversizedInitial:true,initialPromptLimitBytes:SOURCE_CANDIDATE_INITIAL_PROMPT_BYTES})
@@ -5761,7 +6014,9 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
     &&!systemAtomicPairRequired&&!multiFilePairRequired
     &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt))
     &&String(prompt).includes('[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]')
-    &&Buffer.byteLength(initialStudioPrompt,'utf8')>MAX_CONTEXT_BYTES;
+    // Preserve the focused source-anchor strategy when the original work order was oversized.
+    // Initial prompt compaction must not suppress the existing focused-rebuild path.
+    &&Buffer.byteLength(specializedInitialPrompt,'utf8')>MAX_CONTEXT_BYTES;
   if(robloxRebuildFocused)console.log('VIBE2_ROBLOX_REBUILD_FOCUSED_INITIAL=bytes:'+Buffer.byteLength(initialStudioPrompt,'utf8'));
   const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
   const baseMaxAttempts=assetDevelopmentLane&&robloxGraphicsInitial
@@ -6030,6 +6285,9 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
       return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,verifiedExternalLearningPromptChecks,verifiedExternalLearningPromptAllAttempts:(verifiedExternalLearningContract?.required!==true)||verifiedExternalLearningPromptChecks===attempt,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxRebuildFocused,initialPromptBytes:Buffer.byteLength(prompt,'utf8'),requestPromptBytes:attemptPromptBytes,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,gameSourcePairCompletion:multiFilePairRequired&&systemAtomicPairCompletion!=null,truncatedOutputCreditUsed,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,repeatedFailureStrategyShifts,repeatedRejectedPatchCount,repeatedRejectedPatchStrategyShifts,repeatedRejectedPatchGuidanceCount,rejectedPatchFingerprintCount:rejectedPatchHistory.size,failureHistory:[...failureHistory],focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
+      // Provider quota/access outages are infrastructure, not an invalid gameplay edit.
+      // Do not waste game-code retries or apply learning penalties on a model outage.
+      if(error?.vibe2InfrastructureFailure===true)throw error;
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
       if(partialOutput.trim())lastRaw=partialOutput;
@@ -6287,34 +6545,27 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
   }
   throw lastError||new Error('candidate generation failed');
 }
-async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){const fake=images.length?'':clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);if(fake)return fs.readFileSync(path.resolve(fake),'utf8');const options={num_predict:maxPredict,temperature:Math.max(.02,Math.min(.4,Number(temperature)||.08))};if(contextWindow>0)options.num_ctx=contextWindow;const format=completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}:(completionMode==='JSON_SINGLE_MOTION'?singleMotionResponseSchema():(/^JSON_/.test(completionMode)?'json':null));const body=JSON.stringify({model,prompt,...(images.length?{images}:{}),stream:true,think:false,...(format?{format}:{}),options});return await new Promise((resolve,reject)=>{let settled=false,request=null,pending='',output='',doneReason='',firstOutputSeen=false,firstOutputAt=0;const requestStartedAt=Date.now();const finish=(error,value='')=>{if(settled)return;settled=true;const finishedAt=Date.now();const firstOutputMs=firstOutputAt?Math.max(0,firstOutputAt-requestStartedAt):0;const outputBytes=Buffer.byteLength(String(error?.vibe2PartialOutput??value??output??''),'utf8');console.log(`VIBE2_MODEL_GENERATION_DURATION_MS=${Math.max(0,finishedAt-requestStartedAt)}:firstOutputMs=${firstOutputMs||'NONE'}:outputBytes=${outputBytes}:status=${error?'ERROR':'COMPLETE'}`);clearTimeout(timer);clearTimeout(firstOutputTimer);if(request&&!request.destroyed)request.destroy();if(error)reject(error);else resolve(value);};const timer=setTimeout(()=>{const error=new Error(`Ollama 응답 시간 초과: ${timeoutMs}ms`);error.vibe2PartialOutput=output;finish(error);},timeoutMs);const firstOutputTimer=setTimeout(()=>{if(firstOutputSeen||settled)return;const error=new Error(`Ollama 첫 출력 시간 초과: ${firstOutputTimeoutMs}ms`);error.vibe2PartialOutput='';error.vibe2ZeroOutputTimeout=true;finish(error);},Math.min(timeoutMs,firstOutputTimeoutMs));request=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},response=>{if((response.statusCode||0)<200||(response.statusCode||0)>=300){response.resume();finish(new Error(`Ollama HTTP ${response.statusCode}`));return;}response.setEncoding('utf8');const consume=line=>{const text=line.trim();if(!text)return;let payload;try{payload=JSON.parse(text);}catch(error){throw new Error(`Ollama 스트림 JSON 파싱 실패: ${error.message}`);}if(payload?.error)throw new Error(`Ollama 오류: ${payload.error}`);if(payload?.done===true)doneReason=clean(payload.done_reason);if(typeof payload?.response==='string'){if(payload.response.length&&!firstOutputSeen){firstOutputSeen=true;firstOutputAt=Date.now();clearTimeout(firstOutputTimer);console.log(`VIBE2_MODEL_FIRST_OUTPUT_MS=${Math.max(0,firstOutputAt-requestStartedAt)}:promptBytes=${Buffer.byteLength(prompt,'utf8')}:contextWindow=${contextWindow||0}:model=${model}`);}output+=payload.response;
-// 교체 문자열 전용 응답은 제어 문자 혼입이 확정되면 남은 생성을 기다리지 않는다.
-if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&/(?:\/no_think\b|<\/?think\b|```)/i.test(output)){
-  const error=new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
-  error.vibe2PartialOutput=output;
-  console.log('VIBE2_MODEL_CONTROL_TOKEN_EARLY_ABORT=bytes:'+Buffer.byteLength(output,'utf8'));
-  finish(error);return;
-}
-// 원본에 없는 긴 대입문 반복은 스트림 퇴행으로 처리하고 기존 재시도 경로로 돌린다.
-if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'){
-  const newline=output.lastIndexOf('\\n');
-  if(newline>=0){
-    try{
-      const partial=JSON.parse(output.slice(0,newline+2)+'"}');
-      const lines=String(partial.replace||'').split('\n').slice(0,-1).map(line=>line.trim());
-      const tail=lines.slice(-8),repeated=tail[0]||'';
-      if(tail.length===8&&repeated.length>=40&&/^[A-Za-z_][\w.]*\s*=\s*[^=]/.test(repeated)
-        &&tail.every(line=>line===repeated)
-        &&!String(prompt).split(/\r?\n/).map(line=>line.trim()).join('\n').includes(tail.join('\n'))){
-        const error=new Error('Ollama 오류: token repeat limit reached (SOURCE_LINE_REPETITION)');
-        error.vibe2PartialOutput=output;
-        console.log('VIBE2_MODEL_REPETITION_EARLY_ABORT=bytes:'+Buffer.byteLength(output,'utf8'));
-        finish(error);return;
-      }
-    }catch{} // 미완성 JSON 이스케이프는 다음 청크에서 다시 확인한다.
+export async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',images=[],maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,firstOutputTimeoutMs=MODEL_FIRST_OUTPUT_TIMEOUT_MS,contextWindow=0,temperature=.08,completionMode='JSON_EDIT',rejectSourceControlTokens=false}={}){
+  const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'GEMINI_API').toUpperCase();
+  if(provider!=='GEMINI_API')throw new Error('LOCAL_AI_PERMANENTLY_FORBIDDEN: only Gemini API is authorized');
+  // Strictly test-only fixtures. Real candidates must call the external API.
+  if(clean(responseFile)){
+    if(!/^child-/.test(clean(process.env.NODE_TEST_CONTEXT)))throw new Error('MODEL_RESPONSE_FIXTURE_TEST_CONTEXT_REQUIRED');
+    return fs.readFileSync(path.resolve(responseFile),'utf8');
   }
+  if(images.length)throw new Error('GEMINI_IMAGE_INPUT_ADAPTER_NOT_VERIFIED');
+  const key=clean(process.env.GEMINI_API_KEY);
+  if(!key)throw Object.assign(new Error('GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK'),{vibe2InfrastructureFailure:true});
+  const {text}=await requestGeminiFreePair({
+    apiKey:key,
+    contents:[{role:'user',parts:[{text:String(prompt)}]}],
+    maxOutputTokens:maxPredict,timeoutMs,temperature
+  });
+  if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&(/no_think|think|```/i).test(text))
+    throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:STREAM_OUTPUT');
+  return text;
 }
-if(modelResponseComplete(output,completionMode))finish(null,output);}};response.on('data',chunk=>{if(settled)return;try{pending+=chunk;let at;while((at=pending.indexOf('\n'))>=0){const line=pending.slice(0,at);pending=pending.slice(at+1);consume(line);if(settled)return;}}catch(error){finish(error);}});response.on('end',()=>{if(settled)return;try{if(pending.trim())consume(pending);if(settled)return;if(!output.trim())throw new Error('Ollama 응답 비어 있음');if(doneReason==='length'&&!modelResponseComplete(output,completionMode)){const error=new Error('MODEL_OUTPUT_TRUNCATED: 모델 JSON 출력 한도 초과');error.vibe2OutputTruncated=true;error.vibe2MaxPredict=maxPredict;error.vibe2PartialOutput=output;console.log(`VIBE2_MODEL_OUTPUT_TRUNCATED=maxPredict:${maxPredict}:bytes:${Buffer.byteLength(output,'utf8')}`);throw error;}finish(null,output);}catch(error){finish(error);}});response.on('error',finish);});request.on('error',finish);request.end(body);});}
+
 function currentBranch(cwd){try{return clean(execFileSync('git',['rev-parse','--abbrev-ref','HEAD'],{cwd,encoding:'utf8'}));}catch{return'';}}
 function assertCandidateBranch(cwd){const branch=currentBranch(cwd);if(!branch||branch==='main'||branch==='master'||!branch.startsWith('vibe2/candidate/'))throw new Error(`source 적용은 vibe2/candidate/* 브랜치에서만 허용: ${branch||'unknown'}`);return branch;}
 function unityWebBootstrapScaffold(sourceRootRelative=''){
@@ -6672,6 +6923,126 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const sourceRootRelative=assertSourceRoot(order?.source?.root,target,order);
   const sourceRoot=path.resolve(cwd,sourceRootRelative);
   const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
+  // Existing Vibe agent assignment is checked before generation or candidate writes.
+  const agentHandoffPreflight=order?.agentHandoff
+    ?assertVibeAgentHandoffScope({plan:order.agentHandoff,task:order.selectedTask||{id:order.taskId,gameId:order.gameId,target:order.target},
+      route:order.executionRoute||'text-source-worker',target:order.target,responsibleFiles:order?.source?.responsibleFiles||[]})
+    :{pass:false,reason:'LEGACY_WORK_ORDER_HANDOFF_NOT_PRESENT'};
+  // 현재 게임이 선택한 공용 원본만 필요할 때 내려받는다.
+  // 실물 해시를 통과하지 못한 파일은 게임용 라이브러리로 취급하지 않는다.
+  if(applySource){
+    const actions=order?.assetProduction?.assetSupplySummary?.nextActions||[];
+    // Download every family required by the game, including music/audio, UI,
+    // sprites, VFX, motion and materials; never pretend a source is game-ready.
+    const chosen=actions.filter(row=>row?.action==='ACQUIRE_ADAPT'
+      &&clean(row?.externalAcquisition?.license).toUpperCase().replaceAll('_','-')==='CC0-1.0'
+      &&/^assets\/external\/simple-rpg\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_.-]+\.(?:zip|blend|7z|tar\.gz|glb|gltf|fbx|obj|mp3|ogg|wav|flac|aac|m4a|png|jpg|jpeg|webp|svg|gif)$/.test(clean(row?.externalAcquisition?.localSourcePath))
+      &&/^[0-9a-f]{64}$/i.test(clean(row?.externalAcquisition?.sourceHash))
+      &&Number.isSafeInteger(Number(row?.externalAcquisition?.archiveBytes))
+      &&Number(row?.externalAcquisition?.archiveBytes)>=512
+      &&Number(row?.externalAcquisition?.archiveBytes)<=104857600);
+    if(chosen.length){
+      assertCandidateBranch(cwd);
+      const tracked=[],lfsEligible=new Set(),plainGitMissing=new Set();
+      for(const row of chosen){
+        const rel=posix(row.externalAcquisition.localSourcePath),entry=row.externalAcquisition;
+        try{
+          execFileSync('git',['ls-files','--error-unmatch','--',rel],{cwd,timeout:10000,stdio:'pipe'});
+          // The canonical Git blob, not a damaged working-tree file, must
+          // authorize hydration. A different LFS oid is never repaired.
+          let lfs=false;
+          try{
+            // Avoid reading large normal ZIP blobs just to discover that they
+            // are not LFS. The tracked attributes are checked before git show.
+            const attr=execFileSync('git',['check-attr','filter','--',rel],{cwd,timeout:10000,maxBuffer:1024,stdio:'pipe'}).toString('utf8').trim();
+            if(attr.endsWith(': lfs')){
+              const blob=execFileSync('git',['show','HEAD:'+rel],{cwd,timeout:10000,maxBuffer:512,stdio:'pipe'}).toString('utf8');
+              const m=/^version https:\/\/git-lfs\.github\.com\/spec\/v1\r?\noid sha256:([0-9a-f]{64})\r?\nsize ([0-9]+)\r?\n?$/.exec(blob);
+              lfs=Boolean(m&&m[1]===clean(entry.sourceHash).toLowerCase()&&Number(m[2])===Number(entry.archiveBytes));
+            }
+          }catch{}
+          tracked.push(row);
+          if(lfs)lfsEligible.add(rel);
+          else if(!fs.existsSync(path.resolve(cwd,rel)))plainGitMissing.add(rel);
+        }catch{
+          console.log('VIBE2_SELECTED_ASSET_DOWNLOAD=BLOCKED_UNTRACKED:'+safeId(entry.sourceId));
+        }
+      }
+      const ready=new Map();
+      const verify=row=>{
+        const rel=posix(row.externalAcquisition.localSourcePath),full=path.resolve(cwd,rel);
+        try{
+          const bytes=Number(row.externalAcquisition.archiveBytes);
+          if(fs.statSync(full).size!==bytes)return false;
+          return crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex')===clean(row.externalAcquisition.sourceHash).toLowerCase();
+        }catch{return false;}
+      };
+      // Rehydrate absent ordinary Git archives from the pinned HEAD without
+      // fetching all assets or overwriting corrupted existing files.
+      for(const rel of plainGitMissing){
+        try{
+          execFileSync('git',['restore','--source=HEAD','--worktree','--',rel],{cwd,timeout:30000,stdio:'pipe'});
+          console.log('VIBE2_SELECTED_ASSET_GIT_RESTORE=ATTEMPTED:'+safeId(rel));
+        }catch{console.log('VIBE2_SELECTED_ASSET_GIT_RESTORE=FAILED:'+safeId(rel));}
+      }
+      const missing=tracked.filter(row=>lfsEligible.has(posix(row.externalAcquisition.localSourcePath))&&!verify(row));
+      if(missing.length){
+        // A single targeted LFS request replaces checkout of unrelated game assets.
+        const include=[...new Set(missing.map(row=>posix(row.externalAcquisition.localSourcePath)))].sort();
+        try{
+          execFileSync('git',['lfs','pull','--include='+include.join(','),'--exclude=*'],{cwd,timeout:180000,stdio:'pipe'});
+          console.log('VIBE2_SELECTED_ASSET_LFS_DOWNLOAD=ATTEMPTED:'+include.length);
+        }catch(e){
+          console.log('VIBE2_SELECTED_ASSET_LFS_DOWNLOAD=UNAVAILABLE:'+safeId(clean(e?.code||'ERROR')));
+        }
+      }
+      for(const row of tracked){
+        const entry=row.externalAcquisition,rel=posix(entry.localSourcePath);
+        if(!verify(row)&&(lfsEligible.has(rel)||plainGitMissing.has(rel))){
+          // Only an exact, registry-pinned public OpenGameArt attachment can
+          // replace an unavailable LFS original. Landing pages are forbidden.
+          let uri=null;
+          try{
+            const u=new URL(clean(entry.sourceUrl));
+            if(u.protocol==='https:'&&u.hostname==='opengameart.org'
+              &&u.pathname.startsWith('/sites/default/files/')
+              &&!u.username&&!u.password)uri=u.toString();
+          }catch{}
+          if(uri){
+            const temp=path.join(os.tmpdir(),'vibe2-asset-'+safeId(order.gameId||order.taskId)+'-'+crypto.createHash('sha256').update(rel).digest('hex').slice(0,16)+'.part');
+            try{
+              execFileSync('curl',['--fail','--silent','--show-error','--location','--max-redirs','2',
+                '--proto','=https','--proto-redir','=https','--retry','3','--retry-all-errors',
+                '--connect-timeout','12','--max-time','180','--max-filesize','104857600',
+                '--output',temp,uri],{cwd,timeout:240000,stdio:'pipe'});
+              const data=fs.readFileSync(temp);
+              if(data.length===Number(entry.archiveBytes)
+                &&crypto.createHash('sha256').update(data).digest('hex')===clean(entry.sourceHash).toLowerCase()){
+                const destination=path.resolve(cwd,rel),staged=destination+'.vibe2-download.part';
+                try{
+                  fs.writeFileSync(staged,data,{flag:'wx'});
+                  fs.renameSync(staged,destination);
+                }finally{try{fs.unlinkSync(staged);}catch{} }
+              }
+            }catch(e){
+              console.log('VIBE2_SELECTED_ASSET_ORIGIN_DOWNLOAD=FAILED:'+safeId(entry.sourceId));
+            }finally{try{fs.unlinkSync(temp);}catch{}}
+          }
+        }
+        const ok=verify(row);
+        ready.set(rel,ok);
+        console.log('VIBE2_SELECTED_ASSET_DOWNLOAD='+(ok?'VERIFIED:':lfsEligible.has(rel)||plainGitMissing.has(rel)?'PENDING:':'BLOCKED_INVALID_SOURCE:')+safeId(order.gameId)+':'+safeId(entry.sourceId));
+      }
+      order={...order,assetProduction:{...order.assetProduction,
+        assetSupplySummary:{...order.assetProduction.assetSupplySummary,
+          nextActions:actions.map(row=>{
+            const e=row?.externalAcquisition;
+            if(!e||!ready.get(posix(e.localSourcePath)))return row;
+            return {...row,externalAcquisition:{...e,downloaded:true,
+              acquisitionState:'ACQUIRED_ORIGINAL_FILES'}};
+          })}}};
+    }
+  }
   const singleMotionPreflight=evaluateSingleMotionWorkUnit({order,sourceRoot,responsibleFiles});
   if(!singleMotionPreflight.pass)throw new Error(singleMotionPreflight.reason);
   let dccEvidence=null;
@@ -6699,7 +7070,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const modelRouting=resolveAssetSourceModel(order,model);
   const effectiveModel=modelRouting.selectedModel;
   const developmentAuthority=target==='system'
-    ?{owner:'VIBE2_VIBE3',provider:'LOCAL_OLLAMA',model:DEFAULT_MODEL,role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
+    ?{owner:'VIBE2_VIBE3',provider:'GEMINI_API',model:clean(process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash'),role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
     :assertGameDevelopmentAuthority();
   const bootstrap=sourceRootBootstrapAllowed(order,target,sourceRootRelative,responsibleFiles);
   const sourceRootExists=fs.existsSync(sourceRoot)&&fs.statSync(sourceRoot).isDirectory();
@@ -7223,6 +7594,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     generation,
     developmentAuthority,
     compiledWorkContract:order?.compiledWorkContract&&typeof order.compiledWorkContract==='object'?order.compiledWorkContract:null,
+    agentHandoff:order?.agentHandoff||null,
+    agentHandoffPreflight,
     centralPolicyFreshness:{preflight:centralPolicyPreflight,completion:centralPolicyCompletion},
     baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||null,
     goal:order.goal,
@@ -7318,3 +7691,4 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     throw error;
   }
 }
+

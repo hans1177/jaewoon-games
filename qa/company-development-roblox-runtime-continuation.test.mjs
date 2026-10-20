@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {runInNewContext} from 'node:vm';
-import {inspectRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
+import {inspectRobloxBuildPreflight,evaluateRobloxBuildPreflight} from '../tools/company-development-roblox-build-preflight.mjs';
 
 const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
 const headless=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
@@ -18,8 +18,8 @@ test('Roblox native path is package -> shared preflight -> F0 -> private validat
   assert.ok(preflight.includes('workflow_dispatch:'));
   assert.ok(!preflight.includes('company-development-roblox-package.mjs'));
   assert.ok(preflight.includes('company-development-roblox-build-preflight.mjs'));
-  assert.ok(preflight.includes("model: 'llama3.2:1b'"));
-  assert.ok(preflight.includes('Run Vibe plus shared-model build preflight'));
+  assert.ok(!preflight.includes("model: 'llama3.2:1b'"));
+  assert.ok(preflight.includes('Check per-game exact package and source evidence'));
   assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
   assert.ok(headless.includes('Roblox F0 Source Preflight'));
   assert.ok(headless.includes('company-development-roblox-headless-fast-mvp.mjs'));
@@ -33,7 +33,7 @@ test('Roblox native path is package -> shared preflight -> F0 -> private validat
   assert.ok(f9.includes('publish_stage=final'));
 });
 
-test('shared preflight requires exact immutable build and one shared model',()=>{
+test('shared preflight requires exact immutable build and preserves configured shared model',()=>{
   const item={
     gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',
     robloxSourceBootstrapPassedAt:'2026-09-22T00:00:00Z',
@@ -42,10 +42,41 @@ test('shared preflight requires exact immutable build and one shared model',()=>
   };
   const result=inspectRobloxBuildPreflight({item,directive});
   assert.equal(result.pass,true,result.blockers.join(','));
-  assert.equal(result.distinctLeadCount,1);
-  assert.equal(result.sharedModel,'llama3.2:1b');
+  const configured='gemini-3.8-flash';
+  assert.equal(result.distinctLeadCount,configured?1:0);
+  assert.equal(result.sharedModel,configured);
   assert.equal(inspectRobloxBuildPreflight({item:{...item,productionClass:'RELEASE_CONFIRMED'},directive}).pass,true);
   assert.equal(inspectRobloxBuildPreflight({item:{...item,productionClass:'DESIGN_ONLY'},directive}).pass,false);
+});
+
+test('exact game build evidence checks configured shared reviewer and still blocks invalid packages',async()=>{
+  const item={
+    gameId:'test-roblox',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',
+    robloxBuildOrPackagePassed:true,robloxSourceCommit:'a'.repeat(40),
+    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64)
+  };
+  let calls=0;
+  const fetchImpl=async (_url,options)=>{
+    calls++;
+    const request=JSON.parse(options.body);
+    assert.match(_url,/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-3\.(?:8-flash|5-flash-lite):generateContent$/);
+    assert.match(request.contents[0].parts[0].text,/BUILD_EVIDENCE=/);
+    return {ok:true,json:async()=>({candidates:[{content:{parts:[{text:JSON.stringify({decision:'PASS',blockers:[],note:'Exact immutable build is consistent.'})}]}}]})};
+  };
+  const priorKey=process.env.GEMINI_API_KEY;
+  process.env.GEMINI_API_KEY='mock-key-only';
+  let result;
+  try{result=await evaluateRobloxBuildPreflight({item,directive,fetchImpl});}
+  finally{if(priorKey===undefined)delete process.env.GEMINI_API_KEY;else process.env.GEMINI_API_KEY=priorKey;}
+  assert.equal(result.pass,true);
+  const configured=inspectRobloxBuildPreflight({item,directive}).sharedModel;
+  assert.equal(calls,configured?1:0);
+  assert.equal(result.reviewMode,configured?'EXTERNAL_GEMINI_FREE_PAIR_REVIEW':'DETERMINISTIC_GAME_BUILD_EVIDENCE_ONLY');
+  assert.equal(result.leadReviews.length,configured?1:0);
+  const failed=await evaluateRobloxBuildPreflight({item:{...item,robloxBuildOrPackagePassed:false},directive,
+    fetchImpl:()=>{throw new Error('Invalid package must be rejected before a model request')}});
+  assert.equal(failed.pass,false);
+  assert.ok(failed.blockers.includes('build-package-not-passed'));
 });
 
 test('shared preflight admits canonical Roblox Unity concurrent lane without changing selected platform',()=>{
@@ -201,7 +232,9 @@ test('F0 source preflight validates source integrity and explicitly cannot claim
 });
 
 test('canonical native parent calls Roblox runtime while Roblox runtime watches both fast-path workflow contracts',()=>{
-  assert.ok(parent.includes('uses: ./.github/workflows/company-development-roblox-runtime.yml'));
+  assert.ok(parent.includes('name: Dispatch independent Roblox game development'));
+  assert.ok(parent.includes('gh workflow run company-development-roblox-runtime.yml --repo'));
+  assert.ok(parent.includes('ROBLOX_PARENT_WAITS_FOR_GAME_COMPLETION=NO'));
   assert.ok(runtime.includes("- '.github/workflows/company-development-roblox-runtime-continuation.yml'"));
   assert.ok(runtime.includes("- '.github/workflows/company-development-roblox-headless-fast-mvp.yml'"));
 });

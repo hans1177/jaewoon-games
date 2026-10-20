@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { discoverExistingRobloxGames } from './company-development-queue-reconcile.mjs';
 import { ownerDevelopmentHeld, synchronizeOwnerDevelopmentHolds } from './vibe2-queue-control.mjs';
+import {resolveActiveOwnerPolicy} from './company-policy-steward.mjs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../assets/vibe-continuous-queue.js';
@@ -67,7 +68,7 @@ function menuPlatformBindingProfile(project={},platformLane=studioQualityLane(pr
 function sameStudioQualityLane(item={},project={}){return studioQualityTaskLane(item)===studioQualityLane(project);}
 function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?catalog.games:[]).map(game=>[clean(game.id),game]));}
 function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.permanentRemovalPolicy?.ids)?catalog.permanentRemovalPolicy.ids:[]).map(clean).filter(Boolean));}
-const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
+const CANONICAL_POLICY_PATH=String(process.env.COMPANY_VERIFIED_POLICY_PATH||'company-learning/platform-release-roadmap.json').trim();
 const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
 const COMPANY_ASSET_LIBRARY_PATH='company-asset-library.json';
 const DEFAULT_BUILD_UP_ITERATION_EXPECTATION_POLICY=Object.freeze({
@@ -135,13 +136,19 @@ function expectationMetric(spec={},cycle=1,fallback={}){
   return Number.isFinite(max)&&max>0?Math.min(max,value):value;
 }
 const ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE=new Map();
+const ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE_MAX_ENTRIES=64;
 function assetLibrarySourceSnapshot(repoRoot,relativePath=COMPANY_ASSET_LIBRARY_PATH){
   const assetLibraryPath=clean(relativePath)||COMPANY_ASSET_LIBRARY_PATH;
   const file=path.resolve(repoRoot,assetLibraryPath);
   let stat=null;
   try{stat=fs.statSync(file);}catch{}
   const cached=ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.get(file);
-  if(cached&&cached.mtimeMs===(stat?.mtimeMs??null)&&cached.size===(stat?.size??0))return cached.snapshot;
+  if(cached&&cached.mtimeMs===(stat?.mtimeMs??null)&&cached.size===(stat?.size??0)){
+    // Retain frequently used repository snapshots without retaining every transient checkout.
+    ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.delete(file);
+    ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.set(file,cached);
+    return cached.snapshot;
+  }
   const assetLibrary=readJson(file,null);
   const assets=Array.isArray(assetLibrary?.assets)?assetLibrary.assets:[];
   const families=[...new Set(assets.map(row=>clean(row?.family||row?.category).toUpperCase()).filter(Boolean))].sort();
@@ -153,7 +160,11 @@ function assetLibrarySourceSnapshot(repoRoot,relativePath=COMPANY_ASSET_LIBRARY_
     families:Object.freeze(families),
     familyCount:families.length
   });
+  ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.delete(file);
   ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.set(file,Object.freeze({mtimeMs:stat?.mtimeMs??null,size:stat?.size??0,snapshot}));
+  while(ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.size>ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE_MAX_ENTRIES){
+    ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.delete(ASSET_LIBRARY_SOURCE_SNAPSHOT_CACHE.keys().next().value);
+  }
   return snapshot;
 }
 export function resolveBuildUpIterationExpectation({repoRoot=process.cwd(),cycle=1,phase='BUILD_UP',focusPillar=''}={}){
@@ -469,7 +480,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     // source-reconcile의 canonical exact 판정을 그대로 사용해 이미 바뀐 게임 트리에 옛 수리를 재발행하지 않는다.
     const packageAssetFailure=item?.robloxQualityBuildUpEvidence;
     const packageAssetFailureRequested=queueRobloxQualityBuildUpRequested
-      &&clean(packageAssetFailure?.authority)==='roblox-package-asset-binding-failure';
+      &&['roblox-package-asset-binding-failure','roblox-source-static-contract-failure'].includes(clean(packageAssetFailure?.authority));
     const liveRobloxSourceTreeSha=currentSourceTreeSha({repoRoot,sourcePath:root});
     const currentPackageAssetFailure=Boolean(
       packageAssetFailureRequested
@@ -710,17 +721,31 @@ function focusedCaretakerPolicy(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
   if(policy.enabled===true&&policy.completionPursuit?.enabled===true
     &&(policy.targetFocusedGames!==3||policy.maxFocusedGames!==3||new Set(policy.ownerFocusedGameIds||[]).size!==3||policy.ownerFocusedGameIds.length!==3))throw new Error('FOCUSED_BUILD_COMPLETION_REQUIRES_THREE_DISTINCT_GAMES');
+  const platforms=policy.ownerFocusedGamePlatforms||{};
+  const ownerIds=new Set((Array.isArray(policy.ownerFocusedGameIds)?policy.ownerFocusedGameIds:[]).map(clean).filter(Boolean));
+  if(policy.enabled===true&&policy.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY'){
+    if(Object.keys(platforms).length!==ownerIds.size
+      ||[...ownerIds].some(id=>!['ROBLOX','WEB'].includes(clean(platforms[id]).toUpperCase())))
+      throw new Error('FOCUSED_GAME_PLATFORM_MAPPING_INCOMPLETE');
+  }
   return{
     enabled:policy.enabled===true,
-    ownerIds:new Set((Array.isArray(policy.ownerFocusedGameIds)?policy.ownerFocusedGameIds:[]).map(clean).filter(Boolean)),
+    ownerIds,
+    platformByGame:platforms,
+    exactPlatformScope:policy.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY',
     includeAllReleaseConfirmed:policy.includeAllReleaseConfirmed===true,
     completionPursuit:policy.completionPursuit?.enabled===true?policy.completionPursuit:null
   };
 }
-function focusedCaretakerProject(project={},repoRoot=process.cwd()){
+export function focusedCaretakerProject(project={},repoRoot=process.cwd()){
   const policy=focusedCaretakerPolicy(repoRoot);
   if(!policy.enabled)return false;
-  return policy.ownerIds.has(clean(project.gameId))||(policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed');
+  const id=clean(project.gameId),engine=clean(project.engine).toUpperCase();
+  if(policy.ownerIds.has(id)){
+    if(!policy.exactPlatformScope)return true; // Existing isolated legacy tests may omit the new platform map.
+    return policy.platformByGame[id]===engine;
+  }
+  return !policy.exactPlatformScope&&policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed';
 }
 export function projectSort(a,b){
   const focus=(b.ownerFocusedCaretaker===true?1:0)-(a.ownerFocusedCaretaker===true?1:0);if(focus)return focus;
@@ -734,8 +759,12 @@ export function projectSort(a,b){
   }
   return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);
 }
+// [중앙정책] 동기식 기획 1회 동안만 같은 main 정책 스냅샷을 공유한다.
+let activePlanningPolicySnapshot=null;
 function centralPresentationPolicy(repoRoot=process.cwd()){
-  return readJson(path.join(repoRoot,CANONICAL_POLICY_PATH),{});
+  const file=path.resolve(repoRoot,CANONICAL_POLICY_PATH);
+  if(activePlanningPolicySnapshot?.file===file)return activePlanningPolicySnapshot.value;
+  return readJson(file,{});
 }
 function assetProductionEnabled(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot),contract=policy?.assetProductionParallelContract||{};
@@ -750,14 +779,25 @@ function isWeatherPresentationPilot(project={},repoRoot=process.cwd()){
   return contract?.enabled===true&&clean(first.gameId)===clean(project.gameId)&&['unity','roblox','web'].includes(clean(project.engine).toLowerCase());
 }
 function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
-  if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);
+  const policy=centralPresentationPolicy(repoRoot);
+  const ownerScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
+  if(policy?.status==='OWNER_DIRECT_LOCKED'&&!ownerScope)throw new Error('VIBE2_APPROVED_OWNER_SCOPE_REQUIRED');
+  const access=ownerScope?.effectiveDevelopmentAccess||policy?.developmentAccess||{};
+  if(project.engine==='roblox')return access.ROBLOX!=='OWNER_HOLD'&&['release-confirmed','development-confirmed'].includes(project.releaseState);
   if(project.engine==='unity'){
+    // Owner-held Unity cannot consume native production slots, including legacy Unity Web first stage.
+    if(access.UNITY==='OWNER_HOLD'||(project.firstStageUnityWeb===true&&access.UNITY_WEB==='OWNER_HOLD'))return false;
     if(project.firstStageUnityWeb===true&&project.existingHolisticBackfillCatalog===true)return['release-confirmed','development-confirmed'].includes(project.releaseState);
     if(project.releaseState==='development-confirmed'&&project.firstStageUnityWeb===true)return true;
     return false; // Android owner hold: do not generate new native work.
   }
-  if(project.engine==='unreal'){const policy=centralPresentationPolicy(repoRoot);if(policy?.developmentAccess?.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
-  if(project.releaseState==='development-confirmed')return project.engine==='web'&&centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status!=='ACTIVE'; // Existing legacy tests stay readable; production only schedules Roblox and Unity Web.
+  if(project.engine==='unreal'){if(access.FORTNITE_UEFN==='OWNER_HOLD'||policy?.fortniteUefn?.developmentExecutionAllowed!==true)return false;return['release-confirmed','development-confirmed'].includes(project.releaseState);}
+  if(project.releaseState==='development-confirmed'){
+    if(project.engine!=='web')return false;
+    // 승인된 최신 소유자 지시가 있으면 이전 필드/원시 권한은 개발 슬롯을 열 수 없다.
+    if(!ownerScope)return true; // 격리된 레거시 설계 fixture; 실제 검증된 예약에는 ownerScope 필수.
+    return access.WEB==='ALWAYS_ALLOWED'&&ownerScope.activeTargets.includes('WEB');
+  }
   return false;
 }
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
@@ -861,7 +901,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   if(project.engine==='roblox')adaptedGoal+=DESIGN_IMPLEMENTATION_GOAL;
   const focused=project.ownerFocusedCaretaker===true,ownerResume=project.ownerResumableBuildUp===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||ownerResume||project.engine==='roblox'||project.firstStageUnityWeb===true;
   const completion=focused&&project.engine==='roblox'?project.focusCompletionContract:null;
-  if(completion)adaptedGoal+=FOCUSED_BUILD_COMPLETION_GOAL;
+  if(focused)adaptedGoal+=FOCUSED_BUILD_COMPLETION_GOAL; // Web keeps its own verified browser/runtime gates.
   const portfolioValueScore=project.engine==='roblox'
     ? Math.min(100,(project.queueRobloxQualityBuildUpRequired?35:0)
       +(project.queueRobloxInternalReleaseReady?20:0)
@@ -1149,15 +1189,15 @@ function findWebStartupSpatialRepairTask(project,repoRoot,queue){
   if(audit.pass)return null;
   const id=nextCausalGenerationId(queue,`${project.gameId}-web-startup-spatial-repair`);if(!id)return null;
   const blockers=audit.blockers.join(' | ');
-  const goal=`[WEB_REPAIR] [STARTABILITY_AND_2_5D] 게임: ${project.name||project.gameId}
-현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 최종 게임플레이 표현을 최소 2.5D 이상으로 올린다.
+  const goal=`[WEB_REPAIR] [STARTABILITY_AND_TRUE_3D] 게임: ${project.name||project.gameId}
+현재 Web 게임을 실제 브라우저에서 바로 시작 가능한 상태로 수리하고, 최종 게임플레이를 깊이 있는 3D 메시·실제 WebGL 렌더·3D 카메라와 상호작용으로 구현한다.
 확인된 실패: ${blockers}
 빈 화면·검증 단계 버튼·scope 테스트 컨트롤·시작 버튼 무반응을 실제 게임 시작으로 인정하지 않는다. 첫 실제 입력이 플레이어/월드/전투/진행 상태를 바꾸게 연결한다.
-평면 2D 단독 월드, 이모지 그리드, 카드형 검증 화면은 prototype 외 최종 표현으로 금지한다. 장르에 맞춰 등각/원근 카메라, 깊이 정렬, 전경/중경/후경 parallax, 높이·접지 그림자, 깊이 대응 VFX를 조합하거나 실제 3D를 사용한다. UI 오버레이만 2D를 유지할 수 있다.
+평면 2D 단독 월드, 이모지 그리드, 카드형 검증 화면은 prototype 외 최종 표현으로 금지한다. 장르에 맞춰 실제 3D 월드 메시·원근 카메라·깊이 버퍼·WebGL 삼각형 렌더와 공간 상호작용을 구현한다. CSS 원근 효과·등각·parallax·2.5D는 최종 통과 금지한다. UI 오버레이만 2D를 유지할 수 있다.
 기존 게임 규칙·세이브·밸런스·진행·경제·판정 의미는 보존하고 책임 소스를 직접 수정한다. 공용 템플릿이 게임 정체성을 평준화하면 게임 전용 구현으로 분리한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
   const out=task(id,project,goal,[audit.relative],'owner-immediate','high',[
     'owner-directive:all-web-games-must-start',
-    'owner-directive:minimum-2.5d-final-gameplay',
+    'owner-directive:real-3d-final-gameplay',
     'web-stage:WEB_REPAIR',
     'startup-spatial-audit:FAIL',
     ...audit.blockers.map(value=>`startup-spatial-blocker:${value}`)
@@ -2074,7 +2114,7 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages){
   }
   return null;
 }
-export function findDeclaredDccAuthoringTask(project,repoRoot,queue){
+export function findDeclaredDccAuthoringTask(project,repoRoot,queue,sharedAssetRegistry=null){
   const engine=clean(project?.engine).toLowerCase();
   if(!['roblox','unity'].includes(engine))return null;
   if(!['development-confirmed','release-confirmed'].includes(clean(project?.releaseState).toLowerCase()))return null;
@@ -2082,17 +2122,19 @@ export function findDeclaredDccAuthoringTask(project,repoRoot,queue){
   const responsibleFiles=presentationSourcesForProject(project,repoRoot);
   if(!responsibleFiles.length)return null;
   const targetPlatform=engine.toUpperCase(),gameId=clean(project?.gameId);
-  const registry=synchronizeSourceBoundAssetConsumers({
-    repoRoot,
-    registry:readJson(path.join(repoRoot,'company-asset-library.json'),{assets:[]}),
-    gameCatalog:{games:[{
-      id:gameId,
-      lifecycleState:'ACTIVE',
-      productionClass:project.releaseState,
-      robloxProjectPath:engine==='roblox'?(project.projectPath||('roblox-games/'+gameId)):undefined,
-      unityProjectPath:engine==='unity'?(project.projectPath||('unity-games/'+gameId)):undefined
-    }]}
-  }).registry;
+  // [내부 라이브러리] 동일 기획 실행에서 이미 검증된 현재 게임의 소스 바인딩 결과를 재사용한다.
+  const registry=(typeof sharedAssetRegistry==='function'?sharedAssetRegistry():sharedAssetRegistry)
+    ||synchronizeSourceBoundAssetConsumers({
+      repoRoot,
+      registry:readJson(path.join(repoRoot,'company-asset-library.json'),{assets:[]}),
+      gameCatalog:{games:[{
+        id:gameId,
+        lifecycleState:'ACTIVE',
+        productionClass:project.releaseState,
+        robloxProjectPath:engine==='roblox'?(project.projectPath||('roblox-games/'+gameId)):undefined,
+        unityProjectPath:engine==='unity'?(project.projectPath||('unity-games/'+gameId)):undefined
+      }]}
+    }).registry;
   const safeRelative=value=>{
     const normalized=posix(value);
     return Boolean(normalized&&!path.isAbsolute(normalized)&&!normalized.split('/').includes('..'));
@@ -2491,9 +2533,11 @@ function applyRobloxQualityRepairDirective(directive,project,platformLane){
   const studioQualityFailure=project.queueRobloxQualityBuildUpEvidence||null;
   const packageFailure=studioQualityFailure?.authority==='roblox-package-asset-binding-failure';
   const f0Failure=studioQualityFailure?.authority==='roblox-f0-gameplay-product-readiness-failure';
-  const runtimeObserved=!packageFailure&&!f0Failure;
+  const contractFailure=studioQualityFailure?.authority==='roblox-source-static-contract-failure';
+  const runtimeObserved=!packageFailure&&!f0Failure&&!contractFailure;
   const reason=packageFailure
     ?'current source package asset binding failure requires game-side source repair; internal assets must remain unchanged'
+    :contractFailure?'current approved design and source contract failure requires actual source repair; preserve gameplay rules and use the existing design flow for unresolved conflicts'
     :f0Failure?'current source F0 design-bound gameplay gaps require source repair before real runtime testing'
     :'current source Studio product-quality failure requires source repair before another observation';
   return{
@@ -2553,7 +2597,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   );
   const activeDirectiveMultiplayerState=clean((activeDirectiveTask?.buildUpDirective?.qualityGapMap||[]).find(row=>clean(row?.domain).toUpperCase()==='MULTIPLAYER_AND_SYNC')?.state).toUpperCase();
   const projectPlayMode=clean(project?.playMode).toUpperCase();
-  const sharedDesignPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.directNativeDualPlatformDevelopment||{};
+  const sharedDesignPolicy=readJson(sourceFile(repoRoot,CANONICAL_POLICY_PATH||'__policy_not_configured__'),{})?.directNativeDualPlatformDevelopment||{};
   const multiplayerPolicy=sharedDesignPolicy.multiplayerImplementation||{};
   const singleOriginalRequired=sharedDesignPolicy.design?.singleOriginalContract?.originalsPerGame===1;
   const projectRequiresMultiplayer=multiplayerPolicy.required===true||Boolean(projectPlayMode&&projectPlayMode!=='SINGLE');
@@ -2561,7 +2605,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const activeDirectiveSemanticCompatible=(!projectRequiresMultiplayer||activeDirectiveMultiplayerState!=='NOT_APPLICABLE')
     &&(multiplayerPolicy.required!==true||activeDirectiveTask?.buildUpDirective?.multiplayerImplementation?.policyVersion===multiplayerPolicy.version)
     &&(!singleOriginalRequired||activeDirectiveTask?.buildUpDirective?.designImplementationContext?.platformExpansionPolicy?.mode==='SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION');
-  const productionPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{};
+  const productionPolicy=readJson(sourceFile(repoRoot,CANONICAL_POLICY_PATH||'__policy_not_configured__'),{})?.robloxStudioProductionFlowContract||{};
   const productionTarget=platformLane.startsWith('unity')||posix(project.projectPath).startsWith('unity-games/')?'UNITY':platformLane.toUpperCase();
   const productionRequired=productionPolicy.status==='ACTIVE_EXECUTABLE_CONTRACT'&&(productionPolicy.platforms||[]).includes(productionTarget);
   const priorProduction=activeDirectiveTask?.buildUpDirective?.productionPlan||activeDirectiveTask?.buildUpDirective?.robloxProductionPlan;
@@ -2654,7 +2698,24 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const roblox=platform==='ROBLOX';
   const qualityFailure=roblox&&project?.queueRobloxQualityBuildUpRequired===true;
   const packageAssetFailure=qualityFailure&&project.queueRobloxQualityBuildUpEvidence?.authority==='roblox-package-asset-binding-failure';
-  const sourceOnlyQualityFailure=qualityFailure&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure'].includes(project.queueRobloxQualityBuildUpEvidence?.authority);
+  // 패키지 실패의 실제 책임 소스를 기존 바이브 작업 범위에 연결한다.
+  // 내부 자산 원본이나 다른 게임 파일은 수리 범위로 확장하지 않는다.
+  if(packageAssetFailure){
+    const threshold=project.queueRobloxQualityBuildUpEvidence.assetThreshold||{};
+    const failedFamilies=new Set((threshold.blockers||[]).map(value=>clean(value).split(':').at(-1)));
+    const repairFiles=(threshold.familyResults||[]).filter(row=>failedFamilies.has(row.family))
+      .flatMap(row=>row.responsibleFiles||[]).map(posix)
+      .filter(file=>/^(?:client|server|shared)\/(?!.*(?:^|\/)\.\.(?:\/|$)).+\.(?:lua|luau)$/.test(file))
+      .map(file=>`roblox-games/${project.gameId}/${file}`)
+      .filter(file=>fs.existsSync(sourceFile(repoRoot,file)));
+    taskInput={...taskInput,responsibleFiles:[...new Set([...(taskInput.responsibleFiles||[]),...repairFiles])]};
+  }
+  if(qualityFailure&&project.queueRobloxQualityBuildUpEvidence?.authority==='roblox-source-static-contract-failure'){
+    const owners=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau']
+      .map(file=>`roblox-games/${project.gameId}/${file}`).filter(file=>fs.existsSync(sourceFile(repoRoot,file)));
+    taskInput={...taskInput,responsibleFiles:[...new Set([...(taskInput.responsibleFiles||[]),...owners])]};
+  }
+  const sourceOnlyQualityFailure=qualityFailure&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure','roblox-source-static-contract-failure'].includes(project.queueRobloxQualityBuildUpEvidence?.authority);
   const runtimeEvidence={
     platform,
     studioQualityFailure:qualityFailure?project.queueRobloxQualityBuildUpEvidence||null:null,
@@ -3226,7 +3287,7 @@ function hasCurrentAutonomousContentExpansionDirective(directive={},productionPo
 }
 
 function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
-  const productionPolicy=readJson(sourceFile(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{};
+  const productionPolicy=readJson(sourceFile(repoRoot,CANONICAL_POLICY_PATH||'__policy_not_configured__'),{})?.robloxStudioProductionFlowContract||{};
   const projectByScope=new Map();
   for(const project of projects||[]){
     const gameId=clean(project?.gameId);
@@ -3407,7 +3468,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       const repairRequired=project.queueRobloxQualityBuildUpRequired===true;
       const staleDecision=repairRequired&&(candidate.buildUpDirective.nextActionDecision?.action!=='CAUSAL_REPAIR'
         ||candidate.buildUpDirective.effectivenessMeasurement?.previousGeneration?.classification!=='REGRESSION');
-      const staleSourceObservation=repairRequired&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure'].includes(studioQualityFailure?.authority)
+      const staleSourceObservation=repairRequired&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure','roblox-source-static-contract-failure'].includes(studioQualityFailure?.authority)
         &&candidate.buildUpDirective.playtestRuntimeFindings?.runtimeObserved!==false;
       if(staleDecision||staleSourceObservation||JSON.stringify(candidate.buildUpDirective.playtestRuntimeFindings?.studioQualityFailure??null)!==JSON.stringify(studioQualityFailure)){
         candidate=bindSharedBuildUpDirective(candidate,applyRobloxQualityRepairDirective({
@@ -3558,20 +3619,36 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
   return applyBuildUpNextActionController(ordered);
 }
 
-export function findSafeTasks(project,repoRoot,queue){
+export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
   const focus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
-  if(focus?.enabled===true&&project.engine==='roblox'&&(project.gameId===focus.gameId||focus.allRobloxConsumers===true)){
-    const motionRoot='assets/roblox/world-ghosts/motions';
-    const registry=synchronizeSourceBoundAssetConsumers({
-      repoRoot,
-      registry:readJson(path.join(repoRoot,'company-asset-library.json'),{}),
-      gameCatalog:{games:[{
-        id:project.gameId,
-        lifecycleState:'ACTIVE',
-        productionClass:project.releaseState,
-        robloxProjectPath:project.projectPath||('roblox-games/'+project.gameId)
+  // [바이브-내부 라이브러리] 단일 planning cycle 내 원장 파싱/실사용 소스 스캔을 게임별 1회로 묶는다.
+  // 원본/바인딩 캐시는 외부에서 넘긴 이번 기획 호출의 Map에만 보관한다. 다음 기획 호출은 항상 다시 읽는다.
+  let boundAssetRegistry=null;
+  const sourceBoundRegistry=()=>{
+    if(boundAssetRegistry)return boundAssetRegistry;
+    const gameId=clean(project.gameId),engine=clean(project.engine).toLowerCase();
+    const cacheKey=['BOUND',path.resolve(repoRoot),gameId,engine,posix(project.projectPath),clean(project.releaseState).toLowerCase()].join('|');
+    const cached=assetRegistryCache?.get(cacheKey);
+    if(cached){boundAssetRegistry=cached;return cached;}
+    const rawKey='RAW|'+path.resolve(repoRoot,'company-asset-library.json');
+    let raw=assetRegistryCache?.get(rawKey);
+    if(!raw){
+      raw=readJson(path.join(repoRoot,'company-asset-library.json'),{assets:[]});
+      assetRegistryCache?.set(rawKey,raw);
+    }
+    boundAssetRegistry=synchronizeSourceBoundAssetConsumers({
+      repoRoot,registry:raw,gameCatalog:{games:[{
+        id:gameId,lifecycleState:'ACTIVE',productionClass:project.releaseState,
+        robloxProjectPath:engine==='roblox'?(project.projectPath||('roblox-games/'+gameId)):undefined,
+        unityProjectPath:engine==='unity'?(project.projectPath||('unity-games/'+gameId)):undefined
       }]}
     }).registry;
+    assetRegistryCache?.set(cacheKey,boundAssetRegistry);
+    return boundAssetRegistry;
+  };
+  if(focus?.enabled===true&&project.engine==='roblox'&&(project.gameId===focus.gameId||focus.allRobloxConsumers===true)){
+    const motionRoot='assets/roblox/world-ghosts/motions';
+    const registry=sourceBoundRegistry();
     const tasks=[];
     for(const asset of registry.assets||[]){
       const currentConsumers=currentAssetConsumerGameIds(asset);
@@ -3611,7 +3688,7 @@ export function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='roblox'){
     if(project.queueRobloxQualityBuildUpRequired===true)return uniqueTaskCandidates([
       ...holisticBackfillTasks,
-      findDeclaredDccAuthoringTask(project,repoRoot,queue),
+      findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
       ...normalStudioTasks,
       findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
@@ -3621,7 +3698,7 @@ export function findSafeTasks(project,repoRoot,queue){
     return uniqueTaskCandidates([
       findRobloxInternalPlaytestTask(project,repoRoot,queue),
       ...holisticBackfillTasks,
-      findDeclaredDccAuthoringTask(project,repoRoot,queue),
+      findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
       findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
       findWeatherPresentationTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
@@ -3639,7 +3716,7 @@ export function findSafeTasks(project,repoRoot,queue){
         // 진행 중 작업과의 파일 충돌은 기존 plannerConflict 및 예약 검사를 그대로 따른다.
         const independentAssetTasks=uniqueTaskCandidates([
           ...holisticBackfillTasks,
-          findDeclaredDccAuthoringTask(project,repoRoot,queue),
+          findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
           findPresentationQualityTask(project,repoRoot,queue),
           ...normalStudioTasks
         ]).filter(task=>task?.assetProductionLane===true
@@ -3649,7 +3726,7 @@ export function findSafeTasks(project,repoRoot,queue){
       }
       return uniqueTaskCandidates([
         ...holisticBackfillTasks,
-        findDeclaredDccAuthoringTask(project,repoRoot,queue),
+        findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
         findPresentationQualityTask(project,repoRoot,queue),
         ...normalStudioTasks,
         scanExplicitMarkerTask(project,repoRoot,queue)
@@ -3657,7 +3734,7 @@ export function findSafeTasks(project,repoRoot,queue){
     }
     if(project.releaseState==='development-confirmed'&&!pilot)return uniqueTaskCandidates([
       ...holisticBackfillTasks,
-      findDeclaredDccAuthoringTask(project,repoRoot,queue),
+      findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
       findPresentationQualityTask(project,repoRoot,queue),
       ...normalStudioTasks,
       scanExplicitMarkerTask(project,repoRoot,queue)
@@ -3667,7 +3744,7 @@ export function findSafeTasks(project,repoRoot,queue){
       ...(weatherPilot?[findWeatherPresentationTask(project,repoRoot,queue)]:[]),
       ...holisticBackfillTasks,
       ...(!weatherPilot?[findWeatherPresentationTask(project,repoRoot,queue)]:[]),
-      findDeclaredDccAuthoringTask(project,repoRoot,queue),
+      findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
       findPresentationQualityTask(project,repoRoot,queue),
       ...normalStudioTasks,
       scanExplicitMarkerTask(project,repoRoot,queue)
@@ -3785,6 +3862,11 @@ function supersedeLegacyMicroTasksForStudioQuality(queueInput){
 }
 
 export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,queueMaxConcurrentTasks=maxConcurrentTasks,planningBacklogTarget=maxConcurrentTasks,planningBacklogMinimum=Math.min(40,Number(planningBacklogTarget)||0),workPackagePolicy={},recombinationMemory={},historicalRegistry={},robloxDistillationLedger={},robloxPlaybooks={}}={}){
+  // 기획 도중의 반복 정책 파싱을 제거한다. 다음 계획/독립 호출은 언제나 파일을 재확인한다.
+  const previousPlanningPolicySnapshot=activePlanningPolicySnapshot;
+  const policyFile=path.resolve(repoRoot,CANONICAL_POLICY_PATH);
+  activePlanningPolicySnapshot={file:policyFile,value:readJson(policyFile,{})};
+  try{
   catalog=discoverExistingRobloxGames(catalog,repoRoot).catalog;
   const executionWaveMax=parallelLimit(maxConcurrentTasks);
   const persistentQueueMax=parallelLimit(queueMaxConcurrentTasks);
@@ -3920,12 +4002,34 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const normalCapacity=Math.max(0,backlogTarget-developmentPool.length);
   const persistentCapacity=Math.max(0,persistentQueueMax-developmentPool.length);
   const ownerResumableSeedCapacity=Math.min(ownerResumableMissingLaneKeys.size,persistentCapacity);
+  // The owner-selected three exact platform lanes must have an entry even when
+  // generic backlog and wide Web/distinct-game quotas are already full.
+  // Never interrupt independent active work or exceed persistent queue capacity.
+  const focusedProjects=allProjects
+    .filter(project=>project.ownerFocusedCaretaker===true&&isAutonomousProductionTarget(project,repoRoot))
+    .sort(projectSort);
+  const focusedMissingLaneKeys=new Set(focusedProjects
+    .map(project=>clean(project.gameId)+'|'+studioQualityLane(project))
+    .filter(key=>!activeOwnerResumableLaneKeys.has(key)));
+  const focusedSeedCapacity=Math.min(focusedMissingLaneKeys.size,persistentCapacity);
   // 예약 단계에 넘길 서로 다른 웹 게임 후보를 기존 기획기에서 먼저 채운다.
   // 일반 대기 목표가 차도 총 큐 용량·소유자 보류·실제 소스 충돌은 그대로 지킨다.
-  const webFlowPolicy=centralPresentationPolicy(repoRoot)?.developmentSpeedExecution?.webGameFlow;
-  const webFlowTarget=webFlowPolicy?.enabled===true?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
-  const webFlowUnityOnly=centralPresentationPolicy(repoRoot)?.ownerActiveDevelopmentScope20261009?.status==='ACTIVE';
-  const webFlowMatches=item=>webFlowUnityOnly?(item.unityWebDevelopment===true||(item.evidence||[]).includes('unity-web-first-stage')):item.target==='web';
+  const flowOwnerPolicy=centralPresentationPolicy(repoRoot)||{};
+  const webFlowPolicy=flowOwnerPolicy?.developmentSpeedExecution?.webGameFlow;
+  const ownerScope=resolveActiveOwnerPolicy(flowOwnerPolicy,{allowMissing:true});
+  if(flowOwnerPolicy?.status==='OWNER_DIRECT_LOCKED'&&!ownerScope)throw new Error('VIBE2_APPROVED_WEB_FLOW_SCOPE_REQUIRED');
+  // 실제 활성 웹 슬롯은 폐기된 지시 대신 최신 승인된 소유자 권한에서 판정한다.
+  const webFlowUnityOnly=webFlowPolicy?.scope==='UNITY_WEB_SAME_CANONICAL_UNITY_PROJECT';
+  const activeTargets=ownerScope?.activeTargets||[];
+  const effectiveAccess=ownerScope?.effectiveDevelopmentAccess||flowOwnerPolicy?.developmentAccess||{};
+  const authorizedWebFlow=!ownerScope
+    ||(webFlowUnityOnly
+      ?activeTargets.includes('UNITY_WEB')&&effectiveAccess.UNITY_WEB==='ALWAYS_ALLOWED'
+      :activeTargets.includes('WEB')&&effectiveAccess.WEB==='ALWAYS_ALLOWED');
+  const webFlowTarget=webFlowPolicy?.enabled===true&&authorizedWebFlow?Math.max(0,Math.floor(Number(webFlowPolicy.targetConcurrentGames)||0)):0;
+  const webFlowMatches=item=>webFlowUnityOnly
+    ?(item.unityWebDevelopment===true||(item.evidence||[]).includes('unity-web-first-stage'))
+    :(clean(item.target).toLowerCase()==='web'&&posix(item.sourceRoot).startsWith('web-games/')&&item.unityWebDevelopment!==true);
   const webFlowGames=new Set(developmentPool.filter(item=>webFlowMatches(item)&&item.executionLane==='GAME_PRIMARY').map(item=>clean(item.gameId)));
   const webSeedCapacity=Math.min(Math.max(0,webFlowTarget-webFlowGames.size),persistentCapacity);
   const distinctTarget=Math.max(0,Math.floor(Number(centralPresentationPolicy(repoRoot)?.developmentSpeedExecution?.distinctGameDevelopmentTarget)||0));
@@ -3936,7 +4040,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const internalMotionActive=queue.tasks.filter(row=>row.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY'&&['queued','running'].includes(row.status)).length;
   const assetLaneMax=Number(centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.assetDevelopmentLaneMax)||63;
   const internalMotionCapacity=internalAssetFocus?.enabled===true?Math.max(0,assetLaneMax-internalMotionActive):0;
-  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity,internalMotionCapacity,webSeedCapacity,distinctSeedCapacity);
+  const capacity=Math.max(normalCapacity,ownerResumableSeedCapacity,focusedSeedCapacity,internalMotionCapacity,webSeedCapacity,distinctSeedCapacity);
   const planningBacklog={
     target:backlogTarget,
     supersededLegacyMicroTasks:microSupersede.count,
@@ -3950,6 +4054,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     persistentCapacity,
     ownerResumableMissingLaneCount:ownerResumableMissingLaneKeys.size,
     ownerResumableSeedCapacity,
+    focusedMissingLaneCount:focusedMissingLaneKeys.size,
+    focusedMissingLanes:[...focusedMissingLaneKeys].sort(),
+    focusedSeedCapacity,
+    focusedTargetBypass:normalCapacity===0&&focusedSeedCapacity>0,
     ownerResumableTargetBypass:normalCapacity===0&&ownerResumableSeedCapacity>0,
     webGameFlow:{target:webFlowTarget,gameIds:[...webFlowGames],shortfall:Math.max(0,webFlowTarget-webFlowGames.size),seedCapacity:webSeedCapacity,normalBacklogBypass:normalCapacity===0&&webSeedCapacity>0},
     distinctGameFlow:{target:distinctTarget,gameIds:[...activeGameIds],shortfall:Math.max(0,distinctTarget-activeGameIds.size),seedCapacity:distinctSeedCapacity},
@@ -3961,21 +4069,25 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort(projectSort);
   if(!projects.length)return{planned:false,count:0,reason:blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':'NO_CONFIRMED_PRODUCTION_PROJECT',queue,tasks:[],packages:[],planningBacklog,holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workPackagePolicy:policy,workloadTelemetry:computeWorkloadTelemetry(queue,[]),blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
   const planned=[],packages=[],deferredSmallPackages=[];
+  // 이 Map은 매 기획 호출마다 새로 만든다. 병렬 게임 간 파일 책임/보안/런타임 게이트에는 관여하지 않는다.
+  const assetRegistryCache=new Map();
   let sequence=0;
   const planningProjects=[
-    ...(webSeedCapacity?projects.filter(project=>(webFlowUnityOnly?(project.engine==='unity'&&project.firstStageUnityWeb===true):project.engine==='web')&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true,distinctSeed:false})):[]),
-    ...(distinctSeedCapacity?projects.filter(project=>eligibleMissingGameIds.has(project.gameId)).map(project=>({project,webSeed:false,distinctSeed:true})):[]),
-    ...projects.map(project=>({project,webSeed:false,distinctSeed:false}))
+    ...focusedProjects.filter(project=>focusedMissingLaneKeys.has(clean(project.gameId)+'|'+studioQualityLane(project)))
+      .map(project=>({project,webSeed:false,distinctSeed:false,focusedSeed:true})),
+    ...(webSeedCapacity?projects.filter(project=>(webFlowUnityOnly?(project.engine==='unity'&&project.firstStageUnityWeb===true):project.engine==='web')&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true,distinctSeed:false,focusedSeed:false})):[]),
+    ...(distinctSeedCapacity?projects.filter(project=>eligibleMissingGameIds.has(project.gameId)).map(project=>({project,webSeed:false,distinctSeed:true,focusedSeed:false})):[]),
+    ...projects.map(project=>({project,webSeed:false,distinctSeed:false,focusedSeed:false}))
   ];
-  for(const {project,webSeed,distinctSeed} of planningProjects){
+  for(const {project,webSeed,distinctSeed,focusedSeed} of planningProjects){
     if(planned.length>=capacity)break;
     if(webSeed&&(webFlowGames.size>=webFlowTarget||webFlowGames.has(project.gameId)))continue;
     if(distinctSeed&&(activeGameIds.size>=distinctTarget||activeGameIds.has(project.gameId)))continue;
-    if(!webSeed&&!distinctSeed&&normalCapacity===0&&ownerResumableSeedCapacity===0&&internalMotionCapacity===0)continue;
+    if(!webSeed&&!distinctSeed&&!focusedSeed&&normalCapacity===0&&ownerResumableSeedCapacity===0&&internalMotionCapacity===0)continue;
     const ownerResumableLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
     const ownerResumableSeedRequired=ownerResumableMissingLaneKeys.has(ownerResumableLaneKey);
-    const remaining=webSeed||distinctSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
-    const candidates=findSafeTasks(project,repoRoot,queue).filter(candidate=>!webSeed||(webFlowMatches(candidate)&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
+    const remaining=webSeed||distinctSeed||focusedSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
+    const candidates=findSafeTasks(project,repoRoot,queue,assetRegistryCache).filter(candidate=>!webSeed||(webFlowMatches(candidate)&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
     let packageTasks=selectPackageCandidates(candidates.map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
     if(!packageTasks.length)continue;
     if(packageTasks.every(task=>task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')){
@@ -4013,6 +4125,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     planningBacklog.webGameFlow.gameIds=[...webFlowGames];
     planningBacklog.webGameFlow.shortfall=Math.max(0,webFlowTarget-webFlowGames.size);
     if(ownerResumableSeedRequired)ownerResumableMissingLaneKeys.delete(ownerResumableLaneKey);
+    if(focusedSeed)focusedMissingLaneKeys.delete(ownerResumableLaneKey);
   }
   const workloadTelemetry=computeWorkloadTelemetry(queue,packages);
   const quantityTargetMet=workloadTelemetry.plannedFeaturePackageCount>=policy.targetFeaturePackagesPerCycle||workloadTelemetry.plannedRelatedImprovementCount>=policy.minRelatedImprovementsPerPackage;
@@ -4030,6 +4143,9 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   };
   if(!planned.length)return{planned:false,count:0,reason:deferredSmallPackages.length?'MINIMUM_WORKLOAD_GATE':active.length?'AWAITING_INDEPENDENT_CAUSAL_SIGNAL':'CAUSAL_REPLAN_REQUIRED',brainLive:true,causalReplanRequired:true,queue,tasks:[],packages:[],planningBacklog,holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,projectId:projects[0]?.gameId||null,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
   return{planned:true,count:planned.length,reason:ownerActive.length?'WORK_PACKAGES_PLANNED_AROUND_OWNER_DIRECTIVES':'WORK_PACKAGES_PLANNED',queue,tasks:planned,packages,planningBacklog:{...planningBacklog,after:developmentPlanningPool(queue).length,remainingToTarget:Math.max(0,backlogTarget-developmentPlanningPool(queue).length)},holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,task:planned[0],projectId:planned[0].gameId,projectReleaseState:planned[0].releaseState,projectEngine:planned[0].target,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,ownerDirectiveActiveCount:ownerActive.length,projectPriorityPolicy:'OWNER_DIRECTIVES_KEEP_PRIORITY_BUT_INDEPENDENT_FREE_SLOTS_REFILL;WEB_80_88_TO_89_THEN_SINGLE_BLOCKER_THEN_REWORK_THEN_REBUILD_THEN_NEW_DEVELOPMENT',deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
+  }finally{
+    activePlanningPolicySnapshot=previousPlanningPolicySnapshot;
+  }
 }
 
 export function planVibe2AutonomousTask(args={}){return planVibe2AutonomousTasks(args);}
@@ -4151,6 +4267,16 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_PLANNING_BACKLOG_CURRENT=${result.planningBacklog?.current||0}`);
   console.log(`VIBE2_PLANNING_BACKLOG_AFTER=${result.planningBacklog?.after??result.planningBacklog?.current??0}`);
   console.log(`VIBE2_PLANNING_BACKLOG_RELEASE_WAIT_EXCLUDED=${result.planningBacklog?.releaseWaitExcluded||0}`);
+  // Report exact owner-focus work that remains unscheduled; never fabricate QA success.
+  const focusMissing=result.planningBacklog?.focusedMissingLanes||[];
+  const focusDeferred=(result.deferredSmallPackages||[]).filter(row=>
+    focusMissing.some(lane=>lane.startsWith(clean(row.gameId)+'|')));
+  console.log(`VIBE2_FOCUS_MISSING_LANES=${focusMissing.join(',')||'NONE'}`);
+  console.log(`VIBE2_FOCUS_SEED_CAPACITY=${result.planningBacklog?.focusedSeedCapacity||0}`);
+  console.log(`VIBE2_FOCUS_MINIMUM_WORKLOAD_DEFERRED=${focusDeferred.length}`);
+  for(const row of focusDeferred.slice(0,3)){
+    console.log(`VIBE2_FOCUS_DEFERRED=${row.gameId}|${row.reason}|${(row.taskIds||[]).join(',')}`);
+  }
   console.log(`VIBE2_AUTO_PLAN=${result.planned?'YES':'NO'}`);
   console.log(`VIBE2_DEVELOPMENT_QUEUE_SOURCE=${clean(args['development-queue'])||'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_QUEUE_SYNC=${result.queueSynchronized?'YES':'NO'}`);

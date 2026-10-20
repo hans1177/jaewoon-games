@@ -37,9 +37,9 @@ const nativeItem=(gameId='dual',selectedPlatform='ROBLOX')=>({
   enqueuedAt:'2026-09-21T00:00:00.000Z'
 });
 
-test('active selected platforms are Roblox and Unity only',()=>{
+test('both platform aliases remain readable while only Roblox is owner active',()=>{
   assert.deepEqual(SELECTED_PLATFORMS,['ROBLOX','UNITY']);
-  assert.deepEqual(DEFAULT_CONCURRENT_PLATFORMS,['ROBLOX','UNITY']);
+  assert.deepEqual(DEFAULT_CONCURRENT_PLATFORMS,['ROBLOX']);
   assert.equal(DEVELOPMENT_GAME_WIP_MAX,Number.POSITIVE_INFINITY);
   assert.equal(normalizeSelectedPlatform('unity-android'),'UNITY');
   assert.equal(normalizeSelectedPlatform('uefn'),'FORTNITE_UEFN','legacy alias remains readable');
@@ -49,27 +49,28 @@ test('active selected platforms are Roblox and Unity only',()=>{
   assert.equal(PLATFORM_EXECUTION_ADAPTERS.FORTNITE_UEFN.existingExecutionPath,null);
 });
 
-test('development-confirmed games always normalize to Roblox plus Unity even from stale single-platform state',()=>{
-  assert.deepEqual(concurrentTargetPlatforms(nativeItem('a','ROBLOX')),['ROBLOX','UNITY']);
-  assert.deepEqual(concurrentTargetPlatforms({...nativeItem('b','UNITY'),concurrentTargetPlatforms:['UNITY']}),['ROBLOX','UNITY']);
+test('confirmed games normalize to owner active Roblox even from a stale Unity state',()=>{
+  assert.deepEqual(concurrentTargetPlatforms(nativeItem('a','ROBLOX')),['ROBLOX']);
+  assert.deepEqual(concurrentTargetPlatforms({...nativeItem('b','UNITY'),concurrentTargetPlatforms:['UNITY']}),['ROBLOX']);
 });
 
-test('minimum dual-platform design admits both native implementations without Web gates',()=>{
+test('Roblox minimum design is eligible without a Unity or Web prerequisite',()=>{
   const item=nativeItem();
   assert.equal(targetPlatformDevelopmentEligible(item),true);
   assert.equal(platformDevelopmentEligible(item,'ROBLOX'),true);
-  assert.equal(platformDevelopmentEligible(item,'UNITY'),true);
+  assert.equal(platformDevelopmentEligible(item,'UNITY'),false);
   assert.equal(platformDevelopmentEligible(item,'FORTNITE_UEFN'),false);
   assert.equal(targetPlatformDevelopmentEligible({...item,minimumDesignContract:{pass:false}}),false);
-  assert.equal(targetPlatformDevelopmentEligible({...item,platformDesignProfiles:{ROBLOX:item.platformDesignProfiles.ROBLOX}}),false);
+  assert.equal(targetPlatformDevelopmentEligible({...item,platformDesignProfiles:{ROBLOX:item.platformDesignProfiles.ROBLOX}}),true);
+  assert.equal(targetPlatformDevelopmentEligible({...item,platformDesignProfiles:{UNITY:item.platformDesignProfiles.UNITY}}),false);
 });
 
-test('secondary concurrent platform stays eligible while the primary platform owns the shared runtime step',()=>{
+test('secondary Unity work remains blocked by owner hold even when Roblox is advanced',()=>{
   const item={...nativeItem('parallel','ROBLOX'),currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED'};
   assert.equal(targetPlatformDevelopmentEligible(item),false);
   assert.equal(platformDevelopmentEligible(item,'ROBLOX'),false);
-  assert.equal(platformDevelopmentEligible(item,'UNITY'),true);
-  assert.equal(selectTargetPlatformDevelopmentWindow([item]).length,1);
+  assert.equal(platformDevelopmentEligible(item,'UNITY'),false);
+  assert.equal(selectTargetPlatformDevelopmentWindow([item]).length,0);
   assert.equal(platformDevelopmentEligible({...item,unityInternalReleaseReady:true},'UNITY'),false);
 });
 
@@ -82,7 +83,7 @@ test('owner direct development starts from an owner basic baseline without waiti
   };
   assert.equal(targetPlatformDevelopmentEligible(item),true);
   assert.equal(platformDevelopmentEligible(item,'ROBLOX'),true);
-  assert.equal(platformDevelopmentEligible(item,'UNITY'),true);
+  assert.equal(platformDevelopmentEligible(item,'UNITY'),false);
   assert.equal(targetPlatformDevelopmentEligible({...item,designBaselineSource:''}),false);
   assert.equal(targetPlatformDevelopmentEligible({...item,ownerDirectDevelopmentAuthority:'VIBE'}),false);
 });
@@ -102,8 +103,10 @@ test('development eligibility is unbounded by internal policy and the caller may
   const rows=Array.from({length:300},(_,i)=>({...nativeItem(`g${String(i).padStart(3,'0')}`,i%2?'ROBLOX':'UNITY'),enqueuedAt:`2026-09-21T00:${String(i%60).padStart(2,'0')}:00Z`}));
   assert.equal(selectTargetPlatformDevelopmentWindow(rows).length,300);
   assert.equal(selectTargetPlatformDevelopmentWindow(rows,30).length,30);
+  assert.ok(selectTargetPlatformDevelopmentWindow(rows,30).every(item=>item.platformExecutionMode==='ROBLOX_ONLY_OWNER_ACTIVE'));
+  assert.ok(selectTargetPlatformDevelopmentWindow(rows,30).every(item=>JSON.stringify(item.concurrentTargetPlatforms)==='["ROBLOX"]'));
   assert.equal(platformDevelopmentEligible(rows[299],'ROBLOX'),true);
-  assert.equal(platformDevelopmentEligible(rows[299],'UNITY'),true);
+  assert.equal(platformDevelopmentEligible(rows[299],'UNITY'),false);
 });
 
 test('verified owner Roblox release handoff remains readable but cannot bypass minimum design admission',()=>{
@@ -179,7 +182,7 @@ test('released native platforms re-enter only for real next-cycle work and never
     unityInternalReleaseEvidence:{sourceRevision:'d'.repeat(40)}
   };
   assert.equal(platformDevelopmentEligible(unity,'UNITY'),false);
-  assert.equal(platformDevelopmentEligible({...unity,nextEscalationRequired:true,buildUpDirectiveId:'released-unity:g3'},'UNITY'),true);
-  assert.equal(platformDevelopmentEligible({...unity,canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'},'UNITY'),true);
+  assert.equal(platformDevelopmentEligible({...unity,nextEscalationRequired:true,buildUpDirectiveId:'released-unity:g3'},'UNITY'),false);
+  assert.equal(platformDevelopmentEligible({...unity,canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'},'UNITY'),false);
   assert.equal(platformDevelopmentEligible({...unity,nextEscalationRequired:true,buildUpDirectiveId:'released-unity:g3'},'FORTNITE_UEFN'),false);
 });

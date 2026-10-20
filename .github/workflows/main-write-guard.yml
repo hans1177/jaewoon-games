@@ -16,6 +16,14 @@ on:
       - '.github/workflows/company-central-policy-contract-qa.yml'
       - 'tools/company-build-up-directive.mjs'
       - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-gemini-free-rotation.mjs'
+      - 'tools/vibe2-design-intelligence.mjs'
+      - 'tools/vibe2-auto-planner.mjs'
+      - 'tools/vibe2-verified-design-handoff.mjs'
+      - 'tools/vibe2-fan-in-review.mjs'
+      - 'tools/vibe2-queue-control.mjs'
+      - 'tools/design-only-promotion-sync.mjs'
+      - 'qa/vibe2-owner-game-flow-lock.test.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/company-development-roblox-runtime-foundation.mjs'
@@ -36,6 +44,14 @@ on:
       - '.github/workflows/company-central-policy-contract-qa.yml'
       - 'tools/company-build-up-directive.mjs'
       - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-gemini-free-rotation.mjs'
+      - 'tools/vibe2-design-intelligence.mjs'
+      - 'tools/vibe2-auto-planner.mjs'
+      - 'tools/vibe2-verified-design-handoff.mjs'
+      - 'tools/vibe2-fan-in-review.mjs'
+      - 'tools/vibe2-queue-control.mjs'
+      - 'tools/design-only-promotion-sync.mjs'
+      - 'qa/vibe2-owner-game-flow-lock.test.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/company-development-roblox-runtime-foundation.mjs'
@@ -53,7 +69,7 @@ permissions:
 
 jobs:
   guard:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -103,6 +119,9 @@ jobs:
       - name: Unit test deterministic guard only when guard implementation changed
         if: ${{ steps.scope.outputs.guard_changed == 'YES' }}
         run: node --test qa/main-write-guard.test.mjs
+
+      - name: Enforce owner-locked Designer to F0-F9 game production flow
+        run: node --test qa/vibe2-owner-game-flow-lock.test.mjs
 
       - name: Reject new workflow direct writes to main
         env:

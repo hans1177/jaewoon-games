@@ -2,9 +2,10 @@
 // 역할: Vibe2 병렬 DAG 큐의 추가·예약·원자 뉴런 결과·QA대기·완료·실패·gated 재계획 상태를 영속화한다.
 // 원칙: 기존 scheduler와 책임 파일 충돌 보호를 유지하고 source-root/game-wide lock은 만들지 않으며, 검증된 neural gated 실행은 재큐·재우선순위·refill 힌트만 직접 반영한다.
 
+import { resolveActiveOwnerPolicy } from './company-policy-steward.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import {
   createVibeContinuousQueue,
@@ -27,7 +28,12 @@ import { summarizeNeuralEventShadowEvidence } from './vibe2-neural-event-telemet
 
 const clean = (value) => String(value ?? '').trim();
 // The executable lives in the exact main contract checkout; cwd can be a stale control branch.
-const CANONICAL_RESERVATION_POLICY = new URL('../company-learning/platform-release-roadmap.json',import.meta.url);
+// 중앙 검증 정책의 상대 경로는 실행 중인 canonical 소스 위치 기준으로 고정한다.
+// 제어 브랜치/임시 테스트 디렉터리의 cwd로 정책이 바뀌면 안 된다.
+const configuredPolicyPath = String(process.env.COMPANY_VERIFIED_POLICY_PATH||'').trim();
+const CANONICAL_RESERVATION_POLICY = configuredPolicyPath
+  ? path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..',configuredPolicyPath)
+  : '';
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
 const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-generation-context-v3';
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
@@ -153,7 +159,7 @@ function fixedGamePrimaryRepeatSlots() {
 }
 function configuredLaneReservationMax(executionLane='',requested=null,queueMax=null){
   const lane=clean(executionLane||'game-primary').toLowerCase();
-  if(lane==='game-primary')return fixedGamePrimaryRepeatSlots()||64;
+  if(lane==='game-primary')return fixedGamePrimaryRepeatSlots()||128;
   if(lane==='learning-idle')return 1;
   return optionalMaxConcurrent(requested) ?? queueMax;
 }
@@ -342,12 +348,15 @@ export function recoverTransientWorkLockBlocks(queueInput) {
 
 export function recoverCompletedRunningReservations(queueInput, {
   completedRunIds = [],
+  noResultRunIds = [],
   recoveryOutcome = 'COMPLETED_RESERVATION_RUN_RECOVERED',
   recoveryEvidence = COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE,
   evidencePrefix = 'completed-reservation-run'
 } = {}) {
   const queue=createVibeContinuousQueue(queueInput);
   const completed=new Set((Array.isArray(completedRunIds)?completedRunIds:[]).map(clean).filter(Boolean));
+  // Empty worker artifacts are independently verified by the existing reserve GitHub API probe.
+  const noResults=new Set((Array.isArray(noResultRunIds)?noResultRunIds:[]).map(clean).filter(Boolean));
   if(!completed.size)return{recovered:0,recoveredRunIds:[],queue};
   const normalizedOutcome=clean(recoveryOutcome)||'COMPLETED_RESERVATION_RUN_RECOVERED';
   const normalizedEvidence=clean(recoveryEvidence)||COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE;
@@ -357,10 +366,17 @@ export function recoverCompletedRunningReservations(queueInput, {
   const tasks=queue.tasks.map(task=>{
     const runId=clean(task.reservationRunId);
     if(task.status!=='running')return task;
-    if(clean(task.department).toLowerCase()!=='development'||clean(task.type).toLowerCase()!=='implementation')return task;
-    // Completed worker artifacts are converted to slot-released fan-in waits before this recovery.
-    // Preserve those immutable results and only reclaim still-unstarted blocker-free reservations.
-    if(clean(task.blocker)||!runId||!completed.has(runId))return task;
+    // [자산 예약 회수] 그래픽 부서의 기존 자산 개발 작업도 실제 종료된 실행에 한해 재배정한다.
+    if((clean(task.department).toLowerCase()!=='development'&&clean(task.executionLane).toUpperCase()!=='ASSET_DEVELOPMENT')
+      ||clean(task.type).toLowerCase()!=='implementation')return task;
+    // A completed run with no downloadable worker result cannot satisfy fan-in.
+    // Requeue only when the separate API probe proved the run and artifact absence;
+    // keep every review-verified or artifact-bearing fan-in reservation untouched.
+    const evidence=Array.isArray(task.evidence)?task.evidence:[];
+    const noResultFanIn=noResults.has(runId)&&/^slot-released-awaiting-fan-in$/i.test(clean(task.blocker))
+      &&!evidence.some(value=>/^role-result:|^candidate-sha:|^web-f0-f9-verified$/i.test(clean(value)))
+      &&!(Array.isArray(task.neuronResults)&&task.neuronResults.length);
+    if(!runId||!completed.has(runId)||(clean(task.blocker)&&!noResultFanIn))return task;
     recovered+=1;
     recoveredRunIds.add(runId);
     return{
@@ -368,10 +384,12 @@ export function recoverCompletedRunningReservations(queueInput, {
       ...clearedReservation(),
       status:'queued',
       blocker:null,
-      lastOutcome:normalizedOutcome,
+      lastOutcome:noResultFanIn?'FAN_IN_RESULT_ARTIFACT_MISSING_REQUEUED':normalizedOutcome,
       neuronExpectedVariants:0,
       neuronResults:[],
-      evidence:[...new Set([...(task.evidence||[]),normalizedEvidence,`${normalizedPrefix}:${runId}`])]
+      retainedResponsibleFileLocks:noResultFanIn?[]:(task.retainedResponsibleFileLocks||[]),
+      evidence:[...new Set([...(task.evidence||[]),normalizedEvidence,`${normalizedPrefix}:${runId}`,
+        ...(noResultFanIn?['recovery:verified-completed-fan-in-no-worker-artifacts']:[])])]
     };
   });
   return{
@@ -424,6 +442,17 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
   const queue = createVibeContinuousQueue(queueInput);
   let recovered = 0;
   const tasks = queue.tasks.map((task) => {
+    // 외부 무료 API 제한은 소스 오류가 아니다. 정확한 재시도 시각까지 작업을 대기시킨다.
+    if (task.status === 'blocked' && clean(task.blocker) === 'EXTERNAL_AI_QUOTA_COOLDOWN') {
+      const evidence=Array.isArray(task.evidence)?task.evidence:[];
+      const marker=evidence.findLast(value=>clean(value).startsWith('external-ai-quota-retry-at:'));
+      const readyAt=Date.parse(clean(marker).slice('external-ai-quota-retry-at:'.length));
+      if(!Number.isFinite(readyAt)||Number(nowMs)<readyAt)return task;
+      recovered+=1;
+      return {...task,...clearedReservation(),status:'queued',blocker:null,
+        lastOutcome:'EXTERNAL_AI_QUOTA_WAIT_FINISHED',
+        evidence:[...new Set([...evidence,'external-ai-quota-wait-resumed:v1'])]};
+    }
     if (task.status !== 'running') return task;
     if (clean(task.department).toLowerCase() !== 'development' || clean(task.type).toLowerCase() !== 'implementation') return task;
     if (isWorkerCapacityReleasedBlocker(task.blocker)) return task;
@@ -542,7 +571,8 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
 
 export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task = {}) {
   const id=clean(gameId), exclusive=policy.ownerCanonicalRules?.ownerExclusiveDevelopment;
-  const scope=policy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||policy.ownerActiveDevelopmentScope20261009;
+  const newestOwnerScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
+  const scope=newestOwnerScope||policy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||policy.ownerActiveDevelopmentScope20261009;
   const selected=task?.selectedTask||{};
   const targetName=clean(target||selected.target).toLowerCase();
   const evidence=[...(Array.isArray(task?.evidence)?task.evidence:[]),...(Array.isArray(selected?.evidence)?selected.evidence:[])].map(clean);
@@ -557,16 +587,122 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task
     const paths=[task.sourceRoot,task.source?.root,selected.sourceRoot,...(task.responsibleFiles||[]),...(selected.responsibleFiles||[])].map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,''));
     if(paths.some(file=>/^(?:unity-games|web-games|assets\/(?:unity|web))(?:\/|$)/.test(file)))return true;
   }
-  const access=policy.developmentAccess?.[platform]||(platform==='UNITY_ANDROID'?policy.developmentAccess?.UNITY:null);
+  // 최신 승인지시의 플랫폼 판정을 예전 developmentAccess보다 먼저 적용한다.
+  // 서명 없는 임의 권한 변경은 적용하지 않으며, 명시적인 게임별 보류는 아래에서 계속 강제한다.
+  const access=newestOwnerScope
+    ? (newestOwnerScope.effectiveDevelopmentAccess[platform]||
+      (platform==='UNITY_ANDROID'?newestOwnerScope.effectiveDevelopmentAccess.UNITY:null))
+    : (policy.developmentAccess?.[platform]||
+      (platform==='UNITY_ANDROID'?policy.developmentAccess?.UNITY:null));
   if(access==='OWNER_HOLD')return true;
   if(scope?.status==='ACTIVE'){
-    if(targetName==='web')return true;
-    const active=Array.isArray(scope.activeTargets)?scope.activeTargets:['ROBLOX','UNITY_WEB'];
+    const active=Array.isArray(scope.activeTargets)?scope.activeTargets:['ROBLOX'];
+    if(targetName==='web'&&!active.includes('WEB'))return true;
     if(['ROBLOX','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'].includes(platform)&&!active.includes(platform))return true;
   }
   return Boolean(id && ((clean(exclusive?.status).toUpperCase()==='ACTIVE'
     && (exclusive?.gameIds||[]).includes(id))
     || (clean(target).toLowerCase()==='roblox' && (policy.robloxDevelopmentInvestment?.ownerHoldGameIds||[]).includes(id))));
+}
+
+// OWNER_EXCLUSIVE_DIRECT_DEVELOPMENT: 이 범위의 게임 원본은 오너가 직접 지시한 assistant만 수정한다.
+// 작업이 실제로 끝났거나 오너가 범위 해제를 명령하면 기존 Vibe2 큐/소스에서 계속 진행한다.
+// 이 함수는 영속화/Actions dispatch 전에 증거를 검증해 release 후보를 반환한다.
+// 중앙 정책의 gameIds를 자동 삭제했다고 주장하지 않으며 호출자는 결과를 영속화한 뒤
+// 기존 vibe2-24h-runner를 깨워야 한다. 새 큐·파이프라인·PASS 대체 경로는 없다.
+export function completeOwnerExclusiveGameScope({
+  queueInput={},policy={},gameId='',ownerExplicitRelease=false,completion={}
+}={}){
+  const id=clean(gameId);
+  const rules=policy?.ownerCanonicalRules||{};
+  const exclusive=rules.ownerExclusiveDevelopment||{};
+  const active=clean(exclusive.status).toUpperCase()==='ACTIVE'
+    &&Array.isArray(exclusive.gameIds)&&exclusive.gameIds.includes(id);
+  const hold=synchronizeOwnerDevelopmentHolds(queueInput,policy);
+  const unchanged=(reason)=>Object.freeze({
+    released:false,status:reason,gameId:id||null,policy,queue:hold,
+    existingSchedulerWakeRequired:false,sourceOrSaveChanged:false,publicationClaimed:false
+  });
+  if(!/^[a-z0-9][a-z0-9-]{0,79}$/.test(id))return unchanged('INVALID_GAME_ID');
+  if(!active)return unchanged('GAME_NOT_IN_OWNER_EXCLUSIVE_SCOPE');
+  if(exclusive.handoff?.automaticResumeAfterVerifiedOwnerWork!==true
+    &&ownerExplicitRelease!==true)return unchanged('OWNER_AUTO_RESUME_POLICY_REQUIRED');
+  const sha=clean(completion?.sourceSha),f9sha=clean(completion?.f9VerifiedSourceSha);
+  const checks=completion?.checks||{},publication=completion?.publication||{};
+  const scopeTarget=clean(completion?.target).toUpperCase();
+  const releaseState=clean(completion?.releaseState).toLowerCase();
+  const published=clean(publication.status)==='EXACT_REVISION_PUBLISHED'
+    &&publication.sourceSha===sha
+    &&/^[1-9]\d*$/.test(String(publication.runId||''))
+    &&/^[1-9]\d*$/.test(String(publication.targetId||''));
+  const sourceEvidence=/^[0-9a-f]{40}$/.test(sha)&&f9sha===sha
+    &&['ROBLOX','WEB'].includes(scopeTarget)
+    &&[checks.staticQaRunId,checks.buildRunId,checks.f9RuntimeRunId,checks.securityRunId]
+      .every(value=>Number.isSafeInteger(Number(value))&&Number(value)>0)
+    &&checks.sourceIntegrityPassed===true&&checks.f0ToF9Verified===true
+    &&checks.policyPassed===true&&checks.securityPassed===true;
+  // 중앙정책의 명시적 오너 직접 비공개 게시 예외는 F9 PASS를 요구하지 않는다.
+  // 해당 경우에도 현재 main 소스 SHA·실제 소스 가드·빌드·기존 Place 게시 근거가
+  // 모두 필요하며, 별도 Vibe F0→F9 반복을 완료한 것으로 취급하지 않는다.
+  const ownerPublish=policy?.roblox?.deploymentControl?.ownerDirectCanonicalPublishException||{};
+  const specificTarget=exclusive.implementationScope?.publicationTarget||{};
+  const directPublishAllowed=ownerPublish.enabled===true
+    &&(ownerPublish.gameIds||[]).includes(id)
+    &&ownerPublish.trigger==='EXPLICIT_OWNER_DIRECT_PUBLISH_INSTRUCTION'
+    &&ownerPublish.f9RequiredForOwnerDirectPublish===false
+    &&ownerPublish.canonicalPrivateTargetOnly===true
+    &&scopeTarget==='ROBLOX';
+  const ownerPublishVerified=directPublishAllowed
+    &&/^[0-9a-f]{40}$/.test(sha)
+    &&completion.mainSourceSha===sha
+    &&checks.sourceIntegrityPassed===true
+    &&checks.exactMainSourceRevision===true
+    &&checks.staticSourceGuardPassed===true
+    &&checks.buildPassed===true
+    &&checks.securityPassed===true
+    &&[checks.staticQaRunId,checks.buildRunId,checks.securityRunId].every(value=>
+      Number.isSafeInteger(Number(value))&&Number(value)>0)
+    &&published
+    &&String(publication.targetId)===String(specificTarget.placeId)
+    &&(!completion.temporaryPublishArtifactCreated
+      ||checks.temporaryPublishArtifactRemoved===true);
+  // 최신 중앙정책은 모든 게임의 실제 배포 증거를 요구한다.
+  // 이전 정책으로 생성된 기록은 과거 상태 판독용으로만 해석한다.
+  const historicalDevelopmentSkip=policy?.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.developmentGamePublicationAllowed===false
+    &&releaseState==='development-confirmed'&&publication.status==='DEVELOPMENT_PUBLICATION_SKIPPED';
+  const standardVerified=sourceEvidence
+    &&['development-confirmed','release-confirmed'].includes(releaseState)
+    &&(published||historicalDevelopmentSkip);
+  const verified=standardVerified||ownerPublishVerified;
+  if(!verified&&ownerExplicitRelease!==true)return unchanged('OWNER_WORK_EVIDENCE_OR_PUBLICATION_NOT_VERIFIED');
+  const nextPolicy={
+    ...policy,ownerCanonicalRules:{...rules,ownerExclusiveDevelopment:{
+      ...exclusive,gameIds:exclusive.gameIds.filter(game=>game!==id)
+    }}
+  };
+  const nextQueue=synchronizeOwnerDevelopmentHolds(queueInput,nextPolicy);
+  const previousTasks=hold.tasks.filter(task=>task.gameId===id);
+  const newlyEligible=nextQueue.tasks.filter(task=>task.gameId===id&&!task.ownerDevelopmentHold
+    &&task.status==='queued'&&previousTasks.some(prior=>prior.id===task.id&&prior.ownerDevelopmentHold));
+  return Object.freeze({
+    released:true,status:ownerPublishVerified&&!standardVerified
+      ?'OWNER_DIRECT_PUBLISH_HANDOFF_READY_F0_F9_PENDING'
+      :verified?'OWNER_VERIFIED_HANDOFF_READY':'OWNER_EXPLICIT_RELEASE_UNVERIFIED_WORK',
+    gameId:id,policy:nextPolicy,queue:nextQueue,
+    completionVerified:verified,
+    verificationReviewAuthority:'EXISTING_F0_F9_AND_RELEASE_GATES',
+    sourceOrSaveChanged:false,publicationClaimed:false,
+    newlyUnheldTaskIds:Object.freeze(newlyEligible.map(task=>task.id)),
+    existingSchedulerWakeRequired:true,
+    schedulerWorkflow:exclusive.handoff?.resumeRoute||'.github/workflows/vibe2-24h-runner.yml',
+    handoffRequiresPersistedPolicyAndQueue:true,
+    nextEvolutionCycleRequired:true,otherGamesContinue:true,
+    // release 후에도 확인된 마지막 소스/원래 QA 체크포인트에서 이어간다.
+    checkpointAction:ownerPublishVerified&&!standardVerified
+      ?'RESUME_EXISTING_F0_F9_AFTER_OWNER_DIRECT_PUBLISH'
+      :verified?'RESUME_EXISTING_BUILD_UP_F0_F9':'RESUME_CAUSAL_REPAIR_WITH_UNVERIFIED_OWNER_WORK',
+    finalPublicationAndFanInStillAuthoritative:true
+  });
 }
 
 export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(CANONICAL_RESERVATION_POLICY)) {
@@ -910,9 +1046,12 @@ export function applyVibeFanInResults(queueInput, results = []) {
     if (!grouped.has(id)) grouped.set(id, []);
     grouped.get(id).push(raw);
   }
+  // [메인] 정규화 전후에 보존되는 작업 순서로 한 번만 위치를 색인한다.
+  // 그룹마다 전체 대기열을 재검색하지 않으면서 예약·중복 결과 검사는 기존 흐름을 유지한다.
+  const taskIndexById=new Map(queue.tasks.map((task,index)=>[task.id,index]));
   const applied = [];
   for (const [taskId, variants] of grouped.entries()) {
-    const currentTask = queue.tasks.find((task) => task.id === taskId);
+    const currentTask = queue.tasks[taskIndexById.get(taskId)];
     if (!currentTask) { applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'TASK_NOT_FOUND' }); continue; }
     const reservationIds = [...new Set(variants.map(resultReservationId).filter(Boolean))];
     if (reservationIds.length > 1) { applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'RESERVATION_CONFLICT' }); continue; }
@@ -952,6 +1091,36 @@ export function applyVibeFanInResults(queueInput, results = []) {
       });
       applied.push({taskId,outcome:'REQUEUED_TRANSIENT_LOCK',reason:blockers.join('|')||'work-lock-conflict'});
       continue;
+    }
+    // 모든 독립 생성 후보가 확인된 외부 API 429에 막힌 경우만 보류한다.
+    // 기존 재시도 횟수와 학습 평가를 변경하지 않고, 정해진 시각에 기존 큐로 복귀한다.
+    const quotaFailures=passes.length===0&&variants.length>0&&variants.every(row=>
+      clean(row.outcome).toUpperCase()==='FAIL'
+      &&clean(row?.candidateFailure?.class).toUpperCase()==='EXTERNAL_AI_UNAVAILABLE'
+      &&/HTTP_429/.test(clean(row?.candidateFailure?.message))
+      &&/NEXT_RETRY_AT=/.test(clean(row?.candidateFailure?.message))
+    );
+    if(quotaFailures){
+      const retryTimes=variants.map(row=>{
+        const stamp=/NEXT_RETRY_AT=([0-9TZ:.-]+)/.exec(clean(row?.candidateFailure?.message))?.[1];
+        return Date.parse(stamp||'');
+      }).filter(Number.isFinite);
+      if(retryTimes.length===variants.length){
+        const retryAt=new Date(Math.max(Date.now()+60_000,Math.min(...retryTimes))).toISOString();
+        queue=createVibeContinuousQueue({
+          maxConcurrentTasks:queue.maxConcurrentTasks,
+          tasks:queue.tasks.map(task=>task.id===taskId?{
+            ...task,...clearedReservation(),status:'blocked',blocker:'EXTERNAL_AI_QUOTA_COOLDOWN',
+            lastOutcome:'EXTERNAL_AI_QUOTA_WAIT',
+            neuronExpectedVariants:0,neuronResults:[],
+            evidence:[...new Set([...(task.evidence||[]),
+              'external-ai-quota-infrastructure-unavailable:v1',
+              'external-ai-quota-retry-at:'+retryAt])]
+          }:task)
+        });
+        applied.push({taskId,outcome:'DEFERRED_EXTERNAL_QUOTA',retryAt});
+        continue;
+      }
     }
     const neuralTransactions=new Map(variants.map(row=>[row,buildNeuralWorkerTransaction(row)]));
     const neuralVariantFeedback=variants.map(row=>neuralTransactions.get(row).feedback);
@@ -1155,6 +1324,7 @@ export function runQueueCommand(args = {}) {
     const superseded=command==='recover-reservation-runs';
     const recovered=recoverCompletedRunningReservations(queue,{
       completedRunIds,
+      noResultRunIds:superseded?[]:list(args['no-result-runs']),
       recoveryOutcome:superseded?'SUPERSEDED_QUEUED_RESERVATION_RECOVERED':'COMPLETED_RESERVATION_RUN_RECOVERED',
       recoveryEvidence:superseded?'recovery:superseded-queued-reservation-v1':COMPLETED_RESERVATION_RUN_RECOVERY_EVIDENCE,
       evidencePrefix:superseded?'superseded-queued-reservation-run':'completed-reservation-run'

@@ -2,6 +2,7 @@ import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { DESIGN_INTELLIGENCE_STAGES, buildVibeDesignIntelligence, buildDesignEvolutionBrief, validateDesignAwareExperience } from '../tools/vibe2-design-intelligence.mjs';
+import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { validateVibeExperiencePromotion } from '../tools/vibe2-experience-control.mjs';
 
 test('evolution brief separates easy entry, systemic depth, small joys and reliable rewards from academic subject matter',()=>{
@@ -218,6 +219,7 @@ test('material design change requires plan A and B plus selected rationale',()=>
   assert.ok(missing.implementationGate.blockers.includes('PLAN_A_B_REQUIRED_FOR_MATERIAL_DESIGN_CHANGE'));
   const ready=buildVibeDesignIntelligence({task:{
     goal:'장르를 확장한다',type:'design',designChange:true,designRationale:'새 플레이 가능성 검토',
+    designFields:['MAIN','A','B','C','D','@'],
     designAlternatives:[
       {
         label:'PLAN_A',concept:'기존 생존 탐험을 깊게 확장',playerFantasy:'위험한 세계를 스스로 개척한다',
@@ -255,7 +257,11 @@ test('material design change requires plan A and B plus selected rationale',()=>
   assert.equal(ready.blueprint.genreChallengeAllowed,true);
   assert.equal(ready.blueprint.baseConceptIsReferenceNotPrison,true);
   assert.deepEqual(ready.blueprint.issues,[]);
+  assert.equal(ready.designerHandoff.required,false,'ABCD+@ is handled by the existing designer grammar');
   assert.equal(ready.implementationGate.allowed,true);
+  const outsideGrammar=buildVibeDesignIntelligence({task:{goal:'설계 바깥 새 규칙',type:'design',designChange:true,designFields:['CUSTOM_ENGINE_RULE']}});
+  assert.equal(outsideGrammar.designerHandoff.required,true);
+  assert.equal(outsideGrammar.implementationGate.allowed,false);
 });
 
 test('content diversity detects repeated map and enemy templates',()=>{
@@ -416,16 +422,85 @@ test('canonical central policy documents bind the intelligent design loop to exi
   assert.equal(contract.narrativeAndDialogue.characterVoiceProfileRequired,true);
   assert.equal(contract.causalDefectOwnership.sameSymptomDualIndependentMutationForbidden,true);
   assert.equal(contract.designIntegrityChecks.required,true);
-  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.role,'STRUCTURAL_BINDINGS_ONLY');
-  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.policyAuthority,false);
-  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.semanticMirrorForbidden,true);
-  assert.equal(architecture.concurrentPlatformDevelopment.designEvolution.centralContract,'company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.design.continuousIntelligentDesignEvolution');
-  assert.equal(logMap.designEvolutionEvidenceContract.role,'EVIDENCE_AND_CORRELATION_ONLY');
-  assert.equal(logMap.designEvolutionEvidenceContract.policyAuthority,false);
-  assert.equal(logMap.designEvolutionEvidenceContract.policySemanticsDefinedInCentralOnly,true);
+  // Compact four-document contract: the old nested mirrors were intentionally retired.
+  // Policy semantics remain authoritative only in the canonical roadmap.
+  assert.equal(architecture.centralPolicy,null);
+  assert.equal(architecture.branches.main.directGameWorkerWrite,false);
+  assert.equal(architecture.constitutionalEnforcement.mode,'FAIL_CLOSED');
+  assert.equal(architecture.release,'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS');
+  assert.equal(logMap.retained.primaryLog,'GITHUB_ACTIONS_JOB_LOG');
+  assert.equal(logMap.retained.proof,'STRUCTURED_EVIDENCE_REQUIRED');
+  assert.equal(logMap.retained.unknownOrMissingPolicy,'FAIL_CLOSED');
   const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
-  assert.match(cycle,/CANONICAL_POLICY_PATH='company-learning\/platform-release-roadmap\.json'/);
+  assert.ok(cycle.includes("const CANONICAL_POLICY_PATH=String(process.env.COMPANY_VERIFIED_DESIGN_POLICY_PATH||'').trim();"));
+  assert.ok(cycle.includes("throw new Error('DESIGN_CYCLE_VERIFIED_POLICY_PATH_REQUIRED')"));
   assert.doesNotMatch(cycle,/centralPolicy:'COMPANY_FLOW\.md'/);
   assert.match(cycle,/DESIGN_CHECKPOINT_CONTRACT_VERSION=4/);
 });
 
+
+test('non-grammar design revision enters existing designer and blocks source mutation',()=>{
+  const task={id:'owner-123',gameId:'survival',target:'web',type:'implementation',designChange:true,
+    designScope:'spatialLayout.housing',goal:'기존 설계에 하우징과 습격 설계를 추가한다'};
+  const out=buildVibeDesignIntelligence({task});
+  assert.equal(out.designerHandoff.required,true);
+  assert.equal(out.designerHandoff.ready,true);
+  assert.equal(out.designerHandoff.status,'DESIGNER_INTAKE_REQUIRED');
+  assert.equal(out.designerHandoff.existingModule,'tools/company-design-cycle.mjs');
+  assert.equal(out.designerHandoff.existingWorkflow,'.github/workflows/company-seed-design-runtime.yml');
+  assert.equal(out.designerHandoff.designCycleExecuted,false);
+  assert.equal(out.designerHandoff.sourceMutationAuthorized,false);
+  assert.equal(out.implementationGate.allowed,false);
+  assert.ok(out.implementationGate.blockers.includes('DESIGNER_HANDOFF_REQUIRED'));
+  for(const scope of ['A','B','C','D','@','creativeGrammar.a']){
+    const within=buildVibeDesignIntelligence({task:{...task,designScope:scope}});
+    assert.equal(within.designerHandoff.required,false,scope);
+  }
+  const outsideGrammarNamespace=buildVibeDesignIntelligence({task:{...task,designScope:'creativeGrammar.housing'}});
+  assert.equal(outsideGrammarNamespace.designerHandoff.required,true);
+  const actualGrammarField=buildVibeDesignIntelligence({task:{...task,designScope:'creativeGrammar.a.system'}});
+  assert.equal(actualGrammarField.designerHandoff.required,false);
+  const fallback=buildVibeDesignIntelligence({task:{...task,designScope:'',type:'design'}});
+  assert.equal(fallback.designerHandoff.required,true,'unspecified design change is not coded directly');
+  const invalid=buildVibeDesignIntelligence({task:{...task,id:'',target:'unity'}});
+  assert.equal(invalid.designerHandoff.ready,false);
+  assert.equal(invalid.designerHandoff.status,'DESIGNER_INTAKE_INPUT_INVALID');
+});
+
+test('non-grammar handoff uses the current canonical Game Designer workflow without a new pipeline',()=>{
+  const runner=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
+  const worker=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const designer=fs.readFileSync(new URL('../.github/workflows/company-seed-design-runtime.yml',import.meta.url),'utf8');
+  assert.match(runner,/DESIGNER_HANDOFF_REQUIRED/);
+  assert.match(worker,/gh workflow run company-seed-design-runtime\.yml/);
+  assert.match(worker,/DESIGNER_HANDOFF_REQUIRED/);
+  assert.match(designer,/DESIGN_HANDOFF_REQUEST_ID/);
+  assert.match(designer,/ownerRequestInstanceId=revision/);
+  assert.match(designer,/saveSeedState\(state\)/);
+});
+
+test('canonical queue preserves designer revision and scope for real worker handoff',()=>{
+  const raw={id:'designer-revision-101',gameId:'human-go',target:'roblox',department:'development',
+    type:'implementation',goal:'기존 설계 외 하우징 요청',designChange:true,
+    designScope:'spatialLayout.housing',proposedDesignChanges:['spatialLayout.housing'],
+    designFields:['spatialLayout.housing'],status:'queued'};
+  const queue=createVibeContinuousQueue({tasks:[raw]});
+  const task=queue.tasks[0];
+  assert.equal(task.designChange,true);
+  assert.equal(task.designScope,'spatialLayout.housing');
+  assert.deepEqual(task.proposedDesignChanges,['spatialLayout.housing']);
+  assert.deepEqual(task.designFields,['spatialLayout.housing']);
+  const intelligence=buildVibeDesignIntelligence({task});
+  assert.equal(intelligence.designerHandoff.required,true);
+  assert.equal(intelligence.designerHandoff.ready,true);
+  assert.equal(intelligence.designerHandoff.requestId,'designer-revision-101');
+  assert.equal(intelligence.implementationGate.allowed,false);
+  const reloaded=createVibeContinuousQueue(queue).tasks[0];
+  assert.equal(reloaded.designScope,task.designScope,'persisted queue re-normalization must not drop change scope');
+  assert.equal(buildVibeDesignIntelligence({task:reloaded}).designerHandoff.required,true);
+  const unchanged=createVibeContinuousQueue({tasks:[{
+    ...raw,id:'coder-102',goal:'기존 공격 함수 오류 수정',designChange:false,
+    designScope:'',designFields:[],proposedDesignChanges:[]
+  }]}).tasks[0];
+  assert.equal(buildVibeDesignIntelligence({task:unchanged}).designerHandoff.required,false);
+});

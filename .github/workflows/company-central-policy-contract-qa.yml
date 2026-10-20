@@ -12,7 +12,7 @@ on:
       - 'company-learning/next-session-handoff.json'
       - 'qa/other-ai-machine-directive.test.mjs'
       - 'tools/company-shared-context.mjs'
-      - 'qa/company-shared-context.test.mjs'
+      - 'qa/company-four-docs-fingerprint.test.mjs'
       - 'qa/company-long-horizon-vision.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/company-system-ai-workers.yml'
@@ -51,7 +51,7 @@ on:
       - 'tools/company-status-sync.mjs'
       - 'qa/company-status-sync-direct-native.test.mjs'
       - 'qa/company-direct-native-policy-contract.test.mjs'
-      - 'qa/company-central-policy-contract.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
       - 'qa/company-machine-development-lifecycle.test.mjs'
       - 'qa/vibe2-post-release-focus.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
@@ -92,7 +92,6 @@ on:
       - '.github/workflows/unity-web-floor-source-bootstrap.yml'
       - '.github/workflows/company-development-roblox-runtime.yml'
       - '.github/workflows/company-development-roblox-runtime-continuation.yml'
-      - '.github/actions/prepare-ollama/action.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/unity-android-regression.yml'
       - '.github/workflows/director-supervisor.yml'
@@ -123,7 +122,7 @@ on:
       - 'company-learning/next-session-handoff.json'
       - 'qa/other-ai-machine-directive.test.mjs'
       - 'tools/company-shared-context.mjs'
-      - 'qa/company-shared-context.test.mjs'
+      - 'qa/company-four-docs-fingerprint.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/company-system-ai-workers.yml'
       - '.github/workflows/company-security-immune.yml'
@@ -164,7 +163,7 @@ on:
       - 'tools/homepage-test-candidate-sync.mjs'
       - 'tools/company-status-sync.mjs'
       - 'qa/company-status-sync-direct-native.test.mjs'
-      - 'qa/company-central-policy-contract.test.mjs'
+      - 'qa/company-shared-context-retained.test.mjs'
       - 'qa/company-machine-development-lifecycle.test.mjs'
       - 'qa/vibe2-post-release-focus.test.mjs'
       - 'qa/company-central-pipeline-only.test.mjs'
@@ -194,7 +193,6 @@ on:
       - '.github/workflows/unity-web-floor-source-bootstrap.yml'
       - '.github/workflows/company-development-roblox-runtime.yml'
       - '.github/workflows/company-development-roblox-runtime-continuation.yml'
-      - '.github/actions/prepare-ollama/action.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/unity-android-regression.yml'
       - '.github/workflows/director-supervisor.yml'
@@ -224,7 +222,7 @@ permissions:
 
 jobs:
   central-policy-contract:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     # Full-policy QA includes real timeout/rejection scenarios; keep every check within the runner's 15-minute budget.
     timeout-minutes: 15
     steps:
@@ -260,9 +258,16 @@ jobs:
           full_policy=NO
           studio_contract=NO
           post_runtime_contract=NO
+          isolated_post_runtime=NO
           if grep -Eq '^(company-directive\.json|company-learning/(platform-release-roadmap|company-log-map|company-architecture-map|security-immune-system|other-ai-machine-directive|next-session-handoff)\.json|tools/company-shared-context\.mjs|tools/company-constitution-enforcer\.mjs|\.github/workflows/company-central-policy-contract-qa\.yml)$' /tmp/central-policy-impact-files.txt; then full_policy=YES; fi
           if grep -Eq '^(tools/company-development-roblox-studio-local-play\.mjs|qa/company-development-roblox-studio-local-play\.test\.mjs)$' /tmp/central-policy-impact-files.txt; then studio_contract=YES; fi
           if grep -Eq '^(\.github/workflows/company-development-roblox-post-runtime-qa\.yml|qa/company-development-roblox-post-runtime-qa\.test\.mjs)$' /tmp/central-policy-impact-files.txt; then post_runtime_contract=YES; fi
+          # Focus only on an isolated post-runtime QA edit; all other scopes keep full QA.
+          if [ "$full_policy" = NO ] && [ "$post_runtime_contract" = YES ] &&
+             ! grep -Ev '^(\.github/workflows/company-development-roblox-post-runtime-qa\.yml|qa/company-development-roblox-post-runtime-qa\.test\.mjs)$' /tmp/central-policy-impact-files.txt | grep -q .; then
+            isolated_post_runtime=YES
+          fi
+          echo "isolated_post_runtime=$isolated_post_runtime" >> "$GITHUB_OUTPUT"
           echo "full_policy=$full_policy" >> "$GITHUB_OUTPUT"
           echo "studio_contract=$studio_contract" >> "$GITHUB_OUTPUT"
           echo "post_runtime_contract=$post_runtime_contract" >> "$GITHUB_OUTPUT"
@@ -270,18 +275,22 @@ jobs:
           echo "CENTRAL_POLICY_STUDIO_QA=$studio_contract"
           echo "CENTRAL_POLICY_POST_RUNTIME_QA=$post_runtime_contract"
 
+      - name: Verify isolated Roblox post-runtime contract with shared policy preflight
+        if: ${{ steps.impact.outputs.isolated_post_runtime == 'YES' }}
+        run: |
+          node tools/company-constitution-enforcer.mjs --phase=policy-qa
+          node --test qa/company-development-roblox-post-runtime-qa.test.mjs
+
       - name: Verify central policy and selected-platform production authority
+        if: ${{ steps.impact.outputs.isolated_post_runtime != 'YES' }}
         env:
           FULL_POLICY: ${{ steps.impact.outputs.full_policy }}
           STUDIO_CONTRACT: ${{ steps.impact.outputs.studio_contract }}
           POST_RUNTIME_CONTRACT: ${{ steps.impact.outputs.post_runtime_contract }}
         run: |
-          node --check tools/company-shared-context.mjs
           node --check tools/company-constitution-enforcer.mjs
-          node --test qa/company-shared-context.test.mjs
           node --test qa/company-long-horizon-vision.test.mjs
           node --test qa/other-ai-machine-directive.test.mjs
-          node tools/company-shared-context.mjs --output=/tmp/company-shared-context.json
           node tools/company-constitution-enforcer.mjs --phase=policy-qa
           node --test qa/company-constitution-enforcer.test.mjs
           node --check tools/production-classification.mjs

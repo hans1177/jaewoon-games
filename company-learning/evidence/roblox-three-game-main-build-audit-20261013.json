@@ -1,0 +1,165 @@
+{
+  "version": 1,
+  "observedAt": "2026-10-12T21:05:18.515680+00:00",
+  "mainRevision": "e4ed9d209a8ab8e703f1f036074cf0335090f112",
+  "companyRuntimeRevision": "4005ec13323ee9de75b373e9233fb130ec116d35",
+  "scope": "LOCAL_COMPILER_AND_ROJO_PACKAGE_AUDIT_NOT_PIPELINE_F0_OR_PLAY_QA",
+  "games": [
+    {
+      "gameId": "cozy-island",
+      "sourceRevision": "e4ed9d209a8ab8e703f1f036074cf0335090f112",
+      "compiledScripts": 13,
+      "compileErrors": [],
+      "rojoBuildPass": true,
+      "packageSha256": "aba4c6099cebf3d931d8729104778f1d7e02bf984f2c4b1f552d3ccbdeaeb936",
+      "runtimePass": false,
+      "independentQaPass": false,
+      "regressionPass": false,
+      "releasePass": false,
+      "sourceTreeSha": "6260b2c433ae7ab99e53877eee18f75ec945d197",
+      "runtimeQueueSourceRevision": "1a71b8b868b61a8e0ccc0bb048b6bef857e27450",
+      "runtimeQueueBuildPassed": false,
+      "staticContractPass": false,
+      "staticContractBlockers": [
+        "CONFIG_GENRE_PROFILE_REQUIRED"
+      ],
+      "assetBinding": {
+        "applied": true,
+        "runtimeVerified": false,
+        "libraryVersion": 139
+      },
+      "correctedReconciliation": {
+        "pass": false,
+        "failure": "existing-source-static-revalidation-failed",
+        "blockers": [
+          "CONFIG_GENRE_PROFILE_REQUIRED"
+        ],
+        "sourceTreeSha": "6260b2c433ae7ab99e53877eee18f75ec945d197",
+        "sourceContractRepairRequired": true
+      }
+    },
+    {
+      "gameId": "survival",
+      "sourceRevision": "e4ed9d209a8ab8e703f1f036074cf0335090f112",
+      "compiledScripts": 6,
+      "compileErrors": [],
+      "rojoBuildPass": true,
+      "packageSha256": "9f5843d7c231ee8ea4992f403ec95fcea210c08968f10553fe59858cac24b278",
+      "runtimePass": false,
+      "independentQaPass": false,
+      "regressionPass": false,
+      "releasePass": false,
+      "sourceTreeSha": "c63f65b3a6e032ad0eecc584263b110855c7c5bb",
+      "runtimeQueueSourceRevision": "e03e57e0f7bf1d26e60faacf8578b21d07d847db",
+      "runtimeQueueBuildPassed": false,
+      "staticContractPass": false,
+      "staticContractBlockers": [
+        "CONFIG_GENRE_PROFILE_REQUIRED",
+        "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+        "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+        "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+        "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+        "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+      ],
+      "assetBinding": {
+        "applied": true,
+        "runtimeVerified": false,
+        "libraryVersion": 139
+      },
+      "correctedReconciliation": {
+        "pass": false,
+        "failure": "existing-source-static-revalidation-failed",
+        "blockers": [
+          "CONFIG_GENRE_PROFILE_REQUIRED",
+          "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+          "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+          "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+          "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+          "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+        ],
+        "sourceTreeSha": "c63f65b3a6e032ad0eecc584263b110855c7c5bb",
+        "sourceContractRepairRequired": true
+      }
+    },
+    {
+      "gameId": "seed-casual-realm-weaver",
+      "sourceRevision": "e4ed9d209a8ab8e703f1f036074cf0335090f112",
+      "compiledScripts": 6,
+      "compileErrors": [],
+      "rojoBuildPass": true,
+      "packageSha256": "1a67b743c47e64104ebc2f2f4f40de910fbe7813397d027ae1c17391ad84a526",
+      "runtimePass": false,
+      "independentQaPass": false,
+      "regressionPass": false,
+      "releasePass": false,
+      "sourceTreeSha": "4b050b5c05da8dffea3d968d18d8b47e49a6964d",
+      "runtimeQueueSourceRevision": "6f683b542a06407063c40fe10d828bcec062524e",
+      "runtimeQueueBuildPassed": false,
+      "staticContractPass": false,
+      "staticContractBlockers": [
+        "CONFIG_GENRE_PROFILE_REQUIRED",
+        "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+        "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+        "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+        "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+        "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+      ],
+      "assetBinding": {
+        "applied": true,
+        "runtimeVerified": false,
+        "libraryVersion": 139
+      },
+      "correctedReconciliation": {
+        "pass": false,
+        "failure": "existing-source-static-revalidation-failed",
+        "blockers": [
+          "CONFIG_GENRE_PROFILE_REQUIRED",
+          "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+          "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+          "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+          "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+          "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+        ],
+        "sourceTreeSha": "4b050b5c05da8dffea3d968d18d8b47e49a6964d",
+        "sourceContractRepairRequired": true
+      }
+    }
+  ],
+  "existingExecutions": [
+    {
+      "runId": 38307572678,
+      "gameId": "cozy-island",
+      "observedStatus": "queued"
+    },
+    {
+      "runId": 38307875821,
+      "gameId": "seed-casual-realm-weaver",
+      "observedStatus": "queued"
+    },
+    {
+      "runId": 38302788942,
+      "gameId": "survival",
+      "packageJobId": 114999495129,
+      "packageResult": "failed-exact-source-static-contract",
+      "persistObservedStatus": "queued"
+    }
+  ],
+  "duplicateExecutionDispatched": false,
+  "finding": "Existing-source refresh reported static PASS without validation. Unchanged game bytes then concealed an unresolved static/package failure. Corrected existing reconciliation emits exact source/design/validator-bound repair evidence and existing Vibe planner/compact worker receives causal source repairs; actual game repair/runtime/deployment remains unverified.",
+  "preservation": {
+    "gameSourceChanged": false,
+    "balanceChanged": false,
+    "saveChanged": false,
+    "assetOriginalsChanged": false
+  },
+  "remaining": [
+    "Resolve approved-design/current-game profile conflicts in existing source repair flow",
+    "Validate exact pipeline package/F0",
+    "Official Roblox runtime and asset consumers",
+    "Actual multiplayer/play/image QA",
+    "Independent QA/regression/F9/private deployment"
+  ],
+  "releaseClaim": false,
+  "repairRoutingVerifiedLocally": true,
+  "repairRoutingAppliedOnMain": false
+}
