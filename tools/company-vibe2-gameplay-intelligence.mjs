@@ -146,6 +146,17 @@ export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},codingAr
   if(!sourceAnalysis.present)add('IMPLEMENT_CORE_SOURCE','No preserved source is available; implement the locked gameplay sketch without inventing a different game.');
   else add('PRESERVE_EXISTING_BEHAVIOR','Patch the existing game in place; do not replace unrelated working systems.');
   if(sourceAnalysis.storageKeys?.length)add('PRESERVE_SAVE_CONTRACT',`Keep existing save keys and meanings: ${sourceAnalysis.storageKeys.join(', ')}`,['PRESERVE_EXISTING_BEHAVIOR']);
+  // Applies to every existing or new game, regardless of genre and whether flow
+  // requirements happen to name assets. Technical libraries retain own licenses;
+  // the CC0 restriction is strictly for visible game art and motion media.
+  add('DISCOVER_AND_REUSE_ALL_COMPATIBLE_GAME_LIBRARIES',
+    'Before coding or adding a dependency, inspect existing engine, gameplay, AI, physics, navigation, animation, environment, UI, input, sound, QA, prefab and asset libraries plus the asset catalog and preset registry. Reuse compatible implementations through their existing owners; do not indiscriminately install unused libraries, copy across platform authority boundaries or create wrappers/shadow systems.',preserveDependency);
+  add('RESOLVE_ALL_GAME_VISIBLE_ART_FROM_DOWNLOADED_CC0',
+    'Use assets/asset-selector.js, company-asset-library.json and assets/asset-license-ledger.json to match downloaded original CC0/CC0-1.0 character, NPC, monster, terrain, environment, item, prop, UI image, motion art and VFX for this game. Technical program libraries keep their own applicable licenses. Never accept generated stand-in meshes, unlicensed art, self-declared CC0 without provenance, missing media or a mere asset-inspector button as real game implementation. Record any gap instead of claiming completion.',
+    ['DISCOVER_AND_REUSE_ALL_COMPATIBLE_GAME_LIBRARIES']);
+  add('VERIFY_CC0_PROVENANCE_BINDING_AND_GAMEPLAY',
+    'Before public/game PASS, verify each game-visible original source license and download URL against the existing ledger, verify content hashes where available, bind to actual game runtime, and replay gameplay/mobile visual QA. Existing combat, progression, saves, multiplayer and balance must remain intact. Missing or unverified CC0 media fails closed; do not fabricate PASS.',
+    ['RESOLVE_ALL_GAME_VISIBLE_ART_FROM_DOWNLOADED_CC0']);
   if(codingArchitecture){
     add('ESTABLISH_CODING_ARCHITECTURE','Apply logical module boundaries, state ownership, data schema, API contracts and event contracts before broad feature implementation.',preserveDependency);
     if(codingArchitecture.developmentMode==='GREENFIELD')add('IMPLEMENT_GREENFIELD_ARCHITECTURE_FIRST','No existing source is required: lock architecture and contracts before feature code.',['ESTABLISH_CODING_ARCHITECTURE']);
