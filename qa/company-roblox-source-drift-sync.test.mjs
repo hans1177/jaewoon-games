@@ -419,7 +419,7 @@ test('batch cannot cancel queued exact games for unrelated commit changes',()=>{
 
 test('exact Roblox runs deduplicate before work without cancelling an active build',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  assert.match(runtime.slice(0,runtime.indexOf('\njobs:\n')),/\nconcurrency:\n  group: roblox-runtime-ingress-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n  queue: single\n  cancel-in-progress: false/);
+  assert.doesNotMatch(runtime.slice(0,runtime.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   const sourcePlan=runtime.slice(runtime.indexOf('\n  source-plan:\n'),runtime.indexOf('\n  source-worker:\n'));
   assert.match(sourcePlan,/concurrency:\n\s+group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   const freshness=runtime.slice(runtime.indexOf('      - name: Reject superseded batch scheduler'),runtime.indexOf('      - name: Bind Roblox source-plan contract fingerprint'));

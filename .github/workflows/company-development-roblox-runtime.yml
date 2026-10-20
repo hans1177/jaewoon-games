@@ -49,16 +49,8 @@ permissions:
   pull-requests: write
   actions: write
 
-# GitHub-level ingress coalesces waiting runs for the exact same game or batch,
-# before a runner is assigned. The active whole-game run is NEVER cancelled.
-# A new pending request supersedes only an unstarted pending duplicate;
-# results and canonical F0-F9 release stages of the active run remain intact.
-# Distinct games have independent groups and can still execute concurrently.
-concurrency:
-  group: roblox-runtime-ingress-${{ inputs.game_id || 'batch' }}
-  queue: single
-  cancel-in-progress: false
-
+# Flow order is enforced by stage evidence. Do not serialize the whole per-game chain here.
+# Exact duplicate stages are suppressed at their owning stage/dispatch boundary.
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
