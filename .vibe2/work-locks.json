@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1elzwk1",
+      "worker": "vibe2",
+      "taskId": "core-clash-4v4-studio-evolution-roblox-usability-v1",
+      "gameId": "core-clash-4v4",
+      "files": [
+        "roblox-games/core-clash-4v4/client/Game.client.luau",
+        "roblox-games/core-clash-4v4/shared/GameConfig.luau",
+        "roblox-games/core-clash-4v4/server/Game.server.luau"
+      ],
+      "baseSha": "e8d2943c1e6447d529548bcdb86febb472df2dcc",
+      "runId": "39344620688",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-20T00:18:03.307Z",
+      "expiresAt": "2026-10-20T01:03:03.307Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:core-clash-4v4-studio-evolution-roblox-usability-v1"
+      ]
+    }
+  ]
 }
