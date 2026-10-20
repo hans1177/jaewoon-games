@@ -499,6 +499,7 @@ export function syncPublishedWebRoutes({catalog={},manifest={},sourceTreeShaOf}=
 
 export function mergeRuntimeCatalogMissingGames({catalog={},runtimeCatalog={},developmentQueue={}}={}){
   if(!Array.isArray(catalog.games))return[];
+  const removed=new Set((catalog.permanentRemovalPolicy?.ids||[]).map(clean));
   const liveQueueIds=new Set((Array.isArray(developmentQueue.items)?developmentQueue.items:[])
     .filter(item=>{
       const cls=clean(item?.productionClass).toUpperCase();
@@ -506,7 +507,7 @@ export function mergeRuntimeCatalogMissingGames({catalog={},runtimeCatalog={},de
       return ['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(cls)&&!['DISABLED','REMOVED','RETIRED'].includes(lifecycle);
     })
     .map(item=>clean(item?.gameId))
-    .filter(Boolean));
+    .filter(id=>id&&!removed.has(id)));
   const ids=new Set(catalog.games.map(game=>clean(game?.id||game?.gameId)).filter(Boolean));
   const added=[];
   for(const game of Array.isArray(runtimeCatalog.games)?runtimeCatalog.games:[]){
@@ -545,6 +546,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   const artbooks=JSON.parse(filesystem.readFileSync(artbooksPath,'utf8'));
   const developmentQueue=optionalJson(filesystem,developmentQueuePath,{items:[]});
   const runtimeCatalog=runtimeCatalogPath?optionalJson(filesystem,runtimeCatalogPath,{games:[]}):{games:[]};
+  normalizeCatalog(catalog);
   const runtimeCatalogAdded=mergeRuntimeCatalogMissingGames({catalog,runtimeCatalog,developmentQueue});
   const seedState=optionalJson(filesystem,seedStatePath,{seeds:[]});
   const ownerWebGameIds=ownerWebGameIdsPath&&filesystem.existsSync?.(ownerWebGameIdsPath)

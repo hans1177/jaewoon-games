@@ -71,6 +71,8 @@ const activeLifecycle=row=>{
   const sources=sourcesOf(row),web=sources.web||{};
   const state=String(web.state||row?.ownerWebSourceState||'').toUpperCase();
   if(state==='NON_GAME_SURFACE')return false;
+  const cls=String(productionOf(row).class||row?.productionClass||'').toUpperCase();
+  if(['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(cls))return true;
   const root=String(web.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
   const registered=root===`web-games/${id}`||root===`web-games/${id}/unity`;
   const nativeDeployed=hasRunnableHomepageTarget(row)||hasInternalRelease(row);
@@ -153,7 +155,7 @@ function playableWebHref(row){
   if(!/^[a-z0-9][a-z0-9-]*$/.test(id))return '';
   const source=sourcesOf(row).web||{};
   const state=String(source.state||row?.ownerWebSourceState||'').toUpperCase();
-  if(['NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','WITHDRAWN_SIMPLE_PROTOTYPE'].includes(state)||source.archive===false)return '';
+  if(['NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','WITHDRAWN_SIMPLE_PROTOTYPE','PERMANENTLY_REMOVED_REJECTED_TEST'].includes(state)||source.archive===false)return '';
   const root=String(source.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
   if(root!==`web-games/${id}`&&root!==`web-games/${id}/unity`)return '';
   const published=publicationOf(row).web||{};
@@ -186,7 +188,6 @@ function mergeGame(row){
   const small=mediaImageHref(media?.small),cover=mediaImageHref(media?.cover);
   // 실제 존재하는 예전 타이틀 로고만 재활용한다. 없는 원본을 앱 로고로 속이지 않는다.
   const originalTitleArt={
-    'crystal-defense':'assets/title-crystal-defense.svg',
     'bug-defense':'assets/title-insect-defense.svg',
     'egg-heist':'assets/title-egg-heist.svg',
     'human-go':'assets/title-human-go.svg',

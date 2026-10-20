@@ -278,7 +278,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     {id:'dev-playable',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/dev-playable/'},
     {id:'design-playable',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/design-playable/'}
   ]},{testBuilds:[]}).map(gameIdOf)`,context);
-  assert.deepEqual([...visible].sort(),['design-playable','dev-playable'],'registered games stay visible but unverified HTML cannot gain an active game play link');
+  assert.deepEqual([...visible].sort(),['click-only','design-playable','dev-playable','no-build'],'registered games stay visible but unverified HTML cannot gain an active game play link');
 }
 console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconciliation and verified Unity test access');
 
@@ -331,7 +331,7 @@ assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,tru
   });
   ui.setExposure({unityWebEnabled:true,games:[]});
   const cards=ui.developmentRows(sourceCatalog,{});
-  assert.equal(cards.length,sourceCatalog.games.filter(game=>!['WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID','NON_GAME_SURFACE'].includes(String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase())).length,'unverified prototypes must not be listed');
+  assert.equal(cards.length,sourceCatalog.games.filter(game=>String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase()!=='NON_GAME_SURFACE').length,'active approved development games must be listed');
   assert.equal(new Set(Array.from(cards,game=>game.id)).size,cards.length);
 }
 
@@ -387,26 +387,28 @@ assert.equal(catalog.normalization?.automaticFeatureExpansionFreezeForbidden,tru
   assert(homepage.includes('data-src='));
 }
 
-// Withdraw only the audited simple implementations; unrelated/native targets remain intact.
+// 영구 폐기된 테스트는 소스가 삭제되어도 등록부가 재생성하지 못한다.
 {
-  const root=fs.mkdtempSync(path.join(os.tmpdir(),'homepage-simple-click-'));
-  try{
-    const blocked=catalog.webExposurePolicy.withdrawnEntrySha256;
-    for(const id of Object.keys(blocked)){
-      fs.mkdirSync(path.join(root,id),{recursive:true});
-      fs.copyFileSync(`web-games/${id}/index.html`,path.join(root,id,'index.html'));
-    }
-    const fixture={games:Object.keys(blocked).map(id=>({id,name:id,productionClass:'DEVELOPMENT_CONFIRMED',homepageWebPlayable:true,hasWebArchive:true,robloxUrl:'https://www.roblox.com/games/12345'}))};
-    ingestOwnerWebGameIds(fixture,[],{rootDir:root});
-    for(const game of fixture.games){assert.equal(game.homepageWebPlayable,false);assert.equal(game.robloxUrl,'https://www.roblox.com/games/12345');}
-    const workerSource=fs.readFileSync('_worker.js','utf8');
-    const edge=await import('data:text/javascript;base64,'+Buffer.from(workerSource).toString('base64'));
-    for(const id of Object.keys(blocked)){
-      const html=fs.readFileSync(`web-games/${id}/index.html`,'utf8').trim();
-      const env={ASSETS:{fetch:async request=>new URL(request.url).pathname==='/game-catalog.json'?Response.json({webExposurePolicy:catalog.webExposurePolicy,games:[]}):new Response(html,{headers:{'Content-Type':'text/html'}})}};
-      const response=await edge.default.fetch(new Request(`https://example.test/web-games/${id}/`),env);
-      assert.equal(response.status,410,id+' direct route must be withdrawn');
-    }
-  }finally{fs.rmSync(root,{recursive:true,force:true});}
+ const rejected=catalog.permanentRemovalPolicy.rejectedWebTestEntries;
+ for(const id of rejected)assert.equal(fs.existsSync(`web-games/${id}/index.html`),false,id);
+ const id=rejected[0],fixture={games:[{id,name:id,homepageWebPlayable:true,hasWebArchive:true}],permanentRemovalPolicy:{ids:[],rejectedWebTestEntries:[id]}};
+ const result=ingestOwnerWebGameIds(fixture,[id]);
+ assert.ok(result.disabled.includes(id));
+ assert.equal(fixture.games[0].homepageWebPlayable,false);
+ assert.equal(fixture.games[0].ownerWebSourceState,'PERMANENTLY_REMOVED_REJECTED_TEST');
 }
 console.log('PASS compact unique typography covers, media integrity/source binding, lazy video and four audited click-only withdrawals');
+
+// 플랫폼 보류와 게임 자체 중지를 혼동하면 살아 있는 게임이 삭제된다.
+{
+ const catalog={games:[
+  {id:'stopped-demo',name:'중지',lifecycleState:'PAUSED'},
+  {id:'active-demo',name:'유지',lifecycleState:'ACTIVE',developmentAccess:'OWNER_HOLD'}
+ ],permanentRemovalPolicy:{ids:[],ownerGameStopMeansPermanentRemoval:true}};
+ normalizeCatalog(catalog);
+ assert.deepEqual(catalog.games.map(game=>game.id),['active-demo']);
+ assert.deepEqual(catalog.permanentRemovalPolicy.ids,['stopped-demo']);
+ catalog.games.push({id:'stopped-demo',name:'오래된 복구',lifecycleState:'ACTIVE'});
+ normalizeCatalog(catalog);
+ assert.deepEqual(catalog.games.map(game=>game.id),['active-demo']);
+}

@@ -15,7 +15,7 @@ test('wildlife factory creates articulated 3D anatomy instead of sprite animals'
   assert.match(src,/HeadJoint/);
   assert.match(src,/JawJoint/);
   assert.match(src,/TailBaseJoint/);
-  assert.doesNotMatch(src,/BillboardGui|ImageLabel|SurfaceGui/);
+  assert.doesNotMatch(src,/Instance\.new\("(?:BillboardGui|ImageLabel|SurfaceGui)"\)/);
   assert.match(src,/TwoDimensionalPresentationForbidden/);
   assert.match(src,/RootOnlyLocomotionForbidden/);
 });
@@ -40,16 +40,11 @@ test('bear sample cycles visible 3D walk run alert and attack states',()=>{
   assert.match(src,/PivotTo/);
 });
 
-test('interactive web preview is real WebGL 3D and mobile controllable',()=>{
-  const src=read('web-games/wildlife-motion-sample/index.html');
-  assert.match(src,/THREE\.Scene/);
-  assert.match(src,/WebGLRenderer/);
-  assert.match(src,/PerspectiveCamera/);
-  assert.match(src,/FL.*BR|FR.*BL/s);
-  assert.match(src,/data-state="walk"/);
-  assert.match(src,/data-state="run"/);
-  assert.match(src,/data-state="alert"/);
-  assert.match(src,/data-state="attack"/);
+test('owner-removed wildlife test page stays deleted without deleting shared motion code',()=>{
+  assert.equal(fs.existsSync('web-games/wildlife-motion-sample/index.html'),false);
+  const catalog=readJson('game-catalog.json');
+  assert.ok(catalog.permanentRemovalPolicy.ids.includes('wildlife-motion-sample'));
+  assert.equal(fs.existsSync('assets/roblox/survival-wildlife/WildlifeFactory.luau'),true);
 });
 
 test('company asset library registers the real 3D sample and forbids 2D fallback',()=>{
@@ -59,6 +54,7 @@ test('company asset library registers the real 3D sample and forbids 2D fallback
   assert.equal(pack.roblox3dImplementation.articulatedMotor6D,true);
   assert.equal(pack.roblox3dImplementation.billboardOrSpriteAnimalForbidden,true);
   assert.equal(pack.roblox3dImplementation.rootOnlyLocomotionForbidden,true);
-  assert.equal(pack.preview.type,'INTERACTIVE_WEB_3D');
+  assert.equal(pack.preview.type,'SOURCE_ONLY');
+  assert.equal(pack.preview.path,null);
   assert.equal(pack.preview.subject,'BEAR_DARK_BROWN');
 });

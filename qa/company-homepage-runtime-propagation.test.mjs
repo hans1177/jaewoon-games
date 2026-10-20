@@ -229,27 +229,15 @@ test('실제 게임은 유지하고 버튼형 시제품과 진입점 없는 게�
     !['RETIRED','REMOVED','ARCHIVED'].includes(String(game.canonical?.lifecycle?.state||game.lifecycleState||'').toUpperCase())
     &&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(game.canonical?.production?.class||game.productionClass||'').toUpperCase())
   );
-  const shouldList=game=>{
-    const state=String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase();
-    if(state==='NON_GAME_SURFACE')return false;
-    if(!['WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID'].includes(state))return true;
-    const platform=exposure.games?.find(row=>row.gameId===game.id);
-    return (platform?.platforms||[]).some(row=>
-      Boolean(row.internalUrl||row.publicUrl)&&(
-        row.executionAvailable===true||
-        (row.internalReleaseReady===true&&row.releaseReadiness?.homepageReady===true)||
-        (row.platform==='ROBLOX'&&row.historicalInternalRelease===true)
-      )
-    );
-  };
+  const shouldList=game=>String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase()!=='NON_GAME_SURFACE';
   const expected=eligible.filter(shouldList);
   assert.deepEqual([...present].sort(),expected.map(row=>row.id).sort(),'정식 게임은 유지하고 출처만 있는 미검증 시제품은 제외한다');
-  assert.ok(eligible.length>expected.length,'실제 카탈로그에 제외 대상 시제품이 있다');
+  assert.equal(expected.length,catalog.games.length,'개발 중 게임은 모두 게시한다');
   for(const row of eligible.filter(game=>!shouldList(game)))assert.equal(present.has(row.id),false,'시제품이 홈피에 남음: '+row.id);
   for(const row of expected)assert.ok(present.has(row.id),'실제 게임 누락: '+row.id);
 });
 
-test('검증된 네이티브 게임은 철회된 웹 시제품과 무관하게 남고 버튼형 시제품은 숨긴다',()=>{
+test('개발 확정 게임은 게시하되 철회된 테스트의 플레이 버튼은 활성화하지 않는다',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,hasRunnableHomepageTarget,buildCard})',{document:{readyState:'loading',addEventListener(){}}});
   const row=(id,state)=>({id,canonical:{
@@ -265,7 +253,7 @@ test('검증된 네이티브 게임은 철회된 웹 시제품과 무관하게 �
     platform:'ROBLOX',executionAvailable:true,internalUrl:'https://www.roblox.com/games/123456789'
   }]}]});
   const visible=api.developmentRows({games:[clickOnly,invalid,realWeb,native]},{});
-  assert.deepEqual(Array.from(visible,game=>game.id),['real-web','verified-native']);
+  assert.deepEqual(Array.from(visible,game=>game.id),['click-only','missing-entry','real-web','verified-native']);
   assert.equal(api.hasRunnableHomepageTarget(native),true);
   assert.match(api.buildCard(native),/https:\/\/www\.roblox\.com\/games\/123456789/);
   assert.equal(api.hasRunnableHomepageTarget(clickOnly),false);
@@ -658,4 +646,21 @@ test('Cloudflare Pages keeps native runtime APIs while bypassing static assets',
   assert.match(homepage,/function platformLinks\(game\)/);
   const index=fs.readFileSync('index.html','utf8');
   assert.doesNotMatch(index,/prefetchVisibleGames|rel='prefetch'/);
+});
+
+// 영구 제거 게임은 오래된 런타임의 ACTIVE 상태보다 우선한다.
+test('canonical permanent removal wins over stale active runtime and queue entries',()=>{
+  const catalog={games:[],permanentRemovalPolicy:{ids:['ant-simulator','crystal-defense']}};
+  const developmentQueue={items:['ant-simulator','crystal-defense','keep-game'].map(gameId=>({gameId,status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}))};
+  const runtimeCatalog={games:developmentQueue.items.map(row=>({id:row.gameId,name:row.gameId,lifecycleState:'ACTIVE'}))};
+  assert.deepEqual(mergeRuntimeCatalogMissingGames({catalog,runtimeCatalog,developmentQueue}),['keep-game']);
+  assert.deepEqual(catalog.games.map(row=>row.id),['keep-game']);
+});
+
+test('edge catalog removes stale stopped games while showing new active development cards',()=>{
+  const edge=fs.readFileSync('_worker.js','utf8').replace(/export\s+default\s*\{/,'const workerDefault = {');
+  const merge=vm.runInNewContext(edge+';mergeRuntimeCatalog',{Date,Intl});
+  const stale={games:[{id:'ant-simulator',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  const canonical={games:[{id:'simple-rpg',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}],permanentRemovalPolicy:{ids:['ant-simulator']}};
+  assert.deepEqual(Array.from(merge(stale,{}, {},{},canonical).games,game=>game.id),['simple-rpg']);
 });
