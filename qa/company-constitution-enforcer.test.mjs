@@ -103,3 +103,47 @@ test('CC0 constitution rejects weakening inactive-game protection or permanent d
     assert.equal(run(changed).pass,false,field);
   }
 });
+
+test('CC0 owner rule reaches fresh GPT/Vibe sessions, all department agents and official notice',()=>{
+  const rule=policy.ownerCanonicalRules.rule5;
+  assert.equal(rule.enabled,true);
+  assert.equal(rule.automaticContractBinding,true);
+  assert.deepEqual(rule.appliesTo,['CHATGPT','VIBE','ALL_CURRENT_AND_FUTURE_GAME_DEVELOPMENT_WORKERS']);
+  assert.equal(rule.cc0OriginalRequired,true);
+  assert.equal(rule.gameSpecificModificationRequired,true);
+  assert.equal(rule.selfAuthoredLowQualityAssetsMustBePermanentlyDeleted,true);
+  assert.equal(rule.inactiveGameAssetsMustNotBeDeleted,true);
+
+  const rootAgents=fs.readFileSync(path.join(root,'AGENTS.md'),'utf8');
+  const copilot=fs.readFileSync(path.join(root,'.github/copilot-instructions.md'),'utf8');
+  const license=fs.readFileSync(path.join(root,'LICENSES.md'),'utf8');
+  const homepage=fs.readFileSync(path.join(root,'index.html'),'utf8');
+  for(const [name,source] of [['AGENTS.md',rootAgents],['copilot',copilot]]){
+    assert.match(source,/platform-release-roadmap\.json/,name);
+    assert.match(source,/company-log-map\.json/,name);
+    assert.match(source,/company-architecture-map\.json/,name);
+    assert.match(source,/security-immune-system\.json/,name);
+    assert.match(source,/rule5/,name);
+    assert.match(source,/CC0/,name);
+  }
+  assert.match(license,/## 게임 에셋 기본 강제 원칙 — CC0 원본 수정 사용/);
+  assert.doesNotMatch(license,/^- 에셋: CC0 우선$/m);
+  assert.match(license,/게임별로 수정/);
+  assert.match(homepage,/class="cc0PublicNotice"/);
+  assert.match(homepage,/중앙헌법 제5규칙 확인/);
+  assert.match(homepage,/검증된 CC0 원본을 게임별로 수정 사용/);
+
+  const roles=['audio','development','director','graphics','homepage','planning','qa','release'];
+  for(const role of roles){
+    const file=path.join(root,'.github/agents',role+'.agent.md');
+    const agent=fs.readFileSync(file,'utf8');
+    assert.match(agent,/## 새 세션 공통 헌법 — CC0 원본 수정 사용/,role);
+    assert.match(agent,/원본 해시가 검증된 CC0 원본/,role);
+    assert.match(agent,/개발 중지 게임 및 공유 사용 파일은 보존/,role);
+    assert.match(agent,/company-learning\/platform-release-roadmap\.json/,role);
+  }
+  for(const role of ['graphics','audio']){
+    const agent=fs.readFileSync(path.join(root,'.github/agents',role+'.agent.md'),'utf8');
+    assert.doesNotMatch(agent,/외부 에셋은 CC0 또는 상업 이용/,role+' must not grant CC-BY fallback');
+  }
+});
