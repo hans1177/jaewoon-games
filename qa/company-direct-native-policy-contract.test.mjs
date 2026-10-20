@@ -116,11 +116,13 @@ test('directive mirrors Roblox-only development and holds Unity Web',()=>{
 });
 
 
-test('Roblox upper-platform dispatch dedupes only active runs from the current main control revision',()=>{
+test('Roblox upper-platform dispatch recognizes unfinished game owners across main revisions',()=>{
   assert.match(runtime,/CURRENT_CONTROL_SHA: \$\{\{ github\.sha \}\}/);
   assert.match(runtime,/const activeIds=\(file,prefix,exactHead=''\)=>/);
   assert.match(runtime,/if\(exactHead&&String\(run\.head_sha\|\|''\)!==exactHead\)continue/);
-  assert.match(runtime,/const activeRoblox=activeIds\('\/tmp\/active-roblox-native-runs\.json','Roblox runtime · ',currentControlSha\)/);
+  assert.match(runtime,/const activeRoblox=activeIds\('\/tmp\/active-roblox-native-runs\.json','Roblox runtime · '\)/);
+  assert.match(runtime,/NATIVE_ROBLOX_ACTIVE_RUN_SCAN_MODE=ALL_UNFINISHED_ANY_HEAD/);
+  assert.doesNotMatch(runtime,/const activeRoblox=activeIds\([^\n]*currentControlSha\)/);
   assert.match(runtime,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(runtime,/ROBLOX_NATIVE_DISPATCH_CURRENT_MAIN_REQUIRED=/);
 });

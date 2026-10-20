@@ -182,12 +182,12 @@ test('direct horror edits re-enter the canonical development flow',()=>{
   assert.doesNotMatch(central,/\['horror-escape-room'\]/);
 });
 
-test('development coordinator dedupes exact-revision active Roblox games without locking batches',()=>{
+test('development coordinator dedupes unfinished Roblox games across revisions without locking game execution',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
-  assert.match(development,/actions\/workflows\/company-development-roblox-runtime\.yml\/runs\?per_page=100&page=\$page/);
+  assert.match(development,/actions\/workflows\/company-development-roblox-runtime\.yml\/runs\?status=\$active_status&per_page=100&page=\$page/);
   assert.doesNotMatch(development,/company-development-roblox-runtime\.yml\/runs\?event=workflow_dispatch/);
   assert.match(development,/const activeStates=new Set\(\['queued','pending','in_progress','requested'\]\)/);
-  assert.match(development,/const activeRoblox=activeIds\([^\n]*currentControlSha\)/);
+  assert.match(development,/const activeRoblox=activeIds\('\/tmp\/active-roblox-native-runs\.json','Roblox runtime · '\)/);
   assert.match(development,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(development,/NATIVE_ACTIVE_RUN_SCAN=FAIL/);
   assert.doesNotMatch(development,/^  coordinator-gate:\s*$/m);
@@ -589,7 +589,7 @@ test('central development planner removes duplicate runtime contract QA from the
   assert.match(development,/queue_fetch_pid=\$!/);
   assert.match(development,/wait "\$queue_fetch_pid" \|\| queue_fetch_status=\$\?/);
   assert.match(development,/NATIVE_QUEUE_AUTHORITY_FETCH=PASS/);
-  assert.match(development,/company-development-roblox-runtime\.yml\/runs\?per_page=100&page=\$page/);
+  assert.match(development,/company-development-roblox-runtime\.yml\/runs\?status=\$active_status&per_page=100&page=\$page/);
   assert.match(development,/company-development-unity-runtime\.yml\/runs\?per_page=100&page=\$page/);
   assert.match(development,/for page in 1 2 3; do/);
   assert.match(development,/pids\+=\("\$!"\)/);

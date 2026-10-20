@@ -295,9 +295,10 @@ test('native coordinator never locks whole workflow or starts held Unity Web job
   assert.match(global,/github\.run_id/);
   assert.match(global,/cancel-in-progress: false/);
   assert.doesNotMatch(global,/main-push|game_id|source-root/);
-  // [게임별 중복 방지] 총괄 잠금 대신 같은 메인 리비전의 활성 게임 실행만 제외한다.
+  // [게임별 중복 방지] 메인 리비전이 달라도 실제 대기 중인 게임 작업을 보존한다.
   assert.doesNotMatch(workflow,/^  coordinator-gate:\s*$/m);
-  assert.match(workflow,/const activeRoblox=activeIds\([^\n]*currentControlSha\)/);
+  assert.match(workflow,/const activeRoblox=activeIds\('\/tmp\/active-roblox-native-runs\.json','Roblox runtime · '\)/);
+  assert.match(workflow,/NATIVE_ROBLOX_ACTIVE_RUN_SCAN_MODE=ALL_UNFINISHED_ANY_HEAD/);
   assert.match(workflow,/if\(exactHead&&String\(run\.head_sha\|\|''\)!==exactHead\)continue/);
   assert.match(workflow,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
   assert.match(workflow,/NATIVE_ACTIVE_RUN_SCAN=FAIL/);
