@@ -42,6 +42,7 @@ jobs:
             game-catalog.json
             homepage-platform-exposure.json
             tools/github-pages-landing.mjs
+            tools/vibe2-public-game-ui-provenance.mjs
             qa/github-pages-landing.test.mjs
             qa/vibe-motion-engine.test.mjs
             qa/vibe-character-integration.test.mjs
@@ -323,6 +324,13 @@ jobs:
         run: |
           set -euo pipefail
           node tools/github-pages-landing.mjs
+          # Compare each staged game to the actual author-owned source before
+          # GitHub Pages packaging. A build-created debug menu/script fails here.
+          node tools/vibe2-public-game-ui-provenance.mjs \
+            --source=web-games \
+            --published=_site/web-games \
+            --manifest=_site/web-games/publish-manifest.json
+          echo 'PUBLIC_GAME_UI_PROVENANCE=PASS'
           test -s _site/index.html
 
       - name: Verify every published game route and the canonical official homepage
