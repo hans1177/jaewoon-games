@@ -38,14 +38,26 @@ function resolveProject(task,{catalog={},status={},repoRoot=process.cwd(),filesy
 // Repository dispatch identity is independently verified by GitHub Actions, never by the AI model.
 export function validateLocalWebOwnerEvent(event,{actor='',repository=''}={}){
   if(clean(actor)!=='hans1177'||clean(repository)!=='hans1177/jaewoon-games'||
-     clean(event?.action)!=='vibe-local-web-owner-directive')throw new Error('LOCAL_OWNER_EVENT_NOT_AUTHORIZED');
-  const p=event?.client_payload||{};
+     !['vibe-local-web-owner-directive','created'].includes(clean(event?.action)))throw new Error('LOCAL_OWNER_EVENT_NOT_AUTHORIZED');
+  let p=event?.client_payload||{};
+  // 소유자 댓글은 데이터로만 해석한다. 편집/봇/타인/다른 저장소 이벤트는 거부한다.
+  if(event?.action==='created'){
+    if(event?.repository?.full_name!==repository||event?.sender?.login!==actor||
+      event?.comment?.user?.login!==actor||event?.comment?.user?.type!=='User'||
+      event?.comment?.author_association!=='OWNER'||!Number.isSafeInteger(event?.comment?.id)||
+      !Number.isSafeInteger(event?.issue?.number))throw new Error('LOCAL_OWNER_COMMENT_NOT_AUTHORIZED');
+    const text=String(event.comment.body??'');
+    if(!text.startsWith('/vibe-local-web ')||text.length>4096)throw new Error('LOCAL_OWNER_COMMENT_INVALID');
+    try{p=JSON.parse(text.slice('/vibe-local-web '.length));}catch{throw new Error('LOCAL_OWNER_COMMENT_INVALID');}
+    if(!p||typeof p!=='object'||Array.isArray(p))throw new Error('LOCAL_OWNER_COMMENT_INVALID');
+  }
+
   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(clean(p.id))||
      !/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(clean(p.game_id))||
      clean(p.platform)!=='web'||
      clean(p.kind)!=='directive'||
      p.autoDeployAfterVerifiedQa!==true||
-     !clean(p.body)||clean(p.body).length>2000)throw new Error('LOCAL_OWNER_EVENT_INVALID');
+     !clean(p.body)||clean(p.body).length>2000||/[\x00-\x08\x0b-\x1f]/.test(clean(p.body)))throw new Error('LOCAL_OWNER_EVENT_INVALID');
   return {id:clean(p.id),game_id:clean(p.game_id),platform:'web',kind:'directive',priority:'urgent',body:clean(p.body),source:'LOCAL_VIBE_WEB_CHAT'};
 }
 function ownerContext(task){const rows=Array.isArray(task?.ownerMessages)?task.ownerMessages:[],messages=rows.map(row=>clean(row?.body)).filter(Boolean);return messages.length?`\n\n추가 지시:\n${messages.map(text=>`- ${text}`).join('\n')}`:'';}

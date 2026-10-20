@@ -579,3 +579,21 @@ test('owner web deploy-first approval accepts only exact publication policy and 
   assert.throws(()=>execute(head,[...changes,'finalDevelopmentLock.sequenceLock.status']),/SECURITY_OWNER_WEB_DEPLOY_FIRST_SCOPE_INVALID/);
   assert.throws(()=>execute(head,[...changes,'developmentAccess.ROBLOX']),/SECURITY_OWNER_WEB_DEPLOY_FIRST_SCOPE_INVALID/);
 });
+
+test('local owner receiver approval allows only the exact advisory addition and retains source and QA gates',()=>{
+  const begin=securityWorkflow.indexOf('          // Exact owner-authored local WEB chat:');
+  const end=securityWorkflow.indexOf('          const bad=changes.filter',begin);
+  const code=securityWorkflow.slice(begin,end);
+  const head=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json'));
+  const base=structuredClone(head);delete base.localVibeWebChat.existingPwaOwnerCommentReceiver;
+  const changes=['localVibeWebChat.existingPwaOwnerCommentReceiver'];
+  const execute=(candidate,keys=changes)=>runInNewContext(code,{base,head:candidate,changes:keys,
+    console:{log(){}},same:(a,b)=>JSON.stringify(a)===JSON.stringify(b)});
+  assert.doesNotThrow(()=>execute(head));
+  for(const field of ['sourceWriteAllowed','qaVerdictAllowed','deploymentAllowed']){
+    const unsafe=structuredClone(head);unsafe.localVibeWebChat[field]=true;assert.throws(()=>execute(unsafe),/EXACT_CONTRACT_REQUIRED/);
+  }
+  const unsafe=structuredClone(head);unsafe.localVibeWebChat.existingPwaOwnerCommentReceiver.actor='attacker';
+  assert.throws(()=>execute(unsafe),/EXACT_CONTRACT_REQUIRED/);
+  assert.throws(()=>execute(head,[...changes,'developmentAccess.WEB']),/EXACT_CONTRACT_REQUIRED/);
+});

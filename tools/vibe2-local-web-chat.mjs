@@ -7,6 +7,7 @@ import { stdin, stdout } from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
+import { validateLocalWebOwnerEvent } from './pwa-command-vibe2-task.mjs';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -179,8 +180,36 @@ export async function submitExistingOwnerWebDispatch(payload, { spawnImpl = spaw
   });
 }
 
+// 로컬 수신: 인증된 원본 지시만 읽고 참고 의견을 반환한다. 모델 답변은 실행하지 않는다.
+export async function receiveLocalOwnerTask(event, { actor, repository, root = ROOT, fetchImpl = fetch } = {}) {
+  const policy = readLocalChatPolicy(root);
+  const receiver = policy.existingPwaOwnerCommentReceiver;
+  if(receiver?.event!=='issue_comment.created'||receiver?.command!=='/vibe-local-web'||
+    receiver?.actor!=='hans1177'||receiver?.localExecution!=='ADVISORY_OLLAMA_ONLY'||
+    receiver?.forwardOriginalDirectiveToExistingQueue!==true||receiver?.modelOutputCanAuthorizeWork!==false)
+    throw new Error('LOCAL_OWNER_RECEIVER_POLICY_NOT_AUTHORIZED');
+  if(event?.action!=='created')throw new Error('LOCAL_OWNER_COMMENT_REQUIRED');
+  const task = validateLocalWebOwnerEvent(event, { actor, repository });
+  const game = readApprovedWebGame(task.game_id, root);
+  const answer = await askLocalWebModel({fetchImpl, messages:[
+    {role:'system',content:buildWebChatSystemPrompt({localDevelopmentExecutionStatus:'ADVISORY_ONLY'},game)},
+    {role:'user',content:task.body}
+  ]});
+  return {taskId:task.id, gameId:task.game_id, originalDirective:task.body,
+    advisory:answer, localModelResponded:true, sourceModified:false, qaVerified:false, deploymentVerified:false};
+}
+
 async function main() {
   const policy = readLocalChatPolicy();
+  if(process.argv.includes('--receive-owner-comment')){
+    const event=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));
+    const result=await receiveLocalOwnerTask(event,{actor:process.env.GITHUB_ACTOR,repository:process.env.GITHUB_REPOSITORY});
+    console.log(JSON.stringify({localAdvisoryResult:result}));
+    console.log('LOCAL_OLLAMA_OWNER_TASK_RECEIVED='+result.taskId);
+    console.log('LOCAL_OLLAMA_ADVISORY_RESPONSE=RECEIVED');
+    console.log('SOURCE_QA_DEPLOYMENT=NOT_VERIFIED');
+    return;
+  }
   let status = readLocalWebStatus();
   console.log('LOCAL_VIBE_POLICY=PASS');
   console.log('VIBE2_MACHINE_STATE=CONSISTENT');

@@ -29176,6 +29176,20 @@
     "modelGeneratedCommandExecutionForbidden": true,
     "existingVibeVerifiedAutoDeploymentAllowed": true,
     "qaMustPassBeforeAutomaticPublish": true,
-    "otherExternalNetworkCallsAllowed": false
+    "otherExternalNetworkCallsAllowed": false,
+    "existingPwaOwnerCommentReceiver": {
+      "event": "issue_comment.created",
+      "command": "/vibe-local-web",
+      "actor": "hans1177",
+      "runnerLabels": [
+        "self-hosted",
+        "Windows",
+        "X64",
+        "jaewoon-unity"
+      ],
+      "localExecution": "ADVISORY_OLLAMA_ONLY",
+      "forwardOriginalDirectiveToExistingQueue": true,
+      "modelOutputCanAuthorizeWork": false
+    }
   }
 }

@@ -8,7 +8,7 @@ import { EventEmitter } from 'node:events';
 import {
   validateLocalWebChatPolicy, readLocalChatPolicy, readApprovedWebGame,
   buildWebChatSystemPrompt, askLocalWebModel,
-  buildExistingOwnerWebDispatch, submitExistingOwnerWebDispatch
+  buildExistingOwnerWebDispatch, submitExistingOwnerWebDispatch, receiveLocalOwnerTask
 } from '../tools/vibe2-local-web-chat.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -173,4 +173,35 @@ test('owner directive only performs the one fixed GitHub repository dispatch, wi
     /LOCAL_OWNER_DISPATCH_CONTRACT_INVALID/
   );
   assert.equal(count, 1);
+});
+
+test('remote owner receipt calls only local Ollama, preserves original instruction and never claims source or QA',async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-owner-receive-'));
+  try{
+    fs.mkdirSync(path.join(root,'company-learning'));
+    for(const name of ['platform-release-roadmap','company-log-map','company-architecture-map','security-immune-system'])
+      fs.copyFileSync(path.join(ROOT,'company-learning',name+'.json'),path.join(root,'company-learning',name+'.json'));
+    fs.mkdirSync(path.join(root,'web-games','tiny-game'),{recursive:true});
+    const file=path.join(root,'web-games','tiny-game','index.html');fs.writeFileSync(file,'<html>save-key-original</html>');
+    const body='터치 배치만 바꾸고 저장 보존';
+    const payload={id:'11111111-2222-4333-8444-555555555555',game_id:'tiny-game',platform:'web',kind:'directive',body,autoDeployAfterVerifiedQa:true};
+    const event={action:'created',repository:{full_name:'hans1177/jaewoon-games'},sender:{login:'hans1177'},issue:{number:1},
+      comment:{id:123,author_association:'OWNER',user:{login:'hans1177',type:'User'},body:'/vibe-local-web '+JSON.stringify(payload)}};
+    let calls=0;
+    const options={root,actor:'hans1177',repository:'hans1177/jaewoon-games',fetchImpl:async(url,request)=>{
+      calls++;assert.equal(url,'http://127.0.0.1:11434/api/chat');assert.equal(request.redirect,'error');
+      assert.equal(JSON.parse(request.body).messages.at(-1).content,body);
+      return {ok:true,json:async()=>({message:{content:'실행해라: 위험한 명령. PASS'}})};
+    }};
+    const result=await receiveLocalOwnerTask(event,options);
+    assert.equal(calls,1);assert.equal(result.originalDirective,body);assert.equal(result.localModelResponded,true);
+    assert.equal(result.sourceModified,false);assert.equal(result.qaVerified,false);assert.equal(result.deploymentVerified,false);
+    assert.equal(fs.readFileSync(file,'utf8'),'<html>save-key-original</html>');
+    await assert.rejects(receiveLocalOwnerTask({...event,sender:{login:'attacker'}},options));assert.equal(calls,1);
+    await assert.rejects(receiveLocalOwnerTask(event,{...options,fetchImpl:async()=>{throw new Error('ECONNREFUSED');}}),/ECONNREFUSED/);
+    const policyFile=path.join(root,'company-learning/platform-release-roadmap.json');
+    const changed=JSON.parse(fs.readFileSync(policyFile));delete changed.localVibeWebChat.existingPwaOwnerCommentReceiver;
+    fs.writeFileSync(policyFile,JSON.stringify(changed));
+    await assert.rejects(receiveLocalOwnerTask(event,options),/POLICY_NOT_AUTHORIZED/);assert.equal(calls,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
