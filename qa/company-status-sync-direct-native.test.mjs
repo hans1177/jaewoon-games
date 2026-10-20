@@ -148,6 +148,28 @@ test('homepage runtime ignores legacy Web implementation scores for direct-nativ
 });
 
 
+test('owner-paused games stay stopped when old runtime queue still says active',()=>{
+  const catalog={version:1,games:[
+    {id:'ant-simulator',name:'개미 시뮬레이터',lifecycleState:'PAUSED',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'},
+    {id:'active-simulator',name:'다른 게임',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX'}
+  ]};
+  const developmentQueue={items:[
+    {gameId:'ant-simulator',status:'ACTIVE',canonicalState:'TARGET_PLATFORM_RUNTIME',selectedPlatform:'ROBLOX'},
+    {gameId:'active-simulator',status:'ACTIVE',canonicalState:'TARGET_PLATFORM_RUNTIME',selectedPlatform:'ROBLOX'}
+  ]};
+  syncProductionClasses({portfolio:{version:1,projects:[]},catalog,artbooks:{artbooks:[],dailySubmissions:[]},developmentQueue,seedState:{seeds:[]},filesystem:fsStub});
+  applyHomepageRuntimeInfo({catalog,developmentQueue,seedState:{seeds:[]}});
+  const paused=catalog.games.find(game=>game.id==='ant-simulator');
+  const active=catalog.games.find(game=>game.id==='active-simulator');
+  assert.equal(paused.productionTarget,'lifecycle-inactive');
+  assert.equal(paused.homepageStage,'PAUSED');
+  assert.equal(paused.homepageInfo.status,'PAUSED');
+  assert.equal(paused.canonical.lifecycle.state,'PAUSED');
+  assert.equal(paused.homepageInfo.latestWork,'개발 중지 · 오너 지시');
+  assert.equal(active.productionTarget,'ROBLOX_UNITY');
+  assert.equal(active.homepageInfo.status,'TARGET_PLATFORM_RUNTIME');
+});
+
 test('catalog-only DEVELOPMENT_CONFIRMED game keeps canonical direct-native homepage state',()=>{
   const portfolio={version:1,projects:[]};
   const catalog={version:1,games:[{

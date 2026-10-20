@@ -217,7 +217,15 @@ jobs:
             if(!valid.has(g.productionClass))throw new Error(`invalid catalog class: ${g.id}`);
             if(Object.hasOwn(g,'productionTier')||Object.hasOwn(g,'productionTierSource'))throw new Error(`legacy catalog production tier remains: ${g.id}`);
             if(g.homepageCategory!==categoryByClass[g.productionClass]&&!historicalDeploymentShelfAllowed(g))throw new Error(`catalog category mismatch: ${g.id}`);
-            if(g.productionClass==='DEVELOPMENT_CONFIRMED'&&(g.productionTarget!=='ROBLOX_UNITY'||g.homepageStage!=='개발확정 · Roblox + Unity 앱 동시개발'))throw new Error(`development homepage direct-native state mismatch: ${g.id}`);
+            // PAUSED is a first-class owner stop: require explicit inactive routing, never treat it as an active release.
+            const gameLifecycle=String(g.lifecycleState||'ACTIVE').toUpperCase();
+            if(!activeLifecycleStates.has(gameLifecycle)){
+              if(g.productionTarget!=='lifecycle-inactive'||g.homepageStage!==gameLifecycle)
+                throw new Error(`inactive game escaped the development stop: ${g.id}`);
+            }else if(g.productionClass==='DEVELOPMENT_CONFIRMED'
+              &&(g.productionTarget!=='ROBLOX_UNITY'||g.homepageStage!=='개발확정 · Roblox + Unity 앱 동시개발')){
+              throw new Error(`development homepage direct-native state mismatch: ${g.id}`);
+            }
             if(g.productionClass!=='DESIGN_ONLY'&&g.productionTarget==='web-first-playable')throw new Error(`legacy Web-first target remains: ${g.id}`);
           }
           const state=portfolio.productionClassState||{};
