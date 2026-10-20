@@ -136,6 +136,35 @@ test('native preview consumes existing environment, character identity and motio
   'heroMixer.clipAction(desired)'
  ]) assert.ok(moduleSource.includes(label),'missing actual native Vibe binding: '+label);
 });
+// 커스터마이징 정적 회귀: 실제 GLB 5종과 장부, 기존 저장·전투 보존.
+// 실제 공개 브라우저/모바일 게임 작동 여부는 별도 런타임 검증이 필요하다.
+test('CC0 five-choice 3D player customizer is source-bound and does not rewrite gameplay saves',()=>{
+ const models=['knight','mage','barbarian','rogue','rogue-hooded'];
+ const source=ledger.entries.find(x=>x.id==='kaykit-adventurers-cc0-v1');
+ assert.ok(source&&source.license==='CC0-1.0'&&source.commercialUse===true);
+ assert.match(source.evidence.licenseUrl,/KayKit-Character-Pack-Adventures-1\\.0/);
+ for(const name of models){
+  const path='assets/roblox/actors/native/'+name+'.glb';
+  const registered=registry.assets.find(x=>x.path===path);
+  assert.ok(registered,'CC0 registry entry missing: '+name);
+  assert.equal(registered.license,'CC0-1.0');
+  const data=fs.readFileSync(path);
+  assert.ok(data.length>100000,'real original GLB binary missing: '+name);
+  assert.equal(data.toString('utf8',0,4),'glTF','GLB header missing: '+name);
+  assert.ok(moduleSource.includes(name+'.glb'),'3D choice missing: '+name);
+  assert.match(index,new RegExp('value="'+name+'"'));
+ }
+ assert.match(index,/id="startAvatar"/);
+ assert.match(index,/id="avatarOpen"/);
+ assert.match(index,/id="avatarPanel"/);
+ assert.match(index,/AVATAR_SAVE_KEY='jaewoon_fantasy_survival_avatar_v1'/);
+ assert.match(index,/SAVE_KEY='jaewoon_fantasy_survival_v1'/);
+ assert.match(index,/module\\.createWorld3d\\(document\\.getElementById\\('world3d'\\),avatarAppearance\\)/);
+ assert.match(moduleSource,/async function setAvatarAppearance\\(requested\\)/);
+ assert.match(moduleSource,/getAvatarAppearance:\(\)=>\(\{\\.\\.\\.selectedAppearance\}\)/);
+ assert.match(moduleSource,/productionReady:false/);
+});
+
 test('downloaded KayKit knight is ledgered as preview only and source-bound to existing game player',()=>{
  const legal=ledger.entries.find(x=>x.id==='kaykit-adventurers-cc0-v1');
  assert.ok(legal,'KayKit license proof required');
