@@ -30,6 +30,10 @@ export function validateLocalWebChatPolicy(policy) {
     contract?.existingPwaOwnerBridgeDispatchAllowed !== true ||
     contract?.existingPwaOwnerBridgeEvent !== 'vibe-local-web-owner-directive' ||
     contract?.existingVibeVerifiedAutoDeploymentAllowed !== true ||
+    contract?.ownerDirectInputRequired !== true ||
+    contract?.githubCliAuthenticatedOwnerRequired !== true ||
+    contract?.modelGeneratedCommandExecutionForbidden !== true ||
+    contract?.qaMustPassBeforeAutomaticPublish !== true ||
     contract?.otherExternalNetworkCallsAllowed !== false ||
     contract?.sourceWriteAllowed !== false ||
     contract?.githubWriteAllowed !== false ||
@@ -214,7 +218,8 @@ async function main() {
           readLocalChatPolicy();
           const payload = buildExistingOwnerWebDispatch({ gameId: parts[1], goal: parts[2] });
           const submitted = await submitExistingOwnerWebDispatch(payload);
-          console.log('VIBE2_OWNER_WEB_TASK_SUBMITTED=' + submitted.jobId);
+          console.log('GITHUB_OWNER_EVENT_ACCEPTED=' + submitted.jobId);
+          console.log('VIBE2_QUEUE_INGEST=NOT_YET_VERIFIED');
           console.log('DEPLOYMENT=WAIT_FOR_EXISTING_VERIFIED_QA');
           continue;
         }
