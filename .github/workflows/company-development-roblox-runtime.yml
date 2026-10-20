@@ -72,11 +72,12 @@ env:
 jobs:
   source-plan:
     name: resolve Roblox source work
-    # Keep the active planner. GitHub coalesces only redundant pending planners for this exact game/batch.
-    # This never serializes downstream source, runtime, QA, or release work.
+    # Retain the active planner, but supersede unstarted duplicate pending planners by game/batch.
+    # queue: max previously accumulated up to 100 pending plans per game before dedupe code could run.
+    # Downstream source, runtime, QA, release work stays independent and uncancelled.
     concurrency:
       group: roblox-runtime-source-plan-v2-${{ inputs.game_id || 'batch' }}
-      queue: max
+      queue: single
       cancel-in-progress: false
     # Exact-game ingress uses the ARM game-control pool; batch push ingress stays on fixed 24.04.
     # This spreads control work without consuming heavy ubuntu-latest game capacity.

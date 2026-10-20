@@ -563,7 +563,55 @@ jobs:
             console.log('SECURITY_OWNER_WEB_DEPLOY_FIRST_APPROVAL=PASS');
           }
           // OWNER_APPROVED_WEB_DEPLOY_FIRST_END
-          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key))&&!designKeys.has(key)&&!(publicationChanged&&publicationKeys.has(key)));
+          // Exact owner-authored local WEB chat: advisory only, no source/QA/deploy authority.
+          // Authorize only this single immutable addition; never make arbitrary policy edits exempt.
+          const localWebChatAdded=changes.includes('localVibeWebChat');
+          if(localWebChatAdded){
+            const exactOwnerLocalWebChat=
+          {
+            "version": 1,
+            "authority": "OWNER_DIRECTIVE_2026-10-20",
+            "enabled": true,
+            "platform": "WEB",
+            "model": "qwen2.5-coder:3b",
+            "executionScope": "LOCAL_CHAT_AND_EXPLICIT_OWNER_WEB_TASK_SUBMISSION",
+            "executable": "tools/vibe2-local-web-chat.mjs",
+            "localhostOnly": true,
+            "runtimeEndpoint": "http://127.0.0.1:11434/api/chat",
+            "machineStateRead": "EXISTING_VIBE2_HANDOFF_CONSISTENCY_REQUIRED",
+            "gameSourceRead": "EXPLICIT_WEB_GAME_ID_INDEX_HTML_EXCERPT_ONLY",
+            "sourceWriteAllowed": false,
+            "githubWriteAllowed": false,
+            "workflowDispatchAllowed": false,
+            "deploymentAllowed": false,
+            "qaVerdictAllowed": false,
+            "canonicalPipelineUnchanged": true,
+            "centralPolicyOverrideAllowed": false,
+            "remoteGeminiWorkerProviderUnchanged": true,
+            "machineStateMutationAllowed": false,
+            "modelSelfReportedPassIsEvidence": false,
+            "existingSecurityRuntimeAndF0F9GatesUnchanged": true,
+            "scopeNote": "Local advisory chat plus explicit /develop owner directive submitted through existing PWA command bridge GitHub repository_dispatch. Existing Vibe performs source changes and publish automatically only after independent QA. Model answers cannot trigger tasks. No direct main/source write, deployment, QA override, or new pipeline.",
+            "existingPwaOwnerBridgeDispatchAllowed": true,
+            "existingPwaOwnerBridgeEvent": "vibe-local-web-owner-directive",
+            "ownerDirectInputRequired": true,
+            "githubCliAuthenticatedOwnerRequired": true,
+            "modelGeneratedCommandExecutionForbidden": true,
+            "existingVibeVerifiedAutoDeploymentAllowed": true,
+            "qaMustPassBeforeAutomaticPublish": true,
+            "otherExternalNetworkCallsAllowed": false
+          };
+            if(base.localVibeWebChat!==undefined
+              ||changes.length!==1
+              ||!same(head.localVibeWebChat,exactOwnerLocalWebChat))
+              throw new Error('SECURITY_OWNER_LOCAL_WEB_CHAT_EXACT_CONTRACT_REQUIRED');
+            if(head.ownerCanonicalRules?.constitutionalBinding?.enforcerRequiredBeforeWorkerSourceWrite!==true
+              ||head.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.publishBeforeF9Forbidden!==true
+              ||head.developmentLifecycleMachine?.verifiedF0F9PublicationLoop?.exactVerifiedVersionRequiredForPublishAttempt!==true)
+              throw new Error('SECURITY_OWNER_LOCAL_WEB_CHAT_CANONICAL_GATES_REQUIRED');
+            console.log('SECURITY_OWNER_LOCAL_WEB_CHAT_READ_ONLY_AND_VERIFIED_QA=PASS');
+          }
+          const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key))&&!designKeys.has(key)&&!(publicationChanged&&publicationKeys.has(key))&&!(localWebChatAdded&&key==='localVibeWebChat'));
           if(!changes.length||changes.length>70||bad.length)throw new Error('SECURITY_AUTO_POLICY_UNAPPROVED_SCOPE:'+bad.join(','));
           const scope=head.ownerActiveDevelopmentScope20261009;
           const webFlowRows=[];

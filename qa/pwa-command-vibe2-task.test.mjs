@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { ingestPwaTask, buildSyncPayload } from '../tools/pwa-command-vibe2-task.mjs';
+import { ingestPwaTask, buildSyncPayload, validateLocalWebOwnerEvent } from '../tools/pwa-command-vibe2-task.mjs';
 
 const UUID='11111111-2222-4333-8444-555555555555';
 function fixture(){
@@ -46,4 +46,42 @@ test('Vibe2 작업 상태를 PWA 채팅 상태로 변환한다',()=>{
   ]};
   const payload=buildSyncPayload(queue);
   assert.deepEqual(payload.updates.map(x=>x.status),['testing','done']);
+});
+
+
+test('GitHub authenticated owner event accepts only exact existing-web directive', () => {
+  const event = {
+    action:'vibe-local-web-owner-directive',
+    client_payload: {
+      id:UUID,game_id:'insect-survival',platform:'web',
+      kind:'directive',body:'모바일 조작 수정 후 QA 자동 배포',autoDeployAfterVerifiedQa:true
+    }
+  };
+  const auth={actor:'hans1177',repository:'hans1177/jaewoon-games'};
+  const task=validateLocalWebOwnerEvent(event,auth);
+  assert.equal(task.platform,'web');
+  assert.equal(task.source,'LOCAL_VIBE_WEB_CHAT');
+  const f=fixture();
+  const accepted=ingestPwaTask({task,queue:{version:3,tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root});
+  assert.equal(accepted.tasks[0].target,'web');
+  assert.ok(accepted.tasks[0].evidence.includes('owner-auto-deploy-authorization'));
+  assert.ok(accepted.tasks[0].evidence.includes('verified-qa-required'));
+  assert.ok(accepted.tasks[0].evidence.includes('vibe-local-web-owner-directive'));
+  assert.deepEqual(buildSyncPayload(accepted).updates,[],'local web tasks must not pollute PWA device chat state');
+  assert.throws(()=>validateLocalWebOwnerEvent(event,{actor:'outsider',repository:auth.repository}),/LOCAL_OWNER_EVENT_NOT_AUTHORIZED/);
+  assert.throws(()=>validateLocalWebOwnerEvent(event,{actor:auth.actor,repository:'hans1177/other'}),/LOCAL_OWNER_EVENT_NOT_AUTHORIZED/);
+  for(const bad of [{platform:'roblox'},{autoDeployAfterVerifiedQa:false},{body:''},{game_id:'../escape'}]){
+    assert.throws(()=>validateLocalWebOwnerEvent({...event,client_payload:{...event.client_payload,...bad}},auth),/LOCAL_OWNER_EVENT_INVALID/);
+  }
+});
+
+test('explicit web directive is restricted to WEB even when Unity project exists',()=>{
+  const f=fixture();
+  fs.mkdirSync(path.join(f.root,'web-games','daechung-rpg'),{recursive:true});
+  const result=ingestPwaTask({
+    task:{id:UUID,game_id:'daechung-rpg',body:'웹 HUD 개선',platform:'web'},
+    queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root
+  });
+  assert.equal(result.tasks[0].target,'web');
+  assert.ok(result.tasks[0].evidence.includes('source-root:web-games/daechung-rpg'));
 });

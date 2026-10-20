@@ -1200,7 +1200,7 @@ test('source-plan dedupe keeps active same-game ingress on the fixed control run
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
   assert.match(block,/runs-on:\s*ubuntu-24\.04/);
-  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      queue: max\n      cancel-in-progress: false/);
+  assert.match(block,/\n    concurrency:\n      group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n      queue: single\n      cancel-in-progress: false/);
   assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
 });
 
