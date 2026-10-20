@@ -10,16 +10,18 @@ const ROADMAP=JSON.parse(fs.readFileSync('company-learning/platform-release-road
 const PERMANENTLY_REMOVED_IDS=[
   'seed-roblox-battleground-fight-welcome-to-bloxburg',
   'seed-roblox-obby-party-minigam-tower-of-hell',
+  'ant-simulator','crystal-defense','animation-test','vibe-asset-demo','wildlife-motion-sample',
 ];
+const PERMANENTLY_REMOVED_WEB=new Set(ROADMAP.permanentProjectRemoval.rejectedWebTestEntries||[]);
 const PERMANENTLY_REMOVED=new Set(PERMANENTLY_REMOVED_IDS);
 const HISTORICAL_REAL_GAMES=[
   {gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',seed:'SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001'},
-].filter(row=>!PERMANENTLY_REMOVED.has(row.gameId));
+].filter(row=>!PERMANENTLY_REMOVED.has(row.gameId)&&!PERMANENTLY_REMOVED_WEB.has(row.gameId));
 const HARNESS_GAMES=[
   ['seed-roblox-roleplay-life-avat-brookhaven-rp','Harbor Days','SEED-ROBLOX-ROLEPLAY_LIFE_AVATAR-001'],
   ['seed-roblox-story-rpg-adventur-blox-fruits','Shardbound Odyssey','SEED-ROBLOX-STORY_RPG_ADVENTURE_RPG-001'],
   ['seed-roblox-survival-horror-es-doors','Last Lantern','SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001'],
-].filter(([gameId])=>!PERMANENTLY_REMOVED.has(gameId));
+].filter(([gameId])=>!PERMANENTLY_REMOVED.has(gameId)&&!PERMANENTLY_REMOVED_WEB.has(gameId));
 
 
 test('permanently removed projects stay outside Web production regression',()=>{
@@ -39,7 +41,7 @@ test('permanently removed historical projects stay deleted and outside regressio
     'seed-roblox-battleground-fight-welcome-to-bloxburg',
     'seed-roblox-obby-party-minigam-tower-of-hell'
   ];
-  assert.deepEqual([...PERMANENTLY_REMOVED_IDS],removed);
+  assert.ok(removed.every(id=>PERMANENTLY_REMOVED_IDS.includes(id)));
   assert.equal(ROADMAP.permanentProjectRemoval.reentryAllowed,false);
   assert.equal(ROADMAP.permanentProjectRemoval.automaticRecoveryAllowed,false);
   assert.equal(ROADMAP.permanentProjectRemoval.automaticMaintenanceAllowed,false);
@@ -77,3 +79,10 @@ for(const [gameId,gameName,seed] of HARNESS_GAMES){
     }finally{fs.rmSync(temp,{recursive:true,force:true});}
   });
 }
+test('rejected Web test code stays deleted while active native games remain registered',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  for(const id of PERMANENTLY_REMOVED_WEB){
+    assert.equal(fs.existsSync('web-games/'+id),false,id);
+    assert.ok(catalog.games.some(game=>game.id===id&&game.lifecycleState==='ACTIVE'),id);
+  }
+});

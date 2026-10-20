@@ -221,6 +221,7 @@ function latestById(rows,idField){
   return map;
 }
 function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue,canonicalCatalog=baseCatalog){
+  const removed=new Set([...(baseCatalog?.permanentRemovalPolicy?.ids||[]),...(canonicalCatalog?.permanentRemovalPolicy?.ids||[])]);
   const runtimeGames=Array.isArray(baseCatalog?.games)?baseCatalog.games:[];
   const canonicalGames=Array.isArray(canonicalCatalog?.games)?canonicalCatalog.games:[];
   const canonicalById=new Map(canonicalGames.map(game=>[game.id,game]));
@@ -232,7 +233,7 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue,ca
       // 웹 게시 경로 증거만 canonical main에서 투영한다. Roblox/Unity 런타임 권한은 회사 런타임에 남긴다.
       publication:{...runtime.canonical?.publication,web:source.canonical?.publication?.web||{}}}};
   });
-  const baseGames=allBaseGames.filter(game=>['ACTIVE','REBUILD'].includes(String(game?.lifecycleState||'ACTIVE').toUpperCase()));
+  const baseGames=allBaseGames.filter(game=>!removed.has(game.id)&&['ACTIVE','REBUILD'].includes(String(game?.lifecycleState||'ACTIVE').toUpperCase()));
   const projects=Array.isArray(portfolio?.projects)?portfolio.projects:[];
   const activeSeeds=(Array.isArray(seedState?.seeds)?seedState.seeds:[]).filter(seed=>String(seed?.status||'').toUpperCase()==='ACTIVE');
   const queueItems=Array.isArray(developmentQueue?.items)?developmentQueue.items:[];
@@ -307,6 +308,7 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue,ca
   });
   return {
     ...baseCatalog,
+    permanentRemovalPolicy:{...baseCatalog?.permanentRemovalPolicy,...canonicalCatalog?.permanentRemovalPolicy,ids:[...removed]},
     webExposurePolicy:canonicalCatalog.webExposurePolicy||{},
     version:Math.max(1,Number(baseCatalog?.version)||0)+1,
     runtimeAuthority:'company-runtime',

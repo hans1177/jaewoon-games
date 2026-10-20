@@ -1,5 +1,5 @@
 {
-  "version": 586,
+  "version": 587,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -6645,18 +6645,55 @@
   ],
   "primaryPlatformRole": "LEGACY_COMPATIBILITY_ONLY_NOT_SCHEDULING_PRIORITY",
   "permanentProjectRemoval": {
-    "version": 1,
-    "authority": "OWNER_DIRECTIVE",
+    "version": 2,
+    "authority": "OWNER_DIRECTIVE_2026-10-20",
     "ids": [
       "seed-roblox-battleground-fight-welcome-to-bloxburg",
-      "seed-roblox-obby-party-minigam-tower-of-hell"
+      "seed-roblox-obby-party-minigam-tower-of-hell",
+      "ant-simulator",
+      "crystal-defense",
+      "animation-test",
+      "vibe-asset-demo",
+      "wildlife-motion-sample"
     ],
     "state": "REMOVED_PERMANENTLY",
     "reentryAllowed": false,
     "automaticRecoveryAllowed": false,
     "automaticMaintenanceAllowed": false,
     "sourceDeletionRequired": true,
-    "reason": "INACCESSIBLE_HISTORICALLY_DEPLOYED_GAMES_REMOVED_BY_OWNER_2026-09-19"
+    "reason": "OWNER_STOPPED_GAMES_PERMANENT_DELETION",
+    "ownerGameStopMeansPermanentRemoval": true,
+    "stoppedLifecycleStates": [
+      "PAUSED",
+      "STOPPED",
+      "RETIRED",
+      "REMOVED"
+    ],
+    "platformHoldOrTaskFailureDoesNotDeleteGame": true,
+    "synchronizationOwner": "EXISTING_CATALOG_STATUS_AND_VIBE_LIFECYCLE_SYNC",
+    "sharedAssetsUsedByRemainingGamesPreserved": true,
+    "rejectedTestGamesMustBePermanentlyDeleted": true,
+    "rejectionIsNotTransientQaFailure": true,
+    "confirmedRejectedTestGameIds": [
+      "animation-test",
+      "vibe-asset-demo",
+      "wildlife-motion-sample"
+    ],
+    "activeDevelopmentMustBePublishedOnHomepage": true,
+    "rejectedWebTestEntries": [
+      "bug-defense",
+      "seed-casual-realm-weaver",
+      "seed-idle-growth-rpg-crystal-bloom",
+      "seed-puzzle-chromatic-cascade",
+      "seed-roblox-roleplay-life-avat-brookhaven-rp",
+      "seed-roblox-simulator-tycoon-i-adopt-me",
+      "seed-roblox-story-rpg-adventur-blox-fruits",
+      "seed-roblox-survival-horror-es-doors",
+      "seed-single-defense-strat-celestial-bastion",
+      "seed-story-complete-rpg-chronicles-of-eldoria",
+      "survival"
+    ],
+    "activeNativeGameMustRemainWhenOnlyWebPrototypeRejected": true
   },
   "homepagePresentation": {
     "version": 1,
@@ -7251,6 +7288,8 @@
       "status": "OWNER_DIRECT_LOCKED",
       "mode": "ALWAYS_SHOW_DEPLOYED_GAMES_IN_DEVELOPMENT_AND_RELEASE",
       "allDeployedGamesVisible": true,
+      "allActiveDevelopmentGamesVisible": true,
+      "missingBuildDisablesPlayButtonOnly": true,
       "showDevelopmentAndReleasedGames": true,
       "gameCardVisibilityIndependentOfReleaseClassification": true,
       "gameCardVisibilityIndependentOfUnityWebRuntimeQa": true,
@@ -7510,6 +7549,7 @@
     }
   },
   "changeRecord": {
+    "ownerStoppedGamesPermanentRemoval20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20", "gameIds": ["ant-simulator", "crystal-defense"], "ownerGameStopMeansPermanentRemoval": true, "sourceDeletionRequired": true, "automaticReentryForbidden": true, "lockedSequenceChanged": false},
     "ownerCC0ActiveGameReplacement20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20", "requestKo": "게임 제작은 검증된 CC0 원본을 수정해 사용. 개발 중 게임의 자체 제작 저품질 에셋은 대체 검증 후 영구 삭제. 개발하지 않는 게임 및 해당 게임이 사용하는 공유 파일은 교체·삭제하지 않는다.", "rule": "ownerCanonicalRules.rule5", "lockedSequenceChanged": false, "assetMigrationStatus": "PENDING_EXACT_ACTIVE_GAME_REPLACEMENT_AND_RUNTIME_EVIDENCE"},
     "ownerWebDeployThenValidate20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","requestKo":"중앙 정책: 무조건 배포 후 검증","scope":"EXISTING_ORDINARY_WEB_STATIC_MAIN_PUBLICATION","sameRevisionPublicVerificationRequired":true,"existingF0F9InternalOrderChanged":false,"productionReadinessClaimUnchanged":true},
     "ownerReferenceGameAndExistingSystems20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","A":"NAMED_REPRESENTATIVE_SIMILAR_GAME_SYSTEM","B":"EXISTING_GAME_SYSTEM_BASELINE","CDDelvePreserved":true,"lockedSequenceChanged":false},
@@ -22386,6 +22426,7 @@
       "replacementScope": "CURRENTLY_AUTHORIZED_ACTIVE_GAME_DEVELOPMENT_ONLY",
       "inactiveGamesMustRemainUnchanged": true,
       "inactiveGameAssetsMustNotBeDeleted": true,
+      "explicitOwnerPermanentGameRemovalOverridesInactivePreservation": true,
       "sharedAssetDeletionRequiresNoInactiveConsumer": true,
       "sharedAssetWithInactiveConsumersAction": "REMOVE_ACTIVE_GAME_BINDING_AND_REPLACE_ACTIVE_COPY_KEEP_INACTIVE_CONSUMER_BYTES",
       "deletionOrder": [

@@ -183,6 +183,7 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
   const entryFile=clean(policy.requiredEntryFile)||'index.html';
   const minBytes=Math.max(1,Number(policy.minimumEntryBytes)||512);
   const removed=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean));
+  const rejectedWeb=new Set((catalog?.permanentRemovalPolicy?.rejectedWebTestEntries||[]).map(clean));
   const quality=policy.webExposureQuality||{};
   const excluded=new Set(list(quality.excludeFromGameCatalog));
   const discovered=policy.discoverCanonicalEntriesEverySync===true&&filesystem.existsSync?.(diskRoot)
@@ -196,6 +197,11 @@ export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootD
     const dir=diskRoot+'/'+id;
     const indexFile=dir+'/'+entryFile;
     const existing=byId.get(id)||null;
+    if(rejectedWeb.has(id)){
+      if(existing){existing.homepageWebPlayable=false;existing.hasWebArchive=false;existing.ownerWebSourceState='PERMANENTLY_REMOVED_REJECTED_TEST';disabled.push(id);}
+      else ignored.push(id);
+      continue;
+    }
     let sourceState='CURRENT_OWNER_BASELINE';
     let valid=false;
     try{valid=filesystem.existsSync(indexFile)&&filesystem.statSync(indexFile).isFile()&&filesystem.statSync(indexFile).size>=minBytes;}catch{valid=false;}
@@ -562,6 +568,23 @@ export function validatedHomepageMedia(id,entry,{filesystem=fs,root='.'}={}){
 export function normalizeCatalog(catalog={}){
   if(!Array.isArray(catalog.games))throw new Error('catalog.games must be an array');
   const policy=normalizationPolicy();
+  // 게임 중지=영구 제거. 플랫폼 OWNER_HOLD나 개별 작업 실패는 이 대상이 아니다.
+  const removal=catalog.permanentRemovalPolicy||{};
+  const removed=new Set(list(removal.ids));
+  if(removal.ownerGameStopMeansPermanentRemoval===true){
+    const stopped=new Set(['PAUSED','STOPPED','RETIRED','REMOVED']);
+    for(const game of catalog.games){
+      if(stopped.has(clean(game.lifecycleState||game.lifecycle?.state).toUpperCase())){
+        const id=clean(game.id||game.gameId);
+        if(/^[a-z0-9][a-z0-9-]*$/.test(id))removed.add(id);
+      }
+    }
+    removal.ids=[...removed];
+    removal.reentryAllowed=false;
+    removal.automaticRecoveryAllowed=false;
+    removal.automaticMaintenanceAllowed=false;
+  }
+  catalog.games=catalog.games.filter(game=>!removed.has(clean(game.id||game.gameId)));
   catalog.webExposurePolicy=policy.ownerWebAutoIngest?.webExposureQuality||{};
   const ids=new Set();
   let covers={};

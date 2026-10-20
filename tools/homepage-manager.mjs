@@ -346,7 +346,7 @@ async function captureReleaseMedia(planOnly=false,{titlesOnly=false}={}){
         page.on('pageerror',e=>errors.push(e.message));
         page.setDefaultTimeout(30000);
         await page.goto(`${origin}/web-games/${id}/`,{waitUntil:'networkidle',timeout:45000});
-        const known={ 'horror-escape-room':'#startHuman', 'daechung-rpg':'#startBtn', 'ant-simulator':'#startOffline' };
+        const known={ 'horror-escape-room':'#startHuman', 'daechung-rpg':'#startBtn' };
         let start=known[id]?page.locator(known[id]):page.getByRole('button',{name:/^(게임 시작|혼자 시작|시작하기|모험 시작|새 게임|Start|Play)$/i}).first();
         if(id==='cozy-island'){
           // This game already runs on load; interacting at spawn opens a modal.
