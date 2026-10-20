@@ -146,6 +146,17 @@ export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},codingAr
   if(!sourceAnalysis.present)add('IMPLEMENT_CORE_SOURCE','No preserved source is available; implement the locked gameplay sketch without inventing a different game.');
   else add('PRESERVE_EXISTING_BEHAVIOR','Patch the existing game in place; do not replace unrelated working systems.');
   if(sourceAnalysis.storageKeys?.length)add('PRESERVE_SAVE_CONTRACT',`Keep existing save keys and meanings: ${sourceAnalysis.storageKeys.join(', ')}`,['PRESERVE_EXISTING_BEHAVIOR']);
+  // Applies to every existing or new game, regardless of genre and whether flow
+  // requirements happen to name assets. Technical libraries retain own licenses;
+  // the CC0 restriction is strictly for visible game art and motion media.
+  add('DISCOVER_AND_REUSE_ALL_COMPATIBLE_GAME_LIBRARIES',
+    'Before coding or using a dependency, inspect and reuse all compatible existing downloaded original game libraries: engine, gameplay, AI, physics, navigation, animation, environment, UI, input, sound, QA and assets. If missing, obtain the unchanged original from an existing external library only after license/provenance verification. Do not create a new library, generated substitute, authored mesh or shadow system; patch only existing gameplay owners for required game-specific logic.',preserveDependency);
+  add('RESOLVE_ALL_GAME_VISIBLE_ART_FROM_DOWNLOADED_CC0',
+    'Use the existing CC0 libraries and assets/asset-selector.js, company-asset-library.json, assets/asset-license-ledger.json to bind only original unmodified downloaded CC0/CC0-1.0 characters, monsters, terrain, environment, items, props, UI, sound and VFX. Source URL, unmodified status and SHA256 evidence are mandatory. No new library or art creation, procedural stand-ins, studio assets, model recomposition, recoloring or authored derivatives. Existing code/engine libraries retain their respective lawful licenses. Missing original: find/download the authentic CC0 original or mark incomplete; never fabricate implementation.',
+    ['DISCOVER_AND_REUSE_ALL_COMPATIBLE_GAME_LIBRARIES']);
+  add('VERIFY_CC0_PROVENANCE_BINDING_AND_GAMEPLAY',
+    'Before public/game PASS, verify every visible original license, downloaded source URL, ledger record, unmodified status and SHA256 content hash, bind exact original to runtime, and replay gameplay/mobile visual QA. Existing combat, progression, saves, multiplayer and balance must remain intact. Missing or unverified CC0 media fails closed; do not fabricate PASS.',
+    ['RESOLVE_ALL_GAME_VISIBLE_ART_FROM_DOWNLOADED_CC0']);
   if(codingArchitecture){
     add('ESTABLISH_CODING_ARCHITECTURE','Apply logical module boundaries, state ownership, data schema, API contracts and event contracts before broad feature implementation.',preserveDependency);
     if(codingArchitecture.developmentMode==='GREENFIELD')add('IMPLEMENT_GREENFIELD_ARCHITECTURE_FIRST','No existing source is required: lock architecture and contracts before feature code.',['ESTABLISH_CODING_ARCHITECTURE']);
@@ -187,8 +198,8 @@ export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},codingAr
       add('VERIFY_SYSTEM_BUNDLE_DEPTH_AND_ANTI_CHECKLIST','Reject disconnected menu-only features, stat-only variants, cosmetic-only reskins, duplicate currencies, shadow inventories, shadow quest engines and unrelated complexity. Verify early/mid/late system roles and at least one cross-system consequence chain.',['CONNECT_SYSTEMS_INTO_CAUSAL_GAMEPLAY_CHAINS']);
     }
     if(flowAssetRequirements.length){
-      add('RESOLVE_FLOW_ASSET_REQUIREMENTS_FROM_LATEST_LIBRARY','Resolve flow-required CHARACTER/CREATURE/BUILDING/ENVIRONMENT/WEAPON/SKILL/MATERIAL/AUDIO/VFX/UI/MOTION/PROP roles through the existing asset selector at execution time. Never pin a company asset ID in the flow contract.',['IMPLEMENT_GAME_FLOW_ARCHITECTURE']);
-      add('APPLY_OR_ADAPT_FLOW_ASSETS_WITHOUT_GAMEPLAY_AUTHORITY','Use the smallest valid mode among USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS and NATIVE_REAUTHOR_BASE. Presentation assets may visualize gameplay state but may not own damage, balance, progression, save, spawn or networking authority.',['RESOLVE_FLOW_ASSET_REQUIREMENTS_FROM_LATEST_LIBRARY']);
+      add('RESOLVE_FLOW_ASSET_REQUIREMENTS_FROM_LATEST_LIBRARY','Resolve flow-required CHARACTER/CREATURE/BUILDING/ENVIRONMENT/WEAPON/SKILL/MATERIAL/AUDIO/VFX/UI/MOTION/PROP roles only through existing or externally downloaded unmodified original CC0 libraries and the existing asset selector at execution time. Never pin a company asset ID in the flow contract.',['IMPLEMENT_GAME_FLOW_ARCHITECTURE']);
+      add('APPLY_OR_ADAPT_FLOW_ASSETS_WITHOUT_GAMEPLAY_AUTHORITY','For game visuals use USE_ORIGINAL_UNMODIFIED_CC0_AS_IS only. If unavailable, download another approved original CC0 library rather than generating, editing, recoloring, recombining or authoring an asset. Presentation assets may visualize gameplay state but may not own damage, balance, progression, save, spawn or networking authority.',['RESOLVE_FLOW_ASSET_REQUIREMENTS_FROM_LATEST_LIBRARY']);
       add('VERIFY_FLOW_ASSET_STATE_AND_PHASE_COVERAGE','Verify that early/mid/late flow changes have readable world, UI, motion, VFX and audio support where applicable, and that fallback or replacement keeps the same gameplay semantics.',['APPLY_OR_ADAPT_FLOW_ASSETS_WITHOUT_GAMEPLAY_AUTHORITY','IMPLEMENT_FLOW_PHASE_TRANSITIONS']);
     }
   }

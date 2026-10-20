@@ -36,6 +36,9 @@ function scriptBlockers(text,{allowScriptSrc=false}={}){
   const out=[];let i=0;
   for(const m of scripts(text)){
     if(/\bsrc\s*=/i.test(m[1]||'')){if(!allowScriptSrc)out.push('SCRIPT_SRC_FORBIDDEN');continue;}
+    // Import maps and JSON script tags are declarative data, not executable JS.
+    // Preserve existing local engine import maps instead of incorrectly blocking the game.
+    if(/\btype\s*=\s*["'](?:importmap|application\/json|application\/ld\+json)["']/i.test(m[1]||''))continue;
     try{new Script(String(m[2]||''),{filename:`bootstrap-inline-${++i}.js`});
     }catch{out.push('INLINE_SCRIPT_SYNTAX_INVALID');}
   }
