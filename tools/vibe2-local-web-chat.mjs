@@ -78,7 +78,9 @@ export function readLocalWebStatus(root = ROOT) {
 export function readApprovedWebGame(gameId, root = ROOT) {
   const id = clean(gameId);
   if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(id)) throw new Error('INVALID_WEB_GAME_ID');
-  const webRoot = fs.realpathSync(path.join(root, 'web-games'));
+  const repoRoot = fs.realpathSync(root);
+  const webRoot = fs.realpathSync(path.join(repoRoot, 'web-games'));
+  if (!webRoot.startsWith(repoRoot + path.sep)) throw new Error('WEB_ROOT_OUTSIDE_REPOSITORY');
   const candidate = path.join(webRoot, id, 'index.html');
   const real = fs.realpathSync(candidate);
   if (!real.startsWith(webRoot + path.sep)) throw new Error('WEB_SOURCE_OUTSIDE_APPROVED_ROOT');
@@ -106,6 +108,7 @@ export async function askLocalWebModel({ messages, fetchImpl = fetch, signal = A
   }
   const response = await fetchImpl(MODEL_ENDPOINT, {
     method: 'POST',
+    redirect: 'error',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       model: 'qwen2.5-coder:3b', stream: false, messages,
