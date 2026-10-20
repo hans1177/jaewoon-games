@@ -135,6 +135,7 @@ jobs:
       learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}
       recovery_fast_queued: ${{ steps.queue_state.outputs.recovery_fast_queued }}
       runner_pressure: ${{ steps.queue_state.outputs.runner_pressure }}
+      autonomy_admitted: ${{ steps.auto_admission.outputs.admitted }}
     steps:
       - name: Checkout Vibe2 control branch
         uses: actions/checkout@v4
@@ -162,7 +163,42 @@ jobs:
           echo "VIBE2_24H_LEARNING_PROVIDER=$VIBE2_24H_LEARNING_PROVIDER"
           echo "VIBE2_24H_GEMINI_LEARNING=EXTERNAL_ONLY"
 
+      - name: Gate new autonomous waves behind owner publication and real queue backlog
+        id: auto_admission
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Only scheduled autonomous work is paused. Direct owner game requests
+          # use their separate pwa-command-bridge; existing worker results and
+          # security/release QA continue independently.
+          queued_count="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=queued&per_page=1" --jq '.total_count' 2>/dev/null || echo unknown)"
+          pending_count="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=pending&per_page=1" --jq '.total_count' 2>/dev/null || echo unknown)"
+          owner_pending="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/owner-fast-pages-publish.yml/runs?per_page=20" \
+            --jq '[.workflow_runs[] | select(.status == "queued" or .status == "pending" or .status == "requested" or .status == "waiting" or .status == "in_progress")] | length' 2>/dev/null || echo unknown)"
+          admitted=true
+          reason=AUTONOMOUS_ADMITTED
+          threshold=48
+          if [[ "$owner_pending" =~ ^[0-9]+$ ]] && [ "$owner_pending" -gt 0 ]; then
+            admitted=false
+            reason=OWNER_PUBLICATION_PRIORITY
+          elif [[ "$queued_count" =~ ^[0-9]+$ && "$pending_count" =~ ^[0-9]+$ ]] && \
+               [ "$((queued_count+pending_count))" -ge "$threshold" ]; then
+            admitted=false
+            reason=AUTONOMOUS_WORKFLOW_BACKLOG
+          fi
+          echo "admitted=$admitted" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_AUTO_WAVE_ADMISSION=$admitted"
+          echo "VIBE2_AUTO_WAVE_ADMISSION_REASON=$reason"
+          echo "VIBE2_AUTO_WAVE_QUEUED=$queued_count"
+          echo "VIBE2_AUTO_WAVE_PENDING=$pending_count"
+          echo "VIBE2_OWNER_PAGES_PENDING=$owner_pending"
+          echo 'VIBE2_OWNER_DIRECT_DISPATCH=UNCHANGED'
+          echo 'VIBE2_VERIFIED_QA_RECOVERY=UNCHANGED'
+
       - name: Dispatch queued GAME_PRIMARY and independent asset work before full planning
+        if: steps.auto_admission.outputs.admitted == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -344,6 +380,7 @@ jobs:
       - name: Plan from latest main and persist control queue
         env:
           GH_TOKEN: ${{ github.token }}
+          VIBE2_AUTONOMY_ADMITTED: ${{ steps.auto_admission.outputs.admitted }}
         shell: bash
         run: |
           set -euo pipefail
@@ -792,7 +829,8 @@ jobs:
               --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
               --output=/tmp/vibe2-handoff-before-attempt.json >/tmp/vibe2-handoff-before-attempt.log
 
-            node /tmp/vibe2-main/tools/vibe2-release-baseline-queue.mjs \
+            if [ "${VIBE2_AUTONOMY_ADMITTED:-false}" = 'true' ]; then
+              node /tmp/vibe2-main/tools/vibe2-release-baseline-queue.mjs \
               --catalog=/tmp/vibe2-main/game-catalog.json \
               --development-queue=/tmp/vibe2-company-runtime-queue.json \
               --queue="$control_root/.vibe2/queue.json" \
@@ -812,6 +850,11 @@ jobs:
               --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
+            else
+              echo 'VIBE2_AUTOPLAN_ADMISSION=DEFERRED_OWNER_OR_WORKFLOW_BACKLOG'
+              echo 'VIBE2_RELEASE_BASELINE_GAP_PLAN=NO' | tee /tmp/vibe2-release-baseline-plan.log
+              echo 'VIBE2_AUTOPLAN_QUEUED=0' | tee /tmp/vibe2-autoplan.log
+            fi
 
             node --check /tmp/vibe2-main/tools/company-department-portfolio-control.mjs
             (
@@ -1397,7 +1440,7 @@ jobs:
 
   continuous:
     needs: plan
-    if: ${{ needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
+    if: ${{ needs.plan.outputs.autonomy_admitted == 'true' && needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: game-primary
@@ -1409,7 +1452,7 @@ jobs:
   asset_development:
     needs: plan
     # Asset capacity is policy-independent from GAME_PRIMARY; provider scarcity may queue this job but may not suppress the lane.
-    if: ${{ needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0') }}
+    if: ${{ needs.plan.outputs.autonomy_admitted == 'true' && needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0') }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: asset-development
@@ -1421,7 +1464,7 @@ jobs:
   learning_idle:
     needs: plan
     # Reserve exactly one learning worker only while the GitHub runner queue is below the pressure threshold.
-    if: ${{ needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.learning_idle_queued != '0' }}
+    if: ${{ needs.plan.outputs.autonomy_admitted == 'true' && needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.learning_idle_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: learning-idle
@@ -1432,7 +1475,7 @@ jobs:
 
   game_study:
     needs: [plan, continuous, asset_development, learning_idle]
-    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.asset_development_queued == '0' && needs.plan.outputs.asset_development_active == '0' && needs.plan.outputs.learning_idle_queued == '0' }}
+    if: ${{ always() && needs.plan.outputs.autonomy_admitted == 'true' && needs.plan.result == 'success' && needs.plan.outputs.runner_pressure != 'YES' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.asset_development_queued == '0' && needs.plan.outputs.asset_development_active == '0' && needs.plan.outputs.learning_idle_queued == '0' }}
     uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
     permissions:
       contents: write
@@ -1448,8 +1491,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           CONTINUE_REQUIRED: ${{ needs.plan.outputs.continue_required }}
+          AUTONOMY_ADMITTED: ${{ needs.plan.outputs.autonomy_admitted }}
         run: |
           set -euo pipefail
+          if [ "${AUTONOMY_ADMITTED:-false}" != 'true' ]; then
+            echo 'VIBE2_24H_REFILL=DEFERRED_OWNER_OR_QUEUE_PRESSURE'
+            exit 0
+          fi
           if [ "${CONTINUE_REQUIRED:-NO}" != 'YES' ]; then
             echo 'VIBE2_24H_REFILL=SKIPPED_NO_CONTINUE_REQUIRED'
             exit 0
