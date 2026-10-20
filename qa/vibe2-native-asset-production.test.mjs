@@ -191,7 +191,7 @@ test('existing native DCC automatically derives only role-matched internal sourc
     assert.ok(derived);
     assert.equal(derived.librarySourceAssetId,'shared-tree');
     assert.equal(derived.librarySourceSha256,sha);
-    assert.equal(derived.sourceLicense,'project-original');
+    assert.equal(derived.sourceLicense,'cc0');
     assert.equal(derived.args[derived.args.indexOf('--library-parent-id')+1],'shared-tree');
     assert.equal(derived.args[derived.args.indexOf('--library-source-sha256')+1],sha);
     assert.ok(derived.args.includes('--source-model'));
@@ -367,8 +367,13 @@ test('actual acquired CC0 mesh outranks unverified authored mesh for same game r
  assert.equal(first.productionVerificationGranted,false);
  const unavailable=buildAssetSupplyDecisionSummary({...base,registry:{assets:[internal,
    {...original,path:'assets/roblox/actors/native/not-found-model.glb'}],externalSources:[]}});
- assert.equal(unavailable.nextActions.some(row=>[original.id,internal.id].includes(row.assetId)&&['USE','ADAPT'].includes(row.action)),false,
-   'neither missing CC0 source nor deleted authored source can become a ready selection');
+ const pendingSource=unavailable.nextActions.find(row=>row.assetId===original.id);
+ assert.ok(pendingSource,'catalog candidate remains visible for exact source hydration');
+ assert.equal(pendingSource.action,'ADAPT','missing bytes cannot be claimed as native USE');
+ assert.equal(pendingSource.libraryReuse.sourceFileAndSha256InspectionRequired,true);
+ assert.equal(unavailable.nextActions.some(row=>row.assetId===internal.id&&['USE','ADAPT','IMPROVE'].includes(row.action)),false);
+ assert.equal(unavailable.productionVerificationGranted,false);
+ assert.equal(unavailable.runtimeVerificationGranted,false);
  const existing=buildAssetSupplyDecisionSummary({...base,gameId:'original-existing',
    registry:{assets:[{...internal,consumerGameIds:['original-existing']},original],externalSources:[]}});
  assert.equal(existing.nextActions.some(row=>row.assetId===internal.id&&['USE','ADAPT','IMPROVE'].includes(row.action)),false,
@@ -2201,7 +2206,7 @@ test('licensed single image enters existing Blender TripoSR DCC recipe with genu
     gameId:'image-mesh-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 게임 환경 배경 소품 3D',
     imageToAsset:true,referenceImages:[{
       sourceId:'owned-prop-ref',sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
-      path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC0'
+      path:'assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png',license:'CC0'
     }]
   };
   for(const target of ['roblox','unity']){
@@ -2210,7 +2215,7 @@ test('licensed single image enters existing Blender TripoSR DCC recipe with genu
     assert.ok(recipes.length>0,target);
     for(const recipe of recipes){
       assert.equal(recipe.imageToMesh,true);
-      assert.equal(recipe.sourceImage,'assets/roblox/world-ghosts/dokkaebi.png');
+      assert.equal(recipe.sourceImage,'assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png');
       assert.equal(recipe.sourceLicense.toLowerCase(),'cc0');
       assert.equal(recipe.runMode,'VERIFY_ONLY');
       assert.equal(recipe.runtimeVerificationRequired,true);
@@ -2225,15 +2230,18 @@ test('licensed single image enters existing Blender TripoSR DCC recipe with genu
     }
   }
   const ccby={...task,referenceImages:[{
-    path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC-BY',credit:'Creator, source, CC-BY'
+    path:'assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png',license:'CC-BY',credit:'Creator, source, CC-BY'
   }]};
   const byPlan=buildVibeAssetProductionPlan({target:'roblox',task:ccby,manifest:{assets:[]},presetCatalog:{presets:[]}});
-  assert.ok(byPlan.nativeAuthoringExecution.dcc.executionRecipes.every(recipe=>recipe.license==='CC-BY'));
-  const invalid={...task,referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png'}]};
+  const licensedImageRecipes=byPlan.nativeAuthoringExecution.dcc.executionRecipes.filter(recipe=>recipe.imageToMesh===true);
+  assert.ok(licensedImageRecipes.length>0);
+  assert.ok(licensedImageRecipes.every(recipe=>String(recipe.sourceLicense).toUpperCase()==='CC-BY'));
+  assert.ok(licensedImageRecipes.every(recipe=>recipe.companyPromotionAllowed===false&&recipe.runtimeVerificationRequired===true));
+  const invalid={...task,referenceImages:[{path:'assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png'}]};
   assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:invalid,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LICENSE_REQUIRED/);
   const traversal={...task,referenceImages:[{path:'../private.png',license:'project-original'}]};
   assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:traversal,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LOCAL_REPOSITORY_IMAGE_REQUIRED/);
-  const noCredit={...task,referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC-BY'}]};
+  const noCredit={...task,referenceImages:[{path:'assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png',license:'CC-BY'}]};
   assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:noCredit,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_ATTRIBUTION_REQUIRED/);
 });
 
