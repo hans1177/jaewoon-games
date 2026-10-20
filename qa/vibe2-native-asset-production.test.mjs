@@ -5361,3 +5361,16 @@ test('web UI source consumers register actual company assets and invalidate remo
     assert.ok(stale.relations.some(row=>row.assetId==='nine-frame.png'&&row.classification==='STALE_SOURCE_BINDING'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+// [연습 제작물] 라이선스 표기가 있어도 연습 결과는 게임 자산으로 사용하지 않는다.
+test('practice artifacts cannot become game acquisition candidates or be promoted by worker guidance',async()=>{
+  const {createVibeAssetAcquisitionPlan}=await import('../assets/vibe-art-pipeline.js');
+  for(const marker of [{practiceOnly:true},{practiceArtifact:true},{authority:'PRACTICE_ONLY'}]){
+    const practice={id:'practice',license:'CC0',...marker};
+    const plan=createVibeAssetAcquisitionPlan({companyAssets:[practice],externalAssets:[{id:'original',license:'CC0'}]});
+    assert.deepEqual(plan.candidates.map(asset=>asset.id),['original']);
+  }
+  const guidance=assetProductionGuidance({kind:'vibe2-asset-production-plan'});
+  assert.match(guidance,/연습 종료 후/);
+  assert.match(guidance,/라이브러리 승격·재사용 금지/);
+});

@@ -1275,6 +1275,8 @@ function requiredAssetFamilies({request='',requirements=[]}={}){
   return [...families].sort();
 }
 function assetSupplyCandidateAllowed(asset={},target=''){
+  // [연습 제작물] 게임 후보·공용 자산 승격에 연습 결과를 사용하지 않는다.
+  if(asset?.practiceOnly===true||asset?.practiceArtifact===true||asset?.authority==='PRACTICE_ONLY')return false;
   if(asset?.catalogActive===false||asset?.rightsPass===false)return false;
   if(/STALE|QUARANTIN|RETIRED|REJECTED/.test((clean(asset?.catalogState)+' '+clean(asset?.status)).toUpperCase()))return false;
   if(internalAssetHardBlockReason(asset))return false;
@@ -6462,6 +6464,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    '[PRACTICE ONLY / DELETE AFTER EXERCISE] 바이브 자체 제작물은 연습만 허용한다. 게임 사용·라이브러리 승격·재사용 금지. 연습 종료 후 기존 책임 작업에서 연습 파일·미리보기·원장 등록을 영구 삭제하고 삭제 경로 증거만 남긴다. 기존 게임 소비처가 있는 공유 파일은 안전한 CC0 교체 검증 전 삭제하지 않는다.',
     '[CC0 ORIGINAL / ACTIVE GAME ONLY] 게임 에셋은 출처·라이선스·원본 해시가 확인된 CC0 원본을 이 게임에 맞게 수정해서 사용한다. 자체 제작 저품질 에셋은 단순 제외하지 말고 CC0 파생으로 실제 교체·실행 검증한 뒤 영구 삭제한다. 현재 승인된 개발 게임과 책임 파일만 처리하고 개발하지 않는 게임·보류 게임은 교체하지 않는다. 공용 파일을 삭제하기 전 모든 소비처를 확인하며 개발하지 않는 게임이 사용 중이면 그 파일과 등록은 보존하고 개발 중 게임의 연결만 교체한다. CC0 원본·수정 이력·삭제 경로·게임 연결 변경과 실제 런타임 증거 없이 완료를 주장하지 않는다. 자체 제작 fallback·옛 에셋 재생성·새 우회 파이프라인 금지. 게임 판정·저장·밸런스·기존 F0~F9 순서를 보존한다.',
     plan.gameConceptStyle?'[GAME CONCEPT STYLE] '+JSON.stringify(plan.gameConceptStyle)+'. 공용 나무·몬스터·건물·재질은 원본을 보존하고 이 게임의 컨셉·세계·스타일에 맞는 네이티브 파생으로 선택·변형·조합한다. 재질 분류 수와 색·표면 변형 수는 유행 스타일 종류 수가 아니다. 색만 바꾸지 말고 승인된 실루엣·비율·재질 반응·표면 디테일·조명·모션·UI 표현을 적용한다. 다른 게임이나 오래된 공유 스타일로 덮지 않는다. 스타일 명세가 없으면 누락으로 남기고 일반 프리셋으로 최종 스타일 일치를 주장하지 않는다. 원본 해시·게임별 파생·설계 식별·같은 빌드의 중립 비교와 실게임 카메라 증거를 연결하며 판정·충돌·저장·서버 권한은 보존한다.': '',
     plan.externalCustomization?.contentComposition?.authorized
@@ -6584,7 +6587,7 @@ export function assetProductionGuidance(plan={}){
     '서로 다른 에셋 팩을 원형 그대로 섞은 kitbash/sample-project 느낌은 완료가 아니다. Art Bible/재질/실루엣/조명/UI/VFX 언어를 통일한다.',
     '배경은 세계관·지역·서사 맥락에 맞고 몬스터는 생태·전투 역할이 읽히는 실루엣과 표현을 가져야 한다.',
     '액션·전투 캐릭터는 Web부터 IDLE/MOVE/ATTACK/HIT/DEATH 상태를 실제 게임 상태와 연결하고 표현 런타임을 통과한 뒤 native 플랫폼으로 이어간다.',
-    plan.companyGraphicsLibrary?.enabled?'회사 공용 그래픽 라이브러리는 24시간 idle 준비를 계속하지만 연습 산출물은 바로 production asset이 아니다. 실제 게임의 Unity/Roblox 네이티브 적용과 runtime 시각·모션·모바일 QA를 통과한 것만 검증 공용 자산으로 승격한다.':'',
+    plan.companyGraphicsLibrary?.enabled?'바이브 자체 제작물은 연습 전용이다. 품질 점수나 런타임 QA 통과 여부와 관계없이 게임 사용·공용 라이브러리 등록·승격·재사용을 금지한다. 기존 GRAPHICS_PRODUCTION·ASSET_DEVELOPMENT 책임 작업에서 연습 종료 직후 연습 파일·미리보기·원장 등록을 영구 삭제하고 비자산 학습 결과와 삭제 경로 증거만 남긴다. 실제 게임은 검증된 CC0 원본을 수정한 파생 자산만 사용한다. 이미 게임이 사용하는 공유 파일은 소비처 확인과 안전한 교체 전에 삭제하지 않는다.':'',
     plan.companyGraphicsLibrary?.enabled?`캐릭터 플랫폼 프로필=${plan.companyGraphicsLibrary.platformProfile}; Unity/Roblox 바이너리·리그는 직접 공유하지 않고 공통 실루엣/체형/장비 의미만 공유한 뒤 네이티브 재authoring한다.`:'',
     plan.companyGraphicsLibrary?.enabled?`액션 모션 최소 커버리지=${JSON.stringify(plan.companyGraphicsLibrary.motionMinimums)}; weaponPacks=${plan.companyGraphicsLibrary.weaponPacks.join('|')}`:'',
     plan.companyGraphicsLibrary?.survivalWildlife?.enabled?`생존 야생동물 자산팩: species=${plan.companyGraphicsLibrary.survivalWildlife.species.join('|')}; skins=${plan.companyGraphicsLibrary.survivalWildlife.playerSkins.join('|')}; 목표=${plan.companyGraphicsLibrary.survivalWildlife.visualQuality.style||'POLISHED_STYLIZED_LOW_POLY'}`:'',

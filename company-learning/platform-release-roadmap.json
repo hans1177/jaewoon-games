@@ -1,5 +1,5 @@
 {
-  "version": 589,
+  "version": 590,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -22544,9 +22544,40 @@
             "operator": "FILE_CONTAINS",
             "file": "tools/vibe2-asset-production-plan.mjs",
             "expected": "[CC0 ORIGINAL / ACTIVE GAME ONLY]"
+          },
+          {
+            "code": "VIBESELFAUTHOREDASSETSPRACTICEONLY",
+            "operator": "EQ",
+            "path": "vibeSelfAuthoredAssetsPracticeOnly",
+            "expected": true
+          },
+          {
+            "code": "PRACTICEARTIFACTGAMEUSEFORBIDDEN",
+            "operator": "EQ",
+            "path": "practiceArtifactGameUseForbidden",
+            "expected": true
+          },
+          {
+            "code": "PRACTICEARTIFACTPROMOTIONFORBIDDEN",
+            "operator": "EQ",
+            "path": "practiceArtifactPromotionForbidden",
+            "expected": true
+          },
+          {
+            "code": "PRACTICEARTIFACTDELETEAFTEREXERCISE",
+            "operator": "EQ",
+            "path": "practiceArtifactDeleteAfterExercise",
+            "expected": true
           }
         ]
-      }
+      },
+      "vibeSelfAuthoredAssetsPracticeOnly": true,
+      "practiceArtifactGameUseForbidden": true,
+      "practiceArtifactPromotionForbidden": true,
+      "practiceArtifactDeleteAfterExercise": true,
+      "practiceArtifactRetention": "DELETE_FILES_PREVIEWS_AND_LIBRARY_ENTRIES_AFTER_EXERCISE_KEEP_NON_ASSET_LEARNING_EVIDENCE_ONLY",
+      "practiceCleanupOwner": "EXISTING_GRAPHICS_PRODUCTION_AND_ASSET_DEVELOPMENT",
+      "practiceCleanupMustPreserveExistingGameConsumers": true
     },
     "implementationOrder": [
       "RULE_1",
