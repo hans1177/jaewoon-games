@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons} from '../web-games/ocean-voyage/engine.mjs';
+import {PORTS,GOODS,SAVE_KEY,newGame,serializeGame,restoreGame,priceAt,cargoWeight,canDock,trade,buyUpgrade,contractOffer,takeContract,fulfillContracts,navigationRoute,setDestination,stepSea,fireCannons,CREW,EQUIPMENT,recruitCompanion} from '../web-games/ocean-voyage/engine.mjs';
 
 test('separate save key, valid round trip, invalid save stays isolated',()=>{
  const s=newGame();
@@ -103,4 +103,55 @@ test('all rendered ship, dock and harbor GLB assets are real Kenney CC0 sources'
  assert.match(html,/data-hold="right"/);
  assert.match(render,/GLTFLoader/);
  assert.doesNotMatch(render,/new THREE\.BoxGeometry/);
+});
+
+
+test('Britain 1590 campaign starts London with two officers and separated inventory',()=>{
+ const s=newGame();
+ assert.equal(PORTS[0].name,'런던');
+ assert.equal(PORTS[1].name,'플리머스');
+ assert.equal(canDock(s).name,'런던');
+ assert.equal(s.captain,'엘리너 그레이');
+ assert.deepEqual(s.crewRoster,['eleanor','thomas']);
+ assert.equal(s.equipment.telescope,1);
+ assert.ok(CREW.length>=6);
+ assert.ok(EQUIPMENT.length>=5);
+ assert.deepEqual(restoreGame(serializeGame(s)),s);
+});
+test('regional officers only join through their home-port tavern and persist',()=>{
+ const start=newGame();
+ assert.equal(recruitCompanion(start,'isabel').ok,false);
+ const lisbon=structuredClone(start),p=PORTS.find(p=>p.id==='gold');
+ lisbon.ship.x=p.x;lisbon.ship.z=p.z;
+ const joined=recruitCompanion(lisbon,'isabel');
+ assert.equal(joined.ok,true);assert.ok(joined.state.crewRoster.includes('isabel'));
+ assert.equal(joined.state.crewRoster.length,3);
+ assert.equal(lisbon.crewRoster.length,2);
+ assert.equal(recruitCompanion(joined.state,'isabel').ok,false);
+ assert.ok(restoreGame(serializeGame(joined.state)).crewRoster.includes('isabel'));
+});
+test('analogue helm changes heading and inertia persists after stick release',()=>{
+ const s=newGame(),moved=stepSea(s,{turn:.7,throttle:1,manual:true},.6);
+ assert.ok(moved.ship.heading>s.ship.heading);
+ assert.ok(moved.ship.velocity>0);
+ assert.ok(moved.ship.x!==s.ship.x||moved.ship.z!==s.ship.z);
+ const release=stepSea(moved,{turn:0,throttle:0,manual:true},.2);
+ assert.ok(release.ship.velocity>0&&release.ship.velocity<moved.ship.velocity);
+ assert.equal(s.ship.velocity,0);
+});
+test('CC0-only external asset references and functional UK-era voyage UI',()=>{
+ const html=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
+ const main=fs.readFileSync('web-games/ocean-voyage/main.mjs','utf8');
+ assert.match(html,/id="joystickRim"/);
+ assert.match(html,/id="joystickHandle"/);
+ assert.match(html,/Kenney CC0/);
+ assert.match(html,/data-panel="inventory"/);
+ assert.match(html,/data-panel="crew"/);
+ assert.match(html,/data-panel="port"/);
+ assert.match(html,/opengameart\.org\/sites\/default\/files\/pirate_ship_in_game\.ogg/);
+ assert.match(main,/recruitCompanion/);
+ assert.match(main,/music\.play\(\)/);
+ assert.match(main,/crowded_pub_2025\.ogg/);
+ assert.match(main,/joystick\.setPointerCapture/);
+ assert.match(html,/opengameart\.org\/sites\/default\/files\/rpgportraits\.png/);
 });

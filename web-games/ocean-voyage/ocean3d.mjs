@@ -70,9 +70,23 @@ export function createOcean3D(canvas,{onReady=()=>{},onError=()=>{}}={}){
    escort=instance(m.escort,.7);boatsGroup.add(escort);
    frigate=instance(m.frigate,.84);boatsGroup.add(frigate);
    for(const p of PORTS){
-    const root=portMap.get(p.id);
-    for(const [key,x,z,scale] of [['sand',0,0,4.2],['sand',-6,3,3.2],['sand',5,-2,2.9],['building',0,1,.9],['dock',3,7,.95],['palm',-5,-3,.85],['palm',6,-2,.9],['cannon',4,-3,.35],['chest',2,3,.4]]){
+    const root=portMap.get(p.id),southern=['gold','sun'].includes(p.id);
+    // Region-specific harbor silhouettes use only the existing Kenney CC0 GLBs.
+    // Northern England/Netherlands receive dense timber dockyards instead of tropical palms.
+    const decor=[['sand',0,0,4.2],['sand',-6,3,3.2],['sand',5,-2,2.9],['building',0,1,.9],['dock',3,7,.95],
+      ['cannon',4,-3,.35],['chest',2,3,.4],
+      ...(southern?[['palm',-5,-3,.85],['palm',6,-2,.9]]:[['building',-6,-3,.64],['dock',-3,-7,.64]])];
+    const tint=p.id==='dawn'||p.id==='coral'||p.id==='north'?0x8199ae:
+      p.id==='gold'||p.id==='sun'?0xe3bf8d:p.id==='jade'||p.id==='amber'?0xafbfa7:0xd1b3a7;
+    for(const [key,x,z,scale] of decor){
      const object=instance(m[key],scale);object.position.set(x,key==='sand'?-1.4:0,z);
+     if(key==='building'||key==='dock'){
+      object.traverse(part=>{if(!part.isMesh||!part.material)return;
+       part.material=Array.isArray(part.material)?part.material.map(mat=>mat.clone()):part.material.clone();
+       const mats=Array.isArray(part.material)?part.material:[part.material];
+       for(const mat of mats)if(mat.color)mat.color.lerp(new THREE.Color(tint),.20);
+      });
+     }
      root.add(object);
     }
    }
