@@ -350,6 +350,37 @@ function readAvatarAppearance(){
  catch{return validAvatarAppearance(null)}
 }
 let avatarAppearance=readAvatarAppearance();
+// UI: 개인별 화면 설정. 기존 게임 플레이·세이브·밸런스 저장과 별도.
+const HUD_UI_SAVE_KEY='magic-forest-ui-v1';
+function readHudUiSettings(){
+ let saved=null;
+ try{saved=JSON.parse(localStorage.getItem(HUD_UI_SAVE_KEY)||'null')}catch{}
+ return {
+  hand:saved?.hand==='left'?'left':'right',
+  size:saved?.size===108?108:100,
+  quest:saved?.quest==='expanded'?'expanded':'compact'
+ };
+}
+let hudUi=readHudUiSettings();
+function syncHudUi(){
+ document.body.dataset.hudHand=hudUi.hand;
+ document.body.dataset.hudSize=String(hudUi.size);
+ document.body.dataset.questMode=hudUi.quest;
+ document.getElementById('hudHandedness').value=hudUi.hand;
+ document.getElementById('hudSize').value=String(hudUi.size);
+ const expanded=hudUi.quest==='expanded';
+ document.getElementById('questToggle').setAttribute('aria-expanded',String(expanded));
+ document.getElementById('questToggle').setAttribute('aria-label',expanded?'현재 임무 접기':'현재 임무 펼치기');
+ document.getElementById('hudQuestMode').textContent=expanded?'임무 자세히':'임무 요약';
+ document.getElementById('hudQuestMode').setAttribute('aria-pressed',String(expanded));
+}
+function changeHudUi(kind,value){
+ if(kind==='hand')hudUi.hand=value==='left'?'left':'right';
+ if(kind==='size')hudUi.size=Number(value)===108?108:100;
+ if(kind==='quest')hudUi.quest=value==='expanded'?'expanded':'compact';
+ syncHudUi();
+ try{localStorage.setItem(HUD_UI_SAVE_KEY,JSON.stringify(hudUi))}catch{}
+}
 const ui={hpfill:document.getElementById('hpfill'),hptext:document.getElementById('hptext'),foodfill:document.getElementById('foodfill'),foodtext:document.getElementById('foodtext'),questText:document.getElementById('questText'),recorderOverlay:document.getElementById('recorderOverlay'),recorderCaption:document.getElementById('recorderCaption'),recorderState:document.getElementById('recorderState'),weapon:document.getElementById('weapon'),tool:document.getElementById('tool'),armor:document.getElementById('armor'),zone:document.getElementById('zone'),kills:document.getElementById('kills'),wood:document.getElementById('wood'),stone:document.getElementById('stone'),fiber:document.getElementById('fiber'),ironOre:document.getElementById('ironOre'),ironIngot:document.getElementById('ironIngot'),goldOre:document.getElementById('goldOre'),goldIngot:document.getElementById('goldIngot'),essence:document.getElementById('essence'),notice:document.getElementById('notice'),sheet:document.getElementById('sheet'),sheetBody:document.getElementById('sheetBody'),handTab:document.getElementById('handTab'),benchTab:document.getElementById('benchTab'),ironBenchTab:document.getElementById('ironBenchTab'),goldBenchTab:document.getElementById('goldBenchTab'),jungleBenchTab:document.getElementById('jungleBenchTab'),sunstoneBenchTab:document.getElementById('sunstoneBenchTab'),inventoryTab:document.getElementById('inventoryTab'),mapTab:document.getElementById('mapTab'),mapBtn:document.getElementById('map'),attack:document.getElementById('attack'),autoGather:document.getElementById('autoGather'),dismount:document.getElementById('dismount'),petSpecial:document.getElementById('petSpecial'),flash:document.getElementById('flash'),smeltPanel:document.getElementById('smeltPanel'),smeltText:document.getElementById('smeltText'),smeltBtn:document.getElementById('smeltBtn'),goldSmeltBtn:document.getElementById('goldSmeltBtn'),deerSmeltBtn:document.getElementById('deerSmeltBtn'),bugSmeltBtn:document.getElementById('bugSmeltBtn'),fishSmeltBtn:document.getElementById('fishSmeltBtn'),hareSmeltBtn:document.getElementById('hareSmeltBtn'),lizardSmeltBtn:document.getElementById('lizardSmeltBtn'),crystalDeerSmeltBtn:document.getElementById('crystalDeerSmeltBtn'),greensSmeltBtn:document.getElementById('greensSmeltBtn'),birdSmeltBtn:document.getElementById('birdSmeltBtn'),goatSmeltBtn:document.getElementById('goatSmeltBtn'),squidSmeltBtn:document.getElementById('squidSmeltBtn'),monopolySmeltBtn:document.getElementById('monopolySmeltBtn'),sunstoneSmeltBtn:document.getElementById('sunstoneSmeltBtn'),smeltTitle:document.getElementById('smeltTitle'),smeltStation:'furnace',smeltProgress:document.getElementById('smeltProgress'),bestiaryBtn:document.getElementById('bestiary'),bossBanner:document.getElementById('bossBanner'),multiPanel:document.getElementById('multiPanel'),multiStatus:document.getElementById('multiStatus'),multiRoom:document.getElementById('multiRoom')};
 const MULTI_SUPABASE_URL='https://njpexgqvituaxrjpnqsi.supabase.co';
 const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
@@ -6834,6 +6865,30 @@ function openAvatarCustomizer(){
 document.getElementById('startAvatar').addEventListener('click',openAvatarCustomizer);
 document.getElementById('avatarOpen').addEventListener('click',openAvatarCustomizer);
 document.getElementById('heroPortrait').addEventListener('click',openAvatarCustomizer);
+// 모바일 UI: 기존 동작 버튼 그대로 재사용하고 화면 편의 설정만 연결한다.
+syncHudUi();
+document.getElementById('hudHandedness').addEventListener('change',e=>changeHudUi('hand',e.target.value));
+document.getElementById('hudSize').addEventListener('change',e=>changeHudUi('size',e.target.value));
+document.getElementById('hudQuestMode').addEventListener('click',()=>changeHudUi('quest',hudUi.quest==='expanded'?'compact':'expanded'));
+document.getElementById('questToggle').addEventListener('click',()=>changeHudUi('quest',hudUi.quest==='expanded'?'compact':'expanded'));
+document.getElementById('miniMapWrap').addEventListener('click',()=>ui.mapBtn.click());
+document.getElementById('miniMapWrap').addEventListener('keydown',event=>{
+ if(event.key==='Enter'||event.key===' '){event.preventDefault();ui.mapBtn.click()}
+});
+document.querySelector('.hudMenuPanel').addEventListener('click',event=>{
+ if(event.target.closest('button,a'))document.querySelector('.hudMenu').open=false;
+});
+document.getElementById('hudGuideOpen').addEventListener('click',()=>{
+ document.getElementById('hudGuide').hidden=false;
+ document.getElementById('hudGuideClose').focus();
+});
+document.getElementById('hudGuideClose').addEventListener('click',()=>{
+ document.getElementById('hudGuide').hidden=true;
+ document.querySelector('.hudMenu>summary').focus();
+});
+document.getElementById('hudGuide').addEventListener('click',event=>{
+ if(event.target===event.currentTarget)document.getElementById('hudGuideClose').click();
+});
 document.getElementById('avatarClose').addEventListener('click',()=>{document.getElementById('avatarPanel').hidden=true});
 document.getElementById('avatarApply').addEventListener('click',async()=>{
  const next=validAvatarAppearance({
