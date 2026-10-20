@@ -30326,7 +30326,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:40:04.134Z",
-      "updatedAt": "2026-10-20T00:12:38.007Z",
+      "updatedAt": "2026-10-20T00:16:26.528Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -30344,17 +30344,17 @@
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
       "robloxBuildArtifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
-      "robloxBuildPassedAt": "2026-10-20T00:12:38.007Z",
+      "robloxBuildPassedAt": "2026-10-20T00:16:26.528Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-10-20T00:12:38.007Z",
+      "robloxBuildPreflightFailedAt": "2026-10-20T00:16:26.528Z",
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "crystal-defense",
         "pass": false,
         "state": "BLOCKED",
-        "checkedAt": "2026-10-19T23:55:32.780Z",
+        "checkedAt": "2026-10-19T23:57:28.051Z",
         "sourceRevision": "a6a07ae41fa794daccf310b50e9397567b4b324a",
         "artifactIdentity": "sha256:449b394d8afc42fee840c541ff82346ff7d95acbae367958a00dad6ef8020404",
         "secondaryOwnerFocus": false,
@@ -30395,7 +30395,7 @@
               "webValidationPassed is false",
               "musicValidationPassed is false"
             ],
-            "note": "Package cannot start runtime testing because web and music validations have not passed."
+            "note": "Package build evidence shows validation failures for web and music assets, contradicting the requirements to start runtime testing."
           }
         ],
         "blockers": [
@@ -37569,7 +37569,7 @@
       }
     }
   ],
-  "updatedAt": "2026-10-20T00:15:56.833Z",
+  "updatedAt": "2026-10-20T00:16:26.528Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
