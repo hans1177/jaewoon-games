@@ -1,5 +1,5 @@
 {
-  "version": 588,
+  "version": 589,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -7556,6 +7556,7 @@
     }
   },
   "changeRecord": {
+    "fastDevelopmentSourceAssetReuse20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20_FAST_DEVELOPMENT", "scope": "EXISTING_GITHUB_PAGES_ASSET_PREPARATION", "cacheKey": "EXACT_ASSET_TREE_GIT_SHA", "fallbackReuse": "CURRENT_GIT_BLOB_HASH_VERIFIED_BYTES_ONLY", "missingOrChangedAssetsOnlyRestored": true, "postRestoreBlobVerificationRequired": true, "cacheFailureFallsBackToCanonicalGit": true, "cacheSavesMainOnly": true, "publicationTriggerSequenceAndSafetyChecksPreserved": true, "actualSpeedupRequiresRuntimeMeasurements": true, "newPipeline": false},
     "ownerGitHubPagesPermanentRemoval20261020": {"authority":"OWNER_DIRECTIVE_2026-10-20","publisher":"tools/github-pages-landing.mjs","retainedOutputPrunedByExplicitCatalogRemovalOnly":true,"activeGameAndSharedFilesPreserved":true,"newWorkflowOrPipeline":false},
     "ownerStoppedGamesPermanentRemoval20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20", "gameIds": ["ant-simulator", "crystal-defense"], "ownerGameStopMeansPermanentRemoval": true, "sourceDeletionRequired": true, "automaticReentryForbidden": true, "lockedSequenceChanged": false},
     "ownerCC0ActiveGameReplacement20261020": {"authority": "OWNER_DIRECTIVE_2026-10-20", "requestKo": "게임 제작은 검증된 CC0 원본을 수정해 사용. 개발 중 게임의 자체 제작 저품질 에셋은 대체 검증 후 영구 삭제. 개발하지 않는 게임 및 해당 게임이 사용하는 공유 파일은 교체·삭제하지 않는다.", "rule": "ownerCanonicalRules.rule5", "lockedSequenceChanged": false, "assetMigrationStatus": "PENDING_EXACT_ACTIVE_GAME_REPLACEMENT_AND_RUNTIME_EVIDENCE"},

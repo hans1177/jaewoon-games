@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {validatedHomepageMedia,webTreeFingerprint} from '../tools/game-catalog-normalization.mjs';
 import vm from 'node:vm';
+import {execFileSync} from 'node:child_process';
 import {mergeRuntimeCatalogMissingGames,syncPublishedWebRoutes} from '../tools/company-status-sync.mjs';
 import {writePagesLanding} from '../tools/github-pages-landing.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
@@ -689,4 +690,41 @@ test('canonical Pages publisher removes stopped and rejected routes from retaine
     assert.equal(fs.readFileSync(path.join(site,'web-games','keep-game','index.html'),'utf8'),'keep-game original');
     assert.equal(fs.readFileSync(path.join(site,'assets','shared.txt'),'utf8'),'shared original');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 기존 준비 코드를 실제 임시 Git 저장소에서 실행해 캐시가 원본 검증을 우회하지 못하게 한다.
+test('Pages source cache restores only changed bytes and rejects unverified output',()=>{
+ const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
+ const cleanStart=workflow.indexOf("          const cacheDirectories=['assets'];");
+ const cleanEnd=workflow.indexOf('          const catalog=',cleanStart);
+ const verifyStart=workflow.indexOf('          const selectedAssets=[...refs].sort();');
+ const verifyEnd=workflow.indexOf('          // Build only the game-authored HTML.',verifyStart);
+ assert.ok(cleanStart>0&&cleanEnd>cleanStart&&verifyEnd>verifyStart);
+ const code=workflow.slice(cleanStart,cleanEnd)+workflow.slice(verifyStart,verifyEnd);
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'pages-cache-')),before=process.cwd();
+ try{
+  process.chdir(root);fs.mkdirSync('assets');
+  const bytes={'assets/keep.bin':Buffer.from([0,255,1]),'assets/change.bin':Buffer.from('canonical change'),'assets/missing.bin':Buffer.from('canonical missing')};
+  for(const [file,value] of Object.entries(bytes))fs.writeFileSync(file,value);
+  execFileSync('git',['init','-q']);execFileSync('git',['add','assets']);
+  execFileSync('git',['-c','user.name=QA','-c','user.email=qa@example.invalid','commit','-qm','fixture']);
+  const assetBlobs=new Map(Object.entries(bytes).map(([file,value])=>[file,crypto.createHash('sha1').update(Buffer.from('blob '+value.length+'\0')).update(value).digest('hex')]));
+  const restores=[];
+  const cp={execFileSync(command,args,options){restores.push(Array.from(args).slice(args.indexOf('--')+1));return execFileSync(command,args,options);}};
+  const run=(executor=cp)=>vm.runInNewContext(code,{fs,path,crypto,Buffer,cp:executor,assetBlobs,refs:new Set(Object.keys(bytes)),site:'_site',console:{log(){}}});
+  fs.writeFileSync('assets/old-untracked.bin','obsolete cached bytes');
+  run();assert.deepEqual(restores,[],'unchanged cache must avoid all source downloads');
+  assert.equal(fs.existsSync('assets/old-untracked.bin'),false,'deleted source must not return through old cache');
+  fs.writeFileSync('assets/change.bin','poisoned cache');fs.unlinkSync('assets/missing.bin');
+  run();assert.deepEqual(restores,[['assets/change.bin','assets/missing.bin']]);
+  for(const [file,value] of Object.entries(bytes))assert.deepEqual(fs.readFileSync('_site/'+file),value);
+  fs.writeFileSync('outside.txt','protected original');fs.unlinkSync('assets/change.bin');
+  fs.symlinkSync(path.resolve('outside.txt'),'assets/change.bin');
+  run();assert.equal(fs.readFileSync('outside.txt','utf8'),'protected original');
+  assert.equal(fs.lstatSync('assets/change.bin').isSymbolicLink(),false);
+  fs.writeFileSync('assets/change.bin','unrepaired poison');
+  assert.throws(()=>run({execFileSync(){}}),/GITHUB_PAGES_ASSET_SOURCE_MISMATCH/);
+  restores.length=0;fs.rmSync('assets',{recursive:true,force:true});run();
+  assert.deepEqual(restores,[Object.keys(bytes).sort()],'a cache miss must use the unchanged canonical Git fallback');
+ }finally{process.chdir(before);fs.rmSync(root,{recursive:true,force:true});}
 });
