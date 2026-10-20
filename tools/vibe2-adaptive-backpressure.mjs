@@ -240,7 +240,8 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
 // autonomous GAME_PRIMARY. This is a logical reservation ceiling, not a claim
 // that GitHub has actually allocated those hosted runners.
 export function ownerFirstRunnerAllocation(queue={},{
-  lane='game-primary',requestedMax=128,totalSlots=20,ownerReservedSlots=8
+  lane='game-primary',requestedMax=128,totalSlots=20,ownerReservedSlots=8,
+  observedActiveHostedJobs=null
 }={}){
   const requested=Math.max(1,Math.floor(num(requestedMax)||1));
   const tasks=Array.isArray(queue?.tasks)?queue.tasks:[];
@@ -259,10 +260,21 @@ export function ownerFirstRunnerAllocation(queue={},{
     return clean(t.executionLane).toLowerCase().replaceAll('_','-')!==lane;
   }).length;
   const laneCeiling=(automatic?total-reserved:total)-otherLanesActive;
-  const ceiling=Math.max(1,laneCeiling);
+  const knownObserved=observedActiveHostedJobs!==null&&observedActiveHostedJobs!==undefined
+    &&/^[0-9]+$/.test(clean(observedActiveHostedJobs));
+  const observed=knownObserved?Math.max(0,Math.floor(Number(observedActiveHostedJobs))):null;
+  const currentLaneActive=tasks.filter(t=>clean(t.status).toLowerCase()==='running'
+    &&clean(t.executionLane).toLowerCase().replaceAll('_','-')===lane
+    &&!/candidate-awaiting|awaiting.*qa|slot-released|quota|external.*wait/i.test(clean(t.blocker))).length;
+  const liveFree=observed===null?null:Math.max(0,(automatic?total-reserved:total)-observed);
+  const ceiling=Math.max(1,Math.min(laneCeiling,
+    liveFree===null?laneCeiling:currentLaneActive+liveFree));
   return Object.freeze({
     ownerReady,automatic,totalSlots:total,ownerReservedSlots:reserved,
-    otherLanesActive,concurrentCeiling:Math.min(requested,ceiling),
+    otherLanesActive,currentLaneActive,observedHostedJobs:observed,
+    observedScope:'CURRENT_REPOSITORY_ONLY',
+    admissionClosed:automatic&&liveFree===0,
+    concurrentCeiling:Math.min(requested,ceiling),
     reason:automatic?'AUTOMATIC_KEEP_OWNER_RUNNER_HEADROOM':'OWNER_DIRECT_OR_NON_PRIMARY_PRIORITY'
   });
 }
