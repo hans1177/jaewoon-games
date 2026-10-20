@@ -626,37 +626,31 @@ test('free MAIN is synthesized after independent A and B, fused C genres and exp
   }
 });
 
-// 메인: 기존 게임은 새 문법 B 안의 보조 참고이며 A/B 중심과 C/D/@의 생성 근거를 대체하지 않는다.
-test('existing game is only a supporting reference inside fresh grammar B',()=>{
+// 메인: A 참고게임의 이름과 B 원본 시스템을 실제 생성 결과에서 대조한다.
+test('A names a representative game and B preserves the existing actual system',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const method=policy.continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod;
-  const base={requestId:'existing-reference-only',category:'CASUAL',platform:'ROBLOX',designTopicMode:'VIBE_FREE_TOPIC',basicDesignMethod:method};
-  const reference={scope:'B_SUPPORTING_REFERENCE_ONLY',systemFamily:'기존 마을 건설과 주민 운영',playerChoice:'기존 주민에게 작업을 배정한다',source:'design/cozy-island/original.json'};
-  const control=computeVibeSeedProposal(base);
+  const base={requestId:'existing-reference-only',category:'CASUAL',platform:'ROBLOX',designTopicMode:'VIBE_FREE_TOPIC',basicDesignMethod:method,representativeGameReference:'디아블로'};
+  const reference={scope:'B_EXISTING_GAME_SYSTEMS',systemFamily:'기존 마을 건설과 주민 운영',playerChoice:'기존 주민에게 작업을 배정한다',source:'design/cozy-island/original.json'};
   const result=computeVibeSeedProposal({...base,bSystemReference:reference});
-  const poisoned=computeVibeSeedProposal({...base,bSystemReference:reference,category:'SURVIVAL',gameName:'기존 생존 왕국',ownerBrief:'옛 세계관과 원래 중심',coreLoop:['옛 게임 루프'],materials:[{causalDNA:['DYNASTIC_INHERITANCE']}]});
-  assert.deepEqual({...result,category:undefined},{...poisoned,category:undefined},'existing routing metadata must not select the fresh grammar axes');
-  assert.deepEqual(result.gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes,control.gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes);
-  assert.notEqual(result.gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes[1].systemFamily,reference.systemFamily);
-  assert.equal(result.basicDesignSelection.existingSystemReference.scope,'B_SUPPORTING_REFERENCE_ONLY');
-  assert.equal(result.basicDesignSelection.existingSystemReference.systemFamily,reference.systemFamily);
-  assert.deepEqual(result.gameplaySketch.novelGameGrammar.dCreations,control.gameplaySketch.novelGameGrammar.dCreations);
-  assert.deepEqual(result.gameplaySketch.novelGameGrammar.delveLayer,control.gameplaySketch.novelGameGrammar.delveLayer);
-  assert.deepEqual(result.gameplaySketch.novelGameGrammar.gameplaySystemFusion.themeFusion,control.gameplaySketch.novelGameGrammar.gameplaySystemFusion.themeFusion);
-  const migrated=computeVibeSeedProposal({...base,aSystemReference:{...reference,scope:'A_SYSTEM_ONLY'}});
-  assert.deepEqual(migrated,result,'old A reference is migrated only into B supporting reference');
+  const axes=result.gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes;
+  assert.equal(result.basicDesignSelection.a.referenceGame.name,'디아블로');
+  assert.equal(axes[0].systemFamily,result.basicDesignSelection.a.referenceGame.systemFamily);
+  assert.equal(axes[1].systemFamily,reference.systemFamily,'B must be the original system, not an unrelated generated partner');
+  assert.equal(result.basicDesignSelection.existingSystemReference.scope,'B_EXISTING_GAME_SYSTEMS');
+  assert.equal(result.basicDesignSelection.existingSystemReference.source,reference.source);
   const sketch=normalizeGameplaySketch(base,result,result.coreLoop,result.gameName);
-  assert.equal(sketch.novelGameGrammar.gameplaySystemFusion.formula,method.formula);
-  assert.equal(sketch.novelGameGrammar.gameplaySystemFusion.themeFusion.themes,undefined);
-  assert.equal(sketch.novelGameGrammar.existingGameSystemRole,'B_SUPPORTING_REFERENCE');
+  assert.equal(sketch.novelGameGrammar.existingGameSystemRole,'B_EXISTING_GAME_SYSTEMS');
+  assert.equal(sketch.novelGameGrammar.representativeGameReference.name,'디아블로');
+  const migrated=computeVibeSeedProposal({...base,aSystemReference:{...reference,scope:'A_SYSTEM_ONLY'}});
+  assert.deepEqual(migrated,result,'legacy original-system input migrates to B without replacing it');
   const seed={...legacySeed(),GAMEPLAY_SKETCH:sketch,CORE_LOOP:result.coreLoop,DISTINCT_IDENTITY:result.distinctIdentity};
   assert.equal(validateGameSeed(seed).pass,true,validateGameSeed(seed).errors.join('|'));
-  const broken=structuredClone(seed);
-  broken.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements[0].sourceDId='UNKNOWN_D';
-  assert.equal(validateGameSeed(broken).pass,false,'@ without a matching D must be rejected');
-  const oldFormula=structuredClone(seed);
-  oldFormula.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula='MAIN × A × B × C';
-  assert.equal(validateGameSeed(oldFormula).pass,false,'new grammar cannot regress to legacy formula');
+  const broken=structuredClone(seed);broken.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements[0].sourceDId='UNKNOWN_D';
+  assert.equal(validateGameSeed(broken).pass,false,'D/Delve lineage remains mandatory');
+  assert.throws(()=>computeVibeSeedProposal({...base,representativeGameReference:'출처 없는 이름'}),/A_REFERENCE_GAME_SYSTEM_EVIDENCE_REQUIRED/);
+  const fresh=computeVibeSeedProposal(base);
+  assert.equal(fresh.basicDesignSelection.existingSystemReference.scope,'B_NEW_GAME_INITIAL_SYSTEMS','a new game must not fabricate an old baseline');
 });
 
 test('basic floor carries authored standard systems and B supporting reference without genre presets',()=>{
