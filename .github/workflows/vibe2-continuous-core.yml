@@ -192,6 +192,27 @@ jobs:
               echo 'VIBE2_FANIN_WAKE_DUPLICATE_PROBE=UNKNOWN_CONTINUE'
             fi
           fi
+          # Only cron/main-push automatic reserve wakes yield to an owner Pages
+          # publication or a saturated workflow backlog. Explicit user
+          # workflow_dispatch, owner-direct Vibe and result callbacks are unchanged.
+          if [ "$proceed" = true ] && \
+             { [[ "${GITHUB_EVENT_NAME:-}" == 'schedule' ]] || \
+               { [[ "${GITHUB_EVENT_NAME:-}" == 'push' ]] && [[ "${GITHUB_REF_NAME:-}" == 'main' ]]; }; }; then
+            owner_publish="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/owner-fast-pages-publish.yml/runs?per_page=20" \
+              --jq '[.workflow_runs[] | select(.status == "queued" or .status == "pending" or .status == "requested" or .status == "waiting" or .status == "in_progress")] | length' 2>/dev/null || echo unknown)"
+            queued_count="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=queued&per_page=1" --jq '.total_count' 2>/dev/null || echo unknown)"
+            pending_count="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=pending&per_page=1" --jq '.total_count' 2>/dev/null || echo unknown)"
+            if [[ "$owner_publish" =~ ^[0-9]+$ ]] && [ "$owner_publish" -gt 0 ]; then
+              proceed=false
+              echo 'VIBE2_AUTO_MAIN_WAKE_DEFERRED=OWNER_PAGES_PUBLICATION_PRIORITY'
+            elif [[ "$queued_count" =~ ^[0-9]+$ && "$pending_count" =~ ^[0-9]+$ ]] && \
+                 [ "$((queued_count+pending_count))" -ge 48 ]; then
+              proceed=false
+              echo 'VIBE2_AUTO_MAIN_WAKE_DEFERRED=RUNNER_WORKFLOW_BACKLOG'
+            else
+              echo 'VIBE2_AUTO_MAIN_WAKE_ADMITTED=YES'
+            fi
+          fi
           echo "proceed=$proceed" >> "$GITHUB_OUTPUT"
 
       - name: Checkout Vibe2 control line
