@@ -123,15 +123,18 @@ test('original source materials and Diablo-II-style native camera are bound to g
  assert.match(source,/productionReady:false/);
 });
 
-test('no public game receives automatically injected developer asset inspector button',()=>{
+test('public games use exactly their authored asset scripts, never injected or stripped at build',()=>{
  const workflow=fs.readFileSync('.github/workflows/magic-forest-pages.yml','utf8');
  const panel=fs.readFileSync('assets/vibe-runtime-panel.js','utf8');
+ const owner=fs.readFileSync('.github/workflows/owner-fast-pages-publish.yml','utf8');
  const ocean=fs.readFileSync('web-games/ocean-voyage/index.html','utf8');
  assert.doesNotMatch(workflow,/const tag='<script defer src="\/jaewoon-games\/assets\/vibe-runtime-panel\.js"/);
- assert.doesNotMatch(workflow,/PUBLIC_GAME_DEV_INSPECTOR_INJECTION_FORBIDDEN/);
- assert.match(workflow,/VIBE_OPTIONAL_DEV_INSPECTOR_CLEANED/);
- assert.match(workflow,/html\.replace\(/);
- assert.match(panel,/script\?\.dataset\?\.vibeOwnerInspector!=='enabled'/);
+ assert.doesNotMatch(workflow,/withoutInspector=html\.replace/);
+ assert.doesNotMatch(workflow,/PUBLIC_GAME_DEV_INSPECTOR_INJECTION_FORBIDDEN|VIBE_OPTIONAL_DEV_INSPECTOR_CLEANED/);
+ assert.doesNotMatch(owner,/const clean=html\.replace|PUBLIC_ASSET_INSPECTOR_STILL_PRESENT/);
+ assert.match(owner,/OWNER_PAGES_GAME_OWNED_HTML=UNCHANGED/);
+ assert.doesNotMatch(panel,/script\?\.dataset\?\.vibeOwnerInspector!=='enabled'/);
+ assert.match(panel,/if\(!gameId\|\|document\.getElementById\('vibe-assets-launcher'\)\)return/);
  assert.doesNotMatch(ocean,/vibe-runtime-panel\.js/);
 });
 
